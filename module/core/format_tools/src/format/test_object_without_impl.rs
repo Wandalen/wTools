@@ -26,7 +26,7 @@ pub struct TestObjectWithoutImpl
 {
   pub id : String,
   pub created_at : i64,
-  pub file_ids : Vec< String >,
+  pub file_ids : Vec<  String  >,
   pub tools : Option< Vec< HashMap< String, String > > >,
 }
 
@@ -95,7 +95,7 @@ impl Hash for TestObjectWithoutImpl
 impl PartialOrd for TestObjectWithoutImpl
 {
 
-  fn partial_cmp( &self, other: &Self ) -> Option< Ordering >
+  fn partial_cmp( &self, other: &Self ) -> Option<  Ordering  >
   {
     Some( self.cmp( other ) )
   }
@@ -116,7 +116,7 @@ impl Ord for TestObjectWithoutImpl
 }
 
 /// Generate a dynamic array of test objects.
-pub fn test_objects_gen() -> Vec< TestObjectWithoutImpl >
+pub fn test_objects_gen() -> Vec<  TestObjectWithoutImpl  >
 {
 
   vec!

@@ -1,4 +1,4 @@
-//! qqq : write proper descriptionuse is_slice::*;
+//! qqq : write proper descriptionuse `is_slice::`*;
 
 use is_slice::is_slice;
 

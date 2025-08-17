@@ -4,11 +4,11 @@ mod private {
   // use macro_tools::syn::Result;
   // use macro_tools::err;
 
-  #[derive(Debug, PartialEq, Eq, Clone)]
+  #[ derive( Debug, PartialEq, Eq, Clone ) ]
   pub struct UseTree {
-    pub leading_colon: Option<syn::token::PathSep>,
+    pub leading_colon: Option< syn::token::PathSep >,
     pub tree: syn::UseTree,
-    pub rename: Option<syn::Ident>,
+    pub rename: Option< syn::Ident >,
     pub glob: bool,
     pub group: bool,
   }
@@ -21,7 +21,7 @@ mod private {
     /// Is adding prefix to the tree path required?
     /// Add `super::private::` to path unless it starts from `::` or `super` or `crate`.
     pub fn private_prefix_is_needed(&self) -> bool {
-      #[allow(clippy::wildcard_imports, clippy::enum_glob_use)]
+      #[ allow( clippy::wildcard_imports, clippy::enum_glob_use ) ]
       use syn::UseTree::*;
 
       // println!( "private_prefix_is_needed : {:?}", self );
@@ -39,7 +39,7 @@ mod private {
 
     /// Get pure path, cutting off `as module2` from `use module1 as module2`.
     pub fn pure_path(&self) -> syn::Result<syn::punctuated::Punctuated<syn::Ident, Token![::]>> {
-      #[allow(clippy::wildcard_imports, clippy::enum_glob_use)]
+      #[ allow( clippy::wildcard_imports, clippy::enum_glob_use ) ]
       use syn::UseTree::*;
 
       // let leading_colon = None;
@@ -119,8 +119,8 @@ mod private {
   }
 
   impl syn::parse::Parse for UseTree {
-    fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
-      #[allow(clippy::wildcard_imports, clippy::enum_glob_use)]
+    fn parse(input: ParseStream<'_>) -> syn::Result< Self > {
+      #[ allow( clippy::wildcard_imports, clippy::enum_glob_use ) ]
       use syn::UseTree::*;
       let leading_colon = input.parse()?;
       let tree = input.parse()?;
@@ -170,11 +170,11 @@ mod private {
   }
 }
 
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
 
   use super::*;
@@ -182,7 +182,7 @@ pub mod own {
 }
 
 /// Parented namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
 
   use super::*;
@@ -190,7 +190,7 @@ pub mod orphan {
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
 
   use super::*;
@@ -200,7 +200,7 @@ pub mod exposed {
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 }

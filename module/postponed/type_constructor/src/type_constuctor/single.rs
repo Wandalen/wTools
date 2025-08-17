@@ -8,7 +8,6 @@ mod private
   ///
   /// Should not be used directly. Instead use macro [crate::types!].
   ///
-
   #[ macro_export ]
   macro_rules! _single
   {
@@ -521,7 +520,6 @@ mod private
     /// dbg!( x );
     /// ```
     ///
-
     #[ derive( Debug, Clone, PartialEq, Eq, Default ) ]
     pub single Single : < T >;
 

@@ -1,21 +1,21 @@
 //! # Struct Single-Field Scalar Handler - Direct Constructor Generation
 //!
 //! This handler specializes in generating direct scalar constructors for struct enum variants 
-//! with a single named field marked with the `#[scalar]` attribute, providing efficient 
+//! with a single named field marked with the `#[ scalar ]` attribute, providing efficient 
 //! direct construction patterns that bypass the Former pattern for simple single-field scenarios.
 //!
 //! ## Variant Type Specialization
 //!
-//! **Target Pattern**: `Variant { field: T }` with `#[scalar]` attribute
+//! **Target Pattern**: `Variant { field: T }` with `#[ scalar ]` attribute
 //! **Generated Constructor**: `Enum::variant { field } -> Enum`
 //! **Construction Style**: Direct struct-style constructor with single named field parameter
 //!
 //! ## Key Behavioral Characteristics
 //!
 //! ### Attribute-Driven Activation
-//! - **`#[scalar]` Required**: Single-field struct variants with explicit `#[scalar]` attribute
-//! - **Default Behavior**: Without `#[scalar]`, these variants get implicit variant formers
-//! - **`#[subform_scalar]` Compatibility**: Can be combined with `#[subform_scalar]` (same behavior)
+//! - **`#[ scalar ]` Required**: Single-field struct variants with explicit `#[ scalar ]` attribute
+//! - **Default Behavior**: Without `#[ scalar ]`, these variants get implicit variant formers
+//! - **`#[ subform_scalar ]` Compatibility**: Can be combined with `#[ subform_scalar ]` (same behavior)
 //! - **Field-Level Attributes**: Field attributes respected for constructor parameter
 //!
 //! ### Generated Method Characteristics
@@ -86,7 +86,7 @@
 //!
 //! ### Standalone Constructor (Optional)
 //! ```rust,ignore
-//! // Generated when #[standalone_constructors] is present
+//! // Generated when #[ standalone_constructors ] is present
 //! pub fn variant(field: impl Into<T>) -> Enum<T> {
 //!     Enum::Variant { field: field.into() }
 //! }
@@ -104,7 +104,7 @@ use super::*;
 use macro_tools::{Result, quote::quote, syn_err};
 use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 
-/// Generates direct scalar constructor for single-field struct enum variants with `#[scalar]` attribute.
+/// Generates direct scalar constructor for single-field struct enum variants with `#[ scalar ]` attribute.
 ///
 /// This function creates efficient direct constructors for struct variants with a single named field,
 /// implementing comprehensive pitfall prevention for named field parameter handling, struct construction
@@ -146,7 +146,7 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 /// ## Implementation Status
 /// This handler is currently a placeholder implementation that will be completed in future increments
 /// as the enum Former generation system is fully developed.
-pub fn handle(ctx: &mut EnumVariantHandlerContext<'_>) -> Result<proc_macro2::TokenStream> {
+pub fn handle(ctx: &mut EnumVariantHandlerContext<'_>) -> Result< proc_macro2::TokenStream > {
   let variant_name = &ctx.variant.ident;
   let method_name = variant_to_method_name(variant_name);
   let enum_name = ctx.enum_name;
@@ -167,15 +167,15 @@ pub fn handle(ctx: &mut EnumVariantHandlerContext<'_>) -> Result<proc_macro2::To
   })?;
   let field_type = &field.ty;
 
-  // Rule: This handler is for #[scalar] variants only
+  // Rule: This handler is for #[ scalar ] variants only
   if ctx.variant_attrs.scalar.is_none() {
     return Err(syn_err!(
       ctx.variant,
-      "struct_single_field_scalar handler requires #[scalar] attribute"
+      "struct_single_field_scalar handler requires #[ scalar ] attribute"
     ));
   }
 
-  // Generate standalone constructor if #[standalone_constructors] is present
+  // Generate standalone constructor if #[ standalone_constructors ] is present
   if ctx.struct_attrs.standalone_constructors.is_some() {
     let standalone_constructor = quote! {
       #[ inline( always ) ]

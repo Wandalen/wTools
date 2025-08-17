@@ -10,8 +10,7 @@ mod private {
   use proc_macro2::Ident;
   // use syn::spanned::Spanned; // Needed for span
 
-  /// Creates a new identifier, adding the `r#` prefix if the input identifier's
-  /// string representation is a Rust keyword.
+  /// Ensures keyword safety by applying raw identifier escaping when needed to prevent compilation errors.
   ///
   /// Preserves the span of the original identifier.
   /// Requires the `kw` feature.
@@ -29,7 +28,7 @@ mod private {
   /// assert_eq!( got_normal.to_string(), "my_var" );
   /// assert_eq!( got_keyword.to_string(), "r#fn" );
   /// ```
-  #[must_use]
+  #[ must_use ]
   pub fn ident_maybe_raw(ident: &syn::Ident) -> Ident {
     let name = ident.to_string();
     if kw::is(&name) {
@@ -41,11 +40,8 @@ mod private {
     }
   }
 
-  /// Creates a new `syn::Ident` from an existing one, converting it to the specified case.
-  ///
-  /// This function handles raw identifier prefixes (`r#`) correctly and ensures that
-  /// the newly created identifier is also a raw identifier if its cased version is a
-  /// Rust keyword.
+  /// Transforms identifier casing while preserving keyword safety to support code generation scenarios
+  /// that require consistent naming conventions.
   ///
   /// # Arguments
   ///
@@ -54,8 +50,7 @@ mod private {
   ///
   /// # Returns
   ///
-  /// Returns a new `syn::Ident` in the specified case, preserving the span of the original
-  /// identifier and handling raw identifiers (`r#`) appropriately.
+  /// Maintains span information and raw identifier semantics to ensure generated code correctness.
   ///
   /// # Examples
   ///
@@ -79,7 +74,7 @@ mod private {
   /// let got_pascal_keyword = macro_tools::ident::cased_ident_from_ident( &ident_struct, Case::Pascal );
   /// assert_eq!( got_pascal_keyword.to_string(), "Struct" ); // qqq: "Struct" is not a keyword, so `r#` is not added.
   /// ```
-  #[must_use]
+  #[ must_use ]
   pub fn cased_ident_from_ident(original: &syn::Ident, case: convert_case::Case) -> syn::Ident {
     let original_str = original.to_string();
     let had_raw_prefix = original_str.starts_with("r#");
@@ -95,45 +90,45 @@ mod private {
   }
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::ident_maybe_raw;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::cased_ident_from_ident;
 }
 
 /// Orphan namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
 
   use super::*;
   pub use super::super::ident; // Use the new module name
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
 
   use super::*;

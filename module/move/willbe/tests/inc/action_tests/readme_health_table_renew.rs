@@ -15,7 +15,7 @@ fn arrange(source: &str) -> assert_fs::TempDir {
 }
 
 #[test]
-#[should_panic]
+#[should_panic(expected = "Cannot find Cargo.toml")]
 // should panic, because the url to the repository is not in Cargo.toml of the workspace or in Cargo.toml of the module.
 fn without_any_toml_configurations_test() {
   // Arrange

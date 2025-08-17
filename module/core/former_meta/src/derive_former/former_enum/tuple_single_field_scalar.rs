@@ -1,21 +1,21 @@
 //! # Tuple Single-Field Scalar Handler - Direct Constructor Generation
 //!
 //! This handler specializes in generating direct scalar constructors for tuple enum variants 
-//! with a single unnamed field marked with the `#[scalar]` attribute, providing efficient 
+//! with a single unnamed field marked with the `#[ scalar ]` attribute, providing efficient 
 //! direct construction patterns that bypass the Former pattern for simple single-field scenarios.
 //!
 //! ## Variant Type Specialization
 //!
-//! **Target Pattern**: `Variant(T)` with `#[scalar]` attribute
+//! **Target Pattern**: `Variant(T)` with `#[ scalar ]` attribute
 //! **Generated Constructor**: `Enum::variant(T) -> Enum`
 //! **Construction Style**: Direct function call with single parameter
 //!
 //! ## Key Behavioral Characteristics
 //!
 //! ### Attribute-Driven Activation
-//! - **`#[scalar]` Required**: Single-field tuple variants with explicit `#[scalar]` attribute
-//! - **Default Behavior**: Without `#[scalar]`, these variants get inner type formers
-//! - **`#[subform_scalar]` Conflict**: Cannot be combined with `#[subform_scalar]`
+//! - **`#[ scalar ]` Required**: Single-field tuple variants with explicit `#[ scalar ]` attribute
+//! - **Default Behavior**: Without `#[ scalar ]`, these variants get inner type formers
+//! - **`#[ subform_scalar ]` Conflict**: Cannot be combined with `#[ subform_scalar ]`
 //! - **Field-Level Attributes**: Field attributes not applicable for scalar construction
 //!
 //! ### Generated Method Characteristics
@@ -112,7 +112,7 @@ use super::*;
 use macro_tools::{ Result, quote::quote };
 use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 
-/// Generates direct scalar constructor for single-field tuple enum variants with `#[scalar]` attribute.
+/// Generates direct scalar constructor for single-field tuple enum variants with `#[ scalar ]` attribute.
 ///
 /// This function creates efficient direct constructors for tuple variants with a single unnamed field,
 /// implementing comprehensive pitfall prevention for parameter handling, generic propagation,
@@ -148,7 +148,7 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 /// ## Returns
 /// - `Ok(TokenStream)`: Generated direct constructor method for the single-field tuple variant
 /// - `Err(syn::Error)`: If variant processing fails due to invalid configuration
-pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
+pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result<  proc_macro2::TokenStream  >
 {
   let variant_name = &ctx.variant.ident;
   let method_name = variant_to_method_name(variant_name);
@@ -158,7 +158,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
 
   let ( _impl_generics, ty_generics, where_clause ) = ctx.generics.split_for_impl();
 
-  // Rule 1d: #[scalar] on single-field tuple variants generates scalar constructor
+  // Rule 1d: #[ scalar ] on single-field tuple variants generates scalar constructor
   let enum_type_path = if ctx.generics.type_params().next().is_some() {
     quote! { #enum_name #ty_generics }
   } else {

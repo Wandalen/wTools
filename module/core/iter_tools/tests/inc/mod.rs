@@ -1,4 +1,4 @@
 use super::*;
 
-#[allow(missing_docs)]
+#[ allow( missing_docs ) ]
 pub mod basic_test;

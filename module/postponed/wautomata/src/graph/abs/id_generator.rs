@@ -8,7 +8,6 @@ mod private
   use crate::IdentityInterface;
 
   /// Has ID generator.
-
   pub trait HasIdGenerator< Id >
   where
     Id : IdentityInterface,
@@ -18,7 +17,6 @@ mod private
   }
 
   /// Interface to generate ids.
-
   pub trait IdGeneratorTrait< Id >
   where
     Id : IdentityInterface,

@@ -49,7 +49,7 @@ mod private
   //   exec_path : &str,
   //   current_path : impl Into< PathBuf >,
   // )
-  // -> Result< Report, Report >
+  // -> Result<  Report, Report  >
   // {
   //   let current_path = current_path.into();
   //   let ( program, args ) =
@@ -63,7 +63,7 @@ mod private
   //   };
   //   let options = Run::former()
   //   .bin_path( program )
-  //   .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
+  //   .args( args.into_iter().map( OsString::from ).collect::< Vec<  _  > >() )
   //   .current_path( current_path )
   //   .form();
   //   // xxx : qqq : for Petro : implement run for former та для Run
@@ -91,7 +91,7 @@ mod private
   //
   // qqq : for Petro : use typed error
   // qqq : for Petro : write example
-  pub fn run( options : Run ) -> Result< Report, Report >
+  pub fn run( options : Run ) -> Result<  Report, Report  >
   {
     let bin_path : &Path = options.bin_path.as_ref();
     let current_path : &Path = options.current_path.as_ref();
@@ -212,7 +212,7 @@ mod private
   {
     bin_path : PathBuf,
     current_path : PathBuf,
-    args : Vec< OsString >,
+    args : Vec<  OsString  >,
     #[ former( default = false ) ]
     joining_streams : bool,
     env_variable : HashMap< String, String >,
@@ -220,7 +220,7 @@ mod private
 
   impl RunFormer
   {
-    pub fn run( self ) -> Result< Report, Report >
+    pub fn run( self ) -> Result<  Report, Report  >
     {
       run( self.form() )
     }
@@ -236,7 +236,7 @@ mod private
     /// # Returns:
     /// A `Result` containing a `Report` on success, which includes the command's output,
     /// or an error if the command fails to execute or complete.
-    pub fn run_with_shell( self, exec_path : &str, ) -> Result< Report, Report >
+    pub fn run_with_shell( self, exec_path : &str, ) -> Result<  Report, Report  >
     {
       let ( program, args ) =
       if cfg!( target_os = "windows" )
@@ -248,7 +248,7 @@ mod private
         ( "sh", [ "-c", exec_path ] )
       };
       self
-      .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
+      .args( args.into_iter().map( OsString::from ).collect::< Vec<  _  > >() )
       .bin_path( program )
       .run()
     }
@@ -267,7 +267,7 @@ mod private
     /// Stderr.
     pub err : String,
     /// Error if any
-    pub error : Result< (), Error >
+    pub error : Result<  (), Error  >
   }
 
   impl Clone for Report

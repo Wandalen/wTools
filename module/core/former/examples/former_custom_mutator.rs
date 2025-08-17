@@ -38,12 +38,12 @@
 fn main() {}
 #[cfg(all(feature = "derive_former", feature = "enabled"))]
 fn main() {
-  #[cfg(feature = "enabled")]
+  #[ cfg( feature = "enabled" ) ]
   use former_meta::Former;
 
-  #[derive(Debug, PartialEq, Former)]
+  #[ derive( Debug, PartialEq, Former ) ]
   #[ storage_fields( a : i32, b : Option< String > ) ]
-  #[mutator(custom)]
+  #[ mutator( custom ) ]
   pub struct Struct1 {
     c: String,
   }
@@ -52,7 +52,7 @@ fn main() {
 
   impl<Context, Formed> former::FormerMutator for Struct1FormerDefinitionTypes<Context, Formed> {
     // Mutates the context and storage of the entity just before the formation process completes.
-    #[inline]
+    #[ inline ]
     fn form_mutation(storage: &mut Self::Storage, _context: &mut ::core::option::Option<Self::Context>) {
       storage.a.get_or_insert_with(Default::default);
       storage.b.get_or_insert_with(Default::default);

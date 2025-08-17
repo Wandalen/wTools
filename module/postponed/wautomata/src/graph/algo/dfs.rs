@@ -8,7 +8,6 @@ mod private
   ///
   /// Implementation of depth-first search algorithm.
   ///
-
   pub trait DfsAlgorithm
   where
     Self : NodeBasicInterface,

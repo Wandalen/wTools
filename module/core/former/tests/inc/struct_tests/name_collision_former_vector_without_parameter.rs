@@ -13,12 +13,12 @@ pub trait OnEnd {}
 pub struct None {}
 pub struct Some {}
 
-#[derive(Debug, PartialEq)]
+#[ derive( Debug, PartialEq ) ]
 struct Vec {
   f1: i32,
 }
 
-#[derive(Debug, PartialEq, Former)]
+#[ derive( Debug, PartialEq, Former ) ]
 pub struct Struct1 {
   f2: Vec,
   i: ::core::option::Option<i32>,

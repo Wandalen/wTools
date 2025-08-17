@@ -1,23 +1,23 @@
 //! Test for `struct_single_field_subform` handler
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use ::former::prelude::*;
 use ::former::Former;
 
 // Define the inner struct needed for subform tests
-#[derive(Debug, PartialEq, Default, Clone, Former)]
+#[ derive( Debug, PartialEq, Default, Clone, Former ) ]
 pub struct InnerForSubform {
     pub value: i64,
 }
 
-#[derive(Debug, PartialEq, Former)]
+#[ derive( Debug, PartialEq, Former ) ]
 pub enum SingleSubformEnum
 {
-  #[subform_scalar]
+  #[ subform_scalar ]
   VariantOneSubform { field_b: InnerForSubform },
 }
 
-#[test]
+#[ test ]
 fn single_field_subform_test()
 {
   // Test using default behavior - the field should default to InnerForSubform::default()
@@ -27,7 +27,7 @@ fn single_field_subform_test()
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn single_field_subform_field_setter_test()
 {
   // Test using the field setter directly

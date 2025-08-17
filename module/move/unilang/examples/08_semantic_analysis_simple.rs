@@ -11,6 +11,7 @@ use unilang::semantic::SemanticAnalyzer;
 use unilang::types::Value;
 use unilang_parser::{ Parser, UnilangParserOptions };
 
+#[allow(clippy::too_many_lines)]
 fn main() -> Result< (), unilang::error::Error >
 {
   println!( "=== Semantic Analysis Demo ===\n" );

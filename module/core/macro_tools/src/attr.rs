@@ -42,7 +42,7 @@ mod private {
   /// use macro_tools::exposed::*;
   ///
   /// // Example struct attribute
-  /// let attrs : Vec< syn::Attribute > = vec![ syn::parse_quote!( #[ debug ] ) ];
+  /// let attrs : Vec<  syn::Attribute  > = vec![ syn::parse_quote!( #[ debug ] ) ];
   ///
   /// // Checking for 'debug' attribute
   /// let contains_debug = attr::has_debug( ( &attrs ).into_iter() ).unwrap();
@@ -51,7 +51,7 @@ mod private {
   /// ```
   /// # Errors
   /// qqq: doc
-  pub fn has_debug<'a>(attrs: impl Iterator<Item = &'a syn::Attribute>) -> syn::Result<bool> {
+  pub fn has_debug<'a>(attrs: impl Iterator<Item = &'a syn::Attribute>) -> syn::Result< bool > {
     for attr in attrs {
       if let Some(ident) = attr.path().get_ident() {
         let ident_string = format!("{ident}");
@@ -105,8 +105,8 @@ mod private {
   /// assert_eq!( macro_tools::attr::is_standard( "my_attribute" ), false );
   /// ```
   ///
-  #[must_use]
-  #[allow(clippy::match_same_arms)]
+  #[ must_use ]
+  #[ allow( clippy::match_same_arms ) ]
   pub fn is_standard(attr_name: &str) -> bool {
     match attr_name {
       // Conditional compilation
@@ -188,7 +188,7 @@ mod private {
   ///
   /// # Errors
   /// qqq: doc
-  pub fn has_deref<'a>(attrs: impl Iterator<Item = &'a syn::Attribute>) -> syn::Result<bool> {
+  pub fn has_deref<'a>(attrs: impl Iterator<Item = &'a syn::Attribute>) -> syn::Result< bool > {
     for attr in attrs {
       if let Some(ident) = attr.path().get_ident() {
         let ident_string = format!("{ident}");
@@ -219,7 +219,7 @@ mod private {
   ///
   /// # Errors
   /// qqq: doc
-  pub fn has_deref_mut<'a>(attrs: impl Iterator<Item = &'a syn::Attribute>) -> syn::Result<bool> {
+  pub fn has_deref_mut<'a>(attrs: impl Iterator<Item = &'a syn::Attribute>) -> syn::Result< bool > {
     for attr in attrs {
       if let Some(ident) = attr.path().get_ident() {
         let ident_string = format!("{ident}");
@@ -250,7 +250,7 @@ mod private {
   ///
   /// # Errors
   /// qqq: doc
-  pub fn has_from<'a>(attrs: impl Iterator<Item = &'a syn::Attribute>) -> syn::Result<bool> {
+  pub fn has_from<'a>(attrs: impl Iterator<Item = &'a syn::Attribute>) -> syn::Result< bool > {
     for attr in attrs {
       if let Some(ident) = attr.path().get_ident() {
         let ident_string = format!("{ident}");
@@ -281,7 +281,7 @@ mod private {
   ///
   /// # Errors
   /// qqq: doc
-  pub fn has_index_mut<'a>(attrs: impl Iterator<Item = &'a syn::Attribute>) -> syn::Result<bool> {
+  pub fn has_index_mut<'a>(attrs: impl Iterator<Item = &'a syn::Attribute>) -> syn::Result< bool > {
     for attr in attrs {
       if let Some(ident) = attr.path().get_ident() {
         let ident_string = format!("{ident}");
@@ -311,7 +311,7 @@ mod private {
   ///
   /// # Errors
   /// qqq: doc
-  pub fn has_as_mut<'a>(attrs: impl Iterator<Item = &'a syn::Attribute>) -> syn::Result<bool> {
+  pub fn has_as_mut<'a>(attrs: impl Iterator<Item = &'a syn::Attribute>) -> syn::Result< bool > {
     for attr in attrs {
       if let Some(ident) = attr.path().get_ident() {
         let ident_string = format!("{ident}");
@@ -329,25 +329,24 @@ mod private {
   ///
   /// For example: `// #![ deny( missing_docs ) ]`.
   ///
+  #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
+  pub struct AttributesInner(pub Vec<  syn::Attribute  >);
 
-  #[derive(Debug, PartialEq, Eq, Clone, Default)]
-  pub struct AttributesInner(pub Vec<syn::Attribute>);
-
-  impl From<Vec<syn::Attribute>> for AttributesInner {
-    #[inline(always)]
-    fn from(src: Vec<syn::Attribute>) -> Self {
+  impl From< Vec<  syn::Attribute  > > for AttributesInner {
+    #[ inline( always ) ]
+    fn from(src: Vec<  syn::Attribute  >) -> Self {
       Self(src)
     }
   }
 
-  impl From<AttributesInner> for Vec<syn::Attribute> {
-    #[inline(always)]
+  impl From< AttributesInner > for Vec<  syn::Attribute  > {
+    #[ inline( always ) ]
     fn from(src: AttributesInner) -> Self {
       src.0
     }
   }
 
-  #[allow(clippy::iter_without_into_iter)]
+  #[ allow( clippy::iter_without_into_iter ) ]
   impl AttributesInner {
     /// Iterator
     pub fn iter(&self) -> core::slice::Iter<'_, syn::Attribute> {
@@ -355,9 +354,9 @@ mod private {
     }
   }
 
-  #[allow(clippy::default_trait_access)]
+  #[ allow( clippy::default_trait_access ) ]
   impl syn::parse::Parse for AttributesInner {
-    fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
+    fn parse(input: ParseStream<'_>) -> syn::Result< Self > {
       // let mut result : Self = from!();
       let mut result: Self = Default::default();
       loop {
@@ -388,28 +387,28 @@ mod private {
 
   /// Represents a collection of outer attributes.
   ///
-  /// This struct wraps a `Vec< syn::Attribute >`, providing utility methods for parsing,
+  /// This struct wraps a `Vec<  syn::Attribute  >`, providing utility methods for parsing,
   /// converting, and iterating over outer attributes. Outer attributes are those that
   /// appear outside of an item, such as `#[ ... ]` annotations in Rust.
   ///
-  #[derive(Debug, PartialEq, Eq, Clone, Default)]
-  pub struct AttributesOuter(pub Vec<syn::Attribute>);
+  #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
+  pub struct AttributesOuter(pub Vec<  syn::Attribute  >);
 
-  impl From<Vec<syn::Attribute>> for AttributesOuter {
-    #[inline(always)]
-    fn from(src: Vec<syn::Attribute>) -> Self {
+  impl From< Vec<  syn::Attribute  > > for AttributesOuter {
+    #[ inline( always ) ]
+    fn from(src: Vec<  syn::Attribute  >) -> Self {
       Self(src)
     }
   }
 
-  impl From<AttributesOuter> for Vec<syn::Attribute> {
-    #[inline(always)]
+  impl From< AttributesOuter > for Vec<  syn::Attribute  > {
+    #[ inline( always ) ]
     fn from(src: AttributesOuter) -> Self {
       src.0
     }
   }
 
-  #[allow(clippy::iter_without_into_iter)]
+  #[ allow( clippy::iter_without_into_iter ) ]
   impl AttributesOuter {
     /// Iterator
     pub fn iter(&self) -> core::slice::Iter<'_, syn::Attribute> {
@@ -417,9 +416,9 @@ mod private {
     }
   }
 
-  #[allow(clippy::default_trait_access)]
+  #[ allow( clippy::default_trait_access ) ]
   impl syn::parse::Parse for AttributesOuter {
-    fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
+    fn parse(input: ParseStream<'_>) -> syn::Result< Self > {
       let mut result: Self = Default::default();
       loop {
         if !input.peek(Token![ # ]) || input.peek2(Token![!]) {
@@ -448,7 +447,7 @@ mod private {
   }
 
   impl syn::parse::Parse for Many<AttributesInner> {
-    fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
+    fn parse(input: ParseStream<'_>) -> syn::Result< Self > {
       let mut result = Self::new();
       loop {
         // let lookahead = input.lookahead1();
@@ -462,7 +461,7 @@ mod private {
   }
 
   impl syn::parse::Parse for Many<AttributesOuter> {
-    fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
+    fn parse(input: ParseStream<'_>) -> syn::Result< Self > {
       let mut result = Self::new();
       loop {
         // let lookahead = input.lookahead1();
@@ -500,7 +499,7 @@ mod private {
   /// {
   ///   const KEYWORD : &'static str = "my_component";
   ///
-  ///   fn from_meta( attr : &Attribute ) -> syn::Result<Self>
+  ///   fn from_meta( attr : &Attribute ) -> syn::Result< Self >
   ///   {
   ///     // Parsing logic here
   ///     // Return Ok(MyComponent) if parsing is successful
@@ -533,24 +532,24 @@ mod private {
     ///
     /// # Errors
     /// qqq: doc
-    fn from_meta(attr: &syn::Attribute) -> syn::Result<Self>;
+    fn from_meta(attr: &syn::Attribute) -> syn::Result< Self >;
 
     // zzz : redo maybe
   }
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::{
     // equation,
     has_debug,
@@ -564,29 +563,29 @@ pub mod own {
 }
 
 /// Orphan namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
 
   use super::*;
   pub use super::super::attr;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::{AttributesInner, AttributesOuter, AttributeComponent};
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 }

@@ -60,7 +60,7 @@ mod private
   /// impl TryFrom< InitialType > for IntermediateType
   /// {
   ///   type Error = ConversionError;
-  ///   fn try_from( value : InitialType ) -> Result< Self, Self::Error >
+  ///   fn try_from( value : InitialType ) -> Result<  Self, Self::Error  >
   ///   {
   ///     // Conversion logic here
   ///     Ok( IntermediateType )
@@ -70,7 +70,7 @@ mod private
   /// impl TryFrom< IntermediateType > for FinalType
   /// {
   ///   type Error = ConversionError;
-  ///   fn try_from( value : IntermediateType ) -> Result< Self, Self::Error >
+  ///   fn try_from( value : IntermediateType ) -> Result<  Self, Self::Error  >
   ///   {
   ///     // Conversion logic here
   ///     Ok( FinalType )
@@ -78,7 +78,7 @@ mod private
   /// }
   ///
   /// let initial = InitialType;
-  /// let final_result : Result< FinalType, ConversionError > = FinalType::transitive_try_from::< IntermediateType >( initial );
+  /// let final_result : Result<  FinalType, ConversionError  > = FinalType::transitive_try_from::< IntermediateType >( initial );
   /// ```
   pub trait TransitiveTryFrom< Error, Initial >
   {
@@ -103,7 +103,7 @@ mod private
     /// # Errors
     /// qqq: doc
     #[ inline( always ) ]
-    fn transitive_try_from< Transitive >( src : Initial ) -> Result< Self, Error >
+    fn transitive_try_from< Transitive >( src : Initial ) -> Result<  Self, Error  >
     where
       Transitive : TryFrom< Initial >,
       Self : TryFrom< Transitive, Error = Error >,
@@ -146,7 +146,7 @@ mod private
   /// impl TryInto< IntermediateType > for InitialType
   /// {
   ///   type Error = ConversionError;
-  ///   fn try_into( self ) -> Result< IntermediateType, Self::Error >
+  ///   fn try_into( self ) -> Result<  IntermediateType, Self::Error  >
   ///   {
   ///     // Conversion logic here
   ///     Ok( IntermediateType )
@@ -156,7 +156,7 @@ mod private
   /// impl TryInto< FinalType > for IntermediateType
   /// {
   ///   type Error = ConversionError;
-  ///   fn try_into( self ) -> Result< FinalType, Self::Error >
+  ///   fn try_into( self ) -> Result<  FinalType, Self::Error  >
   ///   {
   ///     // Conversion logic here
   ///     Ok( FinalType )
@@ -164,7 +164,7 @@ mod private
   /// }
   ///
   /// let initial = InitialType;
-  /// let final_result : Result< FinalType, ConversionError > = initial.transitive_try_into::< IntermediateType >();
+  /// let final_result : Result<  FinalType, ConversionError  > = initial.transitive_try_into::< IntermediateType >();
   /// ```
   pub trait TransitiveTryInto< Error, Final > : Sized
   {
@@ -184,7 +184,7 @@ mod private
     /// # Errors
     /// qqq: doc
     #[ inline( always ) ]
-    fn transitive_try_into< Transitive >( self ) -> Result< Final, Error >
+    fn transitive_try_into< Transitive >( self ) -> Result<  Final, Error  >
     where
       Self : TryInto< Transitive >,
       Transitive : TryInto< Final, Error = Error >,

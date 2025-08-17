@@ -11,7 +11,7 @@ use error_tools::untyped::Result;
   ///
   /// The `Table` struct is a simple container that holds multiple `Row` objects.
   #[ derive( Debug ) ]
-  pub struct Table( Vec< Row > );
+  pub struct Table( Vec<  Row  > );
 
   impl< T, R > From< T > for Table
   where
@@ -56,7 +56,7 @@ use error_tools::untyped::Result;
   ///
   /// The `Row` struct is a container that holds multiple `String` objects representing the values in a table row.
   #[ derive( Debug ) ]
-  pub struct Row( Vec< String > );
+  pub struct Row( Vec<  String  > );
 
   impl< R, V > From< R > for Row
   where
@@ -69,7 +69,7 @@ use error_tools::untyped::Result;
     }
   }
 
-  fn max_column_lengths( table : &Table ) -> Vec< usize >
+  fn max_column_lengths( table : &Table ) -> Vec<  usize  >
   {
     let num_columns = table.0.first().map_or( 0, | row | row.0.len() );
     ( 0 .. num_columns )
@@ -95,12 +95,12 @@ use error_tools::untyped::Result;
   ///
   /// # Returns
   ///
-  /// * `error::untyped::Result<String, Error>` - A `error::untyped::Result` containing the formatted table as a `String`, or an `Error` if the table is invalid.
+  /// * `error::untyped::Result< String, Error >` - A `error::untyped::Result` containing the formatted table as a `String`, or an `Error` if the table is invalid.
   /// # Errors
   /// qqq: doc
   // aaa : use typed error
   // aaa : done
-  pub fn format_table< IntoTable >( table : IntoTable ) -> Result< String, FormatTableError >
+  pub fn format_table< IntoTable >( table : IntoTable ) -> Result<  String, FormatTableError  >
   where
     IntoTable : Into< Table >,
   {

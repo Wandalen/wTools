@@ -10,7 +10,7 @@ mod private
   use entity::{ Workspace, WorkspaceInitError, PathError }; // Import Workspace, WorkspaceInitError, PathError
   use pth::{ AbsolutePath, CurrentPath }; // Import AbsolutePath and CurrentPath from pth
   // Explicit import for Result and its variants for pattern matching
-  use std::result::Result::{Ok, Err};
+  use core::result::Result::{Ok, Err};
 
   ///
   /// Generate documentation for a crate in a single Markdown file.

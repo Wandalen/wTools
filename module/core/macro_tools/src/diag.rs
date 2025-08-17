@@ -102,7 +102,7 @@ mod private {
   ///
   /// let original_input : proc_macro2::TokenStream = quote!
   /// {
-  ///   #[derive(Debug, PartialEq)]
+  ///   #[ derive( Debug, PartialEq ) ]
   ///   pub struct MyStruct
   ///   {
   ///     pub field : i32,
@@ -125,7 +125,7 @@ mod private {
   /// println!( "{}", formatted_report );
   /// ```
   ///
-  #[allow(clippy::needless_pass_by_value)]
+  #[ allow( clippy::needless_pass_by_value ) ]
   pub fn report_format<IntoAbout, IntoInput, IntoOutput>(about: IntoAbout, input: IntoInput, output: IntoOutput) -> String
   where
     IntoAbout: ToString,
@@ -159,7 +159,7 @@ mod private {
   ///
   /// let original_input : proc_macro2::TokenStream = quote!
   /// {
-  ///   #[derive(Debug, PartialEq)]
+  ///   #[ derive( Debug, PartialEq ) ]
   ///   pub struct MyStruct
   ///   {
   ///     pub field : i32,
@@ -205,7 +205,7 @@ mod private {
   /// tree_print!( tree_type );
   /// ```
   ///
-  #[macro_export]
+  #[ macro_export ]
   macro_rules! tree_print
   {
     ( $src :expr ) =>
@@ -232,7 +232,7 @@ mod private {
   /// tree_print!( tree_type );
   /// ```
   ///
-  #[macro_export]
+  #[ macro_export ]
   macro_rules! code_print
   {
     ( $src :expr ) =>
@@ -250,7 +250,7 @@ mod private {
   ///
   /// Macro for diagnostics purpose to export both syntax tree and source code behind it into a string.
   ///
-  #[macro_export]
+  #[ macro_export ]
   macro_rules! tree_diagnostics_str {
     ( $src :expr ) => {{
       let src2 = &$src;
@@ -261,7 +261,7 @@ mod private {
   ///
   /// Macro for diagnostics purpose to diagnose source code behind it and export it into a string.
   ///
-  #[macro_export]
+  #[ macro_export ]
   macro_rules! code_diagnostics_str {
     ( $src :expr ) => {{
       let src2 = &$src;
@@ -272,7 +272,7 @@ mod private {
   ///
   /// Macro to export source code behind a syntax tree into a string.
   ///
-  #[macro_export]
+  #[ macro_export ]
   macro_rules! code_to_str {
     ( $src :expr ) => {{
       let src2 = &$src;
@@ -290,7 +290,7 @@ mod private {
   /// # ()
   /// ```
   ///
-  #[macro_export]
+  #[ macro_export ]
   macro_rules! syn_err
   {
 
@@ -327,7 +327,7 @@ mod private {
   /// # ()
   /// ```
   ///
-  #[macro_export]
+  #[ macro_export ]
   macro_rules! return_syn_err
   {
     ( $( $Arg : tt )* ) =>
@@ -339,26 +339,26 @@ mod private {
   pub use {tree_print, code_print, tree_diagnostics_str, code_diagnostics_str, code_to_str, syn_err, return_syn_err};
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
 
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
 }
 
 /// Parented namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 
   // #[ doc( inline ) ]
@@ -370,26 +370,26 @@ pub mod orphan {
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
 
   use super::*;
   pub use super::super::diag;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::{indentation, report_format, report_print};
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
 
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::{tree_print, code_print, tree_diagnostics_str, code_diagnostics_str, code_to_str, syn_err, return_syn_err};
 
   // #[ doc( inline ) ]

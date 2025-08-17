@@ -1,7 +1,6 @@
 use example_module::*;
 
 /// Tests
-
 #[ test ]
 fn example_test()
 {

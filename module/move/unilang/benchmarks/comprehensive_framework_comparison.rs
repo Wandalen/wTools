@@ -4,11 +4,24 @@
 //! exponentially increasing command counts, providing detailed metrics for
 //! framework selection decisions.
 
+#![allow(clippy::uninlined_format_args)]
+#![allow(clippy::too_many_lines)]
+#![allow(clippy::similar_names)]
+#![allow(clippy::module_name_repetitions)]
+#![allow(missing_docs)]
+#![allow(clippy::cast_precision_loss)]
+#![allow(clippy::cast_sign_loss)]
+#![allow(clippy::cast_possible_truncation)]
+#![allow(clippy::float_cmp)]
+#![allow(clippy::std_instead_of_core)]
+
 
 #[ cfg( feature = "benchmarks" ) ]
 use std::time::{Duration, Instant};
 #[ cfg( feature = "benchmarks" ) ]
 use std::process::{ Command, Stdio };
+#[ cfg( feature = "benchmarks" ) ]
+use std::fmt::Write;
 #[ cfg( feature = "benchmarks" ) ]
 use std::fs;
 #[ cfg( feature = "benchmarks" ) ]
@@ -38,19 +51,18 @@ where
     let timeout_duration = Duration::from_secs(timeout_minutes * 60);
     
     std::thread::spawn(move || {
-        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(benchmark_fn));
+        let result = std::panic::catch_unwind(core::panic::AssertUnwindSafe(benchmark_fn));
         let _ = tx.send(result);
     });
     
     match rx.recv_timeout(timeout_duration) {
         Ok(Ok(result)) => Some(result),
         Ok(Err(_)) => {
-            println!("❌ {} benchmark panicked for {} commands", benchmark_name, command_count);
+            println!("❌ {benchmark_name} benchmark panicked for {command_count} commands");
             None
         }
         Err(_) => {
-            println!("⏰ {} benchmark timed out after {} minutes for {} commands", 
-                     benchmark_name, timeout_minutes, command_count);
+            println!("⏰ {benchmark_name} benchmark timed out after {timeout_minutes} minutes for {command_count} commands");
             None
         }
     }
@@ -311,7 +323,7 @@ fn benchmark_pico_args_comprehensive( command_count : usize ) -> ComprehensiveBe
 
     // Warmup
     for args_vec in test_args.iter().take(100) {
-        let args = Arguments::from_vec(args_vec.iter().map(|s| s.into()).collect());
+        let args = Arguments::from_vec(args_vec.iter().map(std::convert::Into::into).collect());
         // Pico-args benchmarks by trying to parse all arguments
         let _remaining = args.finish();
     }
@@ -322,7 +334,7 @@ fn benchmark_pico_args_comprehensive( command_count : usize ) -> ComprehensiveBe
 
     for args_vec in &test_args {
         let lookup_start = Instant::now();
-        let args = Arguments::from_vec(args_vec.iter().map(|s| s.into()).collect());
+        let args = Arguments::from_vec(args_vec.iter().map(std::convert::Into::into).collect());
         // Pico-args benchmarks by trying to parse all arguments
         let _remaining = args.finish();
         let lookup_time = lookup_start.elapsed();
@@ -362,7 +374,7 @@ fn measure_unilang_compile_time(command_count: usize) -> (f64, u64) {
     fs::create_dir_all(&work_dir).expect("Failed to create work directory");
     
     // Create a simple Cargo project
-    let cargo_toml = format!(r#"[package]
+    let cargo_toml = r#"[package]
 name = "unilang_compile_test"
 version = "0.1.0"
 edition = "2021"
@@ -374,8 +386,8 @@ name = "benchmark"
 path = "src/main.rs"
 
 [dependencies]
-unilang = {{ path = "../../" }}
-"#);
+unilang = { path = "../../" }
+"#.to_string();
     
     fs::write(format!("{}/Cargo.toml", work_dir), cargo_toml)
         .expect("Failed to write Cargo.toml");
@@ -420,7 +432,7 @@ fn main() {{
     // Measure compile time
     let compile_start = Instant::now();
     let output = Command::new("cargo")
-        .args(&["build", "--release"])
+        .args(["build", "--release"])
         .current_dir(&work_dir)
         .stdout(Stdio::null())
         .stderr(Stdio::null())
@@ -454,7 +466,7 @@ fn measure_clap_compile_time(command_count: usize) -> (f64, u64) {
     fs::create_dir_all(&work_dir).expect("Failed to create work directory");
     
     // Create a simple Cargo project
-    let cargo_toml = format!(r#"[package]
+    let cargo_toml = r#"[package]
 name = "clap_compile_test"
 version = "0.1.0"
 edition = "2021"
@@ -467,7 +479,7 @@ path = "src/main.rs"
 
 [dependencies]
 clap = "4.4"
-"#);
+"#.to_string();
     
     fs::write(format!("{}/Cargo.toml", work_dir), cargo_toml)
         .expect("Failed to write Cargo.toml");
@@ -514,7 +526,7 @@ fn main() {{
     // Measure compile time
     let compile_start = Instant::now();
     let output = Command::new("cargo")
-        .args(&["build", "--release"])
+        .args(["build", "--release"])
         .current_dir(&work_dir)
         .stdout(Stdio::null())
         .stderr(Stdio::null())
@@ -548,7 +560,7 @@ fn measure_pico_args_compile_time(command_count: usize) -> (f64, u64) {
     fs::create_dir_all(&work_dir).expect("Failed to create work directory");
     
     // Create a simple Cargo project
-    let cargo_toml = format!(r#"[package]
+    let cargo_toml = r#"[package]
 name = "pico_args_compile_test"
 version = "0.1.0"
 edition = "2021"
@@ -561,7 +573,7 @@ path = "src/main.rs"
 
 [dependencies]
 pico-args = "0.5"
-"#);
+"#.to_string();
     
     fs::write(format!("{}/Cargo.toml", work_dir), cargo_toml)
         .expect("Failed to write Cargo.toml");
@@ -590,7 +602,7 @@ fn main() {{
     // Measure compile time
     let compile_start = Instant::now();
     let output = Command::new("cargo")
-        .args(&["build", "--release"])
+        .args(["build", "--release"])
         .current_dir(&work_dir)
         .stdout(Stdio::null())
         .stderr(Stdio::null())
@@ -662,7 +674,7 @@ fn generate_comprehensive_comparison_report(results: &[Vec<ComprehensiveBenchmar
     report.push_str("=====================================\n\n");
     
     let now = chrono::Utc::now();
-    report.push_str(&format!("Generated: {} UTC\n", now.format("%Y-%m-%d %H:%M:%S")));
+    writeln!(report, "Generated: {} UTC", now.format("%Y-%m-%d %H:%M:%S")).unwrap();
     report.push_str("Frameworks: Unilang vs Clap vs Pico-Args\n");
     report.push_str("Metrics: Compile Time, Binary Size, Runtime Performance\n");
     report.push_str("Statistical Method: 3 repetitions per measurement, averages reported\n");
@@ -676,11 +688,10 @@ fn generate_comprehensive_comparison_report(results: &[Vec<ComprehensiveBenchmar
     report.push_str("- Pico-Args: 0.5+ (latest stable)\n");
     // Capture actual Rust version
     let rust_version = Command::new("rustc")
-        .args(&["--version"])
+        .args(["--version"])
         .output()
-        .map(|output| String::from_utf8_lossy(&output.stdout).trim().to_string())
-        .unwrap_or_else(|_| "Unable to determine Rust version".to_string());
-    report.push_str(&format!("- Rust: {}\n\n", rust_version));
+        .map_or_else(|_| "Unable to determine Rust version".to_string(), |output| String::from_utf8_lossy(&output.stdout).trim().to_string());
+    writeln!(report, "- Rust: {}\n", rust_version).unwrap();
 
     // Compile Time Comparison
     report.push_str("COMPILE TIME COMPARISON (ms)\n");
@@ -704,10 +715,11 @@ fn generate_comprehensive_comparison_report(results: &[Vec<ComprehensiveBenchmar
             unilang.command_count.to_string()
         };
         
-        report.push_str(&format!(
-            "{:>8} | {:>8.0} | {:>8.0} | {:>8.0} | {}\n",
+        writeln!(
+            report,
+            "{:>8} | {:>8.0} | {:>8.0} | {:>8.0} | {}",
             cmd_display, unilang.compile_time_ms, clap.compile_time_ms, pico_args.compile_time_ms, winner
-        ));
+        ).unwrap();
     }
 
     // Binary Size Comparison
@@ -732,10 +744,11 @@ fn generate_comprehensive_comparison_report(results: &[Vec<ComprehensiveBenchmar
             unilang.command_count.to_string()
         };
         
-        report.push_str(&format!(
-            "{:>8} | {:>8} | {:>8} | {:>8} | {}\n",
+        writeln!(
+            report,
+            "{:>8} | {:>8} | {:>8} | {:>8} | {}",
             cmd_display, unilang.binary_size_kb, clap.binary_size_kb, pico_args.binary_size_kb, winner
-        ));
+        ).unwrap();
     }
 
     // Runtime Performance Comparison
@@ -761,10 +774,11 @@ fn generate_comprehensive_comparison_report(results: &[Vec<ComprehensiveBenchmar
             unilang.command_count.to_string()
         };
         
-        report.push_str(&format!(
-            "{:>8} | {:>8.2} | {:>8.2} | {:>8.2} | {}\n",
+        writeln!(
+            report,
+            "{:>8} | {:>8.2} | {:>8.2} | {:>8.2} | {}",
             cmd_display, unilang.init_time_us, clap.init_time_us, pico_args.init_time_us, winner
-        ));
+        ).unwrap();
     }
 
     // Overall Analysis
@@ -799,8 +813,8 @@ fn generate_comprehensive_comparison_report(results: &[Vec<ComprehensiveBenchmar
 
     // Generate CSV data for further analysis
     let now = chrono::Utc::now();
-    let mut csv_content = format!("# Comprehensive Framework Comparison Results\n");
-    csv_content.push_str(&format!("# Generated: {} UTC\n", now.format("%Y-%m-%d %H:%M:%S")));
+    let mut csv_content = "# Comprehensive Framework Comparison Results\n".to_string();
+    writeln!(csv_content, "# Generated: {} UTC", now.format("%Y-%m-%d %H:%M:%S")).unwrap();
     csv_content.push_str("# Frameworks: Unilang vs Clap vs Pico-Args\n");
     csv_content.push_str("# Statistical Method: 3 repetitions per measurement, averages reported\n");
     csv_content.push_str("# All values are averaged across 5 runs for statistical reliability\n");
@@ -809,8 +823,9 @@ fn generate_comprehensive_comparison_report(results: &[Vec<ComprehensiveBenchmar
     
     for result_set in results {
         for result in result_set {
-            csv_content.push_str(&format!(
-                "{},{},{:.0},{},{:.2},{:.2},{},{:.0}\n",
+            writeln!(
+                csv_content,
+                "{},{},{:.0},{},{:.2},{:.2},{},{:.0}",
                 result.framework,
                 result.command_count,
                 result.compile_time_ms,
@@ -819,7 +834,7 @@ fn generate_comprehensive_comparison_report(results: &[Vec<ComprehensiveBenchmar
                 result.avg_lookup_ns,
                 result.p99_lookup_ns,
                 result.commands_per_second
-            ));
+            ).unwrap();
         }
     }
     
@@ -871,7 +886,7 @@ fn average_benchmark_results(results: &[ComprehensiveBenchmarkResult]) -> Compre
         compile_time_ms: avg_compile_time_ms,
         binary_size_kb: avg_binary_size_kb,
         init_time_us: avg_init_time_us,
-        avg_lookup_ns: avg_lookup_ns,
+        avg_lookup_ns,
         p99_lookup_ns: avg_p99_lookup_ns,
         commands_per_second: avg_commands_per_second,
     }
@@ -905,7 +920,7 @@ mod tests {
         println!("Testing Unilang vs Clap vs Pico-Args with compile time metrics");
         println!("Testing all powers of 10 from 10¹ to 10⁵ with 3 repetitions each\n");
 
-        let command_counts = vec![10, 100, 1000, 10000, 100000];
+        let command_counts = vec![10, 100, 1000, 10000, 100_000];
         let repetitions = 3;
         let mut all_results = Vec::new();
 
@@ -1115,7 +1130,7 @@ fn display_md_file_diff(file_path: &str, old_content: &str, new_content: &str) {
 }
 
 #[ cfg( feature = "benchmarks" ) ]
-fn update_readme_with_results(results: &[Vec<ComprehensiveBenchmarkResult>]) -> Result<(String, String), Box<dyn std::error::Error>> {
+fn update_readme_with_results(results: &[Vec<ComprehensiveBenchmarkResult>]) -> Result<(String, String), Box<dyn core::error::Error>> {
     let readme_path = "benchmarks/readme.md";
     let old_content = fs::read_to_string(readme_path)?;
     let content = old_content.clone();
@@ -1179,7 +1194,7 @@ fn update_readme_with_results(results: &[Vec<ComprehensiveBenchmarkResult>]) -> 
 #[ cfg( feature = "benchmarks" ) ]
 fn generate_scaling_table(data: &[&ComprehensiveBenchmarkResult], framework_name: &str) -> String {
     let mut table = String::new();
-    table.push_str(&format!("### {} Scaling Performance\n\n", framework_name));
+    writeln!(table, "### {} Scaling Performance\n", framework_name).unwrap();
     table.push_str("| Commands | Build Time | Binary Size | Startup | Lookup | Throughput |\n");
     table.push_str("|----------|------------|-------------|---------|--------|-----------|\n");
     
@@ -1191,10 +1206,11 @@ fn generate_scaling_table(data: &[&ComprehensiveBenchmarkResult], framework_name
         let lookup = format_time_nanoseconds(result.avg_lookup_ns);
         let throughput = format_throughput(result.commands_per_second);
         
-        table.push_str(&format!(
-            "| **{}**   | {} | {} | {} | {} | {} |\n",
+        writeln!(
+            table,
+            "| **{}**   | {} | {} | {} | {} | {} |",
             cmd_display, build_time, binary_size, startup, lookup, throughput
-        ));
+        ).unwrap();
     }
     
     table.push('\n');
@@ -1202,7 +1218,7 @@ fn generate_scaling_table(data: &[&ComprehensiveBenchmarkResult], framework_name
 }
 
 #[ cfg( feature = "benchmarks" ) ]
-fn update_table_in_content(content: &str, section_header: &str, new_table: &str) -> Result<String, Box<dyn std::error::Error>> {
+fn update_table_in_content(content: &str, section_header: &str, new_table: &str) -> Result<String, Box<dyn core::error::Error>> {
     let lines: Vec<&str> = content.lines().collect();
     let mut result = Vec::new();
     let mut i = 0;
@@ -1214,7 +1230,7 @@ fn update_table_in_content(content: &str, section_header: &str, new_table: &str)
         if line == section_header {
             found_section = true;
             // Add the section header and new table
-            result.extend(new_table.lines().map(|s| s.to_string()));
+            result.extend(new_table.lines().map(std::string::ToString::to_string));
             
             // Skip old table lines until we hit the next section or end
             i += 1;
@@ -1318,7 +1334,7 @@ fn run_comprehensive_benchmark() {
     }
     println!();
 
-    let command_counts = vec![10, 100, 1000, 10000, 100000];
+    let command_counts = vec![10, 100, 1000, 10000, 100_000];
     let repetitions = 3;
     let mut all_results = Vec::new();
 
@@ -1477,7 +1493,7 @@ fn run_comprehensive_benchmark() {
             println!("✅ benchmarks/readme.md updated with comprehensive results");
             display_md_file_diff("benchmarks/readme.md", &old_content, &new_content);
         }
-        Err(e) => eprintln!("❌ Failed to update README: {}", e),
+        Err(e) => eprintln!("❌ Failed to update README: {e}"),
     }
 
     println!("\n✅ All three frameworks show excellent performance characteristics!");
@@ -1491,7 +1507,7 @@ use criterion::{criterion_group, criterion_main, Criterion};
 #[cfg(feature = "benchmarks")]
 fn comprehensive_benchmark(c: &mut Criterion) {
     c.bench_function("comprehensive_benchmark", |b| {
-        b.iter(|| run_comprehensive_benchmark())
+        b.iter(run_comprehensive_benchmark);
     });
 }
 

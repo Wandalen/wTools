@@ -10,7 +10,8 @@ use unilang::error::Error;
 use unilang::help::HelpGenerator;
 use unilang_parser::Parser;
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+#[allow(clippy::too_many_lines)]
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "=== Error Handling and Type Validation Demo ===\n" );
 

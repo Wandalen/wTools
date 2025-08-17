@@ -40,7 +40,7 @@ mod private
   {
     std::fs::read_dir( path )
     .ok()?
-    .filter_map( std::result::Result::ok )
+    .filter_map( core::result::Result::ok )
     .filter( | p | p.path().is_file() )
     .filter_map( | f |
     {

@@ -10,7 +10,7 @@ use crate::*;
 
 /// Default marker for `AttributePropertyBoolean`.
 /// Used if no marker is defined as parameter.
-#[derive(Debug, Default, Clone, Copy)]
+#[ derive( Debug, Default, Clone, Copy ) ]
 pub struct AttributePropertyBooleanMarker;
 
 /// A generic boolean attribute property.
@@ -51,7 +51,7 @@ pub struct AttributePropertyBooleanMarker;
 ///
 /// impl syn::parse::Parse for MyAttributes
 /// {
-///   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+///   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result<  Self  >
 ///   {
 ///     let mut debug = AttributePropertyBoolean::< DebugMarker >::default();
 ///     let mut enabled = AttributePropertyBoolean::< EnabledMarker >::default();
@@ -109,21 +109,20 @@ pub struct AttributePropertyBooleanMarker;
 ///
 /// The `parse_quote!` macro is used to create a `syn::Attribute` instance with the attribute syntax,
 /// which is then parsed into the `MyAttributes` struct. The resulting `MyAttributes` instance is printed to the console.
-
-#[derive(Debug, Default, Clone, Copy)]
+#[ derive( Debug, Default, Clone, Copy ) ]
 pub struct AttributePropertyBoolean<Marker = AttributePropertyBooleanMarker>(bool, ::core::marker::PhantomData<Marker>);
 
 impl<Marker> AttributePropertyBoolean<Marker> {
   /// Just unwraps and returns the internal data.
-  #[must_use]
-  #[inline(always)]
+  #[ must_use ]
+  #[ inline( always ) ]
   pub fn internal(self) -> bool {
     self.0
   }
 
   /// Returns a reference to the internal boolean value.
-  #[inline(always)]
-  #[must_use]
+  #[ inline( always ) ]
+  #[ must_use ]
   pub fn ref_internal(&self) -> &bool {
     &self.0
   }
@@ -133,7 +132,7 @@ impl<Marker, IntoT> Assign<AttributePropertyBoolean<Marker>, IntoT> for Attribut
 where
   IntoT: Into<AttributePropertyBoolean<Marker>>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     *self = component.into();
   }
@@ -147,7 +146,7 @@ where
 }
 
 impl<Marker> syn::parse::Parse for AttributePropertyBoolean<Marker> {
-  fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result<Self> {
+  fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result< Self > {
     input.parse::<syn::Token![ = ]>()?;
     let value: syn::LitBool = input.parse()?;
     Ok(value.value.into())
@@ -155,15 +154,15 @@ impl<Marker> syn::parse::Parse for AttributePropertyBoolean<Marker> {
 }
 
 impl<Marker> From<bool> for AttributePropertyBoolean<Marker> {
-  #[inline(always)]
-  #[allow(clippy::default_constructed_unit_structs)]
+  #[ inline( always ) ]
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn from(src: bool) -> Self {
     Self(src, PhantomData::default())
   }
 }
 
 impl<Marker> From<AttributePropertyBoolean<Marker>> for bool {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn from(src: AttributePropertyBoolean<Marker>) -> Self {
     src.0
   }
@@ -172,14 +171,14 @@ impl<Marker> From<AttributePropertyBoolean<Marker>> for bool {
 impl<Marker> core::ops::Deref for AttributePropertyBoolean<Marker> {
   type Target = bool;
 
-  #[inline(always)]
+  #[ inline( always ) ]
   fn deref(&self) -> &bool {
     &self.0
   }
 }
 
 impl<Marker> AsRef<bool> for AttributePropertyBoolean<Marker> {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn as_ref(&self) -> &bool {
     &self.0
   }

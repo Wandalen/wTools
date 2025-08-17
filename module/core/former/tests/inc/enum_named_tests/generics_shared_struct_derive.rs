@@ -1,4 +1,4 @@
-//! Purpose: Tests the `#[derive(Former)]` macro's generation of a former builder for a named
+//! Purpose: Tests the `#[ derive( Former ) ]` macro's generation of a former builder for a named
 //! (struct-like) variant (`V1`) within a generic enum (`EnumG4<T>`), where the variant contains
 //! a field with a shared generic type (`InnerG4<T>`). This file focuses on verifying the
 //! derive-based implementation's handling of shared generics and the generation of appropriate
@@ -12,7 +12,7 @@
 //! - Defines a generic enum `EnumG4<T: BoundA + BoundB>` with a named variant `V1 { inner: InnerG4<T>, flag: bool }`.
 //! - Defines the inner struct `InnerG4<T: BoundB>` which also derives `Former`.
 //! - Defines dummy bounds (`BoundA`, `BoundB`) and a concrete type (`MyType`) in the included test file.
-//! - Applies `#[derive(Former)]` to both `EnumG4` and `InnerG4`.
+//! - Applies `#[ derive( Former ) ]` to both `EnumG4` and `InnerG4`.
 //! - Includes shared test logic from `generics_shared_struct_only_test.rs`.
 //! - The included tests call the derived static method `EnumG4::<MyType>::v_1()`, use the returned former's setters (`.inner()`, `.flag()`), and call `.form()`.
 //! - Asserts that the resulting enum instances match manually constructed expected values. This verifies that the derived former builder correctly handles fields with shared generic types and non-generic fields within a generic enum.
@@ -21,7 +21,7 @@
 
 //! # Derive Test: Shared Generics in Struct Variants
 //!
-//! This test file focuses on verifying the `#[derive(Former)]` macro's ability to handle
+//! This test file focuses on verifying the `#[ derive( Former ) ]` macro's ability to handle
 //! enums with struct-like variants where the generic parameter is shared between the enum
 //! and a field within the variant.
 //! Specifically, it tests an enum `EnumG4<T>` where a variant `V1` contains a field

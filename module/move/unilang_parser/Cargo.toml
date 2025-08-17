@@ -1,6 +1,6 @@
 [package]
 name = "unilang_parser"
-version = "0.6.0"
+version = "0.11.0"
 edition = "2021"
 license = "MIT"
 readme = "readme.md"
@@ -25,7 +25,7 @@ error_tools = { workspace = true, features = [ "enabled", "error_typed" ] }
 iter_tools = { workspace = true, features = [ "enabled" ] }
 
 [dev-dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }
 
 [lints]
 workspace = true

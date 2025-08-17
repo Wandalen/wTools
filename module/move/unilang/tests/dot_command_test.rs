@@ -8,7 +8,7 @@
 use unilang::registry::CommandRegistry;
 use unilang::semantic::SemanticAnalyzer;
 use unilang::error::Error;
-use unilang_parser::{Parser, UnilangParserOptions};
+use unilang_parser::{ Parser, UnilangParserOptions };
 
 #[test]
 fn test_dot_command_shows_help_instead_of_panicking()
@@ -129,7 +129,7 @@ fn test_empty_command_path_edge_case()
   // (this simulates what the parser produces for ".")
   let empty_instruction = unilang_parser::GenericInstruction {
     command_path_slices: vec![], // This was causing the panic
-    named_arguments: std::collections::HashMap::new(),
+    named_arguments: std::collections::BTreeMap::new(),
     positional_arguments: vec![],
     help_requested: false,
     overall_location: unilang_parser::SourceLocation::StrSpan { start: 0, end: 1 },

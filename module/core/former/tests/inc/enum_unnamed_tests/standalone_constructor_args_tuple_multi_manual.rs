@@ -119,7 +119,7 @@ where
     Self { storage : storage.unwrap_or_default(), context, on_end : Some( on_end ) }
   }
   #[ inline( always ) ]
-  #[allow(dead_code)]
+  #[ allow( dead_code ) ]
   pub fn new( on_end : Definition::End ) -> Self
   {
     Self::begin( None, None, on_end )

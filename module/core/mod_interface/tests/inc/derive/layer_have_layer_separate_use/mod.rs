@@ -1,15 +1,15 @@
 use super::*;
 mod tools {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   pub use super::super::*;
 }
 
 /// Private namespace of the module.
 mod private {}
 
-/// layer_a
+/// `layer_a`
 pub mod layer_a;
-/// layer_b
+/// `layer_b`
 pub mod layer_b;
 
 the_module::mod_interface! {

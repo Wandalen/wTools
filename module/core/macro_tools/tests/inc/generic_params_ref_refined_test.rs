@@ -1,7 +1,7 @@
 use super::*;
 use the_module::{generic_params::GenericsRef, syn, quote, parse_quote};
 
-#[test]
+#[ test ]
 fn generics_ref_refined_test() {
   let mut generics_std: syn::Generics = syn::parse_quote! { <'a, T: Display + 'a, const N: usize> };
   generics_std.where_clause = parse_quote! { where T: Debug };

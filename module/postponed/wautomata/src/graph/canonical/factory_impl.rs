@@ -192,7 +192,6 @@ impls3!
   ///
   /// Iterate output nodes of the node.
   ///
-
   fn node_add_out_nodes< IntoId1, IntoId2, Iter >
   (
     &mut self,

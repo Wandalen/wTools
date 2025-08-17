@@ -22,5 +22,5 @@ mod rebase_path;
 mod transitive;
 mod without_ext;
 
-#[cfg(feature = "path_unique_folder_name")]
+#[ cfg( feature = "path_unique_folder_name" ) ]
 mod path_unique_folder_name;

@@ -7,6 +7,7 @@ use core::ops::{ Deref };
 
 /// Reference wrapper to make into string conversion with fallback.
 #[ allow( missing_debug_implementations ) ]
+#[ allow( dead_code ) ]
 #[ repr( transparent ) ]
 pub struct Ref< 'a, T, How >
 ( pub Ref2< 'a, T, How > )

@@ -7,7 +7,7 @@ mod components_tests {
 
   mod component_from_manual;
 
-  #[cfg(feature = "types_component_assign")]
+  #[ cfg( feature = "types_component_assign" ) ]
   mod component_assign_manual;
 
   #[cfg(all(feature = "types_component_assign"))]

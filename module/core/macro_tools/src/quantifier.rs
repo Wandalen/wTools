@@ -32,7 +32,7 @@ mod private {
   }
 
   /// Pair of two elements of parsing.
-  #[derive(Debug, PartialEq, Eq, Clone, Default)]
+  #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
   pub struct Pair<T1: Element, T2: Element>(pub T1, pub T2);
 
   impl<T1, T2> Pair<T1, T2>
@@ -51,7 +51,7 @@ mod private {
     T1: Element,
     T2: Element,
   {
-    #[inline(always)]
+    #[ inline( always ) ]
     fn from(src: (T1, T2)) -> Self {
       Self(src.0, src.1)
     }
@@ -62,7 +62,7 @@ mod private {
     T1: Element,
     T2: Element,
   {
-    #[inline(always)]
+    #[ inline( always ) ]
     fn from(src: Pair<T1, T2>) -> Self {
       (src.0, src.1)
     }
@@ -73,7 +73,7 @@ mod private {
     T1: Element + syn::parse::Parse,
     T2: Element + syn::parse::Parse,
   {
-    fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
+    fn parse(input: ParseStream<'_>) -> syn::Result< Self > {
       Ok(Self(input.parse()?, input.parse()?))
     }
   }
@@ -92,22 +92,21 @@ mod private {
   ///
   /// Parse as much elements as possible.
   ///
-
-  #[derive(Debug, PartialEq, Eq, Clone, Default)]
-  pub struct Many<T: quote::ToTokens>(pub Vec<T>);
+  #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
+  pub struct Many<T: quote::ToTokens>(pub Vec< T >);
 
   impl<T> Many<T>
   where
     T: Element,
   {
     /// Constructor.
-    #[must_use]
+    #[ must_use ]
     pub fn new() -> Self {
       Self(Vec::new())
     }
     /// Constructor.
-    #[must_use]
-    pub fn new_with(src: Vec<T>) -> Self {
+    #[ must_use ]
+    pub fn new_with(src: Vec< T >) -> Self {
       Self(src)
     }
     /// Iterator
@@ -116,21 +115,21 @@ mod private {
     }
   }
 
-  impl<T> From<Vec<T>> for Many<T>
+  impl<T> From<Vec< T >> for Many<T>
   where
     T: quote::ToTokens,
   {
-    #[inline(always)]
-    fn from(src: Vec<T>) -> Self {
+    #[ inline( always ) ]
+    fn from(src: Vec< T >) -> Self {
       Self(src)
     }
   }
 
-  impl<T> From<Many<T>> for Vec<T>
+  impl<T> From<Many<T>> for Vec< T >
   where
     T: quote::ToTokens,
   {
-    #[inline(always)]
+    #[ inline( always ) ]
     fn from(src: Many<T>) -> Self {
       src.0
     }
@@ -141,7 +140,7 @@ mod private {
     T: quote::ToTokens,
   {
     type Item = T;
-    #[allow(clippy::std_instead_of_alloc)]
+    #[ allow( clippy::std_instead_of_alloc ) ]
     type IntoIter = alloc::vec::IntoIter<Self::Item>;
     fn into_iter(self) -> Self::IntoIter {
       self.0.into_iter()
@@ -160,7 +159,7 @@ mod private {
     }
   }
 
-  // impl< T > From< Many< T > > for Vec< T >
+  // impl< T > From< Many< T > > for Vec<  T  >
   // where
   //   T : Element,
   // {
@@ -184,7 +183,7 @@ mod private {
   where
     T: Element + syn::parse::Parse + AsMuchAsPossibleNoDelimiter,
   {
-    fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result<Self> {
+    fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result< Self > {
       let mut items = vec![];
       while !input.is_empty() {
         let item: T = input.parse()?;
@@ -201,7 +200,7 @@ mod private {
   //   where
   //     T : Element + WhileDelimiter,
   //   {
-  //     fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+  //     fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result<  Self  >
   //     {
   //       let mut result = Self::new();
   //       loop
@@ -230,30 +229,30 @@ mod private {
   //   }
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
 }
 
 /// Orphan namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
 
   use super::*;
@@ -261,17 +260,17 @@ pub mod exposed {
   pub use super::super::quantifier;
   // pub use super::own as quantifier;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::{AsMuchAsPossibleNoDelimiter, Pair, Many};
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::{};
 }

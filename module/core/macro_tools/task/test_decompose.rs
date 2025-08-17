@@ -1,9 +1,9 @@
-#[cfg(test)]
+#[ cfg( test ) ]
 mod test_decompose {
     use crate::generic_params;
     use syn::parse_quote;
     
-    #[test]
+    #[ test ]
     fn test_trailing_comma_issue() {
         // Test case from the issue  
         let generics: syn::Generics = parse_quote! { <'a> };

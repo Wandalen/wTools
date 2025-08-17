@@ -8,11 +8,11 @@
 /// Define a private namespace for all its items.
 mod private {
 
+  #[ allow( unused_imports ) ]
   use crate::*;
   use core::{ops::Deref, ops::DerefMut};
 
   /// Emulates behavior of `Arc<Mutex< ThreadRng >>` for compatibility.
-
   #[derive(Debug)]
   pub struct SharedGenerator;
 
@@ -25,7 +25,6 @@ mod private {
   }
 
   /// Emulates behavior of `Arc<Mutex< ThreadRng >>` for compatibility.
-
   #[derive(Debug)]
   pub struct SharedGeneratorLock;
 
@@ -40,7 +39,6 @@ mod private {
   /// Placeholder structure that is used when `determinism` feature is not enabled.
   ///
   /// Used for code compatibility for both deterministic and non-deterministic modes.
-
   #[derive(Debug)]
   pub struct DerefRng(rand::rngs::ThreadRng);
 
@@ -68,7 +66,6 @@ mod private {
   /// for then the `determinism` feature is not enabled
   ///
   /// Always returns `rand::thread_rng`
-
   #[derive(Debug, Clone)]
   pub struct Hrng;
 
@@ -83,7 +80,6 @@ mod private {
     /// let mut rng = rng_ref.lock().unwrap();
     /// let got : u64 = rng.gen();
     /// ```
-
     #[inline(always)]
     pub fn master() -> Self {
       Self
@@ -99,7 +95,6 @@ mod private {
     /// let mut rng = rng_ref.lock().unwrap();
     /// let got : u64 = rng.gen();
     /// ```
-
     #[cfg(not(feature = "no_std"))]
     #[inline(always)]
     pub fn master_with_seed(_: Seed) -> Self {
@@ -119,7 +114,6 @@ mod private {
     /// let mut rng = rng_ref.lock().unwrap();
     /// let got : u64 = rng.gen();
     /// ```
-
     #[inline(always)]
     pub fn rng_ref(&self) -> SharedGenerator {
       SharedGenerator

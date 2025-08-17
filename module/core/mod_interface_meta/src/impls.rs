@@ -93,16 +93,16 @@ mod private {
   // zzz : clause should not expect the first argument
 
   /// Context for handlign a record. Cotnains clauses map and debug attribute.
-  #[allow(dead_code)]
+  #[ allow( dead_code ) ]
   pub struct RecordContext<'clauses_map> {
     pub has_debug: bool,
-    pub clauses_map: &'clauses_map mut HashMap<ClauseKind, Vec<proc_macro2::TokenStream>>,
+    pub clauses_map: &'clauses_map mut HashMap<ClauseKind, Vec< proc_macro2::TokenStream >>,
   }
 
   ///
   /// Handle record "use" with implicit visibility.
   ///
-  fn record_reuse_implicit(record: &Record, c: &'_ mut RecordContext<'_>) -> syn::Result<()> {
+  fn record_reuse_implicit(record: &Record, c: &'_ mut RecordContext<'_>) -> syn::Result< () > {
     let attrs1 = &record.attrs;
     let path = record.use_elements.as_ref().unwrap();
 
@@ -152,7 +152,7 @@ mod private {
   ///
   /// Handle record "use" with implicit visibility.
   ///
-  fn record_use_implicit(record: &Record, c: &'_ mut RecordContext<'_>) -> syn::Result<()> {
+  fn record_use_implicit(record: &Record, c: &'_ mut RecordContext<'_>) -> syn::Result< () > {
     let attrs1 = &record.attrs;
     let path = record.use_elements.as_ref().unwrap();
 
@@ -204,7 +204,7 @@ mod private {
   ///
   /// Handle record "use" with explicit visibility.
   ///
-  fn record_use_explicit(record: &Record, c: &'_ mut RecordContext<'_>) -> syn::Result<()> {
+  fn record_use_explicit(record: &Record, c: &'_ mut RecordContext<'_>) -> syn::Result< () > {
     let attrs1 = &record.attrs;
     let path = record.use_elements.as_ref().unwrap();
     let vis = record.vis.clone();
@@ -242,7 +242,7 @@ mod private {
     record: &Record,
     element: &Pair<AttributesOuter, syn::Path>,
     c: &'_ mut RecordContext<'_>,
-  ) -> syn::Result<()> {
+  ) -> syn::Result< () > {
     let attrs1 = &record.attrs;
     let attrs2 = &element.0;
     let path = &element.1;
@@ -278,8 +278,8 @@ mod private {
   ///
   /// Handle record micro module.
   ///
-  #[allow(dead_code)]
-  fn record_layer(record: &Record, element: &Pair<AttributesOuter, syn::Path>, c: &'_ mut RecordContext<'_>) -> syn::Result<()> {
+  #[ allow( dead_code ) ]
+  fn record_layer(record: &Record, element: &Pair<AttributesOuter, syn::Path>, c: &'_ mut RecordContext<'_>) -> syn::Result< () > {
     let attrs1 = &record.attrs;
     let attrs2 = &element.0;
     let path = &element.1;
@@ -337,9 +337,9 @@ mod private {
   ///
   /// Protocol of modularity unifying interface of a module and introducing layers.
   ///
-  #[allow(dead_code, clippy::too_many_lines)]
-  pub fn mod_interface(input: proc_macro::TokenStream) -> syn::Result<proc_macro2::TokenStream> {
-    #[allow(clippy::enum_glob_use)]
+  #[ allow( dead_code, clippy::too_many_lines ) ]
+  pub fn mod_interface(input: proc_macro::TokenStream) -> syn::Result< proc_macro2::TokenStream > {
+    #[ allow( clippy::enum_glob_use ) ]
     use ElementType::*;
 
     let original_input = input.clone();
@@ -350,7 +350,7 @@ mod private {
     // use inspect_type::*;
     // inspect_type_of!( immediates );
 
-    let mut clauses_map: HashMap<_, Vec<proc_macro2::TokenStream>> = HashMap::new();
+    let mut clauses_map: HashMap<_, Vec< proc_macro2::TokenStream >> = HashMap::new();
     clauses_map.insert(ClauseImmediates::Kind(), Vec::new());
     //clauses_map.insert( VisPrivate::Kind(), Vec::new() );
     clauses_map.insert(VisOwn::Kind(), Vec::new());
@@ -388,7 +388,7 @@ mod private {
           }
         }
         _ => {
-          record.elements.iter().try_for_each(|element| -> syn::Result<()> {
+          record.elements.iter().try_for_each(|element| -> syn::Result< () > {
             match record.element_type {
               MicroModule(_) => {
                 record_micro_module(record, element, &mut record_context)?;
@@ -504,7 +504,7 @@ mod private {
 }
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
 
   use super::*;
@@ -514,7 +514,7 @@ pub mod own {
 pub use own::*;
 
 /// Parented namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
 
   use super::*;
@@ -522,7 +522,7 @@ pub mod orphan {
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
 
   use super::*;
@@ -531,7 +531,7 @@ pub mod exposed {
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
 
   use super::*;

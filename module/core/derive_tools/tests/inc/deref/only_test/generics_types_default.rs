@@ -4,6 +4,6 @@ fn deref()
 {
   let a = GenericsTypesDefault( 2 );
   let got = &2;
-  let exp = a.deref();
+  let exp = &*a;
   assert_eq!(got, exp);
 }

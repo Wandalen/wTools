@@ -9,7 +9,7 @@
 //   {
 //
 //     // test.case( "empty" );
-//     let got : std::collections::HashMap< i32, i32 > = the_module::hmap!{};
+//     let got : std::collections::HashMap<  i32, i32  > = the_module::hmap!{};
 //     let exp = std::collections::HashMap::new();
 //     a_id!( got, exp );
 //
@@ -28,7 +28,7 @@
 //   {
 //
 //     // test.case( "empty" );
-//     let got : std::collections::HashSet< i32 > = the_module::hset!{};
+//     let got : std::collections::HashSet<  i32  > = the_module::hset!{};
 //     let exp = std::collections::HashSet::new();
 //     a_id!( got, exp );
 //

@@ -40,7 +40,6 @@
 ///
 /// This file is included via `include!` by both the `_manual.rs` and `_derive.rs`
 /// test files for this scenario (G6).
-
 use super::*; // Imports items from the parent file (either manual or derive)
 use std::marker::PhantomData;
 

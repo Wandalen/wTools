@@ -38,11 +38,11 @@ fn main() {}
 ))]
 fn main() {
   use collection_tools::HashMap;
-  #[cfg(feature = "enabled")]
+  #[ cfg( feature = "enabled" ) ]
   use former_meta::Former;
 
   // Child struct with Former derived for builder pattern support
-  #[derive(Clone, Debug, PartialEq, Former)]
+  #[ derive( Clone, Debug, PartialEq, Former ) ]
   // Use `#[ debug ]` to expand and debug generate code.
   // #[ debug ]
   pub struct Child {
@@ -51,12 +51,12 @@ fn main() {
   }
 
   // Parent struct to hold children
-  #[derive(Debug, PartialEq, Former)]
+  #[ derive( Debug, PartialEq, Former ) ]
   // Use `#[ debug ]` to expand and debug generate code.
   // #[ debug ]
   pub struct Parent {
     // Use `debug` to gennerate sketch of setter.
-    #[subform_entry(setter = false)]
+    #[ subform_entry( setter = false ) ]
     child: HashMap<String, Child>,
   }
 
@@ -69,7 +69,7 @@ fn main() {
     /// This method simplifies the process of dynamically adding child entities with specified names,
     /// providing a basic yet powerful example of custom subformer implementation.
     ///
-    #[inline(always)]
+    #[ inline( always ) ]
     pub fn child1(self, name: &str) -> ChildAsSubformer<Self, impl ChildAsSubformerEnd<Self>> {
       let on_end = |substorage: ChildFormerStorage, super_former: core::option::Option<Self>| -> Self {
         let mut super_former = super_former.unwrap();
@@ -98,7 +98,7 @@ fn main() {
     /// Unlike traditional methods that might use predefined setters like `_child_subform_entry`, this function
     /// explicitly constructs a subformer setup through a closure to provide greater flexibility and control.
     ///
-    #[inline(always)]
+    #[ inline( always ) ]
     pub fn child2(self, name: &str) -> ChildAsSubformer<Self, impl ChildAsSubformerEnd<Self>> {
       let on_end = |substorage: ChildFormerStorage, super_former: core::option::Option<Self>| -> Self {
         let mut super_former = super_former.unwrap();
@@ -136,7 +136,7 @@ fn main() {
   // Required to define how `value` is converted into pair `( key, value )`
   impl former::ValToEntry<HashMap<String, Child>> for Child {
     type Entry = (String, Child);
-    #[inline(always)]
+    #[ inline( always ) ]
     fn val_to_entry(self) -> Self::Entry {
       (self.name.clone(), self)
     }

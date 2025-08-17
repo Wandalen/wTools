@@ -1,10 +1,10 @@
 #![allow(dead_code)]
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
 /// Parameter description.
-#[allow(explicit_outlives_requirements)]
-#[derive(Debug, PartialEq)]
+#[ allow( explicit_outlives_requirements ) ]
+#[ derive( Debug, PartialEq ) ]
 pub struct Child<'child, T: ?Sized + 'child> {
   name: String,
   arg: &'child T,
@@ -14,7 +14,7 @@ pub struct Child<'child, T: ?Sized + 'child> {
 // This will guide the fix for the derive macro
 
 // Storage struct for the former
-#[derive(Debug)]
+#[ derive( Debug ) ]
 pub struct ChildFormerStorage<'child, T: ?Sized + 'child> {
   name: Option<String>,
   arg: Option<&'child T>,
@@ -43,7 +43,7 @@ impl<'child, T: ?Sized + 'child> former::StoragePreform for ChildFormerStorage<'
 }
 
 // The former implementation
-#[derive(Debug)]
+#[ derive( Debug ) ]
 pub struct ChildFormer<'child, T: ?Sized + 'child, Definition = ChildFormerDefinition<'child, T>>
 where
   Definition: former::FormerDefinition<Storage = ChildFormerStorage<'child, T>>,
@@ -105,7 +105,7 @@ where
 }
 
 // Definition types and traits (simplified for this test)
-#[derive(Debug)]
+#[ derive( Debug ) ]
 pub struct ChildFormerDefinitionTypes<'child, T: ?Sized + 'child, Context, Formed> {
   _phantom: std::marker::PhantomData<(&'child T, Context, Formed)>,
 }
@@ -123,7 +123,7 @@ impl<'child, T: ?Sized + 'child, Context, Formed> former::FormerMutator
 {
 }
 
-#[derive(Debug)]
+#[ derive( Debug ) ]
 pub struct ChildFormerDefinition<'child, T: ?Sized + 'child, Context = (), Formed = Child<'child, T>, End = former::ReturnPreformed> {
   _phantom: std::marker::PhantomData<(&'child T, Context, Formed, End)>,
 }
@@ -157,7 +157,7 @@ where
   Definition::Context: 'a,
   Definition::End: 'a,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn former_begin(
     storage: ::core::option::Option<Definition::Storage>,
     context: ::core::option::Option<Definition::Context>,

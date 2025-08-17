@@ -1,10 +1,10 @@
 //! Structure must be public.
 //! Otherwise public trait can't have it as type.
 
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
-#[derive(Debug, PartialEq, former::Former)]
+#[ derive( Debug, PartialEq, former::Former ) ]
 // #[ debug ]
 // #[ derive( Debug, PartialEq ) ]
 pub struct Foo {
@@ -15,7 +15,7 @@ pub struct Foo {
 
 // == end of generated
 
-#[test]
+#[ test ]
 fn basic() {
   let got = Foo::former().bar(13).form();
   let exp = Foo { bar: 13 };

@@ -1,6 +1,6 @@
 use super::*;
 
-#[test]
+#[ test ]
 fn test_needs_drop() {
   struct NeedsDrop;
 

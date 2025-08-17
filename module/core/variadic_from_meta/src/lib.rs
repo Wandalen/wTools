@@ -1,9 +1,10 @@
-#![doc(html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png")]
-#![doc(
+#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
+#![ doc
+(
   html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
-)]
-#![doc(html_root_url = "https://docs.rs/variadic_from_meta/latest/variadic_from_meta/")]
-#![allow(clippy::doc_markdown)] // Added to bypass doc_markdown lint for now
+) ]
+#![ doc( html_root_url = "https://docs.rs/variadic_from_meta/latest/variadic_from_meta/" ) ]
+#![ allow( clippy::doc_markdown ) ] // Added to bypass doc_markdown lint for now
 //! This crate provides a procedural macro for deriving `VariadicFrom` traits.
 
 use macro_tools::{quote, syn, proc_macro2};
@@ -13,18 +14,18 @@ use syn::{parse_macro_input, DeriveInput, Type, Data, Fields}; // Added Fields i
 /// Context for generating `VariadicFrom` implementations.
 struct VariadicFromContext<'a> {
   name: &'a syn::Ident,
-  field_types: Vec<&'a syn::Type>,
-  field_names_or_indices: Vec<proc_macro2::TokenStream>,
+  field_types: Vec< &'a syn::Type >,
+  field_names_or_indices: Vec< proc_macro2::TokenStream >,
   is_tuple_struct: bool,
   num_fields: usize,
   generics: &'a syn::Generics,
 }
 
 impl<'a> VariadicFromContext<'a> {
-  fn new(ast: &'a DeriveInput) -> syn::Result<Self> {
+  fn new(ast: &'a DeriveInput) -> syn::Result< Self > {
     let name = &ast.ident;
 
-    let (field_types, field_names_or_indices, is_tuple_struct): (Vec<&Type>, Vec<proc_macro2::TokenStream>, bool) =
+    let (field_types, field_names_or_indices, is_tuple_struct): (Vec< &Type >, Vec< proc_macro2::TokenStream >, bool) =
       match &ast.data {
         Data::Struct(data) => match &data.fields {
           Fields::Named(fields) => {
@@ -77,7 +78,7 @@ impl<'a> VariadicFromContext<'a> {
         .map(|(name, arg)| {
           quote! { #name : #arg }
         })
-        .collect::<Vec<_>>();
+        .collect::<Vec< _ >>();
       quote! { { #( #named_field_inits ),* } }
     }
   }
@@ -85,7 +86,7 @@ impl<'a> VariadicFromContext<'a> {
   /// Generates the constructor for the struct when all fields are the same type.
   fn constructor_uniform(&self, arg: &proc_macro2::Ident) -> proc_macro2::TokenStream {
     if self.is_tuple_struct {
-      let repeated_args = (0..self.num_fields).map(|_| arg).collect::<Vec<_>>();
+      let repeated_args = (0..self.num_fields).map(|_| arg).collect::<Vec< _ >>();
       quote! { ( #( #repeated_args ),* ) }
     } else {
       let named_field_inits = self
@@ -94,7 +95,7 @@ impl<'a> VariadicFromContext<'a> {
         .map(|name| {
           quote! { #name : #arg }
         })
-        .collect::<Vec<_>>();
+        .collect::<Vec< _ >>();
       quote! { { #( #named_field_inits ),* } }
     }
   }
@@ -129,7 +130,7 @@ fn is_type_string(ty: &syn::Type) -> bool {
 }
 
 /// Generates `FromN` trait implementations.
-#[allow(clippy::similar_names)]
+#[ allow( clippy::similar_names ) ]
 fn generate_from_n_impls(context: &VariadicFromContext<'_>, from_fn_args: &[proc_macro2::Ident]) -> proc_macro2::TokenStream {
   let mut impls = quote! {};
   let name = context.name;
@@ -187,7 +188,7 @@ fn generate_from_n_impls(context: &VariadicFromContext<'_>, from_fn_args: &[proc
 }
 
 /// Generates `From<T>` or `From<(T1, ..., TN)>` trait implementations.
-#[allow(clippy::similar_names)]
+#[ allow( clippy::similar_names ) ]
 fn generate_from_tuple_impl(context: &VariadicFromContext<'_>, from_fn_args: &[proc_macro2::Ident]) -> proc_macro2::TokenStream {
   let mut impls = quote! {};
   let name = context.name;
@@ -251,7 +252,7 @@ fn generate_from_tuple_impl(context: &VariadicFromContext<'_>, from_fn_args: &[p
 }
 
 /// Generates convenience `FromN` implementations.
-#[allow(clippy::similar_names)]
+#[ allow( clippy::similar_names ) ]
 fn generate_convenience_impls(
   context: &VariadicFromContext<'_>,
   from_fn_args: &[proc_macro2::Ident],
@@ -343,7 +344,7 @@ fn generate_convenience_impls(
 }
 
 /// Derive macro for `VariadicFrom`.
-#[proc_macro_derive(VariadicFrom)]
+#[ proc_macro_derive( VariadicFrom ) ]
 pub fn variadic_from_derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
   let ast = parse_macro_input!(input as DeriveInput);
   let context = match VariadicFromContext::new(&ast) {
@@ -358,7 +359,7 @@ pub fn variadic_from_derive(input: proc_macro::TokenStream) -> proc_macro::Token
   }
 
   // Generate argument names once
-  let from_fn_args: Vec<proc_macro2::Ident> = (0..context.num_fields)
+  let from_fn_args: Vec< proc_macro2::Ident > = (0..context.num_fields)
     .map(|i| proc_macro2::Ident::new(&format!("__a{}", i + 1), proc_macro2::Span::call_site()))
     .collect();
 

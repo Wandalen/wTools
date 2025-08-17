@@ -3,7 +3,7 @@ use the_module::exposed::{impls3, index, implsindex as impls_index};
 
 //
 
-#[test]
+#[ test ]
 fn basic() {
   impls3! {
     fn f1()
@@ -29,7 +29,7 @@ fn basic() {
 
 //
 
-#[test]
+#[ test ]
 fn impl_index() {
   impls3! {
     fn f1()
@@ -53,7 +53,7 @@ fn impl_index() {
   f2();
 }
 
-#[test]
+#[ test ]
 fn impl_as() {
   impls3! {
     fn f1()
@@ -76,7 +76,7 @@ fn impl_as() {
   f2b();
 }
 
-#[test]
+#[ test ]
 fn impl_index_as() {
   impls3! {
     fn f1()

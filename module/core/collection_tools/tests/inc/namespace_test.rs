@@ -1,6 +1,6 @@
 use super::*;
 
-#[test]
+#[ test ]
 fn exposed_main_namespace() {
   let _v: Vec<u32> = the_module::collection::Vec::new();
   let _v: Vec<u32> = the_module::exposed::collection::Vec::new();

@@ -4,14 +4,14 @@
 //!
 //! *   **Factors:**
 //!     1.  Variant Type: Unit (Implicitly selected)
-//!     2.  Variant-Level Attribute: None (Default), `#[scalar]`
-//!     3.  Enum-Level Attribute: None, `#[standalone_constructors]`
+//!     2.  Variant-Level Attribute: None (Default), `#[ scalar ]`
+//!     3.  Enum-Level Attribute: None, `#[ standalone_constructors ]`
 //!
 //! *   **Combinations Covered by `unit_variant_only_test.rs`:**
 //!     *   Unit + Default + None (Rule 3a) -> Tested via `Status::pending()` / `Status::complete()` in `unit_variant_constructors()` test.
-//!     *   Unit + `#[scalar]` + None (Rule 1a) -> Tested via `Status::pending()` / `Status::complete()` in `unit_variant_constructors()` test (as default is scalar).
-//!     *   Unit + Default + `#[standalone_constructors]` (Rule 3a, 4) -> Tested via `pending()` / `complete()` in `unit_variant_standalone_constructors()` test.
-//!     *   Unit + `#[scalar]` + `#[standalone_constructors]` (Rule 1a, 4) -> Tested via `pending()` / `complete()` in `unit_variant_standalone_constructors()` test.
+//!     *   Unit + `#[ scalar ]` + None (Rule 1a) -> Tested via `Status::pending()` / `Status::complete()` in `unit_variant_constructors()` test (as default is scalar).
+//!     *   Unit + Default + `#[ standalone_constructors ]` (Rule 3a, 4) -> Tested via `pending()` / `complete()` in `unit_variant_standalone_constructors()` test.
+//!     *   Unit + `#[ scalar ]` + `#[ standalone_constructors ]` (Rule 1a, 4) -> Tested via `pending()` / `complete()` in `unit_variant_standalone_constructors()` test.
 
 // Uncomment modules as they are addressed in increments.
 
@@ -54,7 +54,7 @@ mod simple_unit_derive; // REPLACEMENT: Non-generic version that works around de
 
 // Coverage for `compile_fail` module:
 // - Tests scenarios expected to fail compilation for unit variants.
-// - Currently verifies Rule 2a (`#[subform_scalar]` on a unit variant is an error).
+// - Currently verifies Rule 2a (`#[ subform_scalar ]` on a unit variant is an error).
 pub mod compile_fail;
 
 // COMPREHENSIVE REPLACEMENT: Tests multiple unit variant scenarios in one working test

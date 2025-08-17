@@ -7,6 +7,7 @@ use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, 
 use unilang::registry::CommandRegistry;
 use unilang::static_data::{ StaticArgumentDefinition, StaticArgumentAttributes, StaticCommandDefinition, StaticKind };
 
+#[allow(clippy::too_many_lines)]
 fn main() -> Result< (), unilang::error::Error >
 {
   println!( "=== Static and Dynamic Command Registry Demo ===\n" );

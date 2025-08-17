@@ -10,19 +10,19 @@
 use super::*;
 use test_tools::a_id;
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[ derive( Debug, Clone, Copy, PartialEq ) ]
 pub struct IsTransparentSimple(bool);
 
 impl core::ops::Deref for IsTransparentSimple {
   type Target = bool;
-  #[inline(always)]
+  #[ inline( always ) ]
   fn deref(&self) -> &Self::Target {
     &self.0
   }
 }
 
 impl core::ops::DerefMut for IsTransparentSimple {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn deref_mut(&mut self) -> &mut Self::Target {
     &mut self.0
   }
@@ -60,7 +60,7 @@ impl core::ops::DerefMut for IsTransparentSimple {
 // }
 
 /// Tests the `DerefMut` manual implementation for various struct types.
-#[test]
+#[ test ]
 fn deref_mut_test() {
   // Test for IsTransparentSimple
   let mut got = IsTransparentSimple(true);

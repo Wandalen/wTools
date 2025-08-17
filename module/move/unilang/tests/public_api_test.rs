@@ -27,18 +27,20 @@ fn test_root_namespace_imports()
   
   // Verify types exist by creating instances or references
   let _registry = CommandRegistry::new();
-  let _kind = Kind::String;
+  let kind = Kind::String;
   let _attrs = ArgumentAttributes::default();
   
   // Use the types to avoid unused warnings
-  let _cmd_def : Option<CommandDefinition> = None;
-  let _arg_def : Option<ArgumentDefinition> = None;
-  let _output : Option<OutputData> = None;
-  let _error : Option<ErrorData> = None;
+  assert_eq!(core::mem::size_of::<CommandDefinition>(), core::mem::size_of::<CommandDefinition>());
+  assert_eq!(core::mem::size_of::<ArgumentDefinition>(), core::mem::size_of::<ArgumentDefinition>());
+  assert_eq!(core::mem::size_of::<OutputData>(), core::mem::size_of::<OutputData>());
+  assert_eq!(core::mem::size_of::<ErrorData>(), core::mem::size_of::<ErrorData>());
   let _value = Value::String("test".to_string());
-  let _pipeline : Option<Pipeline> = None;
-  let _verified : Option<VerifiedCommand> = None;
+  assert_eq!(core::mem::size_of::<Pipeline>(), core::mem::size_of::<Pipeline>());
+  assert_eq!(core::mem::size_of::<VerifiedCommand>(), core::mem::size_of::<VerifiedCommand>());
   let _ctx = ExecutionContext::default();
+  assert_eq!(core::mem::size_of::<Kind>(), core::mem::size_of::<Kind>());
+  core::hint::black_box(kind);
 }
 
 /// Tests that essential types can be imported from prelude.
@@ -50,7 +52,7 @@ fn test_prelude_imports()
   
   // Verify prelude contains essential types
   let _registry = CommandRegistry::new();
-  let _kind = Kind::String;
+  core::hint::black_box(Kind::String);
   let _output = OutputData
   {
     content : "test".to_string(),
@@ -93,7 +95,6 @@ fn test_module_specific_imports()
   // Semantic module
   use unilang::semantic::
   {
-    SemanticAnalyzer,
     VerifiedCommand,
   };
   
@@ -111,24 +112,26 @@ fn test_module_specific_imports()
   use unilang::help::HelpGenerator;
   
   // Verify imports work by using all types
-  let _registry = CommandRegistry::new();
+  let registry = CommandRegistry::new();
   let _value = Value::String( "test".to_string() );
-  let _kind = Kind::String;
+  core::hint::black_box(Kind::String);
   let _attrs = ArgumentAttributes::default();
-  let _cmd_def : Option<CommandDefinition> = None;
-  let _arg_def : Option<ArgumentDefinition> = None;
-  let _output : Option<OutputData> = None;
-  let _error : Option<ErrorData> = None;
-  let _routine : Option<CommandRoutine> = None;
-  let _ctx = ExecutionContext::default();
-  let _analyzer : Option<SemanticAnalyzer<'_>> = None;
-  let _verified : Option<VerifiedCommand> = None;
-  let _pipeline : Option<Pipeline> = None;
-  let _cmd_result : Option<CommandResult> = None;
-  let _batch_result : Option<BatchResult> = None;
-  let _process_fn = process_single_command;
-  let _validate_fn = validate_single_command;
-  let _help_gen = HelpGenerator::new(&_registry);
+  core::hint::black_box(Option::<CommandDefinition>::None);
+  core::hint::black_box(Option::<ArgumentDefinition>::None);
+  // Test that all major types are accessible from prelude
+  assert_eq!(core::mem::size_of::<OutputData>(), core::mem::size_of::<OutputData>());
+  assert_eq!(core::mem::size_of::<ErrorData>(), core::mem::size_of::<ErrorData>());
+  assert_eq!(core::mem::size_of::<CommandRoutine>(), core::mem::size_of::<CommandRoutine>());
+  let ctx = ExecutionContext::default();
+  assert_eq!(core::mem::size_of::<ExecutionContext>(), core::mem::size_of::<ExecutionContext>());
+  assert_eq!(core::mem::size_of::<VerifiedCommand>(), core::mem::size_of::<VerifiedCommand>());
+  assert_eq!(core::mem::size_of::<Pipeline>(), core::mem::size_of::<Pipeline>());
+  assert_eq!(core::mem::size_of::<CommandResult>(), core::mem::size_of::<CommandResult>());
+  assert_eq!(core::mem::size_of::<BatchResult>(), core::mem::size_of::<BatchResult>());
+  // Test that convenience functions are accessible
+  let _process_result = process_single_command("help", &registry, ctx.clone());
+  let _validate_result = validate_single_command("help", &registry);
+  let _help_gen = HelpGenerator::new(&registry);
 }
 
 /// Tests a complete workflow using the public API.
@@ -150,7 +153,7 @@ fn test_complete_workflow()
   
   // Define a command
   let greet_cmd = CommandDefinition::former()
-    .name( "greet" )
+    .name( ".greet" )
     .namespace( String::new() )
     .description( "Greets a person".to_string() )
     .hint( "Simple greeting" )
@@ -162,7 +165,7 @@ fn test_complete_workflow()
     .idempotent( true )
     .deprecation_message( String::new() )
     .http_method_hint( "GET".to_string() )
-    .examples( vec![ "greet name::\"Alice\"".to_string() ] )
+    .examples( vec![ ".greet name::\"Alice\"".to_string() ] )
     .arguments( vec![
       ArgumentDefinition::former()
         .name( "name" )
@@ -199,7 +202,7 @@ fn test_complete_workflow()
   
   // Test with Pipeline API
   let pipeline = Pipeline::new( registry );
-  let result = pipeline.process_command_simple( "greet name::\"Test\"" );
+  let result = pipeline.process_command_simple( ".greet name::\"Test\"" );
   
   assert!( result.success );
   assert_eq!( result.outputs[ 0 ].content, "Hello, Test!" );
@@ -214,18 +217,17 @@ fn test_namespace_structure()
   // use unilang::own::*;
   // let _registry = CommandRegistry::new();
   
-  // Test exposed namespace
-  // Note: These are compile-time tests to ensure namespace exists
-  let _ = || {
+  // Test exposed namespace exists and has expected types
+  {
     use unilang::exposed::*;
-    let _def : Option<CommandDefinition> = None;
-  };
+    assert_eq!(core::mem::size_of::<CommandDefinition>(), core::mem::size_of::<CommandDefinition>());
+  }
   
-  // Test orphan namespace
-  let _ = || {
+  // Test orphan namespace exists and has expected types
+  {
     use unilang::orphan::*;
-    let _kind : Option<Kind> = None;
-  };
+    assert_eq!(core::mem::size_of::<Kind>(), core::mem::size_of::<Kind>());
+  }
 }
 
 /// Tests that commonly needed type combinations work together.

@@ -1,9 +1,9 @@
 #![allow(dead_code)]
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
 // Test the simplest case with lifetime only
-#[derive(Debug, PartialEq)]
+#[ derive( Debug, PartialEq ) ]
 pub struct Basic<'a> {
   val: &'a str,
 }
@@ -36,7 +36,7 @@ impl<'a> BasicFormer<'a> {
   }
 }
 
-#[test]
+#[ test ]
 fn manual_works() {
   let data = "test";
   let result = Basic::former().val(data).form();

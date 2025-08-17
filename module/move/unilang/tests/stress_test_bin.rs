@@ -37,14 +37,16 @@ fn main()
     
     // Progress reporting every 100k lookups
     if i % 100_000 == 0 && i > 0 {
-      println!( "  Completed {} lookups...", i );
+      println!( "  Completed {i} lookups..." );
     }
   }
   
   // Calculate statistics
   latencies.sort();
   let p50 = latencies[ lookup_count / 2 ];
+  #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
   let p95 = latencies[ (lookup_count as f64 * 0.95) as usize ];
+  #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
   let p99 = latencies[ (lookup_count as f64 * 0.99) as usize ];
   let max = latencies[ lookup_count - 1 ];
   

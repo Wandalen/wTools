@@ -36,7 +36,7 @@ willbe = { workspace = true }
 error_tools = { workspace = true }
 
 # [dev-dependencies]
-# test_tools = { workspace = true }
+# test_tools = { workspace = true, features = [ "full" ] }
 # assert_fs = "1.0"
 # serde_yaml = "0.9"
 # serde_json = "1.0.114"

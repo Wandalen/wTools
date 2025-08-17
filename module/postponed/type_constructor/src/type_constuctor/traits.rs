@@ -5,7 +5,6 @@ mod private
   ///
   /// Clone as tuple.
   ///
-
   pub trait CloneAsTuple< Tuple >
   {
     /// Clone as tuple.
@@ -15,7 +14,6 @@ mod private
   ///
   /// Clone as array.
   ///
-
   pub trait CloneAsArray< T, const N : usize >
   {
     /// Clone as array.
@@ -25,7 +23,6 @@ mod private
   ///
   /// Reinterpret as tuple.
   ///
-
   pub trait AsTuple< Tuple >
   {
     /// Reinterpret as tuple.
@@ -35,7 +32,6 @@ mod private
   ///
   /// Reinterpret as array.
   ///
-
   pub trait AsArray< T, const N : usize >
   {
     /// Reinterpret as array.
@@ -45,7 +41,6 @@ mod private
   ///
   /// Reinterpret as slice.
   ///
-
   pub trait AsSlice< T >
   {
     /// Reinterpret as slice.

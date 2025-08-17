@@ -163,7 +163,6 @@ mod private
   /// // The primary formatting method WithDisplay is not available, so the second fallback WithDebugFallback is used.
   /// assert_eq!( got, exp );
   /// ```
-
   #[ macro_export ]
   macro_rules! to_string_with_fallback
   {

@@ -7,7 +7,6 @@ mod private
   ///
   /// Has length and indexed access.
   ///
-
   pub trait Enumerable
   {
     /// Type of an element.
@@ -29,7 +28,6 @@ mod private
   ///
   /// Has length and indexed access, including mutable access.
   ///
-
   pub trait EnumerableMut
   where
     Self : Enumerable,
@@ -96,7 +94,6 @@ mod private
   }
 
   /// Iterator for enumerable.
-
   #[ derive( Debug ) ]
   pub struct EnumerableIteratorCopy< En >
   where
@@ -140,7 +137,6 @@ mod private
   ///
   /// Ref iterator for enumerable.
   ///
-
   #[ derive( Debug ) ]
   pub struct EnumerableIteratorRef< 'a, En >
   where
@@ -184,7 +180,6 @@ mod private
   ///
   /// Mut iterator for enumerable.
   ///
-
   #[ derive( Debug ) ]
   pub struct EnumerableIteratorMut< 'a, En >
   where

@@ -10,7 +10,7 @@
 //! Utility to publish modules on `crates.io` from a command line.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 
 use ::wtest::*;
 #[ cfg( not( feature = "no_std" ) ) ]
@@ -19,9 +19,9 @@ use std::env;
 //
 
 #[ cfg( not( feature = "no_std" ) ) ]
-fn main() -> Result< (), wtools::error::BasicError >
+fn main() -> Result<  (), wtools::error::BasicError  >
 {
-  let args = env::args().skip( 1 ).collect::< Vec< String > >();
+  let args = env::args().skip( 1 ).collect::< Vec<  String  > >();
 
   let ca = wca::CommandsAggregator::former()
   // .exit_code_on_error( 1 )

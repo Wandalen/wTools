@@ -6,14 +6,14 @@
 //!
 
 use crate::*;
-#[allow(unused)]
+#[ allow( unused ) ]
 use collection_tools::BTreeSet;
 
 impl<E> Collection for BTreeSet<E> {
   type Entry = E;
   type Val = E;
 
-  #[inline(always)]
+  #[ inline( always ) ]
   fn entry_to_val(e: Self::Entry) -> Self::Val {
     e
   }
@@ -23,7 +23,7 @@ impl<E> CollectionAdd for BTreeSet<E>
 where
   E: Ord,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn add(&mut self, e: Self::Entry) -> bool {
     self.insert(e);
     true
@@ -34,7 +34,7 @@ impl<E> CollectionAssign for BTreeSet<E>
 where
   E: Ord,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign<Elements>(&mut self, elements: Elements) -> usize
   where
     Elements: IntoIterator<Item = Self::Entry>,
@@ -47,7 +47,7 @@ where
 
 impl<E> CollectionValToEntry<E> for BTreeSet<E> {
   type Entry = E;
-  #[inline(always)]
+  #[ inline( always ) ]
   fn val_to_entry(val: E) -> Self::Entry {
     val
   }
@@ -78,8 +78,7 @@ impl<E> StoragePreform for BTreeSet<E> {
 /// - `Formed`: The type formed at the end of the formation process, typically a `BTreeSet<E>`.
 /// - `End`: A trait determining the behavior at the end of the formation process.
 ///
-
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct BTreeSetDefinition<E, Context, Formed, End>
 where
   End: FormingEnd<BTreeSetDefinitionTypes<E, Context, Formed>>,
@@ -112,8 +111,7 @@ where
 /// - `E`: The element type of the binary tree set.
 /// - `Context`: The context in which the binary tree set is formed.
 /// - `Formed`: The type produced as a result of the formation process.
-
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct BTreeSetDefinitionTypes<E, Context = (), Formed = BTreeSet<E>> {
   _phantom: core::marker::PhantomData<(E, Context, Formed)>,
 }
@@ -198,7 +196,7 @@ impl<E> BTreeSetExt<E> for BTreeSet<E>
 where
   E: Ord,
 {
-  #[allow(clippy::default_constructed_unit_structs)]
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn former() -> BTreeSetFormer<E, (), BTreeSet<E>, ReturnStorage> {
     BTreeSetFormer::<E, (), BTreeSet<E>, ReturnStorage>::new(ReturnStorage::default())
   }

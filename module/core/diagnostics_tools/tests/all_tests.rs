@@ -7,9 +7,9 @@
 // #![ cfg_attr( feature = "type_name_of_val", feature( type_name_of_val ) ) ]
 // #![ feature( trace_macros ) ]
 
-#![allow(unused_imports)]
+#![ allow( unused_imports ) ]
 
-#[path = "../../../../module/step/meta/src/module/terminal.rs"]
+#[ path = "../../../../module/step/meta/src/module/terminal.rs" ]
 mod terminal;
 use diagnostics_tools as the_module;
 mod inc;

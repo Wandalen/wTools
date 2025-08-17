@@ -21,9 +21,9 @@ fn main() {}
 fn main() {
   use collection_tools::{HashSet, hset};
 
-  #[derive(Debug, PartialEq, former::Former)]
+  #[ derive( Debug, PartialEq, former::Former ) ]
   pub struct StructWithSet {
-    #[subform_collection( definition = former::HashSetDefinition )]
+    #[ subform_collection( definition = former::HashSetDefinition ) ]
     set: HashSet<&'static str>,
   }
 

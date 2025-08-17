@@ -1,6 +1,6 @@
 use super::*;
 
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 // #[ the_module::phantom ]
 struct ContravariantType<T> {
   a: T,

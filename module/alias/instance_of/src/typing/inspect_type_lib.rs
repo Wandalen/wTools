@@ -10,7 +10,7 @@
 //! Diagnostic-purpose tools to inspect type of a variable and its size.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 
 #[ cfg( feature = "nightly" ) ]
 mod nightly
@@ -19,7 +19,6 @@ mod nightly
   ///
   /// Macro to inspect type of a variable and its size exporting it as a string.
   ///
-
   #[ macro_export ]
   // #[ cfg_attr( feature = "nightly1", macro_export ) ]
   macro_rules! inspect_to_str_type_of
@@ -44,7 +43,6 @@ mod nightly
   ///
   /// Macro to inspect type of a variable and its size printing into stdout and exporting it as a string.
   ///
-
   #[ macro_export ]
   // #[ cfg_attr( feature = "nightly1", macro_export ) ]
   macro_rules! inspect_type_of

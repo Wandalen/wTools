@@ -1,15 +1,15 @@
 // Purpose: Provides shared test assertions and logic for both the derived and manual implementations
-// of standalone scalar constructors for named (struct-like) variants with `#[arg_for_constructor]`
+// of standalone scalar constructors for named (struct-like) variants with `#[ arg_for_constructor ]`
 // fields. It tests that standalone constructors generated/implemented when the enum has
-// `#[standalone_constructors]` and all variant fields have `#[arg_for_constructor]` behave as
+// `#[ standalone_constructors ]` and all variant fields have `#[ arg_for_constructor ]` behave as
 // expected (scalar style, taking field arguments).
 //
 // Coverage:
-// - Rule 4a (#[standalone_constructors]): Tests the existence and functionality of top-level constructor functions (`struct_variant_args`, `multi_struct_args`).
-// - Rule 4b (Option 2 Logic): Tests that these standalone constructors take arguments corresponding to the `#[arg_for_constructor]` fields and return the final enum instance.
-// - Rule 1e (Struct + Single-Field + `#[scalar]`): Implicitly tested via `StructVariantArgs`.
+// - Rule 4a (#[ standalone_constructors ]): Tests the existence and functionality of top-level constructor functions (`struct_variant_args`, `multi_struct_args`).
+// - Rule 4b (Option 2 Logic): Tests that these standalone constructors take arguments corresponding to the `#[ arg_for_constructor ]` fields and return the final enum instance.
+// - Rule 1e (Struct + Single-Field + `#[ scalar ]`): Implicitly tested via `StructVariantArgs`.
 // - Rule 3e (Struct + Single-Field + Default): Implicitly tested via `StructVariantArgs`.
-// - Rule 1g (Struct + Multi-Field + `#[scalar]`): Implicitly tested via `MultiStructArgs`.
+// - Rule 1g (Struct + Multi-Field + `#[ scalar ]`): Implicitly tested via `MultiStructArgs`.
 // - Rule 3g (Struct + Multi-Field + Default): Implicitly tested via `MultiStructArgs`.
 //
 // Test Relevance/Acceptance Criteria:

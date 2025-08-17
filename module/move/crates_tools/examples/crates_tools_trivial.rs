@@ -10,7 +10,7 @@ fn main() {
     for path in crate_archive.list() {
       // take content from a specific file from the archive
       let bytes = crate_archive.content_bytes(path).unwrap();
-      let string = std::str::from_utf8(bytes).unwrap();
+      let string = core::str::from_utf8(bytes).unwrap();
 
       println!("# {}\n```\n{}```", path.display(), string);
     }

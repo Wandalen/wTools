@@ -2,9 +2,9 @@
 use super::*;
 use derive_tools::AsMut;
 
-#[derive(AsMut)]
+#[ derive( AsMut ) ]
 struct StructNamed {
-  #[as_mut]
+  #[ as_mut ]
   field1: i32,
 }
 

@@ -228,8 +228,7 @@ fn ct4_1_single_str_duplicate_named_error()
     );
     assert!(
       e.to_string().contains( "Duplicate named argument 'name'" ),
-      "CT4.1 Error message mismatch: {}",
-      e
+      "CT4.1 Error message mismatch: {e}"
     );
   }
 }
@@ -386,8 +385,7 @@ fn sa2_1_whole_line_comment()
     );
     assert!(
       e.to_string().contains( "Unexpected token '#' in arguments" ),
-      "SA2.1 Error message mismatch: {}",
-      e.to_string()
+      "SA2.1 Error message mismatch: {e}"
     );
   }
 }
@@ -414,8 +412,7 @@ fn sa2_2_comment_only_line()
     );
     assert!(
       e.to_string().contains( "Unexpected token '#' in arguments" ),
-      "SA2.2 Error message mismatch: {}",
-      e.to_string()
+      "SA2.2 Error message mismatch: {e}"
     );
   }
 }
@@ -442,8 +439,7 @@ fn sa2_3_inline_comment_attempt()
     );
     assert!(
       e.to_string().contains( "Unexpected token '#' in arguments" ),
-      "SA2.3 Error message mismatch: {}",
-      e.to_string()
+      "SA2.3 Error message mismatch: {e}"
     ); // Changed message
   }
 }

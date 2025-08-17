@@ -2,7 +2,7 @@ use super::*;
 
 //
 
-#[test]
+#[ test ]
 fn concat() {
   use the_module::ct;
 
@@ -14,7 +14,7 @@ fn concat() {
 
 //
 
-#[test]
+#[ test ]
 fn format() {
   use the_module::ct;
 

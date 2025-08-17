@@ -14,11 +14,11 @@ fn main() {}
 
 #[cfg(all(feature = "derive_former", feature = "enabled"))]
 fn main() {
-  #[cfg(feature = "enabled")]
+  #[ cfg( feature = "enabled" ) ]
   use former_meta::Former;
 
   /// Structure with a custom setter.
-  #[derive(Debug, Former)]
+  #[ derive( Debug, Former ) ]
   pub struct StructWithCustomSetters {
     word: String,
   }

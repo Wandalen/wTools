@@ -107,26 +107,39 @@ impl CommandRegistry
   /// a compile-time registered command).
   pub fn command_add_runtime( &mut self, command_def : &CommandDefinition, routine : CommandRoutine ) -> Result< (), Error >
   {
-    let full_name = if command_def.name.starts_with( '.' )
+    // EXPLICIT COMMAND NAMING ENFORCEMENT (FR-REG-6)
+    // Following the governing principle: minimum implicit magic!
+    
+    // Validate that command names start with dot prefix
+    if !command_def.name.starts_with( '.' )
     {
-      // Command name is already in full format
-      command_def.name.clone()
+      return Err( Error::Registration( format!(
+        "Invalid command name '{}'. All commands must start with dot prefix (e.g., '.chat'). \
+        This enforces explicit naming with minimal implicit transformations.",
+        command_def.name
+      )));
     }
-    else if command_def.namespace.is_empty()
+    
+    // Validate namespace format if provided
+    if !command_def.namespace.is_empty() && !command_def.namespace.starts_with( '.' )
     {
-      format!( ".{}", command_def.name )
+      return Err( Error::Registration( format!(
+        "Invalid namespace '{}'. Non-empty namespaces must start with dot prefix (e.g., '.session'). \
+        Use empty namespace for root-level commands.",
+        command_def.namespace
+      )));
+    }
+    
+    // Build full command name explicitly - no magic transformations
+    let full_name = if command_def.namespace.is_empty()
+    {
+      // Root-level command: use name as-is (already validated to have dot prefix)
+      command_def.name.clone()
     }
     else
     {
-      let ns = &command_def.namespace;
-      if ns.starts_with( '.' )
-      {
-        format!( "{}.{}", ns, command_def.name )
-      }
-      else
-      {
-        format!( ".{}.{}", ns, command_def.name )
-      }
+      // Namespaced command: explicit concatenation
+      format!( "{}.{}", command_def.namespace, command_def.name.strip_prefix('.').unwrap_or(&command_def.name) )
     };
     // Check if command exists in either static or dynamic registries
     if super::STATIC_COMMANDS.contains_key( &full_name ) || self.dynamic_commands.contains_key( &full_name )

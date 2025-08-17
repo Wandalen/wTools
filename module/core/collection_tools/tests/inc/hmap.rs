@@ -1,8 +1,8 @@
 use super::*;
 
-#[test]
+#[ test ]
 fn reexport() {
-  let mut map1: the_module::HashMap<i32, i32> = the_module::HashMap::new();
+  let mut map1: the_module::HashMap< i32, i32 > = the_module::HashMap::new();
   map1.insert(1, 2);
   let exp = 2;
   let got = *map1.get(&1).unwrap();
@@ -17,11 +17,11 @@ fn reexport() {
   assert_eq!(map1, map2);
 }
 
-#[cfg(feature = "collection_constructors")]
-#[test]
+#[ cfg( feature = "collection_constructors" ) ]
+#[ test ]
 fn constructor() {
   // test.case( "empty" );
-  let got: the_module::HashMap<i32, i32> = the_module::hmap! {};
+  let got: the_module::HashMap< i32, i32 > = the_module::hmap! {};
   let exp = the_module::HashMap::new();
   assert_eq!(got, exp);
 
@@ -36,11 +36,11 @@ fn constructor() {
   let _got = the_module::exposed::hmap!( "a" => "b" );
 }
 
-#[cfg(feature = "collection_into_constructors")]
-#[test]
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ test ]
 fn into_constructor() {
   // test.case( "empty" );
-  let got: the_module::HashMap<i32, i32> = the_module::into_hmap! {};
+  let got: the_module::HashMap< i32, i32 > = the_module::into_hmap! {};
   let exp = the_module::HashMap::new();
   assert_eq!(got, exp);
 
@@ -55,10 +55,10 @@ fn into_constructor() {
   let _got: Hmap<&str, &str> = the_module::exposed::into_hmap!( "a" => "b" );
 }
 
-#[test]
+#[ test ]
 fn iters() {
   struct MyContainer {
-    entries: the_module::HashMap<i32, i32>,
+    entries: the_module::HashMap< i32, i32 >,
   }
 
   impl IntoIterator for MyContainer {
@@ -91,21 +91,21 @@ fn iters() {
   let instance = MyContainer {
     entries: the_module::HashMap::from([(1, 3), (2, 2), (3, 1)]),
   };
-  let got: the_module::HashMap<_, _> = instance.into_iter().collect();
+  let got: the_module::HashMap< _, _ > = instance.into_iter().collect();
   let exp = the_module::HashMap::from([(1, 3), (2, 2), (3, 1)]);
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 
   let instance = MyContainer {
     entries: the_module::HashMap::from([(1, 3), (2, 2), (3, 1)]),
   };
-  let got: the_module::HashMap<_, _> = (&instance).into_iter().map(|(k, v)| (k.clone(), v.clone())).collect();
+  let got: the_module::HashMap< _, _ > = (&instance).into_iter().map(|(k, v)| (*k, *v)).collect();
   let exp = the_module::HashMap::from([(1, 3), (2, 2), (3, 1)]);
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 
   let mut instance = MyContainer {
     entries: the_module::HashMap::from([(1, 3), (2, 2), (3, 1)]),
   };
   (&mut instance).into_iter().for_each(|(_, v)| *v *= 2);
   let exp = the_module::HashMap::from([(1, 6), (2, 4), (3, 2)]);
-  a_id!(instance.entries, exp);
+  assert_eq!(instance.entries, exp);
 }

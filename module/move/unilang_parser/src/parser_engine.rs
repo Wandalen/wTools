@@ -10,9 +10,221 @@ use crate::
   item_adapter::{ RichItem, UnilangTokenKind },
 };
 use crate::instruction::{ Argument, GenericInstruction };
-use std::collections::HashMap;
-use alloc::vec::IntoIter;
-use strs_tools::string::split::{ Split, SplitType };
+use alloc::collections::BTreeMap;
+use alloc::vec::{ Vec, IntoIter };
+use alloc::string::{ String, ToString };
+use alloc::format;
+
+/// Handle quoted string parsing with escape sequence support
+fn handle_quoted_string< 'a >( input : &'a str, pos : &mut usize, result : &mut Vec< crate::item_adapter::Split< 'a > > )
+{
+  use alloc::string::String;
+  
+  let quote_start = *pos;
+  let ch = input.chars().nth( *pos ).unwrap();
+  *pos += ch.len_utf8(); // Skip opening quote
+  let content_start = *pos;
+  
+  let mut unescaped_content = String::new();
+  let mut has_escapes = false;
+  
+  // Process content character by character to handle escapes
+  while *pos < input.len()
+  {
+    let current_ch = input.chars().nth( *pos ).unwrap();
+    
+    if current_ch == '"'
+    {
+      // Found closing quote
+      let content_end = *pos;
+      *pos += current_ch.len_utf8(); // Skip closing quote
+      
+      // Create split with either the original content or unescaped content
+      let final_content = if has_escapes {
+        alloc::borrow::Cow::Owned( unescaped_content )
+      } else {
+        alloc::borrow::Cow::Borrowed( &input[ content_start..content_end ] )
+      };
+      
+      result.push( crate::item_adapter::Split {
+        string : final_content,
+        bounds : ( quote_start, *pos ),
+        start : quote_start,
+        end : *pos,
+        typ : crate::item_adapter::SplitType::Delimiter,
+        was_quoted : true, // Mark as quoted
+      });
+      return;
+    }
+    else if current_ch == '\\'
+    {
+      // Handle escape sequences
+      // If this is the first escape, copy all previous content
+      if !has_escapes {
+        unescaped_content.push_str( &input[ content_start..*pos ] );
+        has_escapes = true;
+      }
+      
+      *pos += current_ch.len_utf8();
+      if *pos < input.len()
+      {
+        let escaped_ch = input.chars().nth( *pos ).unwrap();
+        
+        match escaped_ch
+        {
+          '"' => unescaped_content.push( '"' ),
+          '\\' => unescaped_content.push( '\\' ),
+          'n' => unescaped_content.push( '\n' ),
+          't' => unescaped_content.push( '\t' ),
+          'r' => unescaped_content.push( '\r' ),
+          _ => {
+            // For unknown escapes, include the backslash and the character
+            unescaped_content.push( '\\' );
+            unescaped_content.push( escaped_ch );
+          }
+        }
+        *pos += escaped_ch.len_utf8();
+      }
+      else
+      {
+        // Trailing backslash at end - just add it
+        unescaped_content.push( '\\' );
+      }
+    }
+    else
+    {
+      // Regular character
+      if has_escapes {
+        unescaped_content.push( current_ch );
+      }
+      *pos += current_ch.len_utf8();
+    }
+  }
+  
+  // If we reached end without finding closing quote
+  if *pos >= input.len()
+  {
+    // Unterminated quote - include what we have
+    let final_content = if has_escapes {
+      alloc::borrow::Cow::Owned( unescaped_content )
+    } else {
+      alloc::borrow::Cow::Borrowed( &input[ content_start.. ] )
+    };
+    
+    result.push( crate::item_adapter::Split {
+      string : final_content,
+      bounds : ( quote_start, input.len() ),
+      start : quote_start,
+      end : input.len(),
+      typ : crate::item_adapter::SplitType::Delimiter,
+      was_quoted : true,
+    });
+  }
+}
+
+/// Check for multi-character delimiters
+fn try_multi_char_delimiter< 'a >( input : &'a str, pos : &mut usize, delimiters : &[ &str ], result : &mut Vec< crate::item_adapter::Split< 'a > > ) -> bool
+{
+  for delimiter in delimiters
+  {
+    if delimiter.len() > 1 && input[ *pos.. ].starts_with( delimiter )
+    {
+      result.push( crate::item_adapter::Split {
+        string : alloc::borrow::Cow::Borrowed( &input[ *pos..*pos + delimiter.len() ] ),
+        bounds : ( *pos, *pos + delimiter.len() ),
+        start : *pos,
+        end : *pos + delimiter.len(),
+        typ : crate::item_adapter::SplitType::Delimiter,
+        was_quoted : false,
+      });
+      *pos += delimiter.len();
+      return true;
+    }
+  }
+  false
+}
+
+/// Handle non-delimiter segment
+fn handle_non_delimiter_segment< 'a >( input : &'a str, pos : &mut usize, delimiters : &[ &str ], result : &mut Vec< crate::item_adapter::Split< 'a > > )
+{
+  let start_pos = *pos;
+  while *pos < input.len()
+  {
+    let current_ch = input.chars().nth( *pos ).unwrap();
+    let current_ch_str = &input[ *pos..*pos + current_ch.len_utf8() ];
+    
+    // Check if we hit a delimiter or quote
+    let is_delimiter = current_ch == '"' || current_ch.is_whitespace() || 
+      delimiters.iter().any( | d | d.len() == 1 && *d == current_ch_str ) ||
+      delimiters.iter().any( | d | d.len() > 1 && input[ *pos.. ].starts_with( d ) );
+    
+    if is_delimiter
+    {
+      break;
+    }
+    
+    *pos += current_ch.len_utf8();
+  }
+  
+  if start_pos < *pos
+  {
+    result.push( crate::item_adapter::Split {
+      string : alloc::borrow::Cow::Borrowed( &input[ start_pos..*pos ] ),
+      bounds : ( start_pos, *pos ),
+      start : start_pos,
+      end : *pos,
+      typ : crate::item_adapter::SplitType::Delimiter, // Mark as delimiter so it gets classified as Identifier
+      was_quoted : false,
+    });
+  }
+}
+
+/// Simple split function to replace `strs_tools` functionality
+fn simple_split< 'a >( input : &'a str, delimiters : &[ &str ] ) -> Vec< crate::item_adapter::Split< 'a > >
+{
+  let mut result = Vec::new();
+  let mut pos = 0;
+  
+  while pos < input.len()
+  {
+    let ch = input.chars().nth( pos ).unwrap();
+    
+    // Check if we're starting a quoted string
+    if ch == '"'
+    {
+      handle_quoted_string( input, &mut pos, &mut result );
+      continue;
+    }
+    
+    // First check for multi-character delimiters
+    if try_multi_char_delimiter( input, &mut pos, delimiters, &mut result )
+    {
+      continue;
+    }
+    
+    // Check for single-character delimiters or whitespace
+    let ch_str = &input[ pos..pos + ch.len_utf8() ];
+    
+    if ch.is_whitespace() || delimiters.iter().any( | d | d.len() == 1 && *d == ch_str )
+    {
+      result.push( crate::item_adapter::Split {
+        string : alloc::borrow::Cow::Borrowed( ch_str ),
+        bounds : ( pos, pos + ch.len_utf8() ),
+        start : pos,
+        end : pos + ch.len_utf8(),
+        typ : crate::item_adapter::SplitType::Delimiter,
+        was_quoted : false,
+      });
+      pos += ch.len_utf8();
+    }
+    else
+    {
+      handle_non_delimiter_segment( input, &mut pos, delimiters, &mut result );
+    }
+  }
+  
+  result
+}
 
 /// The main parser struct.
 #[ derive( Debug ) ]
@@ -37,15 +249,11 @@ impl Parser
   /// Returns a `ParseError` if the input string cannot be parsed into a valid instruction.
   pub fn parse_single_instruction( &self, input : &str ) -> Result< crate::instruction::GenericInstruction, ParseError >
   {
-    let splits_iter = strs_tools::split()
-    .src( input )
-    .delimeter( vec![ " ", "\n", "\t", "\r", "::", "?", "#", ".", "!" ] )
-    .preserving_delimeters( true )
-    .quoting( true )
-    .preserving_quoting( false )
-    .perform();
+    // Simple replacement for strs_tools split since the feature is not available
+    let splits_iter = simple_split( input, &[ " ", "\n", "\t", "\r", "::", "?", "#", ".", "!" ] );
 
     let rich_items : Vec< RichItem< '_ > > = splits_iter
+    .into_iter()
     .map( | s |
     {
       let ( kind, adjusted_source_location ) = crate::item_adapter::classify_split( &s )?;
@@ -73,92 +281,73 @@ impl Parser
   /// which indicates a logic error where a trailing delimiter was expected but not found.
   pub fn parse_multiple_instructions( &self, input : &str ) -> Result< Vec< crate::instruction::GenericInstruction >, ParseError >
   {
-    let segments : Vec< Split< '_ > > = strs_tools::split()
-    .src( input )
-    .delimeter( vec![ ";;" ] )
-    .preserving_delimeters( true )
-    .preserving_empty( false ) // Do not preserve empty segments for whitespace
-    .stripping( true ) // Strip leading/trailing whitespace from delimited segments
-    .form()
-    .split()
-    .collect();
-
+    // Use standard string split instead of simple_split to avoid interference with :: operator
+    let parts: Vec<&str> = input.split(";;").collect();
     let mut instructions = Vec::new();
-    let mut last_was_delimiter = true; // Tracks if the previous segment was a delimiter
 
-    // Handle cases where input is empty or consists only of delimiters/whitespace
-    if segments.is_empty()
+    // Handle empty input
+    if parts.is_empty() || (parts.len() == 1 && parts[0].trim().is_empty())
     {
-      return Ok( Vec::new() ); // Empty input, no instructions
+      return Ok( Vec::new() );
     }
 
-    // Check if the first segment is an empty delimited segment (e.g., " ;; cmd")
-    // or if the input starts with a delimiter (e.g., ";; cmd")
-    // This handles "EmptyInstructionSegment" for leading " ;;" or "  ;;"
-    if ( segments[ 0 ].typ == SplitType::Delimiter
-      || ( segments[ 0 ].typ == SplitType::Delimeted && segments[ 0 ].string.trim().is_empty() ) )
-      && segments[ 0 ].start == 0
+    // Check for invalid patterns
+    if input.starts_with(";;")
     {
       return Err( ParseError::new
       (
         ErrorKind::EmptyInstructionSegment,
-        SourceLocation::StrSpan
-        {
-          start : segments[ 0 ].start,
-          end : segments[ 0 ].end,
-        },
+        SourceLocation::StrSpan { start: 0, end: 2 },
+      ));
+    }
+    
+
+    // Check for consecutive delimiters
+    if input.contains(";;;;")
+    {
+      let pos = input.find(";;;;").unwrap();
+      return Err( ParseError::new
+      (
+        ErrorKind::EmptyInstructionSegment,
+        SourceLocation::StrSpan { start: pos, end: pos + 4 },
       ));
     }
 
-    for segment in &segments
+    // Parse each part as an instruction
+    for (i, part) in parts.iter().enumerate()
     {
-      // Filter out empty delimited segments that are not actual content
-      if segment.typ == SplitType::Delimeted && segment.string.trim().is_empty()
+      let trimmed = part.trim();
+      if trimmed.is_empty()
       {
-        continue; // Skip this segment, it's just whitespace or an empty token from stripping
-      }
-
-      if segment.typ == SplitType::Delimiter
-      {
-        if last_was_delimiter
-        // Consecutive delimiters (e.g., "cmd ;;;; cmd")
+        // Empty part - need to determine if this is trailing delimiter or empty segment
+        if i == parts.len() - 1 && input.contains(";;")
         {
+          // This is the last part and it's empty, which means we have a trailing delimiter
+          let semicolon_pos = input.rfind(";;").unwrap();
           return Err( ParseError::new
           (
-            ErrorKind::EmptyInstructionSegment,
-            SourceLocation::StrSpan
-            {
-              start : segment.start,
-              end : segment.end,
+            ErrorKind::TrailingDelimiter,
+            SourceLocation::StrSpan 
+            { 
+              start: semicolon_pos, 
+              end: semicolon_pos + 2
             },
           ));
         }
-        last_was_delimiter = true;
+        // Empty part between delimiters  
+        let part_start = input.find(part).unwrap_or(0);
+        return Err( ParseError::new
+        (
+          ErrorKind::EmptyInstructionSegment,
+          SourceLocation::StrSpan 
+          { 
+            start: part_start, 
+            end: part_start + part.len().max(1)
+          },
+        ));
       }
-      else
-      // Delimited content
-      {
-        let instruction = self.parse_single_instruction( segment.string.as_ref() )?;
-        instructions.push( instruction );
-        last_was_delimiter = false;
-      }
-    }
-
-    // After the loop, check for a trailing delimiter
-    // This handles "TrailingDelimiter" for "cmd ;;" or "cmd ;;   "
-    if last_was_delimiter && !instructions.is_empty()
-    // If the last token was a delimiter and we parsed at least one instruction
-    {
-      let last_delimiter_segment = segments.iter().rev().find( | s | s.typ == SplitType::Delimiter ).unwrap();
-      return Err( ParseError::new
-      (
-        ErrorKind::TrailingDelimiter,
-        SourceLocation::StrSpan
-        {
-          start : last_delimiter_segment.start,
-          end : last_delimiter_segment.end,
-        },
-      ));
+      let instruction = self.parse_single_instruction( trimmed )?;
+      instructions.push( instruction );
     }
 
     Ok( instructions )
@@ -180,7 +369,7 @@ impl Parser
       {
         command_path_slices : Vec::new(),
         positional_arguments : Vec::new(),
-        named_arguments : HashMap::new(),
+        named_arguments : BTreeMap::new(),
         help_requested : false,
         overall_location : SourceLocation::None, // No specific location for empty input
       });
@@ -317,10 +506,10 @@ impl Parser
     &self,
     items_iter : &mut core::iter::Peekable< IntoIter< RichItem< '_ > > >,
   )
-  -> Result< ( Vec< Argument >, HashMap< String, Argument >, bool ), ParseError >
+  -> Result< ( Vec< Argument >, BTreeMap< String, Argument >, bool ), ParseError >
   {
     let mut positional_arguments = Vec::new();
-    let mut named_arguments = HashMap::new();
+    let mut named_arguments = BTreeMap::new();
     let mut help_operator_found = false;
 
     while let Some( item ) = items_iter.next()
@@ -421,8 +610,7 @@ impl Parser
                     }
 
                     if named_arguments.contains_key( arg_name )
-                    {
-                      if self.options.error_on_duplicate_named_arguments
+                      && self.options.error_on_duplicate_named_arguments
                       {
                         return Err( ParseError::new
                         (
@@ -431,7 +619,6 @@ impl Parser
                         ));
                       }
                       // If not erroring on duplicates, the new value will overwrite the old one
-                    }
                     named_arguments.insert
                     (
                       arg_name.clone(),
@@ -561,8 +748,7 @@ impl Parser
                     }
 
                     if named_arguments.contains_key( arg_name )
-                    {
-                      if self.options.error_on_duplicate_named_arguments
+                      && self.options.error_on_duplicate_named_arguments
                       {
                         return Err( ParseError::new
                         (
@@ -571,7 +757,6 @@ impl Parser
                         ));
                       }
                       // If not erroring on duplicates, the new value will overwrite the old one
-                    }
                     named_arguments.insert
                     (
                       arg_name.clone(),

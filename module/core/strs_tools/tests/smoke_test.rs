@@ -1,29 +1,28 @@
 //! Smoke testing of the package.
 
-#[test]
+#[ test ]
 fn local_smoke_test() {
-  ::test_tools::smoke_test_for_local_run();
+  ::test_tools::test::smoke_test::smoke_test_for_local_run();
 }
 
-#[test]
+#[ test ]
 fn published_smoke_test() {
-  ::test_tools::smoke_test_for_published_run();
+  ::test_tools::test::smoke_test::smoke_test_for_published_run();
 }
 
-#[test]
+#[ test ]
 fn debug_strs_tools_semicolon_only() {
   let input = ";;";
   let splits: Vec<_> = strs_tools::string::split()
     .src(input)
-    .delimeter(vec![";;"])
+    .delimeters(&[";;"])
     .preserving_delimeters(true)
     .preserving_empty(false)
     .stripping(true)
-    .form()
-    .split()
+    .perform()
     .collect();
 
-  println!("DEBUG: Splits for ';;': {:?}", splits);
+  println!("DEBUG: Splits for ';;': {splits:?}");
 
   use strs_tools::string::split::{Split, SplitType};
   use std::borrow::Cow;
@@ -38,20 +37,19 @@ fn debug_strs_tools_semicolon_only() {
   assert_eq!(splits, expected);
 }
 
-#[test]
+#[ test ]
 fn debug_strs_tools_trailing_semicolon_space() {
   let input = "cmd1 ;; ";
   let splits: Vec<_> = strs_tools::string::split()
     .src(input)
-    .delimeter(vec![";;"])
+    .delimeters(&[";;"])
     .preserving_delimeters(true)
     .preserving_empty(false)
     .stripping(true)
-    .form()
-    .split()
+    .perform()
     .collect();
 
-  println!("DEBUG: Splits for 'cmd1 ;; ': {:?}", splits);
+  println!("DEBUG: Splits for 'cmd1 ;; ': {splits:?}");
 
   use strs_tools::string::split::{Split, SplitType};
   use std::borrow::Cow;
@@ -75,20 +73,19 @@ fn debug_strs_tools_trailing_semicolon_space() {
   assert_eq!(splits, expected);
 }
 
-#[test]
+#[ test ]
 fn debug_strs_tools_only_semicolon() {
   let input = ";;";
   let splits: Vec<_> = strs_tools::string::split()
     .src(input)
-    .delimeter(vec![";;"])
+    .delimeters(&[";;"])
     .preserving_delimeters(true)
     .preserving_empty(false)
     .stripping(true)
-    .form()
-    .split()
+    .perform()
     .collect();
 
-  println!("DEBUG: Splits for ';;': {:?}", splits);
+  println!("DEBUG: Splits for ';;': {splits:?}");
 
   use strs_tools::string::split::{Split, SplitType};
   use std::borrow::Cow;

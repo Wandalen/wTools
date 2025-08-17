@@ -67,7 +67,6 @@ tests_impls!
       ///
       /// Attribute which is inner.
       ///
-
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
       pair Pair : < T1 : core::cmp::PartialEq + core::clone::Clone >;

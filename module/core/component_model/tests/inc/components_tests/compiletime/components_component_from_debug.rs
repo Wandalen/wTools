@@ -1,13 +1,9 @@
-#[ allow( unused_imports ) ]
-use super::*;
+// Standalone trybuild test file for ComponentFrom functionality
+// This file tests that ComponentFrom derive compiles correctly
 
-///
-/// Options1
-///
+use component_model::ComponentFrom;
 
-#[ derive( Debug, Default, PartialEq, the_module::ComponentFrom ) ]
-#[ debug ]
-// zzz : enable the test
+#[ derive( Debug, Default, PartialEq, ComponentFrom ) ]
 pub struct Options1
 {
   field1 : i32,
@@ -15,4 +11,15 @@ pub struct Options1
   field3 : f32,
 }
 
-//
+fn main()
+{
+  let options = Options1
+  {
+    field1: 42,
+    field2: "test".to_string(),
+    field3: 3.14,
+  };
+
+  // Test that ComponentFrom generates code without compilation errors
+  println!( "ComponentFrom derive test: {:?}", options );
+}

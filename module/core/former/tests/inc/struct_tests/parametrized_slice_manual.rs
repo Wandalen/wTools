@@ -2,19 +2,19 @@
 #![allow(clippy::let_and_return)]
 #![allow(clippy::needless_borrow)]
 #![allow(unused_variables)]
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
-#[derive(Debug, PartialEq)]
+#[ derive( Debug, PartialEq ) ]
 pub struct Struct1<'a> {
   pub string_slice_1: &'a str,
 }
 
 // === begin_coercing of generated
 
-#[automatically_derived]
+#[ automatically_derived ]
 impl<'a> Struct1<'a> {
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn former() -> Struct1Former<'a> {
     Struct1Former::new_coercing(former::ReturnPreformed)
   }
@@ -22,7 +22,7 @@ impl<'a> Struct1<'a> {
 
 // = definition types
 
-#[derive(Debug)]
+#[ derive( Debug ) ]
 // pub struct Struct1FormerDefinitionTypes< 'a, Context = (), Formed = Struct1< 'a > >
 pub struct Struct1FormerDefinitionTypes<'a, Context, Formed> {
   _phantom: core::marker::PhantomData<(&'a (), Context, Formed)>,
@@ -48,7 +48,7 @@ impl<Context, Formed> former::FormerMutator for Struct1FormerDefinitionTypes<'_,
 
 // = definition
 
-#[derive(Debug)]
+#[ derive( Debug ) ]
 // pub struct Struct1FormerDefinition< 'a, Context = (), Formed = Struct1< 'a >, End = former::ReturnPreformed >
 pub struct Struct1FormerDefinition<'a, Context, Formed, End> {
   _phantom: core::marker::PhantomData<(&'a (), Context, Formed, End)>,
@@ -83,7 +83,7 @@ pub struct Struct1FormerStorage<'a> {
 }
 
 impl ::core::default::Default for Struct1FormerStorage<'_> {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn default() -> Self {
     Self {
       string_slice_1: ::core::option::Option::None,
@@ -144,23 +144,23 @@ where
   on_end: core::option::Option<Definition::End>,
 }
 
-#[automatically_derived]
+#[ automatically_derived ]
 impl<'a, Definition> Struct1Former<'a, Definition>
 where
   Definition: former::FormerDefinition<Storage = Struct1FormerStorage<'a>>,
   // Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a > >,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn perform(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
     self.form()
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn new(on_end: Definition::End) -> Self {
     Self::begin_coercing(None, None, on_end)
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn new_coercing<IntoEnd>(end: IntoEnd) -> Self
   where
     IntoEnd: Into<Definition::End>,
@@ -168,7 +168,7 @@ where
     Self::begin_coercing(None, None, end)
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn begin(
     mut storage: core::option::Option<Definition::Storage>,
     context: core::option::Option<Definition::Context>,
@@ -184,7 +184,7 @@ where
     }
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn begin_coercing<IntoEnd>(
     mut storage: core::option::Option<Definition::Storage>,
     context: core::option::Option<Definition::Context>,
@@ -203,19 +203,19 @@ where
     }
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn form(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
     self.end()
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn end(mut self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
     former::FormingEnd::<Definition::Types>::call(&on_end, self.storage, context)
   }
 
-  #[inline]
+  #[ inline ]
   pub fn string_slice_1<Src>(mut self, src: Src) -> Self
   where
     Src: ::core::convert::Into<&'a str>,
@@ -246,7 +246,7 @@ where
   Definition::Context: 'storage,
   Definition::End: 'storage,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn former_begin(
     storage: ::core::option::Option<Definition::Storage>,
     context: ::core::option::Option<Definition::Context>,

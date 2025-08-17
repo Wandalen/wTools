@@ -1,21 +1,21 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 use std::path::PathBuf;
 
 // absolute path relative
 
-#[test]
+#[ test ]
 fn test_absolute_a_minus_b() {
   let from = "/a";
   let to = "/b";
   let expected = "../b";
   assert_eq!(
     the_module::path::path_relative(from, to),
-    PathBuf::from(PathBuf::from(expected))
+    PathBuf::from(expected)
   );
 }
 
-#[test]
+#[ test ]
 fn test_absolute_root_minus_b() {
   let from = "/";
   let to = "/b";
@@ -23,7 +23,7 @@ fn test_absolute_root_minus_b() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_absolute_same_path() {
   let from = "/aa/bb/cc";
   let to = "/aa/bb/cc";
@@ -31,7 +31,7 @@ fn test_absolute_same_path() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_absolute_same_path_with_trail() {
   let from = "/aa/bb/cc";
   let to = "/aa/bb/cc/";
@@ -39,7 +39,7 @@ fn test_absolute_same_path_with_trail() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_absolute_two_trailed_absolute_paths() {
   let from = "/a/b/";
   let to = "/a/b/";
@@ -47,7 +47,7 @@ fn test_absolute_two_trailed_absolute_paths() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_absolute_two_absolute_paths_with_trail() {
   let from = "/a/b";
   let to = "/a/b/";
@@ -55,7 +55,7 @@ fn test_absolute_two_absolute_paths_with_trail() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_absolute_two_absolute_paths() {
   let from = "/a/b/";
   let to = "/a/b";
@@ -63,7 +63,7 @@ fn test_absolute_two_absolute_paths() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_absolute_same_path_trail_to_not() {
   let from = "/aa/bb/cc/";
   let to = "/aa/bb/cc";
@@ -71,7 +71,7 @@ fn test_absolute_same_path_trail_to_not() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_absolute_a_to_double_slash_b() {
   let from = "/a";
   let to = "//b";
@@ -79,7 +79,7 @@ fn test_absolute_a_to_double_slash_b() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_absolute_relative_to_nested() {
   let from = "/foo/bar/baz/asdf/quux";
   let to = "/foo/bar/baz/asdf/quux/new1";
@@ -87,7 +87,7 @@ fn test_absolute_relative_to_nested() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_absolute_out_of_relative_dir() {
   let from = "/abc";
   let to = "/a/b/z";
@@ -95,7 +95,7 @@ fn test_absolute_out_of_relative_dir() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_absolute_relative_root() {
   let from = "/";
   let to = "/a/b/z";
@@ -103,7 +103,7 @@ fn test_absolute_relative_root() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_long_not_direct() {
   let from = "/a/b/xx/yy/zz";
   let to = "/a/b/files/x/y/z.txt";
@@ -111,7 +111,7 @@ fn test_long_not_direct() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_absolute_relative_to_parent_directory() {
   let from = "/aa/bb/cc";
   let to = "/aa/bb";
@@ -119,7 +119,7 @@ fn test_absolute_relative_to_parent_directory() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_absolute_relative_to_parent_directory_file_trailed() {
   let from = "/aa/bb/cc";
   let to = "/aa/bb/";
@@ -127,7 +127,7 @@ fn test_absolute_relative_to_parent_directory_file_trailed() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_absolute_relative_root_to_root() {
   let from = "/";
   let to = "/";
@@ -135,7 +135,7 @@ fn test_absolute_relative_root_to_root() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_windows_disks() {
   let from = "d:/";
   let to = "c:/x/y";
@@ -143,7 +143,7 @@ fn test_windows_disks() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_absolute_relative_to_parent_directory_both_trailed() {
   let from = "/aa/bb/cc/";
   let to = "/aa/bb/";
@@ -151,7 +151,7 @@ fn test_absolute_relative_to_parent_directory_both_trailed() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_absolute_a_with_trail_to_double_slash_b_with_trail() {
   let from = "/a/";
   let to = "//b/";
@@ -159,7 +159,7 @@ fn test_absolute_a_with_trail_to_double_slash_b_with_trail() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_absolute_4_down() {
   let from = "/aa//bb/cc/";
   let to = "//xx/yy/zz/";
@@ -167,7 +167,7 @@ fn test_absolute_4_down() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_absolute_same_length_both_trailed() {
   let from = "/aa//bb/cc/";
   let to = "//xx/yy/zz/";
@@ -175,7 +175,7 @@ fn test_absolute_same_length_both_trailed() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_absolute_relative_to_parent_directory_base_trailed() {
   let from = "/aa/bb/cc/";
   let to = "/aa/bb";
@@ -185,7 +185,7 @@ fn test_absolute_relative_to_parent_directory_base_trailed() {
 
 // relative_path_relative
 
-#[test]
+#[ test ]
 fn test_relative_dot_to_dot() {
   let from = ".";
   let to = ".";
@@ -193,7 +193,7 @@ fn test_relative_dot_to_dot() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_relative_a_to_b() {
   let from = "a";
   let to = "b";
@@ -201,7 +201,7 @@ fn test_relative_a_to_b() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_relative_a_b_to_b_c() {
   let from = "a/b";
   let to = "b/c";
@@ -209,7 +209,7 @@ fn test_relative_a_b_to_b_c() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_relative_a_b_to_a_b_c() {
   let from = "a/b";
   let to = "a/b/c";
@@ -217,7 +217,7 @@ fn test_relative_a_b_to_a_b_c() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_relative_a_b_c_to_a_b() {
   let from = "a/b/c";
   let to = "a/b";
@@ -225,7 +225,7 @@ fn test_relative_a_b_c_to_a_b() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_relative_a_b_c_d_to_a_b_d_c() {
   let from = "a/b/c/d";
   let to = "a/b/d/c";
@@ -233,7 +233,7 @@ fn test_relative_a_b_c_d_to_a_b_d_c() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_relative_a_to_dot_dot_a() {
   let from = "a";
   let to = "../a";
@@ -241,7 +241,7 @@ fn test_relative_a_to_dot_dot_a() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_relative_a_slash_slash_b_to_a_slash_slash_c() {
   let from = "a//b";
   let to = "a//c";
@@ -249,7 +249,7 @@ fn test_relative_a_slash_slash_b_to_a_slash_slash_c() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_relative_a_dot_slash_b_to_a_dot_slash_c() {
   let from = "a/./b";
   let to = "a/./c";
@@ -257,7 +257,7 @@ fn test_relative_a_dot_slash_b_to_a_dot_slash_c() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_relative_a_dot_dot_slash_b_to_b() {
   let from = "a/../b";
   let to = "b";
@@ -265,7 +265,7 @@ fn test_relative_a_dot_dot_slash_b_to_b() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_relative_b_to_b_dot_dot_slash_b() {
   let from = "b";
   let to = "b/../b";
@@ -273,7 +273,7 @@ fn test_relative_b_to_b_dot_dot_slash_b() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_relative_dot_to_dot_dot() {
   let from = ".";
   let to = "..";
@@ -281,7 +281,7 @@ fn test_relative_dot_to_dot_dot() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_relative_dot_to_dot_dot_dot() {
   let from = ".";
   let to = "../..";
@@ -289,7 +289,7 @@ fn test_relative_dot_to_dot_dot_dot() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_relative_dot_dot_to_dot_dot() {
   let from = "..";
   let to = "../..";
@@ -297,7 +297,7 @@ fn test_relative_dot_dot_to_dot_dot() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_relative_dot_dot_to_dot_dot_dot() {
   let from = "..";
   let to = "..";
@@ -305,7 +305,7 @@ fn test_relative_dot_dot_to_dot_dot_dot() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_relative_dot_dot_a_b_to_dot_dot_c_d() {
   let from = "../a/b";
   let to = "../c/d";
@@ -313,7 +313,7 @@ fn test_relative_dot_dot_a_b_to_dot_dot_c_d() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_relative_dot_to_b() {
   let from = ".";
   let to = "b";
@@ -321,7 +321,7 @@ fn test_relative_dot_to_b() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_relative_dot_slash_to_b() {
   let from = "./";
   let to = "b";
@@ -329,7 +329,7 @@ fn test_relative_dot_slash_to_b() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_relative_dot_to_b_slash() {
   let from = ".";
   let to = "b/";
@@ -337,7 +337,7 @@ fn test_relative_dot_to_b_slash() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_relative_dot_slash_to_b_slash() {
   let from = "./";
   let to = "b/";
@@ -345,7 +345,7 @@ fn test_relative_dot_slash_to_b_slash() {
   assert_eq!(the_module::path::path_relative(from, to), PathBuf::from(expected));
 }
 
-#[test]
+#[ test ]
 fn test_relative_a_dot_dot_to_b_dot_dot() {
   let from = "a/../b/..";
   let to = "b";

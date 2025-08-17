@@ -1,7 +1,7 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
-#[derive(Debug, PartialEq, the_module::Former)]
+#[ derive( Debug, PartialEq, the_module::Former ) ]
 pub struct Struct1 {
   #[ former( default = collection_tools::vec![ 1, 2, 3 ] ) ]
   #[ former( default = collection_tools::vec![ 2, 3, 4 ] ) ]

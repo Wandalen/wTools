@@ -1,5 +1,5 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
-#[test]
+#[ test ]
 fn basic() {}

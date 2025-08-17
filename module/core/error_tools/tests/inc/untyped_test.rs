@@ -3,7 +3,7 @@ use super::*;
 
 //
 
-#[cfg(feature = "error_untyped")]
+#[ cfg( feature = "error_untyped" ) ]
 test_tools::tests_impls! {
   fn basic()
   {
@@ -18,7 +18,7 @@ test_tools::tests_impls! {
 
 //
 
-#[cfg(feature = "error_untyped")]
+#[ cfg( feature = "error_untyped" ) ]
 test_tools::tests_index! {
   basic,
 }

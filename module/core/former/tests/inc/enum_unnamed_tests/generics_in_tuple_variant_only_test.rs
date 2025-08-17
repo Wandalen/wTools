@@ -7,7 +7,7 @@ use super::*; // Should import EnumOuter and InnerGeneric from either the manual
 fn basic_construction()
 {
   // Define a concrete type that satisfies the bounds (Debug + Copy + Default + PartialEq)
-  #[derive(Debug, Copy, Clone, Default, PartialEq)]
+  #[ derive( Debug, Copy, Clone, Default, PartialEq ) ]
   struct TypeForT {
     pub data: i32,
   }

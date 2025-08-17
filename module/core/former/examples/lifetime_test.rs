@@ -3,10 +3,10 @@
 
 #![allow(missing_docs)]
 
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 use former_meta::Former;
 
-#[derive(Debug, PartialEq, Former)]
+#[ derive( Debug, PartialEq, Former ) ]
 pub struct Simple<'a> {
   name: &'a str,
 }

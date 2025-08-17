@@ -55,13 +55,13 @@ pub struct Styles< 'callback >
 
 // === begin_coercing of generated
 
-#[automatically_derived]
+#[ automatically_derived ]
 impl< 'callback > Styles< 'callback > where
 {
   #[doc = r""]
   #[doc = r" Provides a mechanism to initiate the formation process with a default completion behavior."]
   #[doc = r""]
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn former() -> StylesFormer< 'callback, StylesFormerDefinition< 'callback, (), Styles< 'callback >, former::ReturnPreformed > >
   {
     StylesFormer::< 'callback, StylesFormerDefinition< 'callback, (), Styles< 'callback >, former::ReturnPreformed > >::new_coercing(former::ReturnPreformed)
@@ -96,7 +96,7 @@ where
 }
 
 #[doc = r" Defines the generic parameters for formation behavior including context, form, and end conditions."]
-#[derive(Debug)]
+#[ derive( Debug ) ]
 pub struct StylesFormerDefinitionTypes< 'callback, __Context = (), __Formed = Styles< 'callback > >
 where
 {
@@ -121,7 +121,7 @@ where
 }
 
 #[doc = r" Holds the definition types used during the formation process."]
-#[derive(Debug)]
+#[ derive( Debug ) ]
 pub struct StylesFormerDefinition< 'callback, __Context = (), __Formed = Styles< 'callback >, __End = former::ReturnPreformed >
 where
 {
@@ -153,7 +153,7 @@ where
 {}
 
 #[doc = "Stores potential values for fields during the formation process."]
-#[allow(explicit_outlives_requirements)]
+#[ allow( explicit_outlives_requirements ) ]
 pub struct StylesFormerStorage< 'callback >
 where
 {
@@ -164,7 +164,7 @@ where
 impl< 'callback > ::core::default::Default for StylesFormerStorage< 'callback >
 where
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn default() -> Self
   {
     Self { filter: ::core::option::Option::None }
@@ -232,7 +232,7 @@ where
   pub on_end: ::core::option::Option< Definition::End >,
 }
 
-#[automatically_derived]
+#[ automatically_derived ]
 impl< 'callback, Definition > StylesFormer< 'callback, Definition >
 where
   Definition: former::FormerDefinition< Storage = StylesFormerStorage< 'callback > >,
@@ -241,7 +241,7 @@ where
   #[doc = r""]
   #[doc = r" Initializes a former with an end condition and default storage."]
   #[doc = r""]
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn new(on_end: Definition::End) -> Self
   {
     Self::begin_coercing(::core::option::Option::None, ::core::option::Option::None, on_end)
@@ -250,7 +250,7 @@ where
   #[doc = r""]
   #[doc = r" Initializes a former with a coercible end condition."]
   #[doc = r""]
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn new_coercing<IntoEnd>(end: IntoEnd) -> Self
   where
     IntoEnd: ::core::convert::Into<Definition::End>,
@@ -261,7 +261,7 @@ where
   #[doc = r""]
   #[doc = r" Begins the formation process with specified context and termination logic."]
   #[doc = r""]
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn begin(
     mut storage: ::core::option::Option<Definition::Storage>,
     context: ::core::option::Option<Definition::Context>,
@@ -283,7 +283,7 @@ where
   #[doc = r""]
   #[doc = r" Starts the formation process with coercible end condition and optional initial values."]
   #[doc = r""]
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn begin_coercing<IntoEnd>(
     mut storage: ::core::option::Option<Definition::Storage>,
     context: ::core::option::Option<Definition::Context>,
@@ -307,7 +307,7 @@ where
   #[doc = r""]
   #[doc = r" Wrapper for `end` to align with common builder pattern terminologies."]
   #[doc = r""]
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn form(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed
   {
     self.end()
@@ -316,7 +316,7 @@ where
   #[doc = r""]
   #[doc = r" Completes the formation and returns the formed object."]
   #[doc = r""]
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn end(mut self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed
   {
     let on_end = self.on_end.take().unwrap();
@@ -326,7 +326,7 @@ where
   }
 
   #[doc = "Scalar setter for the 'filter' field."]
-  #[inline]
+  #[ inline ]
   pub fn filter<Src>(mut self, src: Src) -> Self
   where
     Src: ::core::convert::Into<& 'callback dyn FilterCol>,
@@ -351,7 +351,7 @@ where
   }
 }
 
-#[automatically_derived]
+#[ automatically_derived ]
 impl< 'callback, Definition > StylesFormer< 'callback, Definition >
 where
   Definition: former::FormerDefinition< Storage = StylesFormerStorage< 'callback >, Formed = Styles< 'callback > >,
@@ -363,7 +363,7 @@ where
   #[doc = r" If `perform` defined then associated method is called and its result returned instead of entity."]
   #[doc = r" For example `perform()` of structure with : `#[ perform( fn after1() -> &str > )` returns `&str`."]
   #[doc = r""]
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn perform(self) -> Definition::Formed
   {
     let result = self.form();
@@ -379,7 +379,7 @@ where
   Definition::Context: 'storage,
   Definition::End: 'storage,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn former_begin(
     storage: ::core::option::Option<Definition::Storage>,
     context: ::core::option::Option<Definition::Context>,

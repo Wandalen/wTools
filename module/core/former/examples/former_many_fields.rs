@@ -35,10 +35,10 @@
 //  any(feature = "use_alloc", not(feature = "no_std"))
 //))]
 fn main() {
-  #[cfg(feature = "enabled")]
+  #[ cfg( feature = "enabled" ) ]
   use former_meta::Former;
 
-  #[derive(Debug, PartialEq, Eq, Former)]
+  #[ derive( Debug, PartialEq, Eq, Former ) ]
   pub struct Structure1 {
     int: i32,
     string: String,

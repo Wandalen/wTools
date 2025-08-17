@@ -21,10 +21,10 @@ mod private
     /// original table. These cells are wrapped and used only for displaying. This also
     /// means that one row in original table can be represented here with one or more
     /// rows.
-    pub data: Vec< Vec< WrappedCell< 'data > > >,
+    pub data: Vec< Vec< WrappedCell<  'data  > > >,
 
     /// New widthes of columns that include wrapping.
-    pub column_widthes : Vec< usize >,
+    pub column_widthes : Vec<  usize  >,
 
     /// Size of the first row of the table.
     /// This parameter is used in case header of the table should be displayed.
@@ -49,7 +49,7 @@ mod private
   /// too literally. That is why `wrap_width` is introduced, and additional spaces to the 
   /// right side should be included by the output formatter.
   #[ derive( Debug ) ]
-  pub struct WrappedCell< 'data >
+  pub struct WrappedCell<  'data  >
   {
     /// Width of the cell. In calculations use this width instead of slice length in order
     /// to properly center the text. See example in the doc string of the parent struct.
@@ -148,7 +148,7 @@ mod private
 
       let max_rows = wrapped_rows.iter().map( Vec::len ).max().unwrap_or(0);
 
-      let mut transposed : Vec< Vec< WrappedCell< 'data > > > = Vec::new();
+      let mut transposed : Vec< Vec< WrappedCell<  'data  > > > = Vec::new();
 
       if max_rows == 0 
       {
@@ -157,7 +157,7 @@ mod private
       
       for i in 0..max_rows
       {
-        let mut row_vec : Vec< WrappedCell< 'data > > = Vec::new();
+        let mut row_vec : Vec< WrappedCell<  'data  > > = Vec::new();
 
         for col_lines in &wrapped_rows
         {

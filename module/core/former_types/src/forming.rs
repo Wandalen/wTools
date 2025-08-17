@@ -38,7 +38,7 @@ where
   /// in the entity just before it is finalized and returned.
   ///
   #[ inline ]
-  fn form_mutation( _storage : &mut Self::Storage, _context : &mut ::core::option::Option< Self::Context > ) {}
+  fn form_mutation( _storage : &mut Self::Storage, _context : &mut ::core::option::Option<  Self::Context  > ) {}
 }
 
 // impl< Definition > crate::FormerMutator
@@ -66,16 +66,16 @@ pub trait FormingEnd< Definition : crate::FormerDefinitionTypes >
   ///
   /// # Returns
   /// Returns the transformed or original context based on the implementation.
-  fn call( &self, storage : Definition::Storage, context : core::option::Option< Definition::Context > ) -> Definition::Formed;
+  fn call( &self, storage : Definition::Storage, context : core::option::Option<  Definition::Context  > ) -> Definition::Formed;
 }
 
 impl< Definition, F > FormingEnd< Definition > for F
 where
-  F : Fn( Definition::Storage, core::option::Option< Definition::Context > ) -> Definition::Formed,
+  F : Fn( Definition::Storage, core::option::Option<  Definition::Context  > ) -> Definition::Formed,
   Definition : crate::FormerDefinitionTypes,
 {
   #[ inline( always ) ]
-  fn call( &self, storage : Definition::Storage, context : core::option::Option< Definition::Context > ) -> Definition::Formed
+  fn call( &self, storage : Definition::Storage, context : core::option::Option<  Definition::Context  > ) -> Definition::Formed
   {
     self( storage, context )
   }
@@ -96,7 +96,7 @@ where
 {
   /// Transforms the storage into its final formed state and returns it, bypassing context processing.
   #[ inline( always ) ]
-  fn call( &self, storage : Definition::Storage, _context : core::option::Option< Definition::Context > ) -> Definition::Formed
+  fn call( &self, storage : Definition::Storage, _context : core::option::Option<  Definition::Context  > ) -> Definition::Formed
   {
     crate::StoragePreform::preform( storage )
   }
@@ -107,7 +107,6 @@ where
 /// This struct is suited for straightforward forming processes where the storage already represents the final state of the
 /// entity, and no additional processing or transformation of the storage is required. It simplifies use cases where the
 /// storage does not undergo a transformation into a different type at the end of the forming process.
-
 #[ derive( Debug, Default ) ]
 pub struct ReturnStorage;
 
@@ -117,7 +116,7 @@ where
 {
   /// Returns the storage as the final product of the forming process, ignoring any additional context.
   #[ inline( always ) ]
-  fn call( &self, storage : Definition::Storage, _context : core::option::Option< () > ) -> Definition::Formed
+  fn call( &self, storage : Definition::Storage, _context : core::option::Option<  ()  > ) -> Definition::Formed
   {
     storage
   }
@@ -137,7 +136,7 @@ where
 {
   /// Intentionally causes a panic if called, as its use indicates a configuration error.
   #[ inline( always ) ]
-  fn call( &self, _storage : Definition::Storage, _context : core::option::Option< Definition::Context > ) -> Definition::Formed
+  fn call( &self, _storage : Definition::Storage, _context : core::option::Option<  Definition::Context  > ) -> Definition::Formed
   {
     unreachable!();
   }
@@ -159,14 +158,14 @@ use alloc::boxed::Box;
 #[ allow( clippy::type_complexity ) ]
 pub struct FormingEndClosure< Definition : crate::FormerDefinitionTypes >
 {
-  closure : Box< dyn Fn( Definition::Storage, Option< Definition::Context > ) -> Definition::Formed >,
+  closure : Box< dyn Fn( Definition::Storage, Option<  Definition::Context  > ) -> Definition::Formed >,
   _marker : core::marker::PhantomData< Definition::Storage >,
 }
 
 #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 impl< T, Definition > From< T > for FormingEndClosure< Definition >
 where
-  T : Fn( Definition::Storage, Option< Definition::Context > ) -> Definition::Formed + 'static,
+  T : Fn( Definition::Storage, Option<  Definition::Context  > ) -> Definition::Formed + 'static,
   Definition : crate::FormerDefinitionTypes,
 {
   #[ inline( always ) ]
@@ -194,7 +193,7 @@ impl< Definition : crate::FormerDefinitionTypes > FormingEndClosure< Definition 
   /// # Returns
   ///
   /// Returns an instance of `FormingEndClosure` encapsulating the provided closure.
-  pub fn new( closure : impl Fn( Definition::Storage, Option< Definition::Context > ) -> Definition::Formed + 'static ) -> Self
+  pub fn new( closure : impl Fn( Definition::Storage, Option<  Definition::Context  > ) -> Definition::Formed + 'static ) -> Self
   {
     Self
     {
@@ -221,7 +220,7 @@ impl< Definition : crate::FormerDefinitionTypes > fmt::Debug for FormingEndClosu
 #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 impl< Definition : crate::FormerDefinitionTypes > FormingEnd< Definition > for FormingEndClosure< Definition >
 {
-  fn call( &self, storage : Definition::Storage, context : Option< Definition::Context > ) -> Definition::Formed
+  fn call( &self, storage : Definition::Storage, context : Option<  Definition::Context  > ) -> Definition::Formed
   {
     ( self.closure )( storage, context )
   }
@@ -272,8 +271,8 @@ where
   ///
   fn former_begin
   (
-    storage : core::option::Option< Definition::Storage >,
-    context : core::option::Option< Definition::Context >,
+    storage : core::option::Option<  Definition::Storage  >,
+    context : core::option::Option<  Definition::Context  >,
     on_end : Definition::End,
   ) -> Self;
 }

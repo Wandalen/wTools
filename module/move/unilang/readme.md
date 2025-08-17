@@ -42,11 +42,11 @@ fn main() -> Result< (), unilang::Error >
 {
   // Create a command registry
   let mut registry = CommandRegistry::new();
-  
+
   // Define a simple greeting command
   let greet_cmd = CommandDefinition
   {
-    name : "greet".to_string(),
+    name : ".greet".to_string(),
     namespace : String::new(),  // Global namespace
     description : "A friendly greeting command".to_string(),
     hint : "Says hello to someone".to_string(),
@@ -75,7 +75,7 @@ fn main() -> Result< (), unilang::Error >
     version : "1.0.0".to_string(),
     ..Default::default()
   };
-  
+
   // Define the command's execution logic
   let greet_routine = Box::new( | cmd : VerifiedCommand, _ctx : ExecutionContext |
   {
@@ -84,27 +84,27 @@ fn main() -> Result< (), unilang::Error >
       Some( Value::String( s ) ) => s.clone(),
       _ => "World".to_string(),
     };
-    
+
     println!( "Hello, {}!", name );
-    
+
     Ok( OutputData
     {
       content : format!( "Hello, {}!", name ),
       format : "text".to_string(),
     })
   });
-  
+
   // Register the command
   registry.command_add_runtime( &greet_cmd, greet_routine )?;
-  
+
   // Use the Pipeline API to execute commands
   let pipeline = Pipeline::new( registry );
-  
+
   // Execute a command
   let result = pipeline.process_command_simple( ".greet name::Alice" );
   println!( "Success: {}", result.success );
   println!( "Output: {}", result.outputs[ 0 ].content );
-  
+
   Ok(())
 }
 ```
@@ -112,6 +112,44 @@ fn main() -> Result< (), unilang::Error >
 Run this example:
 ```sh
 cargo run --example 01_basic_command_registration
+```
+
+## Command Requirements
+
+**Important**: All commands in unilang must follow explicit naming conventions:
+
+- ✅ **Dot Prefix Required**: Commands must start with a dot (e.g., `.greet`, `.math.add`)
+- ❌ **No Implicit Magic**: Command names are used exactly as registered - no automatic transformations
+- 🔧 **Namespace Format**: Use `.namespace.command` for hierarchical organization
+- ⚡ **Validation**: Framework rejects commands that don't follow these rules
+
+```rust
+use unilang::CommandDefinition;
+
+// ✅ Correct - explicit dot prefix
+let cmd = CommandDefinition {
+  name: ".greet".to_string(),  // Required dot prefix
+  namespace: String::new(),
+  description: String::new(),
+  routine_link: None,
+  arguments: Vec::new(),
+  hint: String::new(),
+  status: String::new(),
+  version: String::new(),
+  tags: Vec::new(),
+  aliases: Vec::new(),
+  permissions: Vec::new(),
+  idempotent: false,
+  deprecation_message: String::new(),
+  http_method_hint: String::new(),
+  examples: Vec::new(),
+};
+
+// This would be rejected by validation
+// let invalid_cmd = CommandDefinition {
+//   name: "greet".to_string(),   // Missing dot prefix - ERROR!
+//   // ... other fields would be required too
+// };
 ```
 
 ## Core Concepts
@@ -588,32 +626,80 @@ let routine = registry.routines.get( ".namespace.command" ).unwrap();
 let result = routine( verified_command, context )?;
 ```
 
+## REPL Features
+
+Unilang provides two REPL modes designed for different use cases and environments:
+
+### Basic REPL (`repl` feature)
+- **Standard I/O**: Works in any terminal environment
+- **Command History**: Tracks executed commands for debugging
+- **Built-in Help**: Integrated help system with `?` operator
+- **Cross-platform**: Compatible with all supported platforms
+- **Lightweight**: Minimal dependencies for embedded use cases
+
+### Enhanced REPL (`enhanced_repl` feature) ⭐ **Enabled by Default**
+- **📋 Arrow Key Navigation**: ↑/↓ for command history browsing
+- **⚡ Tab Auto-completion**: Command and argument completion
+- **🔐 Interactive Input**: Secure password/API key prompting with masked input
+- **🧠 Advanced Error Recovery**: Intelligent suggestions and contextual help
+- **💾 Persistent Session**: Command history saved across sessions
+- **🖥️ Terminal Detection**: Automatic fallback to basic REPL in non-interactive environments
+- **🎨 Rich Display**: Colorized output and formatted help (when supported)
+
+### Feature Comparison
+
+| Capability | Basic REPL | Enhanced REPL |
+|------------|------------|---------------|
+| Command execution | ✅ | ✅ |
+| Error handling | ✅ | ✅ |
+| Help system (`?`) | ✅ | ✅ |
+| Arrow key history | ❌ | ✅ |
+| Tab completion | ❌ | ✅ |
+| Interactive prompts | Basic | Secure/Masked |
+| Session persistence | ❌ | ✅ |
+| Auto-fallback | N/A | ✅ |
+| Dependencies | None | `rustyline`, `atty` |
+
+### Quick Start
+
+**Default (Enhanced REPL included):**
+```toml
+[dependencies]
+unilang = "0.10"  # Enhanced REPL enabled by default
+```
+
+**Minimal dependencies (basic REPL only):**
+```toml
+[dependencies]
+unilang = { version = "0.10", default-features = false, features = ["enabled", "repl"] }
+```
+
 ## REPL (Read-Eval-Print Loop) Support
 
 unilang provides comprehensive support for building interactive REPL applications. The framework's stateless architecture makes it ideal for REPL implementations.
 
 ### Basic REPL Implementation
 
-```rust
+```rust,ignore
 use unilang::{ registry::CommandRegistry, pipeline::Pipeline };
 use std::io::{ self, Write };
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut registry = CommandRegistry::new();
     // Register your commands...
-    
+
     let pipeline = Pipeline::new(registry);
-    
+
     loop {
         print!("repl> ");
         io::stdout().flush()?;
-        
+
         let mut input = String::new();
         io::stdin().read_line(&mut input)?;
         let input = input.trim();
-        
+
         if input == "quit" { break; }
-        
+
         let result = pipeline.process_command_simple(input);
         if result.success {
             println!("✅ Success: {:?}", result.outputs);
@@ -621,7 +707,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("❌ Error: {}", result.error.unwrap());
         }
     }
-    
+
     Ok(())
 }
 ```
@@ -630,20 +716,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 unilang supports interactive arguments for secure input like passwords:
 
-```rust
+```rust,ignore
 // In your command definition
+use unilang::{ ArgumentDefinition, Kind, ArgumentAttributes };
+
 ArgumentDefinition {
     name: "password".to_string(),
     kind: Kind::String,
-    attributes: ArgumentAttributes { 
+    attributes: ArgumentAttributes {
         interactive: true,
         sensitive: true,
-        ..Default::default() 
+        ..Default::default()
     },
     // ...
-}
+};
 
 // In your REPL loop
+use std::io::{self, Write};
+
 match result.error {
     Some(error) if error.contains("UNILANG_ARGUMENT_INTERACTIVE_REQUIRED") => {
         // Prompt for secure input
@@ -661,7 +751,9 @@ match result.error {
 For production REPL applications, consider these patterns:
 
 **Command History & Auto-completion:**
-```rust
+```rust,ignore
+use std::collections::HashMap;
+
 let mut command_history = Vec::new();
 let mut session_stats = HashMap::new();
 
@@ -676,11 +768,11 @@ command_history.push(input.to_string());
 ```
 
 **Error Recovery:**
-```rust
+```rust,ignore
 match result.error {
     Some(error) => {
         println!("❌ Error: {error}");
-        
+
         // Provide contextual help
         if error.contains("Command not found") {
             println!("💡 Available commands: {:?}", registry.command_names());
@@ -693,7 +785,7 @@ match result.error {
 ```
 
 **Session Management:**
-```rust
+```rust,ignore
 struct ReplSession {
     command_count: u32,
     successful_commands: u32,
@@ -702,6 +794,13 @@ struct ReplSession {
 }
 
 // Track session statistics for debugging and UX
+let mut session = ReplSession {
+    command_count: 0,
+    successful_commands: 0,
+    failed_commands: 0,
+    last_error: None,
+};
+
 session.command_count += 1;
 if result.success {
     session.successful_commands += 1;
@@ -731,6 +830,115 @@ The `examples/` directory contains comprehensive REPL implementations:
 - ✅ **Error Isolation**: Command failures don't affect subsequent commands
 - ✅ **Memory Efficiency**: Constant memory usage regardless of session length
 - ✅ **Professional UX**: History, auto-completion, and intelligent error recovery
+
+## REPL Migration Guide
+
+### From Basic to Enhanced REPL
+
+**Step 1: Update your Cargo.toml**
+```toml
+# If you currently use basic REPL:
+unilang = { version = "0.10", default-features = false, features = ["enabled", "repl"] }
+
+# Change to default (Enhanced REPL included):
+unilang = "0.10"
+
+# Or explicitly enable enhanced REPL:
+unilang = { version = "0.10", features = ["enhanced_repl"] }
+```
+
+**Step 2: Feature Detection in Code**
+```rust
+#[cfg(feature = "enhanced_repl")]
+fn setup_enhanced_repl() -> Result<(), Box<dyn std::error::Error>> {
+    use rustyline::DefaultEditor;
+    let mut rl = DefaultEditor::new()?;
+    
+    println!("🚀 Enhanced REPL: Arrow keys and tab completion enabled!");
+    // Your enhanced REPL loop here...
+    Ok(())
+}
+
+#[cfg(all(feature = "repl", not(feature = "enhanced_repl")))]
+fn setup_basic_repl() -> Result<(), Box<dyn std::error::Error>> {
+    use std::io::{self, Write};
+    
+    println!("📝 Basic REPL: Standard input/output mode");
+    // Your basic REPL loop here...
+    Ok(())
+}
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    #[cfg(feature = "enhanced_repl")]
+    setup_enhanced_repl()?;
+    
+    #[cfg(all(feature = "repl", not(feature = "enhanced_repl")))]
+    setup_basic_repl()?;
+    
+    Ok(())
+}
+```
+
+**Step 3: Handling Interactive Arguments**
+Enhanced REPL provides better support for interactive arguments:
+
+```rust,no_run
+use unilang::prelude::*;
+
+fn handle_interactive_input() -> Result< (), Box< dyn std::error::Error > >
+{
+  let registry = CommandRegistry::new();
+  let mut pipeline = Pipeline::new( registry );
+  let input = String::from( "example_command" );
+  
+  // In your REPL loop
+  let result = pipeline.process_command_simple( &input );
+
+  if result.requires_interactive_input()
+  {
+    if let Some( arg_name ) = result.interactive_argument()
+    {
+      #[ cfg( feature = "enhanced_repl" ) ]
+      {
+        // Enhanced REPL: Secure password prompt with masking
+        use rustyline::DefaultEditor;
+        let mut rl = DefaultEditor::new()?;
+        let password = rl.readline( &format!( "Enter {}: ", arg_name ) )?;
+        // Re-run command with interactive argument...
+      }
+      
+      #[ cfg( all( feature = "repl", not( feature = "enhanced_repl" ) ) ) ]
+      {
+        // Basic REPL: Standard input (visible)
+        use std::io::{ self, Write };
+        print!( "Enter {}: ", arg_name );
+        io::stdout().flush()?;
+        let mut value = String::new();
+        io::stdin().read_line( &mut value )?;
+        // Re-run command with interactive argument...
+      }
+    }
+  }
+  Ok( () )
+}
+```
+
+### Migration Checklist
+
+- [ ] Updated `Cargo.toml` with `enhanced_repl` feature
+- [ ] Added feature-gated code for both REPL modes
+- [ ] Updated interactive argument handling
+- [ ] Tested both enhanced and basic REPL modes
+- [ ] Updated error handling for better UX
+
+### Backward Compatibility
+
+The enhanced REPL automatically falls back to basic functionality when:
+- Running in non-interactive environments (pipes, redirects)
+- Terminal capabilities are limited
+- Dependencies are unavailable
+
+Your existing REPL code will continue to work unchanged.
 
 ## Error Handling
 

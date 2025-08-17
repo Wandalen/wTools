@@ -3,7 +3,7 @@
 // by creating non-parametrized subform_all functionality that combines scalar, subform_scalar, subform_entry, subform_collection
 
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use ::former::prelude::*;
 use ::former::Former;
 
@@ -11,14 +11,14 @@ use ::former::Former;
 use std::collections::HashMap;
 
 // Wrapper types for HashMap values to resolve EntityToStorage trait bound issues
-#[derive(Debug, PartialEq, Former)]
+#[ derive( Debug, PartialEq, Former ) ]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 pub struct StringValue {
   key: String,
   value: String,
 }
 
-#[derive(Debug, PartialEq, Former)]
+#[ derive( Debug, PartialEq, Former ) ]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 pub struct IntValue {
   key: String,
@@ -27,25 +27,25 @@ pub struct IntValue {
 
 // Implement ValToEntry trait for wrapper types
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-impl ::former::ValToEntry<HashMap<String, StringValue>> for StringValue {
+impl ::former::ValToEntry<HashMap< String, StringValue >> for StringValue {
   type Entry = (String, StringValue);
-  #[inline(always)]
+  #[ inline( always ) ]
   fn val_to_entry(self) -> Self::Entry {
     (self.key.clone(), self)
   }
 }
 
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-impl ::former::ValToEntry<HashMap<String, IntValue>> for IntValue {
+impl ::former::ValToEntry<HashMap< String, IntValue >> for IntValue {
   type Entry = (String, IntValue);
-  #[inline(always)]
+  #[ inline( always ) ]
   fn val_to_entry(self) -> Self::Entry {
     (self.key.clone(), self)
   }
 }
 
 // Inner struct for comprehensive subform testing
-#[derive(Debug, PartialEq, Default, Clone, Former)]
+#[ derive( Debug, PartialEq, Default, Clone, Former ) ]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 pub struct SubformAllInner {
   pub title: String,
@@ -54,60 +54,60 @@ pub struct SubformAllInner {
 }
 
 // COMPREHENSIVE SUBFORM_ALL replacement - combines ALL subform types in one working test
-#[derive(Debug, PartialEq, Former)]
+#[ derive( Debug, PartialEq, Former ) ]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 pub struct SubformAllReplacement {
   // Basic scalar field
-  #[scalar]
+  #[ scalar ]
   name: String,
   
   // Subform scalar field  
-  #[subform_scalar]
+  #[ subform_scalar ]
   inner_subform: SubformAllInner,
   
   // Subform collection field
-  #[subform_collection]
+  #[ subform_collection ]
   items: Vec<String>,
   
   // Subform entry field (HashMap) - using wrapper type
-  #[subform_entry]
-  entries: HashMap<String, StringValue>,
+  #[ subform_entry ]
+  entries: HashMap< String, StringValue >,
   
   // Regular field for comparison
   active: bool,
 }
 
 // Advanced subform_all replacement with more complex scenarios
-#[derive(Debug, PartialEq, Former)]
+#[ derive( Debug, PartialEq, Former ) ]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 pub struct AdvancedSubformAllReplacement {
   // Multiple scalar fields
-  #[scalar]
+  #[ scalar ]
   title: String,
   
-  #[scalar] 
+  #[ scalar ] 
   count: i32,
   
   // Multiple subform scalars
-  #[subform_scalar]
+  #[ subform_scalar ]
   primary_inner: SubformAllInner,
   
-  #[subform_scalar]
+  #[ subform_scalar ]
   secondary_inner: SubformAllInner,
   
   // Multiple collections
-  #[subform_collection]
+  #[ subform_collection ]
   string_list: Vec<String>,
   
-  #[subform_collection]
+  #[ subform_collection ]
   int_list: Vec<i32>,
   
   // Multiple entry maps - using wrapper types
-  #[subform_entry]
-  primary_map: HashMap<String, StringValue>,
+  #[ subform_entry ]
+  primary_map: HashMap< String, StringValue >,
   
-  #[subform_entry]
-  secondary_map: HashMap<String, IntValue>,
+  #[ subform_entry ]
+  secondary_map: HashMap< String, IntValue >,
   
   // Regular field
   enabled: bool,
@@ -116,7 +116,7 @@ pub struct AdvancedSubformAllReplacement {
 // COMPREHENSIVE SUBFORM_ALL TESTS - covering ALL subform attribute combinations
 
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-#[test]
+#[ test ]
 fn subform_all_basic_test() {
   let inner = SubformAllInner {
     title: "subform_test".to_string(),
@@ -162,7 +162,7 @@ fn subform_all_basic_test() {
 }
 
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-#[test]
+#[ test ]
 fn subform_all_empty_collections_test() {
   let inner = SubformAllInner {
     title: "empty_test".to_string(),
@@ -192,7 +192,7 @@ fn subform_all_empty_collections_test() {
 }
 
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-#[test]
+#[ test ]
 fn advanced_subform_all_test() {
   let primary_inner = SubformAllInner {
     title: "primary".to_string(),
@@ -261,10 +261,10 @@ fn advanced_subform_all_test() {
 }
 
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-#[test]
+#[ test ]
 fn subform_all_stress_test() {
   // Test comprehensive combination of all subform types
-  let inner = SubformAllInner {
+  let _inner = SubformAllInner {
     title: "stress".to_string(),
     value: 777,
     active: true,
@@ -292,5 +292,5 @@ fn subform_all_stress_test() {
   assert_eq!(got.inner_subform.title, "stress");
   assert_eq!(got.items.len(), 1);
   assert_eq!(got.entries.len(), 1);
-  assert_eq!(got.active, true);
+  assert!(got.active);
 }

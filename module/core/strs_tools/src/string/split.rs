@@ -10,7 +10,7 @@
 //!   
 //! - **Clippy Conflict Resolution**: The explicit lifetime requirement conflicts with clippy's 
 //!   `elidable_lifetime_names` warning. Design Rulebook takes precedence, so we use 
-//!   `#[allow(clippy::elidable_lifetime_names)]` to suppress the warning while maintaining 
+//!   `#[ allow( clippy::elidable_lifetime_names ) ]` to suppress the warning while maintaining 
 //!   explicit lifetimes for architectural consistency.
 //!
 //! - **mod_interface Migration**: This module was converted from manual namespace patterns
@@ -52,6 +52,7 @@ mod private {
   use alloc::borrow::Cow;
   #[ cfg( not( feature = "use_alloc" ) ) ]
   use std::borrow::Cow;
+  #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
   use crate::string::parse_request::OpType;
   use super::SplitFlags; // Import SplitFlags from parent module
 
@@ -97,7 +98,7 @@ mod private {
   #[ cfg( test ) ]
   /// Tests the `unescape_str` function.
   #[ allow( clippy::elidable_lifetime_names ) ] // Design Rulebook requires explicit lifetimes
-  pub fn test_unescape_str< 'a >( input : &'a str ) -> Cow< 'a, str >
+  #[ must_use ] pub fn test_unescape_str< 'a >( input : &'a str ) -> Cow< 'a, str >
   {
     unescape_str( input )
   }
@@ -137,11 +138,11 @@ mod private {
   pub trait Searcher {
     /// Finds the first occurrence of the delimiter pattern in `src`.
     /// Returns `Some((start_index, end_index))` if found, `None` otherwise.
-    fn pos(&self, src: &str) -> Option<(usize, usize)>;
+    fn pos(&self, src: &str) -> Option< (usize, usize) >;
   }
 
   impl Searcher for &str {
-    fn pos(&self, src: &str) -> Option<(usize, usize)> {
+    fn pos(&self, src: &str) -> Option< (usize, usize) > {
       if self.is_empty() {
         return None;
       }
@@ -150,7 +151,7 @@ mod private {
   }
 
   impl Searcher for String {
-    fn pos(&self, src: &str) -> Option<(usize, usize)> {
+    fn pos(&self, src: &str) -> Option< (usize, usize) > {
       if self.is_empty() {
         return None;
       }
@@ -158,8 +159,8 @@ mod private {
     }
   }
 
-  impl Searcher for Vec<&str> {
-    fn pos(&self, src: &str) -> Option<(usize, usize)> {
+  impl Searcher for Vec< &str > {
+    fn pos(&self, src: &str) -> Option< (usize, usize) > {
       let mut r = vec![];
       for pat in self {
         if pat.is_empty() {
@@ -187,7 +188,7 @@ mod private {
     current_offset: usize,
     counter: i32,
     delimeter: D,
-    // active_quote_char : Option< char >, // Removed
+    // active_quote_char : Option<  char  >, // Removed
   }
 
   impl<'a, D: Searcher + Default + Clone> SplitFastIterator<'a, D> {
@@ -207,7 +208,7 @@ mod private {
       &mut self,
       iterable: &'a str,
       current_offset: usize,
-      // active_quote_char: Option<char>, // Removed
+      // active_quote_char: Option< char >, // Removed
       counter: i32,
     ) {
       self.iterable = iterable;
@@ -225,7 +226,7 @@ mod private {
       self.current_offset
     }
     /// Gets the currently active quote character, if any, for testing purposes.
-    // pub fn get_test_active_quote_char(&self) -> Option<char> { self.active_quote_char } // Removed
+    // pub fn get_test_active_quote_char(&self) -> Option< char > { self.active_quote_char } // Removed
     /// Gets the internal counter value, for testing purposes.
     pub fn get_test_counter(&self) -> i32 {
       self.counter
@@ -235,7 +236,7 @@ mod private {
   impl<'a, D: Searcher> Iterator for SplitFastIterator<'a, D> {
     type Item = Split<'a>;
     #[ allow( clippy::too_many_lines ) ]
-    fn next(&mut self) -> Option<Self::Item> {
+    fn next(&mut self) -> Option< Self::Item > {
       if self.iterable.is_empty() && self.counter > 0
       // Modified condition
       {
@@ -314,21 +315,21 @@ mod private {
   #[ derive( Debug ) ]
   // This lint is addressed by using SplitFlags
   pub struct SplitIterator<'a> {
-    iterator: SplitFastIterator<'a, Vec<&'a str>>,
+    iterator: SplitFastIterator<'a, Vec< &'a str >>,
     src: &'a str,
     flags: SplitFlags,
-    quoting_prefixes: Vec<&'a str>,
-    quoting_postfixes: Vec<&'a str>,
+    quoting_prefixes: Vec< &'a str >,
+    quoting_postfixes: Vec< &'a str >,
     pending_opening_quote_delimiter: Option<Split<'a>>,
     last_yielded_token_was_delimiter: bool,
-    just_finished_peeked_quote_end_offset: Option<usize>,
+    just_finished_peeked_quote_end_offset: Option< usize >,
     skip_next_spurious_empty: bool,
-    active_quote_char: Option<char>, // Moved from SplitFastIterator
+    active_quote_char: Option< char >, // Moved from SplitFastIterator
     just_processed_quote: bool,
   }
 
   impl<'a> SplitIterator<'a> {
-    fn new(o: &impl SplitOptionsAdapter<'a, Vec<&'a str>>) -> Self {
+    fn new(o: &impl SplitOptionsAdapter<'a, Vec< &'a str >>) -> Self {
       let mut delimeter_list_for_fast_iterator = o.delimeter();
       delimeter_list_for_fast_iterator.retain(|&pat| !pat.is_empty());
       let iterator = SplitFastIterator::new(&o.clone_options_for_sfi());
@@ -343,7 +344,7 @@ mod private {
         last_yielded_token_was_delimiter: false,
         just_finished_peeked_quote_end_offset: None,
         skip_next_spurious_empty: false,
-        active_quote_char: None, // Initialize here
+        active_quote_char: None, // No active quote at iteration start
         just_processed_quote: false,
       }
     }
@@ -352,7 +353,7 @@ mod private {
   impl<'a> Iterator for SplitIterator<'a> {
     type Item = Split<'a>;
     #[ allow( clippy::too_many_lines ) ]
-    fn next(&mut self) -> Option<Self::Item> {
+    fn next(&mut self) -> Option< Self::Item > {
       loop {
         if let Some(offset) = self.just_finished_peeked_quote_end_offset.take() {
           if self.iterator.current_offset != offset {
@@ -417,7 +418,7 @@ mod private {
             end: current_sfi_offset,
             was_quoted: false,
           };
-          // Set flag to false to prevent generating another empty token on next iteration
+          // Prevent duplicate empty tokens after delimiter processing
           self.last_yielded_token_was_delimiter = false;
           // Advance the iterator's counter to skip the empty content that would naturally be returned next
           self.iterator.counter += 1;
@@ -456,7 +457,7 @@ mod private {
               self.iterator.iterable = &self.iterator.iterable[prefix_len..];
               self.active_quote_char = Some(first_char_iterable); // Set active quote char in SplitIterator
 
-              let mut end_of_quote_idx: Option<usize> = None;
+              let mut end_of_quote_idx: Option< usize > = None;
               let mut chars = self.iterator.iterable.chars();
               let mut current_char_offset = 0;
               let mut escaped = false;
@@ -504,7 +505,7 @@ mod private {
                 // Check if this is an adjacent quote scenario (no delimiter follows)
                 let remaining_chars = &self.iterator.iterable[end_idx..];
                 let is_adjacent = if remaining_chars.len() > 1 {
-                  let chars_after_quote: Vec<char> = remaining_chars.chars().take(2).collect();
+                  let chars_after_quote: Vec< char > = remaining_chars.chars().take(2).collect();
                   if chars_after_quote.len() >= 2 {
                     chars_after_quote[0] == '"' && chars_after_quote[1].is_alphanumeric()
                   } else {
@@ -648,11 +649,11 @@ mod private {
     src: &'a str,
     delimeter: D,
     flags: SplitFlags,
-    quoting_prefixes: Vec<&'a str>,
-    quoting_postfixes: Vec<&'a str>,
+    quoting_prefixes: Vec< &'a str >,
+    quoting_postfixes: Vec< &'a str >,
   }
 
-  impl<'a> SplitOptions<'a, Vec<&'a str>> {
+  impl<'a> SplitOptions<'a, Vec< &'a str >> {
     /// Consumes the options and returns a `SplitIterator`.
     #[ must_use ]
     pub fn split(self) -> SplitIterator<'a> {
@@ -667,7 +668,7 @@ mod private {
       SplitFastIterator::new(&self)
     }
   }
-  impl<'a> core::iter::IntoIterator for SplitOptions<'a, Vec<&'a str>> {
+  impl<'a> core::iter::IntoIterator for SplitOptions<'a, Vec< &'a str >> {
     type Item = Split<'a>;
     type IntoIter = SplitIterator<'a>;
 
@@ -688,9 +689,9 @@ mod private {
     /// Gets the behavior flags for splitting.
     fn flags(&self) -> SplitFlags;
     /// Gets the prefixes that denote the start of a quoted section.
-    fn quoting_prefixes(&self) -> &Vec<&'a str>;
+    fn quoting_prefixes(&self) -> &Vec< &'a str >;
     /// Gets the postfixes that denote the end of a quoted section.
-    fn quoting_postfixes(&self) -> &Vec<&'a str>;
+    fn quoting_postfixes(&self) -> &Vec< &'a str >;
     /// Clones the options, specifically for initializing a `SplitFastIterator`.
     fn clone_options_for_sfi(&self) -> SplitOptions<'a, D>;
   }
@@ -705,10 +706,10 @@ mod private {
     fn flags(&self) -> SplitFlags {
       self.flags
     }
-    fn quoting_prefixes(&self) -> &Vec<&'a str> {
+    fn quoting_prefixes(&self) -> &Vec< &'a str > {
       &self.quoting_prefixes
     }
-    fn quoting_postfixes(&self) -> &Vec<&'a str> {
+    fn quoting_postfixes(&self) -> &Vec< &'a str > {
       &self.quoting_postfixes
     }
     fn clone_options_for_sfi(&self) -> SplitOptions<'a, D> {
@@ -716,28 +717,80 @@ mod private {
     }
   }
 
-  /// Former (builder) for creating `SplitOptions`.
-  // This lint is addressed by using SplitFlags
+  /// Basic builder for creating simple `SplitOptions` without `OpType` dependency.
   #[ derive( Debug ) ]
-  pub struct SplitOptionsFormer<'a> {
+  pub struct BasicSplitBuilder<'a> {
     src: &'a str,
-    delimeter: OpType<&'a str>,
+    delimiters: Vec<&'a str>,
     flags: SplitFlags,
     quoting_prefixes: Vec<&'a str>,
     quoting_postfixes: Vec<&'a str>,
   }
 
-  impl<'a> SplitOptionsFormer<'a> {
-    /// Creates a new `SplitOptionsFormer` with the given delimiter(s).
-    pub fn new<D: Into<OpType<&'a str>>>(delimeter: D) -> SplitOptionsFormer<'a> {
+  impl<'a> Default for BasicSplitBuilder<'a> {
+    fn default() -> Self {
+      Self::new()
+    }
+  }
+
+  impl<'a> BasicSplitBuilder<'a> {
+    /// Creates a new `BasicSplitBuilder`.
+    #[ must_use ]
+    pub fn new() -> BasicSplitBuilder<'a> {
       Self {
         src: "",
-        delimeter: OpType::Vector(vec![]).append(delimeter.into()),
+        delimiters: vec![],
         flags: SplitFlags::PRESERVING_DELIMITERS, // Default
         quoting_prefixes: vec![],
         quoting_postfixes: vec![],
       }
     }
+
+    /// Sets the source string to split.
+    pub fn src(&mut self, value: &'a str) -> &mut Self {
+      self.src = value;
+      self
+    }
+
+    /// Sets a single delimiter.
+    pub fn delimeter(&mut self, value: &'a str) -> &mut Self {
+      self.delimiters = vec![value];
+      self
+    }
+
+    /// Sets multiple delimiters.
+    pub fn delimeters(&mut self, value: &[&'a str]) -> &mut Self {
+      self.delimiters = value.to_vec();
+      self
+    }
+
+    /// Sets quoting behavior.
+    pub fn quoting(&mut self, value: bool) -> &mut Self {
+      if value {
+        self.flags.insert(SplitFlags::QUOTING);
+        // Set default quoting characters if not already set
+        if self.quoting_prefixes.is_empty() {
+          self.quoting_prefixes = vec!["\"", "'"];
+        }
+        if self.quoting_postfixes.is_empty() {
+          self.quoting_postfixes = vec!["\"", "'"];
+        }
+      } else {
+        self.flags.remove(SplitFlags::QUOTING);
+      }
+      self
+    }
+
+    /// Sets stripping behavior.
+    pub fn stripping(&mut self, value: bool) -> &mut Self {
+      if value {
+        self.flags.insert(SplitFlags::STRIPPING);
+      } else {
+        self.flags.remove(SplitFlags::STRIPPING);
+      }
+      self
+    }
+
     /// Sets whether to preserve empty segments.
     pub fn preserving_empty(&mut self, value: bool) -> &mut Self {
       if value {
@@ -747,7 +800,8 @@ mod private {
       }
       self
     }
-    /// Sets whether to preserve delimiter segments.
+
+    /// Sets whether to preserve delimiters in output.
     pub fn preserving_delimeters(&mut self, value: bool) -> &mut Self {
       if value {
         self.flags.insert(SplitFlags::PRESERVING_DELIMITERS);
@@ -756,7 +810,8 @@ mod private {
       }
       self
     }
-    /// Sets whether to preserve quoting characters in the output.
+
+    /// Sets whether to preserve quoting in output.
     pub fn preserving_quoting(&mut self, value: bool) -> &mut Self {
       if value {
         self.flags.insert(SplitFlags::PRESERVING_QUOTING);
@@ -765,7 +820,97 @@ mod private {
       }
       self
     }
-    /// Sets whether to strip leading/trailing whitespace from delimited segments.
+
+    /// Sets quoting prefixes.
+    pub fn quoting_prefixes(&mut self, value: &[&'a str]) -> &mut Self {
+      self.quoting_prefixes = value.to_vec();
+      self
+    }
+
+    /// Sets quoting postfixes.
+    pub fn quoting_postfixes(&mut self, value: &[&'a str]) -> &mut Self {
+      self.quoting_postfixes = value.to_vec();
+      self
+    }
+
+    /// Performs the split operation and returns a `SplitIterator`.
+    pub fn perform(&mut self) -> SplitIterator<'a> {
+      let options = SplitOptions {
+        src: self.src,
+        delimeter: self.delimiters.clone(),
+        flags: self.flags,
+        quoting_prefixes: self.quoting_prefixes.clone(),
+        quoting_postfixes: self.quoting_postfixes.clone(),
+      };
+      options.split()
+    }
+
+    /// Attempts to create a SIMD-optimized iterator when simd feature is enabled.
+    #[ cfg( feature = "simd" ) ]
+    pub fn perform_simd(&mut self) -> SplitIterator<'a> {
+      // For now, just use regular perform - SIMD integration needs more work
+      self.perform()
+    }
+    
+    /// Attempts to create a SIMD-optimized iterator - fallback version when simd feature is disabled.
+    #[ cfg( not( feature = "simd" ) ) ]
+    pub fn perform_simd(&mut self) -> SplitIterator<'a> {
+      self.perform()
+    }
+  }
+
+  /// Former (builder) for creating `SplitOptions`.
+  // This lint is addressed by using SplitFlags
+  #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
+  #[ derive( Debug ) ]
+  pub struct SplitOptionsFormer<'a> {
+    src: &'a str,
+    delimeter: OpType<&'a str>,
+    flags: SplitFlags,
+    quoting_prefixes: Vec< &'a str >,
+    quoting_postfixes: Vec< &'a str >,
+  }
+
+  #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
+  impl<'a> SplitOptionsFormer<'a> {
+    /// Initializes builder with delimiters to support fluent configuration of split options.
+    pub fn new<D: Into<OpType<&'a str>>>(delimeter: D) -> SplitOptionsFormer<'a> {
+      Self {
+        src: "",
+        delimeter: OpType::Vector(vec![]).append(delimeter.into()),
+        flags: SplitFlags::PRESERVING_DELIMITERS, // Default
+        quoting_prefixes: vec![],
+        quoting_postfixes: vec![],
+      }
+    }
+    /// Controls empty segment handling to accommodate different parsing requirements.
+    pub fn preserving_empty(&mut self, value: bool) -> &mut Self {
+      if value {
+        self.flags.insert(SplitFlags::PRESERVING_EMPTY);
+      } else {
+        self.flags.remove(SplitFlags::PRESERVING_EMPTY);
+      }
+      self
+    }
+    /// Controls delimiter preservation to support scenarios needing delimiter tracking.
+    pub fn preserving_delimeters(&mut self, value: bool) -> &mut Self {
+      if value {
+        self.flags.insert(SplitFlags::PRESERVING_DELIMITERS);
+      } else {
+        self.flags.remove(SplitFlags::PRESERVING_DELIMITERS);
+      }
+      self
+    }
+    /// Controls quote character preservation for maintaining original format integrity.
+    pub fn preserving_quoting(&mut self, value: bool) -> &mut Self {
+      if value {
+        self.flags.insert(SplitFlags::PRESERVING_QUOTING);
+      } else {
+        self.flags.remove(SplitFlags::PRESERVING_QUOTING);
+      }
+      self
+    }
+    /// Controls whitespace trimming to support clean data extraction scenarios.
     pub fn stripping(&mut self, value: bool) -> &mut Self {
       if value {
         self.flags.insert(SplitFlags::STRIPPING);
@@ -774,7 +919,7 @@ mod private {
       }
       self
     }
-    /// Sets whether to enable handling of quoted sections.
+    /// Enables quote-aware splitting to handle complex strings with embedded delimiters.
     pub fn quoting(&mut self, value: bool) -> &mut Self {
       if value {
         self.flags.insert(SplitFlags::QUOTING);
@@ -783,17 +928,17 @@ mod private {
       }
       self
     }
-    /// Sets the prefixes that denote the start of a quoted section.
-    pub fn quoting_prefixes(&mut self, value: Vec<&'a str>) -> &mut Self {
+    /// Configures quote start markers to support custom quotation systems.
+    pub fn quoting_prefixes(&mut self, value: Vec< &'a str >) -> &mut Self {
       self.quoting_prefixes = value;
       self
     }
-    /// Sets the postfixes that denote the end of a quoted section.
-    pub fn quoting_postfixes(&mut self, value: Vec<&'a str>) -> &mut Self {
+    /// Configures quote end markers to support asymmetric quotation systems.
+    pub fn quoting_postfixes(&mut self, value: Vec< &'a str >) -> &mut Self {
       self.quoting_postfixes = value;
       self
     }
-    /// Sets the source string to be split.
+    /// Provides input string to enable convenient chained configuration.
     pub fn src(&mut self, value: &'a str) -> &mut Self {
       self.src = value;
       self
@@ -808,7 +953,7 @@ mod private {
     /// # Panics
     /// Panics if `delimeter` field contains an `OpType::Primitive(None)` which results from `<&str>::default()`,
     /// and `vector()` method on `OpType` is not robust enough to handle it (currently it would unwrap a None).
-    pub fn form(&mut self) -> SplitOptions<'a, Vec<&'a str>> {
+    pub fn form(&mut self) -> SplitOptions<'a, Vec< &'a str >> {
       if self.flags.contains(SplitFlags::QUOTING) {
         if self.quoting_prefixes.is_empty() {
           self.quoting_prefixes = vec!["\"", "`", "'"];
@@ -839,7 +984,7 @@ mod private {
         if delims.len() > 1 {
           // For multi-delimiter splitting, SIMD provides significant benefits
           if let Ok(_simd_iter) = super::simd_split_cached(self.src, delims) {
-            // Create a wrapper that converts SIMDSplitIterator items to SplitIterator format
+            // TODO: Bridge SIMD iterator with standard format for performance optimization
             return self.perform(); // For now, fallback to regular - we'll enhance this
           }
           // SIMD failed, use regular implementation
@@ -856,10 +1001,18 @@ mod private {
       self.perform()
     }
   }
-  /// Creates a new `SplitOptionsFormer` to build `SplitOptions` for splitting a string.
-  /// This is the main entry point for using the string splitting functionality.
+  /// Creates a basic split iterator builder for string splitting functionality.
+  /// This is the main entry point for using basic string splitting.
   #[ must_use ]
-  pub fn split<'a>() -> SplitOptionsFormer<'a> {
+  pub fn split<'a>() -> BasicSplitBuilder<'a> {
+    BasicSplitBuilder::new()
+  }
+
+  /// Creates a new `SplitOptionsFormer` to build `SplitOptions` for splitting a string.
+  /// This is the main entry point for using advanced string splitting functionality.
+  #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
+  #[ must_use ]
+  pub fn split_advanced<'a>() -> SplitOptionsFormer<'a> {
     SplitOptionsFormer::new(<&str>::default())
   }
 }
@@ -877,7 +1030,9 @@ pub mod own {
   #[ allow( unused_imports ) ]
   use super::*;
   pub use orphan::*;
-  pub use private::{ Split, SplitType, SplitIterator, split, SplitOptionsFormer, Searcher };
+  pub use private::{ Split, SplitType, SplitIterator, Searcher, BasicSplitBuilder, split };
+  #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
+  pub use private::{ split_advanced, SplitOptionsFormer };
   #[ cfg( feature = "simd" ) ]
   pub use super::{ SIMDSplitIterator, simd_split_cached, get_or_create_cached_patterns };
   #[ cfg( test ) ]
@@ -898,8 +1053,9 @@ pub mod exposed {
   #[ allow( unused_imports ) ]
   use super::*;
   pub use prelude::*;
-  pub use super::own::split;
-  pub use super::own::{ Split, SplitType, SplitIterator, SplitOptionsFormer, Searcher };
+  pub use super::own::{ Split, SplitType, SplitIterator, Searcher, BasicSplitBuilder, split };
+  #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
+  pub use super::own::{ split_advanced, SplitOptionsFormer };
   #[ cfg( feature = "simd" ) ]
   pub use super::own::{ SIMDSplitIterator, simd_split_cached, get_or_create_cached_patterns };
   #[ cfg( test ) ]
@@ -911,7 +1067,9 @@ pub mod exposed {
 pub mod prelude {
   #[ allow( unused_imports ) ]
   use super::*;
-  pub use private::{ SplitOptionsFormer, split, Searcher };
+  pub use private::{ Searcher, BasicSplitBuilder, split };
+  #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
+  pub use private::{ SplitOptionsFormer, split_advanced };
   #[ cfg( test ) ]
   pub use private::{ SplitFastIterator, test_unescape_str as unescape_str };
 }

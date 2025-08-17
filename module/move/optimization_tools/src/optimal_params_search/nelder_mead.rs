@@ -12,6 +12,7 @@ use std::
 use deterministic_rand::{ Hrng, Seed, Rng };
 use iter_tools::Itertools;
 use rayon::iter::{ IntoParallelIterator, ParallelIterator };
+use error_tools::dependency::thiserror;
 
 use super::results_serialize::save_result;
 
@@ -553,7 +554,7 @@ where R : RangeBounds< f64 > + Sync,
 
         iterations += 1;
   
-        //centroid
+        // centroid
         let mut x0_center = vec![ 0.0; dimensions ];
         for ( point, _ ) in res.iter().take( res.len() - 1 )
         {
@@ -563,7 +564,7 @@ where R : RangeBounds< f64 > + Sync,
           }
         }
 
-        //reflection
+        // reflection
         let worst_dir = res.last().clone().unwrap();
         let mut x_ref = vec![ 0.0; dimensions ];
         for i in 0..dimensions
@@ -584,7 +585,7 @@ where R : RangeBounds< f64 > + Sync,
           continue;
         }
 
-        //expansion
+        // expansion
         if reflection_score < res[ 0 ].1
         {
           let mut x_exp = vec![ 0.0; dimensions ];
@@ -614,7 +615,7 @@ where R : RangeBounds< f64 > + Sync,
           }
         }
 
-        //contraction
+        // contraction
         let mut x_con = vec![ 0.0; dimensions ];
         for i in 0..dimensions
         {
@@ -632,7 +633,7 @@ where R : RangeBounds< f64 > + Sync,
           continue;
         }
 
-        //shrink
+        // shrink
         let x1 = res[ 0 ].clone().0;
         let mut new_res = Vec::new();
         for ( point, _ ) in res
@@ -729,7 +730,7 @@ where R : RangeBounds< f64 > + Sync,
         } )
       }
 
-      //centroid
+      // centroid
       let mut x0_center = vec![ 0.0; dimensions ];
       for ( point, _ ) in res.iter().take( res.len() - 1 )
       {
@@ -739,7 +740,7 @@ where R : RangeBounds< f64 > + Sync,
         }
       }
 
-      //reflection
+      // reflection
       let worst_dir = res.last().clone().unwrap();
       let mut x_ref = vec![ 0.0; dimensions ];
       for i in 0..dimensions
@@ -758,7 +759,7 @@ where R : RangeBounds< f64 > + Sync,
         continue;
       }
 
-      //expansion
+      // expansion
       if reflection_score < res[ 0 ].1
       {
         let mut x_exp = vec![ 0.0; dimensions ];
@@ -784,7 +785,7 @@ where R : RangeBounds< f64 > + Sync,
         }
       }
 
-      //contraction
+      // contraction
       let mut x_con = vec![ 0.0; dimensions ];
       for i in 0..dimensions
       {
@@ -800,7 +801,7 @@ where R : RangeBounds< f64 > + Sync,
         continue;
       }
 
-      //shrink
+      // shrink
       let x1 = res[ 0 ].clone().0;
       let mut new_res = Vec::new();
       for ( point, _ ) in res

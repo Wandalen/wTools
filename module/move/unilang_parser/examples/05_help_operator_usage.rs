@@ -7,7 +7,7 @@
 
 use unilang_parser::{ Parser, UnilangParserOptions };
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   let parser = Parser::new( UnilangParserOptions::default() );
 

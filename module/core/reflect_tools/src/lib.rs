@@ -2,14 +2,28 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/reflect_tools/latest/reflect_tools/" ) ]
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Reflection utilities" ) ]
+#![ allow( clippy::used_underscore_items ) ]
+#![ allow( clippy::len_without_is_empty ) ]
+#![ allow( clippy::iter_skip_next ) ]
+#![ allow( clippy::must_use_candidate ) ]
+#![ allow( clippy::used_underscore_binding ) ]
+#![ allow( clippy::needless_return ) ]
+#![ allow( clippy::missing_panics_doc ) ]
+#![ allow( clippy::elidable_lifetime_names ) ]
+#![ allow( clippy::std_instead_of_core ) ]
+#![ allow( clippy::semicolon_if_nothing_returned ) ]
+#![ allow( clippy::implicit_hasher ) ]
+#![ allow( clippy::doc_markdown ) ]
+#![ allow( clippy::useless_conversion ) ]
+#![ allow( clippy::needless_range_loop ) ]
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "reflect_types" ) ]
 pub mod reflect;
 
 /// Namespace with dependencies.
-
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {

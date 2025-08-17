@@ -1,7 +1,7 @@
 # module/move/willbe/Cargo.toml
 [package]
 name = "willbe"
-version = "0.23.0"
+version = "0.24.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -99,7 +99,7 @@ collection_tools = { workspace = true, features = [ "collection_constructors", "
 macro_tools = { workspace = true, features = [ "default" ] }
 
 [dev-dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }
 assert_fs = "1.0"
 serde_yaml = "0.9"
 serde_json = "1.0.114"

@@ -27,8 +27,8 @@ mod private {
   pub trait VisibilityInterface {
     type Token: syn::token::Token + syn::parse::Parse;
 
-    fn vis_make(token: Self::Token, restriction: Option<Restriction>) -> Self;
-    fn restriction(&self) -> Option<&Restriction>;
+    fn vis_make(token: Self::Token, restriction: Option< Restriction >) -> Self;
+    fn restriction(&self) -> Option< &Restriction >;
   }
 
   ///
@@ -43,12 +43,12 @@ mod private {
   /// Has kind.
   pub trait HasClauseKind {
     /// Static function to get kind of the visibility.
-    #[allow(non_snake_case)]
-    #[allow(dead_code)]
+    #[ allow( non_snake_case ) ]
+    #[ allow( dead_code ) ]
     fn Kind() -> ClauseKind;
 
     /// Method to get kind of the visibility.
-    #[allow(dead_code)]
+    #[ allow( dead_code ) ]
     fn kind(&self) -> ClauseKind {
       Self::Kind()
     }
@@ -58,19 +58,19 @@ mod private {
 
   macro_rules! Clause {
     ( $Name1:ident, $Kind:ident ) => {
-      #[derive(Debug, PartialEq, Eq, Clone)]
+      #[ derive( Debug, PartialEq, Eq, Clone ) ]
       pub struct $Name1 {}
 
       impl $Name1 {
-        #[allow(dead_code)]
+        #[ allow( dead_code ) ]
         pub fn new() -> Self {
           Self {}
         }
       }
 
       impl HasClauseKind for $Name1 {
-        #[allow(non_snake_case)]
-        #[allow(dead_code)]
+        #[ allow( non_snake_case ) ]
+        #[ allow( dead_code ) ]
         fn Kind() -> ClauseKind {
           ClauseKind::$Kind
         }
@@ -82,14 +82,14 @@ mod private {
 
   macro_rules! Vis {
     ( $Name0:ident, $Name1:ident, $Name2:ident, $Kind:ident ) => {
-      #[derive(Debug, PartialEq, Eq, Clone)]
+      #[ derive( Debug, PartialEq, Eq, Clone ) ]
       pub struct $Name1 {
         pub token: kw::$Name2,
-        pub restriction: Option<Restriction>,
+        pub restriction: Option< Restriction >,
       }
 
       impl $Name1 {
-        #[allow(dead_code)]
+        #[ allow( dead_code ) ]
         pub fn new() -> Self {
           Self {
             token: kw::$Name2(proc_macro2::Span::call_site()),
@@ -100,17 +100,17 @@ mod private {
 
       impl VisibilityInterface for $Name1 {
         type Token = kw::$Name2;
-        fn vis_make(token: Self::Token, restriction: Option<Restriction>) -> Self {
+        fn vis_make(token: Self::Token, restriction: Option< Restriction >) -> Self {
           Self { token, restriction }
         }
-        fn restriction(&self) -> Option<&Restriction> {
+        fn restriction(&self) -> Option< &Restriction > {
           self.restriction.as_ref()
         }
       }
 
       impl HasClauseKind for $Name1 {
-        #[allow(non_snake_case)]
-        #[allow(dead_code)]
+        #[ allow( non_snake_case ) ]
+        #[ allow( dead_code ) ]
         fn Kind() -> ClauseKind {
           ClauseKind::$Kind
         }
@@ -135,8 +135,8 @@ mod private {
   macro_rules! HasClauseKind {
     ( $Name1:path, $Kind:ident ) => {
       impl HasClauseKind for $Name1 {
-        #[allow(non_snake_case)]
-        #[allow(dead_code)]
+        #[ allow( non_snake_case ) ]
+        #[ allow( dead_code ) ]
         fn Kind() -> ClauseKind {
           ClauseKind::$Kind
         }
@@ -182,20 +182,18 @@ mod private {
   ///
   /// Restriction, for example `pub( crate )`.
   ///
-
-  #[derive(Debug, PartialEq, Eq, Clone)]
+  #[ derive( Debug, PartialEq, Eq, Clone ) ]
   pub struct Restriction {
     paren_token: syn::token::Paren,
-    in_token: Option<syn::token::In>,
+    in_token: Option< syn::token::In >,
     path: Box<syn::Path>,
   }
 
   /// Kinds of clause.
-
-  #[derive(Debug, Hash, Default, PartialEq, Eq, Clone, Copy)]
+  #[ derive( Debug, Hash, Default, PartialEq, Eq, Clone, Copy ) ]
   pub enum ClauseKind {
     /// Invisible outside.
-    #[default]
+    #[ default ]
     Private,
     /// Owned by current file entities.
     Own,
@@ -216,8 +214,7 @@ mod private {
   ///
   /// Visibility of an element.
   ///
-
-  #[derive(Debug, Default, PartialEq, Eq, Clone)]
+  #[ derive( Debug, Default, PartialEq, Eq, Clone ) ]
   pub enum Visibility {
     //Private( VisPrivate ),
     Own(VisOwn),
@@ -228,37 +225,37 @@ mod private {
     // Public( syn::VisPublic ),
     // Crate( syn::VisCrate ),
     // Restricted( syn::VisRestricted ),
-    #[default]
+    #[ default ]
     Inherited,
   }
 
   impl Visibility {
-    fn parse_own(input: ParseStream<'_>) -> syn::Result<Self> {
+    fn parse_own(input: ParseStream<'_>) -> syn::Result< Self > {
       Self::_parse_vis::<VisOwn>(input)
     }
 
-    fn parse_orphan(input: ParseStream<'_>) -> syn::Result<Self> {
+    fn parse_orphan(input: ParseStream<'_>) -> syn::Result< Self > {
       Self::_parse_vis::<VisOrphan>(input)
     }
 
-    fn parse_exposed(input: ParseStream<'_>) -> syn::Result<Self> {
+    fn parse_exposed(input: ParseStream<'_>) -> syn::Result< Self > {
       Self::_parse_vis::<VisExposed>(input)
     }
 
-    fn parse_prelude(input: ParseStream<'_>) -> syn::Result<Self> {
+    fn parse_prelude(input: ParseStream<'_>) -> syn::Result< Self > {
       Self::_parse_vis::<VisPrelude>(input)
     }
 
-    fn parse_pub(input: ParseStream<'_>) -> syn::Result<Self> {
+    fn parse_pub(input: ParseStream<'_>) -> syn::Result< Self > {
       Self::_parse_vis::<VisPublic>(input)
     }
 
-    // fn parse_pub( input : ParseStream< '_ > ) -> syn::Result< Self >
+    // fn parse_pub( input : ParseStream< '_ > ) -> syn::Result<  Self  >
     // {
     //   Ok( Visibility::Public( syn::VisPublic { pub_token : input.parse()? } ) )
     // }
 
-    fn _parse_vis<Vis>(input: ParseStream<'_>) -> syn::Result<Self>
+    fn _parse_vis<Vis>(input: ParseStream<'_>) -> syn::Result< Self >
     where
       Vis: Into<Visibility> + VisibilityInterface,
     {
@@ -295,7 +292,7 @@ mod private {
       Ok(Vis::vis_make(token, None).into())
     }
 
-    // fn parse_in_crate( input : ParseStream< '_ > ) -> syn::Result< Self >
+    // fn parse_in_crate( input : ParseStream< '_ > ) -> syn::Result<  Self  >
     // {
     //   if input.peek2( Token![ :: ] )
     //   {
@@ -311,7 +308,7 @@ mod private {
     // }
 
     /// Get kind.
-    #[allow(dead_code)]
+    #[ allow( dead_code ) ]
     pub fn kind(&self) -> ClauseKind {
       match self {
         // Visibility::Private( e ) => e.kind(),
@@ -327,8 +324,8 @@ mod private {
     }
 
     /// Get restrictions.
-    #[allow(dead_code)]
-    pub fn restriction(&self) -> Option<&Restriction> {
+    #[ allow( dead_code ) ]
+    pub fn restriction(&self) -> Option< &Restriction > {
       match self
       {
         // Visibility::Private( e ) => e.restriction(),
@@ -345,7 +342,7 @@ mod private {
   }
 
   impl syn::parse::Parse for Visibility {
-    fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
+    fn parse(input: ParseStream<'_>) -> syn::Result< Self > {
       // Recognize an empty None-delimited group, as produced by a $:vis
       // matcher that matched no tokens.
 
@@ -386,7 +383,7 @@ mod private {
     }
   }
 
-  #[allow(clippy::derived_hash_with_manual_eq)]
+  #[ allow( clippy::derived_hash_with_manual_eq ) ]
   impl Hash for Visibility {
     fn hash<H: Hasher>(&self, state: &mut H) {
       self.kind().hash(state);
@@ -408,11 +405,11 @@ mod private {
   }
 }
 
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
 
   use super::*;
@@ -420,7 +417,7 @@ pub mod own {
 }
 
 /// Parented namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
 
   use super::*;
@@ -428,7 +425,7 @@ pub mod orphan {
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
 
   use super::*;
@@ -451,7 +448,7 @@ pub mod exposed {
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 }

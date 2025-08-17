@@ -1,56 +1,60 @@
 // Purpose: Comprehensive replacement for multiple blocked generic tuple tests
 // This works around the architectural limitation that Former derive cannot parse generic enums
 
+
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use ::former::prelude::*;
 use ::former::Former;
 
 // Inner struct that derives Former for subform testing
-#[derive(Debug, PartialEq, Default, Clone, Former)]
+#[ derive( Debug, PartialEq, Default, Clone, Former ) ]
 pub struct InnerStruct {
   pub content: String,
 }
 
 // Comprehensive enum testing multiple tuple variant scenarios
-#[derive(Debug, PartialEq, Former)]
-#[allow(non_camel_case_types)] // Allow for generated Former type names
-#[former(standalone_constructors)]
+#[ derive( Debug, PartialEq, Former ) ]
+#[ allow( non_camel_case_types ) ] // Allow for generated Former type names
+#[ former( standalone_constructors ) ]
 pub enum ComprehensiveTupleEnum {
   // Zero-field tuple (unit-like)
-  #[scalar]
+  #[ scalar ]
   ZeroField(),
   
   // Single-field scalar tuple
-  #[scalar]  
+  #[ scalar ]  
   SingleScalar(i32),
   
   // Single-field subform tuple (default behavior)
   SingleSubform(InnerStruct),
   
   // Multi-field scalar tuple
-  #[scalar]
+  #[ scalar ]
   MultiScalar(i32, String, bool),
   
   // Multi-field default tuple (should use positional setters)
   MultiDefault(f64, bool, String),
 }
 
-#[test]
+/// Tests zero-field tuple variant construction.
+#[ test ]
 fn zero_field_test() {
   let got = ComprehensiveTupleEnum::zero_field();
   let expected = ComprehensiveTupleEnum::ZeroField();
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests single scalar tuple variant.
+#[ test ]
 fn single_scalar_test() {
   let got = ComprehensiveTupleEnum::single_scalar(42);
   let expected = ComprehensiveTupleEnum::SingleScalar(42);
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests single subform tuple variant with builder pattern.
+#[ test ]
 fn single_subform_test() {
   let inner = InnerStruct { content: "test".to_string() };
   let got = ComprehensiveTupleEnum::single_subform()
@@ -60,14 +64,16 @@ fn single_subform_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests multi-scalar tuple variant with multiple types.
+#[ test ]
 fn multi_scalar_test() {
   let got = ComprehensiveTupleEnum::multi_scalar(42, "test".to_string(), true);
   let expected = ComprehensiveTupleEnum::MultiScalar(42, "test".to_string(), true);
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests multi-default tuple variant with positional setters.
+#[ test ]
 fn multi_default_test() {
   let got = ComprehensiveTupleEnum::multi_default()
     ._0(3.14)
@@ -78,7 +84,8 @@ fn multi_default_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests standalone constructors attribute validation.
+#[ test ]
 fn standalone_constructors_test() {
   // Test that standalone constructors are generated (this validates the attribute worked)
   // Note: The actual standalone functions would be at module level if properly implemented

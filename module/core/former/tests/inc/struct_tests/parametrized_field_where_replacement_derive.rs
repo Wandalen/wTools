@@ -5,20 +5,20 @@
 use super::*;
 
 // Simplified parametrized structs without complex lifetime bounds
-#[derive(Debug, Clone, PartialEq, Default, former::Former)]
+#[ derive( Debug, Clone, PartialEq, Default, former::Former ) ]
 pub struct ParametrizedChild<T> 
 where
-  T: Clone + Default + PartialEq + std::fmt::Debug,
+  T: Clone + Default + PartialEq + core::fmt::Debug,
 {
   pub name: String,
   pub value: T,
   pub active: bool,
 }
 
-#[derive(Debug, Clone, PartialEq, Default, former::Former)]
+#[ derive( Debug, Clone, PartialEq, Default, former::Former ) ]
 pub struct ParametrizedParent<T> 
 where
-  T: Clone + Default + PartialEq + std::fmt::Debug,
+  T: Clone + Default + PartialEq + core::fmt::Debug,
 {
   pub description: String,
   pub child_data: ParametrizedChild<T>,
@@ -26,14 +26,14 @@ where
 }
 
 // Specialized versions for common types to avoid generic complexity
-#[derive(Debug, Clone, PartialEq, Default, former::Former)]
+#[ derive( Debug, Clone, PartialEq, Default, former::Former ) ]
 pub struct StringParametrizedParent {
   pub description: String,
   pub child_data: ParametrizedChild<String>,
   pub count: usize,
 }
 
-#[derive(Debug, Clone, PartialEq, Default, former::Former)]
+#[ derive( Debug, Clone, PartialEq, Default, former::Former ) ]
 pub struct IntParametrizedParent {
   pub description: String,
   pub child_data: ParametrizedChild<i32>,
@@ -42,7 +42,7 @@ pub struct IntParametrizedParent {
 
 // COMPREHENSIVE PARAMETRIZED FIELD TESTS - without complex lifetime bounds
 
-#[test]
+#[ test ]
 fn parametrized_field_where_string_test() {
   let child = ParametrizedChild {
     name: "string_child".to_string(),
@@ -65,7 +65,7 @@ fn parametrized_field_where_string_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn parametrized_field_where_int_test() {
   let child = ParametrizedChild {
     name: "int_child".to_string(),
@@ -88,7 +88,7 @@ fn parametrized_field_where_int_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn parametrized_field_where_generic_string_test() {
   let child = ParametrizedChild::<String> {
     name: "generic_string_child".to_string(),
@@ -111,7 +111,7 @@ fn parametrized_field_where_generic_string_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn parametrized_field_where_generic_int_test() {
   let child = ParametrizedChild::<i32> {
     name: "generic_int_child".to_string(),
@@ -134,7 +134,7 @@ fn parametrized_field_where_generic_int_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn parametrized_field_where_nested_building_test() {
   // Test building nested parametrized structures
   let got = StringParametrizedParent::former()
@@ -152,11 +152,11 @@ fn parametrized_field_where_nested_building_test() {
   assert_eq!(got.description, "nested_building");
   assert_eq!(got.child_data.name, "built_child");
   assert_eq!(got.child_data.value, "built_value");
-  assert_eq!(got.child_data.active, true);
+  assert!(got.child_data.active);
   assert_eq!(got.count, 5);
 }
 
-#[test]
+#[ test ]
 fn parametrized_field_where_complex_generics_test() {
   // Test complex parametrized scenarios with different types
   let string_child = ParametrizedChild {
@@ -199,7 +199,7 @@ fn parametrized_field_where_complex_generics_test() {
   // Verify all parametrized types work correctly
   assert_eq!(string_parent.child_data.value, "complex_string");
   assert_eq!(int_parent.child_data.value, 777);
-  assert_eq!(bool_parent.child_data.value, true);
+  assert!(bool_parent.child_data.value);
   
   assert_eq!(string_parent.count, 1);
   assert_eq!(int_parent.count, 2); 
@@ -207,7 +207,7 @@ fn parametrized_field_where_complex_generics_test() {
 }
 
 // Test comprehensive parametrized field functionality 
-#[test]
+#[ test ]
 fn parametrized_field_where_comprehensive_test() {
   // Test that demonstrates all parametrized field capabilities without lifetime issues
   

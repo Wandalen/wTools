@@ -6,7 +6,7 @@ use super::item_attributes::{ItemAttributes};
 ///
 /// Derive macro to implement `PhantomData` when-ever it's possible to do automatically.
 ///
-pub fn phantom(input: proc_macro::TokenStream) -> Result<proc_macro2::TokenStream> {
+pub fn phantom(input: proc_macro::TokenStream) -> Result< proc_macro2::TokenStream > {
   let _original_input = input.clone();
   let parsed = syn::parse::<StructLike>(input)?;
   let _has_debug = attr::has_debug(parsed.attrs().iter())?;

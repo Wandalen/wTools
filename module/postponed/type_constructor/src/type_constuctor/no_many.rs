@@ -8,7 +8,6 @@ mod private
   /// Should not be used directly. Instead use macro [crate::types!].
   /// Type constructor `many` is available if eiter feature `use_std` or feature `use_alloc` is enabled. Also feature `many` should be enabled.
   ///
-
   #[ macro_export ]
   macro_rules! _many
   {

@@ -2,8 +2,14 @@ use super::*;
 use the_module::parse_quote;
 
 //
+// | TC011 | Test decomposing generics with lifetime parameters only | `decompose_generics_with_lifetime_parameters_only` |
+// | TC012 | Test decomposing generics with constants only | `decompose_generics_with_constants_only` |
+// | TC013 | Test decomposing generics with default values | `decompose_generics_with_default_values` |
+// | TC014 | Test decomposing mixed generic types | `decompose_mixed_generics_types` |
 
-#[test]
+//
+
+#[ test ]
 fn generics_with_where() {
   let got: the_module::generic_params::GenericsWithWhere = parse_quote! {
     < 'a, T : Clone, U : Default, V : core::fmt::Debug >
@@ -33,7 +39,7 @@ fn generics_with_where() {
 
 //
 
-#[test]
+#[ test ]
 fn merge_assumptions() {
   use the_module::generic_params;
 
@@ -65,7 +71,7 @@ fn merge_assumptions() {
 
 //
 
-#[test]
+#[ test ]
 fn merge_defaults() {
   use the_module::generic_params;
 
@@ -97,7 +103,7 @@ fn merge_defaults() {
 
 //
 
-#[test]
+#[ test ]
 fn only_names() {
   use macro_tools::syn::parse_quote;
 
@@ -111,7 +117,7 @@ fn only_names() {
 
 //
 
-#[test]
+#[ test ]
 fn decompose_empty_generics() {
   let generics: syn::Generics = syn::parse_quote! {};
   let (_impl_with_def, impl_gen, ty_gen, where_gen) = the_module::generic_params::decompose(&generics);
@@ -121,7 +127,7 @@ fn decompose_empty_generics() {
   assert!(where_gen.is_empty(), "Where generics should be empty");
 }
 
-#[test]
+#[ test ]
 fn decompose_generics_without_where_clause() {
   let generics: syn::Generics = syn::parse_quote! { < T, U > };
   let (_impl_with_def, impl_gen, ty_gen, where_gen) = the_module::generic_params::decompose(&generics);
@@ -136,7 +142,7 @@ fn decompose_generics_without_where_clause() {
   a_id!(ty_gen, exp.params);
 }
 
-#[test]
+#[ test ]
 fn decompose_generics_with_where_clause() {
   use macro_tools::quote::ToTokens;
 
@@ -177,7 +183,7 @@ fn decompose_generics_with_where_clause() {
   }
 }
 
-#[test]
+#[ test ]
 fn decompose_generics_with_only_where_clause() {
   let generics: the_module::generic_params::GenericsWithWhere = syn::parse_quote! { where T : Clone, U : Default };
   let generics = generics.unwrap();
@@ -188,7 +194,7 @@ fn decompose_generics_with_only_where_clause() {
   assert_eq!(where_gen.len(), 2, "Where generics should have two predicates");
 }
 
-#[test]
+#[ test ]
 fn decompose_generics_with_complex_constraints() {
   use macro_tools::quote::ToTokens;
   let generics: the_module::generic_params::GenericsWithWhere =
@@ -229,7 +235,7 @@ fn decompose_generics_with_complex_constraints() {
   }
 }
 
-#[test]
+#[ test ]
 fn decompose_generics_with_nested_generic_types() {
   let generics: syn::Generics = syn::parse_quote! { < T : Iterator< Item = U >, U > };
   let (_impl_with_def, impl_gen, ty_gen, where_gen) = the_module::generic_params::decompose(&generics);
@@ -247,7 +253,7 @@ fn decompose_generics_with_nested_generic_types() {
   );
 }
 
-#[test]
+#[ test ]
 fn decompose_generics_with_lifetime_parameters_only() {
   let generics: syn::Generics = syn::parse_quote! { < 'a, 'b > };
   let (_impl_with_def, impl_gen, ty_gen, where_gen) = the_module::generic_params::decompose(&generics);
@@ -262,7 +268,7 @@ fn decompose_generics_with_lifetime_parameters_only() {
   assert!(where_gen.is_empty(), "Where generics should be empty");
 }
 
-#[test]
+#[ test ]
 fn decompose_generics_with_constants_only() {
   let generics: syn::Generics = syn::parse_quote! { < const N : usize, const M : usize > };
   let (_impl_with_def, impl_gen, ty_gen, where_gen) = the_module::generic_params::decompose(&generics);
@@ -277,7 +283,7 @@ fn decompose_generics_with_constants_only() {
   assert!(where_gen.is_empty(), "Where generics should be empty");
 }
 
-#[test]
+#[ test ]
 fn decompose_generics_with_default_values() {
   let generics: syn::Generics = syn::parse_quote! { < T = usize, U = i32 > };
   let (impl_with_def, impl_gen, ty_gen, where_gen) = the_module::generic_params::decompose(&generics);
@@ -294,7 +300,7 @@ fn decompose_generics_with_default_values() {
   assert!(where_gen.is_empty(), "Where generics should be empty");
 }
 
-#[test]
+#[ test ]
 fn decompose_mixed_generics_types() {
   use macro_tools::quote::ToTokens;
   let generics: the_module::generic_params::GenericsWithWhere =

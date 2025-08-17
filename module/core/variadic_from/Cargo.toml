@@ -1,6 +1,6 @@
 [package]
 name = "variadic_from"
-version = "0.35.0"
+version = "0.41.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -53,5 +53,5 @@ variadic_from_meta = { workspace = true }
 
 [dev-dependencies]
 
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }
 trybuild = { version = "1.0", features = ["diff"] }

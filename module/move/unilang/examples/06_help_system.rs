@@ -28,6 +28,7 @@ use unilang::registry::CommandRegistry;
 use unilang::help::HelpGenerator;
 use unilang::types::Value;
 
+#[allow(clippy::too_many_lines)]
 fn main() -> Result< (), unilang::error::Error >
 {
   println!( "=== Help System Demo ===\n" );
@@ -280,7 +281,7 @@ fn main() -> Result< (), unilang::error::Error >
       
       // Validation rules are shown in help - guide users on acceptable ranges
       // Min/Max prevent nonsensical values and potential system issues
-      validation_rules: vec![ ValidationRule::Min(0.0), ValidationRule::Max(100000.0) ],
+      validation_rules: vec![ ValidationRule::Min(0.0), ValidationRule::Max(100_000.0) ],
       
       aliases: vec![ "batch".to_string(), "chunk".to_string() ],
       tags: vec![ "performance".to_string(), "memory".to_string() ],

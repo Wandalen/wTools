@@ -36,7 +36,7 @@
 //!
 //! impl syn::parse::Parse for MyAttributes
 //! {
-//!   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+//!   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result<  Self  >
 //!   {
 //!     let mut debug = AttributePropertyBoolean::< DebugMarker >::default();
 //!     let mut enabled = AttributePropertyBoolean::< EnabledMarker >::default();
@@ -141,32 +141,32 @@ mod private {
   }
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::{};
 }
 
 /// Orphan namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
 
   use super::*;
@@ -174,11 +174,11 @@ pub mod exposed {
 
   // pub use super::own as attr_prop;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
 
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::{
     private::AttributePropertyComponent, singletone::AttributePropertySingletone, singletone::AttributePropertySingletoneMarker,
     singletone_optional::AttributePropertyOptionalSingletone, singletone_optional::AttributePropertyOptionalSingletoneMarker,
@@ -190,7 +190,7 @@ pub mod exposed {
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 }

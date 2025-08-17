@@ -97,7 +97,7 @@ fn test_cli_specific_command_help_add()
   .assert()
   .success()
   .stdout(
-    predicate::str::contains( "Usage: add (v1.0.0)" )
+    predicate::str::contains( "Usage: .add (v1.0.0)" )
     .and( predicate::str::contains( "Aliases: sum, plus" ) )
     .and( predicate::str::contains( "Tags: math, calculation" ) ) // Added this line
     .and( predicate::str::contains( "Hint: Adds two numbers." ) ) // Modified this line

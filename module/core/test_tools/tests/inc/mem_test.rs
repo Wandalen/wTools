@@ -2,8 +2,8 @@ use super::*;
 
 //
 
-#[allow(dead_code)]
-#[test]
+#[ allow( dead_code ) ]
+#[ test ]
 fn same_data() {
   let buf = [0u8; 128];
   assert!(the_module::mem::same_data(&buf, &buf));

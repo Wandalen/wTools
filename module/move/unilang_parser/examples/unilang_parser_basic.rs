@@ -1,6 +1,6 @@
-//! Comprehensive Basic Usage Example for unilang_parser
+//! Comprehensive Basic Usage Example for `unilang_parser`
 //!
-//! This example demonstrates the core functionality of the unilang_parser crate:
+//! This example demonstrates the core functionality of the `unilang_parser` crate:
 //! - Creating a Parser with default configuration
 //! - Parsing single instructions with various argument types
 //! - Parsing multiple instructions separated by ;;
@@ -11,7 +11,7 @@
 use unilang_parser::{ Parser, UnilangParserOptions };
 // Removed: use unilang_parser::Argument; // This import is no longer strictly needed for the `unwrap_or` fix, but keep it for clarity if `Argument` is used elsewhere.
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "=== Unilang Parser Basic Usage Examples ===\n" );
 
@@ -22,7 +22,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   // Example 1: Single instruction with mixed argument types
   println!( "1. Single Instruction with Mixed Arguments:" );
   let input_single = "log.level severity::\"debug\" message::'Hello, Unilang!' --verbose";
-  println!( "   Input: {}", input_single );
+  println!( "   Input: {input_single}" );
 
   let instruction = parser.parse_single_instruction( input_single )?;
 
@@ -35,17 +35,17 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   println!( "\n2. Accessing Specific Arguments:" );
   if let Some( severity ) = instruction.named_arguments.get( "severity" )
   {
-    println!( "   Severity level: {:?}", severity );
+    println!( "   Severity level: {severity:?}" );
   }
   if let Some( message ) = instruction.named_arguments.get( "message" )
   {
-    println!( "   Log message: {:?}", message );
+    println!( "   Log message: {message:?}" );
   }
 
   // Example 3: Multiple instructions (command sequence)
   println!( "\n3. Multiple Instructions (Command Sequence):" );
   let input_multiple = "system.info ? ;; file.read path::\"/etc/hosts\" --binary ;; user.add 'John Doe' email::john.doe@example.com";
-  println!( "   Input: {}", input_multiple );
+  println!( "   Input: {input_multiple}" );
 
   let instructions = parser.parse_multiple_instructions( input_multiple )?;
 
@@ -63,7 +63,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
         println!
         (
           "     -> File path: {}",
-          instruction.named_arguments.get( "path" ).map( | arg | &arg.value ).unwrap_or( & "unknown".to_string() )
+          instruction.named_arguments.get( "path" ).map_or( & "unknown".to_string(), | arg | &arg.value )
         );
         println!
         (
@@ -76,12 +76,12 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
         println!
         (
           "     -> User name: {}",
-          instruction.positional_arguments.get( 0 ).map( | arg | &arg.value ).unwrap_or( & "unknown".to_string() )
+          instruction.positional_arguments.first().map_or( & "unknown".to_string(), | arg | &arg.value )
         );
         println!
         (
           "     -> Email: {}",
-          instruction.named_arguments.get( "email" ).map( | arg | &arg.value ).unwrap_or( & "unknown".to_string() )
+          instruction.named_arguments.get( "email" ).map_or( & "unknown".to_string(), | arg | &arg.value )
         );
       },
       _ => {}
@@ -94,7 +94,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
 
   println!( "   Full command path: {:?}", complex_path.command_path_slices );
   println!( "   Namespace: {:?}", &complex_path.command_path_slices[ ..complex_path.command_path_slices.len() - 1 ] );
-  println!( "   Command name: {}", complex_path.command_path_slices.last().unwrap_or( & "".to_string() ) );
+  println!( "   Command name: {}", complex_path.command_path_slices.last().unwrap_or( & String::new() ) );
   println!( "   Joined path: {}", complex_path.command_path_slices.join( "." ) );
 
   // Example 5: Help operator demonstration
@@ -107,7 +107,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
 
   for help_cmd in help_examples
   {
-    println!( "   Help command: {}", help_cmd );
+    println!( "   Help command: {help_cmd}" );
     let help_instruction = parser.parse_single_instruction( help_cmd )?;
 
     println!( "     Command: {:?}", help_instruction.command_path_slices );

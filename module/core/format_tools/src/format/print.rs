@@ -225,7 +225,6 @@ mod private
   }
 
   /// A struct for extracting and organizing row of table data for formatting.
-
   #[ derive( Debug, Default ) ]
   pub struct RowDescriptor
   {
@@ -242,7 +241,6 @@ mod private
   }
 
   /// A struct for extracting and organizing row of table data for formatting.
-
   #[ derive( Debug, Default ) ]
   pub struct ColDescriptor< 'label >
   {
@@ -261,7 +259,6 @@ mod private
   /// transformation of raw table data into a structured format suitable for
   /// rendering as a table.
   ///
-
   #[ allow( dead_code ) ]
   #[ derive( Debug ) ]
   pub struct InputExtract< 'data >
@@ -284,7 +281,7 @@ mod private
     pub col_descriptors : Vec< ColDescriptor< 'data > >,
 
     /// Descriptors for each row, including height.
-    pub row_descriptors : Vec< RowDescriptor >,
+    pub row_descriptors : Vec<  RowDescriptor  >,
 
     /// Extracted data for each cell, including string content and size.
     //                      string,              size,
@@ -451,7 +448,7 @@ mod private
       let mut key_to_ikey : HashMap< Cow< 'data, str >, usize > = HashMap::new();
 
       let mut col_descriptors : Vec< ColDescriptor< '_ > > = Vec::with_capacity( mcells[ 0 ] );
-      let mut row_descriptors : Vec< RowDescriptor > = Vec::with_capacity( mcells[ 1 ] );
+      let mut row_descriptors : Vec<  RowDescriptor  > = Vec::with_capacity( mcells[ 1 ] );
 
       let mut data : Vec< Vec< ( Cow< 'data, str >, [ usize ; 2 ] ) > > = Vec::new();
       let mut irow : usize = 0;

@@ -19,8 +19,8 @@ mod private
   /// - `path` - the root path
   /// - `objects` - a list of paths from the root that will be added
   /// - `dry` - a flag that indicates whether to apply the changes or not
-  ///         - `true` - does not modify git state
-  ///         - `false` - adds a change in the working directory to the staging area
+  ///   - `true` - does not modify git state
+  ///   - `false` - adds a change in the working directory to the staging area
   ///
   /// # Returns :
   /// Returns a result containing a report indicating the result of the operation.
@@ -142,7 +142,6 @@ mod private
   ///
   /// Returns an error if the `git push` command fails.
   // qqq : should be typed error, apply err_with
-
   #[ cfg_attr( feature = "tracing", tracing::instrument( skip( path ), fields( path = %path.as_ref().display() ) ) ) ]
   pub fn push< P >( path : P, dry : bool ) -> error::untyped::Result< Report >
   // qqq : don't use 1-prameter Result

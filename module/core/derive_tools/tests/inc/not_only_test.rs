@@ -1,5 +1,6 @@
-#![ allow( unused_imports ) ]
-#![ allow( dead_code ) ]
+#[ allow( unused_imports ) ]
+#[ allow( dead_code ) ]
+#[ allow( unused_variables ) ]
 
 use test_tools::prelude::*;
 

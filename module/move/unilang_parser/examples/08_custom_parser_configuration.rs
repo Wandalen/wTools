@@ -7,6 +7,7 @@
 
 use unilang_parser::{ Parser, UnilangParserOptions };
 
+#[allow(clippy::too_many_lines)]
 fn main()
 {
   println!( "=== Custom Parser Configuration ===" );
@@ -24,7 +25,7 @@ fn main()
       println!( "  Positional: {:?}", instruction.positional_arguments );
       println!( "  Named: {:?}", instruction.named_arguments );
     }
-    Err( e ) => println!( "✗ Default parser error: {}", e ),
+    Err( e ) => println!( "✗ Default parser error: {e}" ),
   }
 
   // Strict configuration
@@ -49,7 +50,7 @@ fn main()
     Err( e ) =>
     {
       println!( "✓ Strict parser correctly rejected duplicate arguments" );
-      println!( "   Error: {}", e );
+      println!( "   Error: {e}" );
     }
   }
 
@@ -61,7 +62,7 @@ fn main()
     Err( e ) =>
     {
       println!( "✓ Strict parser correctly rejected positional after named" );
-      println!( "   Error: {}", e );
+      println!( "   Error: {e}" );
     }
   }
 
@@ -75,7 +76,7 @@ fn main()
       println!( "  Positional: {:?}", instruction.positional_arguments );
       println!( "  Named: {:?}", instruction.named_arguments );
     }
-    Err( e ) => println!( "✗ Strict parser error: {}", e ),
+    Err( e ) => println!( "✗ Strict parser error: {e}" ),
   }
 
   // Compare configurations side by side
@@ -89,7 +90,7 @@ fn main()
 
   for ( description, test_input ) in test_cases
   {
-    println!( "\nTest: {} - '{}'", description, test_input );
+    println!( "\nTest: {description} - '{test_input}'" );
 
     match default_parser.parse_single_instruction( test_input )
     {

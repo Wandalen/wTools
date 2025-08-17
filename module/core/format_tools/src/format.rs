@@ -12,7 +12,6 @@ mod private
   /// depending on the parameters `how`, `fallback1`, and `fallback2`. Unlike `_field_with_key`,
   /// the key is the path of the expression and is deduced from the last part of the expression.
   /// For example, for `this.is.field`, the key is `field`.
-
   #[ macro_export ]
   macro_rules! _field_with_key
   {
@@ -43,7 +42,6 @@ mod private
   /// depending on the parameters `how`, `fallback1`, and `fallback2`. Unlike `_field_with_key`,
   /// the key is the path of the expression and is deduced from the last part of the expression.
   /// For example, for `this.is.field`, the key is `field`.
-
   #[ macro_export ]
   macro_rules! _field
   {

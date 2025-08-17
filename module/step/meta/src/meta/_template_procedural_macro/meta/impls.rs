@@ -12,7 +12,6 @@ use macro_tools::{ Result };
 ///
 /// Template.
 ///
-
 pub fn name( _input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
 

@@ -4,11 +4,25 @@ mod private
 {
 
   use crate::*;
+  #[cfg(not(feature = "no_std"))]
   use std::
   {
     borrow::Cow,
     io,
     path::{ Component, Path, PathBuf },
+    string::String,
+  };
+  
+  #[cfg(feature = "no_std")]
+  extern crate std;
+  
+  #[cfg(feature = "no_std")]
+  use std::
+  {
+    borrow::Cow,
+    io,
+    path::{ Component, Path, PathBuf },
+    string::String,
   };
   // use camino::{ Utf8Path, Utf8PathBuf };
 
@@ -68,7 +82,7 @@ mod private
   }
 
   /// Implementation of `TryIntoCowPath` for a reference to `Utf8Path`.
-  #[cfg( feature = "path_utf8" )]
+  #[ cfg( feature = "path_utf8" ) ]
   impl< 'a > TryIntoCowPath< 'a > for &'a Utf8Path
   {
     fn try_into_cow_path( self ) -> Result< Cow<'a, Path>, io::Error >
@@ -78,7 +92,7 @@ mod private
   }
 
   /// Implementation of `TryIntoCowPath` for `Utf8PathBuf`.
-  #[cfg( feature = "path_utf8" )]
+  #[ cfg( feature = "path_utf8" ) ]
   impl<'a> TryIntoCowPath<'a> for Utf8PathBuf
   {
     fn try_into_cow_path( self ) -> Result< Cow<'a, Path>, io::Error >

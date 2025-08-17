@@ -6,7 +6,6 @@ mod private
   ///
   /// Parse properties.
   ///
-
   pub trait PropsParseOptionsAdapter
   {
     /// Parse from splits.
@@ -24,7 +23,6 @@ mod private
   ///
   /// Properties parsing options.
   ///
-
   #[ derive( Debug, PartialEq, Eq ) ]
   pub struct PropsParseOptions
   {
@@ -51,7 +49,6 @@ mod private
   ///
   /// Parse properties from splits.
   ///
-
   pub fn parse_from_splits< I >( splits : I ) -> HashMap< Box< str >, Box< str > >
   where
     < I as Iterator >::Item : core::fmt::Display,

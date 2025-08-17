@@ -3,7 +3,7 @@
 use crate::*;
 use collection_tools::HashSet;
 
-#[allow(clippy::implicit_hasher)]
+#[ allow( clippy::implicit_hasher ) ]
 impl<K> Collection for HashSet<K>
 where
   K: core::cmp::Eq + core::hash::Hash,
@@ -11,13 +11,13 @@ where
   type Entry = K;
   type Val = K;
 
-  #[inline(always)]
+  #[ inline( always ) ]
   fn entry_to_val(e: Self::Entry) -> Self::Val {
     e
   }
 }
 
-#[allow(clippy::implicit_hasher)]
+#[ allow( clippy::implicit_hasher ) ]
 impl<K> CollectionAdd for HashSet<K>
 where
   K: core::cmp::Eq + core::hash::Hash,
@@ -25,13 +25,13 @@ where
   // type Entry = K;
   // type Val = K;
 
-  #[inline(always)]
+  #[ inline( always ) ]
   fn add(&mut self, e: Self::Entry) -> bool {
     self.insert(e)
   }
 }
 
-#[allow(clippy::implicit_hasher)]
+#[ allow( clippy::implicit_hasher ) ]
 impl<K> CollectionAssign for HashSet<K>
 where
   K: core::cmp::Eq + core::hash::Hash,
@@ -48,13 +48,13 @@ where
   }
 }
 
-#[allow(clippy::implicit_hasher)]
+#[ allow( clippy::implicit_hasher ) ]
 impl<K> CollectionValToEntry<K> for HashSet<K>
 where
   K: core::cmp::Eq + core::hash::Hash,
 {
   type Entry = K;
-  #[inline(always)]
+  #[ inline( always ) ]
   fn val_to_entry(val: K) -> Self::Entry {
     val
   }
@@ -75,14 +75,14 @@ where
 //   K : core::cmp::Eq + core::hash::Hash,
 // {
 //   /// Inserts a key-value pair into the map.
-//   fn insert( &mut self, element : K ) -> Option< K >;
+//   fn insert( &mut self, element : K ) -> Option<  K  >;
 // }
 //
 // // impl< K > HashSetLike< K > for HashSet< K >
 // // where
 // //   K : core::cmp::Eq + core::hash::Hash,
 // // {
-// //   fn insert( &mut self, element : K ) -> Option< K >
+// //   fn insert( &mut self, element : K ) -> Option<  K  >
 // //   {
 // //     HashSet::replace( self, element )
 // //   }
@@ -90,7 +90,7 @@ where
 
 // = storage
 
-#[allow(clippy::implicit_hasher)]
+#[ allow( clippy::implicit_hasher ) ]
 impl<K> Storage for HashSet<K>
 where
   K: ::core::cmp::Eq + ::core::hash::Hash,
@@ -99,7 +99,7 @@ where
   type Preformed = HashSet<K>;
 }
 
-#[allow(clippy::implicit_hasher)]
+#[ allow( clippy::implicit_hasher ) ]
 impl<K> StoragePreform for HashSet<K>
 where
   K: ::core::cmp::Eq + ::core::hash::Hash,
@@ -125,8 +125,7 @@ where
 /// - `Formed`: The type of the entity produced, typically a `HashSet<K>`.
 /// - `End`: A trait defining the end behavior of the formation process, managing how the hash set is finalized.
 ///
-
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct HashSetDefinition<K, Context = (), Formed = HashSet<K>, End = ReturnStorage>
 where
   K: ::core::cmp::Eq + ::core::hash::Hash,
@@ -156,8 +155,7 @@ where
 /// of a `HashSet`, including the storage type, the context, and the type ultimately formed. It ensures that
 /// these elements are congruent and coherent throughout the lifecycle of the hash set formation.
 ///
-
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct HashSetDefinitionTypes<K, Context = (), Formed = HashSet<K>> {
   _phantom: core::marker::PhantomData<(K, Context, Formed)>,
 }
@@ -178,7 +176,7 @@ impl<K, Context, Formed> FormerMutator for HashSetDefinitionTypes<K, Context, Fo
 
 // = entity to
 
-#[allow(clippy::implicit_hasher)]
+#[ allow( clippy::implicit_hasher ) ]
 impl<K, Definition> EntityToFormer<Definition> for HashSet<K>
 where
   K: ::core::cmp::Eq + ::core::hash::Hash,
@@ -195,7 +193,7 @@ where
   type Former = HashSetFormer<K, Definition::Context, Definition::Formed, Definition::End>;
 }
 
-#[allow(clippy::implicit_hasher)]
+#[ allow( clippy::implicit_hasher ) ]
 impl<K> crate::EntityToStorage for HashSet<K>
 where
   K: ::core::cmp::Eq + ::core::hash::Hash,
@@ -203,7 +201,7 @@ where
   type Storage = HashSet<K>;
 }
 
-#[allow(clippy::implicit_hasher)]
+#[ allow( clippy::implicit_hasher ) ]
 impl<K, Context, Formed, End> crate::EntityToDefinition<Context, Formed, End> for HashSet<K>
 where
   K: ::core::cmp::Eq + ::core::hash::Hash,
@@ -213,7 +211,7 @@ where
   type Types = HashSetDefinitionTypes<K, Context, Formed>;
 }
 
-#[allow(clippy::implicit_hasher)]
+#[ allow( clippy::implicit_hasher ) ]
 impl<K, Context, Formed> crate::EntityToDefinitionTypes<Context, Formed> for HashSet<K>
 where
   K: ::core::cmp::Eq + ::core::hash::Hash,
@@ -247,12 +245,12 @@ where
   fn former() -> HashSetFormer<K, (), HashSet<K>, ReturnStorage>;
 }
 
-#[allow(clippy::implicit_hasher)]
+#[ allow( clippy::implicit_hasher ) ]
 impl<K> HashSetExt<K> for HashSet<K>
 where
   K: ::core::cmp::Eq + ::core::hash::Hash,
 {
-  #[allow(clippy::default_constructed_unit_structs)]
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn former() -> HashSetFormer<K, (), HashSet<K>, ReturnStorage> {
     HashSetFormer::<K, (), HashSet<K>, ReturnStorage>::new(ReturnStorage::default())
   }

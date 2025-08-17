@@ -2,7 +2,7 @@ use test_tools::*;
 
 //
 
-tests_impls!
+test_tools::tests_impls!
 {
   fn pass()
   {
@@ -12,7 +12,7 @@ tests_impls!
 
 //
 
-tests_index!
+test_tools::tests_index!
 {
   pass,
 }

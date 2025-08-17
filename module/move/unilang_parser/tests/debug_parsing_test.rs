@@ -16,7 +16,7 @@
 
 use unilang_parser::{ Parser, UnilangParserOptions };
 
-/// Tests the parsing of "test_cmd hello 123" to debug unexpected command path behavior.
+/// Tests the parsing of "`test_cmd` hello 123" to debug unexpected command path behavior.
 /// Test Combination: D1.1
 #[ test ]
 fn debug_test_cmd_hello_123_parsing()

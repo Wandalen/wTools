@@ -1,6 +1,6 @@
 [package]
 name = "unilang"
-version = "0.6.0"
+version = "0.12.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -21,14 +21,14 @@ keywords = [ "wtools", "CLI", "CUI", "user-interface" ]
 workspace = true
 
 [package.metadata.docs.rs]
-features = [ "full", "error_tools/enabled", "strs_tools/enabled", "mod_interface/enabled", "iter_tools/enabled", "former/enabled" ]
+features = [ "full", "error_tools/enabled", "mod_interface/enabled", "former/enabled" ]
 all-features = false
 
 [features]
-default = [ "enabled", "simd" ]
-full = [ "enabled", "on_unknown_suggest", "simd" ]
+default = [ "enabled", "simd", "repl", "enhanced_repl" ]
+full = [ "enabled", "on_unknown_suggest", "simd", "repl", "enhanced_repl" ]
 enabled = []
-benchmarks = [ "simd", "clap", "pico-args", "criterion" ]
+benchmarks = [ "simd", "clap", "pico-args", "benchkit" ]
 
 # Performance optimizations - SIMD enabled by default for maximum performance
 # Can be disabled with: cargo build --no-default-features --features enabled
@@ -38,8 +38,17 @@ benchmarks = [ "simd", "clap", "pico-args", "criterion" ]
 # - SIMD tokenization in unilang_parser
 simd = [ "simd-json", "unilang_parser/simd" ]  # SIMD optimizations enabled by default
 
+# REPL (Read-Eval-Print Loop) support - basic interactive shell functionality
+repl = []
+
+# Enhanced REPL with command history, auto-completion, and arrow key support
+# Enables: Arrow key navigation, tab completion, secure input, session persistence
+# Dependencies: rustyline (terminal handling), atty (interactive detection)
+# Auto-fallback: Gracefully degrades to basic REPL in non-interactive environments
+enhanced_repl = [ "repl", "dep:rustyline", "dep:atty" ]
+
 # This configuration suggests an action to be done when the command is unknown. In this case, when an unknown command is encountered, the system might suggest alternatives
-on_unknown_suggest = [ "dep:textdistance" ]
+on_unknown_suggest = [ ]
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
@@ -53,14 +62,14 @@ phf = { version = "0.11", features = ["macros"] }
 ## internal
 error_tools = { workspace = true, features = [ "enabled", "error_typed", "error_untyped" ] }
 mod_interface = { workspace = true, features = [ "enabled" ] }
-iter_tools = { workspace = true, features = [ "enabled" ] }
 former = { workspace = true, features = [ "enabled", "derive_former" ] }
 unilang_parser = { workspace = true } # SIMD features controlled by main unilang features
 
 ## external
 log = "0.4"
 #closure = "0.3"
-textdistance = { version = "1.0", optional = true } # fuzzy commands search
+rustyline = { version = "14.0", optional = true } # Enhanced REPL with history and arrow keys
+atty = { version = "0.2", optional = true } # Terminal detection for enhanced REPL
 indexmap = "2.2.6"
 
 # Performance optimization dependencies
@@ -69,7 +78,7 @@ simd-json = { version = "0.13", optional = true } # SIMD-optimized JSON parsing
 # Benchmark dependencies moved to dev-dependencies to avoid production inclusion
 clap = { version = "4.4", optional = true }
 pico-args = { version = "0.5", optional = true }
-criterion = { version = "0.5", optional = true }
+benchkit = { workspace = true, optional = true, features = [ "enabled", "markdown_reports", "data_generators" ] }
 
 [[bin]]
 name = "unilang_cli"
@@ -110,6 +119,27 @@ name = "throughput_benchmark"
 path = "benchmarks/throughput_benchmark.rs"
 harness = false
 
+[[bench]]
+name = "string_interning_benchmark"
+path = "benchmarks/string_interning_benchmark.rs"
+harness = false
+
+[[bench]]
+name = "integrated_string_interning_benchmark"
+path = "benchmarks/integrated_string_interning_benchmark.rs"
+harness = false
+
+[[bench]]
+name = "simd_json_benchmark"
+path = "benchmarks/simd_json_benchmark.rs"
+harness = false
+
+[[bench]]
+name = "strs_tools_benchmark"
+path = "benchmarks/strs_tools_benchmark.rs"
+harness = false
+
+
 [[test]]
 name = "run_all_benchmarks"
 path = "benchmarks/run_all_benchmarks.rs"
@@ -130,12 +160,11 @@ path = "benchmarks/run_all_benchmarks.rs"
 
 
 [build-dependencies]
-phf_codegen = "0.11"
 serde = "1.0"
 serde_yaml = "0.9"
 
 [dev-dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }
 assert_cmd = "2.0"
 predicates = "2.1"
 assert_fs = "1.0"

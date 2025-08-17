@@ -1,4 +1,4 @@
-//! Purpose: Tests the `#[derive(Former)]` macro's generation of constructors for single-field and multi-field tuple variants within a generic enum with bounds. This file focuses on verifying the derive-based implementation, particularly the default behavior when `#[scalar]` is commented out.
+//! Purpose: Tests the `#[ derive( Former ) ]` macro's generation of constructors for single-field and multi-field tuple variants within a generic enum with bounds. This file focuses on verifying the derive-based implementation, particularly the default behavior when `#[ scalar ]` is commented out.
 //!
 //! Coverage:
 //! - Rule 3d (Tuple + Single-Field + Default): Verifies `Enum::variant() -> InnerFormer<...>` for a generic enum.
@@ -8,7 +8,7 @@
 //! Test Relevance/Acceptance Criteria:
 //! - Defines a generic enum `EnumScalarGeneric<T: Bound>` with variants `Variant1(InnerScalar<T>)` and `Variant2(InnerScalar<T>, bool)`.
 //! - Includes shared test logic from `scalar_generic_tuple_only_test.rs`.
-//! - Relies on `#[derive(Former)]` to generate static methods (`variant_1`, `variant_2`).
+//! - Relies on `#[ derive( Former ) ]` to generate static methods (`variant_1`, `variant_2`).
 //! - The included tests invoke these methods and use `.into()` for `variant_1` (expecting scalar) and setters/`.form()` for `variant_2` (expecting subformer), asserting the final enum instance matches manual construction. This tests the derived constructors' behavior with generic tuple variants.
 
 // File: module/core/former/tests/inc/former_enum_tests/scalar_generic_tuple_derive.rs
@@ -21,16 +21,16 @@
 // manual implementation and successful generated code. This is a known limitation
 // of the macro expansion timing.
 
-// --- Enum Definition with Bounds and #[scalar] Variants ---
+// --- Enum Definition with Bounds and #[ scalar ] Variants ---
 // Apply Former derive here. This is what we are testing.
-#[derive(Debug, PartialEq, Clone)]
+#[ derive( Debug, PartialEq, Clone ) ]
 
 // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
 
-#[derive(former::Former)]
+#[ derive( former::Former ) ]
 pub enum EnumScalarGeneric<T : Bound> where T: Clone
 {
-  #[scalar] // Enabled for Rule 1d testing
+  #[ scalar ] // Enabled for Rule 1d testing
   Variant1(InnerScalar<T>), // Tuple variant with one generic field
 
   Variant2(InnerScalar<T>, bool), // Tuple variant with generic and non-generic fields

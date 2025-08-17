@@ -10,7 +10,7 @@
 //! Macro to answer the question: does it implement a trait?
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 
 // #[ macro_use ]
 mod implements_impl;
@@ -31,7 +31,6 @@ mod private
   /// dbg!( implements!( Box::new( 13_i32 ) => Copy ) );
   /// // < implements!( 13_i32 => Copy ) : false
   /// ```
-
   #[ macro_export ]
   macro_rules! implements
   {
@@ -53,7 +52,6 @@ mod private
   /// dbg!( instance_of!( Box::new( 13_i32 ) => Copy ) );
   /// // < instance_of!( 13_i32 => Copy ) : false
   /// ```
-
   #[ macro_export ]
   macro_rules! instance_of
   {

@@ -12,14 +12,14 @@
 //!
 //! ## Usage Examples
 //! ```rust,ignore
-//! #[derive(Former)]
+//! #[ derive( Former ) ]
 //! enum MyEnum {
 //!     // Works with Former-implementing types
-//!     #[subform_scalar]  // Uses field's Former
+//!     #[ subform_scalar ]  // Uses field's Former
 //!     WithFormer(MyStruct),
 //!     
 //!     // Works with primitive types using explicit scalar
-//!     #[scalar]  // Direct scalar approach
+//!     #[ scalar ]  // Direct scalar approach
 //!     Primitive(i32),
 //! }
 //! ```
@@ -33,7 +33,7 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 ///
 /// This handler generates variant formers with better error handling and more
 /// informative compiler messages when trait bounds aren't satisfied.
-pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
+pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result<  proc_macro2::TokenStream  >
 {
   let variant_name = ctx.variant_name;
   let variant_fields = ctx.variant.fields();
@@ -56,14 +56,14 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
 }
 
 /// Generates scalar approach for primitives and explicitly marked fields.
-fn generate_scalar_approach(ctx : &mut EnumVariantHandlerContext<'_>) -> Result< proc_macro2::TokenStream >
+fn generate_scalar_approach(ctx : &mut EnumVariantHandlerContext<'_>) -> Result<  proc_macro2::TokenStream  >
 {
   // Delegate to the scalar handler
   super::tuple_single_field_scalar::handle(ctx)
 }
 
 /// Generates enhanced subform approach with better error messages.
-fn generate_enhanced_subform_approach(ctx : &mut EnumVariantHandlerContext<'_>) -> Result< proc_macro2::TokenStream >
+fn generate_enhanced_subform_approach(ctx : &mut EnumVariantHandlerContext<'_>) -> Result<  proc_macro2::TokenStream  >
 {
   let variant_name = ctx.variant_name;
   let variant_fields = ctx.variant.fields();
@@ -78,7 +78,7 @@ fn generate_enhanced_subform_approach(ctx : &mut EnumVariantHandlerContext<'_>) 
   // Create informative error messages
   let error_hint = format!(
     "Field type `{}` in variant `{}` must implement `Former` trait for subform functionality. \
-     Consider adding `#[scalar]` attribute if this is a primitive type.",
+     Consider adding `#[ scalar ]` attribute if this is a primitive type.",
     quote!(#field_type).to_string(),
     variant_name
   );
@@ -91,7 +91,7 @@ fn generate_enhanced_subform_approach(ctx : &mut EnumVariantHandlerContext<'_>) 
       #[ doc = "" ]
       #[ doc = "This method returns a subformer that delegates to the field type's Former implementation." ]
       #[ doc = concat!("If you get a compilation error, the field type `", stringify!(#field_type), "` may not implement `Former`.") ]
-      #[ doc = "In that case, consider using `#[scalar]` attribute instead." ]
+      #[ doc = "In that case, consider using `#[ scalar ]` attribute instead." ]
       #[ inline( always ) ]
       pub fn #method_name() -> < #field_type as former::EntityToFormer< #field_type##FormerDefinition > >::Former
       where
@@ -132,7 +132,7 @@ fn generate_enhanced_subform_approach(ctx : &mut EnumVariantHandlerContext<'_>) 
 ///
 /// This generates code that will provide clear error messages if the
 /// field type doesn't meet the requirements for subform handling.
-pub fn generate_error_fallback(ctx : &mut EnumVariantHandlerContext<'_>) -> Result< proc_macro2::TokenStream >
+pub fn generate_error_fallback(ctx : &mut EnumVariantHandlerContext<'_>) -> Result<  proc_macro2::TokenStream  >
 {
   let variant_name = ctx.variant_name;
   let field = ctx.variant.fields().iter().next().unwrap();
@@ -144,7 +144,7 @@ pub fn generate_error_fallback(ctx : &mut EnumVariantHandlerContext<'_>) -> Resu
     compile_error!(concat!(
       "Cannot generate subformer for variant `", stringify!(#variant_name), "` in enum `", stringify!(#enum_name), "`. ",
       "Field type `", stringify!(#field_type), "` does not implement the required Former traits. ",
-      "Consider using `#[scalar]` attribute instead of `#[subform_scalar]` for primitive types."
+      "Consider using `#[ scalar ]` attribute instead of `#[ subform_scalar ]` for primitive types."
     ));
   })
 }

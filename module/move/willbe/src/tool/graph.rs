@@ -15,7 +15,7 @@ mod private
     hash::Hash,
   };
   use collection_tools::collection::{ HashMap, HashSet, VecDeque };
-  use pth::PathBuf;
+  use std::path::PathBuf;
   use petgraph::
   {
     graph::Graph,

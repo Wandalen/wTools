@@ -27,7 +27,7 @@ fn basic_test() {
   let expected_output_path = workspace
     .target_directory()
     .join("doc")
-    .join(format!("{}_doc.md", crate_name));
+    .join(format!("{crate_name}_doc.md"));
 
   // Act
   let result = action::crate_doc::doc(&workspace, &crate_dir, None);
@@ -115,7 +115,7 @@ fn output_option_test() {
   assert!(!content.is_empty(), "Output file is empty");
   assert!(content.contains("# Crate Documentation"), "Output file missing main header");
   assert!(
-    content.contains(&format!("# Module `{}`", crate_name)),
+    content.contains(&format!("# Module `{crate_name}`")),
     "Output file missing module header"
   );
   assert!(
@@ -131,7 +131,7 @@ fn output_option_test() {
   assert!(!workspace
     .target_directory()
     .join("doc")
-    .join(format!("{}_doc.md", crate_name))
+    .join(format!("{crate_name}_doc.md"))
     .exists());
 
   // Clean up the created file/directory relative to CWD
@@ -189,13 +189,12 @@ fn cargo_doc_fail_test() {
 
   assert!(
     matches!(error, CrateDocError::Command(_)),
-    "Expected Command error, got {:?}",
-    error
+    "Expected Command error, got {error:?}"
   );
   assert!(
     report
       .status
-      .contains(&format!("Failed during `cargo doc` execution for `{}`.", crate_name)),
+      .contains(&format!("Failed during `cargo doc` execution for `{crate_name}`.")),
     "Report status mismatch: {}",
     report.status
   );
@@ -209,6 +208,6 @@ fn cargo_doc_fail_test() {
   assert!(!workspace
     .target_directory()
     .join("doc")
-    .join(format!("{}_doc.md", crate_name))
+    .join(format!("{crate_name}_doc.md"))
     .exists());
 }

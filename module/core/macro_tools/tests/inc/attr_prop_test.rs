@@ -1,14 +1,14 @@
 use super::*;
 use quote::ToTokens;
 
-#[test]
+#[ test ]
 fn attr_prop_test() {
   use the_module::{AttributePropertyComponent, AttributePropertyBoolean, AttributePropertyOptionalSingletone};
 
-  #[derive(Debug, Default, Clone, Copy)]
+  #[ derive( Debug, Default, Clone, Copy ) ]
   pub struct DebugMarker;
 
-  #[derive(Debug, Default, Clone, Copy)]
+  #[ derive( Debug, Default, Clone, Copy ) ]
   pub struct EnabledMarker;
 
   // pub trait AttributePropertyComponent
@@ -24,7 +24,7 @@ fn attr_prop_test() {
     const KEYWORD: &'static str = "enabled";
   }
 
-  #[derive(Debug, Default)]
+  #[ derive( Debug, Default ) ]
   struct MyAttributes {
     pub debug: AttributePropertyBoolean<DebugMarker>,
     pub enabled: AttributePropertyBoolean<EnabledMarker>,
@@ -85,7 +85,7 @@ fn attr_prop_test() {
   assert!(!parsed.debug.internal());
 }
 
-#[test]
+#[ test ]
 fn attribute_property_enabled() {
   use the_module::AttributePropertyOptionalSingletone;
 

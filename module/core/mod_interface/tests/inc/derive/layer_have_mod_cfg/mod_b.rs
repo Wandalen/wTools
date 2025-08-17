@@ -1,4 +1,4 @@
-/// fn_b
+/// `fn_b`
 pub fn fn_b() -> bool
 {
   true

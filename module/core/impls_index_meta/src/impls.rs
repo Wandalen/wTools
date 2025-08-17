@@ -1,12 +1,18 @@
 extern crate alloc;
-use proc_macro2::TokenStream;
-use quote::{quote, ToTokens};
-use syn::{
-  parse::{Parse, ParseStream},
-  Result, // Use syn's Result directly
-  Token,
-  Item,
-  spanned::Spanned, // Import Spanned trait for error reporting
+use macro_tools::
+{
+  proc_macro2::TokenStream,
+  quote,
+  quote::ToTokens,
+  syn,
+  syn::
+  {
+    parse::{ Parse, ParseStream },
+    Result, // Use syn's Result directly
+    Token,
+    Item,
+    spanned::Spanned, // Import Spanned trait for error reporting
+  },
 };
 use core::fmt; // Import fmt for manual Debug impl if needed
 use alloc::vec::IntoIter; // Use alloc instead of std
@@ -18,7 +24,7 @@ trait AsMuchAsPossibleNoDelimiter {}
 
 /// Wrapper for parsing multiple elements.
 // No derive(Debug) here as T might not implement Debug
-pub struct Many<T: ToTokens>(pub Vec<T>);
+pub struct Many<T: ToTokens>(pub Vec< T >);
 
 // Manual Debug implementation for Many<T> if T implements Debug
 impl<T> fmt::Debug for Many<T>
@@ -79,9 +85,9 @@ where
 /// Module-specific item.
 /// Represents an optional `?` followed by a `syn::Item`.
 ///
-// Removed #[derive(Debug)]
+// Removed #[ derive( Debug ) ]
 pub struct Item2 {
-  pub optional: Option<Token![ ? ]>,
+  pub optional: Option< Token![ ? ] >,
   pub func: syn::Item,
 }
 
@@ -99,9 +105,9 @@ impl fmt::Debug for Item2 {
 impl AsMuchAsPossibleNoDelimiter for Item2 {}
 
 impl Parse for Item2 {
-  fn parse(input: ParseStream<'_>) -> Result<Self> {
+  fn parse(input: ParseStream<'_>) -> Result< Self > {
     // Look for an optional '?' token first
-    let optional: Option<Token![ ? ]> = input.parse()?;
+    let optional: Option< Token![ ? ] > = input.parse()?;
 
     // Parse the item (expected to be a function, but we parse Item for flexibility)
     let func: Item = input.parse()?;
@@ -139,7 +145,7 @@ impl<T> Parse for Many<T>
 where
   T: Parse + ToTokens + AsMuchAsPossibleNoDelimiter,
 {
-  fn parse(input: ParseStream<'_>) -> Result<Self> {
+  fn parse(input: ParseStream<'_>) -> Result< Self > {
     let mut items = Vec::new();
     // Continue parsing as long as the input stream is not empty
     while !input.is_empty() {
@@ -152,7 +158,7 @@ where
 }
 
 impl Parse for Items2 {
-  fn parse(input: ParseStream<'_>) -> Result<Self> {
+  fn parse(input: ParseStream<'_>) -> Result< Self > {
     let many: Many<Item2> = input.parse()?;
     Ok(Self(many))
   }
@@ -214,7 +220,7 @@ impl ToTokens for Items2 {
   }
 }
 
-pub fn impls(input: proc_macro::TokenStream) -> Result<TokenStream> {
+pub fn impls(input: proc_macro::TokenStream) -> Result< TokenStream > {
   let items2: Items2 = syn::parse(input)?;
 
   let result = quote! {

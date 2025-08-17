@@ -2,6 +2,8 @@ use super::*;
 use std::sync::{Arc, Mutex};
 use the_module::CommandsAggregator;
 
+//
+
 #[test]
 fn changes_state_of_local_variable_on_perform() {
   let history = Arc::new(Mutex::new(vec![]));

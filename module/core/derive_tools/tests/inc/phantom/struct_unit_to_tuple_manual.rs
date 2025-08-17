@@ -1,6 +1,6 @@
-use std::marker::PhantomData;
+use core::marker::PhantomData;
 
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 struct StructUnit<T>(PhantomData<T>);
 
 include!("./only_test/struct_unit_to_tuple.rs");

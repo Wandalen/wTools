@@ -35,5 +35,5 @@ async-trait = { workspace = true }
 async_from = { workspace = true }
 
 [dev-dependencies]
-# test_tools = { workspace = true }
+# test_tools = { workspace = true, features = [ "full" ] }
 tokio = { workspace = true, default-features = false, features = [ "rt-multi-thread", "time", "macros" ] }

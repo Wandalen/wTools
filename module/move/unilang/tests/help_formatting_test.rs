@@ -10,6 +10,7 @@
 use unilang::prelude::*;
 
 #[test]
+#[allow(clippy::too_many_lines)]
 fn test_help_formatting_is_readable()
 {
   // This test ensures help output follows the improved formatting specification
@@ -111,9 +112,7 @@ fn test_help_formatting_is_readable()
             let hint_text = parts[1].split(',').next().unwrap_or("");
             
             // If the hint is redundant with information already present, fail the test
-            if before_hint.contains(hint_text) {
-              panic!("Redundant hint text found: '{}' already contains '{}'", before_hint, hint_text);
-            }
+            assert!(!before_hint.contains(hint_text), "Redundant hint text found: '{before_hint}' already contains '{hint_text}'");
           }
         }
       }
@@ -142,11 +141,11 @@ fn test_help_formatting_is_readable()
     // Should not contain the old cramped patterns
     assert!(
       !arg_line.contains("(Kind:"),
-      "Found old 'Kind:' format, should use 'Type:': '{}'", arg_line
+      "Found old 'Kind:' format, should use 'Type:': '{arg_line}'"
     );
     assert!(
       !(arg_line.contains("- Hint:") && arg_line.len() > 60),
-      "Found old cramped 'Hint:' format: '{}'", arg_line
+      "Found old cramped 'Hint:' format: '{arg_line}'"
     );
     
     // Should use improved patterns
@@ -154,7 +153,7 @@ fn test_help_formatting_is_readable()
       // Main argument lines should be reasonably short
       assert!(
         arg_line.len() <= 80,
-        "Argument header line too long: '{}'", arg_line
+        "Argument header line too long: '{arg_line}'"
       );
     }
   }

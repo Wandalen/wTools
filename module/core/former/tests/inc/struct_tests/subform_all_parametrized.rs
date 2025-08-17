@@ -1,10 +1,10 @@
 #![allow(dead_code)]
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
 /// Parameter description.
-#[allow(explicit_outlives_requirements)]
-#[derive(Debug, PartialEq, the_module::Former)]
+#[ allow( explicit_outlives_requirements ) ]
+#[ derive( Debug, PartialEq, the_module::Former ) ]
 // #[ derive( Debug, PartialEq ) ]
 pub struct Child<'child, T>
 where
@@ -15,7 +15,7 @@ where
 }
 
 /// Parent required for the template.
-#[derive(Debug, Default, PartialEq, the_module::Former)]
+#[ derive( Debug, Default, PartialEq, the_module::Former ) ]
 // #[ derive( Debug, Default, PartialEq, the_module::Former ) ] #[ debug ]
 // #[ derive( Debug, Default, PartialEq ) ]
 pub struct Parent<'child> {
@@ -29,7 +29,7 @@ impl<'child, Definition> ParentFormer<'child, Definition>
 where
   Definition: former::FormerDefinition<Storage = <Parent<'child> as former::EntityToStorage>::Storage>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn child(self, name: &str) -> ChildAsSubformer<'child, str, Self, impl ChildAsSubformerEnd<'child, str, Self>> {
     self._children_subform_entry::<ChildFormer<'_, _, _>, _>().name(name)
   }
@@ -39,7 +39,7 @@ where
 
 // == end of generated
 
-#[test]
+#[ test ]
 fn subform_child() {
   let got = Parent::former()
     .child("a")
@@ -64,7 +64,7 @@ fn subform_child() {
   a_id!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn subform_child_generated() {
   let got = Parent::former()
     ._child()
@@ -91,7 +91,7 @@ fn subform_child_generated() {
   a_id!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn collection() {
   let got = Parent::former()
     .children2()
@@ -114,7 +114,7 @@ fn collection() {
   a_id!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn scalar() {
   let children = collection_tools::vec![
     Child {

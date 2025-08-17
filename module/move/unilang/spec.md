@@ -32,6 +32,7 @@
     *   13. Project Goals & Success Metrics
     *   14. Deliverables
     *   15. Open Questions
+        *   15.1. Governing Principles
     *   16. Core Principles of Development
 *   **Appendix: Addendum**
     *   Conformance Checklist
@@ -117,6 +118,11 @@ This section lists the specific, testable functions the `unilang` framework **mu
 *   **FR-REG-3 (Declarative Loading):** The framework **must** provide functions (`load_from_yaml_str`, `load_from_json_str`) to load `CommandDefinition`s from structured text at runtime.
 *   **FR-REG-4 (Namespace Support):** The framework **must** support hierarchical command organization through dot-separated namespaces (e.g., `.math.add`).
 *   **FR-REG-5 (Alias Resolution):** The framework **must** support command aliases. When an alias is invoked, the framework **must** execute the corresponding canonical command.
+*   **FR-REG-6 (Explicit Command Names):** The framework **must** enforce explicit command naming:
+    - All command names **must** start with a dot prefix (e.g., `.chat`, `.session.list`)
+    - Command registration **must** fail with a clear error if the name lacks a dot prefix
+    - The framework **must not** automatically add, remove, or transform command names during registration or execution
+    - Namespaced commands **must** use dot-separated hierarchy (e.g., name: `list`, namespace: `.session` → `.session.list`)
 
 #### 4.2. Argument Parsing & Type System
 *   **FR-ARG-1 (Type Support):** The framework **must** support parsing and type-checking for the following `Kind`s: `String`, `Integer`, `Float`, `Boolean`, `Path`, `File`, `Directory`, `Enum`, `Url`, `DateTime`, `Pattern`, `List`, `Map`, `JsonString`, and `Object`.
@@ -431,6 +437,38 @@ Upon completion, the project will deliver the following artifacts:
 1.  **Custom Type Registration:** What is the API and process for an `Integrator` to define a new custom `Kind` and register its associated parsing and validation logic with the framework?
 2.  **Plugin System:** What would a formal plugin system look like, allowing third-party crates to provide `unilang` commands to a host application?
 
+### 15.1. Governing Principles
+
+The unilang framework is built on fundamental principles that guide all architectural decisions and implementation details:
+
+#### 15.1.1. Minimum Implicit Magic
+The framework **must** minimize implicit behavior and transformations to maximize predictability:
+- **Explicit Operations**: All operations should be explicit rather than implicit
+- **Predictable Behavior**: What you specify is exactly what you get - no hidden transformations
+- **Clear APIs**: Function behavior should be obvious from signatures and documentation
+- **No Surprising Side Effects**: Commands and functions should behave exactly as documented
+
+#### 15.1.2. Single Source of Truth
+Each piece of information **must** have exactly one authoritative source:
+- **Command Definitions**: Commands registered exactly as specified, used exactly as registered
+- **Configuration**: One canonical location for each configuration setting
+- **Documentation**: Single authoritative source for each concept or procedure
+
+#### 15.1.3. Fail-Fast Validation
+The framework **must** detect and report errors as early as possible:
+- **Registration Time**: Invalid command definitions rejected immediately during registration
+- **Parse Time**: Syntax errors detected during parsing phase
+- **Semantic Analysis**: Type and validation errors caught before execution
+- **Clear Error Messages**: All errors include actionable guidance for resolution
+
+#### 15.1.4. Explicit Dependencies
+All dependencies and relationships **must** be made explicit:
+- **Command Dependencies**: Clear specification of required arguments and constraints
+- **Type Dependencies**: Explicit type requirements and conversions
+- **System Dependencies**: Clear documentation of external requirements
+
+These principles serve as the foundation for all design decisions and implementation choices throughout the framework.
+
 ### 16. Core Principles of Development
 
 #### 16.1. Single Source of Truth
@@ -447,6 +485,15 @@ The development process **must** be fully transparent and auditable. All signifi
 
 #### 16.5. File Naming Conventions
 All file names within the project repository **must** use lowercase `snake_case`.
+
+#### 16.6. Explicit Command Naming Principle
+The framework **must** adhere to the principle of explicit command naming with minimal implicit transformations:
+
+- **Commands as Registered**: Command names **must** be used exactly as registered, without automatic prefix addition or name transformation
+- **Dot Prefix Requirement**: All commands **must** be registered with explicit dot prefix (e.g., `.chat`, `.session.list`)  
+- **Validation Enforcement**: The framework **must** reject command registrations that do not start with a dot prefix
+- **No Implicit Behavior**: The system **must not** automatically add dots, modify namespaces, or transform command names during registration or execution
+- **Principle of Least Surprise**: Command behavior should be predictable - what you register is exactly what gets executed
 
 ---
 ### Appendix: Addendum

@@ -19,19 +19,19 @@ impl SplitFlags {
   pub const QUOTING: SplitFlags = SplitFlags(1 << 4);
 
   /// Creates a new `SplitFlags` instance from a raw `u8` value.
-  #[must_use]
-  pub const fn from_bits(bits: u8) -> Option<Self> {
+  #[ must_use ]
+  pub const fn from_bits(bits: u8) -> Option< Self > {
     Some(Self(bits))
   }
 
   /// Returns the raw `u8` value of the flags.
-  #[must_use]
+  #[ must_use ]
   pub const fn bits(&self) -> u8 {
     self.0
   }
 
   /// Returns `true` if all of `other`'s flags are contained within `self`.
-  #[must_use]
+  #[ must_use ]
   pub const fn contains(&self, other: Self) -> bool {
     (self.0 & other.0) == other.0
   }

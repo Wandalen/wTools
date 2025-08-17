@@ -1,4 +1,4 @@
-//! Purpose: Tests the `#[derive(Former)]` macro's generation of subformer starter methods for an enum
+//! Purpose: Tests the `#[ derive( Former ) ]` macro's generation of subformer starter methods for an enum
 //! with multiple single-field tuple variants, where the inner types also derive `Former`. This file
 //! verifies that the default behavior for single-field tuple variants is to generate a subformer,
 //! allowing nested building.
@@ -10,7 +10,7 @@
 //! Test Relevance/Acceptance Criteria:
 //! - Defines an enum `FunctionStep` with multiple single-field tuple variants (`Prompt`, `Break`, `InstructionsApplyToFiles`, `Run`).
 //! - The inner types (`Prompt`, `Break`, etc.) also derive `Former`.
-//! - Applies `#[derive(Former)]` to the `FunctionStep` enum.
+//! - Applies `#[ derive( Former ) ]` to the `FunctionStep` enum.
 //! - Contains test functions that call the derived static methods (e.g., `FunctionStep::prompt()`, `FunctionStep::r#break()`).
 //! - Uses the returned subformers to set fields of the inner types and calls `.form()` on the subformers to get the final `FunctionStep` enum instance.
 //! - Asserts that the resulting enum instances match manually constructed expected values. This verifies that the default behavior for single-field tuple variants is to generate subformer starters that correctly integrate with the inner types' formers.
@@ -20,16 +20,16 @@ use former::Former;
 
 // Define the inner structs that the enum variants will hold.
 // These need to derive Former themselves if you want to build them easily.
-#[derive(Debug, PartialEq)] // xxx: Former derive disabled - trailing comma issue
+#[ derive( Debug, PartialEq ) ] // xxx: Former derive disabled - trailing comma issue
 pub struct Prompt { pub content: String }
 
-#[derive(Debug, PartialEq)] // xxx: Former derive disabled - trailing comma issue
+#[ derive( Debug, PartialEq ) ] // xxx: Former derive disabled - trailing comma issue
 pub struct Break { pub condition: bool }
 
-#[derive(Debug, PartialEq)] // xxx: Former derive disabled - trailing comma issue
+#[ derive( Debug, PartialEq ) ] // xxx: Former derive disabled - trailing comma issue
 pub struct InstructionsApplyToFiles { pub instruction: String }
 
-#[derive(Debug, PartialEq)] // xxx: Former derive disabled - trailing comma issue
+#[ derive( Debug, PartialEq ) ] // xxx: Former derive disabled - trailing comma issue
 pub struct Run { pub command: String }
 
 // Derive Former on the enum.
@@ -37,8 +37,8 @@ pub struct Run { pub command: String }
 // #[ debug ]
 // FIX: Combined derive attributes
 // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[derive(Debug, Clone, PartialEq, Former)]
-#[derive(Debug, Clone, PartialEq)]
+// #[ derive( Debug, Clone, PartialEq, Former ) ]
+#[ derive( Debug, Clone, PartialEq ) ]
 enum FunctionStep
 {
   Prompt(Prompt),

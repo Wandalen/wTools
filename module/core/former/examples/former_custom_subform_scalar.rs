@@ -40,11 +40,11 @@ fn main() {}
   any(feature = "use_alloc", not(feature = "no_std"))
 ))]
 fn main() {
-  #[cfg(feature = "enabled")]
+  #[ cfg( feature = "enabled" ) ]
   use former_meta::Former;
 
   // Child struct with Former derived for builder pattern support
-  #[derive(Debug, PartialEq, Former)]
+  #[ derive( Debug, PartialEq, Former ) ]
   // Optional: Use `#[ debug ]` to expand and debug generated code.
   // #[ debug ]
   pub struct Child {
@@ -53,13 +53,13 @@ fn main() {
   }
 
   // Parent struct designed to hold a single Child instance using subform scalar
-  #[derive(Debug, PartialEq, Former)]
+  #[ derive( Debug, PartialEq, Former ) ]
   // Optional: Use `#[ debug ]` to expand and debug generated code.
   // #[ debug ]
   pub struct Parent {
     // The `subform_scalar` attribute is used to specify that the 'child' field has its own former
     // and can be individually configured via a subform setter. This is not a collection but a single scalar entity.
-    #[subform_scalar(setter = false)]
+    #[ subform_scalar( setter = false ) ]
     child: Child,
   }
 
@@ -69,7 +69,7 @@ fn main() {
   where
     Definition: former::FormerDefinition<Storage = <Parent as former::EntityToStorage>::Storage>,
   {
-    #[inline(always)]
+    #[ inline( always ) ]
     pub fn child(self, name: &str) -> ChildAsSubformer<Self, impl ChildAsSubformerEnd<Self>> {
       self._child_subform_scalar::<ChildFormer<_>, _>().name(name)
     }

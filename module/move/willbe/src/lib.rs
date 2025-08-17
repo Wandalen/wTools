@@ -3,7 +3,8 @@
   html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
 )]
 #![doc(html_root_url = "https://docs.rs/willbe/")]
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Build and project management binary" ) ]
 
 // qqq2 : xxx2 : fix broken sequence of publishing because of skipping debug dependencies
 //

@@ -3,8 +3,7 @@ use super::*;
 ///
 /// Form CA commands grammar.
 ///
-
-pub fn grammar_form() -> Vec< wca::Command >
+pub fn grammar_form() -> Vec<  wca::Command  >
 {
   vec!
   [
@@ -16,8 +15,7 @@ pub fn grammar_form() -> Vec< wca::Command >
 ///
 /// Form CA commands executor.
 ///
-
-pub fn executor_form() -> std::collections::HashMap< String, wca::Routine >
+pub fn executor_form() -> std::collections::HashMap<  String, wca::Routine  >
 {
   std::collections::HashMap::from_iter
   ([

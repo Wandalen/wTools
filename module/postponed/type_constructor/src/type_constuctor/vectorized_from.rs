@@ -17,7 +17,6 @@ mod private
   /// let got = <( Single1, Single1 )>::vectorized_from( src );
   /// ```
   ///
-
   pub trait VectorizedFrom< T > : Sized
   {
     /// Performs the conversion.
@@ -39,7 +38,6 @@ mod private
   /// let got : ( Single1, Single1 ) = src.vectorized_into();
   /// ```
   ///
-
   pub trait VectorizedInto< T > : Sized
   {
     /// Performs the conversion.

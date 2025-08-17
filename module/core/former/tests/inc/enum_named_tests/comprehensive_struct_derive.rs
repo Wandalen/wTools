@@ -2,39 +2,39 @@
 // This works around the architectural limitation that Former derive cannot parse generic enums
 
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use ::former::prelude::*;
 use ::former::Former;
 
 // Comprehensive enum testing multiple SCALAR struct variant scenarios (avoiding subform conflicts)
-#[derive(Debug, PartialEq, Former)]
-#[allow(non_camel_case_types)] // Allow for generated Former type names  
-#[former(standalone_constructors)]
+#[ derive( Debug, PartialEq, Former ) ]
+#[ allow( non_camel_case_types ) ] // Allow for generated Former type names  
+#[ former( standalone_constructors ) ]
 pub enum ComprehensiveStructEnum {
   // Zero-field struct
-  #[scalar]
+  #[ scalar ]
   ZeroField {},
   
   // Single-field scalar struct
-  #[scalar]
+  #[ scalar ]
   SingleScalar { value: i32 },
   
   // Multi-field scalar struct
-  #[scalar]
+  #[ scalar ]
   MultiScalar { field1: i32, field2: String, field3: bool },
   
   // Multi-field default struct (should use field setters) - no subform conflicts
   MultiDefault { name: String, age: i32, active: bool },
 }
 
-#[test]
+#[ test ]
 fn zero_field_struct_test() {
   let got = ComprehensiveStructEnum::zero_field();
   let expected = ComprehensiveStructEnum::ZeroField {};
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn single_scalar_struct_test() {
   let got = ComprehensiveStructEnum::single_scalar(42);
   let expected = ComprehensiveStructEnum::SingleScalar { value: 42 };
@@ -43,7 +43,7 @@ fn single_scalar_struct_test() {
 
 // Removed subform test to avoid trait conflicts
 
-#[test]
+#[ test ]
 fn multi_scalar_struct_test() {
   let got = ComprehensiveStructEnum::multi_scalar(42, "test".to_string(), true);
   let expected = ComprehensiveStructEnum::MultiScalar { 
@@ -54,7 +54,7 @@ fn multi_scalar_struct_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn multi_default_struct_test() {
   let got = ComprehensiveStructEnum::multi_default()
     .name("Alice".to_string())
