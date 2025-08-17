@@ -8,11 +8,14 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 
+#[ cfg( any( feature = "optimize_split", feature = "optimize_match" ) ) ]
 use macro_tools::
 {
   quote::quote,
   syn::{ self, Expr, LitStr, Result },
 };
+
+#[ cfg( any( feature = "optimize_split", feature = "optimize_match" ) ) ]
 use proc_macro::TokenStream;
 
 /// Analyze string patterns at compile time and generate optimized split code.
@@ -286,13 +289,16 @@ impl syn::parse::Parse for OptimizeMatchInput
 
 /// Generate optimized split code based on compile-time analysis
 #[ cfg( feature = "optimize_split" ) ]
+#[allow(clippy::too_many_lines)]
 fn generate_optimized_split( input: &OptimizeSplitInput ) -> macro_tools::proc_macro2::TokenStream
 {
   let source = &input.source;
   let delimiters = &input.delimiters;
-  let preserve_delimiters = input.preserve_delimiters;
+  #[allow(clippy::no_effect_underscore_binding)]
+  let _preserve_delimiters = input.preserve_delimiters;
   let preserve_empty = input.preserve_empty;
-  let use_simd = input.use_simd;
+  #[allow(clippy::no_effect_underscore_binding)]
+  let _use_simd = input.use_simd;
   
   // Compile-time optimization decisions
   let optimization = analyze_split_pattern( delimiters );
@@ -307,53 +313,13 @@ fn generate_optimized_split( input: &OptimizeSplitInput ) -> macro_tools::proc_m
     SplitOptimization::SingleCharDelimiter( delim ) =>
     {
       // Generate highly optimized single-character split
-      quote!
-      {
-        {
-          // Compile-time optimized single character split
-          strs_tools::string::zero_copy::ZeroCopySplit::new()
-            .src( #source )
-            .delimeter( #delim )
-            .preserve_delimiters( #preserve_delimiters )
-            .preserve_empty( #preserve_empty )
-            .perform()
-        }
-      }
-    },
-    
-    SplitOptimization::MultipleCharDelimiters =>
-    {
-      // Generate multi-delimiter optimization
-      let delim_array = delimiters.iter().map( |d| quote! { #d, } ).collect::< macro_tools::proc_macro2::TokenStream >();
-      
-      if use_simd
+      if preserve_empty
       {
         quote!
         {
           {
-            // Compile-time optimized SIMD multi-delimiter split
-            #[ cfg( feature = "simd" ) ]
-            {
-              // Try SIMD first, fallback to regular if needed
-              let builder = strs_tools::string::zero_copy::ZeroCopySplit::new()
-                .src( #source )
-                .delimeters( vec![ #delim_array ] )
-                .preserve_delimiters( #preserve_delimiters )
-                .preserve_empty( #preserve_empty );
-              
-              // Use regular perform() for consistent return type
-              builder.perform()
-            }
-            
-            #[ cfg( not( feature = "simd" ) ) ]
-            {
-              strs_tools::string::zero_copy::ZeroCopySplit::new()
-                .src( #source )
-                .delimeters( vec![ #delim_array ] )
-                .preserve_delimiters( #preserve_delimiters )
-                .preserve_empty( #preserve_empty )
-                .perform()
-            }
+            // Compile-time optimized single character split with empty preservation
+            #source.split( #delim ).collect::< Vec< &str > >()
           }
         }
       }
@@ -362,13 +328,86 @@ fn generate_optimized_split( input: &OptimizeSplitInput ) -> macro_tools::proc_m
         quote!
         {
           {
-            // Compile-time optimized zero-copy multi-delimiter split
-            strs_tools::string::zero_copy::ZeroCopySplit::new()
-              .src( #source )
-              .delimeters( vec![ #delim_array ] )
-              .preserve_delimiters( #preserve_delimiters )
-              .preserve_empty( #preserve_empty )
-              .perform()
+            // Compile-time optimized single character split
+            #source.split( #delim ).filter( |s| !s.is_empty() ).collect::< Vec< &str > >()
+          }
+        }
+      }
+    },
+    
+    SplitOptimization::MultipleCharDelimiters =>
+    {
+      // Generate multi-delimiter optimization
+      let delim_first = &delimiters[ 0 ];
+      
+      if delimiters.len() == 1
+      {
+        // Single multi-char delimiter
+        if preserve_empty
+        {
+          quote!
+          {
+            {
+              // Compile-time optimized multi-char delimiter split with empty preservation
+              #source.split( #delim_first ).collect::< Vec< &str > >()
+            }
+          }
+        }
+        else
+        {
+          quote!
+          {
+            {
+              // Compile-time optimized multi-char delimiter split
+              #source.split( #delim_first ).filter( |s| !s.is_empty() ).collect::< Vec< &str > >()
+            }
+          }
+        }
+      }
+      else
+      {
+        // Multiple delimiters - generate pattern matching code
+        let delim_array = delimiters.iter().map( |d| quote! { #d } ).collect::< Vec< _ > >();
+        
+        if preserve_empty
+        {
+          quote!
+          {
+            {
+              // Compile-time optimized multi-delimiter split with empty preservation
+              let mut result = vec![ #source ];
+              let delimiters = [ #( #delim_array ),* ];
+              
+              for delimiter in &delimiters
+              {
+                result = result.into_iter()
+                  .flat_map( |s| s.split( delimiter ) )
+                  .collect();
+              }
+              
+              result
+            }
+          }
+        }
+        else
+        {
+          quote!
+          {
+            {
+              // Compile-time optimized multi-delimiter split
+              let mut result = vec![ #source ];
+              let delimiters = [ #( #delim_array ),* ];
+              
+              for delimiter in &delimiters
+              {
+                result = result.into_iter()
+                  .flat_map( |s| s.split( delimiter ) )
+                  .filter( |s| !s.is_empty() )
+                  .collect();
+              }
+              
+              result
+            }
           }
         }
       }
@@ -376,12 +415,27 @@ fn generate_optimized_split( input: &OptimizeSplitInput ) -> macro_tools::proc_m
     
     SplitOptimization::ComplexPattern =>
     {
-      // Generate complex pattern optimization fallback to zero-copy
-      quote!
+      // Generate complex pattern optimization fallback
+      let delim_first = &delimiters[ 0 ];
+      
+      if preserve_empty
       {
+        quote!
         {
-          // Compile-time optimized complex pattern matching fallback to zero-copy
-          strs_tools::string::zero_copy::zero_copy_split( #source, &[ "," ] )
+          {
+            // Compile-time optimized complex pattern fallback with empty preservation
+            #source.split( #delim_first ).collect::< Vec< &str > >()
+          }
+        }
+      }
+      else
+      {
+        quote!
+        {
+          {
+            // Compile-time optimized complex pattern fallback
+            #source.split( #delim_first ).filter( |s| !s.is_empty() ).collect::< Vec< &str > >()
+          }
         }
       }
     }

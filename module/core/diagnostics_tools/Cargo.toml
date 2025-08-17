@@ -52,7 +52,7 @@ pretty_assertions = { workspace = true, optional = true }
 
 [dev-dependencies]
 trybuild = "1.0.106"
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }
 strip-ansi-escapes = "0.1.1"
 serde_json = "1.0"
 

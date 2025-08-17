@@ -39,7 +39,7 @@ use_alloc = [ "no_std" ]
 enabled = []
 
 [dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }
 # wtools = { workspace = true }
 # wca = { workspace = true }
 # wpublisher = { workspace = true }

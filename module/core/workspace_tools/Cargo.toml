@@ -38,7 +38,7 @@ integration = []
 glob = { workspace = true, optional = true }
 tempfile = { workspace = true, optional = true }
 cargo_metadata = { workspace = true, optional = true }
-toml = { workspace = true, optional = true }
+toml = { workspace = true, features = [ "preserve_order" ], optional = true }
 serde = { workspace = true, features = [ "derive" ], optional = true }
 serde_json = { workspace = true, optional = true }
 serde_yaml = { workspace = true, optional = true }

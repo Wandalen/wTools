@@ -46,6 +46,7 @@ pub mod own {
 
   #[ doc( inline ) ]
   #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
+  #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
   pub use super::collection::own::*;
 }
 
@@ -61,6 +62,7 @@ pub mod orphan {
 
   #[ doc( inline ) ]
   #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
+  #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
   pub use collection::orphan::*;
 }
 
@@ -73,10 +75,12 @@ pub mod exposed {
 
   #[ doc( inline ) ]
   #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
+  #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
   pub use prelude::*;
 
   #[ doc( inline ) ]
   #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
+  #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
   pub use collection::exposed::*;
 }
 
@@ -90,6 +94,13 @@ pub mod prelude {
   #[ doc( inline ) ]
   #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use collection::prelude::*;
+}
+
+/// Empty prelude for no_std configurations
+#[ cfg( feature = "enabled" ) ]
+#[cfg(all(feature = "no_std", not(feature = "use_alloc")))]
+#[ allow( unused_imports ) ]
+pub mod prelude {
 }
 
 // pub use own::collection as xxx;

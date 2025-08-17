@@ -1,6 +1,6 @@
 [package]
 name = "mod_interface"
-version = "0.43.0"
+version = "0.44.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -44,4 +44,4 @@ path = "examples/mod_interface_debug/src/main.rs"
 mod_interface_meta = { workspace = true }
 
 [dev-dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }

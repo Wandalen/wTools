@@ -59,4 +59,4 @@ is_slice = { workspace = true }
 implements = { workspace = true }
 
 [dev-dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }

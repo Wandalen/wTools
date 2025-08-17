@@ -3,6 +3,13 @@
 //! This test validates that issue 017 has been completely resolved and that
 //! the governing principle of "Minimum Implicit Magic" is properly enforced.
 
+#![ allow( clippy::needless_pass_by_value ) ]
+#![ allow( clippy::unnecessary_wraps ) ]
+#![ allow( clippy::too_many_lines ) ]
+#![ allow( clippy::inefficient_to_string ) ]
+#![ allow( clippy::uninlined_format_args ) ]
+#![ allow( clippy::map_unwrap_or ) ]
+
 use unilang::{ CommandDefinition, CommandRegistry, Pipeline, ExecutionContext, VerifiedCommand, OutputData, ErrorData };
 
 fn demo_handler(cmd: VerifiedCommand, _ctx: ExecutionContext) -> Result< OutputData, ErrorData >

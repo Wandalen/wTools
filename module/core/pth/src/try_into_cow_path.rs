@@ -10,6 +10,7 @@ mod private
     borrow::Cow,
     io,
     path::{ Component, Path, PathBuf },
+    string::String,
   };
   
   #[cfg(feature = "no_std")]
@@ -21,6 +22,7 @@ mod private
     borrow::Cow,
     io,
     path::{ Component, Path, PathBuf },
+    string::String,
   };
   // use camino::{ Utf8Path, Utf8PathBuf };
 

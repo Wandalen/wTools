@@ -1,6 +1,6 @@
 [package]
 name = "reflect_tools_meta"
-version = "0.6.0"
+version = "0.7.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -46,4 +46,4 @@ macro_tools = { workspace = true, features = [ "default" ] }
 # xxx : qqq : optimize features set
 
 [dev-dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }

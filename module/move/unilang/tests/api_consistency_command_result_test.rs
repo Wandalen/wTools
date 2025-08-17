@@ -1,7 +1,9 @@
-//! Tests for API consistency improvements to CommandResult and error handling.
+//! Tests for API consistency improvements to `CommandResult` and error handling.
 //!
 //! This module tests the implementation of task 019, which improves API consistency
-//! by adding helper methods to CommandResult and structured error types.
+//! by adding helper methods to `CommandResult` and structured error types.
+
+#![ allow( clippy::doc_markdown ) ]
 
 use unilang::{ CommandResult, UnilangError, OutputData };
 

@@ -47,6 +47,7 @@ mod private
     with_debug : bool,
     #[ former( default = false ) ]
     with_release : bool,
+    #[ cfg( feature = "progress_bar" ) ]
     #[ former( default = true ) ]
     with_progress : bool,
   }
@@ -90,8 +91,14 @@ mod private
       with_none_features,
       with_debug,
       with_release,
+      #[ cfg( feature = "progress_bar" ) ]
       with_progress
     } = o.props.try_into()?;
+    
+    // Default value when progress_bar feature is disabled
+    #[ cfg( not( feature = "progress_bar" ) ) ]
+    #[ allow( unused_variables ) ]
+    let with_progress = false;
 
     let mut channels = HashSet::new();
     if with_stable { channels.insert( Channel::Stable ); }
@@ -119,9 +126,12 @@ Set at least one of them to true." );
     .enabled_features( enabled_features )
     .with_all_features( with_all_features )
     .with_none_features( with_none_features )
-    .optimizations( optimizations )
-    .with_progress( with_progress )
-    .form();
+    .optimizations( optimizations );
+    
+    #[ cfg( feature = "progress_bar" ) ]
+    let args = args.with_progress( with_progress );
+    
+    let args = args.form();
 
     match action::test( args, dry )
     {
@@ -183,8 +193,11 @@ Set at least one of them to true." );
       .get_owned( "with_none_features" ) { this.with_none_features::< bool >( v ) } else { this };
       this = if let Some( v ) = value
       .get_owned( "always" ) { this.enabled_features::< Vec< String > >( v ) } else { this };
-      this = if let Some( v ) = value
-      .get_owned( "with_progress" ) { this.with_progress::< bool >( v ) } else { this };
+      #[ cfg( feature = "progress_bar" ) ]
+      {
+        this = if let Some( v ) = value
+        .get_owned( "with_progress" ) { this.with_progress::< bool >( v ) } else { this };
+      }
 
       Ok( this.form() )
     }

@@ -54,6 +54,7 @@ mod private
     optimizations : HashSet< optimization::Optimization >,
     #[ former( default = 1000u32 ) ]
     variants_cap : u32,
+    #[ cfg( feature = "progress_bar" ) ]
     #[ former( default = false ) ]
     with_progress : bool,
   }
@@ -120,8 +121,14 @@ Try to install it with `rustup install {}` command(-s)",
       with_none_features,
       optimizations,
       variants_cap,
+      #[ cfg( feature = "progress_bar" ) ]
       with_progress,
     } = o;
+    
+    // Default value when progress_bar feature is disabled
+    #[ cfg( not( feature = "progress_bar" ) ) ]
+    #[ allow( unused_variables ) ]
+    let with_progress = false;
 
     // zzz : watch and review after been ready
     // aaa : for Petro : use relevant entity. use either, implement TryFrom< Either< CrateDir, ManifestFile > >
@@ -210,8 +217,10 @@ Try to install it with `rustup install {}` command(-s)",
     .concurrent( concurrent )
     .plan( plan )
     .option_temp( temp_path )
-    .dry( dry )
-    .with_progress( with_progress );
+    .dry( dry );
+    
+    #[ cfg( feature = "progress_bar" ) ]
+    let test_options_former = test_options_former.with_progress( with_progress );
 
     let options = test_options_former.form();
     let result = tests_run( &options );
