@@ -233,31 +233,29 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
 [ 5. Commit Code + Perf Docs ] <- [ 4. Auto-Update `benchmark_results.md` ] <- [ Analyze Results ]
 ```
 
-## 📁 Standard `benches/` Directory Integration
+## 📁 Why Not `benches/`? Standard Directory Integration
 
-`benchkit` fully embraces the standard Rust `benches/` directory structure with enhanced capabilities. **ALL benchmark-related files must be located in the standard `benches/` directory** - this is where Rust expects performance benchmarks to live.
+The traditional `benches/` directory creates artificial separation between ALL your benchmark content and the standard Rust project structure. `benchkit` encourages you to use standard directories for ALL benchmark-related files:
 
-- ✅ **Use `benches/`**: The standard directory for ALL benchmark-related files (this is the Rust convention)
-- ✅ **Comprehensive reporting**: `benchmark_results.md` automatically updated with benchmark results
-- ✅ **Organized structure**: Keep all performance analysis, data, and reports in `benches/`
-- ✅ **Standard compliance**: Follow Rust ecosystem conventions for benchmark organization
-- ❌ **Never use `tests/`**: Keep performance benchmarks separate from unit tests (tests/ is for correctness, not performance)
+- ✅ **Use `tests/`**: Performance benchmarks alongside unit tests
+- ✅ **Use `examples/`**: Demonstration benchmarks and showcases  
+- ✅ **Use `src/bin/`**: Dedicated benchmark executables
+- ✅ **Standard integration**: Keep ALL benchmark content in standard Rust directories
+- ❌ **Avoid `benches/`**: Don't isolate ANY benchmark files in framework-specific directories
 
 ### Why This Matters
 
-**Standard Rust Convention**: The `benches/` directory is the established Rust ecosystem standard for ALL benchmark-related files - following this convention ensures consistency across projects.
+**Workflow Integration**: ALL benchmark content should be part of regular development, not isolated in framework-specific directories.
 
-**Automatic Documentation**: `benchkit` automatically updates `benchmark_results.md` with comprehensive benchmark reports, creating living documentation that stays current with your performance characteristics.
+**Documentation Proximity**: ALL benchmark files are documentation - keep them integrated with your standard project structure for better maintainability.
 
-**Organized Performance Analysis**: Keep ALL benchmark code, data generation, analysis scripts, and reports centralized in `benches/` for easy maintenance and discovery.
+**Testing Philosophy**: Performance is part of correctness validation - integrate benchmarks with your existing test suite.
 
-**Ecosystem Integration**: Tools like `cargo bench` expect benchmarks in `benches/` - following this standard ensures compatibility with the broader Rust toolchain.
+**Toolkit vs Framework**: Frameworks enforce rigid `benches/` isolation; toolkits integrate with your existing project structure.
 
-**Separation of Concerns**: Performance benchmarks serve different purposes than correctness tests - `benches/` keeps them properly separated from `tests/` while following Rust conventions.
+### Automatic Documentation Updates
 
-### Automatic `benchmark_results.md` Reports
-
-`benchkit` excels at maintaining comprehensive, automatically updated documentation in your `benchmark_results.md` file:
+`benchkit` excels at maintaining comprehensive, automatically updated documentation in your project files:
 
 ```markdown
 # Benchmark Results
@@ -291,12 +289,13 @@ This documentation is automatically generated and updated every time you run ben
 
 ### Integration Examples
 
-```rust
-// ✅ In standard benches/ directory - ALL benchmark files belong here
-// benches/algorithm_comparison.rs
+```rust,no_run
+// ✅ In standard tests/ directory alongside unit tests
+// tests/performance_comparison.rs
 use benchkit::prelude::*;
 
-fn main()
+#[test]
+fn benchmark_algorithms()
 {
   let mut suite = BenchmarkSuite::new( "Algorithm Comparison" );
   
@@ -312,15 +311,15 @@ fn main()
   
   let results = suite.run_all();
   
-  // Automatically update benchmark_results.md with results
-  let updater = MarkdownUpdater::new( "benchmark_results.md", "Benchmark Results" ).unwrap();
+  // Automatically update readme.md with results
+  let updater = MarkdownUpdater::new( "readme.md", "Performance" ).unwrap();
   updater.update_section( &results.generate_markdown_report().generate() ).unwrap();
 }
 ```
 
-```rust
-// ✅ Standard benches/ structure with comprehensive reporting
-// benches/performance_suite.rs  
+```rust,no_run
+// ✅ In examples/ directory for demonstrations
+// examples/comprehensive_benchmark.rs  
 use benchkit::prelude::*;
 
 fn main()
@@ -334,12 +333,12 @@ fn main()
   
   let results = comprehensive.run_all();
   
-  // Update benchmark_results.md with comprehensive report
+  // Update readme.md with comprehensive report
   let report = results.generate_markdown_report();
-  let updater = MarkdownUpdater::new( "benchmark_results.md", "Performance Analysis" ).unwrap();
+  let updater = MarkdownUpdater::new( "readme.md", "Performance Analysis" ).unwrap();
   updater.update_section( &report.generate() ).unwrap();
   
-  println!( "Updated benchmark_results.md with latest performance results" );
+  println!( "Updated readme.md with latest performance results" );
 }
 ```
 
@@ -347,9 +346,9 @@ fn main()
 
 For optimal build performance and clean separation, put your benchmark code behind feature flags:
 
-```rust
-// ✅ Standard benches/ directory with feature flags for optional execution
-// benches/comprehensive_benchmark.rs
+```rust,no_run
+// ✅ In src/bin/ directory for dedicated benchmark executables  
+// src/bin/comprehensive_benchmark.rs
 #[ cfg( feature = "enabled" ) ]
 use benchkit::prelude::*;
 
@@ -364,18 +363,18 @@ fn main()
   
   let results = suite.run_all();
   
-  // Automatically update benchmark_results.md
-  let updater = MarkdownUpdater::new( "benchmark_results.md", "Latest Results" ).unwrap();
+  // Automatically update readme.md
+  let updater = MarkdownUpdater::new( "readme.md", "Latest Results" ).unwrap();
   updater.update_section( &results.generate_markdown_report().generate() ).unwrap();
   
-  println!( "Benchmarks completed - benchmark_results.md updated" );
+  println!( "Benchmarks completed - readme.md updated" );
 }
 
 #[ cfg( not( feature = "enabled" ) ) ]
 fn main()
 {
   println!( "Run with: cargo run --bin comprehensive_benchmark --features enabled" );
-  println!( "Results will be automatically saved to benchmark_results.md" );
+  println!( "Results will be automatically saved to readme.md" );
 }
 ```
 
@@ -394,14 +393,14 @@ Run benchmarks selectively:
 # Run only unit tests (fast)
 cargo test
 
-# Run specific benchmark binary (updates benchmark_results.md)
+# Run specific benchmark binary (updates readme.md)
 cargo run --bin comprehensive_benchmark --features enabled
 
-# Run all benchmark binaries in benches/
-find benches/ -name "*.rs" -exec basename {} .rs \; | xargs -I {} cargo run --bin {} --features enabled
+# Run benchmarks from examples/
+cargo run --example performance_demo --features enabled
 
-# Use cargo bench for standard Rust benchmarking
-cargo bench --features enabled
+# Run all binaries containing benchmarks
+cargo run --bin performance_suite --features enabled
 ```
 
 This approach keeps your regular builds fast while making comprehensive performance testing available when needed.
@@ -431,3 +430,4 @@ This project is licensed under the **MIT License**.
 ## Performance
 
 *This section is automatically updated by benchkit when you run benchmarks.*
+
