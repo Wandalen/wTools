@@ -25,6 +25,7 @@ use std::time::Duration;
 
 /// CI/CD exit codes for different scenarios
 #[ derive( Debug, Clone, Copy, PartialEq ) ]
+#[ allow( dead_code ) ]  // Some variants are for demonstration purposes
 enum CiExitCode
 {
   Success = 0,
@@ -190,7 +191,7 @@ fn create_pr_results_good() -> HashMap< String, BenchmarkResult >
 }
 
 /// Simulate the CI/CD pipeline performance validation step
-fn run_performance_validation( config : &CiCdConfig, pr_results : HashMap< String, BenchmarkResult >, baseline_results : HashMap< String, BenchmarkResult > ) -> ( CiExitCode, String )
+fn run_performance_validation( config : &CiCdConfig, pr_results : &HashMap< String, BenchmarkResult >, baseline_results : &HashMap< String, BenchmarkResult > ) -> ( CiExitCode, String )
 {
   println!( "🚀 RUNNING PERFORMANCE VALIDATION" );
   println!( "  Environment: {}", config.environment );
@@ -220,14 +221,14 @@ fn run_performance_validation( config : &CiCdConfig, pr_results : HashMap< Strin
   println!( "  ✅ Data quality validation passed" );
   
   // Step 2: Create historical data from baseline
-  let historical = HistoricalResults::new().with_baseline( baseline_results );
+  let historical = HistoricalResults::new().with_baseline( baseline_results.clone() );
   
   // Step 3: Run regression analysis
   let analyzer = RegressionAnalyzer::new()
     .with_baseline_strategy( config.baseline_strategy.clone() )
     .with_significance_threshold( config.significance_level );
   
-  let regression_report = analyzer.analyze( &pr_results, &historical );
+  let regression_report = analyzer.analyze( pr_results, &historical );
   
   // Step 4: Detect regressions
   let mut regressions = Vec::new();
@@ -305,7 +306,7 @@ fn generate_github_actions_report( pr_results : &HashMap< String, BenchmarkResul
   report.push_str( "| Benchmark | Trend | Status | Notes |\n" );
   report.push_str( "|-----------|--------|--------|-------|\n" );
   
-  for ( operation, _result ) in pr_results
+  for operation in pr_results.keys()
   {
     let trend_icon = match regression_report.get_trend_for( operation )
     {
@@ -363,7 +364,7 @@ fn demonstrate_development_pr_validation()
   let baseline = create_baseline_results();
   let pr_results = create_pr_results_with_regression();
   
-  let ( exit_code, message ) = run_performance_validation( &config, pr_results, baseline );
+  let ( exit_code, message ) = run_performance_validation( &config, &pr_results, &baseline );
   
   match exit_code
   {
@@ -388,7 +389,7 @@ fn demonstrate_staging_pr_validation()
   // Test with regression
   println!( "📊 Testing PR with performance regression:" );
   let pr_with_regression = create_pr_results_with_regression();
-  let ( exit_code, message ) = run_performance_validation( &config, pr_with_regression, baseline.clone() );
+  let ( exit_code, message ) = run_performance_validation( &config, &pr_with_regression, &baseline );
   
   match exit_code
   {
@@ -402,7 +403,7 @@ fn demonstrate_staging_pr_validation()
   // Test with good performance
   println!( "📊 Testing PR with good performance:" );
   let pr_good = create_pr_results_good();
-  let ( exit_code, message ) = run_performance_validation( &config, pr_good, baseline );
+  let ( exit_code, message ) = run_performance_validation( &config, &pr_good, &baseline );
   
   match exit_code
   {
@@ -424,7 +425,7 @@ fn demonstrate_production_deployment_validation()
   let baseline = create_baseline_results();
   let pr_results = create_pr_results_good();  // Use good results for production
   
-  let ( exit_code, message ) = run_performance_validation( &config, pr_results, baseline );
+  let ( exit_code, message ) = run_performance_validation( &config, &pr_results, &baseline );
   
   match exit_code
   {
@@ -480,21 +481,21 @@ fn demonstrate_multi_environment_pipeline()
   
   // Development validation
   let dev_config = CiCdConfig::development();
-  let ( dev_exit, dev_message ) = run_performance_validation( &dev_config, pr_results.clone(), baseline.clone() );
+  let ( dev_exit, dev_message ) = run_performance_validation( &dev_config, &pr_results, &baseline );
   println!( "🔧 Development: {} - {}", if dev_exit == CiExitCode::Success { "PASS" } else { "WARN" }, dev_message );
   
   // Staging validation (only if dev passes)
   if dev_exit == CiExitCode::Success
   {
     let staging_config = CiCdConfig::staging();
-    let ( staging_exit, staging_message ) = run_performance_validation( &staging_config, pr_results.clone(), baseline.clone() );
+    let ( staging_exit, staging_message ) = run_performance_validation( &staging_config, &pr_results, &baseline );
     println!( "🎭 Staging: {} - {}", if staging_exit == CiExitCode::Success { "PASS" } else { "FAIL" }, staging_message );
     
     // Production validation (only if staging passes)
     if staging_exit == CiExitCode::Success
     {
       let prod_config = CiCdConfig::production();
-      let ( prod_exit, prod_message ) = run_performance_validation( &prod_config, pr_results, baseline );
+      let ( prod_exit, prod_message ) = run_performance_validation( &prod_config, &pr_results, &baseline );
       println!( "🏭 Production: {} - {}", if prod_exit == CiExitCode::Success { "PASS" } else { "FAIL" }, prod_message );
     }
     else

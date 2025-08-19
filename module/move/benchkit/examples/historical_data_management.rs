@@ -1,8 +1,8 @@
 //! Historical Data Management Examples
 //!
 //! This example demonstrates EVERY aspect of managing historical benchmark data:
-//! - Creating and managing HistoricalResults with multiple data sources
-//! - TimestampedResults creation and manipulation
+//! - Creating and managing `HistoricalResults` with multiple data sources
+//! - `TimestampedResults` creation and manipulation
 //! - Data persistence patterns for long-term storage
 //! - Historical data validation and cleanup
 //! - Performance trend tracking across time periods
@@ -32,6 +32,7 @@ fn generate_realistic_benchmark_data( base_performance_micros : u64, variation_f
   for i in 0..sample_count
   {
     // Add realistic variation with some consistency
+    #[allow(clippy::cast_sign_loss)]
     let variation = ( ( i as f64 * 0.1 ).sin() * variation_factor * base_nanos as f64 ) as u64;
     let time_nanos = base_nanos + variation;
     times.push( Duration::from_nanos( time_nanos ) );
@@ -58,6 +59,7 @@ fn create_comprehensive_historical_dataset() -> HistoricalResults
   for week in 0..26
   {
     let mut week_results = HashMap::new();
+    #[allow(clippy::cast_sign_loss)]
     let timestamp = now - Duration::from_secs( ( week * 7 * 24 * 3600 ) as u64 );
     
     for ( algo_name, base_perf ) in &algorithms
@@ -87,10 +89,11 @@ fn create_comprehensive_historical_dataset() -> HistoricalResults
         _ => 1.0,
       };
       
+      #[allow(clippy::cast_sign_loss)]
       let adjusted_perf = ( *base_perf as f64 * performance_factor ) as u64;
       let times = generate_realistic_benchmark_data( adjusted_perf, 0.1, 15 );
       
-      week_results.insert( algo_name.to_string(), BenchmarkResult::new( *algo_name, times ) );
+      week_results.insert( (*algo_name).to_string(), BenchmarkResult::new( *algo_name, times ) );
     }
     
     historical_runs.push( TimestampedResults::new( timestamp, week_results ) );
@@ -101,7 +104,7 @@ fn create_comprehensive_historical_dataset() -> HistoricalResults
   for ( algo_name, base_perf ) in &algorithms
   {
     let baseline_times = generate_realistic_benchmark_data( *base_perf, 0.05, 20 );
-    baseline_data.insert( algo_name.to_string(), BenchmarkResult::new( *algo_name, baseline_times ) );
+    baseline_data.insert( (*algo_name).to_string(), BenchmarkResult::new( *algo_name, baseline_times ) );
   }
   
   HistoricalResults::new()
