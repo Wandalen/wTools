@@ -110,6 +110,76 @@ cargo run --bin performance_demo --features enabled
 ### 🆕 Enhanced Features
 
 <details>
+<summary><strong>🔥 NEW: Comprehensive Regression Analysis System</strong></summary>
+
+Advanced performance regression detection with statistical analysis and trend identification.
+
+```rust
+use benchkit::prelude::*;
+use std::collections::HashMap;
+use std::time::{ Duration, SystemTime };
+
+fn regression_analysis_example() -> Result< (), Box< dyn std::error::Error > > {
+    // Current benchmark results
+    let mut current_results = HashMap::new();
+    let current_times = vec![ Duration::from_micros( 85 ), Duration::from_micros( 88 ), Duration::from_micros( 82 ) ];
+    current_results.insert( "fast_sort".to_string(), BenchmarkResult::new( "fast_sort", current_times ) );
+    
+    // Historical baseline data
+    let mut baseline_data = HashMap::new();
+    let baseline_times = vec![ Duration::from_micros( 110 ), Duration::from_micros( 115 ), Duration::from_micros( 108 ) ];
+    baseline_data.insert( "fast_sort".to_string(), BenchmarkResult::new( "fast_sort", baseline_times ) );
+    
+    let historical = HistoricalResults::new().with_baseline( baseline_data );
+    
+    // Configure regression analyzer
+    let analyzer = RegressionAnalyzer::new()
+        .with_baseline_strategy( BaselineStrategy::FixedBaseline )
+        .with_significance_threshold( 0.05 )  // 5% significance level
+        .with_trend_window( 5 );
+    
+    // Perform regression analysis
+    let regression_report = analyzer.analyze( &current_results, &historical );
+    
+    // Check results
+    if regression_report.has_significant_changes() {
+        println!( "📊 Significant performance changes detected!" );
+        
+        if let Some( trend ) = regression_report.get_trend_for( "fast_sort" ) {
+            match trend {
+                PerformanceTrend::Improving => println!( "🟢 Performance improved!" ),
+                PerformanceTrend::Degrading => println!( "🔴 Performance regression detected!" ),
+                PerformanceTrend::Stable => println!( "🟡 Performance remains stable" ),
+            }
+        }
+        
+        // Generate professional markdown report
+        let markdown_report = regression_report.format_markdown();
+        println!( "{}", markdown_report );
+    }
+    
+    Ok(())
+}
+```
+
+**Key Features:**
+- **Three Baseline Strategies**: Fixed baseline, rolling average, and previous run comparison
+- **Statistical Significance**: Configurable thresholds with proper statistical testing
+- **Trend Detection**: Automatic identification of improving, degrading, or stable performance
+- **Professional Reports**: Publication-quality markdown with statistical analysis
+- **CI/CD Integration**: Automated regression detection for deployment pipelines
+- **Historical Data Management**: Long-term performance tracking with quality validation
+
+**Use Cases:**
+- Automated performance regression detection in CI/CD pipelines
+- Long-term performance monitoring and trend analysis
+- Code optimization validation with statistical confidence
+- Production deployment gates with zero-regression tolerance
+- Performance documentation with automated updates
+
+</details>
+
+<details>
 <summary><strong>Safe Update Chain Pattern - Atomic Documentation Updates</strong></summary>
 
 Coordinate multiple markdown section updates atomically - either all succeed or none are modified.
@@ -889,6 +959,22 @@ This approach keeps your regular builds fast while making comprehensive performa
   - Domain-specific validation scenarios (research, development, production, micro)
   - Full integration with templates and update chains
 
+- **[Regression Analysis Comprehensive](examples/regression_analysis_comprehensive.rs)**: Complete regression analysis system demonstration
+  - All baseline strategies (Fixed, Rolling Average, Previous Run)
+  - Performance trend detection (Improving, Degrading, Stable)
+  - Statistical significance testing with configurable thresholds
+  - Professional markdown report generation with regression insights
+  - Real-world optimization scenarios and configuration guidance
+  - Full integration with PerformanceReport templates
+
+- **[Historical Data Management](examples/historical_data_management.rs)**: Managing long-term performance data
+  - Incremental historical data building and TimestampedResults creation
+  - Data quality validation and cleanup procedures
+  - Performance trend analysis across multiple time windows
+  - Storage and serialization strategy recommendations
+  - Data retention and archival best practices
+  - Integration with RegressionAnalyzer for trend detection
+
 ### 🔧 Integration Examples
 
 - **[Integration Workflows](examples/integration_workflows.rs)**: Real-world workflow automation
@@ -911,6 +997,14 @@ This approach keeps your regular builds fast while making comprehensive performa
   - Memory-efficient large-scale processing (1000+ algorithms)
   - Performance optimization techniques (caching, concurrency, incremental processing)
 
+- **[CI/CD Regression Detection](examples/cicd_regression_detection.rs)**: Automated performance validation in CI/CD pipelines
+  - Multi-environment validation (development, staging, production)
+  - Configurable regression thresholds and statistical significance levels
+  - Automated performance gate decisions with proper exit codes
+  - GitHub Actions compatible reporting and documentation updates
+  - Progressive validation pipeline with halt-on-failure
+  - Real-world CI/CD integration patterns and best practices
+
 ### 🚀 Running the Examples
 
 ```bash
@@ -919,10 +1013,17 @@ cargo run --example update_chain_comprehensive --all-features
 cargo run --example templates_comprehensive --all-features  
 cargo run --example validation_comprehensive --all-features
 
+# NEW: Regression Analysis Examples
+cargo run --example regression_analysis_comprehensive --all-features
+cargo run --example historical_data_management --all-features
+
 # Integration examples
 cargo run --example integration_workflows --all-features
 cargo run --example error_handling_patterns --all-features
 cargo run --example advanced_usage_patterns --all-features
+
+# NEW: CI/CD Integration Example
+cargo run --example cicd_regression_detection --all-features
 
 # Original enhanced features demo
 cargo run --example enhanced_features_demo --all-features
