@@ -9,15 +9,16 @@
 ## Table of Contents
 
 1. [Practical Examples Index](#practical-examples-index)
-2. [Getting Started Effectively](#getting-started-effectively)
-3. [Organizing Your Benchmarks](#organizing-your-benchmarks)
-4. [Writing Good Benchmarks](#writing-good-benchmarks)
-5. [Data Generation Best Practices](#data-generation-best-practices)
-6. [Documentation and Reporting](#documentation-and-reporting)
-7. [Performance Analysis Workflows](#performance-analysis-workflows)
-8. [CI/CD Integration Patterns](#cicd-integration-patterns)
-9. [Common Pitfalls to Avoid](#common-pitfalls-to-avoid)
-10. [Advanced Usage Patterns](#advanced-usage-patterns)
+2. [Quick Metrics Reference](#quick-metrics-reference)
+3. [Getting Started Effectively](#getting-started-effectively)
+4. [Organizing Your Benchmarks](#organizing-your-benchmarks)
+5. [Writing Good Benchmarks](#writing-good-benchmarks)
+6. [Data Generation Best Practices](#data-generation-best-practices)
+7. [Documentation and Reporting](#documentation-and-reporting)
+8. [Performance Analysis Workflows](#performance-analysis-workflows)
+9. [CI/CD Integration Patterns](#cicd-integration-patterns)
+10. [Common Pitfalls to Avoid](#common-pitfalls-to-avoid)
+11. [Advanced Usage Patterns](#advanced-usage-patterns)
 
 ---
 
@@ -68,6 +69,48 @@ find examples/ -name "*.rs" -exec basename {} .rs \; | xargs -I {} cargo run --e
 2. **Basic Analysis**: [regression_analysis_comprehensive.rs](examples/regression_analysis_comprehensive.rs) - Understand performance analysis
 3. **Long-term Tracking**: [historical_data_management.rs](examples/historical_data_management.rs) - Build performance awareness
 4. **Production Ready**: [cicd_regression_detection.rs](examples/cicd_regression_detection.rs) - Integrate into your development workflow
+
+---
+
+## Quick Metrics Reference
+
+### Common Performance Metrics
+
+This table shows the most frequently used metrics across different use cases:
+
+| Metric Type | What It Measures | When to Use | Typical Range |
+|-------------|------------------|-------------|---------------|
+| **Execution Time** | Function/operation duration | Algorithm comparison, optimization validation | μs to ms |
+| **Throughput** | Operations per second | API performance, data processing rates | ops/sec |
+| **Memory Usage** | Peak memory consumption | Memory optimization, resource planning | KB to MB |
+| **Cache Performance** | Hit/miss ratios | Memory access optimization | % hit rate |
+| **Latency** | Response time under load | System responsiveness, user experience | ms |
+| **CPU Utilization** | Processor usage percentage | Resource efficiency, scaling analysis | % usage |
+| **I/O Performance** | Read/write operations per second | Storage optimization, database tuning | IOPS |
+
+### Measurement Context Templates
+
+Use these templates before performance tables to make clear what is being measured:
+
+**For Functions:**
+```rust
+// Measuring: fn process_data( data: &[ u8 ] ) -> Result< ProcessedData >
+```
+
+**For Commands:**
+```bash
+# Measuring: cargo bench --all-features
+```
+
+**For Endpoints:**
+```http
+# Measuring: POST /api/v1/process {"data": "..."}
+```
+
+**For Algorithms:**
+```rust
+// Measuring: quicksort vs mergesort vs heapsort on Vec< i32 >
+```
 
 ---
 
@@ -208,22 +251,36 @@ for (size_name, size) in data_sizes {
 
 ```rust
 // Good: Direct comparison pattern
-suite.benchmark("quicksort_performance", || quicksort(&test_data));
-suite.benchmark("mergesort_performance", || mergesort(&test_data)); 
-suite.benchmark("heapsort_performance", || heapsort(&test_data));
+suite.benchmark( "quicksort_performance", || quicksort( &test_data ) );
+suite.benchmark( "mergesort_performance", || mergesort( &test_data ) ); 
+suite.benchmark( "heapsort_performance", || heapsort( &test_data ) );
 
 // Better: Structured comparison
-let algorithms = vec![
-    ("quicksort", quicksort as fn(&[i32]) -> Vec<i32>),
-    ("mergesort", mergesort),
-    ("heapsort", heapsort),
+let algorithms = vec!
+[
+  ( "quicksort", quicksort as fn( &[ i32 ] ) -> Vec< i32 > ),
+  ( "mergesort", mergesort ),
+  ( "heapsort", heapsort ),
 ];
 
-for (name, algorithm) in algorithms {
-    suite.benchmark(&format!("{}_large_dataset", name), 
-                   || algorithm(&large_dataset));
+for ( name, algorithm ) in algorithms
+{
+  suite.benchmark( &format!( "{}_large_dataset", name ), 
+                 || algorithm( &large_dataset ) );
 }
 ```
+
+This produces a clear performance comparison table:
+
+```rust
+// Measuring: Sorting algorithms on Vec< i32 > with 10,000 elements
+```
+
+| Algorithm | Average Time | Std Dev | Relative Performance |
+|-----------|--------------|---------|---------------------|
+| quicksort_large_dataset | 2.1ms | ±0.15ms | 1.00x (baseline) |
+| mergesort_large_dataset | 2.8ms | ±0.12ms | 1.33x slower |
+| heapsort_large_dataset | 3.2ms | ±0.18ms | 1.52x slower |
 
 **Why**: Makes it immediately clear which approach performs better and by how much.
 
@@ -326,7 +383,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ### Write Context-Rich Reports
 
-**Recommendation**: Include context and interpretation, not just raw numbers:
+**Recommendation**: Include context and interpretation, not just raw numbers. Always provide visual context before tables to make clear what is being measured:
 
 ```rust
 let template = PerformanceReport::new()
@@ -350,6 +407,33 @@ let template = PerformanceReport::new()
         "#
     ));
 ```
+
+**Example of Well-Documented Results:**
+
+```rust
+// Measuring: fn parse_json( input: &str ) -> Result< JsonValue >
+```
+
+**Context**: Performance comparison after implementing SIMD optimizations for JSON parsing.
+
+| Input Size | Before Optimization | After Optimization | Improvement |
+|------------|---------------------|-------------------|-------------|
+| Small (1KB) | 125μs ± 8μs | 98μs ± 5μs | 21.6% faster |
+| Medium (10KB) | 1.2ms ± 45μs | 0.85ms ± 32μs | 29.2% faster |
+| Large (100KB) | 12.5ms ± 180μs | 8.1ms ± 120μs | 35.2% faster |
+
+**Key Findings**: SIMD optimizations provide increasing benefits with larger inputs.
+
+```bash
+# Measuring: cargo bench --features simd_optimizations
+```
+
+**Environment**: Intel i7-12700K, 32GB RAM, Ubuntu 22.04
+
+| Benchmark | Baseline | Optimized | Relative |
+|-----------|----------|-----------|----------|
+| json_parse_small | 2.1ms | 1.6ms | 1.31x faster |
+| json_parse_medium | 18.3ms | 12.9ms | 1.42x faster |
 
 **Why**: Context helps readers understand the significance of results and what actions to take.
 
@@ -585,14 +669,19 @@ if analysis.is_reliable() {
 ```
 ## Performance Results
 
+// Measuring: Cache-friendly optimization algorithms on dataset of 50K records
+
 Performance comparison after implementing cache-friendly optimizations:
 
-- **algorithm_a**: 1.2ms (15% improvement from baseline)
-- **algorithm_b**: 1.8ms (stable performance) 
-- **algorithm_c**: 0.9ms (25% improvement - recommended for production)
+| Algorithm | Before | After | Improvement | Status |
+|-----------|---------|--------|-------------|---------|
+| algorithm_a | 1.4ms | 1.2ms | 15% faster | ✅ Optimized |
+| algorithm_b | 1.8ms | 1.8ms | No change | ⚠️ Needs work |
+| algorithm_c | 1.2ms | 0.9ms | 25% faster | ✅ Production ready |
 
 **Key Finding**: Cache optimizations provide significant benefits for algorithms A and C.
 **Recommendation**: Implement similar patterns in algorithm B for consistency.
+**Environment**: 16GB RAM, SSD storage, typical production load
 ```
 
 ---
