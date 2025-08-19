@@ -1,6 +1,7 @@
 use super::*;
 use assert_fs::prelude::*;
-use the_module::{action, collection::HashMap};
+use the_module::{action};
+use std::collections::HashMap;
 
 //
 

@@ -10,7 +10,8 @@ mod private
   use wca::VerifiedCommand;
   // use error::Result;
   // qqq : group dependencies
-  use pth::{ AbsolutePath, PathBuf };
+  use pth::AbsolutePath;
+  use std::path::PathBuf;
   use action::test::TestsCommandOptions;
   use former::Former;
   use crate::entity::channel::Channel;

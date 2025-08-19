@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 
 #[ test ]
 fn subforme_scalar()

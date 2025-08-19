@@ -1,7 +1,9 @@
 //! Example demonstrating manual debugging of command-line parsing functionality.
 
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 use strs_tools::string::parser::*;
 
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn main() {
     let input = "myapp --verbose --output:result.txt input1.txt";
     println!("Input: '{}'", input);
@@ -32,4 +34,9 @@ fn main() {
             println!("Split parts: {:?}", parts);
         }
     }
+}
+
+#[ cfg( not( all( feature = "string_split", not( feature = "no_std" ) ) ) ) ]
+fn main() {
+    println!("Example requires string_split feature and !no_std");
 }

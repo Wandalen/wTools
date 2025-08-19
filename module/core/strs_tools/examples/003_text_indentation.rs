@@ -4,6 +4,7 @@
 //! code generation, and document processing tasks that require precise control
 //! over line-by-line formatting.
 
+#[allow(unused_imports)]
 use strs_tools::*;
 
 fn main()

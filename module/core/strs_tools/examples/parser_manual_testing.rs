@@ -3,22 +3,35 @@
 //! This program demonstrates and tests various parser integration features
 //! through interactive examples and validates functionality manually.
 
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
+#[ allow( unused_imports ) ]
 use strs_tools::string::parser::*;
+#[ allow( unused_imports ) ]
 use std::time::Instant;
 
 fn main() {
     println!("=== Parser Integration Manual Testing ===\n");
     
-    test_basic_single_pass_parsing();
-    test_command_line_parsing_scenarios();
-    test_validation_functionality();
-    test_error_handling();
-    test_performance_comparison();
-    test_real_world_scenarios();
+    #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
+    {
+        test_basic_single_pass_parsing();
+        test_command_line_parsing_scenarios();
+        test_validation_functionality();
+        test_error_handling();
+        test_performance_comparison();
+        test_real_world_scenarios();
+        
+        println!("=== All Manual Tests Completed Successfully ===");
+    }
     
-    println!("=== All Manual Tests Completed Successfully ===");
+    #[ cfg( not( all( feature = "string_split", not( feature = "no_std" ) ) ) ) ]
+    {
+        println!("Parser integration functionality not available - feature 'string_split' not enabled or 'no_std' is active");
+        println!("This manual testing requires string parsing features that aren't currently available");
+    }
 }
 
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_basic_single_pass_parsing() {
     println!("📋 Testing Basic Single-Pass Parsing");
     println!("────────────────────────────────────────");
@@ -67,6 +80,7 @@ fn test_basic_single_pass_parsing() {
     println!();
 }
 
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_command_line_parsing_scenarios() {
     println!("⚡ Testing Command-Line Parsing Scenarios");
     println!("─────────────────────────────────────────────");
@@ -103,6 +117,7 @@ fn test_command_line_parsing_scenarios() {
     println!();
 }
 
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_validation_functionality() {
     println!("🔍 Testing Validation Functionality");
     println!("────────────────────────────────────");
@@ -139,6 +154,7 @@ fn test_validation_functionality() {
     println!();
 }
 
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_error_handling() {
     println!("🚨 Testing Error Handling");
     println!("─────────────────────────");
@@ -170,6 +186,7 @@ fn test_error_handling() {
     println!();
 }
 
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_performance_comparison() {
     println!("⏱️  Testing Performance Comparison");
     println!("──────────────────────────────────");
@@ -211,6 +228,7 @@ fn test_performance_comparison() {
     println!();
 }
 
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_real_world_scenarios() {
     println!("🌍 Testing Real-World Scenarios");
     println!("───────────────────────────────");

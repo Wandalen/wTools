@@ -75,7 +75,8 @@ mod private
   {
     let mut report = ReadmeHeadersRenewReport::default();
     // let absolute_path = AbsolutePath::try_from( std::env::current_dir()? )?;
-    let crate_dir = CrateDir::transitive_try_from::< AbsolutePath >( CurrentPath )?;
+    let abs_path = AbsolutePath::try_from( std::env::current_dir()? )?;
+    let crate_dir = CrateDir::try_from( abs_path )?;
     let mut fail = false;
 
     match crate::action::main_header::action( crate_dir.clone() )

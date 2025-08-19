@@ -4,6 +4,7 @@
 //! to standard library string operations, particularly for parsing complex text
 //! formats like command lines, configuration files, and quoted strings.
 
+#[allow(unused_imports)]
 use strs_tools::*;
 
 fn main()

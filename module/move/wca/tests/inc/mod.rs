@@ -1,5 +1,5 @@
 use super::*;
-use test_tools::exposed::*;
+use test_tools::*;
 
 mod commands_aggregator;
 mod executor;

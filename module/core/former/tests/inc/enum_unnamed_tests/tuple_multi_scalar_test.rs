@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Test for `tuple_multi_fields_scalar` handler
 use super::*;
 #[ allow( unused_imports ) ]

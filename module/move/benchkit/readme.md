@@ -1,4 +1,3 @@
-
 # benchkit
 
 [![docs.rs](https://docs.rs/benchkit/badge.svg)](https://docs.rs/benchkit)
@@ -38,11 +37,11 @@ This example demonstrates the core `benchkit` workflow: comparing two algorithms
 benchkit = { version = "0.1", features = [ "full" ] }
 ```
 
-**2. Create a benchmark in your `tests` directory:**
+**2. Create a benchmark in your `benches` directory:**
 
-```rust
-// In tests/performance_test.rs
-#![ cfg( feature = "integration" ) ]
+```rust  
+// In benches/performance_demo.rs
+#![ cfg( feature = "enabled" ) ]
 use benchkit::prelude::*;
 
 fn generate_data( size : usize ) -> Vec< u32 >
@@ -82,245 +81,21 @@ fn update_readme_performance_docs()
     }
   );
 
-  // Run the comparison and update the documentation
+  // Run the comparison and update readme.md
   let report = comparison.run();
   let markdown = report.to_markdown();
 
-  let updater = MarkdownUpdater::new( "readme.md", "Performance" );
+  let updater = MarkdownUpdater::new( "readme.md", "Benchmark Results" ).unwrap();
   updater.update_section( &markdown ).unwrap();
 }
 ```
 
-**3. Add a placeholder section to your `readme.md`:**
-
-```markdown
-## Performance
-
-## api_performance Results
-
-| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
-|-----------|-----------|---------|-----|-----|----------|
-| create_user | 36.00ns | 27777778 | 0.00ns | 40.00ns | 13.00ns |
-| get_user | 40.00ns | 25000000 | 40.00ns | 40.00ns | 0.00ns |
-
-### Key Insights
-
-- **Fastest operation**: create_user (36.00ns)
-- **Performance range**: 1.1x difference between fastest and slowest
-
-
-
-## api_performance Results
-
-| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
-|-----------|-----------|---------|-----|-----|----------|
-| get_user | 32.00ns | 31250000 | 0.00ns | 40.00ns | 17.00ns |
-| create_user | 36.00ns | 27777778 | 0.00ns | 40.00ns | 13.00ns |
-
-### Key Insights
-
-- **Fastest operation**: get_user (32.00ns)
-- **Performance range**: 1.1x difference between fastest and slowest
-
-
-
-## api_performance Results
-
-| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
-|-----------|-----------|---------|-----|-----|----------|
-| get_user | 64.00ns | 15625000 | 40.00ns | 80.00ns | 21.00ns |
-| create_user | 64.00ns | 15625000 | 40.00ns | 80.00ns | 21.00ns |
-
-### Key Insights
-
-- **Fastest operation**: get_user (64.00ns)
-- **Performance range**: 1.0x difference between fastest and slowest
-
-
-
-## api_performance Results
-
-| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
-|-----------|-----------|---------|-----|-----|----------|
-| create_user | 40.00ns | 25000000 | 40.00ns | 40.00ns | 0.00ns |
-| get_user | 40.00ns | 25000000 | 40.00ns | 40.00ns | 0.00ns |
-
-### Key Insights
-
-- **Fastest operation**: create_user (40.00ns)
-- **Performance range**: 1.0x difference between fastest and slowest
-
-
-
-## api_performance Results
-
-| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
-|-----------|-----------|---------|-----|-----|----------|
-| get_user | 24.00ns | 41666667 | 0.00ns | 40.00ns | 21.00ns |
-| create_user | 28.00ns | 35714286 | 0.00ns | 40.00ns | 19.00ns |
-
-### Key Insights
-
-- **Fastest operation**: get_user (24.00ns)
-- **Performance range**: 1.2x difference between fastest and slowest
-
-
-
-## api_performance Results
-
-| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
-|-----------|-----------|---------|-----|-----|----------|
-| create_user | 32.00ns | 31250000 | 0.00ns | 40.00ns | 17.00ns |
-| get_user | 36.00ns | 27777778 | 0.00ns | 40.00ns | 13.00ns |
-
-### Key Insights
-
-- **Fastest operation**: create_user (32.00ns)
-- **Performance range**: 1.1x difference between fastest and slowest
-
-
-
-## api_performance Results
-
-| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
-|-----------|-----------|---------|-----|-----|----------|
-| create_user | 84.00ns | 11904762 | 80.00ns | 120.00ns | 13.00ns |
-| get_user | 88.00ns | 11363636 | 80.00ns | 120.00ns | 17.00ns |
-
-### Key Insights
-
-- **Fastest operation**: create_user (84.00ns)
-- **Performance range**: 1.0x difference between fastest and slowest
-
-
-
-## api_performance Results
-
-| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
-|-----------|-----------|---------|-----|-----|----------|
-| get_user | 84.00ns | 11904762 | 80.00ns | 120.00ns | 13.00ns |
-| create_user | 92.00ns | 10869565 | 80.00ns | 120.00ns | 19.00ns |
-
-### Key Insights
-
-- **Fastest operation**: get_user (84.00ns)
-- **Performance range**: 1.1x difference between fastest and slowest
-
-
-
-## Performance
-
-## api_performance Results
-
-| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
-|-----------|-----------|---------|-----|-----|----------|
-| create_user | 36.00ns | 27777778 | 0.00ns | 40.00ns | 13.00ns |
-| get_user | 40.00ns | 25000000 | 40.00ns | 40.00ns | 0.00ns |
-
-### Key Insights
-
-- **Fastest operation**: create_user (36.00ns)
-- **Performance range**: 1.1x difference between fastest and slowest
-
-
-
-## api_performance Results
-
-| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
-|-----------|-----------|---------|-----|-----|----------|
-| get_user | 32.00ns | 31250000 | 0.00ns | 40.00ns | 17.00ns |
-| create_user | 36.00ns | 27777778 | 0.00ns | 40.00ns | 13.00ns |
-
-### Key Insights
-
-- **Fastest operation**: get_user (32.00ns)
-- **Performance range**: 1.1x difference between fastest and slowest
-
-
-
-## api_performance Results
-
-| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
-|-----------|-----------|---------|-----|-----|----------|
-| get_user | 64.00ns | 15625000 | 40.00ns | 80.00ns | 21.00ns |
-| create_user | 64.00ns | 15625000 | 40.00ns | 80.00ns | 21.00ns |
-
-### Key Insights
-
-- **Fastest operation**: get_user (64.00ns)
-- **Performance range**: 1.0x difference between fastest and slowest
-
-
-
-## api_performance Results
-
-| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
-|-----------|-----------|---------|-----|-----|----------|
-| create_user | 40.00ns | 25000000 | 40.00ns | 40.00ns | 0.00ns |
-| get_user | 40.00ns | 25000000 | 40.00ns | 40.00ns | 0.00ns |
-
-### Key Insights
-
-- **Fastest operation**: create_user (40.00ns)
-- **Performance range**: 1.0x difference between fastest and slowest
-
-
-
-## api_performance Results
-
-| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
-|-----------|-----------|---------|-----|-----|----------|
-| get_user | 24.00ns | 41666667 | 0.00ns | 40.00ns | 21.00ns |
-| create_user | 28.00ns | 35714286 | 0.00ns | 40.00ns | 19.00ns |
-
-### Key Insights
-
-- **Fastest operation**: get_user (24.00ns)
-- **Performance range**: 1.2x difference between fastest and slowest
-
-
-
-## api_performance Results
-
-| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
-|-----------|-----------|---------|-----|-----|----------|
-| create_user | 32.00ns | 31250000 | 0.00ns | 40.00ns | 17.00ns |
-| get_user | 36.00ns | 27777778 | 0.00ns | 40.00ns | 13.00ns |
-
-### Key Insights
-
-- **Fastest operation**: create_user (32.00ns)
-- **Performance range**: 1.1x difference between fastest and slowest
-
-
-
-## api_performance Results
-
-| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
-|-----------|-----------|---------|-----|-----|----------|
-| create_user | 84.00ns | 11904762 | 80.00ns | 120.00ns | 13.00ns |
-| get_user | 88.00ns | 11363636 | 80.00ns | 120.00ns | 17.00ns |
-
-### Key Insights
-
-- **Fastest operation**: create_user (84.00ns)
-- **Performance range**: 1.0x difference between fastest and slowest
-
-
-
-## api_performance Results
-
-| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
-|-----------|-----------|---------|-----|-----|----------|
-| get_user | 84.00ns | 11904762 | 80.00ns | 120.00ns | 13.00ns |
-| create_user | 92.00ns | 10869565 | 80.00ns | 120.00ns | 19.00ns |
-
-### Key Insights
-
-- **Fastest operation**: get_user (84.00ns)
-- **Performance range**: 1.1x difference between fastest and slowest
-
-
+**3. Run your benchmark and watch readme.md update automatically:**
+```bash
+cargo run --bin performance_demo --features enabled  
+```
+
+---
 
 ## 🧰 What's in the Toolkit?
 
@@ -424,7 +199,7 @@ let random_data = seeded_gen.random_string( 1024 );
 
 The "documentation-first" philosophy is enabled by powerful report generation and file updating tools.
 
-```rust
+```rust,no_run
 use benchkit::prelude::*;
 
 fn main() -> Result< (), Box< dyn std::error::Error > >
@@ -438,7 +213,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   let markdown_report = results.generate_markdown_report().generate();
 
   // Automatically update the "## Performance" section of a file.
-  let updater = MarkdownUpdater::new( "readme.md", "Performance" );
+  let updater = MarkdownUpdater::new( "readme.md", "Performance" )?;
   updater.update_section( &markdown_report )?;
   
   Ok( () )
@@ -452,11 +227,183 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
 `benchkit` is designed to make performance analysis a natural part of your development cycle.
 
 ```text
-[ 1. Write Code ] -> [ 2. Add Benchmark in `tests/` ] -> [ 3. Run `cargo test` ]
-       ^                                                              |
-       |                                                              v
-[ 5. Commit Code + Perf Docs ] <- [ 4. Auto-Update `readme.md` ] <- [ Analyze Console Results ]
+[ 1. Write Code ] -> [ 2. Add Benchmark in `benches/` ] -> [ 3. Run `cargo run --bin` ]
+       ^                                                                   |
+       |                                                                   v
+[ 5. Commit Code + Perf Docs ] <- [ 4. Auto-Update `benchmark_results.md` ] <- [ Analyze Results ]
 ```
+
+## 📁 Why Not `benches/`? Standard Directory Integration
+
+The traditional `benches/` directory creates artificial separation between ALL your benchmark content and the standard Rust project structure. `benchkit` encourages you to use standard directories for ALL benchmark-related files:
+
+- ✅ **Use `tests/`**: Performance benchmarks alongside unit tests
+- ✅ **Use `examples/`**: Demonstration benchmarks and showcases  
+- ✅ **Use `src/bin/`**: Dedicated benchmark executables
+- ✅ **Standard integration**: Keep ALL benchmark content in standard Rust directories
+- ❌ **Avoid `benches/`**: Don't isolate ANY benchmark files in framework-specific directories
+
+### Why This Matters
+
+**Workflow Integration**: ALL benchmark content should be part of regular development, not isolated in framework-specific directories.
+
+**Documentation Proximity**: ALL benchmark files are documentation - keep them integrated with your standard project structure for better maintainability.
+
+**Testing Philosophy**: Performance is part of correctness validation - integrate benchmarks with your existing test suite.
+
+**Toolkit vs Framework**: Frameworks enforce rigid `benches/` isolation; toolkits integrate with your existing project structure.
+
+### Automatic Documentation Updates
+
+`benchkit` excels at maintaining comprehensive, automatically updated documentation in your project files:
+
+```markdown
+# Benchmark Results
+
+## Algorithm Comparison
+
+| Algorithm | Mean Time | Throughput | Relative |
+|-----------|-----------|------------|----------|
+| quicksort | 1.23ms    | 815 ops/s  | baseline |
+| mergesort | 1.45ms    | 689 ops/s  | 1.18x    |
+| heapsort  | 1.67ms    | 599 ops/s  | 1.36x    |
+
+*Last updated: 2024-01-15 14:32:18 UTC*
+*Generated by benchkit v0.4.0*
+
+## Performance Trends
+
+- quicksort maintains consistent performance across data sizes
+- mergesort shows better cache behavior on large datasets
+- heapsort provides predictable O(n log n) guarantees
+
+## Test Configuration
+
+- Hardware: 16-core AMD Ryzen, 32GB RAM
+- Rust version: 1.75.0
+- Optimization: --release
+- Iterations: 1000 per benchmark
+```
+
+This documentation is automatically generated and updated every time you run benchmarks.
+
+### Integration Examples
+
+```rust,no_run
+// ✅ In standard tests/ directory alongside unit tests
+// tests/performance_comparison.rs
+use benchkit::prelude::*;
+
+#[test]
+fn benchmark_algorithms()
+{
+  let mut suite = BenchmarkSuite::new( "Algorithm Comparison" );
+  
+  suite.benchmark( "quick_sort", ||
+  {
+    // Your quicksort implementation
+  });
+  
+  suite.benchmark( "merge_sort", ||  
+  {
+    // Your mergesort implementation
+  });
+  
+  let results = suite.run_all();
+  
+  // Automatically update readme.md with results
+  let updater = MarkdownUpdater::new( "readme.md", "Performance" ).unwrap();
+  updater.update_section( &results.generate_markdown_report().generate() ).unwrap();
+}
+```
+
+```rust,no_run
+// ✅ In examples/ directory for demonstrations
+// examples/comprehensive_benchmark.rs  
+use benchkit::prelude::*;
+
+fn main()
+{
+  let mut comprehensive = BenchmarkSuite::new( "Comprehensive Performance Analysis" );
+  
+  // Add multiple benchmarks
+  comprehensive.benchmark( "data_processing", || { /* code */ } );
+  comprehensive.benchmark( "memory_operations", || { /* code */ } );
+  comprehensive.benchmark( "io_operations", || { /* code */ } );
+  
+  let results = comprehensive.run_all();
+  
+  // Update readme.md with comprehensive report
+  let report = results.generate_markdown_report();
+  let updater = MarkdownUpdater::new( "readme.md", "Performance Analysis" ).unwrap();
+  updater.update_section( &report.generate() ).unwrap();
+  
+  println!( "Updated readme.md with latest performance results" );
+}
+```
+
+### 🔧 Feature Flag Recommendations
+
+For optimal build performance and clean separation, put your benchmark code behind feature flags:
+
+```rust,no_run
+// ✅ In src/bin/ directory for dedicated benchmark executables  
+// src/bin/comprehensive_benchmark.rs
+#[ cfg( feature = "enabled" ) ]
+use benchkit::prelude::*;
+
+#[ cfg( feature = "enabled" ) ]
+fn main()
+{
+  let mut suite = BenchmarkSuite::new( "Comprehensive Performance Suite" );
+  
+  suite.benchmark( "algorithm_a", || { /* implementation */ } );
+  suite.benchmark( "algorithm_b", || { /* implementation */ } );
+  suite.benchmark( "data_structure_ops", || { /* implementation */ } );
+  
+  let results = suite.run_all();
+  
+  // Automatically update readme.md
+  let updater = MarkdownUpdater::new( "readme.md", "Latest Results" ).unwrap();
+  updater.update_section( &results.generate_markdown_report().generate() ).unwrap();
+  
+  println!( "Benchmarks completed - readme.md updated" );
+}
+
+#[ cfg( not( feature = "enabled" ) ) ]
+fn main()
+{
+  println!( "Run with: cargo run --bin comprehensive_benchmark --features enabled" );
+  println!( "Results will be automatically saved to readme.md" );
+}
+```
+
+Add to your `Cargo.toml`:
+
+```toml
+[features]
+benchmark = ["benchkit"]
+
+[dev-dependencies]
+benchkit = { version = "0.1", features = ["full"], optional = true }
+```
+
+Run benchmarks selectively:
+```bash
+# Run only unit tests (fast)
+cargo test
+
+# Run specific benchmark binary (updates readme.md)
+cargo run --bin comprehensive_benchmark --features enabled
+
+# Run benchmarks from examples/
+cargo run --example performance_demo --features enabled
+
+# Run all binaries containing benchmarks
+cargo run --bin performance_suite --features enabled
+```
+
+This approach keeps your regular builds fast while making comprehensive performance testing available when needed.
 
 ## Installation
 
@@ -478,3 +425,9 @@ Contributions are welcome! `benchkit` aims to be a community-driven toolkit that
 ## License
 
 This project is licensed under the **MIT License**.
+
+
+## Performance
+
+*This section is automatically updated by benchkit when you run benchmarks.*
+

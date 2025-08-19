@@ -6,7 +6,7 @@
 #[allow(unused_imports)]
 use unilang_instruction_parser as the_module;
 #[allow(unused_imports)]
-use test_tools::exposed::*;
+use test_tools::*;
 
 // Include all test modules from the core unilang_parser crate using full module path
 #[path = "../../../../module/move/unilang_parser/tests/parser_config_entry_tests.rs"]

@@ -77,6 +77,7 @@
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 
 #[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
 use macro_tools::{Result, diag};
 
 #[ cfg( feature = "derive_former" ) ]

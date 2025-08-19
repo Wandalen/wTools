@@ -1,9 +1,10 @@
 #[ allow( unused_imports ) ]
 use super::*;
 #[ allow( unused_imports ) ]
-use test_tools::prelude::*;
-use test_tools::impls_index::tests_impls;
-use test_tools::impls_index::tests_index;
+use test_tools::*;
+// xxx: temporarily disabled due to macro resolution issues
+// use test_tools::impls_index::tests_impls;
+// use test_tools::impls_index::tests_index;
 
 #[cfg(any(feature = "either", feature = "dt_either"))]
 mod either_test;

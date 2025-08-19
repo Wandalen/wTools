@@ -49,7 +49,8 @@ full = [
 ]
 
 # Performance optimization features
-performance = ["former_meta/performance"]
+performance = ["former_meta/performance", "dep:benchkit"]
+benchmarks = ["performance", "dep:benchkit"]
 enabled = [ "former_meta/enabled", "former_types/enabled" ]
 
 derive_former = [ "former_meta/derive_former", "types_former" ]
@@ -68,8 +69,94 @@ former_diagnostics_print_generated = [ "former_meta/former_diagnostics_print_gen
 [dependencies]
 former_meta = { workspace = true } # Debug features disabled to prevent compile-time output
 former_types = { workspace = true }
-# collection_tools = { workspace = true, features = [ "collection_constructors" ] }
+collection_tools = { workspace = true, features = [ "collection_constructors" ] }
+benchkit = { workspace = true, optional = true, features = [ "enabled", "markdown_reports", "data_generators" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }
 collection_tools = { workspace = true, features = [ "collection_constructors" ] }
+
+[[bench]]
+name = "former_optimization_benchmark"
+path = "benches/former_optimization_benchmark.rs"
+required-features = ["benchmarks"]
+harness = false
+
+[[bench]]
+name = "macro_expansion_benchmark"
+path = "benches/macro_expansion_benchmark.rs"
+required-features = ["benchmarks"]
+harness = false
+
+[[bench]]
+name = "builder_runtime_benchmark"
+path = "benches/builder_runtime_benchmark.rs"
+required-features = ["benchmarks"]
+harness = false
+
+[[bench]]
+name = "real_memory_benchmark"
+path = "benches/real_memory_benchmark.rs"
+required-features = ["benchmarks"]
+harness = false
+
+# xxx: Temporarily disabled due to Former macro formatting issues
+# [[bench]]
+# name = "real_builder_benchmark"
+# path = "benches/real_builder_benchmark.rs"
+# required-features = ["benchmarks"]
+# harness = false
+
+[[bench]]
+name = "baseline_macro_performance"
+path = "benches/baseline_macro_performance.rs"
+required-features = ["benchmarks"]
+harness = false
+
+[[bench]]
+name = "real_baseline_measurement"
+path = "benches/real_baseline_measurement.rs"
+required-features = ["benchmarks"]
+harness = false
+
+[[bench]]
+name = "simple_baseline_benchmark"
+path = "benches/simple_baseline_benchmark.rs"
+required-features = ["benchmarks"]
+harness = false
+
+[[bench]]
+name = "practical_baseline"
+path = "benches/practical_baseline.rs"
+required-features = ["benchmarks"]
+harness = false
+
+[[bench]]
+name = "post_optimization_measurement"
+path = "benches/post_optimization_measurement.rs"
+required-features = ["benchmarks"]
+harness = false
+
+[[bench]]
+name = "advanced_optimization_round"
+path = "benches/advanced_optimization_round.rs"
+required-features = ["benchmarks"]
+harness = false
+
+[[bench]]
+name = "quote_consolidation_benchmark"
+path = "benches/quote_consolidation_benchmark.rs"
+required-features = ["benchmarks"]
+harness = false
+
+[[bench]]
+name = "optimization_comparison_benchmark"
+path = "benches/optimization_comparison_benchmark.rs"
+required-features = ["benchmarks"]
+harness = false
+
+[[bench]]
+name = "radical_ast_free_benchmark"
+path = "benches/radical_ast_free_benchmark.rs"
+required-features = ["benchmarks"]
+harness = false

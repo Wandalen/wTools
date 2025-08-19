@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: Provides a hand-written implementation of the `Former` pattern's constructors for named
 //! (struct-like) variants with varying field counts and attributes (`#[ scalar ]`, `#[ subform_scalar ]`),
 //! demonstrating the manual implementation corresponding to the derived behavior. This includes manual
@@ -79,6 +80,7 @@ where Definition: FormerDefinition<Storage = InnerForSubformFormerStorage> {
 
 // Define the enum without the derive macro
 #[ derive( Debug, PartialEq ) ]
+#[allow(clippy::enum_variant_names)]
 pub enum EnumWithNamedFields // Renamed enum for clarity
 {
   // --- Zero Fields (Named - Struct-like) ---

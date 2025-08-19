@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: Tests the `#[ derive( Former ) ]` macro's generation of constructors for unit variants
 //! within an enum that has generic parameters and bounds. This file focuses on verifying
 //! the derive-based implementation.

@@ -13,7 +13,7 @@
 #![allow(unused_imports)]
 #![allow(dead_code)]
 
-use test_tools::prelude::*;
+use test_tools::*;
 
 // IF1.1: Unit struct - should not compile
 // pub struct UnitStruct;

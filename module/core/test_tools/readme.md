@@ -7,6 +7,36 @@
 
 Tools for writing and running tests.
 
+## Architecture Overview
+
+This crate serves as an **aggregation layer** that unifies testing tools from multiple ecosystem crates:
+- `error_tools` - Error handling and assertions
+- `collection_tools` - Collection constructor macros and utilities  
+- `impls_index` - Implementation and test organization macros
+- `mem_tools`, `typing_tools`, `diagnostics_tools` - Specialized testing utilities
+
+### Key Design Patterns
+
+**Namespace Re-exports:** The crate provides unified access through `own::*`, `orphan::*`, `exposed::*`, and `prelude::*` modules that re-export functionality from dependency crates.
+
+**Macro Re-exports:** Collection constructor macros (`heap!`, `vec!`, etc.) require explicit re-export since `#[macro_export]` macros are not propagated through module re-exports.
+
+**Feature Cascading:** Features are propagated to dependencies through Cargo.toml, with some requiring explicit handling in source code.
+
+### Test Aggregation Strategy
+
+Tests from dependency crates are included via path references to ensure re-export consistency. This requires the complete public API to remain visible during test compilation.
+
+**⚠️ IMPORTANT:** Never hide public API modules with feature gates during test compilation. See troubleshooting documentation in the source code for details.
+
+## Troubleshooting
+
+For test compilation issues, see the comprehensive troubleshooting documentation embedded in the source code:
+- **Main troubleshooting guide:** See doc comments at the top of `src/lib.rs` 
+- **Test-specific guidance:** See doc comments in `tests/tests.rs` and `tests/inc/mod.rs`
+- **Inline warnings:** Critical sections have detailed prevention and resolution guidance
+- **Historical context:** Each warning references the specific task that resolved the issue
+
 ### Basic use-case
 
 <!-- {{# generate.module{} #}} -->

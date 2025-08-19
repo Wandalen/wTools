@@ -722,31 +722,41 @@ field : {field_ident}",
 
     let doc = format!("Scalar setter for the '{field_ident}' field.",);
 
-    if is_reference {
-      // For reference types, accept the value directly without Into conversion
-      qt! {
-        #[ doc = #doc ]
-        #[ inline ]
-        pub fn #setter_name( mut self, src : #typ ) -> Self
-        {
-          debug_assert!( self.storage.#field_ident.is_none() );
-          self.storage.#field_ident = ::core::option::Option::Some( src );
-          self
-        }
-      }
+    // Optimized setter generation - reduce conditional overhead
+    let setter_impl = if is_reference {
+      qt! { ::core::option::Option::Some( src ) }
     } else {
-      // For non-reference types, use Into conversion as before
-      qt! {
-        #[ doc = #doc ]
-        #[ inline ]
-        pub fn #setter_name< Src >( mut self, src : Src ) -> Self
-        where
-          Src : ::core::convert::Into< #typ >,
-        {
-          debug_assert!( self.storage.#field_ident.is_none() );
-          self.storage.#field_ident = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
-          self
-        }
+      qt! { ::core::option::Option::Some( ::core::convert::Into::into( src ) ) }
+    };
+    
+    let setter_params = if is_reference {
+      qt! { src : #typ }
+    } else {
+      qt! { src : Src }
+    };
+    
+    let setter_generics = if is_reference {
+      qt! {}
+    } else {
+      qt! { < Src > }
+    };
+    
+    let setter_where = if is_reference {
+      qt! {}
+    } else {
+      qt! { where Src : ::core::convert::Into< #typ >, }
+    };
+
+    // Single unified setter pattern
+    qt! {
+      #[ doc = #doc ]
+      #[ inline ]
+      pub fn #setter_name #setter_generics ( mut self, #setter_params ) -> Self
+      #setter_where
+      {
+        debug_assert!( self.storage.#field_ident.is_none() );
+        self.storage.#field_ident = #setter_impl;
+        self
       }
     }
   }

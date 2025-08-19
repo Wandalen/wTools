@@ -14,7 +14,9 @@ mod private
   // qqq : typed error
   pub fn readme_modules_headers_renew() -> error::untyped::Result< () >
   {
-    match action::readme_modules_headers_renew( CrateDir::transitive_try_from::< AbsolutePath >( CurrentPath )? )
+    let current_path = AbsolutePath::try_from( std::env::current_dir()? )?;
+    let crate_dir = CrateDir::try_from( current_path )?;
+    match action::readme_modules_headers_renew( crate_dir )
     {
       Ok( report ) =>
       {

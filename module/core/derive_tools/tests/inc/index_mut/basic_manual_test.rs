@@ -13,7 +13,7 @@
 #![allow(unused_imports)]
 #![allow(dead_code)]
 
-use test_tools::prelude::*;
+use test_tools::*;
 use core::ops::IndexMut as _;
 use core::ops::Index as _;
 

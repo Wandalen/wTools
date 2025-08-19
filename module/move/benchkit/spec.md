@@ -20,12 +20,13 @@
     * 4.4. Analysis Tools
   * 5. Non-Functional Requirements
   * 6. Feature Flags & Modularity
+  * 7. Standard Directory Requirements
 * **Part II: Internal Design (Design Recommendations)**
-  * 7. Architectural Principles
-  * 8. Integration Patterns
+  * 8. Architectural Principles
+  * 9. Integration Patterns
 * **Part III: Development Guidelines**
-  * 9. Lessons Learned Reference
-  * 10. Implementation Priorities
+  * 10. Lessons Learned Reference
+  * 11. Implementation Priorities
 
 ---
 
@@ -38,20 +39,22 @@
 **benchkit** is designed as a **toolkit, not a framework**. Unlike opinionated frameworks that impose specific workflows, benchkit provides flexible building blocks that developers can combine to create custom benchmarking solutions tailored to their specific needs.
 
 **Key Philosophy:**
-- **Toolkit over Framework**: Provide tools, not constraints
+- **Standard Directory Compliance**: ALL benchmark files must be in standard `benches/` directory
+- **Automatic Documentation**: `benches/readme.md` automatically updated with comprehensive reports
 - **Research-Grade Statistical Rigor**: Professional statistical analysis meeting publication standards
-- **Markdown-First Reporting**: Focus on readable, version-controllable reports  
+- **Toolkit over Framework**: Provide tools, not constraints
 - **Optimization-Focused**: Surface key metrics that guide optimization decisions
 - **Integration-Friendly**: Work alongside existing tools, not replace them
 
 #### 1.2. In Scope: The Toolkit Philosophy
 
 **Core Capabilities:**
-1. **Flexible Measurement**: Time, memory, throughput, custom metrics
-2. **Data Generation**: Configurable test data generators for common patterns
-3. **Report Generation**: Markdown, HTML, JSON outputs with customizable templates
-4. **Analysis Tools**: Statistical analysis, comparative benchmarking, regression detection, git-style diffing, visualization
-5. **Documentation Integration**: Seamlessly update markdown documentation with benchmark results
+1. **Standard Directory Integration**: ALL benchmark files organized in standard `benches/` directory following Rust conventions
+2. **Automatic Report Generation**: `benches/readme.md` automatically updated with comprehensive benchmark results and analysis
+3. **Flexible Measurement**: Time, memory, throughput, custom metrics with statistical rigor
+4. **Data Generation**: Configurable test data generators for common patterns
+5. **Analysis Tools**: Statistical analysis, comparative benchmarking, regression detection, git-style diffing, visualization
+6. **Living Documentation**: Automatically maintained performance documentation that stays current with code changes
 
 **Target Use Cases:**
 - Performance analysis for optimization work
@@ -133,20 +136,34 @@
 
 #### 4.3. Report Generation (FR-REPORTS)
 
-**FR-REPORTS-1: Markdown Integration**
-- Must generate markdown tables and sections for benchmark results
+**FR-REPORTS-1: Standard Directory Reporting** ⭐ **CRITICAL REQUIREMENT**
+- Must generate comprehensive reports in `benches/readme.md` following Rust conventions
+- Must automatically update `benches/readme.md` with latest benchmark results
+- Must preserve existing content while updating benchmark sections
 - Must support updating specific sections of existing markdown files
-- Must preserve non-benchmark content when updating documents
+- **Must use exact section matching to prevent section duplication** - Critical bug fix requirement
+- Must validate section names to prevent conflicts and misuse
+- Must provide conflict detection for overlapping section names
 
 **FR-REPORTS-2: Multiple Output Formats**
 - Must support markdown, HTML, and JSON output formats
 - Must provide customizable templates for each format
 - Must allow embedding of charts and visualizations
 
-**FR-REPORTS-3: Documentation Focus**
-- Must generate reports suitable for inclusion in documentation
+**FR-REPORTS-3: Living Documentation**
+- Must generate reports that serve as comprehensive performance documentation
 - Must provide clear, actionable summaries of performance characteristics  
 - Must highlight key optimization opportunities and bottlenecks
+- Must include timestamps and configuration details for reproducibility
+- Must maintain historical context and trends in `benches/readme.md`
+
+**FR-REPORTS-4: Safe API Design** ⭐ **CRITICAL REQUIREMENT**
+- Must provide section name validation to prevent invalid names (empty, too long, invalid characters)
+- Must offer both safe (validated) and unchecked API variants for backwards compatibility
+- Must detect and warn about potential section name conflicts before they cause issues
+- Must use proper error types (MarkdownError) with clear, actionable error messages
+- Must prevent the critical substring matching bug through exact section matching
+- Must guide users toward safe section naming practices through API design
 
 #### 4.4. Analysis Tools (FR-ANALYSIS)
 
@@ -182,7 +199,40 @@
 - Must identify performance scaling characteristics
 - Must provide actionable recommendations based on measurement patterns
 
-### 5. Non-Functional Requirements
+### 5. Critical Bug Fixes and Security Requirements
+
+**CBF-1: Markdown Section Duplication Prevention** ⭐ **CRITICAL FIX**
+
+**Background**: A critical substring matching bug was discovered where `MarkdownUpdater.replace_section_content()` used `line.contains()` instead of exact matching for section headers. This caused severe section duplication when section names shared common substrings.
+
+**Impact Evidence**:
+- wflow project: readme.md grew from 5,865 to 7,751 lines (+1,886 lines) in one benchmark run
+- 37 duplicate "Performance Benchmarks" sections created
+- 201 duplicate table headers generated
+- Documentation became unusable and contradictory
+
+**Root Cause**: `src/reporting.rs:56` contained:
+```rust
+if line.contains(self.section_marker.trim_start_matches("## ")) {
+```
+This matched ANY section containing the substring, so:
+- "Performance Benchmarks" ✓ (intended)
+- "Language Operations Performance" ✓ (unintended - contains "Performance")
+- "Realistic Scenarios Performance" ✓ (unintended - contains "Performance")
+
+**Required Fix**: Changed to exact matching:
+```rust
+if line.trim() == self.section_marker.trim() {
+```
+
+**Prevention Requirements**:
+- Must use exact section name matching in all markdown processing
+- Must provide comprehensive regression tests for section matching edge cases
+- Must validate section names to prevent conflicts
+- Must detect and warn about potential substring conflicts
+- Must maintain backwards compatibility through unchecked API variants
+
+### 6. Non-Functional Requirements
 
 **NFR-PERFORMANCE-1: Low Overhead**
 - Measurement overhead must be <1% of measured operation time for operations >1ms
@@ -204,12 +254,12 @@
 - Must support deterministic seeding for reproducible data generation
 - Must handle system noise and provide statistical confidence measures
 
-### 6. Feature Flags & Modularity
+### 7. Feature Flags & Modularity
 
 | Feature | Description | Default | Dependencies |
 |---------|-------------|---------|--------------|
 | `enabled` | Core benchmarking functionality | ✓ | - |
-| `markdown_reports` | Markdown report generation | ✓ | pulldown-cmark |
+| `markdown_reports` | **Safe markdown report generation with exact section matching** ⭐ | ✓ | pulldown-cmark |
 | `data_generators` | Common data generation patterns | ✓ | rand |
 | `criterion_compat` | Compatibility layer with criterion | ✓ | criterion |
 | `html_reports` | HTML report generation | - | tera |
@@ -220,11 +270,52 @@
 | `visualization` | Chart generation and plotting | - | plotters |
 | `optimization_hints` | Performance optimization suggestions | - | statistical_analysis |
 
+**Critical Note**: The `markdown_reports` feature now includes mandatory safety features:
+- Section name validation and conflict detection
+- Exact section matching (prevents duplication bug)
+- MarkdownError type for proper error handling
+- Safe/unchecked API variants for backwards compatibility
+
+### 8. Standard Directory Requirements
+
+**SR-DIRECTORY-1: Standard Rust Convention Compliance** ⭐ **MANDATORY**
+- ALL benchmark-related files must be located in the standard `benches/` directory
+- This follows established Rust ecosystem conventions and ensures compatibility with `cargo bench`
+- Benchmark binaries, data generation scripts, and analysis tools must all reside in `benches/`
+- No benchmark-related files should be placed in `tests/`, `examples/`, or `src/bin/`
+
+**SR-DIRECTORY-2: Automatic Documentation Generation** ⭐ **MANDATORY**
+- `benches/readme.md` must be automatically generated and updated with benchmark results
+- The file must serve as comprehensive performance documentation for the project
+- Updates must preserve existing content while refreshing benchmark sections
+- Reports must include timestamps, configuration details, and historical context
+
+**SR-DIRECTORY-3: Structured Organization**
+```
+project/
+├── benches/
+│   ├── readme.md              # Automatically updated comprehensive reports
+│   ├── algorithm_comparison.rs # Comparative benchmarks
+│   ├── performance_suite.rs    # Main benchmark suite
+│   ├── memory_benchmarks.rs    # Memory-specific benchmarks
+│   └── data_generation.rs      # Custom data generators
+├── src/
+│   └── lib.rs                  # Main library code
+└── tests/
+    └── unit_tests.rs           # Unit tests (NO benchmarks)
+```
+
+**SR-DIRECTORY-4: Integration with Rust Toolchain**
+- Must work seamlessly with `cargo bench` command
+- Must support standard Rust benchmark discovery and execution patterns
+- Must integrate with existing Rust development workflows
+- Must provide compatibility with IDE tooling and cargo extensions
+
 ---
 
 ## Part II: Internal Design (Design Recommendations)
 
-### 7. Architectural Principles
+### 9. Architectural Principles
 
 **AP-1: Toolkit over Framework**
 - Provide composable functions rather than monolithic framework
@@ -246,15 +337,16 @@
 - Handle measurement noise and outliers appropriately  
 - Offer confidence intervals and significance testing
 
-### 8. Integration Patterns
+### 10. Integration Patterns
 
-**Pattern 1: Inline Benchmarking**
+**Pattern 1: Standard Directory Benchmarking**
 ```rust
+// benches/performance_suite.rs
 use benchkit::prelude::*;
 
-fn benchmark_my_function()
+fn main()
 {
-  let mut suite = BenchmarkSuite::new( "my_function_performance" );
+  let mut suite = BenchmarkSuite::new( "Core Function Performance" );
   
   suite.benchmark( "small_input", ||
   {
@@ -262,43 +354,56 @@ fn benchmark_my_function()
     bench_block( || my_function( &data ) )
   });
   
-  suite.generate_markdown_report( "performance.md", "## Performance Results" );
+  let results = suite.run_all();
+  
+  // Automatically update benches/readme.md with safe API
+  let updater = MarkdownUpdater::new( "benches/readme.md", "Performance Results" ).unwrap();
+  updater.update_section( &results.generate_markdown_report() ).unwrap();
 }
 ```
 
 **Pattern 2: Comparative Analysis**
 ```rust
+// benches/algorithm_comparison.rs
 use benchkit::prelude::*;
 
-fn compare_algorithms()
+fn main()
 {
-  let comparison = ComparativeAnalysis::new()
+  let comparison = ComparativeAnalysis::new( "Algorithm Performance Comparison" )
     .algorithm( "original", || original_algorithm( &data ) )
     .algorithm( "optimized", || optimized_algorithm( &data ) )
     .with_data_sizes( &[ 10, 100, 1000, 10000 ] );
   
   let report = comparison.run_comparison();
-  report.update_markdown_section( "README.md", "## Algorithm Comparison" );
+  
+  // Update benches/readme.md with comparison results using safe API
+  let updater = MarkdownUpdater::new( "benches/readme.md", "Algorithm Comparison" ).unwrap();
+  updater.update_section( &report.generate_markdown_report() ).unwrap();
 }
 ```
 
-**Pattern 3: Documentation Integration**
+**Pattern 3: Comprehensive Benchmark Suite**
 ```rust
+// benches/comprehensive_suite.rs
 use benchkit::prelude::*;
 
-#[ cfg( test ) ]
-mod performance_tests
+fn main()
 {
-  #[ test ]
-  fn update_performance_documentation()
-  {
-    let suite = BenchmarkSuite::from_config( "benchmarks/config.toml" );
-    let results = suite.run_all();
-    
-    // Update multiple sections in documentation
-    results.update_markdown_file( "docs/performance.md" );
-    results.update_readme_section( "README.md", "## Performance" );
-  }
+  let mut suite = BenchmarkSuite::new( "Comprehensive Performance Suite" );
+  
+  // Add multiple benchmark categories
+  suite.benchmark( "data_processing", || process_large_dataset() );
+  suite.benchmark( "memory_operations", || memory_intensive_task() );
+  suite.benchmark( "io_operations", || file_system_benchmarks() );
+  
+  let results = suite.run_all();
+  
+  // Generate comprehensive benches/readme.md report with safe API
+  let comprehensive_report = results.generate_comprehensive_report();
+  let updater = MarkdownUpdater::new( "benches/readme.md", "Performance Analysis" ).unwrap();
+  updater.update_section( &comprehensive_report ).unwrap();
+  
+  println!( "Updated benches/readme.md with comprehensive performance analysis" );
 }
 ```
 
@@ -391,7 +496,43 @@ fn generate_performance_charts()
 }
 ```
 
-**Pattern 7: Research-Grade Statistical Analysis** ⭐ **CRITICAL FEATURE**
+**Pattern 7: Safe Section Management with Conflict Detection** ⭐ **CRITICAL FEATURE**
+```rust
+// benches/safe_section_management.rs
+use benchkit::prelude::*;
+
+fn main() -> Result<(), benchkit::reporting::MarkdownError>
+{
+  // Safe API with validation - prevents the critical substring matching bug
+  let updater = MarkdownUpdater::new("benches/readme.md", "Performance Results")?;
+  
+  // Check for potential conflicts before proceeding
+  let conflicts = updater.check_conflicts()?;
+  if !conflicts.is_empty() {
+    println!("⚠️ Warning: Potential section name conflicts detected:");
+    for conflict in conflicts {
+      println!("  - {}", conflict);
+    }
+    println!("Consider using more specific section names to avoid duplication.");
+  }
+  
+  // Safe to proceed - exact matching prevents duplication
+  let suite = BenchmarkSuite::new("Core Performance");
+  let results = suite.run_all();
+  updater.update_section(&results.generate_markdown_report())?;
+  
+  // Example of problematic section names that would be caught:
+  // ✅ Good: "Performance Results", "Memory Benchmarks", "API Tests"  
+  // ⚠️ Risky: "Performance", "Benchmarks", "Test" (too generic, likely to conflict)
+  
+  // For backwards compatibility, unchecked API is still available:
+  // let unchecked = MarkdownUpdater::new_unchecked("benches/readme.md", "");
+  
+  Ok(())
+}
+```
+
+**Pattern 8: Research-Grade Statistical Analysis** ⭐ **CRITICAL FEATURE**
 ```rust
 use benchkit::prelude::*;
 
@@ -433,7 +574,7 @@ fn research_grade_performance_analysis()
 }
 ```
 
-### 9. Key Learnings from unilang/strs_tools Benchmarking
+### 11. Key Learnings from unilang/strs_tools Benchmarking
 
 **Lesson 1: Focus on Key Metrics**
 - Surface 2-3 critical performance indicators  
@@ -471,7 +612,7 @@ fn research_grade_performance_analysis()
 
 ## Part III: Development Guidelines
 
-### 9. Lessons Learned Reference
+### 12. Lessons Learned Reference
 
 **CRITICAL**: All development decisions for benchkit are based on real-world experience from unilang and strs_tools benchmarking work. The complete set of requirements, anti-patterns, and lessons learned is documented in [`recommendations.md`](recommendations.md).
 
@@ -502,9 +643,16 @@ fn research_grade_performance_analysis()
 - **Solution**: Surface 2-3 key indicators, hide details behind optional analysis
 - **Evidence**: "expose just few critical parameters of optimization and hid the rest deeper"
 
+#### 9.6. Critical Substring Matching Bug ⭐ **CRITICAL LESSON**
+- **Problem**: Markdown section updates used substring matching causing exponential duplication
+- **Impact**: Files grew from 5,865 to 7,751 lines in one run, 37 duplicate sections created
+- **Root Cause**: `line.contains()` matched overlapping section names like "Performance" 
+- **Solution**: Exact matching with `line.trim() == section_marker.trim()` + API validation
+- **Prevention**: Safe API with conflict detection, comprehensive regression tests, backwards compatibility
+
 **For complete requirements and anti-patterns, see [`recommendations.md`](recommendations.md).**
 
-### 10. Implementation Priorities
+### 13. Implementation Priorities
 
 Based on real-world usage patterns and critical path analysis from unilang/strs_tools work:
 
@@ -541,12 +689,17 @@ Based on real-world usage patterns and critical path analysis from unilang/strs_
 - [ ] Integration requires <10 lines of code
 - [ ] Documentation updates happen automatically
 - [ ] Performance regressions detected within 1% accuracy
+- [x] **Critical substring matching bug eliminated** - No more section duplication
+- [x] **Safe API prevents common mistakes** - Validation guides users to best practices
 
 **Technical Success Metrics:**
 - [ ] Measurement overhead <1% for operations >1ms
 - [ ] All features work independently
 - [ ] Compatible with existing criterion benchmarks
 - [ ] Memory usage scales linearly with data size
+- [x] **Exact section matching prevents document corruption**
+- [x] **Comprehensive regression tests prevent bug recurrence**
+- [x] **Backwards compatibility maintained through unchecked API variants**
 
 ### Reference Documents
 

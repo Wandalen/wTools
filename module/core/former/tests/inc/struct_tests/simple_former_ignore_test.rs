@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Simple test for #[`former_ignore`] attribute - minimal test to verify basic functionality
 
 #[ allow( unused_imports ) ]

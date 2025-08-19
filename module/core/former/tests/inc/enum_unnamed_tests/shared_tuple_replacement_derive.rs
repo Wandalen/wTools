@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 // Purpose: Comprehensive replacement for blocked generics_shared_tuple_derive test
 // This works around "requires delegation architecture (.inner_field method missing)"
 // by creating non-generic shared tuple functionality that works with current Former capabilities

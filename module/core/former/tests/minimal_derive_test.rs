@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Test if derive macros work with lifetime-only structs
 
 #![allow(unused_imports)]

@@ -3,7 +3,7 @@ use super::*;
 // qqq : for Bohdan : bad. don't import the_module::*
 use inc::helper::{ProjectBuilder, WorkspaceBuilder};
 
-use collection::BTreeSet;
+use std::collections::BTreeSet;
 use assert_fs::TempDir;
 
 use the_module::action::test::{test, TestsCommandOptions};

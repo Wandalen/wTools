@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 #[ allow( dead_code ) ]
 #[ allow( unused_variables ) ]
-use test_tools::prelude::*;
+use test_tools::*;
 
 // Test for UnitStruct - commented out since New derive is not available
 // #[ test ]

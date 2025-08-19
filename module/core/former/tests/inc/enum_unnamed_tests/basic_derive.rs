@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: Tests the `#[ derive( Former ) ]` macro's generation of constructors for unnamed (tuple)
 //! variants that return subformers, including with `#[ subform_scalar ]` and `#[ standalone_constructors ]`.
 //! This file focuses on verifying the derive-based implementation.

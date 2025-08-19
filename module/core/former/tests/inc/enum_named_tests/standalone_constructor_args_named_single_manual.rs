@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: Provides a hand-written implementation of the standalone scalar constructor function
 //! for a single-field named (struct-like) variant (`StructVariantArgs { field: String }`) within
 //! an enum, demonstrating the manual implementation corresponding to the derived behavior when the

@@ -1,6 +1,6 @@
 #[ allow( unused_imports ) ]
 #[ allow( dead_code ) ]
-use test_tools::prelude::*;
+use test_tools::*;
 
 // Test for TupleStruct1 - commented out since InnerFrom derive is not available
 // #[ test ]

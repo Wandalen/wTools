@@ -1,6 +1,7 @@
 use super::*;
 
-use the_module::{AbsolutePath, Path, PathBuf};
+use the_module::{AbsolutePath};
+use std::path::{Path, PathBuf};
 
 #[ test ]
 fn basic() {

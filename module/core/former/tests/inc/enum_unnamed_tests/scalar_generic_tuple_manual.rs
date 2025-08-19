@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: This file provides a manual implementation of the `Former` pattern's static constructors
 //! for an enum (`EnumScalarGeneric<T>`) with tuple variants containing generic types and bounds. It
 //! demonstrates how the static constructors should behave for tuple variants involving generics,

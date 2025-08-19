@@ -1,5 +1,5 @@
 use super::*;
-use test_tools::exposed::*;
+use test_tools::*;
 
 #[ cfg( any( feature = "diagnostics_runtime_assertions", feature = "diagnostics_runtime_assertions" ) ) ]
 mod cta_test;

@@ -4,6 +4,7 @@ mod private
 {
 
   use crate::*;
+  use std::path::PathBuf;
 
   #[ cfg( feature = "no_std" ) ]
   extern crate std;
@@ -205,11 +206,6 @@ mod private
   {
     #[ cfg( target_os = "windows" ) ]
     use std::path::PathBuf;
-    #[ cfg( feature = "no_std" ) ]
-    extern crate alloc;
-    #[ cfg( feature = "no_std" ) ]
-    #[ allow( unused_imports ) ]
-    use alloc::string::ToString;
 
     // println!( "a" );
     // let path = path.as_ref().canonicalize()?;
@@ -331,13 +327,11 @@ mod private
   /// # Panics
   /// qqq: doc
   // qqq : make macro paths_join!( ... )
-  pub fn iter_join< 'a ,I, P >( paths : I ) -> std::path::PathBuf
+  pub fn iter_join< 'a ,I, P >( paths : I ) -> PathBuf
   where
     I : Iterator< Item = P >,
     P : TryIntoCowPath< 'a >,
   {
-    #[ allow( unused_imports ) ]
-    use std::path::PathBuf;
     #[ cfg( feature = "no_std" ) ]
     extern crate alloc;
     #[ cfg( feature = "no_std" ) ]

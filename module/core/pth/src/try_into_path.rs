@@ -22,6 +22,9 @@ mod private
     path::{ Component, Path, PathBuf },
     string::String,
   };
+  
+  #[cfg(feature = "no_std")]
+  use alloc::string::String;
   // use camino::{ Utf8Path, Utf8PathBuf };
 
   /// A trait for converting various types into a `PathBuf`.

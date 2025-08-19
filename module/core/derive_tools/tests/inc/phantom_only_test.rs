@@ -1,6 +1,6 @@
 #[ allow( unused_imports ) ]
 #[ allow( dead_code ) ]
-use test_tools::prelude::*;
+use test_tools::*;
 
 use crate::inc::phantom_tests::struct_named::NamedStruct1 as NamedStruct1Derive;
 use crate::inc::phantom_tests::struct_named::NamedStruct2 as NamedStruct2Derive;

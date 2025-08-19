@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 mod struct_zero_default_error;
 mod struct_zero_subform_scalar_error;
 

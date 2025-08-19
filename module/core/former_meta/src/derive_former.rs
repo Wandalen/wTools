@@ -27,6 +27,7 @@ mod raw_identifier_utils;
 
 // raw_identifier_utils module available but not directly used here
 mod attribute_validation;
+// Removed macro_helpers module - optimization functions were counter-productive
 
 /// Represents the generic parameters for a `FormerDefinitionTypes`.
 ///

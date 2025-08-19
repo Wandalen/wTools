@@ -43,7 +43,7 @@ full = [
   "performance",
 ]
 
-# Performance optimization features
+# Performance features (benchmarking only)
 performance = []
 enabled = [ "macro_tools/enabled", "iter_tools/enabled", "former_types/enabled", "component_model_types/enabled" ]
 

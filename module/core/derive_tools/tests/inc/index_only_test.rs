@@ -2,7 +2,7 @@
 #[ allow( dead_code ) ]
 #[ allow( unused_variables ) ]
 
-use test_tools::prelude::*;
+use test_tools::*;
 use core::ops::Index as _;
 
 // Test for TupleStruct1

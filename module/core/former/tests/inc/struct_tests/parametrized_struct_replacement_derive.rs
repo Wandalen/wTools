@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 // Purpose: Focused replacement for blocked parametrized_struct_where test
 // This works around "Derive macro uses Definition as generic K, but Definition doesn't implement Hash+Eq" 
 // by creating non-parametrized struct equivalents with HashMap/BTreeMap that actually work
@@ -8,7 +9,7 @@ use ::former::prelude::*;
 use ::former::Former;
 
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-use std::collections::HashMap;
+use collection_tools::HashMap;
 
 // Wrapper structs that derive Former for use in HashMap values
 #[ derive( Debug, PartialEq, Former ) ]
