@@ -1005,6 +1005,15 @@ This approach keeps your regular builds fast while making comprehensive performa
   - Progressive validation pipeline with halt-on-failure
   - Real-world CI/CD integration patterns and best practices
 
+- **🚨 [Cargo Bench Integration](examples/cargo_bench_integration.rs)**: CRITICAL - Standard `cargo bench` integration patterns
+  - Seamless integration with Rust's standard `cargo bench` command
+  - Automatic documentation updates during benchmark execution
+  - Standard `benches/` directory structure support
+  - Criterion compatibility layer for zero-migration adoption
+  - CI/CD integration with standard workflows and conventions
+  - Real-world project structure and configuration examples
+  - **This is the foundation requirement for benchkit adoption**
+
 ### 🚀 Running the Examples
 
 ```bash
@@ -1024,6 +1033,9 @@ cargo run --example advanced_usage_patterns --all-features
 
 # NEW: CI/CD Integration Example
 cargo run --example cicd_regression_detection --all-features
+
+# 🚨 CRITICAL: Cargo Bench Integration Example
+cargo run --example cargo_bench_integration --all-features
 
 # Original enhanced features demo
 cargo run --example enhanced_features_demo --all-features

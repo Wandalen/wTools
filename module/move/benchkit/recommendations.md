@@ -6,6 +6,32 @@
 
 ---
 
+## 🚨 CRITICAL REQUIREMENT SUMMARY
+
+### The #1 Most Important Requirement: `cargo bench` Integration
+
+**Without seamless `cargo bench` integration, benchkit will fail in the marketplace.**
+
+Rust developers expect `cargo bench` to work. This is not optional - it's the foundation of benchkit's value proposition. Every other feature is secondary to making `cargo bench` work perfectly with automatic documentation updates and regression analysis.
+
+**Key Requirements:**
+- ✅ `cargo bench` must work immediately without setup
+- ✅ Documentation must update automatically during benchmarks
+- ✅ Regression analysis must happen automatically
+- ✅ Must work in standard `benches/` directory
+- ✅ Must be compatible with existing criterion projects
+- ✅ Must require zero additional commands or manual steps
+
+**Success Metric:** A developer should be able to:
+1. Add benchkit to their Cargo.toml
+2. Create a benchmark in `benches/`
+3. Run `cargo bench`
+4. See their README.md automatically updated with results
+
+If this doesn't work flawlessly, benchkit will not achieve adoption.
+
+---
+
 ## Table of Contents
 
 1. [Core Philosophy Recommendations](#core-philosophy-recommendations)
@@ -98,6 +124,71 @@ minimal = ["enabled"]                                          # Core timing onl
 ---
 
 ## User Experience Guidelines
+
+### 🚨 REQ-UX-000: Mandatory `cargo bench` Support (FOUNDATIONAL)
+**Source**: Industry standard expectations and Rust ecosystem conventions
+
+**⚠️ FOUNDATIONAL REQUIREMENT: Without this, benchkit will not be adopted by the Rust community.**
+
+**Requirements:**
+- **MUST** integrate seamlessly with `cargo bench` as the primary interface
+- **MUST** support the standard `benches/` directory structure
+- **MUST** work with Rust's built-in benchmark harness and custom harnesses
+- **MUST** automatically update documentation during benchmark execution
+- **MUST** provide regression analysis as part of the benchmark process
+- **MUST** be compatible with existing cargo bench workflows
+
+**Critical Design Principles:**
+1. **Convention over Configuration**: Follow existing Rust patterns, don't invent new ones
+2. **Zero Migration Cost**: Existing projects should adopt benchkit with minimal changes
+3. **Automatic Documentation**: Performance docs should never be stale or out of date
+4. **Ecosystem Integration**: Must work with cargo, clippy, rustfmt, and other standard tools
+
+**Implementation Requirements:**
+```toml
+# In Cargo.toml - Standard Rust benchmark setup
+[[bench]]
+name = "performance_suite"
+harness = false  # Use benchkit as the harness
+
+[dev-dependencies]
+benchkit = { version = "0.1", features = ["cargo_bench"] }
+```
+
+```rust
+// In benches/performance_suite.rs - Works with cargo bench
+use benchkit::prelude::*;
+
+fn main() {
+    // Standard benchkit setup that integrates with cargo bench
+    let mut suite = BenchmarkSuite::new("Algorithm Performance");
+    
+    suite.benchmark("algorithm_a", || algorithm_a_implementation());
+    suite.benchmark("algorithm_b", || algorithm_b_implementation());
+    
+    // Automatically update documentation during cargo bench
+    let results = suite.run_with_auto_docs(&[
+        ("README.md", "## Performance"),
+        ("PERFORMANCE.md", "## Latest Results"),
+    ])?;
+    
+    // Automatic regression analysis
+    results.check_regressions_and_alert()?;
+}
+```
+
+**Expected User Workflow:**
+```bash
+# User expectation - this MUST work without additional setup
+cargo bench
+
+# Should automatically:
+# - Run all benchmarks in benches/
+# - Update README.md and PERFORMANCE.md
+# - Check for performance regressions
+# - Generate professional performance reports
+# - Maintain historical data for trend analysis
+```
 
 ### REQ-UX-001: Simple Integration Pattern
 **Source**: Frustration with complex setup requirements
