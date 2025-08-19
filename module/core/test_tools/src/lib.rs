@@ -21,7 +21,6 @@
 /// Namespace with dependencies.
 #[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
-#[cfg(not(feature = "doctest"))]
 pub mod dependency {
 
   // // zzz : exclude later
@@ -110,7 +109,6 @@ mod private {}
 // pub use test::{ compiletime, helper, smoke_test };
 
 #[ cfg( feature = "enabled" ) ]
-#[cfg(not(feature = "doctest"))]
 pub mod test;
 
 /// Aggegating submodules without using cargo, but including their entry files directly.
@@ -118,46 +116,49 @@ pub mod test;
 /// We don't want to run doctest of included files, because all of the are relative to submodule.
 /// So we disable doctests of such submodules with `#[ cfg( not( doctest ) ) ]`.
 #[ cfg( feature = "enabled" ) ]
-#[cfg(not(feature = "doctest"))]
 // #[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
 #[cfg(all(feature = "standalone_build", not(feature = "normal_build")))]
 // #[ cfg( any( not( doctest ), not( feature = "standalone_build" ) ) ) ]
 mod standalone;
 
 #[ cfg( feature = "enabled" ) ]
-#[cfg(not(feature = "doctest"))]
 #[cfg(all(feature = "standalone_build", not(feature = "normal_build")))]
 pub use standalone::*;
 
 #[ cfg( feature = "enabled" ) ]
-#[cfg(not(feature = "doctest"))]
 #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
 pub use ::{error_tools, collection_tools, impls_index, mem_tools, typing_tools, diagnostics_tools};
 
+// Re-export collection constructor macros for aggregated test accessibility
 #[ cfg( feature = "enabled" ) ]
-#[cfg(not(feature = "doctest"))]
+#[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
+#[ cfg( feature = "collection_constructors" ) ]
+pub use collection_tools::{heap, vec, bmap, bset, hmap, hset, llist, deque};
+
+#[ cfg( feature = "enabled" ) ]
+#[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
+#[ cfg( feature = "collection_into_constructors" ) ]
+pub use collection_tools::{into_heap, into_vec, into_bmap, into_bset, into_hmap, into_hset, into_llist, into_vecd};
+
+#[ cfg( feature = "enabled" ) ]
 #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
 pub use error_tools::error;
 
 #[ cfg( feature = "enabled" ) ]
-#[cfg(not(feature = "doctest"))]
 #[cfg(all(feature = "standalone_build", not(feature = "normal_build")))]
 pub use implsindex as impls_index;
 
 #[ cfg( feature = "enabled" ) ]
-#[cfg(not(feature = "doctest"))]
 #[ allow( unused_imports ) ]
 pub use ::{};
 
 #[ cfg( feature = "enabled" ) ]
-#[cfg(not(feature = "doctest"))]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
-#[cfg(not(feature = "doctest"))]
 #[ allow( unused_imports ) ]
 pub mod own {
   use super::*;
@@ -178,7 +179,6 @@ pub mod own {
 
 /// Shared with parent namespace of the module
 #[ cfg( feature = "enabled" ) ]
-#[cfg(not(feature = "doctest"))]
 #[ allow( unused_imports ) ]
 pub mod orphan {
   use super::*;
@@ -192,7 +192,6 @@ pub mod orphan {
 
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
-#[cfg(not(feature = "doctest"))]
 #[ allow( unused_imports ) ]
 pub mod exposed {
   use super::*;
@@ -213,7 +212,6 @@ pub mod exposed {
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ cfg( feature = "enabled" ) ]
-#[cfg(not(feature = "doctest"))]
 #[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;

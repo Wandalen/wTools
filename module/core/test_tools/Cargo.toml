@@ -58,6 +58,8 @@ normal_build = [
   "dep:mem_tools",
   "dep:typing_tools",
   "dep:diagnostics_tools",
+  "collection_constructors",
+  "collection_into_constructors",
 ]
 
 # standalone_build vesion of build is used to avoid cyclic dependency
