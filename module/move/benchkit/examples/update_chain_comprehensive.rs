@@ -1,4 +1,3 @@
-#![allow(clippy::all)]
 //! Comprehensive Update Chain Pattern Examples
 //!
 //! This example demonstrates EVERY use case of the Safe Update Chain Pattern:
@@ -13,6 +12,10 @@
 #![ allow( clippy::uninlined_format_args ) ]
 #![ allow( clippy::format_push_string ) ]
 #![ allow( clippy::needless_borrows_for_generic_args ) ]
+#![ allow( clippy::needless_raw_string_hashes ) ]
+#![ allow( clippy::std_instead_of_core ) ]
+#![ allow( clippy::permissions_set_readonly_false ) ]
+#![ allow( clippy::if_not_else ) ]
 
 use benchkit::prelude::*;
 use std::collections::HashMap;

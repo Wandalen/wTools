@@ -1,4 +1,4 @@
-#![allow(clippy::all)]
+#![ allow( clippy::needless_raw_string_hashes ) ]
 //! Comprehensive Benchmark Validation Examples
 //!
 //! This example demonstrates EVERY use case of the Validation Framework:

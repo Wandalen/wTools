@@ -1,4 +1,4 @@
-#![allow(clippy::all)]
+#![ allow( clippy::needless_raw_string_hashes ) ]
 //! Advanced Usage Pattern Examples
 //!
 //! This example demonstrates EVERY advanced usage pattern for enhanced features:

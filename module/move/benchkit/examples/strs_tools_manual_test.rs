@@ -1,4 +1,3 @@
-#![allow(clippy::all)]
 //! Manual testing of `strs_tools` integration with benchkit
 //!
 //! This tests benchkit with actual `strs_tools` functionality to identify issues.

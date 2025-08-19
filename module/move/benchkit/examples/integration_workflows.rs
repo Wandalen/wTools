@@ -1,4 +1,3 @@
-#![allow(clippy::all)]
 //! Complete Integration Workflow Examples
 //!
 //! This example demonstrates EVERY integration pattern combining all enhanced features:
@@ -16,6 +15,8 @@
 #![ allow( clippy::useless_vec ) ]
 #![ allow( clippy::needless_borrows_for_generic_args ) ]
 #![ allow( clippy::too_many_lines ) ]
+#![ allow( clippy::needless_raw_string_hashes ) ]
+#![ allow( clippy::std_instead_of_core ) ]
 
 use benchkit::prelude::*;
 use std::collections::HashMap;

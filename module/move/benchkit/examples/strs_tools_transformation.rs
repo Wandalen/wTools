@@ -1,4 +1,3 @@
-#![allow(clippy::all)]
 //! Comprehensive demonstration of benchkit applied to `strs_tools`
 //!
 //! This example shows the transformation from complex criterion-based benchmarks

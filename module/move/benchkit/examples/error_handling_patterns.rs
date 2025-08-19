@@ -1,4 +1,3 @@
-#![allow(clippy::all)]
 //! Comprehensive Error Handling Pattern Examples
 //!
 //! This example demonstrates EVERY error handling scenario for enhanced features:
@@ -14,6 +13,10 @@
 #![ allow( clippy::uninlined_format_args ) ]
 #![ allow( clippy::format_push_string ) ]
 #![ allow( clippy::too_many_lines ) ]
+#![ allow( clippy::needless_raw_string_hashes ) ]
+#![ allow( clippy::std_instead_of_core ) ]
+#![ allow( clippy::if_not_else ) ]
+#![ allow( clippy::permissions_set_readonly_false ) ]
 
 use benchkit::prelude::*;
 use std::collections::HashMap;

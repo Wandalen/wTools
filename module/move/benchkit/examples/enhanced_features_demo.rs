@@ -1,4 +1,7 @@
-#![allow(clippy::all)]
+#![ allow( clippy::similar_names ) ]
+#![ allow( clippy::needless_raw_string_hashes ) ]
+#![ allow( clippy::std_instead_of_core ) ]
+#![ allow( clippy::if_not_else ) ]
 //! Demonstration of enhanced benchkit features
 //! 
 //! This example showcases the new practical usage features:

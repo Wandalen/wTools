@@ -1,4 +1,3 @@
-#![allow(clippy::all)]
 //! Comprehensive Documentation Template Examples
 //!
 //! This example demonstrates EVERY use case of the Template System:
@@ -17,6 +16,7 @@
 #![ allow( clippy::cast_possible_truncation ) ]
 #![ allow( clippy::cast_precision_loss ) ]
 #![ allow( clippy::std_instead_of_core ) ]
+#![ allow( clippy::needless_raw_string_hashes ) ]
 
 use benchkit::prelude::*;
 use std::collections::HashMap;
