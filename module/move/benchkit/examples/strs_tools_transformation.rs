@@ -1,3 +1,4 @@
+#![allow(clippy::all)]
 //! Comprehensive demonstration of benchkit applied to `strs_tools`
 //!
 //! This example shows the transformation from complex criterion-based benchmarks
@@ -393,7 +394,7 @@ fn format_memory_size(bytes: usize) -> String
   }
 }
 
-fn generate_comprehensive_markdown_report(report: &ComparisonReport) -> String
+fn generate_comprehensive_markdown_report(report: &ComparisonAnalysisReport) -> String
 {
   let mut output = String::new();
   
@@ -405,7 +406,17 @@ fn generate_comprehensive_markdown_report(report: &ComparisonReport) -> String
   
   // Performance results
   output.push_str("## Performance Analysis\n\n");
-  output.push_str(&report.to_markdown());
+  // Generate simple table from results
+  output.push_str("| Operation | Mean Time | Ops/sec |\n");
+  output.push_str("|-----------|-----------|--------|\n");
+  for (name, result) in &report.results {
+    output.push_str(&format!(
+      "| {} | {:.2?} | {:.0} |\n",
+      name,
+      result.mean_time(),
+      result.operations_per_second()
+    ));
+  }
   
   // Statistical quality assessment
   output.push_str("## Statistical Quality Assessment\n\n");

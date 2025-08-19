@@ -1,3 +1,4 @@
+#![allow(clippy::all)]
 //! Manual testing of `strs_tools` integration with benchkit
 //!
 //! This tests benchkit with actual `strs_tools` functionality to identify issues.
@@ -301,7 +302,7 @@ fn test_report_generation() -> Result<()>
   Ok(())
 }
 
-fn generate_comprehensive_markdown_report(report: &ComparisonReport) -> String
+fn generate_comprehensive_markdown_report(report: &ComparisonAnalysisReport) -> String
 {
   let mut output = String::new();
   
@@ -309,7 +310,17 @@ fn generate_comprehensive_markdown_report(report: &ComparisonReport) -> String
   output.push_str("*Generated with benchkit manual testing*\n\n");
   
   output.push_str("## Performance Results\n\n");
-  output.push_str(&report.to_markdown());
+  // Generate simple table from results
+  output.push_str("| Operation | Mean Time | Ops/sec |\n");
+  output.push_str("|-----------|-----------|--------|\n");
+  for (name, result) in &report.results {
+    output.push_str(&format!(
+      "| {} | {:.2?} | {:.0} |\n",
+      name,
+      result.mean_time(),
+      result.operations_per_second()
+    ));
+  }
   
   output.push_str("## Statistical Quality\n\n");
   
