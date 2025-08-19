@@ -39,7 +39,7 @@ sync : git.sync
 #  make audit
 
 audit :
-  cargo audit
+  cargo audit && $(MAKE) --no-print-directory clean-cache-files
 
 #
 # === General commands
@@ -148,4 +148,23 @@ all : fmt lint test
   checkmate \
   test \
   up \
-  doc
+  doc \
+  clean-cache-files
+
+#
+# === Cache Cleanup ===
+#
+
+# Clean cache files created by cargo audit and other tools by adding hyphen prefix.
+# This ensures they are ignored by git while preserving the data for future runs.
+#
+# Usage :
+#  make clean-cache-files
+clean-cache-files:
+  @echo "Cleaning cache files (adding hyphen prefix for git exclusion)..."
+  @if [ -d "advisory-db" ]; then mv advisory-db -advisory-db 2>/dev/null || true; fi
+  @if [ -f "advisory-db..lock" ]; then mv advisory-db..lock -advisory-db..lock 2>/dev/null || true; fi
+  @if [ -d ".global-cache" ]; then mv .global-cache -.global-cache 2>/dev/null || true; fi
+  @if [ -d ".package-cache" ]; then mv .package-cache -.package-cache 2>/dev/null || true; fi
+  @if [ -d "registry" ]; then mv registry -registry 2>/dev/null || true; fi
+  @echo "Cache files cleaned successfully."

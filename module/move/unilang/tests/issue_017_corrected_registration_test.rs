@@ -3,6 +3,10 @@
 //! This test shows the solution to issue 017: register commands without dot prefix,
 //! let the interpreter add it automatically.
 
+#![ allow( clippy::unnecessary_wraps ) ]
+#![ allow( clippy::inefficient_to_string ) ]
+#![ allow( clippy::uninlined_format_args ) ]
+
 use unilang::{ CommandDefinition, CommandRegistry, Pipeline, ExecutionContext, VerifiedCommand, OutputData, ErrorData };
 
 fn create_test_command_handler(_cmd: VerifiedCommand, _ctx: ExecutionContext) -> Result< OutputData, ErrorData >

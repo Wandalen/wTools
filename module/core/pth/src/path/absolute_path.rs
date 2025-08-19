@@ -5,6 +5,7 @@ mod private
   use std::
   {
     path::{ Path, PathBuf },
+    borrow::Cow,
     io,
     borrow::Cow,
   };

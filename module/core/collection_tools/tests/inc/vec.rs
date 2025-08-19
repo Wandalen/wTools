@@ -3,18 +3,14 @@ use super::*;
 #[ test ]
 #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
 fn reexport() {
-  let mut vec1: the_module::Vec< i32 > = the_module::Vec::new();
-  vec1.push(1);
-  vec1.push(2);
+  let vec1: the_module::Vec< i32 > = the_module::vec![ 1, 2 ];
   let got = *vec1.first().unwrap();
   assert_eq!(got, 1);
   let got = *vec1.last().unwrap();
   assert_eq!(got, 2);
 
   use std::vec::Vec as DynList;
-  let mut vec2: DynList<i32> = DynList::new();
-  vec2.push(1);
-  vec2.push(2);
+  let vec2: DynList<i32> = DynList::from([ 1, 2 ]);
   let got = *vec2.first().unwrap();
   assert_eq!(got, 1);
   let got = *vec2.last().unwrap();
@@ -33,9 +29,7 @@ fn constructor() {
 
   // test.case( "multiple entry" );
   let got = the_module::vec! { 3, 13 };
-  let mut exp = the_module::Vec::new();
-  exp.push(3);
-  exp.push(13);
+  let exp = the_module::vec![ 3, 13 ];
   assert_eq!(got, exp);
 
   let _got = the_module::vec!("b");
@@ -53,9 +47,7 @@ fn into_constructor() {
 
   // test.case( "multiple entry" );
   let got: the_module::Vec< i32 > = the_module::into_vec! { 3, 13 };
-  let mut exp = the_module::Vec::new();
-  exp.push(3);
-  exp.push(13);
+  let exp = the_module::vec![ 3, 13 ];
   assert_eq!(got, exp);
 
   let _got: Vec< &str > = the_module::into_vec!("b");

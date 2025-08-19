@@ -1,6 +1,6 @@
 [package]
 name = "clone_dyn_meta"
-version = "0.39.0"
+version = "0.41.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -38,4 +38,4 @@ macro_tools = { workspace = true, features = [ "attr", "attr_prop", "ct", "diag"
 component_model_types = { workspace = true, features = [ "types_component_assign" ] }
 
 [dev-dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }

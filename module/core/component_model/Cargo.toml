@@ -1,6 +1,6 @@
 [package]
 name = "component_model"
-version = "0.5.0"
+version = "0.6.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -58,5 +58,5 @@ component_model_types = { workspace = true, optional = true }
 # collection_tools = { workspace = true, features = [ "collection_constructors" ] }
 
 [dev-dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }
 collection_tools = { workspace = true, features = [ "collection_constructors" ] }

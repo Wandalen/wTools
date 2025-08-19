@@ -309,6 +309,7 @@ mod private
     temp_path : Option< path::PathBuf >,
     plan : &'a TestPackagePlan,
     dry : bool,
+    #[ cfg( feature = "progress_bar" ) ]
     with_progress : bool,
     #[ cfg( feature = "progress_bar" ) ]
     progress_bar : progress_bar::ProgressBar< 'a >
@@ -772,8 +773,10 @@ mod private
               let test_package_options = PackageTestOptions::former()
               .option_temp( args.temp_path.clone() )
               .plan( plan )
-              .dry( args.dry )
-              .with_progress( args.with_progress );
+              .dry( args.dry );
+              
+              #[ cfg( feature = "progress_bar" ) ]
+              let test_package_options = test_package_options.with_progress( args.with_progress );
 
               #[ cfg( feature = "progress_bar" ) ]
               let test_package_options =

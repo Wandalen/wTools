@@ -191,9 +191,12 @@ fn plan() {
     .dir(abs)
     .channels([Channel::Stable, Channel::Nightly])
     .optimizations([Optimization::Debug, Optimization::Release])
-    .with_none_features(true)
-    .with_progress(false)
-    .form();
+    .with_none_features(true);
+    
+  #[ cfg( feature = "progress_bar" ) ]
+  let args = args.with_progress(false);
+  
+  let args = args.form();
 
   let rep = test(args, true).unwrap().success_reports[0].clone().tests;
 

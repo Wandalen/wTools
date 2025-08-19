@@ -1,6 +1,6 @@
 [package]
 name = "derive_tools_meta"
-version = "0.44.0"
+version = "0.46.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -81,4 +81,4 @@ iter_tools = { workspace = true, features = [ "iter_trait" ] }
 component_model_types = { workspace = true, features = [ "types_component_assign" ] }
 
 [dev-dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }

@@ -49,6 +49,7 @@ fn into_constructor() {
 #[ test ]
 fn iters() {
   struct MyContainer {
+    #[allow(clippy::linkedlist)]
     entries: the_module::LinkedList<i32>,
   }
 

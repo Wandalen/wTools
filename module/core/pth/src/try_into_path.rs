@@ -20,6 +20,7 @@ mod private
   {
     io,
     path::{ Component, Path, PathBuf },
+    string::String,
   };
   
   #[cfg(feature = "no_std")]
