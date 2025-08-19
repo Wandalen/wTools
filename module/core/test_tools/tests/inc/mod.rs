@@ -1,5 +1,22 @@
 use super::*;
 
+// TROUBLESHOOTING: Test Aggregation Pattern
+//
+// This file includes tests from dependency crates via explicit paths to ensure
+// that test_tools re-exports work correctly. If tests are failing to compile:
+//
+// 1. E0432 errors (unresolved imports): Check that src/lib.rs namespace modules 
+//    (own, orphan, exposed, prelude) are not hidden by cfg gates
+//
+// 2. E0433 errors (could not find X in the_module): Check that macros are 
+//    explicitly re-exported in src/lib.rs, especially collection constructors
+//
+// 3. Path errors: Verify that dependency crates exist at the specified paths
+//    and that their test modules are properly structured
+//
+// The pattern `use test_tools as the_module` in tests.rs creates the unified
+// interface that these aggregated tests expect.
+
 mod impls_index_test;
 mod mem_test;
 mod try_build_test;

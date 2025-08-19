@@ -40,8 +40,21 @@ default = [
 full = [
   "default"
 ]
-doctest = [] # for doctest shorcaomings resolution
+# CRITICAL: This feature controls doctest-specific behavior but can break test compilation
+# if used incorrectly. See REGRESSION PREVENTION notes below.
+doctest = [] # for doctest shortcomings resolution
 # doctest does not work properly for aggregators
+
+# REGRESSION PREVENTION WARNING:
+# The 'doctest' feature is enabled by rustdoc during documentation builds and 
+# by some test configurations. DO NOT use #[cfg(not(feature = "doctest"))] to
+# hide public API modules as this breaks test compilation.
+#
+# SAFE USAGE: Use doctest feature for documentation-specific logic inside modules,
+# but never to conditionally hide entire public modules or namespace structures.
+#
+# HISTORICAL CONTEXT: Task 001 fixed 147 compilation errors caused by doctest
+# cfg gates hiding the public API from tests. See task/completed/001_*.md
 no_std = [
 ]
 use_alloc = [
@@ -82,9 +95,16 @@ standalone_diagnostics_tools = [ "diagnostics_runtime_assertions", "diagnostics_
 # error_tools
 error_typed = []
 error_untyped = []
-# collection_tools
-collection_constructors = []
-collection_into_constructors = []
+# collection_tools - CRITICAL for test compilation
+# These features must be enabled AND their macros must be explicitly re-exported
+# in src/lib.rs for aggregated tests to access them. See src/lib.rs macro re-export
+# documentation for details.
+collection_constructors = []       # Enables heap!, vec!, bmap!, etc.
+collection_into_constructors = []  # Enables into_heap!, into_vec!, etc.
+
+# REGRESSION PREVENTION: If these features are enabled but the corresponding
+# macros are not re-exported in src/lib.rs, tests will fail with E0433 errors
+# like "could not find `heap` in `the_module`". See Task 002 resolution.
 # typing_tools
 typing_inspect_type = [ "inspect_type/enabled" ]
 typing_is_slice = [ "is_slice/enabled" ]
