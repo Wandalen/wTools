@@ -20,12 +20,13 @@
     * 4.4. Analysis Tools
   * 5. Non-Functional Requirements
   * 6. Feature Flags & Modularity
+  * 7. Standard Directory Requirements
 * **Part II: Internal Design (Design Recommendations)**
-  * 7. Architectural Principles
-  * 8. Integration Patterns
+  * 8. Architectural Principles
+  * 9. Integration Patterns
 * **Part III: Development Guidelines**
-  * 9. Lessons Learned Reference
-  * 10. Implementation Priorities
+  * 10. Lessons Learned Reference
+  * 11. Implementation Priorities
 
 ---
 
@@ -38,20 +39,22 @@
 **benchkit** is designed as a **toolkit, not a framework**. Unlike opinionated frameworks that impose specific workflows, benchkit provides flexible building blocks that developers can combine to create custom benchmarking solutions tailored to their specific needs.
 
 **Key Philosophy:**
-- **Toolkit over Framework**: Provide tools, not constraints
+- **Standard Directory Compliance**: ALL benchmark files must be in standard `benches/` directory
+- **Automatic Documentation**: `benches/readme.md` automatically updated with comprehensive reports
 - **Research-Grade Statistical Rigor**: Professional statistical analysis meeting publication standards
-- **Markdown-First Reporting**: Focus on readable, version-controllable reports  
+- **Toolkit over Framework**: Provide tools, not constraints
 - **Optimization-Focused**: Surface key metrics that guide optimization decisions
 - **Integration-Friendly**: Work alongside existing tools, not replace them
 
 #### 1.2. In Scope: The Toolkit Philosophy
 
 **Core Capabilities:**
-1. **Flexible Measurement**: Time, memory, throughput, custom metrics
-2. **Data Generation**: Configurable test data generators for common patterns
-3. **Report Generation**: Markdown, HTML, JSON outputs with customizable templates
-4. **Analysis Tools**: Statistical analysis, comparative benchmarking, regression detection, git-style diffing, visualization
-5. **Documentation Integration**: Seamlessly update markdown documentation with benchmark results
+1. **Standard Directory Integration**: ALL benchmark files organized in standard `benches/` directory following Rust conventions
+2. **Automatic Report Generation**: `benches/readme.md` automatically updated with comprehensive benchmark results and analysis
+3. **Flexible Measurement**: Time, memory, throughput, custom metrics with statistical rigor
+4. **Data Generation**: Configurable test data generators for common patterns
+5. **Analysis Tools**: Statistical analysis, comparative benchmarking, regression detection, git-style diffing, visualization
+6. **Living Documentation**: Automatically maintained performance documentation that stays current with code changes
 
 **Target Use Cases:**
 - Performance analysis for optimization work
@@ -133,20 +136,23 @@
 
 #### 4.3. Report Generation (FR-REPORTS)
 
-**FR-REPORTS-1: Markdown Integration**
-- Must generate markdown tables and sections for benchmark results
+**FR-REPORTS-1: Standard Directory Reporting**
+- Must generate comprehensive reports in `benches/readme.md` following Rust conventions
+- Must automatically update `benches/readme.md` with latest benchmark results
+- Must preserve existing content while updating benchmark sections
 - Must support updating specific sections of existing markdown files
-- Must preserve non-benchmark content when updating documents
 
 **FR-REPORTS-2: Multiple Output Formats**
 - Must support markdown, HTML, and JSON output formats
 - Must provide customizable templates for each format
 - Must allow embedding of charts and visualizations
 
-**FR-REPORTS-3: Documentation Focus**
-- Must generate reports suitable for inclusion in documentation
+**FR-REPORTS-3: Living Documentation**
+- Must generate reports that serve as comprehensive performance documentation
 - Must provide clear, actionable summaries of performance characteristics  
 - Must highlight key optimization opportunities and bottlenecks
+- Must include timestamps and configuration details for reproducibility
+- Must maintain historical context and trends in `benches/readme.md`
 
 #### 4.4. Analysis Tools (FR-ANALYSIS)
 
@@ -220,11 +226,46 @@
 | `visualization` | Chart generation and plotting | - | plotters |
 | `optimization_hints` | Performance optimization suggestions | - | statistical_analysis |
 
+### 7. Standard Directory Requirements
+
+**SR-DIRECTORY-1: Standard Rust Convention Compliance** ⭐ **MANDATORY**
+- ALL benchmark-related files must be located in the standard `benches/` directory
+- This follows established Rust ecosystem conventions and ensures compatibility with `cargo bench`
+- Benchmark binaries, data generation scripts, and analysis tools must all reside in `benches/`
+- No benchmark-related files should be placed in `tests/`, `examples/`, or `src/bin/`
+
+**SR-DIRECTORY-2: Automatic Documentation Generation** ⭐ **MANDATORY**
+- `benches/readme.md` must be automatically generated and updated with benchmark results
+- The file must serve as comprehensive performance documentation for the project
+- Updates must preserve existing content while refreshing benchmark sections
+- Reports must include timestamps, configuration details, and historical context
+
+**SR-DIRECTORY-3: Structured Organization**
+```
+project/
+├── benches/
+│   ├── readme.md              # Automatically updated comprehensive reports
+│   ├── algorithm_comparison.rs # Comparative benchmarks
+│   ├── performance_suite.rs    # Main benchmark suite
+│   ├── memory_benchmarks.rs    # Memory-specific benchmarks
+│   └── data_generation.rs      # Custom data generators
+├── src/
+│   └── lib.rs                  # Main library code
+└── tests/
+    └── unit_tests.rs           # Unit tests (NO benchmarks)
+```
+
+**SR-DIRECTORY-4: Integration with Rust Toolchain**
+- Must work seamlessly with `cargo bench` command
+- Must support standard Rust benchmark discovery and execution patterns
+- Must integrate with existing Rust development workflows
+- Must provide compatibility with IDE tooling and cargo extensions
+
 ---
 
 ## Part II: Internal Design (Design Recommendations)
 
-### 7. Architectural Principles
+### 8. Architectural Principles
 
 **AP-1: Toolkit over Framework**
 - Provide composable functions rather than monolithic framework
@@ -246,15 +287,16 @@
 - Handle measurement noise and outliers appropriately  
 - Offer confidence intervals and significance testing
 
-### 8. Integration Patterns
+### 9. Integration Patterns
 
-**Pattern 1: Inline Benchmarking**
+**Pattern 1: Standard Directory Benchmarking**
 ```rust
+// benches/performance_suite.rs
 use benchkit::prelude::*;
 
-fn benchmark_my_function()
+fn main()
 {
-  let mut suite = BenchmarkSuite::new( "my_function_performance" );
+  let mut suite = BenchmarkSuite::new( "Core Function Performance" );
   
   suite.benchmark( "small_input", ||
   {
@@ -262,43 +304,56 @@ fn benchmark_my_function()
     bench_block( || my_function( &data ) )
   });
   
-  suite.generate_markdown_report( "performance.md", "## Performance Results" );
+  let results = suite.run_all();
+  
+  // Automatically update benches/readme.md
+  let updater = MarkdownUpdater::new( "benches/readme.md", "Performance Results" );
+  updater.update_section( &results.generate_markdown_report() ).unwrap();
 }
 ```
 
 **Pattern 2: Comparative Analysis**
 ```rust
+// benches/algorithm_comparison.rs
 use benchkit::prelude::*;
 
-fn compare_algorithms()
+fn main()
 {
-  let comparison = ComparativeAnalysis::new()
+  let comparison = ComparativeAnalysis::new( "Algorithm Performance Comparison" )
     .algorithm( "original", || original_algorithm( &data ) )
     .algorithm( "optimized", || optimized_algorithm( &data ) )
     .with_data_sizes( &[ 10, 100, 1000, 10000 ] );
   
   let report = comparison.run_comparison();
-  report.update_markdown_section( "README.md", "## Algorithm Comparison" );
+  
+  // Update benches/readme.md with comparison results
+  let updater = MarkdownUpdater::new( "benches/readme.md", "Algorithm Comparison" );
+  updater.update_section( &report.generate_markdown_report() ).unwrap();
 }
 ```
 
-**Pattern 3: Documentation Integration**
+**Pattern 3: Comprehensive Benchmark Suite**
 ```rust
+// benches/comprehensive_suite.rs
 use benchkit::prelude::*;
 
-#[ cfg( test ) ]
-mod performance_tests
+fn main()
 {
-  #[ test ]
-  fn update_performance_documentation()
-  {
-    let suite = BenchmarkSuite::from_config( "benchmarks/config.toml" );
-    let results = suite.run_all();
-    
-    // Update multiple sections in documentation
-    results.update_markdown_file( "docs/performance.md" );
-    results.update_readme_section( "README.md", "## Performance" );
-  }
+  let mut suite = BenchmarkSuite::new( "Comprehensive Performance Suite" );
+  
+  // Add multiple benchmark categories
+  suite.benchmark( "data_processing", || process_large_dataset() );
+  suite.benchmark( "memory_operations", || memory_intensive_task() );
+  suite.benchmark( "io_operations", || file_system_benchmarks() );
+  
+  let results = suite.run_all();
+  
+  // Generate comprehensive benches/readme.md report
+  let comprehensive_report = results.generate_comprehensive_report();
+  let updater = MarkdownUpdater::new( "benches/readme.md", "Performance Analysis" );
+  updater.update_section( &comprehensive_report ).unwrap();
+  
+  println!( "Updated benches/readme.md with comprehensive performance analysis" );
 }
 ```
 
@@ -471,7 +526,7 @@ fn research_grade_performance_analysis()
 
 ## Part III: Development Guidelines
 
-### 9. Lessons Learned Reference
+### 10. Lessons Learned Reference
 
 **CRITICAL**: All development decisions for benchkit are based on real-world experience from unilang and strs_tools benchmarking work. The complete set of requirements, anti-patterns, and lessons learned is documented in [`recommendations.md`](recommendations.md).
 
@@ -504,7 +559,7 @@ fn research_grade_performance_analysis()
 
 **For complete requirements and anti-patterns, see [`recommendations.md`](recommendations.md).**
 
-### 10. Implementation Priorities
+### 11. Implementation Priorities
 
 Based on real-world usage patterns and critical path analysis from unilang/strs_tools work:
 
