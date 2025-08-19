@@ -40,6 +40,7 @@ The `examples/` directory contains comprehensive demonstrations of all benchkit 
 | Example | Purpose | Key Features Demonstrated |
 |---------|---------|---------------------------|
 | **[cargo_bench_integration.rs](examples/cargo_bench_integration.rs)** | **CRITICAL**: Standard Rust workflow | • Seamless `cargo bench` integration<br>• Automatic documentation updates<br>• Criterion compatibility patterns<br>• Real-world project structure |
+| **[cv_improvement_patterns.rs](examples/cv_improvement_patterns.rs)** | **ESSENTIAL**: Benchmark reliability | • CV troubleshooting techniques<br>• Thread pool stabilization<br>• CPU frequency management<br>• Systematic improvement workflow |
 
 ### Usage Pattern Examples
 
@@ -208,7 +209,7 @@ project/
 
 ### Focus on Key Metrics
 
-**Recommendation**: Measure 2-3 critical performance indicators, not everything.
+**Recommendation**: Measure 2-3 critical performance indicators, not everything. Always monitor CV (Coefficient of Variation) to ensure reliable results.
 
 ```rust
 // Good: Focus on what matters for optimization
@@ -222,7 +223,7 @@ suite.benchmark("function_c", || function_c());
 // ... 20 more unrelated functions
 ```
 
-**Why**: Too many metrics overwhelm decision-making. Focus on what drives optimization decisions.
+**Why**: Too many metrics overwhelm decision-making. Focus on what drives optimization decisions. High CV values (>10%) indicate unreliable measurements - see [CV Troubleshooting](#coefficient-of-variation-cv-troubleshooting) for solutions.
 
 ### Use Standard Data Sizes
 
@@ -444,7 +445,7 @@ let template = PerformanceReport::new()
 
 ### Before/After Optimization Workflow
 
-**Recommendation**: Follow this systematic approach for optimization work:
+**Recommendation**: Follow this systematic approach for optimization work. Always check CV values to ensure reliable comparisons.
 
 ```rust
 // 1. Establish baseline
@@ -474,6 +475,15 @@ fn measure_optimization_impact() {
         println!("⚠️ Warning: Performance regressions detected!");
         for regression in comparison.regressions() {
             println!("  - {}: {:.1}% slower", regression.name, regression.percentage);
+        }
+    }
+    
+    // Check CV reliability for valid comparisons
+    for result in comparison.results() {
+        let cv_percent = result.coefficient_of_variation() * 100.0;
+        if cv_percent > 10.0 {
+            println!("⚠️ High CV ({:.1}%) for {} - see CV troubleshooting guide", 
+                    cv_percent, result.name());
         }
     }
 }
@@ -960,6 +970,32 @@ suite.benchmark("function_2", || function_2());
 suite.benchmark("core_parsing_algorithm", || parse_large_document());
 suite.benchmark("memory_intensive_operation", || process_large_dataset());
 suite.benchmark("optimization_critical_path", || critical_performance_function());
+```
+
+### Don't Ignore Coefficient of Variation (CV)
+
+❌ **Avoid using results with high CV values**:
+```rust
+// Single measurement with no CV analysis - unreliable
+let result = bench_function("unreliable", || algorithm());
+println!("Algorithm takes {} ns", result.mean_time().as_nanos()); // Misleading!
+```
+
+✅ **Always check CV before drawing conclusions**:
+```rust
+// Multiple measurements with CV analysis
+let result = bench_function_n("reliable", 20, || algorithm());
+let cv_percent = result.coefficient_of_variation() * 100.0;
+
+if cv_percent > 10.0 {
+    println!("⚠️ High CV ({:.1}%) - results unreliable", cv_percent);
+    println!("See CV troubleshooting guide for improvement techniques");
+} else {
+    println!("✅ Algorithm: {} ± {} ns (CV: {:.1}%)", 
+             result.mean_time().as_nanos(),
+             result.standard_deviation().as_nanos(),
+             cv_percent);
+}
 ```
 
 ### Don't Ignore Statistical Significance
