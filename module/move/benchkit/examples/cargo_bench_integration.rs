@@ -59,10 +59,10 @@ fn demonstrate_ideal_cargo_bench_pattern() {
     let mut suite = BenchmarkSuite::new("Algorithm Performance Suite");
     
     // Add benchmarks using the standard pattern
-    suite.benchmark("quicksort", || algorithms::quicksort_implementation());
-    suite.benchmark("mergesort", || algorithms::mergesort_implementation());  
-    suite.benchmark("heapsort", || algorithms::heapsort_implementation());
-    suite.benchmark("bubblesort", || algorithms::bubblesort_implementation());
+    suite.benchmark("quicksort", algorithms::quicksort_implementation);
+    suite.benchmark("mergesort", algorithms::mergesort_implementation);  
+    suite.benchmark("heapsort", algorithms::heapsort_implementation);
+    suite.benchmark("bubblesort", algorithms::bubblesort_implementation);
     
     println!("   ✅ Added 4 benchmarks to suite");
     
@@ -138,15 +138,15 @@ criterion_main!(benches);
     println!("// After: benchkit with criterion compatibility layer");
     println!("use benchkit::prelude::*;");
     println!("use benchkit::criterion_compat::{{criterion_group, criterion_main, Criterion}};");
-    println!("");
+    println!();
     println!("fn quicksort_benchmark(c: &mut Criterion) {{");
     println!("    c.bench_function(\"quicksort\", |b| b.iter(|| quicksort_implementation()));");
     println!("}}");
-    println!("");
+    println!();
     println!("// SAME API - zero migration effort!");
     println!("criterion_group!(benches, quicksort_benchmark);");
     println!("criterion_main!(benches);");
-    println!("");
+    println!();
     println!("// But now with automatic documentation updates and regression analysis!");
     
     println!("✅ Migration requires ZERO code changes with compatibility layer!");
@@ -155,7 +155,7 @@ criterion_main!(benches);
     println!("--------------------------------------");
     println!("// Pure benchkit pattern - cleaner and more powerful");
     println!("use benchkit::prelude::*;");
-    println!("");
+    println!();
     println!("fn main() {{");
     println!("    let mut suite = BenchmarkSuite::new(\"Algorithm Performance\");");
     println!("    ");
@@ -298,7 +298,7 @@ benchmarks = ["benchkit"]
     println!("---------------------------------------------------------");
     println!("use benchkit::prelude::*;");
     println!("use my_rust_project::algorithms::*;");
-    println!("");
+    println!();
     println!("fn main() -> Result<(), Box<dyn std::error::Error>> {{");
     println!("    let mut suite = BenchmarkSuite::new(\"Algorithm Performance Suite\");");
     println!("    ");
