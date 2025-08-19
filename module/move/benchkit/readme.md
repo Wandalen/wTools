@@ -426,3 +426,18 @@ Contributions are welcome! `benchkit` aims to be a community-driven toolkit that
 ## License
 
 This project is licensed under the **MIT License**.
+
+## Performance
+
+## api_performance Results
+
+| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
+|-----------|-----------|---------|-----|-----|----------|
+| get_user | 68.00ns | 14705882 | 40.00ns | 80.00ns | 19.00ns |
+| create_user | 92.00ns | 10869565 | 40.00ns | 160.00ns | 33.00ns |
+
+### Key Insights
+
+- **Fastest operation**: get_user (68.00ns)
+- **Performance range**: 1.4x difference between fastest and slowest
+

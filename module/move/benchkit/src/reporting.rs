@@ -9,6 +9,53 @@ use std::path::Path;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
+/// Errors that can occur during markdown processing
+#[derive(Debug)]
+pub enum MarkdownError {
+  /// Section name cannot be empty
+  EmptySectionName,
+  /// Section name is too long (max 100 characters)
+  SectionNameTooLong,
+  /// Section name contains invalid characters (newlines, etc.)
+  InvalidCharacters,
+  /// Potential section name conflicts detected
+  SectionConflict { 
+    /// List of conflicting section names
+    conflicts: Vec<String> 
+  },
+  /// IO error during file operations
+  Io(std::io::Error),
+}
+
+impl std::fmt::Display for MarkdownError {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    match self {
+      MarkdownError::EmptySectionName => write!(f, "Section name cannot be empty"),
+      MarkdownError::SectionNameTooLong => write!(f, "Section name is too long (max 100 characters)"),
+      MarkdownError::InvalidCharacters => write!(f, "Section name contains invalid characters"),
+      MarkdownError::SectionConflict { conflicts } => {
+        write!(f, "Potential section name conflict detected: {:?}", conflicts)
+      }
+      MarkdownError::Io(err) => write!(f, "IO error: {}", err),
+    }
+  }
+}
+
+impl std::error::Error for MarkdownError {
+  fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+    match self {
+      MarkdownError::Io(err) => Some(err),
+      _ => None,
+    }
+  }
+}
+
+impl From<std::io::Error> for MarkdownError {
+  fn from(err: std::io::Error) -> Self {
+    MarkdownError::Io(err)
+  }
+}
+
 /// Markdown section updater for integrating benchmark results into documentation
 #[derive(Debug)]
 pub struct MarkdownUpdater {
@@ -18,11 +65,93 @@ pub struct MarkdownUpdater {
 
 impl MarkdownUpdater {
   /// Create new markdown updater for specific file and section
-  pub fn new(file_path: impl AsRef<Path>, section_name: &str) -> Self {
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if the section name is invalid or potentially conflicting.
+  pub fn new(file_path: impl AsRef<Path>, section_name: &str) -> std::result::Result<Self, MarkdownError> {
+    Self::validate_section_name(section_name)?;
+    
+    Ok(Self {
+      file_path: file_path.as_ref().to_path_buf(),
+      section_marker: format!("## {section_name}"),
+    })
+  }
+
+  /// Create new markdown updater without validation (for backwards compatibility)
+  ///
+  /// # Safety
+  ///
+  /// This bypasses section name validation and may create conflicts.
+  /// Use `new()` instead for safer API.
+  pub fn new_unchecked(file_path: impl AsRef<Path>, section_name: &str) -> Self {
     Self {
       file_path: file_path.as_ref().to_path_buf(),
       section_marker: format!("## {section_name}"),
     }
+  }
+
+  /// Validate section name for safety
+  fn validate_section_name(section_name: &str) -> std::result::Result<(), MarkdownError> {
+    if section_name.trim().is_empty() {
+      return Err(MarkdownError::EmptySectionName);
+    }
+    
+    if section_name.len() > 100 {
+      return Err(MarkdownError::SectionNameTooLong);
+    }
+    
+    if section_name.contains('\n') || section_name.contains('\r') {
+      return Err(MarkdownError::InvalidCharacters);
+    }
+    
+    Ok(())
+  }
+
+  /// Check if this section name might conflict with existing sections
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if the file cannot be read.
+  pub fn check_conflicts(&self) -> std::result::Result<Vec<String>, MarkdownError> {
+    if !self.file_path.exists() {
+      return Ok(vec![]);
+    }
+    
+    let content = std::fs::read_to_string(&self.file_path)?;
+    let existing_sections = Self::extract_section_names(&content);
+    
+    let target_words: std::collections::HashSet<_> = self.section_marker
+      .trim_start_matches("## ")
+      .split_whitespace()
+      .collect();
+        
+    let conflicts: Vec<String> = existing_sections
+      .into_iter()
+      .filter(|section| {
+        let section_words: std::collections::HashSet<_> = section
+          .trim_start_matches("## ")
+          .split_whitespace()
+          .collect();
+        // Check for shared words that could cause substring conflicts
+        !target_words.is_disjoint(&section_words) && section != &self.section_marker
+      })
+      .collect();
+      
+    Ok(conflicts)
+  }
+  
+  /// Extract section names from markdown content
+  fn extract_section_names(content: &str) -> Vec<String> {
+    content.lines()
+      .filter(|line| line.trim_start().starts_with("## "))
+      .map(|line| line.trim().to_string())
+      .collect()
+  }
+
+  /// Get the section marker (for testing)
+  pub fn section_marker(&self) -> &str {
+    &self.section_marker
   }
 
   /// Update the section with new content
@@ -45,7 +174,10 @@ impl MarkdownUpdater {
   }
 
   /// Replace content between section marker and next section (or end)
-  fn replace_section_content(&self, existing: &str, new_content: &str) -> String {
+  /// 
+  /// This method is public for testing purposes to allow direct verification
+  /// of section matching behavior.
+  pub fn replace_section_content(&self, existing: &str, new_content: &str) -> String {
     let lines: Vec<&str> = existing.lines().collect();
     let mut result = Vec::new();
     let mut in_target_section = false;
@@ -53,7 +185,7 @@ impl MarkdownUpdater {
 
     for line in lines {
       if line.trim_start().starts_with("## ") {
-        if line.contains(self.section_marker.trim_start_matches("## ")) {
+        if line.trim() == self.section_marker.trim() {
           // Found our target section
           result.push(line);
           result.push("");
@@ -381,9 +513,21 @@ impl ReportGenerator {
   ///
   /// # Errors
   ///
-  /// Returns an error if the file cannot be read or written.
+  /// Returns an error if the file cannot be read or written, or if section name is invalid.
   pub fn update_markdown_file(&self, file_path: impl AsRef<Path>, section_name: &str) -> Result<()> {
-    let updater = MarkdownUpdater::new(file_path, section_name);
+    let updater = MarkdownUpdater::new(file_path, section_name)
+      .map_err(|e| Box::new(e) as Box<dyn std::error::Error>)?;
+    let content = self.generate_comprehensive_report();
+    updater.update_section(&content)
+  }
+
+  /// Update markdown file section with report (bypasses validation for compatibility)
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if the file cannot be read or written.
+  pub fn update_markdown_file_unchecked(&self, file_path: impl AsRef<Path>, section_name: &str) -> Result<()> {
+    let updater = MarkdownUpdater::new_unchecked(file_path, section_name);
     let content = self.generate_comprehensive_report();
     updater.update_section(&content)
   }
@@ -438,6 +582,17 @@ pub mod quick {
   ) -> Result<()> {
     let generator = ReportGenerator::new(title, results.clone());
     generator.update_markdown_file(file_path, section_name)
+  }
+
+  /// Quickly update a markdown section with benchmark results (unchecked)
+  pub fn update_markdown_section_unchecked(
+    results: &HashMap<String, BenchmarkResult>,
+    file_path: impl AsRef<Path>,
+    section_name: &str,
+    title: &str
+  ) -> Result<()> {
+    let generator = ReportGenerator::new(title, results.clone());
+    generator.update_markdown_file_unchecked(file_path, section_name)
   }
 
   /// Generate a simple markdown table from results
