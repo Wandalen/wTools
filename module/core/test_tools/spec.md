@@ -442,12 +442,6 @@ As you build the system, please use this document to log your key implementation
 -   [Decision 1: Reason...]
 -   [Decision 2: Reason...]
 
-#### Finalized Internal Data Models
-*The definitive, as-built schema for all databases, data structures, and objects used internally by the system.*
-
--   [Model 1: Schema and notes...]
--   [Model 2: Schema and notes...]
-
 #### Environment Variables
 *List all environment variables required to run the application. Include the variable name, a brief description of its purpose, and an example value (use placeholders for secrets).*
 
