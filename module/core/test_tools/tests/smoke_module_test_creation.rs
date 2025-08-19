@@ -1,6 +1,6 @@
-//! Tests for SmokeModuleTest creation functionality (Task 014)
+//! Tests for `SmokeModuleTest` creation functionality (Task 014)
 //!
-//! These tests verify that SmokeModuleTest can create temporary, isolated Cargo projects
+//! These tests verify that `SmokeModuleTest` can create temporary, isolated Cargo projects
 //! in the filesystem according to FR-4 specification requirements.
 
 use test_tools::*;
@@ -10,7 +10,7 @@ mod smoke_module_test_creation_tests
 {
   use super::*;
 
-  /// Test that SmokeModuleTest creates a temporary directory structure
+  /// Test that `SmokeModuleTest` creates a temporary directory structure
   #[test]
   fn test_creates_temporary_directory_structure()
   {

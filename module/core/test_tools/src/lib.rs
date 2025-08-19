@@ -206,8 +206,8 @@ pub use ::{error_tools, impls_index, mem_tools, typing_tools, diagnostics_tools}
 #[ cfg( feature = "enabled" ) ]
 pub use test::process;
 
-/// Re-export collection_tools types and functions but not macros to avoid ambiguity.
-/// Macros are available via collection_tools::macro_name! to prevent std::vec! conflicts.
+/// Re-export `collection_tools` types and functions but not macros to avoid ambiguity.
+/// Macros are available via `collection_tools::macro_name`! to prevent `std::vec`! conflicts.
 #[ cfg( feature = "enabled" ) ]
 #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
 pub use collection_tools::{
@@ -236,7 +236,7 @@ pub use collection_tools::{into_heap, into_vec, into_bmap, into_bset, into_hmap,
 ///
 /// ## Why Moved to Prelude
 /// Collection constructor macros like `heap!`, `vec!`, etc. were previously re-exported
-/// at crate root level, causing ambiguity with std::vec! when using `use test_tools::*`.
+/// at crate root level, causing ambiguity with `std::vec`! when using `use test_tools::*`.
 /// 
 /// Moving them to prelude resolves the ambiguity while maintaining access via
 /// `use test_tools::prelude::*` for users who need collection constructors.
@@ -256,7 +256,6 @@ pub use collection_tools::{into_heap, into_vec, into_bmap, into_bset, into_hmap,
 ///
 /// ## Historical Context  
 /// This resolves the vec! ambiguity issue while preserving Task 002's macro accessibility.
-
 #[ cfg( feature = "enabled" ) ]
 #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
 pub use error_tools::error;
@@ -274,9 +273,8 @@ pub use ::{};
 #[ allow( unused_imports ) ]
 pub use own::*;
 
-/// vec! macro removed to prevent ambiguity with std::vec!
-/// Aggregated collection_tools tests will need to use collection_tools::vec! explicitly
-
+/// vec! macro removed to prevent ambiguity with `std::vec`!
+/// Aggregated `collection_tools` tests will need to use `collection_tools::vec`! explicitly
 /// Own namespace of the module.
 ///
 /// # CRITICAL REGRESSION PREVENTION WARNING

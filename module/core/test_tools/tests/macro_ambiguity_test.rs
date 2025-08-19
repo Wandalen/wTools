@@ -37,6 +37,7 @@ fn test_selective_import_pattern()
   // RECOMMENDED: Import only what you need instead of `use test_tools::*`
   use test_tools::BTreeMap; // Import specific items
   
+  #[allow(clippy::useless_vec)]
   let _std_vec = vec![ 1, 2, 3 ]; // No ambiguity since collection macros not imported
   let _btree: BTreeMap<i32, i32> = BTreeMap::new();
 }
