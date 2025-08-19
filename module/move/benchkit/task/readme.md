@@ -13,6 +13,7 @@ This file serves as the single source of truth for all project work tracking.
 | 005 | 005 | 2025 | 9 | 5 | 40 | Enhancement | ✅ (Completed) | [Enhance Practical Usage Features](completed/005_enhance_practical_usage_features.md) | Implement practical enhancements based on real-world usage feedback: update chain pattern, validation framework, templates, and historical tracking |
 | 006 | 006 | 3600 | 10 | 6 | 16 | Critical Bug | 📥 (Backlog) | [Fix MarkdownUpdater Duplication Bug](backlog/006_fix_markdown_updater_duplication_bug.md) | Detailed specification for fixing critical duplication bug in MarkdownUpdater with comprehensive test cases and solutions |
 | 007 | 007 | 2400 | 8 | 4 | 24 | Enhancement | 📥 (Backlog) | [Implement Regression Analysis](backlog/007_implement_regression_analysis.md) | Implement regression analysis functionality for performance templates with historical data comparison |
+| 008 | 008 | 2700 | 9 | 7 | 16 | Enhancement | 📥 (Backlog) | [Add Coefficient of Variation Guidance](backlog/008_add_coefficient_of_variation_guidance.md) | Add comprehensive CV troubleshooting guidance and proven improvement techniques to recommendations.md |
 
 ## Phases
 
@@ -32,6 +33,7 @@ This file serves as the single source of truth for all project work tracking.
 ### Enhancement
 *   ✅ [Enhance Practical Usage Features](completed/005_enhance_practical_usage_features.md)
 *   📥 [Implement Regression Analysis](backlog/007_implement_regression_analysis.md)
+*   📥 [Add Coefficient of Variation Guidance](backlog/008_add_coefficient_of_variation_guidance.md)
 
 ## Issues Index
 
