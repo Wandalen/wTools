@@ -9,7 +9,7 @@ mod private
     fs::{ OpenOptions, File },
     io::{ Write, Read, Seek, SeekFrom },
   };
-  use pth::{ Path, PathBuf };
+  use std::path::{ Path, PathBuf };
   use convert_case::Casing;
   use toml_edit::Document;
   use regex::bytes::Regex;

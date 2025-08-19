@@ -5,6 +5,7 @@
 
 #[ allow( unused_imports ) ]
 use strs_tools::*;
+#[ allow( unused_imports ) ]
 use std::time::Instant;
 
 fn main()

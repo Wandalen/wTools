@@ -4,6 +4,7 @@ mod private
 {
 
   use crate::*;
+  use std::path::PathBuf;
 
   #[ cfg( feature = "no_std" ) ]
   extern crate std;
@@ -205,10 +206,6 @@ mod private
   {
     #[ cfg( target_os = "windows" ) ]
     use std::path::PathBuf;
-    #[ cfg( feature = "no_std" ) ]
-    extern crate alloc;
-    #[ cfg( feature = "no_std" ) ]
-    use alloc::string::ToString;
 
     // println!( "a" );
     // let path = path.as_ref().canonicalize()?;

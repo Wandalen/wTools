@@ -2,8 +2,8 @@ use super::*;
 
 use the_module::{
   features::{features_powerset, estimate_with},
-  collection::HashMap,
 };
+use std::collections::{HashMap, BTreeSet};
 use serde::Deserialize;
 
 /// Constructs a mock `Package` with specified features for testing.
@@ -56,9 +56,9 @@ fn case_1() {
   .unwrap();
   dbg!(&result);
 
-  assert!(result.contains(&vec!["f1".to_string(), "f2".to_string()].into_iter().collect()));
-  assert!(result.contains(&vec!["f2".to_string()].into_iter().collect()));
-  assert!(result.contains(&vec!["f2".to_string(), "f3".to_string()].into_iter().collect()));
+  assert!(result.contains(&vec!["f1".to_string(), "f2".to_string()].into_iter().collect::<BTreeSet<_>>()));
+  assert!(result.contains(&vec!["f2".to_string()].into_iter().collect::<BTreeSet<_>>()));
+  assert!(result.contains(&vec!["f2".to_string(), "f3".to_string()].into_iter().collect::<BTreeSet<_>>()));
   assert_eq!(result.len(), 3);
 }
 
@@ -83,14 +83,14 @@ fn case_2() {
   .unwrap();
   dbg!(&result);
 
-  assert!(result.contains(&vec!["f2".to_string()].into_iter().collect()));
-  assert!(result.contains(&vec!["f1".to_string(), "f2".to_string()].into_iter().collect()));
+  assert!(result.contains(&vec!["f2".to_string()].into_iter().collect::<BTreeSet<_>>()));
+  assert!(result.contains(&vec!["f1".to_string(), "f2".to_string()].into_iter().collect::<BTreeSet<_>>()));
   assert!(result.contains(
     &vec!["f1".to_string(), "f2".to_string(), "f3".to_string()]
       .into_iter()
-      .collect()
+      .collect::<BTreeSet<_>>()
   ));
-  assert!(result.contains(&vec!["f2".to_string(), "f3".to_string()].into_iter().collect()));
+  assert!(result.contains(&vec!["f2".to_string(), "f3".to_string()].into_iter().collect::<BTreeSet<_>>()));
   assert_eq!(result.len(), 4);
 }
 
@@ -115,10 +115,10 @@ fn case_3() {
   .unwrap();
   dbg!(&result);
 
-  assert!(result.contains(&vec![].into_iter().collect()));
-  assert!(result.contains(&vec!["f2".to_string()].into_iter().collect()));
-  assert!(result.contains(&vec!["f1".to_string(), "f2".to_string()].into_iter().collect()));
-  assert!(result.contains(&vec!["f2".to_string(), "f3".to_string()].into_iter().collect()));
+  assert!(result.contains(&vec![].into_iter().collect::<BTreeSet<_>>()));
+  assert!(result.contains(&vec!["f2".to_string()].into_iter().collect::<BTreeSet<_>>()));
+  assert!(result.contains(&vec!["f1".to_string(), "f2".to_string()].into_iter().collect::<BTreeSet<_>>()));
+  assert!(result.contains(&vec!["f2".to_string(), "f3".to_string()].into_iter().collect::<BTreeSet<_>>()));
   assert_eq!(result.len(), 4);
 }
 
@@ -146,16 +146,16 @@ fn case_4() {
   assert!(result.contains(
     &vec!["f1".to_string(), "f2".to_string(), "f3".to_string(),]
       .into_iter()
-      .collect()
+      .collect::<BTreeSet<_>>()
   ));
-  assert!(result.contains(&vec!["f2".to_string()].into_iter().collect()));
-  assert!(result.contains(&vec!["f1".to_string(), "f2".to_string()].into_iter().collect()));
+  assert!(result.contains(&vec!["f2".to_string()].into_iter().collect::<BTreeSet<_>>()));
+  assert!(result.contains(&vec!["f1".to_string(), "f2".to_string()].into_iter().collect::<BTreeSet<_>>()));
   assert!(result.contains(
     &vec!["f1".to_string(), "f2".to_string(), "f3".to_string()]
       .into_iter()
-      .collect()
+      .collect::<BTreeSet<_>>()
   ));
-  assert!(result.contains(&vec!["f2".to_string(), "f3".to_string()].into_iter().collect()));
+  assert!(result.contains(&vec!["f2".to_string(), "f3".to_string()].into_iter().collect::<BTreeSet<_>>()));
   assert_eq!(result.len(), 4);
 }
 
@@ -180,8 +180,8 @@ fn case_5() {
   .unwrap();
   dbg!(&result);
 
-  assert!(result.contains(&vec!["f2".to_string()].into_iter().collect()));
-  assert!(result.contains(&vec!["f1".to_string(), "f2".to_string()].into_iter().collect()));
+  assert!(result.contains(&vec!["f2".to_string()].into_iter().collect::<BTreeSet<_>>()));
+  assert!(result.contains(&vec!["f1".to_string(), "f2".to_string()].into_iter().collect::<BTreeSet<_>>()));
   assert_eq!(result.len(), 2);
 }
 
@@ -206,8 +206,8 @@ fn case_6() {
   .unwrap();
   dbg!(&result);
 
-  assert!(result.contains(&vec!["f1".to_string(), "f2".to_string()].into_iter().collect()));
-  assert!(result.contains(&vec!["f2".to_string()].into_iter().collect()));
+  assert!(result.contains(&vec!["f1".to_string(), "f2".to_string()].into_iter().collect::<BTreeSet<_>>()));
+  assert!(result.contains(&vec!["f2".to_string()].into_iter().collect::<BTreeSet<_>>()));
 
   assert_eq!(result.len(), 2);
 }

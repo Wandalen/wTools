@@ -10,7 +10,7 @@
 #![allow(unused_imports)]
 #![allow(dead_code)]
 
-use test_tools::prelude::*;
+use test_tools::*;
 use core::marker::PhantomData;
 
 // P1.1: Named struct with one field

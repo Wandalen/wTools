@@ -6,6 +6,7 @@ mod private
   {
     path::{ Path, PathBuf },
     io,
+    borrow::Cow,
   };
   use core::
   {

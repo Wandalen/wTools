@@ -1,7 +1,7 @@
 #![allow(unused_imports)]
 #![allow(dead_code)]
 
-use test_tools::prelude::*;
+use test_tools::*;
 use core::marker::PhantomData;
 use core::marker::PhantomData as CorePhantomData;
 

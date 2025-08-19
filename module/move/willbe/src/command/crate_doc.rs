@@ -8,7 +8,7 @@ mod private
   use wca::VerifiedCommand;
   use error::untyped::Error; // Use untyped::Error for the command return
   use entity::{ Workspace, WorkspaceInitError, PathError }; // Import Workspace, WorkspaceInitError, PathError
-  use pth::{ AbsolutePath, CurrentPath }; // Import AbsolutePath and CurrentPath from pth
+  use pth::AbsolutePath; // Import AbsolutePath from pth
   // Explicit import for Result and its variants for pattern matching
   use core::result::Result::{Ok, Err};
 
@@ -32,8 +32,7 @@ mod private
     let absolute_path = if path_arg.is_relative()
     {
       // If relative, resolve it against the current directory
-      let current_dir = AbsolutePath::try_from( CurrentPath )
-        .map_err( | e | Error::new( e ).context( "Failed to get current directory" ) )?;
+      let current_dir = AbsolutePath::try_from( std::env::current_dir()? )?;
       current_dir.join( path_arg.clone() ) // Clone path_arg as join consumes it
     }
     else

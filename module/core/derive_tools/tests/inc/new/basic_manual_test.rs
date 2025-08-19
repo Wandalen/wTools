@@ -13,7 +13,7 @@
 #![allow(unused_imports)]
 #![allow(dead_code)]
 
-use test_tools::prelude::*;
+use test_tools::*;
 
 // N1.1: Unit struct
 pub struct UnitStruct;

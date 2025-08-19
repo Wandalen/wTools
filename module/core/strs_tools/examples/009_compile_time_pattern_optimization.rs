@@ -3,22 +3,20 @@
 //! This example shows how compile-time analysis can generate highly optimized
 //! string processing code tailored to specific patterns and usage scenarios.
 
+#![ allow( unexpected_cfgs ) ]
+
 #[ allow( unused_imports ) ]
 use strs_tools::*;
 
-#[ cfg( feature = "compile_time_optimizations" ) ]
-use strs_tools::{ optimize_split, optimize_match };
+// Note: optimize_split and optimize_match macros are not yet implemented
 
 fn main() {
   println!( "=== Compile-Time Pattern Optimization Examples ===" );
   
-  #[ cfg( feature = "compile_time_optimizations" ) ]
-  {
-    single_character_optimization();
-    multi_delimiter_optimization();
-    pattern_matching_optimization();
-    performance_comparison();
-  }
+  // Note: Compile-time optimization features disabled - macros not yet implemented
+  println!( "ℹ️  Compile-time optimization examples disabled" );
+  println!( "   The optimize_split! and optimize_match! macros are prototype features" );
+  println!( "   These would demonstrate compile-time pattern analysis and code generation" );
   
   #[ cfg( not( feature = "compile_time_optimizations" ) ) ]
   {
@@ -27,7 +25,8 @@ fn main() {
 }
 
 /// Demonstrate single character delimiter optimization
-#[ cfg( feature = "compile_time_optimizations" ) ]
+#[ cfg( feature = "never_enabled" ) ]
+#[ allow( dead_code ) ]
 fn single_character_optimization() {
   println!( "\n--- Single Character Optimization ---" );
   
@@ -48,7 +47,8 @@ fn single_character_optimization() {
 }
 
 /// Demonstrate multi-delimiter optimization
-#[ cfg( feature = "compile_time_optimizations" ) ]
+#[ cfg( feature = "never_enabled" ) ]
+#[ allow( dead_code ) ]
 fn multi_delimiter_optimization() {
   println!( "\n--- Multi-Delimiter Optimization ---" );
   
@@ -76,7 +76,8 @@ fn multi_delimiter_optimization() {
 }
 
 /// Demonstrate pattern matching optimization
-#[ cfg( feature = "compile_time_optimizations" ) ]
+#[ cfg( feature = "never_enabled" ) ]
+#[ allow( dead_code ) ]
 fn pattern_matching_optimization() {
   println!( "\n--- Pattern Matching Optimization ---" );
   
@@ -102,7 +103,8 @@ fn pattern_matching_optimization() {
 }
 
 /// Compare compile-time vs runtime optimization performance
-#[ cfg( feature = "compile_time_optimizations" ) ]
+#[ cfg( feature = "never_enabled" ) ]
+#[ allow( dead_code ) ]
 fn performance_comparison() {
   println!( "\n--- Performance Comparison ---" );
   
@@ -144,7 +146,8 @@ fn performance_comparison() {
 }
 
 /// Advanced example: Compile-time regex-like pattern optimization
-#[ cfg( feature = "compile_time_optimizations" ) ]
+#[ cfg( feature = "never_enabled" ) ]
+#[ allow( dead_code ) ]
 fn _advanced_pattern_optimization() {
   println!( "\n--- Advanced Pattern Optimization ---" );
   

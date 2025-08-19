@@ -171,7 +171,7 @@ mod private
     let packages = workspace.packages();
     let packages_to_publish : Vec< String > = packages
     .clone()
-    .filter( | &package | paths.contains( &package.crate_dir().unwrap().into() ) )
+    .filter( | &package | paths.contains( &AbsolutePath::from( package.crate_dir().unwrap() ) ) )
     .map( | p | p.name().to_string() )
     .collect();
     let package_map : collection::HashMap< String, package::Package< '_ > > = packages

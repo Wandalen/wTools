@@ -60,9 +60,11 @@ mod private
     type Error = WorkspaceInitError;
 
     /// Load data from current directory
-    fn try_from( cd : CurrentPath ) -> Result< Self, Self::Error >
+    fn try_from( _cd : CurrentPath ) -> Result< Self, Self::Error >
     {
-      Self::try_from( CrateDir::transitive_try_from::< AbsolutePath >( cd )? )
+      let abs_path = AbsolutePath::try_from( std::env::current_dir()? )?;
+      let crate_dir = CrateDir::try_from( abs_path )?;
+      Self::try_from( crate_dir )
     }
 
   }

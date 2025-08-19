@@ -3,22 +3,37 @@
 //! Compares traditional multi-pass parsing approaches with the new
 //! single-pass parser integration functionality for various scenarios.
 
+#[ allow( unused_imports ) ]
 use std::time::Instant;
+
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
+#[ allow( unused_imports ) ]
 use strs_tools::string::parser::*;
 
 fn main() {
     println!("🚀 Parser Integration Performance Benchmarks");
     println!("============================================\n");
     
-    benchmark_command_line_parsing();
-    benchmark_csv_processing();
-    benchmark_integer_parsing();
-    benchmark_validation_splitting();
-    benchmark_memory_efficiency();
+    #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
+    {
+        benchmark_command_line_parsing();
+        benchmark_csv_processing();
+        benchmark_integer_parsing();
+        benchmark_validation_splitting();
+        benchmark_memory_efficiency();
+        
+        println!("\n✅ All benchmarks completed successfully!");
+    }
     
-    println!("\n✅ All benchmarks completed successfully!");
+    #[ cfg( not( all( feature = "string_split", not( feature = "no_std" ) ) ) ) ]
+    {
+        println!("Parser integration functionality not available - feature 'string_split' not enabled or 'no_std' is active");
+        println!("This benchmark requires string parsing features that aren't currently available");
+    }
 }
 
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn benchmark_command_line_parsing() {
     println!("📊 Command-Line Parsing Benchmark");
     println!("─────────────────────────────────");
@@ -67,6 +82,8 @@ fn benchmark_command_line_parsing() {
     println!();
 }
 
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn benchmark_csv_processing() {
     println!("📈 CSV Processing with Validation Benchmark");
     println!("──────────────────────────────────────────");
@@ -107,6 +124,7 @@ fn benchmark_csv_processing() {
     println!();
 }
 
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn benchmark_integer_parsing() {
     println!("🔢 Integer Parsing Benchmark");
     println!("───────────────────────────");
@@ -150,6 +168,7 @@ fn benchmark_integer_parsing() {
     println!();
 }
 
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn benchmark_validation_splitting() {
     println!("✅ Validation During Splitting Benchmark");
     println!("────────────────────────────────────────");
@@ -187,6 +206,7 @@ fn benchmark_validation_splitting() {
     println!();
 }
 
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn benchmark_memory_efficiency() {
     println!("💾 Memory Efficiency Comparison");
     println!("──────────────────────────────");

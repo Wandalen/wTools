@@ -3,6 +3,7 @@
 //!
 
 // `Rng`` is re-exported from `rand` and `Hrng` stands for hierarchical random number generators.
+#[cfg(not(feature = "no_std"))]
 use deterministic_rand::{Rng, Hrng};
 
 fn main() {

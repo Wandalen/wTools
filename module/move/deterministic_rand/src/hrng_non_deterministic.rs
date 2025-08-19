@@ -8,7 +8,6 @@
 /// Define a private namespace for all its items.
 mod private {
 
-  use crate::*;
   use core::{ops::Deref, ops::DerefMut};
 
   /// Emulates behavior of `Arc<Mutex< ThreadRng >>` for compatibility.

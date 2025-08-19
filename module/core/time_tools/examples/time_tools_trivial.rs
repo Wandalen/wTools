@@ -1,6 +1,6 @@
 //! qqq : write proper description
 fn main() {
-  #[ cfg( feature = "chrono" ) ]
+  #[ cfg( all( feature = "chrono", not( feature = "no_std" ) ) ) ]
   {
     use time_tools as the_module;
 

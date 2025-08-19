@@ -416,11 +416,11 @@ mod private
     }
     else
     {
-      let envs = if options.backtrace
+      let envs: std::collections::HashMap< String, String > = if options.backtrace
       {
         [ ( "RUST_BACKTRACE".to_string(), "full".to_string() ) ].into_iter().collect()
       }
-      else { collection::HashMap::new() };
+      else { std::collections::HashMap::new() };
       Run::former()
       .bin_path( program )
       .args( args.into_iter().map( std::ffi::OsString::from ).collect::< Vec< _ > >() )

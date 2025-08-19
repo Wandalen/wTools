@@ -18,7 +18,6 @@ mod private
     fs,
     path::PathBuf,
   };
-  use collection_tools::HashMap;
   use toml_edit::Document;
   use rustdoc_md::rustdoc_json_types::Crate as RustdocCrate;
   use rustdoc_md::rustdoc_json_to_markdown;
@@ -148,7 +147,7 @@ mod private
     ];
 
     // Define environment variables
-    let envs: HashMap< String, String > =
+    let envs: std::collections::HashMap< String, String > =
     [
       ( "RUSTC_BOOTSTRAP".to_string(), "1".to_string() ),
       ( "RUSTDOCFLAGS".to_string(), "-Z unstable-options --output-format json".to_string() ),

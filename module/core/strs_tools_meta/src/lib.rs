@@ -8,11 +8,13 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 
+#[ cfg( any( feature = "optimize_split", feature = "optimize_match" ) ) ]
 use macro_tools::
 {
   quote::quote,
   syn::{ self, Expr, LitStr, Result },
 };
+#[ cfg( any( feature = "optimize_split", feature = "optimize_match" ) ) ]
 use proc_macro::TokenStream;
 
 /// Analyze string patterns at compile time and generate optimized split code.
