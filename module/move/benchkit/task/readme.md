@@ -12,6 +12,7 @@ This file serves as the single source of truth for all project work tracking.
 | 004 | 004 | 4900 | 10 | 7 | 8 | Integration | ✅ (Completed) | [benchkit Successful Integration Report](completed/004_benchkit_successful_integration_report.md) | Document successful production integration of benchkit 0.5.0 in wflow project with comprehensive validation |
 | 005 | 005 | 2025 | 9 | 5 | 40 | Enhancement | ✅ (Completed) | [Enhance Practical Usage Features](completed/005_enhance_practical_usage_features.md) | Implement practical enhancements based on real-world usage feedback: update chain pattern, validation framework, templates, and historical tracking |
 | 006 | 006 | 3600 | 10 | 6 | 16 | Critical Bug | 📥 (Backlog) | [Fix MarkdownUpdater Duplication Bug](backlog/006_fix_markdown_updater_duplication_bug.md) | Detailed specification for fixing critical duplication bug in MarkdownUpdater with comprehensive test cases and solutions |
+| 007 | 007 | 2400 | 8 | 4 | 24 | Enhancement | 📥 (Backlog) | [Implement Regression Analysis](backlog/007_implement_regression_analysis.md) | Implement regression analysis functionality for performance templates with historical data comparison |
 
 ## Phases
 
@@ -30,6 +31,7 @@ This file serves as the single source of truth for all project work tracking.
 
 ### Enhancement
 *   ✅ [Enhance Practical Usage Features](completed/005_enhance_practical_usage_features.md)
+*   📥 [Implement Regression Analysis](backlog/007_implement_regression_analysis.md)
 
 ## Issues Index
 

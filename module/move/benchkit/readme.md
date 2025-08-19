@@ -117,20 +117,27 @@ Coordinate multiple markdown section updates atomically - either all succeed or 
 ```rust
 use benchkit::prelude::*;
 
-// Update multiple sections atomically
-let chain = MarkdownUpdateChain::new("readme.md")?
-    .add_section("Performance Benchmarks", performance_markdown)
-    .add_section("Memory Analysis", memory_markdown)
-    .add_section("CPU Profiling", cpu_markdown);
+fn update_markdown_atomically() -> Result< (), Box< dyn std::error::Error > > {
+    let performance_markdown = "## Performance Results\n\nFast!";
+    let memory_markdown = "## Memory Usage\n\nLow!";
+    let cpu_markdown = "## CPU Usage\n\nOptimal!";
+    
+    // Update multiple sections atomically
+    let chain = MarkdownUpdateChain::new("readme.md")?
+        .add_section("Performance Benchmarks", performance_markdown)
+        .add_section("Memory Analysis", memory_markdown)
+        .add_section("CPU Profiling", cpu_markdown);
 
-// Validate all sections before any updates
-let conflicts = chain.check_all_conflicts()?;
-if !conflicts.is_empty() {
-    return Err(format!("Section conflicts detected: {:?}", conflicts));
+    // Validate all sections before any updates
+    let conflicts = chain.check_all_conflicts()?;
+    if !conflicts.is_empty() {
+        return Err(format!("Section conflicts detected: {:?}", conflicts).into());
+    }
+
+    // Atomic update - either all succeed or all fail
+    chain.execute()?;
+    Ok(())
 }
-
-// Atomic update - either all succeed or all fail
-chain.execute()?;
 ```
 
 **Key Features:**
@@ -148,24 +155,34 @@ chain.execute()?;
 
 **Advanced Example:**
 ```rust
-// Complex coordinated update across multiple report types
-let chain = MarkdownUpdateChain::new("PROJECT_BENCHMARKS.md")?
-    .add_section("Performance Analysis", &performance_report)
-    .add_section("Memory Usage Analysis", &memory_report)
-    .add_section("Algorithm Comparison", &comparison_report)
-    .add_section("Quality Assessment", &validation_report);
+use benchkit::prelude::*;
 
-// Validate everything before committing any changes
-match chain.check_all_conflicts() {
-    Ok(conflicts) if conflicts.is_empty() => {
-        println!("✅ All {} sections validated", chain.len());
-        chain.execute()?;
-    },
-    Ok(conflicts) => {
-        eprintln!("⚠️ Conflicts: {:?}", conflicts);
-        // Handle conflicts or use more specific section names
-    },
-    Err(e) => eprintln!("❌ Validation failed: {}", e),
+fn complex_update_example() -> Result< (), Box< dyn std::error::Error > > {
+    let performance_report = "Performance analysis results";
+    let memory_report = "Memory usage analysis";
+    let comparison_report = "Algorithm comparison data";
+    let validation_report = "Quality assessment report";
+    
+    // Complex coordinated update across multiple report types
+    let chain = MarkdownUpdateChain::new("PROJECT_BENCHMARKS.md")?
+        .add_section("Performance Analysis", performance_report)
+        .add_section("Memory Usage Analysis", memory_report)
+        .add_section("Algorithm Comparison", comparison_report)
+        .add_section("Quality Assessment", validation_report);
+
+    // Validate everything before committing any changes
+    match chain.check_all_conflicts() {
+        Ok(conflicts) if conflicts.is_empty() => {
+            println!("✅ All {} sections validated", chain.len());
+            chain.execute()?;
+        },
+        Ok(conflicts) => {
+            eprintln!("⚠️ Conflicts: {:?}", conflicts);
+            // Handle conflicts or use more specific section names
+        },
+        Err(e) => eprintln!("❌ Validation failed: {}", e),
+    }
+    Ok(())
 }
 ```
 
@@ -178,29 +195,36 @@ Generate standardized, publication-quality reports with full statistical analysi
 
 ```rust
 use benchkit::prelude::*;
+use std::collections::HashMap;
 
-// Comprehensive performance analysis
-let performance_template = PerformanceReport::new()
-    .title("Algorithm Performance Analysis")
-    .add_context("Comparing sequential vs parallel processing approaches")
-    .include_statistical_analysis(true)
-    .include_regression_analysis(true)
-    .add_custom_section(CustomSection::new(
-        "Implementation Notes", 
-        "Detailed implementation considerations and optimizations applied"
-    ));
+fn generate_reports() -> Result< (), Box< dyn std::error::Error > > {
+    let results = HashMap::new();
+    let comparison_results = HashMap::new();
+    
+    // Comprehensive performance analysis
+    let performance_template = PerformanceReport::new()
+        .title("Algorithm Performance Analysis")
+        .add_context("Comparing sequential vs parallel processing approaches")
+        .include_statistical_analysis(true)
+        .include_regression_analysis(true)
+        .add_custom_section(CustomSection::new(
+            "Implementation Notes", 
+            "Detailed implementation considerations and optimizations applied"
+        ));
 
-let performance_report = performance_template.generate(&results)?;
+    let performance_report = performance_template.generate(&results)?;
 
-// A/B testing comparison with statistical significance
-let comparison_template = ComparisonReport::new()
-    .title("Sequential vs Parallel Processing Comparison")
-    .baseline("Sequential Processing")
-    .candidate("Parallel Processing") 
-    .significance_threshold(0.01)     // 1% statistical significance
-    .practical_significance_threshold(0.05);  // 5% practical significance
+    // A/B testing comparison with statistical significance
+    let comparison_template = ComparisonReport::new()
+        .title("Sequential vs Parallel Processing Comparison")
+        .baseline("Sequential Processing")
+        .candidate("Parallel Processing") 
+        .significance_threshold(0.01)     // 1% statistical significance
+        .practical_significance_threshold(0.05);  // 5% practical significance
 
-let comparison_report = comparison_template.generate(&comparison_results)?;
+    let comparison_report = comparison_template.generate(&comparison_results)?;
+    Ok(())
+}
 ```
 
 **Performance Report Features:**
@@ -219,29 +243,34 @@ let comparison_report = comparison_template.generate(&comparison_results)?;
 
 **Advanced Template Composition:**
 ```rust
-// Create domain-specific template with multiple custom sections
-let enterprise_template = PerformanceReport::new()
-    .title("Enterprise Algorithm Performance Audit")
-    .add_context("Monthly performance review for production trading systems")
-    .include_statistical_analysis(true)
-    .add_custom_section(CustomSection::new(
-        "Risk Assessment",
-        r#"### Performance Risk Analysis
-        
-| Algorithm | Latency Risk | Throughput Risk | Stability | Overall |
-|-----------|-------------|-----------------|-----------|----------|
-| Current   | 🟢 Low     | 🟡 Medium      | 🟢 Low   | 🟡 Medium |
-| Proposed  | 🟢 Low     | 🟢 Low        | 🟢 Low   | 🟢 Low    |"#
-    ))
-    .add_custom_section(CustomSection::new(
-        "Business Impact",
-        r#"### Projected Business Impact
+use benchkit::prelude::*;
 
-- **Latency Improvement**: 15% faster response times
-- **Throughput Increase**: +2,000 req/sec capacity
-- **Cost Reduction**: -$50K/month in infrastructure
-- **SLA Compliance**: 99.9% → 99.99% uptime"#
-    ));
+fn create_enterprise_template() -> PerformanceReport {
+    // Create domain-specific template with multiple custom sections
+    let enterprise_template = PerformanceReport::new()
+        .title("Enterprise Algorithm Performance Audit")
+        .add_context("Monthly performance review for production trading systems")
+        .include_statistical_analysis(true)
+        .add_custom_section(CustomSection::new(
+            "Risk Assessment",
+            r#"### Performance Risk Analysis
+            
+    | Algorithm | Latency Risk | Throughput Risk | Stability | Overall |
+    |-----------|-------------|-----------------|-----------|----------|
+    | Current   | 🟢 Low     | 🟡 Medium      | 🟢 Low   | 🟡 Medium |
+    | Proposed  | 🟢 Low     | 🟢 Low        | 🟢 Low   | 🟢 Low    |"#
+        ))
+        .add_custom_section(CustomSection::new(
+            "Business Impact",
+            r#"### Projected Business Impact
+
+    - **Latency Improvement**: 15% faster response times
+    - **Throughput Increase**: +2,000 req/sec capacity
+    - **Cost Reduction**: -$50K/month in infrastructure
+    - **SLA Compliance**: 99.9% → 99.99% uptime"#
+        ));
+    enterprise_template
+}
 ```
 
 </details>
@@ -253,32 +282,37 @@ Comprehensive quality assessment system with configurable criteria and automatic
 
 ```rust
 use benchkit::prelude::*;
+use std::collections::HashMap;
 
-// Configure validator for your specific requirements
-let validator = BenchmarkValidator::new()
-    .min_samples(20)                           // Require 20+ measurements
-    .max_coefficient_variation(0.10)           // 10% maximum variability
-    .require_warmup(true)                      // Detect warm-up periods
-    .max_time_ratio(3.0)                       // 3x max/min ratio
-    .min_measurement_time(Duration::from_micros(50)); // 50μs minimum duration
+fn validate_benchmark_results() {
+    let results = HashMap::new();
+    
+    // Configure validator for your specific requirements
+    let validator = BenchmarkValidator::new()
+        .min_samples(20)                           // Require 20+ measurements
+        .max_coefficient_variation(0.10)           // 10% maximum variability
+        .require_warmup(true)                      // Detect warm-up periods
+        .max_time_ratio(3.0)                       // 3x max/min ratio
+        .min_measurement_time(Duration::from_micros(50)); // 50μs minimum duration
 
-// Validate all results with detailed analysis
-let validated_results = ValidatedResults::new(results, validator);
+    // Validate all results with detailed analysis
+    let validated_results = ValidatedResults::new(results, validator);
 
-println!("Reliability: {:.1}%", validated_results.reliability_rate());
+    println!("Reliability: {:.1}%", validated_results.reliability_rate());
 
-// Get detailed quality warnings
-if let Some(warnings) = validated_results.reliability_warnings() {
-    println!("⚠️ Quality Issues Detected:");
-    for warning in warnings {
-        println!("  - {}", warning);
+    // Get detailed quality warnings
+    if let Some(warnings) = validated_results.reliability_warnings() {
+        println!("⚠️ Quality Issues Detected:");
+        for warning in warnings {
+            println!("  - {}", warning);
+        }
     }
-}
 
-// Work with only statistically reliable results
-let reliable_only = validated_results.reliable_results();
-println!("Using {}/{} reliable benchmarks for analysis", 
-         reliable_only.len(), validated_results.results.len());
+    // Work with only statistically reliable results
+    let reliable_only = validated_results.reliable_results();
+    println!("Using {}/{} reliable benchmarks for analysis", 
+             reliable_only.len(), validated_results.results.len());
+}
 ```
 
 **Validation Criteria:**
@@ -297,41 +331,56 @@ println!("Using {}/{} reliable benchmarks for analysis",
 
 **Domain-Specific Validation:**
 ```rust
-// Real-time systems validation (very strict)
-let realtime_validator = BenchmarkValidator::new()
-    .min_samples(50)
-    .max_coefficient_variation(0.02)  // 2% maximum
-    .max_time_ratio(1.5);             // Very tight timing
+use benchkit::prelude::*;
+use std::collections::HashMap;
 
-// Interactive systems validation (balanced)  
-let interactive_validator = BenchmarkValidator::new()
-    .min_samples(15)
-    .max_coefficient_variation(0.15)  // 15% acceptable
-    .require_warmup(false);           // Interactive may not show warmup
+fn domain_specific_validation() {
+    let results = HashMap::new();
+    
+    // Real-time systems validation (very strict)
+    let realtime_validator = BenchmarkValidator::new()
+        .min_samples(50)
+        .max_coefficient_variation(0.02)  // 2% maximum
+        .max_time_ratio(1.5);             // Very tight timing
 
-// Batch processing validation (lenient)
-let batch_validator = BenchmarkValidator::new()
-    .min_samples(10)
-    .max_coefficient_variation(0.25)  // 25% acceptable  
-    .max_time_ratio(5.0);             // Allow more variation
+    // Interactive systems validation (balanced)  
+    let interactive_validator = BenchmarkValidator::new()
+        .min_samples(15)
+        .max_coefficient_variation(0.15)  // 15% acceptable
+        .require_warmup(false);           // Interactive may not show warmup
 
-// Apply appropriate validator for your domain
-let domain_results = ValidatedResults::new(results, realtime_validator);
+    // Batch processing validation (lenient)
+    let batch_validator = BenchmarkValidator::new()
+        .min_samples(10)
+        .max_coefficient_variation(0.25)  // 25% acceptable  
+        .max_time_ratio(5.0);             // Allow more variation
+
+    // Apply appropriate validator for your domain
+    let domain_results = ValidatedResults::new(results, realtime_validator);
+}
 ```
 
 **Quality Reporting:**
 ```rust
-// Generate comprehensive validation report
-let validation_report = validator.generate_validation_report(&results);
+use benchkit::prelude::*;
+use std::collections::HashMap;
 
-// Validation report includes:
-// - Summary statistics and reliability rates
-// - Detailed warnings with improvement recommendations  
-// - Validation criteria documentation
-// - Quality assessment for each benchmark
-// - Actionable steps to improve measurement quality
+fn generate_validation_report() {
+    let results = HashMap::new();
+    let validator = BenchmarkValidator::new();
+    
+    // Generate comprehensive validation report
+    let validation_report = validator.generate_validation_report(&results);
 
-println!("{}", validation_report);
+    // Validation report includes:
+    // - Summary statistics and reliability rates
+    // - Detailed warnings with improvement recommendations  
+    // - Validation criteria documentation
+    // - Quality assessment for each benchmark
+    // - Actionable steps to improve measurement quality
+
+    println!("{}", validation_report);
+}
 ```
 
 </details>
@@ -343,8 +392,14 @@ Comprehensive examples demonstrating real-world usage patterns and advanced inte
 
 **Development Workflow Integration:**
 ```rust
+use benchkit::prelude::*;
+
 // Complete development cycle: benchmark → validate → document → commit
-fn development_workflow() -> Result<()> {
+fn development_workflow() -> Result< (), Box< dyn std::error::Error > > {
+    // Mock implementations for doc test
+    fn quicksort_implementation() {}
+    fn mergesort_implementation() {}
+    
     // 1. Run benchmarks
     let mut suite = BenchmarkSuite::new("Algorithm Performance");
     suite.benchmark("quicksort", || quicksort_implementation());
@@ -355,7 +410,7 @@ fn development_workflow() -> Result<()> {
     let validator = BenchmarkValidator::new()
         .min_samples(15)
         .max_coefficient_variation(0.15);
-    let validated_results = ValidatedResults::new(results, validator);
+    let validated_results = ValidatedResults::new(results.results, validator);
     
     if validated_results.reliability_rate() < 80.0 {
         return Err("Benchmark quality insufficient for analysis".into());
@@ -374,8 +429,8 @@ fn development_workflow() -> Result<()> {
     
     // 4. Update documentation atomically
     let chain = MarkdownUpdateChain::new("README.md")?
-        .add_section("Performance Analysis", &report)
-        .add_section("Quality Assessment", &validated_results.validation_report());
+        .add_section("Performance Analysis", report)
+        .add_section("Quality Assessment", validated_results.validation_report());
     
     chain.execute()?;
     println!("✅ Development documentation updated successfully");
@@ -386,9 +441,12 @@ fn development_workflow() -> Result<()> {
 
 **CI/CD Pipeline Integration:**
 ```rust
+use benchkit::prelude::*;
+use std::collections::HashMap;
+
 // Automated performance regression detection
 fn cicd_performance_check(baseline_results: HashMap<String, BenchmarkResult>, 
-                          pr_results: HashMap<String, BenchmarkResult>) -> Result<bool> {
+                          pr_results: HashMap<String, BenchmarkResult>) -> Result< bool, Box< dyn std::error::Error > > {
     // Validate both result sets
     let validator = BenchmarkValidator::new().require_warmup(false);
     let baseline_validated = ValidatedResults::new(baseline_results.clone(), validator.clone());
@@ -433,12 +491,15 @@ fn cicd_performance_check(baseline_results: HashMap<String, BenchmarkResult>,
 
 **Multi-Project Coordination:**
 ```rust
+use benchkit::prelude::*;
+use std::collections::HashMap;
+
 // Coordinate benchmark updates across multiple related projects
-fn coordinate_multi_project_benchmarks() -> Result<()> {
+fn coordinate_multi_project_benchmarks() -> Result< (), Box< dyn std::error::Error > > {
     let projects = vec!["web-api", "batch-processor", "realtime-analyzer"];
     let mut all_results = HashMap::new();
     
-    // Collect results from all projects
+    // Collect results from all projects  
     for project in &projects {
         let project_results = run_project_benchmarks(project)?;
         all_results.extend(project_results);
@@ -473,6 +534,22 @@ fn coordinate_multi_project_benchmarks() -> Result<()> {
     // Notify project maintainers
     notify_project_teams(&projects, &impact_report)?;
     
+    Ok(())
+}
+
+// Helper functions for the example
+fn run_project_benchmarks(_project: &str) -> Result< HashMap< String, BenchmarkResult >, Box< dyn std::error::Error > > {
+    // Mock implementation for doc test
+    Ok(HashMap::new())
+}
+
+fn format_project_impact_analysis(_projects: &[&str], _results: &HashMap< String, BenchmarkResult >) -> String {
+    // Mock implementation for doc test  
+    "Impact analysis summary".to_string()
+}
+
+fn notify_project_teams(_projects: &[&str], _report: &str) -> Result< (), Box< dyn std::error::Error > > {
+    // Mock implementation for doc test
     Ok(())
 }
 ```

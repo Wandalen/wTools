@@ -131,7 +131,7 @@ impl MarkdownUpdateChain
   /// let chain = MarkdownUpdateChain::new( "readme.md" )?
   ///   .add_section( "Performance Benchmarks", "## Results\n\nFast!" )
   ///   .add_section( "Memory Usage", "## Memory\n\nLow usage" );
-  /// # Ok::<(), error_tools::Error>(())
+  /// # Ok::<(), Box<dyn std::error::Error>>(())
   /// ```
   pub fn add_section( mut self, section_name : impl Into< String >, content : impl Into< String > ) -> Self
   {

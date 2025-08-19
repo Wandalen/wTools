@@ -5,8 +5,64 @@
 
 use crate::measurement::BenchmarkResult;
 use std::collections::HashMap;
+use std::time::SystemTime;
 
 type Result< T > = std::result::Result< T, Box< dyn std::error::Error > >;
+
+/// Historical benchmark results for regression analysis
+#[ derive( Debug, Clone ) ]
+pub struct HistoricalResults
+{
+  baseline_data : HashMap< String, BenchmarkResult >,
+  historical_runs : Vec< TimestampedResults >,
+}
+
+/// Timestamped benchmark results
+#[ derive( Debug, Clone ) ]
+#[ allow( dead_code ) ] // Fields will be used in future enhancements
+pub struct TimestampedResults
+{
+  timestamp : SystemTime,
+  results : HashMap< String, BenchmarkResult >,
+}
+
+impl HistoricalResults
+{
+  /// Create new empty historical results
+  #[ must_use ]
+  pub fn new() -> Self
+  {
+    Self
+    {
+      baseline_data : HashMap::new(),
+      historical_runs : Vec::new(),
+    }
+  }
+
+  /// Set baseline data for comparison
+  #[ must_use ]
+  pub fn with_baseline( mut self, baseline : HashMap< String, BenchmarkResult > ) -> Self
+  {
+    self.baseline_data = baseline;
+    self
+  }
+
+  /// Add historical run data
+  #[ must_use ]
+  pub fn with_historical_run( mut self, timestamp : SystemTime, results : HashMap< String, BenchmarkResult > ) -> Self
+  {
+    self.historical_runs.push( TimestampedResults { timestamp, results } );
+    self
+  }
+}
+
+impl Default for HistoricalResults
+{
+  fn default() -> Self
+  {
+    Self::new()
+  }
+}
 
 /// Trait for report template generation
 pub trait ReportTemplate
@@ -29,6 +85,8 @@ pub struct PerformanceReport
   include_regression_analysis : bool,
   /// Custom sections to include
   custom_sections : Vec< CustomSection >,
+  /// Historical data for regression analysis
+  historical_data : Option< HistoricalResults >,
 }
 
 impl PerformanceReport
@@ -44,6 +102,7 @@ impl PerformanceReport
       include_statistical_analysis : true,
       include_regression_analysis : false,
       custom_sections : Vec::new(),
+      historical_data : None,
     }
   }
 
@@ -84,6 +143,14 @@ impl PerformanceReport
   pub fn add_custom_section( mut self, section : CustomSection ) -> Self
   {
     self.custom_sections.push( section );
+    self
+  }
+
+  /// Set historical data for regression analysis
+  #[ must_use ]
+  pub fn with_historical_data( mut self, historical : HistoricalResults ) -> Self
+  {
+    self.historical_data = Some( historical );
     self
   }
 }
@@ -280,11 +347,144 @@ impl PerformanceReport
   }
 
   /// Add regression analysis section
-  fn add_regression_analysis( &self, output : &mut String, _results : &HashMap< String, BenchmarkResult > )
+  fn add_regression_analysis( &self, output : &mut String, results : &HashMap< String, BenchmarkResult > )
   {
-    // xxx: Implement regression analysis when historical data is available
-    // This would compare against baseline measurements or historical trends
-    output.push_str( "**Regression Analysis**: Not yet implemented. Historical baseline data required.\n\n" );
+    if let Some( ref historical ) = self.historical_data
+    {
+      // Perform actual regression analysis when historical data is available
+      output.push_str( "### Performance Comparison Against Baseline\n\n" );
+      
+      let mut improvements = Vec::new();
+      let mut regressions = Vec::new();
+      let mut stable_operations = Vec::new();
+      let mut new_operations = Vec::new();
+      
+      for ( operation_name, current_result ) in results
+      {
+        if let Some( baseline_result ) = historical.baseline_data.get( operation_name )
+        {
+          let current_time = current_result.mean_time().as_secs_f64();
+          let baseline_time = baseline_result.mean_time().as_secs_f64();
+          let improvement_ratio = baseline_time / current_time;
+          
+          if improvement_ratio > 1.05 // 5% improvement threshold
+          {
+            let improvement_percent = ( improvement_ratio - 1.0 ) * 100.0;
+            output.push_str( &format!( 
+              "**{}**: 🎉 **Performance improvement detected** - {:.1}% faster than baseline ({:.2?} vs {:.2?})\n\n",
+              operation_name,
+              improvement_percent,
+              current_result.mean_time(),
+              baseline_result.mean_time()
+            ) );
+            improvements.push( ( operation_name.clone(), improvement_percent ) );
+          }
+          else if improvement_ratio < 0.95 // 5% regression threshold
+          {
+            let regression_percent = ( 1.0 - improvement_ratio ) * 100.0;
+            output.push_str( &format!( 
+              "**{}**: ⚠️ **Performance regression detected** - {:.1}% slower than baseline ({:.2?} vs {:.2?})\n\n",
+              operation_name,
+              regression_percent,
+              current_result.mean_time(),
+              baseline_result.mean_time()
+            ) );
+            regressions.push( ( operation_name.clone(), regression_percent ) );
+          }
+          else
+          {
+            output.push_str( &format!( 
+              "**{}**: ✅ **Performance stable** - within 5% of baseline ({:.2?} vs {:.2?})\n\n",
+              operation_name,
+              current_result.mean_time(),
+              baseline_result.mean_time()
+            ) );
+            stable_operations.push( operation_name.clone() );
+          }
+        }
+        else
+        {
+          output.push_str( &format!( 
+            "**{}**: ℹ️ **New operation** - no baseline data available for comparison\n\n",
+            operation_name
+          ) );
+          new_operations.push( operation_name.clone() );
+        }
+      }
+      
+      // Add actionable recommendations based on analysis results
+      self.add_regression_recommendations( output, &improvements, &regressions, &stable_operations, &new_operations );
+    }
+    else
+    {
+      // Fallback to placeholder when no historical data available
+      output.push_str( "**Regression Analysis**: Not yet implemented. Historical baseline data required.\n\n" );
+      output.push_str( "**📖 Setup Guide**: See [`recommendations.md`](recommendations.md) for comprehensive guidelines on:\n" );
+      output.push_str( "- Historical data collection and baseline management\n" );
+      output.push_str( "- Statistical analysis requirements and validation criteria\n" );
+      output.push_str( "- Integration with CI/CD pipelines for automated regression detection\n" );
+      output.push_str( "- Documentation automation best practices\n\n" );
+    }
+  }
+
+  /// Add actionable recommendations based on regression analysis results
+  fn add_regression_recommendations( &self, output : &mut String, improvements : &[ ( String, f64 ) ], regressions : &[ ( String, f64 ) ], stable_operations : &[ String ], new_operations : &[ String ] )
+  {
+    output.push_str( "### 🎯 Analysis Summary & Recommendations\n\n" );
+    
+    if !regressions.is_empty()
+    {
+      output.push_str( "#### ⚠️ **Action Required - Performance Regressions Detected**\n\n" );
+      for ( operation, regression_percent ) in regressions
+      {
+        output.push_str( &format!( "- **{}**: {:.1}% slower than baseline\n", operation, regression_percent ) );
+      }
+      output.push_str( "\n**Immediate Actions:**\n" );
+      output.push_str( "1. 🔍 **Profile the regressed operations** to identify performance bottlenecks\n" );
+      output.push_str( "2. 📊 **Review recent changes** that may have impacted these operations\n" );
+      output.push_str( "3. 🧪 **Run detailed benchmarks** with validation framework for statistical confidence\n" );
+      output.push_str( "4. 📋 **Consider blocking deployment** until regressions are resolved\n\n" );
+    }
+    
+    if !improvements.is_empty()
+    {
+      output.push_str( "#### 🎉 **Performance Improvements Achieved**\n\n" );
+      for ( operation, improvement_percent ) in improvements
+      {
+        output.push_str( &format!( "- **{}**: {:.1}% faster than baseline\n", operation, improvement_percent ) );
+      }
+      output.push_str( "\n**Success Actions:**\n" );
+      output.push_str( "1. 📝 **Document the optimization techniques** used for future reference\n" );
+      output.push_str( "2. 🔄 **Update baseline data** to reflect new performance standards\n" );
+      output.push_str( "3. 📊 **Share results** with team for knowledge transfer\n" );
+      output.push_str( "4. 🧪 **Validate improvements** under production workloads\n\n" );
+    }
+    
+    if !stable_operations.is_empty()
+    {
+      output.push_str( &format!( "#### ✅ **Stable Performance** ({} operations)\n\n", stable_operations.len() ) );
+      output.push_str( "These operations maintain consistent performance within 5% of baseline - no action required.\n\n" );
+    }
+    
+    if !new_operations.is_empty()
+    {
+      output.push_str( &format!( "#### 📈 **New Operations** ({} detected)\n\n", new_operations.len() ) );
+      output.push_str( "**Setup Actions:**\n" );
+      output.push_str( "1. 🎯 **Establish baselines** for new operations by running multiple measurement cycles\n" );
+      output.push_str( "2. 📊 **Apply validation framework** to ensure measurement quality\n" );
+      output.push_str( "3. 📋 **Update documentation** to include new performance expectations\n" );
+      output.push_str( "4. 🔄 **Configure CI/CD** to monitor these operations going forward\n\n" );
+    }
+    
+    // Add links to project resources based on readme.md content
+    output.push_str( "### 📚 **Next Steps & Resources**\n\n" );
+    output.push_str( "- **📖 Development Guidelines**: See [`recommendations.md`](recommendations.md) for comprehensive best practices\n" );
+    output.push_str( "- **🔧 Validation Framework**: Use `BenchmarkValidator` for quality assurance ([examples/validation_comprehensive.rs](examples/validation_comprehensive.rs))\n" );
+    output.push_str( "- **📊 Template System**: Generate professional reports ([examples/templates_comprehensive.rs](examples/templates_comprehensive.rs))\n" );
+    output.push_str( "- **🔄 Update Chain**: Coordinate documentation updates ([examples/update_chain_comprehensive.rs](examples/update_chain_comprehensive.rs))\n" );
+    output.push_str( "- **🚀 Integration Workflows**: Automate CI/CD performance checks ([examples/integration_workflows.rs](examples/integration_workflows.rs))\n\n" );
+    
+    output.push_str( "*Generated by benchkit - Professional benchmarking toolkit following documentation-first principles*\n\n" );
   }
 
   /// Add methodology note

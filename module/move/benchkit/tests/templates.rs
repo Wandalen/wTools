@@ -222,4 +222,39 @@ mod tests
     assert_eq!( template.significance_threshold_value(), 0.05 );
     assert_eq!( template.practical_significance_threshold_value(), 0.10 );
   }
+
+  #[ test ]
+  fn test_performance_report_with_regression_analysis()
+  {
+    let results = create_sample_results();
+    
+    // Create historical data for regression analysis
+    let mut baseline_data = HashMap::new();
+    let baseline_times = vec![ 
+      Duration::from_micros( 120 ), Duration::from_micros( 118 ), Duration::from_micros( 122 ),
+      Duration::from_micros( 119 ), Duration::from_micros( 121 ), Duration::from_micros( 120 ),
+      Duration::from_micros( 123 ), Duration::from_micros( 117 ), Duration::from_micros( 121 ),
+      Duration::from_micros( 120 ), Duration::from_micros( 122 ), Duration::from_micros( 119 )
+    ];
+    baseline_data.insert( "fast_operation".to_string(), BenchmarkResult::new( "fast_operation", baseline_times ) );
+    
+    let historical = HistoricalResults::new()
+      .with_baseline( baseline_data );
+    
+    let template = PerformanceReport::new()
+      .title( "Performance Report with Regression Analysis" )
+      .include_regression_analysis( true )
+      .with_historical_data( historical );
+    
+    let report = template.generate( &results ).unwrap();
+    
+    // Should include regression analysis section
+    assert!( report.contains( "## Regression Analysis" ) );
+    
+    // Should detect performance improvement (100μs current vs 120μs baseline)
+    assert!( report.contains( "Performance improvement detected" ) || report.contains( "faster than baseline" ) );
+    
+    // Should not show placeholder message when historical data is available
+    assert!( !report.contains( "Not yet implemented" ) );
+  }
 }
