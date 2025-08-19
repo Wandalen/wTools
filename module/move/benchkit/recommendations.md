@@ -546,10 +546,14 @@ generate_nested_data(depth: 3, width: 4)      // JSON-like nested structures
 - [ ] Memory usage scales linearly with data size
 
 ### Ecosystem Success Metrics
-- [ ] Used alongside criterion without conflicts
+- [ ] **`cargo bench` integration works in existing Rust projects without changes** - **CRITICAL**
+- [ ] **CI/CD pipelines can use `cargo bench` for automated performance tracking** - **CRITICAL**
+- [ ] **Works alongside existing criterion benchmarks without conflicts** - **HIGH PRIORITY**
 - [ ] Adopted for documentation generation in multiple projects
 - [ ] Provides actionable optimization recommendations
 - [ ] Reduces benchmarking setup time by >50% compared to manual approaches
+- [ ] **Performance documentation stays up-to-date automatically** - **HIGH PRIORITY**
+- [ ] **Regression detection prevents performance degradations in production** - **HIGH PRIORITY**
 
 ---
 
