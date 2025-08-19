@@ -41,7 +41,7 @@ benchkit = { version = "0.1", features = [ "full" ] }
 
 ```rust  
 // In benches/performance_demo.rs
-#![ cfg( feature = "benchmark" ) ]
+#![ cfg( feature = "enabled" ) ]
 use benchkit::prelude::*;
 
 fn generate_data( size : usize ) -> Vec< u32 >
@@ -81,18 +81,18 @@ fn update_readme_performance_docs()
     }
   );
 
-  // Run the comparison and update benches/readme.md
+  // Run the comparison and update benchmark_results.md
   let report = comparison.run();
   let markdown = report.to_markdown();
 
-  let updater = MarkdownUpdater::new( "benches/readme.md", "Benchmark Results" );
+  let updater = MarkdownUpdater::new( "benchmark_results.md", "Benchmark Results" ).unwrap();
   updater.update_section( &markdown ).unwrap();
 }
 ```
 
-**3. Run your benchmark and watch benches/readme.md update automatically:**
+**3. Run your benchmark and watch benchmark_results.md update automatically:**
 ```bash
-cargo run --bin performance_demo --features benchmark  
+cargo run --bin performance_demo --features enabled  
 ```
 
 ---
@@ -213,7 +213,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   let markdown_report = results.generate_markdown_report().generate();
 
   // Automatically update the "## Performance" section of a file.
-  let updater = MarkdownUpdater::new( "readme.md", "Performance" );
+  let updater = MarkdownUpdater::new( "readme.md", "Performance" )?;
   updater.update_section( &markdown_report )?;
   
   Ok( () )
@@ -230,7 +230,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
 [ 1. Write Code ] -> [ 2. Add Benchmark in `benches/` ] -> [ 3. Run `cargo run --bin` ]
        ^                                                                   |
        |                                                                   v
-[ 5. Commit Code + Perf Docs ] <- [ 4. Auto-Update `benches/readme.md` ] <- [ Analyze Results ]
+[ 5. Commit Code + Perf Docs ] <- [ 4. Auto-Update `benchmark_results.md` ] <- [ Analyze Results ]
 ```
 
 ## 📁 Standard `benches/` Directory Integration
@@ -238,7 +238,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
 `benchkit` fully embraces the standard Rust `benches/` directory structure with enhanced capabilities. **ALL benchmark-related files must be located in the standard `benches/` directory** - this is where Rust expects performance benchmarks to live.
 
 - ✅ **Use `benches/`**: The standard directory for ALL benchmark-related files (this is the Rust convention)
-- ✅ **Comprehensive reporting**: `benches/readme.md` automatically updated with benchmark results
+- ✅ **Comprehensive reporting**: `benchmark_results.md` automatically updated with benchmark results
 - ✅ **Organized structure**: Keep all performance analysis, data, and reports in `benches/`
 - ✅ **Standard compliance**: Follow Rust ecosystem conventions for benchmark organization
 - ❌ **Never use `tests/`**: Keep performance benchmarks separate from unit tests (tests/ is for correctness, not performance)
@@ -247,7 +247,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
 
 **Standard Rust Convention**: The `benches/` directory is the established Rust ecosystem standard for ALL benchmark-related files - following this convention ensures consistency across projects.
 
-**Automatic Documentation**: `benchkit` automatically updates `benches/readme.md` with comprehensive benchmark reports, creating living documentation that stays current with your performance characteristics.
+**Automatic Documentation**: `benchkit` automatically updates `benchmark_results.md` with comprehensive benchmark reports, creating living documentation that stays current with your performance characteristics.
 
 **Organized Performance Analysis**: Keep ALL benchmark code, data generation, analysis scripts, and reports centralized in `benches/` for easy maintenance and discovery.
 
@@ -255,9 +255,9 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
 
 **Separation of Concerns**: Performance benchmarks serve different purposes than correctness tests - `benches/` keeps them properly separated from `tests/` while following Rust conventions.
 
-### Automatic `benches/readme.md` Reports
+### Automatic `benchmark_results.md` Reports
 
-`benchkit` excels at maintaining comprehensive, automatically updated documentation in your `benches/readme.md` file:
+`benchkit` excels at maintaining comprehensive, automatically updated documentation in your `benchmark_results.md` file:
 
 ```markdown
 # Benchmark Results
@@ -312,9 +312,9 @@ fn main()
   
   let results = suite.run_all();
   
-  // Automatically update benches/readme.md with results
-  let updater = MarkdownUpdater::new( "benches/readme.md", "Benchmark Results" );
-  updater.update_section( &results.generate_markdown_report() ).unwrap();
+  // Automatically update benchmark_results.md with results
+  let updater = MarkdownUpdater::new( "benchmark_results.md", "Benchmark Results" ).unwrap();
+  updater.update_section( &results.generate_markdown_report().generate() ).unwrap();
 }
 ```
 
@@ -334,12 +334,12 @@ fn main()
   
   let results = comprehensive.run_all();
   
-  // Update benches/readme.md with comprehensive report
-  let report = results.generate_comprehensive_report();
-  let updater = MarkdownUpdater::new( "benches/readme.md", "Performance Analysis" );
-  updater.update_section( &report ).unwrap();
+  // Update benchmark_results.md with comprehensive report
+  let report = results.generate_markdown_report();
+  let updater = MarkdownUpdater::new( "benchmark_results.md", "Performance Analysis" ).unwrap();
+  updater.update_section( &report.generate() ).unwrap();
   
-  println!( "Updated benches/readme.md with latest performance results" );
+  println!( "Updated benchmark_results.md with latest performance results" );
 }
 ```
 
@@ -350,10 +350,10 @@ For optimal build performance and clean separation, put your benchmark code behi
 ```rust
 // ✅ Standard benches/ directory with feature flags for optional execution
 // benches/comprehensive_benchmark.rs
-#[ cfg( feature = "benchmark" ) ]
+#[ cfg( feature = "enabled" ) ]
 use benchkit::prelude::*;
 
-#[ cfg( feature = "benchmark" ) ]
+#[ cfg( feature = "enabled" ) ]
 fn main()
 {
   let mut suite = BenchmarkSuite::new( "Comprehensive Performance Suite" );
@@ -364,18 +364,18 @@ fn main()
   
   let results = suite.run_all();
   
-  // Automatically update benches/readme.md
-  let updater = MarkdownUpdater::new( "benches/readme.md", "Latest Results" );
-  updater.update_section( &results.generate_markdown_report() ).unwrap();
+  // Automatically update benchmark_results.md
+  let updater = MarkdownUpdater::new( "benchmark_results.md", "Latest Results" ).unwrap();
+  updater.update_section( &results.generate_markdown_report().generate() ).unwrap();
   
-  println!( "Benchmarks completed - benches/readme.md updated" );
+  println!( "Benchmarks completed - benchmark_results.md updated" );
 }
 
-#[ cfg( not( feature = "benchmark" ) ) ]
+#[ cfg( not( feature = "enabled" ) ) ]
 fn main()
 {
-  println!( "Run with: cargo run --bin comprehensive_benchmark --features benchmark" );
-  println!( "Results will be automatically saved to benches/readme.md" );
+  println!( "Run with: cargo run --bin comprehensive_benchmark --features enabled" );
+  println!( "Results will be automatically saved to benchmark_results.md" );
 }
 ```
 
@@ -394,14 +394,14 @@ Run benchmarks selectively:
 # Run only unit tests (fast)
 cargo test
 
-# Run specific benchmark binary (updates benches/readme.md)
-cargo run --bin comprehensive_benchmark --features benchmark
+# Run specific benchmark binary (updates benchmark_results.md)
+cargo run --bin comprehensive_benchmark --features enabled
 
 # Run all benchmark binaries in benches/
-find benches/ -name "*.rs" -exec basename {} .rs \; | xargs -I {} cargo run --bin {} --features benchmark
+find benches/ -name "*.rs" -exec basename {} .rs \; | xargs -I {} cargo run --bin {} --features enabled
 
 # Use cargo bench for standard Rust benchmarking
-cargo bench --features benchmark
+cargo bench --features enabled
 ```
 
 This approach keeps your regular builds fast while making comprehensive performance testing available when needed.
@@ -433,6 +433,62 @@ This project is licensed under the **MIT License**.
 
 | Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
 |-----------|-----------|---------|-----|-----|----------|
+| get_user | 40.00ns | 25000000 | 0.00ns | 80.00ns | 19.00ns |
+| create_user | 40.00ns | 25000000 | 40.00ns | 40.00ns | 0.00ns |
+
+### Key Insights
+
+- **Fastest operation**: get_user (40.00ns)
+- **Performance range**: 1.0x difference between fastest and slowest
+
+
+
+## api_performance Results
+
+| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
+|-----------|-----------|---------|-----|-----|----------|
+| create_user | 40.00ns | 25000000 | 40.00ns | 40.00ns | 0.00ns |
+| get_user | 40.00ns | 25000000 | 40.00ns | 40.00ns | 0.00ns |
+
+### Key Insights
+
+- **Fastest operation**: create_user (40.00ns)
+- **Performance range**: 1.0x difference between fastest and slowest
+
+
+
+## api_performance Results
+
+| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
+|-----------|-----------|---------|-----|-----|----------|
+| create_user | 36.00ns | 27777778 | 0.00ns | 40.00ns | 13.00ns |
+| get_user | 36.00ns | 27777778 | 0.00ns | 40.00ns | 13.00ns |
+
+### Key Insights
+
+- **Fastest operation**: create_user (36.00ns)
+- **Performance range**: 1.0x difference between fastest and slowest
+
+
+
+## api_performance Results
+
+| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
+|-----------|-----------|---------|-----|-----|----------|
+| create_user | 36.00ns | 27777778 | 0.00ns | 40.00ns | 13.00ns |
+| get_user | 40.00ns | 25000000 | 40.00ns | 40.00ns | 0.00ns |
+
+### Key Insights
+
+- **Fastest operation**: create_user (36.00ns)
+- **Performance range**: 1.1x difference between fastest and slowest
+
+
+
+## api_performance Results
+
+| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
+|-----------|-----------|---------|-----|-----|----------|
 | get_user | 68.00ns | 14705882 | 40.00ns | 80.00ns | 19.00ns |
 | create_user | 92.00ns | 10869565 | 40.00ns | 160.00ns | 33.00ns |
 
@@ -440,4 +496,3 @@ This project is licensed under the **MIT License**.
 
 - **Fastest operation**: get_user (68.00ns)
 - **Performance range**: 1.4x difference between fastest and slowest
-
