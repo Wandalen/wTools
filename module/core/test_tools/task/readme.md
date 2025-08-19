@@ -8,7 +8,7 @@ This document serves as the **single source of truth** for all project work.
 |----------|-----|--------------|-------|----------|----------------|-------|--------|------|-------------|
 | 1 | 002 | 3136 | 8 | 7 | 2 | Development | ✅ (Completed) | [Fix Collection Macro Re-exports](completed/002_fix_collection_macro_reexports.md) | Fix collection constructor macro re-export visibility in test_tools aggregation layer |
 | 2 | 003 | 2500 | 10 | 5 | 4 | Documentation | ✅ (Completed) | [Add Regression Prevention Documentation](completed/003_add_regression_prevention_documentation.md) | Add comprehensive doc comments and guidance to prevent test compilation regressions |
-| 3 | 014 | 2500 | 10 | 5 | 4 | Testing | 🔄 (Planned) | [Write Tests for SmokeModuleTest Creation](014_write_tests_for_smoke_module_test.md) | Write failing tests to verify SmokeModuleTest can create temporary, isolated Cargo projects in filesystem (FR-4) |
+| 3 | 014 | 2500 | 10 | 5 | 4 | Testing | ✅ (Completed) | [Write Tests for SmokeModuleTest Creation](completed/014_write_tests_for_smoke_module_test.md) | Write failing tests to verify SmokeModuleTest can create temporary, isolated Cargo projects in filesystem (FR-4) |
 | 4 | 015 | 2500 | 10 | 5 | 6 | Development | 🔄 (Planned) | [Implement SmokeModuleTest Creation](015_implement_smoke_module_test_creation.md) | Implement SmokeModuleTest utility capable of creating temporary, isolated Cargo projects in filesystem (FR-4) |
 | 5 | 020 | 2500 | 10 | 5 | 4 | Testing | 🔄 (Planned) | [Write Tests for Cargo Command Execution](020_write_tests_for_cargo_execution.md) | Write failing tests to verify SmokeModuleTest executes cargo test and cargo run with success assertions (FR-6) |
 | 6 | 021 | 2500 | 10 | 5 | 5 | Development | 🔄 (Planned) | [Implement Cargo Command Execution](021_implement_cargo_execution.md) | Implement SmokeModuleTest execution of cargo test and cargo run with proper success verification (FR-6) |
@@ -51,7 +51,7 @@ This document serves as the **single source of truth** for all project work.
 
 *   ✅ [Fix Collection Macro Re-exports](completed/002_fix_collection_macro_reexports.md)
 *   ✅ [Add Regression Prevention Documentation](completed/003_add_regression_prevention_documentation.md)
-*   🔄 [Write Tests for SmokeModuleTest Creation](014_write_tests_for_smoke_module_test.md)
+*   ✅ [Write Tests for SmokeModuleTest Creation](completed/014_write_tests_for_smoke_module_test.md)
 *   🔄 [Implement SmokeModuleTest Creation](015_implement_smoke_module_test_creation.md)
 *   🔄 [Write Tests for Cargo Command Execution](020_write_tests_for_cargo_execution.md)
 *   🔄 [Implement Cargo Command Execution](021_implement_cargo_execution.md)
