@@ -12,7 +12,7 @@ use std::collections::HashMap;
 #[test]
 fn test_no_section_duplication_with_overlapping_names()
 {
-  let initial = r#"# Test Document
+  let initial = r"# Test Document
 
 ## Performance Benchmarks
 Old performance data
@@ -21,7 +21,7 @@ Old performance data
 Old language data
 
 ## Realistic Scenarios Performance
-Old scenarios data"#;
+Old scenarios data";
 
   let updater = MarkdownUpdater::new_unchecked("test.md", "Performance Benchmarks");
   let result = updater.replace_section_content(initial, "New performance data");
@@ -43,11 +43,11 @@ Old scenarios data"#;
 #[test]
 fn test_exact_section_matching_prevents_substring_conflicts()
 {
-  let initial = r#"## API
+  let initial = r"## API
 Old API data
 
 ## API Documentation  
-Old docs data"#;
+Old docs data";
 
   let updater = MarkdownUpdater::new_unchecked("test.md", "API");
   let result = updater.replace_section_content(initial, "New API data");
@@ -64,11 +64,11 @@ Old docs data"#;
 #[test]
 fn test_section_matching_with_whitespace_variations()
 {
-  let initial = r#"##   Performance Benchmarks   
+  let initial = r"##   Performance Benchmarks   
 Old data with spaces
 
 ## Performance Benchmarks
-Old data exact"#;
+Old data exact";
 
   let updater = MarkdownUpdater::new_unchecked("test.md", "Performance Benchmarks");  
   let result = updater.replace_section_content(initial, "New data");
@@ -86,10 +86,10 @@ Old data exact"#;
 #[test]
 fn test_markdown_updater_creates_section_if_missing()
 {
-  let initial = r#"# Test Document
+  let initial = r"# Test Document
 
 ## Existing Section
-Some data"#;
+Some data";
 
   let updater = MarkdownUpdater::new_unchecked("test.md", "New Section");
   let result = updater.replace_section_content(initial, "New section content");
@@ -106,8 +106,8 @@ Some data"#;
 #[test]
 fn test_multiple_updates_dont_create_duplicates()
 {
-  let initial = r#"## Performance Benchmarks
-Original data"#;
+  let initial = r"## Performance Benchmarks
+Original data";
 
   let updater = MarkdownUpdater::new_unchecked("test.md", "Performance Benchmarks");
   
@@ -126,7 +126,7 @@ Original data"#;
 fn test_real_world_scenario_with_multiple_performance_sections()
 {
   // This test simulates the exact scenario that caused the bug in wflow project
-  let initial = r#"# Benchmark Results
+  let initial = r"# Benchmark Results
 
 ## Performance Benchmarks
 Line counting results
@@ -135,7 +135,7 @@ Line counting results
 Language detection results
 
 ## Realistic Scenarios Performance
-End-to-end scenario results"#;
+End-to-end scenario results";
 
   // Update each section independently
   let updater1 = MarkdownUpdater::new_unchecked("test.md", "Performance Benchmarks");
@@ -208,13 +208,13 @@ fn test_section_name_validation()
 fn test_conflict_detection()
 {
   // Create a temporary file with existing sections
-  let content = r#"# Test Document
+  let content = r"# Test Document
 
 ## Performance Benchmarks
 Old performance data
 
 ## Language Operations Performance
-Old language data"#;
+Old language data";
   
   std::fs::write("conflict_test.md", content).unwrap();
   
@@ -234,11 +234,11 @@ Old language data"#;
 #[test] 
 fn test_no_conflict_with_distinct_names()
 {
-  let content = r#"## API Documentation
+  let content = r"## API Documentation
 Content
 
 ## Database Schema  
-Content"#;
+Content";
   
   std::fs::write("no_conflict_test.md", content).unwrap();
   
