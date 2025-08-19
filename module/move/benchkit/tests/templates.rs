@@ -9,7 +9,7 @@ mod tests
 {
   use benchkit::prelude::*;
   use std::collections::HashMap;
-  use std::time::Duration;
+  use std::time::{ Duration, SystemTime };
 
   fn create_sample_results() -> HashMap< String, BenchmarkResult >
   {
@@ -256,5 +256,151 @@ mod tests
     
     // Should not show placeholder message when historical data is available
     assert!( !report.contains( "Not yet implemented" ) );
+  }
+
+  #[ test ]
+  fn test_regression_analyzer_fixed_baseline_strategy()
+  {
+    let results = create_sample_results();
+    
+    // Create baseline with slower performance
+    let mut baseline_data = HashMap::new();
+    let baseline_times = vec![ 
+      Duration::from_micros( 150 ), Duration::from_micros( 148 ), Duration::from_micros( 152 ),
+      Duration::from_micros( 149 ), Duration::from_micros( 151 ), Duration::from_micros( 150 )
+    ];
+    baseline_data.insert( "fast_operation".to_string(), BenchmarkResult::new( "fast_operation", baseline_times ) );
+    
+    let historical = HistoricalResults::new()
+      .with_baseline( baseline_data );
+    
+    let analyzer = RegressionAnalyzer::new()
+      .with_baseline_strategy( BaselineStrategy::FixedBaseline )
+      .with_significance_threshold( 0.05 );
+    
+    let regression_report = analyzer.analyze( &results, &historical );
+    
+    // Should detect significant improvement
+    assert!( regression_report.has_significant_changes() );
+    assert!( regression_report.get_trend_for( "fast_operation" ) == Some( PerformanceTrend::Improving ) );
+    
+    // Should include statistical significance
+    assert!( regression_report.is_statistically_significant( "fast_operation" ) );
+  }
+
+  #[ test ]
+  fn test_regression_analyzer_rolling_average_strategy()
+  {
+    let results = create_sample_results();
+    
+    // Create historical runs showing gradual improvement
+    let mut historical_runs = Vec::new();
+    
+    // Run 1: Slower performance
+    let mut run1_results = HashMap::new();
+    let run1_times = vec![ Duration::from_micros( 140 ), Duration::from_micros( 142 ), Duration::from_micros( 138 ) ];
+    run1_results.insert( "fast_operation".to_string(), BenchmarkResult::new( "fast_operation", run1_times ) );
+    historical_runs.push( TimestampedResults::new( 
+      SystemTime::now() - Duration::from_secs( 604_800 ), // 1 week ago
+      run1_results 
+    ) );
+    
+    // Run 2: Medium performance  
+    let mut run2_results = HashMap::new();
+    let run2_times = vec![ Duration::from_micros( 120 ), Duration::from_micros( 122 ), Duration::from_micros( 118 ) ];
+    run2_results.insert( "fast_operation".to_string(), BenchmarkResult::new( "fast_operation", run2_times ) );
+    historical_runs.push( TimestampedResults::new(
+      SystemTime::now() - Duration::from_secs( 86400 ), // 1 day ago
+      run2_results
+    ) );
+    
+    let historical = HistoricalResults::new()
+      .with_historical_runs( historical_runs );
+    
+    let analyzer = RegressionAnalyzer::new()
+      .with_baseline_strategy( BaselineStrategy::RollingAverage )
+      .with_trend_window( 3 );
+    
+    let regression_report = analyzer.analyze( &results, &historical );
+    
+    // Should detect improving trend from rolling average
+    assert!( regression_report.get_trend_for( "fast_operation" ) == Some( PerformanceTrend::Improving ) );
+    assert!( regression_report.has_historical_data( "fast_operation" ) );
+  }
+
+  #[ test ]
+  fn test_regression_analyzer_previous_run_strategy()
+  {
+    let results = create_sample_results();
+    
+    // Create single previous run with worse performance
+    let mut previous_results = HashMap::new();
+    let previous_times = vec![ Duration::from_micros( 130 ), Duration::from_micros( 132 ), Duration::from_micros( 128 ) ];
+    previous_results.insert( "fast_operation".to_string(), BenchmarkResult::new( "fast_operation", previous_times ) );
+    
+    let historical = HistoricalResults::new()
+      .with_previous_run( TimestampedResults::new( 
+        SystemTime::now() - Duration::from_secs( 3600 ), // 1 hour ago
+        previous_results 
+      ) );
+    
+    let analyzer = RegressionAnalyzer::new()
+      .with_baseline_strategy( BaselineStrategy::PreviousRun );
+    
+    let regression_report = analyzer.analyze( &results, &historical );
+    
+    // Should detect improvement compared to previous run
+    assert!( regression_report.get_trend_for( "fast_operation" ) == Some( PerformanceTrend::Improving ) );
+    assert!( regression_report.has_previous_run_data() );
+  }
+
+  #[ test ]
+  fn test_regression_analyzer_statistical_significance()
+  {
+    let results = create_sample_results();
+    
+    // Create baseline with very similar performance (should not be significant)
+    let mut baseline_data = HashMap::new();
+    let baseline_times = vec![ 
+      Duration::from_micros( 101 ), Duration::from_micros( 99 ), Duration::from_micros( 102 ),
+      Duration::from_micros( 100 ), Duration::from_micros( 98 ), Duration::from_micros( 101 )
+    ];
+    baseline_data.insert( "fast_operation".to_string(), BenchmarkResult::new( "fast_operation", baseline_times ) );
+    
+    let historical = HistoricalResults::new()
+      .with_baseline( baseline_data );
+    
+    let analyzer = RegressionAnalyzer::new()
+      .with_significance_threshold( 0.01 ); // Very strict threshold
+    
+    let regression_report = analyzer.analyze( &results, &historical );
+    
+    // Should detect that changes are not statistically significant
+    assert!( !regression_report.is_statistically_significant( "fast_operation" ) );
+    assert!( regression_report.get_trend_for( "fast_operation" ) == Some( PerformanceTrend::Stable ) );
+  }
+
+  #[ test ]
+  fn test_regression_report_markdown_output()
+  {
+    let results = create_sample_results();
+    
+    let mut baseline_data = HashMap::new();
+    let baseline_times = vec![ Duration::from_micros( 150 ), Duration::from_micros( 152 ), Duration::from_micros( 148 ) ];
+    baseline_data.insert( "fast_operation".to_string(), BenchmarkResult::new( "fast_operation", baseline_times ) );
+    
+    let historical = HistoricalResults::new()
+      .with_baseline( baseline_data );
+    
+    let analyzer = RegressionAnalyzer::new();
+    let regression_report = analyzer.analyze( &results, &historical );
+    
+    let markdown = regression_report.format_markdown();
+    
+    // Should include proper markdown sections
+    assert!( markdown.contains( "### Performance Comparison Against Baseline" ) );
+    assert!( markdown.contains( "### Analysis Summary & Recommendations" ) );
+    assert!( markdown.contains( "Performance improvement detected" ) );
+    assert!( markdown.contains( "faster than baseline" ) );
   }
 }

@@ -19,11 +19,34 @@ pub struct HistoricalResults
 
 /// Timestamped benchmark results
 #[ derive( Debug, Clone ) ]
-#[ allow( dead_code ) ] // Fields will be used in future enhancements
 pub struct TimestampedResults
 {
   timestamp : SystemTime,
   results : HashMap< String, BenchmarkResult >,
+}
+
+impl TimestampedResults
+{
+  /// Create new timestamped results
+  #[ must_use ]
+  pub fn new( timestamp : SystemTime, results : HashMap< String, BenchmarkResult > ) -> Self
+  {
+    Self { timestamp, results }
+  }
+
+  /// Get timestamp
+  #[ must_use ]
+  pub fn timestamp( &self ) -> SystemTime
+  {
+    self.timestamp
+  }
+
+  /// Get results
+  #[ must_use ]
+  pub fn results( &self ) -> &HashMap< String, BenchmarkResult >
+  {
+    &self.results
+  }
 }
 
 impl HistoricalResults
@@ -51,8 +74,38 @@ impl HistoricalResults
   #[ must_use ]
   pub fn with_historical_run( mut self, timestamp : SystemTime, results : HashMap< String, BenchmarkResult > ) -> Self
   {
-    self.historical_runs.push( TimestampedResults { timestamp, results } );
+    self.historical_runs.push( TimestampedResults::new( timestamp, results ) );
     self
+  }
+
+  /// Add multiple historical runs
+  #[ must_use ]
+  pub fn with_historical_runs( mut self, runs : Vec< TimestampedResults > ) -> Self
+  {
+    self.historical_runs = runs;
+    self
+  }
+
+  /// Set the previous run (most recent historical run)
+  #[ must_use ]
+  pub fn with_previous_run( mut self, run : TimestampedResults ) -> Self
+  {
+    self.historical_runs = vec![ run ];
+    self
+  }
+
+  /// Get baseline data
+  #[ must_use ]
+  pub fn baseline_data( &self ) -> &HashMap< String, BenchmarkResult >
+  {
+    &self.baseline_data
+  }
+
+  /// Get historical runs
+  #[ must_use ]
+  pub fn historical_runs( &self ) -> &Vec< TimestampedResults >
+  {
+    &self.historical_runs
   }
 }
 
@@ -61,6 +114,404 @@ impl Default for HistoricalResults
   fn default() -> Self
   {
     Self::new()
+  }
+}
+
+/// Baseline strategy for regression analysis
+#[ derive( Debug, Clone, PartialEq ) ]
+pub enum BaselineStrategy
+{
+  /// Compare against fixed baseline
+  FixedBaseline,
+  /// Compare against rolling average of historical runs
+  RollingAverage,
+  /// Compare against previous run
+  PreviousRun,
+}
+
+/// Performance trend detected in regression analysis
+#[ derive( Debug, Clone, PartialEq ) ]
+pub enum PerformanceTrend
+{
+  /// Performance improving over time
+  Improving,
+  /// Performance degrading over time
+  Degrading,
+  /// Performance stable within normal variation
+  Stable,
+}
+
+/// Regression analysis configuration and engine
+#[ derive( Debug, Clone ) ]
+pub struct RegressionAnalyzer
+{
+  /// Statistical significance threshold (default: 0.05)
+  significance_threshold : f64,
+  /// Number of historical runs to consider for trends (default: 5)
+  trend_window : usize,
+  /// Strategy for baseline comparison
+  baseline_strategy : BaselineStrategy,
+}
+
+impl RegressionAnalyzer
+{
+  /// Create new regression analyzer with default settings
+  #[ must_use ]
+  pub fn new() -> Self
+  {
+    Self
+    {
+      significance_threshold : 0.05,
+      trend_window : 5,
+      baseline_strategy : BaselineStrategy::FixedBaseline,
+    }
+  }
+
+  /// Set baseline strategy
+  #[ must_use ]
+  pub fn with_baseline_strategy( mut self, strategy : BaselineStrategy ) -> Self
+  {
+    self.baseline_strategy = strategy;
+    self
+  }
+
+  /// Set significance threshold
+  #[ must_use ]
+  pub fn with_significance_threshold( mut self, threshold : f64 ) -> Self
+  {
+    self.significance_threshold = threshold;
+    self
+  }
+
+  /// Set trend window size
+  #[ must_use ]
+  pub fn with_trend_window( mut self, window : usize ) -> Self
+  {
+    self.trend_window = window;
+    self
+  }
+
+  /// Analyze current results against historical data
+  #[ must_use ]
+  pub fn analyze( &self, results : &HashMap< String, BenchmarkResult >, historical : &HistoricalResults ) -> RegressionReport
+  {
+    let mut report = RegressionReport::new();
+
+    for ( operation_name, current_result ) in results
+    {
+      let analysis = self.analyze_single_operation( operation_name, current_result, historical );
+      report.add_operation_analysis( operation_name.clone(), analysis );
+    }
+
+    report
+  }
+
+  /// Analyze single operation
+  fn analyze_single_operation( &self, operation_name : &str, current_result : &BenchmarkResult, historical : &HistoricalResults ) -> OperationAnalysis
+  {
+    match self.baseline_strategy
+    {
+      BaselineStrategy::FixedBaseline => self.analyze_against_fixed_baseline( operation_name, current_result, historical ),
+      BaselineStrategy::RollingAverage => self.analyze_against_rolling_average( operation_name, current_result, historical ),
+      BaselineStrategy::PreviousRun => self.analyze_against_previous_run( operation_name, current_result, historical ),
+    }
+  }
+
+  /// Analyze against fixed baseline
+  fn analyze_against_fixed_baseline( &self, operation_name : &str, current_result : &BenchmarkResult, historical : &HistoricalResults ) -> OperationAnalysis
+  {
+    if let Some( baseline_result ) = historical.baseline_data().get( operation_name )
+    {
+      let current_time = current_result.mean_time().as_secs_f64();
+      let baseline_time = baseline_result.mean_time().as_secs_f64();
+      let improvement_ratio = baseline_time / current_time;
+      
+      let trend = if improvement_ratio > 1.0 + self.significance_threshold
+      {
+        PerformanceTrend::Improving
+      }
+      else if improvement_ratio < 1.0 - self.significance_threshold
+      {
+        PerformanceTrend::Degrading
+      }
+      else
+      {
+        PerformanceTrend::Stable
+      };
+
+      let is_significant = ( improvement_ratio - 1.0 ).abs() > self.significance_threshold;
+
+      OperationAnalysis
+      {
+        trend,
+        improvement_ratio,
+        is_statistically_significant : is_significant,
+        baseline_time : Some( baseline_time ),
+        has_historical_data : true,
+      }
+    }
+    else
+    {
+      OperationAnalysis::no_data()
+    }
+  }
+
+  /// Analyze against rolling average  
+  fn analyze_against_rolling_average( &self, operation_name : &str, current_result : &BenchmarkResult, historical : &HistoricalResults ) -> OperationAnalysis
+  {
+    let historical_runs = historical.historical_runs();
+    if historical_runs.is_empty()
+    {
+      return OperationAnalysis::no_data();
+    }
+
+    // Calculate rolling average from recent runs
+    let recent_runs : Vec< _ > = historical_runs
+      .iter()
+      .rev() // Most recent first
+      .take( self.trend_window )
+      .filter_map( | run | run.results().get( operation_name ) )
+      .collect();
+
+    if recent_runs.is_empty()
+    {
+      return OperationAnalysis::no_data();
+    }
+
+    let avg_time = recent_runs.iter()
+      .map( | result | result.mean_time().as_secs_f64() )
+      .sum::< f64 >() / recent_runs.len() as f64;
+
+    let current_time = current_result.mean_time().as_secs_f64();
+    let improvement_ratio = avg_time / current_time;
+
+    let trend = if improvement_ratio > 1.0 + self.significance_threshold
+    {
+      PerformanceTrend::Improving
+    }
+    else if improvement_ratio < 1.0 - self.significance_threshold
+    {
+      PerformanceTrend::Degrading
+    }
+    else
+    {
+      PerformanceTrend::Stable
+    };
+
+    let is_significant = ( improvement_ratio - 1.0 ).abs() > self.significance_threshold;
+
+    OperationAnalysis
+    {
+      trend,
+      improvement_ratio,
+      is_statistically_significant : is_significant,
+      baseline_time : Some( avg_time ),
+      has_historical_data : true,
+    }
+  }
+
+  /// Analyze against previous run
+  fn analyze_against_previous_run( &self, operation_name : &str, current_result : &BenchmarkResult, historical : &HistoricalResults ) -> OperationAnalysis
+  {
+    let historical_runs = historical.historical_runs();
+    if let Some( previous_run ) = historical_runs.last()
+    {
+      if let Some( previous_result ) = previous_run.results().get( operation_name )
+      {
+        let current_time = current_result.mean_time().as_secs_f64();
+        let previous_time = previous_result.mean_time().as_secs_f64();
+        let improvement_ratio = previous_time / current_time;
+
+        let trend = if improvement_ratio > 1.0 + self.significance_threshold
+        {
+          PerformanceTrend::Improving
+        }
+        else if improvement_ratio < 1.0 - self.significance_threshold
+        {
+          PerformanceTrend::Degrading
+        }
+        else
+        {
+          PerformanceTrend::Stable
+        };
+
+        let is_significant = ( improvement_ratio - 1.0 ).abs() > self.significance_threshold;
+
+        OperationAnalysis
+        {
+          trend,
+          improvement_ratio,
+          is_statistically_significant : is_significant,
+          baseline_time : Some( previous_time ),
+          has_historical_data : true,
+        }
+      }
+      else
+      {
+        OperationAnalysis::no_data()
+      }
+    }
+    else
+    {
+      OperationAnalysis::no_data()
+    }
+  }
+}
+
+impl Default for RegressionAnalyzer
+{
+  fn default() -> Self
+  {
+    Self::new()
+  }
+}
+
+/// Analysis results for a single operation
+#[ derive( Debug, Clone ) ]
+pub struct OperationAnalysis
+{
+  trend : PerformanceTrend,
+  improvement_ratio : f64,
+  is_statistically_significant : bool,
+  baseline_time : Option< f64 >,
+  has_historical_data : bool,
+}
+
+impl OperationAnalysis
+{
+  /// Create analysis indicating no historical data available
+  #[ must_use ]
+  fn no_data() -> Self
+  {
+    Self
+    {
+      trend : PerformanceTrend::Stable,
+      improvement_ratio : 1.0,
+      is_statistically_significant : false,
+      baseline_time : None,
+      has_historical_data : false,
+    }
+  }
+}
+
+/// Complete regression analysis report
+#[ derive( Debug, Clone ) ]
+pub struct RegressionReport
+{
+  operations : HashMap< String, OperationAnalysis >,
+}
+
+impl RegressionReport
+{
+  /// Create new regression report
+  #[ must_use ]
+  fn new() -> Self
+  {
+    Self
+    {
+      operations : HashMap::new(),
+    }
+  }
+
+  /// Add analysis for an operation
+  fn add_operation_analysis( &mut self, operation : String, analysis : OperationAnalysis )
+  {
+    self.operations.insert( operation, analysis );
+  }
+
+  /// Check if any operations have significant changes
+  #[ must_use ]
+  pub fn has_significant_changes( &self ) -> bool
+  {
+    self.operations.values().any( | analysis | analysis.is_statistically_significant )
+  }
+
+  /// Get trend for specific operation
+  #[ must_use ]
+  pub fn get_trend_for( &self, operation : &str ) -> Option< PerformanceTrend >
+  {
+    self.operations.get( operation ).map( | analysis | analysis.trend.clone() )
+  }
+
+  /// Check if operation has statistically significant changes
+  #[ must_use ]
+  pub fn is_statistically_significant( &self, operation : &str ) -> bool
+  {
+    self.operations.get( operation )
+      .is_some_and( | analysis | analysis.is_statistically_significant )
+  }
+
+  /// Check if operation has historical data
+  #[ must_use ]
+  pub fn has_historical_data( &self, operation : &str ) -> bool
+  {
+    self.operations.get( operation )
+      .is_some_and( | analysis | analysis.has_historical_data )
+  }
+
+  /// Check if report has previous run data (for PreviousRun strategy)
+  #[ must_use ]
+  pub fn has_previous_run_data( &self ) -> bool
+  {
+    self.operations.values().any( | analysis | analysis.has_historical_data )
+  }
+
+  /// Format report as markdown
+  #[ must_use ]
+  pub fn format_markdown( &self ) -> String
+  {
+    let mut output = String::new();
+
+    output.push_str( "### Performance Comparison Against Baseline\n\n" );
+
+    for ( operation_name, analysis ) in &self.operations
+    {
+      if !analysis.has_historical_data
+      {
+        output.push_str( &format!( 
+          "**{}**: ℹ️ **New operation** - no baseline data available for comparison\n\n",
+          operation_name
+        ) );
+        continue;
+      }
+
+      if let Some( _baseline_time ) = analysis.baseline_time
+      {
+        let improvement_percent = ( analysis.improvement_ratio - 1.0 ) * 100.0;
+        
+        match analysis.trend
+        {
+          PerformanceTrend::Improving =>
+          {
+            output.push_str( &format!( 
+              "**{}**: 🎉 **Performance improvement detected** - {:.1}% faster than baseline\n\n",
+              operation_name,
+              improvement_percent
+            ) );
+          },
+          PerformanceTrend::Degrading =>
+          {
+            output.push_str( &format!( 
+              "**{}**: ⚠️ **Performance regression detected** - {:.1}% slower than baseline\n\n",
+              operation_name,
+              improvement_percent.abs()
+            ) );
+          },
+          PerformanceTrend::Stable =>
+          {
+            output.push_str( &format!( 
+              "**{}**: ✅ **Performance stable** - within normal variation of baseline\n\n",
+              operation_name
+            ) );
+          },
+        }
+      }
+    }
+
+    output.push_str( "### Analysis Summary & Recommendations\n\n" );
+    output.push_str( "Regression analysis complete. See individual operation results above for detailed findings.\n\n" );
+
+    output
   }
 }
 
@@ -351,69 +802,18 @@ impl PerformanceReport
   {
     if let Some( ref historical ) = self.historical_data
     {
-      // Perform actual regression analysis when historical data is available
-      output.push_str( "### Performance Comparison Against Baseline\n\n" );
+      // Use RegressionAnalyzer for enhanced analysis capabilities
+      let analyzer = RegressionAnalyzer::new()
+        .with_baseline_strategy( BaselineStrategy::FixedBaseline )
+        .with_significance_threshold( 0.05 );
       
-      let mut improvements = Vec::new();
-      let mut regressions = Vec::new();
-      let mut stable_operations = Vec::new();
-      let mut new_operations = Vec::new();
+      let regression_report = analyzer.analyze( results, historical );
+      let markdown_output = regression_report.format_markdown();
       
-      for ( operation_name, current_result ) in results
-      {
-        if let Some( baseline_result ) = historical.baseline_data.get( operation_name )
-        {
-          let current_time = current_result.mean_time().as_secs_f64();
-          let baseline_time = baseline_result.mean_time().as_secs_f64();
-          let improvement_ratio = baseline_time / current_time;
-          
-          if improvement_ratio > 1.05 // 5% improvement threshold
-          {
-            let improvement_percent = ( improvement_ratio - 1.0 ) * 100.0;
-            output.push_str( &format!( 
-              "**{}**: 🎉 **Performance improvement detected** - {:.1}% faster than baseline ({:.2?} vs {:.2?})\n\n",
-              operation_name,
-              improvement_percent,
-              current_result.mean_time(),
-              baseline_result.mean_time()
-            ) );
-            improvements.push( ( operation_name.clone(), improvement_percent ) );
-          }
-          else if improvement_ratio < 0.95 // 5% regression threshold
-          {
-            let regression_percent = ( 1.0 - improvement_ratio ) * 100.0;
-            output.push_str( &format!( 
-              "**{}**: ⚠️ **Performance regression detected** - {:.1}% slower than baseline ({:.2?} vs {:.2?})\n\n",
-              operation_name,
-              regression_percent,
-              current_result.mean_time(),
-              baseline_result.mean_time()
-            ) );
-            regressions.push( ( operation_name.clone(), regression_percent ) );
-          }
-          else
-          {
-            output.push_str( &format!( 
-              "**{}**: ✅ **Performance stable** - within 5% of baseline ({:.2?} vs {:.2?})\n\n",
-              operation_name,
-              current_result.mean_time(),
-              baseline_result.mean_time()
-            ) );
-            stable_operations.push( operation_name.clone() );
-          }
-        }
-        else
-        {
-          output.push_str( &format!( 
-            "**{}**: ℹ️ **New operation** - no baseline data available for comparison\n\n",
-            operation_name
-          ) );
-          new_operations.push( operation_name.clone() );
-        }
-      }
-      
-      // Add actionable recommendations based on analysis results
-      self.add_regression_recommendations( output, &improvements, &regressions, &stable_operations, &new_operations );
+      output.push_str( &markdown_output );
+
+      // Add enhanced recommendations with more context
+      self.add_enhanced_recommendations( output, &regression_report, results );
     }
     else
     {
@@ -427,64 +827,95 @@ impl PerformanceReport
     }
   }
 
-  /// Add actionable recommendations based on regression analysis results
-  fn add_regression_recommendations( &self, output : &mut String, improvements : &[ ( String, f64 ) ], regressions : &[ ( String, f64 ) ], stable_operations : &[ String ], new_operations : &[ String ] )
+
+  /// Add enhanced recommendations based on regression report
+  fn add_enhanced_recommendations( &self, output : &mut String, regression_report : &RegressionReport, results : &HashMap< String, BenchmarkResult > )
   {
-    output.push_str( "### 🎯 Analysis Summary & Recommendations\n\n" );
-    
-    if !regressions.is_empty()
+    // Collect operations by trend for enhanced reporting
+    let mut improving_ops = Vec::new();
+    let mut degrading_ops = Vec::new();
+    let mut stable_ops = Vec::new();
+    let mut new_ops = Vec::new();
+
+    for operation_name in results.keys()
     {
-      output.push_str( "#### ⚠️ **Action Required - Performance Regressions Detected**\n\n" );
-      for ( operation, regression_percent ) in regressions
+      match regression_report.get_trend_for( operation_name )
       {
-        output.push_str( &format!( "- **{}**: {:.1}% slower than baseline\n", operation, regression_percent ) );
+        Some( PerformanceTrend::Improving ) =>
+        {
+          if regression_report.is_statistically_significant( operation_name )
+          {
+            improving_ops.push( operation_name );
+          }
+        },
+        Some( PerformanceTrend::Degrading ) =>
+        {
+          if regression_report.is_statistically_significant( operation_name )
+          {
+            degrading_ops.push( operation_name );
+          }
+        },
+        Some( PerformanceTrend::Stable ) =>
+        {
+          stable_ops.push( operation_name );
+        },
+        None =>
+        {
+          if !regression_report.has_historical_data( operation_name )
+          {
+            new_ops.push( operation_name );
+          }
+        },
       }
-      output.push_str( "\n**Immediate Actions:**\n" );
-      output.push_str( "1. 🔍 **Profile the regressed operations** to identify performance bottlenecks\n" );
-      output.push_str( "2. 📊 **Review recent changes** that may have impacted these operations\n" );
-      output.push_str( "3. 🧪 **Run detailed benchmarks** with validation framework for statistical confidence\n" );
-      output.push_str( "4. 📋 **Consider blocking deployment** until regressions are resolved\n\n" );
     }
-    
-    if !improvements.is_empty()
+
+    if !improving_ops.is_empty() || !degrading_ops.is_empty() || regression_report.has_significant_changes()
     {
-      output.push_str( "#### 🎉 **Performance Improvements Achieved**\n\n" );
-      for ( operation, improvement_percent ) in improvements
+      output.push_str( "### 📊 **Statistical Analysis Summary**\n\n" );
+      
+      if regression_report.has_significant_changes()
       {
-        output.push_str( &format!( "- **{}**: {:.1}% faster than baseline\n", operation, improvement_percent ) );
+        output.push_str( "**Statistically Significant Changes Detected**: This analysis identified performance changes that exceed normal measurement variance.\n\n" );
       }
-      output.push_str( "\n**Success Actions:**\n" );
-      output.push_str( "1. 📝 **Document the optimization techniques** used for future reference\n" );
-      output.push_str( "2. 🔄 **Update baseline data** to reflect new performance standards\n" );
-      output.push_str( "3. 📊 **Share results** with team for knowledge transfer\n" );
-      output.push_str( "4. 🧪 **Validate improvements** under production workloads\n\n" );
+      else
+      {
+        output.push_str( "**No Statistically Significant Changes**: All performance variations are within expected measurement noise.\n\n" );
+      }
     }
-    
-    if !stable_operations.is_empty()
+
+    if !improving_ops.is_empty()
     {
-      output.push_str( &format!( "#### ✅ **Stable Performance** ({} operations)\n\n", stable_operations.len() ) );
-      output.push_str( "These operations maintain consistent performance within 5% of baseline - no action required.\n\n" );
+      output.push_str( "### 🎯 **Performance Optimization Insights**\n\n" );
+      output.push_str( "The following operations show statistically significant improvements:\n" );
+      for op in &improving_ops
+      {
+        output.push_str( &format!( "- **{}**: Consider documenting optimization techniques for knowledge sharing\n", op ) );
+      }
+      output.push_str( "\n**Next Steps**: Update performance baselines and validate improvements under production conditions.\n\n" );
     }
-    
-    if !new_operations.is_empty()
+
+    if !degrading_ops.is_empty()
     {
-      output.push_str( &format!( "#### 📈 **New Operations** ({} detected)\n\n", new_operations.len() ) );
-      output.push_str( "**Setup Actions:**\n" );
-      output.push_str( "1. 🎯 **Establish baselines** for new operations by running multiple measurement cycles\n" );
-      output.push_str( "2. 📊 **Apply validation framework** to ensure measurement quality\n" );
-      output.push_str( "3. 📋 **Update documentation** to include new performance expectations\n" );
-      output.push_str( "4. 🔄 **Configure CI/CD** to monitor these operations going forward\n\n" );
+      output.push_str( "### ⚠️ **Regression Investigation Required**\n\n" );
+      output.push_str( "**Critical**: The following operations show statistically significant performance degradation:\n" );
+      for op in &degrading_ops
+      {
+        output.push_str( &format!( "- **{}**: Requires immediate investigation\n", op ) );
+      }
+      output.push_str( "\n**Recommended Actions**:\n" );
+      output.push_str( "1. **Profile regressed operations** to identify bottlenecks\n" );
+      output.push_str( "2. **Review recent code changes** affecting these operations\n" );
+      output.push_str( "3. **Run additional validation** with increased sample sizes\n" );
+      output.push_str( "4. **Consider deployment hold** until regressions are resolved\n\n" );
     }
-    
-    // Add links to project resources based on readme.md content
-    output.push_str( "### 📚 **Next Steps & Resources**\n\n" );
-    output.push_str( "- **📖 Development Guidelines**: See [`recommendations.md`](recommendations.md) for comprehensive best practices\n" );
-    output.push_str( "- **🔧 Validation Framework**: Use `BenchmarkValidator` for quality assurance ([examples/validation_comprehensive.rs](examples/validation_comprehensive.rs))\n" );
-    output.push_str( "- **📊 Template System**: Generate professional reports ([examples/templates_comprehensive.rs](examples/templates_comprehensive.rs))\n" );
-    output.push_str( "- **🔄 Update Chain**: Coordinate documentation updates ([examples/update_chain_comprehensive.rs](examples/update_chain_comprehensive.rs))\n" );
-    output.push_str( "- **🚀 Integration Workflows**: Automate CI/CD performance checks ([examples/integration_workflows.rs](examples/integration_workflows.rs))\n\n" );
-    
-    output.push_str( "*Generated by benchkit - Professional benchmarking toolkit following documentation-first principles*\n\n" );
+
+    // Add project-specific recommendations
+    output.push_str( "### 🔗 **Integration Resources**\n\n" );
+    output.push_str( "For enhanced regression analysis capabilities:\n" );
+    output.push_str( "- **Configure baseline strategies**: Use `RegressionAnalyzer::with_baseline_strategy()` for rolling averages or previous-run comparisons\n" );
+    output.push_str( "- **Adjust significance thresholds**: Use `with_significance_threshold()` for domain-specific sensitivity\n" );
+    output.push_str( "- **Historical data management**: Implement `TimestampedResults` for comprehensive trend analysis\n" );
+    output.push_str( "- **Automated monitoring**: Integrate with CI/CD pipelines for continuous performance validation\n\n" );
   }
 
   /// Add methodology note
