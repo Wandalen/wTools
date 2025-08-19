@@ -13,6 +13,7 @@
 3. [User Experience Guidelines](#user-experience-guidelines)
 4. [Performance Analysis Best Practices](#performance-analysis-best-practices)
 5. [Documentation Integration Requirements](#documentation-integration-requirements)
+   - [🚀 REQ-DOC-004: Mandatory `cargo bench` Integration (CRITICAL)](#-req-doc-004-mandatory-cargo-bench-integration-critical)
 6. [Data Generation Standards](#data-generation-standards)
 7. [Statistical Analysis Requirements](#statistical-analysis-requirements)
 8. [Feature Organization Principles](#feature-organization-principles)
@@ -217,6 +218,158 @@ results.update_markdown_section("docs/performance.md", "## Latest Results")?;
 - **SHOULD** allow embedding of charts and visualizations
 - **MUST** focus on actionable insights rather than raw data
 
+### 🚀 REQ-DOC-004: Mandatory `cargo bench` Integration (CRITICAL)
+**Source**: Industry standard practice and user expectation for Rust benchmarking
+
+**⚠️ CRITICAL REQUIREMENT: This is the #1 most important requirement for benchkit adoption and usability.**
+
+**Requirements:**
+- **MUST** provide seamless `cargo bench` integration as the PRIMARY interface
+- **MUST** automatically update ALL markdown files during `cargo bench` execution
+- **MUST** work without requiring users to remember special commands or flags
+- **MUST** integrate with existing Rust ecosystem conventions and tooling
+- **MUST** support the standard `benches/` directory structure expected by Rust developers
+
+**Why this is critical:**
+1. **User Expectation**: Rust developers expect `cargo bench` to "just work"
+2. **Workflow Integration**: CI/CD pipelines and development workflows rely on `cargo bench`
+3. **Ecosystem Compatibility**: Must work alongside existing benchmarking tools
+4. **Zero Learning Curve**: Developers shouldn't need to learn new commands
+5. **Automated Documentation**: Performance docs should update automatically during benchmarks
+
+**Technical Implementation Requirements:**
+
+```rust
+// In benches/performance_suite.rs - Standard Rust benchmark location
+use benchkit::prelude::*;
+
+// MUST work with standard cargo bench runner
+fn main() {
+    let mut suite = BenchmarkSuite::new("Algorithm Performance");
+    
+    suite.benchmark("quicksort", || quicksort_implementation());
+    suite.benchmark("mergesort", || mergesort_implementation());
+    
+    let results = suite.run_all();
+    
+    // MUST automatically update documentation during cargo bench
+    let updater = MarkdownUpdateChain::new("README.md")?
+        .add_section("Performance Results", &results.generate_markdown())
+        .add_section("Latest Benchmarks", &results.generate_summary());
+    
+    updater.execute()?;
+    
+    // MUST integrate with regression analysis
+    if let Some(historical) = load_historical_data()? {
+        let analyzer = RegressionAnalyzer::new()
+            .with_baseline_strategy(BaselineStrategy::RollingAverage);
+        
+        let regression_report = analyzer.analyze(&results.results, &historical);
+        
+        let performance_updater = MarkdownUpdateChain::new("PERFORMANCE.md")?
+            .add_section("Regression Analysis", regression_report.format_markdown());
+            
+        performance_updater.execute()?;
+    }
+}
+```
+
+**Directory Structure Requirements:**
+```
+project_root/
+├── benches/                    # Standard Rust benchmark directory
+│   ├── performance_suite.rs    # Main benchmark suite (auto-updates docs)
+│   ├── algorithm_comparison.rs # Specific comparison benchmarks
+│   └── regression_detection.rs # Historical performance tracking
+├── README.md                   # Auto-updated with latest results
+├── PERFORMANCE.md              # Detailed performance documentation
+└── docs/
+    └── benchmarks/             # Extended benchmark documentation
+        ├── methodology.md
+        └── historical_data.md
+```
+
+**Execution Requirements:**
+```bash
+# MUST work with standard cargo bench command
+cargo bench
+
+# MUST automatically:
+# 1. Run all benchmarks in benches/
+# 2. Update README.md with latest results
+# 3. Update PERFORMANCE.md with detailed analysis
+# 4. Perform regression analysis against historical data
+# 5. Generate professional markdown reports
+# 6. Validate benchmark quality and reliability
+```
+
+**Integration with Existing Ecosystem:**
+- **MUST** work alongside existing criterion benchmarks
+- **MUST** support migration from criterion with minimal code changes
+- **SHOULD** provide criterion compatibility layer
+- **MUST** integrate with cargo-bench tools and runners
+- **SHOULD** support custom runners and harnesses
+
+**CI/CD Integration Requirements:**
+```yaml
+# GitHub Actions example that MUST work out of the box
+- name: Run benchmarks and update documentation
+  run: |
+    cargo bench
+    git add README.md PERFORMANCE.md
+    git commit -m "docs: Update performance benchmarks"
+```
+
+**Quality Assurance Requirements:**
+- **MUST** validate all markdown updates before committing
+- **MUST** detect conflicts and provide clear error messages
+- **MUST** support atomic updates (all-or-nothing)
+- **MUST** preserve non-benchmark content in documentation
+- **MUST** handle concurrent access and file locking properly
+
+**Performance Requirements:**
+- **MUST** complete documentation updates in <5 seconds for typical projects
+- **MUST** handle large benchmark suites (100+ benchmarks) efficiently
+- **SHOULD** provide progress indicators for long-running operations
+- **MUST** minimize memory usage during documentation generation
+
+**Error Handling Requirements:**
+- **MUST** provide clear error messages when documentation updates fail
+- **MUST** restore original files if partial updates fail
+- **SHOULD** suggest solutions for common integration problems
+- **MUST** never leave documentation in a broken/inconsistent state
+
+**Regression Analysis Integration:**
+- **MUST** automatically perform regression analysis during `cargo bench`
+- **MUST** update regression reports in documentation
+- **SHOULD** detect and highlight significant performance changes
+- **MUST** maintain historical performance data automatically
+- **SHOULD** provide alerts for performance regressions
+
+**Multi-Environment Support:**
+- **SHOULD** support environment-specific benchmark configurations
+- **SHOULD** allow different documentation update strategies per environment
+- **MUST** work consistently across development, staging, and production
+- **SHOULD** integrate with environment-specific regression thresholds
+
+**Success Criteria:**
+- [ ] `cargo bench` runs benchkit benchmarks without additional setup
+- [ ] Documentation updates automatically during benchmark execution
+- [ ] Zero additional commands needed for typical benchmark workflows
+- [ ] Works in existing Rust projects without structural changes
+- [ ] Integrates with CI/CD pipelines using standard `cargo bench`
+- [ ] Provides regression analysis automatically during benchmarks
+- [ ] Compatible with existing criterion-based projects
+- [ ] Supports migration from criterion with <10 lines of code changes
+
+**Anti-patterns to Avoid:**
+- ❌ Requiring custom commands instead of `cargo bench`
+- ❌ Manual documentation update steps
+- ❌ Complex setup or configuration requirements
+- ❌ Breaking compatibility with existing benchmark workflows
+- ❌ Requiring users to remember special flags or options
+- ❌ Forcing project restructuring to adopt benchkit
+
 ---
 
 ## Data Generation Standards
@@ -337,35 +490,54 @@ generate_nested_data(depth: 3, width: 4)      // JSON-like nested structures
 
 ## Implementation Priorities
 
-### Phase 1: Core Functionality (MVP)
-1. Basic timing and measurement (`enabled`)
-2. Simple markdown report generation (`markdown_reports`)
-3. Standard data generators (`data_generators`)
+### 🚨 CRITICAL PRIORITY: `cargo bench` Integration
+**This MUST be implemented before any other features - it's the foundation of benchkit usability.**
 
-### Phase 2: Analysis Tools
-1. Comparative analysis (`comparative_analysis`)
-2. Statistical analysis (`statistical_analysis`)
-3. Regression detection and baseline management
+1. **Seamless `cargo bench` runner integration** - Users expect `cargo bench` to work
+2. **Automatic markdown documentation updates** - No manual steps required
+3. **Standard `benches/` directory support** - Follow Rust ecosystem conventions
+4. **Regression analysis during benchmarks** - Automated performance monitoring
+5. **Criterion compatibility layer** - Smooth migration path for existing projects
+
+### Phase 1: Core Functionality (MVP) + Mandatory `cargo bench`
+1. **`cargo bench` integration** (`cargo_bench_runner`) - **CRITICAL REQUIREMENT**
+2. **Automatic markdown updates** (`markdown_auto_update`) - **CRITICAL REQUIREMENT**
+3. Basic timing and measurement (`enabled`)
+4. Simple markdown report generation (`markdown_reports`)
+5. Standard data generators (`data_generators`)
+
+### Phase 2: Enhanced `cargo bench` + Analysis Tools
+1. **Regression analysis during `cargo bench`** - **HIGH PRIORITY**
+2. **Historical data management for `cargo bench`** - **HIGH PRIORITY**
+3. Comparative analysis (`comparative_analysis`)
+4. Statistical analysis (`statistical_analysis`)
+5. Professional template system for documentation
 
 ### Phase 3: Advanced Features
-1. HTML and JSON reports (`html_reports`, `json_reports`)
-2. Criterion compatibility (`criterion_compat`)
-3. Optimization hints and recommendations (`optimization_hints`)
+1. **Multi-environment `cargo bench` configurations** - **HIGH PRIORITY**
+2. HTML and JSON reports (`html_reports`, `json_reports`)
+3. **Enhanced criterion compatibility** (`criterion_compat`)
+4. Optimization hints and recommendations (`optimization_hints`)
 
 ### Phase 4: Ecosystem Integration
-1. CI/CD tooling and automation
+1. **CI/CD `cargo bench` automation** - **HIGH PRIORITY**
 2. IDE integration and tooling support
 3. Performance monitoring and alerting
+4. Advanced regression detection and alerting
 
 ---
 
 ## Success Criteria
 
 ### User Experience Success Metrics
+- [ ] **`cargo bench` works immediately without additional setup** - **CRITICAL**
+- [ ] **Documentation updates automatically during `cargo bench`** - **CRITICAL**
+- [ ] **Zero manual steps required for typical benchmark workflows** - **CRITICAL**
 - [ ] New users can run first benchmark in <5 minutes
 - [ ] Integration into existing project requires <10 lines of code
-- [ ] Documentation updates happen automatically without manual intervention
 - [ ] Performance regressions detected within 1% accuracy
+- [ ] **Migration from criterion requires <10 lines of code changes** - **HIGH PRIORITY**
+- [ ] **Regression analysis happens automatically during benchmarks** - **HIGH PRIORITY**
 
 ### Technical Success Metrics  
 - [ ] Measurement overhead <1% for operations >1ms
