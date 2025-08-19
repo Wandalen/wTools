@@ -7,6 +7,8 @@
 
 `benchkit` is a lightweight toolkit for performance analysis, born from the hard-learned lessons of optimizing high-performance libraries. It rejects rigid, all-or-nothing frameworks in favor of flexible, composable tools that integrate seamlessly into your existing workflow.
 
+> 🎯 **NEW TO benchkit?** Start with [`recommendations.md`](recommendations.md) - Essential guidelines from real-world performance optimization experience.
+
 ## The Benchmarking Dilemma
 
 In Rust, developers often face a frustrating choice:
@@ -15,6 +17,8 @@ In Rust, developers often face a frustrating choice:
 2.  **The Manual Approach (`std::time`):** Simple to start, but statistically naive. It leads to boilerplate, inconsistent measurements, and conclusions that are easily skewed by system noise.
 
 `benchkit` offers a third way.
+
+> **📋 Important**: For production use and development contributions, see [`recommendations.md`](recommendations.md) - a comprehensive guide with proven patterns, requirements, and best practices from real-world benchmarking experience.
 
 ## A Toolkit, Not a Framework
 
@@ -28,6 +32,8 @@ This is the core philosophy of `benchkit`. It doesn't impose a workflow; it prov
 ---
 
 ## 🚀 Quick Start: Compare, Analyze, and Document
+
+**📖 First time?** Review [`recommendations.md`](recommendations.md) for comprehensive best practices and development guidelines.
 
 This example demonstrates the core `benchkit` workflow: comparing two algorithms and automatically updating a performance section in your `readme.md`.
 
@@ -418,9 +424,29 @@ benchkit = "0.1"
 benchkit = { version = "0.1", features = [ "full" ] }
 ```
 
+## 📋 Development Guidelines & Best Practices
+
+**⚠️ IMPORTANT**: Before using benchkit in production or contributing to development, **strongly review** the comprehensive [`recommendations.md`](recommendations.md) file. This document contains essential requirements, best practices, and lessons learned from real-world performance analysis work.
+
+The recommendations cover:
+- ✅ **Core philosophy** and toolkit vs framework principles
+- ✅ **Technical architecture** requirements and feature organization
+- ✅ **Performance analysis** best practices with standardized data patterns
+- ✅ **Documentation integration** requirements for automated reporting
+- ✅ **Statistical analysis** requirements for reliable measurements
+
+**📖 Read [`recommendations.md`](recommendations.md) first** - it will save you time and ensure you're following proven patterns.
+
 ## Contributing
 
-Contributions are welcome! `benchkit` aims to be a community-driven toolkit that solves real-world benchmarking problems. Please see our contribution guidelines and open tasks.
+Contributions are welcome! `benchkit` aims to be a community-driven toolkit that solves real-world benchmarking problems. 
+
+**Before contributing:**
+1. **📖 Read [`recommendations.md`](recommendations.md)** - Contains all development requirements and design principles
+2. Review open tasks in the [`task/`](task/) directory  
+3. Check our contribution guidelines
+
+All contributions must align with the principles and requirements outlined in [`recommendations.md`](recommendations.md).
 
 ## License
 
