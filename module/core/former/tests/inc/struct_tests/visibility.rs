@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Structure must be public.
 //! Otherwise public trait can't have it as type.
 

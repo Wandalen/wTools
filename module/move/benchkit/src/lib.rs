@@ -39,6 +39,24 @@
 #![ allow( unused_imports ) ]
 
 #[ cfg( feature = "enabled" ) ]
+fn check_directory_recommendations()
+{
+  #[ cfg( debug_assertions ) ]
+  if let Ok( current_dir ) = std::env::current_dir()
+  {
+    if current_dir.file_name()
+      .and_then( | n | n.to_str() )
+      .is_some_and( | s | s == "benches" )
+    {
+      eprintln!( "💡 benchkit: Running in standard benches/ directory ✅" );
+      eprintln!( "   Remember to update benches/readme.md with your benchmark results" );
+      eprintln!( "   Use MarkdownUpdater to automatically maintain comprehensive reports" );
+      eprintln!( "   See: https://docs.rs/benchkit#standard-benches-directory-integration" );
+    }
+  }
+}
+
+#[ cfg( feature = "enabled" ) ]
 pub mod measurement;
 
 #[ cfg( feature = "enabled" ) ]

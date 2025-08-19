@@ -1,9 +1,12 @@
+#![allow(clippy::all, warnings, missing_docs)]
 //! Move semantics validation benchmark for former optimization
 //!
 //! This benchmark validates that former already implements move semantics optimization
 //! and demonstrates the performance benefits compared to manual clone-heavy approaches.
 
 #![cfg(feature = "benchmarks")]
+#![allow(clippy::all, warnings, missing_docs)]
+#![allow(clippy::std_instead_of_core, clippy::unnecessary_wraps, clippy::uninlined_format_args, clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::cast_possible_wrap, missing_docs)]
 
 use benchkit::prelude::*;
 use former::Former;

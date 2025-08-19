@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: Provides a hand-written implementation of the `Former` pattern's standalone former builder
 //! for a multi-field tuple variant (`Variant(u32, String)`) within an enum that has
 //! `#[ standalone_constructors ]` and no fields with `#[ arg_for_constructor ]`. This file focuses on

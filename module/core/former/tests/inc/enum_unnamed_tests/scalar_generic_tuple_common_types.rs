@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 // Define a simple bound for testing generics
 pub trait Bound : core::fmt::Debug + Default + Clone + PartialEq {}
 

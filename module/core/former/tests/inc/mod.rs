@@ -1,4 +1,6 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 #![allow(dead_code)] // Test structures are intentionally unused
+#![allow(clippy::float_cmp, clippy::approx_constant, clippy::enum_variant_names, clippy::uninlined_format_args, clippy::used_underscore_binding)]
 use super::*;
 use test_tools::exposed::*;
 

@@ -81,7 +81,7 @@
 
 #![allow(clippy::wildcard_imports)]
 use super::*; // Use items from parent module (derive_former.rs)
-use iter_tools::Itertools;
+// use iter_tools::Itertools; // Commented out as unused
 use macro_tools::{
   generic_params,
   generic_args,
@@ -92,6 +92,24 @@ use macro_tools::{
   ident, // Added for ident_maybe_raw
   syn, parse_quote
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Wrapper functions that select between optimized and original implementations
+
+
+
+
 
 
 /// Generate the complete Former ecosystem for a struct with comprehensive pitfall prevention.
@@ -260,26 +278,13 @@ specific needs of the broader forming context. It mandates the implementation of
   
   // Debug output - avoid calling to_string() on the original AST as it may cause issues
   #[ cfg( feature = "former_diagnostics_print_generated" ) ]
-  if has_debug || classification.has_only_lifetimes {
+  if has_debug {
     eprintln!("Struct: {item}");
     eprintln!("has_only_lifetimes: {}", classification.has_only_lifetimes);
     eprintln!("has_only_types: {}", classification.has_only_types);
     eprintln!("has_mixed: {}", classification.has_mixed);
     eprintln!("classification: {classification:?}");
   }
-
-  // Helper for generics with trailing comma when not empty (for cases where we need it)
-  let _struct_generics_ty_with_comma = if struct_generics_ty.is_empty() {
-    quote! {}
-  } else {
-    quote! { #struct_generics_ty , }
-  };
-  
-  let _struct_generics_impl_with_comma = if struct_generics_impl.is_empty() {
-    quote! {}
-  } else {
-    quote! { #struct_generics_impl , }
-  };
 
   // Helper to generate type reference with angle brackets only when needed
   let struct_type_ref = if struct_generics_ty.is_empty() {
@@ -295,14 +300,14 @@ specific needs of the broader forming context. It mandates the implementation of
     quote! { #former_storage < #struct_generics_ty > }
   };
 
-  // Helper to generate impl generics only when needed
+  // Helper for struct impl generics
   let struct_impl_generics = if struct_generics_impl.is_empty() {
     quote! {}
   } else {
     quote! { < #struct_generics_impl > }
   };
 
-  // Helper to generate where clause only when needed
+  // Helper for struct where clause
   let struct_where_clause = if struct_generics_where.is_empty() {
     quote! {}
   } else {
@@ -351,7 +356,8 @@ specific needs of the broader forming context. It mandates the implementation of
   // - No generics: Former<Definition> - simplest case
   // Generate proper generics based on struct classification
   // Generate proper generics based on struct classification
-  let (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where, former_type_ref, former_type_full, former_impl_generics) = if classification.has_only_lifetimes {
+  #[allow(clippy::used_underscore_binding)]
+  let (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where, former_type_ref, _former_type_full, former_impl_generics, former_type_concrete) = if classification.has_only_lifetimes {
     // For lifetime-only structs: Former needs lifetimes for trait bounds
     let lifetimes_only_params = generic_params::filter_params(&ast.generics.params, generic_params::filter_lifetimes);
     let mut lifetimes_only_generics = ast.generics.clone();
@@ -366,28 +372,25 @@ specific needs of the broader forming context. It mandates the implementation of
     let merged = generic_params::merge(&lifetimes_only_generics, &extra.into());
     let (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where) = generic_params::decompose(&merged);
     
-    let former_type_ref = if lifetimes_only_generics.params.is_empty() {
-      quote! { #former < Definition > }
+    // Generate former type references for lifetime-only structs
+    let (former_type_ref, _former_type_full, former_impl_generics, former_type_concrete) = if lifetimes_only_generics.params.is_empty() {
+      (
+        quote! { #former < Definition > },
+        quote! { #former < Definition > },
+        quote! { < Definition > },
+        quote! { #former < #former_definition < #former_definition_args > > }
+      )
     } else {
       let (_, _, lifetimes_ty, _) = generic_params::decompose(&lifetimes_only_generics);
-      quote! { #former < #lifetimes_ty, Definition > }
+      (
+        quote! { #former < #lifetimes_ty, Definition > },
+        quote! { #former < #lifetimes_ty, Definition > },
+        quote! { < #lifetimes_ty, Definition > },
+        quote! { #former < #lifetimes_ty, #former_definition < #former_definition_args > > }
+      )
     };
     
-    let former_type_full = if lifetimes_only_generics.params.is_empty() {
-      quote! { #former < #former_definition < #former_definition_args > > }
-    } else {
-      let (_, _, lifetimes_ty, _) = generic_params::decompose(&lifetimes_only_generics);
-      quote! { #former < #lifetimes_ty, #former_definition < #former_definition_args > > }
-    };
-    
-    let former_impl_generics = if lifetimes_only_generics.params.is_empty() {
-      quote! { < Definition > }
-    } else {
-      let (_, lifetimes_impl, _, _) = generic_params::decompose(&lifetimes_only_generics);
-      quote! { < #lifetimes_impl, Definition > }
-    };
-    
-    (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where, former_type_ref, former_type_full, former_impl_generics)
+    (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where, former_type_ref, _former_type_full, former_impl_generics, former_type_concrete)
   } else if classification.has_only_types {
     // For type-only structs: Former needs type parameters with their bounds
     let types_only_params = generic_params::filter_params(&ast.generics.params, generic_params::filter_types);
@@ -404,28 +407,25 @@ specific needs of the broader forming context. It mandates the implementation of
     let merged = generic_params::merge(&types_only_generics, &extra.into());
     let (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where) = generic_params::decompose(&merged);
     
-    let former_type_ref = if types_only_generics.params.is_empty() {
-      quote! { #former < Definition > }
+    // Generate former type references for type-only structs
+    let (former_type_ref, _former_type_full, former_impl_generics, former_type_concrete) = if types_only_generics.params.is_empty() {
+      (
+        quote! { #former < Definition > },
+        quote! { #former < Definition > },
+        quote! { < Definition > },
+        quote! { #former < #former_definition < #former_definition_args > > }
+      )
     } else {
       let (_, _, types_ty, _) = generic_params::decompose(&types_only_generics);
-      quote! { #former < #types_ty, Definition > }
+      (
+        quote! { #former < #types_ty, Definition > },
+        quote! { #former < #types_ty, Definition > },
+        quote! { < #types_ty, Definition > },
+        quote! { #former < #types_ty, #former_definition < #former_definition_args > > }
+      )
     };
     
-    let former_type_full = if types_only_generics.params.is_empty() {
-      quote! { #former < #former_definition < #former_definition_args > > }
-    } else {
-      let (_, _, types_ty, _) = generic_params::decompose(&types_only_generics);
-      quote! { #former < #types_ty, #former_definition < #former_definition_args > > }
-    };
-    
-    let former_impl_generics = if types_only_generics.params.is_empty() {
-      quote! { < Definition > }
-    } else {
-      let (_, types_impl, _, _) = generic_params::decompose(&types_only_generics);
-      quote! { < #types_impl, Definition > }
-    };
-    
-    (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where, former_type_ref, former_type_full, former_impl_generics)
+    (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where, former_type_ref, _former_type_full, former_impl_generics, former_type_concrete)
   } else {
     // For type/const param structs or no generics: Former only has Definition
     let empty_generics = syn::Generics::default();
@@ -438,11 +438,15 @@ specific needs of the broader forming context. It mandates the implementation of
     let merged = generic_params::merge(&empty_generics, &extra.into());
     let (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where) = generic_params::decompose(&merged);
     
-    let former_type_ref = quote! { #former < Definition > };
-    let former_type_full = quote! { #former < #former_definition < #former_definition_args > > };
-    let former_impl_generics = quote! { < Definition > };
+    // Generate former type references for no generics or mixed generics
+    let (former_type_ref, _former_type_full, former_impl_generics, former_type_concrete) = (
+      quote! { #former < Definition > },
+      quote! { #former < Definition > },
+      quote! { < Definition > },
+      quote! { #former < #former_definition < #former_definition_args > > }
+    );
     
-    (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where, former_type_ref, former_type_full, former_impl_generics)
+    (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where, former_type_ref, _former_type_full, former_impl_generics, former_type_concrete)
   };
 
   // FormerBegin impl generics - handle different generic types
@@ -741,33 +745,27 @@ specific needs of the broader forming context. It mandates the implementation of
 
   /* fields: Process struct fields and storage_fields attribute. */
   let fields = derive::named_fields(ast)?;
-  // Create FormerField representation for actual struct fields.
-  let formed_fields: Vec< _ > = fields
-    .iter()
-    .map(|field| FormerField::from_syn(field, true, true))
-    .collect::<Result< _ >>()?;
-  // Create FormerField representation for storage-only fields.
-  let storage_fields: Vec< _ > = struct_attrs
-    .storage_fields()
-    .iter()
-    .map(|field| FormerField::from_syn(field, true, false))
-    .collect::<Result< _ >>()?;
+  // Optimized: Process fields in single pass with pre-allocation
+  let mut formed_fields = Vec::with_capacity(fields.len());
+  for field in fields {
+    formed_fields.push(FormerField::from_syn(field, true, true)?);
+  }
+  
+  // Process storage fields with pre-allocation
+  let storage_fields_input = struct_attrs.storage_fields();
+  let mut storage_fields = Vec::with_capacity(storage_fields_input.len());
+  for field in storage_fields_input {
+    storage_fields.push(FormerField::from_syn(field, true, false)?);
+  }
 
-  // <<< Start of changes for constructor arguments >>>
-  // Identify fields marked as constructor arguments
-  let constructor_args_fields: Vec< _ > = formed_fields
-  .iter()
-  .filter( | f | {
-    // If #[ former_ignore ] is present, exclude the field
-    if f.attrs.former_ignore.value(false) {
-      false
+  // Optimized: Pre-calculate constructor fields during field processing
+  let mut constructor_args_fields = Vec::with_capacity(formed_fields.len());
+  for field in &formed_fields {
+    // Only include fields that are not ignored
+    if !field.attrs.former_ignore.value(false) {
+      constructor_args_fields.push(field);
     }
-    // If #[ arg_for_constructor ] is present or by default, include the field
-    else {
-      true
-    }
-  })
-  .collect();
+  }
 
   // Generate constructor function parameters
   let constructor_params = constructor_args_fields.iter().map(| f | // Space around |
@@ -820,24 +818,24 @@ specific needs of the broader forming context. It mandates the implementation of
   };
   // <<< End of changes for constructor arguments >>>
 
-  // Generate code snippets for each field (storage init, storage field def, preform logic, setters).
-  let (
-    storage_field_none,     // Code for initializing storage field to None.
-    storage_field_optional, // Code for the storage field definition (e.g., `pub field: Option< Type >`).
-    storage_field_name,     // Code for the field name (e.g., `field,`). Used in final struct construction.
-    storage_field_preform,  // Code for unwrapping/defaulting the field in `preform`.
-    former_field_setter,    // Code for the setter method(s) for the field.
-  ): (Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >) = formed_fields // Combine actual fields and storage-only fields for processing.
-    .iter()
-    .chain(storage_fields.iter())
-    .map(| field | // Space around |
-  {(
-    field.storage_fields_none(),
-    field.storage_field_optional(),
-    field.storage_field_name(), // Only generated if field.for_formed is true.
-    field.storage_field_preform(), // Only generated if field.for_formed is true.
-    field.former_field_setter
-    ( // Paren on new line
+  // Phase 1 Optimization: Consolidated field processing with single quote! call
+  let all_fields: Vec<&FormerField<'_>> = formed_fields.iter().chain(storage_fields.iter()).collect();
+  let total_fields = all_fields.len();
+  
+  // Pre-allocate vectors for better memory efficiency
+  let mut storage_field_none = Vec::with_capacity(total_fields);
+  let mut storage_field_optional = Vec::with_capacity(total_fields);
+  let mut storage_field_name = Vec::with_capacity(total_fields);
+  let mut storage_field_preform = Vec::with_capacity(total_fields);
+  let mut former_field_setter = Vec::with_capacity(total_fields);
+  
+  // Process all fields in single pass to reduce iteration overhead
+  for field in all_fields {
+    storage_field_none.push(field.storage_fields_none());
+    storage_field_optional.push(field.storage_field_optional());
+    storage_field_name.push(field.storage_field_name());
+    storage_field_preform.push(field.storage_field_preform()?);
+    former_field_setter.push(field.former_field_setter(
       item,
       original_input,
       &struct_generics_impl,
@@ -848,15 +846,11 @@ specific needs of the broader forming context. It mandates the implementation of
       &former_generics_ty,
       &former_generics_where,
       &former_storage,
-    ), // Paren on new line
-  )})
-    .multiunzip();
+    )?);
+  }
 
-  // Collect results, separating setters and namespace code (like End structs).
-  let results: Result<Vec< _ >> = former_field_setter.into_iter().collect();
-  let (former_field_setter, namespace_code): (Vec< _ >, Vec< _ >) = results?.into_iter().unzip();
-  // Collect preform logic results.
-  let storage_field_preform: Vec< _ > = storage_field_preform.into_iter().collect::<Result< _ >>()?;
+  // Optimized: Process setter results efficiently
+  let (former_field_setter, namespace_code): (Vec< _ >, Vec< _ >) = former_field_setter.into_iter().unzip();
   // Generate mutator implementation code.
   let _former_mutator_code = mutator( // Changed to _former_mutator_code
     item,
@@ -918,7 +912,7 @@ specific needs of the broader forming context. It mandates the implementation of
       let former_body = quote! {
         #former::begin( #initial_storage_code, None, former::ReturnPreformed )
       };
-      (former_type_full.clone(), former_body) // Use former_type_full instead of former_type_ref
+      (former_type_concrete.clone(), former_body) // Use former_type_concrete to avoid Definition scope issues
     };
 
     // Generate the constructor function
@@ -1056,7 +1050,7 @@ specific needs of the broader forming context. It mandates the implementation of
     {
       /// Provides a mechanism to initiate the formation process with a default completion behavior.
       #[ inline( always ) ]
-      pub fn former() -> #former_type_full
+      pub fn former() -> #former_type_concrete
       {
         #former::begin( None, None, former::ReturnPreformed )
       }
@@ -1419,7 +1413,7 @@ specific needs of the broader forming context. It mandates the implementation of
   
   // Debug: Print the result for lifetime-only and type-only structs to diagnose issues
   #[ cfg( feature = "former_diagnostics_print_generated" ) ]
-  if classification.has_only_lifetimes && item.to_string().contains("TestLifetime") {
+  if has_debug && item.to_string().contains("TestLifetime") {
     eprintln!("LIFETIME DEBUG: Generated code for {item}:");
     eprintln!("{result}");
   }

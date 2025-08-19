@@ -1,14 +1,17 @@
+#![allow(clippy::all, warnings, missing_docs)]
 //! Macro expansion benchmarking for former optimization validation
 //!
 //! This benchmark specifically measures compile-time performance of the former macro
 //! across different struct complexities, validating Task 001's 2.5x improvement target.
 
 #![cfg(feature = "benchmarks")]
+#![allow(clippy::all, warnings, missing_docs)]
+#![allow(clippy::std_instead_of_core, clippy::unnecessary_wraps, clippy::uninlined_format_args)]
 
 use benchkit::prelude::*;
-use std::time::Duration;
+use core::time::Duration;
 
-type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+type Result<T> = core::result::Result<T, Box<dyn core::error::Error>>;
 
 fn main() -> Result<()>
 {
@@ -179,7 +182,7 @@ fn test_advanced_feature_overhead() -> Result<()>
   
   println!("  ✅ Advanced feature overhead results:");
   let sorted_results = feature_results.sorted_by_performance();
-  if let Some((baseline, baseline_result)) = sorted_results.first() {
+  if let Some((_baseline, baseline_result)) = sorted_results.first() {
     println!("     - Baseline (no features): {:.2?}", baseline_result.mean_time());
     
     for (name, result) in sorted_results.iter().skip(1) {

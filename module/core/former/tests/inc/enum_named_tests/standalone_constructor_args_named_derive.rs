@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: Tests the `#[ derive( Former ) ]` macro's generation of standalone scalar constructor functions
 //! for named (struct-like) variants when the enum has the `#[ standalone_constructors ]` attribute and
 //! fields within the variants have the `#[ arg_for_constructor ]` attribute. This file focuses on

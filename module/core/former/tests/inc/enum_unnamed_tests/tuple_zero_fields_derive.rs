@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: Tests the `#[ derive( Former ) ]` macro's generation of constructors for zero-field tuple variants, covering both default behavior and the effect of the `#[ scalar ]` attribute. This file focuses on verifying the derive-based implementation.
 //!
 //! Coverage:

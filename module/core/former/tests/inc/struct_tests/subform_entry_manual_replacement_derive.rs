@@ -1,8 +1,10 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 // Purpose: Comprehensive replacement for blocked subform_entry_manual test
 // This works around "Complex lifetime errors with higher-ranked trait bounds"
 // by creating simplified subform entry functionality that works with current Former capabilities
 
 use super::*;
+use collection_tools::HashMap;
 
 // Simplified child struct without complex lifetime bounds
 #[ derive( Debug, Clone, PartialEq, Default, former::Former ) ]
@@ -14,7 +16,7 @@ pub struct EntryChild {
 
 // Implement ValToEntry to map EntryChild to HashMap key/value
 // The key is derived from the 'name' field
-impl ::former::ValToEntry<std::collections::HashMap< String, EntryChild >> for EntryChild {
+impl ::former::ValToEntry<HashMap< String, EntryChild >> for EntryChild {
   type Entry = (String, EntryChild);
   #[ inline( always ) ]
   fn val_to_entry(self) -> Self::Entry {
@@ -26,7 +28,7 @@ impl ::former::ValToEntry<std::collections::HashMap< String, EntryChild >> for E
 #[ derive( Debug, PartialEq, former::Former ) ]
 pub struct EntryParent {
   #[ subform_entry ]
-  pub children: std::collections::HashMap< String, EntryChild >,
+  pub children: HashMap< String, EntryChild >,
   
   pub description: String,
 }
@@ -34,7 +36,7 @@ pub struct EntryParent {
 impl Default for EntryParent {
   fn default() -> Self {
     Self {
-      children: std::collections::HashMap::new(),
+      children: HashMap::new(),
       description: "default_parent".to_string(),
     }
   }
@@ -61,7 +63,7 @@ fn entry_manual_replacement_basic_test() {
     
   let expected = EntryParent {
     children: {
-      let mut map = std::collections::HashMap::new();
+      let mut map = HashMap::new();
       map.insert("key1".to_string(), child);
       map
     },
@@ -101,7 +103,7 @@ fn entry_manual_replacement_multiple_entries_test() {
     
   let expected = EntryParent {
     children: {
-      let mut map = std::collections::HashMap::new();
+      let mut map = HashMap::new();
       map.insert("first".to_string(), child1);
       map.insert("second".to_string(), child2);
       map

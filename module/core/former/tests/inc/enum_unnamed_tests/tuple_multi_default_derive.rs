@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: Tests the `#[ derive( Former ) ]` macro's generation of an implicit variant former for a multi-field tuple variant when no specific variant attribute (`#[ scalar ]` or `#[ subform_scalar ]`) is applied (default behavior). This file focuses on verifying the derive-based implementation.
 //!
 //! Coverage:

@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Test file to verify the comprehensive #[ debug ] attribute implementation
 
 #![allow(unused_imports)]

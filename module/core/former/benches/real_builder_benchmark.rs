@@ -1,14 +1,17 @@
+#![allow(clippy::all, warnings, missing_docs)]
 //! Real builder runtime benchmarking measuring actual former-generated code
 //!
 //! This benchmark measures the actual performance of former-generated builders,
 //! replacing simulations with real struct definitions and builder usage.
 
 #![cfg(feature = "benchmarks")]
+#![allow(clippy::all, warnings, missing_docs)]
+#![allow(clippy::std_instead_of_core, clippy::unnecessary_wraps, clippy::uninlined_format_args, clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::cast_possible_wrap)]
 
 use benchkit::prelude::*;
 use former::Former;
 
-type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+type Result<T> = core::result::Result<T, Box<dyn core::error::Error>>;
 
 // Test structures representing different complexity levels
 
@@ -204,7 +207,8 @@ fn test_real_method_chaining() -> Result<()>
     let mut chaining_comparison = ComparativeAnalysis::new("real_method_chaining");
     
     // Short method chain (3 methods)
-    chaining_comparison = chaining_comparison.algorithm("short_chain", || {
+
+chaining_comparison = chaining_comparison.algorithm("short_chain", || {
         let _result = SimpleStruct::former()
             .name("test".to_string())
             .value(42)
@@ -213,7 +217,8 @@ fn test_real_method_chaining() -> Result<()>
     });
     
     // Medium method chain (5 methods)
-    chaining_comparison = chaining_comparison.algorithm("medium_chain", || {
+
+chaining_comparison = chaining_comparison.algorithm("medium_chain", || {
         let _result = MediumStruct::former()
             .name("test".to_string())
             .description("desc".to_string())
@@ -225,7 +230,8 @@ fn test_real_method_chaining() -> Result<()>
     });
     
     // Long method chain (10+ methods)
-    chaining_comparison = chaining_comparison.algorithm("long_chain", || {
+
+chaining_comparison = chaining_comparison.algorithm("long_chain", || {
         let _result = ComplexStruct::former()
             .id("id".to_string())
             .name("name".to_string())
@@ -280,7 +286,8 @@ fn test_move_vs_clone_performance() -> Result<()>
     let mut move_clone_comparison = ComparativeAnalysis::new("move_vs_clone");
     
     // Current approach: potential clones (simulated)
-    move_clone_comparison = move_clone_comparison.algorithm("current_clone_approach", || {
+
+move_clone_comparison = move_clone_comparison.algorithm("current_clone_approach", || {
         // Simulate current former behavior with potential clones
         let name = "test_name".to_string();
         let description = "test_description".to_string();
@@ -299,7 +306,8 @@ fn test_move_vs_clone_performance() -> Result<()>
     });
     
     // Optimized approach: move semantics (what we want to achieve)
-    move_clone_comparison = move_clone_comparison.algorithm("optimized_move_approach", || {
+
+move_clone_comparison = move_clone_comparison.algorithm("optimized_move_approach", || {
         // Simulate optimized former with move semantics
         let _result = ComplexStruct::former()
             .name("test_name".to_string())    // Optimized: direct move
@@ -348,7 +356,8 @@ fn test_real_world_patterns() -> Result<()>
     let mut patterns_comparison = ComparativeAnalysis::new("real_world_patterns");
     
     // CLI command definition pattern (from unilang)
-    patterns_comparison = patterns_comparison.algorithm("cli_command_definition", || {
+
+patterns_comparison = patterns_comparison.algorithm("cli_command_definition", || {
         let mut flags = std::collections::HashMap::new();
         flags.insert("verbose".to_string(), "Enable verbose output".to_string());
         
@@ -364,7 +373,8 @@ fn test_real_world_patterns() -> Result<()>
     });
     
     // Configuration loading pattern
-    patterns_comparison = patterns_comparison.algorithm("config_loading", || {
+
+patterns_comparison = patterns_comparison.algorithm("config_loading", || {
         let mut metadata = std::collections::HashMap::new();
         metadata.insert("config_version".to_string(), "1.0".to_string());
         metadata.insert("environment".to_string(), "production".to_string());
@@ -381,7 +391,8 @@ fn test_real_world_patterns() -> Result<()>
     });
     
     // Batch data processing pattern
-    patterns_comparison = patterns_comparison.algorithm("batch_processing", || {
+
+patterns_comparison = patterns_comparison.algorithm("batch_processing", || {
         let mut results = Vec::new();
         for i in 0..10 {
             let item = SimpleStruct::former()

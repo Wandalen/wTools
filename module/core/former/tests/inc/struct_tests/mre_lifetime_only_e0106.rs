@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 // MRE test for E0106 "missing lifetime specifier" error in lifetime-only structs
 // This test ensures we don't regress on lifetime-only struct handling
 

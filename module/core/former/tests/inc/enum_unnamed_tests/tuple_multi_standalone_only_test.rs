@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 // Purpose: Tests standalone constructor functionality for multi-field tuple variants
 // This file is included by tuple_multi_standalone derive/manual files
 

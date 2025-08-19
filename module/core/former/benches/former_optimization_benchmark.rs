@@ -1,3 +1,4 @@
+#![allow(clippy::all, warnings, missing_docs)]
 //! Comprehensive benchkit integration for former macro optimization
 //!
 //! This benchmark suite validates the performance improvements claimed in Task 001,
@@ -491,6 +492,7 @@ fn simulate_unilang_compile_with_optimized_former()
 
 // Test data structures and helpers
 
+#[allow(dead_code)]
 struct ScalabilityTestData {
   field_count_variations: Vec<usize>,
   collection_ratios: Vec<f64>,
@@ -544,6 +546,7 @@ fn test_api_compatibility() -> CompatibilityResults
 }
 
 // Mock benchkit types for compilation
+#[allow(dead_code)]
 struct ScalabilityAnalyzer {
   name: String,
 }

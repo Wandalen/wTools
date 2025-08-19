@@ -37,6 +37,8 @@ impl BenchmarkSuite
   /// Create a new benchmark suite
   pub fn new( name : impl Into< String > ) -> Self
   {
+    crate::check_directory_recommendations();
+    
     Self
     {
       name : name.into(),

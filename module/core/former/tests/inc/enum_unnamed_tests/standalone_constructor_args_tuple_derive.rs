@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 // File: module/core/former/tests/inc/former_enum_tests/unnamed_tests/standalone_constructor_args_tuple_derive.rs
 
 #[ allow( unused_imports ) ]

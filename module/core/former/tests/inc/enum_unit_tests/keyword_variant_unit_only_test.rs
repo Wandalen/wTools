@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 // Purpose: Provides shared test assertions and logic for verifying the constructors generated
 // by `#[ derive( Former ) ]` for enums with unit variants that use keyword identifiers.
 // This file is included by `keyword_variant_unit_derive.rs`.

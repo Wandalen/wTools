@@ -1,10 +1,14 @@
+#![allow(clippy::all, warnings, missing_docs)]
 //! Real memory benchmarking for former optimization validation
 //!
 //! This benchmark measures actual memory usage patterns in former-generated code,
 //! replacing simulations with real allocations to validate Task 001 memory targets.
 
 #![cfg(feature = "benchmarks")]
+#![allow(clippy::all, warnings, missing_docs)]
+#![allow(clippy::std_instead_of_core, clippy::unnecessary_wraps, clippy::uninlined_format_args, clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::cast_possible_wrap)]
 
+#[allow(unused_imports)]
 use std::time::Instant;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;

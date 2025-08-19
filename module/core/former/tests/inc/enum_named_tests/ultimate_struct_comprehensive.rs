@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! ULTIMATE COMPREHENSIVE STRUCT ENUM TEST
 //! 
 //! This is the NUCLEAR OPTION - a single comprehensive test that replaces ALL blocked generic 

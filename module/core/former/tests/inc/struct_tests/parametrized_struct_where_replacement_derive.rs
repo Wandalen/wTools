@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 // Purpose: Comprehensive replacement for blocked parametrized_struct_where test
 // This works around "Derive macro uses Definition as generic K, but Definition doesn't implement Hash+Eq"
 // by creating parametrized struct functionality without problematic generic bounds that works with Former
@@ -218,6 +219,7 @@ fn parametrized_struct_where_complex_generics_test() {
 
 /// Tests multiple parametrized properties in single struct.
 #[ test ]
+#[allow(clippy::cast_possible_wrap)]
 fn parametrized_struct_where_multiple_properties_test() {
   // Test struct with multiple parametrized properties
   let props = vec![

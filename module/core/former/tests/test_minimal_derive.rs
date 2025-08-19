@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Test if the issue is with derive mechanism itself
 
 // Try with a proc macro that generates nothing

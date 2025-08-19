@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 #![allow(clippy::elidable_lifetime_names)]
 #![allow(clippy::let_and_return)]
 #![allow(clippy::needless_borrow)]

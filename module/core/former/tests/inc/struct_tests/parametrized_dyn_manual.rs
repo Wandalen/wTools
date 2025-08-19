@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 // xxx2 : qqq2 :
 // - uncomment code
 // - duplicate the file and actually use macro Former

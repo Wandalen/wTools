@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 // Purpose: Provides shared test assertions and logic for verifying the constructors generated
 // by `#[ derive( Former ) ]` for enums with unnamed (tuple) variants that return subformers.
 // This file is included by both `basic_derive.rs` and `basic_manual.rs`.
