@@ -7,6 +7,25 @@
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 #![ cfg_attr( not( doc ), doc = "Testing utilities and tools" ) ]
 
+//! # Important: `vec!` Macro Ambiguity
+//!
+//! When using `use test_tools::*`, you may encounter ambiguity between `std::vec!` and `collection_tools::vec!`.
+//!
+//! ## Solutions:
+//!
+//! ```rust
+//! // RECOMMENDED: Use std::vec! explicitly
+//! use test_tools::*;
+//! let v = std::vec![1, 2, 3];
+//!
+//! // OR: Use selective imports
+//! use test_tools::{BTreeMap, HashMap};
+//! let v = vec![1, 2, 3]; // No ambiguity
+//!
+//! // OR: Use collection macros explicitly  
+//! let collection_vec = collection_tools::vec![1, 2, 3];
+//! ```
+//!
 //! # Test Compilation Troubleshooting Guide
 //!
 //! This crate aggregates testing tools from multiple ecosystem crates. Due to the complexity
@@ -91,13 +110,17 @@ pub mod dependency {
   #[ doc( inline ) ]
   pub use super::{
     error_tools,
-    collection_tools,
     impls_index,
     mem_tools,
     typing_tools,
     diagnostics_tools,
     // process_tools,
   };
+
+  // Re-export collection_tools directly to maintain dependency access
+  #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
+  #[ doc( inline ) ]
+  pub use ::collection_tools;
 }
 
 mod private {}
@@ -177,54 +200,62 @@ pub use standalone::*;
 
 #[ cfg( feature = "enabled" ) ]
 #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
-pub use ::{error_tools, collection_tools, impls_index, mem_tools, typing_tools, diagnostics_tools};
+pub use ::{error_tools, impls_index, mem_tools, typing_tools, diagnostics_tools};
 
-/// Re-export collection constructor macros for aggregated test accessibility.
-///
-/// # CRITICAL REGRESSION PREVENTION
-///
-/// ## Why This Is Required
-/// Collection constructor macros like `heap!`, `vec!`, etc. are defined with `#[macro_export]`
-/// in `collection_tools`, which exports them at the crate root level. However, the module 
-/// re-export `pub use collection_tools;` does NOT re-export the macros.
-///
-/// Aggregated tests expect to access these as `the_module::macro_name!{}`, requiring
-/// explicit re-exports here with the same feature gates as the original definitions.
-///
-/// ## What Happens If Removed
-/// Removing these re-exports will cause compilation failures in aggregated tests:
-/// ```text
-/// error[E0433]: failed to resolve: could not find `heap` in `the_module`
-/// error[E0433]: failed to resolve: could not find `vec` in `the_module`
-/// ```
-///
-/// ## Resolution Guide
-/// 1. Ensure `collection_tools` dependency has required features enabled in Cargo.toml
-/// 2. Verify these re-exports match the macro names in `collection_tools/src/collection/`
-/// 3. Confirm feature gates match those in `collection_tools` macro definitions
-/// 4. Test with: `cargo test -p test_tools --all-features --no-run`
-///
-/// ## Historical Context
-/// This was resolved in Task 002 after Task 001 fixed cfg gate issues.
-/// See `task/completed/002_fix_collection_macro_reexports.md` for full details.
-///
+// Import process module 
+#[ cfg( feature = "enabled" ) ]
+pub use test::process;
+
+/// Re-export collection_tools types and functions but not macros to avoid ambiguity.
+/// Macros are available via collection_tools::macro_name! to prevent std::vec! conflicts.
+#[ cfg( feature = "enabled" ) ]
+#[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
+pub use collection_tools::{
+  // Collection types
+  BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, LinkedList, VecDeque, Vec,
+  // Collection modules
+  collection, btree_map, btree_set, binary_heap, hash_map, hash_set, linked_list, vec_deque, vector,
+};
+
+// Re-export collection macros at root level with original names for aggregated tests
+// This will cause ambiguity with std::vec! when using wildcard imports
+// NOTE: vec! macro removed to prevent ambiguity with std::vec!
 #[ cfg( feature = "enabled" ) ]
 #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
 #[ cfg( feature = "collection_constructors" ) ]
-pub use collection_tools::{heap, vec, bmap, bset, hmap, hset, llist, deque};
+pub use collection_tools::{heap, bmap, bset, hmap, hset, llist, deque, dlist};
 
-/// Re-export collection into-constructor macros.
-/// 
-/// # NOTE
-/// Same requirements as constructor macros above. These enable `into_` variants
-/// that convert elements during construction (e.g., string literals to String).
-/// 
-/// # REGRESSION PREVENTION  
-/// If removed, tests will fail with similar E0433 errors for into_* macros.
 #[ cfg( feature = "enabled" ) ]
 #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
 #[ cfg( feature = "collection_into_constructors" ) ]
-pub use collection_tools::{into_heap, into_vec, into_bmap, into_bset, into_hmap, into_hset, into_llist, into_vecd};
+pub use collection_tools::{into_heap, into_vec, into_bmap, into_bset, into_hmap, into_hset, into_llist, into_vecd, into_dlist};
+
+/// Collection constructor macros moved to prelude module to prevent ambiguity.
+///
+/// # CRITICAL REGRESSION PREVENTION
+///
+/// ## Why Moved to Prelude
+/// Collection constructor macros like `heap!`, `vec!`, etc. were previously re-exported
+/// at crate root level, causing ambiguity with std::vec! when using `use test_tools::*`.
+/// 
+/// Moving them to prelude resolves the ambiguity while maintaining access via
+/// `use test_tools::prelude::*` for users who need collection constructors.
+///
+/// ## What Happens If Moved Back to Root
+/// Re-exporting at root will cause E0659 ambiguity errors:
+/// ```text
+/// error[E0659]: `vec` is ambiguous
+/// = note: `vec` could refer to a macro from prelude  
+/// = note: `vec` could also refer to the macro imported here
+/// ```
+///
+/// ## Access Patterns
+/// - Standard tests: `use test_tools::*;` (no conflicts)
+/// - Collection macros needed: `use test_tools::prelude::*;`
+/// - Explicit access: `test_tools::prelude::vec![]`
+///
+/// ## Historical Context  
+/// This resolves the vec! ambiguity issue while preserving Task 002's macro accessibility.
 
 #[ cfg( feature = "enabled" ) ]
 #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
@@ -242,6 +273,9 @@ pub use ::{};
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 pub use own::*;
+
+/// vec! macro removed to prevent ambiguity with std::vec!
+/// Aggregated collection_tools tests will need to use collection_tools::vec! explicitly
 
 /// Own namespace of the module.
 ///
@@ -276,8 +310,16 @@ pub mod own {
   #[ doc( inline ) ]
   pub use {
     error_tools::{debug_assert_id, debug_assert_identical, debug_assert_ni, debug_assert_not_identical, ErrWith},
-    collection_tools::orphan::*, impls_index::orphan::*, mem_tools::orphan::*, typing_tools::orphan::*,
+    impls_index::orphan::*, mem_tools::orphan::*, typing_tools::orphan::*,
     diagnostics_tools::orphan::*,
+  };
+
+  // Re-export collection_tools types selectively (no macros to avoid ambiguity)
+  #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
+  #[ doc( inline ) ]
+  pub use collection_tools::{
+    BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, LinkedList, VecDeque, Vec,
+    collection, btree_map, btree_set, binary_heap, hash_map, hash_set, linked_list, vec_deque, vector,
   };
 }
 
@@ -316,9 +358,33 @@ pub mod exposed {
   #[ doc( inline ) ]
   pub use {
     error_tools::{debug_assert_id, debug_assert_identical, debug_assert_ni, debug_assert_not_identical, ErrWith},
-    collection_tools::exposed::*, impls_index::exposed::*, mem_tools::exposed::*, typing_tools::exposed::*,
+    impls_index::exposed::*, mem_tools::exposed::*, typing_tools::exposed::*,
     diagnostics_tools::exposed::*,
   };
+
+  // Re-export collection_tools types and macros for exposed namespace
+  #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
+  #[ doc( inline ) ]
+  pub use collection_tools::{
+    BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, LinkedList, VecDeque, Vec,
+    collection, btree_map, btree_set, binary_heap, hash_map, hash_set, linked_list, vec_deque, vector,
+  };
+
+  // Re-export collection type aliases from collection::exposed
+  #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
+  #[ doc( inline ) ]
+  pub use collection_tools::collection::exposed::{
+    Llist, Dlist, Deque, Map, Hmap, Set, Hset, Bmap, Bset,
+  };
+
+  // Collection constructor macros for aggregated test compatibility  
+  #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
+  #[ cfg( feature = "collection_constructors" ) ]
+  pub use collection_tools::{heap, bmap, bset, hmap, hset, llist, deque, dlist};
+
+  #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
+  #[ cfg( feature = "collection_into_constructors" ) ]
+  pub use collection_tools::{into_heap, into_vec, into_bmap, into_bset, into_hmap, into_hset, into_llist, into_vecd, into_dlist};
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -338,7 +404,36 @@ pub mod prelude {
   #[ doc( inline ) ]
   pub use {
     error_tools::{debug_assert_id, debug_assert_identical, debug_assert_ni, debug_assert_not_identical, ErrWith},
-    collection_tools::prelude::*, impls_index::prelude::*, mem_tools::prelude::*, typing_tools::prelude::*,
+    impls_index::prelude::*, mem_tools::prelude::*, typing_tools::prelude::*,
     diagnostics_tools::prelude::*,
   };
+
+
+  // Collection constructor macros removed from re-exports to prevent std::vec! ambiguity.
+  //
+  // AMBIGUITY RESOLUTION
+  // Collection constructor macros like `vec!`, `heap!`, etc. are no longer re-exported
+  // in test_tools to prevent conflicts with std::vec! when using `use test_tools::*`.
+  //
+  // Access Patterns for Collection Constructors:
+  // ```
+  // use test_tools::*;
+  // 
+  // // Use std::vec! without ambiguity
+  // let std_vec = vec![1, 2, 3];
+  // 
+  // // Use collection_tools constructors explicitly
+  // let collection_vec = collection_tools::vec![1, 2, 3];
+  // let heap = collection_tools::heap![1, 2, 3];
+  // let bmap = collection_tools::bmap!{1 => "one"};
+  // ```
+  //
+  // Alternative: Direct Import
+  // ```
+  // use test_tools::*;
+  // use collection_tools::{vec as cvec, heap, bmap};
+  // 
+  // let std_vec = vec![1, 2, 3];    // std::vec!
+  // let collection_vec = cvec![1, 2, 3]; // collection_tools::vec!
+  // ```
 }

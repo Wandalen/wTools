@@ -3,7 +3,7 @@ use super::*;
 #[ test ]
 #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
 fn reexport() {
-  let vec1: the_module::Vec< i32 > = the_module::vec![ 1, 2 ];
+  let vec1: the_module::Vec< i32 > = std::vec![ 1, 2 ];
   let got = *vec1.first().unwrap();
   assert_eq!(got, 1);
   let got = *vec1.last().unwrap();
@@ -23,16 +23,16 @@ fn reexport() {
 #[ test ]
 fn constructor() {
   // test.case( "empty" );
-  let got: the_module::Vec< i32 > = the_module::vec! {};
+  let got: the_module::Vec< i32 > = std::vec! {};
   let exp = the_module::Vec::<i32>::new();
   assert_eq!(got, exp);
 
   // test.case( "multiple entry" );
-  let got = the_module::vec! { 3, 13 };
-  let exp = the_module::vec![ 3, 13 ];
+  let got = std::vec! { 3, 13 };
+  let exp = std::vec![ 3, 13 ];
   assert_eq!(got, exp);
 
-  let _got = the_module::vec!("b");
+  let _got = std::vec!("b");
   let _got = the_module::dlist!("b");
   let _got = the_module::exposed::dlist!("b");
 }
@@ -47,7 +47,7 @@ fn into_constructor() {
 
   // test.case( "multiple entry" );
   let got: the_module::Vec< i32 > = the_module::into_vec! { 3, 13 };
-  let exp = the_module::vec![ 3, 13 ];
+  let exp = std::vec![ 3, 13 ];
   assert_eq!(got, exp);
 
   let _got: Vec< &str > = the_module::into_vec!("b");

@@ -21,7 +21,7 @@ fn implements_basic() {
   assert!(the_module::implements!( [ 1, 2, 3 ] => Trait1 ));
 
   impl<T: Sized> Trait1 for Vec<T> {}
-  assert!(the_module::implements!( vec!( 1, 2, 3 ) => Trait1 ));
+  assert!(the_module::implements!( std::vec!( 1, 2, 3 ) => Trait1 ));
 
   impl Trait1 for f32 {}
   assert!(the_module::implements!( 13_f32 => Trait1 ));
@@ -58,18 +58,18 @@ fn implements_functions() {
     println!("hello");
   };
 
-  let fn_context = vec![1, 2, 3];
+  let fn_context = std::vec![1, 2, 3];
   let _fn = || {
     println!("hello {fn_context:?}");
   };
 
-  let mut fn_mut_context = vec![1, 2, 3];
+  let mut fn_mut_context = std::vec![1, 2, 3];
   let _fn_mut = || {
     fn_mut_context[0] = 3;
     println!("{fn_mut_context:?}");
   };
 
-  let mut fn_once_context = vec![1, 2, 3];
+  let mut fn_once_context = std::vec![1, 2, 3];
   let _fn_once = || {
     fn_once_context[0] = 3;
     let x = fn_once_context;
@@ -137,18 +137,18 @@ fn fn_experiment() {
     println!("hello");
   };
 
-  let fn_context = vec![1, 2, 3];
+  let fn_context = std::vec![1, 2, 3];
   let _fn = || {
     println!("hello {fn_context:?}");
   };
 
-  let mut fn_mut_context = vec![1, 2, 3];
+  let mut fn_mut_context = std::vec![1, 2, 3];
   let _fn_mut = || {
     fn_mut_context[0] = 3;
     println!("{fn_mut_context:?}");
   };
 
-  let mut fn_once_context = vec![1, 2, 3];
+  let mut fn_once_context = std::vec![1, 2, 3];
   let _fn_once = || {
     fn_once_context[0] = 3;
     let x = fn_once_context;

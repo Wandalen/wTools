@@ -12,7 +12,7 @@ fn is_slice_basic() {
   // the_module::inspect_type_of!( &[ 1, 2, 3 ][ .. ] );
   // the_module::inspect_type_of!( &[ 1, 2, 3 ] );
 
-  assert_eq!(the_module::is_slice!(vec!(1, 2, 3)), false);
+  assert_eq!(the_module::is_slice!(std::vec!(1, 2, 3)), false);
   assert_eq!(the_module::is_slice!(13_f32), false);
   assert_eq!(the_module::is_slice!(true), false);
   let src = false;
