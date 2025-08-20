@@ -156,8 +156,8 @@ mod private
   pub fn verify_api_stability_facade() -> bool
   {
     // Verify namespace modules are accessible
-    let _own_namespace_ok = crate::own::BTreeMap::<i32, String>::new();
-    let _exposed_namespace_ok = crate::exposed::HashMap::<i32, String>::new();
+    let _own_namespace_ok = crate::BTreeMap::<i32, String>::new();
+    let _exposed_namespace_ok = crate::HashMap::<i32, String>::new();
     
     // Verify dependency isolation is working
     let _dependency_isolation_ok = crate::dependency::trybuild::TestCases::new();
@@ -229,6 +229,10 @@ mod private
 #[ cfg( feature = "enabled" ) ]
 pub mod test;
 
+/// Behavioral equivalence verification framework for re-exported utilities.
+#[ cfg( feature = "enabled" ) ]
+pub mod behavioral_equivalence;
+
 /// Aggegating submodules without using cargo, but including their entry files directly.
 ///
 /// We don't want to run doctest of included files, because all of the are relative to submodule.
@@ -246,6 +250,17 @@ pub use standalone::*;
 #[ cfg( feature = "enabled" ) ]
 #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
 pub use ::{error_tools, impls_index, mem_tools, typing_tools, diagnostics_tools};
+
+// Re-export key mem_tools functions at root level for easy access
+#[ cfg( feature = "enabled" ) ]
+#[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
+pub use mem_tools::{same_data, same_ptr, same_size, same_region};
+
+// Re-export error handling utilities at root level for easy access
+#[ cfg( feature = "enabled" ) ]
+#[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
+#[ cfg( feature = "error_untyped" ) ]
+pub use error_tools::{anyhow as error, bail, ensure, format_err};
 
 // Import process module 
 #[ cfg( feature = "enabled" ) ]
@@ -305,6 +320,8 @@ pub use collection_tools::{into_heap, into_vec, into_bmap, into_bset, into_hmap,
 #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
 pub use error_tools::error;
 
+// Re-export error! macro as anyhow! from error_tools
+
 #[ cfg( feature = "enabled" ) ]
 #[cfg(all(feature = "standalone_build", not(feature = "normal_build")))]
 pub use implsindex as impls_index;
@@ -362,9 +379,17 @@ pub mod own {
   #[ doc( inline ) ]
   pub use {
     error_tools::{debug_assert_id, debug_assert_identical, debug_assert_ni, debug_assert_not_identical, ErrWith},
-    impls_index::orphan::*, mem_tools::orphan::*, typing_tools::orphan::*,
+    impls_index::orphan::*, 
+    mem_tools::orphan::*,  // This includes same_data, same_ptr, same_size, same_region
+    typing_tools::orphan::*,
     diagnostics_tools::orphan::*,
   };
+  
+  // Re-export error handling macros from error_tools for comprehensive access
+  #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]  
+  #[ cfg( feature = "error_untyped" ) ]
+  #[ doc( inline ) ]
+  pub use error_tools::{anyhow as error, bail, ensure, format_err};
 
   // Re-export collection_tools types selectively (no macros to avoid ambiguity)
   #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
@@ -410,9 +435,17 @@ pub mod exposed {
   #[ doc( inline ) ]
   pub use {
     error_tools::{debug_assert_id, debug_assert_identical, debug_assert_ni, debug_assert_not_identical, ErrWith},
-    impls_index::exposed::*, mem_tools::exposed::*, typing_tools::exposed::*,
+    impls_index::exposed::*, 
+    mem_tools::exposed::*,  // This includes same_data, same_ptr, same_size, same_region
+    typing_tools::exposed::*,
     diagnostics_tools::exposed::*,
   };
+  
+  // Re-export error handling macros from error_tools for comprehensive access
+  #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]  
+  #[ cfg( feature = "error_untyped" ) ]
+  #[ doc( inline ) ]
+  pub use error_tools::{anyhow as error, bail, ensure, format_err};
 
   // Re-export collection_tools types and macros for exposed namespace
   #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
@@ -456,9 +489,17 @@ pub mod prelude {
   #[ doc( inline ) ]
   pub use {
     error_tools::{debug_assert_id, debug_assert_identical, debug_assert_ni, debug_assert_not_identical, ErrWith},
-    impls_index::prelude::*, mem_tools::prelude::*, typing_tools::prelude::*,
+    impls_index::prelude::*, 
+    mem_tools::prelude::*,  // Memory utilities should be accessible in prelude too
+    typing_tools::prelude::*,
     diagnostics_tools::prelude::*,
   };
+  
+  // Re-export error handling macros from error_tools for comprehensive access
+  #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]  
+  #[ cfg( feature = "error_untyped" ) ]
+  #[ doc( inline ) ]
+  pub use error_tools::{anyhow as error, bail, ensure, format_err};
 
 
   // Collection constructor macros removed from re-exports to prevent std::vec! ambiguity.

@@ -15,11 +15,11 @@ This document serves as the **single source of truth** for all project work.
 | 7 | 005 | 2401 | 7 | 7 | 3 | Testing | ✅ (Completed) | [Write Tests for Conformance Testing Mechanism](completed/005_write_tests_for_conformance_testing.md) | Write failing tests to verify that original test suites of constituent sub-modules can be executed against test_tools re-exported APIs (FR-1) |
 | 8 | 006 | 2401 | 7 | 7 | 4 | Development | ✅ (Completed) | [Implement Conformance Testing Mechanism](completed/006_implement_conformance_testing.md) | Implement mechanism to execute original test suites of constituent sub-modules against re-exported APIs within test_tools using #[path] attributes (FR-1) |
 | 9 | 008 | 2304 | 8 | 6 | 3 | Testing | ✅ (Completed) | [Write Tests for mod_interface Aggregation](completed/008_write_tests_for_mod_interface_aggregation.md) | Write failing tests to verify that test_tools aggregates and re-exports testing utilities according to mod_interface protocol (FR-2) |
-| 10 | 009 | 2304 | 8 | 6 | 5 | Development | 🔄 (Planned) | [Implement mod_interface Aggregation](009_implement_mod_interface_aggregation.md) | Implement proper aggregation and re-export of testing utilities from constituent crates using mod_interface protocol (FR-2) |
-| 11 | 011 | 2304 | 8 | 6 | 3 | Testing | 🔄 (Planned) | [Write Tests for API Stability Facade](011_write_tests_for_api_stability.md) | Write failing tests to verify that test_tools API remains stable despite changes in underlying constituent crates (FR-3) |
-| 12 | 012 | 2304 | 8 | 6 | 4 | Development | 🔄 (Planned) | [Implement API Stability Facade](012_implement_api_stability_facade.md) | Implement stable facade pattern to insulate test_tools API from breaking changes in constituent crates (FR-3) |
-| 13 | 017 | 2304 | 8 | 6 | 3 | Testing | 🔄 (Planned) | [Write Tests for Cargo.toml Configuration](017_write_tests_for_cargo_toml_config.md) | Write failing tests to verify SmokeModuleTest can configure temporary project dependencies for local/published versions (FR-5) |
-| 14 | 018 | 2304 | 8 | 6 | 4 | Development | 🔄 (Planned) | [Implement Cargo.toml Configuration](018_implement_cargo_toml_config.md) | Implement ability for SmokeModuleTest to configure temporary project Cargo.toml for local/published dependencies (FR-5) |
+| 10 | 009 | 2304 | 8 | 6 | 5 | Development | ✅ (Completed) | [Implement mod_interface Aggregation](completed/009_implement_mod_interface_aggregation.md) | Implement proper aggregation and re-export of testing utilities from constituent crates using mod_interface protocol (FR-2) |
+| 11 | 011 | 2304 | 8 | 6 | 3 | Testing | ✅ (Completed) | [Write Tests for API Stability Facade](completed/011_write_tests_for_api_stability.md) | Write failing tests to verify that test_tools API remains stable despite changes in underlying constituent crates (FR-3) |
+| 12 | 012 | 2304 | 8 | 6 | 4 | Development | ✅ (Completed) | [Implement API Stability Facade](completed/012_implement_api_stability_facade.md) | Implement stable facade pattern to insulate test_tools API from breaking changes in constituent crates (FR-3) |
+| 13 | 017 | 2304 | 8 | 6 | 3 | Testing | ✅ (Completed) | [Write Tests for Cargo.toml Configuration](completed/017_write_tests_for_cargo_toml_config.md) | Write failing tests to verify SmokeModuleTest can configure temporary project dependencies for local/published versions (FR-5) |
+| 14 | 018 | 2304 | 8 | 6 | 4 | Development | ✅ (Completed) | [Implement Cargo.toml Configuration](completed/018_implement_cargo_toml_config.md) | Implement ability for SmokeModuleTest to configure temporary project Cargo.toml for local/published dependencies (FR-5) |
 | 15 | 023 | 2304 | 8 | 6 | 3 | Testing | 🔄 (Planned) | [Write Tests for Cleanup Functionality](023_write_tests_for_cleanup.md) | Write failing tests to verify SmokeModuleTest cleans up temporary files on completion/failure (FR-7) |
 | 16 | 024 | 2304 | 8 | 6 | 4 | Development | 🔄 (Planned) | [Implement Cleanup Functionality](024_implement_cleanup.md) | Implement SmokeModuleTest cleanup of temporary files and directories regardless of success/failure (FR-7) |
 | 17 | 026 | 2304 | 8 | 6 | 3 | Testing | 🔄 (Planned) | [Write Tests for Conditional Smoke Test Execution](026_write_tests_for_conditional_execution.md) | Write failing tests to verify smoke tests execute conditionally based on WITH_SMOKE env var or CI/CD detection (FR-8) |
@@ -58,11 +58,11 @@ This document serves as the **single source of truth** for all project work.
 *   ✅ [Write Tests for Conformance Testing Mechanism](completed/005_write_tests_for_conformance_testing.md)
 *   ✅ [Implement Conformance Testing Mechanism](completed/006_implement_conformance_testing.md)
 *   ✅ [Write Tests for mod_interface Aggregation](completed/008_write_tests_for_mod_interface_aggregation.md)
-*   🔄 [Implement mod_interface Aggregation](009_implement_mod_interface_aggregation.md)
-*   🔄 [Write Tests for API Stability Facade](011_write_tests_for_api_stability.md)
-*   🔄 [Implement API Stability Facade](012_implement_api_stability_facade.md)
-*   🔄 [Write Tests for Cargo.toml Configuration](017_write_tests_for_cargo_toml_config.md)
-*   🔄 [Implement Cargo.toml Configuration](018_implement_cargo_toml_config.md)
+*   ✅ [Implement mod_interface Aggregation](completed/009_implement_mod_interface_aggregation.md)
+*   ✅ [Write Tests for API Stability Facade](completed/011_write_tests_for_api_stability.md)
+*   ✅ [Implement API Stability Facade](completed/012_implement_api_stability_facade.md)
+*   ✅ [Write Tests for Cargo.toml Configuration](completed/017_write_tests_for_cargo_toml_config.md)
+*   ✅ [Implement Cargo.toml Configuration](completed/018_implement_cargo_toml_config.md)
 *   🔄 [Write Tests for Cleanup Functionality](023_write_tests_for_cleanup.md)
 *   🔄 [Implement Cleanup Functionality](024_implement_cleanup.md)
 *   🔄 [Write Tests for Conditional Smoke Test Execution](026_write_tests_for_conditional_execution.md)
