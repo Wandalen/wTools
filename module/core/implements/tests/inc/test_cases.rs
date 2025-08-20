@@ -21,7 +21,7 @@ fn implements_basic() {
   assert!(the_module::implements!( [ 1, 2, 3 ] => Trait1 ));
 
   impl<T: Sized> Trait1 for Vec<T> {}
-  assert!(the_module::implements!( vec!( 1, 2, 3 ) => Trait1 ));
+  assert!(the_module::implements!( std::vec!( 1, 2, 3 ) => Trait1 ));
 
   impl Trait1 for f32 {}
   assert!(the_module::implements!( 13_f32 => Trait1 ));
@@ -34,10 +34,10 @@ fn implements_basic() {
   assert!(the_module::implements!( src => Clone ));
 
   let src = Box::new(true);
-  assert_eq!(the_module::implements!( src => Copy ), false);
+  assert!(!the_module::implements!( src => Copy ));
   assert!(the_module::implements!( src => Clone ));
 
-  assert_eq!(the_module::implements!( Box::new( true ) => core::marker::Copy ), false);
+  assert!(!the_module::implements!( Box::new( true ) => core::marker::Copy ));
   assert!(the_module::implements!( Box::new( true ) => core::clone::Clone ));
 }
 
@@ -46,7 +46,7 @@ fn implements_basic() {
 #[ test ]
 fn instance_of_basic() {
   let src = Box::new(true);
-  assert_eq!(the_module::instance_of!( src => Copy ), false);
+  assert!(!the_module::instance_of!( src => Copy ));
   assert!(the_module::instance_of!( src => Clone ));
 }
 
@@ -54,23 +54,24 @@ fn instance_of_basic() {
 
 #[ test ]
 fn implements_functions() {
-  let _f = || {
+  let test_f_simple = || {
     println!("hello");
   };
+  let _ = test_f_simple; // Explicitly ignore to prevent unused warning
 
-  let fn_context = vec![1, 2, 3];
-  let _fn = || {
+  let fn_context = std::vec![1, 2, 3];
+  let test_fn = || {
     println!("hello {fn_context:?}");
   };
 
-  let mut fn_mut_context = vec![1, 2, 3];
-  let _fn_mut = || {
+  let mut fn_mut_context = std::vec![1, 2, 3];
+  let test_fn_mut = || {
     fn_mut_context[0] = 3;
     println!("{fn_mut_context:?}");
   };
 
-  let mut fn_once_context = vec![1, 2, 3];
-  let _fn_once = || {
+  let mut fn_once_context = std::vec![1, 2, 3];
+  let test_fn_once = || {
     fn_once_context[0] = 3;
     let x = fn_once_context;
     println!("{x:?}");
@@ -78,10 +79,10 @@ fn implements_functions() {
 
   /* */
 
-  assert!(the_module::implements!( _fn => Copy ));
-  assert!(the_module::implements!( _fn => Clone ));
-  assert_eq!(the_module::implements!( _fn => core::ops::Not ), false);
-  let _ = _fn;
+  assert!(the_module::implements!( test_fn => Copy ));
+  assert!(the_module::implements!( test_fn => Clone ));
+  assert!(!the_module::implements!( test_fn => core::ops::Not ));
+  let _ = test_fn;
 
   /* */
 
@@ -90,20 +91,20 @@ fn implements_functions() {
   // assert_eq!( the_module::implements!( &function1 => FnMut() -> () ), true );
   // assert_eq!( the_module::implements!( &function1 => FnOnce() -> () ), true );
 
-  // assert_eq!( the_module::implements!( _fn => fn() -> () ), true );
-  assert!(the_module::implements!( _fn => Fn() ));
-  assert!(the_module::implements!( _fn => FnMut() ));
-  assert!(the_module::implements!( _fn => FnOnce() ));
+  // assert_eq!( the_module::implements!( test_fn => fn() -> () ), true );
+  assert!(the_module::implements!( test_fn => Fn() ));
+  assert!(the_module::implements!( test_fn => FnMut() ));
+  assert!(the_module::implements!( test_fn => FnOnce() ));
 
-  // assert_eq!( the_module::implements!( _fn_mut => fn() -> () ), false );
-  // assert_eq!( the_module::implements!( _fn_mut => Fn() -> () ), false );
-  assert!(the_module::implements!( _fn_mut => FnMut() ));
-  assert!(the_module::implements!( _fn_mut => FnOnce() ));
+  // assert_eq!( the_module::implements!( test_fn_mut => fn() -> () ), false );
+  // assert_eq!( the_module::implements!( test_fn_mut => Fn() -> () ), false );
+  assert!(the_module::implements!( test_fn_mut => FnMut() ));
+  assert!(the_module::implements!( test_fn_mut => FnOnce() ));
 
-  // assert_eq!( the_module::implements!( _fn_once => fn() -> () ), false );
-  // assert_eq!( the_module::implements!( _fn_once => Fn() -> () ), false );
-  // assert_eq!( the_module::implements!( _fn_once => FnMut() -> () ), false );
-  assert!(the_module::implements!( _fn_once => FnOnce() ));
+  // assert_eq!( the_module::implements!( test_fn_once => fn() -> () ), false );
+  // assert_eq!( the_module::implements!( test_fn_once => Fn() -> () ), false );
+  // assert_eq!( the_module::implements!( test_fn_once => FnMut() -> () ), false );
+  assert!(the_module::implements!( test_fn_once => FnOnce() ));
 
   // fn is_f < R >                             ( _x : fn() -> R )      -> bool { true }
   // fn is_fn < R, F : Fn() -> R >             ( _x : &F )             -> bool { true }
@@ -133,23 +134,23 @@ fn fn_experiment() {
     true
   }
 
-  let _f = || {
+  let test_closure = || {
     println!("hello");
   };
 
-  let fn_context = vec![1, 2, 3];
-  let _fn = || {
+  let fn_context = std::vec![1, 2, 3];
+  let test_fn_capture = || {
     println!("hello {fn_context:?}");
   };
 
-  let mut fn_mut_context = vec![1, 2, 3];
-  let _fn_mut = || {
+  let mut fn_mut_context = std::vec![1, 2, 3];
+  let test_fn_mut2 = || {
     fn_mut_context[0] = 3;
     println!("{fn_mut_context:?}");
   };
 
-  let mut fn_once_context = vec![1, 2, 3];
-  let _fn_once = || {
+  let mut fn_once_context = std::vec![1, 2, 3];
+  let test_fn_once2 = || {
     fn_once_context[0] = 3;
     let x = fn_once_context;
     println!("{x:?}");
@@ -160,25 +161,25 @@ fn fn_experiment() {
   assert!(is_fn_mut(&function1));
   assert!(is_fn_once(&function1));
 
-  assert!(is_f(_f));
-  assert!(is_fn(&_f));
-  assert!(is_fn_mut(&_f));
-  assert!(is_fn_once(&_f));
+  assert!(is_f(test_closure));
+  assert!(is_fn(&test_closure));
+  assert!(is_fn_mut(&test_closure));
+  assert!(is_fn_once(&test_closure));
 
-  // assert_eq!( is_f( _fn ), true );
-  assert!(is_fn(&_fn));
-  assert!(is_fn_mut(&_fn));
-  assert!(is_fn_once(&_fn));
+  // assert_eq!( is_f( test_fn_capture ), true );
+  assert!(is_fn(&test_fn_capture));
+  assert!(is_fn_mut(&test_fn_capture));
+  assert!(is_fn_once(&test_fn_capture));
 
-  // assert_eq!( is_f( _fn_mut ), true );
-  // assert_eq!( is_fn( &_fn_mut ), true );
-  assert!(is_fn_mut(&_fn_mut));
-  assert!(is_fn_once(&_fn_mut));
+  // assert_eq!( is_f( test_fn_mut2 ), true );
+  // assert_eq!( is_fn( &test_fn_mut2 ), true );
+  assert!(is_fn_mut(&test_fn_mut2));
+  assert!(is_fn_once(&test_fn_mut2));
 
-  // assert_eq!( is_f( _fn_once ), true );
-  // assert_eq!( is_fn( &_fn_once ), true );
-  // assert_eq!( is_fn_mut( &_fn_once ), true );
-  assert!(is_fn_once(&_fn_once));
+  // assert_eq!( is_f( test_fn_once2 ), true );
+  // assert_eq!( is_fn( &test_fn_once2 ), true );
+  // assert_eq!( is_fn_mut( &test_fn_once2 ), true );
+  assert!(is_fn_once(&test_fn_once2));
 
   // type Routine< R > = fn() -> R;
   fn is_f<R>(_x: fn() -> R) -> bool {

@@ -15,7 +15,7 @@ tests_impls! {
       {
         name : "command".into(),
         subjects : vec![],
-        properties : HashMap::new(),
+        properties : std::collections::HashMap::new(),
       },
       parser.parse( [ ".command" ] ).unwrap().commands[ 0 ]
     );
@@ -27,7 +27,7 @@ tests_impls! {
       {
         name : "command".into(),
         subjects : vec![ "subject".into() ],
-        properties : HashMap::new(),
+        properties : std::collections::HashMap::new(),
       },
       parser.parse( [ ".command", "subject" ] ).unwrap().commands[ 0 ]
     );
@@ -39,7 +39,7 @@ tests_impls! {
       {
         name : "command".into(),
         subjects : vec![ "subject1".into(), "subject2".into(), "subject3".into() ],
-        properties : HashMap::new(),
+        properties : std::collections::HashMap::new(),
       },
       parser.parse( [ ".command", "subject1", "subject2", "subject3" ] ).unwrap().commands[ 0 ]
     );
@@ -51,7 +51,7 @@ tests_impls! {
       {
         name : "command".into(),
         subjects : vec![],
-        properties : HashMap::from_iter( [ ( "prop".into(), "value".into() ) ] ),
+        properties : std::collections::HashMap::from_iter( [ ( "prop".into(), "value".into() ) ] ),
       },
       parser.parse( [ ".command", "prop:value" ] ).unwrap().commands[ 0 ]
     );
@@ -63,7 +63,7 @@ tests_impls! {
       {
         name : "command".into(),
         subjects : vec![],
-        properties : HashMap::from_iter(
+        properties : std::collections::HashMap::from_iter(
         [
           ( "prop1".into(), "value1".into() ),
           ( "prop2".into(), "value2".into() ),
@@ -80,7 +80,7 @@ tests_impls! {
       {
         name : "command".into(),
         subjects : vec![ "subject".into() ],
-        properties : HashMap::from_iter( [ ( "prop".into(), "value".into() ) ] ),
+        properties : std::collections::HashMap::from_iter( [ ( "prop".into(), "value".into() ) ] ),
       },
       parser.parse( [ ".command", "subject", "prop:value" ] ).unwrap().commands[ 0 ]
     );
@@ -97,7 +97,7 @@ tests_impls! {
           "subject2".into(),
           "subject3".into(),
         ],
-        properties : HashMap::from_iter(
+        properties : std::collections::HashMap::from_iter(
         [
           ( "prop1".into(), "value1".into() ),
           ( "prop2".into(), "value2".into() ),
@@ -120,7 +120,7 @@ tests_impls! {
       {
         name : "command".into(),
         subjects : vec![ "value with spaces".into() ],
-        properties : HashMap::new(),
+        properties : std::collections::HashMap::new(),
       },
       parser.parse( [ ".command", "value with spaces" ] ).unwrap().commands[ 0 ]
     );
@@ -131,7 +131,7 @@ tests_impls! {
       {
         name : "command".into(),
         subjects : vec![],
-        properties : HashMap::from_iter( [ ( "prop".into(), "value with spaces".into() ) ] ),
+        properties : std::collections::HashMap::from_iter( [ ( "prop".into(), "value with spaces".into() ) ] ),
       },
       parser.parse( [ ".command", "prop:value with spaces" ] ).unwrap().commands[ 0 ]
     );
@@ -142,7 +142,7 @@ tests_impls! {
       {
         name : "command".into(),
         subjects : vec![],
-        properties : HashMap::from_iter( [ ( "prop".into(), "value with spaces".into() ) ] ),
+        properties : std::collections::HashMap::from_iter( [ ( "prop".into(), "value with spaces".into() ) ] ),
       },
       parser.parse( [ ".command", "prop:", "value with spaces" ] ).unwrap().commands[ 0 ]
     );
@@ -153,7 +153,7 @@ tests_impls! {
       {
         name : "command".into(),
         subjects : vec![],
-        properties : HashMap::from_iter( [ ( "prop".into(), "value with spaces".into() ) ] ),
+        properties : std::collections::HashMap::from_iter( [ ( "prop".into(), "value with spaces".into() ) ] ),
       },
       parser.parse( [ ".command", "prop", ":value with spaces" ] ).unwrap().commands[ 0 ]
     );
@@ -164,7 +164,7 @@ tests_impls! {
       {
         name : "command".into(),
         subjects : vec![],
-        properties : HashMap::from_iter( [ ( "prop".into(), "value with spaces".into() ) ] ),
+        properties : std::collections::HashMap::from_iter( [ ( "prop".into(), "value with spaces".into() ) ] ),
       },
       parser.parse( [ ".command", "prop", ":", "value with spaces" ] ).unwrap().commands[ 0 ]
     );
@@ -180,7 +180,7 @@ tests_impls! {
       {
         name : "additional_command".into(),
         subjects : vec![],
-        properties : HashMap::new(),
+        properties : std::collections::HashMap::new(),
       },
       parser.parse( [ ".additional_command" ] ).unwrap().commands[ 0 ]
     );
@@ -191,7 +191,7 @@ tests_impls! {
       {
         name : "command.sub_command".into(),
         subjects : vec![ "subj_ect".into() ],
-        properties : HashMap::new(),
+        properties : std::collections::HashMap::new(),
       },
       parser.parse( [ ".command.sub_command", "subj_ect" ] ).unwrap().commands[ 0 ]
     );
@@ -202,7 +202,7 @@ tests_impls! {
       {
         name : "command".into(),
         subjects : vec![],
-        properties : HashMap::from_iter( [ ( "long_prop".into(), "some-value".into() ) ] ),
+        properties : std::collections::HashMap::from_iter( [ ( "long_prop".into(), "some-value".into() ) ] ),
       },
       parser.parse( [ ".command", "long_prop:some-value" ] ).unwrap().commands[ 0 ]
     );
@@ -218,7 +218,7 @@ tests_impls! {
       {
         name : "command".into(),
         subjects : vec![ "/absolute/path/to/something".into() ],
-        properties : HashMap::new(),
+        properties : std::collections::HashMap::new(),
       },
       parser.parse( [ ".command", "/absolute/path/to/something" ] ).unwrap().commands[ 0 ]
     );
@@ -229,7 +229,7 @@ tests_impls! {
       {
         name : "command".into(),
         subjects : vec![ "./path/to/something".into() ],
-        properties : HashMap::new(),
+        properties : std::collections::HashMap::new(),
       },
       parser.parse( [ ".command", "./path/to/something" ] ).unwrap().commands[ 0 ]
     );
@@ -245,7 +245,7 @@ tests_impls! {
       {
         name : "command".into(),
         subjects : vec![],
-        properties : HashMap::from_iter( [ ( "path".into(), "/absolute/path/to/something".into() ) ] ),
+        properties : std::collections::HashMap::from_iter( [ ( "path".into(), "/absolute/path/to/something".into() ) ] ),
       },
       parser.parse( [ ".command", "path:/absolute/path/to/something" ] ).unwrap().commands[ 0 ]
     );
@@ -256,7 +256,7 @@ tests_impls! {
       {
         name : "command".into(),
         subjects : vec![],
-        properties : HashMap::from_iter( [ ( "path".into(), "./path/to/something".into() ) ] ),
+        properties : std::collections::HashMap::from_iter( [ ( "path".into(), "./path/to/something".into() ) ] ),
       },
       parser.parse( [ ".command", "path:./path/to/something" ] ).unwrap().commands[ 0 ]
     );
@@ -267,7 +267,7 @@ tests_impls! {
       {
         name : "command".into(),
         subjects : vec![],
-        properties : HashMap::from_iter( [ ( "path".into(), "../path/to/something".into() ) ] ),
+        properties : std::collections::HashMap::from_iter( [ ( "path".into(), "../path/to/something".into() ) ] ),
       },
       parser.parse( [ ".command", "path:../path/to/something" ] ).unwrap().commands[ 0 ]
     );
@@ -283,7 +283,7 @@ tests_impls! {
       {
         name : "command".into(),
         subjects : vec![],
-        properties : HashMap::from_iter( [ ( "list".into(), "[1,2,3]".into() ) ] ),
+        properties : std::collections::HashMap::from_iter( [ ( "list".into(), "[1,2,3]".into() ) ] ),
       },
       parser.parse( [ ".command", "list:[1,2,3]" ] ).unwrap().commands[ 0 ]
     );
@@ -299,7 +299,7 @@ tests_impls! {
       {
         name : "command".into(),
         subjects : vec![ "subject with spaces".into() ],
-        properties : HashMap::from_iter( [ ( "prop".into(), "property with spaces".into() ) ] ),
+        properties : std::collections::HashMap::from_iter( [ ( "prop".into(), "property with spaces".into() ) ] ),
       },
       parser.parse( [ ".command", "subject with spaces", "prop:property with spaces" ] ).unwrap().commands[ 0 ]
     );
@@ -311,7 +311,7 @@ tests_impls! {
       {
         name : "command".into(),
         subjects : vec![ "\\.command".into() ],
-        properties : HashMap::from_iter( [ ( "prop".into(), ".command".into() ) ] ),
+        properties : std::collections::HashMap::from_iter( [ ( "prop".into(), ".command".into() ) ] ),
       },
       parser.parse( [ ".command", "\\.command", "prop:.command" ] ).unwrap().commands[ 0 ]
     );
@@ -323,7 +323,7 @@ tests_impls! {
       {
         name : "command".into(),
         subjects : vec![ "' queted ' \\ value".into() ],
-        properties : HashMap::from_iter( [ ( "prop".into(), "some \"quetes\" ' \\ in string".into() ) ] ),
+        properties : std::collections::HashMap::from_iter( [ ( "prop".into(), "some \"quetes\" ' \\ in string".into() ) ] ),
       },
       parser.parse( [ ".command", "\' queted \' \\ value", "prop:some \"quetes\" ' \\ in string" ] ).unwrap().commands[ 0 ]
     );
@@ -339,7 +339,7 @@ tests_impls! {
       {
         name : ".".into(),
         subjects : vec![],
-        properties : HashMap::new(),
+        properties : std::collections::HashMap::new(),
       },
       parser.parse( [ "." ] ).unwrap().commands[ 0 ]
     );
@@ -350,7 +350,7 @@ tests_impls! {
       {
         name : "command.".into(),
         subjects : vec![],
-        properties : HashMap::new(),
+        properties : std::collections::HashMap::new(),
       },
       parser.parse( [ ".command." ] ).unwrap().commands[ 0 ]
     );
@@ -361,7 +361,7 @@ tests_impls! {
       {
         name : ".?".into(),
         subjects : vec![],
-        properties : HashMap::new(),
+        properties : std::collections::HashMap::new(),
       },
       parser.parse( [ ".?" ] ).unwrap().commands[ 0 ]
     );
@@ -372,7 +372,7 @@ tests_impls! {
       {
         name : "command.?".into(),
         subjects : vec![],
-        properties : HashMap::new(),
+        properties : std::collections::HashMap::new(),
       },
       parser.parse( [ ".command.?" ] ).unwrap().commands[ 0 ]
     );

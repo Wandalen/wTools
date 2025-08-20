@@ -17,7 +17,7 @@ tests_impls! {
         {
           name : "command".into(),
           subjects : vec![],
-          properties : HashMap::new(),
+          properties : std::collections::HashMap::new(),
         },
       ]},
       parser.parse( [ ".command" ] ).unwrap()
@@ -31,19 +31,19 @@ tests_impls! {
         {
           name : "command1".into(),
           subjects : vec![],
-          properties : HashMap::new(),
+          properties : std::collections::HashMap::new(),
         },
         ParsedCommand
         {
           name : "command2".into(),
           subjects : vec![],
-          properties : HashMap::new(),
+          properties : std::collections::HashMap::new(),
         },
         ParsedCommand
         {
           name : "command3".into(),
           subjects : vec![],
-          properties : HashMap::new(),
+          properties : std::collections::HashMap::new(),
         }
       ]},
       parser.parse( [ ".command1", ".command2", ".command3" ] ).unwrap()

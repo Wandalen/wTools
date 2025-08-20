@@ -5,13 +5,14 @@ use criterion::{criterion_group, criterion_main, Criterion};
 use wca::grammar::Dictionary;
 use wca::{CommandsAggregator, Type};
 
+#[allow(clippy::needless_pass_by_value)]
 fn init(count: usize, command: wca::grammar::Command) -> CommandsAggregator {
   let mut dic_former = Dictionary::former();
   for i in 0..count {
     let name = format!("command_{i}");
 
     let mut command = command.clone();
-    command.phrase = name.clone();
+    command.phrase.clone_from(&name);
 
     dic_former = dic_former.command(command);
   }
@@ -76,6 +77,7 @@ fn initialize_commands_with_properties(count: usize) -> CommandsAggregator {
   )
 }
 
+#[allow(clippy::needless_pass_by_value)]
 fn run_commands<S: AsRef<str>>(ca: CommandsAggregator, command: S) {
   ca.perform(command.as_ref()).unwrap();
 }

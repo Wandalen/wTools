@@ -68,6 +68,15 @@ pub mod suite;
 #[ cfg( feature = "markdown_reports" ) ]
 pub mod reporting;
 
+#[ cfg( feature = "markdown_reports" ) ]
+pub mod update_chain;
+
+#[ cfg( feature = "markdown_reports" ) ]
+pub mod templates;
+
+#[ cfg( feature = "enabled" ) ]
+pub mod validation;
+
 #[ cfg( feature = "data_generators" ) ]
 pub mod generators;
 
@@ -118,6 +127,14 @@ pub mod prelude
 
   #[ cfg( feature = "markdown_reports" ) ]
   pub use crate::reporting::*;
+
+  #[ cfg( feature = "markdown_reports" ) ]
+  pub use crate::update_chain::*;
+
+  #[ cfg( feature = "markdown_reports" ) ]
+  pub use crate::templates::*;
+
+  pub use crate::validation::*;
 
   #[ cfg( feature = "data_generators" ) ]
   pub use crate::generators::*;

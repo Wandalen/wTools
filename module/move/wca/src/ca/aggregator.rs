@@ -103,7 +103,7 @@ mod private
   ///
   /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
   /// let ca = CommandsAggregator::former()
-  /// .command( "echo" )
+  /// .command( "cmd.echo" )
   ///   .hint( "prints all subjects and properties" )
   ///   .subject().hint( "argument" ).kind( Type::String ).optional( false ).end()
   ///   .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( false ).end()
@@ -111,7 +111,7 @@ mod private
   ///   .end()
   /// .perform();
   ///
-  /// ca.perform( ".echo something" )?;
+  /// ca.perform( ".cmd." )?;
   /// # Ok( () ) }
   /// ```
   #[ derive( Debug ) ]
@@ -227,11 +227,14 @@ mod private
     ///
     /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
     /// let ca = CommandsAggregator::former()
-    /// // ...
+    /// .command( "cmd.test" )
+    ///   .hint( "test command" )
+    ///   .routine( || println!( "test" ) )
+    ///   .end()
     /// .help( | grammar, command | format!( "Replaced help content" ) )
     /// .perform();
     ///
-    /// ca.perform( ".help" )?;
+    /// ca.perform( ".cmd." )?;
     /// # Ok( () ) }
     /// ```
     #[ must_use ]
@@ -252,12 +255,15 @@ mod private
     ///
     /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
     /// let ca = CommandsAggregator::former()
-    /// // ...
+    /// .command( "cmd.test" )
+    ///   .hint( "test command" )
+    ///   .routine( || println!( "test" ) )
+    ///   .end()
     /// .callback( | _input, _program | println!( "Program is valid" ) )
     /// .perform();
     ///
     /// // prints the "Program is valid" and after executes the program
-    /// ca.perform( ".help" )?;
+    /// ca.perform( ".cmd." )?;
     /// # Ok( () ) }
     /// ```
     #[ must_use ]

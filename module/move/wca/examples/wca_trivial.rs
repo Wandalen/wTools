@@ -4,6 +4,7 @@
 
 use wca::{CommandsAggregator, Order, Type, VerifiedCommand};
 
+#[allow(clippy::needless_pass_by_value)]
 fn f1(o: VerifiedCommand) {
   println!("= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.props);
 }

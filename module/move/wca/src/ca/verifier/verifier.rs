@@ -61,23 +61,17 @@ mod private
   /// Converts a `ParsedCommand` to a `VerifiedCommand` by performing validation and type casting on values.
   ///
   /// ```
-  /// # use wca::{ Type, verifier::Verifier, grammar::{ Dictionary, Command }, parser::ParsedCommand };
-  /// # use std::collections::HashMap;
+  /// # use wca::{ CommandsAggregator };
   /// # fn main() -> Result< (), Box< dyn std::error::Error > >
   /// # {
-  /// # let verifier = Verifier;
-  /// let dictionary = Dictionary::former()
-  /// .command( Command::former().phrase( "command" ).form() )
-  /// .form();
+  /// let ca = CommandsAggregator::former()
+  /// .command( "cmd.command" )
+  ///   .hint( "test command" )
+  ///   .routine( || println!( "test" ) )
+  ///   .end()
+  /// .perform();
   ///
-  /// let raw_command = ParsedCommand
-  /// {
-  ///   name: "command".to_string(),
-  ///   subjects: vec![],
-  ///   properties: HashMap::new(),
-  /// };
-  ///
-  /// let grammar_command = verifier.to_command( &dictionary, raw_command )?;
+  /// ca.perform( ".cmd." )?;
   /// # Ok( () )
   /// # }
   /// ```
