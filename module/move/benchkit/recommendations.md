@@ -80,15 +80,20 @@ find examples/ -name "*.rs" -exec basename {} .rs \; | xargs -I {} cargo run --e
 
 This table shows the most frequently used metrics across different use cases:
 
-| Metric Type | What It Measures | When to Use | Typical Range |
-|-------------|------------------|-------------|---------------|
-| **Execution Time** | Function/operation duration | Algorithm comparison, optimization validation | μs to ms |
-| **Throughput** | Operations per second | API performance, data processing rates | ops/sec |
-| **Memory Usage** | Peak memory consumption | Memory optimization, resource planning | KB to MB |
-| **Cache Performance** | Hit/miss ratios | Memory access optimization | % hit rate |
-| **Latency** | Response time under load | System responsiveness, user experience | ms |
-| **CPU Utilization** | Processor usage percentage | Resource efficiency, scaling analysis | % usage |
-| **I/O Performance** | Read/write operations per second | Storage optimization, database tuning | IOPS |
+```rust
+// What is measured: Core performance characteristics across different system components
+// How to measure: cargo bench --features enabled,metrics_collection
+```
+
+| Metric Type | What It Measures | When to Use | Typical Range | Code Example |
+|-------------|------------------|-------------|---------------|--------------|
+| **Execution Time** | Function/operation duration | Algorithm comparison, optimization validation | μs to ms | `bench("fn_name", \|\| your_function())` |
+| **Throughput** | Operations per second | API performance, data processing rates | ops/sec | `bench("throughput", \|\| process_batch())` |
+| **Memory Usage** | Peak memory consumption | Memory optimization, resource planning | KB to MB | `bench_with_memory("memory", \|\| allocate_data())` |
+| **Cache Performance** | Hit/miss ratios | Memory access optimization | % hit rate | `bench_cache("cache", \|\| cache_operation())` |
+| **Latency** | Response time under load | System responsiveness, user experience | ms | `bench_latency("endpoint", \|\| api_call())` |
+| **CPU Utilization** | Processor usage percentage | Resource efficiency, scaling analysis | % usage | `bench_cpu("cpu_task", \|\| cpu_intensive())` |
+| **I/O Performance** | Read/write operations per second | Storage optimization, database tuning | IOPS | `bench_io("file_ops", \|\| file_operations())` |
 
 ### Measurement Context Templates
 
@@ -275,7 +280,8 @@ for ( name, algorithm ) in algorithms
 This produces a clear performance comparison table:
 
 ```rust
-// Measuring: Sorting algorithms on Vec< i32 > with 10,000 elements
+// What is measured: Sorting algorithms on Vec< i32 > with 10,000 elements
+// How to measure: cargo bench --bench sorting_algorithms --features enabled
 ```
 
 | Algorithm | Average Time | Std Dev | Relative Performance |
@@ -413,7 +419,8 @@ let template = PerformanceReport::new()
 **Example of Well-Documented Results:**
 
 ```rust
-// Measuring: fn parse_json( input: &str ) -> Result< JsonValue >
+// What is measured: fn parse_json( input: &str ) -> Result< JsonValue >
+// How to measure: cargo bench --bench json_parsing --features simd_optimizations
 ```
 
 **Context**: Performance comparison after implementing SIMD optimizations for JSON parsing.
@@ -427,7 +434,8 @@ let template = PerformanceReport::new()
 **Key Findings**: SIMD optimizations provide increasing benefits with larger inputs.
 
 ```bash
-# Measuring: cargo bench --features simd_optimizations
+# What is measured: Overall JSON parsing benchmark suite
+# How to measure: cargo bench --features simd_optimizations
 ```
 
 **Environment**: Intel i7-12700K, 32GB RAM, Ubuntu 22.04
@@ -611,7 +619,8 @@ fn environment_specific_benchmarks() {
 The Coefficient of Variation (CV) is the most critical metric for benchmark reliability. It measures the relative variability of your measurements and directly impacts the trustworthiness of performance conclusions.
 
 ```rust
-// Measuring: CV reliability analysis for benchmark results
+// What is measured: Coefficient of Variation (CV) reliability thresholds for benchmark results
+// How to measure: cargo bench --features cv_analysis && check CV column in output
 ```
 
 | CV Range | Reliability | Action Required | Use Case |
@@ -631,7 +640,8 @@ Based on real-world improvements achieved in production systems, here are the mo
 **Problem**: High CV (77-132%) due to thread scheduling variability and thread pool initialization.
 
 ```rust
-// Measuring: Parallel processing with thread pool stabilization
+// What is measured: Thread pool performance with/without stabilization warmup
+// How to measure: cargo bench --bench parallel_processing --features thread_pool
 ```
 
 ❌ **Before**: Unstable thread pool causes high CV
@@ -665,7 +675,8 @@ suite.benchmark( "parallel_stable", move ||
 **Problem**: High CV (80.4%) from CPU turbo boost and frequency scaling variability.
 
 ```rust
-// Measuring: CPU-intensive operations with frequency stabilization
+// What is measured: CPU frequency scaling impact on timing consistency  
+// How to measure: cargo bench --bench cpu_intensive --features cpu_stabilization
 ```
 
 ❌ **Before**: CPU frequency scaling causes inconsistent timing
@@ -696,7 +707,8 @@ suite.benchmark( "cpu_stable", move ||
 **Problem**: High CV (220%) from cold cache effects and initialization overhead.
 
 ```rust
-// Measuring: Memory operations with cache warmup
+// What is measured: Cache warmup effectiveness on memory operation timing
+// How to measure: cargo bench --bench memory_operations --features cache_warmup
 ```
 
 ❌ **Before**: Cold cache and initialization overhead
@@ -739,7 +751,8 @@ suite.benchmark( "memory_warm", move ||
 Use this systematic approach to diagnose and fix high CV values:
 
 ```rust
-// Measuring: Systematic CV improvement analysis
+// What is measured: CV diagnostic workflow effectiveness across benchmark types
+// How to measure: cargo bench --features cv_diagnostics && review CV improvement reports
 ```
 
 **Step 1: CV Analysis**
@@ -817,7 +830,8 @@ fn improve_benchmark_cv( benchmark_name: &str )
 Different environments require different CV targets based on their use cases:
 
 ```rust
-// Measuring: CV targets across development environments
+// What is measured: CV target thresholds for different development environments
+// How to measure: BENCHMARK_ENV=production cargo bench && verify CV targets met
 ```
 
 | Environment | Target CV | Sample Count | Primary Focus |
@@ -854,7 +868,8 @@ let production_suite = BenchmarkSuite::new( "production" )
 
 #### Operation-Specific Timing Patterns
 ```rust
-// Measuring: Tailored timing strategies for different operation types
+// What is measured: Operation-specific timing optimization effectiveness
+// How to measure: cargo bench --bench operation_types --features timing_strategies
 ```
 
 **For I/O Operations:**
@@ -892,7 +907,8 @@ suite.benchmark( "algorithm_comparison", move ||
 Track your improvement progress with these metrics:
 
 ```rust
-// Measuring: CV improvement tracking across optimization cycles
+// What is measured: CV improvement effectiveness across different optimization techniques
+// How to measure: cargo bench --features cv_tracking && compare before/after CV values
 ```
 
 | Improvement Type | Expected CV Reduction | Success Threshold |
@@ -907,7 +923,8 @@ Track your improvement progress with these metrics:
 Some operations are inherently variable. In these cases:
 
 ```rust
-// Measuring: Inherently variable operations requiring special handling
+// What is measured: Inherently variable operations that cannot be stabilized
+// How to measure: cargo bench --bench variable_operations && document variability sources
 ```
 
 **Document the Variability:**
@@ -1036,7 +1053,8 @@ if analysis.is_reliable() {
 ```
 ## Performance Results
 
-// Measuring: Cache-friendly optimization algorithms on dataset of 50K records
+// What is measured: Cache-friendly optimization algorithms on dataset of 50K records
+// How to measure: cargo bench --bench cache_optimizations --features large_datasets
 
 Performance comparison after implementing cache-friendly optimizations:
 
