@@ -34,7 +34,7 @@ mod smoke_module_test_creation_tests
     assert!(project_path.join("src/main.rs").exists(), "main.rs should exist");
     
     // Clean up
-    smoke_test.clean(true).unwrap();
+    smoke_test.clean(true).expect("cleanup should succeed");
   }
 
   /// Test that temporary projects are isolated from the main project

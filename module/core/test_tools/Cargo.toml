@@ -84,6 +84,8 @@ standalone_build = [
   "standalone_mem_tools",
   "standalone_typing_tools",
   "standalone_diagnostics_tools",
+  "process_tools",
+  "process_environment_is_cicd",
 ]
 standalone_error_tools = [ "dep:anyhow", "dep:thiserror", "error_typed", "error_untyped" ]
 standalone_collection_tools = [ "dep:hashbrown", "collection_constructors", "collection_into_constructors" ]

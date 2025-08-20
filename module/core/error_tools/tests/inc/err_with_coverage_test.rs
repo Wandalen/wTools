@@ -75,7 +75,9 @@ fn test_result_with_report_alias() {
   type MyResult = ResultWithReport<String, io::Error>;
   let ok_val: MyResult = core::result::Result::Ok("30".to_string());
   assert!(ok_val.is_ok());
-  assert_eq!(ok_val.unwrap(), "30".to_string());
+  if let Ok(val) = ok_val {
+    assert_eq!(val, "30".to_string());
+  }
 
   let err_val: MyResult =
     core::result::Result::Err(("report".to_string(), io::Error::new(io::ErrorKind::BrokenPipe, "pipe broken")));

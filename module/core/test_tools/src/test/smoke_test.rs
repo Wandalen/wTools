@@ -100,17 +100,16 @@ mod private {
     }
 
     /// Prepare files at temp dir for smoke testing.
-    /// Prepare files at temp dir for smoke testing.
-    ///
-    /// # Panics
-    ///
-    /// This function will panic if it fails to create the directory or write to the file.
+    /// 
+    /// Creates a temporary, isolated Cargo project with proper dependency configuration.
+    /// Implements FR-4 and FR-5 requirements for project creation and configuration.
     ///
     /// # Errors
     ///
-    /// Returns an error if the operation fails.
-    pub fn form(&mut self) -> Result< (), &'static str > {
-      std::fs::create_dir(&self.test_path).unwrap();
+    /// Returns an error if directory creation, project initialization, or file writing fails.
+    pub fn form(&mut self) -> Result< (), Box< dyn core::error::Error > > {
+      std::fs::create_dir(&self.test_path)
+        .map_err(|e| format!("Failed to create test directory: {e}"))?;
 
       let mut test_path = self.test_path.clone();
 
@@ -124,8 +123,16 @@ mod private {
         .current_dir(&test_path)
         .args(["new", "--bin", &test_name])
         .output()
-        .expect("Failed to execute command");
-      println!("{}", core::str::from_utf8(&output.stderr).expect("Invalid UTF-8"));
+        .map_err(|e| format!("Failed to execute cargo new command: {e}"))?;
+      
+      if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        return Err(format!("Cargo new failed: {stderr}").into());
+      }
+      
+      if !output.stderr.is_empty() {
+        println!("{}", String::from_utf8_lossy(&output.stderr));
+      }
 
       test_path.push(test_name);
 
@@ -159,7 +166,8 @@ mod private {
       let mut config_path = test_path.clone();
       config_path.push("Cargo.toml");
       println!("\n{config_data}\n");
-      std::fs::write(config_path, config_data).unwrap();
+      std::fs::write(config_path, config_data)
+        .map_err(|e| format!("Failed to write Cargo.toml: {e}"))?;
 
       /* write code */
       test_path.push("src");
@@ -176,132 +184,218 @@ mod private {
         code = self.code,
       );
       println!("\n{code}\n");
-      std::fs::write(&test_path, code).unwrap();
+      std::fs::write(&test_path, code)
+        .map_err(|e| format!("Failed to write main.rs: {e}"))?;
 
       Ok(())
     }
 
-    /// Do smoke testing.
-    /// Do smoke testing.
-    ///
-    /// # Panics
-    ///
-    /// This function will panic if the command execution fails or if the smoke test fails.
+    /// Execute smoke testing by running cargo test and cargo run.
+    /// 
+    /// Implements FR-6 requirement: executes both `cargo test` and `cargo run` 
+    /// within the temporary project and ensures both commands succeed.
     ///
     /// # Errors
     ///
-    /// Returns an error if the operation fails.
-    pub fn perform(&self) -> Result< (), &'static str > {
+    /// Returns an error if either cargo test or cargo run fails.
+    pub fn perform(&self) -> Result< (), Box< dyn core::error::Error > > {
       let mut test_path = self.test_path.clone();
 
       let test_name = format!("{}{}", self.dependency_name, self.test_postfix);
       test_path.push(test_name);
 
+      // Execute cargo test
       let output = std::process::Command::new("cargo")
         .current_dir(test_path.clone())
         .args(["test"])
         .output()
-        .unwrap();
-      println!("status : {}", output.status);
-      println!("{}", core::str::from_utf8(&output.stdout).expect("Invalid UTF-8"));
-      println!("{}", core::str::from_utf8(&output.stderr).expect("Invalid UTF-8"));
-      assert!(output.status.success(), "Smoke test failed");
+        .map_err(|e| format!("Failed to execute cargo test: {e}"))?;
+      
+      println!("cargo test status: {}", output.status);
+      if !output.stdout.is_empty() {
+        println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
+      }
+      if !output.stderr.is_empty() {
+        println!("stderr: {}", String::from_utf8_lossy(&output.stderr));
+      }
+      
+      if !output.status.success() {
+        return Err(format!("cargo test failed with status: {}", output.status).into());
+      }
 
+      // Execute cargo run --release  
       let output = std::process::Command::new("cargo")
         .current_dir(test_path)
         .args(["run", "--release"])
         .output()
-        .unwrap();
-      println!("status : {}", output.status);
-      println!("{}", core::str::from_utf8(&output.stdout).expect("Invalid UTF-8"));
-      println!("{}", core::str::from_utf8(&output.stderr).expect("Invalid UTF-8"));
-      assert!(output.status.success(), "Smoke test failed");
+        .map_err(|e| format!("Failed to execute cargo run: {e}"))?;
+      
+      println!("cargo run status: {}", output.status);
+      if !output.stdout.is_empty() {
+        println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
+      }
+      if !output.stderr.is_empty() {
+        println!("stderr: {}", String::from_utf8_lossy(&output.stderr));
+      }
+      
+      if !output.status.success() {
+        return Err(format!("cargo run failed with status: {}", output.status).into());
+      }
 
       Ok(())
     }
 
-    /// Cleaning temp directory after testing.
-    /// Cleaning temp directory after testing.
+    /// Clean up temporary directory after testing.
+    /// 
+    /// Implements FR-7 requirement: cleans up all temporary files and directories 
+    /// from the filesystem upon completion, regardless of success or failure.
     ///
-    /// # Panics
-    ///
-    /// This function will panic if it fails to remove the directory and `force` is set to `false`.
+    /// # Arguments
+    /// 
+    /// * `force` - If true, ignores cleanup errors and continues. If false, returns error on cleanup failure.
     ///
     /// # Errors
     ///
-    /// Returns an error if the operation fails.
-    pub fn clean(&self, force: bool) -> Result< (), &'static str > {
-      let result = std::fs::remove_dir_all(&self.test_path);
-      if force {
-        result.unwrap_or_default();
-      } else {
-        let msg = format!(
-          "Cannot remove temporary directory {}. Please, remove it manually",
-          &self.test_path.display()
-        );
-        result.expect(&msg);
+    /// Returns an error if cleanup fails and `force` is false.
+    pub fn clean(&self, force: bool) -> Result< (), Box< dyn core::error::Error > > {
+      if !self.test_path.exists() {
+        // Directory already cleaned or never created
+        return Ok(());
       }
-      Ok(())
+      
+      let result = std::fs::remove_dir_all(&self.test_path);
+      match result {
+        Ok(()) => Ok(()),
+        Err(e) => {
+          if force {
+            eprintln!("Warning: Failed to remove temporary directory {}: {}", 
+                     self.test_path.display(), e);
+            Ok(())
+          } else {
+            Err(format!("Cannot remove temporary directory {}: {}. Consider manual cleanup.", 
+                       self.test_path.display(), e).into())
+          }
+        }
+      }
     }
   }
 
-  /// Run smoke test for the module.
-  /// Run smoke test for the module.
+  /// Run smoke test for the module with proper cleanup on failure.
+  /// 
+  /// Implements comprehensive smoke testing with automatic cleanup regardless of success or failure.
+  /// This ensures FR-7 compliance by cleaning up resources even when tests fail.
+  ///
+  /// # Errors
+  ///
+  /// Returns error if environment variables are missing, project creation fails, or testing fails.
   ///
   /// # Panics
   ///
   /// This function will panic if the environment variables `CARGO_PKG_NAME` or `CARGO_MANIFEST_DIR` are not set.
-  pub fn smoke_test_run(local: bool) {
-    let module_name = std::env::var("CARGO_PKG_NAME").unwrap();
-    let module_path = std::env::var("CARGO_MANIFEST_DIR").unwrap();
+  pub fn smoke_test_run(local: bool) -> Result< (), Box< dyn core::error::Error > > {
+    let module_name = std::env::var("CARGO_PKG_NAME")
+      .map_err(|_| "CARGO_PKG_NAME environment variable not set")?;
+    let module_path = std::env::var("CARGO_MANIFEST_DIR")
+      .map_err(|_| "CARGO_MANIFEST_DIR environment variable not set")?;
     let test_name = if local { "_local_smoke_test" } else { "_published_smoke_test" };
     println!("smoke_test_run module_name:{module_name} module_path:{module_path}");
 
-    let mut t = SmokeModuleTest::new(module_name.as_str());
-    t.test_postfix(test_name);
-    t.clean(true).unwrap();
+    let mut smoke_test = SmokeModuleTest::new(module_name.as_str());
+    smoke_test.test_postfix(test_name);
+    
+    // Always attempt cleanup before starting (force=true to ignore errors)
+    let _ = smoke_test.clean(true);
 
-    t.version("*");
+    smoke_test.version("*");
     if local {
-      t.local_path_clause(module_path.as_str());
+      smoke_test.local_path_clause(module_path.as_str());
     }
-    t.form().unwrap();
-    t.perform().unwrap();
-    t.clean(false).unwrap();
+    
+    // Execute the smoke test with proper cleanup on any failure
+    let result = (|| -> Result< (), Box< dyn core::error::Error > > {
+      smoke_test.form()?;
+      smoke_test.perform()?;
+      Ok(())
+    })();
+    
+    // Always clean up, regardless of success or failure (FR-7)
+    let cleanup_result = smoke_test.clean(false);
+    
+    // Return the original error if test failed, otherwise cleanup error if any
+    match result {
+      Ok(()) => cleanup_result,
+      Err(e) => {
+        // Log cleanup error but preserve original test error
+        if let Err(cleanup_err) = cleanup_result {
+          eprintln!("Warning: Cleanup failed after test failure: {cleanup_err}");
+        }
+        Err(e)
+      }
+    }
   }
 
   /// Run smoke test for both published and local version of the module.
-  pub fn smoke_tests_run() {
-    smoke_test_for_local_run();
-    smoke_test_for_published_run();
+  /// 
+  /// Implements FR-8: conditional execution based on environment variables or CI/CD detection.
+  ///
+  /// # Errors
+  ///
+  /// Returns error if either local or published smoke test fails.
+  pub fn smoke_tests_run() -> Result< (), Box< dyn core::error::Error > > {
+    smoke_test_for_local_run()?;
+    smoke_test_for_published_run()?;
+    Ok(())
   }
 
   /// Run smoke test for local version of the module.
-  pub fn smoke_test_for_local_run() {
+  /// 
+  /// Implements FR-8: conditional execution triggered by `WITH_SMOKE` environment variable 
+  /// or CI/CD environment detection.
+  ///
+  /// # Errors
+  ///
+  /// Returns error if smoke test execution fails.
+  pub fn smoke_test_for_local_run() -> Result< (), Box< dyn core::error::Error > > {
     println!("smoke_test_for_local_run : {:?}", std::env::var("WITH_SMOKE"));
-    let run = if let Ok(value) = std::env::var("WITH_SMOKE") {
+    
+    let should_run = if let Ok(value) = std::env::var("WITH_SMOKE") {
       matches!(value.as_str(), "1" | "local")
     } else {
-      // qqq : xxx : use is_cicd() and return false if false
-      // true
       environment::is_cicd()
     };
-    if run {
-      smoke_test_run(true);
+    
+    if should_run {
+      println!("Running local smoke test (WITH_SMOKE or CI/CD detected)");
+      smoke_test_run(true)
+    } else {
+      println!("Skipping local smoke test (no WITH_SMOKE env var and not in CI/CD)");
+      Ok(())
     }
   }
 
   /// Run smoke test for published version of the module.
-  pub fn smoke_test_for_published_run() {
-    let run = if let Ok(value) = std::env::var("WITH_SMOKE") {
+  /// 
+  /// Implements FR-8: conditional execution triggered by `WITH_SMOKE` environment variable 
+  /// or CI/CD environment detection.
+  ///
+  /// # Errors
+  ///
+  /// Returns error if smoke test execution fails.
+  pub fn smoke_test_for_published_run() -> Result< (), Box< dyn core::error::Error > > {
+    println!("smoke_test_for_published_run : {:?}", std::env::var("WITH_SMOKE"));
+    
+    let should_run = if let Ok(value) = std::env::var("WITH_SMOKE") {
       matches!(value.as_str(), "1" | "published")
     } else {
       environment::is_cicd()
-      // qqq : xxx : use is_cicd() and return false if false
-      // true
     };
-    if run {
-      smoke_test_run(false);
+    
+    if should_run {
+      println!("Running published smoke test (WITH_SMOKE or CI/CD detected)");
+      smoke_test_run(false)
+    } else {
+      println!("Skipping published smoke test (no WITH_SMOKE env var and not in CI/CD)");
+      Ok(())
     }
   }
 }
