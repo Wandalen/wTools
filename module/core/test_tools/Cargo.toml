@@ -36,6 +36,7 @@ default = [
   "normal_build",
   "process_tools",
   "process_environment_is_cicd",
+  "integration",
 ]
 full = [
   "default"
@@ -62,6 +63,7 @@ use_alloc = [
 ]
 enabled = [
 ]
+integration = []
 # nightly = [ "typing_tools/nightly" ]
 
 normal_build = [
