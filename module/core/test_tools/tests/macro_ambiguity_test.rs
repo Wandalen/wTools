@@ -13,18 +13,18 @@ fn test_qualified_std_vec_usage()
 #[test]  
 fn test_collection_tools_direct_access()
 {
-  // All collection constructors accessible via collection_tools directly
-  let _heap = collection_tools::heap![ 1, 2, 3 ];
-  let _vec = collection_tools::vec![ 1, 2, 3 ];
-  let _bmap = collection_tools::bmap!{ 1 => "one", 2 => "two" };
-  let _hset = collection_tools::hset![ 1, 2, 3 ];
+  // All collection constructors accessible via test_tools directly
+  let _heap = test_tools::heap![ 1, 2, 3 ];
+  let _vec = test_tools::vector_from![ 1, 2, 3 ];
+  let _bmap = test_tools::bmap!{ 1 => "one", 2 => "two" };
+  let _hset = test_tools::hset![ 1, 2, 3 ];
 }
 
 #[test]
 fn test_aliased_import_pattern()
 {
   // RECOMMENDED: Use aliases to avoid ambiguity
-  use collection_tools::{vec as cvec, heap};
+  use test_tools::{vector_from as cvec, heap};
   
   let _std_vec = std::vec![ 1, 2, 3 ];    // Use std explicitly
   let _collection_vec = cvec![ 1, 2, 3 ]; // Use aliased collection macro

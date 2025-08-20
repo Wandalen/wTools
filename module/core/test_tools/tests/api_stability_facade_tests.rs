@@ -75,8 +75,8 @@ mod api_stability_facade_tests
     let value2 = 42;
     
     // These should remain stable regardless of underlying implementation changes
-    test_tools::debug_assert_identical!(value1, value2);
-    test_tools::debug_assert_id!(value1, value2);
+    test_tools::debug_assert_identical(value1, value2);
+    test_tools::debug_assert_id(value1, value2);
     
     // Test error handling stability
     // This tests that ErrWith trait remains accessible through stable facade
@@ -205,7 +205,7 @@ mod api_stability_facade_tests
     
     // Test that diagnostic tools work regardless of internal diagnostics_tools changes
     let value = 42;
-    debug_assert_identical!(value, 42);
+    test_tools::debug_assert_identical(value, 42);
     
     // Implementation isolation verified through successful API access above
   }
@@ -228,7 +228,7 @@ mod api_stability_facade_tests
       let _set = test_tools::HashSet::<String>::new();
       
       // Diagnostic utilities available
-      test_tools::debug_assert_identical!(42, 42);
+      test_tools::debug_assert_identical(42, 42);
       
       true
     };

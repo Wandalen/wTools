@@ -136,14 +136,14 @@ mod behavioral_equivalence_verification_tests
       let data3: Vec<i32> = (size..size*2).collect();
 
       // Test same_size equivalence for various sizes
-      let direct_same_size = mem_tools::same_size(&data1, &data2);
+      let direct_same_size = test_tools::same_size(&data1, &data2);
       let reexport_same_size = test_tools::same_size(&data1, &data2);
       assert_eq!(direct_same_size, reexport_same_size, 
                 "same_size results differ for size {size}");
 
       // Test different sizes
       if size > 0 {
-        let direct_diff_size = mem_tools::same_size(&data1, &data3);
+        let direct_diff_size = test_tools::same_size(&data1, &data3);
         let reexport_diff_size = test_tools::same_size(&data1, &data3);
         assert_eq!(direct_diff_size, reexport_diff_size, 
                   "same_size results differ for different sizes at size {size}");
@@ -159,7 +159,7 @@ mod behavioral_equivalence_verification_tests
     ];
 
     for test_case in string_test_cases {
-      let mut direct_vec = collection_tools::Vec::new();
+      let mut direct_vec = test_tools::Vec::new();
       let mut reexport_vec = test_tools::Vec::new();
 
       for item in &test_case {

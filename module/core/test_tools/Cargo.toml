@@ -32,8 +32,8 @@ no-default-features = false
 [features]
 default = [
   "enabled",
-  # "standalone_build",
-  "normal_build",
+  "standalone_build",  # Use standalone_build as default to break circular dependencies
+  # "normal_build",    # COMMENTED OUT: Disabled to break circular dependencies
   "process_tools",
   "process_environment_is_cicd",
   "integration",
@@ -67,12 +67,13 @@ integration = []
 # nightly = [ "typing_tools/nightly" ]
 
 normal_build = [
-  "dep:error_tools",
-  "dep:collection_tools",
-  "dep:impls_index",
-  "dep:mem_tools",
-  "dep:typing_tools",
-  "dep:diagnostics_tools",
+  # COMMENTED OUT: Dependencies that create circular dependencies  
+  # "dep:error_tools",
+  # "dep:collection_tools", 
+  # "dep:impls_index",
+  # "dep:mem_tools",
+  # "dep:typing_tools",
+  # "dep:diagnostics_tools",
   "collection_constructors",
   "collection_into_constructors",
 ]
@@ -80,6 +81,7 @@ normal_build = [
 # standalone_build vesion of build is used to avoid cyclic dependency
 # when crate depend on itself
 standalone_build = [
+  "enabled",
   "standalone_error_tools",
   "standalone_collection_tools",
   "standalone_impls_index",
@@ -133,14 +135,16 @@ num-traits = { workspace = true }
 rand = { workspace = true }
 # tempdir = { workspace = true }
 
-## internal
+## internal - COMMENTED OUT FOR STANDALONE BUILD TO BREAK CIRCULAR DEPENDENCIES
+## These dependencies create circular dependencies when foundational modules depend on test_tools
+## In standalone_build mode, we use direct transient dependencies instead
 
-error_tools = { workspace = true, features = [ "full" ], optional = true }
-collection_tools = { workspace = true, features = [ "full" ], optional = true }
-impls_index = { workspace = true, features = [ "full" ], optional = true }
-mem_tools = { workspace = true, features = [ "full" ], optional = true }
-typing_tools = { workspace = true, features = [ "full" ], optional = true }
-diagnostics_tools = { workspace = true, features = [ "full" ], optional = true }
+# error_tools = { workspace = true, features = [ "full" ], optional = true }
+# collection_tools = { workspace = true, features = [ "full" ], optional = true }
+# impls_index = { workspace = true, features = [ "full" ], optional = true }
+# mem_tools = { workspace = true, features = [ "full" ], optional = true }
+# typing_tools = { workspace = true, features = [ "full" ], optional = true }
+# diagnostics_tools = { workspace = true, features = [ "full" ], optional = true }
 
 
 ## transient

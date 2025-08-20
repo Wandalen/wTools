@@ -9,7 +9,8 @@
 //! | T8.5 | `ResultWithReport` type alias usage    | Correctly defines a Result with tuple error     |
 //!
 use super::*;
-use error_tools::error::{ErrWith, ResultWithReport};
+use test_tools::ErrWith;
+use test_tools::error_tools::ResultWithReport;
 use std::io;
 
 /// Tests `err_with` on an `Ok` result.
