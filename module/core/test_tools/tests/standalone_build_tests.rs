@@ -152,7 +152,7 @@ mod standalone_build_tests
       
       // Collection functionality
       let _test_vec = test_tools::Vec::from([1, 2, 3, 4, 5]);
-      let _test_map = test_tools::HashMap::from([("key1", "value1"), ("key2", "value2")]);
+      let _test_map: test_tools::HashMap<&str, &str> = test_tools::HashMap::from([("key1", "value1"), ("key2", "value2")]);
       
       // Memory utilities
       let data = vec![42u32; 1000];
@@ -174,7 +174,7 @@ mod standalone_build_tests
       }
       
       let _test_vec = test_tools::Vec::from([1, 2, 3, 4, 5]);
-      let _test_map = test_tools::HashMap::from([("key1", "value1"), ("key2", "value2")]);
+      let _test_map: test_tools::HashMap<&str, &str> = test_tools::HashMap::from([("key1", "value1"), ("key2", "value2")]);
       
       let data = vec![42u32; 1000];
       let _same_size = test_tools::same_size(&data, &data);

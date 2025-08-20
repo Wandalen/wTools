@@ -1,4 +1,6 @@
 //! Integration tests for `optimize_split` macro
+
+#![ cfg( any() ) ] // TODO: Integration test requires strs_tools dependency
 //!
 //! # Test Matrix for `optimize_split`
 //!

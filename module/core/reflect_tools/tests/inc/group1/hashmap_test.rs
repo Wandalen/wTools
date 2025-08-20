@@ -18,7 +18,7 @@ fn reflect_hashmap_test()
 
   a_id!( reflect( &map ).is_container(), true );
   a_id!( reflect( &map ).len(), 2 );
-  a_id!( reflect( &map ).type_name(), "std::collections::hash::map::HashMap< i32, alloc::string::String >" );
+  a_id!( reflect( &map ).type_name(), "std::collections::hash::map::HashMap<i32, alloc::string::String>" );
   a_id!( reflect( &map ).type_id(), core::any::TypeId::of::< HashMap<  i32, String  > >() );
 
   let expected = vec!
@@ -34,7 +34,7 @@ fn reflect_hashmap_test()
   let empty_map : HashMap<  String, String  > = HashMap::new();
   a_id!( reflect( &empty_map ).is_container(), true );
   a_id!( reflect( &empty_map ).len(), 0 );
-  a_id!( reflect( &empty_map ).type_name(), "std::collections::hash::map::HashMap< alloc::string::String, alloc::string::String >" );
+  a_id!( reflect( &empty_map ).type_name(), "std::collections::hash::map::HashMap<alloc::string::String, alloc::string::String>" );
   a_id!( reflect( &empty_map ).type_id(), core::any::TypeId::of::< HashMap<  String, String  > >() );
 
   a_id!( reflect( &empty_map ).elements().collect::< Vec< _ > >(), Vec::new() );

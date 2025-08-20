@@ -3,13 +3,14 @@
 //! These tests verify that the procedural macros generate correct and efficient
 //! code for various string processing patterns.
 
+#[ cfg( all( feature = "compile_time_optimizations", feature = "string_split", not( feature = "no_std" ) ) ) ]
 use strs_tools::*;
 
-#[ cfg( feature = "compile_time_optimizations" ) ]
+#[ cfg( all( feature = "compile_time_optimizations", feature = "string_split", not( feature = "no_std" ) ) ) ]
 use strs_tools::{ optimize_split, optimize_match };
 
 #[ test ]
-#[ cfg( feature = "compile_time_optimizations" ) ]
+#[ cfg( all( feature = "compile_time_optimizations", feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_compile_time_single_delimiter_optimization() {
   let input = "hello,world,rust,programming";
   
@@ -31,7 +32,7 @@ fn test_compile_time_single_delimiter_optimization() {
 }
 
 #[ test ]
-#[ cfg( feature = "compile_time_optimizations" ) ]
+#[ cfg( all( feature = "compile_time_optimizations", feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_compile_time_multiple_delimiters_optimization() {
   let input = "key1:value1;key2:value2,key3:value3";
   
@@ -54,7 +55,7 @@ fn test_compile_time_multiple_delimiters_optimization() {
 }
 
 #[ test ]
-#[ cfg( feature = "compile_time_optimizations" ) ]
+#[ cfg( all( feature = "compile_time_optimizations", feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_compile_time_delimiter_preservation() {
   let input = "a,b;c:d";
   
@@ -83,7 +84,7 @@ fn test_compile_time_delimiter_preservation() {
 }
 
 #[ test ]
-#[ cfg( feature = "compile_time_optimizations" ) ]
+#[ cfg( all( feature = "compile_time_optimizations", feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_compile_time_empty_segments_handling() {
   let input = "a,,b";
   
@@ -106,7 +107,7 @@ fn test_compile_time_empty_segments_handling() {
 }
 
 #[ test ]
-#[ cfg( feature = "compile_time_optimizations" ) ]
+#[ cfg( all( feature = "compile_time_optimizations", feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_compile_time_pattern_matching_single() {
   let input = "https://example.com/path";
   
@@ -116,7 +117,7 @@ fn test_compile_time_pattern_matching_single() {
 }
 
 #[ test ]
-#[ cfg( feature = "compile_time_optimizations" ) ]
+#[ cfg( all( feature = "compile_time_optimizations", feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_compile_time_pattern_matching_multiple() {
   let test_cases = [
     ( "https://secure.com", "https://" ),
@@ -141,7 +142,7 @@ fn test_compile_time_pattern_matching_multiple() {
 }
 
 #[ test ]
-#[ cfg( feature = "compile_time_optimizations" ) ]
+#[ cfg( all( feature = "compile_time_optimizations", feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_compile_time_no_match_patterns() {
   let input = "plain text without protocols";
   
@@ -155,7 +156,7 @@ fn test_compile_time_no_match_patterns() {
 }
 
 #[ test ]
-#[ cfg( feature = "compile_time_optimizations" ) ]
+#[ cfg( all( feature = "compile_time_optimizations", feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_compile_time_zero_copy_consistency() {
   let input = "field1|field2|field3|field4";
   
@@ -178,7 +179,7 @@ fn test_compile_time_zero_copy_consistency() {
 }
 
 #[ test ]
-#[ cfg( feature = "compile_time_optimizations" ) ]
+#[ cfg( all( feature = "compile_time_optimizations", feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_compile_time_performance_characteristics() {
   use std::time::Instant;
   
@@ -217,7 +218,7 @@ fn test_compile_time_performance_characteristics() {
 }
 
 #[ test ]
-#[ cfg( feature = "compile_time_optimizations" ) ]
+#[ cfg( all( feature = "compile_time_optimizations", feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_compile_time_edge_cases() {
   // Empty string
   let empty_result: Vec<_> = optimize_split!( "", "," ).collect();
@@ -240,7 +241,7 @@ fn test_compile_time_edge_cases() {
 }
 
 #[ test ]
-#[ cfg( feature = "compile_time_optimizations" ) ]
+#[ cfg( all( feature = "compile_time_optimizations", feature = "string_split", not( feature = "no_std" ) ) ) ]
 #[ cfg( feature = "simd" ) ]
 fn test_compile_time_simd_integration() {
   let input = "data1,data2,data3,data4,data5,data6,data7,data8";

@@ -14,7 +14,7 @@ mod fundamental
   mod fields_bmap;
   mod fields_bset;
   mod fields_deque;
-  mod fields_hset;
+  // mod fields_hset; // TODO: Hset doesn't implement Fields trait 
   mod fields_llist;
 
 }

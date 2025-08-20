@@ -3,9 +3,11 @@
 //! Tests all parser integration features including single-pass parsing,
 //! command-line parsing, validation, and error handling scenarios.
 
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 use strs_tools::string::parser::*;
 
 #[ test ]
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_single_pass_integer_parsing()
 {
   // Test parsing integers while splitting
@@ -26,6 +28,7 @@ fn test_single_pass_integer_parsing()
 }
 
 #[ test ]
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_single_pass_parsing_with_errors()
 {
   // Test parsing with some invalid tokens
@@ -59,6 +62,7 @@ fn test_single_pass_parsing_with_errors()
 }
 
 #[ test ]
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_command_line_parsing_comprehensive()
 {
   let input = "myapp --verbose --output:result.txt input1.txt input2.txt --debug";
@@ -79,6 +83,7 @@ fn test_command_line_parsing_comprehensive()
 }
 
 #[ test ]
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_command_line_parsing_with_spaces_and_tabs()
 {
   let input = "cmd\t--flag1\t\targ1   --key:value  \t arg2";
@@ -97,6 +102,7 @@ fn test_command_line_parsing_with_spaces_and_tabs()
 }
 
 #[ test ]
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_validation_during_splitting()
 {
   let input = "apple,123,banana,456,cherry,789,grape";
@@ -123,6 +129,7 @@ fn test_validation_during_splitting()
 }
 
 #[ test ]
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_count_valid_tokens()
 {
   let input = "apple,123,banana,456,cherry,789,grape";
@@ -142,6 +149,7 @@ fn test_count_valid_tokens()
 }
 
 #[ test ]
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_multiple_delimiters()
 {
   let input = "a,b;c:d|e f\tg";
@@ -163,6 +171,7 @@ fn test_multiple_delimiters()
 }
 
 #[ test ]
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_empty_input_handling()
 {
   let input = "";
@@ -181,6 +190,7 @@ fn test_empty_input_handling()
 }
 
 #[ test ]
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_single_token_input()
 {
   let input = "single";
@@ -196,6 +206,7 @@ fn test_single_token_input()
 }
 
 #[ test ]
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_consecutive_delimiters()
 {
   let input = "a,,b,,,c";
@@ -213,6 +224,7 @@ fn test_consecutive_delimiters()
 }
 
 #[ test ]
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_complex_parsing_scenario()
 {
   // Complex real-world scenario: parsing configuration-like input
@@ -235,6 +247,7 @@ fn test_complex_parsing_scenario()
 }
 
 #[ test ]
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_error_position_information()
 {
   let input = "10,invalid,30";
@@ -259,6 +272,7 @@ fn test_error_position_information()
 }
 
 #[ test ]
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_string_vs_str_compatibility()
 {
   let owned_string = String::from( "a,b,c,d" );
@@ -283,6 +297,7 @@ fn test_string_vs_str_compatibility()
 }
 
 #[ test ]
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 fn test_performance_characteristics()
 {
   // Test with smaller input to verify basic performance characteristics

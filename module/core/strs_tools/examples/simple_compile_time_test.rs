@@ -6,7 +6,7 @@ use strs_tools::*;
 fn main() {
   println!( "Testing compile-time pattern optimization..." );
   
-  #[ cfg( all( feature = "compile_time_optimizations", feature = "string_split" ) ) ]
+  #[ cfg( all( feature = "compile_time_optimizations", feature = "string_split", not( feature = "no_std" ) ) ) ]
   {
     use strs_tools::string::zero_copy::ZeroCopyStringExt;
     
@@ -22,7 +22,7 @@ fn main() {
     println!( "   The optimize_split! macro is not yet fully implemented" );
   }
   
-  #[ cfg( not( all( feature = "compile_time_optimizations", feature = "string_split" ) ) ) ]
+  #[ cfg( not( all( feature = "compile_time_optimizations", feature = "string_split", not( feature = "no_std" ) ) ) ) ]
   {
     println!( "Compile-time optimizations or string_split feature not enabled" );
     println!( "Enable with: --features compile_time_optimizations,string_split" );

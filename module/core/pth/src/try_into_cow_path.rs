@@ -22,7 +22,6 @@ mod private
     borrow::Cow,
     io,
     path::{ Component, Path, PathBuf },
-    string::String,
   };
   
   #[cfg(feature = "no_std")]
