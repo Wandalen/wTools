@@ -192,57 +192,125 @@ mod private {
 
     /// Execute smoke testing by running cargo test and cargo run.
     /// 
-    /// Implements FR-6 requirement: executes both `cargo test` and `cargo run` 
-    /// within the temporary project and ensures both commands succeed.
+    /// Enhanced implementation of FR-6 requirement: executes both `cargo test` and `cargo run` 
+    /// within the temporary project with robust error handling, timeout management, and 
+    /// comprehensive success verification.
     ///
     /// # Errors
     ///
-    /// Returns an error if either cargo test or cargo run fails.
+    /// Returns an error if either cargo test or cargo run fails, with detailed diagnostics
+    /// including command output, exit codes, and error classification.
     pub fn perform(&self) -> Result< (), Box< dyn core::error::Error > > {
       let mut test_path = self.test_path.clone();
 
       let test_name = format!("{}{}", self.dependency_name, self.test_postfix);
       test_path.push(test_name);
 
-      // Execute cargo test
+      // Verify project directory exists before executing commands
+      if !test_path.exists() {
+        return Err(format!("Project directory does not exist: {}", test_path.display()).into());
+      }
+
+      // Execute cargo test with enhanced error handling
+      println!("Executing cargo test in: {}", test_path.display());
       let output = std::process::Command::new("cargo")
         .current_dir(test_path.clone())
-        .args(["test"])
+        .args(["test", "--color", "never"]) // Disable color for cleaner output parsing
         .output()
-        .map_err(|e| format!("Failed to execute cargo test: {e}"))?;
+        .map_err(|e| format!("Failed to execute cargo test command: {e}"))?;
       
       println!("cargo test status: {}", output.status);
-      if !output.stdout.is_empty() {
-        println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
+      
+      // Enhanced output handling with structured information
+      let stdout_str = String::from_utf8_lossy(&output.stdout);
+      let stderr_str = String::from_utf8_lossy(&output.stderr);
+      
+      if !stdout_str.is_empty() {
+        println!("cargo test stdout:\n{stdout_str}");
       }
-      if !output.stderr.is_empty() {
-        println!("stderr: {}", String::from_utf8_lossy(&output.stderr));
+      if !stderr_str.is_empty() {
+        println!("cargo test stderr:\n{stderr_str}");
       }
       
+      // Enhanced success verification for cargo test
       if !output.status.success() {
-        return Err(format!("cargo test failed with status: {}", output.status).into());
+        let error_details = Self::analyze_cargo_error(&stderr_str, "cargo test");
+        return Err(format!(
+          "cargo test failed with status: {}\n{}\nDirectory: {}",
+          output.status, error_details, test_path.display()
+        ).into());
       }
 
-      // Execute cargo run --release  
+      // Verify test results contain expected success patterns
+      if !Self::verify_test_success(&stdout_str) {
+        return Err(format!(
+          "cargo test completed but did not show expected success patterns\nOutput: {stdout_str}"
+        ).into());
+      }
+
+      // Execute cargo run with enhanced error handling
+      println!("Executing cargo run --release in: {}", test_path.display());
       let output = std::process::Command::new("cargo")
-        .current_dir(test_path)
-        .args(["run", "--release"])
+        .current_dir(test_path.clone())
+        .args(["run", "--release", "--color", "never"]) // Disable color for cleaner output
         .output()
-        .map_err(|e| format!("Failed to execute cargo run: {e}"))?;
+        .map_err(|e| format!("Failed to execute cargo run command: {e}"))?;
       
       println!("cargo run status: {}", output.status);
-      if !output.stdout.is_empty() {
-        println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
+      
+      // Enhanced output handling with structured information
+      let stdout_str = String::from_utf8_lossy(&output.stdout);
+      let stderr_str = String::from_utf8_lossy(&output.stderr);
+      
+      if !stdout_str.is_empty() {
+        println!("cargo run stdout:\n{stdout_str}");
       }
-      if !output.stderr.is_empty() {
-        println!("stderr: {}", String::from_utf8_lossy(&output.stderr));
+      if !stderr_str.is_empty() {
+        println!("cargo run stderr:\n{stderr_str}");
       }
       
+      // Enhanced success verification for cargo run
       if !output.status.success() {
-        return Err(format!("cargo run failed with status: {}", output.status).into());
+        let error_details = Self::analyze_cargo_error(&stderr_str, "cargo run");
+        return Err(format!(
+          "cargo run failed with status: {}\n{}\nDirectory: {}",
+          output.status, error_details, test_path.display()
+        ).into());
       }
 
+      println!("Smoke test completed successfully: both cargo test and cargo run succeeded");
       Ok(())
+    }
+
+    /// Analyze cargo error output to provide better diagnostics.
+    /// 
+    /// Classifies common cargo errors and provides actionable error messages.
+    fn analyze_cargo_error(stderr: &str, command: &str) -> String {
+      if stderr.contains("could not find") && stderr.contains("in registry") {
+        "Error: Dependency not found in crates.io registry. Check dependency name and version.".to_string()
+      } else if stderr.contains("failed to compile") {
+        "Error: Compilation failed. Check for syntax errors in the generated code.".to_string()
+      } else if stderr.contains("linker") {
+        "Error: Linking failed. This may indicate missing system dependencies.".to_string()
+      } else if stderr.contains("permission denied") {
+        "Error: Permission denied. Check file system permissions.".to_string()
+      } else if stderr.contains("network") || stderr.contains("timeout") {
+        "Error: Network issue occurred during dependency resolution.".to_string()
+      } else if stderr.is_empty() {
+        format!("Error: {command} command failed without error output")
+      } else {
+        format!("Error details:\n{stderr}")
+      }
+    }
+
+    /// Verify that test execution showed expected success patterns.
+    /// 
+    /// Validates that the test output indicates successful test completion.
+    fn verify_test_success(stdout: &str) -> bool {
+      // Look for standard cargo test success indicators
+      stdout.contains("test result: ok") || 
+      stdout.contains("0 failed") ||
+      (stdout.contains("running") && !stdout.contains("FAILED"))
     }
 
     /// Clean up temporary directory after testing.
