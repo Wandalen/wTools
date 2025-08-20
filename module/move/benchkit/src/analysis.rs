@@ -51,7 +51,7 @@ impl ComparativeAnalysis {
 
   /// Run the comparative analysis
   #[must_use]
-  pub fn run(self) -> ComparisonReport {
+  pub fn run(self) -> ComparisonAnalysisReport {
     let mut results = HashMap::new();
     
     for (name, variant) in self.variants {
@@ -59,7 +59,7 @@ impl ComparativeAnalysis {
       results.insert(name.clone(), result);
     }
     
-    ComparisonReport {
+    ComparisonAnalysisReport {
       name: self.name,
       results,
     }
@@ -68,14 +68,14 @@ impl ComparativeAnalysis {
 
 /// Report containing results of comparative analysis
 #[derive(Debug)]
-pub struct ComparisonReport {
+pub struct ComparisonAnalysisReport {
   /// Name of the comparison analysis
   pub name: String,
   /// Results of each algorithm variant tested
   pub results: HashMap<String, BenchmarkResult>,
 }
 
-impl ComparisonReport {
+impl ComparisonAnalysisReport {
   /// Get the fastest result
   #[must_use]
   pub fn fastest(&self) -> Option<(&String, &BenchmarkResult)> {

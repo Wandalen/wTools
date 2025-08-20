@@ -13,7 +13,7 @@ test_tools::tests_impls! {
   //
 
   #[ cfg( debug_assertions ) ]
-  #[ should_panic ]
+  #[ should_panic( expected = "assertion `left == right` failed" ) ]
   fn debug_assert_id_fail()
   {
     // test.case( "not identical" );
@@ -31,7 +31,7 @@ test_tools::tests_impls! {
   //
 
   #[ cfg( debug_assertions ) ]
-  #[ should_panic ]
+  #[ should_panic( expected = "assertion `left == right` failed" ) ]
   fn debug_assert_identical_fail()
   {
     // test.case( "not identical" );
@@ -49,7 +49,7 @@ test_tools::tests_impls! {
   //
 
   #[ cfg( debug_assertions ) ]
-  #[ should_panic ]
+  #[ should_panic( expected = "assertion `left != right` failed" ) ]
   fn debug_assert_ni_fail()
   {
     // test.case( "identical" );
@@ -67,7 +67,7 @@ test_tools::tests_impls! {
   //
 
   #[ cfg( debug_assertions ) ]
-  #[ should_panic ]
+  #[ should_panic( expected = "assertion `left != right` failed" ) ]
   fn debug_assert_not_identical_fail()
   {
     // test.case( "identical" );

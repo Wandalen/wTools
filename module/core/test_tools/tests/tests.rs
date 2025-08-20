@@ -7,7 +7,7 @@
 //!
 //! ## Common Issues in Aggregated Tests
 //!
-//! ### E0432: "unresolved imports test_tools::tests_impls" 
+//! ### E0432: "unresolved imports `test_tools::tests_impls`" 
 //! - **Cause:** API modules hidden by cfg gates in src/lib.rs
 //! - **Fix:** Remove `#[cfg(not(feature = "doctest"))]` from namespace modules
 //! - **Check:** Verify `own`, `orphan`, `exposed`, `prelude` modules are always visible
