@@ -16,13 +16,13 @@ tests_impls! {
     a_id!( 1, inner_number );
 
     let inner_number : f64 = number.into();
-    a_id!( 1.0, inner_number );
+    assert!( ( inner_number - 1.0 ).abs() < f64::EPSILON );
 
     // negative float number
-    let number = Type::Number.try_cast( "-3.14".into() );
+    let number = Type::Number.try_cast( "-3.15".into() );
 
     let number = number.unwrap();
-    a_id!( Value::Number( -3.14 ) , number );
+    a_id!( Value::Number( -3.15 ) , number );
 
     let inner_number : i32 = number.clone().into();
     a_id!( -3, inner_number );
@@ -31,7 +31,7 @@ tests_impls! {
     a_id!( 0, inner_number );
 
     let inner_number : f64 = number.into();
-    a_id!( -3.14, inner_number );
+    assert!( ( inner_number - ( -3.15 ) ).abs() < f64::EPSILON );
 
     // not a number
     let not_number = Type::Number.try_cast( "text".into() );
@@ -113,18 +113,23 @@ tests_impls! {
     a_id!( vec![ "some", "string" ], inner_string );
 
     // numbers
-    let numbers = Type::List( Type::Number.into(), ';' ).try_cast( "100;3.14".into() );
+    let numbers = Type::List( Type::Number.into(), ';' ).try_cast( "100;3.15".into() );
     let numbers = numbers.unwrap();
     a_id!
     (
-      Value::List( vec![ Value::Number( 100.0 ), Value::Number( 3.14 ) ] ), numbers
+      Value::List( vec![ Value::Number( 100.0 ), Value::Number( 3.15 ) ] ), numbers
     );
 
     let inner_numbers : Vec< i32 > = numbers.clone().into();
     a_id!( vec![ 100, 3 ], inner_numbers );
 
     let inner_numbers : Vec< f64 > = numbers.into();
-    a_id!( vec![ 100.0, 3.14 ], inner_numbers );
+    let expected = vec![ 100.0, 3.15 ];
+    assert_eq!( expected.len(), inner_numbers.len() );
+    for ( a, b ) in expected.iter().zip( inner_numbers.iter() )
+    {
+      assert!( ( a - b ).abs() < f64::EPSILON );
+    }
   }
 
   // xxx : The try_cast method on value is designed to convert user input strings into parsed values, such as lists of strings or numbers. However, when converting these parsed values back into their original string representations using the display method, the resulting string may not match the original user input.
