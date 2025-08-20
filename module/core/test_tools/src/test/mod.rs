@@ -66,8 +66,9 @@ pub mod exposed {
     process::exposed::*,
   };
 
-  #[ doc( inline ) ]
-  pub use crate::impls_index::{impls, index, tests_impls, tests_impls_optional, tests_index};
+  // COMMENTED OUT: impls_index dependency disabled to break circular dependencies
+  // #[ doc( inline ) ]
+  // pub use crate::impls_index::{impls, index, tests_impls, tests_impls_optional, tests_index};
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

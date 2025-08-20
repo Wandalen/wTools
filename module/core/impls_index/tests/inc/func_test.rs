@@ -43,6 +43,7 @@ fn fn_rename() {
 //
 
 #[ test ]
+#[ allow( clippy::too_many_lines ) ]
 fn fns() {
   //   // test.case( "several, trivial syntax" );
   //   {
