@@ -1,3 +1,9 @@
+//! Test module for verifying list argument parsing and validation functionality.
+//!
+//! This module tests the unilang framework's ability to handle list-type command arguments
+//! with validation rules, specifically ensuring that list arguments with minimum item
+//! constraints are properly parsed and validated during command execution.
+
 use unilang::prelude::*;
 use unilang::ValidationRule;
 use unilang_parser::{ Parser, UnilangParserOptions };
@@ -34,8 +40,8 @@ fn arg_list_test() -> Result< (), unilang::Error >
       (
         OutputData
         {
-          content : "".to_string(),
-          format : "".to_string(),
+          content : String::new(),
+          format : String::new(),
         }
       )
     }
@@ -44,7 +50,7 @@ fn arg_list_test() -> Result< (), unilang::Error >
 
   let parser = Parser::new( UnilangParserOptions::default() );
 
-  let input = ".region.buy_castle 1 1";
+  let input = ".region.buy_castle coord::1,1";
   let instructions = [ parser.parse_single_instruction( input ).map_err( unilang::Error::from )? ];
   let semantic_analyzer = unilang::semantic::SemanticAnalyzer::new( &instructions[ .. ], &registry );
   let commands = semantic_analyzer.analyze()?;
