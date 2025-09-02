@@ -614,7 +614,7 @@ fn research_grade_performance_analysis()
 
 ### 12. Lessons Learned Reference
 
-**CRITICAL**: All development decisions for benchkit are based on real-world experience from unilang and strs_tools benchmarking work. The complete set of requirements, anti-patterns, and lessons learned is documented in [`recommendations.md`](recommendations.md).
+**CRITICAL**: All development decisions for benchkit are based on real-world experience from unilang and strs_tools benchmarking work. The complete set of requirements, anti-patterns, and mandatory standards is documented in [`usage.md`](usage.md).
 
 **Key lessons that shaped benchkit design:**
 
@@ -650,7 +650,7 @@ fn research_grade_performance_analysis()
 - **Solution**: Exact matching with `line.trim() == section_marker.trim()` + API validation
 - **Prevention**: Safe API with conflict detection, comprehensive regression tests, backwards compatibility
 
-**For complete requirements and anti-patterns, see [`recommendations.md`](recommendations.md).**
+**For complete requirements and mandatory standards, see [`usage.md`](usage.md).**
 
 ### 13. Cargo Bench Integration Requirements ⭐ **CRITICAL**
 
@@ -673,7 +673,7 @@ name = "performance_suite"
 harness = false  # Use benchkit as the harness
 
 [dev-dependencies]
-benchkit = { version = "0.1", features = ["cargo_bench"] }
+benchkit = { version = "0.8.0", features = ["cargo_bench"] }
 ```
 
 ```rust
@@ -774,6 +774,6 @@ Based on real-world usage patterns and critical path analysis from unilang/strs_
 
 ### Reference Documents
 
-- **[`recommendations.md`](recommendations.md)** - Complete requirements from real-world experience
+- **[`usage.md`](usage.md)** - Mandatory standards and compliance requirements from production systems
 - **[`readme.md`](readme.md)** - Usage-focused documentation with examples  
 - **[`examples/`](examples/)** - Comprehensive usage demonstrations

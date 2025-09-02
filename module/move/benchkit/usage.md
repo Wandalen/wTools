@@ -1,25 +1,25 @@
-# benchkit User Recommendations
+# benchkit Usage Standards
 
-**Purpose**: Best practices and guidance for using benchkit effectively  
-**Audience**: Developers using benchkit for performance testing  
-**Source**: Lessons learned from real-world performance optimization projects
+**Authority**: Mandatory standards for benchkit implementation  
+**Compliance**: All requirements are non-negotiable for production use  
+**Source**: Battle-tested practices from high-performance production systems
 
 ---
 
 ## Table of Contents
 
 1. [Practical Examples Index](#practical-examples-index)
-2. [Quick Metrics Reference](#quick-metrics-reference)
-3. [Getting Started Effectively](#getting-started-effectively)
-4. [Organizing Your Benchmarks](#organizing-your-benchmarks)
-5. [Writing Good Benchmarks](#writing-good-benchmarks)
-6. [Data Generation Best Practices](#data-generation-best-practices)
-7. [Documentation and Reporting](#documentation-and-reporting)
+2. [Mandatory Performance Standards](#mandatory-performance-standards)
+3. [Required Implementation Protocols](#required-implementation-protocols)
+4. [Benchmark Organization Requirements](#benchmark-organization-requirements)
+5. [Quality Standards for Benchmark Design](#quality-standards-for-benchmark-design)
+6. [Data Generation Compliance Standards](#data-generation-compliance-standards)
+7. [Documentation and Reporting Requirements](#documentation-and-reporting-requirements)
 8. [Performance Analysis Workflows](#performance-analysis-workflows)
 9. [CI/CD Integration Patterns](#cicd-integration-patterns)
-10. [Coefficient of Variation (CV) Troubleshooting](#coefficient-of-variation-cv-troubleshooting)
-11. [Common Pitfalls to Avoid](#common-pitfalls-to-avoid)
-12. [Advanced Usage Patterns](#advanced-usage-patterns)
+10. [Coefficient of Variation (CV) Standards](#coefficient-of-variation-cv-standards)
+11. [Prohibited Practices and Violations](#prohibited-practices-and-violations)
+12. [Advanced Implementation Requirements](#advanced-implementation-requirements)
 
 ---
 
@@ -74,30 +74,30 @@ find examples/ -name "*.rs" -exec basename {} .rs \; | xargs -I {} cargo run --e
 
 ---
 
-## Quick Metrics Reference
+## Mandatory Performance Standards
 
-### Common Performance Metrics
+### Required Performance Metrics
 
-This table shows the most frequently used metrics across different use cases:
+**COMPLIANCE REQUIREMENT**: All production benchmarks MUST implement these metrics according to specified standards:
 
 ```rust
 // What is measured: Core performance characteristics across different system components
 // How to measure: cargo bench --features enabled,metrics_collection
 ```
 
-| Metric Type | What It Measures | When to Use | Typical Range | Code Example |
-|-------------|------------------|-------------|---------------|--------------|
-| **Execution Time** | Function/operation duration | Algorithm comparison, optimization validation | μs to ms | `bench("fn_name", \|\| your_function())` |
-| **Throughput** | Operations per second | API performance, data processing rates | ops/sec | `bench("throughput", \|\| process_batch())` |
-| **Memory Usage** | Peak memory consumption | Memory optimization, resource planning | KB to MB | `bench_with_memory("memory", \|\| allocate_data())` |
-| **Cache Performance** | Hit/miss ratios | Memory access optimization | % hit rate | `bench_cache("cache", \|\| cache_operation())` |
-| **Latency** | Response time under load | System responsiveness, user experience | ms | `bench_latency("endpoint", \|\| api_call())` |
-| **CPU Utilization** | Processor usage percentage | Resource efficiency, scaling analysis | % usage | `bench_cpu("cpu_task", \|\| cpu_intensive())` |
-| **I/O Performance** | Read/write operations per second | Storage optimization, database tuning | IOPS | `bench_io("file_ops", \|\| file_operations())` |
+| Metric Type | Compliance Requirement | Mandatory Use Cases | Performance Targets | Implementation Standard |
+|-------------|------------------------|---------------------|---------------------|------------------------|
+| **Execution Time** | ✅ REQUIRED - Must include confidence intervals | ALL algorithm comparisons | CV < 5% for reliable results | `bench_function("fn_name", \|\| your_function())` |
+| **Throughput** | ✅ REQUIRED - Must report ops/sec with statistical significance | ALL API performance tests | Report measured ops/sec with confidence intervals | `bench_function("api", \|\| process_batch())` |
+| **Memory Usage** | ✅ REQUIRED - Must detect leaks and track peak usage | ALL memory-intensive operations | Track allocation patterns and peak usage | `bench_with_allocation_tracking("memory", \|\| allocate_data())` |
+| **Cache Performance** | ⚡ RECOMMENDED for optimization claims | Cache optimization validation | Measure and report actual hit/miss ratios | `bench_function("cache", \|\| cache_operation())` |
+| **Latency** | 🚨 CRITICAL for user-facing systems | ALL user-facing operations | Report p95/p99 latency with statistical analysis | `bench_function("endpoint", \|\| api_call())` |
+| **CPU Utilization** | ✅ REQUIRED for scaling claims | Resource efficiency validation | Profile CPU usage patterns during execution | `bench_function("task", \|\| cpu_intensive())` |
+| **I/O Performance** | ⚡ RECOMMENDED for data processing | Storage and database operations | Measure actual I/O throughput and patterns | `bench_function("ops", \|\| file_operations())` |
 
 ### Measurement Context Templates
 
-Use these templates before performance tables to make clear what is being measured:
+**BEST PRACTICE**: Performance tables should include these standardized context headers:
 
 **For Functions:**
 ```rust
@@ -121,11 +121,11 @@ Use these templates before performance tables to make clear what is being measur
 
 ---
 
-## Getting Started Effectively
+## Required Implementation Protocols
 
-### Start Small, Expand Gradually
+### Mandatory Setup Requirements
 
-**Recommendation**: Begin with one simple benchmark to establish your workflow, then expand systematically.
+**NON-NEGOTIABLE REQUIREMENT**: ALL implementations MUST begin with this standardized setup protocol - no exceptions.
 
 ```rust
 // Start with this simple pattern in benches/getting_started.rs
@@ -163,11 +163,11 @@ cargo run --bin my-benchmark-runner
 
 ---
 
-## Organizing Your Benchmarks
+## Benchmark Organization Requirements
 
 ### Standard Directory Structure
 
-**Recommendation**: Follow this proven directory organization pattern:
+**RECOMMENDED STRUCTURE**: Projects should follow this proven directory organization:
 
 ```
 project/
@@ -210,11 +210,11 @@ project/
 
 ---
 
-## Writing Good Benchmarks
+## Quality Standards for Benchmark Design
 
 ### Focus on Key Metrics
 
-**Recommendation**: Measure 2-3 critical performance indicators, not everything. Always monitor CV (Coefficient of Variation) to ensure reliable results.
+**GUIDANCE**: Focus on 2-3 critical performance indicators with CV < 5% for reliable results. This approach provides the best balance of insight and statistical confidence.
 
 ```rust
 // Good: Focus on what matters for optimization
@@ -294,11 +294,11 @@ This produces a clear performance comparison table:
 
 ---
 
-## Data Generation Best Practices
+## Data Generation Compliance Standards
 
 ### Generate Realistic Test Data
 
-**Recommendation**: Use data that matches your real-world usage patterns:
+**IMPORTANT**: Test data should accurately represent production workloads for meaningful results:
 
 ```rust
 // Good: Realistic data generation
@@ -360,11 +360,11 @@ suite.benchmark("algorithm_performance", || {
 
 ---
 
-## Documentation and Reporting
+## Documentation and Reporting Requirements
 
 ### Automatic Documentation Updates
 
-**Recommendation**: Always update documentation automatically during benchmarks:
+**BEST PRACTICE**: Benchmarks should automatically update documentation to maintain accuracy and reduce manual errors:
 
 ```rust
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -612,11 +612,11 @@ fn environment_specific_benchmarks() {
 
 ---
 
-## Coefficient of Variation (CV) Troubleshooting
+## Coefficient of Variation (CV) Standards
 
 ### Understanding CV Values and Reliability
 
-The Coefficient of Variation (CV) is the most critical metric for benchmark reliability. It measures the relative variability of your measurements and directly impacts the trustworthiness of performance conclusions.
+**IMPORTANT GUIDANCE**: CV serves as a key reliability indicator for benchmark quality. High CV values indicate unreliable measurements that should be investigated.
 
 ```rust
 // What is measured: Coefficient of Variation (CV) reliability thresholds for benchmark results
@@ -951,11 +951,11 @@ fn handle_variable_benchmark( result: &BenchmarkResult )
 
 ---
 
-## Common Pitfalls to Avoid
+## Prohibited Practices and Violations
 
 ### Avoid These Section Naming Mistakes
 
-❌ **Don't use generic section names**:
+⚠️ **AVOID**: Generic section names can cause conflicts and should be avoided:
 ```rust
 // This causes conflicts and duplication
 MarkdownUpdater::new("README.md", "Performance")  // Too generic!
@@ -963,7 +963,7 @@ MarkdownUpdater::new("README.md", "Results")      // Unclear!
 MarkdownUpdater::new("README.md", "Benchmarks")   // Generic!
 ```
 
-✅ **Use specific, descriptive section names**:
+✅ **COMPLIANCE STANDARD**: Use only specific, descriptive section names that meet our requirements:
 ```rust
 // These are clear and avoid conflicts
 MarkdownUpdater::new("README.md", "Algorithm Performance Analysis")
@@ -1071,11 +1071,11 @@ Performance comparison after implementing cache-friendly optimizations:
 
 ---
 
-## Advanced Usage Patterns
+## Advanced Implementation Requirements
 
 ### Custom Metrics Collection
 
-**Recommendation**: Extend beyond timing when it matters for your use case:
+**ADVANCED REQUIREMENT**: Production systems MUST implement custom metrics for comprehensive performance analysis:
 
 ```rust
 struct CustomMetrics {

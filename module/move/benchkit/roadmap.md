@@ -315,6 +315,6 @@ fn compare_algorithms() {
 ## References
 
 - **spec.md** - Complete functional requirements and technical specifications
-- **recommendations.md** - Lessons learned from unilang/strs_tools benchmarking
+- **usage.md** - Lessons learned from unilang/strs_tools benchmarking
 - **Design Rulebook** - Architectural principles and development procedures
 - **Codestyle Rulebook** - Code formatting and structural patterns

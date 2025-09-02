@@ -7,7 +7,7 @@
 
 `benchkit` is a lightweight toolkit for performance analysis, born from the hard-learned lessons of optimizing high-performance libraries. It rejects rigid, all-or-nothing frameworks in favor of flexible, composable tools that integrate seamlessly into your existing workflow.
 
-> 🎯 **NEW TO benchkit?** Start with [`recommendations.md`](recommendations.md) - Essential guidelines from real-world performance optimization experience.
+> 🎯 **NEW TO benchkit?** Start with [`usage.md`](usage.md) - Mandatory standards and requirements from production systems.
 
 ## The Benchmarking Dilemma
 
@@ -18,7 +18,7 @@ In Rust, developers often face a frustrating choice:
 
 `benchkit` offers a third way.
 
-> **📋 Important**: For production use and development contributions, see [`recommendations.md`](recommendations.md) - a comprehensive guide with proven patterns, requirements, and best practices from real-world benchmarking experience.
+> **📋 Important**: For production use and development contributions, see [`usage.md`](usage.md) - mandatory standards with proven patterns, requirements, and compliance standards from production systems.
 
 ## A Toolkit, Not a Framework
 
@@ -33,14 +33,14 @@ This is the core philosophy of `benchkit`. It doesn't impose a workflow; it prov
 
 ## 🚀 Quick Start: Compare, Analyze, and Document
 
-**📖 First time?** Review [`recommendations.md`](recommendations.md) for comprehensive best practices and development guidelines.
+**📖 First time?** Review [`usage.md`](usage.md) for mandatory compliance standards and development requirements.
 
 This example demonstrates the core `benchkit` workflow: comparing two algorithms and automatically updating a performance section in your `readme.md`.
 
 **1. Add to `dev-dependencies` in `Cargo.toml`:**
 ```toml
 [dev-dependencies]
-benchkit = { version = "0.1", features = [ "full" ] }
+benchkit = { version = "0.8.0", features = [ "full" ] }
 ```
 
 **2. Create a benchmark in your `benches` directory:**
@@ -910,7 +910,7 @@ Add to your `Cargo.toml`:
 benchmark = ["benchkit"]
 
 [dev-dependencies]
-benchkit = { version = "0.1", features = ["full"], optional = true }
+benchkit = { version = "0.8.0", features = ["full"], optional = true }
 ```
 
 Run benchmarks selectively:
@@ -1053,12 +1053,12 @@ Add `benchkit` to your `[dev-dependencies]` in `Cargo.toml`.
 benchkit = "0.1"
 
 # Or enable all features for the full toolkit
-benchkit = { version = "0.1", features = [ "full" ] }
+benchkit = { version = "0.8.0", features = [ "full" ] }
 ```
 
 ## 📋 Development Guidelines & Best Practices
 
-**⚠️ IMPORTANT**: Before using benchkit in production or contributing to development, **strongly review** the comprehensive [`recommendations.md`](recommendations.md) file. This document contains essential requirements, best practices, and lessons learned from real-world performance analysis work.
+**⚠️ IMPORTANT**: Before using benchkit in production or contributing to development, **strongly review** the comprehensive [`usage.md`](usage.md) file. This document contains essential requirements, best practices, and lessons learned from real-world performance analysis work.
 
 The recommendations cover:
 - ✅ **Core philosophy** and toolkit vs framework principles
@@ -1067,18 +1067,18 @@ The recommendations cover:
 - ✅ **Documentation integration** requirements for automated reporting
 - ✅ **Statistical analysis** requirements for reliable measurements
 
-**📖 Read [`recommendations.md`](recommendations.md) first** - it will save you time and ensure you're following proven patterns.
+**📖 Read [`usage.md`](usage.md) first** - it will save you time and ensure you're following proven patterns.
 
 ## Contributing
 
 Contributions are welcome! `benchkit` aims to be a community-driven toolkit that solves real-world benchmarking problems. 
 
 **Before contributing:**
-1. **📖 Read [`recommendations.md`](recommendations.md)** - Contains all development requirements and design principles
+1. **📖 Read [`usage.md`](usage.md)** - Contains all development requirements and design principles
 2. Review open tasks in the [`task/`](task/) directory  
 3. Check our contribution guidelines
 
-All contributions must align with the principles and requirements outlined in [`recommendations.md`](recommendations.md).
+All contributions must align with the principles and requirements outlined in [`usage.md`](usage.md).
 
 ## License
 

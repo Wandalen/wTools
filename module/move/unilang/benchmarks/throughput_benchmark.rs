@@ -20,7 +20,7 @@ use pico_args::Arguments;
 
 /// Framework comparison using benchkit's comparative analysis
 #[ cfg( feature = "benchmarks" ) ]
-fn run_framework_comparison_benchkit( command_count : usize ) -> ComparisonReport
+fn run_framework_comparison_benchkit( command_count : usize ) -> ComparisonAnalysisReport
 {
   println!( "🎯 Comparative Analysis: {} Commands (using benchkit)", command_count );
 
@@ -290,7 +290,10 @@ fn run_memory_benchmark_benchkit()
   }
   
   // Display detailed comparison
-  println!( "\n{}", report.to_markdown() );
+  for ( name, result ) in report.sorted_by_performance()
+  {
+    println!( "📊 {}: {:.0} ops/sec ({}ms)", name, result.operations_per_second(), result.mean_time().as_millis() );
+  }
 }
 
 /// Run comprehensive benchmarks using benchkit
@@ -304,7 +307,22 @@ pub fn run_comprehensive_benchkit_demo()
   // 1. Framework comparison
   println!( "1️⃣  Framework Comparison (10 commands)" );
   let comparison_report = run_framework_comparison_benchkit( 10 );
-  println!( "{}\n", comparison_report.to_markdown() );
+  // Display comprehensive comparison results
+  println!( "📊 Framework Comparison Results:" );
+  for ( name, result ) in comparison_report.sorted_by_performance()
+  {
+    println!( "  • {}: {:.0} ops/sec ({}ms)", name, result.operations_per_second(), result.mean_time().as_millis() );
+  }
+  
+  if let Some( ( fastest_name, fastest_result ) ) = comparison_report.fastest()
+  {
+    if let Some( ( slowest_name, slowest_result ) ) = comparison_report.slowest()
+    {
+      let speedup = slowest_result.mean_time().as_nanos() as f64 / fastest_result.mean_time().as_nanos() as f64;
+      println!( "⚡ Speedup: {} is {:.1}x faster than {}", fastest_name, speedup, slowest_name );
+    }
+  }
+  println!();
   
   // 2. Scaling analysis
   println!( "2️⃣  Scaling Analysis" );

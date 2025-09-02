@@ -275,7 +275,7 @@ my_rust_project/
     println!(r#"
 [package]
 name = "my_rust_project"
-version = "0.1.0"
+version = "0.8.0"
 
 # Standard Rust benchmark configuration
 [[bench]]
@@ -287,7 +287,7 @@ name = "algorithm_comparison"
 harness = false
 
 [dev-dependencies]
-benchkit = {{ version = "0.1", features = ["cargo_bench", "regression_analysis"] }}
+benchkit = {{ version = "0.8.0", features = ["cargo_bench", "regression_analysis"] }}
 
 [features]
 # Optional: allow disabling benchmarks in some environments

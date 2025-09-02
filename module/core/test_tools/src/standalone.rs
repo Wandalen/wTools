@@ -16,11 +16,19 @@ pub mod error_tools {
     /// The error type for this implementation
     type Error;
     /// Add context to an error using a closure
+    /// 
+    /// # Errors
+    /// 
+    /// Returns an error if the original operation failed, wrapped with contextual information.
     fn err_with<F>(self, f: F) -> Result<T, (String, Self::Error)> 
     where 
       Self: Sized, 
       F: FnOnce() -> String;
     /// Add context to an error using a static string
+    /// 
+    /// # Errors
+    /// 
+    /// Returns an error if the original operation failed, wrapped with the provided report message.
     fn err_with_report(self, report: &str) -> Result<T, (String, Self::Error)> where Self: Sized;
   }
   
@@ -56,40 +64,65 @@ pub mod error_tools {
   
   // Debug assertion macros for compatibility - simplified to avoid macro scoping issues
   /// Assert that two values are identical
-  pub fn debug_assert_identical<T: PartialEq + std::fmt::Debug>(left: T, right: T) {
+  pub fn debug_assert_identical<T: PartialEq + core::fmt::Debug>(left: &T, right: &T) {
     debug_assert_eq!(left, right, "Values should be identical");
   }
   
   /// Assert that two values are identical (alias for `debug_assert_identical`)
-  pub fn debug_assert_id<T: PartialEq + std::fmt::Debug>(left: T, right: T) {
+  pub fn debug_assert_id<T: PartialEq + core::fmt::Debug>(left: &T, right: &T) {
     debug_assert_identical(left, right);
   }
   
   /// Assert that two values are not identical
-  pub fn debug_assert_not_identical<T: PartialEq + std::fmt::Debug>(left: T, right: T) {
+  pub fn debug_assert_not_identical<T: PartialEq + core::fmt::Debug>(left: &T, right: &T) {
     debug_assert_ne!(left, right, "Values should not be identical");
   }
   
   /// Assert that two values are not identical (alias for `debug_assert_not_identical`)
-  pub fn debug_assert_ni<T: PartialEq + std::fmt::Debug>(left: T, right: T) {
+  pub fn debug_assert_ni<T: PartialEq + core::fmt::Debug>(left: &T, right: &T) {
     debug_assert_not_identical(left, right);
   }
 }
 
 /// Collection tools for standalone mode
 pub mod collection_tools {
-  use std::hash::Hash;
+  use core::hash::Hash;
   use std::collections::hash_map::RandomState;
   
   /// A hash map implementation using hashbrown for standalone mode
   #[derive(Debug, Clone)]
   pub struct HashMap<K, V>(hashbrown::HashMap<K, V, RandomState>);
   
+  impl<'a, K, V> IntoIterator for &'a HashMap<K, V>
+  where
+    K: Hash + Eq,
+  {
+    type Item = (&'a K, &'a V);
+    type IntoIter = hashbrown::hash_map::Iter<'a, K, V>;
+    
+    fn into_iter(self) -> Self::IntoIter {
+      self.iter()
+    }
+  }
+  
+  impl<'a, K, V> IntoIterator for &'a mut HashMap<K, V>
+  where
+    K: Hash + Eq,
+  {
+    type Item = (&'a K, &'a mut V);
+    type IntoIter = hashbrown::hash_map::IterMut<'a, K, V>;
+    
+    fn into_iter(self) -> Self::IntoIter {
+      self.iter_mut()
+    }
+  }
+
   impl<K, V> HashMap<K, V> 
   where 
     K: Hash + Eq,
   {
     /// Create a new empty `HashMap`
+    #[must_use]
     pub fn new() -> Self {
       Self(hashbrown::HashMap::with_hasher(RandomState::new()))
     }
@@ -102,21 +135,28 @@ pub mod collection_tools {
     /// Get a reference to the value for a given key
     pub fn get<Q>(&self, k: &Q) -> Option<&V> 
     where 
-      K: std::borrow::Borrow<Q>,
+      K: core::borrow::Borrow<Q>,
       Q: Hash + Eq + ?Sized,
     {
       self.0.get(k)
     }
     
     /// Get the number of elements in the `HashMap`
+    #[must_use]
     pub fn len(&self) -> usize {
       self.0.len()
+    }
+    
+    /// Returns true if the `HashMap` is empty
+    #[must_use]
+    pub fn is_empty(&self) -> bool {
+      self.0.is_empty()
     }
     
     /// Get a mutable reference to the value for a given key
     pub fn get_mut<Q>(&mut self, k: &Q) -> Option<&mut V> 
     where 
-      K: std::borrow::Borrow<Q>,
+      K: core::borrow::Borrow<Q>,
       Q: Hash + Eq + ?Sized,
     {
       self.0.get_mut(k)
@@ -125,7 +165,7 @@ pub mod collection_tools {
     /// Remove a key-value pair from the `HashMap`
     pub fn remove<Q>(&mut self, k: &Q) -> Option<V> 
     where 
-      K: std::borrow::Borrow<Q>,
+      K: core::borrow::Borrow<Q>,
       Q: Hash + Eq + ?Sized,
     {
       self.0.remove(k)
@@ -133,10 +173,11 @@ pub mod collection_tools {
     
     /// Clear all key-value pairs from the `HashMap`
     pub fn clear(&mut self) {
-      self.0.clear()
+      self.0.clear();
     }
     
     /// Returns an iterator over all key-value pairs (immutable references)
+    #[must_use]
     pub fn iter(&self) -> hashbrown::hash_map::Iter<'_, K, V> {
       self.0.iter()
     }
@@ -230,13 +271,28 @@ pub mod collection_tools {
   
   impl<T: core::hash::Hash + Eq> Eq for HashSet<T> {}
   
+  impl<'a, T> IntoIterator for &'a HashSet<T>
+  where
+    T: Hash + Eq,
+  {
+    type Item = &'a T;
+    type IntoIter = hashbrown::hash_set::Iter<'a, T>;
+    
+    fn into_iter(self) -> Self::IntoIter {
+      self.iter()
+    }
+  }
+  
   impl<T> HashSet<T> {
     /// Create a new empty `HashSet`
+    #[must_use]
     pub fn new() -> Self {
       Self(hashbrown::HashSet::with_hasher(RandomState::new()))
     }
     
     /// Returns an iterator over the set
+    #[must_use]
+    #[allow(clippy::iter_without_into_iter)]
     pub fn iter(&self) -> hashbrown::hash_set::Iter<'_, T> {
       self.0.iter()
     }
@@ -250,11 +306,13 @@ pub mod collection_tools {
     }
     
     /// Returns the number of elements in the set
+    #[must_use]
     pub fn len(&self) -> usize {
       self.0.len()
     }
     
     /// Returns true if the set is empty
+    #[must_use]
     pub fn is_empty(&self) -> bool {
       self.0.is_empty()
     }
@@ -581,7 +639,6 @@ pub mod collection_tools {
 }
 // Collection tools re-exported at crate level
 #[allow(unused_imports)]
-
 /// Memory tools for standalone mode
 pub mod mem_tools {
   use core::ptr;
@@ -606,8 +663,8 @@ pub mod mem_tools {
     }
 
     // Check if they're the exact same memory location
-    let ptr1 = std::ptr::from_ref(src1).cast::<()>();
-    let ptr2 = std::ptr::from_ref(src2).cast::<()>();
+    let ptr1 = core::ptr::from_ref(src1).cast::<()>();
+    let ptr2 = core::ptr::from_ref(src2).cast::<()>();
     ptr1 == ptr2
   }
   
@@ -636,7 +693,6 @@ pub mod mem_tools {
 }
 // Memory tools re-exported at crate level
 #[allow(unused_imports)]
-
 /// Typing tools for standalone mode
 pub mod typing_tools {
   // Minimal typing utilities for standalone mode
@@ -1123,7 +1179,7 @@ macro_rules! is_slice {
 #[macro_export]
 macro_rules! debug_assert_id_macro {
   ($left:expr, $right:expr) => {
-    crate::debug_assert_id($left, $right);
+    $crate::debug_assert_id($left, $right);
   };
 }
 

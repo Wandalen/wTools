@@ -819,7 +819,7 @@ impl PerformanceReport
     {
       // Fallback to placeholder when no historical data available
       output.push_str( "**Regression Analysis**: Not yet implemented. Historical baseline data required.\n\n" );
-      output.push_str( "**📖 Setup Guide**: See [`recommendations.md`](recommendations.md) for comprehensive guidelines on:\n" );
+      output.push_str( "**📖 Setup Guide**: See [`usage.md`](usage.md) for mandatory standards and requirements on:\n" );
       output.push_str( "- Historical data collection and baseline management\n" );
       output.push_str( "- Statistical analysis requirements and validation criteria\n" );
       output.push_str( "- Integration with CI/CD pipelines for automated regression detection\n" );

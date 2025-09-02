@@ -152,7 +152,7 @@ mod private {
       #[cfg(feature = "standalone_build")]
       {
         // Placeholder for standalone mode - macros may not be fully available
-        return Ok(());
+        Ok(())
       }
       
       // COMMENTED OUT: collection_tools dependency disabled to break circular dependencies

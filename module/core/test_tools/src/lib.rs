@@ -406,6 +406,10 @@ pub use test::process;
 ///
 /// ## Historical Context  
 /// This resolves the vec! ambiguity issue while preserving Task 002's macro accessibility.
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
+pub use ::{};
+
 // COMMENTED OUT: error_tools dependency disabled to break circular dependencies
 // #[ cfg( feature = "enabled" ) ]
 // #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
@@ -417,10 +421,6 @@ pub use test::process;
 // #[ cfg( feature = "enabled" ) ]
 // #[cfg(all(feature = "standalone_build", not(feature = "normal_build")))]
 // pub use implsindex as impls_index;
-
-#[ cfg( feature = "enabled" ) ]
-#[ allow( unused_imports ) ]
-pub use ::{};
 
 /// Verifies that the API stability facade is functioning correctly.
 /// This function can be used to check that all stability mechanisms are operational.
