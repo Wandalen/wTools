@@ -11,37 +11,39 @@ documentation = "https://docs.rs/workspace_tools"
 repository = "https://github.com/Wandalen/workspace_tools"
 homepage = "https://github.com/Wandalen/workspace_tools"
 description = """
-Universal workspace-relative path resolution for any Rust project. Provides consistent, reliable path management regardless of execution context or working directory.
+Reliable workspace-relative path resolution for Rust projects. Automatically finds your workspace root and provides consistent file path handling regardless of execution context.
 """
-categories = [ "development-tools", "filesystem" ]
-keywords = [ "workspace", "path", "resolution", "build-tools", "cross-platform" ]
+categories = [ "filesystem", "development-tools" ]
+keywords = [ "workspace", "path", "cargo", "filesystem", "build-tools" ]
 
 [lints]
 workspace = true
 
 [package.metadata.docs.rs]
-features = [ "full" ]
+features = [ "serde", "glob", "secrets", "validation" ]
 all-features = false
 
 [features]
-default = [ "full" ]
-full = [ "enabled", "glob", "secret_management", "cargo_integration", "serde_integration", "stress", "integration" ]
-enabled = [ "dep:tempfile" ]
+default = [ "serde" ]
+serde = [ "dep:serde", "dep:serde_json", "dep:serde_yaml" ]
 glob = [ "dep:glob" ]
-secret_management = []
-cargo_integration = [ "dep:cargo_metadata", "dep:toml" ]
-serde_integration = [ "dep:serde", "dep:serde_json", "dep:serde_yaml" ]
-stress = []
-integration = []
+secrets = []
+validation = [ "dep:jsonschema", "dep:schemars" ]
+testing = [ "dep:tempfile" ]
 
 [dependencies]
+# Core dependencies (always available)
+cargo_metadata = { workspace = true }
+toml = { workspace = true, features = [ "preserve_order" ] }
+
+# Optional dependencies
 glob = { workspace = true, optional = true }
 tempfile = { workspace = true, optional = true }
-cargo_metadata = { workspace = true, optional = true }
-toml = { workspace = true, features = [ "preserve_order" ], optional = true }
 serde = { workspace = true, features = [ "derive" ], optional = true }
 serde_json = { workspace = true, optional = true }
 serde_yaml = { workspace = true, optional = true }
+jsonschema = { version = "0.20", optional = true }
+schemars = { version = "0.8", optional = true }
 
 [dev-dependencies]
 # Test utilities - using minimal local dependencies only

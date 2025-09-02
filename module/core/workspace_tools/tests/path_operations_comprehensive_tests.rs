@@ -277,7 +277,7 @@ fn test_all_standard_directory_paths()
 }
 
 /// Test PO.17: Secret directory path (when feature enabled)
-#[ cfg( feature = "secret_management" ) ]
+#[ cfg( feature = "secrets" ) ]
 #[ test ]  
 fn test_secret_directory_path()
 {
@@ -291,7 +291,7 @@ fn test_secret_directory_path()
 }
 
 /// Test PO.18: Secret file path (when feature enabled)
-#[ cfg( feature = "secret_management" ) ]
+#[ cfg( feature = "secrets" ) ]
 #[ test ]
 fn test_secret_file_path()
 {

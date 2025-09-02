@@ -88,7 +88,7 @@ edition.workspace = true
 }
 
 /// Test FC.2: Glob + Secret Management integration
-#[ cfg( all( feature = "glob", feature = "secret_management" ) ) ]
+#[ cfg( all( feature = "glob", feature = "secrets" ) ) ]
 #[ test ]
 fn test_glob_secret_management_integration()
 {
@@ -194,7 +194,7 @@ edition.workspace = true
 }
 
 /// Test FC.4: Serde + Secret Management integration
-#[ cfg( all( feature = "serde_integration", feature = "secret_management" ) ) ]
+#[ cfg( all( feature = "serde_integration", feature = "secrets" ) ) ]
 #[ test ]
 fn test_serde_secret_management_integration()
 {
@@ -253,7 +253,7 @@ fn test_serde_secret_management_integration()
   feature = "cargo_integration", 
   feature = "serde_integration", 
   feature = "glob", 
-  feature = "secret_management"
+  feature = "secrets"
 ) ) ]
 #[ test ]
 fn test_all_features_integration()
@@ -390,7 +390,7 @@ fn test_minimal_functionality()
   feature = "cargo_integration", 
   feature = "serde_integration", 
   feature = "glob", 
-  feature = "secret_management"
+  feature = "secrets"
 ) ) ]
 #[ test ]
 fn test_all_features_performance()

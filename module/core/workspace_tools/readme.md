@@ -131,89 +131,40 @@ your-project/
 
 ---
 
-## 🎭 Advanced Features
+## 🔧 Optional Features
 
-`workspace_tools` is packed with powerful, optional features. Enable them in your `Cargo.toml` as needed.
+Enable additional functionality as needed in your `Cargo.toml`:
 
-<details>
-<summary><strong>🔧 Seamless Serde Integration (`serde_integration`)</strong></summary>
-
-Eliminate boilerplate for loading `.toml`, `.json`, and `.yaml` files.
-
-**Enable:** `cargo add serde` and add `workspace_tools = { workspace = true, features = ["serde_integration"] }` to `Cargo.toml`.
+**Serde Integration** (`serde`) - *enabled by default*
+Load `.toml`, `.json`, and `.yaml` files directly into structs.
 
 ```rust
-use serde::Deserialize;
-use workspace_tools::workspace;
-
 #[ derive( Deserialize ) ]
-struct AppConfig
-{
-  name : String,
-  port : u16,
-}
+struct AppConfig { name: String, port: u16 }
 
-let ws = workspace()?;
-
-// Automatically finds and parses `config/app.{toml,yaml,json}`.
-let config : AppConfig = ws.load_config( "app" )?;
-println!( "Running '{}' on port {}", config.name, config.port );
-
-// Load and merge multiple layers (e.g., base + production).
-let final_config : AppConfig = ws.load_config_layered( &[ "base", "production" ] )?;
-
-// Partially update a configuration file on disk.
-let updates = serde_json::json!( { "port": 9090 } );
-let updated_config : AppConfig = ws.update_config( "app", updates )?;
+let config: AppConfig = workspace()?.load_config( "app" )?;
 ```
 
-</details>
-
-<details>
-<summary><strong>🔍 Powerful Resource Discovery (`glob`)</strong></summary>
-
-Find files anywhere in your workspace using glob patterns.
-
-**Enable:** Add `workspace_tools = { workspace = true, features = ["glob"] }` to `Cargo.toml`.
+**Resource Discovery** (`glob`)
+Find files with glob patterns like `src/**/*.rs`.
 
 ```rust
-use workspace_tools::workspace;
-
-let ws = workspace()?;
-
-// Find all Rust source files recursively.
-let rust_files = ws.find_resources( "src/**/*.rs" )?;
-
-// Intelligently find a config file, trying multiple extensions.
-let db_config = ws.find_config( "database" )?; // Finds config/database.toml, .yaml, etc.
+let rust_files = workspace()?.find_resources( "src/**/*.rs" )?;
 ```
 
-</details>
-
-<details>
-<summary><strong>🔒 Secure Secret Management (`secret_management`)</strong></summary>
-
-Load secrets from files in a dedicated, git-ignored `.secret/` directory, with fallbacks to environment variables.
-
-**Enable:** Add `workspace_tools = { workspace = true, features = ["secret_management"] }` to `Cargo.toml`.
-
-```
-// .gitignore
-.*
-// .secret/-secrets.sh
-API_KEY="your-super-secret-key"
-```
+**Secret Management** (`secrets`)
+Load secrets from `.secret/` directory with environment fallbacks.
 
 ```rust
-use workspace_tools::workspace;
-
-let ws = workspace()?;
-
-// Loads API_KEY from .secret/-secrets.sh, or falls back to the environment.
-let api_key = ws.load_secret_key( "API_KEY", "-secrets.sh" )?;
+let api_key = workspace()?.load_secret_key( "API_KEY", "-secrets.sh" )?;
 ```
 
-</details>
+**Config Validation** (`validation`)
+Schema-based validation for configuration files.
+
+```rust
+let config: AppConfig = workspace()?.load_config_with_validation( "app" )?;
+```
 
 ---
 
@@ -286,15 +237,6 @@ graph TD
 
 ---
 
-## 🚧 Vision & Roadmap
-
-`workspace_tools` is actively developed. Our vision is to make workspace management a solved problem in Rust. Upcoming features include:
-
-*   **Project Scaffolding**: A powerful `cargo workspace-tools init` command to create new projects from templates.
-*   **Configuration Validation**: Schema-based validation to catch config errors before they cause panics.
-*   **Async & Hot-Reloading**: Full `tokio` integration for non-blocking file operations and live configuration reloads.
-*   **Official CLI Tool**: A `cargo workspace-tools` command for managing your workspace from the terminal.
-*   **IDE Integration**: Rich support for VS Code and RustRover to bring workspace-awareness directly into your editor.
 
 ## 🤝 Contributing
 

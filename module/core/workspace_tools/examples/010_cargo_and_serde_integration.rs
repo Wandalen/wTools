@@ -62,12 +62,11 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "🚀 Cargo Integration and Serde Integration Demo\n" );
 
-  // demonstrate cargo integration
-  #[ cfg( feature = "cargo_integration" ) ]
+  // demonstrate cargo integration (always available)
   cargo_integration_demo();
 
   // demonstrate serde integration
-  #[ cfg( feature = "serde_integration" ) ]
+  #[ cfg( feature = "serde" ) ]
   serde_integration_demo()?;
 
   Ok( () )
@@ -290,9 +289,9 @@ fn serde_integration_demo() -> Result< (), Box< dyn core::error::Error > >
   Ok( () )
 }
 
-#[ cfg( not( any( feature = "cargo_integration", feature = "serde_integration" ) ) ) ]
+#[ cfg( not( feature = "serde" ) ) ]
 fn main()
 {
-  println!( "🔧 This example requires cargo_integration and/or serde_integration features." );
-  println!( "   Run with: cargo run --example 010_cargo_and_serde_integration --features full" );
+  println!( "🔧 This example requires serde feature (enabled by default)." );
+  println!( "   Run with: cargo run --example 010_cargo_and_serde_integration --features serde" );
 }

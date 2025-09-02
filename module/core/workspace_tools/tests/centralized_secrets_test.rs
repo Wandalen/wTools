@@ -1,5 +1,5 @@
 //! Integration test for centralized secrets management
-#![ cfg( feature = "secret_management" ) ]
+#![ cfg( feature = "secrets" ) ]
 
 use workspace_tools::workspace;
 use std::env;

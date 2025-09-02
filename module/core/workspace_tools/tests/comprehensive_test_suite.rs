@@ -99,8 +99,6 @@ use std::{
   thread,
 };
 
-#[ cfg( feature = "stress" ) ]
-use std::time::Instant;
 
 // Global mutex to serialize environment variable tests
 static ENV_TEST_MUTEX: Mutex< () > = Mutex::new( () );
@@ -258,24 +256,14 @@ mod core_workspace_tests
     
     restore_env_var( "WORKSPACE_PATH", original );
     
-    // with cargo integration enabled, should detect cargo workspace first
-    #[ cfg( feature = "cargo_integration" ) ]
-    {
-      // should detect actual cargo workspace (not just fallback to current dir)
-      assert!( workspace.is_cargo_workspace() );
-      // workspace root should exist and be a directory
-      assert!( workspace.root().exists() );
-      assert!( workspace.root().is_dir() );
-      // should contain a Cargo.toml with workspace configuration
-      assert!( workspace.cargo_toml().exists() );
-    }
-    
-    // without cargo integration, should fallback to current directory
-    #[ cfg( not( feature = "cargo_integration" ) ) ]
-    {
-      let current_dir = env::current_dir().unwrap();
-      assert_eq!( workspace.root(), current_dir );
-    }
+    // cargo integration is always available - should detect cargo workspace
+    // should detect actual cargo workspace (not just fallback to current dir)
+    assert!( workspace.is_cargo_workspace() );
+    // workspace root should exist and be a directory
+    assert!( workspace.root().exists() );
+    assert!( workspace.root().is_dir() );
+    // should contain a Cargo.toml with workspace configuration
+    assert!( workspace.cargo_toml().exists() );
   }
 
   /// test w2.2: fallback resolution to git root
@@ -477,7 +465,7 @@ mod path_operation_tests
     assert_eq!( workspace.cargo_toml(), root.join( "Cargo.toml" ) );
     assert_eq!( workspace.readme(), root.join( "readme.md" ) );
     
-    #[ cfg( feature = "secret_management" ) ]
+    #[ cfg( feature = "secrets" ) ]
     {
       assert_eq!( workspace.secret_dir(), root.join( ".secret" ) );
       assert_eq!( workspace.secret_file( "test" ), root.join( ".secret/test" ) );
@@ -851,7 +839,7 @@ mod glob_functionality_tests
 // feature-specific tests: secret_management functionality  
 // ============================================================================
 
-#[ cfg( feature = "secret_management" ) ]
+#[ cfg( feature = "secrets" ) ]
 mod secret_management_tests
 {
   use super::*;
@@ -1319,7 +1307,7 @@ mod integration_tests
     assert!( workspace.tests_dir().exists(), "tests dir should exist" );
     assert!( workspace.workspace_dir().exists(), "workspace dir should exist" );
     
-    #[ cfg( feature = "secret_management" ) ]
+    #[ cfg( feature = "secrets" ) ]
     {
       assert!( workspace.secret_dir().exists(), "secret dir should exist" );
     }
@@ -1428,7 +1416,7 @@ mod performance_tests
 
   /// test p1.3: large secret files parsing
   #[ test ]
-  #[ cfg( all( feature = "secret_management", feature = "stress" ) ) ]
+  #[ cfg( all( feature = "secrets", feature = "stress" ) ) ]
   fn test_large_secret_files()
   {
     let ( _temp_dir, workspace ) = testing::create_test_workspace();

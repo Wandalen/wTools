@@ -274,7 +274,7 @@ fn test_testing_utilities()
   assert!( workspace.logs_dir().exists() );
 }
 
-#[ cfg( feature = "secret_management" ) ]
+#[ cfg( feature = "secrets" ) ]
 mod secret_management_tests
 {
   use super::*;

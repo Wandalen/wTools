@@ -19,7 +19,7 @@ use std::
 
 /// Test that `secret_dir` returns correct `.secret` directory path
 #[ test ]
-#[ cfg( feature = "secret_management" ) ]
+#[ cfg( feature = "secrets" ) ]
 fn test_secret_directory_path_correctness()
 {
   let ( _temp_dir, workspace ) = create_test_workspace_with_structure();
@@ -34,7 +34,7 @@ fn test_secret_directory_path_correctness()
 
 /// Test that `secret_file` creates paths within `.secret` directory
 #[ test ]
-#[ cfg( feature = "secret_management" ) ]
+#[ cfg( feature = "secrets" ) ]
 fn test_secret_file_path_correctness()
 {
   let ( _temp_dir, workspace ) = create_test_workspace_with_structure();
@@ -48,7 +48,7 @@ fn test_secret_file_path_correctness()
 
 /// Test loading secrets from `-secrets.sh` file within `.secret` directory
 #[ test ]
-#[ cfg( feature = "secret_management" ) ]
+#[ cfg( feature = "secrets" ) ]
 fn test_load_secrets_from_correct_directory()
 {
   let ( _temp_dir, workspace ) = create_test_workspace_with_structure();
@@ -79,7 +79,7 @@ DEBUG_MODE="true"
 
 /// Test loading individual secret key from `.secret` directory
 #[ test ]
-#[ cfg( feature = "secret_management" ) ]
+#[ cfg( feature = "secrets" ) ]
 fn test_load_secret_key_from_correct_directory()
 {
   let ( _temp_dir, workspace ) = create_test_workspace_with_structure();
@@ -105,7 +105,7 @@ PROD_DATABASE_URL="postgresql://prod.example.com:5432/proddb"
 
 /// Test that `.secret` directory is created by `create_test_workspace_with_structure`
 #[ test ]
-#[ cfg( feature = "secret_management" ) ]
+#[ cfg( feature = "secrets" ) ]
 fn test_secret_directory_exists_in_test_workspace()
 {
   let ( _temp_dir, workspace ) = create_test_workspace_with_structure();
@@ -120,7 +120,7 @@ fn test_secret_directory_exists_in_test_workspace()
 
 /// Test that multiple secret files can coexist in `.secret` directory
 #[ test ]
-#[ cfg( feature = "secret_management" ) ]
+#[ cfg( feature = "secrets" ) ]
 fn test_multiple_secret_files_in_directory()
 {
   let ( _temp_dir, workspace ) = create_test_workspace_with_structure();
@@ -157,7 +157,7 @@ fn test_multiple_secret_files_in_directory()
 
 /// Test path validation for secret directory structure
 #[ test ]
-#[ cfg( feature = "secret_management" ) ]
+#[ cfg( feature = "secrets" ) ]
 fn test_secret_path_validation()
 {
   let ( _temp_dir, workspace ) = create_test_workspace_with_structure();
