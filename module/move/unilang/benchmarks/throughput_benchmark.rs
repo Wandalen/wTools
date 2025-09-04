@@ -370,7 +370,7 @@ mod tests
 
   #[ cfg( feature = "benchmarks" ) ]
   #[ test ]
-  #[ ignore = "Benchkit integration demo - run explicitly" ]
+  #[ ignore = "Benchkit integration - comprehensive throughput analysis" ]
   fn benchkit_integration_demo()
   {
     run_comprehensive_benchkit_demo();

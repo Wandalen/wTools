@@ -210,7 +210,7 @@ mod tests {
     use super::*;
 
     #[test]
-    #[ignore = "Long running benchmark suite - run explicitly with: cargo test run_all_benchmarks --release --features benchmarks -- --nocapture --ignored"]
+    #[ignore = "Long running manual benchmark suite - comprehensive orchestration with external processes"]
     fn run_all_benchmarks() {
         println!("🏁 COMPREHENSIVE BENCHMARK SUITE");
         println!("================================");
@@ -312,5 +312,90 @@ mod tests {
         
         println!("\n🎉 All benchmarks completed successfully!");
         println!("Run individual benchmarks as needed or re-run this comprehensive suite.");
+    }
+
+    /// Benchkit-compliant benchmark suite orchestrator
+    #[ cfg( feature = "benchmarks" ) ]
+    #[ test ]
+    #[ ignore = "Benchkit integration - comprehensive benchmark suite orchestration" ]
+    fn run_all_benchmarks_benchkit()
+    {
+        use benchkit::prelude::*;
+        
+        println!( "🏁 Benchkit Comprehensive Benchmark Suite" );
+        println!( "=========================================" );
+        println!( "Running core benchmark suites with statistical rigor" );
+        
+        // Create a comprehensive benchmark suite that orchestrates multiple benchmark types
+        let mut suite = BenchmarkSuite::new( "unilang_comprehensive_suite" );
+        
+        println!( "\n📊 Orchestrating core benchmarks with benchkit:" );
+        
+        // Add JSON parsing performance benchmark
+        println!( "  • SIMD JSON parsing performance" );
+        suite.benchmark( "simd_json_parsing", ||
+        {
+            use unilang::simd_json_parser::SIMDJsonParser;
+            let test_json = r#"{"test":{"nested":{"data":[1,2,3,4,5],"info":"benchkit test"}}}"#;
+            let result = SIMDJsonParser::parse_to_serde_value( test_json ).unwrap();
+            core::hint::black_box( result );
+        });
+        
+        // Add registry performance benchmark
+        println!( "  • Command registry performance" );
+        suite.benchmark( "command_registry_performance", ||
+        {
+            use unilang::registry::CommandRegistry;
+            let registry = CommandRegistry::new();
+            let command = registry.command( ".version" );
+            core::hint::black_box( command );
+        });
+        
+        // Add pipeline performance benchmark
+        println!( "  • Command pipeline performance" );
+        suite.benchmark( "command_pipeline_performance", ||
+        {
+            use unilang::pipeline::Pipeline;
+            use unilang::registry::CommandRegistry;
+            let registry = CommandRegistry::new();
+            let pipeline = Pipeline::new( registry );
+            let result = pipeline.process_command_simple( ".version" );
+            core::hint::black_box( result );
+        });
+        
+        // Add string interning benchmark
+        println!( "  • String interning performance" );
+        suite.benchmark( "string_interning_performance", ||
+        {
+            use unilang::interner::intern;
+            let interned = intern( "test_command_name" );
+            core::hint::black_box( interned );
+        });
+        
+        println!( "\n⏱️  Running benchkit statistical analysis..." );
+        let results = suite.run_analysis();
+        
+        // Generate comprehensive report
+        println!( "\n📈 Benchmark Suite Results:" );
+        for ( name, result ) in &results.results
+        {
+            println!( "  • {}: {:.0} ops/sec ({:.3} μs avg)", 
+                     name, 
+                     result.operations_per_second(), 
+                     result.mean_time().as_nanos() as f64 / 1000.0 );
+        }
+        
+        // Performance insights
+        println!( "\n💡 Performance Insights:" );
+        println!( "  • All core components benchmarked with statistical rigor" );
+        println!( "  • Results provide reliable performance baseline" );
+        println!( "  • Individual benchmark variations captured and measured" );
+        
+        let report = results.generate_markdown_report();
+        let report_content = report.generate();
+        println!( "\n📊 Full Statistical Report:\n{report_content}" );
+        
+        println!( "\n✅ Comprehensive benchkit suite completed successfully!" );
+        println!( "All core unilang components measured with professional statistical rigor" );
     }
 }

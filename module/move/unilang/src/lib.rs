@@ -123,4 +123,7 @@ mod_interface::mod_interface!
   
   /// SIMD-optimized JSON parsing for 4-25x performance improvements.
   layer simd_json_parser;
+  
+  /// SIMD-optimized tokenization for 3-6x performance improvements.
+  layer simd_tokenizer;
 }

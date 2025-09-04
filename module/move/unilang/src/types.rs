@@ -201,33 +201,49 @@ fn parse_path_value( input : &str, kind : &Kind ) -> Result< Value, TypeError >
   match kind {
     Kind::Path => Ok(Value::Path(path)),
     Kind::File => {
-      if path.is_file() {
+      #[ cfg( not( target_arch = "wasm32" ) ) ]
+      {
+        if path.is_file() {
+          Ok(Value::File(path))
+        } else if path.is_dir() {
+          Err(TypeError {
+            expected_kind: kind.clone(),
+            reason: "Expected a file, but found a directory".to_string(),
+          })
+        } else {
+          Err(TypeError {
+            expected_kind: kind.clone(),
+            reason: format!("File not found at path: {input}"),
+          })
+        }
+      }
+      #[ cfg( target_arch = "wasm32" ) ]
+      {
+        // WebAssembly fallback: accept paths without filesystem validation
         Ok(Value::File(path))
-      } else if path.is_dir() {
-        Err(TypeError {
-          expected_kind: kind.clone(),
-          reason: "Expected a file, but found a directory".to_string(),
-        })
-      } else {
-        Err(TypeError {
-          expected_kind: kind.clone(),
-          reason: format!("File not found at path: {input}"),
-        })
       }
     }
     Kind::Directory => {
-      if path.is_dir() {
+      #[ cfg( not( target_arch = "wasm32" ) ) ]
+      {
+        if path.is_dir() {
+          Ok(Value::Directory(path))
+        } else if path.is_file() {
+          Err(TypeError {
+            expected_kind: kind.clone(),
+            reason: "Expected a directory, but found a file".to_string(),
+          })
+        } else {
+          Err(TypeError {
+            expected_kind: kind.clone(),
+            reason: format!("Directory not found at path: {input}"),
+          })
+        }
+      }
+      #[ cfg( target_arch = "wasm32" ) ]
+      {
+        // WebAssembly fallback: accept paths without filesystem validation
         Ok(Value::Directory(path))
-      } else if path.is_file() {
-        Err(TypeError {
-          expected_kind: kind.clone(),
-          reason: "Expected a directory, but found a file".to_string(),
-        })
-      } else {
-        Err(TypeError {
-          expected_kind: kind.clone(),
-          reason: format!("Directory not found at path: {input}"),
-        })
       }
     }
     _ => unreachable!("Called parse_path_value with non-path kind: {:?}", kind),

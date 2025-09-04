@@ -30,13 +30,17 @@ full = [ "enabled", "on_unknown_suggest", "simd", "repl", "enhanced_repl" ]
 enabled = []
 benchmarks = [ "simd", "clap", "pico-args", "benchkit" ]
 
+# WebAssembly-compatible feature set - excludes platform-specific dependencies
+# No enhanced REPL (rustyline/atty), no SIMD (platform detection issues), minimal dependencies
+wasm = [ "enabled" ]
+
 # Performance optimizations - SIMD enabled by default for maximum performance
 # Can be disabled with: cargo build --no-default-features --features enabled
 # This enables:
 # - SIMD JSON parsing (simd-json: 4-25x faster than serde_json)
 # - SIMD string operations in strs_tools (memchr, aho-corasick, bytecount)
 # - SIMD tokenization in unilang_parser
-simd = [ "simd-json", "unilang_parser/simd" ]  # SIMD optimizations enabled by default
+simd = [ "simd-json", "memchr", "bytecount", "unilang_parser/simd" ]  # SIMD optimizations enabled by default
 
 # REPL (Read-Eval-Print Loop) support - basic interactive shell functionality
 repl = []
@@ -74,6 +78,8 @@ indexmap = "2.2.6"
 
 # Performance optimization dependencies
 simd-json = { version = "0.13", optional = true } # SIMD-optimized JSON parsing
+memchr = { version = "2.7", optional = true } # SIMD-optimized byte searching (6x faster than std)
+bytecount = { version = "0.6", optional = true } # SIMD byte counting and operations
 
 # Benchmark dependencies moved to dev-dependencies to avoid production inclusion
 clap = { version = "4.4", optional = true }

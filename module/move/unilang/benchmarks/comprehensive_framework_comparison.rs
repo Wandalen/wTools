@@ -913,7 +913,7 @@ mod tests {
 
     #[ cfg( feature = "benchmarks" ) ]
     #[test]
-    #[ignore = "Long running benchmark - run explicitly"]
+    #[ignore = "Long running manual benchmark - comprehensive analysis"]
     fn comprehensive_framework_comparison_benchmark() {
         println!("🚀 Starting Comprehensive Framework Comparison Benchmark");
         println!("========================================================");
@@ -1515,6 +1515,77 @@ fn comprehensive_benchmark(c: &mut Criterion) {
 criterion_group!(benches, comprehensive_benchmark);
 #[cfg(feature = "benchmarks")]
 criterion_main!(benches);
+
+/// Benchkit-compliant comprehensive framework comparison benchmark
+#[ cfg( feature = "benchmarks" ) ]
+#[ test ]
+#[ ignore = "Benchkit integration - comprehensive framework comparison" ]
+fn comprehensive_framework_comparison_benchkit()
+{
+    use benchkit::prelude::*;
+    
+    println!( "🚀 Comprehensive Framework Comparison using Benchkit" );
+    println!( "====================================================" );
+    println!( "Testing Unilang vs Clap vs Pico-Args with statistical rigor" );
+    
+    // Test with smaller command counts suitable for benchkit statistical analysis  
+    let command_counts = vec![ 10, 100, 500 ];
+    
+    for &count in &command_counts
+    {
+        let cmd_display = format_command_count( count );
+        println!( "\n🎯 Benchmarking {} commands", cmd_display );
+        
+        let comparison = ComparativeAnalysis::new( format!( "framework_comparison_{}_commands", count ) )
+            .algorithm( "unilang", move ||
+            {
+                let result = benchmark_unilang_comprehensive( count );
+                core::hint::black_box( result );
+            })
+            .algorithm( "clap", move ||
+            {
+                let result = benchmark_clap_comprehensive( count );
+                core::hint::black_box( result );
+            })
+            .algorithm( "pico_args", move ||
+            {
+                let result = benchmark_pico_args_comprehensive( count );
+                core::hint::black_box( result );
+            });
+        
+        let report = comparison.run();
+        
+        // Display results
+        println!( "📊 Performance Results for {} commands:", cmd_display );
+        for ( name, result ) in report.sorted_by_performance()
+        {
+            println!( "  • {}: {:.0} ops/sec ({:.2}ms avg)", 
+                     name, 
+                     result.operations_per_second(), 
+                     result.mean_time().as_secs_f64() * 1000.0 );
+        }
+        
+        // Display comparative analysis
+        if let Some( ( fastest_name, fastest_result ) ) = report.fastest()
+        {
+            println!( "🏆 Fastest: {}", fastest_name );
+            
+            for ( name, result ) in report.results()
+            {
+                if name != fastest_name
+                {
+                    let speedup = result.mean_time().as_nanos() as f64 / fastest_result.mean_time().as_nanos() as f64;
+                    println!( "  📈 {} is {:.2}x faster than {}", fastest_name, speedup, name );
+                }
+            }
+        }
+        
+        println!( "✨ Statistical analysis completed with benchkit rigor" );
+    }
+    
+    println!( "\n🎉 Comprehensive framework comparison completed!" );
+    println!( "All benchmarks executed with statistical rigor via benchkit" );
+}
 
 #[cfg(not(feature = "benchmarks"))]
 fn main() {
