@@ -99,17 +99,31 @@ struct ValidatedUser
 
 fn validate_user_data( data : &UserData ) -> Result< ValidatedUser, String >
 {
-  // Using assertions to validate business rules with clear error messages
-  a_true!( !data.name.is_empty(), "Name cannot be empty" );
-  a_true!( data.name.len() <= 100, "Name too long" );
+  // Proper error handling instead of assertions
+  if data.name.is_empty() {
+    return Err( "Name cannot be empty".to_string() );
+  }
+  if data.name.len() > 100 {
+    return Err( "Name too long".to_string() );
+  }
   
-  a_true!( data.email.contains( '@' ), "Email must contain @" );
-  a_true!( data.email.len() >= 5, "Email too short" );
+  if !data.email.contains( '@' ) {
+    return Err( "Email must contain @".to_string() );
+  }
+  if data.email.len() < 5 {
+    return Err( "Email too short".to_string() );
+  }
   
-  a_true!( data.age >= 13, "Must be at least 13 years old" );
-  a_true!( data.age <= 150, "Age seems unrealistic" );
+  if data.age < 13 {
+    return Err( "Must be at least 13 years old".to_string() );
+  }
+  if data.age > 150 {
+    return Err( "Age seems unrealistic".to_string() );
+  }
   
-  a_true!( data.preferences.len() <= 10, "Too many preferences" );
+  if data.preferences.len() > 10 {
+    return Err( "Too many preferences".to_string() );
+  }
   
   // Compile-time validation of assumptions
   cta_type_same_size!( u32, u32 ); // Sanity check
@@ -137,13 +151,21 @@ struct DataBatch
 
 fn process_data_batch( batch : &DataBatch ) -> Result< ProcessedBatch, String >
 {
-  // Validate input assumptions
-  a_true!( !batch.id.is_empty(), "Batch ID cannot be empty" );
-  a_true!( !batch.items.is_empty(), "Batch cannot be empty" );
-  a_true!( batch.items.len() <= 10000, "Batch too large for processing" );
+  // Proper error handling instead of assertions
+  if batch.id.is_empty() {
+    return Err( "Batch ID cannot be empty".to_string() );
+  }
+  if batch.items.is_empty() {
+    return Err( "Batch cannot be empty".to_string() );
+  }
+  if batch.items.len() > 10000 {
+    return Err( "Batch too large for processing".to_string() );
+  }
   
   // Validate data quality
-  a_true!( batch.items.iter().all( |x| x.is_finite() ), "All items must be finite numbers" );
+  if !batch.items.iter().all( |x| x.is_finite() ) {
+    return Err( "All items must be finite numbers".to_string() );
+  }
   
   let mut processed_items = Vec::new();
   let mut validation_errors = 0;
@@ -161,11 +183,17 @@ fn process_data_batch( batch : &DataBatch ) -> Result< ProcessedBatch, String >
   }
   
   // Validate processing results
-  a_true!( !processed_items.is_empty(), "Processing should produce some results" );
-  a_true!( validation_errors < batch.items.len() / 2, "Too many validation errors" );
+  if processed_items.is_empty() {
+    return Err( "Processing should produce some results".to_string() );
+  }
+  if validation_errors >= batch.items.len() / 2 {
+    return Err( "Too many validation errors".to_string() );
+  }
   
   let success_rate = processed_items.len() as f64 / batch.items.len() as f64;
-  a_true!( success_rate >= 0.8, "Success rate should be at least 80%" );
+  if success_rate < 0.8 {
+    return Err( "Success rate should be at least 80%".to_string() );
+  }
   
   Ok( ProcessedBatch
   {
@@ -308,9 +336,14 @@ fn parse_api_response( json : &str ) -> Result< ApiResponse, Box< dyn core::erro
 {
   let value : serde_json::Value = serde_json::from_str( json )?;
   
+  // Safe casting with proper error handling
+  let status_u64 = value[ "status" ].as_u64().unwrap();
+  let status = u16::try_from( status_u64 )
+    .map_err( |_| format!( "Status value {status_u64} is too large for u16" ) )?;
+
   Ok( ApiResponse
   {
-    status : value[ "status" ].as_u64().unwrap() as u16,
+    status,
     message : value[ "message" ].as_str().unwrap().to_string(),
     data : value[ "data" ].clone(),
   } )

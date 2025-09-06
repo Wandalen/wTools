@@ -147,7 +147,7 @@ impl WebService
     Ok( config )
   }
   
-  #[ cfg( feature = "secret_management" ) ]
+  #[ cfg( feature = "secrets" ) ]
   fn load_secrets( ws : &workspace_tools::Workspace, config : &ServiceConfig )
   {
     println!( "   🔒 loading service secrets..." );
@@ -167,7 +167,7 @@ impl WebService
     }
   }
   
-  #[ cfg( not( feature = "secret_management" ) ) ]
+  #[ cfg( not( feature = "secrets" ) ) ]
   fn load_secrets( _ws : &workspace_tools::Workspace, _config : &ServiceConfig )
   {
     println!( "   ℹ️  secret management not enabled" );

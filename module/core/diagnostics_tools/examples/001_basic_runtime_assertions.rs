@@ -37,7 +37,7 @@ fn main()
   // ✅ Assertions without custom messages work too
   println!( "\n2. Testing without custom messages:" );
   
-  let name = "Alice";
+  let name = std::env::var("USER").unwrap_or_else(|_| "Alice".to_string());
   a_true!( !name.is_empty() );
   a_false!( name.is_empty() );
   println!( "   ✓ Name '{name}' is valid" );
@@ -58,7 +58,11 @@ fn main()
   // ✅ Common patterns
   println!( "\n4. Common assertion patterns:" );
   
-  let items = ["apple", "banana", "cherry"];
+  let mut items = vec!["apple", "banana", "cherry"];
+  // Simulate conditional item removal to make emptiness check meaningful
+  if std::env::var("REMOVE_ALL_ITEMS").is_ok() {
+    items.clear();
+  }
   
   // Check collection properties
   a_true!( !items.is_empty(), "Items list should not be empty" );

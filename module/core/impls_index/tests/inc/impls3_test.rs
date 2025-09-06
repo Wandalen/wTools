@@ -1,3 +1,5 @@
+#![allow(unused_macros)]
+
 use super::*;
 use the_module::exposed::{impls3, index, implsindex as impls_index};
 

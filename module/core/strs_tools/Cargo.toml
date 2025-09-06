@@ -16,6 +16,9 @@ Tools to manipulate strings.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
+exclude = [
+  "benches/"
+]
 
 [lints]
 workspace = true
@@ -28,6 +31,7 @@ all-features = false
 # Default feature set - includes all commonly used features with performance optimizations
 default = [
   "enabled",
+  "std",
   "string_indentation",
   "string_isolate",
   "string_split",
@@ -40,6 +44,7 @@ default = [
 # Full feature set - includes everything for maximum functionality
 full = [
   "enabled",
+  "std",
   "string_indentation",
   "string_isolate",
   "string_split",
@@ -48,6 +53,7 @@ full = [
   "simd",
   "compile_time_optimizations",
   "specialized_algorithms", # Explicit control over Task 007 algorithms
+  "_disabled_compile_time_tests", # Enable prototype compile-time tests
 ]
 
 # ========================================
@@ -92,11 +98,20 @@ specialized_algorithms = ["string_split"] # Requires string_split as base functi
 # Compile-time pattern optimizations using proc macros
 compile_time_optimizations = ["dep:strs_tools_meta"]
 
+# Internal feature for disabling prototype tests
+_disabled_compile_time_tests = []
+
 # ========================================
 # ENVIRONMENT FEATURES (platform control)
 # ========================================
 
-# no_std compatibility - disables std-dependent features
+# Standard library support (default) - enables std-dependent features and tests
+# This takes precedence over no_std when both are enabled (e.g., with --all-features)
+std = []
+
+# no_std compatibility - disables std-dependent features  
+# Note: This feature is only intended for embedded/no_std environments
+# When testing with --all-features, std functionality takes precedence
 no_std = []
 
 # Enables alloc-based functionality in no_std environments
@@ -132,24 +147,14 @@ lazy_static = { version = "1.4", optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }
-criterion = { version = "0.5", features = ["html_reports"] }
+benchkit = { workspace = true }
 ctor = { version = "0.2" }
 
-# Disabled due to infinite loop issues
 [[bench]]
-name = "bottlenecks"
+name = "simple_specialized_benchmark"
 harness = false
-path = "benchmarks/bottlenecks.rs"
-
-[[bench]]
-name = "zero_copy_comparison"
-harness = false
-path = "benchmarks/zero_copy_comparison.rs"
-
-[[bench]]
-name = "compile_time_optimization_benchmark"
-harness = false
-path = "benchmarks/compile_time_optimization_benchmark.rs"
+path = "benches/simple_specialized_benchmark.rs"
+required-features = ["string_split", "specialized_algorithms"]
 
 [[bin]]
 name = "simd_test"

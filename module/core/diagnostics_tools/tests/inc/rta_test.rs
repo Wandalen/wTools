@@ -8,12 +8,12 @@ use the_module::prelude::*;
 use test_tools::impls_index::tests_impls;
 use test_tools::impls_index::tests_index;
 */
-use diagnostics_tools::a_true;
-use diagnostics_tools::a_id;
-use diagnostics_tools::a_not_id;
-use diagnostics_tools::a_dbg_true;
-use diagnostics_tools::a_dbg_id;
-use diagnostics_tools::a_dbg_not_id;
+use the_module::a_true;
+use the_module::a_id;
+use the_module::a_not_id;
+use the_module::a_dbg_true;
+use the_module::a_dbg_id;
+use the_module::a_dbg_not_id;
 
 // qqq : do negative testing, don't forget about optional arguments /* aaa : Dmytro : done */
 // Test implementations (available on all platforms)

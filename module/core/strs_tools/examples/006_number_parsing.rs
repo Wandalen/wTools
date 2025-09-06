@@ -310,6 +310,7 @@ fn error_handling_and_validation()
 ///
 /// Shows practical applications like configuration file parsing,
 /// data validation, unit conversion, and user input processing.
+#[ allow( clippy::too_many_lines ) ]
 fn real_world_scenarios()
 {
   println!( "\n--- Real-World Scenarios ---" );

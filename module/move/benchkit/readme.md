@@ -7,7 +7,7 @@
 
 `benchkit` is a lightweight toolkit for performance analysis, born from the hard-learned lessons of optimizing high-performance libraries. It rejects rigid, all-or-nothing frameworks in favor of flexible, composable tools that integrate seamlessly into your existing workflow.
 
-> 🎯 **NEW TO benchkit?** Start with [`recommendations.md`](recommendations.md) - Essential guidelines from real-world performance optimization experience.
+> 🎯 **NEW TO benchkit?** Start with [`usage.md`](usage.md) - Mandatory standards and requirements from production systems.
 
 ## The Benchmarking Dilemma
 
@@ -18,7 +18,7 @@ In Rust, developers often face a frustrating choice:
 
 `benchkit` offers a third way.
 
-> **📋 Important**: For production use and development contributions, see [`recommendations.md`](recommendations.md) - a comprehensive guide with proven patterns, requirements, and best practices from real-world benchmarking experience.
+> **📋 Important**: For production use and development contributions, see [`usage.md`](usage.md) - mandatory standards with proven patterns, requirements, and compliance standards from production systems.
 
 ## A Toolkit, Not a Framework
 
@@ -33,14 +33,14 @@ This is the core philosophy of `benchkit`. It doesn't impose a workflow; it prov
 
 ## 🚀 Quick Start: Compare, Analyze, and Document
 
-**📖 First time?** Review [`recommendations.md`](recommendations.md) for comprehensive best practices and development guidelines.
+**📖 First time?** Review [`usage.md`](usage.md) for mandatory compliance standards and development requirements.
 
 This example demonstrates the core `benchkit` workflow: comparing two algorithms and automatically updating a performance section in your `readme.md`.
 
 **1. Add to `dev-dependencies` in `Cargo.toml`:**
 ```toml
 [dev-dependencies]
-benchkit = { version = "0.1", features = [ "full" ] }
+benchkit = { version = "0.8.0", features = [ "full" ] }
 ```
 
 **2. Create a benchmark in your `benches` directory:**
@@ -758,25 +758,31 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
 [ 5. Commit Code + Perf Docs ] <- [ 4. Auto-Update `benchmark_results.md` ] <- [ Analyze Results ]
 ```
 
-## 📁 Why Not `benches/`? Standard Directory Integration
+## 📁 MANDATORY `benches/` Directory - NO ALTERNATIVES
 
-The traditional `benches/` directory creates artificial separation between ALL your benchmark content and the standard Rust project structure. `benchkit` encourages you to use standard directories for ALL benchmark-related files:
+**ABSOLUTE REQUIREMENT**: ALL benchmark-related files MUST be in the `benches/` directory. This is NON-NEGOTIABLE for proper benchkit functionality:
 
-- ✅ **Use `tests/`**: Performance benchmarks alongside unit tests
-- ✅ **Use `examples/`**: Demonstration benchmarks and showcases  
-- ✅ **Use `src/bin/`**: Dedicated benchmark executables
-- ✅ **Standard integration**: Keep ALL benchmark content in standard Rust directories
-- ❌ **Avoid `benches/`**: Don't isolate ANY benchmark files in framework-specific directories
+- 🚫 **NEVER in `tests/`**: Benchmarks are NOT tests and MUST NOT be mixed with unit tests
+- 🚫 **NEVER in `examples/`**: Examples are demonstrations, NOT performance measurements  
+- 🚫 **NEVER in `src/bin/`**: Source binaries are NOT benchmarks
+- ✅ **ONLY in `benches/`**: This is the EXCLUSIVE location for ALL benchmark content
+
+**Why This Requirement Exists:**
+
+- ⚡ **Cargo Requirement**: `cargo bench` ONLY works with `benches/` directory
+- 🏗️ **Ecosystem Standard**: ALL professional Rust projects use `benches/` EXCLUSIVELY
+- 🔧 **Tool Compatibility**: IDEs, CI systems, linters expect benchmarks ONLY in `benches/`
+- 📊 **Performance Isolation**: Benchmarks require different compilation and execution than tests
 
 ### Why This Matters
 
-**Workflow Integration**: ALL benchmark content should be part of regular development, not isolated in framework-specific directories.
+**Ecosystem Integration**: The `benches/` directory is the official Rust standard, ensuring compatibility with the entire Rust toolchain.
 
-**Documentation Proximity**: ALL benchmark files are documentation - keep them integrated with your standard project structure for better maintainability.
+**Zero Configuration**: `cargo bench` automatically discovers and runs benchmarks in the `benches/` directory without additional setup.
 
-**Testing Philosophy**: Performance is part of correctness validation - integrate benchmarks with your existing test suite.
+**Community Expectations**: Developers expect to find benchmarks in `benches/` - this follows the principle of least surprise.
 
-**Toolkit vs Framework**: Frameworks enforce rigid `benches/` isolation; toolkits integrate with your existing project structure.
+**Tool Compatibility**: All Rust tooling (IDEs, CI/CD, linters) is designed around the standard `benches/` structure.
 
 ### Automatic Documentation Updates
 
@@ -910,7 +916,7 @@ Add to your `Cargo.toml`:
 benchmark = ["benchkit"]
 
 [dev-dependencies]
-benchkit = { version = "0.1", features = ["full"], optional = true }
+benchkit = { version = "0.8.0", features = ["full"], optional = true }
 ```
 
 Run benchmarks selectively:
@@ -1005,6 +1011,15 @@ This approach keeps your regular builds fast while making comprehensive performa
   - Progressive validation pipeline with halt-on-failure
   - Real-world CI/CD integration patterns and best practices
 
+- **🚨 [Cargo Bench Integration](examples/cargo_bench_integration.rs)**: CRITICAL - Standard `cargo bench` integration patterns
+  - Seamless integration with Rust's standard `cargo bench` command
+  - Automatic documentation updates during benchmark execution
+  - Standard `benches/` directory structure support
+  - Criterion compatibility layer for zero-migration adoption
+  - CI/CD integration with standard workflows and conventions
+  - Real-world project structure and configuration examples
+  - **This is the foundation requirement for benchkit adoption**
+
 ### 🚀 Running the Examples
 
 ```bash
@@ -1025,6 +1040,9 @@ cargo run --example advanced_usage_patterns --all-features
 # NEW: CI/CD Integration Example
 cargo run --example cicd_regression_detection --all-features
 
+# 🚨 CRITICAL: Cargo Bench Integration Example
+cargo run --example cargo_bench_integration --all-features
+
 # Original enhanced features demo
 cargo run --example enhanced_features_demo --all-features
 ```
@@ -1041,12 +1059,12 @@ Add `benchkit` to your `[dev-dependencies]` in `Cargo.toml`.
 benchkit = "0.1"
 
 # Or enable all features for the full toolkit
-benchkit = { version = "0.1", features = [ "full" ] }
+benchkit = { version = "0.8.0", features = [ "full" ] }
 ```
 
 ## 📋 Development Guidelines & Best Practices
 
-**⚠️ IMPORTANT**: Before using benchkit in production or contributing to development, **strongly review** the comprehensive [`recommendations.md`](recommendations.md) file. This document contains essential requirements, best practices, and lessons learned from real-world performance analysis work.
+**⚠️ IMPORTANT**: Before using benchkit in production or contributing to development, **strongly review** the comprehensive [`usage.md`](usage.md) file. This document contains essential requirements, best practices, and lessons learned from real-world performance analysis work.
 
 The recommendations cover:
 - ✅ **Core philosophy** and toolkit vs framework principles
@@ -1055,18 +1073,18 @@ The recommendations cover:
 - ✅ **Documentation integration** requirements for automated reporting
 - ✅ **Statistical analysis** requirements for reliable measurements
 
-**📖 Read [`recommendations.md`](recommendations.md) first** - it will save you time and ensure you're following proven patterns.
+**📖 Read [`usage.md`](usage.md) first** - it will save you time and ensure you're following proven patterns.
 
 ## Contributing
 
 Contributions are welcome! `benchkit` aims to be a community-driven toolkit that solves real-world benchmarking problems. 
 
 **Before contributing:**
-1. **📖 Read [`recommendations.md`](recommendations.md)** - Contains all development requirements and design principles
+1. **📖 Read [`usage.md`](usage.md)** - Contains all development requirements and design principles
 2. Review open tasks in the [`task/`](task/) directory  
 3. Check our contribution guidelines
 
-All contributions must align with the principles and requirements outlined in [`recommendations.md`](recommendations.md).
+All contributions must align with the principles and requirements outlined in [`usage.md`](usage.md).
 
 ## License
 

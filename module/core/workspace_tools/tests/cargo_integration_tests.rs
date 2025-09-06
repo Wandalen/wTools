@@ -15,7 +15,7 @@
 //! | CI008   | workspace_members | Get all workspace members | Success with member list |
 //! | CI009   | resolve_or_fallback | Cargo integration as primary strategy | Uses cargo detection first |
 
-#![ cfg( feature = "cargo_integration" ) ]
+// cargo integration is now always available
 
 use workspace_tools::{ Workspace, WorkspaceError };
 use std::fs;

@@ -15,7 +15,7 @@
 //! - Memory usage remains constant regardless of session length
 //! - Safe for long-running REPL sessions without memory leaks
 //!
-//! ## Performance Characteristics  
+//! ## Command Pipeline Performance Analysis  
 //! - Component reuse provides 20-50% performance improvement over creating new instances
 //! - Static command registry lookups via PHF are zero-cost even with millions of commands
 //! - Parsing overhead is minimal and constant-time for typical command lengths

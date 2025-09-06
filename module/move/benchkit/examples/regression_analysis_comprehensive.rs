@@ -1,12 +1,12 @@
 //! Comprehensive Regression Analysis Examples
 //!
 //! This example demonstrates EVERY aspect of the new Regression Analysis system:
-//! - RegressionAnalyzer with all baseline strategies (Fixed, Rolling Average, Previous Run)
-//! - HistoricalResults management and TimestampedResults creation
+//! - `RegressionAnalyzer` with all baseline strategies (Fixed, Rolling Average, Previous Run)
+//! - `HistoricalResults` management and `TimestampedResults` creation
 //! - Performance trend detection (Improving, Degrading, Stable)  
 //! - Statistical significance testing with configurable thresholds
 //! - Professional markdown report generation with regression insights
-//! - Integration with PerformanceReport templates
+//! - Integration with `PerformanceReport` templates
 //! - Real-world scenarios: code optimization, library upgrades, performance monitoring
 
 #![ cfg( feature = "enabled" ) ]

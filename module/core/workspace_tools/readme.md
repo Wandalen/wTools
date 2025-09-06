@@ -131,89 +131,110 @@ your-project/
 
 ---
 
-## 🎭 Advanced Features
+## 🔧 Optional Features
 
-`workspace_tools` is packed with powerful, optional features. Enable them in your `Cargo.toml` as needed.
+Enable additional functionality as needed in your `Cargo.toml`:
 
-<details>
-<summary><strong>🔧 Seamless Serde Integration (`serde_integration`)</strong></summary>
-
-Eliminate boilerplate for loading `.toml`, `.json`, and `.yaml` files.
-
-**Enable:** `cargo add serde` and add `workspace_tools = { workspace = true, features = ["serde_integration"] }` to `Cargo.toml`.
+**Serde Integration** (`serde`) - *enabled by default*
+Load `.toml`, `.json`, and `.yaml` files directly into structs.
 
 ```rust
-use serde::Deserialize;
-use workspace_tools::workspace;
-
 #[ derive( Deserialize ) ]
-struct AppConfig
-{
-  name : String,
-  port : u16,
+struct AppConfig { name: String, port: u16 }
+
+let config: AppConfig = workspace()?.load_config( "app" )?; // Supports .toml, .json, .yaml
+```
+
+**Resource Discovery** (`glob`)
+Find files with glob patterns like `src/**/*.rs`.
+
+```rust
+let rust_files = workspace()?.find_resources( "src/**/*.rs" )?;
+```
+
+**Secret Management** (`secrets`)
+Load secrets from `.secret/` directory with environment fallbacks. Supports both `KEY=VALUE` format and shell `export KEY=VALUE` statements.
+
+```rust
+let api_key = workspace()?.load_secret_key( "API_KEY", "-secrets.sh" )?;
+```
+
+**Memory-Safe Secret Handling** (`secure`)
+Advanced secret management with memory-safe `SecretString` types and automatic injection.
+
+```rust
+use secrecy::ExposeSecret;
+
+// Memory-safe secret loading
+let secrets = workspace()?.load_secrets_secure( "-secrets.sh" )?;
+let api_key = secrets.get( "API_KEY" ).unwrap();
+println!( "API Key: {}", api_key.expose_secret() );
+
+// Template-based secret injection into configuration files
+let config = workspace()?.load_config_with_secret_injection( "config.toml", "-secrets.sh" )?;
+
+// Secret strength validation
+workspace()?.validate_secret( "weak123" )?; // Returns error for weak secrets
+```
+
+**Config Validation** (`validation`)
+Schema-based validation for configuration files.
+
+```rust
+let config: AppConfig = workspace()?.load_config_with_validation( "app" )?;
+```
+
+---
+
+## 🔐 Advanced Security Features
+
+### Type-Safe Secret Injection
+
+The `SecretInjectable` trait allows automatic injection of secrets into configuration types with compile-time safety:
+
+```rust
+use workspace_tools::{ workspace, SecretInjectable };
+
+#[derive(Debug)]
+struct AppConfig {
+    database_url: String,
+    api_key: String,
+}
+
+impl SecretInjectable for AppConfig {
+    fn inject_secret(&mut self, key: &str, value: String) -> workspace_tools::Result<()> {
+        match key {
+            "DATABASE_URL" => self.database_url = value,
+            "API_KEY" => self.api_key = value,
+            _ => return Err(workspace_tools::WorkspaceError::SecretInjectionError(
+                format!("unknown secret key: {}", key)
+            )),
+        }
+        Ok(())
+    }
+
+    fn validate_secrets(&self) -> workspace_tools::Result<()> {
+        if self.api_key.is_empty() {
+            return Err(workspace_tools::WorkspaceError::SecretValidationError(
+                "api_key cannot be empty".to_string()
+            ));
+        }
+        Ok(())
+    }
 }
 
 let ws = workspace()?;
-
-// Automatically finds and parses `config/app.{toml,yaml,json}`.
-let config : AppConfig = ws.load_config( "app" )?;
-println!( "Running '{}' on port {}", config.name, config.port );
-
-// Load and merge multiple layers (e.g., base + production).
-let final_config : AppConfig = ws.load_config_layered( &[ "base", "production" ] )?;
-
-// Partially update a configuration file on disk.
-let updates = serde_json::json!( { "port": 9090 } );
-let updated_config : AppConfig = ws.update_config( "app", updates )?;
+let mut config = AppConfig { database_url: String::new(), api_key: String::new() };
+config = ws.load_config_with_secrets(config, "-secrets.sh")?; // Automatically validates
 ```
 
-</details>
+### Security Best Practices
 
-<details>
-<summary><strong>🔍 Powerful Resource Discovery (`glob`)</strong></summary>
-
-Find files anywhere in your workspace using glob patterns.
-
-**Enable:** Add `workspace_tools = { workspace = true, features = ["glob"] }` to `Cargo.toml`.
-
-```rust
-use workspace_tools::workspace;
-
-let ws = workspace()?;
-
-// Find all Rust source files recursively.
-let rust_files = ws.find_resources( "src/**/*.rs" )?;
-
-// Intelligently find a config file, trying multiple extensions.
-let db_config = ws.find_config( "database" )?; // Finds config/database.toml, .yaml, etc.
-```
-
-</details>
-
-<details>
-<summary><strong>🔒 Secure Secret Management (`secret_management`)</strong></summary>
-
-Load secrets from files in a dedicated, git-ignored `.secret/` directory, with fallbacks to environment variables.
-
-**Enable:** Add `workspace_tools = { workspace = true, features = ["secret_management"] }` to `Cargo.toml`.
-
-```
-// .gitignore
-.*
-// .secret/-secrets.sh
-API_KEY="your-super-secret-key"
-```
-
-```rust
-use workspace_tools::workspace;
-
-let ws = workspace()?;
-
-// Loads API_KEY from .secret/-secrets.sh, or falls back to the environment.
-let api_key = ws.load_secret_key( "API_KEY", "-secrets.sh" )?;
-```
-
-</details>
+- **Memory Safety**: All secrets wrapped in `SecretString` types that prevent accidental exposure
+- **Debug Protection**: Secrets are automatically redacted from debug output
+- **Explicit Access**: Secrets require explicit `expose_secret()` calls for access
+- **Validation**: Built-in secret strength validation rejects weak passwords
+- **Zeroization**: Secrets are automatically cleared from memory when dropped
 
 ---
 
@@ -286,15 +307,68 @@ graph TD
 
 ---
 
-## 🚧 Vision & Roadmap
+## 📚 API Reference
 
-`workspace_tools` is actively developed. Our vision is to make workspace management a solved problem in Rust. Upcoming features include:
+### Core Methods
 
-*   **Project Scaffolding**: A powerful `cargo workspace-tools init` command to create new projects from templates.
-*   **Configuration Validation**: Schema-based validation to catch config errors before they cause panics.
-*   **Async & Hot-Reloading**: Full `tokio` integration for non-blocking file operations and live configuration reloads.
-*   **Official CLI Tool**: A `cargo workspace-tools` command for managing your workspace from the terminal.
-*   **IDE Integration**: Rich support for VS Code and RustRover to bring workspace-awareness directly into your editor.
+```rust
+// Workspace creation and path operations
+let ws = workspace()?;                    // Auto-detect workspace root
+let ws = Workspace::new( "/path/to/root" ); // Explicit path
+let path = ws.join( "relative/path" );    // Join paths safely
+let root = ws.root();                     // Get workspace root
+
+// Standard directories
+let config = ws.config_dir();             // ./config/
+let data = ws.data_dir();                 // ./data/
+let logs = ws.logs_dir();                 // ./logs/
+let docs = ws.docs_dir();                 // ./docs/
+```
+
+### Configuration Loading
+
+```rust
+// Load configuration files (supports .toml, .json, .yaml)
+let config: MyConfig = ws.load_config( "app" )?;
+let config: MyConfig = ws.load_config_from( "config/app.toml" )?;
+
+// Layered configuration (loads multiple files and merges)
+let config: MyConfig = ws.load_config_layered( &[ "base", "dev" ] )?;
+
+// Configuration with validation
+let config: MyConfig = ws.load_config_with_validation( "app" )?;
+```
+
+### Secret Management
+
+```rust
+// Basic secret loading
+let secrets = ws.load_secrets_from_file( "-secrets.sh" )?;
+let api_key = ws.load_secret_key( "API_KEY", "-secrets.sh" )?;
+
+// Memory-safe secret handling (requires 'secure' feature)
+let secrets = ws.load_secrets_secure( "-secrets.sh" )?;
+let api_key = ws.load_secret_key_secure( "API_KEY", "-secrets.sh" )?;
+let token = ws.env_secret( "GITHUB_TOKEN" );
+
+// Secret validation and injection
+ws.validate_secret( "password123" )?; // Validates strength
+let config_text = ws.load_config_with_secret_injection( "app.toml", "-secrets.sh" )?;
+let config: MyConfig = ws.load_config_with_secrets( my_config, "-secrets.sh" )?;
+```
+
+### Resource Discovery
+
+```rust
+// Find files with glob patterns (requires 'glob' feature)  
+let rust_files = ws.find_resources( "src/**/*.rs" )?;
+let configs = ws.find_resources( "config/**/*.{toml,json,yaml}" )?;
+
+// Find configuration files with priority ordering
+let config_path = ws.find_config( "app" )?; // Looks for app.toml, app.json, app.yaml
+```
+
+---
 
 ## 🤝 Contributing
 

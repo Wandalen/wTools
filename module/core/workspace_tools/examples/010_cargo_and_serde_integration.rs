@@ -6,16 +6,16 @@
 //! 3. Configuration saving and updating
 //! 4. Layered configuration management
 //!
-//! Run with: cargo run --example `010_cargo_and_serde_integration` --features full
+//! Run with: cargo run --example `010_cargo_and_serde` --features full
 
 use workspace_tools::Workspace;
 
-#[ cfg( feature = "serde_integration" ) ]
+#[ cfg( feature = "serde" ) ]
 use serde::{ Deserialize, Serialize };
-#[ cfg( feature = "serde_integration" ) ]
+#[ cfg( feature = "serde" ) ]
 use workspace_tools::ConfigMerge;
 
-#[ cfg( feature = "serde_integration" ) ]
+#[ cfg( feature = "serde" ) ]
 #[ derive( Debug, Clone, Serialize, Deserialize ) ]
 struct AppConfig
 {
@@ -27,7 +27,7 @@ struct AppConfig
   features : Vec< String >,
 }
 
-#[ cfg( feature = "serde_integration" ) ]
+#[ cfg( feature = "serde" ) ]
 #[ derive( Debug, Clone, Serialize, Deserialize ) ]
 struct DatabaseConfig
 {
@@ -37,7 +37,7 @@ struct DatabaseConfig
   ssl : bool,
 }
 
-#[ cfg( feature = "serde_integration" ) ]
+#[ cfg( feature = "serde" ) ]
 impl ConfigMerge for AppConfig
 {
   fn merge( mut self, other : Self ) -> Self
@@ -62,19 +62,18 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "🚀 Cargo Integration and Serde Integration Demo\n" );
 
-  // demonstrate cargo integration
-  #[ cfg( feature = "cargo_integration" ) ]
-  cargo_integration_demo();
+  // demonstrate cargo integration (always available)
+  cargo_demo();
 
   // demonstrate serde integration
-  #[ cfg( feature = "serde_integration" ) ]
-  serde_integration_demo()?;
+  #[ cfg( feature = "serde" ) ]
+  serde_demo()?;
 
   Ok( () )
 }
 
-#[ cfg( feature = "cargo_integration" ) ]
-fn cargo_integration_demo()
+#[ cfg( feature = "serde" ) ]
+fn cargo_demo()
 {
   println!( "📦 Cargo Integration Features:" );
   
@@ -159,8 +158,8 @@ fn cargo_integration_demo()
   println!();
 }
 
-#[ cfg( feature = "serde_integration" ) ]
-fn serde_integration_demo() -> Result< (), Box< dyn core::error::Error > >
+#[ cfg( feature = "serde" ) ]
+fn serde_demo() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "🔧 Serde Integration Features:" );
   
@@ -290,9 +289,9 @@ fn serde_integration_demo() -> Result< (), Box< dyn core::error::Error > >
   Ok( () )
 }
 
-#[ cfg( not( any( feature = "cargo_integration", feature = "serde_integration" ) ) ) ]
+#[ cfg( not( feature = "serde" ) ) ]
 fn main()
 {
-  println!( "🔧 This example requires cargo_integration and/or serde_integration features." );
-  println!( "   Run with: cargo run --example 010_cargo_and_serde_integration --features full" );
+  println!( "🔧 This example requires serde feature (enabled by default)." );
+  println!( "   Run with: cargo run --example 010_cargo_and_serde --features serde" );
 }

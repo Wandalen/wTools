@@ -128,7 +128,7 @@ fn test_m_t3_12_quoting_no_preserve_strip() {
   .quoting( true )
   // preserving_quoting is false by default
   .perform();
-  let expected = vec![
+  let expected = [
     ("a", SplitType::Delimeted, 0, 1),
     ("b c", SplitType::Delimeted, 3, 6), // Quotes stripped
     ("d", SplitType::Delimeted, 8, 9),

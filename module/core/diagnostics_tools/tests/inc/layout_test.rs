@@ -2,10 +2,10 @@
 use super::*;
 #[ allow( unused_imports ) ]
 use the_module::prelude::*;
-use diagnostics_tools::cta_type_same_size;
-use diagnostics_tools::cta_type_same_align;
-use diagnostics_tools::cta_ptr_same_size;
-use diagnostics_tools::cta_mem_same_size;
+use the_module::cta_type_same_size;
+use the_module::cta_type_same_align;
+use the_module::cta_ptr_same_size;
+use the_module::cta_mem_same_size;
 
 // qqq : do negative testing /* aaa : Dmytro : done */
 // zzz : continue here

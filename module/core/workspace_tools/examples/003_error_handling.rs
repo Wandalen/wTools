@@ -122,15 +122,15 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
       println!( "   handle security violation: {}", path.display() ),
     
     // handle new error types from cargo and serde integration
-    #[ cfg( feature = "cargo_integration" ) ]
+    #[ cfg( feature = "serde" ) ]
     Err( WorkspaceError::CargoError( msg ) ) =>
       println!( "   handle cargo error: {msg}" ),
     
-    #[ cfg( feature = "cargo_integration" ) ]  
+    #[ cfg( feature = "serde" ) ]  
     Err( WorkspaceError::TomlError( msg ) ) =>
       println!( "   handle toml error: {msg}" ),
     
-    #[ cfg( feature = "serde_integration" ) ]
+    #[ cfg( feature = "serde" ) ]
     Err( WorkspaceError::SerdeError( msg ) ) =>
       println!( "   handle serde error: {msg}" ),
     

@@ -6,16 +6,20 @@ use strs_tools::*;
 fn main() {
   println!( "Testing compile-time pattern optimization..." );
   
-  #[ cfg( all( feature = "compile_time_optimizations", feature = "string_split" ) ) ]
+  #[ cfg( all( feature = "compile_time_optimizations", feature = "string_split", not( feature = "no_std" ) ) ) ]
   {
-    use strs_tools::string::zero_copy::ZeroCopyStringExt;
+    use strs_tools::string::split::split;
     
     // Test basic functionality without macros first
     let input = "a,b,c";
-    let result: Vec<_> = input.zero_copy_split( &[","] ).collect();
+    let result: Vec<_> = split()
+      .src( input )
+      .delimeter( "," )
+      .perform()
+      .map( |s| s.string.to_string() )
+      .collect();
     
-    println!( "Zero-copy split result: {:?}", 
-             result.iter().map( |s| s.as_str() ).collect::< Vec<_> >() );
+    println!( "Split result: {:?}", result );
     
     // Note: Macro testing disabled - optimize_split! macro not yet fully implemented
     println!( "ℹ️  Compile-time optimization macros are prototype features" );

@@ -1,6 +1,5 @@
 use super::*;
-use test_tools::impls_index::tests_impls;
-use test_tools::impls_index::tests_index;
+// tests_impls and tests_index are macros available from test_tools crate root
 use test_tools::diagnostics_tools::a_true;
 use test_tools::diagnostics_tools::a_false;
 

@@ -982,6 +982,63 @@ Explore the `examples/` directory for more detailed examples:
 - `10_full_pipeline.rs` - Complete pipeline example
 - `11_pipeline_api.rs` - Pipeline API features
 - `full_cli_example.rs` - Full-featured CLI application
+- `examples/wasm-repl/` - **🌐 WebAssembly REPL** - Interactive web-based command interface
+
+## 🌐 WebAssembly Support
+
+UniLang provides **full WebAssembly compatibility** allowing you to run your command framework in web browsers with near-native performance.
+
+### Features
+
+- **🚀 Complete Framework**: Full unilang functionality in WebAssembly
+- **🔧 Cross-Platform**: Same API works in native and browser environments  
+- **⚡ SIMD Optimized**: Fast parsing with SIMD acceleration where available
+- **📦 Optimized Builds**: Small bundle size (~800KB-1.2MB compressed)
+- **🎯 Type Safety**: Full type validation and error handling in WASM
+- **🔄 Seamless Integration**: Easy Rust-to-JavaScript bridge
+
+### Quick Start
+
+1. **Navigate to WASM REPL Example**
+   ```bash
+   cd examples/wasm-repl
+   ```
+
+2. **Build for WebAssembly**
+   ```bash
+   # Option 1: Using wasm-pack (recommended)
+   wasm-pack build --target web --release
+
+   # Option 2: Using cargo directly
+   cargo build --target wasm32-unknown-unknown --release
+   ```
+
+3. **Serve and Test**
+   ```bash
+   cd www
+   python3 -m http.server 8000
+   # Open http://localhost:8000 in your browser
+   ```
+
+### Live Demo Commands
+
+Try these commands in the WebAssembly REPL:
+
+```bash
+.help                    # Show available commands
+.demo.echo Hello WASM!   # Echo text through WebAssembly
+.calc.add 42 58         # Simple calculator
+```
+
+### WebAssembly-Specific Features
+
+- **Conditional Compilation**: Filesystem operations gracefully disabled for WASM targets
+- **Memory Optimization**: Custom allocator (`wee_alloc`) for reduced binary size
+- **Error Handling**: Browser-friendly panic hooks and error reporting
+- **Performance**: SIMD acceleration for parsing and JSON processing
+- **Browser API Integration**: Full access to Web APIs through `web-sys`
+
+For complete build and deployment instructions, see [`examples/wasm-repl/BUILD_GUIDE.md`](examples/wasm-repl/BUILD_GUIDE.md).
 
 ## Contributing
 

@@ -47,12 +47,11 @@ pub use simd::{ SIMDSplitIterator, simd_split_cached, get_or_create_cached_patte
 
 /// Internal implementation details for string splitting.
 mod private {
-  #[ allow( clippy::struct_excessive_bools ) ]
-  #[ cfg( feature = "use_alloc" ) ]
-  use alloc::borrow::Cow;
-  #[ cfg( not( feature = "use_alloc" ) ) ]
+  #[ cfg( feature = "std" ) ]
   use std::borrow::Cow;
-  #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
+  #[ cfg( all( feature = "use_alloc", not( feature = "std" ) ) ) ]
+  use alloc::borrow::Cow;
+  #[ cfg( all( feature = "string_parse_request", feature = "std" ) ) ]
   use crate::string::parse_request::OpType;
   use super::SplitFlags; // Import SplitFlags from parent module
 
@@ -861,7 +860,7 @@ mod private {
 
   /// Former (builder) for creating `SplitOptions`.
   // This lint is addressed by using SplitFlags
-  #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
+  #[ cfg( all( feature = "string_parse_request", feature = "std" ) ) ]
   #[ derive( Debug ) ]
   pub struct SplitOptionsFormer<'a> {
     src: &'a str,
@@ -871,7 +870,7 @@ mod private {
     quoting_postfixes: Vec< &'a str >,
   }
 
-  #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
+  #[ cfg( all( feature = "string_parse_request", feature = "std" ) ) ]
   impl<'a> SplitOptionsFormer<'a> {
     /// Initializes builder with delimiters to support fluent configuration of split options.
     pub fn new<D: Into<OpType<&'a str>>>(delimeter: D) -> SplitOptionsFormer<'a> {
@@ -1010,7 +1009,7 @@ mod private {
 
   /// Creates a new `SplitOptionsFormer` to build `SplitOptions` for splitting a string.
   /// This is the main entry point for using advanced string splitting functionality.
-  #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
+  #[ cfg( all( feature = "string_parse_request", feature = "std" ) ) ]
   #[ must_use ]
   pub fn split_advanced<'a>() -> SplitOptionsFormer<'a> {
     SplitOptionsFormer::new(<&str>::default())
@@ -1031,7 +1030,7 @@ pub mod own {
   use super::*;
   pub use orphan::*;
   pub use private::{ Split, SplitType, SplitIterator, Searcher, BasicSplitBuilder, split };
-  #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
+  #[ cfg( all( feature = "string_parse_request", feature = "std" ) ) ]
   pub use private::{ split_advanced, SplitOptionsFormer };
   #[ cfg( feature = "simd" ) ]
   pub use super::{ SIMDSplitIterator, simd_split_cached, get_or_create_cached_patterns };
@@ -1054,7 +1053,7 @@ pub mod exposed {
   use super::*;
   pub use prelude::*;
   pub use super::own::{ Split, SplitType, SplitIterator, Searcher, BasicSplitBuilder, split };
-  #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
+  #[ cfg( all( feature = "string_parse_request", feature = "std" ) ) ]
   pub use super::own::{ split_advanced, SplitOptionsFormer };
   #[ cfg( feature = "simd" ) ]
   pub use super::own::{ SIMDSplitIterator, simd_split_cached, get_or_create_cached_patterns };
@@ -1068,7 +1067,7 @@ pub mod prelude {
   #[ allow( unused_imports ) ]
   use super::*;
   pub use private::{ Searcher, BasicSplitBuilder, split };
-  #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
+  #[ cfg( all( feature = "string_parse_request", feature = "std" ) ) ]
   pub use private::{ SplitOptionsFormer, split_advanced };
   #[ cfg( test ) ]
   pub use private::{ SplitFastIterator, test_unescape_str as unescape_str };

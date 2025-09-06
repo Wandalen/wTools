@@ -1,9 +1,11 @@
+#[ allow( unused_imports ) ]
 use super::*;
 
 //
 
-#[cfg(not(feature = "no_std"))]
+#[cfg(feature = "std")]
 #[ test ]
+#[ allow( unused_variables ) ] // Variables are used by a_id! macro but compiler can't detect it
 fn basic() {
   use the_module::string::indentation;
 

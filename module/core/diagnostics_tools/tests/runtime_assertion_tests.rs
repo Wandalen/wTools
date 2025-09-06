@@ -14,8 +14,7 @@ fn a_id_run()
   } else if let Some( s ) = err.downcast_ref::< &'static str >()
   {
     s
-  } else
-  {
+  } else {
     panic!( "Unknown panic payload type: {err:?}" );
   };
   let msg = String::from_utf8( strip_ansi_escapes::strip( msg ).unwrap() ).unwrap();
@@ -40,8 +39,7 @@ fn a_not_id_run()
   } else if let Some( s ) = err.downcast_ref::< &'static str >()
   {
     s
-  } else
-  {
+  } else {
     panic!( "Unknown panic payload type: {err:?}" );
   };
   let msg = String::from_utf8( strip_ansi_escapes::strip( msg ).unwrap() ).unwrap();

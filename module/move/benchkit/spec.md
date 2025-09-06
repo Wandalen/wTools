@@ -278,11 +278,12 @@ if line.trim() == self.section_marker.trim() {
 
 ### 8. Standard Directory Requirements
 
-**SR-DIRECTORY-1: Standard Rust Convention Compliance** ⭐ **MANDATORY**
-- ALL benchmark-related files must be located in the standard `benches/` directory
-- This follows established Rust ecosystem conventions and ensures compatibility with `cargo bench`
-- Benchmark binaries, data generation scripts, and analysis tools must all reside in `benches/`
-- No benchmark-related files should be placed in `tests/`, `examples/`, or `src/bin/`
+**SR-DIRECTORY-1: ABSOLUTE `benches/` Directory Requirement** ⭐ **MANDATORY - NO EXCEPTIONS**
+- ALL benchmark-related files MUST be located EXCLUSIVELY in the `benches/` directory
+- This is NON-NEGOTIABLE for cargo bench compatibility and ecosystem standards
+- Benchmark binaries, data generation scripts, and analysis tools MUST ALL reside in `benches/`
+- 🚫 **STRICTLY PROHIBITED**: ANY benchmark files in `tests/`, `examples/`, or `src/bin/`
+- 🚫 **ENFORCEMENT**: benchkit will ERROR if benchmarks detected outside `benches/`
 
 **SR-DIRECTORY-2: Automatic Documentation Generation** ⭐ **MANDATORY**
 - `benches/readme.md` must be automatically generated and updated with benchmark results
@@ -614,7 +615,7 @@ fn research_grade_performance_analysis()
 
 ### 12. Lessons Learned Reference
 
-**CRITICAL**: All development decisions for benchkit are based on real-world experience from unilang and strs_tools benchmarking work. The complete set of requirements, anti-patterns, and lessons learned is documented in [`recommendations.md`](recommendations.md).
+**CRITICAL**: All development decisions for benchkit are based on real-world experience from unilang and strs_tools benchmarking work. The complete set of requirements, anti-patterns, and mandatory standards is documented in [`usage.md`](usage.md).
 
 **Key lessons that shaped benchkit design:**
 
@@ -650,37 +651,108 @@ fn research_grade_performance_analysis()
 - **Solution**: Exact matching with `line.trim() == section_marker.trim()` + API validation
 - **Prevention**: Safe API with conflict detection, comprehensive regression tests, backwards compatibility
 
-**For complete requirements and anti-patterns, see [`recommendations.md`](recommendations.md).**
+**For complete requirements and mandatory standards, see [`usage.md`](usage.md).**
 
-### 13. Implementation Priorities
+### 13. Cargo Bench Integration Requirements ⭐ **CRITICAL**
+
+**REQ-CARGO-001: Seamless cargo bench Integration** 
+**Priority**: FOUNDATIONAL - Without this, benchkit will not be adopted by the Rust community.
+
+**Requirements:**
+- **MUST** integrate seamlessly with `cargo bench` as the primary interface
+- **MUST** support the standard `benches/` directory structure
+- **MUST** work with Rust's built-in benchmark harness and custom harnesses
+- **MUST** automatically update documentation during benchmark execution
+- **MUST** provide regression analysis as part of the benchmark process
+- **MUST** be compatible with existing cargo bench workflows
+
+**Technical Implementation Requirements:**
+```toml
+# In Cargo.toml - Standard Rust benchmark setup
+[[bench]]
+name = "performance_suite"
+harness = false  # Use benchkit as the harness
+
+[dev-dependencies]
+benchkit = { version = "0.8.0", features = ["cargo_bench"] }
+```
+
+```rust
+// In benches/performance_suite.rs - Works with cargo bench
+use benchkit::prelude::*;
+
+fn main() {
+    let mut suite = BenchmarkSuite::new("Algorithm Performance");
+    suite.benchmark("algorithm_a", || algorithm_a_implementation());
+    
+    // Automatically update documentation during cargo bench
+    let results = suite.run_with_auto_docs(&[
+        ("README.md", "## Performance"),
+        ("PERFORMANCE.md", "## Latest Results"),
+    ])?;
+    
+    // Automatic regression analysis
+    results.check_regressions_and_alert()?;
+}
+```
+
+**Expected User Workflow:**
+```bash
+# User expectation - this MUST work without additional setup
+cargo bench
+
+# Should automatically:
+# - Run all benchmarks in benches/
+# - Update README.md and PERFORMANCE.md
+# - Check for performance regressions
+# - Generate professional performance reports
+# - Maintain historical data for trend analysis
+```
+
+**Success Criteria:**
+- [ ] `cargo bench` runs benchkit benchmarks without additional setup
+- [ ] Documentation updates automatically during benchmark execution
+- [ ] Zero additional commands needed for typical benchmark workflows
+- [ ] Works in existing Rust projects without structural changes
+- [ ] Integrates with CI/CD pipelines using standard `cargo bench`
+- [ ] Provides regression analysis automatically during benchmarks
+- [ ] Compatible with existing criterion-based projects
+- [ ] Supports migration from criterion with <10 lines of code changes
+
+### 14. Implementation Priorities
 
 Based on real-world usage patterns and critical path analysis from unilang/strs_tools work:
 
-#### Phase 1: Core Functionality (MVP)
-**Justification**: Essential for any benchmarking work
-1. Basic timing and measurement (`enabled`)
-2. Simple markdown report generation (`markdown_reports`)  
-3. Standard data generators (`data_generators`)
+#### Phase 1: Core Functionality (MVP) + Mandatory cargo bench
+**Justification**: Essential for any benchmarking work + Rust ecosystem adoption
+1. **`cargo bench` integration** (`cargo_bench_runner`) - **CRITICAL REQUIREMENT**
+2. **Automatic markdown updates** (`markdown_auto_update`) - **CRITICAL REQUIREMENT**
+3. Basic timing and measurement (`enabled`)
+4. Simple markdown report generation (`markdown_reports`)  
+5. Standard data generators (`data_generators`)
 
-#### Phase 2: Analysis Tools  
+#### Phase 2: Enhanced cargo bench + Analysis Tools  
 **Justification**: Essential for professional performance analysis
-1. **Research-grade statistical analysis (`statistical_analysis`)** ⭐ **CRITICAL**
-2. Comparative analysis (`comparative_analysis`)
-3. Git-style performance diffing (`diff_analysis`)
-4. Regression detection and baseline management
+1. **Regression analysis during `cargo bench`** - **HIGH PRIORITY**
+2. **Historical data management for `cargo bench`** - **HIGH PRIORITY**
+3. **Research-grade statistical analysis (`statistical_analysis`)** ⭐ **CRITICAL**
+4. Comparative analysis (`comparative_analysis`)
+5. Git-style performance diffing (`diff_analysis`)
 
 #### Phase 3: Advanced Features
 **Justification**: Nice-to-have for comprehensive analysis
-1. Chart generation and visualization (`visualization`)
-2. HTML and JSON reports (`html_reports`, `json_reports`)
-3. Criterion compatibility (`criterion_compat`)
-4. Optimization hints and recommendations (`optimization_hints`)
+1. **Multi-environment `cargo bench` configurations** - **HIGH PRIORITY**
+2. Chart generation and visualization (`visualization`)
+3. HTML and JSON reports (`html_reports`, `json_reports`)
+4. **Enhanced criterion compatibility** (`criterion_compat`)
+5. Optimization hints and recommendations (`optimization_hints`)
 
 #### Phase 4: Ecosystem Integration
 **Justification**: Long-term adoption and CI/CD integration
-1. CI/CD tooling and automation
+1. **CI/CD `cargo bench` automation** - **HIGH PRIORITY**
 2. IDE integration and tooling support  
 3. Performance monitoring and alerting
+4. Advanced regression detection and alerting
 
 ### Success Criteria
 
@@ -703,6 +775,6 @@ Based on real-world usage patterns and critical path analysis from unilang/strs_
 
 ### Reference Documents
 
-- **[`recommendations.md`](recommendations.md)** - Complete requirements from real-world experience
+- **[`usage.md`](usage.md)** - Mandatory standards and compliance requirements from production systems
 - **[`readme.md`](readme.md)** - Usage-focused documentation with examples  
 - **[`examples/`](examples/)** - Comprehensive usage demonstrations

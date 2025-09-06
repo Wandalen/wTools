@@ -1,9 +1,9 @@
-//! # 005 - Secret Management (`secret_management` feature)  
+//! # 005 - Secret Management (`secrets` feature)  
 //!
 //! secure configuration loading with environment fallbacks
-//! this example requires the "`secret_management`" feature
+//! this example requires the "`secrets`" feature
 
-#[ cfg( feature = "secret_management" ) ]
+#[ cfg( feature = "secrets" ) ]
 fn main() -> Result< (), workspace_tools::WorkspaceError >
 {
   println!( "🔒 workspace secret management\n" );
@@ -122,7 +122,7 @@ fn main() -> Result< (), workspace_tools::WorkspaceError >
   Ok( () )
 }
 
-#[ cfg( feature = "secret_management" ) ]
+#[ cfg( feature = "secrets" ) ]
 fn setup_secret_files( ws : &workspace_tools::Workspace ) -> Result< (), workspace_tools::WorkspaceError >
 {
   use std::fs;
@@ -180,7 +180,7 @@ LOG_LEVEL=debug
   Ok( () )
 }
 
-#[ cfg( feature = "secret_management" ) ]
+#[ cfg( feature = "secrets" ) ]
 fn validate_secrets( ws : &workspace_tools::Workspace )
 {
   let required_secrets = vec![ "DATABASE_URL", "API_KEY", "JWT_SECRET" ];
@@ -218,7 +218,7 @@ fn validate_secrets( ws : &workspace_tools::Workspace )
   }
 }
 
-#[ cfg( feature = "secret_management" ) ]
+#[ cfg( feature = "secrets" ) ]
 fn demonstrate_app_config( ws : &workspace_tools::Workspace ) -> Result< (), workspace_tools::WorkspaceError >
 {
   // simulate loading configuration with secrets
@@ -254,13 +254,13 @@ fn demonstrate_app_config( ws : &workspace_tools::Workspace ) -> Result< (), wor
   Ok( () )
 }
 
-#[ cfg( feature = "secret_management" ) ]
+#[ cfg( feature = "secrets" ) ]
 fn cleanup_secret_files( ws : &workspace_tools::Workspace )
 {
   let _ = std::fs::remove_dir_all( ws.secret_dir() );
 }
 
-#[ cfg( feature = "secret_management" ) ]
+#[ cfg( feature = "secrets" ) ]
 fn mask_secret( value : &str ) -> String
 {
   if value.len() <= 8
@@ -276,13 +276,13 @@ fn mask_secret( value : &str ) -> String
   }
 }
 
-#[ cfg( not( feature = "secret_management" ) ) ]
+#[ cfg( not( feature = "secrets" ) ) ]
 fn main()
 {
-  println!( "🚨 this example requires the 'secret_management' feature" );
-  println!( "run with: cargo run --example 005_secret_management --features secret_management" );
+  println!( "🚨 this example requires the 'secrets' feature" );
+  println!( "run with: cargo run --example 005_secrets --features secrets" );
   println!();
-  println!( "to enable secret_management feature permanently, add to cargo.toml:" );
+  println!( "to enable secrets feature permanently, add to cargo.toml:" );
   println!( r#"[dependencies]"# );
-  println!( r#"workspace_tools = { version = "0.1", features = ["secret_management"] }"# );
+  println!( r#"workspace_tools = {{ version = "0.1", features = ["secrets"] }}"# );
 }

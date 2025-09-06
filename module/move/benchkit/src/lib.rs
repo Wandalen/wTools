@@ -44,14 +44,23 @@ fn check_directory_recommendations()
   #[ cfg( debug_assertions ) ]
   if let Ok( current_dir ) = std::env::current_dir()
   {
-    if current_dir.file_name()
-      .and_then( | n | n.to_str() )
-      .is_some_and( | s | s == "benches" )
+    if let Some( dir_name ) = current_dir.file_name().and_then( | n | n.to_str() )
     {
-      eprintln!( "💡 benchkit: Running in standard benches/ directory ✅" );
-      eprintln!( "   Remember to update benches/readme.md with your benchmark results" );
-      eprintln!( "   Use MarkdownUpdater to automatically maintain comprehensive reports" );
-      eprintln!( "   See: https://docs.rs/benchkit#standard-benches-directory-integration" );
+      if dir_name == "benches"
+      {
+        eprintln!( "✅ benchkit: Running in REQUIRED benches/ directory - CORRECT!" );
+        eprintln!( "   Remember to update benches/readme.md with your benchmark results" );
+        eprintln!( "   Use MarkdownUpdater to automatically maintain comprehensive reports" );
+        eprintln!( "   See: https://docs.rs/benchkit#mandatory-benches-directory" );
+      }
+      else if dir_name == "tests" || dir_name == "examples" || dir_name == "src"
+      {
+        eprintln!( "❌ benchkit ERROR: Benchmarks MUST be in benches/ directory!" );
+        eprintln!( "   Current location: {}/", dir_name );
+        eprintln!( "   REQUIRED: Move ALL benchmark files to benches/ directory" );
+        eprintln!( "   Benchmarks are NOT tests - they belong in benches/ ONLY" );
+        eprintln!( "   See: https://docs.rs/benchkit#mandatory-benches-directory" );
+      }
     }
   }
 }

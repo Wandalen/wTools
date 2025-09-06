@@ -810,7 +810,7 @@ mod tests
     
     // Count only alphabetic tokens
     let alpha_count = input.count_valid_tokens( &[ "," ], |token| {
-      token.chars().all( |c| c.is_alphabetic() )
+      token.chars().all( char::is_alphabetic )
     } );
     
     assert_eq!( alpha_count, 3 ); // apple, banana, cherry
@@ -821,13 +821,13 @@ mod tests
   {
     let input = "valid,123,banana";
     let results: Vec< _ > = input
-      .split_with_validation( &[ "," ], |token| token.chars().all( |c| c.is_alphabetic() ) )
+      .split_with_validation( &[ "," ], |token| token.chars().all( char::is_alphabetic ) )
       .collect();
 
     // Should have validation errors for "123" token (not alphabetic)
-    assert!( results.iter().any( |r| r.is_err() ) );
+    assert!( results.iter().any( std::result::Result::is_err ) );
     
     // Should have successful results for "valid" and "banana"
-    assert!( results.iter().any( |r| r.is_ok() ) );
+    assert!( results.iter().any( std::result::Result::is_ok ) );
   }
 }

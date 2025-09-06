@@ -11,10 +11,10 @@ use std::collections::HashMap;
 #[ cfg( feature = "simd" ) ]
 use std::sync::{ Arc, RwLock };
 
-#[ cfg( feature = "use_alloc" ) ]
-use alloc::borrow::Cow;
-#[ cfg( not( feature = "use_alloc" ) ) ]
+#[ cfg( feature = "std" ) ]
 use std::borrow::Cow;
+#[ cfg( all( feature = "use_alloc", not( feature = "std" ) ) ) ]
+use alloc::borrow::Cow;
 
 use super::{ Split, SplitType };
 

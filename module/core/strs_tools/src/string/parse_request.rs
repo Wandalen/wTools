@@ -1,11 +1,23 @@
 use core::default::Default;
-use std::collections::HashMap;
 
-mod private {
-  #[ cfg( all( feature = "string_split", feature = "string_isolate", not( feature = "no_std" ) ) ) ]
+// Import standard collections with proper precedence
+#[ cfg( feature = "std" ) ]
+use std::collections::HashMap;
+#[ cfg( all( feature = "use_alloc", not( feature = "std" ) ) ) ]
+use alloc::collections::BTreeMap as HashMap;
+
+// Import vec macro and common types
+#[ cfg( feature = "std" ) ]
+use std::{ vec, vec::Vec, string::String };
+#[ cfg( all( feature = "use_alloc", not( feature = "std" ) ) ) ]
+use alloc::{ vec, vec::Vec, string::String };
+
+/// Internal implementation details exposed for testing
+pub mod private {
+  #[ cfg( all( feature = "string_split", feature = "string_isolate", feature = "std" ) ) ]
   use crate::string::split::split;
 
-  #[ cfg( all( feature = "string_split", feature = "string_isolate", not( feature = "no_std" ) ) ) ]
+  #[ cfg( all( feature = "string_split", feature = "string_isolate", feature = "std" ) ) ]
   use crate::string::{
     isolate::isolate_right, // Keep the import for the function
   };
@@ -269,7 +281,7 @@ mod private {
     #[ allow( clippy::assigning_clones, clippy::too_many_lines, clippy::collapsible_if ) ]
     /// # Panics
     /// Panics if `map_entries.1` is `None` when `join.push_str` is called.
-    #[ cfg( all( feature = "string_split", feature = "string_isolate", not( feature = "no_std" ) ) ) ]
+    #[ cfg( all( feature = "string_split", feature = "string_isolate", feature = "std" ) ) ]
     pub fn parse(&mut self) -> Request<'a> // Changed to inherent method, takes &mut self
     {
       let mut result = Request {
@@ -473,7 +485,7 @@ mod private {
   ///
   ///
   #[ must_use ]
-  #[ cfg( all( feature = "string_split", feature = "string_isolate", not( feature = "no_std" ) ) ) ]
+  #[ cfg( all( feature = "string_split", feature = "string_isolate", feature = "std" ) ) ]
   pub fn request_parse<'a>() -> ParseOptions<'a> // Return ParseOptions directly
   {
     ParseOptions::default()
@@ -483,6 +495,7 @@ mod private {
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 pub use own::*;
+
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
@@ -494,9 +507,17 @@ pub mod own {
     OpType,
     Request,
     ParseOptions,
+    ParseSrc,
+    ParseKeyValDelimeter,
+    ParseCommandsDelimeter,
+    ParseQuoting,
+    ParseUnquoting,
+    ParseParsingArrays,
+    ParseSeveralValues,
+    ParseSubjectWinPathsMaybe,
     // ParseOptionsAdapter, // Removed
   };
-  #[ cfg( all( feature = "string_split", feature = "string_isolate", not( feature = "no_std" ) ) ) ]
+  #[ cfg( all( feature = "string_split", feature = "string_isolate", feature = "std" ) ) ]
   pub use private::request_parse;
 }
 
@@ -516,7 +537,7 @@ pub mod exposed {
   pub use prelude::*; // Added
   pub use super::own as parse_request;
 
-  #[ cfg( all( feature = "string_split", feature = "string_isolate", not( feature = "no_std" ) ) ) ]
+  #[ cfg( all( feature = "string_split", feature = "string_isolate", feature = "std" ) ) ]
   pub use private::request_parse;
 }
 

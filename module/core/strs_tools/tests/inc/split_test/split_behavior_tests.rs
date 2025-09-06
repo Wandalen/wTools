@@ -103,7 +103,7 @@ fn test_remove_non_existing_flag() {
 #[ test ]
 fn test_bitor_operator() {
   let flags = SplitFlags::PRESERVING_EMPTY | SplitFlags::STRIPPING;
-  assert_eq!(flags, SplitFlags(0b00001001));
+  assert_eq!(flags, SplitFlags(0b0000_1001));
 }
 
 /// Tests `bitand` operator to intersect flags.
@@ -130,7 +130,7 @@ fn test_not_operator() {
 /// Test Combination: T2.12
 #[ test ]
 fn test_from_bits_and_bits() {
-  let value = 0b00010101;
+  let value = 0b0001_0101;
   let flags = SplitFlags::from_bits(value).unwrap();
   assert_eq!(flags.bits(), value);
 }

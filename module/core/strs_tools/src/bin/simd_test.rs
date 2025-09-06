@@ -3,15 +3,15 @@
 //! Tests that SIMD string operations are working correctly and shows
 //! basic performance characteristics.
 
-#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
 use std::time::Instant;
-#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
 use strs_tools::string::split;
 
-#[ cfg( all( feature = "simd", feature = "string_split", not( feature = "no_std" ) ) ) ]
+#[ cfg( all( feature = "simd", feature = "string_split", feature = "std" ) ) ]
 use strs_tools::simd::SimdStringExt;
 
-#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
 fn main() 
 {
   println!( "🚀 SIMD String Operations Test" );
@@ -139,7 +139,7 @@ fn main()
   println!( "✨ Test completed!" );
 }
 
-#[ cfg( not( all( feature = "string_split", not( feature = "no_std" ) ) ) ) ]
+#[ cfg( not( all( feature = "string_split", feature = "std" ) ) ) ]
 fn main() 
 {
     println!("SIMD test requires string_split feature and !no_std");
