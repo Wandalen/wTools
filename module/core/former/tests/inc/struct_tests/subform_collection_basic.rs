@@ -3,6 +3,8 @@
 
 #[ allow( unused_imports ) ]
 use super::*;
+#[ allow( unused_imports ) ]
+use test_tools::a_id;
 
 // use std::collections::HashMap;
 // use std::collections::HashSet;

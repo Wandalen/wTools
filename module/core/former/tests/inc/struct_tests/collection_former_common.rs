@@ -3,6 +3,8 @@
 
 use super::*;
 #[ allow( unused_imports ) ]
+use test_tools::a_id;
+#[ allow( unused_imports ) ]
 use collection_tools::Vec;
 
 fn context_plus_13(_storage: Vec<String>, context: Option<f32>) -> f32 {
