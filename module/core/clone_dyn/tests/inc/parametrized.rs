@@ -98,7 +98,7 @@ fn basic() {
     "\"abcd\"".to_string(),
     "[1, 2]".to_string(),
   ];
-  a_id!(vec, vec2);
+  assert_eq!(vec, vec2);
 
   //
 
@@ -112,7 +112,7 @@ fn basic() {
   let vec2 = the_module::clone(&vec);
   let vec = vec.iter().map(|e| e.dbg()).collect::<Vec<_>>();
   let vec2 = vec2.iter().map(|e| e.dbg()).collect::<Vec<_>>();
-  a_id!(vec, vec2);
+  assert_eq!(vec, vec2);
 
   //
 
@@ -126,7 +126,7 @@ fn basic() {
   let vec2 = vec.clone();
   let vec = vec.iter().map(|e| e.dbg()).collect::<Vec<_>>();
   let vec2 = vec2.iter().map(|e| e.dbg()).collect::<Vec<_>>();
-  a_id!(vec, vec2);
+  assert_eq!(vec, vec2);
 
   //
 }
