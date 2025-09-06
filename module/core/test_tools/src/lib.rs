@@ -414,19 +414,6 @@ pub use test::process;
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
 pub use ::{};
-<<<<<<< HEAD
-=======
-
-// COMMENTED OUT: error_tools dependency disabled to break circular dependencies
-// #[ cfg( feature = "enabled" ) ]
-// #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
-// pub use error_tools::error;
-// // Re-export error! macro as anyhow! from error_tools
-// COMMENTED OUT: implsindex dependency disabled to break circular dependencies  
-// #[ cfg( feature = "enabled" ) ]
-// #[cfg(all(feature = "standalone_build", not(feature = "normal_build")))]
-// pub use implsindex as impls_index;
->>>>>>> 0901971f8c15e76ac4055e50324f7002219cfb39
 
 // COMMENTED OUT: error_tools dependency disabled to break circular dependencies
 // #[ cfg( feature = "enabled" ) ]
