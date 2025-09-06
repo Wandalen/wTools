@@ -20,7 +20,7 @@ fn llist_string_fields()
   let collection = llist!
   [
     "a".to_string(),
-    "b".to_string(),
+    "b".to_string()
   ];
 
   // k, v
@@ -49,7 +49,7 @@ fn llist_str_fields()
   let collection = llist!
   [
     "a",
-    "b",
+    "b"
   ];
 
   // k, v

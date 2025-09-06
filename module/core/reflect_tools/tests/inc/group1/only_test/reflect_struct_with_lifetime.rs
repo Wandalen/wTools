@@ -13,14 +13,14 @@ fn reflect_struct_with_lifetime()
   {
     f1 : &x,
     f2 : 2,
-    f3 : &z,
+    f3 : z,
   };
 
   // for information
   println!( "Struct1 : {:?}", reflect( &ins ).type_id() );
   println!( "Struct1.f1 : {:?}", reflect( &ins ).elements().next().unwrap().val.type_id() );
-  println!( "Struct1.f2 : {:?}", reflect( &ins ).elements().skip( 1 ).next().unwrap().val.type_id() );
-  println!( "Struct1.f3 : {:?}", reflect( &ins ).elements().skip( 2 ).next().unwrap().val.type_id() );
+  println!( "Struct1.f2 : {:?}", reflect( &ins ).elements().nth( 1 ).unwrap().val.type_id() );
+  println!( "Struct1.f3 : {:?}", reflect( &ins ).elements().nth( 2 ).unwrap().val.type_id() );
 
   println!( "i32.type_id : {:?}", reflect( &1i32 ).type_id() );
   println!( "i32.type_name : {:?}", reflect( &1i32 ).type_name() );

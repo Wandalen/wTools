@@ -45,7 +45,7 @@ for TestObject
 
     if let Some( tools ) = &self.tools
     {
-      dst.push( ( "tools", Some( Cow::Owned( format!( "{:?}", tools ) ) ).into() ) );
+      dst.push( ( "tools", Some( Cow::Owned( format!( "{tools:?}" ) ) ).into() ) );
     }
     else
     {
@@ -80,7 +80,7 @@ fn basic()
   let test_object = TestObject
   {
     id : "12345".to_string(),
-    created_at : 1627845583,
+    created_at : 1_627_845_583,
     file_ids : vec![ "file1".to_string(), "file2".to_string() ],
     tools : Some
     (
@@ -118,7 +118,7 @@ fn test_vec_fields()
     TestObject
     {
       id : "12345".to_string(),
-      created_at : 1627845583,
+      created_at : 1_627_845_583,
       file_ids : vec![ "file1".to_string(), "file2".to_string() ],
       tools : Some
       (

@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 /// Private namespace of the module.
 mod private {
 

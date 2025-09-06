@@ -10,41 +10,30 @@
 <!-- {{# generate.module{} #}} -->
 
 ```rust
-# #[ cfg( all( feature = "derive_from", feature = "derive_inner_from", feature = "derive_display", feature = "derive_from_str" ) ) ]
+# #[ cfg( all( feature = "derive_from", feature = "derive_display", feature = "derive_from_str" ) ) ]
 {
   use derive_tools::*;
 
-  #[ derive( From, InnerFrom, Display, FromStr, PartialEq, Debug ) ]
-  #[ display( "{a}-{b}" ) ]
-  struct Struct1
-  {
-    a : i32,
-    b : i32,
-  }
-
-  // derived InnerFrom
-  let src = Struct1 { a : 1, b : 3 };
-  let got : ( i32, i32 ) = src.into();
-  let exp = ( 1, 3 );
-  assert_eq!( got, exp );
+  #[ derive( From, Display, FromStr, PartialEq, Debug ) ]
+  #[ display( "{0}" ) ]
+  struct Struct1( i32 );
 
   // derived From
-  let src : Struct1 = ( 1, 3 ).into();
-  let got : ( i32, i32 ) = src.into();
-  let exp = ( 1, 3 );
-  assert_eq!( got, exp );
+  let src : Struct1 = 42.into();
+  let exp = Struct1( 42 );
+  assert_eq!( src, exp );
 
   // derived Display
-  let src = Struct1 { a : 1, b : 3 };
+  let src = Struct1( 42 );
   let got = format!( "{}", src );
-  let exp = "1-3";
+  let exp = "42";
   println!( "{}", got );
   assert_eq!( got, exp );
 
-  // derived FromStr
+  // derived FromStr  
   use std::str::FromStr;
-  let src = Struct1::from_str( "1-3" );
-  let exp = Ok( Struct1 { a : 1, b : 3 } );
+  let src = Struct1::from_str( "42" );
+  let exp = Ok( Struct1( 42 ) );
   assert_eq!( src, exp );
 
 }

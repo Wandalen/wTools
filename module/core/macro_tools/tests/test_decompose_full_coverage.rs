@@ -408,16 +408,12 @@ fn test_d1_26_attributes_on_generic_params() {
     
     // Verify attributes are preserved in with_defaults but stripped in impl/ty
     // This requires checking the actual parameter attributes
-    if let Some(param) = with_defaults.first() {
-        if let syn::GenericParam::Type(tp) = param {
-            assert!(!tp.attrs.is_empty(), "with_defaults should preserve attributes");
-        }
+    if let Some(syn::GenericParam::Type(tp)) = with_defaults.first() {
+        assert!(!tp.attrs.is_empty(), "with_defaults should preserve attributes");
     }
     
-    if let Some(param) = impl_gen.first() {
-        if let syn::GenericParam::Type(tp) = param {
-            assert!(tp.attrs.is_empty(), "impl_gen should strip attributes");
-        }
+    if let Some(syn::GenericParam::Type(tp)) = impl_gen.first() {
+        assert!(tp.attrs.is_empty(), "impl_gen should strip attributes");
     }
 }
 

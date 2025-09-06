@@ -1,5 +1,8 @@
+#![ allow( clippy::no_effect_underscore_binding ) ]
+
 #[ allow( unused_imports ) ]
 use super::*;
+use test_tools::a_id;
 
 use the_module::
 {
@@ -42,7 +45,7 @@ fn basic()
   //   10 | Boris |   5
   // (3 rows)
 
-  let exp = r#"│ id │ created_at │          file_ids          │           tools            │
+  let _exp = r#"│ id │ created_at │          file_ids          │           tools            │
 ─────────────────────────────────────────────────────────────────────────────
 │ 1  │ 1627845583 │        [                   │                            │
 │    │            │            "file1",        │                            │
@@ -56,7 +59,7 @@ fn basic()
 │    │            │                            │         "tool2": "value2", │
 │    │            │                            │     },                     │
 │    │            │                            │ ]                          │"#;
-  a_id!( output.as_str(), exp );
+  a_id!( output.as_str(), _exp );
 
 }
 
@@ -120,7 +123,7 @@ fn custom_format()
   assert!( output.contains( "file_ids" ) );
   assert!( output.contains( "tools" ) );
 
-  let exp = r#">( id )|( created_at )|(          file_ids          )|(           tools            )<
+  let _exp = r#">( id )|( created_at )|(          file_ids          )|(           tools            )<
 ─────────────────────────────────────────────────────────────────────────────────────
 >( 1  )|( 1627845583 )|(        [                   )|(                            )<
 >(    )|(            )|(            "file1",        )|(                            )<
@@ -134,7 +137,7 @@ fn custom_format()
 >(    )|(            )|(                            )|(         "tool2": "value2", )<
 >(    )|(            )|(                            )|(     },                     )<
 >(    )|(            )|(                            )|( ]                          )<"#;
-  a_id!( output.as_str(), exp );
+  a_id!( output.as_str(), _exp );
 
   // using table_to_string_with_format
 
@@ -149,8 +152,8 @@ fn custom_format()
   format.row_separator = "\n".into();
 
   // let as_table = AsTable::new( &test_objects );
-  let got = AsTable::new( &test_objects ).table_to_string_with_format( &format );
-  let exp = r#">( id )|( created_at )|(          file_ids          )|(           tools            )<
+  let _got = AsTable::new( &test_objects ).table_to_string_with_format( &format );
+  let _exp = r#">( id )|( created_at )|(          file_ids          )|(           tools            )<
 ─────────────────────────────────────────────────────────────────────────────────────
 >( 1  )|( 1627845583 )|(        [                   )|(                            )<
 >(    )|(            )|(            "file1",        )|(                            )<
@@ -164,7 +167,7 @@ fn custom_format()
 >(    )|(            )|(                            )|(         "tool2": "value2", )<
 >(    )|(            )|(                            )|(     },                     )<
 >(    )|(            )|(                            )|( ]                          )<"#;
-  a_id!( got, exp );
+  a_id!( got, _exp );
 
 }
 
@@ -194,12 +197,12 @@ fn filter_col_none()
 
   println!( "\noutput\n{output}" );
 
-  let exp = r#"><
+  let _exp = r#"><
 ──
 ><
 ><"#;
 
-  a_id!( output.as_str(), exp );
+  a_id!( output.as_str(), _exp );
 
 }
 
@@ -232,7 +235,7 @@ fn filter_col_callback()
 
   println!( "\noutput\n{output}" );
 
-  let exp = r#">( id )|( created_at )|(          file_ids          )<
+  let _exp = r#">( id )|( created_at )|(          file_ids          )<
 ──────────────────────────────────────────────────────
 >( 1  )|( 1627845583 )|(        [                   )<
 >(    )|(            )|(            "file1",        )<
@@ -243,7 +246,7 @@ fn filter_col_callback()
 >(    )|(            )|(     "file4\nmore details", )<
 >(    )|(            )|( ]                          )<"#;
 
-  a_id!( output.as_str(), exp );
+  a_id!( output.as_str(), _exp );
 
 }
 
@@ -273,9 +276,9 @@ fn filter_row_none()
 
   println!( "\noutput\n{output}" );
 
-  let exp = r#""#;
+  let _exp = r#""#;
 
-  a_id!( output.as_str(), exp );
+  a_id!( output.as_str(), _exp );
 
 }
 
@@ -308,7 +311,7 @@ fn filter_row_callback()
 
   println!( "\noutput\n{output}" );
 
-  let exp = r#">( id )|( created_at )|(          file_ids          )|(           tools            )<
+  let _exp = r#">( id )|( created_at )|(          file_ids          )|(           tools            )<
 ─────────────────────────────────────────────────────────────────────────────────────
 >( 2  )|(     13     )|( [                          )|( [                          )<
 >(    )|(            )|(     "file3",               )|(     {                      )<
@@ -319,7 +322,7 @@ fn filter_row_callback()
 >(    )|(            )|(                            )|(     },                     )<
 >(    )|(            )|(                            )|( ]                          )<"#;
 
-  a_id!( output.as_str(), exp );
+  a_id!( output.as_str(), _exp );
 
 }
 
@@ -484,7 +487,7 @@ fn ukrainian_chars()
   assert!( got.is_ok() );
   println!( "{}", &output );
 
-  let exp =  r#"│           id            │ created_at │     file_ids     │                   tools                   │
+  let _exp =  r#"│           id            │ created_at │     file_ids     │                   tools                   │
 ───────────────────────────────────────────────────────────────────────────────────────────────────────
 │      Доміно             │    100     │ [                │                                           │
 │                         │            │     "файл1",     │                                           │
@@ -498,7 +501,7 @@ fn ukrainian_chars()
 │                         │            │                  │         "тулз2": "значення2",             │
 │                         │            │                  │     },                                    │
 │                         │            │                  │ ]                                         │"#;
-  a_id!( output.as_str(), exp );
+  a_id!( output.as_str(), _exp );
 }
 
 #[ test ]
@@ -513,7 +516,7 @@ fn ukrainian_and_english_chars()
   assert!( got.is_ok() );
   println!( "{}", &output );
 
-  let exp =  r#"│      id      │ created_at │     file_ids     │                   tools                   │
+  let _exp =  r#"│      id      │ created_at │     file_ids     │                   tools                   │
 ────────────────────────────────────────────────────────────────────────────────────────────
 │ Доміно       │    100     │ [                │ [                                         │
 │              │            │     "файл1",     │     {                                     │
@@ -531,5 +534,5 @@ fn ukrainian_and_english_chars()
 │              │            │                  │                "tools1": "value2",        │
 │              │            │                  │            },                             │
 │              │            │                  │        ]                                  │"#;
-  a_id!( output.as_str(), exp );
+  a_id!( output.as_str(), _exp );
 }

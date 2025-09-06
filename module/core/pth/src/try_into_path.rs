@@ -4,7 +4,8 @@ mod private
   #[ allow( unused_imports, clippy::wildcard_imports ) ]
   #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
   use crate::*;
-  #[cfg(not(feature = "no_std"))]
+
+  #[ cfg( not( feature = "no_std" ) ) ]
   use std::
   {
     io,
@@ -12,20 +13,18 @@ mod private
     string::String,
   };
   
-  #[cfg(feature = "no_std")]
+  #[ cfg( feature = "no_std" ) ]
   extern crate std;
   
-  #[cfg(feature = "no_std")]
+  #[ cfg( feature = "no_std" ) ]
   use std::
   {
     io,
     path::{ Component, Path, PathBuf },
-    string::String,
   };
   
-  #[cfg(feature = "no_std")]
+  #[ cfg( feature = "no_std" ) ]
   use alloc::string::String;
-  // use camino::{ Utf8Path, Utf8PathBuf };
 
   /// A trait for converting various types into a `PathBuf`.
   ///
@@ -42,13 +41,13 @@ mod private
     /// * `Err(io::Error)` - An error if the conversion fails.
     /// # Errors
     /// qqq: doc
-    fn try_into_path( self ) -> Result<  PathBuf, io::Error  >;
+    fn try_into_path( self ) -> Result< PathBuf, io::Error >;
   }
 
   /// Implementation of `TryIntoPath` for `&str`.
   impl TryIntoPath for &str
   {
-    fn try_into_path( self ) -> Result<  PathBuf, io::Error  >
+    fn try_into_path( self ) -> Result< PathBuf, io::Error >
     {
       Ok( PathBuf::from( self ) )
     }
@@ -57,7 +56,7 @@ mod private
   /// Implementation of `TryIntoPath` for `String`.
   impl TryIntoPath for String
   {
-    fn try_into_path( self ) -> Result<  PathBuf, io::Error  >
+    fn try_into_path( self ) -> Result< PathBuf, io::Error >
     {
       Ok( PathBuf::from( self ) )
     }
@@ -66,7 +65,7 @@ mod private
   /// Implementation of `TryIntoPath` for a reference to `Path`.
   impl TryIntoPath for &Path
   {
-    fn try_into_path( self ) -> Result<  PathBuf, io::Error  >
+    fn try_into_path( self ) -> Result< PathBuf, io::Error >
     {
       Ok( self.to_path_buf() )
     }
@@ -75,7 +74,7 @@ mod private
   /// Implementation of `TryIntoPath` for `PathBuf`.
   impl TryIntoPath for PathBuf
   {
-    fn try_into_path( self ) -> Result<  PathBuf, io::Error  >
+    fn try_into_path( self ) -> Result< PathBuf, io::Error >
     {
       Ok( self )
     }
@@ -85,7 +84,7 @@ mod private
   #[ cfg( feature = "path_utf8" ) ]
   impl TryIntoPath for &Utf8Path
   {
-    fn try_into_path( self ) -> Result<  PathBuf, io::Error  >
+    fn try_into_path( self ) -> Result< PathBuf, io::Error >
     {
       Ok( self.as_std_path().to_path_buf() )
     }
@@ -95,16 +94,16 @@ mod private
   #[ cfg( feature = "path_utf8" ) ]
   impl TryIntoPath for Utf8PathBuf
   {
-    fn try_into_path( self ) -> Result<  PathBuf, io::Error  >
+    fn try_into_path( self ) -> Result< PathBuf, io::Error >
     {
       Ok( self.as_std_path().to_path_buf() )
     }
   }
 
   /// Implementation of `TryIntoPath` for `std::path::Component`.
-  impl TryIntoPath for Component<'_>
+  impl TryIntoPath for Component< '_ >
   {
-    fn try_into_path( self ) -> Result<  PathBuf, io::Error  >
+    fn try_into_path( self ) -> Result< PathBuf, io::Error >
     {
       Ok( self.as_os_str().into() )
     }
@@ -115,7 +114,7 @@ mod private
   where
     T : AsRef< Path >,
   {
-    fn try_into_path( self ) -> Result<  PathBuf, io::Error  >
+    fn try_into_path( self ) -> Result< PathBuf, io::Error >
     {
       Ok( self.as_ref().to_path_buf() )
     }

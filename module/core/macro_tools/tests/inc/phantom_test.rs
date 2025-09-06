@@ -19,8 +19,8 @@ fn phantom_add_basic() {
   };
 
   let got = the_module::phantom::add_to_item(&item);
-  // a_id!( tree_print!( got ), tree_print!( exp ) );
-  a_id!(got, exp);
+  // assert_eq!( tree_print!( got ), tree_print!( exp ) );
+  assert_eq!(got, exp);
 }
 
 //

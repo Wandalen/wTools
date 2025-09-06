@@ -1,7 +1,9 @@
 #![allow(dead_code)]
+#![allow(clippy::doc_markdown)]
 #![allow(unused_imports)]
 
 use super::*;
+use test_tools::a_id;
 
 // private layer
 mod layer_a;

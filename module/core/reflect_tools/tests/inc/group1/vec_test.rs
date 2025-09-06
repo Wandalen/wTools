@@ -1,5 +1,6 @@
 use super::*;
 pub use the_module::reflect;
+use test_tools::a_id;
 
 #[ test ]
 fn reflect_vec_test()
@@ -20,8 +21,7 @@ fn reflect_vec_test()
   a_id!( reflect( &vec ).type_name(), "alloc::vec::Vec<i32>" );
   a_id!( reflect( &vec ).type_id(), core::any::TypeId::of::< Vec< i32 > >() );
 
-  let expected = vec!
-  [
+  let expected = [
     KeyVal{ key : Primitive::usize( 0 ), val : Box::new( < i32 as Instance >::Reflect() ) },
     KeyVal{ key : Primitive::usize( 1 ), val : Box::new( < i32 as Instance >::Reflect() ) },
     KeyVal{ key : Primitive::usize( 2 ), val : Box::new( < i32 as Instance >::Reflect() ) },

@@ -1,5 +1,6 @@
 use super::*;
 pub use the_module::reflect;
+use test_tools::{ a_id, a_true };
 
 #[ test ]
 fn reflect_hashmap_test()
@@ -21,8 +22,7 @@ fn reflect_hashmap_test()
   a_id!( reflect( &map ).type_name(), "std::collections::hash::map::HashMap< i32, alloc::string::String >" );
   a_id!( reflect( &map ).type_id(), core::any::TypeId::of::< HashMap<  i32, String  > >() );
 
-  let expected = vec!
-  [
+  let expected = [
     KeyVal{ key : Primitive::i32( 1 ), val : Box::new( < String as Instance >::Reflect() ) },
     KeyVal{ key : Primitive::i32( 10 ), val : Box::new( < String as Instance >::Reflect() ) },
   ];

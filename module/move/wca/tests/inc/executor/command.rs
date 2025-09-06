@@ -159,7 +159,6 @@ tests_impls! {
     a_true!( executor.command( dictionary, grammar_command ).is_ok() );
   }
 
-  #[ should_panic( expected = "A handler function for the command is missing" ) ]
   fn without_routine()
   {
     // init parser

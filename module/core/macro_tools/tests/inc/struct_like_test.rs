@@ -23,7 +23,7 @@ fn basic() {
       field2 : String
     }
   };
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 
   // - pub struct
 
@@ -43,7 +43,7 @@ fn basic() {
       field2 : String
     }
   };
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 
   // - enum
 
@@ -63,7 +63,7 @@ fn basic() {
       field2( i32 ),
     }
   };
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 
   // - pub enum
 
@@ -83,7 +83,7 @@ fn basic() {
       field2( i32 ),
     }
   };
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 
   // - unit
 
@@ -95,7 +95,7 @@ fn basic() {
   let got: struct_like::StructLike = parse_quote! {
     struct Unit;
   };
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 
   // - pub unit
 
@@ -107,7 +107,7 @@ fn basic() {
   let got: struct_like::StructLike = parse_quote! {
     pub( crate ) struct Unit;
   };
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 }
 
 //

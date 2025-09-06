@@ -3,6 +3,8 @@
 
 #[ allow( unused_imports ) ]
 use super::*;
+#[ allow( unused_imports ) ]
+use test_tools::a_id;
 
 // Test re-enabled to verify proper fix
 #[ derive( Debug, PartialEq, former::Former ) ]

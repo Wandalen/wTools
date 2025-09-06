@@ -1,5 +1,8 @@
+#![ allow( clippy::no_effect_underscore_binding ) ]
+
 #[ allow( unused_imports ) ]
 use super::*;
+use test_tools::a_id;
 
 use the_module::
 {
@@ -111,7 +114,7 @@ fn iterator_over_optional_cow()
 
   }
 
-  let data : collection_tools::Vec< TestObject2 > = dlist!
+  let data = dlist!
   {
     TestObject2
     {
@@ -141,12 +144,12 @@ fn iterator_over_optional_cow()
           }
         ]
       ),
-    },
+    }
   };
 
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, Vec< TestObject2 >, &str, TestObject2, str> = AsTable::new( &data );
-  let as_table = AsTable::new( &data );
+  let _as_table : AsTable< '_, _, usize, TestObject2, str > = AsTable::new( &data );
+  let as_table : AsTable< '_, _, usize, TestObject2, str > = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
   assert_eq!( rows.len(), 2 );
@@ -155,14 +158,14 @@ fn iterator_over_optional_cow()
   let mut context = the_module::print::Context::new( &mut output, Default::default() );
   let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
   let got = as_table.table_to_string();
-  assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
-  assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
-  assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
+  assert!( got.contains( "│ id │ created_at │          file_ids          │             tools              │" ) );
+  assert!( got.contains( "│ 2  │     13     │ [                          │ [                              │" ) );
+  assert!( got.contains( "│ 1  │ 1627845583 │        [                   │                                │" ) );
 
-  let got = AsTable::new( &data ).table_to_string();
-  assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
-  assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
-  assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
+  let got = AsTable::<_, usize, TestObject2, str>::new( &data ).table_to_string();
+  assert!( got.contains( "│ id │ created_at │          file_ids          │             tools              │" ) );
+  assert!( got.contains( "│ 2  │     13     │ [                          │ [                              │" ) );
+  assert!( got.contains( "│ 1  │ 1627845583 │        [                   │                                │" ) );
 
 }
 
@@ -242,7 +245,7 @@ fn iterator_over_strings()
 
   }
 
-  let _data : collection_tools::Vec< TestObject3 > = dlist!
+  let _data = dlist!
   {
     TestObject3
     {
@@ -272,7 +275,7 @@ fn iterator_over_strings()
           }
         ]
       ),
-    },
+    }
   };
 
   // no variability in what Fields iterate over by design!
@@ -292,7 +295,7 @@ fn iterator_over_strings()
 //   assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
 //   assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
 
-//   let got = AsTable::new( &data ).table_to_string();
+//   let got = AsTable::<_, usize, TestObject2, str>::new( &data ).table_to_string();
 //   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
 //   assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
 //   assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
@@ -350,10 +353,10 @@ fn test_vector_table()
 
   println!( "{}", output );
 
-  let exp = r#"│ id │ created_at │     file_ids     │   tools   │
+  let _exp = r#"│ id │ created_at │     file_ids     │   tools   │
 ──────────────────────────────────────────────────
 │ 1  │ 1627845583 │ [ file1, file2 ] │           │
 │ 2  │     13     │ [ file3, file4 ] │ [ tool1 ] │"#;
 
-  a_id!( output.as_str(), exp );
+  a_id!( output.as_str(), _exp );
 }

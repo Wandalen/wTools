@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 /// Private namespace of the module.
 mod private {}
 
@@ -8,6 +9,7 @@ pub mod own {
   #[ doc( inline ) ]
   pub use orphan::*;
   /// `layer_a_own`
+  #[allow(dead_code)]
   pub fn layer_a_own() -> bool {
     true
   }

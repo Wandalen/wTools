@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+#![allow(clippy::doc_markdown)]
 // use super::*;
 
 /// Define a private namespace for all its items.

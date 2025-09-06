@@ -2,6 +2,8 @@
 #![allow(dead_code)]
 
 use super::*;
+#[ allow( unused_imports ) ]
+use test_tools::a_id;
 use the_module::Former;
 
 pub mod core {}

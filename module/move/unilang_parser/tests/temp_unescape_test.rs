@@ -20,7 +20,7 @@
 
 /// Tests basic unescaping of a string containing various escape sequences using `strs_tools`.
 /// Test Combination: T6.1
-#[ ignore ]
+#[ ignore = "temporarily disabled due to missing string_split feature" ]
 #[test]
 fn temp_strs_tools_unescaping() {
   // xxx: temporarily disabled due to missing string_split feature

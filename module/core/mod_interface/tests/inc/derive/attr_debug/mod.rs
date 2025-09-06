@@ -1,4 +1,7 @@
+#![allow(dead_code)]
+#![allow(clippy::doc_markdown)]
 use super::*;
+use test_tools::a_id;
 
 mod private {}
 

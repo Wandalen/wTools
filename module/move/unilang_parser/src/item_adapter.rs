@@ -5,6 +5,7 @@
 
 use crate::error::{ ParseError, SourceLocation };
 use alloc::borrow::Cow;
+use alloc::string::{ String, ToString };
 use core::fmt;
 
 /// Temporary simple replacement for `strs_tools` Split

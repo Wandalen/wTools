@@ -9,7 +9,7 @@ fn concat() {
   const KEYWORD: &str = "keyword";
   let got = ct::str::concat!("Known attirbutes are : ", KEYWORD, ".",);
   let exp = "Known attirbutes are : keyword.";
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 }
 
 //
@@ -21,5 +21,5 @@ fn format() {
   const KEYWORD: &str = "keyword";
   let got = ct::str::format!("Known attirbutes are : {}{}", KEYWORD, ".",);
   let exp = "Known attirbutes are : keyword.";
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 }

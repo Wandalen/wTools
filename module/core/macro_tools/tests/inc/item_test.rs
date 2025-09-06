@@ -17,7 +17,7 @@ fn ensure_comma_named_struct_with_multiple_fields() {
   let exp: syn::ItemStruct = parse_quote! {  struct Example { field1 : i32, field2 : String, } };
   // let got = quote!( #got ).to_string();
   // assert_eq!( exp, got );
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 }
 
 #[ test ]

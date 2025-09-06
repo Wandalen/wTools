@@ -1,5 +1,6 @@
 use super::*;
 pub use the_module::reflect;
+use test_tools::a_id;
 
 #[ derive( Debug, Clone, PartialEq ) ]
 pub struct Struct1
@@ -28,6 +29,7 @@ pub struct EntityDescriptor< I : reflect::Instance >
 impl< I : reflect::Instance > EntityDescriptor< I >
 {
   #[ inline( always ) ]
+  #[ allow( clippy::used_underscore_binding ) ]
   pub fn new() -> Self
   {
     let _phantom = core::marker::PhantomData::< I >;

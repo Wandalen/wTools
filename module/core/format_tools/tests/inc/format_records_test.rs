@@ -1,5 +1,8 @@
+#![ allow( clippy::no_effect_underscore_binding ) ]
+
 #[ allow( unused_imports ) ]
 use super::*;
+use test_tools::a_id;
 
 use the_module::
 {
@@ -34,7 +37,7 @@ fn basic()
   assert!( got.is_ok() );
   println!( "{}", &output );
 
-  let exp = r#" = 1
+  let _exp = r#" = 1
 │ id         │ 1            │
 │ created_at │ 1627845583   │
 │ file_ids   │ [            │
@@ -57,7 +60,7 @@ fn basic()
 │            │         "tool2": "value2", │
 │            │     },                     │
 │            │ ]                          │"#;
-  a_id!( output.as_str(), exp );
+  a_id!( output.as_str(), _exp );
 
 }
 
@@ -78,7 +81,7 @@ fn unicode()
   assert!( got.is_ok() );
   println!( "{}", &output );
 
-  let exp = r#" = 1
+  let _exp = r#" = 1
 │ id         │ Доміно                        │
 │ created_at │ 100                           │
 │ file_ids   │ [                             │
@@ -108,7 +111,7 @@ fn unicode()
 │            │         "tools1": "value2", │
 │            │     },                      │
 │            │ ]                           │"#;
-  a_id!( output.as_str(), exp );
+  a_id!( output.as_str(), _exp );
 
 }
 
@@ -137,7 +140,7 @@ fn custom_format()
 
   println!( "\noutput\n{output}" );
 
-  let exp = r#" = 1
+  let _exp = r#" = 1
 >( id         )|( 1            )<
 >( created_at )|( 1627845583   )<
 >( file_ids   )|( [            )<
@@ -160,7 +163,7 @@ fn custom_format()
 >(            )|(         "tool2": "value2", )<
 >(            )|(     },                     )<
 >(            )|( ]                          )<"#;
-  a_id!( output.as_str(), exp );
+  a_id!( output.as_str(), _exp );
 
   // using table_to_string_with_format
 
@@ -175,8 +178,8 @@ fn custom_format()
   format.row_separator = "\n".into();
 
   // let as_table = AsTable::new( &test_objects );
-  let got = AsTable::new( &test_objects ).table_to_string_with_format( &format );
-  let exp = r#" = 1
+  let _got = AsTable::new( &test_objects ).table_to_string_with_format( &format );
+  let _exp = r#" = 1
 >( id         )|( 1            )<
 >( created_at )|( 1627845583   )<
 >( file_ids   )|( [            )<
@@ -199,7 +202,7 @@ fn custom_format()
 >(            )|(         "tool2": "value2", )<
 >(            )|(     },                     )<
 >(            )|( ]                          )<"#;
-  a_id!( got, exp );
+  a_id!( got, _exp );
 
 }
 
@@ -228,12 +231,12 @@ fn filter_col_none()
   assert!( result.is_ok() );
   println!( "\noutput\n{output}" );
 
-  let exp = r#" = 1
+  let _exp = r#" = 1
 
  = 2
 "#;
 
-  a_id!( output.as_str(), exp );
+  a_id!( output.as_str(), _exp );
 
 }
 
@@ -265,7 +268,7 @@ fn filter_col_callback()
   assert!( result.is_ok() );
   println!( "\noutput\n{output}" );
 
-  let exp = r#" = 1
+  let _exp = r#" = 1
 >( id         )|( 1            )<
 >( created_at )|( 1627845583   )<
 >( file_ids   )|( [            )<
@@ -280,7 +283,7 @@ fn filter_col_callback()
 >(            )|(     "file4\nmore details", )<
 >(            )|( ]                          )<"#;
 
-  a_id!( output.as_str(), exp );
+  a_id!( output.as_str(), _exp );
 
 }
 
@@ -310,9 +313,9 @@ fn filter_row_none()
 
   println!( "\noutput\n{output}" );
 
-  let exp = r#""#;
+  let _exp = r#""#;
 
-  a_id!( output.as_str(), exp );
+  a_id!( output.as_str(), _exp );
 
 }
 
@@ -345,7 +348,7 @@ fn filter_row_callback()
 
   println!( "\noutput\n{output}" );
 
-  let exp = r#" = 2
+  let _exp = r#" = 2
 >( id         )|( 2                          )<
 >( created_at )|( 13                         )<
 >( file_ids   )|( [                          )<
@@ -361,7 +364,7 @@ fn filter_row_callback()
 >(            )|(     },                     )<
 >(            )|( ]                          )<"#;
 
-  a_id!( output.as_str(), exp );
+  a_id!( output.as_str(), _exp );
 
 }
 

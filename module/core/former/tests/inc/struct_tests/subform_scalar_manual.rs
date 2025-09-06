@@ -2,6 +2,8 @@
 #![allow(dead_code)]
 
 use super::*;
+#[ allow( unused_imports ) ]
+use test_tools::a_id;
 
 /// Child
 // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose

@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+#![allow(clippy::doc_markdown)]
 // use super::*;
 
 /// Define a private namespace for all its items.
@@ -19,6 +21,6 @@ crate::the_module::mod_interface! {
 
 #[ test ]
 fn basic() {
-  let _s1 = Struct1;
-  let _s2 = Struct2;
+  let _ = Struct1;
+  let _ = Struct2;
 }

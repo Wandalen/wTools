@@ -1,7 +1,9 @@
 use super::*;
 pub use the_module::reflect;
+use test_tools::a_id;
 
 #[ test ]
+#[ allow( clippy::too_many_lines ) ]
 fn reflect_common_test()
 {
   use reflect::{ Entity, reflect };
