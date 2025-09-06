@@ -9,10 +9,7 @@ use the_module::
   // the_module::print,
 };
 
-use std::
-{
-  collections::HashMap,
-};
+use collection_tools::HashMap;
 
 use test_object::TestObject;
 
@@ -112,7 +109,7 @@ fn hmap_basic()
   };
 
   // Convert test_tools HashMap to std HashMap for Fields trait compatibility
-  let data: std::collections::HashMap<&str, TestObject> = data_raw.into_iter().collect();
+  let data: HashMap<&str, TestObject> = data_raw.into_iter().collect();
 
   use the_module::TableFormatter;
   let _as_table : AsTable< '_, _, &str, TestObject, str > = AsTable::new( &data );

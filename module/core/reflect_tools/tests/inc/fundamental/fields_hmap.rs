@@ -12,7 +12,7 @@ use std::
   borrow::Cow,
 };
 
-use std::collections::HashMap as Hmap;
+use collection_tools::HashMap as Hmap;
 
 #[ test ]
 fn vec_string_fields()

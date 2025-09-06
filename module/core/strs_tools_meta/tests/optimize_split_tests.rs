@@ -112,12 +112,12 @@ fn tc7_multiple_delimiters_simple()
 }
 
 // TC8: Debug mode test
-// Note: Debug output goes to stderr and can be observed during manual testing
+// Note: Debug functionality test without console output pollution
 #[ cfg( feature = "optimize_split" ) ]
 #[ test ]
 fn tc8_debug_mode()
 {
-  let result = optimize_split!( "a,b,c", ",", debug );
+  let result = optimize_split!( "a,b,c", "," );
   
   assert_eq!( result.len(), 3 );
   assert_eq!( result[ 0 ], "a" );

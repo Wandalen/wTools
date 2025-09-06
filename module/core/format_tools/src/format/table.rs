@@ -15,7 +15,6 @@ mod private
   use std::
   {
     borrow::Cow,
-    collections::HashMap,
   };
   use reflect_tools::
   {
@@ -75,6 +74,8 @@ mod private
 
   /// Marker trait to tag structures for which table trait deducing should be done from trait Fields, which is reflection.
   pub trait TableWithFields {}
+  
+  impl TableWithFields for collection_tools::HashMap< String, String > {}
 
   // =
 
@@ -93,15 +94,6 @@ mod private
     ;
   }
 
-  impl Cells< str > for HashMap< String, String >
-  {
-    fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b str, Option< Cow< 'b, str > > ) >
-    where
-      'a : 'b,
-    {
-      self.iter().map( | ( k, v ) | ( k.as_str(), Some( Cow::from( v ) ) ) )
-    }
-  }
 
   impl< Row, CellKey > Cells< CellKey >
   for Row
