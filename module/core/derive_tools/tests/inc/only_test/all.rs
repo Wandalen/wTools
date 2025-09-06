@@ -4,18 +4,12 @@ use super::derives::a_id;
 fn basic_test()
 {
 
-  let got = IsTransparent::default();
-  let exp = IsTransparent( true );
-  a_id!( got, exp );
+  a_id!( IsTransparent::default(), IsTransparent( true ) );
 
   // From
 
-  let got = IsTransparent::from( true );
-  let exp = IsTransparent( true );
-  a_id!( got, exp );
-  let got = IsTransparent::from( false );
-  let exp = IsTransparent( false );
-  a_id!( got, exp );
+  a_id!( IsTransparent::from( true ), IsTransparent( true ) );
+  a_id!( IsTransparent::from( false ), IsTransparent( false ) );
 
   // InnerFrom - commented out since InnerFrom derive is not available
 
@@ -28,28 +22,26 @@ fn basic_test()
 
   // Deref
 
-  let got = IsTransparent( true );
-  let exp = true;
-  a_id!( *got, exp );
+  a_id!( *IsTransparent( true ), true );
 
   // DerefMut
 
-  let mut got = IsTransparent( true );
-  *got = false;
-  let exp = false;
-  a_id!( *got, exp );
+  {
+    let mut got = IsTransparent( true );
+    *got = false;
+    a_id!( *got, false );
+  }
 
   // AsRef
 
-  let got = IsTransparent( true );
-  let exp = true;
-  a_id!( got.as_ref(), &exp );
+  a_id!( IsTransparent( true ).as_ref(), &true );
 
   // AsMut
 
-  let mut got = IsTransparent( true );
-  *got.as_mut() = false;
-  let exp = false;
-  a_id!( got.0, exp );
+  {
+    let mut got = IsTransparent( true );
+    *got.as_mut() = false;
+    a_id!( got.0, false );
+  }
 
 }

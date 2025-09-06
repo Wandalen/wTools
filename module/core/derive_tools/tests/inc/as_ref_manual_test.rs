@@ -5,6 +5,7 @@ use super::*;
 // use derives::*;
 
 #[ derive( Debug, Clone, Copy, PartialEq ) ]
+#[ allow( dead_code ) ]
 pub struct IsTransparent(bool);
 
 impl AsRef<bool> for IsTransparent {

@@ -27,9 +27,9 @@ fn named_fields_with_named_fields() {
   expected_fields.push_value(field_b);
   expected_fields.push_punct(Comma::default());
 
-  a_id!(
-    format!("{:?}", result),
-    format!("{:?}", expected_fields),
+  assert_eq!(
+    format!("{result:?}"),
+    format!("{expected_fields:?}"),
     "Fields did not match expected output"
   );
 }
