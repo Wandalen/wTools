@@ -1,6 +1,6 @@
 //! Simple benchmark test for zero-copy token parsing.
 
-use std::time::{ Duration, Instant };
+use std::time::Instant;
 use unilang_parser::{ Parser, UnilangParserOptions };
 
 fn main()
@@ -29,10 +29,10 @@ fn main()
   let elapsed = start.elapsed();
   let avg_time = elapsed / iterations;
   
-  println!( "Test input: {}", test_input );
-  println!( "Iterations: {}", iterations );
-  println!( "Total time: {:?}", elapsed );
-  println!( "Average time per parse: {:?}", avg_time );
+  println!( "Test input: {test_input}" );
+  println!( "Iterations: {iterations}" );
+  println!( "Total time: {elapsed:?}" );
+  println!( "Average time per parse: {avg_time:?}" );
   println!( "Parsing rate: {:.0} commands/sec", 1_000_000_000.0 / avg_time.as_nanos() as f64 );
   
   // Test the instruction result
