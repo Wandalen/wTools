@@ -5,7 +5,7 @@ fn local_smoke_test() {
   println!("Local smoke test passed");
 }
 
-#[ignore]
+#[ignore = "smoke test for published version"]
 #[test]
 fn published_smoke_test() {
   println!("Published smoke test passed");

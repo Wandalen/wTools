@@ -158,8 +158,8 @@ fn assumption_streams_switching() {
   use rand::{RngCore, SeedableRng};
   use rand_chacha::ChaCha8Rng;
 
-  let a = 6234031553773679537;
-  let b = 5421492469564588225;
+  let a = 6_234_031_553_773_679_537;
+  let b = 5_421_492_469_564_588_225;
 
   let mut master = ChaCha8Rng::seed_from_u64(13);
   master.set_stream(0);
@@ -188,8 +188,8 @@ fn assumption_streams_same_source() {
   use rand::{RngCore, SeedableRng};
   use rand_chacha::ChaCha8Rng;
 
-  let a = 6234031553773679537;
-  let b = 2305422516838604614;
+  let a = 6_234_031_553_773_679_537;
+  let b = 2_305_422_516_838_604_614;
 
   let mut master = ChaCha8Rng::seed_from_u64(13);
   master.set_stream(0);

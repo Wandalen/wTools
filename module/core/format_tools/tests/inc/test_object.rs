@@ -10,13 +10,13 @@ use the_module::
   OptionalCow,
 };
 
-use std::
+use core::
 {
   hash::Hasher,
   hash::Hash,
   cmp::Ordering,
-  borrow::Cow,
 };
+use std::borrow::Cow;
 
 use collection_tools::HashMap;
 

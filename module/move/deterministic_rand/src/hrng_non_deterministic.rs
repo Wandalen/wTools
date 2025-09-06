@@ -17,7 +17,8 @@ mod private {
   impl SharedGenerator {
     /// Emulate lock of a mutex.
     #[inline(always)]
-    pub fn lock(&self) -> SharedGeneratorLock {
+    #[allow(clippy::unused_self)]
+    pub fn lock(self) -> SharedGeneratorLock {
       SharedGeneratorLock
     }
   }
@@ -29,7 +30,8 @@ mod private {
   impl SharedGeneratorLock {
     /// Emulate unwrap of a result of guard produced my locking a mutex.
     #[inline(always)]
-    pub fn unwrap(&self) -> DerefRng {
+    #[allow(clippy::unused_self)]
+    pub fn unwrap(self) -> DerefRng {
       DerefRng(rand::thread_rng())
     }
   }
@@ -79,6 +81,7 @@ mod private {
     /// let got : u64 = rng.gen();
     /// ```
     #[inline(always)]
+    #[must_use]
     pub fn master() -> Self {
       Self
     }
@@ -113,12 +116,14 @@ mod private {
     /// let got : u64 = rng.gen();
     /// ```
     #[inline(always)]
+    #[must_use]
     pub fn rng_ref(&self) -> SharedGenerator {
       SharedGenerator
     }
 
     /// Creates new child hierarchical random number generator by index seed.
     #[inline(always)]
+    #[must_use]
     pub fn child(&self, _: usize) -> Self {
       Self
     }
@@ -132,6 +137,7 @@ mod private {
 
     /// Returns number of children created by this generator.
     #[inline(always)]
+    #[must_use]
     pub fn _children_len(&self) -> usize {
       0
     }

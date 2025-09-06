@@ -12,6 +12,7 @@
 use rayon::prelude::*;
 use deterministic_rand::{distributions::Uniform, Rng, Hrng};
 
+#[allow(clippy::float_cmp)]
 fn main() {
   // Define a range for random number generation between -1.0 and 1.0.
   let range = Uniform::new(-1.0f64, 1.0);
@@ -61,7 +62,7 @@ fn main() {
 
   // If determinism is enabled, assert that the calculated value of Pi matches the expected result.
   #[cfg(feature = "determinism")]
-  assert_eq!(got_pi, 3.1410448);
+  assert_eq!(got_pi, 3.141_044_8);
 
   // Print the calculated value of Pi.
   println!("PI = {got_pi}");
