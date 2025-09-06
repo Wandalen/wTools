@@ -427,7 +427,7 @@ path = "module/core/strs_tools"
 default-features = false
 
 [workspace.dependencies.strs_tools_meta]
-version = "~0.6.0"
+version = "~0.7.0"
 path = "module/core/strs_tools_meta"
 default-features = false
 
