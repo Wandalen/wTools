@@ -22,7 +22,7 @@ use test_object::TestObject;
 fn dlist_basic()
 {
 
-  let data : collection_tools::Dlist< TestObject > = dlist!
+  let data = dlist!
   {
     TestObject
     {
@@ -56,8 +56,8 @@ fn dlist_basic()
   };
 
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, Vec< TestObject >, &str, TestObject, str> = AsTable::new( &data );
-  let as_table = AsTable::new( &data );
+  let _as_table : AsTable< '_, _, usize, TestObject, str > = AsTable::new( &data );
+  let as_table : AsTable< '_, _, usize, TestObject, str > = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
   assert_eq!( rows.len(), 2 );
@@ -78,7 +78,7 @@ fn dlist_basic()
 fn hmap_basic()
 {
 
-  let data : collection_tools::HashMap<  &str, TestObject  > = hmap!
+  let data_raw = hmap!
   {
     "a" => TestObject
     {
@@ -111,9 +111,12 @@ fn hmap_basic()
     }
   };
 
+  // Convert test_tools HashMap to std HashMap for Fields trait compatibility
+  let data: std::collections::HashMap<&str, TestObject> = data_raw.into_iter().collect();
+
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, HashMap<  &str, TestObject  >, &str, TestObject, str> = AsTable::new( &data );
-  let as_table = AsTable::new( &data );
+  let _as_table : AsTable< '_, _, &str, TestObject, str > = AsTable::new( &data );
+  let as_table : AsTable< '_, _, &str, TestObject, str > = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
   assert_eq!( rows.len(), 2 );
@@ -134,7 +137,7 @@ fn hmap_basic()
 fn bmap_basic()
 {
 
-  let data : Bmap< &str, TestObject > = bmap!
+  let data_raw = bmap!
   {
     "a" => TestObject
     {
@@ -167,9 +170,12 @@ fn bmap_basic()
     }
   };
 
+  // Convert test_tools BTreeMap to std BTreeMap for Fields trait compatibility  
+  let data: std::collections::BTreeMap<&str, TestObject> = data_raw.into_iter().collect();
+
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, Bmap< &str, TestObject >, &str, TestObject, str> = AsTable::new( &data );
-  let as_table = AsTable::new( &data );
+  let _as_table : AsTable< '_, std::collections::BTreeMap<&str, TestObject>, &str, TestObject, str> = AsTable::new( &data );
+  let as_table : AsTable< '_, _, &str, TestObject, str > = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
   assert_eq!( rows.len(), 2 );
@@ -188,7 +194,7 @@ fn bmap_basic()
 fn bset_basic()
 {
 
-  let data : collection_tools::Bset< TestObject > = bset!
+  let data = bset!
   {
     TestObject
     {
@@ -223,7 +229,7 @@ fn bset_basic()
 
   use the_module::TableFormatter;
   let _as_table : AsTable< '_, BTreeSet<  TestObject  >, &str, TestObject, str> = AsTable::new( &data );
-  let as_table = AsTable::new( &data );
+  let as_table : AsTable< '_, _, usize, TestObject, str > = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
   assert_eq!( rows.len(), 2 );
@@ -242,7 +248,7 @@ fn bset_basic()
 fn deque_basic()
 {
 
-  let data : collection_tools::Deque< TestObject > = deque!
+  let data = deque!
   {
     TestObject
     {
@@ -277,7 +283,7 @@ fn deque_basic()
 
   use the_module::TableFormatter;
   let _as_table : AsTable< '_, VecDeque< TestObject >, &str, TestObject, str> = AsTable::new( &data );
-  let as_table = AsTable::new( &data );
+  let as_table : AsTable< '_, _, usize, TestObject, str > = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
   assert_eq!( rows.len(), 2 );
@@ -296,7 +302,7 @@ fn deque_basic()
 fn hset_basic()
 {
 
-  let data : collection_tools::Hset< TestObject > = hset!
+  let data_raw = hset!
   {
     TestObject
     {
@@ -329,9 +335,12 @@ fn hset_basic()
     }
   };
 
+  // Convert test_tools HashSet to std HashSet for Fields trait compatibility
+  let data: std::collections::HashSet<TestObject> = data_raw.into_iter().collect();
+
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, HashSet<  TestObject  >, &str, TestObject, str> = AsTable::new( &data );
-  let as_table = AsTable::new( &data );
+  let _as_table : AsTable< '_, std::collections::HashSet<TestObject>, usize, TestObject, str> = AsTable::new( &data );
+  let as_table : AsTable< '_, _, usize, TestObject, str > = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
   assert_eq!( rows.len(), 2 );
@@ -350,7 +359,7 @@ fn hset_basic()
 fn llist_basic()
 {
 
-  let data : collection_tools::Llist< TestObject > = llist!
+  let data = llist!
   {
     TestObject
     {
@@ -385,7 +394,7 @@ fn llist_basic()
 
   use the_module::TableFormatter;
   let _as_table : AsTable< '_, LinkedList< TestObject >, &str, TestObject, str> = AsTable::new( &data );
-  let as_table = AsTable::new( &data );
+  let as_table : AsTable< '_, _, usize, TestObject, str > = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
   assert_eq!( rows.len(), 2 );
@@ -405,7 +414,7 @@ fn llist_basic()
 #[ test ]
 fn vec_of_hashmap()
 {
-  let data : Vec< HashMap<  String, String  > > = vec!
+  let data = vec!
   [
     {
       let mut map = HashMap::new();
@@ -425,8 +434,8 @@ fn vec_of_hashmap()
 
   use the_module::TableFormatter;
 
-  let _as_table : AsTable< '_, Vec< HashMap<  String, String  > >, &str, HashMap<  String, String  >, str> = AsTable::new( &data );
-  let as_table = AsTable::new( &data );
+  let _as_table : AsTable< '_, Vec< HashMap<  String, String  > >, usize, HashMap<  String, String  >, str> = AsTable::new( &data );
+  let as_table : AsTable< '_, _, usize, HashMap<String, String>, str > = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
   assert_eq!( rows.len(), 2 );
