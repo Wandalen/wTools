@@ -272,7 +272,7 @@ mod private
       }
       // fix clippy
       let command = dictionary.command( &raw_command.name )
-      .ok_or_else( ||
+      .ok_or(
       {
         #[ cfg( feature = "on_unknown_suggest" ) ]
         {

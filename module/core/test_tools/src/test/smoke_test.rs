@@ -452,7 +452,7 @@ mod private {
       // On Windows, we need to escape backslashes for TOML
       #[cfg(target_os = "windows")]
       {
-        Ok(path_str.replace('\\', "\\\\"))
+        path_str.replace('\\', "\\\\")
       }
       
       // On Unix-like systems, paths should work as-is in TOML
