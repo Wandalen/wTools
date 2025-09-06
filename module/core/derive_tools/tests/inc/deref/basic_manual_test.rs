@@ -3,6 +3,7 @@ use super::*;
 // use derives::*;
 
 #[ derive( Debug, Clone, Copy, PartialEq ) ]
+#[ allow( dead_code ) ]
 pub struct IsTransparentSimple(bool);
 
 impl core::ops::Deref for IsTransparentSimple {
@@ -39,13 +40,13 @@ use test_tools::a_id;
 #[ test ]
 fn deref_test() {
   // Test for IsTransparentSimple
-  let _got = IsTransparentSimple(true);
-  let _exp = true;
-  a_id!(*_got, _exp);
+  a_id!(*IsTransparentSimple(true), true);
 
   // Test for IsTransparentComplex
-  let got_tmp = "hello".to_string();
-  let _got = IsTransparentComplex::<'_, '_, String, str, 0>(&got_tmp, core::marker::PhantomData);
-  let _exp = &got_tmp;
-  a_id!(*_got, _exp);
+  #[ allow( clippy::no_effect_underscore_binding ) ]
+  {
+    let got_tmp = "hello".to_string();
+    let _got = IsTransparentComplex::<'_, '_, String, str, 0>(&got_tmp, core::marker::PhantomData);
+    a_id!(*_got, &got_tmp);
+  }
 }

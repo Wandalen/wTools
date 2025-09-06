@@ -25,8 +25,7 @@ pub struct IsTransparentSimple(bool);
 fn deref_mut_test() {
   // Test for IsTransparentSimple
   let mut _got = IsTransparentSimple(true);
-  let _exp = true;
-  a_id!(*_got, _exp);
+  a_id!(*_got, true);
   *_got = false;
   a_id!(*_got, false);
 

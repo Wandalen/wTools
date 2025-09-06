@@ -33,7 +33,10 @@ fn main()
     let params = typ::type_parameters( &tree_type, 0..=0 );
     
     print!( "Type parameters: " );
-    params.iter().for_each( |param| print!( "{} ", qt!( #param ) ) );
+    for param in &params
+    {
+      print!( "{} ", qt!( #param ) );
+    }
     println!();
     println!();
   }
@@ -49,9 +52,10 @@ fn main()
     let params = typ::type_parameters( &tree_type, 0..=1 );
     
     println!( "Type parameters:" );
-    params.iter().enumerate().for_each( |(i, param)| {
+    for (i, param) in params.iter().enumerate()
+    {
       println!( "  [{}]: {}", i, qt!( #param ) );
-    });
+    }
     println!();
   }
 

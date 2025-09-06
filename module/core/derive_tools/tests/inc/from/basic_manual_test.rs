@@ -11,6 +11,7 @@ use super::*;
 use test_tools::a_id;
 
 #[ derive( Debug, Clone, Copy, PartialEq ) ]
+#[ allow( dead_code ) ]
 pub struct IsTransparentSimple(bool);
 
 impl From<bool> for IsTransparentSimple {
@@ -40,13 +41,9 @@ where
 #[ test ]
 fn from_test() {
   // Test for IsTransparentSimple
-  let _got = IsTransparentSimple::from(true);
-  let _exp = IsTransparentSimple(true);
-  a_id!(_got, _exp);
+  a_id!(IsTransparentSimple::from(true), IsTransparentSimple(true));
 
   // Test for IsTransparentComplex
-  let got_tmp = "hello".to_string();
-  let _got = IsTransparentComplex::<'_, '_, String, str, 0>::from(&got_tmp);
-  let _exp = IsTransparentComplex::<'_, '_, String, str, 0>(&got_tmp, core::marker::PhantomData);
-  a_id!(_got, _exp);
+  let _got_tmp = "hello".to_string();
+  a_id!(IsTransparentComplex::<'_, '_, String, str, 0>::from(&_got_tmp), IsTransparentComplex::<'_, '_, String, str, 0>(&_got_tmp, core::marker::PhantomData));
 }

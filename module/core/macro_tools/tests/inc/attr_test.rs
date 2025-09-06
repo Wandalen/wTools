@@ -98,7 +98,7 @@ fn attribute_basic() -> Result<()> {
     #[ derive( Clone ) ]
     #[ derive( Debug ) ]
   })?);
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 
   // test.case( "AttributesInner" );
   let code = qt! {
@@ -110,7 +110,7 @@ fn attribute_basic() -> Result<()> {
     // #![ deny( missing_docs ) ]
     #![ warn( something ) ]
   })?);
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 
   // test.case( "AttributesInner" );
   let code = qt! {
@@ -130,7 +130,7 @@ fn attribute_basic() -> Result<()> {
       #[ warn( something2 ) ]
     })?),
   ));
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 
   //
 

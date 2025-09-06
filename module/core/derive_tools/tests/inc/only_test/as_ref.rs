@@ -7,8 +7,6 @@ fn as_ref_test()
 
   // AsRef
 
-  let _got = IsTransparent( true );
-  let _exp = true;
-  a_id!( _got.as_ref(), &_exp );
+  a_id!( IsTransparent( true ).as_ref(), &true );
 
 }

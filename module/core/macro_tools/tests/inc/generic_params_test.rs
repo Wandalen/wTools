@@ -26,7 +26,7 @@ fn generics_with_where() {
       Definition : former::FormerDefinition,
   };
 
-  // a_id!( tree_print!( got ), tree_print!( exp ) );
+  // assert_eq!( tree_print!( got ), tree_print!( exp ) );
   // code_print!( got );
   // code_print!( exp );
   // code_print!( got.where_clause );
@@ -58,7 +58,7 @@ fn merge_assumptions() {
       V : Sized
   };
 
-  // a_id!( tree_print!( got ), tree_print!( exp ) );
+  // assert_eq!( tree_print!( got ), tree_print!( exp ) );
   // code_print!( got );
   // code_print!( exp );
   // code_print!( got.where_clause );
@@ -90,7 +90,7 @@ fn merge_defaults() {
       V : Sized
   };
 
-  // a_id!( tree_print!( got ), tree_print!( exp ) );
+  // assert_eq!( tree_print!( got ), tree_print!( exp ) );
   // code_print!( got );
   // code_print!( exp );
   // code_print!( got.where_clause );
@@ -137,9 +137,9 @@ fn decompose_generics_without_where_clause() {
   assert!(where_gen.is_empty(), "Where generics should be empty");
 
   let exp: syn::Generics = syn::parse_quote! { < T, U > };
-  a_id!(impl_gen, exp.params);
+  assert_eq!(impl_gen, exp.params);
   let exp: syn::Generics = syn::parse_quote! { < T, U > };
-  a_id!(ty_gen, exp.params);
+  assert_eq!(ty_gen, exp.params);
 }
 
 #[ test ]
@@ -152,8 +152,8 @@ fn decompose_generics_with_where_clause() {
 
   let impl_exp: syn::Generics = syn::parse_quote! { < T, U > };
   let ty_exp: syn::Generics = syn::parse_quote! { < T, U > };
-  a_id!(impl_gen, impl_exp.params);
-  a_id!(ty_gen, ty_exp.params);
+  assert_eq!(impl_gen, impl_exp.params);
+  assert_eq!(ty_gen, ty_exp.params);
 
   assert_eq!(impl_gen.len(), 2, "Impl generics should have two parameters");
   assert_eq!(ty_gen.len(), 2, "Type generics should have two parameters");
@@ -204,8 +204,8 @@ fn decompose_generics_with_complex_constraints() {
 
   let impl_exp: syn::Generics = syn::parse_quote! { < T : Clone + Send, U : Default > };
   let ty_exp: syn::Generics = syn::parse_quote! { < T, U > };
-  a_id!(impl_gen, impl_exp.params);
-  a_id!(ty_gen, ty_exp.params);
+  assert_eq!(impl_gen, impl_exp.params);
+  assert_eq!(ty_gen, ty_exp.params);
 
   assert_eq!(impl_gen.len(), 2, "Impl generics should reflect complex constraints");
   assert_eq!(ty_gen.len(), 2, "Type generics should reflect complex constraints");
@@ -242,8 +242,8 @@ fn decompose_generics_with_nested_generic_types() {
 
   let impl_exp: syn::Generics = syn::parse_quote! { < T : Iterator< Item = U >, U > };
   let ty_exp: syn::Generics = syn::parse_quote! { < T, U > };
-  a_id!(impl_gen, impl_exp.params);
-  a_id!(ty_gen, ty_exp.params);
+  assert_eq!(impl_gen, impl_exp.params);
+  assert_eq!(ty_gen, ty_exp.params);
 
   assert_eq!(impl_gen.len(), 2, "Impl generics should handle nested generics");
   assert_eq!(ty_gen.len(), 2, "Type generics should handle nested generics");
@@ -260,8 +260,8 @@ fn decompose_generics_with_lifetime_parameters_only() {
 
   let impl_exp: syn::Generics = syn::parse_quote! { < 'a, 'b > };
   let ty_exp: syn::Generics = syn::parse_quote! { < 'a, 'b > };
-  a_id!(impl_gen, impl_exp.params);
-  a_id!(ty_gen, ty_exp.params);
+  assert_eq!(impl_gen, impl_exp.params);
+  assert_eq!(ty_gen, ty_exp.params);
 
   assert_eq!(impl_gen.len(), 2, "Impl generics should contain only lifetimes");
   assert_eq!(ty_gen.len(), 2, "Type generics should contain only lifetimes");
@@ -275,8 +275,8 @@ fn decompose_generics_with_constants_only() {
 
   let impl_exp: syn::Generics = syn::parse_quote! { < const N : usize, const M : usize > };
   let ty_exp: syn::Generics = syn::parse_quote! { < const N : usize, const M : usize > };
-  a_id!(impl_gen, impl_exp.params);
-  a_id!(ty_gen, ty_exp.params);
+  assert_eq!(impl_gen, impl_exp.params);
+  assert_eq!(ty_gen, ty_exp.params);
 
   assert_eq!(impl_gen.len(), 2, "Impl generics should contain constants");
   assert_eq!(ty_gen.len(), 2, "Type generics should contain constants");
@@ -291,9 +291,9 @@ fn decompose_generics_with_default_values() {
   let impl_with_exp: syn::Generics = syn::parse_quote! { < T = usize, U = i32, > };
   let impl_exp: syn::Generics = syn::parse_quote! { < T, U > };
   let ty_exp: syn::Generics = syn::parse_quote! { < T, U > };
-  a_id!(impl_with_def, impl_with_exp.params);
-  a_id!(impl_gen, impl_exp.params);
-  a_id!(ty_gen, ty_exp.params);
+  assert_eq!(impl_with_def, impl_with_exp.params);
+  assert_eq!(impl_gen, impl_exp.params);
+  assert_eq!(ty_gen, ty_exp.params);
 
   assert_eq!(impl_gen.len(), 2, "Impl generics should retain default types");
   assert_eq!(ty_gen.len(), 2, "Type generics should retain default types");
@@ -310,8 +310,8 @@ fn decompose_mixed_generics_types() {
 
   let impl_exp: syn::Generics = syn::parse_quote! { < 'a, T, const N : usize, U : Trait1 > };
   let ty_exp: syn::Generics = syn::parse_quote! { < 'a, T, const N : usize, U > };
-  a_id!(impl_gen, impl_exp.params);
-  a_id!(ty_gen, ty_exp.params);
+  assert_eq!(impl_gen, impl_exp.params);
+  assert_eq!(ty_gen, ty_exp.params);
 
   assert_eq!(impl_gen.len(), 4, "Impl generics should correctly interleave types");
   assert_eq!(ty_gen.len(), 4, "Type generics should correctly interleave types");
