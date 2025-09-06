@@ -2,7 +2,7 @@
 //!
 //! this example demonstrates secure configuration loading functionality
 
-#[ cfg( feature = "secret_management" ) ]
+#[ cfg( feature = "secrets" ) ]
 fn main() -> Result< (), workspace_tools::WorkspaceError >
 {
   // ensure we have a workspace path set
@@ -72,9 +72,9 @@ REDIS_URL=redis://localhost:6379
   Ok( () )
 }
 
-#[ cfg( not( feature = "secret_management" ) ) ]
+#[ cfg( not( feature = "secrets" ) ) ]
 fn main()
 {
-  println!( "this example requires the 'secret_management' feature" );
-  println!( "run with: cargo run --example secret_management --features secret_management" );
+  println!( "this example requires the 'secrets' feature" );
+  println!( "run with: cargo run --example secret_management --features secrets" );
 }

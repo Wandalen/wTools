@@ -5,7 +5,7 @@
 
 use workspace_tools::WorkspaceError;
 
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "testing" ) ]
 use workspace_tools::testing::{ create_test_workspace, create_test_workspace_with_structure };
 
 fn main() -> Result< (), WorkspaceError >
@@ -13,9 +13,9 @@ fn main() -> Result< (), WorkspaceError >
   println!( "🧪 testing integration with workspace_tools\n" );
   
   // this example demonstrates testing patterns rather than actual tests
-  // the testing utilities require the "enabled" feature (which is in default features)
+  // the testing utilities require the "testing" feature (which is in default features)
   
-  #[ cfg( feature = "enabled" ) ]
+  #[ cfg( feature = "testing" ) ]
   {
     demonstrate_basic_testing();
     demonstrate_structured_testing()?;
@@ -24,10 +24,10 @@ fn main() -> Result< (), WorkspaceError >
     demonstrate_cleanup_patterns()?;
   }
   
-  #[ cfg( not( feature = "enabled" ) ) ]
+  #[ cfg( not( feature = "testing" ) ) ]
   {
-    println!( "🚨 testing utilities require the 'enabled' feature" );
-    println!( "the 'enabled' feature is in default features, so this should normally work" );
+    println!( "🚨 testing utilities require the 'testing' feature" );
+    println!( "the 'testing' feature is in default features, so this should normally work" );
   }
   
   println!( "\n🧪 testing best practices:" );
@@ -44,7 +44,7 @@ fn main() -> Result< (), WorkspaceError >
   Ok( () )
 }
 
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "testing" ) ]
 fn demonstrate_basic_testing()
 {
   println!( "1️⃣  basic testing patterns:" );
@@ -72,7 +72,7 @@ fn demonstrate_basic_testing()
   println!( "   ✅ automatic cleanup on scope exit" );
 }
 
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "testing" ) ]
 fn demonstrate_structured_testing() -> Result< (), WorkspaceError >
 {
   println!( "\n2️⃣  structured testing with standard directories:" );
@@ -115,7 +115,7 @@ fn demonstrate_structured_testing() -> Result< (), WorkspaceError >
   Ok( () )
 }
 
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "testing" ) ]
 fn demonstrate_config_testing() -> Result< (), WorkspaceError >
 {
   println!( "\n3️⃣  configuration testing patterns:" );
@@ -162,7 +162,7 @@ fn demonstrate_config_testing() -> Result< (), WorkspaceError >
   Ok( () )
 }
 
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "testing" ) ]
 fn demonstrate_isolation_testing() -> Result< (), WorkspaceError >
 {
   println!( "\n4️⃣  testing workspace isolation:" );
@@ -198,7 +198,7 @@ fn demonstrate_isolation_testing() -> Result< (), WorkspaceError >
   Ok( () )
 }
 
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "testing" ) ]
 fn demonstrate_cleanup_patterns() -> Result< (), WorkspaceError >
 {
   println!( "\n5️⃣  cleanup and resource management patterns:" );
@@ -254,7 +254,7 @@ mod test_examples
 {
   use super::*;
   
-  #[ cfg( feature = "enabled" ) ]
+  #[ cfg( feature = "testing" ) ]
   #[ test ]
   fn test_workspace_basic_operations()
   {
@@ -273,7 +273,7 @@ mod test_examples
     assert!( data_dir.starts_with( ws.root() ) );
   }
   
-  #[ cfg( feature = "enabled" ) ]
+  #[ cfg( feature = "testing" ) ]
   #[ test ]
   fn test_workspace_with_structure()
   {
@@ -291,7 +291,7 @@ mod test_examples
     assert!( ws.is_workspace_file( &config_file ) );
   }
   
-  #[ cfg( all( feature = "enabled", feature = "glob" ) ) ]
+  #[ cfg( all( feature = "testing", feature = "glob" ) ) ]
   #[ test ] 
   fn test_config_discovery()
   {

@@ -1,0 +1,56 @@
+[package]
+name = "unilang-wasm-repl"
+version = "0.12.0"
+edition = "2021"
+authors = ["Kostiantyn Wandalen <wandalen@obox.systems>"]
+license = "MIT"
+description = "WebAssembly REPL example for unilang command framework"
+
+[workspace]
+# Empty workspace to avoid conflicts with parent workspace
+
+[lib]
+name = "unilang_wasm_repl"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+# WebAssembly bindings
+wasm-bindgen = "0.2"
+js-sys = "0.3"
+
+# Console logging for WASM
+console_error_panic_hook = { version = "0.1", optional = true }
+wee_alloc = { version = "0.4", optional = true }
+
+# Web APIs
+web-sys = { version = "0.3", features = [
+  "console",
+  "Document",
+  "Element", 
+  "HtmlElement",
+  "HtmlInputElement",
+  "HtmlTextAreaElement",
+  "Window",
+  "Event",
+  "EventTarget",
+  "KeyboardEvent",
+] }
+
+# Unilang with WebAssembly-compatible features
+unilang = { path = "../..", default-features = false, features = ["enabled"] }
+
+# JSON support for command definitions
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[profile.release]
+# Optimize for small code size in WebAssembly
+opt-level = "s"
+lto = true
+
+# Enable panic hook and allocator optimizations
+[features]
+default = ["console_error_panic_hook", "wee_alloc"]
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3"

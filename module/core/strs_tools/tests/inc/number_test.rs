@@ -1,6 +1,8 @@
 #[ allow( unused_imports ) ]
 use super::*;
+#[ allow( unused_imports ) ]
 use test_tools::impls_index::tests_impls;
+#[ allow( unused_imports ) ]
 use test_tools::impls_index::tests_index;
 //
 
@@ -27,9 +29,8 @@ tests_impls! {
       .decimal_point( b',' )
       .build()
       .unwrap();
-      let got = crate::the_module::string::number::parse_partial_with_options::< f32, _, FORMAT >( "0", &options );
-      let exp = Ok( ( 0.0, 1 ) );
-      a_id!( got, exp );
+      let result = crate::the_module::string::number::parse_partial_with_options::< f32, _, FORMAT >( "0", &options );
+      assert_eq!( result, Ok( ( 0.0f32, 1usize ) ) );
     }
 
     /* test.case( "parse_with_options" ); */
@@ -40,9 +41,8 @@ tests_impls! {
       .decimal_point( b',' )
       .build()
       .unwrap();
-      let got = crate::the_module::string::number::parse_with_options::< f32, _, FORMAT >( "1,2345", &options );
-      let exp = Ok( 1.2345 );
-      a_id!( got, exp );
+      let result = crate::the_module::string::number::parse_with_options::< f32, _, FORMAT >( "1,2345", &options );
+      assert_eq!( result, Ok( 1.2345f32 ) );
     }
 
     /* test.case( "to_string" ); */

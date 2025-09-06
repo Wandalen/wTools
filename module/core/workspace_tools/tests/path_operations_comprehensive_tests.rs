@@ -61,11 +61,17 @@ fn test_join_absolute_path()
   let temp_dir = TempDir::new().unwrap();
   let workspace = create_test_workspace_at( temp_dir.path() );
   
+  // Use platform-appropriate absolute path
+  #[ cfg( windows ) ]
+  let absolute_path = PathBuf::from( r"C:\Windows\System32\hosts" );
+  #[ cfg( not( windows ) ) ]
   let absolute_path = PathBuf::from( "/etc/hosts" );
+  
   let joined = workspace.join( &absolute_path );
   
-  // join() should return the absolute path as-is
-  assert_eq!( joined, absolute_path );
+  // join() should join the path with workspace root, not return absolute path as-is
+  let expected = workspace.root().join( &absolute_path );
+  assert_eq!( joined, expected );
 }
 
 /// Test PO.3: `join()` with empty path
@@ -277,7 +283,7 @@ fn test_all_standard_directory_paths()
 }
 
 /// Test PO.17: Secret directory path (when feature enabled)
-#[ cfg( feature = "secret_management" ) ]
+#[ cfg( feature = "secrets" ) ]
 #[ test ]  
 fn test_secret_directory_path()
 {
@@ -291,7 +297,7 @@ fn test_secret_directory_path()
 }
 
 /// Test PO.18: Secret file path (when feature enabled)
-#[ cfg( feature = "secret_management" ) ]
+#[ cfg( feature = "secrets" ) ]
 #[ test ]
 fn test_secret_file_path()
 {

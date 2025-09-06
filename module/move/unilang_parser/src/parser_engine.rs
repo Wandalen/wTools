@@ -438,7 +438,7 @@ impl Parser
                 item.adjusted_source_location.clone(),
               ));
             }
-            command_path_slices.push( s.clone() );
+            command_path_slices.push( s.to_string() );
             last_token_was_dot = false;
             items_iter.next(); // Consume item
           }
@@ -543,7 +543,7 @@ impl Parser
                   | UnilangTokenKind::Unrecognized( ref val )
                   | UnilangTokenKind::Number( ref val ) =>
                   {
-                    let mut current_value = val.clone();
+                    let mut current_value = val.to_string();
                     let mut current_value_end_location = match value_item.source_location()
                     {
                       SourceLocation::StrSpan { end, .. } => end,
@@ -609,7 +609,7 @@ impl Parser
                       }
                     }
 
-                    if named_arguments.contains_key( arg_name )
+                    if named_arguments.keys().any( | k | k == arg_name )
                       && self.options.error_on_duplicate_named_arguments
                       {
                         return Err( ParseError::new
@@ -621,10 +621,10 @@ impl Parser
                       // If not erroring on duplicates, the new value will overwrite the old one
                     named_arguments.insert
                     (
-                      arg_name.clone(),
+                      arg_name.to_string(),
                       Argument
                       {
-                        name : Some( arg_name.clone() ),
+                        name : Some( arg_name.to_string() ),
                         value : current_value,
                         name_location : Some( item.source_location() ),
                         value_location : SourceLocation::StrSpan
@@ -747,7 +747,7 @@ impl Parser
                       }
                     }
 
-                    if named_arguments.contains_key( arg_name )
+                    if named_arguments.keys().any( | k | k == arg_name )
                       && self.options.error_on_duplicate_named_arguments
                       {
                         return Err( ParseError::new
@@ -759,10 +759,10 @@ impl Parser
                       // If not erroring on duplicates, the new value will overwrite the old one
                     named_arguments.insert
                     (
-                      arg_name.clone(),
+                      arg_name.to_string(),
                       Argument
                       {
-                        name : Some( arg_name.clone() ),
+                        name : Some( arg_name.to_string() ),
                         value : current_value,
                         name_location : Some( item.source_location() ),
                         value_location : SourceLocation::StrSpan
@@ -812,7 +812,7 @@ impl Parser
               positional_arguments.push( Argument
               {
                 name : None,
-                value : s.clone(),
+                value : s.to_string(),
                 name_location : None,
                 value_location : item.source_location(),
               });
@@ -832,7 +832,7 @@ impl Parser
             positional_arguments.push( Argument
             {
               name : None,
-              value : s.clone(),
+              value : s.to_string(),
               name_location : None,
               value_location : item.source_location(),
             });
@@ -852,7 +852,7 @@ impl Parser
           positional_arguments.push( Argument
           {
             name : None,
-            value : s.clone(),
+            value : s.to_string(),
             name_location : None,
             value_location : item.source_location(),
           });

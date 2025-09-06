@@ -18,9 +18,9 @@ use std::fs;
 use tempfile::TempDir;
 
 /// Test FC.1: Cargo + Serde integration
-#[ cfg( all( feature = "cargo_integration", feature = "serde_integration" ) ) ]
+#[ cfg( all( feature = "serde", feature = "serde" ) ) ]
 #[ test ]
-fn test_cargo_serde_integration()
+fn test_cargo_serde()
 {
   use serde::{ Serialize, Deserialize };
   
@@ -88,7 +88,7 @@ edition.workspace = true
 }
 
 /// Test FC.2: Glob + Secret Management integration
-#[ cfg( all( feature = "glob", feature = "secret_management" ) ) ]
+#[ cfg( all( feature = "glob", feature = "secrets" ) ) ]
 #[ test ]
 fn test_glob_secret_management_integration()
 {
@@ -138,7 +138,7 @@ fn test_glob_secret_management_integration()
 }
 
 /// Test FC.3: Cargo + Glob integration  
-#[ cfg( all( feature = "cargo_integration", feature = "glob" ) ) ]
+#[ cfg( all( feature = "serde", feature = "glob" ) ) ]
 #[ test ]
 fn test_cargo_glob_integration()
 {
@@ -194,7 +194,7 @@ edition.workspace = true
 }
 
 /// Test FC.4: Serde + Secret Management integration
-#[ cfg( all( feature = "serde_integration", feature = "secret_management" ) ) ]
+#[ cfg( all( feature = "serde", feature = "secrets" ) ) ]
 #[ test ]
 fn test_serde_secret_management_integration()
 {
@@ -250,10 +250,10 @@ fn test_serde_secret_management_integration()
 
 /// Test FC.5: All features integration
 #[ cfg( all( 
-  feature = "cargo_integration", 
-  feature = "serde_integration", 
+  feature = "serde", 
+  feature = "serde", 
   feature = "glob", 
-  feature = "secret_management"
+  feature = "secrets"
 ) ) ]
 #[ test ]
 fn test_all_features_integration()
@@ -387,10 +387,10 @@ fn test_minimal_functionality()
 
 /// Test FC.7: Performance with all features enabled
 #[ cfg( all( 
-  feature = "cargo_integration", 
-  feature = "serde_integration", 
+  feature = "serde", 
+  feature = "serde", 
   feature = "glob", 
-  feature = "secret_management"
+  feature = "secrets"
 ) ) ]
 #[ test ]
 fn test_all_features_performance()
@@ -422,7 +422,7 @@ fn test_all_features_performance()
 }
 
 /// Test FC.8: Feature interaction edge cases
-#[ cfg( all( feature = "cargo_integration", feature = "serde_integration" ) ) ]
+#[ cfg( all( feature = "serde", feature = "serde" ) ) ]
 #[ test ]
 fn test_feature_interaction_edge_cases()
 {

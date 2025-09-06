@@ -27,6 +27,8 @@ cargo add strs_tools
 Unlike standard `str.split()`, handles quotes and preserves context:
 
 ```rust
+# #[cfg(all(feature = "string_split", not(feature = "no_std")))]
+# {
 use strs_tools::string;
 
 // Basic splitting with delimiter preservation
@@ -51,6 +53,7 @@ let parts : Vec< String > = string::split()
 .map( String::from )
 .collect();
 // Results: ["run", "--file", "my file.txt", "--verbose"]
+# }
 ```
 
 ### Text Indentation
@@ -58,11 +61,14 @@ let parts : Vec< String > = string::split()
 Add consistent indentation to multi-line text:
 
 ```rust
+# #[cfg(all(feature = "string_indentation", not(feature = "no_std")))]
+# {
 use strs_tools::string;
 
 let code = "fn main() {\n    println!(\"Hello\");\n}";
 let indented = string::indentation::indentation( "  ", code, "" );
 // Result: "  fn main() {\n      println!(\"Hello\");\n  }"
+# }
 ```
 
 ### Command Parsing

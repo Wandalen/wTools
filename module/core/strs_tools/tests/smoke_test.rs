@@ -1,19 +1,19 @@
 //! Smoke testing of the package.
 
-#[ ignore ]
+#[ ignore = "temporarily disabled due to test_tools::test module gating issues" ]
 #[ test ]
 fn local_smoke_test() {
   // xxx: temporarily disabled due to test_tools::test module gating issues
 }
 
-#[ ignore ]
+#[ ignore = "temporarily disabled due to test_tools::test module gating issues" ]
 #[ test ]
 fn published_smoke_test() {
   // xxx: temporarily disabled due to test_tools::test module gating issues
 }
 
-#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
-#[ ignore ]
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
+#[ ignore = "temporarily disabled due to string_split feature being gated" ]
 #[ test ]
 fn debug_strs_tools_semicolon_only() {
   // xxx: temporarily disabled due to string_split feature being gated
@@ -42,8 +42,8 @@ fn debug_strs_tools_semicolon_only() {
   assert_eq!(splits, expected);
 }
 
-#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
-#[ ignore ]
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
+#[ ignore = "temporarily disabled due to string_split feature being gated" ]
 #[ test ]
 fn debug_strs_tools_trailing_semicolon_space() {
   // xxx: temporarily disabled due to string_split feature being gated
@@ -81,8 +81,8 @@ fn debug_strs_tools_trailing_semicolon_space() {
   assert_eq!(splits, expected);
 }
 
-#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
-#[ ignore ]
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
+#[ ignore = "temporarily disabled due to string_split feature being gated" ]
 #[ test ]
 fn debug_strs_tools_only_semicolon() {
   // xxx: temporarily disabled due to string_split feature being gated

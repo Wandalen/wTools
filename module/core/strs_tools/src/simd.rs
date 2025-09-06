@@ -4,17 +4,17 @@
 //! searching, and character counting. It automatically falls back to scalar
 //! implementations when SIMD is not available or disabled.
 
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "std" ) ]
 extern crate std;
 
-#[ cfg( feature = "use_alloc" ) ]
+#[ cfg( all( feature = "use_alloc", not( feature = "std" ) ) ) ]
 extern crate alloc;
 
-#[ cfg( feature = "use_alloc" ) ]
-use alloc::string::String;
-
-#[ cfg( not( feature = "no_std" ) ) ]
+// String import with proper precedence: std takes precedence when available
+#[ cfg( feature = "std" ) ]
 use std::string::String;
+#[ cfg( all( feature = "use_alloc", not( feature = "std" ) ) ) ]
+use alloc::string::String;
 
 #[ cfg( feature = "simd" ) ]
 use memchr::{ memchr, memmem };
@@ -23,7 +23,7 @@ use aho_corasick::AhoCorasick;
 #[ cfg( feature = "simd" ) ]
 use bytecount;
 
-#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
 pub use crate::string::split::{ SIMDSplitIterator, simd_split_cached };
 
 /// SIMD-optimized string search operations.
@@ -150,7 +150,7 @@ pub trait SimdStringExt
   /// # Errors
   /// 
   /// Returns an error string if SIMD is not available or pattern compilation fails.
-  #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
+  #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
   fn simd_split( &self, delimiters: &[ &str ] ) -> Result< SIMDSplitIterator<'_>, String >;
   
   /// SIMD-optimized substring search.
@@ -168,7 +168,7 @@ pub trait SimdStringExt
 
 impl SimdStringExt for str 
 {
-  #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
+  #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
   fn simd_split( &self, delimiters: &[ &str ] ) -> Result< SIMDSplitIterator<'_>, String > 
   {
     #[ cfg( feature = "simd" ) ]
@@ -206,7 +206,7 @@ impl SimdStringExt for str
 
 impl SimdStringExt for String 
 {
-  #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
+  #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
   fn simd_split( &self, delimiters: &[ &str ] ) -> Result< SIMDSplitIterator<'_>, String > 
   {
     self.as_str().simd_split( delimiters )

@@ -1,6 +1,8 @@
 #[ allow( unused_imports ) ]
 use super::*;
+#[ allow( unused_imports ) ]
 use test_tools::impls_index::tests_impls;
+#[ allow( unused_imports ) ]
 use test_tools::impls_index::tests_index;
 
 //

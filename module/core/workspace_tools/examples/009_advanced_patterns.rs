@@ -770,7 +770,7 @@ impl WorkspacePlugin for SecurityScannerPlugin
     let mut data = HashMap::new();
     
     // simulate security checks
-    #[ cfg( feature = "secret_management" ) ]
+    #[ cfg( feature = "secrets" ) ]
     {
       let secret_dir = workspace.secret_dir();
       if secret_dir.exists()

@@ -38,7 +38,21 @@
 //! ## features
 //!
 //! - **`glob`**: enables pattern-based resource discovery
-//! - **`secret_management`**: provides secure configuration file handling utilities
+//! - **`secrets`**: provides secure configuration file handling utilities
+//! - **`secure`**: enables memory-safe secret handling with the secrecy crate
+//! - **`serde`**: provides configuration loading with serde support
+//! - **`validation`**: enables configuration validation with JSON Schema
+//!
+//! ## security best practices
+//!
+//! when using the `secure` feature for secret management:
+//!
+//! - secrets are wrapped in `SecretString` types that prevent accidental exposure
+//! - debug output automatically redacts secret values
+//! - secrets require explicit `expose_secret()` calls for access
+//! - use the `SecretInjectable` trait for automatic configuration injection
+//! - validate secret strength with `validate_secret()` method
+//! - secrets are zeroized from memory when dropped
 
 #![ warn( missing_docs ) ]
 
@@ -48,14 +62,23 @@ use std::
   path::{ Path, PathBuf },
 };
 
-#[ cfg( feature = "cargo_integration" ) ]
 use std::collections::HashMap;
 
 #[ cfg( feature = "glob" ) ]
 use glob::glob;
 
-#[ cfg( feature = "secret_management" ) ]
+#[ cfg( feature = "secrets" ) ]
 use std::fs;
+
+#[ cfg( feature = "validation" ) ]
+use jsonschema::Validator;
+
+#[ cfg( feature = "validation" ) ]
+use schemars::JsonSchema;
+
+#[ cfg( feature = "secure" ) ]
+use secrecy::{ SecretString, ExposeSecret };
+
 
 /// workspace path resolution errors
 #[ derive( Debug, Clone ) ]
@@ -76,14 +99,21 @@ pub enum WorkspaceError
   /// path is outside workspace boundaries
   PathOutsideWorkspace( PathBuf ),
   /// cargo metadata error
-  #[ cfg( feature = "cargo_integration" ) ]
-  CargoError( String ),
+    CargoError( String ),
   /// toml parsing error
-  #[ cfg( feature = "cargo_integration" ) ]
-  TomlError( String ),
+    TomlError( String ),
   /// serde deserialization error
-  #[ cfg( feature = "serde_integration" ) ]
+  #[ cfg( feature = "serde" ) ]
   SerdeError( String ),
+  /// config validation error
+  #[ cfg( feature = "validation" ) ]
+  ValidationError( String ),
+  /// secret validation error
+  #[ cfg( feature = "secure" ) ]
+  SecretValidationError( String ),
+  /// secret injection error
+  #[ cfg( feature = "secure" ) ]
+  SecretInjectionError( String ),
 }
 
 impl core::fmt::Display for WorkspaceError
@@ -107,15 +137,22 @@ impl core::fmt::Display for WorkspaceError
         write!( f, "path not found: {}. ensure the workspace structure is properly initialized", path.display() ),
       WorkspaceError::PathOutsideWorkspace( path ) =>
         write!( f, "path is outside workspace boundaries: {}", path.display() ),
-      #[ cfg( feature = "cargo_integration" ) ]
-      WorkspaceError::CargoError( msg ) =>
+            WorkspaceError::CargoError( msg ) =>
         write!( f, "cargo metadata error: {msg}" ),
-      #[ cfg( feature = "cargo_integration" ) ]
-      WorkspaceError::TomlError( msg ) =>
+            WorkspaceError::TomlError( msg ) =>
         write!( f, "toml parsing error: {msg}" ),
-      #[ cfg( feature = "serde_integration" ) ]
+      #[ cfg( feature = "serde" ) ]
       WorkspaceError::SerdeError( msg ) =>
         write!( f, "serde error: {msg}" ),
+      #[ cfg( feature = "validation" ) ]
+      WorkspaceError::ValidationError( msg ) =>
+        write!( f, "config validation error: {msg}" ),
+      #[ cfg( feature = "secure" ) ]
+      WorkspaceError::SecretValidationError( msg ) =>
+        write!( f, "secret validation error: {msg}" ),
+      #[ cfg( feature = "secure" ) ]
+      WorkspaceError::SecretInjectionError( msg ) =>
+        write!( f, "secret injection error: {msg}" ),
     }
   }
 }
@@ -124,6 +161,28 @@ impl core::error::Error for WorkspaceError {}
 
 /// result type for workspace operations
 pub type Result< T > = core::result::Result< T, WorkspaceError >;
+
+/// trait for types that support automatic secret injection
+///
+/// configuration types can implement this trait to enable automatic
+/// secret injection from workspace secret files
+#[ cfg( feature = "secure" ) ]
+pub trait SecretInjectable
+{
+  /// inject a secret value for the given key
+  ///
+  /// # Errors
+  ///
+  /// returns error if the key is not recognized or injection fails
+  fn inject_secret( &mut self, key : &str, value : String ) -> Result< () >;
+
+  /// validate all injected secrets meet security requirements
+  ///
+  /// # Errors
+  ///
+  /// returns error if any secret fails validation
+  fn validate_secrets( &self ) -> Result< () >;
+}
 
 /// workspace path resolver providing centralized access to workspace-relative paths
 ///
@@ -218,18 +277,9 @@ impl Workspace
   #[inline]
   pub fn resolve_or_fallback() -> Self
   {
-    #[ cfg( feature = "cargo_integration" ) ]
-    {
+        {
       Self::from_cargo_workspace()
         .or_else( |_| Self::resolve() )
-        .or_else( |_| Self::from_current_dir() )
-        .or_else( |_| Self::from_git_root() )
-        .unwrap_or_else( |_| Self::from_cwd() )
-    }
-    
-    #[ cfg( not( feature = "cargo_integration" ) ) ]
-    {
-      Self::resolve()
         .or_else( |_| Self::from_current_dir() )
         .or_else( |_| Self::from_git_root() )
         .unwrap_or_else( |_| Self::from_cwd() )
@@ -466,108 +516,6 @@ impl Workspace
       .map_err( |_| WorkspaceError::EnvironmentVariableMissing( key.to_string() ) )?;
     Ok( PathBuf::from( value ) )
   }
-}
-
-// cargo integration types and implementations
-#[ cfg( feature = "cargo_integration" ) ]
-/// cargo metadata information for workspace
-#[ derive( Debug, Clone ) ]
-pub struct CargoMetadata
-{
-  /// root directory of the cargo workspace
-  pub workspace_root : PathBuf,
-  /// list of workspace member packages
-  pub members : Vec< CargoPackage >,
-  /// workspace-level dependencies
-  pub workspace_dependencies : HashMap< String, String >,
-}
-
-#[ cfg( feature = "cargo_integration" ) ]
-/// information about a cargo package within a workspace
-#[ derive( Debug, Clone ) ]
-pub struct CargoPackage
-{
-  /// package name
-  pub name : String,
-  /// package version
-  pub version : String,
-  /// path to the package's Cargo.toml
-  pub manifest_path : PathBuf,
-  /// root directory of the package
-  pub package_root : PathBuf,
-}
-
-// serde integration types
-#[ cfg( feature = "serde_integration" ) ]
-/// trait for configuration types that can be merged
-pub trait ConfigMerge : Sized
-{
-  /// merge this configuration with another, returning the merged result
-  #[must_use]
-  fn merge( self, other : Self ) -> Self;
-}
-
-#[ cfg( feature = "serde_integration" ) ]
-/// workspace-aware serde deserializer
-#[ derive( Debug ) ]
-pub struct WorkspaceDeserializer< 'ws >
-{
-  /// reference to workspace for path resolution
-  pub workspace : &'ws Workspace,
-}
-
-#[ cfg( feature = "serde_integration" ) ]
-/// custom serde field for workspace-relative paths
-#[ derive( Debug, Clone, PartialEq ) ]
-pub struct WorkspacePath( pub PathBuf );
-
-// conditional compilation for optional features
-
-#[ cfg( feature = "glob" ) ]
-impl Workspace
-{
-  /// find files matching a glob pattern within the workspace
-  ///
-  /// # Errors
-  ///
-  /// returns error if the glob pattern is invalid or if there are errors reading the filesystem
-  ///
-  /// # examples
-  ///
-  /// ```rust
-  /// # fn main() -> Result<(), workspace_tools::WorkspaceError> {
-  /// use workspace_tools::workspace;
-  ///
-  /// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
-  /// let ws = workspace()?;
-  ///
-  /// // find all rust source files
-  /// let rust_files = ws.find_resources( "src/**/*.rs" )?;
-  ///
-  /// // find all configuration files
-  /// let configs = ws.find_resources( "config/**/*.toml" )?;
-  /// # Ok(())
-  /// # }
-  /// ```
-  pub fn find_resources( &self, pattern : &str ) -> Result< Vec< PathBuf > >
-  {
-    let full_pattern = self.join( pattern );
-    let pattern_str = full_pattern.to_string_lossy();
-
-    let mut results = Vec::new();
-
-    for entry in glob( &pattern_str )
-      .map_err( | e | WorkspaceError::GlobError( e.to_string() ) )?
-    {
-      match entry
-      {
-        Ok( path ) => results.push( path ),
-        Err( e ) => return Err( WorkspaceError::GlobError( e.to_string() ) ),
-      }
-    }
-
-    Ok( results )
-  }
 
   /// find configuration file by name
   ///
@@ -625,7 +573,108 @@ impl Workspace
   }
 }
 
-#[ cfg( feature = "secret_management" ) ]
+// cargo integration types and implementations
+/// cargo metadata information for workspace
+#[ derive( Debug, Clone ) ]
+pub struct CargoMetadata
+{
+  /// root directory of the cargo workspace
+  pub workspace_root : PathBuf,
+  /// list of workspace member packages
+  pub members : Vec< CargoPackage >,
+  /// workspace-level dependencies
+  pub workspace_dependencies : HashMap< String, String >,
+}
+
+/// information about a cargo package within a workspace
+#[ derive( Debug, Clone ) ]
+pub struct CargoPackage
+{
+  /// package name
+  pub name : String,
+  /// package version
+  pub version : String,
+  /// path to the package's Cargo.toml
+  pub manifest_path : PathBuf,
+  /// root directory of the package
+  pub package_root : PathBuf,
+}
+
+// serde integration types
+#[ cfg( feature = "serde" ) ]
+/// trait for configuration types that can be merged
+pub trait ConfigMerge : Sized
+{
+  /// merge this configuration with another, returning the merged result
+  #[must_use]
+  fn merge( self, other : Self ) -> Self;
+}
+
+#[ cfg( feature = "serde" ) ]
+/// workspace-aware serde deserializer
+#[ derive( Debug ) ]
+pub struct WorkspaceDeserializer< 'ws >
+{
+  /// reference to workspace for path resolution
+  pub workspace : &'ws Workspace,
+}
+
+#[ cfg( feature = "serde" ) ]
+/// custom serde field for workspace-relative paths
+#[ derive( Debug, Clone, PartialEq ) ]
+pub struct WorkspacePath( pub PathBuf );
+
+// conditional compilation for optional features
+
+#[ cfg( feature = "glob" ) ]
+impl Workspace
+{
+  /// find files matching a glob pattern within the workspace
+  ///
+  /// # Errors
+  ///
+  /// returns error if the glob pattern is invalid or if there are errors reading the filesystem
+  ///
+  /// # examples
+  ///
+  /// ```rust
+  /// # fn main() -> Result<(), workspace_tools::WorkspaceError> {
+  /// use workspace_tools::workspace;
+  ///
+  /// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
+  /// let ws = workspace()?;
+  ///
+  /// // find all rust source files
+  /// let rust_files = ws.find_resources( "src/**/*.rs" )?;
+  ///
+  /// // find all configuration files
+  /// let configs = ws.find_resources( "config/**/*.toml" )?;
+  /// # Ok(())
+  /// # }
+  /// ```
+  pub fn find_resources( &self, pattern : &str ) -> Result< Vec< PathBuf > >
+  {
+    let full_pattern = self.join( pattern );
+    let pattern_str = full_pattern.to_string_lossy();
+
+    let mut results = Vec::new();
+
+    for entry in glob( &pattern_str )
+      .map_err( | e | WorkspaceError::GlobError( e.to_string() ) )?
+    {
+      match entry
+      {
+        Ok( path ) => results.push( path ),
+        Err( e ) => return Err( WorkspaceError::GlobError( e.to_string() ) ),
+      }
+    }
+
+    Ok( results )
+  }
+
+}
+
+#[ cfg( feature = "secrets" ) ]
 impl Workspace
 {
   /// get secrets directory path
@@ -743,7 +792,11 @@ impl Workspace
 
   /// parse key-value file content
   ///
-  /// supports shell script format with comments and quotes
+  /// supports multiple formats:
+  /// - shell script format with comments and quotes
+  /// - export statements: `export KEY=VALUE`
+  /// - standard dotenv format: `KEY=VALUE`
+  /// - mixed formats in same file
   fn parse_key_value_file( content : &str ) -> HashMap< String, String >
   {
     let mut secrets = HashMap::new();
@@ -758,8 +811,18 @@ impl Workspace
         continue;
       }
 
+      // handle export statements by stripping 'export ' prefix
+      let processed_line = if line.starts_with( "export " )
+      {
+        line.strip_prefix( "export " ).unwrap_or( line ).trim()
+      }
+      else
+      {
+        line
+      };
+
       // parse KEY=VALUE format
-      if let Some( ( key, value ) ) = line.split_once( '=' )
+      if let Some( ( key, value ) ) = processed_line.split_once( '=' )
       {
         let key = key.trim();
         let value = value.trim();
@@ -783,7 +846,324 @@ impl Workspace
   }
 }
 
-#[ cfg( feature = "cargo_integration" ) ]
+#[ cfg( feature = "secure" ) ]
+impl Workspace
+{
+  /// load secrets from a key-value file with memory-safe handling
+  ///
+  /// returns secrets as `SecretString` types for enhanced security
+  /// supports shell script format (KEY=value lines)
+  ///
+  /// # Errors
+  ///
+  /// returns error if the file cannot be read or contains invalid format
+  ///
+  /// # examples
+  ///
+  /// ```rust
+  /// # fn main() -> Result<(), workspace_tools::WorkspaceError> {
+  /// use workspace_tools::workspace;
+  /// use secrecy::ExposeSecret;
+  ///
+  /// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
+  /// let ws = workspace()?;
+  ///
+  /// // load from .secret/-secrets.sh
+  /// match ws.load_secrets_secure( "-secrets.sh" )
+  /// {
+  ///     Ok( secrets ) =>
+  ///     {
+  ///         if let Some( api_key ) = secrets.get( "API_KEY" )
+  ///         {
+  ///             println!( "loaded api key: {}", api_key.expose_secret() );
+  ///         }
+  ///     }
+  ///     Err( _ ) => println!( "no secrets file found" ),
+  /// }
+  /// # Ok(())
+  /// # }
+  /// ```
+  pub fn load_secrets_secure( &self, filename : &str ) -> Result< HashMap< String, SecretString > >
+  {
+    let secret_file = self.secret_file( filename );
+
+    if !secret_file.exists()
+    {
+      return Ok( HashMap::new() );
+    }
+
+    let content = fs::read_to_string( &secret_file )
+      .map_err( | e | WorkspaceError::IoError( format!( "failed to read {}: {}", secret_file.display(), e ) ) )?;
+
+    let parsed = Self::parse_key_value_file( &content );
+    let mut secure_secrets = HashMap::new();
+
+    for ( key, value ) in parsed
+    {
+      secure_secrets.insert( key, SecretString::new( value ) );
+    }
+
+    Ok( secure_secrets )
+  }
+
+  /// load a specific secret key with memory-safe handling and fallback to environment
+  ///
+  /// tries to load from secret file first, then falls back to environment variable
+  /// returns `SecretString` for enhanced security
+  ///
+  /// # Errors
+  ///
+  /// returns error if the key is not found in either the secret file or environment variables
+  ///
+  /// # examples
+  ///
+  /// ```rust
+  /// # fn main() -> Result<(), workspace_tools::WorkspaceError> {
+  /// use workspace_tools::workspace;
+  /// use secrecy::ExposeSecret;
+  ///
+  /// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
+  /// let ws = workspace()?;
+  ///
+  /// // looks for API_KEY in .secret/-secrets.sh, then in environment
+  /// match ws.load_secret_key_secure( "API_KEY", "-secrets.sh" )
+  /// {
+  ///     Ok( key ) => println!( "loaded api key: {}", key.expose_secret() ),
+  ///     Err( _ ) => println!( "api key not found" ),
+  /// }
+  /// # Ok(())
+  /// # }
+  /// ```
+  pub fn load_secret_key_secure( &self, key_name : &str, filename : &str ) -> Result< SecretString >
+  {
+    // try loading from secret file first
+    if let Ok( secrets ) = self.load_secrets_secure( filename )
+    {
+      if let Some( value ) = secrets.get( key_name )
+      {
+        return Ok( value.clone() );
+      }
+    }
+
+    // fallback to environment variable
+    match env::var( key_name )
+    {
+      Ok( value ) => Ok( SecretString::new( value ) ),
+      Err( _ ) => Err( WorkspaceError::ConfigurationError(
+        format!(
+          "{} not found. please add it to {} or set environment variable",
+          key_name,
+          self.secret_file( filename ).display()
+        )
+      ))
+    }
+  }
+
+  /// get environment variable as `SecretString` for memory-safe handling
+  ///
+  /// # examples
+  ///
+  /// ```rust
+  /// # fn main() -> Result<(), workspace_tools::WorkspaceError> {
+  /// use workspace_tools::workspace;
+  /// use secrecy::ExposeSecret;
+  ///
+  /// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
+  /// let ws = workspace()?;
+  ///
+  /// if let Some( token ) = ws.env_secret( "GITHUB_TOKEN" )
+  /// {
+  ///     println!( "using secure token: {}", token.expose_secret() );
+  /// }
+  /// # Ok(())
+  /// # }
+  /// ```
+  #[ must_use ]
+  pub fn env_secret( &self, key : &str ) -> Option< SecretString >
+  {
+    env::var( key ).ok().map( SecretString::new )
+  }
+
+  /// validate secret strength and security requirements
+  ///
+  /// checks for common security issues like weak passwords, common patterns, etc.
+  ///
+  /// # Errors
+  ///
+  /// returns error if the secret does not meet minimum security requirements
+  ///
+  /// # examples
+  ///
+  /// ```rust
+  /// # fn main() -> Result<(), workspace_tools::WorkspaceError> {
+  /// use workspace_tools::workspace;
+  ///
+  /// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
+  /// let ws = workspace()?;
+  ///
+  /// // this will fail - too weak
+  /// assert!( ws.validate_secret( "123" ).is_err() );
+  ///
+  /// // this will pass - strong secret
+  /// assert!( ws.validate_secret( "super-strong-secret-2024!" ).is_ok() );
+  /// # Ok(())
+  /// # }
+  /// ```
+  pub fn validate_secret( &self, secret : &str ) -> Result< () >
+  {
+    if secret.len() < 8
+    {
+      return Err( WorkspaceError::SecretValidationError( 
+        "secret must be at least 8 characters long".to_string() 
+      ) );
+    }
+
+    if secret == "123" || secret == "password" || secret == "secret" || secret.to_lowercase() == "test"
+    {
+      return Err( WorkspaceError::SecretValidationError( 
+        "secret is too weak or uses common patterns".to_string() 
+      ) );
+    }
+
+    // check for reasonable complexity (at least some variety)
+    let has_letter = secret.chars().any( char::is_alphabetic );
+    let has_number = secret.chars().any( char::is_numeric );
+    let has_special = secret.chars().any( | c | !c.is_alphanumeric() );
+
+    if !( has_letter || has_number || has_special )
+    {
+      return Err( WorkspaceError::SecretValidationError( 
+        "secret should contain letters, numbers, or special characters".to_string() 
+      ) );
+    }
+
+    Ok( () )
+  }
+
+  /// load configuration with automatic secret injection
+  ///
+  /// replaces `${VAR_NAME}` placeholders in configuration with values from secret files
+  ///
+  /// # Errors
+  ///
+  /// returns error if configuration file cannot be read or secret injection fails
+  ///
+  /// # examples
+  ///
+  /// ```rust,no_run
+  /// # fn main() -> Result<(), workspace_tools::WorkspaceError> {
+  /// use workspace_tools::workspace;
+  ///
+  /// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
+  /// let ws = workspace()?;
+  ///
+  /// // loads config.toml and replaces ${SECRET} with values from secrets.sh
+  /// let config = ws.load_config_with_secret_injection( "config.toml", "secrets.sh" )?;
+  /// # Ok(())
+  /// # }
+  /// ```
+  pub fn load_config_with_secret_injection( &self, config_file : &str, secret_file : &str ) -> Result< String >
+  {
+    // load the configuration file
+    let config_path = self.join( config_file );
+    let config_content = std::fs::read_to_string( &config_path )
+      .map_err( | e | WorkspaceError::IoError( format!( "failed to read config {}: {}", config_path.display(), e ) ) )?;
+
+    // load secrets securely
+    let secrets = self.load_secrets_secure( secret_file )?;
+
+    // perform template substitution
+    let mut result = config_content;
+    for ( key, secret_value ) in secrets
+    {
+      let placeholder = format!( "${{{key}}}" );
+      let replacement = secret_value.expose_secret();
+      result = result.replace( &placeholder, replacement );
+    }
+
+    // check for unresolved placeholders
+    if result.contains( "${" )
+    {
+      return Err( WorkspaceError::SecretInjectionError(
+        "configuration contains unresolved placeholders - check secret file completeness".to_string()
+      ) );
+    }
+
+    Ok( result )
+  }
+
+  /// load configuration with automatic secret injection using `SecretInjectable` trait
+  ///
+  /// loads secrets from file and injects them into the configuration type
+  ///
+  /// # Errors
+  ///
+  /// returns error if secret loading or injection fails
+  ///
+  /// # examples
+  ///
+  /// ```rust,no_run
+  /// # fn main() -> Result<(), workspace_tools::WorkspaceError> {
+  /// # #[cfg(feature = "secure")] {
+  /// use workspace_tools::{ workspace, SecretInjectable };
+  ///
+  /// #[derive(Debug)]
+  /// struct AppConfig {
+  ///     database_url: String,
+  ///     api_key: String,
+  /// }
+  ///
+  /// impl SecretInjectable for AppConfig {
+  ///     fn inject_secret(&mut self, key: &str, value: String) -> workspace_tools::Result<()> {
+  ///         match key {
+  ///             "DATABASE_URL" => self.database_url = value,
+  ///             "API_KEY" => self.api_key = value,
+  ///             _ => return Err(workspace_tools::WorkspaceError::SecretInjectionError(
+  ///                 format!("unknown secret key: {}", key)
+  ///             )),
+  ///         }
+  ///         Ok(())
+  ///     }
+  ///
+  ///     fn validate_secrets(&self) -> workspace_tools::Result<()> {
+  ///         if self.api_key.is_empty() {
+  ///             return Err(workspace_tools::WorkspaceError::SecretValidationError(
+  ///                 "api_key cannot be empty".to_string()
+  ///             ));
+  ///         }
+  ///         Ok(())
+  ///     }
+  /// }
+  ///
+  /// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
+  /// let ws = workspace()?;
+  /// let mut config = AppConfig { database_url: String::new(), api_key: String::new() };
+  ///
+  /// // config gets secrets injected from .secret/-config.sh
+  /// config = ws.load_config_with_secrets( config, "-config.sh" )?;
+  /// # }
+  /// # Ok(())
+  /// # }
+  /// ```
+  pub fn load_config_with_secrets< T : SecretInjectable >( &self, mut config : T, secret_file : &str ) -> Result< T >
+  {
+    // load secrets securely
+    let secrets = self.load_secrets_secure( secret_file )?;
+
+    // inject each secret into the configuration
+    for ( key, secret_value ) in secrets
+    {
+      config.inject_secret( &key, secret_value.expose_secret().to_string() )?;
+    }
+
+    // validate the final configuration
+    config.validate_secrets()?;
+
+    Ok( config )
+  }
+
+}
+
 impl Workspace
 {
   /// create workspace from cargo workspace root (auto-detected)
@@ -975,7 +1355,7 @@ impl Workspace
   }
 }
 
-#[ cfg( feature = "serde_integration" ) ]
+#[ cfg( feature = "serde" ) ]
 impl Workspace
 {
   /// load configuration with automatic format detection
@@ -1192,7 +1572,7 @@ impl Workspace
   }
 }
 
-#[ cfg( feature = "serde_integration" ) ]
+#[ cfg( feature = "serde" ) ]
 impl serde::Serialize for WorkspacePath
 {
   fn serialize< S >( &self, serializer : S ) -> core::result::Result< S::Ok, S::Error >
@@ -1203,7 +1583,7 @@ impl serde::Serialize for WorkspacePath
   }
 }
 
-#[ cfg( feature = "serde_integration" ) ]
+#[ cfg( feature = "serde" ) ]
 impl< 'de > serde::Deserialize< 'de > for WorkspacePath
 {
   fn deserialize< D >( deserializer : D ) -> core::result::Result< Self, D::Error >
@@ -1215,8 +1595,162 @@ impl< 'de > serde::Deserialize< 'de > for WorkspacePath
   }
 }
 
+#[ cfg( feature = "validation" ) ]
+impl Workspace
+{
+  /// load and validate configuration against a json schema
+  ///
+  /// # Errors
+  ///
+  /// returns error if configuration cannot be loaded, schema is invalid, or validation fails
+  ///
+  /// # examples
+  ///
+  /// ```rust,no_run
+  /// use workspace_tools::workspace;
+  /// use serde::{ Deserialize };
+  /// use schemars::JsonSchema;
+  ///
+  /// #[ derive( Deserialize, JsonSchema ) ]
+  /// struct AppConfig
+  /// {
+  ///     name : String,
+  ///     port : u16,
+  /// }
+  ///
+  /// # fn main() -> Result<(), workspace_tools::WorkspaceError> {
+  /// let ws = workspace()?;
+  /// let config : AppConfig = ws.load_config_with_validation( "app" )?;
+  /// # Ok(())
+  /// # }
+  /// ```
+  pub fn load_config_with_validation< T >( &self, name : &str ) -> Result< T >
+  where
+    T : serde::de::DeserializeOwned + JsonSchema,
+  {
+    // generate schema from type
+    let schema = schemars::schema_for!( T );
+    let schema_json = serde_json::to_value( &schema )
+      .map_err( | e | WorkspaceError::ValidationError( format!( "failed to serialize schema: {e}" ) ) )?;
+    
+    // compile schema for validation
+    let compiled_schema = Validator::new( &schema_json )
+      .map_err( | e | WorkspaceError::ValidationError( format!( "failed to compile schema: {e}" ) ) )?;
+    
+    self.load_config_with_schema( name, &compiled_schema )
+  }
+  
+  /// load and validate configuration against a provided json schema
+  ///
+  /// # Errors
+  ///
+  /// returns error if configuration cannot be loaded or validation fails
+  pub fn load_config_with_schema< T >( &self, name : &str, schema : &Validator ) -> Result< T >
+  where
+    T : serde::de::DeserializeOwned,
+  {
+    let config_path = self.find_config( name )?;
+    self.load_config_from_with_schema( config_path, schema )
+  }
+  
+  /// load and validate configuration from specific file with schema
+  ///
+  /// # Errors
+  ///
+  /// returns error if file cannot be read, parsed, or validated
+  pub fn load_config_from_with_schema< T, P >( &self, path : P, schema : &Validator ) -> Result< T >
+  where
+    T : serde::de::DeserializeOwned,
+    P : AsRef< Path >,
+  {
+    let path = path.as_ref();
+    let content = std::fs::read_to_string( path )
+      .map_err( | e | WorkspaceError::IoError( format!( "failed to read {}: {}", path.display(), e ) ) )?;
+
+    let extension = path.extension()
+      .and_then( | ext | ext.to_str() )
+      .unwrap_or( "toml" );
+
+    // parse to json value first for validation
+    let json_value = match extension
+    {
+      "toml" =>
+      {
+        let toml_value : toml::Value = toml::from_str( &content )
+          .map_err( | e | WorkspaceError::SerdeError( format!( "toml parsing error: {e}" ) ) )?;
+        serde_json::to_value( toml_value )
+          .map_err( | e | WorkspaceError::SerdeError( format!( "toml to json conversion error: {e}" ) ) )?
+      }
+      "json" => serde_json::from_str( &content )
+        .map_err( | e | WorkspaceError::SerdeError( format!( "json parsing error: {e}" ) ) )?,
+      "yaml" | "yml" =>
+      {
+        let yaml_value : serde_yaml::Value = serde_yaml::from_str( &content )
+          .map_err( | e | WorkspaceError::SerdeError( format!( "yaml parsing error: {e}" ) ) )?;
+        serde_json::to_value( yaml_value )
+          .map_err( | e | WorkspaceError::SerdeError( format!( "yaml to json conversion error: {e}" ) ) )?
+      }
+      _ => return Err( WorkspaceError::ConfigurationError( format!( "unsupported config format: {extension}" ) ) ),
+    };
+    
+    // validate against schema
+    if let Err( validation_errors ) = schema.validate( &json_value )
+    {
+      let errors : Vec< String > = validation_errors
+        .map( | error | format!( "{}: {}", error.instance_path, error ) )
+        .collect();
+      return Err( WorkspaceError::ValidationError( format!( "validation failed: {}", errors.join( "; " ) ) ) );
+    }
+    
+    // if validation passes, deserialize to target type
+    serde_json::from_value( json_value )
+      .map_err( | e | WorkspaceError::SerdeError( format!( "deserialization error: {e}" ) ) )
+  }
+  
+  /// validate configuration content against schema without loading
+  ///
+  /// # Errors
+  ///
+  /// returns error if content cannot be parsed or validation fails
+  pub fn validate_config_content( content : &str, schema : &Validator, format : &str ) -> Result< () >
+  {
+    // parse content to json value
+    let json_value = match format
+    {
+      "toml" =>
+      {
+        let toml_value : toml::Value = toml::from_str( content )
+          .map_err( | e | WorkspaceError::SerdeError( format!( "toml parsing error: {e}" ) ) )?;
+        serde_json::to_value( toml_value )
+          .map_err( | e | WorkspaceError::SerdeError( format!( "toml to json conversion error: {e}" ) ) )?
+      }
+      "json" => serde_json::from_str( content )
+        .map_err( | e | WorkspaceError::SerdeError( format!( "json parsing error: {e}" ) ) )?,
+      "yaml" | "yml" =>
+      {
+        let yaml_value : serde_yaml::Value = serde_yaml::from_str( content )
+          .map_err( | e | WorkspaceError::SerdeError( format!( "yaml parsing error: {e}" ) ) )?;
+        serde_json::to_value( yaml_value )
+          .map_err( | e | WorkspaceError::SerdeError( format!( "yaml to json conversion error: {e}" ) ) )?
+      }
+      _ => return Err( WorkspaceError::ConfigurationError( format!( "unsupported config format: {format}" ) ) ),
+    };
+    
+    // validate against schema
+    if let Err( validation_errors ) = schema.validate( &json_value )
+    {
+      let errors : Vec< String > = validation_errors
+        .map( | error | format!( "{}: {}", error.instance_path, error ) )
+        .collect();
+      return Err( WorkspaceError::ValidationError( format!( "validation failed: {}", errors.join( "; " ) ) ) );
+    }
+    
+    Ok( () )
+  }
+}
+
 /// testing utilities for workspace functionality
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "testing" ) ]
 pub mod testing
 {
   use super::Workspace;
@@ -1284,14 +1818,14 @@ pub mod testing
       workspace.workspace_dir(),
     ];
 
-    #[ cfg( feature = "secret_management" ) ]
+    #[ cfg( feature = "secrets" ) ]
     let all_dirs = {
       let mut dirs = base_dirs;
       dirs.push( workspace.secret_dir() );
       dirs
     };
 
-    #[ cfg( not( feature = "secret_management" ) ) ]
+    #[ cfg( not( feature = "secrets" ) ) ]
     let all_dirs = base_dirs;
 
     for dir in all_dirs

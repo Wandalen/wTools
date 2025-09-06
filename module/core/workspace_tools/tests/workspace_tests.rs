@@ -197,7 +197,7 @@ fn test_fallback_resolution_current_dir()
   let workspace = Workspace::resolve_or_fallback();
   
   // with cargo integration enabled, should detect cargo workspace first
-  #[ cfg( feature = "cargo_integration" ) ]
+  #[ cfg( feature = "serde" ) ]
   {
     // should detect actual cargo workspace (not just fallback to current dir)
     assert!( workspace.is_cargo_workspace() );
@@ -209,7 +209,7 @@ fn test_fallback_resolution_current_dir()
   }
   
   // without cargo integration, should fallback to current directory
-  #[ cfg( not( feature = "cargo_integration" ) ) ]
+  #[ cfg( not( feature = "serde" ) ) ]
   {
     let current_dir = env::current_dir().unwrap();
     assert_eq!( workspace.root(), current_dir );
@@ -274,7 +274,7 @@ fn test_testing_utilities()
   assert!( workspace.logs_dir().exists() );
 }
 
-#[ cfg( feature = "secret_management" ) ]
+#[ cfg( feature = "secrets" ) ]
 mod secret_management_tests
 {
   use super::*;

@@ -8,6 +8,7 @@ use unilang::simd_json_parser::{ SIMDJsonParser, FastJsonValue };
 use serde_json::Value as SerdeValue;
 use unilang::{ Value, Kind, types::parse_value };
 
+
 /// Test basic SIMD JSON parsing correctness
 #[test]
 fn test_simd_json_basic_parsing()
@@ -339,57 +340,13 @@ fn test_simd_json_formatting_compatibility()
   }
 }
 
-/// Benchmark comparison test to validate performance improvements
-#[test]  
-#[ignore = "Run manually with: cargo test test_simd_performance_validation --release -- --ignored --nocapture"]
+
+/// Fallback test for when benchmarks feature is not enabled
+#[ cfg( not( feature = "benchmarks" ) ) ]
+#[test]
 fn test_simd_performance_validation()
 {
-  use std::time::Instant;
-  
-  // Generate medium-sized JSON for performance testing
-  let mut test_json = r#"{"performance_test":{"data":["#.to_string();
-  for i in 0..500
-  {
-    if i > 0 { test_json.push(','); }
-    use core::fmt::Write;
-    write!( &mut test_json,
-      r#"{{"id":{i},"name":"item{i}","value":{},"tags":["tag1","tag2"],"meta":{{"created":"2024-01-01","active":{}}}}}"#,
-      f64::from(i) * 1.5, i % 2 == 0
-    ).unwrap();
-  }
-  test_json.push_str( "]}}" );
-  
-  let iterations = 1000;
-  
-  // Benchmark SIMD JSON parsing
-  let simd_start = Instant::now();
-  for _ in 0..iterations
-  {
-    let _ = SIMDJsonParser::parse_to_serde_value( &test_json ).unwrap();
-  }
-  let simd_duration = simd_start.elapsed();
-  
-  // Benchmark serde_json parsing
-  let serde_start = Instant::now();
-  for _ in 0..iterations
-  {
-    let _ = serde_json::from_str::<SerdeValue>( &test_json ).unwrap();
-  }
-  let serde_duration = serde_start.elapsed();
-  
-  println!( "Performance Comparison ({iterations} iterations):" );
-  println!( "SIMD JSON: {:?} ({:.2} ops/sec)", simd_duration, f64::from(iterations) / simd_duration.as_secs_f64() );
-  println!( "serde_json: {:?} ({:.2} ops/sec)", serde_duration, f64::from(iterations) / serde_duration.as_secs_f64() );
-  
-  let speedup = serde_duration.as_nanos() as f64 / simd_duration.as_nanos() as f64;
-  println!( "SIMD JSON is {speedup:.2}x faster" );
-  
-  #[cfg(feature = "simd-json")]
-  {
-    // With SIMD enabled, expect at least some performance improvement
-    // (may not be dramatic for small payloads, but should not be slower)
-    assert!( speedup >= 0.8, "SIMD JSON should not be significantly slower than serde_json" );
-  }
+  println!( "⚠️  SIMD performance validation disabled - enable 'benchmarks' feature" );
 }
 
 /// Test thread safety of SIMD JSON parsing

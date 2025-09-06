@@ -1,3 +1,5 @@
+#![allow(unused_macros)]
+
 // use test_tools::exposed::*;
 use super::*;
 use the_module::exposed::impls1;

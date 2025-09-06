@@ -11,7 +11,7 @@ tests_impls! {
     let exp = parse::OpType::Primitive( 1 );
     a_id!( got, exp );
 
-    let got = parse::OpType::from( vec![ 1, 2 ] );
+    let got: parse::OpType<i32> = parse::OpType::from( vec![ 1, 2 ] );
     let exp = parse::OpType::Vector( vec![ 1, 2 ] );
     a_id!( got, exp );
 

@@ -13,7 +13,7 @@
 //! | SI009   | update_config | Partial configuration update | Success with updated config |
 //! | SI010   | WorkspacePath | Serialize and deserialize workspace paths | Success |
 
-#![ cfg( feature = "serde_integration" ) ]
+#![ cfg( feature = "serde" ) ]
 
 use workspace_tools::{ Workspace, WorkspaceError, ConfigMerge, WorkspacePath };
 use serde::{ Serialize, Deserialize };

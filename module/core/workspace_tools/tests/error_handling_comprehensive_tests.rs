@@ -68,7 +68,6 @@ fn test_path_outside_workspace_display()
 }
 
 /// Test ER.5: `CargoError` error display
-#[ cfg( feature = "cargo_integration" ) ]
 #[ test ]
 fn test_cargo_error_display()
 {
@@ -80,7 +79,6 @@ fn test_cargo_error_display()
 }
 
 /// Test ER.6: `TomlError` error display
-#[ cfg( feature = "cargo_integration" ) ]
 #[ test ]
 fn test_toml_error_display()
 {
@@ -92,7 +90,7 @@ fn test_toml_error_display()
 }
 
 /// Test ER.7: `SerdeError` error display
-#[ cfg( feature = "serde_integration" ) ]
+#[ cfg( feature = "serde" ) ]
 #[ test ]
 fn test_serde_error_display()
 {
@@ -116,13 +114,11 @@ fn test_error_trait_implementation()
     WorkspaceError::PathOutsideWorkspace( PathBuf::from( "/test" ) ),
   ];
   
-  #[ cfg( feature = "cargo_integration" ) ]
   errors.push( WorkspaceError::CargoError( "test".to_string() ) );
   
-  #[ cfg( feature = "cargo_integration" ) ]
   errors.push( WorkspaceError::TomlError( "test".to_string() ) );
   
-  #[ cfg( feature = "serde_integration" ) ]
+  #[ cfg( feature = "serde" ) ]
   errors.push( WorkspaceError::SerdeError( "test".to_string() ) );
   
   for error in errors

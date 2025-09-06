@@ -2,7 +2,7 @@
 use super::*;
 #[ allow( unused_imports ) ]
 use the_module::prelude::*;
-use diagnostics_tools::cta_true;
+use the_module::cta_true;
 
 // xxx: temporarily disabled due to macro resolution issues
 /*

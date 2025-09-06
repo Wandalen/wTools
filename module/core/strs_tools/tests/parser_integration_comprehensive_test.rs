@@ -3,8 +3,10 @@
 //! Tests all parser integration features including single-pass parsing,
 //! command-line parsing, validation, and error handling scenarios.
 
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
 use strs_tools::string::parser::*;
 
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
 #[ test ]
 fn test_single_pass_integer_parsing()
 {
@@ -25,6 +27,7 @@ fn test_single_pass_integer_parsing()
   assert_eq!( numbers, vec![ 10, 20, 30, 40, 50 ] );
 }
 
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
 #[ test ]
 fn test_single_pass_parsing_with_errors()
 {
@@ -58,6 +61,7 @@ fn test_single_pass_parsing_with_errors()
   assert_eq!( results[ 4 ].as_ref().unwrap(), &50 );
 }
 
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
 #[ test ]
 fn test_command_line_parsing_comprehensive()
 {
@@ -78,6 +82,7 @@ fn test_command_line_parsing_comprehensive()
   assert!( matches!( tokens[ 5 ], ParsedToken::Flag( "debug" ) ) );
 }
 
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
 #[ test ]
 fn test_command_line_parsing_with_spaces_and_tabs()
 {
@@ -96,6 +101,7 @@ fn test_command_line_parsing_with_spaces_and_tabs()
   assert!( matches!( tokens[ 4 ], ParsedToken::Positional( "arg2" ) ) );
 }
 
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
 #[ test ]
 fn test_validation_during_splitting()
 {
@@ -104,7 +110,7 @@ fn test_validation_during_splitting()
   // Test validation that only allows alphabetic tokens
   let results: Vec< _ > = input
     .split_with_validation( &[ "," ], |token| {
-      token.chars().all( |c| c.is_alphabetic() )
+      token.chars().all( char::is_alphabetic )
     } )
     .collect();
   
@@ -122,6 +128,7 @@ fn test_validation_during_splitting()
   assert!( results[ 5 ].is_err() );
 }
 
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
 #[ test ]
 fn test_count_valid_tokens()
 {
@@ -129,18 +136,19 @@ fn test_count_valid_tokens()
   
   // Count only alphabetic tokens
   let alphabetic_count = input.count_valid_tokens( &[ "," ], |token| {
-    token.chars().all( |c| c.is_alphabetic() )
+    token.chars().all( char::is_alphabetic )
   } );
   
   // Count only numeric tokens  
   let numeric_count = input.count_valid_tokens( &[ "," ], |token| {
-    token.chars().all( |c| c.is_numeric() )
+    token.chars().all( char::is_numeric )
   } );
   
   assert_eq!( alphabetic_count, 4 ); // apple, banana, cherry, grape
   assert_eq!( numeric_count, 3 );    // 123, 456, 789
 }
 
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
 #[ test ]
 fn test_multiple_delimiters()
 {
@@ -162,6 +170,7 @@ fn test_multiple_delimiters()
   }
 }
 
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
 #[ test ]
 fn test_empty_input_handling()
 {
@@ -180,6 +189,7 @@ fn test_empty_input_handling()
   assert_eq!( cmd_results.unwrap().len(), 0 );
 }
 
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
 #[ test ]
 fn test_single_token_input()
 {
@@ -195,6 +205,7 @@ fn test_single_token_input()
   assert_eq!( results[ 0 ].as_ref().unwrap(), &"single" );
 }
 
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
 #[ test ]
 fn test_consecutive_delimiters()
 {
@@ -212,6 +223,7 @@ fn test_consecutive_delimiters()
   assert_eq!( results[ 2 ].as_ref().unwrap(), &"c" );
 }
 
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
 #[ test ]
 fn test_complex_parsing_scenario()
 {
@@ -234,6 +246,7 @@ fn test_complex_parsing_scenario()
   assert!( matches!( tokens[ 6 ], ParsedToken::Positional( "error.log" ) ) );
 }
 
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
 #[ test ]
 fn test_error_position_information()
 {
@@ -258,6 +271,7 @@ fn test_error_position_information()
   }
 }
 
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
 #[ test ]
 fn test_string_vs_str_compatibility()
 {
@@ -282,6 +296,7 @@ fn test_string_vs_str_compatibility()
   }
 }
 
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
 #[ test ]
 fn test_performance_characteristics()
 {

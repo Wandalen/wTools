@@ -125,9 +125,14 @@ fn demonstrate_development_workflow()
   let sum : f64 = processed.iter().sum();
   a_dbg_true!( sum > 0.0, "Sum should be positive" );
   
-  // Check specific calculations
+  // Check specific calculations with proper float comparison
   let first_result = processed[ 0 ];
-  a_dbg_id!( first_result, 2.0, "First calculation should double the input" );
+  let expected_first = 2.0;
+  let epsilon = 1e-10;
+  a_dbg_true!( (first_result - expected_first).abs() < epsilon, 
+    "First calculation should double the input (within epsilon)" );
+  println!( "   Expected: {expected_first}, Actual: {first_result}, Diff: {}", 
+    (first_result - expected_first).abs() );
   
   println!( "   ✓ Development debugging workflow completed\n" );
 }
@@ -152,10 +157,14 @@ fn demonstrate_troubleshooting()
   a_dbg_true!( result.is_finite(), "Result should be a finite number" );
   a_dbg_true!( result > calculation_input, "Result should be greater than input" );
   
-  // Show the intermediate steps
+  // Show the intermediate steps with proper float comparison
   let step1 = calculation_input * 2.0;
   let step2 = step1 + 10.0;
-  a_dbg_id!( result, step2, "Result should match expected calculation" );
+  let epsilon = 1e-10;
+  a_dbg_true!( (result - step2).abs() < epsilon, 
+    "Result should match expected calculation (within epsilon)" );
+  println!( "   Expected: {step2}, Actual: {result}, Diff: {}", 
+    (result - step2).abs() );
   
   println!( "   ✓ Troubleshooting scenarios completed\n" );
 }

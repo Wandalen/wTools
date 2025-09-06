@@ -1,4 +1,4 @@
-#![ cfg_attr( feature = "no_std", no_std ) ]
+#![ cfg_attr( all( feature = "no_std", not( feature = "std" ) ), no_std ) ]
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc
 (

@@ -79,6 +79,7 @@ fn main()
   println!( "\n➡️  Next: Run example 005 to learn about debug variants!" );
 }
 
+#[allow(clippy::forget_non_drop, clippy::transmute_ptr_to_ptr)]
 fn demonstrate_runtime_memory_checks()
 {
   println!( "\n4. Runtime memory validation:" );
@@ -87,13 +88,15 @@ fn demonstrate_runtime_memory_checks()
   let vector = Vector2 { x : 3.0, y : 4.0 };
   
   // Runtime validation that actual values have expected sizes
+  // These macros are intentional demonstrations of memory layout validation
   cta_mem_same_size!( point, vector );
   println!( "   ✓ Point and Vector2 instances have same memory size" );
   
   let ptr1 : *const u8 = core::ptr::null();
   let ptr2 : *const i64 = core::ptr::null();
   
-  // Validate that different pointer types have same size
+  // Validate that different pointer types have same size  
+  // This macro intentionally demonstrates pointer size validation
   cta_ptr_same_size!( &raw const ptr1, &raw const ptr2 );
   println!( "   ✓ Pointers to different types have same size" );
 }
