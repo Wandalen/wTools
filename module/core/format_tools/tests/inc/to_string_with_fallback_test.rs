@@ -1,5 +1,6 @@
 #[ allow( unused_imports ) ]
 use super::*;
+use test_tools::{ a_id, a_true };
 
 use the_module::
 {

@@ -141,7 +141,7 @@ fn iterator_over_optional_cow()
           }
         ]
       ),
-    },
+    }
   };
 
   use the_module::TableFormatter;
@@ -272,7 +272,7 @@ fn iterator_over_strings()
           }
         ]
       ),
-    },
+    }
   };
 
   // no variability in what Fields iterate over by design!

@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use super::tools::*;
 
 /// Private namespace of the module.

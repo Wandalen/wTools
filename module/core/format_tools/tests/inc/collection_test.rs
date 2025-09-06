@@ -52,7 +52,7 @@ fn dlist_basic()
           }
         ]
       ),
-    },
+    }
   };
 
   use the_module::TableFormatter;
@@ -108,7 +108,7 @@ fn hmap_basic()
           }
         ]
       ),
-    },
+    }
   };
 
   use the_module::TableFormatter;
@@ -164,7 +164,7 @@ fn bmap_basic()
           }
         ]
       ),
-    },
+    }
   };
 
   use the_module::TableFormatter;
@@ -218,7 +218,7 @@ fn bset_basic()
           }
         ]
       ),
-    },
+    }
   };
 
   use the_module::TableFormatter;
@@ -272,7 +272,7 @@ fn deque_basic()
           }
         ]
       ),
-    },
+    }
   };
 
   use the_module::TableFormatter;
@@ -326,7 +326,7 @@ fn hset_basic()
           }
         ]
       ),
-    },
+    }
   };
 
   use the_module::TableFormatter;
@@ -380,7 +380,7 @@ fn llist_basic()
           }
         ]
       ),
-    },
+    }
   };
 
   use the_module::TableFormatter;
