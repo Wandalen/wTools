@@ -18,7 +18,7 @@ fn reflect_struct_in_struct()
   let types = reflect::reflect( &ins ).elements().map( | e | e.val.type_name() ).collect::< Vec< _ > >();
   a_id!( types, vec![ "i32", "alloc::string::String", "tests::inc::group1::struct_in_struct_manual_test::Struct2" ] );
 
-  let f3 = reflect::reflect( &ins ).elements().skip( 2 ).next().unwrap();
+  let f3 = reflect::reflect( &ins ).elements().nth( 2 ).unwrap();
   a_id!( f3.key, reflect::Primitive::str( "f3" ) );
   a_id!( f3.val.is_container(), true );
   a_id!( f3.val.len(), 3 );

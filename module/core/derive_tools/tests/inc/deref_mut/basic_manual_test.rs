@@ -63,11 +63,11 @@ impl core::ops::DerefMut for IsTransparentSimple {
 #[ test ]
 fn deref_mut_test() {
   // Test for IsTransparentSimple
-  let mut got = IsTransparentSimple(true);
-  let exp = true;
-  a_id!(*got, exp);
-  *got = false;
-  a_id!(*got, false);
+  let mut _got = IsTransparentSimple(true);
+  let _exp = true;
+  a_id!(*_got, _exp);
+  *_got = false;
+  a_id!(*_got, false);
 
   // Test for IsTransparentComplex (commented out due to const generics issue)
   // let mut got_tmp = "hello".to_string();

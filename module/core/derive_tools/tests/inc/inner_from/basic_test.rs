@@ -21,6 +21,7 @@ use crate::the_module::InnerFrom;
 
 // IF1.2: Tuple struct with one field - InnerFrom derive not available
 // #[ derive( InnerFrom ) ]
+#[ allow( dead_code ) ]
 pub struct TupleStruct1(pub i32);
 
 // IF1.3: Tuple struct with multiple fields - should not compile
@@ -29,6 +30,7 @@ pub struct TupleStruct1(pub i32);
 
 // IF1.4: Named struct with one field - InnerFrom derive not available
 // #[ derive( InnerFrom ) ]
+#[ allow( dead_code ) ]
 pub struct NamedStruct1 {
   pub field1: i32,
 }

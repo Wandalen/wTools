@@ -1,5 +1,6 @@
 use super::*;
 pub use the_module::reflect;
+use test_tools::a_id;
 
 #[ derive( Debug, Clone, PartialEq ) ]
 pub struct Struct1< 'a, 'b >
@@ -21,6 +22,7 @@ impl< 'a, 'b, I : reflect::Instance > EntityDescriptor< 'a, 'b, I >
 {
   /// Constructor of the descriptor.
   #[ inline( always ) ]
+  #[ allow( clippy::used_underscore_binding ) ]
   pub fn new() -> Self
   {
     let _phantom = core::marker::PhantomData::< ( &'a (), &'b (), I ) >;

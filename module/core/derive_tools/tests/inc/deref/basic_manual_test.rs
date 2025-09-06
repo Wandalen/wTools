@@ -39,13 +39,13 @@ use test_tools::a_id;
 #[ test ]
 fn deref_test() {
   // Test for IsTransparentSimple
-  let got = IsTransparentSimple(true);
-  let exp = true;
-  a_id!(*got, exp);
+  let _got = IsTransparentSimple(true);
+  let _exp = true;
+  a_id!(*_got, _exp);
 
   // Test for IsTransparentComplex
   let got_tmp = "hello".to_string();
-  let got = IsTransparentComplex::<'_, '_, String, str, 0>(&got_tmp, core::marker::PhantomData);
-  let exp = &got_tmp;
-  a_id!(*got, exp);
+  let _got = IsTransparentComplex::<'_, '_, String, str, 0>(&got_tmp, core::marker::PhantomData);
+  let _exp = &got_tmp;
+  a_id!(*_got, _exp);
 }
