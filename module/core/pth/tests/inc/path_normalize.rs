@@ -1,8 +1,12 @@
+#![ allow( unused_variables ) ]
+
 #[ allow( unused_imports ) ]
 use super::*;
 
 #[ test ]
-fn path_consisting_only_of_dot_segments() {
+#[ allow( unused_variables ) ]
+fn path_consisting_only_of_dot_segments()
+{
   let path = std::path::PathBuf::from("././.");
   let exp = ".";
   let normalized = the_module::path::normalize(&path);
