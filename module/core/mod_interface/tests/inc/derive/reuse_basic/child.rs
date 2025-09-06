@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 mod private {
   pub struct Own;
   pub struct Orphan;

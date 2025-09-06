@@ -16,7 +16,7 @@ fn create_test_split( content: &str ) -> Split< '_ >
   }
 }
 
-fn benchmark_owned_classification( iterations: u32, test_content: &str ) -> std::time::Duration
+fn benchmark_owned_classification( iterations: u32, test_content: &str ) -> core::time::Duration
 {
   let test_split = create_test_split( test_content );
   
@@ -29,7 +29,7 @@ fn benchmark_owned_classification( iterations: u32, test_content: &str ) -> std:
   start.elapsed()
 }
 
-fn benchmark_zero_copy_classification( iterations: u32, test_content: &str ) -> std::time::Duration
+fn benchmark_zero_copy_classification( iterations: u32, test_content: &str ) -> core::time::Duration
 {
   let test_split = create_test_split( test_content );
   
@@ -57,12 +57,12 @@ fn main()
   
   let iterations = 100_000;
   
-  println!( "Iterations per test: {}", iterations );
+  println!( "Iterations per test: {iterations}" );
   println!();
   
   for ( name, test_content ) in test_cases
   {
-    println!( "Testing '{}' (content: '{}')", name, test_content );
+    println!( "Testing '{name}' (content: '{test_content}')" );
     
     // Warmup
     benchmark_owned_classification( 1000, test_content );
@@ -81,16 +81,16 @@ fn main()
     let improvement = owned_avg.as_nanos() as f64 / zero_copy_avg.as_nanos() as f64;
     
     println!( "  Owned approach:" );
-    println!( "    Time: {:?}", owned_time );
-    println!( "    Average: {:?}", owned_avg );
-    println!( "    Rate: {:.0} classifications/sec", owned_rate );
+    println!( "    Time: {owned_time:?}" );
+    println!( "    Average: {owned_avg:?}" );
+    println!( "    Rate: {owned_rate:.0} classifications/sec" );
     
     println!( "  Zero-copy approach:" );
-    println!( "    Time: {:?}", zero_copy_time );
-    println!( "    Average: {:?}", zero_copy_avg );
-    println!( "    Rate: {:.0} classifications/sec", zero_copy_rate );
+    println!( "    Time: {zero_copy_time:?}" );
+    println!( "    Average: {zero_copy_avg:?}" );
+    println!( "    Rate: {zero_copy_rate:.0} classifications/sec" );
     
-    println!( "  Improvement: {:.1}x faster", improvement );
+    println!( "  Improvement: {improvement:.1}x faster" );
     println!();
   }
   
@@ -104,6 +104,6 @@ fn main()
   
   println!( "Owned result: {:?}", owned_result.0 );
   println!( "Zero-copy result: {:?}", zero_copy_result.0 );
-  println!( "Zero-copy to owned: {:?}", zero_copy_owned );
-  println!( "Results match: {}", format!( "{:?}", owned_result.0 ) == format!( "{:?}", zero_copy_owned ) );
+  println!( "Zero-copy to owned: {zero_copy_owned:?}" );
+  println!( "Results match: {}", format!( "{:?}", owned_result.0 ) == format!( "{zero_copy_owned:?}" ) );
 }

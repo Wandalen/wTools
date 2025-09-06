@@ -67,6 +67,26 @@ where
 
 }
 
+// Implementation for HashMap<String, V> to be queried with &str keys
+impl< V, Borrowed > Fields< &'_ str, Option< Cow< '_, Borrowed > > > for HashMap< String, V >
+where
+  V : std::borrow::Borrow< Borrowed >,
+  Borrowed : std::borrow::ToOwned + 'static + ?Sized,
+{
+
+  type Key< 'k > = &'k str
+  where Self : 'k;
+
+  type Val< 'v > = Option< Cow< 'v, Borrowed > >
+  where Self : 'v, V : 'v;
+
+  fn fields< 's >( &'s self ) -> impl IteratorTrait< Item = ( Self::Key< 's >, Self::Val< 's > ) >
+  {
+    self.iter().map( move | ( key, val ) | ( key.as_str(), Some( Cow::Borrowed( val.borrow() ) ) ) )
+  }
+
+}
+
 // impl< K, V, Marker > Fields< K, OptionalCow< '_, V, Marker > > for HashMap< K, V >
 // where
 //   K : core::hash::Hash + core::cmp::Eq,

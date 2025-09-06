@@ -5,6 +5,8 @@
 #![allow(unused_variables)]
 #[ allow( unused_imports ) ]
 use super::*;
+#[ allow( unused_imports ) ]
+use test_tools::a_id;
 
 #[ derive( Debug, PartialEq ) ]
 pub struct Struct1<'a> {

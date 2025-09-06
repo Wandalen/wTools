@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+#![allow(clippy::doc_markdown)]
 use super::*;
 mod tools {
   #[ allow( unused_imports ) ]

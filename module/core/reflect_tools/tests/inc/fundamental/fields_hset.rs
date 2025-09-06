@@ -11,16 +11,15 @@ use the_module::
 use std::
 {
   borrow::Cow,
+  collections::HashSet,
 };
 
 #[ test ]
 fn hset_string_fields()
 {
-  let collection : HashSet<  String  > = hset!
-  [
-    "a".to_string(),
-    "b".to_string(),
-  ];
+  let mut collection = HashSet::< String >::new();
+  collection.insert( "a".to_string() );
+  collection.insert( "b".to_string() );
 
   // k, v
   let got : HashSet<  _  > = Fields::< usize, &str >::fields( &collection ).collect();
@@ -39,11 +38,9 @@ fn hset_string_fields()
 #[ test ]
 fn hset_str_fields()
 {
-  let collection : HashSet<  &str  > = hset!
-  [
-    "a",
-    "b",
-  ];
+  let mut collection = HashSet::< &str >::new();
+  collection.insert( "a" );
+  collection.insert( "b" );
 
   // k, v
   let got : HashSet<  _  > = Fields::< usize, &str >::fields( &collection ).collect();

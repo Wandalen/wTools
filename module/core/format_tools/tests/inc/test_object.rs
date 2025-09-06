@@ -10,14 +10,15 @@ use the_module::
   OptionalCow,
 };
 
-use std::
+use core::
 {
-  collections::HashMap,
   hash::Hasher,
   hash::Hash,
   cmp::Ordering,
-  borrow::Cow,
 };
+use std::borrow::Cow;
+
+use collection_tools::HashMap;
 
 /// Struct representing a test object with various fields.
 #[ derive( Clone, Debug, PartialEq, Eq ) ]

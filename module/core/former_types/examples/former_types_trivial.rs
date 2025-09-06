@@ -51,7 +51,7 @@ fn main() {
     }
   }
 
-  let mut got: Person = Default::default();
+  let mut got: Person = Person::default();
   got.assign(13);
   got.assign("John");
   assert_eq!(

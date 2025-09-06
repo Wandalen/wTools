@@ -1,4 +1,8 @@
+#![allow(dead_code)]
+#![allow(clippy::duplicate_mod)]
+#![allow(clippy::doc_markdown)]
 use super::*;
+use test_tools::a_id;
 
 /// Layer X
 pub mod layer_x;

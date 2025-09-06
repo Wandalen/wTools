@@ -272,13 +272,20 @@ mod private
       }
       // fix clippy
       let command = dictionary.command( &raw_command.name )
-      .ok_or(
+      .ok_or_else( ||
       {
         #[ cfg( feature = "on_unknown_suggest" ) ]
-        if let Some( phrase ) = Self::suggest_command( dictionary, &raw_command.name ) {
-          return Err( VerificationError::CommandNotFound { name_suggestion: Some( phrase.to_string() ), command_info: None } );
+        {
+          if let Some( phrase ) = Self::suggest_command( dictionary, &raw_command.name ) {
+            VerificationError::CommandNotFound { name_suggestion: Some( phrase.to_string() ), command_info: None }
+          } else {
+            VerificationError::CommandNotFound { name_suggestion: None, command_info: None }
+          }
         }
-        VerificationError::CommandNotFound { name_suggestion: None, command_info: None }
+        #[ cfg( not( feature = "on_unknown_suggest" ) ) ]
+        {
+          VerificationError::CommandNotFound { name_suggestion: None, command_info: None }
+        }
       })?;
 
       let Some( cmd ) = Self::check_command( command, &raw_command ) else

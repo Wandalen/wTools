@@ -150,7 +150,7 @@ fn type_rightmost_basic() {
   let code = qt!(core::option::Option<i32>);
   let tree_type = syn::parse2::<syn::Type>(code).unwrap();
   let got = the_module::typ::type_rightmost(&tree_type);
-  a_id!(got, Some("Option".to_string()));
+  assert_eq!(got, Some("Option".to_string()));
 }
 
 //
@@ -174,38 +174,38 @@ fn type_parameters_basic() {
     .cloned()
     .collect();
   let exp = vec![q!(i8)];
-  a_id!(got, exp);
+  assert_eq!(got, exp);
   let got: Vec< syn::Type > = the_module::typ::type_parameters(&tree_type, 0..=1)
     .into_iter()
     .cloned()
     .collect();
   let exp = vec![q!(i8), q!(i16)];
-  a_id!(got, exp);
+  assert_eq!(got, exp);
   let got: Vec< syn::Type > = the_module::typ::type_parameters(&tree_type, 0..=2)
     .into_iter()
     .cloned()
     .collect();
   let exp = vec![q!(i8), q!(i16), q!(i32)];
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 
   let got: Vec< syn::Type > = the_module::typ::type_parameters(&tree_type, 0..0)
     .into_iter()
     .cloned()
     .collect();
   let exp: Vec< syn::Type > = vec![];
-  a_id!(got, exp);
+  assert_eq!(got, exp);
   let got: Vec< syn::Type > = the_module::typ::type_parameters(&tree_type, 0..1)
     .into_iter()
     .cloned()
     .collect();
   let exp = vec![q!(i8)];
-  a_id!(got, exp);
+  assert_eq!(got, exp);
   let got: Vec< syn::Type > = the_module::typ::type_parameters(&tree_type, 0..2)
     .into_iter()
     .cloned()
     .collect();
   let exp = vec![q!(i8), q!(i16)];
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 
   // unbound
   let got: Vec< syn::Type > = the_module::typ::type_parameters(&tree_type, ..)
@@ -213,19 +213,19 @@ fn type_parameters_basic() {
     .cloned()
     .collect();
   let exp = vec![q!(i8), q!(i16), q!(i32), q!(i64)];
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 
   let got: Vec< syn::Type > = the_module::typ::type_parameters(&tree_type, ..)
     .into_iter()
     .cloned()
     .collect();
   let exp = vec![q!(i8), q!(i16), q!(i32), q!(i64)];
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 
   let got: Vec< syn::Type > = the_module::typ::type_parameters(&tree_type, ..)
     .into_iter()
     .cloned()
     .collect();
   let exp = vec![q!(i8), q!(i16), q!(i32), q!(i64)];
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 }

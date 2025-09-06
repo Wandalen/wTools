@@ -1,4 +1,3 @@
-
 use layer_x as layer_a;
 
 #[ doc( inline ) ]
@@ -17,7 +16,7 @@ pub mod own
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  #[doc = " layer_a"]
+  #[doc = " `layer_a`"]
   pub use super :: layer_x :: orphan :: * ;
 
 }
@@ -45,7 +44,7 @@ pub mod exposed
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  #[doc = " layer_a"]
+  #[doc = " `layer_a`"]
   pub use super :: layer_x :: exposed :: * ;
 }
 
@@ -56,6 +55,6 @@ pub mod prelude
   use super::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  #[doc = " layer_a"]
+  #[doc = " `layer_a`"]
   pub use super :: layer_x :: prelude :: * ;
 }

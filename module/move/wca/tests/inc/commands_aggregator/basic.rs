@@ -115,7 +115,7 @@ tests_impls! {
     .end()
     .perform();
 
-    let command = vec![ ".command".into(), "./path:to_dir".into() ];
+    let command: Vec<String> = vec![ ".command".into(), "./path:to_dir".into() ];
 
     a_id!( (), ca.perform( command ).unwrap() );
 
@@ -146,7 +146,7 @@ tests_impls! {
       .routine( || println!( "hello" ) )
       .form()
     )
-    .perform();
+    .form();
     let parser = Parser;
     let grammar = the_module::verifier::Verifier;
     let executor = the_module::Executor::former().form();

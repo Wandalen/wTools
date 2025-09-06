@@ -4,6 +4,8 @@
 
 use super::*;
 #[ allow( unused_imports ) ]
+use test_tools::a_id;
+#[ allow( unused_imports ) ]
 use collection_tools::LinkedList;
 use the_module::LinkedListExt;
 

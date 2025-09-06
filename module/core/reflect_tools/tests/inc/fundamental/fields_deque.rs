@@ -20,7 +20,7 @@ fn deque_string_fields()
   let collection = deque!
   [
     "a".to_string(),
-    "b".to_string(),
+    "b".to_string()
   ];
 
   // k, v
@@ -49,7 +49,7 @@ fn deque_str_fields()
   let collection = deque!
   [
     "a",
-    "b",
+    "b"
   ];
 
   // k, v

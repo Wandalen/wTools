@@ -50,9 +50,9 @@ tests_impls! {
       right : parse_quote!{ 31 },
     };
     let got = equation::from_meta( &attr )?;
-    a_id!( got.left, exp.left );
-    a_id!( format!( "{:?}", got ), format!( "{:?}", exp ) );
-    // a_id!( got.right, exp.right );
+    assert_eq!( got.left, exp.left );
+    assert_eq!( format!( "{:?}", got ), format!( "{:?}", exp ) );
+    // assert_eq!( got.right, exp.right );
 
     return Ok( () );
 
@@ -67,11 +67,11 @@ tests_impls! {
 
     let got : the_module::Equation = syn::parse_quote!( default = 31 );
     tree_print!( got );
-    a_id!( code_to_str!( got ), "default = 31".to_string() );
+    assert_eq!( code_to_str!( got ), "default = 31".to_string() );
 
-    a_id!( got.left, syn::parse_quote!( default ) );
-    a_id!( got.op, syn::token::Eq::default() );
-    a_id!( code_to_str!( got.right ), "31".to_string() );
+    assert_eq!( got.left, syn::parse_quote!( default ) );
+    assert_eq!( got.op, syn::token::Eq::default() );
+    assert_eq!( code_to_str!( got.right ), "31".to_string() );
 
   }
 
@@ -88,10 +88,10 @@ tests_impls! {
     let attr1 : syn::Attribute = syn::parse_quote!( #[ former( default = 31 ) ] );
     // tree_print!( attr1 );
     let got = equation::from_meta( &attr1 ).unwrap();
-    a_id!( code_to_str!( got ), "default = 31".to_string() );
-    a_id!( got.left, syn::parse_quote!( default ) );
-    a_id!( got.op, syn::token::Eq::default() );
-    a_id!( code_to_str!( got.right ), "31".to_string() );
+    assert_eq!( code_to_str!( got ), "default = 31".to_string() );
+    assert_eq!( got.left, syn::parse_quote!( default ) );
+    assert_eq!( got.op, syn::token::Eq::default() );
+    assert_eq!( code_to_str!( got.right ), "31".to_string() );
 
   }
 

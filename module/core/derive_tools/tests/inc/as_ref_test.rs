@@ -12,6 +12,7 @@ use super::*;
 // use derives::*;
 
 #[ derive( Debug, Clone, Copy, PartialEq, the_module::AsRef ) ]
+#[ allow( dead_code ) ]
 pub struct IsTransparent(bool);
 
 include!("./only_test/as_ref.rs");

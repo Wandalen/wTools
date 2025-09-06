@@ -12,31 +12,37 @@ use std::
   borrow::Cow,
 };
 
+use collection_tools::HashMap as Hmap;
+
 #[ test ]
 fn vec_string_fields()
 {
-  let collection : Hmap< usize, String > = into_hmap!
-  [
-    1 as usize => "a".to_string(),
-    2 as usize => "b".to_string(),
-  ];
+  let mut collection = Hmap::< usize, String >::new();
+  collection.insert( 1_usize, "a".to_string() );
+  collection.insert( 2_usize, "b".to_string() );
 
   // k, v
   let got : Hmap< _, _ > = Fields::< usize, &str >::fields( &collection ).collect();
   assert_eq!( got.len(), 2 );
-  let exp = into_hmap![ &1 => "a", &2 => "b" ];
+  let mut exp = Hmap::new();
+  exp.insert( &1, "a" );
+  exp.insert( &2, "b" );
   assert_eq!( got, exp );
 
   // k, Option< Cow< '_, str > >
   let got : Hmap< _, _ > = Fields::< usize, Option< Cow< '_, str > > >::fields( &collection ).collect();
   assert_eq!( got.len(), 2 );
-  let exp = into_hmap![ &1 => Some( Cow::Borrowed( "a" ) ), &2 => Some( Cow::Borrowed( "b" ) ) ];
+  let mut exp = Hmap::new();
+  exp.insert( &1, Some( Cow::Borrowed( "a" ) ) );
+  exp.insert( &2, Some( Cow::Borrowed( "b" ) ) );
   assert_eq!( got, exp );
 
   // k, OptionalCow< '_, str, () >
   let got : Hmap< _, _ > = Fields::< usize, OptionalCow< '_, str, () > >::fields( &collection ).collect();
   assert_eq!( got.len(), 2 );
-  let exp = into_hmap![ &1 => OptionalCow::from( "a" ), &2 => OptionalCow::from( "b" ) ];
+  let mut exp = Hmap::new();
+  exp.insert( &1, OptionalCow::from( "a" ) );
+  exp.insert( &2, OptionalCow::from( "b" ) );
   assert_eq!( got, exp );
 
 }
@@ -44,28 +50,32 @@ fn vec_string_fields()
 #[ test ]
 fn vec_str_fields()
 {
-  let collection : Hmap< usize, String > = into_hmap!
-  [
-    1 as usize => "a",
-    2 as usize => "b",
-  ];
+  let mut collection = Hmap::< usize, String >::new();
+  collection.insert( 1_usize, "a".to_string() );
+  collection.insert( 2_usize, "b".to_string() );
 
   // k, v
   let got : Hmap< _, _ > = Fields::< usize, &str >::fields( &collection ).collect();
   assert_eq!( got.len(), 2 );
-  let exp = into_hmap![ &1 => "a", &2 => "b" ];
+  let mut exp = Hmap::new();
+  exp.insert( &1, "a" );
+  exp.insert( &2, "b" );
   assert_eq!( got, exp );
 
   // k, Option< Cow< '_, str > >
   let got : Hmap< _, _ > = Fields::< usize, Option< Cow< '_, str > > >::fields( &collection ).collect();
   assert_eq!( got.len(), 2 );
-  let exp = into_hmap![ &1 => Some( Cow::Borrowed( "a" ) ), &2 => Some( Cow::Borrowed( "b" ) ) ];
+  let mut exp = Hmap::new();
+  exp.insert( &1, Some( Cow::Borrowed( "a" ) ) );
+  exp.insert( &2, Some( Cow::Borrowed( "b" ) ) );
   assert_eq!( got, exp );
 
   // k, OptionalCow< '_, str, () >
   let got : Hmap< _, _ > = Fields::< usize, OptionalCow< '_, str, () > >::fields( &collection ).collect();
   assert_eq!( got.len(), 2 );
-  let exp = into_hmap![ &1 => OptionalCow::from( "a" ), &2 => OptionalCow::from( "b" ) ];
+  let mut exp = Hmap::new();
+  exp.insert( &1, OptionalCow::from( "a" ) );
+  exp.insert( &2, OptionalCow::from( "b" ) );
   assert_eq!( got, exp );
 
 }

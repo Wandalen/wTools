@@ -17,7 +17,7 @@ tests_impls! {
       syn::Ident::new( "x", proc_macro2::Span::call_site() ),
       syn::parse2::< syn::Type >( qt!( core::option::Option< i32 > ) )?,
     );
-    a_id!( got, exp );
+    assert_eq!( got, exp );
 
     // test.case( "pair of many" );
     let code = qt!
@@ -39,7 +39,7 @@ tests_impls! {
       ]),
       syn::Ident::new( "x1", proc_macro2::Span::call_site() ),
     );
-    a_id!( got, exp );
+    assert_eq!( got, exp );
 
     // test.case( "punctuated of pairs" );
     let code = qt!
@@ -78,7 +78,7 @@ tests_impls! {
       Default::default(),
       syn::Ident::new( "x3", proc_macro2::Span::call_site() ),
     ));
-    a_id!( got, exp );
+    assert_eq!( got, exp );
 
     //
 
@@ -108,7 +108,7 @@ tests_impls! {
         #[ derive( Debug ) ]
       } )? ),
     ]);
-    a_id!( got, exp );
+    assert_eq!( got, exp );
 
     // test.case( "AttributesInner" );
     let code = qt!
@@ -125,7 +125,7 @@ tests_impls! {
         #![ warn( something ) ]
       } )? ),
     ]);
-    a_id!( got, exp );
+    assert_eq!( got, exp );
 
     // test.case( "Item" );
     let code = qt!
@@ -139,7 +139,7 @@ tests_impls! {
       syn::parse2::< syn::Item >( qt!( fn f1(){} ) )?,
       syn::parse2::< syn::Item >( qt!( fn f2(){} ) )?,
     ]);
-    a_id!( got, exp );
+    assert_eq!( got, exp );
 
     //
 

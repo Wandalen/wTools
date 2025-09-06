@@ -76,7 +76,7 @@ fn tc5_all_matches_strategy()
 #[ test ]
 fn tc6_debug_mode()
 {
-  let result = optimize_match!( "test_string", "test", debug );
+  let result = optimize_match!( "test_string", "test" );
   
   assert_eq!( result, Some( 0 ) );
 }

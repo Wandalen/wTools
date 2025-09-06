@@ -54,12 +54,10 @@ fn into_generic_args_empty_generics() {
     args: syn::punctuated::Punctuated::new(),
     gt_token: token::Gt::default(),
   };
-  a_id!(
+  assert_eq!(
     exp,
     got,
-    "Failed into_generic_args_empty_generics: exp {:?}, got {:?}",
-    exp,
-    got
+    "Failed into_generic_args_empty_generics: exp {exp:?}, got {got:?}",
   );
 }
 
@@ -80,12 +78,10 @@ fn into_generic_args_single_type_parameter() {
   };
 
   let got = generics.into_generic_args();
-  a_id!(
+  assert_eq!(
     exp,
     got,
-    "Failed into_generic_args_single_type_parameter: exp {:?}, got {:?}",
-    exp,
-    got
+    "Failed into_generic_args_single_type_parameter: exp {exp:?}, got {got:?}",
   );
 }
 
@@ -112,12 +108,10 @@ fn into_generic_args_single_lifetime_parameter() {
   println!("Got: {got:?}");
 
   // Assert to check if the exp matches the got
-  a_id!(
+  assert_eq!(
     exp,
     got,
-    "Failed into_generic_args_single_lifetime_parameter: exp {:?}, got {:?}",
-    exp,
-    got
+    "Failed into_generic_args_single_lifetime_parameter: exp {exp:?}, got {got:?}",
   );
 }
 
@@ -156,12 +150,10 @@ fn into_generic_args_single_const_parameter() {
   println!("Expected: {exp:?}");
   println!("Got: {got:?}");
 
-  a_id!(
+  assert_eq!(
     exp,
     got,
-    "Failed into_generic_args_single_const_parameter: exp {:?}, got {:?}",
-    exp,
-    got
+    "Failed into_generic_args_single_const_parameter: exp {exp:?}, got {got:?}",
   );
 }
 
@@ -212,13 +204,11 @@ fn into_generic_args_mixed_parameters() {
 
   // tree_print!( got );
   // tree_print!( exp );
-  // a_id!(tree_diagnostics_str!( exp ), tree_diagnostics_str!( got ) );
-  a_id!(
+  // assert_eq!(tree_diagnostics_str!( exp ), tree_diagnostics_str!( got ) );
+  assert_eq!(
     exp,
     got,
-    "Failed into_generic_args_mixed_parameters: exp {:?}, got {:?}",
-    exp,
-    got
+    "Failed into_generic_args_mixed_parameters: exp {exp:?}, got {got:?}",
   );
 }
 
@@ -234,7 +224,7 @@ fn merge_empty_arguments() {
   let exp: AngleBracketedGenericArguments = parse_quote! { <> };
 
   let got = generic_args::merge(&a, &b);
-  a_id!(got, exp, "Merging two empty arguments should got in empty arguments");
+  assert_eq!(got, exp, "Merging two empty arguments should got in empty arguments");
 }
 
 //
@@ -249,7 +239,7 @@ fn merge_one_empty_one_non_empty() {
   let exp: AngleBracketedGenericArguments = parse_quote! { < T, U > };
 
   let got = generic_args::merge(&a, &b);
-  a_id!(got, exp, "Merging non-empty with empty should got in the non-empty");
+  assert_eq!(got, exp, "Merging non-empty with empty should got in the non-empty");
 }
 
 //
@@ -264,7 +254,7 @@ fn merge_duplicate_arguments() {
   let exp: AngleBracketedGenericArguments = parse_quote! { < T, T > };
 
   let got = generic_args::merge(&a, &b);
-  a_id!(got, exp, "Duplicates should be preserved in the output");
+  assert_eq!(got, exp, "Duplicates should be preserved in the output");
 }
 
 //
@@ -279,7 +269,7 @@ fn merge_large_number_of_arguments() {
   let exp: AngleBracketedGenericArguments = parse_quote! { <A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T> };
 
   let got = generic_args::merge(&a, &b);
-  a_id!(
+  assert_eq!(
     got,
     exp,
     "Merging large number of arguments should succeed without altering order or count"
@@ -298,7 +288,7 @@ fn merge_complex_generic_constraints() {
   let exp: AngleBracketedGenericArguments = parse_quote! { < T: Clone + Send, U: Default, V: core::fmt::Debug + Sync > };
 
   let got = generic_args::merge(&a, &b);
-  a_id!(got, exp, "Complex constraints should be merged correctly");
+  assert_eq!(got, exp, "Complex constraints should be merged correctly");
 }
 
 //
@@ -313,7 +303,7 @@ fn merge_different_orders_of_arguments() {
   let exp: AngleBracketedGenericArguments = parse_quote! { < T, U, V, W > };
 
   let got = generic_args::merge(&a, &b);
-  a_id!(got, exp, "Order of arguments should be preserved as per the inputs");
+  assert_eq!(got, exp, "Order of arguments should be preserved as per the inputs");
 }
 
 //
@@ -328,6 +318,6 @@ fn merge_interaction_with_lifetimes_and_constants() {
   let exp: AngleBracketedGenericArguments = parse_quote! { <'a, 'b, M : T, N > };
 
   let got = generic_args::merge(&a, &b);
-  // a_id!(tree_diagnostics_str!( exp ), tree_diagnostics_str!( got ) );
-  a_id!(got, exp, "Lifetimes and constants should be interleaved correctly");
+  // assert_eq!(tree_diagnostics_str!( exp ), tree_diagnostics_str!( got ) );
+  assert_eq!(got, exp, "Lifetimes and constants should be interleaved correctly");
 }

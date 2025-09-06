@@ -11,16 +11,15 @@ use the_module::
 use std::
 {
   borrow::Cow,
+  collections::BTreeSet,
 };
 
 #[ test ]
 fn bset_string_fields()
 {
-  let collection : BTreeSet<  String  >  = bset!
-  [
-    "a".to_string(),
-    "b".to_string(),
-  ];
+  let mut collection = BTreeSet::< String >::new();
+  collection.insert( "a".to_string() );
+  collection.insert( "b".to_string() );
 
   // k, v
   let got : BTreeSet<  _  > = Fields::< usize, &str >::fields( &collection ).collect();
@@ -39,10 +38,10 @@ fn bset_string_fields()
 #[ test ]
 fn bset_str_fields()
 {
-  let collection : BTreeSet<  &str  > = bset!
+  let collection : BTreeSet< &str > = bset!
   [
     "a",
-    "b",
+    "b"
   ];
 
   // k, v

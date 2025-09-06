@@ -104,6 +104,7 @@ pub struct ProgramRun {
 
 #[ derive( Debug ) ]
 #[ allow( dead_code ) ]
+#[ allow( clippy::enum_variant_names ) ]
 pub enum GetData {
   FromStr(&'static str),
   FromBin(&'static [u8]),
