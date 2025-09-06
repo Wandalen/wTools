@@ -4,6 +4,8 @@
 #[ allow( unused_imports ) ]
 use super::*;
 #[ allow( unused_imports ) ]
+use test_tools::a_id;
+#[ allow( unused_imports ) ]
 use collection_tools::HashMap;
 
 // Child struct with Former derived for builder pattern support
@@ -678,7 +680,7 @@ fn custom1() {
     .map(|e| e.0)
     .cloned()
     .collect::<collection_tools::HashSet< String >>();
-  let exp = collection_tools::hset!["echo".into(), "exit".into(),];
+  let exp: collection_tools::HashSet<String> = collection_tools::hset!["echo".into(), "exit".into(),];
   a_id!(got, exp);
 }
 
@@ -699,6 +701,6 @@ fn custom2() {
     .map(|e| e.0)
     .cloned()
     .collect::<collection_tools::HashSet< String >>();
-  let exp = collection_tools::hset!["echo".into(), "echo_2".into(), "exit".into(), "exit_2".into(),];
+  let exp: collection_tools::HashSet<String> = collection_tools::hset!["echo".into(), "echo_2".into(), "exit".into(), "exit_2".into(),];
   a_id!(got, exp);
 }

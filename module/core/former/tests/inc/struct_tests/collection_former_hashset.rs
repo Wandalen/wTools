@@ -4,6 +4,8 @@
 #[ allow( unused_imports ) ]
 use super::*;
 #[ allow( unused_imports ) ]
+use test_tools::a_id;
+#[ allow( unused_imports ) ]
 use collection_tools::HashSet;
 use the_module::HashSetExt;
 
