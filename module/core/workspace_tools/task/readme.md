@@ -13,10 +13,13 @@ This document serves as the **single source of truth** for all project work.
 | 5 | 003 | 0 | 8 | 5 | 5 | 2 | ✅ (Completed) | [Config Validation](completed/003_config_validation.md) | Schema-based config validation, prevent runtime errors |
 | 6 | 005 | 0 | 10 | 5 | 5 | 2 | ✅ (Completed) | [Serde Integration](completed/005_serde_integration.md) | First-class serde support for configuration management |
 | 7 | 017 | 0 | 7 | 8 | 5 | 2 | ✅ (Completed) | [Enhanced Secret Parsing](completed/017_enhanced_secret_parsing.md) | Multi-format secret file support (KEY=VALUE and export) |
+| 8 | 021 | 10 | 9 | 7 | 9 | 9 | 📋 (Active) | [Improve Secrets API UX and Error Handling](021_improve_secrets_api_ux_and_error_handling.md) | Fix API pitfalls, enhance error handling, improve developer experience |
 
 ## Current Focus
 
-workspace_tools has completed its **secure secret management capabilities** with:
+workspace_tools has completed its **secure secret management capabilities** and is now focusing on **developer experience improvements**:
+
+### Completed ✅
 - ✅ Automatic Cargo workspace detection
 - ✅ Serde integration for configuration loading  
 - ✅ Enhanced secret management with multiple format support
@@ -25,6 +28,9 @@ workspace_tools has completed its **secure secret management capabilities** with
 - ✅ Advanced configuration injection with SecretInjectable trait
 - ✅ Secret validation and strength checking
 - ✅ Production-ready security optimizations
+
+### Active Work 📋
+- **Task 021**: Improving secrets API user experience and error handling to prevent common developer pitfalls and debugging confusion
 
 ## Issues Index
 
