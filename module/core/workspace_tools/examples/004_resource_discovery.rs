@@ -220,5 +220,5 @@ fn main()
   println!();
   println!( "to enable glob feature permanently, add to cargo.toml:" );
   println!( r#"[dependencies]"# );
-  println!( r#"workspace_tools = { version = "0.1", features = ["glob"] }"# );
+  println!( r#"workspace_tools = {{ version = "0.1", features = ["glob"] }}"# );
 }

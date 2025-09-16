@@ -124,8 +124,9 @@ fn test_comprehensive_error_handling()
   
   // Test missing secret file error
   let result = workspace.load_secrets_secure( "nonexistent.sh" );
-  assert!( result.is_ok() ); // Should return empty HashMap, not error
-  assert!( result.unwrap().is_empty() );
+  assert!( result.is_err() ); // Should return explicit error, not empty HashMap
+  let error_msg = result.unwrap_err().to_string();
+  assert!( error_msg.contains( "not found" ) );
 
   // Test invalid secret format handling
   let invalid_content = "INVALID FORMAT LINE WITHOUT EQUALS SIGN";

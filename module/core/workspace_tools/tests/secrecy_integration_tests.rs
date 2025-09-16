@@ -177,10 +177,11 @@ fn test_secure_error_handling()
 {
   let ( _temp_dir, workspace ) = testing::create_test_workspace_with_structure();
   
-  // Test loading from non-existent file
+  // Test loading from non-existent file - new behavior returns explicit error
   let result = workspace.load_secrets_secure( "-nonexistent.env" );
-  assert!( result.is_ok() ); // Should return empty HashMap, not error
-  assert!( result.unwrap().is_empty() );
+  assert!( result.is_err() ); // Now returns explicit error instead of empty HashMap
+  let error_msg = result.unwrap_err().to_string();
+  assert!( error_msg.contains( "not found at" ) );
   
   // Test loading specific key from non-existent file (no env fallback)
   let result = workspace.load_secret_key_secure( "MISSING_KEY", "-nonexistent.env" );

@@ -942,14 +942,17 @@ VALID_KEY=valid_value
     assert!( !secrets.contains_key( "# this is a comment" ) );
   }
 
-  /// test s2.4: load secrets from nonexistent file
+  /// test s2.4: load secrets from nonexistent file - updated for Task 021
   #[ test ]
   fn test_load_secrets_nonexistent_file()
   {
     let ( _temp_dir, workspace ) = testing::create_test_workspace();
-    
-    let secrets = workspace.load_secrets_from_file( "nonexistent.env" ).unwrap();
-    assert!( secrets.is_empty(), "should return empty map for nonexistent file" );
+
+    // New behavior: returns explicit error instead of empty HashMap
+    let result = workspace.load_secrets_from_file( "nonexistent.env" );
+    assert!( result.is_err(), "should return error for nonexistent file" );
+    let error_msg = result.unwrap_err().to_string();
+    assert!( error_msg.contains( "not found at" ), "error should contain path information" );
   }
 
   /// test s2.5: load secrets with file read error

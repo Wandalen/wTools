@@ -1,3 +1,5 @@
+#![ allow( clippy::uninlined_format_args, clippy::redundant_closure_for_method_calls ) ]
+
 //! Test Matrix: Cargo Integration
 //!
 //! NOTE: These tests change the current working directory and may have race conditions
@@ -68,14 +70,18 @@ fn test_from_cargo_workspace_not_found()
   
   // save original environment
   let original_dir = std::env::current_dir().unwrap();
-  
+
   // set current directory to empty directory
   std::env::set_current_dir( &temp_path ).unwrap();
-  
+
   let result = Workspace::from_cargo_workspace();
-  
-  // restore original directory IMMEDIATELY
-  std::env::set_current_dir( &original_dir ).unwrap();
+
+  // restore original directory IMMEDIATELY before temp_dir might get dropped
+  let restore_result = std::env::set_current_dir( &original_dir );
+  if restore_result.is_err() {
+    // If we can't restore, at least try to go to a safe directory
+    let _ = std::env::set_current_dir( "/" );
+  }
   
   assert!( result.is_err() );
   assert!( matches!( result.unwrap_err(), WorkspaceError::PathNotFound( _ ) ) );
@@ -136,7 +142,7 @@ fn test_is_cargo_workspace_false()
 #[ test ]
 fn test_cargo_metadata_success()
 {
-  let _lock = CARGO_TEST_MUTEX.lock().unwrap();
+  let _lock = CARGO_TEST_MUTEX.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
   
   let temp_dir = create_test_cargo_workspace_with_members();
   let temp_path = temp_dir.path().to_path_buf(); // Get owned path
@@ -159,10 +165,15 @@ fn test_cargo_metadata_success()
   // Execute cargo_metadata with the manifest path, no need to change directories
   let metadata_result = workspace.cargo_metadata();
   
-  // Now restore directory (though we didn't change it)
-  let restore_result = std::env::set_current_dir( &original_dir );
-  if let Err(e) = restore_result {
-    eprintln!("Failed to restore directory: {e}");
+  // Now restore directory if needed (we didn't change it, but be safe)
+  let current_dir = std::env::current_dir().unwrap_or_else(|_| std::path::PathBuf::from("."));
+  if current_dir != original_dir {
+    let restore_result = std::env::set_current_dir( &original_dir );
+    if let Err(e) = restore_result {
+      eprintln!("Failed to restore directory: {e}");
+      // Try to go to a safe directory
+      let _ = std::env::set_current_dir( "/" );
+    }
   }
   
   // Process result
@@ -188,34 +199,16 @@ fn test_cargo_metadata_success()
 #[ test ]
 fn test_workspace_members()
 {
-  let _lock = CARGO_TEST_MUTEX.lock().unwrap();
+  let _lock = CARGO_TEST_MUTEX.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
   
   let temp_dir = create_test_cargo_workspace_with_members();
   let temp_path = temp_dir.path().to_path_buf(); // Get owned path
   
-  // Save original directory - handle potential race conditions
-  let original_dir = match std::env::current_dir() {
-    Ok(dir) => dir,
-    Err(e) => {
-      eprintln!("Warning: Could not get current directory: {e}");
-      // Fallback to a reasonable default
-      std::path::PathBuf::from(".")
-    }
-  };
-  
+  // No need to save/restore directory since we don't change it
   let workspace = Workspace::from_cargo_manifest( temp_path.join( "Cargo.toml" ) ).unwrap();
-  
-  // Execute workspace_members with the manifest path, no need to change directories
+
+  // Execute workspace_members directly without changing directories
   let result = workspace.workspace_members();
-  
-  // Restore original directory (though we didn't change it)
-  let restore_result = std::env::set_current_dir( &original_dir );
-  
-  // Check restore operation succeeded
-  if let Err(e) = restore_result {
-    eprintln!("Failed to restore directory: {e}");
-    // Continue anyway to check the main test result
-  }
   if let Err(ref e) = result {
     println!("workspace_members error: {e}");
   }
