@@ -44,6 +44,7 @@ fn main() -> Result<(), unilang::Error> {
         http_method_hint: String::new(),
         examples: vec![],
         routine_link: None,
+        auto_help_enabled: false,
     };
     
     // Define the command's execution logic

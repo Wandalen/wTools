@@ -58,6 +58,7 @@ fn run_parsing_comparison_benchmark()
         deprecation_message: String::new(),
         http_method_hint: String::new(),
         examples: vec![],
+        auto_help_enabled: false,
       };
       registry.register( cmd );
     }
@@ -92,6 +93,7 @@ fn run_parsing_comparison_benchmark()
         deprecation_message: String::new(),
         http_method_hint: String::new(),
         examples: vec![],
+        auto_help_enabled: false,
       };
       registry.register( cmd );
     }

@@ -168,6 +168,7 @@ mod private
         deprecation_message : static_cmd.deprecation_message.to_string(),
         http_method_hint : static_cmd.http_method_hint.to_string(),
         examples : static_cmd.examples.iter().map( | &s | s.to_string() ).collect(),
+        auto_help_enabled : false, // Static commands don't auto-generate help by default
       }
     }
   }

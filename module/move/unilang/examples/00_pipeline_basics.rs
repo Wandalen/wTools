@@ -52,6 +52,7 @@ fn main() -> Result<(), unilang::Error> {
         http_method_hint: String::new(),
         examples: vec![],
         routine_link: None,
+        auto_help_enabled: false,
     };
     
     let add_routine = Box::new(|cmd: VerifiedCommand, _ctx: ExecutionContext| {

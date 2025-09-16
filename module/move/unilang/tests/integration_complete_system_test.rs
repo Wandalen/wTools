@@ -51,6 +51,7 @@ fn test_complete_system_integration()
       deprecation_message: String::new(),
       http_method_hint: String::new(),
       examples: Vec::new(),
+    auto_help_enabled: false,
     };
     
     let result = registry.command_add_runtime(&cmd, Box::new(demo_handler));
@@ -83,6 +84,7 @@ fn test_complete_system_integration()
       deprecation_message: String::new(),
       http_method_hint: String::new(),
       examples: Vec::new(),
+    auto_help_enabled: false,
     };
     
     let result = registry.command_add_runtime(&cmd, Box::new(demo_handler));
@@ -114,6 +116,7 @@ fn test_complete_system_integration()
       deprecation_message: String::new(),
       http_method_hint: String::new(),
       examples: Vec::new(),
+    auto_help_enabled: false,
     };
     
     let result = registry.command_add_runtime(&invalid_cmd, Box::new(demo_handler));
@@ -185,6 +188,7 @@ fn test_governing_principles_compliance()
     deprecation_message: String::new(),
     http_method_hint: String::new(),
     examples: Vec::new(),
+    auto_help_enabled: false,
   };
   
   let result = registry.command_add_runtime(&explicit_cmd, Box::new(demo_handler));
@@ -216,6 +220,7 @@ fn test_governing_principles_compliance()
     deprecation_message: String::new(),
     http_method_hint: String::new(),
     examples: Vec::new(),
+    auto_help_enabled: false,
   };
   
   let result = registry2.command_add_runtime(&invalid_cmd, Box::new(demo_handler));

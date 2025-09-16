@@ -24,7 +24,6 @@ pub type CommandRoutine = Box< dyn Fn( crate::semantic::VerifiedCommand, Executi
 /// Uses a hybrid model: static commands are stored in a PHF map for zero overhead,
 /// while dynamic commands are stored in a `HashMap` for runtime flexibility.
 ///
-#[ derive( Default ) ] // Removed Clone since CommandRoutine can't be cloned
 #[ allow( missing_debug_implementations ) ]
 pub struct CommandRegistry
 {
@@ -33,6 +32,8 @@ pub struct CommandRegistry
   dynamic_commands : HashMap< String, CommandDefinition >,
   /// A map of command names to their executable routines.
   routines : HashMap< String, CommandRoutine >,
+  /// Whether automatic help command generation is enabled for new registrations.
+  help_conventions_enabled : bool,
 }
 
 impl CommandRegistry
@@ -43,7 +44,12 @@ impl CommandRegistry
   #[ must_use ]
   pub fn new() -> Self
   {
-    Self::default()
+    Self
+    {
+      dynamic_commands : HashMap::new(),
+      routines : HashMap::new(),
+      help_conventions_enabled : true, // Enable by default for better UX
+    }
   }
 
   ///
@@ -197,6 +203,222 @@ impl CommandRegistry
   pub fn builder() -> CommandRegistryBuilder
   {
     CommandRegistryBuilder::new()
+  }
+
+  ///
+  /// Enables/disables automatic `.command.help` generation for all subsequently registered commands.
+  ///
+  /// When enabled, all commands registered with `command_add_runtime` or `register_with_auto_help`
+  /// will automatically generate corresponding `.command.help` commands that provide detailed
+  /// help information about the parent command.
+  ///
+  /// # Arguments
+  /// * `enabled` - Whether to enable automatic help command generation
+  ///
+  /// # Examples
+  /// ```rust,ignore
+  /// use unilang::registry::CommandRegistry;
+  ///
+  /// let mut registry = CommandRegistry::new();
+  /// registry.enable_help_conventions(true);
+  /// // All subsequently registered commands will auto-generate help commands
+  /// ```
+  pub fn enable_help_conventions( &mut self, enabled : bool )
+  {
+    self.help_conventions_enabled = enabled;
+  }
+
+  ///
+  /// Registers a command with automatic help command generation.
+  ///
+  /// This method provides explicit control over help generation, registering the main command
+  /// and optionally generating a `.command.help` counterpart based on the command's configuration
+  /// and the registry's global help conventions setting.
+  ///
+  /// # Arguments
+  /// * `command` - The command definition to register
+  /// * `routine` - The executable routine for the command
+  ///
+  /// # Returns
+  /// * `Result<(), Error>` - Success or registration error
+  ///
+  /// # Errors
+  /// Returns an error if command registration fails due to invalid naming or other validation issues.
+  ///
+  /// # Examples
+  /// ```rust,ignore
+  /// use unilang::{registry::CommandRegistry, data::CommandDefinition};
+  ///
+  /// let mut registry = CommandRegistry::new();
+  /// let cmd = CommandDefinition::former()
+  ///     .name(".example".to_string())
+  ///     .description("Example command".to_string())
+  ///     .with_auto_help(true)
+  ///     .end();
+  ///
+  /// let routine = Box::new(|_cmd, _ctx| Ok(OutputData::default()));
+  /// registry.register_with_auto_help(cmd, routine)?;
+  /// // Both ".example" and ".example.help" are now registered
+  /// ```
+  pub fn register_with_auto_help( &mut self, command : CommandDefinition, routine : CommandRoutine ) -> Result< (), Error >
+  {
+    // First register the main command
+    self.command_add_runtime( &command, routine )?;
+
+    // Generate help command if enabled (either globally or specifically for this command)
+    if self.help_conventions_enabled || command.has_auto_help()
+    {
+      let help_command = command.generate_help_command();
+      let help_routine = self.create_help_routine( &command );
+      self.command_add_runtime( &help_command, help_routine )?;
+    }
+
+    Ok( () )
+  }
+
+  ///
+  /// Retrieves formatted help text for any registered command.
+  ///
+  /// This method generates comprehensive help information for a given command,
+  /// including its description, arguments, usage examples, and metadata.
+  /// It works with both static and dynamic commands.
+  ///
+  /// # Arguments
+  /// * `command_name` - The full name of the command (e.g., ".example" or ".fs.list")
+  ///
+  /// # Returns
+  /// * `Option<String>` - Formatted help text, or None if command not found
+  ///
+  /// # Examples
+  /// ```rust,ignore
+  /// use unilang::registry::CommandRegistry;
+  ///
+  /// let registry = CommandRegistry::new();
+  /// if let Some(help_text) = registry.get_help_for_command(".example") {
+  ///     println!("{}", help_text);
+  /// }
+  /// ```
+  #[ must_use ]
+  pub fn get_help_for_command( &self, command_name : &str ) -> Option< String >
+  {
+    if let Some( cmd_def ) = self.command( command_name )
+    {
+      Some( self.format_help_text( &cmd_def ) )
+    }
+    else
+    {
+      None
+    }
+  }
+
+  ///
+  /// Creates a help routine for a given command.
+  ///
+  /// This internal method generates the executable routine that will be used
+  /// for `.command.help` commands. The routine returns formatted help information
+  /// about the parent command.
+  ///
+  /// # Arguments
+  /// * `parent_command` - The command for which to create a help routine
+  ///
+  /// # Returns
+  /// * `CommandRoutine` - An executable routine that returns help information
+  fn create_help_routine( &self, parent_command : &CommandDefinition ) -> CommandRoutine
+  {
+    let help_text = self.format_help_text( parent_command );
+
+    Box::new( move | _cmd, _ctx |
+    {
+      Ok( OutputData
+      {
+        content : help_text.clone(),
+        format : "text".to_string(),
+      })
+    })
+  }
+
+  ///
+  /// Formats comprehensive help text for a command definition.
+  ///
+  /// This internal method generates detailed, human-readable help information
+  /// including command description, arguments with types and defaults,
+  /// usage examples, and metadata.
+  ///
+  /// # Arguments
+  /// * `cmd_def` - The command definition to format help for
+  ///
+  /// # Returns
+  /// * `String` - Formatted help text
+  fn format_help_text( &self, cmd_def : &CommandDefinition ) -> String
+  {
+    let mut help = String::new();
+
+    // Command header
+    help.push_str( &format!( "Command: {}\n", cmd_def.name ) );
+    help.push_str( &format!( "Description: {}\n", cmd_def.description ) );
+
+    if !cmd_def.hint.is_empty()
+    {
+      help.push_str( &format!( "Hint: {}\n", cmd_def.hint ) );
+    }
+
+    help.push_str( &format!( "Version: {}\n", cmd_def.version ) );
+    help.push_str( &format!( "Status: {}\n", cmd_def.status ) );
+
+    // Arguments section
+    if !cmd_def.arguments.is_empty()
+    {
+      help.push_str( "\nArguments:\n" );
+      for arg in &cmd_def.arguments
+      {
+        let required = if arg.attributes.optional { "optional" } else { "required" };
+        help.push_str( &format!( "  {} ({}, {})", arg.name, arg.kind, required ) );
+
+        if let Some( default ) = &arg.attributes.default
+        {
+          help.push_str( &format!( " [default: {}]", default ) );
+        }
+
+        help.push_str( &format!( "\n    {}\n", arg.description ) );
+
+        if !arg.aliases.is_empty()
+        {
+          help.push_str( &format!( "    Aliases: {}\n", arg.aliases.join( ", " ) ) );
+        }
+      }
+    }
+
+    // Examples section
+    if !cmd_def.examples.is_empty()
+    {
+      help.push_str( "\nExamples:\n" );
+      for example in &cmd_def.examples
+      {
+        help.push_str( &format!( "  {}\n", example ) );
+      }
+    }
+
+    // Aliases section
+    if !cmd_def.aliases.is_empty()
+    {
+      help.push_str( &format!( "\nAliases: {}\n", cmd_def.aliases.join( ", " ) ) );
+    }
+
+    // Usage patterns
+    help.push_str( "\nUsage:\n" );
+    help.push_str( &format!( "  {}  # Execute command\n", cmd_def.name ) );
+    help.push_str( &format!( "  {}.help  # Show this help\n", cmd_def.name ) );
+    help.push_str( &format!( "  {} ??  # Alternative help access\n", cmd_def.name ) );
+
+    help
+  }
+}
+
+impl Default for CommandRegistry
+{
+  fn default() -> Self
+  {
+    Self::new()
   }
 }
 

@@ -37,6 +37,7 @@ fn test_reject_commands_without_dot_prefix()
     deprecation_message: String::new(),
     http_method_hint: String::new(),
     examples: Vec::new(),
+    auto_help_enabled: false,
   };
   
   let result = registry.command_add_runtime(&invalid_cmd, Box::new(dummy_handler));
@@ -75,6 +76,7 @@ fn test_reject_invalid_namespace()
     deprecation_message: String::new(),
     http_method_hint: String::new(),
     examples: Vec::new(),
+    auto_help_enabled: false,
   };
   
   let result = registry.command_add_runtime(&invalid_cmd, Box::new(dummy_handler));
@@ -113,6 +115,7 @@ fn test_accept_correctly_formatted_commands()
     deprecation_message: String::new(),
     http_method_hint: String::new(),
     examples: Vec::new(),
+    auto_help_enabled: false,
   };
   
   let result = registry.command_add_runtime(&root_cmd, Box::new(dummy_handler));
@@ -136,6 +139,7 @@ fn test_accept_correctly_formatted_commands()
     deprecation_message: String::new(),
     http_method_hint: String::new(),
     examples: Vec::new(),
+    auto_help_enabled: false,
   };
   
   let result2 = registry.command_add_runtime(&namespaced_cmd, Box::new(dummy_handler));
@@ -177,6 +181,7 @@ fn test_principle_minimum_implicit_magic()
       deprecation_message: String::new(),
       http_method_hint: String::new(),
       examples: Vec::new(),
+    auto_help_enabled: false,
     };
     
     let result = registry.command_add_runtime(&cmd, Box::new(dummy_handler));

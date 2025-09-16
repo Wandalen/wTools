@@ -133,6 +133,7 @@ fn benchmark_unilang_simd_operation( command_count : usize )
       deprecation_message : String::new(),
       http_method_hint : String::new(),
       examples : vec![],
+      auto_help_enabled : false,
     };
     
     registry.register( cmd );

@@ -72,6 +72,7 @@ fn demonstrate_issue_017_solution()
       deprecation_message: String::new(),
       http_method_hint: String::new(),
       examples: Vec::new(),
+    auto_help_enabled: false,
     };
     
     let result = registry.command_add_runtime(&cmd, Box::new(demo_handler));
@@ -97,6 +98,7 @@ fn demonstrate_issue_017_solution()
     deprecation_message: String::new(),
     http_method_hint: String::new(),
     examples: Vec::new(),
+    auto_help_enabled: false,
   };
   
   let result = registry.command_add_runtime(&invalid_cmd, Box::new(demo_handler));
@@ -120,6 +122,7 @@ fn demonstrate_issue_017_solution()
     deprecation_message: String::new(),
     http_method_hint: String::new(),
     examples: Vec::new(),
+    auto_help_enabled: false,
   };
   
   let result = registry.command_add_runtime(&namespaced_cmd, Box::new(demo_handler));
@@ -193,6 +196,7 @@ fn verify_issue_017_completely_resolved()
       deprecation_message: String::new(),
       http_method_hint: String::new(),
       examples: Vec::new(),
+    auto_help_enabled: false,
     };
     
     let result = registry.command_add_runtime(&cmd, Box::new(demo_handler));

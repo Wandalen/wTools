@@ -37,6 +37,7 @@ fn test_help_operator_shows_help_not_error()
       }
     ],
     routine_link: None,
+    auto_help_enabled: false,
     status: "stable".to_string(),
     version: "1.0.0".to_string(),
     tags: vec![],
@@ -126,6 +127,7 @@ fn test_help_operator_with_multiple_required_args()
       }
     ],
     routine_link: None,
+    auto_help_enabled: false,
     status: "stable".to_string(),
     version: "1.0.0".to_string(),
     tags: vec![],
@@ -199,6 +201,7 @@ fn test_help_operator_takes_precedence_over_validation()
       }
     ],
     routine_link: None,
+    auto_help_enabled: false,
     status: "stable".to_string(),
     version: "1.0.0".to_string(),
     tags: vec![],
@@ -267,6 +270,7 @@ fn test_normal_command_without_help_operator_still_validates()
       }
     ],
     routine_link: None,
+    auto_help_enabled: false,
     status: "stable".to_string(),
     version: "1.0.0".to_string(),
     tags: vec![],

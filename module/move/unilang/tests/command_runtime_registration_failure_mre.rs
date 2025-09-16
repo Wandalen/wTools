@@ -30,6 +30,7 @@ fn test_dot_prefixed_command_runtime_execution()
     namespace : String::new(),
     description : "Test chat command for reproducing issue 017".to_string(),
     routine_link : None, // Runtime registration, not static
+    auto_help_enabled: false,
     arguments : Vec::new(),
     hint : String::new(),
     status : String::new(),
@@ -112,6 +113,7 @@ fn test_non_dot_command_properly_rejected()
     namespace : String::new(),
     description : "Test command without dot prefix".to_string(),
     routine_link : None,
+    auto_help_enabled: false,
     arguments : Vec::new(),
     hint : String::new(),
     status : String::new(),
@@ -172,6 +174,7 @@ fn test_assistant_style_commands()
       namespace : String::new(),
       description : description.to_string(),
       routine_link : None,
+    auto_help_enabled: false,
       arguments : Vec::new(),
       hint : String::new(),
       status : String::new(),

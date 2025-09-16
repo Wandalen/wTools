@@ -205,6 +205,10 @@ harness = false
 
 # stress_test_bin is a binary, not a test - no [[test]] entry needed
 
+[[example]]
+name = "help_conventions_demo"
+path = "examples/18_help_conventions_demo.rs"
+
 
 
 

@@ -141,6 +141,9 @@ This section lists the specific, testable functions the `unilang` framework **mu
 *   **FR-HELP-1 (Command List):** The `HelpGenerator` **must** be able to produce a formatted list of all registered commands, including their names, namespaces, and hints.
 *   **FR-HELP-2 (Detailed Command Help):** The `HelpGenerator` **must** be able to produce detailed, formatted help for a specific command, including its description, arguments (with types, defaults, and validation rules), aliases, and examples.
 *   **FR-HELP-3 (Help Operator):** The parser **must** recognize the `?` operator. When present, the `Semantic Analyzer` **must** return a `HELP_REQUESTED` error containing the detailed help text for the specified command, bypassing all argument validation.
+*   **FR-HELP-4 (Standardized Help Commands):** For every registered command `.command`, the framework **must** provide automatic registration of a corresponding `.command.help` command that returns detailed help information for the parent command. This standardization ensures consistent help access across all commands.
+*   **FR-HELP-5 (Double Question Mark Parameter):** The framework **must** recognize a special parameter `??` that can be appended to any command to trigger help display (e.g., `.command ??`). When this parameter is detected, the system **must** return help information identical to calling `.command.help`, providing an alternative help access method.
+*   **FR-HELP-6 (Automatic Help Command Generation API):** The framework **must** provide APIs (`CommandRegistry::enable_help_conventions`, `CommandDefinition::with_auto_help`) that automatically generate `.command.help` commands and enable `??` parameter processing with minimal developer effort.
 
 #### 4.5. Modality Support
 *   **FR-REPL-1 (REPL Support):** The framework's core components (`Pipeline`, `Parser`, `SemanticAnalyzer`, `Interpreter`) **must** be structured to support a REPL-style execution loop. They **must** be reusable for multiple, sequential command executions within a single process lifetime.
@@ -220,7 +223,8 @@ The `unilang_parser` crate **must** be the reference implementation for this sec
     *   **Named Arguments:** **Must** use the `name::value` syntax.
     *   **Positional Arguments:** Any token that is not a named argument is a positional argument.
 *   **Rule 4 (Help Operator):** The `?` operator, if present, **must** be the final token and triggers the help system.
-*   **Rule 5 (Special Case - Discovery):** A standalone dot (`.`) **must** be interpreted as a request to list all available commands.
+*   **Rule 5 (Double Question Mark Parameter):** The `??` parameter, if present as any argument, **must** trigger help display for the command, identical to calling `.command.help`. This provides a consistent alternative to the `?` operator.
+*   **Rule 6 (Special Case - Discovery):** A standalone dot (`.`) **must** be interpreted as a request to list all available commands.
 
 ### 7. API Reference: Core Data Structures
 
@@ -233,6 +237,22 @@ The public API **must** include the following data structures with the specified
 *   `ValidationRule`: Defines a validation constraint for an argument.
 *   `OutputData`: Standardized structure for successful command output.
 *   `ErrorData`: Standardized structure for command failure information.
+
+#### 7.1. Help Convention API Methods
+
+The following API methods **must** be provided to support standardized help conventions:
+
+**CommandRegistry Methods:**
+*   `enable_help_conventions(&mut self, enabled: bool)` - Enables/disables automatic `.command.help` generation for all subsequently registered commands.
+*   `register_with_auto_help(&mut self, command: CommandDefinition, routine: CommandRoutine)` - Registers a command with automatic help command generation.
+*   `get_help_for_command(&self, command_name: &str) -> Option<String>` - Retrieves formatted help text for any registered command.
+
+**CommandDefinition Methods:**
+*   `with_auto_help(self, enabled: bool) -> Self` - Builder method to enable/disable automatic help command generation for this specific command.
+*   `has_auto_help(&self) -> bool` - Returns true if this command should automatically generate a help counterpart.
+
+**Pipeline Methods:**
+*   `process_help_request(&self, command_name: &str, context: ExecutionContext) -> Result<OutputData, Error>` - Processes help requests uniformly across the framework.
 
 ### 8. Cross-Cutting Concerns (Error Handling, Security, Verbosity)
 
@@ -467,6 +487,13 @@ All dependencies and relationships **must** be made explicit:
 - **Type Dependencies**: Explicit type requirements and conversions
 - **System Dependencies**: Clear documentation of external requirements
 
+#### 15.1.5. Consistent Help Access
+The framework **must** provide standardized, predictable help access for all commands:
+- **Universal Help Commands**: Every command `.command` automatically generates a `.command.help` counterpart
+- **Uniform Help Parameter**: The `??` parameter provides consistent help access across all commands
+- **Help Convention APIs**: Developer-friendly APIs make following help conventions effortless
+- **Discoverability**: Users can always find help through predictable patterns
+
 These principles serve as the foundation for all design decisions and implementation choices throughout the framework.
 
 ### 16. Core Principles of Development
@@ -529,6 +556,9 @@ As you build the system, please use this document to log your key implementation
 | ❌ | **FR-HELP-1:** The `HelpGenerator` must be able to produce a formatted list of all registered commands, including their names, namespaces, and hints. | |
 | ❌ | **FR-HELP-2:** The `HelpGenerator` must be able to produce detailed, formatted help for a specific command, including its description, arguments (with types, defaults, and validation rules), aliases, and examples. | |
 | ❌ | **FR-HELP-3:** The parser must recognize the `?` operator. When present, the `Semantic Analyzer` must return a `HELP_REQUESTED` error containing the detailed help text for the specified command, bypassing all argument validation. | |
+| ❌ | **FR-HELP-4:** For every registered command `.command`, the framework must provide automatic registration of a corresponding `.command.help` command that returns detailed help information for the parent command. | |
+| ❌ | **FR-HELP-5:** The framework must recognize a special parameter `??` that can be appended to any command to trigger help display (e.g., `.command ??`). When this parameter is detected, the system must return help information identical to calling `.command.help`. | |
+| ❌ | **FR-HELP-6:** The framework must provide APIs (`CommandRegistry::enable_help_conventions`, `CommandDefinition::with_auto_help`) that automatically generate `.command.help` commands and enable `??` parameter processing with minimal developer effort. | |
 | ✅ | **FR-REPL-1:** The framework's core components (`Pipeline`, `Parser`, `SemanticAnalyzer`, `Interpreter`) must be structured to support a REPL-style execution loop. They must be reusable for multiple, sequential command executions within a single process lifetime. | Implemented with comprehensive examples and verified stateless operation |
 | ✅ | **FR-INTERACTIVE-1:** When a mandatory argument with the `interactive: true` attribute is not provided, the `Semantic Analyzer` must return a distinct, catchable error (`UNILANG_ARGUMENT_INTERACTIVE_REQUIRED`). This allows the calling modality to intercept the error and prompt the user for input. | Implemented in semantic analyzer with comprehensive test coverage and REPL integration |
 | ❌ | **FR-MOD-WASM-REPL:** The framework must support a web-based REPL modality that can operate entirely on the client-side without a backend server. This requires the core `unilang` library to be fully compilable to the `wasm32-unknown-unknown` target. | |

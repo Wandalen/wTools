@@ -21,6 +21,7 @@ When building command-line tools, you often face these challenges:
 - 🏗️ **Modular Architecture**: Easy to add, modify, or remove commands
 - 🎯 **Type Safety**: Strong typing with comprehensive validation
 - 📚 **Auto Documentation**: Help text and command discovery built-in
+- 🆘 **Smart Help System**: Three ways to get help (`.help`, `??`, `?`) - always accessible
 - 🔍 **Rich Validation**: Built-in validators for common patterns
 
 ## Quick Start
@@ -105,6 +106,11 @@ fn main() -> Result< (), unilang::Error >
   println!( "Success: {}", result.success );
   println!( "Output: {}", result.outputs[ 0 ].content );
 
+  // Try the built-in help system:
+  // pipeline.process_command_simple( ".greet ?" );        // Traditional help
+  // pipeline.process_command_simple( ".greet ??" );       // Modern help parameter
+  // pipeline.process_command_simple( ".greet.help" );     // Auto-generated help command
+
   Ok(())
 }
 ```
@@ -112,6 +118,9 @@ fn main() -> Result< (), unilang::Error >
 Run this example:
 ```sh
 cargo run --example 01_basic_command_registration
+
+# Try the help conventions:
+cargo run --example 18_help_conventions_demo
 ```
 
 ## Command Requirements
@@ -143,6 +152,7 @@ let cmd = CommandDefinition {
   deprecation_message: String::new(),
   http_method_hint: String::new(),
   examples: Vec::new(),
+  auto_help_enabled: false,
 };
 
 // This would be rejected by validation
@@ -185,6 +195,7 @@ let command = CommandDefinition
   deprecation_message : String::new(),
   http_method_hint : String::new(),
   examples : vec![],
+  auto_help_enabled : false,
 };
 // command definition is complete
 assert_eq!(command.name, "my-command");
@@ -328,6 +339,7 @@ let command = CommandDefinition
   deprecation_message : String::new(),
   http_method_hint : String::new(),
   examples : vec![],
+  auto_help_enabled : false,
 };
 assert_eq!(command.name, "demo");
 ```
@@ -407,6 +419,7 @@ let commands = vec!
     deprecation_message : String::new(),
     http_method_hint : "GET".to_string(),
     examples : vec![],
+    auto_help_enabled : false,
   },
   CommandDefinition
   {
@@ -425,6 +438,7 @@ let commands = vec!
     deprecation_message : String::new(),
     http_method_hint : "POST".to_string(),
     examples : vec![],
+    auto_help_enabled : false,
   },
 ];
 assert_eq!(commands.len(), 2);
@@ -478,9 +492,11 @@ unilang supports flexible command-line syntax:
 # List all commands (just dot)
 .
 
-# Get help for any command
-.command ?              # Shows help for 'command'
-.namespace.command ?    # Shows help for namespaced command
+# Get help for any command - multiple ways!
+.command ?              # Traditional help operator
+.command ??             # Modern help parameter (can mix with other args)
+.command.help           # Dedicated help command (auto-generated)
+.namespace.command.help # Works with namespaced commands too
 ```
 
 ## Advanced Features
@@ -534,32 +550,77 @@ assert_eq!(batch_result.success_rate(), 0.0);
 
 ### Help System
 
-unilang provides a comprehensive help system with two ways to access help:
+unilang provides a comprehensive help system with **three standardized ways** to access help:
 
-```rust
+#### 🔧 **Automatic Help Generation**
+Every registered command automatically gets a `.command.help` counterpart:
+
+```rust,ignore
 use unilang::prelude::*;
-let registry = CommandRegistry::new();
-// Automatic help generation
-let help_gen = HelpGenerator::new( &registry );
+let mut registry = CommandRegistry::new();
 
-// List all commands (will be empty for new registry)
-let commands_list = help_gen.list_commands();
-assert!(commands_list.len() > 0); // Always contains header
+// Enable help conventions (enabled by default)
+registry.enable_help_conventions(true);
 
-// Get help for specific command (returns None if not found)
-let help = help_gen.command( "greet" );
-assert!(help.is_none()); // No commands registered yet
+// Register any command with auto-help enabled
+let mut cmd = CommandDefinition::former()
+    .name(".greet")
+    .description("A friendly greeting command")
+    .end();
+
+// Manually enable auto-help (builder method coming soon)
+cmd.auto_help_enabled = true;
+
+// Define a simple routine
+let routine = Box::new(|_cmd, _ctx| {
+    Ok(unilang::data::OutputData {
+        content: "Hello!".to_string(),
+        format: "text".to_string(),
+    })
+});
+
+registry.register_with_auto_help(cmd, routine)?;
+
+// Now BOTH commands are available:
+// .greet       - The original command
+// .greet.help  - Auto-generated help command
 ```
 
-The help operator (`?`) provides instant help without argument validation:
+#### 🎯 **Three Help Access Methods**
+
+**1. Traditional Help Operator (`?`)**
 ```sh
-# Shows help even if required arguments are missing
-.command ?                    # Help for command
+.command ?                    # Instant help, bypasses validation
 .run_file ?                   # Help instead of "missing file argument"
 .config.set ?                 # Help instead of "missing key and value"
 ```
 
-This ensures users can always get help, even when they don't know the required arguments.
+**2. Modern Help Parameter (`??`) - 🆕 Recommended**
+```sh
+.command ??                   # Clean help access
+.command arg1::value ??       # Get help even with partial arguments
+.upload file::data.txt ??     # Mix help with other parameters
+```
+
+**3. Dedicated Help Commands (`.command.help`) - 🆕 Auto-Generated**
+```sh
+.command.help                 # Direct help command access
+.namespace.command.help       # Works with namespaced commands
+.greet.help                   # Consistent, discoverable help
+```
+
+#### ✨ **Help Content Features**
+- **Comprehensive**: Arguments, validation rules, examples, aliases
+- **Consistent Formatting**: Professional, hierarchical display
+- **Always Available**: Never blocked by missing required arguments
+- **Auto-Discovery**: Tab completion includes `.help` commands
+
+#### 💡 **Best Practices**
+- Use `??` for interactive help during command construction
+- Use `.command.help` for documentation and scripting
+- Traditional `?` remains available for compatibility
+
+This ensures users can **always** get help, even when they don't know the required arguments or command structure.
 
 ## Full CLI Example
 
@@ -572,8 +633,13 @@ cargo run --example full_cli_example -- .greet name::Alice
 # See available commands (just dot shows all commands with help)
 cargo run --example full_cli_example -- .
 
-# Get help for a specific command
-cargo run --example full_cli_example -- .help .greet
+# Explore the new help conventions:
+cargo run --example full_cli_example -- .greet.help     # Auto-generated help command
+cargo run --example full_cli_example -- .greet ??       # Modern help parameter
+cargo run --example full_cli_example -- .greet ?        # Traditional help operator
+
+# Try the help conventions demo:
+cargo run --example 18_help_conventions_demo
 ```
 
 ## API Modes
@@ -977,6 +1043,7 @@ Explore the `examples/` directory for more detailed examples:
 - `05_namespaces_and_aliases.rs` - Command organization
 - `06_help_system.rs` - Automatic help generation
 - `07_yaml_json_loading.rs` - Loading commands from files
+- `18_help_conventions_demo.rs` - **🆕 Help Conventions** - Demo of `.help` and `??` features
 - `08_semantic_analysis_simple.rs` - Understanding the analysis phase
 - `09_command_execution.rs` - Execution patterns
 - `10_full_pipeline.rs` - Complete pipeline example
