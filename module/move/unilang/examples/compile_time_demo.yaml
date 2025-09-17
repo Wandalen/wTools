@@ -1,0 +1,167 @@
+# Compile-Time CLI Aggregation Demo Manifest
+# This YAML file demonstrates how multiple CLI modules can be aggregated
+# at compile-time using the existing build.rs infrastructure
+
+# Math CLI Module Commands (prefix: math)
+- name: ".math.add"
+  namespace: ".math"
+  description: "Add two numbers"
+  hint: "Mathematical addition"
+  arguments:
+    - name: "a"
+      description: "First number"
+      kind: "Integer"
+      hint: "First number"
+      attributes:
+        optional: false
+    - name: "b"
+      description: "Second number"
+      kind: "Integer"
+      hint: "Second number"
+      attributes:
+        optional: false
+  status: "stable"
+  version: "1.0.0"
+  tags: ["math", "arithmetic"]
+  aliases: []
+  permissions: []
+  idempotent: true
+  examples:
+    - ".math.add a::10 b::5"
+    - ".math.add a::100 b::200"
+
+- name: ".math.multiply"
+  namespace: ".math"
+  description: "Multiply two numbers"
+  hint: "Mathematical multiplication"
+  arguments:
+    - name: "x"
+      description: "First number"
+      kind: "Integer"
+      hint: "First number"
+      attributes:
+        optional: false
+    - name: "y"
+      description: "Second number"
+      kind: "Integer"
+      hint: "Second number"
+      attributes:
+        optional: false
+  status: "stable"
+  version: "1.0.0"
+  tags: ["math", "arithmetic"]
+  aliases: []
+  permissions: []
+  idempotent: true
+  examples:
+    - ".math.multiply x::7 y::8"
+
+# File CLI Module Commands (prefix: fs)
+- name: ".fs.list"
+  namespace: ".fs"
+  description: "List files in directory"
+  hint: "File system listing"
+  arguments:
+    - name: "path"
+      description: "Directory path to list"
+      kind: "String"
+      hint: "Directory path"
+      attributes:
+        optional: true
+        default: "."
+  status: "stable"
+  version: "1.0.0"
+  tags: ["filesystem", "directory"]
+  aliases: ["ls"]
+  permissions: []
+  idempotent: true
+  examples:
+    - ".fs.list"
+    - ".fs.list path::/home/user"
+
+- name: ".fs.copy"
+  namespace: ".fs"
+  description: "Copy a file"
+  hint: "File system copy"
+  arguments:
+    - name: "source"
+      description: "Source file path"
+      kind: "String"
+      hint: "Source file"
+      attributes:
+        optional: false
+      aliases: ["src"]
+    - name: "destination"
+      description: "Destination file path"
+      kind: "String"
+      hint: "Destination file"
+      attributes:
+        optional: false
+      aliases: ["dest", "dst"]
+  status: "stable"
+  version: "1.0.0"
+  tags: ["filesystem", "copy"]
+  aliases: ["cp"]
+  permissions: []
+  idempotent: false
+  examples:
+    - ".fs.copy source::file1.txt destination::file2.txt"
+
+# Database CLI Module Commands (prefix: db)
+- name: ".db.connect"
+  namespace: ".db"
+  description: "Connect to database"
+  hint: "Database connection"
+  arguments:
+    - name: "host"
+      description: "Database host"
+      kind: "String"
+      hint: "DB host"
+      attributes:
+        optional: true
+        default: "localhost"
+    - name: "port"
+      description: "Database port"
+      kind: "Integer"
+      hint: "DB port"
+      attributes:
+        optional: true
+        default: "5432"
+  status: "stable"
+  version: "1.0.0"
+  tags: ["database", "connection"]
+  aliases: []
+  permissions: ["db_access"]
+  idempotent: true
+  examples:
+    - ".db.connect"
+    - ".db.connect host::production.db port::5432"
+
+# Main aggregated CLI commands (no prefix)
+- name: ".info"
+  namespace: ""
+  description: "Show aggregated CLI information"
+  hint: "CLI information"
+  arguments: []
+  status: "stable"
+  version: "1.0.0"
+  tags: ["info", "help"]
+  aliases: ["about"]
+  permissions: []
+  idempotent: true
+  examples:
+    - ".info"
+
+- name: ".version"
+  namespace: ""
+  description: "Show CLI version"
+  hint: "Version information"
+  arguments: []
+  status: "stable"
+  version: "1.0.0"
+  tags: ["info", "version"]
+  aliases: ["ver"]
+  permissions: []
+  idempotent: true
+  examples:
+    - ".version"
