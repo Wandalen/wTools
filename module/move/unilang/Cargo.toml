@@ -75,6 +75,7 @@ log = "0.4"
 rustyline = { version = "14.0", optional = true } # Enhanced REPL with history and arrow keys
 atty = { version = "0.2", optional = true } # Terminal detection for enhanced REPL
 indexmap = "2.2.6"
+lru = "0.12.3" # LRU cache for hot command optimization
 
 # Performance optimization dependencies
 simd-json = { version = "0.13", optional = true } # SIMD-optimized JSON parsing

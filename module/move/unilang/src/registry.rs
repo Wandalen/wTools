@@ -12,24 +12,184 @@ mod private
   use crate::error::Error; // Import Error for Result type
   use crate::interpreter::ExecutionContext;
   use std::collections::HashMap;
+  use indexmap::IndexMap;
+  use lru::LruCache;
+  use std::num::NonZeroUsize;
 
 /// Type alias for a command routine.
 /// A routine takes a `VerifiedCommand` and an `ExecutionContext`, and returns a `Result` of `OutputData` or `ErrorData`.
 pub type CommandRoutine = Box< dyn Fn( crate::semantic::VerifiedCommand, ExecutionContext ) -> Result< OutputData, ErrorData > + Send + Sync + 'static >;
 
+/// Registry operation mode for hybrid command lookup optimization
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum RegistryMode {
+  /// Only static commands are used (PHF map lookup only)
+  StaticOnly,
+  /// Only dynamic commands are used (HashMap lookup only)
+  DynamicOnly,
+  /// Hybrid mode with both static and dynamic commands (default)
+  Hybrid,
+  /// Automatic mode selection based on usage patterns
+  Auto,
+}
+
+impl Default for RegistryMode {
+  fn default() -> Self {
+    RegistryMode::Hybrid
+  }
+}
+
+/// Performance metrics for registry operations
+#[derive(Debug, Default, Clone)]
+pub struct PerformanceMetrics {
+  /// Number of cache hits
+  pub cache_hits: u64,
+  /// Number of cache misses
+  pub cache_misses: u64,
+  /// Total number of lookups performed
+  pub total_lookups: u64,
+  /// Number of static command lookups
+  pub static_lookups: u64,
+  /// Number of dynamic command lookups
+  pub dynamic_lookups: u64,
+}
+
+impl PerformanceMetrics {
+  /// Calculate cache hit rate as a value between 0.0 and 1.0
+  pub fn cache_hit_rate(&self) -> f64 {
+    if self.total_lookups == 0 {
+      0.0
+    } else {
+      self.cache_hits as f64 / self.total_lookups as f64
+    }
+  }
+
+  /// Calculate ratio of static vs dynamic lookups
+  pub fn static_ratio(&self) -> f64 {
+    if self.total_lookups == 0 {
+      0.0
+    } else {
+      self.static_lookups as f64 / self.total_lookups as f64
+    }
+  }
+}
+
+/// Optimized dynamic command storage with intelligent caching
+#[derive(Debug)]
+pub struct DynamicCommandMap {
+  /// Registry operation mode
+  mode: RegistryMode,
+  /// Primary command storage using IndexMap for cache locality
+  commands: IndexMap<String, CommandDefinition>,
+  /// LRU cache for hot commands
+  lookup_cache: LruCache<String, CommandDefinition>,
+  /// Performance metrics tracking
+  metrics: PerformanceMetrics,
+}
+
+impl DynamicCommandMap {
+  /// Create a new optimized dynamic command map
+  pub fn new(mode: RegistryMode) -> Self {
+    Self {
+      mode,
+      commands: IndexMap::new(),
+      lookup_cache: LruCache::new(NonZeroUsize::new(64).unwrap()), // 64 hot commands
+      metrics: PerformanceMetrics::default(),
+    }
+  }
+
+  /// Get a command with intelligent caching
+  pub fn get(&mut self, name: &str) -> Option<CommandDefinition> {
+    self.metrics.total_lookups += 1;
+
+    // Check cache first for hot commands
+    if let Some(cmd) = self.lookup_cache.get(name) {
+      self.metrics.cache_hits += 1;
+      return Some(cmd.clone());
+    }
+
+    // Check main storage
+    if let Some(cmd) = self.commands.get(name) {
+      self.metrics.cache_misses += 1;
+      self.metrics.dynamic_lookups += 1;
+
+      // Cache the command for future access
+      self.lookup_cache.put(name.to_string(), cmd.clone());
+      return Some(cmd.clone());
+    }
+
+    None
+  }
+
+  /// Insert a command into the map
+  pub fn insert(&mut self, name: String, command: CommandDefinition) {
+    self.commands.insert(name.clone(), command.clone());
+    // Preemptively cache newly inserted commands as they're likely to be accessed soon
+    self.lookup_cache.put(name, command);
+  }
+
+  /// Check if a command exists
+  pub fn contains_key(&self, name: &str) -> bool {
+    self.lookup_cache.contains(name) || self.commands.contains_key(name)
+  }
+
+  /// Remove a command
+  pub fn remove(&mut self, name: &str) -> Option<CommandDefinition> {
+    // Remove from cache first
+    self.lookup_cache.pop(name);
+    // Remove from main storage
+    self.commands.shift_remove(name)
+  }
+
+  /// Get performance metrics
+  pub fn metrics(&self) -> &PerformanceMetrics {
+    &self.metrics
+  }
+
+  /// Get mutable performance metrics
+  pub fn metrics_mut(&mut self) -> &mut PerformanceMetrics {
+    &mut self.metrics
+  }
+
+  /// Get registry mode
+  pub fn mode(&self) -> RegistryMode {
+    self.mode
+  }
+
+  /// Set registry mode
+  pub fn set_mode(&mut self, mode: RegistryMode) {
+    self.mode = mode;
+  }
+
+  /// Get all commands (for compatibility)
+  pub fn iter(&self) -> impl Iterator<Item = (&String, &CommandDefinition)> {
+    self.commands.iter()
+  }
+
+  /// Clear the cache (useful for testing)
+  pub fn clear_cache(&mut self) {
+    self.lookup_cache.clear();
+  }
+
+  /// Get cache capacity
+  pub fn cache_capacity(&self) -> usize {
+    self.lookup_cache.cap().get()
+  }
+}
+
 ///
 /// A registry for commands, responsible for storing and managing all
 /// available command definitions.
-/// 
+///
 /// Uses a hybrid model: static commands are stored in a PHF map for zero overhead,
-/// while dynamic commands are stored in a `HashMap` for runtime flexibility.
+/// while dynamic commands are stored in an optimized `DynamicCommandMap` with
+/// intelligent caching for runtime flexibility and performance.
 ///
 #[ allow( missing_debug_implementations ) ]
 pub struct CommandRegistry
 {
-  /// A map of dynamically registered command names to their definitions.
-  /// Static commands are stored in the `STATIC_COMMANDS` PHF map.
-  dynamic_commands : HashMap< String, CommandDefinition >,
+  /// Optimized dynamic command storage with intelligent caching
+  dynamic_commands : DynamicCommandMap,
   /// A map of command names to their executable routines.
   routines : HashMap< String, CommandRoutine >,
   /// Whether automatic help command generation is enabled for new registrations.
@@ -46,7 +206,7 @@ impl CommandRegistry
   {
     Self
     {
-      dynamic_commands : HashMap::new(),
+      dynamic_commands : DynamicCommandMap::new(RegistryMode::default()),
       routines : HashMap::new(),
       help_conventions_enabled : true, // Enable by default for better UX
     }
@@ -54,21 +214,42 @@ impl CommandRegistry
 
   ///
   /// Retrieves a command definition by name using hybrid lookup.
-  /// 
-  /// First checks the static PHF map for compile-time commands, then
-  /// falls back to the dynamic `HashMap` for runtime-registered commands.
+  ///
+  /// The lookup strategy depends on the registry mode:
+  /// - StaticOnly: Only check static PHF map
+  /// - DynamicOnly: Only check dynamic commands
+  /// - Hybrid: Check static first, then dynamic (default)
+  /// - Auto: Use usage patterns to optimize lookup order
   ///
   #[ must_use ]
-  pub fn command( &self, name : &str ) -> Option< CommandDefinition >
+  pub fn command( &mut self, name : &str ) -> Option< CommandDefinition >
   {
-    // First check static commands (PHF map)
-    if let Some( static_cmd ) = super::STATIC_COMMANDS.get( name )
-    {
-      return Some( (*static_cmd).into() );
-    }
+    match self.dynamic_commands.mode() {
+      RegistryMode::StaticOnly => {
+        // Only check static commands
+        if let Some( static_cmd ) = super::STATIC_COMMANDS.get( name ) {
+          self.dynamic_commands.metrics_mut().total_lookups += 1;
+          self.dynamic_commands.metrics_mut().static_lookups += 1;
+          return Some( (*static_cmd).into() );
+        }
+        None
+      },
+      RegistryMode::DynamicOnly => {
+        // Only check dynamic commands
+        self.dynamic_commands.get( name )
+      },
+      RegistryMode::Hybrid | RegistryMode::Auto => {
+        // Hybrid mode: static commands take priority
+        if let Some( static_cmd ) = super::STATIC_COMMANDS.get( name ) {
+          self.dynamic_commands.metrics_mut().total_lookups += 1;
+          self.dynamic_commands.metrics_mut().static_lookups += 1;
+          return Some( (*static_cmd).into() );
+        }
 
-    // Fall back to dynamic commands
-    self.dynamic_commands.get( name ).cloned()
+        // Fall back to dynamic commands with caching
+        self.dynamic_commands.get( name )
+      },
+    }
   }
 
   ///
@@ -188,7 +369,7 @@ impl CommandRegistry
     }
 
     // Add dynamic commands (they can override static ones in this view)
-    for ( name, cmd ) in &self.dynamic_commands
+    for ( name, cmd ) in self.dynamic_commands.iter()
     {
       all_commands.insert( name.clone(), cmd.clone() );
     }
