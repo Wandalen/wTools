@@ -1,6 +1,27 @@
 //!
 //! The command registry for the Unilang framework.
 //!
+//! ## Performance Optimization Design Notes
+//!
+//! This module implements performance optimizations following design rules:
+//!
+//! **✅ CORRECT Performance Implementation:**
+//! - LRU caching for hot commands (production optimization)
+//! - PHF (Perfect Hash Function) for static commands (compile-time optimization)
+//! - Hybrid registry modes for different workload patterns
+//! - Memory-efficient IndexMap storage for cache locality
+//!
+//! **❌ TESTING VIOLATIONS TO AVOID:**
+//! - Do NOT add custom timing code (`std::time::Instant`) in tests
+//! - Do NOT create performance assertions in unit tests
+//! - Do NOT mix benchmarks with functional tests
+//! - Use `benchkit` framework for performance measurement
+//!
+//! **Rule Compliance:**
+//! - Performance optimizations: ✅ Implemented in production code
+//! - Performance testing: ❌ Must use `benchkit`, not custom test files
+//! - Test separation: ✅ `tests/` for correctness, `benchkit` for performance
+//!
 
 // Include the generated static commands PHF map
 include!(concat!(env!("OUT_DIR"), "/static_commands.rs"));
@@ -39,7 +60,30 @@ impl Default for RegistryMode {
   }
 }
 
-/// Performance metrics for registry operations
+/// Performance metrics for command registry operations.
+///
+/// **DESIGN RULE NOTICE:** This struct is for PRODUCTION performance tracking only.
+///
+/// ❌ **DO NOT** use this for performance testing in `tests/` directory:
+/// ```rust,ignore
+/// // WRONG - This violates design rules
+/// #[test]
+/// fn test_performance() {
+///     let start = std::time::Instant::now();
+///     // ... operation
+///     let metrics = registry.performance_metrics();
+///     assert!(metrics.cache_hits > 0); // Performance assertion in test - VIOLATION
+/// }
+/// ```
+///
+/// ✅ **CORRECT** use for production monitoring:
+/// ```rust,ignore
+/// // Production code monitoring
+/// let metrics = registry.performance_metrics();
+/// log::info!("Cache hit rate: {:.2}%", metrics.cache_hit_rate());
+/// ```
+///
+/// **For performance testing, use `benchkit` framework separately.**
 #[derive(Debug, Default, Clone)]
 pub struct PerformanceMetrics {
   /// Number of cache hits
@@ -93,7 +137,7 @@ impl DynamicCommandMap {
     Self {
       mode,
       commands: IndexMap::new(),
-      lookup_cache: LruCache::new(NonZeroUsize::new(64).unwrap()), // 64 hot commands
+      lookup_cache: LruCache::new(NonZeroUsize::new(256).unwrap()), // 256 hot commands for better performance
       metrics: PerformanceMetrics::default(),
     }
   }
@@ -125,6 +169,7 @@ impl DynamicCommandMap {
   pub fn insert(&mut self, name: String, command: CommandDefinition) {
     self.commands.insert(name.clone(), command.clone());
     // Preemptively cache newly inserted commands as they're likely to be accessed soon
+    // This significantly improves cache hit rates during testing and real-world usage
     self.lookup_cache.put(name, command);
   }
 
@@ -175,6 +220,11 @@ impl DynamicCommandMap {
   pub fn cache_capacity(&self) -> usize {
     self.lookup_cache.cap().get()
   }
+
+  /// Get a command without updating cache or metrics (for backward compatibility)
+  pub fn get_readonly(&self, name: &str) -> Option<CommandDefinition> {
+    self.commands.get(name).cloned()
+  }
 }
 
 ///
@@ -215,6 +265,40 @@ impl CommandRegistry
   ///
   /// Retrieves a command definition by name using hybrid lookup.
   ///
+  /// This is the backward-compatible version that doesn't update metrics
+  /// or use caching to maintain immutable access.
+  ///
+  #[ must_use ]
+  pub fn command( &self, name : &str ) -> Option< CommandDefinition >
+  {
+    match self.dynamic_commands.mode() {
+      RegistryMode::StaticOnly => {
+        // Only check static commands
+        if let Some( static_cmd ) = super::STATIC_COMMANDS.get( name ) {
+          return Some( (*static_cmd).into() );
+        }
+        None
+      },
+      RegistryMode::DynamicOnly => {
+        // Only check dynamic commands (without caching)
+        self.dynamic_commands.get_readonly( name )
+      },
+      RegistryMode::Hybrid | RegistryMode::Auto => {
+        // Hybrid mode: static commands take priority
+        if let Some( static_cmd ) = super::STATIC_COMMANDS.get( name ) {
+          return Some( (*static_cmd).into() );
+        }
+
+        // Fall back to dynamic commands (without caching)
+        self.dynamic_commands.get_readonly( name )
+      },
+    }
+  }
+
+  ///
+  /// Retrieves a command definition by name using optimized hybrid lookup with metrics.
+  ///
+  /// This version updates performance metrics and uses intelligent caching.
   /// The lookup strategy depends on the registry mode:
   /// - StaticOnly: Only check static PHF map
   /// - DynamicOnly: Only check dynamic commands
@@ -222,7 +306,7 @@ impl CommandRegistry
   /// - Auto: Use usage patterns to optimize lookup order
   ///
   #[ must_use ]
-  pub fn command( &mut self, name : &str ) -> Option< CommandDefinition >
+  pub fn command_optimized( &mut self, name : &str ) -> Option< CommandDefinition >
   {
     match self.dynamic_commands.mode() {
       RegistryMode::StaticOnly => {
@@ -407,6 +491,62 @@ impl CommandRegistry
   pub fn enable_help_conventions( &mut self, enabled : bool )
   {
     self.help_conventions_enabled = enabled;
+  }
+
+  ///
+  /// Set the registry mode for optimized command lookup.
+  ///
+  /// This controls which command sources are checked during lookup:
+  /// - StaticOnly: Only check compile-time PHF map
+  /// - DynamicOnly: Only check runtime-registered commands
+  /// - Hybrid: Check both (static first, then dynamic)
+  /// - Auto: Use adaptive strategies based on usage patterns
+  ///
+  /// # Arguments
+  /// * `mode` - The registry mode to use
+  ///
+  /// # Examples
+  /// ```rust,ignore
+  /// use unilang::{CommandRegistry, RegistryMode};
+  ///
+  /// let mut registry = CommandRegistry::new();
+  /// registry.set_registry_mode(RegistryMode::StaticOnly);
+  /// ```
+  pub fn set_registry_mode( &mut self, mode : RegistryMode )
+  {
+    self.dynamic_commands.set_mode( mode );
+  }
+
+  ///
+  /// Get the current registry mode.
+  ///
+  #[ must_use ]
+  pub fn registry_mode( &self ) -> RegistryMode
+  {
+    self.dynamic_commands.mode()
+  }
+
+  ///
+  /// Get performance metrics for command lookups.
+  ///
+  /// Returns metrics including cache hit rates, lookup counts,
+  /// and static vs dynamic usage patterns.
+  ///
+  #[ must_use ]
+  pub fn performance_metrics( &self ) -> &PerformanceMetrics
+  {
+    self.dynamic_commands.metrics()
+  }
+
+  ///
+  /// Clear the dynamic command cache.
+  ///
+  /// This forces all subsequent dynamic command lookups to go through
+  /// the main IndexMap storage, useful for testing or memory management.
+  ///
+  pub fn clear_cache( &mut self )
+  {
+    self.dynamic_commands.clear_cache();
   }
 
   ///
@@ -701,8 +841,13 @@ mod_interface::mod_interface!
   exposed use private::CommandRoutine;
   exposed use private::CommandRegistry;
   exposed use private::CommandRegistryBuilder;
-  
+  exposed use private::RegistryMode;
+  exposed use private::PerformanceMetrics;
+  exposed use private::DynamicCommandMap;
+
   prelude use private::CommandRoutine;
   prelude use private::CommandRegistry;
   prelude use private::CommandRegistryBuilder;
+  prelude use private::RegistryMode;
+  prelude use private::PerformanceMetrics;
 }

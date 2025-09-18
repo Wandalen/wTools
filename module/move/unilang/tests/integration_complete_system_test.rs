@@ -31,7 +31,8 @@ fn test_complete_system_integration()
   let root_commands = vec![
     (".chat", "Multi-agent chat system"),
     (".run", "Execute commands with prompts"),
-    (".help", "Show help information"),
+    // Note: .help is already a static command, so we test different dynamic commands
+    (".status", "Show application status"),
   ];
   
   for (name, desc) in &root_commands {
@@ -130,8 +131,8 @@ fn test_complete_system_integration()
   
   let test_commands = vec![
     ".chat",
-    ".run", 
-    ".help",
+    ".run",
+    ".status", // Using dynamic command that has a routine
     ".session.list",
     ".session.create",
     ".math.add",

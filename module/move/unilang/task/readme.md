@@ -5,13 +5,13 @@
 | Order | ID | Advisability | Value | Easiness | Safety | Priority | Status | Task | Description |
 |-------|----|--------------:|------:|---------:|-------:|---------:|--------|------|-------------|
 | 1 | 048 | 672 | 8 | 6 | 7 | 2 | ✅ (Completed) | [write_tests_for_hybrid_registry_optimization](./048_write_tests_for_hybrid_registry_optimization.md) | Write tests for hybrid registry optimization |
-| 2 | 049 | 672 | 8 | 6 | 7 | 2 | ⏳ (In Progress) | [implement_hybrid_registry_optimization](./049_implement_hybrid_registry_optimization.md) | Implement hybrid registry optimization |
-| 3 | 050 | 672 | 8 | 6 | 7 | 2 | 🔄 (Planned) | [write_tests_for_multi_yaml_build_system](./050_write_tests_for_multi_yaml_build_system.md) | Write tests for multi-YAML build system |
-| 4 | 051 | 672 | 8 | 6 | 7 | 2 | 🔄 (Planned) | [implement_multi_yaml_build_system](./051_implement_multi_yaml_build_system.md) | Implement multi-YAML build system |
-| 5 | 052 | 672 | 8 | 6 | 7 | 2 | 🔄 (Planned) | [write_tests_for_ergonomic_aggregation_apis](./052_write_tests_for_ergonomic_aggregation_apis.md) | Write tests for ergonomic aggregation APIs |
-| 6 | 053 | 672 | 8 | 6 | 7 | 2 | 🔄 (Planned) | [implement_ergonomic_aggregation_apis](./053_implement_ergonomic_aggregation_apis.md) | Implement ergonomic aggregation APIs |
-| 7 | 054 | 672 | 8 | 6 | 7 | 2 | 🔄 (Planned) | [write_tests_for_performance_optimizations](./054_write_tests_for_performance_optimizations.md) | Write tests for performance optimizations |
-| 8 | 055 | 672 | 8 | 6 | 7 | 2 | 🔄 (Planned) | [implement_performance_optimizations](./055_implement_performance_optimizations.md) | Implement performance optimizations |
+| 2 | 049 | 672 | 8 | 6 | 7 | 2 | ✅ (Completed) | [implement_hybrid_registry_optimization](./completed/049_implement_hybrid_registry_optimization.md) | Implement hybrid registry optimization |
+| 3 | 050 | 672 | 8 | 6 | 7 | 2 | ✅ (Completed) | [write_tests_for_multi_yaml_build_system](./completed/050_write_tests_for_multi_yaml_build_system.md) | Write tests for multi-YAML build system |
+| 4 | 051 | 672 | 8 | 6 | 7 | 2 | ✅ (Completed) | [implement_multi_yaml_build_system](./completed/051_implement_multi_yaml_build_system.md) | Implement multi-YAML build system |
+| 5 | 052 | 672 | 8 | 6 | 7 | 2 | ✅ (Completed) | [write_tests_for_ergonomic_aggregation_apis](./completed/052_write_tests_for_ergonomic_aggregation_apis.md) | Write tests for ergonomic aggregation APIs |
+| 6 | 053 | 672 | 8 | 6 | 7 | 2 | ✅ (Completed) | [implement_ergonomic_aggregation_apis](./completed/053_implement_ergonomic_aggregation_apis.md) | Implement ergonomic aggregation APIs |
+| 7 | 054 | 672 | 8 | 6 | 7 | 2 | ✅ (Completed) | [write_tests_for_performance_optimizations](./054_write_tests_for_performance_optimizations.md) | Write tests for performance optimizations |
+| 8 | 055 | 672 | 8 | 6 | 7 | 2 | ✅ (Completed) | [implement_performance_optimizations](./055_implement_performance_optimizations.md) | Implement performance optimizations |
 | 9 | 012 | 120 | 3 | 5 | 8 | 1 | 🚫 (External Dependency) | [former_optimization_ref](./012_former_optimization_ref.md) | Former optimization improvements |
 | 10 | 044 | 0 | 7 | 8 | 9 | 2 | ✅ (Completed) | [fix_documentation_warnings_and_debug_implementations](./completed/044_fix_documentation_warnings_and_debug_implementations.md) | Fix documentation warnings and missing Debug implementations |
 | 11 | 045 | 0 | 6 | 9 | 9 | 2 | ✅ (Completed) | [move_completed_tasks_to_completed_directory](./completed/045_move_completed_tasks_to_completed_directory.md) | Move completed tasks to completed directory |

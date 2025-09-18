@@ -7,6 +7,26 @@
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 #![ cfg_attr( not( doc ), doc = "Universal language processing" ) ]
 
+//!
+//! ## Design Rules Compliance Notice
+//!
+//! **CRITICAL: This codebase must follow strict design rules. Before making changes, review:**
+//! - `$PRO/genai/code/rules/code_design.rulebook.md` - Core design patterns and architecture rules
+//! - `$PRO/genai/code/rules/code_style.rulebook.md` - Code formatting and style requirements
+//!
+//! **Key Rules Summary:**
+//! - **Testing:** All tests MUST be in `tests/` directory, NOT in `src/` as `mod tests`
+//! - **Benchmarking:** Use `benchkit` framework ONLY - no custom timing code in tests
+//! - **Performance Tests:** NEVER mix benchmarks with unit tests - separate concerns
+//! - **Test Documentation:** Every test file MUST have Test Matrix documentation
+//! - **Directory Structure:** `tests/` for tests, `benches/` for benchmarks (if using benchkit)
+//!
+//! **Common Violations to Avoid:**
+//! ❌ Custom `std::time::Instant` timing code in test files
+//! ❌ Performance/benchmark tests in `tests/` directory
+//! ❌ Missing file-level documentation with Test Matrix in test files
+//! ❌ Using anything other than `benchkit` for performance measurement
+//!
 //! ## Feature Flags
 //!
 //! Unilang supports multiple feature flags to customize functionality and dependencies:
@@ -143,7 +163,10 @@ mod_interface::mod_interface!
   
   /// High-level pipeline API.
   layer pipeline;
-  
+
+  /// Multi-YAML build system for compile-time aggregation.
+  layer multi_yaml;
+
   /// String interning system for performance optimization.
   layer interner;
   

@@ -50,8 +50,9 @@ fn demonstrate_issue_017_solution()
   // Demonstrate the current working approach
   let working_commands = vec![
     (".chat", "Start multi-agent chat session"),
-    (".run", "Execute commands with prompts"),  
-    (".help", "Show command help"),
+    (".run", "Execute commands with prompts"),
+    // Note: .help is already a static command, so we test a different dynamic command
+    (".info", "Show application information"),
   ];
   
   println!("📝 Registering commands with EXPLICIT DOT PREFIXES...");
@@ -134,7 +135,7 @@ fn demonstrate_issue_017_solution()
   println!("🧪 Testing command execution...");
   
   // Test all the registered commands work perfectly
-  let test_commands = vec![".chat", ".run", ".help", ".session.list"];
+  let test_commands = vec![".chat", ".run", ".info", ".session.list"];
   
   for cmd_name in &test_commands {
     let result = pipeline.process_command_simple(cmd_name);

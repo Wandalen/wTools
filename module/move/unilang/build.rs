@@ -1,7 +1,24 @@
 //! Build script for unilang crate.
-//! 
+//!
 //! Generates static command definitions from YAML manifest using Perfect Hash Functions (PHF)
 //! for zero-overhead command lookup at runtime.
+//!
+//! ## Design Rules Compliance for PHF Build Process
+//!
+//! **✅ CORRECT Build-Time Optimization:**
+//! - PHF generation during build for zero runtime overhead
+//! - Static command definitions compiled into binary
+//! - YAML-driven configuration for maintainability
+//!
+//! **❌ TESTING VIOLATIONS TO AVOID:**
+//! - Do NOT create build-time performance tests comparing PHF vs HashMap
+//! - Do NOT add timing measurements to verify PHF generation speed
+//! - Do NOT create benchmark tests for PHF lookup performance in `tests/` directory
+//!
+//! **Performance Testing Rules:**
+//! - PHF vs dynamic lookup comparisons belong in `benchkit` framework
+//! - Build script should focus on correctness, not performance measurement
+//! - Static command functionality testing goes in `tests/` (correctness only)
 
 use std::env;
 use std::fs::File;
