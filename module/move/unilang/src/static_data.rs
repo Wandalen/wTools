@@ -257,4 +257,10 @@ mod_interface::mod_interface!
   exposed use private::StaticArgumentAttributes;
   exposed use private::StaticKind;
   exposed use private::StaticValidationRule;
+
+  prelude use private::StaticCommandDefinition;
+  prelude use private::StaticArgumentDefinition;
+  prelude use private::StaticArgumentAttributes;
+  prelude use private::StaticKind;
+  prelude use private::StaticValidationRule;
 }

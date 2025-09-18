@@ -4,8 +4,8 @@
 
 | Order | ID | Advisability | Value | Easiness | Safety | Priority | Status | Task | Description |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | 002 | 98 | 7 | 7 | 5 | 2 | 🔄 (Planned) | [002_fix_collection_former_btree_map.md](002_fix_collection_former_btree_map.md) | Fix collection_former_btree_map test - complex collection type mismatch issues with subform |
-| 2 | 003 | 98 | 7 | 7 | 5 | 2 | ⛔️ (Blocked) | [003_fix_collection_former_hashmap.md](003_fix_collection_former_hashmap.md) | Fix collection_former_hashmap test - HashMap subform collection type mismatch issues |
+| 1 | 002 | 98 | 7 | 7 | 5 | 2 | ✅ (Completed) | [002_fix_collection_former_btree_map.md](completed/002_fix_collection_former_btree_map.md) | Fix collection_former_btree_map test - complex collection type mismatch issues with subform |
+| 2 | 003 | 98 | 7 | 7 | 5 | 2 | ✅ (Completed) | [003_fix_collection_former_hashmap.md](completed/003_fix_collection_former_hashmap.md) | Fix collection_former_hashmap test - HashMap subform collection type mismatch issues |
 | 3 | 001 | 200 | 10 | 10 | 5 | 4 | 🔄 (Planned) | [001_macro_optimization.md](001_macro_optimization.md) | Former Macro Optimization - 2-3x compile time improvement, 1.5-2x runtime improvement |
 | 4 | 006 | 80 | 8 | 5 | 5 | 2 | ✅ (Completed) | [006_fix_lifetime_only_structs.md](completed/006_fix_lifetime_only_structs.md) | Fix lifetime-only structs support - Former derive fails with only lifetime parameters |
 | 5 | 004 | 60 | 6 | 5 | 5 | 2 | ✅ (Completed) | [004_fix_former_begin_trait_bounds_for_type_only_structs.md](completed/004_fix_former_begin_trait_bounds_for_type_only_structs.md) | Fix FormerBegin trait bounds for type-only structs |

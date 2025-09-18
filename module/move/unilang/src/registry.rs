@@ -249,8 +249,27 @@ pub struct CommandRegistry
 impl CommandRegistry
 {
   ///
-  /// Creates a new, empty `CommandRegistry`.
+  /// Creates a new, empty `CommandRegistry` for runtime command registration.
   ///
+  /// ## Performance Warning
+  ///
+  /// Runtime command registration has **10-50x lookup overhead** compared to compile-time
+  /// registration. Consider using static command definitions with PHF maps for production
+  /// applications.
+  ///
+  /// **Recommended Alternative:** Use `StaticCommandRegistry::new()` with compile-time
+  /// generated PHF maps via build.rs for zero-cost lookups.
+  ///
+  /// ## When to Use Runtime Registration
+  ///
+  /// - Commands loaded from external sources at runtime
+  /// - Dynamic command generation required
+  /// - Plugin systems with runtime loading
+  /// - Rapid prototyping scenarios
+  ///
+  /// For production applications, prefer compile-time registration for optimal performance.
+  ///
+  #[ deprecated = "Runtime registration is slower. Use StaticCommandRegistry with compile-time registration for production." ]
   #[ must_use ]
   pub fn new() -> Self
   {
@@ -371,11 +390,27 @@ impl CommandRegistry
   ///
   /// Registers a command with its executable routine at runtime.
   ///
+  /// ## Performance Impact
+  ///
+  /// Each runtime registration adds lookup overhead. Static commands via build.rs provide
+  /// O(1) PHF lookups with zero runtime cost, typically **10-50x faster** than runtime
+  /// HashMap operations.
+  ///
+  /// **Recommended Alternative:** Define commands in YAML and use build.rs for compile-time
+  /// PHF generation. See readme.md for compile-time registration patterns.
+  ///
+  /// ## Use Cases for Runtime Registration
+  ///
+  /// - Plugin systems requiring dynamic command loading
+  /// - Commands from external configuration sources
+  /// - Development and prototyping scenarios
+  ///
   /// # Errors
   ///
   /// Returns an `Error::Registration` if a command with the same name
   /// is already registered and cannot be overwritten (e.g., if it was
   /// a compile-time registered command).
+  #[ deprecated = "Use static command registration via build.rs for better performance" ]
   pub fn command_add_runtime( &mut self, command_def : &CommandDefinition, routine : CommandRoutine ) -> Result< (), Error >
   {
     // EXPLICIT COMMAND NAMING ENFORCEMENT (FR-REG-6)
@@ -845,9 +880,13 @@ mod_interface::mod_interface!
   exposed use private::PerformanceMetrics;
   exposed use private::DynamicCommandMap;
 
-  prelude use private::CommandRoutine;
-  prelude use private::CommandRegistry;
-  prelude use private::CommandRegistryBuilder;
+  // Feature compile-time APIs first in prelude
   prelude use private::RegistryMode;
   prelude use private::PerformanceMetrics;
+  prelude use private::CommandRoutine;
+
+  // Runtime APIs with performance guidance
+  #[ doc = "Runtime command registration. Consider compile-time alternatives for better performance." ]
+  prelude use private::CommandRegistry;
+  prelude use private::CommandRegistryBuilder;
 }

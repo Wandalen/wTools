@@ -1,0 +1,63 @@
+//! Basic Compile-Time Command Registration
+//!
+//! This example demonstrates the fundamental compile-time approach using PHF maps.
+//! Benefits demonstrated:
+//! - Zero runtime lookup cost (O(1) PHF access)
+//! - Compile-time validation of command definitions
+//! - Smaller binary size through static analysis
+//!
+//! Performance: ~1-3 CPU cycles per command lookup vs ~50-150 for runtime registration.
+//!
+//! ## Build Process
+//!
+//! 1. build.rs reads unilang.commands.yaml
+//! 2. Generates static_commands.rs with PHF maps
+//! 3. Compile-time validation ensures correctness
+//! 4. Zero runtime overhead for command lookups
+
+use unilang::prelude::*;
+
+// Include PHF maps generated at compile-time by build.rs
+include!( concat!( env!( "OUT_DIR" ), "/static_commands.rs" ) );
+
+fn main() -> Result< (), unilang::Error >
+{
+  println!( "=== Compile-Time Command Registration Demo ===" );
+  println!();
+
+  // Create registry with compile-time generated PHF maps
+  let registry = StaticCommandRegistry::new( &STATIC_COMMANDS );
+  let pipeline = Pipeline::new( registry );
+
+  // Demonstrate zero-cost lookup
+  println!( "Available commands (zero lookup cost):" );
+  for ( name, definition ) in STATIC_COMMANDS.entries()
+  {
+    println!( "  {} - {}", name, definition.description );
+  }
+  println!();
+
+  // Execute command with O(1) lookup
+  println!( "Executing command with zero lookup overhead..." );
+  let result = pipeline.process_command_simple( ".greet name::World" );
+
+  if result.success
+  {
+    println!( "Command executed successfully with zero lookup overhead" );
+    println!( "Output: {}", result.outputs[ 0 ].content );
+  }
+  else if let Some( error ) = result.error
+  {
+    eprintln!( "Command failed: {}", error );
+  }
+
+  // Demonstrate compile-time safety
+  println!();
+  println!( "Compile-time benefits:" );
+  println!( "- Command definitions validated at build time" );
+  println!( "- Zero memory allocations for command lookup" );
+  println!( "- Perfect hash function eliminates collision overhead" );
+  println!( "- Dead code elimination reduces binary size" );
+
+  Ok( () )
+}

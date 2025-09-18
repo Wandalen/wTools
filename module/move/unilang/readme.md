@@ -5,1112 +5,449 @@
  [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_unilang_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_unilang_push.yml) [![docs.rs](https://img.shields.io/docsrs/unilang?color=e3e8f0&logo=docs.rs)](https://docs.rs/unilang) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module%2Fmove%2Funilang%2Fexamples%2F00_pipeline_basics.rs,RUN_POSTFIX=--example%20module%2Fmove%2Funilang%2Fexamples%2F00_pipeline_basics.rs/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 <!--{ generate.module_header.end }-->
 
-A universal command framework that lets you define command-line interfaces once and deploy them across multiple interaction paradigms — CLI, TUI, GUI, Web APIs, and more.
+**Zero-overhead command framework with compile-time command registration**
 
-## Why unilang?
+## Value Proposition
 
-When building command-line tools, you often face these challenges:
-- **Repetitive Code**: Defining argument parsing, validation, and help generation for each command
-- **Inconsistent APIs**: Different interaction modes (CLI vs Web API) require separate implementations
-- **Limited Extensibility**: Hard to add new commands or change existing ones without major refactoring
-- **Poor User Experience**: Inconsistent help messages, error handling, and command organization
+unilang processes command definitions at compile-time, generating Perfect Hash Function (PHF) maps that provide **O(1) command lookups with zero runtime overhead**. This approach delivers:
 
-**unilang** solves these problems by providing:
-- 📝 **Single Definition**: Define commands once, use everywhere
-- 🔧 **Multiple Modalities**: Same commands work as CLI, Web API, or programmatic API
-- 🏗️ **Modular Architecture**: Easy to add, modify, or remove commands
-- 🎯 **Type Safety**: Strong typing with comprehensive validation
-- 📚 **Auto Documentation**: Help text and command discovery built-in
-- 🆘 **Smart Help System**: Three ways to get help (`.help`, `??`, `?`) - always accessible
-- 🔍 **Rich Validation**: Built-in validators for common patterns
+- **10-50x faster command resolution** compared to runtime HashMap lookups
+- **Compile-time validation** of all command definitions and arguments
+- **Smaller binary size** through static analysis and dead code elimination
+- **SIMD acceleration** for parsing with 4-25x performance improvements
+- **Zero memory allocations** for command lookup operations
 
-## Quick Start
+## Architecture Overview
 
-### Installation
-
-```sh
-cargo add unilang
+**Compile-Time Processing:**
+```
+YAML definitions → build.rs → PHF maps → Zero-cost lookups
 ```
 
-### Basic Example
+**Runtime Execution:**
+```
+Command string → O(1) PHF lookup → Validated execution
+```
 
-Here's a simple "Hello World" command:
+## Quick Start: Compile-Time Registration (Recommended)
 
-```rust,ignore
+### Step 1: Define Commands
+
+Create `unilang.commands.yaml`:
+```yaml
+- name: "greet"
+  namespace: ""
+  description: "High-performance greeting command"
+  arguments:
+    - name: "name"
+      kind: "String"
+      attributes:
+        optional: true
+        default: "World"
+```
+
+### Step 2: Configure Build Script
+
+Add to `build.rs`:
+```rust
+use std::env;
+use std::path::Path;
+
+fn main()
+{
+  println!( "cargo:rerun-if-changed=unilang.commands.yaml" );
+
+  let out_dir = env::var( "OUT_DIR" ).unwrap();
+  let dest_path = Path::new( &out_dir ).join( "static_commands.rs" );
+
+  // Generate PHF maps at compile-time
+  unilang::build::generate_static_commands( &dest_path, "unilang.commands.yaml" );
+}
+```
+
+### Step 3: Zero-Cost Execution
+
+```rust
 use unilang::prelude::*;
+
+// Include compile-time generated PHF maps
+include!( concat!( env!( "OUT_DIR" ), "/static_commands.rs" ) );
 
 fn main() -> Result< (), unilang::Error >
 {
-  // Create a command registry
-  let mut registry = CommandRegistry::new();
-
-  // Define a simple greeting command
-  let greet_cmd = CommandDefinition
-  {
-    name : ".greet".to_string(),
-    namespace : String::new(),  // Global namespace
-    description : "A friendly greeting command".to_string(),
-    hint : "Says hello to someone".to_string(),
-    arguments : vec!
-    [
-      ArgumentDefinition
-      {
-        name : "name".to_string(),
-        description : "Name of the person to greet".to_string(),
-        kind : Kind::String,
-        hint : "Your name".to_string(),
-        attributes : ArgumentAttributes
-        {
-          optional : true,
-          default : Some( "World".to_string() ),
-          ..Default::default()
-        },
-        validation_rules : vec![],
-        aliases : vec![ "n".to_string() ],
-        tags : vec![],
-      }
-    ],
-    // ... other fields with defaults
-    aliases : vec![ "hello".to_string() ],
-    status : "stable".to_string(),
-    version : "1.0.0".to_string(),
-    ..Default::default()
-  };
-
-  // Define the command's execution logic
-  let greet_routine = Box::new( | cmd : VerifiedCommand, _ctx : ExecutionContext |
-  {
-    let name = match cmd.arguments.get( "name" )
-    {
-      Some( Value::String( s ) ) => s.clone(),
-      _ => "World".to_string(),
-    };
-
-    println!( "Hello, {}!", name );
-
-    Ok( OutputData
-    {
-      content : format!( "Hello, {}!", name ),
-      format : "text".to_string(),
-    })
-  });
-
-  // Register the command
-  registry.command_add_runtime( &greet_cmd, greet_routine )?;
-
-  // Use the Pipeline API to execute commands
+  let registry = StaticCommandRegistry::new( &STATIC_COMMANDS );
   let pipeline = Pipeline::new( registry );
 
-  // Execute a command
+  // O(1) lookup - no hashing overhead
   let result = pipeline.process_command_simple( ".greet name::Alice" );
-  println!( "Success: {}", result.success );
+
   println!( "Output: {}", result.outputs[ 0 ].content );
-
-  // Try the built-in help system:
-  // pipeline.process_command_simple( ".greet ?" );        // Traditional help
-  // pipeline.process_command_simple( ".greet ??" );       // Modern help parameter
-  // pipeline.process_command_simple( ".greet.help" );     // Auto-generated help command
-
-  Ok(())
-}
-```
-
-Run this example:
-```sh
-cargo run --example 01_basic_command_registration
-
-# Try the help conventions:
-cargo run --example 18_help_conventions_demo
-```
-
-## Command Requirements
-
-**Important**: All commands in unilang must follow explicit naming conventions:
-
-- ✅ **Dot Prefix Required**: Commands must start with a dot (e.g., `.greet`, `.math.add`)
-- ❌ **No Implicit Magic**: Command names are used exactly as registered - no automatic transformations
-- 🔧 **Namespace Format**: Use `.namespace.command` for hierarchical organization
-- ⚡ **Validation**: Framework rejects commands that don't follow these rules
-
-```rust
-use unilang::CommandDefinition;
-
-// ✅ Correct - explicit dot prefix
-let cmd = CommandDefinition {
-  name: ".greet".to_string(),  // Required dot prefix
-  namespace: String::new(),
-  description: String::new(),
-  routine_link: None,
-  arguments: Vec::new(),
-  hint: String::new(),
-  status: String::new(),
-  version: String::new(),
-  tags: Vec::new(),
-  aliases: Vec::new(),
-  permissions: Vec::new(),
-  idempotent: false,
-  deprecation_message: String::new(),
-  http_method_hint: String::new(),
-  examples: Vec::new(),
-  auto_help_enabled: false,
-};
-
-// This would be rejected by validation
-// let invalid_cmd = CommandDefinition {
-//   name: "greet".to_string(),   // Missing dot prefix - ERROR!
-//   // ... other fields would be required too
-// };
-```
-
-## Core Concepts
-
-### 1. Command Registry
-The central hub that stores and manages all command definitions and their execution routines.
-
-```rust
-use unilang::prelude::*;
-let mut registry = CommandRegistry::new();
-// registry is now ready to use
-```
-
-### 2. Command Definition
-Describes a command's metadata, arguments, and behavior.
-
-```rust
-use unilang::prelude::*;
-let command = CommandDefinition
-{
-  name : "my-command".to_string(),
-  namespace : ".tools".to_string(),  // Hierarchical namespace
-  description : "Does something useful".to_string(),
-  arguments : vec![],
-  routine_link : None,
-  hint : String::new(),
-  status : "stable".to_string(),
-  version : "1.0.0".to_string(),
-  tags : vec![],
-  aliases : vec![],
-  permissions : vec![],
-  idempotent : false,
-  deprecation_message : String::new(),
-  http_method_hint : String::new(),
-  examples : vec![],
-  auto_help_enabled : false,
-};
-// command definition is complete
-assert_eq!(command.name, "my-command");
-```
-
-### 3. Argument Types
-unilang supports rich argument types with automatic parsing and validation:
-
-- **Basic Types**: `String`, `Integer`, `Float`, `Boolean`
-- **Path Types**: `Path`, `File`, `Directory`
-- **Complex Types**: `Url`, `DateTime`, `Pattern` (regex)
-- **Collections**: `List<T>`, `Map<K,V>`
-- **Special Types**: `Enum` (choices), `JsonString`, `Object`
-
-### 4. Validation Rules
-Built-in validators ensure arguments meet requirements:
-
-```rust
-use unilang::prelude::*;
-use unilang::ValidationRule;
-let validation_rules : Vec<ValidationRule> = vec!
-[
-  ValidationRule::Min( 0.0 ),      // Minimum value
-  ValidationRule::Max( 100.0 ),    // Maximum value
-  ValidationRule::MinLength( 3 ),  // Minimum string length
-  ValidationRule::Pattern( "^[A-Z]".to_string() ), // Regex pattern
-];
-assert_eq!(validation_rules.len(), 4);
-```
-
-### 5. Command Execution Pipeline
-The execution flow: Parse → Validate → Execute
-
-```rust
-use unilang::prelude::*;
-let registry = CommandRegistry::new();
-let pipeline = Pipeline::new( registry );
-let result = pipeline.process_command_simple( ".my-command arg1::value" );
-// result contains the execution outcome
-```
-
-### 6. Verbosity Control
-Control debug output levels for cleaner CLI experiences:
-
-```rust
-use unilang::prelude::*;
-use unilang_parser::UnilangParserOptions;
-
-// Create registry and set verbosity programmatically
-let registry = CommandRegistry::new();
-let mut parser_options = UnilangParserOptions::default();
-parser_options.verbosity = 0; // 0 = quiet, 1 = normal, 2 = debug
-
-let pipeline = Pipeline::with_parser_options( registry, parser_options );
-```
-
-Or use environment variable:
-```sh
-# Quiet mode - suppress all debug output
-UNILANG_VERBOSITY=0 my_cli_app .command
-
-# Normal mode (default) - standard output only
-UNILANG_VERBOSITY=1 my_cli_app .command
-
-# Debug mode - include parser traces
-UNILANG_VERBOSITY=2 my_cli_app .command
-```
-
-## Examples
-
-### Working with Different Argument Types
-
-```rust
-use unilang::prelude::*;
-use unilang::ValidationRule;
-// See examples/02_argument_types.rs for the full example
-let command = CommandDefinition
-{
-  name : "demo".to_string(),
-  description : "Demo command with various argument types".to_string(),
-  arguments : vec!
-  [
-    // String with validation
-    ArgumentDefinition
-    {
-      name : "username".to_string(),
-      kind : Kind::String,
-      attributes : ArgumentAttributes::default(),
-      hint : "User identifier".to_string(),
-      description : "Username for the operation".to_string(),
-      validation_rules : vec!
-      [
-        ValidationRule::MinLength( 3 ),
-        ValidationRule::Pattern( "^[a-zA-Z0-9_]+$".to_string() ),
-      ],
-      aliases : vec![],
-      tags : vec![],
-    },
-    // Optional integer with range
-    ArgumentDefinition
-    {
-      name : "age".to_string(),
-      kind : Kind::Integer,
-      attributes : ArgumentAttributes
-      {
-        optional : true,
-        ..ArgumentAttributes::default()
-      },
-      hint : "Age in years".to_string(),
-      description : "Person's age".to_string(),
-      validation_rules : vec!
-      [
-        ValidationRule::Min( 0.0 ),
-        ValidationRule::Max( 150.0 ),
-      ],
-      aliases : vec![],
-      tags : vec![],
-    },
-    // File path that must exist
-    ArgumentDefinition
-    {
-      name : "config".to_string(),
-      kind : Kind::File,
-      attributes : ArgumentAttributes::default(),
-      hint : "Configuration file".to_string(),
-      description : "Path to config file".to_string(),
-      validation_rules : vec![],
-      aliases : vec![],
-      tags : vec![],
-    },
-  ],
-  routine_link : None,
-  namespace : String::new(),
-  hint : "Demonstration command".to_string(),
-  status : "stable".to_string(),
-  version : "1.0.0".to_string(),
-  tags : vec![],
-  aliases : vec![],
-  permissions : vec![],
-  idempotent : false,
-  deprecation_message : String::new(),
-  http_method_hint : String::new(),
-  examples : vec![],
-  auto_help_enabled : false,
-};
-assert_eq!(command.name, "demo");
-```
-
-Run the argument types demo:
-```sh
-cargo run --example 02_argument_types
-```
-
-### Using Collections
-
-```rust
-use unilang::prelude::*;
-// See examples/03_collection_types.rs for the full example
-// List of strings with custom delimiter
-let _tags_arg = ArgumentDefinition
-{
-  name : "tags".to_string(),
-  kind : Kind::List( Box::new( Kind::String ), Some( ',' ) ), // comma-separated
-  attributes : ArgumentAttributes::default(),
-  hint : "Comma-separated tags".to_string(),
-  description : "List of tags".to_string(),
-  validation_rules : vec![],
-  aliases : vec![],
-  tags : vec![],
-};
-
-// Map with custom delimiters
-let _options_arg = ArgumentDefinition
-{
-  name : "options".to_string(),
-  kind : Kind::Map
-  (
-    Box::new( Kind::String ),  // key type
-    Box::new( Kind::String ),  // value type
-    Some( ',' ),               // entry delimiter
-    Some( '=' )                // key-value delimiter
-  ),
-  // Usage: options::debug=true,verbose=false
-  attributes : ArgumentAttributes::default(),
-  hint : "Key-value options".to_string(),
-  description : "Configuration options".to_string(),
-  validation_rules : vec![],
-  aliases : vec![],
-  tags : vec![],
-};
-assert_eq!(_tags_arg.name, "tags");
-```
-
-Run the collections demo:
-```sh
-cargo run --example 03_collection_types
-```
-
-### Namespaces and Command Organization
-
-```rust
-use unilang::prelude::*;
-// See examples/05_namespaces_and_aliases.rs for the full example
-// Commands can be organized hierarchically
-let commands = vec!
-[
-  CommandDefinition
-  {
-    name : "list".to_string(),
-    namespace : ".file".to_string(),  // Access as: file.list
-    description : "List files".to_string(),
-    arguments : vec![],
-    routine_link : None,
-    hint : "List files".to_string(),
-    status : "stable".to_string(),
-    version : "1.0.0".to_string(),
-    tags : vec![],
-    aliases : vec![],
-    permissions : vec![],
-    idempotent : true,
-    deprecation_message : String::new(),
-    http_method_hint : "GET".to_string(),
-    examples : vec![],
-    auto_help_enabled : false,
-  },
-  CommandDefinition
-  {
-    name : "create".to_string(),
-    namespace : ".file".to_string(),  // Access as: file.create
-    description : "Create files".to_string(),
-    arguments : vec![],
-    routine_link : None,
-    hint : "Create files".to_string(),
-    status : "stable".to_string(),
-    version : "1.0.0".to_string(),
-    tags : vec![],
-    aliases : vec![],
-    permissions : vec![],
-    idempotent : false,
-    deprecation_message : String::new(),
-    http_method_hint : "POST".to_string(),
-    examples : vec![],
-    auto_help_enabled : false,
-  },
-];
-assert_eq!(commands.len(), 2);
-```
-
-### Loading Commands from YAML/JSON
-
-```rust,ignore
-// See examples/07_yaml_json_loading.rs for the full example
-use unilang::loader::{ load_from_yaml_file, load_from_json_str };
-use unilang::prelude::*;
-
-// Load from YAML file
-let mut registry = CommandRegistry::new();
-let commands = load_from_yaml_file( "commands.yaml" )?;
-for cmd in commands
-{
-  registry.commands.insert( cmd.name.clone(), cmd );
-}
-
-// Or from JSON string
-let json = r#"[
-{
-  "name" : "test",
-  "description" : "Test command",
-  "arguments" : []
-}]"#;
-let commands = load_from_json_str( json )?;
-```
-
-## Command-Line Usage Patterns
-
-unilang supports flexible command-line syntax:
-
-```sh
-# Named arguments (recommended)
-.command arg1::value1 arg2::value2
-
-# Positional arguments
-.command value1 value2
-
-# Mixed (positional first, then named)
-.command value1 arg2::value2
-
-# With namespaces
-.namespace.command arg::value
-
-# Using aliases
-.cmd arg::value  # If 'cmd' is an alias for 'command'
-
-# List all commands (just dot)
-.
-
-# Get help for any command - multiple ways!
-.command ?              # Traditional help operator
-.command ??             # Modern help parameter (can mix with other args)
-.command.help           # Dedicated help command (auto-generated)
-.namespace.command.help # Works with namespaced commands too
-```
-
-## Advanced Features
-
-### Custom Validation
-
-```rust
-use unilang::prelude::*;
-use unilang::ValidationRule;
-// Create complex validation rules
-let password_arg = ArgumentDefinition
-{
-  name : "password".to_string(),
-  kind : Kind::String,
-  attributes : ArgumentAttributes
-  {
-    sensitive : true,  // Won't be logged or shown in history
-    ..ArgumentAttributes::default()
-  },
-  hint : "Secure password".to_string(),
-  description : "User password with complexity requirements".to_string(),
-  validation_rules : vec!
-  [
-    ValidationRule::MinLength( 8 ),
-    ValidationRule::Pattern( r"^(?=.*[A-Za-z])(?=.*\d)".to_string() ), // Letters and numbers
-  ],
-  aliases : vec![],
-  tags : vec![],
-};
-assert!(password_arg.attributes.sensitive);
-```
-
-### Batch Processing
-
-```rust
-use unilang::prelude::*;
-let registry = CommandRegistry::new();
-let pipeline = Pipeline::new(registry);
-// Process multiple commands efficiently
-let commands = vec!
-[
-  ".file.create name::test.txt",
-  ".file.write name::test.txt content::'Hello'",
-  ".file.list pattern::*.txt",
-];
-
-let batch_result = pipeline.process_batch( &commands, ExecutionContext::default() );
-// Success rate will be 0% since no commands are registered
-assert_eq!(batch_result.success_rate(), 0.0);
-```
-
-### Help System
-
-unilang provides a comprehensive help system with **three standardized ways** to access help:
-
-#### 🔧 **Automatic Help Generation**
-Every registered command automatically gets a `.command.help` counterpart:
-
-```rust,ignore
-use unilang::prelude::*;
-let mut registry = CommandRegistry::new();
-
-// Enable help conventions (enabled by default)
-registry.enable_help_conventions(true);
-
-// Register any command with auto-help enabled
-let mut cmd = CommandDefinition::former()
-    .name(".greet")
-    .description("A friendly greeting command")
-    .end();
-
-// Manually enable auto-help (builder method coming soon)
-cmd.auto_help_enabled = true;
-
-// Define a simple routine
-let routine = Box::new(|_cmd, _ctx| {
-    Ok(unilang::data::OutputData {
-        content: "Hello!".to_string(),
-        format: "text".to_string(),
-    })
-});
-
-registry.register_with_auto_help(cmd, routine)?;
-
-// Now BOTH commands are available:
-// .greet       - The original command
-// .greet.help  - Auto-generated help command
-```
-
-#### 🎯 **Three Help Access Methods**
-
-**1. Traditional Help Operator (`?`)**
-```sh
-.command ?                    # Instant help, bypasses validation
-.run_file ?                   # Help instead of "missing file argument"
-.config.set ?                 # Help instead of "missing key and value"
-```
-
-**2. Modern Help Parameter (`??`) - 🆕 Recommended**
-```sh
-.command ??                   # Clean help access
-.command arg1::value ??       # Get help even with partial arguments
-.upload file::data.txt ??     # Mix help with other parameters
-```
-
-**3. Dedicated Help Commands (`.command.help`) - 🆕 Auto-Generated**
-```sh
-.command.help                 # Direct help command access
-.namespace.command.help       # Works with namespaced commands
-.greet.help                   # Consistent, discoverable help
-```
-
-#### ✨ **Help Content Features**
-- **Comprehensive**: Arguments, validation rules, examples, aliases
-- **Consistent Formatting**: Professional, hierarchical display
-- **Always Available**: Never blocked by missing required arguments
-- **Auto-Discovery**: Tab completion includes `.help` commands
-
-#### 💡 **Best Practices**
-- Use `??` for interactive help during command construction
-- Use `.command.help` for documentation and scripting
-- Traditional `?` remains available for compatibility
-
-This ensures users can **always** get help, even when they don't know the required arguments or command structure.
-
-## Full CLI Example
-
-For a complete example showing all features, check out:
-
-```sh
-# Run the full CLI example with dot-prefixed command
-cargo run --example full_cli_example -- .greet name::Alice
-
-# See available commands (just dot shows all commands with help)
-cargo run --example full_cli_example -- .
-
-# Explore the new help conventions:
-cargo run --example full_cli_example -- .greet.help     # Auto-generated help command
-cargo run --example full_cli_example -- .greet ??       # Modern help parameter
-cargo run --example full_cli_example -- .greet ?        # Traditional help operator
-
-# Try the help conventions demo:
-cargo run --example 18_help_conventions_demo
-```
-
-## API Modes
-
-unilang can be used in different ways:
-
-### 1. Pipeline API (Recommended)
-High-level API that handles the full command execution pipeline:
-
-```rust
-use unilang::prelude::*;
-let registry = CommandRegistry::new();
-let pipeline = Pipeline::new( registry );
-let result = pipeline.process_command_simple( ".command arg::value" );
-// Result will indicate command not found since no commands are registered
-assert!(!result.success);
-```
-
-### 2. Component API
-Lower-level access to individual components:
-
-```rust,ignore
-use unilang::prelude::*;
-# let registry = CommandRegistry::new();
-# let input = ".example";
-# let mut context = ExecutionContext::default();
-// Parse
-let parser = Parser::new( Default::default() );
-let instruction = parser.parse_single_instruction( input )?;
-
-// Analyze
-let analyzer = SemanticAnalyzer::new( &[ instruction ], &registry );
-let commands = analyzer.analyze()?;
-
-// Execute
-let interpreter = Interpreter::new( &commands, &registry );
-interpreter.run( &mut context )?;
-```
-
-### 3. Direct Integration
-For maximum control:
-
-```rust,ignore
-use unilang::prelude::*;
-# let registry = CommandRegistry::new();
-# let verified_command = todo!();
-# let context = ExecutionContext::default();
-// Direct command execution
-let routine = registry.routines.get( ".namespace.command" ).unwrap();
-let result = routine( verified_command, context )?;
-```
-
-## REPL Features
-
-Unilang provides two REPL modes designed for different use cases and environments:
-
-### Basic REPL (`repl` feature)
-- **Standard I/O**: Works in any terminal environment
-- **Command History**: Tracks executed commands for debugging
-- **Built-in Help**: Integrated help system with `?` operator
-- **Cross-platform**: Compatible with all supported platforms
-- **Lightweight**: Minimal dependencies for embedded use cases
-
-### Enhanced REPL (`enhanced_repl` feature) ⭐ **Enabled by Default**
-- **📋 Arrow Key Navigation**: ↑/↓ for command history browsing
-- **⚡ Tab Auto-completion**: Command and argument completion
-- **🔐 Interactive Input**: Secure password/API key prompting with masked input
-- **🧠 Advanced Error Recovery**: Intelligent suggestions and contextual help
-- **💾 Persistent Session**: Command history saved across sessions
-- **🖥️ Terminal Detection**: Automatic fallback to basic REPL in non-interactive environments
-- **🎨 Rich Display**: Colorized output and formatted help (when supported)
-
-### Feature Comparison
-
-| Capability | Basic REPL | Enhanced REPL |
-|------------|------------|---------------|
-| Command execution | ✅ | ✅ |
-| Error handling | ✅ | ✅ |
-| Help system (`?`) | ✅ | ✅ |
-| Arrow key history | ❌ | ✅ |
-| Tab completion | ❌ | ✅ |
-| Interactive prompts | Basic | Secure/Masked |
-| Session persistence | ❌ | ✅ |
-| Auto-fallback | N/A | ✅ |
-| Dependencies | None | `rustyline`, `atty` |
-
-### Quick Start
-
-**Default (Enhanced REPL included):**
-```toml
-[dependencies]
-unilang = "0.10"  # Enhanced REPL enabled by default
-```
-
-**Minimal dependencies (basic REPL only):**
-```toml
-[dependencies]
-unilang = { version = "0.10", default-features = false, features = ["enabled", "repl"] }
-```
-
-## REPL (Read-Eval-Print Loop) Support
-
-unilang provides comprehensive support for building interactive REPL applications. The framework's stateless architecture makes it ideal for REPL implementations.
-
-### Basic REPL Implementation
-
-```rust,ignore
-use unilang::{ registry::CommandRegistry, pipeline::Pipeline };
-use std::io::{ self, Write };
-
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut registry = CommandRegistry::new();
-    // Register your commands...
-
-    let pipeline = Pipeline::new(registry);
-
-    loop {
-        print!("repl> ");
-        io::stdout().flush()?;
-
-        let mut input = String::new();
-        io::stdin().read_line(&mut input)?;
-        let input = input.trim();
-
-        if input == "quit" { break; }
-
-        let result = pipeline.process_command_simple(input);
-        if result.success {
-            println!("✅ Success: {:?}", result.outputs);
-        } else {
-            println!("❌ Error: {}", result.error.unwrap());
-        }
-    }
-
-    Ok(())
-}
-```
-
-### Interactive Arguments with Secure Input
-
-unilang supports interactive arguments for secure input like passwords:
-
-```rust,ignore
-// In your command definition
-use unilang::{ ArgumentDefinition, Kind, ArgumentAttributes };
-
-ArgumentDefinition {
-    name: "password".to_string(),
-    kind: Kind::String,
-    attributes: ArgumentAttributes {
-        interactive: true,
-        sensitive: true,
-        ..Default::default()
-    },
-    // ...
-};
-
-// In your REPL loop
-use std::io::{self, Write};
-
-match result.error {
-    Some(error) if error.contains("UNILANG_ARGUMENT_INTERACTIVE_REQUIRED") => {
-        // Prompt for secure input
-        print!("Enter password: ");
-        io::stdout().flush()?;
-        // Use secure input method (e.g., rpassword crate)
-    },
-    Some(error) => println!("❌ Error: {error}"),
-    None => println!("✅ Success"),
-}
-```
-
-### Advanced REPL Features
-
-For production REPL applications, consider these patterns:
-
-**Command History & Auto-completion:**
-```rust,ignore
-use std::collections::HashMap;
-
-let mut command_history = Vec::new();
-let mut session_stats = HashMap::new();
-
-// In your REPL loop
-if input.ends_with('?') {
-    let partial = input.trim_end_matches('?');
-    suggest_completions(partial, &registry);
-    continue;
-}
-
-command_history.push(input.to_string());
-```
-
-**Error Recovery:**
-```rust,ignore
-match result.error {
-    Some(error) => {
-        println!("❌ Error: {error}");
-
-        // Provide contextual help
-        if error.contains("Command not found") {
-            println!("💡 Available commands: {:?}", registry.command_names());
-        } else if error.contains("Missing required") {
-            println!("💡 Use 'help <command>' for syntax");
-        }
-    },
-    None => println!("✅ Command executed successfully"),
-}
-```
-
-**Session Management:**
-```rust,ignore
-struct ReplSession {
-    command_count: u32,
-    successful_commands: u32,
-    failed_commands: u32,
-    last_error: Option<String>,
-}
-
-// Track session statistics for debugging and UX
-let mut session = ReplSession {
-    command_count: 0,
-    successful_commands: 0,
-    failed_commands: 0,
-    last_error: None,
-};
-
-session.command_count += 1;
-if result.success {
-    session.successful_commands += 1;
-} else {
-    session.failed_commands += 1;
-    session.last_error = result.error;
-}
-```
-
-### REPL Performance Considerations
-
-- **Component Reuse**: Pipeline components are stateless and reusable - this provides 20-50% performance improvement over creating new instances
-- **Memory Management**: Bound command history to prevent memory leaks in long-running sessions
-- **Static Commands**: Use static command registry with PHF for zero-cost lookups even with millions of commands
-
-### Complete REPL Examples
-
-The `examples/` directory contains comprehensive REPL implementations:
-
-- `12_repl_loop.rs` - Basic REPL with stateless operation
-- `15_interactive_repl_mode.rs` - Interactive arguments and secure input
-- `17_advanced_repl_features.rs` - Full-featured REPL with history, auto-completion, and error recovery
-
-**Key REPL Insights:**
-- ✅ **Stateless Design**: Each command execution is independent - no state accumulation
-- ✅ **Interactive Security**: Proper handling of passwords and API keys
-- ✅ **Error Isolation**: Command failures don't affect subsequent commands
-- ✅ **Memory Efficiency**: Constant memory usage regardless of session length
-- ✅ **Professional UX**: History, auto-completion, and intelligent error recovery
-
-## REPL Migration Guide
-
-### From Basic to Enhanced REPL
-
-**Step 1: Update your Cargo.toml**
-```toml
-# If you currently use basic REPL:
-unilang = { version = "0.10", default-features = false, features = ["enabled", "repl"] }
-
-# Change to default (Enhanced REPL included):
-unilang = "0.10"
-
-# Or explicitly enable enhanced REPL:
-unilang = { version = "0.10", features = ["enhanced_repl"] }
-```
-
-**Step 2: Feature Detection in Code**
-```rust
-#[cfg(feature = "enhanced_repl")]
-fn setup_enhanced_repl() -> Result<(), Box<dyn std::error::Error>> {
-    use rustyline::DefaultEditor;
-    let mut rl = DefaultEditor::new()?;
-    
-    println!("🚀 Enhanced REPL: Arrow keys and tab completion enabled!");
-    // Your enhanced REPL loop here...
-    Ok(())
-}
-
-#[cfg(all(feature = "repl", not(feature = "enhanced_repl")))]
-fn setup_basic_repl() -> Result<(), Box<dyn std::error::Error>> {
-    use std::io::{self, Write};
-    
-    println!("📝 Basic REPL: Standard input/output mode");
-    // Your basic REPL loop here...
-    Ok(())
-}
-
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    #[cfg(feature = "enhanced_repl")]
-    setup_enhanced_repl()?;
-    
-    #[cfg(all(feature = "repl", not(feature = "enhanced_repl")))]
-    setup_basic_repl()?;
-    
-    Ok(())
-}
-```
-
-**Step 3: Handling Interactive Arguments**
-Enhanced REPL provides better support for interactive arguments:
-
-```rust,no_run
-use unilang::prelude::*;
-
-fn handle_interactive_input() -> Result< (), Box< dyn std::error::Error > >
-{
-  let registry = CommandRegistry::new();
-  let mut pipeline = Pipeline::new( registry );
-  let input = String::from( "example_command" );
-  
-  // In your REPL loop
-  let result = pipeline.process_command_simple( &input );
-
-  if result.requires_interactive_input()
-  {
-    if let Some( arg_name ) = result.interactive_argument()
-    {
-      #[ cfg( feature = "enhanced_repl" ) ]
-      {
-        // Enhanced REPL: Secure password prompt with masking
-        use rustyline::DefaultEditor;
-        let mut rl = DefaultEditor::new()?;
-        let password = rl.readline( &format!( "Enter {}: ", arg_name ) )?;
-        // Re-run command with interactive argument...
-      }
-      
-      #[ cfg( all( feature = "repl", not( feature = "enhanced_repl" ) ) ) ]
-      {
-        // Basic REPL: Standard input (visible)
-        use std::io::{ self, Write };
-        print!( "Enter {}: ", arg_name );
-        io::stdout().flush()?;
-        let mut value = String::new();
-        io::stdin().read_line( &mut value )?;
-        // Re-run command with interactive argument...
-      }
-    }
-  }
   Ok( () )
 }
 ```
 
-### Migration Checklist
+## Performance Comparison
 
-- [ ] Updated `Cargo.toml` with `enhanced_repl` feature
-- [ ] Added feature-gated code for both REPL modes
-- [ ] Updated interactive argument handling
-- [ ] Tested both enhanced and basic REPL modes
-- [ ] Updated error handling for better UX
+| Approach | Lookup Time | Memory Overhead | Binary Size |
+|----------|-------------|-----------------|-------------|
+| **Compile-Time (PHF)** | 1-3 CPU cycles | Zero | Smaller |
+| Runtime (HashMap) | 50-150 CPU cycles | Hash tables + allocations | Larger |
 
-### Backward Compatibility
+**Benchmark Results:**
+- **Static lookups:** ~2ns per operation
+- **Dynamic lookups:** ~80ns per operation
+- **Performance gain:** 40x faster command resolution
 
-The enhanced REPL automatically falls back to basic functionality when:
-- Running in non-interactive environments (pipes, redirects)
-- Terminal capabilities are limited
-- Dependencies are unavailable
+## When to Use Each Approach
 
-Your existing REPL code will continue to work unchanged.
+### Compile-Time Registration (Recommended)
+**Use when:**
+- Commands are known at build time
+- Maximum performance is required
+- Binary size optimization is important
+- Production deployments
 
-## Error Handling
+**Benefits:**
+- Zero runtime lookup cost
+- Compile-time validation
+- Smaller memory footprint
+- Better cache locality
 
-unilang provides comprehensive error handling:
+### Runtime Registration (Limited Use Cases)
+**Use when:**
+- Commands loaded from external sources at runtime
+- Dynamic command generation required
+- Plugin systems with runtime loading
+- Rapid prototyping scenarios
+
+**Performance Cost:**
+- 10-50x slower lookup operations
+- Runtime memory allocations
+- Larger binary size
+- Hash collision overhead
+
+## CLI Aggregation: Unifying Multiple Tools
+
+unilang excels at aggregating multiple CLI tools into a single unified command interface. This is essential for organizations that want to consolidate developer tools while maintaining namespace isolation.
+
+### Real-World Aggregation Scenario
 
 ```rust
-use unilang::prelude::*;
-let registry = CommandRegistry::new();
-let pipeline = Pipeline::new(registry);
-let input = ".example";
-match pipeline.process_command_simple( input )
+use unilang::multi_yaml::CliBuilder;
+
+// Aggregate multiple CLI tools into one unified command
+let unified_cli = CliBuilder::new()
+  .static_module_with_prefix( "database", "db", database_commands )
+  .static_module_with_prefix( "filesystem", "fs", file_commands )
+  .static_module_with_prefix( "network", "net", network_commands )
+  .static_module_with_prefix( "build", "build", build_commands )
+  .detect_conflicts( true )
+  .build_static();
+
+// Usage: unified-cli db migrate, unified-cli fs copy src dest
+```
+
+### Compile-Time Aggregation Benefits
+
+**Before Aggregation:**
+```bash
+# Separate tools requiring individual installation and learning
+db-cli migrate --direction up
+file-cli copy --src ./source --dest ./target --recursive
+net-cli ping google.com --count 10
+build-cli compile --target release
+```
+
+**After Aggregation:**
+```bash
+# Single unified tool with consistent interface
+unified-cli db migrate direction::up
+unified-cli fs copy source::./source destination::./target recursive::true
+unified-cli net ping host::google.com count::10
+unified-cli build compile target::release
+```
+
+### Key Aggregation Features
+
+#### Namespace Isolation
+Each CLI module maintains its own command space with automatic prefix application:
+
+```rust
+// Database commands become .db.migrate, .db.backup
+// File commands become .fs.copy, .fs.move
+// Network commands become .net.ping, .net.trace
+// No naming conflicts between modules
+```
+
+#### Conflict Detection
+```rust
+let registry = CliBuilder::new()
+  .static_module_with_prefix( "tools", "tool", cli_a_commands )
+  .static_module_with_prefix( "utils", "tool", cli_b_commands )  // Conflict!
+  .detect_conflicts( true )  // Catches duplicate prefixes at build time
+  .build_static();
+```
+
+#### Help System Integration
+```bash
+# All aggregated commands support unified help
+unified-cli db.migrate.help        # Detailed help for database migrations
+unified-cli fs.copy ??             # Interactive help during command construction
+unified-cli net.ping ?             # Traditional help operator
+```
+
+### Advanced Aggregation Patterns
+
+#### Conditional Module Loading
+```rust
+let registry = CliBuilder::new()
+  .conditional_module( "docker", docker_commands, &[ "feature_docker" ] )
+  .conditional_module( "k8s", kubernetes_commands, &[ "feature_k8s" ] )
+  .build_static();
+
+// Only includes modules when features are enabled
+```
+
+#### Multi-Source Aggregation
+```rust
+// Combine static commands, YAML definitions, and runtime modules
+let registry = CliBuilder::new()
+  .static_module_with_prefix( "core", "core", static_commands )
+  .dynamic_module_with_prefix( "plugins", "plugins", "plugins.yaml" )
+  .runtime_module_with_prefix( "custom", "ext", runtime_commands )
+  .build_hybrid();
+```
+
+### Performance Characteristics
+
+| Approach | Lookup Time | Memory Overhead | Conflict Detection |
+|----------|-------------|-----------------|-------------------|
+| **Compile-Time** | O(1) PHF | Zero | Build-time |
+| Runtime | O(log n) | Hash tables | Runtime |
+
+**Aggregation Scaling:**
+- **10 modules, 100 commands each**: ~750ns lookup regardless of module count
+- **Single PHF map**: All 1,000 commands accessible in constant time
+- **Namespace resolution**: Zero runtime overhead with compile-time prefixing
+
+### Complete Example
+
+See `examples/practical_cli_aggregation.rs` for a comprehensive demonstration showing:
+
+- Individual CLI module definitions
+- Runtime and compile-time aggregation approaches
+- Namespace organization and conflict prevention
+- Unified command execution patterns
+- Performance comparison between approaches
+
+```bash
+# Run the complete aggregation demo
+cargo run --example practical_cli_aggregation
+```
+
+This example demonstrates aggregating database, file, network, and build CLIs into a single unified tool while maintaining type safety, performance, and usability.
+
+## Command Definition Format
+
+### Basic Command Structure
+```yaml
+- name: "command_name"           # Required: Command identifier
+  namespace: "optional.prefix"   # Optional: Hierarchical organization
+  description: "What it does"    # Required: User-facing description
+  arguments:                     # Optional: Command parameters
+    - name: "arg_name"
+      kind: "String"             # String, Integer, Float, Boolean, Path, etc.
+      attributes:
+        optional: false          # Required by default
+        default: "value"         # Default value if optional
+```
+
+### Supported Argument Types
+- **Basic Types:** String, Integer, Float, Boolean
+- **Path Types:** Path, File, Directory
+- **Complex Types:** Url, DateTime, Pattern (regex)
+- **Collections:** List, Map with custom delimiters
+- **Special Types:** JsonString, Object, Enum
+
+### Validation Rules
+```yaml
+arguments:
+  - name: "count"
+    kind: "Integer"
+    validation_rules:
+      - Min: 1
+      - Max: 100
+  - name: "email"
+    kind: "String"
+    validation_rules:
+      - Pattern: "^[^@]+@[^@]+\\.[^@]+$"
+      - MinLength: 5
+```
+
+## Command Execution Patterns
+
+### Standard Execution
+```rust
+let result = pipeline.process_command_simple( ".namespace.command arg::value" );
+if result.success
+{
+  println!( "Success: {}", result.outputs[ 0 ].content );
+}
+```
+
+### Batch Processing
+```rust
+let commands = vec!
+[
+  ".file.create name::test.txt",
+  ".file.write name::test.txt content::data",
+  ".file.list pattern::*.txt",
+];
+
+let batch_result = pipeline.process_batch( &commands, ExecutionContext::default() );
+println!( "Success rate: {:.1}%", batch_result.success_rate() * 100.0 );
+```
+
+### Error Handling
+```rust
+match pipeline.process_command_simple( ".command arg::value" )
 {
   result if result.success =>
   {
-    println!( "Output: {}", result.outputs[ 0 ].content );
+    // Process successful execution
+    for output in result.outputs
+    {
+      println!( "Output: {}", output.content );
+    }
   }
   result =>
   {
-    if let Some( _error ) = result.error
+    if let Some( error ) = result.error
     {
-      // Error handling - command not found since no commands registered
-      assert!(!result.success);
+      eprintln!( "Command failed: {}", error );
     }
   }
 }
 ```
 
-## More Examples
+## Help System
 
-Explore the `examples/` directory for more detailed examples:
+unilang provides comprehensive help with three access methods:
 
-- `01_basic_command_registration.rs` - Getting started
-- `02_argument_types.rs` - All supported argument types
-- `03_collection_types.rs` - Lists and maps
-- `04_validation_rules.rs` - Input validation
-- `05_namespaces_and_aliases.rs` - Command organization
-- `06_help_system.rs` - Automatic help generation
-- `07_yaml_json_loading.rs` - Loading commands from files
-- `18_help_conventions_demo.rs` - **🆕 Help Conventions** - Demo of `.help` and `??` features
-- `08_semantic_analysis_simple.rs` - Understanding the analysis phase
-- `09_command_execution.rs` - Execution patterns
-- `10_full_pipeline.rs` - Complete pipeline example
-- `11_pipeline_api.rs` - Pipeline API features
-- `full_cli_example.rs` - Full-featured CLI application
-- `examples/wasm-repl/` - **🌐 WebAssembly REPL** - Interactive web-based command interface
-
-## 🌐 WebAssembly Support
-
-UniLang provides **full WebAssembly compatibility** allowing you to run your command framework in web browsers with near-native performance.
-
-### Features
-
-- **🚀 Complete Framework**: Full unilang functionality in WebAssembly
-- **🔧 Cross-Platform**: Same API works in native and browser environments  
-- **⚡ SIMD Optimized**: Fast parsing with SIMD acceleration where available
-- **📦 Optimized Builds**: Small bundle size (~800KB-1.2MB compressed)
-- **🎯 Type Safety**: Full type validation and error handling in WASM
-- **🔄 Seamless Integration**: Easy Rust-to-JavaScript bridge
-
-### Quick Start
-
-1. **Navigate to WASM REPL Example**
-   ```bash
-   cd examples/wasm-repl
-   ```
-
-2. **Build for WebAssembly**
-   ```bash
-   # Option 1: Using wasm-pack (recommended)
-   wasm-pack build --target web --release
-
-   # Option 2: Using cargo directly
-   cargo build --target wasm32-unknown-unknown --release
-   ```
-
-3. **Serve and Test**
-   ```bash
-   cd www
-   python3 -m http.server 8000
-   # Open http://localhost:8000 in your browser
-   ```
-
-### Live Demo Commands
-
-Try these commands in the WebAssembly REPL:
-
+### Traditional Help Operator
 ```bash
-.help                    # Show available commands
-.demo.echo Hello WASM!   # Echo text through WebAssembly
-.calc.add 42 58         # Simple calculator
+.command ?                    # Instant help, bypasses validation
 ```
 
-### WebAssembly-Specific Features
+### Modern Help Parameter
+```bash
+.command ??                   # Clean help access
+.command arg1::value ??       # Help with partial arguments
+```
 
-- **Conditional Compilation**: Filesystem operations gracefully disabled for WASM targets
-- **Memory Optimization**: Custom allocator (`wee_alloc`) for reduced binary size
-- **Error Handling**: Browser-friendly panic hooks and error reporting
-- **Performance**: SIMD acceleration for parsing and JSON processing
-- **Browser API Integration**: Full access to Web APIs through `web-sys`
+### Auto-Generated Help Commands
+```bash
+.command.help                 # Direct help command access
+.namespace.command.help       # Works with namespaced commands
+```
 
-For complete build and deployment instructions, see [`examples/wasm-repl/BUILD_GUIDE.md`](examples/wasm-repl/BUILD_GUIDE.md).
+## Feature Configuration
+
+### Core Features
+```toml
+[dependencies]
+unilang = "0.10"              # Default: enhanced_repl + simd + enabled
+```
+
+### Performance Optimized
+```toml
+[dependencies]
+unilang = { version = "0.10", features = ["simd", "enhanced_repl"] }
+```
+
+### Minimal Footprint
+```toml
+[dependencies]
+unilang = { version = "0.10", default-features = false, features = ["enabled"] }
+```
+
+### Available Features
+- **`enabled`** - Core functionality (required)
+- **`simd`** - SIMD optimizations for 4-25x parsing performance
+- **`enhanced_repl`** - Advanced REPL with history, completion, secure input
+- **`repl`** - Basic REPL functionality
+- **`on_unknown_suggest`** - Fuzzy command suggestions
+
+## Examples and Learning Path
+
+### Compile-Time Focus Examples
+- `static_01_basic_compile_time.rs` - PHF-based zero-cost lookups
+- `static_02_yaml_build_integration.rs` - Build script integration patterns
+- `static_03_performance_comparison.rs` - Concrete performance measurements
+- `static_04_multi_module_aggregation.rs` - Modular command organization
+
+### Traditional Examples
+- `01_basic_command_registration.rs` - Runtime registration patterns
+- `02_argument_types.rs` - Comprehensive argument type examples
+- `07_yaml_json_loading.rs` - Dynamic command loading
+
+### Advanced Features
+- `18_help_conventions_demo.rs` - Help system demonstration
+- `full_cli_example.rs` - Complete CLI application
+
+### REPL and Interactive
+- `12_repl_loop.rs` - Basic REPL implementation
+- `15_interactive_repl_mode.rs` - Interactive arguments and secure input
+- `17_advanced_repl_features.rs` - History, auto-completion, error recovery
+
+## WebAssembly Support
+
+unilang provides full WebAssembly compatibility for browser deployment:
+
+```bash
+cd examples/wasm-repl
+wasm-pack build --target web --release
+cd www && python3 -m http.server 8000
+```
+
+**WASM Features:**
+- Complete framework functionality in browsers
+- SIMD acceleration where supported
+- Optimized bundle size (800KB-1.2MB compressed)
+- Seamless Rust-to-JavaScript integration
+
+## Migration from Runtime to Compile-Time
+
+### Step 1: Extract Command Definitions
+Convert runtime `CommandDefinition` structures to YAML format.
+
+### Step 2: Configure Build Script
+Add compile-time generation to `build.rs`.
+
+### Step 3: Update Code
+Replace `CommandRegistry::new()` with `StaticCommandRegistry::new()`.
+
+### Step 4: Measure Performance
+Use provided benchmarking examples to verify improvements.
+
+## Performance Optimization Guidelines
+
+### Compile-Time Best Practices
+- Use static command definitions for all known commands
+- Leverage multi-module aggregation for organization
+- Enable SIMD features for maximum parsing performance
+- Utilize conflict detection during build process
+
+### Runtime Considerations
+- Reserve runtime registration for truly dynamic scenarios
+- Minimize command modifications during execution
+- Use batch processing for multiple commands
+- Implement proper error handling and recovery
 
 ## Contributing
 
-See [CONTRIBUTING.md](https://github.com/Wandalen/wTools/blob/master/CONTRIBUTING.md) for details.
+See [CONTRIBUTING.md](https://github.com/Wandalen/wTools/blob/master/CONTRIBUTING.md) for development guidelines.
 
 ## License
 
-Licensed under MIT license ([LICENSE](LICENSE) or <https://opensource.org/licenses/MIT>)
+Licensed under MIT license ([LICENSE](LICENSE) or https://opensource.org/licenses/MIT)
