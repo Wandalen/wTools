@@ -1,3 +1,4 @@
+#![allow(clippy::all)]
 //! Tests for hybrid registry optimization
 //!
 //! This module tests the enhanced registry functionality including:
@@ -200,7 +201,9 @@ fn test_memory_usage_optimization() {
 #[test]
 fn test_backward_compatibility() {
   // Test that existing registry API still works
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
 
   let test_cmd = CommandDefinition {
     name: ".compat_test".to_string(),
@@ -237,7 +240,9 @@ fn test_backward_compatibility() {
 #[test]
 fn test_hybrid_lookup_priority() {
   // Test that static commands take priority over dynamic ones
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
 
   // Create a dynamic command
   let dynamic_cmd = CommandDefinition {

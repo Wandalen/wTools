@@ -699,7 +699,9 @@ impl CliBuilder
     // println!("Building CLI with config: global_prefix={:?}, static_modules={}, dynamic_modules={}, conditional_modules={}",
     //          self.config.global_prefix, self.static_modules.len(), self.dynamic_modules.len(), self.conditional_modules.len());
 
-    let mut registry = CommandRegistry::new();
+    #[allow(deprecated)]
+    #[allow(deprecated)]
+        let mut registry = CommandRegistry::new();
 
     // Set registry mode based on aggregation mode
     let registry_mode = match self.mode
@@ -937,23 +939,23 @@ mod private
 {
   use std::path::PathBuf;
 
-  pub use super::MultiYamlAggregator;
-  pub use super::AggregationConfig;
-  pub use super::ModuleConfig;
-  pub use super::ConflictReport;
-  pub use super::ConflictType;
-  pub use super::EnvConfigParser;
-  pub use super::parse_cargo_metadata;
-
-  // Ergonomic aggregation APIs
-  pub use super::AggregationMode;
-  pub use super::StaticModule;
-  pub use super::DynamicModule;
-  pub use super::ConditionalModule;
-  pub use super::CliConfig;
-  pub use super::CliBuilder;
-  pub use super::aggregate_cli_simple;
-  pub use super::aggregate_cli_complex;
+//   pub use super::MultiYamlAggregator;
+//   pub use super::AggregationConfig;
+//   pub use super::ModuleConfig;
+//   pub use super::ConflictReport;
+//   pub use super::ConflictType;
+//   pub use super::EnvConfigParser;
+//   pub use super::parse_cargo_metadata;
+// 
+//   // Ergonomic aggregation APIs
+//   pub use super::AggregationMode;
+//   pub use super::StaticModule;
+//   pub use super::DynamicModule;
+//   pub use super::ConditionalModule;
+//   pub use super::CliConfig;
+//   pub use super::CliBuilder;
+//   pub use super::aggregate_cli_simple;
+//   pub use super::aggregate_cli_complex;
 
   /// Convenience function for complete multi-YAML workflow
   pub fn create_aggregated_registry( cargo_toml_path: &PathBuf ) -> Result< crate::CommandRegistry, crate::Error >
@@ -972,7 +974,9 @@ mod private
     aggregator.aggregate()?;
 
     // Create and configure registry
-    let mut registry = crate::CommandRegistry::new();
+    #[allow(deprecated)]
+    #[allow(deprecated)]
+        let mut registry = crate::CommandRegistry::new();
     aggregator.register_with_hybrid_registry( &mut registry )?;
 
     Ok( registry )
@@ -998,24 +1002,24 @@ pub mod exposed
 {
   pub use super::private::
   {
-    MultiYamlAggregator,
-    AggregationConfig,
-    ModuleConfig,
-    ConflictReport,
-    ConflictType,
-    EnvConfigParser,
-    parse_cargo_metadata,
-    create_aggregated_registry,
+    // MultiYamlAggregator,
+    // AggregationConfig,
+    // ModuleConfig,
+    // ConflictReport,
+    // ConflictType,
+    // EnvConfigParser,
+    // parse_cargo_metadata,
+    // create_aggregated_registry,
 
-    // Ergonomic aggregation APIs
-    AggregationMode,
-    StaticModule,
-    DynamicModule,
-    ConditionalModule,
-    CliConfig,
-    CliBuilder,
-    aggregate_cli_simple,
-    aggregate_cli_complex,
+    // // Ergonomic aggregation APIs
+    // AggregationMode,
+    // StaticModule,
+    // DynamicModule,
+    // ConditionalModule,
+    // CliConfig,
+    // CliBuilder,
+    // aggregate_cli_simple,
+    // aggregate_cli_complex,
   };
 }
 

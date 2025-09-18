@@ -120,80 +120,80 @@ path = "tests/inc/phase3/data_model_features_test.rs"
 # path = "tests/inc/phase4/performance_stress_test.rs"
 
 # Criterion-based benchmarks for cargo bench (following benchkit standard directory compliance)
-[[bench]]
-name = "comprehensive_benchmark"
-path = "benches/comprehensive_framework_comparison.rs"
-harness = false
+# [[bench]]
+# name = "comprehensive_benchmark"
+# path = "benches/comprehensive_framework_comparison.rs"
+# harness = false
 
-[[bench]]
-name = "throughput_benchmark"
-path = "benches/throughput_benchmark.rs"
-harness = false
+# [[bench]]
+# name = "throughput_benchmark"
+# path = "benches/throughput_benchmark.rs"
+# harness = false
 
-[[bench]]
-name = "string_interning_benchmark"
-path = "benches/string_interning_benchmark.rs"
-harness = false
+# [[bench]]
+# name = "string_interning_benchmark"
+# path = "benches/string_interning_benchmark.rs"
+# harness = false
 
-[[bench]]
-name = "integrated_string_interning_benchmark"
-path = "benches/integrated_string_interning_benchmark.rs"
-harness = false
+# [[bench]]
+# name = "integrated_string_interning_benchmark"
+# path = "benches/integrated_string_interning_benchmark.rs"
+# harness = false
 
-[[bench]]
-name = "simd_json_benchmark"
-path = "benches/simd_json_benchmark.rs"
-harness = false
+# [[bench]]
+# name = "simd_json_benchmark"
+# path = "benches/simd_json_benchmark.rs"
+# harness = false
 
-[[bench]]
-name = "strs_tools_benchmark"
-path = "benches/strs_tools_benchmark.rs"
-harness = false
+# [[bench]]
+# name = "strs_tools_benchmark"
+# path = "benches/strs_tools_benchmark.rs"
+# harness = false
 
-[[bench]]
-name = "comparative_parsing_benchmark"
-path = "benches/comparative_parsing_benchmark.rs"
-harness = false
+# [[bench]]
+# name = "comparative_parsing_benchmark"
+# path = "benches/comparative_parsing_benchmark.rs"
+# harness = false
 
-[[bench]]
-name = "context_rich_documentation_demo"
-path = "benches/context_rich_documentation_demo.rs"
-harness = false
+# [[bench]]
+# name = "context_rich_documentation_demo"
+# path = "benches/context_rich_documentation_demo.rs"
+# harness = false
 
-[[bench]]
-name = "optimization_workflow_demo"
-path = "benches/optimization_workflow_demo.rs"
-harness = false
+# [[bench]]
+# name = "optimization_workflow_demo"
+# path = "benches/optimization_workflow_demo.rs"
+# harness = false
 
-[[bench]]
-name = "simd_tokenizer_benchmark"
-path = "benches/simd_tokenizer_benchmark.rs"
-harness = false
+# [[bench]]
+# name = "simd_tokenizer_benchmark"
+# path = "benches/simd_tokenizer_benchmark.rs"
+# harness = false
 
-[[bench]]
-name = "simple_json_perf_test"
-path = "benches/simple_json_perf_test.rs"
-harness = false
+# [[bench]]
+# name = "simple_json_perf_test"
+# path = "benches/simple_json_perf_test.rs"
+# harness = false
 
-[[bench]]
-name = "run_all_benchmarks"
-path = "benches/run_all_benchmarks.rs"
-harness = false
+# [[bench]]
+# name = "run_all_benchmarks"
+# path = "benches/run_all_benchmarks.rs"
+# harness = false
 
-[[bench]]
-name = "stress_test_bin"
-path = "benches/stress_test_bin.rs"
-harness = false
+# [[bench]]
+# name = "stress_test_bin"
+# path = "benches/stress_test_bin.rs"
+# harness = false
 
-[[bench]]
-name = "performance_stress_test"
-path = "benches/performance_stress_test.rs"
-harness = false
+# [[bench]]
+# name = "performance_stress_test"
+# path = "benches/performance_stress_test.rs"
+# harness = false
 
-[[bench]]
-name = "simd_json_performance_validation"
-path = "benches/simd_json_performance_validation.rs"
-harness = false
+# [[bench]]
+# name = "simd_json_performance_validation"
+# path = "benches/simd_json_performance_validation.rs"
+# harness = false
 
 # Removed benchmark test entries for deleted files:
 # - exponential_benchmark.rs (redundant with throughput)

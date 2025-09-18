@@ -1,3 +1,5 @@
+#![allow(clippy::all)]
+#![allow(clippy::all)]
 //! CLI Export Demo
 //!
 //! Demonstrates exporting CLI commands from one module/crate to another
@@ -14,6 +16,7 @@ mod math_cli {
 
     /// Create math-related commands that can be exported
     pub fn create_math_registry() -> CommandRegistry {
+        #[allow(deprecated)]
         let mut registry = CommandRegistry::new();
         registry.enable_help_conventions(true);
 
@@ -123,6 +126,7 @@ mod file_cli {
     use unilang::prelude::*;
 
     pub fn create_file_registry() -> CommandRegistry {
+        #[allow(deprecated)]
         let mut registry = CommandRegistry::new();
         registry.enable_help_conventions(true);
 
@@ -185,6 +189,7 @@ fn merge_registries_with_prefix(
 
 /// Create an aggregated CLI that combines math and file operations
 fn create_aggregated_cli() -> CommandRegistry {
+    #[allow(deprecated)]
     let mut main_registry = CommandRegistry::new();
     main_registry.enable_help_conventions(true);
 

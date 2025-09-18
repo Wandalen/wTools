@@ -519,7 +519,8 @@ impl CommandRegistry
   /// ```rust,ignore
   /// use unilang::registry::CommandRegistry;
   ///
-  /// let mut registry = CommandRegistry::new();
+  /// #[allow(deprecated)]
+/// let mut registry = CommandRegistry::new();
   /// registry.enable_help_conventions(true);
   /// // All subsequently registered commands will auto-generate help commands
   /// ```
@@ -544,7 +545,8 @@ impl CommandRegistry
   /// ```rust,ignore
   /// use unilang::{CommandRegistry, RegistryMode};
   ///
-  /// let mut registry = CommandRegistry::new();
+  /// #[allow(deprecated)]
+/// let mut registry = CommandRegistry::new();
   /// registry.set_registry_mode(RegistryMode::StaticOnly);
   /// ```
   pub fn set_registry_mode( &mut self, mode : RegistryMode )
@@ -605,7 +607,8 @@ impl CommandRegistry
   /// ```rust,ignore
   /// use unilang::{registry::CommandRegistry, data::CommandDefinition};
   ///
-  /// let mut registry = CommandRegistry::new();
+  /// #[allow(deprecated)]
+/// let mut registry = CommandRegistry::new();
   /// let cmd = CommandDefinition::former()
   ///     .name(".example".to_string())
   ///     .description("Example command".to_string())
@@ -619,6 +622,7 @@ impl CommandRegistry
   pub fn register_with_auto_help( &mut self, command : CommandDefinition, routine : CommandRoutine ) -> Result< (), Error >
   {
     // First register the main command
+    #[allow(deprecated)]
     self.command_add_runtime( &command, routine )?;
 
     // Generate help command if enabled (either globally or specifically for this command)
@@ -626,6 +630,7 @@ impl CommandRegistry
     {
       let help_command = command.generate_help_command();
       let help_routine = self.create_help_routine( &command );
+      #[allow(deprecated)]
       self.command_add_runtime( &help_command, help_routine )?;
     }
 
@@ -774,6 +779,7 @@ impl Default for CommandRegistry
 {
   fn default() -> Self
   {
+    #[allow(deprecated)]
     Self::new()
   }
 }
@@ -825,6 +831,7 @@ impl CommandRegistryBuilder
       if let Some( link ) = &command_def.routine_link
       {
         let routine = crate::loader::resolve_routine_link( link )?;
+        #[allow(deprecated)]
         self.registry.command_add_runtime( &command_def, routine )?;
       }
       else
@@ -849,6 +856,7 @@ impl CommandRegistryBuilder
       if let Some( link ) = &command_def.routine_link
       {
         let routine = crate::loader::resolve_routine_link( link )?;
+        #[allow(deprecated)]
         self.registry.command_add_runtime( &command_def, routine )?;
       }
       else

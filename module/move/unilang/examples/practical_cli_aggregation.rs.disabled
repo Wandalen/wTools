@@ -321,6 +321,7 @@ fn main() -> Result< (), unilang::Error >
   // Method 1: Runtime Aggregation with CliBuilder
   println!( "=== Method 1: Runtime CLI Aggregation ===" );
   #[ allow( deprecated ) ]
+  #[allow(deprecated)]
   let mut runtime_registry = CommandRegistry::new();
 
   // Add each CLI module with prefixes
@@ -331,6 +332,7 @@ fn main() -> Result< (), unilang::Error >
 
     let routine = create_dummy_routine( &format!( "db{}", cmd.name ) );
     #[ allow( deprecated ) ]
+    #[allow(deprecated)]
     runtime_registry.command_add_runtime( &prefixed_cmd, routine )?;
   }
 
@@ -341,6 +343,7 @@ fn main() -> Result< (), unilang::Error >
 
     let routine = create_dummy_routine( &format!( "fs{}", cmd.name ) );
     #[ allow( deprecated ) ]
+    #[allow(deprecated)]
     runtime_registry.command_add_runtime( &prefixed_cmd, routine )?;
   }
 
@@ -351,6 +354,7 @@ fn main() -> Result< (), unilang::Error >
 
     let routine = create_dummy_routine( &format!( "net{}", cmd.name ) );
     #[ allow( deprecated ) ]
+    #[allow(deprecated)]
     runtime_registry.command_add_runtime( &prefixed_cmd, routine )?;
   }
 
@@ -361,6 +365,7 @@ fn main() -> Result< (), unilang::Error >
 
     let routine = create_dummy_routine( &format!( "build{}", cmd.name ) );
     #[ allow( deprecated ) ]
+    #[allow(deprecated)]
     runtime_registry.command_add_runtime( &prefixed_cmd, routine )?;
   }
 

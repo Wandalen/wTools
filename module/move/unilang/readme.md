@@ -20,12 +20,12 @@ unilang processes command definitions at compile-time, generating Perfect Hash F
 ## Architecture Overview
 
 **Compile-Time Processing:**
-```
+```text
 YAML definitions → build.rs → PHF maps → Zero-cost lookups
 ```
 
 **Runtime Execution:**
-```
+```text
 Command string → O(1) PHF lookup → Validated execution
 ```
 
@@ -49,7 +49,7 @@ Create `unilang.commands.yaml`:
 ### Step 2: Configure Build Script
 
 Add to `build.rs`:
-```rust
+```rust,ignore
 use std::env;
 use std::path::Path;
 
@@ -67,7 +67,7 @@ fn main()
 
 ### Step 3: Zero-Cost Execution
 
-```rust
+```rust,ignore
 use unilang::prelude::*;
 
 // Include compile-time generated PHF maps
@@ -132,7 +132,7 @@ unilang excels at aggregating multiple CLI tools into a single unified command i
 
 ### Real-World Aggregation Scenario
 
-```rust
+```rust,ignore
 use unilang::multi_yaml::CliBuilder;
 
 // Aggregate multiple CLI tools into one unified command
@@ -180,7 +180,7 @@ Each CLI module maintains its own command space with automatic prefix applicatio
 ```
 
 #### Conflict Detection
-```rust
+```rust,ignore
 let registry = CliBuilder::new()
   .static_module_with_prefix( "tools", "tool", cli_a_commands )
   .static_module_with_prefix( "utils", "tool", cli_b_commands )  // Conflict!
@@ -199,7 +199,7 @@ unified-cli net.ping ?             # Traditional help operator
 ### Advanced Aggregation Patterns
 
 #### Conditional Module Loading
-```rust
+```rust,ignore
 let registry = CliBuilder::new()
   .conditional_module( "docker", docker_commands, &[ "feature_docker" ] )
   .conditional_module( "k8s", kubernetes_commands, &[ "feature_k8s" ] )
@@ -209,7 +209,7 @@ let registry = CliBuilder::new()
 ```
 
 #### Multi-Source Aggregation
-```rust
+```rust,ignore
 // Combine static commands, YAML definitions, and runtime modules
 let registry = CliBuilder::new()
   .static_module_with_prefix( "core", "core", static_commands )
@@ -287,7 +287,7 @@ arguments:
 ## Command Execution Patterns
 
 ### Standard Execution
-```rust
+```rust,ignore
 let result = pipeline.process_command_simple( ".namespace.command arg::value" );
 if result.success
 {
@@ -296,7 +296,7 @@ if result.success
 ```
 
 ### Batch Processing
-```rust
+```rust,ignore
 let commands = vec!
 [
   ".file.create name::test.txt",
@@ -309,7 +309,7 @@ println!( "Success rate: {:.1}%", batch_result.success_rate() * 100.0 );
 ```
 
 ### Error Handling
-```rust
+```rust,ignore
 match pipeline.process_command_simple( ".command arg::value" )
 {
   result if result.success =>
@@ -425,7 +425,7 @@ Convert runtime `CommandDefinition` structures to YAML format.
 Add compile-time generation to `build.rs`.
 
 ### Step 3: Update Code
-Replace `CommandRegistry::new()` with `StaticCommandRegistry::new()`.
+Replace `CommandRegistry::new()` with compile-time command registration via build.rs.
 
 ### Step 4: Measure Performance
 Use provided benchmarking examples to verify improvements.

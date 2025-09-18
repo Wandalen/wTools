@@ -13,7 +13,8 @@ fn main()
   let start_time = Instant::now();
   
   // Initialize the registry (this should be very fast with static commands)
-  let registry = CommandRegistry::new();
+  #[allow(deprecated)]
+    let registry = CommandRegistry::new();
   let init_time = start_time.elapsed();
   
   println!( "Registry initialization time: {init_time:?}" );

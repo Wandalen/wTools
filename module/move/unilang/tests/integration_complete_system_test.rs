@@ -24,6 +24,7 @@ fn test_complete_system_integration()
   println!("\n🚀 COMPLETE SYSTEM INTEGRATION TEST");
   println!("Validating issue 017 resolution and governing principles\n");
   
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   
   // Test 1: Root-level commands with explicit dot prefixes
@@ -55,6 +56,7 @@ fn test_complete_system_integration()
     auto_help_enabled: false,
     };
     
+    #[allow(deprecated)]
     let result = registry.command_add_runtime(&cmd, Box::new(demo_handler));
     assert!(result.is_ok(), "Root command '{}' should register successfully", name);
     println!("  ✅ Registered: {}", name);
@@ -88,6 +90,7 @@ fn test_complete_system_integration()
     auto_help_enabled: false,
     };
     
+    #[allow(deprecated)]
     let result = registry.command_add_runtime(&cmd, Box::new(demo_handler));
     assert!(result.is_ok(), "Namespaced command '{}/{}' should register successfully", namespace, name);
     println!("  ✅ Registered: {}{}", namespace, name.strip_prefix('.').unwrap_or(name));
@@ -120,6 +123,7 @@ fn test_complete_system_integration()
     auto_help_enabled: false,
     };
     
+    #[allow(deprecated)]
     let result = registry.command_add_runtime(&invalid_cmd, Box::new(demo_handler));
     assert!(result.is_err(), "Command '{}' should be rejected: {}", invalid_name, reason);
     println!("  ❌ Correctly rejected: '{}' ({})", invalid_name, reason);
@@ -171,6 +175,7 @@ fn test_governing_principles_compliance()
   
   // Principle 1: Minimum Implicit Magic
   println!("🔍 Principle 1: Minimum Implicit Magic");
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   
   let explicit_cmd = CommandDefinition {
@@ -192,6 +197,7 @@ fn test_governing_principles_compliance()
     auto_help_enabled: false,
   };
   
+    #[allow(deprecated)]
   let result = registry.command_add_runtime(&explicit_cmd, Box::new(demo_handler));
   assert!(result.is_ok(), "Explicit command should be accepted");
   println!("  ✅ Explicit naming accepted");
@@ -203,6 +209,7 @@ fn test_governing_principles_compliance()
   
   // Principle 2: Fail-Fast Validation
   println!("\n🔍 Principle 2: Fail-Fast Validation");
+  #[allow(deprecated)]
   let mut registry2 = CommandRegistry::new();
   
   let invalid_cmd = CommandDefinition {
@@ -224,6 +231,7 @@ fn test_governing_principles_compliance()
     auto_help_enabled: false,
   };
   
+    #[allow(deprecated)]
   let result = registry2.command_add_runtime(&invalid_cmd, Box::new(demo_handler));
   assert!(result.is_err(), "Invalid command should be rejected at registration time");
   

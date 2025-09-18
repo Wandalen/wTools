@@ -16,7 +16,9 @@ fn test_dot_command_shows_help_instead_of_panicking()
   // This test specifically covers the bug where "." caused a panic
   // Now it should return a help listing instead
   
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   
   // Add a test command
   let test_command = unilang::data::CommandDefinition::former()
@@ -53,7 +55,9 @@ fn test_dot_command_shows_help_instead_of_panicking()
 fn test_dot_command_with_minimal_commands()
 {
   // Test dot command with only built-in commands (like .version)
-  let registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let registry = CommandRegistry::new();
   
   let program = ".";
   let parser = Parser::new(UnilangParserOptions::default());
@@ -79,7 +83,9 @@ fn test_dot_command_with_minimal_commands()
 #[test] 
 fn test_dot_command_lists_multiple_commands()
 {
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   
   // Add multiple test commands
   let cmd1 = unilang::data::CommandDefinition::former()
@@ -123,7 +129,9 @@ fn test_empty_command_path_edge_case()
   // This tests the specific edge case that was causing the panic:
   // When command_path_slices is empty, accessing index 0 panicked
   
-  let registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let registry = CommandRegistry::new();
   
   // Create a GenericInstruction with empty command_path_slices 
   // (this simulates what the parser produces for ".")

@@ -26,7 +26,9 @@ fn test_routine( _cmd : unilang::semantic::VerifiedCommand, _ctx : ExecutionCont
 #[ test ]
 fn test_automatic_help_command_generation()
 {
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
 
   // Enable help conventions globally
   registry.enable_help_conventions( true );
@@ -68,7 +70,9 @@ fn test_automatic_help_command_generation()
 #[ test ]
 fn test_double_question_mark_parameter()
 {
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
 
   // Create a command with arguments for comprehensive help testing
   let cmd = CommandDefinition::former()
@@ -147,7 +151,9 @@ fn test_double_question_mark_parameter()
 #[ test ]
 fn test_help_command_execution()
 {
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
 
   let cmd = CommandDefinition::former()
     .name( ".test_help_exec" )
@@ -186,7 +192,9 @@ fn test_help_command_execution()
 #[ test ]
 fn test_help_conventions_api()
 {
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
 
   // Test 1: Global help conventions toggle
   registry.enable_help_conventions( false );
@@ -276,7 +284,9 @@ fn test_command_definition_builder_methods()
 #[ test ]
 fn test_help_content_formatting()
 {
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
 
   // Create a command with comprehensive metadata for help formatting testing
   let cmd = CommandDefinition::former()
@@ -366,7 +376,9 @@ fn test_help_content_formatting()
 #[ test ]
 fn test_help_error_handling()
 {
-  let registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let registry = CommandRegistry::new();
   let context = ExecutionContext::default();
 
   // Test help request for non-existent command
@@ -379,7 +391,9 @@ fn test_help_error_handling()
   assert!( error_msg.contains( ".nonexistent" ), "Error should mention the command name" );
 
   // Test get_help_for_command with non-existent command - create new registry
-  let new_registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let new_registry = CommandRegistry::new();
   let help_text = new_registry.get_help_for_command( ".nonexistent" );
   assert!( help_text.is_none(), "get_help_for_command should return None for non-existent commands" );
 

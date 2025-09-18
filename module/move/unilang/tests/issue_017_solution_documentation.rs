@@ -45,6 +45,8 @@ fn demonstrate_issue_017_solution()
   println!("   2. No transformations: Use names exactly as registered");
   println!("   3. Fail-fast: Invalid commands rejected at registration\n");
   
+  #[allow(deprecated)]
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   
   // Demonstrate the current working approach
@@ -76,6 +78,7 @@ fn demonstrate_issue_017_solution()
     auto_help_enabled: false,
     };
     
+    #[allow(deprecated)]
     let result = registry.command_add_runtime(&cmd, Box::new(demo_handler));
     assert!(result.is_ok(), "Failed to register {name}");
     println!("   ✅ {name} → registered with explicit naming");
@@ -102,6 +105,8 @@ fn demonstrate_issue_017_solution()
     auto_help_enabled: false,
   };
   
+  #[allow(deprecated)]
+    #[allow(deprecated)]
   let result = registry.command_add_runtime(&invalid_cmd, Box::new(demo_handler));
   assert!(result.is_err(), "Should reject command without dot prefix");
   println!("   ✅ Validation correctly rejected command without dot prefix");
@@ -126,6 +131,8 @@ fn demonstrate_issue_017_solution()
     auto_help_enabled: false,
   };
   
+  #[allow(deprecated)]
+    #[allow(deprecated)]
   let result = registry.command_add_runtime(&namespaced_cmd, Box::new(demo_handler));
   assert!(result.is_ok(), "Failed to register namespaced command");
   println!("   ✅ .list (namespace: .session) → accessible as .session.list\n");
@@ -172,6 +179,8 @@ fn demonstrate_issue_017_solution()
 fn verify_issue_017_completely_resolved()
 {
   // This test verifies that the exact commands that were failing now work perfectly
+  #[allow(deprecated)]
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   
   // Register the problematic commands using the correct explicit dot prefix approach
@@ -200,6 +209,7 @@ fn verify_issue_017_completely_resolved()
     auto_help_enabled: false,
     };
     
+    #[allow(deprecated)]
     let result = registry.command_add_runtime(&cmd, Box::new(demo_handler));
     assert!(result.is_ok(), "Registration should succeed for {name}");
   }

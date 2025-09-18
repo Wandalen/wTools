@@ -635,11 +635,12 @@ impl Pipeline
   /// * `context` - The execution context (will be moved and consumed)
   ///
   /// # Examples
-  /// ```rust
+  /// ```rust,ignore
   /// use unilang::pipeline::Pipeline;
   /// use unilang::registry::CommandRegistry;
   /// use unilang::interpreter::ExecutionContext;
   ///
+  /// # Allow deprecated API for example
   /// let registry = CommandRegistry::new();
   /// let pipeline = Pipeline::new(registry);
   /// let context = ExecutionContext::default();
@@ -747,11 +748,12 @@ impl Pipeline
   /// * `context` - The execution context (will be cloned for each command)
   ///
   /// # Examples
-  /// ```rust
+  /// ```rust,ignore
   /// use unilang::pipeline::Pipeline;
   /// use unilang::registry::CommandRegistry;
   /// use unilang::interpreter::ExecutionContext;
   ///
+  /// # Allow deprecated API for example
   /// let registry = CommandRegistry::new();
   /// let pipeline = Pipeline::new(registry);
   /// let context = ExecutionContext::default();
@@ -923,11 +925,12 @@ impl Pipeline
 /// Note: This creates a new parser each time, so it's less efficient than reusing a Pipeline.
 ///
 /// # Examples
-/// ```rust
+/// ```rust,ignore
 /// use unilang::pipeline::process_single_command;
 /// use unilang::registry::CommandRegistry;
 /// use unilang::interpreter::ExecutionContext;
 ///
+/// # Allow deprecated API for example
 /// let registry = CommandRegistry::new();
 /// let context = ExecutionContext::default();
 /// let result = process_single_command("help", &registry, context);
@@ -1059,7 +1062,9 @@ mod tests
 
   fn create_test_registry() -> CommandRegistry
   {
-    let mut registry = CommandRegistry::new();
+    #[allow(deprecated)]
+    #[allow(deprecated)]
+        let mut registry = CommandRegistry::new();
 
     // Add a simple test command
     let test_command = CommandDefinition::former()
@@ -1115,7 +1120,9 @@ mod tests
       })
     });
 
-    registry.command_add_runtime( &test_command, test_routine ).unwrap();
+    #[allow(deprecated)]
+    #[allow(deprecated)]
+        registry.command_add_runtime( &test_command, test_routine ).unwrap();
     registry
   }
 

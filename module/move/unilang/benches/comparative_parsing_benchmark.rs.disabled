@@ -38,7 +38,8 @@ fn run_parsing_comparison_benchmark()
   
   // Algorithm 1: Pipeline-based parsing (current optimized approach)
   parsing_comparison.add_algorithm( "pipeline_parsing", | commands : &Vec< String > | {
-    let mut registry = CommandRegistry::new();
+    #[allow(deprecated)]
+        let mut registry = CommandRegistry::new();
     
     // Add some basic commands for parsing context
     for i in 0..10 {
@@ -73,7 +74,8 @@ fn run_parsing_comparison_benchmark()
   
   // Algorithm 2: Direct registry lookup (basic approach)
   parsing_comparison.add_algorithm( "direct_registry", | commands : &Vec< String > | {
-    let mut registry = CommandRegistry::new();
+    #[allow(deprecated)]
+        let mut registry = CommandRegistry::new();
     
     // Add basic commands
     for i in 0..10 {

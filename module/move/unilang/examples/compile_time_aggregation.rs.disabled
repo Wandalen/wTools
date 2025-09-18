@@ -1,3 +1,4 @@
+#![allow(clippy::all)]
 //! Compile-Time CLI Aggregation Demo
 //!
 //! This demonstrates how CLI aggregation can be done at compile-time using:
@@ -89,6 +90,7 @@ macro_rules! compile_time_cli {
 
             // Generate the aggregated registry
             pub fn create_aggregated_registry() -> CommandRegistry {
+                #[allow(deprecated)]
                 let mut registry = CommandRegistry::new();
 
                 // Commands are already in the static PHF map
@@ -297,6 +299,7 @@ pub mod generated_example {
 
     /// Create registry with pre-aggregated commands
     pub fn create_compile_time_registry() -> CommandRegistry {
+        #[allow(deprecated)]
         let registry = CommandRegistry::new();
         // Registry would use the static PHF map for lookups
         // Commands are already aggregated with prefixes applied

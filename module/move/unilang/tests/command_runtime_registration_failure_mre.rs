@@ -45,8 +45,12 @@ fn test_dot_prefixed_command_runtime_execution()
   };
 
   // Step 2: Register command with runtime handler
-  let mut registry = CommandRegistry::new();
-  let registration_result = registry.command_add_runtime( &test_cmd, Box::new( create_test_command_handler ) );
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+    #[allow(deprecated)]
+    let registration_result = registry.command_add_runtime( &test_cmd, Box::new( create_test_command_handler ) );
   
   // Verify registration succeeded 
   assert!( registration_result.is_ok(), "Command registration should succeed" );
@@ -127,8 +131,12 @@ fn test_non_dot_command_properly_rejected()
     examples : Vec::new(),
   };
 
-  let mut registry = CommandRegistry::new();
-  let registration_result = registry.command_add_runtime( &test_cmd, Box::new( create_test_command_handler ) );
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+    #[allow(deprecated)]
+    let registration_result = registry.command_add_runtime( &test_cmd, Box::new( create_test_command_handler ) );
   
   println!( "\n=== VALIDATION TEST: Non-dot Command Rejection ===" );
   println!( "Command: '{}'", test_cmd.name );
@@ -163,7 +171,9 @@ fn test_assistant_style_commands()
     ( ".test_session_list", "List available sessions" ),
   ];
   
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   
   // Register all commands
   for (name, description) in &commands 
@@ -188,7 +198,8 @@ fn test_assistant_style_commands()
       examples : Vec::new(),
     };
     
-    let result = registry.command_add_runtime( &cmd, Box::new( create_test_command_handler ) );
+    #[allow(deprecated)]
+        let result = registry.command_add_runtime( &cmd, Box::new( create_test_command_handler ) );
     assert!( result.is_ok(), "Failed to register command '{}'", name );
     println!( "✅ Registered: '{}'", name );
   }

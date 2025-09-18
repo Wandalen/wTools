@@ -11,7 +11,9 @@ use unilang_parser::{ Parser, UnilangParserOptions };
 #[ test ]
 fn arg_list_test() -> Result< (), unilang::Error >
 {
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
 
   let arg = ArgumentDefinition::former()
   .description( "Defines hex to place a castle to." )
@@ -46,7 +48,9 @@ fn arg_list_test() -> Result< (), unilang::Error >
       )
     }
   );
-  registry.command_add_runtime( &buy_castle_def, routine )?;
+  #[allow(deprecated)]
+    #[allow(deprecated)]
+    registry.command_add_runtime( &buy_castle_def, routine )?;
 
   let parser = Parser::new( UnilangParserOptions::default() );
 

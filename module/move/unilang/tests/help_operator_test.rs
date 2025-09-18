@@ -12,6 +12,8 @@ fn test_help_operator_shows_help_not_error()
   use unilang_parser::{ Parser, UnilangParserOptions };
 
   // Create a command with required arguments
+  #[allow(deprecated)]
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   registry.register( CommandDefinition
   {
@@ -87,6 +89,8 @@ fn test_help_operator_with_multiple_required_args()
   use unilang_parser::{ Parser, UnilangParserOptions };
 
   // Create a command with multiple required arguments
+  #[allow(deprecated)]
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   registry.register( CommandDefinition
   {
@@ -173,6 +177,8 @@ fn test_help_operator_takes_precedence_over_validation()
   use unilang_parser::{ Parser, UnilangParserOptions };
 
   // Create a command with validation rules
+  #[allow(deprecated)]
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   registry.register( CommandDefinition
   {
@@ -245,6 +251,8 @@ fn test_normal_command_without_help_operator_still_validates()
   use unilang_parser::{ Parser, UnilangParserOptions };
 
   // Same command as first test
+  #[allow(deprecated)]
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   registry.register( CommandDefinition
   {

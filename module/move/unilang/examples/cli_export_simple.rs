@@ -1,3 +1,4 @@
+#![allow(clippy::all)]
 //! Simple CLI Export and Aggregation Demo
 //!
 //! Demonstrates the core capability to export and combine CLI commands
@@ -14,6 +15,7 @@ use unilang::pipeline::Pipeline;
 
 /// Create a CLI registry with math operations
 pub fn create_math_cli() -> CommandRegistry {
+    #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
     registry.enable_help_conventions(true);
 
@@ -91,6 +93,7 @@ pub fn create_math_cli() -> CommandRegistry {
 
 /// Create a CLI registry with file operations
 pub fn create_file_cli() -> CommandRegistry {
+    #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
     registry.enable_help_conventions(true);
 
@@ -141,6 +144,7 @@ pub fn create_file_cli() -> CommandRegistry {
 /// Combine multiple CLI registries with prefixes
 /// This demonstrates how to export CLIs from modules and combine them
 pub fn create_aggregated_cli() -> Result<CommandRegistry, unilang::error::Error> {
+    #[allow(deprecated)]
     let mut main_registry = CommandRegistry::new();
     main_registry.enable_help_conventions(true);
 

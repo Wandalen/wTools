@@ -29,6 +29,7 @@ fn main() -> Result< (), unilang::Error >
 
   // Setup dynamic registry (runtime HashMap)
   #[ allow( deprecated ) ]
+  #[allow(deprecated)]
   let mut dynamic_registry = CommandRegistry::new();
 
   // Register a test command dynamically for comparison
@@ -63,6 +64,7 @@ fn main() -> Result< (), unilang::Error >
   });
 
   #[ allow( deprecated ) ]
+  #[allow(deprecated)]
   dynamic_registry.command_add_runtime( &dynamic_cmd, routine )?;
 
   const ITERATIONS: usize = 100_000;

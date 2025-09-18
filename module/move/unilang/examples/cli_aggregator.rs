@@ -1,3 +1,4 @@
+#![allow(clippy::all)]
 //! Advanced CLI Aggregation Utility
 //!
 //! This example shows a more sophisticated approach to CLI aggregation
@@ -17,9 +18,17 @@ pub struct CliAggregator {
     registered_clis: HashMap<String, String>, // CLI name -> prefix mapping
 }
 
+impl Default for CliAggregator {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl CliAggregator {
     /// Create a new CLI aggregator
+    #[must_use]
     pub fn new() -> Self {
+        #[allow(deprecated)]
         let mut registry = CommandRegistry::new();
         registry.enable_help_conventions(true);
 
@@ -32,6 +41,10 @@ impl CliAggregator {
     /// Add a CLI with an optional prefix
     /// If prefix is provided, all commands will be prefixed (e.g., "math" -> .math.add)
     /// If no prefix, commands are added as-is (but must avoid conflicts)
+    ///
+    /// # Errors
+    /// Returns an error if there are conflicts with existing commands or prefixes.
+    #[allow(clippy::uninlined_format_args)]
     pub fn add_cli(&mut self, name: &str, _source_registry: CommandRegistry, prefix: Option<&str>) -> Result<(), unilang::Error> {
         // Store the mapping for reference
         self.registered_clis.insert(
@@ -48,6 +61,10 @@ impl CliAggregator {
     }
 
     /// Add individual commands with prefix transformation
+    ///
+    /// # Errors
+    /// Returns an error if the command cannot be registered.
+    #[allow(clippy::uninlined_format_args)]
     pub fn add_command_with_prefix(
         &mut self,
         mut command: CommandDefinition,

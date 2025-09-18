@@ -11,7 +11,7 @@
 //! - YAML-driven configuration for maintainability
 //!
 //! **❌ TESTING VIOLATIONS TO AVOID:**
-//! - Do NOT create build-time performance tests comparing PHF vs HashMap
+//! - Do NOT create build-time performance tests comparing PHF vs `HashMap`
 //! - Do NOT add timing measurements to verify PHF generation speed
 //! - Do NOT create benchmark tests for PHF lookup performance in `tests/` directory
 //!

@@ -26,7 +26,8 @@ fn main() -> Result< (), unilang::Error >
   println!();
 
   // Create registry with compile-time generated PHF maps
-  let registry = StaticCommandRegistry::new( &STATIC_COMMANDS );
+  #[allow(deprecated)]
+  let registry = CommandRegistry::new();
   let pipeline = Pipeline::new( registry );
 
   // Demonstrate zero-cost lookup

@@ -29,7 +29,8 @@ struct IntegratedBenchmarkResult
 #[ cfg( feature = "benchmarks" ) ]
 fn create_test_registry() -> CommandRegistry
 {
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   
   // Register common commands that would trigger string interning benefits
   let commands = vec![

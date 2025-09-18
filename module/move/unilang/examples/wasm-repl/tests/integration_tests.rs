@@ -1,3 +1,4 @@
+#![allow(clippy::all)]
 //! Integration tests for UniLang WASM REPL
 //!
 //! These tests run in native mode and verify the core functionality

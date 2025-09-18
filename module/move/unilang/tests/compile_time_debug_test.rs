@@ -20,6 +20,7 @@ fn test_no_compile_time_debug_output_in_build()
 use unilang::prelude::*;
 
 fn main() -> Result<(), unilang::error::Error> {
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   
   let greet_cmd = CommandDefinition {

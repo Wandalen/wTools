@@ -21,7 +21,9 @@ use unilang::semantic::SemanticAnalyzer;
 // | T1.4  | Map(String,String,;,=)| Kind::Map(String, String, Some(';'), Some('='))  | Map with custom entry and key-value delimiters |
 
 fn setup_test_environment(command: CommandDefinition) -> CommandRegistry {
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   registry.register(command);
   registry
 }

@@ -41,8 +41,12 @@ fn test_correct_dot_command_registration()
     examples : Vec::new(),
   };
 
-  let mut registry = CommandRegistry::new();
-  let registration_result = registry.command_add_runtime( &test_cmd, Box::new( create_test_command_handler ) );
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+    #[allow(deprecated)]
+    let registration_result = registry.command_add_runtime( &test_cmd, Box::new( create_test_command_handler ) );
   
   assert!( registration_result.is_ok(), "Command registration should succeed" );
   println!( "✅ Command registered correctly: '{}'", test_cmd.name );
@@ -80,7 +84,9 @@ fn test_multiple_corrected_commands()
     ( ".test_version", "Show version information" ),
   ];
   
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   
   // Register all commands WITH explicit dot prefix
   for (name, description) in &commands 
@@ -105,7 +111,8 @@ fn test_multiple_corrected_commands()
       examples : Vec::new(),
     };
     
-    let result = registry.command_add_runtime( &cmd, Box::new( create_test_command_handler ) );
+    #[allow(deprecated)]
+        let result = registry.command_add_runtime( &cmd, Box::new( create_test_command_handler ) );
     assert!( result.is_ok(), "Failed to register command '{}'", name );
     println!( "✅ Registered: '{}'", name );
   }
@@ -160,8 +167,12 @@ fn test_namespaced_commands_work_correctly()
     examples : Vec::new(),
   };
 
-  let mut registry = CommandRegistry::new();
-  let result = registry.command_add_runtime( &session_cmd, Box::new( create_test_command_handler ) );
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+    #[allow(deprecated)]
+    let result = registry.command_add_runtime( &session_cmd, Box::new( create_test_command_handler ) );
   assert!( result.is_ok(), "Namespaced command registration should succeed" );
   
   let pipeline = Pipeline::new( registry );

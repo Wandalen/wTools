@@ -94,7 +94,8 @@ fn benchmark_unilang_comprehensive( command_count : usize ) -> ComprehensiveBenc
 
     // Create command registry with N commands
     let init_start = Instant::now();
-    let mut registry = CommandRegistry::new();
+    #[allow(deprecated)]
+        let mut registry = CommandRegistry::new();
     
     // Add N commands to registry
     for i in 0..command_count
@@ -409,7 +410,8 @@ unilang = { path = "../../" }
     let main_rs = format!(r#"use unilang::prelude::*;
 
 fn main() {{
-    let mut registry = CommandRegistry::new();
+    #[allow(deprecated)]
+        let mut registry = CommandRegistry::new();
     
     // Add {} commands
     for i in 0..{} {{

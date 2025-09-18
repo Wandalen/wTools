@@ -23,7 +23,9 @@ use unilang_parser::{ GenericInstruction, Parser, UnilangParserOptions };
 #[ test ]
 fn semantic_analyzer_tests()
 {
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   registry.register( CommandDefinition
   {
     name : "test_cmd".to_string(),
@@ -139,7 +141,9 @@ fn semantic_analyzer_tests()
 #[ test ]
 fn interpreter_tests()
 {
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
 
   // Dummy routine for cmd1
   let cmd1_routine = Box::new(
@@ -152,6 +156,7 @@ fn interpreter_tests()
       })
     },
   );
+  #[allow(deprecated)]
   registry
   .command_add_runtime
   (
@@ -189,6 +194,7 @@ fn interpreter_tests()
       })
     },
   );
+  #[allow(deprecated)]
   registry
   .command_add_runtime
   (
@@ -256,7 +262,9 @@ fn interpreter_tests()
 #[ test ]
 fn help_generator_tests()
 {
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   let cmd_with_args_def = CommandDefinition
   {
     name : "test_cmd".to_string(),

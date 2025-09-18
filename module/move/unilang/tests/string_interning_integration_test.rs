@@ -39,7 +39,9 @@ fn test_semantic_analyzer_integration()
   // This test verifies that string interning works correctly within the semantic analyzer
   // by testing that repeated command name construction uses interned strings
   
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   registry.register( CommandDefinition
   {
     name : ".test.command".to_string(),
@@ -254,7 +256,9 @@ fn test_memory_usage_reporting()
 fn test_pipeline_integration_correctness()
 {
   // Test that string interning doesn't affect pipeline correctness over multiple calls
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   registry.register( CommandDefinition
   {
     name : ".integration.test".to_string(),
@@ -302,7 +306,9 @@ fn test_pipeline_integration_correctness()
 #[ test ]
 fn test_error_handling_with_interning()
 {
-  let registry = CommandRegistry::new(); // Empty registry
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let registry = CommandRegistry::new(); // Empty registry
   let pipeline = Pipeline::new( registry );
   
   // Try to process a non-existent command

@@ -120,7 +120,8 @@ fn test_performance_stress_full()
   println!( "🔧 Benchmarking registry initialization..." );
   suite.benchmark( "registry_initialization", ||
   {
-    let registry = CommandRegistry::new();
+    #[allow(deprecated)]
+        let registry = CommandRegistry::new();
     // Registry creation and initialization
     core::hint::black_box( registry );
   });
@@ -131,7 +132,8 @@ fn test_performance_stress_full()
   // Existing command lookups (cache hits) 
   suite.benchmark( "existing_command_lookup", ||
   {
-    let registry = CommandRegistry::new();
+    #[allow(deprecated)]
+        let registry = CommandRegistry::new();
     let command = registry.command( ".version" );
     core::hint::black_box( command );
   });
@@ -141,7 +143,8 @@ fn test_performance_stress_full()
   let counter_clone = nonexistent_counter.clone();
   suite.benchmark( "nonexistent_command_lookup", move ||
   {
-    let registry = CommandRegistry::new();
+    #[allow(deprecated)]
+        let registry = CommandRegistry::new();
     let counter = counter_clone.fetch_add( 1, core::sync::atomic::Ordering::Relaxed );
     let cmd_name = format!( ".nonexistent_{counter}" );
     let command = registry.command( &cmd_name );
@@ -153,7 +156,8 @@ fn test_performance_stress_full()
   let mixed_counter_clone = mixed_counter.clone();
   suite.benchmark( "mixed_command_lookup_pattern", move ||
   {
-    let registry = CommandRegistry::new();
+    #[allow(deprecated)]
+        let registry = CommandRegistry::new();
     let counter = mixed_counter_clone.fetch_add( 1, core::sync::atomic::Ordering::Relaxed );
     let cmd_name = if counter % 10 == 0 
     {
@@ -171,7 +175,8 @@ fn test_performance_stress_full()
   println!( "📝 Benchmarking command registration stress..." );
   suite.benchmark( "command_registration_stress", ||
   {
-    let local_registry = CommandRegistry::new();
+    #[allow(deprecated)]
+        let local_registry = CommandRegistry::new();
     // Simulate registering a batch of commands during runtime
     for i in 0..100
     {

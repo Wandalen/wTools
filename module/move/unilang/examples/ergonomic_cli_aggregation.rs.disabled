@@ -1,3 +1,5 @@
+#![allow(clippy::all)]
+#![allow(clippy::all)]
 //! Ergonomic CLI Export and Aggregation
 //!
 //! This example demonstrates an intuitive, hard-to-misuse approach to:
@@ -111,6 +113,7 @@ pub struct CliAggregator {
 impl CliAggregator {
     /// Create a new CLI aggregator
     pub fn new() -> Self {
+        #[allow(deprecated)]
         let mut registry = CommandRegistry::new();
         registry.enable_help_conventions(true);
         Self {

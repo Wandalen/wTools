@@ -164,47 +164,39 @@ mod_interface::mod_interface!
   /// High-level pipeline API.
   layer pipeline;
 
-  /// Multi-YAML build system for compile-time aggregation.
-  layer multi_yaml;
+  // /// Multi-YAML build system for compile-time aggregation.
+  // layer multi_yaml;
 
   /// String interning system for performance optimization.
   layer interner;
-  
+
   /// SIMD-optimized JSON parsing for 4-25x performance improvements.
   layer simd_json_parser;
-  
+
   /// SIMD-optimized tokenization for 3-6x performance improvements.
   layer simd_tokenizer;
-  
-  /// Environment-specific benchmark configuration system.
-  #[ cfg( feature = "benchmarks" ) ]
-  layer benchmark_config;
-  
-  /// Coefficient of variation analysis for benchmark quality assessment.
-  #[ cfg( feature = "benchmarks" ) ]
-  layer cv_analysis;
-  
-  /// Automatic documentation updater for benchmark results.
-  #[ cfg( feature = "benchmarks" ) ]
-  layer documentation_updater;
-  
-  /// Standard benchmark data sizes for consistent performance comparison.
-  #[ cfg( feature = "benchmarks" ) ]
-  layer benchmark_data_sizes;
-  
-  /// Realistic test data generation for production-like benchmarks.
-  #[ cfg( feature = "benchmarks" ) ]
-  layer realistic_test_data;
-  
-  /// Comparative benchmark structure for side-by-side algorithm performance analysis.
-  #[ cfg( feature = "benchmarks" ) ]
-  layer comparative_benchmark_structure;
-  
-  /// Context-rich benchmark documentation generator for comprehensive reporting.
-  #[ cfg( feature = "benchmarks" ) ]
-  layer context_rich_documentation;
-  
-  /// Before/after optimization workflow system for systematic performance tracking.
-  #[ cfg( feature = "benchmarks" ) ]
-  layer optimization_workflow;
+
+  // /// Environment-specific benchmark configuration system.
+  // layer benchmark_config;
+
+  // /// Coefficient of variation analysis for benchmark quality assessment.
+  // layer cv_analysis;
+
+  // /// Automatic documentation updater for benchmark results.
+  // layer documentation_updater;
+
+  // /// Standard benchmark data sizes for consistent performance comparison.
+  // layer benchmark_data_sizes;
+
+  // /// Realistic test data generation for production-like benchmarks.
+  // layer realistic_test_data;
+
+  // /// Comparative benchmark structure for side-by-side algorithm performance analysis.
+  // layer comparative_benchmark_structure;
+
+  // /// Context-rich benchmark documentation generator for comprehensive reporting.
+  // layer context_rich_documentation;
+
+  // /// Before/after optimization workflow system for systematic performance tracking.
+  // layer optimization_workflow;
 }

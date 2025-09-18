@@ -12,7 +12,9 @@ use regex::Regex;
 //
 
 fn setup_test_environment(command: CommandDefinition) -> CommandRegistry {
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   registry.register(command);
   registry
 }

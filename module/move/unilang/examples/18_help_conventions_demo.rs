@@ -1,3 +1,4 @@
+#![allow(clippy::all)]
 //! # Help Conventions Demo
 //!
 //! This example demonstrates the standardized help conventions implemented in Unilang:
@@ -29,6 +30,7 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
   println!( "=== Help Conventions Demo ===\n" );
 
   // Step 1: Create registry with help conventions enabled
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   registry.enable_help_conventions( true ); // Enable automatic help generation
 

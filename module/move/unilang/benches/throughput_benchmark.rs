@@ -82,7 +82,8 @@ fn run_framework_comparison_benchkit( command_count : usize ) -> ComparisonAnaly
 fn benchmark_unilang_simd_operation( command_count : usize )
 {
   // Create command registry with N commands
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   
   // Add N commands to registry
   for i in 0..command_count
