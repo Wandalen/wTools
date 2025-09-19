@@ -146,6 +146,13 @@ mod private
     MinItems( usize ),
   }
 
+  ///
+  /// Type alias for PHF maps containing static command definitions.
+  ///
+  /// This type alias provides a convenient way to define compile-time PHF maps
+  /// that contain static command definitions for zero-cost lookup.
+  pub type StaticCommandMap = phf::Map< &'static str, &'static StaticCommandDefinition >;
+
   // Conversion implementations to convert from static to dynamic versions
   impl From< &'static StaticCommandDefinition > for crate::data::CommandDefinition
   {
@@ -257,10 +264,12 @@ mod_interface::mod_interface!
   exposed use private::StaticArgumentAttributes;
   exposed use private::StaticKind;
   exposed use private::StaticValidationRule;
+  exposed use private::StaticCommandMap;
 
   prelude use private::StaticCommandDefinition;
   prelude use private::StaticArgumentDefinition;
   prelude use private::StaticArgumentAttributes;
   prelude use private::StaticKind;
   prelude use private::StaticValidationRule;
+  prelude use private::StaticCommandMap;
 }

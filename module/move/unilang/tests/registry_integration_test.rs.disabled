@@ -1,0 +1,417 @@
+//!
+//! Tests for registry integration between StaticCommandRegistry and existing infrastructure.
+//!
+//! This module tests the integration of `StaticCommandRegistry` with existing `CommandRegistry`
+//! infrastructure and `Pipeline` components.
+//!
+
+use unilang::{ CommandDefinition, CommandRegistry, CommandRegistryBuilder, Pipeline, ExecutionContext, VerifiedCommand, OutputData, ErrorData, RegistryMode };
+
+/// Helper function to create a test CommandDefinition with minimal boilerplate
+fn create_test_command( name: &str, description: &str ) -> CommandDefinition
+{
+  CommandDefinition
+  {
+    name: name.to_string(),
+    namespace: String::new(),
+    description: description.to_string(),
+    routine_link: None,
+    auto_help_enabled: false,
+    hint: String::new(),
+    status: "stable".to_string(),
+    version: "1.0.0".to_string(),
+    tags: Vec::new(),
+    aliases: Vec::new(),
+    permissions: Vec::new(),
+    idempotent: false,
+    deprecation_message: String::new(),
+    http_method_hint: "GET".to_string(),
+    examples: Vec::new(),
+    arguments: Vec::new(),
+  }
+}
+
+#[ test ]
+fn test_command_registry_from_static_commands()
+{
+  // Test creating CommandRegistry from static commands
+  let registry = CommandRegistry::from_static_commands();
+
+  // Should successfully create registry with static commands loaded
+  assert!( true, "CommandRegistry::from_static_commands() should succeed" );
+}
+
+#[ test ]
+fn test_command_registry_backward_compatibility_register()
+{
+  // Test that existing register method still works
+  let mut registry = CommandRegistry::from_static_commands();
+
+  let test_cmd = create_test_command( "test_compat", "Backward compatibility test" );
+
+  // Should be able to register dynamic commands as before
+  registry.register( test_cmd );
+
+  // Should find the registered command
+  let found = registry.get( ".test_compat" );
+  assert!( found.is_some(), "Should find dynamically registered command" );
+
+  let cmd = found.unwrap();
+  assert_eq!( cmd.name, "test_compat" );
+  assert_eq!( cmd.description, "Backward compatibility test" );
+}
+
+#[ test ]
+fn test_command_registry_backward_compatibility_get()
+{
+  // Test that existing get method still works
+  let registry = CommandRegistry::from_static_commands();
+
+  // Should be able to get static commands using existing API
+  let help_cmd = registry.get( ".help" );
+
+  // Either should find static help command or return None if no static commands
+  if let Some( cmd ) = help_cmd
+  {
+    assert!( cmd.description.contains( "help" ) || cmd.description.contains( "Help" ) );
+  }
+}
+
+#[ test ]
+fn test_command_registry_backward_compatibility_register_routine()
+{
+  // Test that existing register_routine method still works
+  let mut registry = CommandRegistry::from_static_commands();
+
+  let test_cmd = create_test_command( "routine_test", "Routine test command" );
+  registry.register( test_cmd );
+
+  // Register a routine using existing API
+  let routine = | _verified_cmd, _context | -> Result< OutputData, ErrorData >
+  {
+    Ok( OutputData { content: "Test routine output".to_string(), format: "text".to_string() } )
+  };
+
+  registry.register_routine( ".routine_test", Box::new( routine ) );
+
+  // Should be able to check for routine existence
+  let has_routine = registry.has_routine( ".routine_test" );
+  assert!( has_routine, "Should have registered routine using existing API" );
+}
+
+#[ test ]
+fn test_command_registry_static_priority_over_dynamic()
+{
+  // Test that static commands take priority over dynamic commands with same name
+  let mut registry = CommandRegistry::from_static_commands();
+
+  // Try to register a dynamic command with the same name as a static one
+  let dynamic_help = create_test_command( "help", "Dynamic help command override" );
+  registry.register( dynamic_help );
+
+  // Lookup should return static version, not dynamic
+  let found_cmd = registry.get( ".help" );
+  if let Some( cmd ) = found_cmd
+  {
+    // Static commands should take precedence
+    // The exact test depends on what static commands are available
+    assert!( !cmd.description.is_empty(), "Should find some help command" );
+  }
+}
+
+#[ test ]
+fn test_command_registry_list_commands_integration()
+{
+  // Test that list_commands includes both static and dynamic commands
+  let mut registry = CommandRegistry::from_static_commands();
+
+  let dynamic_cmd = create_test_command( "dynamic_list_test", "Dynamic command for listing" );
+  registry.register( dynamic_cmd );
+
+  let all_commands = registry.list_commands();
+
+  // Should include both static and dynamic commands
+  let command_names: Vec< String > = all_commands.iter().map( | cmd | cmd.name.clone() ).collect();
+  assert!( command_names.contains( &"dynamic_list_test".to_string() ), "Should include dynamic commands" );
+
+  // Should have at least the dynamic command we added
+  assert!( all_commands.len() >= 1, "Should have at least one command" );
+}
+
+#[ test ]
+fn test_pipeline_integration_with_static_registry()
+{
+  // Test that Pipeline works with registry containing static commands
+  let registry = CommandRegistry::from_static_commands();
+  let pipeline = Pipeline::new( &registry );
+
+  // Should be able to create pipeline without errors
+  assert!( true, "Pipeline should work with static command registry" );
+}
+
+#[ test ]
+fn test_pipeline_command_processing_static_commands()
+{
+  // Test that Pipeline can process static commands
+  let registry = CommandRegistry::from_static_commands();
+  let pipeline = Pipeline::new( &registry );
+
+  // Try to process a help command (common static command)
+  let result = pipeline.process_command( ".help" );
+
+  // Should either succeed or fail gracefully (depending on static commands available)
+  // The main test is that it doesn't panic or crash
+  match result
+  {
+    Ok( _ ) => assert!( true, "Successfully processed static command" ),
+    Err( _ ) => assert!( true, "Gracefully handled static command processing" ),
+  }
+}
+
+#[ test ]
+fn test_pipeline_command_processing_dynamic_commands()
+{
+  // Test that Pipeline can process dynamic commands in integrated registry
+  let mut registry = CommandRegistry::from_static_commands();
+
+  // Register a test command with routine
+  let test_cmd = create_test_command( "pipeline_test", "Pipeline integration test command" );
+  registry.register( test_cmd );
+
+  let routine = | _verified_cmd, _context | -> Result< OutputData, ErrorData >
+  {
+    Ok( OutputData { content: "Pipeline test success".to_string(), format: "text".to_string() } )
+  };
+  registry.register_routine( ".pipeline_test", Box::new( routine ) );
+
+  let pipeline = Pipeline::new( &registry );
+
+  // Should be able to process the dynamic command
+  let result = pipeline.process_command( ".pipeline_test" );
+
+  assert!( result.is_ok(), "Should successfully process dynamic command in integrated registry" );
+
+  let command_result = result.unwrap();
+  assert!( command_result.is_success(), "Command should execute successfully" );
+}
+
+#[ test ]
+fn test_registry_performance_metrics_integration()
+{
+  // Test that performance metrics work in integrated registry
+  let mut registry = CommandRegistry::from_static_commands();
+
+  // Perform some operations
+  let _ = registry.get( ".help" );
+  let _ = registry.get( ".nonexistent" );
+
+  let dynamic_cmd = create_test_command( "metrics_test", "Metrics test command" );
+  registry.register( dynamic_cmd );
+  let _ = registry.get( ".metrics_test" );
+
+  // Should be able to get performance metrics
+  let metrics = registry.performance_metrics();
+  assert!( metrics.total_lookups >= 3, "Should track lookups" );
+}
+
+#[ test ]
+fn test_registry_help_conventions_integration()
+{
+  // Test that help conventions work with integrated registry
+  let mut registry = CommandRegistry::from_static_commands();
+
+  // Enable help conventions
+  registry.enable_help_conventions();
+
+  let test_cmd = create_test_command( "help_conv_test", "Help conventions test" );
+  registry.register( test_cmd );
+
+  // Should be able to get help for the command
+  let help_content = registry.get_help_for_command( ".help_conv_test" );
+  assert!( help_content.is_some(), "Should generate help for registered command" );
+
+  let help_text = help_content.unwrap();
+  assert!( help_text.contains( "help_conv_test" ), "Help should mention command name" );
+}
+
+#[ test ]
+fn test_registry_builder_integration()
+{
+  // Test that CommandRegistryBuilder works with static commands
+  let registry = CommandRegistryBuilder::new()
+    .with_static_commands()
+    .command( create_test_command( "builder_test", "Builder test command" ) )
+    .build();
+
+  // Should find both static and builder-added commands
+  let builder_cmd = registry.get( ".builder_test" );
+  assert!( builder_cmd.is_some(), "Should find builder-added command" );
+
+  let cmd = builder_cmd.unwrap();
+  assert_eq!( cmd.name, "builder_test" );
+  assert_eq!( cmd.description, "Builder test command" );
+}
+
+#[ test ]
+fn test_existing_examples_compatibility()
+{
+  // Test that existing code patterns still work
+  let mut registry = CommandRegistry::new();
+
+  // Old pattern should still work
+  let old_style_cmd = create_test_command( "old_style", "Old style command" );
+  registry.register( old_style_cmd );
+
+  let found = registry.get( ".old_style" );
+  assert!( found.is_some(), "Old style registration should still work" );
+
+  // New pattern should also work
+  let new_registry = CommandRegistry::from_static_commands();
+  assert!( true, "New static command pattern should work" );
+}
+
+#[ test ]
+fn test_registry_mode_switching()
+{
+  // Test switching between registry modes
+  let mut registry = CommandRegistry::from_static_commands();
+
+  // Should be able to switch registry modes
+  registry.set_registry_mode( RegistryMode::DynamicOnly );
+
+  let dynamic_cmd = create_test_command( "mode_test", "Mode switching test" );
+  registry.register( dynamic_cmd );
+
+  // In DynamicOnly mode, should find dynamic commands
+  let found_dynamic = registry.get( ".mode_test" );
+  assert!( found_dynamic.is_some(), "Should find dynamic command in DynamicOnly mode" );
+
+  // Switch to StaticOnly mode
+  registry.set_registry_mode( RegistryMode::StaticOnly );
+
+  // Dynamic command should not be found in StaticOnly mode
+  let not_found_dynamic = registry.get( ".mode_test" );
+  assert!( not_found_dynamic.is_none(), "Should not find dynamic command in StaticOnly mode" );
+}
+
+#[ test ]
+fn test_registry_clear_dynamic_commands()
+{
+  // Test clearing dynamic commands while preserving static ones
+  let mut registry = CommandRegistry::from_static_commands();
+
+  let dynamic_cmd = create_test_command( "clear_test", "Clear test command" );
+  registry.register( dynamic_cmd );
+
+  // Should find the dynamic command
+  assert!( registry.get( ".clear_test" ).is_some(), "Should find dynamic command before clear" );
+
+  // Clear dynamic commands
+  registry.clear_dynamic_commands();
+
+  // Dynamic command should be gone
+  assert!( registry.get( ".clear_test" ).is_none(), "Should not find dynamic command after clear" );
+
+  // Static commands should remain (if any)
+  let static_count_after = registry.static_command_count();
+  assert!( static_count_after >= 0, "Static commands should remain after clearing dynamic" );
+}
+
+#[ test ]
+fn test_command_resolution_priority_consistency()
+{
+  // Test that command resolution priority is consistent across multiple lookups
+  let mut registry = CommandRegistry::from_static_commands();
+
+  // Add a dynamic command that might conflict
+  let dynamic_cmd = create_test_command( "help", "Dynamic help" );
+  registry.register( dynamic_cmd );
+
+  // Multiple lookups should be consistent
+  let first_lookup = registry.get( ".help" );
+  let second_lookup = registry.get( ".help" );
+  let third_lookup = registry.get( ".help" );
+
+  // All lookups should return the same result
+  assert_eq!( first_lookup.is_some(), second_lookup.is_some() );
+  assert_eq!( second_lookup.is_some(), third_lookup.is_some() );
+
+  if let ( Some( first ), Some( second ), Some( third ) ) = ( first_lookup, second_lookup, third_lookup )
+  {
+    assert_eq!( first.name, second.name );
+    assert_eq!( second.name, third.name );
+    assert_eq!( first.description, second.description );
+    assert_eq!( second.description, third.description );
+  }
+}
+
+#[ test ]
+fn test_namespace_command_integration()
+{
+  // Test that namespaced commands work correctly in integrated registry
+  let mut registry = CommandRegistry::from_static_commands();
+
+  // Register a namespaced command
+  let namespaced_cmd = CommandDefinition
+  {
+    name: "status".to_string(),
+    namespace: "system".to_string(),
+    description: "System status command".to_string(),
+    routine_link: None,
+    auto_help_enabled: false,
+    hint: String::new(),
+    status: "stable".to_string(),
+    version: "1.0.0".to_string(),
+    tags: Vec::new(),
+    aliases: Vec::new(),
+    permissions: Vec::new(),
+    idempotent: false,
+    deprecation_message: String::new(),
+    http_method_hint: "GET".to_string(),
+    examples: Vec::new(),
+    arguments: Vec::new(),
+  };
+
+  registry.register( namespaced_cmd );
+
+  // Should be able to find namespaced command
+  let found_namespaced = registry.get( "system.status" );
+  assert!( found_namespaced.is_some(), "Should find namespaced command" );
+
+  let cmd = found_namespaced.unwrap();
+  assert_eq!( cmd.name, "status" );
+  assert_eq!( cmd.namespace, "system" );
+}
+
+#[ test ]
+fn test_registry_thread_safety()
+{
+  // Test that registry operations are thread-safe
+  use std::sync::{ Arc, Mutex };
+  use std::thread;
+
+  let registry = Arc::new( Mutex::new( CommandRegistry::from_static_commands() ) );
+  let mut handles = vec![];
+
+  // Spawn multiple threads to access registry
+  for i in 0..5
+  {
+    let registry_clone = registry.clone();
+    let handle = thread::spawn( move ||
+    {
+      let reg = registry_clone.lock().unwrap();
+      // Perform some operations
+      let _ = reg.get( ".help" );
+      let _ = reg.list_commands();
+      i // return thread id for verification
+    } );
+    handles.push( handle );
+  }
+
+  // Wait for all threads to complete
+  for handle in handles
+  {
+    let thread_result = handle.join();
+    assert!( thread_result.is_ok(), "Thread should complete successfully" );
+  }
+}

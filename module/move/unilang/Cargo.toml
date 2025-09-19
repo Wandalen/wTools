@@ -26,9 +26,14 @@ all-features = false
 
 [features]
 default = [ "enabled", "simd", "repl", "enhanced_repl" ]
-full = [ "enabled", "on_unknown_suggest", "simd", "repl", "enhanced_repl" ]
+full = [ "enabled", "on_unknown_suggest", "simd", "repl", "enhanced_repl", "static_commands", "multi_yaml", "advanced_benchmarks" ]
 enabled = []
 benchmarks = [ "simd", "clap", "pico-args", "benchkit", "num_cpus", "rand" ]
+
+# New feature flags for advanced functionality
+static_commands = [ ]
+multi_yaml = [ "walkdir" ]
+advanced_benchmarks = [ "benchmarks", "sysinfo", "static_commands", "multi_yaml" ]
 
 # WebAssembly-compatible feature set - excludes platform-specific dependencies
 # No enhanced REPL (rustyline/atty), no SIMD (platform detection issues), minimal dependencies
@@ -62,6 +67,8 @@ url = "2.5.0"
 chrono = { version = "0.4.38", features = ["serde"] }
 regex = "1.10.4"
 phf = { version = "0.11", features = ["macros"] }
+walkdir = { version = "2.4", optional = true }
+sysinfo = { version = "0.30", optional = true }
 
 ## internal
 error_tools = { workspace = true, features = [ "enabled", "error_typed", "error_untyped" ] }
@@ -217,6 +224,8 @@ path = "examples/18_help_conventions_demo.rs"
 [build-dependencies]
 serde = "1.0"
 serde_yaml = "0.9"
+phf_codegen = "0.11"
+walkdir = "2.4"
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }

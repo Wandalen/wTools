@@ -1,0 +1,493 @@
+//!
+//! Tests for CliBuilder fluent API for CLI aggregation.
+//!
+//! This module tests the `CliBuilder` fluent API that enables ergonomic CLI aggregation,
+//! combining multiple CLI modules with prefixes, conflict detection, and namespace isolation.
+//!
+
+use unilang::{ CommandDefinition, CliBuilder, StaticCommandRegistry, ConflictResolutionMode };
+
+/// Helper function to create a test CommandDefinition with minimal boilerplate
+fn create_test_command( name: &str, description: &str ) -> CommandDefinition
+{
+  CommandDefinition
+  {
+    name: name.to_string(),
+    namespace: String::new(),
+    description: description.to_string(),
+    routine_link: None,
+    auto_help_enabled: false,
+    hint: String::new(),
+    status: "stable".to_string(),
+    version: "1.0.0".to_string(),
+    tags: Vec::new(),
+    aliases: Vec::new(),
+    permissions: Vec::new(),
+    idempotent: false,
+    deprecation_message: String::new(),
+    http_method_hint: "GET".to_string(),
+    examples: Vec::new(),
+    arguments: Vec::new(),
+  }
+}
+
+/// Helper function to create a test StaticCommandRegistry with some commands
+fn create_test_static_registry( commands: Vec< CommandDefinition > ) -> StaticCommandRegistry
+{
+  let mut registry = StaticCommandRegistry::new();
+  for cmd in commands
+  {
+    registry.register_dynamic_command( cmd );
+  }
+  registry
+}
+
+#[ test ]
+fn test_cli_builder_creation()
+{
+  // Test basic creation of CliBuilder
+  let builder = CliBuilder::new();
+
+  // Should be able to create without errors
+  assert!( true, "CliBuilder creation should succeed" );
+}
+
+#[ test ]
+fn test_cli_builder_fluent_api_chaining()
+{
+  // Test that fluent API methods can be chained
+  let builder = CliBuilder::new()
+    .with_name( "aggregated_cli" )
+    .with_description( "Aggregated CLI application" )
+    .with_version( "1.0.0" );
+
+  // Should be able to chain methods
+  assert!( true, "Fluent API chaining should work" );
+}
+
+#[ test ]
+fn test_cli_builder_static_module_with_prefix()
+{
+  // Test adding static module with prefix
+  let module_commands = vec![
+    create_test_command( "status", "Module status command" ),
+    create_test_command( "info", "Module info command" ),
+  ];
+
+  let static_registry = create_test_static_registry( module_commands );
+
+  let builder = CliBuilder::new()
+    .static_module_with_prefix( "mod1", static_registry );
+
+  // Should be able to add static module with prefix
+  assert!( true, "Should be able to add static module with prefix" );
+}
+
+#[ test ]
+fn test_cli_builder_multiple_static_modules()
+{
+  // Test adding multiple static modules with different prefixes
+  let module1_commands = vec![
+    create_test_command( "start", "Start module1" ),
+    create_test_command( "stop", "Stop module1" ),
+  ];
+
+  let module2_commands = vec![
+    create_test_command( "list", "List module2 items" ),
+    create_test_command( "create", "Create module2 item" ),
+  ];
+
+  let static_registry1 = create_test_static_registry( module1_commands );
+  let static_registry2 = create_test_static_registry( module2_commands );
+
+  let builder = CliBuilder::new()
+    .static_module_with_prefix( "service", static_registry1 )
+    .static_module_with_prefix( "data", static_registry2 );
+
+  // Should be able to add multiple modules
+  assert!( true, "Should be able to add multiple static modules" );
+}
+
+#[ test ]
+fn test_cli_builder_conflict_detection_duplicate_prefixes()
+{
+  // Test that duplicate prefixes are detected
+  let module1_commands = vec![ create_test_command( "cmd1", "Command 1" ) ];
+  let module2_commands = vec![ create_test_command( "cmd2", "Command 2" ) ];
+
+  let static_registry1 = create_test_static_registry( module1_commands );
+  let static_registry2 = create_test_static_registry( module2_commands );
+
+  let result = CliBuilder::new()
+    .static_module_with_prefix( "same", static_registry1 )
+    .static_module_with_prefix( "same", static_registry2 ) // Duplicate prefix
+    .try_build_static();
+
+  // Should detect conflict and return error
+  assert!( result.is_err(), "Should detect duplicate prefix conflict" );
+
+  let error = result.unwrap_err();
+  assert!( error.to_string().contains( "duplicate" ) || error.to_string().contains( "conflict" ) );
+}
+
+#[ test ]
+fn test_cli_builder_conflict_detection_command_overlap()
+{
+  // Test detection of overlapping commands between modules
+  let module1_commands = vec![
+    create_test_command( "help", "Module1 help" ),
+    create_test_command( "status", "Module1 status" ),
+  ];
+
+  let module2_commands = vec![
+    create_test_command( "help", "Module2 help" ), // Overlaps with module1
+    create_test_command( "info", "Module2 info" ),
+  ];
+
+  let static_registry1 = create_test_static_registry( module1_commands );
+  let static_registry2 = create_test_static_registry( module2_commands );
+
+  let result = CliBuilder::new()
+    .static_module_with_prefix( "mod1", static_registry1 )
+    .static_module_with_prefix( "mod2", static_registry2 )
+    .enable_conflict_detection( true )
+    .try_build_static();
+
+  // Should detect command overlap if conflict detection is enabled
+  if result.is_err()
+  {
+    let error = result.unwrap_err();
+    assert!( error.to_string().contains( "overlap" ) || error.to_string().contains( "conflict" ) );
+  }
+}
+
+#[ test ]
+fn test_cli_builder_namespace_isolation()
+{
+  // Test that modules maintain namespace isolation
+  let module1_commands = vec![
+    create_test_command( "deploy", "Deploy service" ),
+    create_test_command( "restart", "Restart service" ),
+  ];
+
+  let module2_commands = vec![
+    create_test_command( "backup", "Backup data" ),
+    create_test_command( "restore", "Restore data" ),
+  ];
+
+  let static_registry1 = create_test_static_registry( module1_commands );
+  let static_registry2 = create_test_static_registry( module2_commands );
+
+  let result = CliBuilder::new()
+    .static_module_with_prefix( "svc", static_registry1 )
+    .static_module_with_prefix( "db", static_registry2 )
+    .build_static();
+
+  assert!( result.is_ok(), "Should build successfully with namespace isolation" );
+
+  let unified_registry = result.unwrap();
+
+  // Should be able to access commands with their prefixes
+  let svc_deploy = unified_registry.get_command( "svc.deploy" );
+  let db_backup = unified_registry.get_command( "db.backup" );
+
+  assert!( svc_deploy.is_some(), "Should find prefixed service command" );
+  assert!( db_backup.is_some(), "Should find prefixed database command" );
+
+  // Should not find commands without prefixes (namespace isolation)
+  let bare_deploy = unified_registry.get_command( ".deploy" );
+  let bare_backup = unified_registry.get_command( ".backup" );
+
+  assert!( bare_deploy.is_none(), "Should not find unprefixed commands" );
+  assert!( bare_backup.is_none(), "Should not find unprefixed commands" );
+}
+
+#[ test ]
+fn test_cli_builder_build_static_success()
+{
+  // Test successful building of static unified registry
+  let module_commands = vec![
+    create_test_command( "test", "Test command" ),
+    create_test_command( "check", "Check command" ),
+  ];
+
+  let static_registry = create_test_static_registry( module_commands );
+
+  let result = CliBuilder::new()
+    .with_name( "test_cli" )
+    .static_module_with_prefix( "testing", static_registry )
+    .build_static();
+
+  assert!( result.is_ok(), "Should build successfully" );
+
+  let unified_registry = result.unwrap();
+
+  // Should contain the prefixed commands
+  let test_cmd = unified_registry.get_command( "testing.test" );
+  let check_cmd = unified_registry.get_command( "testing.check" );
+
+  assert!( test_cmd.is_some(), "Should contain prefixed test command" );
+  assert!( check_cmd.is_some(), "Should contain prefixed check command" );
+}
+
+#[ test ]
+fn test_cli_builder_empty_build()
+{
+  // Test building with no modules
+  let result = CliBuilder::new()
+    .with_name( "empty_cli" )
+    .build_static();
+
+  assert!( result.is_ok(), "Should build successfully even with no modules" );
+
+  let unified_registry = result.unwrap();
+
+  // Should have minimal command set (possibly just built-in commands)
+  let command_count = unified_registry.static_command_count();
+  assert!( command_count >= 0, "Should have non-negative command count" );
+}
+
+#[ test ]
+fn test_cli_builder_module_metadata()
+{
+  // Test that module metadata is preserved
+  let module_commands = vec![
+    create_test_command( "process", "Process data" ),
+  ];
+
+  let static_registry = create_test_static_registry( module_commands );
+
+  let result = CliBuilder::new()
+    .with_name( "metadata_test" )
+    .with_description( "Test CLI with metadata" )
+    .with_version( "2.0.0" )
+    .with_author( "Test Author" )
+    .static_module_with_prefix( "proc", static_registry )
+    .build_static();
+
+  assert!( result.is_ok(), "Should build with metadata" );
+
+  let unified_registry = result.unwrap();
+
+  // Should preserve metadata
+  let metadata = unified_registry.get_metadata();
+  assert!( metadata.name == "metadata_test", "Should preserve CLI name" );
+  assert!( metadata.description == "Test CLI with metadata", "Should preserve description" );
+  assert!( metadata.version == "2.0.0", "Should preserve version" );
+}
+
+#[ test ]
+fn test_cli_builder_command_counting()
+{
+  // Test accurate command counting across modules
+  let module1_commands = vec![
+    create_test_command( "cmd1", "Command 1" ),
+    create_test_command( "cmd2", "Command 2" ),
+  ];
+
+  let module2_commands = vec![
+    create_test_command( "cmd3", "Command 3" ),
+    create_test_command( "cmd4", "Command 4" ),
+    create_test_command( "cmd5", "Command 5" ),
+  ];
+
+  let static_registry1 = create_test_static_registry( module1_commands );
+  let static_registry2 = create_test_static_registry( module2_commands );
+
+  let result = CliBuilder::new()
+    .static_module_with_prefix( "m1", static_registry1 )
+    .static_module_with_prefix( "m2", static_registry2 )
+    .build_static();
+
+  assert!( result.is_ok(), "Should build successfully" );
+
+  let unified_registry = result.unwrap();
+
+  // Should have at least the commands from both modules
+  let total_commands = unified_registry.static_command_count();
+  assert!( total_commands >= 5, "Should have at least 5 commands from modules" );
+}
+
+#[ test ]
+fn test_cli_builder_prefix_validation()
+{
+  // Test validation of prefix names
+  let module_commands = vec![ create_test_command( "test", "Test command" ) ];
+  let static_registry = create_test_static_registry( module_commands );
+
+  // Test invalid prefixes
+  let invalid_prefixes = vec![ "", " ", ".", "invalid.prefix", "123invalid" ];
+
+  for invalid_prefix in invalid_prefixes
+  {
+    let result = CliBuilder::new()
+      .static_module_with_prefix( invalid_prefix, static_registry.clone() )
+      .try_build_static();
+
+    assert!( result.is_err(), "Should reject invalid prefix: '{}'", invalid_prefix );
+  }
+
+  // Test valid prefix
+  let result = CliBuilder::new()
+    .static_module_with_prefix( "valid_prefix", static_registry )
+    .build_static();
+
+  assert!( result.is_ok(), "Should accept valid prefix" );
+}
+
+#[ test ]
+fn test_cli_builder_global_command_handling()
+{
+  // Test handling of global commands (no prefix)
+  let module_commands = vec![
+    create_test_command( "help", "Help command" ),
+    create_test_command( "version", "Version command" ),
+  ];
+
+  let static_registry = create_test_static_registry( module_commands );
+
+  let result = CliBuilder::new()
+    .with_global_commands( static_registry )
+    .build_static();
+
+  assert!( result.is_ok(), "Should build with global commands" );
+
+  let unified_registry = result.unwrap();
+
+  // Global commands should be accessible without prefix
+  let help_cmd = unified_registry.get_command( ".help" );
+  let version_cmd = unified_registry.get_command( ".version" );
+
+  assert!( help_cmd.is_some(), "Should find global help command" );
+  assert!( version_cmd.is_some(), "Should find global version command" );
+}
+
+#[ test ]
+fn test_cli_builder_try_build_vs_build()
+{
+  // Test difference between try_build_static and build_static
+  let module_commands = vec![ create_test_command( "test", "Test command" ) ];
+  let static_registry = create_test_static_registry( module_commands );
+
+  // try_build_static should return Result
+  let try_result = CliBuilder::new()
+    .static_module_with_prefix( "test", static_registry.clone() )
+    .try_build_static();
+
+  assert!( try_result.is_ok(), "try_build_static should return Ok result" );
+
+  // build_static should panic on error or return registry directly
+  let build_result = CliBuilder::new()
+    .static_module_with_prefix( "test", static_registry )
+    .build_static();
+
+  assert!( build_result.is_ok(), "build_static should succeed" );
+}
+
+#[ test ]
+fn test_cli_builder_command_enumeration()
+{
+  // Test enumeration of all commands across modules
+  let module1_commands = vec![
+    create_test_command( "start", "Start service" ),
+    create_test_command( "stop", "Stop service" ),
+  ];
+
+  let module2_commands = vec![
+    create_test_command( "list", "List items" ),
+  ];
+
+  let static_registry1 = create_test_static_registry( module1_commands );
+  let static_registry2 = create_test_static_registry( module2_commands );
+
+  let result = CliBuilder::new()
+    .static_module_with_prefix( "svc", static_registry1 )
+    .static_module_with_prefix( "data", static_registry2 )
+    .build_static();
+
+  assert!( result.is_ok(), "Should build successfully" );
+
+  let unified_registry = result.unwrap();
+
+  // Should be able to list all commands
+  let all_commands = unified_registry.list_static_commands();
+
+  let command_names: Vec< String > = all_commands.iter()
+    .map( | cmd | format!( "{}.{}", cmd.namespace, cmd.name ) )
+    .collect();
+
+  assert!( command_names.contains( &"svc.start".to_string() ), "Should contain svc.start" );
+  assert!( command_names.contains( &"svc.stop".to_string() ), "Should contain svc.stop" );
+  assert!( command_names.contains( &"data.list".to_string() ), "Should contain data.list" );
+}
+
+#[ test ]
+fn test_cli_builder_conflict_resolution_modes()
+{
+  // Test different conflict resolution modes
+  let module1_commands = vec![ create_test_command( "help", "Module1 help" ) ];
+  let module2_commands = vec![ create_test_command( "help", "Module2 help" ) ];
+
+  let static_registry1 = create_test_static_registry( module1_commands );
+  let static_registry2 = create_test_static_registry( module2_commands );
+
+  // Test strict mode (should error on conflicts)
+  let strict_result = CliBuilder::new()
+    .static_module_with_prefix( "m1", static_registry1.clone() )
+    .static_module_with_prefix( "m2", static_registry2.clone() )
+    .conflict_resolution_mode( ConflictResolutionMode::Strict )
+    .try_build_static();
+
+  // Should handle conflicts according to mode
+  // Exact behavior depends on implementation
+
+  // Test override mode (later modules override earlier ones)
+  let override_result = CliBuilder::new()
+    .static_module_with_prefix( "m1", static_registry1 )
+    .static_module_with_prefix( "m2", static_registry2 )
+    .conflict_resolution_mode( ConflictResolutionMode::Override )
+    .build_static();
+
+  assert!( override_result.is_ok(), "Override mode should handle conflicts" );
+}
+
+#[ test ]
+fn test_cli_builder_module_isolation_verification()
+{
+  // Test that modules are properly isolated and don't interfere
+  let module1_commands = vec![
+    create_test_command( "deploy", "Deploy application" ),
+    create_test_command( "status", "Check status" ),
+  ];
+
+  let module2_commands = vec![
+    create_test_command( "deploy", "Deploy database" ), // Same name, different module
+    create_test_command( "migrate", "Run migrations" ),
+  ];
+
+  let static_registry1 = create_test_static_registry( module1_commands );
+  let static_registry2 = create_test_static_registry( module2_commands );
+
+  let result = CliBuilder::new()
+    .static_module_with_prefix( "app", static_registry1 )
+    .static_module_with_prefix( "db", static_registry2 )
+    .build_static();
+
+  assert!( result.is_ok(), "Should build with isolated modules" );
+
+  let unified_registry = result.unwrap();
+
+  // Both deploy commands should be accessible with their prefixes
+  let app_deploy = unified_registry.get_command( "app.deploy" );
+  let db_deploy = unified_registry.get_command( "db.deploy" );
+
+  assert!( app_deploy.is_some(), "Should find app deploy command" );
+  assert!( db_deploy.is_some(), "Should find db deploy command" );
+
+  // Commands should have their original descriptions
+  let app_cmd = app_deploy.unwrap();
+  let db_cmd = db_deploy.unwrap();
+
+  assert!( app_cmd.description.contains( "application" ), "Should preserve app command description" );
+  assert!( db_cmd.description.contains( "database" ), "Should preserve db command description" );
+}

@@ -33,27 +33,98 @@ fn main()
   let out_dir = env::var("OUT_DIR").unwrap();
   let dest_path = Path::new(&out_dir).join("static_commands.rs");
 
-  // Check if we have a custom manifest path from environment variable
-  let manifest_path = env::var("UNILANG_STATIC_COMMANDS_PATH")
-    .unwrap_or_else(|_| "unilang.commands.yaml".to_string());
+  // Support both single file and multi-file discovery modes
+  let yaml_discovery_paths = env::var("UNILANG_YAML_DISCOVERY_PATHS")
+    .map(|paths| paths.split(':').map(String::from).collect::<Vec<_>>())
+    .unwrap_or_else(|_| vec!["./".to_string()]);
 
-  // Read and parse the YAML manifest
-  let Ok(yaml_content) = std::fs::read_to_string(&manifest_path) else {
-    // If manifest doesn't exist, create empty PHF
-    generate_empty_phf(&dest_path);
-    return;
-  };
-
-  let command_definitions: Vec<serde_yaml::Value> = match serde_yaml::from_str(&yaml_content)
+  // Check if we have a custom manifest path from environment variable (single file mode)
+  if let Ok(manifest_path) = env::var("UNILANG_STATIC_COMMANDS_PATH")
   {
-    Ok(definitions) => definitions,
-    Err(e) =>
-    {
-      panic!("Failed to parse YAML manifest: {e}");
-    }
-  };
+    // Single file mode - existing behavior
+    let Ok(yaml_content) = std::fs::read_to_string(&manifest_path) else {
+      generate_empty_phf(&dest_path);
+      return;
+    };
 
-  generate_static_commands(&dest_path, &command_definitions);
+    let command_definitions: Vec<serde_yaml::Value> = match serde_yaml::from_str(&yaml_content)
+    {
+      Ok(definitions) => definitions,
+      Err(e) =>
+      {
+        panic!("Failed to parse YAML manifest: {e}");
+      }
+    };
+
+    generate_static_commands(&dest_path, &command_definitions);
+  }
+  else
+  {
+    // Multi-file discovery mode using walkdir
+    let mut all_command_definitions = Vec::new();
+
+    // Multi-file discovery using walkdir
+    {
+      use walkdir::WalkDir;
+
+      for discovery_path in &yaml_discovery_paths
+      {
+        // Add discovery path to rerun conditions
+        println!("cargo:rerun-if-changed={discovery_path}");
+
+        if Path::new(discovery_path).exists()
+        {
+          for entry in WalkDir::new(discovery_path)
+            .into_iter()
+            .filter_map(|e| e.ok())
+            .filter(|e| e.file_type().is_file())
+            .filter(|e| {
+              if let Some(extension) = e.path().extension()
+              {
+                extension == "yaml" || extension == "yml"
+              }
+              else
+              {
+                false
+              }
+            })
+          {
+            if let Ok(yaml_content) = std::fs::read_to_string(entry.path())
+            {
+              match serde_yaml::from_str::<Vec<serde_yaml::Value>>(&yaml_content)
+              {
+                Ok(mut definitions) => all_command_definitions.append(&mut definitions),
+                Err(e) =>
+                {
+                  eprintln!("Warning: Failed to parse YAML file {:?}: {}", entry.path(), e);
+                  continue;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // If no YAML files found, try the default single file
+    if all_command_definitions.is_empty()
+    {
+      let default_manifest = "unilang.commands.yaml";
+      if let Ok(yaml_content) = std::fs::read_to_string(default_manifest)
+      {
+        match serde_yaml::from_str(&yaml_content)
+        {
+          Ok(definitions) => all_command_definitions = definitions,
+          Err(e) =>
+          {
+            eprintln!("Warning: Failed to parse default YAML manifest: {e}");
+          }
+        }
+      }
+    }
+
+    generate_static_commands(&dest_path, &all_command_definitions);
+  }
 }
 
 fn generate_empty_phf(dest_path: &Path)

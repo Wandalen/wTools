@@ -25,7 +25,10 @@ use unilang::interner::{ StringInterner, intern_command_name };
 #[ cfg( feature = "benchmarks" ) ]
 use benchkit::prelude::*;
 #[ cfg( feature = "benchmarks" ) ]
-use unilang::benchmark_config::BenchmarkConfig;
+// TODO: Implement benchmark_config module
+// use unilang::benchmark_config::BenchmarkConfig;
+// Use benchkit's MeasurementConfig directly
+use benchkit::measurement::MeasurementConfig;
 
 #[ derive( Debug, Clone ) ]
 #[ cfg( feature = "benchmarks" ) ]
@@ -254,11 +257,13 @@ fn run_statistical_analysis_benchmarks()
   println!( "================================================================\n" );
   
   // Get environment-specific benchmark configuration
-  let benchmark_config = BenchmarkConfig::from_environment();
-  println!( "🌍 Environment: {}", benchmark_config.environment );
-  println!( "📏 CV Tolerance: {:.1}%", benchmark_config.cv_tolerance * 100.0 );
-  println!( "📊 Sample Range: {}-{}", benchmark_config.min_sample_size, benchmark_config.max_sample_size );
-  println!( "🎯 Regression Threshold: {:.1}%\n", benchmark_config.regression_threshold * 100.0 );
+  // TODO: Implement BenchmarkConfig module
+  // let benchmark_config = BenchmarkConfig::from_environment();
+  // TODO: Implement BenchmarkConfig module
+  println!( "🌍 Environment: development" );
+  println!( "📏 CV Tolerance: {:.1}%", 5.0 );
+  println!( "📊 Sample Range: {}-{}", 100, 10000 );
+  println!( "🎯 Regression Threshold: {:.1}%\n", 5.0 );
   
   // Realistic command patterns from typical usage
   let test_commands = vec![
@@ -278,10 +283,19 @@ fn run_statistical_analysis_benchmarks()
   
   // Use environment-specific measurement configuration
   println!( "📈 Running statistical analysis with {} samples per algorithm...\n", 
-           benchmark_config.min_sample_size );
+           100 );
   
+  // Define iterations first
+  // TODO: Implement BenchmarkDataSize module
+  let iterations = 10000; // 10,000 iterations for statistical significance
+
   // Convert to benchkit MeasurementConfig
-  let config: MeasurementConfig = benchmark_config.to_measurement_config().into();
+  // TODO: Implement BenchmarkConfig module
+  let config = MeasurementConfig {
+    iterations,
+    warmup_iterations: 10,
+    max_time: core::time::Duration::from_secs(30),
+  };
   
   // Benchmark 1: String construction (baseline)
   let baseline_result = bench_function_with_config("string_construction", &config, || {
@@ -343,23 +357,24 @@ fn run_statistical_analysis_benchmarks()
       println!( "  Sample Size: {}", result.times.len() );
       
       // Use environment-specific CV requirements
-      let cv_meets_env = benchmark_config.cv_meets_requirements(analysis.coefficient_of_variation);
+      // TODO: Implement BenchmarkConfig module
+      let cv_meets_env = analysis.coefficient_of_variation < 0.05;
       let is_reliable = analysis.is_reliable() && cv_meets_env;
       
       if is_reliable {
-        println!( "  Quality: ✅ Meets {} environment requirements", benchmark_config.environment );
+        println!( "  Quality: ✅ Meets development environment requirements" );
         reliable_results.push((name, result, analysis));
       } else if !cv_meets_env {
-        println!( "  Quality: ⚠️  CV {:.1}% exceeds {:.1}% tolerance for {} environment", 
+        println!( "  Quality: ⚠️  CV {:.1}% exceeds {:.1}% tolerance for development environment",
                  analysis.coefficient_of_variation * 100.0,
-                 benchmark_config.cv_tolerance * 100.0,
-                 benchmark_config.environment );
-        let recommended_size = benchmark_config.adaptive_sample_size(analysis.coefficient_of_variation);
+                 5.0 );
+        // TODO: Implement BenchmarkConfig module
+        let recommended_size = core::cmp::min(10000, (1000.0 / analysis.coefficient_of_variation) as usize);
         println!( "  Recommendation: Use {} samples for this variance level", recommended_size );
       } else {
         println!( "  Quality: ⚠️  Not statistically reliable - need more samples" );
         println!( "  Recommendation: Increase sample size to at least {}", 
-                 benchmark_config.adaptive_sample_size(analysis.coefficient_of_variation) );
+                 core::cmp::min(10000, (1000.0 / analysis.coefficient_of_variation) as usize) );
       }
     } else {
       println!( "  Quality: ❌ Statistical analysis failed" );
@@ -389,15 +404,16 @@ fn run_statistical_analysis_benchmarks()
                             / analysis.mean_confidence_interval.point_estimate.as_nanos() as f64;
             let change_ratio = (improvement - 1.0).abs();
             
-            let env_significant = benchmark_config.is_significant_change(change_ratio);
+            // TODO: Implement BenchmarkConfig module
+            let env_significant = change_ratio.abs() > 0.05;
             let statistically_significant = comparison.is_significant;
             
             if statistically_significant && env_significant {
-              println!( "✅ {name}: {:.1}x faster than baseline (significant for {} environment)", 
-                       improvement, benchmark_config.environment );
+              println!( "✅ {name}: {:.1}x faster than baseline (significant for development environment)",
+                       improvement );
             } else if statistically_significant && !env_significant {
               println!( "📈 {name}: {:.1}x faster than baseline (statistically significant but < {:.1}% threshold)", 
-                       improvement, benchmark_config.regression_threshold * 100.0 );
+                       improvement, 5.0 );
             } else {
               println!( "🔍 {name}: {:.1}x faster than baseline (not significant)", improvement );
             }
@@ -433,15 +449,18 @@ fn run_string_interning_benchmarks()
   ];
   
   let command_slices : Vec< &[ &str ] > = test_commands.iter().map( std::vec::Vec::as_slice ).collect();
-  
-  use unilang::benchmark_data_sizes::BenchmarkDataSize;
-  let iterations = BenchmarkDataSize::Huge.value(); // 10,000 iterations for statistical significance
-  
+
+  // TODO: Implement benchmark_data_sizes module
+  // use unilang::benchmark_data_sizes::BenchmarkDataSize;
+  let iterations = 10000; // 10,000 iterations for statistical significance
+
   println!( "Test Configuration:" );
   println!( "- Command patterns: {}", command_slices.len() );
-  println!( "- Iterations per pattern: {} ({})", iterations, BenchmarkDataSize::Huge.description() );
+  // TODO: Implement BenchmarkDataSize module
+  println!( "- Iterations per pattern: {} (Huge dataset for statistical significance)", iterations );
   println!( "- Total operations: {}", command_slices.len() * iterations );
-  println!( "{}", unilang::benchmark_data_sizes::BenchmarkDataUtils::document_sizes() );
+  // TODO: Implement benchmark_data_sizes module
+  // println!( "{}", unilang::benchmark_data_sizes::BenchmarkDataUtils::document_sizes() );
   println!();
   
   // Benchmark 1: Traditional string construction (baseline)
@@ -579,15 +598,16 @@ fn main()
   results.print_summary();
   
   // MANDATORY: Update documentation automatically across multiple files
-  use unilang::documentation_updater::DocumentationUpdater;
-  let doc_updater = DocumentationUpdater::new();
+  use benchkit::documentation::{ DocumentationUpdater, DocumentationConfig };
+  let doc_config = DocumentationConfig::readme_performance("readme.md");
+  let doc_updater = DocumentationUpdater::new(doc_config);
   let markdown_report = results.generate_markdown_report();
-  let comprehensive_report = DocumentationUpdater::generate_report(
-      "String Interning Performance",
-      &markdown_report.generate()
+  let comprehensive_report = format!(
+      "# String Interning Performance\n\n{}",
+      markdown_report.generate()
   );
   
-  if let Err(e) = doc_updater.update_documentation("String Interning Performance", &comprehensive_report) {
+  if let Err(e) = doc_updater.update_section(&comprehensive_report) {
       eprintln!("⚠️ Documentation update failed: {}", e);
   }
   
