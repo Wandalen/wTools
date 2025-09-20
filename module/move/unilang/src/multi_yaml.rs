@@ -16,11 +16,13 @@
 //! - PHF map generation with aggregated commands
 //! - Integration with hybrid registry system
 
-#[ allow( unused_imports ) ]
-use crate::*;
-use std::collections::HashMap;
-use std::path::PathBuf;
-use std::fs;
+mod private
+{
+  #[ allow( unused_imports ) ]
+  use crate::*;
+  use std::collections::HashMap;
+  use std::path::PathBuf;
+  use std::fs;
 
 /// Multi-YAML aggregation system for compile-time command processing
 #[derive(Debug, Clone)]
@@ -935,28 +937,6 @@ pub fn aggregate_cli_complex() -> Result< CommandRegistry, Error >
 
 //
 
-mod private
-{
-  use std::path::PathBuf;
-
-//   pub use super::MultiYamlAggregator;
-//   pub use super::AggregationConfig;
-//   pub use super::ModuleConfig;
-//   pub use super::ConflictReport;
-//   pub use super::ConflictType;
-//   pub use super::EnvConfigParser;
-//   pub use super::parse_cargo_metadata;
-// 
-//   // Ergonomic aggregation APIs
-//   pub use super::AggregationMode;
-//   pub use super::StaticModule;
-//   pub use super::DynamicModule;
-//   pub use super::ConditionalModule;
-//   pub use super::CliConfig;
-//   pub use super::CliBuilder;
-//   pub use super::aggregate_cli_simple;
-//   pub use super::aggregate_cli_complex;
-
   /// Convenience function for complete multi-YAML workflow
   pub fn create_aggregated_registry( cargo_toml_path: &PathBuf ) -> Result< crate::CommandRegistry, crate::Error >
   {
@@ -981,20 +961,26 @@ mod private
 
     Ok( registry )
   }
+
 }
 
-//
+#[ allow( unused_imports ) ]
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
-  pub use super::orphan::*;
+  use super::*;
+  pub use orphan::*;
 }
 
-/// Orphan namespace of the module.
+/// Parented namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
-  pub use super::exposed::*;
+  use super::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
@@ -1002,29 +988,31 @@ pub mod exposed
 {
   pub use super::private::
   {
-    // MultiYamlAggregator,
-    // AggregationConfig,
-    // ModuleConfig,
-    // ConflictReport,
-    // ConflictType,
-    // EnvConfigParser,
-    // parse_cargo_metadata,
-    // create_aggregated_registry,
+    MultiYamlAggregator,
+    AggregationConfig,
+    ModuleConfig,
+    ConflictReport,
+    ConflictType,
+    EnvConfigParser,
+    parse_cargo_metadata,
+    create_aggregated_registry,
 
-    // // Ergonomic aggregation APIs
-    // AggregationMode,
-    // StaticModule,
-    // DynamicModule,
-    // ConditionalModule,
-    // CliConfig,
-    // CliBuilder,
-    // aggregate_cli_simple,
-    // aggregate_cli_complex,
+    // Ergonomic aggregation APIs
+    AggregationMode,
+    StaticModule,
+    DynamicModule,
+    ConditionalModule,
+    CliConfig,
+    CliBuilder,
+    aggregate_cli_simple,
+    aggregate_cli_complex,
   };
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
-  pub use super::exposed::*;
+  use super::*;
+  pub use private::{};
 }

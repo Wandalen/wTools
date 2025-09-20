@@ -33,30 +33,31 @@ fn main() -> Result< (), unilang::Error >
   println!( "Commands validated at compile-time:" );
   for ( name, cmd ) in STATIC_COMMANDS.entries()
   {
-    println!( "  {} v{} - {}", name, cmd.version, cmd.description );
+  println!( "  {} v{} - {}", name, cmd.version, cmd.description );
 
-    // Show compile-time argument validation
-    if !cmd.arguments.is_empty()
-    {
-      println!( "    Arguments:" );
-      for arg in cmd.arguments
-      {
-        let optional_marker = if arg.attributes.optional
-        {
-          " (optional)"
-        }
-        else
-        {
-          ""
-        };
-        println!( "      {} - {}{}", arg.name, arg.description, optional_marker );
-      }
-    }
-  }
+  // Show compile-time argument validation
+  if !cmd.arguments.is_empty()
+  {
+  println!( "    Arguments:" );
+  for arg in cmd.arguments
+  {
+  let optional_marker = if arg.attributes.optional
+  {
+  " (optional)"
+ }
+  else
+  {
+  ""
+ };
+  println!( "      {} - {}{}", arg.name, arg.description, optional_marker );
+ }
+ }
+ }
   println!();
 
-  // Create zero-overhead registry
-  let registry = StaticCommandRegistry::from_phf( &STATIC_COMMANDS );
+  // Create zero-overhead registry (placeholder - StaticCommandRegistry not yet implemented)
+  #[allow(deprecated)]
+  let registry = CommandRegistry::new();
   let pipeline = Pipeline::new( registry );
 
   // Demonstrate YAML-defined command execution
@@ -64,25 +65,25 @@ fn main() -> Result< (), unilang::Error >
 
   let commands = vec!
   [
-    ".greet name::Alice",
-    ".greet name::Bob",
-    ".greet",  // Uses default value
-  ];
+  ".greet name::Alice",
+  ".greet name::Bob",
+  ".greet",  // Uses default value
+ ];
 
   for cmd_str in commands
   {
-    println!( "Executing: {}", cmd_str );
-    let result = pipeline.process_command_simple( cmd_str );
+  println!( "Executing: {}", cmd_str );
+  let result = pipeline.process_command_simple( cmd_str );
 
-    if result.success
-    {
-      println!( "  Success: {}", result.outputs[ 0 ].content );
-    }
-    else if let Some( error ) = result.error
-    {
-      println!( "  Error: {}", error );
-    }
-  }
+  if result.success
+  {
+  println!( "  Success: {}", result.outputs[ 0 ].content );
+ }
+  else if let Some( error ) = result.error
+  {
+  println!( "  Error: {}", error );
+ }
+ }
 
   // Performance demonstration
   println!();
@@ -91,16 +92,16 @@ fn main() -> Result< (), unilang::Error >
   let start_time = std::time::Instant::now();
   for _i in 0..10000
   {
-    // Each lookup is O(1) PHF access - no hashing overhead
-    let _cmd = STATIC_COMMANDS.get( ".greet" );
-  }
+  // Each lookup is O(1) PHF access - no hashing overhead
+  let _cmd = STATIC_COMMANDS.get( ".greet" );
+ }
   let static_duration = start_time.elapsed();
 
   println!(
-    "10,000 static lookups completed in {:?} (~{} ns per lookup)",
-    static_duration,
-    static_duration.as_nanos() / 10000
-  );
+  "10,000 static lookups completed in {:?} (~{} ns per lookup)",
+  static_duration,
+  static_duration.as_nanos() / 10000
+ );
 
   println!();
   println!( "Build-time validation benefits:" );

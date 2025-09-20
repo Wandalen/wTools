@@ -29,42 +29,42 @@ fn main() -> Result< (), unilang::Error >
 
   // Setup dynamic registry (runtime HashMap)
   #[ allow( deprecated ) ]
-  #[allow(deprecated)]
+  #[ allow( deprecated ) ]
   let mut dynamic_registry = CommandRegistry::new();
 
   // Register a test command dynamically for comparison
   let dynamic_cmd = CommandDefinition
   {
-    name: ".greet".to_string(),
-    namespace: "".to_string(),
-    description: "Dynamic greeting command".to_string(),
-    hint: "Test command for performance comparison".to_string(),
-    arguments: vec![], // Simplified for demo
-    routine_link: None,
-    status: "stable".to_string(),
-    version: "1.0.0".to_string(),
-    tags: vec![ "test".to_string() ],
-    aliases: vec![],
-    permissions: vec![],
-    idempotent: true,
-    deprecation_message: "".to_string(),
-    http_method_hint: "GET".to_string(),
-    examples: vec![],
-    auto_help_enabled: false,
-  };
+  name: ".greet".to_string(),
+  namespace: "".to_string(),
+  description: "Dynamic greeting command".to_string(),
+  hint: "Test command for performance comparison".to_string(),
+  arguments: vec![], // Simplified for demo
+  routine_link: None,
+  status: "stable".to_string(),
+  version: "1.0.0".to_string(),
+  tags: vec![ "test".to_string() ],
+  aliases: vec![],
+  permissions: vec![],
+  idempotent: true,
+  deprecation_message: "".to_string(),
+  http_method_hint: "GET".to_string(),
+  examples: vec![],
+  auto_help_enabled: false,
+ };
 
   // Dummy routine for performance testing
   let routine = Box::new( |_cmd: VerifiedCommand, _ctx: ExecutionContext|
   {
-    Ok( OutputData
-    {
-      content: "test".to_string(),
-      format: "text".to_string(),
-    })
-  });
+  Ok( OutputData
+  {
+  content: "test".to_string(),
+  format: "text".to_string(),
+ })
+ });
 
   #[ allow( deprecated ) ]
-  #[allow(deprecated)]
+  #[ allow( deprecated ) ]
   dynamic_registry.command_add_runtime( &dynamic_cmd, routine )?;
 
   const ITERATIONS: usize = 100_000;
@@ -78,8 +78,8 @@ fn main() -> Result< (), unilang::Error >
   let start = Instant::now();
   for _i in 0..ITERATIONS
   {
-    let _result = STATIC_COMMANDS.get( ".greet" );
-  }
+  let _result = STATIC_COMMANDS.get( ".greet" );
+ }
   let static_duration = start.elapsed();
 
   // Benchmark dynamic lookup (HashMap)
@@ -87,8 +87,8 @@ fn main() -> Result< (), unilang::Error >
   let start = Instant::now();
   for _i in 0..ITERATIONS
   {
-    let _result = dynamic_registry.command( ".greet" );
-  }
+  let _result = dynamic_registry.command( ".greet" );
+ }
   let dynamic_duration = start.elapsed();
 
   // Results analysis
@@ -117,16 +117,16 @@ fn main() -> Result< (), unilang::Error >
 
   if speedup > 10.0
   {
-    println!( "  Result: EXCELLENT - Static lookup significantly outperforms dynamic" );
-  }
+  println!( "  Result: EXCELLENT - Static lookup significantly outperforms dynamic" );
+ }
   else if speedup > 5.0
   {
-    println!( "  Result: GOOD - Static lookup shows measurable improvement" );
-  }
+  println!( "  Result: GOOD - Static lookup shows measurable improvement" );
+ }
   else
   {
-    println!( "  Result: MARGINAL - Benefits may vary with workload" );
-  }
+  println!( "  Result: MARGINAL - Benefits may vary with workload" );
+ }
 
   println!();
   println!( "Memory Characteristics:" );
@@ -147,13 +147,13 @@ fn main() -> Result< (), unilang::Error >
   println!( "Recommendation:" );
   if speedup > 5.0
   {
-    println!( "Use compile-time registration for production applications." );
-    println!( "The performance benefit is significant and consistent." );
-  }
+  println!( "Use compile-time registration for production applications." );
+  println!( "The performance benefit is significant and consistent." );
+ }
   else
   {
-    println!( "Consider compile-time registration for performance-critical paths." );
-  }
+  println!( "Consider compile-time registration for performance-critical paths." );
+ }
 
   Ok( () )
 }

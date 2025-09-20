@@ -34,6 +34,7 @@ benchmarks = [ "simd", "clap", "pico-args", "benchkit", "num_cpus", "rand" ]
 static_commands = [ ]
 multi_yaml = [ "walkdir" ]
 advanced_benchmarks = [ "benchmarks", "sysinfo", "static_commands", "multi_yaml" ]
+advanced_cli_tests = [ ]
 
 # WebAssembly-compatible feature set - excludes platform-specific dependencies
 # No enhanced REPL (rustyline/atty), no SIMD (platform detection issues), minimal dependencies
@@ -235,5 +236,6 @@ assert_fs = "1.0"
 clap = "4.4"
 pico-args = "0.5"
 chrono = "0.4"
+tempfile = "3.8"
 
 criterion = "0.5"

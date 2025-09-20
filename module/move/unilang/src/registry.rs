@@ -24,7 +24,7 @@
 //!
 
 // Include the generated static commands PHF map
-include!(concat!(env!("OUT_DIR"), "/static_commands.rs"));
+// include!(concat!(env!("OUT_DIR"), "/static_commands.rs"));
 
 /// Internal namespace.
 mod private
@@ -293,8 +293,9 @@ impl CommandRegistry
     match self.dynamic_commands.mode() {
       RegistryMode::StaticOnly => {
         // Only check static commands
-        if let Some( static_cmd ) = super::STATIC_COMMANDS.get( name ) {
-          return Some( (*static_cmd).into() );
+        // if let Some( static_cmd ) = super::STATIC_COMMANDS.get( name ) {
+        if false {
+          // return Some( (*static_cmd).into() );
         }
         None
       },
@@ -304,8 +305,9 @@ impl CommandRegistry
       },
       RegistryMode::Hybrid | RegistryMode::Auto => {
         // Hybrid mode: static commands take priority
-        if let Some( static_cmd ) = super::STATIC_COMMANDS.get( name ) {
-          return Some( (*static_cmd).into() );
+        // if let Some( static_cmd ) = super::STATIC_COMMANDS.get( name ) {
+        if false {
+          // return Some( (*static_cmd).into() );
         }
 
         // Fall back to dynamic commands (without caching)
@@ -330,10 +332,11 @@ impl CommandRegistry
     match self.dynamic_commands.mode() {
       RegistryMode::StaticOnly => {
         // Only check static commands
-        if let Some( static_cmd ) = super::STATIC_COMMANDS.get( name ) {
+        // if let Some( static_cmd ) = super::STATIC_COMMANDS.get( name ) {
+        if false {
           self.dynamic_commands.metrics_mut().total_lookups += 1;
           self.dynamic_commands.metrics_mut().static_lookups += 1;
-          return Some( (*static_cmd).into() );
+          // return Some( (*static_cmd).into() );
         }
         None
       },
@@ -343,10 +346,11 @@ impl CommandRegistry
       },
       RegistryMode::Hybrid | RegistryMode::Auto => {
         // Hybrid mode: static commands take priority
-        if let Some( static_cmd ) = super::STATIC_COMMANDS.get( name ) {
+        // if let Some( static_cmd ) = super::STATIC_COMMANDS.get( name ) {
+        if false {
           self.dynamic_commands.metrics_mut().total_lookups += 1;
           self.dynamic_commands.metrics_mut().static_lookups += 1;
-          return Some( (*static_cmd).into() );
+          // return Some( (*static_cmd).into() );
         }
 
         // Fall back to dynamic commands with caching
@@ -448,7 +452,8 @@ impl CommandRegistry
       format!( "{}.{}", command_def.namespace, command_def.name.strip_prefix('.').unwrap_or(&command_def.name) )
     };
     // Check if command exists in either static or dynamic registries
-    if super::STATIC_COMMANDS.contains_key( &full_name ) || self.dynamic_commands.contains_key( &full_name )
+    // if super::STATIC_COMMANDS.contains_key( &full_name ) || self.dynamic_commands.contains_key( &full_name )
+    if false || self.dynamic_commands.contains_key( &full_name )
     {
       return Err( Error::Execution( ErrorData::new(
         "UNILANG_COMMAND_ALREADY_EXISTS".to_string(),
@@ -482,9 +487,10 @@ impl CommandRegistry
     let mut all_commands = HashMap::new();
 
     // Add static commands
-    for ( name, static_cmd ) in super::STATIC_COMMANDS.entries()
+    // for ( name, static_cmd ) in super::STATIC_COMMANDS.entries()
+    for ( _name, _static_cmd ) in std::iter::empty::<(&str, &crate::static_data::StaticCommandDefinition)>()
     {
-      all_commands.insert( (*name).to_string(), (*static_cmd).into() );
+      // all_commands.insert( (*name).to_string(), (*static_cmd).into() );
     }
 
     // Add dynamic commands (they can override static ones in this view)

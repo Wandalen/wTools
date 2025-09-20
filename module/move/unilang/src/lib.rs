@@ -164,8 +164,8 @@ mod_interface::mod_interface!
   /// High-level pipeline API.
   layer pipeline;
 
-  // /// Multi-YAML build system for compile-time aggregation.
-  // layer multi_yaml;
+  /// Multi-YAML build system for compile-time aggregation.
+  layer multi_yaml;
 
   /// String interning system for performance optimization.
   layer interner;
@@ -176,8 +176,8 @@ mod_interface::mod_interface!
   /// SIMD-optimized tokenization for 3-6x performance improvements.
   layer simd_tokenizer;
 
-  // /// Environment-specific benchmark configuration system.
-  // layer benchmark_config;
+  /// Environment-specific benchmark configuration system.
+  layer benchmark_config;
 
   // /// Coefficient of variation analysis for benchmark quality assessment.
   // layer cv_analysis;

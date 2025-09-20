@@ -26,7 +26,7 @@ fn main() -> Result< (), unilang::Error >
   println!();
 
   // Create registry with compile-time generated PHF maps
-  #[allow(deprecated)]
+  #[ allow( deprecated ) ]
   let registry = CommandRegistry::new();
   let pipeline = Pipeline::new( registry );
 
@@ -34,8 +34,8 @@ fn main() -> Result< (), unilang::Error >
   println!( "Available commands (zero lookup cost):" );
   for ( name, definition ) in STATIC_COMMANDS.entries()
   {
-    println!( "  {} - {}", name, definition.description );
-  }
+  println!( "  {} - {}", name, definition.description );
+ }
   println!();
 
   // Execute command with O(1) lookup
@@ -44,13 +44,13 @@ fn main() -> Result< (), unilang::Error >
 
   if result.success
   {
-    println!( "Command executed successfully with zero lookup overhead" );
-    println!( "Output: {}", result.outputs[ 0 ].content );
-  }
+  println!( "Command executed successfully with zero lookup overhead" );
+  println!( "Output: {}", result.outputs[ 0 ].content );
+ }
   else if let Some( error ) = result.error
   {
-    eprintln!( "Command failed: {}", error );
-  }
+  eprintln!( "Command failed: {}", error );
+ }
 
   // Demonstrate compile-time safety
   println!();
