@@ -47,7 +47,7 @@ mod private
   /// ) );
   /// ```
   #[ derive( Debug, Clone ) ]
-  pub struct Args( pub Vec< Value > );
+  pub struct Args( pub Vec<  Value  > );
 
   impl Args
   {
@@ -107,7 +107,7 @@ mod private
   /// ) );
   /// ```
   #[ derive( Debug, Clone ) ]
-  pub struct Props( pub HashMap< String, Value > );
+  pub struct Props( pub HashMap<  String, Value  > );
 
   impl Props
   {

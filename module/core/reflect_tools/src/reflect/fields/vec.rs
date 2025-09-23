@@ -6,7 +6,7 @@ use crate :: *;
 use std ::borrow ::Cow;
 use collection_tools ::Vec;
 
-impl< V, Borrowed > Fields< usize, &'_ Borrowed > for Vec< V >
+impl< V, Borrowed > Fields< usize, &'_ Borrowed > for Vec<  V  >
 where
   Borrowed: std ::borrow ::ToOwned + 'static + ?Sized,
   // Borrowed: ?Sized + 'static,
@@ -26,7 +26,7 @@ where
 
 }
 
-impl< V, Borrowed > Fields< usize, Option< Cow< '_, Borrowed > > > for Vec< V >
+impl< V, Borrowed > Fields< usize, Option< Cow< '_, Borrowed > > > for Vec<  V  >
 where
   Borrowed: std ::borrow ::ToOwned + 'static + ?Sized,
   // Borrowed: ?Sized + 'static,
@@ -47,7 +47,7 @@ where
 
 }
 
-impl< V, Borrowed, Marker > Fields< usize, OptionalCow< '_, Borrowed, Marker > > for Vec< V >
+impl< V, Borrowed, Marker > Fields< usize, OptionalCow< '_, Borrowed, Marker > > for Vec<  V  >
 where
   Borrowed: std ::borrow ::ToOwned + 'static + ?Sized,
   // Borrowed: ?Sized + 'static,

@@ -25,7 +25,7 @@ mod private
   pub struct Parser;
 
   // fix clippy error too large return type
-  type ParsedArgs = ( Vec< String >, HashMap< String, String >, usize );
+  type ParsedArgs = ( Vec<  String  >, HashMap<  String, String  >, usize );
 
   impl Parser
   {

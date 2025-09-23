@@ -15,7 +15,7 @@ mod private
   // ///
   // /// This structure holds a hashmap of commands where each command is mapped to its name.
   // #[ derive( Debug, Former ) ]
-  // pub struct Dictionary( HashMap< String, Command > );
+  // pub struct Dictionary( HashMap<  String, Command  > );
 
   /// A collection of commands.
   ///

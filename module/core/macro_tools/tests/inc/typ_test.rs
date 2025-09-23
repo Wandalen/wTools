@@ -5,6 +5,7 @@ use the_module ::qt;
 // | TC011 | Test type parameter extraction with various range patterns | `type_parameters_basic` |
 
 //
+// | TC011 | Test type parameter extraction with various range patterns | `type_parameters_basic` |
 
 #[ test ]
 fn is_optional_with_option_type() 
@@ -119,7 +120,7 @@ fn parameter_first_with_single_generic()
   use syn :: { parse_str, Type };
   use the_module ::typ ::parameter_first;
 
-  let type_string = "Vec< i32 >";
+  let type_string = "Vec<  i32  >";
   let parsed_type: Type = parse_str(type_string).expect("Type should parse correctly");
 
   let first_param = parameter_first(&parsed_type).expect("Expected to extract the first generic parameter");

@@ -27,7 +27,7 @@ pub mod private
  }
  }
 
-  impl< T > Entity for CollectionDescriptor< Vec< T > >
+  impl< T > Entity for CollectionDescriptor< Vec<  T  > >
   where
   T: 'static + Instance,
   {

@@ -172,7 +172,7 @@ mod private
  }
  }
 
-  // impl< T > From< Many< T > > for Vec< T >
+  // impl< T > From< Many< T > > for Vec<  T  >
   // where
   //   T: Element,
   // {

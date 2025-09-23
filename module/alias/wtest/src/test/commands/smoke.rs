@@ -223,7 +223,7 @@ impl< 'a > SmokeModuleTest< 'a >
   self
  }
 
-  fn form( &mut self ) -> Result< (), &'static str >
+  fn form( &mut self ) -> Result<  (), &'static str  >
   {
   std ::fs ::create_dir( &self.test_path ).unwrap();
 

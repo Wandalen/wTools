@@ -196,6 +196,13 @@ cargo bench integrated_string_interning_benchmark --features benchmarks         
 # SIMD JSON parsing optimization benchmarks:
 cargo bench simd_json_benchmark --features benchmarks                                          # 🚀 ~15 sec (JSON parsing performance)
 
+# String interning optimization benchmarks:
+cargo bench string_interning_benchmark --features benchmarks                                   # 🧠 ~5 sec (Microbenchmarks)
+cargo bench integrated_string_interning_benchmark --features benchmarks                       # 🔗 ~10 sec (Pipeline integration)
+
+# SIMD JSON parsing optimization benchmarks:
+cargo bench simd_json_benchmark --features benchmarks                                          # 🚀 ~15 sec (JSON parsing performance)
+
 # Verification commands:
 cargo test --release                                 # Fast - doesn't run benchmarks
 ./benchmark/test_benchmark_system.sh                # Quick system test

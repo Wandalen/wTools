@@ -261,7 +261,7 @@ impl ItemAttributes
   /// < T: ` ::core ::default ::Default` >
   ///
   /// ## `perform_generics` :
-  /// Vec< T >
+  /// Vec<  T  >
   ///
   #[ allow( clippy ::unnecessary_wraps ) ]
   pub fn performer( &self ) -> Result< (TokenStream, TokenStream, TokenStream) >
@@ -611,7 +611,7 @@ impl syn ::parse ::Parse for ItemAttributes
 ///
 /// Attribute to hold information about method to call after form.
 ///
-/// `#[ perform( fn after1< 'a >() -> Option< &'a str > ) ]`
+/// `#[ perform( fn after1< 'a >() -> Option<  &'a str  > ) ]`
 ///
 #[ derive( Debug ) ]
 pub struct AttributePerform 

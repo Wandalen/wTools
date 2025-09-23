@@ -1,4 +1,4 @@
-//! A generic `Option< bool >` attribute property which consists of only keyword.
+//! A generic `Option<  bool  >` attribute property which consists of only keyword.
 //! Defaults to `None`.
 //!
 //! This property can have three states: `None`, `Some( true )`, or `Some( false )`.

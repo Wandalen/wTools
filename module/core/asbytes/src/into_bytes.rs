@@ -5,7 +5,7 @@ mod private
   pub use bytemuck :: { Pod };
 
   /// Trait for consuming data into an owned byte vector.
-  /// This trait is for types that can be meaningfully converted into a `Vec< u8 >`
+  /// This trait is for types that can be meaningfully converted into a `Vec<  u8  >`
   /// by consuming the original value.
   pub trait IntoBytes {
   /// Consumes the value and returns its byte representation as an owned `Vec< u8 >`.

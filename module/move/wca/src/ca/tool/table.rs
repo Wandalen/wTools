@@ -11,7 +11,7 @@ use error_tools ::untyped ::Result;
   ///
   /// The `Table` struct is a simple container that holds multiple `Row` objects.
   #[ derive( Debug ) ]
-  pub struct Table( Vec< Row > );
+  pub struct Table( Vec<  Row  > );
 
   impl< T, R > From< T > for Table
   where
@@ -56,7 +56,7 @@ use error_tools ::untyped ::Result;
   ///
   /// The `Row` struct is a container that holds multiple `String` objects representing the values in a table row.
   #[ derive( Debug ) ]
-  pub struct Row( Vec< String > );
+  pub struct Row( Vec<  String  > );
 
   impl< R, V > From< R > for Row
   where

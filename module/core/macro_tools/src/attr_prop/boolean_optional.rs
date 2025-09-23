@@ -1,5 +1,5 @@
 //!
-//! A generic optional boolean attribute property: `Option< bool >`.
+//! A generic optional boolean attribute property: `Option<  bool  >`.
 //! Defaults to `false`.
 //!
 use core ::marker ::PhantomData;
@@ -12,7 +12,7 @@ use components ::Assign;
 #[ derive( Debug, Default, Clone, Copy ) ]
 pub struct AttributePropertyOptionalBooleanMarker;
 
-/// A generic optional boolean attribute property: `Option< bool >`.
+/// A generic optional boolean attribute property: `Option<  bool  >`.
 /// Defaults to `false`.
 #[ derive( Debug, Default, Clone, Copy ) ]
 pub struct AttributePropertyOptionalBoolean< Marker = AttributePropertyOptionalBooleanMarker >(

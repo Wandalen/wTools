@@ -89,7 +89,7 @@ pub trait Assign< T, IntoT >
 /// }
 /// }
 ///
-/// let mut opt_struct: Option< MyStruct > = None;
+/// let mut opt_struct: Option<  MyStruct  > = None;
 /// opt_struct.option_assign( MyStruct { name: "New Name".to_string() } );
 /// assert_eq!( opt_struct.unwrap().name, "New Name" );
 /// ```

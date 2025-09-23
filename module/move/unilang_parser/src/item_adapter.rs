@@ -84,6 +84,7 @@ impl< 'a > ZeroCopyRichItem< 'a >
  }
 }
 
+
 /// Represents a token with its original split information and classified kind.
 #[ derive( Debug, Clone ) ]
 pub struct RichItem< 'a >

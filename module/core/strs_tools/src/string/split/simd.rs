@@ -27,7 +27,7 @@ use super :: { Split, SplitType };
 pub struct SIMDSplitIterator< 'a > 
 {
   input: &'a str,
-  patterns: Arc< AhoCorasick >,
+  patterns: Arc<  AhoCorasick  >,
   position: usize,
   #[ allow( dead_code ) ] // Used for debugging and future enhancements
   delimiter_patterns: Vec< String >,
@@ -273,7 +273,7 @@ pub struct SIMDSplitIterator< 'a >( std ::marker ::PhantomData< &'a str > );
 #[ cfg( not( all( feature = "simd", feature = "std" ) ) ) ]
 impl< 'a > SIMDSplitIterator< 'a > 
 {
-  pub fn new( _input: &'a str, _delimiters: &[ &str ] ) -> Result< Self, &'static str > 
+  pub fn new( _input: &'a str, _delimiters: &[ &str ] ) -> Result<  Self, &'static str  > 
   {
   Err( "SIMD feature not enabled" )
  }

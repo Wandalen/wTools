@@ -32,7 +32,7 @@ mod private
   // }
   // }
   //
-  //     pub fn clean( &self ) -> Result< (), &'static str >
+  //     pub fn clean( &self ) -> Result<  (), &'static str  >
   //     {
   //       let result = std ::fs ::remove_dir_all( &self.test_path );
   //       result.or_else( | err | format!( "Cannot remove temporary directory {}.", &self.test_path.display() ) );

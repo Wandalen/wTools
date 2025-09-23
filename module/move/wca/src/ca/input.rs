@@ -15,11 +15,11 @@ mod private
 
   /// A structure representing an input with a single string value.
   ///
-  /// This struct is designed to encapsulate a single piece of input data as a `Vec< String >`.
+  /// This struct is designed to encapsulate a single piece of input data as a `Vec<  String  >`.
   /// It provides a simple wrapper that can be used to convert various types of string
   /// representations into a uniform `Input` struct.
   #[ derive( Debug ) ]
-  pub struct Input( pub Vec< String > );
+  pub struct Input( pub Vec<  String  > );
 
   /// A trait for converting various types into `Input`.
   ///
@@ -63,7 +63,7 @@ mod private
  }
  }
 
-  impl IntoInput for Vec< String >
+  impl IntoInput for Vec<  String  >
   {
   fn into_input( self ) -> Input
   {

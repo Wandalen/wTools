@@ -49,7 +49,7 @@ mod private
   //   exec_path: &str,
   //   current_path: impl Into< PathBuf >,
   // )
-  // -> Result< Report, Report >
+  // -> Result<  Report, Report  >
   // {
   //   let current_path = current_path.into();
   //   let ( program, args ) =

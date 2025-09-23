@@ -49,7 +49,7 @@ mod private
   /// too literally. That is why `wrap_width` is introduced, and additional spaces to the 
   /// right side should be included by the output formatter.
   #[ derive( Debug ) ]
-  pub struct WrappedCell< 'data >
+  pub struct WrappedCell<  'data  >
   {
   /// Width of the cell. In calculations use this width instead of slice length in order
   /// to properly center the text. See example in the doc string of the parent struct.

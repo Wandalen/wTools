@@ -166,7 +166,7 @@ mod private
  }
 
 //   impl< Row > IntoAsTable
-//   for Vec< Row >
+//   for Vec<  Row  >
 //   where
 //     Row: Cells< Self ::CellKey >,
 //     // CellKey: table ::CellKey + ?Sized,
