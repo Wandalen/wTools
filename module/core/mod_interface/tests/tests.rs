@@ -6,8 +6,8 @@
 pub struct CrateStructForTesting1 {}
 
 use ::mod_interface as the_module;
-use test_tools::exposed::*;
-#[path = "../../../../module/step/meta/src/module/terminal.rs"]
+use test_tools ::exposed :: *;
+#[ path = "../../../../module/step/meta/src/module/terminal.rs" ]
 mod terminal;
 
 mod inc;

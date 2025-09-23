@@ -1,39 +1,39 @@
-use optimization_tools::*;
-use problems::sudoku::*;
-use hybrid_optimizer::*;
-use test_tools::prelude::*;
-use deterministic_rand::{ Seed, Hrng };
+use optimization_tools :: *;
+use problems ::sudoku :: *;
+use hybrid_optimizer :: *;
+use test_tools ::prelude :: *;
+use deterministic_rand :: { Seed, Hrng };
 
 mod tools;
-use tools::*;
+use tools :: *;
 
 #[ test ]
 fn person_mutate()
 {
   logger_init();
 
-  // let initial = SudokuInitial::new_sa( Board::default(), Seed::default() );
-  let board = Board::default();
-  let hrng = Hrng::master_with_seed( Seed::default() );
+  // let initial = SudokuInitial ::new_sa( Board ::default(), Seed ::default() );
+  let board = Board ::default();
+  let hrng = Hrng ::master_with_seed( Seed ::default() );
 
-  let mut person = SudokuPerson::new( &board, hrng.clone() );
-  log::trace!( "{person:#?}" );
+  let mut person = SudokuPerson ::new( &board, hrng.clone() );
+  log ::trace!( "{person:#?}" );
   a_id!( person.cost, 45.into() );
   a_id!( person.cost, person.board.total_error().into() );
 
   let mutagen = person.mutagen( &board, hrng.clone() );
   // make sure block is the same
-  a_id!( BlockIndex::from( mutagen.cell1 ), BlockIndex::from( mutagen.cell2 ) );
-  person.mutate(  &mutagen );
-  log::trace!( "{person:#?}" );
+  a_id!( BlockIndex ::from( mutagen.cell1 ), BlockIndex ::from( mutagen.cell2 ) );
+  person.mutate( &mutagen );
+  log ::trace!( "{person:#?}" );
   a_id!( person.cost, 48.into() );
   a_id!( person.cost, person.board.total_error().into() );
 
   let mutagen = person.mutagen( &board, hrng.clone() );
   // make sure block is the same
-  a_id!( BlockIndex::from( mutagen.cell1 ), BlockIndex::from( mutagen.cell2 ) );
+  a_id!( BlockIndex ::from( mutagen.cell1 ), BlockIndex ::from( mutagen.cell2 ) );
   person.mutate( &mutagen );
-  log::trace!( "{person:#?}" );
+  log ::trace!( "{person:#?}" );
   a_id!( person.cost, 48.into() );
   a_id!( person.cost, person.board.total_error().into() );
 
@@ -44,9 +44,9 @@ fn person_mutate()
 fn initial_temperature()
 {
   logger_init();
-  let initial = SudokuInitial::new( Board::default() );
-  let p = Problem::new( initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{}  );
-  let optimizer = HybridOptimizer::new( Config::default(), p );
+  let initial = SudokuInitial ::new( Board ::default() );
+  let p = Problem ::new( initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
+  let optimizer = HybridOptimizer ::new( Config ::default(), p );
 
   let temperature = optimizer.initial_temperature();
   a_true!( temperature.unwrap() >= 0f64 );
@@ -65,7 +65,7 @@ fn initial_temperature()
 fn solve_with_sa()
 {
   logger_init();
-  log::set_max_level( log::LevelFilter::Warn );
+  log ::set_max_level( log ::LevelFilter ::Warn );
 
   let input = r#"
   801920000
@@ -79,22 +79,22 @@ fn solve_with_sa()
   000000013
   "#;
 
-  let initial = SudokuInitial::new( Board::from( input ) );
-  let problem = Problem::new( initial, BestRowsColumnsCrossover, RandomPairInBlockMutation );
-  let optimizer = HybridOptimizer::new( Config::default(), problem );
+  let initial = SudokuInitial ::new( Board ::from( input ) );
+  let problem = Problem ::new( initial, BestRowsColumnsCrossover, RandomPairInBlockMutation );
+  let optimizer = HybridOptimizer ::new( Config ::default(), problem );
 
-  log::set_max_level( log::LevelFilter::max() );
+  log ::set_max_level( log ::LevelFilter ::max() );
   let ( reason, solution ) = optimizer.optimize();
 
-  log::trace!( "reason : {reason}" );
+  log ::trace!( "reason: {reason}" );
   a_true!( solution.is_some() );
   let solution = solution.unwrap();
-  log::trace!( "{solution:#?}" );
-  log::trace!( "{:#?}", solution.board );
+  log ::trace!( "{solution:#?}" );
+  log ::trace!( "{:#?}", solution.board );
 
   a_id!( solution.cost, 0.into() );
   #[ cfg( feature = "static_plot" ) ]
-  plot::draw_plots();
+  plot ::draw_plots();
   // a_true!( false );
 }
 
@@ -108,7 +108,7 @@ fn solve_with_sa()
 #[ test ]
 fn solve_empty_full_block()
 {
-  let _sudoku : &str = r#"
+  let _sudoku: &str = r#"
   402000000
   000038000
   090000018
@@ -120,7 +120,7 @@ fn solve_empty_full_block()
   206080047
   "#;
 
-  let sudoku : &str = r#"
+  let sudoku: &str = r#"
   350964170
   700020003
   019003524
@@ -131,19 +131,19 @@ fn solve_empty_full_block()
   800017209
   170039406
   "#;
-  log::set_max_level( log::LevelFilter::Warn );
+  log ::set_max_level( log ::LevelFilter ::Warn );
 
-  let initial = SudokuInitial::new( Board::from( sudoku ) );
-  let problem = Problem::new( initial, BestRowsColumnsCrossover, RandomPairInBlockMutation );
-  let optimizer = HybridOptimizer::new( Config::default(), problem );
+  let initial = SudokuInitial ::new( Board ::from( sudoku ) );
+  let problem = Problem ::new( initial, BestRowsColumnsCrossover, RandomPairInBlockMutation );
+  let optimizer = HybridOptimizer ::new( Config ::default(), problem );
 
-  log::set_max_level( log::LevelFilter::max() );
+  log ::set_max_level( log ::LevelFilter ::max() );
   let ( reason, solution ) = optimizer.optimize();
 
-  log::trace!( "reason : {reason}" );
+  log ::trace!( "reason: {reason}" );
   a_true!( solution.is_some() );
   let solution = solution.unwrap();
-  log::trace!( "{solution:#?}" );
+  log ::trace!( "{solution:#?}" );
   println!( "{:#?}", solution.board );
 
   a_id!( solution.cost, 0.into() );
@@ -197,14 +197,15 @@ fn time_measure()
   "#;
 
 
-  for i in 0..=3 {
-    let initial = SudokuInitial::new( Board::from( input ) );
+  for i in 0..=3 
+  {
+  let initial = SudokuInitial ::new( Board ::from( input ) );
 
-    let mut config = Config::default();
-    config.hrng = Hrng::master_with_seed( Seed::new( i.to_string() ) );
-    let problem = Problem::new( initial, BestRowsColumnsCrossover, RandomPairInBlockMutation );
+  let mut config = Config ::default();
+  config.hrng = Hrng ::master_with_seed( Seed ::new( i.to_string() ) );
+  let problem = Problem ::new( initial, BestRowsColumnsCrossover, RandomPairInBlockMutation );
 
-    let optimizer = HybridOptimizer::new( config, problem );
-    let ( _reason, _solution ) = optimizer.optimize();
-  }
+  let optimizer = HybridOptimizer ::new( config, problem );
+  let ( _reason, _solution ) = optimizer.optimize();
+ }
 }

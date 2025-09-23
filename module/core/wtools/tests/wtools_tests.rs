@@ -3,7 +3,7 @@
 // #![ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
 
 use wtools as the_module;
-use test_tools::exposed::*;
+use test_tools ::exposed :: *;
 
 ///  A struct for testing purpose.
 // #[ derive( Debug, PartialEq ) ]
@@ -55,4 +55,4 @@ mod diag_tools;
 
 
 #[ cfg( feature = "meta_tools" ) ]
-pub use meta_tools::*;
+pub use meta_tools :: *;

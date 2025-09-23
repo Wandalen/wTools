@@ -68,23 +68,23 @@ pub mod dependency
 #[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
+  use super :: *;
 
   #[ doc( inline ) ]
-  pub use orphan::*;
+  pub use orphan :: *;
 
   #[ doc( inline ) ]
-  pub use super::format::own::*;
+  pub use super ::format ::own :: *;
 
   // #[ doc( inline ) ]
-  // pub use super::format::orphan::*;
+  // pub use super ::format ::orphan :: *;
 
 }
 
@@ -93,13 +93,13 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  use super::*;
+  use super :: *;
 
   #[ doc( inline ) ]
-  pub use super::format::orphan::*;
+  pub use super ::format ::orphan :: *;
 
   #[ doc( inline ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 }
 
 /// Exposed namespace of the module.
@@ -107,35 +107,35 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::*;
+  use super :: *;
 
   #[ doc( inline ) ]
-  pub use prelude::*;
+  pub use prelude :: *;
 
   #[ doc( inline ) ]
-  pub use super::format::exposed::*;
+  pub use super ::format ::exposed :: *;
 
   #[ doc( inline ) ]
-  pub use super::dependency::reflect_tools::
+  pub use super ::dependency ::reflect_tools ::
   {
-    Fields,
-    IteratorTrait,
-    _IteratorTrait,
-  };
+  Fields,
+  IteratorTrait,
+  _IteratorTrait,
+ };
 
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::*;
+  use super :: *;
 
   #[ doc( inline ) ]
-  pub use super::format::prelude::*;
+  pub use super ::format ::prelude :: *;
 
   // #[ doc( inline ) ]
-  // pub use super::format::prelude::*;
+  // pub use super ::format ::prelude :: *;
 
 }

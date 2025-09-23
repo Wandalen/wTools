@@ -1,4 +1,4 @@
-use core::ops::{ Deref, DerefMut };
+use core ::ops :: { Deref, DerefMut };
 
 #[ allow( dead_code) ]
 enum EnumTuple
@@ -10,23 +10,23 @@ enum EnumTuple
 impl Deref for EnumTuple
 {
   type Target = String;
-  fn deref( &self ) -> &Self::Target
+  fn deref( &self ) -> &Self ::Target
   {
-    match self
-    {
-      Self::A( v, .. ) | Self::B( v, .. ) => v
-    }
-  }
+  match self
+  {
+   Self ::A( v, .. ) | Self ::B( v, .. ) => v
+ }
+ }
 }
 impl DerefMut for EnumTuple
 {
-  fn deref_mut( &mut self ) -> &mut Self::Target
+  fn deref_mut( &mut self ) -> &mut Self ::Target
   {
-    match self
-    {
-      Self::A( v, .. ) | Self::B( v, .. ) => v
-    }
-  }
+  match self
+  {
+   Self ::A( v, .. ) | Self ::B( v, .. ) => v
+ }
+ }
 }
 
 include!( "./only_test/enum_tuple.rs" );

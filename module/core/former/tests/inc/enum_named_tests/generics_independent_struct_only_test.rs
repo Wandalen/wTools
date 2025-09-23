@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 // Purpose: Provides shared test assertions and logic for both the derived and manual implementations
 // of a former builder for a named (struct-like) variant (`V1`) within a generic enum (`EnumG6<T>`),
 // where the variant contains a field with an independent concrete generic type (`InnerG6<TypeForU>`).

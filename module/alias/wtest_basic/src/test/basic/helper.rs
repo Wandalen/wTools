@@ -7,19 +7,19 @@
 mod private
 {
 
-  // zzz : move here test tools
+  // zzz: move here test tools
 
   // /// Pass only if callback fails either returning error or panicing.
   //
-  // pub fn should_throw< R, F : FnOnce() -> anyhow::Result<  R  > >( f : F ) -> anyhow::Result<  R  >
+  // pub fn should_throw< R, F: FnOnce() - > anyhow ::Result< R > >( f: F ) -> anyhow ::Result< R >
   // {
   //   f()
   // }
 
   //
 
-  // #[panic_handler]
-  // fn panic( info : &core::panic::PanicInfo ) -> !
+  // #[ panic_handler ]
+  // fn panic( info: &core ::panic ::PanicInfo ) -> !
   // {
   //   println!( "{:?}", info );
   //   loop {}
@@ -36,21 +36,21 @@ mod private
   macro_rules! num
   {
 
-    () =>
-    {
-    };
+  () =>
+  {
+ };
 
-    ( $num : expr ) =>
-    {
-      num_traits::cast::< _, T >( $num ).unwrap()
-    };
+  ( $num: expr ) =>
+  {
+   num_traits ::cast :: < _, T >( $num ).unwrap()
+ };
 
-    ( $( $num : expr ),+ ) =>
-    {(
-      $( num_traits::cast::< _, T >( $num ).unwrap() ),+
-    )};
+  ( $( $num: expr ),+ ) =>
+  {(
+   $( num_traits ::cast :: < _, T >( $num ).unwrap() ),+
+ )};
 
-  }
+ }
 
   ///
   /// Test a file with documentation.
@@ -58,14 +58,14 @@ mod private
   #[ macro_export ]
   macro_rules! doc_file_test
   {
-    ( $file:expr ) =>
-    {
-      #[ allow( unused_doc_comments ) ]
-      #[ cfg( doctest ) ]
-      #[ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", $file ) ) ]
-      extern { }
-    };
-  }
+  ( $file: expr ) =>
+  {
+   #[ allow( unused_doc_comments ) ]
+   #[ cfg( doctest ) ]
+   #[ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", $file ) ) ]
+   extern { }
+ };
+ }
 
   pub use num;
   pub use doc_file_test;
@@ -73,11 +73,11 @@ mod private
 
 //
 
-mod_interface_meta::mod_interface!
+mod_interface_meta ::mod_interface!
 {
   prelude use
   {
-    num,
-    doc_file_test,
-  };
+  num,
+  doc_file_test,
+ };
 }

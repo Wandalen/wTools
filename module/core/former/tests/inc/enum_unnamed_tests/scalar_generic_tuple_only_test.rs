@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 // Purpose: This file contains the core test logic for verifying the `Former` derive macro's
 // handling of enums where a tuple variant containing generic types and bounds is explicitly marked
 // with the `#[ scalar ]` attribute, or when default behavior applies. It defines the shared test

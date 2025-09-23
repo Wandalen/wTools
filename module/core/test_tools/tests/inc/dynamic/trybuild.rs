@@ -1,18 +1,18 @@
-use test_tools::*;
+use test_tools :: *;
 
 //
 
-test_tools::tests_impls!
+test_tools ::tests_impls!
 {
   fn pass()
   {
-    assert_eq!( true, true );
-  }
+  assert_eq!( true, true );
+ }
 }
 
 //
 
-test_tools::tests_index!
+test_tools ::tests_index!
 {
   pass,
 }

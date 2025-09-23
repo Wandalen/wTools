@@ -1,0 +1,262 @@
+/* Modern dark theme for UniLang WebAssembly REPL */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    background: linear-gradient(135deg, #1e1e2e 0%, #2d3748 100%);
+    color: #e2e8f0;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    border-bottom: 1px solid #4a5568;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+}
+
+header p {
+    color: #a0aec0;
+    font-size: 1.1rem;
+}
+
+main {
+    display: flex;
+    gap: 30px;
+    flex: 1;
+}
+
+.repl-container {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    min-height: 500px;
+}
+
+.output {
+    flex: 1;
+    background: #2d3748;
+    border: 1px solid #4a5568;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    overflow-y: auto;
+    max-height: 500px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 14px;
+}
+
+.welcome {
+    color: #68d391;
+    padding: 10px 0;
+    border-bottom: 1px solid #4a5568;
+    margin-bottom: 15px;
+}
+
+.command-line {
+    margin: 8px 0;
+    padding: 8px 0;
+}
+
+.command-input {
+    color: #f7fafc;
+    font-weight: bold;
+}
+
+.command-output {
+    color: #e2e8f0;
+    margin-left: 20px;
+    white-space: pre-wrap;
+}
+
+.command-error {
+    color: #fed7d7;
+    margin-left: 20px;
+    white-space: pre-wrap;
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background: #2d3748;
+    border: 1px solid #4a5568;
+    border-radius: 12px;
+}
+
+.prompt {
+    color: #68d391;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+#command-input {
+    flex: 1;
+    padding: 12px;
+    background: #1a202c;
+    border: 1px solid #4a5568;
+    border-radius: 8px;
+    color: #f7fafc;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 14px;
+    outline: none;
+}
+
+#command-input:focus {
+    border-color: #f093fb;
+    box-shadow: 0 0 0 3px rgba(240, 147, 251, 0.1);
+}
+
+#execute-btn {
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#execute-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(240, 147, 251, 0.3);
+}
+
+#execute-btn:active {
+    transform: translateY(0);
+}
+
+.sidebar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.section {
+    background: #2d3748;
+    border: 1px solid #4a5568;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.section h3 {
+    color: #f093fb;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.section ul {
+    list-style: none;
+}
+
+.section li {
+    margin: 8px 0;
+    color: #e2e8f0;
+}
+
+.section code {
+    background: #1a202c;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #68d391;
+    font-size: 13px;
+}
+
+#json-commands {
+    width: 100%;
+    min-height: 100px;
+    padding: 12px;
+    background: #1a202c;
+    border: 1px solid #4a5568;
+    border-radius: 8px;
+    color: #f7fafc;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 12px;
+    resize: vertical;
+    outline: none;
+    margin-bottom: 10px;
+}
+
+#json-commands:focus {
+    border-color: #f093fb;
+    box-shadow: 0 0 0 3px rgba(240, 147, 251, 0.1);
+}
+
+#load-commands-btn {
+    width: 100%;
+    padding: 10px;
+    background: #4a5568;
+    color: #f7fafc;
+    border: 1px solid #718096;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#load-commands-btn:hover {
+    background: #718096;
+}
+
+footer {
+    text-align: center;
+    margin-top: 30px;
+    padding: 20px;
+    border-top: 1px solid #4a5568;
+    color: #a0aec0;
+}
+
+footer a {
+    color: #f093fb;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    main {
+        flex-direction: column;
+    }
+    
+    .input-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .prompt {
+        display: none;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+}

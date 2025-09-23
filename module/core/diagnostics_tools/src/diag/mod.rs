@@ -12,70 +12,74 @@ pub mod rta;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod own {
-  use super::*;
+pub mod own 
+{
+  use super :: *;
   #[ doc( inline ) ]
-  pub use orphan::*;
+  pub use orphan :: *;
   #[ cfg( feature = "diagnostics_runtime_assertions" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::rta::orphan::*;
+  pub use super ::rta ::orphan :: *;
   #[ cfg( feature = "diagnostics_compiletime_assertions" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::cta::orphan::*;
+  pub use super ::cta ::orphan :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   #[ cfg( feature = "diagnostics_memory_layout" ) ]
-  pub use super::layout::orphan::*;
+  pub use super ::layout ::orphan :: *;
 }
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod orphan {
-  use super::*;
+pub mod orphan 
+{
+  use super :: *;
   #[ doc( inline ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod exposed {
-  use super::*;
+pub mod exposed 
+{
+  use super :: *;
   #[ doc( inline ) ]
-  pub use prelude::*;
+  pub use prelude :: *;
   #[ cfg( feature = "diagnostics_runtime_assertions" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::rta::exposed::*;
+  pub use super ::rta ::exposed :: *;
   #[ cfg( feature = "diagnostics_compiletime_assertions" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::cta::exposed::*;
+  pub use super ::cta ::exposed :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   #[ cfg( feature = "diagnostics_memory_layout" ) ]
-  pub use super::layout::exposed::*;
+  pub use super ::layout ::exposed :: *;
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
-pub mod prelude {
-  use super::*;
+pub mod prelude 
+{
+  use super :: *;
   #[ cfg( feature = "diagnostics_runtime_assertions" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::rta::prelude::*;
+  pub use super ::rta ::prelude :: *;
   #[ cfg( feature = "diagnostics_compiletime_assertions" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::cta::prelude::*;
+  pub use super ::cta ::prelude :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   #[ cfg( feature = "diagnostics_memory_layout" ) ]
-  pub use super::layout::prelude::*;
+  pub use super ::layout ::prelude :: *;
 }

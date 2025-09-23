@@ -37,7 +37,8 @@ fn main()
 fn run() -> Result< (), unilang::error::Error >
 {
   // 1. Initialize Command Registry
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
 
   // 2. Define and Register Commands with Routines
 
@@ -91,7 +92,8 @@ fn run() -> Result< (), unilang::error::Error >
 
     unreachable!();
   });
-  registry.command_add_runtime( &math_add_def, math_add_routine )?;
+  #[allow(deprecated)]
+    registry.command_add_runtime( &math_add_def, math_add_routine )?;
 
   // .math.sub command
   let math_sub_def = CommandDefinition::former()
@@ -143,7 +145,8 @@ fn run() -> Result< (), unilang::error::Error >
     }
     unreachable!();
   });
-  registry.command_add_runtime( &math_sub_def, math_sub_routine )?;
+  #[allow(deprecated)]
+    registry.command_add_runtime( &math_sub_def, math_sub_routine )?;
 
   // .greet command
   let greet_def = CommandDefinition::former()
@@ -191,7 +194,8 @@ fn run() -> Result< (), unilang::error::Error >
       format : "text".to_string(),
     })
   });
-  registry.command_add_runtime( &greet_def, greet_routine )?;
+  #[allow(deprecated)]
+    registry.command_add_runtime( &greet_def, greet_routine )?;
 
   // .config.set command
   let config_set_def = CommandDefinition::former()
@@ -241,7 +245,8 @@ fn run() -> Result< (), unilang::error::Error >
       format : "text".to_string(),
     })
   });
-  registry.command_add_runtime( &config_set_def, config_set_routine )?;
+  #[allow(deprecated)]
+    registry.command_add_runtime( &config_set_def, config_set_routine )?;
 
   // .system.echo command
   let echo_def = CommandDefinition::former()
@@ -283,7 +288,8 @@ fn run() -> Result< (), unilang::error::Error >
       format : "text".to_string(),
     })
   });
-  registry.command_add_runtime( &echo_def, echo_routine )?;
+  #[allow(deprecated)]
+    registry.command_add_runtime( &echo_def, echo_routine )?;
 
   // .files.cat command
   let cat_def = CommandDefinition::former()
@@ -355,7 +361,8 @@ fn run() -> Result< (), unilang::error::Error >
       ))
     }
   });
-  registry.command_add_runtime( &cat_def, cat_routine )?;
+  #[allow(deprecated)]
+    registry.command_add_runtime( &cat_def, cat_routine )?;
 
   // 3. Parse Command Line Arguments
   let args : Vec< String > = std::env::args().skip( 1 ).collect();

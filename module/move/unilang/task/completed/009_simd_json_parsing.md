@@ -154,7 +154,7 @@ impl<'a> FastJsonValue<'a> {
 - **JSON-heavy workloads**: 8-15x overall improvement
 - **Mixed workloads**: 3-6x overall improvement
 
-### Benchmarks & Validation
+### SIMD JSON Parsing Performance Validation
 
 #### Microbenchmarks
 ```rust

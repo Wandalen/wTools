@@ -1,4 +1,4 @@
-use core::ops::Deref;
+use core ::ops ::Deref;
 
 #[ allow( dead_code) ]
 enum EnumTuple
@@ -10,13 +10,13 @@ enum EnumTuple
 impl Deref for EnumTuple
 {
   type Target = String;
-  fn deref( &self ) -> &Self::Target
+  fn deref( &self ) -> &Self ::Target
   {
-    match self
-    {
-      Self::A( v, .. ) | Self::B( v, .. ) => v
-    }
-  }
+  match self
+  {
+   Self ::A( v, .. ) | Self ::B( v, .. ) => v
+ }
+ }
 }
 
 include!( "./only_test/enum_tuple.rs" );

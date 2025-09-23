@@ -3,9 +3,9 @@ fn index_mut()
 {
   let mut x = StructMultipleNamed
   { 
-    a : vec![ 4, 17 ],
-    b : vec![ 33, 55 ] 
-  };
+  a: vec![ 4, 17 ],
+  b: vec![ 33, 55 ] 
+ };
   
   x[ 0 ] = 5;
   x[ 1 ] = 18;

@@ -7,6 +7,6 @@
 #[ allow( unused_imports ) ]
 use type_constructor as the_module;
 #[ allow( unused_imports ) ]
-use test_tools::exposed::*;
+use test_tools ::exposed :: *;
 
 mod inc;

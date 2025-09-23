@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Basic test to verify the Former derive works with new #[`former_ignore`] attribute
 
 #[ allow( unused_imports ) ]

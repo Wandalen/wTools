@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //!
 //! Derive-based tests for standalone constructors for structs.
 //! Uses consistent names matching the manual version for testing.
@@ -12,7 +13,7 @@ use ::former::Former; // Import derive macro
 /// Struct using derive for standalone constructors without arguments.
 // All fields are constructor args, so constructor returns Self directly
 #[ derive( Debug, PartialEq, Default, Clone, Former ) ]
-#[ standalone_constructors ] // New attribute
+#[ standalone_constructors ]
 pub struct TestStructNoArgs
 // Consistent name
 {
@@ -25,7 +26,7 @@ pub struct TestStructNoArgs
 /// Struct using derive for standalone constructors with arguments.
 // Attributes to be implemented by the derive macro
 #[ derive( Debug, PartialEq, Default, Clone, Former ) ]
-#[ standalone_constructors ] // New attribute
+#[ standalone_constructors ]
 pub struct TestStructWithArgs
 // Consistent name
 {

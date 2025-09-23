@@ -5,7 +5,7 @@ include!( "../../../../module/step/meta/src/module/terminal.rs" );
 use program_tools as the_module;
 
 #[ allow( unused_imports ) ]
-use test_tools::exposed::*;
+use test_tools ::exposed :: *;
 
 #[ cfg( feature = "enabled" ) ]
 mod inc;

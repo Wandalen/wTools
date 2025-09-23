@@ -1,103 +1,115 @@
-// use test_tools::exposed::*;
-use super::*;
-use the_module::exposed::impls1;
-use the_module::exposed::{index};
+#![allow(unused_macros)]
+
+// use test_tools ::exposed :: *;
+use super :: *;
+use the_module ::exposed ::impls1;
+use the_module ::exposed :: { index };
 
 //
 
 #[ test ]
-fn empty_with_comma() {
+fn empty_with_comma() 
+{
   // test.case( "impls1 basic" );
   {
-    impls1!();
-    index!();
-  }
+  impls1!();
+  index!();
+ }
 }
 
 #[ test ]
-fn empty_without_comma() {
+fn empty_without_comma() 
+{
   // test.case( "impls1 basic" );
   {
-    impls1! {};
+  impls1! {};
 
-    index! {}
-  }
+  index! {}
+ }
 }
 
 #[ test ]
-fn with_comma() {
+fn with_comma() 
+{
   // test.case( "impls1 basic" );
   {
-    impls1! {
-      fn f1() -> i32
-      {
-        println!( "f1" );
-        13
-      }
-    };
+  impls1! 
+{
+   fn f1() -> i32
+   {
+  println!( "f1" );
+  13
+ }
+ };
 
-    index! {
-      f1,
-    }
+  index! {
+   f1,
+ }
 
-    a_id!(f1(), 13);
-  }
+  a_id!(f1(), 13);
+ }
 }
 
 #[ test ]
-fn without_comma() {
+fn without_comma() 
+{
   // test.case( "impls1 basic" );
   {
-    impls1! {
-      fn f1() -> i32
-      {
-        println!( "f1" );
-        13
-      }
-    };
+  impls1! 
+{
+   fn f1() -> i32
+   {
+  println!( "f1" );
+  13
+ }
+ };
 
-    index! {
-      f1
-    }
+  index! {
+   f1
+ }
 
-    a_id!(f1(), 13);
-  }
+  a_id!(f1(), 13);
+ }
 }
 
 #[ test ]
-fn parentheses_with_comma() {
+fn parentheses_with_comma() 
+{
   // test.case( "impls1 basic" );
   {
-    impls1! {
-      fn f1() -> i32
-      {
-        println!( "f1" );
-        13
-      }
-    };
+  impls1! 
+{
+   fn f1() -> i32
+   {
+  println!( "f1" );
+  13
+ }
+ };
 
-    index!(f1,);
+  index!(f1,);
 
-    a_id!(f1(), 13);
-  }
+  a_id!(f1(), 13);
+ }
 }
 
 #[ test ]
-fn parentheses_without_comma() {
+fn parentheses_without_comma() 
+{
   // test.case( "impls1 basic" );
   {
-    impls1! {
-      fn f1() -> i32
-      {
-        println!( "f1" );
-        13
-      }
-    };
+  impls1! 
+{
+   fn f1() -> i32
+   {
+  println!( "f1" );
+  13
+ }
+ };
 
-    index!(f1);
+  index!(f1);
 
-    a_id!(f1(), 13);
-  }
+  a_id!(f1(), 13);
+ }
 }
 
 //

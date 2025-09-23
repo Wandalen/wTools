@@ -1,44 +1,44 @@
 #[ allow( unused_imports ) ]
-use super::the_module::*;
+use super ::the_module :: *;
 
-the_module::tests_impls!
+the_module ::tests_impls!
 {
 
   //
 
   fn pass1_test()
   {
-    the_module::a_id!( true, true );
-  }
+  the_module ::a_id!( true, true );
+ }
 
   //
 
   fn fail1_test()
   {
-    // a_id!( true, false );
-  }
+  // a_id!( true, false );
+ }
 
   //
 
-  #[cfg(any())]
+  #[ cfg(any()) ]
   fn never_test()
   {
-    println!( "never_test" );
-  }
+  println!( "never_test" );
+ }
 
   //
 
-  #[cfg(all())]
+  #[ cfg(all()) ]
   fn always_test()
   {
-    println!( "always_test" );
-  }
+  println!( "always_test" );
+ }
 
 }
 
 //
 
-the_module::tests_index!
+the_module ::tests_index!
 {
   pass1_test,
   fail1_test,

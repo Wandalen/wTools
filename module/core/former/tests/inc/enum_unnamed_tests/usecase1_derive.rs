@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 // Purpose: Tests the `#[ derive( former::Former ) ]` macro's generation of subformer starter methods for an enum
 // with multiple single-field tuple variants, where the inner types also derive `former::Former`. This file
 // focuses on verifying the derive-based implementation.

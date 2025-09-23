@@ -20,7 +20,7 @@ fn main()
   // Simple example showing the structure - actual implementation would require
   // more trait implementations as shown in the full attr_prop example
   println!( "This is a demonstration of the attribute parsing concept." );
-  println!( "For a complete working example, see:" );
+  println!( "For a complete working example, see: " );
   println!( "  cargo run --example macro_tools_attr_prop --all-features" );
   
   println!();

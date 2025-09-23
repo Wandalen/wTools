@@ -1,7 +1,10 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 #![allow(dead_code)]
 
 #[ allow( unused_imports ) ]
 use super::*;
+#[ allow( unused_imports ) ]
+use test_tools::a_id;
 #[ allow( unused_imports ) ]
 use collection_tools::HashMap;
 
@@ -677,7 +680,7 @@ fn custom1() {
     .map(|e| e.0)
     .cloned()
     .collect::<collection_tools::HashSet< String >>();
-  let exp = collection_tools::hset!["echo".into(), "exit".into(),];
+  let exp: collection_tools::HashSet<String> = collection_tools::hset!["echo".into(), "exit".into(),];
   a_id!(got, exp);
 }
 
@@ -698,6 +701,6 @@ fn custom2() {
     .map(|e| e.0)
     .cloned()
     .collect::<collection_tools::HashSet< String >>();
-  let exp = collection_tools::hset!["echo".into(), "echo_2".into(), "exit".into(), "exit_2".into(),];
+  let exp: collection_tools::HashSet<String> = collection_tools::hset!["echo".into(), "echo_2".into(), "exit".into(), "exit_2".into(),];
   a_id!(got, exp);
 }

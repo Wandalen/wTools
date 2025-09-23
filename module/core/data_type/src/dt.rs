@@ -3,75 +3,79 @@ mod private {}
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod own {
+pub mod own 
+{
 
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use orphan::*;
+  pub use orphan :: *;
 }
 
 /// Shared with parent namespace of the module
 #[ allow( unused_imports ) ]
-pub mod orphan {
+pub mod orphan 
+{
 
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod exposed {
+pub mod exposed 
+{
 
-  use super::*;
+  use super :: *;
 
   #[ doc( inline ) ]
-  pub use prelude::*;
+  pub use prelude :: *;
 
   #[ cfg( feature = "either" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use ::either::Either;
+  pub use ::either ::Either;
 
   // #[ cfg( feature = "type_constructor" ) ]
   // #[ doc( inline ) ]
   // #[ allow( unused_imports ) ]
-  // pub use ::type_constructor::exposed::*;
+  // pub use ::type_constructor ::exposed :: *;
 
   #[ cfg( feature = "dt_interval" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use crate::dependency::interval_adapter::exposed::*;
+  pub use crate ::dependency ::interval_adapter ::exposed :: *;
 
   #[ cfg( feature = "dt_collection" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use crate::dependency::collection_tools::exposed::*;
+  pub use crate ::dependency ::collection_tools ::exposed :: *;
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
-pub mod prelude {
-  use super::*;
+pub mod prelude 
+{
+  use super :: *;
 
   // #[ cfg( feature = "either" ) ]
-  // pub use ::either::*;
+  // pub use ::either :: *;
   // #[ cfg( feature = "type_constructor" ) ]
   // #[ doc( inline ) ]
   // #[ allow( unused_imports ) ]
-  // pub use ::type_constructor::prelude::*;
+  // pub use ::type_constructor ::prelude :: *;
 
   #[ cfg( feature = "dt_interval" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use crate::dependency::interval_adapter::prelude::*;
+  pub use crate ::dependency ::interval_adapter ::prelude :: *;
 
   #[ cfg( feature = "dt_collection" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use crate::dependency::collection_tools::prelude::*;
+  pub use crate ::dependency ::collection_tools ::prelude :: *;
 }

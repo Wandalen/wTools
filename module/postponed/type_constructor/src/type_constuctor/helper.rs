@@ -1,10 +1,10 @@
 /// Define a private namespace for all its items.
 mod private
 {
-  use crate::exposed::*;
+  use crate ::exposed :: *;
 
   ///
-  /// Generate code only if feature::make is enabled.
+  /// Generate code only if feature ::make is enabled.
   ///
   /// Do not use manually.
   ///
@@ -12,14 +12,14 @@ mod private
   #[ macro_export ]
   macro_rules! _if_make
   {
-    ( $( $Rest : tt )* ) =>
-    {
-      $( $Rest )*
-    };
-  }
+  ( $( $Rest: tt )* ) =>
+  {
+   $( $Rest )*
+ };
+ }
 
   ///
-  /// Generate code only if feature::make is disabled.
+  /// Generate code only if feature ::make is disabled.
   ///
   /// Do not use manually.
   ///
@@ -27,10 +27,10 @@ mod private
   #[ macro_export ]
   macro_rules! _if_make
   {
-    ( $( $Rest : tt )* ) =>
-    {
-    };
-  }
+  ( $( $Rest: tt )* ) =>
+  {
+ };
+ }
 
   pub use _if_make;
 }
@@ -39,45 +39,45 @@ mod private
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use orphan::*;
+  pub use orphan :: *;
 }
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use prelude::*;
+  pub use prelude :: *;
 }
 
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use private::
+  pub use private ::
   {
-    _if_make,
-  };
+  _if_make,
+ };
 }

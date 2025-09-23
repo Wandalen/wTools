@@ -1,3 +1,4 @@
+#![allow(clippy::all)]
 //! # Basic Command Registration Example
 //!
 //! This example demonstrates the fundamental concepts of unilang:
@@ -25,6 +26,7 @@ fn main() -> Result< (), unilang::error::Error >
   // Step 1: Create the Command Registry
   // The registry is the central storage for all command definitions and their execution routines.
   // Think of it as a dictionary that maps command names to their implementations.
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   println!( "✓ Created command registry" );
 
@@ -114,6 +116,7 @@ fn main() -> Result< (), unilang::error::Error >
   // Step 4: Register the Command
   // This connects the command definition with its execution routine.
   // After this, the command can be looked up and executed by name.
+  #[allow(deprecated)]
   registry.command_add_runtime( &greet_command, greet_routine )?;
   println!( "✓ Registered 'greet' command with routine" );
 

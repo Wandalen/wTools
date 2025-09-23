@@ -13,55 +13,55 @@
 #![ allow( unused_imports ) ]
 #![ allow( dead_code ) ]
 
-use test_tools::prelude::*;
+use test_tools :: *;
 
-// N1.1: Unit struct
+// N1.1 : Unit struct
 pub struct UnitStruct;
 
-impl core::ops::Not for UnitStruct
+impl core ::ops ::Not for UnitStruct
 {
   type Output = Self;
-  fn not( self ) -> Self::Output
+  fn not( self ) -> Self ::Output
   {
-    self
-  }
+  self
+ }
 }
 
-// N1.2: Tuple struct with one field
+// N1.2 : Tuple struct with one field
 pub struct TupleStruct1( pub bool );
 
-impl core::ops::Not for TupleStruct1
+impl core ::ops ::Not for TupleStruct1
 {
   type Output = Self;
-  fn not( self ) -> Self::Output
+  fn not( self ) -> Self ::Output
   {
-    Self( !self.0 )
-  }
+  Self( !self.0 )
+ }
 }
 
-// N1.3: Tuple struct with multiple fields - should not compile
+// N1.3 : Tuple struct with multiple fields - should not compile
 // pub struct TupleStruct2( pub bool, pub bool );
 
-// N1.4: Named struct with one field
+// N1.4 : Named struct with one field
 pub struct NamedStruct1
 {
-  pub field1 : bool,
+  pub field1: bool,
 }
 
-impl core::ops::Not for NamedStruct1
+impl core ::ops ::Not for NamedStruct1
 {
   type Output = Self;
-  fn not( self ) -> Self::Output
+  fn not( self ) -> Self ::Output
   {
-    Self { field1 : !self.field1 }
-  }
+  Self { field1: !self.field1 }
+ }
 }
 
-// N1.5: Named struct with multiple fields - should not compile
+// N1.5 : Named struct with multiple fields - should not compile
 // pub struct NamedStruct2
 // {
-//   pub field1 : bool,
-//   pub field2 : bool,
+//   pub field1: bool,
+//   pub field2: bool,
 // }
 
 // Shared test logic

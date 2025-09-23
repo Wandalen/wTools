@@ -3,20 +3,20 @@
 //! This example demonstrates the fundamental concept of component assignment -
 //! setting struct fields by component type rather than field name.
 
-use component_model::Assign;
+use component_model ::Assign;
 
 #[ derive( Default, Debug, PartialEq, Assign ) ]
 struct Person
 {
-  age : i32,
-  name : String,
+  age: i32,
+  name: String,
 }
 
 fn main()
 {
   println!( "=== Basic Component Assignment ===" );
   
-  let mut person = Person::default();
+  let mut person = Person ::default();
   println!( "Initial person: {person:?}" );
   
   // Assign components by type - no field names needed!
@@ -26,14 +26,14 @@ fn main()
   println!( "After assignment: {person:?}" );
   
   // Verify the assignment worked
-  assert_eq!( person, Person { age : 25, name : "Alice".to_string() } );
+  assert_eq!( person, Person { age: 25, name: "Alice".to_string() } );
   
   // You can assign again to update values
   person.assign( 30 );
   person.assign( "Bob".to_string() );
   
   println!( "After updates: {person:?}" );
-  assert_eq!( person, Person { age : 30, name : "Bob".to_string() } );
+  assert_eq!( person, Person { age: 30, name: "Bob".to_string() } );
   
   println!( "✅ Basic assignment complete!" );
 }

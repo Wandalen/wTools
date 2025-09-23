@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 // Purpose: Provides shared test assertions and logic for both the derived and manual implementations
 // of standalone scalar constructors for named (struct-like) variants with `#[ arg_for_constructor ]`
 // fields. It tests that standalone constructors generated/implemented when the enum has

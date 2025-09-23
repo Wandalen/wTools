@@ -1,6 +1,6 @@
 [package]
 name = "pth"
-version = "0.25.0"
+version = "0.27.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -30,7 +30,7 @@ default = [
   "path_utf8",
 ]
 full = [
-  "default",
+  "enabled",
   "derive_serde",
   "path_utf8",
 ]

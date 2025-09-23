@@ -1,11 +1,11 @@
-#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
+#[ allow( clippy ::std_instead_of_alloc, clippy ::std_instead_of_core ) ]
 mod private
 {
 
-  use crate::*;
-  use collection_tools::collection::{ BTreeSet, HashSet };
-  use error::untyped::{ bail }; // xxx
-  use iter_tools::iter::Itertools;
+  use crate :: *;
+  use collection_tools ::collection :: { BTreeSet, HashSet };
+  use error ::untyped :: { bail }; // xxx
+  use iter_tools ::iter ::Itertools;
 
   /// Generates a powerset of the features available in the given `package`,
   /// filtered according to specified inclusion and exclusion criteria,
@@ -43,109 +43,109 @@ mod private
   ///
   /// # Errors
   /// qqq: doc
-  #[ allow( clippy::too_many_arguments ) ]
+  #[ allow( clippy ::too_many_arguments ) ]
   pub fn features_powerset
   (
-    package : WorkspacePackageRef< '_ >,
-    power : usize,
-    exclude_features : &[ String ],
-    include_features : &[ String ],
-    enabled_features : &[ String ],
-    with_all_features : bool,
-    with_none_features : bool,
-    variants_cap : u32,
-  )
-  // qqq : for Petro : typed error
-  -> error::untyped::Result< HashSet< BTreeSet< String > > >
+  package: WorkspacePackageRef< '_ >,
+  power: usize,
+  exclude_features: &[ String ],
+  include_features: &[ String ],
+  enabled_features: &[ String ],
+  with_all_features: bool,
+  with_none_features: bool,
+  variants_cap: u32,
+ )
+  // qqq: for Petro: typed error
+  -> error ::untyped ::Result< HashSet< BTreeSet< String > > >
   {
-    let mut features_powerset = HashSet::new();
+  let mut features_powerset = HashSet ::new();
 
-    let filtered_features : BTreeSet< _ > = package
-    .features()
-    .keys()
-    .filter( | f | !exclude_features.contains( f ) && ( include_features.contains(f) || include_features.is_empty() ) )
-    .cloned()
-    .collect();
+  let filtered_features: BTreeSet< _ > = package
+  .features()
+  .keys()
+  .filter( | f | !exclude_features.contains( f ) && ( include_features.contains(f) || include_features.is_empty() ) )
+  .cloned()
+  .collect();
 
-    if estimate_with( filtered_features.len(), power, with_all_features, with_none_features, enabled_features, package.features().len() ) > variants_cap as usize
-    {
-      bail!( "Feature powerset longer then cap." )
-    }
+  if estimate_with( filtered_features.len(), power, with_all_features, with_none_features, enabled_features, package.features().len() ) > variants_cap as usize
+  {
+   bail!( "Feature powerset longer then cap." )
+ }
 
-    for subset_size in 0..= std::cmp::min( filtered_features.len(), power )
-    {
-      for combination in filtered_features.iter().combinations( subset_size )
-      {
-        let mut subset : BTreeSet< String > = combination.into_iter().cloned().collect();
-        if subset.is_empty() || subset == filtered_features
-        {
-          continue
-        }
-        subset.extend( enabled_features.iter().cloned() );
-        features_powerset.insert( subset );
-      }
-    }
+  for subset_size in 0..= std ::cmp ::min( filtered_features.len(), power )
+  {
+   for combination in filtered_features.iter().combinations( subset_size )
+   {
+  let mut subset: BTreeSet< String > = combination.into_iter().cloned().collect();
+  if subset.is_empty() || subset == filtered_features
+  {
+   continue
+ }
+  subset.extend( enabled_features.iter().cloned() );
+  features_powerset.insert( subset );
+ }
+ }
 
-    if with_all_features
-    {
-      features_powerset.insert( filtered_features );
-    }
+  if with_all_features
+  {
+   features_powerset.insert( filtered_features );
+ }
 
-    if with_none_features
-    {
-      features_powerset.insert( [].into_iter().collect() );
-      features_powerset.insert( enabled_features.iter().cloned().collect() );
-    }
+  if with_none_features
+  {
+   features_powerset.insert( [].into_iter().collect() );
+   features_powerset.insert( enabled_features.iter().cloned().collect() );
+ }
 
-    Ok( features_powerset )
-  }
+  Ok( features_powerset )
+ }
 
   /// Calculate estimate for `features_powerset.length`
   #[ must_use ]
   pub fn estimate_with
   (
-    n : usize,
-    power : usize,
-    with_all_features : bool,
-    with_none_features : bool,
-    enabled_features : &[ String ],
-    total_features : usize
-  ) -> usize
+  n: usize,
+  power: usize,
+  with_all_features: bool,
+  with_none_features: bool,
+  enabled_features: &[ String ],
+  total_features: usize
+ ) -> usize
   {
-    let mut estimate = 0;
-    let mut binom = 1;
-    let power = power.min( n );
+  let mut estimate = 0;
+  let mut binom = 1;
+  let power = power.min( n );
 
-    for k in 0..=power
-    {
-      estimate += binom;
-      binom = binom * ( n - k ) / ( k + 1 );
-    }
+  for k in 0..=power
+  {
+   estimate += binom;
+   binom = binom * ( n - k ) / ( k + 1 );
+ }
 
-    if with_all_features { estimate += 1; }
-    if with_none_features { estimate += 1; }
+  if with_all_features { estimate += 1; }
+  if with_none_features { estimate += 1; }
 
-    if !enabled_features.is_empty()
-    {
-      let len = enabled_features.len();
-      let combinations = ( 0..=len.min( total_features ) ).map( | k |
-      {
-        let mut binom = 1;
-        for i in 0..k
-        {
-          binom = binom * ( len - i ) / ( i + 1 );
-        }
-        binom
-      }).sum::< usize >();
-      estimate += combinations;
-    }
+  if !enabled_features.is_empty()
+  {
+   let len = enabled_features.len();
+   let combinations = ( 0..=len.min( total_features ) ).map( | k |
+   {
+  let mut binom = 1;
+  for i in 0..k
+  {
+   binom = binom * ( len - i ) / ( i + 1 );
+ }
+  binom
+ }).sum :: < usize >();
+   estimate += combinations;
+ }
 
-    estimate
-  }
+  estimate
+ }
 
 }
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   /// Features
   own use features_powerset;

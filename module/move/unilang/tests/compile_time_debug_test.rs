@@ -20,6 +20,7 @@ fn test_no_compile_time_debug_output_in_build()
 use unilang::prelude::*;
 
 fn main() -> Result<(), unilang::error::Error> {
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   
   let greet_cmd = CommandDefinition {
@@ -29,6 +30,7 @@ fn main() -> Result<(), unilang::error::Error> {
     hint: "Test".to_string(),
     arguments: vec![],
     routine_link: None,
+        auto_help_enabled: false,
     status: "stable".to_string(),
     version: "1.0.0".to_string(),
     tags: vec![],

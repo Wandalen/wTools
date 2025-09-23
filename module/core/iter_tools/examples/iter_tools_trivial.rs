@@ -1,13 +1,14 @@
 //! This example demonstrates the usage of some standard and non-standard functions
 //! from the `iter_tools` crate. The `iter_tools` crate provides additional iterator
 //! methods beyond those provided by the standard library.
-#[cfg(not(feature = "enabled"))]
+#[ cfg(not(feature = "enabled")) ]
 fn main() {}
 
 #[ cfg( feature = "enabled" ) ]
-fn main() {
+fn main() 
+{
   // Importing functions from the `iter_tools` crate
-  use iter_tools::*;
+  use iter_tools :: *;
 
   /* standard functions */
   // Creating a vector
@@ -24,9 +25,10 @@ fn main() {
   // Reversing the vector using the `rev` function from `iter_tools`
   let reversed = rev(&vec);
   // Iterating over the reversed vector
-  for v in reversed {
-    // Pushing the dereferenced value into the result vector
-    result.push(*v);
-  }
+  for v in reversed 
+  {
+  // Pushing the dereferenced value into the result vector
+  result.push(*v);
+ }
   assert_eq!(result, vec![-2, 1, 5,]);
 }

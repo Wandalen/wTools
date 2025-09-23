@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 // Purpose: Focused replacement for blocked generics_in_tuple_variant tests
 // This works around the "Former derive fundamental limitation: cannot parse generic enum syntax"
 // by creating non-generic equivalents that provide the same functionality coverage

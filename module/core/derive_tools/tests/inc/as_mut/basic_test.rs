@@ -1,9 +1,10 @@
 #![allow(unused_imports)]
-use super::*;
-use derive_tools::AsMut;
+use super :: *;
+use derive_tools ::AsMut;
 
 #[ derive( AsMut ) ]
-struct StructNamed {
+struct StructNamed 
+{
   #[ as_mut ]
   field1: i32,
 }

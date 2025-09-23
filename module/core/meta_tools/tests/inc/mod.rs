@@ -1,5 +1,5 @@
 #[ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 
 // #[ cfg( any( feature = "meta_constructors", feature = "meta_constructors" ) ) ]
 // mod meta_constructor_test;

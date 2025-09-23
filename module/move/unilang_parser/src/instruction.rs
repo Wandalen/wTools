@@ -1,9 +1,9 @@
 //! Defines the core instruction and argument structures for unilang.
-#![ allow( clippy::doc_markdown ) ]
-use alloc::collections::BTreeMap;
-use alloc::vec::Vec;
-use alloc::string::String;
-use super::error::SourceLocation;
+#![ allow( clippy ::doc_markdown ) ]
+use alloc ::collections ::BTreeMap;
+use alloc ::vec ::Vec;
+use alloc ::string ::String;
+use super ::error ::SourceLocation;
 
 /// Represents a single argument to a command, either positional or named.
 ///
@@ -13,19 +13,19 @@ use super::error::SourceLocation;
 #[ derive( Debug, PartialEq, Clone, Eq ) ]
 pub struct Argument
 {
-  /// The name of the argument if it's a named argument (e.g., "name" in "`name::value`").
+  /// The name of the argument if it's a named argument (e.g., "name" in "`name ::value`").
   /// This is `None` for positional arguments.
-  pub name : Option< String >,
+  pub name: Option< String >,
   /// The unescaped value of the argument.
   /// For quoted arguments, this is the content within the quotes after escape sequences
   /// have been processed. For unquoted arguments, this is the literal token string.
-  pub value : String,
+  pub value: String,
   /// The location (span) of the argument's name in the original input, if applicable.
-  /// This points to the "name" part of a "`name::value`" pair.
-  pub name_location : Option< SourceLocation >,
+  /// This points to the "name" part of a "`name ::value`" pair.
+  pub name_location: Option< SourceLocation >,
   /// The location (span) of the argument's raw value token in the original input.
   /// For quoted values, this refers to the span including the quotes.
-  pub value_location : SourceLocation,
+  pub value_location: SourceLocation,
 }
 
 /// Represents a generic instruction parsed from the input string or slice.
@@ -40,19 +40,19 @@ pub struct GenericInstruction
   /// A vector of strings representing the segments of the command path.
   /// For example, `command.sub_command --arg` would result in `vec!["command", "sub_command"]`.
   /// If the input was `cmd arg1`, `arg1` would be a positional argument, not part of the command path.
-  pub command_path_slices : Vec< String >,
+  pub command_path_slices: Vec< String >,
   /// A hash map of named arguments.
-  /// The key is the argument name (e.g., "config" for `config::"path/to/file"`),
+  /// The key is the argument name (e.g., "config" for `config :: "path/to/file"`),
   /// and the value is an [`Argument`] struct containing the unescaped value and locations.
-  pub named_arguments : BTreeMap< String, Argument >,
+  pub named_arguments: BTreeMap< String, Argument >,
   /// A vector of positional arguments, stored as [`Argument`] structs.
   /// These are maintained in the order they appeared in the input.
   /// The `name` field within these `Argument` structs will be `None`.
-  pub positional_arguments : Vec< Argument >,
+  pub positional_arguments: Vec< Argument >,
   /// Indicates if help was requested for this command, typically via a trailing `?`
   /// immediately after the command path and before any arguments.
-  pub help_requested : bool,
+  pub help_requested: bool,
   /// The [`SourceLocation`] span covering the entire instruction from its first token
   /// to its last token in the original input.
-  pub overall_location : SourceLocation,
+  pub overall_location: SourceLocation,
 }

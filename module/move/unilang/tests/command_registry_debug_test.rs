@@ -20,7 +20,9 @@ use unilang::registry::CommandRegistry;
 #[ test ]
 fn test_command_registry_key_mismatch()
 {
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
 
   let command_def = CommandDefinition::former()
   .name( ".my_command" )
@@ -45,6 +47,7 @@ fn test_command_registry_key_mismatch()
   .form();
 
   // Register the command and a dummy routine
+  #[allow(deprecated)]
   registry
   .command_add_runtime
   (

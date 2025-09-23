@@ -4,14 +4,14 @@
 //! These traits are central to the implementation of a flexible and extensible formation system,
 //! enabling entities to be constructed using various configurations and complex logic.
 //!
-//! Key aspects of the module include:
-//! - **Entity to Definition Mapping**: Linking entities to their specific formation definitions,
+//! Key aspects of the module include :
+//! - **Entity to Definition Mapping** : Linking entities to their specific formation definitions,
 //!   which detail how they are to be constructed.
-//! - **Entity to Former Mapping**: Associating entities with formers that handle their construction
+//! - **Entity to Former Mapping** : Associating entities with formers that handle their construction
 //!   process.
-//! - **Entity to Storage Mapping**: Defining the storage structures that maintain the state of an
+//! - **Entity to Storage Mapping** : Defining the storage structures that maintain the state of an
 //!   entity during its formation.
-//! - **Definition Traits**: Specifying the properties and ending conditions of the formation
+//! - **Definition Traits** : Specifying the properties and ending conditions of the formation
 //!   process to ensure entities are formed according to specified rules and logic.
 //!
 
@@ -22,17 +22,17 @@
 /// the user's struct/enum and the generated Former ecosystem.
 ///
 /// # Type Parameters
-/// - `Context`: The contextual information available during formation
-/// - `Formed`: The final type that results from the formation process
-/// - `End`: The ending condition or operation for the formation process
+/// - `Context` : The contextual information available during formation
+/// - `Formed` : The final type that results from the formation process
+/// - `End` : The ending condition or operation for the formation process
 ///
 /// # Associated Types
-/// - [`Definition`]: The complete [`FormerDefinition`] that governs this entity's formation
-/// - [`Types`]: The type system integration via [`FormerDefinitionTypes`]
+/// - [`Definition`] : The complete [`FormerDefinition`] that governs this entity's formation
+/// - [`Types`] : The type system integration via [`FormerDefinitionTypes`]
 ///
 /// # Usage in Generated Code
 /// This trait is automatically implemented by the `#[ derive( Former ) ]` macro and should
-/// not typically be implemented manually. It enables the Former pattern to:
+/// not typically be implemented manually. It enables the Former pattern to :
 /// - Determine the correct storage type for an entity
 /// - Link to the appropriate former struct
 /// - Apply the correct formation logic
@@ -40,17 +40,19 @@
 ///
 /// # Example Context
 /// ```rust, ignore
-/// // For a struct like this:
+/// // For a struct like this :
 /// #[ derive( Former ) ]
 /// struct User { name: String, age: u32 }
 ///
-/// // The macro generates an implementation like:
-/// impl EntityToDefinition<(), User, former::ReturnPreformed> for User {
+/// // The macro generates an implementation like :
+/// impl EntityToDefinition< (), User, former ::ReturnPreformed >  for User
+/// {
 ///     type Definition = UserDefinition;
 ///     type Types = UserDefinitionTypes;
 /// }
 /// ```
-pub trait EntityToDefinition<Context, Formed, End> {
+pub trait EntityToDefinition< Context, Formed, End > 
+{
   /// The specific [`FormerDefinition`] associated with this entity.
   ///
   /// This definition contains all the information needed to construct instances
@@ -72,11 +74,11 @@ pub trait EntityToDefinition<Context, Formed, End> {
 /// needing complete formation control.
 ///
 /// # Type Parameters
-/// - `Context`: The contextual information available during formation
-/// - `Formed`: The final type that results from the formation process
+/// - `Context` : The contextual information available during formation
+/// - `Formed` : The final type that results from the formation process
 ///
 /// # Purpose and Usage
-/// This trait serves as a building block for more complex formation scenarios:
+/// This trait serves as a building block for more complex formation scenarios :
 /// - Type system integration for subforms
 /// - Generic parameter propagation in nested structures
 /// - Context type determination in hierarchical builders
@@ -86,7 +88,8 @@ pub trait EntityToDefinition<Context, Formed, End> {
 /// - Simpler than [`EntityToDefinition`] as it doesn't specify end conditions
 /// - Used internally by the Former macro for type resolution
 /// - Enables proper generic parameter handling in complex hierarchies
-pub trait EntityToDefinitionTypes<Context, Formed> {
+pub trait EntityToDefinitionTypes< Context, Formed > 
+{
   /// Specifies the `FormerDefinitionTypes` that define the storage, formed entity, and context types used during formation.
   ///
   /// This association is essential for ensuring that the formation process is carried out
@@ -94,7 +97,7 @@ pub trait EntityToDefinitionTypes<Context, Formed> {
   /// with the entity's actual structure and requirements.
   ///
   /// # Type Requirements
-  /// The associated [`Types`] must implement [`FormerDefinitionTypes`] with:
+  /// The associated [`Types`] must implement [`FormerDefinitionTypes`] with :
   /// - `Storage` type compatible with the entity's field requirements
   /// - `Formed` type matching the target entity type
   /// - `Context` type appropriate for the formation scenario
@@ -108,41 +111,42 @@ pub trait EntityToDefinitionTypes<Context, Formed> {
 /// It's a crucial part of the type system that ensures type safety across the formation process.
 ///
 /// # Type Parameters
-/// - `Definition`: The [`FormerDefinition`] that governs the formation process
+/// - `Definition` : The [`FormerDefinition`] that governs the formation process
 ///
 /// # Purpose and Design
-/// This trait enables:
-/// - **Type-Safe Builder Resolution**: Ensures the correct builder is used for each entity
-/// - **Generic Parameter Preservation**: Maintains generic constraints through builder creation
-/// - **Custom Former Support**: Allows for specialized builder implementations
-/// - **Subform Integration**: Enables nested builders with proper type relationships
+/// This trait enables :
+/// - **Type-Safe Builder Resolution** : Ensures the correct builder is used for each entity
+/// - **Generic Parameter Preservation** : Maintains generic constraints through builder creation
+/// - **Custom Former Support** : Allows for specialized builder implementations
+/// - **Subform Integration** : Enables nested builders with proper type relationships
 ///
 /// # Usage in Generated Code
-/// The `#[ derive( Former ) ]` macro automatically implements this trait:
+/// The `#[ derive( Former ) ]` macro automatically implements this trait :
 /// ```rust, ignore
-/// // For a struct like:
+/// // For a struct like :
 /// #[ derive( Former ) ]
 /// struct Config { setting: String }
 ///
-/// // The macro generates:
-/// impl EntityToFormer<ConfigDefinition> for Config {
-///     type Former = ConfigFormer<ConfigDefinition>;
+/// // The macro generates :
+/// impl EntityToFormer< ConfigDefinition >  for Config
+/// {
+///     type Former = ConfigFormer< ConfigDefinition >;
 /// }
 /// ```
 ///
 /// # Integration Points
-/// This trait works with:
-/// - [`EntityToDefinition`]: For complete entity-to-formation mapping
-/// - [`FormerBegin`]: For initiating the formation process
+/// This trait works with :
+/// - [`EntityToDefinition`] : For complete entity-to-formation mapping
+/// - [`FormerBegin`] : For initiating the formation process
 /// - Generated former structs: For the actual builder implementation
-pub trait EntityToFormer<Definition>
+pub trait EntityToFormer< Definition >
 where
   Definition: FormerDefinition,
 {
   /// The type of the former (builder) used for constructing the entity.
   ///
   /// This type must implement the necessary builder pattern methods and integrate
-  /// properly with the Former ecosystem. It typically includes:
+  /// properly with the Former ecosystem. It typically includes :
   /// - Setter methods for each field
   /// - Subform support for nested structures
   /// - Collection builders for container fields
@@ -164,7 +168,8 @@ where
 /// Maps a type of entity to its storage type.
 /// This trait defines what storage structure is used to hold the interim state
 /// of an entity during its formation.
-pub trait EntityToStorage {
+pub trait EntityToStorage 
+{
   /// The storage type used for forming the entity.
   type Storage;
 }
@@ -172,7 +177,8 @@ pub trait EntityToStorage {
 /// Defines the fundamental components involved in the formation of an entity.
 /// This trait specifies the types of storage, the formed entity, and the context
 /// used during the formation process.
-pub trait FormerDefinitionTypes: Sized {
+pub trait FormerDefinitionTypes: Sized 
+{
   /// The type of storage used to maintain the state during formation.
   type Storage: Default;
 
@@ -187,13 +193,14 @@ pub trait FormerDefinitionTypes: Sized {
 /// This trait connects the formation types with a specific endpoint, defining
 /// how the formation process concludes, including any necessary transformations
 /// or validations.
-pub trait FormerDefinition: Sized {
+pub trait FormerDefinition: Sized 
+{
   /// Encapsulates the types related to the formation process including any mutators.
-  type Types: crate::FormerDefinitionTypes<Storage = Self::Storage, Formed = Self::Formed, Context = Self::Context>
-    + crate::FormerMutator;
+  type Types: crate ::FormerDefinitionTypes< Storage = Self ::Storage, Formed = Self ::Formed, Context = Self ::Context >
+  + crate ::FormerMutator;
 
   /// Defines the ending condition or operation of the formation process.
-  type End: crate::FormingEnd<Self::Types>;
+  type End: crate ::FormingEnd< Self ::Types >;
 
   /// The storage type used during the formation.
   type Storage: Default;

@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 // Purpose: Provides shared test assertions and logic for both the derived and manual implementations of standalone former builder functions for tuple variants without `#[ arg_for_constructor ]` fields. It tests that standalone constructors generated/implemented when the enum has `#[ standalone_constructors ]` and no variant fields have `#[ arg_for_constructor ]` behave as expected (former builder style).
 //
 // Coverage:

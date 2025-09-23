@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Derive implementation for testing unit variants in generic enums.
 
 use super::*;
@@ -7,7 +8,7 @@ use former::Former;
 /// Generic enum with a unit variant, using Former.
 // Temporarily making this non-generic to test basic functionality
 #[ derive( Debug, PartialEq, Former ) ]
-#[ former( standalone_constructors, debug ) ]
+#[ former( standalone_constructors ) ] // debug disabled
 pub enum GenericOption
 {
   #[ scalar ] // Treat Value as a scalar constructor for the enum

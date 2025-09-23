@@ -1,0 +1,25 @@
+# Generated WebAssembly files
+pkg/
+
+# Node.js dependencies (if using npm for development)
+node_modules/
+
+# Build artifacts
+target/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+
+# Logs
+*.log

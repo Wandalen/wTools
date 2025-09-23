@@ -1,10 +1,10 @@
 #[ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 
 #[ test ]
 fn md_offset_basic()
 {
-  use the_module::md_math::MdOffset;
+  use the_module ::md_math ::MdOffset;
 
   let md_size = [ 10, 100, 1000 ];
   let md_index = [ 2, 3, 4 ];

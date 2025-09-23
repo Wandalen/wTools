@@ -36,7 +36,8 @@ Implement streaming split iterators with lazy evaluation, enabling constant memo
 use std::io::{BufRead, BufReader, Read};
 
 /// Streaming split iterator for large inputs
-pub struct StreamingSplit<R: BufRead> {
+pub struct StreamingSplit<R: BufRead> 
+{
     reader: R,
     delimiters: Vec<String>,
     buffer: String,
@@ -47,7 +48,8 @@ pub struct StreamingSplit<R: BufRead> {
 }
 
 impl<R: BufRead> StreamingSplit<R> {
-    pub fn new(reader: R, delimiters: Vec<String>) -> Self {
+    pub fn new(reader: R, delimiters: Vec<String>) -> Self 
+{
         let max_delimiter_len = delimiters.iter().map(|d| d.len()).max().unwrap_or(0);
         
         Self {
@@ -62,7 +64,8 @@ impl<R: BufRead> StreamingSplit<R> {
     }
     
     /// Fill buffer while preserving overlap for cross-boundary matches
-    fn refill_buffer(&mut self) -> std::io::Result<bool> {
+    fn refill_buffer(&mut self) -> std::io::Result<bool> 
+{
         if self.finished {
             return Ok(false);
         }
@@ -91,7 +94,8 @@ impl<R: BufRead> StreamingSplit<R> {
 impl<R: BufRead> Iterator for StreamingSplit<R> {
     type Item = Result<String, std::io::Error>;
     
-    fn next(&mut self) -> Option<Self::Item> {
+    fn next(&mut self) -> Option<Self::Item> 
+{
         loop {
             // Look for delimiter in current buffer
             if let Some((start, end, _)) = self.find_next_delimiter() {
@@ -124,7 +128,8 @@ impl<R: BufRead> Iterator for StreamingSplit<R> {
 
 ```rust
 /// Lazy string processing with generator-like interface
-pub struct LazyStringSplit<'a> {
+pub struct LazyStringSplit<'a> 
+{
     source: &'a str,
     delimiters: Vec<&'a str>,
     current_pos: usize,
@@ -132,7 +137,8 @@ pub struct LazyStringSplit<'a> {
 }
 
 impl<'a> LazyStringSplit<'a> {
-    pub fn new(source: &'a str, delimiters: Vec<&'a str>) -> Self {
+    pub fn new(source: &'a str, delimiters: Vec<&'a str>) -> Self 
+{
         Self {
             source,
             delimiters,
@@ -166,7 +172,8 @@ impl<'a> LazyStringSplit<'a> {
     }
     
     /// Ensure chunk boundaries don't split delimiters
-    fn adjust_chunk_boundary(&self, proposed_end: usize) -> usize {
+    fn adjust_chunk_boundary(&self, proposed_end: usize) -> usize 
+{
         if proposed_end >= self.source.len() {
             return self.source.len();
         }
@@ -182,7 +189,8 @@ impl<'a> LazyStringSplit<'a> {
         proposed_end
     }
     
-    fn is_safe_boundary(&self, pos: usize) -> bool {
+    fn is_safe_boundary(&self, pos: usize) -> bool 
+{
         // Check if position would split any delimiter
         for delimiter in &self.delimiters {
             let delim_len = delimiter.len();
@@ -207,7 +215,8 @@ use std::collections::VecDeque;
 use std::sync::{Arc, Condvar, Mutex};
 
 /// Streaming split with bounded memory and backpressure
-pub struct BoundedStreamingSplit<R: BufRead> {
+pub struct BoundedStreamingSplit<R: BufRead> 
+{
     inner: StreamingSplit<R>,
     buffer_queue: Arc<Mutex<VecDeque<String>>>,
     max_buffered_items: usize,
@@ -216,7 +225,8 @@ pub struct BoundedStreamingSplit<R: BufRead> {
 }
 
 impl<R: BufRead> BoundedStreamingSplit<R> {
-    pub fn new(reader: R, delimiters: Vec<String>, max_buffer_size: usize) -> Self {
+    pub fn new(reader: R, delimiters: Vec<String>, max_buffer_size: usize) -> Self 
+{
         Self {
             inner: StreamingSplit::new(reader, delimiters),
             buffer_queue: Arc::new(Mutex::new(VecDeque::new())),
@@ -227,7 +237,8 @@ impl<R: BufRead> BoundedStreamingSplit<R> {
     }
     
     /// Start background processing thread
-    pub fn start_background_processing(&mut self) -> std::thread::JoinHandle<()> {
+    pub fn start_background_processing(&mut self) -> std::thread::JoinHandle<()> 
+{
         let buffer_queue = Arc::clone(&self.buffer_queue);
         let buffer_not_full = Arc::clone(&self.buffer_not_full);
         let buffer_not_empty = Arc::clone(&self.buffer_not_empty);
@@ -253,7 +264,8 @@ impl<R: BufRead> BoundedStreamingSplit<R> {
     }
     
     /// Get next item with blocking
-    pub fn next_blocking(&self) -> Option<String> {
+    pub fn next_blocking(&self) -> Option<String> 
+{
         let mut queue = self.buffer_queue.lock().unwrap();
         
         // Wait for item if queue is empty
@@ -280,7 +292,8 @@ use futures_core::Stream;
 use tokio::io::{AsyncBufReadExt, BufReader};
 
 /// Async streaming split iterator
-pub struct AsyncStreamingSplit<R> {
+pub struct AsyncStreamingSplit<R> 
+{
     reader: BufReader<R>,
     delimiters: Vec<String>,
     buffer: String,
@@ -289,7 +302,8 @@ pub struct AsyncStreamingSplit<R> {
 }
 
 impl<R: tokio::io::AsyncRead + Unpin> AsyncStreamingSplit<R> {
-    pub fn new(reader: R, delimiters: Vec<String>) -> Self {
+    pub fn new(reader: R, delimiters: Vec<String>) -> Self 
+{
         Self {
             reader: BufReader::new(reader),
             delimiters,
@@ -303,7 +317,8 @@ impl<R: tokio::io::AsyncRead + Unpin> AsyncStreamingSplit<R> {
 impl<R: tokio::io::AsyncRead + Unpin> Stream for AsyncStreamingSplit<R> {
     type Item = Result<String, std::io::Error>;
     
-    fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
+    fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> 
+{
         if self.finished && self.position >= self.buffer.len() {
             return Poll::Ready(None);
         }
@@ -364,7 +379,8 @@ pub trait StreamingStringExt {
         F: FnMut(&str) -> R;
 }
 
-impl StreamingStringExt for str {
+impl StreamingStringExt for str 
+{
     fn streaming_split<R: BufRead>(
         reader: R, 
         delimiters: Vec<String>
@@ -438,7 +454,8 @@ impl StreamingStringExt for str {
 #### Challenge: Cross-Boundary Delimiter Detection
 **Solution**: Overlap buffer with maximum delimiter length
 ```rust
-fn ensure_delimiter_visibility(&mut self) {
+fn ensure_delimiter_visibility(&mut self) 
+{
     let max_delim_len = self.delimiters.iter().map(|d| d.len()).max().unwrap_or(0);
     let overlap_size = max_delim_len * 2; // Safety margin
     
@@ -455,7 +472,8 @@ fn ensure_delimiter_visibility(&mut self) {
 ```rust
 const MAX_SEGMENT_SIZE: usize = 1024 * 1024; // 1MB limit
 
-fn handle_large_segment(&mut self, start: usize) -> Option<String> {
+fn handle_large_segment(&mut self, start: usize) -> Option<String> 
+{
     let segment_size = self.position - start;
     if segment_size > MAX_SEGMENT_SIZE {
         // Split large segment into smaller chunks
@@ -472,7 +490,8 @@ fn handle_large_segment(&mut self, start: usize) -> Option<String> {
 impl<R: BufRead> Iterator for StreamingSplit<R> {
     type Item = Result<String, StreamingError>;
     
-    fn next(&mut self) -> Option<Self::Item> {
+    fn next(&mut self) -> Option<Self::Item> 
+{
         match self.try_next() {
             Ok(Some(segment)) => Some(Ok(segment)),
             Ok(None) => None,
@@ -504,7 +523,8 @@ impl<R: BufRead> Iterator for StreamingSplit<R> {
 #### Memory Usage Comparison
 ```rust
 #[bench]
-fn bench_memory_usage_large_file(b: &mut Bencher) {
+fn bench_memory_usage_large_file(b: &mut Bencher) 
+{
     let large_content = generate_large_test_content(100 * 1024 * 1024); // 100MB
     
     // Current approach - loads everything into memory
@@ -519,7 +539,8 @@ fn bench_memory_usage_large_file(b: &mut Bencher) {
 }
 
 #[bench]
-fn bench_streaming_memory_usage(b: &mut Bencher) {
+fn bench_streaming_memory_usage(b: &mut Bencher) 
+{
     let reader = create_large_test_reader(100 * 1024 * 1024); // 100MB
     
     // Streaming approach - constant memory

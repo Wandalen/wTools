@@ -180,7 +180,8 @@ Each example follows a consistent structure:
 
 use unilang_parser::{Parser, UnilangParserOptions};
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), Box<dyn std::error::Error>> 
+{
     // Example implementation with detailed comments
     println!("=== Example Title ===");
     

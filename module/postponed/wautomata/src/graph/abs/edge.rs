@@ -1,38 +1,38 @@
 /// Define a private namespace for all its items.
 mod private
 {
-  use crate::prelude::*;
-  use core::fmt;
-  use core::hash::Hash;
+  use crate ::prelude :: *;
+  use core ::fmt;
+  use core ::hash ::Hash;
 
   ///
   /// Kind of a edge.
   ///
   pub trait EdgeKindInterface
   where
-    Self :
-      'static +
-      Copy +
-      fmt::Debug +
-      PartialEq +
-      Hash  +
-      Default +
-    ,
+  Self :
+   'static +
+   Copy +
+   fmt ::Debug +
+   PartialEq +
+   Hash  +
+   Default +
+  ,
   {
-  }
+ }
 
   impl< T > EdgeKindInterface for T
   where
-    T :
-      'static +
-      Copy +
-      fmt::Debug +
-      PartialEq +
-      Hash  +
-      Default +
-    ,
+  T :
+   'static +
+   Copy +
+   fmt ::Debug +
+   PartialEq +
+   Hash  +
+   Default +
+  ,
   {
-  }
+ }
 
   ///
   /// No kind for edges.
@@ -45,15 +45,15 @@ mod private
   ///
   pub trait EdgeBasicInterface
   where
-    Self :
-      HasId +
+  Self :
+   HasId +
   {
-  }
+ }
 }
 
 //
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   exposed use EdgeKindless;
   prelude use EdgeKindInterface;

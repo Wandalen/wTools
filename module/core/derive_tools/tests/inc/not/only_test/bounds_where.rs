@@ -1,7 +1,7 @@
 #[ test ]
 fn not()
 {
-  let mut x = BoundsWhere::< bool, u8 > { a : true, b : 0 };
+  let mut x = BoundsWhere :: < bool, u8 > { a: true, b: 0 };
 
   x = !x;
 

@@ -1,21 +1,21 @@
 mod private
 {
 
-  use crate::*;
+  use crate :: *;
 
-  use std::fs;
-  use std::path::PathBuf;
-  use wca::VerifiedCommand;
+  use std ::fs;
+  use std ::path ::PathBuf;
+  use wca ::VerifiedCommand;
 
-  // use error::Result;
-  // qqq : group dependencies
-  // use pth::AbsolutePath;
+  // use error ::Result;
+  // qqq: group dependencies
+  // use pth ::AbsolutePath;
 
-  #[ derive( former::Former ) ]
+  #[ derive( former ::Former ) ]
   struct PublishDiffProperties
   {
-    keep_archive : Option< PathBuf >,
-  }
+  keep_archive: Option< PathBuf >,
+ }
 
   /// Command to display the differences between a local and remote package versions.
   ///
@@ -33,48 +33,48 @@ mod private
   ///
   /// # Panics
   /// qqq: doc
-  pub fn publish_diff( o : VerifiedCommand ) -> error::untyped::Result< () > // qqq : use typed error
+  pub fn publish_diff( o: VerifiedCommand ) -> error ::untyped ::Result< () > // qqq: use typed error
   {
-    let path : PathBuf = o.args.get_owned( 0 ).unwrap_or( std::env::current_dir()? );
-    let PublishDiffProperties { keep_archive } = o.props.try_into()?;
+  let path: PathBuf = o.args.get_owned( 0 ).unwrap_or( std ::env ::current_dir()? );
+  let PublishDiffProperties { keep_archive } = o.props.try_into()?;
 
-    let mut o = action::PublishDiffOptions::former()
-    .path( path );
-    if let Some( k ) = keep_archive.clone() { o = o.keep_archive( k ); }
-    let o = o.form();
+  let mut o = action ::PublishDiffOptions ::former()
+  .path( path );
+  if let Some( k ) = keep_archive.clone() { o = o.keep_archive( k ); }
+  let o = o.form();
 
-    println!( "{}", action::publish_diff( o )? );
-    if let Some( keep ) = keep_archive
-    {
-      // qqq : dont use canonicalizefunction. path does not have exist
-      let keep = AbsolutePath::try_from( fs::canonicalize( keep )? ).unwrap();
-      println!( "Remote version of the package was saved at `{}`", keep.as_ref().display() );
-    }
-
-    Ok( () )
-  }
-
-  impl TryFrom< wca::executor::Props > for PublishDiffProperties
+  println!( "{}", action ::publish_diff( o )? );
+  if let Some( keep ) = keep_archive
   {
-    type Error = error::untyped::Error;
-    fn try_from( value : wca::executor::Props ) -> Result< Self, Self::Error >
-    {
-      let mut this = Self::former();
+   // qqq: dont use canonicalizefunction. path does not have exist
+   let keep = AbsolutePath ::try_from( fs ::canonicalize( keep )? ).unwrap();
+   println!( "Remote version of the package was saved at `{}`", keep.as_ref().display() );
+ }
 
-      this = if let Some( v ) = value
-      .get_owned( "keep_archive" )
-      { this.keep_archive::< PathBuf >( v ) }
-      else
-      { this };
+  Ok( () )
+ }
 
-      Ok( this.form() )
-    }
-  }
+  impl TryFrom< wca ::executor ::Props > for PublishDiffProperties
+  {
+  type Error = error ::untyped ::Error;
+  fn try_from( value: wca ::executor ::Props ) -> Result< Self, Self ::Error >
+  {
+   let mut this = Self ::former();
+
+   this = if let Some( v ) = value
+   .get_owned( "keep_archive" )
+   { this.keep_archive :: < PathBuf >( v ) }
+   else
+   { this };
+
+   Ok( this.form() )
+ }
+ }
 }
 
 //
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   /// Publishes the difference between the local and published versions of a package.
   orphan use publish_diff;

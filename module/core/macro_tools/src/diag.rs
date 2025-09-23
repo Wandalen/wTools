@@ -3,9 +3,10 @@
 //!
 
 /// Define a private namespace for all its items.
-mod private {
+mod private 
+{
 
-  use crate::*;
+  use crate :: *;
 
   /// Adds indentation and optional prefix/postfix to each line of the given string.
   ///
@@ -28,15 +29,15 @@ mod private {
   ///
   /// # Example
   /// ```
-  /// use macro_tools::diag;
+  /// use macro_tools ::diag;
   ///
   /// let input = "Line 1\nLine 2\nLine 3";
-  /// let indented = diag::indentation( "  ", input, ";" );
+  /// let indented = diag ::indentation( "  ", input, ";" );
   /// assert_eq!( indented, "  Line 1;\n  Line 2;\n  Line 3;" );
   ///
   /// // Demonstrating the function's handling of trailing newlines
   /// let input_with_newline = "Line 1\nLine 2\nLine 3\n";
-  /// let indented_with_newline = diag::indentation( "  ", input_with_newline, ";" );
+  /// let indented_with_newline = diag ::indentation( "  ", input_with_newline, ";" );
   /// assert_eq!( indented_with_newline, "  Line 1;\n  Line 2;\n  Line 3;\n  ;" );
   /// ```
   ///
@@ -44,34 +45,36 @@ mod private {
   /// and a semicolon at the end of each line. The function also demonstrates handling
   /// of input strings that end with a newline character by appending an additional line
   /// consisting only of the prefix and postfix.
-  pub fn indentation<Prefix, Src, Postfix>(prefix: Prefix, src: Src, postfix: Postfix) -> String
+  pub fn indentation< Prefix, Src, Postfix >(prefix: Prefix, src: Src, postfix: Postfix) -> String
   where
-    Prefix: AsRef<str>,
-    Src: AsRef<str>,
-    Postfix: AsRef<str>,
+  Prefix: AsRef< str >,
+  Src: AsRef< str >,
+  Postfix: AsRef< str >,
   {
-    let prefix = prefix.as_ref();
-    let postfix = postfix.as_ref();
-    let src = src.as_ref();
+  let prefix = prefix.as_ref();
+  let postfix = postfix.as_ref();
+  let src = src.as_ref();
 
-    let mut result = src.lines().enumerate().fold(String::new(), |mut a, b| {
-      if b.0 > 0 {
-        a.push('\n');
-      }
-      a.push_str(prefix);
-      a.push_str(b.1);
-      a.push_str(postfix);
-      a
-    });
+  let mut result = src.lines().enumerate().fold(String ::new(), |mut a, b| {
+   if b.0 > 0 
+   {
+  a.push('\n');
+ }
+   a.push_str(prefix);
+   a.push_str(b.1);
+   a.push_str(postfix);
+   a
+ });
 
-    if src.ends_with('\n') || src.ends_with("\n\r") || src.ends_with("\r\n") {
-      result.push('\n');
-      result.push_str(prefix);
-      result.push_str(postfix);
-    }
+  if src.ends_with('\n') || src.ends_with("\n\r") || src.ends_with("\r\n") 
+  {
+   result.push('\n');
+   result.push_str(prefix);
+   result.push_str(postfix);
+ }
 
-    result
-  }
+  result
+ }
 
   /// Formats a debugging report for code transformation processes, detailing both the original and generated code for easy comparison and review.
   ///
@@ -98,26 +101,26 @@ mod private {
   /// # Examples
   ///
   /// ```
-  /// use macro_tools::exposed::*;
+  /// use macro_tools ::exposed :: *;
   ///
-  /// let original_input : proc_macro2::TokenStream = quote!
+  /// let original_input: proc_macro2 ::TokenStream = quote!
   /// {
   ///   #[ derive( Debug, PartialEq ) ]
   ///   pub struct MyStruct
   ///   {
-  ///     pub field : i32,
-  ///   }
+  ///     pub field: i32,
+  /// }
   /// };
   ///
-  /// let generated_code : proc_macro2::TokenStream = quote!
+  /// let generated_code: proc_macro2 ::TokenStream = quote!
   /// {
   ///   impl MyStruct
   ///   {
-  ///     pub fn new( field : i32 ) -> Self
+  ///     pub fn new( field: i32 ) -> Self
   ///     {
   ///       MyStruct { field }
-  ///     }
-  ///   }
+  /// }
+  /// }
   /// };
   ///
   /// // Format the debug report for printing or logging
@@ -125,18 +128,18 @@ mod private {
   /// println!( "{}", formatted_report );
   /// ```
   ///
-  #[ allow( clippy::needless_pass_by_value ) ]
-  pub fn report_format<IntoAbout, IntoInput, IntoOutput>(about: IntoAbout, input: IntoInput, output: IntoOutput) -> String
+  #[ allow( clippy ::needless_pass_by_value ) ]
+  pub fn report_format< IntoAbout, IntoInput, IntoOutput >(about: IntoAbout, input: IntoInput, output: IntoOutput) -> String
   where
-    IntoAbout: ToString,
-    IntoInput: ToString,
-    IntoOutput: ToString,
+  IntoAbout: ToString,
+  IntoInput: ToString,
+  IntoOutput: ToString,
   {
-    "\n".to_string()
-      + &format!(" = context\n\n{}\n\n", indentation("  ", about.to_string(), ""))
-      + &format!(" = original\n\n{}\n\n", indentation("  ", input.to_string(), ""))
-      + &format!(" = generated\n\n{}\n", indentation("  ", output.to_string(), ""))
-  }
+  "\n".to_string()
+   + &format!(" = context\n\n{}\n\n", indentation("  ", about.to_string(), ""))
+   + &format!(" = original\n\n{}\n\n", indentation("  ", input.to_string(), ""))
+   + &format!(" = generated\n\n{}\n", indentation("  ", output.to_string(), ""))
+ }
 
   /// Prints a debugging report for a pair of token streams to the standard output.
   ///
@@ -155,26 +158,26 @@ mod private {
   /// # Examples
   ///
   /// ```rust
-  /// use macro_tools::exposed::*;
+  /// use macro_tools ::exposed :: *;
   ///
-  /// let original_input : proc_macro2::TokenStream = quote!
+  /// let original_input: proc_macro2 ::TokenStream = quote!
   /// {
   ///   #[ derive( Debug, PartialEq ) ]
   ///   pub struct MyStruct
   ///   {
-  ///     pub field : i32,
-  ///   }
+  ///     pub field: i32,
+  /// }
   /// };
   ///
-  /// let generated_code : proc_macro2::TokenStream = quote!
+  /// let generated_code: proc_macro2 ::TokenStream = quote!
   /// {
   ///   impl MyStruct
   ///   {
-  ///     pub fn new( field : i32 ) -> Self
+  ///     pub fn new( field: i32 ) -> Self
   ///     {
   ///       MyStruct { field }
-  ///     }
-  ///   }
+  /// }
+  /// }
   /// };
   ///
   /// // Directly print the debug report
@@ -184,108 +187,150 @@ mod private {
   /// The above example demonstrates how the `report_print` function can be used to visualize the changes from original input code to the generated code,
   /// helping developers to verify and understand the modifications made during code generation processes. The output is formatted to show clear distinctions
   /// between the 'original' and 'generated' sections, providing an easy-to-follow comparison.
-  pub fn report_print<IntoAbout, IntoInput, IntoOutput>(about: IntoAbout, input: IntoInput, output: IntoOutput)
+  pub fn report_print< IntoAbout, IntoInput, IntoOutput >(about: IntoAbout, input: IntoInput, output: IntoOutput)
   where
-    IntoAbout: ToString,
-    IntoInput: ToString,
-    IntoOutput: ToString,
+  IntoAbout: ToString,
+  IntoInput: ToString,
+  IntoOutput: ToString,
   {
-    println!("{}", report_format(about, input, output));
-  }
+  println!("{}", report_format(about, input, output));
+ }
 
   ///
   /// Macro for diagnostics purpose to print both syntax tree and source code behind it with syntax tree.
   ///
   /// ### Basic use-case.
   /// ```
-  /// use macro_tools::prelude::*;
+  /// use macro_tools ::prelude :: *;
   ///
-  /// let code = qt!( std::collections::HashMap< i32, i32 > );
-  /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+  /// let code = qt!( std ::collections ::HashMap< i32, i32 > );
+  /// let tree_type = syn ::parse2 :: < syn ::Type >( code ).unwrap();
   /// tree_print!( tree_type );
   /// ```
   ///
   #[ macro_export ]
   macro_rules! tree_print
   {
-    ( $src :expr ) =>
-    {{
-      let result = $crate::tree_diagnostics_str!( $src );
-      println!( "{}", result );
-      result
-    }};
-    ( $( $src :expr ),+ $(,)? ) =>
-    {{
-      $( $crate::tree_print!( $src ) );+
-    }};
-  }
+  ( $src: expr ) =>
+  {{
+   let result = $crate ::tree_diagnostics_str!( $src );
+   println!( "{}", result );
+   result
+ }};
+  ( $( $src: expr ),+ $(,)? ) =>
+  {{
+   $( $crate ::tree_print!( $src ) );+
+ }};
+ }
 
   ///
   /// Macro for diagnostics purpose to print both syntax tree and source code behind it without syntax tree.
   ///
   /// ### Basic use-case.
   /// ```
-  /// use macro_tools::prelude::*;
+  /// use macro_tools ::prelude :: *;
   ///
-  /// let code = qt!( std::collections::HashMap< i32, i32 > );
-  /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+  /// let code = qt!( std ::collections ::HashMap< i32, i32 > );
+  /// let tree_type = syn ::parse2 :: < syn ::Type >( code ).unwrap();
   /// tree_print!( tree_type );
   /// ```
   ///
   #[ macro_export ]
   macro_rules! code_print
   {
-    ( $src :expr ) =>
-    {{
-      let result = $crate::code_diagnostics_str!( $src );
-      println!( "{}", result );
-      result
-    }};
-    ( $( $src :expr ),+ $(,)? ) =>
-    {{
-      $( $crate::code_print!( $src ) );+
-    }};
-  }
+  ( $src: expr ) =>
+  {{
+   let result = $crate ::code_diagnostics_str!( $src );
+   println!( "{}", result );
+   result
+ }};
+  ( $( $src: expr ),+ $(,)? ) =>
+  {{
+   $( $crate ::code_print!( $src ) );+
+ }};
+ }
+
+  /// Custom debug formatter that uses 2-space indentation per project style requirements.
+  ///
+  /// This function formats debug output using 2-space indentation instead of Rust's
+  /// default 4-space indentation, ensuring compliance with the project's codestyle rulebook.
+  ///
+  /// # Parameters
+  /// * `value` - Any type implementing Debug trait to be formatted
+  ///
+  /// # Returns
+  /// A String containing the debug representation with 2-space indentation
+  ///
+  /// # Examples
+  /// ```
+  /// use macro_tools ::diag ::debug_2_space;
+  /// use std ::collections ::HashMap;
+  ///
+  /// let mut map = HashMap ::new();
+  /// map.insert("key", "value");
+  /// let formatted = debug_2_space(&map);
+  /// // Output uses 2-space indentation instead of default 4-space
+  /// ```
+  ///
+  /// **Rationale** : Satisfies the codestyle rulebook requirement for 2-space indentation
+  /// universally applied to all code, including debug output formatting.
+  pub fn debug_2_space< T: core ::fmt ::Debug >(value: &T) -> String
+  {
+  let standard_debug = format!("{value:#?}");
+  // Convert all 4-space indentation to 2-space per codestyle rules
+  // Process line by line to handle nested indentation correctly
+  standard_debug
+  .lines()
+  .map(|line| {
+  let leading_spaces = line.len() - line.trim_start().len();
+  let indent_level = leading_spaces / 4;
+  let remainder_spaces = leading_spaces % 4;
+  let new_indent = "  ".repeat(indent_level) + &" ".repeat(remainder_spaces);
+  format!("{}{}", new_indent, line.trim_start())
+ })
+  .collect :: < Vec<_ >>()
+  .join("\n")
+ }
 
   ///
   /// Macro for diagnostics purpose to export both syntax tree and source code behind it into a string.
   ///
   #[ macro_export ]
   macro_rules! tree_diagnostics_str {
-    ( $src :expr ) => {{
-      let src2 = &$src;
-      format!("{} : {} :\n{:#?}", stringify!($src), $crate::qt! { #src2 }, $src)
-    }};
-  }
+  ( $src: expr ) => {{
+   let src2 = &$src;
+   format!("{} : {} :\n{}", stringify!($src), $crate ::qt! { #src2 }, $crate ::diag ::debug_2_space(&$src))
+ }};
+ }
 
   ///
   /// Macro for diagnostics purpose to diagnose source code behind it and export it into a string.
   ///
   #[ macro_export ]
   macro_rules! code_diagnostics_str {
-    ( $src :expr ) => {{
-      let src2 = &$src;
-      format!("{} : {}", stringify!($src), $crate::qt! { #src2 })
-    }};
-  }
+  ( $src: expr ) => {{
+   let src2 = &$src;
+   format!("{} : {}", stringify!($src), $crate ::qt! { #src2 })
+ }};
+ }
 
   ///
   /// Macro to export source code behind a syntax tree into a string.
   ///
   #[ macro_export ]
   macro_rules! code_to_str {
-    ( $src :expr ) => {{
-      let src2 = &$src;
-      format!("{}", $crate::qt! { #src2 })
-    }};
-  }
+  ( $src: expr ) => {{
+   let src2 = &$src;
+   format!("{}", $crate ::qt! { #src2 })
+ }};
+ }
 
   ///
-  /// Macro to generate syn error either with span of a syntax tree element or with default one `proc_macro2::Span::call_site()`.
+  /// Macro to generate syn error either with span of a syntax tree element or with default one `proc_macro2 ::Span ::call_site()`.
   ///
   /// ### Basic use-case.
   /// ```
-  /// # use macro_tools::exposed::*;
+  /// # use macro_tools ::exposed :: *;
   /// syn_err!( "No attr" );
   /// # ()
   /// ```
@@ -294,35 +339,35 @@ mod private {
   macro_rules! syn_err
   {
 
-    ( $msg:expr $(,)? ) =>
-    {
-      $crate::syn::Error::new( proc_macro2::Span::call_site(), $msg )
-    };
-    ( _, $msg:expr $(,)? ) =>
-    {
-      $crate::syn::Error::new( proc_macro2::Span::call_site(), $msg )
-    };
-    ( $span:expr, $msg:expr $(,)? ) =>
-    {
-      $crate::syn::Error::new( syn::spanned::Spanned::span( &( $span ) ), $msg )
-    };
-    ( $span:expr, $msg:expr, $( $arg:expr ),+ $(,)? ) =>
-    {
-      $crate::syn::Error::new( syn::spanned::Spanned::span( &( $span ) ), format!( $msg, $( $arg ),+ ) )
-    };
-    ( _, $msg:expr, $( $arg:expr ),+ $(,)? ) =>
-    {
-      $crate::syn::Error::new( proc_macro2::Span::call_site(), format!( $msg, $( $arg ),+ ) )
-    };
+  ( $msg: expr $(,)? ) =>
+  {
+   $crate ::syn ::Error ::new( proc_macro2 ::Span ::call_site(), $msg )
+ };
+  ( _, $msg: expr $(,)? ) =>
+  {
+   $crate ::syn ::Error ::new( proc_macro2 ::Span ::call_site(), $msg )
+ };
+  ( $span: expr, $msg: expr $(,)? ) =>
+  {
+   $crate ::syn ::Error ::new( syn ::spanned ::Spanned ::span( &( $span ) ), $msg )
+ };
+  ( $span: expr, $msg: expr, $( $arg: expr ),+ $(,)? ) =>
+  {
+   $crate ::syn ::Error ::new( syn ::spanned ::Spanned ::span( &( $span ) ), format!( $msg, $( $arg ),+ ) )
+ };
+  ( _, $msg: expr, $( $arg: expr ),+ $(,)? ) =>
+  {
+   $crate ::syn ::Error ::new( proc_macro2 ::Span ::call_site(), format!( $msg, $( $arg ),+ ) )
+ };
 
-  }
+ }
 
   ///
-  /// Macro to generate syn error either with span of a syntax tree element or with default one `proc_macro2::Span::call_site()`.
+  /// Macro to generate syn error either with span of a syntax tree element or with default one `proc_macro2 ::Span ::call_site()`.
   ///
   /// ### Basic use-case.
   /// ```
-  /// # use macro_tools::exposed::*;
+  /// # use macro_tools ::exposed :: *;
   /// syn_err!( "No attr" );
   /// # ()
   /// ```
@@ -330,40 +375,42 @@ mod private {
   #[ macro_export ]
   macro_rules! return_syn_err
   {
-    ( $( $Arg : tt )* ) =>
-    {
-      return Result::Err( $crate::syn_err!( $( $Arg )* ) )
-    };
-  }
+  ( $( $Arg: tt )* ) =>
+  {
+   return Result ::Err( $crate ::syn_err!( $( $Arg )* ) )
+ };
+ }
 
-  pub use {tree_print, code_print, tree_diagnostics_str, code_diagnostics_str, code_to_str, syn_err, return_syn_err};
+  pub use { tree_print, code_print, tree_diagnostics_str, code_diagnostics_str, code_to_str, syn_err, return_syn_err };
 }
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod own {
+pub mod own 
+{
 
-  use super::*;
+  use super :: *;
 
   #[ doc( inline ) ]
-  pub use orphan::*;
+  pub use orphan :: *;
 }
 
 /// Parented namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod orphan {
+pub mod orphan 
+{
 
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 
   // #[ doc( inline ) ]
   // #[ allow( unused_imports ) ]
-  // pub use private::
+  // pub use private ::
   // {
   //   Result,
   // };
@@ -371,27 +418,29 @@ pub mod orphan {
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod exposed {
+pub mod exposed 
+{
 
-  use super::*;
-  pub use super::super::diag;
-
-  #[ doc( inline ) ]
-  pub use prelude::*;
+  use super :: *;
+  pub use super ::super ::diag;
 
   #[ doc( inline ) ]
-  pub use private::{indentation, report_format, report_print};
+  pub use prelude :: *;
+
+  #[ doc( inline ) ]
+  pub use private :: { indentation, report_format, report_print, debug_2_space };
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
-pub mod prelude {
+pub mod prelude 
+{
 
-  use super::*;
+  use super :: *;
 
   #[ doc( inline ) ]
-  pub use private::{tree_print, code_print, tree_diagnostics_str, code_diagnostics_str, code_to_str, syn_err, return_syn_err};
+  pub use private :: { tree_print, code_print, tree_diagnostics_str, code_diagnostics_str, code_to_str, syn_err, return_syn_err };
 
   // #[ doc( inline ) ]
-  // pub use private::Result;
+  // pub use private ::Result;
 }

@@ -9,10 +9,11 @@
 #![ cfg_attr( not( doc ), doc = "Reflection tools macro support" ) ]
 
 // #[ cfg( feature = "enabled" ) ]
-// use macro_tools::prelude::*;
+// use macro_tools ::prelude :: *;
 
 #[ cfg( feature = "enabled" ) ]
-mod implementation {
+mod implementation
+{
   #[ cfg( feature = "reflect_derive" ) ]
   pub mod reflect;
 }
@@ -21,17 +22,19 @@ mod implementation {
 ///
 /// Reflect structure of any kind.
 ///
-/// ### Sample :: trivial.
+/// ### Sample `::trivial`.
 ///
-/// qqq : write, please
+/// qqq: write, please
 ///
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "reflect_derive" ) ]
-#[proc_macro_derive(Reflect, attributes(debug))]
-pub fn derive_reflect(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+#[ proc_macro_derive(Reflect, attributes(debug)) ]
+pub fn derive_reflect(input: proc_macro::TokenStream) -> proc_macro::TokenStream 
+{
   let result = implementation::reflect::reflect(input);
-  match result {
-    Ok(stream) => stream.into(),
-    Err(err) => err.to_compile_error().into(),
-  }
+  match result 
+  {
+  Ok(stream) => stream.into(),
+  Err(err) => err.to_compile_error().into(),
+ }
 }

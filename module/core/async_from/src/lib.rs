@@ -8,22 +8,24 @@
 
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
-pub mod dependency {
+pub mod dependency
+{
   pub use ::async_trait;
 }
 
-// xxx : qqq : consider
-//   pub trait AsyncTryFrom<T>: Sized {
+// xxx: qqq: consider
+//   pub trait AsyncTryFrom< T > : Sized {
 //       /// The type returned in the event of a conversion error.
 //       type Error;
 //
 //       /// Performs the conversion.
-//       fn try_from(value: T) -> impl std::future::Future<Output = Result< Self, Self::Error >> + Send;
-//   }
+//       fn try_from(value: T) -> impl std::future::Future< Output = Result< Self, Self::Error >> + Send;
+// }
 
 /// Define a private namespace for all its items.
 #[ cfg( feature = "enabled" ) ]
-mod private {
+mod private
+{
 
   pub use async_trait::async_trait;
   use core::fmt::Debug;
@@ -42,34 +44,34 @@ mod private {
   /// #[ async_trait ]
   /// impl AsyncFrom< String > for MyNumber
   /// {
-  ///   async fn async_from( value : String ) -> Self
+  ///   async fn async_from( value: String ) -> Self
   ///   {
   ///     let num = value.parse::< u32 >().unwrap_or( 0 );
   ///     MyNumber( num )
-  ///   }
+  /// }
   /// }
   ///
-  /// #[ tokio::main ]
+  /// #[ tokio ::main ]
   /// async fn main()
   /// {
-  ///   let num = MyNumber::async_from( "42".to_string() ).await;
+  ///   let num = MyNumber ::async_from( "42".to_string() ).await;
   ///   println!( "Converted: {}", num.0 );
   /// }
   /// ```
   #[ cfg( feature = "async_from" ) ]
   #[ async_trait ]
-  pub trait AsyncFrom<T>: Sized {
-    /// Asynchronously converts a value of type `T` into `Self`.
-    ///
-    /// # Arguments
-    ///
-    /// * `value` - The value to be converted.
-    ///
-    /// # Returns
-    ///
-    /// * `Self` - The converted value.
-    async fn async_from(value: T) -> Self;
-  }
+  pub trait AsyncFrom< T > : Sized {
+  /// Asynchronously converts a value of type `T` into `Self`.
+  ///
+  /// # Arguments
+  ///
+  /// * `value` - The value to be converted.
+  ///
+  /// # Returns
+  ///
+  /// * `Self` - The converted value.
+  async fn async_from(value: T) -> Self;
+ }
 
   /// Trait for asynchronous conversions into a type `T`.
   ///
@@ -78,57 +80,58 @@ mod private {
   /// # Example
   ///
   /// ```rust
-  /// use async_from::{ async_trait, AsyncFrom, AsyncInto };
+  /// use async_from :: { async_trait, AsyncFrom, AsyncInto };
   ///
   /// struct MyNumber( u32 );
   ///
   /// #[ async_trait ]
   /// impl AsyncFrom< String > for MyNumber
   /// {
-  ///   async fn async_from( value : String ) -> Self
+  ///   async fn async_from( value: String ) -> Self
   ///   {
   ///     let num = value.parse::< u32 >().unwrap_or( 0 );
   ///     MyNumber( num )
-  ///   }
+  /// }
   /// }
   ///
-  /// #[ tokio::main ]
+  /// #[ tokio ::main ]
   /// async fn main()
   /// {
-  ///   let num : MyNumber = "42".to_string().async_into().await;
+  ///   let num: MyNumber = "42".to_string().async_into().await;
   ///   println!( "Converted: {}", num.0 );
   /// }
   /// ```
   #[ async_trait ]
   #[ cfg( feature = "async_from" ) ]
-  pub trait AsyncInto<T>: Sized {
-    /// Asynchronously converts `Self` into a value of type `T`.
-    ///
-    /// # Returns
-    ///
-    /// * `T` - The converted value.
-    async fn async_into(self) -> T;
-  }
+  pub trait AsyncInto< T > : Sized {
+  /// Asynchronously converts `Self` into a value of type `T`.
+  ///
+  /// # Returns
+  ///
+  /// * `T` - The converted value.
+  async fn async_into(self) -> T;
+ }
 
   /// Blanket implementation of `AsyncInto` for any type that implements `AsyncFrom`.
   ///
-  /// This implementation allows any type `T` that implements `AsyncFrom<U>` to also implement `AsyncInto<U>`.
+  /// This implementation allows any type `T` that implements `AsyncFrom< U >` to also implement `AsyncInto< U >`.
   #[ async_trait ]
   #[ cfg( feature = "async_from" ) ]
-  impl<T, U> AsyncInto<U> for T
+  impl< T, U > AsyncInto< U > for T
   where
-    U: AsyncFrom<T> + Send,
-    T: Send,
+  U: AsyncFrom< T > + Send,
+  T: Send,
   {
-    /// Asynchronously converts `Self` into a value of type `U` using `AsyncFrom`.
-    ///
-    /// # Returns
-    ///
-    /// * `U` - The converted value.
-    async fn async_into(self) -> U {
-      U::async_from(self).await
-    }
-  }
+  /// Asynchronously converts `Self` into a value of type `U` using `AsyncFrom`.
+  ///
+  /// # Returns
+  ///
+  /// * `U` - The converted value.
+  async fn async_into(self) -> U
+  {
+   U ::async_from(self).await
+ }
+ }
 
   /// Trait for asynchronous fallible conversions from a type `T`.
   ///
@@ -137,8 +140,8 @@ mod private {
   /// # Example
   ///
   /// ```rust
-  /// use async_from::{ async_trait, AsyncTryFrom };
-  /// use std::num::ParseIntError;
+  /// use async_from :: { async_trait, AsyncTryFrom };
+  /// use std ::num ::ParseIntError;
   ///
   /// struct MyNumber( u32 );
   ///
@@ -147,40 +150,40 @@ mod private {
   /// {
   ///   type Error = ParseIntError;
   ///
-  ///   async fn async_try_from( value : String ) -> Result<  Self, Self::Error  >
+  ///   async fn async_try_from( value: String ) -> Result< Self, Self ::Error >
   ///   {
-  ///     let num = value.parse::< u32 >()?;
+  ///     let num = value.parse :: < u32 >()?;
   ///     Ok( MyNumber( num ) )
-  ///   }
+  /// }
   /// }
   ///
-  /// #[ tokio::main ]
+  /// #[ tokio ::main ]
   /// async fn main()
   /// {
-  ///   match MyNumber::async_try_from( "42".to_string() ).await
+  ///   match MyNumber ::async_try_from( "42".to_string() ).await
   ///   {
   ///     Ok( my_num ) => println!( "Converted successfully: {}", my_num.0 ),
   ///     Err( e ) => println!( "Conversion failed: {:?}", e ),
-  ///   }
+  /// }
   /// }
   /// ```
   #[ async_trait ]
   #[ cfg( feature = "async_try_from" ) ]
-  pub trait AsyncTryFrom<T>: Sized {
-    /// The error type returned if the conversion fails.
-    type Error: Debug;
+  pub trait AsyncTryFrom< T > : Sized {
+  /// The error type returned if the conversion fails.
+  type Error: Debug;
 
-    /// Asynchronously attempts to convert a value of type `T` into `Self`.
-    ///
-    /// # Arguments
-    ///
-    /// * `value` - The value to be converted.
-    ///
-    /// # Returns
-    ///
-    /// * `Result< Self, Self::Error >` - On success, returns the converted value. On failure, returns an error.
-    async fn async_try_from(value: T) -> Result< Self, Self::Error >;
-  }
+  /// Asynchronously attempts to convert a value of type `T` into `Self`.
+  ///
+  /// # Arguments
+  ///
+  /// * `value` - The value to be converted.
+  ///
+  /// # Returns
+  ///
+  /// * `Result< Self, Self ::Error >` - On success, returns the converted value. On failure, returns an error.
+  async fn async_try_from(value: T) -> Result< Self, Self ::Error >;
+ }
 
   /// Trait for asynchronous fallible conversions into a type `T`.
   ///
@@ -189,8 +192,8 @@ mod private {
   /// # Example
   ///
   /// ```rust
-  /// use async_from::{ async_trait, AsyncTryFrom, AsyncTryInto };
-  /// use std::num::ParseIntError;
+  /// use async_from :: { async_trait, AsyncTryFrom, AsyncTryInto };
+  /// use std ::num ::ParseIntError;
   ///
   /// struct MyNumber( u32 );
   ///
@@ -199,106 +202,111 @@ mod private {
   /// {
   ///   type Error = ParseIntError;
   ///
-  ///   async fn async_try_from( value : String ) -> Result<  Self, Self::Error  >
+  ///   async fn async_try_from( value: String ) -> Result< Self, Self ::Error >
   ///   {
-  ///     let num = value.parse::< u32 >()?;
+  ///     let num = value.parse :: < u32 >()?;
   ///     Ok( MyNumber( num ) )
-  ///   }
+  /// }
   /// }
   ///
-  /// #[ tokio::main ]
+  /// #[ tokio ::main ]
   /// async fn main()
   /// {
-  ///   let result : Result<  MyNumber, _  > = "42".to_string().async_try_into().await;
+  ///   let result: Result< MyNumber, _ > = "42".to_string().async_try_into().await;
   ///   match result
   ///   {
   ///     Ok( my_num ) => println!( "Converted successfully using AsyncTryInto: {}", my_num.0 ),
   ///     Err( e ) => println!( "Conversion failed using AsyncTryInto: {:?}", e ),
-  ///   }
+  /// }
   /// }
   /// ```
   #[ async_trait ]
   #[ cfg( feature = "async_try_from" ) ]
-  pub trait AsyncTryInto<T>: Sized {
-    /// The error type returned if the conversion fails.
-    type Error: Debug;
+  pub trait AsyncTryInto< T > : Sized {
+  /// The error type returned if the conversion fails.
+  type Error: Debug;
 
-    /// Asynchronously attempts to convert `Self` into a value of type `T`.
-    ///
-    /// # Returns
-    ///
-    /// * `Result< T, Self::Error >` - On success, returns the converted value. On failure, returns an error.
-    async fn async_try_into(self) -> Result< T, Self::Error >;
-  }
+  /// Asynchronously attempts to convert `Self` into a value of type `T`.
+  ///
+  /// # Returns
+  ///
+  /// * `Result< T, Self ::Error >` - On success, returns the converted value. On failure, returns an error.
+  async fn async_try_into(self) -> Result< T, Self ::Error >;
+ }
 
   /// Blanket implementation of `AsyncTryInto` for any type that implements `AsyncTryFrom`.
   ///
-  /// This implementation allows any type `T` that implements `AsyncTryFrom<U>` to also implement `AsyncTryInto<U>`.
+  /// This implementation allows any type `T` that implements `AsyncTryFrom< U >` to also implement `AsyncTryInto< U >`.
   #[ async_trait ]
   #[ cfg( feature = "async_try_from" ) ]
-  impl<T, U> AsyncTryInto<U> for T
+  impl< T, U > AsyncTryInto< U > for T
   where
-    U: AsyncTryFrom<T> + Send,
-    T: Send,
+  U: AsyncTryFrom< T > + Send,
+  T: Send,
   {
-    type Error = U::Error;
+  type Error = U ::Error;
 
-    /// Asynchronously converts `Self` into a value of type `U` using `AsyncTryFrom`.
-    ///
-    /// # Returns
-    ///
-    /// * `Result< U, Self::Error >` - On success, returns the converted value. On failure, returns an error.
-    async fn async_try_into(self) -> Result< U, Self::Error > {
-      U::async_try_from(self).await
-    }
-  }
+  /// Asynchronously converts `Self` into a value of type `U` using `AsyncTryFrom`.
+  ///
+  /// # Returns
+  ///
+  /// * `Result< U, Self ::Error >` - On success, returns the converted value. On failure, returns an error.
+  async fn async_try_into(self) -> Result< U, Self ::Error >
+  {
+   U ::async_try_from(self).await
+ }
+ }
 }
 
 #[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod own {
-  use super::*;
+pub mod own 
+{
+  use super :: *;
   #[ doc( inline ) ]
-  pub use orphan::*;
+  pub use orphan :: *;
 }
 
 /// Orphan namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod orphan {
-  use super::*;
+pub mod orphan 
+{
+  use super :: *;
   #[ doc( inline ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 }
 
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod exposed {
-  use super::*;
+pub mod exposed 
+{
+  use super :: *;
 
   #[ doc( inline ) ]
-  pub use prelude::*;
+  pub use prelude :: *;
 
   #[ doc( inline ) ]
-  pub use ::async_trait::async_trait;
+  pub use ::async_trait ::async_trait;
 
   #[ cfg( feature = "async_from" ) ]
-  pub use private::{AsyncFrom, AsyncInto};
+  pub use private :: { AsyncFrom, AsyncInto };
 
   #[ cfg( feature = "async_try_from" ) ]
-  pub use private::{AsyncTryFrom, AsyncTryInto};
+  pub use private :: { AsyncTryFrom, AsyncTryInto };
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod prelude {
-  use super::*;
+pub mod prelude 
+{
+  use super :: *;
 }

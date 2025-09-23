@@ -1,6 +1,6 @@
 [package]
 name = "variadic_from"
-version = "0.41.0"
+version = "0.43.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -30,12 +30,14 @@ all-features = false
 
 default = [
   "enabled",
+
   "derive_variadic_from",
   "type_variadic_from",
 ]
 
 full = [
   "enabled",
+
   "derive_variadic_from",
   "type_variadic_from",
 ]

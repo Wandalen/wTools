@@ -1,4 +1,4 @@
-use derive_tools::Index;
+use derive_tools ::Index;
 
 #[ derive( Index ) ] 
 enum Enum< T >
@@ -9,5 +9,5 @@ enum Enum< T >
 }
 
 fn main()
-{  
+{ 
 }

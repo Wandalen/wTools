@@ -1,6 +1,6 @@
 [package]
 name = "former_meta"
-version = "2.27.0"
+version = "2.29.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -31,6 +31,7 @@ proc-macro = true
 
 default = [
   "enabled",
+
   "derive_former",
   # "derive_components",
   # "derive_component_from",
@@ -39,11 +40,17 @@ default = [
   # "derive_from_components",
 ]
 full = [
-  "default",
-  "performance",
+  "enabled",
+
+  "derive_former",
+  # "derive_components",
+  # "derive_component_from",
+  # "derive_component_assign",
+  # "derive_components_assign",
+  # "derive_from_components",
 ]
 
-# Performance optimization features
+# Performance features (benchmarking only)
 performance = []
 enabled = [ "macro_tools/enabled", "iter_tools/enabled", "former_types/enabled", "component_model_types/enabled" ]
 

@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 /// Test logic for unit variants in enums (temporarily non-generic).
 use super::*;
 

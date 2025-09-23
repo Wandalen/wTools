@@ -10,7 +10,7 @@ pub mod private {
 
   /// Newtype for the delimiter string slice.
   #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ]
-  pub struct Delimeter<'a>(pub &'a str);
+  pub struct Delimiter<'a>(pub &'a str);
 
   /// Newtype for the quote boolean flag.
   #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ]
@@ -33,7 +33,7 @@ pub mod private {
     /// Source string slice.
     pub src: Src<'a>,
     /// Delimiter string slice.
-    pub delimeter: Delimeter<'a>,
+    pub delimiter: Delimiter<'a>,
     /// Quote boolean flag.
     pub quote: Quote,
     /// Left boolean flag.
@@ -48,7 +48,7 @@ pub mod private {
     fn default() -> Self {
       Self {
         src: Src::default(),
-        delimeter: Delimeter::default(),
+        delimiter: Delimiter::default(),
         quote: Quote::default(),
         left: Left::default(),
         times: 1,
@@ -91,7 +91,7 @@ pub mod private {
         for i in 0..self.times {
           let i = i as usize;
           if i > 0 {
-            len += self.delimeter.0.len();
+            len += self.delimiter.0.len();
           }
           len += parts[i].len();
         }
@@ -99,17 +99,17 @@ pub mod private {
       };
 
       if self.left.0 {
-        let parts: Vec< &str > = self.src.0.trim().splitn(times.into(), self.delimeter.0).collect();
+        let parts: Vec< &str > = self.src.0.trim().splitn(times.into(), self.delimiter.0).collect();
         if parts.len() == 1 {
           result = left_none_result(parts[0]);
         } else {
           let len = count_parts_len(&parts);
-          let max_len = len + self.delimeter.0.len();
+          let max_len = len + self.delimiter.0.len();
           if max_len <= self.src.0.len() {
-            let delim_opt = if self.delimeter.0.is_empty() {
+            let delim_opt = if self.delimiter.0.is_empty() {
               None
             } else {
-              Some(self.delimeter.0)
+              Some(self.delimiter.0)
             };
             result = (&self.src.0[0..len], delim_opt, &self.src.0[max_len..]);
           } else {
@@ -117,16 +117,16 @@ pub mod private {
           }
         }
       } else {
-        let parts: Vec< &str > = self.src.0.trim().rsplitn(times.into(), self.delimeter.0).collect();
+        let parts: Vec< &str > = self.src.0.trim().rsplitn(times.into(), self.delimiter.0).collect();
         if parts.len() == 1 {
           result = right_none_result(parts[0]);
         } else {
           let len = count_parts_len(&parts);
-          if len + self.delimeter.0.len() <= self.src.0.len() {
-            let delim_opt = if self.delimeter.0.is_empty() {
+          if len + self.delimiter.0.len() <= self.src.0.len() {
+            let delim_opt = if self.delimiter.0.is_empty() {
               None
             } else {
-              Some(self.delimeter.0)
+              Some(self.delimiter.0)
             };
             result = (parts[parts.len() - 1], delim_opt, &self.src.0[self.src.0.len() - len..]);
           } else {
@@ -140,7 +140,7 @@ pub mod private {
   }
 
   ///
-  /// Function to split a string with some delimeter.
+  /// Function to split a string with some delimiter.
   ///
   /// It produces former. To convert former into options and run algorithm of splitting call `perform()`.
   ///
@@ -152,7 +152,7 @@ pub mod private {
   }
 
   ///
-  /// Function to split a string with some delimeter. Routine splits string from left.
+  /// Function to split a string with some delimiter. Routine splits string from left.
   ///
   /// It produces former. To convert former into options and run algorithm of splitting call `perform()`.
   ///
@@ -167,7 +167,7 @@ pub mod private {
   }
 
   ///
-  /// Function to split a string with some delimeter. Routine splits string from right.
+  /// Function to split a string with some delimiter. Routine splits string from right.
   ///
   /// It produces former. To convert former into options and run algorithm of splitting call `perform()`.
   ///

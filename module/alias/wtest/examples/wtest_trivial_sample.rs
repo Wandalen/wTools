@@ -1,20 +1,20 @@
-//! qqq : write proper description
-use test_tools::*;
+//! qqq: write proper description
+use test_tools :: *;
 
 tests_impls!
 {
 
   fn pass1_test()
   {
-    assert_eq!( true, true );
-  }
+  assert_eq!( true, true );
+ }
 
   //
 
   fn pass2_test()
   {
-    assert_eq!( 1, 1 );
-  }
+  assert_eq!( 1, 1 );
+ }
 
 }
 

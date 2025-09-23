@@ -1,7 +1,7 @@
 #[ test ]
 fn not()
 {
-  let mut x = NameCollisions { a : true, b : 0 };
+  let mut x = NameCollisions { a: true, b: 0 };
 
   x = !x;
 

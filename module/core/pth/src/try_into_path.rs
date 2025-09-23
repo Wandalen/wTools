@@ -1,28 +1,30 @@
 /// Define a private namespace for all its items.
 mod private
 {
-  #[ allow( unused_imports, clippy::wildcard_imports ) ]
-  #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
-  use crate::*;
-  #[cfg(not(feature = "no_std"))]
-  use std::
+  #[ allow( unused_imports, clippy ::wildcard_imports ) ]
+  #[ allow( clippy ::std_instead_of_alloc, clippy ::std_instead_of_core ) ]
+  use crate :: *;
+
+  #[ cfg( not( feature = "no_std" ) ) ]
+  use std ::
   {
-    io,
-    path::{ Component, Path, PathBuf },
-    string::String,
-  };
+  io,
+  path :: { Component, Path, PathBuf },
+  string ::String,
+ };
   
-  #[cfg(feature = "no_std")]
+  #[ cfg( feature = "no_std" ) ]
   extern crate std;
   
-  #[cfg(feature = "no_std")]
-  use std::
+  #[ cfg( feature = "no_std" ) ]
+  use std ::
   {
-    io,
-    path::{ Component, Path, PathBuf },
-    string::String,
-  };
-  // use camino::{ Utf8Path, Utf8PathBuf };
+  io,
+  path :: { Component, Path, PathBuf },
+ };
+  
+  #[ cfg( feature = "no_std" ) ]
+  use alloc ::string ::String;
 
   /// A trait for converting various types into a `PathBuf`.
   ///
@@ -31,95 +33,95 @@ mod private
   /// Unlike `AsPath`, it is implemented for a wider range of path-like types, similar to `TryIntoCowPath`.
   pub trait TryIntoPath
   {
-    /// Converts the implementing type into a `PathBuf`.
-    ///
-    /// # Returns
-    ///
-    /// * `Ok(PathBuf)` - The owned path buffer.
-    /// * `Err(io::Error)` - An error if the conversion fails.
-    /// # Errors
-    /// qqq: doc
-    fn try_into_path( self ) -> Result<  PathBuf, io::Error  >;
-  }
+  /// Converts the implementing type into a `PathBuf`.
+  ///
+  /// # Returns
+  ///
+  /// * `Ok(PathBuf)` - The owned path buffer.
+  /// * `Err(io ::Error)` - An error if the conversion fails.
+  /// # Errors
+  /// qqq: doc
+  fn try_into_path( self ) -> Result< PathBuf, io ::Error >;
+ }
 
   /// Implementation of `TryIntoPath` for `&str`.
   impl TryIntoPath for &str
   {
-    fn try_into_path( self ) -> Result<  PathBuf, io::Error  >
-    {
-      Ok( PathBuf::from( self ) )
-    }
-  }
+  fn try_into_path( self ) -> Result< PathBuf, io ::Error >
+  {
+   Ok( PathBuf ::from( self ) )
+ }
+ }
 
   /// Implementation of `TryIntoPath` for `String`.
   impl TryIntoPath for String
   {
-    fn try_into_path( self ) -> Result<  PathBuf, io::Error  >
-    {
-      Ok( PathBuf::from( self ) )
-    }
-  }
+  fn try_into_path( self ) -> Result< PathBuf, io ::Error >
+  {
+   Ok( PathBuf ::from( self ) )
+ }
+ }
 
   /// Implementation of `TryIntoPath` for a reference to `Path`.
   impl TryIntoPath for &Path
   {
-    fn try_into_path( self ) -> Result<  PathBuf, io::Error  >
-    {
-      Ok( self.to_path_buf() )
-    }
-  }
+  fn try_into_path( self ) -> Result< PathBuf, io ::Error >
+  {
+   Ok( self.to_path_buf() )
+ }
+ }
 
   /// Implementation of `TryIntoPath` for `PathBuf`.
   impl TryIntoPath for PathBuf
   {
-    fn try_into_path( self ) -> Result<  PathBuf, io::Error  >
-    {
-      Ok( self )
-    }
-  }
+  fn try_into_path( self ) -> Result< PathBuf, io ::Error >
+  {
+   Ok( self )
+ }
+ }
 
   /// Implementation of `TryIntoPath` for a reference to `Utf8Path`.
   #[ cfg( feature = "path_utf8" ) ]
   impl TryIntoPath for &Utf8Path
   {
-    fn try_into_path( self ) -> Result<  PathBuf, io::Error  >
-    {
-      Ok( self.as_std_path().to_path_buf() )
-    }
-  }
+  fn try_into_path( self ) -> Result< PathBuf, io ::Error >
+  {
+   Ok( self.as_std_path().to_path_buf() )
+ }
+ }
 
   /// Implementation of `TryIntoPath` for `Utf8PathBuf`.
   #[ cfg( feature = "path_utf8" ) ]
   impl TryIntoPath for Utf8PathBuf
   {
-    fn try_into_path( self ) -> Result<  PathBuf, io::Error  >
-    {
-      Ok( self.as_std_path().to_path_buf() )
-    }
-  }
-
-  /// Implementation of `TryIntoPath` for `std::path::Component`.
-  impl TryIntoPath for Component<'_>
+  fn try_into_path( self ) -> Result< PathBuf, io ::Error >
   {
-    fn try_into_path( self ) -> Result<  PathBuf, io::Error  >
-    {
-      Ok( self.as_os_str().into() )
-    }
-  }
+   Ok( self.as_std_path().to_path_buf() )
+ }
+ }
 
-  /// Blanket implementation of `TryIntoPath` for references to types implementing `AsRef<Path>`.
+  /// Implementation of `TryIntoPath` for `std ::path ::Component`.
+  impl TryIntoPath for Component< '_ >
+  {
+  fn try_into_path( self ) -> Result< PathBuf, io ::Error >
+  {
+   Ok( self.as_os_str().into() )
+ }
+ }
+
+  /// Blanket implementation of `TryIntoPath` for references to types implementing `AsRef< Path >`.
   impl< T > TryIntoPath for &T
   where
-    T : AsRef< Path >,
+  T: AsRef< Path >,
   {
-    fn try_into_path( self ) -> Result<  PathBuf, io::Error  >
-    {
-      Ok( self.as_ref().to_path_buf() )
-    }
-  }
+  fn try_into_path( self ) -> Result< PathBuf, io ::Error >
+  {
+   Ok( self.as_ref().to_path_buf() )
+ }
+ }
 }
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   orphan use TryIntoPath;
 }

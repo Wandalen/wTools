@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 // Purpose: Replacement for generics_independent_tuple_derive - tests multi-field tuple without generics
 // This works around the architectural limitation that Former derive cannot parse generic enums
 

@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Baseline test - same struct without derive macro to ensure it compiles
 
 /// Baseline test struct for comparison.

@@ -1,4 +1,4 @@
-use derive_tools::IndexMut;
+use derive_tools ::IndexMut;
 
 #[ derive( IndexMut ) ] 
 enum Enum< T >
@@ -9,5 +9,5 @@ enum Enum< T >
 }
 
 fn main()
-{  
+{ 
 }

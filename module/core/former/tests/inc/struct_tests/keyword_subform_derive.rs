@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 // File: module/core/former/tests/inc/former_tests/keyword_subform_derive.rs
 use super::*;
 use collection_tools::{Vec, HashMap}; // Use standard collections

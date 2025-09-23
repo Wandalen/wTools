@@ -1,83 +1,83 @@
 #![allow(unused_imports)]
-use super::*;
+use super :: *;
 
 //
 
-test_tools::tests_impls! {
+test_tools ::tests_impls! {
   fn debug_assert_id_pass()
   {
-    // test.case( "identical" );
-    the_module::debug_assert_id!( 1, 1 );
-  }
+  // test.case( "identical" );
+  the_module ::debug_assert_id!( 1, 1 );
+ }
 
   //
 
   #[ cfg( debug_assertions ) ]
-  #[ should_panic ]
+  #[ should_panic( expected = "assertion `left == right` failed" ) ]
   fn debug_assert_id_fail()
   {
-    // test.case( "not identical" );
-    the_module::debug_assert_id!( 1, 2 );
-  }
+  // test.case( "not identical" );
+  the_module ::debug_assert_id!( 1, 2 );
+ }
 
   //
 
   fn debug_assert_identical_pass()
   {
-    // test.case( "identical" );
-    the_module::debug_assert_identical!( 1, 1 );
-  }
+  // test.case( "identical" );
+  the_module ::debug_assert_identical!( 1, 1 );
+ }
 
   //
 
   #[ cfg( debug_assertions ) ]
-  #[ should_panic ]
+  #[ should_panic( expected = "assertion `left == right` failed" ) ]
   fn debug_assert_identical_fail()
   {
-    // test.case( "not identical" );
-    the_module::debug_assert_identical!( 1, 2 );
-  }
+  // test.case( "not identical" );
+  the_module ::debug_assert_identical!( 1, 2 );
+ }
 
   //
 
   fn debug_assert_ni_pass()
   {
-    // test.case( "not identical" );
-    the_module::debug_assert_ni!( 1, 2 );
-  }
+  // test.case( "not identical" );
+  the_module ::debug_assert_ni!( 1, 2 );
+ }
 
   //
 
   #[ cfg( debug_assertions ) ]
-  #[ should_panic ]
+  #[ should_panic( expected = "assertion `left != right` failed" ) ]
   fn debug_assert_ni_fail()
   {
-    // test.case( "identical" );
-    the_module::debug_assert_ni!( 1, 1 );
-  }
+  // test.case( "identical" );
+  the_module ::debug_assert_ni!( 1, 1 );
+ }
 
   //
 
   fn debug_assert_not_identical_pass()
   {
-    // test.case( "not identical" );
-    the_module::debug_assert_not_identical!( 1, 2 );
-  }
+  // test.case( "not identical" );
+  the_module ::debug_assert_not_identical!( 1, 2 );
+ }
 
   //
 
   #[ cfg( debug_assertions ) ]
-  #[ should_panic ]
+  #[ should_panic( expected = "assertion `left != right` failed" ) ]
   fn debug_assert_not_identical_fail()
   {
-    // test.case( "identical" );
-    the_module::debug_assert_not_identical!( 1, 1 );
-  }
+  // test.case( "identical" );
+  the_module ::debug_assert_not_identical!( 1, 1 );
+ }
 }
 
 //
 
-test_tools::tests_index! {
+test_tools ::tests_index! {
   debug_assert_id_pass,
   debug_assert_id_fail,
   debug_assert_identical_pass,

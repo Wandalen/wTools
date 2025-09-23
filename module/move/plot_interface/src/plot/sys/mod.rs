@@ -1,4 +1,4 @@
-crate::mod_interface!
+crate ::mod_interface!
 {
 
   /// Main aggregating object.

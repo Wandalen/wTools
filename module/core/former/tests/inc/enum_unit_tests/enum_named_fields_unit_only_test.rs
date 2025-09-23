@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 // Purpose: Provides shared test assertions and logic for verifying the constructors generated
 // by `#[ derive( Former ) ]` for enums with unit variants using named fields syntax.
 // This file is included by both `enum_named_fields_unit_derive.rs` and `enum_named_fields_unit_manual.rs`.

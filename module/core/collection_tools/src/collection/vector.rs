@@ -1,15 +1,15 @@
-#[ allow( unused_imports, clippy::wildcard_imports ) ]
-use super::*;
+#[ allow( unused_imports, clippy ::wildcard_imports ) ]
+use super :: *;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-#[ allow( clippy::pub_use ) ]
-pub use alloc::vec::*;
+#[ allow( clippy ::pub_use ) ]
+pub use alloc ::vec :: *;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-#[ allow( clippy::pub_use ) ]
-pub use core::slice::{Iter, IterMut};
+#[ allow( clippy ::pub_use ) ]
+pub use core ::slice :: { Iter, IterMut };
 
 /// Creates a `Vec` from a list of elements.
 ///
@@ -24,7 +24,7 @@ pub use core::slice::{Iter, IterMut};
 /// The macro can be called with a comma-separated list of elements. A trailing comma is optional.
 ///
 /// ```rust
-/// # use collection_tools::{Vec, vec};
+/// # use collection_tools :: { Vec, vec };
 /// // Vec of i32
 /// let vec1 = vec!( 1, 2, 3, 4, 5 );
 ///
@@ -37,8 +37,8 @@ pub use core::slice::{Iter, IterMut};
 ///
 /// # Parameters
 ///
-/// - `$( $key : expr ),* $( , )?`: A comma-separated list of elements to insert into the `Vec`.
-///   Each element can be of any type that implements the `Into<T>` trait, where `T` is the
+/// - `$( $key: expr ),* $( , )?` : A comma-separated list of elements to insert into the `Vec`.
+///   Each element can be of any type that implements the `Into< T >` trait, where `T` is the
 ///   type stored in the `Vec`.
 ///
 /// # Returns
@@ -48,10 +48,10 @@ pub use core::slice::{Iter, IterMut};
 ///
 /// # Example
 ///
-/// Basic usage with integers:
+/// Basic usage with integers :
 ///
 /// ```rust
-/// # use collection_tools::{Vec, vec};
+/// # use collection_tools :: { Vec, vec };
 /// let vec = vec!( 1, 2, 3 );
 /// assert_eq!( vec[ 0 ], 1 );
 /// assert_eq!( vec[ 1 ], 2 );
@@ -60,10 +60,10 @@ pub use core::slice::{Iter, IterMut};
 ///
 /// # Example
 ///
-/// Creating a `Vec` of `&str` from string literals:
+/// Creating a `Vec` of `&str` from string literals :
 ///
 /// ```rust
-/// # use collection_tools::{Vec, vec};
+/// # use collection_tools :: { Vec, vec };
 /// let mixed = vec!{ "value", "another value" };
 /// assert_eq!( mixed[ 0 ], "value" );
 /// assert_eq!( mixed[ 1 ], "another value" );
@@ -74,17 +74,17 @@ pub use core::slice::{Iter, IterMut};
 macro_rules! vec
 {
   (
-    $( $key : expr ),* $( , )?
-  )
+  $( $key: expr ),* $( , )?
+ )
   =>
   {{
-    let _cap = count!( @count $( $key ),* );
-    let mut _vec = $crate::collection::Vec::with_capacity( _cap );
-    $(
-      _vec.push( $key );
-    )*
-    _vec
-  }};
+  let _cap = count!( @count $( $key ),* );
+  let mut _vec = $crate ::collection ::Vec ::with_capacity( _cap );
+  $(
+   _vec.push( $key );
+ )*
+  _vec
+ }};
 }
 
 /// Creates a `Vec` from a list of elements.
@@ -94,7 +94,7 @@ macro_rules! vec
 /// using `.into()`, making it convenient to use literals or values of different, but convertible types.
 ///
 /// Note: The `into_vec!` macro utilizes the `.into()` method to convert each element into the target type
-/// of the `Vec`. Therefore, the elements must be compatible with the `Into<T>` trait for the
+/// of the `Vec`. Therefore, the elements must be compatible with the `Into< T >` trait for the
 /// type `T` used in the `Vec`. Also, this means that sometimes you must specify the type of collection's items.
 ///
 /// # Origin
@@ -106,21 +106,21 @@ macro_rules! vec
 /// The macro can be called with a comma-separated list of elements. A trailing comma is optional.
 ///
 /// ```rust
-/// # use collection_tools::{Vec, into_vec};
+/// # use collection_tools :: { Vec, into_vec };
 /// // Vec of i32
-/// let vec1 : Vec<  i32  > = into_vec!( 1, 2, 3, 4, 5 );
+/// let vec1: Vec< i32 > = into_vec!( 1, 2, 3, 4, 5 );
 ///
 /// // Vec of String
-/// let vec2 : Vec<  String  > = into_vec!{ "hello", "world", "rust" };
+/// let vec2: Vec< String > = into_vec!{ "hello", "world", "rust" };
 ///
 /// // With trailing comma
-/// let vec3 : Vec<  f64  > = into_vec!( 1.1, 2.2, 3.3, );
+/// let vec3: Vec< f64 > = into_vec!( 1.1, 2.2, 3.3, );
 /// ```
 ///
 /// # Parameters
 ///
-/// - `$( $key : expr ),* $( , )?`: A comma-separated list of elements to insert into the `Vec`.
-///   Each element can be of any type that implements the `Into<T>` trait, where `T` is the
+/// - `$( $key: expr ),* $( , )?` : A comma-separated list of elements to insert into the `Vec`.
+///   Each element can be of any type that implements the `Into< T >` trait, where `T` is the
 ///   type stored in the `Vec`.
 ///
 /// # Returns
@@ -130,11 +130,11 @@ macro_rules! vec
 ///
 /// # Example
 ///
-/// Basic usage with integers:
+/// Basic usage with integers :
 ///
 /// ```rust
-/// # use collection_tools::{Vec, into_vec};
-/// let vec : Vec<  i32  > = into_vec!( 1, 2, 3 );
+/// # use collection_tools :: { Vec, into_vec };
+/// let vec: Vec< i32 > = into_vec!( 1, 2, 3 );
 /// assert_eq!( vec[ 0 ], 1 );
 /// assert_eq!( vec[ 1 ], 2 );
 /// assert_eq!( vec[ 2 ], 3 );
@@ -142,11 +142,11 @@ macro_rules! vec
 ///
 /// # Example
 ///
-/// Using with different types that implement `Into<T>`:
+/// Using with different types that implement `Into< T >` :
 ///
 /// ```rust
-/// # use collection_tools::{Vec, into_vec};
-/// let words : Vec<  String  > = into_vec!( "alpha", "beta", "gamma" );
+/// # use collection_tools :: { Vec, into_vec };
+/// let words: Vec< String > = into_vec!( "alpha", "beta", "gamma" );
 /// assert_eq!( words[ 0 ], "alpha" );
 /// assert_eq!( words[ 1 ], "beta" );
 /// assert_eq!( words[ 2 ], "gamma" );
@@ -154,11 +154,11 @@ macro_rules! vec
 ///
 /// # Example
 ///
-/// Creating a `Vec` of `String` from string literals and String objects:
+/// Creating a `Vec` of `String` from string literals and String objects :
 ///
 /// ```rust
-/// # use collection_tools::{Vec, into_vec};
-/// let mixed : Vec<  String  > = into_vec!{ "value", "another value".to_string() };
+/// # use collection_tools :: { Vec, into_vec };
+/// let mixed: Vec< String > = into_vec!{ "value", "another value".to_string() };
 /// assert_eq!( mixed[ 0 ], "value" );
 /// assert_eq!( mixed[ 1 ], "another value" );
 /// ```
@@ -168,15 +168,15 @@ macro_rules! vec
 macro_rules! into_vec
 {
   (
-    $( $key : expr ),* $( , )?
-  )
+  $( $key: expr ),* $( , )?
+ )
   =>
   {{
-    let _cap = count!( @count $( $key ),* );
-    let mut _vec = $crate::collection::Vec::with_capacity( _cap );
-    $(
-      _vec.push( Into::into( $key ) );
-    )*
-    _vec
-  }};
+  let _cap = count!( @count $( $key ),* );
+  let mut _vec = $crate ::collection ::Vec ::with_capacity( _cap );
+  $(
+   _vec.push( Into ::into( $key ) );
+ )*
+  _vec
+ }};
 }
