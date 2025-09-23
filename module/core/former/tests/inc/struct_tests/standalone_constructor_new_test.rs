@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Test for new #[`former_ignore`] standalone constructor behavior
 //! 
 //! This test verifies the new specification rules:

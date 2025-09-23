@@ -81,7 +81,7 @@ string-interner = "0.15"  # Optional: specialized interner crate
 
 ### Testing Strategy
 
-#### Benchmarks
+#### String Interning Performance Benchmarks
 1. Microbenchmark string construction vs interning
 2. Integration benchmark with full command pipeline
 3. Memory usage analysis with long-running processes

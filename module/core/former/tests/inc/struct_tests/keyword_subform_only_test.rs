@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 // File: module/core/former/tests/inc/former_tests/keyword_subform_only_test.rs
 use super::*; // Imports items from keyword_subform_derive.rs
 

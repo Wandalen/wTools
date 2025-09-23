@@ -10,7 +10,7 @@
 extern crate derive_tools_meta;
 
 #[ allow( dead_code ) ]
-#[ derive( derive_tools_meta::DerefMut ) ]
+#[ derive( derive_tools_meta ::DerefMut ) ]
 enum MyEnum
 {
   Variant1( bool ),

@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 // Purpose: Provides shared test assertions for verifying constructors of a unit variant
 // within a simple generic enum.
 // This file is included by `generic_enum_simple_unit_manual.rs` and `generic_enum_simple_unit_derive.rs`.

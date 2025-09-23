@@ -1,7 +1,7 @@
 /// Define a private namespace for all its items.
 mod private
 {
-  use super::super::*;
+  use super ::super :: *;
 
   // ... all code should goes here ...
 
@@ -9,54 +9,54 @@ mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use orphan::*;
+  pub use orphan :: *;
   #[ doc( inline ) ]
-  pub use private::
+  pub use private ::
   {
-    // ... list all items of private which should be visible outside
-  };
+  // ... list all items of private which should be visible outside
+ };
 }
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
   #[ doc( inline ) ]
-  pub use private::
+  pub use private ::
   {
-  };
+ };
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use prelude::*;
+  pub use prelude :: *;
   #[ doc( inline ) ]
-  pub use private::
+  pub use private ::
   {
-  };
+ };
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::*;
+  use super :: *;
 }

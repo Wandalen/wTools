@@ -1,9 +1,10 @@
 #[ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 
-mod manual {
+mod manual 
+{
 
-  use super::*;
+  use super :: *;
 
   mod layer;
   mod micro_modules;
@@ -11,9 +12,10 @@ mod manual {
   mod use_layer;
 }
 
-mod derive {
+mod derive 
+{
 
-  use super::*;
+  use super :: *;
 
   // micro module
   mod micro_modules;
@@ -32,9 +34,9 @@ mod derive {
   mod layer_use_macro;
 
   // use
-  #[path = "./use_as/derive.rs"]
+  #[ path = "./use_as/derive.rs" ]
   mod use_as_derive;
-  #[path = "./use_as/manual.rs"]
+  #[ path = "./use_as/manual.rs" ]
   mod use_as_manual;
   mod use_basic;
   mod use_layer;
@@ -49,4 +51,4 @@ mod derive {
 
 mod trybuild_test;
 
-// xxx : enable
+// xxx: enable

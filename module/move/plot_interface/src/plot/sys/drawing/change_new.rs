@@ -1,32 +1,32 @@
 /// Define a private namespace for all its items.
 mod private
 {
-  use crate::own::*;
+  use crate ::own :: *;
 
   /// ChangerInterface of brush stroke.
   #[ allow( dead_code ) ]
   #[ derive( Debug, Clone ) ]
   pub struct DrawingChangeNew
   {
-    id : Id,
-  }
+  id: Id,
+ }
 
   impl DrawingChangeNew
   {
-    /// Constructor.
-    pub fn new( id : Id ) -> Self
-    {
-      Self{ id }
-    }
-  }
+  /// Constructor.
+  pub fn new( id: Id ) -> Self
+  {
+   Self{ id }
+ }
+ }
 
   impl ChangeInterface for DrawingChangeNew
   {
-  }
+ }
 
 }
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   exposed use DrawingChangeNew;
 }

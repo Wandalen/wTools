@@ -13,7 +13,8 @@ pub mod implsindex;
 
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
-pub mod dependency {
+pub mod dependency
+{
   pub use ::impls_index_meta;
 }
 
@@ -25,7 +26,8 @@ pub use own::*;
 /// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod own {
+pub mod own
+{
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
@@ -37,7 +39,8 @@ pub mod own {
 /// Orphan namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod orphan {
+pub mod orphan
+{
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
@@ -46,7 +49,8 @@ pub mod orphan {
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod exposed {
+pub mod exposed
+{
   use super::*;
   #[ doc( inline ) ]
   pub use prelude::*;
@@ -57,7 +61,8 @@ pub mod exposed {
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod prelude {
+pub mod prelude
+{
   use super::*;
   #[ doc( inline ) ]
   pub use super::implsindex::prelude::*;

@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: Tests the `#[ derive( Former ) ]` macro's generation of standalone scalar constructor functions
 //! for named (struct-like) variants when the enum has the `#[ standalone_constructors ]` attribute and
 //! fields within the variants have the `#[ arg_for_constructor ]` attribute. This file focuses on
@@ -28,7 +29,7 @@ use ::former::Former; // Import derive macro
 
 /// Enum using derive for standalone constructors with arguments.
 #[ derive( Debug, PartialEq, Clone, Former ) ] // Fixed: removed debug from derive
-#[ debug ] // Separate debug attribute
+// #[ debug ] // Separate debug attribute - disabled
 #[ standalone_constructors ] // Enable standalone constructors
 pub enum TestEnumArgsDerived // UNIQUE NAME: Avoid conflicts with manual tests
 {

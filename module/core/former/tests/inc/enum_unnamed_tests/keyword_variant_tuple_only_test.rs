@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 // Purpose: Tests keyword variant handling in tuple context
 // This file is included by keyword_variant_tuple_derive files
 

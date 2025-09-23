@@ -53,7 +53,8 @@ The macro will generate instances of these `unilang` structs.
 *   **`unilang::data::CommandDefinition`**:
     ```rust
     // The macro will generate a static instance of this struct.
-    pub struct CommandDefinition {
+    pub struct CommandDefinition 
+{
         pub name: String,
         pub description: String,
         pub arguments: Vec<ArgumentDefinition>,
@@ -70,7 +71,8 @@ The macro will generate instances of these `unilang` structs.
 *   **`unilang::data::ArgumentDefinition`**:
     ```rust
     // The macro will generate a vector of these based on function parameters.
-    pub struct ArgumentDefinition {
+    pub struct ArgumentDefinition 
+{
         pub name: String,
         pub description: String, // Can be populated from parameter attributes
         pub kind: Kind,
@@ -109,7 +111,8 @@ This is the primary toolkit for building the macro.
         // Define a marker for each property
         #[derive(Debug, Default, Clone, Copy)]
         pub struct NameMarker;
-        impl macro_tools::attr_prop::AttributePropertyComponent for NameMarker {
+        impl macro_tools::attr_prop::AttributePropertyComponent for NameMarker 
+{
             const KEYWORD: &'static str = "name";
         }
         // Create a type alias for the property

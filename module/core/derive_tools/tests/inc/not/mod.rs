@@ -1,5 +1,5 @@
 #![ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 
 mod struct_named;
 mod struct_named_manual;

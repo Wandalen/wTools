@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Test for `tuple_single_field_subform` handler
 use super::*;
 #[ allow( unused_imports ) ]

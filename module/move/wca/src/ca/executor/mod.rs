@@ -1,6 +1,6 @@
 mod private {}
 
-crate::mod_interface!
+crate ::mod_interface!
 {
 
   /// Container for contexts values

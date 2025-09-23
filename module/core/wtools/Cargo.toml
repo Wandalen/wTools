@@ -378,6 +378,8 @@ enabled = []
 # iter_use_alloc = [ "iter", "iter_tools/use_alloc" ]
 
 full = [
+  "enabled",
+
   "iter_full",
   "meta_full",
   "mem_full",
@@ -393,6 +395,8 @@ full = [
 ]
 
 default = [
+  "enabled",
+
   "iter_default",
   "meta_default",
   "mem_default",

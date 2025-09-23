@@ -8,3 +8,8 @@ authors = [
 ]
 license = "MIT"
 publish = false
+
+[features]
+default = [ "enabled" ]
+full = [ "enabled" ]
+enabled = []

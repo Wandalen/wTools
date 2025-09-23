@@ -25,33 +25,33 @@ pub mod exposed
 {
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use super ::private ::
   {
-    mod_interface,
-  };
+  mod_interface,
+ };
   #[ cfg( feature = "meta_for_each" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use super ::private ::
   {
-    for_each,
-  };
+  for_each,
+ };
   #[ cfg( feature = "meta_impls_index" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use super ::private ::
   {
-    impls_index,
-  };
+  impls_index,
+ };
   #[ cfg( feature = "meta_idents_concat" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use super ::private ::
   {
-    paste,
-  };
+  paste,
+ };
 }
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use exposed::*;
+pub use exposed :: *;

@@ -1,0 +1,501 @@
+//! Practical CLI Aggregation: Real-World Multi-Tool Example
+//!
+//! This example demonstrates how to aggregate multiple CLI tools into a single unified command.
+//! It shows the complete workflow from individual CLI modules to a unified aggregated CLI
+//! that organizations commonly need for developer tooling.
+//!
+//! ## Scenario
+//!
+//! A development team wants to unify separate CLI tools into one command:
+//! - Database management CLI (originally `db-cli`)
+//! - File operation CLI (originally `file-cli`)
+//! - Network utilities CLI (originally `net-cli`)
+//! - Build system CLI (originally `build-cli`)
+//!
+//! The goal: `unified-cli db migrate`, `unified-cli fs copy src dest`, etc.
+//!
+//! ## Key Benefits Demonstrated
+//!
+//! - **Namespace isolation**: Each CLI keeps its own command space
+//! - **Prefix management**: Automatic prefix application with conflict detection
+//! - **Zero-cost aggregation**: Compile-time merging with PHF lookup performance
+//! - **Ergonomic API**: Simple builder pattern for complex aggregation scenarios
+
+use unilang::prelude::*;
+use unilang::multi_yaml::CliBuilder;
+use unilang::data::ValidationRule;
+use unilang::CommandRoutine;
+use std::collections::HashMap;
+
+// =============================================================================
+// Helper Functions
+// =============================================================================
+
+/// Convert a vector of command definitions to a CommandRegistry for demonstration
+#[allow(dead_code)]
+fn commands_to_registry( commands: Vec< CommandDefinition > ) -> CommandRegistry
+{
+  #[ allow( deprecated ) ]
+  let mut registry = CommandRegistry::new();
+
+  for cmd in commands
+  {
+    let routine = create_dummy_routine( &cmd.name );
+    #[ allow( deprecated ) ]
+    if let Err( e ) = registry.command_add_runtime( &cmd, routine )
+    {
+      eprintln!( "Warning: Failed to register {}: {}", cmd.name, e );
+    }
+  }
+
+  registry
+}
+
+// =============================================================================
+// Individual CLI Module Definitions
+// =============================================================================
+
+/// Create database management CLI commands
+fn create_database_cli() -> Vec< CommandDefinition >
+{
+  vec!
+  [
+  CommandDefinition
+  {
+  name: ".migrate".to_string(),
+  namespace: "".to_string(),
+  description: "Run database migrations".to_string(),
+  hint: "Apply pending database schema migrations".to_string(),
+  arguments: vec!
+  [
+  ArgumentDefinition
+  {
+  name: "direction".to_string(),
+  kind: Kind::String,
+  attributes: ArgumentAttributes
+  {
+  optional: true,
+  default: Some( "up".to_string() ),
+  ..Default::default()
+ },
+  description: "Migration direction: up or down".to_string(),
+  hint: "up, down, or redo".to_string(),
+  validation_rules: vec![],
+  aliases: vec![ "dir".to_string() ],
+  tags: vec![ "database".to_string() ],
+ }
+ ],
+  routine_link: None,
+  status: "stable".to_string(),
+  version: "1.0.0".to_string(),
+  tags: vec![ "database", "migration" ].iter().map( |s| s.to_string() ).collect(),
+  aliases: vec![],
+  permissions: vec![ "database_admin".to_string() ],
+  idempotent: false,
+  deprecation_message: "".to_string(),
+  http_method_hint: "POST".to_string(),
+  examples: vec![ "db.migrate direction::up".to_string() ],
+  auto_help_enabled: true,
+ },
+  CommandDefinition
+  {
+  name: ".backup".to_string(),
+  namespace: "".to_string(),
+  description: "Create database backup".to_string(),
+  hint: "Export database to backup file".to_string(),
+  arguments: vec!
+  [
+  ArgumentDefinition
+  {
+  name: "output".to_string(),
+  kind: Kind::File,
+  attributes: ArgumentAttributes
+  {
+  optional: false,
+  ..Default::default()
+ },
+  description: "Output backup file path".to_string(),
+  hint: "Path where backup will be saved".to_string(),
+  validation_rules: vec![],
+  aliases: vec![ "o".to_string() ],
+  tags: vec![ "output".to_string() ],
+ }
+ ],
+  routine_link: None,
+  status: "stable".to_string(),
+  version: "1.0.0".to_string(),
+  tags: vec![ "database", "backup" ].iter().map( |s| s.to_string() ).collect(),
+  aliases: vec![],
+  permissions: vec![ "database_read".to_string() ],
+  idempotent: true,
+  deprecation_message: "".to_string(),
+  http_method_hint: "GET".to_string(),
+  examples: vec![ "db.backup output::backup.sql".to_string() ],
+  auto_help_enabled: true,
+ }
+ ]
+}
+
+/// Create file operations CLI commands
+fn create_file_cli() -> Vec< CommandDefinition >
+{
+  vec!
+  [
+  CommandDefinition
+  {
+  name: ".copy".to_string(),
+  namespace: "".to_string(),
+  description: "Copy files and directories".to_string(),
+  hint: "Copy source to destination with options".to_string(),
+  arguments: vec!
+  [
+  ArgumentDefinition
+  {
+  name: "source".to_string(),
+  kind: Kind::Path,
+  attributes: ArgumentAttributes
+  {
+  optional: false,
+  ..Default::default()
+ },
+  description: "Source file or directory path".to_string(),
+  hint: "Path to copy from".to_string(),
+  validation_rules: vec![],
+  aliases: vec![ "src".to_string() ],
+  tags: vec![ "input".to_string() ],
+ },
+  ArgumentDefinition
+  {
+  name: "destination".to_string(),
+  kind: Kind::Path,
+  attributes: ArgumentAttributes
+  {
+  optional: false,
+  ..Default::default()
+ },
+  description: "Destination path".to_string(),
+  hint: "Path to copy to".to_string(),
+  validation_rules: vec![],
+  aliases: vec![ "dest", "dst" ].iter().map( |s| s.to_string() ).collect(),
+  tags: vec![ "output".to_string() ],
+ },
+  ArgumentDefinition
+  {
+  name: "recursive".to_string(),
+  kind: Kind::Boolean,
+  attributes: ArgumentAttributes
+  {
+  optional: true,
+  default: Some( "false".to_string() ),
+  ..Default::default()
+ },
+  description: "Copy directories recursively".to_string(),
+  hint: "Include subdirectories".to_string(),
+  validation_rules: vec![],
+  aliases: vec![ "r".to_string() ],
+  tags: vec![ "option".to_string() ],
+ }
+ ],
+  routine_link: None,
+  status: "stable".to_string(),
+  version: "1.2.0".to_string(),
+  tags: vec![ "filesystem", "copy" ].iter().map( |s| s.to_string() ).collect(),
+  aliases: vec![ "cp".to_string() ],
+  permissions: vec![ "file_write".to_string() ],
+  idempotent: false,
+  deprecation_message: "".to_string(),
+  http_method_hint: "POST".to_string(),
+  examples: vec![ "fs.copy source::src/ destination::dest/ recursive::true".to_string() ],
+  auto_help_enabled: true,
+ }
+ ]
+}
+
+/// Create network utilities CLI commands
+fn create_network_cli() -> Vec< CommandDefinition >
+{
+  vec!
+  [
+  CommandDefinition
+  {
+  name: ".ping".to_string(),
+  namespace: "".to_string(),
+  description: "Ping network host".to_string(),
+  hint: "Test network connectivity to host".to_string(),
+  arguments: vec!
+  [
+  ArgumentDefinition
+  {
+  name: "host".to_string(),
+  kind: Kind::String,
+  attributes: ArgumentAttributes
+  {
+  optional: false,
+  ..Default::default()
+ },
+  description: "Hostname or IP address".to_string(),
+  hint: "Target host to ping".to_string(),
+  validation_rules: vec![],
+  aliases: vec![],
+  tags: vec![ "network".to_string() ],
+ },
+  ArgumentDefinition
+  {
+  name: "count".to_string(),
+  kind: Kind::Integer,
+  attributes: ArgumentAttributes
+  {
+  optional: true,
+  default: Some( "4".to_string() ),
+  ..Default::default()
+ },
+  description: "Number of ping packets".to_string(),
+  hint: "How many pings to send".to_string(),
+  validation_rules: vec!
+  [
+  ValidationRule::Min( 1.0 ),
+  ValidationRule::Max( 100.0 ),
+ ],
+  aliases: vec![ "c".to_string() ],
+  tags: vec![ "count".to_string() ],
+ }
+ ],
+  routine_link: None,
+  status: "stable".to_string(),
+  version: "1.0.0".to_string(),
+  tags: vec![ "network", "diagnostic" ].iter().map( |s| s.to_string() ).collect(),
+  aliases: vec![],
+  permissions: vec![],
+  idempotent: true,
+  deprecation_message: "".to_string(),
+  http_method_hint: "GET".to_string(),
+  examples: vec![ "net.ping host::google.com count::10".to_string() ],
+  auto_help_enabled: true,
+ }
+ ]
+}
+
+/// Create build system CLI commands
+fn create_build_cli() -> Vec< CommandDefinition >
+{
+  vec!
+  [
+  CommandDefinition
+  {
+  name: ".compile".to_string(),
+  namespace: "".to_string(),
+  description: "Compile project".to_string(),
+  hint: "Build project with specified configuration".to_string(),
+  arguments: vec!
+  [
+  ArgumentDefinition
+  {
+  name: "target".to_string(),
+  kind: Kind::String,
+  attributes: ArgumentAttributes
+  {
+  optional: true,
+  default: Some( "debug".to_string() ),
+  ..Default::default()
+ },
+  description: "Build target configuration".to_string(),
+  hint: "debug, release, or test".to_string(),
+  validation_rules: vec![],
+  aliases: vec![ "t".to_string() ],
+  tags: vec![ "build".to_string() ],
+ }
+ ],
+  routine_link: None,
+  status: "stable".to_string(),
+  version: "2.0.0".to_string(),
+  tags: vec![ "build", "compilation" ].iter().map( |s| s.to_string() ).collect(),
+  aliases: vec![ "build".to_string() ],
+  permissions: vec![ "build_system".to_string() ],
+  idempotent: false,
+  deprecation_message: "".to_string(),
+  http_method_hint: "POST".to_string(),
+  examples: vec![ "build.compile target::release".to_string() ],
+  auto_help_enabled: true,
+ }
+ ]
+}
+
+// =============================================================================
+// CLI Aggregation Demonstration
+// =============================================================================
+
+fn main() -> Result< (), unilang::Error >
+{
+  println!( "=== Practical CLI Aggregation Demo ===" );
+  println!( "Unifying database, file, network, and build CLIs into one tool" );
+  println!();
+
+  // Create individual CLI command sets
+  let database_commands = create_database_cli();
+  let file_commands = create_file_cli();
+  let network_commands = create_network_cli();
+  let build_commands = create_build_cli();
+
+  println!( "Individual CLI modules created:" );
+  println!( "  Database CLI: {} commands", database_commands.len() );
+  println!( "  File CLI: {} commands", file_commands.len() );
+  println!( "  Network CLI: {} commands", network_commands.len() );
+  println!( "  Build CLI: {} commands", build_commands.len() );
+  println!();
+
+  // Method 1: Runtime Aggregation with CliBuilder
+  println!( "=== Method 1: Runtime CLI Aggregation ===" );
+  #[ allow( deprecated ) ]
+  #[ allow( deprecated ) ]
+  let mut runtime_registry = CommandRegistry::new();
+
+  // Add each CLI module with prefixes
+  for cmd in database_commands.iter()
+  {
+  let mut prefixed_cmd = cmd.clone();
+  prefixed_cmd.name = format!( ".db{}", cmd.name );
+
+  let routine = create_dummy_routine( &format!( "db{}", cmd.name ) );
+  #[ allow( deprecated ) ]
+  #[ allow( deprecated ) ]
+  runtime_registry.command_add_runtime( &prefixed_cmd, routine )?;
+ }
+
+  for cmd in file_commands.iter()
+  {
+  let mut prefixed_cmd = cmd.clone();
+  prefixed_cmd.name = format!( ".fs{}", cmd.name );
+
+  let routine = create_dummy_routine( &format!( "fs{}", cmd.name ) );
+  #[ allow( deprecated ) ]
+  #[ allow( deprecated ) ]
+  runtime_registry.command_add_runtime( &prefixed_cmd, routine )?;
+ }
+
+  for cmd in network_commands.iter()
+  {
+  let mut prefixed_cmd = cmd.clone();
+  prefixed_cmd.name = format!( ".net{}", cmd.name );
+
+  let routine = create_dummy_routine( &format!( "net{}", cmd.name ) );
+  #[ allow( deprecated ) ]
+  #[ allow( deprecated ) ]
+  runtime_registry.command_add_runtime( &prefixed_cmd, routine )?;
+ }
+
+  for cmd in build_commands.iter()
+  {
+  let mut prefixed_cmd = cmd.clone();
+  prefixed_cmd.name = format!( ".build{}", cmd.name );
+
+  let routine = create_dummy_routine( &format!( "build{}", cmd.name ) );
+  #[ allow( deprecated ) ]
+  #[ allow( deprecated ) ]
+  runtime_registry.command_add_runtime( &prefixed_cmd, routine )?;
+ }
+
+  let runtime_pipeline = Pipeline::new( runtime_registry );
+
+  println!( "Runtime aggregation completed successfully!" );
+  println!();
+
+  // Method 2: Compile-Time Aggregation with CliBuilder (conceptual)
+  println!( "=== Method 2: Compile-Time CLI Aggregation (Conceptual) ===" );
+
+  let _compile_time_builder = CliBuilder::new()
+  .static_module_with_prefix( "database", "db", database_commands.clone() )
+  .static_module_with_prefix( "filesystem", "fs", file_commands.clone() )
+  .static_module_with_prefix( "network", "net", network_commands.clone() )
+  .static_module_with_prefix( "build_tools", "build", build_commands.clone() );
+
+  println!( "Compile-time builder configured with 4 modules:" );
+  println!( "  - database -> 'db' prefix" );
+  println!( "  - filesystem -> 'fs' prefix" );
+  println!( "  - network -> 'net' prefix" );
+  println!( "  - build -> 'build' prefix" );
+  println!();
+
+  // Demonstrate unified CLI usage
+  println!( "=== Unified CLI Usage Examples ===" );
+  println!();
+
+  let test_commands = vec!
+  [
+  ( ".db.migrate direction::up", "Run database migration" ),
+  ( ".db.backup output::backup.sql", "Create database backup" ),
+  ( ".fs.copy source::src destination::dest recursive::true", "Copy files recursively" ),
+  ( ".net.ping host::google.com count::5", "Ping host with custom count" ),
+  ( ".build.compile target::release", "Build release target" ),
+ ];
+
+  println!( "Executing aggregated commands through unified CLI:" );
+  for ( command, description ) in test_commands
+  {
+  println!( "  Command: {}", command );
+  println!( "  Purpose: {}", description );
+
+  let result = runtime_pipeline.process_command_simple( command );
+  if result.success
+  {
+  println!( "  Result: ✅ {}", result.outputs[ 0 ].content );
+ }
+  else if let Some( error ) = result.error
+  {
+  println!( "  Result: ❌ {}", error );
+ }
+  println!();
+ }
+
+  // Show namespace organization
+  println!( "=== Namespace Organization ===" );
+  let all_commands = runtime_pipeline.registry().commands();
+  let mut namespaces: HashMap< String, Vec< String > > = HashMap::new();
+
+  for ( name, _cmd ) in all_commands.iter()
+  {
+  if let Some( first_dot ) = name.find( '.' ).and_then( |i| name[ i + 1.. ].find( '.' ) )
+  {
+  let namespace = name[ 1..first_dot + 1 ].to_string();
+  let command = name[ first_dot + 2.. ].to_string();
+  namespaces.entry( namespace ).or_default().push( command );
+ }
+ }
+
+  for ( namespace, commands ) in namespaces
+  {
+  println!( "Namespace '{}':", namespace );
+  for cmd in commands
+  {
+  println!( "  .{}.{}", namespace, cmd );
+ }
+  println!();
+ }
+
+  println!( "=== Key Benefits Demonstrated ===" );
+  println!( "✅ Namespace isolation: Each CLI maintains its own command space" );
+  println!( "✅ Prefix management: Automatic prefix application prevents conflicts" );
+  println!( "✅ Unified interface: Single entry point for multiple tools" );
+  println!( "✅ Help system integration: All commands support help conventions" );
+  println!( "✅ Type safety: Argument validation across all aggregated CLIs" );
+  println!( "✅ Performance: Compile-time aggregation provides zero-cost lookups" );
+
+  Ok( () )
+}
+
+// =============================================================================
+// Helper Functions
+// =============================================================================
+
+/// Create a dummy routine for demonstration purposes
+fn create_dummy_routine( command_name: &str ) -> CommandRoutine
+{
+  let name = command_name.to_string();
+  Box::new( move |_cmd: VerifiedCommand, _ctx: ExecutionContext|
+  {
+  Ok( OutputData
+  {
+  content: format!( "Executed {} successfully (demo)", name ),
+  format: "text".to_string(),
+ })
+ })
+}

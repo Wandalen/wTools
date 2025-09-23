@@ -2,12 +2,12 @@
 //! Tests for `get_row` function.
 //! 
 
-use httpmock::prelude::*;
-use serde_json::json;
-use gspread::*;
-use actions::gspread::get_row;
-use gcore::ApplicationSecret;
-use gcore::client::
+use httpmock ::prelude :: *;
+use serde_json ::json;
+use gspread :: *;
+use actions ::gspread ::get_row;
+use gcore ::ApplicationSecret;
+use gcore ::client ::
 {
   Client, 
   ValueRange
@@ -20,11 +20,11 @@ use gcore::client::
 /// # How
 /// 1. Start a mock server.
 /// 2. Create a client.
-/// 3. Call `get_row` function which sends a GET request to /{spreadsheet_id}/values/{sheet_name}!A{row_key}:ZZZ{row_key}
+/// 3. Call `get_row` function which sends a GET request to /{spreadsheet_id}/values/{sheet_name}!A{row_key} : ZZZ{row_key}
 /// 4. Check results.
-#[ tokio::test ]
+#[ tokio ::test ]
 async fn test_mock_get_row_should_work()
-{  
+{ 
   let spreadsheet_id = "12345";
   let sheet_name = "tab2";
   let row_key = json!( 10 );
@@ -32,28 +32,28 @@ async fn test_mock_get_row_should_work()
   let mock_response_values = vec![ vec![ json!( "Hello" ), json!( "World" ) ] ];
 
   // 1. Start a mock server.
-  let server = MockServer::start();
+  let server = MockServer ::start();
   let mock = server.mock( | when, then |
   {
-    when.method( GET )
-      .path( "/12345/values/tab2!A10:ZZZ10" )
-      .query_param( "valueRenderOption", "UNFORMATTED_VALUE" );
-    then.status( 200 )
-      .header( "Content-Type", "application/json" )
-      .json_body_obj
-      ( 
-        &ValueRange
-        {
-          range : Some( "tab2!A10:ZZZ10".to_string() ),
-          major_dimension : None,
-          values : Some( mock_response_values.clone() ),
-        } 
-      );
-  } );
+  when.method( GET )
+   .path( "/12345/values/tab2!A10: ZZZ10" )
+   .query_param( "valueRenderOption", "UNFORMATTED_VALUE" );
+  then.status( 200 )
+   .header( "Content-Type", "application/json" )
+   .json_body_obj
+   ( 
+  &ValueRange
+  {
+   range: Some( "tab2!A10: ZZZ10".to_string() ),
+   major_dimension: None,
+   values: Some( mock_response_values.clone() ),
+ } 
+ );
+ } );
 
   // 2. Create a client.
   let endpoint = server.url( "" );
-  let client : Client< '_, ApplicationSecret > = Client::former()
+  let client: Client< '_, ApplicationSecret > = Client ::former()
   .endpoint( &*endpoint )
   .form();
 
@@ -77,9 +77,9 @@ async fn test_mock_get_row_should_work()
 /// # How
 /// 1. Start a mock server.
 /// 2. Create a client.
-/// 3. Call `get_row` function which sends a GET request to /{spreadsheet_id}/values/{sheet_name}!A999:ZZZ999
+/// 3. Call `get_row` function which sends a GET request to /{spreadsheet_id}/values/{sheet_name}!A999: ZZZ999
 /// 4. Check results.
-#[ tokio::test ]
+#[ tokio ::test ]
 async fn test_mock_get_row_no_data_should_work()
 {
   let spreadsheet_id = "12345";
@@ -87,25 +87,25 @@ async fn test_mock_get_row_no_data_should_work()
   let row_key = json!( 999 );
   let  response_body = ValueRange
   {
-    range : Some( "tab2!A999:ZZZ999".to_string() ),
-    ..Default::default()
-  };
+  range: Some( "tab2!A999: ZZZ999".to_string() ),
+  ..Default ::default()
+ };
 
   // 1. Start a mock server.
-  let server = MockServer::start();
+  let server = MockServer ::start();
   let mock = server.mock( | when, then |
   {
-    when.method( GET )
-      .path( "/12345/values/tab2!A999:ZZZ999" )
-      .query_param( "valueRenderOption", "UNFORMATTED_VALUE" );
-    then.status( 200 )
-      .header( "Content-Type", "application/json" )
-      .json_body_obj( &response_body );
-  } );
+  when.method( GET )
+   .path( "/12345/values/tab2!A999: ZZZ999" )
+   .query_param( "valueRenderOption", "UNFORMATTED_VALUE" );
+  then.status( 200 )
+   .header( "Content-Type", "application/json" )
+   .json_body_obj( &response_body );
+ } );
 
   // 2. Create a client.
   let endpoint = server.url( "" );
-  let client : Client< '_, ApplicationSecret > = Client::former()
+  let client: Client< '_, ApplicationSecret > = Client ::former()
   .endpoint( &*endpoint )
   .form();
 
@@ -129,7 +129,7 @@ async fn test_mock_get_row_no_data_should_work()
 /// 2. Create a client.
 /// 3. Call `get_row` with a row key that triggers an error (e.g. row key out of range).
 /// 4. We expect a panic (since the function returns an error and we `.expect()`).
-#[ tokio::test ]
+#[ tokio ::test ]
 #[ should_panic ]
 async fn test_mock_get_row_with_error_should_panic()
 {
@@ -138,19 +138,19 @@ async fn test_mock_get_row_with_error_should_panic()
   let row_key = json!( "bad_key" );
 
   // 1. Start a mock server.
-  let server = MockServer::start();
+  let server = MockServer ::start();
   let _mock = server.mock( | when, then |
   {
-    when.method( GET )
-      .path( "/12345/values/tab2!Abad_key:ZZZbad_key" )
-      .query_param( "valueRenderOption", "UNFORMATTED_VALUE" );
-    then.status( 400 )
-      .header( "Content-Type", "application/json" )
-      .body( r#"{ "error": { "message": "Invalid row key" } }"# );
-  } );
+  when.method( GET )
+   .path( "/12345/values/tab2!Abad_key: ZZZbad_key" )
+   .query_param( "valueRenderOption", "UNFORMATTED_VALUE" );
+  then.status( 400 )
+   .header( "Content-Type", "application/json" )
+   .body( r#"{ "error" : { "message" : "Invalid row key" } }"# );
+ } );
 
   let endpoint = server.url( "" );
-  let client: Client<'_, ApplicationSecret> = Client::former()
+  let client: Client< '_, ApplicationSecret > = Client ::former()
   .endpoint( &*endpoint )
   .form();
 

@@ -23,7 +23,9 @@ use unilang_parser::{ GenericInstruction, Parser, UnilangParserOptions };
 #[ test ]
 fn semantic_analyzer_tests()
 {
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   registry.register( CommandDefinition
   {
     name : "test_cmd".to_string(),
@@ -66,6 +68,7 @@ fn semantic_analyzer_tests()
       },
     ],
     routine_link : None,
+    auto_help_enabled: false,
     namespace : String::new(),
     hint : String::new(),
     status : String::new(),
@@ -138,7 +141,9 @@ fn semantic_analyzer_tests()
 #[ test ]
 fn interpreter_tests()
 {
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
 
   // Dummy routine for cmd1
   let cmd1_routine = Box::new(
@@ -151,6 +156,7 @@ fn interpreter_tests()
       })
     },
   );
+  #[allow(deprecated)]
   registry
   .command_add_runtime
   (
@@ -160,6 +166,7 @@ fn interpreter_tests()
       description : String::new(),
       arguments : vec![],
       routine_link : Some( "cmd1_routine_link".to_string() ),
+      auto_help_enabled : false,
       namespace : String::new(),
       hint : String::new(),
       status : String::new(),
@@ -187,6 +194,7 @@ fn interpreter_tests()
       })
     },
   );
+  #[allow(deprecated)]
   registry
   .command_add_runtime
   (
@@ -196,6 +204,7 @@ fn interpreter_tests()
       description : String::new(),
       arguments : vec![],
       routine_link : Some( "cmd2_routine_link".to_string() ),
+      auto_help_enabled : false,
       namespace : String::new(),
       hint : String::new(),
       status : String::new(),
@@ -253,7 +262,9 @@ fn interpreter_tests()
 #[ test ]
 fn help_generator_tests()
 {
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   let cmd_with_args_def = CommandDefinition
   {
     name : "test_cmd".to_string(),
@@ -279,6 +290,7 @@ fn help_generator_tests()
       }
     ],
     routine_link : None,
+    auto_help_enabled: false,
     namespace : String::new(),
     hint : String::new(),
     status : String::new(),
@@ -299,6 +311,7 @@ fn help_generator_tests()
     description : "A simple command".to_string(),
     arguments : vec![],
     routine_link : None,
+    auto_help_enabled: false,
     namespace : String::new(),
     hint : String::new(),
     status : String::new(),

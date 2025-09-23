@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 use super::*; // Needed for the include
 #[ allow( unused_imports ) ]
 use ::former::prelude::*;

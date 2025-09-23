@@ -1,4 +1,4 @@
-#![allow(missing_docs)]
+#![ allow( missing_docs ) ]
 
 //! Smoke testing of the package.
 

@@ -1,33 +1,35 @@
-// use test_tools::exposed::*;
-use super::*;
-use the_module::exposed::impls1;
-// use the_module::exposed::{ index };
+// use test_tools ::exposed :: *;
+use super :: *;
+use the_module ::exposed ::impls1;
+// use the_module ::exposed :: { index };
 
 //
 
 #[ test ]
-fn impls_basic() {
+fn impls_basic() 
+{
   // test.case( "impls1 basic" );
   {
-    impls1! {
-      fn f1()
-      {
-        println!( "f1" );
-      }
-      pub fn f2()
-      {
-        println!( "f2" );
-      }
-    };
+  impls1! 
+{
+   fn f1()
+   {
+  println!( "f1" );
+ }
+   pub fn f2()
+   {
+  println!( "f2" );
+ }
+ };
 
-    // trace_macros!( true );
-    f1!();
-    f2!();
-    // trace_macros!( false );
+  // trace_macros!( true );
+  f1!();
+  f2!();
+  // trace_macros!( false );
 
-    f1();
-    f2();
-  }
+  f1();
+  f2();
+ }
 
   //   // test.case( "impls1 as" );
   //   {
@@ -37,12 +39,12 @@ fn impls_basic() {
   //       fn f1()
   //       {
   //         println!( "f1" );
-  //       }
+  // }
   //       pub fn f2()
   //       {
   //         println!( "f2" );
-  //       }
-  //     };
+  // }
+  // };
   //
   //     // trace_macros!( true );
   //     f1!( as f1b );
@@ -52,7 +54,7 @@ fn impls_basic() {
   //     f1b();
   //     f2b();
   //
-  //   }
+  // }
   //
   //   // test.case( "impls1 as index" );
   //   {
@@ -62,43 +64,44 @@ fn impls_basic() {
   //       fn f1()
   //       {
   //         println!( "f1" );
-  //       }
+  // }
   //       pub fn f2()
   //       {
   //         println!( "f2" );
-  //       }
-  //     };
+  // }
+  // };
   //
   //     // trace_macros!( true );
   //     index!
   //     {
   //       f1,
   //       f2 as f2b,
-  //     }
+  // }
   //     // trace_macros!( false );
   //
   //     f1();
   //     f2b();
   //
-  //   }
+  // }
 
   // test.case( "macro" );
   {
-    impls1! {
-      fn f1()
-      {
-        macro_rules! macro1
-        {
-          () => { };
-        }
-        macro1!();
-      }
-    }
+  impls1! 
+{
+   fn f1()
+   {
+  macro_rules! macro1
+  {
+   () => { };
+ }
+  macro1!();
+ }
+ }
 
-    // trace_macros!( true );
-    f1!();
-    // trace_macros!( false );
-  }
+  // trace_macros!( true );
+  f1!();
+  // trace_macros!( false );
+ }
 }
 
 //

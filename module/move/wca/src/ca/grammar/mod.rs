@@ -1,6 +1,6 @@
 mod private {}
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   /// User grammar settings.
   /// By using this module, you can define a new commands and provide a detailed descriptions of them.

@@ -3,12 +3,13 @@
 //!
 
 /// Define a private namespace for all its items.
-mod private {
+mod private 
+{
 
-  use crate::*;
-  use core::fmt;
+  use crate :: *;
+  use core ::fmt;
 
-  /// `Tokens` is a wrapper around `proc_macro2::TokenStream`.
+  /// `Tokens` is a wrapper around `proc_macro2 ::TokenStream`.
   /// It is designed to facilitate the parsing and manipulation of token streams
   /// within procedural macros.
   ///
@@ -17,90 +18,105 @@ mod private {
   /// Creating a new `Tokens` instance from a token stream :
   ///
   /// ```rust
-  /// use macro_tools::exposed::*;
+  /// use macro_tools ::exposed :: *;
   ///
-  /// let ts : proc_macro2::TokenStream = qt! { let x = 10; };
-  /// let tokens = tokens::Tokens::new( ts );
+  /// let ts: proc_macro2 ::TokenStream = qt! { let x = 10; };
+  /// let tokens = tokens ::Tokens ::new( ts );
   /// ```
   #[ derive( Default ) ]
-  pub struct Tokens {
-    /// `proc_macro2::TokenStream`
-    pub inner: proc_macro2::TokenStream,
-  }
+  pub struct Tokens
+  {
+  /// `proc_macro2 ::TokenStream`
+  pub inner: proc_macro2 ::TokenStream,
+ }
 
-  impl Tokens {
-    /// Constructor from `proc_macro2::TokenStream`.
-    #[ must_use ]
-    pub fn new(inner: proc_macro2::TokenStream) -> Self {
-      Tokens { inner }
-    }
-  }
+  impl Tokens 
+  {
+  /// Constructor from `proc_macro2 ::TokenStream`.
+  #[ must_use ]
+  pub fn new(inner: proc_macro2 ::TokenStream) -> Self
+  {
+   Tokens { inner }
+ }
+ }
 
-  impl syn::parse::Parse for Tokens {
-    fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result< Self > {
-      let inner: proc_macro2::TokenStream = input.parse()?;
-      Ok(Tokens::new(inner))
-    }
-  }
+  impl syn ::parse ::Parse for Tokens 
+  {
+  fn parse(input: syn ::parse ::ParseStream< '_ >) -> syn ::Result< Self > 
+  {
+   let inner: proc_macro2 ::TokenStream = input.parse()?;
+   Ok(Tokens ::new(inner))
+ }
+ }
 
-  impl quote::ToTokens for Tokens {
-    fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
-      self.inner.to_tokens(tokens);
-    }
-  }
+  impl quote ::ToTokens for Tokens 
+  {
+  fn to_tokens(&self, tokens: &mut proc_macro2 ::TokenStream) 
+  {
+   self.inner.to_tokens(tokens);
+ }
+ }
 
-  impl fmt::Debug for Tokens {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-      write!(f, "{}", self.inner)
-    }
-  }
+  impl fmt ::Debug for Tokens 
+  {
+  fn fmt(&self, f: &mut fmt ::Formatter< '_ >) -> fmt ::Result 
+  {
+   write!(f, "{}", self.inner)
+ }
+ }
 
-  impl core::fmt::Display for Tokens {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-      write!(f, "{}", self.inner)
-    }
-  }
+  impl core ::fmt ::Display for Tokens 
+  {
+  fn fmt(&self, f: &mut core ::fmt ::Formatter< '_ >) -> core ::fmt ::Result 
+  {
+   write!(f, "{}", self.inner)
+ }
+ }
 }
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod own {
+pub mod own 
+{
 
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use orphan::*;
+  pub use orphan :: *;
 }
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod orphan {
+pub mod orphan 
+{
 
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod exposed {
+pub mod exposed 
+{
 
-  use super::*;
+  use super :: *;
 
-  pub use super::super::tokens;
-  // pub use super::own as tokens;
+  pub use super ::super ::tokens;
+  // pub use super ::own as tokens;
 
   #[ doc( inline ) ]
-  pub use prelude::*;
+  pub use prelude :: *;
   #[ doc( inline ) ]
-  pub use private::{Tokens};
+  pub use private :: { Tokens };
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
-pub mod prelude {
-  use super::*;
+pub mod prelude 
+{
+  use super :: *;
 }

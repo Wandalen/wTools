@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 // Purpose: Advanced comprehensive replacement for multiple blocked generic tuple variant tests
 // This works around the architectural limitation that Former derive cannot parse generic enums
 // by creating a comprehensive non-generic replacement with advanced tuple functionality

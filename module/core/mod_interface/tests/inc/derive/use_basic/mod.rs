@@ -1,4 +1,7 @@
-use super::*;
+#![allow(dead_code)]
+#![allow(clippy ::doc_markdown)]
+use super :: *;
+use test_tools ::a_id;
 
 // private layer
 pub mod layer_a;
@@ -7,13 +10,13 @@ pub mod layer_b;
 
 mod private {}
 
-the_module::mod_interface! {
+the_module ::mod_interface! {
 
   /// layer_a
-  use super::layer_a;
+  use super ::layer_a;
 
   /// layer_b
-  use super::layer_b;
+  use super ::layer_b;
 
 }
 

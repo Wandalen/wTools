@@ -1,7 +1,11 @@
-use super::*;
-mod tools {
+#![allow(dead_code)]
+#![allow(clippy ::doc_markdown)]
+use super :: *;
+use test_tools ::a_id;
+mod tools 
+{
   #[ allow( unused_imports ) ]
-  pub use super::super::*;
+  pub use super ::super :: *;
 }
 
 /// Private namespace of the module.
@@ -12,27 +16,28 @@ pub mod layer_a;
 /// `layer_b`
 pub mod layer_b;
 
-the_module::mod_interface! {
+the_module ::mod_interface! {
 
-  // zzz : test with `layer { layer_a, layer_a };`
-  // zzz : test with `use { layer_a, layer_a };`
+  // zzz: test with `layer { layer_a, layer_a };`
+  // zzz: test with `use { layer_a, layer_a };`
 
-  // zzz : make it working
-  // use super::
+  // zzz: make it working
+  // use super ::
   // {
   //   layer_a,
   //   layer_b,
   // };
 
-  use super::layer_a;
-  use super::layer_b;
+  use super ::layer_a;
+  use super ::layer_b;
 
 }
 
-mod mod1 {
+mod mod1 
+{
 
-  // use super::{ layer_b };
-  // pub use super::{ layer_b }::orphan::*;
+  // use super :: { layer_b };
+  // pub use super :: { layer_b } ::orphan :: *;
 }
 
 //

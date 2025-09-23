@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: This file is a test case demonstrating the current limitation and compilation failure
 //! when attempting to use the `#[ subform_entry ]` attribute on a field that is a collection of enums
 //! (specifically, `Vec<SimpleEnum>`). It highlights a scenario that is not currently supported by

@@ -1,6 +1,6 @@
 [package]
 name = "strs_tools"
-version = "0.29.0"
+version = "0.31.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -16,6 +16,9 @@ Tools to manipulate strings.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
+exclude = [
+  "benches/"
+]
 
 [lints]
 workspace = true
@@ -25,29 +28,32 @@ features = [ "full" ]
 all-features = false
 
 [features]
-# Default feature set - includes all commonly used features with performance optimizations
+# Default feature set - no_std compatible with essential functionality
+# For std environments with SIMD, use "full" feature set instead
 default = [
   "enabled",
+  "no_std",
+  "use_alloc",
   "string_indentation",
   "string_isolate",
   "string_split",
   "string_parse_number",
-  "string_parse_request",
-  "simd",
   "compile_time_optimizations",
 ]
 
-# Full feature set - includes everything for maximum functionality
+# Full feature set - includes everything for maximum functionality in std environments
 full = [
   "enabled",
+  "std",                        # Explicitly enable std for maximum performance
   "string_indentation",
   "string_isolate",
   "string_split",
   "string_parse_number",
   "string_parse_request",
-  "simd",
+  "simd",                       # SIMD acceleration (std-only)
   "compile_time_optimizations",
-  "specialized_algorithms", # Explicit control over Task 007 algorithms
+  "specialized_algorithms",     # Explicit control over Task 007 algorithms
+  "_disabled_compile_time_tests", # Enable prototype compile-time tests
 ]
 
 # ========================================
@@ -79,7 +85,9 @@ string_parse_request = ["string_split", "string_isolate", "enabled"]
 # SIMD acceleration for all applicable algorithms
 # When enabled: uses vectorized operations, runtime CPU detection
 # When disabled: uses scalar fallbacks, smaller binary size
+# Note: SIMD features are std-only due to runtime CPU detection requirements
 simd = [
+  "std",                                                         # SIMD requires std for runtime CPU detection
   "dep:memchr", "memchr/std",                                    # memchr with runtime AVX2 detection
   "dep:aho-corasick", "aho-corasick/std", "aho-corasick/perf-literal", # aho-corasick with vectorized prefilters
   "dep:bytecount",                                               # SIMD byte counting
@@ -92,11 +100,20 @@ specialized_algorithms = ["string_split"] # Requires string_split as base functi
 # Compile-time pattern optimizations using proc macros
 compile_time_optimizations = ["dep:strs_tools_meta"]
 
+# Internal feature for disabling prototype tests
+_disabled_compile_time_tests = []
+
 # ========================================
 # ENVIRONMENT FEATURES (platform control)
 # ========================================
 
-# no_std compatibility - disables std-dependent features
+# Standard library support - enables std-dependent features like SIMD and parsing
+# Mutually exclusive with no_std - when both enabled, std takes precedence
+std = []
+
+# no_std compatibility (default) - core functionality without std dependency
+# Provides essential string manipulation in embedded/constrained environments
+# Compatible with alloc for heap-allocated operations via use_alloc feature
 no_std = []
 
 # Enables alloc-based functionality in no_std environments
@@ -132,14 +149,24 @@ lazy_static = { version = "1.4", optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }
-criterion = { version = "0.5", features = ["html_reports"] }
+benchkit = { workspace = true }
 ctor = { version = "0.2" }
 
-# Disabled due to infinite loop issues
 [[bench]]
-name = "bottlenecks"
+name = "simple_specialized_benchmark"
 harness = false
-path = "benchmarks/bottlenecks.rs"
+path = "benches/simple_specialized_benchmark.rs"
+required-features = ["string_split", "specialized_algorithms"]
+
+[[bench]]
+name = "zero_copy_comparison"
+harness = false
+path = "benchmarks/zero_copy_comparison.rs"
+
+[[bench]]
+name = "compile_time_optimization_benchmark"
+harness = false
+path = "benchmarks/compile_time_optimization_benchmark.rs"
 
 [[bench]]
 name = "zero_copy_comparison"

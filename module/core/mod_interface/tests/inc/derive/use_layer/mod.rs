@@ -1,7 +1,11 @@
-use super::*;
-mod tools {
+#![allow(dead_code)]
+#![allow(clippy ::doc_markdown)]
+use super :: *;
+use test_tools ::a_id;
+mod tools 
+{
   #[ allow( unused_imports ) ]
-  pub use super::super::*;
+  pub use super ::super :: *;
 }
 
 pub mod layer_a;
@@ -12,10 +16,10 @@ pub struct SuperStruct1 {}
 
 mod private {}
 
-the_module::mod_interface! {
+the_module ::mod_interface! {
 
   /// layer_a
-  use super::layer_a;
+  use super ::layer_a;
 
 }
 

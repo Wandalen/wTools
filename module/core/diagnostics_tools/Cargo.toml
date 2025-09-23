@@ -29,12 +29,14 @@ all-features = false
 [features]
 default = [
   "enabled",
+
   "diagnostics_runtime_assertions",
   "diagnostics_compiletime_assertions",
   "diagnostics_memory_layout",
 ]
 full = [
   "enabled",
+
   "diagnostics_runtime_assertions",
   "diagnostics_compiletime_assertions",
   "diagnostics_memory_layout",
@@ -58,6 +60,54 @@ serde_json = "1.0"
 
 
 
+
+[[example]]
+name = "001_basic_runtime_assertions"
+required-features = ["enabled"]
+
+[[example]]
+name = "002_better_error_messages"
+required-features = ["enabled"]
+
+[[example]]
+name = "003_compile_time_checks"
+required-features = ["enabled"]
+
+[[example]]
+name = "004_memory_layout_validation"
+required-features = ["enabled"]
+
+[[example]]
+name = "005_debug_variants"
+required-features = ["enabled"]
+
+[[example]]
+name = "006_real_world_usage"
+required-features = ["enabled"]
+
+[[example]]
+name = "001_basic_runtime_assertions"
+required-features = ["enabled"]
+
+[[example]]
+name = "002_better_error_messages"
+required-features = ["enabled"]
+
+[[example]]
+name = "003_compile_time_checks"
+required-features = ["enabled"]
+
+[[example]]
+name = "004_memory_layout_validation"
+required-features = ["enabled"]
+
+[[example]]
+name = "005_debug_variants"
+required-features = ["enabled"]
+
+[[example]]
+name = "006_real_world_usage"
+required-features = ["enabled"]
 
 [[example]]
 name = "001_basic_runtime_assertions"

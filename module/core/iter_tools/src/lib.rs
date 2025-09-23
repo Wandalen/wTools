@@ -1,17 +1,18 @@
-#![cfg_attr(feature = "no_std", no_std)]
-#![doc(html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png")]
-#![doc(
-  html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
-)]
-#![doc(html_root_url = "https://docs.rs/iter_tools/latest/iter_tools/")]
+#![ cfg_attr( feature = "no_std", no_std ) ]
+#![ doc( html_logo_url = "https: //raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
+#![ doc
+(
+  html_favicon_url = "https: //raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
+) ]
+#![ doc( html_root_url = "https: //docs.rs/iter_tools/latest/iter_tools/" ) ]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 #![ cfg_attr( not( doc ), doc = "Iterator utilities" ) ]
 
-#[cfg(all(feature = "no_std", feature = "use_alloc"))]
+#[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
 extern crate alloc;
-#[cfg(all(feature = "no_std", feature = "use_alloc"))]
+#[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
 use alloc::boxed::Box;
-#[cfg(all(feature = "no_std", feature = "use_alloc"))]
+#[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
 use alloc::vec::Vec;
 
 /// Core module.
@@ -20,7 +21,8 @@ pub mod iter;
 
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
-pub mod dependency {
+pub mod dependency
+{
   pub use ::itertools;
 }
 
@@ -32,7 +34,8 @@ pub use own::*;
 /// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod own {
+pub mod own
+{
 
   use super::*;
 
@@ -47,7 +50,8 @@ pub mod own {
 /// Orphan namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod orphan {
+pub mod orphan
+{
 
   use super::*;
   #[ doc( inline ) ]
@@ -57,21 +61,23 @@ pub mod orphan {
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod exposed {
+pub mod exposed
+{
 
   use super::*;
   #[ doc( inline ) ]
   pub use prelude::*;
   #[ doc( inline ) ]
-  pub use super::iter::exposed::*;
+  pub use super ::iter ::exposed :: *;
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod prelude {
+pub mod prelude 
+{
   use super::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::iter::prelude::*;
+  pub use super ::iter ::prelude :: *;
 }

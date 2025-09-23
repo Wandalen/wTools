@@ -1,8 +1,8 @@
 #![ allow( dead_code ) ]
 #[ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 
-// #[ derive( the_module::Index ) ]
+// #[ derive( the_module ::Index ) ]
 struct StructMultipleTuple< T > 
 (
   bool,

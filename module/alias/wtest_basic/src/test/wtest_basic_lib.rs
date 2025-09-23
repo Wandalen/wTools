@@ -1,7 +1,7 @@
 #![ cfg_attr( feature = "no_std", no_std ) ]
-#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
-#![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
-#![ doc( html_root_url = "https://docs.rs/wtest_basic/latest/wtest_basic/" ) ]
+#![ doc( html_logo_url = "https: //raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
+#![ doc( html_favicon_url = "https: //raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
+#![ doc( html_root_url = "https: //docs.rs/wtest_basic/latest/wtest_basic/" ) ]
 // #![ deny( rust_2018_idioms ) ]
 // #![ deny( missing_debug_implementations ) ]
 // #![ deny( missing_docs ) ]
@@ -48,7 +48,7 @@ pub mod dependency
   pub use ::diagnostics_tools;
 }
 
-use mod_interface_meta::mod_interface;
+use mod_interface_meta ::mod_interface;
 
 mod_interface!
 {
@@ -63,16 +63,16 @@ mod_interface!
   prelude use ::diagnostics_tools as diagnostics;
 
   // Correctly import nested items from impls_index
-  prelude use ::impls_index::implsindex::exposed::
+  prelude use ::impls_index ::implsindex ::exposed ::
   {
-    impls,
-    index,
-    tests_impls,
-    tests_impls_optional,
-    tests_index,
-  };
-  prelude use ::typing_tools::{ implements };
+  impls,
+  index,
+  tests_impls,
+  tests_impls_optional,
+  tests_index,
+ };
+  prelude use ::typing_tools :: { implements };
 
 }
 
-// qqq : for Dima : add negative test that wtest_basic::exposed::exposed does not exist /* aaa : Dmytro : added trybuild test with compile time error */
+// qqq: for Dima: add negative test that wtest_basic ::exposed ::exposed does not exist /* aaa: Dmytro: added trybuild test with compile time error */

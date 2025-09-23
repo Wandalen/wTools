@@ -1,22 +1,23 @@
 #![deny(unused_imports)]
 
-use super::*;
+use super :: *;
 // #[ allow ( unused_imports ) ]
-// use the_module::exposed::*;
-// use test_tools::exposed::*;
-// use test_tools::a_id;
+// use the_module ::exposed :: *;
+// use test_tools ::exposed :: *;
+// use test_tools ::a_id;
 
 //
 
 #[ test ]
-fn fn_name() {
+fn fn_name() 
+{
   let f1 = 13;
 
-  let f2 = the_module::exposed::fn_name! {
-    fn f1()
-    {
-    }
-  };
+  let f2 = the_module ::exposed ::fn_name! {
+  fn f1()
+  {
+ }
+ };
 
   dbg!(f2);
   assert_eq!(f2, 13);
@@ -25,17 +26,18 @@ fn fn_name() {
 //
 
 #[ test ]
-fn fn_rename() {
-  the_module::exposed::fn_rename! {
-    @Name { f2 }
-    @Fn
-    {
-      fn f1() -> i32
-      {
-        13
-      }
-    }
-  };
+fn fn_rename() 
+{
+  the_module ::exposed ::fn_rename! {
+  @Name { f2 }
+  @Fn
+  {
+   fn f1() -> i32
+   {
+  13
+ }
+ }
+ };
 
   assert_eq!(f2(), 13);
 }
@@ -43,20 +45,22 @@ fn fn_rename() {
 //
 
 #[ test ]
-fn fns() {
+#[ allow( clippy ::too_many_lines ) ]
+fn fns() 
+{
   //   // test.case( "several, trivial syntax" );
   //   {
   //     let mut counter = 0;
   //
   //     macro_rules! count
   //     {
-  //       ( $( $Tts : tt )* ) =>
+  //       ( $( $Tts: tt )* ) =>
   //       {
   //         dbg!( stringify!( $( $Tts )* ) );
   //         counter += 1;
   //         $( $Tts )*
-  //       };
-  //     }
+  // };
+  // }
   //
   //     fns2!
   //     {
@@ -66,218 +70,218 @@ fn fns() {
   //         fn f1()
   //         {
   //           println!( "f1" );
-  //         }
+  // }
   //         fn f2()
   //         {
   //           println!( "f2" );
-  //         }
-  //       }
-  //     };
+  // }
+  // }
+  // };
   //
   //     a_id!( counter, 2 );
   //     f1();
   //     f2();
-  //   }
+  // }
 
   // test.case( "several, trivial syntax" );
   {
-    let mut counter = 0;
+  let mut counter = 0;
 
-    #[allow(unused_macros)]
-    macro_rules! count
-    {
-      ( $( $Tts : tt )* ) =>
-      {
-        dbg!( stringify!( $( $Tts )* ) );
-        counter += 1;
-        $( $Tts )*
-      };
-    }
+  #[ allow(unused_macros) ]
+  macro_rules! count
+  {
+   ( $( $Tts: tt )* ) =>
+   {
+  dbg!( stringify!( $( $Tts )* ) );
+  counter += 1;
+  $( $Tts )*
+ };
+ }
 
-    the_module::exposed::fns! {
-      @Callback { count }
-      @Fns
-      {
-        fn f1()
-        {
-          println!( "f1" );
-        }
-        fn f2()
-        {
-          println!( "f2" );
-        }
-      }
-    };
+  the_module ::exposed ::fns! {
+   @Callback { count }
+   @Fns
+   {
+  fn f1()
+  {
+   println!( "f1" );
+ }
+  fn f2()
+  {
+   println!( "f2" );
+ }
+ }
+ };
 
-    assert_eq!(counter, 2);
-    f1();
-    f2();
-  }
+  assert_eq!(counter, 2);
+  f1();
+  f2();
+ }
 
   // test.case( "several, complex syntax" );
   {
-    let mut counter = 0;
+  let mut counter = 0;
 
-    #[allow(unused_macros)]
-    macro_rules! count
-    {
-      ( $( $Tts : tt )* ) =>
-      {
-        dbg!( stringify!( $( $Tts )* ) );
-        counter += 1;
-        $( $Tts )*
-      };
-    }
+  #[ allow(unused_macros) ]
+  macro_rules! count
+  {
+   ( $( $Tts: tt )* ) =>
+   {
+  dbg!( stringify!( $( $Tts )* ) );
+  counter += 1;
+  $( $Tts )*
+ };
+ }
 
-    the_module::exposed::fns! {
-      @Callback { count }
-      @Fns
-      {
-        fn f1( src : i32 ) -> i32
-        {
-          println!( "f1" );
-          src
-        }
-        fn f2( src : i32 ) -> i32
-        {
-          println!( "f2" );
-          src
-        }
-      }
-    };
+  the_module ::exposed ::fns! {
+   @Callback { count }
+   @Fns
+   {
+  fn f1( src: i32 ) -> i32
+  {
+   println!( "f1" );
+   src
+ }
+  fn f2( src: i32 ) -> i32
+  {
+   println!( "f2" );
+   src
+ }
+ }
+ };
 
-    assert_eq!(counter, 2);
-    f1(1);
-    f2(2);
-  }
+  assert_eq!(counter, 2);
+  f1(1);
+  f2(2);
+ }
 
   // test.case( "several, parametrized syntax" );
   {
-    let mut counter = 0;
+  let mut counter = 0;
 
-    #[allow(unused_macros)]
-    macro_rules! count
-    {
-      ( $( $Tts : tt )* ) =>
-      {
-        dbg!( stringify!( $( $Tts )* ) );
-        counter += 1;
-        $( $Tts )*
-      };
-    }
+  #[ allow(unused_macros) ]
+  macro_rules! count
+  {
+   ( $( $Tts: tt )* ) =>
+   {
+  dbg!( stringify!( $( $Tts )* ) );
+  counter += 1;
+  $( $Tts )*
+ };
+ }
 
-    the_module::exposed::fns! {
-      @Callback { count }
-      @Fns
-      {
-        fn f1< T : Copy >( src : T ) -> T
-        {
-          println!( "f1" );
-          src
-        }
-      }
-    };
+  the_module ::exposed ::fns! {
+   @Callback { count }
+   @Fns
+   {
+  fn f1< T: Copy >( src: T ) -> T
+  {
+   println!( "f1" );
+   src
+ }
+ }
+ };
 
-    assert_eq!(counter, 1);
-    f1(1);
-  }
+  assert_eq!(counter, 1);
+  f1(1);
+ }
 
   // test.case( "several, visibility" );
   {
-    let mut counter = 0;
+  let mut counter = 0;
 
-    #[allow(unused_macros)]
-    macro_rules! count
-    {
-      ( $( $Tts : tt )* ) =>
-      {
-        dbg!( stringify!( $( $Tts )* ) );
-        counter += 1;
-        $( $Tts )*
-      };
-    }
+  #[ allow(unused_macros) ]
+  macro_rules! count
+  {
+   ( $( $Tts: tt )* ) =>
+   {
+  dbg!( stringify!( $( $Tts )* ) );
+  counter += 1;
+  $( $Tts )*
+ };
+ }
 
-    the_module::exposed::fns! {
-      @Callback { count }
-      @Fns
-      {
-        pub fn f1( src : i32 ) -> i32
-        {
-          println!( "f1" );
-          src
-        }
-      }
-    };
+  the_module ::exposed ::fns! {
+   @Callback { count }
+   @Fns
+   {
+  pub fn f1( src: i32 ) -> i32
+  {
+   println!( "f1" );
+   src
+ }
+ }
+ };
 
-    assert_eq!(counter, 1);
-    f1(1);
-  }
+  assert_eq!(counter, 1);
+  f1(1);
+ }
 
   // test.case( "several, where with comma" );
   {
-    let mut counter = 0;
+  let mut counter = 0;
 
-    #[allow(unused_macros)]
-    macro_rules! count
-    {
-      ( $( $Tts : tt )* ) =>
-      {
-        dbg!( stringify!( $( $Tts )* ) );
-        counter += 1;
-        $( $Tts )*
-      };
-    }
+  #[ allow(unused_macros) ]
+  macro_rules! count
+  {
+   ( $( $Tts: tt )* ) =>
+   {
+  dbg!( stringify!( $( $Tts )* ) );
+  counter += 1;
+  $( $Tts )*
+ };
+ }
 
-    the_module::exposed::fns! {
-      @Callback { count }
-      @Fns
-      {
-        fn f1< T, >( src : T ) -> T
-        where
-          T : Copy,
-        {
-          println!( "f1" );
-          src
-        }
-      }
-    };
+  the_module ::exposed ::fns! {
+   @Callback { count }
+   @Fns
+   {
+  fn f1< T, >( src: T ) -> T
+  where
+   T: Copy,
+  {
+   println!( "f1" );
+   src
+ }
+ }
+ };
 
-    assert_eq!(counter, 1);
-    f1(1);
-  }
+  assert_eq!(counter, 1);
+  f1(1);
+ }
 
   // test.case( "several, where without comma" );
   {
-    let mut counter = 0;
+  let mut counter = 0;
 
-    #[allow(unused_macros)]
-    macro_rules! count
-    {
-      ( $( $Tts : tt )* ) =>
-      {
-        dbg!( stringify!( $( $Tts )* ) );
-        counter += 1;
-        $( $Tts )*
-      };
-    }
+  #[ allow(unused_macros) ]
+  macro_rules! count
+  {
+   ( $( $Tts: tt )* ) =>
+   {
+  dbg!( stringify!( $( $Tts )* ) );
+  counter += 1;
+  $( $Tts )*
+ };
+ }
 
-    the_module::exposed::fns! {
-      @Callback { count }
-      @Fns
-      {
-        fn f1< T >( src : T ) -> T
-        where
-          T : Copy
-        {
-          println!( "f1" );
-          src
-        }
-      }
-    };
+  the_module ::exposed ::fns! {
+   @Callback { count }
+   @Fns
+   {
+  fn f1< T >( src: T ) -> T
+  where
+   T: Copy
+  {
+   println!( "f1" );
+   src
+ }
+ }
+ };
 
-    assert_eq!(counter, 1);
-    f1(1);
-  }
+  assert_eq!(counter, 1);
+  f1(1);
+ }
 
   //   // test.case( "several, complex parameter" );
   //   {
@@ -285,69 +289,69 @@ fn fns() {
   //
   //     macro_rules! count
   //     {
-  //       ( $( $Tts : tt )* ) =>
+  //       ( $( $Tts: tt )* ) =>
   //       {
   //         dbg!( stringify!( $( $Tts )* ) );
   //         counter += 1;
-  //       };
-  //     }
+  // };
+  // }
   //
-  //     the_module::exposed::fns!
+  //     the_module ::exposed ::fns!
   //     {
   //       @Callback { count }
   //       @Fns
   //       {
-  //         fn f1< T >( src : T ) -> T
+  //         fn f1< T >( src: T ) -> T
   //         where
-  //           T : < Self as From< X > >::Type
+  //           T: < Self as From< X > > ::Type
   //         {
   //           println!( "f1" );
   //           src
-  //         }
-  //       }
-  //     };
+  // }
+  // }
+  // };
   //
   //     a_id!( counter, 1 );
-  //   }
+  // }
 
   // test.case( "several, complex syntax" );
   {
-    let mut counter = 0;
+  let mut counter = 0;
 
-    #[allow(unused_macros)]
-    macro_rules! count
-    {
-      ( $( $Tts : tt )* ) =>
-      {
-        dbg!( stringify!( $( $Tts )* ) );
-        counter += 1;
-        $( $Tts )*
-      };
-    }
+  #[ allow(unused_macros) ]
+  macro_rules! count
+  {
+   ( $( $Tts: tt )* ) =>
+   {
+  dbg!( stringify!( $( $Tts )* ) );
+  counter += 1;
+  $( $Tts )*
+ };
+ }
 
-    // trace_macros!( true );
-    the_module::exposed::fns! {
-      @Callback { count }
-      @Fns
-      {
-        fn f1< T >( src : T ) -> T
-        where
-          T : Copy,
-        {
-          println!( "f1" );
-          src
-        }
-        fn f2< T : Copy >( src : T ) -> T
-        {
-          println!( "f2" );
-          src
-        }
-      }
-    };
-    // trace_macros!( false );
+  // trace_macros!( true );
+  the_module ::exposed ::fns! {
+   @Callback { count }
+   @Fns
+   {
+  fn f1< T >( src: T ) -> T
+  where
+   T: Copy,
+  {
+   println!( "f1" );
+   src
+ }
+  fn f2< T: Copy >( src: T ) -> T
+  {
+   println!( "f2" );
+   src
+ }
+ }
+ };
+  // trace_macros!( false );
 
-    assert_eq!(counter, 2);
-    f1(1);
-    f2(2);
-  }
+  assert_eq!(counter, 2);
+  f1(1);
+  f2(2);
+ }
 }

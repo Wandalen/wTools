@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: Provides a hand-written implementation of the `Former` pattern's static constructors
 //! for zero-field tuple variants, demonstrating the manual implementation corresponding to both
 //! default behavior and the effect of the `#[ scalar ]` attribute.

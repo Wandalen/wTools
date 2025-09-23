@@ -1,27 +1,27 @@
-use core::ops::{ Index, IndexMut };
+use core ::ops :: { Index, IndexMut };
 
 #[ allow( dead_code ) ]
 struct StructNamed< T >
 {
-  a : Vec< T >
+  a: Vec< T >
 }
 
 impl< T > Index< usize > for StructNamed< T >
 {
   type Output = T;
 
-  fn index( &self, index : usize ) -> &Self::Output 
+  fn index( &self, index: usize ) -> &Self ::Output 
   {
-    &self.a[ index ]
-  }
+  &self.a[ index ]
+ }
 }
 
 impl< T > IndexMut< usize > for StructNamed< T >
 {
-  fn index_mut( &mut self, index : usize ) -> &mut Self::Output 
+  fn index_mut( &mut self, index: usize ) -> &mut Self ::Output 
   {
-    &mut self.a[ index ]
-  }
+  &mut self.a[ index ]
+ }
 }
 
 

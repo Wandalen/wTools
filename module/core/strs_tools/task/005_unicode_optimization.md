@@ -37,9 +37,11 @@ use std::arch::x86_64::*;
 /// UTF-8 boundary-aware SIMD operations
 pub struct UnicodeSIMD;
 
-impl UnicodeSIMD {
+impl UnicodeSIMD 
+{
     /// Find Unicode delimiter with boundary checking
-    pub fn find_unicode_delimiter(haystack: &str, needle: &str) -> Option<usize> {
+    pub fn find_unicode_delimiter(haystack: &str, needle: &str) -> Option<usize> 
+{
         // Use SIMD to find byte patterns, then validate UTF-8 boundaries
         let haystack_bytes = haystack.as_bytes();
         let needle_bytes = needle.as_bytes();
@@ -65,7 +67,8 @@ impl UnicodeSIMD {
     }
     
     /// SIMD byte pattern search with UTF-8 awareness
-    unsafe fn simd_find_bytes(haystack: &[u8], needle: &[u8]) -> Option<usize> {
+    unsafe fn simd_find_bytes(haystack: &[u8], needle: &[u8]) -> Option<usize> 
+{
         if haystack.len() < 16 || needle.is_empty() {
             return Self::scalar_find(haystack, needle);
         }
@@ -100,7 +103,8 @@ impl UnicodeSIMD {
     }
     
     /// Check if position is on UTF-8 character boundary
-    fn is_char_boundary(s: &str, index: usize) -> bool {
+    fn is_char_boundary(s: &str, index: usize) -> bool 
+{
         if index == 0 || index >= s.len() {
             return true;
         }
@@ -118,7 +122,8 @@ impl UnicodeSIMD {
 use unicode_segmentation::{UnicodeSegmentation, GraphemeIndices};
 
 /// Grapheme cluster-aware splitting
-pub struct GraphemeSplitIterator<'a> {
+pub struct GraphemeSplitIterator<'a> 
+{
     input: &'a str,
     delimiters: Vec<&'a str>,
     grapheme_indices: std::vec::IntoIter<(usize, &'a str)>,
@@ -126,7 +131,8 @@ pub struct GraphemeSplitIterator<'a> {
 }
 
 impl<'a> GraphemeSplitIterator<'a> {
-    pub fn new(input: &'a str, delimiters: Vec<&'a str>) -> Self {
+    pub fn new(input: &'a str, delimiters: Vec<&'a str>) -> Self 
+{
         let grapheme_indices: Vec<(usize, &str)> = input
             .grapheme_indices(true) // Extended grapheme clusters
             .collect();
@@ -140,7 +146,8 @@ impl<'a> GraphemeSplitIterator<'a> {
     }
     
     /// Find delimiter respecting grapheme boundaries
-    fn find_grapheme_delimiter(&mut self) -> Option<(usize, usize, &'a str)> {
+    fn find_grapheme_delimiter(&mut self) -> Option<(usize, usize, &'a str)> 
+{
         let mut grapheme_buffer = String::new();
         let mut start_pos = self.position;
         
@@ -177,14 +184,17 @@ use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 
 /// Cache for normalized Unicode strings  
-pub struct NormalizationCache {
+pub struct NormalizationCache 
+{
     nfc_cache: RwLock<HashMap<String, String>>,
     nfd_cache: RwLock<HashMap<String, String>>,
     cache_size_limit: usize,
 }
 
-impl NormalizationCache {
-    pub fn new(size_limit: usize) -> Self {
+impl NormalizationCache 
+{
+    pub fn new(size_limit: usize) -> Self 
+{
         Self {
             nfc_cache: RwLock::new(HashMap::new()),
             nfd_cache: RwLock::new(HashMap::new()),
@@ -193,7 +203,8 @@ impl NormalizationCache {
     }
     
     /// Get NFC normalized string with caching
-    pub fn nfc_normalize(&self, input: &str) -> String {
+    pub fn nfc_normalize(&self, input: &str) -> String 
+{
         // Quick check if already normalized
         if input.is_nfc() {
             return input.to_string();
@@ -222,7 +233,8 @@ impl NormalizationCache {
     }
     
     /// Compare strings with normalization
-    pub fn normalized_equals(&self, a: &str, b: &str) -> bool {
+    pub fn normalized_equals(&self, a: &str, b: &str) -> bool 
+{
         if a == b {
             return true; // Fast path for identical strings
         }
@@ -238,7 +250,8 @@ impl NormalizationCache {
 
 ```rust
 /// Unicode-optimized split operations
-pub struct UnicodeSplit<'a> {
+pub struct UnicodeSplit<'a> 
+{
     src: &'a str,
     delimiters: Vec<&'a str>,
     normalization_cache: Option<&'a NormalizationCache>,
@@ -246,7 +259,8 @@ pub struct UnicodeSplit<'a> {
 }
 
 impl<'a> UnicodeSplit<'a> {
-    pub fn new(src: &'a str) -> Self {
+    pub fn new(src: &'a str) -> Self 
+{
         Self {
             src,
             delimiters: Vec::new(),
@@ -255,22 +269,26 @@ impl<'a> UnicodeSplit<'a> {
         }
     }
     
-    pub fn delimeter(mut self, delim: &'a str) -> Self {
+    pub fn delimeter(mut self, delim: &'a str) -> Self 
+{
         self.delimiters.push(delim);
         self
     }
     
-    pub fn with_normalization(mut self, cache: &'a NormalizationCache) -> Self {
+    pub fn with_normalization(mut self, cache: &'a NormalizationCache) -> Self 
+{
         self.normalization_cache = Some(cache);
         self
     }
     
-    pub fn grapheme_aware(mut self) -> Self {
+    pub fn grapheme_aware(mut self) -> Self 
+{
         self.grapheme_aware = true;
         self
     }
     
-    pub fn perform(self) -> Box<dyn Iterator<Item = &'a str> + 'a> {
+    pub fn perform(self) -> Box<dyn Iterator<Item = &'a str> + 'a> 
+{
         if self.grapheme_aware {
             Box::new(GraphemeSplitIterator::new(self.src, self.delimiters))
         } else if self.has_unicode_delimiters() {
@@ -281,7 +299,8 @@ impl<'a> UnicodeSplit<'a> {
         }
     }
     
-    fn has_unicode_delimiters(&self) -> bool {
+    fn has_unicode_delimiters(&self) -> bool 
+{
         self.delimiters.iter().any(|delim| !delim.is_ascii())
     }
 }
@@ -291,7 +310,8 @@ impl<'a> UnicodeSplit<'a> {
 
 ```rust
 /// Fast Unicode character classification using lookup tables
-pub struct UnicodeClassifier {
+pub struct UnicodeClassifier 
+{
     // Pre-computed lookup tables for common ranges
     ascii_table: [CharClass; 128],
     latin1_table: [CharClass; 256],
@@ -299,7 +319,8 @@ pub struct UnicodeClassifier {
 }
 
 #[derive(Copy, Clone, PartialEq)]
-enum CharClass {
+enum CharClass 
+{
     Whitespace,
     Punctuation, 
     Letter,
@@ -308,9 +329,11 @@ enum CharClass {
     Other,
 }
 
-impl UnicodeClassifier {
+impl UnicodeClassifier 
+{
     /// Classify character with optimized lookup
-    pub fn classify_char(&self, ch: char) -> CharClass {
+    pub fn classify_char(&self, ch: char) -> CharClass 
+{
         let code_point = ch as u32;
         
         match code_point {
@@ -321,7 +344,8 @@ impl UnicodeClassifier {
     }
     
     /// SIMD-optimized whitespace detection for Unicode
-    pub fn is_unicode_whitespace_simd(text: &str) -> Vec<bool> {
+    pub fn is_unicode_whitespace_simd(text: &str) -> Vec<bool> 
+{
         let mut results = Vec::with_capacity(text.chars().count());
         
         // Process ASCII characters with SIMD
@@ -394,7 +418,8 @@ impl UnicodeClassifier {
 **Solution**: SIMD-accelerated UTF-8 validation with lookup tables
 ```rust
 /// Fast UTF-8 validation using SIMD
-unsafe fn validate_utf8_simd(bytes: &[u8]) -> bool {
+unsafe fn validate_utf8_simd(bytes: &[u8]) -> bool 
+{
     // Use SIMD instructions to validate UTF-8 sequences
     // Based on algorithms from simdjson and similar libraries
     let mut i = 0;
@@ -415,7 +440,8 @@ unsafe fn validate_utf8_simd(bytes: &[u8]) -> bool {
 **Solution**: Lazy normalization with content analysis
 ```rust
 /// Analyze text to determine if normalization is needed
-fn needs_normalization(&self, text: &str) -> bool {
+fn needs_normalization(&self, text: &str) -> bool 
+{
     // Quick heuristic checks before expensive normalization
     if text.is_ascii() {
         return false; // ASCII is always normalized
@@ -436,7 +462,8 @@ fn needs_normalization(&self, text: &str) -> bool {
 pub fn split_unicode_streaming(
     input: impl Iterator<Item = char>,
     delimiters: &[&str],
-) -> impl Iterator<Item = String> {
+) -> impl Iterator<Item = String> 
+{
     UnicodeStreamSplitter::new(input, delimiters, 64 * 1024) // 64KB buffer
 }
 ```
@@ -455,7 +482,8 @@ pub fn split_unicode_streaming(
 #### Unicode Content Benchmarks
 ```rust
 #[bench]
-fn bench_unicode_split_latin1(b: &mut Bencher) {
+fn bench_unicode_split_latin1(b: &mut Bencher) 
+{
     let input = "café,naïve,résumé,piñata".repeat(1000); // Latin-1 with diacritics
     b.iter(|| {
         let result: Vec<_> = UnicodeSplit::new(&input)
@@ -479,7 +507,8 @@ fn bench_unicode_split_cjk(b: &mut Bencher) {
 }
 
 #[bench]
-fn bench_unicode_split_emoji(b: &mut Bencher) {
+fn bench_unicode_split_emoji(b: &mut Bencher) 
+{
     let input = "😀🎉😎🚀🎯".repeat(200); // Emoji grapheme clusters
     b.iter(|| {
         let result: Vec<_> = UnicodeSplit::new(&input)

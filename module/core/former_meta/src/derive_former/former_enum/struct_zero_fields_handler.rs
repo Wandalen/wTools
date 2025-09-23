@@ -6,107 +6,107 @@
 //!
 //! ## Variant Type Specialization
 //!
-//! **Target Pattern**: `Variant {}` with required `#[ scalar ]` attribute
-//! **Generated Constructor**: `Enum::variant() -> Enum`
-//! **Construction Style**: Direct zero-parameter function call
+//! **Target Pattern** : `Variant {}` with required `#[ scalar ]` attribute
+//! **Generated Constructor** : `Enum ::variant() -> Enum`
+//! **Construction Style** : Direct zero-parameter function call
 //!
 //! ## Key Behavioral Characteristics
 //!
 //! ### Attribute-Driven Activation
-//! - **`#[ scalar ]` Required**: Zero-field struct variants require explicit `#[ scalar ]` attribute
-//! - **No Default Behavior**: Zero-field struct variants must have explicit attribute (compile error otherwise)
-//! - **`#[ subform_scalar ]` Rejection**: Cannot be used with zero-field variants (compile error)
-//! - **No Field Attributes**: No fields present, so field-level attributes not applicable
+//! - **`#[ scalar ]` Required** : Zero-field struct variants require explicit `#[ scalar ]` attribute
+//! - **No Default Behavior** : Zero-field struct variants must have explicit attribute (compile error otherwise)
+//! - **`#[ subform_scalar ]` Rejection** : Cannot be used with zero-field variants (compile error)
+//! - **No Field Attributes** : No fields present, so field-level attributes not applicable
 //!
 //! ### Generated Method Characteristics
-//! - **Zero Parameters**: No parameters required for construction
-//! - **Struct Syntax**: Constructor uses struct-style construction with empty braces
-//! - **Generic Safety**: Complete generic parameter and where clause propagation 
-//! - **Performance**: Direct construction without any overhead
-//! - **Explicit Attribution**: Requires explicit `#[ scalar ]` attribute for clarity
+//! - **Zero Parameters** : No parameters required for construction
+//! - **Struct Syntax** : Constructor uses struct-style construction with empty braces
+//! - **Generic Safety** : Complete generic parameter and where clause propagation 
+//! - **Performance** : Direct construction without any overhead
+//! - **Explicit Attribution** : Requires explicit `#[ scalar ]` attribute for clarity
 //!
 //! ## Critical Pitfalls Resolved
 //!
 //! ### 1. Mandatory Attribute Validation (Critical Prevention)
-//! **Issue Resolved**: Manual implementations allowing zero-field struct variants without explicit attributes
-//! **Root Cause**: Zero-field struct variants are ambiguous without explicit attribute specification
-//! **Solution**: Compile-time validation that requires explicit `#[ scalar ]` attribute
-//! **Prevention**: Clear error messages enforce explicit attribute usage for clarity
+//! **Issue Resolved** : Manual implementations allowing zero-field struct variants without explicit attributes
+//! **Root Cause** : Zero-field struct variants are ambiguous without explicit attribute specification
+//! **Solution** : Compile-time validation that requires explicit `#[ scalar ]` attribute
+//! **Prevention** : Clear error messages enforce explicit attribute usage for clarity
 //!
 //! ```rust,ignore
-//! // Manual Implementation Pitfall:
+//! // Manual Implementation Pitfall :
 //! Variant {},  // ❌ Ambiguous - requires explicit attribute
 //!
-//! // Generated Solution:
+//! // Generated Solution :
 //! #[ scalar ]
 //! Variant {},  // ✅ Explicit attribute required
 //! ```
 //!
 //! ### 2. Attribute Incompatibility Prevention (Critical Prevention)
-//! **Issue Resolved**: Manual implementations allowing incompatible attributes on zero-field struct variants
-//! **Root Cause**: `#[ subform_scalar ]` attribute makes no sense for variants with no fields to form
-//! **Solution**: Compile-time validation that rejects `#[ subform_scalar ]` on zero-field struct variants
-//! **Prevention**: Clear error messages prevent invalid attribute usage
+//! **Issue Resolved** : Manual implementations allowing incompatible attributes on zero-field struct variants
+//! **Root Cause** : `#[ subform_scalar ]` attribute makes no sense for variants with no fields to form
+//! **Solution** : Compile-time validation that rejects `#[ subform_scalar ]` on zero-field struct variants
+//! **Prevention** : Clear error messages prevent invalid attribute usage
 //!
 //! ### 3. Zero-Parameter Struct Construction (Prevention)
-//! **Issue Resolved**: Manual implementations not properly handling zero-parameter struct constructor generation
-//! **Root Cause**: Zero-field struct variants require special handling for parameter-less method generation
-//! **Solution**: Specialized zero-parameter method generation with proper struct construction syntax
-//! **Prevention**: Automated generation ensures correct zero-parameter struct constructor signature
+//! **Issue Resolved** : Manual implementations not properly handling zero-parameter struct constructor generation
+//! **Root Cause** : Zero-field struct variants require special handling for parameter-less method generation
+//! **Solution** : Specialized zero-parameter method generation with proper struct construction syntax
+//! **Prevention** : Automated generation ensures correct zero-parameter struct constructor signature
 //!
 //! ### 4. Generic Parameter Context (Prevention)
-//! **Issue Resolved**: Manual implementations losing generic parameter context in zero-field struct scenarios
-//! **Root Cause**: Even zero-field struct variants need enum's generic parameters for proper type construction
-//! **Solution**: Complete generic parameter preservation through `GenericsRef` infrastructure
-//! **Prevention**: Ensures all generic constraints are properly maintained
+//! **Issue Resolved** : Manual implementations losing generic parameter context in zero-field struct scenarios
+//! **Root Cause** : Even zero-field struct variants need enum's generic parameters for proper type construction
+//! **Solution** : Complete generic parameter preservation through `GenericsRef` infrastructure
+//! **Prevention** : Ensures all generic constraints are properly maintained
 //!
 //! ```rust,ignore
-//! // Manual Implementation Pitfall:
+//! // Manual Implementation Pitfall :
 //! impl MyEnum {
-//!     fn variant() -> MyEnum {  // ❌ Missing generic parameters
-//!         MyEnum::Variant {}
-//!     }
+//!     fn variant() -> MyEnum { // ❌ Missing generic parameters
+//!         MyEnum ::Variant {}
+//! }
 //! }
 //!
-//! // Generated Solution:
-//! impl<T, U> MyEnum<T, U> {
-//!     fn variant() -> MyEnum<T, U> {  // ✅ Proper generic parameters
-//!         MyEnum::Variant {}
-//!     }
+//! // Generated Solution :
+//! impl< T, U > MyEnum< T, U > {
+//!     fn variant() -> MyEnum< T, U > { // ✅ Proper generic parameters
+//!         MyEnum ::Variant {}
+//! }
 //! }
 //! ```
 //!
 //! ### 5. Struct Construction Syntax (Prevention)
-//! **Issue Resolved**: Manual implementations using incorrect construction syntax for empty struct variants
-//! **Root Cause**: Empty struct variants require `{}` syntax rather than `()` syntax
-//! **Solution**: Proper struct variant construction with empty braces
-//! **Prevention**: Generated code uses correct struct construction syntax
+//! **Issue Resolved** : Manual implementations using incorrect construction syntax for empty struct variants
+//! **Root Cause** : Empty struct variants require `{}` syntax rather than `()` syntax
+//! **Solution** : Proper struct variant construction with empty braces
+//! **Prevention** : Generated code uses correct struct construction syntax
 //!
 //! ## Generated Code Architecture
 //!
 //! ### Direct Struct Constructor Pattern
 //! ```rust,ignore
-//! impl<T, U> Enum<T, U> where T: Clone, U: Default {
-//!     pub fn variant() -> Enum<T, U> {
-//!         Enum::Variant {}
-//!     }
+//! impl< T, U > Enum< T, U > where T: Clone, U: Default {
+//!     pub fn variant() -> Enum< T, U > {
+//!         Enum ::Variant {}
+//! }
 //! }
 //! ```
 //!
 //! ### Attribute Requirements
-//! - **`#[ scalar ]` Required**: Zero-field struct variants must have explicit `#[ scalar ]` attribute
-//! - **`#[ subform_scalar ]` Forbidden**: Generates compile error for invalid attribute usage
+//! - **`#[ scalar ]` Required** : Zero-field struct variants must have explicit `#[ scalar ]` attribute
+//! - **`#[ subform_scalar ]` Forbidden** : Generates compile error for invalid attribute usage
 //!
 //! ## Integration Notes
-//! - **Performance Optimized**: Zero-overhead construction for parameter-less struct variants
-//! - **Attribute Validation**: Compile-time validation enforces explicit attribute requirements
-//! - **Generic Safety**: Complete type safety through generic parameter propagation
-//! - **Struct Syntax**: Maintains proper empty struct variant construction syntax
-//! - **Explicit Clarity**: Requires explicit attributes to eliminate ambiguity
+//! - **Performance Optimized** : Zero-overhead construction for parameter-less struct variants
+//! - **Attribute Validation** : Compile-time validation enforces explicit attribute requirements
+//! - **Generic Safety** : Complete type safety through generic parameter propagation
+//! - **Struct Syntax** : Maintains proper empty struct variant construction syntax
+//! - **Explicit Clarity** : Requires explicit attributes to eliminate ambiguity
 
-use super::*;
-use macro_tools::{Result, quote::quote, syn_err};
-use crate::derive_former::raw_identifier_utils::variant_to_method_name;
+use super :: *;
+use macro_tools :: { Result, quote ::quote, syn_err };
+use crate ::derive_former ::raw_identifier_utils ::variant_to_method_name;
 
 /// Generates direct constructor for zero-field struct enum variants with mandatory `#[ scalar ]` attribute.
 ///
@@ -116,86 +116,90 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 ///
 /// ## Generated Infrastructure
 ///
-/// ### Direct Constructor Method:
-/// - **Zero Parameters**: No parameters required for empty struct variant construction
-/// - **Struct Construction**: Uses proper empty struct variant construction syntax `{}`
-/// - **Generic Propagation**: Complete generic parameter and where clause preservation
-/// - **Type Safety**: Proper enum type path construction with generic parameters
-/// - **Performance**: Minimal overhead direct construction
+/// ### Direct Constructor Method :
+/// - **Zero Parameters** : No parameters required for empty struct variant construction
+/// - **Struct Construction** : Uses proper empty struct variant construction syntax `{}`
+/// - **Generic Propagation** : Complete generic parameter and where clause preservation
+/// - **Type Safety** : Proper enum type path construction with generic parameters
+/// - **Performance** : Minimal overhead direct construction
 ///
 /// ## Pitfall Prevention Features
 ///
-/// - **Mandatory Attribute**: Compile-time enforcement of required `#[ scalar ]` attribute
-/// - **Attribute Validation**: Compile-time rejection of invalid `#[ subform_scalar ]` attribute
-/// - **Generic Context**: Complete generic parameter preservation for proper type construction
-/// - **Struct Syntax**: Proper empty struct variant construction with `{}` syntax
-/// - **Naming Consistency**: Systematic `snake_case` conversion for method naming
+/// - **Mandatory Attribute** : Compile-time enforcement of required `#[ scalar ]` attribute
+/// - **Attribute Validation** : Compile-time rejection of invalid `#[ subform_scalar ]` attribute
+/// - **Generic Context** : Complete generic parameter preservation for proper type construction
+/// - **Struct Syntax** : Proper empty struct variant construction with `{}` syntax
+/// - **Naming Consistency** : Systematic `snake_case` conversion for method naming
 ///
 /// ## Generated Method Signature
 /// ```rust,ignore
-/// impl<T, U> Enum<T, U> where T: Clone, U: Default {
-///     pub fn variant() -> Enum<T, U> {
-///         Enum::Variant {}
-///     }
+/// impl< T, U > Enum< T, U > where T: Clone, U: Default {
+///     pub fn variant() -> Enum< T, U > {
+///         Enum ::Variant {}
+/// }
 /// }
 /// ```
 ///
 /// ## Attribute Requirements
-/// - **`#[ scalar ]` Required**: Must be explicitly specified for zero-field struct variants
-/// - **`#[ subform_scalar ]` Forbidden**: Generates compile error for invalid attribute usage
+/// - **`#[ scalar ]` Required** : Must be explicitly specified for zero-field struct variants
+/// - **`#[ subform_scalar ]` Forbidden** : Generates compile error for invalid attribute usage
 ///
 /// ## Parameters
-/// - `_ctx`: Mutable context containing variant information, generics, and output collections
+/// - `_ctx` : Mutable context containing variant information, generics, and output collections
 ///
 /// ## Returns
-/// - `Ok(TokenStream)`: Generated zero-parameter constructor method for the empty struct variant
-/// - `Err(syn::Error)`: If required `#[ scalar ]` attribute is missing or `#[ subform_scalar ]` is incorrectly applied
+/// - `Ok(TokenStream)` : Generated zero-parameter constructor method for the empty struct variant
+/// - `Err(syn ::Error)` : If required `#[ scalar ]` attribute is missing or `#[ subform_scalar ]` is incorrectly applied
 ///
 /// ## Implementation Status
 /// This handler is currently a placeholder implementation that will be completed in future increments
 /// as the enum Former generation system is fully developed.
-pub fn handle(ctx: &mut EnumVariantHandlerContext<'_>) -> Result< proc_macro2::TokenStream > {
+pub fn handle(ctx: &mut EnumVariantHandlerContext< '_ >) -> Result< proc_macro2 ::TokenStream > 
+{
   let variant_name = &ctx.variant.ident;
   let method_name = variant_to_method_name(variant_name);
   let enum_name = ctx.enum_name;
   let vis = ctx.vis;
 
   // Rule: Zero-field struct variants require #[ scalar ] attribute for direct construction
-  if ctx.variant_attrs.scalar.is_none() {
-    return Err(syn_err!(
-      ctx.variant,
-      "Zero-field struct variants require `#[ scalar ]` attribute for direct construction."
-    ));
-  }
+  if ctx.variant_attrs.scalar.is_none() 
+  {
+  return Err(syn_err!(
+   ctx.variant,
+   "Zero-field struct variants require `#[ scalar ]` attribute for direct construction."
+ ));
+ }
 
   // Rule: #[ subform_scalar ] on zero-field struct variants should cause a compile error
-  if ctx.variant_attrs.subform_scalar.is_some() {
-    return Err(syn_err!(
-      ctx.variant,
-      "#[ subform_scalar ] cannot be used on zero-field struct variants."
-    ));
-  }
+  if ctx.variant_attrs.subform_scalar.is_some() 
+  {
+  return Err(syn_err!(
+   ctx.variant,
+   "#[ subform_scalar ] cannot be used on zero-field struct variants."
+ ));
+ }
 
   // Generate standalone constructor if #[ standalone_constructors ] is present
-  if ctx.struct_attrs.standalone_constructors.is_some() {
-    let standalone_constructor = quote! {
-      #[ inline( always ) ]
-      #vis fn #method_name() -> #enum_name
-      {
-        #enum_name::#variant_name {}
-      }
-    };
-    ctx.standalone_constructors.push(standalone_constructor);
-  }
+  if ctx.struct_attrs.standalone_constructors.is_some() 
+  {
+  let standalone_constructor = quote! {
+   #[ inline( always ) ]
+   #vis fn #method_name() -> #enum_name
+   {
+  #enum_name :: #variant_name {}
+ }
+ };
+  ctx.standalone_constructors.push(standalone_constructor);
+ }
 
   // Generate direct constructor method for zero-field struct variant
   let result = quote! {
-    #[ inline( always ) ]
-    #vis fn #method_name() -> #enum_name
-    {
-      #enum_name::#variant_name {}
-    }
-  };
+  #[ inline( always ) ]
+  #vis fn #method_name() -> #enum_name
+  {
+   #enum_name :: #variant_name {}
+ }
+ };
 
   Ok(result)
 }

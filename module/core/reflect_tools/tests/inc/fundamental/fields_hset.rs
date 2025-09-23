@@ -1,60 +1,57 @@
 #[ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 
-use the_module::
+use the_module ::
 {
   Fields,
 };
 
-// xxx : implement for other collections
+// xxx: implement for other collections
 
-use std::
+use std ::
 {
-  borrow::Cow,
+  borrow ::Cow,
+  collections ::HashSet,
 };
 
 #[ test ]
 fn hset_string_fields()
 {
-  let collection : HashSet<  String  > = hset!
-  [
-    "a".to_string(),
-    "b".to_string(),
-  ];
+  let mut collection = HashSet :: < String > ::new();
+  collection.insert( "a".to_string() );
+  collection.insert( "b".to_string() );
 
   // k, v
-  let got : HashSet<  _  > = Fields::< usize, &str >::fields( &collection ).collect();
+  let got: HashSet< _ > = Fields :: < usize, &str > ::fields( &collection ).collect();
   assert_eq!( got.len(), 2 );
   assert!( got.contains(&( 0, "a" ) ) || got.contains(&( 1, "a" ) ) );
   assert!( got.contains(&( 0, "b" ) ) || got.contains(&( 1, "b" ) ) );
 
   // k, Option< Cow< '_, str > >
-  let got : HashSet<  _  > = Fields::< usize, Option< Cow< '_, str > > >::fields( &collection ).collect();
+  let got: HashSet< _ > = Fields :: < usize, Option< Cow< '_, str > > > ::fields( &collection ).collect();
   assert_eq!( got.len(), 2 );
-  assert!( got.contains(&( 0, Some( Cow::Borrowed( "a" ) ) ) ) || got.contains(&( 1, Some( Cow::Borrowed( "a" ) ) ) ) );
-  assert!( got.contains(&( 0, Some( Cow::Borrowed( "b" ) ) ) ) || got.contains(&( 1, Some( Cow::Borrowed( "b" ) ) ) ) );
+  assert!( got.contains(&( 0, Some( Cow ::Borrowed( "a" ) ) ) ) || got.contains(&( 1, Some( Cow ::Borrowed( "a" ) ) ) ) );
+  assert!( got.contains(&( 0, Some( Cow ::Borrowed( "b" ) ) ) ) || got.contains(&( 1, Some( Cow ::Borrowed( "b" ) ) ) ) );
 
 }
 
 #[ test ]
 fn hset_str_fields()
 {
-  let collection : HashSet<  &str  > = hset!
-  [
-    "a",
-    "b",
-  ];
+  let mut collection = HashSet :: < &str > ::new();
+  collection.insert( "a" );
+  collection.insert( "b" );
 
   // k, v
-  let got : HashSet<  _  > = Fields::< usize, &str >::fields( &collection ).collect();
+  let got: HashSet< _ > = Fields :: < usize, &str > ::fields( &collection ).collect();
   assert_eq!( got.len(), 2 );
   assert!( got.contains(&( 0, "a" ) ) || got.contains(&( 1, "a" ) ) );
   assert!( got.contains(&( 0, "b" ) ) || got.contains(&( 1, "b" ) ) );
 
   // k, Option< Cow< '_, str > >
-  let got : HashSet<  _  > = Fields::< usize, Option< Cow< '_, str > > >::fields( &collection ).collect();
+  let got: HashSet< _ > = Fields :: < usize, Option< Cow< '_, str > > > ::fields( &collection ).collect();
   assert_eq!( got.len(), 2 );
-  assert!( got.contains(&( 0, Some( Cow::Borrowed( "a" ) ) ) ) || got.contains(&( 1, Some( Cow::Borrowed( "a" ) ) ) ) );
-  assert!( got.contains(&( 0, Some( Cow::Borrowed( "b" ) ) ) ) || got.contains(&( 1, Some( Cow::Borrowed( "b" ) ) ) ) );
+  assert!( got.contains(&( 0, Some( Cow ::Borrowed( "a" ) ) ) ) || got.contains(&( 1, Some( Cow ::Borrowed( "a" ) ) ) ) );
+  assert!( got.contains(&( 0, Some( Cow ::Borrowed( "b" ) ) ) ) || got.contains(&( 1, Some( Cow ::Borrowed( "b" ) ) ) ) );
 
 }

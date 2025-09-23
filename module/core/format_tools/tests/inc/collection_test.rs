@@ -1,20 +1,17 @@
 #[ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 
-use the_module::
+use the_module ::
 {
   AsTable,
   TableRows,
   WithRef,
-  // the_module::print,
+  // the_module ::print,
 };
 
-use std::
-{
-  collections::HashMap,
-};
+use collection_tools ::HashMap;
 
-use test_object::TestObject;
+use test_object ::TestObject;
 
 //
 
@@ -22,53 +19,55 @@ use test_object::TestObject;
 fn dlist_basic()
 {
 
-  let data : collection_tools::Dlist< TestObject > = dlist!
+  let data = dlist!
   {
-    TestObject
-    {
-      id : "1".to_string(),
-      created_at : 1627845583,
-      file_ids : vec![ "file1".to_string(), "file2".to_string() ],
-      tools : None
-    },
-    TestObject
-    {
-      id : "2".to_string(),
-      created_at : 13,
-      file_ids : vec![ "file3".to_string(), "file4\nmore details".to_string() ],
-      tools : Some
-      (
-        vec!
-        [
-          {
-            let mut map = HashMap::new();
-            map.insert( "tool1".to_string(), "value1".to_string() );
-            map
-          },
-          {
-            let mut map = HashMap::new();
-            map.insert( "tool2".to_string(), "value2".to_string() );
-            map
-          }
-        ]
-      ),
-    },
-  };
+  TestObject
+  {
+   id: "1".to_string(),
+   created_at: 1627845583,
+   file_ids: vec![ "file1".to_string(), "file2".to_string() ],
+   tools: None
+ },
+  TestObject
+  {
+   id: "2".to_string(),
+   created_at: 13,
+   file_ids: vec![ "file3".to_string(), "file4\nmore details".to_string() ],
+   tools: Some
+   (
+  vec!
+  [
+   {
+  let mut map = HashMap ::new();
+  map.insert( "tool1".to_string(), "value1".to_string() );
+  map
+ },
+   {
+  let mut map = HashMap ::new();
+  map.insert( "tool2".to_string(), "value2".to_string() );
+  map
+ }
+ ]
+ ),
+ }
+ };
 
-  use the_module::TableFormatter;
-  let _as_table : AsTable< '_, Vec< TestObject >, &str, TestObject, str> = AsTable::new( &data );
-  let as_table = AsTable::new( &data );
+  use the_module ::TableFormatter;
+  let _as_table: AsTable< '_, _, usize, TestObject, str > = AsTable ::new( &data );
+  let as_table: AsTable< '_, _, usize, TestObject, str > = AsTable ::new( &data );
 
-  let rows = TableRows::rows( &as_table );
+  let rows = TableRows ::rows( &as_table );
   assert_eq!( rows.len(), 2 );
 
-  let mut output = String::new();
-  let mut context = the_module::print::Context::new( &mut output, Default::default() );
-  let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let mut output = String ::new();
+  let mut context = the_module ::print ::Context ::new( &mut output, Default ::default() );
+  let _got = the_module ::TableFormatter ::fmt( &as_table, &mut context );
   let got = as_table.table_to_string();
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
-  assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
-  assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
+
+
+  assert!( got.contains( "│ 2  │     13     │ [                          │ [                          │" ) );
+  assert!( got.contains( "│ 1  │ 1627845583 │        [                   │                            │" ) );
 
 }
 
@@ -78,53 +77,58 @@ fn dlist_basic()
 fn hmap_basic()
 {
 
-  let data : collection_tools::HashMap<  &str, TestObject  > = hmap!
+  let data_raw = hmap!
   {
-    "a" => TestObject
-    {
-      id : "1".to_string(),
-      created_at : 1627845583,
-      file_ids : vec![ "file1".to_string(), "file2".to_string() ],
-      tools : None
-    },
-    "b" => TestObject
-    {
-      id : "2".to_string(),
-      created_at : 13,
-      file_ids : vec![ "file3".to_string(), "file4\nmore details".to_string() ],
-      tools : Some
-      (
-        vec!
-        [
-          {
-            let mut map = HashMap::new();
-            map.insert( "tool1".to_string(), "value1".to_string() );
-            map
-          },
-          {
-            let mut map = HashMap::new();
-            map.insert( "tool2".to_string(), "value2".to_string() );
-            map
-          }
-        ]
-      ),
-    },
-  };
+  "a" => TestObject
+  {
+   id: "1".to_string(),
+   created_at: 1627845583,
+   file_ids: vec![ "file1".to_string(), "file2".to_string() ],
+   tools: None
+ },
+  "b" => TestObject
+  {
+   id: "2".to_string(),
+   created_at: 13,
+   file_ids: vec![ "file3".to_string(), "file4\nmore details".to_string() ],
+   tools: Some
+   (
+  vec!
+  [
+   {
+  let mut map = HashMap ::new();
+  map.insert( "tool1".to_string(), "value1".to_string() );
+  map
+ },
+   {
+  let mut map = HashMap ::new();
+  map.insert( "tool2".to_string(), "value2".to_string() );
+  map
+ }
+ ]
+ ),
+ }
+ };
 
-  use the_module::TableFormatter;
-  let _as_table : AsTable< '_, HashMap<  &str, TestObject  >, &str, TestObject, str> = AsTable::new( &data );
-  let as_table = AsTable::new( &data );
+  // Convert test_tools HashMap to std HashMap for Fields trait compatibility
+  let data: HashMap< &str, TestObject > = data_raw.into_iter().collect();
 
-  let rows = TableRows::rows( &as_table );
+  use the_module ::TableFormatter;
+  let _as_table: AsTable< '_, _, &str, TestObject, str > = AsTable ::new( &data );
+  let as_table: AsTable< '_, _, &str, TestObject, str > = AsTable ::new( &data );
+
+  let rows = TableRows ::rows( &as_table );
   assert_eq!( rows.len(), 2 );
 
-  let mut output = String::new();
-  let mut context = the_module::print::Context::new( &mut output, Default::default() );
-  let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let mut output = String ::new();
+  let mut context = the_module ::print ::Context ::new( &mut output, Default ::default() );
+  let _got = the_module ::TableFormatter ::fmt( &as_table, &mut context );
   let got = as_table.table_to_string();
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
-  assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
-  assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
+
+
+  assert!( got.contains( "│ 2  │     13     │ [                          │ [                          │" ) );
+  assert!( got.contains( "│ 1  │ 1627845583 │        [                   │                            │" ) );
 
 }
 
@@ -134,53 +138,58 @@ fn hmap_basic()
 fn bmap_basic()
 {
 
-  let data : Bmap< &str, TestObject > = bmap!
+  let data_raw = bmap!
   {
-    "a" => TestObject
-    {
-      id : "1".to_string(),
-      created_at : 1627845583,
-      file_ids : vec![ "file1".to_string(), "file2".to_string() ],
-      tools : None
-    },
-    "b" => TestObject
-    {
-      id : "2".to_string(),
-      created_at : 13,
-      file_ids : vec![ "file3".to_string(), "file4\nmore details".to_string() ],
-      tools : Some
-      (
-        vec!
-        [
-          {
-            let mut map = HashMap::new();
-            map.insert( "tool1".to_string(), "value1".to_string() );
-            map
-          },
-          {
-            let mut map = HashMap::new();
-            map.insert( "tool2".to_string(), "value2".to_string() );
-            map
-          }
-        ]
-      ),
-    },
-  };
+  "a" => TestObject
+  {
+   id: "1".to_string(),
+   created_at: 1627845583,
+   file_ids: vec![ "file1".to_string(), "file2".to_string() ],
+   tools: None
+ },
+  "b" => TestObject
+  {
+   id: "2".to_string(),
+   created_at: 13,
+   file_ids: vec![ "file3".to_string(), "file4\nmore details".to_string() ],
+   tools: Some
+   (
+  vec!
+  [
+   {
+  let mut map = HashMap ::new();
+  map.insert( "tool1".to_string(), "value1".to_string() );
+  map
+ },
+   {
+  let mut map = HashMap ::new();
+  map.insert( "tool2".to_string(), "value2".to_string() );
+  map
+ }
+ ]
+ ),
+ }
+ };
 
-  use the_module::TableFormatter;
-  let _as_table : AsTable< '_, Bmap< &str, TestObject >, &str, TestObject, str> = AsTable::new( &data );
-  let as_table = AsTable::new( &data );
+  // Convert test_tools BTreeMap to std BTreeMap for Fields trait compatibility  
+  let data: std ::collections ::BTreeMap< &str, TestObject > = data_raw.into_iter().collect();
 
-  let rows = TableRows::rows( &as_table );
+  use the_module ::TableFormatter;
+  let _as_table: AsTable< '_, std ::collections ::BTreeMap<&str, TestObject >, &str, TestObject, str> = AsTable ::new( &data );
+  let as_table: AsTable< '_, _, &str, TestObject, str > = AsTable ::new( &data );
+
+  let rows = TableRows ::rows( &as_table );
   assert_eq!( rows.len(), 2 );
 
-  let mut output = String::new();
-  let mut context = the_module::print::Context::new( &mut output, Default::default() );
-  let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let mut output = String ::new();
+  let mut context = the_module ::print ::Context ::new( &mut output, Default ::default() );
+  let _got = the_module ::TableFormatter ::fmt( &as_table, &mut context );
   let got = as_table.table_to_string();
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
-  assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
-  assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
+
+
+  assert!( got.contains( "│ 2  │     13     │ [                          │ [                          │" ) );
+  assert!( got.contains( "│ 1  │ 1627845583 │        [                   │                            │" ) );
 
 }
 
@@ -188,53 +197,55 @@ fn bmap_basic()
 fn bset_basic()
 {
 
-  let data : collection_tools::Bset< TestObject > = bset!
+  let data = bset!
   {
-    TestObject
-    {
-      id : "1".to_string(),
-      created_at : 1627845583,
-      file_ids : vec![ "file1".to_string(), "file2".to_string() ],
-      tools : None
-    },
-    TestObject
-    {
-      id : "2".to_string(),
-      created_at : 13,
-      file_ids : vec![ "file3".to_string(), "file4\nmore details".to_string() ],
-      tools : Some
-      (
-        vec!
-        [
-          {
-            let mut map = HashMap::new();
-            map.insert( "tool1".to_string(), "value1".to_string() );
-            map
-          },
-          {
-            let mut map = HashMap::new();
-            map.insert( "tool2".to_string(), "value2".to_string() );
-            map
-          }
-        ]
-      ),
-    },
-  };
+  TestObject
+  {
+   id: "1".to_string(),
+   created_at: 1627845583,
+   file_ids: vec![ "file1".to_string(), "file2".to_string() ],
+   tools: None
+ },
+  TestObject
+  {
+   id: "2".to_string(),
+   created_at: 13,
+   file_ids: vec![ "file3".to_string(), "file4\nmore details".to_string() ],
+   tools: Some
+   (
+  vec!
+  [
+   {
+  let mut map = HashMap ::new();
+  map.insert( "tool1".to_string(), "value1".to_string() );
+  map
+ },
+   {
+  let mut map = HashMap ::new();
+  map.insert( "tool2".to_string(), "value2".to_string() );
+  map
+ }
+ ]
+ ),
+ }
+ };
 
-  use the_module::TableFormatter;
-  let _as_table : AsTable< '_, BTreeSet<  TestObject  >, &str, TestObject, str> = AsTable::new( &data );
-  let as_table = AsTable::new( &data );
+  use the_module ::TableFormatter;
+  let _as_table: AsTable< '_, BTreeSet< TestObject >, &str, TestObject, str> = AsTable ::new( &data );
+  let as_table: AsTable< '_, _, usize, TestObject, str > = AsTable ::new( &data );
 
-  let rows = TableRows::rows( &as_table );
+  let rows = TableRows ::rows( &as_table );
   assert_eq!( rows.len(), 2 );
 
-  let mut output = String::new();
-  let mut context = the_module::print::Context::new( &mut output, Default::default() );
-  let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let mut output = String ::new();
+  let mut context = the_module ::print ::Context ::new( &mut output, Default ::default() );
+  let _got = the_module ::TableFormatter ::fmt( &as_table, &mut context );
   let got = as_table.table_to_string();
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
-  assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
-  assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
+
+
+  assert!( got.contains( "│ 2  │     13     │ [                          │ [                          │" ) );
+  assert!( got.contains( "│ 1  │ 1627845583 │        [                   │                            │" ) );
 
 }
 
@@ -242,53 +253,55 @@ fn bset_basic()
 fn deque_basic()
 {
 
-  let data : collection_tools::Deque< TestObject > = deque!
+  let data = deque!
   {
-    TestObject
-    {
-      id : "1".to_string(),
-      created_at : 1627845583,
-      file_ids : vec![ "file1".to_string(), "file2".to_string() ],
-      tools : None
-    },
-    TestObject
-    {
-      id : "2".to_string(),
-      created_at : 13,
-      file_ids : vec![ "file3".to_string(), "file4\nmore details".to_string() ],
-      tools : Some
-      (
-        vec!
-        [
-          {
-            let mut map = HashMap::new();
-            map.insert( "tool1".to_string(), "value1".to_string() );
-            map
-          },
-          {
-            let mut map = HashMap::new();
-            map.insert( "tool2".to_string(), "value2".to_string() );
-            map
-          }
-        ]
-      ),
-    },
-  };
+  TestObject
+  {
+   id: "1".to_string(),
+   created_at: 1627845583,
+   file_ids: vec![ "file1".to_string(), "file2".to_string() ],
+   tools: None
+ },
+  TestObject
+  {
+   id: "2".to_string(),
+   created_at: 13,
+   file_ids: vec![ "file3".to_string(), "file4\nmore details".to_string() ],
+   tools: Some
+   (
+  vec!
+  [
+   {
+  let mut map = HashMap ::new();
+  map.insert( "tool1".to_string(), "value1".to_string() );
+  map
+ },
+   {
+  let mut map = HashMap ::new();
+  map.insert( "tool2".to_string(), "value2".to_string() );
+  map
+ }
+ ]
+ ),
+ }
+ };
 
-  use the_module::TableFormatter;
-  let _as_table : AsTable< '_, VecDeque< TestObject >, &str, TestObject, str> = AsTable::new( &data );
-  let as_table = AsTable::new( &data );
+  use the_module ::TableFormatter;
+  let _as_table: AsTable< '_, VecDeque< TestObject >, &str, TestObject, str> = AsTable ::new( &data );
+  let as_table: AsTable< '_, _, usize, TestObject, str > = AsTable ::new( &data );
 
-  let rows = TableRows::rows( &as_table );
+  let rows = TableRows ::rows( &as_table );
   assert_eq!( rows.len(), 2 );
 
-  let mut output = String::new();
-  let mut context = the_module::print::Context::new( &mut output, Default::default() );
-  let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let mut output = String ::new();
+  let mut context = the_module ::print ::Context ::new( &mut output, Default ::default() );
+  let _got = the_module ::TableFormatter ::fmt( &as_table, &mut context );
   let got = as_table.table_to_string();
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
-  assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
-  assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
+
+
+  assert!( got.contains( "│ 2  │     13     │ [                          │ [                          │" ) );
+  assert!( got.contains( "│ 1  │ 1627845583 │        [                   │                            │" ) );
 
 }
 
@@ -296,53 +309,58 @@ fn deque_basic()
 fn hset_basic()
 {
 
-  let data : collection_tools::Hset< TestObject > = hset!
+  let data_raw = hset!
   {
-    TestObject
-    {
-      id : "1".to_string(),
-      created_at : 1627845583,
-      file_ids : vec![ "file1".to_string(), "file2".to_string() ],
-      tools : None
-    },
-    TestObject
-    {
-      id : "2".to_string(),
-      created_at : 13,
-      file_ids : vec![ "file3".to_string(), "file4\nmore details".to_string() ],
-      tools : Some
-      (
-        vec!
-        [
-          {
-            let mut map = HashMap::new();
-            map.insert( "tool1".to_string(), "value1".to_string() );
-            map
-          },
-          {
-            let mut map = HashMap::new();
-            map.insert( "tool2".to_string(), "value2".to_string() );
-            map
-          }
-        ]
-      ),
-    },
-  };
+  TestObject
+  {
+   id: "1".to_string(),
+   created_at: 1627845583,
+   file_ids: vec![ "file1".to_string(), "file2".to_string() ],
+   tools: None
+ },
+  TestObject
+  {
+   id: "2".to_string(),
+   created_at: 13,
+   file_ids: vec![ "file3".to_string(), "file4\nmore details".to_string() ],
+   tools: Some
+   (
+  vec!
+  [
+   {
+  let mut map = HashMap ::new();
+  map.insert( "tool1".to_string(), "value1".to_string() );
+  map
+ },
+   {
+  let mut map = HashMap ::new();
+  map.insert( "tool2".to_string(), "value2".to_string() );
+  map
+ }
+ ]
+ ),
+ }
+ };
 
-  use the_module::TableFormatter;
-  let _as_table : AsTable< '_, HashSet<  TestObject  >, &str, TestObject, str> = AsTable::new( &data );
-  let as_table = AsTable::new( &data );
+  // Convert test_tools HashSet to std HashSet for Fields trait compatibility
+  let data: std ::collections ::HashSet< TestObject > = data_raw.into_iter().collect();
 
-  let rows = TableRows::rows( &as_table );
+  use the_module ::TableFormatter;
+  let _as_table: AsTable< '_, std ::collections ::HashSet<TestObject >, usize, TestObject, str> = AsTable ::new( &data );
+  let as_table: AsTable< '_, _, usize, TestObject, str > = AsTable ::new( &data );
+
+  let rows = TableRows ::rows( &as_table );
   assert_eq!( rows.len(), 2 );
 
-  let mut output = String::new();
-  let mut context = the_module::print::Context::new( &mut output, Default::default() );
-  let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let mut output = String ::new();
+  let mut context = the_module ::print ::Context ::new( &mut output, Default ::default() );
+  let _got = the_module ::TableFormatter ::fmt( &as_table, &mut context );
   let got = as_table.table_to_string();
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
-  assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
-  assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
+
+
+  assert!( got.contains( "│ 2  │     13     │ [                          │ [                          │" ) );
+  assert!( got.contains( "│ 1  │ 1627845583 │        [                   │                            │" ) );
 
 }
 
@@ -350,91 +368,93 @@ fn hset_basic()
 fn llist_basic()
 {
 
-  let data : collection_tools::Llist< TestObject > = llist!
+  let data = llist!
   {
-    TestObject
-    {
-      id : "1".to_string(),
-      created_at : 1627845583,
-      file_ids : vec![ "file1".to_string(), "file2".to_string() ],
-      tools : None
-    },
-    TestObject
-    {
-      id : "2".to_string(),
-      created_at : 13,
-      file_ids : vec![ "file3".to_string(), "file4\nmore details".to_string() ],
-      tools : Some
-      (
-        vec!
-        [
-          {
-            let mut map = HashMap::new();
-            map.insert( "tool1".to_string(), "value1".to_string() );
-            map
-          },
-          {
-            let mut map = HashMap::new();
-            map.insert( "tool2".to_string(), "value2".to_string() );
-            map
-          }
-        ]
-      ),
-    },
-  };
+  TestObject
+  {
+   id: "1".to_string(),
+   created_at: 1627845583,
+   file_ids: vec![ "file1".to_string(), "file2".to_string() ],
+   tools: None
+ },
+  TestObject
+  {
+   id: "2".to_string(),
+   created_at: 13,
+   file_ids: vec![ "file3".to_string(), "file4\nmore details".to_string() ],
+   tools: Some
+   (
+  vec!
+  [
+   {
+  let mut map = HashMap ::new();
+  map.insert( "tool1".to_string(), "value1".to_string() );
+  map
+ },
+   {
+  let mut map = HashMap ::new();
+  map.insert( "tool2".to_string(), "value2".to_string() );
+  map
+ }
+ ]
+ ),
+ }
+ };
 
-  use the_module::TableFormatter;
-  let _as_table : AsTable< '_, LinkedList< TestObject >, &str, TestObject, str> = AsTable::new( &data );
-  let as_table = AsTable::new( &data );
+  use the_module ::TableFormatter;
+  let _as_table: AsTable< '_, LinkedList< TestObject >, &str, TestObject, str> = AsTable ::new( &data );
+  let as_table: AsTable< '_, _, usize, TestObject, str > = AsTable ::new( &data );
 
-  let rows = TableRows::rows( &as_table );
+  let rows = TableRows ::rows( &as_table );
   assert_eq!( rows.len(), 2 );
 
-  let mut output = String::new();
-  let mut context = the_module::print::Context::new( &mut output, Default::default() );
-  let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let mut output = String ::new();
+  let mut context = the_module ::print ::Context ::new( &mut output, Default ::default() );
+  let _got = the_module ::TableFormatter ::fmt( &as_table, &mut context );
   let got = as_table.table_to_string();
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
-  assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
-  assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
+
+
+  assert!( got.contains( "│ 2  │     13     │ [                          │ [                          │" ) );
+  assert!( got.contains( "│ 1  │ 1627845583 │        [                   │                            │" ) );
 
 }
 
-// qqq : xxx : implement for other containers
+// qqq: xxx: implement for other containers
 
 #[ test ]
 fn vec_of_hashmap()
 {
-  let data : Vec< HashMap<  String, String  > > = vec!
+  let data = vec!
   [
-    {
-      let mut map = HashMap::new();
-      map.insert( "id".to_string(), "1".to_string() );
-      map.insert( "created_at".to_string(), "1627845583".to_string() );
-      map
-    },
-    {
-      let mut map = HashMap::new();
-      map.insert( "id".to_string(), "2".to_string() );
-      map.insert( "created_at".to_string(), "13".to_string() );
-      map
-    },
-  ];
+  {
+   let mut map = HashMap ::new();
+   map.insert( "id".to_string(), "1".to_string() );
+   map.insert( "created_at".to_string(), "1627845583".to_string() );
+   map
+ },
+  {
+   let mut map = HashMap ::new();
+   map.insert( "id".to_string(), "2".to_string() );
+   map.insert( "created_at".to_string(), "13".to_string() );
+   map
+ },
+ ];
 
-  use std::borrow::Cow;
+  use std ::borrow ::Cow;
 
-  use the_module::TableFormatter;
+  use the_module ::TableFormatter;
 
-  let _as_table : AsTable< '_, Vec< HashMap<  String, String  > >, &str, HashMap<  String, String  >, str> = AsTable::new( &data );
-  let as_table = AsTable::new( &data );
+  let _as_table: AsTable< '_, Vec< HashMap< String, String > >, usize, HashMap< String, String >, str> = AsTable ::new( &data );
+  let as_table: AsTable< '_, _, usize, HashMap<String, String >, str > = AsTable ::new( &data );
 
-  let rows = TableRows::rows( &as_table );
+  let rows = TableRows ::rows( &as_table );
   assert_eq!( rows.len(), 2 );
 
-  let mut output = String::new();
-  let mut context = the_module::print::Context::new( &mut output, Default::default() );
+  let mut output = String ::new();
+  let mut context = the_module ::print ::Context ::new( &mut output, Default ::default() );
 
-  let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let _got = the_module ::TableFormatter ::fmt( &as_table, &mut context );
 
   let got = as_table.table_to_string();
 

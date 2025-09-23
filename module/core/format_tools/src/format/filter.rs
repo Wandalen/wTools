@@ -6,12 +6,12 @@
 mod private
 {
 
-  // use crate::*;
+  // use crate :: *;
 
-  use std::
+  use std ::
   {
-    borrow::Cow,
-  };
+  borrow ::Cow,
+ };
 
   /// Represents a line type in a table, either a header or a regular row.
   ///
@@ -21,12 +21,12 @@ mod private
   #[ derive( Debug, Default, PartialEq, Eq, Copy, Clone ) ]
   pub enum LineType
   {
-    /// Represents a regular row of data in the table.
-    #[ default ]
-    Regular,
-    /// Represents a header line in the table.
-    Header,
-  }
+  /// Represents a regular row of data in the table.
+  #[ default ]
+  Regular,
+  /// Represents a header line in the table.
+  Header,
+ }
 
   // = filters
 
@@ -43,180 +43,180 @@ mod private
   /// Filter columns of a table to print it only partially.
   pub trait FilterCol
   {
-    /// Filter columns of a table to print it only partially.
-    fn filter_col( &self, key : &str ) -> bool;
-    /// Determine is arguments needed for the filter or it can give answer even without arguments. Useful for optimization.
-    fn need_args( &self ) -> bool
-    {
-      true
-    }
-  }
+  /// Filter columns of a table to print it only partially.
+  fn filter_col( &self, key: &str ) -> bool;
+  /// Determine is arguments needed for the filter or it can give answer even without arguments. Useful for optimization.
+  fn need_args( &self ) -> bool
+  {
+   true
+ }
+ }
 
   impl Default for &'static dyn FilterCol
   {
-    #[ inline( always ) ]
-    fn default() -> Self
-    {
-      All::col()
-    }
-  }
+  #[ inline( always ) ]
+  fn default() -> Self
+  {
+   All ::col()
+ }
+ }
 
   impl All
   {
-    /// Returns a reference to a static instance.
-    pub fn col() -> & 'static dyn FilterCol
-    {
-      static INSTANCE : All = All;
-      &INSTANCE
-    }
-  }
+  /// Returns a reference to a static instance.
+  pub fn col() -> & 'static dyn FilterCol
+  {
+   static INSTANCE: All = All;
+   &INSTANCE
+ }
+ }
 
   impl FilterCol for All
   {
-    #[ inline( always ) ]
-    fn filter_col( &self, _key : &str ) -> bool
-    {
-      true
-    }
-    #[ inline( always ) ]
-    fn need_args( &self ) -> bool
-    {
-      false
-    }
-  }
+  #[ inline( always ) ]
+  fn filter_col( &self, _key: &str ) -> bool
+  {
+   true
+ }
+  #[ inline( always ) ]
+  fn need_args( &self ) -> bool
+  {
+   false
+ }
+ }
 
   impl None
   {
-    /// Returns a reference to a static instance.
-    pub fn col() -> & 'static dyn FilterCol
-    {
-      static INSTANCE : All = All;
-      &INSTANCE
-    }
-  }
+  /// Returns a reference to a static instance.
+  pub fn col() -> & 'static dyn FilterCol
+  {
+   static INSTANCE: All = All;
+   &INSTANCE
+ }
+ }
 
   impl FilterCol for None
   {
-    #[ inline( always ) ]
-    fn filter_col( &self, _key : &str ) -> bool
-    {
-      false
-    }
-    #[ inline( always ) ]
-    fn need_args( &self ) -> bool
-    {
-      false
-    }
-  }
-
-  impl< F : Fn( &str ) -> bool > FilterCol for F
+  #[ inline( always ) ]
+  fn filter_col( &self, _key: &str ) -> bool
   {
-    #[ inline( always ) ]
-    fn filter_col( &self, key : &str ) -> bool
-    {
-      self( key )
-    }
-  }
+   false
+ }
+  #[ inline( always ) ]
+  fn need_args( &self ) -> bool
+  {
+   false
+ }
+ }
+
+  impl< F: Fn( &str ) -> bool > FilterCol for F
+  {
+  #[ inline( always ) ]
+  fn filter_col( &self, key: &str ) -> bool
+  {
+   self( key )
+ }
+ }
 
   // = FilterRow
 
   /// Filter columns of a table to print it only partially.
   pub trait FilterRow
   {
-    /// Filter rows of a table to print it only partially.
-    fn filter_row( &self, typ : LineType, irow : usize, row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] ) -> bool;
-    /// Determine is arguments needed for the filter or it can give answer even without arguments. Useful for optimization.
-    fn need_args( &self ) -> bool
-    {
-      true
-    }
-  }
+  /// Filter rows of a table to print it only partially.
+  fn filter_row( &self, typ: LineType, irow: usize, row: &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] ) -> bool;
+  /// Determine is arguments needed for the filter or it can give answer even without arguments. Useful for optimization.
+  fn need_args( &self ) -> bool
+  {
+   true
+ }
+ }
 
   impl Default for &'static dyn FilterRow
   {
-    #[ inline( always ) ]
-    fn default() -> Self
-    {
-      All::row()
-    }
-  }
+  #[ inline( always ) ]
+  fn default() -> Self
+  {
+   All ::row()
+ }
+ }
 
   impl FilterRow for All
   {
-    #[ inline( always ) ]
-    fn filter_row( &self, _typ : LineType, _irow : usize, _row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] ) -> bool
-    {
-      true
-    }
-    #[ inline( always ) ]
-    fn need_args( &self ) -> bool
-    {
-      false
-    }
-  }
+  #[ inline( always ) ]
+  fn filter_row( &self, _typ: LineType, _irow: usize, _row: &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] ) -> bool
+  {
+   true
+ }
+  #[ inline( always ) ]
+  fn need_args( &self ) -> bool
+  {
+   false
+ }
+ }
 
   impl All
   {
-    /// Returns a reference to a static instance.
-    pub fn row() -> & 'static dyn FilterRow
-    {
-      static INSTANCE : All = All;
-      &INSTANCE
-    }
-  }
+  /// Returns a reference to a static instance.
+  pub fn row() -> & 'static dyn FilterRow
+  {
+   static INSTANCE: All = All;
+   &INSTANCE
+ }
+ }
 
   impl FilterRow for None
   {
-    #[ inline( always ) ]
-    fn filter_row( &self, _typ : LineType, _irow : usize, _row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] ) -> bool
-    {
-      false
-    }
-    #[ inline( always ) ]
-    fn need_args( &self ) -> bool
-    {
-      false
-    }
-  }
+  #[ inline( always ) ]
+  fn filter_row( &self, _typ: LineType, _irow: usize, _row: &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] ) -> bool
+  {
+   false
+ }
+  #[ inline( always ) ]
+  fn need_args( &self ) -> bool
+  {
+   false
+ }
+ }
 
   impl None
   {
-    /// Returns a reference to a static instance.
-    pub fn row() -> & 'static dyn FilterRow
-    {
-      static INSTANCE : None = None;
-      &INSTANCE
-    }
-  }
-
-  impl< F : Fn( LineType, usize, &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] ) -> bool > FilterRow for F
+  /// Returns a reference to a static instance.
+  pub fn row() -> & 'static dyn FilterRow
   {
-    #[ inline( always ) ]
-    fn filter_row( &self, typ : LineType, irow : usize, row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] ) -> bool
-    {
-      self( typ, irow, row )
-    }
-  }
+   static INSTANCE: None = None;
+   &INSTANCE
+ }
+ }
+
+  impl< F: Fn( LineType, usize, &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] ) -> bool > FilterRow for F
+  {
+  #[ inline( always ) ]
+  fn filter_row( &self, typ: LineType, irow: usize, row: &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] ) -> bool
+  {
+   self( typ, irow, row )
+ }
+ }
 
 }
 
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use orphan::*;
+  pub use orphan :: *;
 
   #[ doc( inline ) ]
-  pub use private::
+  pub use private ::
   {
-    All,
-    None,
-  };
+  All,
+  None,
+ };
 
 }
 
@@ -224,17 +224,17 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 
   #[ doc( inline ) ]
-  pub use private::
+  pub use private ::
   {
-    LineType,
-    FilterCol,
-    FilterRow,
-  };
+  LineType,
+  FilterCol,
+  FilterRow,
+ };
 
 }
 
@@ -242,19 +242,19 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::*;
-  pub use super::super::filter;
+  use super :: *;
+  pub use super ::super ::filter;
 
   #[ doc( inline ) ]
-  pub use private::
+  pub use private ::
   {
-  };
+ };
 
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::*;
+  use super :: *;
 }

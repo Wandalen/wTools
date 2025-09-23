@@ -13,10 +13,12 @@ mod impls;
 /// Macros to put each function under a named macro to index every function in a class.
 #[ cfg( feature = "enabled" ) ]
 #[ proc_macro ]
-pub fn impls3(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+pub fn impls3(input : proc_macro::TokenStream) -> proc_macro::TokenStream 
+{
   let result = impls::impls(input);
-  match result {
-    Ok(stream) => stream.into(),
-    Err(err) => err.to_compile_error().into(),
-  }
+  match result 
+  {
+  Ok(stream) => stream.into(),
+  Err(err) => err.to_compile_error().into(),
+ }
 }

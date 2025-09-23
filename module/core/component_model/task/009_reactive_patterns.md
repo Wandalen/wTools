@@ -21,7 +21,8 @@ let config = AppConfig::default()
 Reactive components that update automatically:
 ```rust
 #[derive(ReactiveAssign)]
-struct LiveConfig {
+struct LiveConfig 
+{
   #[component(watch_file = "app.toml")]
   settings: AppSettings,
   
@@ -84,7 +85,8 @@ pub trait ComponentWatcher<T> {
 #### **Component Update Types**
 ```rust
 #[derive(Debug, Clone)]
-pub enum ComponentUpdate<T> {
+pub enum ComponentUpdate<T> 
+{
   Updated { old_value: T, new_value: T },
   Added { value: T },
   Removed,
@@ -92,13 +94,16 @@ pub enum ComponentUpdate<T> {
 }
 
 #[derive(Debug, Clone)]
-pub struct ReactiveHandle {
+pub struct ReactiveHandle 
+{
   watchers: Vec<Box<dyn WatcherHandle>>,
   cancellation_token: tokio_util::sync::CancellationToken,
 }
 
-impl ReactiveHandle {
-  pub async fn stop(self) {
+impl ReactiveHandle 
+{
+  pub async fn stop(self) 
+{
     self.cancellation_token.cancel();
     for watcher in self.watchers {
       watcher.stop().await;
@@ -111,7 +116,8 @@ impl ReactiveHandle {
 
 #### **File System Watcher**
 ```rust
-pub struct FileWatcher<T> {
+pub struct FileWatcher<T> 
+{
   path: PathBuf,
   parser: Box<dyn Fn(&str) -> Result<T, ParseError>>,
   debounce_duration: Duration,
@@ -146,7 +152,8 @@ where
 {
   type Error = WatchError;
   
-  async fn watch(&mut self) -> Result<T, Self::Error> {
+  async fn watch(&mut self) -> Result<T, Self::Error> 
+{
     use notify::{Watcher, RecommendedWatcher, RecursiveMode, Event};
     use tokio::sync::mpsc;
     
@@ -187,17 +194,20 @@ where
 
 #### **Environment Variable Watcher**
 ```rust
-pub struct EnvWatcher {
+pub struct EnvWatcher 
+{
   var_name: String,
   poll_interval: Duration,
   last_value: Option<String>,
 }
 
 #[async_trait]
-impl ComponentWatcher<String> for EnvWatcher {
+impl ComponentWatcher<String> for EnvWatcher 
+{
   type Error = WatchError;
   
-  async fn watch(&mut self) -> Result<String, Self::Error> {
+  async fn watch(&mut self) -> Result<String, Self::Error> 
+{
     let mut interval = tokio::time::interval(self.poll_interval);
     
     loop {
@@ -221,7 +231,8 @@ impl ComponentWatcher<String> for EnvWatcher {
 
 #### **HTTP API Watcher**
 ```rust
-pub struct ApiWatcher<T> {
+pub struct ApiWatcher<T> 
+{
   url: String,
   client: reqwest::Client,
   poll_interval: Duration,
@@ -235,7 +246,8 @@ where
 {
   type Error = WatchError;
   
-  async fn watch(&mut self) -> Result<T, Self::Error> {
+  async fn watch(&mut self) -> Result<T, Self::Error> 
+{
     let mut interval = tokio::time::interval(self.poll_interval);
     
     loop {
@@ -268,7 +280,8 @@ where
 
 #### **Consul KV Watcher**
 ```rust
-pub struct ConsulWatcher<T> {
+pub struct ConsulWatcher<T> 
+{
   client: consul::Client,
   key: String,
   last_index: Option<u64>,
@@ -281,7 +294,8 @@ where
 {
   type Error = WatchError;
   
-  async fn watch(&mut self) -> Result<T, Self::Error> {
+  async fn watch(&mut self) -> Result<T, Self::Error> 
+{
     loop {
       let query = consul::kv::GetOptions::new()
         .with_index(self.last_index.unwrap_or(0))
@@ -306,7 +320,8 @@ where
 #### **ReactiveAssign Derive**
 ```rust
 #[derive(ReactiveAssign)]
-struct LiveConfig {
+struct LiveConfig 
+{
   #[component(watch_file = "config.toml", debounce = "200ms")]
   file_config: FileConfig,
   
@@ -318,12 +333,14 @@ struct LiveConfig {
 }
 
 // Generates:
-impl ReactiveAssign<FileConfig> for LiveConfig {
+impl ReactiveAssign<FileConfig> for LiveConfig 
+{
   type Watcher = FileWatcher<FileConfig>;
   type UpdateStream = tokio::sync::mpsc::Receiver<ComponentUpdate<FileConfig>>;
   type Error = ReactiveError;
   
-  fn start_watching(mut self) -> Result<(ReactiveHandle, Self::UpdateStream), Self::Error> {
+  fn start_watching(mut self) -> Result<(ReactiveHandle, Self::UpdateStream), Self::Error> 
+{
     let (tx, rx) = tokio::sync::mpsc::channel(100);
     let mut watchers = Vec::new();
     
@@ -379,7 +396,8 @@ impl ReactiveAssign<FileConfig> for LiveConfig {
 #### **Dependency-Based Updates**
 ```rust
 #[derive(ReactiveAssign)]
-struct DependentConfig {
+struct DependentConfig 
+{
   #[component(watch_file = "base.toml")]
   base_config: BaseConfig,
   
@@ -391,8 +409,10 @@ struct DependentConfig {
   derived_config: DerivedConfig,
 }
 
-impl DependentConfig {
-  fn merge_configs(&mut self, new_derived: DerivedConfig) {
+impl DependentConfig 
+{
+  fn merge_configs(&mut self, new_derived: DerivedConfig) 
+{
     // Custom merge logic that considers base_config
     self.derived_config = new_derived.merge_with(&self.base_config);
   }
@@ -402,7 +422,8 @@ impl DependentConfig {
 #### **Conditional Watching**
 ```rust
 #[derive(ReactiveAssign)]
-struct ConditionalConfig {
+struct ConditionalConfig 
+{
   #[component(watch_env = "APP_MODE")]
   mode: AppMode,
   
@@ -423,7 +444,8 @@ struct ConditionalConfig {
 #### **Throttling and Rate Limiting**
 ```rust
 #[derive(ReactiveAssign)]
-struct ThrottledConfig {
+struct ThrottledConfig 
+{
   #[component(
     watch_api = "https://config.service/live",
     throttle = "5s",  // Max one update per 5 seconds
@@ -484,7 +506,8 @@ mod tests {
   use tempfile::TempDir;
   
   #[tokio::test]
-  async fn test_file_watcher() {
+  async fn test_file_watcher() 
+{
     let temp_dir = TempDir::new().unwrap();
     let config_file = temp_dir.path().join("config.toml");
     
@@ -511,7 +534,8 @@ mod tests {
   }
   
   #[tokio::test]
-  async fn test_env_watcher() {
+  async fn test_env_watcher() 
+{
     std::env::set_var("TEST_VAR", "initial");
     
     let mut watcher = EnvWatcher::new("TEST_VAR")
@@ -538,9 +562,11 @@ mod tests {
 ```rust
 // tests/reactive_integration.rs
 #[tokio::test]
-async fn test_full_reactive_config() {
+async fn test_full_reactive_config() 
+{
   #[derive(ReactiveAssign, Clone)]
-  struct TestConfig {
+  struct TestConfig 
+{
     #[component(watch_file = "test_config.toml")]
     settings: AppSettings,
     

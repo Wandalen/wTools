@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Test case for debugging E0223 error in `subform_collection`
 //! This is a minimal reproduction test
 

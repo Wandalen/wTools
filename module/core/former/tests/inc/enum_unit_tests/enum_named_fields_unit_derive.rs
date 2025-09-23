@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: Tests the `#[ derive( Former ) ]` macro's generation of constructors for unit variants
 //! within an enum that uses named fields syntax for its variants, including with `#[ scalar ]`
 //! and `#[ standalone_constructors ]`. This file focuses on verifying the derive-based implementation.

@@ -1,6 +1,6 @@
 [package]
 name = "component_model"
-version = "0.6.0"
+version = "0.8.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -31,11 +31,12 @@ use_alloc = [ "no_std", "component_model_types/use_alloc", "collection_tools/use
 # no_std = [ "collection_tools/no_std" ]
 # use_alloc = [ "no_std", "collection_tools/use_alloc" ]
 
-default = [ "full" ]
+default = [ "enabled", "full" ]
 full = [
   "enabled",
+
   "derive_component_model",
-  "derive_components", 
+  "derive_components",
   "derive_component_from",
   "derive_component_assign",
   "derive_components_assign",

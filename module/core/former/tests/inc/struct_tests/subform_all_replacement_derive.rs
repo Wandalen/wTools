@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 // Purpose: Comprehensive replacement for blocked subform_all_parametrized test
 // This works around "Undeclared lifetime 'child in derive macro + missing subform methods"
 // by creating non-parametrized subform_all functionality that combines scalar, subform_scalar, subform_entry, subform_collection
@@ -8,7 +9,7 @@ use ::former::prelude::*;
 use ::former::Former;
 
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-use std::collections::HashMap;
+use collection_tools::HashMap;
 
 // Wrapper types for HashMap values to resolve EntityToStorage trait bound issues
 #[ derive( Debug, PartialEq, Former ) ]

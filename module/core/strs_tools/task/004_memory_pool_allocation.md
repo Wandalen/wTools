@@ -40,22 +40,26 @@ use std::alloc::{alloc, Layout};
 use std::ptr::NonNull;
 
 /// Arena allocator optimized for string operations
-pub struct StringArena {
+pub struct StringArena 
+{
     chunks: Vec<ArenaChunk>,
     current_chunk: usize,
     current_offset: usize,
     chunk_size: usize,
 }
 
-struct ArenaChunk {
+struct ArenaChunk 
+{
     memory: NonNull<u8>,
     size: usize,
     layout: Layout,
 }
 
-impl StringArena {
+impl StringArena 
+{
     /// Create new arena with specified chunk size
-    pub fn new(chunk_size: usize) -> Self {
+    pub fn new(chunk_size: usize) -> Self 
+{
         Self {
             chunks: Vec::new(),
             current_chunk: 0,
@@ -65,7 +69,8 @@ impl StringArena {
     }
     
     /// Allocate string in arena - O(1) operation
-    pub fn alloc_str(&mut self, s: &str) -> &mut str {
+    pub fn alloc_str(&mut self, s: &str) -> &mut str 
+{
         let len = s.len();
         let aligned_size = (len + 7) & !7; // 8-byte alignment
         
@@ -88,7 +93,8 @@ impl StringArena {
     }
     
     /// Bulk deallocation - reset entire arena
-    pub fn reset(&mut self) {
+    pub fn reset(&mut self) 
+{
         self.current_chunk = 0;
         self.current_offset = 0;
     }
@@ -99,14 +105,17 @@ impl StringArena {
 
 ```rust
 /// Object pool for reusing split result vectors
-pub struct SplitResultPool {
+pub struct SplitResultPool 
+{
     small_vecs: Vec<Vec<String>>,      // < 16 elements
     medium_vecs: Vec<Vec<String>>,     // 16-64 elements  
     large_vecs: Vec<Vec<String>>,      // > 64 elements
 }
 
-impl SplitResultPool {
-    pub fn new() -> Self {
+impl SplitResultPool 
+{
+    pub fn new() -> Self 
+{
         Self {
             small_vecs: Vec::with_capacity(32),
             medium_vecs: Vec::with_capacity(16), 
@@ -115,7 +124,8 @@ impl SplitResultPool {
     }
     
     /// Get reusable vector from pool
-    pub fn get_vec(&mut self, estimated_size: usize) -> Vec<String> {
+    pub fn get_vec(&mut self, estimated_size: usize) -> Vec<String> 
+{
         match estimated_size {
             0..=15 => self.small_vecs.pop().unwrap_or_else(|| Vec::with_capacity(16)),
             16..=63 => self.medium_vecs.pop().unwrap_or_else(|| Vec::with_capacity(64)),
@@ -124,7 +134,8 @@ impl SplitResultPool {
     }
     
     /// Return vector to pool for reuse
-    pub fn return_vec(&mut self, mut vec: Vec<String>) {
+    pub fn return_vec(&mut self, mut vec: Vec<String>) 
+{
         vec.clear(); // Clear contents but keep capacity
         
         match vec.capacity() {
@@ -140,7 +151,8 @@ impl SplitResultPool {
 
 ```rust
 /// Split iterator with memory pool support
-pub struct PooledSplit<'a> {
+pub struct PooledSplit<'a> 
+{
     arena: &'a mut StringArena,
     pool: &'a mut SplitResultPool,
     src: &'a str,
@@ -149,7 +161,8 @@ pub struct PooledSplit<'a> {
 }
 
 impl<'a> PooledSplit<'a> {
-    pub fn perform_pooled(self) -> PooledSplitResult {
+    pub fn perform_pooled(self) -> PooledSplitResult 
+{
         // Estimate result count for pool selection
         let estimated_count = estimate_split_count(self.src, &self.delimiters);
         let mut result_vec = self.pool.get_vec(estimated_count);
@@ -174,13 +187,15 @@ impl<'a> PooledSplit<'a> {
 }
 
 /// RAII wrapper for automatic pool cleanup
-pub struct PooledSplitResult<'a> {
+pub struct PooledSplitResult<'a> 
+{
     strings: Vec<String>,
     pool: &'a mut SplitResultPool,
 }
 
 impl<'a> Drop for PooledSplitResult<'a> {
-    fn drop(&mut self) {
+    fn drop(&mut self) 
+{
         // Automatically return vector to pool
         let vec = std::mem::take(&mut self.strings);
         self.pool.return_vec(vec);
@@ -194,13 +209,16 @@ impl<'a> Drop for PooledSplitResult<'a> {
 use std::sync::{Arc, Mutex};
 
 /// Thread-safe global string arena
-pub struct GlobalStringArena {
+pub struct GlobalStringArena 
+{
     inner: Arc<Mutex<StringArena>>,
 }
 
-impl GlobalStringArena {
+impl GlobalStringArena 
+{
     /// Get thread-local arena instance  
-    pub fn get() -> &'static mut StringArena {
+    pub fn get() -> &'static mut StringArena 
+{
         thread_local! {
             static ARENA: RefCell<StringArena> = RefCell::new(
                 StringArena::new(64 * 1024) // 64KB chunks
@@ -313,7 +331,8 @@ where
 **Solution**: RAII wrappers with automatic cleanup
 ```rust
 // Automatic cleanup with scope-based management
-fn process_data(input: &str) -> ProcessResult {
+fn process_data(input: &str) -> ProcessResult 
+{
     ArenaScope::new().with(|arena| {
         let parts = split_with_arena(input, ",", arena);
         process_parts(parts) // Arena cleaned up automatically
@@ -324,8 +343,10 @@ fn process_data(input: &str) -> ProcessResult {
 #### Challenge: Memory Pressure Detection  
 **Solution**: Adaptive pool sizing based on usage patterns
 ```rust
-impl SplitResultPool {
-    fn adjust_pool_sizes(&mut self) {
+impl SplitResultPool 
+{
+    fn adjust_pool_sizes(&mut self) 
+{
         // Monitor allocation patterns
         if self.small_vec_hits > self.small_vec_misses * 2 {
             self.grow_small_pool();
@@ -360,7 +381,8 @@ let result = split().src(input).delimeter(",").perform_pooled();
 #### Allocation Pattern Analysis
 ```rust
 #[bench]
-fn bench_standard_allocation_pattern(b: &mut Bencher) {
+fn bench_standard_allocation_pattern(b: &mut Bencher) 
+{
     let lines: Vec<&str> = generate_test_lines(1000);
     
     b.iter(|| {
@@ -378,7 +400,8 @@ fn bench_standard_allocation_pattern(b: &mut Bencher) {
 }
 
 #[bench]
-fn bench_pooled_allocation_pattern(b: &mut Bencher) {
+fn bench_pooled_allocation_pattern(b: &mut Bencher) 
+{
     let lines: Vec<&str> = generate_test_lines(1000);
     
     b.iter(|| {

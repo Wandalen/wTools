@@ -26,7 +26,8 @@ Enable the test functionality in the ComponentFrom debug test file.
 ### Test Structure
 ```rust
 #[test]
-fn test_component_from_with_debug() {
+fn test_component_from_with_debug() 
+{
     // Test ComponentFrom functionality
     // Verify debug attribute works
     // Check generated code behavior

@@ -1,4 +1,4 @@
-use derive_tools::phantom;
+use derive_tools ::phantom;
 
 #[ phantom ]
 enum Enum< T >

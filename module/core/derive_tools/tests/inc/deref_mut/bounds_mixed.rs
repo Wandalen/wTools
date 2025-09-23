@@ -1,23 +1,23 @@
-use core::fmt::Debug;
+use core ::fmt ::Debug;
 
-use core::ops::Deref;
-use derive_tools::DerefMut;
+use core ::ops ::Deref;
+use derive_tools ::DerefMut;
 
 #[ allow( dead_code ) ]
 #[ derive( DerefMut ) ]
-struct BoundsMixed< T : ToString, U >( #[ deref_mut ] T, U )
+struct BoundsMixed< T: ToString, U >( #[ deref_mut ] T, U )
 where
-  U : Debug;
+  U: Debug;
 
-impl< T : ToString, U > Deref for BoundsMixed< T, U >
+impl< T: ToString, U > Deref for BoundsMixed< T, U >
 where
-  U : Debug,
+  U: Debug,
 {
   type Target = T;
-  fn deref( &self ) -> &Self::Target
+  fn deref( &self ) -> &Self ::Target
   {
-    &self.0
-  }
+  &self.0
+ }
 }
 
 include!( "./only_test/bounds_mixed.rs" );

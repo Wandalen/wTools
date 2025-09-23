@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 // xxx : This file temporarily disables Former derive macro tests due to trailing comma issue
 // See: /home/user1/pro/lib/wTools/module/core/macro_tools/task/task_issue.md
 // Re-enable when macro_tools::generic_params::decompose is fixed

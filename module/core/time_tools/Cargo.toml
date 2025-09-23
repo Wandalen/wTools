@@ -34,13 +34,15 @@ all-features = false
 
 [features]
 default = [
+  "enabled",
+
   "time_now",
-  "enabled"
 ]
 full = [
+  "enabled",
+
   "use_alloc",
   "time_now",
-  "enabled"
 ]
 
 no_std = []

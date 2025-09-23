@@ -1,6 +1,6 @@
-//! xxx : qqq : write please
+//! xxx: qqq: write please
 
 fn main()
 {
-  // xxx : qqq : write please
+  // xxx: qqq: write please
 }

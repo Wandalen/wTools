@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: Tests the `#[ derive( Former ) ]` macro's generation of constructors for single-field and multi-field tuple variants within a generic enum with bounds. This file focuses on verifying the derive-based implementation, particularly the default behavior when `#[ scalar ]` is commented out.
 //!
 //! Coverage:

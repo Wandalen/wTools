@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 // Purpose: Provides shared test assertions and logic for both the derived and manual implementations
 // of subformer starter methods for an enum with multiple single-field tuple variants, where the
 // inner types also derive `Former`. It tests that the constructors generated/implemented for this

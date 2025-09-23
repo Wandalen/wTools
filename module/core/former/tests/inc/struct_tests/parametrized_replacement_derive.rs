@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 // Purpose: Focused replacement for blocked parametrized_field tests
 // This works around "Former derive macro cannot handle lifetimes + ?Sized traits (E0261, E0277, E0309)"
 // by creating non-parametrized equivalents that provide the same functionality coverage

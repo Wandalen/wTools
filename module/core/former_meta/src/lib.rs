@@ -13,10 +13,10 @@
 //! 2. **Attribute Processing**: Parse and validate all Former-specific attributes
 //! 3. **Type Analysis**: Analyze generic parameters, lifetimes, and field types
 //! 4. **Code Generation**: Generate the complete Former ecosystem
-//! 5. **Output Assembly**: Combine generated code into final token stream
+//! 5. **Output Assembly** : Combine generated code into final token stream
 //!
 //! ### Key Modules
-//! - [`derive_former`]: Main entry point and orchestration logic
+//! - [`derive_former`] : Main entry point and orchestration logic
 //! - Field attribute processing and validation
 //! - Struct attribute parsing and management  
 //! - Generic parameter handling for complex scenarios
@@ -25,16 +25,16 @@
 //! ## Supported Constructs
 //!
 //! ### Struct Support
-//! - **Simple Structs**: Basic field-based structures
-//! - **Generic Structs**: Complex generic parameters with constraints
-//! - **Lifetime Parameters**: Full lifetime parameter support
-//! - **Tuple Structs**: Positional field structures
+//! - **Simple Structs** : Basic field-based structures
+//! - **Generic Structs** : Complex generic parameters with constraints
+//! - **Lifetime Parameters** : Full lifetime parameter support
+//! - **Tuple Structs** : Positional field structures
 //!
 //! ### Enum Support  
-//! - **Unit Variants**: Simple enum variants without data
-//! - **Tuple Variants**: Variants with positional fields
-//! - **Struct Variants**: Variants with named fields
-//! - **Mixed Enums**: Enums combining different variant types
+//! - **Unit Variants** : Simple enum variants without data
+//! - **Tuple Variants** : Variants with positional fields
+//! - **Struct Variants** : Variants with named fields
+//! - **Mixed Enums** : Enums combining different variant types
 //!
 //! ## Advanced Features
 //!
@@ -55,7 +55,7 @@
 //!
 //! ## Error Handling and Diagnostics
 //!
-//! The macro provides comprehensive error reporting:
+//! The macro provides comprehensive error reporting :
 //! - Clear error messages for attribute misuse
 //! - Helpful suggestions for common mistakes
 //! - Debug output capabilities for troubleshooting
@@ -63,10 +63,10 @@
 //!
 //! ## Performance Considerations
 //!
-//! - **Compile-time Generation**: All code generated at compile time
-//! - **Minimal Runtime Overhead**: Generated code is highly optimized
-//! - **Memory Efficient**: Strategic use of references and zero-cost abstractions
-//! - **Lazy Evaluation**: Complex analysis only when needed
+//! - **Compile-time Generation** : All code generated at compile time
+//! - **Minimal Runtime Overhead** : Generated code is highly optimized
+//! - **Memory Efficient** : Strategic use of references and zero-cost abstractions
+//! - **Lazy Evaluation** : Complex analysis only when needed
 
 //#![ feature( proc_macro_totokens ) ] // Enable unstable proc_macro_totokens feature
 #![doc(html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png")]
@@ -77,7 +77,8 @@
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 
 #[ allow( unused_imports ) ]
-use macro_tools::{Result, diag};
+#[ cfg( feature = "enabled" ) ]
+use macro_tools::{ Result, diag };
 
 #[ cfg( feature = "derive_former" ) ]
 mod derive_former;
@@ -91,12 +92,12 @@ mod derive_former;
 /// # Core Capabilities and Limitations
 ///
 /// ## ✅ Supported Scenarios
-/// - **Complex Lifetime Parameters**: Handles `<'a, T>` patterns, multiple lifetimes, and where clauses
-/// - **Generic Constraints**: Works with `where T: Hash + Eq`, complex trait bounds
-/// - **Nested Structures**: Subform support for complex hierarchical data
-/// - **Collection Types**: `HashMap`, Vec, `HashSet` with proper trait bound handling
-/// - **Optional Fields**: Automatic `Option< T >` handling with sensible defaults
-/// - **Custom Mutators**: Pre-formation data manipulation and validation
+/// - **Complex Lifetime Parameters** : Handles `< 'a, T >` patterns, multiple lifetimes, and where clauses
+/// - **Generic Constraints** : Works with `where T: Hash + Eq`, complex trait bounds
+/// - **Nested Structures** : Subform support for complex hierarchical data
+/// - **Collection Types** : `HashMap`, Vec, `HashSet` with proper trait bound handling
+/// - **Optional Fields** : Automatic `Option< T >` handling with sensible defaults
+/// - **Custom Mutators** : Pre-formation data manipulation and validation
 ///
 /// ## ⚠️ Common Pitfalls and Solutions
 ///
@@ -115,7 +116,7 @@ mod derive_former;
 /// ### 2. Feature Gate Requirements for Collections
 /// ```rust,ignore
 /// // ✅ REQUIRED: Collection tests need proper feature gates
-/// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+/// #[ cfg(any(not(feature = "no_std"), feature = "use_alloc")) ]
 /// mod test_with_collections;
 /// ```
 ///
@@ -124,7 +125,7 @@ mod derive_former;
 /// // ❌ WRONG: Using non-Hash type as HashMap key
 /// pub struct Definition; // No Hash+Eq implementation
 /// pub struct MyStruct {
-///   map: HashMap<Definition, String>, // Will fail
+///   map: HashMap< Definition, String >, // Will fail
 /// }
 ///
 /// // ✅ CORRECT: Implement required traits or use different key type
@@ -136,7 +137,7 @@ mod derive_former;
 /// ```rust,ignore
 /// // ✅ WORKS: Complex lifetime scenarios are supported
 /// #[ derive( Former ) ]
-/// pub struct Child<'child, T>
+/// pub struct Child< 'child, T >
 /// where
 ///   T: 'child + ?Sized,
 /// {
@@ -146,7 +147,7 @@ mod derive_former;
 /// ```
 ///
 /// ## 📋 Diagnostic Workflow
-/// When encountering issues:
+/// When encountering issues :
 /// 1. **Check for commented derives** (resolves 90% of issues)
 /// 2. **Verify feature gate configuration** (for collection tests)
 /// 3. **Assess trait bound requirements** (Hash+Eq for `HashMap` keys)
@@ -158,9 +159,9 @@ mod derive_former;
 ///
 /// #### E0277: Trait bound not satisfied
 /// ```text
-/// error[E0277]: the trait bound `MyType: Hash` is not satisfied
+/// error[E0277] : the trait bound `MyType: Hash` is not satisfied
 /// ```
-/// **Solution**: Implement required traits for `HashMap` keys:
+/// **Solution** : Implement required traits for `HashMap` keys :
 /// ```rust,ignore
 /// #[ derive( Hash, Eq, PartialEq ) ]
 /// struct MyType { /* fields */ }
@@ -168,12 +169,12 @@ mod derive_former;
 ///
 /// #### E0106: Missing lifetime specifier
 /// ```text
-/// error[E0106]: missing lifetime specifier
+/// error[E0106] : missing lifetime specifier
 /// ```
-/// **Solution**: Add proper lifetime parameters:
+/// **Solution** : Add proper lifetime parameters :
 /// ```rust,ignore
 /// #[ derive( Former ) ]
-/// struct MyStruct<'a> {
+/// struct MyStruct< 'a > {
 ///     reference: &'a str,
 /// }
 /// ```
@@ -193,7 +194,7 @@ mod derive_former;
 /// #### Collection Feature Gate Issues
 /// ```rust,ignore
 /// // ✅ REQUIRED: Add feature gates for collection tests
-/// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+/// #[ cfg(any(not(feature = "no_std"), feature = "use_alloc")) ]
 /// mod collection_tests {
 ///     // HashMap/Vec tests here
 /// }
@@ -201,26 +202,26 @@ mod derive_former;
 ///
 /// # Struct Attributes
 ///
-/// - `debug`: Enables debug mode which can be used to print or log the internal state of the builder for debugging purposes.
-/// - `perform`: Specifies a custom method to be invoked automatically at the end of the build process.
-/// - `storage_fields`: Specifies fields that should be treated as part of the storage for the former.
-/// - `mutator`: Defines a custom mutator class or function to manipulate the data just before the object is finalized.
-/// - `standalone_constructors`: Generates top-level constructor functions (e.g., `my_struct()`, `my_variant()`). Return type depends on `former_ignore` (see Option 2 logic in Readme/advanced.md).
+/// - `debug` : Enables debug mode which can be used to print or log the internal state of the builder for debugging purposes.
+/// - `perform` : Specifies a custom method to be invoked automatically at the end of the build process.
+/// - `storage_fields` : Specifies fields that should be treated as part of the storage for the former.
+/// - `mutator` : Defines a custom mutator class or function to manipulate the data just before the object is finalized.
+/// - `standalone_constructors` : Generates top-level constructor functions (e.g., `my_struct()`, `my_variant()`). Return type depends on `former_ignore` (see Option 2 logic in Readme/advanced.md).
 ///
 /// # Field Attributes
 ///
-/// - `former`: General attribute to specify various options like defaults or inclusion in the former.
-/// - `scalar`: Indicates that the field is a scalar value, enabling direct assignment without the need for a sub-former. Affects the *associated method* constructor for enum variants.
-/// - `collection`: Marks the field as a collection that can use specific former methods to manage its contents.
-/// - `subform`: Specifies that the field should utilize a nested former, facilitating the construction of complex nested structures.
-/// - `former_ignore`: Excludes a field from being an argument for the standalone constructor. Affects constructor signature and return type (see Option 2 logic in Readme/advanced.md).
+/// - `former` : General attribute to specify various options like defaults or inclusion in the former.
+/// - `scalar` : Indicates that the field is a scalar value, enabling direct assignment without the need for a sub-former. Affects the *associated method* constructor for enum variants.
+/// - `collection` : Marks the field as a collection that can use specific former methods to manage its contents.
+/// - `subform` : Specifies that the field should utilize a nested former, facilitating the construction of complex nested structures.
+/// - `former_ignore` : Excludes a field from being an argument for the standalone constructor. Affects constructor signature and return type (see Option 2 logic in Readme/advanced.md).
 ///
 /// # Usage Examples
 ///
 /// ## Basic Structure Building
 ///
 /// ```rust,ignore
-/// use former::Former;
+/// use former ::Former;
 ///
 /// #[ derive( Debug, PartialEq, Former ) ]
 /// pub struct UserProfile {
@@ -229,7 +230,7 @@ mod derive_former;
 ///     bio_optional: Option< String >,
 /// }
 ///
-/// let profile = UserProfile::former()
+/// let profile = UserProfile ::former()
 ///     .age(30)
 ///     .username("JohnDoe".to_string())
 ///     .bio_optional("Software Developer".to_string())
@@ -239,18 +240,18 @@ mod derive_former;
 /// ## Collection Handling
 ///
 /// ```rust,ignore
-/// use former::Former;
-/// use std::collections::HashMap;
+/// use former ::Former;
+/// use std ::collections ::HashMap;
 ///
 /// #[ derive( Debug, Former ) ]
 /// pub struct Config {
 ///     #[ collection ]
-///     settings: HashMap<String, String>,
+///     settings: HashMap< String, String >,
 ///     #[ collection ]
 ///     tags: Vec< String >,
 /// }
 ///
-/// let config = Config::former()
+/// let config = Config ::former()
 ///     .settings().insert("debug", "true").end()
 ///     .tags().push("production").push("web").end()
 ///     .form();
@@ -259,10 +260,10 @@ mod derive_former;
 /// ## Complex Generic Scenarios
 ///
 /// ```rust,ignore
-/// use former::Former;
+/// use former ::Former;
 ///
 /// #[ derive( Debug, Former ) ]
-/// pub struct Container<'a, T>
+/// pub struct Container< 'a, T >
 /// where
 ///     T: Clone + 'a,
 /// {
@@ -271,7 +272,7 @@ mod derive_former;
 /// }
 ///
 /// let value = "hello".to_string();
-/// let container = Container::former()
+/// let container = Container ::former()
 ///     .data(&value)
 ///     .metadata("example".to_string())
 ///     .form();
@@ -280,7 +281,7 @@ mod derive_former;
 /// ## Custom Validation with Mutators
 ///
 /// ```rust,ignore
-/// use former::Former;
+/// use former ::Former;
 ///
 /// #[ derive( Debug, Former ) ]
 /// #[ mutator( custom ) ]
@@ -290,14 +291,15 @@ mod derive_former;
 /// }
 ///
 /// // Custom mutator implementation
-/// impl FormerMutator for ValidatedStructDefinitionTypes {
-///     fn form_mutation(storage: &mut Self::Storage, _context: &mut Option< Self::Context >) {
-///         if let (Some(min), Some(max)) = (&storage.min_value, &storage.max_value) {
-///             if min > max {
-///                 std::mem::swap(&mut storage.min_value, &mut storage.max_value);
-///             }
-///         }
-///     }
+/// impl FormerMutator  for ValidatedStructDefinitionTypes
+/// {
+///     fn form_mutation(storage: &mut Self ::Storage, _context: &mut Option< Self ::Context >) {
+///  if let (Some(min), Some(max)) = (&storage.min_value, &storage.max_value) {
+///  if min > max {
+///                 std ::mem ::swap(&mut storage.min_value, &mut storage.max_value);
+/// }
+/// }
+/// }
 /// }
 /// ```
 ///
@@ -309,7 +311,7 @@ mod derive_former;
 /// ### Debug Attribute Usage
 ///
 /// ```rust,ignore
-/// use former::Former;
+/// use former ::Former;
 ///
 /// // Standalone debug attribute
 /// #[ derive( Debug, PartialEq, Former ) ]
@@ -332,28 +334,28 @@ mod derive_former;
 /// ### Comprehensive Debug Information
 ///
 /// When `#[ debug ]` is present and the `former_diagnostics_print_generated` feature is enabled,
-/// the macro provides detailed information in four phases:
+/// the macro provides detailed information in four phases :
 ///
-/// #### Phase 1: Input Analysis
-/// - **Target Type Information**: Name, kind (struct/enum), visibility
-/// - **Generic Parameters Analysis**: Lifetimes, type parameters, const parameters, where clauses
-/// - **Field/Variant Analysis**: Field names, types, visibility for structs; variant information for enums
-/// - **Attribute Configuration**: All parsed Former attributes, storage fields, mutator settings
+/// #### Phase 1 : Input Analysis
+/// - **Target Type Information** : Name, kind (struct/enum), visibility
+/// - **Generic Parameters Analysis** : Lifetimes, type parameters, const parameters, where clauses
+/// - **Field/Variant Analysis** : Field names, types, visibility for structs; variant information for enums
+/// - **Attribute Configuration** : All parsed Former attributes, storage fields, mutator settings
 ///
-/// #### Phase 2: Generic Classification
-/// - **Classification Results**: How generics are categorized (lifetime-only, type-only, mixed, empty)
-/// - **Generated Generic Components**: `impl_generics`, `ty_generics`, `where_clause` breakdown
-/// - **Strategy Explanation**: Why certain generation strategies were chosen
+/// #### Phase 2 : Generic Classification
+/// - **Classification Results** : How generics are categorized (lifetime-only, type-only, mixed, empty)
+/// - **Generated Generic Components** : `impl_generics`, `ty_generics`, `where_clause` breakdown
+/// - **Strategy Explanation** : Why certain generation strategies were chosen
 ///
-/// #### Phase 3: Generated Components Analysis
-/// - **Core Components**: `FormerStorage`, `FormerDefinition`, `FormerDefinitionTypes`, Former struct
-/// - **Trait Implementations**: `EntityToStorage`, `EntityToFormer`, `EntityToDefinition`, etc.
-/// - **Formation Process**: Step-by-step formation workflow explanation
-/// - **Customizations**: How attributes affect the generated code structure
+/// #### Phase 3 : Generated Components Analysis
+/// - **Core Components** : `FormerStorage`, `FormerDefinition`, `FormerDefinitionTypes`, Former struct
+/// - **Trait Implementations** : `EntityToStorage`, `EntityToFormer`, `EntityToDefinition`, etc.
+/// - **Formation Process** : Step-by-step formation workflow explanation
+/// - **Customizations** : How attributes affect the generated code structure
 ///
-/// #### Phase 4: Complete Generated Code
-/// - **Final `TokenStream`**: The complete code that will be compiled
-/// - **Integration Points**: How generated code integrates with existing types
+/// #### Phase 4 : Complete Generated Code
+/// - **Final `TokenStream`** : The complete code that will be compiled
+/// - **Integration Points** : How generated code integrates with existing types
 ///
 /// ### Enabling Debug Output
 ///
@@ -370,42 +372,44 @@ mod derive_former;
 ///
 /// ### Debug Use Cases
 ///
-/// The debug attribute is particularly useful for:
+/// The debug attribute is particularly useful for :
 ///
-/// 1. **Understanding Macro Behavior**: See exactly how the macro processes your struct/enum definition
-/// 2. **Debugging Complex Scenarios**: Troubleshoot generic parameters, lifetime issues, trait bound problems
-/// 3. **Learning Former Pattern**: Understand the complete ecosystem generated for your types
-/// 4. **Verifying Configuration**: Confirm that attributes are parsed correctly and generate expected code
-/// 5. **Performance Analysis**: Understand the complexity of generated code for optimization
+/// 1. **Understanding Macro Behavior** : See exactly how the macro processes your struct/enum definition
+/// 2. **Debugging Complex Scenarios** : Troubleshoot generic parameters, lifetime issues, trait bound problems
+/// 3. **Learning Former Pattern** : Understand the complete ecosystem generated for your types
+/// 4. **Verifying Configuration** : Confirm that attributes are parsed correctly and generate expected code
+/// 5. **Performance Analysis** : Understand the complexity of generated code for optimization
 ///
 /// ### Integration with Development Workflow
 ///
-/// The debug system integrates seamlessly with existing development tools:
-/// - **Zero Runtime Cost**: Debug analysis only runs during compilation
-/// - **Conditional Compilation**: Debug code only included with feature flag
-/// - **IDE Integration**: Debug output appears in compiler output and can be captured by IDEs
-/// - **CI/CD Friendly**: Can be enabled in build pipelines for automated analysis
+/// The debug system integrates seamlessly with existing development tools :
+/// - **Zero Runtime Cost** : Debug analysis only runs during compilation
+/// - **Conditional Compilation** : Debug code only included with feature flag
+/// - **IDE Integration** : Debug output appears in compiler output and can be captured by IDEs
+/// - **CI/CD Friendly** : Can be enabled in build pipelines for automated analysis
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_former" ) ]
 #[
   proc_macro_derive
   (
-    Former,
-    attributes // This list defines attributes the derive macro processes
-    (
-      debug, perform, storage_fields, mutator, // struct attributes
-      former, scalar, subform_scalar, subform_collection, subform_entry, // field attributes
-      // <<< Added the new attributes here >>>
-      standalone_constructors, // Add struct-level attribute
-      former_ignore,           // Add field-level attribute
-      arg_for_constructor      // Add field-level attribute for constructor inclusion
-    )
-  )
+  Former,
+  attributes // This list defines attributes the derive macro processes
+  (
+   debug, perform, storage_fields, mutator, // struct attributes
+   former, scalar, subform_scalar, subform_collection, subform_entry, // field attributes
+   // < << Added the new attributes here >>>
+   standalone_constructors, // Add struct-level attribute
+   former_ignore,           // Add field-level attribute
+   arg_for_constructor      // Add field-level attribute for constructor inclusion
+ )
+ )
 ]
-pub fn former(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
-  let result = derive_former::former(input);
-  match result {
-    Ok(stream) => stream.into(),
-    Err(err) => err.to_compile_error().into(),
-  }
+pub fn former(input: proc_macro::TokenStream) -> proc_macro::TokenStream 
+{
+  let result = derive_former ::former(input);
+  match result 
+  {
+  Ok(stream) => stream.into(),
+  Err(err) => err.to_compile_error().into(),
+ }
 }

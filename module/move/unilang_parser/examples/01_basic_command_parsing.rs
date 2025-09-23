@@ -1,15 +1,15 @@
 //! Basic Command Parsing Example
 //!
-//! This example demonstrates the fundamental command parsing capabilities:
+//! This example demonstrates the fundamental command parsing capabilities :
 //! - Simple command paths (namespace.command)
 //! - Positional arguments
 //! - Command path extraction
 
-use unilang_parser::{ Parser, UnilangParserOptions };
+use unilang_parser :: { Parser, UnilangParserOptions };
 
-fn main() -> Result< (), Box< dyn core::error::Error > >
+fn main() -> Result< (), Box< dyn core ::error ::Error > >
 {
-  let parser = Parser::new( UnilangParserOptions::default() );
+  let parser = Parser ::new( UnilangParserOptions ::default() );
 
   // Simple command with namespace
   println!( "=== Simple Command ===" );

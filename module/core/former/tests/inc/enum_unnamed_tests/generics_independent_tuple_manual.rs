@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: Provides a manual implementation of constructors and `FormingEnd` for an enum
 //! with unnamed (tuple) variants that have independent generic parameters and bounds,
 //! to serve as a reference for verifying the `#[ derive( Former ) ]` macro's behavior.

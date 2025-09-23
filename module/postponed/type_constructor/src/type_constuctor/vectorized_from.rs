@@ -11,17 +11,17 @@ mod private
   ///
   /// ### Basic use-case.
   /// ```rust
-  /// use type_constructor::prelude::*;
-  /// types!( single Single1 : i32 );
+  /// use type_constructor ::prelude :: *;
+  /// types!( single Single1: i32 );
   /// let src = ( 1, 3 );
-  /// let got = <( Single1, Single1 )>::vectorized_from( src );
+  /// let got = < ( Single1, Single1 ) > ::vectorized_from( src );
   /// ```
   ///
   pub trait VectorizedFrom< T > : Sized
   {
-    /// Performs the conversion.
-    fn vectorized_from( src : T ) -> Self;
-  }
+  /// Performs the conversion.
+  fn vectorized_from( src: T ) -> Self;
+ }
 
   ///
   /// Implementation of trait Into to vectorize into/from.
@@ -32,40 +32,40 @@ mod private
   ///
   /// ### Basic use-case.
   /// ```rust
-  /// use type_constructor::prelude::*;
-  /// types!( single Single1 : i32 );
+  /// use type_constructor ::prelude :: *;
+  /// types!( single Single1: i32 );
   /// let src = ( 1, 3 );
-  /// let got : ( Single1, Single1 ) = src.vectorized_into();
+  /// let got: ( Single1, Single1 ) = src.vectorized_into();
   /// ```
   ///
   pub trait VectorizedInto< T > : Sized
   {
-    /// Performs the conversion.
-    fn vectorized_into( self ) -> T;
-  }
+  /// Performs the conversion.
+  fn vectorized_into( self ) -> T;
+ }
 
   //
 
   impl< Target, Original > VectorizedInto< Target > for Original
   where
-    Target : VectorizedFrom< Original >,
+  Target: VectorizedFrom< Original >,
   {
-    fn vectorized_into( self ) -> Target
-    {
-      Target::vectorized_from( self )
-    }
-  }
+  fn vectorized_into( self ) -> Target
+  {
+   Target ::vectorized_from( self )
+ }
+ }
 
   //
 
-  impl<>
+  impl< >
   VectorizedFrom< () >
   for ()
   {
-    fn vectorized_from( _ : () ) -> Self
-    {
-    }
-  }
+  fn vectorized_from( _: () ) -> Self
+  {
+ }
+ }
 
   //
 
@@ -73,13 +73,13 @@ mod private
   VectorizedFrom< ( Into1, ) >
   for ( Id1, )
   where
-    Into1 : Into< Id1 >,
+  Into1: Into< Id1 >,
   {
-    fn vectorized_from( src : ( Into1, ) ) -> Self
-    {
-      ( src.0.into(), )
-    }
-  }
+  fn vectorized_from( src: ( Into1, ) ) -> Self
+  {
+   ( src.0.into(), )
+ }
+ }
 
   //
 
@@ -87,14 +87,14 @@ mod private
   VectorizedFrom< ( Into1, Into2 ) >
   for ( Id1, Id2 )
   where
-    Into1 : Into< Id1 >,
-    Into2 : Into< Id2 >,
+  Into1: Into< Id1 >,
+  Into2: Into< Id2 >,
   {
-    fn vectorized_from( src : ( Into1, Into2 ) ) -> Self
-    {
-      ( src.0.into(), src.1.into() )
-    }
-  }
+  fn vectorized_from( src: ( Into1, Into2 ) ) -> Self
+  {
+   ( src.0.into(), src.1.into() )
+ }
+ }
 
   //
 
@@ -102,37 +102,37 @@ mod private
   VectorizedFrom< ( Into1, Into2, Into3 ) >
   for ( Id1, Id2, Id3 )
   where
-    Into1 : Into< Id1 >,
-    Into2 : Into< Id2 >,
-    Into3 : Into< Id3 >,
+  Into1: Into< Id1 >,
+  Into2: Into< Id2 >,
+  Into3: Into< Id3 >,
   {
-    fn vectorized_from( src : ( Into1, Into2, Into3 ) ) -> Self
-    {
-      ( src.0.into(), src.1.into(), src.2.into() )
-    }
-  }
+  fn vectorized_from( src: ( Into1, Into2, Into3 ) ) -> Self
+  {
+   ( src.0.into(), src.1.into(), src.2.into() )
+ }
+ }
 
   //
 
-  impl< Id, Into1, const N : usize >
+  impl< Id, Into1, const N: usize >
   VectorizedFrom< [ Into1 ; N ] >
   for [ Id ; N ]
   where
-    Into1 : Into< Id > + Clone,
+  Into1: Into< Id > + Clone,
   {
-    fn vectorized_from( src : [ Into1 ; N ] ) -> Self
-    {
-      // SAFETY : safe because all elements are set in the funtions
-      #[ allow( clippy::uninit_assumed_init ) ]
-      #[ allow( unsafe_code ) ]
-      let mut result : Self = unsafe { core::mem::MaybeUninit::zeroed().assume_init() };
-      for i in 0..N
-      {
-        result[ i ] = src[ i ].clone().into();
-      }
-      result
-    }
-  }
+  fn vectorized_from( src: [ Into1 ; N ] ) -> Self
+  {
+   // SAFETY: safe because all elements are set in the funtions
+   #[ allow( clippy ::uninit_assumed_init ) ]
+   #[ allow( unsafe_code ) ]
+   let mut result: Self = unsafe { core ::mem ::MaybeUninit ::zeroed().assume_init() };
+   for i in 0..N
+   {
+  result[ i ] = src[ i ].clone().into();
+ }
+   result
+ }
+ }
 
 }
 
@@ -140,46 +140,46 @@ mod private
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use orphan::*;
+  pub use orphan :: *;
 }
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use prelude::*;
+  pub use prelude :: *;
 }
 
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use private::
+  pub use private ::
   {
-    VectorizedFrom,
-    VectorizedInto,
-  };
+  VectorizedFrom,
+  VectorizedInto,
+ };
 }

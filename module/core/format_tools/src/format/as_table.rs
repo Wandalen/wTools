@@ -6,13 +6,13 @@
 mod private
 {
 
-  use crate::*;
-  use core::
+  use crate :: *;
+  use core ::
   {
-    ops::{ Deref },
-    marker::PhantomData,
-    fmt,
-  };
+  ops :: { Deref },
+  marker ::PhantomData,
+  fmt,
+ };
 
   /// Transparent wrapper for interpreting data as a table.
   ///
@@ -21,98 +21,98 @@ mod private
   ///
   #[ repr( transparent ) ]
   #[ derive( Clone, Copy ) ]
-  pub struct AsTable< 'table, Table, RowKey, Row, CellKey>
+  pub struct AsTable< 'table, Table, RowKey, Row, CellKey >
   (
-    &'table Table,
-    ::core::marker::PhantomData
-    <(
-      &'table (),
-      fn() -> ( &'table RowKey, Row, &'table CellKey ),
-    )>,
-  )
+  &'table Table,
+  ::core ::marker ::PhantomData
+  <(
+   &'table (),
+   fn() -> ( &'table RowKey, Row, &'table CellKey ),
+ )>,
+ )
   where
-    RowKey : table::RowKey,
-    Row : Cells< CellKey >,
-    CellKey : table::CellKey + ?Sized,
-    // CellRepr : table::CellRepr
+  RowKey: table ::RowKey,
+  Row: Cells< CellKey >,
+  CellKey: table ::CellKey + ?Sized,
+  // CellRepr: table ::CellRepr
   ;
 
-  impl< 'table, Table, RowKey, Row, CellKey>
-  AsTable< 'table, Table, RowKey, Row, CellKey>
+  impl< 'table, Table, RowKey, Row, CellKey >
+  AsTable< 'table, Table, RowKey, Row, CellKey >
   where
-    RowKey : table::RowKey,
-    Row : Cells< CellKey >,
-    CellKey : table::CellKey + ?Sized,
-    // CellRepr : table::CellRepr,
+  RowKey: table ::RowKey,
+  Row: Cells< CellKey >,
+  CellKey: table ::CellKey + ?Sized,
+  // CellRepr: table ::CellRepr,
   {
-    /// Just a constructor.
-    pub fn new( src : &'table Table ) -> Self
-    {
-      Self( src, Default::default() )
-    }
-  }
+  /// Just a constructor.
+  pub fn new( src: &'table Table ) -> Self
+  {
+   Self( src, Default ::default() )
+ }
+ }
 
-  impl< 'table, Table, RowKey, Row, CellKey> AsRef< Table >
-  for AsTable< 'table, Table, RowKey, Row, CellKey>
+  impl< 'table, Table, RowKey, Row, CellKey > AsRef< Table >
+  for AsTable< 'table, Table, RowKey, Row, CellKey >
   where
-    RowKey : table::RowKey,
-    Row : Cells< CellKey >,
-    CellKey : table::CellKey + ?Sized,
-    // CellRepr : table::CellRepr,
+  RowKey: table ::RowKey,
+  Row: Cells< CellKey >,
+  CellKey: table ::CellKey + ?Sized,
+  // CellRepr: table ::CellRepr,
   {
-    fn as_ref( &self ) -> &Table
-    {
-      &self.0
-    }
-  }
+  fn as_ref( &self ) -> &Table
+  {
+   &self.0
+ }
+ }
 
-  impl< 'table, Table, RowKey, Row, CellKey> Deref
-  for AsTable< 'table, Table, RowKey, Row, CellKey>
+  impl< 'table, Table, RowKey, Row, CellKey > Deref
+  for AsTable< 'table, Table, RowKey, Row, CellKey >
   where
-    RowKey : table::RowKey,
-    Row : Cells< CellKey >,
-    CellKey : table::CellKey + ?Sized,
-    // CellRepr : table::CellRepr,
+  RowKey: table ::RowKey,
+  Row: Cells< CellKey >,
+  CellKey: table ::CellKey + ?Sized,
+  // CellRepr: table ::CellRepr,
   {
-    type Target = Table;
+  type Target = Table;
 
-    fn deref( &self ) -> &Self::Target
-    {
-      &self.0
-    }
-  }
+  fn deref( &self ) -> &Self ::Target
+  {
+   &self.0
+ }
+ }
 
-  impl< 'table, Table, RowKey, Row, CellKey> From< &'table Table >
-  for AsTable< 'table, Table, RowKey, Row, CellKey>
+  impl< 'table, Table, RowKey, Row, CellKey > From< &'table Table >
+  for AsTable< 'table, Table, RowKey, Row, CellKey >
   where
-    RowKey : table::RowKey,
-    Row : Cells< CellKey >,
-    CellKey : table::CellKey + ?Sized,
-    // CellRepr : table::CellRepr,
+  RowKey: table ::RowKey,
+  Row: Cells< CellKey >,
+  CellKey: table ::CellKey + ?Sized,
+  // CellRepr: table ::CellRepr,
   {
-    fn from( table : &'table Table ) -> Self
-    {
-      AsTable( table, PhantomData )
-    }
-  }
+  fn from( table: &'table Table ) -> Self
+  {
+   AsTable( table, PhantomData )
+ }
+ }
 
-  impl< 'table, Table, RowKey, Row, CellKey> fmt::Debug
-  for AsTable< 'table, Table, RowKey, Row, CellKey>
+  impl< 'table, Table, RowKey, Row, CellKey > fmt ::Debug
+  for AsTable< 'table, Table, RowKey, Row, CellKey >
   where
-    Table : fmt::Debug,
-    RowKey : table::RowKey,
-    Row : Cells< CellKey >,
-    CellKey : table::CellKey + ?Sized,
-    // CellRepr : table::CellRepr,
+  Table: fmt ::Debug,
+  RowKey: table ::RowKey,
+  Row: Cells< CellKey >,
+  CellKey: table ::CellKey + ?Sized,
+  // CellRepr: table ::CellRepr,
   {
-    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
-    {
-      f
-      .debug_struct( "AsTable" )
-      .field( "0", &self.0 )
-      .finish()
-    }
-  }
+  fn fmt( &self, f: &mut fmt ::Formatter< '_ > ) -> fmt ::Result
+  {
+   f
+   .debug_struct( "AsTable" )
+   .field( "0", &self.0 )
+   .finish()
+ }
+ }
 
   // =
 
@@ -123,54 +123,54 @@ mod private
   ///
   pub trait IntoAsTable
   {
-    /// The type representing the table.
-    type Table;
+  /// The type representing the table.
+  type Table;
 
-    /// The type used to identify each row.
-    type RowKey : table::RowKey;
+  /// The type used to identify each row.
+  type RowKey: table ::RowKey;
 
-    /// The type representing a row, must implement `Cells`.
-    type Row : Cells< Self::CellKey >;
+  /// The type representing a row, must implement `Cells`.
+  type Row: Cells< Self ::CellKey >;
 
-    /// The type used to identify cells within a row, must implement `Key` and can be unsized.
-    type CellKey : table::CellKey + ?Sized;
+  /// The type used to identify cells within a row, must implement `Key` and can be unsized.
+  type CellKey: table ::CellKey + ?Sized;
 
-    // /// The type representing the content of a cell, must implement `CellRepr`.
-    // type // CellRepr : table::CellRepr;
+  // /// The type representing the content of a cell, must implement `CellRepr`.
+  // type // CellRepr: table ::CellRepr;
 
-    /// Converts the data reference into an `AsTable` reference.
-    fn as_table( &self ) -> AsTable< '_, Self::Table, Self::RowKey, Self::Row, Self::CellKey >;
-  }
+  /// Converts the data reference into an `AsTable` reference.
+  fn as_table( &self ) -> AsTable< '_, Self ::Table, Self ::RowKey, Self ::Row, Self ::CellKey >;
+ }
 
-  impl< 'table, Table, RowKey, Row, CellKey> IntoAsTable
-  for AsTable< 'table, Table, RowKey, Row, CellKey>
+  impl< 'table, Table, RowKey, Row, CellKey > IntoAsTable
+  for AsTable< 'table, Table, RowKey, Row, CellKey >
   where
-    RowKey : table::RowKey,
-    Row : Cells< CellKey >,
-    CellKey : table::CellKey + ?Sized,
-    // CellRepr : table::CellRepr,
-    Self : Copy,
+  RowKey: table ::RowKey,
+  Row: Cells< CellKey >,
+  CellKey: table ::CellKey + ?Sized,
+  // CellRepr: table ::CellRepr,
+  Self: Copy,
   {
 
-    type Table = Table;
-    type RowKey = RowKey;
-    type Row = Row;
-    type CellKey = CellKey;
-    // type CellRepr = CellRepr;
+  type Table = Table;
+  type RowKey = RowKey;
+  type Row = Row;
+  type CellKey = CellKey;
+  // type CellRepr = CellRepr;
 
-    fn as_table( &self ) -> AsTable< '_, Self::Table, Self::RowKey, Self::Row, Self::CellKey >
-    {
-      *self
-    }
+  fn as_table( &self ) -> AsTable< '_, Self ::Table, Self ::RowKey, Self ::Row, Self ::CellKey >
+  {
+   *self
+ }
 
-  }
+ }
 
 //   impl< Row > IntoAsTable
 //   for Vec<  Row  >
 //   where
-//     Row : Cells< Self::CellKey >,
-//     // CellKey : table::CellKey + ?Sized,
-//     // // CellRepr : table::CellRepr,
+//     Row: Cells< Self ::CellKey >,
+//     // CellKey: table ::CellKey + ?Sized,
+//     // // CellRepr: table ::CellRepr,
 //   {
 //
 //     type Table = Self;
@@ -179,57 +179,57 @@ mod private
 //     type CellKey = str;
 //     type CellRepr = WithRef;
 //
-//     fn as_table( &self ) -> AsTable< '_, Self::Table, Self::RowKey, Self::Row, Self::CellKey >
+//     fn as_table( &self ) -> AsTable< '_, Self ::Table, Self ::RowKey, Self ::Row, Self ::CellKey >
 //     {
-//       AsTable::from( self )
-//     }
+//       AsTable ::from( self )
+// }
 //
-//   }
+// }
 
-  // pub struct AsTable< 'table, Table, RowKey, Row, CellKey>
+  // pub struct AsTable< 'table, Table, RowKey, Row, CellKey >
 
 }
 
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
+  use super :: *;
 
   #[ doc( inline ) ]
-  pub use orphan::*;
+  pub use orphan :: *;
 }
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::*;
+  use super :: *;
 
   #[ doc( inline ) ]
-  pub use private::
+  pub use private ::
   {
-    AsTable,
-    IntoAsTable,
-  };
+  AsTable,
+  IntoAsTable,
+ };
 
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::*;
+  use super :: *;
 }

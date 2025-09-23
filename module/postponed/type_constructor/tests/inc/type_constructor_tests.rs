@@ -7,22 +7,22 @@
 
 use type_constructor as the_module;
 #[ allow( unused_imports ) ]
-use test_tools::exposed::*;
+use test_tools ::exposed :: *;
 
 #[ path = "./inc.rs" ]
 mod inc;
 
-// zzz : move to inc after implementing macro to check presence of a dependency
+// zzz: move to inc after implementing macro to check presence of a dependency
 #[ cfg( not( feature = "no_std" ) ) ]
-#[ test_tools::nightly ]
+#[ test_tools ::nightly ]
 #[ test ]
 fn trybuild_tests()
 {
-  // use test_tools::trybuild;
-  println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+  // use test_tools ::trybuild;
+  println!( "current_dir: {:?}", std ::env ::current_dir().unwrap() );
   #[ allow( unused_variables ) ]
-  // let t = trybuild::TestCases::new();
-  let t = test_tools::compiletime::TestCases::new();
+  // let t = trybuild ::TestCases ::new();
+  let t = test_tools ::compiletime ::TestCases ::new();
 
   #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
   t.compile_fail( "tests/test/dt/type_constructor/dynamic/make/*.rs" );

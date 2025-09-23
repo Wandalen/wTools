@@ -1,11 +1,11 @@
-// // xxx : review
+// // xxx: review
 //
-// crate::mod_interface!
+// crate ::mod_interface!
 // {
-//   own use ::iter_tools::Itertools;
+//   own use ::iter_tools ::Itertools;
 //
-//   // own use ::error_tools::err;
-//   // own use ::error_tools::dependency::*;
+//   // own use ::error_tools ::err;
+//   // own use ::error_tools ::dependency :: *;
 //
 //   own use error_tools;
 //
@@ -18,5 +18,5 @@
 // // #[ cfg( not( feature = "no_std" ) ) ]
 // // pub mod string
 // // {
-// //   pub use strs_tools::string::*;
+// //   pub use strs_tools ::string :: *;
 // // }

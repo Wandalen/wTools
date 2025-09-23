@@ -42,14 +42,17 @@ use rayon::prelude::*;
 use std::sync::{Arc, Mutex};
 
 /// Parallel splitting for large inputs with work distribution
-pub struct ParallelSplit {
+pub struct ParallelSplit 
+{
     chunk_size: usize,
     num_threads: Option<usize>,
     load_balance: bool,
 }
 
-impl ParallelSplit {
-    pub fn new() -> Self {
+impl ParallelSplit 
+{
+    pub fn new() -> Self 
+{
         Self {
             chunk_size: 1024 * 1024, // 1MB chunks by default
             num_threads: None,        // Use all available cores
@@ -57,12 +60,14 @@ impl ParallelSplit {
         }
     }
     
-    pub fn chunk_size(mut self, size: usize) -> Self {
+    pub fn chunk_size(mut self, size: usize) -> Self 
+{
         self.chunk_size = size;
         self
     }
     
-    pub fn threads(mut self, count: usize) -> Self {
+    pub fn threads(mut self, count: usize) -> Self 
+{
         self.num_threads = Some(count);
         self
     }
@@ -85,7 +90,8 @@ impl ParallelSplit {
     }
     
     /// Calculate chunk boundaries ensuring no delimiter splits
-    fn calculate_chunks(&self, input: &str, delimiters: &[&str]) -> Vec<(usize, usize)> {
+    fn calculate_chunks(&self, input: &str, delimiters: &[&str]) -> Vec<(usize, usize)> 
+{
         let mut chunks = Vec::new();
         let total_len = input.len();
         let target_chunk_size = self.chunk_size;
@@ -104,7 +110,8 @@ impl ParallelSplit {
         chunks
     }
     
-    fn find_safe_boundary(&self, input: &str, start: usize, proposed_end: usize, delimiters: &[&str]) -> usize {
+    fn find_safe_boundary(&self, input: &str, start: usize, proposed_end: usize, delimiters: &[&str]) -> usize 
+{
         if proposed_end >= input.len() {
             return input.len();
         }
@@ -132,7 +139,8 @@ impl ParallelSplit {
 }
 
 /// Iterator for parallel split results
-pub struct ParallelSplitIterator<'a> {
+pub struct ParallelSplitIterator<'a> 
+{
     chunks: Vec<(usize, usize)>,
     delimiters: Vec<&'a str>,
     current_chunk: usize,
@@ -148,7 +156,8 @@ use crossbeam::utils::Backoff;
 use std::thread;
 
 /// Work-stealing executor for string processing tasks
-pub struct WorkStealingExecutor {
+pub struct WorkStealingExecutor 
+{
     workers: Vec<Worker<StringTask>>,
     stealers: Vec<Stealer<StringTask>>,
     injector: Injector<StringTask>,
@@ -156,7 +165,8 @@ pub struct WorkStealingExecutor {
 }
 
 #[derive(Debug)]
-enum StringTask {
+enum StringTask 
+{
     Split { 
         input: String, 
         delimiters: Vec<String>,
@@ -171,8 +181,10 @@ enum StringTask {
     },
 }
 
-impl WorkStealingExecutor {
-    pub fn new(num_workers: usize) -> Self {
+impl WorkStealingExecutor 
+{
+    pub fn new(num_workers: usize) -> Self 
+{
         let mut workers = Vec::new();
         let mut stealers = Vec::new();
         
@@ -262,7 +274,8 @@ impl WorkStealingExecutor {
         Vec::new() // Placeholder
     }
     
-    fn execute_task(task: StringTask) {
+    fn execute_task(task: StringTask) 
+{
         match task {
             StringTask::Split { input, delimiters, start, end, result_sender } => {
                 let chunk = &input[start..end];
@@ -296,20 +309,24 @@ impl WorkStealingExecutor {
 use std::collections::HashMap;
 
 /// NUMA-aware parallel string processor
-pub struct NUMAStringProcessor {
+pub struct NUMAStringProcessor 
+{
     numa_nodes: Vec<NUMANode>,
     thread_affinity: HashMap<usize, usize>, // thread_id -> numa_node
 }
 
 #[derive(Debug)]
-struct NUMANode {
+struct NUMANode 
+{
     id: usize,
     memory_pool: crate::memory_pool::StringArena,
     worker_threads: Vec<usize>,
 }
 
-impl NUMAStringProcessor {
-    pub fn new() -> Self {
+impl NUMAStringProcessor 
+{
+    pub fn new() -> Self 
+{
         let numa_topology = Self::detect_numa_topology();
         let numa_nodes = Self::initialize_numa_nodes(numa_topology);
         
@@ -363,7 +380,8 @@ impl NUMAStringProcessor {
         results
     }
     
-    fn detect_numa_topology() -> Vec<usize> {
+    fn detect_numa_topology() -> Vec<usize> 
+{
         // Platform-specific NUMA detection
         // This is a simplified version - real implementation would use
         // libnuma on Linux, GetNumaHighestNodeNumber on Windows, etc.
@@ -405,7 +423,8 @@ use std::pin::Pin;
 use std::task::{Context, Poll};
 
 /// Parallel streaming processor with configurable parallelism
-pub struct ParallelStreamProcessor<T> {
+pub struct ParallelStreamProcessor<T> 
+{
     input_stream: Pin<Box<dyn Stream<Item = String> + Send>>,
     processor: Box<dyn Fn(String) -> T + Send + Sync>,
     parallelism: usize,
@@ -430,7 +449,9 @@ where
     }
     
     /// Process stream in parallel with backpressure
-    pub fn process(self) -> impl Stream<Item = T> {
+    pub fn process(self) -> impl Stream<Item = T> 
+
+{
         ParallelStreamOutput::new(
             self.input_stream,
             self.processor,
@@ -440,7 +461,8 @@ where
     }
 }
 
-struct ParallelStreamOutput<T> {
+struct ParallelStreamOutput<T> 
+{
     input_stream: Pin<Box<dyn Stream<Item = String> + Send>>,
     processor: Arc<dyn Fn(String) -> T + Send + Sync>,
     sender: mpsc::UnboundedSender<String>,
@@ -471,7 +493,8 @@ where
         }
     }
     
-    fn spawn_processing_task(&mut self, input: String) {
+    fn spawn_processing_task(&mut self, input: String) 
+{
         if self.active_tasks >= self.max_parallelism {
             return; // Backpressure - don't spawn more tasks
         }
@@ -494,7 +517,8 @@ where
 {
     type Item = T;
     
-    fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
+    fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> 
+{
         // Try to get results first
         match self.receiver.poll_recv(cx) {
             Poll::Ready(Some(result)) => {
@@ -554,8 +578,10 @@ pub trait ParallelStringExt {
         R: Send;
 }
 
-impl ParallelStringExt for str {
-    fn par_split(&self, delimiters: &[&str]) -> ParallelSplitIterator<'_> {
+impl ParallelStringExt for str 
+{
+    fn par_split(&self, delimiters: &[&str]) -> ParallelSplitIterator<'_> 
+{
         ParallelSplit::new()
             .split_parallel(self, delimiters)
     }
@@ -570,7 +596,8 @@ impl ParallelStringExt for str {
             .collect()
     }
     
-    fn par_find_all(&self, patterns: &[&str]) -> Vec<(usize, String)> {
+    fn par_find_all(&self, patterns: &[&str]) -> Vec<(usize, String)> 
+{
         use rayon::prelude::*;
         
         // Parallel search across patterns
@@ -649,7 +676,8 @@ impl ParallelStringExt for str {
 #### Challenge: Chunk Boundary Management
 **Solution**: Overlap regions and delimiter-aware boundary detection
 ```rust
-fn find_safe_chunk_boundary(input: &str, proposed_end: usize, delimiters: &[&str]) -> usize {
+fn find_safe_chunk_boundary(input: &str, proposed_end: usize, delimiters: &[&str]) -> usize 
+{
     // Create overlap region to handle cross-boundary delimiters
     let max_delim_len = delimiters.iter().map(|d| d.len()).max().unwrap_or(0);
     let overlap_start = proposed_end.saturating_sub(max_delim_len * 2);
@@ -674,8 +702,10 @@ fn find_safe_chunk_boundary(input: &str, proposed_end: usize, delimiters: &[&str
 #### Challenge: Load Balancing for Uneven Work
 **Solution**: Dynamic work stealing with fine-grained tasks  
 ```rust
-impl WorkStealingExecutor {
-    fn subdivide_large_task(&self, task: StringTask) -> Vec<StringTask> {
+impl WorkStealingExecutor 
+{
+    fn subdivide_large_task(&self, task: StringTask) -> Vec<StringTask> 
+{
         match task {
             StringTask::Split { input, delimiters, start, end, .. } => {
                 let size = end - start;
@@ -700,8 +730,10 @@ impl WorkStealingExecutor {
 #### Challenge: Memory Scaling with Thread Count
 **Solution**: Adaptive memory pool sizing based on available memory
 ```rust
-impl ParallelMemoryManager {
-    fn calculate_optimal_memory_per_thread(&self) -> usize {
+impl ParallelMemoryManager 
+{
+    fn calculate_optimal_memory_per_thread(&self) -> usize 
+{
         let total_memory = Self::get_available_memory();
         let num_threads = self.thread_count;
         let memory_per_thread = total_memory / (num_threads * 4); // Reserve 75% for other uses
@@ -726,7 +758,8 @@ impl ParallelMemoryManager {
 #### Scalability Benchmarks
 ```rust
 #[bench]
-fn bench_parallel_scaling(b: &mut Bencher) {
+fn bench_parallel_scaling(b: &mut Bencher) 
+{
     let input = generate_large_test_input(100 * 1024 * 1024); // 100MB
     let thread_counts = [1, 2, 4, 8, 16];
     
@@ -747,7 +780,8 @@ fn bench_parallel_scaling(b: &mut Bencher) {
 }
 
 #[bench]
-fn bench_numa_awareness(b: &mut Bencher) {
+fn bench_numa_awareness(b: &mut Bencher) 
+{
     let input = generate_numa_test_data();
     
     b.iter(|| {

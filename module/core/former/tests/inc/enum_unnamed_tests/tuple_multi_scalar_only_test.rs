@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 // Purpose: Provides shared test assertions and logic for both the derived and manual implementations
 // of the static scalar constructor for a multi-field tuple variant when it is explicitly marked
 // with the `#[ scalar ]` attribute. It tests that the constructors generated/implemented for this

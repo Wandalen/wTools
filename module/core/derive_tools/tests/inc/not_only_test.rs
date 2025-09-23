@@ -2,7 +2,7 @@
 #[ allow( dead_code ) ]
 #[ allow( unused_variables ) ]
 
-use test_tools::prelude::*;
+use test_tools :: *;
 
 // Test for UnitStruct
 #[ test ]
@@ -31,11 +31,11 @@ fn test_tuple_struct1()
 #[ test ]
 fn test_named_struct1()
 {
-  let instance = NamedStruct1 { field1 : true };
+  let instance = NamedStruct1 { field1: true };
   let not_instance = !instance;
   assert_eq!( not_instance.field1, false );
 
-  let instance = NamedStruct1 { field1 : false };
+  let instance = NamedStruct1 { field1: false };
   let not_instance = !instance;
   assert_eq!( not_instance.field1, true );
 }

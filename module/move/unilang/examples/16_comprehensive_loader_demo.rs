@@ -1,3 +1,4 @@
+#![allow(clippy::all)]
 //! # Comprehensive Loader Demonstration
 //!
 //! This example demonstrates all aspects of command loading from YAML/JSON files,
@@ -674,6 +675,7 @@ fn demonstrate_complex_features() -> Result< (), unilang::error::Error >
     {
       println!( "✅ Complex command loaded successfully" );
 
+      #[allow(deprecated)]
       let mut registry = CommandRegistry::new();
       for cmd in commands
       {

@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: Tests the `#[ derive( Former ) ]` macro's generation of a standalone scalar constructor
 //! for a multi-field tuple variant when the enum has `#[ standalone_constructors ]` and all fields
 //! within the variant have `#[ arg_for_constructor ]`. This file focuses on verifying the derive-based implementation.

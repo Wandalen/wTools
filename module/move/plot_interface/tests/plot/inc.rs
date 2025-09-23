@@ -1,5 +1,5 @@
 
 #[ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 #[ cfg( not( feature = "no_std" ) ) ]
 mod basic_test;

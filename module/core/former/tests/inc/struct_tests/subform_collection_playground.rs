@@ -1,7 +1,8 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 #![deny(missing_docs)]
 #![allow(dead_code)]
 use super::*;
-use std::collections::HashMap;
+use collection_tools::HashMap;
 
 //
 // this should work

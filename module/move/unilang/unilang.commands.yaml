@@ -17,3 +17,68 @@
   deprecation_message: ""
   http_method_hint: "GET"
   examples: []
+
+- name: "help"
+  namespace: ""
+  description: "Show help information"
+  hint: "Displays help for commands"
+  arguments: []
+  routine_link: null
+  status: "stable"
+  version: "1.0.0"
+  tags: []
+  aliases:
+    - "h"
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+  examples: []
+
+- name: "status"
+  namespace: "system"
+  description: "Show system status"
+  hint: "Displays system status information"
+  arguments: []
+  routine_link: null
+  status: "stable"
+  version: "1.0.0"
+  tags: []
+  aliases: []
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+  examples: []
+
+- name: "info"
+  namespace: "system"
+  description: "Show system information"
+  hint: "Displays detailed system information"
+  arguments: []
+  routine_link: null
+  status: "stable"
+  version: "1.0.0"
+  tags: []
+  aliases: []
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+  examples: []
+
+- name: "stats"
+  namespace: "performance"
+  description: "Show performance statistics"
+  hint: "Displays performance metrics"
+  arguments: []
+  routine_link: null
+  status: "stable"
+  version: "1.0.0"
+  tags: []
+  aliases: []
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+  examples: []

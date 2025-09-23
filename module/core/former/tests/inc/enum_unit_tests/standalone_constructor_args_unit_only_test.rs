@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 // Purpose: Provides shared test assertions and logic for verifying the standalone constructor for a unit variant,
 // intended to be included by both the derived (`standalone_constructor_args_unit_derive.rs`) and manual
 // (`standalone_constructor_args_unit_manual.rs`) test files.

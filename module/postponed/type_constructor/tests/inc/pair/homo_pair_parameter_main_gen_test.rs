@@ -1,8 +1,8 @@
 #[ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 
 // trace_macros!( true );
-// the_module::types!
+// the_module ::types!
 // {
 
 //   ///
@@ -11,7 +11,7 @@ use super::*;
 
 //   #[ derive( Debug, Clone ) ]
 //   #[ derive( PartialEq ) ]
-//   pair Pair : < T1 : core::cmp::PartialEq + core::clone::Clone >;
+//   pair Pair: < T1: core ::cmp ::PartialEq + core ::clone ::Clone >;
 
 // }
 // trace_macros!( false );

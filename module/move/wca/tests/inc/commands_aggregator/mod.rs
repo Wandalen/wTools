@@ -1,4 +1,4 @@
-use super::*;
+use super :: *;
 
 mod basic;
 mod callback;
