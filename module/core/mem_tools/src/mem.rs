@@ -34,6 +34,8 @@ mod private
   // ensures that both memory regions have the same length. This guarantees that `memcmp`
   // will not read out of bounds for `src2` when comparing `n` bytes, as both `mem1` and `mem2`
   // are guaranteed to point to at least `n` bytes of valid memory.
+  // SAFETY: The pointers `mem1` and `mem2` are valid for the size of the data, and both regions
+  // have been verified to have the same size, ensuring no out-of-bounds access.
   unsafe { memcmp(mem1, mem2, core ::mem ::size_of_val(src1)) == 0 }
  }
 

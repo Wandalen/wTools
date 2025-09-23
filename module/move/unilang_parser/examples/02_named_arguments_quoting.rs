@@ -1,7 +1,7 @@
 //! Named Arguments and Quoting Example
 //!
 //! This example demonstrates :
-//! - Named arguments with ::separator
+//! - Named arguments with `::separator`
 //! - Single and double quoted values
 //! - Complex strings containing SQL and special characters
 

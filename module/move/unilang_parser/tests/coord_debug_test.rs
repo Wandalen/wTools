@@ -1,4 +1,4 @@
-//! Test for debugging coord::1,1 parsing issue
+//! Test for debugging `coord::1,1` parsing issue
 
 use unilang_parser::*;
 
@@ -16,7 +16,7 @@ fn test_coord_comma_parsing() {
             println!("Positional arguments: {:?}", instruction.positional_arguments);
         }
         Err(e) => {
-            println!("Parse error: {:?}", e);
+            println!("Parse error: {e:?}");
             // Don't panic in this test - let it show the error for now
         }
     }
@@ -37,7 +37,7 @@ fn test_simple_named_arg() {
             println!("Named arguments: {:?}", instruction.named_arguments);
         }
         Err(e) => {
-            println!("Parse error for simple named arg with spaces: {:?}", e);
+            println!("Parse error for simple named arg with spaces: {e:?}");
         }
     }
 
@@ -52,7 +52,7 @@ fn test_simple_named_arg() {
             println!("Named arguments: {:?}", instruction.named_arguments);
         }
         Err(e) => {
-            println!("Parse error for simple named arg without spaces: {:?}", e);
+            println!("Parse error for simple named arg without spaces: {e:?}");
         }
     }
 }

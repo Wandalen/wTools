@@ -22,7 +22,7 @@ mod implementation
 ///
 /// Reflect structure of any kind.
 ///
-/// ### Sample ::trivial.
+/// ### Sample `::trivial`.
 ///
 /// qqq: write, please
 ///
