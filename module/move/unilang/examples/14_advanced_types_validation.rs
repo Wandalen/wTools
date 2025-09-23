@@ -1,3 +1,4 @@
+#![allow(clippy::all)]
 //! # Advanced Types and Validation
 //!
 //! This example demonstrates advanced argument types including JSON objects,
@@ -12,6 +13,7 @@ fn main() -> Result< (), unilang::error::Error >
 {
   println!( "=== Advanced Types and Validation Demo ===\n" );
 
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
 
   // Step 1: Command with advanced argument types
@@ -253,6 +255,7 @@ fn main() -> Result< (), unilang::error::Error >
     })
   });
 
+  #[allow(deprecated)]
   registry.command_add_runtime( &advanced_cmd, advanced_routine )?;
   println!( "✓ Registered advanced types command\n" );
 

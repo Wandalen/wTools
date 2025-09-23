@@ -53,7 +53,8 @@ unilang_parser = { version = "0.2", default-features = false, features = ["no_st
 ```rust
 use unilang_parser::{Parser, UnilangParserOptions};
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), Box<dyn std::error::Error>> 
+{
     // Create parser with default options
     let parser = Parser::new(UnilangParserOptions::default());
     
@@ -246,12 +247,14 @@ use unilang_parser::{Parser, UnilangParserOptions, GenericInstruction};
 
 // Example: Converting to your application's command structure
 #[derive(Debug)]
-struct AppCommand {
+struct AppCommand 
+{
     name: String,
     args: std::collections::HashMap<String, String>,
 }
 
-fn convert_instruction(instruction: GenericInstruction) -> AppCommand {
+fn convert_instruction(instruction: GenericInstruction) -> AppCommand 
+{
     AppCommand {
         name: instruction.command_path_slices.join("."),
         args: instruction.named_arguments,

@@ -19,11 +19,13 @@ The current `generic_params::decompose` function provides excellent functionalit
 
 ```rust
 /// Classify parameters by type
-pub fn classify_generics(generics: &syn::Generics) -> GenericsClassification {
+pub fn classify_generics(generics: &syn::Generics) -> GenericsClassification 
+{
     // Separates into lifetimes, types, and consts
 }
 
-pub struct GenericsClassification {
+pub struct GenericsClassification 
+{
     pub lifetimes: Vec<&syn::LifetimeParam>,
     pub types: Vec<&syn::TypeParam>,
     pub consts: Vec<&syn::ConstParam>,
@@ -54,7 +56,8 @@ pub const FILTER_NON_LIFETIMES: fn(&syn::GenericParam) -> bool = |p| !matches!(p
 
 ```rust
 /// Extended decompose that provides classified parameters
-pub fn decompose_classified(generics: &syn::Generics) -> DecomposedClassified {
+pub fn decompose_classified(generics: &syn::Generics) -> DecomposedClassified 
+{
     let (with_defaults, impl_params, ty_params, where_clause) = decompose(generics);
     let classification = classify_generics(generics);
     
@@ -76,7 +79,8 @@ pub fn decompose_classified(generics: &syn::Generics) -> DecomposedClassified {
     }
 }
 
-pub struct DecomposedClassified {
+pub struct DecomposedClassified 
+{
     // Original fields from decompose
     pub generics_with_defaults: Punctuated<syn::GenericParam, syn::token::Comma>,
     pub generics_impl: Punctuated<syn::GenericParam, syn::token::Comma>,
@@ -129,18 +133,21 @@ Extend `GenericsRef` with new methods:
 ```rust
 impl<'a> GenericsRef<'a> {
     /// Get classification of the generics
-    pub fn classification(&self) -> GenericsClassification {
+    pub fn classification(&self) -> GenericsClassification 
+{
         classify_generics(self.syn_generics)
     }
     
     /// Get impl generics without lifetimes
-    pub fn impl_generics_no_lifetimes(&self) -> proc_macro2::TokenStream {
+    pub fn impl_generics_no_lifetimes(&self) -> proc_macro2::TokenStream 
+{
         let filtered = filter_params(&self.syn_generics.params, FILTER_NON_LIFETIMES);
         // Generate tokens...
     }
     
     /// Check if only contains lifetimes
-    pub fn has_only_lifetimes(&self) -> bool {
+    pub fn has_only_lifetimes(&self) -> bool 
+{
         self.classification().has_only_lifetimes
     }
 }

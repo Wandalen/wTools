@@ -3,13 +3,13 @@
 //! This matrix outlines test cases for the `Parser`'s entry points (`parse_single_instruction`)
 //! and its initial configuration, focusing on various basic input types.
 //!
-//! **Test Factors:**
-//! - `Input String`: Different forms of input (empty, whitespace, comment, simple command, unterminated quote).
-//! - `Parser Options`: The configuration used for the parser (currently only `Default`).
+//! **Test Factors: **
+//! - `Input String` : Different forms of input (empty, whitespace, comment, simple command, unterminated quote).
+//! - `Parser Options` : The configuration used for the parser (currently only `Default`).
 //!
 //! ---
 //!
-//! **Test Combinations:**
+//! **Test Combinations: **
 //!
 //! | ID | Aspect Tested | Input String | Parser Options | Expected Behavior |
 //! |---|---|---|---|---|
@@ -19,9 +19,9 @@
 //! | T1.4 | Simple command | `"command"` | Default | `Ok`, command path `["command"]` |
 //! | T1.5 | Unterminated quote | `"command \"unterminated"`| Default | `Ok`, command path `["command"]`, positional arg `["unterminated"]` |
 
-use unilang_parser::*;
-use unilang_parser::error::ErrorKind; // Added for error assertion
-use unilang_parser::UnilangParserOptions;
+use unilang_parser :: *;
+use unilang_parser ::error ::ErrorKind; // Added for error assertion
+use unilang_parser ::UnilangParserOptions;
 
 // Define default_options function
 
@@ -30,7 +30,7 @@ use unilang_parser::UnilangParserOptions;
 #[ test ]
 fn parse_single_str_empty_input()
 {
-  let parser = Parser::new( UnilangParserOptions::default() );
+  let parser = Parser ::new( UnilangParserOptions ::default() );
   let result = parser.parse_single_instruction( "" );
   assert!( result.is_ok(), "Expected Ok for empty input, got Err: {:?}", result.err() );
   let instruction = result.unwrap();
@@ -45,14 +45,14 @@ fn parse_single_str_empty_input()
 #[ test ]
 fn parse_single_str_whitespace_input()
 {
-  let options = UnilangParserOptions::default();
-  let parser = Parser::new( options );
+  let options = UnilangParserOptions ::default();
+  let parser = Parser ::new( options );
   let result = parser.parse_single_instruction( "   \t\n  " );
   assert!(
-    result.is_ok(),
-    "Expected Ok for whitespace input, got Err: {:?}",
-    result.err()
-  );
+  result.is_ok(),
+  "Expected Ok for whitespace input, got Err: {:?}",
+  result.err()
+ );
   let instruction = result.unwrap();
   assert!( instruction.command_path_slices.is_empty() );
   assert!( instruction.positional_arguments.is_empty() );
@@ -65,14 +65,14 @@ fn parse_single_str_whitespace_input()
 #[ test ]
 fn parse_single_str_comment_input()
 {
-  let parser = Parser::new( UnilangParserOptions::default() );
+  let parser = Parser ::new( UnilangParserOptions ::default() );
   let input = "# This is a comment";
   let result = parser.parse_single_instruction( input );
   assert!( result.is_err(), "Parse error for comment input: {:?}", result.err() );
   if let Err( e ) = result
   {
-    assert_eq!( e.kind, ErrorKind::Syntax( "Unexpected token '#' in arguments".to_string() ) );
-  }
+  assert_eq!( e.kind, ErrorKind ::Syntax( "Unexpected token '#' in arguments".to_string() ) );
+ }
 }
 
 /// Tests parsing a simple command with no arguments or operators.
@@ -80,10 +80,10 @@ fn parse_single_str_comment_input()
 #[ test ]
 fn parse_single_str_simple_command_placeholder()
 {
-  let options = UnilangParserOptions::default();
-  let parser = Parser::new( options );
+  let options = UnilangParserOptions ::default();
+  let parser = Parser ::new( options );
   let result = parser.parse_single_instruction( "command" );
-  assert!( result.is_ok(), "Parse error for 'command': {:?}", result.err() );
+  assert!( result.is_ok(), "Parse error for 'command' : {:?}", result.err() );
   let instruction = result.unwrap();
   assert_eq!( instruction.command_path_slices, vec![ "command".to_string() ] );
 }
@@ -93,14 +93,14 @@ fn parse_single_str_simple_command_placeholder()
 #[ test ]
 fn parse_single_str_unterminated_quote_passes_to_analyzer()
 {
-  let parser = Parser::new( UnilangParserOptions::default() );
+  let parser = Parser ::new( UnilangParserOptions ::default() );
   let input = "command \"unterminated";
   let result = parser.parse_single_instruction( input );
   assert!(
-    result.is_ok(),
-    "Expected Ok for unterminated quote, got Err: {:?}",
-    result.err()
-  );
+  result.is_ok(),
+  "Expected Ok for unterminated quote, got Err: {:?}",
+  result.err()
+ );
   let instruction = result.unwrap();
   assert_eq!( instruction.command_path_slices, vec![ "command".to_string() ] );
   assert_eq!( instruction.positional_arguments.len(), 1 );

@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Test to isolate proc macro issue with lifetime-only structs
 
 // Custom attribute macro that does nothing - just to test the issue

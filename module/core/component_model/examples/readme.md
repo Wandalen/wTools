@@ -61,7 +61,8 @@ cargo run --example 008_performance_comparison
 ### 🎯 **Type-Driven Assignment**
 ```rust
 #[derive(Default, Assign)]
-struct Config {
+struct Config 
+{
   host : String,
   port : u16,
   timeout : f64,

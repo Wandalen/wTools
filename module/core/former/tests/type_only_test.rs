@@ -1,4 +1,5 @@
-//! Test for type-only struct with Former derive.
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
+/// Test for type-only struct with Former derive.
 
 use former::Former;
 

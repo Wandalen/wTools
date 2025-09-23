@@ -1,28 +1,28 @@
 /// Define a private namespace for all its items.
 mod private
 {
-  use crate::prelude::*;
-  // use core::fmt::Debug;
-  // use core::iter::Iterator;
+  use crate ::prelude :: *;
+  // use core ::fmt ::Debug;
+  // use core ::iter ::Iterator;
 
   ///
   /// Implementation of depth-first search algorithm.
   ///
   pub trait DfsAlgorithm
   where
-    Self : NodeBasicInterface,
+  Self: NodeBasicInterface,
   {
-    // fn dfs( roots : Iterator< IdInterface > )
-    // {
-    //
-    // }
-  }
+  // fn dfs( roots: Iterator< IdInterface > )
+  // {
+  //
+  // }
+ }
 
 }
 
 //
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   prelude use DfsAlgorithm;
 }

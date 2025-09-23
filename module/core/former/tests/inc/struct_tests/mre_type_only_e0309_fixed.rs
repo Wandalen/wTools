@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 // MRE test for E0309 lifetime constraint error (should be FIXED)
 // This test ensures we don't regress on the main type-only struct fix
 

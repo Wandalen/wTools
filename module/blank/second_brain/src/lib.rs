@@ -4,7 +4,7 @@
 #![ doc( html_root_url = "https://docs.rs/second_brain/latest/second_brain/" ) ]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 
-/// Function description.
+/// A placeholder function for the second_brain module.
 #[ cfg( feature = "enabled" ) ]
 pub fn f1()
 {

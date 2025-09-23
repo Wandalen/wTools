@@ -34,10 +34,12 @@ include = [
 [features]
 default = [
   "enabled",
+
 ]
 full = [
-  "use_alloc",
   "enabled",
+
+  "use_alloc",
 ]
 no_std = []
 use_alloc = [ "no_std" ]

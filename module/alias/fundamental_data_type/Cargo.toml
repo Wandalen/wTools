@@ -26,10 +26,12 @@ all-features = false
 
 [features]
 default = [
+  "enabled",
   "derive_tools/default",
 ]
 full = [
-  "derive_tools/full",
+  "enabled",
+  "derive_tools/default",
 ]
 no_std = []
 use_alloc = [ "no_std" ]

@@ -3,10 +3,10 @@
 //! Defaults to `false`.
 //!
 
-use core::marker::PhantomData;
+use core ::marker ::PhantomData;
 
-use crate::*;
-// use component_model_types::Assign;
+use crate :: *;
+// use component_model_types ::Assign;
 
 /// Default marker for `AttributePropertyBoolean`.
 /// Used if no marker is defined as parameter.
@@ -19,7 +19,7 @@ pub struct AttributePropertyBooleanMarker;
 /// # Example
 ///
 /// ```rust
-/// use macro_tools::AttributePropertyBoolean;
+/// use macro_tools ::AttributePropertyBoolean;
 ///
 /// #[ derive( Debug, Default, Clone, Copy ) ]
 /// pub struct DebugMarker;
@@ -29,71 +29,71 @@ pub struct AttributePropertyBooleanMarker;
 ///
 /// pub trait AttributePropertyComponent
 /// {
-///   const KEYWORD : &'static str;
+///   const KEYWORD: &'static str;
 /// }
 ///
 /// impl AttributePropertyComponent for DebugMarker
 /// {
-///   const KEYWORD : &'static str = "debug";
+///   const KEYWORD: &'static str = "debug";
 /// }
 ///
 /// impl AttributePropertyComponent for EnabledMarker
 /// {
-///   const KEYWORD : &'static str = "enabled";
+///   const KEYWORD: &'static str = "enabled";
 /// }
 ///
 /// #[ derive( Debug, Default ) ]
 /// struct MyAttributes
 /// {
-///   pub debug : AttributePropertyBoolean< DebugMarker >,
-///   pub enabled : AttributePropertyBoolean< EnabledMarker >,
+///   pub debug: AttributePropertyBoolean< DebugMarker >,
+///   pub enabled: AttributePropertyBoolean< EnabledMarker >,
 /// }
 ///
-/// impl syn::parse::Parse for MyAttributes
+/// impl syn ::parse ::Parse for MyAttributes
 /// {
-///   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result<  Self  >
+///   fn parse( input: syn ::parse ::ParseStream< '_ > ) -> syn ::Result< Self >
 ///   {
-///     let mut debug = AttributePropertyBoolean::< DebugMarker >::default();
-///     let mut enabled = AttributePropertyBoolean::< EnabledMarker >::default();
+///     let mut debug = AttributePropertyBoolean :: < DebugMarker > ::default();
+///     let mut enabled = AttributePropertyBoolean :: < EnabledMarker > ::default();
 ///
 ///     while !input.is_empty()
 ///     {
 ///       let lookahead = input.lookahead1();
-///       if lookahead.peek( syn::Ident )
+///       if lookahead.peek( syn ::Ident )
 ///       {
-///         let ident : syn::Ident = input.parse()?;
+///         let ident: syn ::Ident = input.parse()?;
 ///         match ident.to_string().as_str()
 ///         {
-///           DebugMarker::KEYWORD => debug = input.parse()?,
-///           EnabledMarker::KEYWORD => enabled = input.parse()?,
+///           DebugMarker ::KEYWORD => debug = input.parse()?,
+///           EnabledMarker ::KEYWORD => enabled = input.parse()?,
 ///           _ => return Err( lookahead.error() ),
-///         }
-///       }
+/// }
+/// }
 ///       else
 ///       {
 ///         return Err( lookahead.error() );
-///       }
-///
-///       // Optional comma handling
-///       if input.peek( syn::Token![,] )
-///       {
-///         input.parse::< syn::Token![,] >()?;
-///       }
-///     }
-///
-///     Ok( MyAttributes { debug, enabled } )
-///   }
 /// }
 ///
-/// let input : syn::Attribute = syn::parse_quote!( #[ attribute( enabled = true ) ] );
+///       // Optional comma handling
+///       if input.peek( syn ::Token![,] )
+///       {
+///         input.parse :: < syn ::Token![,] >()?;
+/// }
+/// }
+///
+///     Ok( MyAttributes { debug, enabled } )
+/// }
+/// }
+///
+/// let input: syn ::Attribute = syn ::parse_quote!( #[ attribute( enabled = true ) ] );
 /// let meta = match input.meta
 /// {
-///   syn::Meta::List( meta_list ) => meta_list,
-///   _ => panic!( "Expected a Meta::List" ),
+///   syn ::Meta ::List( meta_list ) => meta_list,
+///   _ => panic!( "Expected a Meta ::List" ),
 /// };
 ///
-/// let nested_meta_stream : proc_macro2::TokenStream = meta.tokens;
-/// let attrs : MyAttributes = syn::parse2( nested_meta_stream ).unwrap();
+/// let nested_meta_stream: proc_macro2 ::TokenStream = meta.tokens;
+/// let attrs: MyAttributes = syn ::parse2( nested_meta_stream ).unwrap();
 /// println!( "{:?}", attrs );
 /// ```
 ///
@@ -107,79 +107,93 @@ pub struct AttributePropertyBooleanMarker;
 /// matching them to the appropriate marker's keyword.
 /// If an unrecognized identifier is encountered, it returns an error.
 ///
-/// The `parse_quote!` macro is used to create a `syn::Attribute` instance with the attribute syntax,
+/// The `parse_quote!` macro is used to create a `syn ::Attribute` instance with the attribute syntax,
 /// which is then parsed into the `MyAttributes` struct. The resulting `MyAttributes` instance is printed to the console.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyBoolean<Marker = AttributePropertyBooleanMarker>(bool, ::core::marker::PhantomData<Marker>);
+pub struct AttributePropertyBoolean< Marker = AttributePropertyBooleanMarker >(bool, ::core ::marker ::PhantomData< Marker >);
 
-impl<Marker> AttributePropertyBoolean<Marker> {
+impl< Marker > AttributePropertyBoolean< Marker > 
+{
   /// Just unwraps and returns the internal data.
   #[ must_use ]
   #[ inline( always ) ]
-  pub fn internal(self) -> bool {
-    self.0
-  }
+  pub fn internal(self) -> bool
+  {
+  self.0
+ }
 
   /// Returns a reference to the internal boolean value.
   #[ inline( always ) ]
   #[ must_use ]
-  pub fn ref_internal(&self) -> &bool {
-    &self.0
-  }
+  pub fn ref_internal( &self ) -> &bool
+  {
+  &self.0
+ }
 }
 
-impl<Marker, IntoT> Assign<AttributePropertyBoolean<Marker>, IntoT> for AttributePropertyBoolean<Marker>
+impl< Marker, IntoT > Assign< AttributePropertyBoolean<Marker >, IntoT> for AttributePropertyBoolean< Marker >
 where
-  IntoT: Into<AttributePropertyBoolean<Marker>>,
+  IntoT: Into< AttributePropertyBoolean<Marker >>,
 {
   #[ inline( always ) ]
-  fn assign(&mut self, component: IntoT) {
-    *self = component.into();
-  }
+  fn assign(&mut self, component: IntoT) 
+  {
+  *self = component.into();
+ }
 }
 
-impl<Marker> AttributePropertyComponent for AttributePropertyBoolean<Marker>
+impl< Marker > AttributePropertyComponent for AttributePropertyBoolean< Marker >
 where
   Marker: AttributePropertyComponent,
 {
-  const KEYWORD: &'static str = Marker::KEYWORD;
+  const KEYWORD: &'static str = Marker ::KEYWORD;
 }
 
-impl<Marker> syn::parse::Parse for AttributePropertyBoolean<Marker> {
-  fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result< Self > {
-    input.parse::<syn::Token![ = ]>()?;
-    let value: syn::LitBool = input.parse()?;
-    Ok(value.value.into())
-  }
+impl< Marker > syn ::parse ::Parse for AttributePropertyBoolean< Marker > 
+{
+  fn parse(input: syn ::parse ::ParseStream< '_ >) -> syn ::Result< Self > 
+  {
+  input.parse :: < syn ::Token![ = ] >()?;
+  let value: syn ::LitBool = input.parse()?;
+  Ok(value.value.into())
+ }
 }
 
-impl<Marker> From<bool> for AttributePropertyBoolean<Marker> {
+impl< Marker > From< bool > for AttributePropertyBoolean< Marker > 
+{
   #[ inline( always ) ]
-  #[ allow( clippy::default_constructed_unit_structs ) ]
-  fn from(src: bool) -> Self {
-    Self(src, PhantomData::default())
-  }
+  #[ allow( clippy ::default_constructed_unit_structs ) ]
+  fn from(src: bool) -> Self 
+  {
+  Self(src, PhantomData ::default())
+ }
 }
 
-impl<Marker> From<AttributePropertyBoolean<Marker>> for bool {
+impl< Marker > From< AttributePropertyBoolean<Marker >> for bool 
+{
   #[ inline( always ) ]
-  fn from(src: AttributePropertyBoolean<Marker>) -> Self {
-    src.0
-  }
+  fn from(src: AttributePropertyBoolean< Marker >) -> Self 
+  {
+  src.0
+ }
 }
 
-impl<Marker> core::ops::Deref for AttributePropertyBoolean<Marker> {
+impl< Marker > core ::ops ::Deref for AttributePropertyBoolean< Marker > 
+{
   type Target = bool;
 
   #[ inline( always ) ]
-  fn deref(&self) -> &bool {
-    &self.0
-  }
+  fn deref( &self ) -> &bool 
+  {
+  &self.0
+ }
 }
 
-impl<Marker> AsRef<bool> for AttributePropertyBoolean<Marker> {
+impl< Marker > AsRef< bool > for AttributePropertyBoolean< Marker > 
+{
   #[ inline( always ) ]
-  fn as_ref(&self) -> &bool {
-    &self.0
-  }
+  fn as_ref( &self ) -> &bool 
+  {
+  &self.0
+ }
 }

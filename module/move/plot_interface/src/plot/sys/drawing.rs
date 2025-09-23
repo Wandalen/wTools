@@ -1,40 +1,40 @@
 /// Define a private namespace for all its items.
 mod private
 {
-  use crate::own::*;
+  use crate ::own :: *;
 
   /// Drawing.
   #[ derive( Debug, Clone ) ]
   pub struct Drawing
   {
-    pub( crate ) id : Id,
-  }
+  pub( crate ) id: Id,
+ }
 
   impl Drawing
   {
-    /// Constructor.
-    pub fn new() -> Self
-    {
-      let id = Id::new::< Self >();
-      Self
-      {
-        id,
-      }
-    }
-  }
+  /// Constructor.
+  pub fn new() -> Self
+  {
+   let id = Id ::new :: < Self >();
+   Self
+   {
+  id,
+ }
+ }
+ }
 
   impl HasIdInterface for Drawing
   {
-    #[ inline ]
-    fn id( &self ) -> Id
-    {
-      self.id
-    }
-  }
+  #[ inline ]
+  fn id( &self ) -> Id
+  {
+   self.id
+ }
+ }
 
 }
 
-crate::mod_interface!
+crate ::mod_interface!
 {
 
   /// Draw changer.
@@ -45,7 +45,7 @@ crate::mod_interface!
   layer command;
   /// Draw queue.
   layer queue;
-  /// New shape : rectangle.
+  /// New shape: rectangle.
   layer rect_change_new;
   /// Change region of the rectangle.
   layer rect_change_region;

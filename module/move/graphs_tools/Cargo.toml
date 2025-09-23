@@ -29,7 +29,8 @@ default = [
   "debug",
 ]
 full = [
-  "default",
+  "enabled",
+  "debug",
 ]
 enabled = [
   "meta_tools/enabled",

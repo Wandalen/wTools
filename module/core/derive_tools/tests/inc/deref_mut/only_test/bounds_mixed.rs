@@ -1,7 +1,7 @@
 #[ test ]
 fn deref_mut()
 {
-  let mut a = BoundsMixed::< String, i32 >( "boo".into(), 3 );
+  let mut a = BoundsMixed :: < String, i32 >( "boo".into(), 3 );
   *a = "foo".into();
   let exp = "foo";
   let got = a.deref();

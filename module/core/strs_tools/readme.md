@@ -27,14 +27,16 @@ cargo add strs_tools
 Unlike standard `str.split()`, handles quotes and preserves context:
 
 ```rust
+# #[cfg(all(feature = "string_split", not(feature = "no_std")))]
+# {
 use strs_tools::string;
 
 // Basic splitting with delimiter preservation
 let text = "hello world test";
 let result : Vec< String > = string::split()
 .src( text )
-.delimeter( " " )
-.stripping( false )  // Keep delimiters
+.delimiter( " " )
+.preserving_delimiters( true )  // Keep delimiters
 .perform()
 .map( String::from )
 .collect();
@@ -45,12 +47,13 @@ assert_eq!( result, vec![ "hello", " ", "world", " ", "test" ] );
 let command = r#"run --file "my file.txt" --verbose"#;
 let parts : Vec< String > = string::split()
 .src( command )
-.delimeter( " " )
+.delimiter( " " )
 .quoting( true )     // Handle quotes intelligently
 .perform()
 .map( String::from )
 .collect();
 // Results: ["run", "--file", "my file.txt", "--verbose"]
+# }
 ```
 
 ### Text Indentation
@@ -58,11 +61,14 @@ let parts : Vec< String > = string::split()
 Add consistent indentation to multi-line text:
 
 ```rust
+# #[cfg(all(feature = "string_indentation", not(feature = "no_std")))]
+# {
 use strs_tools::string;
 
 let code = "fn main() {\n    println!(\"Hello\");\n}";
 let indented = string::indentation::indentation( "  ", code, "" );
 // Result: "  fn main() {\n      println!(\"Hello\");\n  }"
+# }
 ```
 
 ### Command Parsing
@@ -99,7 +105,7 @@ Enable SIMD acceleration for demanding applications:
 
 ```toml
 [dependencies]
-strs_tools = { version = "0.24", features = ["simd"] }
+strs_tools = { version = "0.30", features = ["simd"] }
 ```
 
 SIMD features provide significant speedups for:
@@ -114,7 +120,7 @@ Choose only the functionality you need:
 ```toml
 [dependencies]
 strs_tools = { 
-    version = "0.24", 
+    version = "0.30", 
     features = ["string_split", "string_parse_request"], 
     default-features = false 
 }

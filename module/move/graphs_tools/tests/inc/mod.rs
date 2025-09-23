@@ -1,6 +1,6 @@
 #![ allow( unused_imports ) ]
 
-use super::*;
+use super :: *;
 
 pub mod graph;
 

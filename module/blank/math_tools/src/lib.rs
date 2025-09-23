@@ -1,4 +1,4 @@
-//! qqq : write proper description
+//! qqq: write proper description
 /// get name
 pub fn name() -> String
 {

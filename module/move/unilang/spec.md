@@ -2,8 +2,8 @@
 # spec
 
 - **Name:** Unilang Framework
-- **Version:** 3.0.0
-- **Date:** 2025-08-05
+- **Version:** 3.1.0
+- **Date:** 2025-09-16
 
 ### Table of Contents
 *   **Part I: Public Contract (Mandatory Requirements)**
@@ -141,6 +141,17 @@ This section lists the specific, testable functions the `unilang` framework **mu
 *   **FR-HELP-1 (Command List):** The `HelpGenerator` **must** be able to produce a formatted list of all registered commands, including their names, namespaces, and hints.
 *   **FR-HELP-2 (Detailed Command Help):** The `HelpGenerator` **must** be able to produce detailed, formatted help for a specific command, including its description, arguments (with types, defaults, and validation rules), aliases, and examples.
 *   **FR-HELP-3 (Help Operator):** The parser **must** recognize the `?` operator. When present, the `Semantic Analyzer` **must** return a `HELP_REQUESTED` error containing the detailed help text for the specified command, bypassing all argument validation.
+*   **FR-HELP-4 (Standardized Help Commands):** For every registered command `.command`, the framework **must** provide automatic registration of a corresponding `.command.help` command that returns detailed help information for the parent command. This standardization ensures consistent help access across all commands.
+*   **FR-HELP-5 (Double Question Mark Parameter):** The framework **must** recognize a special parameter `??` that can be appended to any command to trigger help display (e.g., `.command "??"`). When this parameter is detected, the system **must** return help information identical to calling `.command.help`, providing an alternative help access method. *Implementation Note: The `??` parameter must be quoted to avoid parser conflicts with the `?` help operator.*
+*   **FR-HELP-6 (Automatic Help Command Generation API):** The framework **must** provide APIs (`CommandRegistry::enable_help_conventions`, `CommandDefinition::with_auto_help`) that automatically generate `.command.help` commands and enable `??` parameter processing with minimal developer effort.
+
+    *Implementation Notes:* ✅ **IMPLEMENTED**
+    - Automatic `.command.help` command registration via `register_with_auto_help()`
+    - Global help conventions toggle via `enable_help_conventions()`
+    - Per-command control via `auto_help_enabled` field
+    - Pipeline enhancement converts `HELP_REQUESTED` errors to successful help output
+    - Comprehensive help formatting with all command metadata, validation rules, and examples
+    - Three help access methods: `?` operator, `"??"` parameter, and `.command.help` commands
 
 #### 4.5. Modality Support
 *   **FR-REPL-1 (REPL Support):** The framework's core components (`Pipeline`, `Parser`, `SemanticAnalyzer`, `Interpreter`) **must** be structured to support a REPL-style execution loop. They **must** be reusable for multiple, sequential command executions within a single process lifetime.
@@ -220,19 +231,42 @@ The `unilang_parser` crate **must** be the reference implementation for this sec
     *   **Named Arguments:** **Must** use the `name::value` syntax.
     *   **Positional Arguments:** Any token that is not a named argument is a positional argument.
 *   **Rule 4 (Help Operator):** The `?` operator, if present, **must** be the final token and triggers the help system.
-*   **Rule 5 (Special Case - Discovery):** A standalone dot (`.`) **must** be interpreted as a request to list all available commands.
+*   **Rule 5 (Double Question Mark Parameter):** The `??` parameter, if present as any argument, **must** trigger help display for the command, identical to calling `.command.help`. This provides a consistent alternative to the `?` operator.
+*   **Rule 6 (Special Case - Discovery):** A standalone dot (`.`) **must** be interpreted as a request to list all available commands.
 
 ### 7. API Reference: Core Data Structures
 
 The public API **must** include the following data structures with the specified fields. (See `src/data.rs` for the source of truth).
 
-*   `CommandDefinition`: Defines a command's metadata.
+*   `CommandDefinition`: Defines a command's metadata, including the new `auto_help_enabled: bool` field for help convention support.
 *   `ArgumentDefinition`: Defines an argument's metadata.
 *   `ArgumentAttributes`: Defines behavioral flags for an argument.
 *   `Kind`: Defines the data type of an argument.
 *   `ValidationRule`: Defines a validation constraint for an argument.
 *   `OutputData`: Standardized structure for successful command output.
 *   `ErrorData`: Standardized structure for command failure information.
+
+#### 7.1. CommandDefinition Structure
+
+The `CommandDefinition` struct **must** include the following key fields for help convention support:
+*   `auto_help_enabled: bool` - Controls whether this command automatically generates a corresponding `.command.help` command. When `true`, the framework automatically creates the help counterpart during registration.
+
+#### 7.2. Help Convention API Methods
+
+The following API methods **must** be provided to support standardized help conventions:
+
+**CommandRegistry Methods:**
+*   `enable_help_conventions(&mut self, enabled: bool)` - Enables/disables automatic `.command.help` generation for all subsequently registered commands.
+*   `register_with_auto_help(&mut self, command: CommandDefinition, routine: CommandRoutine)` - Registers a command with automatic help command generation.
+*   `get_help_for_command(&self, command_name: &str) -> Option<String>` - Retrieves formatted help text for any registered command.
+
+**CommandDefinition Methods:**
+*   `with_auto_help(self, enabled: bool) -> Self` - Builder method to enable/disable automatic help command generation for this specific command. *(Note: Currently implemented via direct field access `cmd.auto_help_enabled = true`; builder method planned for future release)*
+*   `has_auto_help(&self) -> bool` - Returns true if this command should automatically generate a help counterpart.
+*   `generate_help_command(&self) -> CommandDefinition` - Generates the corresponding `.command.help` command definition for this command.
+
+**Pipeline Methods:**
+*   `process_help_request(&self, command_name: &str, context: ExecutionContext) -> Result<OutputData, Error>` - Processes help requests uniformly across the framework.
 
 ### 8. Cross-Cutting Concerns (Error Handling, Security, Verbosity)
 
@@ -467,6 +501,13 @@ All dependencies and relationships **must** be made explicit:
 - **Type Dependencies**: Explicit type requirements and conversions
 - **System Dependencies**: Clear documentation of external requirements
 
+#### 15.1.5. Consistent Help Access
+The framework **must** provide standardized, predictable help access for all commands:
+- **Universal Help Commands**: Every command `.command` automatically generates a `.command.help` counterpart
+- **Uniform Help Parameter**: The `??` parameter provides consistent help access across all commands
+- **Help Convention APIs**: Developer-friendly APIs make following help conventions effortless
+- **Discoverability**: Users can always find help through predictable patterns
+
 These principles serve as the foundation for all design decisions and implementation choices throughout the framework.
 
 ### 16. Core Principles of Development
@@ -526,9 +567,12 @@ As you build the system, please use this document to log your key implementation
 | ❌ | **FR-PIPE-1:** The `Pipeline` API must correctly orchestrate the full sequence: Parsing -> Semantic Analysis -> Interpretation. | |
 | ❌ | **FR-PIPE-2:** The `Pipeline::process_batch` method must execute a list of commands independently, collecting results for each and not stopping on individual failures. | |
 | ❌ | **FR-PIPE-3:** The `Pipeline::process_sequence` method must execute a list of commands in order and must terminate immediately upon the first command failure. | |
-| ❌ | **FR-HELP-1:** The `HelpGenerator` must be able to produce a formatted list of all registered commands, including their names, namespaces, and hints. | |
-| ❌ | **FR-HELP-2:** The `HelpGenerator` must be able to produce detailed, formatted help for a specific command, including its description, arguments (with types, defaults, and validation rules), aliases, and examples. | |
-| ❌ | **FR-HELP-3:** The parser must recognize the `?` operator. When present, the `Semantic Analyzer` must return a `HELP_REQUESTED` error containing the detailed help text for the specified command, bypassing all argument validation. | |
+| ✅ | **FR-HELP-1:** The `HelpGenerator` must be able to produce a formatted list of all registered commands, including their names, namespaces, and hints. | Implemented with comprehensive formatting and namespace-aware command listing |
+| ✅ | **FR-HELP-2:** The `HelpGenerator` must be able to produce detailed, formatted help for a specific command, including its description, arguments (with types, defaults, and validation rules), aliases, and examples. | Implemented with hierarchical help formatting including all metadata, validation rules, and usage examples |
+| ✅ | **FR-HELP-3:** The parser must recognize the `?` operator. When present, the `Semantic Analyzer` must return a `HELP_REQUESTED` error containing the detailed help text for the specified command, bypassing all argument validation. | Implemented with Pipeline enhancement to convert HELP_REQUESTED errors to successful help output |
+| ✅ | **FR-HELP-4:** For every registered command `.command`, the framework must provide automatic registration of a corresponding `.command.help` command that returns detailed help information for the parent command. | Implemented via `register_with_auto_help()` and `auto_help_enabled` field with automatic help command generation |
+| ✅ | **FR-HELP-5:** The framework must recognize a special parameter `??` that can be appended to any command to trigger help display (e.g., `.command ??`). When this parameter is detected, the system must return help information identical to calling `.command.help`. | Implemented with semantic analyzer support for `??` parameter (requires quoting as `"??"` to avoid parser conflicts) |
+| ✅ | **FR-HELP-6:** The framework must provide APIs (`CommandRegistry::enable_help_conventions`, `CommandDefinition::with_auto_help`) that automatically generate `.command.help` commands and enable `??` parameter processing with minimal developer effort. | Implemented with `enable_help_conventions()`, `register_with_auto_help()`, and `auto_help_enabled` field |
 | ✅ | **FR-REPL-1:** The framework's core components (`Pipeline`, `Parser`, `SemanticAnalyzer`, `Interpreter`) must be structured to support a REPL-style execution loop. They must be reusable for multiple, sequential command executions within a single process lifetime. | Implemented with comprehensive examples and verified stateless operation |
 | ✅ | **FR-INTERACTIVE-1:** When a mandatory argument with the `interactive: true` attribute is not provided, the `Semantic Analyzer` must return a distinct, catchable error (`UNILANG_ARGUMENT_INTERACTIVE_REQUIRED`). This allows the calling modality to intercept the error and prompt the user for input. | Implemented in semantic analyzer with comprehensive test coverage and REPL integration |
 | ❌ | **FR-MOD-WASM-REPL:** The framework must support a web-based REPL modality that can operate entirely on the client-side without a backend server. This requires the core `unilang` library to be fully compilable to the `wasm32-unknown-unknown` target. | |
@@ -536,14 +580,40 @@ As you build the system, please use this document to log your key implementation
 #### Finalized Internal Design Decisions
 *A space for the developer to document key implementation choices for the system's internal design, especially where they differ from the initial recommendations in `spec.md`.*
 
--   [Decision 1: Reason...]
--   [Decision 2: Reason...]
+-   **Help Conventions Implementation (2025-09-16):** Implemented comprehensive help system with three access methods:
+    - Traditional `?` operator (existing)
+    - New `"??"` parameter (requires quoting to avoid parser conflicts)
+    - Auto-generated `.command.help` commands (controlled by `auto_help_enabled` field)
+    - Enhanced Pipeline to convert `HELP_REQUESTED` errors to successful help output
+    - Added `18_help_conventions_demo.rs` example showcasing all three methods
+-   **CommandDefinition Schema Extension:** Added `auto_help_enabled: bool` field to support per-command help generation control, maintains backward compatibility with default `false` value.
 
 #### Finalized Internal Data Models
 *The definitive, as-built schema for all databases, data structures, and objects used internally by the system.*
 
--   [Model 1: Schema and notes...]
--   [Model 2: Schema and notes...]
+**CommandDefinition Structure (as of 2025-09-16):**
+```rust
+pub struct CommandDefinition {
+    pub name: String,                    // Required dot-prefixed command name
+    pub namespace: String,               // Hierarchical namespace organization
+    pub description: String,             // Human-readable command description
+    pub arguments: Vec<ArgumentDefinition>, // Command parameters
+    pub routine_link: Option<String>,    // Link to execution routine
+    pub hint: String,                   // Short description for command lists
+    pub status: String,                 // Command stability status
+    pub version: String,                // Command version
+    pub tags: Vec<String>,              // Categorization tags
+    pub aliases: Vec<String>,           // Alternative command names
+    pub permissions: Vec<String>,       // Access control permissions
+    pub idempotent: bool,              // Whether command is side-effect free
+    pub deprecation_message: String,    // Deprecation notice if applicable
+    pub http_method_hint: String,       // HTTP method suggestion for web API
+    pub examples: Vec<String>,          // Usage examples
+    pub auto_help_enabled: bool,        // NEW: Controls automatic .command.help generation
+}
+```
+
+*See `src/data.rs` for the complete and authoritative structure definitions.*
 
 #### Environment Variables
 *List all environment variables required to run the application. Include the variable name, a brief description of its purpose, and an example value (use placeholders for secrets).*

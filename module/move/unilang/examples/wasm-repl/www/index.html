@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>UniLang WebAssembly REPL</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 UniLang WebAssembly REPL</h1>
+            <p>Interactive command framework running in your browser</p>
+        </header>
+        
+        <main>
+            <div class="repl-container">
+                <div class="output" id="output">
+                    <div class="welcome">
+                        Welcome to UniLang WebAssembly REPL! 🎉<br>
+                        Type <code>.help</code> to see available commands.<br>
+                        Try: <code>.demo.echo Hello World</code> or <code>.calc.add 5 3</code>
+                    </div>
+                </div>
+                
+                <div class="input-container">
+                    <span class="prompt">></span>
+                    <input type="text" id="command-input" placeholder="Enter a command..." autofocus>
+                    <button id="execute-btn">Execute</button>
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <div class="section">
+                    <h3>📖 Quick Help</h3>
+                    <ul>
+                        <li><code>.help</code> - Show all commands</li>
+                        <li><code>.demo.echo &lt;text&gt;</code> - Echo text</li>
+                        <li><code>.calc.add &lt;a&gt; &lt;b&gt;</code> - Add numbers</li>
+                    </ul>
+                </div>
+                
+                <div class="section">
+                    <h3>⚡ Features</h3>
+                    <ul>
+                        <li>✅ WebAssembly powered</li>
+                        <li>✅ SIMD-optimized parsing</li>
+                        <li>✅ Cross-platform validation</li>
+                        <li>✅ Zero-copy tokenization</li>
+                    </ul>
+                </div>
+                
+                <div class="section">
+                    <h3>🔧 Load Custom Commands</h3>
+                    <textarea id="json-commands" placeholder='{"commands": [...]}'></textarea>
+                    <button id="load-commands-btn">Load JSON Commands</button>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>Powered by <a href="https://github.com/Wandalen/wTools" target="_blank">wTools</a> | Built with Rust + WebAssembly</p>
+        </footer>
+    </div>
+    
+    <script type="module" src="bootstrap.js"></script>
+</body>
+</html>

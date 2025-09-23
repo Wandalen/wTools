@@ -1,4 +1,4 @@
-use variadic_from::from;
+use variadic_from ::from;
 
 fn main()
 {

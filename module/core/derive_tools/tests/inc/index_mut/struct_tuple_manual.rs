@@ -1,4 +1,4 @@
-use core::ops::{ Index, IndexMut };
+use core ::ops :: { Index, IndexMut };
 
 #[ allow( dead_code ) ]
 struct StructTuple< T >( Vec< T > );
@@ -7,18 +7,18 @@ impl< T > Index< usize > for StructTuple< T >
 {
   type Output = T;
 
-  fn index( &self, index : usize ) -> &Self::Output 
+  fn index( &self, index: usize ) -> &Self ::Output 
   {
-    &self.0[ index ]
-  }
+  &self.0[ index ]
+ }
 }
 
 impl< T > IndexMut< usize > for StructTuple< T >
 {
-  fn index_mut( &mut self, index : usize ) -> &mut Self::Output 
+  fn index_mut( &mut self, index: usize ) -> &mut Self ::Output 
   {
-    &mut self.0[ index ]
-  }
+  &mut self.0[ index ]
+ }
 }
 
 

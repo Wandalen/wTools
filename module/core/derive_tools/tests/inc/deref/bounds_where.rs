@@ -1,14 +1,14 @@
-trait Trait<'a> {}
-impl Trait<'_> for i32 {}
+trait Trait< 'a > {}
+impl Trait< '_ > for i32 {}
 
-use core::ops::Deref;
-use derive_tools::Deref;
+use core ::ops ::Deref;
+use derive_tools ::Deref;
 
 #[ allow( dead_code ) ]
 #[ derive( Deref ) ]
-struct BoundsWhere<T, U>(#[ deref ] T, U)
+struct BoundsWhere< T, U >(#[ deref ] T, U)
 where
   T: ToString,
-  for<'a> U: Trait<'a>;
+  for< 'a > U: Trait< 'a >;
 
 include!("./only_test/bounds_where.rs");

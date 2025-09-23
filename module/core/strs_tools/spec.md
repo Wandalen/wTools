@@ -24,26 +24,61 @@ These are the non-negotiable, crate-wide design laws.
 
 ### 1.3. API Design & Namespace Philosophy
 
-The library's public API is exposed through a deliberate, four-tiered namespace structure to provide flexibility for different import styles.
+The library's public API is exposed through a deliberate, five-tiered manual namespace structure to provide flexibility for different import styles while maintaining backward compatibility and clear module organization.
 
-*   **`private` (Internal):** Contains all implementation details. It is not part of the public API.
-*   **`own`:** Contains the primary, owned types of a module (e.g., `SplitIterator`). This is for developers who want to be explicit and avoid name clashes.
+**Namespace Hierarchy:**
+*   **`private` (Internal):** Contains all implementation details and is not part of the public API. Houses all structs, enums, functions, and traits with their complete implementations.
+*   **`own`:** Contains the primary, owned types and functions of a module. This is for developers who want to be explicit and avoid name clashes.
+    *   *Usage Example:* `use strs_tools::string::split::own::SplitIterator;`
+*   **`orphan`:** An intermediate namespace that re-exports the `exposed` namespace. This provides a consistent inheritance pattern across the module hierarchy.
+*   **`exposed`:** Re-exports core functionality and key types intended for qualified path usage. This is the intended entry point for most development work.
+    *   *Usage Example:* `strs_tools::string::split::split()`
+*   **`prelude`:** Contains the most essential types and builder functions intended for convenient glob import in application code.
+    *   *Usage Example:* `use strs_tools::prelude::*; let iter = split()...;`
+
+**Manual Implementation Pattern:**
+Each module follows this consistent structure:
+```rust
+pub mod private { /* All implementations */ }
+
+pub use own::*;
+
+pub mod own {
+    pub use orphan::*;
+    pub use private::{/* Selective exports */};
+}
+
+pub mod orphan {
+    pub use exposed::*;
+}
+
+pub mod exposed {
+    pub use prelude::*;
+    pub use super::own::{/* Key types */};
+}
+
+pub mod prelude {
+    pub use private::{/* Essential functions */};
+}
+```
+
+This manual approach provides explicit control over what gets exposed at each level while maintaining the flexibility of the four-tiered namespace philosophy.
 
 ### 1.4. Architecture Compliance & Rule Violations Documentation
 
 #### CRITICAL INSIGHTS FROM RULE COMPLIANCE ANALYSIS:
 
-**1. mod_interface Pattern Migration (PARTIAL - BREAKING CHANGE RISK)**
-- The codebase was converted from manual namespace patterns to `mod_interface!` macro usage
-- **PITFALL**: This changes the public API structure - functions move from `strs_tools::string::split()` to `strs_tools::split()`
-- **INSIGHT**: Backward compatibility requires careful configuration of `mod_interface!` exposed/own/prelude sections
-- **CURRENT STATE**: Main architecture converted but test compatibility needs resolution
+**1. Manual Namespace Architecture (STABLE)**
+- The codebase uses a consistent manual namespace pattern across all modules
+- **BENEFIT**: Provides explicit control over API surface area and backward compatibility
+- **PATTERN**: Each module implements private/own/orphan/exposed/prelude structure manually
+- **STABILITY**: No breaking changes to public API structure - maintains `strs_tools::string::split()` paths
 
-**2. Explicit Lifetime Requirements (CRITICAL)**
-- **RULE VIOLATION**: Functions like `unescape_str(input: &str) -> Cow<'_, str>` use implicit lifetimes
-- **CORRECT FORM**: Must be `fn unescape_str<'a>(input: &'a str) -> Cow<'a, str>`
-- **PITFALL**: Rust allows `'_` as shorthand but Design Rulebook requires explicit lifetime parameters
-- **IMPACT**: Affects ~15 function signatures across split.rs, isolate.rs, parse_request.rs
+**2. Consumer Owns Unescaping Principle (ARCHITECTURAL)**
+- **COMPLIANCE**: Crate follows 'Consumer Owns Unescaping' - no escape sequence interpretation
+- **IMPLEMENTATION**: All string functions return raw content without escape processing
+- **SECURITY**: Prevents injection attacks through malformed escape sequences
+- **RESPONSIBILITY**: Consumers must handle unescaping safely in their own code
 
 **3. Workspace Dependency Management (FIXED)**
 - **VIOLATION**: SIMD dependencies (memchr, aho-corasick, bytecount, lexical) were declared locally instead of inheriting from workspace
@@ -63,15 +98,9 @@ The library's public API is exposed through a deliberate, four-tiered namespace 
 
 **6. Clippy vs Design Rulebook Conflicts (CRITICAL INSIGHT)**
 - **CONFLICT**: Clippy's `elidable_lifetime_names` lint conflicts with Design Rulebook's explicit lifetime requirement
-- **RESOLUTION**: Design Rulebook takes precedence - use `#[allow(clippy::elidable_lifetime_names)]` 
+- **RESOLUTION**: Design Rulebook takes precedence - use `#[allow(clippy::elidable_lifetime_names)]`
 - **ARCHITECTURAL DECISION**: Explicit lifetimes improve maintainability and code clarity over compiler optimization
 - **PATTERN**: When linting tools conflict with architectural rules, architectural consistency wins
-    *   *Usage Example:* `use strs_tools::string::split::own::SplitIterator;`
-*   **`exposed`:** Re-exports the `own` namespace under the module's name (e.g., `pub use super::own as split`). This is the intended entry point for qualified path usage.
-    *   *Usage Example:* `strs_tools::string::split::split()`
-*   **`prelude`:** Contains the most essential types and builder functions intended for convenient glob import.
-    *   *Usage Example:* `use strs_tools::prelude::*; let iter = split()...;`
-*   **`orphan`:** An internal implementation detail used to structure the re-exports between `exposed` and `own`. It should not be used directly.
 
 ### 1.4. Component Interaction Model
 
@@ -144,7 +173,7 @@ let my_delims: Vec<String> = vec!["a".to_string(), "b".to_string()];
 let iter = split()
     // This creates a temporary Vec<&str> that is dropped at the end of the line,
     // leaving the Former with dangling references.
-    .delimeter(my_delims.iter().map(|s| s.as_str()).collect::<Vec<_>>())
+    .delimiter(my_delims.iter().map(|s| s.as_str()).collect::<Vec<_>>())
     .src("c a d b e")
     .perform();
 ```
@@ -160,7 +189,7 @@ let delims_as_slices: Vec<&str> = my_delims.iter().map(|s| s.as_str()).collect()
 // 2. Pass the bound variable to the Former. `delims_as_slices` now lives
 //    long enough for the `perform()` call.
 let iter = split()
-    .delimeter(delims_as_slices)
+    .delimiter(delims_as_slices)
     .src("c a d b e")
     .perform();
 ```
@@ -223,7 +252,7 @@ graph TD
 *   **`struct Split<'a>`**: Represents a segment with `string`, `typ`, `start`, and `end` fields.
 *   **`enum SplitType`**: `Delimited` or `Delimiter`.
 *   **`bitflags! struct SplitFlags`**: `PRESERVING_EMPTY`, `PRESERVING_DELIMITERS`, `PRESERVING_QUOTING`, `STRIPPING`, `QUOTING`.
-*   **`SplitOptionsFormer<'a>`**: The builder returned by `split()`. Provides methods like `.src()`, `.delimeter()`, `.quoting(bool)`, etc., and is consumed by `.perform()`.
+*   **`SplitOptionsFormer<'a>`**: The builder returned by `split()`. Provides methods like `.src()`, `.delimiter()`, `.quoting(bool)`, etc., and is consumed by `.perform()`.
 
 ### 2.2. Module: `string::parse_request`
 
@@ -235,7 +264,7 @@ A higher-level parser for structured commands that have a subject and a map of k
 
 *   **`struct Request<'a>`**: Represents a parsed request with `original`, `subject`, `subjects`, `map`, and `maps` fields.
 *   **`enum OpType<T>`**: A wrapper for a property value: `Primitive(T)` or `Vector(Vec<T>)`.
-*   **`ParseOptions<'a>`**: The builder returned by `request_parse()`. Provides methods like `.src()`, `.key_val_delimeter()`, and is consumed by `.parse()`.
+*   **`ParseOptions<'a>`**: The builder returned by `request_parse()`. Provides methods like `.src()`, `.key_val_delimiter()`, and is consumed by `.parse()`.
 
 ### 2.3. Module: `string::isolate`
 
@@ -283,7 +312,7 @@ This procedure verifies that an implementation conforms to this specification.
 | **CHK-SPL-03** | `split` | **Span Indices:** Correctly reports the start/end byte indices. | Ensures that downstream tools can reliably locate tokens in the original source. |
 | **CHK-REQ-01** | `parse_request` | **Composition:** Correctly parses a command with a subject and properties. | Verifies the composition of `split` and `isolate` to build a higher-level parser. |
 | **CHK-ISO-01** | `isolate` | **Directional Isolate:** Correctly isolates the first delimiter from the specified direction. | Ensures the lightweight wrapper around `splitn`/`rsplitn` is functioning as expected. |
-| **CHK-ARC-01** | Crate-wide | **Unescaping Principle:** Verify that escaped quotes are not unescaped by `split`. | Verifies strict adherence to the 'Consumer Owns Unescaping' architectural principle. |
+| **CHK-ARC-01** | Crate-wide | **No Unescaping Principle:** Verify that `split` returns raw string content without interpreting escape sequences. | Verifies strict adherence to the 'Consumer Owns Unescaping' architectural principle. |
 | **CHK-API-01** | Crate-wide | **Dynamic Delimiter Lifetime:** Verify the documented pattern for using `Vec<String>` as delimiters compiles and works correctly. | To ensure the primary API pitfall is explicitly tested and the documented solution remains valid. |
 | **CHK-NFR-03** | Crate-wide | **Modularity Principle:** Verify feature gates correctly exclude code. | Verifies adherence to the 'Modularity' NFR and ensures lean builds are possible. |
 

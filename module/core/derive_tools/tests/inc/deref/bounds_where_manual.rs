@@ -1,23 +1,24 @@
-trait Trait<'a> {}
-impl Trait<'_> for i32 {}
+trait Trait< 'a > {}
+impl Trait< '_ > for i32 {}
 
-use core::ops::Deref;
+use core ::ops ::Deref;
 
 #[ allow( dead_code ) ]
-struct BoundsWhere<T, U>(T, U)
+struct BoundsWhere< T, U >(T, U)
 where
   T: ToString,
-  for<'a> U: Trait<'a>;
+  for< 'a > U: Trait< 'a >;
 
-impl<T, U> Deref for BoundsWhere<T, U>
+impl< T, U > Deref for BoundsWhere< T, U >
 where
   T: ToString,
-  for<'a> U: Trait<'a>,
+  for< 'a > U: Trait< 'a >,
 {
   type Target = T;
-  fn deref(&self) -> &Self::Target {
-    &self.0
-  }
+  fn deref( &self ) -> &Self ::Target 
+  {
+  &self.0
+ }
 }
 
 include!("./only_test/bounds_where.rs");

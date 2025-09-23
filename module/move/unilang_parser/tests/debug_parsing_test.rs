@@ -2,26 +2,26 @@
 //!
 //! This matrix details test cases for debugging specific parsing behaviors.
 //!
-//! **Test Factors:**
+//! **Test Factors: **
 //! - Input String
 //! - Expected Outcome
 //!
 //! ---
 //!
-//! **Test Combinations:**
+//! **Test Combinations: **
 //!
 //! | ID | Input String | Expected Behavior |
 //! |---|---|---|
 //! | D1.1 | `test_cmd hello 123` | Parses `test_cmd` as command, `hello`, `123` as positional arguments. |
 
-use unilang_parser::{ Parser, UnilangParserOptions };
+use unilang_parser :: { Parser, UnilangParserOptions };
 
 /// Tests the parsing of "`test_cmd` hello 123" to debug unexpected command path behavior.
 /// Test Combination: D1.1
 #[ test ]
 fn debug_test_cmd_hello_123_parsing()
 {
-  let parser = Parser::new( UnilangParserOptions::default() );
+  let parser = Parser ::new( UnilangParserOptions ::default() );
   let input = "test_cmd hello 123";
   let result = parser.parse_single_instruction( input );
 

@@ -1,6 +1,6 @@
 [package]
 name = "process_tools"
-version = "0.15.0"
+version = "0.17.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -25,7 +25,7 @@ all-features = false
 
 [features]
 default = [ "enabled", "process_environment_is_cicd" ]
-full = [ "default" ]
+full = [ "enabled" ]
 enabled = [
   "mod_interface/enabled",
   "former/enabled",

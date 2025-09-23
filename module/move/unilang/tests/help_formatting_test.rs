@@ -16,7 +16,9 @@ fn test_help_formatting_is_readable()
   // This test ensures help output follows the improved formatting specification
   
   // Create a command with multiple arguments to test formatting
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   
   let test_cmd = CommandDefinition {
     name: "run_file".to_string(),
@@ -65,6 +67,7 @@ fn test_help_formatting_is_readable()
       },
     ],
     routine_link: None,
+        auto_help_enabled: false,
     status: "stable".to_string(),
     version: "0.1.0".to_string(),
     tags: vec!["automation".to_string(), "file".to_string()],
@@ -164,7 +167,9 @@ fn test_help_formatting_visual_hierarchy()
 {
   // This test verifies that help output has clear visual hierarchy
   
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   
   let test_cmd = CommandDefinition {
     name: "test_command".to_string(),
@@ -187,6 +192,7 @@ fn test_help_formatting_visual_hierarchy()
       },
     ],
     routine_link: None,
+        auto_help_enabled: false,
     status: "stable".to_string(),
     version: "1.0.0".to_string(),
     tags: vec![],

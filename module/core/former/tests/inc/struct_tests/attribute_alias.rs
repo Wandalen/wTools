@@ -1,5 +1,8 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 #[ allow( unused_imports ) ]
 use super::*;
+#[ allow( unused_imports ) ]
+use test_tools::a_id;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 

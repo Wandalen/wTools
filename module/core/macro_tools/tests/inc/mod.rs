@@ -1,12 +1,13 @@
-use super::*;
-use test_tools::exposed::*;
+use super :: *;
+use test_tools ::exposed :: *;
 
 #[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
-#[path = "."]
-mod if_enabled {
+#[ path = "." ]
+mod if_enabled 
+{
 
-  use super::*;
+  use super :: *;
 
   #[ cfg( feature = "attr_prop" ) ]
   mod attr_prop_test;

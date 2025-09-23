@@ -1,9 +1,12 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 #![allow(dead_code)]
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 
 #[ allow( unused_imports ) ]
 use super::*;
+#[ allow( unused_imports ) ]
+use test_tools::a_id;
 
 // #[ allow( dead_code ) ]
 // type Option = ();

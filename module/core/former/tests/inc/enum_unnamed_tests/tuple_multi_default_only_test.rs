@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 // Purpose: Provides shared test assertions and logic for both the derived and manual implementations
 // of the implicit variant former for a multi-field tuple variant when no specific variant
 // attribute is applied (default behavior). It tests that the constructors generated/implemented

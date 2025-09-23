@@ -1,6 +1,9 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 #![allow(unexpected_cfgs)]
 
 use super::*;
+#[ allow( unused_imports ) ]
+use test_tools::a_id;
 
 #[ derive( Debug, PartialEq ) ]
 pub struct BaseCase {

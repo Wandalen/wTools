@@ -1,3 +1,4 @@
+#![allow(clippy::all)]
 //! # Full Pipeline Demo
 //!
 //! This example demonstrates the complete Unilang pipeline from command
@@ -24,6 +25,7 @@ fn main() -> Result< (), unilang::error::Error >
   println!( "🏗️  PHASE 1: Setting up Command Registry" );
   println!( "==========================================" );
 
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
 
   // Create a comprehensive file management system
@@ -364,6 +366,7 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     }
   });
 
+  #[allow(deprecated)]
   registry.command_add_runtime( &list_command, list_routine )?;
 
   // File sync command
@@ -480,6 +483,7 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     })
   });
 
+  #[allow(deprecated)]
   registry.command_add_runtime( &sync_command, sync_routine )?;
 
   Ok(())
@@ -618,6 +622,7 @@ fn setup_text_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     })
   });
 
+  #[allow(deprecated)]
   registry.command_add_runtime( &analyze_command, analyze_routine )?;
 
   Ok(())
@@ -716,6 +721,7 @@ fn setup_network_commands( registry : &mut CommandRegistry ) -> Result< (), unil
     })
   });
 
+  #[allow(deprecated)]
   registry.command_add_runtime( &ping_command, ping_routine )?;
 
   Ok(())
@@ -768,6 +774,7 @@ fn setup_utility_commands( registry : &mut CommandRegistry ) -> Result< (), unil
     })
   });
 
+  #[allow(deprecated)]
   registry.command_add_runtime( &echo_command, echo_routine )?;
 
   // Timestamp command
@@ -842,6 +849,7 @@ fn setup_utility_commands( registry : &mut CommandRegistry ) -> Result< (), unil
     })
   });
 
+  #[allow(deprecated)]
   registry.command_add_runtime( &timestamp_command, timestamp_routine )?;
 
   Ok(())

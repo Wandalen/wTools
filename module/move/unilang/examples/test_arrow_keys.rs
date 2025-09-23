@@ -1,3 +1,4 @@
+#![allow(clippy::all)]
 //! Test arrow key functionality with rustyline
 //! 
 //! This is a minimal test to verify arrow keys work for command history.

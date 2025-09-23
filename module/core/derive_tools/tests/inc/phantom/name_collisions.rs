@@ -1,12 +1,13 @@
 #![allow(unused_imports)]
 #![allow(dead_code)]
 
-use test_tools::prelude::*;
-use core::marker::PhantomData;
-use core::marker::PhantomData as CorePhantomData;
+use test_tools :: *;
+use core ::marker ::PhantomData;
+use core ::marker ::PhantomData as CorePhantomData;
 
-pub struct NameCollisions<T> {
-  _phantom: CorePhantomData<T>,
+pub struct NameCollisions< T > 
+{
+  _phantom: CorePhantomData< T >,
 }
 
 // Shared test logic

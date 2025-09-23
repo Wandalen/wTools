@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: This is a compile-fail test designed to verify that applying the `#[ subform_scalar ]` attribute
 //! to a multi-field tuple variant results in a compilation error.
 //!

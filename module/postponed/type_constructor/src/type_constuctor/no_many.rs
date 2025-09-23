@@ -5,24 +5,24 @@ mod private
   ///
   /// Type constructor of many.
   ///
-  /// Should not be used directly. Instead use macro [crate::types!].
+  /// Should not be used directly. Instead use macro [crate ::types!].
   /// Type constructor `many` is available if eiter feature `use_std` or feature `use_alloc` is enabled. Also feature `many` should be enabled.
   ///
   #[ macro_export ]
   macro_rules! _many
   {
-    ( $( $Rest:tt )* )
-    =>
-    {
-      compile_error!
-      (
-        concat!
-        (
-          "! Type constructor `many` is available if eiter feature `use_std` or feature `use_alloc` is enabled. Also feature `many` should be enabled.\n",
-        )
-      );
-    }
-  }
+  ( $( $Rest: tt )* )
+  =>
+  {
+   compile_error!
+   (
+  concat!
+  (
+   "! Type constructor `many` is available if eiter feature `use_std` or feature `use_alloc` is enabled. Also feature `many` should be enabled.\n",
+ )
+ );
+ }
+ }
 
   pub use _many;
 }
@@ -31,47 +31,47 @@ mod private
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use orphan::*;
+  pub use orphan :: *;
 }
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use prelude::*;
+  pub use prelude :: *;
 
   #[ doc( inline ) ]
-  pub use private::
+  pub use private ::
   {
-    _many,
-  };
+  _many,
+ };
 
 }
 
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::*;
+  use super :: *;
 }

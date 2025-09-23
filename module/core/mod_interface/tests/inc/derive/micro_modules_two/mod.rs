@@ -1,9 +1,12 @@
-use super::*;
+#![allow(dead_code)]
+#![allow(clippy ::doc_markdown)]
+use super :: *;
+use test_tools ::a_id;
 
 /// Private namespace of the module.
 mod private {}
 
-the_module::mod_interface! {
+the_module ::mod_interface! {
 
   /// mod_own1
   own mod mod_own1;

@@ -4,7 +4,7 @@
 
 mod private {}
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   layer utils;
   layer gspread;

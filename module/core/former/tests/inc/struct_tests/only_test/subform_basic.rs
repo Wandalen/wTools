@@ -1,3 +1,8 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
+#[ allow( unused_imports ) ]
+use super::*;
+#[ allow( unused_imports ) ]
+
 // let ca = wca::ChildsParent::former()
 // .command_with_closure( "echo" )
 //   .name( "prints all subjects and properties" )

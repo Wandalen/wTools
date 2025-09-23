@@ -17,7 +17,8 @@ Traditional struct initialization is verbose and error-prone:
 ```rust
 # struct Config { host : String, port : i32 }
 # struct ConfigBuilder;
-# impl ConfigBuilder {
+# impl ConfigBuilder 
+{
 #   fn new() -> Self { ConfigBuilder }
 #   fn host( self, _ : &str ) -> Self { self }
 #   fn port( self, _ : i32 ) -> Self { self }
@@ -327,6 +328,86 @@ impl< T : Into< usize > > Assign< usize, T > for Database
     self.pool_size = component.into();
   }
 }
+
+let config = DatabaseConfig::default()
+.impute( "postgres.example.com" )    // String
+.impute( 5432 )                      // i32  
+.impute( 30u64 );                    // Duration from seconds
+```
+
+### HTTP Client Builders
+```rust
+use component_model::{ ComponentModel, Assign };
+use std::time::Duration;
+
+#[ derive( Default, ComponentModel ) ]
+struct HttpClient
+{
+  base_url : String,
+  timeout : Duration,
+}
+
+let client = HttpClient::default()
+.impute( "https://api.example.com" )
+.impute( 30.0f64 );  // Duration from fractional seconds
+```
+
+### Game Entity Systems
+```rust
+use component_model::{ ComponentModel, Assign };
+
+#[ derive( Default, ComponentModel ) ]
+struct Player
+{
+  name : String,
+  level : i32,
+}
+
+// Initialize components
+let mut player = Player::default();
+player.assign( "Hero" );
+player.assign( 1 );
+```
+
+## 🧪 Examples
+
+Explore the [examples directory](examples/) for comprehensive usage patterns:
+
+- **[`000_basic_assignment.rs`](examples/000_basic_assignment.rs)** - Basic component assignment
+- **[`001_fluent_builder.rs`](examples/001_fluent_builder.rs)** - Fluent builder pattern
+- **[`002_multiple_components.rs`](examples/002_multiple_components.rs)** - Multiple component handling
+- **[`003_component_from.rs`](examples/003_component_from.rs)** - Component creation patterns
+- **[`004_working_example.rs`](examples/004_working_example.rs)** - Real-world usage scenarios
+- **[`component_model_trivial.rs`](examples/component_model_trivial.rs)** - Minimal example
+
+## 📋 Supported Popular Types
+
+ComponentModel includes built-in intelligent conversion for:
+
+| Type | Input Types | Example |
+|------|-------------|---------|
+| `Duration` | `u64`, `f64`, `(u64, u32)` | `config.assign( 30u64 )` |
+| `PathBuf` | `&str`, `String` | `config.assign( "/path/file" )` |
+| `SocketAddr` | *Coming soon* | String parsing planned |
+| `HashMap` | *Framework ready* | Vec conversion planned |
+| `HashSet` | *Framework ready* | Vec conversion planned |
+
+## ⚠️ Important Limitations
+
+**Type Ambiguity**: When a struct has multiple fields of the same type, `assign()` becomes ambiguous and won't compile. This is by design for type safety.
+
+```rust
+# use component_model::{ ComponentModel, Assign };
+# #[ derive( Default, ComponentModel ) ]
+struct Config
+{
+  host : String,
+  database : String,  // Multiple String fields cause ambiguity
+}
+
+// This won't compile due to ambiguity:
+// let mut config = Config::default();
+// config.assign( "localhost" );  // Error: which String field?
 ```
 
 ## 📚 Available Derive Macros

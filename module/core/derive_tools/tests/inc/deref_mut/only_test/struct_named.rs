@@ -1,7 +1,7 @@
 #[ test ]
 fn deref_mut()
 {
-  let mut a = StructNamed{ a : "boo".into(), b : 3 };
+  let mut a = StructNamed{ a: "boo".into(), b: 3 };
   *a = "foo".into();
   let exp = "foo";
   let got = a.deref();

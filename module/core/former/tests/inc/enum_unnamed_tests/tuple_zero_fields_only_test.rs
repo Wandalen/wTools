@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 // Purpose: Provides shared test assertions for zero-field tuple variants.
 // Assumes the including file defines:
 // 1. `EnumWithZeroFieldTuple` enum with `VariantZeroDefault` and `VariantZeroScalar`.

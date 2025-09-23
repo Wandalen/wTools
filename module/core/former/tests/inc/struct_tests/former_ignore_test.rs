@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Test for new #[`former_ignore`] attribute functionality
 //! 
 //! This test verifies that the new #[`former_ignore`] attribute works correctly with

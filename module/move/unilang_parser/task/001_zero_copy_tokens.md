@@ -27,7 +27,8 @@ Convert parser tokens to use zero-copy string slices (`&str`) instead of owned s
 ```rust
 // Before:
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum UnilangTokenKind {
+pub enum UnilangTokenKind 
+{
     Identifier(String),
     Number(String),
     Unrecognized(String),
@@ -35,7 +36,8 @@ pub enum UnilangTokenKind {
 
 // After:  
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum UnilangTokenKind<'a> {
+pub enum UnilangTokenKind<'a> 
+{
     Identifier(&'a str),
     Number(&'a str),
     Unrecognized(&'a str),
@@ -45,14 +47,16 @@ pub enum UnilangTokenKind<'a> {
 #### 2. Update Core Parser Structures
 ```rust
 // Before:
-pub struct RichItem {
+pub struct RichItem 
+{
     pub split: StrSplit,
     pub kind: UnilangTokenKind,
     pub source_location: SourceLocation,
 }
 
 // After:
-pub struct RichItem<'a> {
+pub struct RichItem<'a> 
+{
     pub split: StrSplit<'a>,
     pub kind: UnilangTokenKind<'a>,
     pub source_location: SourceLocation,
@@ -199,7 +203,8 @@ unilang_parser/
 ```rust
 // In benchmarks/parsing_throughput.rs
 #[cfg(feature = "benchmarks")]
-fn update_benchmark_readme(results: &[BenchmarkResult]) -> Result<(String, String), String> {
+fn update_benchmark_readme(results: &[BenchmarkResult]) -> Result<(String, String), String> 
+{
     let readme_path = "benchmarks/readme.md";
     let old_content = fs::read_to_string(readme_path)?;
     
@@ -210,7 +215,8 @@ fn update_benchmark_readme(results: &[BenchmarkResult]) -> Result<(String, Strin
 }
 
 #[cfg(feature = "benchmarks")]
-fn display_benchmark_diff(old_content: &str, new_content: &str) {
+fn display_benchmark_diff(old_content: &str, new_content: &str) 
+{
     println!("\n📄 Diff for benchmarks/readme.md:");
     println!("═══════════════════════════════════");
     // Line-by-line diff implementation like unilang

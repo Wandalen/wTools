@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! # Test Module Structure and Coverage Outline
 //!
 //! This module aggregates various test suites for the `former` crate and its associated derive macros.

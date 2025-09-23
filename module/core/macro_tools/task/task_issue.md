@@ -79,7 +79,8 @@ Add helper functions for different use cases:
 
 ```rust
 /// Get generics without trailing commas (for type usage)
-pub fn decompose_clean(generics: &syn::Generics) -> (...) {
+pub fn decompose_clean(generics: &syn::Generics) -> (...) 
+{
   let (mut with_defaults, mut impl_gen, mut ty_gen, where_gen) = decompose(generics);
   
   // Remove trailing commas
@@ -94,7 +95,8 @@ pub fn decompose_clean(generics: &syn::Generics) -> (...) {
 }
 
 /// Get generics with trailing commas (for contexts that need them)
-pub fn decompose_with_commas(generics: &syn::Generics) -> (...) {
+pub fn decompose_with_commas(generics: &syn::Generics) -> (...) 
+{
   decompose(generics) // Current behavior
 }
 ```
@@ -128,7 +130,8 @@ This issue was discovered while fixing lifetime parameter handling in the `forme
 
 ```rust
 #[derive(Former)]
-pub struct Simple<'a> {
+pub struct Simple<'a> 
+{
     name: &'a str,
 }
 ```
@@ -154,7 +157,8 @@ use macro_tools::generic_params;
 use quote::quote;
 use syn::parse_quote;
 
-fn main() {
+fn main() 
+{
     // Parse a simple struct with lifetime parameter
     let generics: syn::Generics = parse_quote! { <'a> };
     let (_, impl_gen, ty_gen, _) = generic_params::decompose(&generics);
@@ -197,7 +201,8 @@ error: proc-macro derive produced unparsable tokens
 ```rust
 // In a derive macro using decompose:
 #[derive(Former)]
-pub struct Simple<'a> {
+pub struct Simple<'a> 
+{
     name: &'a str,
 }
 
@@ -210,7 +215,8 @@ for SimpleFormer< 'a, Definition >  // Invalid: 'a, should be just Definition
 
 ```rust
 #[test]
-fn test_decompose_no_trailing_commas() {
+fn test_decompose_no_trailing_commas() 
+{
     let generics: syn::Generics = syn::parse_quote! { <'a, T: Clone> };
     let (_, impl_gen, ty_gen, _) = generic_params::decompose(&generics);
     
@@ -223,7 +229,8 @@ fn test_decompose_no_trailing_commas() {
 }
 
 #[test]
-fn test_decompose_empty_generics() {
+fn test_decompose_empty_generics() 
+{
     let generics: syn::Generics = syn::parse_quote! { };
     let (_, impl_gen, ty_gen, _) = generic_params::decompose(&generics);
     
@@ -233,7 +240,8 @@ fn test_decompose_empty_generics() {
 }
 
 #[test]
-fn test_decompose_single_lifetime() {
+fn test_decompose_single_lifetime() 
+{
     let generics: syn::Generics = syn::parse_quote! { <'a> };
     let (_, impl_gen, ty_gen, _) = generic_params::decompose(&generics);
     

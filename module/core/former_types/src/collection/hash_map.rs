@@ -6,67 +6,70 @@
 //!
 
 
-use crate::*;
-use collection_tools::HashMap;
+use crate :: *;
+use collection_tools ::HashMap;
 
-#[ allow( clippy::implicit_hasher ) ]
-impl<K, V> Collection for HashMap<K, V>
+#[ allow( clippy ::implicit_hasher ) ]
+impl< K, V > Collection for HashMap< K, V >
 where
-  K: core::cmp::Eq + core::hash::Hash,
+  K: core ::cmp ::Eq + core ::hash ::Hash,
 {
   type Entry = (K, V);
   type Val = V;
 
   #[ inline( always ) ]
-  fn entry_to_val(e: Self::Entry) -> Self::Val {
-    e.1
-  }
+  fn entry_to_val(e: Self ::Entry) -> Self ::Val 
+  {
+  e.1
+ }
 }
 
-#[ allow( clippy::implicit_hasher ) ]
-impl<K, V> CollectionAdd for HashMap<K, V>
+#[ allow( clippy ::implicit_hasher ) ]
+impl< K, V > CollectionAdd for HashMap< K, V >
 where
-  K: core::cmp::Eq + core::hash::Hash,
+  K: core ::cmp ::Eq + core ::hash ::Hash,
 {
   #[ inline( always ) ]
-  fn add(&mut self, (k, v): Self::Entry) -> bool {
-    self.insert(k, v).map_or_else(|| true, |_| false)
-  }
+  fn add(&mut self, (k, v) : Self ::Entry) -> bool 
+  {
+  self.insert(k, v).map_or_else(|| true, |_| false)
+ }
 }
 
-#[ allow( clippy::implicit_hasher ) ]
-impl<K, V> CollectionAssign for HashMap<K, V>
+#[ allow( clippy ::implicit_hasher ) ]
+impl< K, V > CollectionAssign for HashMap< K, V >
 where
-  K: core::cmp::Eq + core::hash::Hash,
+  K: core ::cmp ::Eq + core ::hash ::Hash,
 {
-  fn assign<Elements>(&mut self, elements: Elements) -> usize
+  fn assign< Elements >(&mut self, elements: Elements) -> usize
   where
-    Elements: IntoIterator<Item = Self::Entry>,
+  Elements: IntoIterator< Item = Self ::Entry >,
   {
-    let initial_len = self.len();
-    self.extend(elements);
-    self.len() - initial_len
-  }
+  let initial_len = self.len();
+  self.extend(elements);
+  self.len() - initial_len
+ }
 }
 
 // = storage
 
-#[ allow( clippy::implicit_hasher ) ]
-impl<K, E> Storage for HashMap<K, E>
+#[ allow( clippy ::implicit_hasher ) ]
+impl< K, E > Storage for HashMap< K, E >
 where
-  K: ::core::cmp::Eq + ::core::hash::Hash,
+  K:  ::core ::cmp ::Eq + ::core ::hash ::Hash,
 {
-  type Preformed = HashMap<K, E>;
+  type Preformed = HashMap< K, E >;
 }
 
-#[ allow( clippy::implicit_hasher ) ]
-impl<K, E> StoragePreform for HashMap<K, E>
+#[ allow( clippy ::implicit_hasher ) ]
+impl< K, E > StoragePreform for HashMap< K, E >
 where
-  K: ::core::cmp::Eq + ::core::hash::Hash,
+  K:  ::core ::cmp ::Eq + ::core ::hash ::Hash,
 {
-  fn preform(self) -> Self::Preformed {
-    self
-  }
+  fn preform(self) -> Self ::Preformed 
+  {
+  self
+ }
 }
 
 // = definition
@@ -79,31 +82,31 @@ where
 /// formation within any system that implements complex data management operations.
 ///
 /// # Type Parameters
-/// - `K`: The key type of the hash map.
-/// - `E`: The value type of the hash map.
-/// - `Context`: The optional context provided during the formation process.
-/// - `Formed`: The type of the entity produced, typically a `HashMap<K, E>`.
-/// - `End`: A trait defining the end behavior of the formation process, managing how the hash map is finalized.
+/// - `K` : The key type of the hash map.
+/// - `E` : The value type of the hash map.
+/// - `Context` : The optional context provided during the formation process.
+/// - `Formed` : The type of the entity produced, typically a `HashMap< K, E >`.
+/// - `End` : A trait defining the end behavior of the formation process, managing how the hash map is finalized.
 ///
 #[ derive( Debug, Default ) ]
-pub struct HashMapDefinition<K, E, Context = (), Formed = HashMap<K, E>, End = ReturnStorage>
+pub struct HashMapDefinition< K, E, Context = (), Formed = HashMap<K, E >, End = ReturnStorage>
 where
-  K: ::core::cmp::Eq + ::core::hash::Hash,
-  End: FormingEnd<HashMapDefinitionTypes<K, E, Context, Formed>>,
+  K:  ::core ::cmp ::Eq + ::core ::hash ::Hash,
+  End: FormingEnd< HashMapDefinitionTypes<K, E, Context, Formed >>,
 {
-  _phantom: core::marker::PhantomData<(K, E, Context, Formed, End)>,
+  _phantom: core ::marker ::PhantomData< (K, E, Context, Formed, End) >,
 }
 
-impl<K, E, Context, Formed, End> FormerDefinition for HashMapDefinition<K, E, Context, Formed, End>
+impl< K, E, Context, Formed, End > FormerDefinition for HashMapDefinition< K, E, Context, Formed, End >
 where
-  K: ::core::cmp::Eq + ::core::hash::Hash,
-  End: FormingEnd<HashMapDefinitionTypes<K, E, Context, Formed>>,
+  K:  ::core ::cmp ::Eq + ::core ::hash ::Hash,
+  End: FormingEnd< HashMapDefinitionTypes<K, E, Context, Formed >>,
 {
-  type Storage = HashMap<K, E>;
+  type Storage = HashMap< K, E >;
   type Formed = Formed;
   type Context = Context;
 
-  type Types = HashMapDefinitionTypes<K, E, Context, Formed>;
+  type Types = HashMapDefinitionTypes< K, E, Context, Formed >;
   type End = End;
 }
 
@@ -116,75 +119,76 @@ where
 /// consistency of type relations throughout the former lifecycle.
 ///
 /// # Type Parameters
-/// - `K`: The key type of the hash map.
-/// - `E`: The value type of the hash map.
-/// - `Context`: The operational context in which the hash map is formed.
-/// - `Formed`: The type produced, typically mirroring the structure of a `HashMap<K, E>`.
+/// - `K` : The key type of the hash map.
+/// - `E` : The value type of the hash map.
+/// - `Context` : The operational context in which the hash map is formed.
+/// - `Formed` : The type produced, typically mirroring the structure of a `HashMap< K, E >`.
 #[ derive( Debug, Default ) ]
-pub struct HashMapDefinitionTypes<K, E, Context = (), Formed = HashMap<K, E>> {
-  _phantom: core::marker::PhantomData<(K, E, Context, Formed)>,
+pub struct HashMapDefinitionTypes< K, E, Context = (), Formed = HashMap<K, E >> 
+{
+  _phantom: core ::marker ::PhantomData< (K, E, Context, Formed) >,
 }
 
-impl<K, E, Context, Formed> FormerDefinitionTypes for HashMapDefinitionTypes<K, E, Context, Formed>
+impl< K, E, Context, Formed > FormerDefinitionTypes for HashMapDefinitionTypes< K, E, Context, Formed >
 where
-  K: ::core::cmp::Eq + ::core::hash::Hash,
+  K:  ::core ::cmp ::Eq + ::core ::hash ::Hash,
 {
-  type Storage = HashMap<K, E>;
+  type Storage = HashMap< K, E >;
   type Formed = Formed;
   type Context = Context;
 }
 
 // = mutator
 
-impl<K, E, Context, Formed> FormerMutator for HashMapDefinitionTypes<K, E, Context, Formed> where
-  K: ::core::cmp::Eq + ::core::hash::Hash
+impl< K, E, Context, Formed > FormerMutator for HashMapDefinitionTypes< K, E, Context, Formed > where
+  K:  ::core ::cmp ::Eq + ::core ::hash ::Hash
 {
 }
 
 // = Entity To
 
-#[ allow( clippy::implicit_hasher ) ]
-impl<K, E, Definition> EntityToFormer<Definition> for HashMap<K, E>
+#[ allow( clippy ::implicit_hasher ) ]
+impl< K, E, Definition > EntityToFormer< Definition > for HashMap< K, E >
 where
-  K: ::core::cmp::Eq + ::core::hash::Hash,
+  K:  ::core ::cmp ::Eq + ::core ::hash ::Hash,
   Definition: FormerDefinition<
-    Storage = HashMap<K, E>,
-    Types = HashMapDefinitionTypes<
-      K,
-      E,
-      <Definition as definition::FormerDefinition>::Context,
-      <Definition as definition::FormerDefinition>::Formed,
-    >,
-  >,
-  Definition::End: forming::FormingEnd<Definition::Types>,
+  Storage = HashMap< K, E >,
+  Types = HashMapDefinitionTypes<
+   K,
+   E,
+   < Definition as definition ::FormerDefinition > ::Context,
+   < Definition as definition ::FormerDefinition > ::Formed,
+ >,
+ >,
+  Definition ::End: forming ::FormingEnd< Definition ::Types >,
 {
-  type Former = HashMapFormer<K, E, Definition::Context, Definition::Formed, Definition::End>;
+  type Former = HashMapFormer< K, E, Definition ::Context, Definition ::Formed, Definition ::End >;
 }
 
-#[ allow( clippy::implicit_hasher ) ]
-impl<K, E> crate::EntityToStorage for HashMap<K, E>
+#[ allow( clippy ::implicit_hasher ) ]
+impl< K, E > crate ::EntityToStorage for HashMap< K, E >
 where
-  K: ::core::cmp::Eq + ::core::hash::Hash,
+  K:  ::core ::cmp ::Eq + ::core ::hash ::Hash,
 {
-  type Storage = HashMap<K, E>;
+  type Storage = HashMap< K, E >;
 }
 
-#[ allow( clippy::implicit_hasher ) ]
-impl<K, E, Context, Formed, End> crate::EntityToDefinition<Context, Formed, End> for HashMap<K, E>
+#[ allow( clippy ::implicit_hasher ) ]
+impl< K, E, Context, Formed, End > crate ::EntityToDefinition< Context, Formed, End > for HashMap< K, E >
 where
-  K: ::core::cmp::Eq + ::core::hash::Hash,
-  End: crate::FormingEnd<HashMapDefinitionTypes<K, E, Context, Formed>>,
+  K:  ::core ::cmp ::Eq + ::core ::hash ::Hash,
+  End: crate ::FormingEnd< HashMapDefinitionTypes<K, E, Context, Formed >>,
 {
-  type Definition = HashMapDefinition<K, E, Context, Formed, End>;
-  type Types = HashMapDefinitionTypes<K, E, Context, Formed>;
+  type Definition = HashMapDefinition< K, E, Context, Formed, End >;
+  type Types = HashMapDefinitionTypes< K, E, Context, Formed >;
 }
 
-#[ allow( clippy::implicit_hasher ) ]
-impl<K, E, Context, Formed> crate::EntityToDefinitionTypes<Context, Formed> for HashMap<K, E>
+#[ allow( clippy ::implicit_hasher ) ]
+impl< K, E, Context, Formed > crate ::EntityToDefinitionTypes< Context, Formed > for HashMap< K, E >
 where
-  K: ::core::cmp::Eq + ::core::hash::Hash,
+  K:  ::core ::cmp ::Eq + ::core ::hash ::Hash,
 {
-  type Types = HashMapDefinitionTypes<K, E, Context, Formed>;
+  type Types = HashMapDefinitionTypes< K, E, Context, Formed >;
 }
 
 // = subformer
@@ -199,7 +203,7 @@ where
 ///
 /// The alias helps reduce boilerplate code and enhances readability, making the construction of hash maps in
 /// a builder pattern both efficient and expressive.
-pub type HashMapFormer<K, E, Context, Formed, End> = CollectionFormer<(K, E), HashMapDefinition<K, E, Context, Formed, End>>;
+pub type HashMapFormer< K, E, Context, Formed, End > = CollectionFormer< (K, E), HashMapDefinition<K, E, Context, Formed, End >>;
 
 // = extension
 
@@ -210,26 +214,28 @@ pub type HashMapFormer<K, E, Context, Formed, End> = CollectionFormer<(K, E), Ha
 /// with the builder pattern provided by the `former` framework. It's a convenience trait that simplifies
 /// creating configured hash map builders with default settings.
 ///
-pub trait HashMapExt<K, E>: sealed::Sealed
+pub trait HashMapExt< K, E > : sealed ::Sealed
 where
-  K: ::core::cmp::Eq + ::core::hash::Hash,
+  K:  ::core ::cmp ::Eq + ::core ::hash ::Hash,
 {
   /// Initializes a builder pattern for `HashMap` using a default `HashMapFormer`.
-  fn former() -> HashMapFormer<K, E, (), HashMap<K, E>, ReturnStorage>;
+  fn former() -> HashMapFormer< K, E, (), HashMap<K, E >, ReturnStorage>;
 }
 
-#[ allow( clippy::default_constructed_unit_structs, clippy::implicit_hasher ) ]
-impl<K, E> HashMapExt<K, E> for HashMap<K, E>
+#[ allow( clippy ::default_constructed_unit_structs, clippy ::implicit_hasher ) ]
+impl< K, E > HashMapExt< K, E > for HashMap< K, E >
 where
-  K: ::core::cmp::Eq + ::core::hash::Hash,
+  K:  ::core ::cmp ::Eq + ::core ::hash ::Hash,
 {
-  fn former() -> HashMapFormer<K, E, (), HashMap<K, E>, ReturnStorage> {
-    HashMapFormer::<K, E, (), HashMap<K, E>, ReturnStorage>::new(ReturnStorage::default())
-  }
+  fn former() -> HashMapFormer< K, E, (), HashMap<K, E >, ReturnStorage> 
+  {
+  HashMapFormer :: < K, E, (), HashMap<K, E >, ReturnStorage> ::new(ReturnStorage ::default())
+ }
 }
 
-mod sealed {
-  use super::HashMap;
+mod sealed 
+{
+  use super ::HashMap;
   pub trait Sealed {}
-  impl<K, E> Sealed for HashMap<K, E> {}
+  impl< K, E > Sealed for HashMap< K, E > {}
 }

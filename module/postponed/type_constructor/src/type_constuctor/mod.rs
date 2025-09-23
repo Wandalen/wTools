@@ -7,9 +7,9 @@
 (
   all
   (
-    feature = "many",
-    any( not( feature = "no_std" ), feature = "use_alloc" ),
-  )
+  feature = "many",
+  any( not( feature = "no_std" ), feature = "use_alloc" ),
+ )
 )]
 pub mod many;
 /// Type constructor of many.
@@ -17,9 +17,9 @@ pub mod many;
 (
   any
   (
-    not( feature = "many" ),
-    all( feature = "no_std", not( feature = "use_alloc" ) ),
-  )
+  not( feature = "many" ),
+  all( feature = "no_std", not( feature = "use_alloc" ) ),
+ )
 )]
 #[ path = "./no_many.rs" ]
 pub mod many;
@@ -48,129 +48,129 @@ pub mod make;
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use orphan::*;
+  pub use orphan :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::many::orphan::*;
+  pub use super ::many ::orphan :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::pair::orphan::*;
+  pub use super ::pair ::orphan :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::single::orphan::*;
+  pub use super ::single ::orphan :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::types::orphan::*;
+  pub use super ::types ::orphan :: *;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   #[ cfg( feature = "vectorized_from" ) ]
-  pub use super::vectorized_from::orphan::*;
+  pub use super ::vectorized_from ::orphan :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::helper::orphan::*;
+  pub use super ::helper ::orphan :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::traits::orphan::*;
+  pub use super ::traits ::orphan :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::enumerable::orphan::*;
+  pub use super ::enumerable ::orphan :: *;
   // #[ doc( inline ) ]
   // #[ allow( unused_imports ) ]
   // #[ cfg( feature = "make" ) ]
-  // pub use super::make::orphan::*;
+  // pub use super ::make ::orphan :: *;
 }
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use prelude::*;
+  pub use prelude :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::many::exposed::*;
+  pub use super ::many ::exposed :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::pair::exposed::*;
+  pub use super ::pair ::exposed :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::single::exposed::*;
+  pub use super ::single ::exposed :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::types::exposed::*;
+  pub use super ::types ::exposed :: *;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   #[ cfg( feature = "vectorized_from" ) ]
-  pub use super::vectorized_from::exposed::*;
+  pub use super ::vectorized_from ::exposed :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::helper::exposed::*;
+  pub use super ::helper ::exposed :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::traits::exposed::*;
+  pub use super ::traits ::exposed :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::enumerable::exposed::*;
+  pub use super ::enumerable ::exposed :: *;
   // #[ doc( inline ) ]
   // #[ allow( unused_imports ) ]
   // #[ cfg( feature = "make" ) ]
-  // pub use super::make::exposed::*;
+  // pub use super ::make ::exposed :: *;
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::many::prelude::*;
+  pub use super ::many ::prelude :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::pair::prelude::*;
+  pub use super ::pair ::prelude :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::single::prelude::*;
+  pub use super ::single ::prelude :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::types::prelude::*;
+  pub use super ::types ::prelude :: *;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   #[ cfg( feature = "vectorized_from" ) ]
-  pub use super::vectorized_from::prelude::*;
+  pub use super ::vectorized_from ::prelude :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::helper::prelude::*;
+  pub use super ::helper ::prelude :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::traits::prelude::*;
+  pub use super ::traits ::prelude :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::enumerable::prelude::*;
+  pub use super ::enumerable ::prelude :: *;
   // #[ doc( inline ) ]
   // #[ allow( unused_imports ) ]
   // #[ cfg( feature = "make" ) ]
-  // pub use super::make::prelude::*;
+  // pub use super ::make ::prelude :: *;
 }

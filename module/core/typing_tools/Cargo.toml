@@ -29,6 +29,7 @@ all-features = false
 
 default = [
   "enabled",
+
   "typing_implements",
   "typing_is_slice",
   "typing_inspect_type",
@@ -37,6 +38,7 @@ default = [
 
 full = [
   "enabled",
+
   "typing_implements",
   "typing_is_slice",
   "typing_inspect_type",

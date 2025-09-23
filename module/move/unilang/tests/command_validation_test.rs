@@ -18,7 +18,9 @@ fn dummy_handler(_cmd: VerifiedCommand, _ctx: ExecutionContext) -> Result< Outpu
 #[test]
 fn test_reject_commands_without_dot_prefix()
 {
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   
   // This should be REJECTED - no dot prefix
   let invalid_cmd = CommandDefinition {
@@ -37,9 +39,12 @@ fn test_reject_commands_without_dot_prefix()
     deprecation_message: String::new(),
     http_method_hint: String::new(),
     examples: Vec::new(),
+    auto_help_enabled: false,
   };
   
-  let result = registry.command_add_runtime(&invalid_cmd, Box::new(dummy_handler));
+  #[allow(deprecated)]
+    #[allow(deprecated)]
+    let result = registry.command_add_runtime(&invalid_cmd, Box::new(dummy_handler));
   
   // Should fail with explicit error message
   assert!(result.is_err(), "Command without dot prefix should be rejected");
@@ -56,7 +61,9 @@ fn test_reject_commands_without_dot_prefix()
 #[test] 
 fn test_reject_invalid_namespace()
 {
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   
   // This should be REJECTED - namespace without dot prefix
   let invalid_cmd = CommandDefinition {
@@ -75,9 +82,12 @@ fn test_reject_invalid_namespace()
     deprecation_message: String::new(),
     http_method_hint: String::new(),
     examples: Vec::new(),
+    auto_help_enabled: false,
   };
   
-  let result = registry.command_add_runtime(&invalid_cmd, Box::new(dummy_handler));
+  #[allow(deprecated)]
+    #[allow(deprecated)]
+    let result = registry.command_add_runtime(&invalid_cmd, Box::new(dummy_handler));
   
   // Should fail with explicit error message
   assert!(result.is_err(), "Namespace without dot prefix should be rejected");
@@ -94,7 +104,9 @@ fn test_reject_invalid_namespace()
 #[test]
 fn test_accept_correctly_formatted_commands()
 {
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   
   // Root-level command - should be accepted
   let root_cmd = CommandDefinition {
@@ -113,9 +125,12 @@ fn test_accept_correctly_formatted_commands()
     deprecation_message: String::new(),
     http_method_hint: String::new(),
     examples: Vec::new(),
+    auto_help_enabled: false,
   };
   
-  let result = registry.command_add_runtime(&root_cmd, Box::new(dummy_handler));
+  #[allow(deprecated)]
+    #[allow(deprecated)]
+    let result = registry.command_add_runtime(&root_cmd, Box::new(dummy_handler));
   assert!(result.is_ok(), "Correctly formatted root command should be accepted");
   println!("✅ Accepted correctly formatted root command");
   
@@ -136,9 +151,12 @@ fn test_accept_correctly_formatted_commands()
     deprecation_message: String::new(),
     http_method_hint: String::new(),
     examples: Vec::new(),
+    auto_help_enabled: false,
   };
   
-  let result2 = registry.command_add_runtime(&namespaced_cmd, Box::new(dummy_handler));
+  #[allow(deprecated)]
+    #[allow(deprecated)]
+    let result2 = registry.command_add_runtime(&namespaced_cmd, Box::new(dummy_handler));
   assert!(result2.is_ok(), "Correctly formatted namespaced command should be accepted");
   println!("✅ Accepted correctly formatted namespaced command");
 }
@@ -152,7 +170,9 @@ fn test_principle_minimum_implicit_magic()
   println!("   - Explicit validation with clear error messages");
   println!("   - What you register is exactly what gets executed\n");
   
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   
   // Test cases demonstrating the principle
   let test_cases = vec![
@@ -177,9 +197,11 @@ fn test_principle_minimum_implicit_magic()
       deprecation_message: String::new(),
       http_method_hint: String::new(),
       examples: Vec::new(),
+    auto_help_enabled: false,
     };
     
-    let result = registry.command_add_runtime(&cmd, Box::new(dummy_handler));
+    #[allow(deprecated)]
+        let result = registry.command_add_runtime(&cmd, Box::new(dummy_handler));
     
     if name.starts_with('.') {
       assert!(result.is_ok(), "Command '{}' should be accepted", name);

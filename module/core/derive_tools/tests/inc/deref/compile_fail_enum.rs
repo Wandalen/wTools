@@ -9,7 +9,7 @@ extern crate derive_tools_meta;
 // | CF1.1 | Enum      | "Deref cannot be derived for enums. It is only applicable to structs with a single field." |
 
 #[ allow( dead_code ) ]
-#[ derive( derive_tools_meta::Deref ) ]
+#[ derive( derive_tools_meta ::Deref ) ]
 enum MyEnum
 {
   Variant1( bool ),

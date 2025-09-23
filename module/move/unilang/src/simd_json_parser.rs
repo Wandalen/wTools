@@ -3,6 +3,44 @@
 //!
 //! This module provides 4-25x faster JSON parsing compared to `serde_json`
 //! by leveraging SIMD instructions (AVX2/SSE4.2) for byte-level operations.
+//!
+//! ## Design Rules Compliance for SIMD Optimizations
+//!
+//! **✅ CORRECT Implementation:**
+//! - SIMD optimizations in production code for real performance benefits
+//! - Graceful fallback to standard parsing when SIMD unavailable
+//! - Feature flag gated for optional dependency management
+//!
+//! **❌ TESTING VIOLATIONS TO AVOID:**
+//! ```rust,ignore
+//! // WRONG - Do not create SIMD performance tests in tests/
+//! #[test]
+//! fn test_simd_performance() {
+//!     let start = std::time::Instant::now();
+//!     let simd_result = SIMDJsonParser::parse(input);
+//!     let simd_time = start.elapsed();
+//!
+//!     let start = std::time::Instant::now();
+//!     let normal_result = serde_json::from_str(input);
+//!     let normal_time = start.elapsed();
+//!
+//!     assert!(simd_time < normal_time); // Performance assertion - RULE VIOLATION
+//! }
+//! ```
+//!
+//! **✅ CORRECT Testing Approach:**
+//! ```rust,ignore
+//! // Test correctness, not performance
+//! #[test]
+//! fn test_simd_correctness() {
+//!     let input = r#"{"key": "value"}"#;
+//!     let simd_result = SIMDJsonParser::parse(input);
+//!     let expected = serde_json::from_str(input).unwrap();
+//!     assert_eq!(simd_result.unwrap(), expected); // Correctness assertion - CORRECT
+//! }
+//! ```
+//!
+//! **For SIMD performance measurement, use `benchkit` framework separately.**
 
 /// Internal namespace.
 mod private

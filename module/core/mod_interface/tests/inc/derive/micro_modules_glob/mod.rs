@@ -1,24 +1,28 @@
-// use super::*;
+#![allow(dead_code)]
+#![allow(clippy ::doc_markdown)]
+// use super :: *;
 
 /// Define a private namespace for all its items.
-mod private {
+mod private 
+{
   pub struct Struct1;
   pub struct Struct2;
 }
 
 //
 
-crate::the_module::mod_interface! {
+crate ::the_module ::mod_interface! {
   own use
   {
-    *
-  };
+  *
+ };
 }
 
 //
 
 #[ test ]
-fn basic() {
-  let _s1 = Struct1;
-  let _s2 = Struct2;
+fn basic() 
+{
+  let _ = Struct1;
+  let _ = Struct2;
 }

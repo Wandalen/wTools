@@ -1,17 +1,17 @@
 /// Define a private namespace for all its items.
 mod private
 {
-  use crate::prelude::*;
-  use core::fmt;
-  use core::hash::Hash;
-  use core::cmp::{ PartialEq, Eq };
-  use wtools::dt::prelude::*;
+  use crate ::prelude :: *;
+  use core ::fmt;
+  use core ::hash ::Hash;
+  use core ::cmp :: { PartialEq, Eq };
+  use wtools ::dt ::prelude :: *;
 
   // types!
   // {
   //   /// Identify an instance by name.
   //   #[ derive( PartialEq, Eq, Copy, Clone, Hash, Default, Debug ) ]
-  //   pub single IdentityWithPointer : usize;
+  //   pub single IdentityWithPointer: usize;
   // }
 
   ///
@@ -23,42 +23,42 @@ mod private
   impl IdentityWithPointer
   {
 
-    /// Construct from an arbitrary reference.
-    #[ inline ]
-    pub fn make< T >( src : &T ) -> Self
-    {
-      // Safety : it differentiate different instances.
-      let ptr = unsafe
-      {
-        core::mem::transmute::< _, usize >( src )
-      };
-      Self( ptr )
-    }
+  /// Construct from an arbitrary reference.
+  #[ inline ]
+  pub fn make< T >( src: &T ) -> Self
+  {
+   // Safety: it differentiate different instances.
+   let ptr = unsafe
+   {
+  core ::mem ::transmute :: < _, usize >( src )
+ };
+   Self( ptr )
+ }
 
-  }
+ }
 
   impl< 'a, T > From< &'a T > for IdentityWithPointer
   {
-    fn from( src : &'a T ) -> Self
-    {
-      let ptr = unsafe
-      {
-        core::mem::transmute::< _, usize >( src )
-      };
-      Self( ptr )
-    }
-  }
+  fn from( src: &'a T ) -> Self
+  {
+   let ptr = unsafe
+   {
+  core ::mem ::transmute :: < _, usize >( src )
+ };
+   Self( ptr )
+ }
+ }
 
   //
 
-  // zzz : implement IdentityGenerableInterface for other identities. make it working
-  // zzz : use type constructors
+  // zzz: implement IdentityGenerableInterface for other identities. make it working
+  // zzz: use type constructors
 
   // types!
   // {
   //   /// Identify an instance by name.
   //   #[ derive( PartialEq, Eq, Copy, Clone, Hash, Default ) ]
-  //   pub single IdentityWithName : &'static str;
+  //   pub single IdentityWithName: &'static str;
   // }
 
   ///
@@ -71,41 +71,41 @@ mod private
   impl IdentityWithName
   {
 
-    /// Construct from an arbitrary reference.
-    #[ inline ]
-    pub fn make( val : &'static str ) -> Self
-    {
-      Self( val )
-    }
+  /// Construct from an arbitrary reference.
+  #[ inline ]
+  pub fn make( val: &'static str ) -> Self
+  {
+   Self( val )
+ }
 
-  }
+ }
 
   impl From< &'static str > for IdentityWithName
   {
-    fn from( src : &'static str ) -> Self
-    {
-      Self( src )
-    }
-  }
+  fn from( src: &'static str ) -> Self
+  {
+   Self( src )
+ }
+ }
 
   impl< Src > From< &Src > for IdentityWithName
   where
-    Src : Clone,
-    IdentityWithName : From< Src >,
+  Src: Clone,
+  IdentityWithName: From< Src >,
   {
-    fn from( src : &Src ) -> Self
-    {
-      From::< Src >::from( src.clone() )
-    }
-  }
+  fn from( src: &Src ) -> Self
+  {
+   From :: < Src > ::from( src.clone() )
+ }
+ }
 
-  impl fmt::Debug for IdentityWithName
+  impl fmt ::Debug for IdentityWithName
   {
-    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
-    {
-      f.write_fmt( format_args!( "{}", self.0 ) )
-    }
-  }
+  fn fmt( &self, f: &mut fmt ::Formatter< '_ > ) -> fmt ::Result
+  {
+   f.write_fmt( format_args!( "{}", self.0 ) )
+ }
+ }
 
   //
   // =
@@ -113,10 +113,10 @@ mod private
 
   types!
   {
-    /// Identify an instance by integer.
-    #[ derive( PartialEq, Eq, Copy, Clone, Hash ) ]
-    pub single IdentityWithInt : isize;
-  }
+  /// Identify an instance by integer.
+  #[ derive( PartialEq, Eq, Copy, Clone, Hash ) ]
+  pub single IdentityWithInt: isize;
+ }
 
   ///
   /// Interface to to generate a new IDs for IdentityWithInt
@@ -124,28 +124,28 @@ mod private
   #[ derive( Debug, Copy, Clone, Default ) ]
   pub struct IdGeneratorInt
   {
-    counter : IdentityWithInt,
-  }
+  counter: IdentityWithInt,
+ }
 
   impl IdGeneratorTrait< IdentityWithInt > for IdGeneratorInt
   {
-    /// Generate a new identity based on the current increasing it.
-    fn id_next( &mut self ) -> IdentityWithInt
-    {
-      self.counter.0 += 1;
-      self.counter
-    }
-    /// Check is the identity valid.
-    fn is_id_valid( &self, src : IdentityWithInt ) -> bool
-    {
-      src.0 >= 0 && src.0 < self.counter.0
-    }
-  }
+  /// Generate a new identity based on the current increasing it.
+  fn id_next( &mut self ) -> IdentityWithInt
+  {
+   self.counter.0 += 1;
+   self.counter
+ }
+  /// Check is the identity valid.
+  fn is_id_valid( &self, src: IdentityWithInt ) -> bool
+  {
+   src.0 >= 0 && src.0 < self.counter.0
+ }
+ }
 
   impl HasIdGenerator< IdentityWithInt > for IdentityWithInt
   {
-    type Generator = IdGeneratorInt;
-  }
+  type Generator = IdGeneratorInt;
+ }
 
 //   impl IdentityGenerableInterface for IdentityWithInt
 //   {
@@ -155,39 +155,39 @@ mod private
 //       let result = Self( self.0 + 1 );
 //       assert!( self.is_valid() );
 //       result
-//     }
+// }
 //
 //     fn is_valid( &self ) -> bool
 //     {
 //       self.0 > 0
-//     }
+// }
 //
-//   }
+// }
 
   impl Default for IdentityWithInt
   {
-    fn default() -> Self { Self( 1 ) }
-  }
+  fn default() -> Self { Self( 1 ) }
+ }
 
-  impl fmt::Debug for IdentityWithInt
+  impl fmt ::Debug for IdentityWithInt
   {
-    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
-    {
-      f.write_fmt( format_args!( "{}", self.0 ) )
-    }
-  }
+  fn fmt( &self, f: &mut fmt ::Formatter< '_ > ) -> fmt ::Result
+  {
+   f.write_fmt( format_args!( "{}", self.0 ) )
+ }
+ }
 
 }
 
 //
 
-crate::mod_interface!
+crate ::mod_interface!
 {
-  exposed use super::private::
+  exposed use super ::private ::
   {
-    IdentityWithPointer,
-    IdentityWithName,
-    IdentityWithInt,
-    IdGeneratorInt,
-  };
+  IdentityWithPointer,
+  IdentityWithName,
+  IdentityWithInt,
+  IdGeneratorInt,
+ };
 }

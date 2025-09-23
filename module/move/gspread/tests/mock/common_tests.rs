@@ -2,12 +2,12 @@
 //! Common tests for every function.
 //! 
 
-use httpmock::prelude::*;
-use gspread::*;
-use actions::gspread::get_cell;
-use gcore::
+use httpmock ::prelude :: *;
+use gspread :: *;
+use actions ::gspread ::get_cell;
+use gcore ::
 {
-  client::Client, 
+  client ::Client, 
   ApplicationSecret
 };
 
@@ -19,24 +19,25 @@ use gcore::
 /// 1. Start a mock server.
 /// 2. Create a client.
 /// 3. Send a HTTP request.
-#[ tokio::test ]
+#[ tokio ::test ]
 #[ should_panic ]
 async fn test_mock_wrong_spreadsheet_id_should_panic() 
 {
   // 1. Start server.
-  let server = MockServer::start();
-  let _ = server.mock( | when, then | {
-    when.method( GET )
-      .path( "/12345/values/tab2!A2" );
-    then
-      .status( 200 )
-      .header( "Content-Type", "application/json" )
-      .body( r#""# );
-  } );
+  let server = MockServer ::start();
+  let _ = server.mock( | when, then |
+  {
+  when.method( GET )
+   .path( "/12345/values/tab2!A2" );
+  then
+   .status( 200 )
+   .header( "Content-Type", "application/json" )
+   .body( r#""# );
+ } );
 
   // 2. Create a client. 
   let endpoint = server.url( "" );
-  let client : Client< '_, ApplicationSecret > = Client::former()
+  let client: Client< '_, ApplicationSecret > = Client ::former()
   .endpoint( &*endpoint )
   .form();
 
@@ -53,24 +54,25 @@ async fn test_mock_wrong_spreadsheet_id_should_panic()
 /// 1. Start a mock server.
 /// 2. Create a client.
 /// 3. Send a HTTP request.
-#[ tokio::test ]
+#[ tokio ::test ]
 #[ should_panic ]
 async fn test_mock_wrong_sheet_name_should_panic() 
 {
   // 1. Start server.
-  let server = MockServer::start();
-  let _ = server.mock( | when, then | {
-    when.method( GET )
-      .path( "/12345/values/tab2!A2" );
-    then
-      .status( 200 )
-      .header( "Content-Type", "application/json" )
-      .body( r#""# );
-  } );
+  let server = MockServer ::start();
+  let _ = server.mock( | when, then |
+  {
+  when.method( GET )
+   .path( "/12345/values/tab2!A2" );
+  then
+   .status( 200 )
+   .header( "Content-Type", "application/json" )
+   .body( r#""# );
+ } );
 
   // 2. Create a client. 
   let endpoint = server.url( "" );
-  let client : Client< '_, ApplicationSecret > = Client::former()
+  let client: Client< '_, ApplicationSecret > = Client ::former()
   .endpoint( &*endpoint )
   .form();
 

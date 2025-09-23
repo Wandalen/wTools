@@ -134,8 +134,14 @@ impl< 'a > SemanticAnalyzer< 'a >
         format!( "Command Error: The command '{command_name}' was not found. Use '.' to see all available commands or check for typos." ),
       ))?;
 
-      // Check if help was requested for this command
-      if instruction.help_requested
+      // Check for double question mark parameter (alternative help access)
+      let has_double_question_mark = instruction.positional_arguments.iter()
+        .any( | arg | arg.value == "??" ) ||
+        instruction.named_arguments.values()
+        .any( | arg | arg.value == "??" );
+
+      // Check if help was requested for this command (via ? operator or ?? parameter)
+      if instruction.help_requested || has_double_question_mark
       {
         // Generate help for this specific command
         let help_generator = crate::help::HelpGenerator::new( self.registry );

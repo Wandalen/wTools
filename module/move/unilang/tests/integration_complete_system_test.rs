@@ -24,6 +24,7 @@ fn test_complete_system_integration()
   println!("\n🚀 COMPLETE SYSTEM INTEGRATION TEST");
   println!("Validating issue 017 resolution and governing principles\n");
   
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   
   // Test 1: Root-level commands with explicit dot prefixes
@@ -31,7 +32,8 @@ fn test_complete_system_integration()
   let root_commands = vec![
     (".chat", "Multi-agent chat system"),
     (".run", "Execute commands with prompts"),
-    (".help", "Show help information"),
+    // Note: .help is already a static command, so we test different dynamic commands
+    (".status", "Show application status"),
   ];
   
   for (name, desc) in &root_commands {
@@ -51,8 +53,10 @@ fn test_complete_system_integration()
       deprecation_message: String::new(),
       http_method_hint: String::new(),
       examples: Vec::new(),
+    auto_help_enabled: false,
     };
     
+    #[allow(deprecated)]
     let result = registry.command_add_runtime(&cmd, Box::new(demo_handler));
     assert!(result.is_ok(), "Root command '{}' should register successfully", name);
     println!("  ✅ Registered: {}", name);
@@ -83,8 +87,10 @@ fn test_complete_system_integration()
       deprecation_message: String::new(),
       http_method_hint: String::new(),
       examples: Vec::new(),
+    auto_help_enabled: false,
     };
     
+    #[allow(deprecated)]
     let result = registry.command_add_runtime(&cmd, Box::new(demo_handler));
     assert!(result.is_ok(), "Namespaced command '{}/{}' should register successfully", namespace, name);
     println!("  ✅ Registered: {}{}", namespace, name.strip_prefix('.').unwrap_or(name));
@@ -114,8 +120,10 @@ fn test_complete_system_integration()
       deprecation_message: String::new(),
       http_method_hint: String::new(),
       examples: Vec::new(),
+    auto_help_enabled: false,
     };
     
+    #[allow(deprecated)]
     let result = registry.command_add_runtime(&invalid_cmd, Box::new(demo_handler));
     assert!(result.is_err(), "Command '{}' should be rejected: {}", invalid_name, reason);
     println!("  ❌ Correctly rejected: '{}' ({})", invalid_name, reason);
@@ -127,8 +135,8 @@ fn test_complete_system_integration()
   
   let test_commands = vec![
     ".chat",
-    ".run", 
-    ".help",
+    ".run",
+    ".status", // Using dynamic command that has a routine
     ".session.list",
     ".session.create",
     ".math.add",
@@ -167,6 +175,7 @@ fn test_governing_principles_compliance()
   
   // Principle 1: Minimum Implicit Magic
   println!("🔍 Principle 1: Minimum Implicit Magic");
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   
   let explicit_cmd = CommandDefinition {
@@ -185,8 +194,10 @@ fn test_governing_principles_compliance()
     deprecation_message: String::new(),
     http_method_hint: String::new(),
     examples: Vec::new(),
+    auto_help_enabled: false,
   };
   
+    #[allow(deprecated)]
   let result = registry.command_add_runtime(&explicit_cmd, Box::new(demo_handler));
   assert!(result.is_ok(), "Explicit command should be accepted");
   println!("  ✅ Explicit naming accepted");
@@ -198,6 +209,7 @@ fn test_governing_principles_compliance()
   
   // Principle 2: Fail-Fast Validation
   println!("\n🔍 Principle 2: Fail-Fast Validation");
+  #[allow(deprecated)]
   let mut registry2 = CommandRegistry::new();
   
   let invalid_cmd = CommandDefinition {
@@ -216,8 +228,10 @@ fn test_governing_principles_compliance()
     deprecation_message: String::new(),
     http_method_hint: String::new(),
     examples: Vec::new(),
+    auto_help_enabled: false,
   };
   
+    #[allow(deprecated)]
   let result = registry2.command_add_runtime(&invalid_cmd, Box::new(demo_handler));
   assert!(result.is_err(), "Invalid command should be rejected at registration time");
   

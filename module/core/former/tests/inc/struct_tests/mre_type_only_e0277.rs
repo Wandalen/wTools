@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 // MRE test for E0277 trait bound error in type-only struct FormerBegin
 // This test ensures the trait bounds are properly propagated in FormerBegin implementations
 

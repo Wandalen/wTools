@@ -344,7 +344,8 @@ Replace your `anyhow` imports with `error_tools::untyped`:
 // After  
 use error_tools::untyped::{ Result, Context, bail, format_err };
 
-fn main() {
+fn main() 
+{
     println!("Migration complete - same API, different import!");
 }
 ```
@@ -363,7 +364,8 @@ Add the explicit `thiserror` import and use `error_tools::typed`:
 use error_tools::typed::Error;
 use error_tools::dependency::thiserror;  // Required for derive macros
 
-fn main() {
+fn main() 
+{
     println!("Migration complete - same derive macros, unified import!");
 }
 ```

@@ -18,4 +18,4 @@ pub mod std_types;
 // pub mod serde_support;
 
 #[ cfg( feature = "types_component_assign" ) ]
-pub use std_types::*;
+pub use std_types :: *;

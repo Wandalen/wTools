@@ -1,6 +1,6 @@
-// use super::*;
+// use super :: *;
 // #[ cfg( feature = "canonical" ) ]
-// use the_module::canonical::CellNodeFactory as GenerativeNodeFactory;
+// use the_module ::canonical ::CellNodeFactory as GenerativeNodeFactory;
 //
 // #[ cfg( feature = "canonical" ) ]
 // include!( "./factory_impls.rs" );
@@ -11,13 +11,13 @@
 //
 //   fn nodecell_make()
 //   {
-//     use the_module::prelude::*;
+//     use the_module ::prelude :: *;
 //
-//     let node : the_module::canonical::Node = from!( 13 );
+//     let node: the_module ::canonical ::Node = from!( 13 );
 //     a_id!( node.id(), 13.into() );
-//     let cellnode : < the_module::canonical::CellNodeFactory as GraphNodesNominalInterface >::NodeHandle = from!( node );
+//     let cellnode: < the_module ::canonical ::CellNodeFactory as GraphNodesNominalInterface > ::NodeHandle = from!( node );
 //
-//   }
+// }
 //
 // }
 //

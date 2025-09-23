@@ -1,22 +1,22 @@
-use core::ops::Deref;
-use derive_tools::DerefMut;
+use core ::ops ::Deref;
+use derive_tools ::DerefMut;
 
 #[ allow( dead_code ) ]
 #[ derive( DerefMut ) ]
 struct StructNamed
 {
   #[ deref_mut ]
-  a : String,
-  b : i32,
+  a: String,
+  b: i32,
 }
 
 impl Deref for StructNamed
 {
   type Target = String;
-  fn deref( &self ) -> &Self::Target
+  fn deref( &self ) -> &Self ::Target
   {
-    &self.a
-  }
+  &self.a
+ }
 }
 
 include!( "./only_test/struct_named.rs" );

@@ -12,7 +12,9 @@ use regex::Regex;
 //
 
 fn setup_test_environment(command: CommandDefinition) -> CommandRegistry {
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   registry.register(command);
   registry
 }
@@ -66,6 +68,7 @@ fn test_path_argument_type() {
       tags: vec![],
     }],
     routine_link: None,
+        auto_help_enabled: false,
     namespace: String::new(),
     hint: String::new(),
     status: String::new(),
@@ -137,6 +140,7 @@ fn test_file_argument_type() {
       tags: vec![],
     }],
     routine_link: None,
+        auto_help_enabled: false,
     namespace: String::new(),
     hint: String::new(),
     status: String::new(),
@@ -217,6 +221,7 @@ fn test_directory_argument_type() {
       tags: vec![],
     }],
     routine_link: None,
+        auto_help_enabled: false,
     namespace: String::new(),
     hint: String::new(),
     status: String::new(),
@@ -294,6 +299,7 @@ fn test_enum_argument_type() {
       tags: vec![],
     }],
     routine_link: None,
+        auto_help_enabled: false,
     namespace: String::new(),
     hint: String::new(),
     status: String::new(),
@@ -380,6 +386,7 @@ fn test_url_argument_type() {
       tags: vec![],
     }],
     routine_link: None,
+        auto_help_enabled: false,
     namespace: String::new(),
     hint: String::new(),
     status: String::new(),
@@ -451,6 +458,7 @@ fn test_datetime_argument_type() {
       tags: vec![],
     }],
     routine_link: None,
+        auto_help_enabled: false,
     namespace: String::new(),
     hint: String::new(),
     status: String::new(),
@@ -522,6 +530,7 @@ fn test_pattern_argument_type() {
       tags: vec![],
     }],
     routine_link: None,
+        auto_help_enabled: false,
     namespace: String::new(),
     hint: String::new(),
     status: String::new(),
@@ -594,6 +603,7 @@ fn test_default_argument() {
       tags: vec![],
     }],
     routine_link: None,
+        auto_help_enabled: false,
     namespace: String::new(),
     hint: String::new(),
     status: String::new(),

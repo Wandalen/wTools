@@ -1,10 +1,10 @@
-#[ allow( unused_imports, clippy::wildcard_imports ) ]
-use super::*;
+#[ allow( unused_imports, clippy ::wildcard_imports ) ]
+use super :: *;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-#[ allow( clippy::pub_use ) ]
-pub use alloc::collections::binary_heap::*;
+#[ allow( clippy ::pub_use ) ]
+pub use alloc ::collections ::binary_heap :: *;
 
 /// Creates a `BinaryHeap` from a list of elements.
 ///
@@ -19,7 +19,7 @@ pub use alloc::collections::binary_heap::*;
 /// The macro can be called with a comma-separated list of elements. A trailing comma is optional.
 ///
 /// ```rust
-/// # use collection_tools::{ BinaryHeap, heap };
+/// # use collection_tools :: { BinaryHeap, heap };
 /// // BinaryHeap of i32
 /// let heap1 = heap!( 3, 1, 4, 1, 5, 9 );
 ///
@@ -32,8 +32,8 @@ pub use alloc::collections::binary_heap::*;
 ///
 /// # Parameters
 ///
-/// - `$( $key:expr ),* $( , )?`: A comma-separated list of elements to insert into the `BinaryHeap`.
-///   Each element can be of any type that implements the `Into<T>` trait, where `T` is the
+/// - `$( $key: expr ),* $( , )?` : A comma-separated list of elements to insert into the `BinaryHeap`.
+///   Each element can be of any type that implements the `Into< T >` trait, where `T` is the
 ///   type stored in the `BinaryHeap`.
 ///
 /// # Returns
@@ -43,10 +43,10 @@ pub use alloc::collections::binary_heap::*;
 ///
 /// # Example
 ///
-/// Basic usage with integers:
+/// Basic usage with integers :
 ///
 /// ```rust
-/// # use collection_tools::{ BinaryHeap, heap };
+/// # use collection_tools :: { BinaryHeap, heap };
 /// let heap = heap!( 5, 3, 7, 1 );
 /// assert_eq!( heap.peek(), Some( &7 ) ); // The largest value is at the top of the heap
 /// ```
@@ -56,17 +56,17 @@ pub use alloc::collections::binary_heap::*;
 macro_rules! heap
 {
   (
-    $( $key : expr ),* $( , )?
-  )
+  $( $key: expr ),* $( , )?
+ )
   =>
   {{
-    let _cap = count!( @count $( $key ),* );
-    let mut _heap = $crate::collection::BinaryHeap::with_capacity( _cap );
-    $(
-      _heap.push( $key );
-    )*
-    _heap
-  }};
+  let _cap = count!( @count $( $key ),* );
+  let mut _heap = $crate ::collection ::BinaryHeap ::with_capacity( _cap );
+  $(
+   _heap.push( $key );
+ )*
+  _heap
+ }};
 }
 
 /// Creates a `BinaryHeap` from a list of elements.
@@ -76,7 +76,7 @@ macro_rules! heap
 /// using `.into()`, allowing for the use of literals or values of different, but convertible types.
 ///
 /// Note: The `into_heap` macro utilizes the `.into()` method to convert each element into the target type
-/// of the `BinaryHeap`. This means that the elements must be compatible with the `Into<T>` trait for the
+/// of the `BinaryHeap`. This means that the elements must be compatible with the `Into< T >` trait for the
 /// type `T` used in the `BinaryHeap`. Also, this means that sometimes you must specify the type of collection's items.
 ///
 /// # Origin
@@ -88,21 +88,21 @@ macro_rules! heap
 /// The macro can be called with a comma-separated list of elements. A trailing comma is optional.
 ///
 /// ```rust
-/// # use collection_tools::{ BinaryHeap, into_heap };
+/// # use collection_tools :: { BinaryHeap, into_heap };
 /// // BinaryHeap of i32
-/// let heap1 : BinaryHeap< i32 > = into_heap!( 3, 1, 4, 1, 5, 9 );
+/// let heap1: BinaryHeap< i32 > = into_heap!( 3, 1, 4, 1, 5, 9 );
 ///
 /// // BinaryHeap of String
-/// let heap2 : BinaryHeap< String > = into_heap!{ "pear".to_string(), "apple", "banana" };
+/// let heap2: BinaryHeap< String > = into_heap!{ "pear".to_string(), "apple", "banana" };
 ///
 /// // With trailing comma
-/// let heap3 : BinaryHeap< i32 > = into_heap!( 2, 7, 1, 8, );
+/// let heap3: BinaryHeap< i32 > = into_heap!( 2, 7, 1, 8, );
 /// ```
 ///
 /// # Parameters
 ///
-/// - `$( $key:expr ),* $( , )?`: A comma-separated list of elements to insert into the `BinaryHeap`.
-///   Each element can be of any type that implements the `Into<T>` trait, where `T` is the
+/// - `$( $key: expr ),* $( , )?` : A comma-separated list of elements to insert into the `BinaryHeap`.
+///   Each element can be of any type that implements the `Into< T >` trait, where `T` is the
 ///   type stored in the `BinaryHeap`.
 ///
 /// # Returns
@@ -112,31 +112,31 @@ macro_rules! heap
 ///
 /// # Example
 ///
-/// Basic usage with integers:
+/// Basic usage with integers :
 ///
 /// ```rust
-/// # use collection_tools::{ BinaryHeap, into_heap };
-/// let heap : BinaryHeap< i32 > = into_heap!( 5, 3, 7, 1 );
+/// # use collection_tools :: { BinaryHeap, into_heap };
+/// let heap: BinaryHeap< i32 > = into_heap!( 5, 3, 7, 1 );
 /// assert_eq!( heap.peek(), Some( &7 ) ); // The largest value is at the top of the heap
 /// ```
 ///
 /// # Example
 ///
-/// Using with different types that implement `Into<T>`:
+/// Using with different types that implement `Into< T >` :
 ///
 /// ```rust
-/// # use collection_tools::{ BinaryHeap, into_heap };
-/// let chars : BinaryHeap< char > = into_heap!( 'a', 'b', 'c' );
+/// # use collection_tools :: { BinaryHeap, into_heap };
+/// let chars: BinaryHeap< char > = into_heap!( 'a', 'b', 'c' );
 /// assert_eq!( chars.peek(), Some( &'c' ) ); // Characters are ordered by their ASCII value
 /// ```
 ///
 /// # Example
 ///
-/// Creating a `BinaryHeap` of `String` from string literals:
+/// Creating a `BinaryHeap` of `String` from string literals :
 ///
 /// ```rust
-/// # use collection_tools::{ BinaryHeap, into_heap };
-/// let fruits : BinaryHeap< String > = into_heap!{ "cherry", "apple", "banana" };
+/// # use collection_tools :: { BinaryHeap, into_heap };
+/// let fruits: BinaryHeap< String > = into_heap!{ "cherry", "apple", "banana" };
 /// assert_eq!( fruits.peek(), Some( &"cherry".to_string() ) ); // The lexicographically largest value is at the top
 /// ```
 ///
@@ -145,15 +145,15 @@ macro_rules! heap
 macro_rules! into_heap
 {
   (
-    $( $key : expr ),* $( , )?
-  )
+  $( $key: expr ),* $( , )?
+ )
   =>
   {{
-    let _cap = count!( @count $( $key ),* );
-    let mut _heap = $crate::collection::BinaryHeap::with_capacity( _cap );
-    $(
-      _heap.push( Into::into( $key ) );
-    )*
-    _heap
-  }};
+  let _cap = count!( @count $( $key ),* );
+  let mut _heap = $crate ::collection ::BinaryHeap ::with_capacity( _cap );
+  $(
+   _heap.push( Into ::into( $key ) );
+ )*
+  _heap
+ }};
 }

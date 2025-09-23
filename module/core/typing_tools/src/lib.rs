@@ -11,16 +11,16 @@
 //! This crate provides collection of general purpose tools for type checking and has been
 //! systematically updated to comply with the Design and Codestyle Rulebooks.
 //!
-//! ## Completed Compliance Work:
+//! ## Completed Compliance Work :
 //!
-//! 1. **Feature Architecture**: All functionality is properly gated behind the "enabled" feature.
+//! 1. **Feature Architecture** : All functionality is properly gated behind the "enabled" feature.
 //!
-//! 2. **Documentation Strategy**: Uses `#![ doc = include_str!(...) ]` to include readme.md
+//! 2. **Documentation Strategy** : Uses `#![ doc = include_str!(...) ]` to include readme.md
 //!    instead of duplicating documentation in source files.
 //!
-//! 3. **Attribute Formatting**: All attributes use proper spacing per Universal Formatting Rule.
+//! 3. **Attribute Formatting** : All attributes use proper spacing per Universal Formatting Rule.
 //!
-//! 4. **Namespace Organization**: Uses standard own/orphan/exposed/prelude pattern.
+//! 4. **Namespace Organization** : Uses standard own/orphan/exposed/prelude pattern.
 
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 #![ cfg_attr( not( doc ), doc = "Type system utilities" ) ]
@@ -31,7 +31,8 @@ pub mod typing;
 
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
-pub mod dependency {
+pub mod dependency
+{
   #[ cfg( feature = "typing_inspect_type" ) ]
   pub use ::inspect_type;
   #[ cfg( feature = "typing_is_slice" ) ]
@@ -48,7 +49,8 @@ pub use own::*;
 /// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod own {
+pub mod own
+{
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
@@ -60,7 +62,8 @@ pub mod own {
 /// Orphan namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod orphan {
+pub mod orphan
+{
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
@@ -69,7 +72,8 @@ pub mod orphan {
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod exposed {
+pub mod exposed
+{
   use super::*;
   #[ doc( inline ) ]
   pub use prelude::*;
@@ -81,7 +85,8 @@ pub mod exposed {
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod prelude {
+pub mod prelude
+{
   use super::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

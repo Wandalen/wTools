@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: Provides a manual implementation of a constructor for a unit variant
 //! within a generic enum with bounds, to serve as a reference for verifying
 //! the `#[ derive( Former ) ]` macro's behavior.

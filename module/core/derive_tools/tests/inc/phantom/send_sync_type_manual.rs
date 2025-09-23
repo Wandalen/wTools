@@ -1,9 +1,10 @@
-use core::marker::PhantomData;
+use core ::marker ::PhantomData;
 
 #[ allow( dead_code ) ]
-struct SendSyncType<T> {
+struct SendSyncType< T > 
+{
   a: T,
-  _phantom: PhantomData<T>,
+  _phantom: PhantomData< T >,
 }
 
 include!("./only_test/send_sync_type.rs");

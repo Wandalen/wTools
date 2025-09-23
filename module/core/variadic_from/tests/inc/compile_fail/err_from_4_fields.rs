@@ -1,7 +1,7 @@
 //! This test ensures that `VariadicFrom` derive fails for structs with >3 fields.
 
-use variadic_from::VariadicFrom;
-use variadic_from::from;
+use variadic_from ::VariadicFrom;
+use variadic_from ::from;
 
 #[ derive( VariadicFrom ) ]
 struct MyStruct( i32, i32, i32, i32 );

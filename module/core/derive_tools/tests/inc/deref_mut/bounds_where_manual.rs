@@ -1,34 +1,34 @@
-trait Trait<'a> {}
-impl<'a> Trait<'a> for i32 {}
+trait Trait< 'a > {}
+impl< 'a > Trait< 'a > for i32 {}
 
-use core::ops::{ Deref, DerefMut };
+use core ::ops :: { Deref, DerefMut };
 
 #[ allow( dead_code ) ]
 struct BoundsWhere< T, U >( T, U )
 where
-  T : ToString,
-  for< 'a > U : Trait< 'a >;
+  T: ToString,
+  for< 'a > U: Trait< 'a >;
 
 impl< T, U > Deref for BoundsWhere< T, U >
 where
-  T : ToString,
-  for< 'a > U : Trait< 'a >
+  T: ToString,
+  for< 'a > U: Trait< 'a >
 {
   type Target = T;
-  fn deref( &self ) -> &Self::Target
+  fn deref( &self ) -> &Self ::Target
   {
-    &self.0
-  }
+  &self.0
+ }
 }
 impl< T, U > DerefMut for BoundsWhere< T, U >
 where
-  T : ToString,
-  for< 'a > U : Trait< 'a >
+  T: ToString,
+  for< 'a > U: Trait< 'a >
 {
-  fn deref_mut( &mut self ) -> &mut Self::Target
+  fn deref_mut( &mut self ) -> &mut Self ::Target
   {
-    &mut self.0
-  }
+  &mut self.0
+ }
 }
 
 include!( "./only_test/bounds_where.rs" );

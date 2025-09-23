@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 // Purpose: Simplified replacement for comprehensive_mixed_derive to avoid build timeouts
 // This provides mixed enum variant coverage without causing build performance issues
 

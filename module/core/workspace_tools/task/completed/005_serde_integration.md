@@ -40,7 +40,8 @@ Provide first-class serde integration for seamless configuration management, eli
 
 ### **New API Surface**
 ```rust
-impl Workspace {
+impl Workspace 
+{
     /// Load configuration with automatic format detection
     pub fn load_config<T>(&self, name: &str) -> Result<T>
     where
@@ -82,7 +83,8 @@ pub trait ConfigMerge: Sized {
 
 /// Workspace-aware serde deserializer
 #[derive(Debug)]
-pub struct WorkspaceDeserializer<'ws> {
+pub struct WorkspaceDeserializer<'ws> 
+{
     workspace: &'ws Workspace,
 }
 
@@ -113,7 +115,8 @@ serde_yaml = { version = "0.9", optional = true }
 
 // Core implementation
 #[cfg(feature = "serde_integration")]
-impl Workspace {
+impl Workspace 
+{
     pub fn load_config<T>(&self, name: &str) -> Result<T>
     where
         T: serde::de::DeserializeOwned,
@@ -170,7 +173,8 @@ impl Workspace {
         }
     }
     
-    fn detect_config_format(&self, path: &Path) -> Result<ConfigFormat> {
+    fn detect_config_format(&self, path: &Path) -> Result<ConfigFormat> 
+{
         match path.extension().and_then(|ext| ext.to_str()) {
             Some("json") => Ok(ConfigFormat::Json),
             Some("toml") => Ok(ConfigFormat::Toml),
@@ -183,7 +187,8 @@ impl Workspace {
 }
 
 #[derive(Debug, Clone, Copy)]
-enum ConfigFormat {
+enum ConfigFormat 
+{
     Json,
     Toml,
     Yaml,
@@ -193,7 +198,8 @@ enum ConfigFormat {
 #### **Step 2: Configuration Serialization** (Day 2)
 ```rust
 #[cfg(feature = "serde_integration")]
-impl Workspace {
+impl Workspace 
+{
     pub fn save_config<T>(&self, name: &str, config: &T) -> Result<()>
     where
         T: serde::Serialize,
@@ -288,7 +294,8 @@ impl Workspace {
     }
 }
 
-fn merge_json_values(target: &mut serde_json::Value, source: serde_json::Value) {
+fn merge_json_values(target: &mut serde_json::Value, source: serde_json::Value) 
+{
     use serde_json::Value;
     
     match (target, source) {
@@ -313,7 +320,8 @@ pub trait ConfigMerge: Sized {
 }
 
 #[cfg(feature = "serde_integration")]
-impl Workspace {
+impl Workspace 
+{
     pub fn load_config_layered<T>(&self, names: &[&str]) -> Result<T>
     where
         T: serde::de::DeserializeOwned + ConfigMerge,
@@ -363,8 +371,10 @@ impl Workspace {
 }
 
 // Example implementation of ConfigMerge for common patterns
-impl ConfigMerge for serde_json::Value {
-    fn merge(mut self, other: Self) -> Self {
+impl ConfigMerge for serde_json::Value 
+{
+    fn merge(mut self, other: Self) -> Self 
+{
         merge_json_values(&mut self, other);
         self
     }
@@ -373,7 +383,8 @@ impl ConfigMerge for serde_json::Value {
 // Derive macro helper (future enhancement)
 /*
 #[derive(serde::Deserialize, serde::Serialize, ConfigMerge)]
-struct AppConfig {
+struct AppConfig 
+{
     #[merge(strategy = "replace")]
     name: String,
     
@@ -392,16 +403,20 @@ struct AppConfig {
 #[derive(Debug, Clone, PartialEq)]
 pub struct WorkspacePath(PathBuf);
 
-impl WorkspacePath {
-    pub fn new<P: AsRef<Path>>(path: P) -> Self {
+impl WorkspacePath 
+{
+    pub fn new<P: AsRef<Path>>(path: P) -> Self 
+{
         Self(path.as_ref().to_path_buf())
     }
     
-    pub fn as_path(&self) -> &Path {
+    pub fn as_path(&self) -> &Path 
+{
         &self.0
     }
     
-    pub fn resolve(&self, workspace: &Workspace) -> PathBuf {
+    pub fn resolve(&self, workspace: &Workspace) -> PathBuf 
+{
         if self.0.is_absolute() {
             self.0.clone()
         } else {
@@ -420,7 +435,8 @@ impl<'de> serde::Deserialize<'de> for WorkspacePath {
     }
 }
 
-impl serde::Serialize for WorkspacePath {
+impl serde::Serialize for WorkspacePath 
+{
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
@@ -431,12 +447,14 @@ impl serde::Serialize for WorkspacePath {
 
 /// Workspace context for custom deserialization
 #[cfg(feature = "serde_integration")]
-pub struct WorkspaceDeserializer<'ws> {
+pub struct WorkspaceDeserializer<'ws> 
+{
     workspace: &'ws Workspace,
 }
 
 impl<'ws> WorkspaceDeserializer<'ws> {
-    pub fn new(workspace: &'ws Workspace) -> Self {
+    pub fn new(workspace: &'ws Workspace) -> Self 
+{
         Self { workspace }
     }
     
@@ -465,7 +483,8 @@ impl<'de> serde::Deserialize<'de> for EnvVar {
     }
 }
 
-impl serde::Serialize for EnvVar {
+impl serde::Serialize for EnvVar 
+{
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
@@ -488,7 +507,8 @@ mod serde_integration_tests {
     use serde::{Deserialize, Serialize};
     
     #[derive(Deserialize, Serialize, Debug, PartialEq)]
-    struct TestConfig {
+    struct TestConfig 
+{
         name: String,
         port: u16,
         features: Vec<String>,
@@ -496,14 +516,17 @@ mod serde_integration_tests {
     }
     
     #[derive(Deserialize, Serialize, Debug, PartialEq)]
-    struct DatabaseConfig {
+    struct DatabaseConfig 
+{
         host: String,
         port: u16,
         ssl: bool,
     }
     
-    impl ConfigMerge for TestConfig {
-        fn merge(mut self, other: Self) -> Self {
+    impl ConfigMerge for TestConfig 
+{
+        fn merge(mut self, other: Self) -> Self 
+{
             // Simple merge strategy - other values override self
             Self {
                 name: other.name,
@@ -521,7 +544,8 @@ mod serde_integration_tests {
     }
     
     #[test]
-    fn test_config_loading_toml() {
+    fn test_config_loading_toml() 
+{
         let (_temp_dir, ws) = create_test_workspace_with_structure();
         
         let config_content = r#"
@@ -545,7 +569,8 @@ ssl = false
     }
     
     #[test]
-    fn test_config_loading_yaml() {
+    fn test_config_loading_yaml() 
+{
         let (_temp_dir, ws) = create_test_workspace_with_structure();
         
         let config_content = r#"
@@ -568,7 +593,8 @@ database:
     }
     
     #[test]
-    fn test_config_saving() {
+    fn test_config_saving() 
+{
         let (_temp_dir, ws) = create_test_workspace_with_structure();
         
         let config = TestConfig {
@@ -590,7 +616,8 @@ database:
     }
     
     #[test]
-    fn test_config_updating() {
+    fn test_config_updating() 
+{
         let (_temp_dir, ws) = create_test_workspace_with_structure();
         
         // Create initial config
@@ -609,7 +636,8 @@ database:
         
         // Update with partial data
         #[derive(Serialize)]
-        struct PartialUpdate {
+        struct PartialUpdate 
+{
             port: u16,
             features: Vec<String>,
         }
@@ -628,7 +656,8 @@ database:
     }
     
     #[test]
-    fn test_layered_config_loading() {
+    fn test_layered_config_loading() 
+{
         let (_temp_dir, ws) = create_test_workspace_with_structure();
         
         // Base config
@@ -664,7 +693,8 @@ ssl = true
     }
     
     #[test]
-    fn test_workspace_path_type() {
+    fn test_workspace_path_type() 
+{
         let workspace_path = WorkspacePath::new("config/app.toml");
         let json = serde_json::to_string(&workspace_path).unwrap();
         assert_eq!(json, r#""config/app.toml""#);
@@ -688,7 +718,8 @@ use workspace_tools::workspace;
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize)]
-struct AppConfig {
+struct AppConfig 
+{
     name: String,
     port: u16,
     database_url: String,

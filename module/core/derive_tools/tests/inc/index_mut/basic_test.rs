@@ -13,35 +13,36 @@
 #![allow(unused_imports)]
 #![allow(dead_code)]
 
-use test_tools::prelude::*;
-use core::ops::{Index, IndexMut};
-use derive_tools::IndexMut;
+use test_tools :: *;
+use core ::ops :: { Index, IndexMut };
+use derive_tools ::IndexMut;
 
-// IM1.1: Unit struct - should not compile
+// IM1.1 : Unit struct - should not compile
 // #[ derive( IndexMut ) ]
 // pub struct UnitStruct;
 
-// IM1.2: Tuple struct with one field
+// IM1.2 : Tuple struct with one field
 #[ derive( IndexMut ) ]
 pub struct TupleStruct1(#[ index_mut ] pub i32);
 
-// IM1.3: Tuple struct with multiple fields - should not compile
+// IM1.3 : Tuple struct with multiple fields - should not compile
 // #[ derive( IndexMut ) ]
 // pub struct TupleStruct2( pub i32, pub i32 );
 
-// IM1.4: Named struct with one field
+// IM1.4 : Named struct with one field
 #[ derive( IndexMut ) ]
-pub struct NamedStruct1 {
+pub struct NamedStruct1 
+{
   #[ index_mut ]
   pub field1: i32,
 }
 
-// IM1.5: Named struct with multiple fields - should not compile
+// IM1.5 : Named struct with multiple fields - should not compile
 // #[ derive( IndexMut ) ]
 // pub struct NamedStruct2
 // {
-//   pub field1 : i32,
-//   pub field2 : i32,
+//   pub field1: i32,
+//   pub field2: i32,
 // }
 
 // Shared test logic

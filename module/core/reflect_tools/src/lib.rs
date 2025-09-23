@@ -76,6 +76,9 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use ::reflect_tools_meta::*;
 
+  #[ doc( inline ) ]
+  pub use ::derive_tools::{ From, InnerFrom };
+
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -88,5 +91,8 @@ pub mod prelude
   #[ cfg( feature = "reflect_types" ) ]
   #[ doc( inline ) ]
   pub use super::reflect::prelude::*;
+
+  #[ doc( inline ) ]
+  pub use ::derive_tools::{ From, InnerFrom };
 
 }

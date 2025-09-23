@@ -1,6 +1,6 @@
 [package]
 name = "component_model_meta"
-version = "0.6.0"
+version = "0.8.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -28,9 +28,10 @@ proc-macro = true
 
 [features]
 
-default = [ "full" ]
+default = [ "enabled", "full" ]
 full = [
   "enabled",
+
   "derive_component_model",
   "derive_components",
   "derive_component_from",

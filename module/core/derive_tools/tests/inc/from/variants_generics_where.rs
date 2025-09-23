@@ -1,13 +1,13 @@
 #![ allow( dead_code ) ]
 #[ allow( unused_imports ) ]
-use super::*;
-use derive_tools::From;
+use super :: *;
+use derive_tools ::From;
 
 #[ derive( Debug, PartialEq, From ) ]
 
 pub enum GetData< 'a, T = str >
 where
-  T : ToString + ?Sized,
+  T: ToString + ?Sized,
 {
   Nothing,
   FromT( &'a T ),

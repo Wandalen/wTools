@@ -1,16 +1,16 @@
 #[ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 
 #[ cfg( feature = "use_alloc" ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use crate::dependency::hashbrown::hash_set::*;
+pub use crate ::dependency ::hashbrown ::hash_set :: *;
 
-#[cfg(not(feature = "no_std"))]
+#[ cfg(not(feature = "no_std")) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-#[ allow( clippy::pub_use ) ]
-pub use std::collections::hash_set::*;
+#[ allow( clippy ::pub_use ) ]
+pub use std ::collections ::hash_set :: *;
 
 /// Creates a `HashSet` from a list of elements.
 ///
@@ -18,7 +18,7 @@ pub use std::collections::hash_set::*;
 ///
 /// # Origin
 ///
-/// This collection can be reexported from different crates:
+/// This collection can be reexported from different crates :
 /// - from `std`, if `use_std` is on ( `no_std` flag if off )
 /// - from `hashbrown`, if `use_alloc` flag if on
 ///
@@ -27,7 +27,7 @@ pub use std::collections::hash_set::*;
 /// The macro can be called with a comma-separated list of elements. A trailing comma is optional.
 ///
 /// ```rust
-/// # use collection_tools::{ HashSet, hset };
+/// # use collection_tools :: { HashSet, hset };
 /// // HashSet of &str
 /// let set1 = hset!( "a", "b", "c" );
 ///
@@ -40,7 +40,7 @@ pub use std::collections::hash_set::*;
 ///
 /// # Parameters
 ///
-/// - `$( $key:expr ),* $( , )?`: A comma-separated list of elements to insert into the `HashSet`.
+/// - `$( $key: expr ),* $( , )?` : A comma-separated list of elements to insert into the `HashSet`.
 ///   Each element can be of any type that implements the `Into< T >` trait, where `T` is the
 ///   type stored in the `HashSet`.
 ///
@@ -51,10 +51,10 @@ pub use std::collections::hash_set::*;
 ///
 /// # Example
 ///
-/// Basic usage with string slices:
+/// Basic usage with string slices :
 ///
 /// ```rust
-/// # use collection_tools::{ HashSet, hset };
+/// # use collection_tools :: { HashSet, hset };
 /// let set = hset!( "one", "two", "three" );
 /// assert!( set.contains( "one" ) );
 /// assert!( set.contains( "two" ) );
@@ -64,10 +64,10 @@ pub use std::collections::hash_set::*;
 ///
 /// # Example
 ///
-/// Creating a `HashSet` of `&str` from string literals:
+/// Creating a `HashSet` of `&str` from string literals :
 ///
 /// ```rust
-/// # use collection_tools::{ HashSet, hset };
+/// # use collection_tools :: { HashSet, hset };
 /// let s = hset!{ "value" };
 /// assert_eq!( s.get( "value" ), Some( &"value" ) );
 /// ```
@@ -77,17 +77,17 @@ pub use std::collections::hash_set::*;
 macro_rules! hset
 {
   (
-    $( $key : expr ),* $( , )?
-  )
+  $( $key: expr ),* $( , )?
+ )
   =>
   {{
-    let _cap = count!( @count $( $key ),* );
-    let mut _set = $crate::collection::HashSet::with_capacity( _cap );
-    $(
-      let _ = _set.insert( $key );
-    )*
-    _set
-  }};
+  let _cap = count!( @count $( $key ),* );
+  let mut _set = $crate ::collection ::HashSet ::with_capacity( _cap );
+  $(
+   let _ = _set.insert( $key );
+ )*
+  _set
+ }};
 }
 
 /// Creates a `HashSet` from a list of elements.
@@ -102,7 +102,7 @@ macro_rules! hset
 ///
 /// # Origin
 ///
-/// This collection can be reexported from different crates:
+/// This collection can be reexported from different crates :
 /// - from `std`, if `use_std` is on ( `no_std` flag if off )
 /// - from `hashbrown`, if `use_alloc` flag if on
 ///
@@ -111,20 +111,20 @@ macro_rules! hset
 /// The macro can be called with a comma-separated list of elements. A trailing comma is optional.
 ///
 /// ```rust
-/// # use collection_tools::{ HashSet, into_hset };
+/// # use collection_tools :: { HashSet, into_hset };
 /// // HashSet of &str
-/// let set1 : HashSet< &str > = into_hset!( "a", "b", "c" );
+/// let set1: HashSet< &str > = into_hset!( "a", "b", "c" );
 ///
 /// // HashSet of String
-/// let set2 : HashSet< String > = into_hset!{ "a".to_string(), "b", "c" };
+/// let set2: HashSet< String > = into_hset!{ "a".to_string(), "b", "c" };
 ///
 /// // With trailing comma
-/// let set3 : HashSet< i32 > = into_hset!( 1, 2, 3, );
+/// let set3: HashSet< i32 > = into_hset!( 1, 2, 3, );
 /// ```
 ///
 /// # Parameters
 ///
-/// - `$( $key:expr ),* $( , )?`: A comma-separated list of elements to insert into the `HashSet`.
+/// - `$( $key: expr ),* $( , )?` : A comma-separated list of elements to insert into the `HashSet`.
 ///   Each element can be of any type that implements the `Into< T >` trait, where `T` is the
 ///   type stored in the `HashSet`.
 ///
@@ -135,11 +135,11 @@ macro_rules! hset
 ///
 /// # Example
 ///
-/// Basic usage with string slices:
+/// Basic usage with string slices :
 ///
 /// ```rust
-/// # use collection_tools::{ HashSet, into_hset };
-/// let set : HashSet< &str > = into_hset!( "one", "two", "three" );
+/// # use collection_tools :: { HashSet, into_hset };
+/// let set: HashSet< &str > = into_hset!( "one", "two", "three" );
 /// assert!( set.contains( "one" ) );
 /// assert!( set.contains( "two" ) );
 /// assert!( set.contains( "three" ) );
@@ -148,11 +148,11 @@ macro_rules! hset
 ///
 /// # Example
 ///
-/// Using with different types that implement `Into< T >`:
+/// Using with different types that implement `Into< T >` :
 ///
 /// ```rust
-/// # use collection_tools::{ HashSet, into_hset };
-/// let numbers : HashSet< i32 > = into_hset!( 1, 2, 3 );
+/// # use collection_tools :: { HashSet, into_hset };
+/// let numbers: HashSet< i32 > = into_hset!( 1, 2, 3 );
 /// assert!( numbers.contains( &1 ) );
 /// assert!( numbers.contains( &2 ) );
 /// assert!( numbers.contains( &3 ) );
@@ -160,11 +160,11 @@ macro_rules! hset
 ///
 /// # Example
 ///
-/// Creating a `HashSet` of `String` from string literals:
+/// Creating a `HashSet` of `String` from string literals :
 ///
 /// ```rust
-/// # use collection_tools::{ HashSet, into_hset };
-/// let s : HashSet< String > = into_hset!{ "value" };
+/// # use collection_tools :: { HashSet, into_hset };
+/// let s: HashSet< String > = into_hset!{ "value" };
 /// assert_eq!( s.get( "value" ), Some( &"value".to_string() ) );
 /// ```
 ///
@@ -173,15 +173,15 @@ macro_rules! hset
 macro_rules! into_hset
 {
   (
-    $( $key : expr ),* $( , )?
-  )
+  $( $key: expr ),* $( , )?
+ )
   =>
   {{
-    let _cap = count!( @count $( $key ),* );
-    let mut _set = $crate::collection::HashSet::with_capacity( _cap );
-    $(
-      let _ = _set.insert( Into::into( $key ) );
-    )*
-    _set
-  }};
+  let _cap = count!( @count $( $key ),* );
+  let mut _set = $crate ::collection ::HashSet ::with_capacity( _cap );
+  $(
+   let _ = _set.insert( Into ::into( $key ) );
+ )*
+  _set
+ }};
 }

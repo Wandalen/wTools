@@ -1,19 +1,21 @@
-use super::*;
-use assert_fs::prelude::*;
-use std::io::Read;
-use the_module::{
+use super :: *;
+use assert_fs ::prelude :: *;
+use std ::io ::Read;
+use the_module ::
+{
   action,
-  // path::AbsolutePath,
+  // path ::AbsolutePath,
   CrateDir,
 };
 
-fn arrange(source: &str) -> assert_fs::TempDir {
-  let root_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
-  let assets_relative_path = std::path::Path::new(ASSET_PATH);
+fn arrange(source: &str) -> assert_fs ::TempDir 
+{
+  let root_path = std ::path ::Path ::new(env!("CARGO_MANIFEST_DIR"));
+  let assets_relative_path = std ::path ::Path ::new(ASSET_PATH);
   let assets_path = root_path.join(assets_relative_path);
 
-  let temp = assert_fs::TempDir::new().unwrap();
-  temp.copy_from(assets_path.join(source), &["**"]).unwrap();
+  let temp = assert_fs ::TempDir ::new().unwrap();
+  temp.copy_from(assets_path.join(source), &[ "**"]).unwrap();
 
   temp
 }
@@ -23,18 +25,19 @@ fn arrange(source: &str) -> assert_fs::TempDir {
 // [![docs.rs](https://img.shields.io/docsrs/test_module?color=e3e8f0&logo=docs.rs)](https://docs.rs/test_module)
 // [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftest_module_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20test_module_trivial/https://github.com/Wandalen/wTools)
 // [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
-#[test]
-fn tags_should_stay() {
+#[ test ]
+fn tags_should_stay() 
+{
   // Arrange
   let temp = arrange("single_module");
 
   // Act
-  _ = action::readme_modules_headers_renew::readme_modules_headers_renew(CrateDir::try_from(temp.path()).unwrap()).unwrap();
-  // _ = action::main_header::action( CrateDir::try_from( temp.path() ).unwrap() ).unwrap();
+  _ = action ::readme_modules_headers_renew ::readme_modules_headers_renew(CrateDir ::try_from(temp.path()).unwrap()).unwrap();
+  // _ = action ::main_header ::action( CrateDir ::try_from( temp.path() ).unwrap() ).unwrap();
 
-  let mut file = std::fs::File::open(temp.path().join("test_module").join("readme.md")).unwrap();
+  let mut file = std ::fs ::File ::open(temp.path().join("test_module").join("readme.md")).unwrap();
 
-  let mut actual = String::new();
+  let mut actual = String ::new();
 
   _ = file.read_to_string(&mut actual).unwrap();
 
@@ -43,16 +46,17 @@ fn tags_should_stay() {
   assert!(actual.contains("<!--{ generate.module_header.end }-->"));
 }
 
-#[test]
-fn default_stability() {
+#[ test ]
+fn default_stability() 
+{
   // Arrange
   let temp = arrange("single_module");
 
   // Act
-  _ = action::readme_modules_headers_renew::readme_modules_headers_renew(CrateDir::try_from(temp.path()).unwrap()).unwrap();
-  let mut file = std::fs::File::open(temp.path().join("test_module").join("readme.md")).unwrap();
+  _ = action ::readme_modules_headers_renew ::readme_modules_headers_renew(CrateDir ::try_from(temp.path()).unwrap()).unwrap();
+  let mut file = std ::fs ::File ::open(temp.path().join("test_module").join("readme.md")).unwrap();
 
-  let mut actual = String::new();
+  let mut actual = String ::new();
 
   _ = file.read_to_string(&mut actual).unwrap();
 
@@ -61,34 +65,36 @@ fn default_stability() {
   assert!(!actual.contains('|')); // fix clippy
 }
 
-#[test]
-fn docs() {
+#[ test ]
+fn docs() 
+{
   // Arrange
   let temp = arrange("single_module");
 
   // Act
-  _ = action::readme_modules_headers_renew::readme_modules_headers_renew(CrateDir::try_from(temp.path()).unwrap()).unwrap();
-  let mut file = std::fs::File::open(temp.path().join("test_module").join("readme.md")).unwrap();
+  _ = action ::readme_modules_headers_renew ::readme_modules_headers_renew(CrateDir ::try_from(temp.path()).unwrap()).unwrap();
+  let mut file = std ::fs ::File ::open(temp.path().join("test_module").join("readme.md")).unwrap();
 
-  let mut actual = String::new();
+  let mut actual = String ::new();
 
   _ = file.read_to_string(&mut actual).unwrap();
 
   // Assert
   assert!(actual
-    .contains("[![docs.rs](https://img.shields.io/docsrs/test_module?color=e3e8f0&logo=docs.rs)](https://docs.rs/test_module)"));
+  .contains("[![docs.rs](https://img.shields.io/docsrs/test_module?color=e3e8f0&logo=docs.rs)](https://docs.rs/test_module)"));
 }
 
-#[test]
-fn no_gitpod() {
+#[ test ]
+fn no_gitpod() 
+{
   // Arrange
   let temp = arrange("single_module");
 
   // Act
-  _ = action::readme_modules_headers_renew::readme_modules_headers_renew(CrateDir::try_from(temp.path()).unwrap()).unwrap();
-  let mut file = std::fs::File::open(temp.path().join("test_module").join("readme.md")).unwrap();
+  _ = action ::readme_modules_headers_renew ::readme_modules_headers_renew(CrateDir ::try_from(temp.path()).unwrap()).unwrap();
+  let mut file = std ::fs ::File ::open(temp.path().join("test_module").join("readme.md")).unwrap();
 
-  let mut actual = String::new();
+  let mut actual = String ::new();
 
   _ = file.read_to_string(&mut actual).unwrap();
 
@@ -96,15 +102,16 @@ fn no_gitpod() {
   // no example - no gitpod
   assert!(!actual.contains("[Open in Gitpod]"));
 }
-#[test]
-fn with_gitpod() {
+#[ test ]
+fn with_gitpod() 
+{
   let temp = arrange("single_module_with_example");
 
   // Act
-  _ = action::readme_modules_headers_renew::readme_modules_headers_renew(CrateDir::try_from(temp.path()).unwrap()).unwrap();
-  let mut file = std::fs::File::open(temp.path().join("module").join("test_module").join("readme.md")).unwrap();
+  _ = action ::readme_modules_headers_renew ::readme_modules_headers_renew(CrateDir ::try_from(temp.path()).unwrap()).unwrap();
+  let mut file = std ::fs ::File ::open(temp.path().join("module").join("test_module").join("readme.md")).unwrap();
 
-  let mut actual = String::new();
+  let mut actual = String ::new();
 
   _ = file.read_to_string(&mut actual).unwrap();
 
@@ -112,16 +119,17 @@ fn with_gitpod() {
   assert!(actual.contains("[Open in Gitpod]"));
 }
 
-#[test]
-fn discord() {
+#[ test ]
+fn discord() 
+{
   // Arrange
   let temp = arrange("single_module");
 
   // Act
-  _ = action::readme_modules_headers_renew::readme_modules_headers_renew(CrateDir::try_from(temp.path()).unwrap()).unwrap();
-  let mut file = std::fs::File::open(temp.path().join("test_module").join("readme.md")).unwrap();
+  _ = action ::readme_modules_headers_renew ::readme_modules_headers_renew(CrateDir ::try_from(temp.path()).unwrap()).unwrap();
+  let mut file = std ::fs ::File ::open(temp.path().join("test_module").join("readme.md")).unwrap();
 
-  let mut actual = String::new();
+  let mut actual = String ::new();
 
   _ = file.read_to_string(&mut actual).unwrap();
 
@@ -129,16 +137,17 @@ fn discord() {
   assert!( actual.contains( "[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)" ) );
 }
 
-#[test]
-fn status() {
+#[ test ]
+fn status() 
+{
   // Arrange
   let temp = arrange("single_module");
 
   // Act
-  _ = action::readme_modules_headers_renew::readme_modules_headers_renew(CrateDir::try_from(temp.path()).unwrap()).unwrap();
-  let mut file = std::fs::File::open(temp.path().join("test_module").join("readme.md")).unwrap();
+  _ = action ::readme_modules_headers_renew ::readme_modules_headers_renew(CrateDir ::try_from(temp.path()).unwrap()).unwrap();
+  let mut file = std ::fs ::File ::open(temp.path().join("test_module").join("readme.md")).unwrap();
 
-  let mut actual = String::new();
+  let mut actual = String ::new();
 
   _ = file.read_to_string(&mut actual).unwrap();
 
@@ -146,21 +155,22 @@ fn status() {
   assert!( actual.contains( "[![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_test_module_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_test_module_push.yml)" ) );
 }
 
-#[test]
-fn idempotency() {
+#[ test ]
+fn idempotency() 
+{
   // Arrange
   let temp = arrange("single_module");
 
   // Act
-  _ = action::readme_modules_headers_renew::readme_modules_headers_renew(CrateDir::try_from(temp.path()).unwrap()).unwrap();
-  let mut file = std::fs::File::open(temp.path().join("test_module").join("readme.md")).unwrap();
-  let mut actual1 = String::new();
+  _ = action ::readme_modules_headers_renew ::readme_modules_headers_renew(CrateDir ::try_from(temp.path()).unwrap()).unwrap();
+  let mut file = std ::fs ::File ::open(temp.path().join("test_module").join("readme.md")).unwrap();
+  let mut actual1 = String ::new();
   _ = file.read_to_string(&mut actual1).unwrap();
   drop(file);
 
-  _ = action::readme_modules_headers_renew::readme_modules_headers_renew(CrateDir::try_from(temp.path()).unwrap()).unwrap();
-  let mut file = std::fs::File::open(temp.path().join("test_module").join("readme.md")).unwrap();
-  let mut actual2 = String::new();
+  _ = action ::readme_modules_headers_renew ::readme_modules_headers_renew(CrateDir ::try_from(temp.path()).unwrap()).unwrap();
+  let mut file = std ::fs ::File ::open(temp.path().join("test_module").join("readme.md")).unwrap();
+  let mut actual2 = String ::new();
   _ = file.read_to_string(&mut actual2).unwrap();
   drop(file);
 
@@ -168,19 +178,20 @@ fn idempotency() {
   assert_eq!(actual1, actual2);
 }
 
-#[test]
-fn with_many_members_and_varius_config() {
+#[ test ]
+fn with_many_members_and_varius_config() 
+{
   let temp = arrange("three_packages");
 
-  _ = action::readme_modules_headers_renew::readme_modules_headers_renew(CrateDir::try_from(temp.path()).unwrap()).unwrap();
+  _ = action ::readme_modules_headers_renew ::readme_modules_headers_renew(CrateDir ::try_from(temp.path()).unwrap()).unwrap();
 
-  let mut file_b = std::fs::File::open(temp.path().join("b").join("readme.md")).unwrap();
-  let mut file_c = std::fs::File::open(temp.path().join("c").join("readme.md")).unwrap();
-  let mut file_d = std::fs::File::open(temp.path().join("d").join("readme.md")).unwrap();
+  let mut file_b = std ::fs ::File ::open(temp.path().join("b").join("readme.md")).unwrap();
+  let mut file_c = std ::fs ::File ::open(temp.path().join("c").join("readme.md")).unwrap();
+  let mut file_d = std ::fs ::File ::open(temp.path().join("d").join("readme.md")).unwrap();
 
-  let mut actual_b = String::new();
-  let mut actual_c = String::new();
-  let mut actual_d = String::new();
+  let mut actual_b = String ::new();
+  let mut actual_c = String ::new();
+  let mut actual_d = String ::new();
 
   _ = file_b.read_to_string(&mut actual_b).unwrap();
   _ = file_c.read_to_string(&mut actual_c).unwrap();
@@ -191,12 +202,13 @@ fn with_many_members_and_varius_config() {
   assert!(actual_d.contains("(https://discord.gg/123456789)"));
 }
 
-#[test]
-#[should_panic(expected = "workspace_name not found in workspace Cargo.toml")]
-fn without_needed_config() {
+#[ test ]
+#[ should_panic(expected = "workspace_name not found in workspace Cargo.toml") ]
+fn without_needed_config() 
+{
   // Arrange
   let temp = arrange("variadic_tag_configurations");
 
   // Act
-  _ = action::main_header::action(CrateDir::try_from(temp.path()).unwrap()).unwrap();
+  _ = action ::main_header ::action(CrateDir ::try_from(temp.path()).unwrap()).unwrap();
 }

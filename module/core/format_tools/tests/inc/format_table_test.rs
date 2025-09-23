@@ -1,7 +1,10 @@
-#[ allow( unused_imports ) ]
-use super::*;
+#![ allow( clippy ::no_effect_underscore_binding ) ]
 
-use the_module::
+#[ allow( unused_imports ) ]
+use super :: *;
+use test_tools ::a_id;
+
+use the_module ::
 {
   AsTable,
   WithRef,
@@ -10,10 +13,10 @@ use the_module::
   output_format,
 };
 
-use std::
+use std ::
 {
-  // collections::HashMap,
-  borrow::Cow,
+  // collections ::HashMap,
+  borrow ::Cow,
 };
 
 //
@@ -21,15 +24,15 @@ use std::
 #[ test ]
 fn basic()
 {
-  let test_objects = test_object::test_objects_gen();
+  let test_objects = test_object ::test_objects_gen();
 
-  let _as_table : AsTable< '_, Vec< test_object::TestObject >, usize, test_object::TestObject, str> = AsTable::new( &test_objects );
-  let as_table = AsTable::new( &test_objects );
+  let _as_table: AsTable< '_, Vec< test_object ::TestObject >, usize, test_object ::TestObject, str> = AsTable ::new( &test_objects );
+  let as_table = AsTable ::new( &test_objects );
 
-  let mut output = String::new();
-  let mut context = print::Context::new( &mut output, Default::default() );
-  // let mut context : Context< '_, print::All > = Context::new( &mut output, Default::default() );
-  let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let mut output = String ::new();
+  let mut context = print ::Context ::new( &mut output, Default ::default() );
+  // let mut context: Context< '_, print ::All > = Context ::new( &mut output, Default ::default() );
+  let got = the_module ::TableFormatter ::fmt( &as_table, &mut context );
   assert!( got.is_ok() );
   println!( "{}", &output );
 
@@ -42,21 +45,21 @@ fn basic()
   //   10 | Boris |   5
   // (3 rows)
 
-  let exp = r#"│ id │ created_at │          file_ids          │           tools            │
+  let _exp = r#"│ id │ created_at │          file_ids          │           tools            │
 ─────────────────────────────────────────────────────────────────────────────
-│ 1  │ 1627845583 │        [                   │                            │
+│ 1  │ 1627845583 │        [ │                            │
 │    │            │            "file1",        │                            │
 │    │            │            "file2",        │                            │
-│    │            │        ]                   │                            │
-│ 2  │     13     │ [                          │ [                          │
-│    │            │     "file3",               │     {                      │
-│    │            │     "file4\nmore details", │         "tool1": "value1", │
-│    │            │ ]                          │     },                     │
-│    │            │                            │     {                      │
-│    │            │                            │         "tool2": "value2", │
-│    │            │                            │     },                     │
+│    │            │ ]                   │                            │
+│ 2  │     13     │ [ │ [ │
+│    │            │     "file3",               │     { │
+│    │            │     "file4\nmore details", │         "tool1" : "value1", │
+│    │            │ ]                          │ },                     │
+│    │            │                            │     { │
+│    │            │                            │         "tool2" : "value2", │
+│    │            │                            │ },                     │
 │    │            │                            │ ]                          │"#;
-  a_id!( output.as_str(), exp );
+  a_id!( output.as_str(), _exp );
 
 }
 
@@ -65,12 +68,12 @@ fn basic()
 #[ test ]
 fn table_to_string()
 {
-  use the_module::TableFormatter;
-  let test_objects = test_object::test_objects_gen();
+  use the_module ::TableFormatter;
+  let test_objects = test_object ::test_objects_gen();
 
   // with explicit arguments
 
-  let as_table : AsTable< '_, Vec< test_object::TestObject >, usize, test_object::TestObject, str> = AsTable::new( &test_objects );
+  let as_table: AsTable< '_, Vec< test_object ::TestObject >, usize, test_object ::TestObject, str> = AsTable ::new( &test_objects );
   let table_string = as_table.table_to_string();
   println!( "\ntable_string\n{table_string}" );
   assert!( table_string.contains( "id" ) );
@@ -81,7 +84,7 @@ fn table_to_string()
   // without explicit arguments
 
   println!( "" );
-  let as_table = AsTable::new( &test_objects );
+  let as_table = AsTable ::new( &test_objects );
   let table_string = as_table.table_to_string();
   assert!( table_string.contains( "id" ) );
   assert!( table_string.contains( "created_at" ) );
@@ -96,10 +99,10 @@ fn table_to_string()
 #[ test ]
 fn custom_format()
 {
-  // use the_module::TableFormatter;
-  let test_objects = test_object::test_objects_gen();
+  // use the_module ::TableFormatter;
+  let test_objects = test_object ::test_objects_gen();
 
-  let mut format = output_format::Table::default();
+  let mut format = output_format ::Table ::default();
   format.cell_prefix = "( ".into();
   format.cell_postfix = " )".into();
   format.cell_separator = "|".into();
@@ -107,11 +110,11 @@ fn custom_format()
   format.row_postfix = "<".into();
   format.row_separator = "\n".into();
 
-  let printer = print::Printer::with_format( &format );
-  let as_table = AsTable::new( &test_objects );
-  let mut output = String::new();
-  let mut context = print::Context::new( &mut output, printer );
-  let result = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let printer = print ::Printer ::with_format( &format );
+  let as_table = AsTable ::new( &test_objects );
+  let mut output = String ::new();
+  let mut context = print ::Context ::new( &mut output, printer );
+  let result = the_module ::TableFormatter ::fmt( &as_table, &mut context );
   assert!( result.is_ok() );
 
   println!( "\noutput\n{output}" );
@@ -120,27 +123,27 @@ fn custom_format()
   assert!( output.contains( "file_ids" ) );
   assert!( output.contains( "tools" ) );
 
-  let exp = r#">( id )|( created_at )|(          file_ids          )|(           tools            )<
+  let _exp = r#">( id )|( created_at )|( file_ids )|( tools )<
 ─────────────────────────────────────────────────────────────────────────────────────
->( 1  )|( 1627845583 )|(        [                   )|(                            )<
->(    )|(            )|(            "file1",        )|(                            )<
->(    )|(            )|(            "file2",        )|(                            )<
->(    )|(            )|(        ]                   )|(                            )<
->( 2  )|(     13     )|( [                          )|( [                          )<
->(    )|(            )|(     "file3",               )|(     {                      )<
->(    )|(            )|(     "file4\nmore details", )|(         "tool1": "value1", )<
->(    )|(            )|( ]                          )|(     },                     )<
->(    )|(            )|(                            )|(     {                      )<
->(    )|(            )|(                            )|(         "tool2": "value2", )<
->(    )|(            )|(                            )|(     },                     )<
->(    )|(            )|(                            )|( ]                          )<"#;
-  a_id!( output.as_str(), exp );
+>( 1 )|( 1627845583 )|( [ )|( )<
+>( )|( )|( "file1", )|( )<
+>( )|( )|( "file2", )|( )<
+>( )|( )|( ] )|( )<
+>( 2 )|( 13 )|( [ )|( [ )<
+>( )|( )|( "file3", )|( { )<
+>( )|( )|( "file4\nmore details", )|( "tool1" : "value1", )<
+>( )|( )|( ] )|( }, )<
+>( )|( )|( )|( { )<
+>( )|( )|( )|( "tool2" : "value2", )<
+>( )|( )|( )|( }, )<
+>( )|( )|( )|( ] )<"#;
+  a_id!( output.as_str(), _exp );
 
   // using table_to_string_with_format
 
-  use the_module::TableFormatter;
+  use the_module ::TableFormatter;
 
-  let mut format = output_format::Table::default();
+  let mut format = output_format ::Table ::default();
   format.cell_prefix = "( ".into();
   format.cell_postfix = " )".into();
   format.cell_separator = "|".into();
@@ -148,23 +151,23 @@ fn custom_format()
   format.row_postfix = "<".into();
   format.row_separator = "\n".into();
 
-  // let as_table = AsTable::new( &test_objects );
-  let got = AsTable::new( &test_objects ).table_to_string_with_format( &format );
-  let exp = r#">( id )|( created_at )|(          file_ids          )|(           tools            )<
+  // let as_table = AsTable ::new( &test_objects );
+  let _got = AsTable ::new( &test_objects ).table_to_string_with_format( &format );
+  let _exp = r#">( id )|( created_at )|( file_ids )|( tools )<
 ─────────────────────────────────────────────────────────────────────────────────────
->( 1  )|( 1627845583 )|(        [                   )|(                            )<
->(    )|(            )|(            "file1",        )|(                            )<
->(    )|(            )|(            "file2",        )|(                            )<
->(    )|(            )|(        ]                   )|(                            )<
->( 2  )|(     13     )|( [                          )|( [                          )<
->(    )|(            )|(     "file3",               )|(     {                      )<
->(    )|(            )|(     "file4\nmore details", )|(         "tool1": "value1", )<
->(    )|(            )|( ]                          )|(     },                     )<
->(    )|(            )|(                            )|(     {                      )<
->(    )|(            )|(                            )|(         "tool2": "value2", )<
->(    )|(            )|(                            )|(     },                     )<
->(    )|(            )|(                            )|( ]                          )<"#;
-  a_id!( got, exp );
+>( 1 )|( 1627845583 )|( [ )|( )<
+>( )|( )|( "file1", )|( )<
+>( )|( )|( "file2", )|( )<
+>( )|( )|( ] )|( )<
+>( 2 )|( 13 )|( [ )|( [ )<
+>( )|( )|( "file3", )|( { )<
+>( )|( )|( "file4\nmore details", )|( "tool1" : "value1", )<
+>( )|( )|( ] )|( }, )<
+>( )|( )|( )|( { )<
+>( )|( )|( )|( "tool2" : "value2", )<
+>( )|( )|( )|( }, )<
+>( )|( )|( )|( ] )<"#;
+  a_id!( got, _exp );
 
 }
 
@@ -173,9 +176,9 @@ fn custom_format()
 #[ test ]
 fn filter_col_none()
 {
-  let test_objects = test_object::test_objects_gen();
+  let test_objects = test_object ::test_objects_gen();
 
-  let mut format = output_format::Table::default();
+  let mut format = output_format ::Table ::default();
   format.cell_prefix = "( ".into();
   format.cell_postfix = " )".into();
   format.cell_separator = "|".into();
@@ -183,23 +186,23 @@ fn filter_col_none()
   format.row_postfix = "<".into();
   format.row_separator = "\n".into();
 
-  let mut printer = print::Printer::with_format( &format );
-  printer.filter_col = &filter::None;
+  let mut printer = print ::Printer ::with_format( &format );
+  printer.filter_col = &filter ::None;
 
-  let as_table = AsTable::new( &test_objects );
-  let mut output = String::new();
-  let mut context = print::Context::new( &mut output, printer );
-  let result = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let as_table = AsTable ::new( &test_objects );
+  let mut output = String ::new();
+  let mut context = print ::Context ::new( &mut output, printer );
+  let result = the_module ::TableFormatter ::fmt( &as_table, &mut context );
   assert!( result.is_ok() );
 
   println!( "\noutput\n{output}" );
 
-  let exp = r#"><
+  let _exp = r#"><
 ──
 ><
 ><"#;
 
-  a_id!( output.as_str(), exp );
+  a_id!( output.as_str(), _exp );
 
 }
 
@@ -208,9 +211,9 @@ fn filter_col_none()
 #[ test ]
 fn filter_col_callback()
 {
-  let test_objects = test_object::test_objects_gen();
+  let test_objects = test_object ::test_objects_gen();
 
-  let mut format = output_format::Table::default();
+  let mut format = output_format ::Table ::default();
   format.cell_prefix = "( ".into();
   format.cell_postfix = " )".into();
   format.cell_separator = "|".into();
@@ -218,32 +221,32 @@ fn filter_col_callback()
   format.row_postfix = "<".into();
   format.row_separator = "\n".into();
 
-  let mut printer = print::Printer::with_format( &format );
-  printer.filter_col = &| title : &str |
+  let mut printer = print ::Printer ::with_format( &format );
+  printer.filter_col = &| title: &str |
   {
-    title != "tools"
-  };
+  title != "tools"
+ };
 
-  let as_table = AsTable::new( &test_objects );
-  let mut output = String::new();
-  let mut context = print::Context::new( &mut output, printer );
-  let result = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let as_table = AsTable ::new( &test_objects );
+  let mut output = String ::new();
+  let mut context = print ::Context ::new( &mut output, printer );
+  let result = the_module ::TableFormatter ::fmt( &as_table, &mut context );
   assert!( result.is_ok() );
 
   println!( "\noutput\n{output}" );
 
-  let exp = r#">( id )|( created_at )|(          file_ids          )<
+  let _exp = r#">( id )|( created_at )|( file_ids )<
 ──────────────────────────────────────────────────────
->( 1  )|( 1627845583 )|(        [                   )<
->(    )|(            )|(            "file1",        )<
->(    )|(            )|(            "file2",        )<
->(    )|(            )|(        ]                   )<
->( 2  )|(     13     )|( [                          )<
->(    )|(            )|(     "file3",               )<
->(    )|(            )|(     "file4\nmore details", )<
->(    )|(            )|( ]                          )<"#;
+>( 1 )|( 1627845583 )|( [ )<
+>( )|( )|( "file1", )<
+>( )|( )|( "file2", )<
+>( )|( )|( ] )<
+>( 2 )|( 13 )|( [ )<
+>( )|( )|( "file3", )<
+>( )|( )|( "file4\nmore details", )<
+>( )|( )|( ] )<"#;
 
-  a_id!( output.as_str(), exp );
+  a_id!( output.as_str(), _exp );
 
 }
 
@@ -252,9 +255,9 @@ fn filter_col_callback()
 #[ test ]
 fn filter_row_none()
 {
-  let test_objects = test_object::test_objects_gen();
+  let test_objects = test_object ::test_objects_gen();
 
-  let mut format = output_format::Table::default();
+  let mut format = output_format ::Table ::default();
   format.cell_prefix = "( ".into();
   format.cell_postfix = " )".into();
   format.cell_separator = "|".into();
@@ -262,20 +265,20 @@ fn filter_row_none()
   format.row_postfix = "<".into();
   format.row_separator = "\n".into();
 
-  let mut printer = print::Printer::with_format( &format );
-  printer.filter_row = &filter::None;
+  let mut printer = print ::Printer ::with_format( &format );
+  printer.filter_row = &filter ::None;
 
-  let as_table = AsTable::new( &test_objects );
-  let mut output = String::new();
-  let mut context = print::Context::new( &mut output, printer );
-  let result = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let as_table = AsTable ::new( &test_objects );
+  let mut output = String ::new();
+  let mut context = print ::Context ::new( &mut output, printer );
+  let result = the_module ::TableFormatter ::fmt( &as_table, &mut context );
   assert!( result.is_ok() );
 
   println!( "\noutput\n{output}" );
 
-  let exp = r#""#;
+  let _exp = r#""#;
 
-  a_id!( output.as_str(), exp );
+  a_id!( output.as_str(), _exp );
 
 }
 
@@ -284,9 +287,9 @@ fn filter_row_none()
 #[ test ]
 fn filter_row_callback()
 {
-  let test_objects = test_object::test_objects_gen();
+  let test_objects = test_object ::test_objects_gen();
 
-  let mut format = output_format::Table::default();
+  let mut format = output_format ::Table ::default();
   format.cell_prefix = "( ".into();
   format.cell_postfix = " )".into();
   format.cell_separator = "|".into();
@@ -294,54 +297,54 @@ fn filter_row_callback()
   format.row_postfix = "<".into();
   format.row_separator = "\n".into();
 
-  let mut printer = print::Printer::with_format( &format );
-  printer.filter_row = &| _typ, irow, _row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] |
+  let mut printer = print ::Printer ::with_format( &format );
+  printer.filter_row = &| _typ, irow, _row: &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] |
   {
-    irow != 1
-  };
+  irow != 1
+ };
 
-  let as_table = AsTable::new( &test_objects );
-  let mut output = String::new();
-  let mut context = print::Context::new( &mut output, printer );
-  let result = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let as_table = AsTable ::new( &test_objects );
+  let mut output = String ::new();
+  let mut context = print ::Context ::new( &mut output, printer );
+  let result = the_module ::TableFormatter ::fmt( &as_table, &mut context );
   assert!( result.is_ok() );
 
   println!( "\noutput\n{output}" );
 
-  let exp = r#">( id )|( created_at )|(          file_ids          )|(           tools            )<
+  let _exp = r#">( id )|( created_at )|( file_ids )|( tools )<
 ─────────────────────────────────────────────────────────────────────────────────────
->( 2  )|(     13     )|( [                          )|( [                          )<
->(    )|(            )|(     "file3",               )|(     {                      )<
->(    )|(            )|(     "file4\nmore details", )|(         "tool1": "value1", )<
->(    )|(            )|( ]                          )|(     },                     )<
->(    )|(            )|(                            )|(     {                      )<
->(    )|(            )|(                            )|(         "tool2": "value2", )<
->(    )|(            )|(                            )|(     },                     )<
->(    )|(            )|(                            )|( ]                          )<"#;
+>( 2 )|( 13 )|( [ )|( [ )<
+>( )|( )|( "file3", )|( { )<
+>( )|( )|( "file4\nmore details", )|( "tool1" : "value1", )<
+>( )|( )|( ] )|( }, )<
+>( )|( )|( )|( { )<
+>( )|( )|( )|( "tool2" : "value2", )<
+>( )|( )|( )|( }, )<
+>( )|( )|( )|( ] )<"#;
 
-  a_id!( output.as_str(), exp );
+  a_id!( output.as_str(), _exp );
 
 }
 
 //
 
-// xxx : implement test for vector of vectors
+// xxx: implement test for vector of vectors
 
 //
 
 #[ test ]
 fn no_subtract_with_overflow()
 {
-  let test_objects = test_object::test_objects_gen_with_unicode();
+  let test_objects = test_object ::test_objects_gen_with_unicode();
 
-  let format = output_format::Table::default();
-  let printer = print::Printer::with_format( &format );
+  let format = output_format ::Table ::default();
+  let printer = print ::Printer ::with_format( &format );
 
-  let as_table = AsTable::new( &test_objects );
-  let mut output = String::new();
-  let mut context = print::Context::new( &mut output, printer );
+  let as_table = AsTable ::new( &test_objects );
+  let mut output = String ::new();
+  let mut context = print ::Context ::new( &mut output, printer );
 
-  let result = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let result = the_module ::TableFormatter ::fmt( &as_table, &mut context );
 
   assert!( result.is_ok() );
 }
@@ -349,31 +352,31 @@ fn no_subtract_with_overflow()
 #[ test ]
 fn test_width_limiting()
 {
-  use the_module::string;
+  use the_module ::string;
 
   for max_width in min_width()..max_width()
   {
-    println!("max_width: {}", max_width);
+  println!("max_width: {}", max_width);
 
-    let test_objects = test_object::test_objects_gen();
-    let as_table = AsTable::new( &test_objects );
+  let test_objects = test_object ::test_objects_gen();
+  let as_table = AsTable ::new( &test_objects );
 
-    let mut format = output_format::Table::default();
-    format.max_width = max_width;
+  let mut format = output_format ::Table ::default();
+  format.max_width = max_width;
 
-    let mut output = String::new();
-    let printer = print::Printer::with_format( &format );
-    let mut context = print::Context::new( &mut output, printer );
+  let mut output = String ::new();
+  let printer = print ::Printer ::with_format( &format );
+  let mut context = print ::Context ::new( &mut output, printer );
 
-    let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let got = the_module ::TableFormatter ::fmt( &as_table, &mut context );
 
-    assert!( got.is_ok() );
-    
-    for line in string::lines( &output )
-    {
-      assert_eq!( max_width, line.chars().count() );
-    }
-  }
+  assert!( got.is_ok() );
+  
+  for line in string ::lines( &output )
+  {
+   assert_eq!( max_width, line.chars().count() );
+ }
+ }
 }
 
 #[ test ]
@@ -382,65 +385,65 @@ fn test_error_on_unsatisfiable_limit()
   // 0 is a special value that signifies no limit. Therefore, the lower bound is 1.
   for max_width in 1..( min_width() )
   {
-    println!( "max_width: {}", max_width );
+  println!( "max_width: {}", max_width );
 
-    let test_objects = test_object::test_objects_gen();
-    let as_table = AsTable::new( &test_objects );
+  let test_objects = test_object ::test_objects_gen();
+  let as_table = AsTable ::new( &test_objects );
 
-    let mut format = output_format::Table::default();
-    format.max_width = max_width;
+  let mut format = output_format ::Table ::default();
+  format.max_width = max_width;
 
-    let mut output = String::new();
-    let printer = print::Printer::with_format( &format );
-    let mut context = print::Context::new( &mut output, printer );
+  let mut output = String ::new();
+  let printer = print ::Printer ::with_format( &format );
+  let mut context = print ::Context ::new( &mut output, printer );
 
-    let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let got = the_module ::TableFormatter ::fmt( &as_table, &mut context );
 
-    assert!( got.is_err() );
-  }
+  assert!( got.is_err() );
+ }
 }
 
 #[ test ]
 fn test_table_not_grows()
 {
-  use the_module::string;
+  use the_module ::string;
 
   let expected_width = max_width();
   
   // The upper bound was chosen arbitrarily.
   for max_width in ( expected_width + 1 )..500
   {
-    println!( "max_width: {}", max_width );
+  println!( "max_width: {}", max_width );
 
-    let test_objects = test_object::test_objects_gen();
-    let as_table = AsTable::new( &test_objects );
+  let test_objects = test_object ::test_objects_gen();
+  let as_table = AsTable ::new( &test_objects );
 
-    let mut format = output_format::Table::default();
-    format.max_width = max_width;
+  let mut format = output_format ::Table ::default();
+  format.max_width = max_width;
 
-    let mut output = String::new();
-    let printer = print::Printer::with_format( &format );
-    let mut context = print::Context::new( &mut output, printer );
+  let mut output = String ::new();
+  let printer = print ::Printer ::with_format( &format );
+  let mut context = print ::Context ::new( &mut output, printer );
 
-    let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let got = the_module ::TableFormatter ::fmt( &as_table, &mut context );
 
-    assert!( got.is_ok() );
+  assert!( got.is_ok() );
 
-    for line in string::lines( &output )
-    {
-      assert_eq!( expected_width, line.chars().count() );
-    }
-  }
+  for line in string ::lines( &output )
+  {
+   assert_eq!( expected_width, line.chars().count() );
+ }
+ }
 }
 
 /// Utility function for calculating minimum table width with `test_objects_gen()` with
 /// the default table style.
 fn min_width() -> usize
 {
-  use the_module::Fields;
+  use the_module ::Fields;
 
-  let format = output_format::Table::default();
-  let test_objects = test_object::test_objects_gen();
+  let format = output_format ::Table ::default();
+  let test_objects = test_object ::test_objects_gen();
   let col_count = test_objects[0].fields().count();
   
   format.min_width( col_count )
@@ -450,24 +453,24 @@ fn min_width() -> usize
 /// the default table style without any maximum width.
 fn max_width() -> usize
 {
-  use the_module::string;
+  use the_module ::string;
 
-  let test_objects = test_object::test_objects_gen();
-  let as_table = AsTable::new( &test_objects );
+  let test_objects = test_object ::test_objects_gen();
+  let as_table = AsTable ::new( &test_objects );
 
-  let format = output_format::Table::default();
+  let format = output_format ::Table ::default();
 
-  let mut output = String::new();
-  let printer = print::Printer::with_format( &format );
-  let mut context = print::Context::new( &mut output, printer );
+  let mut output = String ::new();
+  let printer = print ::Printer ::with_format( &format );
+  let mut context = print ::Context ::new( &mut output, printer );
 
-  let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let got = the_module ::TableFormatter ::fmt( &as_table, &mut context );
   assert!( got.is_ok() );
 
-  for line in string::lines( &output )
+  for line in string ::lines( &output )
   {
-    return line.chars().count();
-  }
+  return line.chars().count();
+ }
 
   0
 }
@@ -475,61 +478,61 @@ fn max_width() -> usize
 #[ test ]
 fn ukrainian_chars()
 {
-  let test_objects = test_object::test_objects_gen_with_unicode();
-  let as_table = AsTable::new( &test_objects );
+  let test_objects = test_object ::test_objects_gen_with_unicode();
+  let as_table = AsTable ::new( &test_objects );
 
-  let mut output = String::new();
-  let mut context = print::Context::new( &mut output, Default::default() );
-  let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let mut output = String ::new();
+  let mut context = print ::Context ::new( &mut output, Default ::default() );
+  let got = the_module ::TableFormatter ::fmt( &as_table, &mut context );
   assert!( got.is_ok() );
   println!( "{}", &output );
 
-  let exp =  r#"│           id            │ created_at │     file_ids     │                   tools                   │
+  let _exp =  r#"│           id            │ created_at │     file_ids     │                   tools                   │
 ───────────────────────────────────────────────────────────────────────────────────────────────────────
-│      Доміно             │    100     │ [                │                                           │
+│      Доміно             │    100     │ [ │                                           │
 │                         │            │     "файл1",     │                                           │
 │                         │            │     "файл2",     │                                           │
 │                         │            │ ]                │                                           │
-│ Інший юнікод            │    120     │        []        │ [                                         │
-│                         │            │                  │     {                                     │
-│                         │            │                  │         "тулз1": "значення1",             │
-│                         │            │                  │     },                                    │
-│                         │            │                  │     {                                     │
-│                         │            │                  │         "тулз2": "значення2",             │
-│                         │            │                  │     },                                    │
+│ Інший юнікод            │    120     │        []        │ [ │
+│                         │            │                  │     { │
+│                         │            │                  │         "тулз1" : "значення1",             │
+│                         │            │                  │ },                                    │
+│                         │            │                  │     { │
+│                         │            │                  │         "тулз2" : "значення2",             │
+│                         │            │                  │ },                                    │
 │                         │            │                  │ ]                                         │"#;
-  a_id!( output.as_str(), exp );
+  a_id!( output.as_str(), _exp );
 }
 
 #[ test ]
 fn ukrainian_and_english_chars()
 {
-  let test_objects = test_object::test_objects_gen_2_languages();
-  let as_table = AsTable::new( &test_objects );
+  let test_objects = test_object ::test_objects_gen_2_languages();
+  let as_table = AsTable ::new( &test_objects );
 
-  let mut output = String::new();
-  let mut context = print::Context::new( &mut output, Default::default() );
-  let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let mut output = String ::new();
+  let mut context = print ::Context ::new( &mut output, Default ::default() );
+  let got = the_module ::TableFormatter ::fmt( &as_table, &mut context );
   assert!( got.is_ok() );
   println!( "{}", &output );
 
-  let exp =  r#"│      id      │ created_at │     file_ids     │                   tools                   │
+  let _exp =  r#"│      id      │ created_at │     file_ids     │                   tools                   │
 ────────────────────────────────────────────────────────────────────────────────────────────
-│ Доміно       │    100     │ [                │ [                                         │
-│              │            │     "файл1",     │     {                                     │
-│              │            │     "файл2",     │         "тулз1": "значення1",             │
-│              │            │ ]                │     },                                    │
-│              │            │                  │     {                                     │
-│              │            │                  │         "тулз2": "значення2",             │
-│              │            │                  │     },                                    │
+│ Доміно       │    100     │ [ │ [ │
+│              │            │     "файл1",     │     { │
+│              │            │     "файл2",     │         "тулз1" : "значення1",             │
+│              │            │ ]                │ },                                    │
+│              │            │                  │     { │
+│              │            │                  │         "тулз2" : "значення2",             │
+│              │            │                  │ },                                    │
 │              │            │                  │ ]                                         │
-│     File     │    120     │   [              │        [                                  │
-│              │            │       "file1",   │            {                              │
-│              │            │       "file2",   │                "tools1": "value1",        │
-│              │            │   ]              │            },                             │
-│              │            │                  │            {                              │
-│              │            │                  │                "tools1": "value2",        │
-│              │            │                  │            },                             │
-│              │            │                  │        ]                                  │"#;
-  a_id!( output.as_str(), exp );
+│     File     │    120     │   [ │        [ │
+│              │            │       "file1",   │            { │
+│              │            │       "file2",   │                "tools1" : "value1",        │
+│              │            │ ]              │ },                             │
+│              │            │                  │            { │
+│              │            │                  │                "tools1" : "value2",        │
+│              │            │                  │ },                             │
+│              │            │                  │ ]                                  │"#;
+  a_id!( output.as_str(), _exp );
 }

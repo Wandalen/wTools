@@ -4,39 +4,39 @@
 
 mod private
 {
-  use std::cell::RefCell;
-  use former::Former;
-  use crate::*;
-  use gcore::Secret;
-  use crate::utils::constants::GOOGLE_API_URL;
+  use std ::cell ::RefCell;
+  use former ::Former;
+  use crate :: *;
+  use gcore ::Secret;
+  use crate ::utils ::constants ::GOOGLE_API_URL;
 
   /// # Auth
   /// 
   /// Structure to keep oauth2 token.
   /// 
-  /// ## Fields:
-  /// - `secret`:
+  /// ## Fields :
+  /// - `secret` :
   ///   A structure which implemets [`Secret`] trait.
-  /// - `token`:
+  /// - `token` :
   ///   Oauth2 token in string representation.
-  pub struct Auth< 'a, S : Secret + 'a >
+  pub struct Auth< 'a, S: Secret + 'a >
   {
-    pub secret : &'a S,
-    token : RefCell< Option< String > >
-  }
+  pub secret: &'a S,
+  token: RefCell< Option< String > >
+ }
 
-  impl< 'a, S : Secret > Auth< 'a, S >
+  impl< 'a, S: Secret > Auth< 'a, S >
   {
-    /// Just constructor.
-    pub fn new( secret : &'a S ) -> Self
-    {
-      Self
-      {
-        secret : secret,
-        token : RefCell::new( None )
-      }
-    }
-  }
+  /// Just constructor.
+  pub fn new( secret: &'a S ) -> Self
+  {
+   Self
+   {
+  secret: secret,
+  token: RefCell ::new( None )
+ }
+ }
+ }
   
   /// # Gspread Client
   ///
@@ -56,7 +56,7 @@ mod private
   ///
   /// - `endpoint`  
   ///   - A `String` specifying the base API endpoint for Google Sheets.  
-  ///   - Defaults to `"https://sheets.googleapis.com/v4/spreadsheets"` if no value
+  ///   - Defaults to `"https: //sheets.googleapis.com/v4/spreadsheets"` if no value
   ///     is provided.
   /// 
   /// ## Methods
@@ -76,21 +76,21 @@ mod private
   /// to access various Google Sheets API operations, such as reading or updating
   /// spreadsheet cells.
   #[ derive( Former ) ]
-  pub struct Client< 'a, S : Secret + 'a >
+  pub struct Client< 'a, S: Secret + 'a >
   {
-    auth : Option< Auth< 'a, S > >,
-    #[ former( default = GOOGLE_API_URL ) ]
-    endpoint : &'a str,
-  }
+  auth: Option< Auth< 'a, S > >,
+  #[ former( default = GOOGLE_API_URL ) ]
+  endpoint: &'a str,
+ }
 
   // Implementation methods moved to methods.rs to avoid circular imports
 }
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   own use
   {
-    Auth,
-    Client,
-  };
+  Auth,
+  Client,
+ };
 }

@@ -9,33 +9,33 @@
 
 #![ allow( unused_imports ) ]
 
-use workspace_tools::
+use workspace_tools ::
 {
   Workspace,
   WorkspaceError,
   workspace,
-  testing::create_test_workspace_with_structure,
+  testing ::create_test_workspace_with_structure,
 };
-use std::path::PathBuf;
+use std ::path ::PathBuf;
 
 /// Tests that workspace creation works with explicit parameters.
 /// Test Combination: T1.1
 #[ test ]
 fn test_workspace_creation_explicit_path()
 {
-  let temp_dir = std::env::temp_dir();
+  let temp_dir = std ::env ::temp_dir();
   let test_path = temp_dir.join( "test_workspace_explicit" );
   
   // Create test directory structure
-  std::fs::create_dir_all( &test_path ).expect( "Failed to create test directory" );
+  std ::fs ::create_dir_all( &test_path ).expect( "Failed to create test directory" );
   
   // Test with explicit path - no default parameters used
-  let workspace = Workspace::new( test_path.clone() );
+  let workspace = Workspace ::new( test_path.clone() );
   
   assert_eq!( workspace.root(), test_path.as_path() );
   
   // Cleanup
-  std::fs::remove_dir_all( &test_path ).ok();
+  std ::fs ::remove_dir_all( &test_path ).ok();
 }
 
 /// Tests workspace-relative path resolution with explicit components.
@@ -61,26 +61,26 @@ fn test_path_resolution_explicit_components()
 fn test_error_handling_missing_env_var()
 {
   // Temporarily remove the environment variable
-  let original_value = std::env::var( "WORKSPACE_PATH" ).ok();
-  std::env::remove_var( "WORKSPACE_PATH" );
+  let original_value = std ::env ::var( "WORKSPACE_PATH" ).ok();
+  std ::env ::remove_var( "WORKSPACE_PATH" );
   
   // Test should return proper error - explicit error verification
-  let result = Workspace::resolve();
+  let result = Workspace ::resolve();
   
   match result
   {
-    Err( WorkspaceError::EnvironmentVariableMissing( var ) ) =>
-    {
-      assert_eq!( var, "WORKSPACE_PATH" );
-    },
-    _ => panic!( "Expected EnvironmentVariableMissing error" ),
-  }
+  Err( WorkspaceError ::EnvironmentVariableMissing( var ) ) =>
+  {
+   assert_eq!( var, "WORKSPACE_PATH" );
+ },
+  _ => panic!( "Expected EnvironmentVariableMissing error" ),
+ }
   
   // Restore environment variable if it existed
   if let Some( value ) = original_value
   {
-    std::env::set_var( "WORKSPACE_PATH", value );
-  }
+  std ::env ::set_var( "WORKSPACE_PATH", value );
+ }
 }
 
 /// Tests standard directory creation with explicit directory list.
@@ -93,20 +93,20 @@ fn test_standard_directory_structure_explicit()
   // Explicit verification of each directory - no defaults assumed
   let expected_dirs = vec!
   [
-    workspace.config_dir(),
-    workspace.data_dir(), 
-    workspace.logs_dir(),
-    workspace.docs_dir(),
-    workspace.tests_dir(),
-    workspace.workspace_dir(),
-  ];
+  workspace.config_dir(),
+  workspace.data_dir(), 
+  workspace.logs_dir(),
+  workspace.docs_dir(),
+  workspace.tests_dir(),
+  workspace.workspace_dir(),
+ ];
   
   for dir in expected_dirs
   {
-    assert!( dir.exists(), "Directory should exist: {}", dir.display() );
-    assert!( dir.is_dir(), "Path should be a directory: {}", dir.display() );
-    assert!( dir.starts_with( workspace.root() ), "Directory should be within workspace: {}", dir.display() );
-  }
+  assert!( dir.exists(), "Directory should exist: {}", dir.display() );
+  assert!( dir.is_dir(), "Path should be a directory: {}", dir.display() );
+  assert!( dir.starts_with( workspace.root() ), "Directory should be within workspace: {}", dir.display() );
+ }
 }
 
 /// Tests workspace boundary validation with explicit paths.
@@ -118,7 +118,7 @@ fn test_workspace_boundary_validation_explicit()
   
   // Test explicit workspace file detection
   let internal_path = workspace.join( "config/test.toml" );
-  let external_path = PathBuf::from( "/tmp/external.toml" );
+  let external_path = PathBuf ::from( "/tmp/external.toml" );
   
   assert!( workspace.is_workspace_file( &internal_path ) );
   assert!( !workspace.is_workspace_file( &external_path ) );

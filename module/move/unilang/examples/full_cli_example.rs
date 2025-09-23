@@ -1,3 +1,4 @@
+#![allow(clippy::all)]
 //! This example demonstrates a comprehensive usage of the `unilang` framework,
 //! showcasing command definitions with various features like namespaces, aliases,
 //! argument kinds, and default values. It sets up a full CLI application
@@ -19,6 +20,7 @@ fn main()
 Result< (), Error >
 {
   // 1. Initialize Command Registry
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
 
   // 2. Define and Register Commands with Routines
@@ -75,6 +77,7 @@ Result< (), Error >
     }
     unreachable!();
   });
+  #[allow(deprecated)]
   registry.command_add_runtime( &math_add_def, math_add_routine )?;
 
   // .math.sub command
@@ -129,6 +132,7 @@ Result< (), Error >
     }
     unreachable!();
   });
+  #[allow(deprecated)]
   registry.command_add_runtime( &math_sub_def, math_sub_routine )?;
 
   // .greet command
@@ -172,6 +176,7 @@ Result< (), Error >
       format : "text".to_string(),
     })
   });
+  #[allow(deprecated)]
   registry.command_add_runtime( &greet_def, greet_routine )?;
 
   // .config.set command
@@ -225,6 +230,7 @@ Result< (), Error >
       format : "text".to_string(),
     })
   });
+  #[allow(deprecated)]
   registry.command_add_runtime( &config_set_def, config_set_routine )?;
   let args : Vec< String > = std::env::args().skip( 1 ).collect();
 

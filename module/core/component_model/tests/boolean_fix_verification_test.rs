@@ -10,15 +10,15 @@
 //! | T1.4 | Multiple bool fields handling      | Each field gets specific methods   |
 //! | T1.5 | Multiple bool fields fluent        | Fluent pattern with all bool fields|
 
-use component_model::ComponentModel;
-use component_model_types::Assign;
+use component_model ::ComponentModel;
+use component_model_types ::Assign;
 
 #[ derive( Default, ComponentModel, PartialEq, Debug ) ]
 struct TestConfig
 {
-  host : String,
-  port : i32,
-  enabled : bool,
+  host: String,
+  port: i32,
+  enabled: bool,
 }
 
 /// Test that field-specific setter methods work correctly
@@ -26,7 +26,7 @@ struct TestConfig
 #[ test ]
 fn test_field_specific_assignment_methods()
 {
-  let mut config = TestConfig::default();
+  let mut config = TestConfig ::default();
   
   // Use field-specific setter methods to avoid type ambiguity
   config.host_set( "localhost".to_string() );
@@ -43,11 +43,11 @@ fn test_field_specific_assignment_methods()
 #[ test ]
 fn test_field_specific_impute_methods()
 {
-  let config = TestConfig::default()
-    .host_with( "api.example.com".to_string() )
-    .port_with( 3000i32 )
-    .enabled_with( false );
-    
+  let config = TestConfig ::default()
+  .host_with( "api.example.com".to_string() )
+  .port_with( 3000i32 )
+  .enabled_with( false );
+  
   assert_eq!( config.host, "api.example.com" );
   assert_eq!( config.port, 3000 );
   assert!( !config.enabled );
@@ -58,12 +58,12 @@ fn test_field_specific_impute_methods()
 #[ test ]
 fn test_explicit_assign_trait_still_works()
 {
-  let mut config = TestConfig::default();
+  let mut config = TestConfig ::default();
   
   // Explicit type annotation still works
-  Assign::<String, String>::assign( &mut config, "test".to_string() );
-  Assign::<i32, i32>::assign( &mut config, 1234i32 );
-  Assign::<bool, bool>::assign( &mut config, true );
+  Assign :: < String, String > ::assign( &mut config, "test".to_string() );
+  Assign :: < i32, i32 > ::assign( &mut config, 1234i32 );
+  Assign :: < bool, bool > ::assign( &mut config, true );
   
   assert_eq!( config.host, "test" );
   assert_eq!( config.port, 1234 );
@@ -74,9 +74,9 @@ fn test_explicit_assign_trait_still_works()
 #[ derive( Default, ComponentModel, PartialEq, Debug ) ]
 struct MultiBoolConfig
 {
-  enabled : bool,
-  debug : bool,
-  verbose : bool,
+  enabled: bool,
+  debug: bool,
+  verbose: bool,
 }
 
 /// Test multiple bool fields each get their own specific setter methods
@@ -84,7 +84,7 @@ struct MultiBoolConfig
 #[ test ]
 fn test_multiple_bool_fields_with_field_specific_methods()
 {
-  let mut config = MultiBoolConfig::default();
+  let mut config = MultiBoolConfig ::default();
   
   // Each bool field gets its own specific method
   config.enabled_set( true );
@@ -101,11 +101,11 @@ fn test_multiple_bool_fields_with_field_specific_methods()
 #[ test ]
 fn test_multiple_bool_fields_fluent_pattern()
 {
-  let config = MultiBoolConfig::default()
-    .enabled_with( true )
-    .debug_with( false )
-    .verbose_with( true );
-    
+  let config = MultiBoolConfig ::default()
+  .enabled_with( true )
+  .debug_with( false )
+  .verbose_with( true );
+  
   assert!( config.enabled );
   assert!( !config.debug );
   assert!( config.verbose );

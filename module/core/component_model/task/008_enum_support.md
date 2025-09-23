@@ -9,7 +9,8 @@ Extend component model to support enum types with variant-specific component ass
 Component model only works with structs:
 ```rust
 #[derive(ComponentModel)]
-struct Config {
+struct Config 
+{
   mode: String,  // "development" | "production" | "testing"
   database: String, // Could be different for each mode
 }
@@ -30,7 +31,8 @@ if config.mode == "production" && !config.database.starts_with("postgres://") {
 Native enum support with variant-specific components:
 ```rust
 #[derive(ComponentModel)]
-enum DatabaseConfig {
+enum DatabaseConfig 
+{
   #[component(default)]
   Development {
     #[component(default = "localhost")]
@@ -101,7 +103,8 @@ pub trait VariantConstructor<T> {
 #### **Simple Enum (Unit Variants)**
 ```rust
 #[derive(ComponentModel)]
-enum LogLevel {
+enum LogLevel 
+{
   Debug,
   Info, 
   Warn,
@@ -109,8 +112,10 @@ enum LogLevel {
 }
 
 // Generates string-based assignment
-impl Assign<LogLevel, &str> for LogLevel {
-  fn assign(&mut self, component: &str) -> Result<(), ComponentError> {
+impl Assign<LogLevel, &str> for LogLevel 
+{
+  fn assign(&mut self, component: &str) -> Result<(), ComponentError> 
+{
     *self = match component.to_lowercase().as_str() {
       "debug" => LogLevel::Debug,
       "info" => LogLevel::Info,
@@ -134,7 +139,8 @@ assert!(matches!(level, LogLevel::Debug));
 #### **Complex Enum (Struct Variants)**
 ```rust
 #[derive(ComponentModel)]
-enum ServerMode {
+enum ServerMode 
+{
   Development {
     #[component(default = "127.0.0.1")]
     host: String,
@@ -160,8 +166,10 @@ enum ServerMode {
 }
 
 // Generated variant constructors
-impl ServerMode {
-  pub fn development() -> Self {
+impl ServerMode 
+{
+  pub fn development() -> Self 
+{
     Self::Development {
       host: "127.0.0.1".to_string(),
       port: 8080,
@@ -169,7 +177,8 @@ impl ServerMode {
     }
   }
   
-  pub fn production() -> Self {
+  pub fn production() -> Self 
+{
     Self::Production {
       host: "".to_string(),
       port: 0,
@@ -177,7 +186,8 @@ impl ServerMode {
     }
   }
   
-  pub fn testing() -> Self {
+  pub fn testing() -> Self 
+{
     Self::Testing {
       database: "test".to_string(),
     }
@@ -185,10 +195,12 @@ impl ServerMode {
 }
 
 // Generated component assignment
-impl EnumAssign<String, &str> for ServerMode {
+impl EnumAssign<String, &str> for ServerMode 
+{
   type Error = ComponentError;
   
-  fn assign_to_variant(&mut self, component: &str) -> Result<(), Self::Error> {
+  fn assign_to_variant(&mut self, component: &str) -> Result<(), Self::Error> 
+{
     match self {
       Self::Development { host, .. } => {
         *host = component.to_string();
@@ -209,10 +221,12 @@ impl EnumAssign<String, &str> for ServerMode {
   }
 }
 
-impl EnumAssign<u16, u16> for ServerMode {
+impl EnumAssign<u16, u16> for ServerMode 
+{
   type Error = ComponentError;
   
-  fn assign_to_variant(&mut self, component: u16) -> Result<(), Self::Error> {
+  fn assign_to_variant(&mut self, component: u16) -> Result<(), Self::Error> 
+{
     match self {
       Self::Development { port, .. } => {
         *port = component;
@@ -238,8 +252,10 @@ impl EnumAssign<u16, u16> for ServerMode {
 
 #### **Safe Variant Switching**
 ```rust
-impl ServerMode {
-  pub fn switch_to_development(self) -> Self {
+impl ServerMode 
+{
+  pub fn switch_to_development(self) -> Self 
+{
     match self {
       Self::Development { .. } => self, // Already correct variant
       Self::Production { host, .. } => {
@@ -257,7 +273,8 @@ impl ServerMode {
     }
   }
   
-  pub fn try_switch_to_production(self) -> Result<Self, ValidationError> {
+  pub fn try_switch_to_production(self) -> Result<Self, ValidationError> 
+{
     match self {
       Self::Production { .. } => Ok(self),
       Self::Development { host, port, .. } => {
@@ -287,22 +304,26 @@ impl ServerMode {
 
 #### **Component Query by Variant**
 ```rust
-impl ServerMode {
-  pub fn get_host(&self) -> Option<&str> {
+impl ServerMode 
+{
+  pub fn get_host(&self) -> Option<&str> 
+{
     match self {
       Self::Development { host, .. } | Self::Production { host, .. } => Some(host),
       Self::Testing { .. } => None,
     }
   }
   
-  pub fn get_port(&self) -> Option<u16> {
+  pub fn get_port(&self) -> Option<u16> 
+{
     match self {
       Self::Development { port, .. } | Self::Production { port, .. } => Some(*port),
       Self::Testing { .. } => None,
     }
   }
   
-  pub fn supports_component<T: ComponentType>(&self) -> bool {
+  pub fn supports_component<T: ComponentType>(&self) -> bool 
+{
     match (T::type_name(), self.variant_name()) {
       ("String", "Development") => true,
       ("String", "Production") => true, 
@@ -322,7 +343,8 @@ impl ServerMode {
 #### **Nested Enums**
 ```rust
 #[derive(ComponentModel)]
-enum DatabaseType {
+enum DatabaseType 
+{
   Postgres {
     #[component(nested)]
     connection: PostgresConfig,
@@ -338,7 +360,8 @@ enum DatabaseType {
 }
 
 #[derive(ComponentModel)]
-struct PostgresConfig {
+struct PostgresConfig 
+{
   host: String,
   port: u16,
   sslmode: String,
@@ -348,13 +371,15 @@ struct PostgresConfig {
 #### **Generic Enum Support**
 ```rust
 #[derive(ComponentModel)]
-enum Result<T, E> {
+enum Result<T, E> 
+{
   Ok(T),
   Err(E),
 }
 
 #[derive(ComponentModel)]
-enum Option<T> {
+enum Option<T> 
+{
   Some(T),
   None,
 }
@@ -372,7 +397,8 @@ option.assign_to_variant(42); // Changes to Some(42)
 #### **Either Pattern**
 ```rust
 #[derive(ComponentModel)]
-enum Either<L, R> {
+enum Either<L, R> 
+{
   Left(L),
   Right(R),
 }
@@ -381,7 +407,8 @@ impl<L, R, T> Assign<Either<L, R>, T> for Either<L, R>
 where
   T: TryInto<L> + TryInto<R>,
 {
-  fn assign(&mut self, component: T) {
+  fn assign(&mut self, component: T) 
+{
     // Try left first, then right
     if let Ok(left_val) = component.try_into() {
       *self = Either::Left(left_val);
@@ -437,9 +464,11 @@ mod tests {
   use super::*;
   
   #[test]
-  fn test_simple_enum_assignment() {
+  fn test_simple_enum_assignment() 
+{
     #[derive(ComponentModel, PartialEq, Debug)]
-    enum Color {
+    enum Color 
+{
       Red,
       Green,
       Blue,
@@ -453,9 +482,11 @@ mod tests {
   }
   
   #[test]
-  fn test_struct_variant_assignment() {
+  fn test_struct_variant_assignment() 
+{
     #[derive(ComponentModel)]
-    enum ServerConfig {
+    enum ServerConfig 
+{
       Development { host: String, port: u16 },
       Production { host: String, port: u16, ssl: bool },
     }
@@ -478,9 +509,11 @@ mod tests {
   }
   
   #[test]
-  fn test_variant_switching() {
+  fn test_variant_switching() 
+{
     #[derive(ComponentModel)]
-    enum Mode {
+    enum Mode 
+{
       Dev { debug: bool },
       Prod { optimized: bool },
     }
@@ -500,9 +533,11 @@ mod tests {
 ```rust
 // tests/enum_integration.rs
 #[test]
-fn test_complex_enum_config() {
+fn test_complex_enum_config() 
+{
   #[derive(ComponentModel)]
-  enum AppEnvironment {
+  enum AppEnvironment 
+{
     Development {
       #[component(default = "localhost")]
       db_host: String,

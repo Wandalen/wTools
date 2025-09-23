@@ -1,7 +1,7 @@
-use super::*;
+use super :: *;
 
 #[ allow( dead_code ) ]
-// #[ derive( the_module::Index ) ]
+// #[ derive( the_module ::Index ) ]
 struct StructTuple< T >
 ( 
    // #[ index ]

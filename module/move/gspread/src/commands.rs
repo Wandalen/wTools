@@ -5,13 +5,13 @@
 
 mod private
 {
-  use clap::
+  use clap ::
   {
-    Parser,
-    Subcommand
-  };
-  use crate::*;
-  use commands::gspread;
+  Parser,
+  Subcommand
+ };
+  use crate :: *;
+  use commands ::gspread;
 
   /// # Cli
   ///
@@ -19,16 +19,16 @@ mod private
   ///
   /// This struct is the entry point for parsing and handling command-line arguments using the `clap` crate.
   ///
-  /// ## Fields:
-  /// - `command`:  
+  /// ## Fields :
+  /// - `command` :  
   ///   A `CliCommand` enum that specifies the root command and its subcommands.
   #[ derive ( Debug, Parser ) ]
   pub struct Cli
   {
-    /// Root of the CLI commands.
-    #[ command ( subcommand ) ]
-    pub command : CliCommand,
-  }
+  /// Root of the CLI commands.
+  #[ command ( subcommand ) ]
+  pub command: CliCommand,
+ }
 
   /// # CliCommand
   ///
@@ -36,20 +36,20 @@ mod private
   ///
   /// Each variant represents a category of commands or a specific functionality the tool provides.
   ///
-  /// ## Variants:
-  /// - `GSpread`:  
+  /// ## Variants :
+  /// - `GSpread` :  
   ///   Handles commands related to Google Sheets (`gspread`).  
-  ///   Delegates to the `gspread::Command` for further subcommands and logic.
+  ///   Delegates to the `gspread ::Command` for further subcommands and logic.
   #[ derive ( Debug, Subcommand ) ]
   pub enum CliCommand
   {
-    #[ command ( subcommand, long_about = "\n\nGoogle Sheets commands.", name = "gspread" ) ]
-    GSpread( gspread::Command ),
-  }
+  #[ command ( subcommand, long_about = "\n\nGoogle Sheets commands.", name = "gspread" ) ]
+  GSpread( gspread ::Command ),
+ }
 
 }
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   layer gspread;
   layer gspread_header;
@@ -63,8 +63,8 @@ crate::mod_interface!
 
   own use
   {
-    Cli,
-    CliCommand,
-  };
+  Cli,
+  CliCommand,
+ };
 }
 

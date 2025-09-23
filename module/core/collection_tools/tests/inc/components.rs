@@ -1,4 +1,4 @@
 #[ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 
-// qqq : implement VectorInterface
+// qqq: implement VectorInterface
