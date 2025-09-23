@@ -551,6 +551,8 @@ pub struct CliConfig
   pub detect_conflicts: bool,
   /// Environment variable overrides
   pub env_overrides: HashMap< String, String >,
+  /// Environment variable exclusions
+  pub exclude_env_overrides: Vec< String >,
 }
 
 /// Ergonomic CLI builder for simple and complex aggregation scenarios

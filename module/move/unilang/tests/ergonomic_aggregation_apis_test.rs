@@ -3,15 +3,16 @@
 //! This module tests the new ergonomic aggregation APIs that provide simple interfaces
 //! for common use cases while preserving complex APIs for advanced scenarios. This includes:
 //!
-//! - aggregate_cli! macro for zero-boilerplate static aggregation
-//! - CliBuilder for complex scenarios with static, dynamic, and conditional modules
+//! - `aggregate_cli`! macro for zero-boilerplate static aggregation
+//! - `CliBuilder` for complex scenarios with static, dynamic, and conditional modules
 //! - Mode selection APIs with intelligent defaults
 //! - Conditional module loading with feature flags
 //! - Error handling and validation
 //! - Integration with hybrid registry and multi-YAML build system
-//! - Backward compatibility with existing CliAggregator
+//! - Backward compatibility with existing `CliAggregator`
 
 use unilang::prelude::*;
+use unilang::multi_yaml::{ CliBuilder, AggregationMode, aggregate_cli_simple, aggregate_cli_complex };
 use std::path::PathBuf;
 
 #[test]
@@ -366,14 +367,13 @@ fn test_mode_selection_apis()
     let registry = CliBuilder::new()
       .mode( mode.clone() )
       .build()
-      .expect( &format!( "Failed to build CLI with mode {:?}", mode ) );
+      .unwrap_or_else(|_| panic!("Failed to build CLI with mode {mode:?}"));
 
     // Each should build successfully
     match mode
     {
-      AggregationMode::Static => assert_eq!( registry.registry_mode(), RegistryMode::Hybrid ),
       AggregationMode::Dynamic => assert_eq!( registry.registry_mode(), RegistryMode::DynamicOnly ),
-      AggregationMode::Hybrid => assert_eq!( registry.registry_mode(), RegistryMode::Hybrid ),
+      AggregationMode::Static | AggregationMode::Hybrid => assert_eq!( registry.registry_mode(), RegistryMode::Hybrid ),
       AggregationMode::Auto => {
         // Auto mode with no modules should default to StaticOnly
         assert_eq!( registry.registry_mode(), RegistryMode::StaticOnly );

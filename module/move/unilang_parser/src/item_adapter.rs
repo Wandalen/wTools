@@ -84,61 +84,6 @@ impl< 'a > ZeroCopyRichItem< 'a >
  }
 }
 
-/// Temporary simple replacement for `strs_tools` Split
-#[ derive( Debug, Clone ) ]
-pub struct Split< 'a >
-{
-  /// The string content of this split
-  pub string : Cow< 'a, str >,
-  /// The byte bounds in the original string  
-  pub bounds : ( usize, usize ),
-  /// Start position in the original string
-  pub start : usize,
-  /// End position in the original string
-  pub end : usize,
-  /// Type of this split segment
-  pub typ : SplitType,
-  /// Whether this segment was originally quoted
-  pub was_quoted : bool,
-}
-
-/// Type of split segment
-#[ derive( Debug, Clone, PartialEq ) ]
-pub enum SplitType
-{
-  /// A delimiter segment
-  Delimiter,
-  /// A non-delimiter segment
-  NonDelimiter,
-}
-
-/// Temporary simple replacement for `strs_tools` Split
-#[ derive( Debug, Clone ) ]
-pub struct Split< 'a >
-{
-  /// The string content of this split
-  pub string : Cow< 'a, str >,
-  /// The byte bounds in the original string  
-  pub bounds : ( usize, usize ),
-  /// Start position in the original string
-  pub start : usize,
-  /// End position in the original string
-  pub end : usize,
-  /// Type of this split segment
-  pub typ : SplitType,
-  /// Whether this segment was originally quoted
-  pub was_quoted : bool,
-}
-
-/// Type of split segment
-#[ derive( Debug, Clone, PartialEq ) ]
-pub enum SplitType
-{
-  /// A delimiter segment
-  Delimiter,
-  /// A non-delimiter segment
-  NonDelimiter,
-}
 
 /// Represents a token with its original split information and classified kind.
 #[ derive( Debug, Clone ) ]

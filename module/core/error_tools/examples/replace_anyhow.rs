@@ -5,7 +5,7 @@ use error_tools ::untyped :: { Result, Context, format_err };
 
 fn read_and_process_file(path: &str) -> Result< String > 
 {
-  let content = std ::fs ::read_to_string(path).context(format_err!("Failed to read file at '{}'", path))?;
+  let content = std ::fs ::read_to_string(path).context(format_err!("Failed to read file at '{path}'"))?;
 
   if content.is_empty() 
   {

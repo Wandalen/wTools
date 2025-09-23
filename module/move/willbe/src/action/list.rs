@@ -41,7 +41,7 @@ mod private
    {
   "tree" => ListFormat ::Tree,
   "toposort" => ListFormat ::Topological,
-  e => return Err( error ::untyped ::format_err!( "Unknown format '{}'. Available values: [tree, toposort]", e ) )
+  e => return Err( error ::untyped ::format_err!( "Unknown format '{e}'. Available values: [tree, toposort]" ) )
  };
 
    Ok( value )
@@ -107,7 +107,7 @@ mod private
    {
   "nothing" => ListFilter ::Nothing,
   "local" => ListFilter ::Local,
-  e => return Err( error ::untyped ::format_err!( "Unknown filter '{}'. Available values: [nothing, local]", e ) )
+  e => return Err( error ::untyped ::format_err!( "Unknown filter '{e}'. Available values: [nothing, local]" ) )
  };
 
    Ok( value )
