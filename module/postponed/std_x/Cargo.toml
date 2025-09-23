@@ -358,6 +358,7 @@ diagnostics_compiletime_assertions = [ "diagnostics", "wtools/diagnostics_compil
 nightly = []
 
 default = [
+  "enabled",
   "iter_default",
   "meta_default",
   "typing_default",

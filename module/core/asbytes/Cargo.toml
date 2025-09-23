@@ -25,7 +25,13 @@ all-features = false
 
 [features]
 default = [ "enabled", "as_bytes", "into_bytes", "derive", "must_cast" ] # Added into_bytes
-full = [ "default" ]
+full = [
+  "enabled",
+  "as_bytes",
+  "into_bytes",
+  "derive",
+  "must_cast",
+]
 enabled = []
 # Feature for AsBytes trait and its implementations
 as_bytes = [ "dep:bytemuck" ]

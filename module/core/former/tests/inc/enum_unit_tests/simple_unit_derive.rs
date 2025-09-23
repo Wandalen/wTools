@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 // Purpose: Replacement for generic_enum_simple_unit_derive - tests unit variants without generics
 // This works around the architectural limitation that Former derive cannot parse generic enums
 

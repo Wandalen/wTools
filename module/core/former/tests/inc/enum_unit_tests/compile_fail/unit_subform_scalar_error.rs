@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: Tests that applying `#[ subform_scalar ]` to a unit variant results in a compile-time error.
 //!
 //! Coverage:

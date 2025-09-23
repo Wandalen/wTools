@@ -1,91 +1,94 @@
-#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
+#[ allow( clippy ::std_instead_of_alloc, clippy ::std_instead_of_core ) ]
 mod private
 {
 
-  use crate::*;
+  use crate :: *;
 
-  use std::fmt;
-  use process_tools::process;
-  use error::
+  use std ::fmt;
+  use process_tools ::process;
+  use error ::
   {
-    untyped::{ format_err, Context },
-  };
+  untyped :: { format_err, Context },
+ };
 
   #[ derive( Debug, Default, Clone ) ]
   /// Represents an extended Git report with optional process reports.
   pub struct ExtendedGitReport
   {
-    /// Optional report for the `git add` process.
-    pub add : Option< process::Report >,
-    /// Optional report for the `git commit` process.
-    pub commit : Option< process::Report >,
-    /// Optional report for the `git push` process.
-    pub push : Option< process::Report >,
-  }
+  /// Optional report for the `git add` process.
+  pub add: Option< process ::Report >,
+  /// Optional report for the `git commit` process.
+  pub commit: Option< process ::Report >,
+  /// Optional report for the `git push` process.
+  pub push: Option< process ::Report >,
+ }
 
-  impl fmt::Display for ExtendedGitReport
+  impl fmt ::Display for ExtendedGitReport
   {
-    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
-    {
-      let Self { add, commit, push } = &self;
+  fn fmt( &self, f: &mut fmt ::Formatter< '_ > ) -> fmt ::Result
+  {
+   let Self { add, commit, push } = &self;
 
-      if let Some( add ) = add { writeln!( f, "{add}" )? }
-      if let Some( commit ) = commit { writeln!( f, "{commit}" )? }
-      if let Some( push ) = push { writeln!( f, "{push}" )? }
+   if let Some( add ) = add 
+   { writeln!( f, "{add}" )? }
+   if let Some( commit ) = commit 
+   { writeln!( f, "{commit}" )? }
+   if let Some( push ) = push 
+   { writeln!( f, "{push}" )? }
 
-      std::fmt::Result::Ok( () )
-    }
-  }
+   std ::fmt ::Result ::Ok( () )
+ }
+ }
 
-  // aaa : for Bohdan : should not be here // aaa : done
-  // aaa : for Bohdan : documentation // aaa : done
+  // aaa: for Bohdan: should not be here // aaa: done
+  // aaa: for Bohdan: documentation // aaa: done
   /// The `GitOptions` struct represents a set of options used to perform a Git commit operation.
   #[ derive( Debug, Clone ) ]
   pub struct GitOptions
   {
-    /// An absolute path to the root directory of the Git repository.
-    pub git_root : AbsolutePath,
-    /// A vector of absolute paths to the files or directories that should be committed.
-    pub items : Vec< AbsolutePath >,
-    /// A string containing the commit message.
-    pub message : String,
-    /// A boolean flag indicating whether the commit should be performed in dry run mode
-    /// (i.e., no changes are actually made to the repository)
-    pub dry : bool,
-  }
+  /// An absolute path to the root directory of the Git repository.
+  pub git_root: AbsolutePath,
+  /// A vector of absolute paths to the files or directories that should be committed.
+  pub items: Vec< AbsolutePath >,
+  /// A string containing the commit message.
+  pub message: String,
+  /// A boolean flag indicating whether the commit should be performed in dry run mode
+  /// (i.e., no changes are actually made to the repository)
+  pub dry: bool,
+ }
 
   /// Performs a Git commit operation using the provided options
   /// # Errors
   /// qqq: doc
-  #[ allow( clippy::needless_pass_by_value ) ]
-  pub fn perform_git_commit( o : GitOptions ) -> error::untyped::Result< ExtendedGitReport >
-  // qqq : use typed error
+  #[ allow( clippy ::needless_pass_by_value ) ]
+  pub fn perform_git_commit( o: GitOptions ) -> error ::untyped ::Result< ExtendedGitReport >
+  // qqq: use typed error
   {
-    use tool::git;
-    let mut report = ExtendedGitReport::default();
-    if o.items.is_empty() { return error::untyped::Result::Ok( report ); }
-    let items : error::untyped::Result< Vec< _ > > = o
-    .items
-    .iter()
-    .map
-    (
-      | item | item.as_ref().strip_prefix( o.git_root.as_ref() ).map( std::path::Path::to_string_lossy )
-      .with_context( || format!("git_root: {}, item: {}", o.git_root.as_ref().display(), item.as_ref().display() ) )
-    )
-    .collect();
+  use tool ::git;
+  let mut report = ExtendedGitReport ::default();
+  if o.items.is_empty() { return error ::untyped ::Result ::Ok( report ); }
+  let items: error ::untyped ::Result< Vec< _ > > = o
+  .items
+  .iter()
+  .map
+  (
+   | item | item.as_ref().strip_prefix( o.git_root.as_ref() ).map( std ::path ::Path ::to_string_lossy )
+   .with_context( || format!("git_root: {}, item: {}", o.git_root.as_ref().display(), item.as_ref().display() ) )
+ )
+  .collect();
 
-    let res = git::add( &o.git_root, &items?, o.dry ).map_err( | e | format_err!( "{report}\n{e}" ) )?;
-    report.add = Some( res );
-    let res = git::commit( &o.git_root, &o.message, o.dry ).map_err( | e | format_err!( "{report}\n{e}" ) )?;
-    report.commit = Some( res );
+  let res = git ::add( &o.git_root, &items?, o.dry ).map_err( | e | format_err!( "{report}\n{e}" ) )?;
+  report.add = Some( res );
+  let res = git ::commit( &o.git_root, &o.message, o.dry ).map_err( | e | format_err!( "{report}\n{e}" ) )?;
+  report.commit = Some( res );
 
-    error::untyped::Result::Ok( report )
-  }
+  error ::untyped ::Result ::Ok( report )
+ }
 }
 
 //
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   own use ExtendedGitReport;
   own use GitOptions;

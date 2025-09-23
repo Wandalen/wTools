@@ -1,14 +1,14 @@
-use derive_tools::Index;
+use derive_tools ::Index;
 
 #[ derive( Index ) ] 
 struct StructMultipleNamed< T > 
 {
   #[ index ]
-  a : Vec< T >,
+  a: Vec< T >,
   #[ index ]
-  b : Vec< T >,
+  b: Vec< T >,
 }
 
 fn main()
-{  
+{ 
 }

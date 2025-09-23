@@ -14,14 +14,25 @@
 //!
 //! ## Usage Examples
 //!
-//! ```rust,ignore
-//! use strs_tools::string::specialized::{SingleCharSplitIterator, smart_split};
+//! ```rust
+//! # #[cfg(all(feature = "string_split", feature = "specialized_algorithms", feature = "std"))]
+//! # {
+//! use strs_tools::string::specialized::{SingleCharSplitIterator, smart_split, SplitResult};
+//!
+//! let input = "apple,banana,cherry";
 //!
 //! // Manual algorithm selection for maximum performance
-//! let words: Vec<&str> = SingleCharSplitIterator::new(input, ',', false).collect();
+//! let words: Vec<SplitResult> = SingleCharSplitIterator::new(input, ',', false).collect();
+//! assert_eq!(words.len(), 3);
+//! assert_eq!(words[0].as_str(), "apple");
+//! assert_eq!(words[1].as_str(), "banana");
+//! assert_eq!(words[2].as_str(), "cherry");
 //!
 //! // Automatic algorithm selection based on pattern analysis
-//! let parts: Vec<&str> = smart_split(input, &[","]).collect();
+//! let parts: Vec<SplitResult> = smart_split(input, &[","]).collect();
+//! assert_eq!(parts.len(), 3);
+//! assert_eq!(parts[0].as_str(), "apple");
+//! # }
 //! ```
 
 use std::borrow::Cow;
@@ -106,12 +117,19 @@ impl<'a> AsRef<str> for SplitResult<'a> {
 /// - **Throughput**: Up to 2GB/s on modern CPUs with SIMD memchr
 ///
 /// ## Usage
-/// ```rust,ignore
-/// use strs_tools::string::specialized::SingleCharSplitIterator;
+/// ```rust
+/// # #[cfg(all(feature = "string_split", feature = "specialized_algorithms", feature = "std"))]
+/// # {
+/// use strs_tools::string::specialized::{SingleCharSplitIterator, SplitResult};
 ///
 /// let input = "apple,banana,cherry,date";
-/// let fruits: Vec<&str> = SingleCharSplitIterator::new(input, ',', false).collect();
-/// assert_eq!(fruits, vec!["apple", "banana", "cherry", "date"]);
+/// let fruits: Vec<SplitResult> = SingleCharSplitIterator::new(input, ',', false).collect();
+/// assert_eq!(fruits.len(), 4);
+/// assert_eq!(fruits[0].as_str(), "apple");
+/// assert_eq!(fruits[1].as_str(), "banana");
+/// assert_eq!(fruits[2].as_str(), "cherry");
+/// assert_eq!(fruits[3].as_str(), "date");
+/// # }
 /// ```
 #[ derive( Debug, Clone ) ]
 pub struct SingleCharSplitIterator<'a> {
@@ -228,10 +246,10 @@ impl<'a> Iterator for SingleCharSplitIterator<'a> {
         self.position = self.input.len();
         self.finished = true;
         
-        if !remaining.is_empty() {
-          Some( SplitResult::Borrowed( remaining ) )
-        } else {
+        if remaining.is_empty() {
           None
+        } else {
+          Some( SplitResult::Borrowed( remaining ) )
         }
       }
     }
@@ -339,14 +357,26 @@ impl AlgorithmSelector {
 /// - **Multi-patterns**: 2-3x faster with SIMD Aho-Corasick
 ///
 /// ## Usage
-/// ```rust,ignore
-/// use strs_tools::string::specialized::smart_split;
+/// ```rust
+/// # #[cfg(all(feature = "string_split", feature = "specialized_algorithms", feature = "std"))]
+/// # {
+/// use strs_tools::string::specialized::{smart_split, SplitResult};
 ///
 /// // Automatically uses SingleChar algorithm for comma
-/// let fields: Vec<&str> = smart_split("a,b,c,d", &[","]).collect();
+/// let fields: Vec<SplitResult> = smart_split("a,b,c,d", &[","]).collect();
+/// assert_eq!(fields.len(), 4);
+/// assert_eq!(fields[0].as_str(), "a");
+/// assert_eq!(fields[1].as_str(), "b");
+/// assert_eq!(fields[2].as_str(), "c");
+/// assert_eq!(fields[3].as_str(), "d");
 ///
 /// // Automatically uses BoyerMoore for "::" pattern  
-/// let parts: Vec<&str> = smart_split("a::b::c", &["::"]).collect();
+/// let parts: Vec<SplitResult> = smart_split("a::b::c", &["::"]).collect();
+/// assert_eq!(parts.len(), 3);
+/// assert_eq!(parts[0].as_str(), "a");
+/// assert_eq!(parts[1].as_str(), "b");
+/// assert_eq!(parts[2].as_str(), "c");
+/// # }
 /// ```
 pub fn smart_split<'a>( input: &'a str, delimiters: &'a [ &'a str ] ) -> Box<dyn Iterator<Item = SplitResult<'a>> + 'a> {
   let algorithm = AlgorithmSelector::select_with_size_hint( delimiters, input.len() );
@@ -545,10 +575,10 @@ impl<'a> Iterator for BoyerMooreSplitIterator<'a> {
         self.position = self.input.len();
         self.finished = true;
         
-        if !remaining.is_empty() {
-          Some( SplitResult::Borrowed( remaining ) )
-        } else {
+        if remaining.is_empty() {
           None
+        } else {
+          Some( SplitResult::Borrowed( remaining ) )
         }
       }
     }

@@ -1,5 +1,6 @@
+#![allow(dead_code)]
 
-use super::tools::*;
+use super ::tools :: *;
 
 /// Private namespace of the module.
 mod private
@@ -8,35 +9,35 @@ mod private
   /// `layer_a_own`
   pub fn layer_a_own() -> bool
   {
-    true
-  }
+  true
+ }
 
   /// `layer_a_orphan`
   pub fn layer_a_orphan() -> bool
   {
-    true
-  }
+  true
+ }
 
   /// `layer_a_exposed`
   pub fn layer_a_exposed() -> bool
   {
-    true
-  }
+  true
+ }
 
   /// `layer_a_prelude`
   pub fn layer_a_prelude() -> bool
   {
-    true
-  }
+  true
+ }
 
 }
 
 //
 
-the_module::mod_interface!
+the_module ::mod_interface!
 {
 
-  // orphan use super::private::
+  // orphan use super ::private ::
   // {
   //   protected where layer_a_own as layer_a_own2,
   //   layer_a_orphan,

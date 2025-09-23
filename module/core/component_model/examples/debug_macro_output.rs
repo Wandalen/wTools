@@ -5,19 +5,20 @@
 //! 
 //! Run with: `cargo run --example debug_macro_output`
 
-use component_model::ComponentModel;
+use component_model ::ComponentModel;
 
 #[ derive( Default, ComponentModel ) ]
 #[ debug ]  // This example specifically demonstrates debug attribute functionality
 struct Config
 {
-  host : String,
-  port : i32,  
-  enabled : bool,
+  host: String,
+  port: i32,  
+  enabled: bool,
 }
 
-fn main() {
-  let mut config = Config::default();
+fn main() 
+{
+  let mut config = Config ::default();
   
   // Use field-specific methods to avoid type ambiguity
   config.host_set( "localhost".to_string() );
@@ -27,10 +28,10 @@ fn main() {
   println!( "Config: host={}, port={}, enabled={}", config.host, config.port, config.enabled );
   
   // Fluent pattern also works
-  let config2 = Config::default()
-    .host_with( "api.example.com".to_string() )
-    .port_with( 3000i32 )
-    .enabled_with( false );
-    
+  let config2 = Config ::default()
+  .host_with( "api.example.com".to_string() )
+  .port_with( 3000i32 )
+  .enabled_with( false );
+  
   println!( "Config2: host={}, port={}, enabled={}", config2.host, config2.port, config2.enabled );
 }

@@ -29,22 +29,23 @@ mod derive;
 /// struct MyStruct
 /// {
 ///   #[ as_mut( original ) ]
-///   a : i32,
-///   b : i32,
+///   a: i32,
+///   b: i32,
 /// }
 ///
-/// let mut my_struct = MyStruct { a : 1, b : 2 };
+/// let mut my_struct = MyStruct { a: 1, b: 2 };
 /// *my_struct.as_mut() += 1;
 /// dbg!( my_struct.a );
 /// ```
 ///
 /// To learn more about the feature, study the module [`derive_tools::AsMut`](https://docs.rs/derive_tools/latest/derive_tools/as_mut/index.html).
 ///
-#[proc_macro_derive(AsMut, attributes(as_mut))]
-pub fn as_mut(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+#[ proc_macro_derive(AsMut, attributes(as_mut)) ]
+pub fn as_mut(input: proc_macro::TokenStream) -> proc_macro::TokenStream 
+{
   derive::as_mut::as_mut(input)
-    .unwrap_or_else(macro_tools::syn::Error::into_compile_error)
-    .into()
+  .unwrap_or_else(macro_tools::syn::Error::into_compile_error)
+  .into()
 }
 
 ///
@@ -59,21 +60,22 @@ pub fn as_mut(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 /// struct MyStruct
 /// {
 ///   #[ as_ref( original ) ]
-///   a : i32,
-///   b : i32,
+///   a: i32,
+///   b: i32,
 /// }
 ///
-/// let my_struct = MyStruct { a : 1, b : 2 };
+/// let my_struct = MyStruct { a: 1, b: 2 };
 /// dbg!( my_struct.as_ref() );
 /// ```
 ///
 /// To learn more about the feature, study the module [`derive_tools::AsRef`](https://docs.rs/derive_tools/latest/derive_tools/as_ref/index.html).
 ///
-#[proc_macro_derive(AsRef, attributes(as_ref))]
-pub fn as_ref(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+#[ proc_macro_derive(AsRef, attributes(as_ref)) ]
+pub fn as_ref(input: proc_macro::TokenStream) -> proc_macro::TokenStream 
+{
   derive::as_ref::as_ref(input)
-    .unwrap_or_else(macro_tools::syn::Error::into_compile_error)
-    .into()
+  .unwrap_or_else(macro_tools::syn::Error::into_compile_error)
+  .into()
 }
 
 ///
@@ -88,21 +90,22 @@ pub fn as_ref(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 /// struct MyStruct
 /// {
 ///   #[ deref( original ) ]
-///   a : i32,
-///   b : i32,
+///   a: i32,
+///   b: i32,
 /// }
 ///
-/// let my_struct = MyStruct { a : 1, b : 2 };
+/// let my_struct = MyStruct { a: 1, b: 2 };
 /// dbg!( *my_struct );
 /// ```
 ///
 /// To learn more about the feature, study the module [`derive_tools::Deref`](https://docs.rs/derive_tools/latest/derive_tools/deref/index.html).
 ///
-#[proc_macro_derive(Deref, attributes(deref, debug))]
-pub fn deref(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+#[ proc_macro_derive(Deref, attributes(deref, debug)) ]
+pub fn deref(input: proc_macro::TokenStream) -> proc_macro::TokenStream 
+{
   derive::deref::deref(input)
-    .unwrap_or_else(macro_tools::syn::Error::into_compile_error)
-    .into()
+  .unwrap_or_else(macro_tools::syn::Error::into_compile_error)
+  .into()
 }
 
 ///
@@ -117,22 +120,23 @@ pub fn deref(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 /// struct MyStruct
 /// {
 ///   #[ deref_mut( original ) ]
-///   a : i32,
-///   b : i32,
+///   a: i32,
+///   b: i32,
 /// }
 ///
-/// let mut my_struct = MyStruct { a : 1, b : 2 };
+/// let mut my_struct = MyStruct { a: 1, b: 2 };
 /// *my_struct += 1;
 /// dbg!( my_struct.a );
 /// ```
 ///
 /// To learn more about the feature, study the module [`derive_tools::DerefMut`](https://docs.rs/derive_tools/latest/derive_tools/deref_mut/index.html).
 ///
-#[proc_macro_derive(DerefMut, attributes(deref_mut))]
-pub fn deref_mut(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+#[ proc_macro_derive(DerefMut, attributes(deref_mut)) ]
+pub fn deref_mut(input: proc_macro::TokenStream) -> proc_macro::TokenStream 
+{
   derive::deref_mut::deref_mut(input)
-    .unwrap_or_else(macro_tools::syn::Error::into_compile_error)
-    .into()
+  .unwrap_or_else(macro_tools::syn::Error::into_compile_error)
+  .into()
 }
 
 ///
@@ -152,11 +156,12 @@ pub fn deref_mut(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 ///
 /// To learn more about the feature, study the module [`derive_tools::From`](https://docs.rs/derive_tools/latest/derive_tools/from/index.html).
 ///
-#[proc_macro_derive(From, attributes(from))]
-pub fn from(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+#[ proc_macro_derive(From, attributes(from)) ]
+pub fn from(input: proc_macro::TokenStream) -> proc_macro::TokenStream 
+{
   derive::from::from(input)
-    .unwrap_or_else(macro_tools::syn::Error::into_compile_error)
-    .into()
+  .unwrap_or_else(macro_tools::syn::Error::into_compile_error)
+  .into()
 }
 
 ///
@@ -176,11 +181,12 @@ pub fn from(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 ///
 /// To learn more about the feature, study the module [`derive_tools::Index`](https://docs.rs/derive_tools/latest/derive_tools/index/index.html).
 ///
-#[proc_macro_derive(Index, attributes(index))]
-pub fn index(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+#[ proc_macro_derive(Index, attributes(index)) ]
+pub fn index(input: proc_macro::TokenStream) -> proc_macro::TokenStream 
+{
   derive::index::index(input)
-    .unwrap_or_else(macro_tools::syn::Error::into_compile_error)
-    .into()
+  .unwrap_or_else(macro_tools::syn::Error::into_compile_error)
+  .into()
 }
 
 ///
@@ -201,11 +207,12 @@ pub fn index(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 ///
 /// To learn more about the feature, study the module [`derive_tools::IndexMut`](https://docs.rs/derive_tools/latest/derive_tools/index_mut/index.html).
 ///
-#[proc_macro_derive(IndexMut, attributes(index_mut))]
-pub fn index_mut(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+#[ proc_macro_derive(IndexMut, attributes(index_mut)) ]
+pub fn index_mut(input: proc_macro::TokenStream) -> proc_macro::TokenStream 
+{
   derive::index_mut::index_mut(input)
-    .unwrap_or_else(macro_tools::syn::Error::into_compile_error)
-    .into()
+  .unwrap_or_else(macro_tools::syn::Error::into_compile_error)
+  .into()
 }
 
 ///
@@ -225,11 +232,12 @@ pub fn index_mut(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 ///
 /// To learn more about the feature, study the module [`derive_tools::InnerFrom`](https://docs.rs/derive_tools/latest/derive_tools/inner_from/index.html).
 ///
-#[proc_macro_derive(InnerFrom, attributes(inner_from))]
-pub fn inner_from(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+#[ proc_macro_derive(InnerFrom, attributes(inner_from)) ]
+pub fn inner_from(input: proc_macro::TokenStream) -> proc_macro::TokenStream 
+{
   derive::inner_from::inner_from(input)
-    .unwrap_or_else(macro_tools::syn::Error::into_compile_error)
-    .into()
+  .unwrap_or_else(macro_tools::syn::Error::into_compile_error)
+  .into()
 }
 
 ///
@@ -249,11 +257,12 @@ pub fn inner_from(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 ///
 /// To learn more about the feature, study the module [`derive_tools::New`](https://docs.rs/derive_tools/latest/derive_tools/new/index.html).
 ///
-#[proc_macro_derive(New, attributes(new))]
-pub fn new(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+#[ proc_macro_derive(New, attributes(new)) ]
+pub fn new(input: proc_macro::TokenStream) -> proc_macro::TokenStream 
+{
   derive::new::new(input)
-    .unwrap_or_else(macro_tools::syn::Error::into_compile_error)
-    .into()
+  .unwrap_or_else(macro_tools::syn::Error::into_compile_error)
+  .into()
 }
 
 ///
@@ -273,19 +282,20 @@ pub fn new(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 ///
 /// To learn more about the feature, study the module [`derive_tools::Not`](https://docs.rs/derive_tools/latest/derive_tools/not/index.html).
 ///
-#[proc_macro_derive(Not, attributes(not))]
-pub fn not(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+#[ proc_macro_derive(Not, attributes(not)) ]
+pub fn not(input: proc_macro::TokenStream) -> proc_macro::TokenStream 
+{
   derive::not::not(input)
-    .unwrap_or_else(macro_tools::syn::Error::into_compile_error)
-    .into()
+  .unwrap_or_else(macro_tools::syn::Error::into_compile_error)
+  .into()
 }
 
-// ///\n// /// Implement `PhantomData` for a structure.\n// ///\n// /// ### Sample.\n// ///\n// /// ```text\n// /// use derive_tools::PhantomData;\n// ///\n// /// #\[ derive\( PhantomData \) \]\n// /// struct MyStruct< T >\( core::marker::PhantomData< T > \);\n// ///\n// /// let my_struct = MyStruct::\< i32 >\( core::marker::PhantomData \);\n// /// dbg!\( my_struct \);\n// /// ```\n// ///\n// /// To learn more about the feature, study the module \[`derive_tools::PhantomData`\]\(https://docs.rs/derive_tools/latest/derive_tools/phantom_data/index.html\)\.
-// qqq: This derive is currently generating invalid code by attempting to implement `core::marker::PhantomData` as a trait.
+// ///\n// /// Implement `PhantomData` for a structure.\n// ///\n// /// ### Sample.\n// ///\n// /// ```text\n// /// use derive_tools ::PhantomData;\n// ///\n// /// #\[ derive\( PhantomData \) \]\n// /// struct MyStruct< T >\( core ::marker ::PhantomData< T > \);\n// ///\n// /// let my_struct = MyStruct :: \< i32 >\( core ::marker ::PhantomData \);\n// /// dbg!\( my_struct \);\n// /// ```\n// ///\n// /// To learn more about the feature, study the module \[`derive_tools ::PhantomData`\]\(https: //docs.rs/derive_tools/latest/derive_tools/phantom_data/index.html\)\.
+// qqq: This derive is currently generating invalid code by attempting to implement `core ::marker ::PhantomData` as a trait.
 // It needs to be re-designed to correctly handle `PhantomData` usage, likely by adding a field to the struct.
 // Temporarily disabling to allow other tests to pass.
 // #[ proc_macro_derive( PhantomData, attributes( phantom_data ) ]
-// pub fn phantom_data( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+// pub fn phantom_data( input: proc_macro::TokenStream ) -> proc_macro::TokenStream
 // {
 //   derive::phantom::phantom( input ).unwrap_or_else( macro_tools::syn::Error::into_compile_error ).into()
 // }
@@ -307,9 +317,10 @@ pub fn not(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 ///
 /// To learn more about the feature, study the module [`derive_tools::VariadicFrom`](https://docs.rs/derive_tools/latest/derive_tools/variadic_from/index.html).
 ///
-#[proc_macro_derive(VariadicFrom, attributes(variadic_from))]
-pub fn variadic_from(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+#[ proc_macro_derive(VariadicFrom, attributes(variadic_from)) ]
+pub fn variadic_from(input: proc_macro::TokenStream) -> proc_macro::TokenStream 
+{
   derive::variadic_from::variadic_from(input)
-    .unwrap_or_else(macro_tools::syn::Error::into_compile_error)
-    .into()
+  .unwrap_or_else(macro_tools::syn::Error::into_compile_error)
+  .into()
 }

@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 // Purpose: Tests standalone constructor args functionality
 // This file is included by standalone_constructor_args_tuple derive/manual files
 

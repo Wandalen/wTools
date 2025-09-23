@@ -1,5 +1,5 @@
-use mod_interface::mod_interface;
-use error_tools::thiserror;
+use mod_interface ::mod_interface;
+use error_tools ::thiserror;
 
 mod private
 {
@@ -7,20 +7,20 @@ mod private
 
 pub mod ser
 {
-  pub use serde::
+  pub use serde ::
   { 
-    Serialize, 
-    Deserialize 
-  };
-  pub use serde_json::
+  Serialize, 
+  Deserialize 
+ };
+  pub use serde_json ::
   { 
-    error::Error, 
-    self 
-  };
-  pub use serde_with::*;
+  error ::Error, 
+  self 
+ };
+  pub use serde_with :: *;
 }
 
-crate::mod_interface!
+crate ::mod_interface!
 {
 
   layer gcore;
@@ -29,11 +29,11 @@ crate::mod_interface!
   layer actions;
   layer utils;
 
-  exposed use ::reflect_tools::
+  exposed use ::reflect_tools ::
   {
-    Fields,
-    _IteratorTrait,
-    IteratorTrait,
-  };
+  Fields,
+  _IteratorTrait,
+  IteratorTrait,
+ };
 
 }

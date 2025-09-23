@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 // Purpose: Tests generic tuple variant functionality
 // This file is included by generics_in_tuple_variant derive/manual files
 

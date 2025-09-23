@@ -1,34 +1,34 @@
-#![doc(html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png")]
+#![doc(html_logo_url = "https: //raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png")]
 #![doc(
-  html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
+  html_favicon_url = "https: //raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
 )]
-#![doc(html_root_url = "https://docs.rs/willbe/")]
+#![doc(html_root_url = "https: //docs.rs/willbe/")]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 #![ cfg_attr( not( doc ), doc = "Build and project management binary" ) ]
 
-// qqq2 : xxx2 : fix broken sequence of publishing because of skipping debug dependencies
+// qqq2: xxx2: fix broken sequence of publishing because of skipping debug dependencies
 //
 // cd module/core/former_meta
 // cargo package --allow-dirty --no-verify
 //
-// Caused by:
+// Caused by :
 //   failed to select a version for `former_types`.
 //       ... required by package `macro_tools v0.46.0`
 //       ... which satisfies dependency `macro_tools = "~0.46.0"` of package `impls_index_meta v0.10.0`
 //       ... which satisfies dependency `impls_index_meta = "~0.10.0"` of package `test_tools v0.12.0`
-//       ... which satisfies dependency `test_tools = "~0.12.0"` of package `former_meta v2.12.0 (C:\pro\lib\wtools\module\core\former_meta)`
+//       ... which satisfies dependency `test_tools = "~0.12.0"` of package `former_meta v2.12.0 (C: \pro\lib\wtools\module\core\former_meta)`
 //   versions that meet the requirements `~2.14.0` are: 2.14.0
 //
 //   all possible versions conflict with previously selected packages.
 //
 //     previously selected package `former_types v2.15.0`
-//       ... which satisfies dependency `former_types = "~2.15.0"` of package `former_meta v2.12.0 (C:\pro\lib\wtools\module\core\former_meta)`
+//       ... which satisfies dependency `former_types = "~2.15.0"` of package `former_meta v2.12.0 (C: \pro\lib\wtools\module\core\former_meta)`
 //
 //   failed to select a version for `former_types` which could resolve this conflict
 
-// qqq2 : xx2 : attempt to publish graphs_tools publish all crates do not respecting check on outdate
+// qqq2: xx2: attempt to publish graphs_tools publish all crates do not respecting check on outdate
 //
-// Wrong:
+// Wrong :
 // [0] interval_adapter (0.28.0 -> 0.29.0)
 // [1] collection_tools (0.17.0 -> 0.18.0)
 // [2] former_types (2.14.0 -> 2.15.0)
@@ -50,24 +50,25 @@
 // [18] former (2.12.0 -> 2.13.0)
 // [19] graphs_tools (0.3.0 -> 0.4.0)
 //
-// Correct:
+// Correct :
 // [0] impls_index (0.9.0 -> 0.10.0)
 // [1] for_each (0.10.0 -> 0.11.0)
 // [2] meta_tools (0.12.0 -> 0.13.0)
 // [3] graphs_tools (0.3.0 -> 0.4.0)
 
-// qqq2 : xxx2 : another problem
+// qqq2: xxx2: another problem
 // if you publish a crate and after you try to publish another which depends on the first willbe don't see any changes and don't publish second
 // for example publishing impl_index -> after publising test_tools make willbe struggle to see that publishing of test_tools is required
 
 #![allow(ambiguous_glob_imports)]
 
-use mod_interface::meta::mod_interface;
+use mod_interface ::meta ::mod_interface;
 
 /// Define a private namespace for all its items.
-mod private {
+mod private 
+{
 
-  use crate::{ error, command };
+  use crate :: { error, command };
 
   /// Takes the command line arguments and perform associated function(s).
   /// If no arguments are provided, the function identifies this as an ambiguous state and prompts the user with a help message, suggesting possible commands they might want to execute.
@@ -77,32 +78,35 @@ mod private {
   ///
   /// # Errors
   /// qqq: doc
-  pub fn run(args: Vec<String>) -> Result<(), error::untyped::Error> {
-    #[cfg(feature = "tracing")]
-    {
-      tracing_subscriber::fmt().pretty().init();
-    }
+  pub fn run(args: Vec< String >) -> Result< (), error ::untyped ::Error >
+  {
+  #[ cfg(feature = "tracing") ]
+  {
+   tracing_subscriber ::fmt().pretty().init();
+ }
 
-    let args: Vec<String> = args.into_iter().skip(1).collect();
+  let args: Vec< String > = args.into_iter().skip(1).collect();
 
-    let ca = command::ca()
-      .help_variants([wca::HelpVariants::General, wca::HelpVariants::SubjectCommand])
-      .perform();
+  let ca = command ::ca()
+   .help_variants([wca ::HelpVariants ::General, wca ::HelpVariants ::SubjectCommand])
+   .perform();
 
-    let program = args.join(" ");
-    if program.is_empty() {
-      eprintln!("Ambiguity. Did you mean?");
-      ca.perform(".help")?;
-      std::process::exit(1)
-    } else {
-      Ok(ca.perform(program.as_str())?)
-    }
-  }
+  let program = args.join(" ");
+  if program.is_empty() 
+  {
+   eprintln!("Ambiguity. Did you mean?");
+   ca.perform(".help")?;
+   std ::process ::exit(1);
+ } else {
+   Ok(ca.perform(program.as_str())?)
+ }
+}
+
 }
 
 mod_interface! {
 
-  own use private::run;
+  own use private ::run;
 
   /// Error handling facade.
   layer error;
@@ -122,4 +126,4 @@ mod_interface! {
 }
 
 // Re-export thiserror outside of mod_interface since it doesn't have the required structure
-pub use ::error_tools::dependency::thiserror;
+pub use ::error_tools ::dependency ::thiserror;

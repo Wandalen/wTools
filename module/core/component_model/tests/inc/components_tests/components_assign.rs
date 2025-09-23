@@ -1,60 +1,72 @@
 #[ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 #[ allow( unused_imports ) ]
-use component_model::{Assign, AssignWithType};
+use component_model :: { Assign, AssignWithType };
 
 ///
 /// Options1
 ///
-#[ derive( Debug, Default, PartialEq, the_module::Assign, the_module::ComponentsAssign ) ]
-pub struct Options1 {
-  field1 : i32,
-  field2 : String,
-  field3 : f32,
+#[ derive( Debug, Default, PartialEq, the_module ::Assign, the_module ::ComponentsAssign ) ]
+pub struct Options1 
+{
+  field1: i32,
+  field2: String,
+  field3: f32,
 }
 
-impl From< &Options1 > for i32 {
+impl From< &Options1 > for i32 
+{
   #[ inline( always ) ]
-  fn from( src : &Options1 ) -> Self {
-    src.field1
-  }
+  fn from( src: &Options1 ) -> Self 
+  {
+  src.field1
+ }
 }
 
-impl From< &Options1 > for String {
+impl From< &Options1 > for String 
+{
   #[ inline( always ) ]
-  fn from( src : &Options1 ) -> Self {
-    src.field2.clone()
-  }
+  fn from( src: &Options1 ) -> Self 
+  {
+  src.field2.clone()
+ }
 }
 
-impl From< &Options1 > for f32 {
+impl From< &Options1 > for f32 
+{
   #[ inline( always ) ]
-  fn from( src : &Options1 ) -> Self {
-    src.field3
-  }
+  fn from( src: &Options1 ) -> Self 
+  {
+  src.field3
+ }
 }
 
 ///
 /// Options2
 ///
-#[ derive( Debug, Default, PartialEq, the_module::Assign, the_module::ComponentsAssign ) ]
-pub struct Options2 {
-  field1 : i32,
-  field2 : String,
+#[ derive( Debug, Default, PartialEq, the_module ::Assign, the_module ::ComponentsAssign ) ]
+pub struct Options2 
+{
+  field1: i32,
+  field2: String,
 }
 
-impl From< &Options2 > for i32 {
+impl From< &Options2 > for i32 
+{
   #[ inline( always ) ]
-  fn from( src : &Options2 ) -> Self {
-    src.field1
-  }
+  fn from( src: &Options2 ) -> Self 
+  {
+  src.field1
+ }
 }
 
-impl From< &Options2 > for String {
+impl From< &Options2 > for String 
+{
   #[ inline( always ) ]
-  fn from( src : &Options2 ) -> Self {
-    src.field2.clone()
-  }
+  fn from( src: &Options2 ) -> Self 
+  {
+  src.field2.clone()
+ }
 }
 
 //

@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: Tests the `#[ derive( Former ) ]` macro's generation of a former builder for a named
 //! (struct-like) variant (`V1`) within a generic enum (`EnumG4<T>`), where the variant contains
 //! a field with a shared generic type (`InnerG4<T>`). This file focuses on verifying the

@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: Provides a hand-written implementation of the `Former` pattern's subformer starter methods
 //! for an enum with multiple single-field tuple variants, where the inner types also derive `Former`.
 //! This file demonstrates the manual implementation corresponding to the derived behavior, showing how

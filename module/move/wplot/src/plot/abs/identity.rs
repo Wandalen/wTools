@@ -1,10 +1,10 @@
-use super::*;
-use std::any::Any;
-use std::sync::Mutex;
-use lazy_static::lazy_static;
+use super :: *;
+use std ::any ::Any;
+use std ::sync ::Mutex;
+use lazy_static ::lazy_static;
 
 /// Interface to describe identity.
-pub trait HasIdInterface : Send + Sync
+pub trait HasIdInterface: Send + Sync
 {
   /// Get id.
   fn id( &self ) -> Id;
@@ -15,10 +15,10 @@ pub trait HasIdInterface : Send + Sync
 impl dyn HasIdInterface
 {
   /// Downcast to concrete type.
-  pub fn downcast_ref< T : Any >( &self ) -> Option< &T >
+  pub fn downcast_ref< T: Any >( &self ) -> Option< &T >
   {
-    self.root().downcast_ref()
-  }
+  self.root().downcast_ref()
+ }
 }
 
 /// Id of resource.
@@ -30,13 +30,13 @@ impl Id
   /// Generate new id.
   pub fn next() -> Self
   {
-    let mut c = unsafe { COUNTER.lock().unwrap() };
-    *c += 1;
-    Id( *c )
-  }
+  let mut c = unsafe { COUNTER.lock().unwrap() };
+  *c += 1;
+  Id( *c )
+ }
 }
 
 lazy_static!
 {
-  static ref COUNTER : Mutex< i32 > = Mutex::new( 0 );
+  static ref COUNTER: Mutex< i32 > = Mutex ::new( 0 );
 }

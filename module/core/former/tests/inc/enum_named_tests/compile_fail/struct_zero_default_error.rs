@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: This is a compile-fail test designed to verify that a zero-field named (struct-like)
 //! variant without the `#[ scalar ]` attribute results in a compilation error.
 //!

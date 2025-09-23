@@ -1,43 +1,43 @@
-use feed_rs::parser as feed_parser;
-use gluesql::
+use feed_rs ::parser as feed_parser;
+use gluesql ::
 {
-  core::
+  core ::
   {
-    chrono::{ DateTime, Utc },
-    data::Value
-  },
-  sled_storage::sled::Config,
+  chrono :: { DateTime, Utc },
+  data ::Value
+ },
+  sled_storage ::sled ::Config,
 };
-use wca::iter_tools::Itertools;
-use unitore::
+use wca ::iter_tools ::Itertools;
+use unitore ::
 {
-  feed_config::SubscriptionConfig,
-  sled_adapter::FeedStorage,
-  entity::{ frame::FrameStore, feed::FeedStore },
+  feed_config ::SubscriptionConfig,
+  sled_adapter ::FeedStorage,
+  entity :: { frame ::FrameStore, feed ::FeedStore },
 };
-use error_tools::untyped::Result;
+use error_tools ::untyped ::Result;
 
-#[ tokio::test ]
+#[ tokio ::test ]
 async fn test_save() -> Result< () >
 {
-  let temp_path = pth::path::unique_folder_name().unwrap();
+  let temp_path = pth ::path ::unique_folder_name().unwrap();
 
-  let config = Config::default()
+  let config = Config ::default()
   .path( format!( "./{}", temp_path ) )
   .temporary( true )
   ;
 
-  let mut feed_storage = FeedStorage::init_storage( &config ).await?;
+  let mut feed_storage = FeedStorage ::init_storage( &config ).await?;
 
   let feed_config = SubscriptionConfig
   {
-    update_period : std::time::Duration::from_secs( 1000 ),
-    link : url::Url::parse( "https://www.nasa.gov/feed/" )?,
-  };
+  update_period: std ::time ::Duration ::from_secs( 1000 ),
+  link: url ::Url ::parse( "https: //www.nasa.gov/feed/" )?,
+ };
 
-  let mut feeds = Vec::new();
+  let mut feeds = Vec ::new();
 
-  let feed = feed_parser::parse( include_str!("./fixtures/plain_feed.xml").as_bytes() )?;
+  let feed = feed_parser ::parse( include_str!("./fixtures/plain_feed.xml").as_bytes() )?;
   feeds.push( ( feed, feed_config.update_period.clone(), feed_config.link.clone() ) );
   feed_storage.feeds_process( feeds ).await?;
 
@@ -49,31 +49,31 @@ async fn test_save() -> Result< () >
   Ok( () )
 }
 
-#[ tokio::test ]
+#[ tokio ::test ]
 async fn test_update() -> Result< () >
 {
-  let temp_path = pth::path::unique_folder_name().unwrap();
+  let temp_path = pth ::path ::unique_folder_name().unwrap();
 
-  let config = Config::default()
+  let config = Config ::default()
   .path( format!( "./{}", temp_path ) )
   .temporary( true )
   ;
 
-  let mut feed_storage = FeedStorage::init_storage( &config ).await?;
+  let mut feed_storage = FeedStorage ::init_storage( &config ).await?;
 
   let feed_config = SubscriptionConfig
   {
-    update_period : std::time::Duration::from_secs( 1000 ),
-    link : url::Url::parse( "https://www.nasa.gov/feed/" )?,
-  };
+  update_period: std ::time ::Duration ::from_secs( 1000 ),
+  link: url ::Url ::parse( "https: //www.nasa.gov/feed/" )?,
+ };
 
   // initial fetch
-  let feed = feed_parser::parse( include_str!("./fixtures/plain_feed.xml").as_bytes() )?;
+  let feed = feed_parser ::parse( include_str!("./fixtures/plain_feed.xml").as_bytes() )?;
   let feeds = vec![ ( feed, feed_config.update_period.clone(), feed_config.link.clone() ) ];
   feed_storage.feeds_process( feeds ).await?;
 
   // updated fetch
-  let feed = feed_parser::parse( include_str!("./fixtures/updated_one_frame.xml").as_bytes() )?;
+  let feed = feed_parser ::parse( include_str!("./fixtures/updated_one_frame.xml").as_bytes() )?;
 
   let feeds = vec![ ( feed, feed_config.update_period.clone(), feed_config.link.clone() ) ];
   feed_storage.feeds_process( feeds ).await?;
@@ -85,25 +85,25 @@ async fn test_update() -> Result< () >
   .iter()
   .map( | val | val.selected_frames.selected_rows.clone() )
   .flatten()
-  .collect::< Vec< _ > >()
+  .collect :: < Vec< _ > >()
   ;
 
   let entries = entries.iter().map( | entry |
-    {
-      let id = match &entry[ 0 ]
-      {
-        Value::Str( s ) => s.to_owned(),
-        _ => String::new(),
-      };
+  {
+   let id = match &entry[ 0 ]
+   {
+  Value ::Str( s ) => s.to_owned(),
+  _ => String ::new(),
+ };
 
-      let published = match &entry[ 8 ]
-      {
-        Value::Timestamp( date_time ) => date_time.and_utc(),
-        _ => DateTime::< Utc >::default(),
-      };
-      ( id, published )
-    }
-  )
+   let published = match &entry[ 8 ]
+   {
+  Value ::Timestamp( date_time ) => date_time.and_utc(),
+  _ => DateTime :: < Utc > ::default(),
+ };
+   ( id, published )
+ }
+ )
   .collect_vec()
   ;
 
@@ -113,8 +113,8 @@ async fn test_update() -> Result< () >
   // check date
   let updated = entries.iter().find
   (
-    | ( id, _published ) | id == "https://www.nasa.gov/?post_type=image-article&p=631537"
-  );
+  | ( id, _published ) | id == "https: //www.nasa.gov/?post_type=image-article&p=631537"
+ );
   assert!( updated.is_some() );
   let _updated = updated.unwrap();
   Ok( () )

@@ -24,7 +24,8 @@ diagnostics_tools = "0.11"
 ```rust,no_run
 use diagnostics_tools::*;
 
-fn main() {
+fn main() 
+{
     // Instead of cryptic assertion failures, get beautiful diffs:
     a_id!( vec![ 1, 2, 3 ], vec![ 1, 2, 4 ] );
     

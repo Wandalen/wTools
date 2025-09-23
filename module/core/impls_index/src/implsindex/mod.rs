@@ -6,8 +6,8 @@ pub mod func;
 /// Several macro to encourage to write indexed code to improve readibility.
 pub mod impls;
 
-/* zzz : use name protected */
-/* zzz : use for implementing of macro mod_interface */
+/* zzz: use name protected */
+/* zzz: use for implementing of macro mod_interface */
 
 // /// Namespace with dependencies.
 // #[ cfg( feature = "enabled" ) ]
@@ -19,46 +19,50 @@ pub mod impls;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod own {
-  use super::*;
+pub mod own 
+{
+  use super :: *;
   #[ doc( inline ) ]
-  pub use orphan::*;
+  pub use orphan :: *;
   #[ doc( inline ) ]
-  pub use ::impls_index_meta::*;
+  pub use ::impls_index_meta :: *;
 }
 
 /// Shared with parent namespace of the module
 #[ allow( unused_imports ) ]
-pub mod orphan {
-  use super::*;
+pub mod orphan 
+{
+  use super :: *;
   #[ doc( inline ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod exposed {
-  use super::*;
-  pub use super::super::implsindex;
+pub mod exposed 
+{
+  use super :: *;
+  pub use super ::super ::implsindex;
   // pub use crate as impls_index;
   #[ doc( inline ) ]
-  pub use prelude::*;
+  pub use prelude :: *;
   #[ doc( inline ) ]
-  pub use impls::exposed::*;
+  pub use impls ::exposed :: *;
   #[ doc( inline ) ]
-  pub use func::exposed::*;
+  pub use func ::exposed :: *;
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
-pub mod prelude {
-  use super::*;
+pub mod prelude 
+{
+  use super :: *;
   #[ doc( inline ) ]
-  pub use impls::prelude::*;
+  pub use impls ::prelude :: *;
   #[ doc( inline ) ]
-  pub use func::prelude::*;
+  pub use func ::prelude :: *;
 }

@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Manual implementation for testing unit variants in enums with mixed variant kinds.
 
 use super::*;

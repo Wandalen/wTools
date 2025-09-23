@@ -2,12 +2,12 @@
 //! String tools.
 //!
 
-// xxx : move to crate string_tools
+// xxx: move to crate string_tools
 
 /// Define a private namespace for all its items.
 mod private
 {
-  // use crate::*;
+  // use crate :: *;
 
   /// Returns the size of the text in `src` as a `[ width, height ]` array.
   ///
@@ -23,23 +23,23 @@ mod private
   ///
   /// # Returns
   ///
-  /// A `[usize; 2]` array representing the dimensions of the text:
-  /// - `width`: The length of the longest line in the text.
-  /// - `height`: The total number of lines in the text.
+  /// A `[usize; 2]` array representing the dimensions of the text :
+  /// - `width` : The length of the longest line in the text.
+  /// - `height` : The total number of lines in the text.
   ///
   /// # Nuances
   ///
-  /// - **Empty Strings**: If the input string is empty, the function returns `[0, 1]`
+  /// - **Empty Strings** : If the input string is empty, the function returns `[0, 1]`
   ///   because there is one line with a width of zero.
-  /// - **Trailing Newlines**: If the input string ends with a newline character, it is
+  /// - **Trailing Newlines** : If the input string ends with a newline character, it is
   ///   treated as having an additional empty line at the end.
-  /// - **Empty Lines**: Empty lines within the text are counted as lines with a width of zero.
+  /// - **Empty Lines** : Empty lines within the text are counted as lines with a width of zero.
   ///
   /// # Examples
   ///
   /// ```
   /// let text = "Hello\nWorld\nThis is a test";
-  /// let dimensions = format_tools::string::size( text );
+  /// let dimensions = format_tools ::string ::size( text );
   /// assert_eq!( dimensions, [ 14, 3 ] );
   /// ```
   ///
@@ -48,7 +48,7 @@ mod private
   ///
   /// ```
   /// let text = "";
-  /// let dimensions = format_tools::string::size( text );
+  /// let dimensions = format_tools ::string ::size( text );
   /// assert_eq!( dimensions, [ 0, 1 ] );
   /// ```
   ///
@@ -57,35 +57,35 @@ mod private
   ///
   /// ```
   /// let text = "Line 1\n\nLine 3\n";
-  /// let dimensions = format_tools::string::size( text );
+  /// let dimensions = format_tools ::string ::size( text );
   /// assert_eq!( dimensions, [ 6, 4 ] );
   /// ```
   ///
   /// In this example, the function returns `[ 6, 4 ]` because the longest line ( "Line 1" or "Line 3" )
   /// has 6 characters, there are 4 lines in total, including the empty line and the trailing newline.
-  pub fn size< S : AsRef< str > >( src : S ) -> [ usize ; 2 ]
+  pub fn size< S: AsRef< str > >( src: S ) -> [ usize ; 2 ]
   {
-    let text = src.as_ref();
-    let mut height = 0;
-    let mut width = 0;
+  let text = src.as_ref();
+  let mut height = 0;
+  let mut width = 0;
 
-    for line in lines( text )
-    {
-      height += 1;
-      let line_length = line.as_bytes().len();
-      if line_length > width
-      {
-        width = line_length;
-      }
-    }
+  for line in lines( text )
+  {
+   height += 1;
+   let line_length = line.as_bytes().len();
+   if line_length > width
+   {
+  width = line_length;
+ }
+ }
 
-    [ width, height ]
-  }
+  [ width, height ]
+ }
 
   /// Returns an iterator over the lines of a string slice.
   ///
   /// This function provides an iterator that yields each line of the input string slice.
-  /// It is an enhancement over the standard `str::lines()` method, as it handles trailing
+  /// It is an enhancement over the standard `str ::lines()` method, as it handles trailing
   /// newlines by returning an additional empty line if the input string ends with a newline.
   ///
   /// # Arguments
@@ -101,16 +101,16 @@ mod private
   ///
   /// ```
   /// let text = "Hello\nWorld\n";
-  /// let mut lines = format_tools::string::lines( text );
+  /// let mut lines = format_tools ::string ::lines( text );
   /// assert_eq!( lines.next(), Some( "Hello" ) );
   /// assert_eq!( lines.next(), Some( "World" ) );
   /// assert_eq!( lines.next(), Some( "" ) );
   /// assert_eq!( lines.next(), None );
   /// ```
-  pub fn lines< S : AsRef< str > + ?Sized >( src : & S ) -> Lines< '_ >
+  pub fn lines< S: AsRef< str > + ?Sized >( src: & S ) -> Lines< '_ >
   {
-    Lines::new( src.as_ref() )
-  }
+  Lines ::new( src.as_ref() )
+ }
 
   /// Returns an iterator over the lines of a string slice with text wrapping.
   ///
@@ -135,7 +135,7 @@ mod private
   ///
   /// ```
   /// let text = "Hello\nWorld\n";
-  /// let mut lines = format_tools::string::lines_with_limit( text, 3 );
+  /// let mut lines = format_tools ::string ::lines_with_limit( text, 3 );
   /// assert_eq!( lines.next(), Some( "Hel" ) );
   /// assert_eq!( lines.next(), Some( "lo" ) );
   /// assert_eq!( lines.next(), Some( "Wor" ) );
@@ -143,74 +143,74 @@ mod private
   /// assert_eq!( lines.next(), Some( "" ) );
   /// assert_eq!( lines.next(), None );
   /// ```
-  pub fn lines_with_limit< S : AsRef< str > + ?Sized >
+  pub fn lines_with_limit< S: AsRef< str > + ?Sized >
   (
-    src : & S,
-    limit_width : usize
-  )
+  src: & S,
+  limit_width: usize
+ )
   -> LinesWithLimit< '_ >
   {
-    LinesWithLimit::new( src.as_ref(), limit_width )
-  }
+  LinesWithLimit ::new( src.as_ref(), limit_width )
+ }
 
   /// An iterator over the lines of a string slice.
   ///
   /// This struct implements the `Iterator` trait, allowing you to iterate over the lines
-  /// of a string. It enhances the standard `str::Lines` iterator by handling trailing
+  /// of a string. It enhances the standard `str ::Lines` iterator by handling trailing
   /// newlines, ensuring that an additional empty line is returned if the input string
   /// ends with a newline character.
   /// ```
   #[ derive( Debug ) ]
   pub struct Lines< 'a >
   {
-    lines : std::str::Lines< 'a >,
-    has_trailing_newline : bool,
-    finished : bool,
-  }
+  lines: std ::str ::Lines< 'a >,
+  has_trailing_newline: bool,
+  finished: bool,
+ }
 
   impl< 'a > Lines< 'a >
   {
-    fn new( input : &'a str ) -> Self
-    {
-      let has_trailing_newline = input.len() == 0 || input.ends_with( '\n' );
-      Lines
-      {
-        lines : input.lines(),
-        has_trailing_newline,
-        finished : false,
-      }
-    }
-  }
+  fn new( input: &'a str ) -> Self
+  {
+   let has_trailing_newline = input.len() == 0 || input.ends_with( '\n' );
+   Lines
+   {
+  lines: input.lines(),
+  has_trailing_newline,
+  finished: false,
+ }
+ }
+ }
 
   impl< 'a > Iterator for Lines< 'a >
   {
-    type Item = &'a str;
+  type Item = &'a str;
 
-    fn next( &mut self ) -> Option<  Self::Item  >
-    {
-      if self.finished
-      {
-        return None;
-      }
+  fn next( &mut self ) -> Option< Self ::Item >
+  {
+   if self.finished
+   {
+  return None;
+ }
 
-      match self.lines.next()
-      {
-        Some( line ) => Some( line ),
-        None =>
-        {
-          if self.has_trailing_newline
-          {
-            self.finished = true;
-            Some( "" )
-          }
-          else
-          {
-            None
-          }
-        }
-      }
-    }
-  }
+   match self.lines.next()
+   {
+  Some( line ) => Some( line ),
+  None =>
+  {
+   if self.has_trailing_newline
+   {
+  self.finished = true;
+  Some( "" )
+ }
+   else
+   {
+  None
+ }
+ }
+ }
+ }
+ }
 
   /// An iterator over the lines of a string slice with text wrapping.
   ///
@@ -224,106 +224,106 @@ mod private
   #[ derive( Debug ) ]
   pub struct LinesWithLimit< 'a >
   {
-    lines : Lines< 'a >,
-    limit_width : usize,
-    cur : Option<  &'a str  >,
-  }
+  lines: Lines< 'a >,
+  limit_width: usize,
+  cur: Option< &'a str >,
+ }
 
   impl< 'a > LinesWithLimit< 'a >
   {
-    fn new( input : &'a str, limit_width : usize ) -> Self
-    {
-      LinesWithLimit
-      {
-        lines : lines( input ),
-        limit_width,
-        cur : None,
-      }
-    }
-  }
+  fn new( input: &'a str, limit_width: usize ) -> Self
+  {
+   LinesWithLimit
+   {
+  lines: lines( input ),
+  limit_width,
+  cur: None,
+ }
+ }
+ }
 
   impl< 'a > Iterator for LinesWithLimit< 'a > 
   {
-    type Item = &'a str;
+  type Item = &'a str;
 
-    fn next( &mut self ) -> Option<  Self::Item  > 
-    {
-      loop 
-      {
-        let s = match self.cur 
-        {
-          Some( st ) if !st.is_empty() => st,
+  fn next( &mut self ) -> Option< Self ::Item > 
+  {
+   loop 
+   {
+  let s = match self.cur 
+  {
+   Some( st ) if !st.is_empty() => st,
 
-          _ => 
-          {
-            let next_line = self.lines.next()?;
-            if next_line.is_empty() 
-            {
-              self.cur = None;
-              return Some( "" );
-            } 
-            else 
-            {
-              self.cur = Some( next_line );
-              continue; 
-            }
-          }
-        };
+   _ => 
+   {
+  let next_line = self.lines.next()?;
+  if next_line.is_empty() 
+  {
+   self.cur = None;
+   return Some( "" );
+ } 
+  else 
+  {
+   self.cur = Some( next_line );
+   continue; 
+ }
+ }
+ };
 
-        if self.limit_width == 0 
-        {
-          self.cur = None;
-          return Some( s );
-        }
+  if self.limit_width == 0 
+  {
+   self.cur = None;
+   return Some( s );
+ }
 
-        let mut boundary_byte_index = s.len();
-        let mut char_count = 0;
-        for ( byte_i, _ch ) in s.char_indices() 
-        {
-          if char_count == self.limit_width 
-          {
-            boundary_byte_index = byte_i;
-            break;
-          }
-          char_count += 1;
-        }
+  let mut boundary_byte_index = s.len();
+  let mut char_count = 0;
+  for ( byte_i, _ch ) in s.char_indices() 
+  {
+   if char_count == self.limit_width 
+   {
+  boundary_byte_index = byte_i;
+  break;
+ }
+   char_count += 1;
+ }
 
-        let chunk = &s[ ..boundary_byte_index ];
-        let rest = &s[ boundary_byte_index.. ];
+  let chunk = &s[ ..boundary_byte_index ];
+  let rest = &s[ boundary_byte_index.. ];
 
-        match rest.is_empty()
-        {
-          true => self.cur = None,
-          false => self.cur = Some( rest )
-        };
+  match rest.is_empty()
+  {
+   true => self.cur = None,
+   false => self.cur = Some( rest )
+ };
 
-        return Some( chunk );
-      }
-    }
+  return Some( chunk );
+ }
+ }
 }
 
 }
 
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use orphan::*;
+  pub use orphan :: *;
 
   #[ doc( inline ) ]
-  pub use private::
+  pub use private ::
   {
-    size,
-    lines,
-    Lines,
-    lines_with_limit,
-    LinesWithLimit,
-  };
+  size,
+  lines,
+  Lines,
+  lines_with_limit,
+  LinesWithLimit,
+ };
 
 }
 
@@ -331,22 +331,22 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::*;
-  pub use super::super::string;
+  use super :: *;
+  pub use super ::super ::string;
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::*;
+  use super :: *;
 }

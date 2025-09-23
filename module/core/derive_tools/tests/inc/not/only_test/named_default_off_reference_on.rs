@@ -2,7 +2,7 @@
 fn not()
 {
   let value = true;
-  let mut x = NamedDefaultOffReferenceOn { a : &value, b : 0 };
+  let mut x = NamedDefaultOffReferenceOn { a: &value, b: 0 };
 
   x = !x;
 

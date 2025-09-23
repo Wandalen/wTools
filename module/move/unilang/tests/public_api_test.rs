@@ -26,6 +26,8 @@ fn test_root_namespace_imports()
   use unilang::ArgumentAttributes;
   
   // Verify types exist by creating instances or references
+  #[allow(deprecated)]
+  #[allow(deprecated)]
   let _registry = CommandRegistry::new();
   let kind = Kind::String;
   let _attrs = ArgumentAttributes::default();
@@ -51,6 +53,8 @@ fn test_prelude_imports()
   use unilang::prelude::*;
   
   // Verify prelude contains essential types
+  #[allow(deprecated)]
+  #[allow(deprecated)]
   let _registry = CommandRegistry::new();
   core::hint::black_box(Kind::String);
   let _output = OutputData
@@ -112,6 +116,8 @@ fn test_module_specific_imports()
   use unilang::help::HelpGenerator;
   
   // Verify imports work by using all types
+  #[allow(deprecated)]
+  #[allow(deprecated)]
   let registry = CommandRegistry::new();
   let _value = Value::String( "test".to_string() );
   core::hint::black_box(Kind::String);
@@ -149,6 +155,8 @@ fn test_complete_workflow()
   };
   
   // Create a registry
+  #[allow(deprecated)]
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   
   // Define a command
@@ -195,6 +203,8 @@ fn test_complete_workflow()
   });
   
   // Register the command
+  #[allow(deprecated)]
+    #[allow(deprecated)]
   registry.command_add_runtime( &greet_cmd, routine )
     .expect( "Failed to register command" );
   
@@ -215,7 +225,10 @@ fn test_namespace_structure()
 {
   // Test own namespace (if it exists)
   // use unilang::own::*;
-  // let _registry = CommandRegistry::new();
+  use unilang::CommandRegistry;
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+  let _registry = CommandRegistry::new();
   
   // Test exposed namespace exists and has expected types
   {
@@ -237,6 +250,8 @@ fn test_common_use_patterns()
   // Pattern 1: Minimal imports for basic usage
   use unilang::{ CommandRegistry, Pipeline };
   
+  #[allow(deprecated)]
+  #[allow(deprecated)]
   let registry = CommandRegistry::new();
   let _pipeline = Pipeline::new( registry );
   

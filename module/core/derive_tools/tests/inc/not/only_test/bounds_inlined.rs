@@ -1,7 +1,7 @@
 #[ test ]
 fn not()
 {
-  let mut x = BoundsInlined::< bool, u8 > { a : true, b : 0 };
+  let mut x = BoundsInlined :: < bool, u8 > { a: true, b: 0 };
 
   x = !x;
 

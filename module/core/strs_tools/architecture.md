@@ -225,7 +225,7 @@ Some functionality uses procedural macros following the established workflow:
 
 | Standard Library | strs_tools Equivalent | Benefits |
 |------------------|----------------------|----------|
-| `str.split()` | `string::split().src().delimeter().perform()` | Quote awareness, delimiter preservation |
+| `str.split()` | `string::split().src().delimiter().perform()` | Quote awareness, delimiter preservation |
 | Manual parsing | `string::parse_request::parse()` | Structured command parsing |
 | `str.trim()` + parsing | `string::number::parse()` | Robust number format support |
 

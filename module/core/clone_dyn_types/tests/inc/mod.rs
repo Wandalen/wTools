@@ -1,10 +1,11 @@
 #[ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 
-#[path = "../../../clone_dyn/tests/inc"]
-mod tests {
+#[ path = "../../../clone_dyn/tests/inc" ]
+mod tests 
+{
   #[ allow( unused_imports ) ]
-  use super::*;
+  use super :: *;
 
   mod basic_manual;
   // mod basic;

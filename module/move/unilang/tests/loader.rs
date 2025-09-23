@@ -21,6 +21,7 @@ fn test_load_command_definitions_from_yaml_str_success()
   idempotent: true
   deprecation_message: ""
   http_method_hint: "GET"
+  auto_help_enabled: false
   examples: []
   arguments:
     - name: "input"
@@ -77,7 +78,8 @@ fn test_load_command_definitions_from_json_str_success()
     "permissions": ["admin"],
     "idempotent": false,
     "deprecation_message": "",
-    "http_method_hint": "POST", 
+    "http_method_hint": "POST",
+    "auto_help_enabled": false,
     "examples": ["json_command input::test"],
     "arguments": [{
       "name": "data",
@@ -191,6 +193,7 @@ fn test_load_command_definitions_yaml_with_complex_types()
   idempotent: true
   deprecation_message: ""
   http_method_hint: ""
+  auto_help_enabled: false
   examples: []
   arguments:
     - name: "integer_arg"

@@ -229,7 +229,7 @@ if error.contains("UNILANG_ARGUMENT_INTERACTIVE_REQUIRED") ||
 }
 ```
 
-## Performance Characteristics
+## REPL Implementation Performance Analysis
 
 ### Enhanced REPL
 - **Memory**: Higher due to rustyline dependencies

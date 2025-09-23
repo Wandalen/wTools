@@ -1,3 +1,4 @@
+#![allow(clippy::all)]
 //! # Collection Types Demo
 //!
 //! This example demonstrates how to work with List and Map argument types,
@@ -12,6 +13,7 @@ fn main() -> Result< (), unilang::error::Error >
 {
   println!( "=== Collection Types Demo ===\n" );
 
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
 
   // Step 1: Command demonstrating List types
@@ -100,6 +102,7 @@ fn main() -> Result< (), unilang::error::Error >
     })
   });
 
+  #[allow(deprecated)]
   registry.command_add_runtime( &list_demo, list_routine )?;
 
   // Step 2: Command demonstrating Map types
@@ -206,6 +209,7 @@ fn main() -> Result< (), unilang::error::Error >
     })
   });
 
+  #[allow(deprecated)]
   registry.command_add_runtime( &map_demo, map_routine )?;
 
   println!( "✓ Registered collection type demonstration commands" );

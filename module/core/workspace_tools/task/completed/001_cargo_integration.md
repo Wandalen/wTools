@@ -39,7 +39,8 @@ Implement automatic Cargo workspace detection to eliminate the need for manual `
 
 ### **New API Surface**
 ```rust
-impl Workspace {
+impl Workspace 
+{
     /// Create workspace from Cargo workspace root (auto-detected)
     pub fn from_cargo_workspace() -> Result<Self>;
     
@@ -57,14 +58,16 @@ impl Workspace {
 }
 
 #[derive(Debug, Clone)]
-pub struct CargoMetadata {
+pub struct CargoMetadata 
+{
     pub workspace_root: PathBuf,
     pub members: Vec<CargoPackage>,
     pub workspace_dependencies: HashMap<String, String>,
 }
 
 #[derive(Debug, Clone)]  
-pub struct CargoPackage {
+pub struct CargoPackage 
+{
     pub name: String,
     pub version: String,
     pub manifest_path: PathBuf,
@@ -82,7 +85,8 @@ cargo_metadata = "0.18"
 toml = "0.8"
 
 // Implementation in src/lib.rs
-fn find_cargo_workspace() -> Result<PathBuf> {
+fn find_cargo_workspace() -> Result<PathBuf> 
+{
     let mut current = std::env::current_dir()?;
     
     loop {
@@ -113,8 +117,10 @@ fn find_cargo_workspace() -> Result<PathBuf> {
 
 #### **Step 2: Metadata Integration** (Day 2)
 ```rust
-impl Workspace {
-    pub fn cargo_metadata(&self) -> Result<CargoMetadata> {
+impl Workspace 
+{
+    pub fn cargo_metadata(&self) -> Result<CargoMetadata> 
+{
         let output = std::process::Command::new("cargo")
             .args(&["metadata", "--format-version", "1"])
             .current_dir(&self.root)
@@ -154,14 +160,17 @@ impl Workspace {
 
 #### **Step 3: Updated Constructor Logic** (Day 3)
 ```rust
-impl Workspace {
-    pub fn from_cargo_workspace() -> Result<Self> {
+impl Workspace 
+{
+    pub fn from_cargo_workspace() -> Result<Self> 
+{
         let workspace_root = find_cargo_workspace()?;
         Ok(Self { root: workspace_root })
     }
     
     // Update existing resolve() to try Cargo first
-    pub fn resolve() -> Result<Self> {
+    pub fn resolve() -> Result<Self> 
+{
         // Try Cargo workspace detection first
         if let Ok(ws) = Self::from_cargo_workspace() {
             return Ok(ws);
@@ -180,7 +189,8 @@ impl Workspace {
 }
 
 // Update convenience function
-pub fn workspace() -> Result<Workspace> {
+pub fn workspace() -> Result<Workspace> 
+{
     Workspace::resolve()
 }
 ```
@@ -193,7 +203,8 @@ mod cargo_integration_tests {
     use std::fs;
     
     #[test]
-    fn test_cargo_workspace_detection() {
+    fn test_cargo_workspace_detection() 
+{
         let (_temp_dir, test_ws) = create_test_workspace_with_structure();
         
         // Create fake Cargo.toml with workspace
@@ -211,13 +222,15 @@ serde = "1.0"
     }
     
     #[test]
-    fn test_cargo_metadata_parsing() {
+    fn test_cargo_metadata_parsing() 
+{
         // Test cargo metadata integration
         // Requires actual cargo workspace for testing
     }
     
     #[test] 
-    fn test_workspace_member_detection() {
+    fn test_workspace_member_detection() 
+{
         // Test detection from within workspace member directory
     }
 }
@@ -239,7 +252,8 @@ workspace_tools = "0.2"  # No configuration needed!
 ```rust
 use workspace_tools::workspace;
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), Box<dyn std::error::Error>> 
+{
     // Automatically detects Cargo workspace - no setup required!
     let ws = workspace()?;
     
@@ -260,7 +274,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 //! Cargo workspace integration example
 use workspace_tools::{workspace, Workspace};
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), Box<dyn std::error::Error>> 
+{
     // Automatic detection - no configuration needed
     let ws = workspace()?;
     

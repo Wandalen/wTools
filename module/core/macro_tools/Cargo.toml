@@ -1,6 +1,6 @@
 [package]
 name = "macro_tools"
-version = "0.67.0"
+version = "0.69.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -51,9 +51,7 @@ default = [
   "typ",
   "typed",
 ]
-full = [
-  "default",
-]
+full = [ "enabled" ]
 
 enabled = [
   "component_model_types/enabled",

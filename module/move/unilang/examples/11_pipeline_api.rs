@@ -1,3 +1,4 @@
+#![allow(clippy::all)]
 //! # Pipeline API Demo
 //!
 //! This example demonstrates the high-level Pipeline API that simplifies
@@ -258,6 +259,7 @@ fn main() -> Result< (), unilang::error::Error >
 /// Set up a demo registry with various commands for testing
 fn setup_demo_registry() -> Result< CommandRegistry, unilang::error::Error >
 {
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
 
   // Calculator commands
@@ -330,6 +332,7 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     })
   });
 
+  #[allow(deprecated)]
   registry.command_add_runtime( &add_cmd, add_routine )?;
 
   // Multiply command
@@ -386,6 +389,7 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     })
   });
 
+  #[allow(deprecated)]
   registry.command_add_runtime( &multiply_cmd, multiply_routine )?;
 
   // Divide command (with error handling)
@@ -451,6 +455,7 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     })
   });
 
+  #[allow(deprecated)]
   registry.command_add_runtime( &divide_cmd, divide_routine )?;
 
   Ok(())
@@ -502,6 +507,7 @@ fn setup_text_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     })
   });
 
+  #[allow(deprecated)]
   registry.command_add_runtime( &reverse_cmd, reverse_routine )?;
 
   Ok(())
@@ -541,6 +547,7 @@ fn setup_util_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     })
   });
 
+  #[allow(deprecated)]
   registry.command_add_runtime( &timestamp_cmd, timestamp_routine )?;
 
   Ok(())

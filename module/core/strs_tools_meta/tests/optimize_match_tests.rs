@@ -5,7 +5,7 @@
 //! | Test ID | Scenario | Pattern Type | Strategy | Expected Behavior |
 //! |---------|----------|--------------|----------|-------------------|
 //! | TC1 | Single pattern | "prefix" | default | Single pattern optimization |
-//! | TC2 | Multiple small patterns | `["http://", "https://"]` | `"first_match"` | Trie-based optimization |
+//! | TC2 | Multiple small patterns | `["http: //", "https: //"]` | `"first_match"` | Trie-based optimization |
 //! | TC3 | Multiple large patterns | Many long patterns | "first_match" | Sequential matching |
 //! | TC4 | Strategy: longest_match | `["a", "ab", "abc"]` | `"longest_match"` | Longest match strategy |
 //! | TC5 | Strategy: all_matches | `["a", "b"]` | `"all_matches"` | All matches strategy |
@@ -13,7 +13,7 @@
 //!
 
 #[ cfg( feature = "optimize_match" ) ]
-use strs_tools_meta::optimize_match;
+use strs_tools_meta ::optimize_match;
 
 // TC1: Single pattern - should use SinglePattern optimization
 #[ cfg( feature = "optimize_match" ) ]
@@ -31,9 +31,9 @@ fn tc1_single_pattern()
 #[ test ]
 fn tc2_multiple_small_patterns()
 {
-  let result = optimize_match!( "https://example.com", [ "http://", "https://" ] );
+  let result = optimize_match!( "https: //example.com", [ "http: //", "https: //" ] );
   
-  // Should find https:// at position 0
+  // Should find https: // at position 0
   assert_eq!( result, Some( 0 ) );
 }
 
@@ -42,9 +42,9 @@ fn tc2_multiple_small_patterns()
 #[ test ]
 fn tc3_first_match_strategy()
 {
-  let result = optimize_match!( "test http:// and https://", [ "http://", "https://" ], strategy = "first_match" );
+  let result = optimize_match!( "test http: // and https: //", [ "http: //", "https: //" ], strategy = "first_match" );
   
-  // Should find http:// first at position 5
+  // Should find http: // first at position 5
   assert_eq!( result, Some( 5 ) );
 }
 
@@ -76,7 +76,7 @@ fn tc5_all_matches_strategy()
 #[ test ]
 fn tc6_debug_mode()
 {
-  let result = optimize_match!( "test_string", "test", debug );
+  let result = optimize_match!( "test_string", "test" );
   
   assert_eq!( result, Some( 0 ) );
 }

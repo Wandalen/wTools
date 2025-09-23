@@ -43,7 +43,8 @@ use diagnostics_tools::{ a_true, a_false, a_id, a_not_id };
 
 **Before:**
 ```rust
-fn test_my_function() {
+fn test_my_function() 
+{
     let result = my_function();
     assert_eq!(result.len(), 3);
     assert!(result.contains("hello"));
@@ -53,7 +54,8 @@ fn test_my_function() {
 
 **After:**
 ```rust
-fn test_my_function() {
+fn test_my_function() 
+{
     let result = my_function();
     a_id!(result.len(), 3);           // Better diff on failure
     a_true!(result.contains("hello")); // Better error context  
@@ -68,7 +70,8 @@ fn test_my_function() {
 **Before:**
 ```rust
 #[test]
-fn test_user_data() {
+fn test_user_data() 
+{
     let user = create_user();
     assert_eq!(user.name, "John");
     assert_eq!(user.age, 30);
@@ -79,7 +82,8 @@ fn test_user_data() {
 **After:**
 ```rust
 #[test]
-fn test_user_data() {
+fn test_user_data() 
+{
     let user = create_user();
     
     // Get beautiful structured diffs for complex comparisons:
@@ -110,7 +114,8 @@ cta_type_same_align!(u64, f64);
 
 **Before:**
 ```rust
-fn validate_input(data: &[u8]) {
+fn validate_input(data: &[u8]) 
+{
     debug_assert!(data.len() > 0);
     debug_assert!(data.len() < 1024);
 }
@@ -118,7 +123,8 @@ fn validate_input(data: &[u8]) {
 
 **After:**
 ```rust
-fn validate_input(data: &[u8]) {
+fn validate_input(data: &[u8]) 
+{
     // Debug variants show values even on success during development:
     a_dbg_true!(data.len() > 0);
     a_dbg_true!(data.len() < 1024);
@@ -136,7 +142,8 @@ You dont need to migrate everything at once. The crates work together:
 ```rust
 use diagnostics_tools::*;
 
-fn mixed_assertions() {
+fn mixed_assertions() 
+{
     // Keep existing assertions:
     assert!(some_condition);
     
@@ -159,7 +166,8 @@ Focus on test files first - this is where better error messages provide the most
 use diagnostics_tools::*;
 
 #[test]
-fn api_response_format() {
+fn api_response_format() 
+{
     let response = call_api();
     
     // Much clearer when JSON structures differ:
@@ -172,7 +180,8 @@ fn api_response_format() {
 Use debug variants during active development:
 
 ```rust
-fn debug_data_processing(input: &Data) -> ProcessedData {
+fn debug_data_processing(input: &Data) -> ProcessedData 
+{
     let result = process_data(input);
     
     // Shows values even when assertions pass - helpful during development:

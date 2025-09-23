@@ -4,39 +4,40 @@
 
 /// Define a private namespace for all its items.
 // #[ cfg( not( feature = "no_std" ) ) ]
-mod private {
+mod private 
+{
 
-  //   use std::
+  //   use std ::
   //   {
-  //     env::consts::EXE_EXTENSION,
-  //     path::{ Path, PathBuf },
-  //     process::Command,
-  //   };
+  //     env ::consts ::EXE_EXTENSION,
+  //     path :: { Path, PathBuf },
+  //     process ::Command,
+  // };
   //
-  //   // xxx : qqq : ?
+  //   // xxx: qqq: ?
   //   /// poorly described function
-  //   pub fn path_to_exe( temp_path : &Path, name : &Path,  ) -> PathBuf
+  //   pub fn path_to_exe( temp_path: &Path, name: &Path, ) -> PathBuf
   //   {
   //
-  //     _ = Command::new( "rustc" )
+  //     _ = Command ::new( "rustc" )
   //     .current_dir( temp_path )
   //     .arg( name )
   //     .status()
   //     .unwrap();
   //
-  //     PathBuf::from( temp_path )
+  //     PathBuf ::from( temp_path )
   //     .join( name.file_name().unwrap() )
   //     .with_extension( EXE_EXTENSION )
-  //   }
+  // }
 }
 
 // //
 // // #[ cfg( not( feature = "no_std" ) ) ]
-// crate::mod_interface!
+// crate ::mod_interface!
 // {
 //
 //   // exposed use super;
-//   exposed use super::super::asset;
+//   exposed use super ::super ::asset;
 //
 //   // own use path_to_exe;
 //
@@ -44,45 +45,49 @@ mod private {
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod own {
-  use super::*;
+pub mod own 
+{
+  use super :: *;
 
   #[ doc( inline ) ]
-  pub use {};
+  pub use { };
 }
 
 /// Shared with parent namespace of the module
 #[ allow( unused_imports ) ]
-pub mod orphan {
-  use super::*;
+pub mod orphan 
+{
+  use super :: *;
 
   #[ doc( inline ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 
-  pub use super::super::asset;
+  pub use super ::super ::asset;
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod exposed {
-  use super::*;
+pub mod exposed 
+{
+  use super :: *;
 
   #[ doc( inline ) ]
-  pub use prelude::*;
+  pub use prelude :: *;
 
   #[ doc( inline ) ]
-  pub use {};
+  pub use { };
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
-pub mod prelude {
-  use super::*;
+pub mod prelude 
+{
+  use super :: *;
 
   #[ doc( inline ) ]
-  pub use {};
+  pub use { };
 }

@@ -4,10 +4,10 @@
 #[ macro_export ]
 macro_rules! only_for_terminal_module
 {
-( $( $Any : tt )* ) =>
+( $( $Any: tt )* ) =>
   {
-    $( $Any )*
-  };
+  $( $Any )*
+ };
 }
 
 /// Mechanism to include tests only to aggregating crate.
@@ -15,7 +15,7 @@ macro_rules! only_for_terminal_module
 #[ macro_export ]
 macro_rules! only_for_aggregating_module
 {
-  ( $( $Any : tt )* ) =>
+  ( $( $Any: tt )* ) =>
   {
-  }
+ }
 }

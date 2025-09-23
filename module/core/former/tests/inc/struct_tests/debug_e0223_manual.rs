@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Manual version of the minimal test case to isolate the E0223 error
 //! This implements what the macro should generate
 

@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: Provides a manual implementation of the standalone constructor for a unit variant within an enum,
 //! corresponding to the derive-based test in `standalone_constructor_args_unit_derive.rs`. This file verifies
 //! the expected behavior of the manual implementation.

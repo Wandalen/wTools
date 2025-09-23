@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 /// Shared test logic for unit variants with keyword identifiers.
 use super::*;
 

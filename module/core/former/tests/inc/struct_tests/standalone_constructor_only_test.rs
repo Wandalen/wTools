@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 //
 // Contains the shared test logic for standalone constructors.
 // This file is included by both the manual and derive test files.

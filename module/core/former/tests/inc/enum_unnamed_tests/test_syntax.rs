@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 #![allow(dead_code)] // Test structures are intentionally unused
 use super::*;
 

@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 // Purpose: Tests enum with named fields in unnamed context
 // This file is included by enum_named_fields_unnamed derive/manual files
 

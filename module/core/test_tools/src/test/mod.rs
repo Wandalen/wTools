@@ -5,7 +5,7 @@
 mod private {}
 
 // // #[ cfg( not( feature = "no_std" ) ) ]
-// crate::mod_interface!
+// crate ::mod_interface!
 // {
 //   layer asset;
 //   layer compiletime;
@@ -24,61 +24,66 @@ pub mod version;
 #[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod own {
-  use super::*;
+pub mod own 
+{
+  use super :: *;
 
   #[ doc( inline ) ]
-  pub use orphan::*;
+  pub use orphan :: *;
 
   #[ doc( inline ) ]
   pub use {
-    asset::orphan::*, compiletime::orphan::*, helper::orphan::*, smoke_test::orphan::*, version::orphan::*, process::orphan::*,
-  };
+  asset ::orphan :: *, compiletime ::orphan :: *, helper ::orphan :: *, smoke_test ::orphan :: *, version ::orphan :: *, process ::orphan :: *,
+ };
 }
 
 /// Shared with parent namespace of the module
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod orphan {
-  use super::*;
+pub mod orphan 
+{
+  use super :: *;
 
   #[ doc( inline ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 }
 
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod exposed {
-  use super::*;
+pub mod exposed 
+{
+  use super :: *;
 
   #[ doc( inline ) ]
-  pub use prelude::*;
+  pub use prelude :: *;
 
   #[ doc( inline ) ]
   pub use {
-    asset::exposed::*, compiletime::exposed::*, helper::exposed::*, smoke_test::exposed::*, version::exposed::*,
-    process::exposed::*,
-  };
+  asset ::exposed :: *, compiletime ::exposed :: *, helper ::exposed :: *, smoke_test ::exposed :: *, version ::exposed :: *,
+  process ::exposed :: *,
+ };
 
-  #[ doc( inline ) ]
-  pub use crate::impls_index::{impls, index, tests_impls, tests_impls_optional, tests_index};
+  // COMMENTED OUT: impls_index dependency disabled to break circular dependencies
+  // #[ doc( inline ) ]
+  // pub use crate ::impls_index :: { impls, index, tests_impls, tests_impls_optional, tests_index };
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod prelude {
-  use super::*;
+pub mod prelude 
+{
+  use super :: *;
 
   #[ doc( inline ) ]
   pub use {
-    asset::prelude::*, compiletime::prelude::*, helper::prelude::*, smoke_test::prelude::*, version::prelude::*,
-    process::prelude::*,
-  };
+  asset ::prelude :: *, compiletime ::prelude :: *, helper ::prelude :: *, smoke_test ::prelude :: *, version ::prelude :: *,
+  process ::prelude :: *,
+ };
 }

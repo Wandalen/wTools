@@ -12,23 +12,23 @@ Collection of general purpose time tools.
 <!-- {{# generate.module{} #}} -->
 
 ```rust
-#[ cfg( feature = "chrono" ) ]
+#[ cfg( all( feature = "chrono", not( feature = "no_std" ) ) ) ]
 {
   use time_tools::*;
 
   /* get milliseconds from UNIX epoch */
-  let now = time::now();
-  println!( "now {}", now );
+  let now_ms = now::now();
+  println!( "now {}", now_ms );
 
   /* get nanoseconds from UNIX epoch */
-  let now = time::now();
-  let now_ns = time::ns::now();
-  assert_eq!( now, now_ns / 1000000 );
+  let now_ms = now::now();
+  let now_ns = ns::now();
+  assert_eq!( now_ms, now_ns / 1000000 );
 
   /* get seconds from UNIX epoch */
-  let now = time::now();
-  let now_s = time::s::now();
-  assert_eq!( now / 1000, now_s );
+  let now_ms = now::now();
+  let now_s = s::now();
+  assert_eq!( now_ms / 1000, now_s );
 }
 ```
 

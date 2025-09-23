@@ -1,8 +1,8 @@
-use test_tools::a_id;
-use super::*;
+use test_tools ::a_id;
+use super :: *;
 
-// use diagnostics_tools::prelude::*;
-// use derives::*;
+// use diagnostics_tools ::prelude :: *;
+// use derives :: *;
 
 #[ derive( Debug, Clone, Copy, PartialEq ) ]
 pub struct IsTransparent( bool );
@@ -11,8 +11,8 @@ impl AsMut< bool > for IsTransparent
 {
   fn as_mut( &mut self ) -> &mut bool
   {
-    &mut self.0
-  }
+  &mut self.0
+ }
 }
 
 include!( "./only_test/as_mut.rs" );

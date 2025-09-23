@@ -1,6 +1,6 @@
 [package]
 name = "unilang"
-version = "0.12.0"
+version = "0.15.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -26,9 +26,19 @@ all-features = false
 
 [features]
 default = [ "enabled", "simd", "repl", "enhanced_repl" ]
-full = [ "enabled", "on_unknown_suggest", "simd", "repl", "enhanced_repl" ]
+full = [ "enabled", "on_unknown_suggest", "simd", "repl", "enhanced_repl", "static_commands", "multi_yaml", "advanced_benchmarks" ]
 enabled = []
-benchmarks = [ "simd", "clap", "pico-args", "benchkit" ]
+benchmarks = [ "simd", "clap", "pico-args", "benchkit", "num_cpus", "rand" ]
+
+# New feature flags for advanced functionality
+static_commands = [ ]
+multi_yaml = [ "walkdir" ]
+advanced_benchmarks = [ "benchmarks", "sysinfo", "static_commands", "multi_yaml" ]
+advanced_cli_tests = [ ]
+
+# WebAssembly-compatible feature set - excludes platform-specific dependencies
+# No enhanced REPL (rustyline/atty), no SIMD (platform detection issues), minimal dependencies
+wasm = [ "enabled" ]
 
 # Performance optimizations - SIMD enabled by default for maximum performance
 # Can be disabled with: cargo build --no-default-features --features enabled
@@ -36,7 +46,16 @@ benchmarks = [ "simd", "clap", "pico-args", "benchkit" ]
 # - SIMD JSON parsing (simd-json: 4-25x faster than serde_json)
 # - SIMD string operations in strs_tools (memchr, aho-corasick, bytecount)
 # - SIMD tokenization in unilang_parser
-simd = [ "simd-json", "unilang_parser/simd" ]  # SIMD optimizations enabled by default
+simd = [ "simd-json", "memchr", "bytecount", "unilang_parser/simd" ]  # SIMD optimizations enabled by default
+
+# REPL (Read-Eval-Print Loop) support - basic interactive shell functionality
+repl = []
+
+# Enhanced REPL with command history, auto-completion, and arrow key support
+# Enables: Arrow key navigation, tab completion, secure input, session persistence
+# Dependencies: rustyline (terminal handling), atty (interactive detection)
+# Auto-fallback: Gracefully degrades to basic REPL in non-interactive environments
+enhanced_repl = [ "repl", "dep:rustyline", "dep:atty" ]
 
 # REPL (Read-Eval-Print Loop) support - basic interactive shell functionality
 repl = []
@@ -58,6 +77,8 @@ url = "2.5.0"
 chrono = { version = "0.4.38", features = ["serde"] }
 regex = "1.10.4"
 phf = { version = "0.11", features = ["macros"] }
+walkdir = { version = "2.4", optional = true }
+sysinfo = { version = "0.30", optional = true }
 
 ## internal
 error_tools = { workspace = true, features = [ "enabled", "error_typed", "error_untyped" ] }
@@ -71,20 +92,27 @@ log = "0.4"
 rustyline = { version = "14.0", optional = true } # Enhanced REPL with history and arrow keys
 atty = { version = "0.2", optional = true } # Terminal detection for enhanced REPL
 indexmap = "2.2.6"
+lru = "0.12.3" # LRU cache for hot command optimization
 
 # Performance optimization dependencies
 simd-json = { version = "0.13", optional = true } # SIMD-optimized JSON parsing
+memchr = { version = "2.7", optional = true } # SIMD-optimized byte searching (6x faster than std)
+bytecount = { version = "0.6", optional = true } # SIMD byte counting and operations
 
 # Benchmark dependencies moved to dev-dependencies to avoid production inclusion
 clap = { version = "4.4", optional = true }
 pico-args = { version = "0.5", optional = true }
-benchkit = { workspace = true, optional = true, features = [ "enabled", "markdown_reports", "data_generators" ] }
+benchkit = { workspace = true, optional = true, features = [ "enabled", "markdown_reports", "data_generators", "statistical_analysis" ] }
+num_cpus = { version = "1.16", optional = true }
+rand = { version = "0.8", optional = true }
 
 [[bin]]
 name = "unilang_cli"
 path = "src/bin/unilang_cli.rs"
 
-# Benchmark binaries removed - functionality moved to test targets
+
+
+# Benchmark binaries moved to standard directory structure per benchkit requirements
 
 
 
@@ -108,41 +136,81 @@ path = "tests/inc/phase3/data_model_features_test.rs"
 # name = "performance_stress_test"
 # path = "tests/inc/phase4/performance_stress_test.rs"
 
-# Criterion-based benchmarks for cargo bench
-[[bench]]
-name = "comprehensive_benchmark"
-path = "benchmarks/comprehensive_framework_comparison.rs"
-harness = false
+# Criterion-based benchmarks for cargo bench (following benchkit standard directory compliance)
+# [[bench]]
+# name = "comprehensive_benchmark"
+# path = "benches/comprehensive_framework_comparison.rs"
+# harness = false
 
-[[bench]]
-name = "throughput_benchmark"
-path = "benchmarks/throughput_benchmark.rs"
-harness = false
+# [[bench]]
+# name = "throughput_benchmark"
+# path = "benches/throughput_benchmark.rs"
+# harness = false
 
-[[bench]]
-name = "string_interning_benchmark"
-path = "benchmarks/string_interning_benchmark.rs"
-harness = false
+# [[bench]]
+# name = "string_interning_benchmark"
+# path = "benches/string_interning_benchmark.rs"
+# harness = false
 
-[[bench]]
-name = "integrated_string_interning_benchmark"
-path = "benchmarks/integrated_string_interning_benchmark.rs"
-harness = false
+# [[bench]]
+# name = "integrated_string_interning_benchmark"
+# path = "benches/integrated_string_interning_benchmark.rs"
+# harness = false
 
-[[bench]]
-name = "simd_json_benchmark"
-path = "benchmarks/simd_json_benchmark.rs"
-harness = false
+# [[bench]]
+# name = "simd_json_benchmark"
+# path = "benches/simd_json_benchmark.rs"
+# harness = false
 
-[[bench]]
-name = "strs_tools_benchmark"
-path = "benchmarks/strs_tools_benchmark.rs"
-harness = false
+# [[bench]]
+# name = "strs_tools_benchmark"
+# path = "benches/strs_tools_benchmark.rs"
+# harness = false
 
+# [[bench]]
+# name = "comparative_parsing_benchmark"
+# path = "benches/comparative_parsing_benchmark.rs"
+# harness = false
 
-[[test]]
-name = "run_all_benchmarks"
-path = "benchmarks/run_all_benchmarks.rs"
+# [[bench]]
+# name = "context_rich_documentation_demo"
+# path = "benches/context_rich_documentation_demo.rs"
+# harness = false
+
+# [[bench]]
+# name = "optimization_workflow_demo"
+# path = "benches/optimization_workflow_demo.rs"
+# harness = false
+
+# [[bench]]
+# name = "simd_tokenizer_benchmark"
+# path = "benches/simd_tokenizer_benchmark.rs"
+# harness = false
+
+# [[bench]]
+# name = "simple_json_perf_test"
+# path = "benches/simple_json_perf_test.rs"
+# harness = false
+
+# [[bench]]
+# name = "run_all_benchmarks"
+# path = "benches/run_all_benchmarks.rs"
+# harness = false
+
+# [[bench]]
+# name = "stress_test_bin"
+# path = "benches/stress_test_bin.rs"
+# harness = false
+
+# [[bench]]
+# name = "performance_stress_test"
+# path = "benches/performance_stress_test.rs"
+# harness = false
+
+# [[bench]]
+# name = "simd_json_performance_validation"
+# path = "benches/simd_json_performance_validation.rs"
+# harness = false
 
 # Removed benchmark test entries for deleted files:
 # - exponential_benchmark.rs (redundant with throughput)
@@ -155,6 +223,10 @@ path = "benchmarks/run_all_benchmarks.rs"
 
 # stress_test_bin is a binary, not a test - no [[test]] entry needed
 
+[[example]]
+name = "help_conventions_demo"
+path = "examples/18_help_conventions_demo.rs"
+
 
 
 
@@ -162,6 +234,8 @@ path = "benchmarks/run_all_benchmarks.rs"
 [build-dependencies]
 serde = "1.0"
 serde_yaml = "0.9"
+phf_codegen = "0.11"
+walkdir = "2.4"
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }
@@ -171,5 +245,6 @@ assert_fs = "1.0"
 clap = "4.4"
 pico-args = "0.5"
 chrono = "0.4"
+tempfile = "3.8"
 
 criterion = "0.5"

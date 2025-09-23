@@ -1,9 +1,9 @@
-#![cfg_attr(feature = "no_std", no_std)]
-#![doc(html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png")]
-#![doc(
+#![ cfg_attr( feature = "no_std", no_std ) ]
+#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
+#![ doc(
   html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
-)]
-#![doc(html_root_url = "https://docs.rs/time_tools/latest/time_tools/")]
+) ]
+#![ doc( html_root_url = "https://docs.rs/time_tools/latest/time_tools/" ) ]
 // #![ deny( rust_2018_idioms ) ]
 // #![ deny( missing_debug_implementations ) ]
 // #![ deny( missing_docs ) ]
@@ -17,18 +17,21 @@
 
 /// Operates over current time.
 #[ cfg( feature = "time_now" ) ]
-#[path = "./now.rs"]
+#[ path = "./now.rs" ]
 #[ cfg( feature = "enabled" ) ]
 pub mod now;
 
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
-pub mod dependency {}
+pub mod dependency
+{
+}
 
 /// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod own {
+pub mod own
+{
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
@@ -42,7 +45,8 @@ pub use own::*;
 /// Shared with parent namespace of the module
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod orphan {
+pub mod orphan
+{
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
@@ -51,7 +55,8 @@ pub mod orphan {
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod exposed {
+pub mod exposed
+{
   use super::*;
   #[ doc( inline ) ]
   pub use prelude::*;
@@ -64,6 +69,7 @@ pub mod exposed {
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod prelude {
+pub mod prelude
+{
   use super::*;
 }

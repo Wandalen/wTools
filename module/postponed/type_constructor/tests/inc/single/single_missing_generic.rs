@@ -1,4 +1,4 @@
-use type_constructor::prelude::*;
+use type_constructor ::prelude :: *;
 
 
 fn main()
@@ -6,7 +6,7 @@ fn main()
   types!
   {
 
-    single Bad : Option;
+  single Bad: Option;
 
-  }
+ }
 }

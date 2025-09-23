@@ -1,6 +1,6 @@
 
 #[ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 
 // #[ cfg( any( feature = "type_constructor", feature = "dt_type_constructor" ) ) ]
 // #[ cfg( any( feature = "type_constructor", feature = "dt_type_constructor" ) ) ]
@@ -12,12 +12,12 @@ use super::*;
 // mod prelude_test;
 
 // #[ allow( unused_imports ) ]
-// use super::*;
+// use super :: *;
 
 #[ cfg( feature = "enabled" ) ]
 mod single
 {
-  use super::*;
+  use super :: *;
 
   mod single_parameter_main_gen_test;
   mod single_parameter_main_manual_test;
@@ -32,13 +32,13 @@ mod single
 (
   all
   (
-    // feature = "make",
-    any( not( feature = "no_std" ), feature = "use_alloc" ),
-  )
+  // feature = "make",
+  any( not( feature = "no_std" ), feature = "use_alloc" ),
+ )
 )]
 mod pair
 {
-  use super::*;
+  use super :: *;
 
   mod pair_parameter_main_gen_test;
   mod pair_parameter_main_manual_test;
@@ -61,13 +61,13 @@ mod pair
 (
   all
   (
-    feature = "many",
-    any( not( feature = "no_std" ), feature = "use_alloc" ),
-  )
+  feature = "many",
+  any( not( feature = "no_std" ), feature = "use_alloc" ),
+ )
 )]
 mod many
 {
-  use super::*;
+  use super :: *;
   // mod many_parameter_main_manual_test;
   // mod many_parameter_main_gen_test;
   mod many_parameter_test;

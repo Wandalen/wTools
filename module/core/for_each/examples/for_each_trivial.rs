@@ -1,5 +1,5 @@
-//! qqq : write proper description
-use for_each::for_each;
+//! qqq: write proper description
+use for_each ::for_each;
 
 fn main()
 {

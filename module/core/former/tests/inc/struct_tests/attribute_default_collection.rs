@@ -1,4 +1,7 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 use super::*;
+#[ allow( unused_imports ) ]
+use test_tools::a_id;
 
 use collection_tools::HashMap;
 use collection_tools::HashSet;

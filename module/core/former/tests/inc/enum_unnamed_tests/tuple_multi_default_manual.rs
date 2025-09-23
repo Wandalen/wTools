@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Purpose: Provides a hand-written implementation of the `Former` pattern's implicit variant former
 //! for a multi-field tuple variant (`Variant(u32, String)`) within an enum, demonstrating the manual
 //! implementation corresponding to the default behavior when no specific variant attribute is applied.

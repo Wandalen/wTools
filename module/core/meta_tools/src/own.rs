@@ -10,11 +10,11 @@ pub mod exposed
 {
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use super ::private ::
   {
-  };
+ };
 }
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use exposed::*;
+pub use exposed :: *;

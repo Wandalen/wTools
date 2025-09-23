@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 mod subform_collection_test;
 // REMOVED: comprehensive_mixed_derive (too large, causes build timeouts - replaced with simplified_mixed_derive)
 mod simplified_mixed_derive; // REPLACEMENT: Simplified mixed enum coverage without build timeout issues

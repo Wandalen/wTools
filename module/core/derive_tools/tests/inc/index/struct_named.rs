@@ -1,12 +1,12 @@
 #![ allow( dead_code ) ]
 #[ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 
-// #[ derive( the_module::Index ) ]
+// #[ derive( the_module ::Index ) ]
 struct StructNamed< T > 
 {
   // #[ index ]
-  a : Vec< T >,
+  a: Vec< T >,
 }
 
 // include!( "./only_test/struct_named.rs" );

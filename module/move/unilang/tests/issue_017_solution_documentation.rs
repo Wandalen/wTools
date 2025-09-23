@@ -45,13 +45,16 @@ fn demonstrate_issue_017_solution()
   println!("   2. No transformations: Use names exactly as registered");
   println!("   3. Fail-fast: Invalid commands rejected at registration\n");
   
+  #[allow(deprecated)]
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   
   // Demonstrate the current working approach
   let working_commands = vec![
     (".chat", "Start multi-agent chat session"),
-    (".run", "Execute commands with prompts"),  
-    (".help", "Show command help"),
+    (".run", "Execute commands with prompts"),
+    // Note: .help is already a static command, so we test a different dynamic command
+    (".info", "Show application information"),
   ];
   
   println!("📝 Registering commands with EXPLICIT DOT PREFIXES...");
@@ -72,8 +75,10 @@ fn demonstrate_issue_017_solution()
       deprecation_message: String::new(),
       http_method_hint: String::new(),
       examples: Vec::new(),
+    auto_help_enabled: false,
     };
     
+    #[allow(deprecated)]
     let result = registry.command_add_runtime(&cmd, Box::new(demo_handler));
     assert!(result.is_ok(), "Failed to register {name}");
     println!("   ✅ {name} → registered with explicit naming");
@@ -97,8 +102,11 @@ fn demonstrate_issue_017_solution()
     deprecation_message: String::new(),
     http_method_hint: String::new(),
     examples: Vec::new(),
+    auto_help_enabled: false,
   };
   
+  #[allow(deprecated)]
+    #[allow(deprecated)]
   let result = registry.command_add_runtime(&invalid_cmd, Box::new(demo_handler));
   assert!(result.is_err(), "Should reject command without dot prefix");
   println!("   ✅ Validation correctly rejected command without dot prefix");
@@ -120,8 +128,11 @@ fn demonstrate_issue_017_solution()
     deprecation_message: String::new(),
     http_method_hint: String::new(),
     examples: Vec::new(),
+    auto_help_enabled: false,
   };
   
+  #[allow(deprecated)]
+    #[allow(deprecated)]
   let result = registry.command_add_runtime(&namespaced_cmd, Box::new(demo_handler));
   assert!(result.is_ok(), "Failed to register namespaced command");
   println!("   ✅ .list (namespace: .session) → accessible as .session.list\n");
@@ -131,7 +142,7 @@ fn demonstrate_issue_017_solution()
   println!("🧪 Testing command execution...");
   
   // Test all the registered commands work perfectly
-  let test_commands = vec![".chat", ".run", ".help", ".session.list"];
+  let test_commands = vec![".chat", ".run", ".info", ".session.list"];
   
   for cmd_name in &test_commands {
     let result = pipeline.process_command_simple(cmd_name);
@@ -168,6 +179,8 @@ fn demonstrate_issue_017_solution()
 fn verify_issue_017_completely_resolved()
 {
   // This test verifies that the exact commands that were failing now work perfectly
+  #[allow(deprecated)]
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   
   // Register the problematic commands using the correct explicit dot prefix approach
@@ -193,8 +206,10 @@ fn verify_issue_017_completely_resolved()
       deprecation_message: String::new(),
       http_method_hint: String::new(),
       examples: Vec::new(),
+    auto_help_enabled: false,
     };
     
+    #[allow(deprecated)]
     let result = registry.command_add_runtime(&cmd, Box::new(demo_handler));
     assert!(result.is_ok(), "Registration should succeed for {name}");
   }

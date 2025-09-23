@@ -12,14 +12,14 @@ mod maybe_as;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use protected :: *;
 
 /// Protected namespace of the module.
 pub mod protected
 {
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use super ::orphan :: *;
 }
 
 /// Orphan namespace of the module.
@@ -27,7 +27,7 @@ pub mod orphan
 {
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use super ::exposed :: *;
 }
 
 /// Exposed namespace of the module.
@@ -35,16 +35,16 @@ pub mod exposed
 {
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::
+  pub use super ::
   {
-    aref::IntoRef,
-    aref::Ref,
-    maybe_as::IntoMaybeAs,
-    maybe_as::MaybeAs,
-  };
+  aref ::IntoRef,
+  aref ::Ref,
+  maybe_as ::IntoMaybeAs,
+  maybe_as ::MaybeAs,
+ };
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 pub mod prelude
 {
 }

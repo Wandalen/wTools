@@ -1,4 +1,4 @@
-use the_module::PhantomData;
+use the_module ::PhantomData;
 
 #[ derive( PhantomData ) ]
 struct MyStruct;
@@ -13,6 +13,6 @@ enum MyEnum
 #[ derive( PhantomData ) ]
 union MyUnion
 {
-  field1 : u32,
-  field2 : f32,
+  field1: u32,
+  field2: f32,
 }

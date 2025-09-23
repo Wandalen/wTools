@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 //! Quick test to verify struct_zero_fields_handler error validation
 use super::*;
 #[ allow( unused_imports ) ]

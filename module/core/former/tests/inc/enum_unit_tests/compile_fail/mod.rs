@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 // REVERTED: unit_subform_scalar_error (intentional compile_fail test - should remain disabled)
 
 #[ cfg( feature = "derive_former" ) ]

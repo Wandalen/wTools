@@ -1,4 +1,4 @@
-#![ cfg_attr( feature = "no_std", no_std ) ]
+#![ cfg_attr( all( feature = "no_std", not( feature = "std" ) ), no_std ) ]
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc
 (
@@ -27,32 +27,32 @@
 //! # Rule Compliance & Architectural Notes
 //!
 //! This crate has been systematically updated to comply with the Design and Codestyle Rulebooks.
-//! Key compliance achievements and ongoing considerations:
+//! Key compliance achievements and ongoing considerations :
 //!
-//! ## Completed Compliance Work:
+//! ## Completed Compliance Work :
 //!
-//! 1. **Documentation Strategy**: Uses `#![ doc = include_str!(...) ]` to include readme.md
+//! 1. **Documentation Strategy** : Uses `#![ doc = include_str!(...) ]` to include readme.md
 //!    instead of duplicating documentation. This is the mandated approach for all entry files.
 //!
-//! 2. **Workspace Dependencies**: All external dependencies now inherit from workspace with
+//! 2. **Workspace Dependencies** : All external dependencies now inherit from workspace with
 //!    `{ workspace = true }`. SIMD optimization deps (memchr, aho-corasick, bytecount, lexical)
 //!    were moved to workspace level for version consistency.
 //!
-//! 3. **Attribute Formatting**: All attributes use proper spacing per Universal Formatting Rule:
+//! 3. **Attribute Formatting** : All attributes use proper spacing per Universal Formatting Rule :
 //!    `#[ cfg( feature = "enabled" ) ]` instead of `#[ cfg( feature = "enabled" ) ]`
 //!
-//! 4. **mod_interface Architecture**: Converted from manual namespace patterns to `mod_interface!`
-//!    macro usage for cleaner module organization and controlled visibility.
+//! 4. **Manual Namespace Architecture** : Uses the standard wTools manual namespace pattern
+//!    (private/own/orphan/exposed/prelude) for precise API control and stable public interfaces.
 //!
-//! ## Critical Architectural Decisions:
+//! ## Critical Architectural Decisions :
 //!
-//! - **Feature Gating**: All functionality is gated behind the "enabled" feature, which now
-//!   also enables "mod_interface/enabled" for proper macro functionality.
+//! - **Feature Gating** : All functionality is gated behind the "enabled" feature for
+//!   granular control over compilation and dependencies.
 //!
-//! - **Error Handling**: Uses `error_tools` exclusively - no `anyhow` or `thiserror` dependencies
+//! - **Error Handling** : Uses `error_tools` exclusively - no `anyhow` or `thiserror` dependencies
 //!   per Design Rulebook requirements.
 //!
-//! - **Testing Isolation**: All tests are in `tests/` directory, never in `src/`, following
+//! - **Testing Isolation** : All tests are in `tests/` directory, never in `src/`, following
 //!   the mandatory testing architecture pattern.
 
 /// String tools.
@@ -76,7 +76,8 @@ pub use own::*;
 /// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod own {
+pub mod own
+{
   #[ allow( unused_imports ) ]
   use super::*;
   pub use orphan::*;
@@ -90,7 +91,8 @@ pub mod own {
 /// Parented namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod orphan {
+pub mod orphan
+{
   #[ allow( unused_imports ) ]
   use super::*;
   pub use exposed::*;
@@ -99,7 +101,8 @@ pub mod orphan {
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod exposed {
+pub mod exposed
+{
   #[ allow( unused_imports ) ]
   use super::*;
   pub use prelude::*;
@@ -109,7 +112,8 @@ pub mod exposed {
 /// Namespace of the module to include with `use module::*`.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod prelude {
+pub mod prelude
+{
   #[ allow( unused_imports ) ]
   use super::*;
   pub use super::string::prelude::*;

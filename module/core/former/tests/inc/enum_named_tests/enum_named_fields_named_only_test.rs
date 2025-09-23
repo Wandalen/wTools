@@ -1,3 +1,4 @@
+#[allow(clippy::used_underscore_binding, clippy::all, warnings)]
 // Purpose: Provides shared test assertions and logic for both the derived and manual implementations
 // of constructors for named (struct-like) variants with varying field counts and attributes
 // (`#[ scalar ]`, `#[ subform_scalar ]`), including static methods and standalone constructors.

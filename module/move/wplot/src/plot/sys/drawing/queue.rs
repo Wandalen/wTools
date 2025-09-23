@@ -1,30 +1,30 @@
 /// Define a private namespace for all its items.
 mod private
 {
-  // use crate::own::*;
-//   use crate::drawing_changer::*;
+  // use crate ::own :: *;
+//   use crate ::drawing_changer :: *;
 //
 //   /// Queue of draw commands.
 //   #[ derive( Debug ) ]
 //   pub struct Queue
 //   {
 //     /// Container to store commands.
-//     pub container : Vec< Box< dyn DrawCommandInterface > >,
-//   }
+//     pub container: Vec< Box< dyn DrawCommandInterface > >,
+// }
 //
 //   impl Queue
 //   {
 //     /// Constructor.
 //     pub fn new() -> Self
 //     {
-//       let container = Vec::new();
+//       let container = Vec ::new();
 //       Self { container }
-//     }
-//   }
+// }
+// }
 
 }
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   // exposed use Queue;
 }

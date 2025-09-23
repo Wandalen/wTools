@@ -33,8 +33,8 @@ include = [
 ]
 
 [features]
-default = [ "test_tools/default" ]
-full = [ "test_tools/full" ]
+default = [ "enabled", "test_tools/default" ]
+full = [ "enabled" ]
 no_std = [ "test_tools/no_std" ]
 use_alloc = [ "test_tools/use_alloc" ]
 enabled = [ "test_tools/enabled" ]

@@ -32,15 +32,15 @@
 mod private
 {
 
-  use std::borrow::Cow;
+  use std ::borrow ::Cow;
 
-  use crate::*;
-  use print::
+  use crate :: *;
+  use print ::
   {
-    InputExtract,
-    Context,
-  };
-  use core::fmt;
+  InputExtract,
+  Context,
+ };
+  use core ::fmt;
 
   //=
 
@@ -52,30 +52,30 @@ mod private
   ///
   pub trait TableOutputFormat
   {
-    /// Formats the table extract and writes it into the destination buffer.
-    ///
-    /// # Parameters
-    /// - `x`: The `InputExtract` containing table data to be formatted.
-    /// - `c`: The `Context` holding the buffer and styles for formatting.
-    ///
-    /// # Returns
-    /// A `fmt::Result` indicating success or failure of the write operation.
-    fn extract_write< 'buf, 'data >
-    (
-      &self,
-      x : &InputExtract< 'data >,
-      c : &mut Context< 'buf >,
-    ) -> fmt::Result;
-  }
+  /// Formats the table extract and writes it into the destination buffer.
+  ///
+  /// # Parameters
+  /// - `x` : The `InputExtract` containing table data to be formatted.
+  /// - `c` : The `Context` holding the buffer and styles for formatting.
+  ///
+  /// # Returns
+  /// A `fmt ::Result` indicating success or failure of the write operation.
+  fn extract_write< 'buf, 'data >
+  (
+   &self,
+   x: &InputExtract< 'data >,
+   c: &mut Context< 'buf >,
+ ) -> fmt ::Result;
+ }
 
   impl Default for &'static dyn TableOutputFormat
   {
-    #[ inline( always ) ]
-    fn default() -> Self
-    {
-      super::table::Table::instance()
-    }
-  }
+  #[ inline( always ) ]
+  fn default() -> Self
+  {
+   super ::table ::Table ::instance()
+ }
+ }
 
   /// Print table, which is constructed with vectors and `Cow`s, with the
   /// specified output formatter.
@@ -87,25 +87,25 @@ mod private
   /// is true.
   pub fn vector_table_write< 'data, 'context >
   (
-    column_names : Vec< Cow< 'data, str > >,
-    has_header : bool,
-    rows : Vec< Vec< Cow< 'data, str > > >,
-    c : &mut Context< 'context >,
-  ) -> fmt::Result
+  column_names: Vec< Cow< 'data, str > >,
+  has_header: bool,
+  rows: Vec< Vec< Cow< 'data, str > > >,
+  c: &mut Context< 'context >,
+ ) -> fmt ::Result
   {
-    InputExtract::extract_from_raw_table
-    ( 
-      column_names,
-      has_header,
-      rows,
-      c.printer.filter_col,
-      c.printer.filter_row,
-      | x |
-      {
-        c.printer.output_format.extract_write( x, c )
-      }
-    )
-  }
+  InputExtract ::extract_from_raw_table
+  ( 
+   column_names,
+   has_header,
+   rows,
+   c.printer.filter_col,
+   c.printer.filter_row,
+   | x |
+   {
+  c.printer.output_format.extract_write( x, c )
+ }
+ )
+ }
 
 }
 
@@ -114,26 +114,26 @@ mod records;
 mod keys;
 
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use orphan::*;
+  pub use orphan :: *;
 
   #[ doc( inline ) ]
   pub use
   {
-    table::Table,
-    records::Records,
-    keys::Keys,
-  };
+  table ::Table,
+  records ::Records,
+  keys ::Keys,
+ };
 
   #[ doc( inline ) ]
-  pub use private::vector_table_write;
+  pub use private ::vector_table_write;
 
 }
 
@@ -141,26 +141,26 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::*;
-  pub use super::super::output_format;
+  use super :: *;
+  pub use super ::super ::output_format;
 
   #[ doc( inline ) ]
-  pub use private::TableOutputFormat;
+  pub use private ::TableOutputFormat;
 
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::*;
+  use super :: *;
 }

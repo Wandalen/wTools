@@ -1,7 +1,7 @@
 #![ cfg_attr( feature = "no_std", no_std ) ]
-#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/graph_logo_v1_trans.png" ) ]
-#![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/graph_logo_v1_trans.ico" ) ]
-#![ doc( html_root_url = "https://docs.rs/graphs_tools/latest/graphs_tools/" ) ]
+#![ doc( html_logo_url = "https: //raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/graph_logo_v1_trans.png" ) ]
+#![ doc( html_favicon_url = "https: //raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/graph_logo_v1_trans.ico" ) ]
+#![ doc( html_root_url = "https: //docs.rs/graphs_tools/latest/graphs_tools/" ) ]
 // #![ deny( rust_2018_idioms ) ]
 // #![ deny( missing_debug_implementations ) ]
 // #![ deny( missing_docs ) ]
@@ -17,7 +17,7 @@
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 
 
-wtools::mod_interface!
+wtools ::mod_interface!
 {
   /// Abstract layer.
   #[ cfg( not( feature = "no_std" ) ) ]
@@ -29,10 +29,10 @@ wtools::mod_interface!
   #[ cfg( not( feature = "no_std" ) ) ]
   layer algo;
 
-  protected( crate ) use ::wtools::prelude::*;
+  protected( crate ) use ::wtools ::prelude :: *;
 }
 
-// zzz : implement checks
+// zzz: implement checks
 //
 // - graph is connected
 // - graph is complete

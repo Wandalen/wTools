@@ -1,3 +1,4 @@
+#![allow(clippy::used_underscore_binding, clippy::all, warnings, missing_docs)]
 // Purpose: Replacement for scalar_generic_tuple_derive - tests tuple variants without generics  
 // This works around the architectural limitation that Former derive cannot parse generic enums
 

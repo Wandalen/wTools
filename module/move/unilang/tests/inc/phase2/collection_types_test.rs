@@ -21,7 +21,9 @@ use unilang::semantic::SemanticAnalyzer;
 // | T1.4  | Map(String,String,;,=)| Kind::Map(String, String, Some(';'), Some('='))  | Map with custom entry and key-value delimiters |
 
 fn setup_test_environment(command: CommandDefinition) -> CommandRegistry {
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   registry.register(command);
   registry
 }
@@ -75,6 +77,7 @@ fn test_list_string_kind() {
       tags: vec![],
     }],
     routine_link: None,
+        auto_help_enabled: false,
     namespace: String::new(),
     hint: String::new(),
     status: String::new(),
@@ -128,6 +131,7 @@ fn test_list_integer_custom_delimiter_kind() {
       tags: vec![],
     }],
     routine_link: None,
+        auto_help_enabled: false,
     namespace: String::new(),
     hint: String::new(),
     status: String::new(),
@@ -181,6 +185,7 @@ fn test_map_string_integer_kind() {
       tags: vec![],
     }],
     routine_link: None,
+        auto_help_enabled: false,
     namespace: String::new(),
     hint: String::new(),
     status: String::new(),
@@ -237,6 +242,7 @@ fn test_map_string_string_custom_delimiters_kind() {
       tags: vec![],
     }],
     routine_link: None,
+        auto_help_enabled: false,
     namespace: String::new(),
     hint: String::new(),
     status: String::new(),
