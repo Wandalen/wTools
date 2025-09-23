@@ -225,7 +225,8 @@ benchkit/
 ```rust
 use benchkit::prelude::*;
 
-fn benchmark_my_function() {
+fn benchmark_my_function() 
+{
     let mut suite = BenchmarkSuite::new("my_function_performance");
     
     suite.benchmark("small_input", || {
@@ -241,7 +242,8 @@ fn benchmark_my_function() {
 ```rust
 use benchkit::prelude::*;
 
-fn compare_algorithms() {
+fn compare_algorithms() 
+{
     let comparison = ComparativeAnalysis::new()
         .algorithm("original", || original_algorithm(&data))
         .algorithm("optimized", || optimized_algorithm(&data))

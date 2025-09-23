@@ -86,13 +86,15 @@ cargo bench memory_allocation --features benchmarks
 ### Zero-Copy Architecture
 ```rust
 // Before: Owned strings
-pub enum UnilangTokenKind {
+pub enum UnilangTokenKind 
+{
     Identifier(String),    // Heap allocation
     Number(String),        // Heap allocation  
 }
 
 // After: Borrowed strings
-pub enum UnilangTokenKind<'a> {
+pub enum UnilangTokenKind<'a> 
+{
     Identifier(&'a str),   // Zero allocation
     Number(&'a str),       // Zero allocation
 }

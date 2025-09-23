@@ -1,17 +1,19 @@
-use test_tools::a_id;
-use super::*;
+use test_tools ::a_id;
+use super :: *;
 
-// use diagnostics_tools::prelude::*;
-// use derives::*;
+// use diagnostics_tools ::prelude :: *;
+// use derives :: *;
 
 #[ derive( Debug, Clone, Copy, PartialEq ) ]
 #[ allow( dead_code ) ]
 pub struct IsTransparent(bool);
 
-impl AsRef<bool> for IsTransparent {
-  fn as_ref(&self) -> &bool {
-    &self.0
-  }
+impl AsRef< bool > for IsTransparent 
+{
+  fn as_ref( &self ) -> &bool 
+  {
+  &self.0
+ }
 }
 
 include!("./only_test/as_ref.rs");

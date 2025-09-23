@@ -1,8 +1,8 @@
 #![ allow( dead_code ) ]
 #[ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 
-// #[ derive( Debug, PartialEq, the_module::From ) ]
+// #[ derive( Debug, PartialEq, the_module ::From ) ]
 
 pub enum GetData
 {
@@ -23,19 +23,19 @@ pub enum GetData
 impl From< String > for GetData
 {
   #[ inline ]
-  fn from( src : String ) -> Self
+  fn from( src: String ) -> Self
   {
-    Self::FromString2( src )
-  }
+  Self ::FromString2( src )
+ }
 }
 
 impl From< ( String, String ) > for GetData
 {
   #[ inline ]
-  fn from( src : ( String, String ) ) -> Self
+  fn from( src: ( String, String ) ) -> Self
   {
-    Self::FromPair2( src.0, src.1 )
-  }
+  Self ::FromPair2( src.0, src.1 )
+ }
 }
 
 // == begin of generated

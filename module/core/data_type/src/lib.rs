@@ -1,25 +1,26 @@
-#![cfg_attr(feature = "no_std", no_std)]
-#![doc(html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png")]
-#![doc(
+#![ cfg_attr( feature = "no_std", no_std ) ]
+#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
+#![ doc(
   html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
-)]
-#![doc(html_root_url = "https://docs.rs/data_type/latest/data_type/")]
+) ]
+#![ doc( html_root_url = "https://docs.rs/data_type/latest/data_type/" ) ]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 #![ cfg_attr( not( doc ), doc = "Data type utilities" ) ]
 
-// zzz : proc macro for standard lib epilogue
-// zzz : expose one_cell
+// zzz: proc macro for standard lib epilogue
+// zzz: expose one_cell
 
 /// Wrap dependencies under a namespace.
 pub mod dt;
 
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
-pub mod dependency {
+pub mod dependency
+{
   #[ cfg( feature = "either" ) ]
   pub use ::either;
   // #[ cfg( feature = "type_constructor" ) ]
-  // pub use ::type_constructor; // xxx : rid of
+  // pub use ::type_constructor; // xxx: rid of
   #[ cfg( feature = "dt_interval" ) ]
   pub use ::interval_adapter;
   #[ cfg( feature = "dt_collection" ) ]
@@ -32,7 +33,8 @@ pub use own::*;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod own {
+pub mod own
+{
 
   use super::*;
   #[ doc( inline ) ]
@@ -44,51 +46,54 @@ pub mod own {
 
 /// Shared with parent namespace of the module
 #[ allow( unused_imports ) ]
-pub mod orphan {
+pub mod orphan
+{
 
   use super::*;
   #[ doc( inline ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod exposed {
+pub mod exposed 
+{
 
   use super::*;
 
   #[ doc( inline ) ]
-  pub use prelude::*;
+  pub use prelude :: *;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::dt::exposed::*;
+  pub use super ::dt ::exposed :: *;
 
   #[ cfg( feature = "dt_interval" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use crate::dependency::interval_adapter::exposed::*;
+  pub use crate ::dependency ::interval_adapter ::exposed :: *;
 
   #[ cfg( feature = "dt_collection" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use crate::dependency::collection_tools::exposed::*;
+  pub use crate ::dependency ::collection_tools ::exposed :: *;
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
-pub mod prelude {
+pub mod prelude 
+{
   use super::*;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::dt::prelude::*;
+  pub use super ::dt ::prelude :: *;
 
   // #[ cfg( not( feature = "no_std" ) ) ]
   // #[ cfg( feature = "prelude" ) ]
   // #[ doc( inline ) ]
   // #[ allow( unused_imports ) ]
-  // pub use std::collections::
+  // pub use std ::collections ::
   // {
   //   HashMap as Map,
   //   HashSet as Set,
@@ -105,7 +110,7 @@ pub mod prelude {
   // #[ cfg( feature = "prelude" ) ]
   // #[ doc( inline ) ]
   // #[ allow( unused_imports ) ]
-  // pub use std::vec::
+  // pub use std ::vec ::
   // {
   //   Vec,
   //   Vec as DynList,
@@ -114,23 +119,23 @@ pub mod prelude {
   #[ cfg( feature = "dt_interval" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use crate::dependency::interval_adapter::prelude::*;
+  pub use crate ::dependency ::interval_adapter ::prelude :: *;
 
   #[ cfg( feature = "dt_collection" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use crate::dependency::collection_tools::prelude::*;
+  pub use crate ::dependency ::collection_tools ::prelude :: *;
 
   // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   // #[ cfg( feature = "dt_prelude" ) ]
   // #[ doc( inline ) ]
   // #[ allow( unused_imports ) ]
-  // pub use core::
+  // pub use core ::
   // {
   //   fmt,
   // };
 }
 
-// zzz : use maybe
-// https://github.com/CAD97/pointer-utils/tree/master/crates/slice-dst
-// zzz : add once_cell maybe
+// zzz: use maybe
+// https: //github.com/CAD97/pointer-utils/tree/master/crates/slice-dst
+// zzz: add once_cell maybe

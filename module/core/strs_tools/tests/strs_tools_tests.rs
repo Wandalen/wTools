@@ -5,5 +5,5 @@ use strs_tools as the_module;
 mod inc;
 
 #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
-#[path = "./inc/split_test/split_behavior_tests.rs"]
+#[ path = "./inc/split_test/split_behavior_tests.rs" ]
 mod split_behavior_tests;

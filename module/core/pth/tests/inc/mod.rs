@@ -1,5 +1,5 @@
-use super::*;
-use test_tools::*;
+use super :: *;
+use test_tools :: *;
 
 mod as_path_test;
 mod try_into_cow_path_test;

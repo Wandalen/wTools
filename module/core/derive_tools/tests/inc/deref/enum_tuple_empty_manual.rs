@@ -1,4 +1,4 @@
-use core::ops::Deref;
+use core ::ops ::Deref;
 
 #[ allow( dead_code) ]
 enum EnumTupleEmpty
@@ -10,10 +10,10 @@ enum EnumTupleEmpty
 impl Deref for EnumTupleEmpty
 {
   type Target = ();
-  fn deref( &self ) -> &Self::Target
+  fn deref( &self ) -> &Self ::Target
   {
-    &()
-  }
+  &()
+ }
 }
 
 include!( "./only_test/enum_tuple_empty.rs" );

@@ -119,7 +119,8 @@ use benchkit::prelude::*;
 use std::collections::HashMap;
 use std::time::{ Duration, SystemTime };
 
-fn regression_analysis_example() -> Result< (), Box< dyn std::error::Error > > {
+fn regression_analysis_example() -> Result< (), Box< dyn std::error::Error > > 
+{
     // Current benchmark results
     let mut current_results = HashMap::new();
     let current_times = vec![ Duration::from_micros( 85 ), Duration::from_micros( 88 ), Duration::from_micros( 82 ) ];
@@ -187,7 +188,8 @@ Coordinate multiple markdown section updates atomically - either all succeed or 
 ```rust
 use benchkit::prelude::*;
 
-fn update_markdown_atomically() -> Result< (), Box< dyn std::error::Error > > {
+fn update_markdown_atomically() -> Result< (), Box< dyn std::error::Error > > 
+{
     let performance_markdown = "## Performance Results\n\nFast!";
     let memory_markdown = "## Memory Usage\n\nLow!";
     let cpu_markdown = "## CPU Usage\n\nOptimal!";
@@ -227,7 +229,8 @@ fn update_markdown_atomically() -> Result< (), Box< dyn std::error::Error > > {
 ```rust
 use benchkit::prelude::*;
 
-fn complex_update_example() -> Result< (), Box< dyn std::error::Error > > {
+fn complex_update_example() -> Result< (), Box< dyn std::error::Error > > 
+{
     let performance_report = "Performance analysis results";
     let memory_report = "Memory usage analysis";
     let comparison_report = "Algorithm comparison data";
@@ -267,7 +270,8 @@ Generate standardized, publication-quality reports with full statistical analysi
 use benchkit::prelude::*;
 use std::collections::HashMap;
 
-fn generate_reports() -> Result< (), Box< dyn std::error::Error > > {
+fn generate_reports() -> Result< (), Box< dyn std::error::Error > > 
+{
     let results = HashMap::new();
     let comparison_results = HashMap::new();
     
@@ -315,7 +319,8 @@ fn generate_reports() -> Result< (), Box< dyn std::error::Error > > {
 ```rust
 use benchkit::prelude::*;
 
-fn create_enterprise_template() -> PerformanceReport {
+fn create_enterprise_template() -> PerformanceReport 
+{
     // Create domain-specific template with multiple custom sections
     let enterprise_template = PerformanceReport::new()
         .title("Enterprise Algorithm Performance Audit")
@@ -354,7 +359,8 @@ Comprehensive quality assessment system with configurable criteria and automatic
 use benchkit::prelude::*;
 use std::collections::HashMap;
 
-fn validate_benchmark_results() {
+fn validate_benchmark_results() 
+{
     let results = HashMap::new();
     
     // Configure validator for your specific requirements
@@ -404,7 +410,8 @@ fn validate_benchmark_results() {
 use benchkit::prelude::*;
 use std::collections::HashMap;
 
-fn domain_specific_validation() {
+fn domain_specific_validation() 
+{
     let results = HashMap::new();
     
     // Real-time systems validation (very strict)
@@ -435,7 +442,8 @@ fn domain_specific_validation() {
 use benchkit::prelude::*;
 use std::collections::HashMap;
 
-fn generate_validation_report() {
+fn generate_validation_report() 
+{
     let results = HashMap::new();
     let validator = BenchmarkValidator::new();
     
@@ -465,7 +473,8 @@ Comprehensive examples demonstrating real-world usage patterns and advanced inte
 use benchkit::prelude::*;
 
 // Complete development cycle: benchmark → validate → document → commit
-fn development_workflow() -> Result< (), Box< dyn std::error::Error > > {
+fn development_workflow() -> Result< (), Box< dyn std::error::Error > > 
+{
     // Mock implementations for doc test
     fn quicksort_implementation() {}
     fn mergesort_implementation() {}
@@ -565,7 +574,8 @@ use benchkit::prelude::*;
 use std::collections::HashMap;
 
 // Coordinate benchmark updates across multiple related projects
-fn coordinate_multi_project_benchmarks() -> Result< (), Box< dyn std::error::Error > > {
+fn coordinate_multi_project_benchmarks() -> Result< (), Box< dyn std::error::Error > > 
+{
     let projects = vec!["web-api", "batch-processor", "realtime-analyzer"];
     let mut all_results = HashMap::new();
     
@@ -608,17 +618,20 @@ fn coordinate_multi_project_benchmarks() -> Result< (), Box< dyn std::error::Err
 }
 
 // Helper functions for the example
-fn run_project_benchmarks(_project: &str) -> Result< HashMap< String, BenchmarkResult >, Box< dyn std::error::Error > > {
+fn run_project_benchmarks(_project: &str) -> Result< HashMap< String, BenchmarkResult >, Box< dyn std::error::Error > > 
+{
     // Mock implementation for doc test
     Ok(HashMap::new())
 }
 
-fn format_project_impact_analysis(_projects: &[&str], _results: &HashMap< String, BenchmarkResult >) -> String {
+fn format_project_impact_analysis(_projects: &[&str], _results: &HashMap< String, BenchmarkResult >) -> String 
+{
     // Mock implementation for doc test  
     "Impact analysis summary".to_string()
 }
 
-fn notify_project_teams(_projects: &[&str], _report: &str) -> Result< (), Box< dyn std::error::Error > > {
+fn notify_project_teams(_projects: &[&str], _report: &str) -> Result< (), Box< dyn std::error::Error > > 
+{
     // Mock implementation for doc test
     Ok(())
 }

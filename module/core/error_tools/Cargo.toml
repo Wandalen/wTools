@@ -1,6 +1,6 @@
 [package]
 name = "error_tools"
-version = "0.33.0"
+version = "0.34.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -35,9 +35,7 @@ default = [
   "error_typed",
   "error_untyped",
 ]
-full = [
-  "default",
-]
+full = [ "enabled" ]
 no_std = []
 use_alloc = [ "no_std" ]
 enabled = []

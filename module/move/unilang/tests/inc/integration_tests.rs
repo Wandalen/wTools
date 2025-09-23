@@ -18,7 +18,9 @@ fn basic_integration_test()
 fn basic_integration_test_with_new_parser()
 {
   // Test Matrix Row: T3.1
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   registry.register( CommandDefinition
   {
     name : "add".to_string(),
@@ -74,7 +76,9 @@ fn basic_integration_test_with_new_parser()
     let b = cmd.arguments.get( "b" ).unwrap().as_integer().unwrap();
     Ok( unilang::data::OutputData { content : ( a + b ).to_string(), format : "text".to_string() } )
   });
-  registry.command_add_runtime( &registry.get( "add" ).unwrap(), add_routine ).unwrap();
+  #[allow(deprecated)]
+    #[allow(deprecated)]
+    registry.command_add_runtime( &registry.get( "add" ).unwrap(), add_routine ).unwrap();
 
   let parser = Parser::new( UnilangParserOptions::default() );
   let input = "add 5 3";

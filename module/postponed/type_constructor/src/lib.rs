@@ -1,8 +1,8 @@
 
 #![ cfg_attr( feature = "no_std", no_std ) ]
-#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
-#![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico")]
-#![ doc( html_root_url = "https://docs.rs/type_constructor/latest/type_constructor/")]
+#![ doc( html_logo_url = "https: //raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
+#![ doc( html_favicon_url = "https: //raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico")]
+#![ doc( html_root_url = "https: //docs.rs/type_constructor/latest/type_constructor/")]
 // #![ deny( rust_2018_idioms ) ]
 // #![ deny( missing_debug_implementations ) ]
 // #![ deny( missing_docs ) ]
@@ -13,17 +13,17 @@
 
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 
-pub use derive_tools::{ From_0, From_1, From_2, From_3, from };
+pub use derive_tools :: { From_0, From_1, From_2, From_3, from };
 
 /// Temporary workaround.
 #[ macro_export ]
 macro_rules! _if_from
 {
-  ( $( $code:tt )* )
+  ( $( $code: tt )* )
   =>
   {
-    $( $code )*
-  };
+  $( $code )*
+ };
 }
 
 // #![ without_std ]
@@ -38,7 +38,7 @@ macro_rules! _if_from
 // pub mod type_constuctor;
 // #[ doc( inline ) ]
 // #[ allow( unused_imports ) ]
-// pub use inc::*;
+// pub use inc :: *;
 
 
 #[ cfg( feature = "enabled" ) ]
@@ -53,18 +53,18 @@ pub mod dependency
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use orphan::*;
-  pub use super::type_constuctor::own::*;
+  pub use orphan :: *;
+  pub use super ::type_constuctor ::own :: *;
 }
 
 /// Shared with parent namespace of the module
@@ -72,11 +72,11 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use exposed::*;
-  pub use super::type_constuctor::orphan::*;
+  pub use exposed :: *;
+  pub use super ::type_constuctor ::orphan :: *;
 }
 
 /// Exposed namespace of the module.
@@ -84,20 +84,20 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use prelude::*;
+  pub use prelude :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::type_constuctor::exposed::*;
+  pub use super ::type_constuctor ::exposed :: *;
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::*;
-  pub use super::type_constuctor::prelude::*;
+  use super :: *;
+  pub use super ::type_constuctor ::prelude :: *;
 }

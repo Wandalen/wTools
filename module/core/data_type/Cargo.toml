@@ -1,6 +1,6 @@
 [package]
 name = "data_type"
-version = "0.16.0"
+version = "0.17.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -29,8 +29,10 @@ all-features = false
 [features]
 
 default = [
-  # "use_std",
   "enabled",
+
+  # "use_std",
+
   "dt_either",
   "dt_interval",
   "dt_collection",
@@ -39,8 +41,10 @@ default = [
   # "type_constructor/default",
 ]
 full = [
-  # "use_std",
   "enabled",
+
+  # "use_std",
+
   "dt_either",
   "dt_interval",
   "dt_collection",

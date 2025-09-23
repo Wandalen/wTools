@@ -1,10 +1,10 @@
 // module/move/willbe/src/action/mod.rs
 mod private {}
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   /// Errors handling.
-  use crate::error;
+  use crate ::error;
   
   /// Generate documentation for a crate.
   layer crate_doc;

@@ -3,16 +3,17 @@
 //! Tests for comparative analysis and regression analysis
 
 #[ cfg( feature = "integration" ) ]
-use benchkit::prelude::*;
-use std::thread;
-use core::time::Duration;
-use std::collections::HashMap;
+use benchkit ::prelude :: *;
+use std ::thread;
+use core ::time ::Duration;
+use std ::collections ::HashMap;
 
-#[test]
-fn test_comparative_analysis() {
-  let comparison = ComparativeAnalysis::new("test_comparison")
-    .algorithm("fast", || {})
-    .algorithm("slow", || thread::sleep(Duration::from_millis(1)));
+#[ test ]
+fn test_comparative_analysis() 
+{
+  let comparison = ComparativeAnalysis ::new("test_comparison")
+  .algorithm("fast", || {})
+  .algorithm("slow", || thread ::sleep(Duration ::from_millis(1)));
   
   let report = comparison.run();
   assert_eq!(report.results.len(), 2);
@@ -22,18 +23,19 @@ fn test_comparative_analysis() {
   assert_eq!(fastest.unwrap().0, "fast");
 }
 
-#[test]
-fn test_regression_analysis() {
+#[ test ]
+fn test_regression_analysis() 
+{
   let fast_result = bench_once(|| {});
-  let slow_result = bench_once(|| thread::sleep(Duration::from_millis(1)));
+  let slow_result = bench_once(|| thread ::sleep(Duration ::from_millis(1)));
   
-  let mut baseline = HashMap::new();
+  let mut baseline = HashMap ::new();
   baseline.insert("test".to_string(), fast_result);
   
-  let mut current = HashMap::new();
+  let mut current = HashMap ::new();
   current.insert("test".to_string(), slow_result);
   
-  let analysis = RegressionAnalysis::new(baseline, current);
+  let analysis = RegressionAnalysis ::new(baseline, current);
   let regressions = analysis.detect_regressions(1.0);
   
   assert!(!regressions.is_empty());

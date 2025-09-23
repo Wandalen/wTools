@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use super::tools::*;
+use super ::tools :: *;
 
 /// Private namespace of the module.
 mod private
@@ -11,22 +11,22 @@ mod private
   /// macro1
   macro_rules! macro1
   {
-    () => {};
-  }
+  () => {};
+ }
 
   #[ allow( unused_macros ) ]
   /// macro2
   macro_rules! macro2
   {
-    () => {};
-  }
+  () => {};
+ }
 
   #[ allow( unused_macros ) ]
   /// macro3
   macro_rules! macro3
   {
-    () => {};
-  }
+  () => {};
+ }
 
   #[ allow( unused_imports ) ]
   pub( crate ) use macro2;
@@ -36,7 +36,7 @@ mod private
 
 //
 
-the_module::mod_interface!
+the_module ::mod_interface!
 {
 
   // exposed( crate ) use macro1;

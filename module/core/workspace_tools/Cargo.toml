@@ -1,6 +1,6 @@
 [package]
 name = "workspace_tools"
-version = "0.3.0"
+version = "0.5.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -24,7 +24,9 @@ features = [ "serde", "glob", "secrets", "secure", "validation" ]
 all-features = false
 
 [features]
-default = [ "serde" ]
+default = [ "enabled", "serde" ]
+full = [ "enabled", "serde", "glob", "secrets", "secure", "validation", "testing" ]
+enabled = []
 serde = [ "dep:serde", "dep:serde_json", "dep:serde_yaml" ]
 glob = [ "dep:glob" ]
 secrets = []

@@ -128,7 +128,7 @@ mod private {
   #[ derive( Debug, Clone, Copy, PartialEq, Eq ) ]
   pub enum SplitType {
     /// A segment of delimited content.
-    Delimeted,
+    Delimited,
     /// A segment representing a delimiter.
     Delimiter,
   }
@@ -251,7 +251,7 @@ mod private {
           if d_start == 0 {
             return Some(Split {
               string: Cow::Borrowed(""),
-              typ: SplitType::Delimeted,
+              typ: SplitType::Delimited,
               start: self.current_offset,
               end: self.current_offset,
               was_quoted: false,
@@ -260,7 +260,7 @@ mod private {
           let segment_str = &self.iterable[..d_start];
           let split = Split {
             string: Cow::Borrowed(segment_str),
-            typ: SplitType::Delimeted,
+            typ: SplitType::Delimited,
             start: self.current_offset,
             end: self.current_offset + segment_str.len(),
             was_quoted: false,
@@ -276,7 +276,7 @@ mod private {
           let segment_str = self.iterable;
           let split = Split {
             string: Cow::Borrowed(segment_str),
-            typ: SplitType::Delimeted,
+            typ: SplitType::Delimited,
             start: self.current_offset,
             end: self.current_offset + segment_str.len(),
             was_quoted: false,
@@ -412,7 +412,7 @@ mod private {
           let current_sfi_offset = self.iterator.current_offset;
           let empty_token = Split {
             string: Cow::Borrowed(""),
-            typ: SplitType::Delimeted,
+            typ: SplitType::Delimited,
             start: current_sfi_offset,
             end: current_sfi_offset,
             was_quoted: false,
@@ -551,7 +551,7 @@ mod private {
                 let new_end = opening_quote_original_start + new_string.len();
                 effective_split_opt = Some(Split {
                   string: new_string,
-                  typ: SplitType::Delimeted,
+                  typ: SplitType::Delimited,
                   start: opening_quote_original_start,
                   end: new_end,
                   was_quoted: true,
@@ -562,7 +562,7 @@ mod private {
                 let new_end = new_start + unescaped_string.len();
                 effective_split_opt = Some(Split {
                   string: unescaped_string,
-                  typ: SplitType::Delimeted,
+                  typ: SplitType::Delimited,
                   start: new_start,
                   end: new_end,
                   was_quoted: true,
@@ -586,7 +586,7 @@ mod private {
         if quote_handled_by_peek {
           self.skip_next_spurious_empty = true;
         }
-        if self.skip_next_spurious_empty && current_split.typ == SplitType::Delimeted && current_split.string.is_empty() {
+        if self.skip_next_spurious_empty && current_split.typ == SplitType::Delimited && current_split.string.is_empty() {
           self.skip_next_spurious_empty = false;
           continue;
         }
@@ -609,7 +609,7 @@ mod private {
             }
           }
         }
-        if self.flags.contains(SplitFlags::STRIPPING) && current_split.typ == SplitType::Delimeted {
+        if self.flags.contains(SplitFlags::STRIPPING) && current_split.typ == SplitType::Delimited {
           let original_len = current_split.string.len();
           let trimmed_string = current_split.string.trim();
           if trimmed_string.len() < original_len {
@@ -619,7 +619,7 @@ mod private {
             current_split.end = current_split.start + current_split.string.len();
           }
         }
-        let skip = (current_split.typ == SplitType::Delimeted
+        let skip = (current_split.typ == SplitType::Delimited
           && current_split.string.is_empty()
           && !self.flags.contains(SplitFlags::PRESERVING_EMPTY))
           || (current_split.typ == SplitType::Delimiter && !self.flags.contains(SplitFlags::PRESERVING_DELIMITERS));

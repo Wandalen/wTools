@@ -2,13 +2,13 @@
 //! Tests for `copy_to` function.
 //!
 
-use httpmock::prelude::*;
-use serde_json::json;
-use gspread::*;
-use actions::gspread::copy_to;
-use gcore::
+use httpmock ::prelude :: *;
+use serde_json ::json;
+use gspread :: *;
+use actions ::gspread ::copy_to;
+use gcore ::
 {
-  client::Client, 
+  client ::Client, 
   ApplicationSecret
 };
 
@@ -18,49 +18,50 @@ use gcore::
 /// # How
 /// 1. Start a mock server.
 /// 2. Create a client pointing to that mock server.
-/// 3. Mock a `POST` request to /{spreadsheet_id}/sheets/{sheet_id}:copyTo.
+/// 3. Mock a `POST` request to /{spreadsheet_id}/sheets/{sheet_id} : copyTo.
 /// 4. Call `copy_to`.
 /// 5. Verify the response (e.g. `sheetId` and `title`).
-#[ tokio::test ]
+#[ tokio ::test ]
 async fn test_mock_copy_to_should_work() 
 {
-  let server = MockServer::start();
+  let server = MockServer ::start();
   let spreadsheet_id = "12345";
   let sheet_id = "67890";
   let destination_spreadsheet_id = "destination123";
 
   let body = json!
   (
-    {
-      "sheetId" : 999,
-      "title" : "CopiedSheet",
-      "index" : 2
-    }
-  );
+  {
+   "sheetId" : 999,
+   "title" : "CopiedSheet",
+   "index" : 2
+ }
+ );
 
   // 1. Mock the POST request for copying the sheet.
-  let copy_mock = server.mock( | when, then | {
-    when.method( POST )
-      .path( format!( "/{}/sheets/{}:copyTo", spreadsheet_id, sheet_id ) );
-    then.status( 200 )
-      .header( "Content-Type", "application/json" )
-      .json_body( body.clone() );
-  } );
+  let copy_mock = server.mock( | when, then |
+  {
+  when.method( POST )
+   .path( format!( "/{}/sheets/{} : copyTo", spreadsheet_id, sheet_id ) );
+  then.status( 200 )
+   .header( "Content-Type", "application/json" )
+   .json_body( body.clone() );
+ } );
 
   // 2. Create a client pointing to our mock server.
   let endpoint = server.url( "" );
-  let client : Client< '_, ApplicationSecret > = Client::former()
+  let client: Client< '_, ApplicationSecret > = Client ::former()
   .endpoint( &*endpoint )
   .form();
 
   // 3. Call `copy_to`.
   let response = copy_to
   (
-    &client, 
-    spreadsheet_id, 
-    sheet_id, 
-    destination_spreadsheet_id
-  )
+  &client, 
+  spreadsheet_id, 
+  sheet_id, 
+  destination_spreadsheet_id
+ )
   .await
   .expect( "copy_to failed" );
 
@@ -81,46 +82,47 @@ async fn test_mock_copy_to_should_work()
 /// 2. Create a client.
 /// 3. Mock a `POST` request that returns an error (400).
 /// 4. Call `copy_to` and expect a panic (due to `.expect(...)`).
-#[ tokio::test ]
+#[ tokio ::test ]
 #[ should_panic ]
 async fn test_mock_copy_to_should_panic() 
 {
-  let server = MockServer::start();
+  let server = MockServer ::start();
   let spreadsheet_id = "12345";
   let sheet_id = "67890";
   let destination_spreadsheet_id = "destination123";
 
   // 1. Mock a failing POST request.
-  let _copy_mock = server.mock( | when, then | {
-    when.method( POST )
-      .path( format!( "/{}/sheets/{}:copyTo", spreadsheet_id, sheet_id ) );
-    then.status( 400 )
-      .header( "Content-Type", "application/json" )
-      .json_body
-      ( 
-        json!
-        (
-          {
-            "error" : { "message" : "Invalid request or missing permissions." }
-          }
-        ) 
-      );
-  });
+  let _copy_mock = server.mock( | when, then |
+  {
+  when.method( POST )
+   .path( format!( "/{}/sheets/{} : copyTo", spreadsheet_id, sheet_id ) );
+  then.status( 400 )
+   .header( "Content-Type", "application/json" )
+   .json_body
+   ( 
+  json!
+  (
+   {
+  "error" : { "message" : "Invalid request or missing permissions." }
+ }
+ ) 
+ );
+ });
 
   // 2. Create a client pointing to our mock server.
   let endpoint = server.url( "" );
-  let client : Client< '_, ApplicationSecret > = Client::former()
+  let client: Client< '_, ApplicationSecret > = Client ::former()
   .endpoint( &*endpoint )
   .form();
 
   // 3. Call `copy_to`, which should panic because we `.expect(...)`.
   let response = copy_to
   (
-    &client,
-    spreadsheet_id,
-    sheet_id,
-    destination_spreadsheet_id
-  )
+  &client,
+  spreadsheet_id,
+  sheet_id,
+  destination_spreadsheet_id
+ )
   .await
   .expect( "copy_to failed. Ok!" );
 

@@ -1,63 +1,66 @@
-#[cfg(not(feature = "no_std"))]
-use std::time;
+#[ cfg(not(feature = "no_std")) ]
+use std ::time;
 
 ///
 /// Get current time. Units are milliseconds.
 ///
-#[cfg(not(feature = "no_std"))]
-#[ allow( clippy::cast_possible_truncation ) ]
-#[ allow( clippy::missing_panics_doc ) ]
+#[ cfg(not(feature = "no_std")) ]
+#[ allow( clippy ::cast_possible_truncation ) ]
+#[ allow( clippy ::missing_panics_doc ) ]
 #[ must_use ] pub fn now() -> i64 {
-  time::SystemTime::now().duration_since(time::UNIX_EPOCH).unwrap().as_millis() as i64
+  time ::SystemTime ::now().duration_since(time ::UNIX_EPOCH).unwrap().as_millis() as i64
 }
 
 ///
 /// Default units are seconds.
 ///
-pub mod s {
+pub mod s 
+{
   #[ allow( unused_imports ) ]
-  use super::*;
+  use super :: *;
 
   /// Get current time. Units are seconds.
-  #[cfg(not(feature = "no_std"))]
-  #[ allow( clippy::cast_possible_wrap ) ]
-  #[ allow( clippy::missing_panics_doc ) ]
+  #[ cfg(not(feature = "no_std")) ]
+  #[ allow( clippy ::cast_possible_wrap ) ]
+  #[ allow( clippy ::missing_panics_doc ) ]
   #[ must_use ] pub fn now() -> i64 {
-    time::SystemTime::now().duration_since(time::UNIX_EPOCH).unwrap().as_secs() as i64
-  }
+  time ::SystemTime ::now().duration_since(time ::UNIX_EPOCH).unwrap().as_secs() as i64
+ }
 }
 
 ///
 /// Default units are milliseconds.
 ///
-pub mod ms {
+pub mod ms 
+{
   #[ allow( unused_imports ) ]
-  use super::*;
+  use super :: *;
 
   /// Get current time. Units are milliseconds.
-  #[cfg(not(feature = "no_std"))]
-  #[ allow( clippy::cast_possible_truncation ) ]
-  #[ allow( clippy::missing_panics_doc ) ]
+  #[ cfg(not(feature = "no_std")) ]
+  #[ allow( clippy ::cast_possible_truncation ) ]
+  #[ allow( clippy ::missing_panics_doc ) ]
   #[ must_use ] pub fn now() -> i64 {
-    time::SystemTime::now().duration_since(time::UNIX_EPOCH).unwrap().as_millis() as i64
-  }
+  time ::SystemTime ::now().duration_since(time ::UNIX_EPOCH).unwrap().as_millis() as i64
+ }
 }
 
-// xxx : qqq for Dima : problem. ms should not be part of `wtools::ms`, something is wrong. fix it, please
-/* aaa : Dmytro : all routines and modules is inside wtools and wtools::time, added test suite to test it */
+// xxx: qqq for Dima: problem. ms should not be part of `wtools ::ms`, something is wrong. fix it, please
+/* aaa: Dmytro: all routines and modules is inside wtools and wtools ::time, added test suite to test it */
 
 ///
 /// Default units are nanoseconds.
 ///
-pub mod ns {
+pub mod ns 
+{
   #[ allow( unused_imports ) ]
-  use super::*;
+  use super :: *;
 
   /// Get current time. Units are nanoseconds.
-  #[cfg(not(feature = "no_std"))]
-  #[ allow( clippy::cast_possible_truncation ) ]
-  #[ allow( clippy::missing_panics_doc ) ]
+  #[ cfg(not(feature = "no_std")) ]
+  #[ allow( clippy ::cast_possible_truncation ) ]
+  #[ allow( clippy ::missing_panics_doc ) ]
   #[ must_use ] pub fn now() -> i64 {
-    time::SystemTime::now().duration_since(time::UNIX_EPOCH).unwrap().as_nanos() as i64
-  }
+  time ::SystemTime ::now().duration_since(time ::UNIX_EPOCH).unwrap().as_nanos() as i64
+ }
 }

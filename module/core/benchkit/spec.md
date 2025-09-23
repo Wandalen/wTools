@@ -681,7 +681,8 @@ benchkit = { version = "0.8.0", features = ["cargo_bench"] }
 // In benches/performance_suite.rs - Works with cargo bench
 use benchkit::prelude::*;
 
-fn main() {
+fn main() 
+{
     let mut suite = BenchmarkSuite::new("Algorithm Performance");
     suite.benchmark("algorithm_a", || algorithm_a_implementation());
     

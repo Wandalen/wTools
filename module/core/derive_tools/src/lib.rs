@@ -11,22 +11,22 @@
 //! # Rule Compliance & Architectural Notes
 //!
 //! This crate has been systematically updated to comply with the Design and Codestyle Rulebooks.
-//! Key compliance achievements:
+//! Key compliance achievements :
 //!
-//! ## Completed Compliance Work:
+//! ## Completed Compliance Work :
 //!
-//! 1. **Feature Architecture**: All functionality is properly gated behind the "enabled" feature
+//! 1. **Feature Architecture** : All functionality is properly gated behind the "enabled" feature
 //!    following the mandatory 'enabled' and 'full' features requirement.
 //!
-//! 2. **Dependencies**: Uses workspace dependency inheritance with `{ workspace = true }`.
+//! 2. **Dependencies** : Uses workspace dependency inheritance with `{ workspace = true }`.
 //!    All derive macro dependencies are centralized in the workspace Cargo.toml.
 //!
-//! 3. **Attribute Formatting**: All attributes use proper spacing per Universal Formatting Rule.
+//! 3. **Attribute Formatting** : All attributes use proper spacing per Universal Formatting Rule.
 //!
-//! 4. **Documentation Strategy**: Uses `#![ doc = include_str!(...) ]` to include readme.md
+//! 4. **Documentation Strategy** : Uses `#![ doc = include_str!(...) ]` to include readme.md
 //!    instead of duplicating documentation.
 //!
-//! 5. **Namespace Organization**: Uses the standard own/orphan/exposed/prelude namespace
+//! 5. **Namespace Organization** : Uses the standard own/orphan/exposed/prelude namespace
 //!    pattern for controlled visibility and re-exports.
 
 #[ cfg( feature = "derive_from" ) ]
@@ -54,11 +54,12 @@ pub use derive_tools_meta::Index;
 pub use derive_tools_meta::IndexMut;
 #[ cfg( feature = "derive_more" ) ]
 #[ allow( unused_imports ) ]
-mod derive_more {
+mod derive_more
+{
   #[ cfg( feature = "derive_add" ) ]
-  pub use ::derive_more::{Add, Sub};
+  pub use ::derive_more::{ Add, Sub };
   #[ cfg( feature = "derive_add_assign" ) ]
-  pub use ::derive_more::{AddAssign, SubAssign};
+  pub use ::derive_more::{ AddAssign, SubAssign };
   #[ cfg( feature = "derive_constructor" ) ]
   pub use ::derive_more::Constructor;
   #[ cfg( feature = "derive_error" ) ]
@@ -66,13 +67,13 @@ mod derive_more {
   #[ cfg( feature = "derive_into" ) ]
   pub use ::derive_more::Into;
   // #[ cfg( feature = "derive_iterator" ) ]
-  // pub use ::derive_more::Iterator;
+  // pub use ::derive_more ::Iterator;
   #[ cfg( feature = "derive_into_iterator" ) ]
   pub use ::derive_more::IntoIterator;
   #[ cfg( feature = "derive_mul" ) ]
-  pub use ::derive_more::{Mul, Div};
+  pub use ::derive_more::{ Mul, Div };
   #[ cfg( feature = "derive_mul_assign" ) ]
-  pub use ::derive_more::{MulAssign, DivAssign};
+  pub use ::derive_more::{ MulAssign, DivAssign };
   #[ cfg( feature = "derive_sum" ) ]
   pub use ::derive_more::Sum;
   #[ cfg( feature = "derive_try_into" ) ]
@@ -82,29 +83,30 @@ mod derive_more {
   #[ cfg( feature = "derive_unwrap" ) ]
   pub use ::derive_more::Unwrap;
 
-  // qqq : list all
-  // qqq : make sure all features of derive_more is reexported
+  // qqq: list all
+  // qqq: make sure all features of derive_more is reexported
 }
 
 #[ doc( inline ) ]
-#[cfg(any(feature = "derive_variadic_from", feature = "type_variadic_from"))]
+#[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
 pub use variadic_from as variadic;
 
 /// Namespace with dependencies.
 #[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
-pub mod dependency {
+pub mod dependency
+{
 
   #[ doc( inline ) ]
   pub use ::derive_tools_meta;
 
   #[ doc( inline ) ]
   #[ cfg( feature = "derive_clone_dyn" ) ]
-  pub use ::clone_dyn::{self, dependency::*};
+  pub use ::clone_dyn :: { self, dependency :: * };
 
   #[ doc( inline ) ]
-  #[cfg(any(feature = "derive_variadic_from", feature = "type_variadic_from"))]
-  pub use ::variadic_from::{self, dependency::*};
+  #[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
+  pub use ::variadic_from :: { self, dependency :: * };
 
   #[ doc( inline ) ]
   #[ cfg( feature = "derive_more" ) ]
@@ -120,104 +122,108 @@ pub mod dependency {
 #[ doc( inline ) ]
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod own {
+pub mod own 
+{
 
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use orphan::*;
+  pub use orphan :: *;
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
-  pub use ::clone_dyn::orphan::*;
+  pub use ::clone_dyn ::orphan :: *;
 }
 
 /// Orphan namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod orphan {
+pub mod orphan 
+{
 
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 }
 
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod exposed {
+pub mod exposed 
+{
 
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use prelude::*;
+  pub use prelude :: *;
 
   #[ cfg( feature = "derive_more" ) ]
   #[ doc( inline ) ]
-  pub use super::derive_more::*;
+  pub use super ::derive_more :: *;
 
   #[ cfg( feature = "derive_strum" ) ]
   #[ doc( inline ) ]
-  pub use ::strum::*;
-  // qqq : xxx : name all
+  pub use ::strum :: *;
+  // qqq: xxx: name all
 
-  #[cfg(any(feature = "derive_variadic_from", feature = "type_variadic_from"))]
+  #[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
   #[ doc( inline ) ]
-  pub use ::variadic_from::exposed::*;
+  pub use ::variadic_from ::exposed :: *;
 
   #[ cfg( feature = "derive_strum" ) ]
   #[ doc( inline ) ]
-  pub use ::strum::*;
+  pub use ::strum :: *;
 
   #[ cfg( feature = "derive_display" ) ]
   #[ doc( inline ) ]
-  pub use ::parse_display::Display;
+  pub use ::parse_display ::Display;
 
   #[ cfg( feature = "derive_from_str" ) ]
   #[ doc( inline ) ]
-  pub use ::parse_display::FromStr;
+  pub use ::parse_display ::FromStr;
 
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
-  pub use ::clone_dyn::exposed::*;
+  pub use ::clone_dyn ::exposed :: *;
 
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
   pub use ::clone_dyn;
 
   #[ doc( inline ) ]
-  pub use ::derive_tools_meta::*;
+  pub use ::derive_tools_meta :: *;
 
   #[ doc( inline ) ]
   #[ cfg( feature = "derive_from" ) ]
-  pub use ::derive_tools_meta::From;
+  pub use ::derive_tools_meta ::From;
 
   #[ doc( inline ) ]
   #[ cfg( feature = "derive_inner_from" ) ]
-  pub use ::derive_tools_meta::InnerFrom;
+  pub use ::derive_tools_meta ::InnerFrom;
 
   #[ doc( inline ) ]
   #[ cfg( feature = "derive_new" ) ]
-  pub use ::derive_tools_meta::New;
+  pub use ::derive_tools_meta ::New;
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod prelude {
-  use super::*;
+pub mod prelude 
+{
+  use super :: *;
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
   pub use ::clone_dyn;
 
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
-  pub use ::clone_dyn::prelude::*;
+  pub use ::clone_dyn ::prelude :: *;
 
-  #[cfg(any(feature = "derive_variadic_from", feature = "type_variadic_from"))]
+  #[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
   #[ doc( inline ) ]
-  pub use ::variadic_from::prelude::*;
+  pub use ::variadic_from ::prelude :: *;
 }
 

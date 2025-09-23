@@ -373,7 +373,8 @@ update_markdown_section("docs/benchmarks.md", "## Latest Results", full_report);
 #[cfg(test)]
 mod performance_tests {
     #[test]
-    fn benchmark_critical_path() {
+    fn benchmark_critical_path() 
+{
         let result = bench_function("parse_operation", || parse_input("data"));
         assert!(result.mean_time() < Duration::from_millis(100));
     }

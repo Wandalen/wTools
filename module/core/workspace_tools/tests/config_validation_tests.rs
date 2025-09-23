@@ -5,28 +5,28 @@
 
 #![ cfg( feature = "testing" ) ]
 
-use workspace_tools::testing::create_test_workspace_with_structure;
-use std::fs;
-use serde::{ Deserialize, Serialize };
-use schemars::JsonSchema;
+use workspace_tools ::testing ::create_test_workspace_with_structure;
+use std ::fs;
+use serde :: { Deserialize, Serialize };
+use schemars ::JsonSchema;
 
 /// Test configuration struct for validation
 #[ derive( Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq ) ]
 struct AppConfig
 {
-  name : String,
-  port : u16,
-  debug : bool,
-  features : Vec< String >,
-  database : DatabaseConfig,
+  name: String,
+  port: u16,
+  debug: bool,
+  features: Vec< String >,
+  database: DatabaseConfig,
 }
 
 #[ derive( Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq ) ]
 struct DatabaseConfig
 {
-  host : String,
-  port : u16,
-  ssl_enabled : bool,
+  host: String,
+  port: u16,
+  ssl_enabled: bool,
 }
 
 /// Test automatic schema generation and validation with valid config
@@ -49,9 +49,9 @@ ssl_enabled = true
 "#;
   
   let config_file = workspace.config_dir().join( "app.toml" );
-  fs::write( &config_file, config_content ).unwrap();
+  fs ::write( &config_file, config_content ).unwrap();
   
-  let loaded_config : AppConfig = workspace.load_config_with_validation( "app" ).unwrap();
+  let loaded_config: AppConfig = workspace.load_config_with_validation( "app" ).unwrap();
   
   assert_eq!( loaded_config.name, "test-app" );
   assert_eq!( loaded_config.port, 8080 );
@@ -83,9 +83,9 @@ ssl_enabled = true
 "#;
   
   let config_file = workspace.config_dir().join( "app.toml" );
-  fs::write( &config_file, config_content ).unwrap();
+  fs ::write( &config_file, config_content ).unwrap();
   
-  let result = workspace.load_config_with_validation::< AppConfig >( "app" );
+  let result = workspace.load_config_with_validation :: < AppConfig >( "app" );
   
   assert!( result.is_err() );
   let error_msg = result.unwrap_err().to_string();
@@ -108,9 +108,9 @@ features = ["logging"]
 "#;
   
   let config_file = workspace.config_dir().join( "app.toml" );
-  fs::write( &config_file, config_content ).unwrap();
+  fs ::write( &config_file, config_content ).unwrap();
   
-  let result = workspace.load_config_with_validation::< AppConfig >( "app" );
+  let result = workspace.load_config_with_validation :: < AppConfig >( "app" );
   
   assert!( result.is_err() );
   let error_msg = result.unwrap_err().to_string();
@@ -126,22 +126,22 @@ fn test_load_config_with_validation_json()
   
   let config_content = r#"
 {
-  "name": "json-app",
-  "port": 9090,
-  "debug": false,
-  "features": ["api", "web"],
-  "database": {
-    "host": "db.example.com",
-    "port": 3306,
-    "ssl_enabled": false
-  }
+  "name" : "json-app",
+  "port" : 9090,
+  "debug" : false,
+  "features" : ["api", "web"],
+  "database" : {
+  "host" : "db.example.com",
+  "port" : 3306,
+  "ssl_enabled" : false
+ }
 }
 "#;
   
   let config_file = workspace.config_dir().join( "app.json" );
-  fs::write( &config_file, config_content ).unwrap();
+  fs ::write( &config_file, config_content ).unwrap();
   
-  let loaded_config : AppConfig = workspace.load_config_with_validation( "app" ).unwrap();
+  let loaded_config: AppConfig = workspace.load_config_with_validation( "app" ).unwrap();
   
   assert_eq!( loaded_config.name, "json-app" );
   assert_eq!( loaded_config.port, 9090 );
@@ -162,19 +162,19 @@ fn test_load_config_with_validation_yaml()
 name: yaml-app
 port: 7070
 debug: true
-features:
+features :
   - yaml
   - validation
-database:
+database :
   host: yaml-db.local
   port: 5433
   ssl_enabled: true
 ";
   
   let config_file = workspace.config_dir().join( "app.yaml" );
-  fs::write( &config_file, config_content ).unwrap();
+  fs ::write( &config_file, config_content ).unwrap();
   
-  let loaded_config : AppConfig = workspace.load_config_with_validation( "app" ).unwrap();
+  let loaded_config: AppConfig = workspace.load_config_with_validation( "app" ).unwrap();
   
   assert_eq!( loaded_config.name, "yaml-app" );
   assert_eq!( loaded_config.port, 7070 );
@@ -206,10 +206,10 @@ extra_db_field = 42
 "#;
   
   let config_file = workspace.config_dir().join( "app.toml" );
-  fs::write( &config_file, config_content ).unwrap();
+  fs ::write( &config_file, config_content ).unwrap();
   
   // Should succeed - extra fields are typically allowed in JSON Schema
-  let loaded_config : AppConfig = workspace.load_config_with_validation( "app" ).unwrap();
+  let loaded_config: AppConfig = workspace.load_config_with_validation( "app" ).unwrap();
   
   assert_eq!( loaded_config.name, "test-app" );
   assert_eq!( loaded_config.port, 8080 );
@@ -220,13 +220,13 @@ extra_db_field = 42
 #[ cfg( feature = "validation" ) ]
 fn test_validate_config_content()
 {
-  use workspace_tools::Workspace;
-  use jsonschema::Validator;
+  use workspace_tools ::Workspace;
+  use jsonschema ::Validator;
   
   // Generate schema
-  let schema = schemars::schema_for!( AppConfig );
-  let schema_json = serde_json::to_value( &schema ).unwrap();
-  let compiled_schema = Validator::new( &schema_json ).unwrap();
+  let schema = schemars ::schema_for!( AppConfig );
+  let schema_json = serde_json ::to_value( &schema ).unwrap();
+  let compiled_schema = Validator ::new( &schema_json ).unwrap();
   
   // Valid TOML content
   let valid_content = r#"
@@ -241,7 +241,7 @@ port = 5432
 ssl_enabled = false
 "#;
   
-  let result = Workspace::validate_config_content( valid_content, &compiled_schema, "toml" );
+  let result = Workspace ::validate_config_content( valid_content, &compiled_schema, "toml" );
   assert!( result.is_ok() );
   
   // Invalid TOML content (missing database)
@@ -252,7 +252,7 @@ debug = true
 features = []
 "#;
   
-  let result = Workspace::validate_config_content( invalid_content, &compiled_schema, "toml" );
+  let result = Workspace ::validate_config_content( invalid_content, &compiled_schema, "toml" );
   assert!( result.is_err() );
   let error_msg = result.unwrap_err().to_string();
   assert!( error_msg.contains( "validation" ) );
@@ -279,9 +279,9 @@ ssl_enabled = "not-a-boolean"
 "#;
   
   let config_file = workspace.config_dir().join( "app.toml" );
-  fs::write( &config_file, config_content ).unwrap();
+  fs ::write( &config_file, config_content ).unwrap();
   
-  let result = workspace.load_config_with_validation::< AppConfig >( "app" );
+  let result = workspace.load_config_with_validation :: < AppConfig >( "app" );
   
   assert!( result.is_err() );
   let error_msg = result.unwrap_err().to_string();
@@ -295,22 +295,22 @@ ssl_enabled = "not-a-boolean"
 #[ cfg( feature = "validation" ) ]
 fn test_load_config_with_external_schema()
 {
-  use jsonschema::Validator;
+  use jsonschema ::Validator;
   
   let ( _temp_dir, workspace ) = create_test_workspace_with_structure();
   
   // Create a custom schema that's more restrictive
-  let schema_json = serde_json::json!( {
-    "type": "object",
-    "properties": {
-      "name": { "type": "string", "minLength": 3 },
-      "port": { "type": "number", "minimum": 1000, "maximum": 9999 }
-    },
-    "required": [ "name", "port" ],
-    "additionalProperties": false
-  } );
+  let schema_json = serde_json ::json!( {
+  "type" : "object",
+  "properties" : {
+   "name" : { "type" : "string", "minLength" : 3 },
+   "port" : { "type" : "number", "minimum" : 1000, "maximum" : 9999 }
+ },
+  "required" : [ "name", "port" ],
+  "additionalProperties" : false
+ } );
   
-  let compiled_schema = Validator::new( &schema_json ).unwrap();
+  let compiled_schema = Validator ::new( &schema_json ).unwrap();
   
   // Valid config according to custom schema
   let config_content = r#"
@@ -319,16 +319,16 @@ port = 8080
 "#;
   
   let config_file = workspace.config_dir().join( "custom.toml" );
-  fs::write( &config_file, config_content ).unwrap();
+  fs ::write( &config_file, config_content ).unwrap();
   
   #[ derive( Deserialize ) ]
   struct CustomConfig
   {
-    name : String,
-    port : u16,
-  }
+  name: String,
+  port: u16,
+ }
   
-  let loaded_config : CustomConfig = workspace.load_config_from_with_schema( &config_file, &compiled_schema ).unwrap();
+  let loaded_config: CustomConfig = workspace.load_config_from_with_schema( &config_file, &compiled_schema ).unwrap();
   
   assert_eq!( loaded_config.name, "valid-app" );
   assert_eq!( loaded_config.port, 8080 );
@@ -340,8 +340,8 @@ port = 80
 "#;
   
   let invalid_file = workspace.config_dir().join( "invalid.toml" );
-  fs::write( &invalid_file, invalid_content ).unwrap();
+  fs ::write( &invalid_file, invalid_content ).unwrap();
   
-  let result = workspace.load_config_from_with_schema::< CustomConfig, _ >( &invalid_file, &compiled_schema );
+  let result = workspace.load_config_from_with_schema :: < CustomConfig, _ >( &invalid_file, &compiled_schema );
   assert!( result.is_err() );
 }

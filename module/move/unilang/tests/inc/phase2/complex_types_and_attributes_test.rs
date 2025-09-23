@@ -6,7 +6,9 @@ use unilang::semantic::SemanticAnalyzer;
 use unilang::types::Value;
 
 fn setup_test_environment(command: CommandDefinition) -> CommandRegistry {
-  let mut registry = CommandRegistry::new();
+  #[allow(deprecated)]
+  #[allow(deprecated)]
+    let mut registry = CommandRegistry::new();
   registry.register(command);
   registry
 }
@@ -59,6 +61,7 @@ fn test_json_string_argument_type() {
       tags: vec![],
     }],
     routine_link: None,
+        auto_help_enabled: false,
     namespace: String::new(),
     hint: String::new(),
     status: String::new(),
@@ -130,6 +133,7 @@ fn test_object_argument_type() {
       tags: vec![],
     }],
     routine_link: None,
+        auto_help_enabled: false,
     namespace: String::new(),
     hint: String::new(),
     status: String::new(),
@@ -201,6 +205,7 @@ fn test_multiple_argument() {
       tags: vec![],
     }],
     routine_link: None,
+        auto_help_enabled: false,
     namespace: String::new(),
     hint: String::new(),
     status: String::new(),
@@ -266,6 +271,7 @@ fn test_validated_argument() {
       tags: vec![],
     }],
     routine_link: None,
+        auto_help_enabled: false,
     namespace: String::new(),
     hint: String::new(),
     status: String::new(),
@@ -349,6 +355,7 @@ fn test_default_argument() {
       tags: vec![],
     }],
     routine_link: None,
+        auto_help_enabled: false,
     namespace: String::new(),
     hint: String::new(),
     status: String::new(),

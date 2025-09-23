@@ -1,47 +1,47 @@
 //! Example demonstrating git-style diff functionality for benchmark results
 
-#[cfg(feature = "diff_analysis")]
-use benchkit::prelude::*;
-#[cfg(feature = "diff_analysis")]
-use core::time::Duration;
+#[ cfg(feature = "diff_analysis") ]
+use benchkit ::prelude :: *;
+#[ cfg(feature = "diff_analysis") ]
+use core ::time ::Duration;
 
 fn main()
 {
-  #[cfg(feature = "diff_analysis")]
+  #[ cfg(feature = "diff_analysis") ]
   {
   println!("🔄 Benchkit Diff Analysis Example");
   
   // Simulate baseline benchmark results (old implementation)
   let baseline_results = vec![
-    (
-      "string_concatenation".to_string(),
-      BenchmarkResult::new("string_concat_old", vec![Duration::from_millis(100); 5])
-    ),
-    (
-      "hash_computation".to_string(),
-      BenchmarkResult::new("hash_comp_old", vec![Duration::from_millis(50); 5])
-    ),
-    (
-      "sorting_algorithm".to_string(),
-      BenchmarkResult::new("sort_old", vec![Duration::from_millis(200); 5])
-    ),
-  ];
+  (
+   "string_concatenation".to_string(),
+   BenchmarkResult ::new("string_concat_old", vec![Duration ::from_millis(100); 5])
+ ),
+  (
+   "hash_computation".to_string(),
+   BenchmarkResult ::new("hash_comp_old", vec![Duration ::from_millis(50); 5])
+ ),
+  (
+   "sorting_algorithm".to_string(),
+   BenchmarkResult ::new("sort_old", vec![Duration ::from_millis(200); 5])
+ ),
+ ];
   
   // Simulate current benchmark results (new implementation)
   let current_results = vec![
-    (
-      "string_concatenation".to_string(),
-      BenchmarkResult::new("string_concat_new", vec![Duration::from_millis(50); 5])  // 2x faster
-    ),
-    (
-      "hash_computation".to_string(),
-      BenchmarkResult::new("hash_comp_new", vec![Duration::from_millis(75); 5])  // 1.5x slower
-    ),
-    (
-      "sorting_algorithm".to_string(),
-      BenchmarkResult::new("sort_new", vec![Duration::from_millis(195); 5])  // Slightly faster
-    ),
-  ];
+  (
+   "string_concatenation".to_string(),
+   BenchmarkResult ::new("string_concat_new", vec![Duration ::from_millis(50); 5])  // 2x faster
+ ),
+  (
+   "hash_computation".to_string(),
+   BenchmarkResult ::new("hash_comp_new", vec![Duration ::from_millis(75); 5])  // 1.5x slower
+ ),
+  (
+   "sorting_algorithm".to_string(),
+   BenchmarkResult ::new("sort_new", vec![Duration ::from_millis(195); 5])  // Slightly faster
+ ),
+ ];
   
   println!("\n📊 Comparing benchmark results...\n");
   
@@ -51,21 +51,21 @@ fn main()
   // Show individual diffs
   for diff in &diff_set.diffs
   {
-    println!("{}", diff.to_summary());
-  }
+  println!("{}", diff.to_summary());
+ }
   
   // Show detailed diff for significant changes
-  println!("\n📋 Detailed Analysis:\n");
+  println!("\n📋 Detailed Analysis: \n");
   
   for diff in diff_set.significant_changes()
   {
-    println!("=== {} ===", diff.benchmark_name);
-    println!("{}", diff.to_diff_format());
-    println!();
-  }
+  println!("=== {} ===", diff.benchmark_name);
+  println!("{}", diff.to_diff_format());
+  println!();
+ }
   
   // Show summary report
-  println!("📈 Summary Report:");
+  println!("📈 Summary Report: ");
   println!("==================");
   println!("Total benchmarks: {}", diff_set.summary_stats.total_benchmarks);
   println!("Improvements: {} 📈", diff_set.summary_stats.improvements);
@@ -77,28 +77,28 @@ fn main()
   let regressions = diff_set.regressions();
   if !regressions.is_empty()
   {
-    println!("\n⚠️  Regressions detected:");
-    for regression in regressions
-    {
-      println!("  - {}: {:.1}% slower", regression.benchmark_name, regression.analysis.ops_per_sec_change.abs());
-    }
-  }
+  println!("\n⚠️  Regressions detected: ");
+  for regression in regressions
+  {
+   println!("  - {} : {:.1}% slower", regression.benchmark_name, regression.analysis.ops_per_sec_change.abs());
+ }
+ }
   
   // Show improvements
   let improvements = diff_set.improvements();
   if !improvements.is_empty()
   {
-    println!("\n🎉 Improvements detected:");
-    for improvement in improvements
-    {
-      println!("  - {}: {:.1}% faster", improvement.benchmark_name, improvement.analysis.ops_per_sec_change);
-    }
-  }
-  } // End of cfg(feature = "diff_analysis")
-  
-  #[cfg(not(feature = "diff_analysis"))]
+  println!("\n🎉 Improvements detected: ");
+  for improvement in improvements
   {
-    println!("🔄 Benchkit Diff Analysis Example (disabled)");
-    println!("Enable with --features diff_analysis");
-  }
+   println!("  - {} : {:.1}% faster", improvement.benchmark_name, improvement.analysis.ops_per_sec_change);
+ }
+ }
+ } // End of cfg(feature = "diff_analysis")
+  
+  #[ cfg(not(feature = "diff_analysis")) ]
+  {
+  println!("🔄 Benchkit Diff Analysis Example (disabled)");
+  println!("Enable with --features diff_analysis");
+ }
 }

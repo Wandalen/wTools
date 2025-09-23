@@ -1,3 +1,4 @@
+#![allow(clippy::all)]
 //! # WebAssembly REPL for Unilang
 //!
 //! This example demonstrates how to use the unilang command framework in a WebAssembly environment.
@@ -41,6 +42,7 @@ impl UniLangWasmRepl {
   #[wasm_bindgen(constructor)]
   pub fn new() -> UniLangWasmRepl {
     // Create a command registry
+    #[allow(deprecated)]
     let mut registry = unilang::CommandRegistry::new();
     
     // Register basic commands suitable for WebAssembly environment
@@ -123,12 +125,14 @@ impl UniLangWasmRepl {
       tags: Vec::new(),
       aliases: Vec::new(),
       examples: Vec::new(),
+    auto_help_enabled: false,
       permissions: Vec::new(),
       idempotent: true,
       deprecation_message: String::new(),
       http_method_hint: "GET".to_string(),
     };
     
+    #[allow(deprecated)]
     if let Err(e) = registry.command_add_runtime(&echo_cmd, Box::new(demo_handler)) {
       console::error_1(&format!("Failed to register echo command: {}", e).into());
     }
@@ -167,12 +171,14 @@ impl UniLangWasmRepl {
       tags: Vec::new(),
       aliases: Vec::new(),
       examples: Vec::new(),
+    auto_help_enabled: false,
       permissions: Vec::new(),
       idempotent: true,
       deprecation_message: String::new(),
       http_method_hint: "GET".to_string(),
     };
     
+    #[allow(deprecated)]
     if let Err(e) = registry.command_add_runtime(&calc_cmd, Box::new(demo_handler)) {
       console::error_1(&format!("Failed to register add command: {}", e).into());
     }

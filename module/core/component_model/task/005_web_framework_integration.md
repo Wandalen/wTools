@@ -103,7 +103,8 @@ pub trait FromExtract< E : ExtractSource >
 #### **Generic Extraction Specification**
 ```rust
 #[derive(Debug, Clone, PartialEq)]
-pub struct ExtractSpec {
+pub struct ExtractSpec 
+{
   pub source_type: SourceType,
   pub key: Option<String>,
   pub default_value: Option<String>,
@@ -113,7 +114,8 @@ pub struct ExtractSpec {
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub enum SourceType {
+pub enum SourceType 
+{
   Path(Option<String>),        // Path parameter by position or name
   Query(Option<String>),       // Query parameter by name or all
   Header(String),              // HTTP header by name
@@ -125,7 +127,8 @@ pub enum SourceType {
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub enum BodyType {
+pub enum BodyType 
+{
   Json,
   Form,
   Text,
@@ -142,7 +145,8 @@ Framework adapters implement `ExtractSource` to bridge the generic system with s
 // Axum adapter
 pub struct AxumExtractor;
 
-impl ExtractSource for AxumExtractor {
+impl ExtractSource for AxumExtractor 
+{
   type Context = (axum::http::request::Parts, Option<axum::extract::State<AppState>>);
   type Error = AxumExtractionError;
   
@@ -174,7 +178,8 @@ impl ExtractSource for AxumExtractor {
     }
   }
   
-  fn supports_extraction(&self, spec: &ExtractSpec) -> bool {
+  fn supports_extraction(&self, spec: &ExtractSpec) -> bool 
+{
     matches!(spec.source_type, 
       SourceType::Path(_) | 
       SourceType::Query(_) | 
@@ -188,7 +193,8 @@ impl ExtractSource for AxumExtractor {
 // Actix-web adapter
 pub struct ActixExtractor;
 
-impl ExtractSource for ActixExtractor {
+impl ExtractSource for ActixExtractor 
+{
   type Context = (actix_web::HttpRequest, Option<&mut actix_web::dev::Payload>);
   type Error = ActixExtractionError;
   
@@ -217,11 +223,13 @@ impl ExtractSource for ActixExtractor {
 }
 
 // Generic config extractor (non-web)
-pub struct ConfigExtractor {
+pub struct ConfigExtractor 
+{
   config: std::collections::HashMap<String, String>,
 }
 
-impl ExtractSource for ConfigExtractor {
+impl ExtractSource for ConfigExtractor 
+{
   type Context = ();
   type Error = ConfigExtractionError;
   
@@ -258,7 +266,8 @@ impl ExtractSource for ConfigExtractor {
 #### **Basic Extraction**
 ```rust
 #[derive(Extract)]
-struct ApiRequest {
+struct ApiRequest 
+{
   #[extract(path)]                    // Extract first path parameter
   user_id: u64,
   
@@ -276,7 +285,8 @@ struct ApiRequest {
 #### **Cross-Platform Extraction**
 ```rust
 #[derive(Extract)]
-struct UniversalConfig {
+struct UniversalConfig 
+{
   #[extract(config = "database.url")]     // From config files
   database_url: String,
   
@@ -306,7 +316,8 @@ fn load_app_config(
 #### **Custom Extractors**
 ```rust
 #[derive(Extract)]
-struct AdvancedRequest {
+struct AdvancedRequest 
+{
   #[extract(custom = "extract_bearer_token")]
   token: BearerToken,
   
@@ -340,7 +351,8 @@ fn extract_user_from_jwt<E: ExtractSource>(
 #### **Conditional and Contextual Extraction**
 ```rust
 #[derive(Extract)]
-struct ConditionalRequest {
+struct ConditionalRequest 
+{
   #[extract(header = "authorization")]
   auth: Option<String>,
   
@@ -358,7 +370,8 @@ struct ConditionalRequest {
 #### **Nested and Composite Extraction** 
 ```rust
 #[derive(Extract)]
-struct CompositeRequest {
+struct CompositeRequest 
+{
   #[extract(nested)]
   auth_info: AuthInfo,
   
@@ -370,7 +383,8 @@ struct CompositeRequest {
 }
 
 #[derive(Extract)]
-struct AuthInfo {
+struct AuthInfo 
+{
   #[extract(header = "authorization")]
   token: String,
   
@@ -379,7 +393,8 @@ struct AuthInfo {
 }
 
 #[derive(Extract)]  
-struct RequestMetadata {
+struct RequestMetadata 
+{
   #[extract(header = "user-agent")]
   user_agent: String,
   
@@ -396,7 +411,8 @@ struct RequestMetadata {
 #### **Generated Extract Implementation**
 ```rust
 #[derive(Extract)]
-struct ApiRequest {
+struct ApiRequest 
+{
   #[extract(path)]
   user_id: u64,
   
@@ -523,9 +539,11 @@ mod tests {
   use super::*;
   
   #[test]
-  fn test_generic_extraction() {
+  fn test_generic_extraction() 
+{
     #[derive(Extract, Debug, PartialEq)]
-    struct TestRequest {
+    struct TestRequest 
+{
       #[extract(config = "app.name")]
       name: String,
       
@@ -548,9 +566,11 @@ mod tests {
   }
   
   #[test]
-  fn test_custom_extractor() {
+  fn test_custom_extractor() 
+{
     #[derive(Extract)]
-    struct TestRequest {
+    struct TestRequest 
+{
       #[extract(custom = "extract_test_value")]
       value: TestValue,
     }
@@ -567,9 +587,11 @@ mod tests {
   }
   
   #[test] 
-  fn test_conditional_extraction() {
+  fn test_conditional_extraction() 
+{
     #[derive(Extract)]
-    struct TestRequest {
+    struct TestRequest 
+{
       #[extract(config = "debug")]
       debug: bool,
       

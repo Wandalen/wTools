@@ -45,12 +45,14 @@ For proper regression analysis implementation, we need:
 
 #### 1. Historical Data Management
 ```rust
-pub struct HistoricalResults {
+pub struct HistoricalResults 
+{
     baseline_data: HashMap<String, BenchmarkResult>,
     historical_runs: Vec<TimestampedResults>,
 }
 
-pub struct TimestampedResults {
+pub struct TimestampedResults 
+{
     timestamp: SystemTime,
     results: HashMap<String, BenchmarkResult>,
     metadata: BenchmarkMetadata,
@@ -59,13 +61,15 @@ pub struct TimestampedResults {
 
 #### 2. Regression Analysis Engine
 ```rust
-pub struct RegressionAnalyzer {
+pub struct RegressionAnalyzer 
+{
     significance_threshold: f64,
     trend_window: usize,
     baseline_strategy: BaselineStrategy,
 }
 
-pub enum BaselineStrategy {
+pub enum BaselineStrategy 
+{
     FixedBaseline,      // Compare against fixed baseline
     RollingAverage,     // Compare against rolling average
     PreviousRun,        // Compare against previous run
@@ -74,10 +78,12 @@ pub enum BaselineStrategy {
 
 #### 3. Enhanced Template Integration
 ```rust
-impl PerformanceReport {
+impl PerformanceReport 
+{
     pub fn with_historical_data(mut self, historical: &HistoricalResults) -> Self;
     
-    fn add_regression_analysis(&self, output: &mut String, results: &HashMap<String, BenchmarkResult>) {
+    fn add_regression_analysis(&self, output: &mut String, results: &HashMap<String, BenchmarkResult>) 
+{
         if let Some(ref historical) = self.historical_data {
             // Implement actual regression analysis
             let analyzer = RegressionAnalyzer::new();

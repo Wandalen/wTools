@@ -1,6 +1,6 @@
 //! To avoid messing up with long logical expressions in the codebase.
 
-// use cfg_aliases::cfg_aliases;
+// use cfg_aliases ::cfg_aliases;
 
 fn main()
 {
@@ -12,14 +12,14 @@ fn main()
   //     all
   //     (
   //       feature = "reflect_reflect"
-  //     )
-  //   },
+  // )
+  // },
   //   any_feature :
   //   {
   //     any
   //     (
   //       feature = "reflect_reflect"
-  //     )
-  //   },
+  // )
+  // },
   // }
 }

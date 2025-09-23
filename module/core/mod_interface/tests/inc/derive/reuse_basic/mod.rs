@@ -1,6 +1,6 @@
 #![allow(dead_code)]
-#![allow(clippy::doc_markdown)]
-// use super::*;
+#![allow(clippy ::doc_markdown)]
+// use super :: *;
 
 /// Define a private namespace for all its items.
 mod private {}
@@ -9,18 +9,19 @@ mod child;
 
 //
 
-crate::the_module::mod_interface! {
+crate ::the_module ::mod_interface! {
   reuse child;
 }
 
 //
 
 #[ test ]
-fn basic() {
-  let _ = child::Own;
-  let _ = child::Orphan;
-  let _ = child::Exposed;
-  let _ = child::Prelude;
+fn basic() 
+{
+  let _ = child ::Own;
+  let _ = child ::Orphan;
+  let _ = child ::Exposed;
+  let _ = child ::Prelude;
 
   let _ = Own;
   let _ = Orphan;

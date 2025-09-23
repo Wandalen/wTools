@@ -119,7 +119,8 @@ Create practical examples showing:
 
 #### A. CV Analysis Example
 ```rust
-fn analyze_benchmark_reliability() {
+fn analyze_benchmark_reliability() 
+{
     let results = run_benchmark_suite();
     
     for result in results.results() {
@@ -143,7 +144,8 @@ fn analyze_benchmark_reliability() {
 
 #### B. Systematic CV Improvement Workflow
 ```rust
-fn improve_benchmark_cv(benchmark_name: &str) {
+fn improve_benchmark_cv(benchmark_name: &str) 
+{
     println!("🔧 Improving CV for benchmark: {}", benchmark_name);
     
     // Step 1: Baseline measurement

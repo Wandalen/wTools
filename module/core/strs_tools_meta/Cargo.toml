@@ -1,6 +1,6 @@
 [package]
 name = "strs_tools_meta"
-version = "0.7.0"
+version = "0.8.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -23,11 +23,13 @@ proc-macro = true
 [features]
 default = [
   "enabled",
+
   "optimize_split",
   "optimize_match",
 ]
 full = [
   "enabled",
+
   "optimize_split",
   "optimize_match",
 ]

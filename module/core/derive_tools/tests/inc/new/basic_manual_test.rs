@@ -13,56 +13,68 @@
 #![allow(unused_imports)]
 #![allow(dead_code)]
 
-use test_tools::*;
+use test_tools :: *;
 
-// N1.1: Unit struct
+// N1.1 : Unit struct
 pub struct UnitStruct;
 
-impl UnitStruct {
-  pub fn new() -> Self {
-    Self {}
-  }
+impl UnitStruct 
+{
+  pub fn new() -> Self
+  {
+  Self {}
+ }
 }
 
-// N1.2: Tuple struct with one field
+// N1.2 : Tuple struct with one field
 pub struct TupleStruct1(pub i32);
 
-impl TupleStruct1 {
-  pub fn new(field0: i32) -> Self {
-    Self(field0)
-  }
+impl TupleStruct1 
+{
+  pub fn new(field0: i32) -> Self
+  {
+  Self(field0)
+ }
 }
 
-// N1.3: Tuple struct with multiple fields
+// N1.3 : Tuple struct with multiple fields
 pub struct TupleStruct2(pub i32, pub i32);
 
-impl TupleStruct2 {
-  pub fn new(field0: i32, field1: i32) -> Self {
-    Self(field0, field1)
-  }
+impl TupleStruct2 
+{
+  pub fn new(field0: i32, field1: i32) -> Self
+  {
+  Self(field0, field1)
+ }
 }
 
-// N1.4: Named struct with one field
-pub struct NamedStruct1 {
+// N1.4 : Named struct with one field
+pub struct NamedStruct1 
+{
   pub field1: i32,
 }
 
-impl NamedStruct1 {
-  pub fn new(field1: i32) -> Self {
-    Self { field1 }
-  }
+impl NamedStruct1 
+{
+  pub fn new(field1: i32) -> Self
+  {
+  Self { field1 }
+ }
 }
 
-// N1.5: Named struct with multiple fields
-pub struct NamedStruct2 {
+// N1.5 : Named struct with multiple fields
+pub struct NamedStruct2 
+{
   pub field1: i32,
   pub field2: i32,
 }
 
-impl NamedStruct2 {
-  pub fn new(field1: i32, field2: i32) -> Self {
-    Self { field1, field2 }
-  }
+impl NamedStruct2 
+{
+  pub fn new(field1: i32, field2: i32) -> Self
+  {
+  Self { field1, field2 }
+ }
 }
 
 // Shared test logic

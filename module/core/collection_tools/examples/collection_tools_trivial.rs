@@ -6,29 +6,30 @@
 //!
 //! ## Features
 //!
-//! - `hmap!`: A macro to create `HashMap` instances with minimal syntax.
+//! - `hmap!` : A macro to create `HashMap` instances with minimal syntax.
 //!
 //! ## Example Usage
 //!
 //! Here's a quick example to demonstrate how you can use the `hmap!` macro provided by this crate
 //! to create a `HashMap` similar to how you might initialize a map in other languages. This example
-//! also shows that the resulting map is equivalent to one created using the standard `HashMap::new`
+//! also shows that the resulting map is equivalent to one created using the standard `HashMap ::new`
 //! and `.insert()` methods.
 //!
 //! The `hmap!` macro significantly simplifies the syntax required to instantiate and populate
 //! a `HashMap`, making your code cleaner and more concise. This is particularly useful in cases
 //! where you need to define a map with a known set of key-value pairs upfront.
 
-#[cfg(not(all(
+#[ cfg( not( all(
   feature = "enabled",
   feature = "collection_constructors",
   any(feature = "use_alloc", not(feature = "no_std"))
-)))]
+) ) ) ]
 fn main() {}
 
-#[cfg(all(feature = "enabled", feature = "collection_constructors"))]
-#[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
-fn main() {
+#[ cfg(all(feature = "enabled", feature = "collection_constructors")) ]
+#[ cfg(any(feature = "use_alloc", not(feature = "no_std"))) ]
+fn main() 
+{
   use collection_tools::*;
   let map = hmap! { 3 => 13 };
   let mut expected = collection_tools::HashMap::new();

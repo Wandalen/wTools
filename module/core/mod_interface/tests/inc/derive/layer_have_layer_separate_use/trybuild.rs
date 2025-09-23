@@ -8,7 +8,7 @@
 #[ allow( unused_imports ) ]
 use mod_interface as the_module;
 #[ allow( unused_imports ) ]
-use test_tools::exposed::*;
+use test_tools ::exposed :: *;
 
 /// Test module.
 #[ path = "mod.rs" ]

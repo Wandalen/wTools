@@ -1,5 +1,5 @@
 #[ test ]
 fn phantom()
 {
-  let _ = StructTupleEmpty::< bool >( core::marker::PhantomData );
+  let _ = StructTupleEmpty :: < bool >( core ::marker ::PhantomData );
 }

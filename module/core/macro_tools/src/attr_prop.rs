@@ -4,7 +4,7 @@
 //! # Example
 //!
 //! ```rust
-//! use macro_tools::AttributePropertyBoolean;
+//! use macro_tools ::AttributePropertyBoolean;
 //!
 //! #[ derive( Debug, Default, Clone, Copy ) ]
 //! pub struct DebugMarker;
@@ -14,71 +14,71 @@
 //!
 //! pub trait AttributePropertyComponent
 //! {
-//!   const KEYWORD : &'static str;
+//!   const KEYWORD: &'static str;
 //! }
 //!
 //! impl AttributePropertyComponent for DebugMarker
 //! {
-//!   const KEYWORD : &'static str = "debug";
+//!   const KEYWORD: &'static str = "debug";
 //! }
 //!
 //! impl AttributePropertyComponent for EnabledMarker
 //! {
-//!   const KEYWORD : &'static str = "enabled";
+//!   const KEYWORD: &'static str = "enabled";
 //! }
 //!
 //! #[ derive( Debug, Default ) ]
 //! struct MyAttributes
 //! {
-//!   pub debug : AttributePropertyBoolean< DebugMarker >,
-//!   pub enabled : AttributePropertyBoolean< EnabledMarker >,
+//!   pub debug: AttributePropertyBoolean< DebugMarker >,
+//!   pub enabled: AttributePropertyBoolean< EnabledMarker >,
 //! }
 //!
-//! impl syn::parse::Parse for MyAttributes
+//! impl syn ::parse ::Parse for MyAttributes
 //! {
-//!   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result<  Self  >
+//!   fn parse( input: syn ::parse ::ParseStream< '_ > ) -> syn ::Result< Self >
 //!   {
-//!     let mut debug = AttributePropertyBoolean::< DebugMarker >::default();
-//!     let mut enabled = AttributePropertyBoolean::< EnabledMarker >::default();
+//!     let mut debug = AttributePropertyBoolean :: < DebugMarker > ::default();
+//!     let mut enabled = AttributePropertyBoolean :: < EnabledMarker > ::default();
 //!
 //!     while !input.is_empty()
 //!     {
 //!       let lookahead = input.lookahead1();
-//!       if lookahead.peek( syn::Ident )
+//!       if lookahead.peek( syn ::Ident )
 //!       {
-//!         let ident : syn::Ident = input.parse()?;
+//!         let ident: syn ::Ident = input.parse()?;
 //!         match ident.to_string().as_str()
 //!         {
-//!           DebugMarker::KEYWORD => debug = input.parse()?,
-//!           EnabledMarker::KEYWORD => enabled = input.parse()?,
+//!           DebugMarker ::KEYWORD => debug = input.parse()?,
+//!           EnabledMarker ::KEYWORD => enabled = input.parse()?,
 //!           _ => return Err( lookahead.error() ),
-//!         }
-//!       }
+//! }
+//! }
 //!       else
 //!       {
 //!         return Err( lookahead.error() );
-//!       }
-//!
-//!       // Optional comma handling
-//!       if input.peek( syn::Token![,] )
-//!       {
-//!         input.parse::< syn::Token![,] >()?;
-//!       }
-//!     }
-//!
-//!     Ok( MyAttributes { debug, enabled } )
-//!   }
 //! }
 //!
-//! let input : syn::Attribute = syn::parse_quote!( #[ attribute( enabled = true ) ] );
+//!       // Optional comma handling
+//!       if input.peek( syn ::Token![,] )
+//!       {
+//!         input.parse :: < syn ::Token![,] >()?;
+//! }
+//! }
+//!
+//!     Ok( MyAttributes { debug, enabled } )
+//! }
+//! }
+//!
+//! let input: syn ::Attribute = syn ::parse_quote!( #[ attribute( enabled = true ) ] );
 //! let meta = match input.meta
 //! {
-//!   syn::Meta::List( meta_list ) => meta_list,
-//!   _ => panic!( "Expected a Meta::List" ),
+//!   syn ::Meta ::List( meta_list ) => meta_list,
+//!   _ => panic!( "Expected a Meta ::List" ),
 //! };
 //!
-//! let nested_meta_stream : proc_macro2::TokenStream = meta.tokens;
-//! let attrs : MyAttributes = syn::parse2( nested_meta_stream ).unwrap();
+//! let nested_meta_stream: proc_macro2 ::TokenStream = meta.tokens;
+//! let attrs: MyAttributes = syn ::parse2( nested_meta_stream ).unwrap();
 //! println!( "{:?}", attrs );
 //! ```
 //!
@@ -92,7 +92,7 @@
 //! matching them to the appropriate marker's keyword.
 //! If an unrecognized identifier is encountered, it returns an error.
 //!
-//! The `parse_quote!` macro is used to create a `syn::Attribute` instance with the attribute syntax,
+//! The `parse_quote!` macro is used to create a `syn ::Attribute` instance with the attribute syntax,
 //! which is then parsed into the `MyAttributes` struct. The resulting `MyAttributes` instance is printed to the console.
 
 mod boolean;
@@ -103,8 +103,9 @@ mod syn;
 mod syn_optional;
 
 /// Define a private namespace for all its items.
-mod private {
-  // use crate::*;
+mod private 
+{
+  // use crate :: *;
 
   /// Trait for properties of an attribute component that can be identified by a keyword.
   ///
@@ -119,78 +120,82 @@ mod private {
   /// # Example
   ///
   /// ```rust
-  /// use macro_tools::AttributePropertyComponent;
+  /// use macro_tools ::AttributePropertyComponent;
   ///
   /// struct MyProperty;
   ///
   /// impl AttributePropertyComponent for MyProperty
   /// {
-  ///   const KEYWORD : &'static str = "my_property";
+  ///   const KEYWORD: &'static str = "my_property";
   /// }
   /// ```
   ///
   pub trait AttributePropertyComponent
   where
-    Self: Sized,
+  Self: Sized,
   {
-    /// The keyword that identifies the component.
-    ///
-    /// This constant is used to match the attribute to the corresponding property.
-    /// Each implementor of this trait must provide a unique keyword for its type.
-    const KEYWORD: &'static str;
-  }
+  /// The keyword that identifies the component.
+  ///
+  /// This constant is used to match the attribute to the corresponding property.
+  /// Each implementor of this trait must provide a unique keyword for its type.
+  const KEYWORD: &'static str;
+ }
 }
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod own {
+pub mod own 
+{
 
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use orphan::*;
+  pub use orphan :: *;
   #[ doc( inline ) ]
-  pub use private::{};
+  pub use private :: { };
 }
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod orphan {
+pub mod orphan 
+{
 
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod exposed {
+pub mod exposed 
+{
 
-  use super::*;
-  pub use super::super::attr_prop;
+  use super :: *;
+  pub use super ::super ::attr_prop;
 
-  // pub use super::own as attr_prop;
+  // pub use super ::own as attr_prop;
 
   #[ doc( inline ) ]
-  pub use prelude::*;
+  pub use prelude :: *;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::{
-    private::AttributePropertyComponent, singletone::AttributePropertySingletone, singletone::AttributePropertySingletoneMarker,
-    singletone_optional::AttributePropertyOptionalSingletone, singletone_optional::AttributePropertyOptionalSingletoneMarker,
-    boolean::AttributePropertyBoolean, boolean::AttributePropertyBooleanMarker,
-    boolean_optional::AttributePropertyOptionalBoolean, boolean_optional::AttributePropertyOptionalBooleanMarker,
-    syn::AttributePropertySyn, syn::AttributePropertySynMarker, syn_optional::AttributePropertyOptionalSyn,
-    syn_optional::AttributePropertyOptionalSynMarker,
-  };
+  pub use super :: {
+  private ::AttributePropertyComponent, singletone ::AttributePropertySingletone, singletone ::AttributePropertySingletoneMarker,
+  singletone_optional ::AttributePropertyOptionalSingletone, singletone_optional ::AttributePropertyOptionalSingletoneMarker,
+  boolean ::AttributePropertyBoolean, boolean ::AttributePropertyBooleanMarker,
+  boolean_optional ::AttributePropertyOptionalBoolean, boolean_optional ::AttributePropertyOptionalBooleanMarker,
+  syn ::AttributePropertySyn, syn ::AttributePropertySynMarker, syn_optional ::AttributePropertyOptionalSyn,
+  syn_optional ::AttributePropertyOptionalSynMarker,
+ };
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
-pub mod prelude {
-  use super::*;
+pub mod prelude 
+{
+  use super :: *;
 }

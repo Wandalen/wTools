@@ -1,12 +1,12 @@
 #[ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 
 // trace_macros!( true );
-// the_module::types!
+// the_module ::types!
 // {
 //   #[ derive( Debug, Clone ) ]
 //   #[ derive( PartialEq, Default ) ]
-//   many Many : < T >;
+//   many Many: < T >;
 // }
 // trace_macros!( false );
 

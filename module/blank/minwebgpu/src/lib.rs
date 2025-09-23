@@ -3,7 +3,7 @@
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 
-/// Function description.
+/// A placeholder function for the minwebgpu module.
 #[ cfg( feature = "enabled" ) ]
 pub fn f1()
 {

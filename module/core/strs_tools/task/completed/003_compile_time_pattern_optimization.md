@@ -49,20 +49,23 @@ let result = split_optimized!(input, ["::", ":", "."] => {
 
 ```rust
 /// Compile-time pattern analysis and specialization
-pub struct CompiletimeSplit<const N: usize> {
+pub struct CompiletimeSplit<const N: usize> 
+{
     delimiters: [&'static str; N],
     algorithm: SplitAlgorithm,
 }
 
 impl<const N: usize> CompiletimeSplit<N> {
     /// Analyze patterns at compile time
-    pub const fn new(delimiters: [&'static str; N]) -> Self {
+    pub const fn new(delimiters: [&'static str; N]) -> Self 
+{
         let algorithm = Self::analyze_patterns(&delimiters);
         Self { delimiters, algorithm }
     }
     
     /// Compile-time pattern analysis
-    const fn analyze_patterns(patterns: &[&'static str; N]) -> SplitAlgorithm {
+    const fn analyze_patterns(patterns: &[&'static str; N]) -> SplitAlgorithm 
+{
         // Const evaluation determines optimal algorithm
         if N == 1 && patterns[0].len() == 1 {
             SplitAlgorithm::SingleChar
@@ -82,7 +85,8 @@ impl<const N: usize> CompiletimeSplit<N> {
 ```rust
 /// Compile-time algorithm selection
 #[derive(Clone, Copy)]
-pub enum SplitAlgorithm {
+pub enum SplitAlgorithm 
+{
     SingleChar,        // memchr optimization
     FewChars,          // 2-3 characters, manual unrolling  
     SmallPatternSet,   // aho-corasick with small alphabet
@@ -90,7 +94,9 @@ pub enum SplitAlgorithm {
 }
 
 impl<const N: usize> CompiletimeSplit<N> {
-    pub fn split<'a>(&self, input: &'a str) -> impl Iterator<Item = &'a str> + 'a {
+    pub fn split<'a>(&self, input: &'a str) -> impl Iterator<Item = &'a str> + 'a 
+
+{
         match self.algorithm {
             SplitAlgorithm::SingleChar => {
                 // Compile-time specialized for single character
@@ -115,7 +121,8 @@ use quote::quote;
 use syn::{parse_macro_input, LitStr, Expr};
 
 #[proc_macro]
-pub fn split_optimized(input: TokenStream) -> TokenStream {
+pub fn split_optimized(input: TokenStream) -> TokenStream 
+{
     let input = parse_macro_input!(input as SplitOptimizedInput);
     
     // Analyze delimiter patterns at compile time
@@ -140,7 +147,8 @@ pub fn split_optimized(input: TokenStream) -> TokenStream {
 }
 
 /// Compile-time pattern analysis
-fn analyze_delimiter_patterns(patterns: &[String]) -> PatternType {
+fn analyze_delimiter_patterns(patterns: &[String]) -> PatternType 
+{
     if patterns.len() == 1 && patterns[0].len() == 1 {
         PatternType::SingleChar(patterns[0].chars().next().unwrap())
     } else if patterns.len() <= 3 && patterns.iter().all(|p| p.len() == 1) {
@@ -156,7 +164,8 @@ fn analyze_delimiter_patterns(patterns: &[String]) -> PatternType {
 
 ```rust
 /// Compile-time string analysis
-pub const fn analyze_string_const(s: &str) -> StringMetrics {
+pub const fn analyze_string_const(s: &str) -> StringMetrics 
+{
     let mut metrics = StringMetrics::new();
     let bytes = s.as_bytes();
     let mut i = 0;
@@ -265,7 +274,8 @@ let result = COMMON_DELIMITERS.split(input);
 ```rust
 // Limit macro expansion for large pattern sets
 #[proc_macro]
-pub fn split_optimized(input: TokenStream) -> TokenStream {
+pub fn split_optimized(input: TokenStream) -> TokenStream 
+{
     if pattern_count > MAX_SPECIALIZED_PATTERNS {
         // Fall back to runtime algorithm
         generate_runtime_fallback()
@@ -290,7 +300,8 @@ pub fn split_optimized(input: TokenStream) -> TokenStream {
 #### Compile-Time vs Runtime Comparison
 ```rust
 #[bench]
-fn bench_runtime_pattern_analysis(b: &mut Bencher) {
+fn bench_runtime_pattern_analysis(b: &mut Bencher) 
+{
     let input = "field1:value1,field2:value2;field3:value3";
     b.iter(|| {
         // Runtime analysis every iteration
@@ -304,7 +315,8 @@ fn bench_runtime_pattern_analysis(b: &mut Bencher) {
 }
 
 #[bench]  
-fn bench_compiletime_specialized(b: &mut Bencher) {
+fn bench_compiletime_specialized(b: &mut Bencher) 
+{
     let input = "field1:value1,field2:value2;field3:value3";
     
     // Pattern analysis done at compile time
@@ -356,7 +368,8 @@ let fields: Vec<&str> = split_optimized!("a,b;c", [",", ";"]);
 // Type-safe compile-time patterns
 const DELIMS: CompiletimeSplit<2> = CompiletimeSplit::new([",", ";"]);
 
-fn process_csv_line(line: &str) -> Vec<&str> {
+fn process_csv_line(line: &str) -> Vec<&str> 
+{
     DELIMS.split(line).collect()
 }
 

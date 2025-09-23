@@ -112,7 +112,8 @@ pub fn optimize_match( input: TokenStream ) -> TokenStream { ... }
 #### 3. Debug Attribute Implementation
 ```rust
 // Added debug parameter to input structures
-struct OptimizeSplitInput {
+struct OptimizeSplitInput 
+{
   source: Expr,
   delimiters: Vec< String >,
   preserve_delimiters: bool,

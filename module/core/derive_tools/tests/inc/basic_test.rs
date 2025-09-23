@@ -1,7 +1,7 @@
 #![allow(unused_imports)]
-use super::*;
-use super::derives::{tests_impls, tests_index};
-use super::derives::a_id;
+use super :: *;
+use super ::derives :: { tests_impls, tests_index };
+use super ::derives ::a_id;
 
 //
 
@@ -10,88 +10,88 @@ tests_impls! {
   #[ cfg( all( feature = "derive_from", feature = "derive_inner_from", feature = "derive_display", feature = "derive_from_str" ) ) ]
   fn samples()
   {
-    use crate::the_module::*;
+  use crate ::the_module :: *;
 
-    #[ derive( // From, // InnerFrom,
+  #[ derive( // From, // InnerFrom,
 Display, FromStr, PartialEq, Debug ) ]
-    #[ display( "{a}-{b}" ) ]
-    struct Struct1
-    {
-      a : i32,
-      b : i32,
-    }
+  #[ display( "{a}-{b}" ) ]
+  struct Struct1
+  {
+   a: i32,
+   b: i32,
+ }
 
-    // derived InnerFrom - commented out until derive issues are resolved
-    // let src = Struct1 { a : 1, b : 3 };
-    // let got : ( i32, i32 ) = src.into();
-    // let exp = ( 1, 3 );
-    // assert_eq!( got, exp );
+  // derived InnerFrom - commented out until derive issues are resolved
+  // let src = Struct1 { a: 1, b: 3 };
+  // let got: ( i32, i32 ) = src.into();
+  // let exp = ( 1, 3 );
+  // assert_eq!( got, exp );
 
-    // derived From - commented out until derive issues are resolved
-    // let src : Struct1 = ( 1, 3 ).into();
-    // let got : ( i32, i32 ) = src.into();
-    // let exp = ( 1, 3 );
-    // assert_eq!( got, exp );
+  // derived From - commented out until derive issues are resolved
+  // let src: Struct1 = ( 1, 3 ).into();
+  // let got: ( i32, i32 ) = src.into();
+  // let exp = ( 1, 3 );
+  // assert_eq!( got, exp );
 
-    // derived Display
-    let src = Struct1 { a : 1, b : 3 };
-    let got = format!( "{}", src );
-    let exp = "1-3";
-    println!( "{}", got );
-    assert_eq!( got, exp );
+  // derived Display
+  let src = Struct1 { a: 1, b: 3 };
+  let got = format!( "{}", src );
+  let exp = "1-3";
+  println!( "{}", got );
+  assert_eq!( got, exp );
 
-    // derived FromStr
-    use std::str::FromStr;
-    let src = Struct1::from_str( "1-3" );
-    let exp = Ok( Struct1 { a : 1, b : 3 } );
-    assert_eq!( src, exp );
-  }
+  // derived FromStr
+  use std ::str ::FromStr;
+  let src = Struct1 ::from_str( "1-3" );
+  let exp = Ok( Struct1 { a: 1, b: 3 } );
+  assert_eq!( src, exp );
+ }
 
   //
 
   #[ cfg( all( feature = "derive_from", feature = "derive_inner_from", feature = "derive_display" ) ) ]
   fn basic()
   {
-    use crate::the_module::*;
+  use crate ::the_module :: *;
 
-    #[ derive( // From, // InnerFrom,
+  #[ derive( // From, // InnerFrom,
 Display ) ]
-    #[ display( "{a}-{b}" ) ]
-    struct Struct1
-    {
-      a : i32,
-      b : i32,
-    }
+  #[ display( "{a}-{b}" ) ]
+  struct Struct1
+  {
+   a: i32,
+   b: i32,
+ }
 
-    // let src = Struct1 { a : 1, b : 3 };
-    // let got : ( i32, i32 ) = src.into();
-    // let exp = ( 1, 3 );
-    // a_id!( got, exp );
+  // let src = Struct1 { a: 1, b: 3 };
+  // let got: ( i32, i32 ) = src.into();
+  // let exp = ( 1, 3 );
+  // a_id!( got, exp );
 
-    let src = Struct1 { a : 1, b : 3 };
-    let got = format!( "{}", src );
-    let exp = "1-3";
-    a_id!( got, exp );
-  }
+  let src = Struct1 { a: 1, b: 3 };
+  let got = format!( "{}", src );
+  let exp = "1-3";
+  a_id!( got, exp );
+ }
 
   //
 
   #[ cfg( all( feature = "strum", feature = "derive_strum" ) ) ]
   fn enum_with_strum()
   {
-    use strum::{ EnumIter, IntoEnumIterator };
+  use strum :: { EnumIter, IntoEnumIterator };
 
-    #[ derive( EnumIter, Debug, PartialEq ) ]
-    enum Foo
-    {
-      Bar,
-      Baz
-    }
+  #[ derive( EnumIter, Debug, PartialEq ) ]
+  enum Foo
+  {
+   Bar,
+   Baz
+ }
 
-    let mut iter = Foo::iter();
-    a_id!( iter.next(), Some( Foo::Bar ) );
-    a_id!( iter.next(), Some( Foo::Baz ) );
-  }
+  let mut iter = Foo ::iter();
+  a_id!( iter.next(), Some( Foo ::Bar ) );
+  a_id!( iter.next(), Some( Foo ::Baz ) );
+ }
 }
 
 //

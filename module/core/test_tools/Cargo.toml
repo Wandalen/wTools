@@ -38,9 +38,7 @@ default = [
   "process_environment_is_cicd",
   "integration",
 ]
-full = [
-  "default"
-]
+full = [ "enabled" ]
 # CRITICAL: This feature controls doctest-specific behavior but can break test compilation
 # if used incorrectly. See REGRESSION PREVENTION notes below.
 doctest = [] # for doctest shortcomings resolution
@@ -81,7 +79,7 @@ normal_build = [
 # standalone_build vesion of build is used to avoid cyclic dependency
 # when crate depend on itself
 standalone_build = [
-  "enabled",
+
   "standalone_error_tools",
   "standalone_collection_tools",
   "standalone_impls_index",

@@ -1,143 +1,143 @@
-#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
+#[ allow( clippy ::std_instead_of_alloc, clippy ::std_instead_of_core ) ]
 mod private
 {
 
-  use crate::*;
-  // qqq : for Bohdan : bad
-  // use std::*;
-  use std::slice;
-  use former::Former;
+  use crate :: *;
+  // qqq: for Bohdan: bad
+  // use std :: *;
+  use std ::slice;
+  use former ::Former;
 
   /// Stores information about the current workspace.
   #[ derive( Debug, Clone ) ]
   pub struct Workspace
   {
-    /// Metadata of the workspace, containing detailed information about the packages, dependencies, and other workspace-related data.
-    pub metadata : cargo_metadata::Metadata,
-    /// The directory containing the manifest file (`Cargo.toml`) of the workspace.
-    pub crate_dir : CrateDir,
-  }
+  /// Metadata of the workspace, containing detailed information about the packages, dependencies, and other workspace-related data.
+  pub metadata: cargo_metadata ::Metadata,
+  /// The directory containing the manifest file (`Cargo.toml`) of the workspace.
+  pub crate_dir: CrateDir,
+ }
 
   /// Represents errors related to workspace operations.
-  #[ derive( Debug, error::typed::Error ) ]
+  #[ derive( Debug, error ::typed ::Error ) ]
   pub enum WorkspaceInitError
   {
-    /// Something went wrong with path to a workspace.
-    #[ error( "Path error. Details: {0}" ) ]
-    Path( #[ from ] PathError ),
-    /// Something went wrong with the workspace' data
-    #[ error( "Can not load workspace data. Details: {0}" ) ]
-    Metadata( #[ from ] cargo_metadata::Error ),
-    /// Files error
-    #[ error( "I/O error: {0}" ) ]
-    IO( #[ from ] std::io::Error ),
-  }
+  /// Something went wrong with path to a workspace.
+  #[ error( "Path error. Details: {0}" ) ]
+  Path( #[ from ] PathError ),
+  /// Something went wrong with the workspace' data
+  #[ error( "Can not load workspace data. Details: {0}" ) ]
+  Metadata( #[ from ] cargo_metadata ::Error ),
+  /// Files error
+  #[ error( "I/O error: {0}" ) ]
+  IO( #[ from ] std ::io ::Error ),
+ }
 
   impl TryFrom< CrateDir > for Workspace
   {
-    type Error = WorkspaceInitError;
+  type Error = WorkspaceInitError;
 
-    /// Load data from current directory
-    fn try_from( mut crate_dir : CrateDir ) -> Result< Self, Self::Error >
-    {
-      let metadata = cargo_metadata::MetadataCommand::new()
-      .current_dir( crate_dir.as_ref() )
-      .no_deps()
-      .exec()?;
-      // inout crate dir may refer on crate's manifest dir, not workspace's manifest dir
-      crate_dir = ( &metadata.workspace_root ).try_into()?;
-      Result::Ok( Self
-      {
-        metadata,
-        crate_dir,
-      })
-    }
+  /// Load data from current directory
+  fn try_from( mut crate_dir: CrateDir ) -> Result< Self, Self ::Error >
+  {
+   let metadata = cargo_metadata ::MetadataCommand ::new()
+   .current_dir( crate_dir.as_ref() )
+   .no_deps()
+   .exec()?;
+   // inout crate dir may refer on crate's manifest dir, not workspace's manifest dir
+   crate_dir = ( &metadata.workspace_root ).try_into()?;
+   Result ::Ok( Self
+   {
+  metadata,
+  crate_dir,
+ })
+ }
 
-  }
+ }
 
   impl TryFrom< CurrentPath > for Workspace
   {
-    type Error = WorkspaceInitError;
+  type Error = WorkspaceInitError;
 
-    /// Load data from current directory
-    fn try_from( _cd : CurrentPath ) -> Result< Self, Self::Error >
-    {
-      let abs_path = AbsolutePath::try_from( std::env::current_dir()? )?;
-      let crate_dir = CrateDir::try_from( abs_path )?;
-      Self::try_from( crate_dir )
-    }
-
-  }
-
-  impl From< cargo_metadata::Metadata > for Workspace
+  /// Load data from current directory
+  fn try_from( _cd: CurrentPath ) -> Result< Self, Self ::Error >
   {
-    fn from( metadata : cargo_metadata::Metadata ) -> Self
-    {
-      // SAFE: `workspace_root` is a path to a`Cargo.toml` file, therefor the parent is the directory
-      let path = metadata.workspace_root.as_std_path().parent().unwrap().to_path_buf();
-      let crate_dir = CrateDir::try_from( path ).unwrap();
-      Self
-      {
-        metadata,
-        crate_dir,
-      }
-    }
-  }
+   let abs_path = AbsolutePath ::try_from( std ::env ::current_dir()? )?;
+   let crate_dir = CrateDir ::try_from( abs_path )?;
+   Self ::try_from( crate_dir )
+ }
+
+ }
+
+  impl From< cargo_metadata ::Metadata > for Workspace
+  {
+  fn from( metadata: cargo_metadata ::Metadata ) -> Self
+  {
+   // SAFE: `workspace_root` is a path to a`Cargo.toml` file, therefor the parent is the directory
+   let path = metadata.workspace_root.as_std_path().parent().unwrap().to_path_buf();
+   let crate_dir = CrateDir ::try_from( path ).unwrap();
+   Self
+   {
+  metadata,
+  crate_dir,
+ }
+ }
+ }
 
   impl Workspace
   {
 
-    /// Returns list of all packages
-    pub fn packages< 'a >( &'a self )
-    -> core::iter::Map
-    <
-      slice::Iter< 'a, cargo_metadata::Package >,
-      impl Fn( &'a cargo_metadata::Package ) -> WorkspacePackageRef< 'a > + Clone,
-    >
-    {
-      self.metadata.packages.iter().map( WorkspacePackageRef::from )
-    }
+  /// Returns list of all packages
+  pub fn packages< 'a >( &'a self )
+  -> core ::iter ::Map
+  <
+   slice ::Iter< 'a, cargo_metadata ::Package >,
+   impl Fn( &'a cargo_metadata ::Package ) -> WorkspacePackageRef< 'a > + Clone,
+ >
+  {
+   self.metadata.packages.iter().map( WorkspacePackageRef ::from )
+ }
 
-    /// Returns the path to workspace root
-    ///
-    /// # Panics
-    /// qqq: doc
-    #[ must_use ]
-    pub fn workspace_root( &self ) -> CrateDir
-    {
-      // Safe because workspace_root.as_std_path() is always a path to a directory
-      CrateDir::try_from( self.metadata.workspace_root.as_std_path() ).unwrap()
-    }
+  /// Returns the path to workspace root
+  ///
+  /// # Panics
+  /// qqq: doc
+  #[ must_use ]
+  pub fn workspace_root( &self ) -> CrateDir
+  {
+   // Safe because workspace_root.as_std_path() is always a path to a directory
+   CrateDir ::try_from( self.metadata.workspace_root.as_std_path() ).unwrap()
+ }
 
-    /// Returns the path to target directory
-    #[ must_use ]
-    pub fn target_directory( &self ) -> &std::path::Path
-    {
-      self.metadata.target_directory.as_std_path()
-    }
+  /// Returns the path to target directory
+  #[ must_use ]
+  pub fn target_directory( &self ) -> &std ::path ::Path
+  {
+   self.metadata.target_directory.as_std_path()
+ }
 
-    /// Find a package by its manifest file path
-    ///
-    /// # Panics
-    /// qqq: doc
-    pub fn package_find_by_manifest< P >( &self, manifest_file : P ) -> Option< WorkspacePackageRef< '_ > >
-    where
-      P : AsRef< std::path::Path >,
-    {
-      self
-      .packages()
-      .find( | &p | p.manifest_file().unwrap().as_ref() == manifest_file.as_ref() )
-    }
+  /// Find a package by its manifest file path
+  ///
+  /// # Panics
+  /// qqq: doc
+  pub fn package_find_by_manifest< P >( &self, manifest_file: P ) -> Option< WorkspacePackageRef< '_ > >
+  where
+   P: AsRef< std ::path ::Path >,
+  {
+   self
+   .packages()
+   .find( | &p | p.manifest_file().unwrap().as_ref() == manifest_file.as_ref() )
+ }
 
-    /// Filter of packages.
-    #[ must_use ]
-    pub fn packages_which( &self ) -> PackagesFilterFormer< '_ >
-    {
-      // PackagesFilter::new( self )
-      PackagesFilter::former().workspace( self )
-    }
+  /// Filter of packages.
+  #[ must_use ]
+  pub fn packages_which( &self ) -> PackagesFilterFormer< '_ >
+  {
+   // PackagesFilter ::new( self )
+   PackagesFilter ::former().workspace( self )
+ }
 
-  }
+ }
 
 
   #[ derive( Former ) ]
@@ -145,162 +145,162 @@ mod private
   #[ allow( missing_debug_implementations ) ]
   pub struct PackagesFilter< 'a >
   {
-    workspace : &'a Workspace,
-    crate_dir : Box< dyn PackageFilter >,
-    manifest_file : Box< dyn PackageFilter >,
-  }
+  workspace: &'a Workspace,
+  crate_dir: Box< dyn PackageFilter >,
+  manifest_file: Box< dyn PackageFilter >,
+ }
 
   pub trait PackageFilter
   {
-    fn include( &self, package : WorkspacePackageRef< '_ > ) -> bool;
-  }
+  fn include( &self, package: WorkspacePackageRef< '_ > ) -> bool;
+ }
 
   impl Default for Box< dyn PackageFilter >
   {
-    fn default() -> Self
-    {
-      Box::new( PackageFilterAll )
-    }
-  }
+  fn default() -> Self
+  {
+   Box ::new( PackageFilterAll )
+ }
+ }
 
   pub struct PackageFilterAll;
   impl PackageFilter for PackageFilterAll
   {
-    #[ inline( always ) ]
-    fn include( &self, _package : WorkspacePackageRef< '_ > ) -> bool
-    {
-      true
-    }
-  }
+  #[ inline( always ) ]
+  fn include( &self, _package: WorkspacePackageRef< '_ > ) -> bool
+  {
+   true
+ }
+ }
 
   pub struct PackageFilterCrateDir( CrateDir );
   impl PackageFilter for PackageFilterCrateDir
   {
-    #[ inline( always ) ]
-    fn include( &self, package : WorkspacePackageRef< '_ > ) -> bool
-    {
-      self.0 == package.crate_dir().unwrap()
-    }
-  }
+  #[ inline( always ) ]
+  fn include( &self, package: WorkspacePackageRef< '_ > ) -> bool
+  {
+   self.0 == package.crate_dir().unwrap()
+ }
+ }
 
   impl From< CrateDir > for Box< dyn PackageFilter >
   {
-    #[ inline( always ) ]
-    fn from( src : CrateDir ) -> Self
-    {
-      Box::new( PackageFilterCrateDir( src ) )
-    }
-  }
+  #[ inline( always ) ]
+  fn from( src: CrateDir ) -> Self
+  {
+   Box ::new( PackageFilterCrateDir( src ) )
+ }
+ }
 
   pub struct PackageFilterManifestFile( ManifestFile );
   impl PackageFilter for PackageFilterManifestFile
   {
-    #[ inline( always ) ]
-    fn include( &self, package : WorkspacePackageRef< '_ > ) -> bool
-    {
-      self.0 == package.manifest_file().unwrap()
-    }
-  }
+  #[ inline( always ) ]
+  fn include( &self, package: WorkspacePackageRef< '_ > ) -> bool
+  {
+   self.0 == package.manifest_file().unwrap()
+ }
+ }
 
   impl From< ManifestFile > for Box< dyn PackageFilter >
   {
-    #[ inline( always ) ]
-    fn from( src : ManifestFile ) -> Self
-    {
-      Box::new( PackageFilterManifestFile( src ) )
-    }
-  }
+  #[ inline( always ) ]
+  fn from( src: ManifestFile ) -> Self
+  {
+   Box ::new( PackageFilterManifestFile( src ) )
+ }
+ }
 
   impl< 'a > PackagesFilter< 'a >
   {
 
-    pub fn new( workspace : &'a Workspace ) -> Self
-    {
-      Self
-      {
-        workspace,
-        crate_dir : Box::default(),
-        manifest_file : Box::default(),
-      }
-    }
+  pub fn new( workspace: &'a Workspace ) -> Self
+  {
+   Self
+   {
+  workspace,
+  crate_dir: Box ::default(),
+  manifest_file: Box ::default(),
+ }
+ }
 
-    #[ inline( always ) ]
-    #[ allow( clippy::unused_self ) ]
-    pub fn iter( &'a self ) -> impl Iterator< Item = WorkspacePackageRef< 'a > > + Clone
-    {
+  #[ inline( always ) ]
+  #[ allow( clippy ::unused_self ) ]
+  pub fn iter( &'a self ) -> impl Iterator< Item = WorkspacePackageRef< 'a > > + Clone
+  {
 
-      // self
-      // .workspace
-      // .packages()
-      // .find( | &p | p.manifest_file().unwrap().as_ref() == manifest_file.as_ref() )
+   // self
+   // .workspace
+   // .packages()
+   // .find( | &p | p.manifest_file().unwrap().as_ref() == manifest_file.as_ref() )
 
-      // let filter_crate_dir = if Some( crate_dir ) = self.crate_dir
-      // {
-      //   | p | p.manifest_file().unwrap().as_ref() == manifest_file.as_ref()
-      // }
+   // let filter_crate_dir = if Some( crate_dir ) = self.crate_dir
+   // {
+   //   | p | p.manifest_file().unwrap().as_ref() == manifest_file.as_ref()
+   // }
 
-      std::iter::empty()
-    }
+   std ::iter ::empty()
+ }
 
-  }
+ }
 
   impl< 'a > PackagesFilterFormer< 'a >
   {
-    #[ inline( always ) ]
-    // pub fn find< 'a >( self ) -> impl Iterator< Item = WorkspacePackageRef< 'a > > + Clone
-    pub fn find( self ) -> Option< WorkspacePackageRef< 'a > >
-    {
-      let formed = self.form();
+  #[ inline( always ) ]
+  // pub fn find< 'a >( self ) -> impl Iterator< Item = WorkspacePackageRef< 'a > > + Clone
+  pub fn find( self ) -> Option< WorkspacePackageRef< 'a > >
+  {
+   let formed = self.form();
 
-      formed
-      .workspace
-      .packages()
-      .find( | &p |
-      {
-        if !formed.crate_dir.include( p ) { return false }
-        if !formed.manifest_file.include( p ) { return false }
-        true
-      })
-      // .unwrap()
+   formed
+   .workspace
+   .packages()
+   .find( | &p |
+   {
+  if !formed.crate_dir.include( p ) { return false }
+  if !formed.manifest_file.include( p ) { return false }
+  true
+ })
+   // .unwrap()
 
-      // let filter_crate_dir = if Some( crate_dir ) = self.crate_dir
-      // {
-      //   | p | p.manifest_file().unwrap().as_ref() == manifest_file.as_ref()
-      // }
+   // let filter_crate_dir = if Some( crate_dir ) = self.crate_dir
+   // {
+   //   | p | p.manifest_file().unwrap().as_ref() == manifest_file.as_ref()
+   // }
 
-      // std::iter::empty()
-    }
-  }
+   // std ::iter ::empty()
+ }
+ }
 
   impl Entries for Workspace
   {
-    fn entries( &self ) -> impl IterTrait< '_, SourceFile >
-    {
-      self
-      .packages()
-      .flat_map( | package | package.entries().collect::< Vec< _ > >() )
-      .collect::< Vec< _ > >()
-      .into_iter()
-    }
-  }
+  fn entries( &self ) -> impl IterTrait< '_, SourceFile >
+  {
+   self
+   .packages()
+   .flat_map( | package | package.entries().collect :: < Vec< _ > >() )
+   .collect :: < Vec< _ > >()
+   .into_iter()
+ }
+ }
 
   impl Sources for Workspace
   {
-    fn sources( &self ) -> impl IterTrait< '_, SourceFile >
-    {
-      self
-      .packages()
-      .flat_map( | package | package.sources().collect::< Vec< _ > >() )
-      .collect::< Vec< _ > >().into_iter()
-      // .into_iter()
-    }
-  }
+  fn sources( &self ) -> impl IterTrait< '_, SourceFile >
+  {
+   self
+   .packages()
+   .flat_map( | package | package.sources().collect :: < Vec< _ > >() )
+   .collect :: < Vec< _ > >().into_iter()
+   // .into_iter()
+ }
+ }
 
 }
 
 //
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   exposed use WorkspaceInitError;
   exposed use Workspace;

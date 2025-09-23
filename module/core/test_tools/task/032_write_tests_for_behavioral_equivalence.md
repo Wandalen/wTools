@@ -20,25 +20,29 @@ Write failing tests to verify test_tools re-exported assertions are behaviorally
 ## Test Structure
 ```rust
 #[test]
-fn test_error_tools_behavioral_equivalence() {
+fn test_error_tools_behavioral_equivalence() 
+{
     // Should fail initially - implementation in task 033
     // Compare direct error_tools usage vs test_tools re-export
 }
 
 #[test]
-fn test_collection_tools_behavioral_equivalence() {
+fn test_collection_tools_behavioral_equivalence() 
+{
     // Should fail initially - implementation in task 033
     // Compare direct collection_tools usage vs test_tools re-export
 }
 
 #[test]
-fn test_diagnostics_assertions_equivalence() {
+fn test_diagnostics_assertions_equivalence() 
+{
     // Should fail initially - implementation in task 033
     // Verify assertion behavior is identical between direct and re-exported access
 }
 
 #[test]
-fn test_panic_and_error_message_equivalence() {
+fn test_panic_and_error_message_equivalence() 
+{
     // Should fail initially - implementation in task 033
     // Verify error messages and panic behavior are identical
 }

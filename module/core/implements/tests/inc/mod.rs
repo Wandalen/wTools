@@ -1,4 +1,4 @@
 #[ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 
 mod test_cases;

@@ -1,7 +1,7 @@
-use super::*;
+use super :: *;
 
 #[ allow( unused_imports ) ]
-use test_tools::exposed::*;
+use test_tools ::exposed :: *;
 
 mod bmap;
 mod bset;
@@ -15,5 +15,5 @@ mod vec;
 mod components;
 mod namespace_test;
 
-// qqq : make subdirectory for each container -- done
-// qqq : don't put tests otsude of directory `inc` -- done
+// qqq: make subdirectory for each container -- done
+// qqq: don't put tests otsude of directory `inc` -- done

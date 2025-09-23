@@ -8,11 +8,11 @@ fn contravariant()
 {
   let x_fn: &dyn for< 'a > Fn( &'a str ) -> String = &| s: &str |
   {
-    format!( "x_fn: {s}" )
-  };
+  format!( "x_fn: {s}" )
+ };
 
-  let x: ContravariantType< &dyn for< 'a > Fn( &'a str ) -> String > = ContravariantType { a: x_fn, _phantom: core::marker::PhantomData };
+  let x: ContravariantType< &dyn for< 'a > Fn( &'a str ) -> String > = ContravariantType { a: x_fn, _phantom: core ::marker ::PhantomData };
   let value = assert_contravariant(&x);
 
-  assert_eq!( value, String::from( "x_fn: test" ) );
+  assert_eq!( value, String ::from( "x_fn: test" ) );
 }

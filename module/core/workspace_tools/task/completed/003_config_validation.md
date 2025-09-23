@@ -414,12 +414,15 @@ impl Workspace
 #[cfg(feature = "config_validation")]
 pub mod schema {
     /// Helper to create common JSON schemas
-    pub struct SchemaBuilder {
+    pub struct SchemaBuilder 
+{
         schema: serde_json::Value,
     }
     
-    impl SchemaBuilder {
-        pub fn new() -> Self {
+    impl SchemaBuilder 
+{
+        pub fn new() -> Self 
+{
             Self {
                 schema: serde_json::json!({
                     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -430,7 +433,8 @@ pub mod schema {
             }
         }
         
-        pub fn add_string_field(mut self, name: &str, required: bool) -> Self {
+        pub fn add_string_field(mut self, name: &str, required: bool) -> Self 
+{
             self.schema["properties"][name] = serde_json::json!({
                 "type": "string"
             });
@@ -443,7 +447,8 @@ pub mod schema {
             self
         }
         
-        pub fn add_integer_field(mut self, name: &str, min: Option<i64>, max: Option<i64>) -> Self {
+        pub fn add_integer_field(mut self, name: &str, min: Option<i64>, max: Option<i64>) -> Self 
+{
             let mut field_schema = serde_json::json!({
                 "type": "integer"
             });
@@ -459,7 +464,8 @@ pub mod schema {
             self
         }
         
-        pub fn build(self) -> String {
+        pub fn build(self) -> String 
+{
             serde_json::to_string_pretty(&self.schema).unwrap()
         }
     }
@@ -469,7 +475,8 @@ pub mod schema {
 use workspace_tools::{ConfigSchema, schema::SchemaBuilder};
 
 #[derive(serde::Deserialize, serde::Serialize)]
-pub struct AppConfig {
+pub struct AppConfig 
+{
     pub name: String,
     pub port: u16,
     pub database_url: String,
@@ -477,8 +484,10 @@ pub struct AppConfig {
     pub max_connections: Option<u32>,
 }
 
-impl ConfigSchema for AppConfig {
-    fn json_schema() -> &'static str {
+impl ConfigSchema for AppConfig 
+{
+    fn json_schema() -> &'static str 
+{
         r#"{
             "$schema": "http://json-schema.org/draft-07/schema#",
             "type": "object",
@@ -497,7 +506,8 @@ impl ConfigSchema for AppConfig {
         }"#
     }
     
-    fn config_name() -> &'static str {
+    fn config_name() -> &'static str 
+{
         "app"
     }
 }
@@ -629,14 +639,17 @@ use workspace_tools::{workspace, ConfigSchema};
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize)]
-struct AppConfig {
+struct AppConfig 
+{
     name: String,
     port: u16,
     database_url: String,
 }
 
-impl ConfigSchema for AppConfig {
-    fn json_schema() -> &'static str {
+impl ConfigSchema for AppConfig 
+{
+    fn json_schema() -> &'static str 
+{
         r#"{"type": "object", "properties": {...}}"#
     }
     
@@ -662,7 +675,8 @@ use workspace_tools::{workspace, ConfigSchema, schema::SchemaBuilder};
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug)]
-struct DatabaseConfig {
+struct DatabaseConfig 
+{
     host: String,
     port: u16,
     username: String,
@@ -671,8 +685,10 @@ struct DatabaseConfig {
     max_connections: Option<u32>,
 }
 
-impl ConfigSchema for DatabaseConfig {
-    fn json_schema() -> &'static str {
+impl ConfigSchema for DatabaseConfig 
+{
+    fn json_schema() -> &'static str 
+{
         r#"{
             "type": "object",
             "properties": {
@@ -691,7 +707,8 @@ impl ConfigSchema for DatabaseConfig {
     fn config_name() -> &'static str { "database" }
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), Box<dyn std::error::Error>> 
+{
     let ws = workspace()?;
     
     println!("⚙️  Configuration Validation Demo");
@@ -777,7 +794,8 @@ None - this is purely additive functionality with feature flag.
 
 ### API Features Delivered
 ```rust
-impl Workspace {
+impl Workspace 
+{
     /// Load and validate config with auto-generated schema
     pub fn load_config_with_validation<T>(&self, name: &str) -> Result<T>
     where T: serde::de::DeserializeOwned + JsonSchema;

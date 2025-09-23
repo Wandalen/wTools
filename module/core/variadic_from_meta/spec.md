@@ -125,7 +125,8 @@ This is the primary and most expressive way to use the crate.
     ```rust
     # use variadic_from::exposed::*;
     #[derive(Debug, PartialEq, Default, VariadicFrom)]
-    struct Point {
+    struct Point 
+{
         x: i32,
         y: i32,
     }
@@ -192,14 +193,17 @@ The framework is designed to be extensible through manual trait implementation.
 use variadic_from::exposed::*;
 
 #[derive(Debug, PartialEq, Default, VariadicFrom)]
-struct UserProfile {
+struct UserProfile 
+{
     id: u32,
     username: String,
 }
 
 // Manual implementation for a single argument for convenience
-impl From1<&str> for UserProfile {
-    fn from1(name: &str) -> Self {
+impl From1<&str> for UserProfile 
+{
+    fn from1(name: &str) -> Self 
+{
         Self { id: 0, username: name.to_string() }
     }
 }

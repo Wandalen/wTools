@@ -8,7 +8,7 @@ use former::Former;
 /// Generic enum with a unit variant, using Former.
 // Temporarily making this non-generic to test basic functionality
 #[ derive( Debug, PartialEq, Former ) ]
-#[ former( standalone_constructors, debug ) ]
+#[ former( standalone_constructors ) ] // debug disabled
 pub enum GenericOption
 {
   #[ scalar ] // Treat Value as a scalar constructor for the enum

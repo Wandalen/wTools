@@ -1,3 +1,4 @@
+#[cfg(feature = "non_existent_feature")]
 //! Before/after optimization workflow system for systematic performance tracking
 //!
 //! Implements benchkit usage.md "Before/After Optimization Workflow" requirements:
@@ -19,11 +20,11 @@ mod private
   #[ cfg( feature = "benchmarks" ) ]
   use crate::
   {
-    BenchmarkResult,
-    ContextRichDocGenerator,
-    BenchmarkMeasurementContext,
-    BeforeAfterComparison,
-    OptimizationStatus,
+    // // BenchmarkResult,
+    // // ContextRichDocGenerator,
+    // // BenchmarkMeasurementContext,
+    // // BeforeAfterComparison,
+    // // OptimizationStatus,
   };
 
   /// Simple CV analysis for optimization workflow
@@ -91,7 +92,7 @@ mod private
     /// Environment description
     pub environment_info : String,
     /// Individual benchmark results
-    pub results : Vec< BenchmarkResult >,
+    pub results : Vec< // BenchmarkResult >,
     /// Coefficient of variation for baseline quality
     pub cv_analysis : CoefficientsOfVariationAnalysis,
     /// Notes about baseline conditions
@@ -106,9 +107,9 @@ mod private
     /// Baseline results for comparison
     pub baseline : BaselineResults,
     /// Current results after optimization
-    pub current_results : Vec< BenchmarkResult >,
+    pub current_results : Vec< // BenchmarkResult >,
     /// Before/after comparisons for each algorithm
-    pub comparisons : Vec< BeforeAfterComparison >,
+    pub comparisons : Vec< // BeforeAfterComparison >,
     /// Statistical significance indicators
     pub significance_analysis : SignificanceAnalysis,
     /// Overall optimization summary
@@ -157,7 +158,7 @@ mod private
     /// Working directory for baseline storage
     baseline_dir : PathBuf,
     /// Documentation generator for reports
-    doc_generator : ContextRichDocGenerator,
+    doc_generator : // ContextRichDocGenerator,
     /// Current benchmark identifier
     benchmark_name : String,
   }
@@ -179,7 +180,7 @@ mod private
         fs::create_dir_all( &baseline_path )?;
       }
 
-      let doc_generator = ContextRichDocGenerator::default_environment();
+      let doc_generator = // ContextRichDocGenerator::default_environment();
 
       Ok( Self
       {
@@ -192,7 +193,7 @@ mod private
     /// Step 1: Establish performance baseline
     pub fn establish_baseline(
       &self,
-      results : Vec< BenchmarkResult >,
+      results : Vec< // BenchmarkResult >,
       cv_analysis : CoefficientsOfVariationAnalysis,
       environment_info : String,
       notes : Vec< String >
@@ -222,7 +223,7 @@ mod private
     /// Step 3: Measure optimization impact
     pub fn measure_optimization_impact(
       &mut self,
-      current_results : Vec< BenchmarkResult >,
+      current_results : Vec< // BenchmarkResult >,
       current_cv_analysis : CoefficientsOfVariationAnalysis
     ) -> std::io::Result< OptimizationImpact >
     {
@@ -239,7 +240,7 @@ mod private
         if let Some( baseline_result ) = baseline.results.iter()
           .find( | b | b.algorithm_name == current_result.algorithm_name )
         {
-          let comparison = BeforeAfterComparison
+          let comparison = // BeforeAfterComparison
           {
             algorithm_name : current_result.algorithm_name.clone(),
             before_nanos : baseline_result.average_time_nanos,
@@ -323,36 +324,37 @@ mod private
     }
 
     /// Determine optimization status based on performance change
-    fn determine_optimization_status( &self, before_nanos : f64, after_nanos : f64 ) -> OptimizationStatus
+    fn determine_optimization_status( &self, before_nanos : f64, after_nanos : f64 ) -> // OptimizationStatus
     {
       let improvement_pct = ( ( before_nanos - after_nanos ) / before_nanos ) * 100.0;
       
       if improvement_pct >= 20.0
       {
-        OptimizationStatus::ProductionReady
+        // OptimizationStatus::ProductionReady
       }
       else if improvement_pct >= 5.0
       {
-        OptimizationStatus::Optimized
+        // OptimizationStatus::Optimized
       }
       else if improvement_pct >= -5.0
       {
-        OptimizationStatus::Baseline
+        // OptimizationStatus::Baseline
       }
       else if improvement_pct >= -20.0
       {
-        OptimizationStatus::NeedsWork
+        // OptimizationStatus::NeedsWork
       }
       else
       {
-        OptimizationStatus::Regression
+        // OptimizationStatus::Regression
       }
     }
 
     /// Analyze statistical significance of optimization results
+    /*
     fn analyze_significance(
       &self,
-      comparisons : &[ BeforeAfterComparison ],
+      comparisons : &[ // BeforeAfterComparison ],
       baseline_cv : &CoefficientsOfVariationAnalysis,
       current_cv : &CoefficientsOfVariationAnalysis
     ) -> SignificanceAnalysis
@@ -388,11 +390,13 @@ mod private
         current_quality : current_cv.overall_quality_assessment(),
       }
     }
+    */
 
     /// Generate optimization summary with recommendations
+    /*
     fn generate_optimization_summary(
       significance : &SignificanceAnalysis,
-      comparisons : &[ BeforeAfterComparison ]
+      comparisons : &[ // BeforeAfterComparison ]
     ) -> OptimizationSummary
     {
       let mut achievements = Vec::new();
@@ -466,6 +470,7 @@ mod private
         next_steps,
       }
     }
+    */
 
     /// Report optimization impact to console
     fn report_optimization_impact( impact : &OptimizationImpact )
@@ -513,7 +518,7 @@ mod private
       self.doc_generator.clear_sections();
 
       // Create measurement context
-      let context = BenchmarkMeasurementContext
+      let context = // BenchmarkMeasurementContext
       {
         what_is_measured : format!( 
           "Optimization impact analysis for {} algorithms in {}",

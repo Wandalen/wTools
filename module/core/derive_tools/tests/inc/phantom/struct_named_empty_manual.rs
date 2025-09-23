@@ -1,8 +1,9 @@
-use core::marker::PhantomData;
+use core ::marker ::PhantomData;
 
 #[ allow( dead_code ) ]
-struct StructNamedEmpty<T> {
-  _phantom: PhantomData<T>,
+struct StructNamedEmpty< T > 
+{
+  _phantom: PhantomData< T >,
 }
 
 include!("./only_test/struct_named_empty.rs");

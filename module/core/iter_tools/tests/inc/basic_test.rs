@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 #[ allow( unused_imports ) ]
-use the_module::*;
+use the_module :: *;
 
 //
 
@@ -12,6 +12,6 @@ fn basic()
   // test.case( "basic" );
   let src = [ 1, 2, 3 ];
   let exp = ( vec![ 2, 3, 4 ], vec![ 0, 1, 2 ] );
-  let got : ( Vec< _ >, Vec< _ > ) = src.iter().map( | e | ( e + 1, e - 1 ) ).multiunzip();
+  let got: ( Vec< _ >, Vec< _ > ) = src.iter().map( | e | ( e + 1, e - 1 ) ).multiunzip();
   assert_eq!( got, exp );
 }

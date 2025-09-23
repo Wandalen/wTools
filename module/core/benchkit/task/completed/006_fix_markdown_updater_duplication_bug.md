@@ -45,7 +45,8 @@ use benchkit::reporting::MarkdownUpdater;
 use std::fs;
 
 #[test]
-fn test_markdown_updater_duplication_bug() -> Result<(), Box<dyn std::error::Error>> {
+fn test_markdown_updater_duplication_bug() -> Result<(), Box<dyn std::error::Error>> 
+{
     // Create initial markdown file
     fs::write("test.md", "# Test\n\n## Results\n\nInitial content\n\n## Other\n\nOther data")?;
     
@@ -102,8 +103,10 @@ $ grep -c "## Processing Methods Comparison" readme.md
 Improve the section identification and replacement logic:
 
 ```rust
-impl MarkdownUpdater {
-    pub fn update_section(&self, content: &str) -> Result<()> {
+impl MarkdownUpdater 
+{
+    pub fn update_section(&self, content: &str) -> Result<()> 
+{
         let existing_content = fs::read_to_string(&self.file_path)?;
         let lines: Vec<&str> = existing_content.lines().collect();
         let mut result_lines = Vec::new();
@@ -168,8 +171,10 @@ impl MarkdownUpdater {
 Add validation to detect and prevent duplicates:
 
 ```rust
-impl MarkdownUpdater {
-    fn validate_no_duplicates(&self) -> Result<()> {
+impl MarkdownUpdater 
+{
+    fn validate_no_duplicates(&self) -> Result<()> 
+{
         let content = fs::read_to_string(&self.file_path)?;
         let section_header = format!("## {}", self.section_name);
         let count = content.matches(&section_header).count();
@@ -184,7 +189,8 @@ impl MarkdownUpdater {
         Ok(())
     }
     
-    pub fn update_section(&self, content: &str) -> Result<()> {
+    pub fn update_section(&self, content: &str) -> Result<()> 
+{
         // ... existing update logic ...
         
         // Validate result

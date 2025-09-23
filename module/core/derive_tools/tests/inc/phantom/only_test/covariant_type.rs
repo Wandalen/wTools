@@ -6,7 +6,7 @@ fn assert_covariant< 'a >( x: CovariantType< &'static str > ) -> CovariantType< 
 #[ test ]
 fn covariant()
 {
-  let x: CovariantType< &'static str > = CovariantType { a: "boo", _phantom: core::marker::PhantomData, };
+  let x: CovariantType< &'static str > = CovariantType { a: "boo", _phantom: core ::marker ::PhantomData, };
   let y: CovariantType< &str > = assert_covariant( x );
   assert_eq!( y.a, "boo" );
 }

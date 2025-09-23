@@ -3,42 +3,42 @@ pub(crate) mod changer;
 /// Define a private namespace for all its items.
 mod private
 {
-  // use crate::own::*;
+  // use crate ::own :: *;
 
-  use crate::abs::identity::private::{Id, HasIdInterface};
+  use crate ::abs ::identity ::private :: { Id, HasIdInterface };
 
   /// Drawing.
   #[ derive( Debug, Clone ) ]
   pub struct Drawing
   {
-    pub( crate ) id : Id,
-  }
+  pub( crate ) id: Id,
+ }
 
   impl Drawing
   {
-    /// Constructor.
-    pub fn new() -> Self
-    {
-      let id = Id::new::< Self >();
-      Self
-      {
-        id,
-      }
-    }
-  }
+  /// Constructor.
+  pub fn new() -> Self
+  {
+   let id = Id ::new :: < Self >();
+   Self
+   {
+  id,
+ }
+ }
+ }
 
   impl HasIdInterface for Drawing
   {
-    #[ inline ]
-    fn id( &self ) -> Id
-    {
-      self.id
-    }
-  }
+  #[ inline ]
+  fn id( &self ) -> Id
+  {
+   self.id
+ }
+ }
 
 }
 
-::meta_tools::mod_interface!
+::meta_tools ::mod_interface!
 {
 
   /// Draw changer.
@@ -49,7 +49,7 @@ mod private
   layer command;
   /// Draw queue.
   layer queue;
-  /// New shape : rectangle.
+  /// New shape: rectangle.
   layer rect_change_new;
   /// Change region of the rectangle.
   layer rect_change_region;

@@ -1,6 +1,6 @@
 [package]
 name = "strs_tools"
-version = "0.30.0"
+version = "0.31.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -28,31 +28,31 @@ features = [ "full" ]
 all-features = false
 
 [features]
-# Default feature set - includes all commonly used features with performance optimizations
+# Default feature set - no_std compatible with essential functionality
+# For std environments with SIMD, use "full" feature set instead
 default = [
   "enabled",
-  "std",
+  "no_std",
+  "use_alloc",
   "string_indentation",
   "string_isolate",
   "string_split",
   "string_parse_number",
-  "string_parse_request",
-  "simd",
   "compile_time_optimizations",
 ]
 
-# Full feature set - includes everything for maximum functionality
+# Full feature set - includes everything for maximum functionality in std environments
 full = [
   "enabled",
-  "std",
+  "std",                        # Explicitly enable std for maximum performance
   "string_indentation",
   "string_isolate",
   "string_split",
   "string_parse_number",
   "string_parse_request",
-  "simd",
+  "simd",                       # SIMD acceleration (std-only)
   "compile_time_optimizations",
-  "specialized_algorithms", # Explicit control over Task 007 algorithms
+  "specialized_algorithms",     # Explicit control over Task 007 algorithms
   "_disabled_compile_time_tests", # Enable prototype compile-time tests
 ]
 
@@ -85,7 +85,9 @@ string_parse_request = ["string_split", "string_isolate", "enabled"]
 # SIMD acceleration for all applicable algorithms
 # When enabled: uses vectorized operations, runtime CPU detection
 # When disabled: uses scalar fallbacks, smaller binary size
+# Note: SIMD features are std-only due to runtime CPU detection requirements
 simd = [
+  "std",                                                         # SIMD requires std for runtime CPU detection
   "dep:memchr", "memchr/std",                                    # memchr with runtime AVX2 detection
   "dep:aho-corasick", "aho-corasick/std", "aho-corasick/perf-literal", # aho-corasick with vectorized prefilters
   "dep:bytecount",                                               # SIMD byte counting
@@ -105,13 +107,13 @@ _disabled_compile_time_tests = []
 # ENVIRONMENT FEATURES (platform control)
 # ========================================
 
-# Standard library support (default) - enables std-dependent features and tests
-# This takes precedence over no_std when both are enabled (e.g., with --all-features)
+# Standard library support - enables std-dependent features like SIMD and parsing
+# Mutually exclusive with no_std - when both enabled, std takes precedence
 std = []
 
-# no_std compatibility - disables std-dependent features  
-# Note: This feature is only intended for embedded/no_std environments
-# When testing with --all-features, std functionality takes precedence
+# no_std compatibility (default) - core functionality without std dependency
+# Provides essential string manipulation in embedded/constrained environments
+# Compatible with alloc for heap-allocated operations via use_alloc feature
 no_std = []
 
 # Enables alloc-based functionality in no_std environments

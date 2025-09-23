@@ -1,8 +1,8 @@
 #![ allow( dead_code ) ]
 #[ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 
-// #[ derive( the_module::IndexMut ) ]
+// #[ derive( the_module ::IndexMut ) ]
 struct StructTuple< T >
 ( 
    // #[ index ]

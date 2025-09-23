@@ -15,7 +15,7 @@ mod private
   ///
   /// This struct is the central piece of a command's definition, providing all
   /// the necessary information for parsing, validation, and execution.
-  #[ derive( Debug, Clone, serde::Serialize, serde::Deserialize, former::Former ) ]
+  #[ derive( Debug, Clone, serde::Serialize, serde::Deserialize, former::Former, Default ) ]
   pub struct CommandDefinition
   {
     /// The name of the command, used to invoke it from the command line.
@@ -49,6 +49,9 @@ mod private
     pub http_method_hint : String, // Added
     /// Illustrative usage examples for help text.
     pub examples : Vec< String >, // Added
+    /// Whether this command should automatically generate a `.command.help` counterpart.
+    #[ former( default = false ) ]
+    pub auto_help_enabled : bool, // Help Convention Support
   }
 
   ///
@@ -518,6 +521,113 @@ mod private
     {
       let s = String::deserialize( deserializer )?;
       s.parse().map_err( serde::de::Error::custom )
+    }
+  }
+
+  impl CommandDefinition
+  {
+    ///
+    /// Builder method to enable/disable automatic help command generation for this specific command.
+    ///
+    /// This method follows the fluent builder pattern to configure help conventions.
+    /// When enabled, registering this command will automatically create a `.command.help`
+    /// counterpart that provides detailed help information.
+    ///
+    /// # Arguments
+    /// * `enabled` - Whether to automatically generate help commands
+    ///
+    /// # Returns
+    /// * `Self` - The modified `CommandDefinition` for method chaining
+    ///
+    /// # Examples
+    /// ```rust,ignore
+    /// use unilang::data::CommandDefinition;
+    ///
+    /// let cmd = CommandDefinition::former()
+    ///     .name("example".to_string())
+    ///     .description("An example command".to_string())
+    ///     .with_auto_help(true)  // Enable automatic help generation
+    ///     .end();
+    /// ```
+    #[ must_use ]
+    pub fn with_auto_help( mut self, enabled : bool ) -> Self
+    {
+      self.auto_help_enabled = enabled;
+      self
+    }
+
+    ///
+    /// Returns true if this command should automatically generate a help counterpart.
+    ///
+    /// This method checks whether the command is configured to automatically
+    /// generate `.command.help` commands during registration.
+    ///
+    /// # Returns
+    /// * `bool` - Whether auto-help generation is enabled for this command
+    ///
+    /// # Examples
+    /// ```rust,ignore
+    /// use unilang::data::CommandDefinition;
+    ///
+    /// let cmd = CommandDefinition::former()
+    ///     .with_auto_help(true)
+    ///     .end();
+    /// assert!(cmd.has_auto_help());
+    /// ```
+    #[ must_use ]
+    pub fn has_auto_help( &self ) -> bool
+    {
+      self.auto_help_enabled
+    }
+
+    ///
+    /// Generates a corresponding help command definition for this command.
+    ///
+    /// Creates a new `CommandDefinition` for the `.command.help` counterpart
+    /// that provides detailed help information about the parent command.
+    /// The help command includes comprehensive information about arguments,
+    /// usage examples, and command metadata.
+    ///
+    /// # Returns
+    /// * `CommandDefinition` - A new command definition for the help counterpart
+    ///
+    /// # Examples
+    /// ```rust,ignore
+    /// use unilang::data::CommandDefinition;
+    ///
+    /// let cmd = CommandDefinition::former()
+    ///     .name("example".to_string())
+    ///     .description("An example command".to_string())
+    ///     .end();
+    ///
+    /// let help_cmd = cmd.generate_help_command();
+    /// assert_eq!(help_cmd.name, "example.help");
+    /// ```
+    #[ must_use ]
+    pub fn generate_help_command( &self ) -> CommandDefinition
+    {
+      CommandDefinition
+      {
+        name : format!( "{}.help", self.name ),
+        namespace : self.namespace.clone(),
+        description : format!( "Display help information for the '{}' command", self.name ),
+        hint : format!( "Help for {}", self.name ),
+        status : "stable".to_string(),
+        version : self.version.clone(),
+        arguments : vec![], // Help commands typically take no arguments
+        routine_link : None, // Will be set during registration
+        tags : vec![ "help".to_string(), "documentation".to_string() ],
+        aliases : vec![ format!( "{}.h", self.name ) ], // Add short alias
+        permissions : vec![], // Help commands should be accessible to all
+        idempotent : true, // Help commands are always idempotent
+        deprecation_message : String::new(),
+        http_method_hint : "GET".to_string(), // Help is read-only
+        examples : vec![
+          format!( "{}.help", self.name ),
+          format!( "{} ??", self.name )
+        ],
+        auto_help_enabled : false, // Prevent recursive help generation
+      }
     }
   }
 }

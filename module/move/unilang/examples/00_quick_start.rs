@@ -1,3 +1,4 @@
+#![allow(clippy::all)]
 //! # Quick Start Example
 //!
 //! This example shows the complete flow from command definition to execution
@@ -9,6 +10,7 @@ use unilang::prelude::*;
 
 fn main() -> Result<(), unilang::Error> {
     // Create a command registry
+    #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
     
     // Define a simple greeting command
@@ -44,6 +46,7 @@ fn main() -> Result<(), unilang::Error> {
         http_method_hint: String::new(),
         examples: vec![],
         routine_link: None,
+        auto_help_enabled: false,
     };
     
     // Define the command's execution logic
@@ -62,6 +65,7 @@ fn main() -> Result<(), unilang::Error> {
     });
     
     // Register the command
+    #[allow(deprecated)]
     registry.command_add_runtime(&greet_cmd, greet_routine)?;
     
     // Use the Pipeline API to execute commands

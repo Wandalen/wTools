@@ -1,6 +1,6 @@
 [package]
 name = "variadic_from_meta"
-version = "0.13.0"
+version = "0.14.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -24,3 +24,8 @@ proc-macro = true
 
 [dependencies]
 macro_tools = { workspace = true, features = ["enabled", "struct_like", "generic_params", "typ", "diag"] }
+
+[features]
+default = [ "enabled" ]
+full = [ "enabled" ]
+enabled = []

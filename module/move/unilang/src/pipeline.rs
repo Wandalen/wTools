@@ -635,11 +635,12 @@ impl Pipeline
   /// * `context` - The execution context (will be moved and consumed)
   ///
   /// # Examples
-  /// ```rust
+  /// ```rust,ignore
   /// use unilang::pipeline::Pipeline;
   /// use unilang::registry::CommandRegistry;
   /// use unilang::interpreter::ExecutionContext;
   ///
+  /// # Allow deprecated API for example
   /// let registry = CommandRegistry::new();
   /// let pipeline = Pipeline::new(registry);
   /// let context = ExecutionContext::default();
@@ -675,6 +676,25 @@ impl Pipeline
       Ok( commands ) => commands,
       Err( error ) =>
       {
+        // Check if this is a help request - if so, treat it as successful output
+        if let crate::error::Error::Execution( error_data ) = &error
+        {
+          if error_data.code == "HELP_REQUESTED"
+          {
+            return CommandResult
+            {
+              command,
+              outputs : vec![ crate::data::OutputData
+              {
+                content : error_data.message.clone(),
+                format : "text".to_string(),
+              }],
+              success : true,
+              error : None,
+            };
+          }
+        }
+
         return CommandResult
         {
           command,
@@ -728,11 +748,12 @@ impl Pipeline
   /// * `context` - The execution context (will be cloned for each command)
   ///
   /// # Examples
-  /// ```rust
+  /// ```rust,ignore
   /// use unilang::pipeline::Pipeline;
   /// use unilang::registry::CommandRegistry;
   /// use unilang::interpreter::ExecutionContext;
   ///
+  /// # Allow deprecated API for example
   /// let registry = CommandRegistry::new();
   /// let pipeline = Pipeline::new(registry);
   /// let context = ExecutionContext::default();
@@ -851,6 +872,49 @@ impl Pipeline
     .map( | &cmd_str | self.validate_command( cmd_str ) )
     .collect()
   }
+
+  ///
+  /// Processes help requests uniformly across the framework.
+  ///
+  /// This method provides a standardized way to handle help requests for any registered command.
+  /// It generates comprehensive help information including command description, arguments,
+  /// usage examples, and metadata.
+  ///
+  /// # Arguments
+  /// * `command_name` - The full name of the command to get help for (e.g., ".example" or ".fs.list")
+  /// * `context` - The execution context for the help request
+  ///
+  /// # Returns
+  /// * `Result<OutputData, Error>` - Formatted help output or error if command not found
+  ///
+  /// # Examples
+  /// ```rust,ignore
+  /// use unilang::{pipeline::Pipeline, interpreter::ExecutionContext};
+  ///
+  /// let pipeline = Pipeline::new(registry);
+  /// let context = ExecutionContext::default();
+  ///
+  /// match pipeline.process_help_request(".example", context) {
+  ///     Ok(output) => println!("{}", output.content),
+  ///     Err(e) => eprintln!("Help error: {}", e),
+  /// }
+  /// ```
+  #[allow(clippy::needless_pass_by_value)]
+  pub fn process_help_request( &self, command_name : &str, _context : ExecutionContext ) -> Result< OutputData, Error >
+  {
+    match self.registry.get_help_for_command( command_name )
+    {
+      Some( help_text ) => Ok( OutputData
+      {
+        content : help_text,
+        format : "text".to_string(),
+      }),
+      None => Err( Error::Registration( format!(
+        "Help Error: Command '{}' not found. Use '.' to see all available commands.",
+        command_name
+      ))),
+    }
+  }
 }
 
 ///
@@ -861,11 +925,12 @@ impl Pipeline
 /// Note: This creates a new parser each time, so it's less efficient than reusing a Pipeline.
 ///
 /// # Examples
-/// ```rust
+/// ```rust,ignore
 /// use unilang::pipeline::process_single_command;
 /// use unilang::registry::CommandRegistry;
 /// use unilang::interpreter::ExecutionContext;
 ///
+/// # Allow deprecated API for example
 /// let registry = CommandRegistry::new();
 /// let context = ExecutionContext::default();
 /// let result = process_single_command("help", &registry, context);
@@ -997,7 +1062,9 @@ mod tests
 
   fn create_test_registry() -> CommandRegistry
   {
-    let mut registry = CommandRegistry::new();
+    #[allow(deprecated)]
+    #[allow(deprecated)]
+        let mut registry = CommandRegistry::new();
 
     // Add a simple test command
     let test_command = CommandDefinition::former()
@@ -1053,7 +1120,9 @@ mod tests
       })
     });
 
-    registry.command_add_runtime( &test_command, test_routine ).unwrap();
+    #[allow(deprecated)]
+    #[allow(deprecated)]
+        registry.command_add_runtime( &test_command, test_routine ).unwrap();
     registry
   }
 

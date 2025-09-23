@@ -1,6 +1,6 @@
 #![ allow( non_snake_case ) ]
 #![ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 
 pub mod core {}
 pub mod std {}
@@ -10,9 +10,9 @@ pub mod FromString {}
 pub mod FromPair {}
 pub mod FromBin {}
 
-// qqq : add collision tests for 4 outher branches
+// qqq: add collision tests for 4 outher branches
 
-// #[ derive( Debug, PartialEq, the_module::From ) ]
+// #[ derive( Debug, PartialEq, the_module ::From ) ]
 
 pub enum GetData
 {

@@ -1,16 +1,16 @@
-use std::error::Error;
-use clap::Parser;
-use dotenv::dotenv;
+use std ::error ::Error;
+use clap ::Parser;
+use dotenv ::dotenv;
 
-use gspread::*;
-use gcore::ApplicationSecret;
-use gcore::client::
+use gspread :: *;
+use gcore ::ApplicationSecret;
+use gcore ::client ::
 {
   Auth,
   Client
 };
 
-use commands::
+use commands ::
 {
   self,
   Cli,
@@ -18,28 +18,28 @@ use commands::
 };
 
 
-#[ tokio::main ]
+#[ tokio ::main ]
 async fn main() -> Result< (), Box< dyn Error > >
 {
   dotenv().ok();
 
-  let secret = ApplicationSecret::read();
+  let secret = ApplicationSecret ::read();
   
-  let auth = Auth::new( &secret );
+  let auth = Auth ::new( &secret );
   
-  let client = Client::former()
+  let client = Client ::former()
   .auth( auth )
   .form();
 
-  let cli = Cli::parse();
+  let cli = Cli ::parse();
 
   match cli.command
   {
-    CliCommand::GSpread( cmd ) =>
-    {
-      commands::gspread::command( &client, cmd ).await;
-    }
-  }
+  CliCommand ::GSpread( cmd ) =>
+  {
+   commands ::gspread ::command( &client, cmd ).await;
+ }
+ }
 
   Ok( () )
 }

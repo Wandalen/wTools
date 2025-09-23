@@ -1,26 +1,26 @@
-use core::ops::{ Deref, DerefMut };
+use core ::ops :: { Deref, DerefMut };
 
 #[ allow( dead_code ) ]
 struct StructNamed
 {
-  a : String,
-  b : i32,
+  a: String,
+  b: i32,
 }
 
 impl Deref for StructNamed
 {
   type Target = String;
-  fn deref( &self ) -> &Self::Target
+  fn deref( &self ) -> &Self ::Target
   {
-    &self.a
-  }
+  &self.a
+ }
 }
 impl DerefMut for StructNamed
 {
-  fn deref_mut( &mut self ) -> &mut Self::Target
+  fn deref_mut( &mut self ) -> &mut Self ::Target
   {
-    &mut self.a
-  }
+  &mut self.a
+ }
 }
 
 include!( "./only_test/struct_named.rs" );

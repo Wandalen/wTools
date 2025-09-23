@@ -1,3 +1,4 @@
+#![allow(clippy::all)]
 //! # Advanced REPL Features
 //!
 //! This example demonstrates advanced REPL capabilities including command history,
@@ -15,6 +16,7 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "=== Advanced REPL Features Demo ===\n" );
 
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   register_comprehensive_commands( &mut registry )?;
 
@@ -88,6 +90,7 @@ fn register_comprehensive_commands( registry : &mut CommandRegistry ) -> Result<
     })
   });
 
+  #[allow(deprecated)]
   registry.command_add_runtime( &ls_cmd, ls_routine )?;
 
   // Network commands
@@ -159,6 +162,7 @@ fn register_comprehensive_commands( registry : &mut CommandRegistry ) -> Result<
     })
   });
 
+  #[allow(deprecated)]
   registry.command_add_runtime( &ping_cmd, ping_routine )?;
 
   // Data processing command
@@ -256,6 +260,7 @@ fn register_comprehensive_commands( registry : &mut CommandRegistry ) -> Result<
     })
   });
 
+  #[allow(deprecated)]
   registry.command_add_runtime( &process_cmd, process_routine )?;
 
   println!( "✓ Registered {} commands for advanced REPL demo", registry.commands().len() );

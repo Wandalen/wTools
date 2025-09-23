@@ -13,34 +13,34 @@
 #[ allow( unused_imports ) ]
 #[ allow( dead_code ) ]
 
-use test_tools::*;
-use crate::the_module::Not;
+use test_tools :: *;
+use crate ::the_module ::Not;
 
-// N1.1: Unit struct
+// N1.1 : Unit struct
 #[ derive( Not ) ]
 pub struct UnitStruct;
 
-// N1.2: Tuple struct with one field
+// N1.2 : Tuple struct with one field
 #[ derive( Not ) ]
 pub struct TupleStruct1( pub bool );
 
-// N1.3: Tuple struct with multiple fields - should not compile
+// N1.3 : Tuple struct with multiple fields - should not compile
 // #[ derive( Not ) ]
 // pub struct TupleStruct2( pub bool, pub bool );
 
-// N1.4: Named struct with one field
+// N1.4 : Named struct with one field
 #[ derive( Not ) ]
 pub struct NamedStruct1
 {
-  pub field1 : bool,
+  pub field1: bool,
 }
 
-// N1.5: Named struct with multiple fields - should not compile
+// N1.5 : Named struct with multiple fields - should not compile
 // #[ derive( Not ) ]
 // pub struct NamedStruct2
 // {
-//   pub field1 : bool,
-//   pub field2 : bool,
+//   pub field1: bool,
+//   pub field2: bool,
 // }
 
 // Shared test logic

@@ -8,42 +8,42 @@
 ///
 /// # Type Parameters
 ///
-/// - `T`: The type of the component to be set on the implementing object. This type represents
+/// - `T` : The type of the component to be set on the implementing object. This type represents
 ///   the final form of the component as it should be stored or represented in the object.
-/// - `IntoT`: The type that can be converted into `T`. This allows the `assign` method to accept
+/// - `IntoT` : The type that can be converted into `T`. This allows the `assign` method to accept
 ///   different types that are capable of being transformed into the required component type `T`,
 ///   providing greater flexibility in setting the component.
 ///
 /// # Examples
 ///
-/// Implementing `Assign` to set a name string on a struct:
+/// Implementing `Assign` to set a name string on a struct :
 ///
 /// ```rust
-/// use component_model_types::Assign; // use crate `component_model` instead of crate `component_model_types` unless you need to use crate `component_model_types` directly
+/// use component_model_types ::Assign; // use crate `component_model` instead of crate `component_model_types` unless you need to use crate `component_model_types` directly
 ///
 /// struct MyStruct {
 ///   name: String,
 /// }
 ///
-/// impl< IntoT : Into< String > > Assign< String, IntoT > for MyStruct
+/// impl< IntoT: Into< String > > Assign< String, IntoT > for MyStruct
 /// {
-///   fn assign( &mut self, component : IntoT )
+///   fn assign( &mut self, component: IntoT )
 ///   {
 ///     self.name = component.into();
-///   }
+/// }
 /// }
 ///
-/// let mut obj = MyStruct { name : String::new() };
+/// let mut obj = MyStruct { name: String ::new() };
 /// obj.assign( "New Name" );
 /// assert_eq!( obj.name, "New Name" );
 /// ```
 #[ cfg( feature = "types_component_assign" ) ]
-pub trait Assign<T, IntoT>
+pub trait Assign< T, IntoT >
 {
   /// Sets or replaces the component on the object with the given value.
   ///
   /// This method takes ownership of the given value (`component`), which is of type `IntoT`.
-  /// For standard implementations, `component` is converted into type `T` using `Into<T>`.
+  /// For standard implementations, `component` is converted into type `T` using `Into< T >`.
   /// For popular types, custom conversion logic may be used.
   fn assign(&mut self, component: IntoT);
 
@@ -53,11 +53,11 @@ pub trait Assign<T, IntoT>
   #[ must_use ]
   fn impute(mut self, component: IntoT) -> Self
   where
-    Self: Sized,
+  Self: Sized,
   {
-    self.assign(component);
-    self
-  }
+  self.assign(component);
+  self
+ }
 }
 
 /// Extension trait to provide a method for setting a component on an `Option< Self >`
@@ -66,37 +66,37 @@ pub trait Assign<T, IntoT>
 ///
 /// # Type Parameters
 ///
-/// - `T`: The type of the component to be set on the implementing object. This type represents
+/// - `T` : The type of the component to be set on the implementing object. This type represents
 ///   the final form of the component as it should be stored or represented in the object.
 ///
 /// # Examples
 ///
-/// Using `option_assign` to set a component on an `Option`:
+/// Using `option_assign` to set a component on an `Option` :
 ///
 /// ```rust
-/// use component_model_types::{ Assign, OptionExt }; // use crate `component_model` instead of crate `component_model_types` unless you need to use crate `component_model_types` directly
+/// use component_model_types :: { Assign, OptionExt }; // use crate `component_model` instead of crate `component_model_types` unless you need to use crate `component_model_types` directly
 ///
 /// struct MyStruct
 /// {
-///   name : String,
+///   name: String,
 /// }
 ///
-/// impl< IntoT : Into< MyStruct > > Assign< MyStruct, IntoT > for MyStruct
+/// impl< IntoT: Into< MyStruct > > Assign< MyStruct, IntoT > for MyStruct
 /// {
-///   fn assign( &mut self, component : IntoT )
+///   fn assign( &mut self, component: IntoT )
 ///   {
 ///     self.name = component.into().name;
-///   }
+/// }
 /// }
 ///
-/// let mut opt_struct: Option<  MyStruct  > = None;
+/// let mut opt_struct: Option< MyStruct > = None;
 /// opt_struct.option_assign( MyStruct { name: "New Name".to_string() } );
 /// assert_eq!( opt_struct.unwrap().name, "New Name" );
 /// ```
 #[ cfg( feature = "types_component_assign" ) ]
-pub trait OptionExt<T>: sealed::Sealed
+pub trait OptionExt< T > : sealed ::Sealed
 where
-  T: Sized + Assign<T, T>,
+  T: Sized + Assign< T, T >,
 {
   /// Sets the component on the `Option` if it is `None`.
   ///
@@ -104,28 +104,31 @@ where
   ///
   /// # Parameters
   ///
-  /// - `src`: The value to assign to the `Option`.
+  /// - `src` : The value to assign to the `Option`.
   fn option_assign(&mut self, src: T);
 }
 
 #[ cfg( feature = "types_component_assign" ) ]
-impl<T> OptionExt<T> for Option< T >
+impl< T > OptionExt< T > for Option< T >
 where
-  T: Sized + Assign<T, T>,
+  T: Sized + Assign< T, T >,
 {
   #[ inline( always ) ]
-  fn option_assign(&mut self, src: T) {
-    match self {
-      Some(self_ref) => Assign::assign(self_ref, Into::<T>::into(src)),
-      None => *self = Some(src),
-    }
-  }
+  fn option_assign(&mut self, src: T) 
+  {
+  match self 
+  {
+   Some(self_ref) => Assign ::assign(self_ref, Into :: < T > ::into(src)),
+   None => *self = Some(src),
+ }
+ }
 }
 
 #[ cfg( feature = "types_component_assign" ) ]
-mod sealed {
+mod sealed 
+{
   pub trait Sealed {}
-  impl<T> Sealed for Option< T > where T: Sized + super::Assign<T, T> {}
+  impl< T > Sealed for Option< T > where T: Sized + super ::Assign< T, T > {}
 }
 
 /// The `AssignWithType` trait provides a mechanism to set a component on an object,
@@ -135,38 +138,39 @@ mod sealed {
 ///
 /// # Type Parameters
 ///
-/// - `T`: The type of the component to be set on the implementing object. This specifies
+/// - `T` : The type of the component to be set on the implementing object. This specifies
 ///   the exact type expected by the object as its component.
-/// - `IntoT`: A type that can be converted into `T`, providing flexibility in the types of values
+/// - `IntoT` : A type that can be converted into `T`, providing flexibility in the types of values
 ///   that can be used to set the component.
 ///
 /// # Examples
 ///
-/// Implementing `AssignWithType` to set a username on a struct:
+/// Implementing `AssignWithType` to set a username on a struct :
 ///
 /// ```rust
-/// use component_model_types::{ Assign, AssignWithType }; // use crate `component_model` instead of crate `component_model_types` unless you need to use crate `component_model_types` directly
+/// use component_model_types :: { Assign, AssignWithType }; // use crate `component_model` instead of crate `component_model_types` unless you need to use crate `component_model_types` directly
 ///
 /// struct UserProfile
 /// {
-///   username : String,
+///   username: String,
 /// }
 ///
-/// impl< IntoT : Into< String > > Assign< String, IntoT > for UserProfile
+/// impl< IntoT: Into< String > > Assign< String, IntoT > for UserProfile
 /// {
-///   fn assign( &mut self, component : IntoT )
+///   fn assign( &mut self, component: IntoT )
 ///   {
 ///     self.username = component.into();
-///   }
+/// }
 /// }
 ///
-/// let mut user_profile = UserProfile { username : String::new() };
-/// user_profile.assign_with_type::< String, _ >("john_doe");
+/// let mut user_profile = UserProfile { username: String ::new() };
+/// user_profile.assign_with_type :: < String, _ >("john_doe");
 ///
 /// assert_eq!( user_profile.username, "john_doe" );
 /// ```
 #[ cfg( feature = "types_component_assign" ) ]
-pub trait AssignWithType {
+pub trait AssignWithType 
+{
   /// Sets the value of a component by its type.
   ///
   /// This method allows an implementer of `AssignWithType` to set a component on `self`
@@ -176,26 +180,27 @@ pub trait AssignWithType {
   ///
   /// # Parameters
   ///
-  /// - `component`: The value to assign to the component.
+  /// - `component` : The value to assign to the component.
   ///
   /// # Type Parameters
   ///
-  /// - `T`: The type of the component to be set on the implementing object.
-  /// - `IntoT`: A type that can be converted into `T`.
-  fn assign_with_type<T, IntoT>(&mut self, component: IntoT)
+  /// - `T` : The type of the component to be set on the implementing object.
+  /// - `IntoT` : A type that can be converted into `T`.
+  fn assign_with_type< T, IntoT >(&mut self, component: IntoT)
   where
-    IntoT: Into<T>,
-    Self: Assign<T, IntoT>;
+  IntoT: Into< T >,
+  Self: Assign< T, IntoT >;
 }
 
 #[ cfg( feature = "types_component_assign" ) ]
-impl<S> AssignWithType for S {
+impl< S > AssignWithType for S 
+{
   #[ inline( always ) ]
-  fn assign_with_type<T, IntoT>(&mut self, component: IntoT)
+  fn assign_with_type< T, IntoT >(&mut self, component: IntoT)
   where
-    IntoT: Into<T>,
-    Self: Assign<T, IntoT>,
+  IntoT: Into< T >,
+  Self: Assign< T, IntoT >,
   {
-    Assign::<T, IntoT>::assign(self, component);
-  }
+  Assign :: < T, IntoT > ::assign(self, component);
+ }
 }

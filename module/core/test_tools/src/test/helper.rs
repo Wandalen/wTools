@@ -2,22 +2,23 @@
 //! Helpers for testing.
 //!
 
-// use super::*;
+// use super :: *;
 
 /// Define a private namespace for all its items.
-mod private {
+mod private 
+{
 
-  // zzz : move here test tools
+  // zzz: move here test tools
 
   // /// Pass only if callback fails either returning error or panicing.
   //
-  // pub fn should_throw< R, F : FnOnce() -> anyhow::Result<  R  > >( f : F ) -> anyhow::Result<  R  >
+  // pub fn should_throw< R, F: FnOnce() - > anyhow ::Result< R > >( f: F ) -> anyhow ::Result< R >
   // {
   //   f()
   // }
   //
   // #[ panic_handler ]
-  // fn panic( info : &core::panic::PanicInfo ) -> !
+  // fn panic( info: &core ::panic ::PanicInfo ) -> !
   // {
   //   println!( "{:?}", info );
   //   loop {}
@@ -32,91 +33,96 @@ mod private {
   macro_rules! num
   {
 
-    () =>
-    {
-    };
+  () =>
+  {
+ };
 
-    ( $num : expr ) =>
-    {
-      num_traits::cast::< _, T >( $num ).unwrap()
-    };
+  ( $num: expr ) =>
+  {
+   num_traits ::cast :: < _, T >( $num ).unwrap()
+ };
 
-    ( $( $num : expr ),+ ) =>
-    {(
-      $( num_traits::cast::< _, T >( $num ).unwrap() ),+
-    )};
+  ( $( $num: expr ),+ ) =>
+  {(
+   $( num_traits ::cast :: < _, T >( $num ).unwrap() ),+
+ )};
 
-  }
+ }
   /// Test a file with documentation.
   #[ macro_export ]
   macro_rules! doc_file_test {
-    ( $file:expr ) => {
-      #[ allow( unused_doc_comments ) ]
-      #[ cfg( doctest ) ]
-      #[ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", $file ) ) ]
-      extern "C" {}
-    };
-  }
+  ( $file: expr ) =>
+  {
+   #[ allow( unused_doc_comments ) ]
+   #[ cfg( doctest ) ]
+   #[ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", $file ) ) ]
+   extern "C" {}
+ };
+ }
 
   pub use num;
   pub use doc_file_test;
 }
 
-// crate::mod_interface!
+// crate ::mod_interface!
 // {
 //   // xxx
 //   // #![ debug ]
 //   // exposed use super;
-//   exposed use super::super::helper;
+//   exposed use super ::super ::helper;
 //
 //   prelude use
 //   {
 //     num,
 //     doc_file_test,
-//   };
+// };
 // }
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod own {
-  use super::*;
+pub mod own 
+{
+  use super :: *;
 
   #[ doc( inline ) ]
-  pub use {private::*};
+  pub use { private :: * };
 }
 
 /// Shared with parent namespace of the module
 #[ allow( unused_imports ) ]
-pub mod orphan {
-  use super::*;
+pub mod orphan 
+{
+  use super :: *;
 
   #[ doc( inline ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 
-  pub use super::super::helper;
+  pub use super ::super ::helper;
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod exposed {
-  use super::*;
+pub mod exposed 
+{
+  use super :: *;
 
   #[ doc( inline ) ]
-  pub use prelude::*;
+  pub use prelude :: *;
 
   #[ doc( inline ) ]
-  pub use {private::num, private::doc_file_test};
+  pub use { private ::num, private ::doc_file_test };
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
-pub mod prelude {
-  use super::*;
+pub mod prelude 
+{
+  use super :: *;
 
   #[ doc( inline ) ]
-  pub use {};
+  pub use { };
 }

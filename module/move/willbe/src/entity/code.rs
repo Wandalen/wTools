@@ -1,13 +1,13 @@
-#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
+#[ allow( clippy ::std_instead_of_alloc, clippy ::std_instead_of_core ) ]
 mod private
 {
 
-  use crate::*;
+  use crate :: *;
 
-  use std::
+  use std ::
   {
-    borrow::Cow,
-  };
+  borrow ::Cow,
+ };
 
   /// A trait for converting an object to its code representation.
   ///
@@ -17,11 +17,11 @@ mod private
   ///
   pub trait AsCode
   {
-    /// Converts the object to its code representation.
-    /// # Errors
-    /// qqq: doc
-    fn as_code( &self ) -> std::io::Result< Cow< '_, str > >;
-  }
+  /// Converts the object to its code representation.
+  /// # Errors
+  /// qqq: doc
+  fn as_code( &self ) -> std ::io ::Result< Cow< '_, str > >;
+ }
 
   /// A trait for retrieving an iterator over items of a source file.
   ///
@@ -30,14 +30,14 @@ mod private
   /// all source files associated with an object, such as a workspace or a package.
   pub trait CodeItems
   {
-    /// Returns an iterator over the source files.
-    fn items( &self ) -> impl IterTrait< '_, syn::Item >;
-  }
+  /// Returns an iterator over the source files.
+  fn items( &self ) -> impl IterTrait< '_, syn ::Item >;
+ }
 }
 
 //
 
-crate::mod_interface!
+crate ::mod_interface!
 {
 
   exposed use AsCode;

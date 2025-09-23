@@ -88,14 +88,17 @@ pub trait PrettyDisplay {
 
 #### 3. Implement for Existing Error Types
 ```rust
-impl PrettyDisplay for crate::error::typed::Error {
-    fn pretty_display(&self) -> String {
+impl PrettyDisplay for crate::error::typed::Error 
+{
+    fn pretty_display(&self) -> String 
+{
         // Format structured error without debug wrapper
         format!("{}", self.message)  // Extract clean message
     }
     
     #[cfg(feature = "error_colored")]
-    fn pretty_display_colored(&self) -> String {
+    fn pretty_display_colored(&self) -> String 
+{
         use owo_colors::OwoColorize;
         match self.severity {
             ErrorSeverity::Error => format!("❌ {}", self.message.red()),
@@ -154,12 +157,14 @@ macro_rules! pprintln {
 #### 2. Helper Functions
 ```rust
 #[cfg(feature = "pretty_display")]
-pub fn display_error_pretty(error: &dyn std::error::Error) -> String {
+pub fn display_error_pretty(error: &dyn std::error::Error) -> String 
+{
     // Smart error chain formatting
 }
 
 #[cfg(feature = "error_context")]
-pub fn display_error_with_context(error: &dyn std::error::Error, context: &str) -> String {
+pub fn display_error_with_context(error: &dyn std::error::Error, context: &str) -> String 
+{
     // Error with additional context
 }
 ```
@@ -169,8 +174,10 @@ pub fn display_error_with_context(error: &dyn std::error::Error, context: &str) 
 #### 1. Error Chain Visualization
 ```rust
 #[cfg(feature = "error_context")]
-impl ErrorChainDisplay for Error {
-    fn display_chain(&self) -> String {
+impl ErrorChainDisplay for Error 
+{
+    fn display_chain(&self) -> String 
+{
         // Visual error chain like:
         // ┌─ Main Error: Command failed
         // ├─ Caused by: Network timeout  
@@ -230,7 +237,8 @@ supports-color = { version = "3.0", optional = true }  # Color support detection
 ```rust
 #[test]
 #[cfg(feature = "pretty_display")]
-fn test_pretty_display_basic() {
+fn test_pretty_display_basic() 
+{
     let error = create_test_error();
     let pretty = error.pretty_display();
     assert!(!pretty.contains("ErrorData {"));  // No debug wrapper
@@ -239,7 +247,8 @@ fn test_pretty_display_basic() {
 
 #[test] 
 #[cfg(feature = "error_colored")]
-fn test_colored_output() {
+fn test_colored_output() 
+{
     let error = create_test_error();
     let colored = error.pretty_display_colored();
     assert!(colored.contains("\x1b["));  // ANSI color codes present

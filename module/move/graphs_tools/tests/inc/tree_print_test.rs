@@ -1,6 +1,6 @@
-use super::*;
+use super :: *;
 
-use graph::map_of_nodes::
+use graph ::map_of_nodes ::
 {
   Node, NodeId, Graph,
 };
@@ -10,15 +10,15 @@ use graph::map_of_nodes::
 #[ test ]
 fn write_as_dfs_tree()
 {
-  use the_module::tree_print::GraphDirectedPrintAsTree;
-  let graph = Graph::duplet_assymetric();
+  use the_module ::tree_print ::GraphDirectedPrintAsTree;
+  let graph = Graph ::duplet_assymetric();
 
-  let mut got = String::new();
+  let mut got = String ::new();
   let r = graph.write_as_dfs_tree( &mut got, 0.into() );
-  let exp = r#"node::0
-├─ node::1
-├─ node::2
-│  ├─ node::3
+  let exp = r#"node :: 0
+├─ node :: 1
+├─ node :: 2
+│  ├─ node :: 3
 "#;
   println!( "{}", got );
   assert_eq!( got, exp );
@@ -31,19 +31,19 @@ fn write_as_dfs_tree()
 #[ test ]
 fn string_with_dfs_tree()
 {
-  use the_module::tree_print::GraphDirectedPrintAsTree;
-  let graph = Graph::triplet_with_double_legs();
+  use the_module ::tree_print ::GraphDirectedPrintAsTree;
+  let graph = Graph ::triplet_with_double_legs();
 
   let got = graph.string_with_dfs_tree( 0.into() );
   println!( "{}", got );
-  let exp = r#"node::0
-├─ node::1
-│  ├─ node::4
-│  ├─ node::5
-├─ node::2
-├─ node::3
-│  ├─ node::6
-│  ├─ node::7
+  let exp = r#"node :: 0
+├─ node :: 1
+│  ├─ node :: 4
+│  ├─ node :: 5
+├─ node :: 2
+├─ node :: 3
+│  ├─ node :: 6
+│  ├─ node :: 7
 "#;
   assert_eq!( got, exp );
 
@@ -54,19 +54,19 @@ fn string_with_dfs_tree()
 #[ test ]
 fn string_with_bfs_tree()
 {
-  use the_module::tree_print::GraphDirectedPrintAsTree;
-  let graph = Graph::triplet_with_double_legs();
+  use the_module ::tree_print ::GraphDirectedPrintAsTree;
+  let graph = Graph ::triplet_with_double_legs();
 
   let got = graph.string_with_bfs_tree( 0.into() );
   println!( "{}", got );
-  let exp = r#"node::0
-├─ node::1
-├─ node::2
-├─ node::3
-│  ├─ node::4
-│  ├─ node::5
-│  ├─ node::6
-│  ├─ node::7
+  let exp = r#"node :: 0
+├─ node :: 1
+├─ node :: 2
+├─ node :: 3
+│  ├─ node :: 4
+│  ├─ node :: 5
+│  ├─ node :: 6
+│  ├─ node :: 7
 "#;
   println!( "{}", got );
   assert_eq!( got, exp );

@@ -19,25 +19,29 @@ Write failing tests to verify SmokeModuleTest can configure temporary project de
 ## Test Structure
 ```rust
 #[test]
-fn test_local_path_dependency_configuration() {
+fn test_local_path_dependency_configuration() 
+{
     // Should fail initially - implementation in task 018
     // Verify local path dependencies are properly configured in Cargo.toml
 }
 
 #[test]
-fn test_published_version_dependency_configuration() {
+fn test_published_version_dependency_configuration() 
+{
     // Should fail initially - implementation in task 018
     // Verify published version dependencies are properly configured
 }
 
 #[test]
-fn test_cargo_toml_generation() {
+fn test_cargo_toml_generation() 
+{
     // Should fail initially - implementation in task 018
     // Verify complete Cargo.toml file is properly generated
 }
 
 #[test]
-fn test_cross_platform_path_handling() {
+fn test_cross_platform_path_handling() 
+{
     // Should fail initially - implementation in task 018
     // Verify path escaping works correctly on Windows and Unix
 }

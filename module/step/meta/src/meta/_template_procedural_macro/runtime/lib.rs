@@ -1,7 +1,7 @@
 #![ cfg_attr( feature = "no_std", no_std ) ]
-#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
-#![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
-#![ doc( html_root_url = "https://docs.rs/_template_procedural_macro_runtime/latest/_template_procedural_macro_runtime/" ) ]
+#![ doc( html_logo_url = "https: //raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
+#![ doc( html_favicon_url = "https: //raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
+#![ doc( html_root_url = "https: //docs.rs/_template_procedural_macro_runtime/latest/_template_procedural_macro_runtime/" ) ]
 // #![ deny( rust_2018_idioms ) ]
 // #![ deny( missing_debug_implementations ) ]
 // #![ deny( missing_docs ) ]
@@ -22,23 +22,23 @@ pub mod dependency
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
-  pub use exposed::*;
+  use super :: *;
+  pub use exposed :: *;
 }
 
-pub use own::*;
+pub use own :: *;
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::*;
-  pub use prelude::*;
+  use super :: *;
+  pub use prelude :: *;
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::*;
+  use super :: *;
 }

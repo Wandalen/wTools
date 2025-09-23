@@ -1,12 +1,12 @@
 #[ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 
 #[ cfg( feature = "reflect_newtype" ) ]
 // #[ path = "fundamental" ]
 mod fundamental
 {
   #[ allow( unused_imports ) ]
-  use super::*;
+  use super :: *;
 
   mod fields_test;
   mod fields_vec;
@@ -24,7 +24,7 @@ mod fundamental
 mod group1
 {
   #[ allow( unused_imports ) ]
-  use super::*;
+  use super :: *;
 
   mod newtype_experiment;
 

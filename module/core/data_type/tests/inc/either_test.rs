@@ -1,5 +1,5 @@
 #[ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 
 // xxx: temporarily disabled due to macro resolution issues
 /*
@@ -7,9 +7,9 @@ tests_impls! {
 
   fn basic_test()
   {
-    let left : the_module::Either< _, () > = the_module::Either::Left( 13 );
-    a_id!( left.flip(), the_module::Either::Right( 13 ) );
-  }
+  let left: the_module ::Either< _, () > = the_module ::Either ::Left( 13 );
+  a_id!( left.flip(), the_module ::Either ::Right( 13 ) );
+ }
 
 }
 

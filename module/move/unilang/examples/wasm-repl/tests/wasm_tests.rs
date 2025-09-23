@@ -1,3 +1,4 @@
+#![allow(clippy::all)]
 //! WebAssembly tests for UniLang REPL
 //!
 //! These tests verify that the WebAssembly bridge works correctly and can execute

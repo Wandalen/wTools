@@ -1,43 +1,43 @@
-use gluesql::
+use gluesql ::
 {
-  sled_storage::sled::Config,
-  prelude::Payload::Select,
+  sled_storage ::sled ::Config,
+  prelude ::Payload ::Select,
 };
-use unitore::
+use unitore ::
 {
-  sled_adapter::FeedStorage,
-  entity::config::ConfigStore,
-  action::config,
+  sled_adapter ::FeedStorage,
+  entity ::config ::ConfigStore,
+  action ::config,
 };
-use error_tools::untyped::Result;
+use error_tools ::untyped ::Result;
 
-#[ tokio::test ]
+#[ tokio ::test ]
 async fn config_delete() -> Result< () >
 {
 
-  let path = std::path::PathBuf::from( "./tests/fixtures/test_config.toml" );
-  let temp_path = pth::path::unique_folder_name().unwrap();
+  let path = std ::path ::PathBuf ::from( "./tests/fixtures/test_config.toml" );
+  let temp_path = pth ::path ::unique_folder_name().unwrap();
 
-  let config = Config::default()
+  let config = Config ::default()
   .path( format!( "./{}", temp_path ) )
   .temporary( true )
   ;
 
-  let mut feed_storage = FeedStorage::init_storage( &config ).await?;
-  config::config_add( feed_storage.clone(), &path ).await?;
+  let mut feed_storage = FeedStorage ::init_storage( &config ).await?;
+  config ::config_add( feed_storage.clone(), &path ).await?;
 
-  config::config_delete( feed_storage.clone(), &path ).await?;
+  config ::config_delete( feed_storage.clone(), &path ).await?;
 
   let list = feed_storage.config_list().await?;
 
-  if let Select{ labels : _, rows } = list
+  if let Select{ labels: _, rows } = list
   {
-    assert!( rows.len() == 0 )
-  }
+  assert!( rows.len() == 0 )
+ }
   else
   {
-    assert!( false );
-  }
+  assert!( false );
+ }
 
   Ok( () )
 }

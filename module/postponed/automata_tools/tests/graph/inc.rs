@@ -1,8 +1,8 @@
 #![ allow( unused_imports ) ]
 
-use super::*;
-use std::collections::HashSet;
-// use wtools::prelude::*;
+use super :: *;
+use std ::collections ::HashSet;
+// use wtools ::prelude :: *;
 
 #[ cfg( not( feature = "no_std" ) ) ]
 mod canonical_node_test;

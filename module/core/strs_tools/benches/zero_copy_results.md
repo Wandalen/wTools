@@ -66,7 +66,8 @@ assert!(segment.is_owned()); // Now owned after modification
 
 #### 1. Lifetime Safety
 ```rust
-pub struct ZeroCopySegment<'a> {
+pub struct ZeroCopySegment<'a> 
+{
   content: Cow<'a, str>,           // Copy-on-write for optimal memory usage
   segment_type: SegmentType,       // Content vs Delimiter classification  
   start_pos: usize,               // Position tracking in original string
@@ -78,7 +79,9 @@ pub struct ZeroCopySegment<'a> {
 #### 2. SIMD Integration
 ```rust
 #[cfg(feature = "simd")]
-pub fn perform_simd(self) -> Result<impl Iterator<Item = ZeroCopySegment<'a>>, String> {
+pub fn perform_simd(self) -> Result<impl Iterator<Item = ZeroCopySegment<'a>>, String> 
+
+{
     match simd_split_cached(src, &delim_refs) {
         Ok(simd_iter) => Ok(simd_iter.map(|split| ZeroCopySegment::from(split))),
         Err(e) => Err(format!("SIMD split failed: {:?}", e)),

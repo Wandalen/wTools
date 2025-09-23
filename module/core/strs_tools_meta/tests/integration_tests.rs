@@ -3,10 +3,10 @@
 //! # Test Matrix Summary
 //! 
 //! This file provides the main entry point for integration tests.
-//! Detailed Test Matrices are contained in individual test modules:
+//! Detailed Test Matrices are contained in individual test modules :
 //! 
-//! - `optimize_split_tests`: Tests for `optimize_split` macro
-//! - `optimize_match_tests`: Tests for `optimize_match` macro
+//! - `optimize_split_tests` : Tests for `optimize_split` macro
+//! - `optimize_match_tests` : Tests for `optimize_match` macro
 //!
 
 #[ cfg( feature = "optimize_split" ) ]

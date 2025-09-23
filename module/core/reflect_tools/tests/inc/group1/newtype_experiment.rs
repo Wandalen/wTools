@@ -1,5 +1,5 @@
-use test_tools::a_id;
-// pub use the_module::reflect;
+use test_tools ::a_id;
+// pub use the_module ::reflect;
 
 #[ test ]
 fn basic()
@@ -25,12 +25,12 @@ fn basic()
   #[ allow( dead_code ) ]
   pub struct Options3
   {
-    voltage : Voltage,
-    resistance : Resistance,
-    pair : Pair,
-  }
+  voltage: Voltage,
+  resistance: Resistance,
+  pair: Pair,
+ }
 
-  // Options3::former()
+  // Options3 ::former()
   // .set( voltage )
   // .set( resistance )
   // .set( pair )

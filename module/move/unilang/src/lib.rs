@@ -7,6 +7,26 @@
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 #![ cfg_attr( not( doc ), doc = "Universal language processing" ) ]
 
+//!
+//! ## Design Rules Compliance Notice
+//!
+//! **CRITICAL: This codebase must follow strict design rules. Before making changes, review:**
+//! - `$PRO/genai/code/rules/code_design.rulebook.md` - Core design patterns and architecture rules
+//! - `$PRO/genai/code/rules/code_style.rulebook.md` - Code formatting and style requirements
+//!
+//! **Key Rules Summary:**
+//! - **Testing:** All tests MUST be in `tests/` directory, NOT in `src/` as `mod tests`
+//! - **Benchmarking:** Use `benchkit` framework ONLY - no custom timing code in tests
+//! - **Performance Tests:** NEVER mix benchmarks with unit tests - separate concerns
+//! - **Test Documentation:** Every test file MUST have Test Matrix documentation
+//! - **Directory Structure:** `tests/` for tests, `benches/` for benchmarks (if using benchkit)
+//!
+//! **Common Violations to Avoid:**
+//! ❌ Custom `std::time::Instant` timing code in test files
+//! ❌ Performance/benchmark tests in `tests/` directory
+//! ❌ Missing file-level documentation with Test Matrix in test files
+//! ❌ Using anything other than `benchkit` for performance measurement
+//!
 //! ## Feature Flags
 //!
 //! Unilang supports multiple feature flags to customize functionality and dependencies:
@@ -143,45 +163,40 @@ mod_interface::mod_interface!
   
   /// High-level pipeline API.
   layer pipeline;
-  
+
+  /// Multi-YAML build system for compile-time aggregation.
+  layer multi_yaml;
+
   /// String interning system for performance optimization.
   layer interner;
-  
+
   /// SIMD-optimized JSON parsing for 4-25x performance improvements.
   layer simd_json_parser;
-  
+
   /// SIMD-optimized tokenization for 3-6x performance improvements.
   layer simd_tokenizer;
-  
+
   /// Environment-specific benchmark configuration system.
-  #[ cfg( feature = "benchmarks" ) ]
   layer benchmark_config;
-  
-  /// Coefficient of variation analysis for benchmark quality assessment.
-  #[ cfg( feature = "benchmarks" ) ]
-  layer cv_analysis;
-  
-  /// Automatic documentation updater for benchmark results.
-  #[ cfg( feature = "benchmarks" ) ]
-  layer documentation_updater;
-  
+
+  // /// Coefficient of variation analysis for benchmark quality assessment.
+  // layer cv_analysis;
+
+  // /// Automatic documentation updater for benchmark results.
+  // layer documentation_updater;
+
   /// Standard benchmark data sizes for consistent performance comparison.
-  #[ cfg( feature = "benchmarks" ) ]
   layer benchmark_data_sizes;
-  
-  /// Realistic test data generation for production-like benchmarks.
-  #[ cfg( feature = "benchmarks" ) ]
-  layer realistic_test_data;
-  
-  /// Comparative benchmark structure for side-by-side algorithm performance analysis.
-  #[ cfg( feature = "benchmarks" ) ]
-  layer comparative_benchmark_structure;
-  
-  /// Context-rich benchmark documentation generator for comprehensive reporting.
-  #[ cfg( feature = "benchmarks" ) ]
-  layer context_rich_documentation;
-  
-  /// Before/after optimization workflow system for systematic performance tracking.
-  #[ cfg( feature = "benchmarks" ) ]
-  layer optimization_workflow;
+
+  // /// Realistic test data generation for production-like benchmarks.
+  // layer realistic_test_data;
+
+  // /// Comparative benchmark structure for side-by-side algorithm performance analysis.
+  // layer comparative_benchmark_structure;
+
+  // /// Context-rich benchmark documentation generator for comprehensive reporting.
+  // layer context_rich_documentation;
+
+  // /// Before/after optimization workflow system for systematic performance tracking.
+  // layer optimization_workflow;
 }

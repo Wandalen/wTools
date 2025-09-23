@@ -196,13 +196,16 @@ The `SecretInjectable` trait allows automatic injection of secrets into configur
 use workspace_tools::{ workspace, SecretInjectable };
 
 #[derive(Debug)]
-struct AppConfig {
+struct AppConfig 
+{
     database_url: String,
     api_key: String,
 }
 
-impl SecretInjectable for AppConfig {
-    fn inject_secret(&mut self, key: &str, value: String) -> workspace_tools::Result<()> {
+impl SecretInjectable for AppConfig 
+{
+    fn inject_secret(&mut self, key: &str, value: String) -> workspace_tools::Result<()> 
+{
         match key {
             "DATABASE_URL" => self.database_url = value,
             "API_KEY" => self.api_key = value,
@@ -213,7 +216,8 @@ impl SecretInjectable for AppConfig {
         Ok(())
     }
 
-    fn validate_secrets(&self) -> workspace_tools::Result<()> {
+    fn validate_secrets(&self) -> workspace_tools::Result<()> 
+{
         if self.api_key.is_empty() {
             return Err(workspace_tools::WorkspaceError::SecretValidationError(
                 "api_key cannot be empty".to_string()

@@ -3,19 +3,20 @@
 
 #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
 #[ test ]
-fn debug_split_issue() {
-  use strs_tools::string::split::{SplitOptionsFormer}; // Removed SplitType
+fn debug_split_issue() 
+{
+  use strs_tools ::string ::split;
 
-  let input = r#"cmd name::"a\\\\b\\\"c\\\'d\\ne\\tf""#;
-  let splitter = SplitOptionsFormer::new(vec!["::", " "])
-    .src(input)
-    .quoting(true)
-    .quoting_prefixes(vec![r#"""#, r"'"])
-    .quoting_postfixes(vec![r#"""#, r"'"])
-    .perform();
+  let input = r#"cmd name :: "a\\\\b\\\"c\\\'d\\ne\\tf""#;
+  let splitter = split()
+  .src(input)
+  .delimeter(" :: ")
+  .quoting(true)
+  .perform();
 
   println!("Input: {input:?}");
-  for item in splitter {
-    println!("Split item: {item:?}");
-  }
+  for item in splitter 
+  {
+  println!("Split item: {item:?}");
+ }
 }

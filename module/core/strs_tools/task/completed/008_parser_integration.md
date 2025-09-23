@@ -50,7 +50,8 @@ Implement integrated parsing operations that combine tokenization, validation, a
 
 ```rust
 /// Combined tokenization and parsing in single pass
-pub struct TokenParsingIterator<'a, F, T> {
+pub struct TokenParsingIterator<'a, F, T> 
+{
     input: &'a str,
     delimiters: Vec<&'a str>,
     parser_func: F,
@@ -62,7 +63,8 @@ impl<'a, F, T> TokenParsingIterator<'a, F, T>
 where
     F: Fn(&str) -> Result<T, ParseError>,
 {
-    pub fn new(input: &'a str, delimiters: Vec<&'a str>, parser: F) -> Self {
+    pub fn new(input: &'a str, delimiters: Vec<&'a str>, parser: F) -> Self 
+{
         Self {
             input,
             delimiters,
@@ -79,7 +81,8 @@ where
 {
     type Item = Result<T, ParseError>;
     
-    fn next(&mut self) -> Option<Self::Item> {
+    fn next(&mut self) -> Option<Self::Item> 
+{
         // Find next token using existing split logic
         let token = self.find_next_token()?;
         
@@ -106,7 +109,8 @@ where
 ```rust
 /// Parser for structured command-line arguments
 #[derive(Debug, Clone)]
-pub struct CommandParser<'a> {
+pub struct CommandParser<'a> 
+{
     input: &'a str,
     token_delimiters: Vec<&'a str>,
     kv_separator: &'a str,
@@ -114,7 +118,8 @@ pub struct CommandParser<'a> {
 }
 
 #[derive(Debug, Clone)]
-pub enum ParsedToken<'a> {
+pub enum ParsedToken<'a> 
+{
     Command(&'a str),
     KeyValue { key: &'a str, value: &'a str },
     Flag(&'a str),
@@ -122,7 +127,8 @@ pub enum ParsedToken<'a> {
 }
 
 impl<'a> CommandParser<'a> {
-    pub fn new(input: &'a str) -> Self {
+    pub fn new(input: &'a str) -> Self 
+{
         Self {
             input,
             token_delimiters: vec![" ", "\t"],
@@ -132,7 +138,9 @@ impl<'a> CommandParser<'a> {
     }
     
     /// Parse command line in single pass with context awareness
-    pub fn parse_structured(self) -> impl Iterator<Item = Result<ParsedToken<'a>, ParseError>> + 'a {
+    pub fn parse_structured(self) -> impl Iterator<Item = Result<ParsedToken<'a>, ParseError>> + 'a 
+
+{
         StructuredParsingIterator {
             parser: self,
             position: 0,
@@ -142,13 +150,15 @@ impl<'a> CommandParser<'a> {
 }
 
 #[derive(Debug, Clone, Copy)]
-enum ParsingContext {
+enum ParsingContext 
+{
     Command,     // Expecting command name
     Arguments,   // Expecting arguments or flags
     Value,       // Expecting value after key
 }
 
-struct StructuredParsingIterator<'a> {
+struct StructuredParsingIterator<'a> 
+{
     parser: CommandParser<'a>,
     position: usize,
     current_context: ParsingContext,
@@ -157,7 +167,8 @@ struct StructuredParsingIterator<'a> {
 impl<'a> Iterator for StructuredParsingIterator<'a> {
     type Item = Result<ParsedToken<'a>, ParseError>;
     
-    fn next(&mut self) -> Option<Self::Item> {
+    fn next(&mut self) -> Option<Self::Item> 
+{
         if self.position >= self.parser.input.len() {
             return None;
         }
@@ -188,7 +199,8 @@ impl<'a> Iterator for StructuredParsingIterator<'a> {
 }
 
 impl<'a> StructuredParsingIterator<'a> {
-    fn parse_argument_token(&mut self, token: &'a str) -> Result<ParsedToken<'a>, ParseError> {
+    fn parse_argument_token(&mut self, token: &'a str) -> Result<ParsedToken<'a>, ParseError> 
+{
         if token.starts_with(self.parser.flag_prefix) {
             // Flag argument
             let flag_name = &token[self.parser.flag_prefix.len()..];
@@ -216,7 +228,8 @@ impl<'a> StructuredParsingIterator<'a> {
 
 ```rust
 /// Advanced CSV parser with context-aware field processing  
-pub struct ContextAwareCSVParser<'a, F> {
+pub struct ContextAwareCSVParser<'a, F> 
+{
     input: &'a str,
     field_processors: Vec<F>, // One processor per column
     current_row: usize,
@@ -228,7 +241,8 @@ impl<'a, F> ContextAwareCSVParser<'a, F>
 where
     F: Fn(&str, usize, usize) -> Result<String, ParseError>, // (field, row, col) -> processed_value
 {
-    pub fn new(input: &'a str, field_processors: Vec<F>) -> Self {
+    pub fn new(input: &'a str, field_processors: Vec<F>) -> Self 
+{
         Self {
             input,
             field_processors,
@@ -239,7 +253,9 @@ where
     }
     
     /// Parse CSV with column-specific processing
-    pub fn parse_with_context(mut self) -> impl Iterator<Item = Result<Vec<String>, ParseError>> + 'a {
+    pub fn parse_with_context(mut self) -> impl Iterator<Item = Result<Vec<String>, ParseError>> + 'a 
+
+{
         std::iter::from_fn(move || {
             if self.position >= self.input.len() {
                 return None;
@@ -282,7 +298,8 @@ where
 use std::collections::VecDeque;
 
 /// Streaming parser with configurable lookahead for context-sensitive parsing
-pub struct StreamingParserWithLookahead<R: BufRead> {
+pub struct StreamingParserWithLookahead<R: BufRead> 
+{
     reader: R,
     lookahead_buffer: VecDeque<String>,
     lookahead_size: usize,
@@ -291,7 +308,8 @@ pub struct StreamingParserWithLookahead<R: BufRead> {
 }
 
 impl<R: BufRead> StreamingParserWithLookahead<R> {
-    pub fn new(reader: R, delimiters: Vec<String>, lookahead_size: usize) -> Self {
+    pub fn new(reader: R, delimiters: Vec<String>, lookahead_size: usize) -> Self 
+{
         Self {
             reader,
             lookahead_buffer: VecDeque::new(),
@@ -302,7 +320,8 @@ impl<R: BufRead> StreamingParserWithLookahead<R> {
     }
     
     /// Fill lookahead buffer to enable context-aware parsing
-    fn ensure_lookahead(&mut self) -> std::io::Result<()> {
+    fn ensure_lookahead(&mut self) -> std::io::Result<()> 
+{
         while self.lookahead_buffer.len() < self.lookahead_size {
             let mut line = String::new();
             let bytes_read = self.reader.read_line(&mut line)?;
@@ -350,13 +369,15 @@ impl<R: BufRead> StreamingParserWithLookahead<R> {
 
 ```rust
 /// Parser combinator interface for complex parsing scenarios
-pub struct ParseCombinator<'a> {
+pub struct ParseCombinator<'a> 
+{
     input: &'a str,
     position: usize,
 }
 
 impl<'a> ParseCombinator<'a> {
-    pub fn new(input: &'a str) -> Self {
+    pub fn new(input: &'a str) -> Self 
+{
         Self { input, position: 0 }
     }
     
@@ -445,7 +466,8 @@ pub trait ParserIntegrationExt {
     fn parse_command_line(&self) -> impl Iterator<Item = Result<ParsedToken, ParseError>>;
 }
 
-impl ParserIntegrationExt for str {
+impl ParserIntegrationExt for str 
+{
     fn split_and_parse<T, F>(
         &self,
         delimiters: &[&str],
@@ -479,7 +501,9 @@ impl ParserIntegrationExt for str {
             })
     }
     
-    fn parse_command_line(&self) -> impl Iterator<Item = Result<ParsedToken, ParseError>> {
+    fn parse_command_line(&self) -> impl Iterator<Item = Result<ParsedToken, ParseError>> 
+
+{
         CommandParser::new(self).parse_structured()
     }
 }
@@ -536,15 +560,18 @@ impl ParserIntegrationExt for str {
 **Solution**: State machine approach with clear context transitions
 ```rust
 #[derive(Debug, Clone, Copy)]
-enum ParserState {
+enum ParserState 
+{
     Initial,
     ExpectingValue(usize), // Parameter: expected value type ID
     InQuotedString,
     EscapeSequence,
 }
 
-impl ParserStateMachine {
-    fn transition(&mut self, token: &str) -> Result<ParserState, ParseError> {
+impl ParserStateMachine 
+{
+    fn transition(&mut self, token: &str) -> Result<ParserState, ParseError> 
+{
         match (self.current_state, token) {
             (ParserState::Initial, token) if token.starts_with('"') => {
                 Ok(ParserState::InQuotedString)
@@ -563,15 +590,18 @@ impl ParserStateMachine {
 **Solution**: Detailed error types with position information
 ```rust
 #[derive(Debug, Clone)]
-pub enum ParseError {
+pub enum ParseError 
+{
     InvalidToken { token: String, position: usize, expected: String },
     ValidationFailed { token: String, position: usize, reason: String },
     UnexpectedEof { position: usize, expected: String },
     IoError(std::io::Error),
 }
 
-impl ParseError {
-    pub fn with_position(mut self, pos: usize) -> Self {
+impl ParseError 
+{
+    pub fn with_position(mut self, pos: usize) -> Self 
+{
         match &mut self {
             ParseError::InvalidToken { position, .. } => *position = pos,
             ParseError::ValidationFailed { position, .. } => *position = pos,
@@ -593,7 +623,8 @@ pub trait TokenParser<'a> {
     fn parse(&self, token: &'a str, context: &ParserContext) -> Result<Self::Output, Self::Error>;
     
     /// Validate parser at compile time
-    fn validate_parser() -> Result<(), &'static str> {
+    fn validate_parser() -> Result<(), &'static str> 
+{
         // Compile-time validation logic
         Ok(())
     }
@@ -605,7 +636,8 @@ impl<'a> TokenParser<'a> for IntParser {
     type Output = i32;
     type Error = ParseError;
     
-    fn parse(&self, token: &'a str, _: &ParserContext) -> Result<i32, ParseError> {
+    fn parse(&self, token: &'a str, _: &ParserContext) -> Result<i32, ParseError> 
+{
         token.parse().map_err(|_| ParseError::InvalidToken {
             token: token.to_string(),
             position: 0,
@@ -629,7 +661,8 @@ impl<'a> TokenParser<'a> for IntParser {
 #### Parser Integration Benchmarks
 ```rust
 #[bench]
-fn bench_multipass_command_parsing(b: &mut Bencher) {
+fn bench_multipass_command_parsing(b: &mut Bencher) 
+{
     let input = "command arg1:value1 arg2:value2 --flag positional";
     
     b.iter(|| {
@@ -656,7 +689,8 @@ fn bench_multipass_command_parsing(b: &mut Bencher) {
 }
 
 #[bench]
-fn bench_integrated_command_parsing(b: &mut Bencher) {
+fn bench_integrated_command_parsing(b: &mut Bencher) 
+{
     let input = "command arg1:value1 arg2:value2 --flag positional";
     
     b.iter(|| {

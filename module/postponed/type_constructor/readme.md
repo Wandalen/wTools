@@ -270,7 +270,8 @@ impl<T: Copy> core::ops::Deref for MySingle< T >
 }
 impl< T : Copy > From< std::sync::Arc< T > > for MySingle< T >
 {
-  fn from( src : std::sync::Arc< T >) -> Self {
+  fn from( src : std::sync::Arc< T >) -> Self 
+{
     Self( src )
   }
 }

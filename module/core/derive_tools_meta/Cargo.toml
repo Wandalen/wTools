@@ -1,6 +1,6 @@
 [package]
 name = "derive_tools_meta"
-version = "0.47.0"
+version = "0.48.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -30,6 +30,7 @@ proc-macro = true
 [features]
 default = [
   "enabled",
+
   "derive_deref_mut",
   "derive_deref",
   "derive_from",
@@ -45,6 +46,7 @@ default = [
 ]
 full = [
   "enabled",
+
   "derive_deref_mut",
   "derive_deref",
   "derive_from",

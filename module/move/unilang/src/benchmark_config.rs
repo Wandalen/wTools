@@ -158,6 +158,7 @@ pub struct MeasurementConfigWrapper {
   pub regression_threshold: f64,
 }
 
+#[cfg(feature = "benchkit")]
 impl From<MeasurementConfigWrapper> for benchkit::measurement::MeasurementConfig {
   fn from(wrapper: MeasurementConfigWrapper) -> Self {
     Self {

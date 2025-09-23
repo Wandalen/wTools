@@ -11,7 +11,7 @@
 //!
 //! Note: Unit structs and tuple structs are not supported (requires named fields)
 
-use component_model::ComponentModel;
+use component_model ::ComponentModel;
 
 // Note: Unit structs are not supported by ComponentModel (requires named fields)
 // This is expected behavior as the macro needs fields to generate methods for
@@ -20,24 +20,24 @@ use component_model::ComponentModel;
 /// Test multiple bool fields each get specific methods
 /// Test Combination: T5.3
 #[ derive( ComponentModel, Debug, PartialEq ) ]
-#[ allow( clippy::struct_excessive_bools ) ]  // Needed for testing multiple bool fields
+#[ allow( clippy ::struct_excessive_bools ) ]  // Needed for testing multiple bool fields
 struct MultipleBoolsDetailed
 {
-  enabled : bool,
-  visible : bool, 
-  active : bool,
-  debug : bool,
+  enabled: bool,
+  visible: bool, 
+  active: bool,
+  debug: bool,
 }
 
 #[ test ]
 fn test_multiple_identical_bool_fields()
 {
   let mut config = MultipleBoolsDetailed {
-    enabled: false,
-    visible: false,
-    active: false,
-    debug: false,
-  };
+  enabled: false,
+  visible: false,
+  active: false,
+  debug: false,
+ };
   
   // Each boolean field should have its own specific method
   config.enabled_set( true );
@@ -57,11 +57,11 @@ fn test_multiple_identical_bool_fields()
 fn test_multiple_bools_fluent()
 {
   let config = MultipleBoolsDetailed {
-    enabled: false,
-    visible: false,
-    active: false,
-    debug: false,
-  }
+  enabled: false,
+  visible: false,
+  active: false,
+  debug: false,
+ }
   .enabled_with( true )
   .visible_with( true )
   .active_with( false )
@@ -79,17 +79,17 @@ fn test_multiple_bools_fluent()
 #[ derive( ComponentModel, Debug ) ]
 struct VeryLongFieldNames
 {
-  this_is_a_very_long_field_name_that_tests_method_generation : String,
-  another_extremely_long_field_name_for_testing_purposes : i32,
+  this_is_a_very_long_field_name_that_tests_method_generation: String,
+  another_extremely_long_field_name_for_testing_purposes: i32,
 }
 
 #[ test ]
 fn test_very_long_field_names()
 {
   let mut config = VeryLongFieldNames {
-    this_is_a_very_long_field_name_that_tests_method_generation: String::new(),
-    another_extremely_long_field_name_for_testing_purposes: 0,
-  };
+  this_is_a_very_long_field_name_that_tests_method_generation: String ::new(),
+  another_extremely_long_field_name_for_testing_purposes: 0,
+ };
   
   // Methods should be generated correctly even for very long names
   config.this_is_a_very_long_field_name_that_tests_method_generation_set( "long_test".to_string() );
@@ -105,23 +105,23 @@ fn test_very_long_field_names()
 #[ derive( ComponentModel, Debug, PartialEq ) ]
 struct MixedUsage
 {
-  name : String,
-  count : i32,
-  enabled : bool,
+  name: String,
+  count: i32,
+  enabled: bool,
 }
 
 #[ test ]
 fn test_mixed_assign_and_impute()
 {
-  let mut config = MixedUsage { name: String::new(), count: 0, enabled: false };
+  let mut config = MixedUsage { name: String ::new(), count: 0, enabled: false };
   
   // Mix assignment and fluent patterns
   config.name_set( "mixed".to_string() );
   
   let config = config
-    .count_with( 42i32 )
-    .enabled_with( true );
-    
+  .count_with( 42i32 )
+  .enabled_with( true );
+  
   assert_eq!( config.name, "mixed" );
   assert_eq!( config.count, 42 );
   assert!( config.enabled );
@@ -136,24 +136,24 @@ fn test_mixed_assign_and_impute()
 #[ derive( ComponentModel, Debug ) ]
 struct NestedGenerics
 {
-  data : Vec< Option< String > >,
-  mapping : std::collections::HashMap< String, Vec< i32 > >,
+  data: Vec< Option< String > >,
+  mapping: std ::collections ::HashMap< String, Vec< i32 > >,
 }
 
 #[ test ]
 fn test_nested_generic_types()
 {
   let mut config = NestedGenerics {
-    data: Vec::new(),
-    mapping: std::collections::HashMap::new(),
-  };
+  data: Vec ::new(),
+  mapping: std ::collections ::HashMap ::new(),
+ };
   
   config.data_set( vec![ Some( "nested".to_string() ), None ] );
   config.mapping_set( {
-    let mut map = std::collections::HashMap::new();
-    map.insert( "key".to_string(), vec![ 1, 2, 3 ] );
-    map
-  } );
+  let mut map = std ::collections ::HashMap ::new();
+  map.insert( "key".to_string(), vec![ 1, 2, 3 ] );
+  map
+ } );
   
   assert_eq!( config.data.len(), 2 );
   assert_eq!( config.data[ 0 ], Some( "nested".to_string() ) );

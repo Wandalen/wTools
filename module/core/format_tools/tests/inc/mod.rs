@@ -1,10 +1,10 @@
-use super::*;
+use super :: *;
 
 #[ cfg( feature = "enabled" ) ]
 #[ path = "." ]
 mod fundamental
 {
-  use super::*;
+  use super :: *;
 
   mod test_object;
 
@@ -13,7 +13,7 @@ mod fundamental
 
   mod format_table_test;
   mod format_records_test;
-  // mod format_keys_test; // qqq : xxx : implement
+  // mod format_keys_test; // qqq: xxx: implement
 
   mod collection_test;
   mod fields_test;

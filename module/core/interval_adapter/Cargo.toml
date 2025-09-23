@@ -1,6 +1,6 @@
 [package]
 name = "interval_adapter"
-version = "0.37.0"
+version = "0.38.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -27,7 +27,10 @@ all-features = false
 
 [features]
 default = [ "enabled", "no_std" ]
-full = [ "default" ]
+full = [
+  "enabled",
+  "no_std",
+]
 no_std = []
 use_alloc = [ "no_std" ]
 enabled = []

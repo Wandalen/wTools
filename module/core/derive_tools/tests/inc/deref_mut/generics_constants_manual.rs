@@ -1,22 +1,22 @@
-use core::ops::{ Deref, DerefMut };
+use core ::ops :: { Deref, DerefMut };
 
 #[ allow( dead_code ) ]
-struct GenericsConstants< const N : usize >( i32 );
+struct GenericsConstants< const N: usize >( i32 );
 
-impl< const N : usize > Deref for GenericsConstants< N >
+impl< const N: usize > Deref for GenericsConstants< N >
 {
   type Target = i32;
-  fn deref( &self ) -> &Self::Target
+  fn deref( &self ) -> &Self ::Target
   {
-    &self.0
-  }
+  &self.0
+ }
 }
-impl< const N : usize > DerefMut for GenericsConstants< N >
+impl< const N: usize > DerefMut for GenericsConstants< N >
 {
-  fn deref_mut( &mut self ) -> &mut Self::Target
+  fn deref_mut( &mut self ) -> &mut Self ::Target
   {
-    &mut self.0
-  }
+  &mut self.0
+ }
 }
 
 // include!( "./only_test/generics_constants.rs" );

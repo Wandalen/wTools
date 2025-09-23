@@ -60,6 +60,7 @@ fn test_load_from_yaml_str_simple_command()
       deprecation_message: ""
       examples: []
       http_method_hint: ""
+      auto_help_enabled: false
   "#;
 
   let registry = CommandRegistry::builder().load_from_yaml_str( yaml_str ).unwrap().build();
@@ -243,6 +244,7 @@ fn test_load_from_yaml_str_all_scalar_types()
       deprecation_message: ""
       examples: []
       http_method_hint: ""
+      auto_help_enabled: false
   "#;
 
   let registry = CommandRegistry::builder().load_from_yaml_str( yaml_str ).unwrap().build();
@@ -354,6 +356,7 @@ fn test_load_from_yaml_str_collection_types()
       deprecation_message: ""
       examples: []
       http_method_hint: ""
+      auto_help_enabled: false
   "#;
 
   let registry = CommandRegistry::builder().load_from_yaml_str( yaml_str ).unwrap().build();
@@ -475,6 +478,7 @@ fn test_load_from_yaml_str_complex_types_and_attributes()
       deprecation_message: ""
       examples: []
       http_method_hint: ""
+      auto_help_enabled: false
   "#;
 
   let registry = CommandRegistry::builder().load_from_yaml_str( yaml_str ).unwrap().build();
@@ -529,6 +533,7 @@ fn test_load_from_yaml_str_multiple_commands()
       deprecation_message: ""
       examples: []
       http_method_hint: ""
+      auto_help_enabled: false
     - name: command2
       description: Second command
       arguments: []
@@ -543,6 +548,7 @@ fn test_load_from_yaml_str_multiple_commands()
       deprecation_message: ""
       examples: []
       http_method_hint: ""
+      auto_help_enabled: false
   "#;
 
   let registry = CommandRegistry::builder().load_from_yaml_str( yaml_str ).unwrap().build();
@@ -580,7 +586,8 @@ fn test_load_from_json_str_simple_command()
         "idempotent": true,
         "deprecation_message": "",
         "examples": [],
-        "http_method_hint": ""
+        "http_method_hint": "",
+        "auto_help_enabled": false
       }
     ]
   "#;
@@ -636,7 +643,8 @@ fn test_load_from_json_str_all_scalar_types()
         "idempotent": false,
         "deprecation_message": "",
         "examples": [],
-        "http_method_hint": ""
+        "http_method_hint": "",
+        "auto_help_enabled": false
       }
     ]
   "#;
@@ -704,7 +712,8 @@ fn test_load_from_json_str_collection_types()
         "idempotent": true,
         "deprecation_message": "",
         "examples": [],
-        "http_method_hint": ""
+        "http_method_hint": "",
+        "auto_help_enabled": false
       }
     ]
   "#;
@@ -769,7 +778,8 @@ fn test_load_from_json_str_complex_types_and_attributes()
         "idempotent": false,
         "deprecation_message": "",
         "examples": [],
-        "http_method_hint": ""
+        "http_method_hint": "",
+        "auto_help_enabled": false
       }
     ]
   "#;
@@ -827,7 +837,8 @@ fn test_load_from_json_str_multiple_commands()
         "idempotent": false,
         "deprecation_message": "",
         "examples": [],
-        "http_method_hint": ""
+        "http_method_hint": "",
+        "auto_help_enabled": false
       },
       {
         "name": "command2_json",
@@ -843,7 +854,8 @@ fn test_load_from_json_str_multiple_commands()
         "idempotent": false,
         "deprecation_message": "",
         "examples": [],
-        "http_method_hint": ""
+        "http_method_hint": "",
+        "auto_help_enabled": false
       }
     ]
   "#;
@@ -894,6 +906,7 @@ fn test_load_from_yaml_str_invalid_yaml()
       deprecation_message: ""
       examples: []
       http_method_hint: ""
+      auto_help_enabled: false
     - This line is malformed
   "#;
 
@@ -925,7 +938,8 @@ fn test_load_from_json_str_invalid_json()
         "idempotent": false,
         "deprecation_message": "",
         "examples": [],
-        "http_method_hint": ""
+        "http_method_hint": "",
+        "auto_help_enabled": false
       },
       { This is malformed json }
     ]
@@ -969,6 +983,7 @@ fn test_load_from_yaml_str_invalid_kind()
       deprecation_message: ""
       examples: []
       http_method_hint: ""
+      auto_help_enabled: false
   "#;
 
   let result = CommandRegistry::builder().load_from_yaml_str( yaml_str );
@@ -999,7 +1014,8 @@ fn test_load_from_json_str_invalid_kind()
         "idempotent": false,
         "deprecation_message": "",
         "examples": [],
-        "http_method_hint": ""
+        "http_method_hint": "",
+        "auto_help_enabled": false
       }
     ]
   "#;
@@ -1042,6 +1058,7 @@ fn test_load_from_yaml_str_invalid_list_format()
       deprecation_message: ""
       examples: []
       http_method_hint: ""
+      auto_help_enabled: false
   "#;
 
   let result = CommandRegistry::builder().load_from_yaml_str( yaml_str );
@@ -1082,6 +1099,7 @@ fn test_load_from_yaml_str_invalid_map_format()
       deprecation_message: ""
       examples: []
       http_method_hint: ""
+      auto_help_enabled: false
   "#;
 
   let result = CommandRegistry::builder().load_from_yaml_str( yaml_str );
@@ -1122,6 +1140,7 @@ fn test_load_from_yaml_str_invalid_enum_format()
       deprecation_message: ""
       examples: []
       http_method_hint: ""
+      auto_help_enabled: false
   "#;
 
   let result = CommandRegistry::builder().load_from_yaml_str( yaml_str );

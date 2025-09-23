@@ -29,7 +29,7 @@ use ::former::Former; // Import derive macro
 
 /// Enum using derive for standalone constructors with arguments.
 #[ derive( Debug, PartialEq, Clone, Former ) ] // Fixed: removed debug from derive
-#[ debug ] // Separate debug attribute
+// #[ debug ] // Separate debug attribute - disabled
 #[ standalone_constructors ] // Enable standalone constructors
 pub enum TestEnumArgsDerived // UNIQUE NAME: Avoid conflicts with manual tests
 {

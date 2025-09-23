@@ -31,9 +31,12 @@ When section conflicts occur, the API doesn't report the issue - it just creates
 Add validation to catch potential conflicts:
 
 ```rust
-impl MarkdownUpdater {
+impl MarkdownUpdater 
+{
     /// Create new markdown updater with section name validation
-    pub fn new(file_path: impl AsRef<Path>, section_name: &str) -> Result<Self, MarkdownError> {
+    pub fn new(file_path: impl AsRef<Path>, section_name: &str) -> Result<Self, MarkdownError> 
+
+{
         // Validate section name doesn't contain problematic characters
         Self::validate_section_name(section_name)?;
         
@@ -43,7 +46,8 @@ impl MarkdownUpdater {
         })
     }
     
-    fn validate_section_name(section_name: &str) -> Result<(), MarkdownError> {
+    fn validate_section_name(section_name: &str) -> Result<(), MarkdownError> 
+{
         if section_name.trim().is_empty() {
             return Err(MarkdownError::EmptySectionName);
         }
@@ -67,9 +71,11 @@ impl MarkdownUpdater {
 Add method to detect potential section name conflicts:
 
 ```rust
-impl MarkdownUpdater {
+impl MarkdownUpdater 
+{
     /// Check if this section name might conflict with existing sections
-    pub fn check_conflicts(&self) -> Result<Vec<String>, std::io::Error> {
+    pub fn check_conflicts(&self) -> Result<Vec<String>, std::io::Error> 
+{
         if !self.file_path.exists() {
             return Ok(vec![]);
         }
@@ -94,7 +100,8 @@ impl MarkdownUpdater {
         Ok(conflicts)
     }
     
-    fn extract_section_names(content: &str) -> Vec<String> {
+    fn extract_section_names(content: &str) -> Vec<String> 
+{
         content.lines()
             .filter(|line| line.trim_start().starts_with("## "))
             .map(|line| line.trim().to_string())
@@ -108,15 +115,19 @@ impl MarkdownUpdater {
 Provide a builder that guides users to safe section names:
 
 ```rust
-pub struct MarkdownUpdaterBuilder {
+pub struct MarkdownUpdaterBuilder 
+{
     file_path: PathBuf,
     category: Option<String>,
     subcategory: Option<String>,
     suffix: Option<String>,
 }
 
-impl MarkdownUpdaterBuilder {
-    pub fn new(file_path: impl AsRef<Path>) -> Self {
+impl MarkdownUpdaterBuilder 
+{
+    pub fn new(file_path: impl AsRef<Path>) -> Self 
+
+{
         Self {
             file_path: file_path.as_ref().to_path_buf(),
             category: None,
@@ -126,25 +137,29 @@ impl MarkdownUpdaterBuilder {
     }
     
     /// Set the main category (e.g., "Benchmarks", "Results", "Analysis")
-    pub fn category(mut self, category: &str) -> Self {
+    pub fn category(mut self, category: &str) -> Self 
+{
         self.category = Some(category.to_string());
         self
     }
     
     /// Set subcategory (e.g., "Performance", "Memory", "Accuracy")
-    pub fn subcategory(mut self, subcategory: &str) -> Self {
+    pub fn subcategory(mut self, subcategory: &str) -> Self 
+{
         self.subcategory = Some(subcategory.to_string());
         self
     }
     
     /// Set suffix for uniqueness (e.g., "v1", "detailed", "summary")
-    pub fn suffix(mut self, suffix: &str) -> Self {
+    pub fn suffix(mut self, suffix: &str) -> Self 
+{
         self.suffix = Some(suffix.to_string());
         self
     }
     
     /// Build the updater with a guaranteed unique section name
-    pub fn build(self) -> Result<MarkdownUpdater, MarkdownError> {
+    pub fn build(self) -> Result<MarkdownUpdater, MarkdownError> 
+{
         let section_name = match (self.category, self.subcategory, self.suffix) {
             (Some(cat), Some(sub), Some(suf)) => format!("{cat} {sub} {suf}"),
             (Some(cat), Some(sub), None) => format!("{cat} {sub}"),
@@ -184,7 +199,8 @@ if let Ok(conflicts) = updater.check_conflicts() {
 
 ```rust
 #[derive(Debug, thiserror::Error)]
-pub enum MarkdownError {
+pub enum MarkdownError 
+{
     #[error("Section name cannot be empty")]
     EmptySectionName,
     
@@ -227,14 +243,16 @@ pub enum MarkdownError {
 ### Unit Tests
 ```rust
 #[test]
-fn test_section_name_validation() {
+fn test_section_name_validation() 
+{
     assert!(MarkdownUpdater::new("test.md", "").is_err());
     assert!(MarkdownUpdater::new("test.md", "Valid Section").is_ok());
     assert!(MarkdownUpdater::new("test.md", "Line\nBreak").is_err());
 }
 
 #[test]
-fn test_conflict_detection() {
+fn test_conflict_detection() 
+{
     // Create file with existing sections
     let content = "## Performance Benchmarks\ndata\n## Language Performance\ndata";
     std::fs::write("test.md", content).unwrap();
