@@ -131,7 +131,8 @@ find examples/ -name "*.rs" -exec basename {} .rs \; | xargs -I {} cargo run --e
 // Start with this simple pattern in benches/getting_started.rs
 use benchkit::prelude::*;
 
-fn main() {
+fn main() 
+{
     let mut suite = BenchmarkSuite::new("Getting Started");
     
     // Single benchmark to test your setup
@@ -221,19 +222,22 @@ benchkit = { version = "0.8.0", features = ["cargo_bench", "markdown_reports"] }
 // ❌ ABSOLUTELY FORBIDDEN - Benchmarks in tests/
 // tests/benchmark_performance.rs
 #[test] 
-fn benchmark_algorithm() {
+fn benchmark_algorithm() 
+{
     // This is WRONG - benchmarks are NOT tests!
 }
 
 // ❌ ABSOLUTELY FORBIDDEN - Performance code in examples/
 // examples/performance_demo.rs
-fn main() {
+fn main() 
+{
     // This is WRONG - examples are NOT benchmarks!
 }
 
 // ❌ ABSOLUTELY FORBIDDEN - Benchmark executables in src/
 // src/bin/benchmark.rs
-fn main() {
+fn main() 
+{
     // This is WRONG - src/ is NOT for benchmarks!
 }
 ```
@@ -244,7 +248,8 @@ fn main() {
 // ✅ REQUIRED LOCATION - benches/algorithm_performance.rs
 use benchkit::prelude::*;
 
-fn main() {
+fn main() 
+{
     let mut suite = BenchmarkSuite::new("Algorithm Performance");
     suite.benchmark("quicksort", || quicksort_implementation());
     suite.run_all();
@@ -371,7 +376,8 @@ This produces a clear performance comparison table:
 
 ```rust
 // Good: Realistic data generation
-fn generate_realistic_user_data(count: usize) -> Vec<User> {
+fn generate_realistic_user_data(count: usize) -> Vec<User> 
+{
     (0..count).map(|i| User {
         id: i,
         name: format!("User{}", i),
@@ -381,7 +387,8 @@ fn generate_realistic_user_data(count: usize) -> Vec<User> {
 }
 
 // Avoid: Artificial data that doesn't match reality
-fn generate_artificial_data(count: usize) -> Vec<i32> {
+fn generate_artificial_data(count: usize) -> Vec<i32> 
+{
     (0..count).collect()  // Perfect sequence - unrealistic
 }
 ```
@@ -396,7 +403,8 @@ fn generate_artificial_data(count: usize) -> Vec<i32> {
 use rand::{Rng, SeedableRng};
 use rand::rngs::StdRng;
 
-fn generate_test_data(size: usize) -> Vec<String> {
+fn generate_test_data(size: usize) -> Vec<String> 
+{
     let mut rng = StdRng::seed_from_u64(12345); // Fixed seed
     (0..size).map(|_| {
         // Generate consistent pseudo-random data
@@ -436,7 +444,8 @@ suite.benchmark("algorithm_performance", || {
 **BEST PRACTICE**: Benchmarks should automatically update documentation to maintain accuracy and reduce manual errors:
 
 ```rust
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), Box<dyn std::error::Error>> 
+{
     let results = run_benchmark_suite()?;
     
     // Update multiple documentation files
@@ -526,7 +535,8 @@ let template = PerformanceReport::new()
 
 ```rust
 // 1. Establish baseline
-fn establish_baseline() {
+fn establish_baseline() 
+{
     println!("🔍 Step 1: Establishing performance baseline");
     let results = run_benchmark_suite();
     save_baseline_results(&results);
@@ -534,13 +544,15 @@ fn establish_baseline() {
 }
 
 // 2. Implement optimization
-fn implement_optimization() {
+fn implement_optimization() 
+{
     println!("⚡ Step 2: Implementing optimization");
     // Your optimization work here
 }
 
 // 3. Measure impact
-fn measure_optimization_impact() {
+fn measure_optimization_impact() 
+{
     println!("📊 Step 3: Measuring optimization impact");
     let current_results = run_benchmark_suite();
     let baseline = load_baseline_results();
@@ -573,7 +585,8 @@ fn measure_optimization_impact() {
 **Recommendation**: Set up automated regression detection in your development workflow:
 
 ```rust
-fn automated_regression_check() -> Result<(), Box<dyn std::error::Error>> {
+fn automated_regression_check() -> Result<(), Box<dyn std::error::Error>> 
+{
     let current_results = run_benchmark_suite()?;
     let historical = load_historical_data()?;
     
@@ -654,7 +667,8 @@ jobs:
 **Recommendation**: Test performance across different environments:
 
 ```rust
-fn environment_specific_benchmarks() {
+fn environment_specific_benchmarks() 
+{
     let config = match std::env::var("BENCHMARK_ENV").as_deref() {
         Ok("production") => BenchmarkConfig {
             regression_threshold: 0.05,  // Strict: 5%
@@ -1147,7 +1161,8 @@ Performance comparison after implementing cache-friendly optimizations:
 **ADVANCED REQUIREMENT**: Production systems MUST implement custom metrics for comprehensive performance analysis:
 
 ```rust
-struct CustomMetrics {
+struct CustomMetrics 
+{
     execution_time: Duration,
     memory_usage: usize,
     cache_hits: u64,
@@ -1183,7 +1198,8 @@ where F: Fn() -> ()
 **Recommendation**: Build performance awareness into your development process:
 
 ```rust
-fn progressive_performance_monitoring() {
+fn progressive_performance_monitoring() 
+{
     // Daily: Quick smoke test
     if is_daily_run() {
         run_critical_path_benchmarks();

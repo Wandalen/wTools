@@ -185,8 +185,8 @@ mod_interface::mod_interface!
   // /// Automatic documentation updater for benchmark results.
   // layer documentation_updater;
 
-  // /// Standard benchmark data sizes for consistent performance comparison.
-  // layer benchmark_data_sizes;
+  /// Standard benchmark data sizes for consistent performance comparison.
+  layer benchmark_data_sizes;
 
   // /// Realistic test data generation for production-like benchmarks.
   // layer realistic_test_data;

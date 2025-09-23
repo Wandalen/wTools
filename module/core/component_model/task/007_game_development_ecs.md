@@ -10,7 +10,8 @@ Manual entity composition with framework-specific boilerplate:
 ```rust
 // Different approaches for each framework
 // Bevy
-fn spawn_bevy_player(mut commands: Commands) {
+fn spawn_bevy_player(mut commands: Commands) 
+{
   commands.spawn((
     Transform::from_xyz(0.0, 0.0, 0.0),
     Player { health: 100.0 },
@@ -19,7 +20,8 @@ fn spawn_bevy_player(mut commands: Commands) {
 }
 
 // Legion  
-fn spawn_legion_player(world: &mut Legion::World) {
+fn spawn_legion_player(world: &mut Legion::World) 
+{
   world.push((
     Position { x: 0.0, y: 0.0 },
     Health { value: 100.0 },
@@ -28,7 +30,8 @@ fn spawn_legion_player(world: &mut Legion::World) {
 }
 
 // Custom ECS
-fn spawn_custom_entity(world: &mut MyWorld) {
+fn spawn_custom_entity(world: &mut MyWorld) 
+{
   let entity = world.create_entity();
   world.add_component(entity, PositionComponent::new(0.0, 0.0));
   world.add_component(entity, HealthComponent::new(100.0));
@@ -41,7 +44,8 @@ fn spawn_custom_entity(world: &mut MyWorld) {
 Universal entity composition that works with any system:
 ```rust
 #[derive(EntityCompose)]
-struct GameEntity {
+struct GameEntity 
+{
   #[component(category = "transform")]
   position: Vec3,
   
@@ -114,7 +118,8 @@ pub trait IntoComponents<A: EntityAdapter> {
 #### **Generic Component Specification**
 ```rust
 #[derive(Debug, Clone, PartialEq)]
-pub struct ComponentSpec {
+pub struct ComponentSpec 
+{
   pub category: ComponentCategory,
   pub metadata: ComponentMetadata,
   pub spawn_strategy: SpawnStrategy,
@@ -122,7 +127,8 @@ pub struct ComponentSpec {
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub enum ComponentCategory {
+pub enum ComponentCategory 
+{
   Transform,      // Position, rotation, scale
   Physics,        // Rigidbody, collider, physics material
   Rendering,      // Sprite, mesh, material, shader
@@ -133,7 +139,8 @@ pub enum ComponentCategory {
 }
 
 #[derive(Debug, Clone)]
-pub struct ComponentMetadata {
+pub struct ComponentMetadata 
+{
   pub name: String,
   pub description: Option<String>,
   pub version: Option<String>,
@@ -141,7 +148,8 @@ pub struct ComponentMetadata {
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub enum SpawnStrategy {
+pub enum SpawnStrategy 
+{
   Required,       // Must be present when spawning
   Optional,       // Can be added later
   Lazy,          // Created on first access
@@ -155,7 +163,8 @@ pub enum SpawnStrategy {
 ```rust
 pub struct BevyAdapter;
 
-impl EntityAdapter for BevyAdapter {
+impl EntityAdapter for BevyAdapter 
+{
   type Context = bevy::ecs::world::World;
   type EntityId = bevy::ecs::entity::Entity;
   type Error = BevyEntityError;
@@ -197,7 +206,8 @@ impl EntityAdapter for BevyAdapter {
     Ok(entity_commands.id())
   }
   
-  fn supports_component_type(&self, component_type: ComponentTypeId) -> bool {
+  fn supports_component_type(&self, component_type: ComponentTypeId) -> bool 
+{
     // Check if Bevy supports this component type
     matches!(component_type.category, 
       ComponentCategory::Transform |
@@ -213,7 +223,8 @@ impl EntityAdapter for BevyAdapter {
 ```rust
 pub struct LegionAdapter;
 
-impl EntityAdapter for LegionAdapter {
+impl EntityAdapter for LegionAdapter 
+{
   type Context = legion::World;
   type EntityId = legion::Entity;
   type Error = LegionEntityError;
@@ -244,7 +255,8 @@ impl EntityAdapter for LegionAdapter {
 
 #### **Custom ECS Adapter**
 ```rust
-pub struct CustomEcsAdapter<W> {
+pub struct CustomEcsAdapter<W> 
+{
   phantom: PhantomData<W>,
 }
 
@@ -284,7 +296,8 @@ pub trait CustomWorld {
 ```rust
 pub struct GameObjectAdapter;
 
-impl EntityAdapter for GameObjectAdapter {
+impl EntityAdapter for GameObjectAdapter 
+{
   type Context = Scene;
   type EntityId = GameObjectId;
   type Error = GameObjectError;
@@ -342,7 +355,8 @@ let player = Player::default()
 #### **Cross-Platform Entity Definition**
 ```rust
 #[derive(EntityCompose)]
-struct UniversalEntity {
+struct UniversalEntity 
+{
   #[component(category = "transform")]
   transform: TransformData,
   
@@ -373,7 +387,8 @@ let custom_entity = entity_data.spawn_into(MySystemAdapter, &mut my_world)?;
 #### **Asset-Aware Entity Composition**
 ```rust
 #[derive(EntityCompose)]
-struct AssetEntity {
+struct AssetEntity 
+{
   #[component(
     category = "rendering",
     asset = "models/character.glb"
@@ -394,8 +409,10 @@ struct AssetEntity {
 }
 
 // Generic asset loading that works with any asset system
-impl AssetEntity {
-  pub async fn load_with<A: AssetLoader>(asset_loader: &A) -> Result<Self, A::Error> {
+impl AssetEntity 
+{
+  pub async fn load_with<A: AssetLoader>(asset_loader: &A) -> Result<Self, A::Error> 
+{
     let model = asset_loader.load_model("models/character.glb").await?;
     let audio = asset_loader.load_audio("sounds/footsteps.ogg").await?;
     let animation = asset_loader.load_animation("animations/walk.anim").await?;
@@ -425,7 +442,8 @@ pub trait AssetLoader {
 #### **Event System Integration**
 ```rust
 #[derive(EntityAssign)]
-struct EventDrivenEntity {
+struct EventDrivenEntity 
+{
   #[component(
     system = "health",
     events = ["DamageEvent", "HealEvent"]
@@ -441,7 +459,8 @@ struct EventDrivenEntity {
 }
 
 // Generates event handlers
-impl EventDrivenEntity {
+impl EventDrivenEntity 
+{
   pub fn handle_damage_event(
     &mut self, 
     event: &DamageEvent
@@ -455,7 +474,8 @@ impl EventDrivenEntity {
     }
   }
   
-  pub fn register_event_handlers(event_bus: &mut EventBus) {
+  pub fn register_event_handlers(event_bus: &mut EventBus) 
+{
     event_bus.subscribe::<DamageEvent, Self>(Self::handle_damage_event);
     event_bus.subscribe::<HealEvent, Self>(Self::handle_heal_event);
   }
@@ -467,7 +487,8 @@ impl EventDrivenEntity {
 #### **Automatic Query Generation**
 ```rust
 #[derive(EntityAssign)]
-struct QueryableEntity {
+struct QueryableEntity 
+{
   #[component(system = "movement", mutable)]
   position: Transform,
   
@@ -479,7 +500,8 @@ struct QueryableEntity {
 }
 
 // Generates optimized queries
-impl QueryableEntity {
+impl QueryableEntity 
+{
   pub type MovementQuery = (&'static mut Transform, &'static Velocity);
   pub type RenderQuery = (&'static Transform, &'static SpriteComponent);
   
@@ -554,9 +576,11 @@ mod tests {
   use bevy::prelude::*;
   
   #[test]
-  fn test_entity_spawning() {
+  fn test_entity_spawning() 
+{
     #[derive(EntityAssign, Component)]
-    struct TestEntity {
+    struct TestEntity 
+{
       #[component(system = "test")]
       value: i32,
     }
@@ -571,9 +595,11 @@ mod tests {
   }
   
   #[test]
-  fn test_system_registration() {
+  fn test_system_registration() 
+{
     #[derive(EntityAssign)]
-    struct TestEntity {
+    struct TestEntity 
+{
       #[component(system = "movement")]
       position: Vec3,
     }
@@ -594,7 +620,8 @@ use bevy::prelude::*;
 use component_model_ecs::*;
 
 #[derive(EntityAssign, Component)]
-struct Player {
+struct Player 
+{
   #[component(system = "movement")]
   position: Transform,
   
@@ -603,7 +630,8 @@ struct Player {
 }
 
 #[test]
-fn test_full_bevy_integration() {
+fn test_full_bevy_integration() 
+{
   let mut app = App::new()
     .add_plugins(DefaultPlugins)
     .add_systems(Update, (movement_system, health_system));
@@ -626,11 +654,13 @@ fn test_full_bevy_integration() {
   assert_eq!(player.health, 100.0);
 }
 
-fn movement_system(mut query: Query<&mut Transform, With<Player>>) {
+fn movement_system(mut query: Query<&mut Transform, With<Player>>) 
+{
   // Movement logic
 }
 
-fn health_system(mut query: Query<&mut Player>) {
+fn health_system(mut query: Query<&mut Player>) 
+{
   // Health logic  
 }
 ```

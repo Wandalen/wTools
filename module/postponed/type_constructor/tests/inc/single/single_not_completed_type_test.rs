@@ -1,11 +1,11 @@
-use type_constructor::prelude::*;
+use type_constructor ::prelude :: *;
 
 fn main()
 {
   types!
   {
-    
-    pub single Bad : Vec< _ >;
+  
+  pub single Bad: Vec< _ >;
 
-  }
+ }
 }

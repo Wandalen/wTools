@@ -1,5 +1,6 @@
 /// Define a private namespace for all its items.
-mod private {
+mod private 
+{
   /// Adds indentation and optional prefix/postfix to each line of the given string.
   ///
   /// This function iterates over each line in the input string and applies the specified
@@ -21,7 +22,7 @@ mod private {
   ///
   /// # Example
   /// ```
-  ///   let iter = strs_tools::string::split()
+  ///   let iter = strs_tools ::string ::split()
   ///   .src( "abc def" )
   ///   .delimeter( " " )
   ///   .perform();
@@ -31,72 +32,78 @@ mod private {
   /// and a semicolon at the end of each line. The function also demonstrates handling
   /// of input strings that end with a newline character by appending an additional line
   /// consisting only of the prefix and postfix.
-  pub fn indentation<Prefix, Src, Postfix>(prefix: Prefix, src: Src, postfix: Postfix) -> String
+  pub fn indentation< Prefix, Src, Postfix >(prefix: Prefix, src: Src, postfix: Postfix) -> String
   where
-    Prefix: AsRef<str>,
-    Src: AsRef<str>,
-    Postfix: AsRef<str>,
+  Prefix: AsRef< str >,
+  Src: AsRef< str >,
+  Postfix: AsRef< str >,
   {
-    let prefix = prefix.as_ref();
-    let postfix = postfix.as_ref();
-    let src = src.as_ref();
+  let prefix = prefix.as_ref();
+  let postfix = postfix.as_ref();
+  let src = src.as_ref();
 
-    let mut result = src.lines().enumerate().fold(String::new(), |mut a, b| {
-      if b.0 > 0 {
-        a.push('\n');
-      }
-      a.push_str(prefix);
-      a.push_str(b.1);
-      a.push_str(postfix);
-      a
-    });
+  let mut result = src.lines().enumerate().fold(String ::new(), |mut a, b| {
+   if b.0 > 0 
+   {
+  a.push('\n');
+ }
+   a.push_str(prefix);
+   a.push_str(b.1);
+   a.push_str(postfix);
+   a
+ });
 
-    if src.ends_with('\n') || src.ends_with("\n\r") || src.ends_with("\r\n") {
-      result.push('\n');
-      result.push_str(prefix);
-      result.push_str(postfix);
-    }
+  if src.ends_with('\n') || src.ends_with("\n\r") || src.ends_with("\r\n") 
+  {
+   result.push('\n');
+   result.push_str(prefix);
+   result.push_str(postfix);
+ }
 
-    result
-  }
+  result
+ }
 }
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod own {
+pub mod own 
+{
   #[ allow( unused_imports ) ]
-  use super::*;
-  pub use orphan::*;
-  pub use private::{};
+  use super :: *;
+  pub use orphan :: *;
+  pub use private :: { };
 }
 
 /// Parented namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod orphan {
+pub mod orphan 
+{
   #[ allow( unused_imports ) ]
-  use super::*;
-  pub use exposed::*;
-  pub use private::{};
+  use super :: *;
+  pub use exposed :: *;
+  pub use private :: { };
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod exposed {
+pub mod exposed 
+{
   #[ allow( unused_imports ) ]
-  use super::*;
-  pub use prelude::*; // Added
-  pub use super::own as indentation;
+  use super :: *;
+  pub use prelude :: *; // Added
+  pub use super ::own as indentation;
 
-  pub use private::{indentation};
+  pub use private :: { indentation };
 }
 
-/// Namespace of the module to include with `use module::*`.
+/// Namespace of the module to include with `use module :: *`.
 #[ allow( unused_imports ) ]
-pub mod prelude {
+pub mod prelude 
+{
   #[ allow( unused_imports ) ]
-  use super::*;
+  use super :: *;
 }

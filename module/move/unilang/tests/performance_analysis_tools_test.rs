@@ -24,7 +24,7 @@
 //! | Serialization | `test_*_serialization` | Verify data persistence and loading | serde |
 
 use std::collections::HashMap;
-use std::time::Duration;
+use core::time::Duration;
 
 // Test structures for comprehensive testing
 #[ derive( Debug, Clone, PartialEq ) ]
@@ -37,6 +37,7 @@ pub struct MockBenchmarkResult
 
 impl MockBenchmarkResult
 {
+  #[must_use]
   pub fn new( algorithm_name: &str, times: Vec< Duration >, data_size: usize ) -> Self
   {
   Self
@@ -47,6 +48,7 @@ impl MockBenchmarkResult
  }
  }
 
+  #[must_use]
   pub fn coefficient_of_variation( &self ) -> f64
   {
   if self.times.is_empty()
@@ -67,6 +69,7 @@ impl MockBenchmarkResult
   variance.sqrt() / mean
  }
 
+  #[must_use]
   pub fn average_time( &self ) -> Duration
   {
   if self.times.is_empty()
@@ -74,8 +77,10 @@ impl MockBenchmarkResult
   return Duration::ZERO;
  }
 
-  let total_nanos: u128 = self.times.iter().map( |t| t.as_nanos() ).sum();
-  Duration::from_nanos( ( total_nanos / self.times.len() as u128 ) as u64 )
+  let total_nanos: u128 = self.times.iter().map( Duration::as_nanos ).sum();
+  #[allow(clippy::cast_possible_truncation)]
+  let result = u64::try_from( total_nanos / self.times.len() as u128 ).unwrap_or( u64::MAX );
+  Duration::from_nanos( result )
  }
 }
 
@@ -90,6 +95,7 @@ pub enum CvQuality
 
 impl CvQuality
 {
+  #[must_use]
   pub fn from_cv_percentage( cv_percent: f64 ) -> Self
   {
   if cv_percent < 5.0
@@ -110,6 +116,7 @@ impl CvQuality
  }
  }
 
+  #[must_use]
   pub fn indicator( &self ) -> &'static str
   {
   match self
@@ -121,6 +128,7 @@ impl CvQuality
  }
  }
 
+  #[must_use]
   pub fn description( &self ) -> &'static str
   {
   match self
@@ -140,8 +148,17 @@ pub struct CvAnalyzer
   environment: String,
 }
 
+impl Default for CvAnalyzer
+{
+  fn default() -> Self
+  {
+  Self::new()
+ }
+}
+
 impl CvAnalyzer
 {
+  #[must_use]
   pub fn new() -> Self
   {
   Self
@@ -151,6 +168,7 @@ impl CvAnalyzer
  }
  }
 
+  #[must_use]
   pub fn with_config( cv_tolerance: f64, environment: &str ) -> Self
   {
   Self
@@ -160,6 +178,7 @@ impl CvAnalyzer
  }
  }
 
+  #[must_use]
   pub fn analyze_result( &self, name: &str, result: &MockBenchmarkResult ) -> CvAnalysisReport
   {
   let cv_percent = result.coefficient_of_variation() * 100.0;
@@ -193,7 +212,9 @@ impl CvAnalyzer
   {
   // Scale based on CV quality
   let scale_factor = cv / self.cv_tolerance;
-  ( 20.0 * scale_factor ).ceil() as usize
+  #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+  let result = ( 20.0 * scale_factor ).ceil() as usize;
+  result
  }
  }
 }
@@ -216,12 +237,14 @@ pub struct ComparativeBenchmark< T >
 {
   name: String,
   description: String,
+  #[allow(clippy::type_complexity)]
   algorithms: HashMap< String, Box< dyn Fn( &T ) -> Duration + Send + Sync > >,
   baseline_name: Option< String >,
 }
 
 impl< T > ComparativeBenchmark< T >
 {
+  #[must_use]
   pub fn new( name: &str, description: &str ) -> Self
   {
   Self
@@ -233,6 +256,7 @@ impl< T > ComparativeBenchmark< T >
  }
  }
 
+  #[must_use]
   pub fn add_algorithm< F >( mut self, name: &str, algorithm: F ) -> Self
   where
   F: Fn( &T ) -> Duration + Send + Sync + 'static,
@@ -241,22 +265,26 @@ impl< T > ComparativeBenchmark< T >
   self
  }
 
+  #[must_use]
   pub fn set_baseline( mut self, baseline_name: &str ) -> Self
   {
   self.baseline_name = Some( baseline_name.to_string() );
   self
  }
 
+  #[must_use]
   pub fn name( &self ) -> &str
   {
   &self.name
  }
 
+  #[must_use]
   pub fn description( &self ) -> &str
   {
   &self.description
  }
 
+  #[must_use]
   pub fn algorithm_count( &self ) -> usize
   {
   self.algorithms.len()
@@ -289,11 +317,13 @@ pub struct ComparisonResult
 
 impl ComparisonResult
 {
+  #[must_use]
   pub fn new( results: HashMap< String, Duration >, baseline_time: Option< Duration > ) -> Self
   {
   Self { results, baseline_time }
  }
 
+  #[must_use]
   pub fn get_relative_performance( &self, algorithm: &str ) -> Option< f64 >
   {
   if let ( Some( time ), Some( baseline ) ) = ( self.results.get( algorithm ), self.baseline_time )
@@ -313,11 +343,13 @@ impl ComparisonResult
  }
  }
 
+  #[must_use]
   pub fn fastest_algorithm( &self ) -> Option< ( &String, &Duration ) >
   {
   self.results.iter().min_by_key( |( _, time )| time.as_nanos() )
  }
 
+  #[must_use]
   pub fn algorithm_count( &self ) -> usize
   {
   self.results.len()
@@ -344,6 +376,7 @@ pub struct OptimizationStep
 
 impl OptimizationWorkflow
 {
+  #[must_use]
   pub fn new( name: &str ) -> Self
   {
   Self
@@ -355,12 +388,14 @@ impl OptimizationWorkflow
  }
  }
 
+  #[must_use]
   pub fn set_baseline( mut self, baseline: MockBenchmarkResult ) -> Self
   {
   self.baseline = Some( baseline );
   self
  }
 
+  #[must_use]
   pub fn add_optimization_step( mut self, step_name: &str, result: MockBenchmarkResult ) -> Self
   {
   let improvement_percent = if let Some( ref baseline ) = self.baseline
@@ -396,16 +431,19 @@ impl OptimizationWorkflow
   self
  }
 
+  #[must_use]
   pub fn name( &self ) -> &str
   {
   &self.name
  }
 
+  #[must_use]
   pub fn step_count( &self ) -> usize
   {
   self.history.len()
  }
 
+  #[must_use]
   pub fn total_improvement( &self ) -> Option< f64 >
   {
   if let ( Some( ref baseline ), Some( ref current ) ) = ( &self.baseline, &self.current )
@@ -428,6 +466,7 @@ impl OptimizationWorkflow
  }
  }
 
+  #[must_use]
   pub fn has_regressions( &self ) -> bool
   {
   self.history.iter().any( |step| step.is_regression )
@@ -441,11 +480,11 @@ impl OptimizationWorkflow
 fn test_cv_analyzer_creation()
 {
   let analyzer = CvAnalyzer::new();
-  assert_eq!( analyzer.cv_tolerance, 0.15 );
+  assert!( ( analyzer.cv_tolerance - 0.15 ).abs() < f64::EPSILON );
   assert_eq!( analyzer.environment, "Development" );
 
   let custom_analyzer = CvAnalyzer::with_config( 0.05, "Production" );
-  assert_eq!( custom_analyzer.cv_tolerance, 0.05 );
+  assert!( ( custom_analyzer.cv_tolerance - 0.05 ).abs() < f64::EPSILON );
   assert_eq!( custom_analyzer.environment, "Production" );
 }
 
@@ -500,7 +539,7 @@ fn test_cv_calculation()
 
   // Test empty case
   let empty_result = MockBenchmarkResult::new( "empty", vec![], 1000 );
-  assert_eq!( empty_result.coefficient_of_variation(), 0.0 );
+  assert!( empty_result.coefficient_of_variation().abs() < f64::EPSILON );
 }
 
 /// Test CV analysis report generation
@@ -520,7 +559,7 @@ fn test_cv_analysis_report()
   assert!( matches!( report.quality, CvQuality::Excellent ) );
   assert!( report.meets_environment_requirements );
   assert_eq!( report.environment, "Staging" );
-  assert_eq!( report.cv_tolerance, 0.10 );
+  assert!( ( report.cv_tolerance - 0.10 ).abs() < f64::EPSILON );
 }
 
 /// Test sample size recommendations
@@ -726,10 +765,11 @@ fn test_large_dataset_handling()
   let mut large_times = Vec::new();
   for i in 0..10000
   {
+  #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
   large_times.push( Duration::from_nanos( 1000 + ( i % 100 ) as u64 ) );
  }
 
-  let large_result = MockBenchmarkResult::new( "large_test", large_times, 100000 );
+  let large_result = MockBenchmarkResult::new( "large_test", large_times, 100_000 );
 
   let analyzer = CvAnalyzer::new();
   let report = analyzer.analyze_result( "large_benchmark", &large_result );
@@ -747,7 +787,7 @@ fn test_error_handling()
   let analyzer = CvAnalyzer::new();
   let report = analyzer.analyze_result( "empty_test", &empty_result );
 
-  assert_eq!( report.cv_percentage, 0.0 );
+  assert!( report.cv_percentage.abs() < f64::EPSILON );
   assert_eq!( report.current_sample_size, 0 );
 
   // Test single sample
@@ -755,7 +795,7 @@ fn test_error_handling()
   let report = analyzer.analyze_result( "single_test", &single_sample );
 
   assert_eq!( report.current_sample_size, 1 );
-  assert_eq!( report.cv_percentage, 0.0 ); // CV is 0 for single sample
+  assert!( report.cv_percentage.abs() < f64::EPSILON ); // CV is 0 for single sample
 }
 
 /// Test integration with multiple analysis tools

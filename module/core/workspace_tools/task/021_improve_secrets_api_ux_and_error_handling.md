@@ -80,7 +80,8 @@ if !secret_file.exists() {
 
 ### Step 2: Parameter Validation
 ```rust
-pub fn load_secrets_from_file( &self, secret_file_name : &str ) -> Result< HashMap< String, String > > {
+pub fn load_secrets_from_file( &self, secret_file_name : &str ) -> Result< HashMap< String, String > > 
+{
   // Validate parameter doesn't look like a path
   if secret_file_name.contains('/') || secret_file_name.contains('\\') {
     eprintln!(

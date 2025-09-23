@@ -14,10 +14,9 @@
 //!
 //! NOTE: Temporarily commented out due to API mismatches with current implementation.
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main()
 {
   println!("This example is temporarily disabled due to API mismatches.");
-  Ok(())
 }
 
 /*

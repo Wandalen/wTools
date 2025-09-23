@@ -1,11 +1,11 @@
 #[ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 
-the_module::types!
+the_module ::types!
 {
   #[ derive( Debug, Clone ) ]
   #[ derive( PartialEq, Default ) ]
-  single Single : < T >;
+  single Single: < T >;
 }
 
 include!( "./single_parameter_main_test_only.rs" );

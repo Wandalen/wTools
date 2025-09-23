@@ -1,10 +1,10 @@
-use derive_tools::Index;
+use derive_tools ::Index;
 
 #[ derive( Index ) ] 
 struct EmptyStruct 
-{    
+{ 
 }
 
 fn main()
-{  
+{ 
 }

@@ -25,7 +25,7 @@ mod internal {}
 ///
 /// #[ cfg( feature = "derive_clone_dyn" ) ]
 /// #[ clone_dyn ]
-/// pub trait Trait2 : Trait1
+/// pub trait Trait2: Trait1
 /// {
 ///   fn f2( &self );
 /// }
@@ -33,12 +33,14 @@ mod internal {}
 ///
 /// To learn more about the feature, study the module [`clone_dyn`](https://docs.rs/clone_dyn/latest/clone_dyn/).
 #[ proc_macro_attribute ]
-pub fn clone_dyn(attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream {
+pub fn clone_dyn(attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream 
+{
   let result = clone_dyn::clone_dyn(attr, item);
-  match result {
-    Ok(stream) => stream.into(),
-    Err(err) => err.to_compile_error().into(),
-  }
+  match result 
+  {
+  Ok(stream) => stream.into(),
+  Err(err) => err.to_compile_error().into(),
+ }
 }
 
 /// Implementation of `clone_dyn` macro.

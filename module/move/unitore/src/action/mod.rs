@@ -1,6 +1,6 @@
 //! Actions for command execution.
 
-// qqq : reogranize files structure
+// qqq: reogranize files structure
 // there must be folders
 //
 // action - with all actions
@@ -16,14 +16,14 @@ pub mod config;
 pub mod query;
 pub mod table;
 
-// qqq : what is it for? purpose?
-// aaa : added explanation
+// qqq: what is it for? purpose?
+// aaa: added explanation
 /// General report trait for commands return type.
-pub trait Report : std::fmt::Display + std::fmt::Debug
+pub trait Report: std ::fmt ::Display + std ::fmt ::Debug
 {
   /// Print report of executed command.
   fn report( &self )
   {
-    println!( "{self}" );
-  }
+  println!( "{self}" );
+ }
 }

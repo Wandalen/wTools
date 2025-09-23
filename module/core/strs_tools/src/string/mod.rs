@@ -25,86 +25,90 @@ pub mod specialized;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod own {
+pub mod own 
+{
   #[ allow( unused_imports ) ]
-  use super::*;
-  pub use orphan::*;
+  use super :: *;
+  pub use orphan :: *;
   #[ cfg( all( feature = "string_indentation", feature = "std" ) ) ]
-  pub use super::indentation::orphan::*;
+  pub use super ::indentation ::orphan :: *;
   #[ cfg( all( feature = "string_isolate", feature = "std" ) ) ]
-  pub use super::isolate::orphan::*;
+  pub use super ::isolate ::orphan :: *;
   #[ cfg( all( feature = "string_parse_number", feature = "std" ) ) ]
   #[ allow( unused_imports ) ]
-  pub use super::number::orphan::*;
+  pub use super ::number ::orphan :: *;
   #[ cfg( all( feature = "string_parse_request", feature = "std" ) ) ]
-  pub use super::parse_request::orphan::*;
+  pub use super ::parse_request ::orphan :: *;
   #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
-  pub use super::split::orphan::*;
+  pub use super ::split ::orphan :: *;
   #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
-  pub use super::zero_copy::{ ZeroCopyStringExt, ZeroCopySplit, ZeroCopySegment, zero_copy_split };
+  pub use super ::zero_copy :: { ZeroCopyStringExt, ZeroCopySplit, ZeroCopySegment, zero_copy_split };
   #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
-  pub use super::parser::{ ParserIntegrationExt, CommandParser, ParsedToken, ParseError, parse_and_split };
+  pub use super ::parser :: { ParserIntegrationExt, CommandParser, ParsedToken, ParseError, parse_and_split };
   #[ cfg( all( feature = "string_split", feature = "specialized_algorithms", feature = "std" ) ) ]
-  pub use super::specialized::{ smart_split, SingleCharSplitIterator, BoyerMooreSplitIterator, SplitResult, SplitAlgorithm, AlgorithmSelector };
+  pub use super ::specialized :: { smart_split, SingleCharSplitIterator, BoyerMooreSplitIterator, SplitResult, SplitAlgorithm, AlgorithmSelector };
 }
 
 /// Parented namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod orphan {
+pub mod orphan 
+{
   #[ allow( unused_imports ) ]
-  use super::*;
-  pub use exposed::*;
+  use super :: *;
+  pub use exposed :: *;
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod exposed {
+pub mod exposed 
+{
   #[ allow( unused_imports ) ]
-  use super::*;
-  pub use prelude::*;
+  use super :: *;
+  pub use prelude :: *;
   #[ cfg( all( feature = "string_indentation", feature = "std" ) ) ]
   #[ allow( unused_imports ) ]
-  pub use super::indentation::exposed::*;
+  pub use super ::indentation ::exposed :: *;
   #[ cfg( all( feature = "string_isolate", feature = "std" ) ) ]
-  pub use super::isolate::exposed::*;
+  pub use super ::isolate ::exposed :: *;
   #[ cfg( all( feature = "string_parse_number", feature = "std" ) ) ]
   #[ allow( unused_imports ) ]
-  pub use super::number::exposed::*;
+  pub use super ::number ::exposed :: *;
   #[ cfg( all( feature = "string_parse_request", feature = "std" ) ) ]
-  pub use super::parse_request::exposed::*;
+  pub use super ::parse_request ::exposed :: *;
   #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
-  pub use super::split::exposed::*;
+  pub use super ::split ::exposed :: *;
   #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
-  pub use super::zero_copy::{ ZeroCopyStringExt, zero_copy_split };
+  pub use super ::zero_copy :: { ZeroCopyStringExt, zero_copy_split };
   #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
-  pub use super::parser::{ ParserIntegrationExt, ParsedToken, parse_and_split };
+  pub use super ::parser :: { ParserIntegrationExt, ParsedToken, parse_and_split };
   #[ cfg( all( feature = "string_split", feature = "specialized_algorithms", feature = "std" ) ) ]
-  pub use super::specialized::{ smart_split, SingleCharSplitIterator, BoyerMooreSplitIterator };
+  pub use super ::specialized :: { smart_split, SingleCharSplitIterator, BoyerMooreSplitIterator };
 }
 
-/// Namespace of the module to include with `use module::*`.
+/// Namespace of the module to include with `use module :: *`.
 #[ allow( unused_imports ) ]
-pub mod prelude {
+pub mod prelude 
+{
   #[ allow( unused_imports ) ]
-  use super::*;
+  use super :: *;
   #[ cfg( all( feature = "string_indentation", feature = "std" ) ) ]
   #[ allow( unused_imports ) ]
-  pub use super::indentation::prelude::*;
+  pub use super ::indentation ::prelude :: *;
   #[ cfg( all( feature = "string_isolate", feature = "std" ) ) ]
-  pub use super::isolate::prelude::*;
+  pub use super ::isolate ::prelude :: *;
   #[ cfg( all( feature = "string_parse_number", feature = "std" ) ) ]
   #[ allow( unused_imports ) ]
-  pub use super::number::prelude::*;
+  pub use super ::number ::prelude :: *;
   #[ cfg( all( feature = "string_parse_request", feature = "std" ) ) ]
-  pub use super::parse_request::prelude::*;
+  pub use super ::parse_request ::prelude :: *;
   #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
-  pub use super::split::prelude::*;
+  pub use super ::split ::prelude :: *;
   #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
-  pub use super::zero_copy::ZeroCopyStringExt;
+  pub use super ::zero_copy ::ZeroCopyStringExt;
   #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
-  pub use super::parser::ParserIntegrationExt;
+  pub use super ::parser ::ParserIntegrationExt;
 }

@@ -31,6 +31,7 @@ proc-macro = true
 
 default = [
   "enabled",
+
   "derive_former",
   # "derive_components",
   # "derive_component_from",
@@ -39,8 +40,14 @@ default = [
   # "derive_from_components",
 ]
 full = [
-  "default",
-  "performance",
+  "enabled",
+
+  "derive_former",
+  # "derive_components",
+  # "derive_component_from",
+  # "derive_component_assign",
+  # "derive_components_assign",
+  # "derive_from_components",
 ]
 
 # Performance features (benchmarking only)

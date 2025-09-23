@@ -1,130 +1,130 @@
 /// Define a private namespace for all its items.
-#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
+#[ allow( clippy ::std_instead_of_alloc, clippy ::std_instead_of_core ) ]
 mod private
 {
-  use crate::*;
+  use crate :: *;
 
   #[ cfg( not( feature = "no_std" ) ) ]
-  use std::
+  use std ::
   {
-    borrow::Cow,
-    io,
-    path::{ Component, Path, PathBuf },
-    string::String,
-  };
+  borrow ::Cow,
+  io,
+  path :: { Component, Path, PathBuf },
+  string ::String,
+ };
   
   #[ cfg( feature = "no_std" ) ]
   extern crate std;
   
   #[ cfg( feature = "no_std" ) ]
-  use std::
+  use std ::
   {
-    borrow::Cow,
-    io,
-    path::{ Component, Path, PathBuf },
-  };
+  borrow ::Cow,
+  io,
+  path :: { Component, Path, PathBuf },
+ };
   
   #[ cfg( feature = "no_std" ) ]
-  use alloc::string::String;
+  use alloc ::string ::String;
 
-  /// A trait for converting various types into a `Cow<Path>`.
+  /// A trait for converting various types into a `Cow< Path >`.
   ///
   /// This trait is designed to avoid redundant memory allocation.
   /// Unlike `TryIntoPath`, it does not allocate memory on the heap if it's not necessary.
   /// Unlike `AsPath`, it is implemented for a wider number of path-like types, similar to `TryIntoPath`.
   /// The drawback is the necessity to differentiate borrowed and owned paths at runtime.
-  pub trait TryIntoCowPath<'a>
+  pub trait TryIntoCowPath< 'a >
   {
-    /// Converts the implementing type into a `Cow<Path>`.
-    ///
-    /// # Returns
-    ///
-    /// * `Ok(Cow<Path>)` - A `Cow` that may be either borrowed or owned, depending on the input type.
-    /// * `Err(io::Error)` - An error if the conversion fails.
-    /// # Errors
-    /// qqq: doc
-    fn try_into_cow_path( self ) -> Result< Cow< 'a, Path >, io::Error >;
-  }
+  /// Converts the implementing type into a `Cow< Path >`.
+  ///
+  /// # Returns
+  ///
+  /// * `Ok(Cow< Path >)` - A `Cow` that may be either borrowed or owned, depending on the input type.
+  /// * `Err(io ::Error)` - An error if the conversion fails.
+  /// # Errors
+  /// qqq: doc
+  fn try_into_cow_path( self ) -> Result< Cow< 'a, Path >, io ::Error >;
+ }
 
   /// Implementation of `TryIntoCowPath` for `String`.
   impl< 'a > TryIntoCowPath< 'a > for &'a str
   {
-    fn try_into_cow_path( self ) -> Result< Cow< 'a, Path >, io::Error >
-    {
-      Ok( Cow::Borrowed( self.as_path() ) )
-    }
-  }
+  fn try_into_cow_path( self ) -> Result< Cow< 'a, Path >, io ::Error >
+  {
+   Ok( Cow ::Borrowed( self.as_path() ) )
+ }
+ }
 
   /// Implementation of `TryIntoCowPath` for `String`.
   impl< 'a > TryIntoCowPath< 'a > for String
   {
-    fn try_into_cow_path( self ) -> Result< Cow< 'a, Path >, io::Error >
-    {
-      Ok( Cow::Owned( PathBuf::from( self ) ) )
-    }
-  }
+  fn try_into_cow_path( self ) -> Result< Cow< 'a, Path >, io ::Error >
+  {
+   Ok( Cow ::Owned( PathBuf ::from( self ) ) )
+ }
+ }
 
   /// Implementation of `TryIntoCowPath` for `PathBuf`.
   impl< 'a > TryIntoCowPath< 'a > for PathBuf
   {
-    fn try_into_cow_path( self ) -> Result< Cow< 'a, Path >, io::Error >
-    {
-      Ok( Cow::Owned( self ) )
-    }
-  }
+  fn try_into_cow_path( self ) -> Result< Cow< 'a, Path >, io ::Error >
+  {
+   Ok( Cow ::Owned( self ) )
+ }
+ }
 
   /// Implementation of `TryIntoCowPath` for a reference to `Path`.
   impl< 'a > TryIntoCowPath< 'a > for &'a Path
   {
-    fn try_into_cow_path( self ) -> Result< Cow< 'a, Path >, io::Error >
-    {
-      Ok( Cow::Borrowed( self ) )
-    }
-  }
+  fn try_into_cow_path( self ) -> Result< Cow< 'a, Path >, io ::Error >
+  {
+   Ok( Cow ::Borrowed( self ) )
+ }
+ }
 
   /// Implementation of `TryIntoCowPath` for a reference to `Utf8Path`.
   #[ cfg( feature = "path_utf8" ) ]
   impl< 'a > TryIntoCowPath< 'a > for &'a Utf8Path
   {
-    fn try_into_cow_path( self ) -> Result< Cow< 'a, Path >, io::Error >
-    {
-      Ok( Cow::Borrowed( self.as_std_path() ) )
-    }
-  }
+  fn try_into_cow_path( self ) -> Result< Cow< 'a, Path >, io ::Error >
+  {
+   Ok( Cow ::Borrowed( self.as_std_path() ) )
+ }
+ }
 
   /// Implementation of `TryIntoCowPath` for `Utf8PathBuf`.
   #[ cfg( feature = "path_utf8" ) ]
   impl< 'a > TryIntoCowPath< 'a > for Utf8PathBuf
   {
-    fn try_into_cow_path( self ) -> Result< Cow< 'a, Path >, io::Error >
-    {
-      Ok( Cow::Owned( self.as_std_path().to_path_buf() ) )
-    }
-  }
+  fn try_into_cow_path( self ) -> Result< Cow< 'a, Path >, io ::Error >
+  {
+   Ok( Cow ::Owned( self.as_std_path().to_path_buf() ) )
+ }
+ }
 
-  /// Implementation of `TryIntoCowPath` for `std::path::Component`.
+  /// Implementation of `TryIntoCowPath` for `std ::path ::Component`.
   impl< 'a > TryIntoCowPath< 'a > for Component< 'a >
   {
-    fn try_into_cow_path( self ) -> Result< Cow< 'a, Path >, io::Error >
-    {
-      Ok( Cow::Owned( PathBuf::from( self.as_os_str() ) ) )
-    }
-  }
+  fn try_into_cow_path( self ) -> Result< Cow< 'a, Path >, io ::Error >
+  {
+   Ok( Cow ::Owned( PathBuf ::from( self.as_os_str() ) ) )
+ }
+ }
 
   /// Blanket implementation of `TryIntoCowPath` for references to types implementing `AsPath`.
   impl< 'a, T > TryIntoCowPath< 'a > for &'a T
   where
-    T : AsPath,
+  T: AsPath,
   {
-    fn try_into_cow_path( self ) -> Result< Cow< 'a, Path >, io::Error >
-    {
-      Ok( Cow::Borrowed( self.as_path() ) )
-    }
-  }
+  fn try_into_cow_path( self ) -> Result< Cow< 'a, Path >, io ::Error >
+  {
+   Ok( Cow ::Borrowed( self.as_path() ) )
+ }
+ }
 
 }
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   orphan use TryIntoCowPath;
 }

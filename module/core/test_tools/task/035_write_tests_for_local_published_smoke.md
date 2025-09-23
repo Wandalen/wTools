@@ -19,31 +19,36 @@ Write failing tests to verify automated smoke testing against both local and pub
 ## Test Structure
 ```rust
 #[test]
-fn test_local_smoke_testing() {
+fn test_local_smoke_testing() 
+{
     // Should fail initially - implementation in task 036
     // Verify local smoke testing uses path-based dependencies correctly
 }
 
 #[test]
-fn test_published_smoke_testing() {
+fn test_published_smoke_testing() 
+{
     // Should fail initially - implementation in task 036
     // Verify published smoke testing uses registry versions correctly
 }
 
 #[test]
-fn test_automated_dual_execution() {
+fn test_automated_dual_execution() 
+{
     // Should fail initially - implementation in task 036
     // Verify both local and published tests can be run automatically
 }
 
 #[test]
-fn test_release_validation_workflow() {
+fn test_release_validation_workflow() 
+{
     // Should fail initially - implementation in task 036
     // Verify smoke tests provide effective release validation
 }
 
 #[test]
-fn test_consumer_usability_verification() {
+fn test_consumer_usability_verification() 
+{
     // Should fail initially - implementation in task 036
     // Verify smoke tests validate crate usability from consumer perspective
 }

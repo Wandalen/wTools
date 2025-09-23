@@ -9,7 +9,8 @@
 
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
-pub mod dependency {
+pub mod dependency
+{
   #[ cfg( feature = "derive_clone_dyn" ) ]
   pub use ::clone_dyn_meta;
   #[ cfg( feature = "clone_dyn_types" ) ]
@@ -18,7 +19,9 @@ pub mod dependency {
 
 /// Define a private namespace for all its items.
 #[ cfg( feature = "enabled" ) ]
-mod private {}
+mod private
+{
+}
 
 #[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
@@ -28,7 +31,8 @@ pub use own::*;
 /// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod own {
+pub mod own
+{
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
@@ -37,7 +41,8 @@ pub mod own {
 /// Orphan namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod orphan {
+pub mod orphan
+{
   use super::*;
 
   #[ doc( inline ) ]
@@ -52,7 +57,8 @@ pub mod orphan {
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod exposed {
+pub mod exposed
+{
   use super::*;
   #[ doc( inline ) ]
   pub use prelude::*;
@@ -61,7 +67,8 @@ pub mod exposed {
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod prelude {
+pub mod prelude
+{
   use super::*;
 
   #[ doc( inline ) ]

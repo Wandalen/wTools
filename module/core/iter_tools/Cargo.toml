@@ -27,10 +27,11 @@ all-features = false
 [features]
 default = [
   "enabled",
+
   "iter_trait",
   "iter_ext",
 ]
-full = [ "default" ]
+full = [ "enabled" ]
 no_std = []
 use_alloc = [ "itertools/use_alloc" ]
 enabled = [ "clone_dyn_types/enabled" ]

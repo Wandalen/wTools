@@ -14,40 +14,40 @@ mod private
   ///
   /// # Examples
   ///
-  /// When running in a typical development environment (locally):
+  /// When running in a typical development environment (locally) :
   /// ```no_run
-  /// use process_tools::environment;
-  /// assert_eq!( environment::is_cicd(), false );
+  /// use process_tools ::environment;
+  /// assert_eq!( environment ::is_cicd(), false );
   /// ```
   ///
-  /// When running in a CI/CD environment, one of the specified environment variables would be set, and:
+  /// When running in a CI/CD environment, one of the specified environment variables would be set, and :
   /// ```no_run
   /// // This example cannot be run as a test since it depends on the environment
   /// // the code is executed in. However, in a CI environment, this would return true.
-  /// use process_tools::environment;
-  /// assert_eq!( environment::is_cicd(), true );
+  /// use process_tools ::environment;
+  /// assert_eq!( environment ::is_cicd(), true );
   /// ```
   #[ cfg( feature = "process_environment_is_cicd" ) ]
   #[ must_use ]
   pub fn is_cicd() -> bool
   {
-    use std::env;
-    let ci_vars =
-    [
-      "CI",             // Common in many CI systems
-      "GITHUB_ACTIONS", // GitHub Actions
-      "GITLAB_CI",      // GitLab CI
-      "TRAVIS",         // Travis CI
-      "CIRCLECI",       // CircleCI
-      "JENKINS_URL",    // Jenkins
-    ];
+  use std ::env;
+  let ci_vars =
+  [
+   "CI",             // Common in many CI systems
+   "GITHUB_ACTIONS", // GitHub Actions
+   "GITLAB_CI",      // GitLab CI
+   "TRAVIS",         // Travis CI
+   "CIRCLECI",       // CircleCI
+   "JENKINS_URL",    // Jenkins
+ ];
 
-    ci_vars.iter().any( | &var | env::var( var ).is_ok() )
-  }
+  ci_vars.iter().any( | &var | env ::var( var ).is_ok() )
+ }
 
 }
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   #[ cfg( feature = "process_environment_is_cicd" ) ]
   own use is_cicd;

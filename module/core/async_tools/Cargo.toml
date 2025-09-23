@@ -25,7 +25,11 @@ all-features = false
 
 [features]
 default = [ "enabled", "async_from", "async_try_from" ]
-full = [ "default" ]
+full = [
+  "enabled",
+  "async_from",
+  "async_try_from",
+]
 enabled = []
 async_from = [ "async_from/async_from" ]
 async_try_from = [ "async_from/async_try_from" ]

@@ -12,49 +12,50 @@
 //! | T2.6 | Explicit type workaround           | Manual Assign trait usage works     |
 //! | T2.7 | Fluent with explicit types         | Fluent builder with explicit types  |
 
-use component_model::ComponentModel;
-use component_model_types::Assign;
+use component_model ::ComponentModel;
+use component_model_types ::Assign;
 
 // Test struct with unique types - this currently has type ambiguity for bool
 #[ derive( Default, ComponentModel, PartialEq, Debug ) ]
 struct ConfigWithUniqueTypes
 {
-  host : String,
-  port : i32,
-  enabled : bool,
+  host: String,
+  port: i32,
+  enabled: bool,
 }
 
 // Test struct with multiple bool fields - should only generate one bool impl
 #[ derive( Default, ComponentModel, PartialEq, Debug ) ]
 struct ConfigWithMultipleBools
 {
-  enabled : bool,
-  debug : bool,
-  verbose : bool,
+  enabled: bool,
+  debug: bool,
+  verbose: bool,
 }
 
 // Custom type to avoid conversion conflicts
 #[ derive( Default, PartialEq, Debug, Clone ) ]
 struct CustomType( String );
 
-impl From< &str > for CustomType {
-  fn from( s : &str ) -> Self { CustomType( s.to_string() ) }
+impl From< &str > for CustomType 
+{
+  fn from( s: &str ) -> Self { CustomType( s.to_string() ) }
 }
 
 // Test struct with completely distinct types
 #[ derive( Default, ComponentModel, PartialEq, Debug ) ]
 struct ConfigWithDistinctTypes
 {
-  host : String,
-  port : i32,
-  custom : CustomType,
+  host: String,
+  port: i32,
+  custom: CustomType,
 }
 
 // Test struct with single bool field
 #[ derive( Default, ComponentModel, PartialEq, Debug ) ]
 struct ConfigSingleBool
 {
-  enabled : bool,
+  enabled: bool,
 }
 
 /// Test that non-boolean assignments work correctly (regression prevention)
@@ -62,7 +63,7 @@ struct ConfigSingleBool
 #[ test ]
 fn test_non_boolean_assignment_still_works()
 {
-  let mut config = ConfigWithUniqueTypes::default();
+  let mut config = ConfigWithUniqueTypes ::default();
   
   // String assignment should work
   config.assign( "localhost".to_string() );
@@ -78,10 +79,10 @@ fn test_non_boolean_assignment_still_works()
 #[ test ]
 fn test_fluent_builder_non_boolean()
 {
-  let config = ConfigWithUniqueTypes::default()
-    .impute( "api.example.com".to_string() )
-    .impute( 3000i32 );
-    
+  let config = ConfigWithUniqueTypes ::default()
+  .impute( "api.example.com".to_string() )
+  .impute( 3000i32 );
+  
   assert_eq!( config.host, "api.example.com" );
   assert_eq!( config.port, 3000 );
 }
@@ -91,9 +92,9 @@ fn test_fluent_builder_non_boolean()
 #[ test ]
 fn test_multiple_bool_fields_generate_single_impl()
 {
-  let mut config = ConfigWithMultipleBools::default();
+  let mut config = ConfigWithMultipleBools ::default();
   
-  // Should work - only one Assign<bool, _> implementation exists
+  // Should work - only one Assign< bool, _ > implementation exists
   config.assign( true );
   // We can't test which field got set without checking all, but it should compile
 }
@@ -103,11 +104,11 @@ fn test_multiple_bool_fields_generate_single_impl()
 #[ test ]
 fn test_struct_with_distinct_types()
 {
-  let mut config = ConfigWithDistinctTypes::default();
+  let mut config = ConfigWithDistinctTypes ::default();
   
   config.assign( "localhost".to_string() );
   config.assign( 8080i32 );
-  config.assign( CustomType::from( "test" ) );
+  config.assign( CustomType ::from( "test" ) );
   
   assert_eq!( config.host, "localhost" );
   assert_eq!( config.port, 8080 );
@@ -119,10 +120,10 @@ fn test_struct_with_distinct_types()
 #[ test ]
 fn test_single_bool_field()
 {
-  let mut config = ConfigSingleBool::default();
+  let mut config = ConfigSingleBool ::default();
   
   // This should work with explicit type annotation
-  Assign::<bool, bool>::assign( &mut config, true );
+  Assign :: < bool, bool > ::assign( &mut config, true );
   assert!( config.enabled );
 }
 
@@ -131,12 +132,12 @@ fn test_single_bool_field()
 #[ test ]
 fn test_explicit_type_annotation_workaround()
 {
-  let mut config = ConfigWithUniqueTypes::default();
+  let mut config = ConfigWithUniqueTypes ::default();
   
   // Explicit assignment should work
-  Assign::<String, String>::assign( &mut config, "test".to_string() );
-  Assign::<i32, i32>::assign( &mut config, 1234i32 );
-  Assign::<bool, bool>::assign( &mut config, true );
+  Assign :: < String, String > ::assign( &mut config, "test".to_string() );
+  Assign :: < i32, i32 > ::assign( &mut config, 1234i32 );
+  Assign :: < bool, bool > ::assign( &mut config, true );
   
   assert_eq!( config.host, "test" );
   assert_eq!( config.port, 1234 );
@@ -148,17 +149,17 @@ fn test_explicit_type_annotation_workaround()
 #[ test ]
 fn test_fluent_with_explicit_types()
 {
-  let config = ConfigWithUniqueTypes::default()
-    .impute( "test".to_string() )
-    .impute( 9999i32 );
-    // Note: Can't use .impute(bool) due to same ambiguity
+  let config = ConfigWithUniqueTypes ::default()
+  .impute( "test".to_string() )
+  .impute( 9999i32 );
+  // Note: Can't use .impute(bool) due to same ambiguity
   
   assert_eq!( config.host, "test" );
   assert_eq!( config.port, 9999 );
   
   // But we can assign bool afterwards with explicit type
   let mut config = config;
-  Assign::<bool, bool>::assign( &mut config, true );
+  Assign :: < bool, bool > ::assign( &mut config, true );
   assert!( config.enabled );
 }
 

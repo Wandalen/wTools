@@ -5,11 +5,11 @@
 
 #![ cfg( feature = "integration" ) ]
 
-use benchkit::prelude::*;
-use core::time::Duration;
-use std::collections::HashMap;
+use benchkit ::prelude :: *;
+use core ::time ::Duration;
+use std ::collections ::HashMap;
 
-#[test]
+#[ test ]
 fn test_no_section_duplication_with_overlapping_names()
 {
   let initial = r"# Test Document
@@ -23,7 +23,7 @@ Old language data
 ## Realistic Scenarios Performance
 Old scenarios data";
 
-  let updater = MarkdownUpdater::new_unchecked("test.md", "Performance Benchmarks");
+  let updater = MarkdownUpdater ::new_unchecked("test.md", "Performance Benchmarks");
   let result = updater.replace_section_content(initial, "New performance data");
 
   // Should have exactly 3 sections, not more due to duplication
@@ -40,7 +40,7 @@ Old scenarios data";
   assert!(result.contains("Old scenarios data"));
 }
 
-#[test]
+#[ test ]
 fn test_exact_section_matching_prevents_substring_conflicts()
 {
   let initial = r"## API
@@ -49,7 +49,7 @@ Old API data
 ## API Documentation  
 Old docs data";
 
-  let updater = MarkdownUpdater::new_unchecked("test.md", "API");
+  let updater = MarkdownUpdater ::new_unchecked("test.md", "API");
   let result = updater.replace_section_content(initial, "New API data");
 
   // Should update only the exact "API" section, not "API Documentation"
@@ -61,7 +61,7 @@ Old docs data";
   assert_eq!(result.matches("## ").count(), 2);
 }
 
-#[test]
+#[ test ]
 fn test_section_matching_with_whitespace_variations()
 {
   let initial = r"##   Performance Benchmarks   
@@ -70,7 +70,7 @@ Old data with spaces
 ## Performance Benchmarks
 Old data exact";
 
-  let updater = MarkdownUpdater::new_unchecked("test.md", "Performance Benchmarks");  
+  let updater = MarkdownUpdater ::new_unchecked("test.md", "Performance Benchmarks");  
   let result = updater.replace_section_content(initial, "New data");
 
   // Should match only the exactly formatted section after trimming
@@ -83,7 +83,7 @@ Old data exact";
   assert!(!result.contains("Old data exact"));       // This section IS updated
 }
 
-#[test]
+#[ test ]
 fn test_markdown_updater_creates_section_if_missing()
 {
   let initial = r"# Test Document
@@ -91,7 +91,7 @@ fn test_markdown_updater_creates_section_if_missing()
 ## Existing Section
 Some data";
 
-  let updater = MarkdownUpdater::new_unchecked("test.md", "New Section");
+  let updater = MarkdownUpdater ::new_unchecked("test.md", "New Section");
   let result = updater.replace_section_content(initial, "New section content");
 
   // Should have the original section plus the new one
@@ -103,13 +103,13 @@ Some data";
   assert_eq!(result.matches("## ").count(), 2);
 }
 
-#[test]
+#[ test ]
 fn test_multiple_updates_dont_create_duplicates()
 {
   let initial = r"## Performance Benchmarks
 Original data";
 
-  let updater = MarkdownUpdater::new_unchecked("test.md", "Performance Benchmarks");
+  let updater = MarkdownUpdater ::new_unchecked("test.md", "Performance Benchmarks");
   
   // First update
   let result1 = updater.replace_section_content(initial, "First update");
@@ -122,7 +122,7 @@ Original data";
   assert!(!result2.contains("First update"));
 }
 
-#[test]
+#[ test ]
 fn test_real_world_scenario_with_multiple_performance_sections()
 {
   // This test simulates the exact scenario that caused the bug in wflow project
@@ -138,13 +138,13 @@ Language detection results
 End-to-end scenario results";
 
   // Update each section independently
-  let updater1 = MarkdownUpdater::new_unchecked("test.md", "Performance Benchmarks");
+  let updater1 = MarkdownUpdater ::new_unchecked("test.md", "Performance Benchmarks");
   let result1 = updater1.replace_section_content(initial, "Updated line counting");
   
-  let updater2 = MarkdownUpdater::new_unchecked("test.md", "Language Operations Performance");
+  let updater2 = MarkdownUpdater ::new_unchecked("test.md", "Language Operations Performance");
   let result2 = updater2.replace_section_content(&result1, "Updated language detection");
   
-  let updater3 = MarkdownUpdater::new_unchecked("test.md", "Realistic Scenarios Performance");
+  let updater3 = MarkdownUpdater ::new_unchecked("test.md", "Realistic Scenarios Performance");
   let result3 = updater3.replace_section_content(&result2, "Updated scenarios");
 
   // Should still have exactly 3 sections
@@ -161,14 +161,14 @@ End-to-end scenario results";
   assert!(result3.contains("Updated scenarios"));
 }
 
-#[test]
+#[ test ]
 fn test_report_generator_with_markdown_updater_integration()
 {
-  let mut results = HashMap::new();
-  let test_result = BenchmarkResult::new("test_operation", vec![Duration::from_millis(5)]);
+  let mut results = HashMap ::new();
+  let test_result = BenchmarkResult ::new("test_operation", vec![Duration ::from_millis(5)]);
   results.insert("test_operation".to_string(), test_result);
 
-  let generator = ReportGenerator::new("Integration Test", results);
+  let generator = ReportGenerator ::new("Integration Test", results);
   let report_content = generator.generate_comprehensive_report();
 
   // Verify report contains expected sections
@@ -177,34 +177,34 @@ fn test_report_generator_with_markdown_updater_integration()
   assert!(report_content.contains("## Detailed Results"));
   
   // Test that MarkdownUpdater can handle this content
-  let updater = MarkdownUpdater::new_unchecked("test.md", "Integration Test");
+  let updater = MarkdownUpdater ::new_unchecked("test.md", "Integration Test");
   let result = updater.replace_section_content("", &report_content);
   
   assert!(result.contains("## Integration Test"));
   assert_eq!(result.matches("## Integration Test").count(), 1);
 }
 
-#[test]
+#[ test ]
 fn test_section_name_validation()
 {
   // Valid section names should work
-  assert!(MarkdownUpdater::new("test.md", "Valid Section").is_ok());
-  assert!(MarkdownUpdater::new("test.md", "Performance Benchmarks").is_ok());
+  assert!(MarkdownUpdater ::new("test.md", "Valid Section").is_ok());
+  assert!(MarkdownUpdater ::new("test.md", "Performance Benchmarks").is_ok());
   
   // Empty section name should fail
-  assert!(MarkdownUpdater::new("test.md", "").is_err());
-  assert!(MarkdownUpdater::new("test.md", "   ").is_err());
+  assert!(MarkdownUpdater ::new("test.md", "").is_err());
+  assert!(MarkdownUpdater ::new("test.md", "   ").is_err());
   
   // Too long section name should fail
   let long_name = "a".repeat(101);
-  assert!(MarkdownUpdater::new("test.md", &long_name).is_err());
+  assert!(MarkdownUpdater ::new("test.md", &long_name).is_err());
   
   // Section names with newlines should fail
-  assert!(MarkdownUpdater::new("test.md", "Line\nBreak").is_err());
-  assert!(MarkdownUpdater::new("test.md", "Carriage\rReturn").is_err());
+  assert!(MarkdownUpdater ::new("test.md", "Line\nBreak").is_err());
+  assert!(MarkdownUpdater ::new("test.md", "Carriage\rReturn").is_err());
 }
 
-#[test]
+#[ test ]
 fn test_conflict_detection()
 {
   // Create a temporary file with existing sections
@@ -216,10 +216,10 @@ Old performance data
 ## Language Operations Performance
 Old language data";
   
-  std::fs::write("conflict_test.md", content).unwrap();
+  std ::fs ::write("conflict_test.md", content).unwrap();
   
   // Test conflict detection for overlapping names
-  let updater = MarkdownUpdater::new("conflict_test.md", "Performance Results").unwrap();
+  let updater = MarkdownUpdater ::new("conflict_test.md", "Performance Results").unwrap();
   let conflicts = updater.check_conflicts().unwrap();
   
   // Should detect conflicts with both existing sections that contain "Performance"
@@ -228,10 +228,10 @@ Old language data";
   assert!(conflicts.iter().any(|c| c.contains("Language Operations Performance")));
   
   // Clean up
-  std::fs::remove_file("conflict_test.md").ok();
+  std ::fs ::remove_file("conflict_test.md").ok();
 }
 
-#[test] 
+#[ test ] 
 fn test_no_conflict_with_distinct_names()
 {
   let content = r"## API Documentation
@@ -240,30 +240,30 @@ Content
 ## Database Schema  
 Content";
   
-  std::fs::write("no_conflict_test.md", content).unwrap();
+  std ::fs ::write("no_conflict_test.md", content).unwrap();
   
-  let updater = MarkdownUpdater::new("no_conflict_test.md", "Testing Results").unwrap();
+  let updater = MarkdownUpdater ::new("no_conflict_test.md", "Testing Results").unwrap();
   let conflicts = updater.check_conflicts().unwrap();
   
   // Should not detect conflicts with completely different section names
   assert!(conflicts.is_empty());
   
   // Clean up
-  std::fs::remove_file("no_conflict_test.md").ok();
+  std ::fs ::remove_file("no_conflict_test.md").ok();
 }
 
-#[test]
+#[ test ]
 fn test_safe_vs_unchecked_api()
 {
   // Safe API should reject problematic names
-  assert!(MarkdownUpdater::new("test.md", "").is_err());
+  assert!(MarkdownUpdater ::new("test.md", "").is_err());
   
   // Unchecked API should allow them (for backwards compatibility)
-  let updater = MarkdownUpdater::new_unchecked("test.md", "");
+  let updater = MarkdownUpdater ::new_unchecked("test.md", "");
   assert_eq!(updater.section_marker(), "## ");
   
   // Both should work for valid names
-  assert!(MarkdownUpdater::new("test.md", "Valid").is_ok());
-  let updater2 = MarkdownUpdater::new_unchecked("test.md", "Valid");
+  assert!(MarkdownUpdater ::new("test.md", "Valid").is_ok());
+  let updater2 = MarkdownUpdater ::new_unchecked("test.md", "Valid");
   assert_eq!(updater2.section_marker(), "## Valid");
 }

@@ -1,8 +1,8 @@
 //! List all sources
 
-use willbe::exposed::*;
-use willbe::{ Entries, Sources, CodeItems};
-use std::
+use willbe::exposed :: *;
+use willbe ::{ Entries, Sources, CodeItems };
+use std ::
 {
   fs,
   fs::File,
@@ -16,7 +16,7 @@ fn main() -> Result< () >
 
   let package = workspace
   .packages_which()
-  .crate_dir( CrateDir::transitive_try_from::< AbsolutePath >( CurrentPath )? )
+  .crate_dir( CrateDir::transitive_try_from ::< AbsolutePath >( CurrentPath )? )
   .find()
   .expect( "No workspace at current path" )
   ;
@@ -32,25 +32,25 @@ fn main() -> Result< () >
 // pub mod exposed
 // {
 //   #[ allow( unused_imports ) ]
-//   use super::*;
+//   use super :: *;
 // "#;
 
   package.sources().for_each( | source |
   {
-    println!( "   - {source}" );
+  println!( "   - {source}" );
 
-    // let code = source.as_code().unwrap();
-    // let code2 = code.replace( ins, sub );
+  // let code = source.as_code().unwrap();
+  // let code2 = code.replace( ins, sub );
 
-    // source
-    // .items()
-    // .for_each( | item |
-    // {
-    //   println!( "     - {}", std::any::type_name_of_val( &item ) );
-    //   // println!( "     - item : {item:?}" );
-    // });
+  // source
+  // .items()
+  // .for_each( | item |
+  // {
+  //   println!( "     - {}", std::any ::type_name_of_val( &item ) );
+  //   // println!( "     - item: {item:?}" );
+  // });
 
-  });
+ });
 
   // println!( "{}", package.as_code().unwrap() );
 

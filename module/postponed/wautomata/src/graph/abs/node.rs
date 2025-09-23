@@ -1,9 +1,9 @@
 /// Define a private namespace for all its items.
 mod private
 {
-  use crate::prelude::*;
-  // use core::fmt;
-  // use core::hash::Hash;
+  use crate ::prelude :: *;
+  // use core ::fmt;
+  // use core ::hash ::Hash;
 
 //   ///
 //   /// Kind of a node.
@@ -14,7 +14,7 @@ mod private
 //     Self :
 //       'static +
 //       Copy +
-//       fmt::Debug +
+//       fmt ::Debug +
 //       PartialEq +
 //       // Eq +
 //       // xxx
@@ -22,21 +22,21 @@ mod private
 //       Default +
 //     ,
 //   {
-//   }
+// }
 //
 //   impl< T > NodeKindInterface for T
 //   where
 //     T :
 //       'static +
 //       Copy +
-//       fmt::Debug +
+//       fmt ::Debug +
 //       PartialEq +
 //       // Eq +
 //       Hash  +
 //       Default +
 //     ,
 //   {
-//   }
+// }
 
 //   ///
 //   /// No kind for nodes.
@@ -50,22 +50,22 @@ mod private
   ///
   pub trait NodeBasicInterface
   where
-    Self :
-      HasId +
+  Self :
+   HasId +
   {
-  }
+ }
 
 }
 
 //
 
-crate::mod_interface!
+crate ::mod_interface!
 {
 
   // exposed use NodeKindless;
-  prelude use super::private::
+  prelude use super ::private ::
   {
-    // NodeKindInterface,
-    NodeBasicInterface,
-  };
+  // NodeKindInterface,
+  NodeBasicInterface,
+ };
 }

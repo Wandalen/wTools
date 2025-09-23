@@ -17,7 +17,8 @@ Traditional struct initialization is verbose and error-prone:
 ```rust
 # struct Config { host : String, port : i32 }
 # struct ConfigBuilder;
-# impl ConfigBuilder {
+# impl ConfigBuilder 
+{
 #   fn new() -> Self { ConfigBuilder }
 #   fn host( self, _ : &str ) -> Self { self }
 #   fn port( self, _ : i32 ) -> Self { self }

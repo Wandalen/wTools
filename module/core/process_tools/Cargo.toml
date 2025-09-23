@@ -25,7 +25,7 @@ all-features = false
 
 [features]
 default = [ "enabled", "process_environment_is_cicd" ]
-full = [ "default" ]
+full = [ "enabled" ]
 enabled = [
   "mod_interface/enabled",
   "former/enabled",

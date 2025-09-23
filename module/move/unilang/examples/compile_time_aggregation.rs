@@ -305,14 +305,15 @@ pub mod generated_example {
   */
 
   /// Create registry with pre-aggregated commands
+  #[must_use]
   pub fn create_compile_time_registry() -> CommandRegistry
   {
-  #[ allow( deprecated ) ]
-  let registry = CommandRegistry::new();
-  // Registry would use the static PHF map for lookups
-  // Commands are already aggregated with prefixes applied
-  registry
- }
+    #[ allow( deprecated ) ]
+    let registry = CommandRegistry::new();
+    // Registry would use the static PHF map for lookups
+    // Commands are already aggregated with prefixes applied
+    registry
+  }
 }
 
 // =============================================================================

@@ -1,7 +1,7 @@
 #![ cfg_attr( feature = "no_std", no_std ) ]
-#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
-#![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
-#![ doc( html_root_url = "https://docs.rs/inspect_type/latest/inspect_type/" ) ]
+#![ doc( html_logo_url = "https: //raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
+#![ doc( html_favicon_url = "https: //raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
+#![ doc( html_root_url = "https: //docs.rs/inspect_type/latest/inspect_type/" ) ]
 // #![ deny( rust_2018_idioms ) ]
 // #![ deny( missing_debug_implementations ) ]
 // #![ deny( missing_docs ) ]
@@ -23,22 +23,22 @@ mod nightly
   // #[ cfg_attr( feature = "nightly1", macro_export ) ]
   macro_rules! inspect_to_str_type_of
   {
-    ( $src : expr ) =>
-    {{
-      let mut result = String::new();
-      let stringified = stringify!( $src );
+  ( $src: expr ) =>
+  {{
+   let mut result = String ::new();
+   let stringified = stringify!( $src );
 
-      let size = &std::mem::size_of_val( &$src ).to_string()[ .. ];
-      let type_name = std::any::type_name_of_val( &$src );
-      result.push_str( &format!( "sizeof( {} : {} ) = {}", stringified, type_name, size )[ .. ] );
+   let size = &std ::mem ::size_of_val( &$src ).to_string()[ .. ];
+   let type_name = std ::any ::type_name_of_val( &$src );
+   result.push_str( &format!( "sizeof( {} : {} ) = {}", stringified, type_name, size )[ .. ] );
 
-      result
-    }};
-    ( $( $src : expr ),+ $(,)? ) =>
-    {
-      ( $( $crate::dbg!( $src ) ),+ )
-    };
-  }
+   result
+ }};
+  ( $( $src: expr ),+ $(,)? ) =>
+  {
+   ( $( $crate ::dbg!( $src ) ),+ )
+ };
+ }
 
   ///
   /// Macro to inspect type of a variable and its size printing into stdout and exporting it as a string.
@@ -47,13 +47,13 @@ mod nightly
   // #[ cfg_attr( feature = "nightly1", macro_export ) ]
   macro_rules! inspect_type_of
   {
-    ( $src : expr ) =>
-    {{
-      let result = $crate::inspect_to_str_type_of!( $src );
-      println!( "{}", result );
-      result
-    }}
-  }
+  ( $src: expr ) =>
+  {{
+   let result = $crate ::inspect_to_str_type_of!( $src );
+   println!( "{}", result );
+   result
+ }}
+ }
 
   pub use inspect_to_str_type_of;
   pub use inspect_type_of;
@@ -62,49 +62,49 @@ mod nightly
 // #[ cfg( feature = "nightly" ) ]
 // #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-// pub use nightly::*;
+// pub use nightly :: *;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use orphan::*;
+  pub use orphan :: *;
 }
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use prelude::*;
+  pub use prelude :: *;
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::*;
+  use super :: *;
   #[ cfg( feature = "nightly" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::nightly::*;
+  pub use super ::nightly :: *;
 }

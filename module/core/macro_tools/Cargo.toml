@@ -51,9 +51,7 @@ default = [
   "typ",
   "typed",
 ]
-full = [
-  "default",
-]
+full = [ "enabled" ]
 
 enabled = [
   "component_model_types/enabled",

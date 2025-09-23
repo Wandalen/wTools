@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 /// `has_own`
-pub fn has_own() -> bool {
+pub fn has_own() -> bool 
+{
   true
 }

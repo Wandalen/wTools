@@ -20,6 +20,8 @@
 //! - Build script should focus on correctness, not performance measurement
 //! - Static command functionality testing goes in `tests/` (correctness only)
 
+#![allow(clippy::useless_format)]
+
 use std::env;
 use std::fs::File;
 use std::io::{ BufWriter, Write };
@@ -35,8 +37,7 @@ fn main()
 
   // Support both single file and multi-file discovery modes
   let yaml_discovery_paths = env::var("UNILANG_YAML_DISCOVERY_PATHS")
-    .map(|paths| paths.split(':').map(String::from).collect::<Vec<_>>())
-    .unwrap_or_else(|_| vec!["./".to_string()]);
+    .map_or_else(|_| vec!["./".to_string()], |paths| paths.split(':').map(String::from).collect::<Vec<_>>());
 
   // Check if we have a custom manifest path from environment variable (single file mode)
   if let Ok(manifest_path) = env::var("UNILANG_STATIC_COMMANDS_PATH")
@@ -76,7 +77,7 @@ fn main()
         {
           for entry in WalkDir::new(discovery_path)
             .into_iter()
-            .filter_map(|e| e.ok())
+            .filter_map(core::result::Result::ok)
             .filter(|e| e.file_type().is_file())
             .filter(|e| {
               if let Some(extension) = e.path().extension()
@@ -96,8 +97,7 @@ fn main()
                 Ok(mut definitions) => all_command_definitions.append(&mut definitions),
                 Err(e) =>
                 {
-                  eprintln!("Warning: Failed to parse YAML file {:?}: {}", entry.path(), e);
-                  continue;
+                  eprintln!("Warning: Failed to parse YAML file {}: {}", entry.path().display(), e);
                 }
               }
             }

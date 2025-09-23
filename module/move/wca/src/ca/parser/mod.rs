@@ -1,6 +1,6 @@
 mod private {}
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   /// This module defines a raw representation of parsed commands, providing a foundation for further processing and
   /// transformation into other formats. The raw representation captures the essential information about each command in

@@ -7,13 +7,13 @@ fn main()
 {
   // Skip trybuild tests if diagnostics_compiletime_assertions is enabled
   // since the assertions won't fail as expected
-  #[cfg(not(feature = "diagnostics_compiletime_assertions"))]
+  #[ cfg(not(feature = "diagnostics_compiletime_assertions")) ]
   {
-    let t = trybuild::TestCases::new();
-    t.compile_fail( "tests/inc/snipet/cta_mem_same_size_fail.rs" );
-    t.compile_fail( "tests/inc/snipet/cta_ptr_same_size_fail.rs" );
-    t.compile_fail( "tests/inc/snipet/cta_true_fail.rs" );
-    t.compile_fail( "tests/inc/snipet/cta_type_same_align_fail.rs" );
-    t.compile_fail( "tests/inc/snipet/cta_type_same_size_fail.rs" );
-  }
+  let t = trybuild ::TestCases ::new();
+  t.compile_fail( "tests/inc/snipet/cta_mem_same_size_fail.rs" );
+  t.compile_fail( "tests/inc/snipet/cta_ptr_same_size_fail.rs" );
+  t.compile_fail( "tests/inc/snipet/cta_true_fail.rs" );
+  t.compile_fail( "tests/inc/snipet/cta_type_same_align_fail.rs" );
+  t.compile_fail( "tests/inc/snipet/cta_type_same_size_fail.rs" );
+ }
 }

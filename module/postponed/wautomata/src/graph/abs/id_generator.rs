@@ -1,36 +1,36 @@
 /// Define a private namespace for all its items.
 mod private
 {
-  // use crate::prelude::*;
-  // use core::fmt;
-  // use core::hash::Hash;
-  // use core::cmp::{ PartialEq, Eq };
-  use crate::IdentityInterface;
+  // use crate ::prelude :: *;
+  // use core ::fmt;
+  // use core ::hash ::Hash;
+  // use core ::cmp :: { PartialEq, Eq };
+  use crate ::IdentityInterface;
 
   /// Has ID generator.
   pub trait HasIdGenerator< Id >
   where
-    Id : IdentityInterface,
+  Id: IdentityInterface,
   {
-    /// Associated id generator.
-    type Generator : IdGeneratorTrait< Id >;
-  }
+  /// Associated id generator.
+  type Generator: IdGeneratorTrait< Id >;
+ }
 
   /// Interface to generate ids.
   pub trait IdGeneratorTrait< Id >
   where
-    Id : IdentityInterface,
-    Self : Default,
+  Id: IdentityInterface,
+  Self: Default,
   {
-    /// Generate a new id.
-    fn id_next( &mut self ) -> Id;
-    /// Check is id valid.
-    fn is_id_valid( &self, src : Id ) -> bool;
-  }
+  /// Generate a new id.
+  fn id_next( &mut self ) -> Id;
+  /// Check is id valid.
+  fn is_id_valid( &self, src: Id ) -> bool;
+ }
 
   // impl< T, G > HasIdGenerator< T > for T
   // where
-  //   G : IdGeneratorTrait< T >,
+  //   G: IdGeneratorTrait< T >,
   // {
   //   type Generator = G;
   // }
@@ -39,12 +39,12 @@ mod private
 
 //
 
-crate::mod_interface!
+crate ::mod_interface!
 {
-  prelude use super::private::
+  prelude use super ::private ::
   {
-    HasIdGenerator,
-    IdGeneratorTrait,
-    // IdGeneratorInt,
-  };
+  HasIdGenerator,
+  IdGeneratorTrait,
+  // IdGeneratorInt,
+ };
 }

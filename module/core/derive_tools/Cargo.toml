@@ -32,7 +32,6 @@ all-features = false
 
 default = [
   "enabled",
-
   "derive_variadic_from",
   "type_variadic_from",
 
@@ -80,7 +79,6 @@ default = [
 
 full = [
   "enabled",
-
   "derive_variadic_from",
   "type_variadic_from",
 

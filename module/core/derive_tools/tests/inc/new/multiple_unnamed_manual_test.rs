@@ -1,4 +1,4 @@
-use super::*;
+use super :: *;
 
 mod mod1
 {
@@ -8,12 +8,12 @@ mod mod1
 
   impl Struct1
   {
-    #[ inline( always ) ]
-    pub fn new( src1 : i32, src2 : bool ) -> Self
-    {
-      Self( src1, src2 )
-    }
-  }
+  #[ inline( always ) ]
+  pub fn new( src1: i32, src2: bool ) -> Self
+  {
+   Self( src1, src2 )
+ }
+ }
 
 }
 

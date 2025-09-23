@@ -1,4 +1,4 @@
-use super::*;
+use super :: *;
 
 #[ derive( Debug, Clone, Copy, PartialEq ) ]
 struct UnitStruct;
@@ -6,10 +6,10 @@ struct UnitStruct;
 impl From< () > for UnitStruct
 {
   #[ inline( always ) ]
-  fn from( _src : () ) -> Self
+  fn from( _src: () ) -> Self
   {
-    Self
-  }
+  Self
+ }
 }
 
 include!( "./only_test/unit.rs" );

@@ -43,14 +43,16 @@ simd = ["memchr", "bytecount", "aho-corasick"]
 use memchr::{memchr_iter, memmem};
 use aho_corasick::AhoCorasick;
 
-pub struct SIMDSplitIterator<'a> {
+pub struct SIMDSplitIterator<'a> 
+{
     input: &'a str,
     patterns: AhoCorasick,
     position: usize,
 }
 
 impl<'a> SIMDSplitIterator<'a> {
-    pub fn new(input: &'a str, delimiters: &[&str]) -> Result<Self, aho_corasick::BuildError> {
+    pub fn new(input: &'a str, delimiters: &[&str]) -> Result<Self, aho_corasick::BuildError> 
+{
         let patterns = AhoCorasick::new(delimiters)?;
         Ok(Self {
             input,
@@ -63,7 +65,8 @@ impl<'a> SIMDSplitIterator<'a> {
 impl<'a> Iterator for SIMDSplitIterator<'a> {
     type Item = &'a str;
     
-    fn next(&mut self) -> Option<Self::Item> {
+    fn next(&mut self) -> Option<Self::Item> 
+{
         if self.position >= self.input.len() {
             return None;
         }
@@ -91,12 +94,15 @@ impl<'a> Iterator for SIMDSplitIterator<'a> {
 ```rust
 // In strs_tools/src/split/mod.rs
 impl<'a> Split<'a> {
-    pub fn perform_simd(self) -> Result<SIMDSplitIterator<'a>, aho_corasick::BuildError> {
+    pub fn perform_simd(self) -> Result<SIMDSplitIterator<'a>, aho_corasick::BuildError> 
+{
         let delimiters: Vec<&str> = self.delimiters.iter().map(|s| s.as_str()).collect();
         SIMDSplitIterator::new(self.src, &delimiters)
     }
     
-    pub fn perform(self) -> impl Iterator<Item = &'a str> {
+    pub fn perform(self) -> impl Iterator<Item = &'a str> 
+
+{
         #[cfg(feature = "simd")]
         {
             // Try SIMD first, fallback to scalar on error
@@ -120,20 +126,24 @@ use either::Either;
 // In strs_tools/src/search/simd.rs
 pub struct SIMDStringSearch;
 
-impl SIMDStringSearch {
+impl SIMDStringSearch 
+{
     /// SIMD-optimized substring search
-    pub fn find(haystack: &str, needle: &str) -> Option<usize> {
+    pub fn find(haystack: &str, needle: &str) -> Option<usize> 
+{
         memmem::find(haystack.as_bytes(), needle.as_bytes())
     }
     
     /// SIMD-optimized multi-pattern search
-    pub fn find_any(haystack: &str, needles: &[&str]) -> Option<(usize, usize)> {
+    pub fn find_any(haystack: &str, needles: &[&str]) -> Option<(usize, usize)> 
+{
         let ac = AhoCorasick::new(needles).ok()?;
         ac.find(haystack).map(|m| (m.start(), m.pattern()))
     }
     
     /// SIMD-optimized character counting
-    pub fn count_char(s: &str, ch: char) -> usize {
+    pub fn count_char(s: &str, ch: char) -> usize 
+{
         if ch.is_ascii() {
             bytecount::count(s.as_bytes(), ch as u8)
         } else {
@@ -157,16 +167,20 @@ pub mod simd {
         fn simd_count(&self, ch: char) -> usize;
     }
     
-    impl SIMDStringExt for str {
-        fn simd_split(&self, delimiters: &[&str]) -> Result<SIMDSplitIterator, aho_corasick::BuildError> {
+    impl SIMDStringExt for str 
+{
+        fn simd_split(&self, delimiters: &[&str]) -> Result<SIMDSplitIterator, aho_corasick::BuildError> 
+{
             SIMDSplitIterator::new(self, delimiters)
         }
         
-        fn simd_find(&self, needle: &str) -> Option<usize> {
+        fn simd_find(&self, needle: &str) -> Option<usize> 
+{
             SIMDStringSearch::find(self, needle)
         }
         
-        fn simd_count(&self, ch: char) -> usize {
+        fn simd_count(&self, ch: char) -> usize 
+{
             SIMDStringSearch::count_char(self, ch)
         }
     }
@@ -211,7 +225,8 @@ pub mod simd {
 #### Microbenchmarks
 ```rust
 #[bench]
-fn bench_scalar_split(b: &mut Bencher) {
+fn bench_scalar_split(b: &mut Bencher) 
+{
     let input = ".namespace.command arg1::value1 arg2::value2";
     b.iter(|| {
         split().src(input).delimeter(vec![":", ".", "!"]).perform().collect::<Vec<_>>()
@@ -219,7 +234,8 @@ fn bench_scalar_split(b: &mut Bencher) {
 }
 
 #[bench]
-fn bench_simd_split(b: &mut Bencher) {
+fn bench_simd_split(b: &mut Bencher) 
+{
     let input = ".namespace.command arg1::value1 arg2::value2";
     b.iter(|| {
         input.simd_split(&[":", ".", "!"]).unwrap().collect::<Vec<_>>()
@@ -390,7 +406,8 @@ RUST_FLAGS="-C target-feature=-avx2,-sse4.2" cargo bench --features simd
 **Performance Report Generation:**
 ```rust
 // benches/report_generator.rs
-fn generate_performance_report(baseline: &BenchmarkResults, simd: &BenchmarkResults) {
+fn generate_performance_report(baseline: &BenchmarkResults, simd: &BenchmarkResults) 
+{
     // Generate markdown report with:
     // - Throughput comparisons (MB/s)
     // - Improvement ratios

@@ -24,7 +24,9 @@ features = [ "serde", "glob", "secrets", "secure", "validation" ]
 all-features = false
 
 [features]
-default = [ "serde" ]
+default = [ "enabled", "serde" ]
+full = [ "enabled", "serde", "glob", "secrets", "secure", "validation", "testing" ]
+enabled = []
 serde = [ "dep:serde", "dep:serde_json", "dep:serde_yaml" ]
 glob = [ "dep:glob" ]
 secrets = []

@@ -32,7 +32,8 @@ Implement specialized algorithms tailored to common string processing patterns, 
 
 ```rust
 /// Highly optimized single character splitting
-pub struct SingleCharSplitIterator<'a> {
+pub struct SingleCharSplitIterator<'a> 
+{
     input: &'a str,
     delimiter: u8, // ASCII byte for maximum performance
     position: usize,
@@ -40,7 +41,8 @@ pub struct SingleCharSplitIterator<'a> {
 }
 
 impl<'a> SingleCharSplitIterator<'a> {
-    pub fn new(input: &'a str, delimiter: char, preserve_delimiter: bool) -> Self {
+    pub fn new(input: &'a str, delimiter: char, preserve_delimiter: bool) -> Self 
+{
         assert!(delimiter.is_ascii(), "Single char optimization requires ASCII delimiter");
         
         Self {
@@ -52,7 +54,8 @@ impl<'a> SingleCharSplitIterator<'a> {
     }
     
     /// Use memchr for ultra-fast single byte search
-    fn find_next_delimiter(&self) -> Option<usize> {
+    fn find_next_delimiter(&self) -> Option<usize> 
+{
         memchr::memchr(self.delimiter, &self.input.as_bytes()[self.position..])
             .map(|pos| self.position + pos)
     }
@@ -61,7 +64,8 @@ impl<'a> SingleCharSplitIterator<'a> {
 impl<'a> Iterator for SingleCharSplitIterator<'a> {
     type Item = &'a str;
     
-    fn next(&mut self) -> Option<Self::Item> {
+    fn next(&mut self) -> Option<Self::Item> 
+{
         if self.position >= self.input.len() {
             return None;
         }
@@ -95,7 +99,8 @@ impl<'a> Iterator for SingleCharSplitIterator<'a> {
 
 ```rust
 /// Boyer-Moore algorithm for efficient fixed pattern matching
-pub struct BoyerMooreSplitIterator<'a> {
+pub struct BoyerMooreSplitIterator<'a> 
+{
     input: &'a str,
     pattern: &'a str,
     bad_char_table: [usize; 256], // ASCII bad character table
@@ -103,7 +108,8 @@ pub struct BoyerMooreSplitIterator<'a> {
 }
 
 impl<'a> BoyerMooreSplitIterator<'a> {
-    pub fn new(input: &'a str, pattern: &'a str) -> Self {
+    pub fn new(input: &'a str, pattern: &'a str) -> Self 
+{
         let mut bad_char_table = [pattern.len(); 256];
         
         // Build bad character table
@@ -120,7 +126,8 @@ impl<'a> BoyerMooreSplitIterator<'a> {
     }
     
     /// Boyer-Moore pattern search with bad character heuristic
-    fn find_next_pattern(&self) -> Option<usize> {
+    fn find_next_pattern(&self) -> Option<usize> 
+{
         let text = self.input.as_bytes();
         let pattern = self.pattern.as_bytes();
         let text_len = text.len();
@@ -156,7 +163,8 @@ impl<'a> BoyerMooreSplitIterator<'a> {
 impl<'a> Iterator for BoyerMooreSplitIterator<'a> {
     type Item = &'a str;
     
-    fn next(&mut self) -> Option<Self::Item> {
+    fn next(&mut self) -> Option<Self::Item> 
+{
         if self.position >= self.input.len() {
             return None;
         }
@@ -181,7 +189,8 @@ impl<'a> Iterator for BoyerMooreSplitIterator<'a> {
 
 ```rust
 /// High-performance CSV parser with quote handling
-pub struct CSVSplitIterator<'a> {
+pub struct CSVSplitIterator<'a> 
+{
     input: &'a str,
     delimiter: u8, // ',' or '\t'  
     quote_char: u8, // '"'
@@ -191,7 +200,8 @@ pub struct CSVSplitIterator<'a> {
 }
 
 impl<'a> CSVSplitIterator<'a> {
-    pub fn new(input: &'a str, delimiter: char) -> Self {
+    pub fn new(input: &'a str, delimiter: char) -> Self 
+{
         Self {
             input,
             delimiter: delimiter as u8,
@@ -203,7 +213,8 @@ impl<'a> CSVSplitIterator<'a> {
     }
     
     /// Parse next CSV field with proper quote handling
-    fn parse_csv_field(&mut self) -> Option<String> {
+    fn parse_csv_field(&mut self) -> Option<String> 
+{
         let bytes = self.input.as_bytes();
         let mut field = String::new();
         let mut start_pos = self.position;
@@ -266,7 +277,8 @@ impl<'a> CSVSplitIterator<'a> {
 impl<'a> Iterator for CSVSplitIterator<'a> {
     type Item = String;
     
-    fn next(&mut self) -> Option<Self::Item> {
+    fn next(&mut self) -> Option<Self::Item> 
+{
         self.parse_csv_field()
     }
 }
@@ -277,7 +289,8 @@ impl<'a> Iterator for CSVSplitIterator<'a> {
 ```rust
 /// State machine parser for structured formats (URLs, paths, etc.)
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub enum ParserState {
+pub enum ParserState 
+{
     Scheme,    // http, https, ftp, etc.
     Authority, // //domain:port
     Path,      // /path/to/resource
@@ -285,7 +298,8 @@ pub enum ParserState {
     Fragment,  // #anchor
 }
 
-pub struct StateMachineSplitIterator<'a> {
+pub struct StateMachineSplitIterator<'a> 
+{
     input: &'a str,
     current_state: ParserState,
     position: usize,
@@ -294,7 +308,8 @@ pub struct StateMachineSplitIterator<'a> {
 
 impl<'a> StateMachineSplitIterator<'a> {
     /// Create URL parser with predefined state transitions
-    pub fn new_url_parser(input: &'a str) -> Self {
+    pub fn new_url_parser(input: &'a str) -> Self 
+{
         const URL_TRANSITIONS: &[(ParserState, &[u8], ParserState)] = &[
             (ParserState::Scheme, b"://", ParserState::Authority),
             (ParserState::Authority, b"/", ParserState::Path), 
@@ -312,7 +327,8 @@ impl<'a> StateMachineSplitIterator<'a> {
     }
     
     /// Find next state transition
-    fn find_next_transition(&self) -> Option<(usize, ParserState)> {
+    fn find_next_transition(&self) -> Option<(usize, ParserState)> 
+{
         let remaining = &self.input[self.position..];
         
         for &(from_state, trigger_bytes, to_state) in self.transitions {
@@ -330,7 +346,8 @@ impl<'a> StateMachineSplitIterator<'a> {
 impl<'a> Iterator for StateMachineSplitIterator<'a> {
     type Item = (ParserState, &'a str);
     
-    fn next(&mut self) -> Option<Self::Item> {
+    fn next(&mut self) -> Option<Self::Item> 
+{
         if self.position >= self.input.len() {
             return None;
         }
@@ -371,9 +388,11 @@ impl<'a> Iterator for StateMachineSplitIterator<'a> {
 /// Analyze input to select optimal algorithm
 pub struct AlgorithmSelector;
 
-impl AlgorithmSelector {
+impl AlgorithmSelector 
+{
     /// Select best algorithm based on delimiter characteristics
-    pub fn select_split_algorithm(delimiters: &[&str]) -> SplitAlgorithm {
+    pub fn select_split_algorithm(delimiters: &[&str]) -> SplitAlgorithm 
+{
         if delimiters.len() == 1 {
             let delim = delimiters[0];
             if delim.len() == 1 && delim.chars().next().unwrap().is_ascii() {
@@ -398,19 +417,22 @@ impl AlgorithmSelector {
         SplitAlgorithm::Generic
     }
     
-    fn is_csv_pattern(delimiters: &[&str]) -> bool {
+    fn is_csv_pattern(delimiters: &[&str]) -> bool 
+{
         delimiters.len() == 1 && 
         (delimiters[0] == "," || delimiters[0] == "\t" || delimiters[0] == ";")
     }
     
-    fn is_url_pattern(delimiters: &[&str]) -> bool {
+    fn is_url_pattern(delimiters: &[&str]) -> bool 
+{
         let url_delims = ["://", "/", "?", "#"];
         delimiters.iter().all(|d| url_delims.contains(d))
     }
 }
 
 #[derive(Debug, Clone, Copy)]
-pub enum SplitAlgorithm {
+pub enum SplitAlgorithm 
+{
     SingleChar,      // memchr optimization
     BoyerMoore,      // Fixed pattern search
     CSV,             // CSV-specific parsing
@@ -424,7 +446,8 @@ pub enum SplitAlgorithm {
 
 ```rust
 /// Smart split that automatically selects optimal algorithm
-pub fn smart_split(input: &str, delimiters: &[&str]) -> Box<dyn Iterator<Item = &str> + '_> {
+pub fn smart_split(input: &str, delimiters: &[&str]) -> Box<dyn Iterator<Item = &str> + '_> 
+{
     let algorithm = AlgorithmSelector::select_split_algorithm(delimiters);
     
     match algorithm {
@@ -518,8 +541,10 @@ pub fn smart_split(input: &str, delimiters: &[&str]) -> Box<dyn Iterator<Item = 
 #### Challenge: Algorithm Selection Complexity
 **Solution**: Hierarchical decision tree with performance profiling
 ```rust
-impl AlgorithmSelector {
-    fn select_with_profiling(delimiters: &[&str], input_size: usize) -> SplitAlgorithm {
+impl AlgorithmSelector 
+{
+    fn select_with_profiling(delimiters: &[&str], input_size: usize) -> SplitAlgorithm 
+{
         // Use input size to influence algorithm selection
         match (delimiters.len(), input_size) {
             (1, _) if Self::is_single_ascii_char(delimiters[0]) => SplitAlgorithm::SingleChar,
@@ -535,13 +560,15 @@ impl AlgorithmSelector {
 #### Challenge: Return Type Consistency
 **Solution**: Unified return types using Cow<str> or trait objects
 ```rust
-pub enum SplitResult<'a> {
+pub enum SplitResult<'a> 
+{
     Borrowed(&'a str),
     Owned(String),
 }
 
 impl<'a> AsRef<str> for SplitResult<'a> {
-    fn as_ref(&self) -> &str {
+    fn as_ref(&self) -> &str 
+{
         match self {
             SplitResult::Borrowed(s) => s,
             SplitResult::Owned(s) => s.as_str(),
@@ -553,14 +580,16 @@ impl<'a> AsRef<str> for SplitResult<'a> {
 #### Challenge: Memory Management Complexity
 **Solution**: Algorithm-specific memory pools and RAII cleanup
 ```rust
-pub struct SpecializedSplitIterator<'a> {
+pub struct SpecializedSplitIterator<'a> 
+{
     algorithm: SplitAlgorithm,
     iterator: Box<dyn Iterator<Item = SplitResult<'a>> + 'a>,
     cleanup: Option<Box<dyn FnOnce() + 'a>>, // Algorithm-specific cleanup
 }
 
 impl<'a> Drop for SpecializedSplitIterator<'a> {
-    fn drop(&mut self) {
+    fn drop(&mut self) 
+{
         if let Some(cleanup) = self.cleanup.take() {
             cleanup();
         }
@@ -582,7 +611,8 @@ impl<'a> Drop for SpecializedSplitIterator<'a> {
 #### Algorithm Comparison Benchmarks
 ```rust
 #[bench]
-fn bench_single_char_generic(b: &mut Bencher) {
+fn bench_single_char_generic(b: &mut Bencher) 
+{
     let input = "word1 word2 word3 word4".repeat(1000);
     b.iter(|| {
         let result: Vec<_> = generic_split(&input, &[" "]).collect();
@@ -591,7 +621,8 @@ fn bench_single_char_generic(b: &mut Bencher) {
 }
 
 #[bench]  
-fn bench_single_char_specialized(b: &mut Bencher) {
+fn bench_single_char_specialized(b: &mut Bencher) 
+{
     let input = "word1 word2 word3 word4".repeat(1000);
     b.iter(|| {
         let result: Vec<_> = SingleCharSplitIterator::new(&input, ' ', false).collect();
@@ -600,7 +631,8 @@ fn bench_single_char_specialized(b: &mut Bencher) {
 }
 
 #[bench]
-fn bench_boyer_moore_vs_generic(b: &mut Bencher) {
+fn bench_boyer_moore_vs_generic(b: &mut Bencher) 
+{
     let input = "field1::field2::field3::field4".repeat(1000);
     
     // Test both algorithms for comparison

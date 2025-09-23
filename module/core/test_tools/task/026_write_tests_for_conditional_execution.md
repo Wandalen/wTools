@@ -19,31 +19,36 @@ Write failing tests to verify smoke tests execute conditionally based on WITH_SM
 ## Test Structure
 ```rust
 #[test]
-fn test_execution_with_with_smoke_env_var() {
+fn test_execution_with_with_smoke_env_var() 
+{
     // Should fail initially - implementation in task 027
     // Verify smoke tests execute when WITH_SMOKE is set
 }
 
 #[test]
-fn test_execution_in_cicd_environment() {
+fn test_execution_in_cicd_environment() 
+{
     // Should fail initially - implementation in task 027
     // Verify smoke tests execute when CI/CD environment is detected
 }
 
 #[test]
-fn test_skipping_when_conditions_not_met() {
+fn test_skipping_when_conditions_not_met() 
+{
     // Should fail initially - implementation in task 027
     // Verify smoke tests are skipped in normal development environment
 }
 
 #[test]
-fn test_cicd_environment_detection() {
+fn test_cicd_environment_detection() 
+{
     // Should fail initially - implementation in task 027
     // Verify proper detection of various CI/CD environment indicators
 }
 
 #[test]
-fn test_with_smoke_value_variants() {
+fn test_with_smoke_value_variants() 
+{
     // Should fail initially - implementation in task 027
     // Verify different WITH_SMOKE values work correctly (1, local, published)
 }

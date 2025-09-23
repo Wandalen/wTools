@@ -1,26 +1,26 @@
 mod private
 {
 
-  use crate::*;
-  use executor::{ Args, Props };
+  use crate :: *;
+  use executor :: { Args, Props };
 
   /// Represents a grammatically correct command with a phrase descriptor, a list of command subjects, and a set of command options.
   ///
-  /// # Example:
+  /// # Example :
   ///
   /// ```
-  /// # use wca::{ VerifiedCommand, Value, executor::{ Args, Props } };
-  /// # use std::collections::HashMap;
+  /// # use wca :: { VerifiedCommand, Value, executor :: { Args, Props } };
+  /// # use std ::collections ::HashMap;
   /// VerifiedCommand
   /// {
-  ///   phrase : "command".to_string(),
-  ///   internal_command : false,
-  ///   args : Args( vec![ Value::String( "subject_value".to_string() ), /* ... */ ] ),
-  ///   props : Props( HashMap::from_iter(
+  ///   phrase: "command".to_string(),
+  ///   internal_command: false,
+  ///   args: Args( vec![ Value ::String( "subject_value".to_string() ), /* ... */ ] ),
+  ///   props: Props( HashMap ::from_iter(
   ///   [
-  ///     ( "prop_name".to_string(), Value::Number( 42.0 ) ),
+  ///     ( "prop_name".to_string(), Value ::Number( 42.0 ) ),
   ///     /* ... */
-  ///   ]))
+  /// ]))
   /// };
   /// ```
   ///
@@ -29,24 +29,24 @@ mod private
   #[ derive( Debug, Clone ) ]
   pub struct VerifiedCommand
   {
-    /// Phrase descriptor for command.
-    pub phrase : String,
-    /// Flag indicating whether a command is internal or not.
-    pub internal_command : bool,
-    /// Command subjects.
-    pub args : Args,
-    /// Command options.
-    pub props : Props,
-  }
+  /// Phrase descriptor for command.
+  pub phrase: String,
+  /// Flag indicating whether a command is internal or not.
+  pub internal_command: bool,
+  /// Command subjects.
+  pub args: Args,
+  /// Command options.
+  pub props: Props,
+ }
 
 }
 
 //
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   exposed use VerifiedCommand;
 }
 
-// aaa : use orphan instead of exposed for ALL files in the folder, dont use prelude for structs
-// aaa : done.
+// aaa: use orphan instead of exposed for ALL files in the folder, dont use prelude for structs
+// aaa: done.

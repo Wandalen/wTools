@@ -1,28 +1,28 @@
-#![ allow( clippy::doc_markdown ) ]
+#![ allow( clippy ::doc_markdown ) ]
 
 //! Test new secrets API methods added in task 021
 //!
 //! Tests for the new path-aware methods and debug helpers
 
 #[ cfg( feature = "secrets" ) ]
-use workspace_tools::testing;
+use workspace_tools ::testing;
 #[ cfg( feature = "secrets" ) ]
-use std::fs;
+use std ::fs;
 
 /// Test new load_secrets_from_path method
 #[ test ]
 #[ cfg( feature = "secrets" ) ]
 fn test_load_secrets_from_path()
 {
-  let ( _temp_dir, workspace ) = testing::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
   // Create a nested directory structure with secrets
   let config_dir = workspace.join( "config" );
-  fs::create_dir_all( &config_dir ).unwrap();
+  fs ::create_dir_all( &config_dir ).unwrap();
 
   let secret_content = "API_KEY=path-test-key\nDATABASE_URL=path-test-db";
   let config_secrets_file = config_dir.join( "secrets.env" );
-  fs::write( &config_secrets_file, secret_content ).unwrap();
+  fs ::write( &config_secrets_file, secret_content ).unwrap();
 
   // Test the new path-based loading
   let secrets = workspace.load_secrets_from_path( "config/secrets.env" ).unwrap();
@@ -37,15 +37,15 @@ fn test_load_secrets_from_path()
 #[ cfg( feature = "secrets" ) ]
 fn test_path_method_solves_developer_issue()
 {
-  let ( _temp_dir, workspace ) = testing::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
   // Create the exact scenario from the task description
   let lib_dir = workspace.join( "lib/llm_tools/.secret" );
-  fs::create_dir_all( &lib_dir ).unwrap();
+  fs ::create_dir_all( &lib_dir ).unwrap();
 
   let secret_content = "API_KEY=correct-nested-secret\nTOKEN=nested-token-123";
   let nested_secret_file = lib_dir.join( "-secrets.sh" );
-  fs::write( &nested_secret_file, secret_content ).unwrap();
+  fs ::write( &nested_secret_file, secret_content ).unwrap();
 
   // Now the developer can use the correct method for their intent
   let secrets = workspace.load_secrets_from_path( "lib/llm_tools/.secret/-secrets.sh" ).unwrap();
@@ -60,7 +60,7 @@ fn test_path_method_solves_developer_issue()
 #[ cfg( feature = "secrets" ) ]
 fn test_helper_methods()
 {
-  let ( _temp_dir, workspace ) = testing::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
   // Initially no secrets files should exist
   let files = workspace.list_secrets_files().unwrap();
@@ -76,7 +76,7 @@ fn test_helper_methods()
   // Create a secrets file and test again
   let secret_content = "TEST_KEY=test-value";
   let secret_file = workspace.secret_file( "test.env" );
-  fs::write( &secret_file, secret_content ).unwrap();
+  fs ::write( &secret_file, secret_content ).unwrap();
 
   // Now should be detected
   let files = workspace.list_secrets_files().unwrap();
@@ -91,14 +91,14 @@ fn test_helper_methods()
 #[ cfg( feature = "secrets" ) ]
 fn test_load_secrets_from_absolute_path()
 {
-  use tempfile::NamedTempFile;
+  use tempfile ::NamedTempFile;
 
-  let ( _temp_dir, workspace ) = testing::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
   // Create a temporary file outside the workspace
-  let temp_file = NamedTempFile::new().unwrap();
+  let temp_file = NamedTempFile ::new().unwrap();
   let secret_content = "EXTERNAL_KEY=external-value\nEXTERNAL_TOKEN=external-token";
-  fs::write( &temp_file, secret_content ).unwrap();
+  fs ::write( &temp_file, secret_content ).unwrap();
 
   // Test loading from absolute path
   let secrets = workspace.load_secrets_from_absolute_path( temp_file.path() ).unwrap();
@@ -113,17 +113,17 @@ fn test_load_secrets_from_absolute_path()
 #[ cfg( feature = "secure" ) ]
 fn test_secure_path_methods()
 {
-  use secrecy::ExposeSecret;
+  use secrecy ::ExposeSecret;
 
-  let ( _temp_dir, workspace ) = testing::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
   // Create a config directory with secrets
   let config_dir = workspace.join( "config" );
-  fs::create_dir_all( &config_dir ).unwrap();
+  fs ::create_dir_all( &config_dir ).unwrap();
 
   let secret_content = "SECURE_KEY=secure-path-value";
   let config_secrets_file = config_dir.join( "secure.env" );
-  fs::write( &config_secrets_file, secret_content ).unwrap();
+  fs ::write( &config_secrets_file, secret_content ).unwrap();
 
   // Test secure path loading
   let secrets = workspace.load_secrets_from_path_secure( "config/secure.env" ).unwrap();
@@ -138,7 +138,7 @@ fn test_secure_path_methods()
 #[ cfg( feature = "secrets" ) ]
 fn test_path_error_messages()
 {
-  let ( _temp_dir, workspace ) = testing::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
   // Test error for nonexistent path
   let result = workspace.load_secrets_from_path( "nonexistent/secrets.env" );
@@ -147,10 +147,11 @@ fn test_path_error_messages()
   let error_msg = result.unwrap_err().to_string();
   assert!( error_msg.contains( "not found at path" ) );
   assert!( error_msg.contains( "nonexistent/secrets.env" ) );
-  assert!( error_msg.contains( "resolved to:" ) );
+  assert!( error_msg.contains( "resolved to: " ) );
 }
 
 #[ cfg( not( feature = "secrets" ) ) ]
-fn main() {
+fn main() 
+{
   println!( "This test requires the 'secrets' feature" );
 }

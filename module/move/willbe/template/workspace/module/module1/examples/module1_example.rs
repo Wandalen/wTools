@@ -1,6 +1,6 @@
 //! docs
 
-use example_module::hello;
+use example_module ::hello;
 
 // example
 

@@ -34,19 +34,23 @@ Currently, workspace_tools expects secrets files to use simple `KEY=VALUE` forma
 ### **API Design**
 
 ```rust
-impl Workspace {
+impl Workspace 
+{
     /// Enhanced secret file parsing with format detection
-    pub fn load_secrets_from_file_enhanced(&self, filename: &str) -> Result<HashMap<String, String>> {
+    pub fn load_secrets_from_file_enhanced(&self, filename: &str) -> Result<HashMap<String, String>> 
+{
         // Auto-detect and parse multiple formats
     }
     
     /// Parse with specific format (for performance-critical usage)
-    pub fn load_secrets_with_format(&self, filename: &str, format: SecretFileFormat) -> Result<HashMap<String, String>> {
+    pub fn load_secrets_with_format(&self, filename: &str, format: SecretFileFormat) -> Result<HashMap<String, String>> 
+{
         // Format-specific parsing
     }
 }
 
-pub enum SecretFileFormat {
+pub enum SecretFileFormat 
+{
     Auto,           // Auto-detect format
     KeyValue,       // KEY=VALUE
     ShellExport,    // export KEY=VALUE  
@@ -58,7 +62,8 @@ pub enum SecretFileFormat {
 
 1. **Enhanced Parser Function**
    ```rust
-   fn parse_key_value_file_enhanced(content: &str) -> HashMap<String, String> {
+   fn parse_key_value_file_enhanced(content: &str) -> HashMap<String, String> 
+{
        let mut secrets = HashMap::new();
        
        for line in content.lines() {
@@ -113,7 +118,8 @@ pub enum SecretFileFormat {
 ### **Unit Tests**
 ```rust
 #[test]
-fn test_parse_export_format() {
+fn test_parse_export_format() 
+{
     let content = r#"
         export API_KEY="test-key"
         export DEBUG=true
@@ -127,7 +133,8 @@ fn test_parse_export_format() {
 }
 
 #[test]
-fn test_mixed_format_compatibility() {
+fn test_mixed_format_compatibility() 
+{
     let content = r#"
         # Regular format
         DATABASE_URL="postgres://localhost/db"

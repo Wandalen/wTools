@@ -9,7 +9,7 @@ mod private
   #[ cfg( feature = "no_std" ) ]
   extern crate alloc;
   #[ cfg( feature = "no_std" ) ]
-  use alloc::string;
+  use alloc ::string;
 
   /// Master seed.
   #[ derive( Clone, Debug, PartialEq, Eq ) ]
@@ -17,63 +17,63 @@ mod private
 
   impl Seed
   {
-    /// Creates new seed from a string.
-    pub fn new< IntoString >( value : IntoString ) -> Self
-    where
-      IntoString : Into< String >,
-    {
-      Self( value.into() )
-    }
+  /// Creates new seed from a string.
+  pub fn new< IntoString >( value: IntoString ) -> Self
+  where
+   IntoString: Into< String >,
+  {
+   Self( value.into() )
+ }
 
-    /// Used for simplifying seed creation from a [`u64`] seed.
-    #[must_use] pub fn from_integer( src : u64 ) -> Self
-    {
-      Self( format!( "master_seed_{src}" ) )
-    }
+  /// Used for simplifying seed creation from a [`u64`] seed.
+  #[ must_use ] pub fn from_integer( src: u64 ) -> Self
+  {
+   Self( format!( "master_seed_{src}" ) )
+ }
 
-    /// Random string as seed.
-    pub fn random() -> Self
-    {
-      use rand::{ distributions::Alphanumeric, Rng };
-      let str : String = rand::thread_rng()
-      .sample_iter( &Alphanumeric )
-      .take( 16 )
-      .map(char::from)
-      .collect();
-      debug_assert!( !str.is_empty() );
-      Self( str )
-    }
+  /// Random string as seed.
+  pub fn random() -> Self
+  {
+   use rand :: { distributions ::Alphanumeric, Rng };
+   let str: String = rand ::thread_rng()
+   .sample_iter( &Alphanumeric )
+   .take( 16 )
+   .map(char ::from)
+   .collect();
+   debug_assert!( !str.is_empty() );
+   Self( str )
+ }
 
-    /// Returns inner seed string value.
-    #[must_use] pub fn into_inner( self ) -> String
-    {
-      self.0
-    }
-  }
+  /// Returns inner seed string value.
+  #[ must_use ] pub fn into_inner( self ) -> String
+  {
+   self.0
+ }
+ }
 
   impl Default for Seed
   {
-    fn default() -> Self
-    {
-      Self( "master_seed".to_owned() )
-    }
-  }
+  fn default() -> Self
+  {
+   Self( "master_seed".to_owned() )
+ }
+ }
 
   impl< IntoString > From< IntoString > for Seed
   where
-    IntoString : Into< String >,
+  IntoString: Into< String >,
   {
-    #[ inline( always ) ]
-    fn from( src : IntoString ) -> Self
-    {
-      Self::new( src )
-    }
-  }
+  #[ inline( always ) ]
+  fn from( src: IntoString ) -> Self
+  {
+   Self ::new( src )
+ }
+ }
 
 
 }
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   orphan use Seed;
 }

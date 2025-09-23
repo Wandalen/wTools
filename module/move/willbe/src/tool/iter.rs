@@ -5,7 +5,7 @@ mod private
 
 //
 
-crate::mod_interface!
+crate ::mod_interface!
 {
-  exposed use ::iter_tools::{ Itertools, IterTrait };
+  exposed use ::iter_tools :: { Itertools, IterTrait };
 }

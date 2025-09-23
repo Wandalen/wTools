@@ -2,12 +2,12 @@
 //! Tests for `get_rows` function.
 //! 
 
-use gspread::gcore::ApplicationSecret;
-use httpmock::prelude::*;
+use gspread ::gcore ::ApplicationSecret;
+use httpmock ::prelude :: *;
 
-use serde_json::json;
-use gspread::actions::gspread::get_rows;
-use gspread::gcore::client::
+use serde_json ::json;
+use gspread ::actions ::gspread ::get_rows;
+use gspread ::gcore ::client ::
 {
   Client, 
   Dimension, 
@@ -18,7 +18,7 @@ use gspread::gcore::client::
 /// We check that requesting all rows from the second row onward (below the header)
 /// correctly parses the response and returns the expected result.
 /// 
-/// It works:
+/// It works :
 ///  - With the whole rows.
 ///  - With rows with empty columns.
 ///  - With empty rows in the middle.
@@ -28,37 +28,38 @@ use gspread::gcore::client::
 /// 2. Create a client.
 /// 3. Call `get_rows` which sends a GET request to "/{spreadsheet_id}/values/{range}".
 /// 4. Check results.
-#[ tokio::test ]
+#[ tokio ::test ]
 async fn test_mock_get_rows_should_work() 
 {
   let spreadsheet_id = "12345";
   let body = ValueRange
   {
-    major_dimension : Some( Dimension::Row ),
-    range : Some( "tab2!A2:ZZZ".to_string() ),
-    values : Some
-    ( 
-      vec!
-      [ 
-        vec![ json!( "Row2Col1" ), json!( "Row2Col2" ) ], 
-        vec![ json!( "Row3Col1" ), json!( "Row3Col2" ) ] 
-      ] 
-    )
-  };
+  major_dimension: Some( Dimension ::Row ),
+  range: Some( "tab2!A2: ZZZ".to_string() ),
+  values: Some
+  ( 
+   vec!
+   [ 
+  vec![ json!( "Row2Col1" ), json!( "Row2Col2" ) ], 
+  vec![ json!( "Row3Col1" ), json!( "Row3Col2" ) ] 
+ ] 
+ )
+ };
 
   // 1. Start a mock server.
-  let server = MockServer::start();
-  let mock = server.mock( | when, then | {
-    when.method( GET )
-      .path( "/12345/values/tab2!A2:ZZZ" );
-    then.status( 200 )
-      .header( "Content-Type", "application/json" )
-      .json_body_obj( &body );
-  } );
+  let server = MockServer ::start();
+  let mock = server.mock( | when, then |
+  {
+  when.method( GET )
+   .path( "/12345/values/tab2!A2: ZZZ" );
+  then.status( 200 )
+   .header( "Content-Type", "application/json" )
+   .json_body_obj( &body );
+ } );
 
   // 2. Create a client.
   let endpoint = server.url( "" );
-  let client : Client< '_, ApplicationSecret > = Client::former()
+  let client: Client< '_, ApplicationSecret > = Client ::former()
   .endpoint( &*endpoint )
   .form();
 
@@ -80,37 +81,38 @@ async fn test_mock_get_rows_should_work()
   assert_eq!( rows[ 1 ][ 1 ], json!( "Row3Col2" ) );
 }
 
-#[ tokio::test ]
+#[ tokio ::test ]
 async fn test_mock_get_rows_with_empty_columns() 
 {
   let spreadsheet_id = "12345";
   let body = ValueRange
   {
-    major_dimension : Some( Dimension::Row ),
-    range : Some( "tab2!A2:ZZZ".to_string() ),
-    values : Some
-    ( 
-      vec!
-      [ 
-        vec![ json!( "Row2Col1" ), json!( "" ), json!( "Row2Col3" ) ], 
-        vec![ json!( "Row3Col1" ), json!( "" ), json!( "Row3Col3" ) ] 
-      ] 
-    )
-  };
+  major_dimension: Some( Dimension ::Row ),
+  range: Some( "tab2!A2: ZZZ".to_string() ),
+  values: Some
+  ( 
+   vec!
+   [ 
+  vec![ json!( "Row2Col1" ), json!( "" ), json!( "Row2Col3" ) ], 
+  vec![ json!( "Row3Col1" ), json!( "" ), json!( "Row3Col3" ) ] 
+ ] 
+ )
+ };
 
   // 1. Start a mock server.
-  let server = MockServer::start();
-  let mock = server.mock( | when, then | {
-    when.method( GET )
-      .path( "/12345/values/tab2!A2:ZZZ" );
-    then.status( 200 )
-      .header( "Content-Type", "application/json" )
-      .json_body_obj( &body );
-  } );
+  let server = MockServer ::start();
+  let mock = server.mock( | when, then |
+  {
+  when.method( GET )
+   .path( "/12345/values/tab2!A2: ZZZ" );
+  then.status( 200 )
+   .header( "Content-Type", "application/json" )
+   .json_body_obj( &body );
+ } );
 
   // 2. Create a client.
   let endpoint = server.url( "" );
-  let client : Client< '_, ApplicationSecret > = Client::former()
+  let client: Client< '_, ApplicationSecret > = Client ::former()
   .endpoint( &*endpoint )
   .form();
 
@@ -134,38 +136,39 @@ async fn test_mock_get_rows_with_empty_columns()
   assert_eq!( rows[ 1 ][ 2 ], json!( "Row3Col3" ) );
 }
 
-#[ tokio::test ]
+#[ tokio ::test ]
 async fn test_mock_get_rows_with_empty_row_in_the_middle() 
 {
   let spreadsheet_id = "12345";
   let body = ValueRange
   {
-    major_dimension : Some( Dimension::Row ),
-    range : Some( "tab2!A2:ZZZ".to_string() ),
-    values : Some
-    ( 
-      vec!
-      [ 
-        vec![ json!( "Row2Col1" ), json!( "Row2Col2" ), json!( "Row2Col3" ) ], 
-        vec![ json!( "" ), json!( "" ), json!( "" ) ],
-        vec![ json!( "Row3Col1" ), json!( "Row3Col2" ), json!( "Row3Col3" ) ], 
-      ] 
-    )
-  };
+  major_dimension: Some( Dimension ::Row ),
+  range: Some( "tab2!A2: ZZZ".to_string() ),
+  values: Some
+  ( 
+   vec!
+   [ 
+  vec![ json!( "Row2Col1" ), json!( "Row2Col2" ), json!( "Row2Col3" ) ], 
+  vec![ json!( "" ), json!( "" ), json!( "" ) ],
+  vec![ json!( "Row3Col1" ), json!( "Row3Col2" ), json!( "Row3Col3" ) ], 
+ ] 
+ )
+ };
 
   // 1. Start a mock server.
-  let server = MockServer::start();
-  let mock = server.mock( | when, then | {
-    when.method( GET )
-      .path( "/12345/values/tab2!A2:ZZZ" );
-    then.status( 200 )
-      .header( "Content-Type", "application/json" )
-      .json_body_obj( &body );
-  } );
+  let server = MockServer ::start();
+  let mock = server.mock( | when, then |
+  {
+  when.method( GET )
+   .path( "/12345/values/tab2!A2: ZZZ" );
+  then.status( 200 )
+   .header( "Content-Type", "application/json" )
+   .json_body_obj( &body );
+ } );
 
   // 2. Create a client.
   let endpoint = server.url( "" );
-  let client : Client< '_, ApplicationSecret > = Client::former()
+  let client: Client< '_, ApplicationSecret > = Client ::former()
   .endpoint( &*endpoint )
   .form();
 
@@ -194,30 +197,31 @@ async fn test_mock_get_rows_with_empty_row_in_the_middle()
   assert_eq!( rows[ 2 ][ 2 ], json!( "Row3Col3" ) );
 }
 
-#[ tokio::test ]
+#[ tokio ::test ]
 async fn test_mock_get_rows_empty_should_work() 
 {
   let spreadsheet_id = "12345";
   let body = ValueRange
   {
-    major_dimension : Some( Dimension::Row ),
-    range : Some( "tab2!A2:ZZZ".to_string() ),
-    values : Some( vec![] )
-  };
+  major_dimension: Some( Dimension ::Row ),
+  range: Some( "tab2!A2: ZZZ".to_string() ),
+  values: Some( vec![] )
+ };
 
   // 1. Start a mock server.
-  let server = MockServer::start();
-  let _mock = server.mock( | when, then | {
-    when.method( GET )
-      .path( "/12345/values/tab2!A2:ZZZ" );
-    then.status( 200 )
-      .header( "Content-Type", "application/json" )
-      .json_body_obj( &body );
-  } );
+  let server = MockServer ::start();
+  let _mock = server.mock( | when, then |
+  {
+  when.method( GET )
+   .path( "/12345/values/tab2!A2: ZZZ" );
+  then.status( 200 )
+   .header( "Content-Type", "application/json" )
+   .json_body_obj( &body );
+ } );
 
   // 2. Create a client.
   let endpoint = server.url( "" );
-  let client : Client< '_, ApplicationSecret > = Client::former()
+  let client: Client< '_, ApplicationSecret > = Client ::former()
   .endpoint( &*endpoint )
   .form();
 

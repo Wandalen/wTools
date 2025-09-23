@@ -1,24 +1,26 @@
 #![allow(unused_macros)]
 
-use super::*;
-use the_module::exposed::{impls3, index, implsindex as impls_index};
+use super :: *;
+use the_module ::exposed :: { impls3, index, implsindex as impls_index };
 
 //
 
 #[ test ]
-fn basic() {
-  impls3! {
-    fn f1()
-    {
-      println!( "f1" );
-      // panic!( "x" );
-    }
-    pub fn f2()
-    {
-      // panic!( "x" );
-      println!( "f2" );
-    }
-  };
+fn basic() 
+{
+  impls3! 
+{
+  fn f1()
+  {
+   println!( "f1" );
+   // panic!( "x" );
+ }
+  pub fn f2()
+  {
+   // panic!( "x" );
+   println!( "f2" );
+ }
+ };
 
   // trace_macros!( true );
   f1!();
@@ -32,23 +34,25 @@ fn basic() {
 //
 
 #[ test ]
-fn impl_index() {
-  impls3! {
-    fn f1()
-    {
-      println!( "f1" );
-    }
-    pub fn f2()
-    {
-      println!( "f2" );
-    }
-  };
+fn impl_index() 
+{
+  impls3! 
+{
+  fn f1()
+  {
+   println!( "f1" );
+ }
+  pub fn f2()
+  {
+   println!( "f2" );
+ }
+ };
 
   // trace_macros!( true );
   index! {
-    f1,
-    f2,
-  }
+  f1,
+  f2,
+ }
   // trace_macros!( false );
 
   f1();
@@ -56,18 +60,20 @@ fn impl_index() {
 }
 
 #[ test ]
-fn impl_as() {
-  impls3! {
-    fn f1()
-    {
-      println!( "f1" );
-      // panic!( "x" );
-    }
-    pub fn f2()
-    {
-      println!( "f2" );
-    }
-  };
+fn impl_as() 
+{
+  impls3! 
+{
+  fn f1()
+  {
+   println!( "f1" );
+   // panic!( "x" );
+ }
+  pub fn f2()
+  {
+   println!( "f2" );
+ }
+ };
 
   // trace_macros!( true );
   f1!( as f1b );
@@ -79,24 +85,26 @@ fn impl_as() {
 }
 
 #[ test ]
-fn impl_index_as() {
-  impls3! {
-    fn f1()
-    {
-      println!( "f1" );
-      // panic!( "x" );
-    }
-    pub fn f2()
-    {
-      println!( "f2" );
-    }
-  };
+fn impl_index_as() 
+{
+  impls3! 
+{
+  fn f1()
+  {
+   println!( "f1" );
+   // panic!( "x" );
+ }
+  pub fn f2()
+  {
+   println!( "f2" );
+ }
+ };
 
   // trace_macros!( true );
   index! {
-    f1,
-    f2 as f2b,
-  }
+  f1,
+  f2 as f2b,
+ }
   // trace_macros!( false );
 
   f1();

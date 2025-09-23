@@ -286,7 +286,7 @@ impl MultiYamlAggregator
     {
       let const_name = format!(
         "{}_CMD",
-        cmd_name.replace( ".", "_" ).replace( "-", "_" ).to_uppercase()
+        cmd_name.replace( '.', "_" ).replace( '-', "_" ).to_uppercase()
       );
 
       phf_content.push_str( &format!(
@@ -317,7 +317,7 @@ impl MultiYamlAggregator
     {
       let const_name = format!(
         "{}_CMD",
-        cmd_name.replace( ".", "_" ).replace( "-", "_" ).to_uppercase()
+        cmd_name.replace( '.', "_" ).replace( '-', "_" ).to_uppercase()
       );
       phf_content.push_str( &format!( "  \"{}\" => &{},\n", cmd_name, const_name ) );
     }
@@ -771,7 +771,7 @@ impl CliBuilder
         }
       } ).collect();
 
-      multi_yaml_config.global_prefix = self.config.global_prefix.clone();
+      multi_yaml_config.global_prefix.clone_from( &self.config.global_prefix );
       multi_yaml_config.detect_conflicts = self.config.detect_conflicts;
 
       let mut aggregator = MultiYamlAggregator::new( multi_yaml_config );

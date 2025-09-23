@@ -1,4 +1,4 @@
-crate::mod_interface!
+crate ::mod_interface!
 {
   /// Depth-first search.
   layer dfs;

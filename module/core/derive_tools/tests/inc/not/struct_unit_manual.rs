@@ -1,4 +1,4 @@
-use core::ops::Not;
+use core ::ops ::Not;
 
 struct StructUnit;
 
@@ -6,10 +6,10 @@ impl Not for StructUnit
 {
   type Output = Self;
 
-  fn not( self ) -> Self::Output
+  fn not( self ) -> Self ::Output
   {
-    Self {}
-  }
+  Self {}
+ }
 }
 
 // include!( "./only_test/struct_unit.rs" );

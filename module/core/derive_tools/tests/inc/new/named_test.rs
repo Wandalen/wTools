@@ -1,14 +1,14 @@
-use super::*;
+use super :: *;
 
 mod mod1
 {
-  use super::*;
+  use super :: *;
 
-  // #[ derive( Debug, PartialEq, Eq, the_module::New ) ]
+  // #[ derive( Debug, PartialEq, Eq, the_module ::New ) ]
   pub struct Struct1
   {
-    pub a : i32,
-  }
+  pub a: i32,
+ }
 
 }
 

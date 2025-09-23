@@ -1,4 +1,4 @@
-#![ allow( clippy::doc_markdown, clippy::redundant_closure_for_method_calls, clippy::uninlined_format_args ) ]
+#![ allow( clippy ::doc_markdown, clippy ::redundant_closure_for_method_calls, clippy ::uninlined_format_args ) ]
 
 //! Backward Compatibility Validation for Task 021
 //!
@@ -6,20 +6,20 @@
 //! No existing code should break after the task 021 implementation.
 
 #[ cfg( feature = "secrets" ) ]
-use workspace_tools::testing;
+use workspace_tools ::testing;
 #[ cfg( feature = "secrets" ) ]
-use std::fs;
+use std ::fs;
 
 /// Test that existing code patterns still work - from actual api_huggingface usage
 #[ test ]
 #[ cfg( feature = "secrets" ) ]
 fn test_real_world_usage_patterns()
 {
-  let ( _temp_dir, workspace ) = testing::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
   // Create test secrets file
-  fs::create_dir_all( workspace.secret_dir() ).unwrap();
-  fs::write( workspace.secret_file( "api.env" ), "API_KEY=test_key_123\nTOKEN=test_token_456" ).unwrap();
+  fs ::create_dir_all( workspace.secret_dir() ).unwrap();
+  fs ::write( workspace.secret_file( "api.env" ), "API_KEY=test_key_123\nTOKEN=test_token_456" ).unwrap();
 
   // This is the pattern that should continue to work
   let secrets = workspace.load_secrets_from_file( "api.env" ).unwrap();
@@ -31,10 +31,10 @@ fn test_real_world_usage_patterns()
   assert_eq!( api_key, "test_key_123" );
 
   // Environment fallback should still work
-  std::env::set_var( "FALLBACK_TEST_KEY", "fallback_value" );
+  std ::env ::set_var( "FALLBACK_TEST_KEY", "fallback_value" );
   let fallback = workspace.load_secret_key( "FALLBACK_TEST_KEY", "nonexistent.env" ).unwrap();
   assert_eq!( fallback, "fallback_value" );
-  std::env::remove_var( "FALLBACK_TEST_KEY" );
+  std ::env ::remove_var( "FALLBACK_TEST_KEY" );
 }
 
 /// Test that method signatures haven't changed
@@ -42,17 +42,17 @@ fn test_real_world_usage_patterns()
 #[ cfg( feature = "secrets" ) ]
 fn test_method_signatures_unchanged()
 {
-  let ( _temp_dir, workspace ) = testing::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
   // Create test file
-  fs::create_dir_all( workspace.secret_dir() ).unwrap();
-  fs::write( workspace.secret_file( "test.env" ), "KEY=value" ).unwrap();
+  fs ::create_dir_all( workspace.secret_dir() ).unwrap();
+  fs ::write( workspace.secret_file( "test.env" ), "KEY=value" ).unwrap();
 
   // Test all existing method signatures compile and work
-  let _: Result< std::collections::HashMap< String, String >, _ > = workspace.load_secrets_from_file( "test.env" );
+  let _: Result< std ::collections ::HashMap< String, String >, _ > = workspace.load_secrets_from_file( "test.env" );
   let _: Result< String, _ > = workspace.load_secret_key( "KEY", "test.env" );
-  let _: std::path::PathBuf = workspace.secret_dir();
-  let _: std::path::PathBuf = workspace.secret_file( "test.env" );
+  let _: std ::path ::PathBuf = workspace.secret_dir();
+  let _: std ::path ::PathBuf = workspace.secret_file( "test.env" );
 }
 
 /// Test that error types haven't changed for existing methods
@@ -60,7 +60,7 @@ fn test_method_signatures_unchanged()
 #[ cfg( feature = "secrets" ) ]
 fn test_error_types_unchanged()
 {
-  let ( _temp_dir, workspace ) = testing::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
   // Test that error types are still the same
   let result = workspace.load_secrets_from_file( "nonexistent.env" );
@@ -68,7 +68,7 @@ fn test_error_types_unchanged()
 
   let error = result.unwrap_err();
   // Should still be WorkspaceError - if this fails to compile, we broke backward compatibility
-  let _: workspace_tools::WorkspaceError = error;
+  let _: workspace_tools ::WorkspaceError = error;
 }
 
 /// Test that existing code expecting empty HashMap now gets errors (this is intentional breaking change documented in task)
@@ -76,7 +76,7 @@ fn test_error_types_unchanged()
 #[ cfg( feature = "secrets" ) ]
 fn test_silent_failure_now_explicit()
 {
-  let ( _temp_dir, workspace ) = testing::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
   // Previously this would return empty HashMap, now it should return explicit error
   let result = workspace.load_secrets_from_file( "nonexistent.env" );
@@ -91,13 +91,13 @@ fn test_silent_failure_now_explicit()
 #[ cfg( all( feature = "secrets", feature = "secure" ) ) ]
 fn test_secure_backward_compatibility()
 {
-  use secrecy::ExposeSecret;
+  use secrecy ::ExposeSecret;
 
-  let ( _temp_dir, workspace ) = testing::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
   // Create test file
-  fs::create_dir_all( workspace.secret_dir() ).unwrap();
-  fs::write( workspace.secret_file( "secure.env" ), "SECRET_KEY=secret_value" ).unwrap();
+  fs ::create_dir_all( workspace.secret_dir() ).unwrap();
+  fs ::write( workspace.secret_file( "secure.env" ), "SECRET_KEY=secret_value" ).unwrap();
 
   // Test existing secure method still works
   let secrets = workspace.load_secrets_secure( "secure.env" ).unwrap();
@@ -112,7 +112,7 @@ fn test_secure_backward_compatibility()
 #[ cfg( feature = "secrets" ) ]
 fn test_directory_resolution_unchanged()
 {
-  let ( _temp_dir, workspace ) = testing::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
   // Secret directory should still resolve to the same location
   let secret_dir = workspace.secret_dir();
@@ -129,17 +129,17 @@ fn test_directory_resolution_unchanged()
 #[ cfg( feature = "secrets" ) ]
 fn test_environment_fallback_unchanged()
 {
-  let ( _temp_dir, workspace ) = testing::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
   // Set up environment variable
-  std::env::set_var( "TEST_ENV_FALLBACK", "env_value_123" );
+  std ::env ::set_var( "TEST_ENV_FALLBACK", "env_value_123" );
 
   // Should still fallback to environment when file doesn't exist
   let result = workspace.load_secret_key( "TEST_ENV_FALLBACK", "nonexistent_file.env" );
   assert!( result.is_ok(), "Should still fallback to environment variables" );
   assert_eq!( result.unwrap(), "env_value_123" );
 
-  std::env::remove_var( "TEST_ENV_FALLBACK" );
+  std ::env ::remove_var( "TEST_ENV_FALLBACK" );
 }
 
 /// Test existing file parsing behavior unchanged
@@ -147,26 +147,26 @@ fn test_environment_fallback_unchanged()
 #[ cfg( feature = "secrets" ) ]
 fn test_file_parsing_unchanged()
 {
-  let ( _temp_dir, workspace ) = testing::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
-  fs::create_dir_all( workspace.secret_dir() ).unwrap();
+  fs ::create_dir_all( workspace.secret_dir() ).unwrap();
 
   // Test various file formats that should still work
   let test_cases = vec![
-    ( "simple.env", "KEY1=value1\nKEY2=value2", 2 ),
-    ( "with_export.env", "export KEY1=value1\nKEY2=value2", 2 ),
-    ( "with_comments.env", "# Comment\nKEY1=value1\n# Another comment\nKEY2=value2", 2 ),
-    ( "with_spaces.env", "KEY1 = value1\nKEY2= value2 ", 2 ),
-    ( "empty_lines.env", "KEY1=value1\n\n\nKEY2=value2\n", 2 ),
-  ];
+  ( "simple.env", "KEY1=value1\nKEY2=value2", 2 ),
+  ( "with_export.env", "export KEY1=value1\nKEY2=value2", 2 ),
+  ( "with_comments.env", "# Comment\nKEY1=value1\n# Another comment\nKEY2=value2", 2 ),
+  ( "with_spaces.env", "KEY1 = value1\nKEY2= value2 ", 2 ),
+  ( "empty_lines.env", "KEY1=value1\n\n\nKEY2=value2\n", 2 ),
+ ];
 
   for ( filename, content, expected_count ) in test_cases
   {
-    fs::write( workspace.secret_file( filename ), content ).unwrap();
+  fs ::write( workspace.secret_file( filename ), content ).unwrap();
 
-    let secrets = workspace.load_secrets_from_file( filename ).unwrap();
-    assert_eq!( secrets.len(), expected_count, "File {} should parse {} keys", filename, expected_count );
-  }
+  let secrets = workspace.load_secrets_from_file( filename ).unwrap();
+  assert_eq!( secrets.len(), expected_count, "File {} should parse {} keys", filename, expected_count );
+ }
 }
 
 /// Test that helper methods work the same way (these are new but should be stable)
@@ -174,10 +174,10 @@ fn test_file_parsing_unchanged()
 #[ cfg( feature = "secrets" ) ]
 fn test_helper_methods_consistency()
 {
-  let ( _temp_dir, workspace ) = testing::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
-  fs::create_dir_all( workspace.secret_dir() ).unwrap();
-  fs::write( workspace.secret_file( "helper_test.env" ), "KEY=value" ).unwrap();
+  fs ::create_dir_all( workspace.secret_dir() ).unwrap();
+  fs ::write( workspace.secret_file( "helper_test.env" ), "KEY=value" ).unwrap();
 
   // These are new methods but should be consistent with existing patterns
   let files = workspace.list_secrets_files().unwrap();
@@ -191,6 +191,7 @@ fn test_helper_methods_consistency()
 }
 
 #[ cfg( not( feature = "secrets" ) ) ]
-fn main() {
+fn main() 
+{
   println!( "Backward compatibility tests require the 'secrets' feature" );
 }

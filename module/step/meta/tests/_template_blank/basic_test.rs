@@ -1,4 +1,4 @@
-// use test_tools::exposed::*;
+// use test_tools ::exposed :: *;
 
 //
 
@@ -7,8 +7,8 @@ tests_impls!
   #[ test ]
   fn basic()
   {
-    a_id!( true, true );
-  }
+  a_id!( true, true );
+ }
 }
 
 //

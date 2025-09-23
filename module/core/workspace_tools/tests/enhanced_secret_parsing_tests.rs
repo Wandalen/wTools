@@ -5,8 +5,8 @@
 
 #![ cfg( feature = "testing" ) ]
 
-use workspace_tools::testing::create_test_workspace_with_structure;
-use std::fs;
+use workspace_tools ::testing ::create_test_workspace_with_structure;
+use std ::fs;
 
 /// Test parsing export statements in secret files
 #[ test ]
@@ -18,18 +18,18 @@ fn test_export_statement_parsing()
   let secret_content = r#"
 # Example secret file with export statements
 export API_KEY="sk-1234567890abcdef"
-export DATABASE_URL="postgresql://user:pass@localhost/db"
+export DATABASE_URL="postgresql: //user: pass@localhost/db"
 export DEBUG=true
 export TOKEN='bearer-token-here'
 "#;
   
   let secret_file = workspace.secret_file( "-test-exports.sh" );
-  fs::write( &secret_file, secret_content ).unwrap();
+  fs ::write( &secret_file, secret_content ).unwrap();
   
   let secrets = workspace.load_secrets_from_file( "-test-exports.sh" ).unwrap();
   
   assert_eq!( secrets.get( "API_KEY" ).unwrap(), "sk-1234567890abcdef" );
-  assert_eq!( secrets.get( "DATABASE_URL" ).unwrap(), "postgresql://user:pass@localhost/db" );
+  assert_eq!( secrets.get( "DATABASE_URL" ).unwrap(), "postgresql: //user: pass@localhost/db" );
   assert_eq!( secrets.get( "DEBUG" ).unwrap(), "true" );
   assert_eq!( secrets.get( "TOKEN" ).unwrap(), "bearer-token-here" );
 }
@@ -44,20 +44,20 @@ fn test_mixed_format_parsing()
   let secret_content = r#"
 # Mixed format secret file
 API_KEY=standard-format-key
-export DATABASE_URL="postgresql://localhost/db"
-REDIS_URL=redis://localhost:6379
+export DATABASE_URL="postgresql: //localhost/db"
+REDIS_URL=redis: //localhost: 6379
 export SMTP_HOST="smtp.example.com"
 SMTP_PORT=587
 "#;
   
   let secret_file = workspace.secret_file( "-mixed-format.sh" );
-  fs::write( &secret_file, secret_content ).unwrap();
+  fs ::write( &secret_file, secret_content ).unwrap();
   
   let secrets = workspace.load_secrets_from_file( "-mixed-format.sh" ).unwrap();
   
   assert_eq!( secrets.get( "API_KEY" ).unwrap(), "standard-format-key" );
-  assert_eq!( secrets.get( "DATABASE_URL" ).unwrap(), "postgresql://localhost/db" );
-  assert_eq!( secrets.get( "REDIS_URL" ).unwrap(), "redis://localhost:6379" );
+  assert_eq!( secrets.get( "DATABASE_URL" ).unwrap(), "postgresql: //localhost/db" );
+  assert_eq!( secrets.get( "REDIS_URL" ).unwrap(), "redis: //localhost: 6379" );
   assert_eq!( secrets.get( "SMTP_HOST" ).unwrap(), "smtp.example.com" );
   assert_eq!( secrets.get( "SMTP_PORT" ).unwrap(), "587" );
 }
@@ -80,11 +80,11 @@ API_SECRET=active-secret
 #export DISABLED_KEY="disabled"
 
 # More active secrets
-export REDIS_URL="redis://localhost"
+export REDIS_URL="redis: //localhost"
 "#;
   
   let secret_file = workspace.secret_file( "-commented-test.sh" );
-  fs::write( &secret_file, secret_content ).unwrap();
+  fs ::write( &secret_file, secret_content ).unwrap();
   
   let secrets = workspace.load_secrets_from_file( "-commented-test.sh" ).unwrap();
   
@@ -92,7 +92,7 @@ export REDIS_URL="redis://localhost"
   assert_eq!( secrets.len(), 3 );
   assert_eq!( secrets.get( "API_KEY" ).unwrap(), "active-key" );
   assert_eq!( secrets.get( "API_SECRET" ).unwrap(), "active-secret" );
-  assert_eq!( secrets.get( "REDIS_URL" ).unwrap(), "redis://localhost" );
+  assert_eq!( secrets.get( "REDIS_URL" ).unwrap(), "redis: //localhost" );
   
   // Should not have commented secrets
   assert!( !secrets.contains_key( "OLD_API_KEY" ) );
@@ -117,7 +117,7 @@ export QUOTES_IN_VALUE="He said 'Hello World!'"
 "#;
   
   let secret_file = workspace.secret_file( "-quotes-test.sh" );
-  fs::write( &secret_file, secret_content ).unwrap();
+  fs ::write( &secret_file, secret_content ).unwrap();
   
   let secrets = workspace.load_secrets_from_file( "-quotes-test.sh" ).unwrap();
   
@@ -139,18 +139,18 @@ fn test_backward_compatibility()
   // This is the original format that should continue to work
   let secret_content = r#"
 API_KEY="sk-1234567890abcdef"
-DATABASE_URL="postgresql://user:pass@localhost/db"
+DATABASE_URL="postgresql: //user: pass@localhost/db"
 DEBUG=true
 TOKEN='bearer-token-here'
 "#;
   
   let secret_file = workspace.secret_file( "-backward-compat.sh" );
-  fs::write( &secret_file, secret_content ).unwrap();
+  fs ::write( &secret_file, secret_content ).unwrap();
   
   let secrets = workspace.load_secrets_from_file( "-backward-compat.sh" ).unwrap();
   
   assert_eq!( secrets.get( "API_KEY" ).unwrap(), "sk-1234567890abcdef" );
-  assert_eq!( secrets.get( "DATABASE_URL" ).unwrap(), "postgresql://user:pass@localhost/db" );
+  assert_eq!( secrets.get( "DATABASE_URL" ).unwrap(), "postgresql: //user: pass@localhost/db" );
   assert_eq!( secrets.get( "DEBUG" ).unwrap(), "true" );
   assert_eq!( secrets.get( "TOKEN" ).unwrap(), "bearer-token-here" );
 }
@@ -179,7 +179,7 @@ DATABASE_URL=valid-url
 ";
   
   let secret_file = workspace.secret_file( "-malformed-test.sh" );
-  fs::write( &secret_file, secret_content ).unwrap();
+  fs ::write( &secret_file, secret_content ).unwrap();
   
   let secrets = workspace.load_secrets_from_file( "-malformed-test.sh" ).unwrap();
   
@@ -206,7 +206,7 @@ DATABASE_URL=standard-format-url
 "#;
   
   let secret_file = workspace.secret_file( "-integration-test.sh" );
-  fs::write( &secret_file, secret_content ).unwrap();
+  fs ::write( &secret_file, secret_content ).unwrap();
   
   // Test loading individual keys works with both formats
   let api_key = workspace.load_secret_key( "API_KEY", "-integration-test.sh" ).unwrap();
@@ -216,8 +216,8 @@ DATABASE_URL=standard-format-url
   assert_eq!( db_url, "standard-format-url" );
   
   // Test fallback to environment still works
-  std::env::set_var( "TEST_ENV_VAR", "from-environment" );
+  std ::env ::set_var( "TEST_ENV_VAR", "from-environment" );
   let env_var = workspace.load_secret_key( "TEST_ENV_VAR", "-integration-test.sh" ).unwrap();
   assert_eq!( env_var, "from-environment" );
-  std::env::remove_var( "TEST_ENV_VAR" );
+  std ::env ::remove_var( "TEST_ENV_VAR" );
 }

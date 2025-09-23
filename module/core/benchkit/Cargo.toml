@@ -26,6 +26,7 @@ all-features = false
 [features]
 default = [
   "enabled",
+
   "integration",
   "markdown_reports",
   "data_generators",
@@ -34,6 +35,7 @@ default = [
 
 full = [
   "enabled",
+
   "integration",
   "markdown_reports",
   "data_generators",

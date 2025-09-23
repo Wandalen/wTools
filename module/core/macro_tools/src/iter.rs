@@ -7,50 +7,54 @@ mod private {}
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Tailoted iterator.
 #[ allow( unused_imports ) ]
-pub mod own {
+pub mod own 
+{
 
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use orphan::*;
+  pub use orphan :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use iter_tools::own::*;
+  pub use iter_tools ::own :: *;
 }
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod orphan {
+pub mod orphan 
+{
 
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod exposed {
+pub mod exposed 
+{
 
-  use super::*;
-  // pub use super::super::iter;
+  use super :: *;
+  // pub use super ::super ::iter;
 
   #[ doc( inline ) ]
-  pub use prelude::*;
+  pub use prelude :: *;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use iter_tools::exposed::*;
+  pub use iter_tools ::exposed :: *;
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
-pub mod prelude {
-  use super::*;
+pub mod prelude 
+{
+  use super :: *;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use iter_tools::prelude::*;
+  pub use iter_tools ::prelude :: *;
 }

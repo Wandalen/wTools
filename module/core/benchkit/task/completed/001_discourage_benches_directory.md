@@ -47,7 +47,8 @@ The standard `benches/` directory follows Rust ecosystem conventions and provide
 ```rust
 // In benchkit core
 #[cfg(debug_assertions)]
-fn encourage_benches_directory() {
+fn encourage_benches_directory() 
+{
     if std::env::current_dir()
         .map(|p| p.ends_with("benches"))
         .unwrap_or(false) 
@@ -87,8 +88,10 @@ fn encourage_benches_directory() {
 ### Detection Logic
 ```rust
 // Detect and warn about benches/ usage
-impl BenchmarkSuite {
-    pub fn new(name: &str) -> Self {
+impl BenchmarkSuite 
+{
+    pub fn new(name: &str) -> Self 
+{
         #[cfg(debug_assertions)]
         Self::check_directory_recommendations();
         
@@ -96,7 +99,8 @@ impl BenchmarkSuite {
     }
     
     #[cfg(debug_assertions)]
-    fn check_directory_recommendations() {
+    fn check_directory_recommendations() 
+{
         if let Ok(current_dir) = std::env::current_dir() {
             if current_dir.file_name()
                 .and_then(|n| n.to_str())
@@ -108,7 +112,8 @@ impl BenchmarkSuite {
         }
     }
     
-    fn print_integration_guidance() {
+    fn print_integration_guidance() 
+{
         eprintln!("💡 benchkit guidance:");
         eprintln!("   Move ALL benchmark files to standard directories instead of benches/");
         eprintln!("   Use tests/ for benchmarks, examples/ for demos, src/bin/ for executables");
@@ -147,7 +152,8 @@ impl BenchmarkSuite {
 /// // ✅ In examples/ - ALL demonstration benchmarks
 /// use benchkit::prelude::*;
 /// 
-/// fn main() {
+/// fn main() 
+{
 ///     let suite = BenchmarkSuite::new("example_performance");
 ///     // ... benchmark code
 /// }
@@ -157,7 +163,8 @@ impl BenchmarkSuite {
 /// // ✅ In src/bin/ - ALL dedicated benchmark executables
 /// use benchkit::prelude::*;
 /// 
-/// fn main() {
+/// fn main() 
+{
 ///     // Dedicated benchmark binary
 /// }
 /// ```

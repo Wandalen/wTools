@@ -1,16 +1,16 @@
 #![allow(dead_code)]
-use super::*;
-use test_tools::a_id;
+use super :: *;
+use test_tools ::a_id;
 
 /// Layer X
 pub mod layer_x;
 
-// the_module::mod_interface!
+// the_module ::mod_interface!
 // {
 //   #![ debug ]
 //
 //   /// layer_a
-//   use super::layer_x as layer_a;
+//   use super ::layer_x as layer_a;
 // }
 
 include!("./manual_only.rs");

@@ -35,12 +35,14 @@ use_alloc = [
 
 default = [
   "enabled",
+
   "collection_constructors",
   "collection_into_constructors",
 ]
 
 full = [
   "enabled",
+
   "collection_constructors",
   "collection_into_constructors",
 ]

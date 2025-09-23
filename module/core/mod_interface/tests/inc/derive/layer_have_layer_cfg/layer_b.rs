@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use super::tools::*;
+use super ::tools :: *;
 
 /// Private namespace of the module.
 mod private
@@ -9,26 +9,26 @@ mod private
   /// `layer_b_own`
   pub fn layer_b_own() -> bool
   {
-    true
-  }
+  true
+ }
 
   /// `layer_b_orphan`
   pub fn layer_b_orphan() -> bool
   {
-    true
-  }
+  true
+ }
 
   /// `layer_b_exposed`
   pub fn layer_b_exposed() -> bool
   {
-    true
-  }
+  true
+ }
 
   /// `layer_b_prelude`
   pub fn layer_b_prelude() -> bool
   {
-    true
-  }
+  true
+ }
 
 }
 
@@ -41,7 +41,7 @@ pub struct SubStruct2
 
 //
 
-the_module::mod_interface!
+the_module ::mod_interface!
 {
 
   own use layer_b_own;

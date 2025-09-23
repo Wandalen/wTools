@@ -10,18 +10,20 @@
 #![allow(unused_imports)]
 #![allow(dead_code)]
 
-use test_tools::*;
-use core::marker::PhantomData;
+use test_tools :: *;
+use core ::marker ::PhantomData;
 
-// P1.1: Named struct with one field
+// P1.1 : Named struct with one field
 
-pub struct NamedStruct1 {
+pub struct NamedStruct1 
+{
   pub field1: i32,
 }
 
-// P1.2: Named struct with multiple fields
+// P1.2 : Named struct with multiple fields
 
-pub struct NamedStruct2 {
+pub struct NamedStruct2 
+{
   pub field1: i32,
   pub field2: bool,
 }

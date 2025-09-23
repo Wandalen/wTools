@@ -1,51 +1,55 @@
-use super::*;
+use super :: *;
 
-// qqq : for Bohdan : bad. don't import the_module::*
-// use the_module::*;
-use the_module::graph::toposort;
-use std::collections::HashMap;
-use petgraph::Graph;
-use willbe::graph::topological_sort_with_grouping;
+// qqq: for Bohdan: bad. don't import the_module :: *
+// use the_module :: *;
+use the_module ::graph ::toposort;
+use std ::collections ::HashMap;
+use petgraph ::Graph;
+use willbe ::graph ::topological_sort_with_grouping;
 
-struct IndexMap<T>(HashMap<T, usize>);
+struct IndexMap< T >(HashMap< T, usize >);
 
-impl<T> IndexMap<T>
+impl< T > IndexMap< T >
 where
-  T: core::hash::Hash + Eq, // fix clippy
+  T: core ::hash ::Hash + Eq, // fix clippy
 {
-  pub fn new(elements: Vec<T>) -> Self {
-    let index_map = elements
-      .into_iter()
-      .enumerate()
-      .map(|(index, value)| (value, index))
-      .collect();
-    Self(index_map)
-  }
+  pub fn new(elements: Vec< T >) -> Self
+  {
+  let index_map = elements
+   .into_iter()
+   .enumerate()
+   .map(|(index, value)| (value, index))
+   .collect();
+  Self(index_map)
+ }
 
-  pub fn position(&self, element: &T) -> usize {
-    self.0[element]
-  }
+  pub fn position(&self, element: &T) -> usize
+  {
+  self.0[element]
+ }
 }
 
-#[test]
-fn no_dependency() {
-  let mut graph = Graph::new();
+#[ test ]
+fn no_dependency() 
+{
+  let mut graph = Graph ::new();
 
   let _node1 = graph.add_node(&"A");
   let _node2 = graph.add_node(&"B");
 
   let sorted = toposort(graph).unwrap();
 
-  let index_map = IndexMap::new(sorted);
+  let index_map = IndexMap ::new(sorted);
   let node1_position = index_map.position(&"A");
   let node2_position = index_map.position(&"B");
 
   assert!(node1_position < node2_position);
 }
 
-#[test]
-fn a_depends_on_b() {
-  let mut graph = Graph::new();
+#[ test ]
+fn a_depends_on_b() 
+{
+  let mut graph = Graph ::new();
 
   let node1 = graph.add_node(&"A");
   let node2 = graph.add_node(&"B");
@@ -54,16 +58,17 @@ fn a_depends_on_b() {
 
   let sorted = toposort(graph).unwrap();
 
-  let index_map = IndexMap::new(sorted);
+  let index_map = IndexMap ::new(sorted);
   let node1_position = index_map.position(&"A");
   let node2_position = index_map.position(&"B");
 
   assert!(node1_position > node2_position);
 }
 
-#[test]
-fn multiple_dependencies() {
-  let mut graph = Graph::new();
+#[ test ]
+fn multiple_dependencies() 
+{
+  let mut graph = Graph ::new();
 
   let a = graph.add_node(&"A");
   let b = graph.add_node(&"B");
@@ -74,7 +79,7 @@ fn multiple_dependencies() {
 
   let sorted = toposort(graph).unwrap();
 
-  let index_map = IndexMap::new(sorted);
+  let index_map = IndexMap ::new(sorted);
   let a_position = index_map.position(&"A");
   let b_position = index_map.position(&"B");
   let c_position = index_map.position(&"C");
@@ -83,9 +88,10 @@ fn multiple_dependencies() {
   assert!(a_position > c_position);
 }
 
-#[test]
-fn transitive_dependencies() {
-  let mut graph = Graph::new();
+#[ test ]
+fn transitive_dependencies() 
+{
+  let mut graph = Graph ::new();
 
   let a = graph.add_node(&"A");
   let b = graph.add_node(&"B");
@@ -96,7 +102,7 @@ fn transitive_dependencies() {
 
   let sorted = toposort(graph).unwrap();
 
-  let index_map = IndexMap::new(sorted);
+  let index_map = IndexMap ::new(sorted);
   let a_position = index_map.position(&"A");
   let b_position = index_map.position(&"B");
   let c_position = index_map.position(&"C");
@@ -105,10 +111,11 @@ fn transitive_dependencies() {
   assert!(b_position > c_position);
 }
 
-#[test]
-#[should_panic(expected = "Cycle")]
-fn cycle() {
-  let mut graph = Graph::new();
+#[ test ]
+#[ should_panic(expected = "Cycle") ]
+fn cycle() 
+{
+  let mut graph = Graph ::new();
 
   let node1 = graph.add_node(&"A");
   let node2 = graph.add_node(&"B");
@@ -124,9 +131,10 @@ fn cycle() {
 // C -> A
 // output
 // [A], [B,C]
-#[test]
-fn simple_case() {
-  let mut graph = Graph::new();
+#[ test ]
+fn simple_case() 
+{
+  let mut graph = Graph ::new();
 
   let a_node = graph.add_node(&"A");
   let b_node = graph.add_node(&"B");
@@ -163,12 +171,13 @@ fn simple_case() {
 //     3 -> 5 [ label = "" ]
 //     3 -> 6 [ label = "" ]
 // }
-// visualization : https://viz-js.com/?dot=ZGlncmFwaCB7CiAgICAwIFsgbGFiZWwgPSAiMCIgXQogICAgMSBbIGxhYmVsID0gIjEiIF0KICAgIDIgWyBsYWJlbCA9ICIyIiBdCiAgICAzIFsgbGFiZWwgPSAiMyIgXQogICAgNCBbIGxhYmVsID0gIjQiIF0KICAgIDUgWyBsYWJlbCA9ICI1IiBdCiAgICA2IFsgbGFiZWwgPSAiNiIgXQogICAgNyBbIGxhYmVsID0gIjciIF0KICAgIDQgLT4gMCBbIGxhYmVsID0gIiIgXQogICAgNSAtPiAwIFsgbGFiZWwgPSAiIiBdCiAgICA2IC0-IDAgWyBsYWJlbCA9ICIiIF0KICAgIDEgLT4gMyBbIGxhYmVsID0gIiIgXQogICAgMiAtPiAzIFsgbGFiZWwgPSAiIiBdCiAgICA3IC0-IDYgWyBsYWJlbCA9ICIiIF0KICAgIDMgLT4gNCBbIGxhYmVsID0gIiIgXQogICAgMyAtPiA1IFsgbGFiZWwgPSAiIiBdCiAgICAzIC0-IDYgWyBsYWJlbCA9ICIiIF0KfQo~
+// visualization: https: //viz-js.com/?dot=ZGlncmFwaCB7CiAgICAwIFsgbGFiZWwgPSAiMCIgXQogICAgMSBbIGxhYmVsID0gIjEiIF0KICAgIDIgWyBsYWJlbCA9ICIyIiBdCiAgICAzIFsgbGFiZWwgPSAiMyIgXQogICAgNCBbIGxhYmVsID0gIjQiIF0KICAgIDUgWyBsYWJlbCA9ICI1IiBdCiAgICA2IFsgbGFiZWwgPSAiNiIgXQogICAgNyBbIGxhYmVsID0gIjciIF0KICAgIDQgLT4gMCBbIGxhYmVsID0gIiIgXQogICAgNSAtPiAwIFsgbGFiZWwgPSAiIiBdCiAgICA2IC0-IDAgWyBsYWJlbCA9ICIiIF0KICAgIDEgLT4gMyBbIGxhYmVsID0gIiIgXQogICAgMiAtPiAzIFsgbGFiZWwgPSAiIiBdCiAgICA3IC0-IDYgWyBsYWJlbCA9ICIiIF0KICAgIDMgLT4gNCBbIGxhYmVsID0gIiIgXQogICAgMyAtPiA1IFsgbGFiZWwgPSAiIiBdCiAgICAzIC0-IDYgWyBsYWJlbCA9ICIiIF0KfQo~
 // output
 // [0], [6,5,4], [3], [1,2,7]
-#[test]
-fn complicated_test() {
-  let mut graph = Graph::new();
+#[ test ]
+fn complicated_test() 
+{
+  let mut graph = Graph ::new();
 
   let n = graph.add_node(&"0");
   let n_1 = graph.add_node(&"1");

@@ -68,7 +68,8 @@ let protocol_match = optimize_match!(
 
 #### 1. Compile-Time Pattern Analysis
 ```rust
-enum SplitOptimization {
+enum SplitOptimization 
+{
   SingleCharDelimiter( String ),    // Highest optimization potential
   MultipleCharDelimiters,           // SIMD-friendly patterns  
   ComplexPattern,                   // State machine approach
@@ -108,7 +109,8 @@ Based on pattern analysis and algorithm selection:
 
 ### Pattern Analysis Architecture
 ```rust
-fn analyze_split_pattern( delimiters: &[ String ] ) -> Result< SplitOptimization > {
+fn analyze_split_pattern( delimiters: &[ String ] ) -> Result< SplitOptimization > 
+{
   if delimiters.len() == 1 && delimiters[0].len() == 1 {
     // Single character - use fastest path
     Ok( SplitOptimization::SingleCharDelimiter( delimiters[0].clone() ) )

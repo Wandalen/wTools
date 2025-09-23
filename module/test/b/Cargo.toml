@@ -8,5 +8,10 @@ Module publishing test
 """
 repository = "https://github.com/Wandalen/wTools/tree/alpha/module/test/b"
 
+[features]
+default = [ "enabled" ]
+full = [ "enabled" ]
+enabled = []
+
 [dependencies]
 test_experimental_c = { workspace = true }

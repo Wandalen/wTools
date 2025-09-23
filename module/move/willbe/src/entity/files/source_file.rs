@@ -1,34 +1,34 @@
-#![ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
+#![ allow( clippy ::std_instead_of_alloc, clippy ::std_instead_of_core ) ]
 
 
 
-use crate::*;
+use crate :: *;
 
-use entity::
+use entity ::
 {
   PathError,
   ManifestFile,
 };
-use core::
+use core ::
 {
   fmt,
-  ops::
+  ops ::
   {
-    Deref,
-    DerefMut,
-  },
+  Deref,
+  DerefMut,
+ },
 };
-use std::
+use std ::
 {
   fs,
-  path::{ Path, PathBuf },
-  borrow::Cow,
+  path :: { Path, PathBuf },
+  borrow ::Cow,
 };
-// use error::
+// use error ::
 // {
 //   Result,
 // };
-use pth::{ AbsolutePath, Utf8Path, Utf8PathBuf };
+use pth :: { AbsolutePath, Utf8Path, Utf8PathBuf };
 
 /// Path to a source file
 #[ derive( Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
@@ -42,68 +42,68 @@ impl SourceFile
   #[ must_use ]
   pub fn inner( self ) -> AbsolutePath
   {
-    self.0
-  }
+  self.0
+ }
 
 }
 
-impl fmt::Display for SourceFile
+impl fmt ::Display for SourceFile
 {
-  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
+  fn fmt( &self, f: &mut fmt ::Formatter< '_ > ) -> fmt ::Result
   {
-    write!( f, "{}", self.0.display() )
-  }
+  write!( f, "{}", self.0.display() )
+ }
 }
 
-impl fmt::Debug for SourceFile
+impl fmt ::Debug for SourceFile
 {
-  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
+  fn fmt( &self, f: &mut fmt ::Formatter< '_ > ) -> fmt ::Result
   {
-    write!( f, "source file :: {}", self.0.display() )
-  }
+  write!( f, "source file :: {}", self.0.display() )
+ }
 }
 
 impl From< ManifestFile > for SourceFile
 {
-  fn from( src : ManifestFile ) -> Self
+  fn from( src: ManifestFile ) -> Self
   {
-    Self ( src.inner().parent().unwrap() )
-  }
+  Self ( src.inner().parent().unwrap() )
+ }
 }
 
 impl From< SourceFile > for AbsolutePath
 {
-  fn from( src : SourceFile ) -> Self
+  fn from( src: SourceFile ) -> Self
   {
-    src.inner()
-  }
+  src.inner()
+ }
 }
 
 impl From< SourceFile > for PathBuf
 {
-  fn from( src : SourceFile ) -> Self
+  fn from( src: SourceFile ) -> Self
   {
-    src.inner().inner()
-  }
+  src.inner().inner()
+ }
 }
 
 impl< 'a > TryFrom< &'a SourceFile > for &'a str
 {
-  type Error = std::io::Error;
-  fn try_from( src : &'a SourceFile ) -> Result< &'a str, Self::Error >
+  type Error = std ::io ::Error;
+  fn try_from( src: &'a SourceFile ) -> Result< &'a str, Self ::Error >
   {
-    ( &src.0 ).try_into()
-  }
+  ( &src.0 ).try_into()
+ }
 }
 
 impl TryFrom< &SourceFile > for String
 {
-  type Error = std::io::Error;
-  fn try_from( src : &SourceFile ) -> Result< String, Self::Error >
+  type Error = std ::io ::Error;
+  fn try_from( src: &SourceFile ) -> Result< String, Self ::Error >
   {
-    let src2 : &str = src.try_into()?;
-    Result::Ok( src2.into() )
-  }
+  let src2: &str = src.try_into()?;
+  Result ::Ok( src2.into() )
+ }
 }
 
 impl TryFrom< &AbsolutePath > for SourceFile
@@ -111,10 +111,10 @@ impl TryFrom< &AbsolutePath > for SourceFile
   type Error = PathError;
 
   #[ inline( always ) ]
-  fn try_from( src : &AbsolutePath ) -> Result< Self, Self::Error >
+  fn try_from( src: &AbsolutePath ) -> Result< Self, Self ::Error >
   {
-    src.clone().try_into()
-  }
+  src.clone().try_into()
+ }
 }
 
 impl TryFrom< AbsolutePath > for SourceFile
@@ -122,10 +122,10 @@ impl TryFrom< AbsolutePath > for SourceFile
   type Error = PathError;
 
   #[ inline( always ) ]
-  fn try_from( src : AbsolutePath ) -> Result< Self, Self::Error >
+  fn try_from( src: AbsolutePath ) -> Result< Self, Self ::Error >
   {
-    Result::Ok( Self( src ) )
-  }
+  Result ::Ok( Self( src ) )
+ }
 }
 
 impl TryFrom< PathBuf > for SourceFile
@@ -133,10 +133,10 @@ impl TryFrom< PathBuf > for SourceFile
   type Error = PathError;
 
   #[ inline( always ) ]
-  fn try_from( src : PathBuf ) -> Result< Self, Self::Error >
+  fn try_from( src: PathBuf ) -> Result< Self, Self ::Error >
   {
-    Self::try_from( AbsolutePath::try_from( src )? )
-  }
+  Self ::try_from( AbsolutePath ::try_from( src )? )
+ }
 }
 
 impl TryFrom< &Path > for SourceFile
@@ -144,10 +144,10 @@ impl TryFrom< &Path > for SourceFile
   type Error = PathError;
 
   #[ inline( always ) ]
-  fn try_from( src : &Path ) -> Result< Self, Self::Error >
+  fn try_from( src: &Path ) -> Result< Self, Self ::Error >
   {
-    Self::try_from( AbsolutePath::try_from( src )? )
-  }
+  Self ::try_from( AbsolutePath ::try_from( src )? )
+ }
 }
 
 impl TryFrom< &str > for SourceFile
@@ -155,10 +155,10 @@ impl TryFrom< &str > for SourceFile
   type Error = PathError;
 
   #[ inline( always ) ]
-  fn try_from( src : &str ) -> Result< Self, Self::Error >
+  fn try_from( src: &str ) -> Result< Self, Self ::Error >
   {
-    Self::try_from( AbsolutePath::try_from( src )? )
-  }
+  Self ::try_from( AbsolutePath ::try_from( src )? )
+ }
 }
 
 impl TryFrom< Utf8PathBuf > for SourceFile
@@ -166,10 +166,10 @@ impl TryFrom< Utf8PathBuf > for SourceFile
   type Error = PathError;
 
   #[ inline( always ) ]
-  fn try_from( src : Utf8PathBuf ) -> Result< Self, Self::Error >
+  fn try_from( src: Utf8PathBuf ) -> Result< Self, Self ::Error >
   {
-    Self::try_from( AbsolutePath::try_from( src )? )
-  }
+  Self ::try_from( AbsolutePath ::try_from( src )? )
+ }
 }
 
 impl TryFrom< &Utf8PathBuf > for SourceFile
@@ -177,10 +177,10 @@ impl TryFrom< &Utf8PathBuf > for SourceFile
   type Error = PathError;
 
   #[ inline( always ) ]
-  fn try_from( src : &Utf8PathBuf ) -> Result< Self, Self::Error >
+  fn try_from( src: &Utf8PathBuf ) -> Result< Self, Self ::Error >
   {
-    Self::try_from( AbsolutePath::try_from( src )? )
-  }
+  Self ::try_from( AbsolutePath ::try_from( src )? )
+ }
 }
 
 impl TryFrom< &Utf8Path > for SourceFile
@@ -188,64 +188,64 @@ impl TryFrom< &Utf8Path > for SourceFile
   type Error = PathError;
 
   #[ inline( always ) ]
-  fn try_from( src : &Utf8Path ) -> Result< Self, Self::Error >
+  fn try_from( src: &Utf8Path ) -> Result< Self, Self ::Error >
   {
-    Self::try_from( AbsolutePath::try_from( src )? )
-  }
+  Self ::try_from( AbsolutePath ::try_from( src )? )
+ }
 }
 
 impl AsRef< Path > for SourceFile
 {
   fn as_ref( &self ) -> &Path
   {
-    self.0.as_ref()
-  }
+  self.0.as_ref()
+ }
 }
 
 impl AsMut< Path > for SourceFile
 {
   fn as_mut( &mut self ) -> &mut Path
   {
-    self.0.as_mut()
-  }
+  self.0.as_mut()
+ }
 }
 
 impl Deref for SourceFile
 {
   type Target = AbsolutePath;
-  fn deref( &self ) -> &Self::Target
+  fn deref( &self ) -> &Self ::Target
   {
-    &self.0
-  }
+  &self.0
+ }
 }
 
 impl DerefMut for SourceFile
 {
-  fn deref_mut( &mut self ) -> &mut Self::Target
+  fn deref_mut( &mut self ) -> &mut Self ::Target
   {
-    &mut self.0
-  }
+  &mut self.0
+ }
 }
 
 // =
 
 impl CodeItems for SourceFile
 {
-  fn items( &self ) -> impl IterTrait< '_, syn::Item >
+  fn items( &self ) -> impl IterTrait< '_, syn ::Item >
   {
-    // xxx : use closures instead of expect
-    let content = fs::read_to_string( self.as_ref() ).unwrap_or_else( | _ | panic!( "Failed to parse file {self}" ) );
-    let parsed : syn::File = syn::parse_file( &content ).unwrap_or_else( | _ |  panic!( "Failed to parse file {self}" ) );
-    parsed.items.into_iter()
-  }
+  // xxx: use closures instead of expect
+  let content = fs ::read_to_string( self.as_ref() ).unwrap_or_else( | _ | panic!( "Failed to parse file {self}" ) );
+  let parsed: syn ::File = syn ::parse_file( &content ).unwrap_or_else( | _ |  panic!( "Failed to parse file {self}" ) );
+  parsed.items.into_iter()
+ }
 }
 
 impl AsCode for SourceFile
 {
-  fn as_code( &self ) -> std::io::Result< Cow< '_, str > >
+  fn as_code( &self ) -> std ::io ::Result< Cow< '_, str > >
   {
-    std::io::Result::Ok( Cow::Owned( std::fs::read_to_string( self.as_ref() )? ) )
-  }
+  std ::io ::Result ::Ok( Cow ::Owned( std ::fs ::read_to_string( self.as_ref() )? ) )
+ }
 }
 
 // =

@@ -2,210 +2,210 @@
 mod private
 {
 
-  use crate::*;
+  use crate :: *;
 
-  use collection_tools::collection::HashSet;
-  use std::fs;
-  use colored::Colorize;
-  use wca::VerifiedCommand;
-  // use error::Result;
-  // qqq : group dependencies
-  use pth::AbsolutePath;
-  use std::path::PathBuf;
-  use action::test::TestsCommandOptions;
-  use former::Former;
-  use crate::entity::channel::Channel;
-  use error::untyped::bail;
-  use crate::entity::optimization::Optimization;
+  use collection_tools ::collection ::HashSet;
+  use std ::fs;
+  use colored ::Colorize;
+  use wca ::VerifiedCommand;
+  // use error ::Result;
+  // qqq: group dependencies
+  use pth ::AbsolutePath;
+  use std ::path ::PathBuf;
+  use action ::test ::TestsCommandOptions;
+  use former ::Former;
+  use crate ::entity ::channel ::Channel;
+  use error ::untyped ::bail;
+  use crate ::entity ::optimization ::Optimization;
   // Explicit import for Result and its variants for pattern matching
-  use core::result::Result::{Ok, Err};
+  use core ::result ::Result :: { Ok, Err };
 
   #[ derive( Former, Debug ) ]
-  #[ allow( clippy::struct_excessive_bools ) ]
+  #[ allow( clippy ::struct_excessive_bools ) ]
   struct TestsProperties
   {
-    #[ former( default = true ) ]
-    dry : bool,
-    #[ former( default = true ) ]
-    with_stable : bool,
-    #[ former( default = false ) ]
-    with_nightly : bool,
-    #[ former( default = 0u32 ) ]
-    concurrent : u32,
-    #[ former( default = 1u32 ) ]
-    power : u32,
-    include : Vec< String >,
-    #[ former( default  = [ "full".to_string(), "default".to_string() ] ) ]
-    exclude : Vec< String >,
-    #[ former( default = true ) ]
-    temp : bool,
-    enabled_features : Vec< String >,
-    #[ former( default = true ) ]
-    with_all_features : bool,
-    #[ former( default = true ) ]
-    with_none_features : bool,
-    #[ former( default = true ) ]
-    with_debug : bool,
-    #[ former( default = false ) ]
-    with_release : bool,
-    #[ cfg( feature = "progress_bar" ) ]
-    #[ former( default = true ) ]
-    with_progress : bool,
-  }
+  #[ former( default = true ) ]
+  dry: bool,
+  #[ former( default = true ) ]
+  with_stable: bool,
+  #[ former( default = false ) ]
+  with_nightly: bool,
+  #[ former( default = 0u32 ) ]
+  concurrent: u32,
+  #[ former( default = 1u32 ) ]
+  power: u32,
+  include: Vec< String >,
+  #[ former( default  = [ "full".to_string(), "default".to_string() ] ) ]
+  exclude: Vec< String >,
+  #[ former( default = true ) ]
+  temp: bool,
+  enabled_features: Vec< String >,
+  #[ former( default = true ) ]
+  with_all_features: bool,
+  #[ former( default = true ) ]
+  with_none_features: bool,
+  #[ former( default = true ) ]
+  with_debug: bool,
+  #[ former( default = false ) ]
+  with_release: bool,
+  #[ cfg( feature = "progress_bar" ) ]
+  #[ former( default = true ) ]
+  with_progress: bool,
+ }
 
   /// run tests in specified crate
   /// # Errors
   /// qqq: doc
-  // qqq : don't use 1-prameter Result
-  pub fn test( o : VerifiedCommand ) -> error::untyped::Result< () > // qqq : use typed error
+  // qqq: don't use 1-prameter Result
+  pub fn test( o: VerifiedCommand ) -> error ::untyped ::Result< () > // qqq: use typed error
   {
-    let args_line = format!
-    (
-      "{}",
-      o
-      .args
-      .get_owned( 0 )
-      .unwrap_or( std::path::PathBuf::from( "" ) )
-      .display()
-    );
-    let prop_line = o
-    .props
-    .iter()
-    .map( | p | format!( "{}:{}", p.0, p.1 ) )
-    .collect::< Vec< _ > >().join(" ");
+  let args_line = format!
+  (
+   "{}",
+   o
+   .args
+   .get_owned( 0 )
+   .unwrap_or( std ::path ::PathBuf ::from( "" ) )
+   .display()
+ );
+  let prop_line = o
+  .props
+  .iter()
+  .map( | p | format!( "{} : {}", p.0, p.1 ) )
+  .collect :: < Vec< _ > >().join(" ");
 
-    let path : PathBuf = o.args.get_owned( 0 ).unwrap_or_else( || "./".into() );
-    // qqq : dont use canonicalizefunction. path does not have exist
-    let path = AbsolutePath::try_from( fs::canonicalize( path )? )?;
-    let TestsProperties
-    {
-      dry,
-      with_stable,
-      with_nightly,
-      concurrent,
-      power,
-      include,
-      exclude,
-      temp,
-      enabled_features,
-      with_all_features,
-      with_none_features,
-      with_debug,
-      with_release,
-      #[ cfg( feature = "progress_bar" ) ]
-      with_progress
-    } = o.props.try_into()?;
-    
-    // Default value when progress_bar feature is disabled
-    #[ cfg( not( feature = "progress_bar" ) ) ]
-    #[ allow( unused_variables ) ]
-    let with_progress = false;
+  let path: PathBuf = o.args.get_owned( 0 ).unwrap_or_else( || "./".into() );
+  // qqq: dont use canonicalizefunction. path does not have exist
+  let path = AbsolutePath ::try_from( fs ::canonicalize( path )? )?;
+  let TestsProperties
+  {
+   dry,
+   with_stable,
+   with_nightly,
+   concurrent,
+   power,
+   include,
+   exclude,
+   temp,
+   enabled_features,
+   with_all_features,
+   with_none_features,
+   with_debug,
+   with_release,
+   #[ cfg( feature = "progress_bar" ) ]
+   with_progress
+ } = o.props.try_into()?;
+  
+  // Default value when progress_bar feature is disabled
+  #[ cfg( not( feature = "progress_bar" ) ) ]
+  #[ allow( unused_variables ) ]
+  let with_progress = false;
 
-    let mut channels = HashSet::new();
-    if with_stable { channels.insert( Channel::Stable ); }
-    if with_nightly { channels.insert( Channel::Nightly ); }
+  let mut channels = HashSet ::new();
+  if with_stable { channels.insert( Channel ::Stable ); }
+  if with_nightly { channels.insert( Channel ::Nightly ); }
 
-    let mut optimizations = HashSet::new();
-    if with_release { optimizations.insert( Optimization::Release ); }
-    if with_debug { optimizations.insert( Optimization::Debug ); }
+  let mut optimizations = HashSet ::new();
+  if with_release { optimizations.insert( Optimization ::Release ); }
+  if with_debug { optimizations.insert( Optimization ::Debug ); }
 
-    if optimizations.is_empty()
-    {
-      bail!( "Cannot run tests if with_debug and with_release are both false. \
+  if optimizations.is_empty()
+  {
+   bail!( "Cannot run tests if with_debug and with_release are both false. \
 Set at least one of them to true." );
-    }
+ }
 
 
-    let args = TestsCommandOptions::former()
-    .dir( path )
-    .concurrent( concurrent )
-    .channels( channels )
-    .power( power )
-    .exclude_features( exclude )
-    .include_features( include )
-    .temp( temp )
-    .enabled_features( enabled_features )
-    .with_all_features( with_all_features )
-    .with_none_features( with_none_features )
-    .optimizations( optimizations );
-    
-    #[ cfg( feature = "progress_bar" ) ]
-    let args = args.with_progress( with_progress );
-    
-    let args = args.form();
+  let args = TestsCommandOptions ::former()
+  .dir( path )
+  .concurrent( concurrent )
+  .channels( channels )
+  .power( power )
+  .exclude_features( exclude )
+  .include_features( include )
+  .temp( temp )
+  .enabled_features( enabled_features )
+  .with_all_features( with_all_features )
+  .with_none_features( with_none_features )
+  .optimizations( optimizations );
+  
+  #[ cfg( feature = "progress_bar" ) ]
+  let args = args.with_progress( with_progress );
+  
+  let args = args.form();
 
-    match action::test( args, dry )
-    {
-
-      Ok( report ) =>
-      {
-        if dry
-        {
-          let args = if args_line.is_empty() { String::new() } else { format!(" {args_line}" ) };
-          let prop = if prop_line.is_empty() { String::new() } else { format!(" {prop_line}" ) };
-          let line = format!( "will .publish{args}{prop} dry:0" );
-          println!( "To apply plan, call the command `{}`", line.blue() );
-        }
-        else
-        {
-          println!( "{report} ");
-        }
-
-        Ok( () )
-      }
-      Err( ( report, e ) ) =>
-      {
-        eprintln!( "{report}" );
-        Err( e.context( "package test command" ) )
-      }
-    }
-  }
-
-  impl TryFrom< wca::executor::Props > for TestsProperties
+  match action ::test( args, dry )
   {
-    type Error = error::untyped::Error;
-    fn try_from( value : wca::executor::Props ) -> Result< Self, Self::Error >
-    {
-      let mut this = Self::former();
 
-      this = if let Some( v ) = value
-      .get_owned( "dry" ) { this.dry::< bool >( v ) } else { this };
-      this = if let Some( v ) = value
-      .get_owned( "temp" ) { this.temp::< bool >( v ) } else { this };
-      this = if let Some( v ) = value
-      .get_owned( "with_stable" ) { this.with_stable::< bool >( v ) } else { this };
-      this = if let Some( v ) = value
-      .get_owned( "with_nightly" ) { this.with_nightly::< bool >( v ) } else { this };
-      this = if let Some( v ) = value
-      .get_owned( "concurrent" ) { this.concurrent::< u32 >( v ) } else { this };
-      this = if let Some( v ) = value
-      .get_owned( "power" ) { this.power::< u32 >( v ) } else { this };
-      this = if let Some( v ) = value
-      .get_owned( "include" ) { this.include::< Vec< String > >( v ) } else { this };
-      this = if let Some( v ) = value
-      .get_owned( "exclude" ) { this.exclude::< Vec< String > >( v ) } else { this };
-      this = if let Some( v ) = value
-      .get_owned( "with_debug" ) { this.with_debug::< bool >( v ) } else { this };
-      this = if let Some( v ) = value
-      .get_owned( "with_release" ) { this.with_release::< bool >( v ) } else { this };
-      this = if let Some( v ) = value
-      .get_owned( "with_all_features" ) { this.with_all_features::< bool >( v ) } else { this };
-      this = if let Some( v ) = value
-      .get_owned( "with_none_features" ) { this.with_none_features::< bool >( v ) } else { this };
-      this = if let Some( v ) = value
-      .get_owned( "always" ) { this.enabled_features::< Vec< String > >( v ) } else { this };
-      #[ cfg( feature = "progress_bar" ) ]
-      {
-        this = if let Some( v ) = value
-        .get_owned( "with_progress" ) { this.with_progress::< bool >( v ) } else { this };
-      }
+   Ok( report ) =>
+   {
+  if dry
+  {
+   let args = if args_line.is_empty() { String ::new() } else { format!(" {args_line}" ) };
+   let prop = if prop_line.is_empty() { String ::new() } else { format!(" {prop_line}" ) };
+   let line = format!( "will .publish{args}{prop} dry: 0" );
+   println!( "To apply plan, call the command `{}`", line.blue() );
+ }
+  else
+  {
+   println!( "{report} ");
+ }
 
-      Ok( this.form() )
-    }
-  }
+  Ok( () )
+ }
+   Err( ( report, e ) ) =>
+   {
+  eprintln!( "{report}" );
+  Err( e.context( "package test command" ) )
+ }
+ }
+ }
+
+  impl TryFrom< wca ::executor ::Props > for TestsProperties
+  {
+  type Error = error ::untyped ::Error;
+  fn try_from( value: wca ::executor ::Props ) -> Result< Self, Self ::Error >
+  {
+   let mut this = Self ::former();
+
+   this = if let Some( v ) = value
+   .get_owned( "dry" ) { this.dry :: < bool >( v ) } else { this };
+   this = if let Some( v ) = value
+   .get_owned( "temp" ) { this.temp :: < bool >( v ) } else { this };
+   this = if let Some( v ) = value
+   .get_owned( "with_stable" ) { this.with_stable :: < bool >( v ) } else { this };
+   this = if let Some( v ) = value
+   .get_owned( "with_nightly" ) { this.with_nightly :: < bool >( v ) } else { this };
+   this = if let Some( v ) = value
+   .get_owned( "concurrent" ) { this.concurrent :: < u32 >( v ) } else { this };
+   this = if let Some( v ) = value
+   .get_owned( "power" ) { this.power :: < u32 >( v ) } else { this };
+   this = if let Some( v ) = value
+   .get_owned( "include" ) { this.include :: < Vec< String > >( v ) } else { this };
+   this = if let Some( v ) = value
+   .get_owned( "exclude" ) { this.exclude :: < Vec< String > >( v ) } else { this };
+   this = if let Some( v ) = value
+   .get_owned( "with_debug" ) { this.with_debug :: < bool >( v ) } else { this };
+   this = if let Some( v ) = value
+   .get_owned( "with_release" ) { this.with_release :: < bool >( v ) } else { this };
+   this = if let Some( v ) = value
+   .get_owned( "with_all_features" ) { this.with_all_features :: < bool >( v ) } else { this };
+   this = if let Some( v ) = value
+   .get_owned( "with_none_features" ) { this.with_none_features :: < bool >( v ) } else { this };
+   this = if let Some( v ) = value
+   .get_owned( "always" ) { this.enabled_features :: < Vec< String > >( v ) } else { this };
+   #[ cfg( feature = "progress_bar" ) ]
+   {
+  this = if let Some( v ) = value
+  .get_owned( "with_progress" ) { this.with_progress :: < bool >( v ) } else { this };
+ }
+
+   Ok( this.form() )
+ }
+ }
 }
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   /// run tests in specified crate
   exposed use test;

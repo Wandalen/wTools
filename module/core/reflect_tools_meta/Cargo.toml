@@ -34,9 +34,7 @@ default = [
   "reflect_derive",
 ]
 
-full = [
-  "default",
-]
+full = [ "enabled" ]
 enabled = []
 reflect_derive = []
 

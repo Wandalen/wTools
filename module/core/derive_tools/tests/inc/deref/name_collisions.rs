@@ -1,8 +1,8 @@
 #![allow(non_snake_case)]
 #![allow(unused_imports)]
 
-use ::core::ops::Deref;
-use derive_tools::Deref;
+use ::core ::ops ::Deref;
+use derive_tools ::Deref;
 
 pub mod core {}
 pub mod std {}
@@ -14,7 +14,8 @@ pub mod FromBin {}
 
 #[ allow( dead_code ) ]
 #[ derive( Deref ) ]
-struct NameCollisions {
+struct NameCollisions 
+{
   #[ deref ]
   a: i32,
   b: String,

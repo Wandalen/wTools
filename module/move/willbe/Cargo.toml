@@ -32,7 +32,8 @@ default = [
   "progress_bar",
 ]
 full = [
-  "default"
+  "enabled",
+  "progress_bar",
 ]
 enabled = [
   "crates_tools/enabled",

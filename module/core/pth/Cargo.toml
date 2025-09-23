@@ -30,7 +30,7 @@ default = [
   "path_utf8",
 ]
 full = [
-  "default",
+  "enabled",
   "derive_serde",
   "path_utf8",
 ]

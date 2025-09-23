@@ -1,16 +1,17 @@
-use super::*;
+use super :: *;
 
 #[ test ]
-#[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
-fn reexport() {
-  let vec1: the_module::Vec< i32 > = std::vec![ 1, 2 ];
+#[ cfg(any(feature = "use_alloc", not(feature = "no_std"))) ]
+fn reexport() 
+{
+  let vec1: the_module ::Vec< i32 > = std ::vec![ 1, 2 ];
   let got = *vec1.first().unwrap();
   assert_eq!(got, 1);
   let got = *vec1.last().unwrap();
   assert_eq!(got, 2);
 
-  use std::vec::Vec as DynList;
-  let vec2: DynList<i32> = DynList::from([ 1, 2 ]);
+  use std ::vec ::Vec as DynList;
+  let vec2: DynList< i32 > = DynList ::from([ 1, 2 ]);
   let got = *vec2.first().unwrap();
   assert_eq!(got, 1);
   let got = *vec2.last().unwrap();
@@ -21,94 +22,104 @@ fn reexport() {
 
 #[ cfg( feature = "collection_constructors" ) ]
 #[ test ]
-fn constructor() {
+fn constructor() 
+{
   // test.case( "empty" );
-  let got: the_module::Vec< i32 > = std::vec! {};
-  let exp = the_module::Vec::<i32>::new();
+  let got: the_module ::Vec< i32 > = std ::vec! {};
+  let exp = the_module ::Vec :: < i32 > ::new();
   assert_eq!(got, exp);
 
   // test.case( "multiple entry" );
-  let got = std::vec! { 3, 13 };
-  let exp = std::vec![ 3, 13 ];
+  let got = std ::vec! { 3, 13 };
+  let exp = std ::vec![ 3, 13 ];
   assert_eq!(got, exp);
 
-  let _got = std::vec!("b");
-  let _got = the_module::dlist!("b");
-  let _got = the_module::exposed::dlist!("b");
+  let _got = std ::vec!("b");
+  let _got = the_module ::dlist!("b");
+  let _got = the_module ::exposed ::dlist!("b");
 }
 
 #[ cfg( feature = "collection_into_constructors" ) ]
 #[ test ]
-fn into_constructor() {
+fn into_constructor() 
+{
   // test.case( "empty" );
-  let got: the_module::Vec< i32 > = the_module::into_vec! {};
-  let exp = the_module::Vec::<i32>::new();
+  let got: the_module ::Vec< i32 > = the_module ::into_vec! {};
+  let exp = the_module ::Vec :: < i32 > ::new();
   assert_eq!(got, exp);
 
   // test.case( "multiple entry" );
-  let got: the_module::Vec< i32 > = the_module::into_vec! { 3, 13 };
-  let exp = std::vec![ 3, 13 ];
+  let got: the_module ::Vec< i32 > = the_module ::into_vec! { 3, 13 };
+  let exp = std ::vec![ 3, 13 ];
   assert_eq!(got, exp);
 
-  let _got: Vec< &str > = the_module::into_vec!("b");
-  let _got: Vec< &str > = the_module::exposed::into_vec!("b");
-  let _got: Vec< &str > = the_module::into_dlist!("b");
-  let _got: Vec< &str > = the_module::exposed::into_dlist!("b");
+  let _got: Vec< &str > = the_module ::into_vec!("b");
+  let _got: Vec< &str > = the_module ::exposed ::into_vec!("b");
+  let _got: Vec< &str > = the_module ::into_dlist!("b");
+  let _got: Vec< &str > = the_module ::exposed ::into_dlist!("b");
 }
 
-// qqq : implement similar test for all containers -- done
+// qqq: implement similar test for all containers -- done
 #[ test ]
-fn iters() {
-  struct MyContainer {
-    entries: Vec< i32 >,
-  }
+fn iters() 
+{
+  struct MyContainer 
+  {
+  entries: Vec< i32 >,
+ }
 
-  impl IntoIterator for MyContainer {
-    type Item = i32;
-    type IntoIter = the_module::vector::IntoIter<i32>;
-    // qqq : should work -- works
+  impl IntoIterator for MyContainer 
+  {
+  type Item = i32;
+  type IntoIter = the_module ::vector ::IntoIter< i32 >;
+  // qqq: should work -- works
 
-    fn into_iter(self) -> Self::IntoIter {
-      self.entries.into_iter()
-    }
-  }
+  fn into_iter(self) -> Self ::IntoIter 
+  {
+   self.entries.into_iter()
+ }
+ }
 
-  impl<'a> IntoIterator for &'a MyContainer {
-    type Item = &'a i32;
-    type IntoIter = the_module::vector::Iter<'a, i32>;
+  impl< 'a > IntoIterator for &'a MyContainer 
+{
+  type Item = &'a i32;
+  type IntoIter = the_module ::vector ::Iter< 'a, i32 >;
 
-    fn into_iter(self) -> Self::IntoIter {
-      self.entries.iter()
-    }
-  }
+  fn into_iter(self) -> Self ::IntoIter 
+  {
+   self.entries.iter()
+ }
+ }
 
-  impl<'a> IntoIterator for &'a mut MyContainer {
-    type Item = &'a mut i32;
-    type IntoIter = the_module::vector::IterMut<'a, i32>;
+  impl< 'a > IntoIterator for &'a mut MyContainer 
+{
+  type Item = &'a mut i32;
+  type IntoIter = the_module ::vector ::IterMut< 'a, i32 >;
 
-    fn into_iter(self) -> Self::IntoIter {
-      self.entries.iter_mut()
-    }
-  }
+  fn into_iter(self) -> Self ::IntoIter 
+  {
+   self.entries.iter_mut()
+ }
+ }
 
   let instance = MyContainer {
-    entries: the_module::Vec::from([1, 2, 3]),
-  };
+  entries: the_module ::Vec ::from([1, 2, 3]),
+ };
   let got: Vec< _ > = instance.into_iter().collect();
-  let exp = the_module::Vec::from([1, 2, 3]);
+  let exp = the_module ::Vec ::from([1, 2, 3]);
   assert_eq!(got, exp);
 
   let instance = MyContainer {
-    entries: the_module::Vec::from([1, 2, 3]),
-  };
+  entries: the_module ::Vec ::from([1, 2, 3]),
+ };
   let got: Vec< _ > = (&instance).into_iter().copied().collect();
-  let exp = the_module::Vec::from([1, 2, 3]);
+  let exp = the_module ::Vec ::from([1, 2, 3]);
   assert_eq!(got, exp);
 
   let mut instance = MyContainer {
-    entries: the_module::Vec::from([1, 2, 3]),
-  };
+  entries: the_module ::Vec ::from([1, 2, 3]),
+ };
   (&mut instance).into_iter().for_each(|v| *v *= 2);
-  let exp = the_module::Vec::from([2, 4, 6]);
+  let exp = the_module ::Vec ::from([2, 4, 6]);
   assert_eq!(instance.entries, exp);
 }

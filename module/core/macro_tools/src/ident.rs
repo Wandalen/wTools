@@ -3,12 +3,13 @@
 //!
 
 /// Define a private namespace for all its items.
-mod private {
+mod private 
+{
 
-  use crate::*; // Use crate's prelude/exposed items
-  use convert_case::Casing;
-  use proc_macro2::Ident;
-  // use syn::spanned::Spanned; // Needed for span
+  use crate :: *; // Use crate's prelude/exposed items
+  use convert_case ::Casing;
+  use proc_macro2 ::Ident;
+  // use syn ::spanned ::Spanned; // Needed for span
 
   /// Ensures keyword safety by applying raw identifier escaping when needed to prevent compilation errors.
   ///
@@ -17,36 +18,38 @@ mod private {
   ///
   /// # Example
   /// ```rust
-  /// use macro_tools::{ syn, format_ident, ident };
+  /// use macro_tools :: { syn, format_ident, ident };
   ///
   /// let ident_normal = format_ident!( "my_var" );
   /// let ident_keyword = format_ident!( "fn" );
   ///
-  /// let got_normal = ident::ident_maybe_raw( &ident_normal );
-  /// let got_keyword = ident::ident_maybe_raw( &ident_keyword );
+  /// let got_normal = ident ::ident_maybe_raw( &ident_normal );
+  /// let got_keyword = ident ::ident_maybe_raw( &ident_keyword );
   ///
   /// assert_eq!( got_normal.to_string(), "my_var" );
   /// assert_eq!( got_keyword.to_string(), "r#fn" );
   /// ```
   #[ must_use ]
-  pub fn ident_maybe_raw(ident: &syn::Ident) -> Ident {
-    let name = ident.to_string();
-    if kw::is(&name) {
-      // Use r# prefix if the name is a keyword
-      format_ident!("r#{}", name, span = ident.span())
-    } else {
-      // Otherwise, use the name directly (cloned)
-      ident.clone()
-    }
-  }
+  pub fn ident_maybe_raw(ident: &syn ::Ident) -> Ident
+  {
+  let name = ident.to_string();
+  if kw ::is(&name)
+  {
+   // Use r# prefix if the name is a keyword
+   format_ident!("r#{}", name, span = ident.span())
+ } else {
+   // Otherwise, use the name directly (cloned)
+   ident.clone()
+ }
+}
 
   /// Transforms identifier casing while preserving keyword safety to support code generation scenarios
   /// that require consistent naming conventions.
   ///
   /// # Arguments
   ///
-  /// * `original` - The original `syn::Ident` to convert.
-  /// * `case` - The target `convert_case::Case` to convert the identifier to.
+  /// * `original` - The original `syn ::Ident` to convert.
+  /// * `case` - The target `convert_case ::Case` to convert the identifier to.
   ///
   /// # Returns
   ///
@@ -55,81 +58,87 @@ mod private {
   /// # Examples
   ///
   /// ```rust
-  /// use macro_tools::{ syn, format_ident };
-  /// use convert_case::Case;
+  /// use macro_tools :: { syn, format_ident };
+  /// use convert_case ::Case;
   ///
   /// let ident_normal = format_ident!( "my_variable" );
   /// let ident_keyword = format_ident!( "r#fn" );
   ///
   /// // Convert to PascalCase
-  /// let got_pascal = macro_tools::ident::cased_ident_from_ident( &ident_normal, Case::Pascal );
+  /// let got_pascal = macro_tools ::ident ::cased_ident_from_ident( &ident_normal, Case ::Pascal );
   /// assert_eq!( got_pascal.to_string(), "MyVariable" );
   ///
   /// // Convert a raw identifier to SnakeCase
-  /// let got_snake_raw = macro_tools::ident::cased_ident_from_ident( &ident_keyword, Case::Snake );
+  /// let got_snake_raw = macro_tools ::ident ::cased_ident_from_ident( &ident_keyword, Case ::Snake );
   /// assert_eq!( got_snake_raw.to_string(), "r#fn" );
   ///
   /// // Convert a normal identifier that becomes a keyword in the new case
   /// let ident_struct = format_ident!( "struct" );
-  /// let got_pascal_keyword = macro_tools::ident::cased_ident_from_ident( &ident_struct, Case::Pascal );
+  /// let got_pascal_keyword = macro_tools ::ident ::cased_ident_from_ident( &ident_struct, Case ::Pascal );
   /// assert_eq!( got_pascal_keyword.to_string(), "Struct" ); // qqq: "Struct" is not a keyword, so `r#` is not added.
   /// ```
   #[ must_use ]
-  pub fn cased_ident_from_ident(original: &syn::Ident, case: convert_case::Case) -> syn::Ident {
-    let original_str = original.to_string();
-    let had_raw_prefix = original_str.starts_with("r#");
-    let core_str = if had_raw_prefix { &original_str[2..] } else { &original_str };
+  pub fn cased_ident_from_ident(original: &syn ::Ident, case: convert_case ::Case) -> syn ::Ident
+  {
+  let original_str = original.to_string();
+  let had_raw_prefix = original_str.starts_with("r#");
+  let core_str = if had_raw_prefix { &original_str[2..] } else { &original_str };
 
-    let cased_str = core_str.to_case(case);
+  let cased_str = core_str.to_case(case);
 
-    if kw::is(&cased_str) {
-      syn::Ident::new_raw(&cased_str, original.span())
-    } else {
-      syn::Ident::new(&cased_str, original.span())
-    }
-  }
+  if kw ::is(&cased_str)
+  {
+   syn ::Ident ::new_raw(&cased_str, original.span())
+ } else {
+   syn ::Ident ::new(&cased_str, original.span())
+ }
+}
 }
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod own {
+pub mod own 
+{
 
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use orphan::*;
+  pub use orphan :: *;
   #[ doc( inline ) ]
-  pub use private::ident_maybe_raw;
+  pub use private ::ident_maybe_raw;
   #[ doc( inline ) ]
-  pub use private::cased_ident_from_ident;
+  pub use private ::cased_ident_from_ident;
 }
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod orphan {
+pub mod orphan 
+{
 
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod exposed {
+pub mod exposed 
+{
 
-  use super::*;
-  pub use super::super::ident; // Use the new module name
+  use super :: *;
+  pub use super ::super ::ident; // Use the new module name
 
   #[ doc( inline ) ]
-  pub use prelude::*;
+  pub use prelude :: *;
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
-pub mod prelude {
+pub mod prelude 
+{
 
-  use super::*;
+  use super :: *;
 }

@@ -30,6 +30,7 @@ proc-macro = true
 [features]
 default = [
   "enabled",
+
   "derive_deref_mut",
   "derive_deref",
   "derive_from",
@@ -45,6 +46,7 @@ default = [
 ]
 full = [
   "enabled",
+
   "derive_deref_mut",
   "derive_deref",
   "derive_from",

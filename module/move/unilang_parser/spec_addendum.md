@@ -25,7 +25,8 @@ As you build the system, please use this document to log your key implementation
 
 -   **`CommandRegistry` Struct:**
     ```rust
-    pub struct CommandRegistry {
+    pub struct CommandRegistry 
+{
         static_commands: phf::Map<&'static str, CommandDefinition>,
         static_namespaces: phf::Map<&'static str, NamespaceDefinition>,
         dynamic_commands: HashMap<String, CommandDefinition>,

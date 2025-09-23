@@ -1,6 +1,6 @@
-use core::marker::PhantomData;
+use core ::marker ::PhantomData;
 
 #[ allow( dead_code ) ]
-struct StructTupleEmpty<T>(PhantomData<T>);
+struct StructTupleEmpty< T >(PhantomData< T >);
 
 include!("./only_test/struct_tuple_empty.rs");

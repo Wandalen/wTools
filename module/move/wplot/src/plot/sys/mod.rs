@@ -1,4 +1,4 @@
-// ::meta_tools::mod_interface!
+// ::meta_tools ::mod_interface!
 // {
 
 //   /// Main aggregating object.

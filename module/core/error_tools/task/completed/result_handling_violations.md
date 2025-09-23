@@ -30,12 +30,14 @@ In `/home/user1/pro/lib/wTools/module/core/collection_tools/tests/smoke_test.rs`
 
 ```rust
 #[ test ]
-fn local_smoke_test() {
+fn local_smoke_test() 
+{
   ::test_tools::test::smoke_test::smoke_test_for_local_run(); // ❌ Unused Result
 }
 
 #[ test ]
-fn published_smoke_test() {
+fn published_smoke_test() 
+{
   ::test_tools::test::smoke_test::smoke_test_for_published_run(); // ❌ Unused Result
 }
 ```
@@ -60,12 +62,14 @@ Add `let _ = ` prefixes to explicitly acknowledge and discard Results:
 
 ```rust
 #[ test ]
-fn local_smoke_test() {
+fn local_smoke_test() 
+{
   let _ = ::test_tools::test::smoke_test::smoke_test_for_local_run();
 }
 
 #[ test ]
-fn published_smoke_test() {
+fn published_smoke_test() 
+{
   let _ = ::test_tools::test::smoke_test::smoke_test_for_published_run();
 }
 ```
@@ -75,12 +79,14 @@ Convert smoke tests to return Results and propagate errors:
 
 ```rust
 #[ test ]
-fn local_smoke_test() -> Result<(), Box<dyn core::error::Error>> {
+fn local_smoke_test() -> Result<(), Box<dyn core::error::Error>> 
+{
   ::test_tools::test::smoke_test::smoke_test_for_local_run()
 }
 
 #[ test ]
-fn published_smoke_test() -> Result<(), Box<dyn core::error::Error>> {
+fn published_smoke_test() -> Result<(), Box<dyn core::error::Error>> 
+{
   ::test_tools::test::smoke_test::smoke_test_for_published_run()
 }
 ```

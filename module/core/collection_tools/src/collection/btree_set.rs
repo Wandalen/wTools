@@ -1,10 +1,10 @@
-#[ allow( unused_imports, clippy::wildcard_imports ) ]
-use super::*;
+#[ allow( unused_imports, clippy ::wildcard_imports ) ]
+use super :: *;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-#[ allow( clippy::pub_use ) ]
-pub use alloc::collections::btree_set::*;
+#[ allow( clippy ::pub_use ) ]
+pub use alloc ::collections ::btree_set :: *;
 
 /// Creates a `BTreeSet` from a list of elements.
 ///
@@ -19,7 +19,7 @@ pub use alloc::collections::btree_set::*;
 /// The macro can be called with a comma-separated list of elements. A trailing comma is optional.
 ///
 /// ```rust
-/// # use collection_tools::{ BTreeSet, bset };
+/// # use collection_tools :: { BTreeSet, bset };
 /// // BTreeSet of &str
 /// let set1 = bset!( "a", "b", "c" );
 ///
@@ -29,8 +29,8 @@ pub use alloc::collections::btree_set::*;
 ///
 /// # Parameters
 ///
-/// - `$( $key:expr ),* $( , )?`: A comma-separated list of elements to insert into the `BTreeSet`.
-///   Each element can be of any type that implements the `Into<T>` trait, where `T` is the
+/// - `$( $key: expr ),* $( , )?` : A comma-separated list of elements to insert into the `BTreeSet`.
+///   Each element can be of any type that implements the `Into< T >` trait, where `T` is the
 ///   type stored in the `BTreeSet`.
 ///
 /// # Returns
@@ -40,10 +40,10 @@ pub use alloc::collections::btree_set::*;
 ///
 /// # Example
 ///
-/// Basic usage with string slices:
+/// Basic usage with string slices :
 ///
 /// ```rust
-/// # use collection_tools::{ BTreeSet, bset };
+/// # use collection_tools :: { BTreeSet, bset };
 /// let set = bset!( "one", "two", "three" );
 /// assert!( set.contains( "one" ) );
 /// assert!( set.contains( "two" ) );
@@ -56,16 +56,16 @@ pub use alloc::collections::btree_set::*;
 macro_rules! bset
 {
   (
-    $( $key : expr ),* $( , )?
-  )
+  $( $key: expr ),* $( , )?
+ )
   =>
   {{
-    let mut _set = $crate::collection::BTreeSet::new();
-    $(
-      _set.insert( $key );
-    )*
-    _set
-  }};
+  let mut _set = $crate ::collection ::BTreeSet ::new();
+  $(
+   _set.insert( $key );
+ )*
+  _set
+ }};
 }
 
 /// Creates a `BTreeSet` from a list of elements.
@@ -75,7 +75,7 @@ macro_rules! bset
 /// using `.into()`, facilitating the use of literals or values of different, but convertible types.
 ///
 /// Note: The `into_bset` macro relies on the `.into()` method to convert each element into the target type
-/// of the `BTreeSet`. This means that the elements must be compatible with the `Into<T>` trait for the
+/// of the `BTreeSet`. This means that the elements must be compatible with the `Into< T >` trait for the
 /// type `T` used in the `BTreeSet`. Also, this means that sometimes you must specify the type of collection's items.
 ///
 /// # Origin
@@ -87,21 +87,21 @@ macro_rules! bset
 /// The macro can be called with a comma-separated list of elements. A trailing comma is optional.
 ///
 /// ```rust
-/// # use collection_tools::{ BTreeSet, into_bset };
+/// # use collection_tools :: { BTreeSet, into_bset };
 /// // BTreeSet of &str
-/// let set1 : BTreeSet< &str > = into_bset!( "a", "b", "c" );
+/// let set1: BTreeSet< &str > = into_bset!( "a", "b", "c" );
 ///
 /// // BTreeSet of String
-/// let set2 : BTreeSet< String > = into_bset!{ "a".to_string(), "b", "c" };
+/// let set2: BTreeSet< String > = into_bset!{ "a".to_string(), "b", "c" };
 ///
 /// // With trailing comma
-/// let set3 : BTreeSet< i32 > = into_bset!( 1, 2, 3, );
+/// let set3: BTreeSet< i32 > = into_bset!( 1, 2, 3, );
 /// ```
 ///
 /// # Parameters
 ///
-/// - `$( $key:expr ),* $( , )?`: A comma-separated list of elements to insert into the `BTreeSet`.
-///   Each element can be of any type that implements the `Into<T>` trait, where `T` is the
+/// - `$( $key: expr ),* $( , )?` : A comma-separated list of elements to insert into the `BTreeSet`.
+///   Each element can be of any type that implements the `Into< T >` trait, where `T` is the
 ///   type stored in the `BTreeSet`.
 ///
 /// # Returns
@@ -111,11 +111,11 @@ macro_rules! bset
 ///
 /// # Example
 ///
-/// Basic usage with string slices:
+/// Basic usage with string slices :
 ///
 /// ```rust
-/// # use collection_tools::{ BTreeSet, into_bset };
-/// let set  : BTreeSet< &str > = into_bset!( "one", "two", "three" );
+/// # use collection_tools :: { BTreeSet, into_bset };
+/// let set: BTreeSet< &str > = into_bset!( "one", "two", "three" );
 /// assert!( set.contains( "one" ) );
 /// assert!( set.contains( "two" ) );
 /// assert!( set.contains( "three" ) );
@@ -124,11 +124,11 @@ macro_rules! bset
 ///
 /// # Example
 ///
-/// Using with different types that implement `Into<T>`:
+/// Using with different types that implement `Into< T >` :
 ///
 /// ```rust
-/// # use collection_tools::{ BTreeSet, into_bset };
-/// let numbers : BTreeSet< i32 > = into_bset!( 1, 2, 3 );
+/// # use collection_tools :: { BTreeSet, into_bset };
+/// let numbers: BTreeSet< i32 > = into_bset!( 1, 2, 3 );
 /// assert!( numbers.contains( &1 ) );
 /// assert!( numbers.contains( &2 ) );
 /// assert!( numbers.contains( &3 ) );
@@ -136,11 +136,11 @@ macro_rules! bset
 ///
 /// # Example
 ///
-/// Creating a `BTreeSet` of `String` from string literals:
+/// Creating a `BTreeSet` of `String` from string literals :
 ///
 /// ```rust
-/// # use collection_tools::{ BTreeSet, into_bset };
-/// let s : BTreeSet< String > = into_bset!{ "value" };
+/// # use collection_tools :: { BTreeSet, into_bset };
+/// let s: BTreeSet< String > = into_bset!{ "value" };
 /// assert!( s.contains( "value" ) );
 /// ```
 ///
@@ -149,14 +149,14 @@ macro_rules! bset
 macro_rules! into_bset
 {
   (
-    $( $key : expr ),* $( , )?
-  )
+  $( $key: expr ),* $( , )?
+ )
   =>
   {{
-    let mut _set = $crate::collection::BTreeSet::new();
-    $(
-      _set.insert( Into::into( $key ) );
-    )*
-    _set
-  }};
+  let mut _set = $crate ::collection ::BTreeSet ::new();
+  $(
+   _set.insert( Into ::into( $key ) );
+ )*
+  _set
+ }};
 }

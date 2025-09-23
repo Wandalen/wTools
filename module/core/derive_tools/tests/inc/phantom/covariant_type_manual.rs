@@ -1,9 +1,10 @@
-use core::marker::PhantomData;
+use core ::marker ::PhantomData;
 
 #[ allow( dead_code ) ]
-struct CovariantType<T> {
+struct CovariantType< T > 
+{
   a: T,
-  _phantom: PhantomData<T>,
+  _phantom: PhantomData< T >,
 }
 
 include!("./only_test/covariant_type.rs");

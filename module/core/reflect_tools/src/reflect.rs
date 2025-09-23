@@ -5,34 +5,34 @@
 //!
 //! ## Features
 //!
-//! - **Dynamic Type Inspection**: Retrieve detailed type information at runtime, supporting complex scenarios like serialization frameworks that need to dynamically handle different data types.
-//! - **Entity Manipulation**: Manipulate entities in a type-safe manner, leveraging Rust's powerful type system to ensure correctness while allowing dynamic behavior.
-//! - **Reflection API**: Utilize a rich set of APIs to introspect and manipulate entities based on their runtime type information, enabling patterns that are not possible with static typing alone.
-//! - **Support for Primitive and Composite Types**: Handle both primitive types (e.g., integers, floating-point numbers, strings) and composite entities (e.g., structs, arrays, maps) with a unified interface.
+//! - **Dynamic Type Inspection** : Retrieve detailed type information at runtime, supporting complex scenarios like serialization frameworks that need to dynamically handle different data types.
+//! - **Entity Manipulation** : Manipulate entities in a type-safe manner, leveraging Rust's powerful type system to ensure correctness while allowing dynamic behavior.
+//! - **Reflection API** : Utilize a rich set of APIs to introspect and manipulate entities based on their runtime type information, enabling patterns that are not possible with static typing alone.
+//! - **Support for Primitive and Composite Types** : Handle both primitive types (e.g., integers, floating-point numbers, strings) and composite entities (e.g., structs, arrays, maps) with a unified interface.
 //!
 //! ## Use Cases
 //!
-//! - **Serialization/Deserialization**: Automatically convert Rust structs to and from formats like JSON, XML, or binary representations, based on their runtime type information.
-//! - **Dynamic ORM**: Map Rust entities to database tables dynamically, enabling flexible schema evolution and complex queries without sacrificing type safety.
-//! - **Generic Algorithms**: Implement algorithms that operate on collections of heterogeneous types, performing runtime type checks and conversions as necessary.
-//! - **Plugin Architectures**: Build systems that load and interact with plugins or modules of unknown types at compile time, facilitating extensibility and modularity.
+//! - **Serialization/Deserialization** : Automatically convert Rust structs to and from formats like JSON, XML, or binary representations, based on their runtime type information.
+//! - **Dynamic ORM** : Map Rust entities to database tables dynamically, enabling flexible schema evolution and complex queries without sacrificing type safety.
+//! - **Generic Algorithms** : Implement algorithms that operate on collections of heterogeneous types, performing runtime type checks and conversions as necessary.
+//! - **Plugin Architectures** : Build systems that load and interact with plugins or modules of unknown types at compile time, facilitating extensibility and modularity.
 //!
 //! ## Getting Started
 //!
 //! To start using the reflection system, define your entities using the provided traits and enums, and then use the `reflect` function to introspect their properties and behavior at runtime. The system is designed to be intuitive for Rust developers familiar with traits and enums, with minimal boilerplate required to make existing types compatible.
 //!
 //! ## Example
-// qqq : for Yulia : no ignore!
+// qqq: for Yulia: no ignore!
 //!
 //! ```rust, ignore
-//! # use reflect_tools::reflect::{ reflect, Entity };
+//! # use reflect_tools ::reflect :: { reflect, Entity };
 //!
 //! // Define an entity that implements the Instance trait.
 //! #[ derive( Debug ) ]
 //! struct MyEntity
 //! {
-//!   id : i32,
-//!   name : String,
+//!   id: i32,
+//!   name: String,
 //!   // other fields
 //! }
 //!
@@ -50,7 +50,7 @@
 //! Implement additional traits for your types as needed to leverage the full power of the reflection system. The crate is designed to be extensible, allowing custom types to integrate seamlessly with the reflection mechanism.
 //!
 
-// qqq : make the example working. use tests for inpsisrations
+// qqq: make the example working. use tests for inpsisrations
 
 /// Define a private namespace for all its items.
 mod private
@@ -70,46 +70,46 @@ pub mod wrapper;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use orphan::*;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::axiomatic::orphan::*;
+  pub use orphan :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::entity_array::orphan::*;
+  pub use super ::axiomatic ::orphan :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::entity_slice::orphan::*;
+  pub use super ::entity_array ::orphan :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::entity_vec::orphan::*;
+  pub use super ::entity_slice ::orphan :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::entity_hashmap::orphan::*;
+  pub use super ::entity_vec ::orphan :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::entity_hashset::orphan::*;
+  pub use super ::entity_hashmap ::orphan :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::primitive::orphan::*;
+  pub use super ::entity_hashset ::orphan :: *;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super ::primitive ::orphan :: *;
 
-  // xxx : add features
+  // xxx: add features
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::fields::orphan::*;
+  pub use super ::fields ::orphan :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::wrapper::orphan::*;
+  pub use super ::wrapper ::orphan :: *;
 
-  // pub use private::
+  // pub use private ::
   // {
   // };
 }
@@ -118,82 +118,82 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use prelude::*;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::axiomatic::exposed::*;
+  pub use prelude :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::entity_array::exposed::*;
+  pub use super ::axiomatic ::exposed :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::entity_slice::exposed::*;
+  pub use super ::entity_array ::exposed :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::entity_vec::exposed::*;
+  pub use super ::entity_slice ::exposed :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::entity_hashmap::exposed::*;
+  pub use super ::entity_vec ::exposed :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::entity_hashset::exposed::*;
+  pub use super ::entity_hashmap ::exposed :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::primitive::exposed::*;
+  pub use super ::entity_hashset ::exposed :: *;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super ::primitive ::exposed :: *;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::fields::exposed::*;
+  pub use super ::fields ::exposed :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::wrapper::exposed::*;
+  pub use super ::wrapper ::exposed :: *;
 
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::*;
+  use super :: *;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::axiomatic::prelude::*;
+  pub use super ::axiomatic ::prelude :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::entity_array::prelude::*;
+  pub use super ::entity_array ::prelude :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::entity_slice::prelude::*;
+  pub use super ::entity_slice ::prelude :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::entity_vec::prelude::*;
+  pub use super ::entity_vec ::prelude :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::entity_hashmap::prelude::*;
+  pub use super ::entity_hashmap ::prelude :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::entity_hashset::prelude::*;
+  pub use super ::entity_hashset ::prelude :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::primitive::prelude::*;
+  pub use super ::primitive ::prelude :: *;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::fields::prelude::*;
+  pub use super ::fields ::prelude :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::wrapper::prelude::*;
+  pub use super ::wrapper ::prelude :: *;
 
 }

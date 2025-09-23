@@ -1,6 +1,6 @@
-use super::*;
-use the_module::canonical::ReadableNodeFactory as ReadableNodeFactory;
-use the_module::canonical::GenerativeNodeFactory as GenerativeNodeFactory;
+use super :: *;
+use the_module ::canonical ::ReadableNodeFactory as ReadableNodeFactory;
+use the_module ::canonical ::GenerativeNodeFactory as GenerativeNodeFactory;
 
 include!( "./factory_impls.rs" );
 

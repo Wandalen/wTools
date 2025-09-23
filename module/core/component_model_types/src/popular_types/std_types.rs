@@ -12,4 +12,4 @@ pub trait PopularType {}
 // The actual implementations will be generated in the derive macro
 
 // TODO: SocketAddr doesn't implement Default by default, so structs using it need
-// to provide their own Default implementation or use #[derive(Default)] won't work
+// to provide their own Default implementation or use #[ derive(Default) ] won't work

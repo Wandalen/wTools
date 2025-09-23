@@ -11,10 +11,10 @@
 //!
 //! This is useful for attributes that need to enable or disable features or flags.
 
-use core::marker::PhantomData;
+use core ::marker ::PhantomData;
 
-use crate::*;
-// use component_model_types::Assign;
+use crate :: *;
+// use component_model_types ::Assign;
 
 /// Default marker for `AttributePropertySingletone`.
 /// Used if no marker is defined as parameter.
@@ -27,68 +27,80 @@ pub struct AttributePropertySingletoneMarker;
 ///
 /// Unlike other properties, it does not implement parse, because it consists only of keyword which should be parsed outside of the property.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertySingletone<Marker = AttributePropertySingletoneMarker>(bool, ::core::marker::PhantomData<Marker>);
+pub struct AttributePropertySingletone< Marker = AttributePropertySingletoneMarker >(bool, ::core ::marker ::PhantomData< Marker >);
 
-impl<Marker> AttributePropertySingletone<Marker> {
+impl< Marker > AttributePropertySingletone< Marker > 
+{
   /// Unwraps and returns the internal optional boolean value.
   #[ must_use ]
   #[ inline( always ) ]
-  pub fn internal(self) -> bool {
-    self.0
-  }
+  pub fn internal(self) -> bool
+  {
+  self.0
+ }
 
   /// Returns a reference to the internal optional boolean value.
   #[ must_use ]
   #[ inline( always ) ]
-  pub fn ref_internal(&self) -> &bool {
-    &self.0
-  }
+  pub fn ref_internal( &self ) -> &bool
+  {
+  &self.0
+ }
 }
 
-impl<Marker, IntoT> Assign<AttributePropertySingletone<Marker>, IntoT> for AttributePropertySingletone<Marker>
+impl< Marker, IntoT > Assign< AttributePropertySingletone<Marker >, IntoT> for AttributePropertySingletone< Marker >
 where
-  IntoT: Into<AttributePropertySingletone<Marker>>,
+  IntoT: Into< AttributePropertySingletone<Marker >>,
 {
   #[ inline( always ) ]
-  fn assign(&mut self, component: IntoT) {
-    *self = component.into();
-  }
+  fn assign(&mut self, component: IntoT) 
+  {
+  *self = component.into();
+ }
 }
 
-impl<Marker> AttributePropertyComponent for AttributePropertySingletone<Marker>
+impl< Marker > AttributePropertyComponent for AttributePropertySingletone< Marker >
 where
   Marker: AttributePropertyComponent,
 {
-  const KEYWORD: &'static str = Marker::KEYWORD;
+  const KEYWORD: &'static str = Marker ::KEYWORD;
 }
 
-impl<Marker> From<bool> for AttributePropertySingletone<Marker> {
+impl< Marker > From< bool > for AttributePropertySingletone< Marker > 
+{
   #[ inline( always ) ]
-  #[ allow( clippy::default_constructed_unit_structs ) ]
-  fn from(src: bool) -> Self {
-    Self(src, PhantomData::default())
-  }
+  #[ allow( clippy ::default_constructed_unit_structs ) ]
+  fn from(src: bool) -> Self 
+  {
+  Self(src, PhantomData ::default())
+ }
 }
 
-impl<Marker> From<AttributePropertySingletone<Marker>> for bool {
+impl< Marker > From< AttributePropertySingletone<Marker >> for bool 
+{
   #[ inline( always ) ]
-  fn from(src: AttributePropertySingletone<Marker>) -> Self {
-    src.0
-  }
+  fn from(src: AttributePropertySingletone< Marker >) -> Self 
+  {
+  src.0
+ }
 }
 
-impl<Marker> core::ops::Deref for AttributePropertySingletone<Marker> {
+impl< Marker > core ::ops ::Deref for AttributePropertySingletone< Marker > 
+{
   type Target = bool;
 
   #[ inline( always ) ]
-  fn deref(&self) -> &bool {
-    &self.0
-  }
+  fn deref( &self ) -> &bool 
+  {
+  &self.0
+ }
 }
 
-impl<Marker> AsRef<bool> for AttributePropertySingletone<Marker> {
+impl< Marker > AsRef< bool > for AttributePropertySingletone< Marker > 
+{
   #[ inline( always ) ]
-  fn as_ref(&self) -> &bool {
-    &self.0
-  }
+  fn as_ref( &self ) -> &bool 
+  {
+  &self.0
+ }
 }

@@ -1,5 +1,5 @@
 #[ allow( unused_imports ) ]
-use super::*;
+use super :: *;
 
 mod common_tests;
 mod get_header;

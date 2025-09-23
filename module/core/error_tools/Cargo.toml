@@ -35,9 +35,7 @@ default = [
   "error_typed",
   "error_untyped",
 ]
-full = [
-  "default",
-]
+full = [ "enabled" ]
 no_std = []
 use_alloc = [ "no_std" ]
 enabled = []

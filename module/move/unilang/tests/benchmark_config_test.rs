@@ -18,7 +18,7 @@
 //! | Adaptive Sampling | `test_adaptive_sample_size` | Verify dynamic sample size calculation | None |
 //! | Serialization | `test_config_serialization` | Verify serde serialization/deserialization | serde |
 //! | Hardware Detection | `test_detect_environment` | Verify hardware capability detection | sysinfo |
-//! | File Operations | `test_load_from_file` | Verify configuration file loading | tempfile, serde_yaml |
+//! | File Operations | `test_load_from_file` | Verify configuration file loading | tempfile, `serde_yaml` |
 //! | Environment Config | `test_environment_config_*` | Verify CPU, memory, OS information | sysinfo |
 //! | Performance Targets | `test_performance_targets_*` | Verify performance target configuration | None |
 //! | Measurement Config | `test_measurement_config_wrapper` | Verify benchkit integration | benchkit |
@@ -26,7 +26,7 @@
 //! | Display Format | `test_display_format` | Verify string representation | None |
 
 use unilang::benchmark_config::{ BenchmarkConfig, BenchmarkEnvironment };
-use std::time::Duration;
+use core::time::Duration;
 use std::fs;
 use tempfile::NamedTempFile;
 
@@ -91,7 +91,7 @@ fn test_environment_detection_development()
   std::env::set_var( "BENCHMARK_ENV", "development" );
   let config = BenchmarkConfig::from_environment();
   assert_eq!( config.environment, BenchmarkEnvironment::Development );
-  assert_eq!( config.cv_tolerance, 0.15 );
+  assert!( ( config.cv_tolerance - 0.15 ).abs() < f64::EPSILON );
   assert_eq!( config.min_sample_size, 10 );
   std::env::remove_var( "BENCHMARK_ENV" );
 }
@@ -102,7 +102,7 @@ fn test_environment_detection_staging()
   std::env::set_var( "BENCHMARK_ENV", "staging" );
   let config = BenchmarkConfig::from_environment();
   assert_eq!( config.environment, BenchmarkEnvironment::Staging );
-  assert_eq!( config.cv_tolerance, 0.10 );
+  assert!( ( config.cv_tolerance - 0.10 ).abs() < f64::EPSILON );
   assert_eq!( config.min_sample_size, 20 );
   std::env::remove_var( "BENCHMARK_ENV" );
 }
@@ -113,7 +113,7 @@ fn test_environment_detection_production()
   std::env::set_var( "BENCHMARK_ENV", "production" );
   let config = BenchmarkConfig::from_environment();
   assert_eq!( config.environment, BenchmarkEnvironment::Production );
-  assert_eq!( config.cv_tolerance, 0.05 );
+  assert!( ( config.cv_tolerance - 0.05 ).abs() < f64::EPSILON );
   assert_eq!( config.min_sample_size, 50 );
   std::env::remove_var( "BENCHMARK_ENV" );
 }
@@ -170,10 +170,10 @@ fn test_development_config_values()
 {
   let config = BenchmarkConfig::development();
 
-  assert_eq!( config.cv_tolerance, 0.15 );
+  assert!( ( config.cv_tolerance - 0.15 ).abs() < f64::EPSILON );
   assert_eq!( config.min_sample_size, 10 );
   assert_eq!( config.max_sample_size, 20 );
-  assert_eq!( config.regression_threshold, 0.15 );
+  assert!( ( config.regression_threshold - 0.15 ).abs() < f64::EPSILON );
   assert_eq!( config.warmup_iterations, 3 );
   assert_eq!( config.max_benchmark_time, Duration::from_secs( 30 ) );
   assert_eq!( config.environment, BenchmarkEnvironment::Development );
@@ -185,10 +185,10 @@ fn test_staging_config_values()
 {
   let config = BenchmarkConfig::staging();
 
-  assert_eq!( config.cv_tolerance, 0.10 );
+  assert!( ( config.cv_tolerance - 0.10 ).abs() < f64::EPSILON );
   assert_eq!( config.min_sample_size, 20 );
   assert_eq!( config.max_sample_size, 30 );
-  assert_eq!( config.regression_threshold, 0.10 );
+  assert!( ( config.regression_threshold - 0.10 ).abs() < f64::EPSILON );
   assert_eq!( config.warmup_iterations, 5 );
   assert_eq!( config.max_benchmark_time, Duration::from_secs( 120 ) );
   assert_eq!( config.environment, BenchmarkEnvironment::Staging );
@@ -200,10 +200,10 @@ fn test_production_config_values()
 {
   let config = BenchmarkConfig::production();
 
-  assert_eq!( config.cv_tolerance, 0.05 );
+  assert!( ( config.cv_tolerance - 0.05 ).abs() < f64::EPSILON );
   assert_eq!( config.min_sample_size, 50 );
   assert_eq!( config.max_sample_size, 100 );
-  assert_eq!( config.regression_threshold, 0.05 );
+  assert!( ( config.regression_threshold - 0.05 ).abs() < f64::EPSILON );
   assert_eq!( config.warmup_iterations, 10 );
   assert_eq!( config.max_benchmark_time, Duration::from_secs( 600 ) );
   assert_eq!( config.environment, BenchmarkEnvironment::Production );
@@ -259,8 +259,8 @@ fn test_measurement_config_wrapper()
   assert_eq!( wrapper.iterations, config.min_sample_size );
   assert_eq!( wrapper.warmup_iterations, config.warmup_iterations );
   assert_eq!( wrapper.max_time, config.max_benchmark_time );
-  assert_eq!( wrapper.cv_tolerance, config.cv_tolerance );
-  assert_eq!( wrapper.regression_threshold, config.regression_threshold );
+  assert!( ( wrapper.cv_tolerance - config.cv_tolerance ).abs() < f64::EPSILON );
+  assert!( ( wrapper.regression_threshold - config.regression_threshold ).abs() < f64::EPSILON );
 }
 
 /// Test benchkit integration conversion
@@ -374,8 +374,8 @@ fn test_environment_config_memory()
   available_gb: 12.5,
  };
 
-  assert_eq!( memory_info.total_gb, 16.0 );
-  assert_eq!( memory_info.available_gb, 12.5 );
+  assert!( ( memory_info.total_gb - 16.0 ).abs() < f64::EPSILON );
+  assert!( ( memory_info.available_gb - 12.5 ).abs() < f64::EPSILON );
   assert!( memory_info.available_gb <= memory_info.total_gb );
 }
 
@@ -407,10 +407,10 @@ fn test_performance_targets_configuration()
   max_cpu_percent: 80.0,
  };
 
-  assert_eq!( targets.max_latency_ms, 100.0 );
-  assert_eq!( targets.min_throughput_ops_sec, 1000.0 );
-  assert_eq!( targets.max_memory_mb, 512.0 );
-  assert_eq!( targets.max_cpu_percent, 80.0 );
+  assert!( (targets.max_latency_ms - 100.0).abs() < f64::EPSILON );
+  assert!( (targets.min_throughput_ops_sec - 1000.0).abs() < f64::EPSILON );
+  assert!( (targets.max_memory_mb - 512.0).abs() < f64::EPSILON );
+  assert!( (targets.max_cpu_percent - 80.0).abs() < f64::EPSILON );
 }
 
 /// Test performance targets validation
@@ -465,7 +465,7 @@ fn detect_environment() -> EnvironmentConfig
 
 /// Test configuration file loading
 #[ test ]
-fn test_load_from_file() -> Result< (), Box< dyn std::error::Error > >
+fn test_load_from_file() -> Result< (), Box< dyn core::error::Error > >
 {
   // Create temporary config file
   let temp_file = NamedTempFile::new()?;
@@ -486,7 +486,7 @@ max_benchmark_time:
   // Test loading configuration from file
   let loaded_config = load_config_from_file( temp_file.path().to_str().unwrap() )?;
 
-  assert_eq!( loaded_config.cv_tolerance, 0.03 );
+  assert!( (loaded_config.cv_tolerance - 0.03).abs() < f64::EPSILON );
   assert_eq!( loaded_config.min_sample_size, 75 );
   assert_eq!( loaded_config.max_sample_size, 150 );
 
@@ -505,7 +505,7 @@ fn test_invalid_config_file()
 /// Test malformed configuration file handling
 #[ cfg( feature = "benchmarks" ) ]
 #[ test ]
-fn test_malformed_config_file() -> Result< (), Box< dyn std::error::Error > >
+fn test_malformed_config_file() -> Result< (), Box< dyn core::error::Error > >
 {
   let temp_file = NamedTempFile::new()?;
   let malformed_content = "invalid: yaml: content:::bad";
@@ -521,20 +521,38 @@ fn test_malformed_config_file() -> Result< (), Box< dyn std::error::Error > >
 // Mock configuration loading function since BenchmarkConfig doesn't have load_from_file
 /// Configuration loading simulation using available factory methods
 #[ cfg( feature = "benchmarks" ) ]
-fn load_config_from_file( file_path: &str ) -> Result< BenchmarkConfig, Box< dyn std::error::Error > >
+fn load_config_from_file( file_path: &str ) -> Result< BenchmarkConfig, Box< dyn core::error::Error > >
 {
   // Since BenchmarkConfig doesn't have load_from_file, simulate it by checking file content
   let content = std::fs::read_to_string( file_path )?;
   if content.contains( "invalid" ) || content.contains( "bad" ) {
     return Err( "Invalid configuration file format".into() );
   }
-  // Return a default configuration for valid files
-  Ok( BenchmarkConfig::development() )
+
+  // Parse YAML content to extract configuration values
+  let yaml_value: serde_yaml::Value = serde_yaml::from_str( &content )?;
+
+  // Start with development defaults and override with file values
+  let mut config = BenchmarkConfig::development();
+
+  if let Some( cv_tolerance ) = yaml_value.get( "cv_tolerance" ).and_then( serde_yaml::Value::as_f64 ) {
+    config.cv_tolerance = cv_tolerance;
+  }
+  if let Some( min_sample_size ) = yaml_value.get( "min_sample_size" ).and_then( serde_yaml::Value::as_u64 ) {
+    #[allow(clippy::cast_possible_truncation)]
+    { config.min_sample_size = min_sample_size as usize; }
+  }
+  if let Some( max_sample_size ) = yaml_value.get( "max_sample_size" ).and_then( serde_yaml::Value::as_u64 ) {
+    #[allow(clippy::cast_possible_truncation)]
+    { config.max_sample_size = max_sample_size as usize; }
+  }
+
+  Ok( config )
 }
 
 // Fallback for when benchmarks feature is not enabled
 #[ cfg( not( feature = "benchmarks" ) ) ]
-fn load_config_from_file( _file_path: &str ) -> Result< BenchmarkConfig, Box< dyn std::error::Error > >
+fn load_config_from_file( _file_path: &str ) -> Result< BenchmarkConfig, Box< dyn core::error::Error > >
 {
   Err( "Benchmark features not enabled".into() )
 }
@@ -542,7 +560,7 @@ fn load_config_from_file( _file_path: &str ) -> Result< BenchmarkConfig, Box< dy
 /// Test serialization/deserialization when benchmarks feature is enabled
 #[ cfg( feature = "benchmarks" ) ]
 #[ test ]
-fn test_config_serialization() -> Result< (), Box< dyn std::error::Error > >
+fn test_config_serialization() -> Result< (), Box< dyn core::error::Error > >
 {
   // Note: This test assumes BenchmarkConfig implements Serialize/Deserialize
   // In real implementation, these derives would be added to the struct
@@ -563,7 +581,7 @@ fn test_config_serialization() -> Result< (), Box< dyn std::error::Error > >
 /// Test deserialization when benchmarks feature is enabled
 #[ cfg( feature = "benchmarks" ) ]
 #[ test ]
-fn test_config_deserialization() -> Result< (), Box< dyn std::error::Error > >
+fn test_config_deserialization() -> Result< (), Box< dyn core::error::Error > >
 {
   let json_config = r#"{
   "cv_tolerance": 0.08,
@@ -578,7 +596,7 @@ fn test_config_deserialization() -> Result< (), Box< dyn std::error::Error > >
   let serializable: SerializableConfig = serde_json::from_str( json_config )?;
   let config: BenchmarkConfig = serializable.into();
 
-  assert_eq!( config.cv_tolerance, 0.08 );
+  assert!( (config.cv_tolerance - 0.08).abs() < f64::EPSILON );
   assert_eq!( config.min_sample_size, 25 );
   assert_eq!( config.environment, BenchmarkEnvironment::Staging );
 
@@ -624,7 +642,6 @@ impl From< SerializableConfig > for BenchmarkConfig
   {
   let environment = match serializable.environment.as_str()
   {
-  "Development" => BenchmarkEnvironment::Development,
   "Staging/CI" | "Staging" => BenchmarkEnvironment::Staging,
   "Production" => BenchmarkEnvironment::Production,
   _ => BenchmarkEnvironment::Development,

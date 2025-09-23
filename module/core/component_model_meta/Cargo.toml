@@ -28,9 +28,10 @@ proc-macro = true
 
 [features]
 
-default = [ "full" ]
+default = [ "enabled", "full" ]
 full = [
   "enabled",
+
   "derive_component_model",
   "derive_components",
   "derive_component_from",

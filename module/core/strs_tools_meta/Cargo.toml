@@ -23,11 +23,13 @@ proc-macro = true
 [features]
 default = [
   "enabled",
+
   "optimize_split",
   "optimize_match",
 ]
 full = [
   "enabled",
+
   "optimize_split",
   "optimize_match",
 ]

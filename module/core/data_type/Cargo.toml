@@ -29,8 +29,10 @@ all-features = false
 [features]
 
 default = [
-  # "use_std",
   "enabled",
+
+  # "use_std",
+
   "dt_either",
   "dt_interval",
   "dt_collection",
@@ -39,8 +41,10 @@ default = [
   # "type_constructor/default",
 ]
 full = [
-  # "use_std",
   "enabled",
+
+  # "use_std",
+
   "dt_either",
   "dt_interval",
   "dt_collection",

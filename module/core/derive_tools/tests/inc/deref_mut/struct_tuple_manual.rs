@@ -1,4 +1,4 @@
-use core::ops::{ Deref, DerefMut };
+use core ::ops :: { Deref, DerefMut };
 
 #[ allow( dead_code ) ]
 struct StructTuple( String, i32 );
@@ -6,17 +6,17 @@ struct StructTuple( String, i32 );
 impl Deref for StructTuple
 {
   type Target = String;
-  fn deref( &self ) -> &Self::Target
+  fn deref( &self ) -> &Self ::Target
   {
-    &self.0
-  }
+  &self.0
+ }
 }
 impl DerefMut for StructTuple
 {
-  fn deref_mut( &mut self ) -> &mut Self::Target
+  fn deref_mut( &mut self ) -> &mut Self ::Target
   {
-    &mut self.0
-  }
+  &mut self.0
+ }
 }
 
 include!( "./only_test/struct_tuple.rs" );

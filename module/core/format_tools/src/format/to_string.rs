@@ -6,11 +6,11 @@
 mod private
 {
 
-  use std::
+  use std ::
   {
-    fmt,
-    borrow::Cow,
-  };
+  fmt,
+  borrow ::Cow,
+ };
 
   // ==
 
@@ -39,67 +39,67 @@ mod private
   /// Trait to convert a type to a string using a specified formatting method.
   pub trait ToStringWith< How >
   {
-    /// Converts the type to a string using the specified formatting method.
-    fn to_string_with< 's >( &'s self ) -> Cow< 's, str >;
-  }
+  /// Converts the type to a string using the specified formatting method.
+  fn to_string_with< 's >( &'s self ) -> Cow< 's, str >;
+ }
 
   impl< 'a, T > ToStringWith< WithRef > for T
   where
-    T : 'a,
-    T : AsRef< str >,
-    T : ?Sized,
+  T: 'a,
+  T: AsRef< str >,
+  T: ?Sized,
   {
-    /// Converts the type to a string using Display formatting.
-    #[ inline ]
-    fn to_string_with< 's >( &'s self ) -> Cow< 's, str >
-    {
-      // println!( " - WithRef" );
-      Cow::Borrowed( self.as_ref() )
-    }
-  }
+  /// Converts the type to a string using Display formatting.
+  #[ inline ]
+  fn to_string_with< 's >( &'s self ) -> Cow< 's, str >
+  {
+   // println!( " - WithRef" );
+   Cow ::Borrowed( self.as_ref() )
+ }
+ }
 
   impl< 'a, T > ToStringWith< WithDebug > for T
   where
-    T : fmt::Debug,
-    T : ?Sized,
+  T: fmt ::Debug,
+  T: ?Sized,
   {
-    /// Converts the type to a string using Debug formatting.
-    #[ inline ]
-    fn to_string_with< 's >( &'s self ) -> Cow< 's, str >
-    {
-      // println!( " - WithDebug {:?}", self );
-      Cow::Owned( format!( "{:?}", self ) )
-    }
-  }
+  /// Converts the type to a string using Debug formatting.
+  #[ inline ]
+  fn to_string_with< 's >( &'s self ) -> Cow< 's, str >
+  {
+   // println!( " - WithDebug {:?}", self );
+   Cow ::Owned( format!( "{:?}", self ) )
+ }
+ }
 
   impl< 'a, T > ToStringWith< WithDebugMultiline > for T
   where
-    T : fmt::Debug,
-    T : ?Sized,
+  T: fmt ::Debug,
+  T: ?Sized,
   {
-    /// Converts the type to a string using Debug formatting.
-    #[ inline ]
-    fn to_string_with< 's >( &'s self ) -> Cow< 's, str >
-    {
-      // println!( " - WithDebugMultiline {:#?}", self );
-      Cow::Owned( format!( "{:#?}", self ) )
-    }
-  }
+  /// Converts the type to a string using Debug formatting.
+  #[ inline ]
+  fn to_string_with< 's >( &'s self ) -> Cow< 's, str >
+  {
+   // println!( " - WithDebugMultiline {:#?}", self );
+   Cow ::Owned( format!( "{:#?}", self ) )
+ }
+ }
 
   impl< 'a, T > ToStringWith< WithDisplay > for T
   where
-    T : 'a,
-    T : fmt::Display,
-    T : ?Sized,
+  T: 'a,
+  T: fmt ::Display,
+  T: ?Sized,
   {
-    /// Converts the type to a string using Display formatting.
-    #[ inline ]
-    fn to_string_with< 's >( &'s self ) -> Cow< 's, str >
-    {
-      // println!( " - WithDisplay {}", self );
-      Cow::Owned( format!( "{}", self ) )
-    }
-  }
+  /// Converts the type to a string using Display formatting.
+  #[ inline ]
+  fn to_string_with< 's >( &'s self ) -> Cow< 's, str >
+  {
+   // println!( " - WithDisplay {}", self );
+   Cow ::Owned( format!( "{}", self ) )
+ }
+ }
 
 }
 
@@ -107,16 +107,16 @@ mod aref;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*;
+pub use own :: *;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
+  use super :: *;
 
   #[ doc( inline ) ]
-  pub use orphan::*;
+  pub use orphan :: *;
 
 }
 
@@ -124,22 +124,22 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  use super::*;
-  pub use super::super::to_string;
+  use super :: *;
+  pub use super ::super ::to_string;
 
   #[ doc( inline ) ]
-  pub use exposed::*;
+  pub use exposed :: *;
 
   #[ doc( inline ) ]
-  pub use private::
+  pub use private ::
   {
-    WithDebug,
-    WithDebugMultiline,
-    WithDisplay,
-    WithRef,
-    WithWell,
-    ToStringWith,
-  };
+  WithDebug,
+  WithDebugMultiline,
+  WithDisplay,
+  WithRef,
+  WithWell,
+  ToStringWith,
+ };
 
 }
 
@@ -147,14 +147,14 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::*;
+  use super :: *;
   #[ doc( inline ) ]
-  pub use prelude::*;
+  pub use prelude :: *;
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::*;
+  use super :: *;
 }

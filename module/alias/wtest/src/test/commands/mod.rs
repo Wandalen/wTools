@@ -1,5 +1,5 @@
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   /// Perform smoke testing.
   #[ cfg( not( feature = "no_std" ) ) ]
@@ -10,4 +10,4 @@ crate::mod_interface!
 }
 
 #[ cfg( not( feature = "no_std" ) ) ]
-pub use init::*;
+pub use init :: *;

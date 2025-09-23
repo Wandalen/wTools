@@ -1,23 +1,23 @@
 #![allow(dead_code)]
-#![allow(clippy::duplicate_mod)]
-#![allow(clippy::doc_markdown)]
-use super::*;
-use test_tools::a_id;
+#![allow(clippy ::duplicate_mod)]
+#![allow(clippy ::doc_markdown)]
+use super :: *;
+use test_tools ::a_id;
 
 /// Layer X
 pub mod layer_x;
 
 mod private {}
 
-the_module::mod_interface! {
+the_module ::mod_interface! {
   // #![ debug ]
 
   /// layer_a
-  use super::layer_x as layer_a;
+  use super ::layer_x as layer_a;
 
   // /// layer_a
-  // pub use super::layer_x as layer_a;
-  // zzz : make that working
+  // pub use super ::layer_x as layer_a;
+  // zzz: make that working
 
 }
 

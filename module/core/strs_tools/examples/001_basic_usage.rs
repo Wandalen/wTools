@@ -5,7 +5,7 @@
 //! Rust's standard library capabilities.
 
 #[ allow( unused_imports ) ]
-use strs_tools::*;
+use strs_tools :: *;
 
 fn main()
 {
@@ -25,31 +25,31 @@ fn basic_string_splitting()
   
   #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
   {
-    // Split a simple string on spaces
-    let src = "abc def ghi";
-    let iter = string::split()
-    .src( src )                    // Set source string
-    .delimeter( " " )              // Set delimiter to space
-    .perform();                    // Execute the split operation
-    
-    let result : Vec< String > = iter
-    .map( String::from )           // Convert each segment to owned String
-    .collect();
-    
-    println!( "Input: '{src}' -> {result:?}" );
-    // Note: With stripping(false), delimiters are preserved in output
-    assert_eq!( result, vec![ "abc", " ", "def", " ", "ghi" ] );
-    
-    // Example with delimiter that doesn't exist
-    let iter = string::split()
-    .src( src )
-    .delimeter( "x" )              // Delimiter not found in string
-    .perform();
-    
-    let result : Vec< String > = iter.map( String::from ).collect();
-    println!( "No delimiter found: '{src}' -> {result:?}" );
-    assert_eq!( result, vec![ "abc def ghi" ] );  // Returns original string
-  }
+  // Split a simple string on spaces
+  let src = "abc def ghi";
+  let iter = string ::split()
+  .src( src )                    // Set source string
+  .delimeter( " " )              // Set delimiter to space
+  .perform();                    // Execute the split operation
+  
+  let result: Vec< String > = iter
+  .map( String ::from )           // Convert each segment to owned String
+  .collect();
+  
+  println!( "Input: '{src}' -> {result:?}" );
+  // Note: With stripping(false), delimiters are preserved in output
+  assert_eq!( result, vec![ "abc", " ", "def", " ", "ghi" ] );
+  
+  // Example with delimiter that doesn't exist
+  let iter = string ::split()
+  .src( src )
+  .delimeter( "x" )              // Delimiter not found in string
+  .perform();
+  
+  let result: Vec< String > = iter.map( String ::from ).collect();
+  println!( "No delimiter found: '{src}' -> {result:?}" );
+  assert_eq!( result, vec![ "abc def ghi" ] );  // Returns original string
+ }
 }
 
 /// Demonstrates delimiter preservation feature.
@@ -63,24 +63,24 @@ fn delimiter_preservation()
   
   #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
   {
-    let src = "word1 word2 word3";
-    
-    // Split while preserving delimiters (spaces)
-    let iter = string::split()
-    .src( src )
-    .delimeter( " " )
-    .stripping( false )            // Keep delimiters in output
-    .perform();
-    
-    let result : Vec< String > = iter.map( String::from ).collect();
-    
-    println!( "With delimiters preserved:" );
-    println!( "  Input: '{src}' -> {result:?}" );
-    assert_eq!( result, vec![ "word1", " ", "word2", " ", "word3" ] );
-    
-    // Verify we can reconstruct the original string
-    let reconstructed = result.join( "" );
-    assert_eq!( reconstructed, src );
-    println!( "  Reconstructed: '{reconstructed}'" );
-  }
+  let src = "word1 word2 word3";
+  
+  // Split while preserving delimiters (spaces)
+  let iter = string ::split()
+  .src( src )
+  .delimeter( " " )
+  .stripping( false )            // Keep delimiters in output
+  .perform();
+  
+  let result: Vec< String > = iter.map( String ::from ).collect();
+  
+  println!( "With delimiters preserved: " );
+  println!( "  Input: '{src}' -> {result:?}" );
+  assert_eq!( result, vec![ "word1", " ", "word2", " ", "word3" ] );
+  
+  // Verify we can reconstruct the original string
+  let reconstructed = result.join( "" );
+  assert_eq!( reconstructed, src );
+  println!( "  Reconstructed: '{reconstructed}'" );
+ }
 }

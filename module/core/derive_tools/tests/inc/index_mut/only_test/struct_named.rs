@@ -3,8 +3,8 @@ fn index_mut()
 {
   let mut x = StructNamed
   { 
-    a : vec![ 4, 17 ] 
-  };
+  a: vec![ 4, 17 ] 
+ };
   
   x[ 0 ] = 5;
   x[ 1 ] = 18;

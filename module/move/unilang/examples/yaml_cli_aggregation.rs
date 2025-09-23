@@ -20,7 +20,7 @@
 
 use unilang::prelude::*;
 
-fn main() -> Result< (), unilang::Error >
+fn main()
 {
   println!( "=== YAML-Based CLI Aggregation Demo ===" );
   println!( "Demonstrating multi-YAML file aggregation workflow" );
@@ -31,8 +31,6 @@ fn main() -> Result< (), unilang::Error >
 
   // Show actual aggregation with existing static commands
   demonstrate_static_aggregation();
-
-  Ok( () )
 }
 
 fn demonstrate_yaml_workflow()
@@ -157,7 +155,7 @@ fn demonstrate_static_aggregation()
 
   for cmd_str in test_commands
   {
-  println!( "   Executing: {}", cmd_str );
+  println!( "   Executing: {cmd_str}" );
   let result = pipeline.process_command_simple( cmd_str );
 
   if result.success
@@ -166,7 +164,7 @@ fn demonstrate_static_aggregation()
  }
   else if let Some( error ) = result.error
   {
-  println!( "   Result: ❌ {}", error );
+  println!( "   Result: ❌ {error}" );
  }
  }
   println!();

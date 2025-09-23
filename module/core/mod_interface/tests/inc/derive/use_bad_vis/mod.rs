@@ -1,7 +1,7 @@
 #![allow(dead_code)]
-#![allow(clippy::doc_markdown)]
+#![allow(clippy ::doc_markdown)]
 
-use super::*;
+use super :: *;
 
 /// Private
 mod private
@@ -11,7 +11,7 @@ mod private
 
 }
 
-the_module::mod_interface!
+the_module ::mod_interface!
 {
 
   /// layer_a

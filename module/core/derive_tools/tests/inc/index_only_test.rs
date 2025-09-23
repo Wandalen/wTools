@@ -2,8 +2,8 @@
 #[ allow( dead_code ) ]
 #[ allow( unused_variables ) ]
 
-use test_tools::*;
-use core::ops::Index as _;
+use test_tools :: *;
+use core ::ops ::Index as _;
 
 // Test for TupleStruct1
 #[ test ]
@@ -17,6 +17,6 @@ fn test_tuple_struct1()
 #[ test ]
 fn test_named_struct1()
 {
-  let instance = NamedStruct1 { field1 : 456 };
+  let instance = NamedStruct1 { field1: 456 };
   assert_eq!( instance[ "field1" ], 456 );
 }

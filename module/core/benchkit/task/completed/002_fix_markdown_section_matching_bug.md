@@ -94,7 +94,8 @@ if line.trim_start().starts_with("## ") && line.trim() == self.section_marker.tr
 ### Regression Test
 ```rust
 #[test]
-fn test_no_section_duplication_with_overlapping_names() {
+fn test_no_section_duplication_with_overlapping_names() 
+{
     let initial = r#"## Performance Benchmarks
 Old data
 ## Language Operations Performance

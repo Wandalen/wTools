@@ -19,7 +19,8 @@ let config = AppConfig::default()
 Async component resolution and assignment:
 ```rust
 #[derive(AsyncAssign)]
-struct AppConfig {
+struct AppConfig 
+{
   #[component(fetch_from = "database")]
   database_url: String,
   
@@ -83,17 +84,20 @@ pub trait ComponentFetcher<T> {
 }
 
 // Built-in fetchers
-pub struct DatabaseFetcher {
+pub struct DatabaseFetcher 
+{
   query: String,
   connection: DatabaseConnection,
 }
 
-pub struct ConsulFetcher {
+pub struct ConsulFetcher 
+{
   key: String,
   client: ConsulClient,
 }
 
-pub struct VaultFetcher {
+pub struct VaultFetcher 
+{
   secret_path: String,
   client: VaultClient,
 }
@@ -104,7 +108,8 @@ pub struct VaultFetcher {
 #### **AsyncAssign Derive**
 ```rust
 #[derive(AsyncAssign)]
-struct AppConfig {
+struct AppConfig 
+{
   #[component(fetch_from = "database", query = "SELECT value FROM config WHERE key = 'db_url'")]
   database_url: String,
   
@@ -116,19 +121,23 @@ struct AppConfig {
 }
 
 // Generates:
-impl AsyncAssign<String, DatabaseFetcher> for AppConfig {
+impl AsyncAssign<String, DatabaseFetcher> for AppConfig 
+{
   type Error = ComponentError;
   
-  async fn async_assign(&mut self, fetcher: DatabaseFetcher) -> Result<(), Self::Error> {
+  async fn async_assign(&mut self, fetcher: DatabaseFetcher) -> Result<(), Self::Error> 
+{
     let value = fetcher.fetch_component().await?;
     self.database_url = value;
     Ok(())
   }
 }
 
-impl AppConfig {
+impl AppConfig 
+{
   // Fetch all components concurrently
-  async fn fetch_all_components() -> Result<Self, Vec<ComponentError>> {
+  async fn fetch_all_components() -> Result<Self, Vec<ComponentError>> 
+{
     let mut config = Self::default();
     let mut errors = Vec::new();
     
@@ -161,7 +170,8 @@ impl AppConfig {
   }
   
   // Fetch with retry and timeout
-  async fn fetch_with_resilience() -> Result<Self, ComponentError> {
+  async fn fetch_with_resilience() -> Result<Self, ComponentError> 
+{
     use tokio::time::{timeout, Duration};
     
     timeout(Duration::from_secs(30), Self::fetch_all_components())
@@ -176,20 +186,26 @@ impl AppConfig {
 
 #### **Database Fetcher**
 ```rust
-pub struct DatabaseFetcher {
+pub struct DatabaseFetcher 
+{
   pool: sqlx::PgPool,
   query: String,
 }
 
-impl DatabaseFetcher {
-  pub fn new(pool: sqlx::PgPool, query: impl Into<String>) -> Self {
+impl DatabaseFetcher 
+{
+  pub fn new(pool: sqlx::PgPool, query: impl Into<String>) -> Self 
+
+{
     Self {
       pool,
       query: query.into(),
     }
   }
   
-  pub fn from_url(url: &str, query: impl Into<String>) -> Result<Self, sqlx::Error> {
+  pub fn from_url(url: &str, query: impl Into<String>) -> Result<Self, sqlx::Error> 
+
+{
     let pool = sqlx::PgPool::connect(url).await?;
     Ok(Self::new(pool, query))
   }
@@ -202,7 +218,8 @@ where
 {
   type Error = sqlx::Error;
   
-  async fn fetch_component(&self) -> Result<T, Self::Error> {
+  async fn fetch_component(&self) -> Result<T, Self::Error> 
+{
     sqlx::query_as(&self.query)
       .fetch_one(&self.pool)
       .await
@@ -212,14 +229,18 @@ where
 
 #### **HTTP API Fetcher**
 ```rust
-pub struct ApiFetcher {
+pub struct ApiFetcher 
+{
   client: reqwest::Client,
   url: String,
   headers: HeaderMap,
 }
 
-impl ApiFetcher {
-  pub fn new(url: impl Into<String>) -> Self {
+impl ApiFetcher 
+{
+  pub fn new(url: impl Into<String>) -> Self 
+
+{
     Self {
       client: reqwest::Client::new(),
       url: url.into(),
@@ -227,7 +248,8 @@ impl ApiFetcher {
     }
   }
   
-  pub fn with_auth_header(mut self, token: &str) -> Self {
+  pub fn with_auth_header(mut self, token: &str) -> Self 
+{
     self.headers.insert(
       "Authorization",
       format!("Bearer {}", token).parse().unwrap()
@@ -243,7 +265,8 @@ where
 {
   type Error = reqwest::Error;
   
-  async fn fetch_component(&self) -> Result<T, Self::Error> {
+  async fn fetch_component(&self) -> Result<T, Self::Error> 
+{
     self.client
       .get(&self.url)
       .headers(self.headers.clone())
@@ -258,22 +281,26 @@ where
 #### **Configuration Service Fetchers**
 ```rust
 // Consul KV fetcher
-pub struct ConsulFetcher {
+pub struct ConsulFetcher 
+{
   client: consul::Client,
   key: String,
 }
 
 #[async_trait]
-impl ComponentFetcher<String> for ConsulFetcher {
+impl ComponentFetcher<String> for ConsulFetcher 
+{
   type Error = consul::Error;
   
-  async fn fetch_component(&self) -> Result<String, Self::Error> {
+  async fn fetch_component(&self) -> Result<String, Self::Error> 
+{
     self.client.get_kv(&self.key).await
   }
 }
 
 // Vault secret fetcher  
-pub struct VaultFetcher {
+pub struct VaultFetcher 
+{
   client: vault::Client,
   secret_path: String,
   field: Option<String>,
@@ -286,7 +313,8 @@ where
 {
   type Error = vault::Error;
   
-  async fn fetch_component(&self) -> Result<T, Self::Error> {
+  async fn fetch_component(&self) -> Result<T, Self::Error> 
+{
     let secret = self.client.read_secret(&self.secret_path).await?;
     
     if let Some(field) = &self.field {
@@ -305,7 +333,8 @@ where
 #### **Streaming Components**
 ```rust
 #[derive(AsyncAssign)]
-struct StreamingConfig {
+struct StreamingConfig 
+{
   #[component(stream_from = "kafka", topic = "config-updates")]
   live_settings: Settings,
   
@@ -313,8 +342,11 @@ struct StreamingConfig {
   realtime_flags: FeatureFlags,
 }
 
-impl StreamingConfig {
-  async fn watch_for_updates(&mut self) -> impl Stream<Item = ConfigUpdate> {
+impl StreamingConfig 
+{
+  async fn watch_for_updates(&mut self) -> impl Stream<Item = ConfigUpdate> 
+
+{
     // Return stream of configuration updates
   }
 }
@@ -323,7 +355,8 @@ impl StreamingConfig {
 #### **Cached Async Components**
 ```rust
 #[derive(AsyncAssign)]
-struct CachedConfig {
+struct CachedConfig 
+{
   #[component(
     fetch_from = "api", 
     cache_for = "3600",  // Cache for 1 hour
@@ -333,8 +366,10 @@ struct CachedConfig {
 }
 
 // Generates caching logic
-impl CachedConfig {
-  async fn fetch_with_cache() -> Result<Self, ComponentError> {
+impl CachedConfig 
+{
+  async fn fetch_with_cache() -> Result<Self, ComponentError> 
+{
     // Check cache first, fetch if expired, update cache
   }
 }
@@ -343,7 +378,8 @@ impl CachedConfig {
 #### **Retry and Circuit Breaker**
 ```rust
 #[derive(AsyncAssign)]
-struct ResilientConfig {
+struct ResilientConfig 
+{
   #[component(
     fetch_from = "remote_api",
     retry_attempts = "3",
@@ -403,9 +439,11 @@ mod tests {
   use super::*;
   
   #[tokio::test]
-  async fn test_async_assignment() {
+  async fn test_async_assignment() 
+{
     #[derive(AsyncAssign, Default)]
-    struct TestConfig {
+    struct TestConfig 
+{
       value: String,
     }
     
@@ -416,9 +454,11 @@ mod tests {
   }
   
   #[tokio::test]
-  async fn test_concurrent_fetching() {
+  async fn test_concurrent_fetching() 
+{
     #[derive(AsyncAssign)]
-    struct TestConfig {
+    struct TestConfig 
+{
       #[component(fetch_from = "mock_api")]
       api_value: String,
       
@@ -439,7 +479,8 @@ mod tests {
 ```rust
 // tests/async_integration.rs
 #[tokio::test]
-async fn test_database_fetcher() {
+async fn test_database_fetcher() 
+{
   // Setup test database
   let pool = sqlx::PgPool::connect("postgresql://test:test@localhost/test")
     .await
@@ -457,7 +498,8 @@ async fn test_database_fetcher() {
 }
 
 #[tokio::test]
-async fn test_api_fetcher() {
+async fn test_api_fetcher() 
+{
   use wiremock::{Mock, MockServer, ResponseTemplate};
   
   let mock_server = MockServer::start().await;
