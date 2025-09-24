@@ -32,6 +32,7 @@ mod private
     pub sample_count : usize,
   }
 
+  #[ cfg( feature = "benchmarks" ) ]
   impl BenchmarkResult
   {
     /// Calculate relative performance compared to baseline
@@ -83,6 +84,63 @@ mod private
       {
         ( self.std_dev_nanos / self.average_time_nanos ) * 100.0
       }
+    }
+
+    /// Create BenchmarkResult from timing samples
+    #[ cfg( feature = "benchmarks" ) ]
+    pub fn from_samples( algorithm_name : &str, times : Vec< core::time::Duration > ) -> Self
+    {
+      if times.is_empty()
+      {
+        return Self
+        {
+          algorithm_name : algorithm_name.to_string(),
+          average_time_nanos : 0.0,
+          std_dev_nanos : 0.0,
+          min_time_nanos : 0,
+          max_time_nanos : 0,
+          sample_count : 0,
+        };
+      }
+
+      let times_nanos : Vec< f64 > = times.iter().map( |t| t.as_nanos() as f64 ).collect();
+
+      let sum : f64 = times_nanos.iter().sum();
+      let mean = sum / times_nanos.len() as f64;
+
+      let variance = times_nanos.iter()
+        .map( |t| ( t - mean ).powi( 2 ) )
+        .sum::< f64 >() / times_nanos.len() as f64;
+
+      let std_dev = variance.sqrt();
+
+      let min_time = times.iter().min().unwrap_or( &core::time::Duration::ZERO ).as_nanos() as u64;
+      let max_time = times.iter().max().unwrap_or( &core::time::Duration::ZERO ).as_nanos() as u64;
+
+      Self
+      {
+        algorithm_name : algorithm_name.to_string(),
+        average_time_nanos : mean,
+        std_dev_nanos : std_dev,
+        min_time_nanos : min_time,
+        max_time_nanos : max_time,
+        sample_count : times.len(),
+      }
+    }
+
+    /// Get coefficient of variation as ratio (0.0 to 1.0) for compatibility
+    #[ cfg( feature = "benchmarks" ) ]
+    pub fn coefficient_of_variation_ratio( &self ) -> f64
+    {
+      self.coefficient_of_variation() / 100.0
+    }
+
+    /// Get average time as Duration for compatibility
+    #[ cfg( feature = "benchmarks" ) ]
+    pub fn average_time( &self ) -> core::time::Duration
+    {
+      #[allow(clippy::cast_possible_truncation)]
+      core::time::Duration::from_nanos( self.average_time_nanos as u64 )
     }
   }
 

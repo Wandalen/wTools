@@ -13,7 +13,7 @@ The Unilang REPL functionality is organized into two feature levels:
 enhanced_repl
 ├── repl (base REPL functionality)
 ├── rustyline (readline library for advanced features)
-└── atty (TTY detection)
+└── std::io::IsTerminal (TTY detection, Rust 1.70+)
 
 repl
 └── (no dependencies - uses std::io only)
@@ -176,7 +176,7 @@ The REPL automatically detects the environment and provides appropriate guidance
 ### TTY Detection
 
 ```rust
-let is_tty = atty::is(atty::Stream::Stdin);
+let is_tty = std::io::stdin().is_terminal();
 
 if is_tty {
     println!("💡 Arrow Key Usage:");

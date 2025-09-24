@@ -703,9 +703,7 @@ impl CliBuilder
     // println!("Building CLI with config: global_prefix={:?}, static_modules={}, dynamic_modules={}, conditional_modules={}",
     //          self.config.global_prefix, self.static_modules.len(), self.dynamic_modules.len(), self.conditional_modules.len());
 
-    #[allow(deprecated)]
-    #[allow(deprecated)]
-        let mut registry = CommandRegistry::new();
+    let mut registry = CommandRegistry::new();
 
     // Set registry mode based on aggregation mode
     let registry_mode = match self.mode
@@ -956,9 +954,7 @@ pub fn aggregate_cli_complex() -> Result< CommandRegistry, Error >
     aggregator.aggregate()?;
 
     // Create and configure registry
-    #[allow(deprecated)]
-    #[allow(deprecated)]
-        let mut registry = crate::CommandRegistry::new();
+    let mut registry = crate::CommandRegistry::new();
     aggregator.register_with_hybrid_registry( &mut registry )?;
 
     Ok( registry )

@@ -49,7 +49,7 @@
 //!   - **Interactive Prompts**: Secure password input with masking
 //!   - **Session Persistence**: History saved across sessions
 //!   - **Terminal Detection**: Auto-fallback to basic REPL in non-interactive environments
-//!   - **Dependencies**: `rustyline`, `atty`
+//!   - **Dependencies**: `rustyline`, `std::io::IsTerminal`
 //!
 //! ### Performance Features
 //! - **`simd`** - SIMD optimizations for parsing and JSON processing
@@ -191,8 +191,8 @@ mod_interface::mod_interface!
   // /// Realistic test data generation for production-like benchmarks.
   // layer realistic_test_data;
 
-  // /// Comparative benchmark structure for side-by-side algorithm performance analysis.
-  // layer comparative_benchmark_structure;
+  /// Comparative benchmark structure for side-by-side algorithm performance analysis.
+  layer comparative_benchmark_structure;
 
   // /// Context-rich benchmark documentation generator for comprehensive reporting.
   // layer context_rich_documentation;

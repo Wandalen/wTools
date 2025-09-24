@@ -1062,9 +1062,7 @@ mod tests
 
   fn create_test_registry() -> CommandRegistry
   {
-    #[allow(deprecated)]
-    #[allow(deprecated)]
-        let mut registry = CommandRegistry::new();
+    let mut registry = CommandRegistry::new();
 
     // Add a simple test command
     let test_command = CommandDefinition::former()
@@ -1120,9 +1118,7 @@ mod tests
       })
     });
 
-    #[allow(deprecated)]
-    #[allow(deprecated)]
-        registry.command_add_runtime( &test_command, test_routine ).unwrap();
+    registry.command_add_runtime( &test_command, test_routine ).unwrap();
     registry
   }
 

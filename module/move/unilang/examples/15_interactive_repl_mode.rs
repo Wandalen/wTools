@@ -10,6 +10,8 @@ use unilang::pipeline::Pipeline;
 use unilang::error::Error;
 #[ cfg( all( feature = "repl", not( feature = "enhanced_repl" ) ) ) ]
 use std::io::{ self, Write };
+#[ cfg( feature = "enhanced_repl" ) ]
+use std::io::IsTerminal;
 
 #[ cfg( feature = "enhanced_repl" ) ]
 use rustyline::DefaultEditor;
@@ -429,7 +431,7 @@ fn run_enhanced_repl( pipeline : &Pipeline ) -> Result< (), Box< dyn core::error
   println!();
   
   // Check if we're running in an interactive terminal
-  let is_tty = atty::is( atty::Stream::Stdin );
+  let is_tty = std::io::stdin().is_terminal();
   
   if is_tty
   {

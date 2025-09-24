@@ -37,7 +37,6 @@ fn main()
 fn run() -> Result< (), unilang::error::Error >
 {
   // 1. Initialize Command Registry
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
 
   // 2. Define and Register Commands with Routines
@@ -92,7 +91,6 @@ fn run() -> Result< (), unilang::error::Error >
 
     unreachable!();
   });
-  #[allow(deprecated)]
     registry.command_add_runtime( &math_add_def, math_add_routine )?;
 
   // .math.sub command
@@ -145,7 +143,6 @@ fn run() -> Result< (), unilang::error::Error >
     }
     unreachable!();
   });
-  #[allow(deprecated)]
     registry.command_add_runtime( &math_sub_def, math_sub_routine )?;
 
   // .greet command
@@ -194,7 +191,6 @@ fn run() -> Result< (), unilang::error::Error >
       format : "text".to_string(),
     })
   });
-  #[allow(deprecated)]
     registry.command_add_runtime( &greet_def, greet_routine )?;
 
   // .config.set command
@@ -245,7 +241,6 @@ fn run() -> Result< (), unilang::error::Error >
       format : "text".to_string(),
     })
   });
-  #[allow(deprecated)]
     registry.command_add_runtime( &config_set_def, config_set_routine )?;
 
   // .system.echo command
@@ -288,7 +283,6 @@ fn run() -> Result< (), unilang::error::Error >
       format : "text".to_string(),
     })
   });
-  #[allow(deprecated)]
     registry.command_add_runtime( &echo_def, echo_routine )?;
 
   // .files.cat command
@@ -361,7 +355,6 @@ fn run() -> Result< (), unilang::error::Error >
       ))
     }
   });
-  #[allow(deprecated)]
     registry.command_add_runtime( &cat_def, cat_routine )?;
 
   // 3. Parse Command Line Arguments

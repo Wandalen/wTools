@@ -24,6 +24,7 @@ use std::time::Instant;
 use std::collections::HashMap;
 use tempfile::tempdir;
 use std::fs;
+use unilang::data::CommandDefinition;
 
 // Test the static command registry performance requirements
 #[ test ]
@@ -366,59 +367,71 @@ fn test_complete_workflow() -> Result< (), Box< dyn core::error::Error > >
 
 // === Helper Functions and Mock Implementations ===
 
-fn create_mock_static_commands( count: usize ) -> HashMap< String, MockCommandDef >
+fn create_mock_static_commands( count: usize ) -> HashMap< String, CommandDefinition >
 {
   let mut commands = HashMap::new();
 
   for i in 0..count
   {
   let name = format!( ".test_command_{i}" );
-  commands.insert( name, MockCommandDef
-  {
-  name: format!( "test_command_{i}" ),
-  description: format!( "Test command number {i}" ),
- });
+  commands.insert( name, create_minimal_command_definition(
+    &format!( "test_command_{i}" ),
+    &format!( "Test command number {i}" )
+  ));
  }
 
   commands
 }
 
-#[ derive( Debug, Clone ) ]
-#[ allow( dead_code ) ]
-struct MockCommandDef
+/// Create minimal `CommandDefinition` for testing
+fn create_minimal_command_definition( name: &str, description: &str ) -> CommandDefinition
 {
-  name: String,
-  description: String,
+  CommandDefinition::former()
+    .name( name )
+    .namespace( String::new() )
+    .description( description.to_string() )
+    .hint( "Test command" )
+    .status( "stable" )
+    .version( "1.0.0" )
+    .aliases( vec![] )
+    .tags( vec![] )
+    .permissions( vec![] )
+    .idempotent( true )
+    .deprecation_message( String::new() )
+    .http_method_hint( "GET".to_string() )
+    .examples( vec![] )
+    .arguments( vec![] )
+    .form()
 }
 
-fn create_database_cli_commands() -> Vec< MockCommandDef >
+fn create_database_cli_commands() -> Vec< CommandDefinition >
 {
   vec![
-  MockCommandDef { name: "migrate".to_string(), description: "Run database migrations".to_string() },
-  MockCommandDef { name: "backup".to_string(), description: "Create database backup".to_string() },
-  MockCommandDef { name: "restore".to_string(), description: "Restore database from backup".to_string() },
+  create_minimal_command_definition( "migrate", "Run database migrations" ),
+  create_minimal_command_definition( "backup", "Create database backup" ),
+  create_minimal_command_definition( "restore", "Restore database from backup" ),
  ]
 }
 
-fn create_file_cli_commands() -> Vec< MockCommandDef >
+fn create_file_cli_commands() -> Vec< CommandDefinition >
 {
   vec![
-  MockCommandDef { name: "copy".to_string(), description: "Copy files and directories".to_string() },
-  MockCommandDef { name: "move".to_string(), description: "Move files and directories".to_string() },
-  MockCommandDef { name: "delete".to_string(), description: "Delete files and directories".to_string() },
+  create_minimal_command_definition( "copy", "Copy files and directories" ),
+  create_minimal_command_definition( "move", "Move files and directories" ),
+  create_minimal_command_definition( "delete", "Delete files and directories" ),
  ]
 }
 
-fn create_network_cli_commands() -> Vec< MockCommandDef >
+fn create_network_cli_commands() -> Vec< CommandDefinition >
 {
   vec![
-  MockCommandDef { name: "ping".to_string(), description: "Ping network host".to_string() },
-  MockCommandDef { name: "trace".to_string(), description: "Trace network route".to_string() },
-  MockCommandDef { name: "scan".to_string(), description: "Scan network ports".to_string() },
+  create_minimal_command_definition( "ping", "Ping network host" ),
+  create_minimal_command_definition( "trace", "Trace network route" ),
+  create_minimal_command_definition( "scan", "Scan network ports" ),
  ]
 }
 
-fn aggregate_cli_modules( modules: Vec< ( &str, Vec< MockCommandDef > ) > ) -> HashMap< String, MockCommandDef >
+fn aggregate_cli_modules( modules: Vec< ( &str, Vec< CommandDefinition > ) > ) -> HashMap< String, CommandDefinition >
 {
   let mut aggregated = HashMap::new();
 
@@ -434,7 +447,7 @@ fn aggregate_cli_modules( modules: Vec< ( &str, Vec< MockCommandDef > ) > ) -> H
   aggregated
 }
 
-fn detect_conflicts( commands: &HashMap< String, MockCommandDef > ) -> Vec< String >
+fn detect_conflicts( commands: &HashMap< String, CommandDefinition > ) -> Vec< String >
 {
   // Simple conflict detection - in real implementation would be more sophisticated
   let mut seen_names = std::collections::HashSet::new();
@@ -470,12 +483,12 @@ fn discover_yaml_files( dir: &std::path::Path ) -> Result< Vec< std::path::PathB
   Ok( yaml_files )
 }
 
-fn process_yaml_files( _files: &[ std::path::PathBuf ] ) -> Vec< MockCommandDef >
+fn process_yaml_files( _files: &[ std::path::PathBuf ] ) -> Vec< CommandDefinition >
 {
   // Mock YAML processing - in real implementation would parse actual YAML
   vec![
-  MockCommandDef { name: "migrate".to_string(), description: "Database migration from YAML".to_string() },
-  MockCommandDef { name: "copy".to_string(), description: "File copy from YAML".to_string() },
+  create_minimal_command_definition( "migrate", "Database migration from YAML" ),
+  create_minimal_command_definition( "copy", "File copy from YAML" ),
  ]
 }
 
@@ -486,9 +499,9 @@ enum ConflictResolution
 }
 
 fn aggregate_yaml_commands(
-  commands: Vec< MockCommandDef >,
+  commands: Vec< CommandDefinition >,
   _resolution: ConflictResolution
-) -> HashMap< String, MockCommandDef >
+) -> HashMap< String, CommandDefinition >
 {
   let mut aggregated = HashMap::new();
 
@@ -649,15 +662,14 @@ commands:
 }
 
 fn generate_static_command_map(
-  _commands: Vec< MockCommandDef >
-) -> HashMap< String, MockCommandDef >
+  _commands: Vec< CommandDefinition >
+) -> HashMap< String, CommandDefinition >
 {
   let mut static_map = HashMap::new();
-  static_map.insert( ".test".to_string(), MockCommandDef
-  {
-  name: "test".to_string(),
-  description: "Static test command".to_string(),
- });
+  static_map.insert( ".test".to_string(), create_minimal_command_definition(
+    "test",
+    "Static test command"
+  ));
 
   static_map
 }
@@ -669,7 +681,7 @@ struct PerformanceResult
   average_latency: Duration,
 }
 
-fn test_command_execution_performance( commands: &HashMap< String, MockCommandDef > ) -> PerformanceResult
+fn test_command_execution_performance( commands: &HashMap< String, CommandDefinition > ) -> PerformanceResult
 {
   let mut lookup_times = Vec::new();
 
@@ -700,7 +712,7 @@ struct BenchmarkResults
   performance_results: PerformanceResult,
 }
 
-fn run_comprehensive_benchmarks( commands: &HashMap< String, MockCommandDef > ) -> BenchmarkResults
+fn run_comprehensive_benchmarks( commands: &HashMap< String, CommandDefinition > ) -> BenchmarkResults
 {
   BenchmarkResults
   {

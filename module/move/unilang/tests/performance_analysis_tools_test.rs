@@ -23,66 +23,23 @@
 //! | Performance | `test_large_dataset_*` | Verify handling of large benchmark datasets | None |
 //! | Serialization | `test_*_serialization` | Verify data persistence and loading | serde |
 
+#[ cfg( feature = "benchmarks" ) ]
 use std::collections::HashMap;
+#[ cfg( feature = "benchmarks" ) ]
 use core::time::Duration;
 
-// Test structures for comprehensive testing
-#[ derive( Debug, Clone, PartialEq ) ]
-pub struct MockBenchmarkResult
+// Import real benchmark structures
+#[ cfg( feature = "benchmarks" ) ]
+use unilang::comparative_benchmark_structure::BenchmarkResult;
+
+// Type alias for compatibility during transition
+#[ cfg( feature = "benchmarks" ) ]
+type TestBenchmarkResult = BenchmarkResult;
+
+#[ cfg( feature = "benchmarks" ) ]
+mod benchmarks_tests
 {
-  pub times: Vec< Duration >,
-  pub algorithm_name: String,
-  pub data_size: usize,
-}
-
-impl MockBenchmarkResult
-{
-  #[must_use]
-  pub fn new( algorithm_name: &str, times: Vec< Duration >, data_size: usize ) -> Self
-  {
-  Self
-  {
-  times,
-  algorithm_name: algorithm_name.to_string(),
-  data_size,
- }
- }
-
-  #[must_use]
-  pub fn coefficient_of_variation( &self ) -> f64
-  {
-  if self.times.is_empty()
-  {
-  return 0.0;
- }
-
-  let mean = self.times.iter().map( |t| t.as_nanos() as f64 ).sum::< f64 >() / self.times.len() as f64;
-  if mean == 0.0
-  {
-  return 0.0;
- }
-
-  let variance = self.times.iter()
-  .map( |t| ( t.as_nanos() as f64 - mean ).powi( 2 ) )
-  .sum::< f64 >() / self.times.len() as f64;
-
-  variance.sqrt() / mean
- }
-
-  #[must_use]
-  pub fn average_time( &self ) -> Duration
-  {
-  if self.times.is_empty()
-  {
-  return Duration::ZERO;
- }
-
-  let total_nanos: u128 = self.times.iter().map( Duration::as_nanos ).sum();
-  #[allow(clippy::cast_possible_truncation)]
-  let result = u64::try_from( total_nanos / self.times.len() as u128 ).unwrap_or( u64::MAX );
-  Duration::from_nanos( result )
- }
-}
+  use super::*;
 
 #[ derive( Debug, Clone, PartialEq ) ]
 pub enum CvQuality
@@ -179,11 +136,11 @@ impl CvAnalyzer
  }
 
   #[must_use]
-  pub fn analyze_result( &self, name: &str, result: &MockBenchmarkResult ) -> CvAnalysisReport
+  pub fn analyze_result( &self, name: &str, result: &BenchmarkResult ) -> CvAnalysisReport
   {
-  let cv_percent = result.coefficient_of_variation() * 100.0;
+  let cv_percent = result.coefficient_of_variation_ratio() * 100.0;
   let quality = CvQuality::from_cv_percentage( cv_percent );
-  let meets_requirements = result.coefficient_of_variation() <= self.cv_tolerance;
+  let meets_requirements = result.coefficient_of_variation_ratio() <= self.cv_tolerance;
 
   CvAnalysisReport
   {
@@ -193,8 +150,8 @@ impl CvAnalyzer
   meets_environment_requirements: meets_requirements,
   environment: self.environment.clone(),
   cv_tolerance: self.cv_tolerance,
-  current_sample_size: result.times.len(),
-  recommended_sample_size: self.calculate_recommended_size( result.coefficient_of_variation() ),
+  current_sample_size: result.sample_count,
+  recommended_sample_size: self.calculate_recommended_size( result.coefficient_of_variation_ratio() ),
  }
  }
 
@@ -360,8 +317,8 @@ impl ComparisonResult
 pub struct OptimizationWorkflow
 {
   name: String,
-  baseline: Option< MockBenchmarkResult >,
-  current: Option< MockBenchmarkResult >,
+  baseline: Option< BenchmarkResult >,
+  current: Option< BenchmarkResult >,
   history: Vec< OptimizationStep >,
 }
 
@@ -369,7 +326,7 @@ pub struct OptimizationWorkflow
 pub struct OptimizationStep
 {
   step_name: String,
-  result: MockBenchmarkResult,
+  result: BenchmarkResult,
   improvement_percent: f64,
   is_regression: bool,
 }
@@ -389,14 +346,14 @@ impl OptimizationWorkflow
  }
 
   #[must_use]
-  pub fn set_baseline( mut self, baseline: MockBenchmarkResult ) -> Self
+  pub fn set_baseline( mut self, baseline: BenchmarkResult ) -> Self
   {
   self.baseline = Some( baseline );
   self
  }
 
   #[must_use]
-  pub fn add_optimization_step( mut self, step_name: &str, result: MockBenchmarkResult ) -> Self
+  pub fn add_optimization_step( mut self, step_name: &str, result: BenchmarkResult ) -> Self
   {
   let improvement_percent = if let Some( ref baseline ) = self.baseline
   {
@@ -476,6 +433,7 @@ impl OptimizationWorkflow
 // === Tests ===
 
 /// Test CV analyzer creation and configuration
+#[ cfg( feature = "benchmarks" ) ]
 #[ test ]
 fn test_cv_analyzer_creation()
 {
@@ -524,8 +482,8 @@ fn test_cv_calculation()
 {
   // Test perfect consistency (CV = 0)
   let consistent_times = vec![ Duration::from_nanos( 100 ); 10 ];
-  let consistent_result = MockBenchmarkResult::new( "consistent", consistent_times, 1000 );
-  assert!( consistent_result.coefficient_of_variation() < 0.001 );
+  let consistent_result = BenchmarkResult::from_samples( "consistent", consistent_times);
+  assert!( consistent_result.coefficient_of_variation_ratio() < 0.001 );
 
   // Test high variation
   let variable_times = vec![
@@ -534,12 +492,12 @@ fn test_cv_calculation()
   Duration::from_nanos( 150 ),
   Duration::from_nanos( 200 ),
  ];
-  let variable_result = MockBenchmarkResult::new( "variable", variable_times, 1000 );
-  assert!( variable_result.coefficient_of_variation() > 0.2 );
+  let variable_result = BenchmarkResult::from_samples( "variable", variable_times);
+  assert!( variable_result.coefficient_of_variation_ratio() > 0.2 );
 
   // Test empty case
-  let empty_result = MockBenchmarkResult::new( "empty", vec![], 1000 );
-  assert!( empty_result.coefficient_of_variation().abs() < f64::EPSILON );
+  let empty_result = BenchmarkResult::from_samples( "empty", vec![]);
+  assert!( empty_result.coefficient_of_variation_ratio().abs() < f64::EPSILON );
 }
 
 /// Test CV analysis report generation
@@ -550,7 +508,7 @@ fn test_cv_analysis_report()
 
   // Test excellent quality result
   let excellent_times = vec![ Duration::from_nanos( 100 ), Duration::from_nanos( 102 ), Duration::from_nanos( 98 ) ];
-  let excellent_result = MockBenchmarkResult::new( "excellent_algo", excellent_times, 1000 );
+  let excellent_result = BenchmarkResult::from_samples( "excellent_algo", excellent_times);
 
   let report = analyzer.analyze_result( "excellent_test", &excellent_result );
 
@@ -569,13 +527,13 @@ fn test_sample_size_recommendations()
   let analyzer = CvAnalyzer::with_config( 0.10, "Production" );
 
   // Test low CV - should recommend minimum samples
-  let low_cv_result = MockBenchmarkResult::new( "low_cv", vec![ Duration::from_nanos( 100 ); 5 ], 1000 );
+  let low_cv_result = BenchmarkResult::from_samples( "low_cv", vec![ Duration::from_nanos( 100 ); 5 ]);
   let report = analyzer.analyze_result( "test", &low_cv_result );
   assert_eq!( report.recommended_sample_size, 20 );
 
   // Test high CV - should recommend more samples
   let high_cv_times = vec![ Duration::from_nanos( 50 ), Duration::from_nanos( 150 ) ];
-  let high_cv_result = MockBenchmarkResult::new( "high_cv", high_cv_times, 1000 );
+  let high_cv_result = BenchmarkResult::from_samples( "high_cv", high_cv_times);
   let report = analyzer.analyze_result( "test", &high_cv_result );
   assert!( report.recommended_sample_size > 20 );
 }
@@ -649,7 +607,7 @@ fn test_optimization_workflow_creation()
 fn test_optimization_workflow_baseline()
 {
   let baseline_times = vec![ Duration::from_nanos( 1000 ); 10 ];
-  let baseline = MockBenchmarkResult::new( "baseline", baseline_times, 1000 );
+  let baseline = BenchmarkResult::from_samples( "baseline", baseline_times);
 
   let workflow = OptimizationWorkflow::new( "Test Optimization" )
   .set_baseline( baseline );
@@ -662,11 +620,11 @@ fn test_optimization_workflow_baseline()
 fn test_optimization_workflow_steps()
 {
   let baseline_times = vec![ Duration::from_nanos( 1000 ); 10 ];
-  let baseline = MockBenchmarkResult::new( "baseline", baseline_times, 1000 );
+  let baseline = BenchmarkResult::from_samples( "baseline", baseline_times);
 
   // First optimization - 20% improvement
   let optimized_times = vec![ Duration::from_nanos( 800 ); 10 ];
-  let optimized = MockBenchmarkResult::new( "optimized", optimized_times, 1000 );
+  let optimized = BenchmarkResult::from_samples( "optimized", optimized_times);
 
   let workflow = OptimizationWorkflow::new( "Test Optimization" )
   .set_baseline( baseline )
@@ -685,11 +643,11 @@ fn test_optimization_workflow_steps()
 fn test_optimization_workflow_regression()
 {
   let baseline_times = vec![ Duration::from_nanos( 1000 ); 10 ];
-  let baseline = MockBenchmarkResult::new( "baseline", baseline_times, 1000 );
+  let baseline = BenchmarkResult::from_samples( "baseline", baseline_times);
 
   // Regression - 50% slower
   let regression_times = vec![ Duration::from_nanos( 1500 ); 10 ];
-  let regression = MockBenchmarkResult::new( "regression", regression_times, 1000 );
+  let regression = BenchmarkResult::from_samples( "regression", regression_times);
 
   let workflow = OptimizationWorkflow::new( "Test Optimization" )
   .set_baseline( baseline )
@@ -708,10 +666,10 @@ fn test_statistical_significance()
 {
   // Test significant improvement
   let baseline_times = vec![ Duration::from_nanos( 1000 ); 50 ];
-  let baseline = MockBenchmarkResult::new( "baseline", baseline_times, 1000 );
+  let baseline = BenchmarkResult::from_samples( "baseline", baseline_times);
 
   let improved_times = vec![ Duration::from_nanos( 800 ); 50 ];
-  let improved = MockBenchmarkResult::new( "improved", improved_times, 1000 );
+  let improved = BenchmarkResult::from_samples( "improved", improved_times);
 
   let significance = calculate_statistical_significance( &baseline, &improved );
   assert!( significance.is_significant );
@@ -719,7 +677,7 @@ fn test_statistical_significance()
 
   // Test non-significant change
   let similar_times = vec![ Duration::from_nanos( 990 ); 50 ];
-  let similar = MockBenchmarkResult::new( "similar", similar_times, 1000 );
+  let similar = BenchmarkResult::from_samples( "similar", similar_times);
 
   let significance = calculate_statistical_significance( &baseline, &similar );
   assert!( !significance.is_significant );
@@ -737,7 +695,7 @@ fn test_benchmark_quality_assessment()
     Duration::from_nanos( 1000 ), Duration::from_nanos( 1001 ), Duration::from_nanos( 999 ),
     Duration::from_nanos( 1000 ), Duration::from_nanos( 1001 ), Duration::from_nanos( 999 )
   ];
-  let high_quality = MockBenchmarkResult::new( "high_quality", high_quality_times, 1000 );
+  let high_quality = BenchmarkResult::from_samples( "high_quality", high_quality_times);
 
   let quality = assess_benchmark_quality( &high_quality );
   assert!( quality.is_reliable );
@@ -750,7 +708,7 @@ fn test_benchmark_quality_assessment()
     Duration::from_nanos( 700 ), Duration::from_nanos( 1300 ), Duration::from_nanos( 900 ),
     Duration::from_nanos( 1100 ), Duration::from_nanos( 750 ), Duration::from_nanos( 1250 )
   ];
-  let low_quality = MockBenchmarkResult::new( "low_quality", low_quality_times, 1000 );
+  let low_quality = BenchmarkResult::from_samples( "low_quality", low_quality_times);
 
   let quality = assess_benchmark_quality( &low_quality );
   assert!( !quality.is_reliable );
@@ -769,7 +727,7 @@ fn test_large_dataset_handling()
   large_times.push( Duration::from_nanos( 1000 + ( i % 100 ) as u64 ) );
  }
 
-  let large_result = MockBenchmarkResult::new( "large_test", large_times, 100_000 );
+  let large_result = BenchmarkResult::from_samples( "large_test", large_times);
 
   let analyzer = CvAnalyzer::new();
   let report = analyzer.analyze_result( "large_benchmark", &large_result );
@@ -783,7 +741,7 @@ fn test_large_dataset_handling()
 fn test_error_handling()
 {
   // Test empty benchmark result
-  let empty_result = MockBenchmarkResult::new( "empty", vec![], 1000 );
+  let empty_result = BenchmarkResult::from_samples( "empty", vec![]);
   let analyzer = CvAnalyzer::new();
   let report = analyzer.analyze_result( "empty_test", &empty_result );
 
@@ -791,7 +749,7 @@ fn test_error_handling()
   assert_eq!( report.current_sample_size, 0 );
 
   // Test single sample
-  let single_sample = MockBenchmarkResult::new( "single", vec![ Duration::from_nanos( 1000 ) ], 1000 );
+  let single_sample = BenchmarkResult::from_samples( "single", vec![ Duration::from_nanos( 1000 ) ]);
   let report = analyzer.analyze_result( "single_test", &single_sample );
 
   assert_eq!( report.current_sample_size, 1 );
@@ -804,10 +762,10 @@ fn test_analysis_tools_integration()
 {
   // Setup benchmark results
   let times_a = vec![ Duration::from_nanos( 1000 ); 20 ];
-  let result_a = MockBenchmarkResult::new( "algorithm_a", times_a, 1000 );
+  let result_a = BenchmarkResult::from_samples( "algorithm_a", times_a);
 
   let times_b = vec![ Duration::from_nanos( 800 ); 20 ];
-  let result_b = MockBenchmarkResult::new( "algorithm_b", times_b, 1000 );
+  let result_b = BenchmarkResult::from_samples( "algorithm_b", times_b);
 
   // CV Analysis
   let analyzer = CvAnalyzer::with_config( 0.10, "Production" );
@@ -849,7 +807,7 @@ pub struct StatisticalSignificance
   pub confidence_level: f64,
 }
 
-fn calculate_statistical_significance( baseline: &MockBenchmarkResult, improved: &MockBenchmarkResult ) -> StatisticalSignificance
+fn calculate_statistical_significance( baseline: &BenchmarkResult, improved: &BenchmarkResult ) -> StatisticalSignificance
 {
   let baseline_avg = baseline.average_time().as_nanos() as f64;
   let improved_avg = improved.average_time().as_nanos() as f64;
@@ -864,7 +822,7 @@ fn calculate_statistical_significance( baseline: &MockBenchmarkResult, improved:
  };
 
   // Simple significance test - in real implementation would use proper statistical tests
-  let is_significant = improvement_percent.abs() > 5.0 && baseline.times.len() >= 10 && improved.times.len() >= 10;
+  let is_significant = improvement_percent.abs() > 5.0 && baseline.sample_count >= 10 && improved.sample_count >= 10;
 
   StatisticalSignificance
   {
@@ -883,10 +841,10 @@ pub struct BenchmarkQuality
   pub quality_score: f64,
 }
 
-fn assess_benchmark_quality( result: &MockBenchmarkResult ) -> BenchmarkQuality
+fn assess_benchmark_quality( result: &BenchmarkResult ) -> BenchmarkQuality
 {
-  let cv_percentage = result.coefficient_of_variation() * 100.0;
-  let sample_size = result.times.len();
+  let cv_percentage = result.coefficient_of_variation_ratio() * 100.0;
+  let sample_size = result.sample_count;
 
   let is_reliable = cv_percentage < 10.0 && sample_size >= 10;
 
@@ -903,3 +861,5 @@ fn assess_benchmark_quality( result: &MockBenchmarkResult ) -> BenchmarkQuality
   quality_score,
  }
 }
+
+} // End of benchmarks feature gate
