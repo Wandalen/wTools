@@ -16,8 +16,7 @@ Tools for reasoning and knowledge processing.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
-[lints]
-workspace = true
+[workspace]
 
 [package.metadata.docs.rs]
 features = [ "full" ]
@@ -31,4 +30,3 @@ enabled = []
 [dependencies]
 
 [dev-dependencies]
-test_tools = { workspace = true, features = [ "full" ] }
