@@ -1,8 +1,7 @@
-#[cfg(feature = "non_existent_feature")]
 //! Before/after optimization workflow system for systematic performance tracking
 //!
 //! Implements benchkit usage.md "Before/After Optimization Workflow" requirements:
-//! - 3-step systematic workflow: baseline -> optimize -> measure impact  
+//! - 3-step systematic workflow: baseline -> optimize -> measure impact
 //! - Baseline establishment and persistence
 //! - Performance regression detection and reporting
 //! - Statistical significance validation of improvements
