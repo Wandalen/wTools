@@ -463,7 +463,7 @@ default-features = false
 ## process tools
 
 [workspace.dependencies.process_tools]
-version = "~0.17.0"
+version = "~0.18.0"
 path = "module/core/process_tools"
 default-features = false
 
