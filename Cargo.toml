@@ -523,7 +523,7 @@ default-features = false
 ## ca
 
 [workspace.dependencies.wca]
-version = "~0.30.0"
+version = "~0.31.0"
 path = "module/move/wca"
 
 ## censor
