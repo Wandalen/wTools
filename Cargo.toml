@@ -123,7 +123,7 @@ version = "~0.1.4"
 path = "module/alias/std_x"
 
 [workspace.dependencies.unilang_parser]
-version = "~0.13.0"
+version = "~0.14.0"
 path = "module/move/unilang_parser" # Point to original unilang_parser
 
 
