@@ -562,6 +562,78 @@ impl Parser
    SourceLocation ::None => 0, // Default or handle error appropriately
  };
 
+  // First, consume any additional tokens for multi-word values
+  // Continue until we hit another named argument or the end
+  loop
+  {
+   // Check what the next token is without borrowing
+   let should_continue = match items_iter.peek()
+   {
+  Some( next_token ) =>
+  {
+   match &next_token.kind
+   {
+  UnilangTokenKind ::Identifier( _ ) =>
+  {
+   // Look ahead to see if this identifier is followed by ::
+   let mut temp_iter = items_iter.clone();
+   temp_iter.next(); // Skip the identifier
+   if let Some( lookahead_item ) = temp_iter.peek()
+   {
+  if let UnilangTokenKind ::Operator( op ) = &lookahead_item.kind
+  {
+   if *op == " :: " || *op == "::"
+   {
+  // This is another named argument, stop consuming
+  false
+ }
+   else
+   {
+  // Not a named argument, continue consuming
+  true
+ }
+ }
+  else
+  {
+   // Not an operator, continue consuming
+   true
+ }
+ }
+   else
+   {
+  // No lookahead available, continue consuming
+  true
+ }
+ }
+  UnilangTokenKind ::Number( _ ) => true, // Numbers can be part of multi-word values
+  _ => false, // Other token types end the value
+ }
+ }
+  None => false, // No more tokens
+ };
+
+ if !should_continue
+ {
+  break;
+ }
+
+ // Now safely consume the token
+ if let Some( consumed_token ) = items_iter.next()
+ {
+  current_value.push( ' ' );
+  current_value.push_str( &consumed_token.inner.string );
+  current_value_end_location = match consumed_token.source_location()
+  {
+   SourceLocation ::StrSpan { end, .. } => end,
+   SourceLocation ::None => current_value_end_location,
+ };
+ }
+ else
+ {
+  break;
+ }
+ }
+
   // Loop to consume subsequent path segments
   loop
   {

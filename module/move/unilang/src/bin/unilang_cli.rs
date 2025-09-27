@@ -23,6 +23,55 @@ use unilang::semantic::SemanticAnalyzer;
 use unilang::types::Value;
 use unilang_parser::{ Parser, UnilangParserOptions };
 
+/// Rejoins command line arguments that were incorrectly split by the shell
+/// when they contain quoted multi-word values.
+///
+/// For example, if the shell splits `query::"llm rust"` into `["query::\"llm", "rust\""]`,
+/// this function will rejoin them back to `query::"llm rust"`.
+fn rejoin_broken_quoted_args( args: &[ String ] ) -> String
+{
+  let mut result = Vec::new();
+  let mut i = 0;
+
+  while i < args.len()
+  {
+    let current_arg = &args[ i ];
+
+    // Check if this argument has an unmatched opening quote
+    if current_arg.contains( "::\"" ) && !current_arg.ends_with( '"' )
+    {
+      // This argument starts a quoted value, look for the closing quote
+      let mut combined_arg = current_arg.clone();
+      i += 1;
+
+      // Keep adding arguments until we find the closing quote
+      while i < args.len()
+      {
+        combined_arg.push( ' ' );
+        combined_arg.push_str( &args[ i ] );
+
+        if args[ i ].ends_with( '"' )
+        {
+          // Found the closing quote
+          break;
+        }
+        i += 1;
+      }
+
+      result.push( combined_arg );
+    }
+    else
+    {
+      // Regular argument, add as-is
+      result.push( current_arg.clone() );
+    }
+
+    i += 1;
+  }
+
+  result.join( " " )
+}
+
 fn main()
 {
   if let Err( err ) = run()
@@ -357,6 +406,94 @@ fn run() -> Result< (), unilang::error::Error >
   });
     registry.command_add_runtime( &cat_def, cat_routine )?;
 
+  // .video.search command (user's specific request)
+  let video_search_def = CommandDefinition::former()
+  .name( ".search" )
+  .namespace( ".video".to_string() )
+  .description( "Search for videos with query and optional filters".to_string() )
+  .hint( "Search video content with multi-word query support".to_string() )
+  .status( "stable".to_string() )
+  .version( "1.0.0".to_string() )
+  .tags( vec![ "video".to_string(), "search".to_string() ] )
+  .aliases( vec![] )
+  .permissions( vec![] )
+  .idempotent( true )
+  .deprecation_message( String::new() )
+  .http_method_hint( String::new() )
+  .examples( vec![
+    ".video.search query::\"rust programming\"".to_string(),
+    ".video.search query::\"llm rust\" title::\"Tutorial\"".to_string()
+  ] )
+  .arguments( vec!
+  [
+    ArgumentDefinition::former()
+    .name( "query" )
+    .description( "Search query (supports multi-word quoted values)".to_string() )
+    .hint( "The search query text".to_string() )
+    .kind( ArgumentKind::String )
+    .aliases( vec![ "q".to_string() ] )
+    .tags( vec![ "search".to_string() ] )
+    .attributes( ArgumentAttributes
+    {
+      optional : false,
+      multiple : false,
+      default : None,
+      sensitive : false,
+      interactive : false,
+    })
+    .form(),
+    ArgumentDefinition::former()
+    .name( "title" )
+    .description( "Optional title filter".to_string() )
+    .hint( "Filter by title".to_string() )
+    .kind( ArgumentKind::String )
+    .aliases( vec![ "t".to_string() ] )
+    .tags( vec![ "filter".to_string() ] )
+    .attributes( ArgumentAttributes
+    {
+      optional : true,
+      multiple : false,
+      default : None,
+      sensitive : false,
+      interactive : false,
+    })
+    .form(),
+  ])
+  .routine_link( ".video.search".to_string() )
+  .form();
+
+  let video_search_routine : CommandRoutine = Box::new( | cmd, _ctx |
+  {
+    let query = cmd.arguments.get( "query" ).unwrap();
+    let title = cmd.arguments.get( "title" );
+
+    if let Value::String( query_str ) = query
+    {
+      let mut result = format!( "Query: {query_str}" );
+
+      if let Some( Value::String( title_str ) ) = title
+      {
+        use core::fmt::Write;
+        write!( &mut result, "\nTitle: {title_str}" ).unwrap();
+      }
+
+      println!( "{result}" );
+      Ok( OutputData
+      {
+        content : result,
+        format : "text".to_string(),
+      })
+    }
+    else
+    {
+      Err( unilang::data::ErrorData::new(
+        "INVALID_ARGUMENT_TYPE".to_string(),
+        "Query must be a string".to_string(),
+      ))
+    }
+  });
+  registry.command_add_runtime( &video_search_def, video_search_routine )?;
+
   // 3. Parse Command Line Arguments
   let args : Vec< String > = std::env::args().skip( 1 ).collect();
 
@@ -381,7 +518,13 @@ fn run() -> Result< (), unilang::error::Error >
   .ok()
   .and_then( | v | v.parse::< u8 >().ok() )
   .unwrap_or( 1 ); // Default to normal verbosity
-  
+
+  // Debug: print the raw arguments from the shell
+  if verbosity > 1
+  {
+    eprintln!( "DEBUG: Raw shell arguments: {args:?}" );
+  }
+
   let mut parser_options = UnilangParserOptions::default();
   parser_options.verbosity = verbosity;
   
@@ -442,7 +585,15 @@ fn run() -> Result< (), unilang::error::Error >
     return Ok( () );
   }
 
-  let command_input_str = processed_args.join( " " );
+  // Fix for quoted multi-word values: rejoin arguments that were incorrectly split by the shell
+  let command_input_str = rejoin_broken_quoted_args( &processed_args );
+
+  // Debug: print the processed arguments and the rejoined command
+  if verbosity > 1
+  {
+    eprintln!( "DEBUG: Processed arguments: {processed_args:?}" );
+    eprintln!( "DEBUG: Rejoined command string: {command_input_str:?}" );
+  }
   let instruction = parser.parse_single_instruction( &command_input_str )?;
   let instructions = &[ instruction ][ .. ];
 
