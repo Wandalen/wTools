@@ -275,7 +275,7 @@ mod private
         }
       }
 
-      // Check dynamic modules for conflicts (simplified - would need YAML parsing in real impl)
+      // Check dynamic modules for conflicts
       for module in &self.dynamic_modules
       {
         if !module.enabled
@@ -283,32 +283,25 @@ mod private
           continue;
         }
 
-        // For now, simulate command names from dynamic modules
-        let simulated_cmd_name = format!( "example_from_{}", module.name );
-        let final_name = if let Some( prefix ) = &module.prefix
+        // Load actual commands from YAML file for conflict detection
+        if module.yaml_path.exists()
         {
-          if let Some( global_prefix ) = &self.config.global_prefix
+          if let Ok( yaml_content ) = std::fs::read_to_string( &module.yaml_path )
           {
-            format!( ".{}.{}.{}", global_prefix, prefix, simulated_cmd_name )
-          }
-          else
-          {
-            format!( ".{}.{}", prefix, simulated_cmd_name )
+            if let Ok( temp_registry_builder ) = CommandRegistry::builder().load_from_yaml_str( &yaml_content )
+            {
+              let temp_registry = temp_registry_builder.build();
+              for ( _name, cmd ) in temp_registry.commands()
+              {
+                let final_name = self.compute_final_command_name( &cmd, module.prefix.as_ref() );
+                all_commands
+                  .entry( final_name )
+                  .or_insert_with( Vec::new )
+                  .push( module.name.clone() );
+              }
+            }
           }
         }
-        else if let Some( global_prefix ) = &self.config.global_prefix
-        {
-          format!( ".{}.{}", global_prefix, simulated_cmd_name )
-        }
-        else
-        {
-          simulated_cmd_name
-        };
-
-        all_commands
-          .entry( final_name )
-          .or_insert_with( Vec::new )
-          .push( module.name.clone() );
       }
 
       // Check conditional modules for conflicts
@@ -387,104 +380,10 @@ mod private
 
       registry.set_registry_mode( registry_mode );
 
-      // Register static modules
-      for module in &self.static_modules
-      {
-        if !module.enabled
-        {
-          continue;
-        }
-
-        for mut cmd in module.commands.clone()
-        {
-          // Apply module prefix
-          if let Some( prefix ) = &module.prefix
-          {
-            cmd.namespace = if cmd.namespace.is_empty()
-            {
-              format!( ".{}", prefix )
-            }
-            else
-            {
-              format!( ".{}{}", prefix, cmd.namespace )
-            };
-          }
-
-          // Apply global prefix
-          if let Some( global_prefix ) = &self.config.global_prefix
-          {
-            cmd.namespace = if cmd.namespace.is_empty()
-            {
-              format!( ".{}", global_prefix )
-            }
-            else
-            {
-              format!( ".{}{}", global_prefix, cmd.namespace )
-            };
-          }
-
-          registry.register( cmd );
-        }
-      }
-
-      // Process dynamic modules
-      for module in &self.dynamic_modules
-      {
-        if !module.enabled
-        {
-          continue;
-        }
-
-        // For now, create a sample command from the dynamic module
-        // In a real implementation, this would load and parse the YAML file
-        let mut cmd = CommandDefinition::former()
-          .name( "example" )
-          .description( format!( "Example command from {} module", module.name ) )
-          .hint( "Dynamic command" )
-          .form();
-
-        // Apply module prefix
-        if let Some( prefix ) = &module.prefix
-        {
-          cmd.namespace = format!( ".{}", prefix );
-        }
-
-        // Apply global prefix
-        if let Some( global_prefix ) = &self.config.global_prefix
-        {
-          cmd.namespace = if cmd.namespace.is_empty()
-          {
-            format!( ".{}", global_prefix )
-          }
-          else
-          {
-            format!( ".{}{}", global_prefix, cmd.namespace )
-          };
-        }
-
-        registry.register( cmd );
-      }
-
-      // Process conditional modules (check feature flags)
-      for cond_module in &self.conditional_modules
-      {
-        if self.is_feature_enabled( &cond_module.feature )
-        {
-          for mut cmd in cond_module.module.commands.clone()
-          {
-            // Apply conditional module namespace
-            cmd.namespace = format!( ".{}", cond_module.name );
-
-            // Apply global prefix if configured
-            if let Some( global_prefix ) = &self.config.global_prefix
-            {
-              cmd.namespace = format!( ".{}{}", global_prefix, cmd.namespace );
-            }
-
-            registry.register( cmd );
-          }
-        }
-      }
+      // Register all module types
+      self.register_static_modules( &mut registry );
+      self.register_dynamic_modules( &mut registry );
+      self.register_conditional_modules( &mut registry );
 
       Ok( registry )
     }
@@ -495,7 +394,8 @@ mod private
       let mut static_registry = StaticCommandRegistry::new();
 
       // Set registry mode for optimal static performance
-      static_registry.set_mode( RegistryMode::StaticOnly );
+      // Note: Use Hybrid mode to allow dynamic command registration while maintaining static optimizations
+      static_registry.set_mode( RegistryMode::Hybrid );
 
       // Process static modules only for optimal performance
       for module in &self.static_modules
@@ -534,13 +434,18 @@ mod private
           }
 
           // Register command with the static registry
-          let cmd_name = cmd.name.clone(); // Clone to avoid lifetime issues
+          // Note: Using a placeholder routine since actual command execution logic
+          // would be provided by the application using the CliBuilder
+          let cmd_name = cmd.name.clone();
+          let cmd_description = cmd.description.clone();
           let routine = Box::new( move |_cmd, _ctx| {
-            Ok( crate::data::OutputData
-            {
-              content: format!( "Static command '{}' executed", cmd_name ),
-              format: "text".to_string(),
-            })
+            Err( crate::data::ErrorData::new(
+              "UNILANG_COMMAND_NOT_IMPLEMENTED".to_string(),
+              format!(
+                "Command '{}' ({}) is registered but not implemented. Applications using CliBuilder must provide their own command execution logic.",
+                cmd_name, cmd_description
+              ),
+            ))
           });
 
           static_registry.register_with_routine( cmd, routine )?;
@@ -584,15 +489,149 @@ mod private
       }
     }
 
-    /// Check if a feature is enabled (simplified for testing)
+    /// Check if a feature is enabled using real Cargo features
     fn is_feature_enabled( &self, feature: &str ) -> bool
     {
-      // In real implementation, this would check Cargo features
-      // For testing, we'll simulate some enabled features
       match feature
       {
-        "test_feature" | "advanced" => true,
+        "enabled" => cfg!( feature = "enabled" ),
+        "simd" => cfg!( feature = "simd" ),
+        "repl" => cfg!( feature = "repl" ),
+        "enhanced_repl" => cfg!( feature = "enhanced_repl" ),
+        "static_commands" => cfg!( feature = "static_commands" ),
+        "multi_yaml" => cfg!( feature = "multi_yaml" ),
+        "advanced_benchmarks" => cfg!( feature = "advanced_benchmarks" ),
+        "advanced_cli_tests" => cfg!( feature = "advanced_cli_tests" ),
+        "wasm" => cfg!( feature = "wasm" ),
+        "benchmarks" => cfg!( feature = "benchmarks" ),
+        "on_unknown_suggest" => cfg!( feature = "on_unknown_suggest" ),
+        "full" => cfg!( feature = "full" ),
+        // Legacy compatibility for existing tests
+        "test_feature" => cfg!( feature = "advanced_cli_tests" ),
+        "advanced" => cfg!( feature = "full" ),
         _ => false,
+      }
+    }
+
+    /// Apply prefixes to a command
+    fn apply_prefixes( &self, mut cmd: CommandDefinition, module_prefix: Option< &String > ) -> CommandDefinition
+    {
+      // Apply module prefix
+      if let Some( prefix ) = module_prefix
+      {
+        cmd.namespace = if cmd.namespace.is_empty()
+        {
+          format!( ".{}", prefix )
+        }
+        else
+        {
+          format!( ".{}{}", prefix, cmd.namespace )
+        };
+      }
+
+      // Apply global prefix
+      if let Some( global_prefix ) = &self.config.global_prefix
+      {
+        cmd.namespace = if cmd.namespace.is_empty()
+        {
+          format!( ".{}", global_prefix )
+        }
+        else
+        {
+          format!( ".{}{}", global_prefix, cmd.namespace )
+        };
+      }
+
+      cmd
+    }
+
+    /// Register static modules
+    fn register_static_modules( &self, registry: &mut CommandRegistry )
+    {
+      for module in &self.static_modules
+      {
+        if !module.enabled
+        {
+          continue;
+        }
+
+        for cmd in module.commands.clone()
+        {
+          let processed_cmd = self.apply_prefixes( cmd, module.prefix.as_ref() );
+          registry.register( processed_cmd );
+        }
+      }
+    }
+
+    /// Register dynamic modules
+    fn register_dynamic_modules( &self, registry: &mut CommandRegistry )
+    {
+      for module in &self.dynamic_modules
+      {
+        if !module.enabled
+        {
+          continue;
+        }
+
+        // Attempt to load commands from YAML file
+        if module.yaml_path.exists()
+        {
+          // Read file content
+          match std::fs::read_to_string( &module.yaml_path )
+          {
+            Ok( yaml_content ) => {
+              // Create a temporary registry to load YAML commands
+              let temp_registry = match CommandRegistry::builder()
+                .load_from_yaml_str( &yaml_content )
+              {
+                Ok( builder ) => builder.build(),
+                Err( e ) => {
+                  eprintln!( "Warning: Failed to parse YAML file {}: {}", module.yaml_path.display(), e );
+                  continue;
+                }
+              };
+
+              // Register all commands from the YAML file with proper prefixes
+              for ( _name, cmd ) in temp_registry.commands()
+              {
+                let processed_cmd = self.apply_prefixes( cmd, module.prefix.as_ref() );
+                registry.register( processed_cmd );
+              }
+            }
+            Err( e ) => {
+              eprintln!( "Warning: Failed to read YAML file {}: {}", module.yaml_path.display(), e );
+            }
+          }
+        }
+        else
+        {
+          eprintln!( "Warning: YAML file {} does not exist", module.yaml_path.display() );
+        }
+      }
+    }
+
+    /// Register conditional modules
+    fn register_conditional_modules( &self, registry: &mut CommandRegistry )
+    {
+      for cond_module in &self.conditional_modules
+      {
+        if self.is_feature_enabled( &cond_module.feature )
+        {
+          for cmd in cond_module.module.commands.clone()
+          {
+            let mut processed_cmd = cmd;
+            // Apply conditional module namespace
+            processed_cmd.namespace = format!( ".{}", cond_module.name );
+
+            // Apply global prefix if configured
+            if let Some( global_prefix ) = &self.config.global_prefix
+            {
+              processed_cmd.namespace = format!( ".{}{}", global_prefix, processed_cmd.namespace );
+            }
+
+            registry.register( processed_cmd );
+          }
+        }
       }
     }
 
