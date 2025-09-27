@@ -80,6 +80,11 @@ fn main()
             .filter_map(core::result::Result::ok)
             .filter(|e| e.file_type().is_file())
             .filter(|e| {
+              // Exclude test directories from static command discovery
+              let path_str = e.path().to_string_lossy();
+              !path_str.contains("/tests/") && !path_str.contains("\\tests\\")
+            })
+            .filter(|e| {
               if let Some(extension) = e.path().extension()
               {
                 extension == "yaml" || extension == "yml"

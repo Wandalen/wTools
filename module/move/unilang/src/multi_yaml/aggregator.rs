@@ -758,7 +758,7 @@ pub fn parse_cargo_metadata( _cargo_toml_path: &PathBuf ) -> Result< Aggregation
     ModuleConfig
     {
       name: "utils".to_string(),
-      yaml_path: "utils.yaml".to_string(),
+      yaml_path: "tests/test_data/utils.yaml".to_string(),
       prefix: Some( "util".to_string() ),
       enabled: true,
     },
@@ -802,7 +802,7 @@ pub fn aggregate_cli_complex() -> Result< CommandRegistry, Error >
         .description( "Show version".to_string() )
         .form(),
     ] )
-    .dynamic_module_with_prefix( "utils", PathBuf::from( "utils.yaml" ), "util" )
+    .dynamic_module_with_prefix( "utils", PathBuf::from( "tests/test_data/utils.yaml" ), "util" )
     .conditional_module( "advanced", "test_feature", vec![
       CommandDefinition::former()
         .name( "debug" )
