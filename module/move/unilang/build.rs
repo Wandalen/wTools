@@ -80,9 +80,25 @@ fn main()
             .filter_map(core::result::Result::ok)
             .filter(|e| e.file_type().is_file())
             .filter(|e| {
-              // Exclude test directories from static command discovery
-              let path_str = e.path().to_string_lossy();
-              !path_str.contains("/tests/") && !path_str.contains("\\tests\\")
+              // Exclude test directories from static command discovery using proper path handling
+              let path = e.path();
+
+              // Convert to canonical form and check path components
+              let should_exclude = path.components().any(|component| {
+                if let std::path::Component::Normal(os_str) = component {
+                  let name = os_str.to_string_lossy();
+                  name == "tests" || name == "test_data"
+                } else {
+                  false
+                }
+              });
+
+              // Debug output to see what files are being processed (disabled in production)
+              // if should_exclude {
+              //   eprintln!("Excluding YAML file from static commands: {}", path.display());
+              // }
+
+              !should_exclude
             })
             .filter(|e| {
               if let Some(extension) = e.path().extension()
