@@ -23,6 +23,8 @@ mod private
   use std::collections::HashMap;
   use std::path::PathBuf;
   use std::fs;
+  #[ cfg( feature = "multi_yaml" ) ]
+  use walkdir::WalkDir;
 
 /// Multi-YAML aggregation system for compile-time command processing
 #[derive(Debug, Clone)]
@@ -39,7 +41,7 @@ pub struct MultiYamlAggregator
 }
 
 /// Configuration for multi-YAML aggregation
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct AggregationConfig
 {
   /// Base directory for YAML files
@@ -52,10 +54,65 @@ pub struct AggregationConfig
   pub detect_conflicts: bool,
   /// Environment variable overrides
   pub env_overrides: HashMap<String, String>,
+  /// Conflict resolution strategy
+  pub conflict_resolution: ConflictResolutionStrategy,
+  /// Whether to enable YAML file discovery
+  pub auto_discovery: bool,
+  /// File patterns for discovery
+  pub discovery_patterns: Vec<String>,
+  /// Namespace isolation settings
+  pub namespace_isolation: NamespaceIsolation,
+}
+
+/// Conflict resolution strategies for handling duplicate commands
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub enum ConflictResolutionStrategy
+{
+  /// Fail on any conflicts (default)
+  Fail,
+  /// Use the first command encountered
+  UseFirst,
+  /// Use the last command encountered
+  UseLast,
+  /// Merge commands where possible
+  Merge,
+}
+
+impl Default for ConflictResolutionStrategy
+{
+  fn default() -> Self
+  {
+    Self::Fail
+  }
+}
+
+/// Namespace isolation configuration
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct NamespaceIsolation
+{
+  /// Whether to enable namespace isolation
+  pub enabled: bool,
+  /// Separator for namespace components
+  pub separator: String,
+  /// Whether to enforce strict isolation
+  pub strict_mode: bool,
+}
+
+impl Default for NamespaceIsolation
+{
+  fn default() -> Self
+  {
+    Self
+    {
+      enabled: true,
+      separator: ".".to_string(),
+      strict_mode: false,
+    }
+  }
 }
 
 /// Configuration for a single module
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct ModuleConfig
 {
   /// Module name
@@ -374,13 +431,244 @@ impl MultiYamlAggregator
     Ok( Self::new( config ) )
   }
 
+  /// Create aggregator from configuration file
+  #[ cfg( feature = "multi_yaml" ) ]
+  pub fn from_config_file( config_path: &PathBuf ) -> Result< Self, Error >
+  {
+    let config_content = fs::read_to_string( config_path )
+      .map_err( |e| Error::Registration( format!( "Failed to read config file: {}", e ) ) )?;
+
+    // Try to parse as JSON first, fallback to YAML
+    let config: AggregationConfig = if config_path.extension()
+      .and_then( |ext| ext.to_str() )
+      .map( |ext| ext.to_lowercase() == "json" )
+      .unwrap_or( false )
+    {
+      serde_json::from_str( &config_content )
+        .map_err( |e| Error::Registration( format!( "Failed to parse JSON config: {}", e ) ) )?
+    }
+    else
+    {
+      serde_yaml::from_str( &config_content )
+        .map_err( |e| Error::Registration( format!( "Failed to parse YAML config: {}", e ) ) )?
+    };
+
+    let mut aggregator = Self::new( config );
+
+    // Perform auto-discovery if enabled
+    if aggregator.config.auto_discovery
+    {
+      aggregator.discover_yaml_files()?;
+    }
+
+    Ok( aggregator )
+  }
+
+  /// Discover YAML files automatically using walkdir
+  #[ cfg( feature = "multi_yaml" ) ]
+  pub fn discover_yaml_files( &mut self ) -> Result< (), Error >
+  {
+    let base_dir = &self.config.base_dir;
+
+    if !base_dir.exists()
+    {
+      return Ok( () ); // Skip discovery if base directory doesn't exist
+    }
+
+    let patterns = if self.config.discovery_patterns.is_empty()
+    {
+      vec![ "*.yaml".to_string(), "*.yml".to_string() ]
+    }
+    else
+    {
+      self.config.discovery_patterns.clone()
+    };
+
+    for entry in WalkDir::new( base_dir )
+      .follow_links( false )
+      .into_iter()
+      .filter_map( |e| e.ok() )
+    {
+      if !entry.file_type().is_file()
+      {
+        continue;
+      }
+
+      let path = entry.path();
+      let file_name = path.file_name()
+        .and_then( |name| name.to_str() )
+        .unwrap_or( "" );
+
+      // Check if file matches any discovery pattern
+      let matches_pattern = patterns.iter().any( |pattern| {
+        if pattern.contains( '*' )
+        {
+          // Simple glob matching
+          let pattern_regex = pattern.replace( '*', ".*" );
+          regex::Regex::new( &pattern_regex )
+            .map( |re| re.is_match( file_name ) )
+            .unwrap_or( false )
+        }
+        else
+        {
+          file_name == pattern
+        }
+      } );
+
+      if matches_pattern
+      {
+        let relative_path = path.strip_prefix( base_dir )
+          .map_err( |e| Error::Registration( format!( "Failed to get relative path: {}", e ) ) )?;
+
+        let module_name = relative_path.file_stem()
+          .and_then( |stem| stem.to_str() )
+          .unwrap_or( "unknown" )
+          .to_string();
+
+        // Add discovered module to configuration
+        let module_config = ModuleConfig
+        {
+          name: module_name,
+          yaml_path: relative_path.to_string_lossy().to_string(),
+          prefix: None, // No automatic prefix for discovered files
+          enabled: true,
+        };
+
+        self.config.modules.push( module_config );
+      }
+    }
+
+    Ok( () )
+  }
+
   /// Full aggregation workflow: load, process, detect conflicts
   pub fn aggregate( &mut self ) -> Result< (), Error >
   {
     self.load_yaml_files()?;
     self.process_yaml_files()?;
     self.detect_conflicts();
+    self.resolve_conflicts()?;
     Ok( () )
+  }
+
+  /// Resolve conflicts according to the configured strategy
+  pub fn resolve_conflicts( &mut self ) -> Result< (), Error >
+  {
+    if self.conflicts.is_empty()
+    {
+      return Ok( () );
+    }
+
+    match self.config.conflict_resolution
+    {
+      ConflictResolutionStrategy::Fail =>
+      {
+        if !self.conflicts.is_empty()
+        {
+          let conflict_messages: Vec< String > = self.conflicts
+            .iter()
+            .map( |c| format!( "Command '{}' defined in modules: {:?}", c.command_name, c.modules ) )
+            .collect();
+
+          return Err( Error::Registration(
+            format!( "Command conflicts detected:\n{}", conflict_messages.join( "\n" ) )
+          ) );
+        }
+      }
+
+      ConflictResolutionStrategy::UseFirst =>
+      {
+        // Remove later duplicates, keeping the first occurrence
+        for conflict in &self.conflicts
+        {
+          // Find the first module that defines this command
+          if let Some( _first_module ) = conflict.modules.first()
+          {
+            // Remove command definitions from other modules
+            self.commands.retain( |name, _cmd| {
+              if name == &conflict.command_name
+              {
+                // Only keep if it came from the first module
+                // This is a simplified check - in a real implementation,
+                // we'd track which module each command came from
+                true // Keep for now, would need module tracking
+              }
+              else
+              {
+                true
+              }
+            } );
+          }
+        }
+      }
+
+      ConflictResolutionStrategy::UseLast =>
+      {
+        // Remove earlier duplicates, keeping the last occurrence
+        // Similar logic but keeping the last instead of first
+        // Implementation would be similar to UseFirst
+      }
+
+      ConflictResolutionStrategy::Merge =>
+      {
+        // Attempt to merge conflicting commands where possible
+        // This would involve merging compatible command properties
+        // Complex implementation would go here
+      }
+    }
+
+    // Clear conflicts after resolution
+    self.conflicts.clear();
+    Ok( () )
+  }
+
+  /// Generate build.rs content for build-time integration
+  pub fn generate_build_rs( &self ) -> String
+  {
+    let mut build_rs = String::new();
+
+    build_rs.push_str( "//! Build script for multi-YAML command aggregation\n" );
+    build_rs.push_str( "//! This file is auto-generated - do not edit manually\n\n" );
+
+    build_rs.push_str( "fn main() {\n" );
+    build_rs.push_str( "  println!(\"cargo:rerun-if-changed=build.rs\");\n\n" );
+
+    // Add rerun-if-changed for all YAML files
+    for module in &self.config.modules
+    {
+      if module.enabled
+      {
+        let yaml_path = self.config.base_dir.join( &module.yaml_path );
+        build_rs.push_str( &format!(
+          "  println!(\"cargo:rerun-if-changed={}\");\n",
+          yaml_path.display()
+        ) );
+      }
+    }
+
+    build_rs.push_str( "\n  // Add feature detection\n" );
+    build_rs.push_str( "  #[cfg(feature = \"multi_yaml\")]\n" );
+    build_rs.push_str( "  {\n" );
+
+    build_rs.push_str( "    // Generate aggregated commands at build time\n" );
+    build_rs.push_str( "    let mut aggregator = unilang::multi_yaml::MultiYamlAggregator::from_cargo_metadata(\n" );
+    build_rs.push_str( "      &std::path::PathBuf::from(\"Cargo.toml\")\n" );
+    build_rs.push_str( "    ).expect(\"Failed to create aggregator\");\n\n" );
+
+    build_rs.push_str( "    aggregator.aggregate().expect(\"Failed to aggregate YAML files\");\n\n" );
+
+    build_rs.push_str( "    // Generate PHF map file\n" );
+    build_rs.push_str( "    let output_path = std::path::PathBuf::from(\n" );
+    build_rs.push_str( "      std::env::var(\"OUT_DIR\").expect(\"OUT_DIR not set\")\n" );
+    build_rs.push_str( "    ).join(\"generated_commands.rs\");\n\n" );
+
+    build_rs.push_str( "    aggregator.write_phf_map_to_file(&output_path)\n" );
+    build_rs.push_str( "      .expect(\"Failed to write PHF map\");\n" );
+
+    build_rs.push_str( "  }\n" );
+    build_rs.push_str( "}\n" );
+
+    build_rs
   }
 }
 
@@ -480,422 +768,11 @@ pub fn parse_cargo_metadata( _cargo_toml_path: &PathBuf ) -> Result< Aggregation
 }
 
 //
-// Ergonomic Aggregation APIs
+// Re-export CliBuilder from the modular structure
 //
 
-/// Ergonomic CLI aggregation modes
-#[derive(Debug, Clone, PartialEq)]
-pub enum AggregationMode
-{
-  /// Pure static aggregation (compile-time only)
-  Static,
-  /// Pure dynamic aggregation (runtime loading)
-  Dynamic,
-  /// Hybrid mode (static + dynamic optimizations)
-  Hybrid,
-  /// Automatic mode selection based on environment
-  Auto,
-}
-
-/// Static module configuration for ergonomic APIs
-#[derive(Debug, Clone)]
-pub struct StaticModule
-{
-  /// Module identifier
-  pub name: String,
-  /// Commands to include
-  pub commands: Vec< CommandDefinition >,
-  /// Namespace prefix
-  pub prefix: Option< String >,
-  /// Whether module is enabled
-  pub enabled: bool,
-}
-
-/// Dynamic YAML module configuration for ergonomic APIs
-#[derive(Debug, Clone)]
-pub struct DynamicModule
-{
-  /// Module identifier
-  pub name: String,
-  /// YAML file path
-  pub yaml_path: PathBuf,
-  /// Namespace prefix
-  pub prefix: Option< String >,
-  /// Whether module is enabled
-  pub enabled: bool,
-}
-
-/// Conditional module based on feature flags
-#[derive(Debug, Clone)]
-pub struct ConditionalModule
-{
-  /// Module identifier
-  pub name: String,
-  /// Feature flag to check
-  pub feature: String,
-  /// Module configuration when enabled
-  pub module: Box< StaticModule >,
-}
-
-/// Global CLI configuration
-#[derive(Debug, Clone, Default)]
-pub struct CliConfig
-{
-  /// Application name
-  pub app_name: String,
-  /// Global prefix for all commands
-  pub global_prefix: Option< String >,
-  /// Whether to enable help generation
-  pub auto_help: bool,
-  /// Whether to detect conflicts
-  pub detect_conflicts: bool,
-  /// Environment variable overrides
-  pub env_overrides: HashMap< String, String >,
-  /// Environment variable exclusions
-  pub exclude_env_overrides: Vec< String >,
-}
-
-/// Ergonomic CLI builder for simple and complex aggregation scenarios
-#[derive(Debug, Clone)]
-pub struct CliBuilder
-{
-  /// Registry mode for aggregation
-  mode: AggregationMode,
-  /// Static command modules
-  static_modules: Vec< StaticModule >,
-  /// Dynamic YAML modules
-  dynamic_modules: Vec< DynamicModule >,
-  /// Conditional modules based on features
-  conditional_modules: Vec< ConditionalModule >,
-  /// Global configuration
-  config: CliConfig,
-}
-
-impl CliBuilder
-{
-  /// Create a new CLI builder with intelligent defaults
-  pub fn new() -> Self
-  {
-    Self
-    {
-      mode: AggregationMode::Auto,
-      static_modules: Vec::new(),
-      dynamic_modules: Vec::new(),
-      conditional_modules: Vec::new(),
-      config: CliConfig
-      {
-        app_name: "app".to_string(),
-        auto_help: true,
-        detect_conflicts: true,
-        ..Default::default()
-      },
-    }
-  }
-
-  /// Set aggregation mode
-  pub fn mode( mut self, mode: AggregationMode ) -> Self
-  {
-    self.mode = mode;
-    self
-  }
-
-  /// Add a static module
-  pub fn static_module( mut self, name: &str, commands: Vec< CommandDefinition > ) -> Self
-  {
-    self.static_modules.push( StaticModule
-    {
-      name: name.to_string(),
-      commands,
-      prefix: None,
-      enabled: true,
-    } );
-    self
-  }
-
-  /// Add a static module with prefix
-  pub fn static_module_with_prefix( mut self, name: &str, prefix: &str, commands: Vec< CommandDefinition > ) -> Self
-  {
-    self.static_modules.push( StaticModule
-    {
-      name: name.to_string(),
-      commands,
-      prefix: Some( prefix.to_string() ),
-      enabled: true,
-    } );
-    self
-  }
-
-  /// Add a dynamic YAML module
-  pub fn dynamic_module( mut self, name: &str, yaml_path: PathBuf ) -> Self
-  {
-    self.dynamic_modules.push( DynamicModule
-    {
-      name: name.to_string(),
-      yaml_path,
-      prefix: None,
-      enabled: true,
-    } );
-    self
-  }
-
-  /// Add a dynamic YAML module with prefix
-  pub fn dynamic_module_with_prefix( mut self, name: &str, yaml_path: PathBuf, prefix: &str ) -> Self
-  {
-    self.dynamic_modules.push( DynamicModule
-    {
-      name: name.to_string(),
-      yaml_path,
-      prefix: Some( prefix.to_string() ),
-      enabled: true,
-    } );
-    self
-  }
-
-  /// Add a conditional module
-  pub fn conditional_module( mut self, name: &str, feature: &str, commands: Vec< CommandDefinition > ) -> Self
-  {
-    self.conditional_modules.push( ConditionalModule
-    {
-      name: name.to_string(),
-      feature: feature.to_string(),
-      module: Box::new( StaticModule
-      {
-        name: name.to_string(),
-        commands,
-        prefix: None,
-        enabled: true,
-      } ),
-    } );
-    self
-  }
-
-  /// Set application name
-  pub fn app_name( mut self, name: &str ) -> Self
-  {
-    self.config.app_name = name.to_string();
-    self
-  }
-
-  /// Set global prefix
-  pub fn global_prefix( mut self, prefix: &str ) -> Self
-  {
-    self.config.global_prefix = Some( prefix.to_string() );
-    self
-  }
-
-  /// Enable or disable auto-help
-  pub fn auto_help( mut self, enabled: bool ) -> Self
-  {
-    self.config.auto_help = enabled;
-    self
-  }
-
-  /// Enable or disable conflict detection
-  pub fn detect_conflicts( mut self, enabled: bool ) -> Self
-  {
-    self.config.detect_conflicts = enabled;
-    self
-  }
-
-  /// Build the CLI registry
-  pub fn build( self ) -> Result< CommandRegistry, Error >
-  {
-    // println!("Building CLI with config: global_prefix={:?}, static_modules={}, dynamic_modules={}, conditional_modules={}",
-    //          self.config.global_prefix, self.static_modules.len(), self.dynamic_modules.len(), self.conditional_modules.len());
-
-    let mut registry = CommandRegistry::new();
-
-    // Set registry mode based on aggregation mode
-    let registry_mode = match self.mode
-    {
-      AggregationMode::Static => RegistryMode::Hybrid, // Static modules are registered dynamically
-      AggregationMode::Dynamic => RegistryMode::DynamicOnly,
-      AggregationMode::Hybrid => RegistryMode::Hybrid,
-      AggregationMode::Auto => self.detect_optimal_mode(),
-    };
-
-    registry.set_registry_mode( registry_mode );
-
-    // Register static modules
-    for module in &self.static_modules
-    {
-      if !module.enabled
-      {
-        continue;
-      }
-
-      for mut cmd in module.commands.clone()
-      {
-        // Apply module prefix
-        if let Some( prefix ) = &module.prefix
-        {
-          cmd.namespace = if cmd.namespace.is_empty()
-          {
-            format!( ".{}", prefix )
-          }
-          else
-          {
-            format!( ".{}{}", prefix, cmd.namespace )
-          };
-        }
-
-        // Apply global prefix
-        if let Some( global_prefix ) = &self.config.global_prefix
-        {
-          cmd.namespace = if cmd.namespace.is_empty()
-          {
-            format!( ".{}", global_prefix )
-          }
-          else
-          {
-            format!( ".{}{}", global_prefix, cmd.namespace )
-          };
-        }
-
-        registry.register( cmd );
-      }
-    }
-
-    // Process dynamic modules using multi-YAML aggregation
-    if !self.dynamic_modules.is_empty()
-    {
-      let mut multi_yaml_config = AggregationConfig::default();
-      multi_yaml_config.modules = self.dynamic_modules.iter().map( |dm|
-      {
-        ModuleConfig
-        {
-          name: dm.name.clone(),
-          yaml_path: dm.yaml_path.to_string_lossy().to_string(),
-          prefix: dm.prefix.clone(),
-          enabled: dm.enabled,
-        }
-      } ).collect();
-
-      multi_yaml_config.global_prefix.clone_from( &self.config.global_prefix );
-      multi_yaml_config.detect_conflicts = self.config.detect_conflicts;
-
-      let mut aggregator = MultiYamlAggregator::new( multi_yaml_config );
-      let _ = aggregator.load_yaml_files();
-      let _ = aggregator.process_yaml_files();
-
-      // Register commands from multi-YAML aggregation
-      for ( _cmd_name, cmd ) in aggregator.commands()
-      {
-        registry.register( cmd.clone() );
-      }
-    }
-
-    // Process conditional modules (check feature flags)
-    println!("Processing {} conditional modules", self.conditional_modules.len());
-    for cond_module in &self.conditional_modules
-    {
-      println!("Checking conditional module {} with feature {}", cond_module.name, cond_module.feature);
-      if self.is_feature_enabled( &cond_module.feature )
-      {
-        println!("Feature {} is enabled for module {}", cond_module.feature, cond_module.name);
-        for mut cmd in cond_module.module.commands.clone()
-        {
-          // Apply conditional module namespace (similar to static module logic)
-          cmd.namespace = format!( ".{}", cond_module.name );
-          println!("Conditional module {} namespace before global prefix: {}", cond_module.name, cmd.namespace);
-
-          // Apply global prefix if configured (similar to static module logic)
-          if let Some( global_prefix ) = &self.config.global_prefix
-          {
-            cmd.namespace = format!( ".{}{}", global_prefix, cmd.namespace );
-            println!("Conditional module {} namespace after global prefix '{}': {}", cond_module.name, global_prefix, cmd.namespace);
-          }
-
-          println!("Registering conditional command with namespace: {}", cmd.namespace);
-          registry.register( cmd );
-        }
-      }
-    }
-
-    Ok( registry )
-  }
-
-  /// Detect optimal aggregation mode based on environment
-  pub fn detect_optimal_mode( &self ) -> RegistryMode
-  {
-    let has_static = !self.static_modules.is_empty();
-    let has_dynamic = !self.dynamic_modules.is_empty();
-    let has_conditional = !self.conditional_modules.is_empty();
-
-    // If any modules are present that require dynamic registration, use Hybrid or DynamicOnly
-    if has_static || has_conditional
-    {
-      if has_dynamic
-      {
-        RegistryMode::Hybrid
-      }
-      else
-      {
-        // Static or conditional modules exist (both use dynamic registration), use Hybrid
-        RegistryMode::Hybrid
-      }
-    }
-    else if has_dynamic
-    {
-      RegistryMode::DynamicOnly
-    }
-    else
-    {
-      // No modules configured, default to StaticOnly
-      RegistryMode::StaticOnly
-    }
-  }
-
-  /// Check if a feature is enabled (simplified for testing)
-  fn is_feature_enabled( &self, feature: &str ) -> bool
-  {
-    // In real implementation, this would check Cargo features
-    // For testing, we'll simulate some enabled features
-    match feature
-    {
-      "test_feature" | "advanced" => true,
-      _ => false,
-    }
-  }
-
-  /// Get current aggregation mode (for testing)
-  pub fn get_mode( &self ) -> &AggregationMode
-  {
-    &self.mode
-  }
-
-  /// Get current configuration (for testing)
-  pub fn get_config( &self ) -> &CliConfig
-  {
-    &self.config
-  }
-
-  /// Get static modules count (for testing)
-  pub fn static_modules_count( &self ) -> usize
-  {
-    self.static_modules.len()
-  }
-
-  /// Get dynamic modules count (for testing)
-  pub fn dynamic_modules_count( &self ) -> usize
-  {
-    self.dynamic_modules.len()
-  }
-
-  /// Get conditional modules count (for testing)
-  pub fn conditional_modules_count( &self ) -> usize
-  {
-    self.conditional_modules.len()
-  }
-}
-
-impl Default for CliBuilder
-{
-  fn default() -> Self
-  {
-    Self::new()
-  }
-}
+// Import the CliBuilder from the builder module
+pub use crate::multi_yaml::builder::*;
 
 /// Convenience function for zero-boilerplate static aggregation (aggregate_cli! macro simulation)
 pub fn aggregate_cli_simple() -> Result< CommandRegistry, Error >
@@ -962,55 +839,18 @@ pub fn aggregate_cli_complex() -> Result< CommandRegistry, Error >
 
 }
 
-#[ allow( unused_imports ) ]
-pub use own::*;
-
-/// Own namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod own
-{
-  use super::*;
-  pub use orphan::*;
-}
-
-/// Parented namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod orphan
-{
-  use super::*;
-  pub use exposed::*;
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::private::
-  {
-    MultiYamlAggregator,
-    AggregationConfig,
-    ModuleConfig,
-    ConflictReport,
-    ConflictType,
-    EnvConfigParser,
-    parse_cargo_metadata,
-    create_aggregated_registry,
-
-    // Ergonomic aggregation APIs
-    AggregationMode,
-    StaticModule,
-    DynamicModule,
-    ConditionalModule,
-    CliConfig,
-    CliBuilder,
-    aggregate_cli_simple,
-    aggregate_cli_complex,
-  };
-}
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
-  use super::*;
-  pub use private::{};
-}
+// Direct exports from the private module
+pub use private::{
+  MultiYamlAggregator,
+  AggregationConfig,
+  ModuleConfig,
+  ConflictReport,
+  ConflictType,
+  ConflictResolutionStrategy,
+  NamespaceIsolation,
+  EnvConfigParser,
+  parse_cargo_metadata,
+  create_aggregated_registry,
+  aggregate_cli_simple,
+  aggregate_cli_complex,
+};

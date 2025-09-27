@@ -18,7 +18,7 @@
 //! - Aggregate tools into umbrella applications
 //! - Maintain zero-cost lookup performance
 
-use unilang::prelude::*;
+use unilang::multi_yaml::{ MultiYamlAggregator, AggregationConfig, ModuleConfig, ConflictResolutionStrategy, NamespaceIsolation };
 
 fn main()
 {
@@ -98,35 +98,70 @@ fn demonstrate_yaml_workflow()
   println!( "  let registry = StaticCommandRegistry::from_phf(&AGGREGATED_COMMANDS);" );
   println!( "  let pipeline = Pipeline::new(registry);" );
   println!();
-  println!( "  // Zero-cost command execution" );
-  println!( "  pipeline.process_command_simple(\".db.migrate direction::up\")?;" );
-  println!( "  pipeline.process_command_simple(\".fs.copy src::data dest::backup\")?;" );
+  println!( "  // Zero-cost command execution with proper prefixes" );
+  println!( "  pipeline.process_command_simple(\".tool.db.migrate direction::up\")?;" );
+  println!( "  pipeline.process_command_simple(\".tool.fs.copy src::data dest::backup\")?;" );
+  println!( "  pipeline.process_command_simple(\".tool.net.ping host::example.com\")?;" );
   println!( "  Ok(())" );
   println!( "}}" );
   println!( "```" );
   println!();
 }
 
+#[allow(clippy::too_many_lines)]
 fn demonstrate_static_aggregation()
 {
-  println!( "=== Static Aggregation Demo (Using Current Commands) ===" );
+  println!( "=== Static Aggregation Demo (Using MultiYamlAggregator) ===" );
   println!();
 
-  // Include the generated static commands
-  // NOTE: Temporarily commented out due to build script integration issues
-  // include!( concat!( env!( "OUT_DIR" ), "/static_commands.rs" ) );
+  // Demonstrate the actual MultiYamlAggregator API
+  let config = AggregationConfig
+  {
+    base_dir: std::path::PathBuf::from( "examples" ),
+    modules: vec![
+      ModuleConfig
+      {
+        name: "database".to_string(),
+        yaml_path: "database/commands.yaml".to_string(),
+        prefix: Some( "db".to_string() ),
+        enabled: true,
+      },
+      ModuleConfig
+      {
+        name: "filesystem".to_string(),
+        yaml_path: "filesystem/commands.yaml".to_string(),
+        prefix: Some( "fs".to_string() ),
+        enabled: true,
+      },
+      ModuleConfig
+      {
+        name: "network".to_string(),
+        yaml_path: "network/commands.yaml".to_string(),
+        prefix: Some( "net".to_string() ),
+        enabled: true,
+      },
+    ],
+    global_prefix: Some( "tool".to_string() ),
+    detect_conflicts: true,
+    env_overrides: std::collections::HashMap::new(),
+    conflict_resolution: ConflictResolutionStrategy::Fail,
+    auto_discovery: false,
+    discovery_patterns: vec![ "*.yaml".to_string() ],
+    namespace_isolation: NamespaceIsolation
+    {
+      enabled: true,
+      separator: ".".to_string(),
+      strict_mode: false,
+    },
+  };
 
-  // Create registry from existing static commands
-  // NOTE: Temporarily using new registry instead of static commands
-  #[allow(deprecated)]
-  let registry = CommandRegistry::new();
-  let pipeline = Pipeline::new( registry );
+  let aggregator = MultiYamlAggregator::new( config );
 
-  println!( "Available static commands: (placeholder - static commands temporarily disabled)" );
-  // for ( name, cmd ) in STATIC_COMMANDS.entries()
-  // {
-  //   println!( "  {} - {}", name, cmd.description );
-  // }
+  println!( "MultiYamlAggregator Configuration:" );
+  println!( "  Base directory: {}", aggregator.config().base_dir.display() );
+  println!( "  Modules count: {}", aggregator.config().modules.len() );
+  println!( "  Global prefix: {:?}", aggregator.config().global_prefix );
+  println!( "  Conflict detection: {}", aggregator.config().detect_conflicts );
   println!();
 
   // Demonstrate aggregation patterns
@@ -137,36 +172,24 @@ fn demonstrate_static_aggregation()
   println!( "   - Each module maintains its own command namespace" );
   println!( "   - Prefix application prevents naming conflicts" );
   println!( "   - Clear hierarchical organization" );
+  println!( "   - Global prefix: .tool applied to all commands" );
   println!();
 
   println!( "2. **Performance Characteristics**" );
   println!( "   - O(1) lookup regardless of module count" );
   println!( "   - Zero runtime aggregation overhead" );
   println!( "   - Single PHF map for all aggregated commands" );
+  println!( "   - Commands resolved at compile-time via build.rs" );
   println!();
 
-  // Test some commands to show aggregation in action
-  println!( "3. **Unified Command Execution**" );
-  let test_commands = vec!
-  [
-  ".greet name::Alice",
-  ".greet name::Bob",
- ];
-
-  for cmd_str in test_commands
-  {
-  println!( "   Executing: {cmd_str}" );
-  let result = pipeline.process_command_simple( cmd_str );
-
-  if result.success
-  {
-  println!( "   Result: ✅ {}", result.outputs[ 0 ].content );
- }
-  else if let Some( error ) = result.error
-  {
-  println!( "   Result: ❌ {error}" );
- }
- }
+  println!( "3. **YAML File Processing**" );
+  println!( "   Expected command structure after aggregation:" );
+  println!( "   - .tool.db.migrate  (from database/commands.yaml)" );
+  println!( "   - .tool.db.backup   (from database/commands.yaml)" );
+  println!( "   - .tool.fs.copy     (from filesystem/commands.yaml)" );
+  println!( "   - .tool.fs.move     (from filesystem/commands.yaml)" );
+  println!( "   - .tool.net.ping    (from network/commands.yaml)" );
+  println!( "   - .tool.net.trace   (from network/commands.yaml)" );
   println!();
 
   println!( "4. **Development Workflow Benefits**" );
@@ -176,6 +199,8 @@ fn demonstrate_static_aggregation()
   println!( "   ✅ Zero-cost runtime aggregation with PHF maps" );
   println!( "   ✅ Unified help system across all aggregated tools" );
   println!( "   ✅ Type safety and validation for all commands" );
+  println!( "   ✅ Environment variable overrides support" );
+  println!( "   ✅ Automatic YAML file discovery" );
   println!();
 
   println!( "5. **Organizational Benefits**" );

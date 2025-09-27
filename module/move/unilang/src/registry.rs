@@ -98,6 +98,24 @@ pub struct PerformanceMetrics {
   pub dynamic_lookups: u64,
 }
 
+/// Common trait for command registries to enable interoperability.
+///
+/// This trait defines the minimal interface required by components like
+/// Pipeline, SemanticAnalyzer, and Interpreter to work with any registry type.
+pub trait CommandRegistryTrait {
+  /// Get a command definition by name.
+  fn command(&self, name: &str) -> Option<crate::data::CommandDefinition>;
+
+  /// Get all commands as a HashMap.
+  fn commands(&self) -> std::collections::HashMap<String, crate::data::CommandDefinition>;
+
+  /// Get a command routine for execution.
+  fn get_routine(&self, name: &str) -> Option<&CommandRoutine>;
+
+  /// Get formatted help text for a command.
+  fn get_help_for_command(&self, command_name: &str) -> Option<String>;
+}
+
 impl PerformanceMetrics {
   /// Calculate cache hit rate as a value between 0.0 and 1.0
   pub fn cache_hit_rate(&self) -> f64 {
@@ -289,28 +307,9 @@ impl CommandRegistry
   #[ must_use ]
   pub fn command( &self, name : &str ) -> Option< CommandDefinition >
   {
-    match self.dynamic_commands.mode() {
-      RegistryMode::StaticOnly => {
-        // Only check static commands
-        if let Some( static_cmd ) = super::STATIC_COMMANDS.get( name ) {
-          return Some( (*static_cmd).into() );
-        }
-        None
-      },
-      RegistryMode::DynamicOnly => {
-        // Only check dynamic commands (without caching)
-        self.dynamic_commands.get_readonly( name )
-      },
-      RegistryMode::Hybrid | RegistryMode::Auto => {
-        // Hybrid mode: static commands take priority
-        if let Some( static_cmd ) = super::STATIC_COMMANDS.get( name ) {
-          return Some( (*static_cmd).into() );
-        }
-
-        // Fall back to dynamic commands (without caching)
-        self.dynamic_commands.get_readonly( name )
-      },
-    }
+    // CommandRegistry only handles dynamic commands
+    // For static command support, use StaticCommandRegistry instead
+    self.dynamic_commands.get_readonly( name )
   }
 
   ///
@@ -326,32 +325,9 @@ impl CommandRegistry
   #[ must_use ]
   pub fn command_optimized( &mut self, name : &str ) -> Option< CommandDefinition >
   {
-    match self.dynamic_commands.mode() {
-      RegistryMode::StaticOnly => {
-        // Only check static commands
-        if let Some( static_cmd ) = super::STATIC_COMMANDS.get( name ) {
-          self.dynamic_commands.metrics_mut().total_lookups += 1;
-          self.dynamic_commands.metrics_mut().static_lookups += 1;
-          return Some( (*static_cmd).into() );
-        }
-        None
-      },
-      RegistryMode::DynamicOnly => {
-        // Only check dynamic commands
-        self.dynamic_commands.get( name )
-      },
-      RegistryMode::Hybrid | RegistryMode::Auto => {
-        // Hybrid mode: static commands take priority
-        if let Some( static_cmd ) = super::STATIC_COMMANDS.get( name ) {
-          self.dynamic_commands.metrics_mut().total_lookups += 1;
-          self.dynamic_commands.metrics_mut().static_lookups += 1;
-          return Some( (*static_cmd).into() );
-        }
-
-        // Fall back to dynamic commands with caching
-        self.dynamic_commands.get( name )
-      },
-    }
+    // CommandRegistry only handles dynamic commands
+    // For static command support with optimized lookup, use StaticCommandRegistry instead
+    self.dynamic_commands.get( name )
   }
 
   ///
@@ -445,8 +421,9 @@ impl CommandRegistry
       // Namespaced command: explicit concatenation
       format!( "{}.{}", command_def.namespace, command_def.name.strip_prefix('.').unwrap_or(&command_def.name) )
     };
-    // Check if command exists in either static or dynamic registries
-    if super::STATIC_COMMANDS.contains_key( &full_name ) || self.dynamic_commands.contains_key( &full_name )
+    // Check if command exists in dynamic registry
+    // Note: Static command conflicts should be checked by StaticCommandRegistry
+    if self.dynamic_commands.contains_key( &full_name )
     {
       return Err( Error::Execution( ErrorData::new(
         "UNILANG_COMMAND_ALREADY_EXISTS".to_string(),
@@ -479,11 +456,8 @@ impl CommandRegistry
   {
     let mut all_commands = HashMap::new();
 
-    // Add static commands
-    for ( name, static_cmd ) in super::STATIC_COMMANDS.entries()
-    {
-      all_commands.insert( (*name).to_string(), (*static_cmd).into() );
-    }
+    // Add static commands (none available in CommandRegistry - use StaticCommandRegistry instead)
+    // Static commands are only available in StaticCommandRegistry
 
     // Add dynamic commands (they can override static ones in this view)
     for ( name, cmd ) in self.dynamic_commands.iter()
@@ -766,6 +740,46 @@ impl CommandRegistry
 
     help
   }
+
+  ///
+  /// Creates a new `CommandRegistry` from static commands stored in a PHF map.
+  ///
+  /// This method enables integration between static and dynamic command registries
+  /// by converting static command definitions to dynamic ones. All commands from
+  /// the provided PHF map will be added to the new registry's dynamic storage.
+  ///
+  /// # Arguments
+  /// * `static_commands` - A PHF map containing static command definitions
+  ///
+  /// # Returns
+  /// A new `CommandRegistry` containing all commands from the static map
+  ///
+  /// # Performance Note
+  /// This conversion has one-time O(n) cost where n is the number of static commands.
+  /// Once converted, dynamic lookup performance applies (slower than static PHF lookups).
+  /// Consider using `StaticCommandRegistry` directly for better performance.
+  ///
+  /// # Examples
+  /// ```rust,ignore
+  /// use unilang::{ registry::CommandRegistry, static_data::StaticCommandMap };
+  ///
+  /// // Create registry from static commands
+  /// let registry = CommandRegistry::from_static_commands( &STATIC_COMMANDS );
+  /// ```
+  #[ must_use ]
+  pub fn from_static_commands( static_commands : &crate::static_data::StaticCommandMap ) -> Self
+  {
+    let mut registry = Self::new();
+
+    // Convert each static command to dynamic and register it
+    for ( _command_name, static_cmd ) in static_commands.entries()
+    {
+      let dynamic_cmd = crate::data::CommandDefinition::from( *static_cmd );
+      registry.register( dynamic_cmd );
+    }
+
+    registry
+  }
 }
 
 impl Default for CommandRegistry
@@ -773,6 +787,24 @@ impl Default for CommandRegistry
   fn default() -> Self
   {
     Self::new()
+  }
+}
+
+impl CommandRegistryTrait for CommandRegistry {
+  fn command(&self, name: &str) -> Option<crate::data::CommandDefinition> {
+    self.command(name)
+  }
+
+  fn commands(&self) -> std::collections::HashMap<String, crate::data::CommandDefinition> {
+    self.commands()
+  }
+
+  fn get_routine(&self, name: &str) -> Option<&CommandRoutine> {
+    self.get_routine(name)
+  }
+
+  fn get_help_for_command(&self, command_name: &str) -> Option<String> {
+    self.get_help_for_command(command_name)
   }
 }
 
@@ -867,6 +899,452 @@ impl CommandRegistryBuilder
   }
 }
 
+/// Static command registry with hybrid lookup functionality.
+///
+/// Provides optimal performance through compile-time PHF (Perfect Hash Function) maps
+/// for static commands while supporting dynamic runtime commands as fallback.
+/// Static commands always take priority for predictable performance characteristics.
+///
+/// ## Performance Characteristics
+/// - Static command lookup: O(1) with PHF, typically sub-microsecond
+/// - Dynamic command lookup: O(1) average case with LRU caching
+/// - Hybrid mode prioritizes static commands for optimal hot path performance
+///
+/// ## Usage Example
+/// ```rust,ignore
+/// use unilang::registry::StaticCommandRegistry;
+///
+/// // Create registry with hybrid mode (default)
+/// let mut registry = StaticCommandRegistry::new();
+///
+/// // Or create with specific mode
+/// let mut static_only = StaticCommandRegistry::with_mode(RegistryMode::StaticOnly);
+/// ```
+#[allow(missing_debug_implementations)]
+pub struct StaticCommandRegistry {
+  /// Static command storage from PHF map
+  static_commands: Option<&'static crate::static_data::StaticCommandMap>,
+  /// Dynamic command storage with intelligent caching
+  dynamic_commands: DynamicCommandMap,
+  /// Runtime command routines
+  routines: HashMap<String, CommandRoutine>,
+  /// Registry mode controlling lookup behavior
+  mode: RegistryMode,
+  /// Performance metrics for monitoring
+  metrics: PerformanceMetrics,
+}
+
+impl StaticCommandRegistry {
+  /// Create a new static command registry with default hybrid mode.
+  ///
+  /// The registry will check static PHF commands first, then fall back to
+  /// dynamic commands for optimal performance.
+  #[must_use]
+  pub fn new() -> Self {
+    Self {
+      static_commands: None,
+      dynamic_commands: DynamicCommandMap::new(RegistryMode::Hybrid),
+      routines: HashMap::new(),
+      mode: RegistryMode::Hybrid,
+      metrics: PerformanceMetrics::default(),
+    }
+  }
+
+  /// Create a static command registry with specific mode.
+  ///
+  /// # Arguments
+  /// * `mode` - Registry operation mode controlling lookup behavior
+  #[must_use]
+  pub fn with_mode(mode: RegistryMode) -> Self {
+    Self {
+      static_commands: None,
+      dynamic_commands: DynamicCommandMap::new(mode),
+      routines: HashMap::new(),
+      mode,
+      metrics: PerformanceMetrics::default(),
+    }
+  }
+
+  /// Create a static command registry from a PHF map.
+  ///
+  /// This method stores the provided PHF map for static command lookups.
+  ///
+  /// # Arguments
+  /// * `phf_map` - PHF map reference containing static command definitions
+  #[must_use]
+  pub fn from_phf(phf_map: &'static crate::static_data::StaticCommandMap) -> Self {
+    Self {
+      static_commands: Some(phf_map),
+      dynamic_commands: DynamicCommandMap::new(RegistryMode::Hybrid),
+      routines: HashMap::new(),
+      mode: RegistryMode::Hybrid,
+      metrics: PerformanceMetrics::default(),
+    }
+  }
+
+  /// Get a command definition using hybrid lookup with performance tracking.
+  ///
+  /// Lookup strategy depends on registry mode:
+  /// - StaticOnly: PHF map only
+  /// - DynamicOnly: Dynamic commands only
+  /// - Hybrid: Static first, then dynamic fallback
+  /// - Auto: Usage pattern optimization
+  #[must_use]
+  pub fn command_with_metrics(&mut self, name: &str) -> Option<CommandDefinition> {
+    self.metrics.total_lookups += 1;
+
+    match self.mode {
+      RegistryMode::StaticOnly => {
+        if let Some(static_commands) = &self.static_commands {
+          if let Some(static_cmd) = static_commands.get(name) {
+            self.metrics.static_lookups += 1;
+            Some((*static_cmd).into())
+          } else {
+            None
+          }
+        } else {
+          None
+        }
+      }
+      RegistryMode::DynamicOnly => {
+        self.dynamic_commands.get(name)
+      }
+      RegistryMode::Hybrid | RegistryMode::Auto => {
+        // Static commands take priority for performance
+        if let Some(static_commands) = &self.static_commands {
+          if let Some(static_cmd) = static_commands.get(name) {
+            self.metrics.static_lookups += 1;
+            Some((*static_cmd).into())
+          } else {
+            // Fall back to dynamic commands
+            self.dynamic_commands.get(name)
+          }
+        } else {
+          // No static commands available, use dynamic only
+          self.dynamic_commands.get(name)
+        }
+      }
+    }
+  }
+
+  /// Get a command definition (immutable access for compatibility with CommandRegistry).
+  ///
+  /// This provides the same interface as CommandRegistry::command() for components
+  /// like SemanticAnalyzer that require immutable registry access.
+  #[must_use]
+  pub fn command(&self, name: &str) -> Option<CommandDefinition> {
+    self.command_readonly(name)
+  }
+
+  /// Get a command definition without updating metrics (immutable access).
+  #[must_use]
+  pub fn command_readonly(&self, name: &str) -> Option<CommandDefinition> {
+    match self.mode {
+      RegistryMode::StaticOnly => {
+        if let Some(static_commands) = &self.static_commands {
+          if let Some(static_cmd) = static_commands.get(name) {
+            Some((*static_cmd).into())
+          } else {
+            None
+          }
+        } else {
+          None
+        }
+      }
+      RegistryMode::DynamicOnly => {
+        self.dynamic_commands.get_readonly(name)
+      }
+      RegistryMode::Hybrid | RegistryMode::Auto => {
+        // Static commands take priority
+        if let Some(static_commands) = &self.static_commands {
+          if let Some(static_cmd) = static_commands.get(name) {
+            Some((*static_cmd).into())
+          } else {
+            self.dynamic_commands.get_readonly(name)
+          }
+        } else {
+          // No static commands available, use dynamic only
+          self.dynamic_commands.get_readonly(name)
+        }
+      }
+    }
+  }
+
+  /// Register a dynamic command.
+  ///
+  /// Note: Static commands always take priority in hybrid mode.
+  /// Dynamic commands with same names as static commands will be shadowed.
+  pub fn register(&mut self, command: CommandDefinition) {
+    let full_name = if command.name.starts_with('.') {
+      command.name.clone()
+    } else if command.namespace.is_empty() {
+      format!(".{}", command.name)
+    } else {
+      let ns = &command.namespace;
+      if ns.starts_with('.') {
+        format!("{}.{}", ns, command.name)
+      } else {
+        format!(".{}.{}", ns, command.name)
+      }
+    };
+
+    self.dynamic_commands.insert(full_name, command);
+  }
+
+  /// Register a command with its executable routine.
+  pub fn register_with_routine(&mut self, command: CommandDefinition, routine: CommandRoutine) -> Result<(), Error> {
+    let full_name = if command.name.starts_with('.') {
+      command.name.clone()
+    } else if command.namespace.is_empty() {
+      format!(".{}", command.name)
+    } else {
+      let ns = &command.namespace;
+      if ns.starts_with('.') {
+        format!("{}.{}", ns, command.name)
+      } else {
+        format!(".{}.{}", ns, command.name)
+      }
+    };
+
+    self.routines.insert(full_name.clone(), routine);
+    self.dynamic_commands.insert(full_name, command);
+    Ok(())
+  }
+
+  /// Check if a command exists (static or dynamic).
+  #[must_use]
+  pub fn contains(&self, name: &str) -> bool {
+    match self.mode {
+      RegistryMode::StaticOnly => {
+        if let Some(static_commands) = &self.static_commands {
+          static_commands.contains_key(name)
+        } else {
+          false
+        }
+      }
+      RegistryMode::DynamicOnly => {
+        self.dynamic_commands.contains_key(name)
+      }
+      RegistryMode::Hybrid | RegistryMode::Auto => {
+        let static_contains = if let Some(static_commands) = &self.static_commands {
+          static_commands.contains_key(name)
+        } else {
+          false
+        };
+        static_contains || self.dynamic_commands.contains_key(name)
+      }
+    }
+  }
+
+  /// Get all static command names.
+  #[must_use]
+  pub fn static_commands(&self) -> Vec<String> {
+    if matches!(self.mode, RegistryMode::DynamicOnly) {
+      Vec::new()
+    } else if let Some(static_commands) = &self.static_commands {
+      static_commands.keys().map(|k| (*k).to_string()).collect()
+    } else {
+      Vec::new()
+    }
+  }
+
+  /// Get all dynamic command names.
+  #[must_use]
+  pub fn dynamic_commands(&self) -> Vec<String> {
+    if matches!(self.mode, RegistryMode::StaticOnly) {
+      Vec::new()
+    } else {
+      self.dynamic_commands.iter().map(|(k, _)| k.clone()).collect()
+    }
+  }
+
+  /// Get all command names (static and dynamic).
+  #[must_use]
+  pub fn all_commands(&self) -> Vec<String> {
+    let mut commands = self.static_commands();
+    commands.extend(self.dynamic_commands());
+    commands.sort();
+    commands.dedup();
+    commands
+  }
+
+  /// Get current registry mode.
+  #[must_use]
+  pub fn mode(&self) -> RegistryMode {
+    self.mode
+  }
+
+  /// Set registry mode.
+  pub fn set_mode(&mut self, mode: RegistryMode) {
+    self.mode = mode;
+    self.dynamic_commands.set_mode(mode);
+  }
+
+  /// Get performance metrics.
+  #[must_use]
+  pub fn performance_metrics(&self) -> &PerformanceMetrics {
+    &self.metrics
+  }
+
+  /// Clear all dynamic commands and reset metrics.
+  pub fn clear(&mut self) {
+    self.dynamic_commands = DynamicCommandMap::new(self.mode);
+    self.routines.clear();
+    self.metrics = PerformanceMetrics::default();
+  }
+
+  /// Get command routine for execution.
+  #[must_use]
+  pub fn routine(&self, name: &str) -> Option<&CommandRoutine> {
+    self.routines.get(name)
+  }
+
+  /// Get command routine for execution (alias for compatibility with CommandRegistry).
+  #[must_use]
+  pub fn get_routine(&self, name: &str) -> Option<&CommandRoutine> {
+    self.routine(name)
+  }
+
+  /// Get all commands as a HashMap (for compatibility with CommandRegistry interface).
+  ///
+  /// This method provides the same interface as CommandRegistry::commands() for seamless
+  /// integration with components like SemanticAnalyzer that expect this method.
+  #[must_use]
+  pub fn commands(&self) -> std::collections::HashMap<String, crate::data::CommandDefinition> {
+    let mut all_commands = std::collections::HashMap::new();
+
+    // Add static commands if not in DynamicOnly mode
+    if !matches!(self.mode, RegistryMode::DynamicOnly) {
+      if let Some(static_commands) = &self.static_commands {
+        for (name, static_cmd) in static_commands.entries() {
+          all_commands.insert((*name).to_string(), (*static_cmd).into());
+        }
+      }
+    }
+
+    // Add dynamic commands if not in StaticOnly mode
+    if !matches!(self.mode, RegistryMode::StaticOnly) {
+      for (name, cmd) in self.dynamic_commands.iter() {
+        all_commands.insert(name.clone(), cmd.clone());
+      }
+    }
+
+    all_commands
+  }
+
+  /// Get formatted help text for a command (for compatibility with CommandRegistry interface).
+  ///
+  /// This method provides the same interface as CommandRegistry::get_help_for_command()
+  /// for seamless integration with Pipeline and other components.
+  #[must_use]
+  pub fn get_help_for_command(&self, command_name: &str) -> Option<String> {
+    if let Some(cmd_def) = self.command_readonly(command_name) {
+      Some(self.format_help_text(&cmd_def))
+    } else {
+      None
+    }
+  }
+
+  /// Format help text for a command definition (internal helper).
+  fn format_help_text(&self, cmd_def: &crate::data::CommandDefinition) -> String {
+    let mut help = String::new();
+
+    // Command header
+    help.push_str(&format!("Command: {}\n", cmd_def.name));
+    help.push_str(&format!("Description: {}\n", cmd_def.description));
+
+    if !cmd_def.hint.is_empty() {
+      help.push_str(&format!("Hint: {}\n", cmd_def.hint));
+    }
+
+    // Arguments section
+    if !cmd_def.arguments.is_empty() {
+      help.push_str("\nArguments:\n");
+      for arg in &cmd_def.arguments {
+        let required = if arg.attributes.optional { "optional" } else { "required" };
+        help.push_str(&format!("  {} ({}, {})", arg.name, arg.kind, required));
+
+        if let Some(default) = &arg.attributes.default {
+          help.push_str(&format!(" [default: {}]", default));
+        }
+
+        help.push_str(&format!("\n    {}\n", arg.description));
+
+        if !arg.aliases.is_empty() {
+          help.push_str(&format!("    Aliases: {}\n", arg.aliases.join(", ")));
+        }
+      }
+    }
+
+    // Examples section
+    if !cmd_def.examples.is_empty() {
+      help.push_str("\nExamples:\n");
+      for example in &cmd_def.examples {
+        help.push_str(&format!("  {}\n", example));
+      }
+    }
+
+    // Aliases section
+    if !cmd_def.aliases.is_empty() {
+      help.push_str(&format!("\nAliases: {}\n", cmd_def.aliases.join(", ")));
+    }
+
+    // Usage patterns
+    help.push_str("\nUsage:\n");
+    help.push_str(&format!("  {}  # Execute command\n", cmd_def.name));
+    help.push_str(&format!("  {}.help  # Show this help\n", cmd_def.name));
+    help.push_str(&format!("  {} ??  # Alternative help access\n", cmd_def.name));
+
+    help
+  }
+
+  /// Get number of static commands available.
+  #[must_use]
+  pub fn static_command_count(&self) -> usize {
+    if matches!(self.mode, RegistryMode::DynamicOnly) {
+      0
+    } else if let Some(static_commands) = &self.static_commands {
+      static_commands.len()
+    } else {
+      0
+    }
+  }
+
+  /// Get number of dynamic commands registered.
+  #[must_use]
+  pub fn dynamic_command_count(&self) -> usize {
+    if matches!(self.mode, RegistryMode::StaticOnly) {
+      0
+    } else {
+      self.dynamic_commands.iter().count()
+    }
+  }
+}
+
+impl Default for StaticCommandRegistry {
+  fn default() -> Self {
+    Self::new()
+  }
+}
+
+impl CommandRegistryTrait for StaticCommandRegistry {
+  fn command(&self, name: &str) -> Option<crate::data::CommandDefinition> {
+    self.command(name)
+  }
+
+  fn commands(&self) -> std::collections::HashMap<String, crate::data::CommandDefinition> {
+    self.commands()
+  }
+
+  fn get_routine(&self, name: &str) -> Option<&CommandRoutine> {
+    self.get_routine(name)
+  }
+
+  fn get_help_for_command(&self, command_name: &str) -> Option<String> {
+    self.get_help_for_command(command_name)
+  }
+}
+
 }
 
 mod_interface::mod_interface!
@@ -874,6 +1352,8 @@ mod_interface::mod_interface!
   exposed use private::CommandRoutine;
   exposed use private::CommandRegistry;
   exposed use private::CommandRegistryBuilder;
+  exposed use private::StaticCommandRegistry;
+  exposed use private::CommandRegistryTrait;
   exposed use private::RegistryMode;
   exposed use private::PerformanceMetrics;
   exposed use private::DynamicCommandMap;
@@ -882,6 +1362,8 @@ mod_interface::mod_interface!
   prelude use private::RegistryMode;
   prelude use private::PerformanceMetrics;
   prelude use private::CommandRoutine;
+  #[ doc = "High-performance static command registry with PHF-based lookup." ]
+  prelude use private::StaticCommandRegistry;
 
   // Runtime APIs with performance guidance
   #[ doc = "Runtime command registration. Consider compile-time alternatives for better performance." ]
