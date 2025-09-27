@@ -56,8 +56,8 @@
 //! ### feature-specific tests (`secret_management`)
 //! | id    | feature             | test case                  | conditions           | expected             |
 //! |-------|---------------------|----------------------------|----------------------|----------------------|
-//! | s1.1  | `secret_dir`          | secret directory path      | any workspace        | .secret path         |
-//! | s1.2  | `secret_file`         | secret file path           | filename provided    | .secret/filename     |
+//! | s1.1  | `secret_dir`          | secret directory path      | any workspace        | secret path         |
+//! | s1.2  | `secret_file`         | secret file path           | filename provided    | secret/filename     |
 //! | s2.1  | `load_secrets_file`   | valid key=value format     | proper shell format  | parsed hashmap       |
 //! | s2.2  | `load_secrets_file`   | quoted values              | "value" and 'value'  | unquoted values      |
 //! | s2.3  | `load_secrets_file`   | comments and empty lines   | # comments present   | ignored lines        |
@@ -469,8 +469,8 @@ mod path_operation_tests
   
   #[ cfg( feature = "secrets" ) ]
   {
-   assert_eq!( workspace.secret_dir(), root.join( ".secret" ) );
-   assert_eq!( workspace.secret_file( "test" ), root.join( ".secret/test" ) );
+   assert_eq!( workspace.secret_dir(), root.join( "secret" ) );
+   assert_eq!( workspace.secret_file( "test" ), root.join( "secret/test" ) );
  }
  }
 
@@ -853,7 +853,7 @@ mod secret_management_tests
   let ( _temp_dir, workspace ) = testing ::create_test_workspace();
   
   let secret_dir = workspace.secret_dir();
-  assert_eq!( secret_dir, workspace.root().join( ".secret" ) );
+  assert_eq!( secret_dir, workspace.root().join( "secret" ) );
  }
 
   /// test s1.2 : secret file path
@@ -863,7 +863,7 @@ mod secret_management_tests
   let ( _temp_dir, workspace ) = testing ::create_test_workspace();
   
   let secret_file = workspace.secret_file( "test.env" );
-  assert_eq!( secret_file, workspace.root().join( ".secret/test.env" ) );
+  assert_eq!( secret_file, workspace.root().join( "secret/test.env" ) );
  }
 
   /// test s2.1 : load secrets with valid key=value format

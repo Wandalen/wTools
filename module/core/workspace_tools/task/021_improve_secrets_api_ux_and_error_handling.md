@@ -11,7 +11,7 @@ Improve the secrets API user experience by addressing critical usability pitfall
 
 This task focuses on improving developer experience through better API design, explicit error handling, comprehensive documentation, and helpful debugging tools. The improvements maintain full backward compatibility while adding new methods and enhancing existing ones.
 
-Based on real-world usage analysis from `api_huggingface` project where developers attempted `load_secrets_from_file("lib/llm_tools/.secret/-secrets.sh")` expecting it to work as a path, but the API treated it as a filename, resulting in silent failure and debugging confusion.
+Based on real-world usage analysis from `api_huggingface` project where developers attempted `load_secrets_from_file("lib/llm_tools/secret/-secrets.sh")` expecting it to work as a path, but the API treated it as a filename, resulting in silent failure and debugging confusion.
 
 ## Requirements
 
@@ -118,14 +118,14 @@ pub fn resolve_secrets_path( &self, secret_file_name : &str ) -> PathBuf
 ///
 /// # Path Resolution
 /// 
-/// Files are resolved as: `workspace_root/.secret/{secret_file_name}`
+/// Files are resolved as: `workspace_root/secret/{secret_file_name}`
 ///
 /// # Examples
 /// 
 /// ```rust
 /// // ✅ Correct usage - simple filenames
-/// let secrets = ws.load_secrets_from_file("-secrets.sh")?;      // -> .secret/-secrets.sh
-/// let dev = ws.load_secrets_from_file("dev.env")?;             // -> .secret/dev.env
+/// let secrets = ws.load_secrets_from_file("-secrets.sh")?;      // -> secret/-secrets.sh
+/// let dev = ws.load_secrets_from_file("dev.env")?;             // -> secret/dev.env
 /// 
 /// // ❌ Common mistake - using paths
 /// // let secrets = ws.load_secrets_from_file("config/secrets.sh")?; // DON'T DO THIS

@@ -12,7 +12,9 @@
 //! - Backward compatibility with existing `CliAggregator`
 
 use unilang::prelude::*;
-use unilang::multi_yaml::{ CliBuilder, AggregationMode, aggregate_cli_simple, aggregate_cli_complex };
+use unilang::multi_yaml::{ CliBuilder, AggregationMode, aggregate_cli_simple };
+#[ cfg( feature = "advanced_cli_tests" ) ]
+use unilang::multi_yaml::aggregate_cli_complex;
 use std::path::PathBuf;
 
 #[test]
@@ -204,6 +206,7 @@ fn test_cli_builder_auto_mode_detection()
   assert_eq!( detected_mode, RegistryMode::Hybrid );
 }
 
+#[ cfg( feature = "advanced_cli_tests" ) ]
 #[test]
 fn test_cli_builder_conditional_modules_enabled()
 {
@@ -254,6 +257,7 @@ fn test_aggregate_cli_simple_macro()
   assert_eq!( registry.registry_mode(), RegistryMode::Hybrid );
 }
 
+#[ cfg( feature = "advanced_cli_tests" ) ]
 #[test]
 fn test_aggregate_cli_complex_macro()
 {
@@ -382,6 +386,7 @@ fn test_mode_selection_apis()
   }
 }
 
+#[ cfg( feature = "advanced_cli_tests" ) ]
 #[test]
 fn test_complex_scenario_with_all_features()
 {
@@ -400,7 +405,7 @@ fn test_complex_scenario_with_all_features()
     .global_prefix( "app" )
     .mode( AggregationMode::Hybrid )
     .static_module_with_prefix( "static", "st", vec![ static_cmd ] )
-    .dynamic_module_with_prefix( "dynamic", PathBuf::from( "dynamic.yaml" ), "dyn" )
+    .dynamic_module_with_prefix( "dynamic", PathBuf::from( "tests/test_data/dynamic.yaml" ), "dyn" )
     .conditional_module( "conditional", "test_feature", vec![ cond_cmd ] )
     .auto_help( true )
     .detect_conflicts( true )

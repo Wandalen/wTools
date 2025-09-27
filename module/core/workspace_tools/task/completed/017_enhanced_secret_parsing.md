@@ -104,7 +104,7 @@ pub enum SecretFileFormat
 - **Format Flexibility**: Support multiple common formats in same project
 
 ### **Compatibility**  
-- **Shell Scripts**: Works with existing `source .secret/-secrets.sh` workflows
+- **Shell Scripts**: Works with existing `source secret/-secrets.sh` workflows
 - **Docker/Compose**: Compatible with docker-compose env_file format
 - **CI/CD**: Integrates with existing deployment secret management
 

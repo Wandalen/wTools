@@ -1,0 +1,30 @@
+- name: "example"
+  namespace: ""
+  description: "Example utility command from utils module"
+  hint: "Utility command for testing"
+  status: "stable"
+  version: "1.0.0"
+  aliases: ["util"]
+  tags: ["utility", "testing"]
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+  auto_help_enabled: true
+  examples:
+    - "example input::utility_value"
+  arguments:
+    - name: "input"
+      description: "Input parameter for utility"
+      kind: "String"
+      hint: "Utility input value"
+      attributes:
+        optional: true
+        multiple: false
+        is_default_arg: false
+        interactive: false
+        sensitive: false
+      validation_rules: []
+      default_value: "default_util"
+      aliases: ["i"]
+      tags: ["utility"]

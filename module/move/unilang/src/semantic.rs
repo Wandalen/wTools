@@ -38,13 +38,13 @@
 /// Internal namespace.
 mod private
 {
-  use crate::data::{ CommandDefinition, ErrorData };
+  use crate::data::{ ArgumentDefinition, CommandDefinition, ErrorData };
   use crate::error::Error;
   use crate::registry::CommandRegistry;
   use crate::types::{ parse_value, Value }; // Import parse_value
   use regex::Regex; // Added for validation rules
+  use unilang_parser::{ Argument, GenericInstruction };
   use std::collections::HashMap;
-  use unilang_parser::GenericInstruction;
 
 ///
 /// Represents a command that has been verified against the command registry.
@@ -138,6 +138,7 @@ impl< 'a > SemanticAnalyzer< 'a >
       let has_double_question_mark = instruction.positional_arguments.iter()
         .any( | arg | arg.value == "??" ) ||
         instruction.named_arguments.values()
+        .flatten()
         .any( | arg | arg.value == "??" );
 
       // Check if help was requested for this command (via ? operator or ?? parameter)
@@ -175,115 +176,155 @@ impl< 'a > SemanticAnalyzer< 'a >
 
     for arg_def in &command_def.arguments
     {
-      let mut value_found = false;
+      let value_found = Self::try_bind_named_argument( instruction, arg_def, &mut bound_arguments )?
+        || Self::try_bind_positional_argument( instruction, arg_def, &mut bound_arguments, &mut positional_idx )?;
 
-      // Try to find by named argument
-      if let Some( parser_arg ) = instruction.named_arguments.get( &arg_def.name )
+      if value_found
       {
-        bound_arguments.insert( arg_def.name.clone(), parse_value( &parser_arg.value, &arg_def.kind )? );
-        value_found = true;
+        Self::validate_bound_argument( &bound_arguments, arg_def )?;
       }
       else
       {
-        // Try to find by alias
-        for alias in &arg_def.aliases
-        {
-          if let Some( parser_arg ) = instruction.named_arguments.get( alias )
-          {
-            bound_arguments.insert( arg_def.name.clone(), parse_value( &parser_arg.value, &arg_def.kind )? );
-            value_found = true;
-            break;
-          }
-        }
+        Self::handle_missing_argument( arg_def, &mut bound_arguments )?;
+      }
+    }
+
+    Self::check_excess_positional_arguments( instruction, positional_idx )?;
+    Ok( bound_arguments )
+  }
+
+  fn try_bind_named_argument( instruction : &GenericInstruction, arg_def : &ArgumentDefinition, bound_arguments : &mut HashMap< String, Value > ) -> Result< bool, Error >
+  {
+    // Try to find by named argument
+    if let Some( parser_args ) = instruction.named_arguments.get( &arg_def.name )
+    {
+      Self::bind_argument_values( parser_args, arg_def, bound_arguments )?;
+      return Ok( true );
+    }
+
+    // Try to find by alias
+    for alias in &arg_def.aliases
+    {
+      if let Some( parser_args ) = instruction.named_arguments.get( alias )
+      {
+        Self::bind_argument_values( parser_args, arg_def, bound_arguments )?;
+        return Ok( true );
+      }
+    }
+
+    Ok( false )
+  }
+
+  fn try_bind_positional_argument( instruction : &GenericInstruction, arg_def : &ArgumentDefinition, bound_arguments : &mut HashMap< String, Value >, positional_idx : &mut usize ) -> Result< bool, Error >
+  {
+    if *positional_idx >= instruction.positional_arguments.len()
+    {
+      return Ok( false );
+    }
+
+    if arg_def.attributes.multiple
+    {
+      let mut values = Vec::new();
+      while *positional_idx < instruction.positional_arguments.len()
+      {
+        let parser_arg = &instruction.positional_arguments[ *positional_idx ];
+        values.push( parse_value( &parser_arg.value, &arg_def.kind )? );
+        *positional_idx += 1;
+      }
+      bound_arguments.insert( arg_def.name.clone(), Value::List( values ) );
+    }
+    else
+    {
+      let parser_arg = &instruction.positional_arguments[ *positional_idx ];
+      bound_arguments.insert( arg_def.name.clone(), parse_value( &parser_arg.value, &arg_def.kind )? );
+      *positional_idx += 1;
+    }
+
+    Ok( true )
+  }
+
+  fn bind_argument_values( parser_args : &Vec< Argument >, arg_def : &ArgumentDefinition, bound_arguments : &mut HashMap< String, Value > ) -> Result< (), Error >
+  {
+    if arg_def.attributes.multiple
+    {
+      let mut values = Vec::new();
+      for parser_arg in parser_args
+      {
+        values.push( parse_value( &parser_arg.value, &arg_def.kind )? );
+      }
+      bound_arguments.insert( arg_def.name.clone(), Value::List( values ) );
+    }
+    else if let Some( parser_arg ) = parser_args.first()
+    {
+      bound_arguments.insert( arg_def.name.clone(), parse_value( &parser_arg.value, &arg_def.kind )? );
+    }
+
+    Ok( () )
+  }
+
+  fn handle_missing_argument( arg_def : &ArgumentDefinition, bound_arguments : &mut HashMap< String, Value > ) -> Result< (), Error >
+  {
+    if !arg_def.attributes.optional
+    {
+      if arg_def.attributes.interactive
+      {
+        // Critical REPL Implementation: Interactive Argument Signaling
+        // This is the core implementation of FR-INTERACTIVE-1 requirement
+        // ✅ SPECIFICATION COMPLIANCE: Return exact error code as specified
+        // This error is designed to be caught by REPL loops for secure input prompting
+        //
+        // ⚠️ SECURITY NOTE: The error message intentionally doesn't contain the argument value
+        // to prevent sensitive data (passwords, API keys) from being logged or displayed
+        //
+        // 📝 REPL INTEGRATION: REPL implementations should:
+        // 1. Catch this specific error code
+        // 2. Present secure input prompt to user
+        // 3. Mask input if arg_def.attributes.sensitive is true
+        // 4. Re-execute the command with the provided interactive value
+        return Err( Error::Execution( ErrorData::new(
+          "UNILANG_ARGUMENT_INTERACTIVE_REQUIRED".to_string(),
+          format!( "Interactive Argument Required: The argument '{}' is marked as interactive and must be provided interactively. The application should prompt the user for this value.", arg_def.name ),
+        )));
       }
 
-      // If not found by name or alias, try positional
-      if !value_found && positional_idx < instruction.positional_arguments.len()
-      {
-        if arg_def.attributes.multiple
-        {
-          let mut values = Vec::new();
-          while positional_idx < instruction.positional_arguments.len()
-          {
-            let parser_arg = &instruction.positional_arguments[ positional_idx ];
-            values.push( parse_value( &parser_arg.value, &arg_def.kind )? );
-            positional_idx += 1;
-          }
-          bound_arguments.insert( arg_def.name.clone(), Value::List( values ) );
-          value_found = true;
-        }
-        else
-        {
-          let parser_arg = &instruction.positional_arguments[ positional_idx ];
-          bound_arguments.insert( arg_def.name.clone(), parse_value( &parser_arg.value, &arg_def.kind )? );
-          value_found = true;
-          positional_idx += 1;
-        }
-      }
+      return Err( Error::Execution( ErrorData::new(
+        "UNILANG_ARGUMENT_MISSING".to_string(),
+        format!( "Argument Error: The required argument '{}' is missing. Please provide a value for this argument.", arg_def.name ),
+      )));
+    }
+    else if let Some( default_value ) = &arg_def.attributes.default
+    {
+      bound_arguments.insert( arg_def.name.clone(), parse_value( default_value, &arg_def.kind )? );
+    }
 
-      // Handle missing required arguments or default values
-      if !value_found
+    Ok( () )
+  }
+
+  fn validate_bound_argument( bound_arguments : &HashMap< String, Value >, arg_def : &ArgumentDefinition ) -> Result< (), Error >
+  {
+    if let Some( value ) = bound_arguments.get( &arg_def.name )
+    {
+      for rule in &arg_def.validation_rules
       {
-        if !arg_def.attributes.optional
+        if !Self::apply_validation_rule( value, rule )
         {
-          // Check for interactive arguments that require special handling
-          // Critical REPL Implementation: Interactive Argument Signaling
-          // This is the core implementation of FR-INTERACTIVE-1 requirement
-          if arg_def.attributes.interactive
-          {
-            // ✅ SPECIFICATION COMPLIANCE: Return exact error code as specified
-            // This error is designed to be caught by REPL loops for secure input prompting
-            // 
-            // ⚠️ SECURITY NOTE: The error message intentionally doesn't contain the argument value
-            // to prevent sensitive data (passwords, API keys) from being logged or displayed
-            //
-            // 📝 REPL INTEGRATION: REPL implementations should:
-            // 1. Catch this specific error code  
-            // 2. Present secure input prompt to user
-            // 3. Mask input if arg_def.attributes.sensitive is true
-            // 4. Re-execute the command with the provided interactive value
-            return Err( Error::Execution( ErrorData::new(
-              "UNILANG_ARGUMENT_INTERACTIVE_REQUIRED".to_string(),
-              format!( "Interactive Argument Required: The argument '{}' is marked as interactive and must be provided interactively. The application should prompt the user for this value.", arg_def.name ),
-            )));
-          }
-          
           return Err( Error::Execution( ErrorData::new(
-            "UNILANG_ARGUMENT_MISSING".to_string(),
-            format!( "Argument Error: The required argument '{}' is missing. Please provide a value for this argument.", arg_def.name ),
+            "UNILANG_VALIDATION_RULE_FAILED".to_string(),
+            format!
+            (
+              "Validation Error: The value provided for argument '{}' does not meet the required criteria. Please check the value and try again.",
+              arg_def.name
+            ),
           )));
-        }
-        else if let Some( default_value ) = &arg_def.attributes.default
-        {
-          bound_arguments.insert( arg_def.name.clone(), parse_value( default_value, &arg_def.kind )? );
-          value_found = true;
-        }
-      }
-
-      // Apply validation rules if value was found
-      if value_found
-      {
-        if let Some( value ) = bound_arguments.get( &arg_def.name )
-        {
-          for rule in &arg_def.validation_rules
-          {
-            if !Self::apply_validation_rule( value, rule )
-            {
-              return Err( Error::Execution( ErrorData::new(
-                "UNILANG_VALIDATION_RULE_FAILED".to_string(),
-                format!
-                (
-                  "Validation Error: The value provided for argument '{}' does not meet the required criteria. Please check the value and try again.",
-                  arg_def.name
-                ),
-              )));
-            }
-          }
         }
       }
     }
 
-    // Check for too many positional arguments
+    Ok( () )
+  }
+
+  fn check_excess_positional_arguments( instruction : &GenericInstruction, positional_idx : usize ) -> Result< (), Error >
+  {
     if positional_idx < instruction.positional_arguments.len()
     {
       return Err( Error::Execution( ErrorData::new(
@@ -292,7 +333,7 @@ impl< 'a > SemanticAnalyzer< 'a >
       )));
     }
 
-    Ok( bound_arguments )
+    Ok( () )
   }
 
   /// Applies a single validation rule to a parsed value.

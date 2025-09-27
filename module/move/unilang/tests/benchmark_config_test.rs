@@ -27,7 +27,9 @@
 
 use unilang::benchmark_config::{ BenchmarkConfig, BenchmarkEnvironment };
 use core::time::Duration;
+#[ cfg( feature = "benchmarks" ) ]
 use std::fs;
+#[ cfg( feature = "benchmarks" ) ]
 use tempfile::NamedTempFile;
 
 #[ cfg( feature = "benchmarks" ) ]
@@ -464,6 +466,7 @@ fn detect_environment() -> EnvironmentConfig
 }
 
 /// Test configuration file loading
+#[ cfg( feature = "benchmarks" ) ]
 #[ test ]
 fn test_load_from_file() -> Result< (), Box< dyn core::error::Error > >
 {

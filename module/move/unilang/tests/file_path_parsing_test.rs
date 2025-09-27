@@ -30,7 +30,7 @@ fn test_command_with_dot_prefix_and_file_path_with_dot_slash()
       assert_eq!(instruction.named_arguments.len(), 1, "Should have exactly one named argument");
       assert!(instruction.named_arguments.contains_key("file"), "Should have 'file' argument");
       assert_eq!(
-        instruction.named_arguments.get("file").unwrap().value,
+        instruction.named_arguments.get("file").unwrap().first().unwrap().value,
         "./examples/rust_learning.yaml",
         "File argument should contain the full path including './' prefix"
       );
@@ -66,7 +66,7 @@ fn test_command_with_dot_prefix_and_various_file_paths()
         let command_name = instruction.command_path_slices.join(".");
         assert_eq!(command_name, "run_file", "Command name should be 'run_file' for input: {input}");
         assert_eq!(
-          instruction.named_arguments.get("file").unwrap().value,
+          instruction.named_arguments.get("file").unwrap().first().unwrap().value,
           expected_path,
           "File path should be correctly parsed for input: {input}"
         );
@@ -97,7 +97,7 @@ fn test_file_path_does_not_interfere_with_command_parsing()
       
       // File argument should be preserved exactly
       assert_eq!(
-        instruction.named_arguments.get("file").unwrap().value,
+        instruction.named_arguments.get("file").unwrap().first().unwrap().value,
         "./path/to/file.ext",
         "File path should be preserved exactly"
       );

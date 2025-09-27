@@ -43,8 +43,9 @@ pub struct GenericInstruction
   pub command_path_slices: Vec< String >,
   /// A hash map of named arguments.
   /// The key is the argument name (e.g., "config" for `config :: "path/to/file"`),
-  /// and the value is an [`Argument`] struct containing the unescaped value and locations.
-  pub named_arguments: BTreeMap< String, Argument >,
+  /// and the value is a vector of [`Argument`] structs to support multiple values for the same argument name.
+  /// Each entry in the vector contains the unescaped value and locations for one occurrence of the argument.
+  pub named_arguments: BTreeMap< String, Vec< Argument > >,
   /// A vector of positional arguments, stored as [`Argument`] structs.
   /// These are maintained in the order they appeared in the input.
   /// The `name` field within these `Argument` structs will be `None`.

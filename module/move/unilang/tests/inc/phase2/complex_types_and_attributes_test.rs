@@ -26,7 +26,7 @@ fn analyze_program(
 
   let instructions = vec![unilang_parser::GenericInstruction {
     command_path_slices: command_name.split('.').map(std::string::ToString::to_string).collect(),
-    named_arguments: named_args.into_iter().collect(),
+    named_arguments: named_args.into_iter().map(|(k, v)| (k, vec![v])).collect(),
     positional_arguments: positional_args,
     help_requested: false,
     overall_location: SourceLocation::StrSpan { start: 0, end: 0 }, // Placeholder

@@ -48,7 +48,15 @@ pub enum BenchmarkEnvironment {
 impl BenchmarkConfig {
   /// Create configuration based on environment variable
   pub fn from_environment() -> Self {
-    let env_var = std::env::var("BENCHMARK_ENV")
+    Self::from_environment_with_reader(|| std::env::var("BENCHMARK_ENV"))
+  }
+
+  /// Create configuration with custom environment reader (for testing)
+  pub fn from_environment_with_reader<F>(env_reader: F) -> Self
+  where
+    F: FnOnce() -> Result<String, std::env::VarError>,
+  {
+    let env_var = env_reader()
       .unwrap_or_else(|_| "development".to_string())
       .to_lowercase();
 
@@ -186,32 +194,26 @@ mod tests {
 
   #[test]
   fn test_environment_detection_development() {
-    std::env::set_var("BENCHMARK_ENV", "development");
-    let config = BenchmarkConfig::from_environment();
+    let config = BenchmarkConfig::from_environment_with_reader(|| Ok("development".to_string()));
     assert_eq!(config.environment, BenchmarkEnvironment::Development);
     assert_eq!(config.cv_tolerance, 0.15);
     assert_eq!(config.min_sample_size, 10);
-    std::env::remove_var("BENCHMARK_ENV");
   }
 
   #[test]
   fn test_environment_detection_staging() {
-    std::env::set_var("BENCHMARK_ENV", "staging");
-    let config = BenchmarkConfig::from_environment();
+    let config = BenchmarkConfig::from_environment_with_reader(|| Ok("staging".to_string()));
     assert_eq!(config.environment, BenchmarkEnvironment::Staging);
     assert_eq!(config.cv_tolerance, 0.10);
     assert_eq!(config.min_sample_size, 20);
-    std::env::remove_var("BENCHMARK_ENV");
   }
 
   #[test]
   fn test_environment_detection_production() {
-    std::env::set_var("BENCHMARK_ENV", "production");
-    let config = BenchmarkConfig::from_environment();
+    let config = BenchmarkConfig::from_environment_with_reader(|| Ok("production".to_string()));
     assert_eq!(config.environment, BenchmarkEnvironment::Production);
     assert_eq!(config.cv_tolerance, 0.05);
     assert_eq!(config.min_sample_size, 50);
-    std::env::remove_var("BENCHMARK_ENV");
   }
 
   #[test]
@@ -250,9 +252,8 @@ mod tests {
 
   #[test]
   fn test_default_environment() {
-    // Clear environment variable
-    std::env::remove_var("BENCHMARK_ENV");
-    let config = BenchmarkConfig::from_environment();
+    // Test default when environment variable is not set
+    let config = BenchmarkConfig::from_environment_with_reader(|| Err(std::env::VarError::NotPresent));
     assert_eq!(config.environment, BenchmarkEnvironment::Development);
   }
   }

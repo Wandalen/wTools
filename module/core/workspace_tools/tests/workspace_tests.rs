@@ -289,7 +289,7 @@ mod secret_management_tests
   env ::set_var( "WORKSPACE_PATH", temp_dir.path() );
   
   let workspace = Workspace ::resolve().unwrap();
-  assert_eq!( workspace.secret_dir(), temp_dir.path().join( ".secret" ) );
+  assert_eq!( workspace.secret_dir(), temp_dir.path().join( "secret" ) );
   
   // cleanup
   env ::remove_var( "WORKSPACE_PATH" );

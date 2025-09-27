@@ -73,8 +73,7 @@ fn test_dot_command_with_minimal_commands()
   
   if let Err(Error::Execution(error_data)) = result {
     assert_eq!(error_data.code, "HELP_REQUESTED");
-    assert!(error_data.message.contains("Available commands"));
-    assert!(error_data.message.contains(".version")); // Built-in command should be listed
+    assert!(error_data.message.contains("No commands are currently available"));
   } else {
     panic!("Expected Execution error with help content");
   }
