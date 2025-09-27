@@ -464,6 +464,7 @@ fn detect_environment() -> EnvironmentConfig
 }
 
 /// Test configuration file loading
+#[ cfg( feature = "benchmarks" ) ]
 #[ test ]
 fn test_load_from_file() -> Result< (), Box< dyn core::error::Error > >
 {

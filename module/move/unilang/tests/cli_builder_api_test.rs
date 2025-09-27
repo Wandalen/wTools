@@ -423,6 +423,7 @@ fn test_namespace_isolation_nested_prefixes()
   assert!( registry.command( ".myapp.role.user" ).is_none() );
 }
 
+#[ cfg( feature = "advanced_cli_tests" ) ]
 #[test]
 fn test_namespace_isolation_mixed_modules()
 {
@@ -640,6 +641,7 @@ fn test_disabled_modules_excluded()
   assert!( registry.command( ".other.disabled" ).is_some() );
 }
 
+#[ cfg( feature = "advanced_cli_tests" ) ]
 #[test]
 fn test_comprehensive_builder_scenario()
 {

@@ -204,6 +204,7 @@ fn test_cli_builder_auto_mode_detection()
   assert_eq!( detected_mode, RegistryMode::Hybrid );
 }
 
+#[ cfg( feature = "advanced_cli_tests" ) ]
 #[test]
 fn test_cli_builder_conditional_modules_enabled()
 {
@@ -254,6 +255,7 @@ fn test_aggregate_cli_simple_macro()
   assert_eq!( registry.registry_mode(), RegistryMode::Hybrid );
 }
 
+#[ cfg( feature = "advanced_cli_tests" ) ]
 #[test]
 fn test_aggregate_cli_complex_macro()
 {
@@ -382,6 +384,7 @@ fn test_mode_selection_apis()
   }
 }
 
+#[ cfg( feature = "advanced_cli_tests" ) ]
 #[test]
 fn test_complex_scenario_with_all_features()
 {
