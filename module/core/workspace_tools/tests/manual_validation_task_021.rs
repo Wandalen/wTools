@@ -67,7 +67,7 @@ fn test_manual_path_aware_methods()
 
   // Setup nested directory structure
   let config_dir = workspace.join( "config" );
-  let nested_dir = workspace.join( "lib/project/.secret" );
+  let nested_dir = workspace.join( "lib/project/secret" );
   fs ::create_dir_all( &config_dir ).unwrap();
   fs ::create_dir_all( &nested_dir ).unwrap();
 
@@ -83,7 +83,7 @@ fn test_manual_path_aware_methods()
   let nested_secrets = "HF_TOKEN=hf_test_token_123\nAPI_KEY=huggingface_api_key_456";
   fs ::write( nested_dir.join( "-secrets.sh" ), nested_secrets ).unwrap();
 
-  let nested_result = workspace.load_secrets_from_path( "lib/project/.secret/-secrets.sh" ).unwrap();
+  let nested_result = workspace.load_secrets_from_path( "lib/project/secret/-secrets.sh" ).unwrap();
   assert_eq!( nested_result.len(), 2 );
   assert_eq!( nested_result.get( "HF_TOKEN" ).unwrap(), "hf_test_token_123" );
 
@@ -124,7 +124,7 @@ fn test_manual_helper_methods()
 
   // Test resolve_secrets_path
   let resolved_path = workspace.resolve_secrets_path( "test.env" );
-  assert!( resolved_path.ends_with( ".secret/test.env" ), "Should resolve to correct path" );
+  assert!( resolved_path.ends_with( "secret/test.env" ), "Should resolve to correct path" );
 }
 
 /// Manual test to verify debug functionality provides useful information
@@ -187,13 +187,13 @@ fn test_manual_api_huggingface_scenario()
   let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
   // Setup the exact scenario from the task description
-  let lib_dir = workspace.join( "lib/llm_tools/.secret" );
+  let lib_dir = workspace.join( "lib/llm_tools/secret" );
   fs ::create_dir_all( &lib_dir ).unwrap();
   let hf_secrets = "HF_TOKEN=hf_test_token_123\nAPI_KEY=huggingface_api_key_456";
   fs ::write( lib_dir.join( "-secrets.sh" ), hf_secrets ).unwrap();
 
   // Old problematic way (should give helpful error now)
-  match workspace.load_secrets_from_file( "lib/llm_tools/.secret/-secrets.sh" )
+  match workspace.load_secrets_from_file( "lib/llm_tools/secret/-secrets.sh" )
   {
   Ok( _ ) => panic!( "Expected error for path-like parameter" ),
   Err( e ) =>
@@ -205,7 +205,7 @@ fn test_manual_api_huggingface_scenario()
  }
 
   // New correct way should work perfectly
-  let correct_secrets = workspace.load_secrets_from_path( "lib/llm_tools/.secret/-secrets.sh" ).unwrap();
+  let correct_secrets = workspace.load_secrets_from_path( "lib/llm_tools/secret/-secrets.sh" ).unwrap();
   assert_eq!( correct_secrets.len(), 2 );
   assert_eq!( correct_secrets.get( "HF_TOKEN" ).unwrap(), "hf_test_token_123" );
   assert_eq!( correct_secrets.get( "API_KEY" ).unwrap(), "huggingface_api_key_456" );

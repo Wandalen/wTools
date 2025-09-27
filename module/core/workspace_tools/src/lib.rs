@@ -679,16 +679,16 @@ impl Workspace
 {
   /// get secrets directory path
   ///
-  /// returns `workspace_root/.secret`
+  /// returns `workspace_root/secret`
   #[ must_use ]
   pub fn secret_dir( &self ) -> PathBuf
   {
-  self.root.join( ".secret" )
+  self.root.join( "secret" )
   }
 
   /// get path to secret configuration file
   ///
-  /// returns `workspace_root/.secret/{name}`
+  /// returns `workspace_root/secret/{name}`
   #[ must_use ]
   pub fn secret_file( &self, name: &str ) -> PathBuf
   {
@@ -698,11 +698,11 @@ impl Workspace
   /// load secrets from a file in the workspace secrets directory
   ///
   /// supports shell script format (KEY=value lines) and loads secrets from filenames
-  /// within the workspace `.secret/` directory
+  /// within the workspace `secret/` directory
   ///
   /// # Path Resolution
   ///
-  /// Files are resolved as: `workspace_root/.secret/{filename}`
+  /// Files are resolved as: `workspace_root/secret/{filename}`
   ///
   /// **Important** : This method expects a filename, not a path. If you need to load
   /// from a path, use `load_secrets_from_path()` instead.
@@ -717,8 +717,8 @@ impl Workspace
   /// let ws = workspace()?;
   ///
   /// // ✅ Correct usage - simple filenames only
-  /// // let secrets = ws.load_secrets_from_file( "-secrets.sh" )?;      // -> .secret/-secrets.sh
-  /// // let dev = ws.load_secrets_from_file( "development.env" )?;      // -> .secret/development.env
+  /// // let secrets = ws.load_secrets_from_file( "-secrets.sh" )?;      // -> secret/-secrets.sh
+  /// // let dev = ws.load_secrets_from_file( "development.env" )?;      // -> secret/development.env
   ///
   /// // ❌ Common mistake - using paths (will emit warning)
   /// // let secrets = ws.load_secrets_from_file( "config/secrets.env" )?; // DON'T DO THIS
@@ -776,11 +776,11 @@ impl Workspace
   /// load a specific secret key with fallback to environment
   ///
   /// tries to load from secret file first, then falls back to environment variable
-  /// this method uses filename-based resolution (looks in .secret/ directory)
+  /// this method uses filename-based resolution (looks in secret/ directory)
   ///
   /// # Path Resolution
   ///
-  /// Files are resolved as: `workspace_root/.secret/{filename}`
+  /// Files are resolved as: `workspace_root/secret/{filename}`
   ///
   /// # Fallback Strategy
   ///
@@ -798,7 +798,7 @@ impl Workspace
   /// let ws = workspace()?;
   ///
   /// // ✅ Correct usage - filename only
-  /// match ws.load_secret_key( "API_KEY", "-secrets.sh" )  // -> .secret/-secrets.sh
+  /// match ws.load_secret_key( "API_KEY", "-secrets.sh" )  // -> secret/-secrets.sh
   /// {
   ///     Ok( key ) => println!( "loaded api key from file or environment" ),
   ///     Err( e ) => println!( "api key not found: {}", e ),
@@ -893,7 +893,7 @@ impl Workspace
 
   /// list available secrets files in the secrets directory
   ///
-  /// returns vector of filenames (not full paths) found in .secret/ directory
+  /// returns vector of filenames (not full paths) found in secret/ directory
   ///
   /// # examples
   ///
@@ -1020,7 +1020,7 @@ impl Workspace
   /// // let secrets = ws.load_secrets_from_path( "config/secrets.env" )?;
   ///
   /// // load from nested directory
-  /// // let nested = ws.load_secrets_from_path( "lib/project/.secret/api.env" )?;
+  /// // let nested = ws.load_secrets_from_path( "lib/project/secret/api.env" )?;
   /// # Ok(())
   /// # }
   /// ```
@@ -1179,11 +1179,11 @@ impl Workspace
   ///
   /// returns secrets as `SecretString` types for enhanced security
   /// supports shell script format (KEY=value lines) and loads secrets from filenames
-  /// within the workspace `.secret/` directory
+  /// within the workspace `secret/` directory
   ///
   /// # Path Resolution
   ///
-  /// Files are resolved as: `workspace_root/.secret/{filename}`
+  /// Files are resolved as: `workspace_root/secret/{filename}`
   ///
   /// **Important** : This method expects a filename, not a path. If you need to load
   /// from a path, use `load_secrets_from_path_secure()` instead.
@@ -1199,8 +1199,8 @@ impl Workspace
   /// let ws = workspace()?;
   ///
   /// // ✅ Correct usage - simple filenames only
-  /// // let secrets = ws.load_secrets_secure( "-secrets.sh" )?;         // -> .secret/-secrets.sh
-  /// // let dev = ws.load_secrets_secure( "development.env" )?;         // -> .secret/development.env
+  /// // let secrets = ws.load_secrets_secure( "-secrets.sh" )?;         // -> secret/-secrets.sh
+  /// // let dev = ws.load_secrets_secure( "development.env" )?;         // -> secret/development.env
   ///
   /// // Access secret values (requires explicit expose_secret() call)
   /// // if let Some( api_key ) = secrets.get( "API_KEY" )
@@ -1288,7 +1288,7 @@ impl Workspace
   /// # std ::env ::set_var( "WORKSPACE_PATH", std ::env ::current_dir().unwrap() );
   /// let ws = workspace()?;
   ///
-  /// // looks for API_KEY in .secret/-secrets.sh, then in environment
+  /// // looks for API_KEY in secret/-secrets.sh, then in environment
   /// match ws.load_secret_key_secure( "API_KEY", "-secrets.sh" )
   /// {
   ///     Ok( key ) => println!( "loaded api key: {}", key.expose_secret() ),
@@ -1506,7 +1506,7 @@ impl Workspace
   /// let ws = workspace()?;
   /// let mut config = AppConfig { database_url: String ::new(), api_key: String ::new() };
   ///
-  /// // config gets secrets injected from .secret/-config.sh
+  /// // config gets secrets injected from secret/-config.sh
   /// config = ws.load_config_with_secrets( config, "-config.sh" )?;
   /// # }
   /// # Ok(())

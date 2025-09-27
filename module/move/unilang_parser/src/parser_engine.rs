@@ -516,7 +516,7 @@ impl Parser
   &self,
   items_iter: &mut core ::iter ::Peekable< IntoIter< RichItem< '_ > > >,
  )
-  -> Result< ( Vec< Argument >, BTreeMap< String, Argument >, bool ), ParseError >
+  -> Result< ( Vec< Argument >, BTreeMap< String, Vec< Argument > >, bool ), ParseError >
   {
   let mut positional_arguments = Vec ::new();
   let mut named_arguments = BTreeMap ::new();
@@ -621,35 +621,27 @@ impl Parser
  }
  }
 
-  if named_arguments.keys().any( | k | k == arg_name )
-   && self.options.error_on_duplicate_named_arguments
-   {
-  return Err( ParseError ::new
-  (
-   ErrorKind ::Syntax( format!( "Duplicate named argument '{arg_name}'" ) ),
-   value_item.source_location(),
- ));
- }
-   // If not erroring on duplicates, the new value will overwrite the old one
-  named_arguments.insert
-  (
-   arg_name.to_string(),
-   Argument
-   {
-  name: Some( arg_name.to_string() ),
-  value: current_value,
-  name_location: Some( item.source_location() ),
-  value_location: SourceLocation ::StrSpan
+  // Support multiple values for the same argument name
+  let argument = Argument
   {
-   start: match value_item.source_location()
-   {
-  SourceLocation ::StrSpan { start, .. } => start,
-  SourceLocation ::None => 0,
- },
-   end: current_value_end_location,
- },
- },
- );
+    name: Some( arg_name.to_string() ),
+    value: current_value,
+    name_location: Some( item.source_location() ),
+    value_location: SourceLocation ::StrSpan
+    {
+      start: match value_item.source_location()
+      {
+        SourceLocation ::StrSpan { start, .. } => start,
+        SourceLocation ::None => 0,
+      },
+      end: current_value_end_location,
+    },
+  };
+
+  // Insert or append to existing vector
+  named_arguments.entry( arg_name.to_string() )
+    .or_insert_with( Vec::new )
+    .push( argument );
  }
    UnilangTokenKind ::Delimiter( "." ) =>
    {
@@ -769,35 +761,27 @@ impl Parser
  }
  }
 
-  if named_arguments.keys().any( | k | k == arg_name )
-   && self.options.error_on_duplicate_named_arguments
-   {
-  return Err( ParseError ::new
-  (
-   ErrorKind ::Syntax( format!( "Duplicate named argument '{arg_name}'" ) ),
-   value_item.source_location(),
- ));
- }
-   // If not erroring on duplicates, the new value will overwrite the old one
-  named_arguments.insert
-  (
-   arg_name.to_string(),
-   Argument
-   {
-  name: Some( arg_name.to_string() ),
-  value: current_value,
-  name_location: Some( item.source_location() ),
-  value_location: SourceLocation ::StrSpan
+  // Support multiple values for the same argument name
+  let argument = Argument
   {
-   start: match value_item.source_location()
-   {
-  SourceLocation ::StrSpan { start, .. } => start,
-  SourceLocation ::None => 0,
- },
-   end: current_value_end_location,
- },
- },
- );
+    name: Some( arg_name.to_string() ),
+    value: current_value,
+    name_location: Some( item.source_location() ),
+    value_location: SourceLocation ::StrSpan
+    {
+      start: match value_item.source_location()
+      {
+        SourceLocation ::StrSpan { start, .. } => start,
+        SourceLocation ::None => 0,
+      },
+      end: current_value_end_location,
+    },
+  };
+
+  // Insert or append to existing vector
+  named_arguments.entry( arg_name.to_string() )
+    .or_insert_with( Vec::new )
+    .push( argument );
  }
    _ =>
    {

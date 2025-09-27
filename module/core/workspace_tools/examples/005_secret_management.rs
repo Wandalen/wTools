@@ -111,7 +111,7 @@ fn main() -> Result< (), workspace_tools ::WorkspaceError >
   
   println!( "\n🔒 secret management best practices: " );
   println!( "   • never commit secret files to version control" );
-  println!( "   • add .secret/ to .gitignore" );
+  println!( "   • add secret/ to .gitignore" );
   println!( "   • use different files for different environments" );
   println!( "   • validate secrets early in application startup" );
   println!( "   • prefer environment variables in production" );

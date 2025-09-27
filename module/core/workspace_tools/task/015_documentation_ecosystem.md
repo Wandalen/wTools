@@ -1122,7 +1122,7 @@ config/
 ├── config.staging.toml      # Staging overrides
 ├── config.production.toml   # Production overrides
 ├── config.local.toml        # Local developer overrides (git-ignored)
-└── config.secret.toml       # Secrets (git-ignored)
+└── configsecret.toml       # Secrets (git-ignored)
 ```
 
 ## Pattern 2: Plugin Architecture

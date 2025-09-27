@@ -82,12 +82,12 @@ fn test_interactive_argument_signaling()
   {
     command_path_slices: vec!["config".to_string(), "set".to_string()],
     named_arguments: std::collections::BTreeMap::from([
-      ("key".to_string(), unilang_parser::Argument {
+      ("key".to_string(), vec![unilang_parser::Argument {
         name: Some("key".to_string()),
         value: "theme".to_string(),
         name_location: Some(SourceLocation::StrSpan { start: 0, end: 3 }),
         value_location: SourceLocation::StrSpan { start: 5, end: 10 },
-      })
+      }])
     ]),
     positional_arguments: vec![],
     help_requested: false,
@@ -109,18 +109,18 @@ fn test_interactive_argument_signaling()
   {
     command_path_slices: vec!["config".to_string(), "set".to_string()],
     named_arguments: std::collections::BTreeMap::from([
-      ("key".to_string(), unilang_parser::Argument {
+      ("key".to_string(), vec![unilang_parser::Argument {
         name: Some("key".to_string()),
         value: "theme".to_string(),
         name_location: Some(SourceLocation::StrSpan { start: 0, end: 3 }),
         value_location: SourceLocation::StrSpan { start: 5, end: 10 },
-      }),
-      ("value".to_string(), unilang_parser::Argument {
+      }]),
+      ("value".to_string(), vec![unilang_parser::Argument {
         name: Some("value".to_string()),
         value: "dark".to_string(),
         name_location: Some(SourceLocation::StrSpan { start: 12, end: 17 }),
         value_location: SourceLocation::StrSpan { start: 19, end: 23 },
-      })
+      }])
     ]),
     positional_arguments: vec![],
     help_requested: false,
@@ -139,12 +139,12 @@ fn test_interactive_argument_signaling()
   {
     command_path_slices: vec!["config".to_string(), "set".to_string()],
     named_arguments: std::collections::BTreeMap::from([
-      ("value".to_string(), unilang_parser::Argument {
+      ("value".to_string(), vec![unilang_parser::Argument {
         name: Some("value".to_string()),
         value: "dark".to_string(),
         name_location: Some(SourceLocation::StrSpan { start: 0, end: 5 }),
         value_location: SourceLocation::StrSpan { start: 7, end: 11 },
-      })
+      }])
     ]),
     positional_arguments: vec![],
     help_requested: false,

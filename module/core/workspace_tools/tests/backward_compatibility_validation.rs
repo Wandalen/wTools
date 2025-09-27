@@ -116,11 +116,11 @@ fn test_directory_resolution_unchanged()
 
   // Secret directory should still resolve to the same location
   let secret_dir = workspace.secret_dir();
-  assert!( secret_dir.ends_with( ".secret" ), "Secret directory should still end with .secret" );
+  assert!( secret_dir.ends_with( "secret" ), "Secret directory should still end with secret" );
 
   // Secret file resolution should work the same
   let secret_file = workspace.secret_file( "test.env" );
-  assert!( secret_file.parent().unwrap().ends_with( ".secret" ), "Should resolve to secret directory" );
+  assert!( secret_file.parent().unwrap().ends_with( "secret" ), "Should resolve to secret directory" );
   assert!( secret_file.ends_with( "test.env" ), "Should end with filename" );
 }
 
@@ -187,7 +187,7 @@ fn test_helper_methods_consistency()
   assert!( !workspace.secrets_file_exists( "nonexistent.env" ) );
 
   let resolved = workspace.resolve_secrets_path( "test.env" );
-  assert!( resolved.ends_with( ".secret/test.env" ) );
+  assert!( resolved.ends_with( "secret/test.env" ) );
 }
 
 #[ cfg( not( feature = "secrets" ) ) ]

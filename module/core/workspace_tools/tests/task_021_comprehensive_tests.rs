@@ -43,7 +43,7 @@ mod phase_1_enhanced_error_handling
 
   let path_like_params = vec![
    "config/secrets.env",
-   "lib/project/.secret/api.env",
+   "lib/project/secret/api.env",
    "../secrets/prod.env",
    "dir\\windows\\style.env",
  ];
@@ -72,7 +72,7 @@ mod phase_1_enhanced_error_handling
   let error_msg = result.unwrap_err().to_string();
   assert!( error_msg.contains( "missing-file.env" ) );
   assert!( error_msg.contains( "not found at" ) );
-  assert!( error_msg.contains( ".secret/missing-file.env" ) );
+  assert!( error_msg.contains( "secret/missing-file.env" ) );
  }
 
   /// Test available files suggestions
@@ -110,7 +110,7 @@ mod phase_1_enhanced_error_handling
   let error_msg = result.unwrap_err().to_string();
   assert!( error_msg.contains( "API_KEY not found in secrets file 'missing.env'" ) );
   assert!( error_msg.contains( "resolved to: " ) );
-  assert!( error_msg.contains( ".secret/missing.env" ) );
+  assert!( error_msg.contains( "secret/missing.env" ) );
  }
 }
 
@@ -184,7 +184,7 @@ mod phase_2_api_improvements
 
   // Test path resolution
   let path = workspace.resolve_secrets_path( "test.env" );
-  assert!( path.ends_with( ".secret/test.env" ) );
+  assert!( path.ends_with( "secret/test.env" ) );
  }
 
   /// Test debug helper method
@@ -270,7 +270,7 @@ mod phase_3_error_improvements
 
   let error_msg = result.unwrap_err().to_string();
   assert!( error_msg.contains( "test.env" ) ); // Original parameter
-  assert!( error_msg.contains( ".secret/test.env" ) ); // Resolved path
+  assert!( error_msg.contains( "secret/test.env" ) ); // Resolved path
 
   // Test path method error
   let path_result = workspace.load_secrets_from_path( "config/missing.env" );
@@ -378,7 +378,7 @@ mod integration_tests
   let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
   // Recreate the exact scenario from task 021
-  let lib_dir = workspace.join( "lib/llm_tools/.secret" );
+  let lib_dir = workspace.join( "lib/llm_tools/secret" );
   fs ::create_dir_all( &lib_dir ).unwrap();
 
   let secret_content = "API_KEY=huggingface-api-key\nTOKEN=hf-token-123";
@@ -387,13 +387,13 @@ mod integration_tests
 
   // Before: This would silently return empty HashMap
   // After: This returns helpful error with suggestions
-  let old_attempt = workspace.load_secrets_from_file( "lib/llm_tools/.secret/-secrets.sh" );
+  let old_attempt = workspace.load_secrets_from_file( "lib/llm_tools/secret/-secrets.sh" );
   assert!( old_attempt.is_err() );
   let error_msg = old_attempt.unwrap_err().to_string();
   assert!( error_msg.contains( "not found at" ) );
 
   // Now developer can use correct method
-  let correct_result = workspace.load_secrets_from_path( "lib/llm_tools/.secret/-secrets.sh" ).unwrap();
+  let correct_result = workspace.load_secrets_from_path( "lib/llm_tools/secret/-secrets.sh" ).unwrap();
   assert_eq!( correct_result.len(), 2 );
   assert_eq!( correct_result.get( "API_KEY" ).unwrap(), "huggingface-api-key" );
   assert_eq!( correct_result.get( "TOKEN" ).unwrap(), "hf-token-123" );
@@ -437,7 +437,7 @@ mod integration_tests
   let key_result = workspace.load_secret_key( "API_KEY", "missing.env" );
   assert!( key_result.is_err() );
   let key_error_msg = key_result.unwrap_err().to_string();
-  for expected in vec![ "API_KEY not found", "resolved to: ", ".secret/missing.env" ]
+  for expected in vec![ "API_KEY not found", "resolved to: ", "secret/missing.env" ]
   {
    assert!( key_error_msg.contains( expected ),
   "load_secret_key error message should contain '{}'. Got: {}",

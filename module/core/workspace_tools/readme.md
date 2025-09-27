@@ -118,7 +118,7 @@ You have now eliminated brittle, context-dependent file paths from your project!
 ```
 your-project/
 ├── .cargo/
-├── .secret/             # (Optional) Securely manage secrets
+├── secret/             # (Optional) Securely manage secrets
 ├── .workspace/          # Internal workspace metadata
 ├── Cargo.toml           # Your workspace root
 ├── config/              # ( ws.config_dir() ) Application configuration
@@ -153,7 +153,7 @@ let rust_files = workspace()?.find_resources( "src/**/*.rs" )?;
 ```
 
 **Secret Management** (`secrets`)
-Load secrets from `.secret/` directory with environment fallbacks. Supports both `KEY=VALUE` format and shell `export KEY=VALUE` statements.
+Load secrets from `secret/` directory with environment fallbacks. Supports both `KEY=VALUE` format and shell `export KEY=VALUE` statements.
 
 ```rust
 let api_key = workspace()?.load_secret_key( "API_KEY", "-secrets.sh" )?;
