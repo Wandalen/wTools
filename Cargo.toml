@@ -587,7 +587,7 @@ version = "~0.2.0"
 path = "module/move/llm_tools"
 
 [workspace.dependencies.benchkit]
-version = "~0.11.0"
+version = "~0.12.0"
 path = "module/core/benchkit"
 
 ## steps
