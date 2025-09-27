@@ -12,7 +12,9 @@
 //! - Backward compatibility with existing `CliAggregator`
 
 use unilang::prelude::*;
-use unilang::multi_yaml::{ CliBuilder, AggregationMode, aggregate_cli_simple, aggregate_cli_complex };
+use unilang::multi_yaml::{ CliBuilder, AggregationMode, aggregate_cli_simple };
+#[ cfg( feature = "advanced_cli_tests" ) ]
+use unilang::multi_yaml::aggregate_cli_complex;
 use std::path::PathBuf;
 
 #[test]

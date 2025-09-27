@@ -27,7 +27,9 @@
 
 use unilang::benchmark_config::{ BenchmarkConfig, BenchmarkEnvironment };
 use core::time::Duration;
+#[ cfg( feature = "benchmarks" ) ]
 use std::fs;
+#[ cfg( feature = "benchmarks" ) ]
 use tempfile::NamedTempFile;
 
 #[ cfg( feature = "benchmarks" ) ]
