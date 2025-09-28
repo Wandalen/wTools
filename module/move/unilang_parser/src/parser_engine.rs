@@ -21,7 +21,11 @@ fn handle_quoted_string< 'a >( input: &'a str, pos: &mut usize, result: &mut Vec
   use alloc ::string ::String;
   
   let quote_start = *pos;
-  let ch = input.chars().nth( *pos ).unwrap();
+  // Safe UTF-8 character retrieval at byte position
+  let ch = match input[*pos..].chars().next() {
+    Some(character) => character,
+    None => return, // End of input or invalid UTF-8
+  };
   *pos += ch.len_utf8(); // Skip opening quote
   let content_start = *pos;
   
@@ -31,7 +35,11 @@ fn handle_quoted_string< 'a >( input: &'a str, pos: &mut usize, result: &mut Vec
   // Process content character by character to handle escapes
   while *pos < input.len()
   {
-  let current_ch = input.chars().nth( *pos ).unwrap();
+  // Safe UTF-8 character retrieval at byte position
+  let current_ch = match input[*pos..].chars().next() {
+    Some(character) => character,
+    None => break, // End of input or invalid UTF-8
+  };
   
   if current_ch == '"'
   {
@@ -70,7 +78,11 @@ fn handle_quoted_string< 'a >( input: &'a str, pos: &mut usize, result: &mut Vec
    *pos += current_ch.len_utf8();
    if *pos < input.len()
    {
-  let escaped_ch = input.chars().nth( *pos ).unwrap();
+  // Safe UTF-8 character retrieval for escape sequence
+  let escaped_ch = match input[*pos..].chars().next() {
+    Some(character) => character,
+    None => break, // End of input or invalid UTF-8
+  };
   
   match escaped_ch
   {
@@ -155,7 +167,11 @@ fn handle_non_delimiter_segment< 'a >( input: &'a str, pos: &mut usize, delimite
   let start_pos = *pos;
   while *pos < input.len()
   {
-  let current_ch = input.chars().nth( *pos ).unwrap();
+  // Safe UTF-8 character retrieval at byte position
+  let current_ch = match input[*pos..].chars().next() {
+    Some(character) => character,
+    None => break, // End of input or invalid UTF-8
+  };
   let current_ch_str = &input[ *pos..*pos + current_ch.len_utf8() ];
   
   // Check if we hit a delimiter or quote
@@ -192,7 +208,11 @@ fn simple_split< 'a >( input: &'a str, delimiters: &[ &str ] ) -> Vec< crate ::i
   
   while pos < input.len()
   {
-  let ch = input.chars().nth( pos ).unwrap();
+  // Safe UTF-8 character retrieval - get character at byte position
+  let ch = match input[pos..].chars().next() {
+    Some(character) => character,
+    None => break, // End of input or invalid UTF-8
+  };
   
   // Check if we're starting a quoted string
   if ch == '"'
