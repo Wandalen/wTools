@@ -41,9 +41,9 @@ use serde::{ Serialize, Deserialize };
 #[ derive( Debug, Clone, PartialEq ) ]
 pub struct EnvironmentConfig
 {
-  pub cpu_info: CpuInfo,
-  pub memory_info: MemoryInfo,
-  pub os_info: OsInfo,
+  pub cpu: CpuInfo,
+  pub memory: MemoryInfo,
+  pub os: OsInfo,
 }
 
 #[ allow( missing_docs ) ]
@@ -335,17 +335,17 @@ fn test_detect_environment()
   let env_config = detect_environment();
 
   // Verify CPU information is populated
-  assert!( env_config.cpu_info.cores > 0 );
-  assert!( env_config.cpu_info.threads >= env_config.cpu_info.cores );
-  assert!( !env_config.cpu_info.model.is_empty() );
+  assert!( env_config.cpu.cores > 0 );
+  assert!( env_config.cpu.threads >= env_config.cpu.cores );
+  assert!( !env_config.cpu.model.is_empty() );
 
   // Verify memory information is reasonable
-  assert!( env_config.memory_info.total_gb > 0.0 );
-  assert!( env_config.memory_info.available_gb <= env_config.memory_info.total_gb );
+  assert!( env_config.memory.total_gb > 0.0 );
+  assert!( env_config.memory.available_gb <= env_config.memory.total_gb );
 
   // Verify OS information is populated
-  assert!( !env_config.os_info.name.is_empty() );
-  assert!( !env_config.os_info.architecture.is_empty() );
+  assert!( !env_config.os.name.is_empty() );
+  assert!( !env_config.os.architecture.is_empty() );
 }
 
 /// Test environment configuration with CPU information
@@ -444,19 +444,19 @@ fn detect_environment() -> EnvironmentConfig
   // In real implementation, this would use sysinfo or similar crate
   EnvironmentConfig
   {
-  cpu_info: CpuInfo
+  cpu: CpuInfo
   {
   cores: 8,  // Mock values for testing
   threads: 16,  // Mock values for testing
   frequency_mhz: 3000,  // Mock frequency
   model: "Mock CPU".to_string(),
  },
-  memory_info: MemoryInfo
+  memory: MemoryInfo
   {
   total_gb: 16.0,  // Mock values
   available_gb: 12.0,
  },
-  os_info: OsInfo
+  os: OsInfo
   {
   name: std::env::consts::OS.to_string(),
   version: "Mock Version".to_string(),
