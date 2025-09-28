@@ -4,6 +4,14 @@
 
 This directory contains manual testing procedures for the Unilang framework. Manual testing is essential for validating user experience aspects that automated tests cannot fully capture.
 
+## Relationship to Automated Tests
+
+Manual tests complement the domain-based automated test structure (see `../readme.md`):
+- **Automated tests** validate technical correctness within each domain (parser, semantic, interpreter, etc.)
+- **Manual tests** validate user experience and cross-domain workflows that automated tests cannot fully capture
+
+Manual testing scenarios often inform new automated tests, especially for regression prevention.
+
 ## Test Categories
 
 ### 1. User Experience Testing

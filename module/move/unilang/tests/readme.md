@@ -1,8 +1,10 @@
-# Unilang Test Organization System
+# Test Organization
 
-## Overview
+This directory follows a **domain-based organization principle** where tests are grouped by functional domain rather than test methodology.
 
-This document defines the standardized test organization system for the Unilang framework. All tests must follow this structure to ensure maintainability, discoverability, and avoid redundancy.
+## Organization Principle
+
+**Core Rule**: Tests are organized by **what you're testing** (functional domain), not **how you're testing** (test methodology).
 
 ## Core Principles
 
@@ -16,142 +18,115 @@ This document defines the standardized test organization system for the Unilang 
 
 ```
 tests/
-├── readme.md                           # This file
-├── unit/                               # Unit tests (individual components)
-│   ├── parser/
-│   │   ├── tokenization.rs            # Token parsing and validation
-│   │   ├── argument_parsing.rs        # Argument extraction and processing
-│   │   └── quoted_values.rs           # Quoted string handling
-│   ├── semantic/
-│   │   ├── command_validation.rs      # Command existence and structure validation
-│   │   ├── argument_binding.rs        # Argument to definition binding
-│   │   ├── multiple_parameters.rs     # Multiple parameter collection (Task 024 fix)
-│   │   └── type_validation.rs         # Type checking and conversion
-│   ├── registry/
-│   │   ├── command_registration.rs    # Command registration and lookup
-│   │   ├── static_commands.rs         # Static command registry functionality
-│   │   └── dynamic_commands.rs        # Dynamic command registry functionality
-│   ├── interpreter/
-│   │   ├── command_execution.rs       # Command execution engine
-│   │   └── context_management.rs      # Execution context handling
-│   ├── help/
-│   │   ├── generation.rs              # Help content generation
-│   │   ├── conventions.rs             # Help system conventions and standards
-│   │   └── formatting.rs              # Help output formatting
-│   ├── data/
-│   │   ├── types.rs                   # Value types and conversions
-│   │   ├── validation.rs              # Validation rules and enforcement
-│   │   └── error_handling.rs          # Error types and propagation
-│   └── pipeline/
-│       ├── processing.rs              # Pipeline processing flow
-│       └── batch_operations.rs        # Batch command processing
-├── integration/                       # Integration tests (component interactions)
-│   ├── parser_semantic.rs             # Parser to semantic analyzer integration
-│   ├── semantic_interpreter.rs        # Semantic to interpreter integration
-│   ├── end_to_end.rs                  # Complete pipeline integration
-│   ├── registry_integration.rs        # Registry integration scenarios
-│   ├── cli_integration.rs             # CLI binary integration
-│   └── performance.rs                 # Performance and stress testing
-├── acceptance/                        # User acceptance tests (user scenarios)
-│   ├── basic_commands.rs              # Simple command execution scenarios
-│   ├── complex_workflows.rs           # Multi-step user workflows
-│   ├── error_scenarios.rs             # Error handling from user perspective
-│   └── help_system.rs                 # Help system user experience
-├── regression/                        # Regression tests (bug prevention)
-│   ├── parameter_collection.rs        # Prevents Task 024 regression
-│   ├── quoted_parsing.rs              # Prevents parsing regressions
-│   ├── command_registration.rs        # Prevents registration regressions
-│   └── api_compatibility.rs           # Prevents API breaking changes
-├── manual/                            # Manual testing documentation
-│   ├── readme.md                      # Manual testing procedures
-│   ├── workflows/                     # Manual test workflows
-│   └── checklists/                    # Manual verification checklists
-└── fixtures/                          # Test data and utilities
-    ├── test_data/                     # Static test data files
-    ├── mock_commands/                 # Mock command implementations
-    └── utilities/                     # Test utility functions
+├── readme.md           # This file
+├── parser/            # All parser functionality tests
+├── semantic/          # All semantic analysis tests
+├── interpreter/       # All interpreter execution tests
+├── registry/          # All registry management tests
+├── help/             # All help system tests
+├── cli/              # All CLI integration tests
+├── pipeline/         # All pipeline processing tests
+├── data/             # All data model tests
+├── build/            # All build-time generation tests
+├── performance/      # All performance tests
+├── system/           # Cross-cutting system tests
+├── acceptance/       # User acceptance tests
+├── regression/       # Bug prevention tests
+└── manual/           # Manual testing procedures
 ```
+
+## Domain Descriptions
+
+### Core Functionality Domains
+
+- **`parser/`**: Tokenization, argument parsing, SIMD parsing, string interning
+- **`semantic/`**: Command validation, argument binding, type checking, multiple parameter collection
+- **`interpreter/`**: Command execution, context management, error handling
+- **`registry/`**: Static/dynamic registry, command lookup, performance metrics
+- **`help/`**: Help generation, formatting, conventions
+- **`pipeline/`**: End-to-end command processing workflows
+
+### Supporting Domains
+
+- **`cli/`**: CLI builder APIs, ergonomic interfaces, shell integration
+- **`data/`**: Data models, serialization, validation
+- **`build/`**: Build-time code generation, PHF maps, static compilation
+- **`performance/`**: Benchmarks, stress tests, performance analysis
+
+### Cross-Cutting Domains
+
+- **`system/`**: End-to-end workflows, API compatibility, external usage patterns
+- **`acceptance/`**: User-facing acceptance criteria
+- **`regression/`**: Critical bug prevention tests
+
+## Test Methodology
+
+Each domain directory contains **all test types** relevant to that domain:
+- Unit tests (component isolation)
+- Integration tests (component interaction)
+- Performance tests (benchmarks and stress tests)
+- Edge case tests
+- Error condition tests
+
+## Benefits
+
+✅ **Mental Model Alignment**: Find all parser tests in `parser/`, all semantic tests in `semantic/`
+✅ **Locality of Change**: Working on registry? All related tests are in `registry/`
+✅ **Easy Discovery**: No hunting across multiple directories for related functionality
+✅ **Maintainable**: Changes to a domain only affect one test directory
+
+## Adding New Tests
+
+1. **Identify the domain**: What component/feature are you testing?
+2. **Add to appropriate directory**: Put the test in `tests/{domain}/`
+3. **Use descriptive naming**: File names should indicate specific functionality tested
+4. **Include all test types**: Add unit, integration, and performance tests as needed
 
 ## Naming Conventions
 
 ### Files
 - All test files use `snake_case` naming
-- Unit tests: `{feature}.rs` (e.g., `tokenization.rs`)
-- Integration tests: `{integration_scope}.rs` (e.g., `parser_semantic.rs`)
-- Acceptance tests: `{user_scenario}.rs` (e.g., `basic_commands.rs`)
-- Regression tests: `{bug_category}.rs` (e.g., `parameter_collection.rs`)
+- File names should indicate specific functionality: `{feature}.rs` (e.g., `tokenization.rs`, `multiple_parameters.rs`)
 
 ### Test Functions
-- `test_{specific_behavior}()` for unit tests
-- `integration_{interaction_scenario}()` for integration tests
-- `acceptance_{user_story}()` for acceptance tests
-- `regression_{bug_prevention}()` for regression tests
+- `test_{specific_behavior}()` for most tests
+- `{category}_{specific_scenario}()` when categorization helps (e.g., `regression_{bug_prevention}()`)
 
 ### Test Modules
 - Each test file should have a module doc comment explaining its scope
 - Tests should be grouped logically within files using mod blocks if needed
 
-## Test Categories
+## Manual Testing
 
-### 1. Unit Tests (`tests/unit/`)
-- **Purpose**: Test individual components in isolation
-- **Scope**: Single functions, structs, or small modules
-- **Mocking**: Extensive use of mocks and stubs
-- **Speed**: Fast execution (< 1ms per test typically)
+See `manual/readme.md` for manual testing procedures and organization.
 
-### 2. Integration Tests (`tests/integration/`)
-- **Purpose**: Test component interactions and interfaces
-- **Scope**: Multiple components working together
-- **Mocking**: Minimal mocking, real component integration
-- **Speed**: Medium execution (1-100ms per test typically)
+## Quality Standards
 
-### 3. Acceptance Tests (`tests/acceptance/`)
-- **Purpose**: Test complete user scenarios and workflows
-- **Scope**: End-to-end functionality from user perspective
-- **Mocking**: No mocking, real system behavior
-- **Speed**: Slower execution (100ms-1s per test typically)
+### Coverage Requirements
+- **Domain Coverage**: All core domains must have comprehensive test coverage
+- **Functionality Coverage**: All public APIs, error conditions, edge cases tested
+- **Performance Coverage**: Critical paths must have performance validation
+- **Regression Coverage**: All critical bugs must have prevention tests
 
-### 4. Regression Tests (`tests/regression/`)
-- **Purpose**: Prevent previously fixed bugs from returning
-- **Scope**: Specific bug scenarios and edge cases
-- **Mocking**: Match original bug conditions
-- **Speed**: Variable, optimized for bug detection
-
-## Coverage Requirements
-
-### Unit Tests
-- **Target**: 90%+ line coverage for all core modules
-- **Focus**: All public APIs, error conditions, edge cases
-- **Documentation**: Each test clearly documents what it validates
-
-### Integration Tests
-- **Target**: All component interfaces tested
-- **Focus**: Data flow, error propagation, performance characteristics
-- **Documentation**: Integration scenarios and expected behaviors
-
-### Acceptance Tests
-- **Target**: All user-facing features covered
-- **Focus**: Complete workflows, error recovery, help system
-- **Documentation**: User stories and acceptance criteria
-
-### Regression Tests
-- **Target**: All critical bugs covered
-- **Focus**: Bug reproduction and prevention
-- **Documentation**: Bug description, root cause, fix validation
+### Test Quality
+- **Fast Execution**: Individual tests should complete quickly (< 100ms typically)
+- **Deterministic**: Tests must be reliable and repeatable
+- **Isolated**: Tests should not depend on external state or other tests
+- **Clear**: Each test should have a single, obvious purpose
 
 ## File Organization Rules
 
 ### Prohibited Patterns
 ❌ **Task-based naming**: `task_024_*.rs`, `issue_017_*.rs`
-❌ **Temporary naming**: `test_*.rs`, `*_mre.rs`
+❌ **Type-based directories**: `unit/`, `integration/`, `acceptance/` as primary organization
 ❌ **Generic naming**: `tests.rs`, `integration_tests.rs`
 ❌ **Implementation details**: `*_debug_test.rs`, `*_failure_test.rs`
 
 ### Required Patterns
+✅ **Domain-based organization**: `parser/`, `semantic/`, `registry/`
 ✅ **Feature-based naming**: `multiple_parameters.rs`, `command_validation.rs`
-✅ **Clear scope**: `parser_semantic.rs`, `cli_integration.rs`
+✅ **Clear scope**: `tokenization.rs`, `cli_integration.rs`
 ✅ **Descriptive names**: `quoted_values.rs`, `error_scenarios.rs`
-✅ **Hierarchical organization**: `unit/parser/`, `integration/`, `acceptance/`
 
 ## Test Content Standards
 

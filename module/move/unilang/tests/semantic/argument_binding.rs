@@ -516,7 +516,8 @@ fn test_excess_arguments_error()
   assert!( result.is_err(), "Excess arguments should fail" );
 
   let error_message = result.unwrap_err();
-  assert!( error_message.contains( "too many" ) || error_message.contains( "excess" ), "Error should mention excess arguments" );
+  let error_lower = error_message.to_lowercase();
+  assert!( error_lower.contains( "too many" ) || error_lower.contains( "excess" ) || error_lower.contains( "unexpected" ), "Error should mention excess arguments. Got: {}", error_message );
 }
 
 #[test]

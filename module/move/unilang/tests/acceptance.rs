@@ -1,6 +1,8 @@
-//! Acceptance tests for Unilang framework
+//! Acceptance Domain Tests
 //!
-//! This module aggregates all acceptance tests that verify user scenarios.
+//! All tests related to user acceptance criteria: user-facing scenarios,
+//! complete workflows, and end-to-end user experience validation.
 
-#[path = "acceptance/cli_integration.rs"]
-pub mod cli_integration;
+mod acceptance {
+  mod cli_integration;
+}

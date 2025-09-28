@@ -22,7 +22,6 @@ use unilang::semantic::{ SemanticAnalyzer, VerifiedCommand };
 use unilang::interpreter::{ ExecutionContext, Interpreter };
 use unilang::types::Value;
 use unilang_parser::{ Parser, UnilangParserOptions };
-use std::collections::HashMap;
 
 /// Test routine that returns predictable output
 #[allow(clippy::unnecessary_wraps)]
@@ -113,13 +112,16 @@ fn test_basic_command_execution()
 
   let verified_command = create_verified_command( &registry, r#".test"# ).expect( "Should create verified command" );
 
-  let interpreter = Interpreter::new();
-  let context = ExecutionContext::new();
+  let commands = vec![ verified_command ];
+  let interpreter = Interpreter::new( &commands, &registry );
+  let mut context = ExecutionContext {};
 
-  let result = interpreter.execute( verified_command, context );
+  let result = interpreter.run( &mut context );
 
   assert!( result.is_ok(), "Basic command execution should succeed" );
-  let output = result.unwrap();
+  let outputs = result.unwrap();
+  assert_eq!( outputs.len(), 1, "Should have one output" );
+  let output = &outputs[0];
   assert_eq!( output.format, "text" );
   assert!( output.content.contains( "Executed .test with" ), "Output should contain execution info" );
 }
@@ -133,13 +135,16 @@ fn test_command_execution_with_arguments()
 
   let verified_command = create_verified_command( &registry, r#".greet name::"Alice""# ).expect( "Should create verified command" );
 
-  let interpreter = Interpreter::new();
-  let context = ExecutionContext::new();
+  let commands = vec![ verified_command ];
+  let interpreter = Interpreter::new( &commands, &registry );
+  let mut context = ExecutionContext {};
 
-  let result = interpreter.execute( verified_command, context );
+  let result = interpreter.run( &mut context );
 
   assert!( result.is_ok(), "Command execution with arguments should succeed" );
-  let output = result.unwrap();
+  let outputs = result.unwrap();
+  assert_eq!( outputs.len(), 1, "Should have one output" );
+  let output = &outputs[0];
   assert_eq!( output.content, "Hello, Alice!" );
   assert_eq!( output.format, "text" );
 }
@@ -153,13 +158,16 @@ fn test_command_execution_with_default_arguments()
 
   let verified_command = create_verified_command( &registry, r#".greet"# ).expect( "Should create verified command" );
 
-  let interpreter = Interpreter::new();
-  let context = ExecutionContext::new();
+  let commands = vec![ verified_command ];
+  let interpreter = Interpreter::new( &commands, &registry );
+  let mut context = ExecutionContext {};
 
-  let result = interpreter.execute( verified_command, context );
+  let result = interpreter.run( &mut context );
 
   assert!( result.is_ok(), "Command execution with defaults should succeed" );
-  let output = result.unwrap();
+  let outputs = result.unwrap();
+  assert_eq!( outputs.len(), 1, "Should have one output" );
+  let output = &outputs[0];
   assert_eq!( output.content, "Hello, World!" );
 }
 
@@ -172,15 +180,21 @@ fn test_command_execution_error_handling()
 
   let verified_command = create_verified_command( &registry, r#".error"# ).expect( "Should create verified command" );
 
-  let interpreter = Interpreter::new();
-  let context = ExecutionContext::new();
+  let commands = vec![ verified_command ];
+  let interpreter = Interpreter::new( &commands, &registry );
+  let mut context = ExecutionContext {};
 
-  let result = interpreter.execute( verified_command, context );
+  let result = interpreter.run( &mut context );
 
   assert!( result.is_err(), "Error routine should return error" );
   let error = result.unwrap_err();
-  assert_eq!( error.code, "TEST_ERROR" );
-  assert!( error.message.contains( "test error" ) );
+  match error {
+    unilang::Error::Execution( error_data ) => {
+      assert_eq!( error_data.code, "TEST_ERROR" );
+      assert!( error_data.message.contains( "test error" ) );
+    },
+    _ => panic!( "Expected Execution error" ),
+  }
 }
 
 #[test]
@@ -203,13 +217,16 @@ fn test_execution_context_management()
 
   let verified_command = create_verified_command( &registry, r#".test"# ).expect( "Should create verified command" );
 
-  let interpreter = Interpreter::new();
-  let context = ExecutionContext::new();
+  let commands = vec![ verified_command ];
+  let interpreter = Interpreter::new( &commands, &registry );
+  let mut context = ExecutionContext {};
 
-  let result = interpreter.execute( verified_command, context );
+  let result = interpreter.run( &mut context );
 
   assert!( result.is_ok(), "Context management should work correctly" );
-  let output = result.unwrap();
+  let outputs = result.unwrap();
+  assert_eq!( outputs.len(), 1, "Should have one output" );
+  let output = &outputs[0];
   assert_eq!( output.content, "Context validated" );
 }
 
@@ -220,17 +237,19 @@ fn test_multiple_command_executions()
   let cmd = create_test_command( ".test" );
   registry.command_add_runtime( &cmd, Box::new( test_routine ) ).unwrap();
 
-  let interpreter = Interpreter::new();
-
   // Execute multiple commands to ensure no state leakage
   for i in 1..=5 {
     let verified_command = create_verified_command( &registry, r#".test"# ).expect( "Should create verified command" );
-    let context = ExecutionContext::new();
+    let commands = vec![ verified_command ];
+    let interpreter = Interpreter::new( &commands, &registry );
+    let mut context = ExecutionContext {};
 
-    let result = interpreter.execute( verified_command, context );
+    let result = interpreter.run( &mut context );
 
     assert!( result.is_ok(), "Multiple executions should all succeed" );
-    let output = result.unwrap();
+    let outputs = result.unwrap();
+  assert_eq!( outputs.len(), 1, "Should have one output" );
+  let output = &outputs[0];
     assert!( output.content.contains( "Executed .test" ), "Output should be consistent for execution {}", i );
   }
 }
@@ -313,13 +332,16 @@ fn test_execution_with_complex_arguments()
 
   let verified_command = create_verified_command( &registry, r#".complex text::"hello" number::42 flag::true"# ).expect( "Should create verified command" );
 
-  let interpreter = Interpreter::new();
-  let context = ExecutionContext::new();
+  let commands = vec![ verified_command ];
+  let interpreter = Interpreter::new( &commands, &registry );
+  let mut context = ExecutionContext {};
 
-  let result = interpreter.execute( verified_command, context );
+  let result = interpreter.run( &mut context );
 
   assert!( result.is_ok(), "Complex argument execution should succeed" );
-  let output = result.unwrap();
+  let outputs = result.unwrap();
+  assert_eq!( outputs.len(), 1, "Should have one output" );
+  let output = &outputs[0];
   assert_eq!( output.content, "text=hello, number=42, flag=true" );
 }
 
@@ -334,11 +356,12 @@ fn test_execution_performance()
 
   let verified_command = create_verified_command( &registry, r#".perf"# ).expect( "Should create verified command" );
 
-  let interpreter = Interpreter::new();
-  let context = ExecutionContext::new();
+  let commands = vec![ verified_command ];
+  let interpreter = Interpreter::new( &commands, &registry );
+  let mut context = ExecutionContext {};
 
   let start = Instant::now();
-  let result = interpreter.execute( verified_command, context );
+  let result = interpreter.run( &mut context );
   let duration = start.elapsed();
 
   assert!( result.is_ok(), "Performance test should succeed" );
@@ -362,13 +385,16 @@ fn test_execution_output_formats()
 
   let verified_command = create_verified_command( &registry, r#".format"# ).expect( "Should create verified command" );
 
-  let interpreter = Interpreter::new();
-  let context = ExecutionContext::new();
+  let commands = vec![ verified_command ];
+  let interpreter = Interpreter::new( &commands, &registry );
+  let mut context = ExecutionContext {};
 
-  let result = interpreter.execute( verified_command, context );
+  let result = interpreter.run( &mut context );
 
   assert!( result.is_ok(), "Format test should succeed" );
-  let output = result.unwrap();
+  let outputs = result.unwrap();
+  assert_eq!( outputs.len(), 1, "Should have one output" );
+  let output = &outputs[0];
   assert_eq!( output.format, "json" );
   assert!( output.content.contains( "hello" ) );
   assert!( output.content.contains( "success" ) );
