@@ -575,34 +575,35 @@ impl Parser
    {
   UnilangTokenKind ::Identifier( _ ) =>
   {
-   // Look ahead to see if this identifier is followed by ::
-   let mut temp_iter = items_iter.clone();
-   temp_iter.next(); // Skip the identifier
-   if let Some( lookahead_item ) = temp_iter.peek()
+   // FIXED: More reliable lookahead to detect named arguments
+   // Convert iterator to vec for reliable indexing
+   let remaining_items: Vec<_> = items_iter.clone().collect();
+   if remaining_items.len() >= 2
    {
-  if let UnilangTokenKind ::Operator( op ) = &lookahead_item.kind
+  // Check if next two items form a named argument pattern
+  if let UnilangTokenKind ::Operator( op ) = &remaining_items[1].kind
   {
    if *op == " :: " || *op == "::"
    {
-  // This is another named argument, stop consuming
+  // This is definitely another named argument, stop consuming
   false
  }
    else
    {
-  // Not a named argument, continue consuming
+  // Different operator, continue consuming
   true
  }
  }
   else
   {
-   // Not an operator, continue consuming
-   true
+   // Not an operator after identifier, this is likely a positional argument, stop consuming
+   false
  }
  }
    else
    {
-  // No lookahead available, continue consuming
-  true
+  // Less than 2 items remaining, stop consuming to avoid taking positional args
+  false
  }
  }
   UnilangTokenKind ::Number( _ ) => true, // Numbers can be part of multi-word values
@@ -709,6 +710,16 @@ impl Parser
       end: current_value_end_location,
     },
   };
+
+  // Check for duplicate named arguments if the option is set
+  if self.options.error_on_duplicate_named_arguments && named_arguments.contains_key( arg_name )
+  {
+    return Err( ParseError ::new
+    (
+      ErrorKind ::Syntax( format!( "Duplicate named argument '{arg_name}'" ) ),
+      item.adjusted_source_location.clone(),
+    ));
+  }
 
   // Insert or append to existing vector
   named_arguments.entry( arg_name.to_string() )
@@ -849,6 +860,16 @@ impl Parser
       end: current_value_end_location,
     },
   };
+
+  // Check for duplicate named arguments if the option is set
+  if self.options.error_on_duplicate_named_arguments && named_arguments.contains_key( arg_name )
+  {
+    return Err( ParseError ::new
+    (
+      ErrorKind ::Syntax( format!( "Duplicate named argument '{arg_name}'" ) ),
+      item.adjusted_source_location.clone(),
+    ));
+  }
 
   // Insert or append to existing vector
   named_arguments.entry( arg_name.to_string() )

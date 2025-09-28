@@ -195,24 +195,36 @@ impl< 'a > SemanticAnalyzer< 'a >
 
   fn try_bind_named_argument( instruction : &GenericInstruction, arg_def : &ArgumentDefinition, bound_arguments : &mut HashMap< String, Value > ) -> Result< bool, Error >
   {
-    // Try to find by named argument
+    // TASK 024 ENHANCEMENT: Collect all arguments matching canonical name AND all aliases
+    let mut all_matching_args = Vec::new();
+    let mut found_any = false;
+
+    // Collect arguments by canonical name
     if let Some( parser_args ) = instruction.named_arguments.get( &arg_def.name )
     {
-      Self::bind_argument_values( parser_args, arg_def, bound_arguments )?;
-      return Ok( true );
+      all_matching_args.extend_from_slice( parser_args );
+      found_any = true;
     }
 
-    // Try to find by alias
+    // Collect arguments by all aliases
     for alias in &arg_def.aliases
     {
       if let Some( parser_args ) = instruction.named_arguments.get( alias )
       {
-        Self::bind_argument_values( parser_args, arg_def, bound_arguments )?;
-        return Ok( true );
+        all_matching_args.extend_from_slice( parser_args );
+        found_any = true;
       }
     }
 
-    Ok( false )
+    if found_any
+    {
+      Self::bind_argument_values( &all_matching_args, arg_def, bound_arguments )?;
+      Ok( true )
+    }
+    else
+    {
+      Ok( false )
+    }
   }
 
   fn try_bind_positional_argument( instruction : &GenericInstruction, arg_def : &ArgumentDefinition, bound_arguments : &mut HashMap< String, Value >, positional_idx : &mut usize ) -> Result< bool, Error >
@@ -245,8 +257,13 @@ impl< 'a > SemanticAnalyzer< 'a >
 
   fn bind_argument_values( parser_args : &Vec< Argument >, arg_def : &ArgumentDefinition, bound_arguments : &mut HashMap< String, Value > ) -> Result< (), Error >
   {
-    if arg_def.attributes.multiple
+    // TASK 024 FIX: Automatic Multiple Parameter Collection
+    // Always collect multiple values into a list, regardless of the `multiple` attribute
+    // This implements requirement R1: "When the same parameter name appears multiple times, collect ALL values into a list"
+
+    if parser_args.len() > 1
     {
+      // Multiple values detected - always collect into a list
       let mut values = Vec::new();
       for parser_arg in parser_args
       {
@@ -254,8 +271,19 @@ impl< 'a > SemanticAnalyzer< 'a >
       }
       bound_arguments.insert( arg_def.name.clone(), Value::List( values ) );
     }
+    else if arg_def.attributes.multiple
+    {
+      // Single value but multiple=true - wrap in list for consistency
+      let mut values = Vec::new();
+      if let Some( parser_arg ) = parser_args.first()
+      {
+        values.push( parse_value( &parser_arg.value, &arg_def.kind )? );
+      }
+      bound_arguments.insert( arg_def.name.clone(), Value::List( values ) );
+    }
     else if let Some( parser_arg ) = parser_args.first()
     {
+      // Single value and multiple=false - keep as single value
       bound_arguments.insert( arg_def.name.clone(), parse_value( &parser_arg.value, &arg_def.kind )? );
     }
 

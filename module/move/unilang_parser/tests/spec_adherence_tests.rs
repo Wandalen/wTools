@@ -95,7 +95,7 @@ fn tm2_2_command_path_ends_with_named_arg()
   assert_eq!( instruction.command_path_slices, vec![ "cmd".to_string() ] );
   assert!( instruction.positional_arguments.is_empty() );
   assert_eq!( instruction.named_arguments.len(), 1 );
-  assert_eq!( instruction.named_arguments.get( "arg" ).unwrap().value, "val".to_string() );
+  assert_eq!( instruction.named_arguments.get( "arg" ).unwrap()[0].value, "val".to_string() );
   assert!( !instruction.help_requested );
 }
 
@@ -169,7 +169,7 @@ fn tm2_6_named_arg_followed_by_help_operator()
   assert_eq!( instruction.command_path_slices, vec![ "cmd".to_string() ] );
   assert!( instruction.positional_arguments.is_empty() );
   assert_eq!( instruction.named_arguments.len(), 1 );
-  assert_eq!( instruction.named_arguments.get( "name" ).unwrap().value, "val".to_string() );
+  assert_eq!( instruction.named_arguments.get( "name" ).unwrap()[0].value, "val".to_string() );
   assert!( instruction.help_requested );
 }
 
@@ -210,7 +210,7 @@ fn tm2_8_named_arg_with_simple_quoted_value()
   assert!( instruction.positional_arguments.is_empty() );
   assert_eq!( instruction.named_arguments.len(), 1 );
   assert_eq!(
-  instruction.named_arguments.get( "name" ).unwrap().value,
+  instruction.named_arguments.get( "name" ).unwrap()[0].value,
   "value with spaces".to_string()
  );
   assert!( !instruction.help_requested );
@@ -230,7 +230,7 @@ fn tm2_9_named_arg_with_quoted_value_containing_double_colon()
   assert!( instruction.positional_arguments.is_empty() );
   assert_eq!( instruction.named_arguments.len(), 1 );
   assert_eq!(
-  instruction.named_arguments.get( "msg" ).unwrap().value,
+  instruction.named_arguments.get( "msg" ).unwrap()[0].value,
   "DEPRECATED ::message".to_string()
  );
   assert!( !instruction.help_requested );
@@ -249,8 +249,8 @@ fn tm2_10_multiple_named_args_with_simple_quoted_values()
   assert_eq!( instruction.command_path_slices, vec![ "cmd".to_string() ] );
   assert!( instruction.positional_arguments.is_empty() );
   assert_eq!( instruction.named_arguments.len(), 2 );
-  assert_eq!( instruction.named_arguments.get( "name1" ).unwrap().value, "val1".to_string() );
-  assert_eq!( instruction.named_arguments.get( "name2" ).unwrap().value, "val2".to_string() );
+  assert_eq!( instruction.named_arguments.get( "name1" ).unwrap()[0].value, "val1".to_string() );
+  assert_eq!( instruction.named_arguments.get( "name2" ).unwrap()[0].value, "val2".to_string() );
   assert!( !instruction.help_requested );
 }
 
@@ -268,7 +268,7 @@ fn tm2_11_named_arg_with_comma_separated_value()
   assert!( instruction.positional_arguments.is_empty() );
   assert_eq!( instruction.named_arguments.len(), 1 );
   assert_eq!(
-  instruction.named_arguments.get( "tags" ).unwrap().value,
+  instruction.named_arguments.get( "tags" ).unwrap()[0].value,
   "dev,rust,unilang".to_string()
  );
   assert!( !instruction.help_requested );
@@ -288,7 +288,7 @@ fn tm2_12_named_arg_with_key_value_pair_string()
   assert!( instruction.positional_arguments.is_empty() );
   assert_eq!( instruction.named_arguments.len(), 1 );
   assert_eq!(
-  instruction.named_arguments.get( "headers" ).unwrap().value,
+  instruction.named_arguments.get( "headers" ).unwrap()[0].value,
   "Content-Type=application/json,Auth-Token=xyz".to_string()
  );
   assert!( !instruction.help_requested );
@@ -354,7 +354,7 @@ fn s6_4_multi_segment_path_and_named_arg_transition()
   let instruction = result.unwrap();
   assert_eq!( instruction.command_path_slices, vec![ "cmd".to_string(), "sub".to_string() ] );
   assert_eq!( instruction.named_arguments.len(), 1 );
-  assert_eq!( instruction.named_arguments.get( "name" ).unwrap().value, "val".to_string() );
+  assert_eq!( instruction.named_arguments.get( "name" ).unwrap()[0].value, "val".to_string() );
 }
 
 /// Tests Rule 3.1 (Leading Dot) with a command and positional argument.
@@ -438,7 +438,7 @@ fn s6_9_named_arg_followed_by_help_operator()
   let instruction = result.unwrap();
   assert_eq!( instruction.command_path_slices, vec![ "cmd".to_string() ] );
   assert_eq!( instruction.named_arguments.len(), 1 );
-  assert_eq!( instruction.named_arguments.get( "name" ).unwrap().value, "val".to_string() );
+  assert_eq!( instruction.named_arguments.get( "name" ).unwrap()[0].value, "val".to_string() );
   assert!( instruction.help_requested );
 }
 
@@ -493,7 +493,7 @@ fn s6_12_single_named_argument()
   let instruction = result.unwrap();
   assert_eq!( instruction.command_path_slices, vec![ "cmd".to_string() ] );
   assert_eq!( instruction.named_arguments.len(), 1 );
-  assert_eq!( instruction.named_arguments.get( "key" ).unwrap().value, "val".to_string() );
+  assert_eq!( instruction.named_arguments.get( "key" ).unwrap()[0].value, "val".to_string() );
 }
 
 /// Tests Rule 5.2 (Named Arguments) with a named argument whose value is a quoted string with spaces.
@@ -509,7 +509,7 @@ fn s6_13_named_arg_quoted_value_with_spaces()
   assert_eq!( instruction.command_path_slices, vec![ "cmd".to_string() ] );
   assert_eq!( instruction.named_arguments.len(), 1 );
   assert_eq!(
-  instruction.named_arguments.get( "key" ).unwrap().value,
+  instruction.named_arguments.get( "key" ).unwrap()[0].value,
   "val with spaces".to_string()
  );
 }
@@ -526,7 +526,7 @@ fn s6_14_positional_after_named_allowed()
   let instruction = result.unwrap();
   assert_eq!( instruction.command_path_slices, vec![ "cmd".to_string() ] );
   assert_eq!( instruction.named_arguments.len(), 1 );
-  assert_eq!( instruction.named_arguments.get( "name" ).unwrap().value, "val".to_string() );
+  assert_eq!( instruction.named_arguments.get( "name" ).unwrap()[0].value, "val".to_string() );
   assert_eq!( instruction.positional_arguments.len(), 1 );
   assert_eq!( instruction.positional_arguments[ 0 ].value, "pos1".to_string() );
 }
@@ -570,7 +570,10 @@ fn s6_16_duplicate_named_arg_last_wins()
   let instruction = result.unwrap();
   assert_eq!( instruction.command_path_slices, vec![ "cmd".to_string() ] );
   assert_eq!( instruction.named_arguments.len(), 1 );
-  assert_eq!( instruction.named_arguments.get( "name" ).unwrap().value, "val2".to_string() );
+  // With Vec-based API, access the last value for "last wins" behavior
+  let name_values = instruction.named_arguments.get( "name" ).unwrap();
+  assert_eq!( name_values.len(), 2 );
+  assert_eq!( name_values.last().unwrap().value, "val2".to_string() );
 }
 
 /// Tests Rule 5.4 (Duplicate Named Arguments) when `error_on_duplicate_named_arguments` is true.
@@ -613,7 +616,7 @@ fn s6_18_multi_instruction_basic()
   assert_eq!( instructions[ 0 ].positional_arguments[ 0 ].value, "arg1".to_string() );
   assert_eq!( instructions[ 1 ].command_path_slices, vec![ "cmd2".to_string() ] );
   assert_eq!( instructions[ 1 ].named_arguments.len(), 1 );
-  assert_eq!( instructions[ 1 ].named_arguments.get( "name" ).unwrap().value, "val".to_string() );
+  assert_eq!( instructions[ 1 ].named_arguments.get( "name" ).unwrap()[0].value, "val".to_string() );
 }
 
 /// Tests multi-instruction parsing with an empty segment due to consecutive delimiters.
@@ -718,7 +721,7 @@ fn s6_24_named_arg_value_with_double_colon()
   assert_eq!( instruction.command_path_slices, vec![ "cmd".to_string() ] );
   assert_eq!( instruction.named_arguments.len(), 1 );
   assert_eq!(
-  instruction.named_arguments.get( "msg" ).unwrap().value,
+  instruction.named_arguments.get( "msg" ).unwrap()[0].value,
   "DEPRECATED ::message".to_string()
  );
 }
@@ -736,7 +739,7 @@ fn s6_25_named_arg_value_with_commas()
   assert_eq!( instruction.command_path_slices, vec![ "cmd".to_string() ] );
   assert_eq!( instruction.named_arguments.len(), 1 );
   assert_eq!(
-  instruction.named_arguments.get( "tags" ).unwrap().value,
+  instruction.named_arguments.get( "tags" ).unwrap()[0].value,
   "dev,rust,unilang".to_string()
  );
 }
@@ -754,7 +757,7 @@ fn s6_26_named_arg_value_with_key_value_pair()
   assert_eq!( instruction.command_path_slices, vec![ "cmd".to_string() ] );
   assert_eq!( instruction.named_arguments.len(), 1 );
   assert_eq!(
-  instruction.named_arguments.get( "headers" ).unwrap().value,
+  instruction.named_arguments.get( "headers" ).unwrap()[0].value,
   "Content-Type=application/json,Auth-Token=xyz".to_string()
  );
 }

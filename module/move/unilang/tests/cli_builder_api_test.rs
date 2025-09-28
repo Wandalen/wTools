@@ -156,7 +156,8 @@ fn test_static_module_with_prefix_multiple_commands()
 
   // Commands should not be accessible without prefix
   assert!( registry.command( ".version" ).is_none() );
-  assert!( registry.command( ".help" ).is_none() );
+  // NOTE: Global .help command is now mandatory in all registries (mandatory help enforcement)
+  assert!( registry.command( ".help" ).is_some() ); // Global help is always present
   assert!( registry.command( ".status" ).is_none() );
 }
 

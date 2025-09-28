@@ -131,6 +131,7 @@ This section lists the specific, testable functions the `unilang` framework **mu
 *   **FR-ARG-4 (Alias Binding):** The framework **must** correctly bind named arguments specified via an alias to the correct `ArgumentDefinition`.
 *   **FR-ARG-5 (Default Values):** If an optional argument with a default value is not provided, the framework **must** use the default value during semantic analysis.
 *   **FR-ARG-6 (Validation Rule Enforcement):** The `Semantic Analyzer` **must** enforce all `ValidationRule`s (`Min`, `Max`, `MinLength`, `MaxLength`, `Pattern`, `MinItems`) defined for an argument. If a rule is violated, a `UNILANG_VALIDATION_RULE_FAILED` error **must** be returned.
+*   **FR-ARG-7 (Automatic Multiple Parameter Collection):** When the same parameter name appears multiple times in a command invocation (e.g., `command::"value1" command::"value2" command::"value3"`), the `Semantic Analyzer` **must** automatically collect all values into a `Value::List`, regardless of the argument definition's `multiple` attribute. This ensures that no parameter values are lost due to semantic processing limitations. Single parameters **must** remain as single values to maintain backward compatibility.
 
 #### 4.3. Command Execution Pipeline
 *   **FR-PIPE-1 (Pipeline Orchestration):** The `Pipeline` API **must** correctly orchestrate the full sequence: Parsing -> Semantic Analysis -> Interpretation.
@@ -564,6 +565,7 @@ As you build the system, please use this document to log your key implementation
 | ❌ | **FR-ARG-4:** The framework must correctly bind named arguments specified via an alias to the correct `ArgumentDefinition`. | |
 | ❌ | **FR-ARG-5:** If an optional argument with a default value is not provided, the framework must use the default value during semantic analysis. | |
 | ❌ | **FR-ARG-6:** The `Semantic Analyzer` must enforce all `ValidationRule`s (`Min`, `Max`, `MinLength`, `MaxLength`, `Pattern`, `MinItems`) defined for an argument. If a rule is violated, a `UNILANG_VALIDATION_RULE_FAILED` error must be returned. | |
+| ✅ | **FR-ARG-7:** When the same parameter name appears multiple times in a command invocation, the `Semantic Analyzer` must automatically collect all values into a `Value::List`, regardless of the argument definition's `multiple` attribute. Single parameters must remain as single values to maintain backward compatibility. | Implemented in `src/semantic.rs` with comprehensive test coverage in `tests/task_024_comprehensive_test_suite.rs` and `tests/tokenization_failure_reproduction_test.rs`. Resolves Task 024 critical tokenization failure. |
 | ❌ | **FR-PIPE-1:** The `Pipeline` API must correctly orchestrate the full sequence: Parsing -> Semantic Analysis -> Interpretation. | |
 | ❌ | **FR-PIPE-2:** The `Pipeline::process_batch` method must execute a list of commands independently, collecting results for each and not stopping on individual failures. | |
 | ❌ | **FR-PIPE-3:** The `Pipeline::process_sequence` method must execute a list of commands in order and must terminate immediately upon the first command failure. | |
@@ -587,6 +589,7 @@ As you build the system, please use this document to log your key implementation
     - Enhanced Pipeline to convert `HELP_REQUESTED` errors to successful help output
     - Added `18_help_conventions_demo.rs` example showcasing all three methods
 -   **CommandDefinition Schema Extension:** Added `auto_help_enabled: bool` field to support per-command help generation control, maintains backward compatibility with default `false` value.
+-   **Task 024 Resolution - Automatic Multiple Parameter Collection (2025-09-28):** Implemented critical fix for multiple parameter collection in `src/semantic.rs`. The `bind_argument_values()` function now automatically detects when multiple values are provided for the same parameter name and collects them into a `Value::List`, regardless of the argument definition's `multiple` attribute. This resolves the fundamental tokenization issue where only the first parameter value was processed when multiple parameters shared the same name (e.g., `command::"cargo build" command::"echo hello" command::"cargo clippy"`). The fix maintains backward compatibility by preserving single values as scalar types when only one value is provided. Comprehensive test coverage provided via `tests/task_024_comprehensive_test_suite.rs` and `tests/tokenization_failure_reproduction_test.rs`.
 
 #### Finalized Internal Data Models
 *The definitive, as-built schema for all databases, data structures, and objects used internally by the system.*

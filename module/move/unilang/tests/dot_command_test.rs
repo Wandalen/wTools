@@ -68,12 +68,15 @@ fn test_dot_command_with_minimal_commands()
   let analyzer = SemanticAnalyzer::new(instructions, &registry);
   let result = analyzer.analyze();
   
-  // Should return help showing available commands (including built-in ones)
+  // Should return help showing available commands (including mandatory global help)
   assert!(result.is_err(), "Dot command should return help error");
-  
+
   if let Err(Error::Execution(error_data)) = result {
     assert_eq!(error_data.code, "HELP_REQUESTED");
-    assert!(error_data.message.contains("No commands are currently available"));
+    // NOTE: With mandatory help enforcement, .help command is always available
+    assert!(error_data.message.contains("Available Commands") ||
+            error_data.message.contains(".help"),
+            "Should show available commands or mention .help command");
   } else {
     panic!("Expected Execution error with help content");
   }

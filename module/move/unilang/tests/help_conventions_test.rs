@@ -31,6 +31,7 @@ fn test_automatic_help_command_generation()
     let mut registry = CommandRegistry::new();
 
   // Enable help conventions globally
+  #[allow(deprecated)]
   registry.enable_help_conventions( true );
 
   // Create a test command with auto-help enabled
@@ -196,7 +197,8 @@ fn test_help_conventions_api()
   #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
 
-  // Test 1: Global help conventions toggle
+  // Test 1: Global help conventions toggle (deprecated - now always enabled)
+  #[allow(deprecated)]
   registry.enable_help_conventions( false );
 
   let cmd1 = CommandDefinition::former()
@@ -206,11 +208,12 @@ fn test_help_conventions_api()
 
   registry.register_with_auto_help( cmd1, Box::new( test_routine ) ).unwrap();
 
-  // With global help disabled, no help command should be generated
+  // MANDATORY HELP: Help is now always generated regardless of settings
   assert!( registry.command( ".test_no_auto_help" ).is_some(), "Main command should exist" );
-  assert!( registry.command( ".test_no_auto_help.help" ).is_none(), "Help command should not be generated when disabled" );
+  assert!( registry.command( ".test_no_auto_help.help" ).is_some(), "Help command is now always generated (mandatory enforcement)" );
 
   // Test 2: Per-command override
+  #[allow(deprecated)]
   registry.enable_help_conventions( false ); // Still disabled globally
 
   let cmd2 = CommandDefinition::former()

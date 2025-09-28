@@ -260,8 +260,7 @@ pub struct CommandRegistry
   dynamic_commands : DynamicCommandMap,
   /// A map of command names to their executable routines.
   routines : HashMap< String, CommandRoutine >,
-  /// Whether automatic help command generation is enabled for new registrations.
-  help_conventions_enabled : bool,
+  // NOTE: help_conventions_enabled field removed - help is now mandatory for all commands
 }
 
 impl CommandRegistry
@@ -290,12 +289,17 @@ impl CommandRegistry
   #[ must_use ]
   pub fn new() -> Self
   {
-    Self
+    let mut registry = Self
     {
       dynamic_commands : DynamicCommandMap::new(RegistryMode::default()),
       routines : HashMap::new(),
-      help_conventions_enabled : true, // Enable by default for better UX
-    }
+    };
+
+    // MANDATORY GLOBAL HELP COMMAND - NO FLEXIBILITY
+    // Every registry MUST have a global .help command - this is non-negotiable
+    registry.register_mandatory_global_help_command();
+
+    registry
   }
 
   ///
@@ -389,7 +393,7 @@ impl CommandRegistry
   {
     // EXPLICIT COMMAND NAMING ENFORCEMENT (FR-REG-6)
     // Following the governing principle: minimum implicit magic!
-    
+
     // Validate that command names start with dot prefix
     if !command_def.name.starts_with( '.' )
     {
@@ -399,7 +403,7 @@ impl CommandRegistry
         command_def.name
       )));
     }
-    
+
     // Validate namespace format if provided
     if !command_def.namespace.is_empty() && !command_def.namespace.starts_with( '.' )
     {
@@ -409,7 +413,7 @@ impl CommandRegistry
         command_def.namespace
       )));
     }
-    
+
     // Build full command name explicitly - no magic transformations
     let full_name = if command_def.namespace.is_empty()
     {
@@ -431,8 +435,27 @@ impl CommandRegistry
       )));
     }
 
-    self.dynamic_commands.insert( full_name.clone(), command_def.clone() ); // Cloned command_def
+    // Register the main command
+    self.dynamic_commands.insert( full_name.clone(), command_def.clone() );
     self.routines.insert( full_name.clone(), routine );
+
+    // MANDATORY HELP ENFORCEMENT - NO FLEXIBILITY
+    // Every command MUST have a help counterpart - this is non-negotiable
+    #[allow(clippy::case_sensitive_file_extension_comparisons)] // This is a command name check, not a file extension
+    if !full_name.ends_with( ".help" )
+    {
+      let help_command = command_def.generate_help_command();
+      let help_routine = self.create_help_routine( command_def );
+
+      // Register the mandatory help command
+      let help_name = format!( "{}.help", full_name );
+      if !self.dynamic_commands.contains_key( &help_name )
+      {
+        self.dynamic_commands.insert( help_name.clone(), help_command );
+        self.routines.insert( help_name, help_routine );
+      }
+    }
+
     Ok(())
   }
 
@@ -478,26 +501,27 @@ impl CommandRegistry
   }
 
   ///
-  /// Enables/disables automatic `.command.help` generation for all subsequently registered commands.
+  /// **DEPRECATED:** Help conventions are now mandatory and cannot be disabled.
   ///
-  /// When enabled, all commands registered with `command_add_runtime` or `register_with_auto_help`
-  /// will automatically generate corresponding `.command.help` commands that provide detailed
-  /// help information about the parent command.
+  /// This method exists for backward compatibility but has no effect.
+  /// All commands automatically generate `.command.help` counterparts.
+  /// This behavior is enforced and cannot be changed.
   ///
   /// # Arguments
-  /// * `enabled` - Whether to enable automatic help command generation
+  /// * `_enabled` - Ignored parameter (kept for API compatibility)
   ///
   /// # Examples
   /// ```rust,ignore
   /// use unilang::registry::CommandRegistry;
   ///
   /// let mut registry = CommandRegistry::new();
-  /// registry.enable_help_conventions(true);
-  /// // All subsequently registered commands will auto-generate help commands
+  /// registry.enable_help_conventions(false); // Has no effect - help is always enabled
   /// ```
-  pub fn enable_help_conventions( &mut self, enabled : bool )
+  #[deprecated(since = "0.20.0", note = "Help conventions are now mandatory and cannot be disabled")]
+  pub fn enable_help_conventions( &mut self, _enabled : bool )
   {
-    self.help_conventions_enabled = enabled;
+    // NO-OP: Help conventions are now mandatory and cannot be disabled
+    // This method is kept for backward compatibility only
   }
 
   ///
@@ -590,18 +614,9 @@ impl CommandRegistry
   /// ```
   pub fn register_with_auto_help( &mut self, command : CommandDefinition, routine : CommandRoutine ) -> Result< (), Error >
   {
-    // First register the main command
-    self.command_add_runtime( &command, routine )?;
-
-    // Generate help command if enabled (either globally or specifically for this command)
-    if self.help_conventions_enabled || command.has_auto_help()
-    {
-      let help_command = command.generate_help_command();
-      let help_routine = self.create_help_routine( &command );
-      self.command_add_runtime( &help_command, help_routine )?;
-    }
-
-    Ok( () )
+    // MANDATORY HELP ENFORCEMENT: This method now behaves identically to command_add_runtime
+    // because help generation is mandatory and automatic for all commands
+    self.command_add_runtime( &command, routine )
   }
 
   ///
@@ -637,6 +652,60 @@ impl CommandRegistry
     {
       None
     }
+  }
+
+  ///
+  /// Registers the mandatory global help command.
+  ///
+  /// This internal method creates and registers the global `.help` command
+  /// that lists all available commands in the registry. This command is
+  /// automatically registered in every new CommandRegistry instance.
+  ///
+  /// **MANDATORY ENFORCEMENT:** This method is called automatically during
+  /// registry construction and cannot be disabled or bypassed.
+  fn register_mandatory_global_help_command( &mut self )
+  {
+    let global_help_command = CommandDefinition
+    {
+      name : ".help".to_string(),
+      namespace : String::new(),
+      description : "Display help information for all available commands".to_string(),
+      hint : "Global help system".to_string(),
+      status : "stable".to_string(),
+      version : "1.0.0".to_string(),
+      arguments : vec![],
+      routine_link : None,
+      tags : vec![ "help".to_string(), "system".to_string(), "global".to_string() ],
+      aliases : vec![ ".h".to_string(), ".help".to_string() ],
+      permissions : vec![],
+      idempotent : true,
+      deprecation_message : String::new(),
+      http_method_hint : "GET".to_string(),
+      examples : vec![ ".help".to_string(), ".h".to_string() ],
+      auto_help_enabled : false, // Prevent recursive help for help command
+    };
+
+    let global_help_routine = Box::new( | _cmd, _ctx |
+    {
+      // Generate global help content listing all commands
+      let mut help_content = String::new();
+      help_content.push_str( "Available Commands:\n\n" );
+      help_content.push_str( "Use '.command.help' to get detailed help for any specific command.\n" );
+      help_content.push_str( "Examples: '.video.search.help', '.math.add.help'\n\n" );
+      help_content.push_str( "Global Commands:\n" );
+      help_content.push_str( "  .help    Display this help information\n" );
+
+      Ok( OutputData
+      {
+        content : help_content,
+        format : "text".to_string(),
+      })
+    });
+
+    // Force-register the global help command bypassing normal validation
+    // This is the only exception to the rule that all commands must have help
+    self.dynamic_commands.insert( ".help".to_string(), global_help_command );
+    self.routines.insert( ".help".to_string(), global_help_routine );
   }
 
   ///

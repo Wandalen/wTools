@@ -117,7 +117,7 @@ fn convert_instruction( instruction: GenericInstruction ) -> AppCommand
   AppCommand
   {
   name: instruction.command_path_slices.join( "." ),
-  args: instruction.named_arguments.into_iter().map( | ( k, v ) | ( k, v.value ) ).collect(),
+  args: instruction.named_arguments.into_iter().map( | ( k, v ) | ( k, v.last().unwrap().value.clone() ) ).collect(),
   positional_args: instruction.positional_arguments.into_iter().map( | arg | arg.value ).collect(),
   help_requested: instruction.help_requested,
  }

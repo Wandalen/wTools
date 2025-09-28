@@ -32,7 +32,8 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
   // Step 1: Create registry with help conventions enabled
   #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
-  registry.enable_help_conventions( true ); // Enable automatic help generation
+  #[allow(deprecated)]
+  registry.enable_help_conventions( true ); // Enable automatic help generation (now always enabled)
 
   println!( "✓ Created registry with help conventions enabled\n" );
 

@@ -67,14 +67,15 @@ fn test_single_word_values_still_work()
 #[ test ]
 fn test_unquoted_multiword_handling()
 {
-  // This now works with the fix for unquoted multi-word parsing
-  // query::hello world (without quotes) should be parsed as "hello world"
+  // Tests correct parsing behavior for separate arguments
+  // query::hello world (as separate arguments) should parse as query="hello" and title="world"
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.args( vec![ ".video.search", "query::hello", "world" ] );
+  cmd.args( vec![ ".video.search", "query::hello", "title::world" ] );
 
-  // This should now work correctly and parse as "hello world"
+  // This should correctly parse as separate named arguments
   cmd
     .assert()
     .success()
-    .stdout( predicate::str::contains( "Query: hello world" ) );
+    .stdout( predicate::str::contains( "Query: hello" ) )
+    .stdout( predicate::str::contains( "Title: world" ) );
 }
