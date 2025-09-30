@@ -79,7 +79,7 @@ fn test_four_commands()
 {
   let mut registry = CommandRegistry::new();
   for i in 1..=4 {
-    let cmd_name = format!( ".step{}", i );
+    let cmd_name = format!( ".step{i}" );
     let cmd = create_scalability_test_command( &cmd_name );
     registry.register( cmd );
   }
@@ -146,17 +146,17 @@ fn test_15_command_sequence()
 
   // Register 15 automation commands
   for i in 1..=15 {
-    let cmd_name = format!( ".auto{}", i );
+    let cmd_name = format!( ".auto{i}" );
     let cmd = create_scalability_test_command( &cmd_name );
     registry.register( cmd );
   }
 
   // Large automation sequence
   let commands : Vec< String > = (1..=15)
-    .map( |i| format!( r#".auto{} step::"automation step {}""#, i, i ) )
+    .map( |i| format!( r#".auto{i} step::"automation step {i}""# ) )
     .collect();
 
-  let command_refs : Vec< &str > = commands.iter().map( |s| s.as_str() ).collect();
+  let command_refs : Vec< &str > = commands.iter().map( std::string::String::as_str ).collect();
 
   let parsed_count = parse_multiple_commands( &registry, &command_refs )
     .expect( "Should parse all 15 automation commands without errors" );
@@ -174,17 +174,17 @@ fn test_20_command_sequence()
 
   // Register 20 enterprise commands
   for i in 1..=20 {
-    let cmd_name = format!( ".enterprise{}", i );
+    let cmd_name = format!( ".enterprise{i}" );
     let cmd = create_scalability_test_command( &cmd_name );
     registry.register( cmd );
   }
 
   // Enterprise automation sequence
   let commands : Vec< String > = (1..=20)
-    .map( |i| format!( r#".enterprise{} step::"enterprise step {}""#, i, i ) )
+    .map( |i| format!( r#".enterprise{i} step::"enterprise step {i}""# ) )
     .collect();
 
-  let command_refs : Vec< &str > = commands.iter().map( |s| s.as_str() ).collect();
+  let command_refs : Vec< &str > = commands.iter().map( std::string::String::as_str ).collect();
 
   let parsed_count = parse_multiple_commands( &registry, &command_refs )
     .expect( "Should parse all 20 enterprise commands without errors" );
@@ -202,17 +202,17 @@ fn test_50_command_stress_test()
 
   // Register 50 stress test commands
   for i in 1..=50 {
-    let cmd_name = format!( ".stress{}", i );
+    let cmd_name = format!( ".stress{i}" );
     let cmd = create_scalability_test_command( &cmd_name );
     registry.register( cmd );
   }
 
   // Stress test sequence
   let commands : Vec< String > = (1..=50)
-    .map( |i| format!( r#".stress{} step::"stress test {}""#, i, i ) )
+    .map( |i| format!( r#".stress{i} step::"stress test {i}""# ) )
     .collect();
 
-  let command_refs : Vec< &str > = commands.iter().map( |s| s.as_str() ).collect();
+  let command_refs : Vec< &str > = commands.iter().map( std::string::String::as_str ).collect();
 
   let parsed_count = parse_multiple_commands( &registry, &command_refs )
     .expect( "Should parse all 50 stress test commands without errors" );
@@ -232,7 +232,7 @@ fn test_command_parsing_performance()
 
   // Register performance test commands
   for i in 1..=20 {
-    let cmd_name = format!( ".perf{}", i );
+    let cmd_name = format!( ".perf{i}" );
     let cmd = create_scalability_test_command( &cmd_name );
     registry.register( cmd );
   }
@@ -240,21 +240,21 @@ fn test_command_parsing_performance()
   // Test parsing performance with different command counts
   for command_count in [1, 5, 10, 15, 20] {
     let commands : Vec< String > = (1..=command_count)
-      .map( |i| format!( r#".perf{} step::"performance test {}""#, i, i ) )
+      .map( |i| format!( r#".perf{i} step::"performance test {i}""# ) )
       .collect();
 
-    let command_refs : Vec< &str > = commands.iter().map( |s| s.as_str() ).collect();
+    let command_refs : Vec< &str > = commands.iter().map( std::string::String::as_str ).collect();
 
     let start = Instant::now();
     let parsed_count = parse_multiple_commands( &registry, &command_refs )
       .expect( "Performance test should not fail" );
     let duration = start.elapsed();
 
-    assert_eq!( parsed_count, command_count, "Should parse all {} commands", command_count );
+    assert_eq!( parsed_count, command_count, "Should parse all {command_count} commands" );
 
     // Performance should be reasonable (less than 100ms for 20 commands)
     assert!( duration.as_millis() < 100,
-      "Parsing {} commands should be fast but took {:?}", command_count, duration );
+      "Parsing {command_count} commands should be fast but took {duration:?}" );
   }
 }
 
@@ -268,17 +268,17 @@ fn test_memory_usage_scaling()
 
   // Register memory test commands
   for i in 1..=30 {
-    let cmd_name = format!( ".mem{}", i );
+    let cmd_name = format!( ".mem{i}" );
     let cmd = create_scalability_test_command( &cmd_name );
     registry.register( cmd );
   }
 
   // Test memory usage doesn't explode with more commands
   let commands : Vec< String > = (1..=30)
-    .map( |i| format!( r#".mem{} step::"memory test {}""#, i, i ) )
+    .map( |i| format!( r#".mem{i} step::"memory test {i}""# ) )
     .collect();
 
-  let command_refs : Vec< &str > = commands.iter().map( |s| s.as_str() ).collect();
+  let command_refs : Vec< &str > = commands.iter().map( std::string::String::as_str ).collect();
 
   let parsed_count = parse_multiple_commands( &registry, &command_refs )
     .expect( "Memory test should not fail or run out of memory" );
