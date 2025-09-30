@@ -60,10 +60,10 @@ fn parse_multiple_commands( registry : &CommandRegistry, inputs : &[&str] ) -> R
           Ok( verified_commands ) => {
             parsed_count += verified_commands.len();
           },
-          Err( e ) => return Err( format!( "Semantic analysis error for '{}': {:?}", input, e ) ),
+          Err( e ) => return Err( format!( "Semantic analysis error for '{input}': {e:?}" ) ),
         }
       },
-      Err( e ) => return Err( format!( "Parse error for '{}': {:?}", input, e ) ),
+      Err( e ) => return Err( format!( "Parse error for '{input}': {e:?}" ) ),
     }
   }
 

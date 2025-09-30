@@ -70,7 +70,7 @@ fn command_with_help_operator_parsed()
 /// Tests that a command with a multi-segment path followed by a help operator `?` is parsed correctly.
 /// Test Combination: T5.3
 #[ test ]
-fn command_with_help_operator_and_multi_segment_path() 
+fn command_with_help_operator_and_multi_segment_path()
 {
   let parser = Parser ::new(UnilangParserOptions ::default());
   let input = "cmd sub ?";

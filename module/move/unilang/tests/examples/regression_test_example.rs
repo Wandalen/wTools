@@ -177,7 +177,7 @@ fn regression_backward_compatibility_single_parameter_usage()
   // Test various single-parameter patterns that users might use
   let single_param_patterns = vec![
     r#".test param::"simple_value""#,
-    r#".test param::unquoted"#,
+    r".test param::unquoted",
     r#".test param::"value with spaces""#,
     r#".test param::"123""#,
     r#".test param::""#,  // empty string

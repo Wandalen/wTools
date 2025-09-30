@@ -335,7 +335,7 @@ fn test_user_performance_experience()
 
   // From user perspective, should complete quickly
   assert!( result.success, "Should process large file successfully" );
-  assert!( duration.as_secs() < 10, "Should complete within reasonable time: {:?}", duration );
+  assert!( duration.as_secs() < 10, "Should complete within reasonable time: {duration:?}" );
 
   // User should get meaningful progress/feedback for long operations
   assert!( !result.stdout.is_empty(), "Should provide output to user" );
@@ -350,7 +350,7 @@ fn test_user_performance_experience()
   }
 
   let quick_duration = quick_start.elapsed();
-  assert!( quick_duration.as_millis() < 1000, "Quick commands should be very fast: {:?}", quick_duration );
+  assert!( quick_duration.as_millis() < 1000, "Quick commands should be very fast: {quick_duration:?}" );
 }
 
 /// Example: User configuration and customization

@@ -7,5 +7,5 @@ mod performance {
   mod benchmark_config;
   mod json_performance;
   mod performance_analysis;
-  mod performance;
+  mod test_performance;
 }

@@ -28,10 +28,6 @@
 //! | T3.11 | Unexpected token `!` in args | `cmd arg1 ! badchar` | Unexpected Token | Middle | `(false)` | `Syntax` | `(9, 10)` | `Unexpected token '!' in arguments` |
 use unilang_parser :: *;
 use unilang_parser ::error :: { ErrorKind, SourceLocation };
-#[ allow(unused_imports) ] // HashMap might be used in future error tests
-use std ::collections ::HashMap;
-#[ allow(unused_imports) ] // Cow might be used if unescape_string changes signature
-use std ::borrow ::Cow;
 
 fn options_error_on_positional_after_named() -> UnilangParserOptions 
 {

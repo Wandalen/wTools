@@ -50,12 +50,12 @@ fn parse_unicode_command( registry : &CommandRegistry, input : &str ) -> Result<
 {
   let parser = Parser::new( UnilangParserOptions::default() );
   let instruction = parser.parse_single_instruction( input )
-    .map_err( |e| format!( "Parse error: {:?}", e ) )?;
+    .map_err( |e| format!( "Parse error: {e:?}" ) )?;
 
   let instructions_array = [instruction];
   let analyzer = SemanticAnalyzer::new( &instructions_array, registry );
   let _verified_commands = analyzer.analyze()
-    .map_err( |e| format!( "Semantic analysis error: {:?}", e ) )?;
+    .map_err( |e| format!( "Semantic analysis error: {e:?}" ) )?;
 
   Ok(())
 }
@@ -74,7 +74,7 @@ fn test_basic_unicode_emoji()
   // This should work but currently panics on Unicode emoji
   let result = parse_unicode_command( &registry, r#".test content::"echo 🚀 rocket""# );
 
-  assert!( result.is_ok(), "Basic Unicode emoji should parse without panics: {:?}", result );
+  assert!( result.is_ok(), "Basic Unicode emoji should parse without panics: {result:?}" );
 }
 
 /// T1.1b: Multiple Unicode Symbols
@@ -90,7 +90,7 @@ fn test_basic_unicode_symbols()
   // Test multiple Unicode symbols
   let result = parse_unicode_command( &registry, r#".symbols content::"Status: ✅ Success ❌ Fail 🎯 Target""# );
 
-  assert!( result.is_ok(), "Multiple Unicode symbols should parse without panics: {:?}", result );
+  assert!( result.is_ok(), "Multiple Unicode symbols should parse without panics: {result:?}" );
 }
 
 /// T1.2: Unicode in Multiple Commands
@@ -112,11 +112,11 @@ fn test_multiple_commands_with_unicode()
 
   // Parse first command with Unicode
   let result1 = parser.parse_single_instruction( r#".test1 content::"echo 🎯 test1""# );
-  assert!( result1.is_ok(), "First Unicode command should parse: {:?}", result1 );
+  assert!( result1.is_ok(), "First Unicode command should parse: {result1:?}" );
 
   // Parse second command with Unicode
   let result2 = parser.parse_single_instruction( r#".test2 content::"echo ✅ test2""# );
-  assert!( result2.is_ok(), "Second Unicode command should parse: {:?}", result2 );
+  assert!( result2.is_ok(), "Second Unicode command should parse: {result2:?}" );
 }
 
 /// T1.3: Mixed ASCII and Unicode Content
@@ -133,7 +133,7 @@ fn test_mixed_ascii_unicode_content()
   // Mixed ASCII and Unicode content in single string
   let result = parse_unicode_command( &registry, r#".mixed content::"echo normal text with 🚀 emoji and more text""# );
 
-  assert!( result.is_ok(), "Mixed ASCII/Unicode content should parse: {:?}", result );
+  assert!( result.is_ok(), "Mixed ASCII/Unicode content should parse: {result:?}" );
 }
 
 /// Additional Test: Unicode Boundary Detection
@@ -149,7 +149,7 @@ fn test_unicode_boundary_detection()
   // Test Unicode at start, middle, and end
   let result = parse_unicode_command( &registry, r#".boundary content::"🚀start middle🎯 end✅""# );
 
-  assert!( result.is_ok(), "Unicode boundary detection should work: {:?}", result );
+  assert!( result.is_ok(), "Unicode boundary detection should work: {result:?}" );
 }
 
 /// Additional Test: Complex Unicode Sequences
@@ -165,7 +165,7 @@ fn test_complex_unicode_sequences()
   // Complex Unicode with various byte lengths
   let result = parse_unicode_command( &registry, r#".complex content::"🚀🎯✅❌🔥💯⭐🌟🎉🎊""# );
 
-  assert!( result.is_ok(), "Complex Unicode sequences should parse: {:?}", result );
+  assert!( result.is_ok(), "Complex Unicode sequences should parse: {result:?}" );
 }
 
 /// Additional Test: UTF-8 Sequence Validation
@@ -188,7 +188,7 @@ fn test_utf8_sequence_validation()
 
   for test_case in test_cases {
     let result = parse_unicode_command( &registry, test_case );
-    assert!( result.is_ok(), "UTF-8 sequence should parse: {} -> {:?}", test_case, result );
+    assert!( result.is_ok(), "UTF-8 sequence should parse: {test_case} -> {result:?}" );
   }
 }
 
@@ -204,8 +204,8 @@ fn test_unicode_memory_safety()
 
   // Large Unicode string to test memory safety
   let large_unicode = "🚀".repeat( 100 );
-  let input = format!( r#".memory content::"{}""#, large_unicode );
+  let input = format!( r#".memory content::"{large_unicode}""# );
 
   let result = parse_unicode_command( &registry, &input );
-  assert!( result.is_ok(), "Large Unicode content should not cause memory issues: {:?}", result );
+  assert!( result.is_ok(), "Large Unicode content should not cause memory issues: {result:?}" );
 }

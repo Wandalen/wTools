@@ -88,14 +88,14 @@ fn test_simd_info()
 {
   let info = simd_support_info();
   assert!( !info.is_empty() );
-  println!( "SIMD Info: {}", info );
+  println!( "SIMD Info: {info}" );
 }
 
 #[test]
 fn test_simd_enabled_detection()
 {
   let enabled = is_simd_enabled();
-  println!( "SIMD Enabled: {}", enabled );
+  println!( "SIMD Enabled: {enabled}" );
 
   #[ cfg( feature = "simd" ) ]
   assert!( enabled );

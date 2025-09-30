@@ -52,11 +52,11 @@ fn parse_and_bind( registry : &CommandRegistry, input : &str ) -> Result< Vec< V
 {
   let parser = Parser::new( UnilangParserOptions::default() );
   let instruction = parser.parse_single_instruction( input )
-    .map_err( |e| format!( "Parse error: {:?}", e ) )?;
+    .map_err( |e| format!( "Parse error: {e:?}" ) )?;
 
   let instructions_array = [instruction];
   let analyzer = SemanticAnalyzer::new( &instructions_array, registry );
-  analyzer.analyze().map_err( |e| format!( "Binding error: {:?}", e ) )
+  analyzer.analyze().map_err( |e| format!( "Binding error: {e:?}" ) )
 }
 
 #[test]
@@ -252,7 +252,7 @@ fn test_type_conversion_binding()
 
   registry.command_add_runtime( &cmd, Box::new( mock_routine ) ).unwrap();
 
-  let verified_commands = parse_and_bind( &registry, r#".test string_val::"hello" int_val::42 bool_val::true float_val::3.14"# )
+  let verified_commands = parse_and_bind( &registry, r#".test string_val::"hello" int_val::42 bool_val::true float_val::3.15"# )
     .expect( "Type conversion binding should succeed" );
 
   let verified_cmd = &verified_commands[0];
@@ -260,7 +260,7 @@ fn test_type_conversion_binding()
   assert_eq!( verified_cmd.arguments.get( "string_val" ).unwrap(), &Value::String( "hello".to_string() ) );
   assert_eq!( verified_cmd.arguments.get( "int_val" ).unwrap(), &Value::Integer( 42 ) );
   assert_eq!( verified_cmd.arguments.get( "bool_val" ).unwrap(), &Value::Boolean( true ) );
-  assert_eq!( verified_cmd.arguments.get( "float_val" ).unwrap(), &Value::Float( 3.14 ) );
+  assert_eq!( verified_cmd.arguments.get( "float_val" ).unwrap(), &Value::Float( 3.15 ) );
 }
 
 #[test]
@@ -300,7 +300,7 @@ fn test_optional_argument_binding()
   let verified_cmd = &verified_commands[0];
 
   assert_eq!( verified_cmd.arguments.get( "required" ).unwrap(), &Value::String( "value".to_string() ) );
-  assert!( verified_cmd.arguments.get( "optional" ).is_none(), "Optional argument should not be present" );
+  assert!( !verified_cmd.arguments.contains_key("optional"), "Optional argument should not be present" );
 
   // Test with both arguments
   let verified_commands = parse_and_bind( &registry, r#".test required::"req" optional::"opt""# ).expect( "Should bind both arguments" );
@@ -333,7 +333,7 @@ fn test_default_value_binding()
   registry.command_add_runtime( &cmd, Box::new( mock_routine ) ).unwrap();
 
   // Test without providing the parameter (should use default)
-  let verified_commands = parse_and_bind( &registry, r#".test"# ).expect( "Should bind with default value" );
+  let verified_commands = parse_and_bind( &registry, r".test" ).expect( "Should bind with default value" );
   let verified_cmd = &verified_commands[0];
 
   assert_eq!( verified_cmd.arguments.get( "param" ).unwrap(), &Value::String( "default_value".to_string() ) );
@@ -453,7 +453,7 @@ fn test_missing_required_argument_error()
   registry.command_add_runtime( &cmd, Box::new( mock_routine ) ).unwrap();
 
   // Test without required argument (should fail)
-  let result = parse_and_bind( &registry, r#".test"# );
+  let result = parse_and_bind( &registry, r".test" );
   assert!( result.is_err(), "Missing required argument should fail" );
 
   let error_message = result.unwrap_err();
@@ -517,7 +517,7 @@ fn test_excess_arguments_error()
 
   let error_message = result.unwrap_err();
   let error_lower = error_message.to_lowercase();
-  assert!( error_lower.contains( "too many" ) || error_lower.contains( "excess" ) || error_lower.contains( "unexpected" ), "Error should mention excess arguments. Got: {}", error_message );
+  assert!( error_lower.contains( "too many" ) || error_lower.contains( "excess" ) || error_lower.contains( "unexpected" ), "Error should mention excess arguments. Got: {error_message}" );
 }
 
 #[test]
@@ -531,13 +531,13 @@ fn test_binding_performance()
   let mut arguments = Vec::new();
   for i in 0..50 {
     arguments.push( ArgumentDefinition {
-      name : format!( "arg{}", i ),
-      description : format!( "Argument {}", i ),
+      name : format!( "arg{i}" ),
+      description : format!( "Argument {i}" ),
       kind : Kind::String,
       hint : "String argument".to_string(),
       attributes : ArgumentAttributes {
         optional : true,
-        default : Some( format!( "default{}", i ) ),
+        default : Some( format!( "default{i}" ) ),
         ..Default::default()
       },
       validation_rules : vec![], aliases : vec![], tags : vec![],
@@ -549,11 +549,11 @@ fn test_binding_performance()
 
   // Test with all default values (many arguments to bind)
   let start = Instant::now();
-  let result = parse_and_bind( &registry, r#".perf"# );
+  let result = parse_and_bind( &registry, r".perf" );
   let duration = start.elapsed();
 
   assert!( result.is_ok(), "Performance test should succeed" );
-  assert!( duration.as_millis() < 50, "Binding should be fast: {:?}", duration );
+  assert!( duration.as_millis() < 50, "Binding should be fast: {duration:?}" );
 
   let verified_cmd = &result.unwrap()[0];
   assert_eq!( verified_cmd.arguments.len(), 50, "All default arguments should be bound" );

@@ -50,12 +50,12 @@ fn parse_extended_ascii_command( registry : &CommandRegistry, input : &str ) -> 
 {
   let parser = Parser::new( UnilangParserOptions::default() );
   let instruction = parser.parse_single_instruction( input )
-    .map_err( |e| format!( "Parse error: {:?}", e ) )?;
+    .map_err( |e| format!( "Parse error: {e:?}" ) )?;
 
   let instructions_array = [instruction];
   let analyzer = SemanticAnalyzer::new( &instructions_array, registry );
   let _verified_commands = analyzer.analyze()
-    .map_err( |e| format!( "Semantic analysis error: {:?}", e ) )?;
+    .map_err( |e| format!( "Semantic analysis error: {e:?}" ) )?;
 
   Ok(())
 }
@@ -74,7 +74,7 @@ fn test_french_accents()
   // French accented characters
   let result = parse_extended_ascii_command( &registry, r#".french text::"café naïve résumé""# );
 
-  assert!( result.is_ok(), "French accents should parse without panics: {:?}", result );
+  assert!( result.is_ok(), "French accents should parse without panics: {result:?}" );
 }
 
 /// T2.1b: German Umlauts and Eszett
@@ -90,7 +90,7 @@ fn test_german_umlauts()
   // German umlauts and eszett
   let result = parse_extended_ascii_command( &registry, r#".german text::"Bäcker größer Büße""# );
 
-  assert!( result.is_ok(), "German umlauts should parse without panics: {:?}", result );
+  assert!( result.is_ok(), "German umlauts should parse without panics: {result:?}" );
 }
 
 /// T2.2: Spanish Characters
@@ -107,7 +107,7 @@ fn test_spanish_characters()
   // Spanish characters including ñ
   let result = parse_extended_ascii_command( &registry, r#".spanish text::"Ñoño España mañana""# );
 
-  assert!( result.is_ok(), "Spanish characters should parse without panics: {:?}", result );
+  assert!( result.is_ok(), "Spanish characters should parse without panics: {result:?}" );
 }
 
 /// T2.2b: Scandinavian Characters
@@ -123,7 +123,7 @@ fn test_scandinavian_characters()
   // Scandinavian characters
   let result = parse_extended_ascii_command( &registry, r#".scandi text::"København Ålesund Bjørn""# );
 
-  assert!( result.is_ok(), "Scandinavian characters should parse without panics: {:?}", result );
+  assert!( result.is_ok(), "Scandinavian characters should parse without panics: {result:?}" );
 }
 
 /// T2.3: Currency Symbols
@@ -140,7 +140,7 @@ fn test_currency_symbols()
   // Currency symbols
   let result = parse_extended_ascii_command( &registry, r#".currency text::"Price: €50 £40 ¥500 $100""# );
 
-  assert!( result.is_ok(), "Currency symbols should parse without panics: {:?}", result );
+  assert!( result.is_ok(), "Currency symbols should parse without panics: {result:?}" );
 }
 
 /// T2.3b: Mathematical and Special Symbols
@@ -156,7 +156,7 @@ fn test_mathematical_symbols()
   // Mathematical and special symbols
   let result = parse_extended_ascii_command( &registry, r#".math text::"Temperature: ±20° Section§ ¶Graph""# );
 
-  assert!( result.is_ok(), "Mathematical symbols should parse without panics: {:?}", result );
+  assert!( result.is_ok(), "Mathematical symbols should parse without panics: {result:?}" );
 }
 
 /// Additional Test: ISO-8859-1 Character Set
@@ -171,10 +171,10 @@ fn test_iso_8859_1_charset()
 
   // Comprehensive ISO-8859-1 characters
   let iso_chars = "àáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ";
-  let input = format!( r#".iso text::"{}""#, iso_chars );
+  let input = format!( r#".iso text::"{iso_chars}""# );
 
   let result = parse_extended_ascii_command( &registry, &input );
-  assert!( result.is_ok(), "ISO-8859-1 character set should parse: {:?}", result );
+  assert!( result.is_ok(), "ISO-8859-1 character set should parse: {result:?}" );
 }
 
 /// Additional Test: Windows-1252 Characters
@@ -187,10 +187,11 @@ fn test_windows_1252_chars()
   let cmd = create_extended_ascii_test_command( ".win1252" );
   registry.register( cmd );
 
-  // Windows-1252 specific characters (smart quotes, dashes, etc.)
-  let result = parse_extended_ascii_command( &registry, r#".win1252 text::"Smart "quotes" and – dashes""# );
+  // Windows-1252 specific characters (em-dash, properly quoted)
+  // Use escaped quotes to avoid quote parsing issues
+  let result = parse_extended_ascii_command( &registry, r#".win1252 text::"Smart \"quotes\" and – dashes""# );
 
-  assert!( result.is_ok(), "Windows-1252 characters should parse: {:?}", result );
+  assert!( result.is_ok(), "Windows-1252 characters should parse: {result:?}" );
 }
 
 /// Additional Test: Mixed Extended ASCII and Regular ASCII
@@ -206,7 +207,7 @@ fn test_mixed_ascii_extended_ascii()
   // Mixed ASCII and extended ASCII
   let result = parse_extended_ascii_command( &registry, r#".mixed text::"Hello café, welcome to España! Price: €25""# );
 
-  assert!( result.is_ok(), "Mixed ASCII/extended ASCII should parse: {:?}", result );
+  assert!( result.is_ok(), "Mixed ASCII/extended ASCII should parse: {result:?}" );
 }
 
 /// Additional Test: Eastern European Characters
@@ -222,7 +223,7 @@ fn test_eastern_european_characters()
   // Eastern European characters
   let result = parse_extended_ascii_command( &registry, r#".eastern text::"Czech: ěščřžýáíé Polish: ąćęłńóśźż""# );
 
-  assert!( result.is_ok(), "Eastern European characters should parse: {:?}", result );
+  assert!( result.is_ok(), "Eastern European characters should parse: {result:?}" );
 }
 
 /// Additional Test: Character Encoding Boundary Cases
@@ -244,6 +245,6 @@ fn test_encoding_boundaries()
 
   for test_case in test_cases {
     let result = parse_extended_ascii_command( &registry, test_case );
-    assert!( result.is_ok(), "Encoding boundary case should parse: {} -> {:?}", test_case, result );
+    assert!( result.is_ok(), "Encoding boundary case should parse: {test_case} -> {result:?}" );
   }
 }

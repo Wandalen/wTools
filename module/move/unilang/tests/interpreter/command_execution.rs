@@ -24,19 +24,19 @@ use unilang::types::Value;
 use unilang_parser::{ Parser, UnilangParserOptions };
 
 /// Test routine that returns predictable output
-#[allow(clippy::unnecessary_wraps)]
+#[allow(clippy::unnecessary_wraps, clippy::needless_pass_by_value)]
 fn test_routine( cmd : VerifiedCommand, _ctx : ExecutionContext ) -> Result< OutputData, unilang::data::ErrorData >
 {
   let arg_count = cmd.arguments.len();
   Ok( OutputData
   {
-    content : format!( "Executed {} with {} arguments", cmd.definition.name, arg_count ),
+    content : format!( "Executed {} with {arg_count} arguments", cmd.definition.name ),
     format : "text".to_string(),
   })
 }
 
 /// Test routine that accesses specific arguments
-#[allow(clippy::unnecessary_wraps)]
+#[allow(clippy::unnecessary_wraps, clippy::needless_pass_by_value)]
 fn argument_access_routine( cmd : VerifiedCommand, _ctx : ExecutionContext ) -> Result< OutputData, unilang::data::ErrorData >
 {
   let name = cmd.arguments.get( "name" )
@@ -48,7 +48,7 @@ fn argument_access_routine( cmd : VerifiedCommand, _ctx : ExecutionContext ) -> 
 
   Ok( OutputData
   {
-    content : format!( "Hello, {}!", name ),
+    content : format!( "Hello, {name}!" ),
     format : "text".to_string(),
   })
 }
@@ -93,12 +93,12 @@ fn create_verified_command( registry : &CommandRegistry, input : &str ) -> Resul
 {
   let parser = Parser::new( UnilangParserOptions::default() );
   let instruction = parser.parse_single_instruction( input )
-    .map_err( |e| format!( "Parse error: {:?}", e ) )?;
+    .map_err( |e| format!( "Parse error: {e:?}" ) )?;
 
   let instructions_array = [instruction];
   let analyzer = SemanticAnalyzer::new( &instructions_array, registry );
   let mut verified_commands = analyzer.analyze()
-    .map_err( |e| format!( "Semantic analysis error: {:?}", e ) )?;
+    .map_err( |e| format!( "Semantic analysis error: {e:?}" ) )?;
 
   verified_commands.pop().ok_or_else( || "No verified command produced".to_string() )
 }
@@ -110,7 +110,7 @@ fn test_basic_command_execution()
   let cmd = create_test_command( ".test" );
   registry.command_add_runtime( &cmd, Box::new( test_routine ) ).unwrap();
 
-  let verified_command = create_verified_command( &registry, r#".test"# ).expect( "Should create verified command" );
+  let verified_command = create_verified_command( &registry, r".test" ).expect( "Should create verified command" );
 
   let commands = vec![ verified_command ];
   let interpreter = Interpreter::new( &commands, &registry );
@@ -156,7 +156,7 @@ fn test_command_execution_with_default_arguments()
   let cmd = create_test_command( ".greet" );
   registry.command_add_runtime( &cmd, Box::new( argument_access_routine ) ).unwrap();
 
-  let verified_command = create_verified_command( &registry, r#".greet"# ).expect( "Should create verified command" );
+  let verified_command = create_verified_command( &registry, r".greet" ).expect( "Should create verified command" );
 
   let commands = vec![ verified_command ];
   let interpreter = Interpreter::new( &commands, &registry );
@@ -178,7 +178,7 @@ fn test_command_execution_error_handling()
   let cmd = create_test_command( ".error" );
   registry.command_add_runtime( &cmd, Box::new( error_routine ) ).unwrap();
 
-  let verified_command = create_verified_command( &registry, r#".error"# ).expect( "Should create verified command" );
+  let verified_command = create_verified_command( &registry, r".error" ).expect( "Should create verified command" );
 
   let commands = vec![ verified_command ];
   let interpreter = Interpreter::new( &commands, &registry );
@@ -206,7 +206,7 @@ fn test_execution_context_management()
   // Create a routine that validates context
   let context_validation_routine = Box::new( |_cmd: VerifiedCommand, ctx: ExecutionContext| -> Result<OutputData, unilang::data::ErrorData> {
     // Validate that context is properly passed
-    let _context_data = ctx; // Use context to ensure it's passed correctly
+    let _ = ctx; // Use context to ensure it's passed correctly
     Ok( OutputData {
       content : "Context validated".to_string(),
       format : "text".to_string(),
@@ -215,7 +215,7 @@ fn test_execution_context_management()
 
   registry.command_add_runtime( &cmd, context_validation_routine ).unwrap();
 
-  let verified_command = create_verified_command( &registry, r#".test"# ).expect( "Should create verified command" );
+  let verified_command = create_verified_command( &registry, r".test" ).expect( "Should create verified command" );
 
   let commands = vec![ verified_command ];
   let interpreter = Interpreter::new( &commands, &registry );
@@ -239,7 +239,7 @@ fn test_multiple_command_executions()
 
   // Execute multiple commands to ensure no state leakage
   for i in 1..=5 {
-    let verified_command = create_verified_command( &registry, r#".test"# ).expect( "Should create verified command" );
+    let verified_command = create_verified_command( &registry, r".test" ).expect( "Should create verified command" );
     let commands = vec![ verified_command ];
     let interpreter = Interpreter::new( &commands, &registry );
     let mut context = ExecutionContext {};
@@ -250,7 +250,7 @@ fn test_multiple_command_executions()
     let outputs = result.unwrap();
   assert_eq!( outputs.len(), 1, "Should have one output" );
   let output = &outputs[0];
-    assert!( output.content.contains( "Executed .test" ), "Output should be consistent for execution {}", i );
+    assert!( output.content.contains( "Executed .test" ), "Output should be consistent for execution {i}" );
   }
 }
 
@@ -323,7 +323,7 @@ fn test_execution_with_complex_arguments()
     };
 
     Ok( OutputData {
-      content : format!( "text={}, number={}, flag={}", text, number, flag ),
+      content : format!( "text={text}, number={number}, flag={flag}" ),
       format : "text".to_string(),
     })
   });
@@ -354,7 +354,7 @@ fn test_execution_performance()
   let cmd = create_test_command( ".perf" );
   registry.command_add_runtime( &cmd, Box::new( test_routine ) ).unwrap();
 
-  let verified_command = create_verified_command( &registry, r#".perf"# ).expect( "Should create verified command" );
+  let verified_command = create_verified_command( &registry, r".perf" ).expect( "Should create verified command" );
 
   let commands = vec![ verified_command ];
   let interpreter = Interpreter::new( &commands, &registry );
@@ -365,7 +365,7 @@ fn test_execution_performance()
   let duration = start.elapsed();
 
   assert!( result.is_ok(), "Performance test should succeed" );
-  assert!( duration.as_millis() < 10, "Execution should be fast: {:?}", duration );
+  assert!( duration.as_millis() < 10, "Execution should be fast: {duration:?}" );
 }
 
 #[test]
@@ -383,7 +383,7 @@ fn test_execution_output_formats()
 
   registry.command_add_runtime( &cmd, format_routine ).unwrap();
 
-  let verified_command = create_verified_command( &registry, r#".format"# ).expect( "Should create verified command" );
+  let verified_command = create_verified_command( &registry, r".format" ).expect( "Should create verified command" );
 
   let commands = vec![ verified_command ];
   let interpreter = Interpreter::new( &commands, &registry );

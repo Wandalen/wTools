@@ -296,7 +296,7 @@ fn test_error_propagation_through_components()
 
   // Test 1: Semantic analysis error (before execution)
   let parser = Parser::new( UnilangParserOptions::default() );
-  let instruction = parser.parse_single_instruction( r#".nonexistent_command"# ).unwrap();
+  let instruction = parser.parse_single_instruction( r".nonexistent_command" ).unwrap();
   let instructions = [instruction];
   let analyzer = SemanticAnalyzer::new( &instructions, &registry );
   let semantic_result = analyzer.analyze();
@@ -438,7 +438,7 @@ fn test_configuration_integration()
   let permissive_parser = Parser::new( permissive_options );
 
   // Test input that might be handled differently
-  let ambiguous_input = r#".test arg::value extra_text"#;
+  let ambiguous_input = r".test arg::value extra_text";
 
   // Strict parser might be more restrictive
   let strict_result = strict_parser.parse_single_instruction( ambiguous_input );

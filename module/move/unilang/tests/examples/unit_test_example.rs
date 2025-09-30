@@ -100,7 +100,7 @@ fn test_argument_parsing_handles_edge_case_values()
     (r#".test arg::"!@#$%^&*()""#, "!@#$%^&*()"),
 
     // Very long string (boundary test)
-    (r#".test arg::"#.to_string() + &"x".repeat(1000) + r#"""#, "x".repeat(1000).as_str()),
+    (r".test arg::".to_string() + &"x".repeat(1000) + r#"""#, "x".repeat(1000).as_str()),
 
     // String with escaped quotes
     (r#".test arg::"contains \"quotes\" inside""#, r#"contains "quotes" inside"#),

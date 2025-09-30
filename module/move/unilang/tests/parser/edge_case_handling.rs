@@ -49,18 +49,18 @@ fn parse_edge_case_command( registry : &CommandRegistry, input : &str ) -> Resul
 {
   let parser = Parser::new( UnilangParserOptions::default() );
   let instruction = parser.parse_single_instruction( input )
-    .map_err( |e| format!( "Parse error: {:?}", e ) )?;
+    .map_err( |e| format!( "Parse error: {e:?}" ) )?;
 
   let instructions_array = [instruction];
   let analyzer = SemanticAnalyzer::new( &instructions_array, registry );
   let _verified_commands = analyzer.analyze()
-    .map_err( |e| format!( "Semantic analysis error: {:?}", e ) )?;
+    .map_err( |e| format!( "Semantic analysis error: {e:?}" ) )?;
 
   Ok(())
 }
 
 /// T4.1: Empty Quoted Command Value
-/// **Test Case**: `.test content:""`
+/// **Test Case**: `.test content::""`
 /// **Expected**: Should handle empty commands gracefully
 /// **Current**: "Unexpected token 'command1:' in arguments" - tokenization failure
 #[test]
@@ -70,10 +70,10 @@ fn test_empty_command_value()
   let cmd = create_edge_case_test_command( ".test" );
   registry.register( cmd );
 
-  // Empty quoted string - this currently fails with tokenization error
-  let result = parse_edge_case_command( &registry, r#".test content:"""# );
+  // Empty quoted string - using correct double-colon syntax per specification
+  let result = parse_edge_case_command( &registry, r#".test content::"""# );
 
-  assert!( result.is_ok(), "Empty quoted command value should parse gracefully: {:?}", result );
+  assert!( result.is_ok(), "Empty quoted command value should parse gracefully: {result:?}" );
 }
 
 /// T4.1b: Empty Quoted Argument Value
@@ -87,13 +87,13 @@ fn test_empty_argument_value()
   registry.register( cmd );
 
   // Empty argument value
-  let result = parse_edge_case_command( &registry, r#".empty_arg content:"""# );
+  let result = parse_edge_case_command( &registry, r#".empty_arg content::"""# );
 
-  assert!( result.is_ok(), "Empty argument value should be handled: {:?}", result );
+  assert!( result.is_ok(), "Empty argument value should be handled: {result:?}" );
 }
 
 /// T4.2: Whitespace-Only Command Value
-/// **Test Case**: `.test content:"   "`
+/// **Test Case**: `.test content::"   "`
 /// **Expected**: Should handle whitespace-only commands
 /// **Current**: Need to verify behavior
 #[test]
@@ -104,9 +104,9 @@ fn test_whitespace_only_command()
   registry.register( cmd );
 
   // Whitespace-only content
-  let result = parse_edge_case_command( &registry, r#".whitespace content:"   ""# );
+  let result = parse_edge_case_command( &registry, r#".whitespace content::"   ""# );
 
-  assert!( result.is_ok(), "Whitespace-only command should parse: {:?}", result );
+  assert!( result.is_ok(), "Whitespace-only command should parse: {result:?}" );
 }
 
 /// T4.2b: Mixed Whitespace Types
@@ -120,9 +120,9 @@ fn test_mixed_whitespace()
   registry.register( cmd );
 
   // Mixed whitespace: tabs, newlines, spaces
-  let result = parse_edge_case_command( &registry, ".mixed_ws content:\"\t\n  \"" );
+  let result = parse_edge_case_command( &registry, ".mixed_ws content::\"\t\n  \"" );
 
-  assert!( result.is_ok(), "Mixed whitespace should be handled: {:?}", result );
+  assert!( result.is_ok(), "Mixed whitespace should be handled: {result:?}" );
 }
 
 /// Additional Test: Null Characters
@@ -136,15 +136,15 @@ fn test_null_characters()
   registry.register( cmd );
 
   // Null character in string (note: this may need special handling)
-  let input_with_null = format!( r#".null_test content:"test{}null""#, '\0' );
+  let input_with_null = format!( r#".null_test content::"test{}null""#, '\0' );
   let result = parse_edge_case_command( &registry, &input_with_null );
 
   // Note: This test should either succeed gracefully or fail with clear error
   match result {
-    Ok(_) => {}, // Null characters handled gracefully
+    Ok(()) => {}, // Null characters handled gracefully
     Err(e) => {
       // Should get clear error message, not a panic
-      assert!( !e.contains( "panic" ), "Should not panic on null characters: {}", e );
+      assert!( !e.contains( "panic" ), "Should not panic on null characters: {e}" );
     }
   }
 }
@@ -161,14 +161,14 @@ fn test_escape_sequences()
 
   // Test various escape sequences
   let test_cases = vec![
-    r#".escape content:"test with \"quotes\"""#,  // Escaped quotes
-    r#".escape content:"test with \\backslash""#,  // Escaped backslash
-    r#".escape content:"test with \n newline""#,   // Escaped newline
+    r#".escape content::"test with \"quotes\"""#,  // Escaped quotes
+    r#".escape content::"test with \\backslash""#,  // Escaped backslash
+    r#".escape content::"test with \n newline""#,   // Escaped newline
   ];
 
   for test_case in test_cases {
     let result = parse_edge_case_command( &registry, test_case );
-    assert!( result.is_ok(), "Escape sequence should parse: {} -> {:?}", test_case, result );
+    assert!( result.is_ok(), "Escape sequence should parse: {test_case} -> {result:?}" );
   }
 }
 
@@ -184,18 +184,18 @@ fn test_malformed_quotes()
 
   // Test cases that should fail with clear error messages
   let malformed_cases = vec![
-    r#".malformed content:"unclosed quote"#,     // Missing closing quote
+    r#".malformed content::"unclosed quote"#,     // Missing closing quote
     r#".malformed content:unclosed quote""#,     // Missing opening quote
   ];
 
   for malformed_case in malformed_cases {
     let result = parse_edge_case_command( &registry, malformed_case );
     match result {
-      Ok(_) => panic!( "Malformed quote should not parse successfully: {}", malformed_case ),
+      Ok(()) => panic!( "Malformed quote should not parse successfully: {malformed_case}" ),
       Err(e) => {
         // Should get clear error message about malformed quotes
         assert!( e.contains( "quote" ) || e.contains( "parse" ),
-          "Error message should mention quote issue: {} -> {}", malformed_case, e );
+          "Error message should mention quote issue: {malformed_case} -> {e}" );
       }
     }
   }
@@ -212,14 +212,14 @@ fn test_nested_quotes()
   registry.register( cmd );
 
   // Test nested quotes (behavior may vary based on parser design)
-  let result = parse_edge_case_command( &registry, r#".nested content:"outer \"inner\" quotes""# );
+  let result = parse_edge_case_command( &registry, r#".nested content::"outer \"inner\" quotes""# );
 
   // This should either work or fail with clear error
   match result {
-    Ok(_) => {}, // Nested quotes handled
+    Ok(()) => {}, // Nested quotes handled
     Err(e) => {
       // Should get clear error message, not a panic
-      assert!( !e.contains( "panic" ), "Should not panic on nested quotes: {}", e );
+      assert!( !e.contains( "panic" ), "Should not panic on nested quotes: {e}" );
     }
   }
 }
@@ -235,18 +235,16 @@ fn test_long_empty_values()
   registry.register( cmd );
 
   // Multiple empty values in sequence
-  let parser = Parser::new( UnilangParserOptions::default() );
-
   // Test multiple empty value parsing
-  let empty_cases = vec![
-    r#".long_empty content:"""#,
-    r#".long_empty content:"""#,
-    r#".long_empty content:"""#,
+  let empty_cases = [
+    r#".long_empty content::"""#,
+    r#".long_empty content::"""#,
+    r#".long_empty content::"""#,
   ];
 
   for (i, empty_case) in empty_cases.iter().enumerate() {
     let result = parse_edge_case_command( &registry, empty_case );
-    assert!( result.is_ok(), "Empty value {} should parse: {:?}", i + 1, result );
+    assert!( result.is_ok(), "Empty value {} should parse: {result:?}", i + 1 );
   }
 }
 
@@ -262,14 +260,14 @@ fn test_unicode_edge_cases()
 
   // Unicode with whitespace edge cases
   let unicode_edge_cases = vec![
-    r#".unicode_edge content:" 🚀 ""#,        // Unicode with spaces
-    r#".unicode_edge content:"🚀""#,          // Unicode only
-    r#".unicode_edge content:"  ""#,          // Spaces only
+    r#".unicode_edge content::" 🚀 ""#,        // Unicode with spaces
+    r#".unicode_edge content::"🚀""#,          // Unicode only
+    r#".unicode_edge content::"  ""#,          // Spaces only
   ];
 
   for unicode_case in unicode_edge_cases {
     let result = parse_edge_case_command( &registry, unicode_case );
-    assert!( result.is_ok(), "Unicode edge case should parse: {} -> {:?}", unicode_case, result );
+    assert!( result.is_ok(), "Unicode edge case should parse: {unicode_case} -> {result:?}" );
   }
 }
 
@@ -285,14 +283,14 @@ fn test_special_characters_edge_cases()
 
   // Special characters in edge case contexts
   let special_cases = vec![
-    r#".special_edge content:" !@#$%^&*() ""#,    // Special chars with spaces
-    r#".special_edge content:"!@#$%^&*()""#,      // Special chars only
-    r#".special_edge content:" <>=[]{}|; ""#,     // Punctuation with spaces
+    r#".special_edge content::" !@#$%^&*() ""#,    // Special chars with spaces
+    r#".special_edge content::"!@#$%^&*()""#,      // Special chars only
+    r#".special_edge content::" <>=[]{}|; ""#,     // Punctuation with spaces
   ];
 
   for special_case in special_cases {
     let result = parse_edge_case_command( &registry, special_case );
-    assert!( result.is_ok(), "Special character edge case should parse: {} -> {:?}", special_case, result );
+    assert!( result.is_ok(), "Special character edge case should parse: {special_case} -> {result:?}" );
   }
 }
 
@@ -329,6 +327,6 @@ fn test_empty_values_different_types()
   registry.register( cmd );
 
   // Test empty string for string type
-  let result = parse_edge_case_command( &registry, r#".multi_type text:"""# );
-  assert!( result.is_ok(), "Empty string value should be handled: {:?}", result );
+  let result = parse_edge_case_command( &registry, r#".multi_type text::"""# );
+  assert!( result.is_ok(), "Empty string value should be handled: {result:?}" );
 }

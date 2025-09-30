@@ -78,7 +78,7 @@ As you build the system, please use this document to log your key implementation
     *   A token is encountered that is *not* an identifier, a space, or a dot (e.g., an operator like `::` or `?`, or a quoted string).
     *   An identifier is followed by a token that is *not* a dot, and is also not `::`. In this case, the identifier is the last command path segment, and the subsequent token is the first argument.
     *   The end of the input is reached after an identifier or a dot.
-*   **Rule 3: Leading/Trailing Dots:** Leading dots (`.cmd`) are ignored. Trailing dots (`cmd.`) are considered part of the last command path segment if no arguments follow. If arguments follow, a trailing dot on the command path is an error.
+*   **Rule 3: Leading/Trailing Dots:** Leading dots (`.cmd`) are ignored. Trailing dots (`cmd.`) are a syntax error in all cases.
 *   **Rule 4: Help Operator (`?`):** The `?` operator is valid not only immediately after the command path (i.e., as the first argument or the first token after the command path), but also `?` might be preceded by by other arguments, but `?` is always the last. If command has other arguments before `?` then semantic meaning of `?` should be expaining not only the command but those specific arguments.
 *   **Rule 5: Positional Arguments:** Positional arguments are any non-named arguments that follow the command path.
 *   **Rule 6: Named Arguments:** Named arguments are identified by the `name::value` syntax.

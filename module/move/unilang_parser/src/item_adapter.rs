@@ -8,7 +8,7 @@ use alloc ::borrow ::Cow;
 use alloc ::string :: { String, ToString };
 use core ::fmt;
 
-/// Temporary simple replacement for `strs_tools` Split
+/// Split representation compatible with `strs_tools` Split
 #[ derive( Debug, Clone ) ]
 pub struct Split< 'a >
 {
