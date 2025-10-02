@@ -734,43 +734,11 @@ impl Workspace
   /// returns error if the file cannot be read, doesn't exist, or contains invalid format
   pub fn load_secrets_from_file( &self, filename: &str ) -> Result< HashMap< String, String > >
   {
-  // validate parameter doesn't look like a path
-  if filename.contains( '/' ) || filename.contains( '\\' )
-  {
-   eprintln!(
-  "⚠️  Warning: '{filename}' contains path separators. Use load_secrets_from_path() for paths."
- );
-  }
-
+  Self::warn_if_path_like( filename );
   let secret_file = self.secret_file( filename );
-
-  if !secret_file.exists()
-  {
-   // enhanced error: provide context about what files are available
-   let available = self.list_secrets_files().unwrap_or_default();
-   let suggestion = if available.is_empty()
-   {
-  format!( "\nNo files found in secrets directory: {}", self.secret_dir().display() )
-  }
-   else
-   {
-  format!( "\nAvailable files: {}", available.join( ", " ) )
- };
-
-   return Err( WorkspaceError::ConfigurationError(
-  format!(
-   "Secrets file '{}' not found at {}.{}",
-   filename,
-   secret_file.display(),
-   suggestion
- )
- ) );
-  }
-
-  let content = fs ::read_to_string( &secret_file )
-   .map_err( | e | WorkspaceError::IoError( format!( "failed to read {} : {}", secret_file.display(), e ) ) )?;
-
-  Ok( Self ::parse_key_value_file( &content ) )
+  self.check_secret_file_exists( filename, &secret_file )?;
+  let content = Self::read_secret_file( &secret_file )?;
+  Ok( Self::parse_key_value_file( &content ) )
   }
 
   /// load a specific secret key with fallback to environment
@@ -815,6 +783,8 @@ impl Workspace
   /// returns error if the key is not found in either the secret file or environment variables
   pub fn load_secret_key( &self, key_name: &str, filename: &str ) -> Result< String >
   {
+  let secret_file_path = self.secret_file( filename );
+
   // try loading from secret file first
   if let Ok( secrets ) = self.load_secrets_from_file( filename )
   {
@@ -831,7 +801,7 @@ impl Workspace
    "{} not found in secrets file '{}' (resolved to: {}) or environment variables",
    key_name,
    filename,
-   self.secret_file( filename ).display()
+   secret_file_path.display()
  )
  ))
   }
@@ -889,6 +859,60 @@ impl Workspace
   }
 
   secrets
+  }
+
+  /// warn if filename contains path separators
+  ///
+  /// emits warning to stderr if filename looks like a path rather than a simple filename
+  /// this helps users understand they should use path-specific methods for paths
+  fn warn_if_path_like( filename: &str )
+  {
+  if filename.contains( '/' ) || filename.contains( '\\' )
+  {
+   eprintln!(
+  "⚠️  Warning: '{filename}' contains path separators. Use load_secrets_from_path() for paths."
+ );
+  }
+  }
+
+  /// check if secret file exists and provide helpful error if not
+  ///
+  /// returns error with context about available files if the requested file doesn't exist
+  /// error message includes absolute path tried for easier debugging
+  fn check_secret_file_exists( &self, filename: &str, secret_file: &Path ) -> Result< () >
+  {
+  if !secret_file.exists()
+  {
+   let available = self.list_secrets_files().unwrap_or_default();
+   let suggestion = if available.is_empty()
+   {
+  format!( "\n  No files found in secrets directory: {}", self.secret_dir().display() )
+  }
+   else
+   {
+  format!( "\n  Available files: {}", available.join( ", " ) )
+ };
+
+   return Err( WorkspaceError::ConfigurationError(
+  format!(
+   "Secrets file '{}' not found at absolute path: {}{}",
+   filename,
+   secret_file.display(),
+   suggestion
+ )
+ ) );
+  }
+  Ok( () )
+  }
+
+  /// read secret file with proper error handling
+  ///
+  /// wraps `fs::read_to_string` with workspace-specific error messages
+  /// includes absolute path in error for debugging
+  fn read_secret_file( path: &Path ) -> Result< String >
+  {
+  fs::read_to_string( path )
+   .map_err( | e | WorkspaceError::IoError( format!( "Failed to read secrets file\n  Absolute path: {}\n  Error: {}", path.display(), e ) ) )
   }
 
   /// list available secrets files in the secrets directory
@@ -1043,10 +1067,8 @@ impl Workspace
  ) );
   }
 
-  let content = fs ::read_to_string( &secret_file )
-   .map_err( | e | WorkspaceError::IoError( format!( "failed to read {} : {}", secret_file.display(), e ) ) )?;
-
-  Ok( Self ::parse_key_value_file( &content ) )
+  let content = Self::read_secret_file( &secret_file )?;
+  Ok( Self::parse_key_value_file( &content ) )
   }
 
   /// load secrets from absolute path
@@ -1080,16 +1102,14 @@ impl Workspace
   {
    return Err( WorkspaceError::ConfigurationError(
   format!(
-   "Secrets file not found at absolute path: {}",
+   "Failed to load secrets from absolute path\n  Tried absolute path: {}",
    absolute_path.display()
  )
  ) );
   }
 
-  let content = fs ::read_to_string( absolute_path )
-   .map_err( | e | WorkspaceError::IoError( format!( "failed to read {} : {}", absolute_path.display(), e ) ) )?;
-
-  Ok( Self ::parse_key_value_file( &content ) )
+  let content = Self::read_secret_file( absolute_path )?;
+  Ok( Self::parse_key_value_file( &content ) )
   }
 
   /// load secrets with verbose debug information
@@ -1175,6 +1195,17 @@ impl Workspace
 #[ cfg( feature = "secure" ) ]
 impl Workspace
 {
+  /// convert plain `HashMap` of secrets to `SecretString` `HashMap`
+  ///
+  /// wraps each secret value in `SecretString` for memory-safe handling
+  /// this ensures secrets are properly protected in memory and cleared on drop
+  fn to_secure_hashmap( secrets: HashMap< String, String > ) -> HashMap< String, SecretString >
+  {
+  secrets.into_iter()
+   .map( | ( key, value ) | ( key, SecretString::new( value ) ) )
+   .collect()
+  }
+
   /// load secrets from a file in the workspace secrets directory with memory-safe handling
   ///
   /// returns secrets as `SecretString` types for enhanced security
@@ -1222,51 +1253,8 @@ impl Workspace
   /// returns error if the file cannot be read, doesn't exist, or contains invalid format
   pub fn load_secrets_secure( &self, filename: &str ) -> Result< HashMap< String, SecretString > >
   {
-  // validate parameter doesn't look like a path
-  if filename.contains( '/' ) || filename.contains( '\\' )
-  {
-   eprintln!(
-  "⚠️  Warning: '{filename}' contains path separators. Use load_secrets_from_path() for paths."
- );
-  }
-
-  let secret_file = self.secret_file( filename );
-
-  if !secret_file.exists()
-  {
-   // enhanced error: provide context about what files are available
-   let available = self.list_secrets_files().unwrap_or_default();
-   let suggestion = if available.is_empty()
-   {
-  format!( "\nNo files found in secrets directory: {}", self.secret_dir().display() )
-  }
-   else
-   {
-  format!( "\nAvailable files: {}", available.join( ", " ) )
- };
-
-   return Err( WorkspaceError::ConfigurationError(
-  format!(
-   "Secrets file '{}' not found at {}.{}",
-   filename,
-   secret_file.display(),
-   suggestion
- )
- ) );
-  }
-
-  let content = fs ::read_to_string( &secret_file )
-   .map_err( | e | WorkspaceError::IoError( format!( "failed to read {} : {}", secret_file.display(), e ) ) )?;
-
-  let parsed = Self ::parse_key_value_file( &content );
-  let mut secure_secrets = HashMap ::new();
-
-  for ( key, value ) in parsed
-  {
-  secure_secrets.insert( key, SecretString ::new( value ) );
-  }
-
-  Ok( secure_secrets )
+  let secrets = self.load_secrets_from_file( filename )?;
+  Ok( Self::to_secure_hashmap( secrets ) )
   }
 
   /// load a specific secret key with memory-safe handling and fallback to environment
@@ -1299,28 +1287,8 @@ impl Workspace
   /// ```
   pub fn load_secret_key_secure( &self, key_name: &str, filename: &str ) -> Result< SecretString >
   {
-  // try loading from secret file first
-  if let Ok( secrets ) = self.load_secrets_secure( filename )
-  {
-   if let Some( value ) = secrets.get( key_name )
-   {
-  return Ok( value.clone() );
-  }
-  }
-
-  // fallback to environment variable
-  match env ::var( key_name )
-  {
-   Ok( value ) => Ok( SecretString ::new( value ) ),
-   Err( _ ) => Err( WorkspaceError::ConfigurationError(
-  format!(
-   "{} not found in secrets file '{}' (resolved to: {}) or environment variables",
-   key_name,
-   filename,
-   self.secret_file( filename ).display()
- )
- ))
-  }
+  let value = self.load_secret_key( key_name, filename )?;
+  Ok( SecretString::new( value ) )
   }
 
   /// get environment variable as `SecretString` for memory-safe handling
@@ -1560,14 +1528,7 @@ impl Workspace
   pub fn load_secrets_from_path_secure( &self, relative_path: &str ) -> Result< HashMap< String, SecretString > >
   {
   let secrets = self.load_secrets_from_path( relative_path )?;
-  let mut secure_secrets = HashMap ::new();
-
-  for ( key, value ) in secrets
-  {
-  secure_secrets.insert( key, SecretString ::new( value ) );
-  }
-
-  Ok( secure_secrets )
+  Ok( Self::to_secure_hashmap( secrets ) )
   }
 
   /// load secrets from absolute path with memory-safe handling
@@ -1599,14 +1560,7 @@ impl Workspace
   pub fn load_secrets_from_absolute_path_secure( &self, absolute_path: &Path ) -> Result< HashMap< String, SecretString > >
   {
   let secrets = self.load_secrets_from_absolute_path( absolute_path )?;
-  let mut secure_secrets = HashMap ::new();
-
-  for ( key, value ) in secrets
-  {
-  secure_secrets.insert( key, SecretString ::new( value ) );
-  }
-
-  Ok( secure_secrets )
+  Ok( Self::to_secure_hashmap( secrets ) )
   }
 
   /// load secrets with verbose debug information and memory-safe handling
@@ -1640,14 +1594,7 @@ impl Workspace
   pub fn load_secrets_with_debug_secure( &self, secret_file_name: &str ) -> Result< HashMap< String, SecretString > >
   {
   let secrets = self.load_secrets_with_debug( secret_file_name )?;
-  let mut secure_secrets = HashMap ::new();
-
-  for ( key, value ) in secrets
-  {
-  secure_secrets.insert( key, SecretString ::new( value ) );
-  }
-
-  Ok( secure_secrets )
+  Ok( Self::to_secure_hashmap( secrets ) )
   }
 
 }
