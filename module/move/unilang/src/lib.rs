@@ -196,7 +196,4 @@ mod_interface::mod_interface!
 
   /// Context-rich benchmark documentation generator for comprehensive reporting.
   layer context_rich_documentation;
-
-  // /// Before/after optimization workflow system for systematic performance tracking.
-  // layer optimization_workflow;
 }
