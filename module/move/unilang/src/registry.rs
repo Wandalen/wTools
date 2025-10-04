@@ -60,6 +60,80 @@ impl Default for RegistryMode {
   }
 }
 
+/// Helper function to format help text for a command definition.
+///
+/// This function generates a standardized help text format that includes:
+/// - Command header (name, description, hint, version, status)
+/// - Arguments section with details about each parameter
+/// - Examples section
+/// - Aliases section
+/// - Usage patterns
+///
+/// Used by both `CommandRegistry` and `StaticCommandRegistry` to ensure consistent help formatting.
+fn format_command_help( cmd_def : &CommandDefinition ) -> String
+{
+  let mut help = String::new();
+
+  // Command header
+  help.push_str( &format!( "Command: {}\n", cmd_def.name ) );
+  help.push_str( &format!( "Description: {}\n", cmd_def.description ) );
+
+  if !cmd_def.hint.is_empty()
+  {
+    help.push_str( &format!( "Hint: {}\n", cmd_def.hint ) );
+  }
+
+  help.push_str( &format!( "Version: {}\n", cmd_def.version ) );
+  help.push_str( &format!( "Status: {}\n", cmd_def.status ) );
+
+  // Arguments section
+  if !cmd_def.arguments.is_empty()
+  {
+    help.push_str( "\nArguments:\n" );
+    for arg in &cmd_def.arguments
+    {
+      let required = if arg.attributes.optional { "optional" } else { "required" };
+      help.push_str( &format!( "  {} ({}, {})", arg.name, arg.kind, required ) );
+
+      if let Some( default ) = &arg.attributes.default
+      {
+        help.push_str( &format!( " [default: {}]", default ) );
+      }
+
+      help.push_str( &format!( "\n    {}\n", arg.description ) );
+
+      if !arg.aliases.is_empty()
+      {
+        help.push_str( &format!( "    Aliases: {}\n", arg.aliases.join( ", " ) ) );
+      }
+    }
+  }
+
+  // Examples section
+  if !cmd_def.examples.is_empty()
+  {
+    help.push_str( "\nExamples:\n" );
+    for example in &cmd_def.examples
+    {
+      help.push_str( &format!( "  {}\n", example ) );
+    }
+  }
+
+  // Aliases section
+  if !cmd_def.aliases.is_empty()
+  {
+    help.push_str( &format!( "\nAliases: {}\n", cmd_def.aliases.join( ", " ) ) );
+  }
+
+  // Usage patterns
+  help.push_str( "\nUsage:\n" );
+  help.push_str( &format!( "  {}  # Execute command\n", cmd_def.name ) );
+  help.push_str( &format!( "  {}.help  # Show this help\n", cmd_def.name ) );
+  help.push_str( &format!( "  {} ??  # Alternative help access\n", cmd_def.name ) );
+
+  help
+}
+
 /// Performance metrics for command registry operations.
 ///
 /// **DESIGN RULE NOTICE:** This struct is for PRODUCTION performance tracking only.
@@ -341,27 +415,7 @@ impl CommandRegistry
   /// Note: Static commands cannot be overwritten and will take precedence in lookups.
   pub fn register( &mut self, command : CommandDefinition )
   {
-    let full_name = if command.name.starts_with( '.' )
-    {
-      // Command name is already in full format
-      command.name.clone()
-    }
-    else if command.namespace.is_empty()
-    {
-      format!( ".{}", command.name )
-    }
-    else
-    {
-      let ns = &command.namespace;
-      if ns.starts_with( '.' )
-      {
-        format!( "{}.{}", ns, command.name )
-      }
-      else
-      {
-        format!( ".{}.{}", ns, command.name )
-      }
-    };
+    let full_name = command.full_name();
 
     self.dynamic_commands.insert( full_name, command );
   }
@@ -748,66 +802,7 @@ impl CommandRegistry
   /// * `String` - Formatted help text
   fn format_help_text( &self, cmd_def : &CommandDefinition ) -> String
   {
-    let mut help = String::new();
-
-    // Command header
-    help.push_str( &format!( "Command: {}\n", cmd_def.name ) );
-    help.push_str( &format!( "Description: {}\n", cmd_def.description ) );
-
-    if !cmd_def.hint.is_empty()
-    {
-      help.push_str( &format!( "Hint: {}\n", cmd_def.hint ) );
-    }
-
-    help.push_str( &format!( "Version: {}\n", cmd_def.version ) );
-    help.push_str( &format!( "Status: {}\n", cmd_def.status ) );
-
-    // Arguments section
-    if !cmd_def.arguments.is_empty()
-    {
-      help.push_str( "\nArguments:\n" );
-      for arg in &cmd_def.arguments
-      {
-        let required = if arg.attributes.optional { "optional" } else { "required" };
-        help.push_str( &format!( "  {} ({}, {})", arg.name, arg.kind, required ) );
-
-        if let Some( default ) = &arg.attributes.default
-        {
-          help.push_str( &format!( " [default: {}]", default ) );
-        }
-
-        help.push_str( &format!( "\n    {}\n", arg.description ) );
-
-        if !arg.aliases.is_empty()
-        {
-          help.push_str( &format!( "    Aliases: {}\n", arg.aliases.join( ", " ) ) );
-        }
-      }
-    }
-
-    // Examples section
-    if !cmd_def.examples.is_empty()
-    {
-      help.push_str( "\nExamples:\n" );
-      for example in &cmd_def.examples
-      {
-        help.push_str( &format!( "  {}\n", example ) );
-      }
-    }
-
-    // Aliases section
-    if !cmd_def.aliases.is_empty()
-    {
-      help.push_str( &format!( "\nAliases: {}\n", cmd_def.aliases.join( ", " ) ) );
-    }
-
-    // Usage patterns
-    help.push_str( "\nUsage:\n" );
-    help.push_str( &format!( "  {}  # Execute command\n", cmd_def.name ) );
-    help.push_str( &format!( "  {}.help  # Show this help\n", cmd_def.name ) );
-    help.push_str( &format!( "  {} ??  # Alternative help access\n", cmd_def.name ) );
-
-    help
+    format_command_help( cmd_def )
   }
 
   ///
@@ -1144,37 +1139,13 @@ impl StaticCommandRegistry {
   /// Note: Static commands always take priority in hybrid mode.
   /// Dynamic commands with same names as static commands will be shadowed.
   pub fn register(&mut self, command: CommandDefinition) {
-    let full_name = if command.name.starts_with('.') {
-      command.name.clone()
-    } else if command.namespace.is_empty() {
-      format!(".{}", command.name)
-    } else {
-      let ns = &command.namespace;
-      if ns.starts_with('.') {
-        format!("{}.{}", ns, command.name)
-      } else {
-        format!(".{}.{}", ns, command.name)
-      }
-    };
-
+    let full_name = command.full_name();
     self.dynamic_commands.insert(full_name, command);
   }
 
   /// Register a command with its executable routine.
   pub fn register_with_routine(&mut self, command: CommandDefinition, routine: CommandRoutine) -> Result<(), Error> {
-    let full_name = if command.name.starts_with('.') {
-      command.name.clone()
-    } else if command.namespace.is_empty() {
-      format!(".{}", command.name)
-    } else {
-      let ns = &command.namespace;
-      if ns.starts_with('.') {
-        format!("{}.{}", ns, command.name)
-      } else {
-        format!(".{}.{}", ns, command.name)
-      }
-    };
-
+    let full_name = command.full_name();
     self.routines.insert(full_name.clone(), routine);
     self.dynamic_commands.insert(full_name, command);
     Ok(())
@@ -1316,55 +1287,7 @@ impl StaticCommandRegistry {
 
   /// Format help text for a command definition (internal helper).
   fn format_help_text(&self, cmd_def: &crate::data::CommandDefinition) -> String {
-    let mut help = String::new();
-
-    // Command header
-    help.push_str(&format!("Command: {}\n", cmd_def.name));
-    help.push_str(&format!("Description: {}\n", cmd_def.description));
-
-    if !cmd_def.hint.is_empty() {
-      help.push_str(&format!("Hint: {}\n", cmd_def.hint));
-    }
-
-    // Arguments section
-    if !cmd_def.arguments.is_empty() {
-      help.push_str("\nArguments:\n");
-      for arg in &cmd_def.arguments {
-        let required = if arg.attributes.optional { "optional" } else { "required" };
-        help.push_str(&format!("  {} ({}, {})", arg.name, arg.kind, required));
-
-        if let Some(default) = &arg.attributes.default {
-          help.push_str(&format!(" [default: {}]", default));
-        }
-
-        help.push_str(&format!("\n    {}\n", arg.description));
-
-        if !arg.aliases.is_empty() {
-          help.push_str(&format!("    Aliases: {}\n", arg.aliases.join(", ")));
-        }
-      }
-    }
-
-    // Examples section
-    if !cmd_def.examples.is_empty() {
-      help.push_str("\nExamples:\n");
-      for example in &cmd_def.examples {
-        help.push_str(&format!("  {}\n", example));
-      }
-    }
-
-    // Aliases section
-    if !cmd_def.aliases.is_empty() {
-      help.push_str(&format!("\nAliases: {}\n", cmd_def.aliases.join(", ")));
-    }
-
-    // Usage patterns
-    help.push_str("\nUsage:\n");
-    help.push_str(&format!("  {}  # Execute command\n", cmd_def.name));
-    help.push_str(&format!("  {}.help  # Show this help\n", cmd_def.name));
-    help.push_str(&format!("  {} ??  # Alternative help access\n", cmd_def.name));
-
-    help
+    format_command_help( cmd_def )
   }
 
   /// Get number of static commands available.

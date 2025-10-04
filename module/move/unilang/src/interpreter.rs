@@ -75,16 +75,7 @@ impl< 'a > Interpreter< 'a >
       // EXPLICIT COMMAND NAMING (FR-REG-6): Use command names exactly as registered
       // Following the governing principle: minimum implicit magic!
       // Command names are now required to have dot prefixes and are used as-is
-      let full_command_name = if command.definition.namespace.is_empty()
-      {
-        // Root-level command: use name exactly as registered (with dot prefix)
-        command.definition.name.clone()
-      }
-      else
-      {
-        // Namespaced command: explicit concatenation without transformations
-        format!( "{}.{}", command.definition.namespace, command.definition.name.strip_prefix('.').unwrap_or(&command.definition.name) )
-      };
+      let full_command_name = command.definition.full_name();
       let routine = self.registry.get_routine( &full_command_name ).ok_or_else( ||
       {
         Error::Execution( ErrorData::new(

@@ -5,14 +5,6 @@
 use assert_cmd::Command;
 use predicates::prelude::*;
 
-use predicates::Predicate;
-
-#[allow(dead_code)]
-fn contains_all_unordered( expected_lines : Vec< &str > ) -> impl Predicate< str > + '_
-{
-  predicate::function( move | s : &str | expected_lines.iter().all( | line | s.contains( line ) ) )
-}
-
 // Test Matrix for Data Model Features
 //
 // This matrix outlines the tests for various fields and attributes of `CommandDefinition` and `ArgumentDefinition`.

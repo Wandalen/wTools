@@ -120,35 +120,6 @@ fn setup_test_registries() -> Result< ( StaticCommandRegistry, CommandRegistry )
   Ok( ( static_registry, dynamic_registry ) )
 }
 
-/// Create a mock static map for demonstration
-#[allow(dead_code)]
-fn create_mock_static_map() -> StaticCommandMap
-{
-  // This is a simplified mock - in reality, this would be a generated PHF map
-  // For demonstration purposes, we'll use a minimal static map
-  phf::phf_map!
-  {
-    ".test.command_0000" => &StaticCommandDefinition
-    {
-      name: ".test.command_0000",
-      namespace: ".test",
-      description: "Test command number 0",
-      hint: "Performance test command",
-      arguments: &[],
-      routine_link: None,
-      status: "stable",
-      version: "1.0.0",
-      tags: &[],
-      aliases: &[],
-      permissions: &[],
-      idempotent: true,
-      deprecation_message: "",
-      http_method_hint: "GET",
-      examples: &[],
-    },
-  }
-}
-
 /// Validate P99 latency requirement (<1ms for 1000+ commands)
 #[allow(clippy::unnecessary_wraps)]
 fn validate_p99_latency_requirement( static_registry: &StaticCommandRegistry ) -> Result< (), Box< dyn std::error::Error > >

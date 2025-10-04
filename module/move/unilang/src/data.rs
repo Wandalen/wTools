@@ -11,6 +11,71 @@ mod private
   // use former::Former;
 
   ///
+  /// Helper function to construct a full command name from namespace and name components.
+  ///
+  /// This function implements the canonical algorithm for combining namespace and name
+  /// into a fully qualified command name that always starts with a dot prefix.
+  ///
+  /// # Arguments
+  /// * `namespace` - The command's namespace (may be empty or dot-prefixed)
+  /// * `name` - The command's name (may already include dot prefix)
+  ///
+  /// # Returns
+  /// * `String` - The fully qualified command name with dot prefix
+  ///
+  /// # Algorithm
+  /// 1. If name already starts with '.':
+  ///    - If namespace is empty OR name contains '.', return name as-is (already full format)
+  ///    - Otherwise, strip '.' from name and concatenate with namespace
+  /// 2. If name doesn't start with '.':
+  ///    - If namespace is empty, prepend '.' to name
+  ///    - If namespace exists, concatenate with proper dot handling
+  pub fn construct_full_command_name( namespace : &str, name : &str ) -> String
+  {
+    if name.starts_with( '.' )
+    {
+      // Name already has dot prefix
+      if namespace.is_empty() || name.contains( ".." ) || name[ 1.. ].contains( '.' )
+      {
+        // Name is already in full format (e.g., ".integration.test")
+        // OR has multiple dots (e.g., ".a.b") indicating it's already complete
+        name.to_string()
+      }
+      else
+      {
+        // Name has dot but is just the command part (e.g., ".test")
+        // Need to prepend namespace
+        let name_without_dot = &name[ 1.. ];
+        if namespace.starts_with( '.' )
+        {
+          format!( "{}.{}", namespace, name_without_dot )
+        }
+        else
+        {
+          format!( ".{}.{}", namespace, name_without_dot )
+        }
+      }
+    }
+    else if namespace.is_empty()
+    {
+      // No namespace, no dot: add dot prefix
+      format!( ".{}", name )
+    }
+    else
+    {
+      // Has namespace, name has no dot: concatenate
+      if namespace.starts_with( '.' )
+      {
+        format!( "{}.{}", namespace, name )
+      }
+      else
+      {
+        format!( ".{}.{}", namespace, name )
+      }
+    }
+  }
+
+  ///
   /// Defines a command, including its name, arguments, and other metadata.
   ///
   /// This struct is the central piece of a command's definition, providing all
@@ -578,6 +643,42 @@ mod private
     pub fn has_auto_help( &self ) -> bool
     {
       self.auto_help_enabled
+    }
+
+    ///
+    /// Constructs the full command name from namespace and name components.
+    ///
+    /// This method handles the various combinations of namespaced and non-namespaced
+    /// command names, ensuring that the resulting full name always starts with a dot
+    /// prefix according to unilang conventions.
+    ///
+    /// # Returns
+    /// * `String` - The fully qualified command name with dot prefix
+    ///
+    /// # Examples
+    /// ```rust,ignore
+    /// use unilang::data::CommandDefinition;
+    ///
+    /// // Command with dot-prefixed name (already full format)
+    /// let cmd1 = CommandDefinition { name: ".help".to_string(), namespace: "".to_string(), ..Default::default() };
+    /// assert_eq!(cmd1.full_name(), ".help");
+    ///
+    /// // Command without namespace
+    /// let cmd2 = CommandDefinition { name: "help".to_string(), namespace: "".to_string(), ..Default::default() };
+    /// assert_eq!(cmd2.full_name(), ".help");
+    ///
+    /// // Command with namespace
+    /// let cmd3 = CommandDefinition { name: "list".to_string(), namespace: "session".to_string(), ..Default::default() };
+    /// assert_eq!(cmd3.full_name(), ".session.list");
+    ///
+    /// // Command with dot-prefixed namespace
+    /// let cmd4 = CommandDefinition { name: "list".to_string(), namespace: ".session".to_string(), ..Default::default() };
+    /// assert_eq!(cmd4.full_name(), ".session.list");
+    /// ```
+    #[ must_use ]
+    pub fn full_name( &self ) -> String
+    {
+      construct_full_command_name( &self.namespace, &self.name )
     }
 
     ///

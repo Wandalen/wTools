@@ -46,7 +46,6 @@ mod private
   /// This enum replaces string matching for common error patterns and provides
   /// type-safe access to error information for REPL applications and CLI tools.
   #[ derive( Debug, Clone, PartialEq ) ]
-  #[allow(dead_code)]
   pub enum UnilangError
   {
     /// Command was not found, with optional suggestions for similar commands.
