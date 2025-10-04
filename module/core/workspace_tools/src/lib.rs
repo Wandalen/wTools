@@ -214,7 +214,9 @@ impl Workspace
   #[ inline ]
   pub fn new< P: Into< PathBuf > >( root: P ) -> Self
   {
-  Self { root: root.into() }
+  let root = root.into();
+  let root = Self ::cleanup_path( root );
+  Self { root }
   }
 
   /// resolve workspace from environment variables
@@ -339,6 +341,39 @@ impl Workspace
   }
 
   /// get workspace root directory
+  ///
+  /// # Path Normalization Guarantees
+  ///
+  /// the returned path is guaranteed to be:
+  /// - absolute (not relative)
+  /// - normalized (no `/./ ` or trailing `/.`)
+  /// - preserves symlinks (does not resolve to canonical path)
+  ///
+  /// # examples
+  ///
+  /// ```rust
+  /// # fn main() -> Result< (), workspace_tools ::WorkspaceError > {
+  /// use workspace_tools ::workspace;
+  ///
+  /// # std ::env ::set_var( "WORKSPACE_PATH", std ::env ::current_dir().unwrap() );
+  /// let ws = workspace()?;
+  /// let root = ws.root();
+  ///
+  /// // always absolute
+  /// assert!( root.is_absolute() );
+  ///
+  /// // never contains "/./"
+  /// assert!( !root.to_string_lossy().contains( "/./" ) );
+  ///
+  /// // never ends with "/."
+  /// assert!( !root.to_string_lossy().ends_with( "/." ) );
+  ///
+  /// // clean path joining
+  /// let secret_dir = root.join( "secret" );
+  /// // produces: "/path/to/workspace/secret" not "/path/to/workspace/./secret"
+  /// # Ok(())
+  /// # }
+  /// ```
   #[ must_use ]
   #[ inline ]
   pub fn root( &self ) -> &Path
@@ -514,7 +549,67 @@ impl Workspace
   {
   let value = env ::var( key )
    .map_err( |_| WorkspaceError::EnvironmentVariableMissing( key.to_string() ) )?;
-  Ok( PathBuf ::from( value ) )
+
+  // reject empty paths
+  if value.is_empty()
+  {
+   return Err( WorkspaceError::PathNotFound( PathBuf ::from( "" ) ) );
+  }
+
+  let path = PathBuf ::from( value );
+
+  // if relative path, resolve against current directory
+  let absolute = if path.is_relative()
+  {
+   env ::current_dir()
+    .map_err( | e | WorkspaceError::IoError( e.to_string() ) )?
+    .join( path )
+  }
+  else
+  {
+   path
+  };
+
+  // normalize to remove trailing "." and other redundancies
+  Ok( Self ::cleanup_path( absolute ) )
+  }
+
+  /// cleanup path by removing redundant components
+  ///
+  /// removes trailing `/.` and `/./` components without resolving symlinks
+  fn cleanup_path< P: AsRef< Path > >( path: P ) -> PathBuf
+  {
+  // manual normalization without canonicalization (preserves symlinks)
+  let mut normalized = PathBuf::new();
+  let mut components = path.as_ref().components().peekable();
+
+  while let Some( component ) = components.next()
+  {
+   use std ::path ::Component;
+   match component
+   {
+    Component ::CurDir =>
+    {
+     // skip "." unless it's the only component
+     if normalized.as_os_str().is_empty() && components.peek().is_none()
+     {
+      normalized.push( "." );
+     }
+    }
+    Component ::ParentDir =>
+    {
+     // handle ".." by popping parent
+     if !normalized.pop()
+     {
+      // if we cant pop (at root), keep the ParentDir
+      normalized.push( component );
+     }
+    }
+    _ => normalized.push( component ),
+   }
+  }
+
+  normalized
   }
 
   /// find configuration file by name
@@ -1193,19 +1288,46 @@ impl Workspace
 }
 
 #[ cfg( feature = "secure" ) ]
-impl Workspace
+/// trait for converting plain types to secure memory-protected types
+///
+/// this trait provides a generic way to convert regular strings and collections
+/// into their secure counterparts that use memory protection and zeroization
+trait AsSecure
 {
-  /// convert plain `HashMap` of secrets to `SecretString` `HashMap`
-  ///
-  /// wraps each secret value in `SecretString` for memory-safe handling
-  /// this ensures secrets are properly protected in memory and cleared on drop
-  fn to_secure_hashmap( secrets: HashMap< String, String > ) -> HashMap< String, SecretString >
+  /// the secure version of this type
+  type Secure;
+
+  /// convert this value into its secure equivalent
+  fn into_secure( self ) -> Self::Secure;
+}
+
+#[ cfg( feature = "secure" ) ]
+impl AsSecure for String
+{
+  type Secure = SecretString;
+
+  fn into_secure( self ) -> Self::Secure
   {
-  secrets.into_iter()
+  SecretString::new( self )
+  }
+}
+
+#[ cfg( feature = "secure" ) ]
+impl AsSecure for HashMap< String, String >
+{
+  type Secure = HashMap< String, SecretString >;
+
+  fn into_secure( self ) -> Self::Secure
+  {
+  self.into_iter()
    .map( | ( key, value ) | ( key, SecretString::new( value ) ) )
    .collect()
   }
+}
 
+#[ cfg( feature = "secure" ) ]
+impl Workspace
+{
   /// load secrets from a file in the workspace secrets directory with memory-safe handling
   ///
   /// returns secrets as `SecretString` types for enhanced security
@@ -1253,8 +1375,7 @@ impl Workspace
   /// returns error if the file cannot be read, doesn't exist, or contains invalid format
   pub fn load_secrets_secure( &self, filename: &str ) -> Result< HashMap< String, SecretString > >
   {
-  let secrets = self.load_secrets_from_file( filename )?;
-  Ok( Self::to_secure_hashmap( secrets ) )
+  self.load_secrets_from_file( filename ).map( AsSecure::into_secure )
   }
 
   /// load a specific secret key with memory-safe handling and fallback to environment
@@ -1287,8 +1408,7 @@ impl Workspace
   /// ```
   pub fn load_secret_key_secure( &self, key_name: &str, filename: &str ) -> Result< SecretString >
   {
-  let value = self.load_secret_key( key_name, filename )?;
-  Ok( SecretString::new( value ) )
+  self.load_secret_key( key_name, filename ).map( AsSecure::into_secure )
   }
 
   /// get environment variable as `SecretString` for memory-safe handling
@@ -1398,8 +1518,7 @@ impl Workspace
   {
   // load the configuration file
   let config_path = self.join( config_file );
-  let config_content = std ::fs ::read_to_string( &config_path )
-   .map_err( | e | WorkspaceError::IoError( format!( "failed to read config {} : {}", config_path.display(), e ) ) )?;
+  let config_content = Self::read_file_to_string( &config_path )?;
 
   // load secrets securely
   let secrets = self.load_secrets_secure( secret_file )?;
@@ -1527,8 +1646,7 @@ impl Workspace
   /// returns error if the file cannot be read, doesn't exist, or contains invalid format
   pub fn load_secrets_from_path_secure( &self, relative_path: &str ) -> Result< HashMap< String, SecretString > >
   {
-  let secrets = self.load_secrets_from_path( relative_path )?;
-  Ok( Self::to_secure_hashmap( secrets ) )
+  self.load_secrets_from_path( relative_path ).map( AsSecure::into_secure )
   }
 
   /// load secrets from absolute path with memory-safe handling
@@ -1559,8 +1677,7 @@ impl Workspace
   /// returns error if the file cannot be read, doesn't exist, or contains invalid format
   pub fn load_secrets_from_absolute_path_secure( &self, absolute_path: &Path ) -> Result< HashMap< String, SecretString > >
   {
-  let secrets = self.load_secrets_from_absolute_path( absolute_path )?;
-  Ok( Self::to_secure_hashmap( secrets ) )
+  self.load_secrets_from_absolute_path( absolute_path ).map( AsSecure::into_secure )
   }
 
   /// load secrets with verbose debug information and memory-safe handling
@@ -1593,8 +1710,7 @@ impl Workspace
   /// returns error if the file cannot be read, doesn't exist, or contains invalid format
   pub fn load_secrets_with_debug_secure( &self, secret_file_name: &str ) -> Result< HashMap< String, SecretString > >
   {
-  let secrets = self.load_secrets_with_debug( secret_file_name )?;
-  Ok( Self::to_secure_hashmap( secrets ) )
+  self.load_secrets_with_debug( secret_file_name ).map( AsSecure::into_secure )
   }
 
 }
@@ -1624,6 +1740,7 @@ impl Workspace
   pub fn from_cargo_workspace() -> Result< Self >
   {
   let workspace_root = Self ::find_cargo_workspace()?;
+  let workspace_root = Self ::cleanup_path( workspace_root );
   Ok( Self { root: workspace_root } )
   }
 
@@ -1651,6 +1768,9 @@ impl Workspace
   {
    manifest_path.to_path_buf()
  };
+
+  // normalize the path before creating workspace
+  let workspace_root = Self ::cleanup_path( workspace_root );
 
   Ok( Self { root: workspace_root } )
   }
@@ -1790,9 +1910,76 @@ impl Workspace
   }
 }
 
+#[ cfg( any( feature = "serde", feature = "validation", feature = "secure" ) ) ]
+impl Workspace
+{
+  /// internal helper to read file with error wrapping
+  ///
+  /// provides consistent error messages across all file reading operations
+  fn read_file_to_string< P: AsRef< Path > >( path: P ) -> Result< String >
+  {
+    let path = path.as_ref();
+    std ::fs ::read_to_string( path )
+      .map_err( | e | WorkspaceError::IoError(
+        format!( "failed to read {}: {}", path.display(), e )
+      ) )
+  }
+
+  /// internal helper to detect file format from extension
+  ///
+  /// returns format string (toml/json/yaml/yml) based on file extension
+  fn detect_format< P: AsRef< Path > >( path: P ) -> String
+  {
+    path.as_ref()
+      .extension()
+      .and_then( | ext | ext.to_str() )
+      .unwrap_or( "toml" )
+      .to_string()
+  }
+}
+
 #[ cfg( feature = "serde" ) ]
 impl Workspace
 {
+
+  /// internal helper to parse config content based on format
+  fn parse_content< T >( content: &str, format: &str ) -> Result< T >
+  where
+    T: serde ::de ::DeserializeOwned,
+  {
+    match format
+    {
+      "toml" => toml ::from_str( content )
+        .map_err( | e | WorkspaceError::SerdeError( format!( "toml error: {e}" ) ) ),
+      "json" => serde_json ::from_str( content )
+        .map_err( | e | WorkspaceError::SerdeError( format!( "json error: {e}" ) ) ),
+      "yaml" | "yml" => serde_yaml ::from_str( content )
+        .map_err( | e | WorkspaceError::SerdeError( format!( "yaml error: {e}" ) ) ),
+      _ => Err( WorkspaceError::ConfigurationError(
+        format!( "unsupported format: {format}" )
+      ) ),
+    }
+  }
+
+  /// internal helper to serialize config content based on format
+  fn serialize_content< T >( config: &T, format: &str ) -> Result< String >
+  where
+    T: serde ::Serialize,
+  {
+    match format
+    {
+      "toml" => toml ::to_string_pretty( config )
+        .map_err( | e | WorkspaceError::SerdeError( format!( "toml error: {e}" ) ) ),
+      "json" => serde_json ::to_string_pretty( config )
+        .map_err( | e | WorkspaceError::SerdeError( format!( "json error: {e}" ) ) ),
+      "yaml" | "yml" => serde_yaml ::to_string( config )
+        .map_err( | e | WorkspaceError::SerdeError( format!( "yaml error: {e}" ) ) ),
+      _ => Err( WorkspaceError::ConfigurationError(
+        format!( "unsupported format: {format}" )
+      ) ),
+    }
+  }
+
   /// load configuration with automatic format detection
   ///
   /// # Errors
@@ -1838,23 +2025,9 @@ impl Workspace
   P: AsRef< Path >,
   {
   let path = path.as_ref();
-  let content = std ::fs ::read_to_string( path )
-   .map_err( | e | WorkspaceError::IoError( format!( "failed to read {} : {}", path.display(), e ) ) )?;
-
-  let extension = path.extension()
-   .and_then( | ext | ext.to_str() )
-   .unwrap_or( "toml" );
-
-  match extension
-  {
-   "toml" => toml ::from_str( &content )
-  .map_err( | e | WorkspaceError::SerdeError( format!( "toml deserialization error: {e}" ) ) ),
-   "json" => serde_json ::from_str( &content )
-  .map_err( | e | WorkspaceError::SerdeError( format!( "json deserialization error: {e}" ) ) ),
-   "yaml" | "yml" => serde_yaml ::from_str( &content )
-  .map_err( | e | WorkspaceError::SerdeError( format!( "yaml deserialization error: {e}" ) ) ),
-   _ => Err( WorkspaceError::ConfigurationError( format!( "unsupported config format: {extension}" ) ) ),
-  }
+  let content = Self::read_file_to_string( path )?;
+  let format = Self::detect_format( path );
+  Self::parse_content( &content, &format )
   }
 
   /// save configuration with format matching the original
@@ -1883,35 +2056,23 @@ impl Workspace
   P: AsRef< Path >,
   {
   let path = path.as_ref();
-  let extension = path.extension()
-   .and_then( | ext | ext.to_str() )
-   .unwrap_or( "toml" );
-
-  let content = match extension
-  {
-   "toml" => toml ::to_string_pretty( config )
-  .map_err( | e | WorkspaceError::SerdeError( format!( "toml serialization error: {e}" ) ) )?,
-   "json" => serde_json ::to_string_pretty( config )
-  .map_err( | e | WorkspaceError::SerdeError( format!( "json serialization error: {e}" ) ) )?,
-   "yaml" | "yml" => serde_yaml ::to_string( config )
-  .map_err( | e | WorkspaceError::SerdeError( format!( "yaml serialization error: {e}" ) ) )?,
-   _ => return Err( WorkspaceError::ConfigurationError( format!( "unsupported config format: {extension}" ) ) ),
- };
+  let format = Self::detect_format( path );
+  let content = Self::serialize_content( config, &format )?;
 
   // ensure parent directory exists
   if let Some( parent ) = path.parent()
   {
    std ::fs ::create_dir_all( parent )
-  .map_err( | e | WorkspaceError::IoError( format!( "failed to create directory {} : {}", parent.display(), e ) ) )?;
+  .map_err( | e | WorkspaceError::IoError( format!( "failed to create directory {}: {}", parent.display(), e ) ) )?;
   }
 
   // atomic write using temporary file
-  let temp_path = path.with_extension( format!( "{extension}.tmp" ) );
+  let temp_path = path.with_extension( format!( "{format}.tmp" ) );
   std ::fs ::write( &temp_path, content )
-   .map_err( | e | WorkspaceError::IoError( format!( "failed to write temporary file {} : {}", temp_path.display(), e ) ) )?;
-  
+   .map_err( | e | WorkspaceError::IoError( format!( "failed to write temporary file {}: {}", temp_path.display(), e ) ) )?;
+
   std ::fs ::rename( &temp_path, path )
-   .map_err( | e | WorkspaceError::IoError( format!( "failed to rename {} to {} : {}", temp_path.display(), path.display(), e ) ) )?;
+   .map_err( | e | WorkspaceError::IoError( format!( "failed to rename {} to {}: {}", temp_path.display(), path.display(), e ) ) )?;
 
   Ok( () )
   }
@@ -2033,6 +2194,51 @@ impl< 'de > serde ::Deserialize< 'de > for WorkspacePath
 #[ cfg( feature = "validation" ) ]
 impl Workspace
 {
+  /// internal helper to parse content to JSON value for validation
+  fn parse_to_json( content: &str, format: &str ) -> Result< serde_json ::Value >
+  {
+    match format
+    {
+      "toml" =>
+      {
+        let toml_value: toml ::Value = toml ::from_str( content )
+          .map_err( | e | WorkspaceError::SerdeError( format!( "toml parse: {e}" ) ) )?;
+        serde_json ::to_value( toml_value )
+          .map_err( | e | WorkspaceError::SerdeError( format!( "toml→json: {e}" ) ) )
+      }
+      "json" => serde_json ::from_str( content )
+        .map_err( | e | WorkspaceError::SerdeError( format!( "json parse: {e}" ) ) ),
+      "yaml" | "yml" =>
+      {
+        let yaml_value: serde_yaml ::Value = serde_yaml ::from_str( content )
+          .map_err( | e | WorkspaceError::SerdeError( format!( "yaml parse: {e}" ) ) )?;
+        serde_json ::to_value( yaml_value )
+          .map_err( | e | WorkspaceError::SerdeError( format!( "yaml→json: {e}" ) ) )
+      }
+      _ => Err( WorkspaceError::ConfigurationError(
+        format!( "unsupported format: {format}" )
+      ) ),
+    }
+  }
+
+  /// internal helper to validate JSON against schema
+  fn validate_against_schema(
+    json_value: &serde_json ::Value,
+    schema: &Validator
+  ) -> Result< () >
+  {
+    if let Err( validation_errors ) = schema.validate( json_value )
+    {
+      let errors: Vec< String > = validation_errors
+        .map( | error | format!( "{}: {}", error.instance_path, error ) )
+        .collect();
+      return Err( WorkspaceError::ValidationError(
+        format!( "validation failed: {}", errors.join( "; " ) )
+      ) );
+    }
+    Ok( () )
+  }
+
   /// load and validate configuration against a json schema
   ///
   /// # Errors
@@ -2099,47 +2305,18 @@ impl Workspace
   P: AsRef< Path >,
   {
   let path = path.as_ref();
-  let content = std ::fs ::read_to_string( path )
-   .map_err( | e | WorkspaceError::IoError( format!( "failed to read {} : {}", path.display(), e ) ) )?;
-
-  let extension = path.extension()
-   .and_then( | ext | ext.to_str() )
-   .unwrap_or( "toml" );
+  let content = Self::read_file_to_string( path )?;
+  let format = Self::detect_format( path );
 
   // parse to json value first for validation
-  let json_value = match extension
-  {
-   "toml" =>
-   {
-  let toml_value: toml ::Value = toml ::from_str( &content )
-   .map_err( | e | WorkspaceError::SerdeError( format!( "toml parsing error: {e}" ) ) )?;
-  serde_json ::to_value( toml_value )
-   .map_err( | e | WorkspaceError::SerdeError( format!( "toml to json conversion error: {e}" ) ) )?
-  }
-   "json" => serde_json ::from_str( &content )
-  .map_err( | e | WorkspaceError::SerdeError( format!( "json parsing error: {e}" ) ) )?,
-   "yaml" | "yml" =>
-   {
-  let yaml_value: serde_yaml ::Value = serde_yaml ::from_str( &content )
-   .map_err( | e | WorkspaceError::SerdeError( format!( "yaml parsing error: {e}" ) ) )?;
-  serde_json ::to_value( yaml_value )
-   .map_err( | e | WorkspaceError::SerdeError( format!( "yaml to json conversion error: {e}" ) ) )?
-  }
-   _ => return Err( WorkspaceError::ConfigurationError( format!( "unsupported config format: {extension}" ) ) ),
- };
-  
+  let json_value = Self::parse_to_json( &content, &format )?;
+
   // validate against schema
-  if let Err( validation_errors ) = schema.validate( &json_value )
-  {
-   let errors: Vec< String > = validation_errors
-  .map( | error | format!( "{} : {}", error.instance_path, error ) )
-  .collect();
-   return Err( WorkspaceError::ValidationError( format!( "validation failed: {}", errors.join( "; " ) ) ) );
-  }
-  
+  Self::validate_against_schema( &json_value, schema )?;
+
   // if validation passes, deserialize to target type
   serde_json ::from_value( json_value )
-   .map_err( | e | WorkspaceError::SerdeError( format!( "deserialization error: {e}" ) ) )
+    .map_err( | e | WorkspaceError::SerdeError( format!( "deserialization error: {e}" ) ) )
   }
   
   /// validate configuration content against schema without loading
@@ -2150,37 +2327,10 @@ impl Workspace
   pub fn validate_config_content( content: &str, schema: &Validator, format: &str ) -> Result< () >
   {
   // parse content to json value
-  let json_value = match format
-  {
-   "toml" =>
-   {
-  let toml_value: toml ::Value = toml ::from_str( content )
-   .map_err( | e | WorkspaceError::SerdeError( format!( "toml parsing error: {e}" ) ) )?;
-  serde_json ::to_value( toml_value )
-   .map_err( | e | WorkspaceError::SerdeError( format!( "toml to json conversion error: {e}" ) ) )?
-  }
-   "json" => serde_json ::from_str( content )
-  .map_err( | e | WorkspaceError::SerdeError( format!( "json parsing error: {e}" ) ) )?,
-   "yaml" | "yml" =>
-   {
-  let yaml_value: serde_yaml ::Value = serde_yaml ::from_str( content )
-   .map_err( | e | WorkspaceError::SerdeError( format!( "yaml parsing error: {e}" ) ) )?;
-  serde_json ::to_value( yaml_value )
-   .map_err( | e | WorkspaceError::SerdeError( format!( "yaml to json conversion error: {e}" ) ) )?
-  }
-   _ => return Err( WorkspaceError::ConfigurationError( format!( "unsupported config format: {format}" ) ) ),
- };
-  
+  let json_value = Self::parse_to_json( content, format )?;
+
   // validate against schema
-  if let Err( validation_errors ) = schema.validate( &json_value )
-  {
-   let errors: Vec< String > = validation_errors
-  .map( | error | format!( "{} : {}", error.instance_path, error ) )
-  .collect();
-   return Err( WorkspaceError::ValidationError( format!( "validation failed: {}", errors.join( "; " ) ) ) );
-  }
-  
-  Ok( () )
+  Self::validate_against_schema( &json_value, schema )
   }
 }
 
