@@ -151,7 +151,7 @@ fn test_task_022_help_system_shell() {
 #[test]
 fn test_comprehensive_user_workflow_shell() {
     // Simulate a realistic user workflow with multiple commands
-    let workflows = vec![
+    let mut workflows = vec![
         // Workflow 1: Basic command execution
         (vec![".greet"], predicate::str::contains("Hello, World!")),
 
@@ -161,12 +161,16 @@ fn test_comprehensive_user_workflow_shell() {
         // Workflow 3: Math operations
         (vec![".math.add", "a::10", "b::20"], predicate::str::contains("Result: 30")),
 
-        // Workflow 4: File operations
-        (vec![".files.cat", r#"path::"/etc/hostname""#], predicate::str::contains("")),  // Just ensure it runs
-
         // Workflow 5: Configuration
         (vec![".config.set", r#"key::"theme""#, r#"value::"dark""#], predicate::str::contains("Setting config")),  // Should show config set
     ];
+
+    // Workflow 4: File operations (platform-specific)
+    #[cfg(unix)]
+    workflows.push((vec![".files.cat", r#"path::"/etc/hostname""#], predicate::str::contains("")));
+
+    #[cfg(windows)]
+    workflows.push((vec![".files.cat", r#"path::"C:\Windows\system.ini""#], predicate::str::contains("")));
 
     for (args, expected) in workflows {
         let mut cmd = Command::cargo_bin("unilang_cli").unwrap();
