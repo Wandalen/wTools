@@ -190,6 +190,7 @@ impl< 'a > SemanticAnalyzer< 'a >
     }
 
     Self::check_excess_positional_arguments( instruction, positional_idx )?;
+    Self::check_unknown_named_arguments( instruction, command_def )?;
     Ok( bound_arguments )
   }
 
@@ -362,6 +363,216 @@ impl< 'a > SemanticAnalyzer< 'a >
     }
 
     Ok( () )
+  }
+
+  ///
+  /// Checks for unknown named arguments that don't match any defined parameter.
+  ///
+  /// This function validates that all named parameters in the instruction correspond
+  /// to actual parameter definitions (including aliases). If unknown parameters are found,
+  /// it returns an error with helpful suggestions for similar parameter names.
+  ///
+  /// # Arguments
+  /// * `instruction` - The parsed instruction containing named arguments
+  /// * `command_def` - The command definition with valid parameter names
+  ///
+  /// # Returns
+  /// * `Ok(())` if all named arguments are valid
+  /// * `Err` with UNILANG_UNKNOWN_PARAMETER if invalid parameters are found
+  ///
+  /// # Error Format
+  /// - Single unknown: "Unknown parameter 'drry'. Did you mean 'dry'?"
+  /// - Multiple unknown: "Unknown parameters: 'drry', 'foo'. Check command help for valid parameters."
+  fn check_unknown_named_arguments( instruction : &GenericInstruction, command_def : &CommandDefinition ) -> Result< (), Error >
+  {
+    // Collect all valid parameter names (canonical names + aliases)
+    let mut valid_names = std::collections::HashSet::new();
+    for arg_def in &command_def.arguments
+    {
+      valid_names.insert( arg_def.name.as_str() );
+      for alias in &arg_def.aliases
+      {
+        valid_names.insert( alias.as_str() );
+      }
+    }
+
+    // Find unknown parameters in the instruction
+    let mut unknown_params: Vec< &str > = Vec::new();
+    for param_name in instruction.named_arguments.keys()
+    {
+      if !valid_names.contains( param_name.as_str() )
+      {
+        unknown_params.push( param_name );
+      }
+    }
+
+    // If no unknown parameters, validation passes
+    if unknown_params.is_empty()
+    {
+      return Ok( () );
+    }
+
+    // Generate helpful error message with suggestions
+    let error_message = if unknown_params.len() == 1
+    {
+      let unknown = unknown_params[ 0 ];
+
+      // Find best suggestion using Levenshtein distance
+      let suggestion = Self::find_closest_parameter_name( unknown, &valid_names );
+
+      if let Some( suggested_name ) = suggestion
+      {
+        format!(
+          "Argument Error: Unknown parameter '{}'. Did you mean '{}'? Use '.{} ??' for help.",
+          unknown,
+          suggested_name,
+          command_def.name
+        )
+      }
+      else
+      {
+        format!(
+          "Argument Error: Unknown parameter '{}'. Use '.{} ??' to see valid parameters.",
+          unknown,
+          command_def.name
+        )
+      }
+    }
+    else
+    {
+      // Multiple unknown parameters
+      let params_list = unknown_params.iter()
+        .map( | p | format!( "'{}'", p ) )
+        .collect::< Vec< _ > >()
+        .join( ", " );
+
+      format!(
+        "Argument Error: Unknown parameters: {}. Use '.{} ??' to see valid parameters.",
+        params_list,
+        command_def.name
+      )
+    };
+
+    Err( Error::Execution( ErrorData::new(
+      "UNILANG_UNKNOWN_PARAMETER".to_string(),
+      error_message,
+    )))
+  }
+
+  ///
+  /// Finds the closest matching parameter name using Levenshtein distance.
+  ///
+  /// This provides helpful "Did you mean..." suggestions when users make typos
+  /// in parameter names. Only suggests if the similarity is high enough (distance <= 2).
+  ///
+  /// # Arguments
+  /// * `unknown` - The unknown parameter name
+  /// * `valid_names` - Set of all valid parameter names
+  ///
+  /// # Returns
+  /// * `Some(name)` - Best matching parameter name if similarity threshold met
+  /// * `None` - No close match found
+  ///
+  /// # Examples
+  /// - "drry" → Some("dry") (distance: 1)
+  /// - "verbse" → Some("verbose") (distance: 1)
+  /// - "xyz" → None (no close matches)
+  fn find_closest_parameter_name( unknown : &str, valid_names : &std::collections::HashSet< &str > ) -> Option< String >
+  {
+    let mut best_match: Option< ( &str, usize ) > = None;
+
+    for valid_name in valid_names
+    {
+      let distance = Self::levenshtein_distance( unknown, valid_name );
+
+      // Only suggest if distance is small (good match)
+      // and it's better than previous best
+      if distance <= 2
+      {
+        match best_match
+        {
+          None => best_match = Some( ( valid_name, distance ) ),
+          Some( ( _, prev_distance ) ) if distance < prev_distance =>
+          {
+            best_match = Some( ( valid_name, distance ) );
+          },
+          _ => {},
+        }
+      }
+    }
+
+    best_match.map( | ( name, _ ) | name.to_string() )
+  }
+
+  ///
+  /// Calculates Levenshtein distance between two strings.
+  ///
+  /// Levenshtein distance is the minimum number of single-character edits
+  /// (insertions, deletions, or substitutions) required to change one string
+  /// into another. Used for fuzzy matching and typo detection.
+  ///
+  /// # Arguments
+  /// * `a` - First string
+  /// * `b` - Second string
+  ///
+  /// # Returns
+  /// * `usize` - The edit distance between the strings
+  ///
+  /// # Algorithm
+  /// Classic dynamic programming approach with O(n*m) time and space complexity.
+  ///
+  /// # Examples
+  /// - levenshtein("drry", "dry") = 1 (delete 'r')
+  /// - levenshtein("verbse", "verbose") = 1 (insert 'o')
+  /// - levenshtein("cat", "dog") = 3 (substitute all)
+  fn levenshtein_distance( a : &str, b : &str ) -> usize
+  {
+    let a_len = a.chars().count();
+    let b_len = b.chars().count();
+
+    if a_len == 0
+    {
+      return b_len;
+    }
+    if b_len == 0
+    {
+      return a_len;
+    }
+
+    // Create distance matrix
+    let mut matrix = vec![ vec![ 0usize; b_len + 1 ]; a_len + 1 ];
+
+    // Initialize first row and column
+    for i in 0..=a_len
+    {
+      matrix[ i ][ 0 ] = i;
+    }
+    for j in 0..=b_len
+    {
+      matrix[ 0 ][ j ] = j;
+    }
+
+    // Compute distances
+    let a_chars: Vec< char > = a.chars().collect();
+    let b_chars: Vec< char > = b.chars().collect();
+
+    for i in 1..=a_len
+    {
+      for j in 1..=b_len
+      {
+        let cost = usize::from( a_chars[ i - 1 ] != b_chars[ j - 1 ] );
+
+        matrix[ i ][ j ] = std::cmp::min(
+          std::cmp::min(
+            matrix[ i - 1 ][ j ] + 1,      // deletion
+            matrix[ i ][ j - 1 ] + 1       // insertion
+          ),
+          matrix[ i - 1 ][ j - 1 ] + cost  // substitution
+        );
+      }
+    }
+
+    matrix[ a_len ][ b_len ]
   }
 
   /// Applies a single validation rule to a parsed value.

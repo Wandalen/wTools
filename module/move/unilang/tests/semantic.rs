@@ -8,4 +8,6 @@ mod semantic {
   mod command_validation;
   mod multiple_parameters;
   mod parser_semantic;
+  mod unknown_parameters;
+  mod unknown_parameters_edge_cases;
 }

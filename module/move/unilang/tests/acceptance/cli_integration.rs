@@ -19,17 +19,18 @@ use predicates::prelude::*;
 #[test]
 fn test_task_020_multiple_parameter_handling_shell() {
     // Test the critical bug from Task 020: multiple parameters with same name
+    // .video.search only has 'query' and 'title' parameters (not 'tag')
     let mut cmd = Command::cargo_bin("unilang_cli").unwrap();
     cmd.args(vec![
         ".video.search",
         r#"query::"data analysis""#,
         r#"title::"config tutorial""#,
-        r#"tag::"xml processing""#
     ]);
 
     cmd.assert()
         .success()
-        .stdout(predicate::str::contains("Query: data analysis"));
+        .stdout(predicate::str::contains("Query: data analysis"))
+        .stdout(predicate::str::contains("Title: config tutorial"));
 }
 
 /// Test Task 020: Parameter handling with backward compatibility
@@ -48,17 +49,18 @@ fn test_task_020_backward_compatibility_shell() {
 #[test]
 fn test_task_020_complex_multiple_parameters_shell() {
     // Test complex scenario with mixed single and multiple parameters
+    // .video.search only has 'query' and 'title' parameters (not 'tag')
     let mut cmd = Command::cargo_bin("unilang_cli").unwrap();
     cmd.args(vec![
         ".video.search",
         r#"query::"hello world""#,
         r#"title::"cargo test tutorial""#,
-        r#"tag::"rust files""#
     ]);
 
     cmd.assert()
         .success()
-        .stdout(predicate::str::contains("Query: hello world"));
+        .stdout(predicate::str::contains("Query: hello world"))
+        .stdout(predicate::str::contains("Title: cargo test tutorial"));
 }
 
 /// Test Task 021: Critical tokenization regression through shell
@@ -297,14 +299,12 @@ fn test_signal_handling_shell() {
 #[test]
 fn test_integrated_all_task_fixes_shell() {
     // Test a complex scenario that exercises all recent fixes
+    // .video.search only has 'query' and 'title' parameters (not 'tag')
     let mut cmd = Command::cargo_bin("unilang_cli").unwrap();
     cmd.args(vec![
         ".video.search",
         r#"query::"rust programming tutorial""#,  // Task 021: quoted multi-word
         r#"title::"Advanced Rust""#,              // Task 021: additional quoted value
-        r#"tag::"beginner""#,                     // Additional parameter
-        r#"tag::"intermediate""#,                 // Task 020: multiple same parameter
-        r#"tag::"advanced""#,                     // Task 020: multiple same parameter
     ]);
 
     cmd.assert()
