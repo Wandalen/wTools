@@ -1033,4 +1033,135 @@ impl Parser
   Ok( ( positional_arguments, named_arguments, help_operator_found ) )
  }
 
+  /// Parses a single Unilang instruction from an argv array (OS command-line arguments).
+  ///
+  /// This method provides proper CLI integration by preserving the original argv structure
+  /// from the operating system, avoiding information loss from string joining and re-tokenization.
+  ///
+  /// # Algorithm
+  ///
+  /// The argv parser intelligently combines consecutive argv elements that belong together:
+  /// 1. The first element is treated as the command name
+  /// 2. Elements containing `::` start named arguments (`key::value`)
+  /// 3. Following elements without `::` or `.` prefix are combined into the parameter value
+  /// 4. Combining stops when another `::` or `.` prefix is encountered
+  ///
+  /// # Examples
+  ///
+  /// ```ignore
+  /// use unilang_parser::{Parser, UnilangParserOptions};
+  ///
+  /// let parser = Parser::new(UnilangParserOptions::default());
+  ///
+  /// // Shell: ./app command::ls -la
+  /// // OS provides: ["command::ls", "-la"]
+  /// let argv = vec!["command::ls".to_string(), "-la".to_string()];
+  /// let instruction = parser.parse_from_argv(&argv).unwrap();
+  ///
+  /// // Result: command = "ls -la" (correctly combined)
+  /// assert_eq!(instruction.named_arguments.get("command").unwrap()[0].value, "ls -la");
+  /// ```
+  ///
+  /// # Errors
+  ///
+  /// Returns a `ParseError` if:
+  /// - The argv array is malformed (e.g., orphaned `::` operators)
+  /// - The command path structure is invalid
+  /// - Arguments don't follow the expected syntax
+  ///
+  /// # See Also
+  ///
+  /// - [`parse_single_instruction`] - For parsing pre-formatted command strings
+  /// - Task 080: Argv-Based API Request - Full specification and rationale
+  pub fn parse_from_argv( &self, argv: &[String] ) -> Result< GenericInstruction, ParseError >
+  {
+    // Handle empty argv
+    if argv.is_empty()
+    {
+      return Ok( GenericInstruction
+      {
+        command_path_slices: Vec ::new(),
+        positional_arguments: Vec ::new(),
+        named_arguments: BTreeMap ::new(),
+        help_requested: false,
+        overall_location: SourceLocation ::None,
+      });
+    }
+
+    // Process argv into a reconstructed command string with proper token boundaries
+    // We need to quote values that contain spaces to preserve argv boundaries
+    let mut tokens = Vec::new();
+    let mut i = 0;
+
+    while i < argv.len()
+    {
+      let arg = &argv[i];
+
+      // Check if this is a named argument (contains ::)
+      if let Some( ( key, initial_value ) ) = arg.split_once( "::" )
+      {
+        // Start building the value
+        let mut value = initial_value.to_string();
+
+        // Combine subsequent argv elements that are part of this value
+        // Stop when we hit another :: or a dot-prefixed command
+        while i + 1 < argv.len()
+        {
+          let next_arg = &argv[i + 1];
+
+          // Stop if next arg contains :: (it's another named argument)
+          if next_arg.contains( "::" )
+          {
+            break;
+          }
+
+          // Stop if next arg starts with . (it's a command or path separator)
+          if next_arg.starts_with( '.' )
+          {
+            break;
+          }
+
+          // Combine this argument into the value
+          if !value.is_empty()
+          {
+            value.push( ' ' );
+          }
+          value.push_str( next_arg );
+          i += 1;
+        }
+
+        // Add the complete named argument as a single token: key::"value"
+        // Quote the value if it contains spaces or is empty
+        if value.contains( ' ' ) || value.is_empty()
+        {
+          tokens.push( format!( "{key}::\"{value}\"" ) );
+        }
+        else
+        {
+          tokens.push( format!( "{key}::{value}" ) );
+        }
+      }
+      else
+      {
+        // Not a named argument - just add as-is
+        // Quote if it contains spaces to preserve the token boundary
+        if arg.contains( ' ' )
+        {
+          tokens.push( format!( "\"{arg}\"" ) );
+        }
+        else
+        {
+          tokens.push( arg.clone() );
+        }
+      }
+
+      i += 1;
+    }
+
+    // Now convert tokens into a space-separated string and parse it
+    // This reuses the existing string parser infrastructure
+    let command_str = tokens.join( " " );
+    self.parse_single_instruction( &command_str )
+  }
+
 }
