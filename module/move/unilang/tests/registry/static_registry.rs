@@ -344,7 +344,7 @@ fn test_static_command_registry_with_dynamic_commands()
     .name( ".test.dynamic" )
     .description( "Dynamic test command".to_string() )
     .namespace( ".test".to_string() )
-    .form();
+    .end();
 
   registry.register( dynamic_cmd );
 
@@ -408,7 +408,7 @@ fn test_static_command_registry_registry_mode_behavior()
   let dynamic_cmd = CommandDefinition::former()
     .name( ".test.dynamic_only" )
     .description( "Dynamic only command".to_string() )
-    .form();
+    .end();
   registry.register( dynamic_cmd );
 
   // Test StaticOnly mode

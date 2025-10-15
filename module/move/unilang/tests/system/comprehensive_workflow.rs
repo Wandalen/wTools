@@ -401,7 +401,7 @@ fn create_minimal_command_definition( name: &str, description: &str ) -> Command
     .http_method_hint( "GET".to_string() )
     .examples( vec![] )
     .arguments( vec![] )
-    .form()
+    .end()
 }
 
 fn create_database_cli_commands() -> Vec< CommandDefinition >

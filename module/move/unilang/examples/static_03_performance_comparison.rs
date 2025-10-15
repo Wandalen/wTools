@@ -106,7 +106,7 @@ fn setup_test_registries() -> Result< ( StaticCommandRegistry, CommandRegistry )
       .description( description )
       .hint( "Performance test command".to_string() )
       .namespace( ".test".to_string() )
-      .form() );
+      .end() );
   }
 
   // Create static command map (simulating PHF map)

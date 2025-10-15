@@ -25,7 +25,7 @@ fn create_test_command( name: &str, description: &str ) -> CommandDefinition
     .name( name )
     .description( description.to_string() )
     .hint( format!( "Test command: {name}" ) )
-    .form()
+    .end()
 }
 
 /// Create multiple test commands

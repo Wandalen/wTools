@@ -25,7 +25,7 @@ fn test_dot_command_shows_help_instead_of_panicking()
     .name("test")
     .namespace("")
     .description("A test command")
-    .form();
+    .end();
   
   registry.register(test_command);
   
@@ -94,13 +94,13 @@ fn test_dot_command_lists_multiple_commands()
     .name("first")
     .namespace(".test")
     .description("First test command")
-    .form();
+    .end();
     
   let cmd2 = unilang::data::CommandDefinition::former()
     .name("second")
     .namespace(".test")
     .description("Second test command")
-    .form();
+    .end();
   
   registry.register(cmd1);
   registry.register(cmd2);

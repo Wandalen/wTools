@@ -321,7 +321,7 @@ fn run() -> Result< (), unilang::error::Error >
     .end(),
   ])
   .routine_link( ".system.echo".to_string() )
-  .form();
+  .end();
 
   let echo_routine : CommandRoutine = Box::new( | _cmd, _ctx |
   {
@@ -368,10 +368,10 @@ fn run() -> Result< (), unilang::error::Error >
         ..Default::default()
       }
     )
-    .form()
+    .end()
   ])
   .routine_link( ".files.cat".to_string() )
-  .form();
+  .end();
 
   let cat_routine : CommandRoutine = Box::new( | cmd, _ctx |
   {
@@ -441,7 +441,7 @@ fn run() -> Result< (), unilang::error::Error >
       sensitive : false,
       interactive : false,
     })
-    .form(),
+    .end(),
     ArgumentDefinition::former()
     .name( "title" )
     .description( "Optional title filter".to_string() )
@@ -457,10 +457,10 @@ fn run() -> Result< (), unilang::error::Error >
       sensitive : false,
       interactive : false,
     })
-    .form(),
+    .end(),
   ])
   .routine_link( ".video.search".to_string() )
-  .form();
+  .end();
 
   let video_search_routine : CommandRoutine = Box::new( | cmd, _ctx |
   {

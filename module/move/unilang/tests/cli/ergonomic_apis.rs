@@ -49,7 +49,7 @@ fn test_cli_builder_static_modules()
   let cmd = CommandDefinition::former()
     .name( "test" )
     .description( "Test command".to_string() )
-    .form();
+    .end();
 
   let builder = CliBuilder::new()
     .static_module( "test_module", vec![ cmd ] );
@@ -63,7 +63,7 @@ fn test_cli_builder_static_modules_with_prefix()
   let cmd = CommandDefinition::former()
     .name( "test" )
     .description( "Test command".to_string() )
-    .form();
+    .end();
 
   let builder = CliBuilder::new()
     .static_module_with_prefix( "test_module", "test", vec![ cmd ] );
@@ -95,7 +95,7 @@ fn test_cli_builder_conditional_modules()
   let cmd = CommandDefinition::former()
     .name( "conditional" )
     .description( "Conditional command".to_string() )
-    .form();
+    .end();
 
   let builder = CliBuilder::new()
     .conditional_module( "cond_module", "test_feature", vec![ cmd ] );
@@ -124,7 +124,7 @@ fn test_cli_builder_build_static_only()
   let cmd = CommandDefinition::former()
     .name( "version" )
     .description( "Show version".to_string() )
-    .form();
+    .end();
 
   let registry = CliBuilder::new()
     .mode( AggregationMode::Static )
@@ -147,7 +147,7 @@ fn test_cli_builder_build_with_prefix()
   let cmd = CommandDefinition::former()
     .name( "version" )
     .description( "Show version".to_string() )
-    .form();
+    .end();
 
   let registry = CliBuilder::new()
     .mode( AggregationMode::Static )
@@ -177,7 +177,7 @@ fn test_cli_builder_auto_mode_detection()
   // Only static modules should result in StaticOnly mode
   let cmd = CommandDefinition::former()
     .name( "test" )
-    .form();
+    .end();
   let builder = CliBuilder::new()
     .mode( AggregationMode::Auto )
     .static_module( "test", vec![ cmd ] );
@@ -196,7 +196,7 @@ fn test_cli_builder_auto_mode_detection()
   // Mixed modules should result in Hybrid mode
   let cmd = CommandDefinition::former()
     .name( "test" )
-    .form();
+    .end();
   let builder = CliBuilder::new()
     .mode( AggregationMode::Auto )
     .static_module( "static", vec![ cmd ] )
@@ -213,7 +213,7 @@ fn test_cli_builder_conditional_modules_enabled()
   let cmd = CommandDefinition::former()
     .name( "debug" )
     .description( "Debug command".to_string() )
-    .form();
+    .end();
 
   let registry = CliBuilder::new()
     .conditional_module( "debug_module", "test_feature", vec![ cmd ] )
@@ -236,7 +236,7 @@ fn test_cli_builder_conditional_modules_disabled()
   let cmd = CommandDefinition::former()
     .name( "disabled" )
     .description( "Disabled command".to_string() )
-    .form();
+    .end();
 
   let registry = CliBuilder::new()
     .conditional_module( "disabled_module", "disabled_feature", vec![ cmd ] )
@@ -290,7 +290,7 @@ fn test_backward_compatibility_with_existing_apis()
   let cmd = CommandDefinition::former()
     .name( "legacy" )
     .description( "Legacy command".to_string() )
-    .form();
+    .end();
 
   registry.register( cmd );
   assert!( registry.command( ".legacy" ).is_some() );
@@ -299,7 +299,7 @@ fn test_backward_compatibility_with_existing_apis()
   let new_cmd = CommandDefinition::former()
     .name( "new" )
     .description( "New command".to_string() )
-    .form();
+    .end();
 
   let new_registry = CliBuilder::new()
     .static_module( "new", vec![ new_cmd ] )
@@ -323,7 +323,7 @@ fn test_integration_with_hybrid_registry()
   let cmd = CommandDefinition::former()
     .name( "hybrid_test" )
     .description( "Test hybrid registry integration".to_string() )
-    .form();
+    .end();
 
   let mut registry = CliBuilder::new()
     .mode( AggregationMode::Hybrid )
@@ -393,12 +393,12 @@ fn test_complex_scenario_with_all_features()
   let static_cmd = CommandDefinition::former()
     .name( "static_cmd" )
     .description( "Static command".to_string() )
-    .form();
+    .end();
 
   let cond_cmd = CommandDefinition::former()
     .name( "cond_cmd" )
     .description( "Conditional command".to_string() )
-    .form();
+    .end();
 
   let registry = CliBuilder::new()
     .app_name( "complex_app" )

@@ -780,11 +780,14 @@ pub fn aggregate_cli_simple() -> Result< CommandRegistry, Error >
   CliBuilder::new()
     .mode( AggregationMode::Static )
     .static_module( "core", vec![
-      CommandDefinition::former()
+      CommandDefinition::builder()
         .name( "version" )
-        .description( "Show version information".to_string() )
-        .hint( "Version info".to_string() )
-        .form(),
+        .description( "Show version information" )
+        .namespace( "" )
+        .hint( "Version info" )
+        .status( "stable" )
+        .version( "1.0.0" )
+        .build(),
     ] )
     .build()
 }
@@ -797,17 +800,25 @@ pub fn aggregate_cli_complex() -> Result< CommandRegistry, Error >
     .app_name( "myapp" )
     .global_prefix( "myapp" )
     .static_module_with_prefix( "core", "core", vec![
-      CommandDefinition::former()
+      CommandDefinition::builder()
         .name( "version" )
-        .description( "Show version".to_string() )
-        .form(),
+        .description( "Show version" )
+        .namespace( "" )
+        .hint( "Show version" )
+        .status( "stable" )
+        .version( "1.0.0" )
+        .build(),
     ] )
     .dynamic_module_with_prefix( "utils", PathBuf::from( "tests/test_data/utils.yaml" ), "util" )
     .conditional_module( "advanced", "test_feature", vec![
-      CommandDefinition::former()
+      CommandDefinition::builder()
         .name( "debug" )
-        .description( "Debug mode".to_string() )
-        .form(),
+        .description( "Debug mode" )
+        .namespace( "" )
+        .hint( "Debug mode" )
+        .status( "stable" )
+        .version( "1.0.0" )
+        .build(),
     ] )
     .build()
 }

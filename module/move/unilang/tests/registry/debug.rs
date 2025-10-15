@@ -42,9 +42,9 @@ fn test_command_registry_key_mismatch()
     .hint( "A test argument." )
     .kind( Kind::String )
     .attributes( ArgumentAttributes::default() )
-    .form()
+    .end()
   ])
-  .form();
+  .end();
 
   // Register the command and a dummy routine
   #[allow(deprecated)]

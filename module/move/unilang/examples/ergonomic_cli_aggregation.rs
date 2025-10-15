@@ -31,16 +31,16 @@ fn create_math_commands() -> Vec<CommandDefinition>
           .kind( Kind::Integer )
           .hint( "First number".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
         ArgumentDefinition::former()
           .name( "b" )
           .description( "Second number".to_string() )
           .kind( Kind::Integer )
           .hint( "Second number".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
     CommandDefinition::former()
       .name( "multiply" )
       .description( "Multiply two numbers".to_string() )
@@ -52,16 +52,16 @@ fn create_math_commands() -> Vec<CommandDefinition>
           .kind( Kind::Integer )
           .hint( "First number".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
         ArgumentDefinition::former()
           .name( "y" )
           .description( "Second number".to_string() )
           .kind( Kind::Integer )
           .hint( "Second number".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
   ]
 }
 
@@ -84,9 +84,9 @@ fn create_file_commands() -> Vec<CommandDefinition>
             default: Some( ".".to_string() ),
             ..ArgumentAttributes::default()
           } )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
     CommandDefinition::former()
       .name( "copy" )
       .description( "Copy a file".to_string() )
@@ -98,16 +98,16 @@ fn create_file_commands() -> Vec<CommandDefinition>
           .kind( Kind::String )
           .hint( "Source file".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
         ArgumentDefinition::former()
           .name( "destination" )
           .description( "Destination file path".to_string() )
           .kind( Kind::String )
           .hint( "Destination file".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
   ]
 }
 
@@ -130,7 +130,7 @@ fn create_database_commands() -> Vec<CommandDefinition>
             default: Some( "localhost".to_string() ),
             ..ArgumentAttributes::default()
           } )
-          .form(),
+          .end(),
         ArgumentDefinition::former()
           .name( "port" )
           .description( "Database port".to_string() )
@@ -141,9 +141,9 @@ fn create_database_commands() -> Vec<CommandDefinition>
             default: Some( "5432".to_string() ),
             ..ArgumentAttributes::default()
           } )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
     CommandDefinition::former()
       .name( "migrate" )
       .description( "Run database migrations".to_string() )
@@ -159,9 +159,9 @@ fn create_database_commands() -> Vec<CommandDefinition>
             default: Some( "up".to_string() ),
             ..ArgumentAttributes::default()
           } )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
   ]
 }
 
@@ -196,7 +196,7 @@ fn main() -> Result<(), unilang::Error>
     .name( "info" )
     .description( "Show information about this aggregated CLI".to_string() )
     .hint( "CLI information".to_string() )
-    .form();
+    .end();
   registry.register( info_cmd );
 
   let pipeline = Pipeline::new( registry );

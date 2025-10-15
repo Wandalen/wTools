@@ -169,7 +169,7 @@ fn test_resolve_routine_link_placeholder()
       .http_method_hint(String::new())
       .examples(vec![])
       .routine_link(String::new())
-      .form(),
+      .end(),
     arguments: std::collections::HashMap::new(),
   };
   let context = unilang::interpreter::ExecutionContext::default();

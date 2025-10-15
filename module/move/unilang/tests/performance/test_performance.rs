@@ -123,13 +123,13 @@ fn test_command_registry_performance_metrics()
     .name( "test_cmd_1" )
     .description( "Test command 1".to_string() )
     .hint( "Test".to_string() )
-    .form();
+    .end();
 
   let cmd2 = CommandDefinition::former()
     .name( "test_cmd_2" )
     .description( "Test command 2".to_string() )
     .hint( "Test".to_string() )
-    .form();
+    .end();
 
   registry.register( cmd1 );
   registry.register( cmd2 );
@@ -190,7 +190,7 @@ fn test_hybrid_registry_performance_metrics()
     .name( "dynamic_test" )
     .description( "Dynamic test command".to_string() )
     .hint( "Dynamic".to_string() )
-    .form();
+    .end();
 
   registry.register( dynamic_cmd );
 
@@ -247,7 +247,7 @@ fn test_cache_performance_patterns()
       .name( format!( "cache_test_{i}" ) )
       .description( format!( "Cache test command {i}" ) )
       .hint( "Cache test".to_string() )
-      .form();
+      .end();
     registry.register( cmd );
   }
 

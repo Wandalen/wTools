@@ -39,7 +39,7 @@ fn basic_integration_test_with_new_parser()
         default_value : None,
         aliases : vec![],
         tags : vec![],
-        attributes : unilang::data::ArgumentAttributes::former().form(),
+        attributes : unilang::data::ArgumentAttributes::former().end(),
       },
       ArgumentDefinition
       {
@@ -53,7 +53,7 @@ fn basic_integration_test_with_new_parser()
         default_value : None,
         aliases : vec![],
         tags : vec![],
-        attributes : unilang::data::ArgumentAttributes::former().form(),
+        attributes : unilang::data::ArgumentAttributes::former().end(),
       },
     ],
     routine_link : Some( "add_routine".to_string() ),

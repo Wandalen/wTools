@@ -493,15 +493,15 @@ impl CommandRegistry
     self.dynamic_commands.insert( full_name.clone(), command_def.clone() );
     self.routines.insert( full_name.clone(), routine );
 
-    // MANDATORY HELP ENFORCEMENT - NO FLEXIBILITY
-    // Every command MUST have a help counterpart - this is non-negotiable
+    // AUTO HELP GENERATION - Respects auto_help_enabled field
+    // Generate help command only if auto_help_enabled is true
     #[allow(clippy::case_sensitive_file_extension_comparisons)] // This is a command name check, not a file extension
-    if !full_name.ends_with( ".help" )
+    if command_def.auto_help_enabled && !full_name.ends_with( ".help" )
     {
       let help_command = command_def.generate_help_command();
       let help_routine = self.create_help_routine( command_def );
 
-      // Register the mandatory help command
+      // Register the auto-generated help command
       let help_name = format!( "{}.help", full_name );
       if !self.dynamic_commands.contains_key( &help_name )
       {

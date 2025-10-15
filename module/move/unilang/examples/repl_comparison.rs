@@ -122,7 +122,7 @@ fn setup_demo_commands(registry: &mut CommandRegistry) -> Result<(), Error> {
                 tags: vec![],
             }
         ])
-        .form();
+        .end();
 
     let demo_routine = Box::new(|cmd: unilang::semantic::VerifiedCommand, _ctx| {
         let default_name = "World".to_string();
@@ -166,7 +166,7 @@ fn setup_demo_commands(registry: &mut CommandRegistry) -> Result<(), Error> {
                 tags: vec![],
             }
         ])
-        .form();
+        .end();
 
     let secure_routine = Box::new(|cmd: unilang::semantic::VerifiedCommand, _ctx| {
         let default_password = "".to_string();

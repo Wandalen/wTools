@@ -33,7 +33,7 @@ fn create_auth_commands() -> Vec<CommandDefinition>
           .kind( Kind::String )
           .hint( "Username".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
         ArgumentDefinition::former()
           .name( "password" )
           .description( "Password for authentication".to_string() )
@@ -44,9 +44,9 @@ fn create_auth_commands() -> Vec<CommandDefinition>
             interactive: true,
             ..ArgumentAttributes::default()
           } )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
     CommandDefinition::former()
       .name( "auth.logout" )
       .description( "Logout current user session".to_string() )
@@ -62,9 +62,9 @@ fn create_auth_commands() -> Vec<CommandDefinition>
             default: Some( "false".to_string() ),
             ..ArgumentAttributes::default()
           } )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
     CommandDefinition::former()
       .name( "auth.token" )
       .description( "Generate or refresh authentication token".to_string() )
@@ -76,9 +76,9 @@ fn create_auth_commands() -> Vec<CommandDefinition>
           .kind( Kind::String )
           .hint( "Token action".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
   ]
 }
 
@@ -97,14 +97,14 @@ fn create_filesystem_commands() -> Vec<CommandDefinition>
           .kind( Kind::Path )
           .hint( "Source path".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
         ArgumentDefinition::former()
           .name( "destination" )
           .description( "Destination file or directory path".to_string() )
           .kind( Kind::Path )
           .hint( "Destination path".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
         ArgumentDefinition::former()
           .name( "recursive" )
           .description( "Copy directories recursively".to_string() )
@@ -115,9 +115,9 @@ fn create_filesystem_commands() -> Vec<CommandDefinition>
             default: Some( "false".to_string() ),
             ..ArgumentAttributes::default()
           } )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
     CommandDefinition::former()
       .name( "fs.move" )
       .description( "Move or rename files and directories".to_string() )
@@ -129,16 +129,16 @@ fn create_filesystem_commands() -> Vec<CommandDefinition>
           .kind( Kind::Path )
           .hint( "Source path".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
         ArgumentDefinition::former()
           .name( "destination" )
           .description( "Destination file or directory path".to_string() )
           .kind( Kind::Path )
           .hint( "Destination path".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
     CommandDefinition::former()
       .name( "fs.list" )
       .description( "List directory contents".to_string() )
@@ -154,7 +154,7 @@ fn create_filesystem_commands() -> Vec<CommandDefinition>
             default: Some( ".".to_string() ),
             ..ArgumentAttributes::default()
           } )
-          .form(),
+          .end(),
         ArgumentDefinition::former()
           .name( "all" )
           .description( "Show hidden files and directories".to_string() )
@@ -165,9 +165,9 @@ fn create_filesystem_commands() -> Vec<CommandDefinition>
             default: Some( "false".to_string() ),
             ..ArgumentAttributes::default()
           } )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
   ]
 }
 
@@ -186,7 +186,7 @@ fn create_network_commands() -> Vec<CommandDefinition>
           .kind( Kind::String )
           .hint( "Target host".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
         ArgumentDefinition::former()
           .name( "count" )
           .description( "Number of ping packets to send".to_string() )
@@ -197,9 +197,9 @@ fn create_network_commands() -> Vec<CommandDefinition>
             default: Some( "4".to_string() ),
             ..ArgumentAttributes::default()
           } )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
     CommandDefinition::former()
       .name( "net.scan" )
       .description( "Scan network ports on target host".to_string() )
@@ -211,7 +211,7 @@ fn create_network_commands() -> Vec<CommandDefinition>
           .kind( Kind::String )
           .hint( "Target host".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
         ArgumentDefinition::former()
           .name( "ports" )
           .description( "Port range to scan (e.g., 80,443,8080-8090)".to_string() )
@@ -222,9 +222,9 @@ fn create_network_commands() -> Vec<CommandDefinition>
             default: Some( "80,443".to_string() ),
             ..ArgumentAttributes::default()
           } )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
   ]
 }
 

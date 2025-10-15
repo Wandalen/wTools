@@ -39,10 +39,10 @@ fn test_command_registry_key_mismatch()
     .name( "arg1" )
     .hint( "A test argument." )
     .kind( Kind::String )
-    .attributes( ArgumentAttributes::former().form() )
-    .form(),
+    .attributes( ArgumentAttributes::former().end() )
+    .end(),
   ])
-  .form();
+  .end();
 
   // Register the command
   registry.register( command_def.clone() );
