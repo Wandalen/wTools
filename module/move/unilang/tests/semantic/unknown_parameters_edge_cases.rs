@@ -255,32 +255,8 @@ fn test_multiple_close_matches_picks_closest()
 // PARAMETER NAME EDGE CASES
 // ============================================================================
 
-/// TEST: Case sensitivity - parameters are case-sensitive
-#[test]
-#[ignore = "Parser doesn't support uppercase in parameter names currently"]
-fn test_case_sensitive_parameters()
-{
-  let mut registry = CommandRegistry::new();
-  registry.register( create_complex_command() );
-
-  let parser = Parser::new( UnilangParserOptions::default() );
-
-  // "Verbose" with capital V should be unknown
-  // NOTE: This test is ignored because the parser currently rejects uppercase in parameter names
-  let instruction_text = ".complex Verbose::1";
-  let instruction = parser.parse_single_instruction( instruction_text ).unwrap();
-
-  let instructions = vec![ instruction ];
-  let analyzer = SemanticAnalyzer::new( &instructions, &registry );
-
-  let result = analyzer.analyze();
-  assert!( result.is_err(), "Parameters should be case-sensitive" );
-
-  let error_msg = format!( "{:?}", result.unwrap_err() );
-  assert!( error_msg.contains( "Verbose" ) );
-  // Should suggest "verbose" (lowercase)
-  assert!( error_msg.contains( "Did you mean" ) );
-}
+// NOTE: Test for case-sensitive parameters removed - parser doesn't support uppercase
+// parameter names yet. Can be re-added when parser supports this feature.
 
 /// TEST: Very long parameter name
 #[test]

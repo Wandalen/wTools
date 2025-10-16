@@ -263,7 +263,7 @@ The following API methods **must** be provided to support standardized help conv
 *   `get_help_for_command(&self, command_name: &str) -> Option<String>` - Retrieves formatted help text for any registered command.
 
 **CommandDefinition Methods:**
-*   `with_auto_help(self, enabled: bool) -> Self` - Builder method to enable/disable automatic help command generation for this specific command. *(Note: Currently implemented via direct field access `cmd.auto_help_enabled = true`; builder method planned for future release)*
+*   `with_auto_help(self, enabled: bool) -> Self` - Builder method to enable/disable automatic help command generation for this specific command. ✅ **IMPLEMENTED** in `src/data.rs:1028`
 *   `has_auto_help(&self) -> bool` - Returns true if this command should automatically generate a help counterpart.
 *   `generate_help_command(&self) -> CommandDefinition` - Generates the corresponding `.command.help` command definition for this command.
 
