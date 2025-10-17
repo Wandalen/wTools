@@ -188,14 +188,14 @@ mod private
   Self ::String => Ok( Value ::String( value ) ),
   Self ::Number => value.parse().map_err( | _ |
   {
-   error_tools ::untyped ::format_err!( "Can not parse number from `{}`", value )
+   error_tools ::untyped ::format_err!( "Can not parse number from `{value}`" )
  }).map( Value ::Number ),
   Self ::Path => Ok( Value ::Path( value.into() ) ),
   Self ::Bool => Ok( Value ::Bool( match value.as_str()
   {
    "1" | "true" => true, "0" | "false" => false, _ =>
    {
-  return Err( error_tools ::untyped ::format_err!( "Can not parse bool from `{}`", value ) )
+  return Err( error_tools ::untyped ::format_err!( "Can not parse bool from `{value}`" ) )
  }
  })),
   Self ::List( kind, delimeter ) =>

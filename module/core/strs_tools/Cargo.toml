@@ -1,6 +1,6 @@
 [package]
 name = "strs_tools"
-version = "0.31.0"
+version = "0.32.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -158,25 +158,6 @@ harness = false
 path = "benches/simple_specialized_benchmark.rs"
 required-features = ["string_split", "specialized_algorithms"]
 
-[[bench]]
-name = "zero_copy_comparison"
-harness = false
-path = "benchmarks/zero_copy_comparison.rs"
-
-[[bench]]
-name = "compile_time_optimization_benchmark"
-harness = false
-path = "benchmarks/compile_time_optimization_benchmark.rs"
-
-[[bench]]
-name = "zero_copy_comparison"
-harness = false
-path = "benchmarks/zero_copy_comparison.rs"
-
-[[bench]]
-name = "compile_time_optimization_benchmark"
-harness = false
-path = "benchmarks/compile_time_optimization_benchmark.rs"
 
 [[bin]]
 name = "simd_test"

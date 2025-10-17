@@ -33,7 +33,7 @@ fn main() -> Result< (), Box< dyn core ::error ::Error > >
   (
   cmd2.named_arguments
   .get( "version" )
-  .map( | arg | &arg.value )
+  .map( | arg | &arg[0].value )
   .unwrap(),
   "1.2.0"
  );

@@ -97,7 +97,7 @@ fn demonstrate_path_methods( ws: &workspace_tools ::Workspace ) -> Result< (), w
 
   // Create nested directory structure
   let config_dir = ws.join( "config" );
-  let lib_dir = ws.join( "lib/project/.secret" );
+  let lib_dir = ws.join( "lib/project/secret" );
   fs ::create_dir_all( &config_dir )
   .map_err( | e | workspace_tools ::WorkspaceError ::IoError( e.to_string() ) )?;
   fs ::create_dir_all( &lib_dir )
@@ -117,8 +117,8 @@ fn demonstrate_path_methods( ws: &workspace_tools ::Workspace ) -> Result< (), w
   let config_secrets_map = ws.load_secrets_from_path( "config/secrets.env" )?;
   println!( "      Found {} keys: {:?}", config_secrets_map.len(), config_secrets_map.keys().collect :: < Vec< _ > >() );
 
-  println!( "   ✅ Loading from nested lib/project/.secret/api.env: " );
-  let lib_secrets_map = ws.load_secrets_from_path( "lib/project/.secret/api.env" )?;
+  println!( "   ✅ Loading from nested lib/project/secret/api.env: " );
+  let lib_secrets_map = ws.load_secrets_from_path( "lib/project/secret/api.env" )?;
   println!( "      Found {} keys: {:?}", lib_secrets_map.len(), lib_secrets_map.keys().collect :: < Vec< _ > >() );
 
   // Create temporary file for absolute path demo
@@ -194,7 +194,7 @@ fn demonstrate_migration_patterns( _ws: &workspace_tools ::Workspace ) -> Result
 
   println!( "   📚 Before (problematic patterns) : " );
   println!( r#"      // ❌ This used to silently fail
-   let secrets = ws.load_secrets_from_file("lib/project/.secret/api.env")?;
+   let secrets = ws.load_secrets_from_file("lib/project/secret/api.env")?;
 
    // ❌ This gave unhelpful error messages
    let key = ws.load_secret_key("API_KEY", "nonexistent.env")?;"# );
@@ -204,7 +204,7 @@ fn demonstrate_migration_patterns( _ws: &workspace_tools ::Workspace ) -> Result
    let secrets = ws.load_secrets_from_file("api.env")?;  // filename only
 
    // ✅ Or use path-aware method for paths
-   let secrets = ws.load_secrets_from_path("lib/project/.secret/api.env")?;
+   let secrets = ws.load_secrets_from_path("lib/project/secret/api.env")?;
 
    // ✅ Better error messages with resolved paths
    let key = ws.load_secret_key("API_KEY", "api.env")?;

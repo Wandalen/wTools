@@ -114,7 +114,7 @@ mod private
   #[ allow( non_snake_case ) ]
   pub fn load() -> Result< Self >
   {
-   let path = "./.secret/.env";
+   let path = "./secret/.env";
 
    let r = dotenv ::from_path( path );
    if let Err( ref err ) = r
@@ -139,7 +139,7 @@ mod private
   {
    Self ::load().unwrap_or_else( | err |
    {
-  let example = include_str!("../../.secret/readme.md");
+  let example = include_str!("../../secret/readme.md");
   let explanation = format!
   (
    r#" = Lack of secrets
@@ -149,7 +149,7 @@ Failed to load secret or some its parameters.
 
  = Fix
 
-Add missing secret to .env file in .secret directory. Example: MISSING_SECRET=YOUR_MISSING_SECRET
+Add missing secret to .env file in secret directory. Example: MISSING_SECRET=YOUR_MISSING_SECRET
 
  = More information
 
@@ -224,7 +224,7 @@ Add missing secret to .env file in .secret directory. Example: MISSING_SECRET=YO
   #[ allow( non_snake_case ) ]
   pub fn load() -> Result< Self >
   {
-   let path = "./.secret/.env";
+   let path = "./secret/.env";
 
    let r = dotenv ::from_path( path );
    if let Err( ref err ) = r
@@ -255,7 +255,7 @@ Add missing secret to .env file in .secret directory. Example: MISSING_SECRET=YO
   {
    Self ::load().unwrap_or_else( | err |
    {
-  let example = include_str!("../../.secret/readme.md");
+  let example = include_str!("../../secret/readme.md");
   let explanation = format!
   (
    r#" = Lack of secrets
@@ -265,7 +265,7 @@ Failed to load secret or some its parameters.
 
  = Fix
 
-Add missing secret to .env file in .secret directory. Example: MISSING_SECRET=YOUR_MISSING_SECRET
+Add missing secret to .env file in secret directory. Example: MISSING_SECRET=YOUR_MISSING_SECRET
 
  = More information
 

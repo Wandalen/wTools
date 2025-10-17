@@ -52,14 +52,14 @@ fn main() -> Result< (), Box< dyn core ::error ::Error > >
   "Destination: {}",
   cmd2.named_arguments
   .get( "destination" )
-  .map_or( & "not found".to_string(), | arg | &arg.value ),
+  .map_or( & "not found".to_string(), | arg | &arg[0].value ),
  );
   println!
   (
   "Compress: {}",
   cmd2.named_arguments
   .get( "compress" )
-  .map_or( & "not found".to_string(), | arg | &arg.value ),
+  .map_or( & "not found".to_string(), | arg | &arg[0].value ),
  );
 
   println!( "\n✓ Complex argument patterns parsing successful!" );

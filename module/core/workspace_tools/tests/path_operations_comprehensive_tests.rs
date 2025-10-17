@@ -291,7 +291,7 @@ fn test_secret_directory_path()
   let workspace = create_test_workspace_at( temp_dir.path() );
   
   let secret_dir = workspace.secret_dir();
-  let expected = temp_dir.path().join( ".secret" );
+  let expected = temp_dir.path().join( "secret" );
   
   assert_eq!( secret_dir, expected );
 }
@@ -305,7 +305,7 @@ fn test_secret_file_path()
   let workspace = create_test_workspace_at( temp_dir.path() );
   
   let secret_file = workspace.secret_file( "api.env" );
-  let expected = temp_dir.path().join( ".secret/api.env" );
+  let expected = temp_dir.path().join( "secret/api.env" );
   
   assert_eq!( secret_file, expected );
 }

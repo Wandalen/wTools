@@ -70,7 +70,7 @@ fn command_with_help_operator_parsed()
 /// Tests that a command with a multi-segment path followed by a help operator `?` is parsed correctly.
 /// Test Combination: T5.3
 #[ test ]
-fn command_with_help_operator_and_multi_segment_path() 
+fn command_with_help_operator_and_multi_segment_path()
 {
   let parser = Parser ::new(UnilangParserOptions ::default());
   let input = "cmd sub ?";
@@ -215,5 +215,5 @@ fn path_stops_at_double_colon_delimiter()
   assert_eq!(instruction.positional_arguments[0].value, "path".to_string());
   assert_eq!(instruction.named_arguments.len(), 1);
   assert!(instruction.named_arguments.contains_key("arg"));
-  assert_eq!(instruction.named_arguments.get("arg").unwrap().value, "val");
+  assert_eq!(instruction.named_arguments.get("arg").unwrap()[0].value, "val");
 }

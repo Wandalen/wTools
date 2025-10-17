@@ -20,7 +20,7 @@ use pico_args::Arguments;
 
 /// Framework comparison using benchkit's comparative analysis
 #[ cfg( feature = "benchmarks" ) ]
-fn run_framework_comparison_benchkit( command_count : usize ) -> ComparisonReport
+fn run_framework_comparison_benchkit( command_count : usize ) -> ComparisonAnalysisReport
 {
   println!( "🎯 Comparative Analysis: {} Commands (using benchkit)", command_count );
 
@@ -69,6 +69,7 @@ fn run_framework_comparison_benchkit( command_count : usize ) -> ComparisonRepor
 fn benchmark_unilang_simd_operation( command_count : usize )
 {
   // Create command registry with N commands
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   
   // Add N commands to registry
@@ -120,6 +121,7 @@ fn benchmark_unilang_simd_operation( command_count : usize )
       deprecation_message : String::new(),
       http_method_hint : String::new(),
       examples : vec![],
+      auto_help_enabled : false,
     };
     
     registry.register( cmd );
@@ -304,7 +306,7 @@ pub fn run_comprehensive_benchkit_demo()
   // 1. Framework comparison
   println!( "1️⃣  Framework Comparison (10 commands)" );
   let comparison_report = run_framework_comparison_benchkit( 10 );
-  println!( "{}\n", comparison_report.to_markdown() );
+  println!( "{:?}\n", comparison_report );
   
   // 2. Scaling analysis
   println!( "2️⃣  Scaling Analysis" );

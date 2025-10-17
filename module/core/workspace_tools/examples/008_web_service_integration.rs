@@ -545,7 +545,7 @@ volumes :
   
 secrets :
   db_password :
-  file: ./.secret/-production.sh
+  file: ./secret/-production.sh
 "#, self.config.port, self.config.port );
   
   let compose_path = self.workspace.join( "docker-compose.yml" );

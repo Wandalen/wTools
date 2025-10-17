@@ -89,7 +89,7 @@ fn ct1_2_single_str_multi_path_unquoted_named_arg()
  ); // Corrected expectation
   assert_eq!( instruction.named_arguments.len(), 1, "CT1.2 Named args count" );
   let arg1 = instruction.named_arguments.get( "name1" ).expect( "CT1.2 Missing name1" );
-  assert_eq!( arg1.value, "val1", "CT1.2 name1 value" ); // Changed to &str
+  assert_eq!( arg1[0].value, "val1", "CT1.2 name1 value" ); // Changed to &str
       // assert!(!instruction.help_requested, "CT1.2 Help requested");
 }
 
@@ -144,7 +144,7 @@ fn ct1_5_single_str_single_path_named_arg_escaped_val()
   assert!( instruction.positional_arguments.is_empty(), "CT1.5 Positional args" );
   assert_eq!( instruction.named_arguments.len(), 1, "CT1.5 Named args count" );
   let arg1 = instruction.named_arguments.get( "name1" ).expect( "CT1.5 Missing name1" );
-  assert_eq!( arg1.value, "esc\nval", "CT1.5 name1 value with newline" ); // Changed to &str
+  assert_eq!( arg1[0].value, "esc\nval", "CT1.5 name1 value with newline" ); // Changed to &str
                // assert!(!instruction.help_requested, "CT1.5 Help requested");
 }
 
@@ -163,7 +163,7 @@ fn ct1_6_single_str_single_path_named_arg_invalid_escape()
  );
   let instruction = result.unwrap();
   assert_eq!(
-  instruction.named_arguments.get( "name1" ).unwrap().value,
+  instruction.named_arguments.get( "name1" ).unwrap()[0].value,
   "bad\\xval".to_string(),
   "CT1.6 Invalid escape should be literal"
  );
@@ -199,7 +199,7 @@ fn ct3_1_single_str_separator_basic()
   assert!( instr2.positional_arguments.is_empty(), "CT3.1 Instr2 Positional" );
   assert_eq!( instr2.named_arguments.len(), 1, "CT3.1 Instr2 Named count" );
   assert_eq!(
-  instr2.named_arguments.get( "name" ).unwrap().value,
+  instr2.named_arguments.get( "name" ).unwrap()[0].value,
   "val",
   "CT3.1 Instr2 name value"
  ); // Changed to &str
@@ -250,7 +250,7 @@ fn ct4_2_single_str_duplicate_named_last_wins()
   assert_eq!( instruction.command_path_slices, vec![ "cmd".to_string() ] );
   assert_eq!( instruction.named_arguments.len(), 1, "CT4.2 Named args count" );
   assert_eq!(
-  instruction.named_arguments.get( "name" ).unwrap().value,
+  instruction.named_arguments.get( "name" ).unwrap().last().unwrap().value,
   "val2",
   "CT4.2 Last value should win"
  ); // Changed to &str
@@ -308,7 +308,7 @@ fn ct6_1_command_path_with_dots_and_slashes()
  ); // Corrected expectation
   assert_eq!( instruction.named_arguments.len(), 1, "CT6.1 Named args count" );
   assert_eq!(
-  instruction.named_arguments.get( "name" ).unwrap().value,
+  instruction.named_arguments.get( "name" ).unwrap()[0].value,
   "val",
   "CT6.1 name value"
  ); // Changed to &str

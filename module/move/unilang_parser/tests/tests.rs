@@ -1,3 +1,3 @@
 //! Test suite for `unilang_parser`.
-#[ path = "mre_path_parsing_test.rs" ]
-mod mre_path_parsing_test;
+#[ path = "path_with_dots_regression_test.rs" ]
+mod path_with_dots_regression_test;

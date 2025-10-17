@@ -63,7 +63,7 @@ fn main() -> Result< (), Box< dyn core ::error ::Error > >
   println!
   (
    "     -> File path: {}",
-   instruction.named_arguments.get( "path" ).map_or( & "unknown".to_string(), | arg | &arg.value )
+   instruction.named_arguments.get( "path" ).map_or( & "unknown".to_string(), | arg | &arg[0].value )
  );
   println!
   (
@@ -81,7 +81,7 @@ fn main() -> Result< (), Box< dyn core ::error ::Error > >
   println!
   (
    "     -> Email: {}",
-   instruction.named_arguments.get( "email" ).map_or( & "unknown".to_string(), | arg | &arg.value )
+   instruction.named_arguments.get( "email" ).map_or( & "unknown".to_string(), | arg | &arg[0].value )
  );
  },
    _ => {}

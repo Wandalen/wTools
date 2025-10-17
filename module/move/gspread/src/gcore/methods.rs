@@ -162,7 +162,7 @@ mod private
    else 
    {
   let new_token = auth_data
-  .secret
+  secret
   .get_token()
   .await
   .map_err( | err | Error ::ApiError( err.to_string() ) )?;
@@ -485,7 +485,7 @@ mod private
    else 
    {
   let new_token = auth_data
-  .secret
+  secret
   .get_token()
   .await
   .map_err( | err | Error ::ApiError( err.to_string() ) )?;
@@ -584,7 +584,7 @@ mod private
    else 
    {
   let new_token = auth_data
-  .secret
+  secret
   .get_token()
   .await
   .map_err( | err | Error ::ApiError( err.to_string() ) )?;
@@ -720,7 +720,7 @@ mod private
    else 
    {
   let new_token = auth_data
-  .secret
+  secret
   .get_token()
   .await
   .map_err( | err | Error ::ApiError( err.to_string() ) )?;
@@ -822,7 +822,7 @@ mod private
    else 
    {
   let new_token = auth_data
-  .secret
+  secret
   .get_token()
   .await
   .map_err( | err | Error ::ApiError( err.to_string() ) )?;
@@ -933,7 +933,7 @@ mod private
    else 
    {
   let new_token = auth_data
-  .secret
+  secret
   .get_token()
   .await
   .map_err( | err | Error ::ApiError( err.to_string() ) )?;
@@ -1034,7 +1034,7 @@ mod private
    else 
    {
   let new_token = auth_data
-  .secret
+  secret
   .get_token()
   .await
   .map_err( | err | Error ::ApiError( err.to_string() ) )?;
@@ -1124,7 +1124,7 @@ mod private
    else 
    {
   let new_token = auth_data
-  .secret
+  secret
   .get_token()
   .await
   .map_err( | err | Error ::ApiError( err.to_string() ) )?;

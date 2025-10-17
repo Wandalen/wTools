@@ -10,6 +10,8 @@ use unilang::pipeline::Pipeline;
 use unilang::error::Error;
 #[ cfg( all( feature = "repl", not( feature = "enhanced_repl" ) ) ) ]
 use std::io::{ self, Write };
+#[ cfg( feature = "enhanced_repl" ) ]
+use std::io::IsTerminal;
 
 #[ cfg( feature = "enhanced_repl" ) ]
 use rustyline::DefaultEditor;
@@ -429,7 +431,7 @@ fn run_enhanced_repl( pipeline : &Pipeline ) -> Result< (), Box< dyn core::error
   println!();
   
   // Check if we're running in an interactive terminal
-  let is_tty = atty::is( atty::Stream::Stdin );
+  let is_tty = std::io::stdin().is_terminal();
   
   if is_tty
   {
@@ -676,43 +678,4 @@ fn display_command_history( history : &[String] )
   {
     println!( "  {:3}: {cmd}", i + 1 );
   }
-}
-
-/// Main REPL mode features demonstrated:
-#[ cfg( feature = "repl" ) ]
-#[allow(dead_code)]
-fn repl_features_summary()
-{
-  println!( "=== REPL Mode Features ===\n" );
-  
-  println!( "🔄 Stateless Operation:" );
-  println!( "  • Pipeline components are reusable across commands" );
-  println!( "  • No shared state between command executions" );
-  println!( "  • Each command is processed independently" );
-  println!( "  • Memory efficient: no accumulating state" );
-
-  println!( "\n🔒 Interactive Argument Support:" );
-  println!( "  • UNILANG_ARGUMENT_INTERACTIVE_REQUIRED error signaling" );
-  println!( "  • Secure input prompting for passwords/API keys" );
-  println!( "  • Optional interactive arguments with defaults" );
-  println!( "  • Sensitive argument masking in logs/history" );
-
-  println!( "\n🎯 REPL-Specific Features:" );
-  println!( "  • Command history tracking" );
-  println!( "  • Built-in help system" );
-  println!( "  • Clear screen functionality" );
-  println!( "  • Graceful error handling" );
-  println!( "  • Session management" );
-
-  println!( "\n⚡ Performance Benefits:" );
-  println!( "  • Static command registry: zero-cost lookups" );
-  println!( "  • Reusable parser and analyzer instances" );
-  println!( "  • No startup cost per command" );
-  println!( "  • Efficient memory usage" );
-
-  println!( "\n🛠️ Developer Experience:" );
-  println!( "  • Real-time command testing" );
-  println!( "  • Interactive development workflow" );
-  println!( "  • Easy debugging and experimentation" );
-  println!( "  • Live error feedback" );
 }

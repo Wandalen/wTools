@@ -29,6 +29,3 @@ mod error_reporting_tests;
 
 #[ path = "../../../../module/move/unilang_parser/tests/spec_adherence_tests.rs" ]
 mod spec_adherence_tests;
-
-#[ path = "../../../../module/move/unilang_parser/tests/temp_unescape_test.rs" ]
-mod temp_unescape_test;

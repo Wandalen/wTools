@@ -49,7 +49,7 @@
 //!   - **Interactive Prompts**: Secure password input with masking
 //!   - **Session Persistence**: History saved across sessions
 //!   - **Terminal Detection**: Auto-fallback to basic REPL in non-interactive environments
-//!   - **Dependencies**: `rustyline`, `atty`
+//!   - **Dependencies**: `rustyline`, `std::io::IsTerminal`
 //!
 //! ### Performance Features
 //! - **`simd`** - SIMD optimizations for parsing and JSON processing
@@ -179,24 +179,21 @@ mod_interface::mod_interface!
   /// Environment-specific benchmark configuration system.
   layer benchmark_config;
 
-  // /// Coefficient of variation analysis for benchmark quality assessment.
-  // layer cv_analysis;
+  /// Coefficient of variation analysis for benchmark quality assessment.
+  layer cv_analysis;
 
-  // /// Automatic documentation updater for benchmark results.
-  // layer documentation_updater;
+  /// Automatic documentation updater for benchmark results.
+  layer documentation_updater;
 
   /// Standard benchmark data sizes for consistent performance comparison.
   layer benchmark_data_sizes;
 
-  // /// Realistic test data generation for production-like benchmarks.
-  // layer realistic_test_data;
+  /// Realistic test data generation for production-like benchmarks.
+  layer realistic_test_data;
 
-  // /// Comparative benchmark structure for side-by-side algorithm performance analysis.
-  // layer comparative_benchmark_structure;
+  /// Comparative benchmark structure for side-by-side algorithm performance analysis.
+  layer comparative_benchmark_structure;
 
-  // /// Context-rich benchmark documentation generator for comprehensive reporting.
-  // layer context_rich_documentation;
-
-  // /// Before/after optimization workflow system for systematic performance tracking.
-  // layer optimization_workflow;
+  /// Context-rich benchmark documentation generator for comprehensive reporting.
+  layer context_rich_documentation;
 }

@@ -82,3 +82,49 @@
   deprecation_message: ""
   http_method_hint: "GET"
   examples: []
+
+- name: "search"
+  namespace: "test"
+  description: "Test command for quoted value parsing"
+  hint: "Used to test multi-word quoted value parsing"
+  arguments:
+    - name: "query"
+      description: "Search query (supports multi-word quoted values)"
+      kind: "String"
+      hint: "The search query text"
+      attributes:
+        optional: false
+        multiple: false
+        is_default_arg: false
+        interactive: false
+        sensitive: false
+      validation_rules: []
+      default_value: null
+      aliases: ["q"]
+      tags: ["search"]
+    - name: "title"
+      description: "Optional title filter"
+      kind: "String"
+      hint: "Filter by title"
+      attributes:
+        optional: true
+        multiple: false
+        is_default_arg: false
+        interactive: false
+        sensitive: false
+      validation_rules: []
+      default_value: null
+      aliases: ["t"]
+      tags: ["filter"]
+  routine_link: null
+  status: "stable"
+  version: "1.0.0"
+  tags: ["testing", "parsing"]
+  aliases: []
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+  examples:
+    - ".test.search query::\"rust programming\""
+    - ".test.search query::\"llm rust\" title::\"Tutorial\""

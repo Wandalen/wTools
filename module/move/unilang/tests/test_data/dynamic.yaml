@@ -1,0 +1,30 @@
+- name: "example"
+  namespace: ""
+  description: "Example dynamic command from dynamic module"
+  hint: "Dynamic command for testing"
+  status: "stable"
+  version: "1.0.0"
+  aliases: ["dyn"]
+  tags: ["dynamic", "testing"]
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+  auto_help_enabled: true
+  examples:
+    - "example input::dynamic_value"
+  arguments:
+    - name: "input"
+      description: "Input parameter for dynamic command"
+      kind: "String"
+      hint: "Dynamic input value"
+      attributes:
+        optional: true
+        multiple: false
+        is_default_arg: false
+        interactive: false
+        sensitive: false
+      validation_rules: []
+      default_value: "default_dynamic"
+      aliases: ["i"]
+      tags: ["dynamic"]

@@ -1,0 +1,199 @@
+# Makefile targets for test organization validation
+#
+# Include this in your main Makefile with:
+# include tests/tools/Makefile.test_organization
+#
+# Or use directly with:
+# make -f tests/tools/Makefile.test_organization validate-tests
+
+# Colors for output
+RED = \033[0;31m
+GREEN = \033[0;32m
+YELLOW = \033[1;33m
+BLUE = \033[0;34m
+NC = \033[0m # No Color
+
+# Default tests directory
+TESTS_DIR ?= tests
+
+# Check if we're in the right directory structure
+CHECK_STRUCTURE := $(shell if [ -d "$(TESTS_DIR)/unit" ]; then echo "found"; else echo "missing"; fi)
+
+.PHONY: validate-tests validate-test-naming validate-test-structure validate-test-depth validate-test-categories help-test-organization
+
+# Main validation target
+validate-tests: validate-test-structure validate-test-naming validate-test-depth validate-test-categories
+	@echo -e "$(GREEN)✅ All test organization validations passed!$(NC)"
+
+# Validate basic directory structure
+validate-test-structure:
+	@echo -e "$(BLUE)🏗️  Validating test directory structure...$(NC)"
+ifeq ($(CHECK_STRUCTURE),missing)
+	@echo -e "$(RED)❌ Test structure not found. Expected $(TESTS_DIR)/unit directory.$(NC)"
+	@exit 1
+endif
+	@for dir in unit integration acceptance regression; do \
+		if [ ! -d "$(TESTS_DIR)/$$dir" ]; then \
+			echo -e "$(YELLOW)⚠️  Missing recommended directory: $(TESTS_DIR)/$$dir$(NC)"; \
+		fi; \
+	done
+	@echo -e "$(GREEN)✅ Test directory structure is valid$(NC)"
+
+# Validate naming conventions
+validate-test-naming:
+	@echo -e "$(BLUE)🔍 Validating test naming conventions...$(NC)"
+	@violations=0; \
+	for pattern in task_ issue_ fix_ bug_ feature_ enhancement_; do \
+		files=$$(find $(TESTS_DIR) -name "*.rs" -type f | grep "$$pattern" || true); \
+		if [ -n "$$files" ]; then \
+			echo -e "$(RED)❌ Files with prohibited pattern '$$pattern':$(NC)"; \
+			echo "$$files" | sed 's/^/  - /'; \
+			violations=$$((violations + 1)); \
+		fi; \
+	done; \
+	if [ $$violations -gt 0 ]; then \
+		echo -e "$(RED)❌ Found $$violations naming violations$(NC)"; \
+		echo -e "$(BLUE)📖 See $(TESTS_DIR)/readme.md for naming conventions$(NC)"; \
+		exit 1; \
+	fi
+	@echo -e "$(GREEN)✅ Test naming conventions are followed$(NC)"
+
+# Validate directory nesting depth
+validate-test-depth:
+	@echo -e "$(BLUE)📏 Validating directory nesting depth...$(NC)"
+	@max_depth=4; \
+	deep_files=$$(find $(TESTS_DIR) -name "*.rs" -type f | \
+		awk -F'/' -v max=$$max_depth -v tests_dir="$(TESTS_DIR)" \
+		'NF - split(tests_dir, a, "/") > max { print $$0 }' || true); \
+	if [ -n "$$deep_files" ]; then \
+		echo -e "$(RED)❌ Files with excessive nesting (max: $$max_depth levels):$(NC)"; \
+		echo "$$deep_files" | sed 's/^/  - /'; \
+		exit 1; \
+	fi
+	@echo -e "$(GREEN)✅ Directory nesting depth is appropriate$(NC)"
+
+# Validate category-specific conventions
+validate-test-categories:
+	@echo -e "$(BLUE)📋 Validating category-specific conventions...$(NC)"
+	@violations=0; \
+	if [ -d "$(TESTS_DIR)/unit" ]; then \
+		unit_violations=$$(find $(TESTS_DIR)/unit -name "*.rs" -type f | grep -E "(integration|end_to_end)" || true); \
+		if [ -n "$$unit_violations" ]; then \
+			echo -e "$(YELLOW)⚠️  Unit tests suggesting integration:$(NC)"; \
+			echo "$$unit_violations" | sed 's/^/  - /'; \
+			violations=$$((violations + 1)); \
+		fi; \
+	fi; \
+	if [ -d "$(TESTS_DIR)/acceptance" ]; then \
+		acceptance_violations=$$(find $(TESTS_DIR)/acceptance -name "*.rs" -type f | grep -v -E "(cli|user|scenario)" || true); \
+		if [ -n "$$acceptance_violations" ]; then \
+			echo -e "$(YELLOW)⚠️  Acceptance tests not indicating user scenarios:$(NC)"; \
+			echo "$$acceptance_violations" | sed 's/^/  - /'; \
+			violations=$$((violations + 1)); \
+		fi; \
+	fi; \
+	if [ -d "$(TESTS_DIR)/regression" ]; then \
+		regression_violations=$$(find $(TESTS_DIR)/regression -name "*.rs" -type f | grep -v -E "(regression|fix)" || true); \
+		if [ -n "$$regression_violations" ]; then \
+			echo -e "$(YELLOW)⚠️  Regression tests not indicating bug prevention:$(NC)"; \
+			echo "$$regression_violations" | sed 's/^/  - /'; \
+			violations=$$((violations + 1)); \
+		fi; \
+	fi; \
+	if [ $$violations -gt 0 ]; then \
+		echo -e "$(YELLOW)⚠️  Found $$violations category convention issues$(NC)"; \
+		echo -e "$(BLUE)📖 Consider improving naming for better clarity$(NC)"; \
+	fi
+	@echo -e "$(GREEN)✅ Category conventions validated$(NC)"
+
+# Generate test organization report
+test-report:
+	@echo -e "$(BLUE)📊 Test Organization Report$(NC)"
+	@echo "=================================="
+	@echo ""
+	@total_files=0; \
+	for category in unit integration acceptance regression inc tools; do \
+		if [ -d "$(TESTS_DIR)/$$category" ]; then \
+			count=$$(find $(TESTS_DIR)/$$category -name "*.rs" -type f | wc -l); \
+			echo "$$category: $$count files"; \
+			total_files=$$((total_files + count)); \
+		fi; \
+	done; \
+	echo ""; \
+	echo "Total test files: $$total_files"
+	@echo ""
+	@if [ -f "$(TESTS_DIR)/readme.md" ]; then \
+		echo -e "$(GREEN)✅ Organization documentation present$(NC)"; \
+	else \
+		echo -e "$(YELLOW)⚠️  Missing $(TESTS_DIR)/readme.md$(NC)"; \
+	fi
+
+# Install pre-commit hook
+install-test-hooks:
+	@echo -e "$(BLUE)🔧 Installing test organization pre-commit hook...$(NC)"
+	@if [ ! -d ".git" ]; then \
+		echo -e "$(RED)❌ Not in a git repository$(NC)"; \
+		exit 1; \
+	fi
+	@cp $(TESTS_DIR)/tools/pre_commit_test_organization.sh .git/hooks/pre-commit
+	@chmod +x .git/hooks/pre-commit
+	@echo -e "$(GREEN)✅ Pre-commit hook installed$(NC)"
+	@echo -e "$(BLUE)🎯 Test organization will be validated on every commit$(NC)"
+
+# Remove pre-commit hook
+uninstall-test-hooks:
+	@echo -e "$(BLUE)🗑️  Removing test organization pre-commit hook...$(NC)"
+	@if [ -f ".git/hooks/pre-commit" ]; then \
+		rm .git/hooks/pre-commit; \
+		echo -e "$(GREEN)✅ Pre-commit hook removed$(NC)"; \
+	else \
+		echo -e "$(YELLOW)⚠️  No pre-commit hook found$(NC)"; \
+	fi
+
+# Check if pre-commit hook is installed
+check-test-hooks:
+	@if [ -f ".git/hooks/pre-commit" ]; then \
+		echo -e "$(GREEN)✅ Test organization pre-commit hook is installed$(NC)"; \
+	else \
+		echo -e "$(YELLOW)⚠️  No pre-commit hook installed$(NC)"; \
+		echo -e "$(BLUE)💡 Run 'make install-test-hooks' to install$(NC)"; \
+	fi
+
+# Fix common test organization issues
+fix-test-organization:
+	@echo -e "$(BLUE)🔧 Attempting to fix common test organization issues...$(NC)"
+	@echo -e "$(YELLOW)⚠️  This is a dry-run. Review suggestions before applying.$(NC)"
+	@echo ""
+	@# Find files with prohibited patterns and suggest renames
+	@for pattern in task_ issue_ fix_ bug_ feature_ enhancement_; do \
+		files=$$(find $(TESTS_DIR) -name "*.rs" -type f | grep "$$pattern" || true); \
+		if [ -n "$$files" ]; then \
+			echo -e "$(BLUE)Files with pattern '$$pattern':$(NC)"; \
+			for file in $$files; do \
+				new_name=$$(echo "$$file" | sed "s/$$pattern//g"); \
+				echo "  mv $$file $$new_name"; \
+			done; \
+			echo ""; \
+		fi; \
+	done
+	@echo -e "$(YELLOW)💡 Review the suggested mv commands above$(NC)"
+	@echo -e "$(YELLOW)💡 Ensure new names follow feature-based conventions$(NC)"
+
+# Show help for test organization targets
+help-test-organization:
+	@echo -e "$(BLUE)Test Organization Validation Targets:$(NC)"
+	@echo ""
+	@echo "  validate-tests        - Run all test organization validations"
+	@echo "  validate-test-naming  - Check for prohibited naming patterns"
+	@echo "  validate-test-structure - Validate directory structure"
+	@echo "  validate-test-depth   - Check directory nesting depth"
+	@echo "  validate-test-categories - Validate category conventions"
+	@echo "  test-report          - Generate test organization report"
+	@echo "  install-test-hooks   - Install pre-commit hook"
+	@echo "  uninstall-test-hooks - Remove pre-commit hook"
+	@echo "  check-test-hooks     - Check if pre-commit hook is installed"
+	@echo "  fix-test-organization - Suggest fixes for common issues"
+	@echo "  help-test-organization - Show this help"
+	@echo ""
+	@echo -e "$(BLUE)Environment Variables:$(NC)"
+	@echo "  TESTS_DIR            - Tests directory path (default: tests)"

@@ -47,7 +47,7 @@ After you will have all required tokens to use application
 For **Service Account**, **Client ID** and **Client Secret** are enough.
 For **Service account** use all tokens.
 
-Save the credentials in a `.env` within a `.secret` directory. The file should look like this:
+Save the credentials in a `.env` within a `secret` directory. The file should look like this:
 
 ```bash
 CLIENT_ID=YOUR_CLIENT_ID

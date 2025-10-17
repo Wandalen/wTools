@@ -99,10 +99,10 @@ fn command_with_only_named_args_fully_parsed()
   assert_eq!( instruction.named_arguments.len(), 2 );
 
   let arg1 = instruction.named_arguments.get( "name1" ).unwrap();
-  assert_eq!( arg1.value, "val1" );
+  assert_eq!( arg1[0].value, "val1" );
 
   let arg2 = instruction.named_arguments.get( "name2" ).unwrap();
-  assert_eq!( arg2.value, "val2" );
+  assert_eq!( arg2[0].value, "val2" );
 }
 
 /// Tests that a command with mixed arguments (positional first) is fully parsed.
@@ -125,10 +125,10 @@ fn command_with_mixed_args_positional_first_fully_parsed()
 
   assert_eq!( instruction.named_arguments.len(), 2 );
   let named_arg1 = instruction.named_arguments.get( "name1" ).unwrap();
-  assert_eq!( named_arg1.value, "val1" );
+  assert_eq!( named_arg1[0].value, "val1" );
 
   let named_arg2 = instruction.named_arguments.get( "name2" ).unwrap();
-  assert_eq!( named_arg2.value, "val2" );
+  assert_eq!( named_arg2[0].value, "val2" );
 }
 
 /// Tests that a positional argument after a named argument results in an error when the option is set.
@@ -171,7 +171,7 @@ fn command_with_mixed_args_positional_after_named_ok_when_option_not_set()
   assert_eq!( instruction.positional_arguments.len(), 1 );
   assert_eq!( instruction.positional_arguments[ 0 ].value, "pos1".to_string() );
   assert_eq!( instruction.named_arguments.len(), 1 );
-  assert_eq!( instruction.named_arguments.get( "name1" ).unwrap().value, "val1" );
+  assert_eq!( instruction.named_arguments.get( "name1" ).unwrap()[0].value, "val1" );
 }
 
 /// Tests that a named argument with an empty value (no quotes) results in an error.
@@ -239,7 +239,7 @@ fn unescaping_works_for_named_arg_value()
   let result = parser.parse_single_instruction( input );
   assert!( result.is_ok(), "Parse error: {:?}", result.err() );
   let instruction = result.unwrap();
-  assert_eq!( instruction.named_arguments.get( "name" ).unwrap().value, "a\\b\"c'd" );
+  assert_eq!( instruction.named_arguments.get( "name" ).unwrap()[0].value, "a\\b\"c'd" );
 }
 
 /// Tests that unescaping works correctly for a positional argument value.
@@ -296,9 +296,24 @@ fn duplicate_named_arg_last_wins_by_default()
  );
   let instruction = result.unwrap();
 
+  // DEBUG: Print what we actually got
+  println!("DEBUG: Command path: {:?}", instruction.command_path_slices);
+  println!("DEBUG: Named arguments count: {}", instruction.named_arguments.len());
+  for (name, args) in &instruction.named_arguments {
+      println!("DEBUG: Argument '{}' has {} values:", name, args.len());
+      for (i, arg) in args.iter().enumerate() {
+          println!("DEBUG:   [{}]: {:?}", i, arg.value);
+      }
+  }
+
   assert_eq!( instruction.command_path_slices, vec![ "cmd".to_string() ] );
   assert_eq!( instruction.named_arguments.len(), 1, "CT4.2 Named args count" );
-  assert_eq!( instruction.named_arguments.get( "name" ).unwrap().value, "val2" );
+  // With the new Vec-based API, we collect all values and can access the last one
+  let name_args = instruction.named_arguments.get( "name" ).unwrap();
+  assert_eq!( name_args.len(), 2, "Should have 2 values for 'name'" );
+  assert_eq!( name_args[0].value, "val1" );
+  assert_eq!( name_args[1].value, "val2" ); // Last one wins
+  assert_eq!( name_args.last().unwrap().value, "val2" ); // Test last wins behavior
 }
 
 /// Tests a complex instruction with command path and mixed arguments.
@@ -320,7 +335,7 @@ fn command_with_path_and_args_complex_fully_parsed()
 
   let named_arg = instruction.named_arguments.get( "name" ).unwrap();
   assert_eq!( instruction.named_arguments.len(), 1 );
-  assert_eq!( named_arg.value, "val" );
+  assert_eq!( named_arg[0].value, "val" );
 }
 
 /// Tests that a named argument with a quoted and escaped value is parsed correctly, including its location.
@@ -337,7 +352,7 @@ fn named_arg_with_quoted_escaped_value_location()
   assert_eq!( instruction.command_path_slices, vec![ "cmd".to_string() ] );
   assert_eq!( instruction.named_arguments.len(), 1 );
   let arg = instruction.named_arguments.get( "key" ).unwrap();
-  assert_eq!( arg.value, "value with \"quotes\" and \\slash\\" );
+  assert_eq!( arg[0].value, "value with \"quotes\" and \\slash\\" );
 }
 
 /// Tests that a positional argument with a quoted and escaped value is parsed correctly, including its location.
@@ -382,6 +397,6 @@ fn parses_kebab_case_named_argument()
   let instruction = result.unwrap();
   assert_eq!( instruction.command_path_slices, vec![ "cmd".to_string() ] );
   assert_eq!( instruction.named_arguments.len(), 2 );
-  assert_eq!( instruction.named_arguments.get( "my-arg" ).unwrap().value, "value" );
-  assert_eq!( instruction.named_arguments.get( "another-arg" ).unwrap().value, "true" );
+  assert_eq!( instruction.named_arguments.get( "my-arg" ).unwrap()[0].value, "value" );
+  assert_eq!( instruction.named_arguments.get( "another-arg" ).unwrap()[0].value, "true" );
 }

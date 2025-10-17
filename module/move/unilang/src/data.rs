@@ -11,6 +11,71 @@ mod private
   // use former::Former;
 
   ///
+  /// Helper function to construct a full command name from namespace and name components.
+  ///
+  /// This function implements the canonical algorithm for combining namespace and name
+  /// into a fully qualified command name that always starts with a dot prefix.
+  ///
+  /// # Arguments
+  /// * `namespace` - The command's namespace (may be empty or dot-prefixed)
+  /// * `name` - The command's name (may already include dot prefix)
+  ///
+  /// # Returns
+  /// * `String` - The fully qualified command name with dot prefix
+  ///
+  /// # Algorithm
+  /// 1. If name already starts with '.':
+  ///    - If namespace is empty OR name contains '.', return name as-is (already full format)
+  ///    - Otherwise, strip '.' from name and concatenate with namespace
+  /// 2. If name doesn't start with '.':
+  ///    - If namespace is empty, prepend '.' to name
+  ///    - If namespace exists, concatenate with proper dot handling
+  pub fn construct_full_command_name( namespace : &str, name : &str ) -> String
+  {
+    if name.starts_with( '.' )
+    {
+      // Name already has dot prefix
+      if namespace.is_empty() || name.contains( ".." ) || name[ 1.. ].contains( '.' )
+      {
+        // Name is already in full format (e.g., ".integration.test")
+        // OR has multiple dots (e.g., ".a.b") indicating it's already complete
+        name.to_string()
+      }
+      else
+      {
+        // Name has dot but is just the command part (e.g., ".test")
+        // Need to prepend namespace
+        let name_without_dot = &name[ 1.. ];
+        if namespace.starts_with( '.' )
+        {
+          format!( "{}.{}", namespace, name_without_dot )
+        }
+        else
+        {
+          format!( ".{}.{}", namespace, name_without_dot )
+        }
+      }
+    }
+    else if namespace.is_empty()
+    {
+      // No namespace, no dot: add dot prefix
+      format!( ".{}", name )
+    }
+    else
+    {
+      // Has namespace, name has no dot: concatenate
+      if namespace.starts_with( '.' )
+      {
+        format!( "{}.{}", namespace, name )
+      }
+      else
+      {
+        format!( ".{}.{}", namespace, name )
+      }
+    }
+  }
+
+  ///
   /// Defines a command, including its name, arguments, and other metadata.
   ///
   /// This struct is the central piece of a command's definition, providing all
@@ -50,7 +115,6 @@ mod private
     /// Illustrative usage examples for help text.
     pub examples : Vec< String >, // Added
     /// Whether this command should automatically generate a `.command.help` counterpart.
-    #[ former( default = false ) ]
     pub auto_help_enabled : bool, // Help Convention Support
   }
 
@@ -524,8 +588,419 @@ mod private
     }
   }
 
+  // Type-state markers for compile-time enforcement
+
+  /// Marker type indicating a required field has been set.
+  ///
+  /// This zero-sized type is used in the type-state pattern to track
+  /// which required fields have been set in the `CommandDefinitionBuilder`.
+  #[ derive( Debug ) ]
+  pub struct Set;
+
+  /// Marker type indicating a required field has not been set.
+  ///
+  /// This zero-sized type is used in the type-state pattern to track
+  /// which required fields have not yet been set in the `CommandDefinitionBuilder`.
+  #[ derive( Debug ) ]
+  pub struct NotSet;
+
+  use std::marker::PhantomData;
+
+  /// Type-state builder for `CommandDefinition` that enforces required fields at compile time.
+  ///
+  /// This builder uses the type-state pattern to ensure all 6 required fields
+  /// (name, description, namespace, hint, status, version) are set before building.
+  #[ derive( Debug ) ]
+  pub struct CommandDefinitionBuilder< Name, Description, Namespace, Hint, Status, Version >
+  {
+    name : Option< String >,
+    description : Option< String >,
+    namespace : Option< String >,
+    hint : Option< String >,
+    status : Option< String >,
+    version : Option< String >,
+    arguments : Vec< ArgumentDefinition >,
+    routine_link : Option< String >,
+    tags : Vec< String >,
+    aliases : Vec< String >,
+    permissions : Vec< String >,
+    idempotent : bool,
+    deprecation_message : String,
+    http_method_hint : String,
+    examples : Vec< String >,
+    auto_help_enabled : bool,
+    _marker : PhantomData< ( Name, Description, Namespace, Hint, Status, Version ) >,
+  }
+
+  // Start with all required fields NotSet
+  impl CommandDefinitionBuilder< NotSet, NotSet, NotSet, NotSet, NotSet, NotSet >
+  {
+    /// Create a new builder with all required fields unset
+    pub fn new() -> Self
+    {
+      Self
+      {
+        name : None,
+        description : None,
+        namespace : None,
+        hint : None,
+        status : None,
+        version : None,
+        arguments : vec![],
+        routine_link : None,
+        tags : vec![],
+        aliases : vec![],
+        permissions : vec![],
+        idempotent : false,
+        deprecation_message : String::new(),
+        http_method_hint : String::new(),
+        examples : vec![],
+        auto_help_enabled : false,
+        _marker : PhantomData,
+      }
+    }
+  }
+
+  // Method to set name (transitions Name from NotSet to Set)
+  impl< Desc, Ns, Hint, Status, Version >
+    CommandDefinitionBuilder< NotSet, Desc, Ns, Hint, Status, Version >
+  {
+    /// Sets the command name (required field).
+    ///
+    /// This method transitions the `Name` type parameter from `NotSet` to `Set`,
+    /// ensuring compile-time tracking of this required field.
+    ///
+    /// # Examples
+    /// ```
+    /// use unilang::data::CommandDefinition;
+    ///
+    /// let builder = CommandDefinition::builder()
+    ///     .name("my_command");
+    /// ```
+    pub fn name( self, name : impl Into< String > )
+      -> CommandDefinitionBuilder< Set, Desc, Ns, Hint, Status, Version >
+    {
+      CommandDefinitionBuilder
+      {
+        name : Some( name.into() ),
+        description : self.description,
+        namespace : self.namespace,
+        hint : self.hint,
+        status : self.status,
+        version : self.version,
+        arguments : self.arguments,
+        routine_link : self.routine_link,
+        tags : self.tags,
+        aliases : self.aliases,
+        permissions : self.permissions,
+        idempotent : self.idempotent,
+        deprecation_message : self.deprecation_message,
+        http_method_hint : self.http_method_hint,
+        examples : self.examples,
+        auto_help_enabled : self.auto_help_enabled,
+        _marker : PhantomData,
+      }
+    }
+  }
+
+  // Method to set description (transitions Description from NotSet to Set)
+  impl< Name, Ns, Hint, Status, Version >
+    CommandDefinitionBuilder< Name, NotSet, Ns, Hint, Status, Version >
+  {
+    /// Sets the command description (required field).
+    ///
+    /// This method transitions the `Description` type parameter from `NotSet` to `Set`.
+    pub fn description( self, description : impl Into< String > )
+      -> CommandDefinitionBuilder< Name, Set, Ns, Hint, Status, Version >
+    {
+      CommandDefinitionBuilder
+      {
+        name : self.name,
+        description : Some( description.into() ),
+        namespace : self.namespace,
+        hint : self.hint,
+        status : self.status,
+        version : self.version,
+        arguments : self.arguments,
+        routine_link : self.routine_link,
+        tags : self.tags,
+        aliases : self.aliases,
+        permissions : self.permissions,
+        idempotent : self.idempotent,
+        deprecation_message : self.deprecation_message,
+        http_method_hint : self.http_method_hint,
+        examples : self.examples,
+        auto_help_enabled : self.auto_help_enabled,
+        _marker : PhantomData,
+      }
+    }
+  }
+
+  // Method to set namespace (transitions Namespace from NotSet to Set)
+  impl< Name, Desc, Hint, Status, Version >
+    CommandDefinitionBuilder< Name, Desc, NotSet, Hint, Status, Version >
+  {
+    /// Sets the command namespace (required field).
+    ///
+    /// Use empty string `""` for global namespace commands.
+    pub fn namespace( self, namespace : impl Into< String > )
+      -> CommandDefinitionBuilder< Name, Desc, Set, Hint, Status, Version >
+    {
+      CommandDefinitionBuilder
+      {
+        name : self.name,
+        description : self.description,
+        namespace : Some( namespace.into() ),
+        hint : self.hint,
+        status : self.status,
+        version : self.version,
+        arguments : self.arguments,
+        routine_link : self.routine_link,
+        tags : self.tags,
+        aliases : self.aliases,
+        permissions : self.permissions,
+        idempotent : self.idempotent,
+        deprecation_message : self.deprecation_message,
+        http_method_hint : self.http_method_hint,
+        examples : self.examples,
+        auto_help_enabled : self.auto_help_enabled,
+        _marker : PhantomData,
+      }
+    }
+  }
+
+  // Method to set hint (transitions Hint from NotSet to Set)
+  impl< Name, Desc, Ns, Status, Version >
+    CommandDefinitionBuilder< Name, Desc, Ns, NotSet, Status, Version >
+  {
+    /// Sets the command hint (required field).
+    ///
+    /// A short hint shown in help text.
+    pub fn hint( self, hint : impl Into< String > )
+      -> CommandDefinitionBuilder< Name, Desc, Ns, Set, Status, Version >
+    {
+      CommandDefinitionBuilder
+      {
+        name : self.name,
+        description : self.description,
+        namespace : self.namespace,
+        hint : Some( hint.into() ),
+        status : self.status,
+        version : self.version,
+        arguments : self.arguments,
+        routine_link : self.routine_link,
+        tags : self.tags,
+        aliases : self.aliases,
+        permissions : self.permissions,
+        idempotent : self.idempotent,
+        deprecation_message : self.deprecation_message,
+        http_method_hint : self.http_method_hint,
+        examples : self.examples,
+        auto_help_enabled : self.auto_help_enabled,
+        _marker : PhantomData,
+      }
+    }
+  }
+
+  // Method to set status (transitions Status from NotSet to Set)
+  impl< Name, Desc, Ns, Hint, Version >
+    CommandDefinitionBuilder< Name, Desc, Ns, Hint, NotSet, Version >
+  {
+    /// Sets the command status (required field).
+    ///
+    /// Common values: `"stable"`, `"beta"`, `"experimental"`, `"deprecated"`.
+    pub fn status( self, status : impl Into< String > )
+      -> CommandDefinitionBuilder< Name, Desc, Ns, Hint, Set, Version >
+    {
+      CommandDefinitionBuilder
+      {
+        name : self.name,
+        description : self.description,
+        namespace : self.namespace,
+        hint : self.hint,
+        status : Some( status.into() ),
+        version : self.version,
+        arguments : self.arguments,
+        routine_link : self.routine_link,
+        tags : self.tags,
+        aliases : self.aliases,
+        permissions : self.permissions,
+        idempotent : self.idempotent,
+        deprecation_message : self.deprecation_message,
+        http_method_hint : self.http_method_hint,
+        examples : self.examples,
+        auto_help_enabled : self.auto_help_enabled,
+        _marker : PhantomData,
+      }
+    }
+  }
+
+  // Method to set version (transitions Version from NotSet to Set)
+  impl< Name, Desc, Ns, Hint, Status >
+    CommandDefinitionBuilder< Name, Desc, Ns, Hint, Status, NotSet >
+  {
+    /// Sets the command version (required field).
+    ///
+    /// Typically follows semantic versioning (e.g., `"1.0.0"`).
+    pub fn version( self, version : impl Into< String > )
+      -> CommandDefinitionBuilder< Name, Desc, Ns, Hint, Status, Set >
+    {
+      CommandDefinitionBuilder
+      {
+        name : self.name,
+        description : self.description,
+        namespace : self.namespace,
+        hint : self.hint,
+        status : self.status,
+        version : Some( version.into() ),
+        arguments : self.arguments,
+        routine_link : self.routine_link,
+        tags : self.tags,
+        aliases : self.aliases,
+        permissions : self.permissions,
+        idempotent : self.idempotent,
+        deprecation_message : self.deprecation_message,
+        http_method_hint : self.http_method_hint,
+        examples : self.examples,
+        auto_help_enabled : self.auto_help_enabled,
+        _marker : PhantomData,
+      }
+    }
+  }
+
+  // Methods for optional fields - available on all states
+  impl< Name, Desc, Ns, Hint, Status, Version >
+    CommandDefinitionBuilder< Name, Desc, Ns, Hint, Status, Version >
+  {
+    /// Sets the command arguments (optional field, defaults to empty vec).
+    pub fn arguments( mut self, arguments : Vec< ArgumentDefinition > ) -> Self
+    {
+      self.arguments = arguments;
+      self
+    }
+
+    /// Sets the routine link (optional field, defaults to None).
+    pub fn routine_link( mut self, routine_link : Option< String > ) -> Self
+    {
+      self.routine_link = routine_link;
+      self
+    }
+
+    /// Sets the command tags (optional field, defaults to empty vec).
+    pub fn tags( mut self, tags : Vec< String > ) -> Self
+    {
+      self.tags = tags;
+      self
+    }
+
+    /// Sets the command aliases (optional field, defaults to empty vec).
+    pub fn aliases( mut self, aliases : Vec< String > ) -> Self
+    {
+      self.aliases = aliases;
+      self
+    }
+
+    /// Sets the command permissions (optional field, defaults to empty vec).
+    pub fn permissions( mut self, permissions : Vec< String > ) -> Self
+    {
+      self.permissions = permissions;
+      self
+    }
+
+    /// Sets whether the command is idempotent (optional field, defaults to false).
+    pub fn idempotent( mut self, idempotent : bool ) -> Self
+    {
+      self.idempotent = idempotent;
+      self
+    }
+
+    /// Sets the deprecation message (optional field, defaults to empty string).
+    pub fn deprecation_message( mut self, deprecation_message : impl Into< String > ) -> Self
+    {
+      self.deprecation_message = deprecation_message.into();
+      self
+    }
+
+    /// Sets the HTTP method hint (optional field, defaults to empty string).
+    pub fn http_method_hint( mut self, http_method_hint : impl Into< String > ) -> Self
+    {
+      self.http_method_hint = http_method_hint.into();
+      self
+    }
+
+    /// Sets the command examples (optional field, defaults to empty vec).
+    pub fn examples( mut self, examples : Vec< String > ) -> Self
+    {
+      self.examples = examples;
+      self
+    }
+
+    /// Sets whether auto-help is enabled (optional field, defaults to false).
+    pub fn auto_help_enabled( mut self, auto_help_enabled : bool ) -> Self
+    {
+      self.auto_help_enabled = auto_help_enabled;
+      self
+    }
+  }
+
+  // .build() ONLY available when ALL required fields are Set
+  impl CommandDefinitionBuilder< Set, Set, Set, Set, Set, Set >
+  {
+    /// Builds the `CommandDefinition` from the fully-populated builder.
+    ///
+    /// This method is only available when all 6 required fields have been set,
+    /// providing compile-time safety against missing required fields.
+    ///
+    /// # Examples
+    /// ```
+    /// use unilang::data::CommandDefinition;
+    ///
+    /// let cmd = CommandDefinition::builder()
+    ///     .name("my_command")
+    ///     .description("Does something useful")
+    ///     .namespace("")
+    ///     .hint("Brief hint")
+    ///     .status("stable")
+    ///     .version("1.0.0")
+    ///     .build();
+    ///
+    /// assert_eq!(cmd.name, "my_command");
+    /// ```
+    pub fn build( self ) -> CommandDefinition
+    {
+      CommandDefinition
+      {
+        name : self.name.unwrap(),
+        description : self.description.unwrap(),
+        namespace : self.namespace.unwrap(),
+        hint : self.hint.unwrap(),
+        status : self.status.unwrap(),
+        version : self.version.unwrap(),
+        arguments : self.arguments,
+        routine_link : self.routine_link,
+        tags : self.tags,
+        aliases : self.aliases,
+        permissions : self.permissions,
+        idempotent : self.idempotent,
+        deprecation_message : self.deprecation_message,
+        http_method_hint : self.http_method_hint,
+        examples : self.examples,
+        auto_help_enabled : self.auto_help_enabled,
+      }
+    }
+  }
+
   impl CommandDefinition
   {
+    /// Create a new type-state builder for constructing a `CommandDefinition`.
+    ///
+    /// This builder enforces that all 6 required fields (name, description, namespace,
+    /// hint, status, version) are set before building, providing compile-time safety.
+    pub fn builder() -> CommandDefinitionBuilder< NotSet, NotSet, NotSet, NotSet, NotSet, NotSet >
+    {
+      CommandDefinitionBuilder::new()
+    }
+
     ///
     /// Builder method to enable/disable automatic help command generation for this specific command.
     ///
@@ -543,11 +1018,11 @@ mod private
     /// ```rust,ignore
     /// use unilang::data::CommandDefinition;
     ///
-    /// let cmd = CommandDefinition::former()
+    /// let cmd = CommandDefinition::builder()
     ///     .name("example".to_string())
     ///     .description("An example command".to_string())
     ///     .with_auto_help(true)  // Enable automatic help generation
-    ///     .end();
+    ///     .build();
     /// ```
     #[ must_use ]
     pub fn with_auto_help( mut self, enabled : bool ) -> Self
@@ -569,15 +1044,51 @@ mod private
     /// ```rust,ignore
     /// use unilang::data::CommandDefinition;
     ///
-    /// let cmd = CommandDefinition::former()
+    /// let cmd = CommandDefinition::builder()
     ///     .with_auto_help(true)
-    ///     .end();
+    ///     .build();
     /// assert!(cmd.has_auto_help());
     /// ```
     #[ must_use ]
     pub fn has_auto_help( &self ) -> bool
     {
       self.auto_help_enabled
+    }
+
+    ///
+    /// Constructs the full command name from namespace and name components.
+    ///
+    /// This method handles the various combinations of namespaced and non-namespaced
+    /// command names, ensuring that the resulting full name always starts with a dot
+    /// prefix according to unilang conventions.
+    ///
+    /// # Returns
+    /// * `String` - The fully qualified command name with dot prefix
+    ///
+    /// # Examples
+    /// ```rust,ignore
+    /// use unilang::data::CommandDefinition;
+    ///
+    /// // Command with dot-prefixed name (already full format)
+    /// let cmd1 = CommandDefinition { name: ".help".to_string(), namespace: "".to_string(), ..Default::default() };
+    /// assert_eq!(cmd1.full_name(), ".help");
+    ///
+    /// // Command without namespace
+    /// let cmd2 = CommandDefinition { name: "help".to_string(), namespace: "".to_string(), ..Default::default() };
+    /// assert_eq!(cmd2.full_name(), ".help");
+    ///
+    /// // Command with namespace
+    /// let cmd3 = CommandDefinition { name: "list".to_string(), namespace: "session".to_string(), ..Default::default() };
+    /// assert_eq!(cmd3.full_name(), ".session.list");
+    ///
+    /// // Command with dot-prefixed namespace
+    /// let cmd4 = CommandDefinition { name: "list".to_string(), namespace: ".session".to_string(), ..Default::default() };
+    /// assert_eq!(cmd4.full_name(), ".session.list");
+    /// ```
+    #[ must_use ]
+    pub fn full_name( &self ) -> String
+    {
+      construct_full_command_name( &self.namespace, &self.name )
     }
 
     ///
@@ -595,10 +1106,10 @@ mod private
     /// ```rust,ignore
     /// use unilang::data::CommandDefinition;
     ///
-    /// let cmd = CommandDefinition::former()
+    /// let cmd = CommandDefinition::builder()
     ///     .name("example".to_string())
     ///     .description("An example command".to_string())
-    ///     .end();
+    ///     .build();
     ///
     /// let help_cmd = cmd.generate_help_command();
     /// assert_eq!(help_cmd.name, "example.help");
@@ -642,7 +1153,10 @@ mod_interface::mod_interface!
   exposed use private::Namespace;
   exposed use private::OutputData;
   exposed use private::ErrorData;
-  
+  exposed use private::CommandDefinitionBuilder;
+  exposed use private::Set;
+  exposed use private::NotSet;
+
   prelude use private::CommandDefinition;
   prelude use private::ArgumentDefinition;
   prelude use private::ArgumentAttributes;

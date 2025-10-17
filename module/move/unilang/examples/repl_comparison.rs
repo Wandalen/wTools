@@ -41,6 +41,8 @@ use unilang::error::Error;
 
 #[cfg(feature = "enhanced_repl")]
 use rustyline::{DefaultEditor, error::ReadlineError};
+#[cfg(feature = "enhanced_repl")]
+use std::io::IsTerminal;
 
 #[cfg(all(feature = "repl", not(feature = "enhanced_repl")))]
 use std::io::{self, Write, BufRead};
@@ -120,7 +122,7 @@ fn setup_demo_commands(registry: &mut CommandRegistry) -> Result<(), Error> {
                 tags: vec![],
             }
         ])
-        .form();
+        .end();
 
     let demo_routine = Box::new(|cmd: unilang::semantic::VerifiedCommand, _ctx| {
         let default_name = "World".to_string();
@@ -164,7 +166,7 @@ fn setup_demo_commands(registry: &mut CommandRegistry) -> Result<(), Error> {
                 tags: vec![],
             }
         ])
-        .form();
+        .end();
 
     let secure_routine = Box::new(|cmd: unilang::semantic::VerifiedCommand, _ctx| {
         let default_password = "".to_string();
@@ -191,7 +193,7 @@ fn setup_demo_commands(registry: &mut CommandRegistry) -> Result<(), Error> {
 fn run_enhanced_repl(pipeline: &Pipeline) -> Result<(), Box<dyn std::error::Error>> {
     println!("🚀 Enhanced REPL Mode");
     println!("Features: ↑/↓ history, Tab completion, Ctrl+C handling, persistent history");
-    println!("Terminal: {} detected\n", if atty::is(atty::Stream::Stdin) { "Interactive" } else { "Non-interactive" });
+    println!("Terminal: {} detected\n", if std::io::stdin().is_terminal() { "Interactive" } else { "Non-interactive" });
 
     let mut rl = DefaultEditor::new()?;
     

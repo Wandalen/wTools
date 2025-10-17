@@ -1,0 +1,32 @@
+[package]
+name = "reasoning"
+version = "0.1.0"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+]
+license = "MIT"
+readme = "readme.md"
+documentation = "https://docs.rs/reasoning"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/reasoning"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/reasoning"
+description = """
+Tools for knowledge reasoning and digestion from multiple sources.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+[workspace]
+
+[package.metadata.docs.rs]
+features = [ "full" ]
+all-features = false
+
+[features]
+default = [ "enabled" ]
+full = [ "enabled" ]
+enabled = []
+
+[dependencies]
+
+[dev-dependencies]

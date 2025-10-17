@@ -1,0 +1,32 @@
+[package]
+name = "reasoner"
+version = "0.1.0"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+]
+license = "MIT"
+readme = "readme.md"
+documentation = "https://docs.rs/reasoner"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/reasoner"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/reasoner"
+description = """
+Tools for reasoning and knowledge processing.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+[workspace]
+
+[package.metadata.docs.rs]
+features = [ "full" ]
+all-features = false
+
+[features]
+default = [ "enabled" ]
+full = [ "enabled" ]
+enabled = []
+
+[dependencies]
+
+[dev-dependencies]

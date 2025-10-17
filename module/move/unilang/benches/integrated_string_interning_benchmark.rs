@@ -27,6 +27,7 @@ struct IntegratedBenchmarkResult
 #[ cfg( feature = "benchmarks" ) ]
 fn create_test_registry() -> CommandRegistry
 {
+  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   
   // Register common commands that would trigger string interning benefits
@@ -72,6 +73,7 @@ fn create_test_registry() -> CommandRegistry
       deprecation_message : String::new(),
       http_method_hint : String::new(),
       examples : vec![],
+      auto_help_enabled : false,
     };
     
     registry.register( cmd_def );
