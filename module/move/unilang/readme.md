@@ -98,33 +98,77 @@ fn main() -> Result< (), unilang::Error >
 - **Dynamic lookups:** ~80ns per operation
 - **Performance gain:** 40x faster command resolution
 
-## When to Use Each Approach
+## User Guide: Integration Decisions
 
-### Compile-Time Registration (Recommended)
-**Use when:**
-- Commands are known at build time
-- Maximum performance is required
-- Binary size optimization is important
-- Production deployments
+### Decision 1: How Should I Define Commands?
 
-**Benefits:**
-- Zero runtime lookup cost
-- Compile-time validation
-- Smaller memory footprint
-- Better cache locality
+**10 approaches are currently implemented** (see [full comparison](docs/cli_definition_approaches.md)):
 
-### Runtime Registration (Limited Use Cases)
-**Use when:**
-- Commands loaded from external sources at runtime
-- Dynamic command generation required
-- Plugin systems with runtime loading
-- Rapid prototyping scenarios
+| # | Approach | Lookup Speed | When to Use |
+|---|----------|-------------|-------------|
+| **1** | **YAML file → Build-time PHF** ⭐ | **~80ns** | **Production apps, best performance, compile-time validation** |
+| 2 | Multi-YAML files → Build-time PHF | ~80ns | Large modular projects, multiple CLI tools unified |
+| 3 | YAML file → Runtime loading | ~4,200ns | Development, plugin configs loaded at runtime |
+| **4** | **JSON file → Build-time PHF** | **~80ns** | **JSON-first projects, API-driven CLI generation** |
+| 5 | Multi-JSON files → Build-time PHF | ~80ns | Large JSON projects, modular organization |
+| 6 | JSON file → Runtime loading | ~4,200ns | Runtime config loading, dynamic commands |
+| 7 | Rust DSL (inline closures) | ~4,200ns | ⚠️ Prototyping/testing only, NOT for production |
+| **8** | **Rust DSL (const fn + PHF)** | **~80ns** | **High-performance DSL, type-safe compile-time definitions** |
+| 18 | Hybrid (static + runtime) | Mixed | Base CLI + plugin system (best of both worlds) |
 
-**Performance Cost:**
-- 10-50x slower lookup operations
-- Runtime memory allocations
-- Larger binary size
-- Hash collision overhead
+**Strongly Recommended:** Row 1 (YAML + build-time PHF) for 50x better performance and compile-time validation.
+
+**See full comparison:** [21 approaches documented](docs/cli_definition_approaches.md) including planned features like declarative macros, proc macros, TOML, RON, Protobuf, GraphQL, OpenAPI.
+
+### Decision 2: How Do I Execute Commands?
+
+```rust,ignore
+// CLI applications: Avoids shell quoting issues
+let result = pipeline.process_command_from_argv( &std::env::args().collect() );
+
+// REPL/interactive applications: String-based parsing
+let result = pipeline.process_command_simple( ".greet name::Alice" );
+```
+
+### Decision 3: What Are the Naming Rules?
+
+✅ **Commands should start with a dot:**
+```bash
+.greet name::Alice           # Recommended
+greet name::Alice            # Not recommended
+```
+
+### Decision 4: What Features Should I Enable?
+
+**Recommended: Use defaults** (SIMD enabled automatically)
+```toml
+[dependencies]
+unilang = "0.26"  # Includes SIMD (4-25x parsing speedup), enhanced REPL
+```
+
+**Minimal build:**
+```toml
+unilang = { version = "0.26", default-features = false, features = ["enabled"] }
+```
+
+### Decision 5: How Does Help Work?
+
+Three methods available:
+```bash
+.command ?                   # Traditional operator (bypasses validation)
+.command ??                  # Modern parameter
+.command.help                # Auto-generated help command
+```
+
+### Decision 6: Error Handling
+
+Unknown parameters are **always detected** with Levenshtein distance suggestions. This cannot be disabled and ensures command correctness.
+
+### Decision 7: Advanced Use Cases
+
+- **REPL applications:** Use `enhanced_repl` feature for history, completion, secure input
+- **WASM deployment:** Full framework support in browsers with SIMD acceleration
+- **Interactive arguments:** Prompt for missing required arguments in REPL mode
 
 ## CLI Aggregation: Unifying Multiple Tools
 
@@ -144,7 +188,7 @@ let unified_cli = CliBuilder::new()
   .detect_conflicts( true )
   .build_static();
 
-// Usage: unified-cli db migrate, unified-cli fs copy src dest
+// Usage: unified-cli .db.migrate, unified-cli .fs.copy src dest
 ```
 
 ### Compile-Time Aggregation Benefits
@@ -161,10 +205,10 @@ build-cli compile --target release
 **After Aggregation:**
 ```bash
 # Single unified tool with consistent interface
-unified-cli db migrate direction::up
-unified-cli fs copy source::./source destination::./target recursive::true
-unified-cli net ping host::google.com count::10
-unified-cli build compile target::release
+unified-cli .db.migrate direction::up
+unified-cli .fs.copy source::./source destination::./target recursive::true
+unified-cli .net.ping host::google.com count::10
+unified-cli .build.compile target::release
 ```
 
 ### Key Aggregation Features
@@ -191,9 +235,9 @@ let registry = CliBuilder::new()
 #### Help System Integration
 ```bash
 # All aggregated commands support unified help
-unified-cli db.migrate.help        # Detailed help for database migrations
-unified-cli fs.copy ??             # Interactive help during command construction
-unified-cli net.ping ?             # Traditional help operator
+unified-cli .db.migrate.help       # Detailed help for database migrations
+unified-cli .fs.copy ??            # Interactive help during command construction
+unified-cli .net.ping ?            # Traditional help operator
 ```
 
 ### Advanced Aggregation Patterns
@@ -210,12 +254,19 @@ let registry = CliBuilder::new()
 
 #### Multi-Source Aggregation
 ```rust,ignore
-// Combine static commands, YAML definitions, and runtime modules
+use std::path::PathBuf;
+
+// Combine static commands (in-memory) and dynamic YAML loading
 let registry = CliBuilder::new()
-  .static_module_with_prefix( "core", "core", static_commands )
-  .dynamic_module_with_prefix( "plugins", "plugins", "plugins.yaml" )
-  .runtime_module_with_prefix( "custom", "ext", runtime_commands )
+  .static_module_with_prefix( "core", ".core", core_commands )
+  .dynamic_module_with_prefix( "plugins", PathBuf::from( "plugins.yaml" ), ".plugins" )
   .build_hybrid();
+
+// Key differences:
+// - static_module_with_prefix(name, prefix, Vec<CommandDefinition>)
+//   → Commands already in memory, fast O(1) lookup
+// - dynamic_module_with_prefix(name, PathBuf, prefix)
+//   → Commands loaded from YAML file at runtime, ~50x slower lookup
 ```
 
 ### Performance Characteristics
@@ -443,20 +494,3 @@ Use provided benchmarking examples to verify improvements.
 - Minimize command modifications during execution
 - Use batch processing for multiple commands
 - Implement proper error handling and recovery
-
-## Documentation
-
-### Core Documentation
-- **[CLI Definition Approaches](docs/cli_definition_approaches.md)** - Comprehensive guide to all 21 ways to define CLI commands (YAML, JSON, Rust DSL, macros, etc.) with implementation status, performance comparisons, and use case recommendations
-- **[Optimization Guide](docs/optimization_guide.md)** - Performance optimization strategies and benchmark data
-
-### Examples and Learning
-See the `examples/` directory for comprehensive demonstrations of compile-time and runtime patterns.
-
-## Contributing
-
-See [CONTRIBUTING.md](https://github.com/Wandalen/wTools/blob/master/CONTRIBUTING.md) for development guidelines.
-
-## License
-
-Licensed under MIT license ([LICENSE](LICENSE) or https://opensource.org/licenses/MIT)

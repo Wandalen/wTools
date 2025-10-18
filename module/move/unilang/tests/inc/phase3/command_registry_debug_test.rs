@@ -23,7 +23,7 @@ fn test_command_registry_key_mismatch()
     let mut registry = CommandRegistry::new();
 
   let command_def = CommandDefinition::former()
-  .name( "my_command" )
+  .name( ".my_command" )
   .namespace( ".my_namespace" )
   .hint( "A test command." )
   .description( "This is a test command for debugging registry issues." )

@@ -21,7 +21,7 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
 
   // Step 1: Command with strict validation rules
   let validate_cmd = CommandDefinition::former()
-  .name( "validate" )
+  .name( ".validate" )
   .namespace( ".test" )
   .description( "Tests various validation scenarios and error handling".to_string() )
   .hint( "Validation testing command" )

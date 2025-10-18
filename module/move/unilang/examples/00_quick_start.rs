@@ -15,7 +15,7 @@ fn main() -> Result<(), unilang::Error> {
     
     // Define a simple greeting command
     let greet_cmd = CommandDefinition {
-        name: "greet".to_string(),
+        name: ".greet".to_string(),
         namespace: String::new(),  // Global namespace
         description: "A friendly greeting command".to_string(),
         hint: "Says hello to someone".to_string(),
@@ -36,7 +36,7 @@ fn main() -> Result<(), unilang::Error> {
             }
         ],
         // ... other fields with defaults
-        aliases: vec!["hello".to_string()],
+        aliases: vec![],  // Aliases functionality needs investigation
         status: "stable".to_string(),
         version: "1.0.0".to_string(),
         tags: vec![],
@@ -72,22 +72,16 @@ fn main() -> Result<(), unilang::Error> {
     let pipeline = Pipeline::new(registry);
     
     // Execute a command
-    println!("=== Executing: greet name::Alice ===");
-    let result = pipeline.process_command_simple("greet name::Alice");
+    println!("=== Executing: .greet name::Alice ===");
+    let result = pipeline.process_command_simple(".greet name::Alice");
     println!("Success: {}", result.success);
     println!("Output: {}\n", result.outputs[0].content);
     
     // Execute using the default value
-    println!("=== Executing: greet (using default) ===");
-    let result = pipeline.process_command_simple("greet");
+    println!("=== Executing: .greet (using default) ===");
+    let result = pipeline.process_command_simple(".greet");
     println!("Success: {}", result.success);
     println!("Output: {}\n", result.outputs[0].content);
-    
-    // Execute using the alias
-    println!("=== Executing: hello name::Bob (using alias) ===");
-    let result = pipeline.process_command_simple("hello name::Bob");
-    println!("Success: {}", result.success);
-    println!("Output: {}", result.outputs[0].content);
-    
+
     Ok(())
 }

@@ -83,14 +83,14 @@ fn main()
             .filter_map(core::result::Result::ok)
             .filter(|e| e.file_type().is_file())
             .filter(|e| {
-              // Exclude test directories from static command discovery using proper path handling
+              // Exclude test and example directories from static command discovery using proper path handling
               let path = e.path();
 
               // Convert to canonical form and check path components
               let should_exclude = path.components().any(|component| {
                 if let std::path::Component::Normal(os_str) = component {
                   let name = os_str.to_string_lossy();
-                  name == "tests" || name == "test_data"
+                  name == "tests" || name == "test_data" || name == "examples"
                 } else {
                   false
                 }
@@ -204,10 +204,18 @@ fn generate_static_commands(dest_path: &Path, command_definitions: &[serde_yaml:
   {
     let name = cmd_value["name"].as_str().unwrap_or("");
     let namespace = cmd_value["namespace"].as_str().unwrap_or("");
-    
+
     let full_name = if namespace.is_empty()
     {
-      format!(".{name}")
+      // Command name may already have a leading dot, don't duplicate it
+      if name.starts_with('.')
+      {
+        name.to_string()
+      }
+      else
+      {
+        format!(".{name}")
+      }
     }
     else
     {

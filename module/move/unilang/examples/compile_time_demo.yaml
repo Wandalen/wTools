@@ -1,10 +1,13 @@
 # Compile-Time CLI Aggregation Demo Manifest
 # This YAML file demonstrates how multiple CLI modules can be aggregated
 # at compile-time using the existing build.rs infrastructure
+#
+# NAMING CONVENTION: Use compound names with dots (e.g., ".math.add") and empty namespace
+# to demonstrate the recommended command naming format that users will see and use.
 
-# Math CLI Module Commands (prefix: math)
+# Math CLI Module Commands
 - name: ".math.add"
-  namespace: ".math"
+  namespace: ""
   description: "Add two numbers"
   hint: "Mathematical addition"
   arguments:
@@ -31,7 +34,7 @@
     - ".math.add a::100 b::200"
 
 - name: ".math.multiply"
-  namespace: ".math"
+  namespace: ""
   description: "Multiply two numbers"
   hint: "Mathematical multiplication"
   arguments:
@@ -56,9 +59,9 @@
   examples:
     - ".math.multiply x::7 y::8"
 
-# File CLI Module Commands (prefix: fs)
+# File CLI Module Commands
 - name: ".fs.list"
-  namespace: ".fs"
+  namespace: ""
   description: "List files in directory"
   hint: "File system listing"
   arguments:
@@ -80,7 +83,7 @@
     - ".fs.list path::/home/user"
 
 - name: ".fs.copy"
-  namespace: ".fs"
+  namespace: ""
   description: "Copy a file"
   hint: "File system copy"
   arguments:
@@ -107,9 +110,9 @@
   examples:
     - ".fs.copy source::file1.txt destination::file2.txt"
 
-# Database CLI Module Commands (prefix: db)
+# Database CLI Module Commands
 - name: ".db.connect"
-  namespace: ".db"
+  namespace: ""
   description: "Connect to database"
   hint: "Database connection"
   arguments:
@@ -137,31 +140,4 @@
     - ".db.connect"
     - ".db.connect host::production.db port::5432"
 
-# Main aggregated CLI commands (no prefix)
-- name: ".info"
-  namespace: ""
-  description: "Show aggregated CLI information"
-  hint: "CLI information"
-  arguments: []
-  status: "stable"
-  version: "1.0.0"
-  tags: ["info", "help"]
-  aliases: ["about"]
-  permissions: []
-  idempotent: true
-  examples:
-    - ".info"
-
-- name: ".version"
-  namespace: ""
-  description: "Show CLI version"
-  hint: "Version information"
-  arguments: []
-  status: "stable"
-  version: "1.0.0"
-  tags: ["info", "version"]
-  aliases: ["ver"]
-  permissions: []
-  idempotent: true
-  examples:
-    - ".version"
+# Note: .version, .help, .info commands are defined in unilang.commands.yaml

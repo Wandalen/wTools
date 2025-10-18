@@ -56,13 +56,13 @@ fn main() -> Result< (), unilang::error::Error >
   // This command demonstrates how validation rules are applied to arguments
   // and how they prevent invalid data from reaching the command execution.
   let validation_demo = CommandDefinition::former()
-  .name( "validate" )
+  .name( ".validate" )
   .namespace( "validation".to_string() )
   .description( "Demonstrates argument validation rules".to_string() )
   .hint( "Shows different validation constraints" )
   .status( "stable" )
   .version( "1.0.0" )
-  .aliases( vec![ "check".to_string() ] )
+  .aliases( vec![ ".check".to_string() ] )
   .tags( vec![ "validation".to_string(), "demo".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )

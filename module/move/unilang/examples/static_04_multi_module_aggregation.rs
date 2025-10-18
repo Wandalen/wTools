@@ -23,7 +23,8 @@ fn create_auth_commands() -> Vec<CommandDefinition>
 {
   vec![
     CommandDefinition::former()
-      .name( "auth.login" )
+      .name( ".login" )
+      .namespace( ".auth" )
       .description( "Authenticate user login".to_string() )
       .hint( "User authentication".to_string() )
       .arguments( vec![
@@ -48,7 +49,8 @@ fn create_auth_commands() -> Vec<CommandDefinition>
       ])
       .end(),
     CommandDefinition::former()
-      .name( "auth.logout" )
+      .name( ".logout" )
+      .namespace( ".auth" )
       .description( "Logout current user session".to_string() )
       .hint( "User logout".to_string() )
       .arguments( vec![
@@ -66,7 +68,8 @@ fn create_auth_commands() -> Vec<CommandDefinition>
       ])
       .end(),
     CommandDefinition::former()
-      .name( "auth.token" )
+      .name( ".token" )
+      .namespace( ".auth" )
       .description( "Generate or refresh authentication token".to_string() )
       .hint( "Token management".to_string() )
       .arguments( vec![
@@ -87,7 +90,8 @@ fn create_filesystem_commands() -> Vec<CommandDefinition>
 {
   vec![
     CommandDefinition::former()
-      .name( "fs.copy" )
+      .name( ".copy" )
+      .namespace( ".fs" )
       .description( "Copy files or directories".to_string() )
       .hint( "File copy operation".to_string() )
       .arguments( vec![
@@ -119,7 +123,8 @@ fn create_filesystem_commands() -> Vec<CommandDefinition>
       ])
       .end(),
     CommandDefinition::former()
-      .name( "fs.move" )
+      .name( ".move" )
+      .namespace( ".fs" )
       .description( "Move or rename files and directories".to_string() )
       .hint( "File move operation".to_string() )
       .arguments( vec![
@@ -140,7 +145,8 @@ fn create_filesystem_commands() -> Vec<CommandDefinition>
       ])
       .end(),
     CommandDefinition::former()
-      .name( "fs.list" )
+      .name( ".list" )
+      .namespace( ".fs" )
       .description( "List directory contents".to_string() )
       .hint( "Directory listing".to_string() )
       .arguments( vec![
@@ -176,7 +182,8 @@ fn create_network_commands() -> Vec<CommandDefinition>
 {
   vec![
     CommandDefinition::former()
-      .name( "net.ping" )
+      .name( ".ping" )
+      .namespace( ".net" )
       .description( "Send ICMP ping packets to network host".to_string() )
       .hint( "Network ping".to_string() )
       .arguments( vec![
@@ -201,7 +208,8 @@ fn create_network_commands() -> Vec<CommandDefinition>
       ])
       .end(),
     CommandDefinition::former()
-      .name( "net.scan" )
+      .name( ".scan" )
+      .namespace( ".net" )
       .description( "Scan network ports on target host".to_string() )
       .hint( "Network port scan".to_string() )
       .arguments( vec![

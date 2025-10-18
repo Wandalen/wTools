@@ -22,7 +22,8 @@ fn create_devops_commands() -> Vec<CommandDefinition>
   vec![
     // Docker commands
     CommandDefinition::former()
-      .name( "container.list" )
+      .name( ".list" )
+      .namespace( ".container" )
       .description( "List all containers".to_string() )
       .hint( "Docker container listing".to_string() )
       .arguments( vec![
@@ -40,7 +41,8 @@ fn create_devops_commands() -> Vec<CommandDefinition>
       ])
       .form(),
     CommandDefinition::former()
-      .name( "container.logs" )
+      .name( ".logs" )
+      .namespace( ".container" )
       .description( "Get container logs".to_string() )
       .hint( "Docker container logs".to_string() )
       .arguments( vec![
@@ -66,7 +68,8 @@ fn create_devops_commands() -> Vec<CommandDefinition>
       .form(),
     // Kubernetes commands
     CommandDefinition::former()
-      .name( "pod.list" )
+      .name( ".list" )
+      .namespace( ".pod" )
       .description( "List Kubernetes pods".to_string() )
       .hint( "Kubernetes pod listing".to_string() )
       .arguments( vec![
@@ -84,7 +87,8 @@ fn create_devops_commands() -> Vec<CommandDefinition>
       ])
       .form(),
     CommandDefinition::former()
-      .name( "deployment.scale" )
+      .name( ".scale" )
+      .namespace( ".deployment" )
       .description( "Scale Kubernetes deployment".to_string() )
       .hint( "Kubernetes deployment scaling".to_string() )
       .arguments( vec![
@@ -117,7 +121,8 @@ fn create_development_commands() -> Vec<CommandDefinition>
   vec![
     // Git commands
     CommandDefinition::former()
-      .name( "branch.create" )
+      .name( ".create" )
+      .namespace( ".branch" )
       .description( "Create and switch to new branch".to_string() )
       .hint( "Git branch creation".to_string() )
       .arguments( vec![
@@ -142,7 +147,8 @@ fn create_development_commands() -> Vec<CommandDefinition>
       ])
       .form(),
     CommandDefinition::former()
-      .name( "commit.squash" )
+      .name( ".squash" )
+      .namespace( ".commit" )
       .description( "Squash last N commits".to_string() )
       .hint( "Git commit squashing".to_string() )
       .arguments( vec![
@@ -164,7 +170,8 @@ fn create_development_commands() -> Vec<CommandDefinition>
       .form(),
     // Build commands
     CommandDefinition::former()
-      .name( "build.release" )
+      .name( ".release" )
+      .namespace( ".build" )
       .description( "Build release artifacts".to_string() )
       .hint( "Release build".to_string() )
       .arguments( vec![
@@ -182,7 +189,8 @@ fn create_development_commands() -> Vec<CommandDefinition>
       ])
       .form(),
     CommandDefinition::former()
-      .name( "test.integration" )
+      .name( ".integration" )
+      .namespace( ".test" )
       .description( "Run integration tests".to_string() )
       .hint( "Integration testing".to_string() )
       .arguments( vec![
@@ -212,7 +220,8 @@ fn create_database_commands() -> Vec<CommandDefinition>
   vec![
     // PostgreSQL commands
     CommandDefinition::former()
-      .name( "postgres.backup" )
+      .name( ".backup" )
+      .namespace( ".postgres" )
       .description( "Create PostgreSQL database backup".to_string() )
       .hint( "PostgreSQL backup".to_string() )
       .arguments( vec![
@@ -233,7 +242,8 @@ fn create_database_commands() -> Vec<CommandDefinition>
       ])
       .form(),
     CommandDefinition::former()
-      .name( "postgres.restore" )
+      .name( ".restore" )
+      .namespace( ".postgres" )
       .description( "Restore PostgreSQL database from backup".to_string() )
       .hint( "PostgreSQL restore".to_string() )
       .arguments( vec![
@@ -255,7 +265,8 @@ fn create_database_commands() -> Vec<CommandDefinition>
       .form(),
     // Redis commands
     CommandDefinition::former()
-      .name( "redis.monitor" )
+      .name( ".monitor" )
+      .namespace( ".redis" )
       .description( "Monitor Redis commands in real-time".to_string() )
       .hint( "Redis monitoring".to_string() )
       .arguments( vec![
@@ -296,7 +307,8 @@ fn create_cloud_commands() -> Vec<CommandDefinition>
   vec![
     // AWS commands
     CommandDefinition::former()
-      .name( "ec2.list" )
+      .name( ".list" )
+      .namespace( ".ec2" )
       .description( "List EC2 instances".to_string() )
       .hint( "AWS EC2 listing".to_string() )
       .arguments( vec![
@@ -325,7 +337,8 @@ fn create_cloud_commands() -> Vec<CommandDefinition>
       ])
       .form(),
     CommandDefinition::former()
-      .name( "s3.sync" )
+      .name( ".sync" )
+      .namespace( ".s3" )
       .description( "Sync files with S3 bucket".to_string() )
       .hint( "AWS S3 sync".to_string() )
       .arguments( vec![
@@ -347,7 +360,8 @@ fn create_cloud_commands() -> Vec<CommandDefinition>
       .form(),
     // Azure commands
     CommandDefinition::former()
-      .name( "vm.status" )
+      .name( ".status" )
+      .namespace( ".vm" )
       .description( "Get Azure VM status".to_string() )
       .hint( "Azure VM status".to_string() )
       .arguments( vec![

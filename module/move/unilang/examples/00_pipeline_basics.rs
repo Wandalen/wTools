@@ -18,7 +18,7 @@ fn main() -> Result<(), unilang::Error> {
     
     // Register a simple math command
     let add_cmd = CommandDefinition {
-        name: "add".to_string(),
+        name: ".add".to_string(),
         namespace: ".math".to_string(),
         description: "Adds two numbers".to_string(),
         hint: "Addition operation".to_string(),
@@ -83,32 +83,32 @@ fn main() -> Result<(), unilang::Error> {
     println!("--- Simple Command Execution ---");
     
     // Success case
-    let result = pipeline.process_command_simple("math.add a::5 b::3");
-    println!("Command: math.add a::5 b::3");
+    let result = pipeline.process_command_simple(".math.add a::5 b::3");
+    println!("Command: .math.add a::5 b::3");
     println!("Success: {}", result.success);
     println!("Output: {}", result.outputs[0].content);
     println!("Error: {:?}\n", result.error);
     
     // Error case - missing argument
-    let result = pipeline.process_command_simple("math.add a::5");
-    println!("Command: math.add a::5 (missing b)");
+    let result = pipeline.process_command_simple(".math.add a::5");
+    println!("Command: .math.add a::5 (missing b)");
     println!("Success: {}", result.success);
     println!("Output: {:?}", result.outputs.first().map(|o| &o.content));
     println!("Error: {:?}\n", result.error);
     
     // Error case - invalid command
-    let result = pipeline.process_command_simple("math.multiply a::5 b::3");
-    println!("Command: math.multiply a::5 b::3 (unknown command)");
+    let result = pipeline.process_command_simple(".math.multiply a::5 b::3");
+    println!("Command: .math.multiply a::5 b::3 (unknown command)");
     println!("Success: {}", result.success);
     println!("Error: {:?}\n", result.error);
     
     // Step 4: Batch Processing
     println!("--- Batch Processing ---");
     let commands = vec![
-        "math.add a::1 b::2",
-        "math.add a::10 b::20",
-        "math.add a::100 b::200",
-        "math.add a::invalid b::3",  // This will fail
+        ".math.add a::1 b::2",
+        ".math.add a::10 b::20",
+        ".math.add a::100 b::200",
+        ".math.add a::invalid b::3",  // This will fail
     ];
     
     let batch_result = pipeline.process_batch(&commands, ExecutionContext::default());

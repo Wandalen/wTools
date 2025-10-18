@@ -69,7 +69,7 @@ fn test_semantic_analyzer_integration()
   // even if execution fails due to missing routine
   for i in 0..5
   {
-    let result = pipeline.process_command_simple( "test.command" );
+    let result = pipeline.process_command_simple( ".test.command" );
     
     // The command should be found (string interning works)
     // but may fail at execution stage (missing routine) - that's OK for this test
@@ -280,8 +280,8 @@ fn test_pipeline_integration_correctness()
   });
   
   let pipeline = Pipeline::new( registry );
-  let command_text = "integration.test";
-  
+  let command_text = ".integration.test";
+
   // Process the same command multiple times to test consistency
   for i in 0..10
   {
@@ -312,8 +312,8 @@ fn test_error_handling_with_interning()
   let pipeline = Pipeline::new( registry );
   
   // Try to process a non-existent command
-  let result = pipeline.process_command_simple( "nonexistent command" );
-  
+  let result = pipeline.process_command_simple( ".nonexistent command" );
+
   // Should fail
   assert!( !result.success, "Non-existent command should fail" );
   assert!( result.error.is_some(), "Should have error message" );

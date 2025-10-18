@@ -24,13 +24,13 @@ fn main() -> Result< (), unilang::error::Error >
 
   // 1. Simple successful command
   let hello_command = CommandDefinition::former()
-  .name( "hello" )
+  .name( ".hello" )
   .namespace( String::new() )
   .description( "Prints a greeting message".to_string() )
   .hint( "Simple greeting" )
   .status( "stable" )
   .version( "1.0.0" )
-  .aliases( vec![ "hi".to_string() ] )
+  .aliases( vec![ ".hi".to_string() ] )
   .tags( vec![ "greeting".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
@@ -78,13 +78,13 @@ fn main() -> Result< (), unilang::error::Error >
 
   // 2. Command that uses execution context
   let status_command = CommandDefinition::former()
-  .name( "status" )
+  .name( ".status" )
   .namespace( ".system".to_string() )
   .description( "Shows system status information".to_string() )
   .hint( "System diagnostics" )
   .status( "stable" )
   .version( "2.1.0" )
-  .aliases( vec![ "info".to_string(), "diag".to_string() ] )
+  .aliases( vec![ ".info".to_string(), ".diag".to_string() ] )
   .tags( vec![ "system".to_string(), "monitoring".to_string() ] )
   .permissions( vec![ "read_system".to_string() ] )
   .idempotent( true )
@@ -155,13 +155,13 @@ fn main() -> Result< (), unilang::error::Error >
 
   // 3. Command that can fail with error
   let divide_command = CommandDefinition::former()
-  .name( "divide" )
+  .name( ".divide" )
   .namespace( ".math".to_string() )
   .description( "Divides two numbers with error handling".to_string() )
   .hint( "Safe division operation" )
   .status( "stable" )
   .version( "1.2.0" )
-  .aliases( vec![ "div".to_string() ] )
+  .aliases( vec![ ".div".to_string() ] )
   .tags( vec![ "math".to_string(), "arithmetic".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
@@ -252,13 +252,13 @@ fn main() -> Result< (), unilang::error::Error >
 
   // 4. Command with complex data processing
   let analyze_command = CommandDefinition::former()
-  .name( "analyze" )
+  .name( ".analyze" )
   .namespace( ".data".to_string() )
   .description( "Analyzes a list of numbers with statistics".to_string() )
   .hint( "Statistical analysis" )
   .status( "beta" )
   .version( "0.9.0" )
-  .aliases( vec![ "stats".to_string() ] )
+  .aliases( vec![ ".stats".to_string() ] )
   .tags( vec![ "data".to_string(), "statistics".to_string(), "analysis".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
@@ -362,7 +362,7 @@ fn main() -> Result< (), unilang::error::Error >
 
   let test_cases = [
     // Successful executions
-    ( "hello Alice", "Simple successful execution" ),
+    ( ".hello Alice", "Simple successful execution" ),
     ( "system.status --verbose", "Command with context and detailed output" ),
     ( "math.divide 42.0 6.0", "Mathematical operation" ),
     ( "data.analyze --numbers 1.5,2.3,4.1,3.7,5.2,2.8,4.6", "Complex data processing" ),
@@ -428,8 +428,8 @@ fn main() -> Result< (), unilang::error::Error >
 
   let batch_commands = vec!
   [
-    "hello John",
-    "hello Jane",
+    ".hello John",
+    ".hello Jane",
     "math.divide 100.0 4.0",
     "system.status",
   ];

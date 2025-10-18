@@ -82,13 +82,13 @@ fn register_interactive_commands( registry : &mut CommandRegistry ) -> Result< (
 {
   // Command with interactive password input
   let login_cmd = CommandDefinition::former()
-  .name( "login" )
+  .name( ".login" )
   .namespace( ".auth" )
   .description( "User authentication with interactive password".to_string() )
   .hint( "Secure login command" )
   .status( "stable" )
   .version( "1.0.0" )
-  .aliases( vec![ "signin".to_string() ] )
+  .aliases( vec![ ".signin".to_string() ] )
   .tags( vec![ "auth".to_string(), "security".to_string() ] )
   .permissions( vec![] )
   .idempotent( false )
@@ -146,13 +146,13 @@ fn register_interactive_commands( registry : &mut CommandRegistry ) -> Result< (
 
   // Command with optional interactive input
   let config_cmd = CommandDefinition::former()
-  .name( "configure" )
+  .name( ".configure" )
   .namespace( ".system" )
   .description( "System configuration with optional interactive setup".to_string() )
   .hint( "Configuration management" )
   .status( "stable" )
   .version( "2.1.0" )
-  .aliases( vec![ "config".to_string(), "setup".to_string() ] )
+  .aliases( vec![ ".config".to_string(), ".setup".to_string() ] )
   .tags( vec![ "config".to_string(), "system".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
@@ -228,13 +228,13 @@ fn register_interactive_commands( registry : &mut CommandRegistry ) -> Result< (
 
   // Regular command for comparison
   let info_cmd = CommandDefinition::former()
-  .name( "info" )
+  .name( ".info" )
   .namespace( ".system" )
   .description( "Display system information".to_string() )
   .hint( "System info display" )
   .status( "stable" )
   .version( "1.0.0" )
-  .aliases( vec![ "status".to_string() ] )
+  .aliases( vec![ ".status".to_string() ] )
   .tags( vec![ "info".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )

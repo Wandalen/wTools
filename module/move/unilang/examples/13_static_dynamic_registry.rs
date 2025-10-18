@@ -72,13 +72,13 @@ fn main() -> Result< (), unilang::error::Error >
   println!( "\n=== Dynamic Command Registration ===\n" );
 
   let dynamic_cmd = CommandDefinition::former()
-  .name( "dynamic_example" )
+  .name( ".dynamic_example" )
   .namespace( ".demo" )
   .description( "Example of a runtime-registered command".to_string() )
   .hint( "Dynamic command demo" )
   .status( "experimental" )
   .version( "0.1.0" )
-  .aliases( vec![ "de".to_string() ] )
+  .aliases( vec![ ".de".to_string() ] )
   .tags( vec![ "demo".to_string(), "dynamic".to_string() ] )
   .permissions( vec![] )
   .idempotent( false )

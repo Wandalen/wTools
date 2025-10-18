@@ -1065,25 +1065,32 @@ mod private
     /// # Returns
     /// * `String` - The fully qualified command name with dot prefix
     ///
+    /// # Note on Dot Prefix Requirement
+    /// While this method normalizes names without dots (for YAML manifest compatibility),
+    /// the API validation (`validate_command_name`) REQUIRES all commands to start with `.`
+    /// and will reject registrations that don't. Only YAML/JSON manifests use names without
+    /// dots, as the build script adds them automatically.
+    ///
     /// # Examples
     /// ```rust,ignore
     /// use unilang::data::CommandDefinition;
     ///
-    /// // Command with dot-prefixed name (already full format)
+    /// // Correctly formatted command (dot-prefixed name)
     /// let cmd1 = CommandDefinition { name: ".help".to_string(), namespace: "".to_string(), ..Default::default() };
     /// assert_eq!(cmd1.full_name(), ".help");
     ///
-    /// // Command without namespace
+    /// // YAML manifest format (normalization for build script compatibility only)
+    /// // NOTE: Direct API registration requires dot prefix and will reject "help" without validation bypass
     /// let cmd2 = CommandDefinition { name: "help".to_string(), namespace: "".to_string(), ..Default::default() };
-    /// assert_eq!(cmd2.full_name(), ".help");
+    /// assert_eq!(cmd2.full_name(), ".help"); // Internal normalization
     ///
-    /// // Command with namespace
-    /// let cmd3 = CommandDefinition { name: "list".to_string(), namespace: "session".to_string(), ..Default::default() };
+    /// // Namespaced command (both should have dot prefix for API usage)
+    /// let cmd3 = CommandDefinition { name: ".list".to_string(), namespace: ".session".to_string(), ..Default::default() };
     /// assert_eq!(cmd3.full_name(), ".session.list");
     ///
-    /// // Command with dot-prefixed namespace
-    /// let cmd4 = CommandDefinition { name: "list".to_string(), namespace: ".session".to_string(), ..Default::default() };
-    /// assert_eq!(cmd4.full_name(), ".session.list");
+    /// // YAML manifest format (no dots - build script adds them)
+    /// let cmd4 = CommandDefinition { name: "list".to_string(), namespace: "session".to_string(), ..Default::default() };
+    /// assert_eq!(cmd4.full_name(), ".session.list"); // Internal normalization
     /// ```
     #[ must_use ]
     pub fn full_name( &self ) -> String

@@ -22,7 +22,7 @@ fn test_dot_command_shows_help_instead_of_panicking()
   
   // Add a test command
   let test_command = unilang::data::CommandDefinition::former()
-    .name("test")
+    .name(".test")
     .namespace("")
     .description("A test command")
     .end();
@@ -91,13 +91,13 @@ fn test_dot_command_lists_multiple_commands()
   
   // Add multiple test commands
   let cmd1 = unilang::data::CommandDefinition::former()
-    .name("first")
+    .name(".first")
     .namespace(".test")
     .description("First test command")
     .end();
     
   let cmd2 = unilang::data::CommandDefinition::former()
-    .name("second")
+    .name(".second")
     .namespace(".test")
     .description("Second test command")
     .end();

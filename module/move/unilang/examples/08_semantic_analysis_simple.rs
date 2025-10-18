@@ -23,13 +23,13 @@ fn main() -> Result< (), unilang::error::Error >
 
   // Math command for testing
   let math_command = CommandDefinition::former()
-  .name( "calculate" )
+  .name( ".calculate" )
   .namespace( ".math".to_string() )
   .description( "Performs mathematical calculations".to_string() )
   .hint( "Calculator utility" )
   .status( "stable" )
   .version( "1.0.0" )
-  .aliases( vec![ "calc".to_string() ] )
+  .aliases( vec![ ".calc".to_string() ] )
   .tags( vec![ "math".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
@@ -104,13 +104,13 @@ fn main() -> Result< (), unilang::error::Error >
 
   // Text processing command for testing
   let text_command = CommandDefinition::former()
-  .name( "process" )
+  .name( ".process" )
   .namespace( ".text".to_string() )
   .description( "Processes text with various transformations".to_string() )
   .hint( "Text processing utility" )
   .status( "stable" )
   .version( "2.0.0" )
-  .aliases( vec![ "transform".to_string() ] )
+  .aliases( vec![ ".transform".to_string() ] )
   .tags( vec![ "text".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )

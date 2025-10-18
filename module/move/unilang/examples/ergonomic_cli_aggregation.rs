@@ -21,7 +21,7 @@ fn create_math_commands() -> Vec<CommandDefinition>
 {
   vec![
     CommandDefinition::former()
-      .name( "add" )
+      .name( ".add" )
       .description( "Add two numbers".to_string() )
       .hint( "Mathematical addition".to_string() )
       .arguments( vec![
@@ -42,7 +42,7 @@ fn create_math_commands() -> Vec<CommandDefinition>
       ])
       .end(),
     CommandDefinition::former()
-      .name( "multiply" )
+      .name( ".multiply" )
       .description( "Multiply two numbers".to_string() )
       .hint( "Mathematical multiplication".to_string() )
       .arguments( vec![
@@ -70,7 +70,7 @@ fn create_file_commands() -> Vec<CommandDefinition>
 {
   vec![
     CommandDefinition::former()
-      .name( "list" )
+      .name( ".list" )
       .description( "List files in directory".to_string() )
       .hint( "Directory listing".to_string() )
       .arguments( vec![
@@ -88,7 +88,7 @@ fn create_file_commands() -> Vec<CommandDefinition>
       ])
       .end(),
     CommandDefinition::former()
-      .name( "copy" )
+      .name( ".copy" )
       .description( "Copy a file".to_string() )
       .hint( "File copy operation".to_string() )
       .arguments( vec![
@@ -116,7 +116,7 @@ fn create_database_commands() -> Vec<CommandDefinition>
 {
   vec![
     CommandDefinition::former()
-      .name( "connect" )
+      .name( ".connect" )
       .description( "Connect to database".to_string() )
       .hint( "Database connection".to_string() )
       .arguments( vec![
@@ -145,7 +145,7 @@ fn create_database_commands() -> Vec<CommandDefinition>
       ])
       .end(),
     CommandDefinition::former()
-      .name( "migrate" )
+      .name( ".migrate" )
       .description( "Run database migrations".to_string() )
       .hint( "Database migration".to_string() )
       .arguments( vec![
@@ -193,7 +193,7 @@ fn main() -> Result<(), unilang::Error>
   // Add a main info command to the registry
   let mut registry = aggregated_cli;
   let info_cmd = CommandDefinition::former()
-    .name( "info" )
+    .name( ".info" )
     .description( "Show information about this aggregated CLI".to_string() )
     .hint( "CLI information".to_string() )
     .end();

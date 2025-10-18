@@ -14,9 +14,9 @@ use std::time::Instant;
 /// Create a test PHF map for performance metrics testing
 static PERFORMANCE_TEST_COMMANDS: StaticCommandMap = phf::phf_map!
 {
-  "perf_test_1" => &StaticCommandDefinition
+  ".perf_test_1" => &StaticCommandDefinition
   {
-    name: "perf_test_1",
+    name: ".perf_test_1",
     namespace: "perf",
     description: "Performance test command 1",
     hint: "Test command",
@@ -32,9 +32,9 @@ static PERFORMANCE_TEST_COMMANDS: StaticCommandMap = phf::phf_map!
     http_method_hint: "GET",
     examples: &[],
   },
-  "perf_test_2" => &StaticCommandDefinition
+  ".perf_test_2" => &StaticCommandDefinition
   {
-    name: "perf_test_2",
+    name: ".perf_test_2",
     namespace: "perf",
     description: "Performance test command 2",
     hint: "Test command",
@@ -50,9 +50,9 @@ static PERFORMANCE_TEST_COMMANDS: StaticCommandMap = phf::phf_map!
     http_method_hint: "GET",
     examples: &[],
   },
-  "perf_test_3" => &StaticCommandDefinition
+  ".perf_test_3" => &StaticCommandDefinition
   {
-    name: "perf_test_3",
+    name: ".perf_test_3",
     namespace: "perf",
     description: "Performance test command 3",
     hint: "Test command",
@@ -120,13 +120,13 @@ fn test_command_registry_performance_metrics()
 
   // Add some test commands
   let cmd1 = CommandDefinition::former()
-    .name( "test_cmd_1" )
+    .name( ".test_cmd_1" )
     .description( "Test command 1".to_string() )
     .hint( "Test".to_string() )
     .end();
 
   let cmd2 = CommandDefinition::former()
-    .name( "test_cmd_2" )
+    .name( ".test_cmd_2" )
     .description( "Test command 2".to_string() )
     .hint( "Test".to_string() )
     .end();
@@ -139,9 +139,9 @@ fn test_command_registry_performance_metrics()
   let initial_total = initial_metrics.total_lookups;
 
   // Perform some lookups
-  let _cmd1 = registry.command_optimized( "test_cmd_1" );
-  let _cmd2 = registry.command_optimized( "test_cmd_2" );
-  let _cmd1_again = registry.command_optimized( "test_cmd_1" ); // Should hit cache
+  let _cmd1 = registry.command_optimized( ".test_cmd_1" );
+  let _cmd2 = registry.command_optimized( ".test_cmd_2" );
+  let _cmd1_again = registry.command_optimized( ".test_cmd_1" ); // Should hit cache
   let _nonexistent = registry.command_optimized( "nonexistent" );
 
   // Check metrics were updated
@@ -165,9 +165,9 @@ fn test_static_command_registry_performance_metrics()
   assert_eq!( initial_metrics.static_lookups, 0 );
 
   // Perform some static command lookups
-  let _cmd1 = registry.command_with_metrics( "perf_test_1" );
-  let _cmd2 = registry.command_with_metrics( "perf_test_2" );
-  let _cmd3 = registry.command_with_metrics( "perf_test_3" );
+  let _cmd1 = registry.command_with_metrics( ".perf_test_1" );
+  let _cmd2 = registry.command_with_metrics( ".perf_test_2" );
+  let _cmd3 = registry.command_with_metrics( ".perf_test_3" );
   let _nonexistent = registry.command_with_metrics( "nonexistent" );
 
   // Check metrics were updated
@@ -187,7 +187,7 @@ fn test_hybrid_registry_performance_metrics()
 
   // Add a dynamic command
   let dynamic_cmd = CommandDefinition::former()
-    .name( "dynamic_test" )
+    .name( ".dynamic_test" )
     .description( "Dynamic test command".to_string() )
     .hint( "Dynamic".to_string() )
     .end();
@@ -195,9 +195,9 @@ fn test_hybrid_registry_performance_metrics()
   registry.register( dynamic_cmd );
 
   // Perform mixed lookups
-  let _static_cmd = registry.command_with_metrics( "perf_test_1" ); // Static
-  let _dynamic_cmd = registry.command_with_metrics( "dynamic_test" ); // Dynamic
-  let _static_cmd2 = registry.command_with_metrics( "perf_test_2" ); // Static
+  let _static_cmd = registry.command_with_metrics( ".perf_test_1" ); // Static
+  let _dynamic_cmd = registry.command_with_metrics( ".dynamic_test" ); // Dynamic
+  let _static_cmd2 = registry.command_with_metrics( ".perf_test_2" ); // Static
   let _nonexistent = registry.command_with_metrics( "nonexistent" ); // Miss
 
   // Check hybrid metrics
@@ -216,8 +216,8 @@ fn test_performance_metrics_reset()
   let mut registry = StaticCommandRegistry::from_phf( &PERFORMANCE_TEST_COMMANDS );
 
   // Perform some lookups to generate metrics
-  let _cmd1 = registry.command_with_metrics( "perf_test_1" );
-  let _cmd2 = registry.command_with_metrics( "perf_test_2" );
+  let _cmd1 = registry.command_with_metrics( ".perf_test_1" );
+  let _cmd2 = registry.command_with_metrics( ".perf_test_2" );
 
   // Verify metrics are non-zero
   let metrics_before = registry.performance_metrics();
@@ -244,7 +244,7 @@ fn test_cache_performance_patterns()
   for i in 0..10
   {
     let cmd = CommandDefinition::former()
-      .name( format!( "cache_test_{i}" ) )
+      .name( format!( ".cache_test_{i}" ) )
       .description( format!( "Cache test command {i}" ) )
       .hint( "Cache test".to_string() )
       .end();
@@ -253,9 +253,9 @@ fn test_cache_performance_patterns()
 
   // Perform repeated lookups to test cache behavior
   let commands_to_test = vec![
-    "cache_test_0", "cache_test_1", "cache_test_2",
-    "cache_test_0", "cache_test_1", // Repeated lookups
-    "cache_test_0", // More repetition
+    ".cache_test_0", ".cache_test_1", ".cache_test_2",
+    ".cache_test_0", ".cache_test_1", // Repeated lookups
+    ".cache_test_0", // More repetition
   ];
 
   for cmd_name in &commands_to_test
@@ -284,7 +284,7 @@ fn test_performance_metrics_under_load()
   let mut registry = StaticCommandRegistry::from_phf( &PERFORMANCE_TEST_COMMANDS );
 
   let iterations = 1000;
-  let command_names = vec![ "perf_test_1", "perf_test_2", "perf_test_3", "nonexistent" ];
+  let command_names = vec![ ".perf_test_1", ".perf_test_2", ".perf_test_3", "nonexistent" ];
 
   // Warmup
   for _ in 0..100
@@ -340,7 +340,7 @@ fn test_registry_mode_impact_on_metrics()
     dynamic_registry.register( dynamic_cmd );
   }
 
-  let test_commands = vec![ "perf_test_1", "perf_test_2", "perf_test_3" ];
+  let test_commands = vec![ ".perf_test_1", ".perf_test_2", ".perf_test_3" ];
   let iterations = 100;
 
   // Test static registry performance
@@ -412,10 +412,10 @@ fn test_performance_metrics_consistency()
   let mut registry = StaticCommandRegistry::from_phf( &PERFORMANCE_TEST_COMMANDS );
 
   // Mix of readonly and mutable lookups
-  let _readonly1 = registry.command( "perf_test_1" ); // Readonly (no metrics update)
-  let _mutable1 = registry.command_with_metrics( "perf_test_1" ); // Mutable (updates metrics)
-  let _readonly2 = registry.command( "perf_test_2" ); // Readonly (no metrics update)
-  let _mutable2 = registry.command_with_metrics( "perf_test_2" ); // Mutable (updates metrics)
+  let _readonly1 = registry.command( ".perf_test_1" ); // Readonly (no metrics update)
+  let _mutable1 = registry.command_with_metrics( ".perf_test_1" ); // Mutable (updates metrics)
+  let _readonly2 = registry.command( ".perf_test_2" ); // Readonly (no metrics update)
+  let _mutable2 = registry.command_with_metrics( ".perf_test_2" ); // Mutable (updates metrics)
 
   // Only mutable lookups should be counted
   let metrics = registry.performance_metrics();

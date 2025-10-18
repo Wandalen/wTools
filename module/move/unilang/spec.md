@@ -122,7 +122,7 @@ This section lists the specific, testable functions the `unilang` framework **mu
     - All command names **must** start with a dot prefix (e.g., `.chat`, `.session.list`)
     - Command registration **must** fail with a clear error if the name lacks a dot prefix
     - The framework **must not** automatically add, remove, or transform command names during registration or execution
-    - Namespaced commands **must** use dot-separated hierarchy (e.g., name: `list`, namespace: `.session` → `.session.list`)
+    - Namespaced commands **must** use dot-separated hierarchy (e.g., name: `list`, namespace: `session` → `.session.list` - note that YAML manifests use names and namespaces without dots, as the build script adds them automatically)
 
 #### 4.2. Argument Parsing & Type System
 *   **FR-ARG-1 (Type Support):** The framework **must** support parsing and type-checking for the following `Kind`s: `String`, `Integer`, `Float`, `Boolean`, `Path`, `File`, `Directory`, `Enum`, `Url`, `DateTime`, `Pattern`, `List`, `Map`, `JsonString`, and `Object`.

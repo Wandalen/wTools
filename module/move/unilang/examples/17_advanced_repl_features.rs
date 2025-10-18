@@ -38,13 +38,13 @@ fn register_comprehensive_commands( registry : &mut CommandRegistry ) -> Result<
 {
   // File system commands
   let ls_cmd = CommandDefinition::former()
-  .name( "list" )
+  .name( ".list" )
   .namespace( ".fs" )
   .description( "List files and directories".to_string() )
   .hint( "File system listing" )
   .status( "stable" )
   .version( "1.0.0" )
-  .aliases( vec![ "ls".to_string(), "dir".to_string() ] )
+  .aliases( vec![ ".ls".to_string(), ".dir".to_string() ] )
   .tags( vec![ "filesystem".to_string(), "utility".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
@@ -95,13 +95,13 @@ fn register_comprehensive_commands( registry : &mut CommandRegistry ) -> Result<
 
   // Network commands
   let ping_cmd = CommandDefinition::former()
-  .name( "ping" )
+  .name( ".ping" )
   .namespace( ".net" )
   .description( "Ping a host to test connectivity".to_string() )
   .hint( "Network connectivity test" )
   .status( "stable" )
   .version( "2.0.0" )
-  .aliases( vec![ "test".to_string() ] )
+  .aliases( vec![ ".test".to_string() ] )
   .tags( vec![ "network".to_string(), "diagnostic".to_string() ] )
   .permissions( vec![] )
   .idempotent( false )
@@ -167,13 +167,13 @@ fn register_comprehensive_commands( registry : &mut CommandRegistry ) -> Result<
 
   // Data processing command
   let process_cmd = CommandDefinition::former()
-  .name( "process" )
+  .name( ".process" )
   .namespace( ".data" )
   .description( "Process data with various algorithms".to_string() )
   .hint( "Data processing pipeline" )
   .status( "experimental" )
   .version( "0.5.0" )
-  .aliases( vec![ "proc".to_string(), "analyze".to_string() ] )
+  .aliases( vec![ ".proc".to_string(), ".analyze".to_string() ] )
   .tags( vec![ "data".to_string(), "processing".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )

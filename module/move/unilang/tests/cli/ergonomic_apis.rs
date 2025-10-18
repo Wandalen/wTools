@@ -47,7 +47,7 @@ fn test_cli_builder_mode_selection()
 fn test_cli_builder_static_modules()
 {
   let cmd = CommandDefinition::former()
-    .name( "test" )
+    .name( ".test" )
     .description( "Test command".to_string() )
     .end();
 
@@ -61,7 +61,7 @@ fn test_cli_builder_static_modules()
 fn test_cli_builder_static_modules_with_prefix()
 {
   let cmd = CommandDefinition::former()
-    .name( "test" )
+    .name( ".test" )
     .description( "Test command".to_string() )
     .end();
 
@@ -93,7 +93,7 @@ fn test_cli_builder_dynamic_modules_with_prefix()
 fn test_cli_builder_conditional_modules()
 {
   let cmd = CommandDefinition::former()
-    .name( "conditional" )
+    .name( ".conditional" )
     .description( "Conditional command".to_string() )
     .end();
 
@@ -122,7 +122,7 @@ fn test_cli_builder_configuration()
 fn test_cli_builder_build_static_only()
 {
   let cmd = CommandDefinition::former()
-    .name( "version" )
+    .name( ".version" )
     .description( "Show version".to_string() )
     .end();
 
@@ -145,7 +145,7 @@ fn test_cli_builder_build_static_only()
 fn test_cli_builder_build_with_prefix()
 {
   let cmd = CommandDefinition::former()
-    .name( "version" )
+    .name( ".version" )
     .description( "Show version".to_string() )
     .end();
 
@@ -176,7 +176,7 @@ fn test_cli_builder_auto_mode_detection()
 {
   // Only static modules should result in StaticOnly mode
   let cmd = CommandDefinition::former()
-    .name( "test" )
+    .name( ".test" )
     .end();
   let builder = CliBuilder::new()
     .mode( AggregationMode::Auto )
@@ -195,7 +195,7 @@ fn test_cli_builder_auto_mode_detection()
 
   // Mixed modules should result in Hybrid mode
   let cmd = CommandDefinition::former()
-    .name( "test" )
+    .name( ".test" )
     .end();
   let builder = CliBuilder::new()
     .mode( AggregationMode::Auto )
@@ -211,7 +211,7 @@ fn test_cli_builder_auto_mode_detection()
 fn test_cli_builder_conditional_modules_enabled()
 {
   let cmd = CommandDefinition::former()
-    .name( "debug" )
+    .name( ".debug" )
     .description( "Debug command".to_string() )
     .end();
 
@@ -234,7 +234,7 @@ fn test_cli_builder_conditional_modules_enabled()
 fn test_cli_builder_conditional_modules_disabled()
 {
   let cmd = CommandDefinition::former()
-    .name( "disabled" )
+    .name( ".disabled" )
     .description( "Disabled command".to_string() )
     .end();
 
@@ -288,7 +288,7 @@ fn test_backward_compatibility_with_existing_apis()
     let mut registry = CommandRegistry::new();
 
   let cmd = CommandDefinition::former()
-    .name( "legacy" )
+    .name( ".legacy" )
     .description( "Legacy command".to_string() )
     .end();
 
@@ -297,7 +297,7 @@ fn test_backward_compatibility_with_existing_apis()
 
   // Test that new CliBuilder can coexist with existing registries
   let new_cmd = CommandDefinition::former()
-    .name( "new" )
+    .name( ".new" )
     .description( "New command".to_string() )
     .end();
 
@@ -321,7 +321,7 @@ fn test_backward_compatibility_with_existing_apis()
 fn test_integration_with_hybrid_registry()
 {
   let cmd = CommandDefinition::former()
-    .name( "hybrid_test" )
+    .name( ".hybrid_test" )
     .description( "Test hybrid registry integration".to_string() )
     .end();
 
@@ -391,12 +391,12 @@ fn test_mode_selection_apis()
 fn test_complex_scenario_with_all_features()
 {
   let static_cmd = CommandDefinition::former()
-    .name( "static_cmd" )
+    .name( ".static_cmd" )
     .description( "Static command".to_string() )
     .end();
 
   let cond_cmd = CommandDefinition::former()
-    .name( "cond_cmd" )
+    .name( ".cond_cmd" )
     .description( "Conditional command".to_string() )
     .end();
 

@@ -37,21 +37,21 @@ fn main() -> Result< (), unilang::error::Error >
   // - Arguments it accepts
   // - Metadata like version, status, aliases
   let greet_command = CommandDefinition::former()
-  .name( "greet" )                              // The command name users will type
+  .name( ".greet" )                            // The command name users will type
   .namespace( String::new() )                  // Empty = global namespace (no prefix needed)
   .description( "A simple greeting command".to_string() )
   .hint( "Greets a person by name" )           // Short hint shown in command lists
   .status( "stable" )                           // Can be: stable, beta, experimental, deprecated
   .version( "1.0.0" )                          // Semantic versioning
-  .aliases( vec![ "hello".to_string() ] )       // Alternative names (users can type 'hello' instead)
+  .aliases( vec![ ".hello".to_string() ] )     // Alternative names (users can type '.hello' instead)
   .tags( vec![ "greeting".to_string(), "demo".to_string() ] )  // For categorization
   .permissions( vec![] )                        // Empty = no special permissions needed
   .idempotent( true )                          // Safe to run multiple times
   .deprecation_message( String::new() )        // Used when status is "deprecated"
   .http_method_hint( "GET".to_string() )        // Hint for REST API generation
-  .examples( vec![ 
-    "greet name::\"Alice\"".to_string(),        // Example with argument
-    "greet".to_string()                         // Example using default
+  .examples( vec![
+    ".greet name::\"Alice\"".to_string(),      // Example with argument
+    ".greet".to_string()                       // Example using default
   ])
   .arguments( vec!
   [

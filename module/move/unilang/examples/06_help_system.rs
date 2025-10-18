@@ -56,7 +56,7 @@ fn main() -> Result< (), unilang::error::Error >
   // - examples: Real-world usage scenarios with actual command syntax
   let process_command = CommandDefinition::former()
   // Core identification - appears in help as the primary command name
-  .name( "process" )
+  .name( ".process" )
   
   // Namespace creates hierarchical command structure (shows as "data.process")
   // Empty namespace means global scope, ".data" creates data.* family
@@ -81,7 +81,7 @@ fn main() -> Result< (), unilang::error::Error >
   // Aliases provide alternative invocation methods - improves user experience
   // Users can use any of these names to invoke the same command
   // Good practice: include short forms, common synonyms, and legacy names
-  .aliases( vec![ "proc".to_string(), "transform".to_string(), "filter".to_string() ] )
+  .aliases( vec![ ".proc".to_string(), ".transform".to_string(), ".filter".to_string() ] )
   
   // Tags enable categorization and filtering in help systems
   // Helps users discover related commands and understand command purpose
@@ -412,13 +412,13 @@ fn main() -> Result< (), unilang::error::Error >
   // command definitions, showing how the help system adapts to different levels
   // of documentation complexity.
   let simple_command = CommandDefinition::former()
-  .name( "ping" )
+  .name( ".ping" )
   .namespace( String::new() ) // Global namespace - command appears as just "ping"
   .description( "Test connectivity".to_string() )
   .hint( "Simple connectivity test" )
   .status( "stable" )
   .version( "1.0.0" )
-  .aliases( vec![ "test".to_string() ] )
+  .aliases( vec![ ".test".to_string() ] )
   .tags( vec![ "network".to_string() ] )
   .permissions( vec![] ) // No special permissions needed
   .idempotent( true )    // Safe to run multiple times

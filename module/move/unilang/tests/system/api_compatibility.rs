@@ -135,8 +135,8 @@ fn test_module_specific_imports()
   assert_eq!(core::mem::size_of::<CommandResult>(), core::mem::size_of::<CommandResult>());
   assert_eq!(core::mem::size_of::<BatchResult>(), core::mem::size_of::<BatchResult>());
   // Test that convenience functions are accessible
-  let _process_result = process_single_command("help", &registry, ctx.clone());
-  let _validate_result = validate_single_command("help", &registry);
+  let _process_result = process_single_command(".help", &registry, ctx.clone());
+  let _validate_result = validate_single_command(".help", &registry);
   let _help_gen = HelpGenerator::new(&registry);
 }
 
@@ -265,7 +265,7 @@ fn test_common_use_patterns()
   };
   
   let _cmd = CommandDefinition::former()
-    .name( "test" )
+    .name( ".test" )
     .namespace( String::new() )
     .description( "Test command".to_string() )
     .arguments( vec![

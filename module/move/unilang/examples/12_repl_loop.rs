@@ -35,13 +35,13 @@ fn register_sample_commands( registry : &mut CommandRegistry ) -> Result< (), un
 {
   // Echo command
   let echo_cmd = CommandDefinition::former()
-  .name( "echo" )
+  .name( ".echo" )
   .namespace( "" )
   .description( "Echoes the provided text".to_string() )
   .hint( "Simple text echo" )
   .status( "stable" )
   .version( "1.0.0" )
-  .aliases( vec![ "print".to_string() ] )
+  .aliases( vec![ ".print".to_string() ] )
   .tags( vec![ "utility".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
@@ -84,13 +84,13 @@ fn register_sample_commands( registry : &mut CommandRegistry ) -> Result< (), un
 
   // Math command
   let math_cmd = CommandDefinition::former()
-  .name( "add" )
+  .name( ".add" )
   .namespace( ".math" )
   .description( "Adds two numbers".to_string() )
   .hint( "Simple addition" )
   .status( "stable" )
   .version( "1.0.0" )
-  .aliases( vec![ "plus".to_string() ] )
+  .aliases( vec![ ".plus".to_string() ] )
   .tags( vec![ "math".to_string(), "arithmetic".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )

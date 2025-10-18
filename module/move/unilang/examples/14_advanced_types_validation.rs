@@ -18,13 +18,13 @@ fn main() -> Result< (), unilang::error::Error >
 
   // Step 1: Command with advanced argument types
   let advanced_cmd = CommandDefinition::former()
-  .name( "advanced_types" )
+  .name( ".advanced_types" )
   .namespace( ".examples" )
   .description( "Demonstrates advanced argument types and validation".to_string() )
   .hint( "Advanced type system showcase" )
   .status( "stable" )
   .version( "2.0.0" )
-  .aliases( vec![ "adv".to_string() ] )
+  .aliases( vec![ ".adv".to_string() ] )
   .tags( vec![ "advanced".to_string(), "types".to_string(), "validation".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )

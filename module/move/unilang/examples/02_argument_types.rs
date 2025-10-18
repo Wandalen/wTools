@@ -18,7 +18,7 @@ fn main() -> Result< (), unilang::error::Error >
 
   // Step 1: Command with various basic argument types
   let types_demo = CommandDefinition::former()
-  .name( "types_demo" )
+  .name( ".types_demo" )
   .namespace( String::new() )
   .description( "Demonstrates all supported argument types".to_string() )
   .hint( "Shows how different data types work" )
@@ -32,8 +32,8 @@ fn main() -> Result< (), unilang::error::Error >
   .http_method_hint( "POST".to_string() )
   .examples( vec!
   [
-    "types_demo text::hello number::42 flag::true".to_string(),
-    "types_demo url::https://example.com path::/tmp/file".to_string()
+    ".types_demo text::hello number::42 flag::true".to_string(),
+    ".types_demo url::https://example.com path::/tmp/file".to_string()
   ])
   .arguments( vec!
   [

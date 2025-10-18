@@ -331,40 +331,278 @@ impl MultiYamlAggregator
     vec![ "example".to_string() ]
   }
 
+  /// Generate a string array constant
+  fn generate_string_array( items : &[ String ], const_name : &str ) -> String
+  {
+    let mut content = String::new();
+    content.push_str( &format!( "const {}: &[&str] = &[", const_name ) );
+    for item in items
+    {
+      content.push_str( &format!( "\"{}\", ", Self::escape_string( item ) ) );
+    }
+    content.push_str( "];\n" );
+    content
+  }
+
+  /// Generate argument definition for a single argument
+  fn generate_argument_definition(
+    arg : &ArgumentDefinition,
+    const_name_base : &str,
+    arg_idx : usize,
+  ) -> String
+  {
+    let mut content = String::new();
+    let arg_const_name = format!( "{}_{}_ARG", const_name_base, arg_idx );
+    let attrs_const_name = format!( "{}_{}_ATTRS", const_name_base, arg_idx );
+    let aliases_const_name = format!( "{}_{}_ALIASES", const_name_base, arg_idx );
+    let tags_const_name = format!( "{}_{}_TAGS", const_name_base, arg_idx );
+
+    // Generate aliases and tags arrays
+    if !arg.aliases.is_empty()
+    {
+      content.push_str( &Self::generate_string_array( &arg.aliases, &aliases_const_name ) );
+    }
+    if !arg.tags.is_empty()
+    {
+      content.push_str( &Self::generate_string_array( &arg.tags, &tags_const_name ) );
+    }
+
+    // Generate attributes
+    content.push_str( &format!( "const {}: StaticArgumentAttributes = StaticArgumentAttributes::new()\n", attrs_const_name ) );
+    content.push_str( &format!( "  .with_optional( {} )\n", arg.attributes.optional ) );
+    content.push_str( &format!( "  .with_sensitive( {} )\n", arg.attributes.sensitive ) );
+    content.push_str( &format!( "  .with_interactive( {} )\n", arg.attributes.interactive ) );
+    content.push_str( &format!( "  .with_multiple( {} )", arg.attributes.multiple ) );
+    if let Some( ref default ) = arg.attributes.default
+    {
+      content.push_str( &format!( "\n  .with_default( \"{}\" )", Self::escape_string( default ) ) );
+    }
+    content.push_str( ";\n\n" );
+
+    // Generate kind
+    let kind_str = Self::generate_kind_string( &arg.kind, const_name_base, arg_idx, &mut content );
+
+    // Generate argument definition
+    content.push_str( &format!(
+      "const {}: StaticArgumentDefinition = StaticArgumentDefinition::new(\n",
+      arg_const_name
+    ) );
+    content.push_str( &format!( "  \"{}\",\n", Self::escape_string( &arg.name ) ) );
+    content.push_str( &format!( "  {},\n", kind_str ) );
+    content.push_str( &format!( "  \"{}\",\n", Self::escape_string( &arg.description ) ) );
+    content.push_str( ")\n" );
+    content.push_str( &format!( ".with_hint( \"{}\" )\n", Self::escape_string( &arg.hint ) ) );
+    content.push_str( &format!( ".with_attributes( {} )", attrs_const_name ) );
+
+    if !arg.aliases.is_empty()
+    {
+      content.push_str( &format!( "\n.with_aliases( {} )", aliases_const_name ) );
+    }
+    if !arg.tags.is_empty()
+    {
+      content.push_str( &format!( "\n.with_tags( {} )", tags_const_name ) );
+    }
+    content.push_str( ";\n\n" );
+
+    content
+  }
+
+  /// Generate kind string representation with any additional const definitions
+  fn generate_kind_string(
+    kind : &Kind,
+    const_name_base : &str,
+    arg_idx : usize,
+    content : &mut String,
+  ) -> String
+  {
+    match kind
+    {
+      Kind::String => "StaticKind::String".to_string(),
+      Kind::Integer => "StaticKind::Integer".to_string(),
+      Kind::Float => "StaticKind::Float".to_string(),
+      Kind::Boolean => "StaticKind::Boolean".to_string(),
+      Kind::Path => "StaticKind::Path".to_string(),
+      Kind::File => "StaticKind::File".to_string(),
+      Kind::Directory => "StaticKind::Directory".to_string(),
+      Kind::Url => "StaticKind::Url".to_string(),
+      Kind::DateTime => "StaticKind::DateTime".to_string(),
+      Kind::Pattern => "StaticKind::Pattern".to_string(),
+      Kind::JsonString => "StaticKind::JsonString".to_string(),
+      Kind::Enum( ref values ) =>
+      {
+        let enum_values_name = format!( "{}_{}_ENUM_VALUES", const_name_base, arg_idx );
+        content.push_str( &Self::generate_string_array( values, &enum_values_name ) );
+        format!( "StaticKind::Enum( &{} )", enum_values_name )
+      }
+      Kind::List( _, delim ) =>
+      {
+        let delim_str = match delim
+        {
+          Some( c ) => format!( "Some( '{}' )", c ),
+          None => "None".to_string(),
+        };
+        format!( "StaticKind::List( &StaticKind::String, {} )", delim_str )
+      }
+      Kind::Map( _, _, entry_delim, kv_delim ) =>
+      {
+        let entry_delim_str = match entry_delim
+        {
+          Some( c ) => format!( "Some( '{}' )", c ),
+          None => "None".to_string(),
+        };
+        let kv_delim_str = match kv_delim
+        {
+          Some( c ) => format!( "Some( '{}' )", c ),
+          None => "None".to_string(),
+        };
+        format!( "StaticKind::Map( &StaticKind::String, &StaticKind::String, {}, {} )", entry_delim_str, kv_delim_str )
+      }
+      Kind::Object => "StaticKind::JsonString".to_string(),
+    }
+  }
+
+  /// Generate command definition body with all its fields
+  fn generate_command_definition_body(
+    cmd : &CommandDefinition,
+    const_name_base : &str,
+    tags_const_name : &str,
+    aliases_const_name : &str,
+    permissions_const_name : &str,
+    examples_const_name : &str,
+  ) -> String
+  {
+    let mut content = String::new();
+
+    content.push_str( &format!( "  name: \"{}\",\n", Self::escape_string( &cmd.name ) ) );
+    content.push_str( &format!( "  namespace: \"{}\",\n", Self::escape_string( &cmd.namespace ) ) );
+    content.push_str( &format!( "  description: \"{}\",\n", Self::escape_string( &cmd.description ) ) );
+
+    // Arguments
+    if cmd.arguments.is_empty()
+    {
+      content.push_str( "  arguments: &[],\n" );
+    }
+    else
+    {
+      content.push_str( &format!( "  arguments: {}_ARGS,\n", const_name_base ) );
+    }
+
+    content.push_str( "  routine_link: None,\n" );
+    content.push_str( &format!( "  hint: \"{}\",\n", Self::escape_string( &cmd.hint ) ) );
+    content.push_str( &format!( "  status: \"{}\",\n", Self::escape_string( &cmd.status ) ) );
+    content.push_str( &format!( "  version: \"{}\",\n", Self::escape_string( &cmd.version ) ) );
+
+    // Arrays
+    if cmd.tags.is_empty()
+    {
+      content.push_str( "  tags: &[],\n" );
+    }
+    else
+    {
+      content.push_str( &format!( "  tags: {},\n", tags_const_name ) );
+    }
+
+    if cmd.aliases.is_empty()
+    {
+      content.push_str( "  aliases: &[],\n" );
+    }
+    else
+    {
+      content.push_str( &format!( "  aliases: {},\n", aliases_const_name ) );
+    }
+
+    if cmd.permissions.is_empty()
+    {
+      content.push_str( "  permissions: &[],\n" );
+    }
+    else
+    {
+      content.push_str( &format!( "  permissions: {},\n", permissions_const_name ) );
+    }
+
+    content.push_str( &format!( "  idempotent: {},\n", cmd.idempotent ) );
+    content.push_str( &format!( "  deprecation_message: \"{}\",\n", Self::escape_string( &cmd.deprecation_message ) ) );
+    content.push_str( &format!( "  http_method_hint: \"{}\",\n", Self::escape_string( &cmd.http_method_hint ) ) );
+
+    if cmd.examples.is_empty()
+    {
+      content.push_str( "  examples: &[],\n" );
+    }
+    else
+    {
+      content.push_str( &format!( "  examples: {},\n", examples_const_name ) );
+    }
+
+    content
+  }
+
   /// Generate PHF map content for static commands
   pub fn generate_phf_map( &self ) -> String
   {
     let mut phf_content = String::new();
     phf_content.push_str( "use phf::{phf_map, Map};\n" );
-    phf_content.push_str( "use unilang::static_data::StaticCommandDefinition;\n\n" );
+    phf_content.push_str( "use unilang::static_data::{StaticCommandDefinition, StaticArgumentDefinition, StaticArgumentAttributes, StaticKind};\n\n" );
 
-    // Generate static command definitions
+    // Generate each command
     for ( cmd_name, cmd ) in &self.commands
     {
-      let const_name = format!(
-        "{}_CMD",
-        cmd_name.replace( '.', "_" ).replace( '-', "_" ).to_uppercase()
-      );
+      let const_name_base = cmd_name.replace( '.', "_" ).replace( '-', "_" ).to_uppercase();
 
+      // Generate argument definitions
+      for ( arg_idx, arg ) in cmd.arguments.iter().enumerate()
+      {
+        phf_content.push_str( &Self::generate_argument_definition( arg, &const_name_base, arg_idx ) );
+      }
+
+      // Generate arguments array
+      if !cmd.arguments.is_empty()
+      {
+        let args_array_name = format!( "{}_ARGS", const_name_base );
+        phf_content.push_str( &format!( "const {}: &[StaticArgumentDefinition] = &[", args_array_name ) );
+        for arg_idx in 0..cmd.arguments.len()
+        {
+          phf_content.push_str( &format!( "{}_{}_ARG, ", const_name_base, arg_idx ) );
+        }
+        phf_content.push_str( "];\n\n" );
+      }
+
+      // Generate command-level arrays
+      let tags_const_name = format!( "{}_TAGS", const_name_base );
+      let aliases_const_name = format!( "{}_ALIASES", const_name_base );
+      let permissions_const_name = format!( "{}_PERMISSIONS", const_name_base );
+      let examples_const_name = format!( "{}_EXAMPLES", const_name_base );
+
+      if !cmd.tags.is_empty()
+      {
+        phf_content.push_str( &Self::generate_string_array( &cmd.tags, &tags_const_name ) );
+      }
+      if !cmd.aliases.is_empty()
+      {
+        phf_content.push_str( &Self::generate_string_array( &cmd.aliases, &aliases_const_name ) );
+      }
+      if !cmd.permissions.is_empty()
+      {
+        phf_content.push_str( &Self::generate_string_array( &cmd.permissions, &permissions_const_name ) );
+      }
+      if !cmd.examples.is_empty()
+      {
+        phf_content.push_str( &Self::generate_string_array( &cmd.examples, &examples_const_name ) );
+      }
+
+      // Generate command definition
+      let const_name = format!( "{}_CMD", const_name_base );
       phf_content.push_str( &format!(
-        "static {}: StaticCommandDefinition = StaticCommandDefinition {{\n",
+        "\nstatic {}: StaticCommandDefinition = StaticCommandDefinition {{\n",
         const_name
       ) );
-      phf_content.push_str( &format!( "  name: \"{}\",\n", cmd.name ) );
-      phf_content.push_str( &format!( "  namespace: \"{}\",\n", cmd.namespace ) );
-      phf_content.push_str( &format!( "  description: \"{}\",\n", cmd.description ) );
-      phf_content.push_str( "  arguments: &[],\n" );
-      phf_content.push_str( "  routine_link: None,\n" );
-      phf_content.push_str( &format!( "  hint: \"{}\",\n", cmd.hint ) );
-      phf_content.push_str( &format!( "  status: \"{}\",\n", cmd.status ) );
-      phf_content.push_str( &format!( "  version: \"{}\",\n", cmd.version ) );
-      phf_content.push_str( "  tags: &[],\n" );
-      phf_content.push_str( "  aliases: &[],\n" );
-      phf_content.push_str( "  permissions: &[],\n" );
-      phf_content.push_str( &format!( "  idempotent: {},\n", cmd.idempotent ) );
-      phf_content.push_str( &format!( "  deprecation_message: \"{}\",\n", cmd.deprecation_message ) );
-      phf_content.push_str( &format!( "  http_method_hint: \"{}\",\n", cmd.http_method_hint ) );
-      phf_content.push_str( "  examples: &[],\n" );
+      phf_content.push_str( &Self::generate_command_definition_body(
+        cmd,
+        &const_name_base,
+        &tags_const_name,
+        &aliases_const_name,
+        &permissions_const_name,
+        &examples_const_name,
+      ) );
       phf_content.push_str( "};\n\n" );
     }
 
@@ -376,11 +614,21 @@ impl MultiYamlAggregator
         "{}_CMD",
         cmd_name.replace( '.', "_" ).replace( '-', "_" ).to_uppercase()
       );
-      phf_content.push_str( &format!( "  \"{}\" => &{},\n", cmd_name, const_name ) );
+      phf_content.push_str( &format!( "  \"{}\" => &{},\n", Self::escape_string( cmd_name ), const_name ) );
     }
     phf_content.push_str( "};\n" );
 
     phf_content
+  }
+
+  /// Escape strings for Rust code generation
+  fn escape_string( s: &str ) -> String
+  {
+    s.replace( '\\', "\\\\" )
+     .replace( '"', "\\\"" )
+     .replace( '\n', "\\n" )
+     .replace( '\r', "\\r" )
+     .replace( '\t', "\\t" )
   }
 
   /// Get detected conflicts

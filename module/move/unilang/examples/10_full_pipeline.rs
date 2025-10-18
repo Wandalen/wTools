@@ -263,13 +263,13 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
 {
   // File listing command
   let list_command = CommandDefinition::former()
-  .name( "list" )
+  .name( ".list" )
   .namespace( ".file".to_string() )
   .description( "Lists files and directories with various formatting options".to_string() )
   .hint( "Directory listing utility" )
   .status( "stable" )
   .version( "2.3.1" )
-  .aliases( vec![ "ls".to_string(), "dir".to_string() ] )
+  .aliases( vec![ ".ls".to_string(), ".dir".to_string() ] )
   .tags( vec![ "filesystem".to_string(), "utility".to_string() ] )
   .permissions( vec![ "read_directory".to_string() ] )
   .idempotent( true )
@@ -371,13 +371,13 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
 
   // File sync command
   let sync_command = CommandDefinition::former()
-  .name( "sync" )
+  .name( ".sync" )
   .namespace( ".file".to_string() )
   .description( "Synchronizes files between source and target directories".to_string() )
   .hint( "File synchronization utility" )
   .status( "beta" )
   .version( "1.8.0" )
-  .aliases( vec![ "backup".to_string(), "mirror".to_string() ] )
+  .aliases( vec![ ".backup".to_string(), ".mirror".to_string() ] )
   .tags( vec![ "filesystem".to_string(), "backup".to_string(), "sync".to_string() ] )
   .permissions( vec![ "read_file".to_string(), "write_file".to_string() ] )
   .idempotent( false )
@@ -494,13 +494,13 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
 fn setup_text_commands( registry : &mut CommandRegistry ) -> Result< (), unilang::error::Error >
 {
   let analyze_command = CommandDefinition::former()
-  .name( "analyze" )
+  .name( ".analyze" )
   .namespace( ".text".to_string() )
   .description( "Analyzes text with various metrics and statistics".to_string() )
   .hint( "Text analysis and metrics" )
   .status( "stable" )
   .version( "3.1.2" )
-  .aliases( vec![ "stats".to_string(), "metrics".to_string() ] )
+  .aliases( vec![ ".stats".to_string(), ".metrics".to_string() ] )
   .tags( vec![ "text".to_string(), "analysis".to_string(), "nlp".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
@@ -632,13 +632,13 @@ fn setup_text_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
 fn setup_network_commands( registry : &mut CommandRegistry ) -> Result< (), unilang::error::Error >
 {
   let ping_command = CommandDefinition::former()
-  .name( "ping" )
+  .name( ".ping" )
   .namespace( ".network".to_string() )
   .description( "Tests network connectivity to a host".to_string() )
   .hint( "Network connectivity test" )
   .status( "stable" )
   .version( "2.0.1" )
-  .aliases( vec![ "test".to_string(), "check".to_string() ] )
+  .aliases( vec![ ".test".to_string(), ".check".to_string() ] )
   .tags( vec![ "network".to_string(), "connectivity".to_string(), "diagnostic".to_string() ] )
   .permissions( vec![ "network_access".to_string() ] )
   .idempotent( true )
@@ -733,13 +733,13 @@ fn setup_utility_commands( registry : &mut CommandRegistry ) -> Result< (), unil
 {
   // Echo command
   let echo_command = CommandDefinition::former()
-  .name( "echo" )
+  .name( ".echo" )
   .namespace( ".util".to_string() )
   .description( "Prints text to output".to_string() )
   .hint( "Text output utility" )
   .status( "stable" )
   .version( "1.0.0" )
-  .aliases( vec![ "print".to_string(), "say".to_string() ] )
+  .aliases( vec![ ".print".to_string(), ".say".to_string() ] )
   .tags( vec![ "utility".to_string(), "output".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
@@ -779,13 +779,13 @@ fn setup_utility_commands( registry : &mut CommandRegistry ) -> Result< (), unil
 
   // Timestamp command
   let timestamp_command = CommandDefinition::former()
-  .name( "timestamp" )
+  .name( ".timestamp" )
   .namespace( ".util".to_string() )
   .description( "Shows current timestamp in various formats".to_string() )
   .hint( "Timestamp utility" )
   .status( "stable" )
   .version( "1.1.0" )
-  .aliases( vec![ "time".to_string(), "now".to_string() ] )
+  .aliases( vec![ ".time".to_string(), ".now".to_string() ] )
   .tags( vec![ "utility".to_string(), "time".to_string() ] )
   .permissions( vec![] )
   .idempotent( false ) // Time changes

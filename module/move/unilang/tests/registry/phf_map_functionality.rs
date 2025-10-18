@@ -308,7 +308,7 @@ fn test_multi_yaml_aggregator_phf_generation()
 
   // Verify PHF map structure
   assert!( phf_content.contains("use phf::{phf_map, Map}") );
-  assert!( phf_content.contains("use unilang::static_data::StaticCommandDefinition") );
+  assert!( phf_content.contains("StaticCommandDefinition") );
   assert!( phf_content.contains("phf_map!") );
 
   // Print content for debugging

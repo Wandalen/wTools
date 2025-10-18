@@ -27,7 +27,7 @@ Result< (), Error >
 
   // .math.add command
   let math_add_def = CommandDefinition::former()
-  .name( "add" )
+  .name( ".add" )
   .description( "Adds two numbers." )
   .namespace( ".math" )
   .hint( "Adds two numbers." )
@@ -83,7 +83,7 @@ Result< (), Error >
 
   // .math.sub command
   let math_sub_def = CommandDefinition::former()
-  .name( "sub" )
+  .name( ".sub" )
   .description( "Subtracts two numbers." )
   .namespace( ".math" )
   .hint( "Subtracts two numbers." )
@@ -139,7 +139,7 @@ Result< (), Error >
 
   // .greet command
   let greet_def = CommandDefinition::former()
-  .name( "greet" )
+  .name( ".greet" )
   .description( "Greets the specified person." )
   .namespace( "" ) // Global command
   .hint( "Greets the specified person." )
@@ -184,7 +184,7 @@ Result< (), Error >
 
   // .config.set command
   let config_set_def = CommandDefinition::former()
-  .name( "set" )
+  .name( ".set" )
   .description( "Sets a configuration value." )
   .namespace( ".config" )
   .hint( "Sets a configuration value." )

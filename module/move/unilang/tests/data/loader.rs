@@ -154,7 +154,7 @@ fn test_resolve_routine_link_placeholder()
   let routine = result.unwrap();
   let dummy_command = unilang::semantic::VerifiedCommand {
     definition: unilang::data::CommandDefinition::former()
-      .name("test")
+      .name(".test")
       .namespace(String::new())
       .description(String::new())
       .hint(String::new())

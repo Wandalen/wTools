@@ -18,13 +18,13 @@ fn main() -> Result< (), unilang::error::Error >
 
   // Step 1: Command demonstrating List types
   let list_demo = CommandDefinition::former()
-  .name( "list_demo" )
+  .name( ".list_demo" )
   .namespace( "collections".to_string() )
   .description( "Demonstrates List argument types with various delimiters".to_string() )
   .hint( "Shows how to work with lists" )
   .status( "stable" )
   .version( "1.0.0" )
-  .aliases( vec![ "lists".to_string() ] )
+  .aliases( vec![ ".lists".to_string() ] )
   .tags( vec![ "collections".to_string(), "demo".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
@@ -107,13 +107,13 @@ fn main() -> Result< (), unilang::error::Error >
 
   // Step 2: Command demonstrating Map types
   let map_demo = CommandDefinition::former()
-  .name( "map_demo" )
+  .name( ".map_demo" )
   .namespace( "collections".to_string() )
   .description( "Demonstrates Map argument types with custom delimiters".to_string() )
   .hint( "Shows how to work with key-value maps" )
   .status( "stable" )
   .version( "1.0.0" )
-  .aliases( vec![ "maps".to_string() ] )
+  .aliases( vec![ ".maps".to_string() ] )
   .tags( vec![ "collections".to_string(), "demo".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )

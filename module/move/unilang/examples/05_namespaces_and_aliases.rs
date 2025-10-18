@@ -21,13 +21,13 @@ fn main() -> Result< (), unilang::error::Error >
 
   // .math.add command with aliases
   let add_command = CommandDefinition::former()
-  .name( "add" )
+  .name( ".add" )
   .namespace( ".math".to_string() )
   .description( "Adds two or more numbers".to_string() )
   .hint( "Mathematical addition" )
   .status( "stable" )
   .version( "1.2.0" )
-  .aliases( vec![ "sum".to_string(), "plus".to_string(), "+".to_string() ] )
+  .aliases( vec![ ".sum".to_string(), ".plus".to_string(), ".+".to_string() ] )
   .tags( vec![ "arithmetic".to_string(), "basic".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
@@ -98,13 +98,13 @@ fn main() -> Result< (), unilang::error::Error >
 
   // .math.multiply command
   let multiply_command = CommandDefinition::former()
-  .name( "multiply" )
+  .name( ".multiply" )
   .namespace( ".math".to_string() )
   .description( "Multiplies two or more numbers".to_string() )
   .hint( "Mathematical multiplication" )
   .status( "stable" )
   .version( "1.1.0" )
-  .aliases( vec![ "mul".to_string(), "times".to_string(), "*".to_string() ] )
+  .aliases( vec![ ".mul".to_string(), ".times".to_string(), ".*".to_string() ] )
   .tags( vec![ "arithmetic".to_string(), "basic".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
@@ -176,13 +176,13 @@ fn main() -> Result< (), unilang::error::Error >
   // Step 2: Commands in the 'text' namespace
 
   let uppercase_command = CommandDefinition::former()
-  .name( "upper" )
+  .name( ".upper" )
   .namespace( ".text".to_string() )
   .description( "Converts text to uppercase".to_string() )
   .hint( "Text case conversion" )
   .status( "stable" )
   .version( "2.0.0" )
-  .aliases( vec![ "uppercase".to_string(), "caps".to_string(), "UP".to_string() ] )
+  .aliases( vec![ ".uppercase".to_string(), ".caps".to_string(), ".UP".to_string() ] )
   .tags( vec![ "text-processing".to_string(), "formatting".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
@@ -239,13 +239,13 @@ fn main() -> Result< (), unilang::error::Error >
   // Step 3: Commands in the 'file' namespace
 
   let list_command = CommandDefinition::former()
-  .name( "list" )
+  .name( ".list" )
   .namespace( ".file".to_string() )
   .description( "Lists files in a directory".to_string() )
   .hint( "Directory listing" )
   .status( "beta" )
   .version( "0.8.0" )
-  .aliases( vec![ "ls".to_string(), "dir".to_string(), "show".to_string() ] )
+  .aliases( vec![ ".ls".to_string(), ".dir".to_string(), ".show".to_string() ] )
   .tags( vec![ "filesystem".to_string(), "utility".to_string() ] )
   .permissions( vec![ "read_directory".to_string() ] )
   .idempotent( true )
