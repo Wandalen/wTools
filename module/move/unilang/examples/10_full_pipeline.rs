@@ -1,6 +1,9 @@
 #![allow(clippy::all)]
 //! # Full Pipeline Demo
 //!
+//! **⚠️ NOTE:** This example uses runtime registration for demonstration purposes.
+//! For production use, define commands in YAML and use compile-time generation.
+//!
 //! This example demonstrates the complete Unilang pipeline from command
 //! registration through parsing, semantic analysis, and execution,
 //! showing how all components work together.

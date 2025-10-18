@@ -56,7 +56,7 @@ fn create_test_static_command() -> &'static StaticCommandDefinition
 }
 
 /// Create a test PHF map for testing
-static TEST_PHF_MAP: StaticCommandMap = phf::phf_map!
+const TEST_PHF_MAP_INTERNAL: phf::Map<&'static str, &'static StaticCommandDefinition> = phf::phf_map!
 {
   "test_command" => &StaticCommandDefinition
   {
@@ -95,6 +95,8 @@ static TEST_PHF_MAP: StaticCommandMap = phf::phf_map!
     examples: &[],
   },
 };
+
+static TEST_PHF_MAP: StaticCommandMap = StaticCommandMap::from_phf_internal(&TEST_PHF_MAP_INTERNAL);
 
 #[test]
 fn test_static_command_definition_structure()
@@ -255,7 +257,7 @@ fn test_phf_map_lookup_performance()
 fn test_static_command_registry_with_phf()
 {
   // Test StaticCommandRegistry integration with PHF map
-  let registry = StaticCommandRegistry::from_phf( &TEST_PHF_MAP );
+  let registry = StaticCommandRegistry::from_commands( &TEST_PHF_MAP );
 
   // Test command lookup
   let cmd1 = registry.command( "test_command" );

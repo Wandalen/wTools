@@ -331,9 +331,9 @@ let registry = CommandRegistry::builder()
 
 **How it works**:
 ```rust
-let mut registry = StaticCommandRegistry::from_phf(&STATIC_COMMANDS);
+let mut registry = StaticCommandRegistry::from_commands(&STATIC_COMMANDS);
 
-// Static commands from PHF (fast)
+// Static commands from compile-time map (fast, no PHF dependency required)
 let static_cmd = registry.command(".video.search"); // <100ns
 
 // Add dynamic commands at runtime
@@ -388,8 +388,8 @@ fn main() {
 //
 // 2. Use static registry in main.rs:
 fn main() {
-  let registry = StaticCommandRegistry::from_phf(&STATIC_COMMANDS);
-  // Commands are already registered at compile-time!
+  let registry = StaticCommandRegistry::from_commands(&STATIC_COMMANDS);
+  // Commands are already registered at compile-time, no PHF dependency needed!
 }
 ```
 
@@ -727,11 +727,11 @@ Based on goal: **"Make YAML + build-time PHF the obvious default choice"**
 
 **A**: Yes! Use Approach #17 (Hybrid Registry):
 ```rust
-let mut registry = StaticCommandRegistry::from_phf(&STATIC_COMMANDS);
+let mut registry = StaticCommandRegistry::from_commands(&STATIC_COMMANDS);
 registry.register(dynamic_command); // Add dynamic commands
 ```
 
-Static commands are fast (<100ns), dynamic commands are flexible.
+Static commands are fast (<100ns), dynamic commands are flexible. No PHF dependency required.
 
 ### Q: How do I migrate from runtime to compile-time?
 

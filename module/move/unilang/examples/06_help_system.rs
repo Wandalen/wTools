@@ -1,6 +1,9 @@
 #![allow(clippy::all)]
 //! # Help System Demo
 //!
+//! **⚠️ NOTE:** This example uses runtime registration for demonstration purposes.
+//! For production use, define commands in YAML and use compile-time generation.
+//!
 //! This example demonstrates the built-in help generation system in Unilang,
 //! showing how to create comprehensive documentation for commands that users
 //! can access through various help interfaces.

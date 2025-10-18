@@ -20,7 +20,7 @@ use unilang::static_data::StaticCommandDefinition;
 ///
 /// This macro processes CLI module definitions and generates:
 /// 1. Static command definitions
-/// 2. PHF map for zero-overhead lookup
+/// 2. Optimized static map for zero-overhead lookup
 /// 3. Aggregated registry with prefixes applied
 ///
 /// Usage:
@@ -68,25 +68,28 @@ macro_rules! aggregate_module {
  };
 }
 
-/// Macro to generate compile-time CLI with static PHF map
+/// Macro to generate compile-time CLI with optimized static map
 #[ allow( unused_macros ) ]
 macro_rules! compile_time_cli {
   (
   name: $name:literal,
   commands: [ $( $commands:expr ),* ]
  ) => {
-  // This would expand to generate a static PHF map at compile-time
+  // This would expand to generate an optimized static map at compile-time
   // similar to what build.rs currently does
 
   mod compile_time_generated {
   use super::*;
-  use phf;
+  use unilang::static_data::StaticCommandMap;
 
-  // Generate static command definitions
-  static AGGREGATED_COMMANDS: phf::Map<&'static str, CommandDefinition> = phf::phf_map! {
+  // Generate static command definitions (internal optimized map)
+  const AGGREGATED_COMMANDS_PHF: phf::Map<&'static str, &'static unilang::static_data::StaticCommandDefinition> = phf::phf_map! {
   // This would be populated by the macro expansion
   // processing all the module commands with prefixes applied
  };
+
+  // Public wrapper - implementation details hidden
+  static AGGREGATED_COMMANDS: StaticCommandMap = StaticCommandMap::from_phf_internal(&AGGREGATED_COMMANDS_PHF);
 
   // Generate the aggregated registry
   pub fn create_aggregated_registry() -> CommandRegistry
@@ -94,7 +97,7 @@ macro_rules! compile_time_cli {
   #[ allow( deprecated ) ]
   let mut registry = CommandRegistry::new();
 
-  // Commands are already in the static PHF map
+  // Commands are already in the static map
   // Registry will use them for zero-overhead lookup
 
   registry
@@ -255,7 +258,7 @@ pub fn demonstrate_compile_time_benefits()
   println!("    - Runtime prefix application");
   println!();
   println!("  Compile-Time Aggregation:");
-  println!("    - PHF lookup: O(1) guaranteed");
+  println!("    - Static lookup: O(1) guaranteed");
   println!("    - Zero hash computation (precomputed)");
   println!("    - Zero memory allocation (static data)");
   println!("    - Prefixes applied at compile-time");
@@ -263,7 +266,7 @@ pub fn demonstrate_compile_time_benefits()
 
   println!("💾 Memory Usage:");
   println!("  Runtime: Dynamic HashMap + Vec<CommandDefinition>");
-  println!("  Compile-Time: Static PHF map in read-only memory");
+  println!("  Compile-Time: Static command map in read-only memory");
   println!();
 
   println!("⚡ Startup Time:");
@@ -273,7 +276,7 @@ pub fn demonstrate_compile_time_benefits()
 
   println!("🔍 Binary Size:");
   println!("  Runtime: Code for aggregation + dynamic data structures");
-  println!("  Compile-Time: Only static data + PHF lookup code");
+  println!("  Compile-Time: Only static data + optimized lookup code");
   println!();
 
   println!("🛡️ Safety:");
@@ -310,7 +313,7 @@ pub mod generated_example {
   {
     #[ allow( deprecated ) ]
     let registry = CommandRegistry::new();
-    // Registry would use the static PHF map for lookups
+    // Registry would use the optimized static map for lookups
     // Commands are already aggregated with prefixes applied
     registry
   }
@@ -334,12 +337,12 @@ pub fn implementation_strategy()
 
   println!("Phase 2: Build Script Integration");
   println!("  - Extend existing build.rs to handle aggregation");
-  println!("  - Generate PHF maps for aggregated commands");
+  println!("  - Generate optimized static maps for aggregated commands");
   println!("  - Apply prefixes during generation");
   println!();
 
   println!("Phase 3: Registry Integration");
-  println!("  - Modify CommandRegistry to use static PHF maps");
+  println!("  - Modify CommandRegistry to use optimized static maps");
   println!("  - Maintain backward compatibility with dynamic commands");
   println!("  - Hybrid static/dynamic lookup for best of both worlds");
   println!();
@@ -371,7 +374,7 @@ fn main()
   println!();
 
   println!("🔍 Current State:");
-  println!("  ✅ Foundation exists (build.rs + PHF)");
+  println!("  ✅ Foundation exists (build.rs + optimized static maps)");
   println!("  ✅ Static command registry supported");
   println!("  ⏳ Procedural macros needed for ergonomic API");
   println!("  ⏳ Aggregation logic needs build script integration");

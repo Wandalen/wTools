@@ -1,13 +1,12 @@
 //! # Static Command Registry - Basic Compile-Time Example
 //!
 //! This example demonstrates the core functionality of the `StaticCommandRegistry`
-//! with PHF (Perfect Hash Function) based zero-overhead lookups. All command
-//! definitions are registered at compile time using perfect hash maps for
-//! optimal runtime performance.
+//! with zero-overhead compile-time lookups. All command definitions are registered
+//! at compile time using optimized static maps for optimal runtime performance.
 //!
 //! ## Key Features Demonstrated
 //!
-//! - Zero-overhead PHF-based command lookups
+//! - Zero-overhead compile-time command lookups
 //! - Compile-time command registration
 //! - Static command definitions
 //! - Performance comparison with dynamic registry
@@ -23,8 +22,8 @@ use std::time::Instant;
 use unilang::static_data::StaticCommandMap;
 use unilang::registry::StaticCommandRegistry;
 
-/// Example static commands using PHF map
-static EXAMPLE_COMMANDS: StaticCommandMap = phf::phf_map!
+/// Example static commands (internal optimized map)
+const EXAMPLE_COMMANDS_PHF: phf::Map<&'static str, &'static unilang::static_data::StaticCommandDefinition> = phf::phf_map!
 {
   ".version" => &unilang::static_data::StaticCommandDefinition
   {
@@ -177,13 +176,16 @@ static EXAMPLE_COMMANDS: StaticCommandMap = phf::phf_map!
   },
 };
 
+/// Public static command map (implementation details hidden)
+static EXAMPLE_COMMANDS: StaticCommandMap = StaticCommandMap::from_phf_internal(&EXAMPLE_COMMANDS_PHF);
+
 fn main() -> Result< (), Box< dyn std::error::Error > >
 {
   println!( "🚀 Static Command Registry - Basic Compile-Time Example" );
   println!( "=======================================================" );
 
   // Create static command registry
-  let static_registry = StaticCommandRegistry::from_phf( &EXAMPLE_COMMANDS );
+  let static_registry = StaticCommandRegistry::from_commands( &EXAMPLE_COMMANDS );
 
   println!( "\n📊 Static Registry Information:" );
   println!( "  Commands loaded: {}", static_registry.commands().len() );
@@ -195,8 +197,8 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   // Demonstrate command access
   demonstrate_command_access( &static_registry )?;
 
-  // Demonstrate PHF efficiency
-  demonstrate_phf_efficiency( &static_registry )?;
+  // Demonstrate static lookup efficiency
+  demonstrate_static_efficiency( &static_registry )?;
 
   println!( "\n✅ Static command registry example completed successfully" );
   Ok( () )
@@ -273,11 +275,11 @@ fn demonstrate_command_access( registry: &StaticCommandRegistry ) -> Result< (),
   Ok( () )
 }
 
-/// Demonstrate PHF (Perfect Hash Function) efficiency
+/// Demonstrate compile-time static lookup efficiency
 #[allow(clippy::unnecessary_wraps)]
-fn demonstrate_phf_efficiency( registry: &StaticCommandRegistry ) -> Result< (), Box< dyn std::error::Error > >
+fn demonstrate_static_efficiency( registry: &StaticCommandRegistry ) -> Result< (), Box< dyn std::error::Error > >
 {
-  println!( "\n🎯 PHF Efficiency Demonstration:" );
+  println!( "\n🎯 Static Lookup Efficiency Demonstration:" );
 
   // Test that all commands are accessible
   let all_commands = registry.commands();

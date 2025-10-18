@@ -199,7 +199,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
 
   println!( "✅ Row 7 example complete!" );
   println!();
-  println!( "Next: See example 21 for Row 8 (Static PHF with const fn)" );
+  println!( "Next: See example 21 for Row 8 (Compile-Time Static with const fn)" );
 
   Ok(())
 }

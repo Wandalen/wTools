@@ -17,8 +17,8 @@ use unilang::registry::{ StaticCommandRegistry, RegistryMode, CommandRegistryTra
 use unilang::static_data::{ StaticCommandDefinition, StaticCommandMap, StaticArgumentDefinition, StaticKind, StaticArgumentAttributes };
 use std::time::Instant;
 
-/// Create a comprehensive test PHF map with various command types
-static TEST_STATIC_COMMANDS: StaticCommandMap = phf::phf_map!
+/// Create a comprehensive test command map with various command types
+const TEST_STATIC_COMMANDS_PHF: phf::Map<&'static str, &'static StaticCommandDefinition> = phf::phf_map!
 {
   ".test.version" => &StaticCommandDefinition
   {
@@ -189,6 +189,9 @@ static TEST_STATIC_COMMANDS: StaticCommandMap = phf::phf_map!
   },
 };
 
+/// Wrapper for test static commands
+static TEST_STATIC_COMMANDS: StaticCommandMap = StaticCommandMap::from_phf_internal(&TEST_STATIC_COMMANDS_PHF);
+
 #[test]
 fn test_static_command_registry_creation()
 {
@@ -208,10 +211,10 @@ fn test_static_command_registry_creation()
 }
 
 #[test]
-fn test_static_command_registry_from_phf()
+fn test_static_command_registry_from_commands()
 {
-  // Test creation from PHF map
-  let registry = StaticCommandRegistry::from_phf( &TEST_STATIC_COMMANDS );
+  // Test creation from static command map
+  let registry = StaticCommandRegistry::from_commands( &TEST_STATIC_COMMANDS );
   assert_eq!( registry.mode(), RegistryMode::Hybrid );
 
   // Should contain all static commands
@@ -228,7 +231,7 @@ fn test_static_command_registry_from_phf()
 #[test]
 fn test_static_command_lookup_functionality()
 {
-  let registry = StaticCommandRegistry::from_phf( &TEST_STATIC_COMMANDS );
+  let registry = StaticCommandRegistry::from_commands( &TEST_STATIC_COMMANDS );
 
   // Test successful lookups
   let version_cmd = registry.command( ".test.version" );
@@ -261,7 +264,7 @@ fn test_static_command_lookup_functionality()
 #[test]
 fn test_static_command_registry_mode_switching()
 {
-  let mut registry = StaticCommandRegistry::from_phf( &TEST_STATIC_COMMANDS );
+  let mut registry = StaticCommandRegistry::from_commands( &TEST_STATIC_COMMANDS );
 
   // Test mode switching
   registry.set_mode( RegistryMode::StaticOnly );
@@ -280,7 +283,7 @@ fn test_static_command_registry_mode_switching()
 #[test]
 fn test_static_command_registry_performance_metrics()
 {
-  let mut registry = StaticCommandRegistry::from_phf( &TEST_STATIC_COMMANDS );
+  let mut registry = StaticCommandRegistry::from_commands( &TEST_STATIC_COMMANDS );
 
   // Initial metrics should be zero
   let initial_metrics = registry.performance_metrics();
@@ -309,7 +312,7 @@ fn test_static_command_registry_performance_metrics()
 #[test]
 fn test_static_command_registry_performance_characteristics()
 {
-  let registry = StaticCommandRegistry::from_phf( &TEST_STATIC_COMMANDS );
+  let registry = StaticCommandRegistry::from_commands( &TEST_STATIC_COMMANDS );
 
   // Test lookup performance - should be sub-microsecond
   let iterations = 10_000;
@@ -337,7 +340,7 @@ fn test_static_command_registry_performance_characteristics()
 #[test]
 fn test_static_command_registry_with_dynamic_commands()
 {
-  let mut registry = StaticCommandRegistry::from_phf( &TEST_STATIC_COMMANDS );
+  let mut registry = StaticCommandRegistry::from_commands( &TEST_STATIC_COMMANDS );
 
   // Add dynamic command
   let dynamic_cmd = CommandDefinition::former()
@@ -361,7 +364,7 @@ fn test_static_command_registry_with_dynamic_commands()
 #[test]
 fn test_static_command_registry_command_registry_trait()
 {
-  let registry = StaticCommandRegistry::from_phf( &TEST_STATIC_COMMANDS );
+  let registry = StaticCommandRegistry::from_commands( &TEST_STATIC_COMMANDS );
 
   // Test that StaticCommandRegistry implements CommandRegistryTrait
   let trait_registry: &dyn CommandRegistryTrait = &registry;
@@ -383,7 +386,7 @@ fn test_static_command_registry_command_registry_trait()
 #[test]
 fn test_static_command_registry_static_commands_count()
 {
-  let registry = StaticCommandRegistry::from_phf( &TEST_STATIC_COMMANDS );
+  let registry = StaticCommandRegistry::from_commands( &TEST_STATIC_COMMANDS );
 
   // Should report correct static command count
   let static_count = registry.static_command_count();
@@ -402,7 +405,7 @@ fn test_static_command_registry_static_commands_count()
 #[test]
 fn test_static_command_registry_registry_mode_behavior()
 {
-  let mut registry = StaticCommandRegistry::from_phf( &TEST_STATIC_COMMANDS );
+  let mut registry = StaticCommandRegistry::from_commands( &TEST_STATIC_COMMANDS );
 
   // Add a dynamic command
   let dynamic_cmd = CommandDefinition::former()
@@ -430,7 +433,7 @@ fn test_static_command_registry_registry_mode_behavior()
 #[test]
 fn test_static_command_registry_edge_cases()
 {
-  let registry = StaticCommandRegistry::from_phf( &TEST_STATIC_COMMANDS );
+  let registry = StaticCommandRegistry::from_commands( &TEST_STATIC_COMMANDS );
 
   // Test empty string lookup
   assert!( registry.command( "" ).is_none() );
@@ -456,7 +459,7 @@ fn test_static_command_registry_edge_cases()
 #[test]
 fn test_static_command_registry_memory_efficiency()
 {
-  let registry = StaticCommandRegistry::from_phf( &TEST_STATIC_COMMANDS );
+  let registry = StaticCommandRegistry::from_commands( &TEST_STATIC_COMMANDS );
 
   // Test that multiple lookups of the same command return the same data
   let cmd1 = registry.command( ".test.version" ).unwrap();
@@ -478,7 +481,7 @@ fn test_static_command_registry_memory_efficiency()
 #[test]
 fn test_static_command_registry_command_conversion_accuracy()
 {
-  let registry = StaticCommandRegistry::from_phf( &TEST_STATIC_COMMANDS );
+  let registry = StaticCommandRegistry::from_commands( &TEST_STATIC_COMMANDS );
 
   // Test that static commands are converted accurately to dynamic commands
   let add_cmd = registry.command( ".test.add" ).unwrap();
@@ -518,7 +521,7 @@ fn test_static_command_registry_command_conversion_accuracy()
 #[test]
 fn test_static_command_registry_deprecated_commands()
 {
-  let registry = StaticCommandRegistry::from_phf( &TEST_STATIC_COMMANDS );
+  let registry = StaticCommandRegistry::from_commands( &TEST_STATIC_COMMANDS );
 
   // Test deprecated command is accessible
   let deprecated_cmd = registry.command( ".test.deprecated" );
@@ -535,7 +538,7 @@ fn test_static_command_registry_concurrent_access()
   use std::sync::Arc;
   use std::thread;
 
-  let registry = Arc::new( StaticCommandRegistry::from_phf( &TEST_STATIC_COMMANDS ) );
+  let registry = Arc::new( StaticCommandRegistry::from_commands( &TEST_STATIC_COMMANDS ) );
   let mut handles = vec![];
 
   // Spawn multiple threads doing concurrent lookups
@@ -568,7 +571,7 @@ fn test_static_command_registry_concurrent_access()
 #[test]
 fn test_static_command_registry_large_scale_lookup()
 {
-  let registry = StaticCommandRegistry::from_phf( &TEST_STATIC_COMMANDS );
+  let registry = StaticCommandRegistry::from_commands( &TEST_STATIC_COMMANDS );
 
   // Test large number of lookups for stability
   let iterations = 100_000;
@@ -603,7 +606,7 @@ fn test_static_command_registry_large_scale_lookup()
 #[test]
 fn test_static_command_registry_help_generation()
 {
-  let registry = StaticCommandRegistry::from_phf( &TEST_STATIC_COMMANDS );
+  let registry = StaticCommandRegistry::from_commands( &TEST_STATIC_COMMANDS );
 
   // Test help generation for different commands
   let version_help = registry.get_help_for_command( ".test.version" );
@@ -628,7 +631,7 @@ fn test_static_command_registry_help_generation()
 #[test]
 fn test_static_command_registry_routine_management()
 {
-  let registry = StaticCommandRegistry::from_phf( &TEST_STATIC_COMMANDS );
+  let registry = StaticCommandRegistry::from_commands( &TEST_STATIC_COMMANDS );
 
   // Test routine retrieval for static commands (should be None since no routines registered)
   let routine = registry.get_routine( ".test.version" );

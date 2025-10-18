@@ -88,8 +88,8 @@ An Actor is any entity that plays a distinct role and participates in an interac
 *   **`External Service`**: Any external system (e.g., a database, a web API) that a command `Routine` might interact with. The `unilang` framework does not interact with these services directly, but it facilitates the execution of routines that do.
 
 #### 2.3. Internal System Actors
-*   **`Build Script (build.rs)`**: A critical internal actor responsible for compile-time operations. Its primary role is to process static command definitions (from code or manifests) and generate the Perfect Hash Function (PHF) map, enabling the zero-overhead static command registry.
-*   **`Command Registry`**: An internal actor that serves as the runtime database for all command definitions. It manages both the static (PHF) and dynamic (HashMap) command sets and provides the lookup service used by the `Semantic Analyzer`.
+*   **`Build Script (build.rs)`**: A critical internal actor responsible for compile-time operations. Its primary role is to process static command definitions (from code or manifests) and generate optimized static command maps (using Perfect Hash Functions internally) wrapped in `StaticCommandMap`, enabling the zero-overhead static command registry while hiding implementation details from downstream crates.
+*   **`Command Registry`**: An internal actor that serves as the runtime database for all command definitions. It manages both the static (`StaticCommandMap` wrapper) and dynamic (HashMap) command sets and provides the lookup service used by the `Semantic Analyzer`.
 *   **`Parser (unilang_parser)`**: An internal actor that performs lexical and syntactic analysis on a raw input string, converting it into a structured `GenericInstruction` without any knowledge of command definitions.
 *   **`Semantic Analyzer`**: An internal actor that validates a `GenericInstruction` against the `Command Registry` to produce a `VerifiedCommand` that is guaranteed to be executable.
 *   **`Interpreter`**: An internal actor that takes a `VerifiedCommand` and invokes its corresponding `Routine`, managing the execution context and handling results.
@@ -130,6 +130,13 @@ This section lists the specific, testable functions the `unilang` framework **mu
       - If `namespace` is empty and `name` lacks `.`: adds dot prefix to produce `.{name}`
       - If `namespace` is not empty: concatenates to produce `{namespace}.{name}` (requires namespace to have dot prefix)
     - Documentation and examples **should** use Format 1 to show users the exact command syntax they will type
+*   **FR-REG-7 (CLI Module Aggregation):** The framework **must** provide a `CliBuilder` API for aggregating multiple CLI modules into a unified command interface. The API **must** support:
+    - **Module Registration:** `static_module_with_prefix(name, prefix, commands)` to register command modules with namespace prefixes
+    - **Conflict Detection:** Automatic detection of duplicate command names or conflicting prefixes when enabled
+    - **Namespace Isolation:** Each module's commands are isolated within its prefix namespace (e.g., `.db.` prefix for database module)
+    - **Build Modes:** `build_static()` for compile-time registry (`StaticCommandMap` wrapper), `build_hybrid()` for mixed static/dynamic
+    - **Prefix Application:** Automatic prefix prepending to all commands in a module (e.g., prefix `.db` + command `.migrate` → `.db.migrate`)
+    - This enables organizations to consolidate multiple CLI tools while maintaining clear separation of concerns and preventing naming conflicts
 
 #### 4.2. Argument Parsing & Type System
 *   **FR-ARG-1 (Type Support):** The framework **must** support parsing and type-checking for the following `Kind`s: `String`, `Integer`, `Float`, `Boolean`, `Path`, `File`, `Directory`, `Enum`, `Url`, `DateTime`, `Pattern`, `List`, `Map`, `JsonString`, and `Object`.
@@ -162,6 +169,14 @@ This section lists the specific, testable functions the `unilang` framework **mu
     - Pipeline enhancement converts `HELP_REQUESTED` errors to successful help output
     - Comprehensive help formatting with all command metadata, validation rules, and examples
     - Three help access methods: `?` operator, `"??"` parameter, and `.command.help` commands
+*   **FR-HELP-7 (Help Verbosity Levels):** The framework **must** support configurable help verbosity levels to accommodate different user preferences and use cases. The `HelpGenerator` **must** provide five verbosity levels (0-4) controlling the amount of information displayed:
+    - **Level 0 (Minimal):** Command name and brief description only - for quick reference
+    - **Level 1 (Basic):** Add parameters list with types - for syntax lookup
+    - **Level 2 (Standard - DEFAULT):** Concise format with USAGE, PARAMETERS with descriptions, and EXAMPLES sections - optimized for terminal use like unikit
+    - **Level 3 (Detailed):** Full metadata including version, aliases, tags, validation rules - comprehensive documentation
+    - **Level 4 (Comprehensive):** Extensive format with rationale, use cases, and detailed explanations like runbox - for learning and documentation
+
+    The default verbosity **must** be Level 2 (Standard) to provide concise, actionable help without overwhelming users. The API **must** provide methods to create generators with specific verbosity (`HelpGenerator::with_verbosity`), set verbosity dynamically (`set_verbosity`), and query current verbosity (`verbosity`). The verbosity level **must** be parsed from integers 0-4 via `HelpVerbosity::from_level`, with values above 4 capped at Comprehensive.
 
 #### 4.5. Modality Support
 *   **FR-REPL-1 (REPL Support):** The framework's core components (`Pipeline`, `Parser`, `SemanticAnalyzer`, `Interpreter`) **must** be structured to support a REPL-style execution loop. They **must** be reusable for multiple, sequential command executions within a single process lifetime.
@@ -255,6 +270,9 @@ The public API **must** include the following data structures with the specified
 *   `ValidationRule`: Defines a validation constraint for an argument.
 *   `OutputData`: Standardized structure for successful command output.
 *   `ErrorData`: Standardized structure for command failure information.
+*   `StaticCommandMap`: Opaque wrapper for compile-time command maps (hides PHF implementation).
+*   `StaticCommandDefinition`: Const-compatible version of CommandDefinition for static storage.
+*   `StaticArgumentDefinition`: Const-compatible version of ArgumentDefinition for static storage.
 
 #### 7.1. CommandDefinition Structure
 
@@ -278,6 +296,56 @@ The following API methods **must** be provided to support standardized help conv
 **Pipeline Methods:**
 *   `process_help_request(&self, command_name: &str, context: ExecutionContext) -> Result<OutputData, Error>` - Processes help requests uniformly across the framework.
 
+#### 7.3. StaticCommandMap Structure
+
+The `StaticCommandMap` struct **must** be implemented as an opaque wrapper that hides the PHF (Perfect Hash Function) implementation from the public API. This design ensures downstream crates do not need to depend on the `phf` crate.
+
+**Design Requirements:**
+*   **Opaque Wrapper:** The struct **must** hide PHF types completely - no `phf::Map` types in public signatures.
+*   **Zero Dependencies:** Downstream crates using `StaticCommandMap` **must not** require `phf` as a dependency.
+*   **Zero Overhead:** All wrapper methods **must** be `#[inline]` to ensure the wrapper compiles away with no performance cost.
+*   **Const Initialization:** The struct **must** support `const fn` initialization for compile-time map creation.
+
+**Implementation Pattern:**
+```rust
+// Internal (hidden from users)
+pub struct StaticCommandMap {
+  inner: &'static phf::Map<&'static str, &'static StaticCommandDefinition>,
+}
+```
+
+**Public API Methods:**
+*   `get(name: &str) -> Option<&'static StaticCommandDefinition>` - Retrieve command by name (O(1) lookup).
+*   `contains_key(name: &str) -> bool` - Check if command exists.
+*   `keys() -> impl Iterator<Item = &&'static str>` - Iterate over command names.
+*   `entries() -> impl Iterator` - Iterate over (name, definition) pairs.
+*   `values() -> impl Iterator` - Iterate over command definitions.
+*   `len() -> usize` - Get number of commands.
+*   `is_empty() -> bool` - Check if map is empty.
+*   `Index<&str>` trait - Enable indexing syntax (`map["command"]`), panics if key not found.
+
+**Hidden Internal API:**
+*   `from_phf_internal(&'static phf::Map<...>) -> Self` - Used only by generated code, marked `#[doc(hidden)]`.
+
+**Registry Integration:**
+*   `StaticCommandRegistry::from_commands(commands: &'static StaticCommandMap)` - Primary API for creating registry from static map.
+
+**Performance Characteristics:**
+*   Lookup time: O(1), approximately 80 nanoseconds per command.
+*   Memory overhead: Zero runtime allocation (all data is compile-time).
+*   Binary size impact: Minimal (<100 bytes for wrapper code).
+
+**Build System Integration:**
+The `build.rs` script **must** generate code following this pattern:
+```rust
+// Generated code pattern
+const STATIC_COMMANDS_PHF: phf::Map<...> = phf_map! { /* internal */ };
+pub static STATIC_COMMANDS: StaticCommandMap =
+  StaticCommandMap::from_phf_internal(&STATIC_COMMANDS_PHF);
+```
+
+This ensures PHF types remain internal implementation details while exposing a clean, dependency-free API to users.
+
 ### 8. Cross-Cutting Concerns (Error Handling, Security, Verbosity)
 
 *   **Error Handling:** All recoverable errors **must** be propagated as `unilang::Error`, which wraps an `ErrorData` struct containing a machine-readable `code` and a human-readable `message`. The framework defines the following standard error codes:
@@ -291,7 +359,7 @@ The following API methods **must** be provided to support standardized help conv
     - `UNILANG_INTERNAL_ERROR`: Unexpected system error
 *   **Security:** The framework **must** provide a `permissions` field in `CommandDefinition` for integrators to implement role-based access control. The `sensitive` attribute on arguments **must** be respected.
 *   **Verbosity:** The framework **must** support at least three verbosity levels (`quiet`, `normal`, `debug`) configurable via environment variable (`UNILANG_VERBOSITY`) or programmatically.
-*   **Shell Integration:** When building CLI applications that receive command-line arguments from the shell, integrators **must** be aware that the shell strips quotes from arguments before passing them to the application. For arguments containing spaces (e.g., `command::"cargo build"`), the application receives `"command::cargo build"` with quotes removed. Integrators **must** implement argument preprocessing to re-quote values containing spaces before passing them to the unilang parser: `if value.contains(' ') { format!(r#"{name}::"{value}""#) }`. Failure to do so will result in incorrect tokenization and semantic analysis errors. See Task 079 investigation in the Addendum for detailed analysis and reference implementation.
+*   **Shell Integration:** CLI applications **should** use the argv-based API (`Pipeline::process_command_from_argv`) when receiving command-line arguments from the shell (see FR-PIPE-4). This API preserves argument boundaries from the OS and eliminates information loss, enabling natural shell syntax without special quoting requirements. The string-based API (`process_command_simple`) is recommended for REPL/interactive applications where input comes as a single string. **Legacy Approach:** For applications using the string-based API with shell arguments, integrators must implement argument preprocessing to re-quote values containing spaces before passing them to the parser, but the argv-based API eliminates this requirement entirely.
 
 ### 9. Feature Flags & Modularity
 
@@ -324,9 +392,10 @@ It is recommended that the `unilang` ecosystem adhere to the following principle
 
 *   **Parser Independence:** The `unilang` core crate **should** delegate all command string parsing to the `unilang_parser` crate.
 *   **Zero-Overhead Static Registry:** To meet `NFR-PERF-1`, it is **strongly recommended** that the `CommandRegistry` be implemented using a hybrid model:
-    *   A **Perfect Hash Function (PHF)** map, generated at compile-time in `build.rs`, for all statically known commands.
+    *   A **Perfect Hash Function (PHF)** map, generated at compile-time in `build.rs`, for all statically known commands. The PHF implementation **must** be hidden behind the `StaticCommandMap` wrapper to prevent dependency leakage.
     *   A standard `HashMap` for commands registered dynamically at runtime.
-    *   Lookups **should** check the static PHF first before falling back to the dynamic map.
+    *   Lookups **should** check the static map first before falling back to the dynamic map.
+    *   Downstream crates **must not** require `phf` as a dependency - the wrapper ensures complete encapsulation.
 *   **`enabled` Feature Gate Mandate:** All framework crates **must** implement the `enabled` feature gate pattern. The entire crate's functionality, including its modules and dependencies, **should** be conditionally compiled using `#[cfg(feature = "enabled")]`. This is a critical mechanism for managing complex feature sets and dependencies within a Cargo workspace, allowing a crate to be effectively disabled even when it is listed as a non-optional dependency.
 
 ### 11. Architectural Diagrams
@@ -405,7 +474,7 @@ graph TD
         style CompileTime fill:#f9f9f9,stroke:#ddd,stroke-dasharray: 5 5
         manifest("unilang.commands.yaml")
         build_rs("Build Script (build.rs)")
-        phf_map("Static Registry (PHF Map)<br/>Generated .rs file")
+        phf_map("StaticCommandMap Wrapper<br/>(hides PHF)<br/>Generated .rs file")
 
         manifest --> build_rs
         build_rs --> phf_map
@@ -421,7 +490,7 @@ graph TD
 
         subgraph registry
             direction LR
-            phf_map_ref(Static PHF)
+            phf_map_ref(StaticCommandMap<br/>zero-cost wrapper)
             dynamic_map_ref(Dynamic HashMap)
         end
 
@@ -578,6 +647,7 @@ As you build the system, please use this document to log your key implementation
 | ❌ | **FR-REG-4:** The framework must support hierarchical command organization through dot-separated namespaces (e.g., `.math.add`). | |
 | ❌ | **FR-REG-5:** The framework must support command aliases. When an alias is invoked, the framework must execute the corresponding canonical command. | |
 | ✅ | **FR-REG-6:** The framework must enforce explicit command naming with dot-prefixed command names. Runtime API must reject registrations lacking dot prefix. Build-time YAML manifests may use two valid formats (compound names or separate namespace) that both produce dot-prefixed commands. | Implemented with runtime validation in `src/command_validation.rs:48-76` and build.rs transformations in `build.rs:208-223`. Two YAML formats documented and tested: Format 1 (compound names) recommended for examples, Format 2 (separate namespace) valid for production. All 608 tests passing including test data files using both formats. |
+| ✅ | **FR-REG-7:** The framework must provide a CliBuilder API for aggregating multiple CLI modules with namespace isolation, conflict detection, and prefix application. Supports static/hybrid build modes for performance. | Implemented in `src/multi_yaml/aggregator.rs` and `src/multi_yaml/cli_builder.rs`. Comprehensive test coverage in `tests/cli/cli_builder_api.rs` (25+ tests) covering module registration, prefix application, conflict detection, namespace isolation, and build modes. Examples: `examples/22_minimal_cli_aggregation.rs`. All tests passing. |
 | ❌ | **FR-ARG-1:** The framework must support parsing and type-checking for the following `Kind`s: `String`, `Integer`, `Float`, `Boolean`, `Path`, `File`, `Directory`, `Enum`, `Url`, `DateTime`, `Pattern`, `List`, `Map`, `JsonString`, and `Object`. | |
 | ❌ | **FR-ARG-2:** The framework must correctly bind positional arguments from a `GenericInstruction` to the corresponding `ArgumentDefinition`s in the order they are defined. | |
 | ❌ | **FR-ARG-3:** The framework must correctly bind named arguments (`name::value`) from a `GenericInstruction` to the corresponding `ArgumentDefinition`, regardless of order. | |
@@ -596,6 +666,7 @@ As you build the system, please use this document to log your key implementation
 | ✅ | **FR-HELP-4:** For every registered command `.command`, the framework must provide automatic registration of a corresponding `.command.help` command that returns detailed help information for the parent command. | Implemented via `register_with_auto_help()` and `auto_help_enabled` field with automatic help command generation |
 | ✅ | **FR-HELP-5:** The framework must recognize a special parameter `??` that can be appended to any command to trigger help display (e.g., `.command ??`). When this parameter is detected, the system must return help information identical to calling `.command.help`. | Implemented with semantic analyzer support for `??` parameter (requires quoting as `"??"` to avoid parser conflicts) |
 | ✅ | **FR-HELP-6:** The framework must provide APIs (`CommandRegistry::enable_help_conventions`, `CommandDefinition::with_auto_help`) that automatically generate `.command.help` commands and enable `??` parameter processing with minimal developer effort. | Implemented with `enable_help_conventions()`, `register_with_auto_help()`, and `auto_help_enabled` field |
+| ✅ | **FR-HELP-7:** The framework must support configurable help verbosity levels (0-4) to accommodate different user preferences. Default verbosity is Level 2 (Standard - concise like unikit). Provides methods to create, set, and query verbosity levels. | Implemented in `src/help.rs` with `HelpVerbosity` enum (Minimal, Basic, Standard, Detailed, Comprehensive), `HelpGenerator::with_verbosity()`, `set_verbosity()`, and `verbosity()` methods. Default is Standard (Level 2). Comprehensive test coverage in `tests/help_verbosity.rs` with 9 tests verifying all verbosity levels and progressive information display. All tests passing. |
 | ✅ | **FR-REPL-1:** The framework's core components (`Pipeline`, `Parser`, `SemanticAnalyzer`, `Interpreter`) must be structured to support a REPL-style execution loop. They must be reusable for multiple, sequential command executions within a single process lifetime. | Implemented with comprehensive examples and verified stateless operation |
 | ✅ | **FR-INTERACTIVE-1:** When a mandatory argument with the `interactive: true` attribute is not provided, the `Semantic Analyzer` must return a distinct, catchable error (`UNILANG_ARGUMENT_INTERACTIVE_REQUIRED`). This allows the calling modality to intercept the error and prompt the user for input. | Implemented in semantic analyzer with comprehensive test coverage and REPL integration |
 | ❌ | **FR-MOD-WASM-REPL:** The framework must support a web-based REPL modality that can operate entirely on the client-side without a backend server. This requires the core `unilang` library to be fully compilable to the `wasm32-unknown-unknown` target. | |
@@ -609,7 +680,7 @@ The framework's implementation is fully documented through:
 - **Git History:** Detailed commit messages documenting all design decisions, bug fixes, and refactoring
 
 Key architectural decisions:
-- **Hybrid Registry:** Static PHF map for compile-time commands + dynamic HashMap for runtime commands
+- **Hybrid Registry:** `StaticCommandMap` wrapper (hides PHF) for compile-time commands + dynamic HashMap for runtime commands - downstream crates require no PHF dependency
 - **Two-Phase Validation:** Parse-time syntax validation + semantic-time type and constraint validation
 - **Explicit Naming:** Commands require dot prefix (`.command`); YAML manifests support two valid formats
 - **Help Conventions:** Three access methods (`?` operator, `??` parameter, `.command.help` commands)
@@ -648,6 +719,7 @@ pub struct CommandDefinition {
 | Variable | Description | Example |
 | :--- | :--- | :--- |
 | `UNILANG_VERBOSITY` | Sets the logging verbosity (0=quiet, 1=normal, 2=debug). | `2` |
+| `UNILANG_HELP_VERBOSITY` | Controls help output detail level (0=Minimal, 1=Basic, 2=Standard/DEFAULT, 3=Detailed, 4=Comprehensive). | `2` |
 | `UNILANG_STATIC_COMMANDS_PATH` | Overrides the default path to the compile-time command manifest. | `config/commands.yaml` |
 
 #### Finalized Library & Tool Versions

@@ -2,7 +2,7 @@
 //!
 //! This example demonstrates how to integrate YAML command definitions with
 //! the build system to generate static command registries at compile time.
-//! It shows the complete workflow from YAML files to PHF-based registries.
+//! It shows the complete workflow from YAML files to optimized static registries.
 //!
 //! ## Key Features Demonstrated
 //!
@@ -16,7 +16,7 @@
 //!
 //! 1. YAML files are discovered during build
 //! 2. Commands are parsed and validated
-//! 3. PHF maps are generated
+//! 3. Static command maps are generated
 //! 4. Static registry is compiled into binary
 
 use std::collections::HashMap;
@@ -101,7 +101,7 @@ fn demonstrate_yaml_aggregation() -> Result< (), Box< dyn std::error::Error > >
   // 2. Parse command definitions
   // 3. Apply prefixes and namespacing
   // 4. Detect conflicts
-  // 5. Generate PHF maps
+  // 5. Generate optimized static maps
 
   // For demonstration, we'll create mock commands
   create_mock_aggregated_commands( &mut aggregator )?;
@@ -178,10 +178,10 @@ fn demonstrate_build_time_generation() -> Result< (), Box< dyn std::error::Error
   println!( "  ... ({} more lines)", build_rs_content.lines().count().saturating_sub( 10 ) );
   println!( "  {}", "─".repeat( 50 ) );
 
-  // Generate PHF map content
+  // Generate static map content
   let phf_content = aggregator.generate_phf_map();
 
-  println!( "\n  🗺️  Generated PHF map preview:" );
+  println!( "\n  🗺️  Generated static map preview:" );
   println!( "  {}", "─".repeat( 50 ) );
 
   for (i, line) in phf_content.lines().take( 8 ).enumerate()
@@ -195,7 +195,7 @@ fn demonstrate_build_time_generation() -> Result< (), Box< dyn std::error::Error
   println!( "\n  💡 Build Integration Steps:" );
   println!( "    1. Cargo runs build.rs before compilation" );
   println!( "    2. build.rs discovers and processes YAML files" );
-  println!( "    3. PHF maps are generated in $OUT_DIR" );
+  println!( "    3. Static command maps are generated in $OUT_DIR" );
   println!( "    4. Generated code is included in main binary" );
   println!( "    5. Zero runtime overhead for command lookups" );
 
@@ -229,8 +229,8 @@ fn demonstrate_registry_conversion() -> Result< (), Box< dyn std::error::Error >
   // Show conversion workflow
   println!( "\n  🔄 Conversion workflow:" );
   println!( "    1. Dynamic commands → Static command definitions" );
-  println!( "    2. Generate PHF map from command names" );
-  println!( "    3. Create StaticCommandRegistry with PHF map" );
+  println!( "    2. Generate optimized static map from command names" );
+  println!( "    3. Create StaticCommandRegistry with static map" );
   println!( "    4. Verify all commands are accessible" );
 
   // In a real scenario, this would involve:

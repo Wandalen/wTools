@@ -1,6 +1,10 @@
 #![allow(clippy::all)]
 //! # Interactive REPL Mode
 //!
+//! **✅ APPROPRIATE USE OF RUNTIME REGISTRATION:** REPL applications are a legitimate
+//! use case for runtime command registration as commands may be defined interactively
+//! or loaded dynamically during the session.
+//!
 //! This example demonstrates the interactive Read-Eval-Print Loop (REPL) capabilities
 //! of Unilang, including interactive argument handling and stateless operation.
 

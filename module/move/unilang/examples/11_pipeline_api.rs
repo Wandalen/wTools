@@ -1,6 +1,9 @@
 #![allow(clippy::all)]
 //! # Pipeline API Demo
 //!
+//! **⚠️ NOTE:** This example uses runtime registration for demonstration purposes.
+//! For production use, define commands in YAML and use compile-time generation.
+//!
 //! This example demonstrates the high-level Pipeline API that simplifies
 //! common Unilang workflows by combining parsing, semantic analysis, and
 //! execution into convenient helper functions.

@@ -1,13 +1,13 @@
 //! YAML-Based CLI Aggregation: Complete Workflow Example
 //!
 //! This example demonstrates the complete workflow for aggregating multiple CLI tools
-//! using YAML command definitions and compile-time PHF map generation.
+//! using YAML command definitions and compile-time static map generation.
 //!
 //! ## Workflow Demonstrated
 //!
 //! 1. Define individual CLI modules in separate YAML files
 //! 2. Use build.rs to aggregate YAML files at compile-time
-//! 3. Generate unified PHF map for zero-cost lookups
+//! 3. Generate unified static command map for zero-cost lookups
 //! 4. Execute unified CLI with namespace isolation
 //!
 //! ## Real-World Application
@@ -66,7 +66,7 @@ fn demonstrate_yaml_workflow()
   println!( "    .detect_conflicts(true)" );
   println!( "    .validate_schemas(true);" );
   println!();
-  println!( "  // Generate unified PHF map at compile-time" );
+  println!( "  // Generate unified static map at compile-time" );
   println!( "  let output_path = env::var(\"OUT_DIR\").unwrap() + \"/aggregated_commands.rs\";" );
   println!( "  aggregator.generate_static_map(&output_path)?;" );
   println!( "}}" );
@@ -95,7 +95,7 @@ fn demonstrate_yaml_workflow()
   println!( "include!(concat!(env!(\"OUT_DIR\"), \"/aggregated_commands.rs\"));" );
   println!();
   println!( "fn main() -> Result<(), unilang::Error> {{" );
-  println!( "  let registry = StaticCommandRegistry::from_phf(&AGGREGATED_COMMANDS);" );
+  println!( "  let registry = StaticCommandRegistry::from_commands(&AGGREGATED_COMMANDS);" );
   println!( "  let pipeline = Pipeline::new(registry);" );
   println!();
   println!( "  // Zero-cost command execution with proper prefixes" );
@@ -178,7 +178,7 @@ fn demonstrate_static_aggregation()
   println!( "2. **Performance Characteristics**" );
   println!( "   - O(1) lookup regardless of module count" );
   println!( "   - Zero runtime aggregation overhead" );
-  println!( "   - Single PHF map for all aggregated commands" );
+  println!( "   - Single static map for all aggregated commands" );
   println!( "   - Commands resolved at compile-time via build.rs" );
   println!();
 
@@ -196,7 +196,7 @@ fn demonstrate_static_aggregation()
   println!( "   ✅ Individual YAML files for each CLI module" );
   println!( "   ✅ Version control isolation for independent development" );
   println!( "   ✅ Compile-time conflict detection and validation" );
-  println!( "   ✅ Zero-cost runtime aggregation with PHF maps" );
+  println!( "   ✅ Zero-cost runtime aggregation with static maps" );
   println!( "   ✅ Unified help system across all aggregated tools" );
   println!( "   ✅ Type safety and validation for all commands" );
   println!( "   ✅ Environment variable overrides support" );

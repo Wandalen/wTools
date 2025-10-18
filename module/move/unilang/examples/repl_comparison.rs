@@ -1,6 +1,10 @@
 #![allow(clippy::all)]
 //! # REPL Feature Comparison
 //!
+//! **✅ APPROPRIATE USE OF RUNTIME REGISTRATION:** REPL applications are a legitimate
+//! use case for runtime command registration as commands may be defined interactively
+//! or loaded dynamically during the session.
+//!
 //! This example demonstrates the differences between basic and enhanced REPL modes,
 //! allowing you to see both implementations side-by-side.
 

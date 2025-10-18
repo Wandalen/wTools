@@ -487,12 +487,12 @@ fn test_static_command_serialization_roundtrip()
 }
 
 #[ test ]
-fn test_static_command_map_type_alias()
+fn test_static_command_map_wrapper()
 {
-  // Test the StaticCommandMap type alias for PHF compatibility
-  type StaticCommandMap = phf::Map< &'static str, &'static StaticCommandDefinition >;
+  // Test the StaticCommandMap wrapper functionality
+  use phf::phf_map;
 
-  static COMMAND_MAP: StaticCommandMap = phf::phf_map!
+  const COMMAND_MAP_INTERNAL: phf::Map<&'static str, &'static StaticCommandDefinition> = phf_map!
   {
     "cmd1" => &StaticCommandDefinition
     {
@@ -532,7 +532,9 @@ fn test_static_command_map_type_alias()
     },
   };
 
-  // Test map functionality
+  static COMMAND_MAP: unilang::static_data::StaticCommandMap = unilang::static_data::StaticCommandMap::from_phf_internal(&COMMAND_MAP_INTERNAL);
+
+  // Test map functionality through wrapper
   assert_eq!( COMMAND_MAP.len(), 2 );
   assert!( COMMAND_MAP.contains_key( "cmd1" ) );
   assert!( COMMAND_MAP.contains_key( "cmd2" ) );

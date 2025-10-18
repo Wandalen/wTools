@@ -9,7 +9,7 @@
 
 ## Value Proposition
 
-unilang processes command definitions at compile-time, generating Perfect Hash Function (PHF) maps that provide **O(1) command lookups with zero runtime overhead**. This approach delivers:
+unilang processes command definitions at compile-time, generating optimized static command maps (using Perfect Hash Functions internally) that provide **O(1) command lookups with zero runtime overhead and zero additional dependencies for downstream crates**. This approach delivers:
 
 - **10-50x faster command resolution** compared to runtime HashMap lookups
 - **Compile-time validation** of all command definitions and arguments
@@ -21,12 +21,12 @@ unilang processes command definitions at compile-time, generating Perfect Hash F
 
 **Compile-Time Processing:**
 ```text
-YAML definitions → build.rs → PHF maps → Zero-cost lookups
+YAML definitions → build.rs → Static command maps → Zero-cost lookups
 ```
 
 **Runtime Execution:**
 ```text
-Command string → O(1) PHF lookup → Validated execution
+Command string → O(1) static lookup → Validated execution
 ```
 
 ## Quick Start: Compile-Time Registration (Recommended)
@@ -62,7 +62,7 @@ fn main()
   let out_dir = env::var( "OUT_DIR" ).unwrap();
   let dest_path = Path::new( &out_dir ).join( "static_commands.rs" );
 
-  // Generate PHF maps at compile-time
+  // Generate static command maps at compile-time
   unilang::build::generate_static_commands( &dest_path, "unilang.commands.yaml" );
 }
 ```
@@ -72,12 +72,12 @@ fn main()
 ```rust,ignore
 use unilang::prelude::*;
 
-// Include compile-time generated PHF maps
+// Include compile-time generated commands
 include!( concat!( env!( "OUT_DIR" ), "/static_commands.rs" ) );
 
 fn main() -> Result< (), unilang::Error >
 {
-  let registry = StaticCommandRegistry::new( &STATIC_COMMANDS );
+  let registry = StaticCommandRegistry::from_commands( &STATIC_COMMANDS );
   let pipeline = Pipeline::new( registry );
 
   // O(1) lookup - no hashing overhead
@@ -92,7 +92,7 @@ fn main() -> Result< (), unilang::Error >
 
 | Approach | Lookup Time | Memory Overhead | Binary Size |
 |----------|-------------|-----------------|-------------|
-| **Compile-Time (PHF)** | 1-3 CPU cycles | Zero | Smaller |
+| **Compile-Time (Static)** | 1-3 CPU cycles | Zero | Smaller |
 | Runtime (HashMap) | 50-150 CPU cycles | Hash tables + allocations | Larger |
 
 **Benchmark Results:**
@@ -108,17 +108,17 @@ fn main() -> Result< (), unilang::Error >
 
 | # | Approach | Lookup Speed | When to Use |
 |---|----------|-------------|-------------|
-| **1** | **YAML file → Build-time PHF** ⭐ | **~80ns** | **Production apps, best performance, compile-time validation** |
-| 2 | Multi-YAML files → Build-time PHF | ~80ns | Large modular projects, multiple CLI tools unified |
+| **1** | **YAML file → Build-time static** ⭐ | **~80ns** | **Production apps, best performance, compile-time validation** |
+| 2 | Multi-YAML files → Build-time static | ~80ns | Large modular projects, multiple CLI tools unified |
 | 3 | YAML file → Runtime loading | ~4,200ns | Development, plugin configs loaded at runtime |
-| **4** | **JSON file → Build-time PHF** | **~80ns** | **JSON-first projects, API-driven CLI generation** |
-| 5 | Multi-JSON files → Build-time PHF | ~80ns | Large JSON projects, modular organization |
+| **4** | **JSON file → Build-time static** | **~80ns** | **JSON-first projects, API-driven CLI generation** |
+| 5 | Multi-JSON files → Build-time static | ~80ns | Large JSON projects, modular organization |
 | 6 | JSON file → Runtime loading | ~4,200ns | Runtime config loading, dynamic commands |
 | 7 | Rust DSL (inline closures) | ~4,200ns | ⚠️ Prototyping/testing only, NOT for production |
-| **8** | **Rust DSL (const fn + PHF)** | **~80ns** | **High-performance DSL, type-safe compile-time definitions** |
+| **8** | **Rust DSL (const fn + static)** | **~80ns** | **High-performance DSL, type-safe compile-time definitions** |
 | 18 | Hybrid (static + runtime) | Mixed | Base CLI + plugin system (best of both worlds) |
 
-**Strongly Recommended:** Row 1 (YAML + build-time PHF) for 50x better performance and compile-time validation.
+**Strongly Recommended:** Row 1 (YAML + build-time static) for 50x better performance and compile-time validation.
 
 **See full comparison:** [21 approaches documented](docs/cli_definition_approaches.md) including planned features like declarative macros, proc macros, TOML, RON, Protobuf, GraphQL, OpenAPI.
 
@@ -275,12 +275,12 @@ let registry = CliBuilder::new()
 
 | Approach | Lookup Time | Memory Overhead | Conflict Detection |
 |----------|-------------|-----------------|-------------------|
-| **Compile-Time** | O(1) PHF | Zero | Build-time |
+| **Compile-Time** | O(1) static | Zero | Build-time |
 | Runtime | O(log n) | Hash tables | Runtime |
 
 **Aggregation Scaling:**
 - **10 modules, 100 commands each**: ~750ns lookup regardless of module count
-- **Single PHF map**: All 1,000 commands accessible in constant time
+- **Single static map**: All 1,000 commands accessible in constant time
 - **Namespace resolution**: Zero runtime overhead with compile-time prefixing
 
 ### Complete Example
@@ -434,7 +434,7 @@ unilang = { version = "0.10", default-features = false, features = ["enabled"] }
 ## Examples and Learning Path
 
 ### Compile-Time Focus Examples
-- `static_01_basic_compile_time.rs` - PHF-based zero-cost lookups
+- `static_01_basic_compile_time.rs` - Zero-cost static lookups
 - `static_02_yaml_build_integration.rs` - Build script integration patterns
 - `static_03_performance_comparison.rs` - Concrete performance measurements
 - `static_04_multi_module_aggregation.rs` - Modular command organization

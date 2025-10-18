@@ -1,6 +1,9 @@
 #![allow(clippy::all)]
 //! # Argument Types Demo
 //!
+//! **⚠️ NOTE:** This example uses runtime registration for demonstration purposes.
+//! For production use, define argument types in YAML and use compile-time generation.
+//!
 //! This example demonstrates all the supported argument types in Unilang,
 //! including basic types, collections, and complex validation.
 

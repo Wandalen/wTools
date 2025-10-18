@@ -1,7 +1,7 @@
-//! Multi-Module Static Aggregation with PHF Maps
+//! Multi-Module Static Aggregation with Compile-Time Optimization
 //!
 //! This example demonstrates advanced static command aggregation across multiple
-//! modules using PHF maps for zero-overhead lookups. It showcases:
+//! modules using compile-time optimized maps for zero-overhead lookups. It showcases:
 //! 1. Cross-module command aggregation with namespace isolation
 //! 2. Performance comparison between static and dynamic registries
 //! 3. Compile-time conflict detection and resolution
@@ -416,7 +416,7 @@ fn demonstrate_conflict_detection()
 
 fn main() -> Result<(), unilang::Error>
 {
-  println!( "🎯 Multi-Module Static Aggregation with PHF Maps" );
+  println!( "🎯 Multi-Module Static Aggregation with Compile-Time Optimization" );
   println!();
 
   // Module overview

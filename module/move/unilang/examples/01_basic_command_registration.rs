@@ -1,13 +1,18 @@
 #![allow(clippy::all)]
 //! # Basic Command Registration Example
 //!
-//! This example demonstrates the fundamental concepts of unilang:
-//! 1. Creating a command registry to store all commands
-//! 2. Defining a command with its metadata and arguments
-//! 3. Creating an execution routine (the actual logic)
-//! 4. Registering the command with the registry
+//! **⚠️ PERFORMANCE WARNING:** This example uses runtime command registration which has
+//! **10-50x slower lookup performance** than the recommended compile-time approach.
 //!
-//! This is the simplest possible example - a "Hello World" style greeting command.
+//! **For production applications, see:** `static_01_basic_compile_time.rs` and
+//! `static_02_yaml_build_integration.rs` for the recommended patterns.
+//!
+//! ## Educational Purpose
+//!
+//! This example demonstrates the runtime registration API for:
+//! - REPL applications where commands are defined interactively
+//! - Plugin systems with dynamic command loading
+//! - Prototyping and development scenarios
 //!
 //! ## What You'll Learn:
 //! - How to create and configure a `CommandRegistry`

@@ -1,6 +1,9 @@
 #![allow(clippy::all)]
 //! # Command Execution Demo
 //!
+//! **⚠️ NOTE:** This example uses runtime registration for demonstration purposes.
+//! For production use, define commands in YAML and use compile-time generation.
+//!
 //! This example demonstrates the command execution phase, showing how
 //! verified commands are interpreted and executed with proper context
 //! and error handling.

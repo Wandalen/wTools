@@ -12,7 +12,7 @@ use core::time::Duration;
 use std::time::Instant;
 
 /// Create a test PHF map for performance metrics testing
-static PERFORMANCE_TEST_COMMANDS: StaticCommandMap = phf::phf_map!
+const PERFORMANCE_TEST_COMMANDS_PHF: phf::Map<&'static str, &'static StaticCommandDefinition> = phf::phf_map!
 {
   ".perf_test_1" => &StaticCommandDefinition
   {
@@ -69,6 +69,8 @@ static PERFORMANCE_TEST_COMMANDS: StaticCommandMap = phf::phf_map!
     examples: &[],
   },
 };
+
+static PERFORMANCE_TEST_COMMANDS: StaticCommandMap = StaticCommandMap::from_phf_internal(&PERFORMANCE_TEST_COMMANDS_PHF);
 
 #[test]
 fn test_performance_metrics_structure()
@@ -157,7 +159,7 @@ fn test_command_registry_performance_metrics()
 fn test_static_command_registry_performance_metrics()
 {
   // Test performance metrics integration with StaticCommandRegistry
-  let mut registry = StaticCommandRegistry::from_phf( &PERFORMANCE_TEST_COMMANDS );
+  let mut registry = StaticCommandRegistry::from_commands( &PERFORMANCE_TEST_COMMANDS );
 
   // Get initial metrics
   let initial_metrics = registry.performance_metrics();
@@ -183,7 +185,7 @@ fn test_static_command_registry_performance_metrics()
 fn test_hybrid_registry_performance_metrics()
 {
   // Test performance metrics with hybrid registry (static + dynamic)
-  let mut registry = StaticCommandRegistry::from_phf( &PERFORMANCE_TEST_COMMANDS );
+  let mut registry = StaticCommandRegistry::from_commands( &PERFORMANCE_TEST_COMMANDS );
 
   // Add a dynamic command
   let dynamic_cmd = CommandDefinition::former()
@@ -213,7 +215,7 @@ fn test_hybrid_registry_performance_metrics()
 fn test_performance_metrics_reset()
 {
   // Test metrics reset functionality
-  let mut registry = StaticCommandRegistry::from_phf( &PERFORMANCE_TEST_COMMANDS );
+  let mut registry = StaticCommandRegistry::from_commands( &PERFORMANCE_TEST_COMMANDS );
 
   // Perform some lookups to generate metrics
   let _cmd1 = registry.command_with_metrics( ".perf_test_1" );
@@ -281,7 +283,7 @@ fn test_cache_performance_patterns()
 fn test_performance_metrics_under_load()
 {
   // Test performance metrics under high load
-  let mut registry = StaticCommandRegistry::from_phf( &PERFORMANCE_TEST_COMMANDS );
+  let mut registry = StaticCommandRegistry::from_commands( &PERFORMANCE_TEST_COMMANDS );
 
   let iterations = 1000;
   let command_names = vec![ ".perf_test_1", ".perf_test_2", ".perf_test_3", "nonexistent" ];
@@ -330,7 +332,7 @@ fn test_performance_metrics_under_load()
 fn test_registry_mode_impact_on_metrics()
 {
   // Test how different registry modes affect performance metrics
-  let static_registry = StaticCommandRegistry::from_phf( &PERFORMANCE_TEST_COMMANDS );
+  let static_registry = StaticCommandRegistry::from_commands( &PERFORMANCE_TEST_COMMANDS );
   let mut dynamic_registry = CommandRegistry::new();
 
   // Add same commands to dynamic registry
@@ -386,7 +388,7 @@ fn test_registry_mode_impact_on_metrics()
 fn test_performance_metrics_edge_cases()
 {
   // Test edge cases for performance metrics
-  let mut registry = StaticCommandRegistry::from_phf( &PERFORMANCE_TEST_COMMANDS );
+  let mut registry = StaticCommandRegistry::from_commands( &PERFORMANCE_TEST_COMMANDS );
 
   // Test lookup of empty string
   let _empty = registry.command_with_metrics( "" );
@@ -409,7 +411,7 @@ fn test_performance_metrics_edge_cases()
 fn test_performance_metrics_consistency()
 {
   // Test that performance metrics remain consistent across different access patterns
-  let mut registry = StaticCommandRegistry::from_phf( &PERFORMANCE_TEST_COMMANDS );
+  let mut registry = StaticCommandRegistry::from_commands( &PERFORMANCE_TEST_COMMANDS );
 
   // Mix of readonly and mutable lookups
   let _readonly1 = registry.command( ".perf_test_1" ); // Readonly (no metrics update)

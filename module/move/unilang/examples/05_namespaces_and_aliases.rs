@@ -1,6 +1,9 @@
 #![allow(clippy::all)]
 //! # Namespaces and Aliases Demo
 //!
+//! **⚠️ NOTE:** This example uses runtime registration for demonstration purposes.
+//! For production use, define namespaces and aliases in YAML and use compile-time generation.
+//!
 //! This example demonstrates how to organize commands using namespaces
 //! and provide aliases for easier command invocation.
 

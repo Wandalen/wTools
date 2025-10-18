@@ -9,7 +9,7 @@ use unilang::static_data::{ StaticCommandDefinition, StaticCommandMap };
 use phf::phf_map;
 
 // Create a test static command map for testing
-static TEST_STATIC_COMMANDS: StaticCommandMap = phf_map! {
+const TEST_STATIC_COMMANDS_PHF: phf::Map<&'static str, &'static StaticCommandDefinition> = phf_map! {
   ".test_static" => &StaticCommandDefinition {
     name: ".test_static",
     namespace: "",
@@ -28,6 +28,8 @@ static TEST_STATIC_COMMANDS: StaticCommandMap = phf_map! {
     examples: &[],
   },
 };
+
+static TEST_STATIC_COMMANDS: StaticCommandMap = StaticCommandMap::from_phf_internal(&TEST_STATIC_COMMANDS_PHF);
 
 #[test]
 fn test_command_registry_from_static_commands_basic() {

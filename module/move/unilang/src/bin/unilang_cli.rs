@@ -500,7 +500,7 @@ fn run() -> Result< (), unilang::error::Error >
   // Handle case when no arguments are provided
   if args.is_empty()
   {
-    let help_generator = HelpGenerator::new( &registry );
+    let help_generator = HelpGenerator::from_env( &registry );
     let help_text = help_generator.list_commands();
     println!( "{help_text}" );
     eprintln!( "Usage: unilang_cli <command> [args...]" );
@@ -552,7 +552,7 @@ fn run() -> Result< (), unilang::error::Error >
   // Handle '--help' flag
   if processed_args.first().is_some_and( | arg | arg == "--help" )
   {
-    let help_generator = HelpGenerator::new( &registry );
+    let help_generator = HelpGenerator::from_env( &registry );
     println!( "{}", help_generator.list_commands() );
     return Ok( () );
   }
@@ -560,7 +560,7 @@ fn run() -> Result< (), unilang::error::Error >
   // Handle 'help' command manually
   if processed_args.first().is_some_and( | arg | arg == "help" )
   {
-    let help_generator = HelpGenerator::new( &registry );
+    let help_generator = HelpGenerator::from_env( &registry );
     if processed_args.len() > 2
     {
       eprintln!( "Error: Invalid usage of help command. Use `help` or `help <command_name>`." );

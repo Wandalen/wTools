@@ -1,6 +1,9 @@
 #![allow(clippy::all)]
 //! # Validation Rules Demo
 //!
+//! **⚠️ NOTE:** This example uses runtime registration for demonstration purposes.
+//! For production use, define validation rules in YAML and use compile-time generation.
+//!
 //! This example demonstrates how to apply validation rules to command arguments,
 //! including min/max values, string patterns, and length constraints.
 //!

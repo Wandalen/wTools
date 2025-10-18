@@ -153,14 +153,21 @@ fn generate_empty_phf(dest_path: &Path)
   let mut f = BufWriter::new(File::create(dest_path).unwrap());
 
   writeln!(f, "// Generated static commands (empty)").unwrap();
-  writeln!(f, "use phf::{{phf_map, Map}};").unwrap();
-  writeln!(f, "use crate::static_data::StaticCommandDefinition;").unwrap();
+  writeln!(f, "use phf::phf_map;").unwrap();
+  writeln!(f, "use crate::static_data::{{StaticCommandDefinition, StaticCommandMap}};").unwrap();
   writeln!(f).unwrap();
-  writeln!(f, "/// Perfect Hash Function map of static command definitions.").unwrap();
+  writeln!(f, "/// Static command registry (compile-time generated).").unwrap();
   writeln!(f, "/// ").unwrap();
-  writeln!(f, "/// This map provides zero-overhead lookup of compile-time registered commands.").unwrap();
-  writeln!(f, "/// Commands are keyed by their full name (namespace.command).").unwrap();
-  writeln!(f, "pub static STATIC_COMMANDS: Map<&'static str, &'static StaticCommandDefinition> = phf_map! {{}};").unwrap();
+  writeln!(f, "/// This provides zero-overhead lookup of compile-time registered commands.").unwrap();
+  writeln!(f, "/// No PHF dependency required for crates using this registry.").unwrap();
+  writeln!(f).unwrap();
+
+  // Generate internal PHF map as const (not pub)
+  writeln!(f, "const STATIC_COMMANDS_PHF: phf::Map<&'static str, &'static StaticCommandDefinition> = phf_map! {{}};").unwrap();
+  writeln!(f).unwrap();
+
+  // Generate public wrapper
+  writeln!(f, "pub static STATIC_COMMANDS: StaticCommandMap = StaticCommandMap::from_phf_internal(&STATIC_COMMANDS_PHF);").unwrap();
 }
 
 fn generate_static_commands(dest_path: &Path, command_definitions: &[serde_yaml::Value])
@@ -169,8 +176,11 @@ fn generate_static_commands(dest_path: &Path, command_definitions: &[serde_yaml:
 
   // Write header and imports
   writeln!(f, "// Generated static commands").unwrap();
-  writeln!(f, "use phf::{{phf_map, Map}};").unwrap();
-  
+  writeln!(f, "use phf::phf_map;").unwrap();
+
+  // Import StaticCommandMap wrapper
+  writeln!(f, "use crate::static_data::StaticCommandMap;").unwrap();
+
   // Only import types we'll actually use
   if command_definitions.is_empty() {
     writeln!(f, "use crate::static_data::StaticCommandDefinition;").unwrap();
@@ -178,7 +188,7 @@ fn generate_static_commands(dest_path: &Path, command_definitions: &[serde_yaml:
     // Check if we have any commands with arguments
     let has_arguments = command_definitions.iter()
       .any(|cmd| cmd["arguments"].as_sequence().is_some_and(|args| !args.is_empty()));
-    
+
     if has_arguments {
       writeln!(f, "use crate::static_data::{{StaticCommandDefinition, StaticArgumentDefinition, StaticArgumentAttributes, StaticKind}};").unwrap();
     } else {
@@ -193,12 +203,8 @@ fn generate_static_commands(dest_path: &Path, command_definitions: &[serde_yaml:
     generate_command_const(&mut f, i, cmd_value);
   }
 
-  // Generate the PHF map
-  writeln!(f, "/// Perfect Hash Function map of static command definitions.").unwrap();
-  writeln!(f, "/// ").unwrap();
-  writeln!(f, "/// This map provides zero-overhead lookup of compile-time registered commands.").unwrap();
-  writeln!(f, "/// Commands are keyed by their full name (namespace.command).").unwrap();
-  writeln!(f, "pub static STATIC_COMMANDS: Map<&'static str, &'static StaticCommandDefinition> = phf_map! {{").unwrap();
+  // Generate internal PHF map as const (not pub)
+  writeln!(f, "const STATIC_COMMANDS_PHF: phf::Map<&'static str, &'static StaticCommandDefinition> = phf_map! {{").unwrap();
 
   for (i, cmd_value) in command_definitions.iter().enumerate()
   {
@@ -226,6 +232,16 @@ fn generate_static_commands(dest_path: &Path, command_definitions: &[serde_yaml:
   }
 
   writeln!(f, "}};").unwrap();
+  writeln!(f).unwrap();
+
+  // Generate public wrapper
+  writeln!(f, "/// Static command registry (compile-time generated).").unwrap();
+  writeln!(f, "/// ").unwrap();
+  writeln!(f, "/// This map provides zero-overhead lookup of compile-time registered commands.").unwrap();
+  writeln!(f, "/// Commands are keyed by their full name (e.g., \".help\" or \"namespace.command\").").unwrap();
+  writeln!(f, "/// ").unwrap();
+  writeln!(f, "/// No PHF dependency required for crates using this registry.").unwrap();
+  writeln!(f, "pub static STATIC_COMMANDS: StaticCommandMap = StaticCommandMap::from_phf_internal(&STATIC_COMMANDS_PHF);").unwrap();
 }
 
 fn generate_command_const(f: &mut BufWriter<File>, index: usize, cmd_value: &serde_yaml::Value)

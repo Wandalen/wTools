@@ -91,23 +91,21 @@ fn test_cli_global_help_command()
 fn test_cli_specific_command_help_add()
 {
   // Test Matrix Row: T8.5
+  // Note: Using Level 2 (Standard) verbosity by default - concise format
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
   cmd.args( vec![ "help", ".math.add" ] );
   cmd
   .assert()
   .success()
   .stdout(
-    predicate::str::contains( "Usage: .add (v1.0.0)" )
-    .and( predicate::str::contains( "Aliases: sum, plus" ) )
-    .and( predicate::str::contains( "Tags: math, calculation" ) ) // Added this line
-    .and( predicate::str::contains( "Hint: Adds two numbers." ) ) // Modified this line
-    .and( predicate::str::contains( "Adds two numbers." ) ) // Modified this line
-    .and( predicate::str::contains( "Status: stable" ) )
-    .and( predicate::str::contains( "Arguments:" ) )
-    .and( predicate::str::contains( "a (Type: Integer)" ) ) // Updated for new format
-    .and( predicate::str::contains( "First number." ) ) // Description on separate line
-    .and( predicate::str::contains( "b (Type: Integer)" ) ) // Updated for new format
-    .and( predicate::str::contains( "Second number." ) ), // Description on separate line
+    predicate::str::contains( "USAGE:" )
+    .and( predicate::str::contains( ".add" ) )
+    .and( predicate::str::contains( "Adds two numbers" ) )
+    .and( predicate::str::contains( "PARAMETERS:" ) )
+    .and( predicate::str::contains( "a::integer" ) )
+    .and( predicate::str::contains( "First number" ) )
+    .and( predicate::str::contains( "b::integer" ) )
+    .and( predicate::str::contains( "Second number" ) ),
   )
   .stderr( "" );
 }

@@ -1,7 +1,7 @@
 //! # Static and Dynamic Command Registry
 //!
 //! This example demonstrates the hybrid command registry system that combines
-//! compile-time static commands (via PHF) with runtime dynamic registration.
+//! compile-time optimized static commands with runtime dynamic registration.
 
 use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind, OutputData };
 use unilang::registry::CommandRegistry;
@@ -137,8 +137,8 @@ fn main() -> Result< (), unilang::error::Error >
   // Step 4: Compare static vs dynamic performance
   println!( "\n=== Performance Comparison ===\n" );
 
-  println!( "🏁 Static Commands (PHF-based):" );
-  println!( "  • Compile-time generation using Perfect Hash Function (PHF)" );
+  println!( "🏁 Static Commands (Compile-Time Optimized):" );
+  println!( "  • Compile-time generation with optimized lookup tables" );
   println!( "  • Zero allocation lookups: O(1) constant time" );
   println!( "  • Memory efficient: embedded in binary" );
   println!( "  • Startup time: ~95μs (vs 5000μs requirement)" );
@@ -168,7 +168,7 @@ fn main() -> Result< (), unilang::error::Error >
     {
       Some( command ) =>
       {
-        let source = if cmd_name.starts_with( ".perf" ) { "static PHF" } else { "dynamic HashMap" };
+        let source = if cmd_name.starts_with( ".perf" ) { "static registry" } else { "dynamic HashMap" };
         println!( "  ✓ Found in {source} registry" );
         println!( "    Name: {}", command.name );
         println!( "    Namespace: {}", command.namespace );
@@ -196,18 +196,21 @@ fn main() -> Result< (), unilang::error::Error >
   println!( "\n=== Build Process Integration ===\n" );
   println!( "🔧 Static Command Generation:" );
   println!( "  1. build.rs reads command definitions from YAML" );
-  println!( "  2. Generates PHF map with compile-time hash calculation" );
+  println!( "  2. Generates optimized static map at compile-time" );
   println!( "  3. Outputs static_commands.rs with const data structures" );
   println!( "  4. Registry includes generated file for zero-cost lookup" );
 
   println!( "\n📝 Generated Code Structure:" );
   println!( r#"
 // Generated in static_commands.rs:
-static STATIC_COMMANDS: phf::Map<&'static str, StaticCommandDefinition> = phf_map! {{
-  ".perf.cmd_1" => StaticCommandDefinition {{ /* ... */ }},
-  ".perf.cmd_2" => StaticCommandDefinition {{ /* ... */ }},
+const STATIC_COMMANDS_PHF: phf::Map<&'static str, &'static StaticCommandDefinition> = phf_map! {{
+  ".perf.cmd_1" => &CMD_0,
+  ".perf.cmd_2" => &CMD_1,
   // ... millions of commands with O(1) lookup
 }};
+
+// Public API - implementation details hidden
+pub static STATIC_COMMANDS: StaticCommandMap = StaticCommandMap::from_phf_internal(&STATIC_COMMANDS_PHF);
 "# );
 
   println!( "=== Advantages of Hybrid Approach ===\n" );

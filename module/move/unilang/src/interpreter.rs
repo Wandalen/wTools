@@ -29,11 +29,7 @@ pub struct ExecutionContext
 pub struct Interpreter< 'a >
 {
   commands : & 'a [ VerifiedCommand ],
-  // The interpreter needs access to the registry to get the routines
-  // xxx: This should probably be a reference to the registry, not a direct copy of commands.
-  // For now, we'll assume the VerifiedCommand contains enough info to find the routine.
-  // Or, the commands should be paired with their routines.
-  // This means the Interpreter needs a reference to the registry.
+  /// Reference to the registry for accessing command routines
   registry : & 'a crate::registry::CommandRegistry,
 }
 

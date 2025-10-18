@@ -1,7 +1,7 @@
-//! Example 21: Rust DSL → Static PHF with Const Fn Constructors (Row 8)
+//! Example 21: Rust DSL → Compile-Time Static with Const Fn Constructors (Row 8)
 //!
 //! This example demonstrates the Row 8 approach: using Rust DSL with const fn
-//! constructors for compile-time command registration with static PHF maps.
+//! constructors for compile-time command registration with optimized static maps.
 //! This approach prioritizes raw performance and compile-time validation.
 //!
 //! **Trade-offs:**
@@ -153,7 +153,7 @@ fn config_routine( _cmd : VerifiedCommand, _ctx : ExecutionContext ) -> Result< 
 #[ allow( clippy::unnecessary_wraps ) ] // Examples use Result for consistency
 fn main() -> Result< (), Box< dyn std::error::Error > >
 {
-  println!( "=== Row 8: Static PHF with Const Fn Example ===" );
+  println!( "=== Row 8: Compile-Time Static with Const Fn Example ===" );
   println!();
 
   // Example 1: Basic const command
@@ -263,7 +263,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
 
   // Performance note
   println!( "⚡ Performance Characteristics:" );
-  println!( "  - Lookup time: ~80ns per command (PHF map)" );
+  println!( "  - Lookup time: ~80ns per command (optimized static map)" );
   println!( "  - Registration: Compile-time only" );
   println!( "  - Binary size: Minimal (static data in .rodata)" );
   println!( "  - Performance gain: 50x faster than Row 7" );
@@ -274,7 +274,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   println!();
   println!( "Comparison:" );
   println!( "  Row 7 (Inline Closures): ~4,200ns lookup, maximum flexibility" );
-  println!( "  Row 8 (Static PHF):      ~80ns lookup, maximum performance" );
+  println!( "  Row 8 (Compile-Time Static): ~80ns lookup, maximum performance" );
   println!( "  Performance ratio:       50x faster" );
 
   Ok(())

@@ -138,13 +138,14 @@ fn test_task_022_edge_cases_shell() {
 /// Test Task 022: Help system integration
 #[test]
 fn test_task_022_help_system_shell() {
-    // Test help for specific command
+    // Test help for specific command (uses Level 2 Standard verbosity by default)
     let mut cmd = Command::cargo_bin("unilang_cli").unwrap();
     cmd.args(vec![".video.search", "?"]);
 
     cmd.assert()
         .success()
-        .stdout(predicate::str::contains("Usage: .search"));
+        .stdout(predicate::str::contains("USAGE:"))
+        .stdout(predicate::str::contains(".search"));
 }
 
 /// Test complex user workflow simulation

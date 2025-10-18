@@ -1,8 +1,13 @@
 #![allow(clippy::all)]
 //! # Quick Start Example
 //!
-//! This example shows the complete flow from command definition to execution
-//! in the simplest possible way. It matches the example from the README.
+//! **⚠️ PERFORMANCE WARNING:** This example uses runtime command registration which has
+//! **10-50x slower lookup performance** than the recommended compile-time approach.
+//!
+//! **For production applications, use:** `static_01_basic_compile_time.rs` instead.
+//!
+//! This example demonstrates the runtime API for educational purposes and is appropriate
+//! for REPL applications, plugin systems, or rapid prototyping.
 //!
 //! Run with: `cargo run --example 00_quick_start`
 

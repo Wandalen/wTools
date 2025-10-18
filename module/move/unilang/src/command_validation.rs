@@ -13,7 +13,7 @@
 //!
 //! # Examples
 //!
-//! ```rust,ignore
+//! ```rust
 //! use unilang::command_validation::{ validate_command_name, validate_namespace };
 //!
 //! // Valid names
@@ -45,7 +45,7 @@ mod private
 ///
 /// # Examples
 ///
-/// ```rust,ignore
+/// ```rust
 /// use unilang::command_validation::validate_command_name;
 ///
 /// assert!( validate_command_name( ".hello" ).is_ok() );
@@ -75,7 +75,7 @@ pub fn validate_command_name( name : &str ) -> Result< (), Error >
 ///
 /// # Examples
 ///
-/// ```rust,ignore
+/// ```rust
 /// use unilang::command_validation::validate_namespace;
 ///
 /// assert!( validate_namespace( "" ).is_ok() );         // Empty OK
@@ -109,15 +109,13 @@ pub fn validate_namespace( namespace : &str ) -> Result< (), Error >
 ///
 /// # Examples
 ///
-/// ```rust,ignore
-/// use unilang::command_validation::validate_command_for_registration;
-/// use unilang::data::CommandDefinition;
+/// ```rust
+/// use unilang::prelude::*;
 ///
-/// let cmd = CommandDefinition {
-///   name: ".hello".to_string(),
-///   namespace: "".to_string(),
-///   // ... other fields
-/// };
+/// let cmd = CommandDefinition::former()
+///   .name( ".hello".to_string() )
+///   .description( "Test command".to_string() )
+///   .end();
 ///
 /// assert!( validate_command_for_registration( &cmd ).is_ok() );
 /// ```
@@ -134,7 +132,7 @@ pub fn validate_command_for_registration( cmd : &CommandDefinition ) -> Result< 
 ///
 /// # Examples
 ///
-/// ```rust,ignore
+/// ```rust
 /// use unilang::command_validation::is_help_command;
 ///
 /// assert!( is_help_command( ".hello.help" ) );
@@ -151,7 +149,7 @@ pub fn is_help_command( full_name : &str ) -> bool
 ///
 /// # Examples
 ///
-/// ```rust,ignore
+/// ```rust
 /// use unilang::command_validation::make_help_command_name;
 ///
 /// assert_eq!( make_help_command_name( ".hello" ), ".hello.help" );

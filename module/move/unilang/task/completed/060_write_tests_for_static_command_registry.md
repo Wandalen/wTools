@@ -16,7 +16,7 @@ Links to related tasks: Depends on task 059 (PHF generation), leads to task 061 
 
 -   Tests must be located in the `tests/` directory as per design rules
 -   Tests must verify hybrid lookup (static-first, dynamic-fallback) behavior
--   Tests must validate `from_phf()` constructor with generated PHF maps
+-   Tests must validate `from_commands()` constructor with generated command maps
 -   Tests must check command resolution performance metrics (<1ms p99 latency)
 -   Tests must verify integration with existing `CommandRegistry` API surface
 -   Tests must validate static command priority over dynamic commands with same name
@@ -30,7 +30,7 @@ Successfully completed comprehensive test suite for StaticCommandRegistry:
 
 - **Test File Created**: Created `/home/user1/pro/lib/wTools/module/move/unilang/tests/static_command_registry_test.rs` with 20 comprehensive tests
 - **API Design**: Tests define the complete API surface for `StaticCommandRegistry` including:
-  - Basic constructors (`new()`, `from_phf()`, `with_mode()`)
+  - Basic constructors (`new()`, `from_commands()`, `with_mode()`)
   - Hybrid lookup functionality with static-first, dynamic-fallback behavior
   - Command registration and management methods
   - Performance metrics tracking

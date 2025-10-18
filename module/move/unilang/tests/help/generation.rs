@@ -100,13 +100,13 @@ fn test_command_specific_help_generation()
   let help_generator = HelpGenerator::new( &registry );
   let help_content = help_generator.command( &cmd_name ).expect( "Help should be generated" );
 
-  // Verify help contains essential information
+  // Verify help contains essential information (Level 2 Standard format)
   assert!( help_content.contains( "test" ), "Help should contain command name" );
   assert!( help_content.contains( "A test command for help generation validation" ), "Help should contain description" );
   assert!( help_content.contains( "input" ), "Help should contain required argument" );
   assert!( help_content.contains( "output" ), "Help should contain optional argument" );
   assert!( help_content.contains( "verbose" ), "Help should contain boolean argument" );
-  assert!( help_content.contains( "Usage:" ), "Help should contain usage section" );
+  assert!( help_content.contains( "USAGE:" ), "Help should contain usage section" );
 }
 
 #[test]
@@ -126,11 +126,12 @@ fn test_help_includes_argument_details()
   let help_generator = HelpGenerator::new( &registry );
   let help_content = help_generator.command( &cmd_name ).expect( "Help should be generated" );
 
-  // Verify argument details are included
-  assert!( help_content.contains( "Arguments:" ), "Help should contain arguments section" );
+  // Verify argument details are included (Level 2 Standard format uses PARAMETERS:)
+  // Note: Level 2 shows hints if available, otherwise descriptions
+  assert!( help_content.contains( "PARAMETERS:" ), "Help should contain parameters section" );
   assert!( help_content.contains( "input" ), "Help should contain argument names" );
-  assert!( help_content.contains( "Type:" ), "Help should contain type information" );
-  assert!( help_content.contains( "Input file path" ), "Help should contain argument descriptions" );
+  assert!( help_content.contains( "string" ), "Help should contain type information" );
+  assert!( help_content.contains( "Path to the input file" ) || help_content.contains( "Input file path" ), "Help should contain argument descriptions or hints" );
 }
 
 #[test]
@@ -150,9 +151,9 @@ fn test_help_includes_examples()
   let help_generator = HelpGenerator::new( &registry );
   let help_content = help_generator.command( &cmd_name ).expect( "Help should be generated" );
 
-  // Verify help content structure (help generator doesn't include examples)
-  assert!( help_content.contains( "Usage:" ), "Help should contain usage section" );
-  assert!( help_content.contains( "Status:" ), "Help should contain status section" );
+  // Verify help content structure (Level 2 Standard format)
+  assert!( help_content.contains( "USAGE:" ), "Help should contain usage section" );
+  assert!( help_content.contains( "EXAMPLES:" ), "Help should contain examples section" );
   assert!( help_content.contains( "A test command" ), "Help should contain description" );
 }
 

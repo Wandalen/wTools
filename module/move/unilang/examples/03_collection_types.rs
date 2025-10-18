@@ -1,6 +1,9 @@
 #![allow(clippy::all)]
 //! # Collection Types Demo
 //!
+//! **⚠️ NOTE:** This example uses runtime registration for demonstration purposes.
+//! For production use, define collections in YAML and use compile-time generation.
+//!
 //! This example demonstrates how to work with List and Map argument types,
 //! including custom delimiters and nested structures.
 

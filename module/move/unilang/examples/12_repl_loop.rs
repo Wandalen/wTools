@@ -1,6 +1,10 @@
 #![allow(clippy::all)]
 //! # REPL Loop Example
 //!
+//! **✅ APPROPRIATE USE OF RUNTIME REGISTRATION:** REPL applications are a legitimate
+//! use case for runtime command registration as commands may be defined interactively
+//! or loaded dynamically during the session.
+//!
 //! This example demonstrates a basic Read-Eval-Print Loop (REPL) implementation
 //! using Unilang's stateless pipeline components for native applications.
 

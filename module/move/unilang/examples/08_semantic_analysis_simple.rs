@@ -1,6 +1,9 @@
 #![allow(clippy::all)]
 //! # Semantic Analysis Demo (Simplified)
 //!
+//! **⚠️ NOTE:** This example uses runtime registration for demonstration purposes.
+//! For production use, define commands in YAML and use compile-time generation.
+//!
 //! This example demonstrates the semantic analysis phase, showing how
 //! parsed commands are validated against the registry and converted
 //! to verified commands ready for execution.

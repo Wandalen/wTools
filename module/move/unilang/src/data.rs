@@ -1015,14 +1015,16 @@ mod private
     /// * `Self` - The modified `CommandDefinition` for method chaining
     ///
     /// # Examples
-    /// ```rust,ignore
-    /// use unilang::data::CommandDefinition;
+    /// ```rust
+    /// use unilang::prelude::*;
     ///
-    /// let cmd = CommandDefinition::builder()
-    ///     .name("example".to_string())
-    ///     .description("An example command".to_string())
-    ///     .with_auto_help(true)  // Enable automatic help generation
-    ///     .build();
+    /// let cmd = CommandDefinition::former()
+    ///     .name( ".example".to_string() )
+    ///     .description( "An example command".to_string() )
+    ///     .end()
+    ///     .with_auto_help( true );  // Enable automatic help generation
+    ///
+    /// assert!( cmd.has_auto_help() );
     /// ```
     #[ must_use ]
     pub fn with_auto_help( mut self, enabled : bool ) -> Self
@@ -1041,13 +1043,16 @@ mod private
     /// * `bool` - Whether auto-help generation is enabled for this command
     ///
     /// # Examples
-    /// ```rust,ignore
-    /// use unilang::data::CommandDefinition;
+    /// ```rust
+    /// use unilang::prelude::*;
     ///
-    /// let cmd = CommandDefinition::builder()
-    ///     .with_auto_help(true)
-    ///     .build();
-    /// assert!(cmd.has_auto_help());
+    /// let cmd = CommandDefinition::former()
+    ///     .name( ".test".to_string() )
+    ///     .description( "Test command".to_string() )
+    ///     .end()
+    ///     .with_auto_help( true );
+    ///
+    /// assert!( cmd.has_auto_help() );
     /// ```
     #[ must_use ]
     pub fn has_auto_help( &self ) -> bool
@@ -1072,25 +1077,23 @@ mod private
     /// dots, as the build script adds them automatically.
     ///
     /// # Examples
-    /// ```rust,ignore
-    /// use unilang::data::CommandDefinition;
+    /// ```rust
+    /// use unilang::prelude::*;
     ///
-    /// // Correctly formatted command (dot-prefixed name)
-    /// let cmd1 = CommandDefinition { name: ".help".to_string(), namespace: "".to_string(), ..Default::default() };
-    /// assert_eq!(cmd1.full_name(), ".help");
+    /// // Simple command (dot-prefixed name)
+    /// let cmd1 = CommandDefinition::former()
+    ///     .name( ".help".to_string() )
+    ///     .description( "Help command".to_string() )
+    ///     .end();
+    /// assert_eq!( cmd1.full_name(), ".help" );
     ///
-    /// // YAML manifest format (normalization for build script compatibility only)
-    /// // NOTE: Direct API registration requires dot prefix and will reject "help" without validation bypass
-    /// let cmd2 = CommandDefinition { name: "help".to_string(), namespace: "".to_string(), ..Default::default() };
-    /// assert_eq!(cmd2.full_name(), ".help"); // Internal normalization
-    ///
-    /// // Namespaced command (both should have dot prefix for API usage)
-    /// let cmd3 = CommandDefinition { name: ".list".to_string(), namespace: ".session".to_string(), ..Default::default() };
-    /// assert_eq!(cmd3.full_name(), ".session.list");
-    ///
-    /// // YAML manifest format (no dots - build script adds them)
-    /// let cmd4 = CommandDefinition { name: "list".to_string(), namespace: "session".to_string(), ..Default::default() };
-    /// assert_eq!(cmd4.full_name(), ".session.list"); // Internal normalization
+    /// // Namespaced command (both components have dot prefix)
+    /// let cmd2 = CommandDefinition::former()
+    ///     .name( ".list".to_string() )
+    ///     .namespace( ".session".to_string() )
+    ///     .description( "List sessions".to_string() )
+    ///     .end();
+    /// assert_eq!( cmd2.full_name(), ".session.list" );
     /// ```
     #[ must_use ]
     pub fn full_name( &self ) -> String
@@ -1110,16 +1113,17 @@ mod private
     /// * `CommandDefinition` - A new command definition for the help counterpart
     ///
     /// # Examples
-    /// ```rust,ignore
-    /// use unilang::data::CommandDefinition;
+    /// ```rust
+    /// use unilang::prelude::*;
     ///
-    /// let cmd = CommandDefinition::builder()
-    ///     .name("example".to_string())
-    ///     .description("An example command".to_string())
-    ///     .build();
+    /// let cmd = CommandDefinition::former()
+    ///     .name( ".example".to_string() )
+    ///     .description( "An example command".to_string() )
+    ///     .end();
     ///
     /// let help_cmd = cmd.generate_help_command();
-    /// assert_eq!(help_cmd.name, "example.help");
+    /// assert_eq!( help_cmd.name, ".example.help" );
+    /// assert!( help_cmd.description.contains( ".example" ) );
     /// ```
     #[ must_use ]
     pub fn generate_help_command( &self ) -> CommandDefinition

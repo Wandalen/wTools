@@ -144,11 +144,11 @@ impl< 'a > SemanticAnalyzer< 'a >
       // Check if help was requested for this command (via ? operator or ?? parameter)
       if instruction.help_requested || has_double_question_mark
       {
-        // Generate help for this specific command
-        let help_generator = crate::help::HelpGenerator::new( self.registry );
+        // Generate help for this specific command (respects UNILANG_HELP_VERBOSITY env var)
+        let help_generator = crate::help::HelpGenerator::from_env( self.registry );
         let help_content = help_generator.command( command_name )
           .unwrap_or( format!( "No help available for command '{command_name}'" ) );
-        
+
         return Err( Error::Execution( ErrorData::new(
           "HELP_REQUESTED".to_string(),
           help_content,
