@@ -1,4 +1,4 @@
-- name: "example"
+- name: ".example"
   namespace: ""
   description: "Example command from external YAML module"
   hint: "External command for testing"
@@ -12,7 +12,7 @@
   http_method_hint: "GET"
   auto_help_enabled: true
   examples:
-    - "example input::test_value"
+    - ".example input::test_value"
   arguments:
     - name: "input"
       description: "Input parameter"

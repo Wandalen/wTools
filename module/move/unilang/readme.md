@@ -35,7 +35,7 @@ Command string → O(1) PHF lookup → Validated execution
 
 Create `unilang.commands.yaml`:
 ```yaml
-- name: "greet"
+- name: ".greet"
   namespace: ""
   description: "High-performance greeting command"
   arguments:
@@ -45,6 +45,8 @@ Create `unilang.commands.yaml`:
         optional: true
         default: "World"
 ```
+
+**Note:** Command names should always start with a dot (`.`). When using build.rs for static generation, you can optionally omit the dot as it will be added automatically, but showing it here reinforces the naming convention.
 
 ### Step 2: Configure Build Script
 
@@ -302,8 +304,8 @@ This example demonstrates aggregating database, file, network, and build CLIs in
 
 ### Basic Command Structure
 ```yaml
-- name: "command_name"           # Required: Command identifier
-  namespace: "optional.prefix"   # Optional: Hierarchical organization
+- name: ".command_name"          # Required: Command identifier (must start with dot)
+  namespace: ""                  # Optional: Hierarchical organization (e.g., "math", "file")
   description: "What it does"    # Required: User-facing description
   arguments:                     # Optional: Command parameters
     - name: "arg_name"

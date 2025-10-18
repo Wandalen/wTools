@@ -1,4 +1,4 @@
-- name: "example"
+- name: ".example"
   namespace: ""
   description: "Example utility command from utils module"
   hint: "Utility command for testing"
@@ -12,7 +12,7 @@
   http_method_hint: "GET"
   auto_help_enabled: true
   examples:
-    - "example input::utility_value"
+    - ".example input::utility_value"
   arguments:
     - name: "input"
       description: "Input parameter for utility"

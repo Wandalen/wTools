@@ -1,4 +1,4 @@
-- name: "example"
+- name: ".example"
   namespace: ""
   description: "Example dynamic command from dynamic module"
   hint: "Dynamic command for testing"
@@ -12,7 +12,7 @@
   http_method_hint: "GET"
   auto_help_enabled: true
   examples:
-    - "example input::dynamic_value"
+    - ".example input::dynamic_value"
   arguments:
     - name: "input"
       description: "Input parameter for dynamic command"

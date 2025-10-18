@@ -117,8 +117,8 @@ Ridiculous/impractical approaches have been excluded (e.g., Windows Registry, HT
 
 **Example YAML**:
 ```yaml
-- name: "search"
-  namespace: "video"
+- name: ".video.search"
+  namespace: ""
   description: "Search for videos"
   arguments:
     - name: "query"
@@ -382,7 +382,7 @@ fn main() {
 
 // ✅ AFTER: YAML + PHF (50x faster)
 // 1. Create unilang.commands.yaml:
-//    - name: "search"
+//    - name: ".search"
 //      description: "Search command"
 //      arguments: []
 //
@@ -466,8 +466,8 @@ static_commands_from_yaml!(COMMANDS);
 **Example TOML**:
 ```toml
 [[command]]
-name = "search"
-namespace = "video"
+name = ".video.search"
+namespace = ""
 description = "Search for videos"
 
 [[command.arguments]]
