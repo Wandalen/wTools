@@ -45,6 +45,145 @@ mod private
     pub examples : &'static [ &'static str ],
   }
 
+  impl StaticCommandDefinition
+  {
+    /// Creates a new `StaticCommandDefinition` with required fields and sensible defaults.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,ignore
+    /// use unilang::static_data::StaticCommandDefinition;
+    ///
+    /// const CMD: StaticCommandDefinition = StaticCommandDefinition::new(
+    ///   ".greet",
+    ///   "",
+    ///   "Greets the user",
+    /// );
+    /// ```
+    #[ must_use ]
+    pub const fn new(
+      name : &'static str,
+      namespace : &'static str,
+      description : &'static str,
+    ) -> Self
+    {
+      Self
+      {
+        name,
+        namespace,
+        description,
+        hint : "",
+        arguments : &[],
+        routine_link : None,
+        status : "stable",
+        version : "1.0.0",
+        tags : &[],
+        aliases : &[],
+        permissions : &[],
+        idempotent : true,
+        deprecation_message : "",
+        http_method_hint : "GET",
+        examples : &[],
+      }
+    }
+
+    /// Sets the hint for the command.
+    #[ must_use ]
+    pub const fn with_hint( mut self, hint : &'static str ) -> Self
+    {
+      self.hint = hint;
+      self
+    }
+
+    /// Sets the arguments for the command.
+    #[ must_use ]
+    pub const fn with_arguments( mut self, arguments : &'static [ StaticArgumentDefinition ] ) -> Self
+    {
+      self.arguments = arguments;
+      self
+    }
+
+    /// Sets the routine link for the command.
+    #[ must_use ]
+    pub const fn with_routine_link( mut self, routine_link : &'static str ) -> Self
+    {
+      self.routine_link = Some( routine_link );
+      self
+    }
+
+    /// Sets the status for the command.
+    #[ must_use ]
+    pub const fn with_status( mut self, status : &'static str ) -> Self
+    {
+      self.status = status;
+      self
+    }
+
+    /// Sets the version for the command.
+    #[ must_use ]
+    pub const fn with_version( mut self, version : &'static str ) -> Self
+    {
+      self.version = version;
+      self
+    }
+
+    /// Sets the tags for the command.
+    #[ must_use ]
+    pub const fn with_tags( mut self, tags : &'static [ &'static str ] ) -> Self
+    {
+      self.tags = tags;
+      self
+    }
+
+    /// Sets the aliases for the command.
+    #[ must_use ]
+    pub const fn with_aliases( mut self, aliases : &'static [ &'static str ] ) -> Self
+    {
+      self.aliases = aliases;
+      self
+    }
+
+    /// Sets the permissions for the command.
+    #[ must_use ]
+    pub const fn with_permissions( mut self, permissions : &'static [ &'static str ] ) -> Self
+    {
+      self.permissions = permissions;
+      self
+    }
+
+    /// Sets whether the command is idempotent.
+    #[ must_use ]
+    pub const fn with_idempotent( mut self, idempotent : bool ) -> Self
+    {
+      self.idempotent = idempotent;
+      self
+    }
+
+    /// Sets the deprecation message for the command.
+    #[ must_use ]
+    pub const fn with_deprecation_message( mut self, deprecation_message : &'static str ) -> Self
+    {
+      self.deprecation_message = deprecation_message;
+      self
+    }
+
+    /// Sets the HTTP method hint for the command.
+    #[ must_use ]
+    pub const fn with_http_method_hint( mut self, http_method_hint : &'static str ) -> Self
+    {
+      self.http_method_hint = http_method_hint;
+      self
+    }
+
+    /// Sets the examples for the command.
+    #[ must_use ]
+    pub const fn with_examples( mut self, examples : &'static [ &'static str ] ) -> Self
+    {
+      self.examples = examples;
+      self
+    }
+  }
+
   ///
   /// Static, const-compatible version of `ArgumentDefinition`.
   ///
@@ -69,6 +208,82 @@ mod private
     pub tags : &'static [ &'static str ],
   }
 
+  impl StaticArgumentDefinition
+  {
+    /// Creates a new `StaticArgumentDefinition` with required fields and sensible defaults.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,ignore
+    /// use unilang::static_data::{ StaticArgumentDefinition, StaticKind, StaticArgumentAttributes };
+    ///
+    /// const ARG: StaticArgumentDefinition = StaticArgumentDefinition::new(
+    ///   "name",
+    ///   StaticKind::String,
+    ///   "User name",
+    /// );
+    /// ```
+    #[ must_use ]
+    pub const fn new(
+      name : &'static str,
+      kind : StaticKind,
+      description : &'static str,
+    ) -> Self
+    {
+      Self
+      {
+        name,
+        kind,
+        attributes : StaticArgumentAttributes::new(),
+        hint : "",
+        description,
+        validation_rules : &[],
+        aliases : &[],
+        tags : &[],
+      }
+    }
+
+    /// Sets the attributes for the argument.
+    #[ must_use ]
+    pub const fn with_attributes( mut self, attributes : StaticArgumentAttributes ) -> Self
+    {
+      self.attributes = attributes;
+      self
+    }
+
+    /// Sets the hint for the argument.
+    #[ must_use ]
+    pub const fn with_hint( mut self, hint : &'static str ) -> Self
+    {
+      self.hint = hint;
+      self
+    }
+
+    /// Sets the validation rules for the argument.
+    #[ must_use ]
+    pub const fn with_validation_rules( mut self, validation_rules : &'static [ StaticValidationRule ] ) -> Self
+    {
+      self.validation_rules = validation_rules;
+      self
+    }
+
+    /// Sets the aliases for the argument.
+    #[ must_use ]
+    pub const fn with_aliases( mut self, aliases : &'static [ &'static str ] ) -> Self
+    {
+      self.aliases = aliases;
+      self
+    }
+
+    /// Sets the tags for the argument.
+    #[ must_use ]
+    pub const fn with_tags( mut self, tags : &'static [ &'static str ] ) -> Self
+    {
+      self.tags = tags;
+      self
+    }
+  }
+
   ///
   /// Static, const-compatible version of `ArgumentAttributes`.
   ///
@@ -86,6 +301,74 @@ mod private
     pub sensitive : bool,
     /// Indicates if the argument might require user interaction.
     pub interactive : bool,
+  }
+
+  impl StaticArgumentAttributes
+  {
+    /// Creates a new `StaticArgumentAttributes` with sensible defaults.
+    ///
+    /// Defaults: required (not optional), single value, no default, not sensitive, not interactive.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,ignore
+    /// use unilang::static_data::StaticArgumentAttributes;
+    ///
+    /// const ATTRS: StaticArgumentAttributes = StaticArgumentAttributes::new();
+    /// const OPTIONAL_ATTRS: StaticArgumentAttributes = StaticArgumentAttributes::new().with_optional(true);
+    /// ```
+    #[ must_use ]
+    pub const fn new() -> Self
+    {
+      Self
+      {
+        optional : false,
+        multiple : false,
+        default : None,
+        sensitive : false,
+        interactive : false,
+      }
+    }
+
+    /// Sets whether the argument is optional.
+    #[ must_use ]
+    pub const fn with_optional( mut self, optional : bool ) -> Self
+    {
+      self.optional = optional;
+      self
+    }
+
+    /// Sets whether the argument can accept multiple values.
+    #[ must_use ]
+    pub const fn with_multiple( mut self, multiple : bool ) -> Self
+    {
+      self.multiple = multiple;
+      self
+    }
+
+    /// Sets the default value for the argument.
+    #[ must_use ]
+    pub const fn with_default( mut self, default : &'static str ) -> Self
+    {
+      self.default = Some( default );
+      self
+    }
+
+    /// Sets whether the argument contains sensitive data.
+    #[ must_use ]
+    pub const fn with_sensitive( mut self, sensitive : bool ) -> Self
+    {
+      self.sensitive = sensitive;
+      self
+    }
+
+    /// Sets whether the argument might require user interaction.
+    #[ must_use ]
+    pub const fn with_interactive( mut self, interactive : bool ) -> Self
+    {
+      self.interactive = interactive;
+      self
+    }
   }
 
   ///

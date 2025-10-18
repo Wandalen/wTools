@@ -444,6 +444,15 @@ Use provided benchmarking examples to verify improvements.
 - Use batch processing for multiple commands
 - Implement proper error handling and recovery
 
+## Documentation
+
+### Core Documentation
+- **[CLI Definition Approaches](docs/cli_definition_approaches.md)** - Comprehensive guide to all 21 ways to define CLI commands (YAML, JSON, Rust DSL, macros, etc.) with implementation status, performance comparisons, and use case recommendations
+- **[Optimization Guide](docs/optimization_guide.md)** - Performance optimization strategies and benchmark data
+
+### Examples and Learning
+See the `examples/` directory for comprehensive demonstrations of compile-time and runtime patterns.
+
 ## Contributing
 
 See [CONTRIBUTING.md](https://github.com/Wandalen/wTools/blob/master/CONTRIBUTING.md) for development guidelines.

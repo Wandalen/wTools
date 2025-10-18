@@ -448,37 +448,11 @@ impl CommandRegistry
     // EXPLICIT COMMAND NAMING ENFORCEMENT (FR-REG-6)
     // Following the governing principle: minimum implicit magic!
 
-    // Validate that command names start with dot prefix
-    if !command_def.name.starts_with( '.' )
-    {
-      return Err( Error::Registration( format!(
-        "Invalid command name '{}'. All commands must start with dot prefix (e.g., '.chat'). \
-        This enforces explicit naming with minimal implicit transformations.",
-        command_def.name
-      )));
-    }
+    // Validate command definition using centralized validation module
+    crate::command_validation::validate_command_for_registration( command_def )?;
 
-    // Validate namespace format if provided
-    if !command_def.namespace.is_empty() && !command_def.namespace.starts_with( '.' )
-    {
-      return Err( Error::Registration( format!(
-        "Invalid namespace '{}'. Non-empty namespaces must start with dot prefix (e.g., '.session'). \
-        Use empty namespace for root-level commands.",
-        command_def.namespace
-      )));
-    }
-
-    // Build full command name explicitly - no magic transformations
-    let full_name = if command_def.namespace.is_empty()
-    {
-      // Root-level command: use name as-is (already validated to have dot prefix)
-      command_def.name.clone()
-    }
-    else
-    {
-      // Namespaced command: explicit concatenation
-      format!( "{}.{}", command_def.namespace, command_def.name.strip_prefix('.').unwrap_or(&command_def.name) )
-    };
+    // Build full command name using CommandDefinition's method
+    let full_name = command_def.full_name();
     // Check if command exists in dynamic registry
     // Note: Static command conflicts should be checked by StaticCommandRegistry
     if self.dynamic_commands.contains_key( &full_name )
@@ -495,14 +469,13 @@ impl CommandRegistry
 
     // AUTO HELP GENERATION - Respects auto_help_enabled field
     // Generate help command only if auto_help_enabled is true
-    #[allow(clippy::case_sensitive_file_extension_comparisons)] // This is a command name check, not a file extension
-    if command_def.auto_help_enabled && !full_name.ends_with( ".help" )
+    if command_def.auto_help_enabled && !crate::command_validation::is_help_command( &full_name )
     {
       let help_command = command_def.generate_help_command();
       let help_routine = self.create_help_routine( command_def );
 
       // Register the auto-generated help command
-      let help_name = format!( "{}.help", full_name );
+      let help_name = crate::command_validation::make_help_command_name( &full_name );
       if !self.dynamic_commands.contains_key( &help_name )
       {
         self.dynamic_commands.insert( help_name.clone(), help_command );
@@ -951,6 +924,73 @@ impl CommandRegistryBuilder
       }
     }
     Ok( self )
+  }
+
+  ///
+  /// Adds a command with inline routine using a fluent builder.
+  ///
+  /// This provides Row 7 (Rust DSL → Dynamic HashMap) functionality,
+  /// allowing commands and routines to be defined together inline.
+  ///
+  /// # Arguments
+  /// * `name` - Command name (must start with '.')
+  /// * `description` - Command description
+  /// * `routine` - Inline closure for command execution
+  ///
+  /// # Examples
+  /// ```rust,ignore
+  /// use unilang::registry::CommandRegistry;
+  ///
+  /// let registry = CommandRegistry::builder()
+  ///   .command_with_routine(
+  ///     ".greet",
+  ///     "Greets user by name",
+  ///     |cmd, _ctx| {
+  ///       Ok(unilang::data::OutputData {
+  ///         content: "Hello!".to_string(),
+  ///         format: "text".to_string(),
+  ///       })
+  ///     }
+  ///   )
+  ///   .build();
+  /// ```
+  #[ must_use ]
+  pub fn command_with_routine<F>(
+    mut self,
+    name : &str,
+    description : &str,
+    routine : F
+  ) -> Self
+  where
+    F : Fn( crate::semantic::VerifiedCommand, ExecutionContext ) -> Result< OutputData, ErrorData > + Send + Sync + 'static
+  {
+    let cmd = CommandDefinition
+    {
+      name : name.to_string(),
+      namespace : String::new(),
+      description : description.to_string(),
+      hint : String::new(),
+      status : "stable".to_string(),
+      version : "1.0.0".to_string(),
+      arguments : vec![],
+      routine_link : None,
+      tags : vec![],
+      aliases : vec![],
+      permissions : vec![],
+      idempotent : true,
+      deprecation_message : String::new(),
+      http_method_hint : "GET".to_string(),
+      examples : vec![],
+      auto_help_enabled : true,
+    };
+
+    // Register with routine - errors are logged but don't stop the builder chain
+    if let Err( e ) = self.registry.command_add_runtime( &cmd, Box::new( routine ) )
+    {
+      eprintln!( "Warning: Failed to register command '{}': {}", name, e );
+    }
+
+    self
   }
 
   ///

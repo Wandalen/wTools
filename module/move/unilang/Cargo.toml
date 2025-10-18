@@ -113,6 +113,9 @@ path = "tests/inc/phase2/command_loader_yaml_test.rs"
 name = "command_loader_json_test"
 path = "tests/inc/phase2/command_loader_json_test.rs"
 [[test]]
+name = "command_loader_build_time_test"
+path = "tests/inc/phase2/command_loader_build_time_test.rs"
+[[test]]
 name = "command_loader_error_test"
 path = "tests/inc/phase2/command_loader_error_test.rs"
 [[test]]
@@ -120,8 +123,20 @@ name = "cli_integration_test"
 path = "tests/inc/phase2/cli_integration_test.rs"
 
 [[test]]
+name = "command_validation_test"
+path = "tests/inc/phase2/command_validation_test.rs"
+
+[[test]]
 name = "help_generation_test"
 path = "tests/inc/phase2/help_generation_test.rs"
+
+[[test]]
+name = "rust_dsl_inline_closure_test"
+path = "tests/inc/phase2/rust_dsl_inline_closure_test.rs"
+
+[[test]]
+name = "static_const_constructor_test"
+path = "tests/inc/phase2/static_const_constructor_test.rs"
 
 [[test]]
 name = "data_model_features_test"
@@ -230,6 +245,7 @@ path = "examples/18_help_conventions_demo.rs"
 [build-dependencies]
 serde = "1.0"
 serde_yaml = "0.9"
+serde_json = "1.0"  # For JSON build-time command loading
 phf_codegen = "0.11"
 walkdir = "2.4"
 
@@ -242,6 +258,7 @@ clap = "4.4"
 pico-args = "0.5"
 chrono = "0.4"
 tempfile = "3.8"
+walkdir = "2.4"  # For build-time test verification
 
 criterion = "0.5"
 

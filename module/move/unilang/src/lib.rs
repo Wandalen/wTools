@@ -157,7 +157,10 @@ mod_interface::mod_interface!
   
   /// Command registry management.
   layer registry;
-  
+
+  /// Command validation utilities.
+  layer command_validation;
+
   /// Semantic analysis and validation.
   layer semantic;
   

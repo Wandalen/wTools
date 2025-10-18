@@ -1,7 +1,11 @@
 //! Build script for unilang crate.
 //!
-//! Generates static command definitions from YAML manifest using Perfect Hash Functions (PHF)
+//! Generates static command definitions from YAML/JSON manifests using Perfect Hash Functions (PHF)
 //! for zero-overhead command lookup at runtime.
+//!
+//! Supports both YAML and JSON formats with complete parity:
+//! - Single-file mode: `.yaml`, `.yml`, or `.json` files
+//! - Multi-file mode: Discovers all `.yaml`, `.yml`, and `.json` files
 //!
 //! ## Design Rules Compliance for PHF Build Process
 //!
@@ -42,18 +46,17 @@ fn main()
   // Check if we have a custom manifest path from environment variable (single file mode)
   if let Ok(manifest_path) = env::var("UNILANG_STATIC_COMMANDS_PATH")
   {
-    // Single file mode - existing behavior
-    let Ok(yaml_content) = std::fs::read_to_string(&manifest_path) else {
-      generate_empty_phf(&dest_path);
-      return;
-    };
+    // Single file mode - supports both YAML and JSON
+    let manifest_path_buf = Path::new(&manifest_path);
 
-    let command_definitions: Vec<serde_yaml::Value> = match serde_yaml::from_str(&yaml_content)
+    let command_definitions = match parse_command_file(manifest_path_buf)
     {
       Ok(definitions) => definitions,
       Err(e) =>
       {
-        panic!("Failed to parse YAML manifest: {e}");
+        eprintln!("Warning: {e}");
+        generate_empty_phf(&dest_path);
+        return;
       }
     };
 
@@ -103,7 +106,7 @@ fn main()
             .filter(|e| {
               if let Some(extension) = e.path().extension()
               {
-                extension == "yaml" || extension == "yml"
+                extension == "yaml" || extension == "yml" || extension == "json"
               }
               else
               {
@@ -111,15 +114,12 @@ fn main()
               }
             })
           {
-            if let Ok(yaml_content) = std::fs::read_to_string(entry.path())
+            match parse_command_file(entry.path())
             {
-              match serde_yaml::from_str::<Vec<serde_yaml::Value>>(&yaml_content)
+              Ok(mut definitions) => all_command_definitions.append(&mut definitions),
+              Err(e) =>
               {
-                Ok(mut definitions) => all_command_definitions.append(&mut definitions),
-                Err(e) =>
-                {
-                  eprintln!("Warning: Failed to parse YAML file {}: {}", entry.path().display(), e);
-                }
+                eprintln!("Warning: {e}");
               }
             }
           }
@@ -406,4 +406,44 @@ fn generate_string_array(f: &mut BufWriter<File>, const_name: &str, yaml_value: 
 fn escape_string(s: &str) -> String
 {
   s.replace('\\', "\\\\").replace('"', "\\\"")
+}
+
+/// Parse command definitions from a file based on its extension.
+///
+/// Supports:
+/// - `.yaml`, `.yml` → `serde_yaml` parsing
+/// - `.json` → `serde_json` parsing (converted to `serde_yaml::Value` for consistency)
+fn parse_command_file(file_path: &Path) -> Result<Vec<serde_yaml::Value>, String>
+{
+  let content = std::fs::read_to_string(file_path)
+    .map_err(|e| format!("Failed to read file {}: {e}", file_path.display()))?;
+
+  let extension = file_path
+    .extension()
+    .and_then(|ext| ext.to_str())
+    .ok_or_else(|| format!("File has no extension: {}", file_path.display()))?;
+
+  match extension
+  {
+    "yaml" | "yml" =>
+    {
+      serde_yaml::from_str(&content)
+        .map_err(|e| format!("Failed to parse YAML file {}: {e}", file_path.display()))
+    }
+    "json" =>
+    {
+      // Parse JSON first, then convert to YAML Value for unified processing
+      let json_value: serde_json::Value = serde_json::from_str(&content)
+        .map_err(|e| format!("Failed to parse JSON file {}: {e}", file_path.display()))?;
+
+      // Convert JSON Value to YAML Value via intermediate JSON string
+      // This works because both implement serde Serialize/Deserialize
+      let json_str = serde_json::to_string(&json_value)
+        .map_err(|e| format!("Failed to serialize JSON: {e}"))?;
+
+      serde_yaml::from_str(&json_str)
+        .map_err(|e| format!("Failed to convert JSON to YAML representation: {e}"))
+    }
+    other => Err(format!("Unsupported file extension '{other}' for file: {}", file_path.display()))
+  }
 }
