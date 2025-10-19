@@ -14,6 +14,7 @@ use crate::
   HandlebarsRenderer,
   FileSystem,
   RealFileSystem,
+  validate_path,
 };
 
 //
@@ -872,6 +873,9 @@ impl TemplateArchive
     // Process each file
     for file in &self.files
     {
+      // Validate path for security (prevent directory traversal)
+      validate_path( &file.path )?;
+
       let full_path = base_path.join( &file.path );
 
       let final_content = match &file.content
@@ -965,6 +969,9 @@ impl TemplateArchive
     // Process each file
     for file in &self.files
     {
+      // Validate path for security (prevent directory traversal)
+      validate_path( &file.path )?;
+
       let full_path = base_path.join( &file.path );
 
       // Resolve content from source (external or inline)
@@ -1068,6 +1075,9 @@ impl TemplateArchive
     // Process each file
     for file in &self.files
     {
+      // Validate path for security (prevent directory traversal)
+      validate_path( &file.path )?;
+
       let full_path = base_path.join( &file.path );
 
       // Resolve content from source (external or inline)

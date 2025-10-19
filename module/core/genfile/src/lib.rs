@@ -27,6 +27,10 @@ pub mod values;
 #[ cfg( feature = "enabled" ) ]
 pub mod error;
 
+/// Security validation functions
+#[ cfg( feature = "enabled" ) ]
+pub mod security;
+
 /// Template rendering engines
 #[ cfg( feature = "enabled" ) ]
 pub mod renderer;
@@ -62,6 +66,9 @@ pub use values ::Values;
 
 #[ cfg( feature = "enabled" ) ]
 pub use error ::Error;
+
+#[ cfg( feature = "enabled" ) ]
+pub use security ::validate_path;
 
 #[ cfg( feature = "enabled" ) ]
 pub use renderer :: { TemplateRenderer, HandlebarsRenderer };
@@ -112,6 +119,7 @@ pub mod prelude
     Parameters,
     Values,
     Error,
+    validate_path,
     TemplateRenderer,
     HandlebarsRenderer,
     FileDescriptor,

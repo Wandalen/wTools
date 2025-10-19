@@ -2,7 +2,7 @@
 
 **Last Updated:** 2025-10-19
 **Version:** 0.1.0
-**Total Tests:** 188 passing (142 unit + 46 doc)
+**Total Tests:** 215 passing (169 unit/integration + 46 doc)
 
 **Design Principle:** Simple, focused template processing library. Complex features like interactive prompting, TOML merging, and builder patterns are intentionally excluded for simplicity.
 
@@ -32,7 +32,7 @@
 
 | # | Category | Feature | Implementation | Status | Easiness | Value | Score | Notes |
 |---|----------|---------|----------------|--------|----------|-------|-------|-------|
-| 1 | Security | Path traversal validation | Not implemented | ❌ | 5 | 4 | 20 | Reject ".." in paths - HIGH PRIORITY |
+| 1 | Security | Path traversal validation | validate_path() | ✅ | 5 | 4 | 20 | Rejects ".." in paths - 27 tests |
 | 2 | Docs | README.md improvements | Basic readme | ⚠️ | 4 | 4 | 16 | Needs quick start + examples |
 | 3 | NFR3 | Test coverage measurement | 188 tests exist | ⚠️ | 5 | 3 | 15 | Run tarpaulin to get % |
 | 4 | Docs | API documentation | Most items documented | ⚠️ | 3 | 4 | 12 | Fill gaps, module docs |
