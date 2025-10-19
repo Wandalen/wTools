@@ -7,7 +7,7 @@
 // The derive macro now properly handles this by substituting lifetimes.
 
 #[ cfg( feature = "enabled" ) ]
-use former_meta::Former;
+use former::Former;
 
 #[ derive( Debug, PartialEq, Former ) ]
 pub struct Other<'x> {

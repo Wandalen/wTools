@@ -3,7 +3,7 @@
 #![allow(missing_docs)]
 
 #[ cfg( feature = "enabled" ) ]
-use former_meta::Former;
+use former::Former;
 
 /// A basic structure to test Former derive macro
 #[ derive( Debug, PartialEq, Former ) ]

@@ -15,7 +15,7 @@ fn main() {}
 #[cfg(all(feature = "derive_former", feature = "enabled"))]
 fn main() {
   #[ cfg( feature = "enabled" ) ]
-  use former_meta::Former;
+  use former::Former;
 
   /// Structure with a custom setter.
   #[ derive( Debug, Former ) ]
