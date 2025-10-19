@@ -403,6 +403,7 @@ fn main() -> Result< (), unilang::error::Error >
     {
       content : "Data processed successfully".to_string(),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 
@@ -438,6 +439,7 @@ fn main() -> Result< (), unilang::error::Error >
     {
       content : "pong".to_string(),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 

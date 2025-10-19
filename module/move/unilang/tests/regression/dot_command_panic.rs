@@ -41,9 +41,9 @@ fn test_dot_command_shows_help_instead_of_panicking()
   
   // Should return an error with help content, not panic
   assert!(result.is_err(), "Dot command should return help error, not success");
-  
+
   if let Err(Error::Execution(error_data)) = result {
-    assert_eq!(error_data.code, "HELP_REQUESTED", "Should return HELP_REQUESTED error code");
+    assert_eq!(error_data.code, unilang::data::ErrorCode::HelpRequested, "Should return HELP_REQUESTED error code");
     assert!(error_data.message.contains("Available commands"), "Should contain help text");
     assert!(error_data.message.contains(".test"), "Should list the test command");
   } else {
@@ -72,7 +72,7 @@ fn test_dot_command_with_minimal_commands()
   assert!(result.is_err(), "Dot command should return help error");
 
   if let Err(Error::Execution(error_data)) = result {
-    assert_eq!(error_data.code, "HELP_REQUESTED");
+    assert_eq!(error_data.code, unilang::data::ErrorCode::HelpRequested);
     // NOTE: With mandatory help enforcement, .help command is always available
     assert!(error_data.message.contains("Available Commands") ||
             error_data.message.contains(".help"),
@@ -115,7 +115,7 @@ fn test_dot_command_lists_multiple_commands()
   let result = analyzer.analyze();
   
   if let Err(Error::Execution(error_data)) = result {
-    assert_eq!(error_data.code, "HELP_REQUESTED");
+    assert_eq!(error_data.code, unilang::data::ErrorCode::HelpRequested);
     assert!(error_data.message.contains(".test.first"), "Should list first command");
     assert!(error_data.message.contains(".test.second"), "Should list second command");
     assert!(error_data.message.contains("First test command"), "Should show first description");
@@ -154,6 +154,6 @@ fn test_empty_command_path_edge_case()
   // Should return help instead of panicking
   assert!(result.is_err());
   if let Err(Error::Execution(error_data)) = result {
-    assert_eq!(error_data.code, "HELP_REQUESTED");
+    assert_eq!(error_data.code, unilang::data::ErrorCode::HelpRequested);
   }
 }

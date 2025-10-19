@@ -12,7 +12,7 @@ use unilang::{ CommandDefinition, CommandRegistry, ExecutionContext, VerifiedCom
 
 fn dummy_handler(_cmd: VerifiedCommand, _ctx: ExecutionContext) -> Result< OutputData, ErrorData >
 {
-  Ok( OutputData { content: "test".to_string(), format: "text".to_string() } )
+  Ok( OutputData { content: "test".to_string(), format: "text".to_string(), execution_time_ms: None } )
 }
 
 #[test]

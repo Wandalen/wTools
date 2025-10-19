@@ -30,6 +30,7 @@ fn regression_test_routine( _cmd : VerifiedCommand, _ctx : ExecutionContext ) ->
   {
     content : "Commands executed successfully".to_string(),
     format : "text".to_string(),
+      execution_time_ms : None,
   })
 }
 

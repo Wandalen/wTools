@@ -13,9 +13,8 @@
 //! 3. Developer-friendly APIs for help configuration
 //!
 //! ## Key Features Demonstrated:
-//! - Global help conventions toggle
+//! - Mandatory automatic help command generation
 //! - Per-command help configuration
-//! - Automatic help command generation
 //! - Multiple help access methods (?, ??, .command.help)
 //! - Comprehensive help content formatting
 
@@ -29,13 +28,10 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "=== Help Conventions Demo ===\n" );
 
-  // Step 1: Create registry with help conventions enabled
-  #[allow(deprecated)]
+  // Step 1: Create registry - help conventions are now mandatory and always enabled
   let mut registry = CommandRegistry::new();
-  #[allow(deprecated)]
-  registry.enable_help_conventions( true ); // Enable automatic help generation (now always enabled)
 
-  println!( "✓ Created registry with help conventions enabled\n" );
+  println!( "✓ Created registry - help conventions are mandatory (always enabled)\n" );
 
   // Step 2: Register commands with different help configurations
   register_demo_commands( &mut registry )?;
@@ -50,10 +46,10 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
 
   println!( "\n🎉 Help conventions demo completed successfully!" );
   println!( "Key takeaways:" );
-  println!( "  • Every command automatically gets a .command.help counterpart" );
+  println!( "  • Every command automatically gets a .command.help counterpart (mandatory)" );
   println!( "  • Users can access help via: ?, ??, or .command.help" );
   println!( "  • Help content is comprehensive and consistently formatted" );
-  println!( "  • Developers have fine-grained control over help generation" );
+  println!( "  • Help generation is now mandatory - no opt-out mechanism" );
 
   Ok( () )
 }
@@ -152,6 +148,7 @@ fn register_demo_commands( registry : &mut CommandRegistry ) -> Result< (), Erro
     Ok( OutputData {
       content : format!( "Listed {} items in {}", simulated_files.len(), path ),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 
@@ -227,6 +224,7 @@ fn register_demo_commands( registry : &mut CommandRegistry ) -> Result< (), Erro
     Ok( OutputData {
       content : format!( "Ping completed: {} packets sent to {}", count, host ),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 
@@ -258,6 +256,7 @@ fn register_demo_commands( registry : &mut CommandRegistry ) -> Result< (), Erro
     Ok( OutputData {
       content : "System information displayed".to_string(),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 

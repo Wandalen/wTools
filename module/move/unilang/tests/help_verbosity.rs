@@ -10,7 +10,7 @@ use unilang::semantic::VerifiedCommand;
 /// Mock routine for test commands
 fn mock_routine() -> Box< dyn Fn( VerifiedCommand, ExecutionContext ) -> Result< OutputData, ErrorData > + Send + Sync >
 {
-  Box::new( |_cmd, _ctx| Ok( OutputData { content: "test".to_string(), format: "text".to_string() } ) )
+  Box::new( |_cmd, _ctx| Ok( OutputData { content: "test".to_string(), format: "text".to_string(), execution_time_ms: None } ) )
 }
 
 /// Create a test command with various metadata for testing help formatting
@@ -117,19 +117,21 @@ fn test_verbosity_level_2_standard_default()
   // Both should produce the same output
   assert_eq!( help_default, help_explicit );
 
-  // Level 2: Concise like unikit - USAGE, PARAMETERS with descriptions, EXAMPLES
-  assert!( help_default.contains( "USAGE:" ) );
-  assert!( help_default.contains( "PARAMETERS:" ) );
-  assert!( help_default.contains( "EXAMPLES:" ) );
-  assert!( help_default.contains( ".config [key::string]" ) );
+  // Level 2: Standard format with Usage, Arguments, Examples, and Status
+  assert!( help_default.contains( "Usage:" ) );
+  assert!( help_default.contains( "Arguments:" ) );
+  assert!( help_default.contains( "Examples:" ) );
+  assert!( help_default.contains( "Status:" ) );
+  assert!( help_default.contains( "key" ) );
+  assert!( help_default.contains( "Type: string" ) );
   assert!( help_default.contains( "Show specific config key" ) || help_default.contains( "Key name to display" ) );
-  assert!( help_default.contains( ".config format::json" ) );
+  assert!( help_default.contains( ".config format::json" ) || help_default.contains( "1. .config format::json" ) );
 
-  // Should NOT contain verbose metadata
-  assert!( !help_default.contains( "v1.0.0" ) );
-  assert!( !help_default.contains( "Aliases:" ) );
+  // Standard format now includes version and status (changed behavior from old concise format)
+  assert!( help_default.contains( "v1.0.0" ) );
+
+  // Tags should NOT be in Standard level (only in Detailed/Comprehensive)
   assert!( !help_default.contains( "Tags:" ) );
-  assert!( !help_default.contains( "Status:" ) );
 }
 
 #[test]

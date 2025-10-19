@@ -104,7 +104,7 @@ fn semantic_analyzer_tests()
   let instructions = &[ instruction ][ .. ];
   let analyzer = SemanticAnalyzer::new( instructions, &registry );
   let error = analyzer.analyze().unwrap_err();
-  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_COMMAND_NOT_FOUND" ) );
+  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == unilang::data::ErrorCode::CommandNotFound ) );
 
   // T3.3
   let input = "test_cmd";
@@ -112,7 +112,7 @@ fn semantic_analyzer_tests()
   let instructions = &[ instruction ][ .. ];
   let analyzer = SemanticAnalyzer::new( instructions, &registry );
   let error = analyzer.analyze().unwrap_err();
-  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_ARGUMENT_MISSING" ) );
+  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == unilang::data::ErrorCode::ArgumentMissing ) );
 
   // T3.4 - Updated to test a clear type mismatch for the second argument
   let input = "test_cmd hello not-an-integer";
@@ -120,7 +120,7 @@ fn semantic_analyzer_tests()
   let instructions = &[ instruction ][ .. ];
   let analyzer = SemanticAnalyzer::new( instructions, &registry );
   let error = analyzer.analyze().unwrap_err();
-  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ) );
+  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == unilang::data::ErrorCode::TypeMismatch ) );
 
   // T3.5
   let input = "test_cmd \"hello\" 123 456";
@@ -128,7 +128,7 @@ fn semantic_analyzer_tests()
   let instructions = &[ instruction ][ .. ];
   let analyzer = SemanticAnalyzer::new( instructions, &registry );
   let error = analyzer.analyze().unwrap_err();
-  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TOO_MANY_ARGUMENTS" ) );
+  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == unilang::data::ErrorCode::TooManyArguments ) );
 }
 
 ///
@@ -153,6 +153,7 @@ fn interpreter_tests()
       {
         content : "cmd1 executed".to_string(),
         format : "text".to_string(),
+      execution_time_ms : None,
       })
     },
   );
@@ -191,6 +192,7 @@ fn interpreter_tests()
       {
         content : "cmd2 executed".to_string(),
         format : "text".to_string(),
+      execution_time_ms : None,
       })
     },
   );

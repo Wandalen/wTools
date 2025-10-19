@@ -142,6 +142,7 @@ fn register_interactive_commands( registry : &mut CommandRegistry ) -> Result< (
     {
       content : "Login successful".to_string(),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 
@@ -224,6 +225,7 @@ fn register_interactive_commands( registry : &mut CommandRegistry ) -> Result< (
     {
       content : "Configuration updated successfully".to_string(),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 
@@ -260,6 +262,7 @@ fn register_interactive_commands( registry : &mut CommandRegistry ) -> Result< (
     {
       content : "System info displayed".to_string(),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 

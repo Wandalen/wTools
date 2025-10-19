@@ -139,6 +139,7 @@ fn setup_demo_commands(registry: &mut CommandRegistry) -> Result<(), Error> {
         Ok(OutputData {
             content: format!("Hello, {}!", name),
             format: "text".to_string(),
+            execution_time_ms: None,
         })
     });
 
@@ -183,6 +184,7 @@ fn setup_demo_commands(registry: &mut CommandRegistry) -> Result<(), Error> {
         Ok(OutputData {
             content: format!("Authenticated with password of length {}", password.len()),
             format: "text".to_string(),
+      execution_time_ms : None,
         })
     });
 

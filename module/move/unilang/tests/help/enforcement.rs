@@ -20,6 +20,7 @@ fn test_routine( _cmd : unilang::semantic::VerifiedCommand, _ctx : ExecutionCont
   {
     content : "Test command executed successfully".to_string(),
     format : "text".to_string(),
+      execution_time_ms : None,
   })
 }
 
@@ -121,10 +122,6 @@ fn test_mandatory_global_help_command()
 fn test_no_flexibility_in_help_generation()
 {
   let mut registry = CommandRegistry::new();
-
-  // The enable_help_conventions method should be deprecated and have no effect
-  #[allow(deprecated)]
-  registry.enable_help_conventions( false );
 
   // Create command and register it
   let cmd = CommandDefinition::former()
@@ -338,27 +335,21 @@ fn test_help_enforcement_edge_cases()
 }
 
 #[ test ]
-fn test_deprecated_api_compatibility()
+fn test_mandatory_help_always_enforced()
 {
   let mut registry = CommandRegistry::new();
 
-  // Test that deprecated enable_help_conventions still works (but has no effect)
-  #[allow(deprecated)]
-  registry.enable_help_conventions( true );
-  #[allow(deprecated)]
-  registry.enable_help_conventions( false );
-
-  // Should not affect help generation
+  // Help generation is now mandatory with no opt-out mechanism
   let cmd = CommandDefinition::former()
-    .name( ".test_deprecated" )
-    .description( "Test deprecated API compatibility" )
+    .name( ".test_mandatory_enforcement" )
+    .description( "Test that help is always mandatory" )
     .end();
 
   registry.command_add_runtime( &cmd, Box::new( test_routine ) ).unwrap();
-  assert!( registry.command( ".test_deprecated.help" ).is_some(),
-           "Help should be generated regardless of deprecated API calls" );
+  assert!( registry.command( ".test_mandatory_enforcement.help" ).is_some(),
+           "Help MUST always be generated - no exceptions" );
 
-  println!( "✅ Deprecated API compatibility maintained while enforcing mandatory help" );
+  println!( "✅ Mandatory help always enforced with no opt-out mechanism" );
 }
 
 #[ test ]

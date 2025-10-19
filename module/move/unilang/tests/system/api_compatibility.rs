@@ -61,6 +61,7 @@ fn test_prelude_imports()
   {
     content : "test".to_string(),
     format : "text".to_string(),
+      execution_time_ms : None,
   };
 }
 
@@ -199,6 +200,7 @@ fn test_complete_workflow()
     {
       content : format!( "Hello, {name}!" ),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
   
@@ -279,9 +281,10 @@ fn test_common_use_patterns()
   
   // Pattern 3: Import for error handling
   use unilang::ErrorData;
-  
+  use unilang::data::ErrorCode;
+
   let _error_data = ErrorData::new(
-    "TEST001".to_string(),
+    ErrorCode::InternalError,
     "Test error".to_string(),
   );
 }

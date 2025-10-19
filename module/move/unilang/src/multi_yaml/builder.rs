@@ -440,7 +440,7 @@ mod private
           let cmd_description = cmd.description.clone();
           let routine = Box::new( move |_cmd, _ctx| {
             Err( crate::data::ErrorData::new(
-              "UNILANG_COMMAND_NOT_IMPLEMENTED".to_string(),
+              crate::data::ErrorCode::CommandNotImplemented,
               format!(
                 "Command '{}' ({}) is registered but not implemented. Applications using CliBuilder must provide their own command execution logic.",
                 cmd_name, cmd_description

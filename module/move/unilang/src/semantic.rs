@@ -38,7 +38,7 @@
 /// Internal namespace.
 mod private
 {
-  use crate::data::{ ArgumentDefinition, CommandDefinition, ErrorData };
+  use crate::data::{ ArgumentDefinition, CommandDefinition, ErrorData, ErrorCode };
   use crate::error::Error;
   use crate::registry::CommandRegistry;
   use crate::types::{ parse_value, Value }; // Import parse_value
@@ -58,6 +58,194 @@ pub struct VerifiedCommand
   pub definition : CommandDefinition,
   /// The arguments provided for the command, parsed and typed.
   pub arguments : HashMap< String, Value >,
+}
+
+impl VerifiedCommand
+{
+  /// Extracts a string argument by name, returning None if not found or wrong type.
+  ///
+  /// # Examples
+  /// ```
+  /// # use unilang::prelude::*;
+  /// # use std::collections::HashMap;
+  /// # let mut args = HashMap::new();
+  /// # args.insert("name".to_string(), Value::String("Alice".to_string()));
+  /// # let cmd = VerifiedCommand {
+  /// #   definition: CommandDefinition::default(),
+  /// #   arguments: args
+  /// # };
+  /// let name = cmd.get_string("name").unwrap_or("World");
+  /// assert_eq!(name, "Alice");
+  /// ```
+  #[ must_use ]
+  pub fn get_string( &self, name : &str ) -> Option< &str >
+  {
+    self.arguments.get( name ).and_then( | v |
+      if let Value::String( s ) = v { Some( s.as_str() ) } else { None }
+    )
+  }
+
+  /// Extracts a required string argument, returning an error if not found or wrong type.
+  ///
+  /// # Errors
+  /// Returns `Error::Execution` if argument is missing or has wrong type.
+  ///
+  /// # Examples
+  /// ```
+  /// # use unilang::prelude::*;
+  /// # use std::collections::HashMap;
+  /// # let mut args = HashMap::new();
+  /// # args.insert("name".to_string(), Value::String("Alice".to_string()));
+  /// # let cmd = VerifiedCommand {
+  /// #   definition: CommandDefinition::default(),
+  /// #   arguments: args
+  /// # };
+  /// let name = cmd.require_string("name")?;
+  /// assert_eq!(name, "Alice");
+  /// # Ok::<(), unilang::Error>(())
+  /// ```
+  pub fn require_string( &self, name : &str ) -> Result< &str, Error >
+  {
+    self.get_string( name ).ok_or_else( ||
+      Error::Execution( ErrorData::new(
+        ErrorCode::ArgumentTypeMismatch,
+        format!( "Argument Error: Expected string value for argument '{}'", name ),
+      ))
+    )
+  }
+
+  /// Extracts an integer argument by name, returning None if not found or wrong type.
+  #[ must_use ]
+  pub fn get_integer( &self, name : &str ) -> Option< i64 >
+  {
+    self.arguments.get( name ).and_then( | v |
+      if let Value::Integer( i ) = v { Some( *i ) } else { None }
+    )
+  }
+
+  /// Extracts a required integer argument, returning an error if not found or wrong type.
+  ///
+  /// # Errors
+  /// Returns `Error::Execution` if argument is missing or has wrong type.
+  pub fn require_integer( &self, name : &str ) -> Result< i64, Error >
+  {
+    self.get_integer( name ).ok_or_else( ||
+      Error::Execution( ErrorData::new(
+        ErrorCode::ArgumentTypeMismatch,
+        format!( "Argument Error: Expected integer value for argument '{}'", name ),
+      ))
+    )
+  }
+
+  /// Extracts a float argument by name, returning None if not found or wrong type.
+  #[ must_use ]
+  pub fn get_float( &self, name : &str ) -> Option< f64 >
+  {
+    self.arguments.get( name ).and_then( | v |
+      if let Value::Float( f ) = v { Some( *f ) } else { None }
+    )
+  }
+
+  /// Extracts a required float argument, returning an error if not found or wrong type.
+  ///
+  /// # Errors
+  /// Returns `Error::Execution` if argument is missing or has wrong type.
+  pub fn require_float( &self, name : &str ) -> Result< f64, Error >
+  {
+    self.get_float( name ).ok_or_else( ||
+      Error::Execution( ErrorData::new(
+        ErrorCode::ArgumentTypeMismatch,
+        format!( "Argument Error: Expected float value for argument '{}'", name ),
+      ))
+    )
+  }
+
+  /// Extracts a boolean argument by name, returning None if not found or wrong type.
+  #[ must_use ]
+  pub fn get_boolean( &self, name : &str ) -> Option< bool >
+  {
+    self.arguments.get( name ).and_then( | v |
+      if let Value::Boolean( b ) = v { Some( *b ) } else { None }
+    )
+  }
+
+  /// Extracts a required boolean argument, returning an error if not found or wrong type.
+  ///
+  /// # Errors
+  /// Returns `Error::Execution` if argument is missing or has wrong type.
+  pub fn require_boolean( &self, name : &str ) -> Result< bool, Error >
+  {
+    self.get_boolean( name ).ok_or_else( ||
+      Error::Execution( ErrorData::new(
+        ErrorCode::ArgumentTypeMismatch,
+        format!( "Argument Error: Expected boolean value for argument '{}'", name ),
+      ))
+    )
+  }
+
+  /// Extracts a path argument by name, returning None if not found or wrong type.
+  #[ must_use ]
+  pub fn get_path( &self, name : &str ) -> Option< &std::path::Path >
+  {
+    self.arguments.get( name ).and_then( | v |
+      match v
+      {
+        Value::Path( p ) | Value::File( p ) | Value::Directory( p ) => Some( p.as_path() ),
+        _ => None,
+      }
+    )
+  }
+
+  /// Extracts a required path argument, returning an error if not found or wrong type.
+  ///
+  /// # Errors
+  /// Returns `Error::Execution` if argument is missing or has wrong type.
+  pub fn require_path( &self, name : &str ) -> Result< &std::path::Path, Error >
+  {
+    self.get_path( name ).ok_or_else( ||
+      Error::Execution( ErrorData::new(
+        ErrorCode::ArgumentTypeMismatch,
+        format!( "Argument Error: Expected path value for argument '{}'", name ),
+      ))
+    )
+  }
+
+  /// Extracts a list argument by name, returning None if not found or wrong type.
+  #[ must_use ]
+  pub fn get_list( &self, name : &str ) -> Option< &Vec< Value > >
+  {
+    self.arguments.get( name ).and_then( | v |
+      if let Value::List( l ) = v { Some( l ) } else { None }
+    )
+  }
+
+  /// Extracts a required list argument, returning an error if not found or wrong type.
+  ///
+  /// # Errors
+  /// Returns `Error::Execution` if argument is missing or has wrong type.
+  pub fn require_list( &self, name : &str ) -> Result< &Vec< Value >, Error >
+  {
+    self.get_list( name ).ok_or_else( ||
+      Error::Execution( ErrorData::new(
+        ErrorCode::ArgumentTypeMismatch,
+        format!( "Argument Error: Expected list value for argument '{}'", name ),
+      ))
+    )
+  }
+
+  /// Returns true if the argument exists (regardless of type).
+  #[ must_use ]
+  pub fn has_argument( &self, name : &str ) -> bool
+  {
+    self.arguments.contains_key( name )
+  }
+
+  /// Gets a raw Value reference for an argument, returning None if not found.
+  #[ must_use ]
+  pub fn get_value( &self, name : &str ) -> Option< &Value >
+  {
+    self.arguments.get( name )
+  }
 }
 
 ///
@@ -105,7 +293,7 @@ impl< 'a > SemanticAnalyzer< 'a >
     {
       Ok( analysis_result ) => analysis_result,
       Err( _panic_info ) => Err( Error::Execution( ErrorData::new(
-        "UNILANG_INTERNAL_ERROR".to_string(),
+        ErrorCode::InternalError,
         "Internal Error: An unexpected system error occurred during command analysis. This may indicate a bug in the framework.".to_string(),
       )))
     }
@@ -130,7 +318,7 @@ impl< 'a > SemanticAnalyzer< 'a >
       let command_name = crate::interner::intern_command_name( &command_path_refs );
 
       let command_def = self.registry.command( command_name ).ok_or_else( || ErrorData::new(
-        "UNILANG_COMMAND_NOT_FOUND".to_string(),
+        ErrorCode::CommandNotFound,
         format!( "Command Error: The command '{command_name}' was not found. Use '.' to see all available commands or check for typos." ),
       ))?;
 
@@ -150,7 +338,7 @@ impl< 'a > SemanticAnalyzer< 'a >
           .unwrap_or( format!( "No help available for command '{command_name}'" ) );
 
         return Err( Error::Execution( ErrorData::new(
-          "HELP_REQUESTED".to_string(),
+          ErrorCode::HelpRequested,
           help_content,
         )));
       }
@@ -311,13 +499,13 @@ impl< 'a > SemanticAnalyzer< 'a >
         // 3. Mask input if arg_def.attributes.sensitive is true
         // 4. Re-execute the command with the provided interactive value
         return Err( Error::Execution( ErrorData::new(
-          "UNILANG_ARGUMENT_INTERACTIVE_REQUIRED".to_string(),
+          ErrorCode::ArgumentInteractiveRequired,
           format!( "Interactive Argument Required: The argument '{}' is marked as interactive and must be provided interactively. The application should prompt the user for this value.", arg_def.name ),
         )));
       }
 
       return Err( Error::Execution( ErrorData::new(
-        "UNILANG_ARGUMENT_MISSING".to_string(),
+        ErrorCode::ArgumentMissing,
         format!( "Argument Error: The required argument '{}' is missing. Please provide a value for this argument.", arg_def.name ),
       )));
     }
@@ -337,13 +525,10 @@ impl< 'a > SemanticAnalyzer< 'a >
       {
         if !Self::apply_validation_rule( value, rule )
         {
+          let error_message = Self::format_validation_error( &arg_def.name, value, rule );
           return Err( Error::Execution( ErrorData::new(
-            "UNILANG_VALIDATION_RULE_FAILED".to_string(),
-            format!
-            (
-              "Validation Error: The value provided for argument '{}' does not meet the required criteria. Please check the value and try again.",
-              arg_def.name
-            ),
+            ErrorCode::ValidationRuleFailed,
+            error_message,
           )));
         }
       }
@@ -352,12 +537,86 @@ impl< 'a > SemanticAnalyzer< 'a >
     Ok( () )
   }
 
+  /// Formats a detailed validation error message with actual vs expected values.
+  ///
+  /// This provides user-friendly error messages that explain exactly what validation
+  /// rule failed, what value was provided, and what was expected.
+  fn format_validation_error( arg_name : &str, value : &Value, rule : &crate::data::ValidationRule ) -> String
+  {
+    use crate::data::ValidationRule;
+
+    let value_str = match value
+    {
+      Value::String( s ) => format!( "\"{}\"", s ),
+      Value::Integer( i ) => i.to_string(),
+      Value::Float( f ) => f.to_string(),
+      Value::Boolean( b ) => b.to_string(),
+      Value::List( l ) => format!( "[{} items]", l.len() ),
+      Value::Path( p ) | Value::File( p ) | Value::Directory( p ) => format!( "\"{}\"", p.display() ),
+      _ => "value".to_string(),
+    };
+
+    match rule
+    {
+      ValidationRule::Min( min_val ) => format!(
+        "Validation Error: Argument '{}' has value {} which is less than the minimum allowed value of {}. Please provide a value >= {}.",
+        arg_name, value_str, min_val, min_val
+      ),
+      ValidationRule::Max( max_val ) => format!(
+        "Validation Error: Argument '{}' has value {} which exceeds the maximum allowed value of {}. Please provide a value <= {}.",
+        arg_name, value_str, max_val, max_val
+      ),
+      ValidationRule::MinLength( min_len ) =>
+      {
+        let actual_len = match value
+        {
+          Value::String( s ) => s.len(),
+          Value::List( l ) => l.len(),
+          _ => 0,
+        };
+        format!(
+          "Validation Error: Argument '{}' has length {} which is less than the minimum required length of {}. Please provide a value with at least {} characters/items.",
+          arg_name, actual_len, min_len, min_len
+        )
+      },
+      ValidationRule::MaxLength( max_len ) =>
+      {
+        let actual_len = match value
+        {
+          Value::String( s ) => s.len(),
+          Value::List( l ) => l.len(),
+          _ => 0,
+        };
+        format!(
+          "Validation Error: Argument '{}' has length {} which exceeds the maximum allowed length of {}. Please provide a value with at most {} characters/items.",
+          arg_name, actual_len, max_len, max_len
+        )
+      },
+      ValidationRule::Pattern( pattern_str ) => format!(
+        "Validation Error: Argument '{}' with value {} does not match the required pattern '{}'. Please provide a value matching this pattern.",
+        arg_name, value_str, pattern_str
+      ),
+      ValidationRule::MinItems( min_items ) =>
+      {
+        let actual_items = match value
+        {
+          Value::List( l ) => l.len(),
+          _ => 0,
+        };
+        format!(
+          "Validation Error: Argument '{}' has {} items which is less than the minimum required {} items. Please provide at least {} items.",
+          arg_name, actual_items, min_items, min_items
+        )
+      },
+    }
+  }
+
   fn check_excess_positional_arguments( instruction : &GenericInstruction, positional_idx : usize ) -> Result< (), Error >
   {
     if positional_idx < instruction.positional_arguments.len()
     {
       return Err( Error::Execution( ErrorData::new(
-        "UNILANG_TOO_MANY_ARGUMENTS".to_string(),
+        ErrorCode::TooManyArguments,
         "Argument Error: Too many arguments provided for this command. Please check the command usage and remove extra arguments.".to_string(),
       )));
     }
@@ -454,7 +713,7 @@ impl< 'a > SemanticAnalyzer< 'a >
     };
 
     Err( Error::Execution( ErrorData::new(
-      "UNILANG_UNKNOWN_PARAMETER".to_string(),
+      ErrorCode::UnknownParameter,
       error_message,
     )))
   }
@@ -661,7 +920,7 @@ impl< 'a > SemanticAnalyzer< 'a >
 
     // Return a special error that can be handled by the CLI to display help
     Err( Error::Execution( ErrorData::new(
-      "HELP_REQUESTED".to_string(),
+      ErrorCode::HelpRequested,
       help_content,
     )))
   }

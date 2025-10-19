@@ -100,8 +100,8 @@ fn test_interactive_argument_signaling()
   
   // Verify that we get the specific interactive argument error
   assert!(matches!(
-    error, 
-    unilang::error::Error::Execution(data) if data.code == "UNILANG_ARGUMENT_INTERACTIVE_REQUIRED"
+    error,
+    unilang::error::Error::Execution(data) if data.code == unilang::data::ErrorCode::ArgumentInteractiveRequired
   ));
 
   // Test case 2: All arguments provided should succeed
@@ -157,8 +157,8 @@ fn test_interactive_argument_signaling()
   
   // Should get regular missing argument error (not interactive)
   assert!(matches!(
-    error_regular, 
-    unilang::error::Error::Execution(data) if data.code == "UNILANG_ARGUMENT_MISSING"
+    error_regular,
+    unilang::error::Error::Execution(data) if data.code == unilang::data::ErrorCode::ArgumentMissing
   ));
 }
 

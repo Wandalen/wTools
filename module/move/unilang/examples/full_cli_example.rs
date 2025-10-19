@@ -74,6 +74,7 @@ Result< (), Error >
       {
         content : result.to_string(),
         format : "text".to_string(),
+      execution_time_ms : None,
       });
     }
     unreachable!();
@@ -130,6 +131,7 @@ Result< (), Error >
       {
         content : result.to_string(),
         format : "text".to_string(),
+      execution_time_ms : None,
       });
     }
     unreachable!();
@@ -177,6 +179,7 @@ Result< (), Error >
     {
       content : result,
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
   #[allow(deprecated)]
@@ -232,6 +235,7 @@ Result< (), Error >
     {
       content : result,
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
   #[allow(deprecated)]

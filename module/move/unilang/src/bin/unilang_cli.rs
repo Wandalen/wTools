@@ -135,6 +135,7 @@ fn run() -> Result< (), unilang::error::Error >
       {
         content : result.to_string(),
         format : "text".to_string(),
+      execution_time_ms : None,
       });
     }
 
@@ -188,6 +189,7 @@ fn run() -> Result< (), unilang::error::Error >
       {
         content : result.to_string(),
         format : "text".to_string(),
+      execution_time_ms : None,
       });
     }
     unreachable!();
@@ -238,6 +240,7 @@ fn run() -> Result< (), unilang::error::Error >
     {
       content : result,
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
     registry.command_add_runtime( &greet_def, greet_routine )?;
@@ -288,6 +291,7 @@ fn run() -> Result< (), unilang::error::Error >
     {
       content : result,
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
     registry.command_add_runtime( &config_set_def, config_set_routine )?;
@@ -330,6 +334,7 @@ fn run() -> Result< (), unilang::error::Error >
     {
       content : "Echo command executed!\n".to_string(),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
     registry.command_add_runtime( &echo_def, echo_routine )?;
@@ -385,13 +390,14 @@ fn run() -> Result< (), unilang::error::Error >
         {
           content : contents,
           format : "text".to_string(),
+      execution_time_ms : None,
         })
       }
       else
       {
         let error_msg = format!( "Failed to read file: {path_str}" );
         Err( unilang::data::ErrorData::new(
-          "FILE_READ_ERROR".to_string(),
+          unilang::data::ErrorCode::InternalError,
           error_msg,
         ))
       }
@@ -399,7 +405,7 @@ fn run() -> Result< (), unilang::error::Error >
     else
     {
       Err( unilang::data::ErrorData::new(
-        "INVALID_ARGUMENT_TYPE".to_string(),
+        unilang::data::ErrorCode::ArgumentTypeMismatch,
         "Path must be a string".to_string(),
       ))
     }
@@ -482,12 +488,13 @@ fn run() -> Result< (), unilang::error::Error >
       {
         content : result,
         format : "text".to_string(),
+      execution_time_ms : None,
       })
     }
     else
     {
       Err( unilang::data::ErrorData::new(
-        "INVALID_ARGUMENT_TYPE".to_string(),
+        unilang::data::ErrorCode::ArgumentTypeMismatch,
         "Query must be a string".to_string(),
       ))
     }
@@ -602,7 +609,7 @@ fn run() -> Result< (), unilang::error::Error >
   let commands = match semantic_analyzer.analyze()
   {
     Ok( commands ) => commands,
-    Err( unilang::error::Error::Execution( error_data ) ) if error_data.code == "HELP_REQUESTED" =>
+    Err( unilang::error::Error::Execution( error_data ) ) if error_data.code == unilang::data::ErrorCode::HelpRequested =>
     {
       // Special handling for help requests - print the help and exit successfully
       println!( "{}", error_data.message );

@@ -73,6 +73,7 @@ fn main() -> Result< (), unilang::error::Error >
     {
       content : greeting,
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 
@@ -150,6 +151,7 @@ fn main() -> Result< (), unilang::error::Error >
     {
       content : content.to_string(),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 
@@ -198,6 +200,7 @@ fn main() -> Result< (), unilang::error::Error >
 
   let divide_routine = Box::new( | cmd : VerifiedCommand, _ctx : ExecutionContext |
   {
+    use unilang::data::ErrorCode;
     let dividend = cmd.arguments.get( "dividend" )
     .and_then( | v | if let Value::Float( f ) = v { Some( f ) } else { None } )
     .unwrap_or( &0.0 );
@@ -209,7 +212,7 @@ fn main() -> Result< (), unilang::error::Error >
     if *divisor == 0.0
     {
       return Err( ErrorData::new(
-        "DIVISION_BY_ZERO".to_string(),
+        ErrorCode::InternalError,
         format!( "Cannot divide {dividend} by zero. Division by zero is undefined." ),
       ));
     }
@@ -217,7 +220,7 @@ fn main() -> Result< (), unilang::error::Error >
     if divisor.abs() < f64::EPSILON && dividend.abs() > f64::EPSILON
     {
       return Err( ErrorData::new(
-        "DIVISION_BY_NEAR_ZERO".to_string(),
+        ErrorCode::InternalError,
         "Division by very small number may result in numerical instability".to_string(),
       ));
     }
@@ -227,7 +230,7 @@ fn main() -> Result< (), unilang::error::Error >
     if result.is_infinite()
     {
       return Err( ErrorData::new(
-        "RESULT_OVERFLOW".to_string(),
+        ErrorCode::InternalError,
         "Division result is infinite (overflow)".to_string(),
       ));
     }
@@ -235,7 +238,7 @@ fn main() -> Result< (), unilang::error::Error >
     if result.is_nan()
     {
       return Err( ErrorData::new(
-        "INVALID_RESULT".to_string(),
+        ErrorCode::InternalError,
         "Division result is not a number (NaN)".to_string(),
       ));
     }
@@ -247,6 +250,7 @@ fn main() -> Result< (), unilang::error::Error >
     {
       content : result.to_string(),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 
@@ -285,6 +289,7 @@ fn main() -> Result< (), unilang::error::Error >
 
   let analyze_routine = Box::new( | cmd : VerifiedCommand, _ctx : ExecutionContext |
   {
+    use unilang::data::ErrorCode;
     let numbers = cmd.arguments.get( "numbers" )
     .and_then( | v | if let Value::List( list ) = v
     {
@@ -299,7 +304,7 @@ fn main() -> Result< (), unilang::error::Error >
     if numbers.is_empty()
     {
       return Err( ErrorData::new(
-        "NO_DATA".to_string(),
+        ErrorCode::InternalError,
         "No valid numbers provided for analysis".to_string(),
       ));
     }
@@ -352,6 +357,7 @@ fn main() -> Result< (), unilang::error::Error >
     {
       content : result,
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 

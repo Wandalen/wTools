@@ -15,7 +15,7 @@ use unilang::{ CommandDefinition, CommandRegistry, Pipeline, ExecutionContext, V
 fn demo_handler(cmd: VerifiedCommand, _ctx: ExecutionContext) -> Result< OutputData, ErrorData >
 {
   let output = format!("✅ Command '{}' executed successfully", cmd.definition.name);
-  Ok( OutputData { content: output, format: "text".to_string() } )
+  Ok( OutputData { content: output, format: "text".to_string(), execution_time_ms: None } )
 }
 
 #[test]

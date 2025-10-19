@@ -91,20 +91,21 @@ fn test_cli_global_help_command()
 fn test_cli_specific_command_help_add()
 {
   // Test Matrix Row: T8.5
-  // Note: Using Level 2 (Standard) verbosity by default - concise format
+  // Note: Using Level 2 (Standard) verbosity by default - improved readability format
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
   cmd.args( vec![ "help", ".math.add" ] );
   cmd
   .assert()
   .success()
   .stdout(
-    predicate::str::contains( "USAGE:" )
+    predicate::str::contains( "Usage:" )
     .and( predicate::str::contains( ".add" ) )
     .and( predicate::str::contains( "Adds two numbers" ) )
-    .and( predicate::str::contains( "PARAMETERS:" ) )
-    .and( predicate::str::contains( "a::integer" ) )
+    .and( predicate::str::contains( "Arguments:" ) )
+    .and( predicate::str::contains( "a" ) )
+    .and( predicate::str::contains( "Type: integer" ) )
     .and( predicate::str::contains( "First number" ) )
-    .and( predicate::str::contains( "b::integer" ) )
+    .and( predicate::str::contains( "b" ) )
     .and( predicate::str::contains( "Second number" ) ),
   )
   .stderr( "" );

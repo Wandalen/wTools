@@ -714,6 +714,7 @@ fn demonstrate_complex_features() -> Result< (), unilang::error::Error >
           {
             content : "ML Pipeline execution completed (demo)".to_string(),
             format : "text".to_string(),
+      execution_time_ms : None,
           })
         });
 

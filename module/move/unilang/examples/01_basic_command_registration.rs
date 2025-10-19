@@ -114,7 +114,8 @@ fn main() -> Result< (), unilang::error::Error >
     Ok( OutputData
     {
       content : greeting,       // The actual output
-      format : "text".to_string(),  // Format hint (text, json, xml, etc.)
+      format : "text".to_string(),
+      execution_time_ms : None,  // Format hint (text, json, xml, etc.)
     })
   });
 

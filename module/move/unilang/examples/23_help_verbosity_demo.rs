@@ -80,7 +80,7 @@ fn main()
   // Mock routine (not executed in this demo)
   let mock_routine = Box::new( |_cmd: VerifiedCommand, _ctx: ExecutionContext| -> Result< OutputData, unilang::data::ErrorData >
   {
-    Ok( OutputData { content: "Config displayed".to_string(), format: "text".to_string() } )
+    Ok( OutputData { content: "Config displayed".to_string(), format: "text".to_string(), execution_time_ms: None } )
   });
 
   registry.command_add_runtime( &command, mock_routine ).unwrap();

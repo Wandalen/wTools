@@ -31,27 +31,30 @@ fn dummy_routine(_verified_command: VerifiedCommand, _context: ExecutionContext)
   Ok(OutputData {
     content: "Dummy routine executed!".to_string(),
     format: "text".to_string(),
+      execution_time_ms : None,
   })
 }
 
 /// Dummy routine for testing arguments.
 #[allow(clippy::needless_pass_by_value)]
 fn arg_test_routine(verified_command: VerifiedCommand, _context: ExecutionContext) -> Result<OutputData, ErrorData> {
+  use unilang::data::ErrorCode;
   let arg1 = verified_command
     .arguments
     .get("arg1")
     .ok_or_else(|| ErrorData::new(
-      "UNILANG_ARGUMENT_MISSING".to_string(),
+      ErrorCode::ArgumentMissing,
       "Argument 'arg1' not found".to_string(),
     ))?
     .as_integer()
     .ok_or_else(|| ErrorData::new(
-      "UNILANG_TYPE_MISMATCH".to_string(),
+      ErrorCode::TypeMismatch,
       "Argument 'arg1' is not an integer".to_string(),
     ))?;
   Ok(OutputData {
     content: format!("Arg1: {arg1}"),
     format: "text".to_string(),
+      execution_time_ms : None,
   })
 }
 
@@ -199,7 +202,7 @@ fn test_register_duplicate_command() {
     #[allow(deprecated)]
     let result = registry.command_add_runtime(&command_def, Box::new(dummy_routine));
   assert!(result.is_err());
-  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "UNILANG_COMMAND_ALREADY_EXISTS" ));
+  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == unilang::data::ErrorCode::CommandAlreadyExists ));
 }
 
 #[test]
@@ -210,7 +213,7 @@ fn test_execute_non_existent_command() {
     let registry = CommandRegistry::new();
   let result = analyze_and_run(".non_existent_cmd", vec![], std::collections::HashMap::new(), &registry);
   assert!(result.is_err());
-  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "UNILANG_COMMAND_NOT_FOUND" ));
+  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == unilang::data::ErrorCode::CommandNotFound ));
 }
 
 #[test]
@@ -258,7 +261,7 @@ fn test_execute_command_with_missing_argument() {
 
   let result = analyze_and_run("test.missing_arg_cmd", vec![], std::collections::HashMap::new(), &registry);
   assert!(result.is_err());
-  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "UNILANG_ARGUMENT_MISSING" ));
+  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == unilang::data::ErrorCode::ArgumentMissing ));
 }
 
 #[test]
@@ -316,5 +319,5 @@ fn test_execute_command_with_invalid_arg_type() {
   );
   let result = analyze_and_run("test.invalid_type_cmd", vec![], named_args, &registry);
   assert!(result.is_err());
-  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ));
+  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == unilang::data::ErrorCode::TypeMismatch ));
 }

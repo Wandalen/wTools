@@ -47,7 +47,7 @@ fn test_command_hint_in_help()
 
 /// Tests that an argument's hint appears in the help output.
 /// Test Combination: T6.2
-/// Note: With Level 2 (Standard) verbosity, parameters show as `name::type` with description
+/// Note: With Level 2 (Standard) verbosity, parameters show as `name (Type: type)` with description
 #[ test ]
 fn test_argument_hint_in_help()
 {
@@ -56,7 +56,8 @@ fn test_argument_hint_in_help()
   cmd
   .assert()
   .success()
-  .stdout( predicate::str::contains( "arg1::string" ) )
+  .stdout( predicate::str::contains( "arg1" ) )
+  .stdout( predicate::str::contains( "Type: string" ) )
   .stdout( predicate::str::contains( "The first argument to echo." ) )
   .stderr( "" );
 }
@@ -73,14 +74,14 @@ fn test_command_tags_stored()
   cmd
   .assert()
   .success()
-  .stdout( predicate::str::contains( "USAGE:" ) )
+  .stdout( predicate::str::contains( "Usage:" ) )
   .stdout( predicate::str::contains( ".add" ) )
   .stderr( "" );
 }
 
 /// Tests that command help includes usage information.
 /// Test Combination: T6.4
-/// Note: With Level 2 (Standard) verbosity, version is not displayed in the default concise format.
+/// Note: With Level 2 (Standard) verbosity, version is displayed in the header line.
 /// This test now verifies the help system works for versioned commands.
 #[ test ]
 fn test_command_version_in_help()
@@ -90,14 +91,14 @@ fn test_command_version_in_help()
   cmd
   .assert()
   .success()
-  .stdout( predicate::str::contains( "USAGE:" ) )
+  .stdout( predicate::str::contains( "Usage:" ) )
   .stdout( predicate::str::contains( ".add" ) )
   .stderr( "" );
 }
 
 /// Tests that command help works for commands with status metadata.
 /// Test Combination: T6.5
-/// Note: With Level 2 (Standard) verbosity, status is not displayed in the default concise format.
+/// Note: With Level 2 (Standard) verbosity, status is now displayed in the help output.
 /// This test verifies the help system works for commands with status metadata.
 #[ test ]
 fn test_command_status_in_help()
@@ -107,7 +108,7 @@ fn test_command_status_in_help()
   cmd
   .assert()
   .success()
-  .stdout( predicate::str::contains( "USAGE:" ) )
+  .stdout( predicate::str::contains( "Usage:" ) )
   .stdout( predicate::str::contains( ".add" ) )
   .stderr( "" );
 }

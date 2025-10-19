@@ -107,6 +107,7 @@ fn setup_registry_with_routine( command_def: &CommandDefinition ) -> CommandRegi
       {
         content: output,
         format: "text".to_string(),
+      execution_time_ms : None,
       })
     }
   );
@@ -260,6 +261,7 @@ fn test_backward_compatibility_single_parameter_integration()
       {
         content: output,
         format: "text".to_string(),
+      execution_time_ms : None,
       })
     }
   );
@@ -359,6 +361,7 @@ fn test_quote_handling_integration()
       {
         content: output,
         format: "text".to_string(),
+      execution_time_ms : None,
       })
     }
   );
@@ -469,6 +472,7 @@ fn test_multiple_parameter_performance()
         {
           content: format!( "Processed {} items", item_list.len() ),
           format: "text".to_string(),
+      execution_time_ms : None,
         })
       }
       else

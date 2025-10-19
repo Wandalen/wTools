@@ -91,6 +91,7 @@ fn register_comprehensive_commands( registry : &mut CommandRegistry ) -> Result<
     {
       content : format!( "Listed {} items in {path}", simulated_files.len() ),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 
@@ -163,6 +164,7 @@ fn register_comprehensive_commands( registry : &mut CommandRegistry ) -> Result<
     {
       content : format!( "Pinged {host} {count} times successfully" ),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 
@@ -261,6 +263,7 @@ fn register_comprehensive_commands( registry : &mut CommandRegistry ) -> Result<
     {
       content : output,
       format,
+      execution_time_ms : None,
     })
   });
 

@@ -11,7 +11,7 @@ use unilang::{ CommandDefinition, CommandRegistry, Pipeline, ExecutionContext, V
 
 fn create_test_command_handler(_cmd: VerifiedCommand, _ctx: ExecutionContext) -> Result< OutputData, ErrorData >
 {
-  let output_data = OutputData { content: "Test command executed successfully".to_string(), format: "text".to_string() };
+  let output_data = OutputData { content: "Test command executed successfully".to_string(), format: "text".to_string(), execution_time_ms: None };
   Ok( output_data )
 }
 

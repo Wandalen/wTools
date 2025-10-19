@@ -108,7 +108,7 @@ fn test_json_string_argument_type() {
   );
   assert!(result.is_err());
   let error = result.err().unwrap();
-  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ));
+  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == unilang::data::ErrorCode::TypeMismatch ));
 }
 
 #[test]
@@ -180,7 +180,7 @@ fn test_object_argument_type() {
   );
   assert!(result.is_err());
   let error = result.err().unwrap();
-  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ));
+  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == unilang::data::ErrorCode::TypeMismatch ));
 }
 
 #[test]
@@ -314,7 +314,7 @@ fn test_validated_argument() {
   );
   assert!(result.is_err());
   let error = result.err().unwrap();
-  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_VALIDATION_RULE_FAILED" ));
+  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == unilang::data::ErrorCode::ValidationRuleFailed ));
 
   // Test Matrix Row: T1.8 (max violation)
   let result = analyze_program(
@@ -330,7 +330,7 @@ fn test_validated_argument() {
   );
   assert!(result.is_err());
   let error = result.err().unwrap();
-  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_VALIDATION_RULE_FAILED" ));
+  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == unilang::data::ErrorCode::ValidationRuleFailed ));
 }
 
 #[test]

@@ -310,55 +310,71 @@ impl< 'a > HelpGenerator< 'a >
   fn format_standard( &self, command : &crate::CommandDefinition ) -> String
   {
     let mut help = String::new();
+
+    // Command header with version
+    writeln!( &mut help, "Usage: {} (v{})", command.name, command.version ).unwrap();
     writeln!( &mut help, "{}\n", command.description ).unwrap();
 
-    // USAGE section
-    write!( &mut help, "USAGE:\n  {}", command.name ).unwrap();
-    if !command.arguments.is_empty()
+    // Status information
+    writeln!( &mut help, "Status: {}", command.status ).unwrap();
+    if !command.aliases.is_empty()
     {
-      for arg in &command.arguments
-      {
-        if arg.attributes.optional
-        {
-          write!( &mut help, " [{}::{}]", arg.name, Self::format_kind( &arg.kind ) ).unwrap();
-        }
-        else
-        {
-          write!( &mut help, " {}::{}", arg.name, Self::format_kind( &arg.kind ) ).unwrap();
-        }
-      }
-    }
-    writeln!( &mut help, "\n" ).unwrap();
-
-    // PARAMETERS section
-    if !command.arguments.is_empty()
-    {
-      writeln!( &mut help, "PARAMETERS:" ).unwrap();
-      for arg in &command.arguments
-      {
-        let optional_marker = if arg.attributes.optional { " (optional)" } else { "" };
-
-        writeln!
-        (
-          &mut help,
-          "  {}::{}{}  {}",
-          arg.name,
-          Self::format_kind( &arg.kind ),
-          optional_marker,
-          if arg.hint.is_empty() { &arg.description } else { &arg.hint }
-        )
-        .unwrap();
-      }
-      writeln!( &mut help ).unwrap();
+      writeln!( &mut help, "Aliases: {}", command.aliases.join( ", " ) ).unwrap();
     }
 
-    // EXAMPLES section
+    // Arguments section with improved formatting
+    if !command.arguments.is_empty()
+    {
+      writeln!( &mut help, "\nArguments:" ).unwrap();
+      for arg in &command.arguments
+      {
+        write!( &mut help, "{}", arg.name ).unwrap();
+        write!( &mut help, " (Type: {})", Self::format_kind( &arg.kind ) ).unwrap();
+
+        let mut status_parts = Vec::new();
+        if arg.attributes.optional {
+          status_parts.push("Optional");
+        }
+        if arg.attributes.multiple {
+          status_parts.push("Multiple");
+        }
+        if !status_parts.is_empty() {
+          write!( &mut help, " - {}", status_parts.join(", ") ).unwrap();
+        }
+        writeln!( &mut help ).unwrap();
+
+        // Show description, or hint if description is empty
+        let desc_text = if !arg.description.is_empty() {
+          &arg.description
+        } else if !arg.hint.is_empty() {
+          &arg.hint
+        } else {
+          ""
+        };
+
+        if !desc_text.is_empty() {
+          writeln!( &mut help, "  {}", desc_text ).unwrap();
+        }
+
+        if !arg.validation_rules.is_empty() {
+          writeln!(
+            &mut help,
+            "  Rules: [{}]",
+            arg.validation_rules.iter().map(|r| format!("{r:?}")).collect::<Vec<_>>().join( ", " )
+          ).unwrap();
+        }
+
+        writeln!( &mut help ).unwrap();
+      }
+    }
+
+    // Examples section
     if !command.examples.is_empty()
     {
-      writeln!( &mut help, "EXAMPLES:" ).unwrap();
-      for example in &command.examples
+      writeln!( &mut help, "Examples:" ).unwrap();
+      for (idx, example) in command.examples.iter().enumerate()
       {
-        writeln!( &mut help, "  {example}" ).unwrap();
+        writeln!( &mut help, "  {}. {}", idx + 1, example ).unwrap();
       }
       writeln!( &mut help ).unwrap();
     }

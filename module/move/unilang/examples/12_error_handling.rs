@@ -121,6 +121,7 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
     {
       content : "All validations passed successfully".to_string(),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 
