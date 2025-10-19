@@ -45,3 +45,4 @@ collection_tools = { workspace = true }
 mod_interface = { workspace = true }
 
 [dev-dependencies]
+memory-stats = "1.2"

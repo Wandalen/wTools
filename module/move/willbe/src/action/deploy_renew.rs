@@ -2,10 +2,20 @@ mod private
 {
 
   use crate :: *;
-  use std ::path ::Path;
+  use std ::
+  {
+  fs,
+  path :: { Path, PathBuf },
+ };
   use error ::untyped ::Context;
 
-  use tool ::template :: *;
+  use genfile_core ::
+  {
+  TemplateArchive,
+  WriteMode,
+  Value,
+  ParameterDescriptor,
+ };
 
   /// Template for creating deploy files.
   ///
@@ -16,28 +26,28 @@ mod private
 
   impl DeployTemplate
   {
-  /// Creates am instance of `[TemplateHolder]` for deployment template.
+  /// Creates an instance of `TemplateArchive` for deployment template.
   ///
   /// Used for properly initializing a template
   #[ must_use ]
   #[ allow( clippy ::should_implement_trait ) ]
-  pub fn default() -> TemplateHolder
+  pub fn default() -> TemplateArchive
   {
-   let parameters = TemplateParameters ::former()
-   .parameter( "gcp_project_id" ).is_mandatory( true ).end()
-   .parameter( "gcp_region" ).end()
-   .parameter( "gcp_artifact_repo_name" ).end()
-   .parameter( "docker_image_name" ).end()
-   .form();
+   let mut archive = TemplateArchive ::new( "deploy" );
 
-   TemplateHolder
-   {
-  files: get_deploy_template_files(),
-  parameters,
-  values: TemplateValues ::default(),
-  parameter_storage: "./.deploy_template.toml".as_ref(),
-  template_name: "deploy",
- }
+   // Define parameters
+   archive.add_parameter
+   (
+  ParameterDescriptor ::new( "gcp_project_id" )
+  .with_mandatory( true )
+ );
+   archive.add_parameter( ParameterDescriptor ::new( "gcp_region" ) );
+   archive.add_parameter( ParameterDescriptor ::new( "gcp_artifact_repo_name" ) );
+   archive.add_parameter( ParameterDescriptor ::new( "docker_image_name" ) );
+
+   add_deploy_template_files( &mut archive );
+
+   archive
  }
  }
 
