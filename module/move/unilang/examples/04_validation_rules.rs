@@ -349,6 +349,7 @@ fn main() -> Result< (), unilang::error::Error >
     {
       content : "All arguments validated successfully".to_string(),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 

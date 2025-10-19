@@ -332,6 +332,7 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     {
       content : result.to_string(),
       format : "integer".to_string(),
+      execution_time_ms : None,
     })
   });
 
@@ -389,6 +390,7 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     {
       content : result.to_string(),
       format : "integer".to_string(),
+      execution_time_ms : None,
     })
   });
 
@@ -442,8 +444,9 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
 
     if *divisor == 0
     {
+      use unilang::data::ErrorCode;
       return Err( unilang::data::ErrorData::new(
-        "DIVISION_BY_ZERO".to_string(),
+        ErrorCode::InternalError,
         "Cannot divide by zero".to_string(),
       ));
     }
@@ -455,6 +458,7 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     {
       content : result.to_string(),
       format : "integer".to_string(),
+      execution_time_ms : None,
     })
   });
 
@@ -507,6 +511,7 @@ fn setup_text_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     {
       content : reversed,
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 
@@ -547,6 +552,7 @@ fn setup_util_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     {
       content : timestamp.to_string(),
       format : "integer".to_string(),
+      execution_time_ms : None,
     })
   });
 

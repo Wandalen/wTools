@@ -218,11 +218,11 @@ unified-cli .build.compile target::release
 #### Namespace Isolation
 Each CLI module maintains its own command space with automatic prefix application:
 
-```rust
-// Database commands become .db.migrate, .db.backup
-// File commands become .fs.copy, .fs.move
-// Network commands become .net.ping, .net.trace
-// No naming conflicts between modules
+```text
+Database commands become .db.migrate, .db.backup
+File commands become .fs.copy, .fs.move
+Network commands become .net.ping, .net.trace
+No naming conflicts between modules
 ```
 
 #### Conflict Detection

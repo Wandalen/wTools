@@ -34,6 +34,7 @@ fn mock_routine( _cmd : VerifiedCommand, _ctx : ExecutionContext ) -> Result< Ou
   {
     content : "Test executed successfully".to_string(),
     format : "text".to_string(),
+      execution_time_ms : None,
   })
 }
 

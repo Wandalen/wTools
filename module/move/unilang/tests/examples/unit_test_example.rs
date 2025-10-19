@@ -50,6 +50,7 @@ fn test_semantic_analyzer_validates_required_arguments()
     Ok( OutputData {
       content : "success".to_string(),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
   registry.command_add_runtime( &cmd, mock_routine ).unwrap();
@@ -174,6 +175,7 @@ fn test_command_registry_runtime_integration()
     Ok( OutputData {
       content : format!( "Processed: {}", cmd.arguments["input"] ),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 
@@ -333,6 +335,7 @@ fn create_mock_routine() -> Box< dyn Fn( VerifiedCommand, ExecutionContext ) -> 
     Ok( OutputData {
       content : "mock response".to_string(),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   })
 }

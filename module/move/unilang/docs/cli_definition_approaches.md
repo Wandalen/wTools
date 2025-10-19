@@ -10,7 +10,7 @@ Ridiculous/impractical approaches have been excluded (e.g., Windows Registry, HT
 
 - [Comparison Table](#comparison-table) - All 21 realistic approaches (perfect YAML/JSON parity)
 - [Current Implementations](#current-implementations) - What works today
-- [Recommended Approach](#recommended-approach) - YAML + Build-time PHF (Default)
+- [Recommended Approach](#recommended-approach) - YAML + Build-time Static (Default)
 - [Future Enhancements](#future-enhancements) - Planned additions
 - [Advanced Possibilities](#advanced-possibilities) - Niche but valid scenarios
 
@@ -105,14 +105,14 @@ Ridiculous/impractical approaches have been excluded (e.g., Windows Registry, HT
 - Validation tests: 20 tests (V1.1-V4.3) covering centralized validation
 - **Total**: 65 tests ensuring complete coverage
 
-### #1: YAML File → Build-time PHF ⭐ RECOMMENDED DEFAULT
+### #1: YAML File → Build-time Static ⭐ RECOMMENDED DEFAULT
 
 **Implementation**: `build.rs` + `unilang.commands.yaml`
 
 **How it works**:
 1. Define commands in `unilang.commands.yaml`
 2. Build script reads YAML at compile-time
-3. Generates Perfect Hash Function (PHF) map
+3. Generates optimized static command map (using Perfect Hash Functions internally)
 4. Commands compiled into binary with zero runtime overhead
 
 **Example YAML**:
@@ -141,14 +141,14 @@ Ridiculous/impractical approaches have been excluded (e.g., Windows Registry, HT
 
 ---
 
-### #2: Multi-file YAML → Build-time PHF
+### #2: Multi-file YAML → Build-time Static
 
 **Implementation**: `build.rs` with `walkdir` discovery
 
 **How it works**:
 1. Scatter YAML files across project (e.g., `src/commands/*.yaml`)
 2. Build script discovers all `.yaml`/`.yml` files recursively
-3. Merges definitions and generates single PHF map
+3. Merges definitions and generates optimized static map
 4. Automatically excludes `tests/` and `test_data/` directories
 
 **Configuration**:
@@ -259,7 +259,7 @@ let registry = CommandRegistry::builder()
 
 ---
 
-### #8: Rust DSL → Static PHF with Const Fn Constructors
+### #8: Rust DSL → Compile-Time Static with Const Fn Constructors
 
 **Implementation**: `StaticCommandDefinition::new()` + const fn builders
 
@@ -350,11 +350,11 @@ registry.register(dynamic_command); // Slower but flexible
 
 ## Recommended Approach
 
-### 🎯 Use Approach #1: YAML + Build-time PHF
+### 🎯 Use Approach #1: YAML + Build-time Static
 
 **This is your default. Here's why**:
 
-| Criterion | YAML + PHF | Runtime Registration | Rust DSL |
+| Criterion | YAML + Static | Runtime Registration | Rust DSL |
 |-----------|------------|---------------------|----------|
 | **Easiness** | ✅ Very Easy | ✅ Very Easy | 🔥 Hard (verbose) |
 | **Performance** | ⚡ <100ns | ⚠️ 4,200ns (42x slower) | ⚠️ 3,800ns (38x slower) |
@@ -380,7 +380,7 @@ fn main() {
   registry.command_add_runtime(&cmd, routine)?;
 }
 
-// ✅ AFTER: YAML + PHF (50x faster)
+// ✅ AFTER: YAML + Build-time Static (50x faster)
 // 1. Create unilang.commands.yaml:
 //    - name: ".search"
 //      description: "Search command"
@@ -389,7 +389,7 @@ fn main() {
 // 2. Use static registry in main.rs:
 fn main() {
   let registry = StaticCommandRegistry::from_commands(&STATIC_COMMANDS);
-  // Commands are already registered at compile-time, no PHF dependency needed!
+  // Commands are already registered at compile-time, zero dependencies!
 }
 ```
 
@@ -643,12 +643,12 @@ Real-world benchmark for 1,000 command lookups:
 
 ## Implementation Roadmap
 
-Based on goal: **"Make YAML + build-time PHF the obvious default choice"**
+Based on goal: **"Make YAML + build-time static the obvious default choice"**
 
 ### Phase 1: Documentation & Guidance (1 week)
 
 1. ✅ Update `readme.md` - YAML-first quick start
-2. ✅ Add "Getting Started" guide showing YAML → PHF workflow
+2. ✅ Add "Getting Started" guide showing YAML → build-time static workflow
 3. ✅ Document build.rs configuration (env vars, discovery paths)
 4. ✅ Add deprecation notices to runtime registration docs
 5. ✅ Create migration guide (runtime → compile-time)
@@ -707,7 +707,7 @@ Based on goal: **"Make YAML + build-time PHF the obvious default choice"**
 
 ## FAQ
 
-### Q: Why is YAML + PHF the default?
+### Q: Why is YAML + build-time static the default?
 
 **A**: It provides the best balance of:
 - ✅ Performance (50x faster than runtime)
@@ -731,7 +731,7 @@ let mut registry = StaticCommandRegistry::from_commands(&STATIC_COMMANDS);
 registry.register(dynamic_command); // Add dynamic commands
 ```
 
-Static commands are fast (<100ns), dynamic commands are flexible. No PHF dependency required.
+Static commands are fast (<100ns), dynamic commands are flexible. Zero additional dependencies.
 
 ### Q: How do I migrate from runtime to compile-time?
 

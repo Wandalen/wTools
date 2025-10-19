@@ -66,6 +66,7 @@ fn main() -> Result<(), unilang::Error> {
         Ok(OutputData {
             content: format!("Hello, {name}!"),
             format: "text".to_string(),
+            execution_time_ms: None,
         })
     });
     

@@ -14,7 +14,7 @@ fn test_command_result_is_success()
   let success_result = CommandResult
   {
     command: ".test".to_string(),
-    outputs: vec![ OutputData { content: "success".to_string(), format: "text".to_string() } ],
+    outputs: vec![ OutputData { content: "success".to_string(), format: "text".to_string(), execution_time_ms: None } ],
     success: true,
     error: None,
   };
@@ -78,8 +78,8 @@ fn test_command_result_outputs_or_empty()
   {
     command: ".test".to_string(),
     outputs: vec![ 
-      OutputData { content: "output1".to_string(), format: "text".to_string() },
-      OutputData { content: "output2".to_string(), format: "text".to_string() },
+      OutputData { content: "output1".to_string(), format: "text".to_string(), execution_time_ms: None },
+      OutputData { content: "output2".to_string(), format: "text".to_string(), execution_time_ms: None },
     ],
     success: true,
     error: None,
@@ -93,7 +93,7 @@ fn test_command_result_outputs_or_empty()
   let error_result = CommandResult
   {
     command: ".test".to_string(),
-    outputs: vec![ OutputData { content: "should_not_see".to_string(), format: "text".to_string() } ],
+    outputs: vec![ OutputData { content: "should_not_see".to_string(), format: "text".to_string(), execution_time_ms: None } ],
     success: false,
     error: Some( "Error occurred".to_string() ),
   };
@@ -243,7 +243,7 @@ fn test_successful_command_has_no_error_type()
   let success_result = CommandResult
   {
     command: ".test".to_string(),
-    outputs: vec![ OutputData { content: "success".to_string(), format: "text".to_string() } ],
+    outputs: vec![ OutputData { content: "success".to_string(), format: "text".to_string(), execution_time_ms: None } ],
     success: true,
     error: None,
   };

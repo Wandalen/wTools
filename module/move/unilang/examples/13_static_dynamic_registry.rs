@@ -127,6 +127,7 @@ fn main() -> Result< (), unilang::error::Error >
     {
       content : format!( "Dynamic command processed {} arguments", cmd.arguments.len() ),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 

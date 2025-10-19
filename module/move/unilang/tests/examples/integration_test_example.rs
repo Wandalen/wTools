@@ -63,11 +63,12 @@ fn test_complete_command_processing_pipeline()
 
   // Integration test routine that demonstrates data processing
   let integration_routine = Box::new( |cmd: VerifiedCommand, _ctx: ExecutionContext| -> Result<OutputData, ErrorData> {
+    use unilang::data::ErrorCode;
     // Extract arguments (testing argument binding integration)
     let input_value = match cmd.arguments.get( "input" )
     {
       Some( value ) => value.to_string(),
-      None => return Err( ErrorData::new( "MISSING_INPUT".to_string(), "Input argument required".to_string() ) ),
+      None => return Err( ErrorData::new( ErrorCode::ArgumentMissing, "Input argument required".to_string() ) ),
     };
 
     let format = cmd.arguments.get( "format" )
@@ -276,6 +277,7 @@ fn test_error_propagation_through_components()
     .end();
 
   let error_routine = Box::new( |cmd: VerifiedCommand, _ctx: ExecutionContext| -> Result<OutputData, ErrorData> {
+    use unilang::data::ErrorCode;
     let trigger = cmd.arguments.get( "trigger" )
       .map( |v| v.to_string() )
       .unwrap_or_else( || "default".to_string() );
@@ -283,10 +285,10 @@ fn test_error_propagation_through_components()
     // Generate different error types for testing
     match trigger.as_str()
     {
-      "validation" => Err( ErrorData::new( "VALIDATION_ERROR".to_string(), "Input validation failed".to_string() ) ),
-      "runtime" => Err( ErrorData::new( "RUNTIME_ERROR".to_string(), "Runtime execution failed".to_string() ) ),
-      "system" => Err( ErrorData::new( "SYSTEM_ERROR".to_string(), "System resource unavailable".to_string() ) ),
-      _ => Err( ErrorData::new( "UNKNOWN_ERROR".to_string(), "Unknown error condition".to_string() ) ),
+      "validation" => Err( ErrorData::new( ErrorCode::ValidationRuleFailed, "Input validation failed".to_string() ) ),
+      "runtime" => Err( ErrorData::new( ErrorCode::InternalError, "Runtime execution failed".to_string() ) ),
+      "system" => Err( ErrorData::new( ErrorCode::InternalError, "System resource unavailable".to_string() ) ),
+      _ => Err( ErrorData::new( ErrorCode::InternalError, "Unknown error condition".to_string() ) ),
     }
   });
 
@@ -317,7 +319,7 @@ fn test_error_propagation_through_components()
   assert!( execution_result.is_err(), "Should fail at execution stage" );
 
   let execution_error = execution_result.unwrap_err();
-  assert_eq!( execution_error.code, "VALIDATION_ERROR", "Error code should be preserved" );
+  assert_eq!( execution_error.code, unilang::data::ErrorCode::ValidationRuleFailed, "Error code should be preserved" );
   assert!( execution_error.message.contains( "validation" ), "Error message should be preserved" );
 
   // Test 3: Error recovery - system should handle subsequent valid commands
@@ -368,6 +370,7 @@ fn test_integration_performance_characteristics()
       .end();
 
     let perf_routine = Box::new( |_cmd: VerifiedCommand, _ctx: ExecutionContext| -> Result<OutputData, ErrorData> {
+      use unilang::data::ErrorCode;
       Ok( OutputData { content : "performance_test_result".to_string(), format : "text".to_string() })
     });
 

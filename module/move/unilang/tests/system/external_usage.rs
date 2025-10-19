@@ -26,6 +26,7 @@ fn test_external_usage_with_prelude()
     {
       content : "Hello, World!".to_string(),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
   
@@ -88,6 +89,7 @@ fn test_external_usage_with_specific_imports()
     {
       content : format!( "Hello, {name}!" ),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
   
@@ -129,6 +131,7 @@ fn test_external_usage_with_module_imports()
     {
       content : "Test successful".to_string(),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
   
@@ -184,6 +187,7 @@ fn test_external_usage_batch_processing()
     {
       content : "echo".to_string(),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
   

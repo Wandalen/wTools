@@ -237,32 +237,20 @@ impl CommandResult
   /// interactive argument requirements in REPL applications.
   /// 
   /// # REPL Integration Example
-  /// ```rust,ignore
-  /// use unilang::prelude::*;
-  /// 
-  /// let result = pipeline.process_command_simple(".login username::john");
-  /// 
+  /// ```
+  /// use unilang::pipeline::Pipeline;
+  /// use unilang::registry::CommandRegistry;
+  ///
+  /// # #[allow(deprecated)]
+  /// # let registry = CommandRegistry::new();
+  /// # let pipeline = Pipeline::new(registry);
+  /// let result = pipeline.process_command_simple(".help");
+  ///
+  /// // Check if command requires interactive input (like secure password)
   /// if result.requires_interactive_input() {
   ///     if let Some(arg_name) = result.interactive_argument() {
-  ///         // Enhanced REPL: Use secure input with masking
-  ///         #[cfg(feature = "enhanced_repl")]
-  ///         {
-  ///             use rustyline::DefaultEditor;
-  ///             let mut rl = DefaultEditor::new()?;
-  ///             let value = rl.readline(&format!("Enter {}: ", arg_name))?;
-  ///             // Re-run command with interactive argument
-  ///             let retry_cmd = format!("{} {}::{}", original_cmd, arg_name, value);
-  ///             let retry_result = pipeline.process_command_simple(&retry_cmd);
-  ///         }
-  ///         
-  ///         // Basic REPL: Standard input (visible)
-  ///         #[cfg(all(feature = "repl", not(feature = "enhanced_repl")))]
-  ///         {
-  ///             use std::io::{self, Write};
-  ///             print!("Enter {}: ", arg_name);
-  ///             io::stdout().flush()?;
-  ///             // ... handle input
-  ///         }
+  ///         println!("Please provide: {}", arg_name);
+  ///         // In real REPL: prompt for secure input and retry command
   ///     }
   /// }
   /// ```
@@ -299,29 +287,22 @@ impl CommandResult
   /// versus when a genuine error occurred.
   /// 
   /// # REPL Integration Example
-  /// ```rust,ignore
-  /// use unilang::prelude::*;
-  /// 
+  /// ```
+  /// use unilang::pipeline::Pipeline;
+  /// use unilang::registry::CommandRegistry;
+  ///
+  /// # #[allow(deprecated)]
+  /// # let registry = CommandRegistry::new();
+  /// # let pipeline = Pipeline::new(registry);
   /// let result = pipeline.process_command_simple(".");  // List all commands
-  /// 
+  ///
   /// if result.is_help_response() {
-  ///     println!("📖 Available Commands:");
-  ///     
   ///     if let Some(help_text) = result.help_content() {
-  ///         // Enhanced REPL: Rich formatting
-  ///         #[cfg(feature = "enhanced_repl")]
   ///         println!("{}", help_text);
-  ///         
-  ///         // Basic REPL: Plain text
-  ///         #[cfg(all(feature = "repl", not(feature = "enhanced_repl")))]
-  ///         println!("{}", help_text);
-  ///     } else {
-  ///         // Fallback to raw error message
-  ///         println!("{}", result.error_message().unwrap_or("Help not available"));
   ///     }
   /// } else {
   ///     // Handle as genuine error
-  ///     println!("❌ Error: {}", result.error_message().unwrap_or("Unknown error"));
+  ///     println!("Error: {}", result.error_message().unwrap_or("Unknown error"));
   /// }
   /// ```
   /// 
@@ -634,17 +615,17 @@ impl Pipeline
   /// * `context` - The execution context (will be moved and consumed)
   ///
   /// # Examples
-  /// ```rust,ignore
+  /// ```rust
   /// use unilang::pipeline::Pipeline;
   /// use unilang::registry::CommandRegistry;
   /// use unilang::interpreter::ExecutionContext;
   ///
-  /// # Allow deprecated API for example
   /// let registry = CommandRegistry::new();
   /// let pipeline = Pipeline::new(registry);
   /// let context = ExecutionContext::default();
   ///
-  /// let result = pipeline.process_command("help", context);
+  /// let result = pipeline.process_command(".help", context);
+  /// # drop(result); // Suppress unused variable warning
   /// ```
 #[allow(clippy::needless_pass_by_value)]
   #[must_use] pub fn process_command( &self, command_str : &str, mut context : ExecutionContext ) -> CommandResult
@@ -678,7 +659,7 @@ impl Pipeline
         // Check if this is a help request - if so, treat it as successful output
         if let crate::error::Error::Execution( error_data ) = &error
         {
-          if error_data.code == "HELP_REQUESTED"
+          if error_data.code == crate::data::ErrorCode::HelpRequested
           {
             return CommandResult
             {
@@ -687,6 +668,7 @@ impl Pipeline
               {
                 content : error_data.message.clone(),
                 format : "text".to_string(),
+      execution_time_ms : None,
               }],
               success : true,
               error : None,
@@ -757,22 +739,20 @@ impl Pipeline
   /// * `context` - The execution context (will be moved and consumed)
   ///
   /// # Examples
-  /// ```rust,ignore
+  /// ```rust
   /// use unilang::pipeline::Pipeline;
   /// use unilang::registry::CommandRegistry;
   /// use unilang::interpreter::ExecutionContext;
-  /// use std::env;
   ///
   /// let registry = CommandRegistry::new();
   /// let pipeline = Pipeline::new(registry);
   /// let context = ExecutionContext::default();
   ///
-  /// // Shell: ./app command::ls -la
-  /// // OS provides: ["command::ls", "-la"]
-  /// let argv: Vec<String> = vec!["command::ls".to_string(), "-la".to_string()];
+  /// // Shell: ./app .command arg1 arg2
+  /// // OS provides: [".command", "arg1", "arg2"]
+  /// let argv: Vec<String> = vec![".help".to_string()];
   /// let result = pipeline.process_command_from_argv(&argv, context);
-  ///
-  /// // Result: command = "ls -la" (correctly combined)
+  /// # drop(result); // Suppress unused variable warning
   /// ```
   ///
   /// # Why Use This Method?
@@ -786,16 +766,25 @@ impl Pipeline
   /// ```
   ///
   /// **Solution with argv-based API:**
-  /// ```ignore
+  /// ```
+  /// use unilang::pipeline::Pipeline;
+  /// use unilang::registry::CommandRegistry;
+  /// use unilang::interpreter::ExecutionContext;
+  ///
+  /// # #[allow(deprecated)]
+  /// # let registry = CommandRegistry::new();
+  /// # let pipeline = Pipeline::new(registry);
+  /// # let context = ExecutionContext::default();
   /// // ✅ GOOD: Preserves structure
-  /// let argv = vec!["command::ls".to_string(), "-la".to_string()];
-  /// pipeline.process_command_from_argv(&argv);  // Works correctly!
+  /// let argv = vec![".help".to_string()];
+  /// let result = pipeline.process_command_from_argv(&argv, context);
+  /// # drop(result);
   /// ```
   ///
   /// # See Also
   ///
-  /// - [`process_command`] - For REPL/interactive shells
-  /// - [`process_command_from_argv_simple`] - Convenience method with default context
+  /// - [`Self::process_command`] - For REPL/interactive shells
+  /// - [`Self::process_command_from_argv_simple`] - Convenience method with default context
   /// - Task 080: Argv-Based API Request - Full specification
   #[allow(clippy::needless_pass_by_value)]
   #[must_use] pub fn process_command_from_argv( &self, argv : &[String], mut context : ExecutionContext ) -> CommandResult
@@ -830,7 +819,7 @@ impl Pipeline
         // Check if this is a help request - if so, treat it as successful output
         if let crate::error::Error::Execution( error_data ) = &error
         {
-          if error_data.code == "HELP_REQUESTED"
+          if error_data.code == crate::data::ErrorCode::HelpRequested
           {
             return CommandResult
             {
@@ -839,6 +828,7 @@ impl Pipeline
               {
                 content : error_data.message.clone(),
                 format : "text".to_string(),
+      execution_time_ms : None,
               }],
               success : true,
               error : None,
@@ -884,20 +874,19 @@ impl Pipeline
   /// execution context for simple use cases.
   ///
   /// # Examples
-  /// ```rust,ignore
+  /// ```rust
   /// use unilang::pipeline::Pipeline;
   /// use unilang::registry::CommandRegistry;
-  /// use std::env;
   ///
   /// let registry = CommandRegistry::new();
   /// let pipeline = Pipeline::new(registry);
   ///
   /// // Typical CLI application pattern
-  /// let argv: Vec<String> = env::args().skip(1).collect();
+  /// let argv: Vec<String> = vec![".help".to_string()];
   /// let result = pipeline.process_command_from_argv_simple(&argv);
   ///
   /// if result.success {
-  ///     println!("Success: {:?}", result.outputs);
+  ///     println!("Success");
   /// } else {
   ///     eprintln!("Error: {}", result.error.unwrap_or_default());
   /// }
@@ -919,17 +908,16 @@ impl Pipeline
   /// * `context` - The execution context (will be cloned for each command)
   ///
   /// # Examples
-  /// ```rust,ignore
+  /// ```rust
   /// use unilang::pipeline::Pipeline;
   /// use unilang::registry::CommandRegistry;
   /// use unilang::interpreter::ExecutionContext;
   ///
-  /// # Allow deprecated API for example
   /// let registry = CommandRegistry::new();
   /// let pipeline = Pipeline::new(registry);
   /// let context = ExecutionContext::default();
   ///
-  /// let commands = vec!["help", "echo hello", "invalid_command"];
+  /// let commands = vec![".help"];
   /// let batch_result = pipeline.process_batch(&commands, context);
   /// println!("Success rate: {:.1}%", batch_result.success_rate());
   /// ```
@@ -1059,13 +1047,14 @@ impl Pipeline
   /// * `Result<OutputData, Error>` - Formatted help output or error if command not found
   ///
   /// # Examples
-  /// ```rust,ignore
-  /// use unilang::{pipeline::Pipeline, interpreter::ExecutionContext};
+  /// ```rust
+  /// use unilang::{pipeline::Pipeline, registry::CommandRegistry, interpreter::ExecutionContext};
   ///
+  /// let registry = CommandRegistry::new();
   /// let pipeline = Pipeline::new(registry);
   /// let context = ExecutionContext::default();
   ///
-  /// match pipeline.process_help_request(".example", context) {
+  /// match pipeline.process_help_request(".help", context) {
   ///     Ok(output) => println!("{}", output.content),
   ///     Err(e) => eprintln!("Help error: {}", e),
   /// }
@@ -1079,6 +1068,7 @@ impl Pipeline
       {
         content : help_text,
         format : "text".to_string(),
+      execution_time_ms : None,
       }),
       None => Err( Error::Registration( format!(
         "Help Error: Command '{}' not found. Use '.' to see all available commands.",
@@ -1096,15 +1086,16 @@ impl Pipeline
 /// Note: This creates a new parser each time, so it's less efficient than reusing a Pipeline.
 ///
 /// # Examples
-/// ```rust,ignore
+/// ```rust
 /// use unilang::pipeline::process_single_command;
 /// use unilang::registry::CommandRegistry;
 /// use unilang::interpreter::ExecutionContext;
 ///
-/// # Allow deprecated API for example
+/// #[allow(deprecated)]
 /// let registry = CommandRegistry::new();
 /// let context = ExecutionContext::default();
-/// let result = process_single_command("help", &registry, context);
+/// let result = process_single_command(".help", &registry, context);
+/// # drop(result); // Suppress unused variable warning
 /// ```
 #[must_use] pub fn process_single_command
 (
@@ -1286,6 +1277,7 @@ mod tests
       {
         content : message.clone(),
         format : "text".to_string(),
+      execution_time_ms : None,
       })
     });
 

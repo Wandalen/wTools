@@ -144,7 +144,7 @@ fn test_task_022_help_system_shell() {
 
     cmd.assert()
         .success()
-        .stdout(predicate::str::contains("USAGE:"))
+        .stdout(predicate::str::contains("Usage:"))
         .stdout(predicate::str::contains(".search"));
 }
 

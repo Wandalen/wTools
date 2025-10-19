@@ -189,6 +189,145 @@ mod private
     pub tags : Vec< String >,
   }
 
+  impl ArgumentDefinition
+  {
+    /// Creates a new argument with sensible defaults (simplified constructor).
+    ///
+    /// This is the recommended way to create arguments for most use cases.
+    /// It requires only the essential fields (name and type) and provides
+    /// reasonable defaults for all optional fields.
+    ///
+    /// # Arguments
+    /// * `name` - Argument name
+    /// * `kind` - Argument type (String, Integer, etc.)
+    ///
+    /// # Returns
+    /// * `Self` - A new ArgumentDefinition with defaults applied
+    ///
+    /// # Examples
+    /// ```rust
+    /// use unilang::prelude::*;
+    ///
+    /// // Simple required string argument
+    /// let arg = ArgumentDefinition::new("name", Kind::String);
+    /// assert_eq!(arg.name, "name");
+    /// assert!(!arg.attributes.optional);
+    ///
+    /// // Optional integer with default
+    /// let count_arg = ArgumentDefinition::new("count", Kind::Integer)
+    ///   .with_optional(Some("10"));
+    /// assert!(count_arg.attributes.optional);
+    /// ```
+    #[ must_use ]
+    pub fn new( name : impl Into< String >, kind : Kind ) -> Self
+    {
+      Self
+      {
+        name : name.into(),
+        kind,
+        attributes : ArgumentAttributes::default(),
+        hint : String::new(),
+        description : String::new(),
+        validation_rules : Vec::new(),
+        aliases : Vec::new(),
+        tags : Vec::new(),
+      }
+    }
+
+    /// Makes the argument optional with an optional default value (fluent API).
+    ///
+    /// # Examples
+    /// ```rust
+    /// use unilang::prelude::*;
+    ///
+    /// let arg = ArgumentDefinition::new("count", Kind::Integer)
+    ///   .with_optional(Some("10"));
+    /// assert!(arg.attributes.optional);
+    /// assert_eq!(arg.attributes.default, Some("10".to_string()));
+    /// ```
+    #[ must_use ]
+    pub fn with_optional( mut self, default : Option< impl Into< String > > ) -> Self
+    {
+      self.attributes.optional = true;
+      self.attributes.default = default.map( | v | v.into() );
+      self
+    }
+
+    /// Sets the description for the argument (fluent API).
+    ///
+    /// # Examples
+    /// ```rust
+    /// use unilang::prelude::*;
+    ///
+    /// let arg = ArgumentDefinition::new("name", Kind::String)
+    ///   .with_description("User's name");
+    /// assert_eq!(arg.description, "User's name");
+    /// ```
+    #[ must_use ]
+    pub fn with_description( mut self, description : impl Into< String > ) -> Self
+    {
+      self.description = description.into();
+      self
+    }
+
+    /// Adds validation rules to the argument (fluent API).
+    ///
+    /// # Examples
+    /// ```rust
+    /// use unilang::prelude::*;
+    /// use unilang::ValidationRule;
+    ///
+    /// let arg = ArgumentDefinition::new("age", Kind::Integer)
+    ///   .with_validation_rules(vec![
+    ///     ValidationRule::Min(0.0),
+    ///     ValidationRule::Max(150.0),
+    ///   ]);
+    /// assert_eq!(arg.validation_rules.len(), 2);
+    /// ```
+    #[ must_use ]
+    pub fn with_validation_rules( mut self, rules : Vec< ValidationRule > ) -> Self
+    {
+      self.validation_rules = rules;
+      self
+    }
+
+    /// Marks the argument as sensitive (fluent API).
+    ///
+    /// # Examples
+    /// ```rust
+    /// use unilang::prelude::*;
+    ///
+    /// let arg = ArgumentDefinition::new("password", Kind::String)
+    ///   .with_sensitive(true);
+    /// assert!(arg.attributes.sensitive);
+    /// ```
+    #[ must_use ]
+    pub fn with_sensitive( mut self, sensitive : bool ) -> Self
+    {
+      self.attributes.sensitive = sensitive;
+      self
+    }
+
+    /// Marks the argument as interactive (fluent API).
+    ///
+    /// # Examples
+    /// ```rust
+    /// use unilang::prelude::*;
+    ///
+    /// let arg = ArgumentDefinition::new("password", Kind::String)
+    ///   .with_interactive(true)
+    ///   .with_sensitive(true);
+    /// assert!(arg.attributes.interactive);
+    /// assert!(arg.attributes.sensitive);
+    /// ```
+    #[ must_use ]
+    pub fn with_interactive( mut self, interactive : bool ) -> Self
+    {
+      self.attributes.interactive = interactive;
+      self
+    }
+  }
+
   ///
   /// Represents the data type and structure of an argument or value.
   ///
@@ -373,6 +512,141 @@ mod private
     pub content : String,
     /// The format of the content (e.g., "`text`", "`json`", "`xml`").
     pub format : String,
+    /// Execution time in milliseconds (if available).
+    ///
+    /// This field captures how long the command took to execute, useful for
+    /// performance monitoring and optimization. If not set, the command execution
+    /// time was not measured.
+    pub execution_time_ms : Option< u64 >,
+  }
+
+  impl OutputData
+  {
+    /// Creates a new `OutputData` with the specified content and format.
+    ///
+    /// The execution time is initially set to `None` and will be populated
+    /// by the interpreter during command execution.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use unilang::data::OutputData;
+    ///
+    /// let output = OutputData::new( "Hello, World!", "text" );
+    /// assert_eq!( output.content, "Hello, World!" );
+    /// assert_eq!( output.format, "text" );
+    /// assert_eq!( output.execution_time_ms, None );
+    /// ```
+    #[ must_use ]
+    pub fn new( content : impl Into< String >, format : impl Into< String > ) -> Self
+    {
+      Self
+      {
+        content : content.into(),
+        format : format.into(),
+        execution_time_ms : None,
+      }
+    }
+  }
+
+  ///
+  /// Type-safe error codes for the Unilang framework.
+  ///
+  /// This enum provides compile-time validation of error codes, replacing string-based
+  /// error codes with typed variants. Each variant represents a specific error condition
+  /// with a canonical string representation.
+  ///
+  /// # Examples
+  /// ```
+  /// use unilang::data::ErrorCode;
+  ///
+  /// let code = ErrorCode::CommandNotFound;
+  /// assert_eq!(code.as_str(), "UNILANG_COMMAND_NOT_FOUND");
+  /// ```
+  #[ derive( Debug, Clone, PartialEq, Eq ) ]
+  pub enum ErrorCode
+  {
+    /// Command was not found in the registry.
+    CommandNotFound,
+    /// Required argument is missing.
+    ArgumentMissing,
+    /// Argument value has wrong type.
+    ArgumentTypeMismatch,
+    /// Interactive argument requires user input.
+    ArgumentInteractiveRequired,
+    /// Validation rule failed for argument value.
+    ValidationRuleFailed,
+    /// Too many positional arguments provided.
+    TooManyArguments,
+    /// Unknown named parameter provided.
+    UnknownParameter,
+    /// Command with same name already exists.
+    CommandAlreadyExists,
+    /// Command not implemented.
+    CommandNotImplemented,
+    /// Type conversion or mismatch error.
+    TypeMismatch,
+    /// Internal framework error.
+    InternalError,
+    /// Help information requested.
+    HelpRequested,
+  }
+
+  impl ErrorCode
+  {
+    /// Returns the canonical string representation of the error code.
+    #[ must_use ]
+    pub fn as_str( &self ) -> &'static str
+    {
+      match self
+      {
+        Self::CommandNotFound => "UNILANG_COMMAND_NOT_FOUND",
+        Self::ArgumentMissing => "UNILANG_ARGUMENT_MISSING",
+        Self::ArgumentTypeMismatch => "UNILANG_ARGUMENT_TYPE_MISMATCH",
+        Self::ArgumentInteractiveRequired => "UNILANG_ARGUMENT_INTERACTIVE_REQUIRED",
+        Self::ValidationRuleFailed => "UNILANG_VALIDATION_RULE_FAILED",
+        Self::TooManyArguments => "UNILANG_TOO_MANY_ARGUMENTS",
+        Self::UnknownParameter => "UNILANG_UNKNOWN_PARAMETER",
+        Self::CommandAlreadyExists => "UNILANG_COMMAND_ALREADY_EXISTS",
+        Self::CommandNotImplemented => "UNILANG_COMMAND_NOT_IMPLEMENTED",
+        Self::TypeMismatch => "UNILANG_TYPE_MISMATCH",
+        Self::InternalError => "UNILANG_INTERNAL_ERROR",
+        Self::HelpRequested => "HELP_REQUESTED",
+      }
+    }
+  }
+
+  impl core::fmt::Display for ErrorCode
+  {
+    fn fmt( &self, f : &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
+    {
+      write!( f, "{}", self.as_str() )
+    }
+  }
+
+  impl core::str::FromStr for ErrorCode
+  {
+    type Err = ();
+
+    fn from_str( s : &str ) -> Result< Self, Self::Err >
+    {
+      match s
+      {
+        "UNILANG_COMMAND_NOT_FOUND" => Ok( Self::CommandNotFound ),
+        "UNILANG_ARGUMENT_MISSING" => Ok( Self::ArgumentMissing ),
+        "UNILANG_ARGUMENT_TYPE_MISMATCH" => Ok( Self::ArgumentTypeMismatch ),
+        "UNILANG_ARGUMENT_INTERACTIVE_REQUIRED" => Ok( Self::ArgumentInteractiveRequired ),
+        "UNILANG_VALIDATION_RULE_FAILED" => Ok( Self::ValidationRuleFailed ),
+        "UNILANG_TOO_MANY_ARGUMENTS" => Ok( Self::TooManyArguments ),
+        "UNILANG_UNKNOWN_PARAMETER" => Ok( Self::UnknownParameter ),
+        "UNILANG_COMMAND_ALREADY_EXISTS" => Ok( Self::CommandAlreadyExists ),
+        "UNILANG_COMMAND_NOT_IMPLEMENTED" => Ok( Self::CommandNotImplemented ),
+        "UNILANG_TYPE_MISMATCH" => Ok( Self::TypeMismatch ),
+        "UNILANG_INTERNAL_ERROR" => Ok( Self::InternalError ),
+        "HELP_REQUESTED" => Ok( Self::HelpRequested ),
+        _ => Err( () ),
+      }
+    }
   }
 
   ///
@@ -383,8 +657,8 @@ mod private
   #[ derive( Debug, Clone /*, Former*/ ) ]
   pub struct ErrorData
   {
-    /// A unique, machine-readable code for the error (e.g., "`COMMAND_NOT_FOUND`").
-    pub code : String,
+    /// A unique, machine-readable code for the error.
+    pub code : ErrorCode,
     /// A human-readable message explaining the error.
     pub message : String,
     /// Optional source error for error chaining.
@@ -413,7 +687,7 @@ mod private
     /// Creates a new `ErrorData` with no source error.
     ///
     #[ must_use ]
-    pub fn new( code : String, message : String ) -> Self
+    pub fn new( code : ErrorCode, message : String ) -> Self
     {
       Self { code, message, source : None }
     }
@@ -422,7 +696,7 @@ mod private
     /// Creates a new `ErrorData` with a source error for chaining.
     ///
     #[ must_use ]
-    pub fn with_source( code : String, message : String, source : ErrorData ) -> Self
+    pub fn with_source( code : ErrorCode, message : String, source : ErrorData ) -> Self
     {
       Self { code, message, source : Some( Box::new( source ) ) }
     }
@@ -992,10 +1266,139 @@ mod private
 
   impl CommandDefinition
   {
+    /// Creates a new command with sensible defaults (simplified constructor).
+    ///
+    /// This is the recommended way to create commands for most use cases.
+    /// It requires only the essential fields (name and description) and provides
+    /// reasonable defaults for all optional fields.
+    ///
+    /// # Arguments
+    /// * `name` - Command name (must start with '.')
+    /// * `description` - Brief description of what the command does
+    ///
+    /// # Returns
+    /// * `Self` - A new CommandDefinition with defaults applied
+    ///
+    /// # Examples
+    /// ```rust
+    /// use unilang::prelude::*;
+    ///
+    /// // Simple command with just name and description
+    /// let cmd = CommandDefinition::new(".greet", "Greets the user");
+    /// assert_eq!(cmd.name, ".greet");
+    /// assert_eq!(cmd.status, "stable");
+    /// assert_eq!(cmd.version, "1.0.0");
+    /// assert!(cmd.auto_help_enabled);
+    ///
+    /// // Customize with fluent API
+    /// let cmd2 = CommandDefinition::new(".test", "Test command")
+    ///   .with_auto_help(false);
+    /// assert!(!cmd2.auto_help_enabled);
+    /// ```
+    #[ must_use ]
+    pub fn new( name : impl Into< String >, description : impl Into< String > ) -> Self
+    {
+      Self
+      {
+        name : name.into(),
+        description : description.into(),
+        arguments : Vec::new(),
+        routine_link : None,
+        namespace : String::new(),
+        hint : String::new(),
+        status : "stable".to_string(),
+        version : "1.0.0".to_string(),
+        tags : Vec::new(),
+        aliases : Vec::new(),
+        permissions : Vec::new(),
+        idempotent : true,
+        deprecation_message : String::new(),
+        http_method_hint : "GET".to_string(),
+        examples : Vec::new(),
+        auto_help_enabled : true,
+      }
+    }
+
+    /// Adds arguments to the command (fluent API).
+    ///
+    /// # Examples
+    /// ```rust
+    /// use unilang::prelude::*;
+    ///
+    /// let arg = ArgumentDefinition::former()
+    ///   .name("name".to_string())
+    ///   .kind(Kind::String)
+    ///   .perform();
+    ///
+    /// let cmd = CommandDefinition::new(".greet", "Greets user")
+    ///   .with_arguments(vec![arg]);
+    /// assert_eq!(cmd.arguments.len(), 1);
+    /// ```
+    #[ must_use ]
+    pub fn with_arguments( mut self, arguments : Vec< ArgumentDefinition > ) -> Self
+    {
+      self.arguments = arguments;
+      self
+    }
+
+    /// Sets the namespace for the command (fluent API).
+    ///
+    /// # Examples
+    /// ```rust
+    /// use unilang::prelude::*;
+    ///
+    /// let cmd = CommandDefinition::new(".list", "Lists files")
+    ///   .with_namespace("file");
+    /// assert_eq!(cmd.namespace, "file");
+    /// ```
+    #[ must_use ]
+    pub fn with_namespace( mut self, namespace : impl Into< String > ) -> Self
+    {
+      self.namespace = namespace.into();
+      self
+    }
+
+    /// Sets the status for the command (fluent API).
+    ///
+    /// # Examples
+    /// ```rust
+    /// use unilang::prelude::*;
+    ///
+    /// let cmd = CommandDefinition::new(".experimental", "New feature")
+    ///   .with_status("experimental");
+    /// assert_eq!(cmd.status, "experimental");
+    /// ```
+    #[ must_use ]
+    pub fn with_status( mut self, status : impl Into< String > ) -> Self
+    {
+      self.status = status.into();
+      self
+    }
+
+    /// Sets the version for the command (fluent API).
+    ///
+    /// # Examples
+    /// ```rust
+    /// use unilang::prelude::*;
+    ///
+    /// let cmd = CommandDefinition::new(".api", "API endpoint")
+    ///   .with_version("2.0.0");
+    /// assert_eq!(cmd.version, "2.0.0");
+    /// ```
+    #[ must_use ]
+    pub fn with_version( mut self, version : impl Into< String > ) -> Self
+    {
+      self.version = version.into();
+      self
+    }
+
     /// Create a new type-state builder for constructing a `CommandDefinition`.
     ///
     /// This builder enforces that all 6 required fields (name, description, namespace,
     /// hint, status, version) are set before building, providing compile-time safety.
+    ///
+    /// **Note:** For most use cases, prefer `CommandDefinition::new()` which provides
+    /// sensible defaults. Use this builder only when you need fine-grained control.
     pub fn builder() -> CommandDefinitionBuilder< NotSet, NotSet, NotSet, NotSet, NotSet, NotSet >
     {
       CommandDefinitionBuilder::new()
@@ -1164,6 +1567,7 @@ mod_interface::mod_interface!
   exposed use private::Namespace;
   exposed use private::OutputData;
   exposed use private::ErrorData;
+  exposed use private::ErrorCode;
   exposed use private::CommandDefinitionBuilder;
   exposed use private::Set;
   exposed use private::NotSet;
@@ -1174,4 +1578,5 @@ mod_interface::mod_interface!
   prelude use private::Kind;
   prelude use private::OutputData;
   prelude use private::ErrorData;
+  prelude use private::ErrorCode;
 }

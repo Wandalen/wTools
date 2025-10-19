@@ -52,6 +52,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
         Ok( OutputData {
           content: format!( "Hello, {name}!" ),
           format: "text".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -75,6 +76,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
         Ok( OutputData {
           content: format!( "Version: {app_version}\nBuild: {build_date}" ),
           format: "text".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -96,6 +98,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
         Ok( OutputData {
           content: "42".to_string(),
           format: "number".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -106,6 +109,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
         Ok( OutputData {
           content: "10".to_string(),
           format: "number".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -116,6 +120,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
         Ok( OutputData {
           content: "100".to_string(),
           format: "number".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -157,6 +162,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
         Ok( OutputData {
           content: "Runtime: 42.5ms".to_string(),
           format: "text".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -179,6 +185,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
         Ok( OutputData {
           content: "Deploying...".to_string(),
           format: "text".to_string(),
+      execution_time_ms : None,
         })
       }
     )

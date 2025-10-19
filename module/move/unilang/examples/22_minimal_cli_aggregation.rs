@@ -140,6 +140,7 @@ fn db_migrate_routine( cmd : VerifiedCommand, _ctx : ExecutionContext ) -> Resul
   {
     content: format!( "Running database migration: {direction}" ),
     format: "text".to_string(),
+    execution_time_ms: None,
   })
 }
 
@@ -153,6 +154,7 @@ fn db_backup_routine( cmd : VerifiedCommand, _ctx : ExecutionContext ) -> Result
   {
     content: format!( "Creating database backup at: {path}" ),
     format: "text".to_string(),
+    execution_time_ms: None,
   })
 }
 
@@ -174,6 +176,7 @@ fn fs_copy_routine( cmd : VerifiedCommand, _ctx : ExecutionContext ) -> Result< 
   {
     content: format!( "Copying {source} -> {destination} (recursive: {recursive})" ),
     format: "text".to_string(),
+    execution_time_ms: None,
   })
 }
 
@@ -187,6 +190,7 @@ fn fs_list_routine( cmd : VerifiedCommand, _ctx : ExecutionContext ) -> Result< 
   {
     content: format!( "Listing directory: {path}" ),
     format: "text".to_string(),
+    execution_time_ms: None,
   })
 }
 

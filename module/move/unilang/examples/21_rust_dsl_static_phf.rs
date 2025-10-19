@@ -127,6 +127,7 @@ fn greet_routine( cmd : VerifiedCommand, _ctx : ExecutionContext ) -> Result< Ou
   {
     content : format!( "Hello, {name}!" ),
     format : "text".to_string(),
+      execution_time_ms : None,
   })
 }
 
@@ -137,6 +138,7 @@ fn version_routine( _cmd : VerifiedCommand, _ctx : ExecutionContext ) -> Result<
   {
     content : "Version: 1.2.3\nBuild: 2025-01-15".to_string(),
     format : "text".to_string(),
+      execution_time_ms : None,
   })
 }
 
@@ -147,6 +149,7 @@ fn config_routine( _cmd : VerifiedCommand, _ctx : ExecutionContext ) -> Result< 
   {
     content : "Config loaded from: ./config.toml".to_string(),
     format : "text".to_string(),
+      execution_time_ms : None,
   })
 }
 

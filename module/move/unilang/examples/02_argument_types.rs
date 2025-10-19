@@ -180,6 +180,7 @@ fn main() -> Result< (), unilang::error::Error >
     {
       content : "Arguments processed successfully".to_string(),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 

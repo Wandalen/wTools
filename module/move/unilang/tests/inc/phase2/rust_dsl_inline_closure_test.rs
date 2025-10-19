@@ -49,6 +49,7 @@ fn test_ic1_1_single_inline_closure_registration()
         {
           content : "Hello, World!".to_string(),
           format : "text".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -79,6 +80,7 @@ fn test_ic1_2_inline_closure_execution()
         {
           content : "Echo response".to_string(),
           format : "text".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -124,6 +126,7 @@ fn test_ic2_1_multiple_inline_closures_chain()
         {
           content : "Output 1".to_string(),
           format : "text".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -135,6 +138,7 @@ fn test_ic2_1_multiple_inline_closures_chain()
         {
           content : "Output 2".to_string(),
           format : "text".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -146,6 +150,7 @@ fn test_ic2_1_multiple_inline_closures_chain()
         {
           content : "Output 3".to_string(),
           format : "text".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -172,6 +177,7 @@ fn test_ic2_2_each_closure_executes_independently()
         {
           content : "42".to_string(),
           format : "number".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -183,6 +189,7 @@ fn test_ic2_2_each_closure_executes_independently()
         {
           content : "100".to_string(),
           format : "number".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -230,6 +237,7 @@ fn test_ic3_1_auto_help_generated_for_inline()
         {
           content : "Test output".to_string(),
           format : "text".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -262,6 +270,7 @@ fn test_ic3_2_help_command_execution()
         {
           content : "Example output".to_string(),
           format : "text".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -306,6 +315,7 @@ fn test_ic4_1_closure_captures_external_variables()
         {
           content : message.clone(),
           format : "text".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -343,6 +353,7 @@ fn test_ic4_2_multiple_closures_different_captures()
         {
           content : msg1.clone(),
           format : "text".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -354,6 +365,7 @@ fn test_ic4_2_multiple_closures_different_captures()
         {
           content : msg2.clone(),
           format : "text".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -419,6 +431,7 @@ fn test_ic5_1_mix_yaml_and_inline_closures()
         {
           content : "Inline output".to_string(),
           format : "text".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -472,6 +485,7 @@ fn test_ic5_2_mix_json_and_inline_closures()
         {
           content : "Inline output".to_string(),
           format : "text".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -506,6 +520,7 @@ fn test_ic6_1_invalid_command_name_logs_error()
         {
           content : "Should not execute".to_string(),
           format : "text".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -531,6 +546,7 @@ fn test_ic6_2_builder_chain_continues_after_error()
         {
           content : "Bad 1".to_string(),
           format : "text".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -542,6 +558,7 @@ fn test_ic6_2_builder_chain_continues_after_error()
         {
           content : "Good".to_string(),
           format : "text".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -553,6 +570,7 @@ fn test_ic6_2_builder_chain_continues_after_error()
         {
           content : "Bad 2".to_string(),
           format : "text".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -583,6 +601,7 @@ fn test_ic7_1_inline_command_found_in_registry()
         {
           content : "Found".to_string(),
           format : "text".to_string(),
+      execution_time_ms : None,
         })
       }
     )
@@ -612,6 +631,7 @@ fn test_ic7_2_command_metadata_correct()
         {
           content : "Output".to_string(),
           format : "text".to_string(),
+      execution_time_ms : None,
         })
       }
     )

@@ -8,12 +8,13 @@ use unilang::data::ErrorData;
 #[test]
 fn test_error_execution_display()
 {
+  use unilang::data::ErrorCode;
   let error_data = ErrorData::new(
-    "TEST_ERROR".to_string(),
+    ErrorCode::InternalError,
     "This is a test error message".to_string(),
   );
   let error = Error::Execution(error_data);
-  
+
   let error_string = error.to_string();
   assert!(error_string.contains("Execution Error"));
   assert!(error_string.contains("This is a test error message"));
@@ -62,15 +63,16 @@ fn test_error_parse_display()
 #[test]
 fn test_type_error_conversion()
 {
+  use unilang::data::ErrorCode;
   let type_error = unilang::types::TypeError {
     expected_kind: unilang::data::Kind::Integer,
     reason: "Invalid integer format".to_string(),
   };
-  
+
   let error: Error = type_error.into();
-  
+
   if let Error::Execution(error_data) = error {
-    assert_eq!(error_data.code, "UNILANG_TYPE_MISMATCH");
+    assert_eq!(error_data.code, ErrorCode::TypeMismatch);
     assert!(error_data.message.contains("Type Error: Invalid integer format"));
     assert!(error_data.message.contains("Please provide a valid value for this type"));
   } else {
@@ -81,15 +83,16 @@ fn test_type_error_conversion()
 #[test]
 fn test_error_data_conversion()
 {
+  use unilang::data::ErrorCode;
   let error_data = ErrorData::new(
-    "CUSTOM_ERROR".to_string(),
+    ErrorCode::InternalError,
     "Custom error message".to_string(),
   );
-  
+
   let error: Error = error_data.into();
-  
+
   if let Error::Execution(data) = error {
-    assert_eq!(data.code, "CUSTOM_ERROR");
+    assert_eq!(data.code, ErrorCode::InternalError);
     assert_eq!(data.message, "Custom error message");
   } else {
     panic!("Expected Execution error");
@@ -129,27 +132,29 @@ fn test_parse_error_from_conversion()
 #[test]
 fn test_error_debug_format()
 {
+  use unilang::data::ErrorCode;
   let error_data = ErrorData::new(
-    "DEBUG_ERROR".to_string(),
+    ErrorCode::InternalError,
     "Debug error message".to_string(),
   );
   let error = Error::Execution(error_data);
-  
+
   let debug_string = format!("{error:?}");
   assert!(debug_string.contains("Execution"));
-  assert!(debug_string.contains("DEBUG_ERROR"));
+  assert!(debug_string.contains("InternalError"));
 }
 
 #[test]
 fn test_multiple_error_types()
 {
+  use unilang::data::ErrorCode;
   let execution_error = Error::Execution(ErrorData::new(
-    "EXEC_ERROR".to_string(),
+    ErrorCode::InternalError,
     "Execution failed".to_string(),
   ));
-  
+
   let registration_error = Error::Registration("Registration failed".to_string());
-  
+
   // Test that different error types display differently
   assert!(execution_error.to_string().contains("Execution Error"));
   assert!(registration_error.to_string().contains("Registration Error"));

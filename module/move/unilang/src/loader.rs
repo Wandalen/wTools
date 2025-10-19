@@ -61,6 +61,7 @@ pub fn resolve_routine_link( _link : &str ) -> Result< CommandRoutine, Error >
     {
       content : String::new(),
       format : String::new(),
+      execution_time_ms : None,
     })
   }) )
 }

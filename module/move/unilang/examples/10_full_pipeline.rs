@@ -360,12 +360,17 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
         {
           content : files.join( "\n" ),
           format : format.clone(),
+          execution_time_ms : None,
         })
       },
-      Err( e ) => Err( ErrorData::new(
-        "DIRECTORY_READ_ERROR".to_string(),
-        format!( "Cannot read directory '{path}': {e}" ),
-      ))
+      Err( e ) =>
+      {
+        use unilang::data::ErrorCode;
+        Err( ErrorData::new(
+          ErrorCode::InternalError,
+          format!( "Cannot read directory '{path}': {e}" ),
+        ))
+      }
     }
   });
 
@@ -483,6 +488,7 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     {
       content : format!( "Sync from {source} to {target} completed" ),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 
@@ -622,6 +628,7 @@ fn setup_text_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     {
       content : result_json,
       format : "json".to_string(),
+      execution_time_ms : None,
     })
   });
 
@@ -721,6 +728,7 @@ fn setup_network_commands( registry : &mut CommandRegistry ) -> Result< (), unil
     {
       content : summary,
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 
@@ -774,6 +782,7 @@ fn setup_utility_commands( registry : &mut CommandRegistry ) -> Result< (), unil
     {
       content : message.clone(),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 
@@ -849,6 +858,7 @@ fn setup_utility_commands( registry : &mut CommandRegistry ) -> Result< (), unil
     {
       content : timestamp,
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 

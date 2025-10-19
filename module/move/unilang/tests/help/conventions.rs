@@ -20,19 +20,16 @@ fn test_routine( _cmd : unilang::semantic::VerifiedCommand, _ctx : ExecutionCont
   {
     content : "Test command executed successfully".to_string(),
     format : "text".to_string(),
+      execution_time_ms : None,
   })
 }
 
 #[ test ]
 fn test_automatic_help_command_generation()
 {
-  #[allow(deprecated)]
-  #[allow(deprecated)]
-    let mut registry = CommandRegistry::new();
+  let mut registry = CommandRegistry::new();
 
-  // Enable help conventions globally
-  #[allow(deprecated)]
-  registry.enable_help_conventions( true );
+  // Help conventions are now mandatory and always enabled
 
   // Create a test command with auto-help enabled
   let cmd = CommandDefinition::former()
@@ -71,8 +68,6 @@ fn test_automatic_help_command_generation()
 #[ test ]
 fn test_double_question_mark_parameter()
 {
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
 
   // Create a command with arguments for comprehensive help testing
@@ -152,8 +147,6 @@ fn test_double_question_mark_parameter()
 #[ test ]
 fn test_help_command_execution()
 {
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
 
   let cmd = CommandDefinition::former()
@@ -193,37 +186,29 @@ fn test_help_command_execution()
 #[ test ]
 fn test_help_conventions_api()
 {
-  #[allow(deprecated)]
-  #[allow(deprecated)]
-    let mut registry = CommandRegistry::new();
+  let mut registry = CommandRegistry::new();
 
-  // Test 1: Global help conventions toggle (deprecated - now always enabled)
-  #[allow(deprecated)]
-  registry.enable_help_conventions( false );
-
+  // Test 1: Help conventions are now mandatory - always enabled
   let cmd1 = CommandDefinition::former()
-    .name( ".test_no_auto_help" )
-    .description( "Command without auto help" )
+    .name( ".test_mandatory_help" )
+    .description( "Command with mandatory help" )
     .end();
 
   registry.register_with_auto_help( cmd1, Box::new( test_routine ) ).unwrap();
 
-  // MANDATORY HELP: Help is now always generated regardless of settings
-  assert!( registry.command( ".test_no_auto_help" ).is_some(), "Main command should exist" );
-  assert!( registry.command( ".test_no_auto_help.help" ).is_some(), "Help command is now always generated (mandatory enforcement)" );
+  // MANDATORY HELP: Help is now always generated - no opt-out
+  assert!( registry.command( ".test_mandatory_help" ).is_some(), "Main command should exist" );
+  assert!( registry.command( ".test_mandatory_help.help" ).is_some(), "Help command is always generated (mandatory enforcement)" );
 
-  // Test 2: Per-command override
-  #[allow(deprecated)]
-  registry.enable_help_conventions( false ); // Still disabled globally
-
+  // Test 2: Per-command settings dont affect mandatory enforcement
   let cmd2 = CommandDefinition::former()
     .name( ".test_force_help" )
     .description( "Command with forced help" )
     .end();
 
-  // Manually enable auto-help since builder method doesn't work yet
+  // Even with auto_help_enabled = false, help is still mandatory
   let mut cmd2 = cmd2;
-  cmd2.auto_help_enabled = true;
+  cmd2.auto_help_enabled = false;
 
   registry.register_with_auto_help( cmd2, Box::new( test_routine ) ).unwrap();
 
@@ -287,8 +272,6 @@ fn test_command_definition_builder_methods()
 #[ test ]
 fn test_help_content_formatting()
 {
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
 
   // Create a command with comprehensive metadata for help formatting testing
@@ -379,8 +362,6 @@ fn test_help_content_formatting()
 #[ test ]
 fn test_help_error_handling()
 {
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let registry = CommandRegistry::new();
   let context = ExecutionContext::default();
 
@@ -394,8 +375,6 @@ fn test_help_error_handling()
   assert!( error_msg.contains( ".nonexistent" ), "Error should mention the command name" );
 
   // Test get_help_for_command with non-existent command - create new registry
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let new_registry = CommandRegistry::new();
   let help_text = new_registry.get_help_for_command( ".nonexistent" );
   assert!( help_text.is_none(), "get_help_for_command should return None for non-existent commands" );

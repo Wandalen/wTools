@@ -29,7 +29,7 @@ include!(concat!(env!("OUT_DIR"), "/static_commands.rs"));
 /// Internal namespace.
 mod private
 {
-  use crate::data::{ CommandDefinition, ErrorData, OutputData };
+  use crate::data::{ CommandDefinition, ErrorData, ErrorCode, OutputData };
   use crate::error::Error; // Import Error for Result type
   use crate::interpreter::ExecutionContext;
   use std::collections::HashMap;
@@ -458,7 +458,7 @@ impl CommandRegistry
     if self.dynamic_commands.contains_key( &full_name )
     {
       return Err( Error::Execution( ErrorData::new(
-        "UNILANG_COMMAND_ALREADY_EXISTS".to_string(),
+        ErrorCode::CommandAlreadyExists,
         format!( "Registration Error: Command '{full_name}' already exists. Use a different name or remove the existing command first." ),
       )));
     }
@@ -528,30 +528,6 @@ impl CommandRegistry
   }
 
   ///
-  /// **DEPRECATED:** Help conventions are now mandatory and cannot be disabled.
-  ///
-  /// This method exists for backward compatibility but has no effect.
-  /// All commands automatically generate `.command.help` counterparts.
-  /// This behavior is enforced and cannot be changed.
-  ///
-  /// # Arguments
-  /// * `_enabled` - Ignored parameter (kept for API compatibility)
-  ///
-  /// # Examples
-  /// ```rust,ignore
-  /// use unilang::registry::CommandRegistry;
-  ///
-  /// let mut registry = CommandRegistry::new();
-  /// registry.enable_help_conventions(false); // Has no effect - help is always enabled
-  /// ```
-  #[deprecated(since = "0.20.0", note = "Help conventions are now mandatory and cannot be disabled")]
-  pub fn enable_help_conventions( &mut self, _enabled : bool )
-  {
-    // NO-OP: Help conventions are now mandatory and cannot be disabled
-    // This method is kept for backward compatibility only
-  }
-
-  ///
   /// Set the registry mode for optimized command lookup.
   ///
   /// This controls which command sources are checked during lookup:
@@ -564,7 +540,7 @@ impl CommandRegistry
   /// * `mode` - The registry mode to use
   ///
   /// # Examples
-  /// ```rust,ignore
+  /// ```rust
   /// use unilang::{CommandRegistry, RegistryMode};
   ///
   /// let mut registry = CommandRegistry::new();
@@ -625,19 +601,28 @@ impl CommandRegistry
   /// Returns an error if command registration fails due to invalid naming or other validation issues.
   ///
   /// # Examples
-  /// ```rust,ignore
-  /// use unilang::{registry::CommandRegistry, data::CommandDefinition};
+  /// ```rust
+  /// use unilang::{registry::CommandRegistry, data::{CommandDefinition, OutputData}};
   ///
+  /// # fn example() -> Result<(), unilang::Error> {
   /// let mut registry = CommandRegistry::new();
   /// let cmd = CommandDefinition::former()
-  ///     .name(".example".to_string())
+  ///     .name(".example")
   ///     .description("Example command".to_string())
-  ///     .with_auto_help(true)
-  ///     .end();
+  ///     .end()
+  ///     .with_auto_help(true);
   ///
-  /// let routine = Box::new(|_cmd, _ctx| Ok(OutputData::default()));
+  /// let routine = Box::new(|_cmd, _ctx| {
+  ///     Ok(OutputData {
+  ///         content: "Success".to_string(),
+  ///         format: "text".to_string(),
+  ///         execution_time_ms: None,
+  ///     })
+  /// });
   /// registry.register_with_auto_help(cmd, routine)?;
   /// // Both ".example" and ".example.help" are now registered
+  /// # Ok(())
+  /// # }
   /// ```
   pub fn register_with_auto_help( &mut self, command : CommandDefinition, routine : CommandRoutine ) -> Result< (), Error >
   {
@@ -660,7 +645,7 @@ impl CommandRegistry
   /// * `Option<String>` - Formatted help text, or None if command not found
   ///
   /// # Examples
-  /// ```rust,ignore
+  /// ```rust
   /// use unilang::registry::CommandRegistry;
   ///
   /// let registry = CommandRegistry::new();
@@ -726,6 +711,7 @@ impl CommandRegistry
       {
         content : help_content,
         format : "text".to_string(),
+      execution_time_ms : None,
       })
     });
 
@@ -757,6 +743,7 @@ impl CommandRegistry
       {
         content : help_text.clone(),
         format : "text".to_string(),
+      execution_time_ms : None,
       })
     })
   }
@@ -851,10 +838,23 @@ impl CommandRegistryTrait for CommandRegistry {
 /// This provides a convenient way to construct a `CommandRegistry` by
 /// chaining `command` calls.
 #[ allow( missing_debug_implementations ) ]
-#[ derive( Default ) ] // Removed Debug
 pub struct CommandRegistryBuilder
 {
   registry : CommandRegistry,
+  /// Accumulated errors during registration (command_name, error)
+  errors : Vec< ( String, Error ) >,
+}
+
+impl Default for CommandRegistryBuilder
+{
+  fn default() -> Self
+  {
+    Self
+    {
+      registry : CommandRegistry::default(),
+      errors : Vec::new(),
+    }
+  }
 }
 
 impl CommandRegistryBuilder
@@ -938,17 +938,18 @@ impl CommandRegistryBuilder
   /// * `routine` - Inline closure for command execution
   ///
   /// # Examples
-  /// ```rust,ignore
+  /// ```rust
   /// use unilang::registry::CommandRegistry;
   ///
   /// let registry = CommandRegistry::builder()
   ///   .command_with_routine(
   ///     ".greet",
   ///     "Greets user by name",
-  ///     |cmd, _ctx| {
+  ///     |_cmd, _ctx| {
   ///       Ok(unilang::data::OutputData {
   ///         content: "Hello!".to_string(),
   ///         format: "text".to_string(),
+  ///         execution_time_ms: None,
   ///       })
   ///     }
   ///   )
@@ -984,22 +985,90 @@ impl CommandRegistryBuilder
       auto_help_enabled : true,
     };
 
-    // Register with routine - errors are logged but don't stop the builder chain
+    // Register with routine - collect errors for later checking
     if let Err( e ) = self.registry.command_add_runtime( &cmd, Box::new( routine ) )
     {
-      eprintln!( "Warning: Failed to register command '{}': {}", name, e );
+      self.errors.push( ( name.to_string(), e ) );
     }
 
     self
   }
 
   ///
-  /// Builds and returns the `CommandRegistry`.
+  /// Builds and returns the `CommandRegistry`, ignoring any registration errors.
   ///
+  /// **Warning:** This method silently ignores registration errors. Use `build_checked()`
+  /// if you need to ensure all commands were registered successfully.
+  ///
+  /// # Examples
+  /// ```rust
+  /// use unilang::registry::CommandRegistry;
+  ///
+  /// let registry = CommandRegistry::builder()
+  ///   .command_with_routine(".test", "Test command", |_, _| {
+  ///     Ok(unilang::data::OutputData {
+  ///       content: "Success".to_string(),
+  ///       format: "text".to_string(),
+  ///       execution_time_ms: None,
+  ///     })
+  ///   })
+  ///   .build();
+  /// ```
   #[ must_use ]
   pub fn build( self ) -> CommandRegistry
   {
     self.registry
+  }
+
+  ///
+  /// Builds and returns the `CommandRegistry`, returning an error if any registration failed.
+  ///
+  /// This method provides proper error propagation, ensuring that all registration errors
+  /// are caught and reported. Use this method instead of `build()` when you need to
+  /// guarantee that all commands were successfully registered.
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if any command failed to register. The error will contain details
+  /// about all failed registrations.
+  ///
+  /// # Examples
+  /// ```rust
+  /// use unilang::registry::CommandRegistry;
+  ///
+  /// let result = CommandRegistry::builder()
+  ///   .command_with_routine(".test", "Test command", |_, _| {
+  ///     Ok(unilang::data::OutputData {
+  ///       content: "Success".to_string(),
+  ///       format: "text".to_string(),
+  ///       execution_time_ms: None,
+  ///     })
+  ///   })
+  ///   .build_checked();
+  ///
+  /// match result {
+  ///   Ok(registry) => println!("All commands registered successfully"),
+  ///   Err(e) => eprintln!("Registration failed: {}", e),
+  /// }
+  /// ```
+  pub fn build_checked( self ) -> Result< CommandRegistry, Error >
+  {
+    if self.errors.is_empty()
+    {
+      Ok( self.registry )
+    }
+    else
+    {
+      // Construct detailed error message with all failures
+      let mut error_message = String::from( "Command registration failed for the following commands:\n" );
+
+      for ( cmd_name, err ) in &self.errors
+      {
+        error_message.push_str( &format!( "  - '{}': {}\n", cmd_name, err ) );
+      }
+
+      Err( Error::Registration( error_message ) )
+    }
   }
 }
 
@@ -1015,8 +1084,8 @@ impl CommandRegistryBuilder
 /// - Hybrid mode prioritizes static commands for optimal hot path performance
 ///
 /// ## Usage Example
-/// ```rust,ignore
-/// use unilang::registry::StaticCommandRegistry;
+/// ```rust
+/// use unilang::registry::{StaticCommandRegistry, RegistryMode};
 ///
 /// // Create registry with hybrid mode (default)
 /// let mut registry = StaticCommandRegistry::new();

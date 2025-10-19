@@ -204,6 +204,7 @@ fn test_pipeline_argv_integration()
     Ok(OutputData {
       content: message.clone(),
       format: "text".to_string(),
+      execution_time_ms : None,
     })
   });
 

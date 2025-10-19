@@ -32,6 +32,7 @@ fn test_routine( cmd : VerifiedCommand, _ctx : ExecutionContext ) -> Result< Out
   {
     content : format!( "Executed {} with {arg_count} arguments", cmd.definition.name ),
     format : "text".to_string(),
+      execution_time_ms : None,
   })
 }
 
@@ -50,6 +51,7 @@ fn argument_access_routine( cmd : VerifiedCommand, _ctx : ExecutionContext ) -> 
   {
     content : format!( "Hello, {name}!" ),
     format : "text".to_string(),
+      execution_time_ms : None,
   })
 }
 
@@ -58,7 +60,7 @@ fn argument_access_routine( cmd : VerifiedCommand, _ctx : ExecutionContext ) -> 
 fn error_routine( _cmd : VerifiedCommand, _ctx : ExecutionContext ) -> Result< OutputData, unilang::data::ErrorData >
 {
   Err( unilang::data::ErrorData::new(
-    "TEST_ERROR".to_string(),
+    unilang::data::ErrorCode::InternalError,
     "This is a test error for error handling validation".to_string(),
   ))
 }
@@ -190,7 +192,7 @@ fn test_command_execution_error_handling()
   let error = result.unwrap_err();
   match error {
     unilang::Error::Execution( error_data ) => {
-      assert_eq!( error_data.code, "TEST_ERROR" );
+      assert_eq!( error_data.code, unilang::data::ErrorCode::InternalError );
       assert!( error_data.message.contains( "test error" ) );
     },
     _ => panic!( "Expected Execution error" ),
@@ -210,6 +212,7 @@ fn test_execution_context_management()
     Ok( OutputData {
       content : "Context validated".to_string(),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 
@@ -309,22 +312,23 @@ fn test_execution_with_complex_arguments()
   let complex_routine = Box::new( |cmd: VerifiedCommand, _ctx: ExecutionContext| -> Result<OutputData, unilang::data::ErrorData> {
     let text = match cmd.arguments.get( "text" ).unwrap() {
       Value::String( s ) => s.clone(),
-      _ => return Err( unilang::data::ErrorData::new( "TYPE_ERROR".to_string(), "Expected string".to_string() ) ),
+      _ => return Err( unilang::data::ErrorData::new( unilang::data::ErrorCode::TypeMismatch, "Expected string".to_string() ) ),
     };
 
     let number = match cmd.arguments.get( "number" ).unwrap() {
       Value::Integer( i ) => *i,
-      _ => return Err( unilang::data::ErrorData::new( "TYPE_ERROR".to_string(), "Expected integer".to_string() ) ),
+      _ => return Err( unilang::data::ErrorData::new( unilang::data::ErrorCode::TypeMismatch, "Expected integer".to_string() ) ),
     };
 
     let flag = match cmd.arguments.get( "flag" ).unwrap() {
       Value::Boolean( b ) => *b,
-      _ => return Err( unilang::data::ErrorData::new( "TYPE_ERROR".to_string(), "Expected boolean".to_string() ) ),
+      _ => return Err( unilang::data::ErrorData::new( unilang::data::ErrorCode::TypeMismatch, "Expected boolean".to_string() ) ),
     };
 
     Ok( OutputData {
       content : format!( "text={text}, number={number}, flag={flag}" ),
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 
@@ -378,6 +382,7 @@ fn test_execution_output_formats()
     Ok( OutputData {
       content : r#"{"message": "hello", "status": "success"}"#.to_string(),
       format : "json".to_string(),
+      execution_time_ms : None,
     })
   });
 

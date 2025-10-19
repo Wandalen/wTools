@@ -66,6 +66,7 @@ fn main() -> Result<(), unilang::Error> {
             Ok(OutputData {
                 content: result.to_string(),
                 format: "text".to_string(),
+      execution_time_ms : None,
             })
         } else {
             unreachable!("Arguments already validated")

@@ -58,6 +58,7 @@ fn test_command_registry_key_mismatch()
       {
         content : "Dummy routine executed".to_string(),
         format : "text".to_string(),
+      execution_time_ms : None,
       })
     }),
   )

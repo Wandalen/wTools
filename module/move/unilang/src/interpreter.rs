@@ -5,7 +5,7 @@
 /// Internal namespace.
 mod private
 {
-  use crate::data::{ ErrorData, OutputData };
+  use crate::data::{ ErrorData, ErrorCode, OutputData };
   use crate::error::Error;
   use crate::semantic::VerifiedCommand;
 
@@ -54,6 +54,12 @@ impl< 'a > Interpreter< 'a >
   ///
   /// This method currently does not return errors directly from command execution,
   /// but it is designed to propagate `Error` from command routines in future implementations.
+  ///
+  /// ## Performance Monitoring
+  ///
+  /// Each command's execution time is automatically captured and included in the
+  /// `OutputData` result via the `execution_time_ms` field. This allows for
+  /// performance tracking and optimization of command routines.
   #[allow(clippy::missing_errors_doc)]
   pub fn run
   (
@@ -75,17 +81,24 @@ impl< 'a > Interpreter< 'a >
       let routine = self.registry.get_routine( &full_command_name ).ok_or_else( ||
       {
         Error::Execution( ErrorData::new(
-          "UNILANG_INTERNAL_ERROR".to_string(),
+          ErrorCode::InternalError,
           format!( "Internal Error: No executable routine found for command '{}'. This is a system error, please report it.", command.definition.name ),
         ))
       })?;
 
-      // Execute the routine
+      // Capture execution timing
+      let start_time = std::time::Instant::now();
       let output_or_error = routine( command.clone(), context.clone() ); // Clone command and context for routine
+      let execution_time_ms = start_time.elapsed().as_millis() as u64;
 
       match output_or_error
       {
-        Ok( output ) => results.push( output ),
+        Ok( mut output ) =>
+        {
+          // Add execution timing to output
+          output.execution_time_ms = Some( execution_time_ms );
+          results.push( output );
+        },
         Err( error_data ) => return Err( Error::Execution( error_data ) ), // Stop on first error
       }
     }

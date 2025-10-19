@@ -252,6 +252,7 @@ fn main() -> Result< (), unilang::error::Error >
     {
       content : format!( "Successfully processed {} advanced arguments", cmd.arguments.len() ),
       format : "json".to_string(),
+      execution_time_ms : None,
     })
   });
 

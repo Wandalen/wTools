@@ -160,12 +160,12 @@ This section lists the specific, testable functions the `unilang` framework **mu
 *   **FR-HELP-3 (Help Operator):** The parser **must** recognize the `?` operator. When present, the `Semantic Analyzer` **must** return a `HELP_REQUESTED` error containing the detailed help text for the specified command, bypassing all argument validation.
 *   **FR-HELP-4 (Standardized Help Commands):** For every registered command `.command`, the framework **must** provide automatic registration of a corresponding `.command.help` command that returns detailed help information for the parent command. This standardization ensures consistent help access across all commands.
 *   **FR-HELP-5 (Double Question Mark Parameter):** The framework **must** recognize a special parameter `??` that can be appended to any command to trigger help display (e.g., `.command "??"`). When this parameter is detected, the system **must** return help information identical to calling `.command.help`, providing an alternative help access method. *Implementation Note: The `??` parameter must be quoted to avoid parser conflicts with the `?` help operator.*
-*   **FR-HELP-6 (Automatic Help Command Generation API):** The framework **must** provide APIs (`CommandRegistry::enable_help_conventions`, `CommandDefinition::with_auto_help`) that automatically generate `.command.help` commands and enable `??` parameter processing with minimal developer effort.
+*   **FR-HELP-6 (Automatic Help Command Generation API):** The framework **must** provide APIs (`CommandDefinition::with_auto_help`) that automatically generate `.command.help` commands and enable `??` parameter processing with minimal developer effort. Help generation is now mandatory for all commands - no opt-out mechanism exists.
 
     *Implementation Notes:* ✅ **IMPLEMENTED**
     - Automatic `.command.help` command registration via `register_with_auto_help()`
-    - Global help conventions toggle via `enable_help_conventions()`
-    - Per-command control via `auto_help_enabled` field
+    - Help generation is mandatory and always enabled
+    - Per-command control via `auto_help_enabled` field (for configuration only - help still generated)
     - Pipeline enhancement converts `HELP_REQUESTED` errors to successful help output
     - Comprehensive help formatting with all command metadata, validation rules, and examples
     - Three help access methods: `?` operator, `"??"` parameter, and `.command.help` commands
@@ -198,7 +198,7 @@ This section lists the specific, testable functions the `unilang` framework **mu
 
 ### 5. Non-Functional Requirements
 
-*   **NFR-PERF-1 (Startup Time):** For a utility with 1,000,000+ statically compiled commands, the framework **must** introduce zero runtime overhead for command registration. Application startup time **must not** be proportional to the number of static commands. This **must** be achieved via compile-time generation of a Perfect Hash Function (PHF).
+*   **NFR-PERF-1 (Startup Time):** For a utility with 1,000,000+ statically compiled commands, the framework **must** introduce zero runtime overhead for command registration. Application startup time **must not** be proportional to the number of static commands. This **must** be achieved via compile-time generation of optimized static lookup tables (using Perfect Hash Functions).
 *   **NFR-PERF-2 (Lookup Latency):** The p99 latency for resolving a command `FullName` and its arguments **must** be less than 100 nanoseconds for any registry size.
 *   **NFR-PERF-3 (Throughput):** The framework **must** be capable of processing over 5,000,000 simple command lookups per second on a standard developer machine.
 *   **NFR-SEC-1 (Sensitive Data):** Argument values marked as `sensitive: true` **must not** be displayed in logs or user interfaces unless explicitly required by a secure context.
@@ -241,7 +241,7 @@ The REPL (Read-Eval-Print Loop) modality has unique technical challenges and req
 - Clear screen and session reset capabilities are essential for productive use
 
 **Performance Considerations:**
-- Static command registry with PHF provides zero-cost lookups even in REPL context
+- Optimized static command registry provides zero-cost lookups even in REPL context
 - Dynamic command registration during REPL sessions should be supported for development workflows
 - Batch command processing capabilities enable script-like functionality within REPL
 - Command validation without execution supports syntax checking workflows
@@ -284,14 +284,110 @@ The `CommandDefinition` struct **must** include the following key fields for hel
 The following API methods **must** be provided to support standardized help conventions:
 
 **CommandRegistry Methods:**
-*   `enable_help_conventions(&mut self, enabled: bool)` - Enables/disables automatic `.command.help` generation for all subsequently registered commands.
-*   `register_with_auto_help(&mut self, command: CommandDefinition, routine: CommandRoutine)` - Registers a command with automatic help command generation.
+*   `register_with_auto_help(&mut self, command: CommandDefinition, routine: CommandRoutine)` - Registers a command with automatic help command generation (now mandatory for all commands).
 *   `get_help_for_command(&self, command_name: &str) -> Option<String>` - Retrieves formatted help text for any registered command.
 
+**CommandRegistryBuilder Methods:**
+*   `builder() -> CommandRegistryBuilder` - Creates a new builder for fluent command registration.
+*   `command_with_routine(name: &str, description: &str, routine: F) -> Self` - Adds a command with inline routine using fluent builder pattern.
+*   `build(self) -> CommandRegistry` - Builds and returns the CommandRegistry, ignoring any registration errors (for backward compatibility). **Warning:** Silently ignores registration errors.
+*   `build_checked(self) -> Result<CommandRegistry, Error>` - **NEW:** Builds and returns the CommandRegistry with proper error propagation. Returns an error if any command failed to register during the build process. **Recommended** for production code to ensure all commands registered successfully.
+
+**VerifiedCommand Helper Methods:**
+The following helper methods **must** be provided to eliminate boilerplate in command routines (eliminates ~90% of argument extraction code):
+
+*String extraction:*
+*   `get_string(&self, name: &str) -> Option<&str>` - Extracts optional string argument, returns None if not found or wrong type.
+*   `require_string(&self, name: &str) -> Result<&str, Error>` - Extracts required string argument, returns error if missing or wrong type.
+
+*Integer extraction:*
+*   `get_integer(&self, name: &str) -> Option<i64>` - Extracts optional integer argument.
+*   `require_integer(&self, name: &str) -> Result<i64, Error>` - Extracts required integer argument.
+
+*Float extraction:*
+*   `get_float(&self, name: &str) -> Option<f64>` - Extracts optional float argument.
+*   `require_float(&self, name: &str) -> Result<f64, Error>` - Extracts required float argument.
+
+*Boolean extraction:*
+*   `get_boolean(&self, name: &str) -> Option<bool>` - Extracts optional boolean argument.
+*   `require_boolean(&self, name: &str) -> Result<bool, Error>` - Extracts required boolean argument.
+
+*Path extraction:*
+*   `get_path(&self, name: &str) -> Option<&Path>` - Extracts optional path argument (works with Path, File, Directory variants).
+*   `require_path(&self, name: &str) -> Result<&Path, Error>` - Extracts required path argument.
+
+*List extraction:*
+*   `get_list(&self, name: &str) -> Option<&Vec<Value>>` - Extracts optional list argument.
+*   `require_list(&self, name: &str) -> Result<&Vec<Value>, Error>` - Extracts required list argument.
+
+*Generic helpers:*
+*   `has_argument(&self, name: &str) -> bool` - Returns true if argument exists (regardless of type).
+*   `get_value(&self, name: &str) -> Option<&Value>` - Gets raw Value reference for custom handling.
+
+These helpers replace the verbose pattern:
+```rust
+// OLD (verbose, error-prone):
+let name = cmd.arguments.get("name")
+  .and_then(|v| if let Value::String(s) = v { Some(s) } else { None })
+  .unwrap_or("default");
+
+// NEW (concise, type-safe):
+let name = cmd.get_string("name").unwrap_or("default");
+```
+
 **CommandDefinition Methods:**
+*   `new(name, description) -> Self` - **NEW (Phase 2):** Simplified constructor with sensible defaults. Requires only name and description, providing defaults for all optional fields (status="stable", version="1.0.0", auto_help_enabled=true, etc.). Recommended for most use cases.
+*   `with_arguments(arguments: Vec<ArgumentDefinition>) -> Self` - **NEW (Phase 2):** Fluent API for adding arguments.
+*   `with_namespace(namespace: String) -> Self` - **NEW (Phase 2):** Fluent API for setting namespace.
+*   `with_status(status: String) -> Self` - **NEW (Phase 2):** Fluent API for setting status.
+*   `with_version(version: String) -> Self` - **NEW (Phase 2):** Fluent API for setting version.
 *   `with_auto_help(self, enabled: bool) -> Self` - Builder method to enable/disable automatic help command generation for this specific command. ✅ **IMPLEMENTED** in `src/data.rs:1028`
 *   `has_auto_help(&self) -> bool` - Returns true if this command should automatically generate a help counterpart.
 *   `generate_help_command(&self) -> CommandDefinition` - Generates the corresponding `.command.help` command definition for this command.
+
+**ArgumentDefinition Methods:**
+*   `new(name, kind) -> Self` - **NEW (Phase 2):** Simplified constructor with sensible defaults. Requires only name and type, providing defaults for all optional fields (required by default, no validation rules, etc.).
+*   `with_optional(default: Option<String>) -> Self` - **NEW (Phase 2):** Makes argument optional with optional default value.
+*   `with_description(description: String) -> Self` - **NEW (Phase 2):** Sets argument description.
+*   `with_validation_rules(rules: Vec<ValidationRule>) -> Self` - **NEW (Phase 2):** Adds validation rules.
+*   `with_sensitive(sensitive: bool) -> Self` - **NEW (Phase 2):** Marks argument as sensitive (for passwords, API keys).
+*   `with_interactive(interactive: bool) -> Self` - **NEW (Phase 2):** Marks argument as interactive (requires user prompting).
+
+**OutputData Structure and Methods:**
+
+The `OutputData` struct is the standardized structure for successful command execution results. It **must** include the following fields:
+
+```rust
+pub struct OutputData {
+    pub content : String,              // The actual output content
+    pub format : String,               // Output format identifier (e.g., "text", "json", "xml")
+    pub execution_time_ms : Option< u64 >,  // Execution time in milliseconds (automatically populated by Interpreter)
+}
+```
+
+**OutputData Methods:**
+*   `new(content, format) -> Self` - **NEW (Phase 2):** Simplified constructor for creating output data. Accepts content and format parameters (both can be strings or string-like types), setting `execution_time_ms` to `None` initially. The Interpreter will automatically populate execution timing when the command is executed.
+
+**Performance Monitoring:**
+The `execution_time_ms` field is automatically populated by the `Interpreter` during command execution. Command routines do not need to manually track timing - the framework captures execution duration automatically using high-precision timing (`std::time::Instant`). This provides:
+- Zero-overhead timing instrumentation (measured at interpreter level)
+- Consistent timing methodology across all commands
+- Optional field design for backward compatibility
+- Millisecond precision suitable for performance analysis
+
+Example usage in command routines:
+```rust
+fn my_command_routine(cmd: VerifiedCommand, _ctx: ExecutionContext) -> Result<OutputData, ErrorData> {
+    // Perform command logic
+    let result = do_work();
+
+    // Simple output construction - timing added automatically by Interpreter
+    Ok(OutputData::new(
+        format!("Work completed: {}", result),
+        "text"
+    ))
+}
+```
 
 **Pipeline Methods:**
 *   `process_help_request(&self, command_name: &str, context: ExecutionContext) -> Result<OutputData, Error>` - Processes help requests uniformly across the framework.
@@ -348,15 +444,21 @@ This ensures PHF types remain internal implementation details while exposing a c
 
 ### 8. Cross-Cutting Concerns (Error Handling, Security, Verbosity)
 
-*   **Error Handling:** All recoverable errors **must** be propagated as `unilang::Error`, which wraps an `ErrorData` struct containing a machine-readable `code` and a human-readable `message`. The framework defines the following standard error codes:
-    - `UNILANG_COMMAND_NOT_FOUND`: Command does not exist in registry
-    - `UNILANG_ARGUMENT_MISSING`: Required argument not provided
-    - `UNILANG_TOO_MANY_ARGUMENTS`: Excess positional arguments provided
-    - `UNILANG_UNKNOWN_PARAMETER`: Named parameter not defined in command (with typo suggestions)
-    - `UNILANG_VALIDATION_RULE_FAILED`: Argument validation rule violated
-    - `UNILANG_ARGUMENT_INTERACTIVE_REQUIRED`: Interactive argument requires user input
-    - `HELP_REQUESTED`: User requested help via `?` operator or `??` parameter
-    - `UNILANG_INTERNAL_ERROR`: Unexpected system error
+*   **Error Handling:** All recoverable errors **must** be propagated as `unilang::Error`, which wraps an `ErrorData` struct containing a machine-readable `code` (typed `ErrorCode` enum) and a human-readable `message`. The framework defines the following standard error codes via the `ErrorCode` enum:
+    - `ErrorCode::CommandNotFound` (as string: `UNILANG_COMMAND_NOT_FOUND`): Command does not exist in registry
+    - `ErrorCode::ArgumentMissing` (as string: `UNILANG_ARGUMENT_MISSING`): Required argument not provided
+    - `ErrorCode::ArgumentTypeMismatch` (as string: `UNILANG_ARGUMENT_TYPE_MISMATCH`): Argument value has wrong type
+    - `ErrorCode::TooManyArguments` (as string: `UNILANG_TOO_MANY_ARGUMENTS`): Excess positional arguments provided
+    - `ErrorCode::UnknownParameter` (as string: `UNILANG_UNKNOWN_PARAMETER`): Named parameter not defined in command (with typo suggestions)
+    - `ErrorCode::ValidationRuleFailed` (as string: `UNILANG_VALIDATION_RULE_FAILED`): Argument validation rule violated
+    - `ErrorCode::ArgumentInteractiveRequired` (as string: `UNILANG_ARGUMENT_INTERACTIVE_REQUIRED`): Interactive argument requires user input
+    - `ErrorCode::CommandAlreadyExists` (as string: `UNILANG_COMMAND_ALREADY_EXISTS`): Duplicate command registration attempt
+    - `ErrorCode::CommandNotImplemented` (as string: `UNILANG_COMMAND_NOT_IMPLEMENTED`): Command registered but not implemented
+    - `ErrorCode::TypeMismatch` (as string: `UNILANG_TYPE_MISMATCH`): Type conversion or mismatch error
+    - `ErrorCode::HelpRequested` (as string: `HELP_REQUESTED`): User requested help via `?` operator or `??` parameter
+    - `ErrorCode::InternalError` (as string: `UNILANG_INTERNAL_ERROR`): Unexpected system error
+
+    The `ErrorCode` enum provides compile-time type safety and prevents typos in error code strings. The `ErrorData::new()` method now requires an `ErrorCode` enum variant instead of a string.
 *   **Security:** The framework **must** provide a `permissions` field in `CommandDefinition` for integrators to implement role-based access control. The `sensitive` attribute on arguments **must** be respected.
 *   **Verbosity:** The framework **must** support at least three verbosity levels (`quiet`, `normal`, `debug`) configurable via environment variable (`UNILANG_VERBOSITY`) or programmatically.
 *   **Shell Integration:** CLI applications **should** use the argv-based API (`Pipeline::process_command_from_argv`) when receiving command-line arguments from the shell (see FR-PIPE-4). This API preserves argument boundaries from the OS and eliminates information loss, enabling natural shell syntax without special quoting requirements. The string-based API (`process_command_simple`) is recommended for REPL/interactive applications where input comes as a single string. **Legacy Approach:** For applications using the string-based API with shell arguments, integrators must implement argument preprocessing to re-quote values containing spaces before passing them to the parser, but the argv-based API eliminates this requirement entirely.
@@ -392,10 +494,10 @@ It is recommended that the `unilang` ecosystem adhere to the following principle
 
 *   **Parser Independence:** The `unilang` core crate **should** delegate all command string parsing to the `unilang_parser` crate.
 *   **Zero-Overhead Static Registry:** To meet `NFR-PERF-1`, it is **strongly recommended** that the `CommandRegistry` be implemented using a hybrid model:
-    *   A **Perfect Hash Function (PHF)** map, generated at compile-time in `build.rs`, for all statically known commands. The PHF implementation **must** be hidden behind the `StaticCommandMap` wrapper to prevent dependency leakage.
+    *   An **optimized static map** (using Perfect Hash Functions internally), generated at compile-time in `build.rs`, for all statically known commands. The implementation **must** be hidden behind the `StaticCommandMap` wrapper to prevent dependency leakage.
     *   A standard `HashMap` for commands registered dynamically at runtime.
     *   Lookups **should** check the static map first before falling back to the dynamic map.
-    *   Downstream crates **must not** require `phf` as a dependency - the wrapper ensures complete encapsulation.
+    *   Downstream crates **must not** require implementation-specific dependencies - the wrapper ensures complete encapsulation.
 *   **`enabled` Feature Gate Mandate:** All framework crates **must** implement the `enabled` feature gate pattern. The entire crate's functionality, including its modules and dependencies, **should** be conditionally compiled using `#[cfg(feature = "enabled")]`. This is a critical mechanism for managing complex feature sets and dependencies within a Cargo workspace, allowing a crate to be effectively disabled even when it is listed as a non-optional dependency.
 
 ### 11. Architectural Diagrams
@@ -665,7 +767,7 @@ As you build the system, please use this document to log your key implementation
 | ✅ | **FR-HELP-3:** The parser must recognize the `?` operator. When present, the `Semantic Analyzer` must return a `HELP_REQUESTED` error containing the detailed help text for the specified command, bypassing all argument validation. | Implemented with Pipeline enhancement to convert HELP_REQUESTED errors to successful help output |
 | ✅ | **FR-HELP-4:** For every registered command `.command`, the framework must provide automatic registration of a corresponding `.command.help` command that returns detailed help information for the parent command. | Implemented via `register_with_auto_help()` and `auto_help_enabled` field with automatic help command generation |
 | ✅ | **FR-HELP-5:** The framework must recognize a special parameter `??` that can be appended to any command to trigger help display (e.g., `.command ??`). When this parameter is detected, the system must return help information identical to calling `.command.help`. | Implemented with semantic analyzer support for `??` parameter (requires quoting as `"??"` to avoid parser conflicts) |
-| ✅ | **FR-HELP-6:** The framework must provide APIs (`CommandRegistry::enable_help_conventions`, `CommandDefinition::with_auto_help`) that automatically generate `.command.help` commands and enable `??` parameter processing with minimal developer effort. | Implemented with `enable_help_conventions()`, `register_with_auto_help()`, and `auto_help_enabled` field |
+| ✅ | **FR-HELP-6:** The framework must provide APIs (`CommandDefinition::with_auto_help`) that automatically generate `.command.help` commands and enable `??` parameter processing with minimal developer effort. Help generation is now mandatory. | Implemented with `register_with_auto_help()` and `auto_help_enabled` field - help generation is mandatory for all commands |
 | ✅ | **FR-HELP-7:** The framework must support configurable help verbosity levels (0-4) to accommodate different user preferences. Default verbosity is Level 2 (Standard - concise like unikit). Provides methods to create, set, and query verbosity levels. | Implemented in `src/help.rs` with `HelpVerbosity` enum (Minimal, Basic, Standard, Detailed, Comprehensive), `HelpGenerator::with_verbosity()`, `set_verbosity()`, and `verbosity()` methods. Default is Standard (Level 2). Comprehensive test coverage in `tests/help_verbosity.rs` with 9 tests verifying all verbosity levels and progressive information display. All tests passing. |
 | ✅ | **FR-REPL-1:** The framework's core components (`Pipeline`, `Parser`, `SemanticAnalyzer`, `Interpreter`) must be structured to support a REPL-style execution loop. They must be reusable for multiple, sequential command executions within a single process lifetime. | Implemented with comprehensive examples and verified stateless operation |
 | ✅ | **FR-INTERACTIVE-1:** When a mandatory argument with the `interactive: true` attribute is not provided, the `Semantic Analyzer` must return a distinct, catchable error (`UNILANG_ARGUMENT_INTERACTIVE_REQUIRED`). This allows the calling modality to intercept the error and prompt the user for input. | Implemented in semantic analyzer with comprehensive test coverage and REPL integration |
@@ -685,6 +787,7 @@ Key architectural decisions:
 - **Explicit Naming:** Commands require dot prefix (`.command`); YAML manifests support two valid formats
 - **Help Conventions:** Three access methods (`?` operator, `??` parameter, `.command.help` commands)
 - **Argv-Based API:** Native `&[String]` array support for CLI applications alongside string-based API
+- **Automatic Performance Monitoring:** Interpreter-level execution timing capture with `execution_time_ms` field in `OutputData` - provides zero-overhead timing instrumentation without manual tracking in command routines
 
 #### Finalized Internal Data Models
 *The definitive, as-built schema for all databases, data structures, and objects used internally by the system.*
@@ -710,6 +813,23 @@ pub struct CommandDefinition {
     pub auto_help_enabled: bool,        // NEW: Controls automatic .command.help generation
 }
 ```
+
+**OutputData Structure (as of 2025-10-19):**
+```rust
+pub struct OutputData {
+    pub content : String,                  // The actual output content
+    pub format : String,                   // Output format identifier (e.g., "text", "json", "xml")
+    pub execution_time_ms : Option< u64 >, // NEW: Execution time in milliseconds (automatically populated by Interpreter)
+}
+```
+
+**Performance Monitoring Implementation:**
+The `execution_time_ms` field provides automatic performance monitoring for all command executions:
+- **Automatic Capture:** The `Interpreter` automatically measures execution time using `std::time::Instant` and populates this field
+- **Zero Developer Overhead:** Command routines dont need to track timing manually
+- **Backward Compatible:** Optional field design ensures existing code continues to work
+- **Precision:** Millisecond-level precision suitable for performance analysis and optimization
+- **Consistency:** All commands use identical timing methodology for fair comparison
 
 *See `src/data.rs` for the complete and authoritative structure definitions.*
 

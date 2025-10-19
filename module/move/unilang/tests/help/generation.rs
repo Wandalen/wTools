@@ -92,7 +92,7 @@ fn test_command_specific_help_generation()
 
   // Use runtime registration instead since command_add is deprecated
   let mock_routine = Box::new( |_cmd: VerifiedCommand, _ctx: ExecutionContext| -> Result<OutputData, unilang::data::ErrorData> {
-    Ok(OutputData { content: "test".to_string(), format: "text".to_string() })
+    Ok(OutputData::new("test", "text"))
   });
 
   registry.command_add_runtime( &cmd, mock_routine ).unwrap();
@@ -106,7 +106,7 @@ fn test_command_specific_help_generation()
   assert!( help_content.contains( "input" ), "Help should contain required argument" );
   assert!( help_content.contains( "output" ), "Help should contain optional argument" );
   assert!( help_content.contains( "verbose" ), "Help should contain boolean argument" );
-  assert!( help_content.contains( "USAGE:" ), "Help should contain usage section" );
+  assert!( help_content.contains( "Usage:" ), "Help should contain usage section" );
 }
 
 #[test]
@@ -118,7 +118,7 @@ fn test_help_includes_argument_details()
 
   // Use runtime registration instead since command_add is deprecated
   let mock_routine = Box::new( |_cmd: VerifiedCommand, _ctx: ExecutionContext| -> Result<OutputData, unilang::data::ErrorData> {
-    Ok(OutputData { content: "test".to_string(), format: "text".to_string() })
+    Ok(OutputData::new("test", "text"))
   });
 
   registry.command_add_runtime( &cmd, mock_routine ).unwrap();
@@ -126,9 +126,9 @@ fn test_help_includes_argument_details()
   let help_generator = HelpGenerator::new( &registry );
   let help_content = help_generator.command( &cmd_name ).expect( "Help should be generated" );
 
-  // Verify argument details are included (Level 2 Standard format uses PARAMETERS:)
+  // Verify argument details are included (Level 2 Standard format uses Arguments:)
   // Note: Level 2 shows hints if available, otherwise descriptions
-  assert!( help_content.contains( "PARAMETERS:" ), "Help should contain parameters section" );
+  assert!( help_content.contains( "Arguments:" ), "Help should contain arguments section" );
   assert!( help_content.contains( "input" ), "Help should contain argument names" );
   assert!( help_content.contains( "string" ), "Help should contain type information" );
   assert!( help_content.contains( "Path to the input file" ) || help_content.contains( "Input file path" ), "Help should contain argument descriptions or hints" );
@@ -143,7 +143,7 @@ fn test_help_includes_examples()
 
   // Use runtime registration instead since command_add is deprecated
   let mock_routine = Box::new( |_cmd: VerifiedCommand, _ctx: ExecutionContext| -> Result<OutputData, unilang::data::ErrorData> {
-    Ok(OutputData { content: "test".to_string(), format: "text".to_string() })
+    Ok(OutputData::new("test", "text"))
   });
 
   registry.command_add_runtime( &cmd, mock_routine ).unwrap();
@@ -152,8 +152,8 @@ fn test_help_includes_examples()
   let help_content = help_generator.command( &cmd_name ).expect( "Help should be generated" );
 
   // Verify help content structure (Level 2 Standard format)
-  assert!( help_content.contains( "USAGE:" ), "Help should contain usage section" );
-  assert!( help_content.contains( "EXAMPLES:" ), "Help should contain examples section" );
+  assert!( help_content.contains( "Usage:" ), "Help should contain usage section" );
+  assert!( help_content.contains( "Examples:" ), "Help should contain examples section" );
   assert!( help_content.contains( "A test command" ), "Help should contain description" );
 }
 
@@ -166,7 +166,7 @@ fn test_help_includes_aliases()
 
   // Use runtime registration instead since command_add is deprecated
   let mock_routine = Box::new( |_cmd: VerifiedCommand, _ctx: ExecutionContext| -> Result<OutputData, unilang::data::ErrorData> {
-    Ok(OutputData { content: "test".to_string(), format: "text".to_string() })
+    Ok(OutputData::new("test", "text"))
   });
 
   registry.command_add_runtime( &cmd, mock_routine ).unwrap();
@@ -202,13 +202,13 @@ fn test_global_help_listing()
 
   // Use runtime registration for all commands
   let mock_routine1 = Box::new( |_cmd: VerifiedCommand, _ctx: ExecutionContext| -> Result<OutputData, unilang::data::ErrorData> {
-    Ok(OutputData { content: "test".to_string(), format: "text".to_string() })
+    Ok(OutputData::new("test", "text"))
   });
   let mock_routine2 = Box::new( |_cmd: VerifiedCommand, _ctx: ExecutionContext| -> Result<OutputData, unilang::data::ErrorData> {
-    Ok(OutputData { content: "test".to_string(), format: "text".to_string() })
+    Ok(OutputData::new("test", "text"))
   });
   let mock_routine3 = Box::new( |_cmd: VerifiedCommand, _ctx: ExecutionContext| -> Result<OutputData, unilang::data::ErrorData> {
-    Ok(OutputData { content: "test".to_string(), format: "text".to_string() })
+    Ok(OutputData::new("test", "text"))
   });
 
   registry.command_add_runtime( &cmd1, mock_routine1 ).unwrap();
@@ -267,7 +267,7 @@ fn test_help_content_formatting()
 
   // Use runtime registration instead since command_add is deprecated
   let mock_routine = Box::new( |_cmd: VerifiedCommand, _ctx: ExecutionContext| -> Result<OutputData, unilang::data::ErrorData> {
-    Ok(OutputData { content: "test".to_string(), format: "text".to_string() })
+    Ok(OutputData::new("test", "text"))
   });
 
   registry.command_add_runtime( &cmd, mock_routine ).unwrap();
@@ -300,7 +300,7 @@ fn test_help_performance()
       .end();
 
     let mock_routine = Box::new( |_cmd: VerifiedCommand, _ctx: ExecutionContext| -> Result<OutputData, unilang::data::ErrorData> {
-      Ok(OutputData { content: "test".to_string(), format: "text".to_string() })
+      Ok(OutputData::new("test", "text"))
     });
     registry.command_add_runtime( &cmd, mock_routine ).unwrap();
   }
@@ -348,7 +348,7 @@ fn test_command_help_with_complex_arguments()
   let cmd_name = cmd.name.clone();
   // Use runtime registration instead since command_add is deprecated
   let mock_routine = Box::new( |_cmd: VerifiedCommand, _ctx: ExecutionContext| -> Result<OutputData, unilang::data::ErrorData> {
-    Ok(OutputData { content: "test".to_string(), format: "text".to_string() })
+    Ok(OutputData::new("test", "text"))
   });
 
   registry.command_add_runtime( &cmd, mock_routine ).unwrap();

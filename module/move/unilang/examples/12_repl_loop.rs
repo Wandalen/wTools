@@ -80,6 +80,7 @@ fn register_sample_commands( registry : &mut CommandRegistry ) -> Result< (), un
     {
       content : message,
       format : "text".to_string(),
+      execution_time_ms : None,
     })
   });
 
@@ -153,6 +154,7 @@ fn register_sample_commands( registry : &mut CommandRegistry ) -> Result< (), un
     {
       content : result.to_string(),
       format : "number".to_string(),
+      execution_time_ms : None,
     })
   });
 

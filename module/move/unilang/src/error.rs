@@ -62,7 +62,7 @@ mod private
     fn from( error : crate::types::TypeError ) -> Self
     {
       Error::Execution( crate::data::ErrorData::new(
-        "UNILANG_TYPE_MISMATCH".to_string(),
+        crate::data::ErrorCode::TypeMismatch,
         format!( "Type Error: {}. Please provide a valid value for this type.", error.reason ),
       ))
     }

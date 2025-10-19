@@ -5,4 +5,5 @@
 
 mod help {
   mod generation;
+  mod formatting;
 }

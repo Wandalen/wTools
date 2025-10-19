@@ -84,6 +84,7 @@ fn main() -> Result< (), unilang::error::Error >
       {
         content : sum.to_string(),
         format : "text".to_string(),
+      execution_time_ms : None,
       })
     }
     else
@@ -92,6 +93,7 @@ fn main() -> Result< (), unilang::error::Error >
       {
         content : "0".to_string(),
         format : "text".to_string(),
+      execution_time_ms : None,
       })
     }
   });
@@ -161,6 +163,7 @@ fn main() -> Result< (), unilang::error::Error >
       {
         content : product.to_string(),
         format : "text".to_string(),
+      execution_time_ms : None,
       })
     }
     else
@@ -169,6 +172,7 @@ fn main() -> Result< (), unilang::error::Error >
       {
         content : "1".to_string(),
         format : "text".to_string(),
+      execution_time_ms : None,
       })
     }
   });
@@ -224,6 +228,7 @@ fn main() -> Result< (), unilang::error::Error >
       {
         content : upper_text,
         format : "text".to_string(),
+      execution_time_ms : None,
       })
     }
     else
@@ -232,6 +237,7 @@ fn main() -> Result< (), unilang::error::Error >
       {
         content : String::new(),
         format : "text".to_string(),
+      execution_time_ms : None,
       })
     }
   });
@@ -307,13 +313,15 @@ fn main() -> Result< (), unilang::error::Error >
         {
           content : files.join( "\n" ),
           format : "text".to_string(),
+      execution_time_ms : None,
         })
       },
       Err( e ) =>
       {
+        use unilang::data::ErrorCode;
         let error_msg = format!( "Failed to list directory '{path}': {e}" );
         Err( unilang::data::ErrorData::new(
-          "DIRECTORY_READ_ERROR".to_string(),
+          ErrorCode::InternalError,
           error_msg,
         ))
       }
