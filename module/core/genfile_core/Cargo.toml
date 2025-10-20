@@ -8,8 +8,8 @@ authors = [
 license = "MIT"
 readme = "readme.md"
 documentation = "https://docs.rs/genfile_core"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/core/genfile"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/genfile"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/genfile_core"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/genfile_core"
 description = """
 File generation tools for code generation and template materialization.
 """

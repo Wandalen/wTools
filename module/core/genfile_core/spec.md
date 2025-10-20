@@ -632,7 +632,7 @@ None. genfile is a library with no external service dependencies.
 
 1. **genfile Rust Library Crate**
    - Published to crates.io
-   - Source code in wTools monorepo at `module/core/genfile/`
+   - Source code in wTools monorepo at `module/core/genfile_core/`
    - Semantic versioning starting at 0.1.0
 
 2. **API Documentation**

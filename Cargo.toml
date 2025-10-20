@@ -424,7 +424,7 @@ path = "module/alias/werror"
 
 [workspace.dependencies.genfile_core]
 version = "~0.1.0"
-path = "module/core/genfile"
+path = "module/core/genfile_core"
 default-features = false
 
 
