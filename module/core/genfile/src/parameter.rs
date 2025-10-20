@@ -25,7 +25,8 @@
 ///   .description( "Name of the project" )
 ///   .form();
 /// ```
-#[ derive( Debug, Clone, serde::Serialize, serde::Deserialize ) ]
+#[derive(Debug, Clone)]
+#[cfg_attr(any(feature = "json", feature = "yaml"), derive(serde::Serialize, serde::Deserialize))]
 pub struct ParameterDescriptor
 {
   /// Parameter name
@@ -76,7 +77,8 @@ pub struct ParameterDescriptor
 /// let mandatory = params.list_mandatory();
 /// assert_eq!( mandatory.len(), 1 );
 /// ```
-#[ derive( Debug, Clone, Default, serde::Serialize, serde::Deserialize ) ]
+#[derive(Debug, Clone, Default)]
+#[cfg_attr(any(feature = "json", feature = "yaml"), derive(serde::Serialize, serde::Deserialize))]
 pub struct Parameters
 {
   /// List of parameter descriptors

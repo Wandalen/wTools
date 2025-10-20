@@ -25,24 +25,136 @@ features = [ "full" ]
 all-features = false
 
 [features]
-default = [ "enabled" ]
-full = [ "enabled" ]
-enabled = [
+default = [
+  "archive",
+  "template",
+  "renderer",
+  "filesystem",
+  "serialization",
+  "binary",
+]
+
+full = [
+  "archive",
+  "template",
+  "renderer",
+  "filesystem",
+  "serialization",
+  "json",
+  "yaml",
+  "binary",
+  "external_content",
+  "parameter_discovery",
+]
+
+# High-level archive API with self-contained template archives
+archive = [
+  "renderer",
+  "filesystem",
+  "dep:serde",
   "error_tools/enabled",
   "collection_tools/enabled",
   "mod_interface/enabled",
 ]
 
+# Low-level template API with custom value types and renderers
+template = [
+  "renderer",
+  "filesystem",
+  "dep:serde",
+  "error_tools/enabled",
+  "collection_tools/enabled",
+  "mod_interface/enabled",
+]
+
+# Template rendering support (Handlebars)
+renderer = [
+  "dep:handlebars",
+  "dep:serde_json",
+  "error_tools/enabled",
+  "collection_tools/enabled",
+  "mod_interface/enabled",
+]
+
+# Filesystem abstractions (Real + Memory)
+filesystem = [
+  "error_tools/enabled",
+  "collection_tools/enabled",
+  "mod_interface/enabled",
+]
+
+# JSON and YAML serialization support
+serialization = [ "json", "yaml" ]
+
+# JSON serialization only
+json = [
+  "archive",
+  "dep:serde",
+  "dep:serde_json",
+]
+
+# YAML serialization only
+yaml = [
+  "archive",
+  "dep:serde",
+  "dep:serde_yaml",
+]
+
+# Binary file support with base64 encoding
+binary = [
+  "archive",
+  "dep:base64",
+]
+
+# External content sources (FileRef, UrlRef)
+external_content = [
+  "archive",
+]
+
+# Parameter discovery from template content
+parameter_discovery = [
+  "dep:regex",
+]
+
 [dependencies]
-handlebars = "4.5.0"
-serde = { version = "1.0", features = [ "derive" ] }
-serde_json = "1.0"
-serde_yaml = "0.9"
-base64 = "0.22"
-regex = "1.11"
+handlebars = { version = "4.5.0", optional = true }
+serde = { version = "1.0", features = [ "derive" ], optional = true }
+serde_json = { version = "1.0", optional = true }
+serde_yaml = { version = "0.9", optional = true }
+base64 = { version = "0.22", optional = true }
+regex = { version = "1.11", optional = true }
 error_tools = { workspace = true, features = [ "error_typed" ] }
 collection_tools = { workspace = true }
 mod_interface = { workspace = true }
 
 [dev-dependencies]
-memory-stats = "1.2"
+
+# Example feature requirements
+
+[[example]]
+name = "basic_template"
+required-features = [ "archive" ]
+
+[[example]]
+name = "archive_with_parameters"
+required-features = [ "archive", "parameter_discovery" ]
+
+[[example]]
+name = "low_level_template"
+required-features = [ "template" ]
+
+[[example]]
+name = "serialization"
+required-features = [ "json", "yaml" ]
+
+[[example]]
+name = "binary_files"
+required-features = [ "binary", "json" ]
+
+[[example]]
+name = "external_content"
+required-features = [ "external_content" ]
+
+[[example]]
+name = "custom_storage"
+required-features = [ "external_content" ]

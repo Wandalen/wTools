@@ -26,7 +26,7 @@ use crate ::TemplateValue;
 /// assert!( serialized.contains_key( "version" ) );
 /// ```
 #[ derive( Debug, Clone ) ]
-#[ cfg_attr( feature = "enabled", derive( serde::Serialize, serde::Deserialize ) )]
+#[ cfg_attr( any( feature = "json", feature = "yaml" ), derive( serde::Serialize, serde::Deserialize ) )]
 pub struct Values< V = crate ::Value >
 where
   V: TemplateValue

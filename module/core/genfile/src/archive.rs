@@ -1,7 +1,7 @@
 /// Template archive system for packaging and materializing file templates
 use std::collections::{ HashMap, HashSet };
 use std::path::{ Path, PathBuf };
-use serde::{ Serialize, Deserialize };
+
 use crate::
 {
   ParameterDescriptor,
@@ -60,38 +60,39 @@ use crate::
 ///     }
 /// );
 ///
-/// // Discover all template variables automatically
-/// let discovered = archive.discover_parameters();
-/// println!("Found variables: {:?}", discovered);
+/// // List defined parameters
+/// let parameters = archive.list_parameters();
+/// println!("Defined parameters: {:?}", parameters);
 /// ```
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
+#[cfg_attr(any(feature = "json", feature = "yaml"), derive(serde::Serialize, serde::Deserialize))]
 pub struct TemplateArchive
 {
   /// Archive name/identifier
   pub name: String,
 
   /// Archive version
-  #[serde(default = "default_version")]
+  #[cfg_attr(any(feature = "json", feature = "yaml"), serde(default = "default_version"))]
   pub version: String,
 
   /// Optional description
-  #[serde(skip_serializing_if = "Option::is_none")]
+  #[cfg_attr(any(feature = "json", feature = "yaml"), serde(skip_serializing_if = "Option::is_none"))]
   pub description: Option< String >,
 
   /// All files in the archive with their content
-  #[serde(default)]
+  #[cfg_attr(any(feature = "json", feature = "yaml"), serde(default))]
   pub files: Vec< TemplateFile >,
 
   /// Parameter definitions
-  #[serde(default)]
+  #[cfg_attr(any(feature = "json", feature = "yaml"), serde(default))]
   pub parameters: Parameters,
 
   /// Current parameter values (can be set before materialization)
-  #[serde(skip_serializing_if = "Option::is_none")]
+  #[cfg_attr(any(feature = "json", feature = "yaml"), serde(skip_serializing_if = "Option::is_none"))]
   pub values: Option< Values< Value > >,
 
   /// Archive metadata
-  #[serde(skip_serializing_if = "Option::is_none")]
+  #[cfg_attr(any(feature = "json", feature = "yaml"), serde(skip_serializing_if = "Option::is_none"))]
   pub metadata: Option< ArchiveMetadata >,
 }
 
@@ -101,32 +102,34 @@ fn default_version() -> String
 }
 
 /// Metadata about the archive
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
+#[cfg_attr(any(feature = "json", feature = "yaml"), derive(serde::Serialize, serde::Deserialize))]
 pub struct ArchiveMetadata
 {
   /// Author of the template
-  #[serde(skip_serializing_if = "Option::is_none")]
+  #[cfg_attr(any(feature = "json", feature = "yaml"), serde(skip_serializing_if = "Option::is_none"))]
   pub author: Option< String >,
 
   /// License
-  #[serde(skip_serializing_if = "Option::is_none")]
+  #[cfg_attr(any(feature = "json", feature = "yaml"), serde(skip_serializing_if = "Option::is_none"))]
   pub license: Option< String >,
 
   /// Tags for categorization
-  #[serde(default, skip_serializing_if = "Vec::is_empty")]
+  #[cfg_attr(any(feature = "json", feature = "yaml"), serde(default, skip_serializing_if = "Vec::is_empty"))]
   pub tags: Vec< String >,
 
   /// Creation timestamp
-  #[serde(skip_serializing_if = "Option::is_none")]
+  #[cfg_attr(any(feature = "json", feature = "yaml"), serde(skip_serializing_if = "Option::is_none"))]
   pub created_at: Option< String >,
 
   /// Last modified timestamp
-  #[serde(skip_serializing_if = "Option::is_none")]
+  #[cfg_attr(any(feature = "json", feature = "yaml"), serde(skip_serializing_if = "Option::is_none"))]
   pub modified_at: Option< String >,
 }
 
 /// Single file in the archive
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
+#[cfg_attr(any(feature = "json", feature = "yaml"), derive(serde::Serialize, serde::Deserialize))]
 pub struct TemplateFile
 {
   /// Relative path within the archive (e.g., "src/lib.rs")
@@ -139,18 +142,20 @@ pub struct TemplateFile
   pub write_mode: WriteMode,
 
   /// Optional file-specific metadata
-  #[serde(skip_serializing_if = "Option::is_none")]
+  #[cfg_attr(any(feature = "json", feature = "yaml"), serde(skip_serializing_if = "Option::is_none"))]
   pub metadata: Option< FileMetadata >,
 
   /// Optional external content source
   /// If present, this takes precedence over inline content field
-  #[serde(skip_serializing_if = "Option::is_none")]
+  #[cfg_attr(any(feature = "json", feature = "yaml"), serde(skip_serializing_if = "Option::is_none"))]
+  #[cfg(feature = "external_content")]
   pub content_source: Option< crate::ContentSource >,
 }
 
 /// File content representation
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = "type", content = "data")]
+#[derive(Debug, Clone)]
+#[cfg_attr(any(feature = "json", feature = "yaml"), derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(any(feature = "json", feature = "yaml"), serde(tag = "type", content = "data"))]
 pub enum FileContent
 {
   /// Text content (templates, source code, configs)
@@ -159,11 +164,12 @@ pub enum FileContent
 
   /// Binary content (images, executables, archives)
   /// Serialized as base64-encoded string in JSON/YAML
-  #[serde(with = "base64_encoding")]
+  #[ cfg_attr( all( any( feature = "json", feature = "yaml" ), feature = "binary" ), serde( with = "base64_encoding" ) ) ]
   Binary( Vec< u8 > ),
 }
 
 /// Base64 encoding for binary data in JSON/YAML
+#[ cfg( all( any( feature = "json", feature = "yaml" ), feature = "binary" ) ) ]
 mod base64_encoding
 {
   use serde::{ Deserialize, Deserializer, Serializer };
@@ -190,19 +196,20 @@ mod base64_encoding
 }
 
 /// Optional metadata for individual files
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
+#[cfg_attr(any(feature = "json", feature = "yaml"), derive(serde::Serialize, serde::Deserialize))]
 pub struct FileMetadata
 {
   /// Unix permissions (e.g., 0o755 for executables)
-  #[serde(skip_serializing_if = "Option::is_none")]
+  #[cfg_attr(any(feature = "json", feature = "yaml"), serde(skip_serializing_if = "Option::is_none"))]
   pub permissions: Option< u32 >,
 
   /// Whether this is a template (contains {{variables}})
-  #[serde(default)]
+  #[cfg_attr(any(feature = "json", feature = "yaml"), serde(default))]
   pub is_template: bool,
 
   /// File-specific comments
-  #[serde(skip_serializing_if = "Option::is_none")]
+  #[cfg_attr(any(feature = "json", feature = "yaml"), serde(skip_serializing_if = "Option::is_none"))]
   pub comment: Option< String >,
 }
 
@@ -307,6 +314,7 @@ impl TemplateArchive
       content,
       write_mode,
       metadata: None,
+      #[cfg(feature = "external_content")]
       content_source: None,
     });
     self
@@ -398,6 +406,7 @@ impl TemplateArchive
   ///     WriteMode::Rewrite
   /// );
   /// ```
+  #[cfg(feature = "external_content")]
   pub fn add_file_from< S >(
     &mut self,
     path: PathBuf,
@@ -583,6 +592,7 @@ impl TemplateArchive
   /// assert!(discovered.contains("port"));
   /// assert_eq!(discovered.len(), 2);
   /// ```
+  #[cfg(feature = "parameter_discovery")]
   pub fn discover_parameters( &self ) -> HashSet< String >
   {
     let mut params = HashSet::new();
@@ -606,6 +616,7 @@ impl TemplateArchive
   }
 
   /// Find parameters used in templates but not defined
+  #[cfg(feature = "parameter_discovery")]
   pub fn get_undefined_parameters( &self ) -> Vec< String >
   {
     let discovered = self.discover_parameters();
@@ -618,6 +629,7 @@ impl TemplateArchive
   }
 
   /// Find defined parameters not used in any template
+  #[cfg(feature = "parameter_discovery")]
   pub fn get_unused_parameters( &self ) -> Vec< String >
   {
     let discovered = self.discover_parameters();
@@ -631,6 +643,7 @@ impl TemplateArchive
   }
 
   /// Analyze parameter usage across files
+  #[cfg(feature = "parameter_discovery")]
   pub fn analyze_parameter_usage( &self ) -> HashMap< String, Vec< PathBuf > >
   {
     let mut usage: HashMap< String, Vec< PathBuf > > = HashMap::new();
@@ -789,6 +802,7 @@ impl TemplateArchive
   /// let json = archive.to_json().unwrap();
   /// assert!(json.contains("\"name\":\"test\""));
   /// ```
+  #[cfg(feature = "json")]
   pub fn to_json( &self ) -> Result< String, Error >
   {
     serde_json::to_string( self )
@@ -796,6 +810,7 @@ impl TemplateArchive
   }
 
   /// Serialize to pretty-printed JSON
+  #[cfg(feature = "json")]
   pub fn to_json_pretty( &self ) -> Result< String, Error >
   {
     serde_json::to_string_pretty( self )
@@ -813,6 +828,7 @@ impl TemplateArchive
   /// let archive = TemplateArchive::from_json(json).unwrap();
   /// assert_eq!(archive.name, "test");
   /// ```
+  #[cfg(feature = "json")]
   pub fn from_json( json: &str ) -> Result< Self, Error >
   {
     serde_json::from_str( json )
@@ -820,6 +836,7 @@ impl TemplateArchive
   }
 
   /// Serialize to YAML string
+  #[cfg(feature = "yaml")]
   pub fn to_yaml( &self ) -> Result< String, Error >
   {
     serde_yaml::to_string( self )
@@ -827,6 +844,7 @@ impl TemplateArchive
   }
 
   /// Deserialize from YAML string
+  #[cfg(feature = "yaml")]
   pub fn from_yaml( yaml: &str ) -> Result< Self, Error >
   {
     serde_yaml::from_str( yaml )
@@ -943,6 +961,7 @@ impl TemplateArchive
   ///     &resolver
   /// ).unwrap();
   /// ```
+  #[cfg(feature = "external_content")]
   pub fn materialize_with_resolver<R, FS, CR>(
     &self,
     base_path: &Path,
@@ -1049,6 +1068,7 @@ impl TemplateArchive
   ///     &resolver
   /// ).unwrap();
   /// ```
+  #[cfg(feature = "external_content")]
   pub fn materialize_with_storage<R, CS, CR>(
     &self,
     base_path: &Path,
@@ -1222,6 +1242,7 @@ impl TemplateArchive
   ///
   /// // Now all content is inline
   /// ```
+  #[cfg(feature = "external_content")]
   pub fn internalize< CR >( &mut self, resolver: &CR ) -> Result< (), Error >
   where
     CR: crate::ContentResolver,
@@ -1271,6 +1292,7 @@ impl TemplateArchive
   ///
   /// // Now content is stored in /archive-content/ and referenced
   /// ```
+  #[cfg(feature = "external_content")]
   pub fn externalize( &mut self, base_path: &Path ) -> Result< (), Error >
   {
     // Create base directory
@@ -1323,6 +1345,7 @@ impl TemplateArchive
   /// let archive = TemplateArchive::new( "test" );
   /// archive.save_to_file( Path::new( "archive.json" ) ).unwrap();
   /// ```
+  #[cfg(feature = "json")]
   pub fn save_to_file( &self, path: &Path ) -> Result< (), Error >
   {
     let json = self.to_json_pretty()?;
@@ -1348,6 +1371,7 @@ impl TemplateArchive
   ///
   /// let archive = TemplateArchive::load_from_file( Path::new( "archive.json" ) ).unwrap();
   /// ```
+  #[cfg(feature = "json")]
   pub fn load_from_file( path: &Path ) -> Result< Self, Error >
   {
     let json = std::fs::read_to_string( path )?;

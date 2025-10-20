@@ -17,7 +17,6 @@ mod private
   WriteMode,
   Value,
   ParameterDescriptor,
-  Parameters,
  };
 
   /// Template for creating workspace files.
@@ -33,12 +32,13 @@ mod private
   #[ must_use ]
   pub fn get_parameters( &self ) -> Vec< String >
   {
-   self.archive.parameters().descriptors().iter().map( | d | d.name().to_string() ).collect()
+   self.archive.parameters.descriptors.iter().map( | d | d.parameter.clone() ).collect()
  }
  }
 
   impl Default for WorkspaceTemplate
   {
+  #[ allow( clippy ::too_many_lines ) ]
   fn default() -> Self
   {
    let mut archive = TemplateArchive ::new( "workspace" );
@@ -46,18 +46,33 @@ mod private
    // Define parameters
    archive.add_parameter
    (
-  ParameterDescriptor ::new( "project_name" )
-  .with_mandatory( true )
+  ParameterDescriptor
+  {
+   parameter: "project_name".into(),
+   is_mandatory: true,
+   default_value: None,
+   description: None,
+ }
  );
    archive.add_parameter
    (
-  ParameterDescriptor ::new( "url" )
-  .with_mandatory( true )
+  ParameterDescriptor
+  {
+   parameter: "url".into(),
+   is_mandatory: true,
+   default_value: None,
+   description: None,
+ }
  );
    archive.add_parameter
    (
-  ParameterDescriptor ::new( "branches" )
-  .with_mandatory( true )
+  ParameterDescriptor
+  {
+   parameter: "branches".into(),
+   is_mandatory: true,
+   default_value: None,
+   description: None,
+ }
  );
 
    // Add template files

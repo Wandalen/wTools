@@ -30,7 +30,7 @@ mod private
   ///
   /// Used for properly initializing a template
   #[ must_use ]
-  #[ allow( clippy ::should_implement_trait ) ]
+  #[ allow( clippy ::should_implement_trait, clippy ::too_many_lines ) ]
   pub fn default() -> TemplateArchive
   {
    let mut archive = TemplateArchive ::new( "deploy" );
@@ -38,12 +38,44 @@ mod private
    // Define parameters
    archive.add_parameter
    (
-  ParameterDescriptor ::new( "gcp_project_id" )
-  .with_mandatory( true )
+  ParameterDescriptor
+  {
+   parameter: "gcp_project_id".into(),
+   is_mandatory: true,
+   default_value: None,
+   description: None,
+ }
  );
-   archive.add_parameter( ParameterDescriptor ::new( "gcp_region" ) );
-   archive.add_parameter( ParameterDescriptor ::new( "gcp_artifact_repo_name" ) );
-   archive.add_parameter( ParameterDescriptor ::new( "docker_image_name" ) );
+   archive.add_parameter
+   (
+  ParameterDescriptor
+  {
+   parameter: "gcp_region".into(),
+   is_mandatory: false,
+   default_value: None,
+   description: None,
+ }
+ );
+   archive.add_parameter
+   (
+  ParameterDescriptor
+  {
+   parameter: "gcp_artifact_repo_name".into(),
+   is_mandatory: false,
+   default_value: None,
+   description: None,
+ }
+ );
+   archive.add_parameter
+   (
+  ParameterDescriptor
+  {
+   parameter: "docker_image_name".into(),
+   is_mandatory: false,
+   default_value: None,
+   description: None,
+ }
+ );
 
    add_deploy_template_files( &mut archive );
 
@@ -51,46 +83,155 @@ mod private
  }
  }
 
-  fn get_deploy_template_files() -> Vec< TemplateFileDescriptor >
+  #[ allow( clippy ::too_many_lines ) ]
+  fn add_deploy_template_files( archive: &mut TemplateArchive )
   {
-  let formed = TemplateFilesBuilder ::former()
   // root
-  .file().data( include_str!( "../../template/deploy/.deploy_template.toml.hbs" ) ).path( "./.deploy_template.toml" )
-  .mode( WriteMode ::TomlExtend )
-  .is_template( true )
-  .end()
-  .file().data( include_str!( "../../template/deploy/Makefile.hbs" ) ).path( "./Makefile" ).is_template( true ).end()
+  archive.add_text_file
+  (
+   PathBuf ::from( "./.deploy_template.toml" ),
+   include_str!( "../../template/deploy/.deploy_template.toml.hbs" ),
+   WriteMode ::TomlExtend
+ );
+  archive.add_text_file
+  (
+   PathBuf ::from( "./Makefile" ),
+   include_str!( "../../template/deploy/Makefile.hbs" ),
+   WriteMode ::Rewrite
+ );
   // /key
-  .file().data( include_str!( "../../template/deploy/key/pack.sh" ) ).path( "./key/pack.sh" ).end()
-  .file().data( include_str!( "../../template/deploy/key/readme.md" ) ).path( "./key/readme.md" ).end()
+  archive.add_text_file
+  (
+   PathBuf ::from( "./key/pack.sh" ),
+   include_str!( "../../template/deploy/key/pack.sh" ),
+   WriteMode ::Rewrite
+ );
+  archive.add_text_file
+  (
+   PathBuf ::from( "./key/readme.md" ),
+   include_str!( "../../template/deploy/key/readme.md" ),
+   WriteMode ::Rewrite
+ );
   // /deploy/
-  .file().data( include_str!( "../../template/deploy/deploy/redeploy.sh" ) ).path( "./deploy/redeploy.sh" ).end()
-  .file().data( include_str!( "../../template/deploy/deploy/cloud-init.tpl.hbs" ) ).path( "./deploy/cloud-init.tpl" ).is_template( true ).end()
-  .file().data( include_str!( "../../template/deploy/deploy/Dockerfile" ) ).path( "./deploy/Dockerfile" ).end()
-  .file().data( include_str!( "../../template/deploy/deploy/readme.md" ) ).path( "./deploy/readme.md" ).end()
+  archive.add_text_file
+  (
+   PathBuf ::from( "./deploy/redeploy.sh" ),
+   include_str!( "../../template/deploy/deploy/redeploy.sh" ),
+   WriteMode ::Rewrite
+ );
+  archive.add_text_file
+  (
+   PathBuf ::from( "./deploy/cloud-init.tpl" ),
+   include_str!( "../../template/deploy/deploy/cloud-init.tpl.hbs" ),
+   WriteMode ::Rewrite
+ );
+  archive.add_text_file
+  (
+   PathBuf ::from( "./deploy/Dockerfile" ),
+   include_str!( "../../template/deploy/deploy/Dockerfile" ),
+   WriteMode ::Rewrite
+ );
+  archive.add_text_file
+  (
+   PathBuf ::from( "./deploy/readme.md" ),
+   include_str!( "../../template/deploy/deploy/readme.md" ),
+   WriteMode ::Rewrite
+ );
   // /deploy/gar
-  .file().data( include_str!( "../../template/deploy/deploy/gar/readme.md" ) ).path( "./deploy/gar/readme.md" ).end()
-  .file().data( include_str!( "../../template/deploy/deploy/gar/main.tf.hbs" ) ).path( "./deploy/gar/main.tf" ).is_template( true ).end()
-  .file().data( include_str!( "../../template/deploy/deploy/gar/outputs.tf" ) ).path( "./deploy/gar/outputs.tf" ).end()
-  .file().data( include_str!( "../../template/deploy/deploy/gar/variables.tf" ) ).path( "./deploy/gar/variables.tf" ).end()
+  archive.add_text_file
+  (
+   PathBuf ::from( "./deploy/gar/readme.md" ),
+   include_str!( "../../template/deploy/deploy/gar/readme.md" ),
+   WriteMode ::Rewrite
+ );
+  archive.add_text_file
+  (
+   PathBuf ::from( "./deploy/gar/main.tf" ),
+   include_str!( "../../template/deploy/deploy/gar/main.tf.hbs" ),
+   WriteMode ::Rewrite
+ );
+  archive.add_text_file
+  (
+   PathBuf ::from( "./deploy/gar/outputs.tf" ),
+   include_str!( "../../template/deploy/deploy/gar/outputs.tf" ),
+   WriteMode ::Rewrite
+ );
+  archive.add_text_file
+  (
+   PathBuf ::from( "./deploy/gar/variables.tf" ),
+   include_str!( "../../template/deploy/deploy/gar/variables.tf" ),
+   WriteMode ::Rewrite
+ );
   // /deploy/gce
-  .file().data( include_str!( "../../template/deploy/deploy/gce/readme.md" ) ).path( "./deploy/gce/readme.md" ).end()
-  .file().data( include_str!( "../../template/deploy/deploy/gce/main.tf.hbs" ) ).path( "./deploy/gce/main.tf" ).is_template( true ).end()
-  .file().data( include_str!( "../../template/deploy/deploy/gce/outputs.tf.hbs" ) ).path( "./deploy/gce/outputs.tf" ).is_template( true ).end()
-  .file().data( include_str!( "../../template/deploy/deploy/gce/variables.tf" ) ).path( "./deploy/gce/variables.tf" ).end()
+  archive.add_text_file
+  (
+   PathBuf ::from( "./deploy/gce/readme.md" ),
+   include_str!( "../../template/deploy/deploy/gce/readme.md" ),
+   WriteMode ::Rewrite
+ );
+  archive.add_text_file
+  (
+   PathBuf ::from( "./deploy/gce/main.tf" ),
+   include_str!( "../../template/deploy/deploy/gce/main.tf.hbs" ),
+   WriteMode ::Rewrite
+ );
+  archive.add_text_file
+  (
+   PathBuf ::from( "./deploy/gce/outputs.tf" ),
+   include_str!( "../../template/deploy/deploy/gce/outputs.tf.hbs" ),
+   WriteMode ::Rewrite
+ );
+  archive.add_text_file
+  (
+   PathBuf ::from( "./deploy/gce/variables.tf" ),
+   include_str!( "../../template/deploy/deploy/gce/variables.tf" ),
+   WriteMode ::Rewrite
+ );
   // /deploy/gcs
-  .file().data( include_str!( "../../template/deploy/deploy/gcs/main.tf" ) ).path( "./deploy/gcs/main.tf" ).end()
+  archive.add_text_file
+  (
+   PathBuf ::from( "./deploy/gcs/main.tf" ),
+   include_str!( "../../template/deploy/deploy/gcs/main.tf" ),
+   WriteMode ::Rewrite
+ );
   // /deploy/hetzner
-  .file().data( include_str!( "../../template/deploy/deploy/hetzner/main.tf.hbs" ) ).path( "./deploy/hetzner/main.tf" ).is_template( true ).end()
-  .file().data( include_str!( "../../template/deploy/deploy/hetzner/outputs.tf.hbs" ) ).path( "./deploy/hetzner/outputs.tf" ).is_template( true ).end()
-  .file().data( include_str!( "../../template/deploy/deploy/hetzner/variables.tf" ) ).path( "./deploy/hetzner/variables.tf" ).end()
+  archive.add_text_file
+  (
+   PathBuf ::from( "./deploy/hetzner/main.tf" ),
+   include_str!( "../../template/deploy/deploy/hetzner/main.tf.hbs" ),
+   WriteMode ::Rewrite
+ );
+  archive.add_text_file
+  (
+   PathBuf ::from( "./deploy/hetzner/outputs.tf" ),
+   include_str!( "../../template/deploy/deploy/hetzner/outputs.tf.hbs" ),
+   WriteMode ::Rewrite
+ );
+  archive.add_text_file
+  (
+   PathBuf ::from( "./deploy/hetzner/variables.tf" ),
+   include_str!( "../../template/deploy/deploy/hetzner/variables.tf" ),
+   WriteMode ::Rewrite
+ );
   // /deploy/aws
-  .file().data( include_str!( "../../template/deploy/deploy/aws/main.tf" ) ).path( "./deploy/aws/main.tf" ).end()
-  .file().data( include_str!( "../../template/deploy/deploy/aws/outputs.tf" ) ).path( "./deploy/aws/outputs.tf" ).end()
-  .file().data( include_str!( "../../template/deploy/deploy/aws/variables.tf" ) ).path( "./deploy/aws/variables.tf" ).end()
-  .form();
-
-  formed.files
+  archive.add_text_file
+  (
+   PathBuf ::from( "./deploy/aws/main.tf" ),
+   include_str!( "../../template/deploy/deploy/aws/main.tf" ),
+   WriteMode ::Rewrite
+ );
+  archive.add_text_file
+  (
+   PathBuf ::from( "./deploy/aws/outputs.tf" ),
+   include_str!( "../../template/deploy/deploy/aws/outputs.tf" ),
+   WriteMode ::Rewrite
+ );
+  archive.add_text_file
+  (
+   PathBuf ::from( "./deploy/aws/variables.tf" ),
+   include_str!( "../../template/deploy/deploy/aws/variables.tf" ),
+   WriteMode ::Rewrite
+ );
  }
 
   fn dir_name_to_formatted( dir_name: &str, separator: &str ) -> String
@@ -100,18 +241,53 @@ mod private
   .to_lowercase()
  }
 
+  /// Load existing parameters from TOML file into template archive.
+  ///
+  /// Looks for a `.deploy_template.toml` file in the specified path
+  /// and loads parameter values from the `[deploy]` section.
+  fn load_existing_params( archive: &mut TemplateArchive, path: &Path ) -> Option< () >
+  {
+  let param_file = path.join( ".deploy_template.toml" );
+  let data = fs ::read_to_string( param_file ).ok()?;
+  let document = data.parse :: < toml_edit ::Document >().ok()?;
+  let template_table = document.get( "deploy" )?;
+
+  // Clone parameter names to avoid borrow checker issues
+  let param_names: Vec< String > = archive.parameters.descriptors
+  .iter()
+  .map( | d | d.parameter.clone() )
+  .collect();
+
+  for param in param_names
+  {
+   if let Some( value ) = template_table.get( &param )
+   {
+  if let Some( str_value ) = value.as_str()
+  {
+   // Only set if not already set
+   if archive.get_value( &param ).is_none()
+   {
+  archive.set_value( &param, Value ::String( str_value.to_string() ) );
+ }
+ }
+ }
+ }
+
+  Some( () )
+ }
+
   /// Creates deploy template
   /// # Errors
   /// qqq: doc
   pub fn deploy_renew
   (
   path: &Path,
-  mut template: TemplateHolder
+  mut template: TemplateArchive
  )
   -> error ::untyped ::Result< () >
   // qqq: typed error
   {
-  if template.load_existing_params( path ).is_none()
+  if load_existing_params( &mut template, path ).is_none()
   {
    let current_dir = std ::env ::current_dir()?;
    // qqq: for Petro: use file_name
@@ -124,17 +300,25 @@ mod private
    let current_dir = current_dir.as_os_str().to_string_lossy();
    let artifact_repo_name = dir_name_to_formatted( &current_dir, "-" );
    let docker_image_name = dir_name_to_formatted( &current_dir, "_" );
-   template
-   .values
-   .insert_if_empty( "gcp_artifact_repo_name", wca ::Value ::String( artifact_repo_name ) );
-   template
-   .values
-   .insert_if_empty( "docker_image_name", wca ::Value ::String( docker_image_name ) );
-   template
-   .values
-   .insert_if_empty( "gcp_region", wca ::Value ::String( "europe-central2".into() ) );
+
+   // Set defaults only if not already set
+   if template.get_value( "gcp_artifact_repo_name" ).is_none()
+   {
+  template.set_value( "gcp_artifact_repo_name", Value ::String( artifact_repo_name ) );
  }
-  template.files.create_all( path, &template.values )?;
+   if template.get_value( "docker_image_name" ).is_none()
+   {
+  template.set_value( "docker_image_name", Value ::String( docker_image_name ) );
+ }
+   if template.get_value( "gcp_region" ).is_none()
+   {
+  template.set_value( "gcp_region", Value ::String( "europe-central2".into() ) );
+ }
+ }
+
+  // Materialize the template
+  template.materialize( path ).map_err( | e | error ::untyped ::format_err!( "{}", e ) )?;
+
   Ok( () )
  }
 

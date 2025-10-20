@@ -79,7 +79,7 @@
 /// Implement [`TemplateValue`] for custom value types.
 ///
 /// See also: [`value::Value`] for the default enum-based implementation.
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( any( feature = "archive", feature = "template" ) ) ]
 pub mod value;
 
 /// Parameter descriptors and collections.
@@ -88,7 +88,7 @@ pub mod value;
 /// default values, and descriptions.
 ///
 /// See also: [`ParameterDescriptor`] for individual parameters, [`Parameters`] for collections.
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( any( feature = "archive", feature = "template" ) ) ]
 pub mod parameter;
 
 /// Runtime value storage for template substitution.
@@ -97,14 +97,14 @@ pub mod parameter;
 ///materialization. Supports type-preserving serialization for template engines.
 ///
 /// See also: [`value`] for value types, [`parameter`] for parameter definitions.
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( any( feature = "archive", feature = "template" ) ) ]
 pub mod values;
 
 /// Error types for genfile operations.
 ///
 /// Defines [`Error`] enum with variants for different failure modes:
 /// rendering errors, missing parameters, filesystem errors, and invalid templates.
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( any( feature = "archive", feature = "template", feature = "renderer", feature = "filesystem" ) ) ]
 pub mod error;
 
 /// Security validation functions for path traversal prevention.
@@ -113,7 +113,7 @@ pub mod error;
 /// preventing directory traversal attacks.
 ///
 /// See also: [`archive::TemplateArchive::materialize_with_components`] which uses this validation.
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( any( feature = "archive", feature = "template" ) ) ]
 pub mod security;
 
 /// Template rendering engines and the [`TemplateRenderer`] trait.
@@ -122,7 +122,7 @@ pub mod security;
 /// Includes [`HandlebarsRenderer`] as the default implementation.
 ///
 /// See also: [`Template`] which accepts custom renderers.
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "renderer" ) ]
 pub mod renderer;
 
 /// File descriptors and write modes for template materialization.
@@ -131,7 +131,7 @@ pub mod renderer;
 /// and [`WriteMode`] controlling how generated content is written.
 ///
 /// See also: [`template::Template::add_file`] for usage.
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( any( feature = "archive", feature = "template" ) ) ]
 pub mod file_descriptor;
 
 /// File system abstractions for testability.
@@ -140,7 +140,7 @@ pub mod file_descriptor;
 /// ([`RealFileSystem`]) and in-memory testing ([`MemoryFileSystem`]).
 ///
 /// See also: [`Template`] for usage with custom filesystems.
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "filesystem" ) ]
 pub mod filesystem;
 
 /// Low-level template processor with custom value types and renderers.
@@ -149,7 +149,7 @@ pub mod filesystem;
 /// value types, rendering engines, and file systems.
 ///
 /// See also: [`TemplateArchive`] for higher-level self-contained archives.
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "template" ) ]
 pub mod template;
 
 /// Self-contained template archives with serialization support.
@@ -159,7 +159,7 @@ pub mod template;
 /// supporting JSON/YAML serialization and external content references.
 ///
 /// See also: [`Template`] for lower-level custom implementations.
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "archive" ) ]
 pub mod archive;
 
 /// Content source abstractions for external data references.
@@ -169,37 +169,37 @@ pub mod archive;
 /// flexible content management.
 ///
 /// See also: [`archive::TemplateArchive::internalize`] and [`archive::TemplateArchive::externalize`].
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "external_content" ) ]
 pub mod content_source;
 
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( any( feature = "archive", feature = "template" ) ) ]
 pub use value :: { TemplateValue, Value };
 
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( any( feature = "archive", feature = "template" ) ) ]
 pub use parameter :: { ParameterDescriptor, Parameters };
 
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( any( feature = "archive", feature = "template" ) ) ]
 pub use values ::Values;
 
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( any( feature = "archive", feature = "template", feature = "renderer", feature = "filesystem" ) ) ]
 pub use error ::Error;
 
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( any( feature = "archive", feature = "template" ) ) ]
 pub use security ::validate_path;
 
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "renderer" ) ]
 pub use renderer :: { TemplateRenderer, HandlebarsRenderer };
 
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( any( feature = "archive", feature = "template" ) ) ]
 pub use file_descriptor :: { FileDescriptor, WriteMode };
 
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "filesystem" ) ]
 pub use filesystem :: { FileSystem, MemoryFileSystem, RealFileSystem };
 
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "template" ) ]
 pub use template ::Template;
 
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "archive" ) ]
 pub use archive ::
 {
   TemplateArchive,
@@ -210,7 +210,7 @@ pub use archive ::
   MaterializationReport,
 };
 
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "external_content" ) ]
 pub use content_source ::
 {
   ContentSource,
@@ -225,40 +225,27 @@ pub use content_source ::
 };
 
 /// Prelude for convenient imports.
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( any( feature = "archive", feature = "template", feature = "renderer", feature = "filesystem" ) ) ]
 pub mod prelude
 {
-  pub use super ::
-  {
-    TemplateValue,
-    Value,
-    ParameterDescriptor,
-    Parameters,
-    Values,
-    Error,
-    validate_path,
-    TemplateRenderer,
-    HandlebarsRenderer,
-    FileDescriptor,
-    WriteMode,
-    FileSystem,
-    MemoryFileSystem,
-    RealFileSystem,
-    Template,
-    TemplateArchive,
-    TemplateFile,
-    FileContent,
-    FileMetadata,
-    ArchiveMetadata,
-    MaterializationReport,
-    ContentSource,
-    IntoContentSource,
-    FileRef,
-    UrlRef,
-    InlineContent,
-    ContentResolver,
-    ContentStorage,
-    DefaultContentResolver,
-    DefaultContentStorage,
-  };
+  #[ cfg( any( feature = "archive", feature = "template" ) ) ]
+  pub use super ::{ TemplateValue, Value, ParameterDescriptor, Parameters, Values, validate_path, FileDescriptor, WriteMode };
+
+  #[ cfg( any( feature = "archive", feature = "template", feature = "renderer", feature = "filesystem" ) ) ]
+  pub use super ::Error;
+
+  #[ cfg( feature = "renderer" ) ]
+  pub use super ::{ TemplateRenderer, HandlebarsRenderer };
+
+  #[ cfg( feature = "filesystem" ) ]
+  pub use super ::{ FileSystem, MemoryFileSystem, RealFileSystem };
+
+  #[ cfg( feature = "template" ) ]
+  pub use super ::Template;
+
+  #[ cfg( feature = "archive" ) ]
+  pub use super ::{ TemplateArchive, TemplateFile, FileContent, FileMetadata, ArchiveMetadata, MaterializationReport };
+
+  #[ cfg( feature = "external_content" ) ]
+  pub use super ::{ ContentSource, IntoContentSource, FileRef, UrlRef, InlineContent, ContentResolver, ContentStorage, DefaultContentResolver, DefaultContentStorage };
 }

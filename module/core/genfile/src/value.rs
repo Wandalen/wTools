@@ -76,8 +76,9 @@ pub trait TemplateValue: Clone + Send + Sync
 /// let items = Value::List( vec![ "a".into(), "b".into() ] );
 /// assert_eq!( items.to_template_string(), "a, b" );
 /// ```
-#[ derive( Debug, Clone, PartialEq, serde::Deserialize ) ]
-#[ serde( untagged ) ]
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(any(feature = "archive", feature = "template"), derive(serde::Deserialize))]
+#[cfg_attr(any(feature = "archive", feature = "template"), serde(untagged))]
 pub enum Value
 {
   /// Boolean value
@@ -90,6 +91,7 @@ pub enum Value
   String( String ),
 }
 
+#[cfg(any(feature = "archive", feature = "template"))]
 impl serde ::Serialize for Value
 {
   fn serialize< S >( &self, serializer: S ) -> Result< S ::Ok, S ::Error >

@@ -4,7 +4,7 @@ version = "0.2.0"
 edition = "2021"
 license = "MIT"
 readme = "Readme.md"
-repository = "{{repository url}}"
+repository = "{{url}}"
 
 [lints]
 workspace = true

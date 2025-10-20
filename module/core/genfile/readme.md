@@ -118,7 +118,7 @@ let restored = TemplateArchive::from_json( &json ).unwrap();
 
 ### External Content Sources
 
-```rust,no_run
+```rust,ignore
 use genfile_core::{ TemplateArchive, FileRef, UrlRef, WriteMode };
 use std::path::PathBuf;
 
@@ -141,7 +141,7 @@ archive.add_file_from(
 
 ### Custom Storage Backend
 
-```rust,no_run
+```rust,ignore
 use genfile_core::{ TemplateArchive, ContentStorage, FileContent, HandlebarsRenderer };
 use std::path::Path;
 
@@ -160,7 +160,7 @@ impl ContentStorage for CloudStorage
 
 ### Parameter Discovery and Analysis
 
-```rust
+```rust,ignore
 use genfile_core::{ TemplateArchive, ParameterDescriptor, WriteMode };
 use std::path::PathBuf;
 
