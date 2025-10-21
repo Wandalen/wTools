@@ -2,7 +2,6 @@
 ///
 /// Provides security checks to prevent directory traversal attacks and other
 /// security vulnerabilities when materializing templates.
-
 use std::path::{ Path, Component };
 use crate::Error;
 
@@ -99,7 +98,7 @@ mod tests
     assert!( result.is_err() );
 
     let err = result.unwrap_err();
-    let msg = format!( "{}", err );
+    let msg = format!( "{err}" );
     assert!( msg.contains( "directory traversal" ) );
     assert!( msg.contains( "../malicious" ) );
   }

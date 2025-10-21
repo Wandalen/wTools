@@ -6,7 +6,8 @@ use unilang::registry::CommandRegistry;
 use unilang::data::{ CommandDefinition, ArgumentDefinition, Kind, ArgumentAttributes };
 
 /// Register archive commands
-pub fn register( registry : &mut CommandRegistry ) -> Result< (), Box< dyn std::error::Error > >
+#[ allow( deprecated ) ]
+pub fn register( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core::error::Error > >
 {
   register_new( registry )?;
   register_load( registry )?;
@@ -16,7 +17,8 @@ pub fn register( registry : &mut CommandRegistry ) -> Result< (), Box< dyn std::
 }
 
 /// Register .archive.new command
-fn register_new( registry : &mut CommandRegistry ) -> Result< (), Box< dyn std::error::Error > >
+#[ allow( deprecated ) ]
+fn register_new( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core::error::Error > >
 {
   let cmd = CommandDefinition
   {
@@ -101,7 +103,8 @@ fn register_new( registry : &mut CommandRegistry ) -> Result< (), Box< dyn std::
 }
 
 /// Register .archive.load command
-fn register_load( registry : &mut CommandRegistry ) -> Result< (), Box< dyn std::error::Error > >
+#[ allow( deprecated ) ]
+fn register_load( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core::error::Error > >
 {
   let cmd = CommandDefinition
   {
@@ -168,7 +171,8 @@ fn register_load( registry : &mut CommandRegistry ) -> Result< (), Box< dyn std:
 }
 
 /// Register .archive.save command
-fn register_save( registry : &mut CommandRegistry ) -> Result< (), Box< dyn std::error::Error > >
+#[ allow( deprecated ) ]
+fn register_save( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core::error::Error > >
 {
   let cmd = CommandDefinition
   {
@@ -218,7 +222,7 @@ fn register_save( registry : &mut CommandRegistry ) -> Result< (), Box< dyn std:
         attributes : ArgumentAttributes
         {
           optional : true,
-          default : Some( "auto".to_string() ),
+          default : Some( "json".to_string() ),
           sensitive : false,
           interactive : false,
           multiple : false,
@@ -288,8 +292,9 @@ fn register_save( registry : &mut CommandRegistry ) -> Result< (), Box< dyn std:
   Ok( () )
 }
 
-/// Register .archive.from_directory command
-fn register_from_directory( registry : &mut CommandRegistry ) -> Result< (), Box< dyn std::error::Error > >
+/// Register .`archive.from_directory` command
+#[ allow( deprecated ) ]
+fn register_from_directory( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core::error::Error > >
 {
   let cmd = CommandDefinition
   {

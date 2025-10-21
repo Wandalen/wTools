@@ -6,7 +6,7 @@
 //!
 //! File generation tools for code generation and template materialization.
 //!
-//! genfile_core provides a trait-based template processing and file generation library
+//! `genfile_core` provides a trait-based template processing and file generation library
 //! that supports custom value types, pluggable rendering engines, and testable
 //! in-memory file systems.
 //!
@@ -55,7 +55,7 @@
 //!
 //! The crate is organized into focused modules:
 //!
-//! - [`value`] - Value types and the TemplateValue trait
+//! - [`value`] - Value types and the `TemplateValue` trait
 //! - [`parameter`] - Parameter descriptors and collections
 //! - [`values`] - Runtime value storage
 //! - [`renderer`] - Template rendering engines

@@ -1,18 +1,18 @@
 //! Error handling and formatting
 //!
-//! Provides utilities for converting genfile_core errors to unilang ErrorData
+//! Provides utilities for converting `genfile_core` errors to unilang `ErrorData`
 //! and formatting error messages according to cli.rulebook.md standards.
 
 use unilang::data::{ ErrorData, ErrorCode };
 
-/// Format genfile_core error as ErrorData for unilang
+/// Format `genfile_core` error as `ErrorData` for unilang
 ///
-/// Converts errors from genfile_core operations into structured ErrorData
+/// Converts errors from `genfile_core` operations into structured `ErrorData`
 /// with proper context labeling following the format: `[ERROR] [CONTEXT]: message`
 ///
 /// # Parameters
 ///
-/// - `error`: The genfile_core::Error to format
+/// - `error`: The `genfile_core::Error` to format
 /// - `context`: Context label (e.g., "FILE", "PARAMETER", "RENDER")
 ///
 /// # Examples
@@ -25,6 +25,7 @@ use unilang::data::{ ErrorData, ErrorCode };
 /// let error_data = format_error( err, "FILE" );
 /// assert!( error_data.message.contains( "[ERROR] [FILE]:" ) );
 /// ```
+#[must_use] 
 pub fn format_error( error : genfile_core::Error, context : &str ) -> ErrorData
 {
   let message = format!( "[ERROR] [{}]: {}", context.to_uppercase(), error );
@@ -39,7 +40,7 @@ pub fn format_error( error : genfile_core::Error, context : &str ) -> ErrorData
 
 /// Format usage error for missing or invalid parameters
 ///
-/// Creates ErrorData for user input problems.
+/// Creates `ErrorData` for user input problems.
 ///
 /// # Examples
 ///
@@ -60,7 +61,7 @@ pub fn usage_error( message : impl Into< String > ) -> ErrorData
 }
 
 /// Format parameter-related error
-pub fn parameter_error( message : impl Into< String > ) -> ErrorData
+pub fn _parameter_error( message : impl Into< String > ) -> ErrorData
 {
   ErrorData
   {
@@ -82,7 +83,7 @@ pub fn file_error( message : impl Into< String > ) -> ErrorData
 }
 
 /// Format validation error
-pub fn validation_error( message : impl Into< String > ) -> ErrorData
+pub fn _validation_error( message : impl Into< String > ) -> ErrorData
 {
   ErrorData
   {

@@ -1,7 +1,7 @@
 //! Command definitions for genfile CLI
 //!
 //! This module organizes all command definitions into logical groups.
-//! Each submodule registers commands with the unilang CommandRegistry.
+//! Each submodule registers commands with the unilang `CommandRegistry`.
 
 use unilang::registry::CommandRegistry;
 
@@ -25,7 +25,8 @@ pub mod info;
 /// - Materialization (.materialize, .unpack)
 /// - Serialization (.pack)
 /// - Information (.status, .info, .analyze, .discover.*)
-pub fn create_registry() -> Result< CommandRegistry, Box< dyn std::error::Error > >
+#[ allow( deprecated ) ]
+pub fn create_registry() -> Result< CommandRegistry, Box< dyn core::error::Error > >
 {
   let mut registry = CommandRegistry::new();
 

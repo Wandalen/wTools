@@ -3,7 +3,7 @@
 //! Demonstrates the simplest use case: creating a template archive,
 //! adding files, setting values, and materializing to disk.
 //!
-//! Run with: cargo run --example basic_template
+//! Run with: cargo run --example `basic_template`
 
 use genfile_core::
 {
@@ -16,7 +16,7 @@ use genfile_core::
 };
 use std::path::PathBuf;
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "=== Basic Template Materialization Example ===" );
   println!();
@@ -59,7 +59,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   // Read and display the generated file
   let content = fs.read( &PathBuf::from( "/output/greeting.txt" ) )?;
   println!( "Generated content:" );
-  println!( "{}", content );
+  println!( "{content}" );
   println!();
 
   println!( "✅ Example completed successfully" );

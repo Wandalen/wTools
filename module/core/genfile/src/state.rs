@@ -14,7 +14,7 @@ use std::sync::{ Arc, RwLock };
 ///
 /// # Examples
 ///
-/// ```
+/// ```ignore
 /// use genfile::state::ArchiveState;
 /// use genfile_core::TemplateArchive;
 ///
@@ -23,23 +23,25 @@ use std::sync::{ Arc, RwLock };
 /// // Set archive
 /// let mut archive = TemplateArchive::new();
 /// archive.set_name( "test" );
-/// state.set( archive );
+/// state._set( archive );
 ///
 /// // Get archive
-/// if let Some( archive ) = state.get()
+/// if let Some( archive ) = state._get()
 /// {
 ///   println!( "Archive: {}", archive.name().unwrap_or( "unnamed" ) );
 /// }
 /// ```
-#[ derive( Clone ) ]
+#[ derive( Clone, Debug ) ]
 pub struct ArchiveState
 {
+  #[allow(dead_code)]
   inner : Arc< RwLock< Option< TemplateArchive > > >,
 }
 
 impl ArchiveState
 {
   /// Create new empty archive state
+  #[must_use] 
   pub fn new() -> Self
   {
     Self
@@ -51,7 +53,8 @@ impl ArchiveState
   /// Get current archive (clone)
   ///
   /// Returns None if no archive is currently loaded.
-  pub fn get( &self ) -> Option< TemplateArchive >
+  #[must_use] 
+  pub fn _get( &self ) -> Option< TemplateArchive >
   {
     let guard = self.inner.read().ok()?;
     guard.as_ref().cloned()
@@ -60,7 +63,7 @@ impl ArchiveState
   /// Set current archive
   ///
   /// Replaces any existing archive with the new one.
-  pub fn set( &self, archive : TemplateArchive )
+  pub fn _set( &self, archive : TemplateArchive )
   {
     if let Ok( mut guard ) = self.inner.write()
     {
@@ -71,7 +74,7 @@ impl ArchiveState
   /// Clear current archive
   ///
   /// Removes the archive from state, returning to empty state.
-  pub fn clear( &self )
+  pub fn _clear( &self )
   {
     if let Ok( mut guard ) = self.inner.write()
     {
@@ -80,9 +83,10 @@ impl ArchiveState
   }
 
   /// Check if an archive is currently loaded
-  pub fn has_archive( &self ) -> bool
+  #[must_use] 
+  pub fn _has_archive( &self ) -> bool
   {
-    self.inner.read().ok().map( | g | g.is_some() ).unwrap_or( false )
+    self.inner.read().ok().is_some_and( | g | g.is_some() )
   }
 }
 

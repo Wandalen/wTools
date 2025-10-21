@@ -14,7 +14,7 @@ use std::io::{ self, Write };
 ///
 /// # Features
 ///
-/// - Command history with arrow key navigation (via enhanced_repl)
+/// - Command history with arrow key navigation (via `enhanced_repl`)
 /// - Archive state persistence across commands
 /// - Graceful exit on quit/exit/EOF
 /// - Clear error messages
@@ -40,8 +40,8 @@ use std::io::{ self, Write };
 /// ```
 pub fn run_repl(
   pipeline : &Pipeline,
-  state : crate::state::ArchiveState
-) -> Result< (), Box< dyn std::error::Error > >
+  _state : crate::state::ArchiveState
+) -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "genfile REPL v0.1.0" );
   println!( "Type '.help' for help, 'exit' to quit" );
@@ -52,7 +52,7 @@ pub fn run_repl(
   loop
   {
     // Display prompt
-    print!( "genfile[{}]> ", session_count );
+    print!( "genfile[{session_count}]> " );
     io::stdout().flush()?;
 
     // Read user input
@@ -100,7 +100,7 @@ pub fn run_repl(
       },
       Err( e ) =>
       {
-        eprintln!( "Input error: {}", e );
+        eprintln!( "Input error: {e}" );
         break;
       }
     }

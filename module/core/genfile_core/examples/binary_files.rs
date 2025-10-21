@@ -3,7 +3,7 @@
 //! Demonstrates working with binary files alongside text templates.
 //! Shows how binary content is base64-encoded for serialization.
 //!
-//! Run with: cargo run --example binary_files
+//! Run with: cargo run --example `binary_files`
 
 use genfile_core::
 {
@@ -16,7 +16,7 @@ use genfile_core::
 };
 use std::path::PathBuf;
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "=== Binary Files Example ===" );
   println!();
@@ -67,7 +67,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   let json = archive.to_json_pretty()?;
   println!( "JSON representation (truncated):" );
   let json_preview: String = json.chars().take( 500 ).collect();
-  println!( "{}...", json_preview );
+  println!( "{json_preview}..." );
   println!();
 
   // Deserialize from JSON
@@ -90,7 +90,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   println!( "Generated files:" );
   for path in [ "index.html", "logo.png", "background.jpg", "favicon.ico" ]
   {
-    let full_path = PathBuf::from( format!( "/website/{}", path ) );
+    let full_path = PathBuf::from( format!( "/website/{path}" ) );
     let exists = fs.exists( &full_path );
     println!( "  {} - {}", path, if exists { "✅ exists" } else { "❌ missing" } );
   }
@@ -99,7 +99,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   // Display generated HTML
   let html = fs.read( &PathBuf::from( "/website/index.html" ) )?;
   println!( "Generated HTML:" );
-  println!( "{}", html );
+  println!( "{html}" );
   println!();
 
   println!( "✅ Example completed successfully" );

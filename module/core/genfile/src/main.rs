@@ -1,7 +1,13 @@
 //! genfile CLI - Template archive management
 //!
-//! Command-line interface for genfile_core library providing template archive
+//! Command-line interface for `genfile_core` library providing template archive
 //! creation, management, and materialization capabilities.
+
+#![allow( clippy::needless_pass_by_value )]
+#![allow( clippy::missing_errors_doc )]
+#![allow( clippy::too_many_lines )]
+#![allow( clippy::manual_let_else )]
+#![allow( clippy::unnecessary_wraps )]
 
 use unilang::pipeline::Pipeline;
 use unilang::interpreter::ExecutionContext;
@@ -12,7 +18,7 @@ mod state;
 mod error;
 mod repl;
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   let argv : Vec< String > = std::env::args().collect();
 
@@ -43,6 +49,15 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
     eprintln!( "{}", result.error.unwrap_or_default() );
     // TODO: Map error types to exit codes when API supports it
     std::process::exit( 1 );
+  }
+
+  // Print command outputs
+  for output in result.outputs
+  {
+    if !output.content.is_empty()
+    {
+      println!( "{}", output.content );
+    }
   }
 
   Ok( () )

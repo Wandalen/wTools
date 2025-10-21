@@ -6,37 +6,10 @@ use unilang::semantic::VerifiedCommand;
 use unilang::data::{ OutputData, ErrorData };
 use unilang::interpreter::ExecutionContext;
 use genfile_core::TemplateArchive;
-use std::path::Path;
 
-/// Global archive state for REPL sessions
-///
-/// Since ExecutionContext doesn't currently support custom state storage,
-/// we use thread-local storage for the current archive in REPL mode.
-use std::sync::{ Arc, RwLock };
-use std::cell::RefCell;
 
-thread_local! {
-  static CURRENT_ARCHIVE : RefCell< Option< TemplateArchive > > = RefCell::new( None );
-}
-
-/// Get current archive from thread-local storage
-fn get_current_archive() -> Option< TemplateArchive >
-{
-  CURRENT_ARCHIVE.with( | arc | arc.borrow().clone() )
-}
-
-/// Set current archive in thread-local storage
-fn set_current_archive( archive : TemplateArchive )
-{
-  CURRENT_ARCHIVE.with( | arc | *arc.borrow_mut() = Some( archive ) );
-}
-
-/// Clear current archive from thread-local storage
-#[allow(dead_code)]
-fn clear_current_archive()
-{
-  CURRENT_ARCHIVE.with( | arc | *arc.borrow_mut() = None );
-}
+/// Use shared state for current archive
+use super::shared_state::{ get_current_archive, set_current_archive };
 
 /// Handler for .archive.new command
 ///
@@ -66,8 +39,8 @@ pub fn new_handler(
   let output = match verbosity
   {
     0 => String::new(),
-    1 => format!( "Created archive: {}", name ),
-    _ => format!( "Created archive: {}\nDescription: {}", name, description ),
+    1 => format!( "Created archive: {name}" ),
+    _ => format!( "Created archive: {name}\nDescription: {description}" ),
   };
 
   Ok( OutputData
@@ -87,16 +60,16 @@ pub fn load_handler(
 ) -> Result< OutputData, ErrorData >
 {
   // Extract arguments
-  let path = cmd.get_string( "path" )
+  let path = cmd.get_path( "path" )
     .ok_or_else( || crate::error::usage_error( "Missing required parameter: path" ) )?;
   let verbosity = cmd.get_integer( "verbosity" ).unwrap_or( 1 );
 
   // Load archive from file
-  let path_buf = Path::new( path );
+  let path_buf = path;
   let archive = TemplateArchive::load_from_file( path_buf )
     .map_err( | e | crate::error::format_error( e, "ARCHIVE" ) )?;
 
-  let archive_name = &archive.name;
+  let archive_name = archive.name.clone();
   let file_count = archive.file_count();
 
   // Store in thread-local state
@@ -106,12 +79,12 @@ pub fn load_handler(
   let output = match verbosity
   {
     0 => String::new(),
-    1 => format!( "Loaded archive: {}", archive_name ),
+    1 => format!( "Loaded archive: {archive_name}" ),
     _ =>
     {
       format!(
         "Loaded archive: {}\nPath: {}\nFiles: {}",
-        archive_name, path, file_count
+        archive_name, path_buf.display(), file_count
       )
     }
   };
@@ -133,9 +106,9 @@ pub fn save_handler(
 ) -> Result< OutputData, ErrorData >
 {
   // Extract arguments
-  let path = cmd.get_string( "path" )
+  let path = cmd.get_path( "path" )
     .ok_or_else( || crate::error::usage_error( "Missing required parameter: path" ) )?;
-  let format = cmd.get_string( "format" ).unwrap_or( "auto" );
+  let format = cmd.get_string( "format" ).unwrap_or( "json" );
   let pretty = cmd.get_boolean( "pretty" ).unwrap_or( true );
   let verbosity = cmd.get_integer( "verbosity" ).unwrap_or( 1 );
   let dry = cmd.get_boolean( "dry" ).unwrap_or( false );
@@ -144,29 +117,10 @@ pub fn save_handler(
   let archive = get_current_archive()
     .ok_or_else( || crate::error::usage_error( "No archive loaded. Use .archive.new or .archive.load first" ) )?;
 
-  let path_buf = Path::new( path );
+  let path_buf = path;
 
-  // Determine format from extension or explicit parameter
-  let format = if format == "auto"
-  {
-    if let Some( ext ) = path_buf.extension()
-    {
-      match ext.to_str()
-      {
-        Some( "yaml" ) | Some( "yml" ) => "yaml",
-        Some( "json" ) => "json",
-        _ => "json", // default
-      }
-    }
-    else
-    {
-      "json"
-    }
-  }
-  else
-  {
-    format
-  };
+  // Use the format as-is (already have explicit or default "json")
+  let final_format = format;
 
   if dry
   {
@@ -176,7 +130,7 @@ pub fn save_handler(
     }
     else
     {
-      format!( "Dry run: Would save archive to {} (format: {})", path, format )
+      format!( "Dry run: Would save archive to {} (format: {})", path.display(), final_format )
     };
 
     return Ok( OutputData
@@ -196,13 +150,12 @@ pub fn save_handler(
   let output = match verbosity
   {
     0 => String::new(),
-    1 => format!( "Saved archive to: {}", path ),
+    1 => format!( "Saved archive to: {}", path.display() ),
     _ =>
     {
-      let archive_name = &archive.name;
       format!(
         "Saved archive: {}\nPath: {}\nFormat: {}\nPretty: {}",
-        archive_name, path, format, pretty
+        archive.name, path.display(), final_format, pretty
       )
     }
   };
@@ -215,7 +168,7 @@ pub fn save_handler(
   } )
 }
 
-/// Handler for .archive.from_directory command
+/// Handler for .`archive.from_directory` command
 ///
 /// Creates an archive from a filesystem directory.
 pub fn from_directory_handler(
@@ -224,7 +177,7 @@ pub fn from_directory_handler(
 ) -> Result< OutputData, ErrorData >
 {
   // Extract arguments
-  let source = cmd.get_string( "source" )
+  let source = cmd.get_path( "source" )
     .ok_or_else( || crate::error::usage_error( "Missing required parameter: source" ) )?;
   let mode = cmd.get_string( "mode" ).unwrap_or( "reference" );
   let recursive = cmd.get_boolean( "recursive" ).unwrap_or( true );
@@ -232,17 +185,17 @@ pub fn from_directory_handler(
   let exclude_pattern = cmd.get_string( "exclude_pattern" );
   let verbosity = cmd.get_integer( "verbosity" ).unwrap_or( 1 );
 
-  let source_path = Path::new( source );
+  let source_path = source;
 
   // Check if source directory exists
   if !source_path.exists()
   {
-    return Err( crate::error::file_error( format!( "Source directory not found: {}", source ) ) );
+    return Err( crate::error::file_error( format!( "Source directory not found: {}", source_path.display() ) ) );
   }
 
   if !source_path.is_dir()
   {
-    return Err( crate::error::file_error( format!( "Source path is not a directory: {}", source ) ) );
+    return Err( crate::error::file_error( format!( "Source path is not a directory: {}", source_path.display() ) ) );
   }
 
   // Create archive using pack_from_dir
@@ -265,7 +218,7 @@ pub fn from_directory_handler(
   let output = match verbosity
   {
     0 => String::new(),
-    1 => format!( "Created archive from directory: {} ({} files)", source, file_count ),
+    1 => format!( "Created archive from directory: {} ({} files)", source_path.display(), file_count ),
     _ =>
     {
       format!(
@@ -276,7 +229,7 @@ pub fn from_directory_handler(
         Files: {}\n\
         Include pattern: {}\n\
         Exclude pattern: {}",
-        source,
+        source_path.display(),
         mode,
         recursive,
         file_count,

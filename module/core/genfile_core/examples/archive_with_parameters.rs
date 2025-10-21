@@ -3,7 +3,7 @@
 //! Demonstrates parameter management: defining parameters with metadata,
 //! discovering parameters from templates, and analyzing parameter usage.
 //!
-//! Run with: cargo run --example archive_with_parameters
+//! Run with: cargo run --example `archive_with_parameters`
 
 use genfile_core::
 {
@@ -17,7 +17,7 @@ use genfile_core::
 };
 use std::path::PathBuf;
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "=== Archive with Parameters Example ===" );
   println!();
@@ -46,7 +46,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
 
   // Discover all parameters used in templates
   let discovered = archive.discover_parameters();
-  println!( "Discovered parameters: {:?}", discovered );
+  println!( "Discovered parameters: {discovered:?}" );
   println!();
 
   // Add parameter definitions with metadata
@@ -99,7 +99,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   }
   else
   {
-    println!( "⚠️  Undefined parameters: {:?}", undefined );
+    println!( "⚠️  Undefined parameters: {undefined:?}" );
   }
   println!();
 
@@ -111,7 +111,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   }
   else
   {
-    println!( "⚠️  Unused parameters: {:?}", unused );
+    println!( "⚠️  Unused parameters: {unused:?}" );
   }
   println!();
 
