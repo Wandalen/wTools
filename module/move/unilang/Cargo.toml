@@ -26,50 +26,175 @@ features = [ "full", "error_tools/enabled", "mod_interface/enabled", "former/ena
 all-features = false
 
 [features]
-default = [ "enabled", "simd", "repl", "enhanced_repl" ]
-full = [ "enabled", "on_unknown_suggest", "simd", "repl", "enhanced_repl", "static_commands", "multi_yaml", "advanced_benchmarks" ]
+# ========================================
+# Default Configuration (ONLY Approach #2)
+# ========================================
+# By default, ONLY multi-YAML build-time static approach is enabled.
+# This is the recommended production approach for 95% of users.
+# To use other approaches, explicitly enable their feature flags.
+
+default = [ "enabled", "simd", "repl", "enhanced_repl", "approach_yaml_multi_build" ]
+
+# ========================================
+# Approach Features (User-Facing)
+# ========================================
+# Each approach is self-contained - just enable the one you want.
+# Note: Approach #7 (Rust DSL builder) is always available as core API.
+
+# Implemented approaches (8 features):
+approach_yaml_single_build = [ "static_registry", "yaml_parser" ]              # #1: Single YAML → Build-time static
+approach_yaml_multi_build = [ "static_registry", "yaml_parser", "multi_file" ] # #2: Multi-YAML → Build-time static (DEFAULT)
+approach_yaml_runtime = [ "yaml_parser" ]                                       # #3: YAML → Runtime loading
+
+approach_json_single_build = [ "static_registry", "json_parser" ]              # #4: Single JSON → Build-time static
+approach_json_multi_build = [ "static_registry", "json_parser", "multi_file" ] # #5: Multi-JSON → Build-time static
+approach_json_runtime = [ "json_parser" ]                                       # #6: JSON → Runtime loading
+
+# Approach #7 (Rust DSL builder): NO FEATURE - Always available as core API
+
+approach_rust_dsl_const = [ "static_registry" ]                                # #8: Rust DSL const fn → Static
+approach_hybrid = [ "static_registry" ]                                         # #18: Hybrid (static + runtime)
+
+# Future approaches (12 features):
+approach_macro_declarative = [ "static_registry" ]                             # #9: Declarative macro → Static
+approach_macro_proc = [ "static_registry" ]                                    # #10: Proc macro → Static
+
+approach_toml_single_build = [ "static_registry", "toml_parser" ]              # #11: Single TOML → Build-time static
+approach_toml_multi_build = [ "static_registry", "toml_parser", "multi_file" ] # #11+multi: Multi-TOML → Build-time static
+approach_toml_runtime = [ "toml_parser" ]                                      # #12: TOML → Runtime loading
+
+approach_ron_single_build = [ "static_registry", "ron_parser" ]                # #13: Single RON → Build-time static
+approach_ron_multi_build = [ "static_registry", "ron_parser", "multi_file" ]   # #13+multi: Multi-RON → Build-time static
+approach_ron_runtime = [ "ron_parser" ]                                        # #14: RON → Runtime loading
+
+approach_protobuf = [ "static_registry", "protobuf_support" ]                  # #15: Protobuf → Build-time static
+approach_graphql = [ "static_registry", "graphql_support" ]                    # #16: GraphQL → Build-time static
+approach_openapi = [ "static_registry", "openapi_support" ]                    # #17: OpenAPI → Build-time static
+
+approach_plugin = [ "static_registry", "plugin_system" ]                       # #19: Plugin system (.so/.dll)
+approach_binary = [ "static_registry", "binary_serialization" ]                # #20: Binary serialization
+approach_inline_literals = [ "static_registry", "const_parsing" ]              # #21: Inline YAML/JSON literals
+
+# ========================================
+# Infrastructure Features (Building Blocks)
+# ========================================
+# These are automatically enabled by approach features above.
+# Advanced users can enable these directly for custom configurations.
+
+static_registry = [ "dep:phf" ]              # Static command registry infrastructure
+yaml_parser = [ "dep:serde_yaml" ]           # YAML parsing support (build-time + runtime)
+json_parser = [ "dep:serde_json" ]           # JSON parsing support (build-time + runtime)
+multi_file = [ "dep:walkdir" ]               # Multi-file auto-discovery (any format)
+
+# Future infrastructure:
+toml_parser = [ "dep:toml" ]                 # TOML parsing (future)
+ron_parser = [ "dep:ron" ]                   # RON parsing (future)
+protobuf_support = [ "dep:prost" ]           # Protobuf (future)
+graphql_support = [ "dep:async-graphql" ]    # GraphQL (future)
+openapi_support = [ "dep:utoipa" ]           # OpenAPI (future)
+plugin_system = [ "dep:libloading" ]         # Dynamic library loading (future)
+binary_serialization = [ "dep:bincode" ]     # Binary serialization (future)
+const_parsing = [ ]                          # Const eval parsing (future)
+
+# ========================================
+# Convenience Features
+# ========================================
+
+# Full feature set (all implemented approaches):
+full = [
+  "enabled",
+  "on_unknown_suggest",
+  "simd",
+  "repl",
+  "enhanced_repl",
+  "approach_yaml_single_build",
+  "approach_yaml_multi_build",
+  "approach_yaml_runtime",
+  "approach_json_single_build",
+  "approach_json_multi_build",
+  "approach_json_runtime",
+  "approach_rust_dsl_const",
+  "approach_hybrid",
+  "advanced_benchmarks"
+]
+
+# All YAML approaches:
+all_yaml_approaches = [
+  "approach_yaml_single_build",
+  "approach_yaml_multi_build",
+  "approach_yaml_runtime"
+]
+
+# All JSON approaches:
+all_json_approaches = [
+  "approach_json_single_build",
+  "approach_json_multi_build",
+  "approach_json_runtime"
+]
+
+# All build-time static approaches:
+all_static_approaches = [
+  "approach_yaml_single_build",
+  "approach_yaml_multi_build",
+  "approach_json_single_build",
+  "approach_json_multi_build",
+  "approach_rust_dsl_const",
+  "approach_hybrid"
+]
+
+# All runtime approaches:
+all_runtime_approaches = [
+  "approach_yaml_runtime",
+  "approach_json_runtime"
+]
+
+# ========================================
+# Core & Performance Features
+# ========================================
+
 enabled = []
 benchmarks = [ "simd", "clap", "pico-args", "benchkit", "num_cpus", "rand" ]
-
-# New feature flags for advanced functionality
-static_commands = [ ]
-multi_yaml = [ "walkdir" ]
-advanced_benchmarks = [ "benchmarks", "sysinfo", "static_commands", "multi_yaml" ]
+advanced_benchmarks = [ "benchmarks", "sysinfo", "approach_yaml_multi_build", "approach_json_multi_build" ]
 advanced_cli_tests = [ ]
 
 # WebAssembly-compatible feature set - excludes platform-specific dependencies
-# No enhanced REPL (rustyline), no SIMD (platform detection issues), minimal dependencies
 wasm = [ "enabled" ]
 
-# Performance optimizations - SIMD enabled by default for maximum performance
-# Can be disabled with: cargo build --no-default-features --features enabled
-# This enables:
-# - SIMD JSON parsing (simd-json: 4-25x faster than serde_json)
-# - SIMD string operations in strs_tools (memchr, aho-corasick, bytecount)
-# - SIMD tokenization in unilang_parser
-simd = [ "simd-json", "memchr", "bytecount", "unilang_parser/simd" ]  # SIMD optimizations enabled by default
+# SIMD performance optimizations - enabled by default for maximum performance
+simd = [ "simd-json", "memchr", "bytecount", "unilang_parser/simd" ]
 
-# REPL (Read-Eval-Print Loop) support - basic interactive shell functionality
+# REPL (Read-Eval-Print Loop) support
 repl = []
-
-# Enhanced REPL with command history, auto-completion, and arrow key support
-# Enables: Arrow key navigation, tab completion, secure input, session persistence
-# Dependencies: rustyline (terminal handling), std::io::IsTerminal (interactive detection)
-# Auto-fallback: Gracefully degrades to basic REPL in non-interactive environments
 enhanced_repl = [ "repl", "dep:rustyline" ]
 
-# This configuration suggests an action to be done when the command is unknown. In this case, when an unknown command is encountered, the system might suggest alternatives
+# Command suggestions when command is unknown
 on_unknown_suggest = [ ]
 
 [dependencies]
+# Core dependencies (always compiled):
 serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-serde_yaml = "0.9"
 url = "2.5.0"
 chrono = { version = "0.4.38", features = ["serde"] }
 regex = "1.10.4"
-phf = { version = "0.11", features = ["macros"] }
-walkdir = { version = "2.4", optional = true }
+
+# Format parsers (optional, gated by infrastructure features):
+serde_json = { version = "1.0", optional = true }      # Enabled by json_parser
+serde_yaml = { version = "0.9", optional = true }      # Enabled by yaml_parser
+toml = { version = "0.8", optional = true }            # Enabled by toml_parser (future)
+ron = { version = "0.8", optional = true }             # Enabled by ron_parser (future)
+
+# Static registry infrastructure (optional):
+phf = { version = "0.11", features = ["macros"], optional = true }  # Enabled by static_registry
+
+# Multi-file discovery (optional):
+walkdir = { version = "2.4", optional = true }         # Enabled by multi_file
+
+# Future dependencies (optional):
+prost = { version = "0.12", optional = true }          # Enabled by protobuf_support (future)
+async-graphql = { version = "7.0", optional = true }   # Enabled by graphql_support (future)
+utoipa = { version = "4.0", optional = true }          # Enabled by openapi_support (future)
+libloading = { version = "0.8", optional = true }      # Enabled by plugin_system (future)
+bincode = { version = "1.3", optional = true }         # Enabled by binary_serialization (future)
 sysinfo = { version = "0.30", optional = true }
 
 ## internal
@@ -109,15 +234,22 @@ path = "src/bin/unilang_cli.rs"
 [[test]]
 name = "command_loader_yaml_test"
 path = "tests/inc/phase2/command_loader_yaml_test.rs"
+
 [[test]]
 name = "command_loader_json_test"
 path = "tests/inc/phase2/command_loader_json_test.rs"
+required-features = ["json_parser"]
+
 [[test]]
 name = "command_loader_build_time_test"
 path = "tests/inc/phase2/command_loader_build_time_test.rs"
+required-features = ["json_parser"]
+
 [[test]]
 name = "command_loader_error_test"
 path = "tests/inc/phase2/command_loader_error_test.rs"
+required-features = ["json_parser"]
+
 [[test]]
 name = "cli_integration_test"
 path = "tests/inc/phase2/cli_integration_test.rs"
@@ -133,6 +265,7 @@ path = "tests/inc/phase2/help_generation_test.rs"
 [[test]]
 name = "rust_dsl_inline_closure_test"
 path = "tests/inc/phase2/rust_dsl_inline_closure_test.rs"
+required-features = ["json_parser"]
 
 [[test]]
 name = "static_const_constructor_test"
@@ -238,16 +371,49 @@ path = "tests/inc/phase3/data_model_features_test.rs"
 name = "help_conventions_demo"
 path = "examples/18_help_conventions_demo.rs"
 
+# Examples requiring JSON parser feature
+[[example]]
+name = "02_argument_types"
+required-features = ["json_parser"]
+
+[[example]]
+name = "07_yaml_json_loading"
+required-features = ["json_parser"]
+
+[[example]]
+name = "10_full_pipeline"
+required-features = ["json_parser"]
+
+[[example]]
+name = "12_error_handling"
+required-features = ["json_parser"]
+
+[[example]]
+name = "14_advanced_types_validation"
+required-features = ["json_parser"]
+
+[[example]]
+name = "16_comprehensive_loader_demo"
+required-features = ["json_parser"]
 
 
 
 
 [build-dependencies]
+# Core (always available):
 serde = "1.0"
-serde_yaml = "0.9"
-serde_json = "1.0"  # For JSON build-time command loading
-phf_codegen = "0.11"
-walkdir = "2.4"
+serde_yaml = "0.9"  # Always available for build.rs (only used when static_registry enabled)
+
+# Build-time format parsers (optional, gated by infrastructure features):
+serde_json = { version = "1.0", optional = true }     # Enabled by json_parser
+toml = { version = "0.8", optional = true }           # Enabled by toml_parser (future)
+ron = { version = "0.8", optional = true }            # Enabled by ron_parser (future)
+
+# Static registry codegen (optional):
+phf_codegen = { version = "0.11", optional = true }   # Enabled by static_registry
+
+# Multi-file discovery (optional):
+walkdir = { version = "2.4", optional = true }        # Enabled by multi_file
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }

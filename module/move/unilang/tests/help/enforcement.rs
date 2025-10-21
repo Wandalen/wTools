@@ -8,6 +8,8 @@
 //! 4. Help enforcement works for all registration methods
 //!
 
+#![ allow( deprecated ) ]
+
 use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind, OutputData };
 use unilang::registry::CommandRegistry;
 use unilang::interpreter::ExecutionContext;

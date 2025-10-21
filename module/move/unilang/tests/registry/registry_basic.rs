@@ -4,12 +4,14 @@
 //! works correctly and that both `CommandRegistry` and `StaticCommandRegistry`
 //! implement the `CommandRegistryTrait` properly.
 
+#![ allow( deprecated ) ]
+
 use unilang::registry::{ CommandRegistry, CommandRegistryTrait };
 use unilang::static_data::{ StaticCommandDefinition, StaticCommandMap };
 use phf::phf_map;
 
-// Create a test static command map for testing
-const TEST_STATIC_COMMANDS_PHF: phf::Map<&'static str, &'static StaticCommandDefinition> = phf_map! {
+// Create a test static command map for testing (internal implementation)
+const TEST_STATIC_COMMANDS_INTERNAL: phf::Map<&'static str, &'static StaticCommandDefinition> = phf_map! {
   ".test_static" => &StaticCommandDefinition {
     name: ".test_static",
     namespace: "",
@@ -29,7 +31,8 @@ const TEST_STATIC_COMMANDS_PHF: phf::Map<&'static str, &'static StaticCommandDef
   },
 };
 
-static TEST_STATIC_COMMANDS: StaticCommandMap = StaticCommandMap::from_phf_internal(&TEST_STATIC_COMMANDS_PHF);
+/// Public wrapper for test static commands
+static TEST_STATIC_COMMANDS: StaticCommandMap = StaticCommandMap::from_phf_internal(&TEST_STATIC_COMMANDS_INTERNAL);
 
 #[test]
 fn test_command_registry_from_static_commands_basic() {

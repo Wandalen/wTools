@@ -16,6 +16,8 @@
 //! - **GREEN PHASE**: Tests pass after implementing safe UTF-8 character iteration
 //! - **REFACTOR PHASE**: Optimize for performance while maintaining safety
 
+#![ allow( deprecated ) ]
+
 use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind, ArgumentAttributes };
 use unilang::registry::CommandRegistry;
 use unilang::semantic::SemanticAnalyzer;

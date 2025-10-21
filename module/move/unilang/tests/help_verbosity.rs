@@ -59,8 +59,10 @@ fn create_test_command() -> CommandDefinition
 #[test]
 fn test_verbosity_level_0_minimal()
 {
+  #[ allow( deprecated ) ]
   let mut registry = CommandRegistry::new();
   let command = create_test_command();
+  #[ allow( deprecated ) ]
   registry.command_add_runtime( &command, mock_routine() ).unwrap();
 
   let help_gen = HelpGenerator::with_verbosity( &registry, HelpVerbosity::Minimal );
@@ -80,8 +82,10 @@ fn test_verbosity_level_0_minimal()
 #[test]
 fn test_verbosity_level_1_basic()
 {
+  #[ allow( deprecated ) ]
   let mut registry = CommandRegistry::new();
   let command = create_test_command();
+  #[ allow( deprecated ) ]
   registry.command_add_runtime( &command, mock_routine() ).unwrap();
 
   let help_gen = HelpGenerator::with_verbosity( &registry, HelpVerbosity::Basic );
@@ -103,8 +107,10 @@ fn test_verbosity_level_1_basic()
 #[test]
 fn test_verbosity_level_2_standard_default()
 {
+  #[ allow( deprecated ) ]
   let mut registry = CommandRegistry::new();
   let command = create_test_command();
+  #[ allow( deprecated ) ]
   registry.command_add_runtime( &command, mock_routine() ).unwrap();
 
   // Test both default and explicit Standard
@@ -137,8 +143,10 @@ fn test_verbosity_level_2_standard_default()
 #[test]
 fn test_verbosity_level_3_detailed()
 {
+  #[ allow( deprecated ) ]
   let mut registry = CommandRegistry::new();
   let command = create_test_command();
+  #[ allow( deprecated ) ]
   registry.command_add_runtime( &command, mock_routine() ).unwrap();
 
   let help_gen = HelpGenerator::with_verbosity( &registry, HelpVerbosity::Detailed );
@@ -158,8 +166,10 @@ fn test_verbosity_level_3_detailed()
 #[test]
 fn test_verbosity_level_4_comprehensive()
 {
+  #[ allow( deprecated ) ]
   let mut registry = CommandRegistry::new();
   let command = create_test_command();
+  #[ allow( deprecated ) ]
   registry.command_add_runtime( &command, mock_routine() ).unwrap();
 
   let help_gen = HelpGenerator::with_verbosity( &registry, HelpVerbosity::Comprehensive );
@@ -200,8 +210,10 @@ fn test_verbosity_default()
 #[test]
 fn test_verbosity_set_and_get()
 {
+  #[ allow( deprecated ) ]
   let mut registry = CommandRegistry::new();
   let command = create_test_command();
+  #[ allow( deprecated ) ]
   registry.command_add_runtime( &command, mock_routine() ).unwrap();
 
   let mut help_gen = HelpGenerator::new( &registry );
@@ -217,8 +229,10 @@ fn test_verbosity_set_and_get()
 #[test]
 fn test_verbosity_progressive_information()
 {
+  #[ allow( deprecated ) ]
   let mut registry = CommandRegistry::new();
   let command = create_test_command();
+  #[ allow( deprecated ) ]
   registry.command_add_runtime( &command, mock_routine() ).unwrap();
 
   // Test that each level contains more information than the previous

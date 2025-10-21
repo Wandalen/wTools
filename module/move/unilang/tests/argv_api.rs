@@ -160,6 +160,7 @@ fn test_argv_stop_at_next_param()
 fn test_pipeline_argv_integration()
 {
   // Create a test registry with a simple command
+  #[ allow( deprecated ) ]
   let mut registry = CommandRegistry::new();
 
   let test_cmd = CommandDefinition::former()
@@ -208,6 +209,7 @@ fn test_pipeline_argv_integration()
     })
   });
 
+  #[ allow( deprecated ) ]
   registry.command_add_runtime(&test_cmd, test_routine).unwrap();
 
   // Create pipeline and test argv API

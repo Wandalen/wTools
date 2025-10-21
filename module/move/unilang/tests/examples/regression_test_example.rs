@@ -4,6 +4,8 @@
 //! organization structure. It shows proper patterns for preventing the recurrence
 //! of known bugs and maintaining backward compatibility.
 
+#![ allow( deprecated ) ]
+
 use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind, ArgumentAttributes };
 use unilang::registry::CommandRegistry;
 use unilang::semantic::{ SemanticAnalyzer, VerifiedCommand };

@@ -152,18 +152,18 @@ fn test_yaml_file_loading()
 }
 
 #[test]
-fn test_phf_map_generation()
+fn test_static_registry_generation()
 {
-  // Test PHF map generation
+  // Test static registry source generation
   let config = create_test_config();
   let aggregator = MultiYamlAggregator::new( config );
 
-  // Generate PHF map content
-  let phf_content = aggregator.generate_phf_map();
+  // Generate static registry source code
+  let source_code = aggregator.generate_static_registry_source();
 
-  // Should contain PHF map structure
-  assert!( phf_content.contains("phf_map") );
-  assert!( phf_content.contains("Map") );
+  // Should contain static registry structure
+  assert!( source_code.contains("phf_map") );
+  assert!( source_code.contains("Map") );
 }
 
 #[test]
@@ -182,6 +182,7 @@ fn test_build_rs_generation()
 }
 
 #[test]
+#[ cfg( feature = "json_parser" ) ]
 fn test_config_serialization()
 {
   // Test configuration serialization/deserialization
@@ -205,7 +206,7 @@ fn test_config_serialization()
   }
 }
 
-#[cfg(feature = "multi_yaml")]
+#[cfg(feature = "multi_file")]
 #[test]
 fn test_auto_discovery()
 {

@@ -1,4 +1,4 @@
-//! Tests for Row 8: Rust DSL → Static PHF with const fn constructors.
+//! Tests for Row 8: Rust DSL → Static Registry with const fn constructors.
 //!
 //! This module tests the const fn constructor API for creating static command
 //! definitions at compile-time without macros.

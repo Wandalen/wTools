@@ -10,6 +10,8 @@
 #![ allow( clippy::uninlined_format_args ) ]
 #![ allow( clippy::map_unwrap_or ) ]
 
+#![ allow( deprecated ) ]
+
 use unilang::{ CommandDefinition, CommandRegistry, Pipeline, ExecutionContext, VerifiedCommand, OutputData, ErrorData };
 
 fn demo_handler(cmd: VerifiedCommand, _ctx: ExecutionContext) -> Result< OutputData, ErrorData >

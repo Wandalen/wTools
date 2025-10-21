@@ -136,26 +136,30 @@ mod_interface::mod_interface!
 {
   /// Core data structures and types.
   layer data;
-  
+
   /// Static data structures for compile-time commands.
+  /// **Requires feature**: `static_registry`
+  #[ cfg( feature = "static_registry" ) ]
   layer static_data;
-  
+
   /// Error handling utilities.
   layer error;
-  
+
   /// Configuration loading from YAML/JSON.
+  /// Functions gated by `yaml_parser` and `json_parser` features.
   layer loader;
-  
+
   /// Value types and type system.
   layer types;
-  
+
   /// Help generation system.
   layer help;
-  
+
   /// Command execution interpreter.
   layer interpreter;
-  
+
   /// Command registry management.
+  /// Some functions gated by approach features.
   layer registry;
 
   /// Command validation utilities.
@@ -163,17 +167,21 @@ mod_interface::mod_interface!
 
   /// Semantic analysis and validation.
   layer semantic;
-  
+
   /// High-level pipeline API.
   layer pipeline;
 
   /// Multi-YAML build system for compile-time aggregation.
+  /// **Requires feature**: `multi_file`
+  #[ cfg( feature = "multi_file" ) ]
   layer multi_yaml;
 
   /// String interning system for performance optimization.
   layer interner;
 
   /// SIMD-optimized JSON parsing for 4-25x performance improvements.
+  /// **Requires features**: `simd-json` AND `json_parser`
+  #[ cfg( all( feature = "simd-json", feature = "json_parser" ) ) ]
   layer simd_json_parser;
 
   /// SIMD-optimized tokenization for 3-6x performance improvements.

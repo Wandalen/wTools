@@ -2,7 +2,7 @@
 //! Comprehensive tests for `StaticCommandRegistry` functionality.
 //!
 //! This module provides thorough test coverage for `StaticCommandRegistry` including:
-//! - PHF map integration and zero-overhead lookups
+//! - Compile-time optimized static map integration and zero-overhead lookups
 //! - Registry mode switching (`StaticOnly`, `DynamicOnly`, `Hybrid`, `Auto`)
 //! - Performance metrics tracking
 //! - Static command loading and conversion
@@ -12,13 +12,15 @@
 //!
 //! All tests use real implementations without mocking.
 
+#![ allow( deprecated ) ]
+
 use unilang::prelude::*;
 use unilang::registry::{ StaticCommandRegistry, RegistryMode, CommandRegistryTrait };
 use unilang::static_data::{ StaticCommandDefinition, StaticCommandMap, StaticArgumentDefinition, StaticKind, StaticArgumentAttributes };
 use std::time::Instant;
 
-/// Create a comprehensive test command map with various command types
-const TEST_STATIC_COMMANDS_PHF: phf::Map<&'static str, &'static StaticCommandDefinition> = phf::phf_map!
+/// Create a comprehensive test command map with various command types (internal implementation)
+const TEST_STATIC_COMMANDS_INTERNAL: phf::Map<&'static str, &'static StaticCommandDefinition> = phf::phf_map!
 {
   ".test.version" => &StaticCommandDefinition
   {
@@ -190,7 +192,7 @@ const TEST_STATIC_COMMANDS_PHF: phf::Map<&'static str, &'static StaticCommandDef
 };
 
 /// Wrapper for test static commands
-static TEST_STATIC_COMMANDS: StaticCommandMap = StaticCommandMap::from_phf_internal(&TEST_STATIC_COMMANDS_PHF);
+static TEST_STATIC_COMMANDS: StaticCommandMap = StaticCommandMap::from_phf_internal(&TEST_STATIC_COMMANDS_INTERNAL);
 
 #[test]
 fn test_static_command_registry_creation()
@@ -392,7 +394,7 @@ fn test_static_command_registry_static_commands_count()
   let static_count = registry.static_command_count();
   assert_eq!( static_count, TEST_STATIC_COMMANDS.len() );
 
-  // Static commands list should match PHF map
+  // Static commands list should match static map
   let static_commands = registry.static_commands();
   assert_eq!( static_commands.len(), TEST_STATIC_COMMANDS.len() );
 

@@ -1,5 +1,5 @@
 ---
-# Test YAML file for build-time PHF generation
+# Test YAML file for build-time static registry generation
 - name: "build_yaml_cmd"
   namespace: ".test"
   description: "Command loaded from YAML at build-time"

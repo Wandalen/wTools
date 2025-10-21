@@ -64,6 +64,7 @@ fn test_load_command_definitions_from_yaml_str_invalid()
 }
 
 #[test]
+#[ cfg( feature = "json_parser" ) ]
 fn test_load_command_definitions_from_json_str_success()
 {
   let json_content = r#"[{
@@ -102,10 +103,10 @@ fn test_load_command_definitions_from_json_str_success()
 
   let result = load_command_definitions_from_json_str(json_content);
   assert!(result.is_ok());
-  
+
   let commands = result.unwrap();
   assert_eq!(commands.len(), 1);
-  
+
   let cmd = &commands[0];
   assert_eq!(cmd.name, "json_command");
   assert_eq!(cmd.namespace, ".json");
@@ -117,6 +118,7 @@ fn test_load_command_definitions_from_json_str_success()
 }
 
 #[test]
+#[ cfg( feature = "json_parser" ) ]
 fn test_load_command_definitions_from_json_str_invalid()
 {
   let invalid_json = "{invalid json";
@@ -135,6 +137,7 @@ fn test_load_command_definitions_from_yaml_empty()
 }
 
 #[test]
+#[ cfg( feature = "json_parser" ) ]
 fn test_load_command_definitions_from_json_empty()
 {
   let empty_json = "[]";

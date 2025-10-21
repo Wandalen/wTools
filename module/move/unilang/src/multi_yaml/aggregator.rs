@@ -13,7 +13,7 @@
 //! - Intelligent mode selection and auto-detection
 //! - Cargo.toml metadata support
 //! - Environment variable configuration
-//! - PHF map generation with aggregated commands
+//! - Static registry generation with aggregated commands
 //! - Integration with hybrid registry system
 
 mod private
@@ -23,7 +23,7 @@ mod private
   use std::collections::HashMap;
   use std::path::PathBuf;
   use std::fs;
-  #[ cfg( feature = "multi_yaml" ) ]
+  #[ cfg( feature = "multi_file" ) ]
   use walkdir::WalkDir;
 
 /// Multi-YAML aggregation system for compile-time command processing
@@ -536,12 +536,32 @@ impl MultiYamlAggregator
     content
   }
 
-  /// Generate PHF map content for static commands
-  pub fn generate_phf_map( &self ) -> String
+  /// Generate static command registry source code for build-time compilation.
+  ///
+  /// Returns Rust source code that defines a compile-time optimized command registry.
+  /// This code should be written to a `.rs` file and included in your build output.
+  ///
+  /// # Performance
+  /// Commands generated this way have **zero runtime overhead** for lookups (O(1) const-time).
+  ///
+  /// # Returns
+  /// Rust source code string ready to be written to a file
+  ///
+  /// # Example
+  /// ```no_run
+  /// use unilang::multi_yaml::MultiYamlAggregator;
+  /// use unilang::multi_yaml::AggregationConfig;
+  ///
+  /// let config = AggregationConfig::default();
+  /// let aggregator = MultiYamlAggregator::new(config);
+  /// let source_code = aggregator.generate_static_registry_source();
+  /// // Write source_code to a .rs file in your build output
+  /// ```
+  pub fn generate_static_registry_source( &self ) -> String
   {
-    let mut phf_content = String::new();
-    phf_content.push_str( "use phf::{phf_map, Map};\n" );
-    phf_content.push_str( "use unilang::static_data::{StaticCommandDefinition, StaticArgumentDefinition, StaticArgumentAttributes, StaticKind};\n\n" );
+    let mut source_code = String::new();
+    source_code.push_str( "use phf::{phf_map, Map};\n" );
+    source_code.push_str( "use unilang::static_data::{StaticCommandDefinition, StaticArgumentDefinition, StaticArgumentAttributes, StaticKind};\n\n" );
 
     // Generate each command
     for ( cmd_name, cmd ) in &self.commands
@@ -551,19 +571,19 @@ impl MultiYamlAggregator
       // Generate argument definitions
       for ( arg_idx, arg ) in cmd.arguments.iter().enumerate()
       {
-        phf_content.push_str( &Self::generate_argument_definition( arg, &const_name_base, arg_idx ) );
+        source_code.push_str( &Self::generate_argument_definition( arg, &const_name_base, arg_idx ) );
       }
 
       // Generate arguments array
       if !cmd.arguments.is_empty()
       {
         let args_array_name = format!( "{}_ARGS", const_name_base );
-        phf_content.push_str( &format!( "const {}: &[StaticArgumentDefinition] = &[", args_array_name ) );
+        source_code.push_str( &format!( "const {}: &[StaticArgumentDefinition] = &[", args_array_name ) );
         for arg_idx in 0..cmd.arguments.len()
         {
-          phf_content.push_str( &format!( "{}_{}_ARG, ", const_name_base, arg_idx ) );
+          source_code.push_str( &format!( "{}_{}_ARG, ", const_name_base, arg_idx ) );
         }
-        phf_content.push_str( "];\n\n" );
+        source_code.push_str( "];\n\n" );
       }
 
       // Generate command-level arrays
@@ -574,28 +594,28 @@ impl MultiYamlAggregator
 
       if !cmd.tags.is_empty()
       {
-        phf_content.push_str( &Self::generate_string_array( &cmd.tags, &tags_const_name ) );
+        source_code.push_str( &Self::generate_string_array( &cmd.tags, &tags_const_name ) );
       }
       if !cmd.aliases.is_empty()
       {
-        phf_content.push_str( &Self::generate_string_array( &cmd.aliases, &aliases_const_name ) );
+        source_code.push_str( &Self::generate_string_array( &cmd.aliases, &aliases_const_name ) );
       }
       if !cmd.permissions.is_empty()
       {
-        phf_content.push_str( &Self::generate_string_array( &cmd.permissions, &permissions_const_name ) );
+        source_code.push_str( &Self::generate_string_array( &cmd.permissions, &permissions_const_name ) );
       }
       if !cmd.examples.is_empty()
       {
-        phf_content.push_str( &Self::generate_string_array( &cmd.examples, &examples_const_name ) );
+        source_code.push_str( &Self::generate_string_array( &cmd.examples, &examples_const_name ) );
       }
 
       // Generate command definition
       let const_name = format!( "{}_CMD", const_name_base );
-      phf_content.push_str( &format!(
+      source_code.push_str( &format!(
         "\nstatic {}: StaticCommandDefinition = StaticCommandDefinition {{\n",
         const_name
       ) );
-      phf_content.push_str( &Self::generate_command_definition_body(
+      source_code.push_str( &Self::generate_command_definition_body(
         cmd,
         &const_name_base,
         &tags_const_name,
@@ -603,22 +623,22 @@ impl MultiYamlAggregator
         &permissions_const_name,
         &examples_const_name,
       ) );
-      phf_content.push_str( "};\n\n" );
+      source_code.push_str( "};\n\n" );
     }
 
-    // Generate PHF map
-    phf_content.push_str( "pub static AGGREGATED_COMMANDS: Map<&'static str, &'static StaticCommandDefinition> = phf_map! {\n" );
+    // Generate optimized static map
+    source_code.push_str( "pub static AGGREGATED_COMMANDS: Map<&'static str, &'static StaticCommandDefinition> = phf_map! {\n" );
     for ( cmd_name, _ ) in &self.commands
     {
       let const_name = format!(
         "{}_CMD",
         cmd_name.replace( '.', "_" ).replace( '-', "_" ).to_uppercase()
       );
-      phf_content.push_str( &format!( "  \"{}\" => &{},\n", Self::escape_string( cmd_name ), const_name ) );
+      source_code.push_str( &format!( "  \"{}\" => &{},\n", Self::escape_string( cmd_name ), const_name ) );
     }
-    phf_content.push_str( "};\n" );
+    source_code.push_str( "};\n" );
 
-    phf_content
+    source_code
   }
 
   /// Escape strings for Rust code generation
@@ -649,12 +669,36 @@ impl MultiYamlAggregator
     &self.config
   }
 
-  /// Write generated PHF map to file
-  pub fn write_phf_map_to_file( &self, output_path: &PathBuf ) -> Result< (), Error >
+  /// Write static command registry to a build output file.
+  ///
+  /// Generates optimized compile-time command definitions and writes them
+  /// to the specified file path. This file should be included in your
+  /// build.rs output directory.
+  ///
+  /// # Arguments
+  /// * `output_path` - Path where the generated `.rs` file will be written
+  ///
+  /// # Example
+  /// ```no_run
+  /// use unilang::multi_yaml::MultiYamlAggregator;
+  /// use unilang::multi_yaml::AggregationConfig;
+  /// use std::path::PathBuf;
+  ///
+  /// # fn example() -> Result<(), unilang::Error> {
+  /// let config = AggregationConfig::default();
+  /// let aggregator = MultiYamlAggregator::new(config);
+  ///
+  /// let out_dir = std::env::var("OUT_DIR").unwrap();
+  /// let output = PathBuf::from(out_dir).join("static_commands.rs");
+  /// aggregator.write_static_registry(&output)?;
+  /// # Ok(())
+  /// # }
+  /// ```
+  pub fn write_static_registry( &self, output_path: &PathBuf ) -> Result< (), Error >
   {
-    let phf_content = self.generate_phf_map();
-    fs::write( output_path, phf_content )
-      .map_err( |e| Error::Registration( format!( "Failed to write PHF map file: {}", e ) ) )
+    let source_code = self.generate_static_registry_source();
+    fs::write( output_path, source_code )
+      .map_err( |e| Error::Registration( format!( "Failed to write static registry file: {}", e ) ) )
   }
 
   /// Register all aggregated commands with a hybrid registry
@@ -680,25 +724,39 @@ impl MultiYamlAggregator
   }
 
   /// Create aggregator from configuration file
-  #[ cfg( feature = "multi_yaml" ) ]
+  #[ cfg( feature = "multi_file" ) ]
   pub fn from_config_file( config_path: &PathBuf ) -> Result< Self, Error >
   {
     let config_content = fs::read_to_string( config_path )
       .map_err( |e| Error::Registration( format!( "Failed to read config file: {}", e ) ) )?;
 
-    // Try to parse as JSON first, fallback to YAML
+    // Try to parse as JSON first (if json_parser enabled), fallback to YAML
     let config: AggregationConfig = if config_path.extension()
       .and_then( |ext| ext.to_str() )
       .map( |ext| ext.to_lowercase() == "json" )
       .unwrap_or( false )
     {
-      serde_json::from_str( &config_content )
-        .map_err( |e| Error::Registration( format!( "Failed to parse JSON config: {}", e ) ) )?
+      #[ cfg( feature = "json_parser" ) ]
+      {
+        serde_json::from_str( &config_content )
+          .map_err( |e| Error::Registration( format!( "Failed to parse JSON config: {}", e ) ) )?
+      }
+      #[ cfg( not( feature = "json_parser" ) ) ]
+      {
+        return Err( Error::Registration( "JSON config parsing requires the 'json_parser' feature".to_string() ) );
+      }
     }
     else
     {
-      serde_yaml::from_str( &config_content )
-        .map_err( |e| Error::Registration( format!( "Failed to parse YAML config: {}", e ) ) )?
+      #[ cfg( feature = "yaml_parser" ) ]
+      {
+        serde_yaml::from_str( &config_content )
+          .map_err( |e| Error::Registration( format!( "Failed to parse YAML config: {}", e ) ) )?
+      }
+      #[ cfg( not( feature = "yaml_parser" ) ) ]
+      {
+        return Err( Error::Registration( "YAML config parsing requires the 'yaml_parser' feature".to_string() ) );
+      }
     };
 
     let mut aggregator = Self::new( config );
@@ -713,7 +771,7 @@ impl MultiYamlAggregator
   }
 
   /// Discover YAML files automatically using walkdir
-  #[ cfg( feature = "multi_yaml" ) ]
+  #[ cfg( feature = "multi_file" ) ]
   pub fn discover_yaml_files( &mut self ) -> Result< (), Error >
   {
     let base_dir = &self.config.base_dir;
@@ -905,13 +963,13 @@ impl MultiYamlAggregator
 
     build_rs.push_str( "    aggregator.aggregate().expect(\"Failed to aggregate YAML files\");\n\n" );
 
-    build_rs.push_str( "    // Generate PHF map file\n" );
+    build_rs.push_str( "    // Generate static registry file\n" );
     build_rs.push_str( "    let output_path = std::path::PathBuf::from(\n" );
     build_rs.push_str( "      std::env::var(\"OUT_DIR\").expect(\"OUT_DIR not set\")\n" );
     build_rs.push_str( "    ).join(\"generated_commands.rs\");\n\n" );
 
-    build_rs.push_str( "    aggregator.write_phf_map_to_file(&output_path)\n" );
-    build_rs.push_str( "      .expect(\"Failed to write PHF map\");\n" );
+    build_rs.push_str( "    aggregator.write_static_registry(&output_path)\n" );
+    build_rs.push_str( "      .expect(\"Failed to write static registry\");\n" );
 
     build_rs.push_str( "  }\n" );
     build_rs.push_str( "}\n" );
@@ -1071,9 +1129,88 @@ pub fn aggregate_cli_complex() -> Result< CommandRegistry, Error >
     .build()
 }
 
-//
-
-  /// Convenience function for complete multi-YAML workflow
+  /// Runtime multi-YAML aggregation with environment variable support.
+  ///
+  /// **⚠️ PERFORMANCE WARNING: 50x slower than compile-time approach**
+  ///
+  /// This function performs **runtime** multi-YAML file discovery, parsing, and aggregation
+  /// to build a `CommandRegistry`. It is part of the **runtime YAML loading approach**
+  /// and should only be used when compile-time generation is not possible.
+  ///
+  /// ## Performance Characteristics
+  ///
+  /// - **Lookup time**: ~4,000ns per command (runtime `CommandRegistry`)
+  /// - **Startup cost**: YAML parsing + file I/O at application start
+  /// - **vs Compile-time**: 50x slower than `approach_yaml_multi_build` (~80ns)
+  ///
+  /// ## When to Use This Function
+  ///
+  /// **Use this for:**
+  /// - Plugin systems that load commands dynamically at runtime
+  /// - Applications with runtime-configurable command sets
+  /// - REPL environments where commands can be added/removed
+  /// - Development/debugging scenarios requiring hot-reload
+  ///
+  /// **DO NOT use this for:**
+  /// - Production CLI applications (use `approach_yaml_multi_build` instead)
+  /// - Performance-critical applications
+  /// - Static command sets known at compile-time
+  ///
+  /// ## Feature Requirements
+  ///
+  /// **Requires features:**
+  /// - `multi_file` - Multi-YAML file discovery and aggregation
+  /// - `yaml_parser` - YAML deserialization
+  ///
+  /// Enabled by: `approach_yaml_runtime` + manually enabling `multi_file`
+  ///
+  /// ## Workflow
+  ///
+  /// 1. Reads `Cargo.toml` metadata to discover YAML file locations
+  /// 2. Parses `UNILANG_*` environment variables for runtime configuration
+  /// 3. Discovers and loads all YAML files at runtime
+  /// 4. Aggregates commands into a runtime `CommandRegistry`
+  /// 5. Returns registry ready for command execution
+  ///
+  /// ## Recommended Alternative (50x faster)
+  ///
+  /// For production applications, use compile-time aggregation:
+  ///
+  /// ```toml
+  /// [dependencies]
+  /// # Default configuration - 50x faster than runtime
+  /// unilang = "0.28"  # Enables approach_yaml_multi_build by default
+  /// ```
+  ///
+  /// Then in your code:
+  ///
+  /// ```rust,ignore
+  /// // Generated at compile-time by build system
+  /// include!(concat!(env!("OUT_DIR"), "/static_commands.rs"));
+  ///
+  /// // Zero-cost static registry (~80ns lookups)
+  /// let registry = StaticCommandRegistry::from_commands(&STATIC_COMMANDS);
+  /// ```
+  ///
+  /// ## Example Usage (Runtime Aggregation)
+  ///
+  /// ```rust,ignore
+  /// use std::path::PathBuf;
+  /// use unilang::multi_yaml::create_aggregated_registry;
+  ///
+  /// // Runtime aggregation (slow, but dynamic)
+  /// let cargo_toml = PathBuf::from("./Cargo.toml");
+  /// let registry = create_aggregated_registry(&cargo_toml)?;
+  ///
+  /// // Note: This parses YAML files every time the application starts
+  /// // For production, use compile-time approach_yaml_multi_build instead
+  /// ```
+  ///
+  /// ## Related
+  ///
+  /// - Compile-time alternative: `approach_yaml_multi_build` feature
+  /// - See: `examples/static_02_yaml_build_integration.rs` for compile-time pattern
+  /// - See: `docs/optimization_guide.md` for performance comparisons
   pub fn create_aggregated_registry( cargo_toml_path: &PathBuf ) -> Result< crate::CommandRegistry, crate::Error >
   {
     // Create aggregator from Cargo.toml metadata
@@ -1089,7 +1226,15 @@ pub fn aggregate_cli_complex() -> Result< CommandRegistry, Error >
     // Perform aggregation
     aggregator.aggregate()?;
 
-    // Create and configure registry
+    // Create runtime registry for dynamic command loading
+    // NOTE: CommandRegistry::new() is marked deprecated to guide external users
+    // toward compile-time registration. However, this function intentionally
+    // provides RUNTIME aggregation for plugin systems and dynamic scenarios.
+    // The #[allow(deprecated)] is justified because:
+    // 1. This is a documented runtime approach (approach_yaml_runtime + multi_file)
+    // 2. Function documentation warns users about 50x performance penalty
+    // 3. Valid use case: dynamic plugin systems that cannot use compile-time generation
+    #[ allow( deprecated ) ]
     let mut registry = crate::CommandRegistry::new();
     aggregator.register_with_hybrid_registry( &mut registry )?;
 

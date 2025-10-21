@@ -5,6 +5,8 @@
 //! a panic due to an empty `command_path_slices` vector.
 //!
 
+#![ allow( deprecated ) ]
+
 use unilang::registry::CommandRegistry;
 use unilang::semantic::SemanticAnalyzer;
 use unilang::error::Error;

@@ -3,6 +3,8 @@
 //! Validates that string interning works correctly within the semantic analysis
 //! pipeline and provides the expected memory and performance benefits.
 
+#![ allow( deprecated ) ]
+
 use unilang::prelude::*;
 use core::sync::atomic::{ AtomicUsize, Ordering };
 use std::time::Instant;

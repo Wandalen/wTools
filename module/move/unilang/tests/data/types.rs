@@ -333,6 +333,7 @@ fn test_parse_value_map_invalid_entry()
 }
 
 #[test]
+#[ cfg( feature = "json_parser" ) ]
 fn test_parse_value_json_string_success()
 {
   let result = parse_value(r#"{"key": "value"}"#, &Kind::JsonString);
@@ -341,6 +342,7 @@ fn test_parse_value_json_string_success()
 }
 
 #[test]
+#[ cfg( feature = "json_parser" ) ]
 fn test_parse_value_json_string_invalid()
 {
   let result = parse_value("{invalid json", &Kind::JsonString);
@@ -352,6 +354,7 @@ fn test_parse_value_json_string_invalid()
 }
 
 #[test]
+#[ cfg( feature = "json_parser" ) ]
 fn test_parse_value_object_success()
 {
   let result = parse_value(r#"{"key": "value", "number": 42}"#, &Kind::Object);
@@ -366,6 +369,7 @@ fn test_parse_value_object_success()
 }
 
 #[test]
+#[ cfg( feature = "json_parser" ) ]
 fn test_parse_value_object_invalid()
 {
   let result = parse_value("{invalid json object", &Kind::Object);

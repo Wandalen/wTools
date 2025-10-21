@@ -15,6 +15,8 @@
 //! - **GREEN PHASE**: Empty values handled gracefully with clear behavior
 //! - **REFACTOR PHASE**: Consistent error messaging and edge case handling
 
+#![ allow( deprecated ) ]
+
 use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind, ArgumentAttributes };
 use unilang::registry::CommandRegistry;
 use unilang::semantic::SemanticAnalyzer;

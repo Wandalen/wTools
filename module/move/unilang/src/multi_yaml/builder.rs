@@ -367,6 +367,7 @@ mod private
     /// Build the CLI registry with dynamic registration
     pub fn build( self ) -> Result< CommandRegistry, Error >
     {
+      #[ allow( deprecated ) ]
       let mut registry = CommandRegistry::new();
 
       // Set registry mode based on aggregation mode
@@ -498,8 +499,10 @@ mod private
         "simd" => cfg!( feature = "simd" ),
         "repl" => cfg!( feature = "repl" ),
         "enhanced_repl" => cfg!( feature = "enhanced_repl" ),
-        "static_commands" => cfg!( feature = "static_commands" ),
-        "multi_yaml" => cfg!( feature = "multi_yaml" ),
+        "static_registry" => cfg!( feature = "static_registry" ),
+        "static_commands" => cfg!( feature = "static_registry" ), // Legacy alias
+        "multi_file" => cfg!( feature = "multi_file" ),
+        "multi_yaml" => cfg!( feature = "multi_file" ), // Legacy alias
         "advanced_benchmarks" => cfg!( feature = "advanced_benchmarks" ),
         "advanced_cli_tests" => cfg!( feature = "advanced_cli_tests" ),
         "wasm" => cfg!( feature = "wasm" ),

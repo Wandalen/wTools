@@ -9,7 +9,7 @@ mod private
   /// Static, const-compatible version of `CommandDefinition`.
   ///
   /// Uses &'static str and &'static [...] instead of String and Vec
-  /// to enable compile-time storage in PHF maps.
+  /// to enable compile-time storage in optimized static registries.
   #[ derive( Debug, Clone ) ]
   pub struct StaticCommandDefinition
   {
@@ -459,13 +459,13 @@ mod private
   #[ derive( Debug ) ]
   pub struct StaticCommandMap
   {
-    /// Internal PHF map - never exposed in public API
+    /// Internal optimized map - implementation detail, never exposed in public API
     inner: &'static phf::Map< &'static str, &'static StaticCommandDefinition >,
   }
 
   impl StaticCommandMap
   {
-    /// Create from PHF map (internal use only by generated code).
+    /// Create from internal optimized map (internal use only by generated code).
     ///
     /// This method is hidden from documentation and should only be called
     /// by code generated in build.rs.

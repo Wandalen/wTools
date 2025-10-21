@@ -1,3 +1,5 @@
+#![ allow( deprecated ) ]
+
 use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind };
 use unilang::interpreter::{ ExecutionContext, Interpreter };
 use unilang::registry::CommandRegistry;

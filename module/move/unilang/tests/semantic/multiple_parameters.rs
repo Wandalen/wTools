@@ -19,6 +19,8 @@
 //! - `unit/semantic/argument_binding.rs` - General argument binding logic
 //! - `regression/parameter_collection.rs` - Regression prevention for Task 024
 
+#![ allow( deprecated ) ]
+
 use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind, OutputData };
 use unilang::registry::CommandRegistry;
 use unilang::semantic::{ SemanticAnalyzer, VerifiedCommand };

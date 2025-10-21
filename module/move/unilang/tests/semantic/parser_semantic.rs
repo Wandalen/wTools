@@ -13,6 +13,8 @@
 //! - ✅ Quote handling and tokenization
 //! - ✅ Error handling and edge cases
 
+#![ allow( deprecated ) ]
+
 use unilang::
 {
   data::{ ArgumentDefinition, ArgumentAttributes, CommandDefinition, Kind, OutputData },

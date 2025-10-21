@@ -19,6 +19,8 @@
 //! - `unit/parser/argument_parsing.rs` - Parser argument extraction
 //! - `unit/data/types.rs` - Value types and conversions
 
+#![ allow( deprecated ) ]
+
 use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind, OutputData, ValidationRule };
 use unilang::registry::CommandRegistry;
 use unilang::semantic::{ SemanticAnalyzer, VerifiedCommand };

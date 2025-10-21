@@ -7,6 +7,8 @@
 //! 3. Developer-friendly APIs for help configuration
 //!
 
+#![ allow( deprecated ) ]
+
 use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind, OutputData, ValidationRule };
 use unilang::registry::CommandRegistry;
 use unilang::pipeline::Pipeline;

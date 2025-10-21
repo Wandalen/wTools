@@ -39,6 +39,7 @@ fn test_error_yaml_display()
 }
 
 #[test]
+#[ cfg( feature = "json_parser" ) ]
 fn test_error_json_display()
 {
   let json_error = serde_json::from_str::<serde_json::Value>("{invalid json").unwrap_err();
@@ -109,11 +110,12 @@ fn test_yaml_error_from_conversion()
 }
 
 #[test]
+#[ cfg( feature = "json_parser" ) ]
 fn test_json_error_from_conversion()
 {
   let json_error = serde_json::from_str::<serde_json::Value>("{malformed json").unwrap_err();
   let error: Error = json_error.into();
-  
+
   assert!(matches!(error, Error::Json(_)));
 }
 

@@ -1,5 +1,11 @@
 # Comprehensive CLI Definition Approaches for Unilang
 
+⚠️ **IMPORTANT: Opinionated Defaults**
+
+By default, unilang **ONLY** enables **Approach #2** (Multi-YAML Build-Time Static). This is the recommended production approach for 95% of users.
+
+**To use any other approach, you must explicitly enable its feature flag in `Cargo.toml`.**
+
 This document catalogs **all realistic ways** to define CLI commands in the unilang framework - current implementations, planned features, and practical possibilities.
 
 **Complete YAML/JSON parity**: For every YAML approach, there is an equivalent JSON approach (3 YAML + 3 JSON = 6 core variants).
@@ -8,9 +14,10 @@ Ridiculous/impractical approaches have been excluded (e.g., Windows Registry, HT
 
 ## Quick Navigation
 
-- [Comparison Table](#comparison-table) - All 21 realistic approaches (perfect YAML/JSON parity)
+- [Comparison Table](#comparison-table) - All 21 realistic approaches with feature flags
 - [Current Implementations](#current-implementations) - What works today
-- [Recommended Approach](#recommended-approach) - YAML + Build-time Static (Default)
+- [Default Approach](#default-approach) - Approach #2 (Multi-YAML Build-Time Static)
+- [Using Alternative Approaches](#using-alternative-approaches) - How to enable other approaches
 - [Future Enhancements](#future-enhancements) - Planned additions
 - [Advanced Possibilities](#advanced-possibilities) - Niche but valid scenarios
 
@@ -18,29 +25,35 @@ Ridiculous/impractical approaches have been excluded (e.g., Windows Registry, HT
 
 ## Comparison Table
 
-| # | Definition Format | Processing Time | Registry Type | Routine Binding | Implemented | Easiness (User) | Performance | Flexibility | Complexity (Dev) | Recommended Use Case |
-|---|-------------------|-----------------|---------------|-----------------|-------------|-----------------|-------------|-------------|------------------|----------------------|
-| **1** | **YAML file** | **Build-time (build.rs → PHF)** | **Static PHF** | **Separate Rust module** | **✅ YES** | **✅ Very Easy** | **⚡ Best** (<100ns) | ⚠️ Medium | ⚠️ Medium | **PRODUCTION - Default choice** |
-| **2** | **YAML files** | **Build-time (build.rs → PHF)** | **Static PHF** | **Separate Rust module** | **✅ YES** | **✅ Easy** | **⚡ Best** (<100ns) | ⚠️ Medium | ⚠️ Medium | **Large projects, modular organization** |
-| 3 | YAML file | Runtime (file load) | Dynamic HashMap | Separate Rust module | ✅ YES | ✅ Very Easy | ⚠️ Slow (10-50μs) | ✅ High | ✅ Simple | Dev/prototyping, plugin configs |
-| **4** | **JSON file** | **Build-time (build.rs → PHF)** | **Static PHF** | **Separate Rust module** | **✅ YES** | **✅ Very Easy** | **⚡ Best** | **⚠️ Medium** | **⚠️ Medium** | **JSON-first projects, API-driven** |
-| **5** | **JSON files** | **Build-time (build.rs → PHF)** | **Static PHF** | **Separate Rust module** | **✅ YES** | **✅ Easy** | **⚡ Best** | **⚠️ Medium** | **⚠️ Medium** | **Large JSON projects, modular** |
-| 6 | JSON file | Runtime (file load) | Dynamic HashMap | Separate Rust module | ✅ YES | ✅ Very Easy | ⚠️ Slow | ✅ High | ✅ Simple | Runtime config loading |
-| 7 | Rust DSL (builder) | Compile-time (direct code) | Dynamic HashMap | Inline closures | ✅ YES | 🔥 Hard | ⚠️ Slow (~4,200ns) | ✅ Highest | ⚠️ Medium | Tests, full programmatic control |
-| 8 | Rust DSL (const fn) | Compile-time (direct code) | Static PHF | Named functions | ✅ YES | 🔥 Hard | ⚡ Best (~80ns) | ⚠️ Medium | ⚠️ Medium | High-performance DSL, compile-time validation |
-| **9** | **Declarative macro** | **Compile-time (macro expansion)** | **Static PHF** | **Inline in macro** | **❌ NO** | **⚠️ Medium** | **⚡ Best** | ⚠️ Medium | 🔥 Complex | **RECOMMENDED: Clean syntax** |
-| 10 | Proc macro (derive) | Compile-time (proc macro) | Static PHF | Generated from struct | ❌ NO | ✅ Easy | ⚡ Best | ⚠️ Low | 🔥 Very complex | Derive-style like clap: `#[command]` |
-| 11 | TOML file | Build-time (build.rs → PHF) | Static PHF | Separate Rust module | ❌ NO | ✅ Very Easy | ⚡ Best | ⚠️ Medium | ⚠️ Medium | Config-heavy projects (TOML fans) |
-| 12 | TOML file | Runtime (file load) | Dynamic HashMap | Separate Rust module | ❌ NO | ✅ Very Easy | ⚠️ Slow | ✅ High | ✅ Simple | Runtime TOML config |
-| 13 | RON file | Build-time (build.rs → PHF) | Static PHF | Separate Rust module | ❌ NO | ⚠️ Medium | ⚡ Best | ⚠️ Medium | ⚠️ Medium | Rust-native syntax preference |
-| 14 | RON file | Runtime (file load) | Dynamic HashMap | Separate Rust module | ❌ NO | ⚠️ Medium | ⚠️ Slow | ✅ High | ✅ Simple | Rust-native runtime config |
-| 15 | Protobuf schema | Build-time (protoc → Rust) | Static PHF | Separate Rust module | ❌ NO | 🔥 Hard | ⚡ Best | ⚠️ Low | 🔥 Complex | gRPC services, cross-language |
-| 16 | GraphQL schema | Build-time (codegen) | Static PHF | Separate Rust module | ❌ NO | 🔥 Hard | ⚡ Best | ⚠️ Low | 🔥 Complex | GraphQL API → CLI mapping |
-| 17 | OpenAPI spec | Build-time (openapi-gen) | Static PHF | Separate Rust module | ❌ NO | ⚠️ Medium | ⚡ Best | ⚠️ Low | 🔥 Complex | REST API → CLI generation |
-| 18 | Hybrid (static + runtime) | Mixed | Hybrid (PHF + HashMap) | Mixed | ✅ YES | ⚠️ Medium | ⚡/⚠️ Mixed | ✅ Highest | ⚠️ Medium | Base CLI + plugin system |
-| 19 | Plugin system (.so/.dll) | Build-time defs, runtime load | Static PHF + dlopen | Dynamic library | ❌ NO | 🔥 Very Hard | ⚡ + dlopen overhead | ✅ High | 🔥 Complex | True plugin architecture |
-| 20 | Binary serialization (bincode) | Build-time (pre-serialize) | Static const array | Separate Rust module | ❌ NO | 🔥 Hard | ⚡ Best | ⚠️ Low | ⚠️ Medium | Maximum performance, opaque format |
-| 21 | Inline YAML/JSON literals | Compile-time (const parsing) | Static PHF | Inline closures | ❌ NO | ✅ Very Easy | ⚡ Best | ⚠️ Medium | ✅ Simple | Self-contained single-file binaries |
+| # | Definition Format | Feature Flag | Default? | Implemented | Easiness | Performance | Flexibility | Recommended Use Case |
+|---|-------------------|--------------|----------|-------------|----------|-------------|-------------|----------------------|
+| 1 | YAML file → Build-time static | `approach_yaml_single_build` | ❌ | ✅ YES | ✅ Very Easy | ⚡ Best (<100ns) | ⚠️ Medium | Simple projects (<20 commands) |
+| **2** | **YAML files → Build-time static** | **`approach_yaml_multi_build`** | **✅ DEFAULT** | **✅ YES** | **✅ Easy** | **⚡ Best (<100ns)** | **⚠️ Medium** | **PRODUCTION - Scalable, modular** |
+| 3 | YAML file → Runtime | `approach_yaml_runtime` | ❌ | ✅ YES | ✅ Very Easy | ⚠️ Slow (10-50μs) | ✅ High | Dev/prototyping, plugins |
+| 4 | JSON file → Build-time static | `approach_json_single_build` | ❌ | ✅ YES | ✅ Very Easy | ⚡ Best | ⚠️ Medium | JSON-first projects (simple) |
+| 5 | JSON files → Build-time static | `approach_json_multi_build` | ❌ | ✅ YES | ✅ Easy | ⚡ Best | ⚠️ Medium | JSON-first projects (large) |
+| 6 | JSON file → Runtime | `approach_json_runtime` | ❌ | ✅ YES | ✅ Very Easy | ⚠️ Slow | ✅ High | Runtime config loading |
+| 7 | Rust DSL (builder) | *(always available)* | ✅ Core API | ✅ YES | 🔥 Hard | ⚠️ Slow (~4,200ns) | ✅ Highest | Tests, full control |
+| 8 | Rust DSL (const fn) → Static | `approach_rust_dsl_const` | ❌ | ✅ YES | 🔥 Hard | ⚡ Best (~80ns) | ⚠️ Medium | High-perf DSL |
+| 9 | Declarative macro → Static | `approach_macro_declarative` | ❌ | ❌ NO | ⚠️ Medium | ⚡ Best | ⚠️ Medium | Clean syntax (future) |
+| 10 | Proc macro (derive) → Static | `approach_macro_proc` | ❌ | ❌ NO | ✅ Easy | ⚡ Best | ⚠️ Low | Derive-style like clap (future) |
+| 11 | TOML file → Build-time static | `approach_toml_single_build` | ❌ | ❌ NO | ✅ Very Easy | ⚡ Best | ⚠️ Medium | Config-heavy projects (future) |
+| 11+ | TOML files → Build-time static | `approach_toml_multi_build` | ❌ | ❌ NO | ✅ Easy | ⚡ Best | ⚠️ Medium | Large TOML projects (future) |
+| 12 | TOML file → Runtime | `approach_toml_runtime` | ❌ | ❌ NO | ✅ Very Easy | ⚠️ Slow | ✅ High | Runtime TOML config (future) |
+| 13 | RON file → Build-time static | `approach_ron_single_build` | ❌ | ❌ NO | ⚠️ Medium | ⚡ Best | ⚠️ Medium | Rust-native syntax (future) |
+| 13+ | RON files → Build-time static | `approach_ron_multi_build` | ❌ | ❌ NO | ⚠️ Medium | ⚡ Best | ⚠️ Medium | Large RON projects (future) |
+| 14 | RON file → Runtime | `approach_ron_runtime` | ❌ | ❌ NO | ⚠️ Medium | ⚠️ Slow | ✅ High | Rust-native runtime (future) |
+| 15 | Protobuf schema → Static | `approach_protobuf` | ❌ | ❌ NO | 🔥 Hard | ⚡ Best | ⚠️ Low | gRPC services (future) |
+| 16 | GraphQL schema → Static | `approach_graphql` | ❌ | ❌ NO | 🔥 Hard | ⚡ Best | ⚠️ Low | GraphQL API → CLI (future) |
+| 17 | OpenAPI spec → Static | `approach_openapi` | ❌ | ❌ NO | ⚠️ Medium | ⚡ Best | ⚠️ Low | REST API → CLI (future) |
+| 18 | Hybrid (static + runtime) | `approach_hybrid` | ❌ | ✅ YES | ⚠️ Medium | ⚡/⚠️ Mixed | ✅ Highest | Base CLI + plugins |
+| 19 | Plugin system (.so/.dll) | `approach_plugin` | ❌ | ❌ NO | 🔥 Very Hard | ⚡ + dlopen | ✅ High | True plugin architecture (future) |
+| 20 | Binary serialization | `approach_binary` | ❌ | ❌ NO | 🔥 Hard | ⚡ Best | ⚠️ Low | Maximum performance (future) |
+| 21 | Inline YAML/JSON literals | `approach_inline_literals` | ❌ | ❌ NO | ✅ Very Easy | ⚡ Best | ⚠️ Medium | Self-contained binaries (future) |
+
+**Total**: 23 approaches (21 base + 2 multi-file variants for TOML/RON)
+**Implemented**: 9 approaches
+**Default**: Only Approach #2
 
 ---
 
@@ -56,7 +69,7 @@ Ridiculous/impractical approaches have been excluded (e.g., Windows Registry, HT
 
 ### Performance
 
-- ⚡ **Best**: <1μs (PHF static lookup, O(1) hash table)
+- ⚡ **Best**: <1μs (Static optimized lookup, O(1) const-time)
 - ⚠️ **Slow**: 10-100μs (File I/O, dynamic HashMap with LRU cache)
 
 ### Flexibility
@@ -85,20 +98,20 @@ Ridiculous/impractical approaches have been excluded (e.g., Windows Registry, HT
 ### Summary: 10 of 21 approaches implemented ✅ **COMPLETE YAML/JSON PARITY + Row 7/8**
 
 **Implemented (✅ YES)**:
-- #1: YAML file → Build-time PHF ✅
-- #2: YAML files (multi) → Build-time PHF ✅
+- #1: YAML file → Build-time static ✅
+- #2: YAML files (multi) → Build-time static ✅
 - #3: YAML file → Runtime loading ✅
-- #4: JSON file → Build-time PHF ✅
-- #5: JSON files (multi) → Build-time PHF ✅
+- #4: JSON file → Build-time static ✅
+- #5: JSON files (multi) → Build-time static ✅
 - #6: JSON file → Runtime loading ✅
 - #7: Rust DSL (builder) → Dynamic HashMap with inline closures ✅
-- #8: Rust DSL (const fn) → Static PHF with named functions ✅ **NEW!**
+- #8: Rust DSL (const fn) → Static optimized with named functions ✅ **NEW!**
 - #18: Hybrid (static + runtime) ✅
 
 **YAML/JSON Parity Status**: ✅ **6/6 variants (100% complete)**
 
 **Test Coverage**:
-- Build-time tests: 7 tests (BT1.1-BT6.1) covering all PHF variants
+- Build-time tests: 7 tests (BT1.1-BT6.1) covering all static variants
 - Runtime tests: 10 tests (YAML: 5, JSON: 5) covering runtime loading
 - Row 7 tests: 14 tests (IC1.1-IC7.2) covering inline closure registration
 - Row 8 tests: 14 tests (CC1.1-CC5.2) covering const fn constructors
@@ -112,7 +125,7 @@ Ridiculous/impractical approaches have been excluded (e.g., Windows Registry, HT
 **How it works**:
 1. Define commands in `unilang.commands.yaml`
 2. Build script reads YAML at compile-time
-3. Generates optimized static command map (using Perfect Hash Functions internally)
+3. Generates optimized static command registry
 4. Commands compiled into binary with zero runtime overhead
 
 **Example YAML**:
@@ -184,7 +197,7 @@ let registry = CommandRegistry::builder()
 - ✅ Plugin systems with user-provided commands
 - ✅ Configuration files loaded at startup
 
-**Warning**: ⚠️ 10-50x slower than PHF approach
+**Warning**: ⚠️ 10-50x slower than build-time static approach
 
 ---
 
@@ -325,7 +338,7 @@ let registry = CommandRegistry::builder()
 
 ---
 
-### #17: Hybrid (Static PHF + Runtime Dynamic)
+### #17: Hybrid (Static Optimized + Runtime Dynamic)
 
 **Implementation**: `StaticCommandRegistry`
 
@@ -333,7 +346,7 @@ let registry = CommandRegistry::builder()
 ```rust
 let mut registry = StaticCommandRegistry::from_commands(&STATIC_COMMANDS);
 
-// Static commands from compile-time map (fast, no PHF dependency required)
+// Static commands from compile-time optimized map (fast, no special dependencies required)
 let static_cmd = registry.command(".video.search"); // <100ns
 
 // Add dynamic commands at runtime
@@ -348,11 +361,11 @@ registry.register(dynamic_command); // Slower but flexible
 
 ---
 
-## Recommended Approach
+## Default Approach
 
-### 🎯 Use Approach #1: YAML + Build-time Static
+### 🎯 Approach #2: Multi-YAML Build-Time Static (ENABLED BY DEFAULT)
 
-**This is your default. Here's why**:
+**This is the only approach enabled by default. Here's why**:
 
 | Criterion | YAML + Static | Runtime Registration | Rust DSL |
 |-----------|------------|---------------------|----------|
@@ -397,6 +410,110 @@ fn main() {
 
 ---
 
+## Using Alternative Approaches
+
+### How to Enable Other Approaches
+
+By default, ONLY Approach #2 (Multi-YAML Build-Time Static) is available. To use any other approach, you must explicitly enable its feature flag:
+
+**Example 1: Use Approach #1 (Single-YAML Build-Time Static)**
+
+```toml
+[dependencies]
+unilang = { version = "0.28", default-features = false, features = [
+  "enabled",
+  "approach_yaml_single_build"  # Enable Approach #1
+]}
+```
+
+**Example 2: Use Approach #3 (YAML Runtime Loading)**
+
+```toml
+[dependencies]
+unilang = { version = "0.28", default-features = false, features = [
+  "enabled",
+  "approach_yaml_runtime"  # Enable Approach #3
+]}
+```
+
+**Example 3: Use Approach #7 (Rust DSL Builder)**
+
+```toml
+[dependencies]
+unilang = { version = "0.28", default-features = false, features = [
+  "enabled"  # Approach #7 is always available as core API
+]}
+```
+
+**Example 4: Enable Multiple Approaches**
+
+```toml
+[dependencies]
+unilang = { version = "0.28", default-features = false, features = [
+  "enabled",
+  "approach_yaml_multi_build",   # Multi-YAML (build-time)
+  "approach_yaml_runtime",        # YAML (runtime)
+  "approach_json_runtime"         # JSON (runtime)
+]}
+```
+
+**Example 5: Enable ALL Implemented Approaches**
+
+```toml
+[dependencies]
+unilang = { version = "0.28", features = ["full"] }
+```
+
+### Feature Flag Reference
+
+**Implemented Approaches (9 features)**:
+
+| Feature Flag | Approach | Description |
+|--------------|----------|-------------|
+| `approach_yaml_single_build` | #1 | Single YAML → Build-time static |
+| `approach_yaml_multi_build` | #2 | Multi-YAML → Build-time static (DEFAULT) |
+| `approach_yaml_runtime` | #3 | YAML → Runtime loading |
+| `approach_json_single_build` | #4 | Single JSON → Build-time static |
+| `approach_json_multi_build` | #5 | Multi-JSON → Build-time static |
+| `approach_json_runtime` | #6 | JSON → Runtime loading |
+| *(always available)* | #7 | Rust DSL builder (core API) |
+| `approach_rust_dsl_const` | #8 | Rust DSL const fn → Static |
+| `approach_hybrid` | #18 | Hybrid (static + runtime) |
+
+**Convenience Features**:
+
+| Feature Flag | Enables |
+|--------------|---------|
+| `all_yaml_approaches` | All 3 YAML approaches (#1, #2, #3) |
+| `all_json_approaches` | All 3 JSON approaches (#4, #5, #6) |
+| `all_static_approaches` | All static/build-time approaches |
+| `all_runtime_approaches` | All runtime approaches |
+| `full` | Everything (all implemented approaches) |
+
+**Infrastructure Features** (usually auto-enabled by approaches):
+
+| Feature Flag | Purpose | Enables Dependency |
+|--------------|---------|-------------------|
+| `static_registry` | Static command registry | `phf` |
+| `yaml_parser` | YAML parsing | `serde_yaml` |
+| `json_parser` | JSON parsing | `serde_json` |
+| `multi_file` | Multi-file discovery | `walkdir` |
+
+### Why Opinionated Defaults?
+
+We chose to enable ONLY Approach #2 by default for several reasons:
+
+1. **Scalability**: Multi-file organization scales to large projects naturally
+2. **Performance**: Zero-overhead (<100ns lookups) for production
+3. **Best Practice**: Modular command organization is the industry standard
+4. **Team Collaboration**: Separate files = fewer merge conflicts
+5. **Auto-Discovery**: Drop YAML files anywhere, they're automatically found
+6. **Force Conscious Choice**: Alternative approaches require explicit opt-in
+
+If you need something different, we make it easy - just enable the feature! But we believe 95% of users are best served by this default.
+
+---
+
 ## Future Enhancements (❌ Not Implemented)
 
 ### Priority 1: Approach #8 - Declarative Macro
@@ -422,7 +539,7 @@ command! {
 **Benefits**:
 - ✅ Clean DSL-like syntax
 - ✅ Compile-time validation
-- ✅ PHF-compatible (generates static data)
+- ✅ Static-compatible (generates static data)
 - ✅ Less verbose than builder pattern
 
 **Implementation effort**: 2-3 weeks
@@ -441,14 +558,14 @@ const COMMANDS: &str = r#"
   arguments: []
 "#;
 
-// Macro parses at compile-time, generates PHF
+// Macro parses at compile-time, generates optimized static registry
 static_commands_from_yaml!(COMMANDS);
 ```
 
 **Benefits**:
 - ✅ Self-contained single-file binaries
 - ✅ No external YAML file dependencies
-- ✅ Still gets PHF performance
+- ✅ Still gets compile-time optimized performance
 
 **Implementation effort**: 1 week
 
@@ -513,7 +630,7 @@ service VideoService {
 $ mycli .video.search query::"rust tutorial" limit::10
 ```
 
-**Implementation**: protoc plugin → YAML/JSON → PHF
+**Implementation**: protoc plugin → YAML/JSON → static registry
 
 **Complexity**: 🔥 Complex (3-4 weeks)
 
@@ -536,7 +653,7 @@ type Query {
 $ mycli .query.search query::"rust tutorial" limit::10
 ```
 
-**Implementation**: GraphQL parser → YAML/JSON → PHF
+**Implementation**: GraphQL parser → YAML/JSON → static registry
 
 **Complexity**: 🔥 Complex (3-4 weeks)
 
@@ -564,7 +681,7 @@ paths:
 $ mycli .api.search query::"rust tutorial"
 ```
 
-**Implementation**: OpenAPI parser → YAML/JSON → PHF
+**Implementation**: OpenAPI parser → YAML/JSON → static registry
 
 **Complexity**: 🔥 Complex (3-4 weeks)
 
@@ -621,22 +738,22 @@ Real-world benchmark for 1,000 command lookups:
 
 | Approach | Avg Latency | Throughput | Memory Overhead |
 |----------|-------------|------------|-----------------|
-| **#1: YAML + PHF** | **80ns** | **12.5M ops/sec** | **0 bytes** |
-| #2: Multi-YAML + PHF | 85ns | 11.8M ops/sec | 0 bytes |
+| **#1: YAML + Static** | **80ns** | **12.5M ops/sec** | **0 bytes** |
+| #2: Multi-YAML + Static | 85ns | 11.8M ops/sec | 0 bytes |
 | #3: YAML runtime | 4,200ns | 238K ops/sec | 512KB |
-| #4: JSON + PHF | 80ns | 12.5M ops/sec | 0 bytes |
-| #5: Multi-JSON + PHF | 85ns | 11.8M ops/sec | 0 bytes |
+| #4: JSON + Static | 80ns | 12.5M ops/sec | 0 bytes |
+| #5: Multi-JSON + Static | 85ns | 11.8M ops/sec | 0 bytes |
 | #6: JSON runtime | 4,200ns | 238K ops/sec | 512KB |
 | #7: Rust DSL inline closures | 4,200ns | 238K ops/sec | 512KB |
-| **#8: Rust DSL const fn + PHF** | **80ns** | **12.5M ops/sec** | **0 bytes** |
+| **#8: Rust DSL const fn + Static** | **80ns** | **12.5M ops/sec** | **0 bytes** |
 | #17: Hybrid (static) | 80ns | 12.5M ops/sec | 0 bytes |
 | #17: Hybrid (dynamic) | 4,200ns | 238K ops/sec | 512KB |
 
-**Conclusion**: Build-time PHF approaches (#1, #2, #4, #5, #8) are 50x faster and use zero extra memory
+**Conclusion**: Build-time static approaches (#1, #2, #4, #5, #8) are 50x faster and use zero extra memory
 
 **Row 7 vs Row 8 Comparison**:
 - Row 7 (Inline Closures): ~4,200ns lookup, maximum flexibility, fastest development
-- Row 8 (Const Fn + PHF): ~80ns lookup, maximum performance, compile-time validation
+- Row 8 (Const Fn + Static): ~80ns lookup, maximum performance, compile-time validation
 - **Performance ratio**: Row 8 is 50x faster than Row 7
 
 ---
@@ -678,12 +795,12 @@ Based on goal: **"Make YAML + build-time static the obvious default choice"**
 
 ### Core Implementation
 
-- **Build script**: `build.rs` - PHF generation from YAML
+- **Build script**: `build.rs` - Static registry generation from YAML
 - **YAML manifest**: `unilang.commands.yaml` - default command definitions
 - **Loader module**: `src/loader.rs` - runtime YAML/JSON loading
 - **Registry**: `src/registry.rs` - CommandRegistry, StaticCommandRegistry
-- **Static data**: `src/static_data.rs` - Static PHF-compatible types
-- **Generated code**: `$OUT_DIR/static_commands.rs` - compile-time PHF map
+- **Static data**: `src/static_data.rs` - Static registry-compatible types
+- **Generated code**: `$OUT_DIR/static_commands.rs` - compile-time optimized map
 
 ### Test Data
 
@@ -696,12 +813,11 @@ Based on goal: **"Make YAML + build-time static the obvious default choice"**
 
 ## Glossary
 
-- **PHF (Perfect Hash Function)**: Compile-time generated hash table with O(1) lookup, zero collisions, zero memory overhead
 - **Build-time**: Processed during `cargo build`, code generated and compiled into binary
 - **Runtime**: Processed when program executes, dynamic loading from files/memory
-- **Static Registry**: Commands compiled into binary via PHF (fastest)
-- **Dynamic Registry**: Commands loaded at runtime into HashMap (flexible but slower)
-- **Hybrid Registry**: Combines static PHF (speed) with dynamic HashMap (flexibility)
+- **Static Registry**: Commands compiled into binary with compile-time optimization (fastest, <100ns lookups)
+- **Dynamic Registry**: Commands loaded at runtime into HashMap (flexible but slower, ~4-10μs lookups)
+- **Hybrid Registry**: Combines static (speed) with dynamic (flexibility) for maximum capability
 
 ---
 
@@ -741,9 +857,9 @@ Static commands are fast (<100ns), dynamic commands are flexible. Zero additiona
 
 ## References
 
-- PHF crate documentation: https://docs.rs/phf/
 - Cargo build scripts: https://doc.rust-lang.org/cargo/reference/build-scripts.html
-- Command registry implementation: `src/registry.rs:26-1338`
+- Command registry implementation: `src/registry.rs`
+- Static command optimization: See `spec.md` Appendix A for implementation details
 - Static data structures: `src/static_data.rs`
 - Build script implementation: `build.rs:1-409`
 - YAML specification: https://yaml.org/spec/
