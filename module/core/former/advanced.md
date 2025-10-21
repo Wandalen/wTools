@@ -2,6 +2,49 @@
 
 This document provides detailed explanations of the advanced features, customization options, and underlying concepts of the `former` crate. It assumes you have a basic understanding of how to use `#[ derive( Former ) ]` as covered in the main [Readme.md](./Readme.md).
 
+## ⚠️ Do I Need to Read This?
+
+**Most users don't need this document!** If you're just using Former for basic builders, you can skip this entirely.
+
+### ✅ You DON'T need this document if:
+- You're happy with basic `#[derive(Former)]` on structs
+- Simple setters (`.field_name(value)`) work for you
+- You're using `#[subform_collection]` and `#[subform_scalar]` successfully
+- Everything compiles and works as expected
+
+### ⚠️ You MIGHT need this document if:
+- You're getting errors about `Storage`, `Definition`, or `Context`
+- You need to customize how `.form()` behaves
+- You want to understand why Former generates certain code
+- You're implementing custom formers for complex patterns
+
+### 🔴 You DEFINITELY need this document if:
+- You're writing a library that extends Former
+- You're implementing custom `FormingEnd` logic
+- You're debugging Former internals
+- You're curious about the architecture
+
+**Progressive Learning**: Start with [readme.md](readme.md), then [examples/](examples/), then this doc if needed.
+
+---
+
+## Quick Concept Reference
+
+Before diving in, here's a TL;DR of the key concepts:
+
+| Concept | What It Is | When You Care |
+|---------|-----------|---------------|
+| **Former** | The builder struct (`MyStructFormer`) | Never - it's generated automatically |
+| **Storage** | Temporary state during building | Rarely - only for `#[storage_fields]` |
+| **Definition** | Type configuration for forming process | Almost never - advanced customization |
+| **Context** | Parent former in nested builders | Never - handled automatically |
+| **End** | What happens when you call `.form()` | Rarely - only for custom finalization |
+| **Mutator** | Last-minute modifications before forming | Sometimes - for validation/defaults |
+
+**Key Insight**: Former's internals are **abstracted away** for 99% of use cases. You interact with the clean builder API, not these concepts.
+
+---
+
 ## Struct/Enum Level Attributes
 
 Applied directly above the `struct` or `enum` definition.

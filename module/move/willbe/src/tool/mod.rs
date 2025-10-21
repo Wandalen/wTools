@@ -37,10 +37,6 @@ crate ::mod_interface!
   layer graph;
   orphan use super ::graph;
 
-  /// Traits and structs for templates.
-  layer template;
-  orphan use super ::template;
-
   /// Git interaction module that enables seamless integration and management of version control workflows.
   layer git;
   orphan use super ::git;

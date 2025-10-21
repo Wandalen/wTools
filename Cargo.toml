@@ -420,6 +420,14 @@ version = "~0.4.0"
 path = "module/alias/werror"
 
 
+## genfile
+
+[workspace.dependencies.genfile_core]
+version = "~0.1.0"
+path = "module/core/genfile"
+default-features = false
+
+
 ## string tools
 
 [workspace.dependencies.strs_tools]

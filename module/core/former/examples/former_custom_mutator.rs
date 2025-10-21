@@ -39,7 +39,7 @@ fn main() {}
 #[cfg(all(feature = "derive_former", feature = "enabled"))]
 fn main() {
   #[ cfg( feature = "enabled" ) ]
-  use former_meta::Former;
+  use former::Former;
 
   #[ derive( Debug, PartialEq, Former ) ]
   #[ storage_fields( a : i32, b : Option< String > ) ]

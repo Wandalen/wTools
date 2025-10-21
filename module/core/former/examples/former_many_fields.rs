@@ -36,7 +36,7 @@
 //))]
 fn main() {
   #[ cfg( feature = "enabled" ) ]
-  use former_meta::Former;
+  use former::Former;
 
   #[ derive( Debug, PartialEq, Eq, Former ) ]
   pub struct Structure1 {

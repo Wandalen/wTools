@@ -3,133 +3,153 @@ mod private
 {
 
   use crate :: *;
-  use std ::fs;
-  use std ::path ::Path;
+  use std ::
+  {
+  fs,
+  path :: { Path, PathBuf },
+ };
   use error ::untyped ::bail;
-  // use error ::Result;
   // qqq: group dependencies
   use iter_tools ::iter ::Itertools;
-  use template ::
+  use genfile_core ::
   {
-  TemplateFileDescriptor, TemplateFiles, TemplateFilesBuilder, TemplateParameters, TemplateValues
+  TemplateArchive,
+  WriteMode,
+  Value,
+  ParameterDescriptor,
  };
 
   /// Template for creating workspace files.
   #[ derive( Debug ) ]
   pub struct WorkspaceTemplate
   {
-  files: WorkspaceTemplateFiles,
-  parameters: TemplateParameters,
-  values: TemplateValues,
+  archive: TemplateArchive,
  }
 
   impl WorkspaceTemplate
   {
-  /// Returns template parameters
+  /// Returns list of parameter names
   #[ must_use ]
-  pub fn get_parameters( &self ) -> &TemplateParameters
+  pub fn get_parameters( &self ) -> Vec< String >
   {
-   &self.parameters
+   self.archive.parameters.descriptors.iter().map( | d | d.parameter.clone() ).collect()
  }
  }
 
   impl Default for WorkspaceTemplate
   {
+  #[ allow( clippy ::too_many_lines ) ]
   fn default() -> Self
   {
-   let parameters = TemplateParameters ::former()
-   .parameter( "project_name" ).is_mandatory( true ).end()
-   .parameter( "url" ).is_mandatory( true ).end()
-   .parameter( "branches" ).is_mandatory( true ).end()
-   .form();
-   Self
-   {
-  files: WorkspaceTemplateFiles ::default(),
-  parameters,
-  values: TemplateValues ::default(),
- }
- }
- }
+   let mut archive = TemplateArchive ::new( "workspace" );
 
-  /// Files for the deploy template.
-  ///
-  /// Default implementation contains all required files.
-  #[ derive( Debug ) ]
-  pub struct WorkspaceTemplateFiles( Vec< TemplateFileDescriptor > );
-
-  impl Default for WorkspaceTemplateFiles
-  {
-  fn default() -> Self
-  {
-   let formed = TemplateFilesBuilder ::former()
-   .file()
-   .data( include_str!( "../../template/workspace/.gitattributes" ) )
-   .path( "./.gitattributes" )
-   .end()
-   .file()
-   .data( include_str!( "../../template/workspace/.gitignore1" ) )
-   .path( "./.gitignore" )
-   .end()
-   .file()
-   .data( include_str!( "../../template/workspace/.gitpod.yml" ) )
-   .path( "./.gitpod.yml" )
-   .end()
-   .file()
-   .data( include_str!( "../../template/workspace/Cargo.hbs" ) )
-   .path( "./Cargo.toml" )
-   .is_template( true )
-   .end()
-   .file()
-   .data( include_str!( "../../template/workspace/Makefile" ) )
-   .path( "./Makefile" )
-   .end()
-   .file()
-   .data( include_str!( "../../template/workspace/readme.md" ) )
-   .path( "./readme.md" )
-   .end()
-   .file()
-   .data( include_str!( "../../template/workspace/.cargo/config.toml" ) )
-   .path( "./.cargo/config.toml" )
-   .end()
-   .file()
-   .data( include_str!( "../../template/workspace/module/module1/Cargo.toml.x" ) )
-   .path( "./module/Cargo.toml" )
-   .end()
-   .file()
-   .data( include_str!( "../../template/workspace/module/module1/readme.md" ) )
-   .path( "./module/module1/readme.md" )
-   .end()
-   .file()
-   .data
+   // Define parameters
+   archive.add_parameter
    (
-  include_str!( "../../template/workspace/module/module1/examples/module1_example.rs" )
- )
-   .path( "./module/module1/examples/module1_example.rs" )
-   .end()
-   .file()
-   .data( include_str!( "../../template/workspace/module/module1/src/lib.rs" ) )
-   .path( "./module/module1/src/lib.rs" )
-   .end()
-   .file()
-   .data( include_str!( "../../template/workspace/module/module1/tests/hello_test.rs" ) )
-   .path( "./module/module1/tests/hello_test.rs" )
-   .end()
-   .form();
-
-   Self( formed.files )
- }
- }
-
-  impl TemplateFiles for WorkspaceTemplateFiles {}
-  impl IntoIterator for WorkspaceTemplateFiles
+  ParameterDescriptor
   {
-  type Item = TemplateFileDescriptor;
-
-  type IntoIter = std ::vec ::IntoIter< Self ::Item >;
-
-  fn into_iter( self ) -> Self ::IntoIter
+   parameter: "project_name".into(),
+   is_mandatory: true,
+   default_value: None,
+   description: None,
+ }
+ );
+   archive.add_parameter
+   (
+  ParameterDescriptor
   {
-   self.0.into_iter()
+   parameter: "url".into(),
+   is_mandatory: true,
+   default_value: None,
+   description: None,
+ }
+ );
+   archive.add_parameter
+   (
+  ParameterDescriptor
+  {
+   parameter: "branches".into(),
+   is_mandatory: true,
+   default_value: None,
+   description: None,
+ }
+ );
+
+   // Add template files
+   archive.add_text_file
+   (
+  PathBuf ::from( "./.gitattributes" ),
+  include_str!( "../../template/workspace/.gitattributes" ),
+  WriteMode ::Rewrite
+ );
+   archive.add_text_file
+   (
+  PathBuf ::from( "./.gitignore" ),
+  include_str!( "../../template/workspace/.gitignore1" ),
+  WriteMode ::Rewrite
+ );
+   archive.add_text_file
+   (
+  PathBuf ::from( "./.gitpod.yml" ),
+  include_str!( "../../template/workspace/.gitpod.yml" ),
+  WriteMode ::Rewrite
+ );
+   archive.add_text_file
+   (
+  PathBuf ::from( "./Cargo.toml" ),
+  include_str!( "../../template/workspace/Cargo.hbs" ),
+  WriteMode ::Rewrite
+ );
+   archive.add_text_file
+   (
+  PathBuf ::from( "./Makefile" ),
+  include_str!( "../../template/workspace/Makefile" ),
+  WriteMode ::Rewrite
+ );
+   archive.add_text_file
+   (
+  PathBuf ::from( "./readme.md" ),
+  include_str!( "../../template/workspace/readme.md" ),
+  WriteMode ::Rewrite
+ );
+   archive.add_text_file
+   (
+  PathBuf ::from( "./.cargo/config.toml" ),
+  include_str!( "../../template/workspace/.cargo/config.toml" ),
+  WriteMode ::Rewrite
+ );
+   archive.add_text_file
+   (
+  PathBuf ::from( "./module/Cargo.toml" ),
+  include_str!( "../../template/workspace/module/module1/Cargo.toml.x" ),
+  WriteMode ::Rewrite
+ );
+   archive.add_text_file
+   (
+  PathBuf ::from( "./module/module1/readme.md" ),
+  include_str!( "../../template/workspace/module/module1/readme.md" ),
+  WriteMode ::Rewrite
+ );
+   archive.add_text_file
+   (
+  PathBuf ::from( "./module/module1/examples/module1_example.rs" ),
+  include_str!( "../../template/workspace/module/module1/examples/module1_example.rs" ),
+  WriteMode ::Rewrite
+ );
+   archive.add_text_file
+   (
+  PathBuf ::from( "./module/module1/src/lib.rs" ),
+  include_str!( "../../template/workspace/module/module1/src/lib.rs" ),
+  WriteMode ::Rewrite
+ );
+   archive.add_text_file
+   (
+  PathBuf ::from( "./module/module1/tests/hello_test.rs" ),
+  include_str!( "../../template/workspace/module/module1/tests/hello_test.rs" ),
+  WriteMode ::Rewrite
+ );
+
+   Self { archive }
  }
  }
 
@@ -154,25 +174,18 @@ mod private
   {
    bail!( "Directory should be empty" )
  }
-  template
-  .values
-  .insert_if_empty
-  (
-   "project_name",
-   wca ::Value ::String( path.file_name().unwrap().to_string_lossy().into() )
- );
-  template.values.insert_if_empty( "url", wca ::Value ::String( repository_url ) );
-  template
-  .values
-  .insert_if_empty
-  (
-   "branches",
-   wca ::Value ::String
-   (
-  branches.into_iter().map( | b | format!( r#""{b}""# ) ).join( ", " )
- )
- );
-  template.files.create_all( path, &template.values )?;
+
+  // Set parameter values
+  let project_name = path.file_name().unwrap().to_string_lossy().to_string();
+  template.archive.set_value( "project_name", Value ::String( project_name ) );
+  template.archive.set_value( "url", Value ::String( repository_url ) );
+
+  let branches_str = branches.into_iter().map( | b | format!( r#""{b}""# ) ).join( ", " );
+  template.archive.set_value( "branches", Value ::String( branches_str ) );
+
+  // Materialize the template
+  template.archive.materialize( path ).map_err( | e | error ::untyped ::format_err!( "{}", e ) )?;
+
   Ok( () )
  }
 }

@@ -1,5 +1,44 @@
 # Former Macro: Architectural Limitations Analysis
 
+This document provides a systematic analysis of the fundamental limitations preventing certain patterns from working with the Former crate. Each limitation is **experimentally verified** and includes workarounds where available.
+
+## Quick Decision Tree: Will Former Work For My Use Case?
+
+```
+START: Want to use #[derive(Former)]
+  │
+  ├─ Do you need borrowed data (&'a T)?
+  │  ├─ YES ─> ❌ Won't work (Lifetime Limitation)
+  │  │         Workaround: Use Arc<T>, Cow<'static, T>, or owned types
+  │  └─ NO ──> Continue ↓
+  │
+  ├─ Is your type an enum with generic parameters?
+  │  ├─ YES ─> ❌ Won't work (Generic Enum Limitation)
+  │  │         Workaround: Use concrete types (String instead of T)
+  │  └─ NO ──> Continue ↓
+  │
+  ├─ Is your enum multi-variant with complex patterns?
+  │  ├─ YES ─> ⚠️ May conflict (Trait Conflict Limitation)
+  │  │         Workaround: Use single-variant enums or split types
+  │  └─ NO ──> Continue ↓
+  │
+  └─> ✅ Former should work! Proceed with confidence.
+```
+
+## Workaround Quick Reference
+
+| Limitation | Won't Work | Use Instead |
+|------------|------------|-------------|
+| **Lifetimes** | `field: &'a str` | `field: String` or `field: Arc<str>` |
+| **Lifetimes** | `field: &'a [u8]` | `field: Vec<u8>` or `field: Bytes` |
+| **Lifetimes** | `headers: &'a HeaderMap` | `headers: Arc<HeaderMap>` |
+| **Generic Enums** | `enum Msg<T> { Val(T) }` | `enum Msg { Val(String) }` |
+| **Multi-Variant** | Complex enum with 5+ variants | Split into separate enums or use single variant |
+
+---
+
+## Detailed Analysis
+
 This document provides a systematic analysis of the 4 fundamental limitations preventing certain tests from being enabled in the Former crate. Each limitation is **experimentally verified** and characterized using the Target Type Classification framework from the specification.
 
 ## Target Type Classification Context

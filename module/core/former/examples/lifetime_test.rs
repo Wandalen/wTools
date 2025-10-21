@@ -4,7 +4,7 @@
 #![allow(missing_docs)]
 
 #[ cfg( feature = "enabled" ) ]
-use former_meta::Former;
+use former::Former;
 
 #[ derive( Debug, PartialEq, Former ) ]
 pub struct Simple<'a> {
