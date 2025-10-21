@@ -12,7 +12,7 @@ exclude = [
   "module/blank/*",
   "module/postponed/*",
   "module/step/*",
-  "module/move/unitore",
+  "module/core/unitore",
   "module/move/gspread",
   "module/move/benchkit",
   "module/move/optimization_tools",
@@ -124,7 +124,7 @@ path = "module/alias/std_x"
 
 [workspace.dependencies.unilang_parser]
 version = "~0.19.0"
-path = "module/move/unilang_parser" # Point to original unilang_parser
+path = "module/core/unilang_parser"
 
 
 ## data_type
@@ -532,7 +532,7 @@ default-features = false
 
 [workspace.dependencies.wca]
 version = "~0.31.0"
-path = "module/move/wca"
+path = "module/core/wca"
 
 ## censor
 
@@ -545,7 +545,7 @@ path = "module/move/wcensor"
 
 [workspace.dependencies.willbe]
 version = "~0.27.0"
-path = "module/move/willbe"
+path = "module/core/willbe"
 
 
 ## lang
@@ -580,7 +580,7 @@ path = "module/move/sqlx_query"
 
 [workspace.dependencies.deterministic_rand]
 version = "~0.6.0"
-path = "module/move/deterministic_rand"
+path = "module/core/deterministic_rand"
 
 [workspace.dependencies.crates_tools]
 version = "~0.19.0"

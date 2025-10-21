@@ -33,7 +33,7 @@ enabled = []
 genfile_core = { path = "../genfile_core", features = [ "full" ] }
 
 # CLI framework
-unilang = { path = "../../move/unilang", features = [ "enabled", "repl", "enhanced_repl" ] }
+unilang = { path = "../unilang", features = [ "enabled", "repl", "enhanced_repl" ] }
 
 # Error handling and utilities
 error_tools = { workspace = true, features = [ "enabled", "error_typed" ] }
