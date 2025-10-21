@@ -114,8 +114,7 @@ full = [
   "approach_json_multi_build",
   "approach_json_runtime",
   "approach_rust_dsl_const",
-  "approach_hybrid",
-  "advanced_benchmarks"
+  "approach_hybrid"
 ]
 
 # All YAML approaches:
@@ -153,8 +152,7 @@ all_runtime_approaches = [
 # ========================================
 
 enabled = []
-benchmarks = [ "simd", "clap", "pico-args", "benchkit", "num_cpus", "rand" ]
-advanced_benchmarks = [ "benchmarks", "sysinfo", "approach_yaml_multi_build", "approach_json_multi_build" ]
+# NOTE: Benchmark features removed - use unilang_benchmarks workspace crate instead
 advanced_cli_tests = [ ]
 
 # WebAssembly-compatible feature set - excludes platform-specific dependencies
@@ -214,12 +212,8 @@ simd-json = { version = "0.13", optional = true } # SIMD-optimized JSON parsing
 memchr = { version = "2.7", optional = true } # SIMD-optimized byte searching (6x faster than std)
 bytecount = { version = "0.6", optional = true } # SIMD byte counting and operations
 
-# Benchmark dependencies moved to dev-dependencies to avoid production inclusion
-clap = { version = "4.4", optional = true }
-pico-args = { version = "0.5", optional = true }
-benchkit = { workspace = true, optional = true, features = [ "enabled", "markdown_reports", "data_generators", "statistical_analysis" ] }
-num_cpus = { version = "1.16", optional = true }
-rand = { version = "0.8", optional = true }
+# NOTE: Benchmark dependencies have been moved to unilang_benchmarks workspace crate
+# to avoid polluting the production dependency tree
 
 [[bin]]
 name = "unilang_cli"

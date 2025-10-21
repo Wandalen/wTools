@@ -28,9 +28,10 @@ use unilang::interpreter::ExecutionContext;
 use unilang::types::Value;
 use unilang_parser::{ Parser, UnilangParserOptions };
 
-/// Mock routine for multiple parameter tests
+/// Simple test routine for multiple parameter tests
+/// Returns minimal successful output - actual execution not tested here
 #[allow(clippy::unnecessary_wraps)]
-fn mock_routine( _cmd : VerifiedCommand, _ctx : ExecutionContext ) -> Result< OutputData, unilang::data::ErrorData >
+fn test_routine( _cmd : VerifiedCommand, _ctx : ExecutionContext ) -> Result< OutputData, unilang::data::ErrorData >
 {
   Ok( OutputData
   {
@@ -135,7 +136,7 @@ fn test_basic_multiple_parameter_collection()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_multiple_command( ".test", "param", false ); // multiple=false
-  registry.command_add_runtime( &cmd, Box::new( mock_routine ) ).unwrap();
+  registry.command_add_runtime( &cmd, Box::new( test_routine ) ).unwrap();
 
   let input = r#".test param::"value1" param::"value2" param::"value3""#;
   let verified_commands = parse_and_analyze( &registry, input ).expect( "Should succeed" );
@@ -162,7 +163,7 @@ fn test_multiple_parameter_collection_with_multiple_true()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_multiple_command( ".test", "param", true ); // multiple=true
-  registry.command_add_runtime( &cmd, Box::new( mock_routine ) ).unwrap();
+  registry.command_add_runtime( &cmd, Box::new( test_routine ) ).unwrap();
 
   let input = r#".test param::"value1" param::"value2""#;
   let verified_commands = parse_and_analyze( &registry, input ).expect( "Should succeed" );
@@ -183,7 +184,7 @@ fn test_single_parameter_with_multiple_false()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_multiple_command( ".test", "param", false );
-  registry.command_add_runtime( &cmd, Box::new( mock_routine ) ).unwrap();
+  registry.command_add_runtime( &cmd, Box::new( test_routine ) ).unwrap();
 
   let input = r#".test param::"single_value""#;
   let verified_commands = parse_and_analyze( &registry, input ).expect( "Should succeed" );
@@ -205,7 +206,7 @@ fn test_single_parameter_with_multiple_true()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_multiple_command( ".test", "param", true );
-  registry.command_add_runtime( &cmd, Box::new( mock_routine ) ).unwrap();
+  registry.command_add_runtime( &cmd, Box::new( test_routine ) ).unwrap();
 
   let input = r#".test param::"single_value""#;
   let verified_commands = parse_and_analyze( &registry, input ).expect( "Should succeed" );
@@ -231,7 +232,7 @@ fn test_multiple_parameters_with_aliases()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_multiple_command( ".test", "param", false );
-  registry.command_add_runtime( &cmd, Box::new( mock_routine ) ).unwrap();
+  registry.command_add_runtime( &cmd, Box::new( test_routine ) ).unwrap();
 
   // Mix canonical name and aliases
   let input = r#".test param::"value1" alias1::"value2" a::"value3""#;
@@ -258,7 +259,7 @@ fn test_mixed_parameter_types()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_mixed_command();
-  registry.command_add_runtime( &cmd, Box::new( mock_routine ) ).unwrap();
+  registry.command_add_runtime( &cmd, Box::new( test_routine ) ).unwrap();
 
   let input = r#".mixed files::"file1.txt" files::"file2.txt" counts::10 counts::20 enabled::true enabled::false"#;
   let verified_commands = parse_and_analyze( &registry, input ).expect( "Should succeed" );
@@ -313,7 +314,7 @@ fn test_quoted_string_preservation()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_multiple_command( ".test", "commands", false );
-  registry.command_add_runtime( &cmd, Box::new( mock_routine ) ).unwrap();
+  registry.command_add_runtime( &cmd, Box::new( test_routine ) ).unwrap();
 
   let input = r#".test commands::"cargo build" commands::"echo hello world" commands::"ls -la /path/with spaces/""#;
   let verified_commands = parse_and_analyze( &registry, input ).expect( "Should succeed" );
@@ -342,7 +343,7 @@ fn test_unicode_and_special_characters()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_multiple_command( ".test", "text", false );
-  registry.command_add_runtime( &cmd, Box::new( mock_routine ) ).unwrap();
+  registry.command_add_runtime( &cmd, Box::new( test_routine ) ).unwrap();
 
   let input = r#".test text::"hello world" text::"special: chars & symbols""#;
   let verified_commands = parse_and_analyze( &registry, input ).expect( "Should succeed" );
@@ -372,7 +373,7 @@ fn test_performance_with_many_parameters()
 
   let mut registry = CommandRegistry::new();
   let cmd = create_multiple_command( ".test", "data", false );
-  registry.command_add_runtime( &cmd, Box::new( mock_routine ) ).unwrap();
+  registry.command_add_runtime( &cmd, Box::new( test_routine ) ).unwrap();
 
   // Create input with 50 parameters
   let mut input_parts = vec![ ".test".to_string() ];
@@ -404,7 +405,7 @@ fn test_edge_case_empty_values()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_multiple_command( ".test", "values", false );
-  registry.command_add_runtime( &cmd, Box::new( mock_routine ) ).unwrap();
+  registry.command_add_runtime( &cmd, Box::new( test_routine ) ).unwrap();
 
   let input = r#".test values::"" values::"non-empty" values::"""#;
   let verified_commands = parse_and_analyze( &registry, input ).expect( "Should succeed" );
@@ -435,7 +436,7 @@ fn test_backward_compatibility_single_parameters()
 
   // Command with multiple=false
   let cmd = create_multiple_command( ".single", "param", false );
-  registry.command_add_runtime( &cmd, Box::new( mock_routine ) ).unwrap();
+  registry.command_add_runtime( &cmd, Box::new( test_routine ) ).unwrap();
 
   let input = r#".single param::"single_value""#;
   let verified_commands = parse_and_analyze( &registry, input ).expect( "Should succeed" );

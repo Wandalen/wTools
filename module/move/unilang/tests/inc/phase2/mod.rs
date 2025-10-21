@@ -1,3 +1,11 @@
+//\! Mod Tests
+//\!
+//\! ## Scope  
+//\! Tests for mod functionality
+//\!
+//\! ## Coverage
+//\! - Core functionality validation
+
 pub mod argument_types_test;
 pub mod collection_types_test;
 mod command_loader_test;

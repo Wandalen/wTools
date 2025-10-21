@@ -1,3 +1,11 @@
+//\! Complex types and attributes test Tests
+//\!
+//\! ## Scope  
+//\! Tests for complex types and attributes test functionality
+//\!
+//\! ## Coverage
+//\! - Core functionality validation
+
 use std::collections::HashMap;
 use unilang::data::{ArgumentDefinition, CommandDefinition, Kind, ArgumentAttributes, ValidationRule};
 use unilang_parser::{SourceLocation};

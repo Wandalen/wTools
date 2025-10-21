@@ -6,22 +6,17 @@
 /// Internal namespace.
 mod private
 {
-  #[ cfg( feature = "benchmarks" ) ]
   use rand::{ Rng, SeedableRng };
-  #[ cfg( feature = "benchmarks" ) ]
   use rand::rngs::StdRng;
-  #[ cfg( feature = "benchmarks" ) ]
   use crate::benchmark_data_sizes::BenchmarkDataSize;
 
   /// Realistic test data generator for unilang scenarios
-  #[ cfg( feature = "benchmarks" ) ]
   #[ derive( Debug ) ]
   pub struct RealisticDataGenerator
   {
     rng : StdRng,
   }
 
-  #[ cfg( feature = "benchmarks" ) ]
   impl RealisticDataGenerator
   {
     /// Create new generator with fixed seed for reproducible results
@@ -302,7 +297,6 @@ mod private
     }
   }
 
-  #[ cfg( feature = "benchmarks" ) ]
   impl Default for RealisticDataGenerator
   {
     fn default() -> Self
@@ -312,7 +306,6 @@ mod private
   }
 
   /// Pre-generated realistic data cache for performance
-  #[ cfg( feature = "benchmarks" ) ]
   #[ derive( Debug ) ]
   pub struct RealisticDataCache
   {
@@ -321,7 +314,6 @@ mod private
     json_scenarios : std::collections::HashMap< String, String >,
   }
 
-  #[ cfg( feature = "benchmarks" ) ]
   impl RealisticDataCache
   {
     /// Create new cache and pre-generate common data sizes
@@ -371,7 +363,6 @@ mod private
     }
   }
 
-  #[ cfg( feature = "benchmarks" ) ]
   impl Default for RealisticDataCache
   {
     fn default() -> Self
@@ -381,10 +372,6 @@ mod private
   }
 }
 
-mod_interface::mod_interface!
-{
-  #[ cfg( feature = "benchmarks" ) ]
-  orphan use RealisticDataGenerator;
-  #[ cfg( feature = "benchmarks" ) ]
-  orphan use RealisticDataCache;
-}
+// Public exports
+pub use private::RealisticDataGenerator;
+pub use private::RealisticDataCache;

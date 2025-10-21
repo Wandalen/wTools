@@ -1,3 +1,11 @@
+//\! Integration tests Tests
+//\!
+//\! ## Scope  
+//\! Tests for integration tests functionality
+//\!
+//\! ## Coverage
+//\! - Core functionality validation
+
 #![ allow( deprecated ) ]
 
 use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind };

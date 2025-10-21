@@ -217,25 +217,16 @@ let mock_routine = Box::new(move |cmd: VerifiedCommand, _ctx: ExecutionContext| 
 
 ### 4. Performance Testing Patterns
 
-**Baseline Performance Testing**
+**Scalability Testing**
 ```rust
-let start_time = Instant::now();
 let result = system.process_large_input(large_data);
-let duration = start_time.elapsed();
 
 assert!(result.is_ok(), "Should handle large input");
-assert!(duration.as_millis() < 1000, "Should complete within reasonable time");
+assert!(result.output.len() > 0, "Should produce output");
 ```
 
-**Performance Regression Detection**
-```rust
-// Measure before and after
-let baseline_duration = measure_baseline_performance();
-let current_duration = measure_current_performance();
-
-assert!(current_duration <= baseline_duration * 1.5,
-  "Performance should not degrade significantly");
-```
+**Note on Performance Testing**
+Performance testing should be done using dedicated benchmarking tools (like `benchkit` framework), not in unit/integration tests. Tests should focus on correctness only.
 
 ### 5. Data-Driven Testing
 

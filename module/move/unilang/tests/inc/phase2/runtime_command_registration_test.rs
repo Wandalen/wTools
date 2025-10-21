@@ -1,3 +1,22 @@
+
+//! Runtime Command Registration Tests
+//!
+//! ## Scope
+//! Tests the runtime command registration system, verifying that commands can be
+//! registered dynamically and executed correctly through the semantic analyzer.
+//!
+//! ## Coverage
+//! - Command registration and execution success paths
+//! - Argument parsing and binding for runtime commands
+//! - Duplicate command registration handling
+//! - Unknown command error handling
+//! - Missing argument validation
+//! - Invalid argument type checking
+//!
+//! ## Related
+//! - `semantic/argument_binding.rs` - Argument binding logic
+//! - `registry/registry_basic.rs` - Registry functionality tests
+
 use std::collections::HashMap;
 use unilang::{
   data::{ArgumentDefinition, CommandDefinition, Kind, OutputData, ErrorData, ArgumentAttributes},

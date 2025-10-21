@@ -7,7 +7,6 @@
 mod private
 {
   /// Standard benchmark data size categories
-  #[ cfg( feature = "benchmarks" ) ]
   #[ derive( Debug, Clone, Copy, PartialEq, Eq, Hash ) ]
   pub enum BenchmarkDataSize
   {
@@ -21,7 +20,6 @@ mod private
     Huge,
   }
 
-  #[ cfg( feature = "benchmarks" ) ]
   impl BenchmarkDataSize
   {
     /// Get the numeric value for this size category
@@ -86,7 +84,6 @@ mod private
   }
 
   /// Standard data size generator trait
-  #[ cfg( feature = "benchmarks" ) ]
   pub trait StandardDataGenerator< T >
   {
     /// Generate test data for the specified size category
@@ -97,11 +94,9 @@ mod private
   }
 
   /// Utility functions for standard benchmark data
-  #[ cfg( feature = "benchmarks" ) ]
   #[ derive( Debug ) ]
   pub struct BenchmarkDataUtils;
 
-  #[ cfg( feature = "benchmarks" ) ]
   impl BenchmarkDataUtils
   {
     /// Generate command names for the specified size
@@ -154,12 +149,7 @@ mod private
   }
 }
 
-mod_interface::mod_interface!
-{
-  #[ cfg( feature = "benchmarks" ) ]
-  orphan use BenchmarkDataSize;
-  #[ cfg( feature = "benchmarks" ) ]
-  orphan use StandardDataGenerator;
-  #[ cfg( feature = "benchmarks" ) ]
-  orphan use BenchmarkDataUtils;
-}
+// Public exports (no feature gates needed in dedicated benchmark crate)
+pub use private::BenchmarkDataSize;
+pub use private::StandardDataGenerator;
+pub use private::BenchmarkDataUtils;

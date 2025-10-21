@@ -503,10 +503,11 @@ mod private
         "static_commands" => cfg!( feature = "static_registry" ), // Legacy alias
         "multi_file" => cfg!( feature = "multi_file" ),
         "multi_yaml" => cfg!( feature = "multi_file" ), // Legacy alias
-        "advanced_benchmarks" => cfg!( feature = "advanced_benchmarks" ),
+        // NOTE: Benchmark features removed - see unilang_benchmarks workspace crate
+        "advanced_benchmarks" => false,
         "advanced_cli_tests" => cfg!( feature = "advanced_cli_tests" ),
         "wasm" => cfg!( feature = "wasm" ),
-        "benchmarks" => cfg!( feature = "benchmarks" ),
+        "benchmarks" => false,
         "on_unknown_suggest" => cfg!( feature = "on_unknown_suggest" ),
         "full" => cfg!( feature = "full" ),
         // Legacy compatibility for existing tests

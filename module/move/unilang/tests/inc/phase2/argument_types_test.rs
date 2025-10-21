@@ -1,3 +1,11 @@
+//\! Argument types test Tests
+//\!
+//\! ## Scope  
+//\! Tests for argument types test functionality
+//\!
+//\! ## Coverage
+//\! - Core functionality validation
+
 use std::collections::HashMap;
 use unilang::data::{ArgumentDefinition, CommandDefinition, Kind, ArgumentAttributes};
 use unilang_parser::{SourceLocation};

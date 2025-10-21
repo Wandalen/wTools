@@ -140,7 +140,7 @@ impl BenchmarkConfig {
   }
 
   /// Get environment-appropriate measurement configuration for benchkit
-  pub fn to_measurement_config(&self) -> crate::MeasurementConfigWrapper {
+  pub fn to_measurement_config(&self) -> MeasurementConfigWrapper {
     MeasurementConfigWrapper {
       iterations: self.min_sample_size,
       warmup_iterations: self.warmup_iterations,
@@ -166,7 +166,7 @@ pub struct MeasurementConfigWrapper {
   pub regression_threshold: f64,
 }
 
-#[cfg(feature = "benchkit")]
+// Benchkit is always available in this dedicated benchmark crate
 impl From<MeasurementConfigWrapper> for benchkit::measurement::MeasurementConfig {
   fn from(wrapper: MeasurementConfigWrapper) -> Self {
     Self {
@@ -259,9 +259,7 @@ mod tests {
   }
 }
 
-mod_interface::mod_interface!
-{
-  exposed use private::BenchmarkConfig;
-  exposed use private::BenchmarkEnvironment;
-  exposed use private::MeasurementConfigWrapper;
-}
+// Public exports
+pub use private::BenchmarkConfig;
+pub use private::BenchmarkEnvironment;
+pub use private::MeasurementConfigWrapper;

@@ -368,8 +368,6 @@ fn test_execution_with_complex_arguments()
 #[test]
 fn test_execution_performance()
 {
-  use std::time::Instant;
-
   #[ allow( deprecated ) ]
   let mut registry = CommandRegistry::new();
   let cmd = create_test_command( ".perf" );
@@ -382,12 +380,9 @@ fn test_execution_performance()
   let interpreter = Interpreter::new( &commands, &registry );
   let mut context = ExecutionContext {};
 
-  let start = Instant::now();
   let result = interpreter.run( &mut context );
-  let duration = start.elapsed();
 
-  assert!( result.is_ok(), "Performance test should succeed" );
-  assert!( duration.as_millis() < 10, "Execution should be fast: {duration:?}" );
+  assert!( result.is_ok(), "Execution test should succeed" );
 }
 
 #[test]

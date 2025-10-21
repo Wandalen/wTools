@@ -59,7 +59,8 @@
 //!
 //! ### Optional Features
 //! - `on_unknown_suggest` - Fuzzy command suggestions (requires `textdistance`)
-//! - `benchmarks` - Development benchmarking tools (dev-only)
+//!
+//! **Note**: Benchmarking tools are available in the separate `unilang_benchmarks` workspace crate
 //!
 //! ### Usage Examples
 //!
@@ -187,24 +188,7 @@ mod_interface::mod_interface!
   /// SIMD-optimized tokenization for 3-6x performance improvements.
   layer simd_tokenizer;
 
-  /// Environment-specific benchmark configuration system.
-  layer benchmark_config;
-
-  /// Coefficient of variation analysis for benchmark quality assessment.
-  layer cv_analysis;
-
-  /// Automatic documentation updater for benchmark results.
-  layer documentation_updater;
-
-  /// Standard benchmark data sizes for consistent performance comparison.
-  layer benchmark_data_sizes;
-
-  /// Realistic test data generation for production-like benchmarks.
-  layer realistic_test_data;
-
-  /// Comparative benchmark structure for side-by-side algorithm performance analysis.
-  layer comparative_benchmark_structure;
-
-  /// Context-rich benchmark documentation generator for comprehensive reporting.
-  layer context_rich_documentation;
+  // NOTE: Benchmark modules have been moved to unilang_benchmarks workspace crate
+  // to avoid polluting production dependencies. Use unilang_benchmarks for all
+  // benchmarking needs.
 }

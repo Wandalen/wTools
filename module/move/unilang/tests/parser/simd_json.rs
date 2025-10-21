@@ -345,12 +345,12 @@ fn test_simd_json_formatting_compatibility()
 }
 
 
-/// Fallback test for when benchmarks feature is not enabled
-#[ cfg( not( feature = "benchmarks" ) ) ]
+/// NOTE: Benchmarks moved to `unilang_benchmarks` workspace crate
+/// This placeholder ensures tests compile cleanly
 #[test]
 fn test_simd_performance_validation()
 {
-  println!( "⚠️  SIMD performance validation disabled - enable 'benchmarks' feature" );
+  println!( "⚠️  SIMD performance validation moved to unilang_benchmarks crate" );
 }
 
 /// Test thread safety of SIMD JSON parsing

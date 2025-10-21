@@ -1,3 +1,11 @@
+//\! Unit tests Tests
+//\!
+//\! ## Scope  
+//\! Tests for unit tests functionality
+//\!
+//\! ## Coverage
+//\! - Core functionality validation
+
 #[ test ]
 fn basic_arithmetic_test()
 {

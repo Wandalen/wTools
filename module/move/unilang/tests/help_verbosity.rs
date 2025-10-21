@@ -7,8 +7,9 @@ use unilang::data::{ OutputData, ErrorData, ValidationRule };
 use unilang::interpreter::ExecutionContext;
 use unilang::semantic::VerifiedCommand;
 
-/// Mock routine for test commands
-fn mock_routine() -> Box< dyn Fn( VerifiedCommand, ExecutionContext ) -> Result< OutputData, ErrorData > + Send + Sync >
+/// Simple test routine for help generation tests
+/// Returns minimal successful output - actual execution not tested here
+fn test_command_routine() -> Box< dyn Fn( VerifiedCommand, ExecutionContext ) -> Result< OutputData, ErrorData > + Send + Sync >
 {
   Box::new( |_cmd, _ctx| Ok( OutputData { content: "test".to_string(), format: "text".to_string(), execution_time_ms: None } ) )
 }
@@ -63,7 +64,7 @@ fn test_verbosity_level_0_minimal()
   let mut registry = CommandRegistry::new();
   let command = create_test_command();
   #[ allow( deprecated ) ]
-  registry.command_add_runtime( &command, mock_routine() ).unwrap();
+  registry.command_add_runtime( &command, test_command_routine() ).unwrap();
 
   let help_gen = HelpGenerator::with_verbosity( &registry, HelpVerbosity::Minimal );
   let help = help_gen.command( ".config" ).expect( "Command should exist" );
@@ -86,7 +87,7 @@ fn test_verbosity_level_1_basic()
   let mut registry = CommandRegistry::new();
   let command = create_test_command();
   #[ allow( deprecated ) ]
-  registry.command_add_runtime( &command, mock_routine() ).unwrap();
+  registry.command_add_runtime( &command, test_command_routine() ).unwrap();
 
   let help_gen = HelpGenerator::with_verbosity( &registry, HelpVerbosity::Basic );
   let help = help_gen.command( ".config" ).expect( "Command should exist" );
@@ -111,7 +112,7 @@ fn test_verbosity_level_2_standard_default()
   let mut registry = CommandRegistry::new();
   let command = create_test_command();
   #[ allow( deprecated ) ]
-  registry.command_add_runtime( &command, mock_routine() ).unwrap();
+  registry.command_add_runtime( &command, test_command_routine() ).unwrap();
 
   // Test both default and explicit Standard
   let help_gen_default = HelpGenerator::new( &registry );
@@ -147,7 +148,7 @@ fn test_verbosity_level_3_detailed()
   let mut registry = CommandRegistry::new();
   let command = create_test_command();
   #[ allow( deprecated ) ]
-  registry.command_add_runtime( &command, mock_routine() ).unwrap();
+  registry.command_add_runtime( &command, test_command_routine() ).unwrap();
 
   let help_gen = HelpGenerator::with_verbosity( &registry, HelpVerbosity::Detailed );
   let help = help_gen.command( ".config" ).expect( "Command should exist" );
@@ -170,7 +171,7 @@ fn test_verbosity_level_4_comprehensive()
   let mut registry = CommandRegistry::new();
   let command = create_test_command();
   #[ allow( deprecated ) ]
-  registry.command_add_runtime( &command, mock_routine() ).unwrap();
+  registry.command_add_runtime( &command, test_command_routine() ).unwrap();
 
   let help_gen = HelpGenerator::with_verbosity( &registry, HelpVerbosity::Comprehensive );
   let help = help_gen.command( ".config" ).expect( "Command should exist" );
@@ -214,7 +215,7 @@ fn test_verbosity_set_and_get()
   let mut registry = CommandRegistry::new();
   let command = create_test_command();
   #[ allow( deprecated ) ]
-  registry.command_add_runtime( &command, mock_routine() ).unwrap();
+  registry.command_add_runtime( &command, test_command_routine() ).unwrap();
 
   let mut help_gen = HelpGenerator::new( &registry );
   assert_eq!( help_gen.verbosity(), HelpVerbosity::Standard );
@@ -233,7 +234,7 @@ fn test_verbosity_progressive_information()
   let mut registry = CommandRegistry::new();
   let command = create_test_command();
   #[ allow( deprecated ) ]
-  registry.command_add_runtime( &command, mock_routine() ).unwrap();
+  registry.command_add_runtime( &command, test_command_routine() ).unwrap();
 
   // Test that each level contains more information than the previous
   let help_0 = HelpGenerator::with_verbosity( &registry, HelpVerbosity::Minimal )

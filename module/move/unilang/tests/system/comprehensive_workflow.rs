@@ -35,7 +35,7 @@ fn test_static_registry_performance()
   let mut command_lookup_times = Vec::new();
 
   // Create mock static commands data
-  let static_commands = create_mock_static_commands( command_count );
+  let static_commands = create_test_static_commands( command_count );
 
   println!( "🚀 Testing static registry performance with {command_count} commands" );
 
@@ -367,7 +367,9 @@ fn test_complete_workflow() -> Result< (), Box< dyn core::error::Error > >
 
 // === Helper Functions and Mock Implementations ===
 
-fn create_mock_static_commands( count: usize ) -> HashMap< String, CommandDefinition >
+/// Create test command definitions for performance testing
+/// Generates realistic command structures to test static registry performance
+fn create_test_static_commands( count: usize ) -> HashMap< String, CommandDefinition >
 {
   let mut commands = HashMap::new();
 
