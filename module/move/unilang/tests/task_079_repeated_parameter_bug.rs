@@ -75,6 +75,7 @@ fn create_run_command_definition() -> CommandDefinition
 /// Helper: Parse and verify a command string
 fn parse_and_verify_command( input: &str ) -> Result< String, String >
 {
+  #[ allow( deprecated ) ]
   let mut registry = CommandRegistry::new();
   let cmd_def = create_run_command_definition();
   registry.register( cmd_def );

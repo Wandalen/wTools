@@ -15,10 +15,13 @@ mod private
 ///
 /// Loads command definitions from a YAML string.
 ///
+/// **Requires feature**: `yaml_parser` (enabled by YAML approaches)
+///
 /// # Errors
 ///
 /// Returns an `Error::Yaml` if the YAML string is invalid.
 ///
+#[ cfg( feature = "yaml_parser" ) ]
 pub fn load_command_definitions_from_yaml_str( yaml_str : &str ) -> Result< Vec< CommandDefinition >, Error >
 {
   let definitions : Vec< CommandDefinition > = serde_yaml::from_str( yaml_str ).map_err( Error::Yaml )?;
@@ -28,10 +31,13 @@ pub fn load_command_definitions_from_yaml_str( yaml_str : &str ) -> Result< Vec<
 ///
 /// Loads command definitions from a JSON string.
 ///
+/// **Requires feature**: `json_parser` (enabled by JSON approaches)
+///
 /// # Errors
 ///
 /// Returns an `Error::Json` if the JSON string is invalid.
 ///
+#[ cfg( feature = "json_parser" ) ]
 pub fn load_command_definitions_from_json_str( json_str : &str ) -> Result< Vec< CommandDefinition >, Error >
 {
   let definitions : Vec< CommandDefinition > = serde_json::from_str( json_str ).map_err( Error::Json )?;
@@ -71,10 +77,14 @@ pub fn resolve_routine_link( _link : &str ) -> Result< CommandRoutine, Error >
 
 mod_interface::mod_interface!
 {
+  #[ cfg( feature = "yaml_parser" ) ]
   exposed use private::load_command_definitions_from_yaml_str;
+  #[ cfg( feature = "json_parser" ) ]
   exposed use private::load_command_definitions_from_json_str;
   exposed use private::resolve_routine_link;
-  
+
+  #[ cfg( feature = "yaml_parser" ) ]
   prelude use private::load_command_definitions_from_yaml_str;
+  #[ cfg( feature = "json_parser" ) ]
   prelude use private::load_command_definitions_from_json_str;
 }

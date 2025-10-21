@@ -98,6 +98,7 @@ fn test_fixed_shell_args_two_commands()
   println!( "Fixed instruction text: {instruction_text}" );
   assert_eq!( instruction_text, r#".run command::"echo a" command::"echo b" parallel::2"# );
 
+  #[ allow( deprecated ) ]
   let mut registry = CommandRegistry::new();
   registry.register( create_run_command() );
 
@@ -145,6 +146,7 @@ fn test_fixed_shell_args_four_commands()
   println!( "Fixed instruction text: {instruction_text}" );
   assert_eq!( instruction_text, r#".run command::"echo a" command::"echo b" command::"echo c" command::"echo d" parallel::2"# );
 
+  #[ allow( deprecated ) ]
   let mut registry = CommandRegistry::new();
   registry.register( create_run_command() );
 
@@ -188,6 +190,7 @@ fn test_fixed_real_cargo_commands()
 
   println!( "Fixed instruction text: {instruction_text}" );
 
+  #[ allow( deprecated ) ]
   let mut registry = CommandRegistry::new();
   registry.register( create_run_command() );
 
@@ -234,6 +237,7 @@ fn test_fixed_single_word_commands()
   // Single words dont need quoting
   assert_eq!( instruction_text, ".run command::pwd command::whoami command::date command::hostname parallel::2" );
 
+  #[ allow( deprecated ) ]
   let mut registry = CommandRegistry::new();
   registry.register( create_run_command() );
 

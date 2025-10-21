@@ -29,6 +29,7 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
   println!( "=== Help Conventions Demo ===\n" );
 
   // Step 1: Create registry - help conventions are now mandatory and always enabled
+  #[ allow( deprecated ) ]
   let mut registry = CommandRegistry::new();
 
   println!( "✓ Created registry - help conventions are mandatory (always enabled)\n" );

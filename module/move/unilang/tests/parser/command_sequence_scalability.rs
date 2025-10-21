@@ -16,6 +16,8 @@
 //! - **GREEN PHASE**: All commands parsed regardless of sequence length
 //! - **REFACTOR PHASE**: Optimize for large-scale command processing
 
+#![ allow( deprecated ) ]
+
 use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind, ArgumentAttributes };
 use unilang::registry::CommandRegistry;
 use unilang::semantic::SemanticAnalyzer;

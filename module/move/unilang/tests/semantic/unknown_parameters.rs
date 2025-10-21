@@ -6,6 +6,8 @@
 //! Bug reproduction: Currently unilang silently ignores named parameters that don't match
 //! any defined argument in the command definition.
 
+#![ allow( deprecated ) ]
+
 use unilang::
 {
   data::{ ArgumentDefinition, CommandDefinition, Kind, ArgumentAttributes },

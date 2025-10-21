@@ -14,6 +14,7 @@ mod private
   use regex::Regex;
   use core::fmt;
   use std::collections::HashMap; // Added for Map Value
+  #[ cfg( feature = "json_parser" ) ]
   use serde_json; // Added for JsonString and Object Value
 
 /// Represents a parsed and validated value of a specific kind.
@@ -49,6 +50,8 @@ pub enum Value
   /// A JSON string.
   JsonString( String ),
   /// A JSON object.
+  /// **Requires feature**: `json_parser`
+  #[ cfg( feature = "json_parser" ) ]
   Object( serde_json::Value ),
 }
 
@@ -96,6 +99,7 @@ impl PartialEq for Value
       ( Self::Pattern( l ), Self::Pattern( r ) ) => l.as_str() == r.as_str(),
       ( Self::List( l ), Self::List( r ) ) => l == r,
       ( Self::Map( l ), Self::Map( r ) ) => l == r,
+      #[ cfg( feature = "json_parser" ) ]
       ( Self::Object( l ), Self::Object( r ) ) => l == r,
       _ => false,
     }
@@ -118,6 +122,7 @@ impl fmt::Display for Value
       Value::Pattern( r ) => write!( f, "{}", r.as_str() ),
       Value::List( l ) => write!( f, "{l:?}" ),
       Value::Map( m ) => write!( f, "{m:?}" ),
+      #[ cfg( feature = "json_parser" ) ]
       Value::Object( o ) => write!( f, "{o}" ),
     }
   }
@@ -148,7 +153,13 @@ pub fn parse_value( input : &str, kind : &Kind ) -> Result< Value, TypeError >
     Kind::Url | Kind::DateTime | Kind::Pattern => parse_url_datetime_pattern_value( input, kind ),
     Kind::List( .. ) => parse_list_value( input, kind ),
     Kind::Map( .. ) => parse_map_value( input, kind ),
+    #[ cfg( feature = "json_parser" ) ]
     Kind::JsonString | Kind::Object => parse_json_value( input, kind ),
+    #[ cfg( not( feature = "json_parser" ) ) ]
+    Kind::JsonString | Kind::Object => Err( TypeError {
+      expected_kind: kind.clone(),
+      reason: "JSON support requires the 'json_parser' feature".to_string(),
+    }),
   }
 }
 
@@ -337,23 +348,48 @@ fn parse_map_value( input : &str, kind : &Kind ) -> Result< Value, TypeError >
   Ok(Value::Map(parsed_map))
 }
 
+#[ cfg( feature = "json_parser" ) ]
 fn parse_json_value( input : &str, kind : &Kind ) -> Result< Value, TypeError >
 {
   match kind {
     Kind::JsonString => {
-      // Validate that it's a valid JSON string using SIMD-optimized parsing
-      crate::simd_json_parser::SIMDJsonParser::parse_to_serde_value( input ).map_err( |e| TypeError {
-        expected_kind: kind.clone(),
-        reason: e.reason,
-      })?;
+      // Validate that it's a valid JSON string
+      #[ cfg( all( feature = "simd-json", feature = "json_parser" ) ) ]
+      {
+        crate::simd_json_parser::SIMDJsonParser::parse_to_serde_value( input ).map_err( |e| TypeError {
+          expected_kind: kind.clone(),
+          reason: e.reason,
+        })?;
+      }
+      #[ cfg( not( all( feature = "simd-json", feature = "json_parser" ) ) ) ]
+      {
+        let _ = serde_json::from_str::<serde_json::Value>( input ).map_err( |e| TypeError {
+          expected_kind: kind.clone(),
+          reason: format!( "Invalid JSON: {}", e ),
+        })?;
+      }
       Ok( Value::JsonString( input.to_string() ) )
     }
-    Kind::Object => crate::simd_json_parser::SIMDJsonParser::parse_to_serde_value( input )
-      .map( Value::Object )
-      .map_err( |e| TypeError {
-        expected_kind: kind.clone(),
-        reason: e.reason,
-      }),
+    Kind::Object => {
+      #[ cfg( all( feature = "simd-json", feature = "json_parser" ) ) ]
+      {
+        crate::simd_json_parser::SIMDJsonParser::parse_to_serde_value( input )
+          .map( Value::Object )
+          .map_err( |e| TypeError {
+            expected_kind: kind.clone(),
+            reason: e.reason,
+          })
+      }
+      #[ cfg( not( all( feature = "simd-json", feature = "json_parser" ) ) ) ]
+      {
+        serde_json::from_str::<serde_json::Value>( input )
+          .map( Value::Object )
+          .map_err( |e| TypeError {
+            expected_kind: kind.clone(),
+            reason: format!( "Invalid JSON: {}", e ),
+          })
+      }
+    }
     _ => unreachable!( "Called parse_json_value with non-JSON kind: {:?}", kind ),
   }
 }

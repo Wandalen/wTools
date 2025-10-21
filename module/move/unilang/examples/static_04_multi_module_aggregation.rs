@@ -254,6 +254,7 @@ fn benchmark_registry_performance()
     .expect( "Failed to build static registry" );
 
   // Create dynamic registry
+  #[ allow( deprecated ) ]
   let mut dynamic_registry = CommandRegistry::new();
   for cmd in create_auth_commands()
   {

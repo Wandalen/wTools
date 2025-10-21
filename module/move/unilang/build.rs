@@ -36,6 +36,25 @@ fn main()
   println!("cargo:rerun-if-changed=build.rs");
   println!("cargo:rerun-if-changed=unilang.commands.yaml");
 
+  // Only generate static registry if static_registry feature is enabled
+  #[cfg(feature = "static_registry")]
+  {
+    generate_static_registry();
+  }
+
+  // If static_registry not enabled, create empty file
+  #[cfg(not(feature = "static_registry"))]
+  {
+    let out_dir = env::var("OUT_DIR").unwrap();
+    let dest_path = Path::new(&out_dir).join("static_commands.rs");
+    let mut file = File::create(dest_path).unwrap();
+    writeln!(file, "// Static registry not enabled").unwrap();
+  }
+}
+
+#[cfg(feature = "static_registry")]
+fn generate_static_registry()
+{
   let out_dir = env::var("OUT_DIR").unwrap();
   let dest_path = Path::new(&out_dir).join("static_commands.rs");
 
@@ -456,17 +475,24 @@ fn parse_command_file(file_path: &Path) -> Result<Vec<serde_yaml::Value>, String
     }
     "json" =>
     {
-      // Parse JSON first, then convert to YAML Value for unified processing
-      let json_value: serde_json::Value = serde_json::from_str(&content)
-        .map_err(|e| format!("Failed to parse JSON file {}: {e}", file_path.display()))?;
+      #[cfg(feature = "json_parser")]
+      {
+        // Parse JSON first, then convert to YAML Value for unified processing
+        let json_value: serde_json::Value = serde_json::from_str(&content)
+          .map_err(|e| format!("Failed to parse JSON file {}: {e}", file_path.display()))?;
 
-      // Convert JSON Value to YAML Value via intermediate JSON string
-      // This works because both implement serde Serialize/Deserialize
-      let json_str = serde_json::to_string(&json_value)
-        .map_err(|e| format!("Failed to serialize JSON: {e}"))?;
+        // Convert JSON Value to YAML Value via intermediate JSON string
+        // This works because both implement serde Serialize/Deserialize
+        let json_str = serde_json::to_string(&json_value)
+          .map_err(|e| format!("Failed to serialize JSON: {e}"))?;
 
-      serde_yaml::from_str(&json_str)
-        .map_err(|e| format!("Failed to convert JSON to YAML representation: {e}"))
+        serde_yaml::from_str(&json_str)
+          .map_err(|e| format!("Failed to convert JSON to YAML representation: {e}"))
+      }
+      #[cfg(not(feature = "json_parser"))]
+      {
+        Err(format!("JSON support requires the 'json_parser' feature. File: {}", file_path.display()))
+      }
     }
     other => Err(format!("Unsupported file extension '{other}' for file: {}", file_path.display()))
   }

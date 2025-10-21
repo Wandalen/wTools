@@ -9,9 +9,9 @@
 
 ## Value Proposition
 
-unilang processes command definitions at compile-time, generating optimized static command maps (using Perfect Hash Functions internally) that provide **O(1) command lookups with zero runtime overhead and zero additional dependencies for downstream crates**. This approach delivers:
+unilang processes command definitions at compile-time, generating optimized static command registries that provide **O(1) command lookups with zero runtime overhead and zero additional dependencies for downstream crates**. This approach delivers:
 
-- **10-50x faster command resolution** compared to runtime HashMap lookups
+- **50x faster command resolution** compared to runtime HashMap lookups (~80ns vs ~4,000ns)
 - **Compile-time validation** of all command definitions and arguments
 - **Smaller binary size** through static analysis and dead code elimination
 - **SIMD acceleration** for parsing with 4-25x performance improvements
@@ -48,35 +48,53 @@ Create `unilang.commands.yaml`:
 
 **Note:** Command names should always start with a dot (`.`). When using build.rs for static generation, you can optionally omit the dot as it will be added automatically, but showing it here reinforces the naming convention.
 
-### Step 2: Configure Build Script
+### Step 2: Configure Cargo.toml
 
-Add to `build.rs`:
+The default configuration already enables compile-time YAML loading:
+```toml
+[dependencies]
+# Multi-YAML build-time approach is enabled by default
+unilang = "0.28"
+```
+
+For single-file YAML approach, use:
+```toml
+[dependencies]
+unilang = { version = "0.28", default-features = false, features = [
+  "enabled",
+  "approach_yaml_single_build"  # Single YAML file at compile-time
+]}
+```
+
+### Step 3: Configure Build Script (Optional for Single-File)
+
+If using `approach_yaml_single_build`, add minimal `build.rs`:
 ```rust,ignore
-use std::env;
-use std::path::Path;
-
 fn main()
 {
+  // Rebuild if YAML file changes
   println!( "cargo:rerun-if-changed=unilang.commands.yaml" );
 
-  let out_dir = env::var( "OUT_DIR" ).unwrap();
-  let dest_path = Path::new( &out_dir ).join( "static_commands.rs" );
-
-  // Generate static command maps at compile-time
-  unilang::build::generate_static_commands( &dest_path, "unilang.commands.yaml" );
+  // Static registry generation happens automatically when
+  // approach_yaml_single_build or approach_yaml_multi_build is enabled.
+  // The build system discovers YAML files and generates optimized code.
 }
 ```
 
-### Step 3: Zero-Cost Execution
+**Note:** With the default `approach_yaml_multi_build` feature, the build system automatically discovers all `.yaml` files in your project - no build.rs configuration needed!
+
+### Step 4: Zero-Cost Execution
 
 ```rust,ignore
 use unilang::prelude::*;
 
-// Include compile-time generated commands
+// Include compile-time generated commands (created automatically by build system)
 include!( concat!( env!( "OUT_DIR" ), "/static_commands.rs" ) );
 
 fn main() -> Result< (), unilang::Error >
 {
+  // StaticCommandRegistry requires approach_yaml_single_build,
+  // approach_yaml_multi_build, or other build-time approach feature
   let registry = StaticCommandRegistry::from_commands( &STATIC_COMMANDS );
   let pipeline = Pipeline::new( registry );
 
@@ -92,33 +110,41 @@ fn main() -> Result< (), unilang::Error >
 
 | Approach | Lookup Time | Memory Overhead | Binary Size |
 |----------|-------------|-----------------|-------------|
-| **Compile-Time (Static)** | 1-3 CPU cycles | Zero | Smaller |
-| Runtime (HashMap) | 50-150 CPU cycles | Hash tables + allocations | Larger |
+| **Compile-Time (Static)** | ~80ns | Zero | Smaller |
+| Runtime (HashMap) | ~4,000ns | Hash tables + allocations | Larger |
 
 **Benchmark Results:**
-- **Static lookups:** ~2ns per operation
-- **Dynamic lookups:** ~80ns per operation
-- **Performance gain:** 40x faster command resolution
+- **Static lookups:** ~80-100ns (PHF map + zero allocations)
+- **Runtime lookups:** ~4,000-5,000ns (HashMap + semantic analysis)
+- **Performance gain:** 50x faster command resolution
 
 ## User Guide: Integration Decisions
 
 ### Decision 1: How Should I Define Commands?
 
+⚠️ **IMPORTANT: Opinionated Defaults**
+
+unilang **ONLY enables Approach #2 by default**. To use any other approach, you must explicitly enable its feature flag in `Cargo.toml`.
+
 **10 approaches are currently implemented** (see [full comparison](docs/cli_definition_approaches.md)):
 
-| # | Approach | Lookup Speed | When to Use |
-|---|----------|-------------|-------------|
-| **1** | **YAML file → Build-time static** ⭐ | **~80ns** | **Production apps, best performance, compile-time validation** |
-| 2 | Multi-YAML files → Build-time static | ~80ns | Large modular projects, multiple CLI tools unified |
-| 3 | YAML file → Runtime loading | ~4,200ns | Development, plugin configs loaded at runtime |
-| **4** | **JSON file → Build-time static** | **~80ns** | **JSON-first projects, API-driven CLI generation** |
-| 5 | Multi-JSON files → Build-time static | ~80ns | Large JSON projects, modular organization |
-| 6 | JSON file → Runtime loading | ~4,200ns | Runtime config loading, dynamic commands |
-| 7 | Rust DSL (inline closures) | ~4,200ns | ⚠️ Prototyping/testing only, NOT for production |
-| **8** | **Rust DSL (const fn + static)** | **~80ns** | **High-performance DSL, type-safe compile-time definitions** |
-| 18 | Hybrid (static + runtime) | Mixed | Base CLI + plugin system (best of both worlds) |
+| # | Approach | Feature Flag | Default | Lookup Speed | When to Use |
+|---|----------|--------------|---------|-------------|-------------|
+| 1 | YAML file → Build-time static | `approach_yaml_single_build` | ❌ | ~80ns | Single-file projects, compile-time validation |
+| **2** | **Multi-YAML files → Build-time static** | `approach_yaml_multi_build` | **✅ DEFAULT** | **~80ns** | **Modular projects, best DX, auto-discovery** |
+| 3 | YAML file → Runtime loading | `approach_yaml_runtime` | ❌ | ~4,200ns | Plugin configs, runtime loading |
+| 4 | JSON file → Build-time static | `approach_json_single_build` | ❌ | ~80ns | JSON-first projects, API generation |
+| 5 | Multi-JSON files → Build-time static | `approach_json_multi_build` | ❌ | ~80ns | Large JSON projects, modular organization |
+| 6 | JSON file → Runtime loading | `approach_json_runtime` | ❌ | ~4,200ns | Runtime config loading, dynamic commands |
+| 7 | Rust DSL (builder API) | *(always available)* | ✅ | ~4,200ns | Core API, prototyping, type-safe definitions |
+| 8 | Rust DSL (const fn + static) | `approach_rust_dsl_const` | ❌ | ~80ns | High-performance DSL, compile-time |
+| 18 | Hybrid (static + runtime) | `approach_hybrid` | ❌ | Mixed | Base CLI + plugin system |
 
-**Strongly Recommended:** Row 1 (YAML + build-time static) for 50x better performance and compile-time validation.
+**Why Approach #2 is Default:**
+- **Best developer experience** with auto-discovery of command files
+- **Optimal for modular projects** splitting commands across multiple files
+- **Compile-time validation** catches errors before runtime
+- **Zero overhead** with static registry generation
 
 **See full comparison:** [21 approaches documented](docs/cli_definition_approaches.md) including planned features like declarative macros, proc macros, TOML, RON, Protobuf, GraphQL, OpenAPI.
 
@@ -142,16 +168,40 @@ greet name::Alice            # Not recommended
 
 ### Decision 4: What Features Should I Enable?
 
-**Recommended: Use defaults** (SIMD enabled automatically)
+**Recommended: Use defaults** (Approach #2 + SIMD + Enhanced REPL)
 ```toml
 [dependencies]
-unilang = "0.26"  # Includes SIMD (4-25x parsing speedup), enhanced REPL
+unilang = "0.28"  # Multi-YAML build-time + SIMD (4-25x parsing) + Enhanced REPL
 ```
 
-**Minimal build:**
+**Alternative approach (JSON single-file):**
 ```toml
-unilang = { version = "0.26", default-features = false, features = ["enabled"] }
+[dependencies]
+unilang = { version = "0.28", default-features = false, features = [
+  "enabled",
+  "approach_json_single_build"  # Switch to JSON single-file approach
+]}
 ```
+
+**Minimal build (Rust DSL only):**
+```toml
+[dependencies]
+unilang = { version = "0.28", default-features = false, features = ["enabled"] }
+```
+
+**All features enabled:**
+```toml
+[dependencies]
+unilang = { version = "0.28", features = ["full"] }  # All 21 approaches available
+```
+
+**Feature Architecture:**
+
+The framework uses **approach-based feature flags**:
+- Each CLI definition approach has its own feature (e.g., `approach_yaml_multi_build`)
+- Approach features automatically enable required infrastructure (`static_registry`, `yaml_parser`, etc.)
+- Only **Approach #2** enabled by default for optimal performance and minimal binary size
+- See [Feature Flags Documentation](docs/cli_definition_approaches.md#using-alternative-approaches) for complete list
 
 ### Decision 5: How Does Help Work?
 
@@ -174,11 +224,14 @@ Unknown parameters are **always detected** with Levenshtein distance suggestions
 
 ## CLI Aggregation: Unifying Multiple Tools
 
+⚠️ **Feature Required:** `multi_file` (automatically enabled by default `approach_yaml_multi_build`)
+
 unilang excels at aggregating multiple CLI tools into a single unified command interface. This is essential for organizations that want to consolidate developer tools while maintaining namespace isolation.
 
 ### Real-World Aggregation Scenario
 
 ```rust,ignore
+// Requires: approach_yaml_multi_build (default) or manually enable 'multi_file' feature
 use unilang::multi_yaml::CliBuilder;
 
 // Aggregate multiple CLI tools into one unified command
@@ -266,9 +319,9 @@ let registry = CliBuilder::new()
 
 // Key differences:
 // - static_module_with_prefix(name, prefix, Vec<CommandDefinition>)
-//   → Commands already in memory, fast O(1) lookup
+//   → Commands already in memory, fast O(1) lookup (~80-100ns)
 // - dynamic_module_with_prefix(name, PathBuf, prefix)
-//   → Commands loaded from YAML file at runtime, ~50x slower lookup
+//   → Commands loaded from YAML file at runtime (~4,000ns, 50x slower)
 ```
 
 ### Performance Characteristics
@@ -279,8 +332,8 @@ let registry = CliBuilder::new()
 | Runtime | O(log n) | Hash tables | Runtime |
 
 **Aggregation Scaling:**
-- **10 modules, 100 commands each**: ~750ns lookup regardless of module count
-- **Single static map**: All 1,000 commands accessible in constant time
+- **10 modules, 100 commands each**: ~80-100ns lookup regardless of module count
+- **Single static map**: All 1,000 commands accessible in constant time with O(1) complexity
 - **Namespace resolution**: Zero runtime overhead with compile-time prefixing
 
 ### Complete Example
@@ -433,25 +486,41 @@ unilang = { version = "0.10", default-features = false, features = ["enabled"] }
 
 ## Examples and Learning Path
 
-### Compile-Time Focus Examples
-- `static_01_basic_compile_time.rs` - Zero-cost static lookups
-- `static_02_yaml_build_integration.rs` - Build script integration patterns
-- `static_03_performance_comparison.rs` - Concrete performance measurements
-- `static_04_multi_module_aggregation.rs` - Modular command organization
+### 🚀 **Start Here: Recommended Learning Path**
 
-### Traditional Examples
-- `01_basic_command_registration.rs` - Runtime registration patterns
-- `02_argument_types.rs` - Comprehensive argument type examples
-- `07_yaml_json_loading.rs` - Dynamic command loading
+**1. Quick Start (Runtime, Educational Only)**
+- `00_quick_start.rs` - Get something working in 5 minutes (⚠️ runtime registration, slow)
+- `01_basic_command_registration.rs` - Understand the runtime API (⚠️ 50x slower than compile-time)
 
-### Advanced Features
-- `18_help_conventions_demo.rs` - Help system demonstration
-- `full_cli_example.rs` - Complete CLI application
+**2. Production Approach (Compile-Time, Recommended)**
+- `static_01_basic_compile_time.rs` - **READ THIS FIRST** - Explains proper YAML + build.rs pattern
+- `static_02_yaml_build_integration.rs` - Multi-YAML file aggregation
+- `static_03_performance_comparison.rs` - Benchmark compile-time vs runtime (proves 50x speedup)
+- `static_04_multi_module_aggregation.rs` - Organize commands across modules
 
-### REPL and Interactive
+**3. Advanced Type System**
+- `02_argument_types.rs` - String, Integer, Float, Boolean, Path, etc. (⚠️ requires `json_parser`)
+- `03_collection_types.rs` - Lists, Maps with custom delimiters
+- `14_advanced_types_validation.rs` - Complex validation rules (⚠️ requires `json_parser`)
+
+**4. Help & User Experience**
+- `06_help_system.rs` - Comprehensive help system
+- `18_help_conventions_demo.rs` - Three help access methods (?, ??, .help)
+
+**5. REPL Applications**
 - `12_repl_loop.rs` - Basic REPL implementation
-- `15_interactive_repl_mode.rs` - Interactive arguments and secure input
-- `17_advanced_repl_features.rs` - History, auto-completion, error recovery
+- `15_interactive_repl_mode.rs` - Interactive arguments + secure input (⚠️ requires `enhanced_repl`)
+- `17_advanced_repl_features.rs` - History, completion, recovery (⚠️ requires `enhanced_repl`)
+
+**6. Complete Applications**
+- `full_cli_example.rs` - Full-featured CLI with all concepts integrated
+- `practical_cli_aggregation.rs` - Real-world multi-tool aggregation (⚠️ requires `multi_file`)
+
+### ⚠️ **Feature Requirements Legend**
+- No marker = Works with default features
+- ⚠️ `json_parser` = Requires JSON support feature
+- ⚠️ `enhanced_repl` = Requires advanced REPL features
+- ⚠️ `multi_file` = Requires multi-file aggregation (default includes this)
 
 ## WebAssembly Support
 
@@ -471,17 +540,163 @@ cd www && python3 -m http.server 8000
 
 ## Migration from Runtime to Compile-Time
 
-### Step 1: Extract Command Definitions
-Convert runtime `CommandDefinition` structures to YAML format.
+Migrate from runtime registration (slow) to compile-time registration (50x faster) in 4 steps.
 
-### Step 2: Configure Build Script
-Add compile-time generation to `build.rs`.
+### Step 1: Extract Command Definitions to YAML
 
-### Step 3: Update Code
-Replace `CommandRegistry::new()` with compile-time command registration via build.rs.
+**Before (Runtime, in main.rs):**
+```rust,ignore
+#[allow(deprecated)]
+let mut registry = CommandRegistry::new();
 
-### Step 4: Measure Performance
-Use provided benchmarking examples to verify improvements.
+let greet_cmd = CommandDefinition {
+  name: ".greet".to_string(),
+  namespace: String::new(),
+  description: "Greeting command".to_string(),
+  hint: "Say hello".to_string(),
+  arguments: vec![
+    ArgumentDefinition {
+      name: "name".to_string(),
+      kind: Kind::String,
+      description: "Person's name".to_string(),
+      hint: "Name".to_string(),
+      attributes: ArgumentAttributes {
+        optional: true,
+        default: Some("World".to_string()),
+        ..Default::default()
+      },
+      validation_rules: vec![],
+      aliases: vec![],
+      tags: vec![],
+    }
+  ],
+  // ... other fields
+  status: "stable".to_string(),
+  version: "1.0.0".to_string(),
+  aliases: vec![],
+  tags: vec![],
+  permissions: vec![],
+  idempotent: true,
+  deprecation_message: String::new(),
+  http_method_hint: String::new(),
+  examples: vec![],
+  routine_link: None,
+  auto_help_enabled: false,
+};
+
+#[allow(deprecated)]
+registry.command_add_runtime(&greet_cmd, greet_routine)?;
+```
+
+**After (Compile-Time, in unilang.commands.yaml):**
+```yaml
+- name: ".greet"
+  namespace: ""
+  description: "Greeting command"
+  hint: "Say hello"
+  status: "stable"
+  version: "1.0.0"
+  tags: []
+  aliases: []
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: false
+  examples: []
+  arguments:
+    - name: "name"
+      kind: "String"
+      description: "Person's name"
+      hint: "Name"
+      attributes:
+        optional: true
+        default: "World"
+        multiple: false
+        interactive: false
+        sensitive: false
+      validation_rules: []
+      aliases: []
+      tags: []
+  routine_link: null
+```
+
+### Step 2: Update Cargo.toml
+
+**Add feature flag:**
+```toml
+[dependencies]
+# Enable single-file YAML compile-time approach
+unilang = { version = "0.28", features = ["approach_yaml_single_build"] }
+
+# Or use default (multi-file auto-discovery)
+unilang = "0.28"
+```
+
+### Step 3: Configure Build Script (Single-File Only)
+
+For `approach_yaml_single_build`, create `build.rs`:
+```rust,ignore
+fn main()
+{
+  // Rebuild if YAML file changes
+  println!("cargo:rerun-if-changed=unilang.commands.yaml");
+
+  // Static registry generation happens automatically
+  // No manual code needed - the feature flag handles it
+}
+```
+
+**Note:** With default `approach_yaml_multi_build`, no build.rs needed - auto-discovery handles everything!
+
+### Step 4: Update Code to Use Static Registry
+
+**Before (Runtime):**
+```rust,ignore
+use unilang::prelude::*;
+
+fn main() -> Result<(), unilang::Error> {
+  #[allow(deprecated)]
+  let mut registry = CommandRegistry::new();
+
+  // Manual registration (slow)
+  #[allow(deprecated)]
+  registry.command_add_runtime(&greet_cmd, greet_routine)?;
+
+  let pipeline = Pipeline::new(registry);
+  let result = pipeline.process_command_simple(".greet name::Alice");
+  Ok(())
+}
+```
+
+**After (Compile-Time):**
+```rust,ignore
+use unilang::prelude::*;
+
+// Include compile-time generated commands (auto-generated by build system)
+include!(concat!(env!("OUT_DIR"), "/static_commands.rs"));
+
+fn main() -> Result<(), unilang::Error> {
+  // Zero-cost static registry (~80ns lookup vs ~4,000ns runtime)
+  let registry = StaticCommandRegistry::from_commands(&STATIC_COMMANDS);
+
+  let pipeline = Pipeline::new(registry);
+  let result = pipeline.process_command_simple(".greet name::Alice");
+  Ok(())
+}
+```
+
+### Step 5: Measure Performance Improvement
+
+**Run benchmarks:**
+```bash
+cargo run --example static_03_performance_comparison
+```
+
+**Expected results:**
+- **Runtime registration**: ~4,000ns per command lookup
+- **Compile-time registration**: ~80-100ns per command lookup
+- **Performance gain**: 50x faster
 
 ## Performance Optimization Guidelines
 

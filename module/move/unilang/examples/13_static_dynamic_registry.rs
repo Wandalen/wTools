@@ -203,15 +203,15 @@ fn main() -> Result< (), unilang::error::Error >
 
   println!( "\n📝 Generated Code Structure:" );
   println!( r#"
-// Generated in static_commands.rs:
-const STATIC_COMMANDS_PHF: phf::Map<&'static str, &'static StaticCommandDefinition> = phf_map! {{
+// Generated in static_commands.rs (internal implementation):
+const STATIC_COMMANDS_INTERNAL: phf::Map<&'static str, &'static StaticCommandDefinition> = phf_map! {{
   ".perf.cmd_1" => &CMD_0,
   ".perf.cmd_2" => &CMD_1,
   // ... millions of commands with O(1) lookup
 }};
 
 // Public API - implementation details hidden
-pub static STATIC_COMMANDS: StaticCommandMap = StaticCommandMap::from_phf_internal(&STATIC_COMMANDS_PHF);
+pub static STATIC_COMMANDS: StaticCommandMap = StaticCommandMap::from_phf_internal(&STATIC_COMMANDS_INTERNAL);
 "# );
 
   println!( "=== Advantages of Hybrid Approach ===\n" );

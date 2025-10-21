@@ -208,6 +208,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   let fs_commands = create_fs_commands();
 
   // Build registry with module aggregation using proper dot-prefix naming
+  #[ allow( deprecated ) ]
   let mut registry = CommandRegistry::new();
 
   // Register database commands
@@ -219,6 +220,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
       ".backup" => Box::new( db_backup_routine ),
       _ => unreachable!(),
     };
+    #[ allow( deprecated ) ]
     registry.command_add_runtime( &cmd, routine )?;
   }
 
@@ -231,6 +233,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
       ".list" => Box::new( fs_list_routine ),
       _ => unreachable!(),
     };
+    #[ allow( deprecated ) ]
     registry.command_add_runtime( &cmd, routine )?;
   }
 

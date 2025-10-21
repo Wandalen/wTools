@@ -33,8 +33,8 @@ const BENCHMARK_ITERATIONS: usize = 50_000;
 /// Warmup iterations to stabilize performance
 const WARMUP_ITERATIONS: usize = 10_000;
 
-/// Internal optimized map for performance testing
-const MOCK_STATIC_MAP_PHF: phf::Map<&'static str, &'static StaticCommandDefinition> = phf::phf_map!
+/// Internal implementation for performance testing
+const MOCK_STATIC_MAP_INTERNAL: phf::Map<&'static str, &'static StaticCommandDefinition> = phf::phf_map!
 {
   ".test.command_0000" => &StaticCommandDefinition
   {
@@ -57,7 +57,7 @@ const MOCK_STATIC_MAP_PHF: phf::Map<&'static str, &'static StaticCommandDefiniti
 };
 
 /// Public static map wrapper (implementation details hidden)
-static MOCK_STATIC_MAP: StaticCommandMap = StaticCommandMap::from_phf_internal(&MOCK_STATIC_MAP_PHF);
+static MOCK_STATIC_MAP: StaticCommandMap = StaticCommandMap::from_phf_internal(&MOCK_STATIC_MAP_INTERNAL);
 
 fn main() -> Result< (), Box< dyn std::error::Error > >
 {
@@ -93,6 +93,7 @@ fn setup_test_registries() -> Result< ( StaticCommandRegistry, CommandRegistry )
   println!( "\n🔧 Setting up test registries..." );
 
   // Create dynamic registry
+  #[ allow( deprecated ) ]
   let mut dynamic_registry = CommandRegistry::new();
   dynamic_registry.set_registry_mode( RegistryMode::DynamicOnly );
 

@@ -15,6 +15,8 @@
 //! - `unit/semantic/multiple_parameters.rs` - Comprehensive multiple parameter testing
 //! - Original bug report: Task 024 Comprehensive Tokenization Failure Analysis
 
+#![ allow( deprecated ) ]
+
 use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind, OutputData };
 use unilang::registry::CommandRegistry;
 use unilang::semantic::{ SemanticAnalyzer, VerifiedCommand };

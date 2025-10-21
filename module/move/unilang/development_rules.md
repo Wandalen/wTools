@@ -11,7 +11,7 @@ This project strictly follows design rules from `$PRO/genai/code/rules/code_desi
 |------|-------|---------|
 | Unit tests | `tests/` | `#[test] fn test_correctness() { assert_eq!(result, expected); }` |
 | Integration tests | `tests/` | Testing public APIs and workflows |
-| Performance optimizations | `src/` | LRU cache, PHF maps, SIMD in production code |
+| Performance optimizations | `src/` | LRU cache, static registries, SIMD in production code |
 | Production monitoring | `src/` | `metrics.cache_hit_rate()` for logging |
 
 ### ❌ PROHIBITED
@@ -146,12 +146,12 @@ pub fn monitor_performance(&self) {
 unilang/
 ├── src/                    ✅ Production code + optimizations
 │   ├── lib.rs             ✅ Core implementation
-│   ├── registry.rs        ✅ LRU cache, PHF, performance optimizations
+│   ├── registry.rs        ✅ LRU cache, static registry, performance optimizations
 │   └── simd_*.rs          ✅ SIMD optimizations
 ├── tests/                 ✅ Unit/integration tests (correctness only)
 │   ├── README_DESIGN_RULES.md  ✅ This file explains rules
 │   └── *.rs               ✅ Functional tests with Test Matrix docs
-├── build.rs               ✅ PHF generation (build-time optimization)
+├── build.rs               ✅ Static registry generation (build-time optimization)
 └── benches/               ✅ Future: benchkit performance tests (if added)
 ```
 

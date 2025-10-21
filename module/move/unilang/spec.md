@@ -270,7 +270,7 @@ The public API **must** include the following data structures with the specified
 *   `ValidationRule`: Defines a validation constraint for an argument.
 *   `OutputData`: Standardized structure for successful command output.
 *   `ErrorData`: Standardized structure for command failure information.
-*   `StaticCommandMap`: Opaque wrapper for compile-time command maps (hides PHF implementation).
+*   `StaticCommandMap`: Opaque wrapper for compile-time optimized command maps.
 *   `StaticCommandDefinition`: Const-compatible version of CommandDefinition for static storage.
 *   `StaticArgumentDefinition`: Const-compatible version of ArgumentDefinition for static storage.
 
@@ -394,13 +394,15 @@ fn my_command_routine(cmd: VerifiedCommand, _ctx: ExecutionContext) -> Result<Ou
 
 #### 7.3. StaticCommandMap Structure
 
-The `StaticCommandMap` struct **must** be implemented as an opaque wrapper that hides the PHF (Perfect Hash Function) implementation from the public API. This design ensures downstream crates do not need to depend on the `phf` crate.
+The `StaticCommandMap` struct **must** be implemented as an opaque wrapper that hides compile-time optimization implementation details from the public API. This design ensures downstream crates depend only on unilang's public API.
 
 **Design Requirements:**
-*   **Opaque Wrapper:** The struct **must** hide PHF types completely - no `phf::Map` types in public signatures.
-*   **Zero Dependencies:** Downstream crates using `StaticCommandMap` **must not** require `phf` as a dependency.
+*   **Opaque Wrapper:** The struct **must** hide internal optimization types completely - no implementation-specific types in public signatures.
+*   **Zero Dependencies:** Downstream crates using `StaticCommandMap` **must not** require internal optimization library dependencies.
 *   **Zero Overhead:** All wrapper methods **must** be `#[inline]` to ensure the wrapper compiles away with no performance cost.
 *   **Const Initialization:** The struct **must** support `const fn` initialization for compile-time map creation.
+
+**Internal Implementation Note:** See Appendix A for details on the compile-time optimization strategy (PHF).
 
 **Implementation Pattern:**
 ```rust
@@ -421,7 +423,7 @@ pub struct StaticCommandMap {
 *   `Index<&str>` trait - Enable indexing syntax (`map["command"]`), panics if key not found.
 
 **Hidden Internal API:**
-*   `from_phf_internal(&'static phf::Map<...>) -> Self` - Used only by generated code, marked `#[doc(hidden)]`.
+*   `from_phf_internal(...)` - Used only by generated code, marked `#[doc(hidden)]`. See Appendix A for implementation details.
 
 **Registry Integration:**
 *   `StaticCommandRegistry::from_commands(commands: &'static StaticCommandMap)` - Primary API for creating registry from static map.
@@ -434,13 +436,13 @@ pub struct StaticCommandMap {
 **Build System Integration:**
 The `build.rs` script **must** generate code following this pattern:
 ```rust
-// Generated code pattern
-const STATIC_COMMANDS_PHF: phf::Map<...> = phf_map! { /* internal */ };
+// Generated code pattern (internal implementation hidden)
+const STATIC_COMMANDS_INTERNAL: /* optimization structure */ = /* generated */;
 pub static STATIC_COMMANDS: StaticCommandMap =
-  StaticCommandMap::from_phf_internal(&STATIC_COMMANDS_PHF);
+  StaticCommandMap::from_phf_internal(&STATIC_COMMANDS_INTERNAL);
 ```
 
-This ensures PHF types remain internal implementation details while exposing a clean, dependency-free API to users.
+This ensures implementation details remain internal while exposing a clean, dependency-free API to users.
 
 ### 8. Cross-Cutting Concerns (Error Handling, Security, Verbosity)
 
@@ -470,19 +472,91 @@ The framework **must** be highly modular, allowing integrators to select only th
 #### 9.1. The `enabled` Feature
 Every crate in the `unilang` ecosystem (`unilang`, `unilang_parser`, `unilang_meta`) **must** expose an `enabled` feature. This feature **must** be part of the `default` feature set. Disabling the `enabled` feature (`--no-default-features`) **must** effectively remove all of the crate's code and dependencies from the compilation, allowing it to be "turned off" even when included as a non-optional dependency in a workspace.
 
-#### 9.2. Feature Sets
-The following feature flags **must** be available to integrators:
+#### 9.2. Opinionated Defaults Strategy
 
-| Feature | Description | Dependencies Enabled | Default |
+The framework implements an **opinionated defaults strategy** where only **Approach #2** (Multi-YAML Build-Time Static) is enabled by default. This design choice:
+
+1. **Guides users to the recommended approach** with best performance and developer experience
+2. **Minimizes binary size** by excluding unused parsers and dependencies
+3. **Forces conscious opt-in** for alternative approaches, ensuring developers understand trade-offs
+4. **Reduces compilation time** by not building unused infrastructure
+
+To use any approach other than #2, integrators **must** explicitly enable the corresponding feature flag.
+
+#### 9.3. Feature Architecture
+
+The framework uses a two-tier feature architecture:
+
+**Tier 1: Approach Features (User-Facing)**
+Each CLI definition approach has its own feature flag that automatically enables required infrastructure:
+
+| Approach Feature | Enables | Default | Description |
 | :--- | :--- | :--- | :--- |
-| `default` | Enables the standard, full-featured framework experience. | `enabled`, `full` | Yes |
-| `enabled` | The master switch that enables the core framework logic. Disabling this removes the crate entirely. | (Core logic) | Yes |
-| `full` | A convenience feature that enables all optional functionality below. | All optional features | Yes |
-| `declarative_loading` | Enables loading `CommandDefinition`s from YAML and JSON strings. | `serde`, `serde_yaml`, `serde_json` | No |
-| `on_unknown_suggest` | Enables suggestions for mistyped commands (e.g., "did you mean...?"). | `textdistance` | No |
-| `chrono_types` | Enables support for the `Kind::DateTime` argument type. | `chrono` | No |
-| `url_types` | Enables support for the `Kind::Url` argument type. | `url` | No |
-| `regex_types` | Enables support for the `Kind::Pattern` argument type and `ValidationRule::Pattern`. | `regex` | No |
+| `approach_yaml_single_build` | `static_registry`, `yaml_parser` | No | Single YAML → Build-time static |
+| `approach_yaml_multi_build` | `static_registry`, `yaml_parser`, `multi_file` | **Yes** | Multi-YAML → Build-time static (**DEFAULT**) |
+| `approach_yaml_runtime` | `yaml_parser` | No | YAML → Runtime registry |
+| `approach_json_single_build` | `static_registry`, `json_parser` | No | Single JSON → Build-time static |
+| `approach_json_multi_build` | `static_registry`, `json_parser`, `multi_file` | No | Multi-JSON → Build-time static |
+| `approach_json_runtime` | `json_parser` | No | JSON → Runtime registry |
+| *(Approach #7)* | *(always available)* | Yes | Rust DSL builder (core API) |
+| `approach_rust_dsl_const` | `static_registry` | No | Rust DSL → Build-time const |
+| `approach_hybrid` | `static_registry` | No | Mixed static + dynamic registry |
+
+**Tier 2: Infrastructure Features (Building Blocks)**
+These are enabled automatically by approach features and should not be used directly:
+
+| Infrastructure Feature | Dependencies | Purpose |
+| :--- | :--- | :--- |
+| `static_registry` | `phf` (Perfect Hash Functions) | Zero-overhead static command lookup |
+| `yaml_parser` | `serde_yaml` | YAML deserialization |
+| `json_parser` | `serde_json` | JSON deserialization |
+| `multi_file` | `walkdir` | Auto-discovery of command files |
+| `simd` | `simd-json`, `bytecount` | SIMD-optimized parsing (4-25x faster) |
+| `repl` | - | Basic REPL functionality |
+| `enhanced_repl` | `rustyline` | Advanced REPL with history/completion |
+| `on_unknown_suggest` | `textdistance` | Fuzzy command suggestions |
+
+**Core Features:**
+
+| Feature | Description | Default |
+| :--- | :--- | :--- |
+| `enabled` | Master switch - disables entire crate when off | Yes |
+| `default` | Default features: `enabled`, `simd`, `repl`, `enhanced_repl`, `approach_yaml_multi_build` | Yes |
+| `full` | All features except dev-only | No |
+
+#### 9.4. Usage Examples
+
+**Using the default (Approach #2):**
+```toml
+[dependencies]
+unilang = "0.28"  # Only YAML multi-file enabled
+```
+
+**Using alternative approach:**
+```toml
+[dependencies]
+unilang = { version = "0.28", default-features = false, features = [
+  "enabled",
+  "approach_json_single_build"  # Switch to JSON single-file
+]}
+```
+
+**Using multiple approaches:**
+```toml
+[dependencies]
+unilang = { version = "0.28", features = [
+  "approach_yaml_multi_build",   # Default
+  "approach_json_runtime"         # Add runtime JSON loading
+]}
+```
+
+**Minimal configuration (no parsers):**
+```toml
+[dependencies]
+unilang = { version = "0.28", default-features = false, features = [
+  "enabled"  # Only Rust DSL builder API (Approach #7)
+]}
+```
 
 ---
 ## Part II: Internal Design (Design Recommendations)
@@ -494,10 +568,11 @@ It is recommended that the `unilang` ecosystem adhere to the following principle
 
 *   **Parser Independence:** The `unilang` core crate **should** delegate all command string parsing to the `unilang_parser` crate.
 *   **Zero-Overhead Static Registry:** To meet `NFR-PERF-1`, it is **strongly recommended** that the `CommandRegistry` be implemented using a hybrid model:
-    *   An **optimized static map** (using Perfect Hash Functions internally), generated at compile-time in `build.rs`, for all statically known commands. The implementation **must** be hidden behind the `StaticCommandMap` wrapper to prevent dependency leakage.
+    *   An **optimized static map**, generated at compile-time in `build.rs`, for all statically known commands. The implementation **must** be hidden behind the `StaticCommandMap` wrapper to prevent dependency leakage.
     *   A standard `HashMap` for commands registered dynamically at runtime.
     *   Lookups **should** check the static map first before falling back to the dynamic map.
     *   Downstream crates **must not** require implementation-specific dependencies - the wrapper ensures complete encapsulation.
+    *   **Implementation detail:** See Appendix A for the compile-time optimization strategy.
 *   **`enabled` Feature Gate Mandate:** All framework crates **must** implement the `enabled` feature gate pattern. The entire crate's functionality, including its modules and dependencies, **should** be conditionally compiled using `#[cfg(feature = "enabled")]`. This is a critical mechanism for managing complex feature sets and dependencies within a Cargo workspace, allowing a crate to be effectively disabled even when it is listed as a non-optional dependency.
 
 ### 11. Architectural Diagrams
@@ -576,10 +651,10 @@ graph TD
         style CompileTime fill:#f9f9f9,stroke:#ddd,stroke-dasharray: 5 5
         manifest("unilang.commands.yaml")
         build_rs("Build Script (build.rs)")
-        phf_map("StaticCommandMap Wrapper<br/>(hides PHF)<br/>Generated .rs file")
+        static_map("StaticCommandMap Wrapper<br/>(optimized lookup)<br/>Generated .rs file")
 
         manifest --> build_rs
-        build_rs --> phf_map
+        build_rs --> static_map
     end
 
     subgraph "Run Time"
@@ -592,11 +667,11 @@ graph TD
 
         subgraph registry
             direction LR
-            phf_map_ref(StaticCommandMap<br/>zero-cost wrapper)
+            static_map_ref(StaticCommandMap<br/>zero-cost wrapper)
             dynamic_map_ref(Dynamic HashMap)
         end
 
-        phf_map -- "Included via include!()" --> phf_map_ref
+        static_map -- "Included via include!()" --> static_map_ref
         dynamic_map -- "Contained in" --> dynamic_map_ref
     end
 ```
@@ -782,7 +857,7 @@ The framework's implementation is fully documented through:
 - **Git History:** Detailed commit messages documenting all design decisions, bug fixes, and refactoring
 
 Key architectural decisions:
-- **Hybrid Registry:** `StaticCommandMap` wrapper (hides PHF) for compile-time commands + dynamic HashMap for runtime commands - downstream crates require no PHF dependency
+- **Hybrid Registry:** `StaticCommandMap` wrapper (compile-time optimized) for static commands + dynamic HashMap for runtime commands - downstream crates require no internal optimization dependencies
 - **Two-Phase Validation:** Parse-time syntax validation + semantic-time type and constraint validation
 - **Explicit Naming:** Commands require dot prefix (`.command`); YAML manifests support two valid formats
 - **Help Conventions:** Three access methods (`?` operator, `??` parameter, `.command.help` commands)
@@ -856,3 +931,89 @@ The `execution_time_ms` field provides automatic performance monitoring for all 
 1.  Set up the `.env` file using the template above.
 2.  Run `cargo build --release`.
 3.  Place the compiled binary in `/usr/local/bin`.
+
+---
+
+## Appendix A: Internal Implementation Details (For Maintainers)
+
+### A.1 Compile-Time Optimization Strategy
+
+**For Library Maintainers Only** - This section documents internal implementation choices that are intentionally hidden from downstream crates.
+
+#### Perfect Hash Functions (PHF)
+
+The `StaticCommandMap` wrapper uses Perfect Hash Functions (PHF) internally to achieve zero-overhead command lookups. This is an implementation detail that must remain hidden from the public API.
+
+**Why PHF:**
+- O(1) guaranteed lookup time (not average case)
+- Zero runtime memory allocation
+- Generated at compile-time via `build.rs`
+- No hash computation at runtime
+- Typically 10-50x faster than `HashMap` for static data
+
+**Implementation Pattern:**
+```rust
+// Internal (generated by build.rs, never exposed to users)
+const STATIC_COMMANDS_INTERNAL: phf::Map<&'static str, &'static StaticCommandDefinition> = phf_map! {
+    ".command1" => &CMD_DEF_1,
+    ".command2" => &CMD_DEF_2,
+    // ...
+};
+
+// Public API (what users see)
+pub static STATIC_COMMANDS: StaticCommandMap = 
+    StaticCommandMap::from_phf_internal(&STATIC_COMMANDS_INTERNAL);
+```
+
+**Critical Requirements:**
+1. **Never expose `phf::Map` in public signatures** - Always wrap in `StaticCommandMap`
+2. **Mark PHF constructor as `#[doc(hidden)]`** - Only build.rs should use it
+3. **All wrapper methods must be `#[inline]`** - Ensure zero-cost abstraction
+4. **Generated constant names end with `_INTERNAL`** - Signals implementation detail
+
+**Dependencies:**
+- `phf = "0.11"` - Build dependency only (not required by downstream crates)
+- `phf_codegen = "0.11"` - Build script generation
+
+### A.2 Performance Characteristics
+
+**Static Registry (PHF-based):**
+- Startup overhead: ~5μs (map initialization)
+- Lookup latency: ~50-200ns (P99 < 100ns in optimized builds)
+- Memory overhead: Zero runtime allocation
+- Throughput: >10M lookups/second
+
+**Dynamic Registry (HashMap-based):**
+- Startup overhead: ~10-100μs (depends on command count)
+- Lookup latency: ~500-5000ns (P99 < 1μs)
+- Memory overhead: ~48 bytes per command + allocation overhead
+- Throughput: ~1M lookups/second
+
+**Why 10-50x Performance Difference:**
+1. PHF has no hash computation (precomputed at build time)
+2. PHF has perfect collision-free lookups (guaranteed O(1))
+3. PHF data is in read-only memory (better cache locality)
+4. No allocator involvement (zero malloc/free overhead)
+
+### A.3 Build System Integration
+
+The `build.rs` script generates static registries using this process:
+
+1. **Parse YAML manifests** - Load command definitions from YAML files
+2. **Generate PHF map source** - Use `MultiYamlAggregator::generate_static_registry_source()`
+3. **Write to `$OUT_DIR`** - Create `static_commands.rs` in build output
+4. **Include in binary** - Application uses `include!(concat!(env!("OUT_DIR"), "/static_commands.rs"))`
+
+This approach ensures:
+- Compile-time validation of all command definitions
+- Zero runtime parsing overhead
+- Type-safe static command access
+- No dependency on YAML parsing in production binary
+
+---
+
+**Note to Maintainers:** When updating this implementation, ensure that:
+1. Public API never exposes PHF types
+2. All examples use domain terms (not "PHF map")
+3. User documentation focuses on capabilities, not implementation
+4. Deprecation warnings guide users toward static registration

@@ -1,9 +1,41 @@
+//! Performance metrics functionality tests.
 //!
-//! Tests for performance metrics functionality.
+//! ## Purpose
 //!
 //! This module tests the performance metrics tracking system used by both
 //! `CommandRegistry` and `StaticCommandRegistry` to monitor cache performance,
 //! lookup patterns, and registry efficiency.
+//!
+//! ## Expected Performance Characteristics
+//!
+//! Based on benchmarking and user-facing documentation (readme.md, spec.md):
+//!
+//! - **Static command lookups**: ~80-100ns per operation
+//!   - Uses PHF (Perfect Hash Function) maps for O(1) lookups
+//!   - Zero heap allocations during lookup
+//!   - Sub-microsecond performance guarantee
+//!
+//! - **Runtime command lookups**: ~4,000-5,000ns per operation
+//!   - Uses `HashMap` with semantic analysis
+//!   - Includes heap allocations and cache checks
+//!   - ~50x slower than static lookups
+//!
+//! ## Why These Numbers Matter
+//!
+//! The 50x performance difference is the primary value proposition for compile-time
+//! registration. If these tests detect significant performance regression:
+//!
+//! 1. Check if PHF map implementation changed (should be rare)
+//! 2. Check if additional overhead was added to lookup path
+//! 3. Update user-facing documentation (readme.md) if metrics legitimately changed
+//!
+//! ## Testing Notes
+//!
+//! - Manual PHF construction is used here for testing internal implementation
+//! - This is NOT the recommended pattern for users (they should use YAML + build.rs)
+//! - See `examples/static_01_basic_compile_time.rs` for user-facing pattern
+
+#![ allow( deprecated ) ]
 
 use unilang::prelude::*;
 use unilang::registry::{ CommandRegistry, StaticCommandRegistry, PerformanceMetrics };
@@ -11,8 +43,8 @@ use unilang::static_data::{ StaticCommandDefinition, StaticCommandMap };
 use core::time::Duration;
 use std::time::Instant;
 
-/// Create a test PHF map for performance metrics testing
-const PERFORMANCE_TEST_COMMANDS_PHF: phf::Map<&'static str, &'static StaticCommandDefinition> = phf::phf_map!
+/// Create a test static map for performance metrics testing (internal implementation)
+const PERFORMANCE_TEST_COMMANDS_INTERNAL: phf::Map<&'static str, &'static StaticCommandDefinition> = phf::phf_map!
 {
   ".perf_test_1" => &StaticCommandDefinition
   {
@@ -70,7 +102,8 @@ const PERFORMANCE_TEST_COMMANDS_PHF: phf::Map<&'static str, &'static StaticComma
   },
 };
 
-static PERFORMANCE_TEST_COMMANDS: StaticCommandMap = StaticCommandMap::from_phf_internal(&PERFORMANCE_TEST_COMMANDS_PHF);
+/// Public wrapper for performance test commands
+static PERFORMANCE_TEST_COMMANDS: StaticCommandMap = StaticCommandMap::from_phf_internal(&PERFORMANCE_TEST_COMMANDS_INTERNAL);
 
 #[test]
 fn test_performance_metrics_structure()
@@ -118,6 +151,7 @@ fn test_performance_metrics_calculations()
 fn test_command_registry_performance_metrics()
 {
   // Test performance metrics integration with CommandRegistry
+  #[ allow( deprecated ) ]
   let mut registry = CommandRegistry::new();
 
   // Add some test commands
@@ -240,6 +274,7 @@ fn test_performance_metrics_reset()
 fn test_cache_performance_patterns()
 {
   // Test cache performance patterns
+  #[ allow( deprecated ) ]
   let mut registry = CommandRegistry::new();
 
   // Add test commands
@@ -333,6 +368,7 @@ fn test_registry_mode_impact_on_metrics()
 {
   // Test how different registry modes affect performance metrics
   let static_registry = StaticCommandRegistry::from_commands( &PERFORMANCE_TEST_COMMANDS );
+  #[ allow( deprecated ) ]
   let mut dynamic_registry = CommandRegistry::new();
 
   // Add same commands to dynamic registry

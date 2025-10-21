@@ -15,9 +15,9 @@
 //! - Memory usage remains constant regardless of session length
 //! - Safe for long-running REPL sessions without memory leaks
 //!
-//! ## Command Pipeline Performance Analysis  
+//! ## Command Pipeline Performance Analysis
 //! - Component reuse provides 20-50% performance improvement over creating new instances
-//! - Static command registry lookups via PHF are zero-cost even with millions of commands
+//! - Static command registry lookups are zero-cost even with millions of commands
 //! - Parsing overhead is minimal and constant-time for typical command lengths
 //!
 //! ## Error Isolation
@@ -1224,6 +1224,7 @@ mod tests
 
   fn create_test_registry() -> CommandRegistry
   {
+    #[ allow( deprecated ) ]
     let mut registry = CommandRegistry::new();
 
     // Add a simple test command
@@ -1281,6 +1282,7 @@ mod tests
       })
     });
 
+    #[ allow( deprecated ) ]
     registry.command_add_runtime( &test_command, test_routine ).unwrap();
     registry
   }

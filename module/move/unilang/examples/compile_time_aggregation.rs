@@ -82,14 +82,14 @@ macro_rules! compile_time_cli {
   use super::*;
   use unilang::static_data::StaticCommandMap;
 
-  // Generate static command definitions (internal optimized map)
-  const AGGREGATED_COMMANDS_PHF: phf::Map<&'static str, &'static unilang::static_data::StaticCommandDefinition> = phf::phf_map! {
+  // Generate static command definitions (internal implementation)
+  const AGGREGATED_COMMANDS_INTERNAL: phf::Map<&'static str, &'static unilang::static_data::StaticCommandDefinition> = phf::phf_map! {
   // This would be populated by the macro expansion
   // processing all the module commands with prefixes applied
  };
 
   // Public wrapper - implementation details hidden
-  static AGGREGATED_COMMANDS: StaticCommandMap = StaticCommandMap::from_phf_internal(&AGGREGATED_COMMANDS_PHF);
+  static AGGREGATED_COMMANDS: StaticCommandMap = StaticCommandMap::from_phf_internal(&AGGREGATED_COMMANDS_INTERNAL);
 
   // Generate the aggregated registry
   pub fn create_aggregated_registry() -> CommandRegistry
@@ -259,7 +259,7 @@ pub fn demonstrate_compile_time_benefits()
   println!();
   println!("  Compile-Time Aggregation:");
   println!("    - Static lookup: O(1) guaranteed");
-  println!("    - Zero hash computation (precomputed)");
+  println!("    - Zero lookup computation (precomputed)");
   println!("    - Zero memory allocation (static data)");
   println!("    - Prefixes applied at compile-time");
   println!();

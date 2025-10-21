@@ -27,7 +27,9 @@
 mod private
 {
   use crate::data::ErrorData;
+  #[ cfg( feature = "json_parser" ) ]
   use serde_json;
+  #[ cfg( feature = "yaml_parser" ) ]
   use serde_yaml;
   use error_tools::dependency::thiserror;
 
@@ -47,9 +49,13 @@ mod private
     #[ error( "Registration Error: {0}" ) ]
     Registration( String ),
     /// An error that occurred during YAML deserialization.
+    /// **Requires feature**: `yaml_parser`
+    #[ cfg( feature = "yaml_parser" ) ]
     #[ error( "YAML Deserialization Error: {0}" ) ]
     Yaml( #[ from ] serde_yaml::Error ),
     /// An error that occurred during JSON deserialization.
+    /// **Requires feature**: `json_parser`
+    #[ cfg( feature = "json_parser" ) ]
     #[ error( "JSON Deserialization Error: {0}" ) ]
     Json( #[ from ] serde_json::Error ),
     /// An error that occurred during parsing.

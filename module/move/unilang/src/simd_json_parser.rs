@@ -49,6 +49,7 @@ mod private
   use simd_json::OwnedValue;
   #[cfg(feature = "simd-json")]
   use simd_json::prelude::{ ValueAsScalar, ValueAsContainer, TypedScalarValue };
+  #[cfg(feature = "json_parser")]
   use serde_json::Value as SerdeValue;
   use crate::types::TypeError;
   

@@ -2,7 +2,7 @@
 //! Tests for static data structures extension.
 //!
 //! This module tests the extended static command data structures including
-//! `StaticCommandDefinition`, `StaticArgumentDefinition`, and PHF map compatibility.
+//! `StaticCommandDefinition`, `StaticArgumentDefinition`, and compile-time optimized map compatibility.
 //!
 
 use unilang::prelude::*;
@@ -348,10 +348,10 @@ fn test_conversion_static_validation_rules()
 #[ test ]
 fn test_phf_map_compatibility()
 {
-  // Test PHF map type compatibility
+  // Test compile-time optimized map type compatibility
   use phf::Map;
 
-  // This test verifies that our static structures can be used with PHF maps
+  // This test verifies that our static structures can be used with compile-time optimized maps
   static TEST_COMMANDS: Map< &'static str, &'static StaticCommandDefinition > = phf::phf_map!
   {
     "test" => &StaticCommandDefinition
@@ -374,7 +374,7 @@ fn test_phf_map_compatibility()
     },
   };
 
-  // Verify the PHF map works correctly
+  // Verify the compile-time optimized map works correctly
   let cmd = TEST_COMMANDS.get( "test" );
   assert!( cmd.is_some() );
 

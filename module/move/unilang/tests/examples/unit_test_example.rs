@@ -4,6 +4,8 @@
 //! organization structure. It shows proper patterns for testing individual
 //! components in isolation.
 
+#![ allow( deprecated ) ]
+
 use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind, ArgumentAttributes };
 use unilang::registry::CommandRegistry;
 use unilang::semantic::{ SemanticAnalyzer, VerifiedCommand };

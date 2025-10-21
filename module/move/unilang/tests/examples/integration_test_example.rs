@@ -4,6 +4,8 @@
 //! organization structure. It shows proper patterns for testing component
 //! interactions and data flow through multiple system layers.
 
+#![ allow( deprecated ) ]
+
 use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind, ArgumentAttributes };
 use unilang::registry::CommandRegistry;
 use unilang::semantic::{ SemanticAnalyzer, VerifiedCommand };

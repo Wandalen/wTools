@@ -50,7 +50,7 @@ tests/
 
 - **`cli/`**: CLI builder APIs, ergonomic interfaces, shell integration
 - **`data/`**: Data models, serialization, validation
-- **`build/`**: Build-time code generation, PHF maps, static compilation
+- **`build/`**: Build-time code generation, static registries, static compilation
 - **`performance/`**: Benchmarks, stress tests, performance analysis
 
 ### Cross-Cutting Domains

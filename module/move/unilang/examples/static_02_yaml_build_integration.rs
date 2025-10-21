@@ -178,24 +178,24 @@ fn demonstrate_build_time_generation() -> Result< (), Box< dyn std::error::Error
   println!( "  ... ({} more lines)", build_rs_content.lines().count().saturating_sub( 10 ) );
   println!( "  {}", "─".repeat( 50 ) );
 
-  // Generate static map content
-  let phf_content = aggregator.generate_phf_map();
+  // Generate static registry source code
+  let source_code = aggregator.generate_static_registry_source();
 
-  println!( "\n  🗺️  Generated static map preview:" );
+  println!( "\n  🗺️  Generated static registry preview:" );
   println!( "  {}", "─".repeat( 50 ) );
 
-  for (i, line) in phf_content.lines().take( 8 ).enumerate()
+  for (i, line) in source_code.lines().take( 8 ).enumerate()
   {
     println!( "  {:2}: {}", i + 1, line );
   }
 
-  println!( "  ... ({} more lines)", phf_content.lines().count().saturating_sub( 8 ) );
+  println!( "  ... ({} more lines)", source_code.lines().count().saturating_sub( 8 ) );
   println!( "  {}", "─".repeat( 50 ) );
 
   println!( "\n  💡 Build Integration Steps:" );
   println!( "    1. Cargo runs build.rs before compilation" );
   println!( "    2. build.rs discovers and processes YAML files" );
-  println!( "    3. Static command maps are generated in $OUT_DIR" );
+  println!( "    3. Static command registry source is generated in $OUT_DIR" );
   println!( "    4. Generated code is included in main binary" );
   println!( "    5. Zero runtime overhead for command lookups" );
 
@@ -209,6 +209,7 @@ fn demonstrate_registry_conversion() -> Result< (), Box< dyn std::error::Error >
   println!( "\n🔄 Registry Conversion:" );
 
   // Create a standard command registry
+  #[ allow( deprecated ) ]
   let mut dynamic_registry = CommandRegistry::new();
 
   // Add some example commands
@@ -229,8 +230,8 @@ fn demonstrate_registry_conversion() -> Result< (), Box< dyn std::error::Error >
   // Show conversion workflow
   println!( "\n  🔄 Conversion workflow:" );
   println!( "    1. Dynamic commands → Static command definitions" );
-  println!( "    2. Generate optimized static map from command names" );
-  println!( "    3. Create StaticCommandRegistry with static map" );
+  println!( "    2. Generate optimized static registry from command names" );
+  println!( "    3. Create StaticCommandRegistry with static registry" );
   println!( "    4. Verify all commands are accessible" );
 
   // In a real scenario, this would involve:
@@ -249,6 +250,7 @@ fn demonstrate_performance_comparison() -> Result< (), Box< dyn std::error::Erro
   println!( "\n⚡ Performance Comparison:" );
 
   // Create dynamic registry
+  #[ allow( deprecated ) ]
   let mut dynamic_registry = CommandRegistry::new();
 
   // Add commands to dynamic registry
@@ -309,7 +311,7 @@ fn demonstrate_performance_comparison() -> Result< (), Box< dyn std::error::Erro
 
   println!( "\n  💡 Static Registry Benefits:" );
   println!( "    ✅ Zero runtime memory allocation" );
-  println!( "    ✅ Perfect hash function lookups" );
+  println!( "    ✅ Compile-time optimized lookups" );
   println!( "    ✅ CPU cache-friendly access patterns" );
   println!( "    ✅ Compile-time command validation" );
   println!( "    ✅ Smaller binary size (after compression)" );

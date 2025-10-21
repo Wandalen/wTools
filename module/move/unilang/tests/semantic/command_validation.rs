@@ -8,6 +8,8 @@
 #![ allow( clippy::print_literal ) ]
 #![ allow( clippy::single_char_pattern ) ]
 
+#![ allow( deprecated ) ]
+
 use unilang::{ CommandDefinition, CommandRegistry, ExecutionContext, VerifiedCommand, OutputData, ErrorData };
 
 fn dummy_handler(_cmd: VerifiedCommand, _ctx: ExecutionContext) -> Result< OutputData, ErrorData >

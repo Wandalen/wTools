@@ -7,7 +7,7 @@
 //!
 //! **✅ CORRECT Performance Implementation:**
 //! - LRU caching for hot commands (production optimization)
-//! - PHF (Perfect Hash Function) for static commands (compile-time optimization)
+//! - Compile-time optimized static commands (zero-overhead lookups)
 //! - Hybrid registry modes for different workload patterns
 //! - Memory-efficient IndexMap storage for cache locality
 //!
@@ -23,7 +23,7 @@
 //! - Test separation: ✅ `tests/` for correctness, `benchkit` for performance
 //!
 
-// Include the generated static commands PHF map
+// Include the generated static command registry
 include!(concat!(env!("OUT_DIR"), "/static_commands.rs"));
 
 /// Internal namespace.
@@ -44,7 +44,7 @@ pub type CommandRoutine = Box< dyn Fn( crate::semantic::VerifiedCommand, Executi
 /// Registry operation mode for hybrid command lookup optimization
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RegistryMode {
-  /// Only static commands are used (PHF map lookup only)
+  /// Only static commands are used (compile-time optimized lookup only)
   StaticOnly,
   /// Only dynamic commands are used (HashMap lookup only)
   DynamicOnly,
@@ -323,7 +323,7 @@ impl DynamicCommandMap {
 /// A registry for commands, responsible for storing and managing all
 /// available command definitions.
 ///
-/// Uses a hybrid model: static commands are stored in a PHF map for zero overhead,
+/// Uses a hybrid model: static commands are stored in a compile-time optimized registry for zero overhead,
 /// while dynamic commands are stored in an optimized `DynamicCommandMap` with
 /// intelligent caching for runtime flexibility and performance.
 ///
@@ -342,24 +342,30 @@ impl CommandRegistry
   ///
   /// Creates a new, empty `CommandRegistry` for runtime command registration.
   ///
-  /// ## Performance Warning
+  /// ## ⚠️ Deprecation Notice
   ///
-  /// Runtime command registration has **10-50x lookup overhead** compared to compile-time
-  /// registration. Consider using static command definitions for production
-  /// applications.
+  /// Runtime command registration has **10-50x slower performance** than compile-time registration.
+  /// For production applications, use `StaticCommandRegistry::from_commands(&STATIC_COMMANDS)` with
+  /// build.rs generation for zero-cost lookups.
   ///
-  /// **Recommended Alternative:** Use `StaticCommandRegistry::from_commands(&STATIC_COMMANDS)`
-  /// with compile-time generated command maps via build.rs for zero-cost lookups.
+  /// ## When Runtime Registration Is Appropriate
   ///
-  /// ## When to Use Runtime Registration
+  /// - REPL applications requiring interactive command definition
+  /// - Plugin systems with runtime command loading
+  /// - Prototyping and development workflows
   ///
-  /// - Commands loaded from external sources at runtime
-  /// - Dynamic command generation required
-  /// - Plugin systems with runtime loading
-  /// - Rapid prototyping scenarios
+  /// ## Recommended Alternative for Production
   ///
-  /// For production applications, prefer compile-time registration for optimal performance.
+  /// ```ignore
+  /// // In build.rs:
+  /// let aggregator = MultiYamlAggregator::new(config);
+  /// aggregator.write_static_registry(&output_path)?;
   ///
+  /// // In your application:
+  /// let registry = StaticCommandRegistry::from_commands(&STATIC_COMMANDS);
+  /// ```
+  ///
+  #[ deprecated( since = "0.27.0", note = "Runtime registration has 10-50x slower performance. Use compile-time registration for production: StaticCommandRegistry::from_commands(&STATIC_COMMANDS)" ) ]
   #[ must_use ]
   pub fn new() -> Self
   {
@@ -395,7 +401,7 @@ impl CommandRegistry
   ///
   /// This version updates performance metrics and uses intelligent caching.
   /// The lookup strategy depends on the registry mode:
-  /// - StaticOnly: Only check static PHF map
+  /// - StaticOnly: Only check static registry
   /// - DynamicOnly: Only check dynamic commands
   /// - Hybrid: Check static first, then dynamic (default)
   /// - Auto: Use usage patterns to optimize lookup order
@@ -423,26 +429,34 @@ impl CommandRegistry
   ///
   /// Registers a command with its executable routine at runtime.
   ///
-  /// ## Performance Impact
+  /// ## ⚠️ Deprecation Notice
   ///
-  /// Each runtime registration adds lookup overhead. Static commands via build.rs provide
-  /// O(1) PHF lookups with zero runtime cost, typically **10-50x faster** than runtime
-  /// HashMap operations.
+  /// Runtime command registration has **10-50x slower performance** than compile-time registration.
+  /// For production CLI applications, use static command definitions generated at build time.
   ///
-  /// **Recommended Alternative:** Define commands in YAML and use build.rs for compile-time
-  /// PHF generation. See readme.md for compile-time registration patterns.
+  /// ## When Runtime Registration Is Appropriate
   ///
-  /// ## Use Cases for Runtime Registration
+  /// - REPL applications requiring interactive command definition
+  /// - Plugin systems where commands are loaded from external sources
+  /// - Prototyping and development workflows
   ///
-  /// - Plugin systems requiring dynamic command loading
-  /// - Commands from external configuration sources
-  /// - Development and prototyping scenarios
+  /// ## Recommended Alternative for Production
+  ///
+  /// Use `build.rs` to generate static command registries from YAML or procedural definitions,
+  /// then load them with `StaticCommandRegistry::from_commands(&STATIC_COMMANDS)` for zero-cost lookups.
+  ///
+  /// # Arguments
+  ///
+  /// * `command_def` - The command definition
+  /// * `routine` - The function that executes the command logic
   ///
   /// # Errors
   ///
   /// Returns an `Error::Registration` if a command with the same name
   /// is already registered and cannot be overwritten (e.g., if it was
   /// a compile-time registered command).
+  ///
+  #[ deprecated( since = "0.27.0", note = "Runtime registration has 10-50x slower performance. Use compile-time registration for production. Only use for REPL, plugins, or prototyping." ) ]
   pub fn command_add_runtime( &mut self, command_def : &CommandDefinition, routine : CommandRoutine ) -> Result< (), Error >
   {
     // EXPLICIT COMMAND NAMING ENFORCEMENT (FR-REG-6)
@@ -497,9 +511,9 @@ impl CommandRegistry
 
   ///
   /// Returns a collection of all command definitions (both static and dynamic).
-  /// 
+  ///
   /// This is provided for backward compatibility and introspection.
-  /// Static commands are converted from the PHF map.
+  /// Static commands are converted from the optimized static registry.
   ///
   #[ must_use ]
   pub fn commands( &self ) -> HashMap< String, CommandDefinition >
@@ -531,7 +545,7 @@ impl CommandRegistry
   /// Set the registry mode for optimized command lookup.
   ///
   /// This controls which command sources are checked during lookup:
-  /// - StaticOnly: Only check compile-time PHF map
+  /// - StaticOnly: Only check compile-time optimized registry
   /// - DynamicOnly: Only check runtime-registered commands
   /// - Hybrid: Check both (static first, then dynamic)
   /// - Auto: Use adaptive strategies based on usage patterns
@@ -628,6 +642,7 @@ impl CommandRegistry
   {
     // MANDATORY HELP ENFORCEMENT: This method now behaves identically to command_add_runtime
     // because help generation is mandatory and automatic for all commands
+    #[ allow( deprecated ) ]
     self.command_add_runtime( &command, routine )
   }
 
@@ -791,8 +806,10 @@ impl CommandRegistry
   /// let registry = CommandRegistry::from_static_commands( &STATIC_COMMANDS );
   /// ```
   #[ must_use ]
+  #[ cfg( feature = "static_registry" ) ]
   pub fn from_static_commands( static_commands : &crate::static_data::StaticCommandMap ) -> Self
   {
+    #[ allow( deprecated ) ]
     let mut registry = Self::new();
 
     // Convert each static command to dynamic and register it
@@ -810,6 +827,7 @@ impl Default for CommandRegistry
 {
   fn default() -> Self
   {
+    #[ allow( deprecated ) ]
     Self::new()
   }
 }
@@ -881,9 +899,12 @@ impl CommandRegistryBuilder
   ///
   /// Loads command definitions from a YAML string and adds them to the registry.
   ///
+  /// **Requires feature**: `yaml_parser` (enabled by YAML approaches)
+  ///
   /// # Errors
   ///
   /// Returns an `Error` if the YAML string is invalid or if routine links cannot be resolved.
+  #[ cfg( feature = "yaml_parser" ) ]
   pub fn load_from_yaml_str( mut self, yaml_str : &str ) -> Result< Self, Error >
   {
     let command_defs = crate::loader::load_command_definitions_from_yaml_str( yaml_str )?;
@@ -892,6 +913,7 @@ impl CommandRegistryBuilder
       if let Some( link ) = &command_def.routine_link
       {
         let routine = crate::loader::resolve_routine_link( link )?;
+        #[ allow( deprecated ) ]
         self.registry.command_add_runtime( &command_def, routine )?;
       }
       else
@@ -905,9 +927,12 @@ impl CommandRegistryBuilder
   ///
   /// Loads command definitions from a JSON string and adds them to the registry.
   ///
+  /// **Requires feature**: `json_parser` (enabled by JSON approaches)
+  ///
   /// # Errors
   ///
   /// Returns an `Error` if the JSON string is invalid or if routine links cannot be resolved.
+  #[ cfg( feature = "json_parser" ) ]
   pub fn load_from_json_str( mut self, json_str : &str ) -> Result< Self, Error >
   {
     let command_defs = crate::loader::load_command_definitions_from_json_str( json_str )?;
@@ -916,6 +941,7 @@ impl CommandRegistryBuilder
       if let Some( link ) = &command_def.routine_link
       {
         let routine = crate::loader::resolve_routine_link( link )?;
+        #[ allow( deprecated ) ]
         self.registry.command_add_runtime( &command_def, routine )?;
       }
       else
@@ -986,6 +1012,7 @@ impl CommandRegistryBuilder
     };
 
     // Register with routine - collect errors for later checking
+    #[ allow( deprecated ) ]
     if let Err( e ) = self.registry.command_add_runtime( &cmd, Box::new( routine ) )
     {
       self.errors.push( ( name.to_string(), e ) );
@@ -1074,17 +1101,43 @@ impl CommandRegistryBuilder
 
 /// Static command registry with hybrid lookup functionality.
 ///
-/// Provides optimal performance through compile-time optimized static maps
+/// **Requires feature**: `static_registry` (automatically enabled by approach features like
+/// `approach_yaml_single_build`, `approach_yaml_multi_build`, `approach_rust_dsl_const`, etc.)
+///
+/// Provides optimal performance through compile-time optimized static maps (using PHF)
 /// for static commands while supporting dynamic runtime commands as fallback.
 /// Static commands always take priority for predictable performance characteristics.
 ///
 /// ## Performance Characteristics
-/// - Static command lookup: O(1), typically sub-microsecond
-/// - Dynamic command lookup: O(1) average case with LRU caching
-/// - Hybrid mode prioritizes static commands for optimal hot path performance
 ///
-/// ## Usage Example
-/// ```rust
+/// - **Static command lookup**: O(1), typically ~80-100ns per operation
+///   - Uses Perfect Hash Functions (PHF) for zero-overhead lookups
+///   - Zero heap allocations during lookup
+///   - 50x faster than runtime `CommandRegistry` (~4,000ns)
+/// - **Dynamic command lookup**: O(1) average case with LRU caching, ~4,000ns
+/// - **Hybrid mode**: Prioritizes static commands for optimal hot path performance
+///
+/// ## Recommended Usage Pattern
+///
+/// **DO NOT manually construct static maps!** Instead, use YAML + build system:
+///
+/// ```rust,ignore
+/// // In your project:
+/// // 1. Create unilang.commands.yaml with command definitions
+/// // 2. Add feature to Cargo.toml: unilang = "0.28" (default enables multi-YAML)
+/// // 3. Include generated static commands:
+///
+/// include!(concat!(env!("OUT_DIR"), "/static_commands.rs"));
+///
+/// // 4. Use the generated STATIC_COMMANDS constant:
+/// let registry = StaticCommandRegistry::from_commands(&STATIC_COMMANDS);
+/// let pipeline = Pipeline::new(registry);
+/// ```
+///
+/// See `examples/static_01_basic_compile_time.rs` for complete walkthrough.
+///
+/// ## Hybrid Mode Example
+/// ```rust,ignore
 /// use unilang::registry::{StaticCommandRegistry, RegistryMode};
 ///
 /// // Create registry with hybrid mode (default)
@@ -1094,8 +1147,9 @@ impl CommandRegistryBuilder
 /// let mut static_only = StaticCommandRegistry::with_mode(RegistryMode::StaticOnly);
 /// ```
 #[allow(missing_debug_implementations)]
+#[ cfg( feature = "static_registry" ) ]
 pub struct StaticCommandRegistry {
-  /// Static command storage from PHF map
+  /// Compile-time optimized static command storage
   static_commands: Option<&'static crate::static_data::StaticCommandMap>,
   /// Dynamic command storage with intelligent caching
   dynamic_commands: DynamicCommandMap,
@@ -1107,10 +1161,11 @@ pub struct StaticCommandRegistry {
   metrics: PerformanceMetrics,
 }
 
+#[ cfg( feature = "static_registry" ) ]
 impl StaticCommandRegistry {
   /// Create a new static command registry with default hybrid mode.
   ///
-  /// The registry will check static PHF commands first, then fall back to
+  /// The registry will check static commands first, then fall back to
   /// dynamic commands for optimal performance.
   #[must_use]
   pub fn new() -> Self {
@@ -1165,7 +1220,7 @@ impl StaticCommandRegistry {
   /// Get a command definition using hybrid lookup with performance tracking.
   ///
   /// Lookup strategy depends on registry mode:
-  /// - StaticOnly: PHF map only
+  /// - StaticOnly: Static registry only
   /// - DynamicOnly: Dynamic commands only
   /// - Hybrid: Static first, then dynamic fallback
   /// - Auto: Usage pattern optimization
@@ -1429,12 +1484,14 @@ impl StaticCommandRegistry {
   }
 }
 
+#[ cfg( feature = "static_registry" ) ]
 impl Default for StaticCommandRegistry {
   fn default() -> Self {
     Self::new()
   }
 }
 
+#[ cfg( feature = "static_registry" ) ]
 impl CommandRegistryTrait for StaticCommandRegistry {
   fn command(&self, name: &str) -> Option<crate::data::CommandDefinition> {
     self.command(name)
@@ -1460,6 +1517,7 @@ mod_interface::mod_interface!
   exposed use private::CommandRoutine;
   exposed use private::CommandRegistry;
   exposed use private::CommandRegistryBuilder;
+  #[ cfg( feature = "static_registry" ) ]
   exposed use private::StaticCommandRegistry;
   exposed use private::CommandRegistryTrait;
   exposed use private::RegistryMode;
@@ -1470,7 +1528,8 @@ mod_interface::mod_interface!
   prelude use private::RegistryMode;
   prelude use private::PerformanceMetrics;
   prelude use private::CommandRoutine;
-  #[ doc = "High-performance static command registry with PHF-based lookup." ]
+  #[ cfg( feature = "static_registry" ) ]
+  #[ doc = "High-performance static command registry with zero-cost compile-time lookup." ]
   prelude use private::StaticCommandRegistry;
 
   // Runtime APIs with performance guidance

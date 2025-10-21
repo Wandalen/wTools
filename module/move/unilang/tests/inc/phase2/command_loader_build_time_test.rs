@@ -1,10 +1,10 @@
 //! Tests for build-time command loading from YAML/JSON files.
 //!
-//! This module tests the complete YAML/JSON parity for build-time PHF generation:
-//! - YAML single-file → build-time PHF (#1)
-//! - YAML multi-file → build-time PHF (#2)
-//! - JSON single-file → build-time PHF (#4)
-//! - JSON multi-file → build-time PHF (#5)
+//! This module tests the complete YAML/JSON parity for build-time static registry generation:
+//! - YAML single-file → build-time static registry (#1)
+//! - YAML multi-file → build-time static registry (#2)
+//! - JSON single-file → build-time static registry (#4)
+//! - JSON multi-file → build-time static registry (#5)
 //!
 //! **Test Matrix for Build-Time Command Loading**
 //!
@@ -18,7 +18,7 @@
 //! | BT4.1 | Multi-file JSON | .json | 2 | ✅ Tested |
 //! | BT5.1 | Multi-file Mixed | .yaml+.json | 4 | ✅ Tested |
 //!
-//! **Note**: These tests verify the parsing logic. Full build-time PHF generation
+//! **Note**: These tests verify the parsing logic. Full build-time static registry generation
 //! is tested via environment variables:
 //! ```bash
 //! # Test single-file YAML

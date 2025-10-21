@@ -2,6 +2,10 @@
 //!
 //! Tests correctness, performance, and edge cases for SIMD-optimized JSON parsing
 //! to ensure 4-25x performance improvements without breaking API compatibility.
+//!
+//! **Requires feature**: `json_parser`
+
+#![ cfg( feature = "json_parser" ) ]
 
 use test_tools::*;
 use unilang::simd_json_parser::{ SIMDJsonParser, FastJsonValue };

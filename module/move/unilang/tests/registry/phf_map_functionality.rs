@@ -1,8 +1,8 @@
 //!
-//! Tests for PHF (Perfect Hash Function) map functionality.
+//! Tests for static command map functionality.
 //!
-//! This module tests the core PHF map functionality including `StaticCommandDefinition`
-//! conversions, PHF map generation, lookup performance, and integration with the
+//! This module tests the core static map functionality including `StaticCommandDefinition`
+//! conversions, static registry generation, lookup performance, and integration with the
 //! command registry system.
 
 use unilang::prelude::*;
@@ -20,7 +20,7 @@ fn create_test_static_command() -> &'static StaticCommandDefinition
   {
     name: "test_command",
     namespace: "test",
-    description: "A test command for PHF functionality",
+    description: "A test command for static map functionality",
     hint: "Test command hint",
     arguments: &[
       StaticArgumentDefinition
@@ -55,14 +55,14 @@ fn create_test_static_command() -> &'static StaticCommandDefinition
   }
 }
 
-/// Create a test PHF map for testing
-const TEST_PHF_MAP_INTERNAL: phf::Map<&'static str, &'static StaticCommandDefinition> = phf::phf_map!
+/// Create a test static map for testing (internal implementation)
+const TEST_STATIC_MAP_INTERNAL: phf::Map<&'static str, &'static StaticCommandDefinition> = phf::phf_map!
 {
   "test_command" => &StaticCommandDefinition
   {
     name: "test_command",
     namespace: "test",
-    description: "A test command for PHF functionality",
+    description: "A test command for static map functionality",
     hint: "Test command hint",
     arguments: &[],
     routine_link: Some("test_routine"),
@@ -96,7 +96,8 @@ const TEST_PHF_MAP_INTERNAL: phf::Map<&'static str, &'static StaticCommandDefini
   },
 };
 
-static TEST_PHF_MAP: StaticCommandMap = StaticCommandMap::from_phf_internal(&TEST_PHF_MAP_INTERNAL);
+/// Public static map wrapper
+static TEST_STATIC_MAP: StaticCommandMap = StaticCommandMap::from_phf_internal(&TEST_STATIC_MAP_INTERNAL);
 
 #[test]
 fn test_static_command_definition_structure()
@@ -106,7 +107,7 @@ fn test_static_command_definition_structure()
 
   assert_eq!( static_cmd.name, "test_command" );
   assert_eq!( static_cmd.namespace, "test" );
-  assert_eq!( static_cmd.description, "A test command for PHF functionality" );
+  assert_eq!( static_cmd.description, "A test command for static map functionality" );
   assert_eq!( static_cmd.hint, "Test command hint" );
   assert_eq!( static_cmd.status, "stable" );
   assert_eq!( static_cmd.version, "1.0.0" );
@@ -141,7 +142,7 @@ fn test_static_to_dynamic_command_conversion()
   // Verify basic fields
   assert_eq!( dynamic_cmd.name, "test_command" );
   assert_eq!( dynamic_cmd.namespace, "test" );
-  assert_eq!( dynamic_cmd.description, "A test command for PHF functionality" );
+  assert_eq!( dynamic_cmd.description, "A test command for static map functionality" );
   assert_eq!( dynamic_cmd.hint, "Test command hint" );
   assert_eq!( dynamic_cmd.status, "stable" );
   assert_eq!( dynamic_cmd.version, "1.0.0" );
@@ -167,37 +168,37 @@ fn test_static_to_dynamic_command_conversion()
 }
 
 #[test]
-fn test_phf_map_basic_functionality()
+fn test_static_map_basic_functionality()
 {
-  // Test basic PHF map operations
-  assert_eq!( TEST_PHF_MAP.len(), 2 );
+  // Test basic static map operations
+  assert_eq!( TEST_STATIC_MAP.len(), 2 );
 
   // Test contains_key
-  assert!( TEST_PHF_MAP.contains_key("test_command") );
-  assert!( TEST_PHF_MAP.contains_key("another_command") );
-  assert!( !TEST_PHF_MAP.contains_key("nonexistent") );
+  assert!( TEST_STATIC_MAP.contains_key("test_command") );
+  assert!( TEST_STATIC_MAP.contains_key("another_command") );
+  assert!( !TEST_STATIC_MAP.contains_key("nonexistent") );
 
   // Test get
-  let cmd1 = TEST_PHF_MAP.get("test_command");
+  let cmd1 = TEST_STATIC_MAP.get("test_command");
   assert!( cmd1.is_some() );
   assert_eq!( cmd1.unwrap().name, "test_command" );
 
-  let cmd2 = TEST_PHF_MAP.get("another_command");
+  let cmd2 = TEST_STATIC_MAP.get("another_command");
   assert!( cmd2.is_some() );
   assert_eq!( cmd2.unwrap().name, "another_command" );
 
-  let cmd3 = TEST_PHF_MAP.get("nonexistent");
+  let cmd3 = TEST_STATIC_MAP.get("nonexistent");
   assert!( cmd3.is_none() );
 }
 
 #[test]
-fn test_phf_map_iteration()
+fn test_static_map_iteration()
 {
-  // Test PHF map iteration
+  // Test static map iteration
   let mut count = 0;
   let mut names = Vec::new();
 
-  for (key, value) in TEST_PHF_MAP.entries()
+  for (key, value) in TEST_STATIC_MAP.entries()
   {
     count += 1;
     names.push( (*key).to_string() );
@@ -209,16 +210,16 @@ fn test_phf_map_iteration()
   assert!( names.contains( &"another_command".to_string() ) );
 
   // Test keys()
-  let keys: Vec<&str> = TEST_PHF_MAP.keys().copied().collect();
+  let keys: Vec<&str> = TEST_STATIC_MAP.keys().copied().collect();
   assert_eq!( keys.len(), 2 );
   assert!( keys.contains( &"test_command" ) );
   assert!( keys.contains( &"another_command" ) );
 }
 
 #[test]
-fn test_phf_map_lookup_performance()
+fn test_static_map_lookup_performance()
 {
-  // Test PHF map lookup performance characteristics
+  // Test static map lookup performance characteristics
   let iterations = 100_000;
   let commands_to_test = vec!["test_command", "another_command", "nonexistent"];
 
@@ -227,7 +228,7 @@ fn test_phf_map_lookup_performance()
   {
     for cmd_name in &commands_to_test
     {
-      let _result = TEST_PHF_MAP.get(cmd_name);
+      let _result = TEST_STATIC_MAP.get(cmd_name);
     }
   }
 
@@ -237,7 +238,7 @@ fn test_phf_map_lookup_performance()
   {
     for cmd_name in &commands_to_test
     {
-      let _result = TEST_PHF_MAP.get(cmd_name);
+      let _result = TEST_STATIC_MAP.get(cmd_name);
     }
   }
   let duration = start.elapsed();
@@ -245,19 +246,19 @@ fn test_phf_map_lookup_performance()
   let total_lookups = iterations * commands_to_test.len();
   let avg_lookup_time = duration / u32::try_from(total_lookups).unwrap_or(1);
 
-  // PHF lookups should be very fast (< 100ns in optimized builds)
-  println!( "PHF lookup performance: {total_lookups} lookups in {duration:?}, avg: {avg_lookup_time:?} per lookup" );
+  // Static lookups should be very fast (< 100ns in optimized builds)
+  println!( "Static map lookup performance: {total_lookups} lookups in {duration:?}, avg: {avg_lookup_time:?} per lookup" );
 
   // For debug builds and workspace context, be lenient with timing
   // Allow up to 10μs for debug/workspace builds since optimization and build context affect performance
-  assert!( avg_lookup_time.as_nanos() < 10_000, "PHF lookup should be < 10μs, got: {avg_lookup_time:?}" );
+  assert!( avg_lookup_time.as_nanos() < 10_000, "Static lookup should be < 10μs, got: {avg_lookup_time:?}" );
 }
 
 #[test]
-fn test_static_command_registry_with_phf()
+fn test_static_command_registry_with_static_map()
 {
-  // Test StaticCommandRegistry integration with PHF map
-  let registry = StaticCommandRegistry::from_commands( &TEST_PHF_MAP );
+  // Test StaticCommandRegistry integration with static map
+  let registry = StaticCommandRegistry::from_commands( &TEST_STATIC_MAP );
 
   // Test command lookup
   let cmd1 = registry.command( "test_command" );
@@ -282,9 +283,9 @@ fn test_static_command_registry_with_phf()
 }
 
 #[test]
-fn test_multi_yaml_aggregator_phf_generation()
+fn test_multi_yaml_aggregator_static_registry_generation()
 {
-  // Test PHF map generation from MultiYamlAggregator
+  // Test static registry generation from MultiYamlAggregator
   let config = AggregationConfig
   {
     base_dir: PathBuf::from("test"),
@@ -305,19 +306,19 @@ fn test_multi_yaml_aggregator_phf_generation()
 
   let aggregator = MultiYamlAggregator::new( config );
 
-  // Generate PHF map content
-  let phf_content = aggregator.generate_phf_map();
+  // Generate static registry source code
+  let source_code = aggregator.generate_static_registry_source();
 
-  // Verify PHF map structure
-  assert!( phf_content.contains("use phf::{phf_map, Map}") );
-  assert!( phf_content.contains("StaticCommandDefinition") );
-  assert!( phf_content.contains("phf_map!") );
+  // Verify static registry structure
+  assert!( source_code.contains("use phf::{phf_map, Map}") );
+  assert!( source_code.contains("StaticCommandDefinition") );
+  assert!( source_code.contains("phf_map!") );
 
   // Print content for debugging
-  println!( "Generated PHF map content:\n{phf_content}" );
+  println!( "Generated static registry source:\n{source_code}" );
 
-  // Verify the content has basic PHF structure (the exact type name may vary)
-  assert!( phf_content.contains("phf_map") || phf_content.contains("Map") );
+  // Verify the content has basic structure (the exact type name may vary)
+  assert!( source_code.contains("phf_map") || source_code.contains("Map") );
 }
 
 #[test]
@@ -419,20 +420,20 @@ fn test_static_kind_variants()
 }
 
 #[test]
-fn test_phf_map_memory_characteristics()
+fn test_static_map_memory_characteristics()
 {
-  // Test memory characteristics of PHF maps
-  let map_size = core::mem::size_of_val( &TEST_PHF_MAP );
+  // Test memory characteristics of static maps
+  let map_size = core::mem::size_of_val( &TEST_STATIC_MAP );
   let cmd_size = core::mem::size_of::< &StaticCommandDefinition >();
   let key_size = core::mem::size_of::< &str >();
 
-  println!( "PHF map size: {map_size} bytes" );
+  println!( "Static map size: {map_size} bytes" );
   println!( "Command reference size: {cmd_size} bytes" );
   println!( "Key reference size: {key_size} bytes" );
 
-  // PHF maps should have minimal memory overhead
-  // The exact size will depend on the PHF implementation, but should be reasonable
-  assert!( map_size < 1000, "PHF map should have reasonable memory footprint" );
+  // Static maps should have minimal memory overhead
+  // The exact size will depend on the implementation, but should be reasonable
+  assert!( map_size < 1000, "Static map should have reasonable memory footprint" );
 }
 
 /// Static complex command for testing

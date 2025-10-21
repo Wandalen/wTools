@@ -15,6 +15,8 @@
 //! - `unit/help/conventions.rs` - Help system conventions
 //! - `unit/help/formatting.rs` - Help output formatting
 
+#![ allow( deprecated ) ]
+
 use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind, ArgumentAttributes, OutputData };
 use unilang::registry::CommandRegistry;
 use unilang::help::HelpGenerator;
