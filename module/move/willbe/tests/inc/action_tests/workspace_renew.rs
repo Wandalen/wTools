@@ -17,8 +17,37 @@ fn arrange(sample_dir: &str) -> assert_fs ::TempDir
   temp
 }
 
+/// Test workspace template generation with default parameters.
+///
+/// # What This Tests
+///
+/// Validates that workspace template materialization works correctly with genfile_core,
+/// including:
+/// - Template parameter substitution (project_name, url, branches)
+/// - File creation in correct directory structure
+/// - Handlebars template rendering with proper variable names
+///
+/// # Critical Bug History
+///
+/// **2025-10-19:** Fixed template syntax bug in `Cargo.toml.x` where `{{repository url}}`
+/// with a space was interpreted as a Handlebars helper call `repository(url)` instead of
+/// variable substitution. Changed to `{{url}}` to match actual parameter name.
+///
+/// # Why This Test Exists
+///
+/// After migrating from custom template.rs (472 lines) to genfile_core library, this test
+/// ensures zero regressions in workspace generation functionality. The test validates that:
+/// 1. genfile_core's TemplateArchive materializes all files correctly
+/// 2. Parameter values are properly rendered in templates
+/// 3. Directory structure is created as expected
+///
+/// # How to Interpret Failures
+///
+/// - "Helper not defined" errors indicate Handlebars syntax issues in template files
+/// - Missing files suggest TemplateArchive.add_text_file() calls are incorrect
+/// - Wrong content indicates parameter name mismatches or rendering problems
 #[ test ]
-fn default_case() 
+fn default_case()
 {
   // Arrange
   let temp = assert_fs ::TempDir ::new().unwrap();

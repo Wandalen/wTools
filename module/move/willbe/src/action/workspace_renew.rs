@@ -1,3 +1,57 @@
+//! Workspace template generation using genfile_core.
+//!
+//! # Architecture Decision: genfile_core Integration
+//!
+//! **Migration Date:** 2025-10-19
+//!
+//! This module was migrated from a custom 472-line template implementation to use
+//! the `genfile_core` library for template processing. The migration provides:
+//!
+//! - **Code Reuse:** Eliminated duplicated template logic across wTools ecosystem
+//! - **Testing:** Inherited 215 comprehensive tests from genfile_core
+//! - **Security:** Path traversal validation with 27 dedicated tests
+//! - **Features:** Binary file support, JSON/YAML serialization, external content
+//!
+//! # Key Implementation Patterns
+//!
+//! ## Parameter Definition
+//!
+//! Parameters are defined using direct struct construction instead of builders:
+//! ```rust,ignore
+//! archive.add_parameter(ParameterDescriptor {
+//!   parameter: "project_name".into(),
+//!   is_mandatory: true,
+//!   default_value: None,
+//!   description: None,
+//! });
+//! ```
+//!
+//! ## Template File Addition
+//!
+//! All template files are added using `add_text_file()` with embedded content:
+//! ```rust,ignore
+//! archive.add_text_file(
+//!   PathBuf::from("./Cargo.toml"),
+//!   include_str!("../../template/workspace/Cargo.hbs"),
+//!   WriteMode::Rewrite
+//! );
+//! ```
+//!
+//! ## Value Setting and Materialization
+//!
+//! Values are set before materialization:
+//! ```rust,ignore
+//! archive.set_value("project_name", Value::String(name));
+//! archive.materialize(output_path)?;
+//! ```
+//!
+//! # Template Syntax Gotcha
+//!
+//! **IMPORTANT:** Handlebars interprets `{{foo bar}}` (with space) as a helper call
+//! `foo(bar)`, not variable substitution. Always use `{{foo}}` for variables.
+//!
+//! Bug fixed 2025-10-19: `{{repository url}}` → `{{url}}`
+
 #[ allow( clippy ::std_instead_of_alloc, clippy ::std_instead_of_core ) ]
 mod private
 {
@@ -20,6 +74,9 @@ mod private
  };
 
   /// Template for creating workspace files.
+  ///
+  /// Uses genfile_core's TemplateArchive for template processing.
+  /// See module documentation for migration details and patterns.
   #[ derive( Debug ) ]
   pub struct WorkspaceTemplate
   {
