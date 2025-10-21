@@ -1,3 +1,57 @@
+//! Deploy template generation using genfile_core.
+//!
+//! # Architecture Decision: genfile_core Integration
+//!
+//! **Migration Date:** 2025-10-19
+//!
+//! Migrated from custom template.rs to genfile_core library, inheriting advanced features
+//! like `WriteMode::TomlExtend` for smart TOML merging.
+//!
+//! # Key Patterns Specific to Deploy Templates
+//!
+//! ## TOML Parameter Persistence
+//!
+//! Deploy templates use `.deploy_template.toml` for parameter persistence across runs.
+//! The `load_existing_params()` helper loads previously-set values:
+//!
+//! ```rust,ignore
+//! fn load_existing_params(archive: &mut TemplateArchive, path: &Path) -> Option<()> {
+//!   let data = fs::read_to_string(path.join(".deploy_template.toml")).ok()?;
+//!   // Parse TOML and populate archive values...
+//! }
+//! ```
+//!
+//! ## Smart TOML Merging
+//!
+//! Uses `WriteMode::TomlExtend` to merge new template content with existing files:
+//!
+//! ```rust,ignore
+//! archive.add_text_file(
+//!   PathBuf::from("./.deploy_template.toml"),
+//!   include_str!("../../template/deploy/.deploy_template.toml.hbs"),
+//!   WriteMode::TomlExtend  // Merges instead of replacing
+//! );
+//! ```
+//!
+//! ## Borrow Checker Pattern
+//!
+//! To avoid simultaneous immutable/mutable borrows when iterating parameters:
+//!
+//! ```rust,ignore
+//! // Clone parameter names first
+//! let param_names: Vec<String> = archive.parameters.descriptors
+//!   .iter()
+//!   .map(|d| d.parameter.clone())
+//!   .collect();
+//!
+//! // Now safe to mutate archive in loop
+//! for param in param_names {
+//!   archive.set_value(&param, value);
+//! }
+//! ```
+//!
+//! This pattern is essential when both reading from and writing to the archive.
+
 mod private
 {
 
@@ -21,6 +75,9 @@ mod private
   ///
   /// Includes terraform deploy options to GCP, and Hetzner,
   /// a Makefile for useful commands, and a key directory.
+  ///
+  /// Uses genfile_core with WriteMode::TomlExtend for parameter persistence.
+  /// See module documentation for migration details and patterns.
   #[ derive( Debug ) ]
   pub struct DeployTemplate;
 

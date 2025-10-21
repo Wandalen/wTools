@@ -1,9 +1,9 @@
 //! Low-level Template API example
 //!
-//! Demonstrates using the Template<V,R,FS> API instead of TemplateArchive.
+//! Demonstrates using the Template<V,R,FS> API instead of `TemplateArchive`.
 //! This provides more control over value types, renderers, and filesystems.
 //!
-//! Run with: cargo run --example low_level_template
+//! Run with: cargo run --example `low_level_template`
 
 use genfile_core::
 {
@@ -17,7 +17,7 @@ use genfile_core::
 };
 use std::path::PathBuf;
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "=== Low-Level Template API Example ===" );
   println!();

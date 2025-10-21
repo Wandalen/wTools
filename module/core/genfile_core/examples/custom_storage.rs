@@ -1,9 +1,9 @@
 //! Custom storage backend example
 //!
-//! Demonstrates implementing the ContentStorage trait to create
+//! Demonstrates implementing the `ContentStorage` trait to create
 //! a custom storage backend (e.g., cloud storage, database, etc.).
 //!
-//! Run with: cargo run --example custom_storage
+//! Run with: cargo run --example `custom_storage`
 
 use genfile_core::
 {
@@ -21,7 +21,7 @@ use std::collections::HashMap;
 
 /// Custom in-memory storage backend
 ///
-/// This example shows how to implement ContentStorage for a custom backend.
+/// This example shows how to implement `ContentStorage` for a custom backend.
 /// In real applications, this could be S3, Azure Blob Storage, database, etc.
 struct CloudStorage
 {
@@ -54,7 +54,7 @@ impl ContentStorage for CloudStorage
   {
     let key = path.to_string_lossy().to_string();
 
-    println!( "☁️  Uploading to cloud: {}", key );
+    println!( "☁️  Uploading to cloud: {key}" );
 
     // Simulate upload
     self.files.insert( key.clone(), content.clone() );
@@ -65,13 +65,13 @@ impl ContentStorage for CloudStorage
       FileContent::Text( s ) => format!( "{} chars", s.len() ),
       FileContent::Binary( b ) => format!( "{} bytes", b.len() ),
     };
-    println!( "   ✅ Upload complete ({})", size_desc );
+    println!( "   ✅ Upload complete ({size_desc})" );
 
     Ok( () )
   }
 }
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "=== Custom Storage Backend Example ===" );
   println!();
@@ -145,22 +145,17 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   println!( "Files in cloud storage:" );
   for file in cloud.list_files()
   {
-    println!( "  ☁️  {}", file );
+    println!( "  ☁️  {file}" );
   }
   println!();
 
   // Verify content
   if let Some( readme_content ) = cloud.files.get( "s3://my-bucket/app-v1.0.0/README.md" )
   {
-    match readme_content
-    {
-      FileContent::Text( text ) =>
-      {
-        println!( "Sample file content (README.md):" );
-        println!( "{}", text );
-        println!();
-      },
-      _ => {},
+    if let FileContent::Text( text ) = readme_content {
+      println!( "Sample file content (README.md):" );
+      println!( "{text}" );
+      println!();
     }
   }
 

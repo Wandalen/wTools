@@ -82,7 +82,7 @@ fn validate_path_error_message_includes_path()
   assert!( result.is_err() );
 
   let err = result.unwrap_err();
-  let msg = format!( "{}", err );
+  let msg = format!( "{err}" );
   assert!( msg.contains( "directory traversal" ) );
   assert!( msg.contains( "../malicious/file.txt" ) );
 }
@@ -112,7 +112,7 @@ fn materialize_blocks_parent_dir_traversal()
 
   assert!( result.is_err() );
   let err = result.unwrap_err();
-  let msg = format!( "{}", err );
+  let msg = format!( "{err}" );
   assert!( msg.contains( "directory traversal" ) );
 }
 
@@ -287,7 +287,7 @@ fn materialize_validates_before_rendering()
   // Should fail BEFORE template rendering (path validation happens first)
   assert!( result.is_err() );
   let err = result.unwrap_err();
-  let msg = format!( "{}", err );
+  let msg = format!( "{err}" );
   assert!( msg.contains( "directory traversal" ) );
 }
 
@@ -362,8 +362,7 @@ fn spec_requirement_path_traversal_validation()
 
     assert!(
       result.is_err(),
-      "Path '{}' should be rejected but was allowed",
-      malicious_path
+      "Path '{malicious_path}' should be rejected but was allowed"
     );
   }
 }

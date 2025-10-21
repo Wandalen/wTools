@@ -4,7 +4,6 @@
 /// from various sources (inline, filesystem, remote URLs, custom providers).
 /// This allows archive data to be stored externally while maintaining
 /// references in the archive structure.
-
 use std::path::{ Path, PathBuf };
 use serde::{ Serialize, Deserialize };
 use crate::{ FileContent, Error };
@@ -72,7 +71,7 @@ pub enum ContentSource
   },
 }
 
-/// Trait for types that can be converted into a ContentSource.
+/// Trait for types that can be converted into a `ContentSource`.
 ///
 /// Implement this trait to create custom content source types that work
 /// seamlessly with the archive API.
@@ -97,7 +96,7 @@ pub enum ContentSource
 /// ```
 pub trait IntoContentSource
 {
-  /// Convert self into a ContentSource
+  /// Convert self into a `ContentSource`
   fn into_content_source( self ) -> ContentSource;
 }
 
@@ -224,6 +223,7 @@ pub struct InlineContent( pub FileContent );
 impl InlineContent
 {
   /// Create a new inline content source
+  #[must_use] 
   pub fn new( content: FileContent ) -> Self
   {
     Self( content )
@@ -236,6 +236,7 @@ impl InlineContent
   }
 
   /// Create inline binary content
+  #[must_use] 
   pub fn binary( bytes: Vec< u8 > ) -> Self
   {
     Self( FileContent::Binary( bytes ) )
@@ -262,24 +263,28 @@ impl ContentSource
 {
 
   /// Check if this is inline content
+  #[must_use] 
   pub fn is_inline( &self ) -> bool
   {
     matches!( self, Self::Inline { .. } )
   }
 
   /// Check if this is a file reference
+  #[must_use] 
   pub fn is_file( &self ) -> bool
   {
     matches!( self, Self::File { .. } )
   }
 
   /// Check if this is a URL reference
+  #[must_use] 
   pub fn is_url( &self ) -> bool
   {
     matches!( self, Self::Url { .. } )
   }
 
   /// Get inline content if available
+  #[must_use] 
   pub fn as_inline( &self ) -> Option< &FileContent >
   {
     if let Self::Inline { content } = self
@@ -293,6 +298,7 @@ impl ContentSource
   }
 
   /// Get file path if this is a file reference
+  #[must_use] 
   pub fn as_file_path( &self ) -> Option< &Path >
   {
     if let Self::File { path } = self
@@ -306,6 +312,7 @@ impl ContentSource
   }
 
   /// Get URL if this is a URL reference
+  #[must_use] 
   pub fn as_url( &self ) -> Option< &str >
   {
     if let Self::Url { url } = self
@@ -439,6 +446,7 @@ pub struct DefaultContentResolver;
 impl DefaultContentResolver
 {
   /// Create a new default content resolver
+  #[must_use] 
   pub fn new() -> Self
   {
     Self
@@ -484,8 +492,7 @@ impl ContentResolver for DefaultContentResolver
         // Users should implement custom resolver with HTTP client
         Err( Error::Render( format!(
           "URL fetching not supported in default resolver. \
-          Implement custom ContentResolver to fetch from: {}",
-          url
+          Implement custom ContentResolver to fetch from: {url}"
         ) ) )
       }
     }
@@ -517,6 +524,7 @@ pub struct DefaultContentStorage;
 impl DefaultContentStorage
 {
   /// Create a new default content storage
+  #[must_use] 
   pub fn new() -> Self
   {
     Self

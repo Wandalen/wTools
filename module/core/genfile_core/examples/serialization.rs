@@ -14,7 +14,7 @@ use genfile_core::
 };
 use std::path::PathBuf;
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "=== Serialization Example ===" );
   println!();
@@ -100,7 +100,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   let json = archive.to_json_pretty()?;
   println!( "JSON output (first 800 chars):" );
   let json_preview: String = json.chars().take( 800 ).collect();
-  println!( "{}", json_preview );
+  println!( "{json_preview}" );
   println!( "..." );
   println!();
 
@@ -120,7 +120,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   let yaml = archive.to_yaml()?;
   println!( "YAML output (first 1000 chars):" );
   let yaml_preview: String = yaml.chars().take( 1000 ).collect();
-  println!( "{}", yaml_preview );
+  println!( "{yaml_preview}" );
   println!( "..." );
   println!();
 

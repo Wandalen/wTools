@@ -1,9 +1,9 @@
 //! External content sources example
 //!
-//! Demonstrates using FileRef and ContentSource to reference external files
+//! Demonstrates using `FileRef` and `ContentSource` to reference external files
 //! instead of embedding content directly in the archive.
 //!
-//! Run with: cargo run --example external_content
+//! Run with: cargo run --example `external_content`
 
 use genfile_core::
 {
@@ -20,7 +20,7 @@ use genfile_core::
 };
 use std::path::PathBuf;
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "=== External Content Sources Example ===" );
   println!();
@@ -120,7 +120,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   let json = archive.to_json_pretty()?;
   println!( "JSON with external sources (first 600 chars):" );
   let json_preview: String = json.chars().take( 600 ).collect();
-  println!( "{}", json_preview );
+  println!( "{json_preview}" );
   println!( "..." );
   println!();
 
@@ -156,7 +156,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
 
   let content = fs.read( &PathBuf::from( "/output/output.txt" ) )?;
   println!( "Generated content:" );
-  println!( "{}", content );
+  println!( "{content}" );
   println!();
 
   println!( "✅ Example completed successfully" );

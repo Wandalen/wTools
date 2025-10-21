@@ -1,823 +1,636 @@
 # spec
 
-- **Project Name:** genfile
-- **Version:** 0.1
-- **Date:** 2025-10-18
-- **Type:** Library/Framework
 
-## Vocabulary
+## Project Identity
 
-- **Template Value:** A runtime data value that can be serialized to a string for substitution in templates. Values must implement the `TemplateValue` trait to participate in template rendering.
-- **Template Renderer:** An engine that processes template syntax and substitutes variables with provided values. The default implementation uses Handlebars, but the system supports pluggable renderers via the `TemplateRenderer` trait.
-- **File Descriptor:** A specification for a single file to be generated, including its target path, content (template or static), and write behavior.
-- **Write Mode:** The strategy for writing generated files to disk. Currently only `Rewrite` mode is supported, which overwrites existing files completely.
-- **Parameter Descriptor:** Metadata defining a single template parameter, including its name, whether it is mandatory, optional default value, and description.
-- **Parameter Collection:** The complete set of parameter descriptors required by a template, with methods for validation and extraction.
-- **Value Storage:** A container holding actual runtime values for template parameters stored inside the genfile itself for portability and serialization.
-- **Template Holder:** The main orchestrator that combines file descriptors, parameters, values, and rendering engine to execute end-to-end file generation.
-- **File System Port:** An abstraction trait for file I/O operations, enabling testability through in-memory implementations and supporting real filesystem operations in production.
-- **Generation Report:** A structured summary of file generation results, listing all files created, modified, or skipped, with any errors encountered.
+- **Name:** genfile
+- **Version:** 0.1.0
+- **Type:** CLI Application
+- **Repository:** https://github.com/Wandalen/wTools/tree/master/module/core/genfile
+- **License:** MIT
+- **Dependencies:**
+  - genfile_core v0.1.0 (template archive library)
+  - unilang v0.27.0 (CLI framework)
+  - error_tools (error handling)
 
-## Project Goal
+## Goals & Problem Statement
 
-Create a reusable, trait-based template processing and file generation library for the wTools ecosystem that decouples template rendering from specific value types and command-line frameworks, enabling consistent file generation across multiple tools while supporting testability through filesystem abstraction.
+### Goals
 
-## Problem Solved
+Create a command-line interface for genfile_core that:
+1. Enables template archive creation, management, and materialization
+2. Provides both CLI and REPL interaction modes
+3. Supports portable archive creation through content internalization
+4. Follows cli.rulebook.md standards strictly
+5. Integrates seamlessly with wTools ecosystem
 
-The wTools ecosystem currently has template processing logic tightly coupled to the `willbe` project management tool, hardcoded to use `wca::Value` types and Handlebars rendering. This creates:
+### Problem Statement
 
-1. **Code Duplication Risk:** Other tools needing file generation must either duplicate logic or depend on willbe
-2. **Inflexibility:** Cannot use template system with different value types or CLI frameworks
-3. **Testing Difficulty:** File system operations are not abstracted, making unit testing complex
-4. **Tight Coupling:** Template rendering engine cannot be swapped or extended
+Template authors need command-line tools to:
+- Create self-contained template archives from directories
+- Manage template files, parameters, and values
+- Convert between lightweight (with references) and portable (fully embedded) archives
+- Materialize templates into generated code with parameter substitution
+- Inspect and analyze template archive structure
 
-genfile solves these problems by providing a generic, well-tested library with trait-based abstractions that can be reused across the entire wTools ecosystem.
+Currently, these operations require programmatic API usage. genfile CLI provides accessible command-line access to all genfile_core functionality.
 
 ## Target Audience
 
-- **Primary:** wTools developers creating code generation tools, project scaffolding utilities, or configuration file generators
-- **Secondary:** Rust developers building similar file generation systems who want a tested, flexible foundation
+### Primary Users
 
-## Success Metrics
+1. **Template Authors** - Creating reusable project scaffolding and code templates
+2. **Developers** - Materializing templates for new projects with custom parameters
+3. **DevOps Engineers** - Automating code generation in CI/CD pipelines
 
-1. **Adoption:** Successfully integrated into `willbe` as a dependency, replacing existing template.rs (472 lines of duplicated code eliminated)
-   - **Status:** ❌ NOT YET DONE (blocked on willbe team decision)
+### Secondary Users
 
-2. **Test Coverage:** Minimum 80% code coverage for core genfile logic
-   - **Status:** ⚠️ NOT MEASURED (188 tests exist, likely >80%, need to run tarpaulin)
+4. **Template Distributors** - Packaging and sharing template archives
+5. **Build Tool Developers** - Integrating template generation into build workflows
 
-3. **Zero Regressions:** All existing willbe tests continue passing after migration
-   - **Status:** N/A (will be tested during integration)
+## Command Catalog
 
-4. **Performance:** Template rendering and file generation performance matches or exceeds current willbe implementation (within 5% variance)
-   - **Status:** ⚠️ NOT MEASURED (likely fast enough, need benchmarks)
+All commands follow dot-prefix convention with `param::value` format. See [CLI Design Document](./cli_design_v2.md) for complete details.
 
-5. **Reusability:** At least one additional wTools project beyond willbe adopts genfile for file generation needs
-   - **Status:** ❌ NOT YET ACHIEVED (no other projects using it yet)
+### Command Categories
 
-## In Scope
+| Category | Commands | Count |
+|----------|----------|-------|
+| Archive Management | `.archive.new`, `.archive.load`, `.archive.save`, `.archive.from_directory` | 4 |
+| File Operations | `.file.add`, `.file.remove`, `.file.list`, `.file.show` | 4 |
+| Parameter Management | `.parameter.add`, `.parameter.list`, `.parameter.remove` | 3 |
+| Value Management | `.value.set`, `.value.list`, `.value.clear` | 3 |
+| Content Management | `.content.internalize`, `.content.externalize`, `.content.list` | 3 |
+| Materialization | `.materialize`, `.unpack` | 2 |
+| Serialization | `.pack` | 1 |
+| Analysis & Info | `.analyze`, `.discover.parameters`, `.status`, `.info` | 4 |
+| Help | `.`, `.help`, `.command.help` (auto-generated) | 3 |
+| **Total** | | **27** |
 
-1. **Generic Value System:**
-   - `TemplateValue` trait for value abstraction
-   - Default `Value` enum implementation supporting String, Number, Bool, List
-   - Serialization to string format for template engines
+### Standard Parameters
 
-2. **Parameter Management:**
-   - `ParameterDescriptor` for defining individual parameters
-   - `Parameters` collection with validation and mandatory parameter listing
-
-3. **Value Storage:**
-   - `Values<V>` generic storage for template parameter values
-   - Serialization to Handlebars-compatible format
-   - Values stored inside genfile (JSON/YAML) for portability
-
-4. **Template Rendering:**
-   - `TemplateRenderer` trait for pluggable rendering engines
-   - `HandlebarsRenderer` default implementation using Handlebars 4.5.0
-   - Support for variable substitution and conditional logic
-
-5. **File Generation:**
-   - `FileDescriptor` for specifying files to generate
-   - `WriteMode::Rewrite` for file generation
-   - Path handling and directory creation
-
-6. **File System Abstraction:**
-   - `FileSystem` trait for testable I/O operations
-   - `RealFileSystem` implementation for production use
-   - `MemoryFileSystem` implementation for unit testing
-
-7. **Template Orchestration:**
-   - `Template<V, R>` main holder struct
-   - End-to-end generation workflow
-   - Missing mandatory parameter detection
-   - `TemplateArchive` as self-contained genfile format
-
-8. **Error Handling:**
-   - Typed `Error` enum with all error cases
-   - Proper error context and messages
-   - Integration with `error_tools` crate
-
-## Out of Scope
-
-1. **Alternative Template Engines:** Built-in support for Tera, Minijinja, or other template engines (users can implement `TemplateRenderer` trait themselves if needed)
-2. **Async File Operations:** All file I/O is synchronous (async support could be added in future versions if needed)
-3. **Binary File Templates:** Only text-based templates are supported (no image, PDF, or other binary template processing)
-4. **Template Validation:** Pre-generation template syntax validation (templates are validated during rendering only)
-5. **Incremental Generation:** Tracking which files have changed and regenerating only necessary files (all files are regenerated each time)
-6. **GUI or Web Interface:** genfile is a library only, no standalone executable or user interface
-7. **Template Discovery:** Automatic scanning for template files in directories (users must explicitly provide file descriptors)
-8. **Migration Tools:** Utilities to migrate existing willbe template code to genfile (manual migration required)
-
-## System Actors
-
-### Primary Actors
-
-1. **Calling Application**
-   - **Description:** The Rust application or tool that uses genfile as a library dependency
-   - **Interaction:** Creates `Template` instances, provides parameters and values, invokes file generation
-   - **Example:** willbe project management tool, custom code generators
-
-2. **Template Author**
-   - **Description:** Developer who writes template files using template syntax
-   - **Interaction:** Creates `.hbs` or other template files, defines parameter placeholders
-   - **Responsibilities:** Ensuring template syntax is valid, documenting required parameters
-
-### Secondary Actors
-
-3. **File System**
-   - **Description:** Operating system file system where generated files are written
-   - **Interaction:** Receives write requests, provides read access for TOML merging
-   - **Abstraction:** Accessed only through `FileSystem` trait to enable testing
-
-4. **End User**
-   - **Description:** Person running the application that uses genfile
-   - **Interaction:** May be prompted interactively for missing mandatory parameters
-   - **Example:** Developer running `willbe workspace_renew` command
+All commands support:
+- `verbosity::0-5` - Output verbosity control (default varies by command)
+- `dry::0|1` - Dry run mode for destructive operations (default: 0)
 
 ## Functional Requirements
 
-### FR1: Template Value Trait
+### FR1: Archive Lifecycle Management
 
-The system must provide a `TemplateValue` trait that defines how values are converted to template-compatible strings.
+**Commands:** `.archive.new`, `.archive.load`, `.archive.save`, `.archive.from_directory`
 
-**Test Criteria:**
-- Trait must define `to_template_string(&self) -> String` method
-- Trait must define `from_string(s: String) -> Self` method
-- Trait must define `is_empty(&self) -> bool` method
-- Trait must be implementable for custom value types
-- Default `Value` enum must implement the trait
-
-### FR2: Default Value Type
-
-The system must provide a default `Value` enum supporting common data types.
+**Requirements:**
+- Create new empty archives with name and description
+- Load archives from JSON/YAML files (auto-detect format)
+- Save archives to JSON/YAML files (auto-detect from extension or explicit format)
+- Create archives from filesystem directories with mode selection (inline vs reference)
 
 **Test Criteria:**
-- Must support `String` variant
-- Must support `Number` variant (i64)
-- Must support `Bool` variant
-- Must support `List` variant (Vec<String>)
-- Each variant must correctly implement `TemplateValue` trait
-- Conversions to template strings must match expected formats
+- Archive creation with all metadata fields
+- JSON/YAML round-trip serialization
+- Directory scanning with recursive traversal
+- File pattern filtering (include/exclude)
+- Content mode selection (inline vs reference)
 
-### FR3: Parameter Definition
+### FR2: File Content Operations
 
-The system must allow definition of template parameters with metadata.
+**Commands:** `.file.add`, `.file.remove`, `.file.list`, `.file.show`
 
-**Test Criteria:**
-- `ParameterDescriptor` must store parameter name
-- Must support mandatory flag (bool)
-- Must support optional default value
-- Must support optional description
-- Builder pattern via `former` must work for parameter creation
-
-### FR4: Parameter Collection
-
-The system must provide a `Parameters` type collecting all parameter descriptors.
+**Requirements:**
+- Add text files (templates) and binary files to archives
+- Support inline content or external source files
+- Remove files from archives by path
+- List all files with optional details (size, type)
+- Display file content with verbosity control
 
 **Test Criteria:**
-- Must store multiple `ParameterDescriptor` instances
-- Must provide `list_mandatory() -> Vec<&str>` method returning only mandatory parameter names
-- Must support builder pattern for construction
-- Validation must detect missing mandatory parameters
+- Text file addition with inline content
+- Binary file addition with base64 encoding
+- File loading from source paths
+- File removal with validation
+- File listing with multiple verbosity levels
+- Content display for text and binary files
 
-### FR5: Value Storage
+### FR3: Parameter Definition Management
 
-The system must provide generic `Values<V>` storage for template parameter values.
+**Commands:** `.parameter.add`, `.parameter.list`, `.parameter.remove`
 
-**Test Criteria:**
-- Must store HashMap of parameter names to `Option<V>` values
-- `insert_if_empty(key, value)` must only insert if key has None value
-- `to_serializable()` must convert all values to `BTreeMap<String, String>`
-- Must support generic `V: TemplateValue` type parameter
-
-### FR6: Template Renderer Trait
-
-The system must define a `TemplateRenderer` trait for pluggable rendering engines.
+**Requirements:**
+- Define template parameters with metadata (name, description, mandatory flag, default value)
+- List all parameters with filtering (all vs mandatory only)
+- Remove parameter definitions
+- Validate parameter names (alphanumeric + underscore)
 
 **Test Criteria:**
-- Trait must define `render(&self, template: &str, values: &impl Serializable) -> Result<String, Error>` method
-- Multiple renderer implementations must be possible
-- Renderer must accept any serializable value type
+- Parameter creation with all attributes
+- Mandatory parameter enforcement
+- Default value handling
+- Parameter listing with verbosity
+- Parameter removal validation
 
-### FR7: Handlebars Renderer
+### FR4: Parameter Value Management
 
-The system must provide a default `HandlebarsRenderer` implementation.
+**Commands:** `.value.set`, `.value.list`, `.value.clear`
 
-**Test Criteria:**
-- Must use Handlebars 4.5.0 library
-- Must disable HTML escaping (use `no_escape`)
-- Must support variable substitution: `{{variable_name}}`
-- Must support conditional logic: `{{#if condition}}`
-- Must return `Error::Render` on invalid template syntax
-
-### FR8: File Descriptor
-
-The system must provide `FileDescriptor` for specifying files to generate.
+**Requirements:**
+- Set runtime values for template parameters
+- List all current parameter values
+- Clear values (revert to defaults)
+- Validate values against parameter definitions
 
 **Test Criteria:**
-- Must store target file path (relative)
-- Must store file content (template or static string)
-- Must store `is_template` flag (bool)
-- Must store `WriteMode` enum value
-- Builder pattern must work for construction
+- Value setting for defined parameters
+- Value persistence in archive state
+- Value clearing and default restoration
+- Value listing with verbosity
+- Validation of undefined parameters
 
-### FR9: Write Mode Support
+### FR5: Content Source Management
 
-The system must support Rewrite write mode for file generation.
+**Commands:** `.content.internalize`, `.content.externalize`, `.content.list`
 
-**Test Criteria:**
-- `WriteMode::Rewrite` must overwrite existing files completely
-- If file does not exist, must create new file
-- Must write content to file system correctly
-
-### FR10: File System Trait
-
-The system must define `FileSystem` trait abstracting I/O operations.
+**Requirements:**
+- Internalize external references (FileRef, UrlRef → Inline) for portability
+- Externalize inline content to files for lightweight archives
+- List content sources by type with filtering
+- Content resolver integration for file/URL fetching
 
 **Test Criteria:**
-- Must define `write(&self, instruction: &WriteInstruction) -> Result<()>` method
-- Must define `read(&self, instruction: &ReadInstruction) -> Result<Vec<u8>>` method
-- Must define `create_dir_all(&self, path: &Path) -> Result<()>` method
-- Multiple implementations must be possible
+- Internalization of file references
+- Externalization to file references
+- Content source inspection
+- Portability validation
+- File writing with directory creation
 
-### FR11: Real File System Implementation
+### FR6: Template Materialization
 
-The system must provide `RealFileSystem` for production use.
+**Commands:** `.materialize`, `.unpack`
 
-**Test Criteria:**
-- `write()` must create parent directories if missing
-- `write()` must write file content to path
-- `read()` must read file content from path
-- `create_dir_all()` must create all parent directories
-- Must return I/O errors wrapped in typed Error enum
-
-### FR12: Memory File System Implementation
-
-The system must provide `MemoryFileSystem` for testing.
+**Requirements:**
+- Render templates with parameter substitution via Handlebars
+- Write generated files to destination directory
+- Validate all mandatory parameters have values
+- Unpack raw archive content without template rendering
+- Dry run mode for both operations
 
 **Test Criteria:**
-- Must store files in-memory HashMap<PathBuf, Vec<u8>>
-- `write()` must add or update HashMap entry
-- `read()` must return HashMap entry or error if not found
-- `create_dir_all()` must be no-op (in-memory doesn't need directories)
-- Must not touch real filesystem at all
+- Template rendering with parameter values
+- Mandatory parameter validation
+- File generation to destination
+- Dry run preview without writing
+- Unpack vs materialize behavior difference
 
-### FR13: Template Holder Structure
+### FR7: Archive Serialization
 
-The system must provide `Template<V, R>` as main orchestration type.
+**Commands:** `.pack`
 
-**Test Criteria:**
-- Must be generic over `V: TemplateValue` and `R: TemplateRenderer`
-- Must store `Vec<FileDescriptor>` for files to generate
-- Must store `Parameters` for parameter definitions
-- Must store `Values<V>` for runtime values
-- Must store renderer instance of type `R`
-- Must store `template_name` for identification
-
-### FR14: Template Generation
-
-The system must provide end-to-end `generate()` method on Template.
+**Requirements:**
+- Create portable archives by internalizing all references
+- Support both archive and directory inputs
+- Auto-detect output format from extension
+- Comprehensive progress reporting
 
 **Test Criteria:**
-- Must accept base path where files will be generated
-- Must iterate all file descriptors
-- For each file:
-  - Compute full path by joining base path with file descriptor path
-  - If `is_template` is true, render content using renderer
-  - If `is_template` is false, use content directly
-  - Write file using file system abstraction (Rewrite mode)
-- Must return `GenerateReport` with results
-- Must stop on first error and return it
+- Pack from existing archive (internalize refs)
+- Pack from directory (create with inline content)
+- JSON and YAML output formats
+- Portability verification
+- Progress reporting at multiple verbosity levels
 
-### FR15: Missing Mandatory Detection
+### FR8: Archive Analysis
 
-The system must detect missing mandatory parameters before generation.
+**Commands:** `.analyze`, `.discover.parameters`, `.status`, `.info`
 
-**Test Criteria:**
-- `get_missing_mandatory()` must return Vec<&str> of missing parameter names
-- Must check `Parameters.list_mandatory()` against `Values` content
-- Must return only parameters that have None value
-- Must return empty vec if all mandatory parameters provided
-
-### FR16: Typed Errors
-
-The system must provide comprehensive typed error enum.
+**Requirements:**
+- Comprehensive archive analysis (files, parameters, completeness)
+- Parameter discovery in templates via regex scanning
+- Quick status overview
+- Detailed metadata display
 
 **Test Criteria:**
-- `Error::Render` for template rendering failures
-- `Error::MissingParameters` for missing mandatory params
-- `Error::Fs` wrapping std::io::Error
-- `Error::InvalidTemplate` for malformed templates
-- All errors must implement std::error::Error trait
-- All errors must provide clear, actionable messages
+- Analysis output completeness
+- Parameter discovery accuracy
+- Status readiness detection
+- Metadata display formatting
 
-### FR17: Archive Self-Containment
+### FR9: Help System
 
-The system must ensure genfiles (TemplateArchive) are self-contained and portable.
+**Commands:** `.`, `.help`, `.command.help` (auto-generated for all commands)
+
+**Requirements:**
+- Universal help access via `.` and `.help`
+- Command-specific help via `.command.help`
+- Help command filtering (not listed in command listings)
+- Multiple help verbosity levels
+- Usage examples in help output
 
 **Test Criteria:**
-- `TemplateArchive` must store parameter values inside the archive
-- Values must serialize to JSON/YAML with the archive
-- Loading an archive must restore all parameter values
-- External references (FileRef/UrlRef) allowed only for CONTENT, not parameter values
-- Single file contains complete template definition + values
+- Universal help displays all commands
+- Command-specific help shows parameters
+- Help commands filtered from listings
+- Verbosity level support
+- Examples included and accurate
+
+### FR10: REPL Mode
+
+**Commands:** N/A (mode of operation)
+
+**Requirements:**
+- Interactive command execution with prompt
+- Command history with arrow key navigation (enhanced_repl)
+- Stateless design per cli.rulebook.md
+- Archive state persistence across commands in session
+- Graceful exit on quit/exit/EOF
+
+**Test Criteria:**
+- REPL startup and prompt display
+- Command execution in REPL
+- State persistence between commands
+- History navigation functionality
+- Clean exit handling
 
 ## Non-Functional Requirements
 
 ### NFR1: Performance
 
-Template rendering must complete within 100ms for templates up to 10KB with up to 50 parameters on modern hardware (2020+ laptop).
+**Requirements:**
+- Command execution latency < 100ms for typical operations (archive load, parameter set, file add)
+- REPL startup time < 500ms
+- Pack operation < 2s for 100 files
+- Materialize operation < 1s for 10 files
 
-**Measurement:** Benchmark test with 10KB template and 50 parameters, measure median rendering time.
+**Test Criteria:**
+- Benchmark typical command execution
+- Measure REPL startup
+- Profile pack/materialize operations
+- Validate no performance regressions
 
-### NFR2: Memory Efficiency
+### NFR2: Usability
 
-In-memory template operations must not allocate more than 10MB of heap memory for typical use cases (up to 100 files, 1MB of template content total).
+**Requirements:**
+- Strict adherence to cli.rulebook.md standards
+- Consistent command naming (dot-prefix, snake_case, noun-verb)
+- Consistent parameter format (`param::value`)
+- Clear, actionable error messages with context
+- Helpful dry run previews for destructive operations
 
-**Measurement:** Memory profiling during test suite execution with 100 file generation.
+**Test Criteria:**
+- CLI compliance audit passing 100%
+- User testing feedback positive
+- Error messages include resolution guidance
+- Dry run output clearly shows intended changes
 
-### NFR3: Test Coverage
+### NFR3: Error Handling
 
-Core library code must maintain minimum 80% line coverage.
+**Requirements:**
+- Structured error messages: `[ERROR] [CONTEXT]: message`
+- Standard exit codes: 0 (success), 1 (error), 2 (usage error)
+- Path validation preventing directory traversal
+- Clear distinction between user errors and system errors
+- No silent failures
 
-**Measurement:** Run `cargo tarpaulin` or equivalent coverage tool, verify coverage percentage.
+**Test Criteria:**
+- All error paths tested
+- Exit codes verified
+- Path validation prevents `..` attacks
+- Error messages follow format
+- No uncaught exceptions
 
-### NFR4: Compilation Time
+### NFR4: Security
 
-Adding genfile as a dependency must not increase clean build time of dependent projects by more than 5 seconds.
+**Requirements:**
+- Path validation using `genfile_core::validate_path()`
+- No shell command injection
+- No parameter value logging for sensitive data
+- Safe handling of binary files
+- Protection against malicious templates
 
-**Measurement:** Compare willbe clean build time before and after genfile integration.
+**Test Criteria:**
+- Path traversal attack tests
+- Shell injection prevention validated
+- Binary file handling secure
+- No sensitive data in logs
+- Malformed input handling
 
-### NFR5: Documentation
+### NFR5: Testing
 
-Every public API item (trait, struct, enum, function, method) must have doc comments explaining purpose, parameters, return values, and errors.
+**Requirements:**
+- Code coverage ≥80%
+- All commands have unit tests
+- Integration tests for key workflows
+- CLI compliance tests for rulebook adherence
+- Security tests for path validation
 
-**Measurement:** Run `cargo doc` with warnings enabled, verify no missing doc warnings.
+**Test Criteria:**
+- Coverage measurement via tarpaulin
+- All test suites passing
+- No test warnings
+- Fast test execution (< 30s total)
 
-### NFR6: Error Messages
+### NFR6: Documentation
 
-All error messages must include sufficient context to diagnose the problem without consulting source code.
+**Requirements:**
+- Complete README with quick start and examples
+- All public items documented with doc comments
+- CLI Design Document with full command reference
+- Specification (this document)
+- Working examples in documentation
 
-**Measurement:** Manual review of error messages, ensure each includes relevant file paths, parameter names, or template locations.
+**Test Criteria:**
+- Documentation builds without warnings
+- All examples compile and run
+- README covers common workflows
+- API docs accessible via `cargo doc`
 
-### NFR7: Backward Compatibility
+## Technical Architecture
 
-Once version 1.0 is released, all future versions must maintain backward compatibility for public APIs unless major version bump.
+### Framework Stack
 
-**Measurement:** Semantic versioning compliance verification using cargo-semver-checks.
-
-## System Architecture
-
-### Component Diagram
-
-```mermaid
-graph TB
-  subgraph "genfile Library"
-    Value[Value<br/>TemplateValue Trait]
-    Params[Parameters<br/>ParameterDescriptor]
-    Values[Values Storage]
-    Renderer[TemplateRenderer Trait]
-    Handlebars[HandlebarsRenderer]
-    FileDesc[FileDescriptor]
-    Template[Template Holder]
-    FS[FileSystem Trait]
-    RealFS[RealFileSystem]
-    MemFS[MemoryFileSystem]
-    Errors[Error Enum]
-
-    Template -->|uses| Value
-    Template -->|uses| Params
-    Template -->|uses| Values
-    Template -->|uses| Renderer
-    Template -->|uses| FileDesc
-    Template -->|uses| FS
-    Renderer <|-- Handlebars
-    FS <|-- RealFS
-    FS <|-- MemFS
-    Template -->|returns| Errors
-  end
-
-  CallingApp[Calling Application<br/>e.g., willbe] -->|creates| Template
-  CallingApp -->|provides| Value
-  Template -->|writes to| Filesystem[File System]
-  RealFS -->|accesses| Filesystem
+```
+genfile CLI
+    │
+    ├─ unilang (v0.27.0)
+    │   ├─ Pipeline API (command processing)
+    │   ├─ CommandRegistry (command storage)
+    │   ├─ Enhanced REPL (interactive mode)
+    │   └─ Help System (auto-generation)
+    │
+    ├─ genfile_core (v0.1.0)
+    │   ├─ TemplateArchive (main API)
+    │   ├─ ContentSource (inline/file/url)
+    │   ├─ HandlebarsRenderer (templates)
+    │   └─ FileSystem abstraction
+    │
+    └─ error_tools
+        └─ Typed error handling
 ```
 
-### Design Recommendation: Trait-Based Architecture
+### Component Architecture
 
-It is recommended that genfile use a trait-based architecture to maximize flexibility and testability. The key traits suggested are:
+```
+main.rs
+  │
+  ├─ REPL Mode (no args)
+  │   └─ repl::run_repl()
+  │       ├─ Read user input
+  │       ├─ Process via Pipeline
+  │       └─ Maintain ArchiveState
+  │
+  └─ CLI Mode (with args)
+      └─ Pipeline::process_command_from_argv()
+          ├─ Parse command
+          ├─ Validate arguments
+          ├─ Execute handler
+          └─ Return result
 
-1. **TemplateValue Trait:** Allows any value type to participate in template rendering by implementing string conversion. This decouples genfile from specific CLI frameworks like wca.
+Commands Registry
+  │
+  ├─ archive::register()    (.archive.*)
+  ├─ file::register()       (.file.*)
+  ├─ parameter::register()  (.parameter.*)
+  ├─ value::register()      (.value.*)
+  ├─ content::register()    (.content.*)
+  ├─ materialize::register() (.materialize, .unpack)
+  ├─ pack::register()       (.pack)
+  └─ info::register()       (.analyze, .status, .info)
 
-2. **TemplateRenderer Trait:** Enables swapping template engines without changing calling code. Handlebars is the recommended default, but users could implement Tera or custom engines.
+Handlers
+  │
+  ├─ VerifiedCommand → Extract arguments
+  ├─ ExecutionContext → Get ArchiveState
+  ├─ genfile_core API → Execute operation
+  ├─ Format output → Respect verbosity
+  └─ Return OutputData/ErrorData
+```
 
-3. **FileSystem Trait:** Abstracts file I/O to enable pure in-memory unit testing. This is a critical design recommendation for maintaining high test coverage.
+### State Management
 
-### Design Recommendation: Generic Template Type
+**Stateless Design (cli.rulebook.md §89):**
+- Each command execution is independent
+- No persistent state between commands in CLI mode
+- REPL mode uses `ArchiveState` (Arc<RwLock<Option<TemplateArchive>>>)
+- State stored in ExecutionContext per request
+- No global mutable state
 
-It is recommended that the main `Template` type be generic over both value type (`V`) and renderer type (`R`):
+**ArchiveState Pattern:**
+```rust
+struct ArchiveState {
+  inner: Arc<RwLock<Option<TemplateArchive>>>,
+}
+
+// In REPL:
+1. Create ArchiveState once
+2. Pass through ExecutionContext to each command
+3. Commands read/write current archive
+4. State cleared on exit
+```
+
+### Error Handling Strategy
+
+**Error Flow:**
+```
+genfile_core::Error
+    │
+    ├─ Map to ErrorData
+    │   ├─ message: "[ERROR] [CONTEXT]: details"
+    │   ├─ code: 1 (error) or 2 (usage)
+    │   └─ recoverable: false
+    │
+    └─ Return from handler
+        │
+        └─ Pipeline processes
+            │
+            ├─ Success: print outputs
+            └─ Error: print to stderr, exit with code
+```
+
+**Error Contexts:**
+- `[PARAMETER]` - Parameter-related errors
+- `[FILE]` - File operation errors
+- `[RENDER]` - Template rendering errors
+- `[FILESYSTEM]` - I/O errors
+- `[VALIDATION]` - Input validation errors
+- `[USAGE]` - Command usage errors
+- `[SERIALIZATION]` - JSON/YAML errors
+- `[ARCHIVE]` - Archive operation errors
+
+## Success Metrics
+
+### Functional Completeness (Target: 100%)
+
+- [ ] All 27 commands implemented
+- [ ] Both CLI and REPL modes functional
+- [ ] All parameter types supported (String, Integer, Bool, Path, etc.)
+- [ ] Help system complete with auto-generation
+- [ ] Error handling comprehensive
+
+**Measurement:** Manual verification of command catalog
+
+### Quality Metrics
+
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| Test Coverage | ≥80% | cargo tarpaulin |
+| Tests Passing | 100% | cargo test |
+| Clippy Warnings | 0 | cargo clippy |
+| Documentation Coverage | 100% public items | cargo doc |
+| Examples Working | 100% | manual verification |
+
+### CLI Compliance (Target: 100%)
+
+Based on cli.rulebook.md:
+
+- [ ] unilang framework (§209)
+- [ ] Pipeline API (§223)
+- [ ] Dot-prefix naming (§235)
+- [ ] `param::value` format (§77)
+- [ ] Help system (§284)
+- [ ] Help filtering (§322)
+- [ ] Verbosity levels 0-5 (§81)
+- [ ] Dry run support (§82)
+- [ ] Exit codes 0/1/2 (§96)
+- [ ] Error format (§97)
+- [ ] Stateless design (§89)
+- [ ] Security validation (§102)
+
+**Measurement:** Automated compliance tests + manual audit
+
+### Performance Targets
+
+| Operation | Target | Measurement |
+|-----------|--------|-------------|
+| Typical command | < 100ms | Benchmark |
+| REPL startup | < 500ms | Manual timing |
+| Pack (100 files) | < 2s | Benchmark |
+| Materialize (10 files) | < 1s | Benchmark |
+
+**Measurement:** Benchmarks in `benches/` directory
+
+### Integration Health
+
+- [ ] Compiles in workspace without warnings
+- [ ] No dependency version conflicts
+- [ ] Tests pass in CI
+- [ ] Documentation builds successfully
+- [ ] No breaking changes to genfile_core
+
+**Measurement:** CI pipeline results
+
+## Out of Scope
+
+The following are explicitly NOT included in v0.1.0:
+
+1. **GUI Interface** - CLI and REPL only
+2. **Web API** - No HTTP server functionality
+3. **Template Editing** - Use external editors
+4. **Template Marketplace** - No template discovery/download
+5. **Version Control Integration** - No git operations
+6. **Cloud Storage** - No S3/cloud backend support
+7. **Custom Renderers** - Handlebars only (via genfile_core)
+8. **Async I/O** - Synchronous operations only
+9. **Plugin System** - No extension mechanism
+10. **Configuration File** - No `.genfilerc` support
+
+These may be considered for future versions based on user feedback.
+
+## Integration Points
+
+### genfile_core API
+
+Primary integration points:
 
 ```rust
-pub struct Template< V, R >
-where
-  V: TemplateValue,
-  R: TemplateRenderer,
-{
-  // ...
-}
+// Archive operations
+TemplateArchive::new()
+TemplateArchive::load_from_file()
+TemplateArchive::save_to_file()
+TemplateArchive::pack_directory()
+
+// File operations
+archive.add_text_file()
+archive.add_binary_file()
+archive.remove_file()
+archive.list_files()
+
+// Parameter management
+archive.add_parameter()
+archive.set_value()
+archive.list_mandatory()
+
+// Content management
+archive.internalize()
+archive.externalize()
+
+// Materialization
+archive.materialize()
+
+// Analysis
+archive.discover_parameters()
+archive.analyze_parameter_usage()
 ```
 
-This allows compile-time optimization while maintaining flexibility. Users can specialize for their specific value and renderer types.
+### Filesystem
 
-## Dependencies
+- Path validation via `genfile_core::validate_path()`
+- File I/O via `std::fs` and genfile_core abstractions
+- Directory creation for pack/unpack operations
+- Temporary files for REPL state persistence (if needed)
 
-### Required Dependencies
+### Serialization
 
-1. **handlebars = "4.5.0"**
-   - **Purpose:** Default template rendering engine
-   - **Integration:** Used by HandlebarsRenderer implementation
-   - **Risk:** Version pinned to match willbe's current usage, no breaking changes expected
+- JSON serialization via `serde_json`
+- YAML serialization via `serde_yaml`
+- Format auto-detection from file extensions
+- Pretty-printing control for JSON output
 
-2. **error_tools = { workspace = true, features = ["error_typed"] }**
-   - **Purpose:** Error handling infrastructure
-   - **Integration:** Error enum uses error_tools macros
-   - **Risk:** None, internal wTools dependency
+### Template Rendering
 
-3. **collection_tools = { workspace = true }**
-   - **Purpose:** HashMap and BTreeMap utilities
-   - **Integration:** Used in Values storage and serialization
-   - **Risk:** None, internal wTools dependency
+- Handlebars integration via genfile_core
+- Parameter substitution in templates
+- No direct Handlebars API usage (abstracted by genfile_core)
 
-### Design Recommendation: Minimal Dependencies
+## Development Roadmap
 
-It is recommended to keep genfile's dependency footprint as small as possible. Only dependencies listed above are essential. Avoid adding dependencies for convenience features that can be implemented with standard library.
+### v0.1.0 (Initial Release - Current Specification)
 
-## User Stories
+- All 27 commands implemented
+- CLI and REPL modes
+- Complete help system
+- Comprehensive testing
+- Full documentation
 
-### US1: willbe Integration
-As a willbe developer, I want to replace the existing template.rs module with genfile so that template logic is reusable and maintainable.
+### v0.2.0 (Future - Out of Scope)
 
-### US2: Custom Value Types
-As a tool developer, I want to use my own value types in templates so that I can integrate genfile with my CLI framework.
+Potential features based on feedback:
+- Configuration file support (`.genfilerc`)
+- Command aliases
+- Shell completion scripts
+- Interactive parameter prompting
+- Template validation before materialization
 
-### US3: Parameter Persistence in Archive
-As an end user, I want my parameter values saved inside the genfile so that regeneration uses the same values without re-entry.
+### v1.0.0 (Stable)
 
-### US4: Testable File Generation
-As a developer, I want to test file generation in-memory so that my tests run fast and don't pollute the filesystem.
+- Production-ready stability
+- Performance optimizations
+- Extended platform support
+- Community feedback incorporated
 
-### US5: Custom Template Engine
-As an advanced user, I want to implement my own template renderer so that I can use alternative template syntax if Handlebars doesn't meet my needs.
+## References
 
-### US6: Clear Error Messages
-As a user, I want clear error messages when template rendering fails so that I can fix template syntax problems quickly.
+- **CLI Design Document:** [cli_design_v2.md](./cli_design_v2.md)
+- **CLI Rulebook:** `$PRO/genai/cli/cli.rulebook.md`
+- **genfile_core Specification:** `../genfile_core/spec.md`
+- **unilang Documentation:** `../../move/unilang/readme.md`
 
-## Data Flow
+## Approval
 
-### File Generation Sequence
-
-```mermaid
-sequenceDiagram
-  actor User
-  participant App as Calling Application
-  participant Template as Template<V,R>
-  participant Renderer as TemplateRenderer
-  participant FS as FileSystem
-  participant Disk as File System
-
-  User->>App: Run generation command
-  App->>Template: Load from genfile.yaml (with values)
-
-  App->>Template: get_missing_mandatory()
-  Template-->>App: [] (all values in genfile)
-
-  App->>Template: generate(base_path)
-
-  loop For each FileDescriptor
-    Template->>Template: Compute full path
-    alt is_template == true
-      Template->>Renderer: render(template, values)
-      Renderer-->>Template: Rendered string
-    else is_template == false
-      Template->>Template: Use content as-is
-    end
-
-    Template->>FS: write(path, content)
-    FS->>Disk: Write file
-    Disk-->>FS: Success
-    FS-->>Template: Ok
-  end
-
-  Template-->>App: GenerateReport
-  App-->>User: Display results
-```
-
-## API Design
-
-### Design Recommendation: Public API Surface
-
-It is recommended that genfile expose a clean, minimal public API:
-
-**Core Types (must be public):**
-- `TemplateValue` trait
-- `Value` enum
-- `TemplateRenderer` trait
-- `HandlebarsRenderer` struct
-- `FileSystem` trait
-- `RealFileSystem` struct
-- `MemoryFileSystem` struct
-- `Template<V, R>` struct
-- `Parameters` struct
-- `ParameterDescriptor` struct
-- `Values<V>` struct
-- `FileDescriptor` struct
-- `WriteMode` enum
-- `Error` enum
-- `GenerateReport` struct
-
-**Internal Types (should be private or pub(crate)):**
-- `WriteInstruction` struct
-- `ReadInstruction` struct
-- Internal helper functions
-
-### Design Recommendation: Prelude Module
-
-It is recommended to provide a prelude module for convenient imports:
-
-```rust
-pub mod prelude
-{
-  pub use crate ::
-  {
-    Template,
-    TemplateValue,
-    Value,
-    TemplateRenderer,
-    HandlebarsRenderer,
-    FileSystem,
-    RealFileSystem,
-    MemoryFileSystem,
-    Parameters,
-    ParameterDescriptor,
-    Values,
-    FileDescriptor,
-    WriteMode,
-    Error,
-  };
-}
-```
-
-Users can then `use genfile::prelude::*` to import commonly-used types.
-
-## Testing Strategy
-
-### Design Recommendation: Test Organization
-
-It is recommended to organize tests following wTools conventions:
-
-**Location:** `tests/` directory (not `src/`)
-
-**Structure:**
-```
-tests/
-├── smoke_test.rs           # Minimal smoke test
-├── tests.rs                # Feature-gated test module loader
-└── inc/
-    ├── mod.rs
-    ├── basic_test.rs       # Basic API tests
-    ├── value_test.rs       # TemplateValue trait tests
-    ├── parameter_test.rs   # Parameter management tests
-    ├── handlebars_test.rs  # Handlebars rendering tests
-    ├── toml_merge_test.rs  # TOML merging logic tests
-    ├── memory_fs_test.rs   # In-memory filesystem tests
-    └── integration_test.rs # End-to-end integration tests
-```
-
-### Design Recommendation: Test-Driven Development
-
-It is strongly recommended to follow TDD approach:
-1. Write test first for each FR
-2. Run test (should fail)
-3. Implement minimal code to pass test
-4. Refactor if needed
-5. Move to next FR
-
-### Design Recommendation: No Mocking
-
-Following wTools codebase hygiene rules, it is recommended to avoid mocking in tests. Use real implementations or in-memory alternatives (like `MemoryFileSystem` instead of mocking `FileSystem` trait).
-
-## Limitations
-
-Initial version (0.1-1.0) will have the following quantified limitations:
-
-1. **Template Size:** Maximum template file size of 10 MB. Larger templates may cause performance degradation.
-
-2. **Parameter Count:** Maximum 500 parameters per template. Exceeding this may impact rendering performance.
-
-3. **File Count:** Maximum 10,000 files per generation batch. Larger batches should be split.
-
-4. **Nesting Depth:** TOML merging supports maximum 10 levels of nesting. Deeper structures will cause errors.
-
-5. **Concurrency:** Single-threaded file generation only. No parallel file writing.
-
-6. **Platform Support:** Tested only on Linux and macOS. Windows support is best-effort.
-
-7. **Character Encoding:** UTF-8 only. Other encodings not supported.
-
-## External Dependencies
-
-None. genfile is a library with no external service dependencies.
-
-## Deliverables
-
-1. **genfile Rust Library Crate**
-   - Published to crates.io
-   - Source code in wTools monorepo at `module/core/genfile/`
-   - Semantic versioning starting at 0.1.0
-
-2. **API Documentation**
-   - Published to docs.rs
-   - Generated from Rust doc comments
-   - Includes examples and usage patterns
-
-3. **Integration into willbe**
-   - willbe updated to use genfile as dependency
-   - Legacy template.rs removed
-   - All tests passing
-
-## Open Questions
-
-1. Should `GenerateReport` include file hashes to detect changes?
-2. Should we add a `dry_run` mode that previews files without writing?
-3. Should TOML merging support custom merge strategies beyond top-level key replacement?
-4. Should we provide helper functions for common parameter prompting patterns?
+**Status:** Draft
+**Version:** 1.0
+**Date:** 2025-10-20
+**Author:** Development Team
+**Reviewers:** TBD
 
 ---
 
-### Appendix: Addendum
-
-#### Design Patterns
-
-**Trait-Based Architecture:**
-The core design pattern is trait-based abstraction. Three key traits enable extensibility:
-- `TemplateValue`: Abstracts value types
-- `TemplateRenderer`: Abstracts template engines
-- `FileSystem`: Abstracts I/O operations
-
-This pattern allows compile-time specialization while maintaining runtime flexibility.
-
-**Builder Pattern:**
-All complex types use the builder pattern via `former` crate. This provides fluent API and makes construction less error-prone.
-
-**Newtype Pattern:**
-`Values<V>` wraps `HashMap` to provide domain-specific API and enforce invariants.
-
-#### Implementation Priorities
-
-**Phase 1 (Core Abstractions):**
-1. Define traits: `TemplateValue`, `TemplateRenderer`, `FileSystem`
-2. Implement `Value` enum
-3. Implement `Parameters` and `ParameterDescriptor`
-4. Implement `Values<V>` storage
-
-**Phase 2 (Rendering):**
-5. Implement `HandlebarsRenderer`
-6. Test template rendering with various inputs
-
-**Phase 3 (File System):**
-7. Implement `FileSystem` trait
-8. Implement `RealFileSystem`
-9. Implement `MemoryFileSystem`
-10. Test TOML merging logic
-
-**Phase 4 (Integration):**
-11. Implement `Template<V, R>` holder
-12. Implement `generate()` method
-13. Implement parameter loading
-14. Add typed errors
-
-**Phase 5 (Migration):**
-15. Add genfile to willbe dependencies
-16. Create wca::Value adapter
-17. Update workspace_renew
-18. Update deploy_renew
-19. Update cicd_renew
-20. Remove legacy template.rs
-
-#### Performance Considerations
-
-**Memory Allocation:**
-Minimize allocations during template rendering by reusing buffers where possible. Consider arena allocation for short-lived template data.
-
-**Template Caching:**
-HandlebarsRenderer should cache compiled templates if the same template is rendered multiple times. Use internal HashMap keyed by template hash.
-
-**Values Inside Archive:**
-Parameter values are always stored inside the genfile (TemplateArchive) itself. No external parameter storage files.
-
-**Streaming for Large Files:**
-For templates >1MB, consider streaming rendering instead of in-memory string concatenation. This is future enhancement, not MVP requirement.
-
-#### Security Considerations
-
-**Path Traversal:**
-File descriptor paths must be validated to prevent directory traversal attacks. Reject paths containing `..` segments.
-
-**Implementation Status:** ❌ NOT YET IMPLEMENTED (high priority security task)
-
-**Template Injection:**
-If template content comes from untrusted sources, sanitize or reject malicious template syntax. Document that Handlebars allows arbitrary code execution if template is malicious.
-
-**Implementation Status:** ✅ DOCUMENTED (trust Handlebars security model)
-
-**TOML Bomb:**
-~~Reject TOML files >10MB to prevent denial-of-service via extremely large parameter files.~~
-
-**Implementation Status:** N/A (removed - not relevant without TOML parameter files)
-
-#### Integration Patterns
-
-**willbe Integration:**
-```rust
-use genfile::{ TemplateArchive, Value };
-
-// Load genfile with values inside
-let archive = TemplateArchive::load_from_file( "template.yaml" )?;
-
-// Values already loaded from genfile
-// Generate files
-archive.materialize( base_path, &renderer, &mut fs )?;
-```
-
-**Custom Value Type:**
-```rust
-use genfile::{ TemplateValue, Template };
-
-#[ derive( Clone ) ]
-struct MyValue( String );
-
-impl TemplateValue for MyValue
-{
-  fn to_template_string( &self ) -> String { self.0.clone() }
-  fn from_string( s: String ) -> Self { MyValue( s ) }
-  fn is_empty( &self ) -> bool { self.0.is_empty() }
-}
-
-// Use with Template
-let template = Template::< MyValue, _ >::new( /* ... */ );
-```
-
-#### Conformance Checklist
-
-| Status | Requirement | Verification Notes |
-|--------|-------------|-------------------|
-| ✅ | FR1: Template Value Trait | Trait definition with 3 required methods |
-| ✅ | FR2: Default Value Type | Value enum with 4 variants |
-| ✅ | FR3: Parameter Definition | ParameterDescriptor with metadata |
-| ✅ | FR4: Parameter Collection | Parameters with list_mandatory method |
-| ✅ | FR5: Value Storage | Generic Values<V> with HashMap |
-| ✅ | FR6: Template Renderer Trait | Trait with render method |
-| ✅ | FR7: Handlebars Renderer | Default implementation |
-| ✅ | FR8: File Descriptor | Struct with path, content, flags |
-| ✅ | FR9: Write Mode Support | Rewrite mode implemented |
-| ✅ | FR10: File System Trait | Trait with write/read/create_dir |
-| ✅ | FR11: Real File System Implementation | Production filesystem access |
-| ✅ | FR12: Memory File System Implementation | In-memory testing implementation |
-| ✅ | FR13: Template Holder Structure | Generic Template<V,R> + TemplateArchive |
-| ✅ | FR14: Template Generation | End-to-end generate method |
-| ✅ | FR15: Missing Mandatory Detection | get_undefined_parameters method |
-| ✅ | FR16: Typed Errors | Comprehensive Error enum |
-| ✅ | FR17: Archive Self-Containment | Values inside archive, JSON/YAML serialization |
-| ❌ | US1: willbe Integration | Template.rs replaced with genfile |
-| ✅ | US2: Custom Value Types | Custom TemplateValue implementations supported |
-| ✅ | US3: Parameter Persistence | Values saved in genfile.yaml/json |
-| ✅ | US4: Testable File Generation | MemoryFileSystem tests working |
-| ✅ | US5: Custom Template Engine | Custom TemplateRenderer implementations supported |
-| ✅ | US6: Clear Error Messages | Error messages with context |
-| ⚠️ | NFR1: Performance | <100ms for 10KB template - NOT MEASURED (likely met) |
-| ⚠️ | NFR2: Memory Efficiency | <10MB for 100 files - NOT MEASURED (likely met) |
-| ⚠️ | NFR3: Test Coverage | ≥80% line coverage - 188 tests exist, coverage % unknown |
-| ⚠️ | NFR4: Compilation Time | <5s impact - NOT MEASURED (minimal deps, likely met) |
-| ⚠️ | NFR5: Documentation | All public items documented - PARTIAL (most done, some gaps) |
-| ✅ | NFR6: Error Messages | Errors include context - COMPLETE |
-| ✅ | NFR7: Backward Compatibility | Semver compliance - READY (v0.1.0) |
-
----
-
-### Conformance Summary
-
-**Functional Requirements (FR1-FR17):** ✅ **100% COMPLETE** (17/17 implemented, 188 tests passing)
-
-**User Stories (US1-US6):** ⚠️ **83% COMPLETE** (5/6 implemented, US1 blocked on integration)
-
-**Non-Functional Requirements (NFR1-NFR7):** ⚠️ **29% COMPLETE** (2/7 fully met, 5/7 not measured)
-
-**Overall Core Library:** ✅ **PRODUCTION READY** (all features work, just need measurements)
-
-**Critical Missing Items:**
-1. Path traversal validation (security) - NOT IMPLEMENTED
-2. Test coverage measurement - NOT MEASURED
-3. API documentation gaps - PARTIAL
-
-See `docs/not_implemented.md` for complete details on what remains.
-
+**Change Log:**
+- 2025-10-20: Initial specification created

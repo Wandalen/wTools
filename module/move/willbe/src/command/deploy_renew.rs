@@ -1,3 +1,29 @@
+//! Deploy command implementation with wca::Value → genfile_core::Value conversion.
+//!
+//! # Architecture: Value Type Conversion
+//!
+//! This module bridges between willbe's command-line interface (using `wca::Value`)
+//! and genfile_core's template engine (using `genfile_core::Value`).
+//!
+//! ## Conversion Pattern
+//!
+//! The `values_from_props()` function converts between type systems:
+//!
+//! ```rust,ignore
+//! wca::Value::String(s) => Value::String(s.clone())
+//! wca::Value::Number(n) => Value::Number(*n as i64)  // f64 → i64
+//! wca::Value::Bool(b) => Value::Bool(*b)
+//! wca::Value::Path(_) | wca::Value::List(_) => continue  // Unsupported
+//! ```
+//!
+//! **Note:** f64 → i64 cast is intentional and marked with `#[allow(clippy::cast_possible_truncation)]`.
+//! genfile_core uses i64 for numbers, while wca uses f64 for JSON compatibility.
+//!
+//! ## Interactive Parameter Collection
+//!
+//! The `interactive_if_empty()` function prompts users for missing mandatory parameters,
+//! implementing a CLI workflow for template configuration.
+
 mod private
 {
 
@@ -11,6 +37,8 @@ mod private
   use action ::deploy_renew :: *;
 
   /// Helper to get missing mandatory parameters from archive.
+  ///
+  /// Filters archive parameters to find mandatory ones without values set.
   fn get_missing_mandatory( archive: &genfile_core ::TemplateArchive ) -> Vec< String >
   {
   archive

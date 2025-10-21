@@ -374,7 +374,7 @@ impl TemplateArchive
   /// # Parameters
   ///
   /// - `path`: Destination path in the archive
-  /// - `source`: Content source (FileRef, UrlRef, InlineContent, etc.)
+  /// - `source`: Content source (`FileRef`, `UrlRef`, `InlineContent`, etc.)
   /// - `write_mode`: How to write this file during materialization
   ///
   /// # Examples
@@ -439,6 +439,7 @@ impl TemplateArchive
   }
 
   /// Get file by path
+  #[must_use] 
   pub fn get_file( &self, path: &Path ) -> Option< &TemplateFile >
   {
     self.files.iter().find( | f | f.path == path )
@@ -464,12 +465,14 @@ impl TemplateArchive
   /// assert!(archive.has_file(Path::new("test.txt")));
   /// assert!(!archive.has_file(Path::new("missing.txt")));
   /// ```
+  #[must_use] 
   pub fn has_file( &self, path: &Path ) -> bool
   {
     self.files.iter().any( | f | f.path == path )
   }
 
   /// List all file paths
+  #[must_use] 
   pub fn list_files( &self ) -> Vec< &Path >
   {
     self.files.iter().map( | f | f.path.as_path() ).collect()
@@ -491,6 +494,7 @@ impl TemplateArchive
   /// assert!(dirs.contains(&PathBuf::from("src")));
   /// assert!(dirs.contains(&PathBuf::from("src/utils")));
   /// ```
+  #[must_use] 
   pub fn list_directories( &self ) -> Vec< PathBuf >
   {
     let mut dirs = HashSet::new();
@@ -551,18 +555,21 @@ impl TemplateArchive
   }
 
   /// Get parameter definition
+  #[must_use] 
   pub fn get_parameter( &self, name: &str ) -> Option< &ParameterDescriptor >
   {
     self.parameters.descriptors.iter().find( | p | p.parameter == name )
   }
 
   /// List all defined parameters
+  #[must_use] 
   pub fn list_parameters( &self ) -> Vec< &str >
   {
     self.parameters.descriptors.iter().map( | p | p.parameter.as_str() ).collect()
   }
 
   /// List mandatory parameters
+  #[must_use] 
   pub fn list_mandatory_parameters( &self ) -> Vec< &str >
   {
     self.parameters.list_mandatory()
@@ -592,7 +599,12 @@ impl TemplateArchive
   /// assert!(discovered.contains("port"));
   /// assert_eq!(discovered.len(), 2);
   /// ```
+  ///
+  /// # Panics
+  ///
+  /// Panics if the internal regex pattern is invalid (should not occur in practice).
   #[cfg(feature = "parameter_discovery")]
+  #[must_use]
   pub fn discover_parameters( &self ) -> HashSet< String >
   {
     let mut params = HashSet::new();
@@ -617,6 +629,7 @@ impl TemplateArchive
 
   /// Find parameters used in templates but not defined
   #[cfg(feature = "parameter_discovery")]
+  #[must_use] 
   pub fn get_undefined_parameters( &self ) -> Vec< String >
   {
     let discovered = self.discover_parameters();
@@ -643,7 +656,12 @@ impl TemplateArchive
   }
 
   /// Analyze parameter usage across files
+  ///
+  /// # Panics
+  ///
+  /// Panics if the internal regex pattern is invalid (should not occur in practice).
   #[cfg(feature = "parameter_discovery")]
+  #[must_use]
   pub fn analyze_parameter_usage( &self ) -> HashMap< String, Vec< PathBuf > >
   {
     let mut usage: HashMap< String, Vec< PathBuf > > = HashMap::new();
@@ -659,7 +677,7 @@ impl TemplateArchive
           {
             usage
               .entry( param_name.as_str().to_string() )
-              .or_insert_with( Vec::new )
+              .or_default()
               .push( file.path.clone() );
           }
         }
@@ -672,6 +690,10 @@ impl TemplateArchive
   // === Value Operations ===
 
   /// Set parameter value
+  ///
+  /// # Panics
+  ///
+  /// Panics if the values container is in an invalid state (should not occur in practice).
   pub fn set_value( &mut self, name: impl Into< String >, value: Value ) -> &mut Self
   {
     let name_string = name.into();
@@ -684,6 +706,7 @@ impl TemplateArchive
   }
 
   /// Get parameter value
+  #[must_use] 
   pub fn get_value( &self, name: &str ) -> Option< &Value >
   {
     self.values.as_ref().and_then( | v | v.get( name ) )
@@ -700,6 +723,10 @@ impl TemplateArchive
   }
 
   /// Get mutable access to values
+  ///
+  /// # Panics
+  ///
+  /// Panics if the values container is in an invalid state (should not occur in practice).
   pub fn values_mut( &mut self ) -> &mut Values< Value >
   {
     if self.values.is_none()
@@ -732,24 +759,28 @@ impl TemplateArchive
   /// archive.add_text_file(PathBuf::from("b.txt"), "content", WriteMode::Rewrite);
   /// assert_eq!(archive.file_count(), 2);
   /// ```
+  #[must_use] 
   pub fn file_count( &self ) -> usize
   {
     self.files.len()
   }
 
   /// Get number of text files
+  #[must_use] 
   pub fn text_file_count( &self ) -> usize
   {
     self.files.iter().filter( | f | matches!( f.content, FileContent::Text( _ ) ) ).count()
   }
 
   /// Get number of binary files
+  #[must_use] 
   pub fn binary_file_count( &self ) -> usize
   {
     self.files.iter().filter( | f | matches!( f.content, FileContent::Binary( _ ) ) ).count()
   }
 
   /// Calculate total size of all content in bytes
+  #[must_use] 
   pub fn total_size( &self ) -> usize
   {
     self.files.iter().map( | f |
@@ -780,6 +811,7 @@ impl TemplateArchive
   /// archive.add_text_file(PathBuf::from("a/b/c/d.txt"), "x", WriteMode::Rewrite);
   /// assert_eq!(archive.max_directory_depth(), 3);
   /// ```
+  #[must_use] 
   pub fn max_directory_depth( &self ) -> usize
   {
     self.files
@@ -802,19 +834,27 @@ impl TemplateArchive
   /// let json = archive.to_json().unwrap();
   /// assert!(json.contains("\"name\":\"test\""));
   /// ```
+  ///
+  /// # Errors
+  ///
+  /// Returns error if JSON serialization fails.
   #[cfg(feature = "json")]
   pub fn to_json( &self ) -> Result< String, Error >
   {
     serde_json::to_string( self )
-      .map_err( | e | Error::Render( format!( "JSON serialization failed: {}", e ) ) )
+      .map_err( | e | Error::Render( format!( "JSON serialization failed: {e}" ) ) )
   }
 
   /// Serialize to pretty-printed JSON
+  ///
+  /// # Errors
+  ///
+  /// Returns error if JSON serialization fails.
   #[cfg(feature = "json")]
   pub fn to_json_pretty( &self ) -> Result< String, Error >
   {
     serde_json::to_string_pretty( self )
-      .map_err( | e | Error::Render( format!( "JSON serialization failed: {}", e ) ) )
+      .map_err( | e | Error::Render( format!( "JSON serialization failed: {e}" ) ) )
   }
 
   /// Deserialize from JSON string
@@ -828,35 +868,51 @@ impl TemplateArchive
   /// let archive = TemplateArchive::from_json(json).unwrap();
   /// assert_eq!(archive.name, "test");
   /// ```
+  ///
+  /// # Errors
+  ///
+  /// Returns error if JSON deserialization fails.
   #[cfg(feature = "json")]
   pub fn from_json( json: &str ) -> Result< Self, Error >
   {
     serde_json::from_str( json )
-      .map_err( | e | Error::Render( format!( "JSON deserialization failed: {}", e ) ) )
+      .map_err( | e | Error::Render( format!( "JSON deserialization failed: {e}" ) ) )
   }
 
   /// Serialize to YAML string
+  ///
+  /// # Errors
+  ///
+  /// Returns error if YAML serialization fails.
   #[cfg(feature = "yaml")]
   pub fn to_yaml( &self ) -> Result< String, Error >
   {
     serde_yaml::to_string( self )
-      .map_err( | e | Error::Render( format!( "YAML serialization failed: {}", e ) ) )
+      .map_err( | e | Error::Render( format!( "YAML serialization failed: {e}" ) ) )
   }
 
   /// Deserialize from YAML string
+  ///
+  /// # Errors
+  ///
+  /// Returns error if YAML deserialization fails.
   #[cfg(feature = "yaml")]
   pub fn from_yaml( yaml: &str ) -> Result< Self, Error >
   {
     serde_yaml::from_str( yaml )
-      .map_err( | e | Error::Render( format!( "YAML deserialization failed: {}", e ) ) )
+      .map_err( | e | Error::Render( format!( "YAML deserialization failed: {e}" ) ) )
   }
 
   // === Materialization ===
 
-  /// Materialize archive to filesystem at base_path
+  /// Materialize archive to filesystem at `base_path`
   ///
   /// Creates all directories and files, applying template rendering
   /// with current parameter values.
+  ///
+  /// # Errors
+  ///
+  /// Returns error if template rendering or file creation fails.
   pub fn materialize( &self, base_path: &Path ) -> Result< MaterializationReport, Error >
   {
     let renderer = HandlebarsRenderer::new();
@@ -865,6 +921,10 @@ impl TemplateArchive
   }
 
   /// Materialize with custom components (for testing)
+  ///
+  /// # Errors
+  ///
+  /// Returns error if template rendering, file creation, or path validation fails.
   pub fn materialize_with_components<R, FS>(
     &self,
     base_path: &Path,
@@ -878,7 +938,7 @@ impl TemplateArchive
     let mut report = MaterializationReport::default();
 
     // Get values or use empty if none set
-    let values = self.values.as_ref().map( | v | v.to_serializable() ).unwrap_or_default();
+    let values = self.values.as_ref().map( super::values::Values::to_serializable ).unwrap_or_default();
 
     // Track directories that will be created
     // RealFileSystem creates directories automatically in write()
@@ -961,6 +1021,10 @@ impl TemplateArchive
   ///     &resolver
   /// ).unwrap();
   /// ```
+  ///
+  /// # Errors
+  ///
+  /// Returns error if content resolution, template rendering, or file creation fails.
   #[cfg(feature = "external_content")]
   pub fn materialize_with_resolver<R, FS, CR>(
     &self,
@@ -977,7 +1041,7 @@ impl TemplateArchive
     let mut report = MaterializationReport::default();
 
     // Get values or use empty if none set
-    let values = self.values.as_ref().map( | v | v.to_serializable() ).unwrap_or_default();
+    let values = self.values.as_ref().map( super::values::Values::to_serializable ).unwrap_or_default();
 
     // Track directories
     for dir in self.list_directories()
@@ -1038,9 +1102,9 @@ impl TemplateArchive
     Ok( report )
   }
 
-  /// Materialize archive using ContentStorage abstraction.
+  /// Materialize archive using `ContentStorage` abstraction.
   ///
-  /// Instead of using FileSystem trait, uses ContentStorage for maximum
+  /// Instead of using `FileSystem` trait, uses `ContentStorage` for maximum
   /// flexibility. This allows writing to databases, cloud storage, etc.
   ///
   /// # Parameters
@@ -1068,6 +1132,10 @@ impl TemplateArchive
   ///     &resolver
   /// ).unwrap();
   /// ```
+  ///
+  /// # Errors
+  ///
+  /// Returns error if content resolution, storage operations, or file creation fails.
   #[cfg(feature = "external_content")]
   pub fn materialize_with_storage<R, CS, CR>(
     &self,
@@ -1084,7 +1152,7 @@ impl TemplateArchive
     let mut report = MaterializationReport::default();
 
     // Get values or use empty if none set
-    let values = self.values.as_ref().map( | v | v.to_serializable() ).unwrap_or_default();
+    let values = self.values.as_ref().map( super::values::Values::to_serializable ).unwrap_or_default();
 
     // Track directories
     for dir in self.list_directories()
@@ -1191,7 +1259,7 @@ impl TemplateArchive
         {
           // Get relative path from base
           let rel_path = path.strip_prefix( base )
-            .map_err( | e | Error::Render( format!( "Path error: {}", e ) ) )?
+            .map_err( | e | Error::Render( format!( "Path error: {e}" ) ) )?
             .to_path_buf();
 
           // Read file
@@ -1242,6 +1310,10 @@ impl TemplateArchive
   ///
   /// // Now all content is inline
   /// ```
+  ///
+  /// # Errors
+  ///
+  /// Returns error if content resolution fails for any external reference.
   #[cfg(feature = "external_content")]
   pub fn internalize< CR >( &mut self, resolver: &CR ) -> Result< (), Error >
   where
@@ -1275,9 +1347,9 @@ impl TemplateArchive
   ///
   /// - `base_path`: Directory where content files will be written
   ///
-  /// # Returns
+  /// # Errors
   ///
-  /// Ok(()) on success, Error if files cant be written
+  /// Returns error if directory creation or file writing fails.
   ///
   /// # Examples
   ///
@@ -1303,7 +1375,7 @@ impl TemplateArchive
       if file.content_source.is_none()
       {
         // Generate unique filename for content
-        let content_filename = format!( "{}.content", file.path.display() ).replace( "/", "_" );
+        let content_filename = format!( "{}.content", file.path.display() ).replace( '/', "_" );
         let content_path = base_path.join( &content_filename );
 
         // Write content to file
@@ -1336,6 +1408,10 @@ impl TemplateArchive
   ///
   /// - `path`: File path where archive will be saved
   ///
+  /// # Errors
+  ///
+  /// Returns error if JSON serialization or file writing fails.
+  ///
   /// # Examples
   ///
   /// ```rust,ignore
@@ -1359,9 +1435,9 @@ impl TemplateArchive
   ///
   /// - `path`: File path to load archive from
   ///
-  /// # Returns
+  /// # Errors
   ///
-  /// Loaded archive
+  /// Returns error if file reading or JSON deserialization fails.
   ///
   /// # Examples
   ///
