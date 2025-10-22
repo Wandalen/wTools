@@ -15,7 +15,7 @@ repository = "https://github.com/Wandalen/wTools/tree/master/module/alias/unilan
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/alias/unilang_instruction_parser"
 
 [dependencies]
-unilang_parser = { path = "../../move/unilang_parser" }
+unilang_parser = { path = "../../core/unilang_parser" }
 
 
 [features]

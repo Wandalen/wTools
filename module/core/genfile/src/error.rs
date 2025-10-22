@@ -1,94 +1,94 @@
-/// Error types for genfile operations
-/// Errors that can occur during template processing and file generation.
+//! Error handling and formatting
+//!
+//! Provides utilities for converting `genfile_core` errors to unilang `ErrorData`
+//! and formatting error messages according to cli.rulebook.md standards.
+
+use unilang::data::{ ErrorData, ErrorCode };
+
+/// Format `genfile_core` error as `ErrorData` for unilang
 ///
-/// Provides typed error variants for different failure modes, enabling
-/// users to match and handle specific error cases.
+/// Converts errors from `genfile_core` operations into structured `ErrorData`
+/// with proper context labeling following the format: `[ERROR] [CONTEXT]: message`
+///
+/// # Parameters
+///
+/// - `error`: The `genfile_core::Error` to format
+/// - `context`: Context label (e.g., "FILE", "PARAMETER", "RENDER")
 ///
 /// # Examples
 ///
-/// ```rust,ignore
+/// ```
+/// use genfile::error::format_error;
 /// use genfile_core::Error;
 ///
-/// fn process() -> Result< (), Error >
-/// {
-///   // ... template processing
-///   Err( Error::Render( "Invalid template syntax".into() ) )
-/// }
+/// let err = Error::Fs( std::io::Error::from( std::io::ErrorKind::NotFound ) );
+/// let error_data = format_error( err, "FILE" );
+/// assert!( error_data.message.contains( "[ERROR] [FILE]:" ) );
 /// ```
-#[ derive( Debug ) ]
-pub enum Error
+#[must_use] 
+pub fn format_error( error : genfile_core::Error, context : &str ) -> ErrorData
 {
-  /// Template rendering failed.
-  ///
-  /// Occurs when the template engine encounters invalid syntax or
-  /// fails to substitute variables.
-  Render( String ),
+  let message = format!( "[ERROR] [{}]: {}", context.to_uppercase(), error );
 
-  /// Missing mandatory parameters.
-  ///
-  /// Contains list of parameter names that are required but not provided.
-  MissingParameters( Vec< String > ),
-
-  /// File system operation failed.
-  ///
-  /// Wraps underlying I/O errors from filesystem operations.
-  Fs( std ::io ::Error ),
-
-  /// Invalid template.
-  ///
-  /// Template content is malformed or unsupported.
-  InvalidTemplate( String ),
-}
-
-impl core ::fmt ::Display for Error
-{
-  fn fmt( &self, f: &mut core ::fmt ::Formatter< '_ > ) -> core ::fmt ::Result
+  ErrorData
   {
-    match self
-    {
-      Error ::Render( msg ) => write!( f, "Template rendering failed: {msg}" ),
-      Error ::MissingParameters( params ) =>
-        write!( f, "Missing mandatory parameters: {params:?}" ),
-      Error ::Fs( err ) => write!( f, "File system error: {err}" ),
-      Error ::InvalidTemplate( msg ) => write!( f, "Invalid template: {msg}" ),
-    }
+    code : ErrorCode::InternalError,
+    message,
+    source : None,
   }
 }
 
-impl core ::error ::Error for Error
+/// Format usage error for missing or invalid parameters
+///
+/// Creates `ErrorData` for user input problems.
+///
+/// # Examples
+///
+/// ```
+/// use genfile::error::usage_error;
+///
+/// let err = usage_error( "Missing required parameter: name" );
+/// assert!( err.message.contains( "[ERROR] [USAGE]:" ) );
+/// ```
+pub fn usage_error( message : impl Into< String > ) -> ErrorData
 {
-  fn source( &self ) -> Option< &( dyn core ::error ::Error + 'static ) >
+  ErrorData
   {
-    match self
-    {
-      Error ::Fs( err ) => Some( err ),
-      _ => None,
-    }
+    code : ErrorCode::ArgumentMissing,
+    message : format!( "[ERROR] [USAGE]: {}", message.into() ),
+    source : None,
   }
 }
 
-impl From< std ::io ::Error > for Error
+/// Format parameter-related error
+pub fn _parameter_error( message : impl Into< String > ) -> ErrorData
 {
-  fn from( err: std ::io ::Error ) -> Self
+  ErrorData
   {
-    Error ::Fs( err )
+    code : ErrorCode::UnknownParameter,
+    message : format!( "[ERROR] [PARAMETER]: {}", message.into() ),
+    source : None,
   }
 }
 
-#[cfg(feature = "renderer")]
-impl From< handlebars ::RenderError > for Error
+/// Format file-related error
+pub fn file_error( message : impl Into< String > ) -> ErrorData
 {
-  fn from( err: handlebars ::RenderError ) -> Self
+  ErrorData
   {
-    Error ::Render( err.to_string() )
+    code : ErrorCode::InternalError,
+    message : format!( "[ERROR] [FILE]: {}", message.into() ),
+    source : None,
   }
 }
 
-#[cfg(feature = "renderer")]
-impl From< handlebars ::TemplateError > for Error
+/// Format validation error
+pub fn _validation_error( message : impl Into< String > ) -> ErrorData
 {
-  fn from( err: handlebars ::TemplateError ) -> Self
+  ErrorData
   {
-    Error ::Render( err.to_string() )
+    code : ErrorCode::ValidationRuleFailed,
+    message : format!( "[ERROR] [VALIDATION]: {}", message.into() ),
+    source : None,
   }
 }
