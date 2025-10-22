@@ -23,23 +23,14 @@
 //! | Performance | `test_large_dataset_*` | Verify handling of large benchmark datasets | None |
 //! | Serialization | `test_*_serialization` | Verify data persistence and loading | serde |
 
-#[ cfg( feature = "benchmarks" ) ]
 use std::collections::HashMap;
-#[ cfg( feature = "benchmarks" ) ]
 use core::time::Duration;
 
 // Import real benchmark structures
-#[ cfg( feature = "benchmarks" ) ]
-use unilang::comparative_benchmark_structure::BenchmarkResult;
+use unilang_benchmarks::comparative_benchmark_structure::BenchmarkResult;
 
 // Type alias for compatibility during transition
-#[ cfg( feature = "benchmarks" ) ]
 type TestBenchmarkResult = BenchmarkResult;
-
-#[ cfg( feature = "benchmarks" ) ]
-mod benchmarks_tests
-{
-  use super::*;
 
 #[ derive( Debug, Clone, PartialEq ) ]
 pub enum CvQuality
@@ -433,7 +424,6 @@ impl OptimizationWorkflow
 // === Tests ===
 
 /// Test CV analyzer creation and configuration
-#[ cfg( feature = "benchmarks" ) ]
 #[ test ]
 fn test_cv_analyzer_creation()
 {
@@ -861,5 +851,3 @@ fn assess_benchmark_quality( result: &BenchmarkResult ) -> BenchmarkQuality
   quality_score,
  }
 }
-
-} // End of benchmarks feature gate

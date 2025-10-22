@@ -56,12 +56,15 @@ pub use unilang_parser;
 pub mod benchmark_config;
 pub mod benchmark_data_sizes;
 pub mod realistic_test_data;
+pub mod comparative_benchmark_structure;
 
 /// Prelude for benchmarks
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
   pub use crate::benchmark_config::*;
   pub use crate::benchmark_data_sizes::*;
   pub use crate::realistic_test_data::*;
+  pub use crate::comparative_benchmark_structure::*;
   pub use unilang::prelude::*;
 }

@@ -3,18 +3,17 @@
 //! Implements benchkit usage.md "Write Comparative Benchmarks" section
 //! providing systematic comparison with baseline establishment and relative performance.
 
+#![ allow( dead_code ) ]
+#![ allow( unused_imports ) ]
+
 /// Internal namespace.
 mod private
 {
-  #[ cfg( feature = "benchmarks" ) ]
   use std::collections::HashMap;
-  #[ cfg( feature = "benchmarks" ) ]
   use std::fmt::Write;
-  #[ cfg( feature = "benchmarks" ) ]
   use crate::benchmark_data_sizes::BenchmarkDataSize;
 
   /// Results from a single benchmark run
-  #[ cfg( feature = "benchmarks" ) ]
   #[ derive( Debug, Clone, serde::Serialize, serde::Deserialize ) ]
   pub struct BenchmarkResult
   {
@@ -32,11 +31,9 @@ mod private
     pub sample_count : usize,
   }
 
-  #[ cfg( feature = "benchmarks" ) ]
   impl BenchmarkResult
   {
     /// Calculate relative performance compared to baseline
-    #[ cfg( feature = "benchmarks" ) ]
     pub fn relative_performance( &self, baseline_time : f64 ) -> f64
     {
       if baseline_time == 0.0
@@ -50,7 +47,6 @@ mod private
     }
 
     /// Format time in human-readable units
-    #[ cfg( feature = "benchmarks" ) ]
     pub fn format_time( &self ) -> String
     {
       let time_ms = self.average_time_nanos / 1_000_000.0;
@@ -73,7 +69,6 @@ mod private
     }
 
     /// Calculate coefficient of variation as percentage
-    #[ cfg( feature = "benchmarks" ) ]
     pub fn coefficient_of_variation( &self ) -> f64
     {
       if self.average_time_nanos == 0.0
@@ -87,7 +82,6 @@ mod private
     }
 
     /// Create BenchmarkResult from timing samples
-    #[ cfg( feature = "benchmarks" ) ]
     pub fn from_samples( algorithm_name : &str, times : Vec< core::time::Duration > ) -> Self
     {
       if times.is_empty()
@@ -129,14 +123,12 @@ mod private
     }
 
     /// Get coefficient of variation as ratio (0.0 to 1.0) for compatibility
-    #[ cfg( feature = "benchmarks" ) ]
     pub fn coefficient_of_variation_ratio( &self ) -> f64
     {
       self.coefficient_of_variation() / 100.0
     }
 
     /// Get average time as Duration for compatibility
-    #[ cfg( feature = "benchmarks" ) ]
     pub fn average_time( &self ) -> core::time::Duration
     {
       #[allow(clippy::cast_possible_truncation)]
@@ -145,7 +137,6 @@ mod private
   }
 
   /// Comparative benchmark runner for side-by-side algorithm testing
-  #[ cfg( feature = "benchmarks" ) ]
   #[ allow( missing_debug_implementations ) ]
   pub struct ComparativeBenchmark< T >
   {
@@ -159,7 +150,6 @@ mod private
     test_data : HashMap< BenchmarkDataSize, T >,
   }
 
-  #[ cfg( feature = "benchmarks" ) ]
   impl< T > ComparativeBenchmark< T >
   where
     T : Clone + Send + Sync + 'static,
@@ -264,7 +254,6 @@ mod private
   }
 
   /// Results from comparative benchmark run
-  #[ cfg( feature = "benchmarks" ) ]
   #[ derive( Debug, Clone ) ]
   pub struct ComparativeResults
   {
@@ -282,7 +271,6 @@ mod private
     pub fastest_algorithm : String,
   }
 
-  #[ cfg( feature = "benchmarks" ) ]
   impl ComparativeResults
   {
     /// Create new comparative results with baseline establishment
@@ -379,7 +367,6 @@ mod private
   }
 
   /// Multi-size comparative benchmark for comprehensive analysis
-  #[ cfg( feature = "benchmarks" ) ]
   #[ allow( missing_debug_implementations ) ]
   pub struct MultiSizeComparison< T >
   {
@@ -389,7 +376,6 @@ mod private
     results : HashMap< BenchmarkDataSize, ComparativeResults >,
   }
 
-  #[ cfg( feature = "benchmarks" ) ]
   impl< T > MultiSizeComparison< T >
   where
     T : Clone + Send + Sync + 'static,
@@ -460,14 +446,5 @@ mod private
   }
 }
 
-mod_interface::mod_interface!
-{
-  #[ cfg( feature = "benchmarks" ) ]
-  orphan use BenchmarkResult;
-  #[ cfg( feature = "benchmarks" ) ]
-  orphan use ComparativeBenchmark;
-  #[ cfg( feature = "benchmarks" ) ]
-  orphan use ComparativeResults;
-  #[ cfg( feature = "benchmarks" ) ]
-  orphan use MultiSizeComparison;
-}
+// Types are already public through `pub mod comparative_benchmark_structure` in lib.rs
+// No need for mod_interface exportspub use private::*;

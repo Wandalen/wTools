@@ -25,14 +25,11 @@
 //! | Error Handling | `test_invalid_*` | Verify error handling for invalid inputs | None |
 //! | Display Format | `test_display_format` | Verify string representation | None |
 
-use unilang::benchmark_config::{ BenchmarkConfig, BenchmarkEnvironment };
+use unilang_benchmarks::benchmark_config::{ BenchmarkConfig, BenchmarkEnvironment };
 use core::time::Duration;
-#[ cfg( feature = "benchmarks" ) ]
 use std::fs;
-#[ cfg( feature = "benchmarks" ) ]
 use tempfile::NamedTempFile;
 
-#[ cfg( feature = "benchmarks" ) ]
 use serde::{ Serialize, Deserialize };
 
 // Additional test structures for comprehensive testing
@@ -267,7 +264,6 @@ fn test_measurement_config_wrapper()
 
 /// Test benchkit integration conversion
 #[ test ]
-#[ cfg( feature = "benchmarks" ) ]
 fn test_benchkit_integration()
 {
   let config = BenchmarkConfig::production();
@@ -466,7 +462,6 @@ fn detect_environment() -> EnvironmentConfig
 }
 
 /// Test configuration file loading
-#[ cfg( feature = "benchmarks" ) ]
 #[ test ]
 fn test_load_from_file() -> Result< (), Box< dyn core::error::Error > >
 {
@@ -497,7 +492,6 @@ max_benchmark_time:
 }
 
 /// Test invalid configuration file handling
-#[ cfg( feature = "benchmarks" ) ]
 #[ test ]
 fn test_invalid_config_file()
 {
@@ -506,7 +500,6 @@ fn test_invalid_config_file()
 }
 
 /// Test malformed configuration file handling
-#[ cfg( feature = "benchmarks" ) ]
 #[ test ]
 fn test_malformed_config_file() -> Result< (), Box< dyn core::error::Error > >
 {
@@ -523,7 +516,6 @@ fn test_malformed_config_file() -> Result< (), Box< dyn core::error::Error > >
 
 // Mock configuration loading function since BenchmarkConfig doesn't have load_from_file
 /// Configuration loading simulation using available factory methods
-#[ cfg( feature = "benchmarks" ) ]
 fn load_config_from_file( file_path: &str ) -> Result< BenchmarkConfig, Box< dyn core::error::Error > >
 {
   // Since BenchmarkConfig doesn't have load_from_file, simulate it by checking file content
@@ -553,15 +545,8 @@ fn load_config_from_file( file_path: &str ) -> Result< BenchmarkConfig, Box< dyn
   Ok( config )
 }
 
-// Fallback for when benchmarks feature is not enabled
-#[ cfg( not( feature = "benchmarks" ) ) ]
-fn load_config_from_file( _file_path: &str ) -> Result< BenchmarkConfig, Box< dyn core::error::Error > >
-{
-  Err( "Benchmark features not enabled".into() )
-}
 
 /// Test serialization/deserialization when benchmarks feature is enabled
-#[ cfg( feature = "benchmarks" ) ]
 #[ test ]
 fn test_config_serialization() -> Result< (), Box< dyn core::error::Error > >
 {
@@ -582,7 +567,6 @@ fn test_config_serialization() -> Result< (), Box< dyn core::error::Error > >
 }
 
 /// Test deserialization when benchmarks feature is enabled
-#[ cfg( feature = "benchmarks" ) ]
 #[ test ]
 fn test_config_deserialization() -> Result< (), Box< dyn core::error::Error > >
 {
@@ -607,7 +591,6 @@ fn test_config_deserialization() -> Result< (), Box< dyn core::error::Error > >
 }
 
 // Helper struct for serialization testing
-#[ cfg( feature = "benchmarks" ) ]
 #[ derive( Serialize, Deserialize ) ]
 struct SerializableConfig
 {
@@ -620,7 +603,6 @@ struct SerializableConfig
   environment: String,
 }
 
-#[ cfg( feature = "benchmarks" ) ]
 impl From< &BenchmarkConfig > for SerializableConfig
 {
   fn from( config: &BenchmarkConfig ) -> Self
@@ -638,7 +620,6 @@ impl From< &BenchmarkConfig > for SerializableConfig
  }
 }
 
-#[ cfg( feature = "benchmarks" ) ]
 impl From< SerializableConfig > for BenchmarkConfig
 {
   fn from( serializable: SerializableConfig ) -> Self
