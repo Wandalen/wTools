@@ -6,33 +6,39 @@ members = [
   "module/move/*",
 ]
 exclude = [
+  # Exclude all hyphen-prefixed files (temporary files, private scripts)
   "-*",
-  "module/move/cargo_will",
-  "module/alias/cargo_will",
+
+  # Exclude experimental/incomplete modules
   "module/blank/*",
   "module/postponed/*",
   "module/step/*",
-  "module/core/unitore",
-  "module/move/gspread",
-  "module/move/benchkit",
-  "module/move/optimization_tools",
-  "module/move/refiner",
-  "module/move/wplot",
-  "module/move/plot_interface",
-  "module/core/program_tools",
-  "module/move/graphs_tools",
+
+  # Core exclusions: umbrella crates and circular dependency prevention
+  "module/core/wtools",        # Top-level umbrella crate re-exporting all tools
+  "module/core/meta_tools",    # Meta tools aggregator crate
+  "module/core/for_each",      # Used by meta_tools (circular dependency prevention)
+  "module/core/program_tools", # Incomplete stub crate (empty implementation)
+  # NOTE: unitore is included despite compilation errors (uses workspace dependencies)
+
+  # Alias exclusions: wrapper crates excluded to prevent duplication
+  "module/alias/cargo_will",
   "module/alias/fundamental_data_type",
   "module/alias/proc_macro_tools",
   "module/alias/multilayer",
   "module/alias/instance_of",
   "module/alias/werror",
-  "module/core/wtools",
   "module/alias/wproc_macro",
   "module/alias/wtest_basic",
   "module/alias/wtest",
-  "module/core/meta_tools",
-  "module/core/for_each",
-  "step",
+
+  # Move exclusions: modules scheduled for migration to separate repositories
+  "module/move/gspread",
+  "module/move/optimization_tools",
+  "module/move/refiner",
+  "module/move/wplot",
+  "module/move/plot_interface",
+  "module/move/graphs_tools",
 ]
 # default-members = [ "module/core/wtools" ]
 

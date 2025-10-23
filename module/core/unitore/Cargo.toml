@@ -15,8 +15,10 @@ categories = [ "development-tools" ]
 keywords = [ "rss-feed", "atom-feed" ]
 repository = "https://github.com/Wandalen/wTools/tree/alpha/module/core/unitore"
 
-# [lints]
-# workspace = true
+[lints]
+workspace = true
+# NOTE: This crate has compilation errors but is included in workspace
+# because it uses workspace dependencies (cannot be excluded)
 
 [package.metadata.docs.rs]
 features = [ "full" ]
