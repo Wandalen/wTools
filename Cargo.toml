@@ -21,17 +21,6 @@ exclude = [
   "module/core/program_tools", # Incomplete stub crate (empty implementation)
   # NOTE: unitore is included despite compilation errors (uses workspace dependencies)
 
-  # Alias exclusions: wrapper crates excluded to prevent duplication
-  "module/alias/cargo_will",
-  "module/alias/fundamental_data_type",
-  "module/alias/proc_macro_tools",
-  "module/alias/multilayer",
-  "module/alias/instance_of",
-  "module/alias/werror",
-  "module/alias/wproc_macro",
-  "module/alias/wtest_basic",
-  "module/alias/wtest",
-
   # Move exclusions: modules scheduled for migration to separate repositories
   "module/move/gspread",
   "module/move/optimization_tools",
