@@ -9,8 +9,8 @@ authors = [
 license = "MIT"
 readme = "readme.md"
 documentation = "https://docs.rs/crates_tools"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/move/crates_tools"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/crates_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/crates_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/crates_tools"
 description = """
 Tools to analyse crate files.
 """
