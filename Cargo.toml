@@ -3,36 +3,25 @@ resolver = "2"
 members = [
   "module/alias/*",
   "module/core/*",
-  "module/move/*",
+  # NOTE: module/move directory is now empty - all crates moved to core or postponed
 ]
 exclude = [
+  # Exclude all hyphen-prefixed files (temporary files, private scripts)
   "-*",
-  "module/move/cargo_will",
-  "module/alias/cargo_will",
+
+  # Exclude experimental/incomplete modules
   "module/blank/*",
   "module/postponed/*",
   "module/step/*",
-  "module/move/unitore",
-  "module/move/gspread",
-  "module/move/benchkit",
-  "module/move/optimization_tools",
-  "module/move/refiner",
-  "module/move/wplot",
-  "module/move/plot_interface",
-  "module/core/program_tools",
-  "module/move/graphs_tools",
-  "module/alias/fundamental_data_type",
-  "module/alias/proc_macro_tools",
-  "module/alias/multilayer",
-  "module/alias/instance_of",
-  "module/alias/werror",
-  "module/core/wtools",
-  "module/alias/wproc_macro",
-  "module/alias/wtest_basic",
-  "module/alias/wtest",
-  "module/core/meta_tools",
-  "module/core/for_each",
-  "step",
+
+  # Core exclusions: umbrella crates and circular dependency prevention
+  "module/core/wtools",        # Top-level umbrella crate re-exporting all tools
+  "module/core/meta_tools",    # Meta tools aggregator crate
+  "module/core/for_each",      # Used by meta_tools (circular dependency prevention)
+  "module/core/program_tools", # Incomplete stub crate (empty implementation)
+  # NOTE: unitore is included despite compilation errors (uses workspace dependencies)
+
+  # NOTE: module/move directory is now empty - all crates moved to core or postponed
 ]
 # default-members = [ "module/core/wtools" ]
 
@@ -124,7 +113,7 @@ path = "module/alias/std_x"
 
 [workspace.dependencies.unilang_parser]
 version = "~0.19.0"
-path = "module/move/unilang_parser" # Point to original unilang_parser
+path = "module/core/unilang_parser"
 
 
 ## data_type
@@ -515,7 +504,7 @@ path = "module/core/async_tools"
 
 [workspace.dependencies.graphs_tools]
 version = "~0.3.0"
-path = "module/move/graphs_tools"
+path = "module/postponed/graphs_tools"
 default-features = false
 
 [workspace.dependencies.automata_tools]
@@ -531,68 +520,46 @@ default-features = false
 ## ca
 
 [workspace.dependencies.wca]
-version = "~0.31.0"
-path = "module/move/wca"
-
-## censor
-
-[workspace.dependencies.wcensor]
-version = "~0.1.1"
-path = "module/move/wcensor"
-
+version = "~0.32.0"
+path = "module/core/wca"
 
 ## willbe
 
 [workspace.dependencies.willbe]
 version = "~0.27.0"
-path = "module/move/willbe"
+path = "module/core/willbe"
 
 
 ## lang
 
 [workspace.dependencies.wlang]
 version = "~0.1.0"
-path = "module/move/wlang"
-
-
-## publisher
-
-[workspace.dependencies.wpublisher]
-version = "~0.2.0"
-path = "module/move/wpublisher_xxx"
+path = "module/blank/wlang"
 
 
 ## plot
 [workspace.dependencies.wplot]
 version = "~0.2.0"
-path = "module/move/wplot"
+path = "module/postponed/wplot"
 
 [workspace.dependencies.plot_interface]
 version = "~0.1.3"
-path = "module/move/plot_interface"
+path = "module/postponed/plot_interface"
 
 
 ## unsorted
 
 [workspace.dependencies.sqlx_query]
 version = "~0.2.0"
-path = "module/move/sqlx_query"
+path = "module/core/sqlx_query"
 
 [workspace.dependencies.deterministic_rand]
 version = "~0.6.0"
-path = "module/move/deterministic_rand"
+path = "module/core/deterministic_rand"
 
 [workspace.dependencies.crates_tools]
 version = "~0.19.0"
-path = "module/move/crates_tools"
-
-[workspace.dependencies.assistant]
-version = "~0.1.0"
-path = "module/move/assistant"
-
-[workspace.dependencies.llm_tools]
-version = "~0.2.0"
-path = "module/move/llm_tools"
+path = "module/core/crates_tools"
 
 [workspace.dependencies.benchkit]
 version = "~0.12.0"
@@ -780,7 +747,7 @@ version = "0.5.1"
 
 [workspace.dependencies.workspace_tools]
 version = "~0.7.0"
-path = "module/move/workspace_tools"
+path = "module/core/workspace_tools"
 default-features = false
 
 [patch.crates-io]
