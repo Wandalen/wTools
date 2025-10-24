@@ -1,10 +1,10 @@
-//! Deploy template generation using genfile_core.
+//! Deploy template generation using `genfile_core`.
 //!
-//! # Architecture Decision: genfile_core Integration
+//! # Architecture Decision: `genfile_core` Integration
 //!
 //! **Migration Date:** 2025-10-19
 //!
-//! Migrated from custom template.rs to genfile_core library, inheriting advanced features
+//! Migrated from custom template.rs to `genfile_core` library, inheriting advanced features
 //! like `WriteMode::TomlExtend` for smart TOML merging.
 //!
 //! # Key Patterns Specific to Deploy Templates
@@ -76,7 +76,7 @@ mod private
   /// Includes terraform deploy options to GCP, and Hetzner,
   /// a Makefile for useful commands, and a key directory.
   ///
-  /// Uses genfile_core with WriteMode::TomlExtend for parameter persistence.
+  /// Uses `genfile_core` with `WriteMode::TomlExtend` for parameter persistence.
   /// See module documentation for migration details and patterns.
   #[ derive( Debug ) ]
   pub struct DeployTemplate;

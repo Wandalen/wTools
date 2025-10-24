@@ -1,6 +1,6 @@
-//! Workspace template generation using genfile_core.
+//! Workspace template generation using `genfile_core`.
 //!
-//! # Architecture Decision: genfile_core Integration
+//! # Architecture Decision: `genfile_core` Integration
 //!
 //! **Migration Date:** 2025-10-19
 //!
@@ -8,7 +8,7 @@
 //! the `genfile_core` library for template processing. The migration provides:
 //!
 //! - **Code Reuse:** Eliminated duplicated template logic across wTools ecosystem
-//! - **Testing:** Inherited 215 comprehensive tests from genfile_core
+//! - **Testing:** Inherited 215 comprehensive tests from `genfile_core`
 //! - **Security:** Path traversal validation with 27 dedicated tests
 //! - **Features:** Binary file support, JSON/YAML serialization, external content
 //!
@@ -75,7 +75,7 @@ mod private
 
   /// Template for creating workspace files.
   ///
-  /// Uses genfile_core's TemplateArchive for template processing.
+  /// Uses `genfile_core`'s `TemplateArchive` for template processing.
   /// See module documentation for migration details and patterns.
   #[ derive( Debug ) ]
   pub struct WorkspaceTemplate

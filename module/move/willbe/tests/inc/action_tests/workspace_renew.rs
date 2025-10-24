@@ -21,9 +21,9 @@ fn arrange(sample_dir: &str) -> assert_fs ::TempDir
 ///
 /// # What This Tests
 ///
-/// Validates that workspace template materialization works correctly with genfile_core,
+/// Validates that workspace template materialization works correctly with `genfile_core`,
 /// including:
-/// - Template parameter substitution (project_name, url, branches)
+/// - Template parameter substitution (`project_name`, `url`, `branches`)
 /// - File creation in correct directory structure
 /// - Handlebars template rendering with proper variable names
 ///
@@ -35,16 +35,16 @@ fn arrange(sample_dir: &str) -> assert_fs ::TempDir
 ///
 /// # Why This Test Exists
 ///
-/// After migrating from custom template.rs (472 lines) to genfile_core library, this test
+/// After migrating from custom template.rs (472 lines) to `genfile_core` library, this test
 /// ensures zero regressions in workspace generation functionality. The test validates that:
-/// 1. genfile_core's TemplateArchive materializes all files correctly
+/// 1. `genfile_core`'s `TemplateArchive` materializes all files correctly
 /// 2. Parameter values are properly rendered in templates
 /// 3. Directory structure is created as expected
 ///
 /// # How to Interpret Failures
 ///
 /// - "Helper not defined" errors indicate Handlebars syntax issues in template files
-/// - Missing files suggest TemplateArchive.add_text_file() calls are incorrect
+/// - Missing files suggest `TemplateArchive.add_text_file()` calls are incorrect
 /// - Wrong content indicates parameter name mismatches or rendering problems
 #[ test ]
 fn default_case()

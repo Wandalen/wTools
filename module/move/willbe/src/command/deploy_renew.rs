@@ -1,9 +1,9 @@
-//! Deploy command implementation with wca::Value → genfile_core::Value conversion.
+//! Deploy command implementation with `wca::Value` → `genfile_core::Value` conversion.
 //!
 //! # Architecture: Value Type Conversion
 //!
 //! This module bridges between willbe's command-line interface (using `wca::Value`)
-//! and genfile_core's template engine (using `genfile_core::Value`).
+//! and `genfile_core`'s template engine (using `genfile_core::Value`).
 //!
 //! ## Conversion Pattern
 //!
@@ -17,7 +17,7 @@
 //! ```
 //!
 //! **Note:** f64 → i64 cast is intentional and marked with `#[allow(clippy::cast_possible_truncation)]`.
-//! genfile_core uses i64 for numbers, while wca uses f64 for JSON compatibility.
+//! `genfile_core` uses i64 for numbers, while wca uses f64 for JSON compatibility.
 //!
 //! ## Interactive Parameter Collection
 //!
