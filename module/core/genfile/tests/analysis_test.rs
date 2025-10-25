@@ -22,6 +22,8 @@
 
 use std::fs;
 
+mod test_utils;
+
 // FR8: Archive Analysis Tests
 
 #[ test ]
@@ -64,10 +66,7 @@ fn info_displays_archive_metadata()
     archive_path.display()
   );
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( &script )
     .output()
     .expect( "Info workflow should execute" );
 
@@ -130,10 +129,7 @@ fn discover_parameters_finds_template_variables()
     archive_path.display()
   );
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( &script )
     .output()
     .expect( "Discover workflow should execute" );
 
@@ -195,10 +191,7 @@ fn status_shows_archive_readiness()
     archive_path.display()
   );
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( &script )
     .output()
     .expect( "Status workflow should execute" );
 
@@ -256,10 +249,7 @@ fn analyze_provides_comprehensive_overview()
     archive_path.display()
   );
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( &script )
     .output()
     .expect( "Analyze workflow should execute" );
 
@@ -299,9 +289,7 @@ fn analysis_commands_require_loaded_archive()
 
   for cmd in commands
   {
-    let output = std::process::Command::new( "cargo" )
-      .args( [ "run", "--quiet", "--", cmd ] )
-      .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+    let output = test_utils::cargo_run_command( &[ cmd ] )
       .output()
       .expect( "Command should execute" );
 

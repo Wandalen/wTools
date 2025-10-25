@@ -3,6 +3,8 @@
 //! Tests parameter management (.parameter.add, .list, .remove) and
 //! value management (.value.set, .list, .clear)
 
+mod test_utils;
+
 #[ test ]
 fn parameter_add_and_list()
 {
@@ -12,10 +14,7 @@ fn parameter_add_and_list()
                 .parameter.list\n\
                 exit";
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
@@ -34,10 +33,7 @@ fn parameter_add_with_verbosity()
                 .parameter.add name::host mandatory::true default::\"localhost\" description::\"Server host\" verbosity::2\n\
                 exit";
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
@@ -56,10 +52,7 @@ fn parameter_list_with_verbosity()
                 .parameter.list verbosity::2\n\
                 exit";
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
@@ -79,11 +72,7 @@ fn parameter_remove()
                 .parameter.remove name::host\n\
                 .parameter.list\n\
                 exit";
-
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
@@ -99,11 +88,7 @@ fn parameter_remove_nonexistent()
   let script = ".archive.new name::test\n\
                 .parameter.remove name::nonexistent\n\
                 exit";
-
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
@@ -118,11 +103,7 @@ fn parameter_remove_nonexistent()
 fn parameter_without_archive_returns_error()
 {
   let script = ".parameter.add name::host\nexit";
-
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
@@ -142,10 +123,7 @@ fn value_set_and_list()
                 .value.list\n\
                 exit";
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
@@ -164,10 +142,7 @@ fn value_set_with_verbosity()
                 .value.set name::host value::\"example.com\" verbosity::2\n\
                 exit";
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
@@ -185,10 +160,7 @@ fn value_list_with_verbosity()
                 .value.list verbosity::2\n\
                 exit";
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
@@ -208,10 +180,7 @@ fn value_clear()
                 .value.list\n\
                 exit";
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
@@ -226,10 +195,7 @@ fn value_without_archive_returns_error()
 {
   let script = ".value.set name::host value::\"test\"\nexit";
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
@@ -252,10 +218,7 @@ fn parameters_and_values_integration()
                 .value.list verbosity::2\n\
                 exit";
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( script )
     .output()
     .expect( "Command should execute" );
 

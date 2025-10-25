@@ -35,6 +35,8 @@
 
 use std::fs;
 
+mod test_utils;
+
 // FR6: Template Materialization Tests
 
 #[ test ]
@@ -90,10 +92,7 @@ fn materialize_renders_templates_with_parameters()
     destination.display()
   );
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( &script )
     .output()
     .expect( "Materialize workflow should execute" );
 
@@ -166,10 +165,7 @@ fn materialize_fails_without_mandatory_parameters()
     destination.display()
   );
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( &script )
     .output()
     .expect( "Command should execute" );
 
@@ -227,10 +223,7 @@ fn materialize_dry_run_preview()
     destination.display()
   );
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( &script )
     .output()
     .expect( "Dry run should execute" );
 
@@ -262,13 +255,9 @@ fn materialize_without_archive_returns_error()
   let _ = fs::remove_dir_all( &destination );
 
   // Try to materialize without loading archive first
-  let output = std::process::Command::new( "cargo" )
-    .args( [
-      "run", "--quiet", "--",
-      ".materialize",
+  let output = test_utils::cargo_run_command( &[ ".materialize",
       &format!( "destination::{}", destination.display() ),
     ] )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
     .output()
     .expect( "Command should execute" );
 
@@ -337,10 +326,7 @@ fn unpack_preserves_template_variables()
     destination.display()
   );
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( &script )
     .output()
     .expect( "Unpack workflow should execute" );
 
@@ -405,10 +391,7 @@ fn unpack_dry_run_preview()
     destination.display()
   );
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( &script )
     .output()
     .expect( "Dry run should execute" );
 
@@ -440,13 +423,9 @@ fn unpack_without_archive_returns_error()
   let _ = fs::remove_dir_all( &destination );
 
   // Try to unpack without loading archive first
-  let output = std::process::Command::new( "cargo" )
-    .args( [
-      "run", "--quiet", "--",
-      ".unpack",
+  let output = test_utils::cargo_run_command( &[ ".unpack",
       &format!( "destination::{}", destination.display() ),
     ] )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
     .output()
     .expect( "Command should execute" );
 

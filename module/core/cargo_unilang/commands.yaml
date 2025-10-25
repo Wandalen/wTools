@@ -1,0 +1,167 @@
+# cargo_unilang command definitions
+#
+# This file defines cargo_unilang's CLI commands using unilang framework.
+# cargo_unilang itself is a CLI tool built with unilang, demonstrating correct usage.
+
+# Help commands (universal access)
+- name: "."
+  namespace: ""
+  description: "Show general help for cargo_unilang"
+  hint: "Display usage, commands, and examples"
+  status: "stable"
+  version: "1.0.0"
+  idempotent: true
+  arguments: []
+  validation_rules: []
+  aliases: []
+  tags: [ "help" ]
+
+- name: ".help"
+  namespace: ""
+  description: "Show general help for cargo_unilang (same as .)"
+  hint: "Display usage, commands, and examples"
+  status: "stable"
+  version: "1.0.0"
+  idempotent: true
+  arguments: []
+  validation_rules: []
+  aliases: []
+  tags: [ "help" ]
+
+# .new command - Create new unilang project
+- name: ".new"
+  namespace: ""
+  description: "Create new unilang project with correct structure"
+  hint: "Scaffold unilang CLI project preventing common mistakes"
+  status: "stable"
+  version: "1.0.0"
+  idempotent: false
+  arguments:
+    - name: "project"
+      kind: "String"
+      description: "Project name (must be valid Rust package name)"
+      hint: "Name for your CLI project"
+      attributes:
+        optional: false
+      validation_rules:
+        - "Must be 1-64 characters"
+        - "Must start with letter or underscore"
+        - "Only alphanumeric, underscore, hyphen allowed"
+        - "No path separators (.. / \\)"
+      aliases: [ "p" ]
+      tags: [ "required" ]
+
+    - name: "template"
+      kind: "String"
+      description: "Template type: minimal or full"
+      hint: "Project template"
+      attributes:
+        optional: true
+        default: "minimal"
+      validation_rules:
+        - "Must be 'minimal' or 'full'"
+      aliases: [ "t" ]
+      tags: [ "optional" ]
+
+    - name: "author"
+      kind: "String"
+      description: "Author name for Cargo.toml"
+      hint: "Your name <email@example.com>"
+      attributes:
+        optional: true
+      validation_rules: []
+      aliases: [ "a" ]
+      tags: [ "optional" ]
+
+    - name: "license"
+      kind: "String"
+      description: "License type"
+      hint: "MIT, Apache-2.0, GPL-3.0, etc."
+      attributes:
+        optional: true
+        default: "MIT"
+      validation_rules: []
+      aliases: [ "l" ]
+      tags: [ "optional" ]
+
+    - name: "verbosity"
+      kind: "String"
+      description: "Output verbosity level (0-5)"
+      hint: "0=silent, 1=single line, 2=concise, 3=debug"
+      attributes:
+        optional: true
+        default: "2"
+      validation_rules:
+        - "Must be integer 0-5"
+      aliases: [ "v" ]
+      tags: [ "optional" ]
+
+- name: ".new.help"
+  namespace: ""
+  description: "Show help for .new command"
+  hint: "Display detailed .new command documentation"
+  status: "stable"
+  version: "1.0.0"
+  idempotent: true
+  arguments: []
+  validation_rules: []
+  aliases: []
+  tags: [ "help" ]
+
+# .check command - Validate existing project
+- name: ".check"
+  namespace: ""
+  description: "Validate unilang project for common mistakes"
+  hint: "Check for custom build.rs, duplicate deps, deprecated API"
+  status: "stable"
+  version: "1.0.0"
+  idempotent: true
+  arguments:
+    - name: "path"
+      kind: "String"
+      description: "Path to project directory"
+      hint: "Directory to check"
+      attributes:
+        optional: true
+        default: "."
+      validation_rules:
+        - "Must be existing directory"
+        - "Must have read permissions"
+      aliases: [ "p" ]
+      tags: [ "optional" ]
+
+    - name: "verbosity"
+      kind: "String"
+      description: "Output verbosity level (0-5)"
+      hint: "0=silent, 1=single line, 2=concise, 3=debug"
+      attributes:
+        optional: true
+        default: "2"
+      validation_rules:
+        - "Must be integer 0-5"
+      aliases: [ "v" ]
+      tags: [ "optional" ]
+
+    - name: "fix"
+      kind: "String"
+      description: "Auto-fix issues if possible"
+      hint: "true or false"
+      attributes:
+        optional: true
+        default: "false"
+      validation_rules:
+        - "Must be 'true' or 'false'"
+      aliases: [ "f" ]
+      tags: [ "optional" ]
+
+- name: ".check.help"
+  namespace: ""
+  description: "Show help for .check command"
+  hint: "Display detailed .check command documentation"
+  status: "stable"
+  version: "1.0.0"
+  idempotent: true
+  arguments: []
+  validation_rules: []
+  aliases: []
+  tags: [ "help" ]

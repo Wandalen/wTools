@@ -1,0 +1,32 @@
+[package]
+name = "cargo_unilang"
+version = "0.1.0"
+edition = "2021"
+description = "Scaffolding and health check tool for unilang CLI projects - prevents common mistakes"
+license = "MIT"
+repository = "https://github.com/Wandalen/wTools"
+keywords = [ "cli", "scaffolding", "unilang", "code-generation" ]
+categories = [ "command-line-utilities", "development-tools" ]
+
+[dependencies]
+# CLI framework (Rust CLI Framework Mandate compliance)
+unilang = { version = "0.30", path = "../unilang" }
+
+# For Cargo.toml parsing and generation
+toml_edit = "0.22"
+
+# For file operations
+walkdir = "2.5"
+
+[dev-dependencies]
+# Integration testing
+assert_cmd = "2.0"
+assert_fs = "1.1"
+predicates = "3.1"
+
+[[bin]]
+name = "cargo_unilang"
+path = "src/main.rs"
+
+[lints]
+workspace = true

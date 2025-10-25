@@ -4,6 +4,8 @@
 
 use std::fs;
 
+mod test_utils;
+
 #[ test ]
 fn file_add_with_inline_content()
 {
@@ -22,10 +24,7 @@ fn file_add_with_inline_content()
     archive_path.display()
   );
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( &script )
     .output()
     .expect( "Command should execute" );
 
@@ -68,10 +67,7 @@ fn file_add_from_source_file()
     archive_path.display()
   );
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( &script )
     .output()
     .expect( "Command should execute" );
 
@@ -94,10 +90,7 @@ fn file_remove_deletes_file()
                 .file.list\n\
                 exit";
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
@@ -125,10 +118,7 @@ fn file_list_shows_all_files()
                 .file.list\n\
                 exit";
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
@@ -147,10 +137,7 @@ fn file_show_displays_content()
                 .file.show path::test.txt\n\
                 exit";
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
@@ -164,10 +151,7 @@ fn file_add_without_archive_returns_error()
 {
   let script = ".file.add path::test.txt content::\"test\"\nexit";
 
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
@@ -184,11 +168,7 @@ fn file_remove_nonexistent_returns_error()
   let script = ".archive.new name::test\n\
                 .file.remove path::nonexistent.txt\n\
                 exit";
-
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
@@ -205,11 +185,7 @@ fn file_show_nonexistent_returns_error()
   let script = ".archive.new name::test\n\
                 .file.show path::missing.txt\n\
                 exit";
-
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
@@ -226,11 +202,7 @@ fn file_add_without_content_or_from_file_returns_error()
   let script = ".archive.new name::test\n\
                 .file.add path::test.txt\n\
                 exit";
-
-  let output = std::process::Command::new( "sh" )
-    .arg( "-c" )
-    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
-    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+  let output = test_utils::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
