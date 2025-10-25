@@ -28,7 +28,9 @@
 
 use std::env;
 use std::fs::File;
-use std::io::{ BufWriter, Write };
+use std::io::Write;
+#[cfg(feature = "static_registry")]
+use std::io::BufWriter;
 use std::path::Path;
 
 fn main()
@@ -167,6 +169,7 @@ fn generate_static_registry()
   }
 }
 
+#[cfg(feature = "static_registry")]
 fn generate_empty_phf(dest_path: &Path)
 {
   let mut f = BufWriter::new(File::create(dest_path).unwrap());
@@ -189,6 +192,7 @@ fn generate_empty_phf(dest_path: &Path)
   writeln!(f, "pub static STATIC_COMMANDS: StaticCommandMap = StaticCommandMap::from_phf_internal(&STATIC_COMMANDS_PHF);").unwrap();
 }
 
+#[cfg(feature = "static_registry")]
 fn generate_static_commands(dest_path: &Path, command_definitions: &[serde_yaml::Value])
 {
   let mut f = BufWriter::new(File::create(dest_path).unwrap());
@@ -263,6 +267,7 @@ fn generate_static_commands(dest_path: &Path, command_definitions: &[serde_yaml:
   writeln!(f, "pub static STATIC_COMMANDS: StaticCommandMap = StaticCommandMap::from_phf_internal(&STATIC_COMMANDS_PHF);").unwrap();
 }
 
+#[cfg(feature = "static_registry")]
 fn generate_command_const(f: &mut BufWriter<File>, index: usize, cmd_value: &serde_yaml::Value)
 {
   let name = cmd_value["name"].as_str().unwrap_or("");
@@ -339,6 +344,7 @@ fn generate_command_const(f: &mut BufWriter<File>, index: usize, cmd_value: &ser
   writeln!(f).unwrap();
 }
 
+#[cfg(feature = "static_registry")]
 fn generate_argument_const(f: &mut BufWriter<File>, cmd_index: usize, arg_index: usize, arg_value: &serde_yaml::Value)
 {
   let name = arg_value["name"].as_str().unwrap_or("");
@@ -419,6 +425,7 @@ fn generate_argument_const(f: &mut BufWriter<File>, cmd_index: usize, arg_index:
   writeln!(f).unwrap();
 }
 
+#[cfg(feature = "static_registry")]
 fn generate_string_array(f: &mut BufWriter<File>, const_name: &str, yaml_value: &serde_yaml::Value)
 {
   if let Some(array) = yaml_value.as_sequence()
@@ -446,6 +453,7 @@ fn generate_string_array(f: &mut BufWriter<File>, const_name: &str, yaml_value: 
   }
 }
 
+#[cfg(feature = "static_registry")]
 fn escape_string(s: &str) -> String
 {
   s.replace('\\', "\\\\").replace('"', "\\\"")
@@ -456,6 +464,7 @@ fn escape_string(s: &str) -> String
 /// Supports:
 /// - `.yaml`, `.yml` → `serde_yaml` parsing
 /// - `.json` → `serde_json` parsing (converted to `serde_yaml::Value` for consistency)
+#[cfg(feature = "static_registry")]
 fn parse_command_file(file_path: &Path) -> Result<Vec<serde_yaml::Value>, String>
 {
   let content = std::fs::read_to_string(file_path)

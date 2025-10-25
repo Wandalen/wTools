@@ -170,6 +170,7 @@ impl< 'a > SIMDTokenIterator< 'a >
 
   /// Fallback scalar implementation when SIMD is not available.
   #[ cfg( not( feature = "simd" ) ) ]
+  #[ allow( clippy::unnecessary_wraps ) ] // Option is needed for Iterator trait
   fn next_scalar( &mut self ) -> Option< &'a str >
   {
     let remaining = &self.input[ self.position.. ];

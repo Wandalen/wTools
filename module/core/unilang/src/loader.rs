@@ -7,10 +7,12 @@ mod private
 {
   use crate::
   {
-    data::{ CommandDefinition, OutputData },
+    data::OutputData,
     error::Error,
     registry::CommandRoutine,
   };
+  #[cfg(any(feature = "yaml_parser", feature = "json_parser"))]
+  use crate::data::CommandDefinition;
 
 ///
 /// Loads command definitions from a YAML string.
