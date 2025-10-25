@@ -20,27 +20,27 @@ workspace = true
 [dependencies]
 # Main unilang crate (with all features for comprehensive benchmarking)
 unilang = { version = "0.28.0", path = "../unilang", features = ["full"] }
-unilang_parser = { version = "0.19.0", path = "../unilang_parser", features = ["simd"] }
+unilang_parser = { workspace = true, features = ["simd"] }
 
 # Benchmarking framework
 benchkit = { workspace = true, features = [ "enabled", "markdown_reports", "data_generators", "statistical_analysis" ] }
 
 # Benchmark dependencies
-clap = "4.4"
-pico-args = "0.5"
-num_cpus = "1.16"
-rand = "0.8"
-sysinfo = "0.30"
+clap = { workspace = true }
+pico-args = { workspace = true }
+num_cpus = { workspace = true }
+rand = { workspace = true }
+sysinfo = { workspace = true }
 
 # Core dependencies for benchmarks
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
 
 [dev-dependencies]
-criterion = "0.5"
-tempfile = "3.8"
-serde_yaml = "0.9"
-phf = { version = "0.11", features = ["macros"] }
+criterion = { workspace = true }
+tempfile = { workspace = true }
+serde_yaml = { workspace = true }
+phf = { workspace = true, features = ["macros"] }
 
 [[bench]]
 name = "throughput_benchmark"

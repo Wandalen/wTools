@@ -770,6 +770,23 @@ version = "0.1.1"
 [workspace.dependencies.cfg_aliases]
 version = "0.1.1"
 
+## Missing dependencies from unilang_benchmarks audit
+
+[workspace.dependencies.clap]
+version = "4.4"
+
+[workspace.dependencies.pico-args]
+version = "0.5"
+
+[workspace.dependencies.num_cpus]
+version = "1.16"
+
+[workspace.dependencies.sysinfo]
+version = "0.30"
+
+[workspace.dependencies.phf]
+version = "0.11"
+
 [patch.crates-io]
 former_meta = { path = "module/core/former_meta" }
 # const_format = { version = "0.2.32", default-features = false, features = [] }
