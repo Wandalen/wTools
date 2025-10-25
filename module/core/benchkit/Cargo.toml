@@ -98,6 +98,6 @@ plotters = { version = "0.3.7", optional = true, default-features = false, featu
 
 [dev-dependencies]
 tempfile = { workspace = true }
-uuid = { version = "1.11", features = [ "v4" ] }
+uuid = { workspace = true, features = [ "v4" ] }
 
 # Examples will be added as implementation progresses

@@ -27,13 +27,13 @@ all-features = false
 [features]
 default = [ "enabled" ]
 full = [ "enabled", "network" ]
-enabled = [ "network" ]
-network = [ "ureq" ]
+enabled = [ "dep:flate2", "dep:tar", "network" ]
+network = [ "dep:ureq" ]
 
 [dependencies]
-flate2 = "~1.0"
-tar = "~0.4"
-ureq = {  version = "~2.9", optional = true }
+flate2 = { workspace = true, optional = true }
+tar = { workspace = true, optional = true }
+ureq = { version = "~2.9", optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }

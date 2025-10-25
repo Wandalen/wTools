@@ -211,4 +211,4 @@ macro_tools = { workspace = true, features = ["enabled", "diag", "attr"] }
 test_tools = { workspace = true, features = [ "full" ] }
 
 [build-dependencies]
-cfg_aliases = "0.1.1"
+cfg_aliases = { workspace = true }

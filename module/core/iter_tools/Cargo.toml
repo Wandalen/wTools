@@ -34,7 +34,7 @@ default = [
 full = [ "enabled" ]
 no_std = []
 use_alloc = [ "itertools/use_alloc" ]
-enabled = [ "clone_dyn_types/enabled" ]
+enabled = [ "dep:itertools", "dep:clone_dyn_types", "clone_dyn_types/enabled" ]
 
 iter_trait = []
 iter_ext = []
@@ -44,11 +44,11 @@ iter_ext = []
 [dependencies]
 
 # external
-itertools = { version = "~0.11.0", features = [ "use_std" ] }
+itertools = { workspace = true, features = [ "use_std" ], optional = true }
 # qqq : update
 
 # internal
-clone_dyn_types = { workspace = true, features = [] }
+clone_dyn_types = { workspace = true, optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }
