@@ -253,7 +253,7 @@ default-features = false
 ## iter
 
 [workspace.dependencies.iter_tools]
-version = "~0.39.0"
+version = "~0.40.0"
 path = "module/core/iter_tools"
 default-features = false
 
