@@ -95,7 +95,7 @@ missing_docs_in_private_items = "allow"
 ## top level
 
 [workspace.dependencies.wtools]
-version = "~0.2.0"
+version = "~0.2.20"
 path = "module/core/wtools"
 default-features = false
 
@@ -500,6 +500,11 @@ version = "~0.18.0"
 path = "module/core/process_tools"
 default-features = false
 
+[workspace.dependencies.program_tools]
+version = "~0.1.0"
+path = "module/core/program_tools"
+default-features = false
+
 # [workspace.dependencies.process_tools_published]
 # package = "process_tools"
 # version = "~0.9.0"
@@ -591,7 +596,7 @@ path = "module/postponed/plot_interface"
 ## unsorted
 
 [workspace.dependencies.sqlx_query]
-version = "~0.2.0"
+version = "~0.2.1"
 path = "module/core/sqlx_query"
 
 [workspace.dependencies.unitore]
