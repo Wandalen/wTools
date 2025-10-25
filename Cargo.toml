@@ -165,7 +165,7 @@ default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.collection_tools]
-version = "~0.27.0"
+version = "~0.28.0"
 path = "module/core/collection_tools"
 default-features = false
 
@@ -561,7 +561,7 @@ default-features = false
 ## ca
 
 [workspace.dependencies.wca]
-version = "~0.32.0"
+version = "~0.33.0"
 path = "module/core/wca"
 
 ## willbe
