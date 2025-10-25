@@ -2,6 +2,32 @@
 //!
 //! Implements stateless design by using thread-safe in-memory archive storage.
 //! State is isolated per session and does not persist between invocations.
+//!
+//! # ⚠️ ARCHITECTURAL DEBT: Currently Unused
+//!
+//! **Status:** This module exists but is NOT currently used by the application.
+//!
+//! **Intended Design:** This `ArchiveState` implementation uses `Arc<RwLock<>>` to provide
+//! thread-safe state management that can be passed through `unilang::ExecutionContext`.
+//! This aligns with the specification architecture (spec.md:416-426).
+//!
+//! **Actual Implementation:** Due to `ExecutionContext` not yet supporting custom state
+//! (see TODOs in main.rs:42, repl.rs:79), handlers currently use thread-local storage
+//! via `handlers::shared_state::CURRENT_ARCHIVE` instead.
+//!
+//! **Evidence:**
+//! - All methods prefixed with `_` (unused indicator)
+//! - `ArchiveState` created but ignored: main.rs:32, repl.rs:43 (`_state` parameter)
+//! - Handlers use `get_current_archive()`/`set_current_archive()` from `shared_state.rs`
+//!
+//! **Impact:**
+//! - Code confusion: Two state systems, only one works
+//! - Specification divergence: Spec shows this pattern, implementation uses different one
+//! - Maintenance burden: Dead code infrastructure (100 lines)
+//!
+//! **Resolution Path:**
+//! When `unilang::ExecutionContext` gains state support, refactor handlers to use this
+//! `ArchiveState` instead of thread-local storage, then remove `shared_state.rs`.
 
 use genfile_core::TemplateArchive;
 use std::sync::{ Arc, RwLock };

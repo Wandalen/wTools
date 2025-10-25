@@ -425,6 +425,19 @@ struct ArchiveState {
 4. State cleared on exit
 ```
 
+> **⚠️ Implementation Note (v0.2.0):**
+>
+> The design above represents the intended architecture. Current implementation uses
+> thread-local storage (`handlers::shared_state::CURRENT_ARCHIVE`) as a workaround
+> because `unilang::ExecutionContext` does not yet support custom state passing.
+>
+> - `state::ArchiveState` exists but is unused (created in main.rs:32, ignored in handlers)
+> - Handlers use `get_current_archive()`/`set_current_archive()` from `shared_state.rs`
+> - See `state.rs` module docs for migration path and technical debt explanation
+>
+> This deviation violates "No global mutable state" principle and will be corrected
+> when ExecutionContext API evolves.
+
 ### Error Handling Strategy
 
 **Error Flow:**

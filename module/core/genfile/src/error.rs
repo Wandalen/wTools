@@ -83,12 +83,23 @@ pub fn file_error( message : impl Into< String > ) -> ErrorData
 }
 
 /// Format validation error
-pub fn _validation_error( message : impl Into< String > ) -> ErrorData
+pub fn validation_error( message : impl Into< String > ) -> ErrorData
 {
   ErrorData
   {
     code : ErrorCode::ValidationRuleFailed,
     message : format!( "[ERROR] [VALIDATION]: {}", message.into() ),
+    source : None,
+  }
+}
+
+/// Format state-related error
+pub fn state_error( message : impl Into< String > ) -> ErrorData
+{
+  ErrorData
+  {
+    code : ErrorCode::InternalError,
+    message : format!( "[ERROR] [STATE]: {}", message.into() ),
     source : None,
   }
 }
