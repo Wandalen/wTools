@@ -49,7 +49,7 @@ cargo_unilang .new project::my-tool \
 **What it creates**:
 ```
 my-cli/
-├── Cargo.toml       # unilang = "0.30" with warnings
+├── Cargo.toml       # unilang = "0.31" with warnings
 ├── src/main.rs      # 15-line minimal example
 └── commands.yaml    # Example command definitions
 ```
@@ -251,7 +251,7 @@ Unilang's build.rs does this automatically.
 **❌ Wrong**:
 ```toml
 [dependencies]
-unilang = "0.30"
+unilang = "0.31"
 serde_yaml = "0.9"    # ❌ Already in unilang
 walkdir = "2.0"       # ❌ Already in unilang
 
@@ -262,7 +262,7 @@ phf_codegen = "0.11"  # ❌ Already in unilang
 **✅ Correct**:
 ```toml
 [dependencies]
-unilang = "0.30"      # ✅ Only dependency needed
+unilang = "0.31"      # ✅ Only dependency needed
 ```
 
 ### Problem 3: Deprecated API

@@ -121,7 +121,7 @@ path = "module/core/unilang_parser"
 default-features = false
 
 [workspace.dependencies.unilang]
-version = "~0.30.0"
+version = "~0.31.0"
 path = "module/core/unilang"
 default-features = false
 
