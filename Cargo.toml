@@ -90,6 +90,10 @@ arbitrary_source_item_ordering = "allow"
 mod_module_files = "allow"
 # Allow missing docs for private items
 missing_docs_in_private_items = "allow"
+# Allow large enum variants (unilang Value enum has Map/List variants much larger than Integer)
+large_enum_variant = "allow"
+# Allow structs with many booleans (ArgumentAttributes has multiple independent bool config flags)
+struct_excessive_bools = "allow"
 
 
 ## top level

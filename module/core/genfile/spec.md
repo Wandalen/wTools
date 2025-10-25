@@ -403,6 +403,80 @@ Handlers
   └─ Return OutputData/ErrorData
 ```
 
+### Command Specification Architecture
+
+**YAML as Authoritative Source:**
+
+All command definitions are maintained in YAML specification files under `commands/*.yaml`:
+
+```
+commands/
+├── archive.yaml       (4 commands) - FR1: Archive Lifecycle
+├── file.yaml          (4 commands) - FR2: File Operations
+├── parameter.yaml     (3 commands) - FR3: Parameter Management
+├── value.yaml         (3 commands) - FR4: Value Management
+├── content.yaml       (3 commands) - FR5: Content Management
+├── materialize.yaml   (2 commands) - FR6: Materialization
+├── pack.yaml          (1 command)  - FR7: Serialization
+└── analysis.yaml      (4 commands) - FR8: Analysis
+```
+
+**Hybrid Implementation (v0.2.0):**
+
+```
+YAML Specifications (commands/*.yaml)
+    ↓
+    Single Source of Truth for Command Metadata
+    (arguments, descriptions, examples, FR mappings)
+    ↓
+Rust Registration (src/commands/*.rs)
+    ↓
+    Loads YAML definitions + Registers Handler Routines
+    ↓
+CommandRegistry (with metadata + handlers)
+```
+
+**Why Hybrid?**
+
+unilang's Multi-YAML Build system is designed for internal use within unilang itself. External consumers like genfile cannot access:
+- Build-time static registry generation (runs only in unilang, not dependent crates)
+- `MultiYamlAggregator` build APIs (not exported for external use)
+- Runtime `CliBuilder::dynamic_module` (loads YAML but doesnt support setting routines afterward)
+- Private `routines` HashMap (no public API to attach handlers to pre-loaded commands)
+
+**Benefits Achieved:**
+
+- ✅ **Maintainability**: Command metadata in clean YAML format (~31KB vs ~2000 lines Rust)
+- ✅ **Documentation**: YAML serves as API specification with examples and FR mappings
+- ✅ **Validation**: Can lint/validate YAML independently of Rust code
+- ✅ **Consistency**: Single source of truth for all 24 commands
+- ✅ **Future-Proof**: Ready for full Multi-YAML when unilang supports external consumers
+- ⚠️ **Trade-off**: Still requires Rust registration boilerplate (will be eliminated when unilang API evolves)
+
+**YAML Structure Example:**
+
+```yaml
+- name: ".archive.new"
+  namespace: ""
+  description: "Create new empty template archive"
+  hint: "Initialize new archive"
+  status: "stable"
+  version: "0.1.0"
+  functional_requirement: "FR1"
+  idempotent: false
+  arguments:
+    - name: "name"
+      description: "Archive name"
+      kind: "String"
+      attributes: {optional: false, default: null}
+    - name: "description"
+      kind: "String"
+      attributes: {optional: true, default: ""}
+  examples:
+    - ".archive.new name::\"my-template\""
+    - ".archive.new name::\"api-scaffold\" description::\"REST API template\""
+```
+
 ### State Management
 
 **Stateless Design (cli.rulebook.md §89):**

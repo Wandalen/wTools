@@ -2,7 +2,7 @@
 
 ## Overview
 
-Current test coverage: **45 integration tests** across 5 test files covering **19 implemented commands** (70% of total 27 planned commands).
+Current test coverage: **53 integration tests** across 6 test files covering **24 implemented commands** (89% of total 27 planned commands).
 
 ## Test Organization
 
@@ -12,7 +12,8 @@ Tests are organized by functional domain (not by methodology):
 - `file_commands_test.rs` (242 lines) - File management operations
 - `param_value_commands_test.rs` (267 lines) - Parameter and value operations
 - `content_commands_test.rs` (271 lines) - Content transformation operations
-- `materialization_test.rs` (278 lines) - Template materialization and rendering
+- `materialization_test.rs` (468 lines) - Template materialization and raw unpacking
+- `analysis_test.rs` (319 lines) - Archive analysis and inspection
 
 ## Test Methodology
 
@@ -45,14 +46,18 @@ let output = std::process::Command::new( "cargo" )
 - Error handling paths in isolation
 - State management behavior (ArchiveState vs shared_state)
 
-**Unimplemented Commands (8):** No tests for:
-- `.unpack` (materialization - FR6)
-- `.analyze`, `.status`, `.info`, `.discover.parameters` (analysis - FR8)
+**Unimplemented Commands (3):** No tests for:
 - `.help`, `.` (help system - FR9)
+- `.command.help` (auto-generated help - FR9)
 
 **Recently Implemented:**
 - ✅ `.pack` (FR7) - 4 comprehensive tests covering basic functionality, verbosity, dry run, and error handling
 - ✅ `.materialize` (FR6) - 4 comprehensive tests covering template rendering, mandatory parameter validation, dry run, and error handling
+- ✅ `.unpack` (FR6) - 3 comprehensive tests covering raw extraction, dry run, and error handling; validates {{}} placeholders preserved
+- ✅ `.info` (FR8) - Displays archive metadata and statistics
+- ✅ `.discover.parameters` (FR8) - Auto-detects template variables with comprehensive parameter usage analysis
+- ✅ `.status` (FR8) - Shows archive readiness and completeness status
+- ✅ `.analyze` (FR8) - Comprehensive archive analysis combining all insights
 
 ## Test Quality Standards
 

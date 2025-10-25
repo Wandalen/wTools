@@ -13,4 +13,4 @@ pub mod value;
 pub mod content;
 pub mod materialize;
 pub mod pack;
-pub mod info;
+pub mod analysis;

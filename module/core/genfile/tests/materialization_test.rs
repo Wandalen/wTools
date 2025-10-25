@@ -19,6 +19,19 @@
 //! 3. Materialize to destination
 //!
 //! This mirrors real user workflow from quick start example (lib.rs:16-18).
+//!
+//! ## Implementation Lessons
+//!
+//! **Destination Parameter Type (Critical):**
+//! The `.materialize` command uses `Kind::Path` (not `Kind::Directory`) for the
+//! destination parameter. WHY: Users expect materialization to create the output
+//! directory if it doesn't exist. Using `Kind::Directory` causes validation errors
+//! when the path doesn't exist yet, breaking the natural workflow.
+//!
+//! **Mandatory Parameter Validation:**
+//! Validation must occur BEFORE calling `archive.materialize()` to prevent partial
+//! output. Use `archive.values.as_ref().is_none_or(|v| !v.has_value(p))` pattern
+//! to check if mandatory parameters have values set.
 
 use std::fs;
 
@@ -253,6 +266,184 @@ fn materialize_without_archive_returns_error()
     .args( [
       "run", "--quiet", "--",
       ".materialize",
+      &format!( "destination::{}", destination.display() ),
+    ] )
+    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+    .output()
+    .expect( "Command should execute" );
+
+  assert!( !output.status.success(), "Should fail without loaded archive" );
+
+  let combined = format!(
+    "{}{}",
+    String::from_utf8_lossy( &output.stdout ),
+    String::from_utf8_lossy( &output.stderr )
+  );
+
+  assert!(
+    combined.contains( "No archive" ) || combined.contains( "ERROR" ) || combined.contains( "load" ),
+    "Should show clear error about missing archive"
+  );
+
+  // Clean up
+  let _ = fs::remove_dir_all( &destination );
+}
+
+// FR6: Unpack Tests - Raw extraction without template rendering
+
+#[ test ]
+fn unpack_preserves_template_variables()
+{
+  // Test: Unpack writes raw template files WITHOUT parameter substitution
+  //
+  // WHY: This is the CRITICAL difference between .unpack and .materialize.
+  // Users need .unpack to get the raw template files with {{}} placeholders intact,
+  // for editing templates or distributing them to others.
+  //
+  // VALIDATES:
+  // - Template variables {{}} are NOT replaced
+  // - Files created in destination directory
+  // - File content matches archive content exactly (no rendering)
+  //
+  // CRITICAL VERIFICATION:
+  // Output files MUST contain {{variable}} placeholders, NOT substituted values
+
+  let temp_dir = std::env::temp_dir();
+  let source_dir = temp_dir.join( "test_unpack_source" );
+  let archive_path = temp_dir.join( "test_unpack_archive.json" );
+  let destination = temp_dir.join( "test_unpack_output" );
+
+  // Clean up
+  let _ = fs::remove_dir_all( &source_dir );
+  let _ = fs::remove_file( &archive_path );
+  let _ = fs::remove_dir_all( &destination );
+
+  // Create source template directory with template variables
+  fs::create_dir_all( &source_dir ).expect( "Should create source dir" );
+  fs::write(
+    source_dir.join( "template.txt" ),
+    "Project: {{project_name}}\nAuthor: {{author}}"
+  ).expect( "Should write template file" );
+
+  // REPL workflow: pack → load → unpack (NO value setting)
+  let script = format!(
+    ".pack input::{} output::{}\n\
+     .archive.load path::{}\n\
+     .unpack destination::{}\n\
+     exit",
+    source_dir.display(),
+    archive_path.display(),
+    archive_path.display(),
+    destination.display()
+  );
+
+  let output = std::process::Command::new( "sh" )
+    .arg( "-c" )
+    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
+    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+    .output()
+    .expect( "Unpack workflow should execute" );
+
+  let stdout = String::from_utf8_lossy( &output.stdout );
+  let stderr = String::from_utf8_lossy( &output.stderr );
+
+  assert!( output.status.success(), "Workflow should succeed. stdout: {stdout}, stderr: {stderr}" );
+  assert!( stdout.contains( "Unpacked" ) || stdout.contains( "files" ), "Should show success message" );
+
+  // Verify output file exists
+  let template_path = destination.join( "template.txt" );
+  assert!( template_path.exists(), "template.txt should be created" );
+
+  let content = fs::read_to_string( &template_path ).expect( "Should read unpacked file" );
+
+  // CRITICAL: Template variables must be preserved, NOT substituted
+  assert!( content.contains( "{{project_name}}" ), "Should preserve {{project_name}} placeholder" );
+  assert!( content.contains( "{{author}}" ), "Should preserve {{author}} placeholder" );
+  assert!( !content.contains( "my-project" ), "Should NOT contain substituted values" );
+  assert!( !content.contains( "Test User" ), "Should NOT contain substituted values" );
+
+  // Clean up
+  let _ = fs::remove_dir_all( &source_dir );
+  let _ = fs::remove_file( &archive_path );
+  let _ = fs::remove_dir_all( &destination );
+}
+
+#[ test ]
+fn unpack_dry_run_preview()
+{
+  // Test: Dry run shows what would be unpacked without creating files
+  //
+  // WHY: Consistent with other commands - users should be able to preview
+  // unpack operation before committing to filesystem changes.
+  //
+  // CRITICAL: No files should be created in destination directory
+
+  let temp_dir = std::env::temp_dir();
+  let source_dir = temp_dir.join( "test_unpack_dry_source" );
+  let archive_path = temp_dir.join( "test_unpack_dry.json" );
+  let destination = temp_dir.join( "test_unpack_dry_output" );
+
+  // Clean up
+  let _ = fs::remove_dir_all( &source_dir );
+  let _ = fs::remove_file( &archive_path );
+  let _ = fs::remove_dir_all( &destination );
+
+  // Create simple template
+  fs::create_dir_all( &source_dir ).expect( "Should create source dir" );
+  fs::write( source_dir.join( "file.txt" ), "Hello {{name}}" )
+    .expect( "Should write template" );
+
+  // Workflow with dry::1
+  let script = format!(
+    ".pack input::{} output::{}\n\
+     .archive.load path::{}\n\
+     .unpack destination::{} dry::1\n\
+     exit",
+    source_dir.display(),
+    archive_path.display(),
+    archive_path.display(),
+    destination.display()
+  );
+
+  let output = std::process::Command::new( "sh" )
+    .arg( "-c" )
+    .arg( format!( "echo '{script}' | cargo run --quiet 2>&1" ) )
+    .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+    .output()
+    .expect( "Dry run should execute" );
+
+  let stdout = String::from_utf8_lossy( &output.stdout );
+
+  assert!( output.status.success(), "Dry run should succeed" );
+  assert!( stdout.contains( "Dry run" ) || stdout.contains( "Would" ), "Should indicate dry run mode" );
+
+  // CRITICAL: No files should be created
+  assert!( !destination.exists(), "Destination should NOT exist after dry run" );
+
+  // Clean up
+  let _ = fs::remove_dir_all( &source_dir );
+  let _ = fs::remove_file( &archive_path );
+}
+
+#[ test ]
+fn unpack_without_archive_returns_error()
+{
+  // Test: Unpack requires loaded archive in REPL state
+  //
+  // WHY: Common user error - running unpack before loading archive.
+  // Must provide clear, actionable error message.
+
+  let temp_dir = std::env::temp_dir();
+  let destination = temp_dir.join( "test_unpack_no_archive" );
+
+  // Clean up
+  let _ = fs::remove_dir_all( &destination );
+
+  // Try to unpack without loading archive first
+  let output = std::process::Command::new( "cargo" )
+    .args( [
+      "run", "--quiet", "--",
+      ".unpack",
       &format!( "destination::{}", destination.display() ),
     ] )
     .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )

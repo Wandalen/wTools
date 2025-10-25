@@ -28,12 +28,23 @@ default = [ "enabled" ]
 full = [ "enabled" ]
 enabled = []
 
+[build-dependencies]
+# Build-time YAML processing
+walkdir = "2"
+
 [dependencies]
 # Core functionality
 genfile_core = { workspace = true, features = [ "full" ] }
 
-# CLI framework
-unilang = { workspace = true, features = [ "enabled", "repl", "enhanced_repl" ] }
+# CLI framework with Multi-YAML support
+unilang = { workspace = true, features = [
+  "enabled",
+  "repl",
+  "enhanced_repl",
+  "static_registry",           # Enable compile-time static registry
+  "multi_file",                # Enable Multi-file aggregation
+  "approach_yaml_multi_build"  # Enable Approach #2 (default)
+] }
 
 # Error handling and utilities
 error_tools = { workspace = true, features = [ "enabled", "error_typed" ] }

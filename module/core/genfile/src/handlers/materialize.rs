@@ -163,3 +163,140 @@ pub fn materialize_handler(
     execution_time_ms : None,
   } )
 }
+
+/// Handler for .unpack command
+///
+/// Unpacks raw template files to destination without rendering.
+/// Preserves {{variable}} placeholders intact.
+///
+/// # Parameters
+/// - `destination` - Output directory path
+/// - `verbosity` - Output verbosity (0-5, default: 1)
+/// - `dry` - Dry run mode (default: 0)
+pub fn unpack_handler(
+  cmd : VerifiedCommand,
+  _ctx : ExecutionContext
+) -> Result< OutputData, ErrorData >
+{
+  use std::fs;
+
+  // Extract arguments
+  let destination = cmd.get_path( "destination" )
+    .ok_or_else( || crate::error::usage_error( "Missing required parameter: destination" ) )?;
+  let verbosity = cmd.get_integer( "verbosity" ).unwrap_or( 1 );
+  let dry = cmd.get_boolean( "dry" ).unwrap_or( false );
+
+  // Get loaded archive from shared state
+  let archive = crate::handlers::shared_state::get_current_archive()
+    .ok_or_else( || crate::error::state_error( "No archive loaded. Use .archive.load first." ) )?;
+
+  let file_count = archive.files.len();
+
+  // Dry run preview
+  if dry
+  {
+    let output_content = match verbosity
+    {
+      0 => String::new(),
+      1 => format!( "Dry run: Would unpack {} files to {}", file_count, destination.display() ),
+      _ =>
+      {
+        let files_preview = archive
+          .files
+          .iter()
+          .take( 5 )
+          .map( | f | format!( "  - {}", f.path.display() ) )
+          .collect::< Vec< _ > >()
+          .join( "\n" );
+
+        let more = if file_count > 5 { format!( "\n  ... and {} more files", file_count - 5 ) } else { String::new() };
+
+        format!(
+          "Dry run: Would unpack templates\\n\\\n          Destination: {}\\n\\\n          Archive: {}\\n\\\n          Files: {}\\n\\\n          Mode: raw (no rendering)\\n\\\n          Files to create:\\n\\\n          {}{}",
+          destination.display(),
+          archive.name,
+          file_count,
+          files_preview,
+          more
+        )
+      }
+    };
+
+    return Ok( OutputData
+    {
+      content : output_content,
+      format : "text".to_string(),
+      execution_time_ms : None,
+    } );
+  }
+
+  // Create destination directory if needed
+  fs::create_dir_all( destination )
+    .map_err( | e | crate::error::file_error( format!( "Failed to create destination directory: {e}" ) ) )?;
+
+  // Unpack files without rendering
+  let mut files_created = Vec::new();
+
+  for file in &archive.files
+  {
+    let file_path = destination.join( &file.path );
+
+    // Create parent directories if needed
+    if let Some( parent ) = file_path.parent()
+    {
+      fs::create_dir_all( parent )
+        .map_err( | e | crate::error::file_error( format!( "Failed to create directory {}: {}", parent.display(), e ) ) )?;
+    }
+
+    // Write file content directly without rendering
+    match &file.content
+    {
+      genfile_core::FileContent::Text( text ) =>
+      {
+        fs::write( &file_path, text )
+          .map_err( | e | crate::error::file_error( format!( "Failed to write file {}: {}", file_path.display(), e ) ) )?;
+      }
+      genfile_core::FileContent::Binary( bytes ) =>
+      {
+        fs::write( &file_path, bytes )
+          .map_err( | e | crate::error::file_error( format!( "Failed to write file {}: {}", file_path.display(), e ) ) )?;
+      }
+    }
+
+    files_created.push( file_path );
+  }
+
+  // Format output based on verbosity
+  let output_content = match verbosity
+  {
+    0 => String::new(),
+    1 => format!( "Unpacked {} files to {}", files_created.len(), destination.display() ),
+    _ =>
+    {
+      let mut details = format!(
+        "Unpacked templates\\n\\\n        Archive: {}\\n\\\n        Destination: {}\\n\\\n        Files: {}\\n\\\n        Mode: raw (no rendering)",
+        archive.name,
+        destination.display(),
+        files_created.len()
+      );
+
+      if verbosity >= 3 && !files_created.is_empty()
+      {
+        details.push_str( "\\n\\nCreated files:\\n" );
+        for file in &files_created
+        {
+          let _ = write!( &mut details, "  - {}\\n", file.display() );
+        }
+      }
+
+      details
+    }
+  };
+
+  Ok( OutputData
+  {
+    content : output_content,
+    format : "text".to_string(),
+    execution_time_ms : None,
+  } )
+}

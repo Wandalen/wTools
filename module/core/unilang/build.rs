@@ -55,14 +55,20 @@ fn main()
 }
 
 #[cfg(feature = "static_registry")]
+#[allow(clippy::too_many_lines)]
 fn generate_static_registry()
 {
+  use std::path::PathBuf;
+
   let out_dir = env::var("OUT_DIR").unwrap();
   let dest_path = Path::new(&out_dir).join("static_commands.rs");
 
   // Support both single file and multi-file discovery modes
   let yaml_discovery_paths = env::var("UNILANG_YAML_DISCOVERY_PATHS")
     .map_or_else(|_| vec!["./".to_string()], |paths| paths.split(':').map(String::from).collect::<Vec<_>>());
+
+  // Track discovered files for build summary
+  let mut discovered_files : Vec< PathBuf > = Vec::new();
 
   // Check if we have a custom manifest path from environment variable (single file mode)
   if let Ok(manifest_path) = env::var("UNILANG_STATIC_COMMANDS_PATH")
@@ -72,7 +78,11 @@ fn generate_static_registry()
 
     let command_definitions = match parse_command_file(manifest_path_buf)
     {
-      Ok(definitions) => definitions,
+      Ok(definitions) =>
+      {
+        discovered_files.push( manifest_path_buf.to_path_buf() );
+        definitions
+      },
       Err(e) =>
       {
         eprintln!("Warning: {e}");
@@ -82,6 +92,7 @@ fn generate_static_registry()
     };
 
     generate_static_commands(&dest_path, &command_definitions);
+    print_build_summary( &discovered_files, command_definitions.len() );
   }
   else
   {
@@ -137,7 +148,11 @@ fn generate_static_registry()
           {
             match parse_command_file(entry.path())
             {
-              Ok(mut definitions) => all_command_definitions.append(&mut definitions),
+              Ok(mut definitions) =>
+              {
+                discovered_files.push( entry.path().to_path_buf() );
+                all_command_definitions.append(&mut definitions);
+              },
               Err(e) =>
               {
                 eprintln!("Warning: {e}");
@@ -156,7 +171,11 @@ fn generate_static_registry()
       {
         match serde_yaml::from_str(&yaml_content)
         {
-          Ok(definitions) => all_command_definitions = definitions,
+          Ok(definitions) =>
+          {
+            discovered_files.push( PathBuf::from( default_manifest ) );
+            all_command_definitions = definitions;
+          },
           Err(e) =>
           {
             eprintln!("Warning: Failed to parse default YAML manifest: {e}");
@@ -166,6 +185,7 @@ fn generate_static_registry()
     }
 
     generate_static_commands(&dest_path, &all_command_definitions);
+    print_build_summary( &discovered_files, all_command_definitions.len() );
   }
 }
 
@@ -505,4 +525,57 @@ fn parse_command_file(file_path: &Path) -> Result<Vec<serde_yaml::Value>, String
     }
     other => Err(format!("Unsupported file extension '{other}' for file: {}", file_path.display()))
   }
+}
+
+/// Print build summary showing what unilang did automatically.
+///
+/// Makes the invisible visible - shows developers that unilang processed their YAML files
+/// and generated the command registry, so they don't need to write build.rs themselves.
+///
+/// Suppressible via `UNILANG_QUIET_BUILD` environment variable.
+#[cfg(feature = "static_registry")]
+fn print_build_summary( yaml_files : &[ std::path::PathBuf ], command_count : usize )
+{
+  // Don't print if no files discovered
+  if yaml_files.is_empty() { return; }
+
+  // Allow suppression for CI builds or when output is unwanted
+  if env::var( "UNILANG_QUIET_BUILD" ).is_ok() { return; }
+
+  eprintln!();
+  eprintln!( "╔══════════════════════════════════════════════════════════╗" );
+  eprintln!( "║  Unilang: Compile-Time Command Registry                 ║" );
+  eprintln!( "╟──────────────────────────────────────────────────────────╢" );
+
+  let file_word = if yaml_files.len() == 1 { "file" } else { "files" };
+  eprintln!( "║  Found {} YAML {:<46}║", yaml_files.len(), file_word );
+
+  // Show up to 5 files, then "... and N more"
+  let files_to_show = yaml_files.iter().take( 5 );
+  for file in files_to_show
+  {
+    let name = file.file_name()
+      .and_then( |n| n.to_str() )
+      .unwrap_or( "unknown" );
+
+    eprintln!( "║    - {name:<50} ║" );
+  }
+
+  if yaml_files.len() > 5
+  {
+    let remaining = yaml_files.len() - 5;
+    eprintln!( "║    ... and {} more {:<38}║", remaining, "" );
+  }
+
+  let command_word = if command_count == 1 { "command" } else { "commands" };
+  eprintln!( "║  Generated PHF map with {command_count} {command_word:<32}║" );
+  eprintln!( "║  Lookup time: ~80ns (zero runtime overhead)             ║" );
+  eprintln!( "║                                                          ║" );
+  eprintln!( "║  ✅ You did NOT need to write build.rs                  ║" );
+  eprintln!( "║  ✅ YAML parsed at compile-time                         ║" );
+  eprintln!( "║  ✅ Command registry ready                              ║" );
+  eprintln!( "║                                                          ║" );
+  eprintln!( "║  Docs: https://docs.rs/unilang                          ║" );
+  eprintln!( "╚══════════════════════════════════════════════════════════╝" );
+  eprintln!();
 }

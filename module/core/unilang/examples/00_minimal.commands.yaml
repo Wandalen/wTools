@@ -1,0 +1,29 @@
+# Minimal command example for 00_minimal.rs
+#
+# This file is automatically discovered and processed by unilang's build.rs
+# You DON'T need to:
+# - Create your own build.rs
+# - Add serde_yaml dependency
+# - Write YAML parsing code
+# - Generate PHF maps manually
+#
+# Unilang does ALL of this automatically when you add the dependency.
+
+- name: ".greet"
+  namespace: ""
+  description: "A simple greeting command"
+  hint: "Says hello to someone"
+  status: "stable"
+  version: "1.0.0"
+  idempotent: true
+  arguments:
+    - name: "name"
+      kind: "String"
+      description: "Name of the person to greet"
+      hint: "Your name"
+      attributes:
+        optional: true
+        default: "World"
+      validation_rules: []
+      aliases: ["n"]
+      tags: []

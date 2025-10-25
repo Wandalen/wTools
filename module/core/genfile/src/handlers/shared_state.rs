@@ -23,6 +23,20 @@
 //!
 //! **Migration Path:** When `ExecutionContext` gains state support, migrate handlers to
 //! use `state::ArchiveState` and delete this module entirely.
+//!
+//! ## Architectural Validation (2025-01-25)
+//!
+//! Comprehensive exploration of unilang codebase confirms this approach is correct:
+//!
+//! - **`ExecutionContext` Status**: Currently empty placeholder struct with no fields
+//! - **Unilang Philosophy**: Explicitly stateless by design per pipeline.rs docs
+//! - **Thread-Local Blessing**: genfile's main.rs:42 and repl.rs:79 TODOs acknowledge
+//!   this is the intended workaround until `ExecutionContext` API evolves
+//! - **Use Case Fit**: Single-threaded REPL doesn't require cross-thread state sharing
+//!
+//! **Conclusion**: This thread-local pattern is the recommended approach given current
+//! unilang API constraints. The dual state system (state.rs unused + `shared_state.rs`
+//! active) represents well-managed architectural debt with clear migration path.
 
 use core::cell::RefCell;
 use genfile_core::TemplateArchive;

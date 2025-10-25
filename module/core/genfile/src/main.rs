@@ -22,7 +22,9 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   let argv : Vec< String > = std::env::args().collect();
 
-  // Create command registry with all genfile commands
+  // Create command registry with YAML-based command definitions
+  // Command definitions come from commands/*.yaml files
+  // Handlers are registered in handlers module
   let registry = commands::create_registry()?;
 
   // Create pipeline for command processing
