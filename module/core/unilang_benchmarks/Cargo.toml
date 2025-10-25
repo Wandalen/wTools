@@ -19,7 +19,7 @@ workspace = true
 
 [dependencies]
 # Main unilang crate (with all features for comprehensive benchmarking)
-unilang = { version = "0.28.0", path = "../unilang", features = ["full"] }
+unilang = { workspace = true, features = ["full"] }
 unilang_parser = { workspace = true, features = ["simd"] }
 
 # Benchmarking framework

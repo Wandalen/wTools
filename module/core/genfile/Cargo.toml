@@ -30,10 +30,10 @@ enabled = []
 
 [dependencies]
 # Core functionality
-genfile_core = { path = "../genfile_core", features = [ "full" ] }
+genfile_core = { workspace = true, features = [ "full" ] }
 
 # CLI framework
-unilang = { path = "../unilang", features = [ "enabled", "repl", "enhanced_repl" ] }
+unilang = { workspace = true, features = [ "enabled", "repl", "enhanced_repl" ] }
 
 # Error handling and utilities
 error_tools = { workspace = true, features = [ "enabled", "error_typed" ] }

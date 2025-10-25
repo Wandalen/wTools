@@ -114,6 +114,22 @@ path = "module/alias/std_x"
 [workspace.dependencies.unilang_parser]
 version = "~0.19.0"
 path = "module/core/unilang_parser"
+default-features = false
+
+[workspace.dependencies.unilang]
+version = "~0.28.0"
+path = "module/core/unilang"
+default-features = false
+
+[workspace.dependencies.unilang_benchmarks]
+version = "~0.1.0"
+path = "module/core/unilang_benchmarks"
+default-features = false
+
+[workspace.dependencies.unilang_meta]
+version = "~0.1.0"
+path = "module/core/unilang_meta"
+default-features = false
 
 
 ## data_type
@@ -193,6 +209,16 @@ default-features = false
 # default-features = false
 # features = [ "enabled" ]
 # # xxx : remove features, maybe
+
+[workspace.dependencies.tree_fmt]
+version = "~0.4.0"
+path = "module/core/tree_fmt"
+default-features = false
+
+[workspace.dependencies.include_md]
+version = "~0.1.0"
+path = "module/core/include_md"
+default-features = false
 
 [workspace.dependencies.type_constructor]
 version = "~0.3.0"
@@ -416,6 +442,11 @@ version = "~0.1.0"
 path = "module/core/genfile_core"
 default-features = false
 
+[workspace.dependencies.genfile]
+version = "~0.1.0"
+path = "module/core/genfile"
+default-features = false
+
 
 ## string tools
 
@@ -444,6 +475,11 @@ default-features = false
 [workspace.dependencies.file_tools]
 version = "~0.1.0"
 path = "module/alias/file_tools"
+default-features = false
+
+[workspace.dependencies.proper_tools]
+version = "~0.1.0"
+path = "module/alias/proper_tools"
 default-features = false
 
 [workspace.dependencies.pth]
@@ -529,6 +565,11 @@ path = "module/core/wca"
 version = "~0.27.0"
 path = "module/core/willbe"
 
+[workspace.dependencies.willbe2]
+version = "~0.2.0"
+path = "module/alias/willbe2"
+default-features = false
+
 
 ## lang
 
@@ -552,6 +593,11 @@ path = "module/postponed/plot_interface"
 [workspace.dependencies.sqlx_query]
 version = "~0.2.0"
 path = "module/core/sqlx_query"
+
+[workspace.dependencies.unitore]
+version = "~0.1.0"
+path = "module/core/unitore"
+default-features = false
 
 [workspace.dependencies.deterministic_rand]
 version = "~0.6.0"
