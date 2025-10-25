@@ -196,7 +196,7 @@ fn generate_empty_phf(dest_path: &Path)
 
   writeln!(f, "// Generated static commands (empty)").unwrap();
   writeln!(f, "use phf::phf_map;").unwrap();
-  writeln!(f, "use crate::static_data::{{StaticCommandDefinition, StaticCommandMap}};").unwrap();
+  writeln!(f, "use ::unilang::static_data::{{StaticCommandDefinition, StaticCommandMap}};").unwrap();
   writeln!(f).unwrap();
   writeln!(f, "/// Static command registry (compile-time generated).").unwrap();
   writeln!(f, "/// ").unwrap();
@@ -221,21 +221,21 @@ fn generate_static_commands(dest_path: &Path, command_definitions: &[serde_yaml:
   writeln!(f, "// Generated static commands").unwrap();
   writeln!(f, "use phf::phf_map;").unwrap();
 
-  // Import StaticCommandMap wrapper
-  writeln!(f, "use crate::static_data::StaticCommandMap;").unwrap();
+  // Import StaticCommandMap wrapper (absolute path works in both library and examples)
+  writeln!(f, "use ::unilang::static_data::StaticCommandMap;").unwrap();
 
-  // Only import types we'll actually use
+  // Only import types we'll actually use (absolute path works in both library and examples)
   if command_definitions.is_empty() {
-    writeln!(f, "use crate::static_data::StaticCommandDefinition;").unwrap();
+    writeln!(f, "use ::unilang::static_data::StaticCommandDefinition;").unwrap();
   } else {
     // Check if we have any commands with arguments
     let has_arguments = command_definitions.iter()
       .any(|cmd| cmd["arguments"].as_sequence().is_some_and(|args| !args.is_empty()));
 
     if has_arguments {
-      writeln!(f, "use crate::static_data::{{StaticCommandDefinition, StaticArgumentDefinition, StaticArgumentAttributes, StaticKind}};").unwrap();
+      writeln!(f, "use ::unilang::static_data::{{StaticCommandDefinition, StaticArgumentDefinition, StaticArgumentAttributes, StaticKind}};").unwrap();
     } else {
-      writeln!(f, "use crate::static_data::StaticCommandDefinition;").unwrap();
+      writeln!(f, "use ::unilang::static_data::StaticCommandDefinition;").unwrap();
     }
   }
   writeln!(f).unwrap();

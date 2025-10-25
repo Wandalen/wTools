@@ -23,8 +23,10 @@
 //! - Test separation: ✅ `tests/` for correctness, `benchkit` for performance
 //!
 
-// Include the generated static command registry
-include!(concat!(env!("OUT_DIR"), "/static_commands.rs"));
+// NOTE: The generated static_commands.rs file is NOT included here.
+// It's meant for external users (examples, applications using unilang).
+// External users should include it in their own code:
+//   include!(concat!(env!("OUT_DIR"), "/static_commands.rs"));
 
 /// Internal namespace.
 mod private

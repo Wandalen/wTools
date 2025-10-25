@@ -6,9 +6,9 @@
 //! ## What You DON'T Need to Write
 //!
 //! **❌ NO build.rs** - unilang provides this automatically
-//! **❌ NO serde_yaml** - already included via `yaml_parser` feature
-//! **❌ NO walkdir** - already included via `multi_file` feature
-//! **❌ NO phf** - already included via `static_registry` feature
+//! **❌ NO `serde_yaml`** - already included via `yaml_parser` feature
+//! **❌ NO `walkdir`** - already included via `multi_file` feature
+//! **❌ NO `phf`** - already included via `static_registry` feature
 //! **❌ NO manual YAML parsing** - happens at compile-time automatically
 //!
 //! ## What You DO Need
@@ -29,10 +29,11 @@ use unilang::prelude::*;
 // Include compile-time generated commands (created automatically by unilang's build.rs)
 include!( concat!( env!( "OUT_DIR" ), "/static_commands.rs" ) );
 
-fn main() -> Result< (), unilang::Error >
+fn main()
 {
   // Zero-cost static registry (~80ns lookup vs ~4,000ns runtime)
-  let registry = StaticCommandRegistry::from_commands( &STATIC_COMMANDS );
+  // Convert static commands to CommandRegistry for Pipeline API
+  let registry = CommandRegistry::from_static_commands( &STATIC_COMMANDS );
   let pipeline = Pipeline::new( registry );
 
   // Execute command with O(1) lookup
@@ -40,6 +41,4 @@ fn main() -> Result< (), unilang::Error >
 
   println!( "Success: {}", result.success );
   println!( "Output: {}", result.outputs[ 0 ].content );
-
-  Ok( () )
 }

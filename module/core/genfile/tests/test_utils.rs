@@ -9,7 +9,7 @@
 //! - Hardcoded path: `/home/user1/pro/lib/wTools/module/core/genfile`
 //! - Unix shell: `sh -c "echo 'script' | cargo run --quiet"`
 //!
-//! This caused 32/53 tests to fail on Windows with error code 267 (NotADirectory).
+//! This caused 32/53 tests to fail on Windows with error code 267 (`NotADirectory`).
 //!
 //! ## Solution
 //!
@@ -20,8 +20,8 @@
 //!
 //! 2. **Shell Commands** - `repl_command()` detects platform via `cfg!(windows)`:
 //!    - Unix: `sh -c "echo 'script' | cargo run --quiet 2>&1"`
-//!    - Windows: `cmd /C "echo script | cargo run --quiet 2>&1"`
-//!    - Windows uses `echo. & echo` for newlines instead of `\n`
+//!    - Windows: Creates temporary file, uses input redirection `cargo run < script.txt`
+//!    - Windows approach needed because cmd.exe can't pipe multi-line echo properly
 //!
 //! 3. **Cargo Execution** - `cargo_run_command()` provides uniform interface
 //!    for running genfile CLI commands in tests.
@@ -34,6 +34,7 @@
 
 use std::process::Command;
 use std::path::PathBuf;
+use std::io::Write;
 
 /// Get the genfile project directory for use in `.current_dir()`
 ///
@@ -48,23 +49,37 @@ pub fn project_dir() -> PathBuf
 /// Execute a REPL script cross-platform
 ///
 /// On Unix: Uses `sh -c "echo 'script' | cargo run --quiet"`
-/// On Windows: Uses `cmd /C "echo script | cargo run --quiet"`
+/// On Windows: Uses temporary file with input redirection
 ///
 /// # Arguments
 /// * `script` - The REPL commands to execute (newline-separated)
 ///
 /// # Returns
 /// The Command configured for the current platform, ready to call `.output()`
+///
+/// # Panics
+/// Panics if unable to create or write to temporary script file on Windows.
+/// This should not happen in normal test execution.
 #[ must_use ]
 pub fn repl_command( script : &str ) -> Command
 {
   let mut cmd = if cfg!( windows )
   {
+    // On Windows, create a temporary file with the script
+    // and use input redirection, as piping multi-line echo doesn't work
+    let temp_dir = std::env::temp_dir();
+    let script_file = temp_dir.join( format!( "genfile_test_{}.txt", std::process::id() ) );
+
+    // Write script to temp file
+    let mut file = std::fs::File::create( &script_file )
+      .expect( "Should create temp script file" );
+    file.write_all( script.as_bytes() )
+      .expect( "Should write script to temp file" );
+    drop( file );
+
     let mut c = Command::new( "cmd" );
     c.arg( "/C" );
-    // Windows cmd uses echo. for newlines and pipes differently
-    let script_oneline = script.replace( '\n', " & echo. & echo " );
-    c.arg( format!( "echo {script_oneline} | cargo run --quiet 2>&1" ) );
+    c.arg( format!( "cargo run --quiet < {} 2>&1", script_file.display() ) );
     c
   }
   else
