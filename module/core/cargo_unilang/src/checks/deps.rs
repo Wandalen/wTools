@@ -94,7 +94,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-unilang = "0.32"
+unilang = "0.33"
 "#
     ).unwrap();
 
@@ -112,7 +112,7 @@ name = "test"
 version = "0.1.0"
 
 [dependencies]
-unilang = "0.32"
+unilang = "0.33"
 serde_yaml = "0.9"
 "#
     ).unwrap();
@@ -128,7 +128,7 @@ serde_yaml = "0.9"
     let temp = assert_fs::TempDir::new().unwrap();
     temp.child( "Cargo.toml" ).write_str(
 r#"[dependencies]
-unilang = "0.32"
+unilang = "0.33"
 serde_yaml = "0.9"
 walkdir = "2.0"
 phf = "0.11"

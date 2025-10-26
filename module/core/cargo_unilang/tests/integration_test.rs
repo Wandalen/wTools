@@ -223,7 +223,7 @@ fn test_new_verbosity_3_debug()
 fn test_check_verbosity_levels()
 {
   let temp = assert_fs::TempDir::new().unwrap();
-  temp.child( "Cargo.toml" ).write_str( "[dependencies]\nunilang = \"0.32\"\n" ).unwrap();
+  temp.child( "Cargo.toml" ).write_str( "[dependencies]\nunilang = \"0.33\"\n" ).unwrap();
 
   // Verbosity 0 - silent
   Command::cargo_bin( "cargo_unilang" )
@@ -312,7 +312,7 @@ fn test_new_exit_3_already_exists()
 fn test_check_exit_0_no_issues()
 {
   let temp = assert_fs::TempDir::new().unwrap();
-  temp.child( "Cargo.toml" ).write_str( "[dependencies]\nunilang = \"0.32\"\n" ).unwrap();
+  temp.child( "Cargo.toml" ).write_str( "[dependencies]\nunilang = \"0.33\"\n" ).unwrap();
 
   Command::cargo_bin( "cargo_unilang" )
     .unwrap()
@@ -328,7 +328,7 @@ fn test_check_exit_1_issues_found()
 {
   let temp = assert_fs::TempDir::new().unwrap();
   temp.child( "build.rs" ).write_str( "fn main() { serde_yaml::from_str(); }" ).unwrap();
-  temp.child( "Cargo.toml" ).write_str( "[dependencies]\nunilang = \"0.32\"\n" ).unwrap();
+  temp.child( "Cargo.toml" ).write_str( "[dependencies]\nunilang = \"0.33\"\n" ).unwrap();
 
   Command::cargo_bin( "cargo_unilang" )
     .unwrap()
@@ -515,7 +515,7 @@ fn test_check_detects_custom_build_rs()
 {
   let temp = assert_fs::TempDir::new().unwrap();
   temp.child( "build.rs" ).write_str( "fn main() { serde_yaml::from_str(); }" ).unwrap();
-  temp.child( "Cargo.toml" ).write_str( "[dependencies]\nunilang = \"0.32\"\n" ).unwrap();
+  temp.child( "Cargo.toml" ).write_str( "[dependencies]\nunilang = \"0.33\"\n" ).unwrap();
 
   Command::cargo_bin( "cargo_unilang" )
     .unwrap()
@@ -533,7 +533,7 @@ fn test_check_detects_duplicate_dependencies()
   let temp = assert_fs::TempDir::new().unwrap();
   temp.child( "Cargo.toml" ).write_str(
 r#"[dependencies]
-unilang = "0.32"
+unilang = "0.33"
 serde_yaml = "0.9"
 "#
   ).unwrap();
@@ -562,7 +562,7 @@ fn main() {
 }
 "#
   ).unwrap();
-  temp.child( "Cargo.toml" ).write_str( "[dependencies]\nunilang = \"0.32\"\n" ).unwrap();
+  temp.child( "Cargo.toml" ).write_str( "[dependencies]\nunilang = \"0.33\"\n" ).unwrap();
 
   Command::cargo_bin( "cargo_unilang" )
     .unwrap()
@@ -587,7 +587,7 @@ fn main() {
 }
 "#
   ).unwrap();
-  temp.child( "Cargo.toml" ).write_str( "[dependencies]\nunilang = \"0.32\"\n" ).unwrap();
+  temp.child( "Cargo.toml" ).write_str( "[dependencies]\nunilang = \"0.33\"\n" ).unwrap();
 
   Command::cargo_bin( "cargo_unilang" )
     .unwrap()
@@ -649,7 +649,7 @@ fn test_check_ignores_comments_in_cargo_toml()
   let temp = assert_fs::TempDir::new().unwrap();
   temp.child( "Cargo.toml" ).write_str(
 r#"[dependencies]
-unilang = "0.32"
+unilang = "0.33"
 
 # ⚠️  IMPORTANT: Do NOT add these - unilang already provides them:
 # ❌ serde_yaml (via yaml_parser feature)
@@ -674,7 +674,7 @@ fn test_check_multiple_issues()
   temp.child( "build.rs" ).write_str( "fn main() { serde_yaml::from_str(); }" ).unwrap();
   temp.child( "Cargo.toml" ).write_str(
 r#"[dependencies]
-unilang = "0.32"
+unilang = "0.33"
 serde_yaml = "0.9"
 walkdir = "2.0"
 "#

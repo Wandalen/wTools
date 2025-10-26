@@ -18,7 +18,7 @@ edition = "2021"
 
 [dependencies]
 # Unilang with default features (Approach #2: Multi-YAML Build-Time Static)
-unilang = "0.32"
+unilang = "0.33"
 
 # ⚠️  IMPORTANT: Do NOT add these - unilang already provides them:
 # ❌ serde_yaml (via yaml_parser feature)
@@ -47,7 +47,7 @@ mod tests
   {
     let content = cargo_toml( "my-cli", None, None );
     assert!( content.contains( "name = \"my-cli\"" ) );
-    assert!( content.contains( "unilang = \"0.32\"" ) );
+    assert!( content.contains( "unilang = \"0.33\"" ) );
     assert!( content.contains( "Do NOT create build.rs" ) );
     assert!( content.contains( "license = \"MIT\"" ) );
   }

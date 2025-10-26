@@ -10,7 +10,7 @@ categories = [ "command-line-utilities", "development-tools" ]
 
 [dependencies]
 # CLI framework (Rust CLI Framework Mandate compliance)
-unilang = { version = "0.32", path = "../unilang" }
+unilang = { workspace = true }
 
 # For Cargo.toml parsing and generation
 toml_edit = "0.22"
