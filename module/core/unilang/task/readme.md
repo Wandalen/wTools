@@ -5,7 +5,7 @@
 | Order | ID | Advisability | Value | Easiness | Safety | Priority | Status | Task | Description |
 |-------|----|--------------:|------:|---------:|-------:|---------:|--------|------|-------------|
 | 1 | 078 | 1440 | 9 | 8 | 5 | 4 | ✅ (Completed) | [update_cargo_dependencies](./completed/078_update_cargo_dependencies.md) | Update Cargo dependencies for new functionality |
-| 2 | 082 | 1134 | 9 | 9 | 7 | 2 | 🔄 (Planned) | [fix_whitespace_detection_bug](./082_fix_whitespace_detection_bug.md) | Fix whitespace detection bug in parse_from_argv |
+| 2 | 082 | 1134 | 9 | 9 | 7 | 2 | ✅ (Completed) | [fix_whitespace_detection_bug](./completed/082_fix_whitespace_detection_bug.md) | Fix whitespace detection bug in parse_from_argv |
 | 3 | 056 | 1080 | 9 | 6 | 5 | 4 | ✅ (Completed) | [write_tests_for_static_data_structures_extension](./completed/056_write_tests_for_static_data_structures_extension.md) | Write tests for static data structures extension |
 | 4 | 058 | 1080 | 9 | 6 | 5 | 4 | ✅ (Completed) | [write_tests_for_phf_map_generation_system](./completed/058_write_tests_for_phf_map_generation_system.md) | Write tests for PHF map generation system |
 | 5 | 060 | 1080 | 9 | 6 | 5 | 4 | ✅ (Completed) | [write_tests_for_static_command_registry](./completed/060_write_tests_for_static_command_registry.md) | Write tests for StaticCommandRegistry |
@@ -16,7 +16,7 @@
 | 10 | 063 | 720 | 9 | 4 | 5 | 4 | ✅ (Completed) | [implement_registry_integration](./completed/063_implement_registry_integration.md) | Implement registry integration |
 | 11 | 057 | 720 | 9 | 4 | 5 | 4 | ✅ (Completed) | [implement_static_data_structures_extension](./completed/057_implement_static_data_structures_extension.md) | Implement static data structures extension |
 | 12 | 059 | 720 | 9 | 4 | 5 | 4 | ✅ (Completed) | [implement_phf_map_generation_system](./completed/059_implement_phf_map_generation_system.md) | Implement PHF map generation system |
-| 13 | 081 | 720 | 9 | 8 | 5 | 2 | 🔄 (Planned) | [write_tests_for_whitespace_detection_bug](./081_write_tests_for_whitespace_detection_bug.md) | Write tests for whitespace detection bug in parse_from_argv |
+| 13 | 081 | 720 | 9 | 8 | 5 | 2 | ✅ (Completed) | [write_tests_for_whitespace_detection_bug](./completed/081_write_tests_for_whitespace_detection_bug.md) | Write tests for whitespace detection bug in parse_from_argv |
 | 14 | 048 | 672 | 8 | 6 | 7 | 2 | ✅ (Completed) | [write_tests_for_hybrid_registry_optimization](./completed/048_write_tests_for_hybrid_registry_optimization.md) | Write tests for hybrid registry optimization |
 | 15 | 049 | 672 | 8 | 6 | 7 | 2 | ✅ (Completed) | [implement_hybrid_registry_optimization](./completed/049_implement_hybrid_registry_optimization.md) | Implement hybrid registry optimization |
 | 16 | 050 | 672 | 8 | 6 | 7 | 2 | ✅ (Completed) | [write_tests_for_multi_yaml_build_system](./completed/050_write_tests_for_multi_yaml_build_system.md) | Write tests for multi-YAML build system |

@@ -1,16 +1,79 @@
-//! Reproduction test for argv multi-word parameter bug
+//! Argv multi-word parameter parsing tests - including whitespace detection bug reproduction
 //!
-//! This test demonstrates the critical bug where multi-word parameter values
-//! are incorrectly parsed when passed via argv (as from shell command line).
+//! Tests the `parse_from_argv` method which handles command-line arguments passed
+//! as argv array (as from shell). This parser must preserve token boundaries that
+//! the shell established by removing quotes.
 //!
-//! ## Bug Description
+//! ## Test Matrix - Whitespace Detection Bug
 //!
-//! When a user types: `mycli .cmd param::"value with spaces"`
-//! Bash removes quotes and passes: `["mycli", ".cmd", "param::value with spaces"]`
-//! The parser should treat "value with spaces" as a single parameter value.
+//! | Test Case | Scenario | Input | Expected | Actual (Bug) | Status |
+//! |-----------|----------|-------|----------|--------------|--------|
+//! | `test_argv_tab_characters_bug` | Tab within value | `text::word1\tword2` | Value quoted, tab preserved | Tab splits tokens | 🐛 Bug |
+//! | `test_argv_newline_characters_bug` | Newline within value | `text::line1\nline2` | Value quoted, NL preserved | NL splits tokens | 🐛 Bug |
+//! | `test_argv_unicode_nbsp_bug` | Non-breaking space | `text::word1\u{00A0}word2` | Value quoted, NBSP preserved | NBSP splits tokens | 🐛 Bug |
+//! | `test_argv_unicode_emspace_bug` | Em space (U+2003) | `text::word1\u{2003}word2` | Value quoted, preserved | Em space splits tokens | 🐛 Bug |
+//! | `test_argv_mixed_whitespace_bug` | Mixed whitespace | `text::a\tb\nc d` | All WS preserved | Split at each WS | 🐛 Bug |
+//! | `test_argv_only_whitespace_bug` | Only whitespace | `text::\t\n` | WS preserved | Split incorrectly | 🐛 Bug |
 //!
-//! **Currently:** The parser reconstructs quotes but then re-parses, breaking the value.
-//! **Expected:** The parser should preserve the argv token boundaries.
+//! ## Corner Cases Covered
+//!
+//! - ✅ Single-word values (baseline)
+//! - ✅ Multi-word values with spaces (works currently)
+//! - ✅ Empty values
+//! - ✅ Very long values
+//! - ✅ Special characters (=, /, \)
+//! - ✅ Unicode and emoji
+//! - ✅ Multiple consecutive spaces
+//! - ✅ Leading/trailing spaces
+//! - 🐛 Tab characters (BUG)
+//! - 🐛 Newline characters (BUG)
+//! - 🐛 Unicode whitespace (BUG)
+//! - 🐛 Mixed whitespace types (BUG)
+//!
+//! ## Root Cause
+//!
+//! Lines 1135 and 1148 in `parser_engine.rs` use `.contains(' ')` to check
+//! if values need quoting. This only detects ASCII space (U+0020), missing:
+//! - Tabs (\t)
+//! - Newlines (\n, \r)
+//! - Unicode whitespace (\u{00A0}, \u{2003}, etc.)
+//!
+//! When these characters appear in argv tokens, they're not quoted during
+//! token reconstruction, causing the string parser to split on them.
+//!
+//! ## Why Not Caught Initially
+//!
+//! - Original tests only used ASCII spaces
+//! - Tests with tabs/newlines were marked #[ignore] as "limitations"
+//! - No tests for Unicode whitespace existed
+//! - Gap in corner case coverage
+//!
+//! ## Fix Applied
+//!
+//! Change `.contains(' ')` to `.chars().any(|c| c.is_whitespace())` at:
+//! - Line 1135: Named argument value quoting check
+//! - Line 1148: Positional argument quoting check
+//!
+//! ## Prevention
+//!
+//! - Use Unicode-aware whitespace detection (`.is_whitespace()`)
+//! - Test all categories of whitespace characters
+//! - Never assume "space" means only ASCII space
+//! - Cover edge cases systematically with test matrix
+//!
+//! ## Common Pitfalls to Avoid
+//!
+//! - **ASCII-only whitespace detection:** Don't use `.contains(' ')` for whitespace.
+//!   Use `.chars().any(|c| c.is_whitespace())` for Unicode-aware detection.
+//!
+//! - **Incomplete whitespace testing:** Don't test only spaces.
+//!   Test tabs, newlines, and Unicode whitespace characters systematically.
+//!
+//! - **Ignoring "edge cases":** Don't mark failing tests as #[ignore] without investigation.
+//!   "Limitations" are often bugs that undermine core functionality.
+//!
+//! - **Assuming shell behavior:** Don't assume whitespace is only spaces.
+//!   Shells preserve all whitespace in quoted strings (tabs, newlines, Unicode WS).
 
 use unilang_parser::{ Parser, UnilangParserOptions };
 
@@ -371,14 +434,40 @@ fn test_argv_leading_trailing_spaces()
   );
 }
 
-/// Test Case 13: Tab characters in value
+/// Reproduces whitespace detection bug where tabs within values are not quoted.
 ///
-/// KNOWN LIMITATION: Parser treats tabs as whitespace separators within argv tokens.
-/// When the shell passes `"text::word1\tword2"` as a single argv element, `parse_from_argv`
-/// splits it on the tab character, resulting in `"word1"` only.
+/// When shell passes `"text::word1\tword2"` as single argv token, parser should
+/// detect tab character and quote the value to preserve it. Currently uses
+/// `.contains(' ')` which only detects ASCII space, missing tabs.
+///
+/// ## Root Cause
+///
+/// Lines 1135 and 1148 in `parser_engine.rs` use `.contains(' ')` instead of
+/// `.chars().any(|c| c.is_whitespace())`, so tabs aren't detected as whitespace.
+///
+/// ## Why Not Caught Initially
+///
+/// Original test suite only tested ASCII spaces. Tab handling was marked as
+/// "limitation" and ignored rather than investigated as a bug.
+///
+/// ## Fix Applied
+///
+/// Changed whitespace detection from `.contains(' ')` to Unicode-aware
+/// `.chars().any(|c| c.is_whitespace())` at lines 1135 and 1148.
+///
+/// ## Prevention
+///
+/// All whitespace detection must use `.chars().any(|c| c.is_whitespace())`
+/// for Unicode-aware detection. Test all categories of whitespace systematically.
+///
+/// ## Pitfall to Avoid
+///
+/// Never assume "whitespace" means only ASCII space (U+0020). Always use
+/// Unicode-aware methods like `.is_whitespace()` which detects tabs, newlines,
+/// and Unicode whitespace characters.
+// test_kind: bug_reproducer(issue-082)
 #[test]
-#[ignore = "Parser limitation: Tabs treated as token separators even within argv elements"]
-fn test_argv_tab_characters()
+fn test_argv_tab_characters_bug()
 {
   let parser = Parser::new( UnilangParserOptions::default() );
 
@@ -507,14 +596,39 @@ fn test_argv_very_long_value()
   );
 }
 
-/// Test Case 18: Newline characters in value
+/// Reproduces whitespace detection bug where newlines within values are not quoted.
 ///
-/// KNOWN LIMITATION: Parser treats newlines as whitespace separators within argv tokens.
-/// When the shell passes `"text::line1\nline2"` as a single argv element, `parse_from_argv`
-/// splits it on the newline character, resulting in `"line1"` only.
+/// When shell passes `"text::line1\nline2"` as single argv token, parser should
+/// detect newline character and quote the value to preserve it. Currently uses
+/// `.contains(' ')` which only detects ASCII space, missing newlines.
+///
+/// ## Root Cause
+///
+/// Lines 1135 and 1148 in `parser_engine.rs` use `.contains(' ')` instead of
+/// `.chars().any(|c| c.is_whitespace())`, so newlines aren't detected as whitespace.
+///
+/// ## Why Not Caught Initially
+///
+/// Original test suite only tested ASCII spaces. Newline handling was marked as
+/// "limitation" and ignored rather than investigated as a bug.
+///
+/// ## Fix Applied
+///
+/// Changed whitespace detection from `.contains(' ')` to Unicode-aware
+/// `.chars().any(|c| c.is_whitespace())` at lines 1135 and 1148.
+///
+/// ## Prevention
+///
+/// All whitespace detection must use `.chars().any(|c| c.is_whitespace())`
+/// for Unicode-aware detection. Test all categories of whitespace systematically.
+///
+/// ## Pitfall to Avoid
+///
+/// Never assume "whitespace" means only ASCII space. Newlines (\n, \r), tabs (\t),
+/// and Unicode whitespace must all be handled with `.is_whitespace()`.
+// test_kind: bug_reproducer(issue-082)
 #[test]
-#[ignore = "Parser limitation: Newlines treated as token separators even within argv elements"]
-fn test_argv_newline_characters()
+fn test_argv_newline_characters_bug()
 {
   let parser = Parser::new( UnilangParserOptions::default() );
 
@@ -534,5 +648,215 @@ fn test_argv_newline_characters()
     text_values.unwrap()[ 0 ].value,
     "line1\nline2",
     "Newline character should be preserved"
+  );
+}
+
+/// Reproduces whitespace detection bug with non-breaking space (U+00A0).
+///
+/// Non-breaking space is Unicode whitespace but not ASCII space. Parser should
+/// detect it and quote the value. Currently `.contains(' ')` misses it.
+///
+/// ## Root Cause
+///
+/// `.contains(' ')` only checks ASCII space (U+0020), missing Unicode
+/// whitespace like non-breaking space (U+00A0).
+///
+/// ## Why Not Caught Initially
+///
+/// No tests existed for Unicode whitespace characters. Test coverage gap.
+///
+/// ## Fix Applied
+///
+/// Use `.chars().any(|c| c.is_whitespace())` which correctly identifies
+/// all Unicode whitespace including NBSP, em space, thin space, etc.
+///
+/// ## Prevention
+///
+/// Test all categories of whitespace: ASCII, control characters, Unicode.
+/// Never assume whitespace is only ASCII space.
+///
+/// ## Pitfall to Avoid
+///
+/// String methods like `.contains()`, `.split()` with ASCII chars miss Unicode.
+/// Always use Unicode-aware methods: `.is_whitespace()`, `.char_indices()`.
+// test_kind: bug_reproducer(issue-082)
+#[test]
+fn test_argv_unicode_nbsp_bug()
+{
+  let parser = Parser::new( UnilangParserOptions::default() );
+
+  // Non-breaking space (U+00A0) between words
+  let nbsp = "\u{00A0}";
+  let arg = format!( "text::word1{nbsp}word2" );
+
+  let result = parser.parse_from_argv( &[
+    ".cmd".to_string(),
+    arg,
+  ]);
+
+  assert!( result.is_ok(), "Non-breaking space should parse" );
+  let instruction = result.unwrap();
+
+  let text_values = instruction.named_arguments.get( "text" );
+  assert!( text_values.is_some(), "text parameter should exist" );
+  assert_eq!(
+    text_values.unwrap()[ 0 ].value,
+    format!( "word1{nbsp}word2" ),
+    "Non-breaking space should be preserved"
+  );
+}
+
+/// Reproduces whitespace detection bug with em space (U+2003).
+///
+/// Em space is Unicode punctuation whitespace. Parser should detect and quote it.
+///
+/// ## Root Cause
+///
+/// `.contains(' ')` only checks ASCII space, missing Unicode spaces like
+/// em space (U+2003), en space (U+2002), thin space (U+2009), etc.
+///
+/// ## Why Not Caught Initially
+///
+/// No tests for Unicode whitespace. Incomplete corner case coverage.
+///
+/// ## Fix Applied
+///
+/// Use `.chars().any(|c| c.is_whitespace())` for Unicode-aware detection.
+///
+/// ## Prevention
+///
+/// Systematically test all Unicode whitespace categories per Unicode spec.
+///
+/// ## Pitfall to Avoid
+///
+/// Don't assume whitespace is only \t, \n, \r, and space. Unicode defines
+/// 25+ whitespace characters. Use `.is_whitespace()` to catch them all.
+// test_kind: bug_reproducer(issue-082)
+#[test]
+fn test_argv_unicode_emspace_bug()
+{
+  let parser = Parser::new( UnilangParserOptions::default() );
+
+  // Em space (U+2003) between words
+  let em_space = "\u{2003}";
+  let arg = format!( "text::word1{em_space}word2" );
+
+  let result = parser.parse_from_argv( &[
+    ".cmd".to_string(),
+    arg,
+  ]);
+
+  assert!( result.is_ok(), "Em space should parse" );
+  let instruction = result.unwrap();
+
+  let text_values = instruction.named_arguments.get( "text" );
+  assert!( text_values.is_some(), "text parameter should exist" );
+  assert_eq!(
+    text_values.unwrap()[ 0 ].value,
+    format!( "word1{em_space}word2" ),
+    "Em space should be preserved"
+  );
+}
+
+/// Reproduces whitespace detection bug with mixed whitespace types.
+///
+/// When value contains multiple whitespace types (space, tab, newline), all
+/// should be detected and value should be quoted.
+///
+/// ## Root Cause
+///
+/// `.contains(' ')` only detects ASCII space, missing tabs and newlines
+/// in same value.
+///
+/// ## Why Not Caught Initially
+///
+/// Tests with mixed whitespace didn't exist. Each type tested separately.
+///
+/// ## Fix Applied
+///
+/// `.chars().any(|c| c.is_whitespace())` detects any whitespace character.
+///
+/// ## Prevention
+///
+/// Test combinations of whitespace types, not just single characters.
+///
+/// ## Pitfall to Avoid
+///
+/// Don't test edge cases in isolation. Test combinations that occur in
+/// real-world usage (mixed whitespace, multiple types, etc.).
+// test_kind: bug_reproducer(issue-082)
+#[test]
+fn test_argv_mixed_whitespace_bug()
+{
+  let parser = Parser::new( UnilangParserOptions::default() );
+
+  // Value with space, tab, and newline
+  let arg = "text::a\tb\nc d".to_string();
+
+  let result = parser.parse_from_argv( &[
+    ".cmd".to_string(),
+    arg,
+  ]);
+
+  assert!( result.is_ok(), "Mixed whitespace should parse" );
+  let instruction = result.unwrap();
+
+  let text_values = instruction.named_arguments.get( "text" );
+  assert!( text_values.is_some(), "text parameter should exist" );
+  assert_eq!(
+    text_values.unwrap()[ 0 ].value,
+    "a\tb\nc d",
+    "All whitespace types should be preserved"
+  );
+}
+
+/// Reproduces whitespace detection bug with value containing only whitespace.
+///
+/// Value that is only whitespace (tabs, newlines) should be preserved as-is.
+///
+/// ## Root Cause
+///
+/// `.contains(' ')` checks only ASCII space. Value of "\t\n" doesn't contain
+/// space, so it's not quoted, causing incorrect parsing.
+///
+/// ## Why Not Caught Initially
+///
+/// No test for whitespace-only values. Boundary condition not covered.
+///
+/// ## Fix Applied
+///
+/// `.chars().any(|c| c.is_whitespace())` correctly detects whitespace-only values.
+///
+/// ## Prevention
+///
+/// Test boundary conditions: empty string, whitespace-only, single character.
+///
+/// ## Pitfall to Avoid
+///
+/// Don't forget boundary conditions when testing. Empty, single-char,
+/// whitespace-only, very long - all must be tested systematically.
+// test_kind: bug_reproducer(issue-082)
+#[test]
+fn test_argv_only_whitespace_bug()
+{
+  let parser = Parser::new( UnilangParserOptions::default() );
+
+  // Value is only tab and newline
+  let arg = "text::\t\n".to_string();
+
+  let result = parser.parse_from_argv( &[
+    ".cmd".to_string(),
+    arg,
+  ]);
+
+  assert!( result.is_ok(), "Whitespace-only value should parse" );
+  let instruction = result.unwrap();
+
+  let text_values = instruction.named_arguments.get( "text" );
+  assert!( text_values.is_some(), "text parameter should exist" );
+  assert_eq!(
+    text_values.unwrap()[ 0 ].value,
+    "\t\n",
+    "Whitespace-only value should be preserved"
   );
 }

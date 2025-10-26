@@ -1131,8 +1131,8 @@ impl Parser
         }
 
         // Add the complete named argument as a single token: key::"value"
-        // Quote the value if it contains spaces or is empty
-        if value.contains( ' ' ) || value.is_empty()
+        // Quote the value if it contains whitespace or is empty
+        if value.chars().any( char::is_whitespace ) || value.is_empty()
         {
           tokens.push( format!( "{key}::\"{value}\"" ) );
         }
@@ -1144,8 +1144,8 @@ impl Parser
       else
       {
         // Not a named argument - just add as-is
-        // Quote if it contains spaces to preserve the token boundary
-        if arg.contains( ' ' )
+        // Quote if it contains whitespace to preserve the token boundary
+        if arg.chars().any( char::is_whitespace )
         {
           tokens.push( format!( "\"{arg}\"" ) );
         }
