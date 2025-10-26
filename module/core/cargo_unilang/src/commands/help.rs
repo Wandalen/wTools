@@ -87,7 +87,7 @@ PARAMETERS:
 
 WHAT IT CREATES:
   my-cli/
-  ├── Cargo.toml       # unilang = 0.31 with warnings
+  ├── Cargo.toml       # unilang = 0.32 with warnings
   ├── src/main.rs      # 15-line minimal example
   └── commands.yaml    # Example command
 

@@ -316,7 +316,7 @@ name = "test"
 version = "0.1.0"
 
 [dependencies]
-unilang = "0.31"
+unilang = "0.32"
 "#
     ).unwrap();
 
@@ -346,7 +346,7 @@ unilang = "0.31"
     temp.child( "build.rs" ).write_str( "fn main() { serde_yaml::from_str(); }" ).unwrap();
     temp.child( "Cargo.toml" ).write_str(
 r#"[dependencies]
-unilang = "0.31"
+unilang = "0.32"
 serde_yaml = "0.9"
 "#
     ).unwrap();

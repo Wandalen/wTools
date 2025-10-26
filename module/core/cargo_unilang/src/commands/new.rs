@@ -204,7 +204,7 @@ pub fn execute( params : NewParams ) -> Result< i32, String >
     {
       // Concise (default)
       println!( "Created project: {}/", params.project );
-      println!( "  ├── Cargo.toml (unilang = \"0.31\" with warnings)" );
+      println!( "  ├── Cargo.toml (unilang = \"0.32\" with warnings)" );
       println!( "  ├── src/main.rs (15-line minimal example)" );
       println!( "  └── commands.yaml (example command)" );
       println!();
