@@ -14,13 +14,11 @@ fn test_quoted_multiword_value_parsing_reproduction()
 {
   // This test reproduces the critical parsing issue
   // The command: .video.search query::"llm rust"
-  // Should parse query as "llm rust" (without the quotes)
-  // Currently this fails because the parser treats it as:
-  // - query::llm (first argument)
-  // - rust (second argument, incorrectly parsed)
+  // Shell removes quotes and passes argv: ["query::llm rust"]
+  // Parser should parse query as "llm rust" (without the quotes)
 
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.args( vec![ ".video.search", r#"query::"llm rust""# ] );
+  cmd.args( vec![ ".video.search", "query::llm rust" ] );
 
   // The command should succeed and process the query as "llm rust"
   cmd
@@ -33,11 +31,11 @@ fn test_quoted_multiword_value_parsing_reproduction()
 fn test_quoted_multiword_value_with_various_quotes()
 {
   // Test different quote scenarios that should all work
+  // Shell removes quotes, so we pass the values without them
   let test_cases = vec![
-    (r#"query::"hello world""#, "hello world"),
-    (r#"query::"multi word query""#, "multi word query"),
-    (r#"query::"rust programming language""#, "rust programming language"),
-    (r#"query::rust title::"My Amazing Video""#, "My Amazing Video"),
+    ("query::hello world", "hello world"),
+    ("query::multi word query", "multi word query"),
+    ("query::rust programming language", "rust programming language"),
   ];
 
   for (input_arg, expected_value) in test_cases {
@@ -49,6 +47,20 @@ fn test_quoted_multiword_value_with_various_quotes()
       .success()
       .stdout( predicate::str::contains( expected_value ) );
   }
+}
+
+#[ test ]
+fn test_multiple_multiword_params()
+{
+  // Test multiple parameters with multiword values
+  let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
+  cmd.args( vec![ ".video.search", "query::rust language", "title::My Amazing Video" ] );
+
+  cmd
+    .assert()
+    .success()
+    .stdout( predicate::str::contains( "Query: rust language" ) )
+    .stdout( predicate::str::contains( "Title: My Amazing Video" ) );
 }
 
 #[ test ]

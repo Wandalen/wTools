@@ -1,6 +1,6 @@
 //! Integration tests for CLI binary multi-word parameter handling
 //!
-//! These tests verify that the unilang_cli binary correctly handles
+//! These tests verify that the `unilang_cli` binary correctly handles
 //! multi-word parameter values as they come from the shell.
 
 use assert_cmd::Command;
@@ -14,7 +14,7 @@ fn test_cli_multiword_parameter_basic()
 
   // Simulates: unilang_cli .video.search query::"llm rust"
   // Shell removes quotes → argv = [".video.search", "query::llm rust"]
-  cmd.args( &[ ".video.search", "query::llm rust" ] );
+  cmd.args( [ ".video.search", "query::llm rust" ] );
 
   cmd
     .assert()
@@ -28,7 +28,7 @@ fn test_cli_multiword_parameter_many_words()
 {
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
 
-  cmd.args( &[ ".video.search", "query::rust programming language" ] );
+  cmd.args( [ ".video.search", "query::rust programming language" ] );
 
   cmd
     .assert()
@@ -42,7 +42,7 @@ fn test_cli_shell_command_parameter()
 {
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
 
-  cmd.args( &[ ".video.search", "query::cargo build --release" ] );
+  cmd.args( [ ".video.search", "query::cargo build --release" ] );
 
   cmd
     .assert()
@@ -56,7 +56,7 @@ fn test_cli_path_with_spaces()
 {
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
 
-  cmd.args( &[ ".video.search", "query::/My Documents/file.txt" ] );
+  cmd.args( [ ".video.search", "query::/My Documents/file.txt" ] );
 
   cmd
     .assert()
@@ -70,11 +70,11 @@ fn test_cli_multiple_params_one_multiword()
 {
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
 
-  cmd.args( &[
+  cmd.args( [
     ".video.search",
     "query::llm rust",
     "title::Tutorial",
-  ]);
+  ] );
 
   cmd
     .assert()
@@ -89,11 +89,11 @@ fn test_cli_multiple_multiword_params()
 {
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
 
-  cmd.args( &[
+  cmd.args( [
     ".video.search",
     "query::machine learning tutorial",
     "title::Comprehensive Guide",
-  ]);
+  ] );
 
   cmd
     .assert()
@@ -108,7 +108,7 @@ fn test_cli_value_with_special_chars()
 {
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
 
-  cmd.args( &[ ".video.search", "query::PATH=/usr/bin:/bin" ] );
+  cmd.args( [ ".video.search", "query::PATH=/usr/bin:/bin" ] );
 
   cmd
     .assert()
@@ -119,7 +119,7 @@ fn test_cli_value_with_special_chars()
 /// Test Case 8: Preserved quotes (known parser limitation)
 ///
 /// KNOWN LIMITATION: When outer shell quotes preserve inner quotes like
-/// 'query::"llm rust"', the parser receives literal quote characters in the
+/// `'query::"llm rust"'`, the parser receives literal quote characters in the
 /// string and currently doesn't strip them properly.
 ///
 /// This is a parser enhancement opportunity, not a critical bug.
@@ -132,7 +132,7 @@ fn test_cli_with_preserved_quotes()
 
   // Simulates: unilang_cli .video.search 'query::"llm rust"'
   // Outer quotes preserve inner quotes
-  cmd.args( &[ ".video.search", "query::\"llm rust\"" ] );
+  cmd.args( [ ".video.search", "query::\"llm rust\"" ] );
 
   cmd
     .assert()
@@ -146,7 +146,7 @@ fn test_cli_single_word_parameter()
 {
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
 
-  cmd.args( &[ ".video.search", "query::rust" ] );
+  cmd.args( [ ".video.search", "query::rust" ] );
 
   cmd
     .assert()
@@ -162,7 +162,7 @@ fn test_cli_empty_value()
 
   // Note: Empty value handling depends on command definition
   // This tests that it doesn't crash
-  cmd.args( &[ ".video.search", "query::" ] );
+  cmd.args( [ ".video.search", "query::" ] );
 
   // Should either succeed with empty query or give validation error
   // Either is acceptable - main thing is no crash

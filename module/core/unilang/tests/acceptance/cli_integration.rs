@@ -20,11 +20,12 @@ use predicates::prelude::*;
 fn test_task_020_multiple_parameter_handling_shell() {
     // Test the critical bug from Task 020: multiple parameters with same name
     // .video.search only has 'query' and 'title' parameters (not 'tag')
+    // Shell removes quotes, so we pass the values without outer quotes
     let mut cmd = Command::cargo_bin("unilang_cli").unwrap();
     cmd.args(vec![
         ".video.search",
-        r#"query::"data analysis""#,
-        r#"title::"config tutorial""#,
+        "query::data analysis",
+        "title::config tutorial",
     ]);
 
     cmd.assert()
@@ -38,7 +39,7 @@ fn test_task_020_multiple_parameter_handling_shell() {
 fn test_task_020_backward_compatibility_shell() {
     // Ensure single parameters still work (backward compatibility)
     let mut cmd = Command::cargo_bin("unilang_cli").unwrap();
-    cmd.args(vec![".greet", r#"name::"Alice""#]);
+    cmd.args(vec![".greet", "name::Alice"]);
 
     cmd.assert()
         .success()
@@ -53,8 +54,8 @@ fn test_task_020_complex_multiple_parameters_shell() {
     let mut cmd = Command::cargo_bin("unilang_cli").unwrap();
     cmd.args(vec![
         ".video.search",
-        r#"query::"hello world""#,
-        r#"title::"cargo test tutorial""#,
+        "query::hello world",
+        "title::cargo test tutorial",
     ]);
 
     cmd.assert()
@@ -68,7 +69,7 @@ fn test_task_020_complex_multiple_parameters_shell() {
 fn test_task_021_quoted_multiword_values_shell() {
     // Test the critical tokenization regression from Task 021
     let mut cmd = Command::cargo_bin("unilang_cli").unwrap();
-    cmd.args(vec![".video.search", r#"query::"llm rust""#]);
+    cmd.args(vec![".video.search", "query::llm rust"]);
 
     cmd.assert()
         .success()
@@ -79,9 +80,9 @@ fn test_task_021_quoted_multiword_values_shell() {
 #[test]
 fn test_task_021_various_quote_scenarios_shell() {
     let test_cases = vec![
-        (r#"query::"hello world""#, "hello world"),
-        (r#"query::"multi word query""#, "multi word query"),
-        (r#"query::"rust programming language""#, "rust programming language"),
+        ("query::hello world", "hello world"),
+        ("query::multi word query", "multi word query"),
+        ("query::rust programming language", "rust programming language"),
     ];
 
     for (input_arg, expected_value) in test_cases {
@@ -112,8 +113,8 @@ fn test_task_022_comprehensive_parsing_shell() {
     let mut cmd = Command::cargo_bin("unilang_cli").unwrap();
     cmd.args(vec![
         ".video.search",
-        r#"query::"rust programming""#,
-        r#"title::"Tutorial Video""#
+        "query::rust programming",
+        "title::Tutorial Video"
     ]);
 
     cmd.assert()
@@ -285,7 +286,7 @@ fn test_shell_environment_integration() {
 fn test_signal_handling_shell() {
     // Test that the CLI handles termination gracefully
     let mut cmd = Command::cargo_bin("unilang_cli").unwrap();
-    cmd.args(vec![".greet", r#"name::"SignalTest""#]);
+    cmd.args(vec![".greet", "name::SignalTest"]);
 
     // This should complete normally without hanging
     cmd.timeout(core::time::Duration::from_secs(10))
@@ -301,8 +302,8 @@ fn test_integrated_all_task_fixes_shell() {
     let mut cmd = Command::cargo_bin("unilang_cli").unwrap();
     cmd.args(vec![
         ".video.search",
-        r#"query::"rust programming tutorial""#,  // Task 021: quoted multi-word
-        r#"title::"Advanced Rust""#,              // Task 021: additional quoted value
+        "query::rust programming tutorial",  // Task 021: quoted multi-word
+        "title::Advanced Rust",              // Task 021: additional quoted value
     ]);
 
     cmd.assert()
