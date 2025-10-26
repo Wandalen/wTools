@@ -23,55 +23,6 @@ use unilang::semantic::SemanticAnalyzer;
 use unilang::types::Value;
 use unilang_parser::{ Parser, UnilangParserOptions };
 
-/// Rejoins command line arguments that were incorrectly split by the shell
-/// when they contain quoted multi-word values.
-///
-/// For example, if the shell splits `query::"llm rust"` into `["query::\"llm", "rust\""]`,
-/// this function will rejoin them back to `query::"llm rust"`.
-fn rejoin_broken_quoted_args( args: &[ String ] ) -> String
-{
-  let mut result = Vec::new();
-  let mut i = 0;
-
-  while i < args.len()
-  {
-    let current_arg = &args[ i ];
-
-    // Check if this argument has an unmatched opening quote
-    if current_arg.contains( "::\"" ) && !current_arg.ends_with( '"' )
-    {
-      // This argument starts a quoted value, look for the closing quote
-      let mut combined_arg = current_arg.clone();
-      i += 1;
-
-      // Keep adding arguments until we find the closing quote
-      while i < args.len()
-      {
-        combined_arg.push( ' ' );
-        combined_arg.push_str( &args[ i ] );
-
-        if args[ i ].ends_with( '"' )
-        {
-          // Found the closing quote
-          break;
-        }
-        i += 1;
-      }
-
-      result.push( combined_arg );
-    }
-    else
-    {
-      // Regular argument, add as-is
-      result.push( current_arg.clone() );
-    }
-
-    i += 1;
-  }
-
-  result.join( " " )
-}
-
 fn main()
 {
   if let Err( err ) = run()
@@ -593,16 +544,15 @@ fn run() -> Result< (), unilang::error::Error >
     return Ok( () );
   }
 
-  // Fix for quoted multi-word values: rejoin arguments that were incorrectly split by the shell
-  let command_input_str = rejoin_broken_quoted_args( &processed_args );
-
-  // Debug: print the processed arguments and the rejoined command
+  // Parse command using argv-aware parser to properly handle multi-word parameter values.
+  // The shell removes quotes from arguments like query::"llm rust", resulting in
+  // argv = ["query::llm rust"] (one token). Using parse_from_argv() preserves these
+  // token boundaries, while parse_single_instruction() would re-tokenize on spaces.
   if verbosity > 1
   {
-    eprintln!( "DEBUG: Processed arguments: {processed_args:?}" );
-    eprintln!( "DEBUG: Rejoined command string: {command_input_str:?}" );
+    eprintln!( "DEBUG: Processing argv: {processed_args:?}" );
   }
-  let instruction = parser.parse_single_instruction( &command_input_str )?;
+  let instruction = parser.parse_from_argv( &processed_args )?;
   let instructions = &[ instruction ][ .. ];
 
   // 4. Semantic Analysis
