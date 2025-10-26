@@ -116,7 +116,7 @@ version = "~0.1.4"
 path = "module/alias/std_x"
 
 [workspace.dependencies.unilang_parser]
-version = "~0.21.0"
+version = "~0.22.0"
 path = "module/core/unilang_parser"
 default-features = false
 
