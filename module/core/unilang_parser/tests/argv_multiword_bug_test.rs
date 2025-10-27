@@ -156,8 +156,121 @@ fn test_argv_multiword_parameter_no_shell_quotes()
 ///
 /// This is a parser enhancement opportunity - the main use case (natural
 /// syntax without outer quotes) works correctly.
+///
+/// ## Why This Test is Ignored (Critical Analysis)
+///
+/// This test remains ignored because implementing naive quote stripping has
+/// 22 identified critical problems, most notably **silent data corruption**.
+///
+/// ### The Fundamental Problem (Unsolvable from argv)
+///
+/// Two different shell commands produce IDENTICAL argv:
+///
+/// ```bash
+/// # Case A: Over-quoting (accidental)
+/// mycli .cmd 'param::"value"'
+/// → Shell passes: param::"value"
+///
+/// # Case B: Escaped quotes (intentional)
+/// mycli .cmd param::\"value\"
+/// → Shell passes: param::"value"
+/// ```
+///
+/// From argv perspective, both are `param::"value"` (literal quote chars).
+///
+/// **User Intent:**
+/// - Case A wants: `value` (quotes were mistake)
+/// - Case B wants: `"value"` (quotes were deliberate)
+///
+/// **We CANNOT distinguish these cases from argv alone!**
+///
+/// ### Critical Problem: Silent Data Corruption
+///
+/// If we strip quotes (to fix Case A), we break Case B:
+///
+/// **Real-world breaking scenarios:**
+/// 1. Book titles: `'title::"Chapter 1"'` → loses quotes → DB corruption
+/// 2. CSV fields: `'field::"Smith, John"'` → splits into two fields!
+/// 3. SQL literals: `'value::"admin"'` → identifier instead of literal
+/// 4. Code examples: `'template::'"name": "value"'` → invalid JSON
+/// 5. Shell commands: `'command::'"hello"'` → wrong execution
+/// 6. HTML: `'title::'"Welcome"'` → loses emphasis
+/// 7. Env vars: `'PATH::'".:$HOME/bin"'` → wrong semantics
+///
+/// **Worst aspect:** Silent corruption with NO error:
+/// - Code appears to work (no error thrown)
+/// - Tests might pass (if they dont check quotes)
+/// - Data is wrong (corrupted in database)
+/// - Propagates through system (spreads)
+/// - Hard to debug (no error logs)
+/// - Cannot recover (original intent lost)
+///
+/// **This is worse than a crash** because crashes are noticed immediately,
+/// while silent corruption propagates and persists.
+///
+/// ### Why NOT to Implement Naive Stripping
+///
+/// **22 problems identified, including:**
+///
+/// 1. No evidence over-quoting is common (ZERO data)
+/// 2. Breaking changes based on guessing intent (NO DATA)
+/// 3. Cant distinguish intentional vs accidental (IMPOSSIBLE)
+/// 4. Breaks legitimate use cases (MULTIPLE scenarios)
+/// 5. Silent data corruption (CRITICAL)
+/// 6. No migration strategy (NO SAFETY NET)
+/// 7. Risk assessment wrong (claims LOW, actually HIGH)
+/// 8. Didnt consider opt-in option (AVOIDS ALL PROBLEMS)
+///
+/// ### Alternative Approaches (See Task 083)
+///
+/// **Alternative 1: Opt-In Feature (RECOMMENDED)**
+/// - Add `strip_argv_quotes` option (default: false)
+/// - Zero breaking changes
+/// - Users who need it can enable
+///
+/// **Alternative 2: Heuristic (Safer)**
+/// - Only strip if inner value has whitespace
+/// - More conservative, fewer breaking cases
+///
+/// **Alternative 3: Warning Only (SAFEST)**
+/// - Detect quoted boundaries and warn
+/// - NO modification to values
+/// - Educates users, gathers data
+/// - Zero breaking changes
+///
+/// ### Current Recommendation
+///
+/// **DO NOT implement naive quote stripping.**
+///
+/// Instead:
+/// 1. Implement Alternative 3 (warning only) - IMMEDIATE
+/// 2. Gather data on frequency - 2-3 MONTHS
+/// 3. If data shows need, implement Alternative 1 (opt-in) - FUTURE
+/// 4. Or keep in backlog if rare - KEEP SAFE DEFAULT
+///
+/// ### References
+///
+/// - Full analysis: `task/083_implement_preserved_quotes_stripping.md`
+/// - 22 problems documented with severity levels
+/// - 7 real-world breaking scenarios
+/// - 3 alternative approaches with risk assessment
+/// - Data-driven decision framework
+///
+/// ### Test Status
+///
+/// This test remains IGNORED as a marker of the unresolved over-quoting
+/// edge case. The ignored test serves as documentation that:
+/// - The problem is known
+/// - The problem is analyzed
+/// - The naive fix has critical problems
+/// - A safer approach is needed
+///
+/// **When to unignore:**
+/// - After implementing Alternative 1 (opt-in) with explicit user choice
+/// - When test is modified to verify warning (Alternative 3)
+/// - NOT for naive stripping (would cause silent corruption)
 #[test]
-#[ignore = "Parser quote stripping enhancement - requires parse_from_argv improvement"]
+#[ignore = "Over-quoting edge case - naive stripping causes silent data corruption. See task 083 for 22 problems and safe alternatives."]
 fn test_argv_multiword_parameter_with_shell_quotes_preserved()
 {
   let parser = Parser::new( UnilangParserOptions::default() );

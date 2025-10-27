@@ -1130,6 +1130,36 @@ impl Parser
           i += 1;
         }
 
+        // NOTE: Intentionally NOT stripping surrounding quotes from `value` here.
+        //
+        // Task 083 explored adding quote stripping to handle over-quoting like:
+        //   'param::"value"' → strip quotes → param::value
+        //
+        // However, this has critical problems (22 identified):
+        //
+        // FUNDAMENTAL ISSUE: Cannot distinguish user intent from argv alone:
+        //   Case A: 'param::"value"'   → over-quoting (wants: value)
+        //   Case B: param::\"value\"   → escaped quotes (wants: "value")
+        //   Both produce IDENTICAL argv: param::"value"
+        //
+        // CRITICAL RISK: Silent data corruption
+        //   If we strip quotes, Case B breaks with NO error:
+        //   - Book titles: 'title::"Chapter 1"' → loses quotes → DB corruption
+        //   - CSV fields: 'field::"Smith, John"' → splits into two fields!
+        //   - SQL literals: 'value::"admin"' → identifier instead of literal
+        //   - Code/JSON: 'template::'"name": "value"' → invalid JSON
+        //   Silent corruption propagates and persists - worse than crashes!
+        //
+        // RECOMMENDATION: Use warning-only approach (Alternative 3):
+        //   - Detect quoted boundaries and warn user
+        //   - NO modification to values (preserves existing behavior)
+        //   - Gather data on frequency before making breaking changes
+        //
+        // See:
+        //   - task/083_implement_preserved_quotes_stripping.md (full analysis)
+        //   - tests/argv_multiword_bug_test.rs::test_argv_multiword_parameter_with_shell_quotes_preserved
+        //     (ignored test with extensive documentation)
+
         // Add the complete named argument as a single token: key::"value"
         // Quote the value if it contains whitespace or is empty
         if value.chars().any( char::is_whitespace ) || value.is_empty()
