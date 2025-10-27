@@ -85,8 +85,14 @@ fn format_command_help( cmd_def : &CommandDefinition ) -> String
     help.push_str( &format!( "Hint: {}\n", cmd_def.hint ) );
   }
 
-  help.push_str( &format!( "Version: {}\n", cmd_def.version ) );
-  help.push_str( &format!( "Status: {}\n", cmd_def.status ) );
+  if !cmd_def.version.is_empty()
+  {
+    help.push_str( &format!( "Version: {}\n", cmd_def.version ) );
+  }
+  if !cmd_def.status.is_empty()
+  {
+    help.push_str( &format!( "Status: {}\n", cmd_def.status ) );
+  }
 
   // Arguments section
   if !cmd_def.arguments.is_empty()
