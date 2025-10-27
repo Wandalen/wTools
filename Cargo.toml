@@ -447,7 +447,7 @@ path = "module/core/genfile_core"
 default-features = false
 
 [workspace.dependencies.genfile]
-version = "~0.2.0"
+version = "~0.3.0"
 path = "module/core/genfile"
 default-features = false
 
