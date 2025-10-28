@@ -29,6 +29,20 @@ YAML definitions → build.rs → Static command maps → Zero-cost lookups
 Command string → O(1) static lookup → Validated execution
 ```
 
+## Usage Guide
+
+**For comprehensive usage patterns, best practices, and quick reference:**
+See **[usage.md](usage.md)** for concise guide covering:
+- Command naming conventions and structure
+- Argument types and validation
+- Parameter syntax and quoting rules
+- Help system (3 access methods)
+- Error handling patterns
+- REPL implementation
+- CLI aggregation
+- Testing and performance
+- Security considerations
+
 ## Quick Start: Compile-Time Registration (Recommended)
 
 ### Step 1: Define Commands
