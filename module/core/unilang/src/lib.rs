@@ -200,6 +200,10 @@ mod_interface::mod_interface!
   /// SIMD-optimized tokenization for 3-6x performance improvements.
   layer simd_tokenizer;
 
+  /// Build-time helper utilities for type analysis and hint generation.
+  /// Provides tools for detecting type issues in YAML command definitions during build.
+  layer build_helpers;
+
   // NOTE: Benchmark modules have been moved to unilang_benchmarks workspace crate
   // to avoid polluting production dependencies. Use unilang_benchmarks for all
   // benchmarking needs.

@@ -854,7 +854,36 @@ impl MultiYamlAggregator
     self.process_yaml_files()?;
     self.detect_conflicts();
     self.resolve_conflicts()?;
+
+    // Analyze command types and emit hints (non-blocking)
+    self.analyze_command_types();
+
     Ok( () )
+  }
+
+  /// Analyze all aggregated commands for type issues and emit hints
+  ///
+  /// This method analyzes all commands for potential type mismatches
+  /// (e.g., Boolean-as-String, Integer-as-String) and emits helpful
+  /// warnings to stderr. Build continues normally.
+  pub fn analyze_command_types( &self )
+  {
+    use crate::build_helpers::{ TypeAnalyzer, HintGenerator };
+
+    let analyzer = TypeAnalyzer::new();
+    let mut all_hints = Vec::new();
+
+    for cmd in self.commands.values()
+    {
+      for arg in &cmd.arguments
+      {
+        let hints = analyzer.analyze_argument_definition( arg );
+        all_hints.extend( hints );
+      }
+    }
+
+    // Emit all hints to stderr
+    HintGenerator::emit_hints( all_hints );
   }
 
   /// Resolve conflicts according to the configured strategy
