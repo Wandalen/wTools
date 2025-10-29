@@ -404,6 +404,43 @@ arguments:
       - MinLength: 5
 ```
 
+### Common Pitfalls (Type Defaults)
+
+⚠️ **YAML permits type coercion, but unilang enforces strict typing.** The build system now emits type hints for these common mistakes:
+
+**❌ WRONG - Quoted defaults for typed arguments:**
+```yaml
+- name: "dry"
+  kind: "Boolean"
+  attributes:
+    default: 'false'    # String literal, not boolean
+
+- name: "verbosity"
+  kind: "Integer"
+  attributes:
+    default: '2'        # String literal, not integer
+```
+
+**✅ CORRECT - Unquoted defaults matching argument type:**
+```yaml
+- name: "dry"
+  kind: "Boolean"
+  attributes:
+    default: false      # Boolean value
+
+- name: "verbosity"
+  kind: "Integer"
+  attributes:
+    default: 2          # Integer value
+```
+
+**💡 Type Hint Detection:** The build system analyzes argument definitions and emits non-blocking hints during `cargo build` when it detects potential type mismatches. To suppress hints for intentional cases (e.g., version strings like "1.0"), add `suppress_type_hint: true` to the argument's attributes.
+
+**Mandatory Field:**
+```yaml
+auto_help_enabled: true   # Always true - help generation is mandatory
+```
+
 ## Command Execution Patterns
 
 ### Standard Execution

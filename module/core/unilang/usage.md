@@ -170,6 +170,40 @@ ArgumentDefinition {
 }
 ```
 
+### Common Pitfalls (YAML Definitions)
+
+When defining commands in YAML, avoid these type mismatches that violate unilang's type system:
+
+**❌ WRONG:**
+```yaml
+arguments:
+  - name: "dry"
+    kind: "Boolean"
+    attributes:
+      default: 'false'     # Quoted string - type mismatch
+
+  - name: "verbosity"
+    kind: "Integer"
+    attributes:
+      default: '2'         # Quoted string - type mismatch
+```
+
+**✅ CORRECT:**
+```yaml
+arguments:
+  - name: "dry"
+    kind: "Boolean"
+    attributes:
+      default: false       # Unquoted boolean
+
+  - name: "verbosity"
+    kind: "Integer"
+    attributes:
+      default: 2           # Unquoted integer
+```
+
+**Type Hint System:** Build-time analysis detects these issues and emits non-blocking hints during `cargo build`. Audit found these mistakes in 124 instances across production codebases. To suppress hints for intentional cases (e.g., `default: "1.0.0"` for version strings), add `suppress_type_hint: true` to the argument's attributes.
+
 ---
 
 ## Parameter Syntax
