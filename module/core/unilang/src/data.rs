@@ -115,7 +115,23 @@ mod private
     /// Illustrative usage examples for help text.
     pub examples : Vec< String >, // Added
     /// Whether this command should automatically generate a `.command.help` counterpart.
+    #[ former( default = true ) ]
     pub auto_help_enabled : bool, // Help Convention Support
+    /// Category for grouping commands in help output (e.g., "repository_management", "git_operations").
+    #[ serde( default ) ]
+    pub category : String,
+    /// Short one-line description for brief help listings (defaults to first line of description).
+    #[ serde( default ) ]
+    pub short_desc : String,
+    /// Hide this command from brief help listings (useful for .help variants).
+    #[ serde( default ) ]
+    pub hidden_from_list : bool,
+    /// Sort priority within category (lower numbers first).
+    #[ serde( default ) ]
+    pub priority : i32,
+    /// Explicit group membership for related commands (e.g., ".remove" for all .remove.* commands).
+    #[ serde( default ) ]
+    pub group : String,
   }
 
   impl Default for CommandDefinition
@@ -140,6 +156,11 @@ mod private
         http_method_hint : String::new(),
         examples : Vec::new(),
         auto_help_enabled : true, // Default to true - help is mandatory
+        category : String::new(),
+        short_desc : String::new(),
+        hidden_from_list : false,
+        priority : 0,
+        group : String::new(),
       }
     }
   }
@@ -1235,7 +1256,10 @@ mod private
       self
     }
 
-    /// Sets whether auto-help is enabled (optional field, defaults to false).
+    /// Sets whether auto-help is enabled (optional field, defaults to true).
+    ///
+    /// When true (default), registering this command will automatically generate a `.command.help` variant.
+    /// Set to false ONLY for help commands themselves to prevent recursion.
     pub fn auto_help_enabled( mut self, auto_help_enabled : bool ) -> Self
     {
       self.auto_help_enabled = auto_help_enabled;
@@ -1286,6 +1310,11 @@ mod private
         http_method_hint : self.http_method_hint,
         examples : self.examples,
         auto_help_enabled : self.auto_help_enabled,
+        category : String::new(),
+        short_desc : String::new(),
+        hidden_from_list : false,
+        priority : 0,
+        group : String::new(),
       }
     }
   }
@@ -1342,6 +1371,11 @@ mod private
         http_method_hint : "GET".to_string(),
         examples : Vec::new(),
         auto_help_enabled : true,
+        category : String::new(),
+        short_desc : String::new(),
+        hidden_from_list : false,
+        priority : 0,
+        group : String::new(),
       }
     }
 
@@ -1578,6 +1612,11 @@ mod private
           format!( "{} ??", self.name )
         ],
         auto_help_enabled : false, // Prevent recursive help generation
+        category : "help".to_string(),
+        short_desc : format!( "Help for {}", self.name ),
+        hidden_from_list : true, // Hide .help variants from brief listings
+        priority : 999, // Low priority (shown last if visible)
+        group : String::new(),
       }
     }
   }

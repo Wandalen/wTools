@@ -52,6 +52,7 @@ fn main() -> Result<(), unilang::Error> {
         examples: vec![],
         routine_link: None,
         auto_help_enabled: false,
+        ..Default::default()
     };
     
     // Define the command's execution logic

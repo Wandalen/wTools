@@ -710,7 +710,7 @@ impl MultiYamlAggregator
     // Register all processed commands
     for ( _cmd_name, cmd ) in &self.commands
     {
-      registry.register( cmd.clone() );
+      registry.register( cmd.clone() )?;
     }
 
     Ok( () )

@@ -32,5 +32,5 @@ enabled = []
 [dependencies]
 
 [dev-dependencies]
-test_tools = { workspace = true, features = [ "full" ] }
+# test_tools = { workspace = true, features = [ "full" ] }  # REMOVED: Creates circular dependency via macro_tools → clone_dyn_types → test_tools → impls_index_meta → macro_tools
 # inspect_type = { workspace = true, features = [ "full" ] }

@@ -894,29 +894,9 @@ impl< 'a > SemanticAnalyzer< 'a >
   ///
   fn generate_help_listing( &self ) -> Result< Vec< VerifiedCommand >, Error >
   {
-    // Create a synthetic help output
-    let all_commands = self.registry.commands();
-    let mut help_content = String::new();
-    
-    if all_commands.is_empty()
-    {
-      help_content.push_str("No commands are currently available.\n");
-    }
-    else
-    {
-      help_content.push_str("Available commands:\n\n");
-      
-      // Sort commands by name for consistent display
-      let mut sorted_commands: Vec<_> = all_commands.iter().collect();
-      sorted_commands.sort_by_key(|(name, _)| *name);
-      
-      for (name, cmd_def) in sorted_commands
-      {
-#[allow(clippy::format_push_string)]
-        help_content.push_str(&format!("  {:<20} {}\n", name, cmd_def.description));
-      }
-      help_content.push_str("\nUse '<command> ?' to get detailed help for a specific command.\n");
-    }
+    // Use the new HelpGenerator for categorized, filtered output
+    let help_gen = crate::help::HelpGenerator::new( self.registry );
+    let help_content = help_gen.list_commands_filtered( None );
 
     // Return a special error that can be handled by the CLI to display help
     Err( Error::Execution( ErrorData::new(

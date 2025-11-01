@@ -55,6 +55,7 @@ fn main() -> Result<(), unilang::Error> {
         examples: vec![],
         routine_link: None,
         auto_help_enabled: false,
+        ..Default::default()
     };
     
     let add_routine = Box::new(|cmd: VerifiedCommand, _ctx: ExecutionContext| {

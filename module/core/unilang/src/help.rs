@@ -557,13 +557,178 @@ impl< 'a > HelpGenerator< 'a >
   #[ must_use ]
   pub fn list_commands( &self ) -> String
   {
+    self.list_commands_filtered( None )
+  }
+
+  ///
+  /// Generates a summary list of commands filtered by prefix.
+  ///
+  /// # Arguments
+  /// * `prefix` - Optional prefix filter (e.g., ".git", ".remove")
+  ///
+  /// # Returns
+  /// Formatted string with categorized command list
+  ///
+  #[ must_use ]
+  pub fn list_commands_filtered( &self, prefix : Option< &str > ) -> String
+  {
+    use std::collections::BTreeMap;
+
     let mut summary = String::new();
-    writeln!( &mut summary, "Available Commands:" ).unwrap();
-    for ( name, command ) in &self.registry.commands()
+
+    // Filter commands by prefix and visibility
+    let all_commands = self.registry.commands();
+    let commands : Vec< ( &String, &crate::CommandDefinition ) > = all_commands
+      .iter()
+      .filter( |( name, cmd )|
+      {
+        // Apply prefix filter if provided
+        let matches_prefix = prefix.map_or( true, |p| name.starts_with( p ) );
+
+        // Hide commands marked as hidden_from_list
+        let is_visible = !cmd.hidden_from_list;
+
+        matches_prefix && is_visible
+      })
+      .collect();
+
+    if commands.is_empty()
     {
-      writeln!( &mut summary, "  {:<15} {}", name, command.description ).unwrap();
+      if let Some( p ) = prefix
+      {
+        writeln!( &mut summary, "No commands found matching prefix: {}", p ).unwrap();
+      }
+      else
+      {
+        writeln!( &mut summary, "No commands available." ).unwrap();
+      }
+      return summary;
     }
+
+    // Group commands by category
+    let mut by_category : BTreeMap< String, Vec< ( &String, &crate::CommandDefinition ) > > = BTreeMap::new();
+
+    for ( name, cmd ) in commands
+    {
+      let category = if !cmd.category.is_empty()
+      {
+        cmd.category.clone()
+      }
+      else
+      {
+        // Auto-detect category from command prefix
+        self.auto_categorize( name )
+      };
+
+      by_category.entry( category ).or_default().push( ( name, cmd ) );
+    }
+
+    // If only one category and it's empty, show flat list
+    if by_category.len() == 1 && by_category.contains_key( "" )
+    {
+      writeln!( &mut summary, "Available commands:\n" ).unwrap();
+      let mut cmds : Vec< _ > = by_category.get( "" ).unwrap().iter().collect();
+      cmds.sort_by_key( |( name, cmd )| ( cmd.priority, name.as_str() ) );
+
+      for ( name, cmd ) in cmds
+      {
+        let desc = if !cmd.short_desc.is_empty()
+        {
+          &cmd.short_desc
+        }
+        else
+        {
+          &cmd.description
+        };
+        writeln!( &mut summary, "  {:<20} {}", name, desc ).unwrap();
+      }
+    }
+    else
+    {
+      // Show categorized output
+      writeln!( &mut summary, "Available commands:\n" ).unwrap();
+
+      for ( category, mut cmds ) in by_category
+      {
+        if !category.is_empty()
+        {
+          writeln!( &mut summary, "{}:", self.format_category_name( &category ) ).unwrap();
+        }
+
+        // Sort by priority then name
+        cmds.sort_by_key( |( name, cmd )| ( cmd.priority, name.as_str() ) );
+
+        for ( name, cmd ) in cmds
+        {
+          let desc = if !cmd.short_desc.is_empty()
+          {
+            &cmd.short_desc
+          }
+          else
+          {
+            &cmd.description
+          };
+          writeln!( &mut summary, "  {:<20} {}", name, desc ).unwrap();
+        }
+        writeln!( &mut summary ).unwrap();
+      }
+    }
+
+    // Add footer with usage hints
+    if prefix.is_none()
+    {
+      writeln!( &mut summary, "Use '<command> help' to get detailed help for a specific command." ).unwrap();
+      writeln!( &mut summary, "Example: . .list help" ).unwrap();
+    }
+
     summary
+  }
+
+  /// Auto-categorize command based on its name pattern
+  fn auto_categorize( &self, name : &str ) -> String
+  {
+    if name.starts_with( ".git" )
+    {
+      "git_operations".to_string()
+    }
+    else if name.starts_with( ".remove" )
+    {
+      "removal_operations".to_string()
+    }
+    else if name.starts_with( ".orgs" ) || name.starts_with( ".users" ) || name.starts_with( ".discover" )
+    {
+      "github_integration".to_string()
+    }
+    else if name.starts_with( ".add" ) || name.starts_with( ".clone" ) || name.starts_with( ".list" ) || name.starts_with( ".init" )
+    {
+      "repository_management".to_string()
+    }
+    else if name == ".status" || name.starts_with( ".pull" ) || name.starts_with( ".push" ) || name.starts_with( ".sync" ) || name.starts_with( ".update" )
+    {
+      "git_operations".to_string()
+    }
+    else if name == "." || name == ".help"
+    {
+      "help".to_string()
+    }
+    else
+    {
+      String::new()
+    }
+  }
+
+  /// Format category name for display
+  fn format_category_name( &self, category : &str ) -> String
+  {
+    match category
+    {
+      "repository_management" => "REPOSITORY MANAGEMENT".to_string(),
+      "git_operations" => "GIT OPERATIONS".to_string(),
+      "removal_operations" => "REMOVAL OPERATIONS".to_string(),
+      "github_integration" => "GITHUB INTEGRATION".to_string(),
+      "help" => "HELP & INFORMATION".to_string(),
+      _ => category.to_uppercase(),
+    }
   }
 }
 

@@ -42,6 +42,11 @@ fn test_reject_commands_without_dot_prefix()
     http_method_hint: String::new(),
     examples: Vec::new(),
     auto_help_enabled: false,
+    category: String::new(),
+    short_desc: String::new(),
+    hidden_from_list: false,
+    priority: 0,
+    group: String::new(),
   };
   
   #[allow(deprecated)]
@@ -85,6 +90,11 @@ fn test_reject_invalid_namespace()
     http_method_hint: String::new(),
     examples: Vec::new(),
     auto_help_enabled: false,
+    category: String::new(),
+    short_desc: String::new(),
+    hidden_from_list: false,
+    priority: 0,
+    group: String::new(),
   };
   
   #[allow(deprecated)]
@@ -128,6 +138,11 @@ fn test_accept_correctly_formatted_commands()
     http_method_hint: String::new(),
     examples: Vec::new(),
     auto_help_enabled: false,
+    category: String::new(),
+    short_desc: String::new(),
+    hidden_from_list: false,
+    priority: 0,
+    group: String::new(),
   };
   
   #[allow(deprecated)]
@@ -154,6 +169,11 @@ fn test_accept_correctly_formatted_commands()
     http_method_hint: String::new(),
     examples: Vec::new(),
     auto_help_enabled: false,
+    category: String::new(),
+    short_desc: String::new(),
+    hidden_from_list: false,
+    priority: 0,
+    group: String::new(),
   };
   
   #[allow(deprecated)]
@@ -200,6 +220,11 @@ fn test_principle_minimum_implicit_magic()
       http_method_hint: String::new(),
       examples: Vec::new(),
     auto_help_enabled: false,
+    category: String::new(),
+    short_desc: String::new(),
+    hidden_from_list: false,
+    priority: 0,
+    group: String::new(),
     };
     
     #[allow(deprecated)]

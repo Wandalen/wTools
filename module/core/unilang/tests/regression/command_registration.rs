@@ -29,7 +29,6 @@ fn test_correct_dot_command_registration()
     namespace : String::new(), // Empty namespace means root level
     description : "Test chat command registered correctly".to_string(),
     routine_link : None,
-    auto_help_enabled: false,
     arguments : Vec::new(),
     hint : String::new(),
     status : String::new(),
@@ -41,6 +40,8 @@ fn test_correct_dot_command_registration()
     deprecation_message : String::new(),
     http_method_hint : String::new(),
     examples : Vec::new(),
+    auto_help_enabled: false,
+    ..Default::default()
   };
 
   #[allow(deprecated)]
@@ -99,7 +100,6 @@ fn test_multiple_corrected_commands()
       namespace : String::new(),
       description : description.to_string(),
       routine_link : None,
-    auto_help_enabled: false,
       arguments : Vec::new(),
       hint : String::new(),
       status : String::new(),
@@ -111,6 +111,8 @@ fn test_multiple_corrected_commands()
       deprecation_message : String::new(),
       http_method_hint : String::new(),
       examples : Vec::new(),
+      auto_help_enabled: false,
+      ..Default::default()
     };
     
     #[allow(deprecated)]
@@ -155,11 +157,10 @@ fn test_namespaced_commands_work_correctly()
     namespace : ".session".to_string(), // Namespace WITH dot prefix
     description : "List available sessions".to_string(),
     routine_link : None,
-    auto_help_enabled: false,
     arguments : Vec::new(),
     hint : String::new(),
     status : String::new(),
-    version : String::new(), 
+    version : String::new(),
     tags : Vec::new(),
     aliases : Vec::new(),
     permissions : Vec::new(),
@@ -167,6 +168,8 @@ fn test_namespaced_commands_work_correctly()
     deprecation_message : String::new(),
     http_method_hint : String::new(),
     examples : Vec::new(),
+    auto_help_enabled: false,
+    ..Default::default()
   };
 
   #[allow(deprecated)]

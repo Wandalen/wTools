@@ -571,6 +571,11 @@ mod private
         http_method_hint : static_cmd.http_method_hint.to_string(),
         examples : static_cmd.examples.iter().map( | &s | s.to_string() ).collect(),
         auto_help_enabled : false, // Static commands don't auto-generate help by default
+        category : String::new(),
+        short_desc : String::new(),
+        hidden_from_list : false,
+        priority : 0,
+        group : String::new(),
       }
     }
   }

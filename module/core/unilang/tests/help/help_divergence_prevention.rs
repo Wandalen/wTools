@@ -241,3 +241,47 @@ fn test_registry_help_synchronization()
     "SYNC COMPLETENESS BUG: Not all commands present after update!"
   );
 }
+
+/// Test that register() also auto-generates help (not just command_add_runtime)
+///
+/// This test ensures both registration paths have identical behavior,
+/// preventing the help divergence bug where some commands don't appear in help.
+#[test]
+fn test_register_generates_help_like_command_add_runtime() {
+    let mut registry = CommandRegistry::new();
+
+    let cmd = CommandDefinition::former()
+        .name(".deploy")
+        .description("Deploy application")
+        .end();  // auto_help_enabled defaults to true
+
+    // Use register(), not command_add_runtime()
+    registry.register(cmd).expect("Registration should succeed");
+
+    // Main command should exist
+    assert!(
+        registry.command(".deploy").is_some(),
+        "Main command should be registered"
+    );
+
+    // Help command should be auto-generated
+    assert!(
+        registry.command(".deploy.help").is_some(),
+        "HELP DIVERGENCE BUG: register() did NOT auto-generate .deploy.help!\n\
+         This violates requirement that both register() and command_add_runtime() \n\
+         must auto-generate help commands."
+    );
+
+    // Help should appear in listing
+    let listing = registry.format_command_listing();
+    assert!(
+        listing.contains("deploy"),
+        "Command should appear in help listing"
+    );
+
+    // Validation should pass
+    assert!(
+        registry.validate_help_completeness().is_ok(),
+        "Help completeness validation should pass"
+    );
+}

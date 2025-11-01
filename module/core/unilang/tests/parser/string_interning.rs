@@ -62,6 +62,7 @@ fn test_semantic_analyzer_integration()
     deprecation_message : String::new(),
     http_method_hint : String::new(),
     examples : vec![],
+    ..Default::default()
   });
   
   let pipeline = Pipeline::new( registry );
@@ -279,6 +280,7 @@ fn test_pipeline_integration_correctness()
     deprecation_message : String::new(),
     http_method_hint : String::new(),
     examples : vec![],
+    ..Default::default()
   });
   
   let pipeline = Pipeline::new( registry );

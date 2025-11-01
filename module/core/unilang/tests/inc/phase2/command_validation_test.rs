@@ -189,6 +189,7 @@ fn test_v3_1_validate_complete_command_success()
     http_method_hint : "GET".to_string(),
     examples : vec![],
     auto_help_enabled : true,
+    ..Default::default()
   };
 
   assert!( validate_command_for_registration( &cmd ).is_ok() );
@@ -218,6 +219,7 @@ fn test_v3_2_validate_command_with_namespace()
     http_method_hint : "GET".to_string(),
     examples : vec![],
     auto_help_enabled : true,
+    ..Default::default()
   };
 
   assert!( validate_command_for_registration( &cmd ).is_ok() );
@@ -247,6 +249,7 @@ fn test_v3_3_validate_command_invalid_name()
     http_method_hint : "GET".to_string(),
     examples : vec![],
     auto_help_enabled : true,
+    ..Default::default()
   };
 
   assert!( validate_command_for_registration( &cmd ).is_err() );
@@ -276,6 +279,7 @@ fn test_v3_4_validate_command_invalid_namespace()
     http_method_hint : "GET".to_string(),
     examples : vec![],
     auto_help_enabled : true,
+    ..Default::default()
   };
 
   assert!( validate_command_for_registration( &cmd ).is_err() );
@@ -305,6 +309,7 @@ fn test_v3_5_validate_command_both_invalid()
     http_method_hint : "GET".to_string(),
     examples : vec![],
     auto_help_enabled : true,
+    ..Default::default()
   };
 
   // Should fail on name validation first
@@ -386,6 +391,7 @@ fn test_integration_validation_with_full_command()
     http_method_hint : "GET".to_string(),
     examples : vec![ ".social.greet name::Alice".to_string() ],
     auto_help_enabled : true,
+    ..Default::default()
   };
 
   // Should pass validation

@@ -425,13 +425,72 @@ impl CommandRegistry
   ///
   /// Registers a command, adding it to the dynamic registry.
   ///
-  /// If a command with the same name already exists, it will be overwritten.
+  /// **Automatic Help Generation:** When `command.auto_help_enabled` is `true` (default),
+  /// this method automatically generates a `.command.help` variant, ensuring all registered
+  /// commands appear in help listings.
+  ///
+  /// This prevents the help divergence bug where commands are registered but invisible
+  /// in help output (discovered in production: wflow's .languages command).
+  ///
+  /// **Validation:** This method validates the command definition before registration,
+  /// checking for proper naming conventions, namespace format, and parameter storage types.
+  /// This ensures both `register()` and `command_add_runtime()` enforce identical invariants.
+  ///
+  /// **Duplicate Detection:** If a command with the same name already exists, this method
+  /// returns an error. To replace an existing command, use `unregister()` first or use
+  /// `register_or_replace()` for explicit overwrite behavior.
+  ///
   /// Note: Static commands cannot be overwritten and will take precedence in lookups.
-  pub fn register( &mut self, command : CommandDefinition )
+  ///
+  /// # Errors
+  ///
+  /// Returns `Error::Registration` if:
+  /// - Command name doesnt start with '.' prefix
+  /// - Namespace is non-empty but doesnt start with '.' prefix
+  /// - Parameter has `multiple:true` but non-List storage type
+  /// - Command with same name already exists (duplicate)
+  pub fn register( &mut self, command : CommandDefinition ) -> Result< (), Error >
   {
+    // VALIDATION: Enforce same invariants as command_add_runtime (Phase 1 Fix)
+    // This closes the code path divergence vulnerability where register() didn't validate
+    // but command_add_runtime() did, allowing invalid commands via one path.
+    crate::command_validation::validate_command_for_registration( &command )?;
+
     let full_name = command.full_name();
 
-    self.dynamic_commands.insert( full_name, command );
+    // DUPLICATE DETECTION: Prevent silent overwrite (Phase 1 Fix)
+    // Previously, duplicate registration silently overwrote the first command.
+    // This caused production bugs where first registration disappeared without warning.
+    if self.dynamic_commands.contains_key( &full_name )
+    {
+      return Err( Error::Registration( format!(
+        "Command '{}' is already registered. Cannot register duplicate commands. \
+        Use unregister() first or register_or_replace() for explicit overwrite.",
+        full_name
+      )));
+    }
+
+    // Register main command
+    self.dynamic_commands.insert( full_name.clone(), command.clone() );
+
+    // AUTO-GENERATE HELP (same logic as command_add_runtime)
+    if command.auto_help_enabled && !crate::command_validation::is_help_command( &full_name )
+    {
+      let help_command = command.generate_help_command();
+      let help_name = crate::command_validation::make_help_command_name( &full_name );
+
+      if !self.dynamic_commands.contains_key( &help_name )
+      {
+        // Register help command definition
+        self.dynamic_commands.insert( help_name.clone(), help_command );
+
+        // Create and register help routine
+        let help_routine = self.create_help_routine( &command );
+        self.routines.insert( help_name, help_routine );
+      }
+    }
+
+    Ok(())
   }
 
   ///
@@ -835,6 +894,11 @@ impl CommandRegistry
       http_method_hint : "GET".to_string(),
       examples : vec![ ".help".to_string(), ".h".to_string() ],
       auto_help_enabled : false, // Prevent recursive help for help command
+      category : "help".to_string(),
+      short_desc : "Show help for all commands".to_string(),
+      hidden_from_list : false,
+      priority : 0,
+      group : String::new(),
     };
 
     let global_help_routine = Box::new( | _cmd, _ctx |
@@ -941,7 +1005,8 @@ impl CommandRegistry
     for ( _command_name, static_cmd ) in static_commands.entries()
     {
       let dynamic_cmd = crate::data::CommandDefinition::from( *static_cmd );
-      registry.register( dynamic_cmd );
+      registry.register( dynamic_cmd )
+        .expect( "Static commands should always be valid - this is a build-time generation bug" );
     }
 
     registry
@@ -1014,11 +1079,13 @@ impl CommandRegistryBuilder
   ///
   /// Adds a command to the registry being built.
   ///
-  #[ must_use ]
-  pub fn command( mut self, command : CommandDefinition ) -> Self
+  /// # Errors
+  ///
+  /// Returns `Error::Registration` if command validation fails or if duplicate detected.
+  pub fn command( mut self, command : CommandDefinition ) -> Result< Self, Error >
   {
-    self.registry.register( command );
-    self
+    self.registry.register( command )?;
+    Ok( self )
   }
 
   ///
@@ -1043,7 +1110,7 @@ impl CommandRegistryBuilder
       }
       else
       {
-        self.registry.register( command_def );
+        self.registry.register( command_def )?;
       }
     }
     Ok( self )
@@ -1071,7 +1138,7 @@ impl CommandRegistryBuilder
       }
       else
       {
-        self.registry.register( command_def );
+        self.registry.register( command_def )?;
       }
     }
     Ok( self )
@@ -1134,6 +1201,11 @@ impl CommandRegistryBuilder
       http_method_hint : "GET".to_string(),
       examples : vec![],
       auto_help_enabled : true,
+      category : String::new(),
+      short_desc : String::new(),
+      hidden_from_list : false,
+      priority : 0,
+      group : String::new(),
     };
 
     // Register with routine - collect errors for later checking

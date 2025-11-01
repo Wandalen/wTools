@@ -57,6 +57,66 @@ extern crate alloc;
 ///     Ok(())
 /// }
 /// ```
+///
+/// ## ⚠️ CLI Integration: Using Shell Arguments Correctly
+///
+/// When integrating `unilang_parser` into a CLI application that receives arguments from a shell,
+/// **you must use the `parse_from_argv()` method**, NOT `split_whitespace()`.
+///
+/// ### ✅ Correct Usage (CLI Application)
+///
+/// ```rust
+/// use unilang_parser :: { Parser, UnilangParserOptions };
+///
+/// fn main() -> Result< (), Box<dyn std ::error ::Error >> {
+///     let options = UnilangParserOptions ::default();
+///     let parser = Parser ::new(options);
+///
+///     // Collect shell arguments (already tokenized by the shell)
+///     let argv : Vec<String> = std ::env ::args().collect();
+///
+///     // ✅ CORRECT: Use parse_from_argv for shell arguments
+///     let instruction = parser.parse_from_argv(&argv)?;
+///
+///     println!("Command: {:?}", instruction.command_path_slices);
+///     Ok(())
+/// }
+/// ```
+///
+/// ### ❌ Common Pitfall (WRONG)
+///
+/// ```rust,ignore
+/// use unilang_parser :: { Parser, UnilangParserOptions };
+///
+/// fn main() -> Result< (), Box<dyn std ::error ::Error >> {
+///     let options = UnilangParserOptions ::default();
+///     let parser = Parser ::new(options);
+///
+///     let argv : Vec<String> = std ::env ::args().collect();
+///     let joined = argv.join(" ");
+///
+///     // ❌ WRONG: Don't use split_whitespace() on shell argv!
+///     // This breaks quote handling that the shell already performed
+///     let instruction = parser.parse_single_instruction(&joined)?;
+///
+///     Ok(())
+/// }
+/// ```
+///
+/// ### Why This Matters
+///
+/// The shell has **already tokenized** the arguments, handling quotes, escapes, and whitespace.
+/// When you receive `argv` from the shell:
+///
+/// - `my-app "foo bar"` → shell produces `argv = ["my-app", "foo bar"]` (2 tokens)
+/// - If you join and re-split: `"my-app foo bar".split_whitespace()` → produces `["my-app", "foo", "bar"]` (3 tokens) ❌
+///
+/// **Result:** Arguments containing spaces are incorrectly split, breaking user expectations.
+///
+/// ### Rule of Thumb
+///
+/// - **From shell (CLI app):** Use `parse_from_argv(&argv)` - shell already tokenized
+/// - **From string (embedded/scripting):** Use `parse_single_instruction(input)` - string needs parsing
 pub mod config;
 /// Defines error types for the parser.
 pub mod error;

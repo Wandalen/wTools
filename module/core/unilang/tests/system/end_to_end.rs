@@ -39,24 +39,13 @@ fn test_complete_system_integration()
   ];
   
   for (name, desc) in &root_commands {
-    let cmd = CommandDefinition {
-      name: name.to_string(),
-      namespace: String::new(),
-      description: desc.to_string(),
-      routine_link: None,
-      arguments: Vec::new(),
-      hint: String::new(),
-      status: "stable".to_string(),
-      version: "1.0.0".to_string(),
-      tags: Vec::new(),
-      aliases: Vec::new(),
-      permissions: Vec::new(),
-      idempotent: false,
-      deprecation_message: String::new(),
-      http_method_hint: String::new(),
-      examples: Vec::new(),
-    auto_help_enabled: false,
-    };
+    let cmd = CommandDefinition::former()
+      .name(*name)
+      .description(*desc)
+      .status("stable")
+      .version("1.0.0")
+      .auto_help_enabled(false)
+      .end();
     
     #[allow(deprecated)]
     let result = registry.command_add_runtime(&cmd, Box::new(demo_handler));
@@ -73,24 +62,14 @@ fn test_complete_system_integration()
   ];
   
   for (name, namespace, desc) in &namespaced_commands {
-    let cmd = CommandDefinition {
-      name: name.to_string(),
-      namespace: namespace.to_string(),
-      description: desc.to_string(),
-      routine_link: None,
-      arguments: Vec::new(),
-      hint: String::new(),
-      status: "stable".to_string(),
-      version: "1.0.0".to_string(),
-      tags: Vec::new(),
-      aliases: Vec::new(),
-      permissions: Vec::new(),
-      idempotent: false,
-      deprecation_message: String::new(),
-      http_method_hint: String::new(),
-      examples: Vec::new(),
-    auto_help_enabled: false,
-    };
+    let cmd = CommandDefinition::former()
+      .name(*name)
+      .namespace(*namespace)
+      .description(*desc)
+      .status("stable")
+      .version("1.0.0")
+      .auto_help_enabled(false)
+      .end();
     
     #[allow(deprecated)]
     let result = registry.command_add_runtime(&cmd, Box::new(demo_handler));
@@ -106,24 +85,11 @@ fn test_complete_system_integration()
   ];
   
   for (invalid_name, reason) in &invalid_commands {
-    let invalid_cmd = CommandDefinition {
-      name: invalid_name.to_string(),
-      namespace: String::new(),
-      description: "This should fail".to_string(),
-      routine_link: None,
-      arguments: Vec::new(),
-      hint: String::new(),
-      status: String::new(),
-      version: String::new(),
-      tags: Vec::new(),
-      aliases: Vec::new(),
-      permissions: Vec::new(),
-      idempotent: false,
-      deprecation_message: String::new(),
-      http_method_hint: String::new(),
-      examples: Vec::new(),
-    auto_help_enabled: false,
-    };
+    let invalid_cmd = CommandDefinition::former()
+      .name(*invalid_name)
+      .description("This should fail")
+      .auto_help_enabled(false)
+      .end();
     
     #[allow(deprecated)]
     let result = registry.command_add_runtime(&invalid_cmd, Box::new(demo_handler));
@@ -180,24 +146,11 @@ fn test_governing_principles_compliance()
   #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   
-  let explicit_cmd = CommandDefinition {
-    name: ".explicit_test".to_string(),
-    namespace: String::new(),
-    description: "Explicitly named command".to_string(),
-    routine_link: None,
-    arguments: Vec::new(),
-    hint: String::new(),
-    status: String::new(),
-    version: String::new(),
-    tags: Vec::new(),
-    aliases: Vec::new(),
-    permissions: Vec::new(),
-    idempotent: false,
-    deprecation_message: String::new(),
-    http_method_hint: String::new(),
-    examples: Vec::new(),
-    auto_help_enabled: false,
-  };
+  let explicit_cmd = CommandDefinition::former()
+    .name(".explicit_test")
+    .description("Explicitly named command")
+    .auto_help_enabled(false)
+    .end();
   
     #[allow(deprecated)]
   let result = registry.command_add_runtime(&explicit_cmd, Box::new(demo_handler));
@@ -214,24 +167,11 @@ fn test_governing_principles_compliance()
   #[allow(deprecated)]
   let mut registry2 = CommandRegistry::new();
   
-  let invalid_cmd = CommandDefinition {
-    name: "implicit_test".to_string(), // Missing dot
-    namespace: String::new(),
-    description: "Should fail validation".to_string(),
-    routine_link: None,
-    arguments: Vec::new(),
-    hint: String::new(),
-    status: String::new(),
-    version: String::new(),
-    tags: Vec::new(),
-    aliases: Vec::new(),
-    permissions: Vec::new(),
-    idempotent: false,
-    deprecation_message: String::new(),
-    http_method_hint: String::new(),
-    examples: Vec::new(),
-    auto_help_enabled: false,
-  };
+  let invalid_cmd = CommandDefinition::former()
+    .name("implicit_test") // Missing dot
+    .description("Should fail validation")
+    .auto_help_enabled(false)
+    .end();
   
     #[allow(deprecated)]
   let result = registry2.command_add_runtime(&invalid_cmd, Box::new(demo_handler));

@@ -1033,6 +1033,125 @@ impl Parser
   Ok( ( positional_arguments, named_arguments, help_operator_found ) )
  }
 
+  /// Detects potential argv misuse patterns that suggest re-tokenization.
+  ///
+  /// This helper function checks if argv appears to have been created by joining
+  /// shell arguments and then re-splitting with split_whitespace(), which destroys
+  /// the shell's tokenization and breaks quote handling.
+  ///
+  /// # Detection Heuristics
+  ///
+  /// 1. **Consecutive short tokens**: Multiple single-word tokens in a row
+  ///    that could have been a single quoted value (e.g., ["src/my", "project"])
+  ///
+  /// 2. **Path-like splits**: Tokens that look like split paths
+  ///    (e.g., token ending with "/" followed by another token)
+  ///
+  /// 3. **High token density**: Many short tokens relative to argv length
+  ///    (typical of split_whitespace() on joined strings)
+  ///
+  /// # Warning Output
+  ///
+  /// If suspicious patterns are detected, emits a warning to stderr with:
+  /// - Description of the detected pattern
+  /// - Link to CLI integration documentation
+  /// - Recommendation to use parse_from_argv() directly
+  ///
+  /// # Note
+  ///
+  /// This is a heuristic detection - false positives are possible but rare.
+  /// The warning is informational only and doesnt prevent parsing.
+  fn detect_argv_misuse( argv: &[String] )
+  {
+    if argv.len() < 3
+    {
+      // Too short to detect patterns reliably
+      return;
+    }
+
+    // Heuristic 1: Check for path-like splits
+    // Example: ["src/my", "project"] suggests original was "src/my project"
+    for i in 0..argv.len() - 1
+    {
+      let current = &argv[i];
+      let next = &argv[i + 1];
+
+      // Check if current ends with "/" or contains path separators followed by short token
+      if ( current.ends_with( '/' ) || current.contains( '/' ) )
+        && !next.starts_with( '-' )
+        && !next.contains( "::" )
+        && !next.starts_with( '.' )
+        && next.len() < 20  // Short token suggests it was split from a path
+      {
+        #[ cfg( not( feature = "no_std" ) ) ]
+        {
+          eprintln!( "\n⚠️  WARNING: Potential argv misuse detected!" );
+          eprintln!( "   Pattern: Path-like tokens that appear to be split incorrectly" );
+          eprintln!( "   Found: {:?} followed by {:?}", current, next );
+          eprintln!();
+          eprintln!( "   This usually happens when you:" );
+          eprintln!( "     1. Join argv into a string: argv.join(\" \")");
+          eprintln!( "     2. Re-split with split_whitespace() or parse_single_instruction()");
+          eprintln!();
+          eprintln!( "   ❌ WRONG: argv.join(\" \") then parse_single_instruction()");
+          eprintln!( "   ✅ CORRECT: parse_from_argv(&argv) directly");
+          eprintln!();
+          eprintln!( "   Why this matters: Shell already tokenized your arguments." );
+          eprintln!( "   Re-tokenizing destroys quote handling, causing quoted paths" );
+          eprintln!( "   like \"src/my project\" to be incorrectly split." );
+          eprintln!();
+          eprintln!( "   See: docs/cli_integration.md for details");
+          eprintln!();
+        }
+        return;
+      }
+    }
+
+    // Heuristic 2: Check for many consecutive short tokens
+    // Example: ["deploy", "to", "production", "server"] suggests re-tokenization
+    // of what was originally "deploy to production server"
+    let mut consecutive_short = 0;
+    let max_consecutive_short = 0;
+
+    for arg in argv.iter().skip( 1 )  // Skip program name
+    {
+      // Short token that's not a flag, command, or named arg
+      if arg.len() < 15
+        && !arg.starts_with( '-' )
+        && !arg.starts_with( '.' )
+        && !arg.contains( "::" )
+      {
+        consecutive_short += 1;
+        if consecutive_short >= 3
+        {
+          #[ cfg( not( feature = "no_std" ) ) ]
+          {
+            eprintln!( "\n⚠️  WARNING: Potential argv misuse detected!" );
+            eprintln!( "   Pattern: Multiple consecutive short tokens (3+ in a row)" );
+            eprintln!( "   This suggests arguments may have been joined and re-split" );
+            eprintln!();
+            eprintln!( "   Common mistake:" );
+            eprintln!( "     let joined = argv.join(\" \");  // ❌ Loses token boundaries");
+            eprintln!( "     parser.parse_single_instruction(&joined);  // ❌ Re-tokenizes incorrectly");
+            eprintln!();
+            eprintln!( "   Correct approach:" );
+            eprintln!( "     parser.parse_from_argv(&argv);  // ✅ Preserves shell tokenization");
+            eprintln!();
+            eprintln!( "   See: docs/cli_integration.md for complete guide");
+            eprintln!();
+          }
+          return;
+        }
+      }
+      else
+      {
+        consecutive_short = 0;
+      }
+    }
+
+    let _ = max_consecutive_short;  // Suppress unused warning
+  }
+
   /// Parses a single Unilang instruction from an argv array (OS command-line arguments).
   ///
   /// This method provides proper CLI integration by preserving the original argv structure
@@ -1087,6 +1206,9 @@ impl Parser
         overall_location: SourceLocation ::None,
       });
     }
+
+    // Detect potential argv misuse (emits warning if suspicious patterns found)
+    Self::detect_argv_misuse( argv );
 
     // Process argv into a reconstructed command string with proper token boundaries
     // We need to quote values that contain spaces to preserve argv boundaries
@@ -1161,10 +1283,29 @@ impl Parser
         //     (ignored test with extensive documentation)
 
         // Add the complete named argument as a single token: key::"value"
-        // Quote the value if it contains whitespace or is empty
+        // Quote the value if it contains whitespace or is empty. If the value contains quotes,
+        // escape them before wrapping to avoid nested quote errors.
+        //
+        // Fix(issue-084): Prevents double-quoting bug where values like `cld -p "/start"`
+        // would get wrapped as `"cld -p "/start""`, causing tokenizer errors on nested quotes.
+        //
+        // Root cause: Unconditional quoting when whitespace detected, without checking for
+        // existing quotes. When value contains both whitespace AND quotes (e.g., shell commands
+        // with quoted arguments), adding outer quotes creates: `cmd::"cld -p "/start""` where
+        // the inner `"` terminates the outer quote prematurely, leaving `/start""` as unexpected
+        // token.
+        //
+        // Solution: Escape inner quotes by doubling them before adding outer quotes. This
+        // preserves the value integrity while preventing quote confusion.
+        //
+        // Pitfall: Don't assume edge cases are independent. Values can have BOTH whitespace AND
+        // quotes simultaneously (common in shell commands, paths with spaces, etc.). Always test
+        // combinations of characteristics, not just individual edge cases.
         if value.chars().any( char::is_whitespace ) || value.is_empty()
         {
-          tokens.push( format!( "{key}::\"{value}\"" ) );
+          // Escape any existing quotes by replacing " with \"
+          let escaped_value = value.replace( '"', "\\\"" );
+          tokens.push( format!( "{key}::\"{escaped_value}\"" ) );
         }
         else
         {
@@ -1174,10 +1315,15 @@ impl Parser
       else
       {
         // Not a named argument - just add as-is
-        // Quote if it contains whitespace to preserve the token boundary
+        // Quote if it contains whitespace to preserve the token boundary. Escape inner quotes
+        // if present to avoid nested quote errors.
+        //
+        // Fix(issue-084): Same quote-escaping as named arguments above.
         if arg.chars().any( char::is_whitespace )
         {
-          tokens.push( format!( "\"{arg}\"" ) );
+          // Escape any existing quotes by replacing " with \"
+          let escaped_arg = arg.replace( '"', "\\\"" );
+          tokens.push( format!( "\"{escaped_arg}\"" ) );
         }
         else
         {

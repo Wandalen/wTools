@@ -22,12 +22,11 @@ fn test_help_formatting_is_readable()
   #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
   
-  let test_cmd = CommandDefinition {
-    name: "run_file".to_string(),
-    namespace: String::new(),
-    description: "Execute prompts from structured or plain text files".to_string(),
-    hint: "Run prompts from a file (text, YAML, JSON, or TOML)".to_string(),
-    arguments: vec![
+  let test_cmd = CommandDefinition::former()
+    .name("run_file")
+    .description("Execute prompts from structured or plain text files")
+    .hint("Run prompts from a file (text, YAML, JSON, or TOML)")
+    .arguments(vec![
       ArgumentDefinition {
         name: "file".to_string(),
         description: "Path to prompt file".to_string(),
@@ -67,22 +66,16 @@ fn test_help_formatting_is_readable()
         aliases: vec![],
         tags: vec![],
       },
-    ],
-    routine_link: None,
-        auto_help_enabled: false,
-    status: "stable".to_string(),
-    version: "0.1.0".to_string(),
-    tags: vec!["automation".to_string(), "file".to_string()],
-    aliases: vec![],
-    permissions: vec![],
-    idempotent: true,
-    deprecation_message: String::new(),
-    http_method_hint: String::new(),
-    examples: vec![],
-  };
-  
-  registry.register(test_cmd);
-  
+    ])
+    .auto_help_enabled(false)
+    .status("stable")
+    .version("0.1.0")
+    .tags(vec!["automation".to_string(), "file".to_string()])
+    .idempotent(true)
+    .end();
+
+  registry.register(test_cmd).expect("Registration should succeed");
+
   let help_gen = HelpGenerator::new(&registry);
   let help_output = help_gen.command("run_file").expect("Command should exist");
   
@@ -173,12 +166,11 @@ fn test_help_formatting_visual_hierarchy()
   #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
   
-  let test_cmd = CommandDefinition {
-    name: "test_command".to_string(),
-    namespace: String::new(),
-    description: "A test command for formatting verification".to_string(),
-    hint: "Tests help formatting".to_string(),
-    arguments: vec![
+  let test_cmd = CommandDefinition::former()
+    .name("test_command")
+    .description("A test command for formatting verification")
+    .hint("Tests help formatting")
+    .arguments(vec![
       ArgumentDefinition {
         name: "required_arg".to_string(),
         description: "A required argument".to_string(),
@@ -192,22 +184,15 @@ fn test_help_formatting_visual_hierarchy()
         aliases: vec![],
         tags: vec![],
       },
-    ],
-    routine_link: None,
-        auto_help_enabled: false,
-    status: "stable".to_string(),
-    version: "1.0.0".to_string(),
-    tags: vec![],
-    aliases: vec![],
-    permissions: vec![],
-    idempotent: true,
-    deprecation_message: String::new(),
-    http_method_hint: String::new(),
-    examples: vec![],
-  };
+    ])
+    .auto_help_enabled(false)
+    .status("stable")
+    .version("1.0.0")
+    .idempotent(true)
+    .end();
   
-  registry.register(test_cmd);
-  
+  registry.register(test_cmd).expect("Registration should succeed");
+
   let help_gen = HelpGenerator::new(&registry);
   let help_output = help_gen.command("test_command").expect("Command should exist");
   

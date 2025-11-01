@@ -382,9 +382,9 @@ mod private
       registry.set_registry_mode( registry_mode );
 
       // Register all module types
-      self.register_static_modules( &mut registry );
-      self.register_dynamic_modules( &mut registry );
-      self.register_conditional_modules( &mut registry );
+      self.register_static_modules( &mut registry )?;
+      self.register_dynamic_modules( &mut registry )?;
+      self.register_conditional_modules( &mut registry )?;
 
       Ok( registry )
     }
@@ -550,7 +550,7 @@ mod private
     }
 
     /// Register static modules
-    fn register_static_modules( &self, registry: &mut CommandRegistry )
+    fn register_static_modules( &self, registry: &mut CommandRegistry ) -> Result< (), Error >
     {
       for module in &self.static_modules
       {
@@ -562,13 +562,14 @@ mod private
         for cmd in module.commands.clone()
         {
           let processed_cmd = self.apply_prefixes( cmd, module.prefix.as_ref() );
-          registry.register( processed_cmd );
+          registry.register( processed_cmd )?;
         }
       }
+      Ok(())
     }
 
     /// Register dynamic modules
-    fn register_dynamic_modules( &self, registry: &mut CommandRegistry )
+    fn register_dynamic_modules( &self, registry: &mut CommandRegistry ) -> Result< (), Error >
     {
       for module in &self.dynamic_modules
       {
@@ -599,7 +600,7 @@ mod private
               for ( _name, cmd ) in temp_registry.commands()
               {
                 let processed_cmd = self.apply_prefixes( cmd, module.prefix.as_ref() );
-                registry.register( processed_cmd );
+                registry.register( processed_cmd )?;
               }
             }
             Err( e ) => {
@@ -612,10 +613,11 @@ mod private
           eprintln!( "Warning: YAML file {} does not exist", module.yaml_path.display() );
         }
       }
+      Ok(())
     }
 
     /// Register conditional modules
-    fn register_conditional_modules( &self, registry: &mut CommandRegistry )
+    fn register_conditional_modules( &self, registry: &mut CommandRegistry ) -> Result< (), Error >
     {
       for cond_module in &self.conditional_modules
       {
@@ -633,10 +635,11 @@ mod private
               processed_cmd.namespace = format!( ".{}{}", global_prefix, processed_cmd.namespace );
             }
 
-            registry.register( processed_cmd );
+            registry.register( processed_cmd )?;
           }
         }
       }
+      Ok(())
     }
 
     /// Get current aggregation mode (for testing)
