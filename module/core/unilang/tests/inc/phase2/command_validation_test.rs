@@ -229,12 +229,15 @@ fn test_v3_2_validate_command_with_namespace()
 fn test_v3_3_validate_command_invalid_name()
 {
   // Test Matrix Row: V3.2
-  // Command with invalid name (no dot prefix)
+  // Phase 2 Update: Validation now checks full_name() which combines namespace + name
+  // This allows static_module system to work (accepts "test" and adds prefix)
+  // Test updated to verify validation works correctly with full_name approach
 
   let cmd = CommandDefinition
   {
-    name : "hello".to_string(), // Invalid: no dot
-    namespace : String::new(),
+    name : "hello".to_string(), // No dot in name field
+    namespace : String::new(), // Empty namespace
+    // full_name() = ".hello" (dot added by construct_full_command_name)
     description : "Test command".to_string(),
     hint : "Test hint".to_string(),
     status : "stable".to_string(),
@@ -252,7 +255,10 @@ fn test_v3_3_validate_command_invalid_name()
     ..Default::default()
   };
 
-  assert!( validate_command_for_registration( &cmd ).is_err() );
+  // Phase 2: This now passes because full_name() returns ".hello" (valid)
+  // Old behavior: Failed because name field itself didn't have dot
+  // New behavior: Validates full_name which supports static_module system
+  assert!( validate_command_for_registration( &cmd ).is_ok() );
 }
 
 #[ test ]

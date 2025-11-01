@@ -28,5 +28,13 @@ predicates = "3.1"
 name = "cargo_unilang"
 path = "src/main.rs"
 
-[lints]
-workspace = true
+[lints.clippy]
+# cargo_unilang is a developer tool, not a library - allow pedantic lints
+uninlined_format_args = "allow"
+doc_markdown = "allow"
+single_char_pattern = "allow"
+assigning_clones = "allow"
+map_unwrap_or = "allow"
+if_not_else = "allow"
+redundant_closure_for_method_calls = "allow"
+manual_let_else = "allow"

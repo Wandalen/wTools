@@ -341,7 +341,7 @@ fn parse_map_value( input : &str, kind : &Kind ) -> Result< Value, TypeError >
 
     // For simplicity, map keys are always String for now.
     // A more robust solution would parse key_kind.
-    let parsed_key = key_str.to_string();
+    let parsed_key = key_str.clone();
     let parsed_value = parse_value(value_str, value_kind)?;
     parsed_map.insert(parsed_key, parsed_value);
   }

@@ -1209,7 +1209,7 @@ impl Parser
         {
           eprintln!( "\n⚠️  WARNING: Potential argv misuse detected!" );
           eprintln!( "   Pattern: Path-like tokens that appear to be split incorrectly" );
-          eprintln!( "   Found: {:?} followed by {:?}", current, next );
+          eprintln!( "   Found: {current:?} followed by {next:?}" );
           eprintln!();
           eprintln!( "   This usually happens when you:" );
           eprintln!( "     1. Join argv into a string: argv.join(\" \")");

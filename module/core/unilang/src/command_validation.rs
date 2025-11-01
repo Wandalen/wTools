@@ -192,7 +192,17 @@ pub fn validate_parameter_storage_types( cmd : &CommandDefinition ) -> Result< (
 /// ```
 pub fn validate_command_for_registration( cmd : &CommandDefinition ) -> Result< (), Error >
 {
-  validate_command_name( &cmd.name )?;
+  // Validate the final full name (which combines namespace + name)
+  let full_name = cmd.full_name();
+  if !full_name.starts_with( '.' )
+  {
+    return Err( Error::Registration( format!(
+      "Invalid command name '{}'. All commands must start with dot prefix (e.g., '.chat'). \
+      This enforces explicit naming with minimal implicit transformations.",
+      full_name
+    )));
+  }
+
   validate_namespace( &cmd.namespace )?;
   validate_parameter_storage_types( cmd )?;
   Ok(())

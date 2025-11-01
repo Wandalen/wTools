@@ -610,14 +610,14 @@ impl< 'a > HelpGenerator< 'a >
 
     for ( name, cmd ) in commands
     {
-      let category = if !cmd.category.is_empty()
-      {
-        cmd.category.clone()
-      }
-      else
+      let category = if cmd.category.is_empty()
       {
         // Auto-detect category from command prefix
         self.auto_categorize( name )
+      }
+      else
+      {
+        cmd.category.clone()
       };
 
       by_category.entry( category ).or_default().push( ( name, cmd ) );
@@ -632,13 +632,13 @@ impl< 'a > HelpGenerator< 'a >
 
       for ( name, cmd ) in cmds
       {
-        let desc = if !cmd.short_desc.is_empty()
+        let desc = if cmd.short_desc.is_empty()
         {
-          &cmd.short_desc
+          &cmd.description
         }
         else
         {
-          &cmd.description
+          &cmd.short_desc
         };
         writeln!( &mut summary, "  {:<20} {}", name, desc ).unwrap();
       }
@@ -660,13 +660,13 @@ impl< 'a > HelpGenerator< 'a >
 
         for ( name, cmd ) in cmds
         {
-          let desc = if !cmd.short_desc.is_empty()
+          let desc = if cmd.short_desc.is_empty()
           {
-            &cmd.short_desc
+            &cmd.description
           }
           else
           {
-            &cmd.description
+            &cmd.short_desc
           };
           writeln!( &mut summary, "  {:<20} {}", name, desc ).unwrap();
         }

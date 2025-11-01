@@ -1,9 +1,9 @@
-//! cargo_unilang - Scaffolding and health check tool for unilang CLI projects
+//! `cargo_unilang` - Scaffolding and health check tool for unilang CLI projects
 //!
 //! Prevents common mistakes when using unilang framework:
 //! - Custom build.rs (unilang provides this automatically)
-//! - Duplicate dependencies (serde_yaml, walkdir, phf)
-//! - Deprecated API (CommandRegistry::new())
+//! - Duplicate dependencies (`serde_yaml`, walkdir, phf)
+//! - Deprecated API (`CommandRegistry::new()`)
 //!
 //! This tool itself is built using unilang, demonstrating correct usage and
 //! serving as a reference implementation for CLI rulebook compliance.

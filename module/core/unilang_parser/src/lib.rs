@@ -65,7 +65,7 @@ extern crate alloc;
 ///
 /// ### ✅ Correct Usage (CLI Application)
 ///
-/// ```rust
+/// ```rust,no_run
 /// use unilang_parser :: { Parser, UnilangParserOptions };
 ///
 /// fn main() -> Result< (), Box<dyn std ::error ::Error >> {

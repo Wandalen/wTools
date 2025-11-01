@@ -150,6 +150,291 @@ mod private
   }
 
   ///
+  /// A validated namespace that guarantees correct naming conventions.
+  ///
+  /// # Type Safety Guarantees
+  /// - Empty namespace allowed (for root-level commands)
+  /// - Non-empty namespaces must start with '.' prefix
+  /// - Cannot be constructed with invalid values
+  /// - Validation happens at construction time
+  ///
+  /// # Examples
+  /// ```
+  /// use unilang::data::NamespaceType;
+  ///
+  /// // Valid - empty namespace (root level)
+  /// let root = NamespaceType::new("").expect("valid");
+  /// assert_eq!(root.as_str(), "");
+  ///
+  /// // Valid - namespace with dot prefix
+  /// let ns = NamespaceType::new(".video").expect("valid");
+  /// assert_eq!(ns.as_str(), ".video");
+  ///
+  /// // Invalid - non-empty without dot prefix
+  /// assert!(NamespaceType::new("video").is_err());
+  /// ```
+  #[ derive( Debug, Clone, PartialEq, Eq, Hash ) ]
+  pub struct NamespaceType( String );
+
+  impl NamespaceType
+  {
+    ///
+    /// Creates a new NamespaceType with validation.
+    ///
+    /// # Validation Rules
+    /// 1. Empty namespace is allowed (root-level commands)
+    /// 2. Non-empty namespace must start with '.' prefix
+    ///
+    /// # Arguments
+    /// * `namespace` - The namespace to validate
+    ///
+    /// # Returns
+    /// * `Ok(NamespaceType)` - If validation passes
+    /// * `Err(Error)` - If validation fails
+    ///
+    /// # Examples
+    /// ```
+    /// use unilang::data::NamespaceType;
+    ///
+    /// let empty = NamespaceType::new("");
+    /// assert!(empty.is_ok());
+    ///
+    /// let valid = NamespaceType::new(".video");
+    /// assert!(valid.is_ok());
+    ///
+    /// let invalid = NamespaceType::new("video");
+    /// assert!(invalid.is_err());
+    /// ```
+    pub fn new( namespace : impl Into< String > ) -> Result< Self, Error >
+    {
+      let namespace = namespace.into();
+
+      // Validation Rule 1: Empty namespace is allowed
+      if namespace.is_empty()
+      {
+        return Ok( Self( namespace ) );
+      }
+
+      // Validation Rule 2: Non-empty namespace must start with '.'
+      if !namespace.starts_with( '.' )
+      {
+        return Err( Error::Registration( format!(
+          "Invalid namespace '{}'. Non-empty namespaces must start with dot prefix (e.g., '.video'). \
+          Empty namespace is allowed for root-level commands.",
+          namespace
+        )));
+      }
+
+      Ok( Self( namespace ) )
+    }
+
+    ///
+    /// Returns the namespace as a string slice.
+    ///
+    /// # Examples
+    /// ```
+    /// use unilang::data::NamespaceType;
+    ///
+    /// let ns = NamespaceType::new(".video").unwrap();
+    /// assert_eq!(ns.as_str(), ".video");
+    /// ```
+    pub fn as_str( &self ) -> &str
+    {
+      &self.0
+    }
+
+    ///
+    /// Consumes the NamespaceType and returns the inner String.
+    ///
+    /// # Examples
+    /// ```
+    /// use unilang::data::NamespaceType;
+    ///
+    /// let ns = NamespaceType::new(".video").unwrap();
+    /// let inner : String = ns.into_inner();
+    /// assert_eq!(inner, ".video");
+    /// ```
+    pub fn into_inner( self ) -> String
+    {
+      self.0
+    }
+
+    ///
+    /// Returns true if this is the root namespace (empty).
+    ///
+    /// # Examples
+    /// ```
+    /// use unilang::data::NamespaceType;
+    ///
+    /// let root = NamespaceType::new("").unwrap();
+    /// assert!(root.is_root());
+    ///
+    /// let ns = NamespaceType::new(".video").unwrap();
+    /// assert!(!ns.is_root());
+    /// ```
+    pub fn is_root( &self ) -> bool
+    {
+      self.0.is_empty()
+    }
+  }
+
+  impl std::fmt::Display for NamespaceType
+  {
+    fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
+    {
+      write!( f, "{}", self.0 )
+    }
+  }
+
+  impl serde::Serialize for NamespaceType
+  {
+    fn serialize< S >( &self, serializer : S ) -> Result< S::Ok, S::Error >
+    where
+      S : serde::Serializer,
+    {
+      serializer.serialize_str( &self.0 )
+    }
+  }
+
+  impl< 'de > serde::Deserialize< 'de > for NamespaceType
+  {
+    fn deserialize< D >( deserializer : D ) -> Result< Self, D::Error >
+    where
+      D : serde::Deserializer< 'de >,
+    {
+      let s = String::deserialize( deserializer )?;
+      NamespaceType::new( s ).map_err( serde::de::Error::custom )
+    }
+  }
+
+  ///
+  /// A validated version string.
+  ///
+  /// # Type Safety Guarantees
+  /// - Cannot be empty
+  /// - Basic format validation (semver-like)
+  /// - Cannot be constructed with invalid values
+  /// - Validation happens at construction time
+  ///
+  /// # Examples
+  /// ```
+  /// use unilang::data::VersionType;
+  ///
+  /// // Valid versions
+  /// let v = VersionType::new("1.0.0").expect("valid");
+  /// assert_eq!(v.as_str(), "1.0.0");
+  ///
+  /// let v2 = VersionType::new("2.1").expect("valid");
+  /// assert_eq!(v2.as_str(), "2.1");
+  ///
+  /// // Invalid - empty version
+  /// assert!(VersionType::new("").is_err());
+  /// ```
+  #[ derive( Debug, Clone, PartialEq, Eq, Hash ) ]
+  pub struct VersionType( String );
+
+  impl VersionType
+  {
+    ///
+    /// Creates a new VersionType with validation.
+    ///
+    /// # Validation Rules
+    /// 1. Version cannot be empty
+    ///
+    /// # Arguments
+    /// * `version` - The version string to validate
+    ///
+    /// # Returns
+    /// * `Ok(VersionType)` - If validation passes
+    /// * `Err(Error)` - If validation fails
+    ///
+    /// # Examples
+    /// ```
+    /// use unilang::data::VersionType;
+    ///
+    /// let valid = VersionType::new("1.0.0");
+    /// assert!(valid.is_ok());
+    ///
+    /// let empty = VersionType::new("");
+    /// assert!(empty.is_err());
+    /// ```
+    pub fn new( version : impl Into< String > ) -> Result< Self, Error >
+    {
+      let version = version.into();
+
+      // Validation Rule 1: Version cannot be empty
+      if version.is_empty()
+      {
+        return Err( Error::Registration(
+          "Invalid version: version string cannot be empty".to_string()
+        ));
+      }
+
+      Ok( Self( version ) )
+    }
+
+    ///
+    /// Returns the version as a string slice.
+    ///
+    /// # Examples
+    /// ```
+    /// use unilang::data::VersionType;
+    ///
+    /// let v = VersionType::new("1.0.0").unwrap();
+    /// assert_eq!(v.as_str(), "1.0.0");
+    /// ```
+    pub fn as_str( &self ) -> &str
+    {
+      &self.0
+    }
+
+    ///
+    /// Consumes the VersionType and returns the inner String.
+    ///
+    /// # Examples
+    /// ```
+    /// use unilang::data::VersionType;
+    ///
+    /// let v = VersionType::new("1.0.0").unwrap();
+    /// let inner : String = v.into_inner();
+    /// assert_eq!(inner, "1.0.0");
+    /// ```
+    pub fn into_inner( self ) -> String
+    {
+      self.0
+    }
+  }
+
+  impl std::fmt::Display for VersionType
+  {
+    fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
+    {
+      write!( f, "{}", self.0 )
+    }
+  }
+
+  impl serde::Serialize for VersionType
+  {
+    fn serialize< S >( &self, serializer : S ) -> Result< S::Ok, S::Error >
+    where
+      S : serde::Serializer,
+    {
+      serializer.serialize_str( &self.0 )
+    }
+  }
+
+  impl< 'de > serde::Deserialize< 'de > for VersionType
+  {
+    fn deserialize< D >( deserializer : D ) -> Result< Self, D::Error >
+    where
+      D : serde::Deserializer< 'de >,
+    {
+      let s = String::deserialize( deserializer )?;
+      VersionType::new( s ).map_err( serde::de::Error::custom )
+    }
+  }
+
+  ///
   /// Helper function to construct a full command name from namespace and name components.
   ///
   /// This function implements the canonical algorithm for combining namespace and name
@@ -1764,6 +2049,8 @@ mod private
 mod_interface::mod_interface!
 {
   exposed use private::CommandName;
+  exposed use private::NamespaceType;
+  exposed use private::VersionType;
   exposed use private::CommandDefinition;
   exposed use private::ArgumentDefinition;
   exposed use private::ArgumentAttributes;
@@ -1778,6 +2065,8 @@ mod_interface::mod_interface!
   exposed use private::NotSet;
 
   prelude use private::CommandName;
+  prelude use private::NamespaceType;
+  prelude use private::VersionType;
   prelude use private::CommandDefinition;
   prelude use private::ArgumentDefinition;
   prelude use private::ArgumentAttributes;

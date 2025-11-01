@@ -3,13 +3,14 @@
 //!
 //! # Test Coverage
 //! - CommandName: construction, validation, serde, accessors
-//! - Future: Namespace, Version, CommandStatus enum
+//! - NamespaceType: empty namespace, dot prefix validation, serde
+//! - VersionType: non-empty validation, serde
 //!
 //! # Phase 2 Context
 //! These tests verify that the type-safe redesign correctly enforces
 //! invariants at the type level, making invalid states unrepresentable.
 
-use unilang::data::CommandName;
+use unilang::data::{ CommandName, NamespaceType, VersionType };
 
 //
 // CommandName Tests
@@ -368,4 +369,335 @@ fn command_name_multiple_dots()
       name
     );
   }
+}
+
+//
+// NamespaceType Tests
+//
+
+#[ test ]
+fn namespace_valid_empty()
+{
+  // Empty namespace is allowed (root-level commands)
+  let empty = NamespaceType::new( "" );
+  
+  assert!(
+    empty.is_ok(),
+    "NamespaceType::new(\"\") should succeed - empty namespace is valid"
+  );
+
+  let ns = empty.unwrap();
+  assert_eq!(
+    ns.as_str(),
+    "",
+    "Empty namespace should have empty string value"
+  );
+
+  assert!(
+    ns.is_root(),
+    "Empty namespace should be identified as root"
+  );
+}
+
+#[ test ]
+fn namespace_valid_with_dot_prefix()
+{
+  // Valid namespaces with dot prefix
+  let namespaces = vec!
+  [
+    ".video",
+    ".git",
+    ".config",
+    ".integration.test",
+  ];
+
+  for ns_str in namespaces
+  {
+    let result = NamespaceType::new( ns_str );
+    assert!(
+      result.is_ok(),
+      "NamespaceType::new({:?}) should succeed",
+      ns_str
+    );
+
+    let ns = result.unwrap();
+    assert_eq!(
+      ns.as_str(),
+      ns_str,
+      "Namespace should preserve original value"
+    );
+
+    assert!(
+      !ns.is_root(),
+      "Non-empty namespace should not be root"
+    );
+  }
+}
+
+#[ test ]
+fn namespace_rejects_missing_dot_prefix()
+{
+  // Invalid: non-empty without dot prefix
+  let invalid_namespaces = vec!
+  [
+    "video",
+    "git",
+    "config",
+  ];
+
+  for ns_str in invalid_namespaces
+  {
+    let result = NamespaceType::new( ns_str );
+
+    assert!(
+      result.is_err(),
+      "NamespaceType::new({:?}) should fail - missing dot prefix",
+      ns_str
+    );
+
+    let err = result.unwrap_err();
+    let err_msg = err.to_string();
+
+    assert!(
+      err_msg.contains( ns_str ),
+      "Error message should include invalid namespace {:?}: {}",
+      ns_str,
+      err_msg
+    );
+  }
+}
+
+#[ test ]
+fn namespace_display_trait()
+{
+  let empty = NamespaceType::new( "" ).unwrap();
+  assert_eq!( format!( "{}", empty ), "" );
+
+  let ns = NamespaceType::new( ".video" ).unwrap();
+  assert_eq!( format!( "{}", ns ), ".video" );
+}
+
+#[ test ]
+fn namespace_accessors()
+{
+  let ns_str = ".video";
+  let ns = NamespaceType::new( ns_str ).unwrap();
+
+  // Test as_str()
+  assert_eq!( ns.as_str(), ns_str );
+
+  // Test into_inner()
+  let inner = ns.into_inner();
+  assert_eq!( inner, ns_str );
+}
+
+#[ test ]
+fn namespace_clone_and_equality()
+{
+  let ns1 = NamespaceType::new( ".video" ).unwrap();
+  let ns2 = ns1.clone();
+
+  assert_eq!( ns1, ns2, "Cloned namespace should equal original" );
+
+  let ns3 = NamespaceType::new( ".git" ).unwrap();
+  assert_ne!( ns1, ns3, "Different namespaces should not be equal" );
+}
+
+#[ cfg( feature = "json_parser" ) ]
+#[ test ]
+fn namespace_serde_json_serialize()
+{
+  let ns = NamespaceType::new( ".video" ).unwrap();
+  let json = serde_json::to_string( &ns ).expect( "serialization should succeed" );
+
+  assert_eq!( json, "\".video\"" );
+}
+
+#[ cfg( feature = "json_parser" ) ]
+#[ test ]
+fn namespace_serde_json_deserialize_valid()
+{
+  // Test valid namespace
+  let json = "\".video\"";
+  let ns : NamespaceType = serde_json::from_str( json )
+    .expect( "deserialization should succeed" );
+  assert_eq!( ns.as_str(), ".video" );
+
+  // Test empty namespace
+  let json_empty = "\"\"";
+  let empty : NamespaceType = serde_json::from_str( json_empty )
+    .expect( "deserialization of empty namespace should succeed" );
+  assert_eq!( empty.as_str(), "" );
+  assert!( empty.is_root() );
+}
+
+#[ cfg( feature = "json_parser" ) ]
+#[ test ]
+fn namespace_serde_json_deserialize_rejects_invalid()
+{
+  // Test missing dot prefix
+  let json_invalid = "\"video\"";
+  let result : Result< NamespaceType, _ > = serde_json::from_str( json_invalid );
+  assert!(
+    result.is_err(),
+    "Deserialization should fail for namespace without dot prefix"
+  );
+}
+
+#[ cfg( feature = "yaml_parser" ) ]
+#[ test ]
+fn namespace_serde_yaml_deserialize_valid()
+{
+  let yaml = ".video";
+  let ns : NamespaceType = serde_yaml::from_str( yaml )
+    .expect( "YAML deserialization should succeed" );
+  assert_eq!( ns.as_str(), ".video" );
+
+  // Test empty namespace
+  let yaml_empty = "\"\"";
+  let empty : NamespaceType = serde_yaml::from_str( yaml_empty )
+    .expect( "YAML deserialization of empty namespace should succeed" );
+  assert!( empty.is_root() );
+}
+
+//
+// VersionType Tests
+//
+
+#[ test ]
+fn version_valid_construction()
+{
+  // Valid version strings
+  let versions = vec!
+  [
+    "1.0.0",
+    "2.1",
+    "0.1.0-alpha",
+    "1.2.3+build.456",
+    "v1.0",
+  ];
+
+  for ver_str in versions
+  {
+    let result = VersionType::new( ver_str );
+    assert!(
+      result.is_ok(),
+      "VersionType::new({:?}) should succeed",
+      ver_str
+    );
+
+    let ver = result.unwrap();
+    assert_eq!(
+      ver.as_str(),
+      ver_str,
+      "Version should preserve original value"
+    );
+  }
+}
+
+#[ test ]
+fn version_rejects_empty_string()
+{
+  let result = VersionType::new( "" );
+
+  assert!(
+    result.is_err(),
+    "VersionType::new(\"\") should fail - version cannot be empty"
+  );
+
+  let err = result.unwrap_err();
+  let err_msg = err.to_string();
+
+  assert!(
+    err_msg.contains( "empty" ),
+    "Error message should mention 'empty': {}",
+    err_msg
+  );
+}
+
+#[ test ]
+fn version_display_trait()
+{
+  let ver = VersionType::new( "1.0.0" ).unwrap();
+  assert_eq!( format!( "{}", ver ), "1.0.0" );
+}
+
+#[ test ]
+fn version_accessors()
+{
+  let ver_str = "1.2.3";
+  let ver = VersionType::new( ver_str ).unwrap();
+
+  // Test as_str()
+  assert_eq!( ver.as_str(), ver_str );
+
+  // Test into_inner()
+  let inner = ver.into_inner();
+  assert_eq!( inner, ver_str );
+}
+
+#[ test ]
+fn version_clone_and_equality()
+{
+  let ver1 = VersionType::new( "1.0.0" ).unwrap();
+  let ver2 = ver1.clone();
+
+  assert_eq!( ver1, ver2, "Cloned version should equal original" );
+
+  let ver3 = VersionType::new( "2.0.0" ).unwrap();
+  assert_ne!( ver1, ver3, "Different versions should not be equal" );
+}
+
+#[ cfg( feature = "json_parser" ) ]
+#[ test ]
+fn version_serde_json_serialize()
+{
+  let ver = VersionType::new( "1.0.0" ).unwrap();
+  let json = serde_json::to_string( &ver ).expect( "serialization should succeed" );
+
+  assert_eq!( json, "\"1.0.0\"" );
+}
+
+#[ cfg( feature = "json_parser" ) ]
+#[ test ]
+fn version_serde_json_deserialize_valid()
+{
+  let json = "\"1.0.0\"";
+  let ver : VersionType = serde_json::from_str( json )
+    .expect( "deserialization should succeed" );
+  assert_eq!( ver.as_str(), "1.0.0" );
+}
+
+#[ cfg( feature = "json_parser" ) ]
+#[ test ]
+fn version_serde_json_deserialize_rejects_empty()
+{
+  let json_empty = "\"\"";
+  let result : Result< VersionType, _ > = serde_json::from_str( json_empty );
+  assert!(
+    result.is_err(),
+    "Deserialization should fail for empty version"
+  );
+}
+
+#[ cfg( feature = "yaml_parser" ) ]
+#[ test ]
+fn version_serde_yaml_deserialize_valid()
+{
+  let yaml = "1.0.0";
+  let ver : VersionType = serde_yaml::from_str( yaml )
+    .expect( "YAML deserialization should succeed" );
+  assert_eq!( ver.as_str(), "1.0.0" );
+}
+
+#[ cfg( feature = "yaml_parser" ) ]
+#[ test ]
+fn version_serde_yaml_deserialize_rejects_empty()
+{
+  let yaml_empty = "\"\"";
+  let result : Result< VersionType, _ > = serde_yaml::from_str( yaml_empty );
+  assert!(
+    result.is_err(),
+    "YAML deserialization should fail for empty version"
+  );
 }

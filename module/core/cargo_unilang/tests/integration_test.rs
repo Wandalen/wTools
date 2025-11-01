@@ -1,4 +1,4 @@
-//! Integration tests for cargo_unilang
+//! Integration tests for `cargo_unilang`
 //!
 //! Tests CLI rulebook compliance and functional correctness.
 
@@ -556,11 +556,11 @@ fn test_check_detects_deprecated_api()
   let src = temp.child( "src" );
   src.create_dir_all().unwrap();
   src.child( "main.rs" ).write_str(
-r#"use unilang::prelude::*;
+r"use unilang::prelude::*;
 fn main() {
   let registry = CommandRegistry::new();
 }
-"#
+"
   ).unwrap();
   temp.child( "Cargo.toml" ).write_str( "[dependencies]\nunilang = \"0.33\"\n" ).unwrap();
 
@@ -581,11 +581,11 @@ fn test_check_passes_on_clean_project()
   let src = temp.child( "src" );
   src.create_dir_all().unwrap();
   src.child( "main.rs" ).write_str(
-r#"use unilang::prelude::*;
+r"use unilang::prelude::*;
 fn main() {
   let registry = StaticCommandRegistry::from_commands(&STATIC_COMMANDS);
 }
-"#
+"
   ).unwrap();
   temp.child( "Cargo.toml" ).write_str( "[dependencies]\nunilang = \"0.33\"\n" ).unwrap();
 

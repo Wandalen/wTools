@@ -11,6 +11,7 @@ pub struct CheckParams
 {
   pub path : PathBuf,
   pub verbosity : u8,
+  #[ allow( dead_code ) ] // TODO: Implement auto-fix functionality
   pub fix : bool,
 }
 

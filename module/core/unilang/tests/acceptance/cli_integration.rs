@@ -133,7 +133,7 @@ fn test_task_022_edge_cases_shell() {
 
     cmd.assert()
         .success()
-        .stdout(predicate::str::contains("Available Commands"));
+        .stdout(predicate::str::contains("Available commands"));
 }
 
 /// Test Task 022: Help system integration

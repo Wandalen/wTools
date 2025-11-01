@@ -514,7 +514,7 @@ impl< {} > ::core ::convert ::From< {} > for {}< {} >
 item: {item_name}
 field: {variant_name}",
  );
-  diag ::report_print(about, original_input, debug.to_string()); // Uncommented
+  diag ::report_print(about, original_input, debug.clone()); // Uncommented
  }
 
   Ok(qt! {

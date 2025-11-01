@@ -53,7 +53,6 @@ pub fn check_build_rs( project_path : &Path ) -> CheckResult
 mod tests
 {
   use super::*;
-  use std::fs;
   use assert_fs::prelude::*;
 
   #[test]

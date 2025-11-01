@@ -202,6 +202,8 @@ mod_interface::mod_interface!
 
   /// Build-time helper utilities for type analysis and hint generation.
   /// Provides tools for detecting type issues in YAML command definitions during build.
+  /// **Requires feature**: `yaml_parser`
+  #[ cfg( feature = "yaml_parser" ) ]
   layer build_helpers;
 
   // NOTE: Benchmark modules have been moved to unilang_benchmarks workspace crate

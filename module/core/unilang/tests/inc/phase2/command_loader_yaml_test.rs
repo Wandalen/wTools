@@ -430,7 +430,7 @@ fn test_load_from_yaml_str_complex_types_and_attributes()
       tags: []
     - name: arg_multiple
       description: A multiple string argument
-      kind: String
+      kind: List(String)
       attributes:
         optional: false
         multiple: true

@@ -564,7 +564,7 @@ fn test_build_static_zero_overhead_optimization()
 #[test]
 fn test_build_static_vs_build_comparison()
 {
-  let cmd = create_test_command( "test", "Test command" );
+  let cmd = create_test_command( ".test", "Test command" );
 
   // Build with static registry
   let static_registry = CliBuilder::new()

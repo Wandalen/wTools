@@ -856,6 +856,7 @@ impl MultiYamlAggregator
     self.resolve_conflicts()?;
 
     // Analyze command types and emit hints (non-blocking)
+    #[ cfg( feature = "yaml_parser" ) ]
     self.analyze_command_types();
 
     Ok( () )
@@ -866,6 +867,7 @@ impl MultiYamlAggregator
   /// This method analyzes all commands for potential type mismatches
   /// (e.g., Boolean-as-String, Integer-as-String) and emits helpful
   /// warnings to stderr. Build continues normally.
+  #[ cfg( feature = "yaml_parser" ) ]
   pub fn analyze_command_types( &self )
   {
     use crate::build_helpers::{ TypeAnalyzer, HintGenerator };

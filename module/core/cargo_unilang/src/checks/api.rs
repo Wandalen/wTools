@@ -61,11 +61,11 @@ mod tests
     let src = temp.child( "src" );
     src.create_dir_all().unwrap();
     src.child( "main.rs" ).write_str(
-r#"use unilang::prelude::*;
+r"use unilang::prelude::*;
 fn main() {
   let registry = CommandRegistry::with_static_commands();
 }
-"#
+"
     ).unwrap();
 
     let result = check_deprecated_api( temp.path() );
@@ -79,11 +79,11 @@ fn main() {
     let src = temp.child( "src" );
     src.create_dir_all().unwrap();
     src.child( "main.rs" ).write_str(
-r#"use unilang::prelude::*;
+r"use unilang::prelude::*;
 fn main() {
   let registry = CommandRegistry::new();
 }
-"#
+"
     ).unwrap();
 
     let result = check_deprecated_api( temp.path() );
