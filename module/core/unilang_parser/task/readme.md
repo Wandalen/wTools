@@ -11,20 +11,53 @@
 
 | ID | Title | Related Task | Status |
 |----|-------|--------------|--------|
-| ISSUE-STRS-001 | `strs_tools` Unescaping Bug | - | 🔴 (Open) |
+| ISSUE-STRS-001 | `strs_tools` Unescaping Bug | - | ✅ (Resolved - Already Implemented) |
+| ISSUE-CMD-PATH | [Command Path Parser Bug](./issue_command_path_parser_bug.md) | 084 | 🔴 (Open - Critical) |
 
 ## Issues
 
 ### ISSUE-STRS-001: `strs_tools` Unescaping Bug
 
-**Description:** The `strs_tools::string::split` function, when `quoting(true)` is enabled, does not correctly unescape quoted strings containing escaped quotes (`\"`) or escaped backslashes (`\\`). The `SplitFastIterator`'s logic for finding the end of a quoted segment is flawed, leading to incorrect input for the `unescape_str` function.
+**Status:** ✅ (Resolved - Already Implemented)
 
-**Location:** `module/core/strs_tools/src/string/split.rs`
+**Resolution:** Deep investigation on 2025-11-01 revealed that strs_tools already fully implements escape sequence handling at split.rs:462-498. All MRE tests pass. The parsing failures were actually caused by a separate bug in unilang_parser's command path parser (see ISSUE-CMD-PATH).
 
-**Issue Rationale:** This bug prevents `unilang_instruction_parser` from correctly parsing command arguments that contain escaped characters within quoted strings, leading to functional errors. A fix is required in `strs_tools` to unblock `unilang_instruction_parser` development.
+**Evidence:**
+- Escape handling verified at `/home/user1/pro/lib/wTools/module/core/strs_tools/src/string/split.rs:462-498`
+- All tests pass: `/home/user1/pro/lib/wTools/module/core/strs_tools/tests/issue_001_mre.rs`
+- strs_tools correctly produces: `["cmd", "::", "value with \"inner\" quotes"]`
 
-**Related Proposal:** `module/core/strs_tools/task.md`
+**Real Bug:** See ISSUE-CMD-PATH below.
 
-**Status:** 🔴 (Open)
+---
+
+### ISSUE-CMD-PATH: Command Path Parser Bug
+
+**Description:** The command path parser (`parse_command_path` at parser_engine.rs:385-404) incorrectly consumes identifiers without checking if they're part of named argument patterns (`name::value`). This causes the parser to misinterpret named arguments as command path segments, leading to "orphaned operator" errors.
+
+**File:** [issue_command_path_parser_bug.md](./issue_command_path_parser_bug.md)
+
+**Location:** `/home/user1/pro/lib/wTools/module/core/unilang_parser/src/parser_engine.rs:385-404`
+
+**Root Cause:** Parser consumes identifier token without lookahead to check for `::` operator, which would indicate a named argument pattern.
+
+**MRE:**
+```rust
+parse_single_instruction("cmd::value")
+// FAILS with: "Named argument operator '::' cannot appear by itself"
+// SHOULD: Parse as named_arguments={"cmd": ["value"]}
+```
+
+**Impact:**
+- ❌ Blocks `parse_single_instruction()` API for named-only arguments
+- ✅ Works via `parse_from_argv()` (has workaround at lines 1287-1341)
+
+**Fix Required:** Add lookahead logic to detect `identifier::` pattern before consuming token.
+
+**Diagnostic Tests:** `/home/user1/pro/lib/wTools/module/core/unilang_parser/tests/diagnostic_real_bug.rs`
+
+**Status:** 🔴 (Open - Critical)
 
 **Severity:** High
+
+**Related Task:** 084 (Escaped Quotes Handling)

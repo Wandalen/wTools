@@ -713,9 +713,7 @@ fn test_argv_very_long_value()
   let actual_length = text_values.unwrap()[ 0 ].value.len();
   assert!(
     actual_length >= expected_length,
-    "Very long value should be preserved. Expected >= {}, got {}",
-    expected_length,
-    actual_length
+    "Very long value should be preserved. Expected >= {expected_length}, got {actual_length}"
   );
 }
 
@@ -1097,7 +1095,7 @@ fn test_argv_value_with_inner_quotes_and_whitespace()
 /// Test that path-like splits trigger a warning.
 ///
 /// When argv contains consecutive tokens that look like a split path
-/// (e.g., ["src/my", "project"]), this suggests the argv was created by
+/// (e.g., `["src/my", "project"]`), this suggests the argv was created by
 /// joining and re-splitting a quoted path like "src/my project".
 ///
 /// Expected: Warning emitted to stderr (but parsing still succeeds)
@@ -1121,11 +1119,11 @@ fn test_argv_misuse_detection_path_like_split()
 
   // Important: Parsing should still succeed (warning only, not error)
   if let Err( ref e ) = result {
-    eprintln!( "Parse error: {:#?}", e );
+    eprintln!( "Parse error: {e:#?}" );
   }
   assert!(
     result.is_ok(),
-    "Argv misuse warning should not prevent parsing. Error: {:?}", result.err()
+    "Argv misuse warning should not prevent parsing"
   );
 }
 

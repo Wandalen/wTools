@@ -256,8 +256,10 @@ fn ct4_2_single_str_duplicate_named_last_wins()
  ); // Changed to &str
 }
 
-/// Tests that an instruction with no command path but only a named argument results in an error.
+/// Tests that an instruction with no command path but only a named argument parses successfully.
 /// Test Combination: CT5.1
+/// Fixed(issue-cmd-path): This test was incorrectly expecting an error.
+/// Per spec.md:173, command path is optional, so named-only args are valid.
 #[ test ]
 fn ct5_1_single_str_no_path_named_arg_only()
 {
@@ -265,24 +267,14 @@ fn ct5_1_single_str_no_path_named_arg_only()
   let input = "name ::val";
   let result = parser.parse_single_instruction( input );
   assert!(
-  result.is_err(),
-  "CT5.1 Expected error for no path with named arg, got Ok: {:?}",
-  result.ok()
- ); // Changed to expect error
-  if let Err( e ) = result
-  {
-  assert_eq!(
-   e.kind,
-   ErrorKind ::Syntax( "Named argument operator '::' cannot appear by itself".to_string() ),
-   "CT5.1 ErrorKind mismatch: {:?}",
-   e.kind
+  result.is_ok(),
+  "CT5.1 Named-only args should parse successfully (spec.md:173), got error: {:?}",
+  result.err()
  );
-  assert_eq!(
-   e.location,
-   Some( SourceLocation ::StrSpan { start: 5, end: 7 } ),
-   "CT5.1 Location mismatch for ' :: '"
- );
- }
+  let inst = result.unwrap();
+  assert!( inst.command_path_slices.is_empty(), "CT5.1 Command path should be empty" );
+  assert!( inst.named_arguments.contains_key( "name" ), "CT5.1 Should have 'name' named arg" );
+  assert_eq!( inst.named_arguments.get( "name" ).unwrap()[0].value, "val", "CT5.1 Value should be 'val'" );
 }
 
 /// Tests a command path with dots and arguments.

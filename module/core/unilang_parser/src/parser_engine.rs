@@ -2,6 +2,83 @@
 //!
 //! This module provides the core logic for parsing Unilang instructions from a string input.
 //! It handles tokenization, command path parsing, argument parsing, and error reporting.
+//!
+//! ## Known Pitfalls
+//!
+//! ### Iterator Lookahead Pattern with `Peekable`
+//!
+//! Both `parse_command_path` and `parse_arguments` use `Peekable` iterators with outer
+//! loops that call `peek()`. When implementing lookahead within such loops, calling `peek()`
+//! again returns the SAME item, not the next one.
+//!
+//! **Wrong pattern (returns current item):**
+//! ```rust,ignore
+//! while let Some(item) = iter.peek() {
+//!     if let Some(next) = iter.peek() { } // ❌ Returns 'item' again!
+//! }
+//! ```
+//!
+//! **Correct pattern (returns next item):**
+//! ```rust,ignore
+//! while let Some(item) = iter.peek() {
+//!     let mut lookahead = iter.clone();
+//!     lookahead.next(); // Skip current item
+//!     if let Some(next) = lookahead.peek() { } // ✅ Returns truly next item
+//! }
+//! ```
+//!
+//! This pattern is used in:
+//! - `parse_command_path` (lines 407-410) - Detects `name::value` patterns
+//! - `parse_arguments` (lines 955-963) - Detects named argument operators
+//!
+//! ### Operator Variant Handling
+//!
+//! The tokenizer (via `strs_tools`) produces TWO variants of the named argument operator
+//! based on whitespace in the input:
+//! - `"::"` - No surrounding spaces (e.g., `cmd::value`)
+//! - `" :: "` - With surrounding spaces (e.g., `cmd :: value`)
+//!
+//! Both variants are defined in the default config (see `config.rs` operators list).
+//! Any code that checks for the operator MUST check both variants:
+//!
+//! ```rust,ignore
+//! let is_named_arg_operator = match &token.kind {
+//!     UnilangTokenKind::Operator(op) => *op == "::" || *op == " :: ",
+//!     _ => false,
+//! };
+//! ```
+//!
+//! This affects:
+//! - Command path parser lookahead (lines 415-420)
+//! - Argument parser operator detection (lines 958-960)
+//!
+//! ### Borrow Checker Patterns with Lookahead
+//!
+//! When implementing lookahead that needs data from the current item, clone the data
+//! BEFORE performing lookahead to avoid multiple mutable borrows:
+//!
+//! ```rust,ignore
+//! // Clone data before lookahead
+//! let segment = s.clone();
+//! let location = item.location.clone();
+//!
+//! // Now safe to do lookahead with peek()
+//! let mut lookahead = iter.clone();
+//! lookahead.next();
+//! if let Some(next) = lookahead.peek() { ... }
+//!
+//! // Can use cloned data in error handling
+//! return Err(ParseError::new(..., location));
+//! ```
+//!
+//! ### API Consistency Requirement
+//!
+//! Both `parse_from_argv()` and `parse_single_instruction()` must produce identical
+//! results for equivalent inputs. Workarounds or special handling in one path but not
+//! the other create inconsistencies and violate user expectations.
+//!
+//! Always verify both API paths with tests (see `test_api_path_consistency` in
+//! `tests/diagnostic_real_bug.rs`).
 
 use crate ::
 {
@@ -386,17 +463,62 @@ impl Parser
   {
    if command_path_slices.is_empty() || last_token_was_dot
    {
-  if s.contains( '-' )
+  // Fix(issue-cmd-path): Lookahead to detect named argument pattern before consuming
+  // Root cause: Parser was consuming identifiers without checking if they're part of
+  //             the named argument pattern (name::value), violating spec.md:193 which
+  //             mandates "::" ends command path and begins argument parsing. This
+  //             caused "orphaned operator" errors when parsing named-only arguments
+  //             like "cmd::value" because "cmd" was incorrectly added to command_path,
+  //             leaving "::" as the first token for the argument parser.
+  // Pitfall: Must check for BOTH operator variants: "::" and " :: ". The tokenizer
+  //          produces different tokens based on whitespace in input (config line 37).
+  //          Do NOT attempt to peek 2 tokens ahead for two separate ":" tokens - this
+  //          breaks iterator state. Always rely on the tokenizer's single-token output.
+  //          Pattern copied from argument parser (lines 955-963) which handles the same
+  //          lookahead correctly.
+
+  // Clone data before lookahead (avoids borrow conflicts with peek)
+  let segment = s.clone();
+  let item_location = item.adjusted_source_location.clone();
+
+  // Peek ahead to check if this identifier is followed by named argument operator
+  // Clone iterator to look at next item without consuming current
+  let mut lookahead_iter = items_iter.clone();
+  lookahead_iter.next(); // Skip current item (the identifier we're examining)
+
+  if let Some( next_item ) = lookahead_iter.peek()
+  {
+   // Check for named argument operator pattern (per spec.md:193)
+   let is_named_arg_operator = match &next_item.kind
+   {
+    // Match both operator variants from config
+    UnilangTokenKind ::Operator( op ) => *op == "::" || *op == " :: ",
+    _ => false,
+   };
+
+   if is_named_arg_operator
+   {
+    // This identifier is the NAME in a "name::value" pattern, not a command segment
+    // Break without consuming - let argument parser handle the complete pattern
+    break;
+   }
+  }
+
+  // Not followed by ::, so it's a valid command path segment
+  // Validate identifier doesn't contain hyphen (per spec.md:187)
+  if segment.contains( '-' )
   {
    return Err( ParseError ::new
    (
-  ErrorKind ::Syntax( format!( "Invalid character '-' in command path segment '{s}'" ) ),
-  item.adjusted_source_location.clone(),
+  ErrorKind ::Syntax( format!( "Invalid character '-' in command path segment '{segment}'" ) ),
+  item_location,
  ));
  }
-  command_path_slices.push( s.to_string() );
+
+  // Add to command path and consume token
+  command_path_slices.push( segment );
   last_token_was_dot = false;
-  items_iter.next(); // Consume item
+  items_iter.next(); // Safe to consume now
  }
    else
    {
@@ -573,7 +695,7 @@ impl Parser
         | UnilangTokenKind ::Unrecognized( ref val )
         | UnilangTokenKind ::Number( ref val ) =>
         {
-          let mut current_value = val.to_string();
+          let mut current_value = val.clone();
           let mut current_value_end_location = match value_item.source_location()
           {
             SourceLocation ::StrSpan { end, .. } => end,
@@ -1036,26 +1158,26 @@ impl Parser
   /// Detects potential argv misuse patterns that suggest re-tokenization.
   ///
   /// This helper function checks if argv appears to have been created by joining
-  /// shell arguments and then re-splitting with split_whitespace(), which destroys
+  /// shell arguments and then re-splitting with `split_whitespace()`, which destroys
   /// the shell's tokenization and breaks quote handling.
   ///
   /// # Detection Heuristics
   ///
   /// 1. **Consecutive short tokens**: Multiple single-word tokens in a row
-  ///    that could have been a single quoted value (e.g., ["src/my", "project"])
+  ///    that could have been a single quoted value (e.g., `["src/my", "project"]`)
   ///
   /// 2. **Path-like splits**: Tokens that look like split paths
   ///    (e.g., token ending with "/" followed by another token)
   ///
   /// 3. **High token density**: Many short tokens relative to argv length
-  ///    (typical of split_whitespace() on joined strings)
+  ///    (typical of `split_whitespace()` on joined strings)
   ///
   /// # Warning Output
   ///
   /// If suspicious patterns are detected, emits a warning to stderr with:
   /// - Description of the detected pattern
   /// - Link to CLI integration documentation
-  /// - Recommendation to use parse_from_argv() directly
+  /// - Recommendation to use `parse_from_argv()` directly
   ///
   /// # Note
   ///

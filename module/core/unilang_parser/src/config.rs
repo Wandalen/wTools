@@ -14,6 +14,16 @@ pub struct UnilangParserOptions
   /// A list of main delimiters used to split the input string into initial tokens.
   pub main_delimiters: Vec< &'static str >,
   /// A list of operators recognized by the parser.
+  ///
+  /// **Important:** The named argument operator `::` appears in TWO variants:
+  /// - `"::"` - No surrounding spaces (e.g., `cmd::value`)
+  /// - `" :: "` - With surrounding spaces (e.g., `cmd :: value`)
+  ///
+  /// Both variants must be included in the operators list. The tokenizer produces
+  /// different tokens based on whitespace in the input, and parser code must check
+  /// for both variants when detecting named argument operators.
+  ///
+  /// See module-level docs in `parser_engine.rs` for implementation patterns.
   pub operators: Vec< &'static str >,
   /// If `true`, whitespace characters are treated as separators between tokens.
   pub whitespace_is_separator: bool,

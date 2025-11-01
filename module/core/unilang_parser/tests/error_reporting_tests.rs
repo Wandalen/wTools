@@ -58,31 +58,27 @@ fn error_invalid_escape_sequence_location_str()
  );
 }
 
-/// Tests error reporting for an unexpected delimiter ( :: ) in a string.
+/// Tests that named-only arguments (no command path) parse successfully.
+/// Fixed(issue-cmd-path): This test was incorrectly expecting an error.
+/// Per spec.md:173, command path is optional, so `cmd ::arg2` is valid.
 /// Test Combination: T3.2
 #[ test ]
-fn error_unexpected_delimiter_location_str() 
+fn error_unexpected_delimiter_location_str()
 {
   let parser = Parser ::new(UnilangParserOptions ::default());
   let input = r"cmd ::arg2";
   let result = parser.parse_single_instruction(input);
 
   assert!(
-  result.is_err(),
-  "parse_single_instruction failed for input: '{}', error: {:?}",
+  result.is_ok(),
+  "Named-only args should parse successfully (spec.md:173), input: '{}', error: {:?}",
   input,
   result.err()
  );
-  if let Err(e) = result 
-  {
-  assert_eq!(
-   e.kind,
-   ErrorKind ::Syntax("Named argument operator '::' cannot appear by itself".to_string()),
-   "ErrorKind mismatch: {:?}",
-   e.kind
- );
-  assert_eq!(e.location, Some(SourceLocation ::StrSpan { start: 4, end: 6 }));
- }
+  let inst = result.unwrap();
+  assert!( inst.command_path_slices.is_empty() );
+  assert!( inst.named_arguments.contains_key( "cmd" ) );
+  assert_eq!( inst.named_arguments.get( "cmd" ).unwrap()[0].value, "arg2" );
 }
 
 /// Tests error reporting for an empty instruction segment caused by a double semicolon.
@@ -175,30 +171,26 @@ fn missing_value_for_named_arg()
   assert_eq!(err.location, Some(SourceLocation ::StrSpan { start: 4, end: 8 }));
 }
 
-/// Tests error reporting for an unexpected ` :: ` token without a preceding name.
+/// Tests that named-only arguments parse successfully.
+/// Fixed(issue-cmd-path): This test was incorrectly expecting an error.
+/// Per spec.md:173, `cmd` IS the name in the pattern `name::value`.
 /// Test Combination: T3.7
 #[ test ]
-fn unexpected_colon_colon_no_name() 
+fn unexpected_colon_colon_no_name()
 {
   let parser = Parser ::new(UnilangParserOptions ::default());
   let input = "cmd ::value";
   let result = parser.parse_single_instruction(input);
   assert!(
-  result.is_err(),
-  "Expected error for 'cmd ::value', input: '{}', got: {:?}",
+  result.is_ok(),
+  "Named-only args should parse successfully (spec.md:173), input: '{}', error: {:?}",
   input,
-  result.ok()
+  result.err()
  );
-  if let Err(e) = result 
-  {
-  assert_eq!(
-   e.kind,
-   ErrorKind ::Syntax("Named argument operator '::' cannot appear by itself".to_string()),
-   "ErrorKind mismatch: {:?}",
-   e.kind
- );
-  assert_eq!(e.location, Some(SourceLocation ::StrSpan { start: 4, end: 6 }));
- }
+  let inst = result.unwrap();
+  assert!( inst.command_path_slices.is_empty() );
+  assert!( inst.named_arguments.contains_key( "cmd" ) );
+  assert_eq!( inst.named_arguments.get( "cmd" ).unwrap()[0].value, "value" );
 }
 
 /// Tests error reporting for an unexpected ` :: ` token appearing after a value.
