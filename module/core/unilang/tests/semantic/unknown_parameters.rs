@@ -45,7 +45,7 @@ fn create_test_command() -> CommandDefinition
 fn test_unknown_named_parameter_with_suggestion()
 {
   let mut registry = CommandRegistry::new();
-  registry.register( create_test_command() );
+  registry.register( create_test_command() ).expect( "Registration should succeed" );
 
   let parser = Parser::new( UnilangParserOptions::default() );
 
@@ -83,7 +83,7 @@ fn test_unknown_named_parameter_with_suggestion()
 fn test_multiple_unknown_parameters()
 {
   let mut registry = CommandRegistry::new();
-  registry.register( create_test_command() );
+  registry.register( create_test_command() ).expect( "Registration should succeed" );
 
   let parser = Parser::new( UnilangParserOptions::default() );
 
@@ -120,7 +120,7 @@ fn test_multiple_unknown_parameters()
 fn test_mix_valid_and_unknown()
 {
   let mut registry = CommandRegistry::new();
-  registry.register( create_test_command() );
+  registry.register( create_test_command() ).expect( "Registration should succeed" );
 
   let parser = Parser::new( UnilangParserOptions::default() );
 
@@ -157,7 +157,7 @@ fn test_no_params_command_rejects_any_named()
     .end();
 
   let mut registry = CommandRegistry::new();
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Registration should succeed" );
 
   let parser = Parser::new( UnilangParserOptions::default() );
   let instruction_text = ".simple foo::bar";
@@ -186,7 +186,7 @@ fn test_no_params_command_rejects_any_named()
 fn test_valid_parameter_succeeds()
 {
   let mut registry = CommandRegistry::new();
-  registry.register( create_test_command() );
+  registry.register( create_test_command() ).expect( "Registration should succeed" );
 
   let parser = Parser::new( UnilangParserOptions::default() );
 

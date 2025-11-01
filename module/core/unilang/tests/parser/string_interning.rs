@@ -63,7 +63,7 @@ fn test_semantic_analyzer_integration()
     http_method_hint : String::new(),
     examples : vec![],
     ..Default::default()
-  });
+  }).expect( "Failed to register test command" );
   
   let pipeline = Pipeline::new( registry );
   
@@ -281,7 +281,7 @@ fn test_pipeline_integration_correctness()
     http_method_hint : String::new(),
     examples : vec![],
     ..Default::default()
-  });
+  }).expect( "Failed to register test command" );
   
   let pipeline = Pipeline::new( registry );
   let command_text = ".integration.test";

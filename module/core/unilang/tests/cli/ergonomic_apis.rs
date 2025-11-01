@@ -294,7 +294,7 @@ fn test_backward_compatibility_with_existing_apis()
     .description( "Legacy command".to_string() )
     .end();
 
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Registration should succeed" );
   assert!( registry.command( ".legacy" ).is_some() );
 
   // Test that new CliBuilder can coexist with existing registries

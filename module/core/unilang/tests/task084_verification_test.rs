@@ -30,7 +30,7 @@ fn create_task084_test_registry() -> CommandRegistry
     .category( "repository_management" )
     .priority( 1 )
     .form()
-  );
+  ).expect( "Failed to register .add command" );
 
   registry.register( CommandDefinition::former()
     .name( ".clone" )
@@ -39,7 +39,7 @@ fn create_task084_test_registry() -> CommandRegistry
     .category( "repository_management" )
     .priority( 2 )
     .form()
-  );
+  ).expect( "Failed to register .clone command" );
 
   registry.register( CommandDefinition::former()
     .name( ".list" )
@@ -48,7 +48,7 @@ fn create_task084_test_registry() -> CommandRegistry
     .category( "repository_management" )
     .priority( 3 )
     .form()
-  );
+  ).expect( "Failed to register .list command" );
 
   // Git Operations commands
   registry.register( CommandDefinition::former()
@@ -58,7 +58,7 @@ fn create_task084_test_registry() -> CommandRegistry
     .category( "git_operations" )
     .priority( 1 )
     .form()
-  );
+  ).expect( "Failed to register .git.status command" );
 
   registry.register( CommandDefinition::former()
     .name( ".status" )
@@ -67,7 +67,7 @@ fn create_task084_test_registry() -> CommandRegistry
     .category( "git_operations" )
     .priority( 2 )
     .form()
-  );
+  ).expect( "Failed to register .status command" );
 
   registry.register( CommandDefinition::former()
     .name( ".pull" )
@@ -76,7 +76,7 @@ fn create_task084_test_registry() -> CommandRegistry
     .category( "git_operations" )
     .priority( 3 )
     .form()
-  );
+  ).expect( "Failed to register .pull command" );
 
   // Removal Operations commands (grouped by prefix)
   registry.register( CommandDefinition::former()
@@ -86,7 +86,7 @@ fn create_task084_test_registry() -> CommandRegistry
     .category( "removal_operations" )
     .priority( 1 )
     .form()
-  );
+  ).expect( "Failed to register .remove.both command" );
 
   registry.register( CommandDefinition::former()
     .name( ".remove.local" )
@@ -95,7 +95,7 @@ fn create_task084_test_registry() -> CommandRegistry
     .category( "removal_operations" )
     .priority( 2 )
     .form()
-  );
+  ).expect( "Failed to register .remove.local command" );
 
   registry.register( CommandDefinition::former()
     .name( ".remove.registry" )
@@ -104,7 +104,7 @@ fn create_task084_test_registry() -> CommandRegistry
     .category( "removal_operations" )
     .priority( 3 )
     .form()
-  );
+  ).expect( "Failed to register .remove.registry command" );
 
   registry.register( CommandDefinition::former()
     .name( ".remove.missing" )
@@ -113,7 +113,7 @@ fn create_task084_test_registry() -> CommandRegistry
     .category( "removal_operations" )
     .priority( 4 )
     .form()
-  );
+  ).expect( "Failed to register .remove.missing command" );
 
   // Hidden commands (.help variants)
   registry.register( CommandDefinition::former()
@@ -122,7 +122,7 @@ fn create_task084_test_registry() -> CommandRegistry
     .short_desc( "Help for .add" )
     .hidden_from_list( true )  // ← Should be hidden!
     .form()
-  );
+  ).expect( "Failed to register .add.help command" );
 
   registry.register( CommandDefinition::former()
     .name( ".clone.help" )
@@ -130,7 +130,7 @@ fn create_task084_test_registry() -> CommandRegistry
     .short_desc( "Help for .clone" )
     .hidden_from_list( true )  // ← Should be hidden!
     .form()
-  );
+  ).expect( "Failed to register .clone.help command" );
 
   registry
 }

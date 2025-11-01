@@ -70,7 +70,7 @@ fn test_empty_command_value()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_edge_case_test_command( ".test" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Empty quoted string - using correct double-colon syntax per specification
   let result = parse_edge_case_command( &registry, r#".test content::"""# );
@@ -86,7 +86,7 @@ fn test_empty_argument_value()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_edge_case_test_command( ".empty_arg" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Empty argument value
   let result = parse_edge_case_command( &registry, r#".empty_arg content::"""# );
@@ -103,7 +103,7 @@ fn test_whitespace_only_command()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_edge_case_test_command( ".whitespace" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Whitespace-only content
   let result = parse_edge_case_command( &registry, r#".whitespace content::"   ""# );
@@ -119,7 +119,7 @@ fn test_mixed_whitespace()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_edge_case_test_command( ".mixed_ws" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Mixed whitespace: tabs, newlines, spaces
   let result = parse_edge_case_command( &registry, ".mixed_ws content::\"\t\n  \"" );
@@ -135,7 +135,7 @@ fn test_null_characters()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_edge_case_test_command( ".null_test" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Null character in string (note: this may need special handling)
   let input_with_null = format!( r#".null_test content::"test{}null""#, '\0' );
@@ -159,7 +159,7 @@ fn test_escape_sequences()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_edge_case_test_command( ".escape" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Test various escape sequences
   let test_cases = vec![
@@ -182,7 +182,7 @@ fn test_malformed_quotes()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_edge_case_test_command( ".malformed" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Test cases that should fail with clear error messages
   let malformed_cases = vec![
@@ -211,7 +211,7 @@ fn test_nested_quotes()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_edge_case_test_command( ".nested" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Test nested quotes (behavior may vary based on parser design)
   let result = parse_edge_case_command( &registry, r#".nested content::"outer \"inner\" quotes""# );
@@ -234,7 +234,7 @@ fn test_long_empty_values()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_edge_case_test_command( ".long_empty" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Multiple empty values in sequence
   // Test multiple empty value parsing
@@ -258,7 +258,7 @@ fn test_unicode_edge_cases()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_edge_case_test_command( ".unicode_edge" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Unicode with whitespace edge cases
   let unicode_edge_cases = vec![
@@ -281,7 +281,7 @@ fn test_special_characters_edge_cases()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_edge_case_test_command( ".special_edge" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Special characters in edge case contexts
   let special_cases = vec![
@@ -326,7 +326,7 @@ fn test_empty_values_different_types()
     ])
     .end();
 
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Test empty string for string type
   let result = parse_edge_case_command( &registry, r#".multi_type text::"""# );

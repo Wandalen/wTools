@@ -69,7 +69,7 @@ fn create_complex_command() -> CommandDefinition
 fn test_distance_one_suggests()
 {
   let mut registry = CommandRegistry::new();
-  registry.register( create_complex_command() );
+  registry.register( create_complex_command() ).expect( "Registration should succeed" );
 
   let parser = Parser::new( UnilangParserOptions::default() );
 
@@ -93,7 +93,7 @@ fn test_distance_one_suggests()
 fn test_distance_two_suggests()
 {
   let mut registry = CommandRegistry::new();
-  registry.register( create_complex_command() );
+  registry.register( create_complex_command() ).expect( "Registration should succeed" );
 
   let parser = Parser::new( UnilangParserOptions::default() );
 
@@ -120,7 +120,7 @@ fn test_distance_two_suggests()
 fn test_distance_three_no_suggestion()
 {
   let mut registry = CommandRegistry::new();
-  registry.register( create_complex_command() );
+  registry.register( create_complex_command() ).expect( "Registration should succeed" );
 
   let parser = Parser::new( UnilangParserOptions::default() );
 
@@ -144,7 +144,7 @@ fn test_distance_three_no_suggestion()
 fn test_exact_match_succeeds()
 {
   let mut registry = CommandRegistry::new();
-  registry.register( create_complex_command() );
+  registry.register( create_complex_command() ).expect( "Registration should succeed" );
 
   let parser = Parser::new( UnilangParserOptions::default() );
   let instruction_text = ".complex verbose::1";
@@ -166,7 +166,7 @@ fn test_exact_match_succeeds()
 fn test_unknown_close_to_alias_suggests_alias()
 {
   let mut registry = CommandRegistry::new();
-  registry.register( create_complex_command() );
+  registry.register( create_complex_command() ).expect( "Registration should succeed" );
 
   let parser = Parser::new( UnilangParserOptions::default() );
 
@@ -190,7 +190,7 @@ fn test_unknown_close_to_alias_suggests_alias()
 fn test_alias_parameter_succeeds()
 {
   let mut registry = CommandRegistry::new();
-  registry.register( create_complex_command() );
+  registry.register( create_complex_command() ).expect( "Registration should succeed" );
 
   let parser = Parser::new( UnilangParserOptions::default() );
 
@@ -210,7 +210,7 @@ fn test_alias_parameter_succeeds()
 fn test_mix_canonical_and_alias()
 {
   let mut registry = CommandRegistry::new();
-  registry.register( create_complex_command() );
+  registry.register( create_complex_command() ).expect( "Registration should succeed" );
 
   let parser = Parser::new( UnilangParserOptions::default() );
 
@@ -234,7 +234,7 @@ fn test_mix_canonical_and_alias()
 fn test_multiple_close_matches_picks_closest()
 {
   let mut registry = CommandRegistry::new();
-  registry.register( create_complex_command() );
+  registry.register( create_complex_command() ).expect( "Registration should succeed" );
 
   let parser = Parser::new( UnilangParserOptions::default() );
 
@@ -265,7 +265,7 @@ fn test_multiple_close_matches_picks_closest()
 fn test_very_long_parameter_name()
 {
   let mut registry = CommandRegistry::new();
-  registry.register( create_complex_command() );
+  registry.register( create_complex_command() ).expect( "Registration should succeed" );
 
   let parser = Parser::new( UnilangParserOptions::default() );
 
@@ -302,7 +302,7 @@ fn test_parameter_with_numbers_underscores()
     .end();
 
   let mut registry = CommandRegistry::new();
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Registration should succeed" );
 
   let parser = Parser::new( UnilangParserOptions::default() );
 
@@ -355,7 +355,7 @@ fn test_many_parameters_stress()
     .end();
 
   let mut registry = CommandRegistry::new();
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Registration should succeed" );
 
   let parser = Parser::new( UnilangParserOptions::default() );
 
@@ -416,7 +416,7 @@ fn test_similar_parameter_names()
     .end();
 
   let mut registry = CommandRegistry::new();
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Registration should succeed" );
 
   let parser = Parser::new( UnilangParserOptions::default() );
 
@@ -469,7 +469,7 @@ fn test_all_optional_params_unknown_provided()
     .end();
 
   let mut registry = CommandRegistry::new();
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Registration should succeed" );
 
   let parser = Parser::new( UnilangParserOptions::default() );
 
@@ -509,7 +509,7 @@ fn test_no_params_provided_all_optional_succeeds()
     .end();
 
   let mut registry = CommandRegistry::new();
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Registration should succeed" );
 
   let parser = Parser::new( UnilangParserOptions::default() );
 
@@ -550,7 +550,7 @@ fn test_suggestion_boundary_distance_2()
     .end();
 
   let mut registry = CommandRegistry::new();
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Registration should succeed" );
 
   let parser = Parser::new( UnilangParserOptions::default() );
 
@@ -581,7 +581,7 @@ fn test_empty_command_definition()
     .end();
 
   let mut registry = CommandRegistry::new();
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Registration should succeed" );
 
   let parser = Parser::new( UnilangParserOptions::default() );
 

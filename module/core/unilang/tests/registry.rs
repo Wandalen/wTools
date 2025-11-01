@@ -10,4 +10,5 @@ mod registry {
   mod static_registry;
   mod duplicate_detection;
   mod registration_error_handling;
+  mod validation_enforcement;  // Phase 1 validation tests
 }

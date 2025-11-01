@@ -718,7 +718,7 @@ fn demonstrate_complex_features() -> Result< (), unilang::error::Error >
           })
         });
 
-        registry.register( cmd );
+        registry.register( cmd ).expect( "Valid command should register successfully" );
         // Note: In a full demo, we'd register the routine too
       }
 

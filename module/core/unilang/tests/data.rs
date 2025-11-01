@@ -9,4 +9,5 @@ mod data {
   mod loader;
   mod static_data;
   mod types;
+  mod validated_newtypes;
 }

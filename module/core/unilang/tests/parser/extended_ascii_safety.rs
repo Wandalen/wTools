@@ -71,7 +71,7 @@ fn test_french_accents()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_extended_ascii_test_command( ".french" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // French accented characters
   let result = parse_extended_ascii_command( &registry, r#".french text::"café naïve résumé""# );
@@ -87,7 +87,7 @@ fn test_german_umlauts()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_extended_ascii_test_command( ".german" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // German umlauts and eszett
   let result = parse_extended_ascii_command( &registry, r#".german text::"Bäcker größer Büße""# );
@@ -104,7 +104,7 @@ fn test_spanish_characters()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_extended_ascii_test_command( ".spanish" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Spanish characters including ñ
   let result = parse_extended_ascii_command( &registry, r#".spanish text::"Ñoño España mañana""# );
@@ -120,7 +120,7 @@ fn test_scandinavian_characters()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_extended_ascii_test_command( ".scandi" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Scandinavian characters
   let result = parse_extended_ascii_command( &registry, r#".scandi text::"København Ålesund Bjørn""# );
@@ -137,7 +137,7 @@ fn test_currency_symbols()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_extended_ascii_test_command( ".currency" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Currency symbols
   let result = parse_extended_ascii_command( &registry, r#".currency text::"Price: €50 £40 ¥500 $100""# );
@@ -153,7 +153,7 @@ fn test_mathematical_symbols()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_extended_ascii_test_command( ".math" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Mathematical and special symbols
   let result = parse_extended_ascii_command( &registry, r#".math text::"Temperature: ±20° Section§ ¶Graph""# );
@@ -169,7 +169,7 @@ fn test_iso_8859_1_charset()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_extended_ascii_test_command( ".iso" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Comprehensive ISO-8859-1 characters
   let iso_chars = "àáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ";
@@ -187,7 +187,7 @@ fn test_windows_1252_chars()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_extended_ascii_test_command( ".win1252" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Windows-1252 specific characters (em-dash, properly quoted)
   // Use escaped quotes to avoid quote parsing issues
@@ -204,7 +204,7 @@ fn test_mixed_ascii_extended_ascii()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_extended_ascii_test_command( ".mixed" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Mixed ASCII and extended ASCII
   let result = parse_extended_ascii_command( &registry, r#".mixed text::"Hello café, welcome to España! Price: €25""# );
@@ -220,7 +220,7 @@ fn test_eastern_european_characters()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_extended_ascii_test_command( ".eastern" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Eastern European characters
   let result = parse_extended_ascii_command( &registry, r#".eastern text::"Czech: ěščřžýáíé Polish: ąćęłńóśźż""# );
@@ -236,7 +236,7 @@ fn test_encoding_boundaries()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_extended_ascii_test_command( ".boundaries" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Test characters at various encoding boundaries
   let test_cases = vec![

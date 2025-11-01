@@ -32,5 +32,21 @@ This document serves as the **single source of truth** for all project work.
 
 | ID | Title | Related Task | Status |
 |----|-------|--------------|--------|
+| ISSUE-001 | [Escape Sequence Handling Bug](issue_001_escaped_quotes_in_quoted_strings.md) | Parser Integration (008) | ✅ RESOLVED - Already Implemented |
 
 ## Issues
+
+### ISSUE-001: Escape Sequence Handling Bug in Quoted Strings
+
+**Status:** ✅ RESOLVED - Already Implemented (2025-11-01)
+**File:** [issue_001_escaped_quotes_in_quoted_strings.md](issue_001_escaped_quotes_in_quoted_strings.md)
+**Severity:** ~~CRITICAL~~ (Issue was based on incorrect diagnosis)
+
+**Resolution:** Deep investigation revealed that strs_tools already fully implements escape sequence handling at split.rs:462-498. All MRE tests pass. The downstream parsing failure in unilang_parser was caused by a separate bug in unilang_parser's command path parser (parser_engine.rs:385-404), not by strs_tools.
+
+**Evidence:**
+- Escape handling implementation verified at split.rs:462-498
+- All 5 MRE tests in tests/issue_001_mre.rs PASS
+- strs_tools correctly produces: `["cmd", "::", "value with \"inner\" quotes"]`
+
+**Actual Bug Location:** Filed new issue in unilang_parser at `/home/user1/pro/lib/wTools/module/core/unilang_parser/task/issue_command_path_parser_bug.md`

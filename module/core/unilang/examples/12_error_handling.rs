@@ -282,5 +282,8 @@ fn format_error( error : &Error ) -> String
     Error::Yaml( err ) => format!( "📄 YAML: {err}" ),
     Error::Json( err ) => format!( "📄 JSON: {err}" ),
     Error::Parse( err ) => format!( "🔍 Parse: {err}" ),
+    Error::EmptyCommandName => format!( "❌ Validation: Command names cannot be empty" ),
+    Error::MissingDotPrefix( name ) => format!( "❌ Validation: Command '{name}' must start with dot prefix" ),
+    Error::InvalidCommandName( name, reason ) => format!( "❌ Validation: Invalid command name '{name}': {reason}" ),
   }
 }

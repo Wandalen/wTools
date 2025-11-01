@@ -28,8 +28,8 @@ fn test_dot_command_shows_help_instead_of_panicking()
     .namespace("")
     .description("A test command")
     .end();
-  
-  registry.register(test_command);
+
+  registry.register(test_command).expect("Failed to register test command");
   
   // Parse a single dot - this used to cause panic
   let program = ".";
@@ -103,9 +103,9 @@ fn test_dot_command_lists_multiple_commands()
     .namespace(".test")
     .description("Second test command")
     .end();
-  
-  registry.register(cmd1);
-  registry.register(cmd2);
+
+  registry.register(cmd1).expect("Failed to register first command");
+  registry.register(cmd2).expect("Failed to register second command");
   
   let program = ".";
   let parser = Parser::new(UnilangParserOptions::default());

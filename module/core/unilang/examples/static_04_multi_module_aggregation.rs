@@ -258,7 +258,7 @@ fn benchmark_registry_performance()
   let mut dynamic_registry = CommandRegistry::new();
   for cmd in create_auth_commands()
   {
-    dynamic_registry.register( cmd );
+    dynamic_registry.register( cmd ).expect( "Failed to register auth command" );
   }
 
   let test_commands = vec![

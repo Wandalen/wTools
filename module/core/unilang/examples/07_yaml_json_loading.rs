@@ -336,13 +336,13 @@ fn main() -> Result< (), unilang::error::Error >
   // Add YAML commands
   for ( _name, command ) in yaml_registry.commands()
   {
-    combined_registry.register( command );
+    combined_registry.register( command ).expect( "Valid commands should register successfully" );
   }
 
   // Add JSON commands
   for ( _name, command ) in json_registry.commands()
   {
-    combined_registry.register( command );
+    combined_registry.register( command ).expect( "Valid commands should register successfully" );
   }
 
   println!( "✓ Combined registry has {} total commands", combined_registry.commands().len() );

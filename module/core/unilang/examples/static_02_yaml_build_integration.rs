@@ -217,13 +217,13 @@ fn demonstrate_registry_conversion() -> Result< (), Box< dyn std::error::Error >
     .name( ".example.test" )
     .description( "Test command".to_string() )
     .hint( "Test".to_string() )
-    .end() );
+    .end() ).expect( "Valid command should register successfully" );
 
   dynamic_registry.register( CommandDefinition::former()
     .name( ".example.status" )
     .description( "Status command".to_string() )
     .hint( "Status".to_string() )
-    .end() );
+    .end() ).expect( "Valid command should register successfully" );
 
   println!( "  📦 Dynamic registry created with {} commands", dynamic_registry.commands().len() );
 
@@ -260,7 +260,7 @@ fn demonstrate_performance_comparison() -> Result< (), Box< dyn std::error::Erro
       .name( format!( ".test.command_{i}" ) )
       .description( format!( "Test command {i}" ) )
       .hint( "Test command".to_string() )
-      .end() );
+      .end() ).expect( "Valid command should register successfully" );
   }
 
   println!( "  📊 Benchmark Setup:" );

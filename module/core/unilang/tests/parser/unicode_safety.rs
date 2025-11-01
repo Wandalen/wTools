@@ -71,7 +71,7 @@ fn test_basic_unicode_emoji()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_unicode_test_command( ".test" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // This should work but currently panics on Unicode emoji
   let result = parse_unicode_command( &registry, r#".test content::"echo 🚀 rocket""# );
@@ -87,7 +87,7 @@ fn test_basic_unicode_symbols()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_unicode_test_command( ".symbols" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Test multiple Unicode symbols
   let result = parse_unicode_command( &registry, r#".symbols content::"Status: ✅ Success ❌ Fail 🎯 Target""# );
@@ -105,8 +105,8 @@ fn test_multiple_commands_with_unicode()
   let mut registry = CommandRegistry::new();
   let cmd1 = create_unicode_test_command( ".test1" );
   let cmd2 = create_unicode_test_command( ".test2" );
-  registry.register( cmd1 );
-  registry.register( cmd2 );
+  registry.register( cmd1 ).expect( "Failed to register command" );
+  registry.register( cmd2 ).expect( "Failed to register command" );
 
   // This tests multiple commands with Unicode content
   // Currently fails because parser crashes on first Unicode character
@@ -130,7 +130,7 @@ fn test_mixed_ascii_unicode_content()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_unicode_test_command( ".mixed" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Mixed ASCII and Unicode content in single string
   let result = parse_unicode_command( &registry, r#".mixed content::"echo normal text with 🚀 emoji and more text""# );
@@ -146,7 +146,7 @@ fn test_unicode_boundary_detection()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_unicode_test_command( ".boundary" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Test Unicode at start, middle, and end
   let result = parse_unicode_command( &registry, r#".boundary content::"🚀start middle🎯 end✅""# );
@@ -162,7 +162,7 @@ fn test_complex_unicode_sequences()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_unicode_test_command( ".complex" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Complex Unicode with various byte lengths
   let result = parse_unicode_command( &registry, r#".complex content::"🚀🎯✅❌🔥💯⭐🌟🎉🎊""# );
@@ -178,7 +178,7 @@ fn test_utf8_sequence_validation()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_unicode_test_command( ".utf8" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Various UTF-8 character classes
   let test_cases = vec![
@@ -202,7 +202,7 @@ fn test_unicode_memory_safety()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_unicode_test_command( ".memory" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   // Large Unicode string to test memory safety
   let large_unicode = "🚀".repeat( 100 );

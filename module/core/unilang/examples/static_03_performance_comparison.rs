@@ -110,7 +110,7 @@ fn setup_test_registries() -> Result< ( StaticCommandRegistry, CommandRegistry )
       .description( description )
       .hint( "Performance test command".to_string() )
       .namespace( ".test".to_string() )
-      .end() );
+      .end() ).expect( "Failed to register test command" );
   }
 
   // Create static registry from compile-time optimized map

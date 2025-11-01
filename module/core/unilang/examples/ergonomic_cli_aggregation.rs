@@ -197,7 +197,7 @@ fn main() -> Result<(), unilang::Error>
     .description( "Show information about this aggregated CLI".to_string() )
     .hint( "CLI information".to_string() )
     .end();
-  registry.register( info_cmd );
+  registry.register( info_cmd ).expect( "Failed to register .info command" );
 
   let pipeline = Pipeline::new( registry );
 

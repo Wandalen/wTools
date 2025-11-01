@@ -61,6 +61,15 @@ mod private
     /// An error that occurred during parsing.
     #[ error( "Parse Error: {0}" ) ]
     Parse( #[ from ] unilang_parser::error::ParseError ),
+    /// Command name is empty.
+    #[ error( "Invalid command name: command names cannot be empty" ) ]
+    EmptyCommandName,
+    /// Command name doesn't start with dot prefix.
+    #[ error( "Invalid command name '{0}': all commands must start with dot prefix (e.g., '.command')" ) ]
+    MissingDotPrefix( String ),
+    /// Command name contains invalid characters.
+    #[ error( "Invalid command name '{0}': {1}" ) ]
+    InvalidCommandName( String, String ),
   }
 
   impl From< crate::types::TypeError > for Error

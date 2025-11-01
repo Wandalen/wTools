@@ -23,7 +23,7 @@ fn test_help_formatting_is_readable()
     let mut registry = CommandRegistry::new();
   
   let test_cmd = CommandDefinition::former()
-    .name("run_file")
+    .name(".run_file")
     .description("Execute prompts from structured or plain text files")
     .hint("Run prompts from a file (text, YAML, JSON, or TOML)")
     .arguments(vec![
@@ -77,7 +77,7 @@ fn test_help_formatting_is_readable()
   registry.register(test_cmd).expect("Registration should succeed");
 
   let help_gen = HelpGenerator::new(&registry);
-  let help_output = help_gen.command("run_file").expect("Command should exist");
+  let help_output = help_gen.command(".run_file").expect("Command should exist");
   
   // Test formatting requirements from specification section 9.5
   
@@ -167,7 +167,7 @@ fn test_help_formatting_visual_hierarchy()
     let mut registry = CommandRegistry::new();
   
   let test_cmd = CommandDefinition::former()
-    .name("test_command")
+    .name(".test_command")
     .description("A test command for formatting verification")
     .hint("Tests help formatting")
     .arguments(vec![
@@ -194,7 +194,7 @@ fn test_help_formatting_visual_hierarchy()
   registry.register(test_cmd).expect("Registration should succeed");
 
   let help_gen = HelpGenerator::new(&registry);
-  let help_output = help_gen.command("test_command").expect("Command should exist");
+  let help_output = help_gen.command(".test_command").expect("Command should exist");
   
   // Verify section headers are properly spaced
   let lines: Vec<&str> = help_output.lines().collect();

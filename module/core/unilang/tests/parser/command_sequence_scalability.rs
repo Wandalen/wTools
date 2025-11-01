@@ -83,7 +83,7 @@ fn test_four_commands()
   for i in 1..=4 {
     let cmd_name = format!( ".step{i}" );
     let cmd = create_scalability_test_command( &cmd_name );
-    registry.register( cmd );
+    registry.register( cmd ).expect( "Registration should succeed" );
   }
 
   // Create 4 commands - this should exceed the current limit
@@ -116,7 +116,7 @@ fn test_cicd_pipeline_commands()
 
   for cmd_name in &pipeline_commands {
     let cmd = create_scalability_test_command( cmd_name );
-    registry.register( cmd );
+    registry.register( cmd ).expect( "Registration should succeed" );
   }
 
   // CI/CD pipeline sequence
@@ -150,7 +150,7 @@ fn test_15_command_sequence()
   for i in 1..=15 {
     let cmd_name = format!( ".auto{i}" );
     let cmd = create_scalability_test_command( &cmd_name );
-    registry.register( cmd );
+    registry.register( cmd ).expect( "Failed to register command" );
   }
 
   // Large automation sequence
@@ -178,7 +178,7 @@ fn test_20_command_sequence()
   for i in 1..=20 {
     let cmd_name = format!( ".enterprise{i}" );
     let cmd = create_scalability_test_command( &cmd_name );
-    registry.register( cmd );
+    registry.register( cmd ).expect( "Failed to register command" );
   }
 
   // Enterprise automation sequence
@@ -206,7 +206,7 @@ fn test_50_command_stress_test()
   for i in 1..=50 {
     let cmd_name = format!( ".stress{i}" );
     let cmd = create_scalability_test_command( &cmd_name );
-    registry.register( cmd );
+    registry.register( cmd ).expect( "Failed to register command" );
   }
 
   // Stress test sequence
@@ -234,7 +234,7 @@ fn test_command_parsing_performance()
   for i in 1..=20 {
     let cmd_name = format!( ".perf{i}" );
     let cmd = create_scalability_test_command( &cmd_name );
-    registry.register( cmd );
+    registry.register( cmd ).expect( "Failed to register command" );
   }
 
   // Test parsing performance with different command counts
@@ -264,7 +264,7 @@ fn test_memory_usage_scaling()
   for i in 1..=30 {
     let cmd_name = format!( ".mem{i}" );
     let cmd = create_scalability_test_command( &cmd_name );
-    registry.register( cmd );
+    registry.register( cmd ).expect( "Failed to register command" );
   }
 
   // Test memory usage doesn't explode with more commands
@@ -303,7 +303,7 @@ fn test_single_command()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_scalability_test_command( ".single" );
-  registry.register( cmd );
+  registry.register( cmd ).expect( "Failed to register command" );
 
   let commands = vec![ r#".single step::"single command test""# ];
 
