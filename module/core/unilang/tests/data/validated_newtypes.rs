@@ -1,16 +1,17 @@
 //!
-//! Tests for Phase 2 validated newtypes (CommandName, Namespace, Version).
+//! Tests for Phase 2 validated newtypes (CommandName, Namespace, Version, CommandStatus).
 //!
 //! # Test Coverage
 //! - CommandName: construction, validation, serde, accessors
 //! - NamespaceType: empty namespace, dot prefix validation, serde
 //! - VersionType: non-empty validation, serde
+//! - CommandStatus: enum variants, deprecation metadata, serde, backward compatibility
 //!
 //! # Phase 2 Context
 //! These tests verify that the type-safe redesign correctly enforces
 //! invariants at the type level, making invalid states unrepresentable.
 
-use unilang::data::{ CommandName, NamespaceType, VersionType };
+use unilang::data::{ CommandName, NamespaceType, VersionType, CommandStatus };
 
 //
 // CommandName Tests
@@ -700,4 +701,257 @@ fn version_serde_yaml_deserialize_rejects_empty()
     result.is_err(),
     "YAML deserialization should fail for empty version"
   );
+}
+
+//
+// CommandStatus Tests
+//
+
+#[ test ]
+fn command_status_active()
+{
+  let active = CommandStatus::Active;
+  
+  assert!(active.is_active(), "Active status should report is_active()");
+  assert!(!active.is_deprecated(), "Active status should not be deprecated");
+  assert!(!active.is_experimental(), "Active status should not be experimental");
+  assert!(!active.is_internal(), "Active status should not be internal");
+
+  assert_eq!(format!("{}", active), "active");
+}
+
+#[ test ]
+fn command_status_experimental()
+{
+  let experimental = CommandStatus::Experimental;
+  
+  assert!(!experimental.is_active(), "Experimental status should not be active");
+  assert!(experimental.is_experimental(), "Experimental status should report is_experimental()");
+  assert!(!experimental.is_deprecated(), "Experimental status should not be deprecated");
+  assert!(!experimental.is_internal(), "Experimental status should not be internal");
+
+  assert_eq!(format!("{}", experimental), "experimental");
+}
+
+#[ test ]
+fn command_status_internal()
+{
+  let internal = CommandStatus::Internal;
+  
+  assert!(!internal.is_active(), "Internal status should not be active");
+  assert!(internal.is_internal(), "Internal status should report is_internal()");
+  assert!(!internal.is_deprecated(), "Internal status should not be deprecated");
+  assert!(!internal.is_experimental(), "Internal status should not be experimental");
+
+  assert_eq!(format!("{}", internal), "internal");
+}
+
+#[ test ]
+fn command_status_deprecated_full()
+{
+  let deprecated = CommandStatus::Deprecated
+  {
+    reason: "Use .new_command instead".to_string(),
+    since: Some("2.0.0".to_string()),
+    replacement: Some(".new_command".to_string()),
+  };
+  
+  assert!(!deprecated.is_active(), "Deprecated status should not be active");
+  assert!(deprecated.is_deprecated(), "Deprecated status should report is_deprecated()");
+  assert!(!deprecated.is_experimental(), "Deprecated status should not be experimental");
+  assert!(!deprecated.is_internal(), "Deprecated status should not be internal");
+
+  let (reason, since, replacement) = deprecated.deprecation_info().unwrap();
+  assert_eq!(reason, "Use .new_command instead");
+  assert_eq!(since.as_ref().unwrap(), "2.0.0");
+  assert_eq!(replacement.as_ref().unwrap(), ".new_command");
+
+  let display = format!("{}", deprecated);
+  assert!(display.contains("deprecated"));
+  assert!(display.contains("2.0.0"));
+  assert!(display.contains("Use .new_command instead"));
+  assert!(display.contains(".new_command"));
+}
+
+#[ test ]
+fn command_status_deprecated_minimal()
+{
+  let deprecated = CommandStatus::Deprecated
+  {
+    reason: String::new(),
+    since: None,
+    replacement: None,
+  };
+  
+  assert!(deprecated.is_deprecated());
+
+  let (reason, since, replacement) = deprecated.deprecation_info().unwrap();
+  assert_eq!(reason, "");
+  assert!(since.is_none());
+  assert!(replacement.is_none());
+}
+
+#[ test ]
+fn command_status_default()
+{
+  let default = CommandStatus::default();
+  assert!(default.is_active(), "Default status should be Active");
+}
+
+#[ test ]
+fn command_status_clone_and_equality()
+{
+  let active1 = CommandStatus::Active;
+  let active2 = active1.clone();
+  assert_eq!(active1, active2);
+
+  let experimental = CommandStatus::Experimental;
+  assert_ne!(active1, experimental);
+
+  let deprecated1 = CommandStatus::Deprecated
+  {
+    reason: "Old API".to_string(),
+    since: Some("1.0.0".to_string()),
+    replacement: Some(".new".to_string()),
+  };
+  let deprecated2 = deprecated1.clone();
+  assert_eq!(deprecated1, deprecated2);
+}
+
+#[ cfg( feature = "json_parser" ) ]
+#[ test ]
+fn command_status_serde_json_active()
+{
+  let active = CommandStatus::Active;
+  let json = serde_json::to_string(&active).expect("serialization should succeed");
+  assert_eq!(json, "\"active\"");
+
+  let deserialized: CommandStatus = serde_json::from_str(&json)
+    .expect("deserialization should succeed");
+  assert_eq!(active, deserialized);
+}
+
+#[ cfg( feature = "json_parser" ) ]
+#[ test ]
+fn command_status_serde_json_experimental()
+{
+  let experimental = CommandStatus::Experimental;
+  let json = serde_json::to_string(&experimental).expect("serialization should succeed");
+  assert_eq!(json, "\"experimental\"");
+
+  let deserialized: CommandStatus = serde_json::from_str(&json)
+    .expect("deserialization should succeed");
+  assert_eq!(experimental, deserialized);
+}
+
+#[ cfg( feature = "json_parser" ) ]
+#[ test ]
+fn command_status_serde_json_internal()
+{
+  let internal = CommandStatus::Internal;
+  let json = serde_json::to_string(&internal).expect("serialization should succeed");
+  assert_eq!(json, "\"internal\"");
+
+  let deserialized: CommandStatus = serde_json::from_str(&json)
+    .expect("deserialization should succeed");
+  assert_eq!(internal, deserialized);
+}
+
+#[ cfg( feature = "json_parser" ) ]
+#[ test ]
+fn command_status_serde_json_deprecated()
+{
+  let deprecated = CommandStatus::Deprecated
+  {
+    reason: "Use .new instead".to_string(),
+    since: Some("2.0.0".to_string()),
+    replacement: Some(".new".to_string()),
+  };
+
+  let json = serde_json::to_string(&deprecated).expect("serialization should succeed");
+  
+  // Should be a JSON object with fields
+  assert!(json.contains("\"status\""));
+  assert!(json.contains("\"deprecated\""));
+  assert!(json.contains("\"reason\""));
+  assert!(json.contains("Use .new instead"));
+
+  let deserialized: CommandStatus = serde_json::from_str(&json)
+    .expect("deserialization should succeed");
+  
+  assert!(deserialized.is_deprecated());
+  let (reason, since, replacement) = deserialized.deprecation_info().unwrap();
+  assert_eq!(reason, "Use .new instead");
+  assert_eq!(since.as_ref().unwrap(), "2.0.0");
+  assert_eq!(replacement.as_ref().unwrap(), ".new");
+}
+
+#[ cfg( feature = "json_parser" ) ]
+#[ test ]
+fn command_status_serde_json_backward_compatible()
+{
+  // Test backward compatibility with string-based status
+  let test_cases = vec![
+    ("\"stable\"", CommandStatus::Active),
+    ("\"active\"", CommandStatus::Active),
+    ("\"experimental\"", CommandStatus::Experimental),
+    ("\"internal\"", CommandStatus::Internal),
+    ("\"deprecated\"", CommandStatus::Deprecated { 
+      reason: String::new(), 
+      since: None, 
+      replacement: None 
+    }),
+  ];
+
+  for (json, expected) in test_cases
+  {
+    let deserialized: CommandStatus = serde_json::from_str(json)
+      .expect(&format!("deserialization of {} should succeed", json));
+    assert_eq!(deserialized, expected, "Failed for JSON: {}", json);
+  }
+}
+
+#[ cfg( feature = "yaml_parser" ) ]
+#[ test ]
+fn command_status_serde_yaml_simple()
+{
+  let test_cases = vec![
+    ("active", CommandStatus::Active),
+    ("stable", CommandStatus::Active),
+    ("experimental", CommandStatus::Experimental),
+    ("internal", CommandStatus::Internal),
+    ("deprecated", CommandStatus::Deprecated { 
+      reason: String::new(), 
+      since: None, 
+      replacement: None 
+    }),
+  ];
+
+  for (yaml, expected) in test_cases
+  {
+    let deserialized: CommandStatus = serde_yaml::from_str(yaml)
+      .expect(&format!("YAML deserialization of {} should succeed", yaml));
+    assert_eq!(deserialized, expected, "Failed for YAML: {}", yaml);
+  }
+}
+
+#[ cfg( feature = "yaml_parser" ) ]
+#[ test ]
+fn command_status_serde_yaml_deprecated_object()
+{
+  let yaml = r#"
+status: deprecated
+reason: Use .new instead
+since: 2.0.0
+replacement: .new
+"#;
+
+  let deserialized: CommandStatus = serde_yaml::from_str(yaml)
+    .expect("YAML deserialization should succeed");
+  
+  assert!(deserialized.is_deprecated());
+  let (reason, since, replacement) = deserialized.deprecation_info().unwrap();
+  assert_eq!(reason, "Use .new instead");
+  assert_eq!(since.as_ref().unwrap(), "2.0.0");
+  assert_eq!(replacement.as_ref().unwrap(), ".new");
 }

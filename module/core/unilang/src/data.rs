@@ -435,6 +435,312 @@ mod private
   }
 
   ///
+  /// Command status indicating lifecycle stage and availability.
+  ///
+  /// # Type Safety Guarantees
+  /// - No typos in status strings (compile-time checked)
+  /// - Structured deprecation data
+  /// - Clear distinction between stable/experimental/internal
+  ///
+  /// # Examples
+  /// ```
+  /// use unilang::data::CommandStatus;
+  ///
+  /// // Active command
+  /// let active = CommandStatus::Active;
+  /// assert!(active.is_active());
+  ///
+  /// // Deprecated command with metadata
+  /// let deprecated = CommandStatus::Deprecated {
+  ///   reason: "Use .new_command instead".to_string(),
+  ///   since: Some("2.0.0".to_string()),
+  ///   replacement: Some(".new_command".to_string()),
+  /// };
+  /// assert!(deprecated.is_deprecated());
+  /// ```
+  #[ derive( Debug, Clone, PartialEq, Eq ) ]
+  pub enum CommandStatus
+  {
+    /// Command is active and stable for production use
+    Active,
+
+    /// Command is deprecated and may be removed in future versions
+    Deprecated
+    {
+      /// Reason for deprecation and migration guidance
+      reason : String,
+      /// Version when deprecation started
+      since : Option< String >,
+      /// Suggested replacement command
+      replacement : Option< String >,
+    },
+
+    /// Command is experimental and API may change
+    Experimental,
+
+    /// Command is for internal use only
+    Internal,
+  }
+
+  impl CommandStatus
+  {
+    ///
+    /// Returns true if this command is active/stable.
+    ///
+    /// # Examples
+    /// ```
+    /// use unilang::data::CommandStatus;
+    ///
+    /// let active = CommandStatus::Active;
+    /// assert!(active.is_active());
+    ///
+    /// let experimental = CommandStatus::Experimental;
+    /// assert!(!experimental.is_active());
+    /// ```
+    pub fn is_active( &self ) -> bool
+    {
+      matches!( self, CommandStatus::Active )
+    }
+
+    ///
+    /// Returns true if this command is deprecated.
+    ///
+    /// # Examples
+    /// ```
+    /// use unilang::data::CommandStatus;
+    ///
+    /// let deprecated = CommandStatus::Deprecated {
+    ///   reason: "Old API".to_string(),
+    ///   since: None,
+    ///   replacement: None,
+    /// };
+    /// assert!(deprecated.is_deprecated());
+    /// ```
+    pub fn is_deprecated( &self ) -> bool
+    {
+      matches!( self, CommandStatus::Deprecated { .. } )
+    }
+
+    ///
+    /// Returns true if this command is experimental.
+    ///
+    /// # Examples
+    /// ```
+    /// use unilang::data::CommandStatus;
+    ///
+    /// let experimental = CommandStatus::Experimental;
+    /// assert!(experimental.is_experimental());
+    /// ```
+    pub fn is_experimental( &self ) -> bool
+    {
+      matches!( self, CommandStatus::Experimental )
+    }
+
+    ///
+    /// Returns true if this command is internal-only.
+    ///
+    /// # Examples
+    /// ```
+    /// use unilang::data::CommandStatus;
+    ///
+    /// let internal = CommandStatus::Internal;
+    /// assert!(internal.is_internal());
+    /// ```
+    pub fn is_internal( &self ) -> bool
+    {
+      matches!( self, CommandStatus::Internal )
+    }
+
+    ///
+    /// Gets deprecation metadata if this command is deprecated.
+    ///
+    /// # Examples
+    /// ```
+    /// use unilang::data::CommandStatus;
+    ///
+    /// let deprecated = CommandStatus::Deprecated {
+    ///   reason: "Use .new".to_string(),
+    ///   since: Some("2.0.0".to_string()),
+    ///   replacement: Some(".new".to_string()),
+    /// };
+    ///
+    /// let (reason, since, replacement) = deprecated.deprecation_info().unwrap();
+    /// assert_eq!(reason, "Use .new");
+    /// assert_eq!(since.as_ref().unwrap(), "2.0.0");
+    /// assert_eq!(replacement.as_ref().unwrap(), ".new");
+    /// ```
+    pub fn deprecation_info( &self ) -> Option< ( &str, &Option< String >, &Option< String > ) >
+    {
+      match self
+      {
+        CommandStatus::Deprecated { reason, since, replacement } =>
+        {
+          Some( ( reason.as_str(), since, replacement ) )
+        },
+        _ => None,
+      }
+    }
+  }
+
+  impl Default for CommandStatus
+  {
+    fn default() -> Self
+    {
+      CommandStatus::Active
+    }
+  }
+
+  impl std::fmt::Display for CommandStatus
+  {
+    fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
+    {
+      match self
+      {
+        CommandStatus::Active => write!( f, "active" ),
+        CommandStatus::Deprecated { reason, since, replacement } =>
+        {
+          write!( f, "deprecated" )?;
+          if let Some( s ) = since
+          {
+            write!( f, " (since {})", s )?;
+          }
+          if !reason.is_empty()
+          {
+            write!( f, ": {}", reason )?;
+          }
+          if let Some( r ) = replacement
+          {
+            write!( f, " → {}", r )?;
+          }
+          Ok(())
+        },
+        CommandStatus::Experimental => write!( f, "experimental" ),
+        CommandStatus::Internal => write!( f, "internal" ),
+      }
+    }
+  }
+
+  impl serde::Serialize for CommandStatus
+  {
+    fn serialize< S >( &self, serializer : S ) -> Result< S::Ok, S::Error >
+    where
+      S : serde::Serializer,
+    {
+      use serde::ser::SerializeMap;
+
+      match self
+      {
+        CommandStatus::Active =>
+        {
+          serializer.serialize_str( "active" )
+        },
+        CommandStatus::Experimental =>
+        {
+          serializer.serialize_str( "experimental" )
+        },
+        CommandStatus::Internal =>
+        {
+          serializer.serialize_str( "internal" )
+        },
+        CommandStatus::Deprecated { reason, since, replacement } =>
+        {
+          let mut map = serializer.serialize_map( Some( 4 ) )?;
+          map.serialize_entry( "status", "deprecated" )?;
+          map.serialize_entry( "reason", reason )?;
+          map.serialize_entry( "since", since )?;
+          map.serialize_entry( "replacement", replacement )?;
+          map.end()
+        },
+      }
+    }
+  }
+
+  impl< 'de > serde::Deserialize< 'de > for CommandStatus
+  {
+    fn deserialize< D >( deserializer : D ) -> Result< Self, D::Error >
+    where
+      D : serde::Deserializer< 'de >,
+    {
+      use serde::de::{ self, Visitor, MapAccess };
+
+      struct CommandStatusVisitor;
+
+      impl< 'de > Visitor< 'de > for CommandStatusVisitor
+      {
+        type Value = CommandStatus;
+
+        fn expecting( &self, formatter : &mut std::fmt::Formatter ) -> std::fmt::Result
+        {
+          formatter.write_str( "a command status string or deprecated status object" )
+        }
+
+        fn visit_str< E >( self, value : &str ) -> Result< CommandStatus, E >
+        where
+          E : de::Error,
+        {
+          match value.to_lowercase().as_str()
+          {
+            "active" | "stable" => Ok( CommandStatus::Active ),
+            "experimental" => Ok( CommandStatus::Experimental ),
+            "internal" => Ok( CommandStatus::Internal ),
+            "deprecated" =>
+            {
+              // Simple deprecated without metadata
+              Ok( CommandStatus::Deprecated
+              {
+                reason : String::new(),
+                since : None,
+                replacement : None,
+              })
+            },
+            _ => Ok( CommandStatus::Active ), // Default to active for unknown
+          }
+        }
+
+        fn visit_map< M >( self, mut map : M ) -> Result< CommandStatus, M::Error >
+        where
+          M : MapAccess< 'de >,
+        {
+          let mut status : Option< String > = None;
+          let mut reason : Option< String > = None;
+          let mut since : Option< Option< String > > = None;
+          let mut replacement : Option< Option< String > > = None;
+
+          while let Some( key ) = map.next_key::< String >()?
+          {
+            match key.as_str()
+            {
+              "status" => status = Some( map.next_value()? ),
+              "reason" => reason = Some( map.next_value()? ),
+              "since" => since = Some( map.next_value()? ),
+              "replacement" => replacement = Some( map.next_value()? ),
+              _ => { map.next_value::< serde::de::IgnoredAny >()?; },
+            }
+          }
+
+          match status.as_deref()
+          {
+            Some( "deprecated" ) =>
+            {
+              Ok( CommandStatus::Deprecated
+              {
+                reason : reason.unwrap_or_default(),
+                since : since.flatten(),
+                replacement : replacement.flatten(),
+              })
+            },
+            Some( "experimental" ) => Ok( CommandStatus::Experimental ),
+            Some( "internal" ) => Ok( CommandStatus::Internal ),
+            _ => Ok( CommandStatus::Active ),
+          }
+        }
+      }
+
+      deserializer.deserialize_any( CommandStatusVisitor )
+    }
+  }
+
+  ///
   /// Helper function to construct a full command name from namespace and name components.
   ///
   /// This function implements the canonical algorithm for combining namespace and name
@@ -2044,14 +2350,952 @@ mod private
       }
     }
   }
+
+  //
+  // CommandDefinitionV2 - Type-Safe Redesign with Private Fields
+  //
+
+///
+/// Phase 2 type-safe command definition with validated newtypes and private fields.
+///
+/// This is the new implementation that makes invalid states impossible at compile time:
+/// - All fields are private (no direct mutation)
+/// - Uses validated newtypes (CommandName, NamespaceType, CommandStatus, VersionType)
+/// - Controlled access through getter/setter methods
+/// - Custom serde with validation during deserialization
+///
+/// # Migration from CommandDefinition (Legacy)
+///
+/// The old CommandDefinition with public fields will be deprecated in favor of this V2.
+/// Use `CommandDefinitionV2::new()` or the builder pattern to construct commands.
+///
+/// # Examples
+/// ```rust
+/// use unilang::data::{ CommandDefinitionV2, CommandName, NamespaceType, CommandStatus, VersionType };
+///
+/// // Create a new command with validation
+/// let cmd = CommandDefinitionV2::new(
+///   CommandName::new(".build").unwrap(),
+///   "Build the project".to_string(),
+/// );
+///
+/// // Access via getters
+/// assert_eq!(cmd.name().as_str(), ".build");
+/// assert_eq!(cmd.description(), "Build the project");
+/// ```
+#[ derive( Debug, Clone ) ]
+pub struct CommandDefinitionV2
+{
+  /// Validated command name (always starts with '.' prefix)
+  name : CommandName,
+  /// Brief description of what the command does
+  description : String,
+  /// List of arguments the command accepts
+  arguments : Vec< ArgumentDefinition >,
+  /// Optional link to the routine that executes this command
+  routine_link : Option< String >,
+  /// Validated namespace (empty = root, non-empty must have '.' prefix)
+  namespace : NamespaceType,
+  /// Short hint for the command
+  hint : String,
+  /// Command status (Active, Deprecated, Experimental, Internal)
+  status : CommandStatus,
+  /// Validated version string
+  version : VersionType,
+  /// Tags associated with the command
+  tags : Vec< String >,
+  /// Aliases for the command
+  aliases : Vec< String >,
+  /// Permissions required to execute the command
+  permissions : Vec< String >,
+  /// Indicates if the command is idempotent
+  idempotent : bool,
+  /// Deprecation message (deprecated - use CommandStatus::Deprecated instead)
+  deprecation_message : String,
+  /// Suggested HTTP method for Web API modality
+  http_method_hint : String,
+  /// Usage examples for help text
+  examples : Vec< String >,
+  /// Whether to automatically generate a .command.help counterpart
+  auto_help_enabled : bool,
+  /// Category for grouping commands in help output
+  category : String,
+  /// Short one-line description for brief help listings
+  short_desc : String,
+  /// Hide this command from brief help listings
+  hidden_from_list : bool,
+  /// Sort priority within category (lower numbers first)
+  priority : i32,
+  /// Explicit group membership for related commands
+  group : String,
 }
+
+impl CommandDefinitionV2
+{
+  ///
+  /// Creates a new command with sensible defaults.
+  ///
+  /// This is the recommended way to create commands. It requires only the essential
+  /// validated fields (name and description) and provides reasonable defaults for
+  /// all optional fields.
+  ///
+  /// # Arguments
+  /// * `name` - Validated command name (must start with '.')
+  /// * `description` - Brief description of what the command does
+  ///
+  /// # Returns
+  /// * `Self` - A new CommandDefinitionV2 with defaults applied
+  ///
+  /// # Examples
+  /// ```rust
+  /// use unilang::data::{ CommandDefinitionV2, CommandName };
+  ///
+  /// let name = CommandName::new(".greet").unwrap();
+  /// let cmd = CommandDefinitionV2::new(name, "Greets the user".to_string());
+  ///
+  /// assert_eq!(cmd.name().as_str(), ".greet");
+  /// assert_eq!(cmd.description(), "Greets the user");
+  /// ```
+  #[ must_use ]
+  pub fn new( name : CommandName, description : String ) -> Self
+  {
+    Self
+    {
+      name,
+      description,
+      arguments : Vec::new(),
+      routine_link : None,
+      namespace : NamespaceType::new( "" ).expect( "empty namespace always valid" ),
+      hint : String::new(),
+      status : CommandStatus::Active,
+      version : VersionType::new( "1.0.0" ).expect( "default version valid" ),
+      tags : Vec::new(),
+      aliases : Vec::new(),
+      permissions : Vec::new(),
+      idempotent : true,
+      deprecation_message : String::new(),
+      http_method_hint : "GET".to_string(),
+      examples : Vec::new(),
+      auto_help_enabled : true,
+      category : String::new(),
+      short_desc : String::new(),
+      hidden_from_list : false,
+      priority : 0,
+      group : String::new(),
+    }
+  }
+
+  // ===================================================================
+  // Getter Methods - Read-only access to private fields
+  // ===================================================================
+
+  /// Returns a reference to the validated command name
+  #[ must_use ]
+  pub fn name( &self ) -> &CommandName
+  {
+    &self.name
+  }
+
+  /// Returns the command description
+  #[ must_use ]
+  pub fn description( &self ) -> &str
+  {
+    &self.description
+  }
+
+  /// Returns a reference to the command arguments
+  #[ must_use ]
+  pub fn arguments( &self ) -> &Vec< ArgumentDefinition >
+  {
+    &self.arguments
+  }
+
+  /// Returns the routine link if set
+  #[ must_use ]
+  pub fn routine_link( &self ) -> Option< &String >
+  {
+    self.routine_link.as_ref()
+  }
+
+  /// Returns a reference to the validated namespace
+  #[ must_use ]
+  pub fn namespace( &self ) -> &NamespaceType
+  {
+    &self.namespace
+  }
+
+  /// Returns the command hint
+  #[ must_use ]
+  pub fn hint( &self ) -> &str
+  {
+    &self.hint
+  }
+
+  /// Returns a reference to the command status
+  #[ must_use ]
+  pub fn status( &self ) -> &CommandStatus
+  {
+    &self.status
+  }
+
+  /// Returns a reference to the validated version
+  #[ must_use ]
+  pub fn version( &self ) -> &VersionType
+  {
+    &self.version
+  }
+
+  /// Returns a reference to the command tags
+  #[ must_use ]
+  pub fn tags( &self ) -> &Vec< String >
+  {
+    &self.tags
+  }
+
+  /// Returns a reference to the command aliases
+  #[ must_use ]
+  pub fn aliases( &self ) -> &Vec< String >
+  {
+    &self.aliases
+  }
+
+  /// Returns a reference to the permissions
+  #[ must_use ]
+  pub fn permissions( &self ) -> &Vec< String >
+  {
+    &self.permissions
+  }
+
+  /// Returns whether the command is idempotent
+  #[ must_use ]
+  pub fn idempotent( &self ) -> bool
+  {
+    self.idempotent
+  }
+
+  /// Returns the deprecation message
+  #[ must_use ]
+  pub fn deprecation_message( &self ) -> &str
+  {
+    &self.deprecation_message
+  }
+
+  /// Returns the HTTP method hint
+  #[ must_use ]
+  pub fn http_method_hint( &self ) -> &str
+  {
+    &self.http_method_hint
+  }
+
+  /// Returns a reference to the usage examples
+  #[ must_use ]
+  pub fn examples( &self ) -> &Vec< String >
+  {
+    &self.examples
+  }
+
+  /// Returns whether auto-help is enabled
+  #[ must_use ]
+  pub fn auto_help_enabled( &self ) -> bool
+  {
+    self.auto_help_enabled
+  }
+
+  /// Returns the command category
+  #[ must_use ]
+  pub fn category( &self ) -> &str
+  {
+    &self.category
+  }
+
+  /// Returns the short description
+  #[ must_use ]
+  pub fn short_desc( &self ) -> &str
+  {
+    &self.short_desc
+  }
+
+  /// Returns whether the command is hidden from listings
+  #[ must_use ]
+  pub fn hidden_from_list( &self ) -> bool
+  {
+    self.hidden_from_list
+  }
+
+  /// Returns the command priority
+  #[ must_use ]
+  pub fn priority( &self ) -> i32
+  {
+    self.priority
+  }
+
+  /// Returns the command group
+  #[ must_use ]
+  pub fn group( &self ) -> &str
+  {
+    &self.group
+  }
+
+  // ===================================================================
+  // Setter Methods - Fluent API with validation
+  // ===================================================================
+
+  /// Sets the command name (validated)
+  #[ must_use ]
+  pub fn with_name( mut self, name : CommandName ) -> Self
+  {
+    self.name = name;
+    self
+  }
+
+  /// Sets the command description
+  #[ must_use ]
+  pub fn with_description( mut self, description : impl Into< String > ) -> Self
+  {
+    self.description = description.into();
+    self
+  }
+
+  /// Sets the command arguments
+  #[ must_use ]
+  pub fn with_arguments( mut self, arguments : Vec< ArgumentDefinition > ) -> Self
+  {
+    self.arguments = arguments;
+    self
+  }
+
+  /// Sets the routine link
+  #[ must_use ]
+  pub fn with_routine_link( mut self, link : Option< String > ) -> Self
+  {
+    self.routine_link = link;
+    self
+  }
+
+  /// Sets the command namespace (validated)
+  #[ must_use ]
+  pub fn with_namespace( mut self, namespace : NamespaceType ) -> Self
+  {
+    self.namespace = namespace;
+    self
+  }
+
+  /// Sets the command hint
+  #[ must_use ]
+  pub fn with_hint( mut self, hint : impl Into< String > ) -> Self
+  {
+    self.hint = hint.into();
+    self
+  }
+
+  /// Sets the command status
+  #[ must_use ]
+  pub fn with_status( mut self, status : CommandStatus ) -> Self
+  {
+    self.status = status;
+    self
+  }
+
+  /// Sets the command version (validated)
+  #[ must_use ]
+  pub fn with_version( mut self, version : VersionType ) -> Self
+  {
+    self.version = version;
+    self
+  }
+
+  /// Sets the command tags
+  #[ must_use ]
+  pub fn with_tags( mut self, tags : Vec< String > ) -> Self
+  {
+    self.tags = tags;
+    self
+  }
+
+  /// Sets the command aliases
+  #[ must_use ]
+  pub fn with_aliases( mut self, aliases : Vec< String > ) -> Self
+  {
+    self.aliases = aliases;
+    self
+  }
+
+  /// Sets the permissions
+  #[ must_use ]
+  pub fn with_permissions( mut self, permissions : Vec< String > ) -> Self
+  {
+    self.permissions = permissions;
+    self
+  }
+
+  /// Sets whether the command is idempotent
+  #[ must_use ]
+  pub fn with_idempotent( mut self, idempotent : bool ) -> Self
+  {
+    self.idempotent = idempotent;
+    self
+  }
+
+  /// Sets the deprecation message
+  #[ must_use ]
+  pub fn with_deprecation_message( mut self, message : impl Into< String > ) -> Self
+  {
+    self.deprecation_message = message.into();
+    self
+  }
+
+  /// Sets the HTTP method hint
+  #[ must_use ]
+  pub fn with_http_method_hint( mut self, hint : impl Into< String > ) -> Self
+  {
+    self.http_method_hint = hint.into();
+    self
+  }
+
+  /// Sets the usage examples
+  #[ must_use ]
+  pub fn with_examples( mut self, examples : Vec< String > ) -> Self
+  {
+    self.examples = examples;
+    self
+  }
+
+  /// Sets whether auto-help is enabled
+  #[ must_use ]
+  pub fn with_auto_help( mut self, enabled : bool ) -> Self
+  {
+    self.auto_help_enabled = enabled;
+    self
+  }
+
+  /// Sets the command category
+  #[ must_use ]
+  pub fn with_category( mut self, category : impl Into< String > ) -> Self
+  {
+    self.category = category.into();
+    self
+  }
+
+  /// Sets the short description
+  #[ must_use ]
+  pub fn with_short_desc( mut self, desc : impl Into< String > ) -> Self
+  {
+    self.short_desc = desc.into();
+    self
+  }
+
+  /// Sets whether the command is hidden from listings
+  #[ must_use ]
+  pub fn with_hidden_from_list( mut self, hidden : bool ) -> Self
+  {
+    self.hidden_from_list = hidden;
+    self
+  }
+
+  /// Sets the command priority
+  #[ must_use ]
+  pub fn with_priority( mut self, priority : i32 ) -> Self
+  {
+    self.priority = priority;
+    self
+  }
+
+  /// Sets the command group
+  #[ must_use ]
+  pub fn with_group( mut self, group : impl Into< String > ) -> Self
+  {
+    self.group = group.into();
+    self
+  }
+
+  // ===================================================================
+  // Helper Methods (ported from CommandDefinition)
+  // ===================================================================
+
+  ///
+  /// Returns true if this command should automatically generate a help counterpart.
+  ///
+  /// # Examples
+  /// ```rust
+  /// use unilang::data::{ CommandDefinitionV2, CommandName };
+  ///
+  /// let name = CommandName::new(".test").unwrap();
+  /// let cmd = CommandDefinitionV2::new(name, "Test".to_string())
+  ///   .with_auto_help(true);
+  ///
+  /// assert!(cmd.has_auto_help());
+  /// ```
+  #[ must_use ]
+  pub fn has_auto_help( &self ) -> bool
+  {
+    self.auto_help_enabled
+  }
+
+  ///
+  /// Constructs the full command name from namespace and name components.
+  ///
+  /// This method handles the various combinations of namespaced and non-namespaced
+  /// command names, ensuring that the resulting full name always starts with a dot
+  /// prefix according to unilang conventions.
+  ///
+  /// # Returns
+  /// * `String` - The fully qualified command name with dot prefix
+  ///
+  /// # Examples
+  /// ```rust
+  /// use unilang::data::{ CommandDefinitionV2, CommandName, NamespaceType };
+  ///
+  /// // Simple command (no namespace)
+  /// let name = CommandName::new(".help").unwrap();
+  /// let cmd1 = CommandDefinitionV2::new(name, "Help".to_string());
+  /// assert_eq!(cmd1.full_name(), ".help");
+  ///
+  /// // Namespaced command
+  /// let name2 = CommandName::new(".list").unwrap();
+  /// let ns = NamespaceType::new(".session").unwrap();
+  /// let cmd2 = CommandDefinitionV2::new(name2, "List".to_string())
+  ///   .with_namespace(ns);
+  /// assert_eq!(cmd2.full_name(), ".session.list");
+  /// ```
+  #[ must_use ]
+  pub fn full_name( &self ) -> String
+  {
+    construct_full_command_name( self.namespace.as_str(), self.name.as_str() )
+  }
+
+  ///
+  /// Generates a corresponding help command definition for this command.
+  ///
+  /// Creates a new `CommandDefinitionV2` for the `.command.help` counterpart
+  /// that provides detailed help information about the parent command.
+  ///
+  /// # Returns
+  /// * `CommandDefinitionV2` - A new command definition for the help counterpart
+  ///
+  /// # Examples
+  /// ```rust
+  /// use unilang::data::{ CommandDefinitionV2, CommandName };
+  ///
+  /// let name = CommandName::new(".example").unwrap();
+  /// let cmd = CommandDefinitionV2::new(name, "Example".to_string());
+  ///
+  /// let help_cmd = cmd.generate_help_command();
+  /// assert_eq!(help_cmd.name().as_str(), ".example.help");
+  /// assert!(help_cmd.description().contains(".example"));
+  /// ```
+  #[ must_use ]
+  pub fn generate_help_command( &self ) -> CommandDefinitionV2
+  {
+    let help_name = CommandName::new( format!( "{}.help", self.name.as_str() ) )
+      .expect( "help command name should be valid" );
+
+    CommandDefinitionV2
+    {
+      name : help_name,
+      namespace : self.namespace.clone(),
+      description : format!( "Display help information for the '{}' command", self.name.as_str() ),
+      hint : format!( "Help for {}", self.name.as_str() ),
+      status : CommandStatus::Active,
+      version : self.version.clone(),
+      arguments : vec![], // Help commands typically take no arguments
+      routine_link : None, // Will be set during registration
+      tags : vec![ "help".to_string(), "documentation".to_string() ],
+      aliases : vec![ format!( "{}.h", self.name.as_str() ) ],
+      permissions : vec![], // Help commands accessible to all
+      idempotent : true, // Help commands always idempotent
+      deprecation_message : String::new(),
+      http_method_hint : "GET".to_string(), // Help is read-only
+      examples : vec![
+        format!( "{}.help", self.name.as_str() ),
+        format!( "{} ??", self.name.as_str() )
+      ],
+      auto_help_enabled : false, // Prevent recursive help generation
+      category : "help".to_string(),
+      short_desc : format!( "Help for {}", self.name.as_str() ),
+      hidden_from_list : true, // Hide .help variants from brief listings
+      priority : 999, // Low priority (shown last if visible)
+      group : String::new(),
+    }
+  }
+}
+
+//
+// Serde Implementation for CommandDefinitionV2
+//
+
+impl serde::Serialize for CommandDefinitionV2
+{
+  fn serialize< S >( &self, serializer : S ) -> Result< S::Ok, S::Error >
+  where
+    S : serde::Serializer,
+  {
+    use serde::ser::SerializeStruct;
+
+    let mut state = serializer.serialize_struct( "CommandDefinition", 21 )?;
+
+    state.serialize_field( "name", &self.name )?;
+    state.serialize_field( "description", &self.description )?;
+    state.serialize_field( "arguments", &self.arguments )?;
+    state.serialize_field( "routine_link", &self.routine_link )?;
+    state.serialize_field( "namespace", &self.namespace )?;
+    state.serialize_field( "hint", &self.hint )?;
+    state.serialize_field( "status", &self.status )?;
+    state.serialize_field( "version", &self.version )?;
+    state.serialize_field( "tags", &self.tags )?;
+    state.serialize_field( "aliases", &self.aliases )?;
+    state.serialize_field( "permissions", &self.permissions )?;
+    state.serialize_field( "idempotent", &self.idempotent )?;
+    state.serialize_field( "deprecation_message", &self.deprecation_message )?;
+    state.serialize_field( "http_method_hint", &self.http_method_hint )?;
+    state.serialize_field( "examples", &self.examples )?;
+    state.serialize_field( "auto_help_enabled", &self.auto_help_enabled )?;
+    state.serialize_field( "category", &self.category )?;
+    state.serialize_field( "short_desc", &self.short_desc )?;
+    state.serialize_field( "hidden_from_list", &self.hidden_from_list )?;
+    state.serialize_field( "priority", &self.priority )?;
+    state.serialize_field( "group", &self.group )?;
+
+    state.end()
+  }
+}
+
+impl< 'de > serde::Deserialize< 'de > for CommandDefinitionV2
+{
+  fn deserialize< D >( deserializer : D ) -> Result< Self, D::Error >
+  where
+    D : serde::Deserializer< 'de >,
+  {
+    use serde::de::{ self, Visitor, MapAccess };
+
+    #[ derive( serde::Deserialize ) ]
+    #[ serde( field_identifier, rename_all = "snake_case" ) ]
+    enum Field
+    {
+      Name,
+      Description,
+      Arguments,
+      RoutineLink,
+      Namespace,
+      Hint,
+      Status,
+      Version,
+      Tags,
+      Aliases,
+      Permissions,
+      Idempotent,
+      DeprecationMessage,
+      HttpMethodHint,
+      Examples,
+      AutoHelpEnabled,
+      Category,
+      ShortDesc,
+      HiddenFromList,
+      Priority,
+      Group,
+    }
+
+    struct CommandDefinitionV2Visitor;
+
+    impl< 'de > Visitor< 'de > for CommandDefinitionV2Visitor
+    {
+      type Value = CommandDefinitionV2;
+
+      fn expecting( &self, formatter : &mut std::fmt::Formatter ) -> std::fmt::Result
+      {
+        formatter.write_str( "struct CommandDefinition" )
+      }
+
+      fn visit_map< V >( self, mut map : V ) -> Result< CommandDefinitionV2, V::Error >
+      where
+        V : MapAccess< 'de >,
+      {
+        let mut name : Option< CommandName > = None;
+        let mut description : Option< String > = None;
+        let mut arguments : Option< Vec< ArgumentDefinition > > = None;
+        let mut routine_link : Option< Option< String > > = None;
+        let mut namespace : Option< NamespaceType > = None;
+        let mut hint : Option< String > = None;
+        let mut status : Option< CommandStatus > = None;
+        let mut version : Option< VersionType > = None;
+        let mut tags : Option< Vec< String > > = None;
+        let mut aliases : Option< Vec< String > > = None;
+        let mut permissions : Option< Vec< String > > = None;
+        let mut idempotent : Option< bool > = None;
+        let mut deprecation_message : Option< String > = None;
+        let mut http_method_hint : Option< String > = None;
+        let mut examples : Option< Vec< String > > = None;
+        let mut auto_help_enabled : Option< bool > = None;
+        let mut category : Option< String > = None;
+        let mut short_desc : Option< String > = None;
+        let mut hidden_from_list : Option< bool > = None;
+        let mut priority : Option< i32 > = None;
+        let mut group : Option< String > = None;
+
+        while let Some( key ) = map.next_key()?
+        {
+          match key
+          {
+            Field::Name =>
+            {
+              if name.is_some()
+              {
+                return Err( de::Error::duplicate_field( "name" ) );
+              }
+              name = Some( map.next_value()? );
+            },
+            Field::Description =>
+            {
+              if description.is_some()
+              {
+                return Err( de::Error::duplicate_field( "description" ) );
+              }
+              description = Some( map.next_value()? );
+            },
+            Field::Arguments =>
+            {
+              if arguments.is_some()
+              {
+                return Err( de::Error::duplicate_field( "arguments" ) );
+              }
+              arguments = Some( map.next_value()? );
+            },
+            Field::RoutineLink =>
+            {
+              if routine_link.is_some()
+              {
+                return Err( de::Error::duplicate_field( "routine_link" ) );
+              }
+              routine_link = Some( map.next_value()? );
+            },
+            Field::Namespace =>
+            {
+              if namespace.is_some()
+              {
+                return Err( de::Error::duplicate_field( "namespace" ) );
+              }
+              namespace = Some( map.next_value()? );
+            },
+            Field::Hint =>
+            {
+              if hint.is_some()
+              {
+                return Err( de::Error::duplicate_field( "hint" ) );
+              }
+              hint = Some( map.next_value()? );
+            },
+            Field::Status =>
+            {
+              if status.is_some()
+              {
+                return Err( de::Error::duplicate_field( "status" ) );
+              }
+              status = Some( map.next_value()? );
+            },
+            Field::Version =>
+            {
+              if version.is_some()
+              {
+                return Err( de::Error::duplicate_field( "version" ) );
+              }
+              version = Some( map.next_value()? );
+            },
+            Field::Tags =>
+            {
+              if tags.is_some()
+              {
+                return Err( de::Error::duplicate_field( "tags" ) );
+              }
+              tags = Some( map.next_value()? );
+            },
+            Field::Aliases =>
+            {
+              if aliases.is_some()
+              {
+                return Err( de::Error::duplicate_field( "aliases" ) );
+              }
+              aliases = Some( map.next_value()? );
+            },
+            Field::Permissions =>
+            {
+              if permissions.is_some()
+              {
+                return Err( de::Error::duplicate_field( "permissions" ) );
+              }
+              permissions = Some( map.next_value()? );
+            },
+            Field::Idempotent =>
+            {
+              if idempotent.is_some()
+              {
+                return Err( de::Error::duplicate_field( "idempotent" ) );
+              }
+              idempotent = Some( map.next_value()? );
+            },
+            Field::DeprecationMessage =>
+            {
+              if deprecation_message.is_some()
+              {
+                return Err( de::Error::duplicate_field( "deprecation_message" ) );
+              }
+              deprecation_message = Some( map.next_value()? );
+            },
+            Field::HttpMethodHint =>
+            {
+              if http_method_hint.is_some()
+              {
+                return Err( de::Error::duplicate_field( "http_method_hint" ) );
+              }
+              http_method_hint = Some( map.next_value()? );
+            },
+            Field::Examples =>
+            {
+              if examples.is_some()
+              {
+                return Err( de::Error::duplicate_field( "examples" ) );
+              }
+              examples = Some( map.next_value()? );
+            },
+            Field::AutoHelpEnabled =>
+            {
+              if auto_help_enabled.is_some()
+              {
+                return Err( de::Error::duplicate_field( "auto_help_enabled" ) );
+              }
+              auto_help_enabled = Some( map.next_value()? );
+            },
+            Field::Category =>
+            {
+              if category.is_some()
+              {
+                return Err( de::Error::duplicate_field( "category" ) );
+              }
+              category = Some( map.next_value()? );
+            },
+            Field::ShortDesc =>
+            {
+              if short_desc.is_some()
+              {
+                return Err( de::Error::duplicate_field( "short_desc" ) );
+              }
+              short_desc = Some( map.next_value()? );
+            },
+            Field::HiddenFromList =>
+            {
+              if hidden_from_list.is_some()
+              {
+                return Err( de::Error::duplicate_field( "hidden_from_list" ) );
+              }
+              hidden_from_list = Some( map.next_value()? );
+            },
+            Field::Priority =>
+            {
+              if priority.is_some()
+              {
+                return Err( de::Error::duplicate_field( "priority" ) );
+              }
+              priority = Some( map.next_value()? );
+            },
+            Field::Group =>
+            {
+              if group.is_some()
+              {
+                return Err( de::Error::duplicate_field( "group" ) );
+              }
+              group = Some( map.next_value()? );
+            },
+          }
+        }
+
+        // Required fields
+        let name = name.ok_or_else( || de::Error::missing_field( "name" ) )?;
+        let description = description.ok_or_else( || de::Error::missing_field( "description" ) )?;
+
+        // Optional fields with defaults
+        let namespace = namespace.unwrap_or_else( || NamespaceType::new( "" ).expect( "empty namespace valid" ) );
+        let hint = hint.unwrap_or_default();
+        let status = status.unwrap_or( CommandStatus::Active );
+        let version = version.unwrap_or_else( || VersionType::new( "1.0.0" ).expect( "default version valid" ) );
+        let arguments = arguments.unwrap_or_default();
+        let routine_link = routine_link.unwrap_or( None );
+        let tags = tags.unwrap_or_default();
+        let aliases = aliases.unwrap_or_default();
+        let permissions = permissions.unwrap_or_default();
+        let idempotent = idempotent.unwrap_or( true );
+        let deprecation_message = deprecation_message.unwrap_or_default();
+        let http_method_hint = http_method_hint.unwrap_or_else( || "GET".to_string() );
+        let examples = examples.unwrap_or_default();
+        let auto_help_enabled = auto_help_enabled.unwrap_or( true );
+        let category = category.unwrap_or_default();
+        let short_desc = short_desc.unwrap_or_default();
+        let hidden_from_list = hidden_from_list.unwrap_or( false );
+        let priority = priority.unwrap_or( 0 );
+        let group = group.unwrap_or_default();
+
+        Ok( CommandDefinitionV2
+        {
+          name,
+          description,
+          arguments,
+          routine_link,
+          namespace,
+          hint,
+          status,
+          version,
+          tags,
+          aliases,
+          permissions,
+          idempotent,
+          deprecation_message,
+          http_method_hint,
+          examples,
+          auto_help_enabled,
+          category,
+          short_desc,
+          hidden_from_list,
+          priority,
+          group,
+        })
+      }
+    }
+
+    const FIELDS : &[ &str ] = &[
+      "name",
+      "description",
+      "arguments",
+      "routine_link",
+      "namespace",
+      "hint",
+      "status",
+      "version",
+      "tags",
+      "aliases",
+      "permissions",
+      "idempotent",
+      "deprecation_message",
+      "http_method_hint",
+      "examples",
+      "auto_help_enabled",
+      "category",
+      "short_desc",
+      "hidden_from_list",
+      "priority",
+      "group",
+    ];
+
+    deserializer.deserialize_struct( "CommandDefinition", FIELDS, CommandDefinitionV2Visitor )
+  }
+}
+
+} // mod private
 
 mod_interface::mod_interface!
 {
   exposed use private::CommandName;
   exposed use private::NamespaceType;
   exposed use private::VersionType;
+  exposed use private::CommandStatus;
   exposed use private::CommandDefinition;
+  exposed use private::CommandDefinitionV2;
   exposed use private::ArgumentDefinition;
   exposed use private::ArgumentAttributes;
   exposed use private::Kind;
@@ -2067,7 +3311,9 @@ mod_interface::mod_interface!
   prelude use private::CommandName;
   prelude use private::NamespaceType;
   prelude use private::VersionType;
+  prelude use private::CommandStatus;
   prelude use private::CommandDefinition;
+  prelude use private::CommandDefinitionV2;
   prelude use private::ArgumentDefinition;
   prelude use private::ArgumentAttributes;
   prelude use private::Kind;

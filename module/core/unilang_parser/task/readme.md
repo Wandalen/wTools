@@ -5,7 +5,7 @@
 | Order | ID | Advisability | Value | Easiness | Safety | Priority | Status | Task | Description |
 |-------|----|--------------:|------:|---------:|-------:|---------:|--------|------|-------------|
 | 1 | 084 | 0 | 9 | 7 | 7 | 0 | ✅ (Completed) | [tokenizer_escaped_quote_handling](./completed/084_tokenizer_escaped_quote_handling.md) | Fix tokenizer handling of backslash-escaped quotes in values with whitespace |
-| 2 | 001 | 1620 | 10 | 3 | 6 | 9 | 📥 (Backlog) | [zero_copy_tokens](./backlog/001_zero_copy_tokens.md) | Zero-copy token implementation for 8-15x performance improvement |
+| 2 | 001 | 360 | 10 | 3 | 6 | 2 | 📥 (Backlog) | [zero_copy_tokens](./backlog/001_zero_copy_tokens.md) | Zero-copy token implementation for 8-15x performance improvement |
 
 ## Issues Index
 
