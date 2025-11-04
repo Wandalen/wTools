@@ -19,15 +19,66 @@ unilang processes command definitions at compile-time, generating optimized stat
 
 ## Architecture Overview
 
-**Compile-Time Processing:**
+### Build-Time Processing (Happens Once)
+
 ```text
-YAML definitions → build.rs → Static command maps → Zero-cost lookups
+Developer writes YAML
+         |
+         v
+   unilang.commands.yaml
+   - name: ".greet"
+     description: "..."
+     arguments: [...]
+         |
+         v
+   build.rs (automatic)
+   - Discovers YAML files
+   - Validates definitions
+   - Generates PHF map
+         |
+         v
+   OUT_DIR/static_commands.rs
+   static STATIC_COMMANDS: [...]
+   // PHF map with O(1) lookups
+         |
+         v
+   Binary compiled
+   (zero-overhead ready)
 ```
 
-**Runtime Execution:**
+### Runtime Execution (Every Command)
+
 ```text
-Command string → O(1) static lookup → Validated execution
+User: ".greet name::Alice"
+         |
+         v
+     Parser
+   (SIMD accelerated)
+         |
+         v
+  Static Registry Lookup
+   O(1) PHF map access
+   ~80ns (no hashing!)
+         |
+         v
+   Semantic Analyzer
+   - Validate types
+   - Apply defaults
+   - Check constraints
+         |
+         v
+   Command Routine
+   Execute business logic
+         |
+         v
+   Output Result
 ```
+
+**Key Benefits:**
+- ⚡ **Build-time:** Validation catches errors before deployment
+- 🚀 **Runtime:** O(1) lookups with zero allocations (~80ns)
+- 📦 **Binary:** Smaller size via static analysis
+- 🔒 **Type-safe:** Impossible to register invalid commands
 
 ## Getting Started (60 Seconds)
 
@@ -57,6 +108,106 @@ Command string → O(1) static lookup → Validated execution
 **What just happened?** Commands auto-discovered from YAML, compiled into zero-overhead static registry, ready for O(1) lookups.
 
 **Next:** See [detailed guide](#quick-start-build-time-registration-recommended) for production setup.
+
+## Troubleshooting
+
+Common issues and solutions for new users:
+
+### ❌ "Command not found" error
+
+**Symptom:** `Error: Command '.greet' not found in registry`
+
+**Cause:** Command name missing dot prefix
+
+**Solution:**
+```yaml
+# ❌ Wrong
+- name: "greet"
+
+# ✅ Correct
+- name: ".greet"
+```
+
+**All command names MUST start with `.` (dot prefix)**
+
+### ❌ "Type mismatch" error during build
+
+**Symptom:** Type hint warnings during `cargo build`
+
+**Cause:** YAML default values quoted when they shouldn't be
+
+**Solution:**
+```yaml
+# ❌ Wrong - quoted values
+arguments:
+  - name: "dry"
+    kind: "Boolean"
+    attributes:
+      default: 'false'     # String, not Boolean!
+
+# ✅ Correct - unquoted primitives
+arguments:
+  - name: "dry"
+    kind: "Boolean"
+    attributes:
+      default: false       # Boolean type
+```
+
+**Rule:** Boolean, Integer, Float values must NOT be quoted in YAML
+
+### ❌ Build fails with "could not find static_commands.rs"
+
+**Symptom:** `error: couldn't read .../static_commands.rs: No such file or directory`
+
+**Cause:** Wrong feature flag or missing build-time approach
+
+**Solution:**
+```toml
+# Ensure you have a build-time approach enabled
+[dependencies]
+unilang = "0.35"  # Default includes approach_yaml_multi_build
+```
+
+Check that you have at least one `.yaml` file with commands, or enable a different build-time approach feature.
+
+### ❌ Performance not improved after migration
+
+**Symptom:** Lookups still slow after switching to build-time approach
+
+**Cause:** Still using deprecated runtime registration APIs
+
+**Solution:**
+```rust,ignore
+// ❌ Wrong - still using runtime API (deprecated)
+#[allow(deprecated)]
+let registry = CommandRegistry::new();
+
+// ✅ Correct - using static registry
+let registry = StaticCommandRegistry::from_commands(&STATIC_COMMANDS);
+```
+
+Verify you're using `StaticCommandRegistry`, not `CommandRegistry::new()`.
+
+### ❌ "Unknown parameter" error
+
+**Symptom:** `Error: Unknown parameter 'nam'`
+
+**Cause:** Typo in parameter name
+
+**Solution:** Check error message for "Did you mean...?" suggestion:
+```text
+Error: Unknown parameter 'nam'. Did you mean 'name'?
+Use '.greet ??' for help
+```
+
+Parameter names are validated strictly - use `??` operator to see valid parameters.
+
+### 🔍 Still having issues?
+
+1. **Check examples:** Run `cargo run --example static_01_basic_compile_time`
+2. **Enable verbose logging:** Set `RUST_LOG=debug`
+3. **Verify feature flags:** Run `cargo tree -f "{p} {f}"`
+4. **Review [usage.md](usage.md)** for detailed syntax rules
 
 ## Usage Guide
 
@@ -170,6 +321,72 @@ fn main() -> Result< (), unilang::Error >
 - **Static lookups:** ~80-100ns (PHF map + zero allocations)
 - **Runtime lookups:** ~4,000-5,000ns (HashMap + semantic analysis)
 - **Performance gain:** 50x faster command resolution
+
+### Benchmark Methodology
+
+**Hardware:** AMD Ryzen 9 5950X, 64GB RAM, NVMe SSD
+**Framework:** [benchkit](../benchkit) - specialized benchmarking framework for unilang
+**Test Scenario:** Lookup 100 commands from registry of 1,000 commands
+**Iterations:** 10,000 runs per approach, median reported
+**Tool:** `cargo run --example static_03_performance_comparison`
+
+**What's measured:**
+- Static: PHF map lookup + CommandDefinition retrieval
+- Runtime: HashMap lookup + CommandDefinition retrieval
+- Excludes parsing (measured separately with SIMD benchmarks)
+
+**Run benchmarks yourself:**
+```bash
+cargo run --release --example static_03_performance_comparison
+```
+
+See `/examples/static_03_performance_comparison.rs` for full benchmark implementation.
+
+## Comparison to Alternatives
+
+How unilang differs from popular Rust CLI frameworks:
+
+| Feature | unilang | clap | structopt | argh |
+|---------|---------|------|-----------|------|
+| **Command Lookup** | O(1) static PHF | Runtime HashMap | Runtime | Runtime |
+| **Definition Style** | YAML/JSON/Rust DSL | Rust builder API | Derive macros | Derive macros |
+| **Modality Support** | CLI, REPL, Web API | CLI only | CLI only | CLI only |
+| **Multi-file Organization** | Auto-discovery | Manual | Manual | Manual |
+| **Runtime Registration** | Hybrid (deprecated) | No | No | No |
+| **Build-time Validation** | Yes | No | Yes (compile) | Yes (compile) |
+| **REPL Support** | Built-in | Manual | Manual | Manual |
+| **Help Generation** | Auto + 3 operators | Auto | Auto | Auto |
+| **Performance** | ~80ns lookup | ~200-500ns | ~200-500ns | ~100-300ns |
+| **CLI Aggregation** | Built-in | Manual | Manual | Manual |
+| **Learning Curve** | Medium | Low | Low | Very Low |
+
+### When to Choose unilang
+
+**Choose unilang if you need:**
+- ✅ REPL or interactive shell interfaces
+- ✅ Multi-modality support (CLI + Web API + TUI)
+- ✅ Runtime plugin/command discovery (hybrid mode)
+- ✅ Maximum performance with static dispatch
+- ✅ CLI aggregation across multiple crates
+- ✅ Declarative YAML/JSON command definitions
+
+**Choose alternatives if:**
+- ❌ You only need basic CLI arg parsing (use `argh` - simplest)
+- ❌ You prefer pure-Rust derive macros (use `structopt`/`clap`)
+- ❌ You need mature ecosystem with extensive plugins (`clap` has most)
+- ❌ You want minimal learning curve (`argh` is fastest to learn)
+
+### Philosophy Differences
+
+**unilang:**
+- "Define once, use everywhere" - single command definition for all modalities
+- Optimized for command-rich applications (100s of commands)
+- Build-time optimization and validation
+
+**clap/structopt/argh:**
+- "CLI-first" - specialized for argument parsing
+- Optimized for applications with 1-20 commands
+- Runtime flexibility, simpler mental model
 
 ## User Guide: Integration Decisions
 
