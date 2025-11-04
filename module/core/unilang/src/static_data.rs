@@ -548,7 +548,21 @@ mod private
     }
   }
 
-  // Conversion implementations to convert from static to dynamic versions
+  /// Converts static command definition to dynamic command definition
+  ///
+  /// # Status String Conversion
+  ///
+  /// Static status strings are converted to `CommandStatus` enum:
+  /// - `"experimental"` → `CommandStatus::Experimental`
+  /// - `"internal"` → `CommandStatus::Internal`
+  /// - `"stable"`, `"active"`, or any other value → `CommandStatus::Active`
+  ///
+  /// **Important:** The string `"stable"` converts to `CommandStatus::Active`, which
+  /// displays as `"active"`. Tests comparing status strings must expect `"active"`,
+  /// not `"stable"`.
+  ///
+  /// If `deprecation_message` is non-empty, the status becomes `CommandStatus::Deprecated`
+  /// regardless of the status string.
   impl From< &'static StaticCommandDefinition > for crate::data::CommandDefinition
   {
     fn from( static_cmd : &'static StaticCommandDefinition ) -> Self
@@ -557,12 +571,12 @@ mod private
 
       let status = if static_cmd.deprecation_message.is_empty()
       {
-        // Parse status string
+        // Parse status string - "stable" and other unrecognized values map to Active
         match static_cmd.status.to_lowercase().as_str()
         {
           "experimental" => CommandStatus::Experimental,
           "internal" => CommandStatus::Internal,
-          _ => CommandStatus::Active,
+          _ => CommandStatus::Active,  // "stable" maps here
         }
       }
       else

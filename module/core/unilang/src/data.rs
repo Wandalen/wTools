@@ -678,6 +678,18 @@ mod private
   /// The new API forces explicit handling of deprecation metadata at construction time,
   /// preventing incomplete deprecation notices.
   ///
+  /// # Display Format
+  ///
+  /// The `Display` implementation produces human-readable status strings:
+  /// - `Active` → "active"
+  /// - `Experimental` → "experimental"
+  /// - `Internal` → "internal"
+  /// - `Deprecated{reason, ..}` → "deprecated: {reason}" (includes reason if non-empty)
+  ///
+  /// **Important:** Tests comparing status strings must account for the full display format.
+  /// For example, `CommandStatus::Deprecated { reason: "Use .v2 instead", .. }` displays as
+  /// `"deprecated: Use .v2 instead"`, not just `"deprecated"`.
+  ///
   /// # Examples
   /// ```
   /// use unilang::data::CommandStatus;
@@ -685,14 +697,16 @@ mod private
   /// // Active command
   /// let active = CommandStatus::Active;
   /// assert!(active.is_active());
+  /// assert_eq!(active.to_string(), "active");
   ///
-  /// // Deprecated command with metadata
+  /// // Deprecated command with full metadata
   /// let deprecated = CommandStatus::Deprecated {
   ///   reason: "Use .new_command instead".to_string(),
   ///   since: Some("2.0.0".to_string()),
   ///   replacement: Some(".new_command".to_string()),
   /// };
   /// assert!(deprecated.is_deprecated());
+  /// assert_eq!(deprecated.to_string(), "deprecated (since 2.0.0): Use .new_command instead → .new_command");
   /// ```
   #[ derive( Debug, Clone, PartialEq, Eq ) ]
   pub enum CommandStatus
@@ -2349,6 +2363,19 @@ mod private
     ///
     /// The `end()` method provides similar ergonomics to `..Default::default()` while
     /// maintaining type safety and validation.
+    ///
+    /// # Fail-Fast Validation (Phase 2)
+    ///
+    /// This method enforces validation at construction time, not registration time:
+    /// - Command names must start with `.` (dot prefix)
+    /// - Versions must be valid semantic versions
+    /// - **Panics immediately** if validation fails, preventing invalid state
+    ///
+    /// **Design rationale:**
+    /// - Earlier detection: bugs caught at construction, not registration
+    /// - Simpler code: no duplicate validation in registration paths
+    /// - Better DX: panic stack traces point directly to construction site
+    /// - Type safety: invalid commands cannot exist, even temporarily
     ///
     /// # Default Values
     ///

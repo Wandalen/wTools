@@ -1,28 +1,52 @@
-//! Validation Enforcement Tests (Phase 1 Fixes)
+//! Validation Enforcement Tests (Phase 1 → Phase 2 Evolution)
 //!
-//! Tests verifying that `register()` enforces the same validation rules as
-//! `command_add_runtime()`, preventing the code path divergence vulnerability
-//! identified in Task 085 (Day 3 Audit).
+//! ## Architecture Evolution
+//!
+//! **Phase 1:** Validation at registration time (both `register()` and `command_add_runtime()`)
+//! - Fixed code path divergence where validation rules differed between registration methods
+//! - Prevented invalid commands from being registered
+//!
+//! **Phase 2:** Validation at construction time (fail-fast)
+//! - Moved validation earlier in lifecycle: `CommandDefinition::former().name()` panics immediately
+//! - Invalid commands cannot be constructed, making registration-time validation redundant
+//! - Tests adapted to use `#[should_panic]` pattern since construction panics replace registration errors
 //!
 //! ## Test Matrix
 //!
-//! | Test ID | What's Tested | Input | Expected | Bug Fixed |
-//! |---------|---------------|-------|----------|-----------|
-//! | VAL-1 | Missing dot prefix | "build" | Error | Phase 1.1 |
-//! | VAL-2 | Invalid namespace | "ns" | Error | Phase 1.1 |
-//! | VAL-3 | Duplicate registration | Same name twice | Error | Phase 1.2 |
-//! | VAL-4 | Valid command | ".build" | Success | Baseline |
-//! | VAL-5 | Path consistency | Both paths reject | Identical | Phase 1.1 |
+//! | Test ID | What's Tested | Input | Expected | Phase 2 Behavior |
+//! |---------|---------------|-------|----------|------------------|
+//! | VAL-1 | Missing dot prefix | "build" | Panic | `#[should_panic]` test |
+//! | VAL-2 | Invalid namespace | "ns" | Error | Still at registration |
+//! | VAL-3 | Duplicate registration | Same name twice | Error | Still at registration |
+//! | VAL-4 | Valid command | ".build" | Success | Unchanged |
+//! | VAL-5 | Path consistency | Both paths panic | Identical | At construction |
 
 #![ allow( clippy::uninlined_format_args ) ]
 //!
-//! ## Scope
+//! ## Design Rationale
 //!
-//! Tests that Phase 1 fixes prevent:
-//! 1. Commands without dot prefix being registered via `register()`
-//! 2. Commands with invalid namespaces being registered
-//! 3. Duplicate commands silently overwriting existing ones
-//! 4. Code path divergence between `register()` and `command_add_runtime()`
+//! Phase 2's fail-fast validation prevents invalid state from ever existing:
+//! - **Earlier Detection:** Bugs caught at construction, not registration
+//! - **Simpler Code:** No need for duplicate validation in multiple registration paths
+//! - **Type Safety:** Invalid commands cannot be constructed, even temporarily
+//! - **Better DX:** Panics provide clear stack traces pointing to exact error location
+//!
+//! ## Testing Pattern
+//!
+//! Tests validating construction-time failures use `#[should_panic(expected = "...")]`:
+//! ```ignore
+//! #[test]
+//! #[should_panic(expected = "MissingDotPrefix")]
+//! fn test_invalid_construction()
+//! {
+//!   let _cmd = CommandDefinition::former()
+//!     .name( "invalid" )  // ❌ Panics here
+//!     .end();
+//! }
+//! ```
+//!
+//! Tests validating registration-time failures (e.g., duplicates, invalid namespaces) use
+//! traditional `assert!(result.is_err())` pattern.
 
 #![ allow( deprecated ) ]
 
