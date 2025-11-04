@@ -70,10 +70,9 @@ impl VerifiedCommand
   /// # use std::collections::HashMap;
   /// # let mut args = HashMap::new();
   /// # args.insert("name".to_string(), Value::String("Alice".to_string()));
-  /// # let cmd = VerifiedCommand {
-  /// #   definition: CommandDefinition::default(),
-  /// #   arguments: args
-  /// # };
+  /// # let cmd_name = CommandName::new(".test").unwrap();
+  /// # let definition = CommandDefinition::new(cmd_name, "Test".to_string());
+  /// # let cmd = VerifiedCommand { definition, arguments: args };
   /// let name = cmd.get_string("name").unwrap_or("World");
   /// assert_eq!(name, "Alice");
   /// ```
@@ -96,10 +95,9 @@ impl VerifiedCommand
   /// # use std::collections::HashMap;
   /// # let mut args = HashMap::new();
   /// # args.insert("name".to_string(), Value::String("Alice".to_string()));
-  /// # let cmd = VerifiedCommand {
-  /// #   definition: CommandDefinition::default(),
-  /// #   arguments: args
-  /// # };
+  /// # let cmd_name = CommandName::new(".test").unwrap();
+  /// # let definition = CommandDefinition::new(cmd_name, "Test".to_string());
+  /// # let cmd = VerifiedCommand { definition, arguments: args };
   /// let name = cmd.require_string("name")?;
   /// assert_eq!(name, "Alice");
   /// # Ok::<(), unilang::Error>(())
@@ -362,7 +360,7 @@ impl< 'a > SemanticAnalyzer< 'a >
     let mut bound_arguments = HashMap::new();
     let mut positional_idx = 0;
 
-    for arg_def in &command_def.arguments
+    for arg_def in command_def.arguments()
     {
       let value_found = Self::try_bind_named_argument( instruction, arg_def, &mut bound_arguments )?
         || Self::try_bind_positional_argument( instruction, arg_def, &mut bound_arguments, &mut positional_idx )?;
@@ -646,7 +644,7 @@ impl< 'a > SemanticAnalyzer< 'a >
   {
     // Collect all valid parameter names (canonical names + aliases)
     let mut valid_names = std::collections::HashSet::new();
-    for arg_def in &command_def.arguments
+    for arg_def in command_def.arguments()
     {
       valid_names.insert( arg_def.name.as_str() );
       for alias in &arg_def.aliases
@@ -685,7 +683,7 @@ impl< 'a > SemanticAnalyzer< 'a >
           "Argument Error: Unknown parameter '{}'. Did you mean '{}'? Use '.{} ??' for help.",
           unknown,
           suggested_name,
-          command_def.name
+          command_def.name().as_str()
         )
       }
       else
@@ -693,7 +691,7 @@ impl< 'a > SemanticAnalyzer< 'a >
         format!(
           "Argument Error: Unknown parameter '{}'. Use '.{} ??' to see valid parameters.",
           unknown,
-          command_def.name
+          command_def.name().as_str()
         )
       }
     }
@@ -708,7 +706,7 @@ impl< 'a > SemanticAnalyzer< 'a >
       format!(
         "Argument Error: Unknown parameters: {}. Use '.{} ??' to see valid parameters.",
         params_list,
-        command_def.name
+        command_def.name().as_str()
       )
     };
 

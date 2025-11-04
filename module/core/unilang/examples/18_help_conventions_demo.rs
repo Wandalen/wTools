@@ -122,10 +122,6 @@ fn register_demo_commands( registry : &mut CommandRegistry ) -> Result< (), Erro
     ])
     .end();
 
-  // Manually enable auto-help since builder method doesn't work yet
-  let mut fs_list_cmd = fs_list_cmd;
-  fs_list_cmd.auto_help_enabled = true;
-
   let fs_routine = Box::new( | cmd : unilang::semantic::VerifiedCommand, _ctx |
   {
     let path = cmd.arguments.get( "path" ).map_or( ".".to_string(), std::string::ToString::to_string );
@@ -206,10 +202,6 @@ fn register_demo_commands( registry : &mut CommandRegistry ) -> Result< (), Erro
     ])
     .end();
 
-  // Manually enable auto-help since builder method doesn't work yet
-  let mut net_ping_cmd = net_ping_cmd;
-  net_ping_cmd.auto_help_enabled = true;
-
   let ping_routine = Box::new( | cmd : unilang::semantic::VerifiedCommand, _ctx |
   {
     let host = cmd.arguments.get( "host" ).map_or( "localhost".to_string(), std::string::ToString::to_string );
@@ -241,10 +233,6 @@ fn register_demo_commands( registry : &mut CommandRegistry ) -> Result< (), Erro
     .version( "1.0.0" )
     .examples( vec![ ".sys.info".to_string() ] )
     .end();
-
-  // Manually enable auto-help since builder method doesn't work yet
-  let mut sys_info_cmd = sys_info_cmd;
-  sys_info_cmd.auto_help_enabled = true;
 
   let info_routine = Box::new( | _cmd : unilang::semantic::VerifiedCommand, _ctx |
   {

@@ -365,7 +365,7 @@ fn demonstrate_hybrid_pattern() -> Result<(), unilang::Error>
   {
     match registry.command( cmd_name )
     {
-      Some( cmd ) => println!( "  ✅ {}: {} -> {}", module, cmd_name, cmd.description ),
+      Some( cmd ) => println!( "  ✅ {}: {} -> {}", module, cmd_name, cmd.description() ),
       None => println!( "  ❌ {module}: {cmd_name} -> Not found" ),
     }
   }
@@ -442,21 +442,21 @@ fn main() -> Result<(), unilang::Error>
   {
     categories.entry( "auth".to_string() )
       .or_default()
-      .push( format!( "sys.{}", cmd.name ) );
+      .push( format!( "sys.{}", cmd.name() ) );
   }
 
   for cmd in &fs_commands
   {
     categories.entry( "fs".to_string() )
       .or_default()
-      .push( format!( "sys.{}", cmd.name ) );
+      .push( format!( "sys.{}", cmd.name() ) );
   }
 
   for cmd in &net_commands
   {
     categories.entry( "net".to_string() )
       .or_default()
-      .push( format!( "sys.{}", cmd.name ) );
+      .push( format!( "sys.{}", cmd.name() ) );
   }
 
   for (category, commands) in &categories

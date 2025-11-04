@@ -280,17 +280,17 @@ fn demonstrate_yaml_loading() -> Result< (), unilang::error::Error >
 
       for cmd in &commands
       {
-        println!( "\n🎯 Command: {}.{}", cmd.namespace, cmd.name );
-        println!( "   Description: {}", cmd.description );
-        println!( "   Status: {} (v{})", cmd.status, cmd.version );
-        println!( "   Arguments: {} defined", cmd.arguments.len() );
-        println!( "   Aliases: {:?}", cmd.aliases );
-        println!( "   Tags: {:?}", cmd.tags );
+        println!( "\n🎯 Command: {}.{}", cmd.namespace, cmd.name() );
+        println!( "   Description: {}", cmd.description() );
+        println!( "   Status: {} (v{})", cmd.status(), cmd.version() );
+        println!( "   Arguments: {} defined", cmd.arguments().len() );
+        println!( "   Aliases: {:?}", cmd.aliases() );
+        println!( "   Tags: {:?}", cmd.tags() );
 
-        if !cmd.arguments.is_empty()
+        if !cmd.arguments().is_empty()
         {
           println!( "   🔧 Arguments:" );
-          for arg in &cmd.arguments
+          for arg in cmd.arguments()
           {
             let interactive = if arg.attributes.interactive { " (interactive)" } else { "" };
             let sensitive = if arg.attributes.sensitive { " (sensitive)" } else { "" };
@@ -455,15 +455,15 @@ fn demonstrate_json_loading() -> Result< (), unilang::error::Error >
 
       for cmd in &commands
       {
-        println!( "\n🚀 Command: {}.{}", cmd.namespace, cmd.name );
-        println!( "   Description: {}", cmd.description );
-        println!( "   Status: {} (v{})", cmd.status, cmd.version );
-        println!( "   Arguments: {} defined", cmd.arguments.len() );
-        println!( "   Permissions: {:?}", cmd.permissions );
+        println!( "\n🚀 Command: {}.{}", cmd.namespace, cmd.name() );
+        println!( "   Description: {}", cmd.description() );
+        println!( "   Status: {} (v{})", cmd.status(), cmd.version() );
+        println!( "   Arguments: {} defined", cmd.arguments().len() );
+        println!( "   Permissions: {:?}", cmd.permissions() );
 
         // Analyze argument complexity
         let mut arg_stats = std::collections::HashMap::new();
-        for arg in &cmd.arguments
+        for arg in cmd.arguments()
         {
           let kind_name = match &arg.kind
           {
@@ -680,12 +680,12 @@ fn demonstrate_complex_features() -> Result< (), unilang::error::Error >
       for cmd in commands
       {
         println!( "\n🧠 ML Pipeline Command Analysis:" );
-        println!( "   • Name: {}.{}", cmd.namespace, cmd.name );
-        println!( "   • Arguments: {}", cmd.arguments.len() );
+        println!( "   • Name: {}.{}", cmd.namespace, cmd.name() );
+        println!( "   • Arguments: {}", cmd.arguments().len() );
 
         // Analyze argument types and complexity
         let mut type_complexity = std::collections::HashMap::new();
-        for arg in &cmd.arguments
+        for arg in cmd.arguments()
         {
           let complexity = match &arg.kind
           {

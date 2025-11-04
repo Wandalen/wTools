@@ -376,8 +376,8 @@ fn create_test_static_commands( count: usize ) -> HashMap< String, CommandDefini
   for i in 0..count
   {
   let name = format!( ".test_command_{i}" );
-  commands.insert( name, create_minimal_command_definition(
-    &format!( "test_command_{i}" ),
+  commands.insert( name.clone(), create_minimal_command_definition(
+    &name,
     &format!( "Test command number {i}" )
   ));
  }
@@ -409,27 +409,27 @@ fn create_minimal_command_definition( name: &str, description: &str ) -> Command
 fn create_database_cli_commands() -> Vec< CommandDefinition >
 {
   vec![
-  create_minimal_command_definition( "migrate", "Run database migrations" ),
-  create_minimal_command_definition( "backup", "Create database backup" ),
-  create_minimal_command_definition( "restore", "Restore database from backup" ),
+  create_minimal_command_definition( ".migrate", "Run database migrations" ),
+  create_minimal_command_definition( ".backup", "Create database backup" ),
+  create_minimal_command_definition( ".restore", "Restore database from backup" ),
  ]
 }
 
 fn create_file_cli_commands() -> Vec< CommandDefinition >
 {
   vec![
-  create_minimal_command_definition( "copy", "Copy files and directories" ),
-  create_minimal_command_definition( "move", "Move files and directories" ),
-  create_minimal_command_definition( "delete", "Delete files and directories" ),
+  create_minimal_command_definition( ".copy", "Copy files and directories" ),
+  create_minimal_command_definition( ".move", "Move files and directories" ),
+  create_minimal_command_definition( ".delete", "Delete files and directories" ),
  ]
 }
 
 fn create_network_cli_commands() -> Vec< CommandDefinition >
 {
   vec![
-  create_minimal_command_definition( "ping", "Ping network host" ),
-  create_minimal_command_definition( "trace", "Trace network route" ),
-  create_minimal_command_definition( "scan", "Scan network ports" ),
+  create_minimal_command_definition( ".ping", "Ping network host" ),
+  create_minimal_command_definition( ".trace", "Trace network route" ),
+  create_minimal_command_definition( ".scan", "Scan network ports" ),
  ]
 }
 
@@ -441,7 +441,7 @@ fn aggregate_cli_modules( modules: Vec< ( &str, Vec< CommandDefinition > ) > ) -
   {
   for command in commands
   {
-  let prefixed_name = format!( ".{}.{}", prefix, command.name );
+  let prefixed_name = format!( ".{}.{}", prefix, command.name() );
   aggregated.insert( prefixed_name, command );
  }
  }
@@ -489,8 +489,8 @@ fn process_yaml_files( _files: &[ std::path::PathBuf ] ) -> Vec< CommandDefiniti
 {
   // Mock YAML processing - in real implementation would parse actual YAML
   vec![
-  create_minimal_command_definition( "migrate", "Database migration from YAML" ),
-  create_minimal_command_definition( "copy", "File copy from YAML" ),
+  create_minimal_command_definition( ".migrate", "Database migration from YAML" ),
+  create_minimal_command_definition( ".copy", "File copy from YAML" ),
  ]
 }
 
@@ -509,7 +509,7 @@ fn aggregate_yaml_commands(
 
   for ( i, command ) in commands.into_iter().enumerate()
   {
-  let prefixed_name = format!( ".yaml_{i}.{}", command.name );
+  let prefixed_name = format!( ".yaml_{i}.{}", command.name() );
   aggregated.insert( prefixed_name, command );
  }
 
@@ -669,7 +669,7 @@ fn generate_static_command_map(
 {
   let mut static_map = HashMap::new();
   static_map.insert( ".test".to_string(), create_minimal_command_definition(
-    "test",
+    ".test",
     "Static test command"
   ));
 

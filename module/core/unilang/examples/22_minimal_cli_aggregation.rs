@@ -40,9 +40,9 @@ fn create_db_commands() -> Vec< CommandDefinition >
             default: Some( "up".to_string() ),
             ..ArgumentAttributes::default()
           })
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
     CommandDefinition::former()
       .name( ".backup" )
       .namespace( ".db" )
@@ -59,9 +59,9 @@ fn create_db_commands() -> Vec< CommandDefinition >
             default: Some( "./backup.sql".to_string() ),
             ..ArgumentAttributes::default()
           })
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
   ]
 }
 
@@ -84,13 +84,13 @@ fn create_fs_commands() -> Vec< CommandDefinition >
           .description( "Source path".to_string() )
           .kind( Kind::String )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
         ArgumentDefinition::former()
           .name( "destination" )
           .description( "Destination path".to_string() )
           .kind( Kind::String )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
         ArgumentDefinition::former()
           .name( "recursive" )
           .description( "Copy recursively".to_string() )
@@ -101,9 +101,9 @@ fn create_fs_commands() -> Vec< CommandDefinition >
             default: Some( "false".to_string() ),
             ..ArgumentAttributes::default()
           })
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
     CommandDefinition::former()
       .name( ".list" )
       .namespace( ".fs" )
@@ -120,9 +120,9 @@ fn create_fs_commands() -> Vec< CommandDefinition >
             default: Some( ".".to_string() ),
             ..ArgumentAttributes::default()
           })
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
   ]
 }
 
@@ -214,7 +214,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   // Register database commands
   for cmd in db_commands
   {
-    let routine : CommandRoutine = match cmd.name.as_str()
+    let routine : CommandRoutine = match cmd.name().to_string().as_str()
     {
       ".migrate" => Box::new( db_migrate_routine ),
       ".backup" => Box::new( db_backup_routine ),
@@ -227,7 +227,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   // Register file system commands
   for cmd in fs_commands
   {
-    let routine : CommandRoutine = match cmd.name.as_str()
+    let routine : CommandRoutine = match cmd.name().to_string().as_str()
     {
       ".copy" => Box::new( fs_copy_routine ),
       ".list" => Box::new( fs_list_routine ),

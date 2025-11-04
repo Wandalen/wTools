@@ -19,41 +19,31 @@ fn main() -> Result<(), unilang::Error> {
     let mut registry = CommandRegistry::new();
     
     // Define a simple greeting command
-    let greet_cmd = CommandDefinition {
-        name: ".greet".to_string(),
-        namespace: String::new(),  // Global namespace
-        description: "A friendly greeting command".to_string(),
-        hint: "Says hello to someone".to_string(),
-        arguments: vec![
-            ArgumentDefinition {
-                name: "name".to_string(),
-                description: "Name of the person to greet".to_string(),
-                kind: Kind::String,
-                hint: "Your name".to_string(),
-                attributes: ArgumentAttributes {
-                    optional: true,
-                    default: Some("World".to_string()),
-                    ..Default::default()
-                },
-                validation_rules: vec![],
-                aliases: vec!["n".to_string()],
-                tags: vec![],
-            }
-        ],
-        // ... other fields with defaults
-        aliases: vec![],  // Aliases functionality needs investigation
-        status: "stable".to_string(),
-        version: "1.0.0".to_string(),
-        tags: vec![],
-        permissions: vec![],
-        idempotent: true,
-        deprecation_message: String::new(),
-        http_method_hint: String::new(),
-        examples: vec![],
-        routine_link: None,
-        auto_help_enabled: false,
-        ..Default::default()
-    };
+    let greet_cmd = CommandDefinition::former()
+      .name( ".greet" )
+      .description( "A friendly greeting command" )
+      .hint( "Says hello to someone" )
+      .arguments( vec![
+        ArgumentDefinition {
+          name: "name".to_string(),
+          description: "Name of the person to greet".to_string(),
+          kind: Kind::String,
+          hint: "Your name".to_string(),
+          attributes: ArgumentAttributes {
+            optional: true,
+            default: Some("World".to_string()),
+            ..Default::default()
+          },
+          validation_rules: vec![],
+          aliases: vec!["n".to_string()],
+          tags: vec![],
+        }
+      ])
+      .status( "stable" )
+      .version( "1.0.0" )
+      .idempotent( true )
+      .auto_help_enabled( false )
+      .end();
     
     // Define the command's execution logic
     let greet_routine = Box::new(|cmd: VerifiedCommand, _ctx: ExecutionContext| {

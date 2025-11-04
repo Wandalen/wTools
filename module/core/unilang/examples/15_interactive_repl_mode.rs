@@ -632,18 +632,18 @@ fn display_repl_help( registry : &CommandRegistry )
   
   for ( name, command ) in registry.commands()
   {
-    let interactive_args = command.arguments.iter()
+    let interactive_args = command.arguments().iter()
       .filter( |arg| arg.attributes.interactive )
       .count();
-    
+
     let interactive_marker = if interactive_args > 0 { " 🔒" } else { "" };
-    
+
     println!( "  • {name}{interactive_marker}" );
-    println!( "    {}", command.description );
-    
-    if !command.aliases.is_empty()
+    println!( "    {}", command.description() );
+
+    if !command.aliases().is_empty()
     {
-      println!( "    Aliases: {}", command.aliases.join( ", " ) );
+      println!( "    Aliases: {}", command.aliases().join( ", " ) );
     }
     
     if interactive_args > 0

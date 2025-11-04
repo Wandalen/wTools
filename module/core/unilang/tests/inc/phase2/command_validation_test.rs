@@ -3,6 +3,41 @@
 //! This module tests the centralized validation logic used across all command
 //! registration approaches to ensure consistent behavior.
 //!
+//! # Why These Tests Exist
+//!
+//! **Purpose:** Verify that command validation rules are enforced consistently across
+//! all construction paths (direct, builder, YAML, static conversion). Centralized
+//! validation prevents bugs where one path validates but another doesn't.
+//!
+//! **What We're Protecting Against:**
+//!
+//! 1. **Inconsistent validation:** If registry validates but CLI builder doesn't,
+//!    commands can bypass checks. These tests ensure validation is centralized and
+//!    used everywhere.
+//!
+//! 2. **Validation gaps:** New construction paths might forget to validate. Tests
+//!    verify that `validate_command_for_registration` is the single source of truth.
+//!
+//! 3. **Phase 2 breaking change:** Old validation checked individual fields (name, namespace).
+//!    New validation checks `full_name()` to support `static_module` system. Tests verify
+//!    this change doesn't break existing commands.
+//!
+//! 4. **Unclear error messages:** Validation errors should be actionable. Tests verify
+//!    error messages mention specific problems (`MissingDotPrefix` vs generic "invalid").
+//!
+//! **How to Interpret Failures:**
+//!
+//! - **Name validation fails:** `CommandName` validation not running or rules changed
+//! - **Namespace validation fails:** `NamespaceType` validation not running
+//! - **Full validation fails:** Validation bypass in construction path
+//! - **Helper function fails:** Help command detection or naming logic broken
+//!
+//! **Phase 2 Design Note:**
+//!
+//! Validation now checks `full_name()` (namespace + name) instead of individual fields.
+//! This allows the `static_module` system to work (accepts "test" name, adds ".test" prefix).
+//! Tests marked with "Phase 2 Update" comments verify this intentional behavior change.
+//!
 //! **Test Matrix for Command Validation**
 //!
 //! | Test | Category | Validates | Status |
@@ -171,26 +206,17 @@ fn test_v3_1_validate_complete_command_success()
   // Test Matrix Row: V3.1
   // Complete command validation with valid data
 
-  let cmd = CommandDefinition
-  {
-    name : ".hello".to_string(),
-    namespace : String::new(),
-    description : "Test command".to_string(),
-    hint : "Test hint".to_string(),
-    status : "stable".to_string(),
-    version : "1.0.0".to_string(),
-    arguments : vec![],
-    routine_link : None,
-    tags : vec![],
-    aliases : vec![],
-    permissions : vec![],
-    idempotent : true,
-    deprecation_message : String::new(),
-    http_method_hint : "GET".to_string(),
-    examples : vec![],
-    auto_help_enabled : true,
-    ..Default::default()
-  };
+  let cmd = CommandDefinition::former()
+    .name( ".hello" )
+    .description( "Test command" )
+    .hint( "Test hint" )
+    .status( "stable" )
+    .version( "1.0.0" )
+    .arguments( vec![] )
+    .idempotent( true )
+    .http_method_hint( "GET" )
+    .auto_help_enabled( true )
+    .end();
 
   assert!( validate_command_for_registration( &cmd ).is_ok() );
 }
@@ -201,26 +227,18 @@ fn test_v3_2_validate_command_with_namespace()
   // Test Matrix Row: V3.1
   // Command with valid namespace
 
-  let cmd = CommandDefinition
-  {
-    name : ".search".to_string(),
-    namespace : ".video".to_string(),
-    description : "Search videos".to_string(),
-    hint : "Search hint".to_string(),
-    status : "stable".to_string(),
-    version : "1.0.0".to_string(),
-    arguments : vec![],
-    routine_link : None,
-    tags : vec![],
-    aliases : vec![],
-    permissions : vec![],
-    idempotent : true,
-    deprecation_message : String::new(),
-    http_method_hint : "GET".to_string(),
-    examples : vec![],
-    auto_help_enabled : true,
-    ..Default::default()
-  };
+  let cmd = CommandDefinition::former()
+    .name( ".search" )
+    .namespace( ".video" )
+    .description( "Search videos" )
+    .hint( "Search hint" )
+    .status( "stable" )
+    .version( "1.0.0" )
+    .arguments( vec![] )
+    .idempotent( true )
+    .http_method_hint( "GET" )
+    .auto_help_enabled( true )
+    .end();
 
   assert!( validate_command_for_registration( &cmd ).is_ok() );
 }
@@ -229,35 +247,27 @@ fn test_v3_2_validate_command_with_namespace()
 fn test_v3_3_validate_command_invalid_name()
 {
   // Test Matrix Row: V3.2
-  // Phase 2 Update: Validation now checks full_name() which combines namespace + name
-  // This allows static_module system to work (accepts "test" and adds prefix)
-  // Test updated to verify validation works correctly with full_name approach
+  // Phase 2 Update: CommandName validation enforces dot prefix at construction time
+  // This is fail-fast validation - invalid names cannot be constructed
+  // Test updated to use valid name and verify construction + registration succeed
 
-  let cmd = CommandDefinition
-  {
-    name : "hello".to_string(), // No dot in name field
-    namespace : String::new(), // Empty namespace
-    // full_name() = ".hello" (dot added by construct_full_command_name)
-    description : "Test command".to_string(),
-    hint : "Test hint".to_string(),
-    status : "stable".to_string(),
-    version : "1.0.0".to_string(),
-    arguments : vec![],
-    routine_link : None,
-    tags : vec![],
-    aliases : vec![],
-    permissions : vec![],
-    idempotent : true,
-    deprecation_message : String::new(),
-    http_method_hint : "GET".to_string(),
-    examples : vec![],
-    auto_help_enabled : true,
-    ..Default::default()
-  };
+  let cmd = CommandDefinition::former()
+    .name( ".hello" ) // Valid name with dot prefix (required by Phase 2)
+    // Empty namespace (default ".")
+    // full_name() = ".hello"
+    .description( "Test command" )
+    .hint( "Test hint" )
+    .status( "stable" )
+    .version( "1.0.0" )
+    .arguments( vec![] )
+    .idempotent( true )
+    .http_method_hint( "GET" )
+    .auto_help_enabled( true )
+    .end();
 
-  // Phase 2: This now passes because full_name() returns ".hello" (valid)
-  // Old behavior: Failed because name field itself didn't have dot
-  // New behavior: Validates full_name which supports static_module system
+  // Phase 2: Passes because both construction and registration validation succeed
+  // Construction: name has dot prefix (validated by CommandName newtype)
+  // Registration: full_name ".hello" is valid
   assert!( validate_command_for_registration( &cmd ).is_ok() );
 }
 
@@ -267,26 +277,18 @@ fn test_v3_4_validate_command_invalid_namespace()
   // Test Matrix Row: V3.2
   // Command with invalid namespace (no dot prefix)
 
-  let cmd = CommandDefinition
-  {
-    name : ".search".to_string(),
-    namespace : "video".to_string(), // Invalid: no dot
-    description : "Search videos".to_string(),
-    hint : "Search hint".to_string(),
-    status : "stable".to_string(),
-    version : "1.0.0".to_string(),
-    arguments : vec![],
-    routine_link : None,
-    tags : vec![],
-    aliases : vec![],
-    permissions : vec![],
-    idempotent : true,
-    deprecation_message : String::new(),
-    http_method_hint : "GET".to_string(),
-    examples : vec![],
-    auto_help_enabled : true,
-    ..Default::default()
-  };
+  let cmd = CommandDefinition::former()
+    .name( ".search" )
+    .namespace( "video" ) // Invalid: no dot
+    .description( "Search videos" )
+    .hint( "Search hint" )
+    .status( "stable" )
+    .version( "1.0.0" )
+    .arguments( vec![] )
+    .idempotent( true )
+    .http_method_hint( "GET" )
+    .auto_help_enabled( true )
+    .end();
 
   assert!( validate_command_for_registration( &cmd ).is_err() );
 }
@@ -295,30 +297,24 @@ fn test_v3_4_validate_command_invalid_namespace()
 fn test_v3_5_validate_command_both_invalid()
 {
   // Test Matrix Row: V3.2
-  // Command with both name and namespace invalid
+  // Phase 2: Name validation happens at construction (fail-fast)
+  // This test now verifies namespace validation at registration time
+  // Updated to use valid name so construction succeeds, namespace validation fails
 
-  let cmd = CommandDefinition
-  {
-    name : "search".to_string(), // Invalid: no dot
-    namespace : "video".to_string(), // Invalid: no dot
-    description : "Search videos".to_string(),
-    hint : "Search hint".to_string(),
-    status : "stable".to_string(),
-    version : "1.0.0".to_string(),
-    arguments : vec![],
-    routine_link : None,
-    tags : vec![],
-    aliases : vec![],
-    permissions : vec![],
-    idempotent : true,
-    deprecation_message : String::new(),
-    http_method_hint : "GET".to_string(),
-    examples : vec![],
-    auto_help_enabled : true,
-    ..Default::default()
-  };
+  let cmd = CommandDefinition::former()
+    .name( ".search" ) // Valid: has dot (construction succeeds)
+    .namespace( "video" ) // Invalid: no dot (registration validation catches this)
+    .description( "Search videos" )
+    .hint( "Search hint" )
+    .status( "stable" )
+    .version( "1.0.0" )
+    .arguments( vec![] )
+    .idempotent( true )
+    .http_method_hint( "GET" )
+    .auto_help_enabled( true )
+    .end();
 
-  // Should fail on name validation first
+  // Should fail on namespace validation at registration time
   assert!( validate_command_for_registration( &cmd ).is_err() );
 }
 
@@ -379,26 +375,22 @@ fn test_integration_validation_with_full_command()
 {
   // Test that validation works correctly with a realistic command
 
-  let valid_cmd = CommandDefinition
-  {
-    name : ".greet".to_string(),
-    namespace : ".social".to_string(),
-    description : "Greets user by name".to_string(),
-    hint : "Use this to say hello".to_string(),
-    status : "stable".to_string(),
-    version : "1.0.0".to_string(),
-    arguments : vec![],
-    routine_link : None,
-    tags : vec![ "greeting".to_string() ],
-    aliases : vec![ "hello".to_string() ],
-    permissions : vec![ "public".to_string() ],
-    idempotent : true,
-    deprecation_message : String::new(),
-    http_method_hint : "GET".to_string(),
-    examples : vec![ ".social.greet name::Alice".to_string() ],
-    auto_help_enabled : true,
-    ..Default::default()
-  };
+  let valid_cmd = CommandDefinition::former()
+    .name( ".greet" )
+    .namespace( ".social" )
+    .description( "Greets user by name" )
+    .hint( "Use this to say hello" )
+    .status( "stable" )
+    .version( "1.0.0" )
+    .arguments( vec![] )
+    .tags( vec![ "greeting".to_string() ] )
+    .aliases( vec![ "hello".to_string() ] )
+    .permissions( vec![ "public".to_string() ] )
+    .idempotent( true )
+    .http_method_hint( "GET" )
+    .examples( vec![ ".social.greet name::Alice".to_string() ] )
+    .auto_help_enabled( true )
+    .end();
 
   // Should pass validation
   assert!( validate_command_for_registration( &valid_cmd ).is_ok() );

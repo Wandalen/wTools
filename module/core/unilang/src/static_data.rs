@@ -553,30 +553,51 @@ mod private
   {
     fn from( static_cmd : &'static StaticCommandDefinition ) -> Self
     {
-      crate::data::CommandDefinition
+      use crate::data::{ CommandName, CommandStatus, VersionType };
+
+      let status = if static_cmd.deprecation_message.is_empty()
       {
-        name : static_cmd.name.to_string(),
-        namespace : static_cmd.namespace.to_string(),
-        description : static_cmd.description.to_string(),
-        hint : static_cmd.hint.to_string(),
-        arguments : static_cmd.arguments.iter().map( core::convert::Into::into ).collect(),
-        routine_link : static_cmd.routine_link.map( str::to_string ),
-        status : static_cmd.status.to_string(),
-        version : static_cmd.version.to_string(),
-        tags : static_cmd.tags.iter().map( | &s | s.to_string() ).collect(),
-        aliases : static_cmd.aliases.iter().map( | &s | s.to_string() ).collect(),
-        permissions : static_cmd.permissions.iter().map( | &s | s.to_string() ).collect(),
-        idempotent : static_cmd.idempotent,
-        deprecation_message : static_cmd.deprecation_message.to_string(),
-        http_method_hint : static_cmd.http_method_hint.to_string(),
-        examples : static_cmd.examples.iter().map( | &s | s.to_string() ).collect(),
-        auto_help_enabled : false, // Static commands don't auto-generate help by default
-        category : String::new(),
-        short_desc : String::new(),
-        hidden_from_list : false,
-        priority : 0,
-        group : String::new(),
+        // Parse status string
+        match static_cmd.status.to_lowercase().as_str()
+        {
+          "experimental" => CommandStatus::Experimental,
+          "internal" => CommandStatus::Internal,
+          _ => CommandStatus::Active,
+        }
       }
+      else
+      {
+        CommandStatus::Deprecated
+        {
+          reason : static_cmd.deprecation_message.to_string(),
+          since : None,
+          replacement : None,
+        }
+      };
+
+      crate::data::CommandDefinition::new(
+        CommandName::new( static_cmd.name ).expect( "valid static command name" ),
+        static_cmd.description.to_string(),
+      )
+      .with_namespace( static_cmd.namespace.to_string() )
+      .with_hint( static_cmd.hint )
+      .with_arguments( static_cmd.arguments.iter().map( core::convert::Into::into ).collect() )
+      .with_routine_link( static_cmd.routine_link.map( str::to_string ) )
+      .with_status( status )
+      .with_version( VersionType::new( static_cmd.version ).expect( "valid static version" ) )
+      .with_tags( static_cmd.tags.iter().map( | &s | s.to_string() ).collect() )
+      .with_aliases( static_cmd.aliases.iter().map( | &s | s.to_string() ).collect() )
+      .with_permissions( static_cmd.permissions.iter().map( | &s | s.to_string() ).collect() )
+      .with_idempotent( static_cmd.idempotent )
+      .with_deprecation_message( static_cmd.deprecation_message )
+      .with_http_method_hint( static_cmd.http_method_hint )
+      .with_examples( static_cmd.examples.iter().map( | &s | s.to_string() ).collect() )
+      .with_auto_help( false ) // Static commands don't auto-generate help by default
+      .with_category( "" )
+      .with_short_desc( "" )
+      .with_hidden_from_list( false )
+      .with_priority( 0 )
+      .with_group( "" )
     }
   }
 

@@ -179,6 +179,7 @@ fn test_cli_builder_auto_mode_detection()
   // Only static modules should result in StaticOnly mode
   let cmd = CommandDefinition::former()
     .name( ".test" )
+    .description( "Test command" )
     .end();
   let builder = CliBuilder::new()
     .mode( AggregationMode::Auto )
@@ -198,6 +199,7 @@ fn test_cli_builder_auto_mode_detection()
   // Mixed modules should result in Hybrid mode
   let cmd = CommandDefinition::former()
     .name( ".test" )
+    .description( "Test command" )
     .end();
   let builder = CliBuilder::new()
     .mode( AggregationMode::Auto )

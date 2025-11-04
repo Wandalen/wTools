@@ -8,7 +8,7 @@
 /// Internal namespace.
 mod private
 {
-  use crate::data::CommandDefinition;
+  use crate::data::{ CommandDefinition };
   use crate::error::Error;
   use crate::registry::{ CommandRegistry, StaticCommandRegistry, RegistryMode };
   use std::collections::HashMap;
@@ -340,18 +340,18 @@ mod private
     /// Compute the final command name after applying prefixes
     fn compute_final_command_name( &self, cmd: &CommandDefinition, module_prefix: Option< &String > ) -> String
     {
-      let mut final_name = cmd.name.clone();
+      let mut final_name = cmd.name().as_str().to_string();
 
       // Apply module prefix
       if let Some( prefix ) = module_prefix
       {
-        final_name = if cmd.namespace.is_empty()
+        final_name = if cmd.namespace().is_empty()
         {
           format!( ".{}.{}", prefix, final_name.strip_prefix( '.' ).unwrap_or( &final_name ) )
         }
         else
         {
-          format!( ".{}{}.{}", prefix, cmd.namespace, final_name.strip_prefix( '.' ).unwrap_or( &final_name ) )
+          format!( ".{}{}.{}", prefix, cmd.namespace(), final_name.strip_prefix( '.' ).unwrap_or( &final_name ) )
         };
       }
 
@@ -411,34 +411,36 @@ mod private
           // Apply module prefix
           if let Some( prefix ) = &module.prefix
           {
-            cmd.namespace = if cmd.namespace.is_empty()
+            let new_namespace_str = if cmd.namespace().is_empty()
             {
               format!( ".{}", prefix )
             }
             else
             {
-              format!( ".{}{}", prefix, cmd.namespace )
+              format!( ".{}{}", prefix, cmd.namespace() )
             };
+            cmd = cmd.with_namespace( new_namespace_str );
           }
 
           // Apply global prefix
           if let Some( global_prefix ) = &self.config.global_prefix
           {
-            cmd.namespace = if cmd.namespace.is_empty()
+            let new_namespace_str = if cmd.namespace().is_empty()
             {
               format!( ".{}", global_prefix )
             }
             else
             {
-              format!( ".{}{}", global_prefix, cmd.namespace )
+              format!( ".{}{}", global_prefix, cmd.namespace() )
             };
+            cmd = cmd.with_namespace( new_namespace_str );
           }
 
           // Register command with the static registry
           // Note: Using a placeholder routine since actual command execution logic
           // would be provided by the application using the CliBuilder
-          let cmd_name = cmd.name.clone();
-          let cmd_description = cmd.description.clone();
+          let cmd_name = cmd.name().as_str().to_string();
+          let cmd_description = cmd.description().to_string();
           let routine = Box::new( move |_cmd, _ctx| {
             Err( crate::data::ErrorData::new(
               crate::data::ErrorCode::CommandNotImplemented,
@@ -523,27 +525,29 @@ mod private
       // Apply module prefix
       if let Some( prefix ) = module_prefix
       {
-        cmd.namespace = if cmd.namespace.is_empty()
+        let new_namespace = if cmd.namespace().is_empty()
         {
           format!( ".{}", prefix )
         }
         else
         {
-          format!( ".{}{}", prefix, cmd.namespace )
+          format!( ".{}{}", prefix, cmd.namespace() )
         };
+        cmd = cmd.with_namespace( new_namespace.clone() );
       }
 
       // Apply global prefix
       if let Some( global_prefix ) = &self.config.global_prefix
       {
-        cmd.namespace = if cmd.namespace.is_empty()
+        let new_namespace = if cmd.namespace().is_empty()
         {
           format!( ".{}", global_prefix )
         }
         else
         {
-          format!( ".{}{}", global_prefix, cmd.namespace )
+          format!( ".{}{}", global_prefix, cmd.namespace() )
         };
+        cmd = cmd.with_namespace( new_namespace.clone() );
       }
 
       cmd
@@ -627,12 +631,14 @@ mod private
           {
             let mut processed_cmd = cmd;
             // Apply conditional module namespace
-            processed_cmd.namespace = format!( ".{}", cond_module.name );
+            let new_namespace = format!( ".{}", cond_module.name );
+            processed_cmd = processed_cmd.with_namespace( new_namespace.clone() );
 
             // Apply global prefix if configured
             if let Some( global_prefix ) = &self.config.global_prefix
             {
-              processed_cmd.namespace = format!( ".{}{}", global_prefix, processed_cmd.namespace );
+              let new_namespace = format!( ".{}{}", global_prefix, processed_cmd.namespace() );
+              processed_cmd = processed_cmd.with_namespace( new_namespace.clone() );
             }
 
             registry.register( processed_cmd )?;

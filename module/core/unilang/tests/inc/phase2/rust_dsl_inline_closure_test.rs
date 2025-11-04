@@ -60,9 +60,9 @@ fn test_ic1_1_single_inline_closure_registration()
   assert!( cmd.is_some(), "Command should be registered" );
 
   let cmd_def = cmd.unwrap();
-  assert_eq!( cmd_def.name, ".greet" );
-  assert_eq!( cmd_def.description, "Greets the user" );
-  assert_eq!( cmd_def.status, "stable" );
+  assert_eq!( cmd_def.name().to_string(), ".greet" );
+  assert_eq!( cmd_def.description().to_string(), "Greets the user" );
+  assert!(matches!(cmd_def.status(), unilang::data::CommandStatus::Active));
 }
 
 #[ test ]
@@ -504,16 +504,20 @@ fn test_ic5_2_mix_json_and_inline_closures()
 // IC6: Error Handling Tests
 // ============================================================================
 
+/// Test that invalid command names are rejected during builder registration (Phase 2 fail-fast)
+///
+/// **Phase 2 Update:** Validation moved to construction time.
+/// Invalid names panic in `command_with_routine()` when creating internal `CommandDefinition`.
 #[ test ]
+#[should_panic(expected = "MissingDotPrefix")]
 fn test_ic6_1_invalid_command_name_logs_error()
 {
   // Test Matrix Row: IC6.1
-  // Invalid command names should be caught by validation
+  // Phase 2: This panics during builder call
 
-  // This should log an error but not panic
-  let registry = CommandRegistry::builder()
+  let _registry = CommandRegistry::builder()
     .command_with_routine(
-      "invalid", // Missing dot prefix
+      "invalid", // ❌ Missing dot prefix - panics here
       "Invalid command",
       |_cmd, _ctx| {
         Ok( OutputData
@@ -525,21 +529,22 @@ fn test_ic6_1_invalid_command_name_logs_error()
       }
     )
     .build();
-
-  // Command should NOT be registered
-  assert!( registry.command( "invalid" ).is_none() );
-  assert!( registry.get_routine( "invalid" ).is_none() );
 }
 
+/// Test that invalid commands panic during builder chain (Phase 2 fail-fast)
+///
+/// **Phase 2 Update:** Builder chain doesn't continue after validation errors.
+/// Invalid names panic immediately in first `command_with_routine()` call.
 #[ test ]
+#[should_panic(expected = "MissingDotPrefix")]
 fn test_ic6_2_builder_chain_continues_after_error()
 {
   // Test Matrix Row: IC6.2
-  // Builder chain should continue even after registration error
+  // Phase 2: This panics on first invalid command
 
-  let registry = CommandRegistry::builder()
+  let _registry = CommandRegistry::builder()
     .command_with_routine(
-      "invalid1", // Invalid
+      "invalid1", // ❌ Missing dot prefix - panics here
       "Invalid 1",
       |_cmd, _ctx| {
         Ok( OutputData
@@ -562,24 +567,7 @@ fn test_ic6_2_builder_chain_continues_after_error()
         })
       }
     )
-    .command_with_routine(
-      "invalid2", // Invalid
-      "Invalid 2",
-      |_cmd, _ctx| {
-        Ok( OutputData
-        {
-          content : "Bad 2".to_string(),
-          format : "text".to_string(),
-      execution_time_ms : None,
-        })
-      }
-    )
     .build();
-
-  // Only valid command should be registered
-  assert!( registry.command( "invalid1" ).is_none() );
-  assert!( registry.command( ".valid" ).is_some() );
-  assert!( registry.command( "invalid2" ).is_none() );
 }
 
 // ============================================================================
@@ -613,7 +601,7 @@ fn test_ic7_1_inline_command_found_in_registry()
 
   // Should also be in command list
   let all_commands = registry.commands();
-  assert!( all_commands.values().any( |c| c.name == ".lookup_test" ) );
+  assert!( all_commands.values().any( |c| c.name().as_str() == ".lookup_test" ) );
 }
 
 #[ test ]
@@ -640,12 +628,12 @@ fn test_ic7_2_command_metadata_correct()
   let cmd = registry.command( ".metadata_test" ).unwrap();
 
   // Check all metadata fields
-  assert_eq!( cmd.name, ".metadata_test" );
-  assert_eq!( cmd.namespace, "" ); // Empty by default
-  assert_eq!( cmd.description, "This is the description" );
-  assert_eq!( cmd.status, "stable" );
-  assert_eq!( cmd.version, "1.0.0" );
-  assert!( cmd.auto_help_enabled ); // Should be true by default
-  assert!( cmd.idempotent ); // Should be true by default
-  assert_eq!( cmd.http_method_hint, "GET" );
+  assert_eq!( cmd.name().to_string(), ".metadata_test" );
+  assert_eq!( cmd.namespace(), "" ); // Empty by default
+  assert_eq!( cmd.description().to_string(), "This is the description" );
+  assert!(matches!(cmd.status(), unilang::data::CommandStatus::Active));
+  assert_eq!( cmd.version().to_string(), "1.0.0" );
+  assert!( cmd.auto_help_enabled() ); // Should be true by default
+  assert!( cmd.idempotent() ); // Should be true by default
+  assert_eq!( cmd.http_method_hint(), "GET" ); // GET is the default
 }

@@ -331,14 +331,14 @@ fn help_generator_tests()
   let help_gen = HelpGenerator::new( &registry );
 
   // T5.1
-  let help_text = help_gen.command( &cmd_with_args_def.name ).unwrap();
+  let help_text = help_gen.command( &cmd_with_args_def.name() ).unwrap();
   assert!( help_text.contains( "Usage: test_cmd" ) );
   assert!( help_text.contains( "A test command" ) );
   assert!( help_text.contains( "Arguments:" ) );
   assert!( help_text.contains( "arg1" ) );
 
   // T5.2
-  let help_text = help_gen.command( &cmd_without_args_def.name ).unwrap();
+  let help_text = help_gen.command( &cmd_without_args_def.name() ).unwrap();
   assert!( help_text.contains( "Usage: simple_cmd" ) );
   assert!( help_text.contains( "A simple command" ) );
   assert!( !help_text.contains( "Arguments:" ) );

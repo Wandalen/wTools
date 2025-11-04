@@ -47,8 +47,8 @@ fn test_command_registry_from_static_commands_basic() {
 
   // Verify that the static command can be retrieved
   let cmd = registry.command(".test_static").expect("Test static command should exist");
-  assert_eq!(cmd.name, ".test_static", "Command name should match");
-  assert_eq!(cmd.description, "Test static command", "Command description should match");
+  assert_eq!(cmd.name().to_string(), ".test_static", "Command name should match");
+  assert_eq!(cmd.description().to_string(), "Test static command", "Command description should match");
 }
 
 #[test]

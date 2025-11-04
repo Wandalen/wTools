@@ -23,26 +23,11 @@ fn test_correct_dot_command_registration()
   // NEW APPROACH: Explicit command naming with dot prefixes
   // Commands must be registered with dot prefixes - no implicit magic!
   
-  let test_cmd = CommandDefinition
-  {
-    name : ".test_chat".to_string(), // Explicit dot prefix required!
-    namespace : String::new(), // Empty namespace means root level
-    description : "Test chat command registered correctly".to_string(),
-    routine_link : None,
-    arguments : Vec::new(),
-    hint : String::new(),
-    status : String::new(),
-    version : String::new(),
-    tags : Vec::new(),
-    aliases : Vec::new(),
-    permissions : Vec::new(),
-    idempotent : false,
-    deprecation_message : String::new(),
-    http_method_hint : String::new(),
-    examples : Vec::new(),
-    auto_help_enabled: false,
-    ..Default::default()
-  };
+  let test_cmd = CommandDefinition::former()
+    .name( ".test_chat" ) // Explicit dot prefix required!
+    .namespace( "" ) // Empty namespace means root level
+    .description( "Test chat command registered correctly" )
+    .end();
 
   #[allow(deprecated)]
   #[allow(deprecated)]
@@ -52,7 +37,7 @@ fn test_correct_dot_command_registration()
     let registration_result = registry.command_add_runtime( &test_cmd, Box::new( create_test_command_handler ) );
   
   assert!( registration_result.is_ok(), "Command registration should succeed" );
-  println!( "✅ Command registered correctly: '{}'", test_cmd.name );
+  println!( "✅ Command registered correctly: '{}'", test_cmd.name() );
 
   let pipeline = Pipeline::new( registry );
 
@@ -92,29 +77,14 @@ fn test_multiple_corrected_commands()
     let mut registry = CommandRegistry::new();
   
   // Register all commands WITH explicit dot prefix
-  for (name, description) in &commands 
+  for (name, description) in &commands
   {
-    let cmd = CommandDefinition
-    {
-      name : name.to_string(), // Already has dot prefix!
-      namespace : String::new(),
-      description : description.to_string(),
-      routine_link : None,
-      arguments : Vec::new(),
-      hint : String::new(),
-      status : String::new(),
-      version : String::new(),
-      tags : Vec::new(),
-      aliases : Vec::new(),
-      permissions : Vec::new(),
-      idempotent : false,
-      deprecation_message : String::new(),
-      http_method_hint : String::new(),
-      examples : Vec::new(),
-      auto_help_enabled: false,
-      ..Default::default()
-    };
-    
+    let cmd = CommandDefinition::former()
+      .name( *name ) // Already has dot prefix!
+      .namespace( "" )
+      .description( *description )
+      .end();
+
     #[allow(deprecated)]
         let result = registry.command_add_runtime( &cmd, Box::new( create_test_command_handler ) );
     assert!( result.is_ok(), "Failed to register command '{}'", name );
@@ -151,26 +121,11 @@ fn test_multiple_corrected_commands()
 fn test_namespaced_commands_work_correctly() 
 {
   // Test that namespaced commands still work as expected
-  let session_cmd = CommandDefinition
-  {
-    name : ".list".to_string(), // Command name with dot prefix
-    namespace : ".session".to_string(), // Namespace WITH dot prefix
-    description : "List available sessions".to_string(),
-    routine_link : None,
-    arguments : Vec::new(),
-    hint : String::new(),
-    status : String::new(),
-    version : String::new(),
-    tags : Vec::new(),
-    aliases : Vec::new(),
-    permissions : Vec::new(),
-    idempotent : false,
-    deprecation_message : String::new(),
-    http_method_hint : String::new(),
-    examples : Vec::new(),
-    auto_help_enabled: false,
-    ..Default::default()
-  };
+  let session_cmd = CommandDefinition::former()
+    .name( ".list" ) // Command name with dot prefix
+    .namespace( ".session" ) // Namespace WITH dot prefix
+    .description( "List available sessions" )
+    .end();
 
   #[allow(deprecated)]
   #[allow(deprecated)]

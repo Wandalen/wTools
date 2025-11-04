@@ -139,7 +139,7 @@ pub fn validate_parameter_storage_types( cmd : &CommandDefinition ) -> Result< (
 {
   use crate::data::Kind;
 
-  for arg in &cmd.arguments
+  for arg in cmd.arguments()
   {
     if arg.attributes.multiple
     {
@@ -155,7 +155,7 @@ pub fn validate_parameter_storage_types( cmd : &CommandDefinition ) -> Result< (
             \n\nThis prevents the wplan bug pattern where multiple values silently overwrite each other. \
             \n\nChange to: Kind::List( Box::new( Kind::String ), None ) or similar List variant.",
             arg.name,
-            cmd.name,
+            cmd.name().as_str(),
             arg.kind
           )));
         }
@@ -203,7 +203,7 @@ pub fn validate_command_for_registration( cmd : &CommandDefinition ) -> Result< 
     )));
   }
 
-  validate_namespace( &cmd.namespace )?;
+  validate_namespace( cmd.namespace() )?;
   validate_parameter_storage_types( cmd )?;
   Ok(())
 }

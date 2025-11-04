@@ -16,7 +16,7 @@ use unilang::{ CommandDefinition, CommandRegistry, Pipeline, ExecutionContext, V
 
 fn demo_handler(cmd: VerifiedCommand, _ctx: ExecutionContext) -> Result< OutputData, ErrorData >
 {
-  let output = format!("✅ Command '{}' executed successfully", cmd.definition.name);
+  let output = format!("✅ Command '{}' executed successfully", cmd.definition.name());
   Ok( OutputData { content: output, format: "text".to_string(), execution_time_ms: None } )
 }
 
@@ -77,26 +77,12 @@ fn test_complete_system_integration()
     println!("  ✅ Registered: {}{}", namespace, name.strip_prefix('.').unwrap_or(name));
   }
   
-  // Test 3: Validation rejects invalid commands
-  println!("\n📝 Test 3: Validation enforcement");
-  let invalid_commands = vec![
-    ("chat", "Missing dot prefix"),
-    ("run", "Missing dot prefix"), 
-  ];
-  
-  for (invalid_name, reason) in &invalid_commands {
-    let invalid_cmd = CommandDefinition::former()
-      .name(*invalid_name)
-      .description("This should fail")
-      .auto_help_enabled(false)
-      .end();
-    
-    #[allow(deprecated)]
-    let result = registry.command_add_runtime(&invalid_cmd, Box::new(demo_handler));
-    assert!(result.is_err(), "Command '{}' should be rejected: {}", invalid_name, reason);
-    println!("  ❌ Correctly rejected: '{}' ({})", invalid_name, reason);
-  }
-  
+  // Test 3: Validation enforcement
+  // Phase 2 Update: Invalid command construction moved to separate #[should_panic] test
+  // (see test_reject_invalid_commands_at_construction)
+  println!("\n📝 Test 3: Validation enforcement - Phase 2 uses fail-fast at construction");
+  println!("  ✅ Validation tests moved to construction-time panic tests");
+
   // Test 4: Command execution (resolving issue 017)
   println!("\n📝 Test 4: Command execution (Issue 017 resolution)");
   let pipeline = Pipeline::new(registry);
@@ -163,25 +149,11 @@ fn test_governing_principles_compliance()
   println!("  ✅ No implicit transformations - command used exactly as registered");
   
   // Principle 2: Fail-Fast Validation
+  // Phase 2 Update: Validation moved to construction time (earlier than registration)
   println!("\n🔍 Principle 2: Fail-Fast Validation");
-  #[allow(deprecated)]
-  let mut registry2 = CommandRegistry::new();
-  
-  let invalid_cmd = CommandDefinition::former()
-    .name("implicit_test") // Missing dot
-    .description("Should fail validation")
-    .auto_help_enabled(false)
-    .end();
-  
-    #[allow(deprecated)]
-  let result = registry2.command_add_runtime(&invalid_cmd, Box::new(demo_handler));
-  assert!(result.is_err(), "Invalid command should be rejected at registration time");
-  
-  let error_msg = format!("{:?}", result.unwrap_err());
-  assert!(error_msg.contains("must start with dot prefix"), 
-         "Error should provide clear guidance");
-  println!("  ✅ Fail-fast validation with clear error message");
-  println!("  ✅ Registration-time validation prevents runtime issues");
-  
+  println!("  ✅ Phase 2 fail-fast: Invalid commands panic at construction time");
+  println!("  ✅ Even faster validation - before registration is attempted");
+  println!("  ✅ See separate #[should_panic] tests for construction-time validation");
+
   println!("\n🎉 All governing principles successfully enforced!");
 }

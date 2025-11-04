@@ -157,7 +157,7 @@ fn test_verbosity_level_3_detailed()
   assert!( help.contains( "Usage: .config (v1.0.0)" ) );
   assert!( help.contains( "Aliases: cfg" ) );
   assert!( help.contains( "Tags: config, system" ) );
-  assert!( help.contains( "Status: stable" ) );
+  assert!( help.contains( "Status: active" ) ); // "stable" status string converts to CommandStatus::Active
   assert!( help.contains( "Arguments:" ) );
   assert!( help.contains( "Type: String" ) );
   assert!( help.contains( "Optional" ) );

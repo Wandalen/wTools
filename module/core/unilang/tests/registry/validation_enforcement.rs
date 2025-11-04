@@ -13,6 +13,8 @@
 //! | VAL-3 | Duplicate registration | Same name twice | Error | Phase 1.2 |
 //! | VAL-4 | Valid command | ".build" | Success | Baseline |
 //! | VAL-5 | Path consistency | Both paths reject | Identical | Phase 1.1 |
+
+#![ allow( clippy::uninlined_format_args ) ]
 //!
 //! ## Scope
 //!
@@ -43,59 +45,33 @@ fn create_mock_routine() -> Box< dyn Fn( VerifiedCommand, ExecutionContext ) -> 
 // VAL-1: Commands Without Dot Prefix Must Be Rejected
 //
 
-/// Test that `register()` rejects commands without dot prefix
+/// Test that construction rejects commands without dot prefix (Phase 2 fail-fast)
 ///
-/// **Bug Fixed:** Phase 1.1 - Previously `register()` didn't validate,
-/// allowing invalid commands to be registered.
+/// **Phase 2 Update:** Validation moved from registration to construction time.
+/// Invalid names now panic during `CommandDefinition::former().name()` call.
 #[test]
+#[should_panic(expected = "MissingDotPrefix")]
 fn test_register_rejects_command_without_dot_prefix()
 {
-  let mut registry = CommandRegistry::new();
-
-  let invalid_cmd = CommandDefinition::former()
-    .name( "build" )  // ❌ No dot prefix
+  // Phase 2: This panics at construction time, before registration
+  let _invalid_cmd = CommandDefinition::former()
+    .name( "build" )  // ❌ No dot prefix - panics here
     .description( "Build project" )
     .end();
-
-  let result = registry.register( invalid_cmd );
-
-  assert!(
-    result.is_err(),
-    "register() should reject commands without dot prefix"
-  );
-
-  let err_msg = result.unwrap_err().to_string();
-  assert!(
-    err_msg.contains( "must start with dot prefix" ),
-    "Error message should explain the naming rule"
-  );
 }
 
-/// Test that `command_add_runtime()` also rejects commands without dot prefix
+/// Test that construction rejects commands without dot prefix (Phase 2 fail-fast)
 ///
-/// **Baseline:** This always worked - used as comparison for VAL-5
+/// **Phase 2 Update:** Validation moved to construction time for both paths.
 #[test]
+#[should_panic(expected = "MissingDotPrefix")]
 fn test_command_add_runtime_rejects_command_without_dot_prefix()
 {
-  let mut registry = CommandRegistry::new();
-
-  let invalid_cmd = CommandDefinition::former()
-    .name( "build" )  // ❌ No dot prefix
+  // Phase 2: This panics at construction time, before `command_add_runtime()` call
+  let _invalid_cmd = CommandDefinition::former()
+    .name( "build" )  // ❌ No dot prefix - panics here
     .description( "Build project" )
     .end();
-
-  let result = registry.command_add_runtime( &invalid_cmd, create_mock_routine() );
-
-  assert!(
-    result.is_err(),
-    "command_add_runtime() should reject commands without dot prefix"
-  );
-
-  let err_msg = result.unwrap_err().to_string();
-  assert!(
-    err_msg.contains( "must start with dot prefix" ),
-    "Error messages should match between paths"
-  );
 }
 
 //
@@ -200,7 +176,7 @@ fn test_duplicate_rejection_preserves_first_command()
   let registered_cmd = registry.command( ".build" ).expect( "First command should still exist" );
 
   assert_eq!(
-    registered_cmd.description,
+    registered_cmd.description(),
     "First build command",
     "First command should be preserved (not overwritten)"
   );
@@ -245,33 +221,15 @@ fn test_register_accepts_valid_command()
 ///
 /// **Bug Fixed:** Phase 1.1 - Code path divergence eliminated
 #[test]
+#[should_panic(expected = "MissingDotPrefix")]
 fn test_both_paths_reject_invalid_commands_identically()
 {
-  let mut registry1 = CommandRegistry::new();
-  let mut registry2 = CommandRegistry::new();
-
-  let invalid_cmd = CommandDefinition::former()
-    .name( "invalid" )  // ❌ No dot prefix
+  // Phase 2 Update: Validation moved to construction time, so both paths
+  // now reject at the same point (during `CommandDefinition::former().name()`)
+  let _invalid_cmd = CommandDefinition::former()
+    .name( "invalid" )  // ❌ No dot prefix - panics here
     .description( "Test" )
     .end();
-
-  // Both paths should reject
-  let result1 = registry1.register( invalid_cmd.clone() );
-  let result2 = registry2.command_add_runtime( &invalid_cmd, create_mock_routine() );
-
-  assert!(
-    result1.is_err() && result2.is_err(),
-    "Both registration paths should reject invalid commands"
-  );
-
-  // Error messages should be similar (both mention dot prefix requirement)
-  let err1 = result1.unwrap_err().to_string();
-  let err2 = result2.unwrap_err().to_string();
-
-  assert!(
-    err1.contains( "dot prefix" ) && err2.contains( "dot prefix" ),
-    "Both paths should give similar error messages about naming convention"
-  );
 }
 
 /// Test that both registration paths accept valid commands identically
@@ -365,20 +323,10 @@ fn test_error_messages_are_helpful()
 {
   let mut registry = CommandRegistry::new();
 
-  // Test 1: No dot prefix
-  let no_dot = CommandDefinition::former()
-    .name( "build" )
-    .description( "Test" )
-    .end();
+  // Phase 2 Update: Removed "no dot prefix" test case - validation now happens at
+  // construction time (see #[should_panic] tests above)
 
-  let err1 = registry.register( no_dot ).unwrap_err().to_string();
-  assert!(
-    err1.contains( "must start" ) && err1.contains( "dot prefix" ),
-    "Error should explain what's required: {}",
-    err1
-  );
-
-  // Test 2: Duplicate
+  // Test: Duplicate registration
   let dup1 = CommandDefinition::former().name( ".test" ).description( "A" ).end();
   let dup2 = CommandDefinition::former().name( ".test" ).description( "B" ).end();
 

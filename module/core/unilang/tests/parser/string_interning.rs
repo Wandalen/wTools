@@ -44,26 +44,18 @@ fn test_semantic_analyzer_integration()
   #[allow(deprecated)]
   #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
-  registry.register( CommandDefinition
-  {
-    name : ".test.command".to_string(),
-    description : "Test command".to_string(),
-    arguments : vec![],
-    routine_link : None,
-    auto_help_enabled: false,
-    namespace : "test".to_string(),
-    hint : "Test command".to_string(),
-    status : "stable".to_string(),
-    version : "1.0.0".to_string(),
-    tags : vec![],
-    aliases : vec![],
-    permissions : vec![],
-    idempotent : true,
-    deprecation_message : String::new(),
-    http_method_hint : String::new(),
-    examples : vec![],
-    ..Default::default()
-  }).expect( "Failed to register test command" );
+  registry.register( CommandDefinition::former()
+    .name( ".test.command" )
+    .description( "Test command" )
+    .arguments( vec![] )
+    .auto_help_enabled( false )
+    .namespace( ".test" )
+    .hint( "Test command" )
+    .status( "stable" )
+    .version( "1.0.0" )
+    .idempotent( true )
+    .end()
+  ).expect( "Failed to register test command" );
   
   let pipeline = Pipeline::new( registry );
   
@@ -262,26 +254,18 @@ fn test_pipeline_integration_correctness()
   #[allow(deprecated)]
   #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
-  registry.register( CommandDefinition
-  {
-    name : ".integration.test".to_string(),
-    description : "Integration test command".to_string(),
-    arguments : vec![],
-    routine_link : None,
-    auto_help_enabled: false,
-    namespace : "test".to_string(),
-    hint : "Test".to_string(),
-    status : "stable".to_string(),
-    version : "1.0.0".to_string(),
-    tags : vec![],
-    aliases : vec![],
-    permissions : vec![],
-    idempotent : true,
-    deprecation_message : String::new(),
-    http_method_hint : String::new(),
-    examples : vec![],
-    ..Default::default()
-  }).expect( "Failed to register test command" );
+  registry.register( CommandDefinition::former()
+    .name( ".integration.test" )
+    .description( "Integration test command" )
+    .arguments( vec![] )
+    .auto_help_enabled( false )
+    .namespace( ".test" )
+    .hint( "Test" )
+    .status( "stable" )
+    .version( "1.0.0" )
+    .idempotent( true )
+    .end()
+  ).expect( "Failed to register test command" );
   
   let pipeline = Pipeline::new( registry );
   let command_text = ".integration.test";

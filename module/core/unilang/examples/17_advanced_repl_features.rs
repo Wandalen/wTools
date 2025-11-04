@@ -473,7 +473,7 @@ fn handle_command_result( result : unilang::pipeline::CommandResult, input : &st
     Some( error ) =>
     {
       state.failed_commands += 1;
-      let error_msg = error.to_string();
+      let error_msg = error.clone();
       state.last_error = Some( error_msg.clone() );
       
       println!( "❌ Error: {error_msg}" );

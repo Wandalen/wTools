@@ -271,9 +271,9 @@ Result< (), Error >
   let mut alias_map : HashMap< String, String > = HashMap::new();
   for cmd_def in registry.commands().values()
   {
-    for alias in &cmd_def.aliases
+    for alias in cmd_def.aliases()
     {
-      alias_map.insert( alias.clone(), cmd_def.name.clone() );
+      alias_map.insert( alias.clone(), cmd_def.name().to_string() );
     }
   }
 

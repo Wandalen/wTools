@@ -9,7 +9,7 @@ use unilang::data::Kind;
 fn test_load_command_definitions_from_yaml_str_success()
 {
   let yaml_content = r#"
-- name: "test_command"
+- name: ".test_command"
   namespace: ".test"
   description: "A test command"
   hint: "Test hint"
@@ -25,7 +25,7 @@ fn test_load_command_definitions_from_yaml_str_success()
   examples: []
   arguments:
     - name: "input"
-      kind: "String" 
+      kind: "String"
       description: "Input parameter"
       hint: "Input hint"
       attributes:
@@ -46,12 +46,12 @@ fn test_load_command_definitions_from_yaml_str_success()
   assert_eq!(commands.len(), 1);
   
   let cmd = &commands[0];
-  assert_eq!(cmd.name, "test_command");
-  assert_eq!(cmd.namespace, ".test");
-  assert_eq!(cmd.description, "A test command");
-  assert_eq!(cmd.arguments.len(), 1);
-  assert_eq!(cmd.arguments[0].name, "input");
-  assert!(matches!(cmd.arguments[0].kind, Kind::String));
+  assert_eq!(cmd.name().to_string(), ".test_command");
+  assert_eq!(cmd.namespace(), ".test");
+  assert_eq!(cmd.description().to_string(), "A test command");
+  assert_eq!(cmd.arguments().len(), 1);
+  assert_eq!(cmd.arguments()[0].name, "input");
+  assert!(matches!(cmd.arguments()[0].kind, Kind::String));
 }
 
 #[test]
@@ -68,7 +68,7 @@ fn test_load_command_definitions_from_yaml_str_invalid()
 fn test_load_command_definitions_from_json_str_success()
 {
   let json_content = r#"[{
-    "name": "json_command",
+    "name": ".json_command",
     "namespace": ".json",
     "description": "A JSON test command",
     "hint": "JSON hint",
@@ -81,7 +81,7 @@ fn test_load_command_definitions_from_json_str_success()
     "deprecation_message": "",
     "http_method_hint": "POST",
     "auto_help_enabled": false,
-    "examples": ["json_command input::test"],
+    "examples": [".json_command input::test"],
     "arguments": [{
       "name": "data",
       "kind": "JsonString",
@@ -108,13 +108,13 @@ fn test_load_command_definitions_from_json_str_success()
   assert_eq!(commands.len(), 1);
 
   let cmd = &commands[0];
-  assert_eq!(cmd.name, "json_command");
-  assert_eq!(cmd.namespace, ".json");
-  assert_eq!(cmd.status, "beta");
-  assert_eq!(cmd.tags, vec!["json", "test"]);
-  assert_eq!(cmd.permissions, vec!["admin"]);
-  assert!(!cmd.idempotent);
-  assert_eq!(cmd.arguments[0].attributes.default, Some("{}".to_string()));
+  assert_eq!(cmd.name().to_string(), ".json_command");
+  assert_eq!(cmd.namespace(), ".json");
+  assert!(matches!(cmd.status(), unilang::data::CommandStatus::Active));
+  assert_eq!(cmd.tags(), &vec!["json", "test"]);
+  assert_eq!(cmd.permissions(), &vec!["admin"]);
+  assert!(!cmd.idempotent());
+  assert_eq!(cmd.arguments()[0].attributes.default, Some("{}".to_string()));
 }
 
 #[test]
@@ -162,7 +162,7 @@ fn test_resolve_routine_link_placeholder()
       .description(String::new())
       .hint(String::new())
       .status(String::new())
-      .version(String::new())
+      .version("1.0.0")
       .arguments(vec![])
       .tags(vec![])
       .aliases(vec![])
@@ -171,7 +171,7 @@ fn test_resolve_routine_link_placeholder()
       .deprecation_message(String::new())
       .http_method_hint(String::new())
       .examples(vec![])
-      .routine_link(String::new())
+      .routine_link(Some(String::new()))
       .end(),
     arguments: std::collections::HashMap::new(),
   };
@@ -184,7 +184,7 @@ fn test_resolve_routine_link_placeholder()
 fn test_load_command_definitions_yaml_with_complex_types()
 {
   let yaml_content = r#"
-- name: "complex_command"
+- name: ".complex_command"
   namespace: ".complex"
   description: "Command with complex argument types"
   hint: "Complex types test"
@@ -246,9 +246,9 @@ fn test_load_command_definitions_yaml_with_complex_types()
   assert_eq!(commands.len(), 1);
   
   let cmd = &commands[0];
-  assert_eq!(cmd.arguments.len(), 3);
-  assert!(matches!(cmd.arguments[0].kind, Kind::Integer));
-  assert!(matches!(cmd.arguments[1].kind, Kind::Float));
-  assert!(matches!(cmd.arguments[2].kind, Kind::Boolean));
-  assert_eq!(cmd.arguments[1].attributes.default, Some("0.0".to_string()));
+  assert_eq!(cmd.arguments().len(), 3);
+  assert!(matches!(cmd.arguments()[0].kind, Kind::Integer));
+  assert!(matches!(cmd.arguments()[1].kind, Kind::Float));
+  assert!(matches!(cmd.arguments()[2].kind, Kind::Boolean));
+  assert_eq!(cmd.arguments()[1].attributes.default, Some("0.0".to_string()));
 }

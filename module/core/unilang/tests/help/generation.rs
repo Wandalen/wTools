@@ -90,7 +90,7 @@ fn test_command_specific_help_generation()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_test_command();
-  let cmd_name = cmd.name.clone();
+  let cmd_name = cmd.name().clone();
 
   // Use runtime registration instead since command_add is deprecated
   let mock_routine = Box::new( |_cmd: VerifiedCommand, _ctx: ExecutionContext| -> Result<OutputData, unilang::data::ErrorData> {
@@ -100,7 +100,7 @@ fn test_command_specific_help_generation()
   registry.command_add_runtime( &cmd, mock_routine ).unwrap();
 
   let help_generator = HelpGenerator::new( &registry );
-  let help_content = help_generator.command( &cmd_name ).expect( "Help should be generated" );
+  let help_content = help_generator.command( cmd_name.as_str() ).expect( "Help should be generated" );
 
   // Verify help contains essential information (Level 2 Standard format)
   assert!( help_content.contains( "test" ), "Help should contain command name" );
@@ -116,7 +116,7 @@ fn test_help_includes_argument_details()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_test_command();
-  let cmd_name = cmd.name.clone();
+  let cmd_name = cmd.name().clone();
 
   // Use runtime registration instead since command_add is deprecated
   let mock_routine = Box::new( |_cmd: VerifiedCommand, _ctx: ExecutionContext| -> Result<OutputData, unilang::data::ErrorData> {
@@ -126,7 +126,7 @@ fn test_help_includes_argument_details()
   registry.command_add_runtime( &cmd, mock_routine ).unwrap();
 
   let help_generator = HelpGenerator::new( &registry );
-  let help_content = help_generator.command( &cmd_name ).expect( "Help should be generated" );
+  let help_content = help_generator.command( cmd_name.as_str() ).expect( "Help should be generated" );
 
   // Verify argument details are included (Level 2 Standard format uses Arguments:)
   // Note: Level 2 shows hints if available, otherwise descriptions
@@ -141,7 +141,7 @@ fn test_help_includes_examples()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_test_command();
-  let cmd_name = cmd.name.clone();
+  let cmd_name = cmd.name().clone();
 
   // Use runtime registration instead since command_add is deprecated
   let mock_routine = Box::new( |_cmd: VerifiedCommand, _ctx: ExecutionContext| -> Result<OutputData, unilang::data::ErrorData> {
@@ -151,7 +151,7 @@ fn test_help_includes_examples()
   registry.command_add_runtime( &cmd, mock_routine ).unwrap();
 
   let help_generator = HelpGenerator::new( &registry );
-  let help_content = help_generator.command( &cmd_name ).expect( "Help should be generated" );
+  let help_content = help_generator.command( cmd_name.as_str() ).expect( "Help should be generated" );
 
   // Verify help content structure (Level 2 Standard format)
   assert!( help_content.contains( "Usage:" ), "Help should contain usage section" );
@@ -164,7 +164,7 @@ fn test_help_includes_aliases()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_test_command();
-  let cmd_name = cmd.name.clone();
+  let cmd_name = cmd.name().clone();
 
   // Use runtime registration instead since command_add is deprecated
   let mock_routine = Box::new( |_cmd: VerifiedCommand, _ctx: ExecutionContext| -> Result<OutputData, unilang::data::ErrorData> {
@@ -174,7 +174,7 @@ fn test_help_includes_aliases()
   registry.command_add_runtime( &cmd, mock_routine ).unwrap();
 
   let help_generator = HelpGenerator::new( &registry );
-  let help_content = help_generator.command( &cmd_name ).expect( "Help should be generated" );
+  let help_content = help_generator.command( cmd_name.as_str() ).expect( "Help should be generated" );
 
   // Verify aliases are mentioned
   assert!( help_content.contains( 'i' ) && help_content.contains( "input" ), "Help should mention argument aliases" );
@@ -265,7 +265,7 @@ fn test_help_content_formatting()
 {
   let mut registry = CommandRegistry::new();
   let cmd = create_test_command();
-  let cmd_name = cmd.name.clone();
+  let cmd_name = cmd.name().clone();
 
   // Use runtime registration instead since command_add is deprecated
   let mock_routine = Box::new( |_cmd: VerifiedCommand, _ctx: ExecutionContext| -> Result<OutputData, unilang::data::ErrorData> {
@@ -275,7 +275,7 @@ fn test_help_content_formatting()
   registry.command_add_runtime( &cmd, mock_routine ).unwrap();
 
   let help_generator = HelpGenerator::new( &registry );
-  let help_content = help_generator.command( &cmd_name ).expect( "Help should be generated" );
+  let help_content = help_generator.command( cmd_name.as_str() ).expect( "Help should be generated" );
 
   // Verify basic formatting structure
   let lines : Vec< &str > = help_content.lines().collect();
@@ -347,7 +347,7 @@ fn test_command_help_with_complex_arguments()
     ])
     .end();
 
-  let cmd_name = cmd.name.clone();
+  let cmd_name = cmd.name().clone();
   // Use runtime registration instead since command_add is deprecated
   let mock_routine = Box::new( |_cmd: VerifiedCommand, _ctx: ExecutionContext| -> Result<OutputData, unilang::data::ErrorData> {
     Ok(OutputData::new("test", "text"))
@@ -356,7 +356,7 @@ fn test_command_help_with_complex_arguments()
   registry.command_add_runtime( &cmd, mock_routine ).unwrap();
 
   let help_generator = HelpGenerator::new( &registry );
-  let help_content = help_generator.command( &cmd_name ).expect( "Help should be generated" );
+  let help_content = help_generator.command( cmd_name.as_str() ).expect( "Help should be generated" );
 
   // Verify complex argument features are documented
   assert!( help_content.contains( "multi_value" ), "Help should contain argument name" );

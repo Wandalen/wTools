@@ -5,7 +5,7 @@
 
 mod data {
   mod api_consistency;
-  mod command_definition_v2;
+  mod command_definition;
   mod error_handling;
   mod loader;
   mod static_data;

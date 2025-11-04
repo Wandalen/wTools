@@ -8,6 +8,16 @@
 //! - Conflict detection system for duplicate prefixes
 //! - Namespace isolation between modules
 //! - `build_static()` method creating unified registry
+//!
+//! ## Phase 2 Type-Safety Update
+//!
+//! After `CommandDefinition` redesign (private fields + validated newtypes), all test helpers
+//! must produce valid commands. The `create_test_command()` helper automatically adds dot
+//! prefixes because `CommandName` validates at construction time.
+//!
+//! **Design Decision:** Fail-fast validation (at construction) is better than runtime validation.
+//! Tests expecting invalid names now panic at helper construction, not during registration.
+//! This is the intended behavior - invalid states are impossible to represent.
 
 use unilang::prelude::*;
 use unilang::multi_yaml::{ CliBuilder, AggregationMode, ConflictType };
@@ -19,10 +29,18 @@ use std::path::PathBuf;
 // =============================================================================
 
 /// Create a sample command for testing
+///
+/// **Phase 2 Note:** Automatically adds dot prefix to command names to satisfy
+/// `CommandName` validation. The CLI builder's prefix functionality adds *namespace*
+/// prefixes (e.g., "core", "test"), not the initial dot. All command names must
+/// start with a dot at construction time.
 fn create_test_command( name: &str, description: &str ) -> CommandDefinition
 {
+  // Ensure name has dot prefix for CommandName validation
+  let name_with_dot = if name.starts_with( '.' ) { name.to_string() } else { format!( ".{name}" ) };
+
   CommandDefinition::former()
-    .name( name )
+    .name( &name_with_dot )
     .description( description.to_string() )
     .hint( format!( "Test command: {name}" ) )
     .end()
@@ -390,9 +408,9 @@ fn test_namespace_isolation_same_command_names()
   let db_start = registry.command( ".db.start" ).unwrap();
   let cache_start = registry.command( ".cache.start" ).unwrap();
 
-  assert!( web_start.description.contains( "web server" ) );
-  assert!( db_start.description.contains( "database" ) );
-  assert!( cache_start.description.contains( "cache" ) );
+  assert!( web_start.description().contains( "web server" ) );
+  assert!( db_start.description().contains( "database" ) );
+  assert!( cache_start.description().contains( "cache" ) );
 }
 
 #[test]
@@ -416,8 +434,8 @@ fn test_namespace_isolation_nested_prefixes()
   let user_create_cmd = registry.command( ".myapp.user.create" ).unwrap();
   let role_create_cmd = registry.command( ".myapp.role.create" ).unwrap();
 
-  assert!( user_create_cmd.description.contains( "user" ) );
-  assert!( role_create_cmd.description.contains( "role" ) );
+  assert!( user_create_cmd.description().contains( "user" ) );
+  assert!( role_create_cmd.description().contains( "role" ) );
 
   // Cross-namespace access should fail
   assert!( registry.command( ".myapp.user.role" ).is_none() );

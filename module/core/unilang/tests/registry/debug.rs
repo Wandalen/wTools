@@ -67,11 +67,11 @@ fn test_command_registry_key_mismatch()
   .expect( "Failed to register command with dummy routine" );
 
   // Attempt to retrieve the command using the fully qualified name
-  let lookup_key = if command_def.namespace.is_empty() {
-    command_def.name.clone() // Name already has dot prefix
+  let lookup_key = if command_def.namespace().is_empty() {
+    command_def.name().to_string() // Name already has dot prefix
   } else {
-    let ns = &command_def.namespace;
-    let name_without_dot = command_def.name.strip_prefix('.').unwrap_or(&command_def.name);
+    let ns = command_def.namespace();
+    let name_without_dot = command_def.name().as_str().strip_prefix('.').unwrap_or(command_def.name().as_str());
     if ns.starts_with( '.' )
     {
       format!( "{}.{}", ns, name_without_dot )
@@ -91,7 +91,7 @@ fn test_command_registry_key_mismatch()
     retrieved_command.is_some(),
     "Command '{lookup_key}' was not found in the registry."
   );
-  assert_eq!( retrieved_command.unwrap().name, command_def.name );
+  assert_eq!( retrieved_command.unwrap().name(), command_def.name() );
 
   // Also check the routine map
   let retrieved_routine = registry.get_routine( &lookup_key );

@@ -234,8 +234,8 @@ fn main() -> Result< (), unilang::error::Error >
             println!( "✅ Semantic analysis PASSED" );
             for verified_cmd in &verified_commands
             {
-              println!( "  Command: {} v{}", verified_cmd.definition.name, verified_cmd.definition.version );
-              println!( "  Namespace: {}", verified_cmd.definition.namespace );
+              println!( "  Command: {} v{}", verified_cmd.definition.name(), verified_cmd.definition.version() );
+              println!( "  Namespace: {}", verified_cmd.definition.namespace() );
               println!( "  Verified arguments:" );
               for ( name, value ) in &verified_cmd.arguments
               {
@@ -289,7 +289,7 @@ fn main() -> Result< (), unilang::error::Error >
             // Execute the verified command
             for verified_cmd in verified_commands
             {
-              if let Some( routine ) = registry.get_routine( &format!( ".{}.{}", verified_cmd.definition.namespace.trim_start_matches( '.' ), verified_cmd.definition.name ) )
+              if let Some( routine ) = registry.get_routine( &format!( ".{}.{}", verified_cmd.definition.namespace().trim_start_matches( '.' ), verified_cmd.definition.name() ) )
               {
                 let context = unilang::interpreter::ExecutionContext::default();
                 match routine( verified_cmd, context )

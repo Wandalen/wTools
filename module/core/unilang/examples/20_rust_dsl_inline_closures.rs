@@ -59,7 +59,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
     .build();
 
   println!( "  Registered command: .greet" );
-  println!( "  Description: {}", registry.command( ".greet" ).unwrap().description );
+  println!( "  Description: {}", registry.command( ".greet" ).unwrap().description() );
   println!();
 
   // Example 2: Closure capturing external variables

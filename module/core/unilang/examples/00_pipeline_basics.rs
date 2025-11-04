@@ -9,6 +9,7 @@
 
 use unilang::prelude::*;
 
+#[ allow( clippy::too_many_lines ) ]
 fn main() -> Result<(), unilang::Error> {
     println!("=== Pipeline API Basics ===\n");
     
@@ -17,12 +18,12 @@ fn main() -> Result<(), unilang::Error> {
     let mut registry = CommandRegistry::new();
     
     // Register a simple math command
-    let add_cmd = CommandDefinition {
-        name: ".add".to_string(),
-        namespace: ".math".to_string(),
-        description: "Adds two numbers".to_string(),
-        hint: "Addition operation".to_string(),
-        arguments: vec![
+    let add_cmd = CommandDefinition::former()
+        .name( ".add" )
+        .namespace( ".math" )
+        .description( "Adds two numbers" )
+        .hint( "Addition operation" )
+        .arguments( vec![
             ArgumentDefinition {
                 name: "a".to_string(),
                 description: "First number".to_string(),
@@ -43,20 +44,11 @@ fn main() -> Result<(), unilang::Error> {
                 aliases: vec![],
                 tags: vec![],
             },
-        ],
-        status: "stable".to_string(),
-        version: "1.0.0".to_string(),
-        aliases: vec![],
-        tags: vec![],
-        permissions: vec![],
-        idempotent: true,
-        deprecation_message: String::new(),
-        http_method_hint: String::new(),
-        examples: vec![],
-        routine_link: None,
-        auto_help_enabled: false,
-        ..Default::default()
-    };
+        ])
+        .status( "stable" )
+        .version( "1.0.0" )
+        .idempotent( true )
+        .end();
     
     let add_routine = Box::new(|cmd: VerifiedCommand, _ctx: ExecutionContext| {
         if let (Some(Value::Integer(a)), Some(Value::Integer(b))) = 

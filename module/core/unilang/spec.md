@@ -99,7 +99,7 @@ An Actor is any entity that plays a distinct role and participates in an interac
 *   **`unilang`**: This specification and the core framework crate.
 *   **`utility1`**: A generic placeholder for the primary application that implements `unilang`.
 *   **`Command Registry`**: The runtime data structure that holds all known `CommandDefinition`s and their associated `Routine`s. It supports both static (compile-time) and dynamic (run-time) registration.
-*   **`CommandDefinition`**: The canonical metadata for a command, defining its name, arguments, aliases, and behavior.
+*   **`CommandDefinition`**: The canonical metadata for a command, defining its name, arguments, aliases, and behavior. **Phase 2:** Now uses private fields with validated newtypes (`CommandName`, `NamespaceType`, `VersionType`, `CommandStatus`) and type-state builder pattern for type-safe construction.
 *   **`ArgumentDefinition`**: The canonical metadata for a command's argument, defining its name, `Kind`, and validation rules.
 *   **`Routine`**: The executable code (a Rust closure or function) associated with a command.
 *   **`Modality`**: A specific way of interacting with `utility1` (e.g., CLI, REPL, Web API).
@@ -274,9 +274,162 @@ The public API **must** include the following data structures with the specified
 *   `StaticCommandDefinition`: Const-compatible version of CommandDefinition for static storage.
 *   `StaticArgumentDefinition`: Const-compatible version of ArgumentDefinition for static storage.
 
+#### 7.0. Phase 2 Type-Safe Redesign (Breaking Changes)
+
+**Status:** ✅ **IMPLEMENTED** (v3.1.0)
+
+The `CommandDefinition` structure underwent a complete type-safe redesign implementing the "parse don't validate" pattern. This redesign makes invalid states impossible to represent at compile time.
+
+**Design Philosophy:**
+
+The core principle is "Invalid States Should Be Impossible". The old API allowed commands to be constructed in invalid states that only failed at runtime during registration. The new API catches errors at construction time, moving bugs from runtime to compile time.
+
+**Key Changes:**
+
+1. **Private Fields with Getter Methods**
+   - All `CommandDefinition` fields are now private
+   - Access via getter methods only (e.g., `cmd.name()` instead of `cmd.name`)
+   - Prevents mutation after construction
+   - Guarantees immutability and validity
+
+2. **Validated Newtypes**
+   - `CommandName`: Wrapper type guaranteeing dot prefix (e.g., `.build`)
+   - `NamespaceType`: Wrapper type guaranteeing valid namespace (empty or dot-prefixed)
+   - `VersionType`: Wrapper type guaranteeing non-empty version string
+   - `CommandStatus`: Enum (`Active`, `Deprecated`, `Experimental`, `Internal`) replacing String
+
+3. **Type-State Builder Pattern**
+   - `CommandDefinition::former()` returns a type-state builder
+   - `end()` method: Requires only `name` + `description`, provides defaults (ergonomic)
+   - `build()` method: Requires ALL fields explicitly set (explicit for production)
+   - Compile-time enforcement of required fields via phantom types
+
+**Construction Patterns:**
+
+```rust
+// Pattern 1: Direct constructor (simple commands)
+let name = CommandName::new(".build").unwrap();
+let cmd = CommandDefinition::new(name, "Build the project".to_string());
+
+// Pattern 2: Builder with defaults (tests, simple cases)
+let cmd = CommandDefinition::former()
+  .name(".build")
+  .description("Build the project")
+  .end(); // Provides defaults: namespace="", status=Active, version="1.0.0"
+
+// Pattern 3: Builder fully explicit (production)
+let cmd = CommandDefinition::former()
+  .name(".build")
+  .description("Build the project")
+  .namespace("")
+  .hint("Build hint")
+  .status("active")
+  .version("1.0.0")
+  .build(); // No defaults, all fields required
+```
+
+**Validated Types API:**
+
+```rust
+// CommandName - guarantees dot prefix
+pub struct CommandName(String);
+impl CommandName {
+  pub fn new(name: impl Into<String>) -> Result<Self, Error>;
+  pub fn as_str(&self) -> &str;
+  pub fn into_inner(self) -> String;
+}
+
+// NamespaceType - guarantees valid namespace
+pub struct NamespaceType(String);
+impl NamespaceType {
+  pub fn new(namespace: impl Into<String>) -> Result<Self, Error>;
+  pub fn as_str(&self) -> &str;
+  pub fn is_root(&self) -> bool; // Returns true if namespace is empty
+}
+
+// VersionType - guarantees non-empty version
+pub struct VersionType(String);
+impl VersionType {
+  pub fn new(version: impl Into<String>) -> Result<Self, Error>;
+  pub fn as_str(&self) -> &str;
+}
+
+// CommandStatus - enum eliminates typos
+pub enum CommandStatus {
+  Active,
+  Deprecated { reason: String, since: Option<String>, replacement: Option<String> },
+  Experimental,
+  Internal,
+}
+```
+
+**Builder API:**
+
+```rust
+// Type-state builder with phantom types
+impl CommandDefinition {
+  pub fn former() -> CommandDefinitionBuilder<NotSet, NotSet, NotSet, NotSet, NotSet, NotSet>;
+}
+
+impl CommandDefinitionBuilder<Set, Set, Namespace, Hint, Status, Version> {
+  // Available when name + description are set (others optional)
+  pub fn end(self) -> CommandDefinition;
+}
+
+impl CommandDefinitionBuilder<Set, Set, Set, Set, Set, Set> {
+  // Only available when ALL fields are set
+  pub fn build(self) -> CommandDefinition;
+}
+```
+
+**Getter Methods:**
+
+All `CommandDefinition` fields now have getter methods:
+
+```rust
+impl CommandDefinition {
+  pub fn name(&self) -> &CommandName;
+  pub fn description(&self) -> &str;
+  pub fn namespace(&self) -> &str;
+  pub fn status(&self) -> &CommandStatus;
+  pub fn version(&self) -> &VersionType;
+  pub fn auto_help_enabled(&self) -> bool;
+  // ... all other fields
+
+  pub fn full_name(&self) -> String; // Returns namespace + name
+  pub fn generate_help_command(&self) -> CommandDefinition;
+}
+```
+
+**Migration Impact:**
+
+- **BREAKING:** All `CommandDefinition` construction must use builder or `new()` method
+- **BREAKING:** Field access changed from direct (`cmd.name`) to getters (`cmd.name()`)
+- **BREAKING:** Invalid commands now panic at construction, not registration
+- **BREAKING:** Status strings replaced with `CommandStatus` enum
+- **BENEFIT:** Bugs caught at compile time instead of runtime
+- **BENEFIT:** Type system documents valid states
+- **BENEFIT:** IDE autocomplete guides correct usage
+
+**Design Rationale:**
+
+See `src/data.rs` module documentation for comprehensive design rationale explaining:
+- Why private fields (immutability guarantees)
+- Why validated newtypes (fail-fast construction)
+- Why type-state pattern (compile-time enforcement)
+- Why `end()` vs `build()` (flexibility vs explicitness trade-offs)
+- Why `ArgumentDefinition` retains public fields (pragmatic exception)
+
+**Trade-offs:**
+
+- **Cost:** More verbose construction, complex type signatures, breaking changes
+- **Benefit:** Entire categories of bugs eliminated at compile time
+
+This trade-off strongly favors type safety for domain objects where correctness is critical.
+
 #### 7.1. CommandDefinition Structure
 
-The `CommandDefinition` struct **must** include the following key fields for help convention support:
+The `CommandDefinition` struct has private fields accessible via getter methods. Key fields include:
 *   `auto_help_enabled: bool` - Controls whether this command automatically generates a corresponding `.command.help` command. When `true`, the framework automatically creates the help counterpart during registration.
 
 #### 7.2. Help Convention API Methods
@@ -336,14 +489,61 @@ let name = cmd.get_string("name").unwrap_or("default");
 ```
 
 **CommandDefinition Methods:**
-*   `new(name, description) -> Self` - **NEW (Phase 2):** Simplified constructor with sensible defaults. Requires only name and description, providing defaults for all optional fields (status="stable", version="1.0.0", auto_help_enabled=true, etc.). Recommended for most use cases.
-*   `with_arguments(arguments: Vec<ArgumentDefinition>) -> Self` - **NEW (Phase 2):** Fluent API for adding arguments.
-*   `with_namespace(namespace: String) -> Self` - **NEW (Phase 2):** Fluent API for setting namespace.
-*   `with_status(status: String) -> Self` - **NEW (Phase 2):** Fluent API for setting status.
-*   `with_version(version: String) -> Self` - **NEW (Phase 2):** Fluent API for setting version.
-*   `with_auto_help(self, enabled: bool) -> Self` - Builder method to enable/disable automatic help command generation for this specific command. ✅ **IMPLEMENTED** in `src/data.rs:1028`
-*   `has_auto_help(&self) -> bool` - Returns true if this command should automatically generate a help counterpart.
+
+*Construction (Phase 2 Type-Safe API):*
+*   `new(name: CommandName, description: String) -> Self` - Direct constructor requiring validated `CommandName` and description. Provides defaults for all optional fields (namespace="", status=Active, version="1.0.0", auto_help_enabled=true, etc.). Use when you already have a validated CommandName.
+*   `former() -> CommandDefinitionBuilder<NotSet, NotSet, NotSet, NotSet, NotSet, NotSet>` - Returns a type-state builder for fluent construction. The builder enforces required fields at compile time.
+
+*Builder Methods (available on `CommandDefinitionBuilder`):*
+*   `name(self, name: impl Into<String>) -> CommandDefinitionBuilder<Set, ...>` - Sets command name (validates dot prefix). Transitions `Name` type parameter to `Set`.
+*   `description(self, description: impl Into<String>) -> CommandDefinitionBuilder<..., Set, ...>` - Sets command description. Transitions `Description` type parameter to `Set`.
+*   `namespace(self, namespace: impl Into<String>) -> CommandDefinitionBuilder` - Sets namespace (validates if non-empty). Optional field.
+*   `hint(self, hint: impl Into<String>) -> CommandDefinitionBuilder` - Sets command hint. Optional field.
+*   `status(self, status: impl Into<String>) -> CommandDefinitionBuilder` - Sets command status ("active", "deprecated", "experimental", "internal"). Optional field.
+*   `version(self, version: impl Into<String>) -> CommandDefinitionBuilder` - Sets version string. Optional field.
+*   `arguments(self, arguments: Vec<ArgumentDefinition>) -> CommandDefinitionBuilder` - Sets command arguments. Optional field.
+*   `tags(self, tags: Vec<String>) -> CommandDefinitionBuilder` - Sets command tags. Optional field.
+*   `aliases(self, aliases: Vec<String>) -> CommandDefinitionBuilder` - Sets command aliases. Optional field.
+*   `permissions(self, permissions: Vec<String>) -> CommandDefinitionBuilder` - Sets required permissions. Optional field.
+*   `idempotent(self, idempotent: bool) -> CommandDefinitionBuilder` - Sets idempotent flag. Optional field.
+*   `http_method_hint(self, method: impl Into<String>) -> CommandDefinitionBuilder` - Sets HTTP method hint. Optional field.
+*   `examples(self, examples: Vec<String>) -> CommandDefinitionBuilder` - Sets usage examples. Optional field.
+*   `auto_help_enabled(self, enabled: bool) -> CommandDefinitionBuilder` - Controls automatic help command generation. Optional field.
+*   `category(self, category: impl Into<String>) -> CommandDefinitionBuilder` - Sets command category. Optional field.
+*   `short_desc(self, desc: impl Into<String>) -> CommandDefinitionBuilder` - Sets short description. Optional field.
+*   `hidden_from_list(self, hidden: bool) -> CommandDefinitionBuilder` - Sets hidden flag. Optional field.
+*   `priority(self, priority: i32) -> CommandDefinitionBuilder` - Sets command priority. Optional field.
+*   `group(self, group: impl Into<String>) -> CommandDefinitionBuilder` - Sets command group. Optional field.
+*   `end(self) -> CommandDefinition` - Builds CommandDefinition with defaults for unset fields. Available when `Name` and `Description` are `Set`.
+*   `build(self) -> CommandDefinition` - Builds CommandDefinition with no defaults. Available only when ALL type parameters are `Set`.
+
+*Getter Methods (available on `CommandDefinition`):*
+*   `name(&self) -> &CommandName` - Returns the validated command name.
+*   `description(&self) -> &str` - Returns the command description.
+*   `namespace(&self) -> &str` - Returns the namespace (empty string for root-level commands).
+*   `hint(&self) -> &str` - Returns the command hint.
+*   `status(&self) -> &CommandStatus` - Returns the command status enum.
+*   `version(&self) -> &VersionType` - Returns the validated version.
+*   `arguments(&self) -> &[ArgumentDefinition]` - Returns the command arguments.
+*   `routine_link(&self) -> Option<&String>` - Returns the routine link if set.
+*   `tags(&self) -> &[String]` - Returns the command tags.
+*   `aliases(&self) -> &[String]` - Returns the command aliases.
+*   `permissions(&self) -> &[String]` - Returns required permissions.
+*   `idempotent(&self) -> bool` - Returns the idempotent flag.
+*   `deprecation_message(&self) -> &str` - Returns the deprecation message.
+*   `http_method_hint(&self) -> &str` - Returns the HTTP method hint.
+*   `examples(&self) -> &[String]` - Returns usage examples.
+*   `auto_help_enabled(&self) -> bool` - Returns true if auto-help is enabled.
+*   `category(&self) -> &str` - Returns the command category.
+*   `short_desc(&self) -> &str` - Returns the short description.
+*   `hidden_from_list(&self) -> bool` - Returns the hidden flag.
+*   `priority(&self) -> i32` - Returns the command priority.
+*   `group(&self) -> &str` - Returns the command group.
+
+*Helper Methods:*
+*   `full_name(&self) -> String` - Returns the full command name (namespace + name). For root commands returns just the name.
 *   `generate_help_command(&self) -> CommandDefinition` - Generates the corresponding `.command.help` command definition for this command.
+*   `has_auto_help(&self) -> bool` - Alias for `auto_help_enabled()` (deprecated, use `auto_help_enabled()` instead).
 
 **ArgumentDefinition Methods:**
 *   `new(name, kind) -> Self` - **NEW (Phase 2):** Simplified constructor with sensible defaults. Requires only name and type, providing defaults for all optional fields (required by default, no validation rules, etc.).

@@ -82,7 +82,7 @@ impl< 'a > Interpreter< 'a >
       {
         Error::Execution( ErrorData::new(
           ErrorCode::InternalError,
-          format!( "Internal Error: No executable routine found for command '{}'. This is a system error, please report it.", command.definition.name ),
+          format!( "Internal Error: No executable routine found for command '{}'. This is a system error, please report it.", command.definition.name().as_str() ),
         ))
       })?;
 

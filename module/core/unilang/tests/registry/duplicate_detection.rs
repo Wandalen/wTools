@@ -162,10 +162,10 @@ fn test_first_registration_preserved_on_duplicate()
   if let Some( stored_cmd ) = registry.command( ".build" )
   {
     assert!(
-      stored_cmd.description.contains( "Original" ),
+      stored_cmd.description().contains( "Original" ),
       "OVERWRITE BUG: Command description changed from 'Original' to '{}'!\n\
        This proves the duplicate registration OVERWROTE the original.",
-      stored_cmd.description
+      stored_cmd.description()
     );
   }
 }

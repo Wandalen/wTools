@@ -286,19 +286,19 @@ impl< 'a > HelpGenerator< 'a >
   /// Format Level 0: Minimal - Just name and brief description
   fn format_minimal( &self, command : &crate::CommandDefinition ) -> String
   {
-    format!( "{} - {}", command.name, command.description )
+    format!( "{} - {}", command.name().as_str(), command.description() )
   }
 
   /// Format Level 1: Basic - Add parameters list with types
   fn format_basic( &self, command : &crate::CommandDefinition ) -> String
   {
     let mut help = String::new();
-    writeln!( &mut help, "{} - {}", command.name, command.description ).unwrap();
+    writeln!( &mut help, "{} - {}", command.name().as_str(), command.description() ).unwrap();
 
-    if !command.arguments.is_empty()
+    if !command.arguments().is_empty()
     {
       writeln!( &mut help, "\nPARAMETERS:" ).unwrap();
-      for arg in &command.arguments
+      for arg in command.arguments()
       {
         writeln!( &mut help, "  {}::{}", arg.name, Self::format_kind( &arg.kind ) ).unwrap();
       }
@@ -312,21 +312,21 @@ impl< 'a > HelpGenerator< 'a >
     let mut help = String::new();
 
     // Command header with version
-    writeln!( &mut help, "Usage: {} (v{})", command.name, command.version ).unwrap();
-    writeln!( &mut help, "{}\n", command.description ).unwrap();
+    writeln!( &mut help, "Usage: {} (v{})", command.name().as_str(), command.version().as_str() ).unwrap();
+    writeln!( &mut help, "{}\n", command.description() ).unwrap();
 
     // Status information
-    writeln!( &mut help, "Status: {}", command.status ).unwrap();
-    if !command.aliases.is_empty()
+    writeln!( &mut help, "Status: {}", command.status() ).unwrap();
+    if !command.aliases().is_empty()
     {
-      writeln!( &mut help, "Aliases: {}", command.aliases.join( ", " ) ).unwrap();
+      writeln!( &mut help, "Aliases: {}", command.aliases().join( ", " ) ).unwrap();
     }
 
     // Arguments section with improved formatting
-    if !command.arguments.is_empty()
+    if !command.arguments().is_empty()
     {
       writeln!( &mut help, "\nArguments:" ).unwrap();
-      for arg in &command.arguments
+      for arg in command.arguments()
       {
         write!( &mut help, "{}", arg.name ).unwrap();
         write!( &mut help, " (Type: {})", Self::format_kind( &arg.kind ) ).unwrap();
@@ -369,10 +369,10 @@ impl< 'a > HelpGenerator< 'a >
     }
 
     // Examples section
-    if !command.examples.is_empty()
+    if !command.examples().is_empty()
     {
       writeln!( &mut help, "Examples:" ).unwrap();
-      for (idx, example) in command.examples.iter().enumerate()
+      for (idx, example) in command.examples().iter().enumerate()
       {
         writeln!( &mut help, "  {}. {}", idx + 1, example ).unwrap();
       }
@@ -390,26 +390,26 @@ impl< 'a > HelpGenerator< 'a >
     (
       &mut help,
       "Usage: {} (v{})",
-      command.name,
-      command.version
+      command.name().as_str(),
+      command.version().as_str()
     )
     .unwrap();
-    if !command.aliases.is_empty()
+    if !command.aliases().is_empty()
     {
-      writeln!( &mut help, "Aliases: {}", command.aliases.join( ", " ) ).unwrap();
+      writeln!( &mut help, "Aliases: {}", command.aliases().join( ", " ) ).unwrap();
     }
-    if !command.tags.is_empty()
+    if !command.tags().is_empty()
     {
-      writeln!( &mut help, "Tags: {}", command.tags.join( ", " ) ).unwrap();
+      writeln!( &mut help, "Tags: {}", command.tags().join( ", " ) ).unwrap();
     }
-    writeln!( &mut help, "\n  Hint: {}", command.hint ).unwrap();
-    writeln!( &mut help, "  {}\n", command.description ).unwrap();
-    writeln!( &mut help, "Status: {}", command.status ).unwrap();
+    writeln!( &mut help, "\n  Hint: {}", command.hint() ).unwrap();
+    writeln!( &mut help, "  {}\n", command.description() ).unwrap();
+    writeln!( &mut help, "Status: {}", command.status() ).unwrap();
 
-    if !command.arguments.is_empty()
+    if !command.arguments().is_empty()
     {
       writeln!( &mut help, "\nArguments:" ).unwrap();
-      for arg in &command.arguments
+      for arg in command.arguments()
       {
         write!( &mut help, "{}", arg.name ).unwrap();
         write!( &mut help, " (Type: {})", arg.kind ).unwrap();
@@ -454,13 +454,13 @@ impl< 'a > HelpGenerator< 'a >
   fn format_comprehensive( &self, command : &crate::CommandDefinition ) -> String
   {
     let mut help = String::new();
-    writeln!( &mut help, "{} - {}\n", command.name, command.description ).unwrap();
+    writeln!( &mut help, "{} - {}\n", command.name().as_str(), command.description() ).unwrap();
 
     // USAGE section
-    write!( &mut help, "USAGE:\n  {}", command.name ).unwrap();
-    if !command.arguments.is_empty()
+    write!( &mut help, "USAGE:\n  {}", command.name().as_str() ).unwrap();
+    if !command.arguments().is_empty()
     {
-      for arg in &command.arguments
+      for arg in command.arguments()
       {
         if arg.attributes.optional
         {
@@ -476,23 +476,23 @@ impl< 'a > HelpGenerator< 'a >
 
     // DESCRIPTION section with metadata
     writeln!( &mut help, "DESCRIPTION:" ).unwrap();
-    writeln!( &mut help, "  {}", command.description ).unwrap();
-    if !command.hint.is_empty() && command.hint != command.description
+    writeln!( &mut help, "  {}", command.description() ).unwrap();
+    if !command.hint().is_empty() && command.hint() != command.description()
     {
-      writeln!( &mut help, "  {}", command.hint ).unwrap();
+      writeln!( &mut help, "  {}", command.hint() ).unwrap();
     }
-    writeln!( &mut help, "\n  Status: {} (v{})", command.status, command.version ).unwrap();
-    if !command.aliases.is_empty()
+    writeln!( &mut help, "\n  Status: {} (v{})", command.status(), command.version().as_str() ).unwrap();
+    if !command.aliases().is_empty()
     {
-      writeln!( &mut help, "  Aliases: {}", command.aliases.join( ", " ) ).unwrap();
+      writeln!( &mut help, "  Aliases: {}", command.aliases().join( ", " ) ).unwrap();
     }
     writeln!( &mut help ).unwrap();
 
     // PARAMETERS section with detailed explanations
-    if !command.arguments.is_empty()
+    if !command.arguments().is_empty()
     {
       writeln!( &mut help, "PARAMETERS:\n" ).unwrap();
-      for arg in &command.arguments
+      for arg in command.arguments()
       {
         writeln!( &mut help, "  {}::<value>", arg.name ).unwrap();
 
@@ -532,10 +532,10 @@ impl< 'a > HelpGenerator< 'a >
     }
 
     // EXAMPLES section
-    if !command.examples.is_empty()
+    if !command.examples().is_empty()
     {
       writeln!( &mut help, "EXAMPLES:" ).unwrap();
-      for example in &command.examples
+      for example in command.examples()
       {
         writeln!( &mut help, "  {example}" ).unwrap();
       }
@@ -543,9 +543,9 @@ impl< 'a > HelpGenerator< 'a >
     }
 
     // TAGS section if present
-    if !command.tags.is_empty()
+    if !command.tags().is_empty()
     {
-      writeln!( &mut help, "TAGS: {}", command.tags.join( ", " ) ).unwrap();
+      writeln!( &mut help, "TAGS: {}", command.tags().join( ", " ) ).unwrap();
     }
 
     help
@@ -586,7 +586,7 @@ impl< 'a > HelpGenerator< 'a >
         let matches_prefix = prefix.map_or( true, |p| name.starts_with( p ) );
 
         // Hide commands marked as hidden_from_list
-        let is_visible = !cmd.hidden_from_list;
+        let is_visible = !cmd.hidden_from_list();
 
         matches_prefix && is_visible
       })
@@ -610,14 +610,14 @@ impl< 'a > HelpGenerator< 'a >
 
     for ( name, cmd ) in commands
     {
-      let category = if cmd.category.is_empty()
+      let category = if cmd.category().is_empty()
       {
         // Auto-detect category from command prefix
         self.auto_categorize( name )
       }
       else
       {
-        cmd.category.clone()
+        cmd.category().to_string()
       };
 
       by_category.entry( category ).or_default().push( ( name, cmd ) );
@@ -628,17 +628,17 @@ impl< 'a > HelpGenerator< 'a >
     {
       writeln!( &mut summary, "Available commands:\n" ).unwrap();
       let mut cmds : Vec< _ > = by_category.get( "" ).unwrap().iter().collect();
-      cmds.sort_by_key( |( name, cmd )| ( cmd.priority, name.as_str() ) );
+      cmds.sort_by_key( |( name, cmd )| ( cmd.priority(), name.as_str() ) );
 
       for ( name, cmd ) in cmds
       {
-        let desc = if cmd.short_desc.is_empty()
+        let desc = if cmd.short_desc().is_empty()
         {
-          &cmd.description
+          &cmd.description()
         }
         else
         {
-          &cmd.short_desc
+          &cmd.short_desc()
         };
         writeln!( &mut summary, "  {:<20} {}", name, desc ).unwrap();
       }
@@ -656,17 +656,17 @@ impl< 'a > HelpGenerator< 'a >
         }
 
         // Sort by priority then name
-        cmds.sort_by_key( |( name, cmd )| ( cmd.priority, name.as_str() ) );
+        cmds.sort_by_key( |( name, cmd )| ( cmd.priority(), name.as_str() ) );
 
         for ( name, cmd ) in cmds
         {
-          let desc = if cmd.short_desc.is_empty()
+          let desc = if cmd.short_desc().is_empty()
           {
-            &cmd.description
+            &cmd.description()
           }
           else
           {
-            &cmd.short_desc
+            &cmd.short_desc()
           };
           writeln!( &mut summary, "  {:<20} {}", name, desc ).unwrap();
         }

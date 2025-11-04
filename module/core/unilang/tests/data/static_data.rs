@@ -1,5 +1,38 @@
 //!
-//! Tests for the `static_data` module
+//! Tests for the `static_data` module - Static to Dynamic Command Conversion
+//!
+//! # Why These Tests Exist
+//!
+//! **Purpose:** Verify that compile-time static command definitions correctly convert
+//! to runtime dynamic `CommandDefinition` instances with full type safety preserved.
+//!
+//! **What We're Protecting Against:**
+//!
+//! 1. **Conversion bugs:** Static -> Dynamic conversion must preserve all fields and
+//!    semantics. Tests catch any mismatches between static and dynamic representations.
+//!
+//! 2. **Validation bypassing:** Static commands don't have runtime validation (compile-time
+//!    only). The conversion must apply dynamic validation rules correctly.
+//!
+//! 3. **Type mismatches:** Static types use `&'static str`, dynamic uses `String`.
+//!    Tests verify the conversion handles lifetimes and allocations correctly.
+//!
+//! 4. **Enum conversion errors:** `StaticKind` -> `Kind` and `StaticValidationRule` ->
+//!    `ValidationRule` conversions must be complete. Missing variant conversions would
+//!    cause runtime errors.
+//!
+//! **How to Interpret Failures:**
+//!
+//! - **Conversion test fails:** Field mapping broken, check `From<&StaticCommandDefinition>`
+//! - **Kind conversion fails:** Missing variant in `StaticKind` -> `Kind` mapping
+//! - **Validation rule fails:** Missing variant in `StaticValidationRule` -> `ValidationRule`
+//! - **Nested structure fails:** Complex types (`List`, `Map`, `Enum`) not converting correctly
+//!
+//! **Why This Matters:**
+//!
+//! The `static_data` system enables compile-time command definition (zero runtime cost),
+//! but dynamic systems (registry, help, CLI) need runtime representations. These tests
+//! ensure the bridge between compile-time and runtime is correct.
 //!
 
 use unilang::static_data::*;
@@ -25,7 +58,7 @@ fn test_static_command_definition_conversion()
   };
 
   static STATIC_CMD: StaticCommandDefinition = StaticCommandDefinition {
-    name: "test_command",
+    name: ".test_command",
     namespace: ".test",
     description: "A test command",
     hint: "Test hint",
@@ -39,28 +72,28 @@ fn test_static_command_definition_conversion()
     idempotent: true,
     deprecation_message: "",
     http_method_hint: "GET",
-    examples: &["test_command arg::value"],
+    examples: &[".test_command arg::value"],
   };
 
   let dynamic_cmd: unilang::data::CommandDefinition = (&STATIC_CMD).into();
 
-  assert_eq!(dynamic_cmd.name, "test_command");
-  assert_eq!(dynamic_cmd.namespace, ".test");
-  assert_eq!(dynamic_cmd.description, "A test command");
-  assert_eq!(dynamic_cmd.hint, "Test hint");
-  assert_eq!(dynamic_cmd.status, "stable");
-  assert_eq!(dynamic_cmd.version, "1.0.0");
-  assert_eq!(dynamic_cmd.tags, vec!["test", "example"]);
-  assert_eq!(dynamic_cmd.aliases, vec!["tc", "test"]);
-  assert_eq!(dynamic_cmd.permissions, vec!["user", "admin"]);
-  assert!(dynamic_cmd.idempotent);
-  assert_eq!(dynamic_cmd.deprecation_message, "");
-  assert_eq!(dynamic_cmd.http_method_hint, "GET");
-  assert_eq!(dynamic_cmd.examples, vec!["test_command arg::value"]);
-  assert_eq!(dynamic_cmd.routine_link, Some("test.routine".to_string()));
+  assert_eq!(dynamic_cmd.name().as_str(), ".test_command");
+  assert_eq!(dynamic_cmd.namespace(), ".test");
+  assert_eq!(dynamic_cmd.description(), "A test command");
+  assert_eq!(dynamic_cmd.hint(), "Test hint");
+  assert!(matches!(dynamic_cmd.status(), unilang::data::CommandStatus::Active));
+  assert_eq!(dynamic_cmd.version().as_str(), "1.0.0");
+  assert_eq!(dynamic_cmd.tags(), &vec!["test".to_string(), "example".to_string()]);
+  assert_eq!(dynamic_cmd.aliases(), &vec!["tc".to_string(), "test".to_string()]);
+  assert_eq!(dynamic_cmd.permissions(), &vec!["user".to_string(), "admin".to_string()]);
+  assert!(dynamic_cmd.idempotent());
+  assert_eq!(dynamic_cmd.deprecation_message(), "");
+  assert_eq!(dynamic_cmd.http_method_hint(), "GET");
+  assert_eq!(dynamic_cmd.examples(), &vec![".test_command arg::value".to_string()]);
+  assert_eq!(dynamic_cmd.routine_link(), Some(&"test.routine".to_string()));
 
-  assert_eq!(dynamic_cmd.arguments.len(), 1);
-  let arg = &dynamic_cmd.arguments[0];
+  assert_eq!(dynamic_cmd.arguments().len(), 1);
+  let arg = &dynamic_cmd.arguments()[0];
   assert_eq!(arg.name, "test_arg");
   assert_eq!(arg.hint, "test hint");
   assert_eq!(arg.description, "test description");
@@ -263,7 +296,7 @@ fn test_static_argument_definition_conversion()
 fn test_static_command_definition_with_empty_arrays()
 {
   static STATIC_CMD: StaticCommandDefinition = StaticCommandDefinition {
-    name: "minimal_command",
+    name: ".minimal_command",
     namespace: ".minimal",
     description: "Minimal command",
     hint: "Minimal hint",
@@ -282,17 +315,17 @@ fn test_static_command_definition_with_empty_arrays()
 
   let dynamic_cmd: unilang::data::CommandDefinition = (&STATIC_CMD).into();
 
-  assert_eq!(dynamic_cmd.name, "minimal_command");
-  assert_eq!(dynamic_cmd.namespace, ".minimal");
-  assert!(dynamic_cmd.arguments.is_empty());
-  assert_eq!(dynamic_cmd.routine_link, None);
-  assert_eq!(dynamic_cmd.status, "experimental");
-  assert_eq!(dynamic_cmd.version, "0.1.0");
-  assert!(dynamic_cmd.tags.is_empty());
-  assert!(dynamic_cmd.aliases.is_empty());
-  assert!(dynamic_cmd.permissions.is_empty());
-  assert!(!dynamic_cmd.idempotent);
-  assert_eq!(dynamic_cmd.deprecation_message, "Deprecated for testing");
-  assert_eq!(dynamic_cmd.http_method_hint, "POST");
-  assert!(dynamic_cmd.examples.is_empty());
+  assert_eq!(dynamic_cmd.name().as_str(), ".minimal_command");
+  assert_eq!(dynamic_cmd.namespace(), ".minimal");
+  assert!(dynamic_cmd.arguments().is_empty());
+  assert_eq!(dynamic_cmd.routine_link(), None);
+  assert!(matches!(dynamic_cmd.status(), unilang::data::CommandStatus::Deprecated { .. }));
+  assert_eq!(dynamic_cmd.version().as_str(), "0.1.0");
+  assert!(dynamic_cmd.tags().is_empty());
+  assert!(dynamic_cmd.aliases().is_empty());
+  assert!(dynamic_cmd.permissions().is_empty());
+  assert!(!dynamic_cmd.idempotent());
+  assert_eq!(dynamic_cmd.deprecation_message(), "Deprecated for testing");
+  assert_eq!(dynamic_cmd.http_method_hint(), "POST");
+  assert!(dynamic_cmd.examples().is_empty());
 }

@@ -131,7 +131,7 @@ fn main() -> Result< (), unilang::error::Error >
   println!( "\nRegistered commands:" );
   for ( name, cmd ) in &registry.commands()
   {
-    println!( "  {} - {}", name, cmd.description );
+    println!( "  {} - {}", name, cmd.description() );
   }
 
   // Show how to test the command

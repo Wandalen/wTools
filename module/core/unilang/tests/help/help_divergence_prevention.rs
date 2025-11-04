@@ -76,7 +76,7 @@ fn test_registered_command_appears_in_help_listing()
 
   // Register command (simulates wflow registering .languages)
   let cmd = create_test_command( ".languages", "Detect programming languages" );
-  let cmd_name = cmd.name.clone();
+  let cmd_name = cmd.name().to_string();
 
   registry.command_add_runtime( &cmd, create_mock_routine() )
     .expect( "Command registration should succeed" );
@@ -95,7 +95,7 @@ fn test_registered_command_appears_in_help_listing()
 
   // Verify command is actually in registry
   assert!(
-    registry.command( &cmd_name ).is_some(),
+    registry.command( cmd_name.as_str() ).is_some(),
     "Command should exist in registry"
   );
 }
@@ -110,7 +110,7 @@ fn test_help_command_auto_generated_on_registration()
   let mut registry = CommandRegistry::new();
 
   let cmd = create_test_command( ".deploy", "Deploy application" );
-  let cmd_name = cmd.name.clone();
+  let cmd_name = cmd.name().to_string();
   let help_cmd_name = format!( "{cmd_name}.help" );
 
   registry.command_add_runtime( &cmd, create_mock_routine() )
@@ -125,7 +125,7 @@ fn test_help_command_auto_generated_on_registration()
 
   // Verify help command is executable
   let help_generator = HelpGenerator::new( &registry );
-  let help_content = help_generator.command( &cmd_name );
+  let help_content = help_generator.command( cmd_name.as_str() );
 
   assert!(
     help_content.is_some(),
@@ -162,7 +162,7 @@ fn test_multiple_commands_all_appear_in_help()
   // CRITICAL CHECK: ALL commands must be visible
   for cmd in &commands
   {
-    let cmd_name = &cmd.name;
+    let cmd_name = cmd.name().as_str();
     assert!(
       help_listing.contains( cmd_name ) || help_listing.contains( cmd_name.trim_start_matches( '.' ) ),
       "HELP COMPLETENESS BUG: Command '{}' is missing from help listing!\n\
@@ -242,7 +242,7 @@ fn test_registry_help_synchronization()
   );
 }
 
-/// Test that register() also auto-generates help (not just command_add_runtime)
+/// Test that `register()` also auto-generates help (not just `command_add_runtime`)
 ///
 /// This test ensures both registration paths have identical behavior,
 /// preventing the help divergence bug where some commands don't appear in help.

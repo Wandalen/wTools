@@ -77,28 +77,31 @@ fn format_command_help( cmd_def : &CommandDefinition ) -> String
   let mut help = String::new();
 
   // Command header
-  help.push_str( &format!( "Command: {}\n", cmd_def.name ) );
-  help.push_str( &format!( "Description: {}\n", cmd_def.description ) );
+  help.push_str( &format!( "Command: {}\n", cmd_def.name().as_str() ) );
+  help.push_str( &format!( "Description: {}\n", cmd_def.description() ) );
 
-  if !cmd_def.hint.is_empty()
+  if !cmd_def.hint().is_empty()
   {
-    help.push_str( &format!( "Hint: {}\n", cmd_def.hint ) );
+    help.push_str( &format!( "Hint: {}\n", cmd_def.hint() ) );
   }
 
-  if !cmd_def.version.is_empty()
+  if !cmd_def.version().as_str().is_empty()
   {
-    help.push_str( &format!( "Version: {}\n", cmd_def.version ) );
+    help.push_str( &format!( "Version: {}\n", cmd_def.version().as_str() ) );
   }
-  if !cmd_def.status.is_empty()
+
+  // Status is now an enum, show if not Active
+  match cmd_def.status()
   {
-    help.push_str( &format!( "Status: {}\n", cmd_def.status ) );
+    crate::data::CommandStatus::Active => {},
+    status => help.push_str( &format!( "Status: {:?}\n", status ) ),
   }
 
   // Arguments section
-  if !cmd_def.arguments.is_empty()
+  if !cmd_def.arguments().is_empty()
   {
     help.push_str( "\nArguments:\n" );
-    for arg in &cmd_def.arguments
+    for arg in cmd_def.arguments()
     {
       let required = if arg.attributes.optional { "optional" } else { "required" };
       help.push_str( &format!( "  {} ({}, {})", arg.name, arg.kind, required ) );
@@ -118,26 +121,26 @@ fn format_command_help( cmd_def : &CommandDefinition ) -> String
   }
 
   // Examples section
-  if !cmd_def.examples.is_empty()
+  if !cmd_def.examples().is_empty()
   {
     help.push_str( "\nExamples:\n" );
-    for example in &cmd_def.examples
+    for example in cmd_def.examples()
     {
       help.push_str( &format!( "  {}\n", example ) );
     }
   }
 
   // Aliases section
-  if !cmd_def.aliases.is_empty()
+  if !cmd_def.aliases().is_empty()
   {
-    help.push_str( &format!( "\nAliases: {}\n", cmd_def.aliases.join( ", " ) ) );
+    help.push_str( &format!( "\nAliases: {}\n", cmd_def.aliases().join( ", " ) ) );
   }
 
   // Usage patterns
   help.push_str( "\nUsage:\n" );
-  help.push_str( &format!( "  {}  # Execute command\n", cmd_def.name ) );
-  help.push_str( &format!( "  {}.help  # Show this help\n", cmd_def.name ) );
-  help.push_str( &format!( "  {} ??  # Alternative help access\n", cmd_def.name ) );
+  help.push_str( &format!( "  {}  # Execute command\n", cmd_def.name().as_str() ) );
+  help.push_str( &format!( "  {}.help  # Show this help\n", cmd_def.name().as_str() ) );
+  help.push_str( &format!( "  {} ??  # Alternative help access\n", cmd_def.name().as_str() ) );
 
   help
 }
@@ -425,7 +428,7 @@ impl CommandRegistry
   ///
   /// Registers a command, adding it to the dynamic registry.
   ///
-  /// **Automatic Help Generation:** When `command.auto_help_enabled` is `true` (default),
+  /// **Automatic Help Generation:** When `command.auto_help_enabled()` is `true` (default),
   /// this method automatically generates a `.command.help` variant, ensuring all registered
   /// commands appear in help listings.
   ///
@@ -474,7 +477,7 @@ impl CommandRegistry
     self.dynamic_commands.insert( full_name.clone(), command.clone() );
 
     // AUTO-GENERATE HELP (same logic as command_add_runtime)
-    if command.auto_help_enabled && !crate::command_validation::is_help_command( &full_name )
+    if command.auto_help_enabled() && !crate::command_validation::is_help_command( &full_name )
     {
       let help_command = command.generate_help_command();
       let help_name = crate::command_validation::make_help_command_name( &full_name );
@@ -550,7 +553,7 @@ impl CommandRegistry
 
     // AUTO HELP GENERATION - Respects auto_help_enabled field
     // Generate help command only if auto_help_enabled is true
-    if command_def.auto_help_enabled && !crate::command_validation::is_help_command( &full_name )
+    if command_def.auto_help_enabled() && !crate::command_validation::is_help_command( &full_name )
     {
       let help_command = command_def.generate_help_command();
       let help_routine = self.create_help_routine( command_def );
@@ -708,7 +711,7 @@ impl CommandRegistry
       if let Some( cmd ) = commands.get( &cmd_name )
       {
         // Use description for the listing (primary documentation)
-        let description = &cmd.description;
+        let description = &cmd.description();
 
         // Format: "  .command_name                  - Description"
         output.push_str( &format!( "  {:<30} - {}\n", cmd_name, description ) );
@@ -760,7 +763,7 @@ impl CommandRegistry
       if let Some( cmd ) = commands.get( cmd_name )
       {
         // Only validate if auto_help is enabled for this command
-        if cmd.auto_help_enabled
+        if cmd.auto_help_enabled()
         {
           let help_name = format!( "{}.help", cmd_name );
           if !commands.contains_key( &help_name )
@@ -876,30 +879,30 @@ impl CommandRegistry
   /// registry construction and cannot be disabled or bypassed.
   fn register_mandatory_global_help_command( &mut self )
   {
-    let global_help_command = CommandDefinition
-    {
-      name : ".help".to_string(),
-      namespace : String::new(),
-      description : "Display help information for all available commands".to_string(),
-      hint : "Global help system".to_string(),
-      status : "stable".to_string(),
-      version : "1.0.0".to_string(),
-      arguments : vec![],
-      routine_link : None,
-      tags : vec![ "help".to_string(), "system".to_string(), "global".to_string() ],
-      aliases : vec![ ".h".to_string(), ".help".to_string() ],
-      permissions : vec![],
-      idempotent : true,
-      deprecation_message : String::new(),
-      http_method_hint : "GET".to_string(),
-      examples : vec![ ".help".to_string(), ".h".to_string() ],
-      auto_help_enabled : false, // Prevent recursive help for help command
-      category : "help".to_string(),
-      short_desc : "Show help for all commands".to_string(),
-      hidden_from_list : false,
-      priority : 0,
-      group : String::new(),
-    };
+    use crate::data::{ CommandName, CommandStatus, VersionType };
+
+    let global_help_command = CommandDefinition::new(
+      CommandName::new( ".help" ).expect( "valid help command name" ),
+      "Display help information for all available commands".to_string(),
+    )
+    .with_namespace( String::new() )
+    .with_hint( "Global help system" )
+    .with_status( CommandStatus::Active )
+    .with_version( VersionType::new( "1.0.0" ).expect( "valid version" ) )
+    .with_arguments( vec![] )
+    .with_routine_link( None )
+    .with_tags( vec![ "help".to_string(), "system".to_string(), "global".to_string() ] )
+    .with_aliases( vec![ ".h".to_string(), ".help".to_string() ] )
+    .with_permissions( vec![] )
+    .with_idempotent( true )
+    .with_http_method_hint( "GET" )
+    .with_examples( vec![ ".help".to_string(), ".h".to_string() ] )
+    .with_auto_help( false ) // Prevent recursive help for help command
+    .with_category( "help" )
+    .with_short_desc( "Show help for all commands" )
+    .with_hidden_from_list( false )
+    .with_priority( 0 )
+    .with_group( "" );
 
     let global_help_routine = Box::new( | _cmd, _ctx |
     {
@@ -1102,7 +1105,7 @@ impl CommandRegistryBuilder
     let command_defs = crate::loader::load_command_definitions_from_yaml_str( yaml_str )?;
     for command_def in command_defs
     {
-      if let Some( link ) = &command_def.routine_link
+      if let Some( link ) = command_def.routine_link()
       {
         let routine = crate::loader::resolve_routine_link( link )?;
         #[ allow( deprecated ) ]
@@ -1130,7 +1133,7 @@ impl CommandRegistryBuilder
     let command_defs = crate::loader::load_command_definitions_from_json_str( json_str )?;
     for command_def in command_defs
     {
-      if let Some( link ) = &command_def.routine_link
+      if let Some( link ) = command_def.routine_link()
       {
         let routine = crate::loader::resolve_routine_link( link )?;
         #[ allow( deprecated ) ]
@@ -1183,30 +1186,17 @@ impl CommandRegistryBuilder
   where
     F : Fn( crate::semantic::VerifiedCommand, ExecutionContext ) -> Result< OutputData, ErrorData > + Send + Sync + 'static
   {
-    let cmd = CommandDefinition
-    {
-      name : name.to_string(),
-      namespace : String::new(),
-      description : description.to_string(),
-      hint : String::new(),
-      status : "stable".to_string(),
-      version : "1.0.0".to_string(),
-      arguments : vec![],
-      routine_link : None,
-      tags : vec![],
-      aliases : vec![],
-      permissions : vec![],
-      idempotent : true,
-      deprecation_message : String::new(),
-      http_method_hint : "GET".to_string(),
-      examples : vec![],
-      auto_help_enabled : true,
-      category : String::new(),
-      short_desc : String::new(),
-      hidden_from_list : false,
-      priority : 0,
-      group : String::new(),
-    };
+    use crate::data::{ CommandName, CommandStatus, VersionType };
+
+    let cmd = CommandDefinition::new(
+      CommandName::new( name ).expect( "valid command name" ),
+      description.to_string(),
+    )
+    .with_status( CommandStatus::Active )
+    .with_version( VersionType::new( "1.0.0" ).expect( "valid version" ) )
+    .with_auto_help( true )
+    .with_idempotent( true )
+    .with_http_method_hint( "GET" );
 
     // Register with routine - collect errors for later checking
     #[ allow( deprecated ) ]

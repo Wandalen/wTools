@@ -169,9 +169,9 @@ mod private
           arr.iter().map( | v | Self::simd_to_serde( v.clone() ) ).collect() 
         )
       } else if let Some( obj ) = simd_value.as_object() {
-        SerdeValue::Object( 
+        SerdeValue::Object(
           obj.iter()
-            .map( |( k, v )| ( k.to_string(), Self::simd_to_serde( v.clone() ) ) )
+            .map( |( k, v )| ( k.clone(), Self::simd_to_serde( v.clone() ) ) )
             .collect()
         )
       } else if let Some( n ) = simd_value.as_i64() {

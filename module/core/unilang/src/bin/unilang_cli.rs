@@ -276,7 +276,7 @@ fn run() -> Result< (), unilang::error::Error >
     })
     .end(),
   ])
-  .routine_link( ".system.echo".to_string() )
+  .routine_link( Some( ".system.echo".to_string() ) )
   .end();
 
   let echo_routine : CommandRoutine = Box::new( | _cmd, _ctx |
@@ -327,7 +327,7 @@ fn run() -> Result< (), unilang::error::Error >
     )
     .end()
   ])
-  .routine_link( ".files.cat".to_string() )
+  .routine_link( Some( ".files.cat".to_string() ) )
   .end();
 
   let cat_routine : CommandRoutine = Box::new( | cmd, _ctx |
@@ -417,7 +417,7 @@ fn run() -> Result< (), unilang::error::Error >
     })
     .end(),
   ])
-  .routine_link( ".video.search".to_string() )
+  .routine_link( Some( ".video.search".to_string() ) )
   .end();
 
   let video_search_routine : CommandRoutine = Box::new( | cmd, _ctx |
@@ -493,7 +493,7 @@ fn run() -> Result< (), unilang::error::Error >
   let mut alias_map : HashMap< String, String > = HashMap::new();
   for ( full_name, cmd_def ) in &registry.commands()
   {
-    for alias in &cmd_def.aliases
+    for alias in cmd_def.aliases()
     {
       alias_map.insert( alias.clone(), full_name.clone() );
     }

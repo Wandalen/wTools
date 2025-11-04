@@ -171,10 +171,10 @@ fn main() -> Result< (), unilang::error::Error >
       {
         let source = if cmd_name.starts_with( ".perf" ) { "static registry" } else { "dynamic HashMap" };
         println!( "  ✓ Found in {source} registry" );
-        println!( "    Name: {}", command.name );
-        println!( "    Namespace: {}", command.namespace );
-        println!( "    Description: {}", command.description );
-        println!( "    Arguments: {}", command.arguments.len() );
+        println!( "    Name: {}", command.name() );
+        println!( "    Namespace: {}", command.namespace() );
+        println!( "    Description: {}", command.description() );
+        println!( "    Arguments: {}", command.arguments().len() );
       },
       None =>
       {

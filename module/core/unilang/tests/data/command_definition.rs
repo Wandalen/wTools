@@ -1,7 +1,35 @@
-//! Tests for CommandDefinitionV2 - Phase 2 type-safe redesign
+//! Tests for CommandDefinition - Phase 2 type-safe redesign
 //!
-//! This module tests the new CommandDefinitionV2 with private fields,
+//! This module tests the new CommandDefinition with private fields,
 //! validated newtypes, and custom serde implementation.
+//!
+//! # Why These Tests Exist
+//!
+//! **Purpose:** Verify type-safe design catches errors at compile/construction time,
+//! not at runtime. The old API allowed invalid commands to be constructed and only
+//! failed during registration. These tests ensure the new API fails fast.
+//!
+//! **What We're Protecting Against:**
+//!
+//! 1. **Invalid construction:** Tests verify that `CommandName`/`NamespaceType` validation
+//!    runs during construction, not registration. Invalid values should be impossible
+//!    to represent in the type system.
+//!
+//! 2. **Mutation bugs:** With private fields, commands can't be invalidated after
+//!    construction. These tests verify getters work and no mutation is possible.
+//!
+//! 3. **Deserialization bypassing validation:** YAML loading could bypass validation
+//!    if `serde` isn't custom-implemented. Tests verify validation runs during deserialize.
+//!
+//! 4. **Runtime vs compile-time errors:** The goal is moving errors from runtime to
+//!    compile time. Tests verify this migration succeeded.
+//!
+//! **How to Interpret Failures:**
+//!
+//! - **Construction test fails:** Validation isn't running at construction time
+//! - **Getter test fails:** Field access pattern broken (shouldn't happen with private fields)
+//! - **Serde test fails:** Validation bypassed during YAML load
+//! - **Fluent API test fails:** Builder pattern type-state transitions broken
 //!
 //! **Test Coverage:**
 //! - Construction with validated types
@@ -11,11 +39,13 @@
 //! - Validation during YAML load
 //! - Helper methods (full_name, generate_help_command)
 
+#![ allow( clippy::doc_markdown ) ]
+
 use unilang::
 {
   data::
   {
-    CommandDefinitionV2,
+    CommandDefinition,
     CommandName,
     NamespaceType,
     CommandStatus,
@@ -31,13 +61,13 @@ use unilang::
 fn test_v2_basic_construction()
 {
   let name = CommandName::new( ".build" ).unwrap();
-  let cmd = CommandDefinitionV2::new( name, "Build the project".to_string() );
+  let cmd = CommandDefinition::new( name, "Build the project".to_string() );
 
-  assert_eq!( cmd.name()().as_str(), ".build" );
-  assert_eq!( cmd.description()(), "Build the project" );
-  assert_eq!( cmd.namespace().as_str(), "" );
-  assert!( matches!( cmd.status()(), CommandStatus::Active ) );
-  assert_eq!( cmd.version().as_str(), "1.0.0" );
+  assert_eq!( cmd.name().to_string(), ".build" );
+  assert_eq!( cmd.description().to_string(), "Build the project" );
+  assert_eq!( cmd.namespace(), "" );
+  assert!( matches!( cmd.status(), CommandStatus::Active ) );
+  assert_eq!( cmd.version().to_string(), "1.0.0" );
   assert!( cmd.auto_help_enabled() );
 }
 
@@ -48,13 +78,13 @@ fn test_v2_fluent_api()
   let ns = NamespaceType::new( ".session" ).unwrap();
   let version = VersionType::new( "2.0.0" ).unwrap();
 
-  let cmd = CommandDefinitionV2::new( name, "Test command".to_string() )
-    .with_namespace( ns )
+  let cmd = CommandDefinition::new( name, "Test command".to_string() )
+    .with_namespace( ns.to_string() )
     .with_version( version )
     .with_hint( "Test hint" )
     .with_auto_help( false );
 
-  assert_eq!( cmd.namespace().as_str(), ".session" );
+  assert_eq!( cmd.namespace(), ".session" );
   assert_eq!( cmd.version().as_str(), "2.0.0" );
   assert_eq!( cmd.hint(), "Test hint" );
   assert!( !cmd.auto_help_enabled() );
@@ -65,7 +95,7 @@ fn test_v2_with_status_variants()
 {
   let name = CommandName::new( ".deprecated_cmd" ).unwrap();
 
-  let cmd = CommandDefinitionV2::new( name, "Old command".to_string() )
+  let cmd = CommandDefinition::new( name, "Old command".to_string() )
     .with_status( CommandStatus::Deprecated
     {
       reason : "Use .new_cmd instead".to_string(),
@@ -73,8 +103,8 @@ fn test_v2_with_status_variants()
       replacement : Some( ".new_cmd".to_string() ),
     });
 
-  assert!( cmd.status()().is_deprecated() );
-  let ( reason, since, replacement ) = cmd.status()().deprecation_info().unwrap();
+  assert!( cmd.status().is_deprecated() );
+  let ( reason, since, replacement ) = cmd.status().deprecation_info().unwrap();
   assert_eq!( reason, "Use .new_cmd instead" );
   assert_eq!( since.as_deref(), Some( "v2.0.0" ) );
   assert_eq!( replacement.as_deref(), Some( ".new_cmd" ) );
@@ -88,7 +118,7 @@ fn test_v2_with_status_variants()
 fn test_v2_all_getters()
 {
   let name = CommandName::new( ".full" ).unwrap();
-  let cmd = CommandDefinitionV2::new( name, "Full test".to_string() )
+  let cmd = CommandDefinition::new( name, "Full test".to_string() )
     .with_tags( vec![ "tag1".to_string(), "tag2".to_string() ] )
     .with_aliases( vec![ "alias1".to_string() ] )
     .with_permissions( vec![ "admin".to_string() ] )
@@ -102,12 +132,12 @@ fn test_v2_all_getters()
     .with_group( "test_group" );
 
   // Verify all getters work
-  assert_eq!( cmd.tags()().len(), 2 );
-  assert_eq!( cmd.aliases()().len(), 1 );
-  assert_eq!( cmd.permissions()().len(), 1 );
-  assert!( !cmd.idempotent()() );
-  assert_eq!( cmd.http_method_hint()(), "POST" );
-  assert_eq!( cmd.examples()().len(), 1 );
+  assert_eq!( cmd.tags().len(), 2 );
+  assert_eq!( cmd.aliases().len(), 1 );
+  assert_eq!( cmd.permissions().len(), 1 );
+  assert!( !cmd.idempotent() );
+  assert_eq!( cmd.http_method_hint(), "POST" );
+  assert_eq!( cmd.examples().len(), 1 );
   assert_eq!( cmd.category(), "testing" );
   assert_eq!( cmd.short_desc(), "Short" );
   assert!( cmd.hidden_from_list() );
@@ -123,7 +153,7 @@ fn test_v2_all_getters()
 fn test_v2_full_name_simple()
 {
   let name = CommandName::new( ".help" ).unwrap();
-  let cmd = CommandDefinitionV2::new( name, "Help".to_string() );
+  let cmd = CommandDefinition::new( name, "Help".to_string() );
 
   assert_eq!( cmd.full_name(), ".help" );
 }
@@ -134,8 +164,8 @@ fn test_v2_full_name_namespaced()
   let name = CommandName::new( ".list" ).unwrap();
   let ns = NamespaceType::new( ".session" ).unwrap();
 
-  let cmd = CommandDefinitionV2::new( name, "List sessions".to_string() )
-    .with_namespace( ns );
+  let cmd = CommandDefinition::new( name, "List sessions".to_string() )
+    .with_namespace( ns.to_string() );
 
   assert_eq!( cmd.full_name(), ".session.list" );
 }
@@ -144,7 +174,7 @@ fn test_v2_full_name_namespaced()
 fn test_v2_generate_help_command()
 {
   let name = CommandName::new( ".example" ).unwrap();
-  let cmd = CommandDefinitionV2::new( name, "Example command".to_string() );
+  let cmd = CommandDefinition::new( name, "Example command".to_string() );
 
   let help_cmd = cmd.generate_help_command();
 
@@ -172,11 +202,11 @@ status: "active"
 version: "1.0.0"
 "#;
 
-  let cmd : CommandDefinitionV2 = serde_yaml::from_str( yaml ).unwrap();
+  let cmd : CommandDefinition = serde_yaml::from_str( yaml ).unwrap();
 
-  assert_eq!( cmd.name()().as_str(), ".build" );
-  assert_eq!( cmd.description()(), "Build the project" );
-  assert!( matches!( cmd.status()(), CommandStatus::Active ) );
+  assert_eq!( cmd.name().to_string(), ".build" );
+  assert_eq!( cmd.description().to_string(), "Build the project" );
+  assert!( matches!( cmd.status(), CommandStatus::Active ) );
 }
 
 #[ test ]
@@ -196,11 +226,11 @@ examples:
   - ".test another::example"
 "#;
 
-  let cmd : CommandDefinitionV2 = serde_yaml::from_str( yaml ).unwrap();
+  let cmd : CommandDefinition = serde_yaml::from_str( yaml ).unwrap();
 
-  assert_eq!( cmd.tags()().len(), 2 );
-  assert_eq!( cmd.aliases()().len(), 2 );
-  assert_eq!( cmd.examples()().len(), 2 );
+  assert_eq!( cmd.tags().len(), 2 );
+  assert_eq!( cmd.aliases().len(), 2 );
+  assert_eq!( cmd.examples().len(), 2 );
 }
 
 #[ test ]
@@ -211,7 +241,7 @@ name: "invalid_no_dot"
 description: "Invalid"
 "#;
 
-  let result : Result< CommandDefinitionV2, _ > = serde_yaml::from_str( yaml );
+  let result : Result< CommandDefinition, _ > = serde_yaml::from_str( yaml );
   assert!( result.is_err() );
 }
 
@@ -224,7 +254,7 @@ description: "Test"
 namespace: "invalid_no_dot"
 "#;
 
-  let result : Result< CommandDefinitionV2, _ > = serde_yaml::from_str( yaml );
+  let result : Result< CommandDefinition, _ > = serde_yaml::from_str( yaml );
   assert!( result.is_err() );
 }
 
@@ -237,7 +267,7 @@ description: "Test"
 version: ""
 "#;
 
-  let result : Result< CommandDefinitionV2, _ > = serde_yaml::from_str( yaml );
+  let result : Result< CommandDefinition, _ > = serde_yaml::from_str( yaml );
   assert!( result.is_err() );
 }
 
@@ -248,7 +278,7 @@ fn test_v2_missing_required_name()
 description: "No name"
 "#;
 
-  let result : Result< CommandDefinitionV2, _ > = serde_yaml::from_str( yaml );
+  let result : Result< CommandDefinition, _ > = serde_yaml::from_str( yaml );
   assert!( result.is_err() );
 }
 
@@ -259,7 +289,7 @@ fn test_v2_missing_required_description()
 name: ".test"
 "#;
 
-  let result : Result< CommandDefinitionV2, _ > = serde_yaml::from_str( yaml );
+  let result : Result< CommandDefinition, _ > = serde_yaml::from_str( yaml );
   assert!( result.is_err() );
 }
 
@@ -274,8 +304,8 @@ fn test_v2_realistic_command()
   let ns = NamespaceType::new( ".cloud" ).unwrap();
   let version = VersionType::new( "3.1.4" ).unwrap();
 
-  let cmd = CommandDefinitionV2::new( name, "Deploy to cloud infrastructure".to_string() )
-    .with_namespace( ns )
+  let cmd = CommandDefinition::new( name, "Deploy to cloud infrastructure".to_string() )
+    .with_namespace( ns.to_string() )
     .with_version( version )
     .with_hint( "Deploy your application" )
     .with_tags( vec![ "cloud".to_string(), "deployment".to_string() ] )
@@ -291,10 +321,10 @@ fn test_v2_realistic_command()
 
   // Verify construction
   assert_eq!( cmd.full_name(), ".cloud.deploy" );
-  assert_eq!( cmd.tags()().len(), 2 );
-  assert_eq!( cmd.permissions()()[0], "admin" );
-  assert!( !cmd.idempotent()() );
-  assert_eq!( cmd.http_method_hint()(), "POST" );
+  assert_eq!( cmd.tags().len(), 2 );
+  assert_eq!( cmd.permissions()[0], "admin" );
+  assert!( !cmd.idempotent() );
+  assert_eq!( cmd.http_method_hint(), "POST" );
   assert_eq!( cmd.priority(), 1 );
 }
 
@@ -302,7 +332,7 @@ fn test_v2_realistic_command()
 fn test_v2_help_command_generation()
 {
   let name = CommandName::new( ".parent" ).unwrap();
-  let cmd = CommandDefinitionV2::new( name, "Parent command".to_string() );
+  let cmd = CommandDefinition::new( name, "Parent command".to_string() );
 
   let help_cmd = cmd.generate_help_command();
 

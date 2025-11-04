@@ -37,9 +37,9 @@ fn create_devops_commands() -> Vec<CommandDefinition>
             default: Some( "false".to_string() ),
             ..ArgumentAttributes::default()
           } )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
     CommandDefinition::former()
       .name( ".logs" )
       .namespace( ".container" )
@@ -52,7 +52,7 @@ fn create_devops_commands() -> Vec<CommandDefinition>
           .kind( Kind::String )
           .hint( "Container identifier".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
         ArgumentDefinition::former()
           .name( "follow" )
           .description( "Follow log output".to_string() )
@@ -63,9 +63,9 @@ fn create_devops_commands() -> Vec<CommandDefinition>
             default: Some( "false".to_string() ),
             ..ArgumentAttributes::default()
           } )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
     // Kubernetes commands
     CommandDefinition::former()
       .name( ".list" )
@@ -83,9 +83,9 @@ fn create_devops_commands() -> Vec<CommandDefinition>
             default: Some( "default".to_string() ),
             ..ArgumentAttributes::default()
           } )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
     CommandDefinition::former()
       .name( ".scale" )
       .namespace( ".deployment" )
@@ -98,16 +98,16 @@ fn create_devops_commands() -> Vec<CommandDefinition>
           .kind( Kind::String )
           .hint( "Deployment identifier".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
         ArgumentDefinition::former()
           .name( "replicas" )
           .description( "Number of replicas".to_string() )
           .kind( Kind::Integer )
           .hint( "Replica count".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
   ]
 }
 
@@ -132,7 +132,7 @@ fn create_development_commands() -> Vec<CommandDefinition>
           .kind( Kind::String )
           .hint( "New branch name".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
         ArgumentDefinition::former()
           .name( "from" )
           .description( "Base branch".to_string() )
@@ -143,9 +143,9 @@ fn create_development_commands() -> Vec<CommandDefinition>
             default: Some( "main".to_string() ),
             ..ArgumentAttributes::default()
           } )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
     CommandDefinition::former()
       .name( ".squash" )
       .namespace( ".commit" )
@@ -158,16 +158,16 @@ fn create_development_commands() -> Vec<CommandDefinition>
           .kind( Kind::Integer )
           .hint( "Commit count".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
         ArgumentDefinition::former()
           .name( "message" )
           .description( "Squash commit message".to_string() )
           .kind( Kind::String )
           .hint( "New commit message".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
     // Build commands
     CommandDefinition::former()
       .name( ".release" )
@@ -185,9 +185,9 @@ fn create_development_commands() -> Vec<CommandDefinition>
             default: Some( "x86_64-unknown-linux-gnu".to_string() ),
             ..ArgumentAttributes::default()
           } )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
     CommandDefinition::former()
       .name( ".integration" )
       .namespace( ".test" )
@@ -204,9 +204,9 @@ fn create_development_commands() -> Vec<CommandDefinition>
             default: Some( "true".to_string() ),
             ..ArgumentAttributes::default()
           } )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
   ]
 }
 
@@ -231,16 +231,16 @@ fn create_database_commands() -> Vec<CommandDefinition>
           .kind( Kind::String )
           .hint( "Target database".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
         ArgumentDefinition::former()
           .name( "output" )
           .description( "Backup file path".to_string() )
           .kind( Kind::Path )
           .hint( "Output file".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
     CommandDefinition::former()
       .name( ".restore" )
       .namespace( ".postgres" )
@@ -253,16 +253,16 @@ fn create_database_commands() -> Vec<CommandDefinition>
           .kind( Kind::String )
           .hint( "Target database".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
         ArgumentDefinition::former()
           .name( "backup_file" )
           .description( "Backup file path".to_string() )
           .kind( Kind::File )
           .hint( "Backup file".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
     // Redis commands
     CommandDefinition::former()
       .name( ".monitor" )
@@ -280,7 +280,7 @@ fn create_database_commands() -> Vec<CommandDefinition>
             default: Some( "localhost".to_string() ),
             ..ArgumentAttributes::default()
           } )
-          .form(),
+          .end(),
         ArgumentDefinition::former()
           .name( "port" )
           .description( "Redis port".to_string() )
@@ -291,9 +291,9 @@ fn create_database_commands() -> Vec<CommandDefinition>
             default: Some( "6379".to_string() ),
             ..ArgumentAttributes::default()
           } )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
   ]
 }
 
@@ -322,7 +322,7 @@ fn create_cloud_commands() -> Vec<CommandDefinition>
             default: Some( "us-east-1".to_string() ),
             ..ArgumentAttributes::default()
           } )
-          .form(),
+          .end(),
         ArgumentDefinition::former()
           .name( "state" )
           .description( "Instance state filter".to_string() )
@@ -333,9 +333,9 @@ fn create_cloud_commands() -> Vec<CommandDefinition>
             default: Some( "running".to_string() ),
             ..ArgumentAttributes::default()
           } )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
     CommandDefinition::former()
       .name( ".sync" )
       .namespace( ".s3" )
@@ -348,16 +348,16 @@ fn create_cloud_commands() -> Vec<CommandDefinition>
           .kind( Kind::Path )
           .hint( "Local path".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
         ArgumentDefinition::former()
           .name( "bucket" )
           .description( "S3 bucket name".to_string() )
           .kind( Kind::String )
           .hint( "Target bucket".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
     // Azure commands
     CommandDefinition::former()
       .name( ".status" )
@@ -371,16 +371,16 @@ fn create_cloud_commands() -> Vec<CommandDefinition>
           .kind( Kind::String )
           .hint( "Resource group".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
         ArgumentDefinition::former()
           .name( "vm_name" )
           .description( "Virtual machine name".to_string() )
           .kind( Kind::String )
           .hint( "VM name".to_string() )
           .attributes( ArgumentAttributes::default() )
-          .form(),
+          .end(),
       ])
-      .form(),
+      .end(),
   ]
 }
 

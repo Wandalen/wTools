@@ -111,7 +111,7 @@ fn demonstrate_yaml_aggregation() -> Result< (), Box< dyn std::error::Error > >
 
   for (name, cmd) in commands.iter().take( 3 )
   {
-    println!( "    📝 {}: {}", name, cmd.description );
+    println!( "    📝 {}: {}", name, cmd.description() );
   }
 
   if commands.len() > 3

@@ -107,7 +107,7 @@ fn test_multiple_true_requires_list_kind()
   );
 
   // Verify this is the correct pattern
-  if let Some( arg ) = correct_cmd.arguments.first()
+  if let Some( arg ) = correct_cmd.arguments().first()
   {
     assert!(
       arg.attributes.multiple,
@@ -218,7 +218,7 @@ fn test_valid_parameter_combinations()
   );
 
   assert!(
-    !valid1.arguments.is_empty(),
+    !valid1.arguments().is_empty(),
     "Valid command should be created"
   );
 
@@ -230,7 +230,7 @@ fn test_valid_parameter_combinations()
   );
 
   assert!(
-    !valid2.arguments.is_empty(),
+    !valid2.arguments().is_empty(),
     "Valid command should be created"
   );
 
@@ -242,7 +242,7 @@ fn test_valid_parameter_combinations()
   );
 
   assert!(
-    !valid3.arguments.is_empty(),
+    !valid3.arguments().is_empty(),
     "Valid command should be created"
   );
 }

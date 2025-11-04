@@ -17,8 +17,8 @@ fn create_test_static_command() -> &'static StaticCommandDefinition
 {
   &StaticCommandDefinition
   {
-    name: "test_command",
-    namespace: "test",
+    name: ".test_command",
+    namespace: ".test",
     description: "A test command for static map functionality",
     hint: "Test command hint",
     arguments: &[
@@ -50,7 +50,7 @@ fn create_test_static_command() -> &'static StaticCommandDefinition
     idempotent: true,
     deprecation_message: "",
     http_method_hint: "GET",
-    examples: &["test_command input_value", "test_command --help"],
+    examples: &[".test_command input_value", ".test_command --help"],
   }
 }
 
@@ -59,8 +59,8 @@ const TEST_STATIC_MAP_INTERNAL: phf::Map<&'static str, &'static StaticCommandDef
 {
   "test_command" => &StaticCommandDefinition
   {
-    name: "test_command",
-    namespace: "test",
+    name: ".test_command",
+    namespace: ".test",
     description: "A test command for static map functionality",
     hint: "Test command hint",
     arguments: &[],
@@ -73,12 +73,12 @@ const TEST_STATIC_MAP_INTERNAL: phf::Map<&'static str, &'static StaticCommandDef
     idempotent: true,
     deprecation_message: "",
     http_method_hint: "GET",
-    examples: &["test_command"],
+    examples: &[".test_command"],
   },
   "another_command" => &StaticCommandDefinition
   {
-    name: "another_command",
-    namespace: "test",
+    name: ".another_command",
+    namespace: ".test",
     description: "Another test command",
     hint: "Another hint",
     arguments: &[],
@@ -104,8 +104,8 @@ fn test_static_command_definition_structure()
   // Test StaticCommandDefinition basic structure
   let static_cmd = create_test_static_command();
 
-  assert_eq!( static_cmd.name, "test_command" );
-  assert_eq!( static_cmd.namespace, "test" );
+  assert_eq!( static_cmd.name, ".test_command" );
+  assert_eq!( static_cmd.namespace, ".test" );
   assert_eq!( static_cmd.description, "A test command for static map functionality" );
   assert_eq!( static_cmd.hint, "Test command hint" );
   assert_eq!( static_cmd.status, "stable" );
@@ -139,31 +139,31 @@ fn test_static_to_dynamic_command_conversion()
   let dynamic_cmd: CommandDefinition = static_cmd.into();
 
   // Verify basic fields
-  assert_eq!( dynamic_cmd.name, "test_command" );
-  assert_eq!( dynamic_cmd.namespace, "test" );
-  assert_eq!( dynamic_cmd.description, "A test command for static map functionality" );
-  assert_eq!( dynamic_cmd.hint, "Test command hint" );
-  assert_eq!( dynamic_cmd.status, "stable" );
-  assert_eq!( dynamic_cmd.version, "1.0.0" );
-  assert!( dynamic_cmd.idempotent );
+  assert_eq!( dynamic_cmd.name().as_str(), ".test_command" );
+  assert_eq!( dynamic_cmd.namespace(), ".test" );
+  assert_eq!( dynamic_cmd.description(), "A test command for static map functionality" );
+  assert_eq!( dynamic_cmd.hint(), "Test command hint" );
+  assert!(matches!(dynamic_cmd.status(), unilang::data::CommandStatus::Active));
+  assert_eq!( dynamic_cmd.version().as_str(), "1.0.0" );
+  assert!( dynamic_cmd.idempotent() );
 
   // Verify arguments were converted
-  assert_eq!( dynamic_cmd.arguments.len(), 1 );
-  assert_eq!( dynamic_cmd.arguments[0].name, "input" );
-  assert!( !dynamic_cmd.arguments[0].attributes.optional );
+  assert_eq!( dynamic_cmd.arguments().len(), 1 );
+  assert_eq!( dynamic_cmd.arguments()[0].name, "input" );
+  assert!( !dynamic_cmd.arguments()[0].attributes.optional );
 
   // Verify collections were converted
-  assert_eq!( dynamic_cmd.tags.len(), 2 );
-  assert!( dynamic_cmd.tags.contains( &"test".to_string() ) );
-  assert!( dynamic_cmd.tags.contains( &"functionality".to_string() ) );
+  assert_eq!( dynamic_cmd.tags().len(), 2 );
+  assert!( dynamic_cmd.tags().contains( &"test".to_string() ) );
+  assert!( dynamic_cmd.tags().contains( &"functionality".to_string() ) );
 
-  assert_eq!( dynamic_cmd.aliases.len(), 2 );
-  assert!( dynamic_cmd.aliases.contains( &"tc".to_string() ) );
+  assert_eq!( dynamic_cmd.aliases().len(), 2 );
+  assert!( dynamic_cmd.aliases().contains( &"tc".to_string() ) );
 
-  assert_eq!( dynamic_cmd.permissions.len(), 1 );
-  assert!( dynamic_cmd.permissions.contains( &"read".to_string() ) );
+  assert_eq!( dynamic_cmd.permissions().len(), 1 );
+  assert!( dynamic_cmd.permissions().contains( &"read".to_string() ) );
 
-  assert_eq!( dynamic_cmd.examples.len(), 2 );
+  assert_eq!( dynamic_cmd.examples().len(), 2 );
 }
 
 #[test]
@@ -180,11 +180,11 @@ fn test_static_map_basic_functionality()
   // Test get
   let cmd1 = TEST_STATIC_MAP.get("test_command");
   assert!( cmd1.is_some() );
-  assert_eq!( cmd1.unwrap().name, "test_command" );
+  assert_eq!( cmd1.unwrap().name, ".test_command" );
 
   let cmd2 = TEST_STATIC_MAP.get("another_command");
   assert!( cmd2.is_some() );
-  assert_eq!( cmd2.unwrap().name, "another_command" );
+  assert_eq!( cmd2.unwrap().name, ".another_command" );
 
   let cmd3 = TEST_STATIC_MAP.get("nonexistent");
   assert!( cmd3.is_none() );
@@ -197,11 +197,11 @@ fn test_static_map_iteration()
   let mut count = 0;
   let mut names = Vec::new();
 
-  for (key, value) in TEST_STATIC_MAP.entries()
+  for (key, _value) in TEST_STATIC_MAP.entries()
   {
     count += 1;
     names.push( (*key).to_string() );
-    assert_eq!( *key, value.name );
+    // Note: Keys don't have dot prefix, but command names do
   }
 
   assert_eq!( count, 2 );
@@ -259,11 +259,11 @@ fn test_static_command_registry_with_static_map()
   // Test command lookup
   let cmd1 = registry.command( "test_command" );
   assert!( cmd1.is_some() );
-  assert_eq!( cmd1.unwrap().name, "test_command" );
+  assert_eq!( cmd1.unwrap().name().to_string(), ".test_command" );
 
   let cmd2 = registry.command( "another_command" );
   assert!( cmd2.is_some() );
-  assert_eq!( cmd2.unwrap().name, "another_command" );
+  assert_eq!( cmd2.unwrap().name().to_string(), ".another_command" );
 
   let cmd3 = registry.command( "nonexistent" );
   assert!( cmd3.is_none() );
@@ -435,8 +435,8 @@ fn test_static_map_memory_characteristics()
 /// Static complex command for testing
 static COMPLEX_COMMAND: StaticCommandDefinition = StaticCommandDefinition
   {
-    name: "complex_command",
-    namespace: "advanced",
+    name: ".complex_command",
+    namespace: ".advanced",
     description: "A complex command with multiple arguments",
     hint: "Complex operation",
     arguments: &[
@@ -505,9 +505,9 @@ static COMPLEX_COMMAND: StaticCommandDefinition = StaticCommandDefinition
     deprecation_message: "",
     http_method_hint: "POST",
     examples: &[
-      "complex_command input.txt",
-      "complex_command input.txt --output output.txt",
-      "complex_command input.txt -o output.txt --verbose",
+      ".complex_command input.txt",
+      ".complex_command input.txt --output output.txt",
+      ".complex_command input.txt -o output.txt --verbose",
     ],
   };
 
@@ -517,24 +517,24 @@ fn test_complex_command_with_multiple_arguments()
   // Test conversion to dynamic command
   let dynamic_cmd: CommandDefinition = (&COMPLEX_COMMAND).into();
 
-  assert_eq!( dynamic_cmd.name, "complex_command" );
-  assert_eq!( dynamic_cmd.arguments.len(), 3 );
+  assert_eq!( dynamic_cmd.name().as_str(), ".complex_command" );
+  assert_eq!( dynamic_cmd.arguments().len(), 3 );
 
   // Test first argument (required file)
-  assert_eq!( dynamic_cmd.arguments[0].name, "input_file" );
-  assert!( !dynamic_cmd.arguments[0].attributes.optional );
+  assert_eq!( dynamic_cmd.arguments()[0].name, "input_file" );
+  assert!( !dynamic_cmd.arguments()[0].attributes.optional );
 
   // Test second argument (optional file with default)
-  assert_eq!( dynamic_cmd.arguments[1].name, "output_file" );
-  assert!( dynamic_cmd.arguments[1].attributes.optional );
+  assert_eq!( dynamic_cmd.arguments()[1].name, "output_file" );
+  assert!( dynamic_cmd.arguments()[1].attributes.optional );
 
   // Test third argument (boolean flag)
-  assert_eq!( dynamic_cmd.arguments[2].name, "verbose" );
-  assert!( dynamic_cmd.arguments[2].attributes.optional );
+  assert_eq!( dynamic_cmd.arguments()[2].name, "verbose" );
+  assert!( dynamic_cmd.arguments()[2].attributes.optional );
 
   // Test collections
-  assert_eq!( dynamic_cmd.tags.len(), 3 );
-  assert_eq!( dynamic_cmd.aliases.len(), 2 );
-  assert_eq!( dynamic_cmd.permissions.len(), 2 );
-  assert_eq!( dynamic_cmd.examples.len(), 3 );
+  assert_eq!( dynamic_cmd.tags().len(), 3 );
+  assert_eq!( dynamic_cmd.aliases().len(), 2 );
+  assert_eq!( dynamic_cmd.permissions().len(), 2 );
+  assert_eq!( dynamic_cmd.examples().len(), 3 );
 }

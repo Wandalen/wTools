@@ -8,6 +8,10 @@
 //! - CommandStatus: enum variants, deprecation metadata, serde, backward compatibility
 //!
 //! # Phase 2 Context
+
+#![ allow( clippy::uninlined_format_args ) ]
+#![ allow( clippy::expect_fun_call ) ]
+#![ allow( clippy::doc_markdown ) ]
 //! These tests verify that the type-safe redesign correctly enforces
 //! invariants at the type level, making invalid states unrepresentable.
 
@@ -939,12 +943,12 @@ fn command_status_serde_yaml_simple()
 #[ test ]
 fn command_status_serde_yaml_deprecated_object()
 {
-  let yaml = r#"
+  let yaml = r"
 status: deprecated
 reason: Use .new instead
 since: 2.0.0
 replacement: .new
-"#;
+";
 
   let deserialized: CommandStatus = serde_yaml::from_str(yaml)
     .expect("YAML deserialization should succeed");

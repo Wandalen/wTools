@@ -40,11 +40,11 @@ fn test_cli_no_args_help()
   .assert()
   .success()
   .stdout( contains_all_unordered( vec![
-    "Available Commands:",
-    "  .math.add       Adds two numbers.",
-    "  .math.sub       Subtracts two numbers.",
-    "  .greet          Greets the specified person.",
-    "  .config.set     Sets a configuration value.",
+    "Available commands:",
+    "  .math.add            Adds two numbers.",
+    "  .math.sub            Subtracts two numbers.",
+    "  .greet               Greets the specified person.",
+    "  .config.set          Sets a configuration value.",
   ]) )
   .stderr( predicate::str::contains( "Usage: unilang_cli <command> [args...]" ) );
 }
@@ -59,11 +59,11 @@ fn test_cli_global_help_flag()
   .assert()
   .success()
   .stdout( contains_all_unordered( vec![
-    "Available Commands:",
-    "  .math.add       Adds two numbers.",
-    "  .math.sub       Subtracts two numbers.",
-    "  .greet          Greets the specified person.",
-    "  .config.set     Sets a configuration value.",
+    "Available commands:",
+    "  .math.add            Adds two numbers.",
+    "  .math.sub            Subtracts two numbers.",
+    "  .greet               Greets the specified person.",
+    "  .config.set          Sets a configuration value.",
   ]) )
   .stderr( "" ); // No stderr for successful help
 }
@@ -78,11 +78,11 @@ fn test_cli_global_help_command()
   .assert()
   .success()
   .stdout( contains_all_unordered( vec![
-    "Available Commands:",
-    "  .math.add       Adds two numbers.",
-    "  .math.sub       Subtracts two numbers.",
-    "  .greet          Greets the specified person.",
-    "  .config.set     Sets a configuration value.",
+    "Available commands:",
+    "  .math.add            Adds two numbers.",
+    "  .math.sub            Subtracts two numbers.",
+    "  .greet               Greets the specified person.",
+    "  .config.set          Sets a configuration value.",
   ]) )
   .stderr( "" ); // No stderr for successful help
 }

@@ -71,18 +71,18 @@ fn test_load_from_json_str_simple_command()
 
   assert!( registry.commands().contains_key( ".system.hello_json" ) );
   let command = registry.command(".system.hello_json").unwrap();
-  assert_eq!( command.name, ".hello_json" );
-  assert_eq!( command.description, "Says hello from JSON" );
-  assert!( command.arguments.is_empty() );
-  assert_eq!( command.routine_link, Some( "dummy_hello_json_routine".to_string() ) );
-  assert_eq!( command.namespace, ".system".to_string() );
-  assert_eq!( command.hint, "Says hello from JSON" );
-  assert_eq!( command.status, "stable" );
-  assert_eq!( command.version, "1.0.0".to_string() );
-  assert_eq!( command.tags, vec![ "greeting".to_string() ] );
-  assert_eq!( command.aliases, vec![ "hi_json".to_string() ] );
-  assert_eq!( command.permissions, vec![ "public".to_string() ] );
-  assert!( command.idempotent );
+  assert_eq!( command.name().as_str(), ".hello_json" );
+  assert_eq!( command.description(), "Says hello from JSON" );
+  assert!( command.arguments().is_empty() );
+  assert_eq!( command.routine_link(), Some( &"dummy_hello_json_routine".to_string() ) );
+  assert_eq!( command.namespace(), ".system".to_string() );
+  assert_eq!( command.hint(), "Says hello from JSON" );
+  assert!(matches!( command.status(), unilang::data::CommandStatus::Active ));
+  assert_eq!( command.version().as_str(), "1.0.0" );
+  assert_eq!( command.tags(), &vec![ "greeting".to_string() ] );
+  assert_eq!( command.aliases(), &vec![ "hi_json".to_string() ] );
+  assert_eq!( command.permissions(), &vec![ "public".to_string() ] );
+  assert!( command.idempotent() );
   assert!( registry.get_routine( ".system.hello_json" ).is_some() );
 }
 
@@ -93,7 +93,7 @@ fn test_load_from_json_str_all_scalar_types()
   let json_str = r#"
   [
    {
-    "name": "scalar_command_json",
+    "name": ".scalar_command_json",
     "description": "Command with scalar arguments from JSON",
     "arguments": [
      { "name": "arg_string", "description": "A string argument", "kind": "String", "attributes": { "optional": false, "multiple": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "String hint", "aliases": [], "tags": [] },
@@ -128,38 +128,38 @@ fn test_load_from_json_str_all_scalar_types()
 
   assert!( registry.commands().contains_key( ".test.scalar_command_json" ) );
   let command = registry.command(".test.scalar_command_json").unwrap();
-  assert_eq!( command.arguments.len(), 11 );
-  assert_eq!( command.arguments[ 0 ].kind, Kind::String );
-  assert_eq!( command.arguments[ 1 ].kind, Kind::Integer );
-  assert_eq!( command.arguments[ 2 ].kind, Kind::Float );
-  assert_eq!( command.arguments[ 3 ].kind, Kind::Boolean );
-  assert_eq!( command.arguments[ 4 ].kind, Kind::Path );
-  assert_eq!( command.arguments[ 5 ].kind, Kind::File );
-  assert_eq!( command.arguments[ 6 ].kind, Kind::Directory );
+  assert_eq!( command.arguments().len(), 11 );
+  assert_eq!( command.arguments()[ 0 ].kind, Kind::String );
+  assert_eq!( command.arguments()[ 1 ].kind, Kind::Integer );
+  assert_eq!( command.arguments()[ 2 ].kind, Kind::Float );
+  assert_eq!( command.arguments()[ 3 ].kind, Kind::Boolean );
+  assert_eq!( command.arguments()[ 4 ].kind, Kind::Path );
+  assert_eq!( command.arguments()[ 5 ].kind, Kind::File );
+  assert_eq!( command.arguments()[ 6 ].kind, Kind::Directory );
   assert_eq!(
-  command.arguments[ 7 ].kind,
+  command.arguments()[ 7 ].kind,
   Kind::Enum( vec![ "one".to_string(), "two".to_string(), "three".to_string() ])
   );
-  assert_eq!( command.arguments[ 8 ].kind, Kind::Url );
-  assert_eq!( command.arguments[ 9 ].kind, Kind::DateTime );
-  assert_eq!( command.arguments[ 10 ].kind, Kind::Pattern );
+  assert_eq!( command.arguments()[ 8 ].kind, Kind::Url );
+  assert_eq!( command.arguments()[ 9 ].kind, Kind::DateTime );
+  assert_eq!( command.arguments()[ 10 ].kind, Kind::Pattern );
 
-  assert_eq!( command.namespace, ".test".to_string() );
-  assert_eq!( command.hint, "Scalar command hint" );
-  assert_eq!( command.status, "experimental" );
-  assert_eq!( command.version, "0.1.0".to_string() );
-  assert_eq!( command.tags, vec![ "test".to_string(), "scalar".to_string() ] );
-  assert_eq!( command.aliases, vec![ "s_cmd_json".to_string() ] );
-  assert_eq!( command.permissions, vec![ "dev".to_string() ] );
-  assert!( !command.idempotent );
+  assert_eq!( command.namespace(), ".test".to_string() );
+  assert_eq!( command.hint(), "Scalar command hint" );
+  assert!(matches!( command.status(), unilang::data::CommandStatus::Experimental ));
+  assert_eq!( command.version().as_str(), "0.1.0" );
+  assert_eq!( command.tags(), &vec![ "test".to_string(), "scalar".to_string() ] );
+  assert_eq!( command.aliases(), &vec![ "s_cmd_json".to_string() ] );
+  assert_eq!( command.permissions(), &vec![ "dev".to_string() ] );
+  assert!( !command.idempotent() );
 
-  assert_eq!( command.arguments[ 0 ].hint, "String hint" );
+  assert_eq!( command.arguments()[ 0 ].hint, "String hint" );
   // is_default_arg field no longer exists
-  assert_eq!( command.arguments[ 0 ].attributes.default, None );
-  assert_eq!( command.arguments[ 0 ].aliases, Vec::< String >::new() );
-  assert_eq!( command.arguments[ 0 ].tags, Vec::< String >::new() );
-  assert!( !command.arguments[ 0 ].attributes.interactive );
-  assert!( !command.arguments[ 0 ].attributes.sensitive );
+  assert_eq!( command.arguments()[ 0 ].attributes.default, None );
+  assert_eq!( command.arguments()[ 0 ].aliases, Vec::< String >::new() );
+  assert_eq!( command.arguments()[ 0 ].tags, Vec::< String >::new() );
+  assert!( !command.arguments()[ 0 ].attributes.interactive );
+  assert!( !command.arguments()[ 0 ].attributes.sensitive );
 }
 
 #[ test ]
@@ -169,7 +169,7 @@ fn test_load_from_json_str_collection_types()
   let json_str = r#"
   [
    {
-    "name": "collection_command_json",
+    "name": ".collection_command_json",
     "description": "Command with collection arguments from JSON",
     "arguments": [
      { "name": "arg_list_string", "description": "A list of strings", "kind": "List(String)", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "List string hint", "default_value": null, "aliases": [], "tags": [] },
@@ -197,34 +197,34 @@ fn test_load_from_json_str_collection_types()
 
   assert!( registry.commands().contains_key( ".test.collection_command_json" ) );
   let command = registry.command(".test.collection_command_json").unwrap();
-  assert_eq!( command.arguments.len(), 4 );
-  assert_eq!( command.arguments[ 0 ].kind, Kind::List( Box::new( Kind::String ), None ) );
-  assert_eq!( command.arguments[ 1 ].kind, Kind::List( Box::new( Kind::Integer ), Some( ';' ) ) );
+  assert_eq!( command.arguments().len(), 4 );
+  assert_eq!( command.arguments()[ 0 ].kind, Kind::List( Box::new( Kind::String ), None ) );
+  assert_eq!( command.arguments()[ 1 ].kind, Kind::List( Box::new( Kind::Integer ), Some( ';' ) ) );
   assert_eq!(
-  command.arguments[ 2 ].kind,
+  command.arguments()[ 2 ].kind,
   Kind::Map( Box::new( Kind::String ), Box::new( Kind::Integer ), None, None )
   );
   assert_eq!(
-  command.arguments[ 3 ].kind,
+  command.arguments()[ 3 ].kind,
   Kind::Map( Box::new( Kind::String ), Box::new( Kind::String ), Some( ';' ), Some( '=' ) )
   );
 
-  assert_eq!( command.namespace, ".test".to_string() );
-  assert_eq!( command.hint, "Collection command hint" );
-  assert_eq!( command.status, "stable" );
-  assert_eq!( command.version, "1.0.0".to_string() );
-  assert_eq!( command.tags, vec![ "test".to_string(), "collection".to_string() ] );
-  assert_eq!( command.aliases, vec![ "c_cmd_json".to_string() ] );
-  assert_eq!( command.permissions, vec![ "public".to_string() ] );
-  assert!( command.idempotent );
+  assert_eq!( command.namespace(), ".test".to_string() );
+  assert_eq!( command.hint(), "Collection command hint" );
+  assert!(matches!( command.status(), unilang::data::CommandStatus::Active ));
+  assert_eq!( command.version().as_str(), "1.0.0" );
+  assert_eq!( command.tags(), &vec![ "test".to_string(), "collection".to_string() ] );
+  assert_eq!( command.aliases(), &vec![ "c_cmd_json".to_string() ] );
+  assert_eq!( command.permissions(), &vec![ "public".to_string() ] );
+  assert!( command.idempotent() );
 
-  assert_eq!( command.arguments[ 0 ].hint, "List string hint" );
+  assert_eq!( command.arguments()[ 0 ].hint, "List string hint" );
   // is_default_arg field no longer exists
-  assert_eq!( command.arguments[ 0 ].attributes.default, None );
-  assert_eq!( command.arguments[ 0 ].aliases, Vec::< String >::new() );
-  assert_eq!( command.arguments[ 0 ].tags, Vec::< String >::new() );
-  assert!( !command.arguments[ 0 ].attributes.interactive );
-  assert!( !command.arguments[ 0 ].attributes.sensitive );
+  assert_eq!( command.arguments()[ 0 ].attributes.default, None );
+  assert_eq!( command.arguments()[ 0 ].aliases, Vec::< String >::new() );
+  assert_eq!( command.arguments()[ 0 ].tags, Vec::< String >::new() );
+  assert!( !command.arguments()[ 0 ].attributes.interactive );
+  assert!( !command.arguments()[ 0 ].attributes.sensitive );
 }
 
 #[ test ]
@@ -234,7 +234,7 @@ fn test_load_from_json_str_complex_types_and_attributes()
   let json_str = r#"
   [
    {
-    "name": "complex_command_json",
+    "name": ".complex_command_json",
     "description": "Command with complex types and attributes from JSON",
     "arguments": [
      { "name": "arg_json_string", "description": "A JSON string argument", "kind": "JsonString", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "Json string hint", "default_value": null, "aliases": [], "tags": [] },
@@ -263,33 +263,33 @@ fn test_load_from_json_str_complex_types_and_attributes()
 
   assert!( registry.commands().contains_key( ".test.complex_command_json" ) );
   let command = registry.command(".test.complex_command_json").unwrap();
-  assert_eq!( command.arguments.len(), 5 );
-  assert_eq!( command.arguments[ 0 ].kind, Kind::JsonString );
-  assert_eq!( command.arguments[ 1 ].kind, Kind::Object );
-  assert!( command.arguments[ 2 ].attributes.multiple );
+  assert_eq!( command.arguments().len(), 5 );
+  assert_eq!( command.arguments()[ 0 ].kind, Kind::JsonString );
+  assert_eq!( command.arguments()[ 1 ].kind, Kind::Object );
+  assert!( command.arguments()[ 2 ].attributes.multiple );
   assert_eq!(
-  command.arguments[ 3 ].validation_rules,
+  command.arguments()[ 3 ].validation_rules,
   vec![ ValidationRule::Min(10.0), ValidationRule::Max(100.0) ]
   );
   // is_default_arg field no longer exists
-  assert_eq!( command.arguments[ 4 ].attributes.default, Some( "default_string".to_string() ) );
+  assert_eq!( command.arguments()[ 4 ].attributes.default, Some( "default_string".to_string() ) );
 
-  assert_eq!( command.namespace, ".test".to_string() );
-  assert_eq!( command.hint, "Complex command hint" );
-  assert_eq!( command.status, "stable" );
-  assert_eq!( command.version, "1.0.0".to_string() );
-  assert_eq!( command.tags, vec![ "test".to_string(), "complex".to_string() ] );
-  assert_eq!( command.aliases, vec![ "comp_cmd_json".to_string() ] );
-  assert_eq!( command.permissions, vec![ "public".to_string() ] );
-  assert!( !command.idempotent );
+  assert_eq!( command.namespace(), ".test".to_string() );
+  assert_eq!( command.hint(), "Complex command hint" );
+  assert!(matches!( command.status(), unilang::data::CommandStatus::Active ));
+  assert_eq!( command.version().as_str(), "1.0.0" );
+  assert_eq!( command.tags(), &vec![ "test".to_string(), "complex".to_string() ] );
+  assert_eq!( command.aliases(), &vec![ "comp_cmd_json".to_string() ] );
+  assert_eq!( command.permissions(), &vec![ "public".to_string() ] );
+  assert!( !command.idempotent() );
 
-  assert_eq!( command.arguments[ 0 ].hint, "Json string hint" );
+  assert_eq!( command.arguments()[ 0 ].hint, "Json string hint" );
   // is_default_arg field no longer exists
-  assert_eq!( command.arguments[ 0 ].attributes.default, None );
-  assert_eq!( command.arguments[ 0 ].aliases, Vec::< String >::new() );
-  assert_eq!( command.arguments[ 0 ].tags, Vec::< String >::new() );
-  assert!( !command.arguments[ 0 ].attributes.interactive );
-  assert!( !command.arguments[ 0 ].attributes.sensitive );
+  assert_eq!( command.arguments()[ 0 ].attributes.default, None );
+  assert_eq!( command.arguments()[ 0 ].aliases, Vec::< String >::new() );
+  assert_eq!( command.arguments()[ 0 ].tags, Vec::< String >::new() );
+  assert!( !command.arguments()[ 0 ].attributes.interactive );
+  assert!( !command.arguments()[ 0 ].attributes.sensitive );
 }
 
 #[ test ]
@@ -299,7 +299,7 @@ fn test_load_from_json_str_multiple_commands()
   let json_str = r#"
   [
    {
-    "name": "command1_json",
+    "name": ".command1_json",
     "description": "First command from JSON",
     "arguments": [],
     "namespace": ".group1",
@@ -316,7 +316,7 @@ fn test_load_from_json_str_multiple_commands()
     "auto_help_enabled": false
    },
    {
-    "name": "command2_json",
+    "name": ".command2_json",
     "description": "Second command from JSON",
     "arguments": [],
     "namespace": ".group1",

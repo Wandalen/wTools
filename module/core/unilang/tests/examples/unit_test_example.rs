@@ -175,7 +175,7 @@ fn test_command_registry_runtime_integration()
     assert!( cmd.arguments.contains_key( "input" ) );
 
     Ok( OutputData {
-      content : format!( "Processed: {}", cmd.arguments["input"] ),
+      content : format!( "Processed: {}", cmd.arguments()["input"] ),
       format : "text".to_string(),
       execution_time_ms : None,
     })

@@ -144,8 +144,8 @@ fn test_conversion_static_to_dynamic_command()
   // Test conversion from StaticCommandDefinition to CommandDefinition
   static STATIC_CMD: StaticCommandDefinition = StaticCommandDefinition
   {
-    name: "test_cmd",
-    namespace: "test",
+    name: ".test_cmd",
+    namespace: ".test",
     description: "Test description",
     hint: "Test hint",
     arguments: &[],
@@ -158,26 +158,26 @@ fn test_conversion_static_to_dynamic_command()
     idempotent: true,
     deprecation_message: "",
     http_method_hint: "GET",
-    examples: &[ "test_cmd --help" ],
+    examples: &[ ".test_cmd --help" ],
   };
 
   let dynamic_cmd: CommandDefinition = ( &STATIC_CMD ).into();
 
-  assert_eq!( dynamic_cmd.name, "test_cmd" );
-  assert_eq!( dynamic_cmd.namespace, "test" );
-  assert_eq!( dynamic_cmd.description, "Test description" );
-  assert_eq!( dynamic_cmd.hint, "Test hint" );
-  assert_eq!( dynamic_cmd.routine_link, Some( "test_routine".to_string() ) );
-  assert_eq!( dynamic_cmd.status, "stable" );
-  assert_eq!( dynamic_cmd.version, "1.0.0" );
-  assert_eq!( dynamic_cmd.tags, vec![ "test" ] );
-  assert_eq!( dynamic_cmd.aliases, vec![ "tc" ] );
-  assert_eq!( dynamic_cmd.permissions, vec![ "read" ] );
-  assert!( dynamic_cmd.idempotent );
-  assert_eq!( dynamic_cmd.deprecation_message, "" );
-  assert_eq!( dynamic_cmd.http_method_hint, "GET" );
-  assert_eq!( dynamic_cmd.examples, vec![ "test_cmd --help" ] );
-  assert!( !dynamic_cmd.auto_help_enabled ); // Static commands don't auto-generate help by default
+  assert_eq!( dynamic_cmd.name().as_str(), ".test_cmd" );
+  assert_eq!( dynamic_cmd.namespace(), ".test" );
+  assert_eq!( dynamic_cmd.description(), "Test description" );
+  assert_eq!( dynamic_cmd.hint(), "Test hint" );
+  assert_eq!( dynamic_cmd.routine_link(), Some(&"test_routine".to_string()) );
+  assert!(matches!( dynamic_cmd.status(), unilang::data::CommandStatus::Active ));
+  assert_eq!( dynamic_cmd.version().as_str(), "1.0.0" );
+  assert_eq!( dynamic_cmd.tags(), &vec![ "test" ] );
+  assert_eq!( dynamic_cmd.aliases(), &vec![ "tc" ] );
+  assert_eq!( dynamic_cmd.permissions(), &vec![ "read" ] );
+  assert!( dynamic_cmd.idempotent() );
+  assert_eq!( dynamic_cmd.deprecation_message(), "" );
+  assert_eq!( dynamic_cmd.http_method_hint(), "GET" );
+  assert_eq!( dynamic_cmd.examples(), &vec![ ".test_cmd --help" ] );
+  assert!( !dynamic_cmd.auto_help_enabled() ); // Static commands don't auto-generate help by default
 }
 
 #[ test ]
@@ -415,8 +415,8 @@ fn test_static_command_with_arguments()
 
   static STATIC_CMD: StaticCommandDefinition = StaticCommandDefinition
   {
-    name: "process",
-    namespace: "file",
+    name: ".process",
+    namespace: ".file",
     description: "Process multiple files",
     hint: "file processor",
     arguments: &[ STATIC_ARG ],
@@ -429,7 +429,7 @@ fn test_static_command_with_arguments()
     idempotent: false,
     deprecation_message: "",
     http_method_hint: "POST",
-    examples: &[ "process --files file1.txt,file2.txt" ],
+    examples: &[ ".process --files file1.txt,file2.txt" ],
   };
 
   // Test the command structure
@@ -441,9 +441,9 @@ fn test_static_command_with_arguments()
 
   // Test conversion to dynamic
   let dynamic_cmd: CommandDefinition = ( &STATIC_CMD ).into();
-  assert_eq!( dynamic_cmd.arguments.len(), 1 );
-  assert_eq!( dynamic_cmd.arguments[ 0 ].name, "files" );
-  assert!( dynamic_cmd.arguments[ 0 ].attributes.multiple );
+  assert_eq!( dynamic_cmd.arguments().len(), 1 );
+  assert_eq!( dynamic_cmd.arguments()[ 0 ].name, "files" );
+  assert!( dynamic_cmd.arguments()[ 0 ].attributes.multiple );
 }
 
 #[ test ]
@@ -452,8 +452,8 @@ fn test_static_command_serialization_roundtrip()
   // Test that static structures can be serialized and used for code generation
   static STATIC_CMD: StaticCommandDefinition = StaticCommandDefinition
   {
-    name: "serialize_test",
-    namespace: "test",
+    name: ".serialize_test",
+    namespace: ".test",
     description: "Test serialization",
     hint: "serialization test",
     arguments: &[],
@@ -473,17 +473,18 @@ fn test_static_command_serialization_roundtrip()
   let dynamic_cmd: CommandDefinition = ( &STATIC_CMD ).into();
 
   // Verify all fields match
-  assert_eq!( dynamic_cmd.name, STATIC_CMD.name );
-  assert_eq!( dynamic_cmd.namespace, STATIC_CMD.namespace );
-  assert_eq!( dynamic_cmd.description, STATIC_CMD.description );
-  assert_eq!( dynamic_cmd.hint, STATIC_CMD.hint );
-  assert_eq!( dynamic_cmd.routine_link.as_deref(), STATIC_CMD.routine_link );
-  assert_eq!( dynamic_cmd.status, STATIC_CMD.status );
-  assert_eq!( dynamic_cmd.version, STATIC_CMD.version );
-  assert_eq!( dynamic_cmd.tags, STATIC_CMD.tags.iter().map( | &s | s.to_string() ).collect::< Vec< _ > >() );
-  assert_eq!( dynamic_cmd.aliases, STATIC_CMD.aliases.iter().map( | &s | s.to_string() ).collect::< Vec< _ > >() );
-  assert_eq!( dynamic_cmd.idempotent, STATIC_CMD.idempotent );
-  assert_eq!( dynamic_cmd.examples, STATIC_CMD.examples.iter().map( | &s | s.to_string() ).collect::< Vec< _ > >() );
+  assert_eq!( dynamic_cmd.name().as_str(), STATIC_CMD.name );
+  assert_eq!( dynamic_cmd.namespace(), STATIC_CMD.namespace );
+  assert_eq!( dynamic_cmd.description(), STATIC_CMD.description );
+  assert_eq!( dynamic_cmd.hint(), STATIC_CMD.hint );
+  assert_eq!( dynamic_cmd.routine_link().as_ref().map(|s| s.as_str()), STATIC_CMD.routine_link );
+  // Status "experimental" converts to CommandStatus::Experimental
+  assert!(matches!( dynamic_cmd.status(), unilang::data::CommandStatus::Experimental ));
+  assert_eq!( dynamic_cmd.version().as_str(), STATIC_CMD.version );
+  assert_eq!( dynamic_cmd.tags(), &STATIC_CMD.tags.iter().map( | &s | s.to_string() ).collect::< Vec< _ > >() );
+  assert_eq!( dynamic_cmd.aliases(), &STATIC_CMD.aliases.iter().map( | &s | s.to_string() ).collect::< Vec< _ > >() );
+  assert_eq!( dynamic_cmd.idempotent(), STATIC_CMD.idempotent );
+  assert_eq!( dynamic_cmd.examples(), &STATIC_CMD.examples.iter().map( | &s | s.to_string() ).collect::< Vec< _ > >() );
 }
 
 #[ test ]

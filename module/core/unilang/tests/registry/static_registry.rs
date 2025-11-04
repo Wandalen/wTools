@@ -238,24 +238,24 @@ fn test_static_command_lookup_functionality()
   let version_cmd = registry.command( ".test.version" );
   assert!( version_cmd.is_some() );
   let version_cmd = version_cmd.unwrap();
-  assert_eq!( version_cmd.name, ".test.version" );
-  assert_eq!( version_cmd.description, "Show version information" );
+  assert_eq!( version_cmd.name().to_string(), ".test.version" );
+  assert_eq!( version_cmd.description().to_string(), "Show version information" );
   assert_eq!( version_cmd.namespace, ".test" );
 
   // Test command with arguments
   let add_cmd = registry.command( ".test.add" );
   assert!( add_cmd.is_some() );
   let add_cmd = add_cmd.unwrap();
-  assert_eq!( add_cmd.arguments.len(), 2 );
-  assert_eq!( add_cmd.arguments[0].name, "a" );
-  assert_eq!( add_cmd.arguments[1].name, "b" );
+  assert_eq!( add_cmd.arguments().len(), 2 );
+  assert_eq!( add_cmd.arguments()[0].name, "a" );
+  assert_eq!( add_cmd.arguments()[1].name, "b" );
 
   // Test complex command
   let copy_cmd = registry.command( ".test.file.copy" );
   assert!( copy_cmd.is_some() );
   let copy_cmd = copy_cmd.unwrap();
-  assert_eq!( copy_cmd.arguments.len(), 3 );
-  assert_eq!( copy_cmd.permissions, vec![ "read", "write" ] );
+  assert_eq!( copy_cmd.arguments().len(), 3 );
+  assert_eq!( copy_cmd.permissions(), &vec![ "read".to_string(), "write".to_string() ] );
 
   // Test non-existent command
   let missing_cmd = registry.command( ".test.nonexistent" );
@@ -462,8 +462,8 @@ fn test_static_command_registry_memory_efficiency()
   let cmd2 = registry.command( ".test.version" ).unwrap();
 
   // Commands should be equal
-  assert_eq!( cmd1.name, cmd2.name );
-  assert_eq!( cmd1.description, cmd2.description );
+  assert_eq!( cmd1.name(), cmd2.name() );
+  assert_eq!( cmd1.description(), cmd2.description() );
   assert_eq!( cmd1.namespace, cmd2.namespace );
 
   // Test that all commands are accessible
@@ -483,24 +483,25 @@ fn test_static_command_registry_command_conversion_accuracy()
   let add_cmd = registry.command( ".test.add" ).unwrap();
 
   // Verify all fields are converted correctly
-  assert_eq!( add_cmd.name, ".test.add" );
+  assert_eq!( add_cmd.name().to_string(), ".test.add" );
   assert_eq!( add_cmd.namespace, ".test" );
-  assert_eq!( add_cmd.description, "Add two numbers" );
-  assert_eq!( add_cmd.hint, "Mathematical addition" );
-  assert_eq!( add_cmd.status, "stable" );
-  assert_eq!( add_cmd.version, "1.0.0" );
-  assert_eq!( add_cmd.tags, vec![ "math", "calculation" ] );
-  assert_eq!( add_cmd.aliases, vec![ "plus", "sum" ] );
-  assert_eq!( add_cmd.permissions, vec![ "read" ] );
-  assert!( add_cmd.idempotent );
-  assert_eq!( add_cmd.deprecation_message, "" );
-  assert_eq!( add_cmd.http_method_hint, "POST" );
-  assert_eq!( add_cmd.examples, vec![ ".test.add 5 3", ".test.add --a 10 --b 20" ] );
+  assert_eq!( add_cmd.description().to_string(), "Add two numbers" );
+  assert_eq!( add_cmd.hint(), "Mathematical addition" );
+  // Status string "stable" is converted to CommandStatus::Active (displays as "active")
+  assert_eq!( add_cmd.status().to_string(), "active" );
+  assert_eq!( add_cmd.version().to_string(), "1.0.0" );
+  assert_eq!( add_cmd.tags(), &vec![ "math".to_string(), "calculation".to_string() ] );
+  assert_eq!( add_cmd.aliases(), &vec![ "plus".to_string(), "sum".to_string() ] );
+  assert_eq!( add_cmd.permissions(), &vec![ "read".to_string() ] );
+  assert!( add_cmd.idempotent() );
+  assert_eq!( add_cmd.deprecation_message(), "" );
+  assert_eq!( add_cmd.http_method_hint(), "POST" );
+  assert_eq!( add_cmd.examples(), &vec![ ".test.add 5 3".to_string(), ".test.add --a 10 --b 20".to_string() ] );
 
   // Test arguments conversion
-  assert_eq!( add_cmd.arguments.len(), 2 );
+  assert_eq!( add_cmd.arguments().len(), 2 );
 
-  let arg_a = &add_cmd.arguments[0];
+  let arg_a = &add_cmd.arguments()[0];
   assert_eq!( arg_a.name, "a" );
   assert_eq!( arg_a.hint, "First number" );
   assert_eq!( arg_a.description, "The first number to add" );
@@ -508,7 +509,7 @@ fn test_static_command_registry_command_conversion_accuracy()
   assert!( !arg_a.attributes.optional );
   assert_eq!( arg_a.aliases, vec![ "first", "num1" ] );
 
-  let arg_b = &add_cmd.arguments[1];
+  let arg_b = &add_cmd.arguments()[1];
   assert_eq!( arg_b.name, "b" );
   assert_eq!( arg_b.hint, "Second number" );
   assert!( matches!( arg_b.kind, Kind::Integer ) );
@@ -524,8 +525,9 @@ fn test_static_command_registry_deprecated_commands()
   assert!( deprecated_cmd.is_some() );
 
   let cmd = deprecated_cmd.unwrap();
-  assert_eq!( cmd.status, "deprecated" );
-  assert_eq!( cmd.deprecation_message, "Use .test.version instead" );
+  // CommandStatus::Deprecated Display includes the reason in the output
+  assert_eq!( cmd.status().to_string(), "deprecated: Use .test.version instead" );
+  assert_eq!( cmd.deprecation_message(), "Use .test.version instead" );
 }
 
 #[test]

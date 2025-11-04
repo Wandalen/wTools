@@ -32,7 +32,7 @@ fn test_routine( cmd : VerifiedCommand, _ctx : ExecutionContext ) -> Result< Out
   let arg_count = cmd.arguments.len();
   Ok( OutputData
   {
-    content : format!( "Executed {} with {arg_count} arguments", cmd.definition.name ),
+    content : format!( "Executed {} with {arg_count} arguments", cmd.definition.name() ),
     format : "text".to_string(),
       execution_time_ms : None,
   })

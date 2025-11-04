@@ -11,6 +11,9 @@
 //! 5. Unified help generation
 
 #![ cfg( test ) ]
+#![ allow( clippy::uninlined_format_args ) ]
+#![ allow( clippy::bool_assert_comparison ) ]
+#![ allow( clippy::doc_markdown ) ]
 
 use unilang::data::CommandDefinition;
 use unilang::registry::CommandRegistry;
@@ -29,7 +32,8 @@ fn create_task084_test_registry() -> CommandRegistry
     .short_desc( "Add repository" )
     .category( "repository_management" )
     .priority( 1 )
-    .form()
+    .auto_help_enabled( false )  // Disable auto-help (manual .add.help below)
+    .end()
   ).expect( "Failed to register .add command" );
 
   registry.register( CommandDefinition::former()
@@ -38,7 +42,8 @@ fn create_task084_test_registry() -> CommandRegistry
     .short_desc( "Clone repositories" )
     .category( "repository_management" )
     .priority( 2 )
-    .form()
+    .auto_help_enabled( false )  // Disable auto-help (manual .clone.help below)
+    .end()
   ).expect( "Failed to register .clone command" );
 
   registry.register( CommandDefinition::former()
@@ -47,7 +52,7 @@ fn create_task084_test_registry() -> CommandRegistry
     .short_desc( "List repositories" )
     .category( "repository_management" )
     .priority( 3 )
-    .form()
+    .end()
   ).expect( "Failed to register .list command" );
 
   // Git Operations commands
@@ -57,7 +62,7 @@ fn create_task084_test_registry() -> CommandRegistry
     .short_desc( "Detailed git status" )
     .category( "git_operations" )
     .priority( 1 )
-    .form()
+    .end()
   ).expect( "Failed to register .git.status command" );
 
   registry.register( CommandDefinition::former()
@@ -66,7 +71,7 @@ fn create_task084_test_registry() -> CommandRegistry
     .short_desc( "Quick status" )
     .category( "git_operations" )
     .priority( 2 )
-    .form()
+    .end()
   ).expect( "Failed to register .status command" );
 
   registry.register( CommandDefinition::former()
@@ -75,7 +80,7 @@ fn create_task084_test_registry() -> CommandRegistry
     .short_desc( "Pull changes" )
     .category( "git_operations" )
     .priority( 3 )
-    .form()
+    .end()
   ).expect( "Failed to register .pull command" );
 
   // Removal Operations commands (grouped by prefix)
@@ -85,7 +90,7 @@ fn create_task084_test_registry() -> CommandRegistry
     .short_desc( "Remove config + files" )
     .category( "removal_operations" )
     .priority( 1 )
-    .form()
+    .end()
   ).expect( "Failed to register .remove.both command" );
 
   registry.register( CommandDefinition::former()
@@ -94,7 +99,7 @@ fn create_task084_test_registry() -> CommandRegistry
     .short_desc( "Delete files only" )
     .category( "removal_operations" )
     .priority( 2 )
-    .form()
+    .end()
   ).expect( "Failed to register .remove.local command" );
 
   registry.register( CommandDefinition::former()
@@ -103,7 +108,7 @@ fn create_task084_test_registry() -> CommandRegistry
     .short_desc( "Remove from config" )
     .category( "removal_operations" )
     .priority( 3 )
-    .form()
+    .end()
   ).expect( "Failed to register .remove.registry command" );
 
   registry.register( CommandDefinition::former()
@@ -112,7 +117,7 @@ fn create_task084_test_registry() -> CommandRegistry
     .short_desc( "Clean missing" )
     .category( "removal_operations" )
     .priority( 4 )
-    .form()
+    .end()
   ).expect( "Failed to register .remove.missing command" );
 
   // Hidden commands (.help variants)
@@ -121,7 +126,7 @@ fn create_task084_test_registry() -> CommandRegistry
     .description( "Show detailed help for .add" )
     .short_desc( "Help for .add" )
     .hidden_from_list( true )  // ← Should be hidden!
-    .form()
+    .end()
   ).expect( "Failed to register .add.help command" );
 
   registry.register( CommandDefinition::former()
@@ -129,7 +134,7 @@ fn create_task084_test_registry() -> CommandRegistry
     .description( "Show detailed help for .clone" )
     .short_desc( "Help for .clone" )
     .hidden_from_list( true )  // ← Should be hidden!
-    .form()
+    .end()
   ).expect( "Failed to register .clone.help command" );
 
   registry
@@ -279,14 +284,14 @@ fn test_task084_all_yaml_fields_exist()
     .hidden_from_list( true )           // ✅ Field 3
     .priority( 5 )                      // ✅ Field 4
     .group( "test_group" )              // ✅ Field 5
-    .form();
+    .end();
 
-  assert_eq!( cmd.name, ".test" );
-  assert_eq!( cmd.category, "test_category" );
-  assert_eq!( cmd.short_desc, "Short description" );
-  assert_eq!( cmd.hidden_from_list, true );
-  assert_eq!( cmd.priority, 5 );
-  assert_eq!( cmd.group, "test_group" );
+  assert_eq!( cmd.name().to_string(), ".test" );
+  assert_eq!( cmd.category(), "test_category" );
+  assert_eq!( cmd.short_desc(), "Short description" );
+  assert_eq!( cmd.hidden_from_list(), true );
+  assert_eq!( cmd.priority(), 5 );
+  assert_eq!( cmd.group(), "test_group" );
 
   println!( "\n✅ All YAML metadata fields exist and work correctly" );
 }

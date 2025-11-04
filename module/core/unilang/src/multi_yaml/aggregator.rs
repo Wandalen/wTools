@@ -238,36 +238,38 @@ impl MultiYamlAggregator
           // Apply module prefix
           if let Some( prefix ) = &module.prefix
           {
-            cmd.namespace = if cmd.namespace.is_empty()
+            let new_namespace_str = if cmd.namespace().is_empty()
             {
               format!( ".{}", prefix )
             }
             else
             {
-              format!( ".{}{}", prefix, cmd.namespace )
+              format!( ".{}{}", prefix, cmd.namespace() )
             };
+            cmd = cmd.with_namespace( new_namespace_str );
           }
 
           // Apply global prefix if configured
           if let Some( global_prefix ) = &self.config.global_prefix
           {
-            cmd.namespace = if cmd.namespace.is_empty()
+            let new_namespace_str = if cmd.namespace().is_empty()
             {
               format!( ".{}", global_prefix )
             }
             else
             {
-              format!( ".{}{}", global_prefix, cmd.namespace )
+              format!( ".{}{}", global_prefix, cmd.namespace() )
             };
+            cmd = cmd.with_namespace( new_namespace_str );
           }
 
-          let full_name = if cmd.namespace.is_empty()
+          let full_name = if cmd.namespace().is_empty()
           {
-            cmd.name.clone()
+            cmd.name().as_str().to_string()
           }
           else
           {
-            format!( "{}.{}", cmd.namespace, cmd.name.strip_prefix( '.' ).unwrap_or( &cmd.name ) )
+            format!( "{}.{}", cmd.namespace(), cmd.name().as_str().strip_prefix( '.' ).unwrap_or( cmd.name().as_str() ) )
           };
 
           self.commands.insert( full_name, cmd );
@@ -473,12 +475,12 @@ impl MultiYamlAggregator
   {
     let mut content = String::new();
 
-    content.push_str( &format!( "  name: \"{}\",\n", Self::escape_string( &cmd.name ) ) );
-    content.push_str( &format!( "  namespace: \"{}\",\n", Self::escape_string( &cmd.namespace ) ) );
-    content.push_str( &format!( "  description: \"{}\",\n", Self::escape_string( &cmd.description ) ) );
+    content.push_str( &format!( "  name: \"{}\",\n", Self::escape_string( &cmd.name().as_str() ) ) );
+    content.push_str( &format!( "  namespace: \"{}\",\n", Self::escape_string( &cmd.namespace() ) ) );
+    content.push_str( &format!( "  description: \"{}\",\n", Self::escape_string( &cmd.description() ) ) );
 
     // Arguments
-    if cmd.arguments.is_empty()
+    if cmd.arguments().is_empty()
     {
       content.push_str( "  arguments: &[],\n" );
     }
@@ -488,12 +490,21 @@ impl MultiYamlAggregator
     }
 
     content.push_str( "  routine_link: None,\n" );
-    content.push_str( &format!( "  hint: \"{}\",\n", Self::escape_string( &cmd.hint ) ) );
-    content.push_str( &format!( "  status: \"{}\",\n", Self::escape_string( &cmd.status ) ) );
-    content.push_str( &format!( "  version: \"{}\",\n", Self::escape_string( &cmd.version ) ) );
+    content.push_str( &format!( "  hint: \"{}\",\n", Self::escape_string( &cmd.hint() ) ) );
+
+    // Format status enum as string
+    let status_str = match cmd.status()
+    {
+      crate::data::CommandStatus::Active => "active",
+      crate::data::CommandStatus::Deprecated { .. } => "deprecated",
+      crate::data::CommandStatus::Experimental => "experimental",
+      crate::data::CommandStatus::Internal => "internal",
+    };
+    content.push_str( &format!( "  status: \"{}\",\n", Self::escape_string( status_str ) ) );
+    content.push_str( &format!( "  version: \"{}\",\n", Self::escape_string( &cmd.version().as_str() ) ) );
 
     // Arrays
-    if cmd.tags.is_empty()
+    if cmd.tags().is_empty()
     {
       content.push_str( "  tags: &[],\n" );
     }
@@ -502,7 +513,7 @@ impl MultiYamlAggregator
       content.push_str( &format!( "  tags: {},\n", tags_const_name ) );
     }
 
-    if cmd.aliases.is_empty()
+    if cmd.aliases().is_empty()
     {
       content.push_str( "  aliases: &[],\n" );
     }
@@ -511,7 +522,7 @@ impl MultiYamlAggregator
       content.push_str( &format!( "  aliases: {},\n", aliases_const_name ) );
     }
 
-    if cmd.permissions.is_empty()
+    if cmd.permissions().is_empty()
     {
       content.push_str( "  permissions: &[],\n" );
     }
@@ -520,11 +531,11 @@ impl MultiYamlAggregator
       content.push_str( &format!( "  permissions: {},\n", permissions_const_name ) );
     }
 
-    content.push_str( &format!( "  idempotent: {},\n", cmd.idempotent ) );
-    content.push_str( &format!( "  deprecation_message: \"{}\",\n", Self::escape_string( &cmd.deprecation_message ) ) );
-    content.push_str( &format!( "  http_method_hint: \"{}\",\n", Self::escape_string( &cmd.http_method_hint ) ) );
+    content.push_str( &format!( "  idempotent: {},\n", cmd.idempotent() ) );
+    content.push_str( &format!( "  deprecation_message: \"{}\",\n", Self::escape_string( &cmd.deprecation_message() ) ) );
+    content.push_str( &format!( "  http_method_hint: \"{}\",\n", Self::escape_string( &cmd.http_method_hint() ) ) );
 
-    if cmd.examples.is_empty()
+    if cmd.examples().is_empty()
     {
       content.push_str( "  examples: &[],\n" );
     }
@@ -569,17 +580,17 @@ impl MultiYamlAggregator
       let const_name_base = cmd_name.replace( '.', "_" ).replace( '-', "_" ).to_uppercase();
 
       // Generate argument definitions
-      for ( arg_idx, arg ) in cmd.arguments.iter().enumerate()
+      for ( arg_idx, arg ) in cmd.arguments().iter().enumerate()
       {
         source_code.push_str( &Self::generate_argument_definition( arg, &const_name_base, arg_idx ) );
       }
 
       // Generate arguments array
-      if !cmd.arguments.is_empty()
+      if !cmd.arguments().is_empty()
       {
         let args_array_name = format!( "{}_ARGS", const_name_base );
         source_code.push_str( &format!( "const {}: &[StaticArgumentDefinition] = &[", args_array_name ) );
-        for arg_idx in 0..cmd.arguments.len()
+        for arg_idx in 0..cmd.arguments().len()
         {
           source_code.push_str( &format!( "{}_{}_ARG, ", const_name_base, arg_idx ) );
         }
@@ -592,21 +603,21 @@ impl MultiYamlAggregator
       let permissions_const_name = format!( "{}_PERMISSIONS", const_name_base );
       let examples_const_name = format!( "{}_EXAMPLES", const_name_base );
 
-      if !cmd.tags.is_empty()
+      if !cmd.tags().is_empty()
       {
-        source_code.push_str( &Self::generate_string_array( &cmd.tags, &tags_const_name ) );
+        source_code.push_str( &Self::generate_string_array( &cmd.tags(), &tags_const_name ) );
       }
-      if !cmd.aliases.is_empty()
+      if !cmd.aliases().is_empty()
       {
-        source_code.push_str( &Self::generate_string_array( &cmd.aliases, &aliases_const_name ) );
+        source_code.push_str( &Self::generate_string_array( &cmd.aliases(), &aliases_const_name ) );
       }
-      if !cmd.permissions.is_empty()
+      if !cmd.permissions().is_empty()
       {
-        source_code.push_str( &Self::generate_string_array( &cmd.permissions, &permissions_const_name ) );
+        source_code.push_str( &Self::generate_string_array( &cmd.permissions(), &permissions_const_name ) );
       }
-      if !cmd.examples.is_empty()
+      if !cmd.examples().is_empty()
       {
-        source_code.push_str( &Self::generate_string_array( &cmd.examples, &examples_const_name ) );
+        source_code.push_str( &Self::generate_string_array( &cmd.examples(), &examples_const_name ) );
       }
 
       // Generate command definition
@@ -877,7 +888,7 @@ impl MultiYamlAggregator
 
     for cmd in self.commands.values()
     {
-      for arg in &cmd.arguments
+      for arg in cmd.arguments()
       {
         let hints = analyzer.analyze_argument_definition( arg );
         all_hints.extend( hints );
@@ -1117,14 +1128,14 @@ pub fn aggregate_cli_simple() -> Result< CommandRegistry, Error >
   CliBuilder::new()
     .mode( AggregationMode::Static )
     .static_module( "core", vec![
-      CommandDefinition::builder()
-        .name( "version" )
-        .description( "Show version information" )
-        .namespace( "" )
-        .hint( "Version info" )
-        .status( "stable" )
-        .version( "1.0.0" )
-        .build(),
+      CommandDefinition::new(
+        crate::data::CommandName::new( ".version" ).expect( "valid name" ),
+        "Show version information".to_string(),
+      )
+      .with_namespace( String::new() )
+      .with_hint( "Version info" )
+      .with_status( crate::data::CommandStatus::Active )
+      .with_version( crate::data::VersionType::new( "1.0.0" ).expect( "valid version" ) ),
     ] )
     .build()
 }
@@ -1137,25 +1148,25 @@ pub fn aggregate_cli_complex() -> Result< CommandRegistry, Error >
     .app_name( "myapp" )
     .global_prefix( "myapp" )
     .static_module_with_prefix( "core", "core", vec![
-      CommandDefinition::builder()
-        .name( "version" )
-        .description( "Show version" )
-        .namespace( "" )
-        .hint( "Show version" )
-        .status( "stable" )
-        .version( "1.0.0" )
-        .build(),
+      CommandDefinition::new(
+        crate::data::CommandName::new( ".version" ).expect( "valid name" ),
+        "Show version".to_string(),
+      )
+      .with_namespace( String::new() )
+      .with_hint( "Show version" )
+      .with_status( crate::data::CommandStatus::Active )
+      .with_version( crate::data::VersionType::new( "1.0.0" ).expect( "valid version" ) ),
     ] )
     .dynamic_module_with_prefix( "utils", PathBuf::from( "tests/test_data/utils.yaml" ), "util" )
     .conditional_module( "advanced", "test_feature", vec![
-      CommandDefinition::builder()
-        .name( "debug" )
-        .description( "Debug mode" )
-        .namespace( "" )
-        .hint( "Debug mode" )
-        .status( "stable" )
-        .version( "1.0.0" )
-        .build(),
+      CommandDefinition::new(
+        crate::data::CommandName::new( ".debug" ).expect( "valid name" ),
+        "Debug mode".to_string(),
+      )
+      .with_namespace( String::new() )
+      .with_hint( "Debug mode" )
+      .with_status( crate::data::CommandStatus::Active )
+      .with_version( crate::data::VersionType::new( "1.0.0" ).expect( "valid version" ) ),
     ] )
     .build()
 }

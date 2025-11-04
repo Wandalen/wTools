@@ -293,12 +293,13 @@ fn test_cc4_1_static_to_dynamic_command_conversion()
 
   let dynamic_cmd : CommandDefinition = ( &STATIC_CMD ).into();
 
-  assert_eq!( dynamic_cmd.name, ".convert_test" );
-  assert_eq!( dynamic_cmd.namespace, ".test" );
-  assert_eq!( dynamic_cmd.description, "Test conversion" );
-  assert_eq!( dynamic_cmd.hint, "Conversion test hint" );
-  assert_eq!( dynamic_cmd.version, "3.0.0" );
-  assert_eq!( dynamic_cmd.status, "stable" );
+  assert_eq!( &dynamic_cmd.name().to_string(), ".convert_test" );
+  assert_eq!( &dynamic_cmd.namespace().to_string(), ".test" );
+  assert_eq!( &dynamic_cmd.description().to_string(), "Test conversion" );
+  assert_eq!( &dynamic_cmd.hint().to_string(), "Conversion test hint" );
+  assert_eq!( &dynamic_cmd.version().to_string(), "3.0.0" );
+  // Status string "stable" is converted to CommandStatus::Active (displays as "active")
+  assert_eq!( &dynamic_cmd.status().to_string(), "active" );
 }
 
 #[ test ]
