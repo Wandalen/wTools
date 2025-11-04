@@ -6,21 +6,6 @@ async fn async_try_from_test()
   // Example implementation of AsyncTryFrom for a custom type
   struct MyNumber(u32);
 
-  // xxx: qqq: broken
-  //   #[ the_module ::async_trait ]
-  //   impl< 'a > the_module ::AsyncTryFrom< &'a str > for MyNumber
-  //   {
-  //     type Error = std ::num ::ParseIntError;
-  //
-  //     async fn async_try_from( value: &'a str ) -> Result< Self, Self ::Error >
-  //     {
-  //       // Simulate asynchronous work
-  //       tokio ::time ::sleep( tokio ::time ::Duration ::from_millis( 1 ) ).await;
-  //       let num = value.parse :: < u32 >()?;
-  //       Ok( MyNumber( num ) )
-  // }
-  // }
-
   #[ the_module ::async_trait ]
   impl the_module ::AsyncTryFrom< String > for MyNumber 
   {

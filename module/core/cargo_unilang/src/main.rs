@@ -10,9 +10,9 @@
 
 #![allow(clippy::all)]
 
-mod commands;
-mod templates;
-mod checks;
+pub mod commands;
+pub mod templates;
+pub mod checks;
 
 use std::{ env, process };
 
