@@ -139,7 +139,7 @@ default-features = false
 ## data_type
 
 [workspace.dependencies.data_type]
-version = "~0.18.0"
+version = "~0.19.0"
 path = "module/core/data_type"
 default-features = false
 
