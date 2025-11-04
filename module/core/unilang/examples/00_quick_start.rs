@@ -1,13 +1,17 @@
 #![allow(clippy::all)]
 //! # Quick Start Example
 //!
-//! **⚠️ PERFORMANCE WARNING:** This example uses runtime command registration which has
-//! **10-50x slower lookup performance** than the recommended compile-time approach.
+//! **⚠️ DEPRECATION NOTICE:** This example uses deprecated runtime command registration APIs
+//! (`CommandRegistry::new()` and `command_add_runtime()`).
+//!
+//! **Performance Impact:** 10-50x slower lookup performance than recommended build-time approach.
 //!
 //! **For production applications, use:** `static_01_basic_compile_time.rs` instead.
 //!
-//! This example demonstrates the runtime API for educational purposes and is appropriate
-//! for REPL applications, plugin systems, or rapid prototyping.
+//! **When to use runtime registration:**
+//! - REPL applications requiring dynamic command loading
+//! - Plugin systems with runtime command discovery
+//! - Rapid prototyping (temporary use only)
 //!
 //! Run with: `cargo run --example 00_quick_start`
 

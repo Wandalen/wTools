@@ -3,7 +3,7 @@
 
 - **Name:** Unilang Framework
 - **Version:** 3.1.0
-- **Date:** 2025-09-16
+- **Date:** 2025-01-04
 
 ### Table of Contents
 *   **Part I: Public Contract (Mandatory Requirements)**

@@ -29,6 +29,35 @@ YAML definitions → build.rs → Static command maps → Zero-cost lookups
 Command string → O(1) static lookup → Validated execution
 ```
 
+## Getting Started (60 Seconds)
+
+1. **Add dependency:**
+   ```toml
+   [dependencies]
+   unilang = "0.35"
+   ```
+
+2. **Create `unilang.commands.yaml` in project root:**
+   ```yaml
+   - name: ".greet"
+     description: "Greeting command"
+     arguments:
+       - name: "name"
+         kind: "String"
+         attributes:
+           optional: true
+           default: "World"
+   ```
+
+3. **Run example:**
+   ```bash
+   cargo run --example static_01_basic_compile_time
+   ```
+
+**What just happened?** Commands auto-discovered from YAML, compiled into zero-overhead static registry, ready for O(1) lookups.
+
+**Next:** See [detailed guide](#quick-start-build-time-registration-recommended) for production setup.
+
 ## Usage Guide
 
 **For comprehensive usage patterns, best practices, and quick reference:**
@@ -43,14 +72,14 @@ See **[usage.md](usage.md)** for concise guide covering:
 - Testing and performance
 - Security considerations
 
-## Quick Start: Compile-Time Registration (Recommended)
+## Quick Start: Build-Time Registration (Recommended)
 
 ### Step 1: Define Commands
 
 Create `unilang.commands.yaml`:
 ```yaml
-- name: ".greet"
-  namespace: ""
+- name: ".greet"           # RECOMMENDED: Show full command name
+  namespace: ""            # Leave empty for root-level commands
   description: "High-performance greeting command"
   arguments:
     - name: "name"
@@ -60,42 +89,52 @@ Create `unilang.commands.yaml`:
         default: "World"
 ```
 
-**Note:** Command names should always start with a dot (`.`). When using build.rs for static generation, you can optionally omit the dot as it will be added automatically, but showing it here reinforces the naming convention.
+**YAML Command Naming:**
+- **Recommended:** `name: ".greet"` with `namespace: ""` - shows exact command users will type
+- **Alternative:** `name: "greet"` with `namespace: ".session"` - requires understanding concatenation
+- **Always** include the dot prefix in either `name` or `namespace`
 
 ### Step 2: Configure Cargo.toml
 
-The default configuration already enables compile-time YAML loading:
+The default configuration already enables build-time YAML processing:
 ```toml
 [dependencies]
 # Multi-YAML build-time approach is enabled by default
-unilang = "0.28"
+unilang = "0.35"
 ```
 
 For single-file YAML approach, use:
 ```toml
 [dependencies]
-unilang = { version = "0.28", default-features = false, features = [
+unilang = { version = "0.35", default-features = false, features = [
   "enabled",
   "approach_yaml_single_build"  # Single YAML file at compile-time
 ]}
 ```
 
-### Step 3: Configure Build Script (Optional for Single-File)
+### Step 3: Build Script (Do You Need build.rs?)
 
-If using `approach_yaml_single_build`, add minimal `build.rs`:
+**Decision Tree:**
+
+```text
+Using default multi-YAML approach?
+  ├─ YES → ✅ No build.rs needed (auto-discovery)
+  └─ NO  → Using single-file YAML?
+             ├─ YES → ✅ Add minimal build.rs below
+             └─ NO  → ✅ Custom approach - implement discovery logic
+```
+
+**For Single-File YAML Only** (`approach_yaml_single_build`):
 ```rust,ignore
 fn main()
 {
   // Rebuild if YAML file changes
   println!( "cargo:rerun-if-changed=unilang.commands.yaml" );
-
-  // Static registry generation happens automatically when
-  // approach_yaml_single_build or approach_yaml_multi_build is enabled.
-  // The build system discovers YAML files and generates optimized code.
+  // Static registry generation happens automatically
 }
 ```
 
-**Note:** With the default `approach_yaml_multi_build` feature, the build system automatically discovers all `.yaml` files in your project - no build.rs configuration needed!
+**Default Multi-YAML:** No build.rs needed - automatic discovery of all `.yaml` files!
 
 ### Step 4: Zero-Cost Execution
 
@@ -124,7 +163,7 @@ fn main() -> Result< (), unilang::Error >
 
 | Approach | Lookup Time | Memory Overhead | Binary Size |
 |----------|-------------|-----------------|-------------|
-| **Compile-Time (Static)** | ~80ns | Zero | Smaller |
+| **Build-Time (Static)** | ~80ns | Zero | Smaller |
 | Runtime (HashMap) | ~4,000ns | Hash tables + allocations | Larger |
 
 **Benchmark Results:**
@@ -182,32 +221,16 @@ greet name::Alice            # Not recommended
 
 ### Decision 4: What Features Should I Enable?
 
-**Recommended: Use defaults** (Approach #2 + SIMD + Enhanced REPL)
-```toml
-[dependencies]
-unilang = "0.28"  # Multi-YAML build-time + SIMD (4-25x parsing) + Enhanced REPL
-```
+**Choose Your Configuration:**
 
-**Alternative approach (JSON single-file):**
-```toml
-[dependencies]
-unilang = { version = "0.28", default-features = false, features = [
-  "enabled",
-  "approach_json_single_build"  # Switch to JSON single-file approach
-]}
-```
+| Use Case | Configuration | What You Get |
+|----------|---------------|--------------|
+| **Production (Recommended)** | `unilang = "0.35"` | Multi-YAML + SIMD + Enhanced REPL |
+| **Custom Approach** | `unilang = { version = "0.35", default-features = false, features = ["enabled", "approach_json_single_build"] }` | Switch to specific approach |
+| **Minimal (Core API Only)** | `unilang = { version = "0.35", default-features = false, features = ["enabled"] }` | Rust DSL only, no build-time |
+| **Full (Development/Testing)** | `unilang = { version = "0.35", features = ["full"] }` | All 21 approaches available |
 
-**Minimal build (Rust DSL only):**
-```toml
-[dependencies]
-unilang = { version = "0.28", default-features = false, features = ["enabled"] }
-```
-
-**All features enabled:**
-```toml
-[dependencies]
-unilang = { version = "0.28", features = ["full"] }  # All 21 approaches available
-```
+**Most users:** Just use `unilang = "0.35"` and you're done.
 
 **Feature Architecture:**
 
@@ -342,7 +365,7 @@ let registry = CliBuilder::new()
 
 | Approach | Lookup Time | Memory Overhead | Conflict Detection |
 |----------|-------------|-----------------|-------------------|
-| **Compile-Time** | O(1) static | Zero | Build-time |
+| **Build-Time** | O(1) static | Zero | Build-time |
 | Runtime | O(log n) | Hash tables | Runtime |
 
 **Aggregation Scaling:**
@@ -436,9 +459,11 @@ arguments:
 
 **💡 Type Hint Detection:** The build system analyzes argument definitions and emits non-blocking hints during `cargo build` when it detects potential type mismatches. To suppress hints for intentional cases (e.g., version strings like "1.0"), add `suppress_type_hint: true` to the argument's attributes.
 
-**Mandatory Field:**
+**Help Generation:**
 ```yaml
-auto_help_enabled: true   # Always true - help generation is mandatory
+auto_help_enabled: true   # Default: true. Controls auto-generation of .command.help
+                          # Set to false to prevent .command.help creation
+                          # Help still available via ? and ?? operators
 ```
 
 ## Command Execution Patterns
@@ -541,9 +566,9 @@ unilang = { version = "0.10", default-features = false, features = ["enabled"] }
 
 **1. Quick Start (Runtime, Educational Only)**
 - `00_quick_start.rs` - Get something working in 5 minutes (⚠️ runtime registration, slow)
-- `01_basic_command_registration.rs` - Understand the runtime API (⚠️ 50x slower than compile-time)
+- `01_basic_command_registration.rs` - Understand the runtime API (⚠️ 50x slower than build-time)
 
-**2. Production Approach (Compile-Time, Recommended)**
+**2. Production Approach (Build-Time, Recommended)**
 - `static_01_basic_compile_time.rs` - **READ THIS FIRST** - Explains proper YAML + build.rs pattern
 - `static_02_yaml_build_integration.rs` - Multi-YAML file aggregation
 - `static_03_performance_comparison.rs` - Benchmark compile-time vs runtime (proves 50x speedup)
@@ -589,15 +614,17 @@ cd www && python3 -m http.server 8000
 - Optimized bundle size (800KB-1.2MB compressed)
 - Seamless Rust-to-JavaScript integration
 
-## Migration from Runtime to Compile-Time
+## Migration from Runtime to Build-Time
 
-Migrate from runtime registration (slow) to compile-time registration (50x faster) in 4 steps.
+**⚠️ DEPRECATION NOTICE:** Runtime command registration (`CommandRegistry::new()` and `command_add_runtime()`) is deprecated. This section exists solely for migrating legacy code to the recommended build-time approach.
+
+Migrate from runtime registration (slow, deprecated) to build-time registration (50x faster, recommended) in 4 steps.
 
 ### Step 1: Extract Command Definitions to YAML
 
-**Before (Runtime, in main.rs):**
+**Before (Runtime, in main.rs):** ⚠️ **DEPRECATED - Do not use in new code**
 ```rust,ignore
-#[allow(deprecated)]
+#[allow(deprecated)]  // Required: These APIs are deprecated
 let mut registry = CommandRegistry::new();
 
 let greet_cmd = CommandDefinition {
@@ -639,7 +666,7 @@ let greet_cmd = CommandDefinition {
 registry.command_add_runtime(&greet_cmd, greet_routine)?;
 ```
 
-**After (Compile-Time, in unilang.commands.yaml):**
+**After (Build-Time, in unilang.commands.yaml):**
 ```yaml
 - name: ".greet"
   namespace: ""
@@ -678,10 +705,10 @@ registry.command_add_runtime(&greet_cmd, greet_routine)?;
 ```toml
 [dependencies]
 # Enable single-file YAML compile-time approach
-unilang = { version = "0.28", features = ["approach_yaml_single_build"] }
+unilang = { version = "0.35", features = ["approach_yaml_single_build"] }
 
 # Or use default (multi-file auto-discovery)
-unilang = "0.28"
+unilang = "0.35"
 ```
 
 ### Step 3: Configure Build Script (Single-File Only)
@@ -702,16 +729,16 @@ fn main()
 
 ### Step 4: Update Code to Use Static Registry
 
-**Before (Runtime):**
+**Before (Runtime):** ⚠️ **DEPRECATED**
 ```rust,ignore
 use unilang::prelude::*;
 
 fn main() -> Result<(), unilang::Error> {
-  #[allow(deprecated)]
+  #[allow(deprecated)]  // Required: deprecated API
   let mut registry = CommandRegistry::new();
 
-  // Manual registration (slow)
-  #[allow(deprecated)]
+  // Manual registration (slow, deprecated)
+  #[allow(deprecated)]  // Required: deprecated API
   registry.command_add_runtime(&greet_cmd, greet_routine)?;
 
   let pipeline = Pipeline::new(registry);
@@ -720,11 +747,11 @@ fn main() -> Result<(), unilang::Error> {
 }
 ```
 
-**After (Compile-Time):**
+**After (Build-Time):**
 ```rust,ignore
 use unilang::prelude::*;
 
-// Include compile-time generated commands (auto-generated by build system)
+// Include build-time generated commands (auto-generated by build system)
 include!(concat!(env!("OUT_DIR"), "/static_commands.rs"));
 
 fn main() -> Result<(), unilang::Error> {

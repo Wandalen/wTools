@@ -21,7 +21,7 @@ Unilang uses **Approach #2 (Multi-YAML Build-Time Static)** by default:
 
 ```toml
 [dependencies]
-unilang = "0.28"  # Default: Multi-YAML + SIMD + enhanced REPL
+unilang = "0.35"  # Default: Multi-YAML + SIMD + enhanced REPL
 ```
 
 ### Alternative Approaches
@@ -101,11 +101,11 @@ CommandDefinition {
   version: "1.0.0",             // Track evolution
   aliases: vec![".short"],      // Alternative names
   examples: vec!["..."],        // Real usage patterns
-  auto_help_enabled: true,      // Mandatory - always true
+  auto_help_enabled: true,      // Default: true. Auto-generates .command.help
 }
 ```
 
-**Note:** Help generation is mandatory - every command automatically gets `.command.help` counterpart.
+**Note:** `auto_help_enabled` defaults to `true`, creating `.command.help` commands automatically. Set to `false` to prevent auto-generation while keeping `?` and `??` help operators.
 
 ---
 
@@ -449,7 +449,7 @@ tests/
 
 Disable if needed:
 ```toml
-unilang = { version = "0.28", default-features = false, features = [
+unilang = { version = "0.35", default-features = false, features = [
   "enabled",
   "approach_yaml_multi_build"
 ]}
@@ -483,7 +483,7 @@ if let Some(key) = api_key {
 - [ ] Clear description and hint
 - [ ] Status and version set
 - [ ] Examples provided
-- [ ] `auto_help_enabled` = true
+- [ ] `auto_help_enabled` configured (defaults to true)
 
 ### Argument Definition
 - [ ] Descriptive name
@@ -531,6 +531,6 @@ See `examples/` directory:
 
 **Key rule:** All command names MUST start with dot (`.`). This is enforced at runtime.
 
-**Help is mandatory:** Every command automatically gets `.command.help`. No opt-out.
+**Help generation:** Commands with `auto_help_enabled: true` (default) automatically get `.command.help` commands. All commands support `?` and `??` help operators regardless.
 
 **Use argv API:** For CLI applications, always use `process_command_from_argv()` to preserve argument boundaries.
