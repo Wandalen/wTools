@@ -7,6 +7,38 @@
 
 **Zero-overhead command framework with compile-time command registration**
 
+## Table of Contents
+
+**Getting Started**
+- [Value Proposition](#value-proposition) - Why unilang?
+- [Architecture Overview](#architecture-overview) - How it works
+- [Getting Started (60 Seconds)](#getting-started-60-seconds) - Quick start
+- [Troubleshooting](#troubleshooting) - Common issues & solutions
+- [Quick Start: Build-Time Registration](#quick-start-build-time-registration-recommended) - Detailed guide
+
+**Understanding Performance**
+- [Performance Comparison](#performance-comparison) - Benchmarks & methodology
+- [Comparison to Alternatives](#comparison-to-alternatives) - vs clap/structopt/argh
+
+**Core Concepts**
+- [User Guide: Integration Decisions](#user-guide-integration-decisions) - Design choices
+- [Command Definition Format](#command-definition-format) - YAML structure
+- [Command Execution Patterns](#command-execution-patterns) - Usage patterns
+- [Help System](#help-system) - Three access methods
+
+**Advanced Topics**
+- [CLI Aggregation](#cli-aggregation-unifying-multiple-tools) - Multi-tool consolidation
+- [Migration from Runtime to Build-Time](#migration-from-runtime-to-build-time) - Upgrade guide
+- [Performance Optimization Guidelines](#performance-optimization-guidelines) - Tuning
+- [WebAssembly Support](#webassembly-support) - Browser deployment
+
+**Reference**
+- [Usage Guide (usage.md)](usage.md) - Complete syntax reference
+- [Feature Configuration](#feature-configuration) - Feature flags
+- [Examples and Learning Path](#examples-and-learning-path) - Code examples
+
+---
+
 ## Value Proposition
 
 unilang processes command definitions at compile-time, generating optimized static command registries that provide **O(1) command lookups with zero runtime overhead and zero additional dependencies for downstream crates**. This approach delivers:
@@ -475,6 +507,14 @@ Unknown parameters are **always detected** with Levenshtein distance suggestions
 - **REPL applications:** Use `enhanced_repl` feature for history, completion, secure input
 - **WASM deployment:** Full framework support in browsers with SIMD acceleration
 - **Interactive arguments:** Prompt for missing required arguments in REPL mode
+
+---
+
+# Advanced Topics
+
+The following sections cover advanced usage patterns, migration strategies, and specialized deployments. New users should start with the [Getting Started](#getting-started-60-seconds) section above.
+
+---
 
 ## CLI Aggregation: Unifying Multiple Tools
 
