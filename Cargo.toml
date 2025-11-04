@@ -500,7 +500,7 @@ default-features = false
 ## process tools
 
 [workspace.dependencies.process_tools]
-version = "~0.22.0"
+version = "~0.23.0"
 path = "module/core/process_tools"
 default-features = false
 
