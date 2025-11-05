@@ -1,3 +1,4 @@
+//! Tests for `program_tools`.
 
 include!( "../../../../module/step/meta/src/module/terminal.rs" );
 

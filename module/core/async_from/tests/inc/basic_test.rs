@@ -23,19 +23,23 @@ async fn async_try_from_test()
   use the_module :: { AsyncTryFrom, AsyncTryInto };
 
   // Using AsyncTryFrom directly
-  match MyNumber ::async_try_from("42".to_string()).await 
-  {
-  Ok(my_num) => println!("Converted successfully: {}", my_num.0),
-  Err(e) => println!("Conversion failed: {e:?}"),
- }
+  let result = MyNumber ::async_try_from("42".to_string()).await;
+  assert!( result.is_ok(), "AsyncTryFrom should succeed for valid input" );
+  let my_num = result.unwrap();
+  assert_eq!( my_num.0, 42, "AsyncTryFrom should convert '42' to 42" );
 
   // Using AsyncTryInto, which is automatically implemented
   let result: Result< MyNumber, _ > = "42".to_string().async_try_into().await;
-  match result 
-  {
-  Ok(my_num) => println!("Converted successfully using AsyncTryInto: {}", my_num.0),
-  Err(e) => println!("Conversion failed using AsyncTryInto: {e:?}"),
- }
+  assert!( result.is_ok(), "AsyncTryInto should succeed for valid input" );
+  let my_num = result.unwrap();
+  assert_eq!( my_num.0, 42, "AsyncTryInto should convert '42' to 42" );
+
+  // Test error case - invalid input should fail
+  let result = MyNumber ::async_try_from("invalid".to_string()).await;
+  assert!( result.is_err(), "AsyncTryFrom should fail for invalid input" );
+
+  let result: Result< MyNumber, _ > = "invalid".to_string().async_try_into().await;
+  assert!( result.is_err(), "AsyncTryInto should fail for invalid input" );
 }
 
 #[ tokio ::test ]
@@ -60,9 +64,16 @@ async fn async_from_test()
 
   // Using AsyncFrom directly
   let my_num: MyNumber = MyNumber ::async_from("42".to_string()).await;
-  println!("Converted successfully using AsyncFrom: {}", my_num.0);
+  assert_eq!( my_num.0, 42, "AsyncFrom should convert '42' to 42" );
 
   // Using AsyncInto, which is automatically implemented
   let my_num: MyNumber = "42".to_string().async_into().await;
-  println!("Converted successfully using AsyncInto: {}", my_num.0);
+  assert_eq!( my_num.0, 42, "AsyncInto should convert '42' to 42" );
+
+  // Test with invalid input - should fall back to 0 due to unwrap_or(0)
+  let my_num: MyNumber = MyNumber ::async_from("invalid".to_string()).await;
+  assert_eq!( my_num.0, 0, "AsyncFrom should fall back to 0 for invalid input" );
+
+  let my_num: MyNumber = "invalid".to_string().async_into().await;
+  assert_eq!( my_num.0, 0, "AsyncInto should fall back to 0 for invalid input" );
 }

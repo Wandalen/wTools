@@ -1,13 +1,7 @@
 #[ allow( unused_imports ) ]
 use super :: *;
-// use test_tools ::exposed :: *;
 #[ allow( unused_imports ) ]
 use the_module ::prelude :: *;
-// xxx: temporarily disabled due to macro resolution issues
-/*
-use test_tools ::impls_index ::tests_impls;
-use test_tools ::impls_index ::tests_index;
-*/
 use the_module ::a_true;
 use the_module ::a_id;
 use the_module ::a_not_id;
@@ -17,8 +11,6 @@ use the_module ::a_dbg_not_id;
 
 // qqq: do negative testing, don't forget about optional arguments /* aaa: Dmytro: done */
 // Test implementations (available on all platforms)
-// xxx: temporarily disabled due to macro resolution issues
-/*
 tests_impls! {
   fn a_true_pass()
   {
@@ -232,7 +224,7 @@ tests_impls! {
  }
 }
 
-// Windows-specific test index (cfg directive disabled as requested)
+// Test index
 tests_index! {
   a_true_pass,
   a_true_fail_simple,
@@ -264,5 +256,3 @@ tests_index! {
   a_dbg_not_id_fail_with_msg,
   a_dbg_not_id_fail_with_msg_template,
 }
-*/
-

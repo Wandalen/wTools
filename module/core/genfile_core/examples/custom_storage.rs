@@ -150,13 +150,11 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
   println!();
 
   // Verify content
-  if let Some( readme_content ) = cloud.files.get( "s3://my-bucket/app-v1.0.0/README.md" )
+  if let Some( FileContent::Text( text ) ) = cloud.files.get( "s3://my-bucket/app-v1.0.0/README.md" )
   {
-    if let FileContent::Text( text ) = readme_content {
-      println!( "Sample file content (README.md):" );
-      println!( "{text}" );
-      println!();
-    }
+    println!( "Sample file content (README.md):" );
+    println!( "{text}" );
+    println!();
   }
 
   println!( "✅ Example completed successfully" );

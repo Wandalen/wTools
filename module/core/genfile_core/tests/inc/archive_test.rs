@@ -1,23 +1,23 @@
-/// Tests for TemplateArchive functionality
-///
-/// # Test Coverage
-///
-/// - Binary file serialization with all byte values (0x00-0xFF)
-/// - JSON/YAML serialization roundtrip for binary content
-/// - Parameter discovery from templates
-/// - Deep directory nesting
-/// - File CRUD operations
-/// - Parameter analysis and validation
-/// - Materialization to filesystem
-///
-/// # Special Focus: Binary File Handling
-///
-/// Per requirements, we test that JSON/YAML formats properly represent
-/// binary files and all non-textual symbols. This includes:
-/// - All 256 possible byte values (0x00-0xFF)
-/// - Special control characters (\0, \n, \r, \t, etc.)
-/// - High-bit characters (0x80-0xFF)
-/// - Base64 encoding/decoding accuracy
+//! Tests for `TemplateArchive` functionality
+//!
+//! # Test Coverage
+//!
+//! - Binary file serialization with all byte values (0x00-0xFF)
+//! - JSON/YAML serialization roundtrip for binary content
+//! - Parameter discovery from templates
+//! - Deep directory nesting
+//! - File CRUD operations
+//! - Parameter analysis and validation
+//! - Materialization to filesystem
+//!
+//! # Special Focus: Binary File Handling
+//!
+//! Per requirements, we test that JSON/YAML formats properly represent
+//! binary files and all non-textual symbols. This includes:
+//! - All 256 possible byte values (0x00-0xFF)
+//! - Special control characters (\0, \n, \r, \t, etc.)
+//! - High-bit characters (0x80-0xFF)
+//! - Base64 encoding/decoding accuracy
 
 use genfile_core::
 {
@@ -491,7 +491,9 @@ fn json_serialization_all_bytes()
     assert_eq!( bytes.len(), 256 );
     for ( i, &byte ) in bytes.iter().enumerate()
     {
-      assert_eq!( byte, i as u8, "Byte at position {} doesnt match", i );
+      #[ allow( clippy::cast_possible_truncation ) ]
+      let expected = i as u8;
+      assert_eq!( byte, expected, "Byte at position {i} doesnt match" );
     }
   }
   else
@@ -524,7 +526,9 @@ fn yaml_serialization_all_bytes()
     assert_eq!( bytes.len(), 256 );
     for ( i, &byte ) in bytes.iter().enumerate()
     {
-      assert_eq!( byte, i as u8, "Byte at position {} doesnt match", i );
+      #[ allow( clippy::cast_possible_truncation ) ]
+      let expected = i as u8;
+      assert_eq!( byte, expected, "Byte at position {i} doesnt match" );
     }
   }
   else
@@ -631,7 +635,7 @@ fn json_pretty_print()
 
   // Pretty-printed JSON should have indentation
   assert!( json.contains( "  " ) );
-  assert!( json.contains( "\n" ) );
+  assert!( json.contains( '\n' ) );
 }
 
 #[ test ]

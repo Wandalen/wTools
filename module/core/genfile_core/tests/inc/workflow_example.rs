@@ -1,12 +1,12 @@
-/// Complete workflow example demonstrating pack/unpack and internalize/externalize
-///
-/// This example shows a complete template archive workflow:
-/// 1. Create archive with mixed inline and external content
-/// 2. Internalize external sources to make self-contained
-/// 3. Save archive to file
-/// 4. Load archive from file
-/// 5. Externalize content to reduce archive size
-/// 6. Materialize with custom storage
+//! Complete workflow example demonstrating pack/unpack and internalize/externalize
+//!
+//! This example shows a complete template archive workflow:
+//! 1. Create archive with mixed inline and external content
+//! 2. Internalize external sources to make self-contained
+//! 3. Save archive to file
+//! 4. Load archive from file
+//! 5. Externalize content to reduce archive size
+//! 6. Materialize with custom storage
 
 use genfile_core::
 {
@@ -74,7 +74,7 @@ impl ContentResolver for TemplateServiceResolver
         match self.templates.get( &key )
         {
           Some( content ) => Ok( FileContent::Text( content.clone() ) ),
-          None => Err( Error::Render( format!( "Template not found: {}", key ) ) ),
+          None => Err( Error::Render( format!( "Template not found: {key}" ) ) ),
         }
       }
 
@@ -83,7 +83,7 @@ impl ContentResolver for TemplateServiceResolver
         match self.templates.get( url )
         {
           Some( content ) => Ok( FileContent::Text( content.clone() ) ),
-          None => Err( Error::Render( format!( "URL not found: {}", url ) ) ),
+          None => Err( Error::Render( format!( "URL not found: {url}" ) ) ),
         }
       }
     }
@@ -174,13 +174,14 @@ fn complete_workflow_example()
     WriteMode::Rewrite
   );
 
-  assert_eq!( archive.file_count(), 4 );
-  println!( "   Created archive with {} files", archive.file_count() );
+  let file_count = archive.file_count();
+  assert_eq!( file_count, 4 );
+  println!( "   Created archive with {file_count} files" );
 
   let external_count = archive.list_files().iter()
     .filter( | p | archive.get_file( p ).unwrap().content_source.is_some() )
     .count();
-  println!( "   {} files have external sources", external_count );
+  println!( "   {external_count} files have external sources" );
 
   // STEP 2: Internalize external sources
   println!( "\n2. Internalizing external sources..." );
@@ -192,7 +193,7 @@ fn complete_workflow_example()
     .filter( | p | archive.get_file( p ).unwrap().content_source.is_some() )
     .count();
 
-  println!( "   After internalization: {} external sources", external_after );
+  println!( "   After internalization: {external_after} external sources" );
   assert_eq!( external_after, 0 );
 
   // STEP 3: Set parameter values
@@ -204,7 +205,8 @@ fn complete_workflow_example()
   archive.set_value( "header", Value::String( "=== My Document ===\n".into() ) );
   archive.set_value( "footer", Value::String( "---\n2024 Example Corp\n".into() ) );
 
-  println!( "   Set {} parameter values", archive.values_mut().len() );
+  let values_count = archive.values_mut().len();
+  println!( "   Set {values_count} parameter values" );
 
   // STEP 4: Materialize to cloud storage
   println!( "\n4. Materializing to cloud storage..." );
@@ -219,8 +221,9 @@ fn complete_workflow_example()
     &resolver
   ).unwrap();
 
-  println!( "   Stored {} objects in cloud", cloud.object_count() );
-  assert_eq!( cloud.object_count(), 4 );
+  let object_count = cloud.object_count();
+  println!( "   Stored {object_count} objects in cloud" );
+  assert_eq!( object_count, 4 );
 
   // Verify content was rendered correctly
   let header_obj = cloud.get_object( "s3://my-bucket/output/header.txt" ).unwrap();
@@ -262,7 +265,8 @@ fn workflow_serialize_deserialize()
   // Serialize with external references
   println!( "\n1. Serializing archive with external references..." );
   let json_with_refs = archive.to_json_pretty().unwrap();
-  println!( "   JSON size with refs: {} bytes", json_with_refs.len() );
+  let json_with_refs_len = json_with_refs.len();
+  println!( "   JSON size with refs: {json_with_refs_len} bytes" );
   assert!( json_with_refs.contains( "content_source" ) );
 
   // Internalize
@@ -278,7 +282,8 @@ fn workflow_serialize_deserialize()
   // Serialize with inline content
   println!( "\n3. Serializing archive with inline content..." );
   let json_inline = archive.to_json_pretty().unwrap();
-  println!( "   JSON size inline: {} bytes", json_inline.len() );
+  let json_inline_len = json_inline.len();
+  println!( "   JSON size inline: {json_inline_len} bytes" );
   assert!( !json_inline.contains( "content_source" ) );
 
   // Deserialize and verify
@@ -293,7 +298,7 @@ fn workflow_serialize_deserialize()
   match &db_file.content
   {
     FileContent::Text( s ) => assert_eq!( s, "connection_string={{db_url}}" ),
-    _ => panic!( "Expected text" ),
+    FileContent::Binary( _ ) => panic!( "Expected text" ),
   }
 
   println!( "\n=== Serialization Workflow Complete ===" );

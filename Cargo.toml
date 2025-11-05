@@ -16,9 +16,7 @@ exclude = [
 
   # Core exclusions: umbrella crates and circular dependency prevention
   "module/core/wtools",        # Top-level umbrella crate re-exporting all tools
-  "module/core/meta_tools",    # Meta tools aggregator crate
   "module/core/for_each",      # Used by meta_tools (circular dependency prevention)
-  "module/core/program_tools", # Incomplete stub crate (empty implementation)
   # NOTE: unitore is included despite compilation errors (uses workspace dependencies)
 
   # NOTE: module/move directory is now empty - all crates moved to core or postponed

@@ -228,7 +228,7 @@ Old language data";
   assert!(conflicts.iter().any(|c| c.contains("Language Operations Performance")));
   
   // Clean up
-  std ::fs ::remove_file("conflict_test.md").ok();
+  std ::fs ::remove_file("conflict_test.md").expect("Failed to cleanup conflict_test.md");
 }
 
 #[ test ] 
@@ -249,7 +249,7 @@ Content";
   assert!(conflicts.is_empty());
   
   // Clean up
-  std ::fs ::remove_file("no_conflict_test.md").ok();
+  std ::fs ::remove_file("no_conflict_test.md").expect("Failed to cleanup no_conflict_test.md");
 }
 
 #[ test ]

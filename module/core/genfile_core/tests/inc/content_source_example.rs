@@ -1,10 +1,10 @@
-/// Example demonstrating external content sources
-///
-/// This example shows how to use the content source abstraction to:
-/// 1. Reference templates from external files
-/// 2. Fetch content from URLs (with custom resolver)
-/// 3. Mix inline and external content sources
-/// 4. Implement custom content resolvers for databases, cloud storage, etc.
+//! Example demonstrating external content sources
+//!
+//! This example shows how to use the content source abstraction to:
+//! 1. Reference templates from external files
+//! 2. Fetch content from URLs (with custom resolver)
+//! 3. Mix inline and external content sources
+//! 4. Implement custom content resolvers for databases, cloud storage, etc.
 
 use genfile_core::
 {
@@ -79,7 +79,7 @@ impl ContentResolver for HttpResolver
         match self.cache.get( url )
         {
           Some( content ) => Ok( FileContent::Text( content.clone() ) ),
-          None => Err( Error::Render( format!( "URL not found: {}", url ) ) ),
+          None => Err( Error::Render( format!( "URL not found: {url}" ) ) ),
         }
       }
     }
@@ -97,9 +97,9 @@ fn example_external_content_sources()
   // 1. Inline content (traditional approach)
   archive.add_text_file(
     PathBuf::from( "index.html" ),
-    r#"<html>
+    r"<html>
   <body>{{content}}</body>
-</html>"#,
+</html>",
     WriteMode::Rewrite
   );
 
@@ -203,13 +203,13 @@ impl ContentResolver for DatabaseResolver
         match self.get_template( template_id )
         {
           Some( content ) => Ok( FileContent::Text( content ) ),
-          None => Err( Error::Render( format!( "Template not found in DB: {}", template_id ) ) ),
+          None => Err( Error::Render( format!( "Template not found in DB: {template_id}" ) ) ),
         }
       }
 
       ContentSource::Url { url } =>
       {
-        Err( Error::Render( format!( "URLs not supported: {}", url ) ) )
+        Err( Error::Render( format!( "URLs not supported: {url}" ) ) )
       }
     }
   }
@@ -280,7 +280,7 @@ fn example_serialization_with_external_sources()
   // Serialize to JSON
   let json = archive.to_json_pretty().unwrap();
 
-  println!( "Archive JSON:\n{}", json );
+  println!( "Archive JSON:\n{json}" );
 
   // Verify it contains source references
   assert!( json.contains( "content_source" ) );

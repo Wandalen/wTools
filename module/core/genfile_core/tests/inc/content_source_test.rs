@@ -1,14 +1,14 @@
-/// Tests for ContentSource and external data references
-///
-/// # Test Coverage
-///
-/// - ContentSource creation (inline, file, URL)
-/// - DefaultContentResolver for inline and file sources
-/// - Custom ContentResolver implementations
-/// - Archive with external file references
-/// - Archive with URL references
-/// - Materialization with content resolver
-/// - Custom content storage implementations
+//! Tests for `ContentSource` and external data references
+//!
+//! # Test Coverage
+//!
+//! - `ContentSource` creation (inline, file, URL)
+//! - `DefaultContentResolver` for inline and file sources
+//! - Custom `ContentResolver` implementations
+//! - Archive with external file references
+//! - Archive with URL references
+//! - Materialization with content resolver
+//! - Custom content storage implementations
 
 use genfile_core::
 {
@@ -48,7 +48,7 @@ fn content_source_inline()
   match content
   {
     FileContent::Text( text ) => assert_eq!( text, "Hello {{name}}" ),
-    _ => panic!( "Expected text content" ),
+    FileContent::Binary( _ ) => panic!( "Expected text content" ),
   }
 }
 
@@ -95,7 +95,7 @@ fn default_resolver_inline()
   match content
   {
     FileContent::Text( text ) => assert_eq!( text, "test content" ),
-    _ => panic!( "Expected text content" ),
+    FileContent::Binary( _ ) => panic!( "Expected text content" ),
   }
 }
 
@@ -121,7 +121,7 @@ fn default_resolver_url_not_supported()
       assert!( msg.contains( "URL fetching not supported" ) );
       assert!( msg.contains( "https://example.com/data.json" ) );
     }
-    _ => panic!( "Expected render error" ),
+    Error::MissingParameters( _ ) | Error::Fs( _ ) | Error::InvalidTemplate( _ ) => panic!( "Expected render error" ),
   }
 }
 
@@ -162,7 +162,7 @@ impl ContentResolver for MockResolver
         let key = path.display().to_string();
         self.responses.get( &key ).cloned().ok_or_else( ||
         {
-          Error::Render( format!( "Mock: file not found: {}", key ) )
+          Error::Render( format!( "Mock: file not found: {key}" ) )
         })
       }
 
@@ -170,7 +170,7 @@ impl ContentResolver for MockResolver
       {
         self.responses.get( url ).cloned().ok_or_else( ||
         {
-          Error::Render( format!( "Mock: URL not found: {}", url ) )
+          Error::Render( format!( "Mock: URL not found: {url}" ) )
         })
       }
     }
@@ -196,7 +196,7 @@ fn custom_resolver_file()
   match content
   {
     FileContent::Text( text ) => assert_eq!( text, "Mocked content {{var}}" ),
-    _ => panic!( "Expected text content" ),
+    FileContent::Binary( _ ) => panic!( "Expected text content" ),
   }
 }
 
@@ -219,7 +219,7 @@ fn custom_resolver_url()
   match content
   {
     FileContent::Text( text ) => assert_eq!( text, r#"{"key":"{{value}}"}"# ),
-    _ => panic!( "Expected text content" ),
+    FileContent::Binary( _ ) => panic!( "Expected text content" ),
   }
 }
 
@@ -468,7 +468,7 @@ fn custom_storage()
   match &storage.writes[ 0 ].1
   {
     FileContent::Text( text ) => assert_eq!( text, "content" ),
-    _ => panic!( "Expected text content" ),
+    FileContent::Binary( _ ) => panic!( "Expected text content" ),
   }
 }
 

@@ -1,13 +1,13 @@
-/// Advanced archive tests - pack/unpack, internalize/externalize
-///
-/// # Test Coverage
-///
-/// - Materialize with ContentStorage
-/// - Pack archive from directory tree
-/// - Internalize external references
-/// - Externalize inline content
-/// - Save/load archive files
-/// - Round-trip conversions
+//! Advanced archive tests - pack/unpack, internalize/externalize
+//!
+//! # Test Coverage
+//!
+//! - Materialize with `ContentStorage`
+//! - Pack archive from directory tree
+//! - Internalize external references
+//! - Externalize inline content
+//! - Save/load archive files
+//! - Round-trip conversions
 
 use genfile_core::
 {
@@ -30,7 +30,7 @@ use std::collections::HashMap;
 
 //
 
-/// Mock storage for testing ContentStorage
+/// Mock storage for testing `ContentStorage`
 struct MockStorage
 {
   pub stored: HashMap< PathBuf, FileContent >,
@@ -97,14 +97,14 @@ fn materialize_with_storage()
   match text_content
   {
     FileContent::Text( s ) => assert_eq!( s, "Value: 100" ),
-    _ => panic!( "Expected text content" ),
+    FileContent::Binary( _ ) => panic!( "Expected text content" ),
   }
 
   let binary_content = storage.get( Path::new( "/out/data.bin" ) ).unwrap();
   match binary_content
   {
     FileContent::Binary( b ) => assert_eq!( b, &vec![ 0x00, 0xFF, 0x42 ] ),
-    _ => panic!( "Expected binary content" ),
+    FileContent::Text( _ ) => panic!( "Expected binary content" ),
   }
 }
 
@@ -145,7 +145,7 @@ impl ContentResolver for MockResolver
         let key = path.display().to_string();
         self.responses.get( &key ).cloned().ok_or_else( ||
         {
-          Error::Render( format!( "Not found: {}", key ) )
+          Error::Render( format!( "Not found: {key}" ) )
         })
       }
 
@@ -153,7 +153,7 @@ impl ContentResolver for MockResolver
       {
         self.responses.get( url ).cloned().ok_or_else( ||
         {
-          Error::Render( format!( "Not found: {}", url ) )
+          Error::Render( format!( "Not found: {url}" ) )
         })
       }
     }
@@ -204,7 +204,7 @@ fn internalize_external_sources()
   match &file1.content
   {
     FileContent::Text( s ) => assert_eq!( s, "From file" ),
-    _ => panic!( "Expected text" ),
+    FileContent::Binary( _ ) => panic!( "Expected text" ),
   }
 
   let file2 = archive.get_file( Path::new( "file2.txt" ) ).unwrap();
@@ -212,7 +212,7 @@ fn internalize_external_sources()
   match &file2.content
   {
     FileContent::Text( s ) => assert_eq!( s, "From URL" ),
-    _ => panic!( "Expected text" ),
+    FileContent::Binary( _ ) => panic!( "Expected text" ),
   }
 
   let file3 = archive.get_file( Path::new( "file3.txt" ) ).unwrap();
@@ -220,7 +220,7 @@ fn internalize_external_sources()
   match &file3.content
   {
     FileContent::Text( s ) => assert_eq!( s, "Inline content" ),
-    _ => panic!( "Expected text" ),
+    FileContent::Binary( _ ) => panic!( "Expected text" ),
   }
 }
 
@@ -327,7 +327,7 @@ fn internalize_binary_content()
   match &file.content
   {
     FileContent::Binary( b ) => assert_eq!( b, &vec![ 0x89, 0x50, 0x4E, 0x47 ] ),
-    _ => panic!( "Expected binary" ),
+    FileContent::Text( _ ) => panic!( "Expected binary" ),
   }
 }
 
@@ -392,6 +392,6 @@ fn internalize_preserves_metadata()
   match &file.content
   {
     FileContent::Text( s ) => assert_eq!( s, "#!/bin/bash" ),
-    _ => panic!( "Expected text" ),
+    FileContent::Binary( _ ) => panic!( "Expected text" ),
   }
 }
