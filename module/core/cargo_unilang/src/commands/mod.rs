@@ -2,6 +2,8 @@
 //!
 //! Each command handler implements the actual functionality for CLI commands.
 
+#![allow(ambiguous_glob_reexports)]
+
 pub mod new;
 pub mod check;
 pub mod help;

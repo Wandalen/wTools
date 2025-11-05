@@ -72,9 +72,9 @@ pub fn clone_dyn(attr_input: proc_macro ::TokenStream, item_input: proc_macro ::
 
  };
 
-  if has_debug 
+  if has_debug
   {
-  let about = format!("macro: CloneDny\ntrait: {item_name}");
+  let about = format!("macro: CloneDyn\ntrait: {item_name}");
   diag ::report_print(about, &original_input, &result);
  }
 
