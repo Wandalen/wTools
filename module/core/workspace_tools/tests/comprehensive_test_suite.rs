@@ -100,6 +100,28 @@ use std ::
   thread,
 };
 
+// helper functions to replace testing module
+fn create_test_workspace() -> ( TempDir, Workspace )
+{
+  let temp_dir = TempDir ::new().expect( "Failed to create temp directory" );
+  let workspace = Workspace ::new( temp_dir.path() );
+  ( temp_dir, workspace )
+}
+
+fn create_test_workspace_with_structure() -> ( TempDir, Workspace )
+{
+  let temp_dir = TempDir ::new().expect( "Failed to create temp directory" );
+  let workspace = Workspace ::new( temp_dir.path() );
+
+  // create standard directories
+  fs ::create_dir_all( workspace.config_dir() ).ok();
+  fs ::create_dir_all( workspace.data_dir() ).ok();
+  fs ::create_dir_all( workspace.logs_dir() ).ok();
+  fs ::create_dir_all( workspace.docs_dir() ).ok();
+  fs ::create_dir_all( workspace.tests_dir() ).ok();
+
+  ( temp_dir, workspace )
+}
 
 // Global mutex to serialize environment variable tests
 static ENV_TEST_MUTEX: Mutex< () > = Mutex ::new( () );
@@ -331,7 +353,7 @@ mod path_operation_tests
   #[ test ]
   fn test_join_relative_path()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   let joined = workspace.join( "config/app.toml" );
   let expected = workspace.root().join( "config/app.toml" );
@@ -343,7 +365,7 @@ mod path_operation_tests
   #[ test ]
   fn test_join_absolute_path()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   // Use platform-appropriate absolute path
   #[ cfg( windows ) ]
@@ -362,7 +384,7 @@ mod path_operation_tests
   #[ test ]
   fn test_join_empty_path()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   let joined = workspace.join( "" );
   assert_eq!( joined, workspace.root() );
@@ -372,7 +394,7 @@ mod path_operation_tests
   #[ test ]
   fn test_join_with_parent_traversal()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   let joined = workspace.join( "config/../data/file.txt" );
   let expected = workspace.root().join( "config/../data/file.txt" );
@@ -384,7 +406,7 @@ mod path_operation_tests
   #[ test ]
   fn test_boundary_check_internal_paths()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   let internal_paths = vec!
   [
@@ -405,7 +427,7 @@ mod path_operation_tests
   #[ test ]
   fn test_boundary_check_external_paths()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   // Use platform-appropriate external paths
   let mut external_paths = vec![ env ::temp_dir() ]; // different temp directory
@@ -435,7 +457,7 @@ mod path_operation_tests
   #[ cfg( unix ) ]
   fn test_boundary_check_symlinks()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   // create symlink to external location
   let external_target = env ::temp_dir().join( "external_file" );
@@ -455,7 +477,7 @@ mod path_operation_tests
   #[ test ]
   fn test_standard_directory_paths()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   let root = workspace.root();
   
   assert_eq!( workspace.config_dir(), root.join( "config" ) );
@@ -478,7 +500,7 @@ mod path_operation_tests
   #[ test ]
   fn test_workspace_validation_success()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   let result = workspace.validate();
   assert!( result.is_ok(), "workspace validation should succeed: {result:?}" );
@@ -488,7 +510,7 @@ mod path_operation_tests
   #[ test ]
   fn test_path_normalization_existing()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   // create a file to normalize
   let test_file = workspace.join( "test_file.txt" );
@@ -506,7 +528,7 @@ mod path_operation_tests
   #[ test ]
   fn test_path_normalization_nonexistent()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   let result = workspace.normalize_path( "nonexistent_file.txt" );
   assert!( result.is_err() );
@@ -655,7 +677,7 @@ mod glob_functionality_tests
   #[ test ]
   fn test_find_resources_simple_pattern()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = create_test_workspace_with_structure();
   
   // create test rust files - ensure src directory exists first
   let src_dir = workspace.join( "src" );
@@ -682,7 +704,7 @@ mod glob_functionality_tests
   #[ test ]
   fn test_find_resources_recursive_pattern()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = create_test_workspace_with_structure();
   
   // create nested rust files
   let paths = vec!
@@ -714,7 +736,7 @@ mod glob_functionality_tests
   #[ test ]
   fn test_find_resources_no_matches()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = create_test_workspace_with_structure();
   
   let found = workspace.find_resources( "src/*.nonexistent" ).unwrap();
   assert!( found.is_empty(), "should return empty vector for no matches" );
@@ -724,7 +746,7 @@ mod glob_functionality_tests
   #[ test ]
   fn test_find_resources_invalid_pattern()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   let result = workspace.find_resources( "src/**[invalid" );
   assert!( result.is_err() );
@@ -740,7 +762,7 @@ mod glob_functionality_tests
   #[ test ]
   fn test_find_config_toml()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = create_test_workspace_with_structure();
   
   let config_file = workspace.config_dir().join( "app.toml" );
   // Ensure parent directory exists before writing
@@ -758,7 +780,7 @@ mod glob_functionality_tests
   #[ test ]
   fn test_find_config_yaml()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = create_test_workspace_with_structure();
   
   let config_file = workspace.config_dir().join( "app.yaml" );
   // Ensure parent directory exists before writing  
@@ -776,7 +798,7 @@ mod glob_functionality_tests
   #[ test ]
   fn test_find_config_json()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = create_test_workspace_with_structure();
   
   let config_file = workspace.config_dir().join( "app.json" );
   fs ::write( &config_file, "{\"name\" : \"test\", \"version\" : \"1.0\"}\n" ).unwrap();
@@ -789,7 +811,7 @@ mod glob_functionality_tests
   #[ test ]
   fn test_find_config_dotfile()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = create_test_workspace_with_structure();
   
   let config_file = workspace.root().join( ".app.toml" );
   fs ::write( &config_file, "[app]\nhidden_config = true\n" ).unwrap();
@@ -802,7 +824,7 @@ mod glob_functionality_tests
   #[ test ]
   fn test_find_config_priority_order()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = create_test_workspace_with_structure();
   
   // create multiple formats - toml should have highest priority
   let toml_file = workspace.config_dir().join( "app.toml" );
@@ -821,7 +843,7 @@ mod glob_functionality_tests
   #[ test ]
   fn test_find_config_not_found()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = create_test_workspace_with_structure();
   
   let result = workspace.find_config( "nonexistent_config" );
   assert!( result.is_err() );
@@ -850,7 +872,7 @@ mod secret_management_tests
   #[ test ]
   fn test_secret_directory_path()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   let secret_dir = workspace.secret_dir();
   assert_eq!( secret_dir, workspace.root().join( "secret" ) );
@@ -860,7 +882,7 @@ mod secret_management_tests
   #[ test ]
   fn test_secret_file_path()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   let secret_file = workspace.secret_file( "test.env" );
   assert_eq!( secret_file, workspace.root().join( "secret/test.env" ) );
@@ -870,7 +892,7 @@ mod secret_management_tests
   #[ test ]
   fn test_load_secrets_valid_format()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   let secret_dir = workspace.secret_dir();
   fs ::create_dir_all( &secret_dir ).unwrap();
@@ -891,7 +913,7 @@ mod secret_management_tests
   #[ test ]
   fn test_load_secrets_quoted_values()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   let secret_dir = workspace.secret_dir();
   fs ::create_dir_all( &secret_dir ).unwrap();
@@ -916,7 +938,7 @@ EMPTY_QUOTES=
   #[ test ]
   fn test_load_secrets_with_comments()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   let secret_dir = workspace.secret_dir();
   fs ::create_dir_all( &secret_dir ).unwrap();
@@ -948,7 +970,7 @@ VALID_KEY=valid_value
   #[ test ]
   fn test_load_secrets_nonexistent_file()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
 
   // New behavior: returns explicit error instead of empty HashMap
   let result = workspace.load_secrets_from_file( "nonexistent.env" );
@@ -962,7 +984,7 @@ VALID_KEY=valid_value
   #[ cfg( unix ) ]
   fn test_load_secrets_permission_denied()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   let secret_dir = workspace.secret_dir();
   fs ::create_dir_all( &secret_dir ).unwrap();
@@ -990,7 +1012,7 @@ VALID_KEY=valid_value
   #[ test ]
   fn test_load_secrets_malformed_content()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   let secret_dir = workspace.secret_dir();
   fs ::create_dir_all( &secret_dir ).unwrap();
@@ -1012,7 +1034,7 @@ VALID_KEY=valid_value
   #[ test ]
   fn test_load_secret_key_from_file()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   let secret_dir = workspace.secret_dir();
   fs ::create_dir_all( &secret_dir ).unwrap();
@@ -1029,7 +1051,7 @@ VALID_KEY=valid_value
   #[ test ]
   fn test_load_secret_key_from_environment()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   env ::set_var( "TEST_ENV_SECRET", "env_secret_456" );
   
@@ -1043,7 +1065,7 @@ VALID_KEY=valid_value
   #[ test ]
   fn test_load_secret_key_file_priority()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   let secret_dir = workspace.secret_dir();
   fs ::create_dir_all( &secret_dir ).unwrap();
@@ -1066,7 +1088,7 @@ VALID_KEY=valid_value
   #[ test ]
   fn test_load_secret_key_not_found()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   let result = workspace.load_secret_key( "NONEXISTENT_KEY", "nonexistent.env" );
   assert!( result.is_err() );
@@ -1086,7 +1108,7 @@ VALID_KEY=valid_value
   #[ test ]
   fn test_parse_key_value_edge_cases()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   let secret_dir = workspace.secret_dir();
   fs ::create_dir_all( &secret_dir ).unwrap();
@@ -1127,7 +1149,7 @@ mod integration_tests
   #[ test ]
   fn test_cross_platform_paths()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   // test various path formats that should work cross-platform
   let test_paths = vec!
@@ -1151,7 +1173,7 @@ mod integration_tests
   #[ cfg( unix ) ]
   fn test_symlink_handling()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = create_test_workspace_with_structure();
   
   // create a real file
   let real_file = workspace.join( "data/real_file.txt" );
@@ -1174,7 +1196,7 @@ mod integration_tests
   #[ cfg( unix ) ]
   fn test_broken_symlink_handling()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = create_test_workspace_with_structure();
   
   // create symlink to nonexistent file
   let broken_symlink = workspace.join( "data/broken_link.txt" );
@@ -1193,7 +1215,7 @@ mod integration_tests
   #[ cfg( unix ) ]
   fn test_readonly_workspace()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   // make workspace read-only
   use std ::os ::unix ::fs ::PermissionsExt;
@@ -1215,7 +1237,7 @@ mod integration_tests
   #[ test ]
   fn test_concurrent_workspace_access()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   let workspace = Arc ::new( workspace );
   let results = Arc ::new( Mutex ::new( Vec ::new() ) );
   
@@ -1283,8 +1305,8 @@ mod integration_tests
   #[ test ]
   fn test_testing_utilities_isolation()
   {
-  let ( _temp_dir1, workspace1 ) = testing ::create_test_workspace();
-  let ( _temp_dir2, workspace2 ) = testing ::create_test_workspace();
+  let ( _temp_dir1, workspace1 ) = create_test_workspace();
+  let ( _temp_dir2, workspace2 ) = create_test_workspace();
   
   // workspaces should be different
   assert_ne!( workspace1.root(), workspace2.root() );
@@ -1302,7 +1324,7 @@ mod integration_tests
   #[ test ]
   fn test_structured_workspace_creation()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = create_test_workspace_with_structure();
   
   // all standard directories should exist
   assert!( workspace.config_dir().exists(), "config dir should exist" );
@@ -1336,7 +1358,7 @@ mod performance_tests
   // #[ cfg( feature = "stress" ) ]
   fn test_large_workspace_performance()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = create_test_workspace_with_structure();
   
   let start = Instant ::now();
   
@@ -1377,7 +1399,7 @@ mod performance_tests
   #[ cfg( feature = "glob" ) ]
   fn test_concurrent_glob_patterns()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
+  let ( _temp_dir, workspace ) = create_test_workspace_with_structure();
   let workspace = Arc ::new( workspace );
   
   // create test files
@@ -1427,7 +1449,7 @@ mod performance_tests
   #[ cfg( feature = "secrets" ) ]
   fn test_large_secret_files()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   let secret_dir = workspace.secret_dir();
   fs ::create_dir_all( &secret_dir ).unwrap();
@@ -1511,7 +1533,7 @@ mod performance_tests
   // #[ cfg( feature = "stress" ) ]
   fn test_memory_usage()
   {
-  let ( _temp_dir, _workspace ) = testing ::create_test_workspace_with_structure();
+  let ( _temp_dir, _workspace ) = create_test_workspace_with_structure();
   
   // create many workspace instances (should not accumulate memory)
   let mut workspaces = Vec ::new();
@@ -1547,7 +1569,7 @@ mod edge_case_tests
   #[ test ]
   fn test_very_long_paths()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   // create path with 200+ character filename
   let long_name = "a".repeat( 200 );
@@ -1564,7 +1586,7 @@ mod edge_case_tests
   #[ test ]
   fn test_unicode_paths()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   let unicode_paths = vec!
   [
@@ -1586,7 +1608,7 @@ mod edge_case_tests
   #[ test ]
   fn test_empty_and_whitespace_paths()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   let edge_paths = vec!
   [
@@ -1611,7 +1633,7 @@ mod edge_case_tests
   #[ test ]
   fn test_root_level_operations()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   // operations on workspace root itself
   assert!( workspace.is_workspace_file( workspace.root() ) );
@@ -1625,7 +1647,7 @@ mod edge_case_tests
   #[ test ]
   fn test_deeply_nested_paths()
   {
-  let ( _temp_dir, workspace ) = testing ::create_test_workspace();
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   // create very deep nesting
   let deep_parts: Vec< String > = ( 0..20 ).map( | i | format!( "level_{i}" ) ).collect();

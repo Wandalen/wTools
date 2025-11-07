@@ -3,19 +3,25 @@
 //! These tests verify that the secret management functionality correctly uses
 //! the `secret` directory (not `.secrets`) and properly handles secret files.
 
-#![ allow( unused_imports ) ]
+use workspace_tools :: { Workspace, WorkspaceError };
+use std :: { fs, collections ::HashMap };
+use tempfile ::TempDir;
 
-use workspace_tools ::
+/// helper to create test workspace with standard directory structure
+fn create_test_workspace_with_structure() -> ( TempDir, Workspace )
 {
-  Workspace,
-  WorkspaceError,
-  testing ::create_test_workspace_with_structure,
-};
-use std ::
-{
-  fs,
-  collections ::HashMap,
-};
+  let temp_dir = TempDir ::new().expect( "Failed to create temp directory" );
+  let workspace = Workspace ::new( temp_dir.path() );
+
+  // create standard directories
+  fs ::create_dir_all( workspace.config_dir() ).ok();
+  fs ::create_dir_all( workspace.data_dir() ).ok();
+  fs ::create_dir_all( workspace.logs_dir() ).ok();
+  fs ::create_dir_all( workspace.docs_dir() ).ok();
+  fs ::create_dir_all( workspace.tests_dir() ).ok();
+
+  ( temp_dir, workspace )
+}
 
 /// Test that `secret_dir` returns correct `secret` directory path
 #[ test ]

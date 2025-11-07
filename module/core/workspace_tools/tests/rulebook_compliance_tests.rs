@@ -7,7 +7,7 @@
 //! | T1.3 | Error Handling    | Missing  | Proper error returned |
 //! | T1.4 | Directory Creation| Standard | All directories created |
 
-use workspace_tools :: { Workspace, WorkspaceError, workspace };
+use workspace_tools :: { Workspace, WorkspaceError };
 use std :: { path ::PathBuf, fs };
 use tempfile ::TempDir;
 
