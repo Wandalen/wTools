@@ -425,11 +425,3 @@ criterion = "0.5"
 [package.metadata.cargo-udeps.ignore]
 normal = ["num_cpus", "sysinfo"]
 build = ["phf_codegen"]
-
-# Fix for Windows build issue - force newer windows crates
-# Issue: windows-0.52.0 has const evaluation bug causing clippy failures
-# Solution: Use windows-0.54+ which fixes the scalar size mismatch error
-[patch.crates-io]
-windows = "=0.54.0"
-windows-core = "=0.54.0"
-windows-targets = "=0.52.6"
