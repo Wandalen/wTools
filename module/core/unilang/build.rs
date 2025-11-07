@@ -23,6 +23,23 @@
 //! - PHF vs dynamic lookup comparisons belong in `benchkit` framework
 //! - Build script should focus on correctness, not performance measurement
 //! - Static command functionality testing goes in `tests/` (correctness only)
+//!
+//! ## Critical: Three-Layer Data Integrity Chain
+//!
+//! **Adding a new field to `StaticCommandDefinition` requires updates in THREE locations:**
+//!
+//! 1. **Struct Definition** (`src/static_data.rs`) - Add field to `StaticCommandDefinition`
+//! 2. **Build Script Extraction** (this file) - Extract field from YAML in `generate_command_const()`
+//! 3. **Conversion** (`src/static_data.rs`) - Map field in `From<&StaticCommandDefinition>`
+//!
+//! **Missing any location = silent data loss.** YAML values will be read but never reach runtime.
+//!
+//! **Example (Issue-088)**: The `auto_help_enabled` field was missing from steps 1 and 2,
+//! causing all static commands to have `auto_help_enabled: false` regardless of YAML configuration.
+//! This broke `.command.help` generation for all users.
+//!
+//! **Prevention**: When adding fields, update `generate_command_const()` to extract from YAML
+//! and include in generated const, then add conversion tests in `tests/data/static_data.rs`.
 
 #![allow(clippy::useless_format)]
 
@@ -561,6 +578,8 @@ fn generate_command_const(f: &mut BufWriter<File>, index: usize, cmd_value: &ser
   let idempotent = cmd_value["idempotent"].as_bool().unwrap_or(false);
   let deprecation_message = cmd_value["deprecation_message"].as_str().unwrap_or("");
   let http_method_hint = cmd_value["http_method_hint"].as_str().unwrap_or("");
+  // Fix(issue-088): Extract auto_help_enabled from YAML (defaults to true)
+  let auto_help_enabled = cmd_value["auto_help_enabled"].as_bool().unwrap_or(true);
 
   // Generate arguments array
   if let Some(arguments) = cmd_value["arguments"].as_sequence()
@@ -622,6 +641,8 @@ fn generate_command_const(f: &mut BufWriter<File>, index: usize, cmd_value: &ser
   writeln!(f, "  deprecation_message: \"{}\",", escape_string(deprecation_message)).unwrap();
   writeln!(f, "  http_method_hint: \"{}\",", escape_string(http_method_hint)).unwrap();
   writeln!(f, "  examples: CMD_{index}_EXAMPLES,").unwrap();
+  // Fix(issue-088): Include auto_help_enabled field in generated PHF const
+  writeln!(f, "  auto_help_enabled: {auto_help_enabled},").unwrap();
   writeln!(f, "}};").unwrap();
   writeln!(f).unwrap();
 }

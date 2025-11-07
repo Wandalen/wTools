@@ -14,6 +14,7 @@ This document serves as the **single source of truth** for all project work.
 | 6 | 005 | 0 | 10 | 5 | 5 | 2 | ✅ (Completed) | [Serde Integration](completed/005_serde_integration.md) | First-class serde support for configuration management |
 | 7 | 017 | 0 | 7 | 8 | 5 | 2 | ✅ (Completed) | [Enhanced Secret Parsing](completed/017_enhanced_secret_parsing.md) | Multi-format secret file support (KEY=VALUE and export) |
 | 8 | 021 | 10 | 9 | 7 | 9 | 9 | 📋 (Active) | [Improve Secrets API UX and Error Handling](021_improve_secrets_api_ux_and_error_handling.md) | Fix API pitfalls, enhance error handling, improve developer experience |
+| 9 | 022 | 10 | 10 | 8 | 9 | 10 | 📋 (Active) | [Extend Workspace Resolution for Installed Applications](022_extend_workspace_resolution_for_installed_applications.md) | Add $PRO and $HOME fallbacks for installed CLI tools to load secrets |
 
 ## Current Focus
 
@@ -31,6 +32,7 @@ workspace_tools has completed its **secure secret management capabilities** and 
 
 ### Active Work 📋
 - **Task 021**: Improving secrets API user experience and error handling to prevent common developer pitfalls and debugging confusion
+- **Task 022**: Extending workspace resolution with $PRO and $HOME fallbacks to support installed CLI applications that need workspace-level secrets
 
 ## Issues Index
 

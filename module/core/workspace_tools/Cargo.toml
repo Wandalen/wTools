@@ -52,3 +52,4 @@ zeroize = { version = "1.7", optional = true }
 
 [dev-dependencies]
 # Test utilities - using minimal local dependencies only
+tempfile = { workspace = true }

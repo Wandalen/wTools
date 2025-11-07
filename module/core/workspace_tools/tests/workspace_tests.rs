@@ -194,7 +194,7 @@ fn test_fallback_resolution_current_dir()
 {
   env ::remove_var( "WORKSPACE_PATH" );
   
-  let workspace = Workspace ::resolve_or_fallback();
+  let workspace = Workspace ::resolve_with_extended_fallbacks();
   
   // with cargo integration enabled, should detect cargo workspace first
   #[ cfg( feature = "serde" ) ]
@@ -230,17 +230,26 @@ fn test_from_current_dir()
 #[ test ]
 fn test_convenience_function()
 {
-  // Save original env var to restore later
+  // Save original env var and cwd to restore later
   let original_workspace_path = env ::var( "WORKSPACE_PATH" ).ok();
-  
+  let original_cwd = env ::current_dir().ok();
+
   let temp_dir = TempDir ::new().unwrap();
   env ::set_var( "WORKSPACE_PATH", temp_dir.path() );
-  
+
+  // Change to temp directory to avoid finding cargo workspace
+  let test_cwd = TempDir ::new().unwrap();
+  env ::set_current_dir( test_cwd.path() ).ok();
+
   let ws = workspace().unwrap();
   assert_eq!( ws.root(), temp_dir.path() );
-  
+
   // Restore original environment
-  match original_workspace_path 
+  if let Some( cwd ) = original_cwd
+  {
+   env ::set_current_dir( cwd ).ok();
+  }
+  match original_workspace_path
   {
   Some( path ) => env ::set_var( "WORKSPACE_PATH", path ),
   None => env ::remove_var( "WORKSPACE_PATH" ),

@@ -38,6 +38,7 @@ const TEST_STATIC_COMMANDS_INTERNAL: phf::Map<&'static str, &'static StaticComma
     deprecation_message: "",
     http_method_hint: "GET",
     examples: &[ ".test.version", ".test.version --help" ],
+    auto_help_enabled: true,
   },
 
   ".test.add" => &StaticCommandDefinition
@@ -94,6 +95,7 @@ const TEST_STATIC_COMMANDS_INTERNAL: phf::Map<&'static str, &'static StaticComma
     deprecation_message: "",
     http_method_hint: "POST",
     examples: &[ ".test.add 5 3", ".test.add --a 10 --b 20" ],
+    auto_help_enabled: true,
   },
 
   ".test.file.copy" => &StaticCommandDefinition
@@ -168,6 +170,7 @@ const TEST_STATIC_COMMANDS_INTERNAL: phf::Map<&'static str, &'static StaticComma
     deprecation_message: "",
     http_method_hint: "POST",
     examples: &[ ".test.file.copy input.txt output.txt", ".test.file.copy --source data.json --destination backup.json --overwrite true" ],
+    auto_help_enabled: true,
   },
 
   ".test.deprecated" => &StaticCommandDefinition
@@ -187,6 +190,7 @@ const TEST_STATIC_COMMANDS_INTERNAL: phf::Map<&'static str, &'static StaticComma
     deprecation_message: "Use .test.version instead",
     http_method_hint: "GET",
     examples: &[],
+    auto_help_enabled: true,
   },
 };
 

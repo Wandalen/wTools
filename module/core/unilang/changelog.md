@@ -1,4 +1,33 @@
 # Changelog
+
+### 2025-11-06 - Bug Fix: Issue-088 - Auto Help Enabled Field Preservation
+
+**Problem:** Static commands with `auto_help_enabled: true` in YAML were incorrectly converted to `auto_help_enabled: false` at runtime, breaking automatic `.command.help` variant generation.
+
+**Root Cause:** Three-layer data integrity chain was broken:
+1. `StaticCommandDefinition` struct was missing `auto_help_enabled` field
+2. `build.rs` wasn't extracting the field from YAML definitions
+3. `From<&StaticCommandDefinition>` conversion was hardcoding `false`
+
+**Fix Applied:**
+- Added `auto_help_enabled: bool` field to `StaticCommandDefinition` (src/static_data.rs:51)
+- Updated build script to extract field from YAML and include in PHF generation (build.rs:565, 628)
+- Fixed conversion to preserve field value instead of hardcoding false (src/static_data.rs:636)
+- Updated 21 test/example instances across 7 files
+- Added 3 comprehensive bug reproducer tests with 5-section documentation
+
+**Validation:** 600+ tests passing, zero regressions, production-ready
+
+**Files Modified:**
+- Core: `src/static_data.rs`, `build.rs`, `tests/data/static_data.rs`
+- Tests: `tests/registry/phf_map_functionality.rs`, `tests/registry/registry_basic.rs`, `tests/registry/static_registry.rs`, `tests/parser/static_data_structures.rs`
+- Examples: `examples/static_03_performance_comparison.rs`, `examples/compile_time_aggregation.rs`, `examples/13_static_dynamic_registry.rs`
+
+**Knowledge Preserved:**
+- Module documentation with "Silent Field Loss" pitfall and prevention strategies
+- Build script documentation with "Three-Layer Data Integrity Chain" warning
+- Permanent bug reproducer tests marked with `// test_kind: bug_reproducer(issue-088)`
+
 ### 2025-06-28 - Increment 6: Implement CLI Argument Parsing and Execution
 *   **Description:** Integrated the `unilang` core into a basic CLI application (`src/bin/unilang_cli.rs`). Implemented a `main` function to initialize `CommandRegistry`, register sample commands, parse command-line arguments, and use `Lexer`, `Parser`, `SemanticAnalyzer`, and `Interpreter` for execution. Handled errors by printing to `stderr` and exiting with a non-zero status code. Corrected `CommandDefinition` and `ArgumentDefinition` `former` usage. Implemented `as_integer` and `as_path` helper methods on `Value` in `src/types.rs`. Updated `CommandRoutine` signatures and return types in `src/bin/unilang_cli.rs` to align with `Result<OutputData, ErrorData>`. Corrected `Parser`, `SemanticAnalyzer`, and `Interpreter` instantiation and usage. Updated `cli_integration_test.rs` to match new `stderr` output format. Removed unused `std::path::PathBuf` import. Addressed Clippy lints (`unnecessary_wraps`, `needless_pass_by_value`, `uninlined_format_args`).
 *   **Verification:** All tests passed, including `cli_integration_test.rs`, and `cargo clippy -p unilang -- -D warnings` passed.

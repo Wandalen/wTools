@@ -54,6 +54,7 @@ fn main() -> Result< (), unilang::error::Error >
     deprecation_message: "",
     http_method_hint: "GET",
     examples: &["demo.static_example input::hello"],
+    auto_help_enabled: true,
   };
 
   println!( "📋 Static Command Definition:" );

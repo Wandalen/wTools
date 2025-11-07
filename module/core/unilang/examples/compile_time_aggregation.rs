@@ -153,6 +153,7 @@ pub mod math_cli_static {
   deprecation_message: "",
   http_method_hint: "",
   examples: &[],
+  auto_help_enabled: true,
  };
 
   /// Static multiply command definition
@@ -172,6 +173,7 @@ pub mod math_cli_static {
   deprecation_message: "",
   http_method_hint: "",
   examples: &[],
+  auto_help_enabled: true,
  };
 
   static COMMANDS: &[&StaticCommandDefinition] = &[&ADD_COMMAND, &MULTIPLY_COMMAND];

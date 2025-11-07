@@ -247,7 +247,7 @@ fn test_resolve_or_fallback_cargo_primary()
   // unset WORKSPACE_PATH to ensure cargo detection is used
   std ::env ::remove_var( "WORKSPACE_PATH" );
   
-  let workspace = Workspace ::resolve_or_fallback();
+  let workspace = Workspace ::resolve_with_extended_fallbacks();
   
   // restore environment completely
   let restore_result = std ::env ::set_current_dir( &original_dir );

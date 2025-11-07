@@ -29,6 +29,7 @@ fn test_static_command_definition_creation()
     deprecation_message: "",
     http_method_hint: "GET",
     examples: &["test_command --help"],
+    auto_help_enabled: true,
   };
 
   assert_eq!( static_cmd.name, "test_command" );
@@ -159,6 +160,7 @@ fn test_conversion_static_to_dynamic_command()
     deprecation_message: "",
     http_method_hint: "GET",
     examples: &[ ".test_cmd --help" ],
+    auto_help_enabled: true,
   };
 
   let dynamic_cmd: CommandDefinition = ( &STATIC_CMD ).into();
@@ -177,7 +179,8 @@ fn test_conversion_static_to_dynamic_command()
   assert_eq!( dynamic_cmd.deprecation_message(), "" );
   assert_eq!( dynamic_cmd.http_method_hint(), "GET" );
   assert_eq!( dynamic_cmd.examples(), &vec![ ".test_cmd --help" ] );
-  assert!( !dynamic_cmd.auto_help_enabled() ); // Static commands don't auto-generate help by default
+  // Issue-088: Verify auto_help_enabled is preserved from static definition
+  assert!( dynamic_cmd.auto_help_enabled(), "auto_help_enabled should be preserved as true from static definition" );
 }
 
 #[ test ]
@@ -371,6 +374,7 @@ fn test_phf_map_compatibility()
       deprecation_message: "",
       http_method_hint: "GET",
       examples: &[],
+      auto_help_enabled: true,
     },
   };
 
@@ -430,6 +434,7 @@ fn test_static_command_with_arguments()
     deprecation_message: "",
     http_method_hint: "POST",
     examples: &[ ".process --files file1.txt,file2.txt" ],
+    auto_help_enabled: true,
   };
 
   // Test the command structure
@@ -467,6 +472,7 @@ fn test_static_command_serialization_roundtrip()
     deprecation_message: "",
     http_method_hint: "GET",
     examples: &[ "serialize_test" ],
+    auto_help_enabled: true,
   };
 
   // Convert to dynamic and verify data integrity
@@ -512,6 +518,7 @@ fn test_static_command_map_wrapper()
       deprecation_message: "",
       http_method_hint: "GET",
       examples: &[],
+      auto_help_enabled: true,
     },
     "cmd2" => &StaticCommandDefinition
     {
@@ -530,6 +537,7 @@ fn test_static_command_map_wrapper()
       deprecation_message: "",
       http_method_hint: "POST",
       examples: &[],
+      auto_help_enabled: true,
     },
   };
 

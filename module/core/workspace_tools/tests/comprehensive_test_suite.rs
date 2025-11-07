@@ -254,7 +254,7 @@ mod core_workspace_tests
   {
   let original = env ::var( "WORKSPACE_PATH" ).ok();
   env ::remove_var( "WORKSPACE_PATH" );
-  let workspace = Workspace ::resolve_or_fallback();
+  let workspace = Workspace ::resolve_with_extended_fallbacks();
   
   restore_env_var( "WORKSPACE_PATH", original );
   
@@ -1477,7 +1477,7 @@ mod performance_tests
   for i in 0..100
   {
    // Use resolve_or_fallback for robustness in stress testing
-   let workspace = Workspace ::resolve_or_fallback();
+   let workspace = Workspace ::resolve_with_extended_fallbacks();
    
    // perform various operations (these should never fail)
    let _ = workspace.validate();
@@ -1518,7 +1518,7 @@ mod performance_tests
   
   for _ in 0..100
   {
-   let ws = Workspace ::resolve_or_fallback();
+   let ws = Workspace ::resolve_with_extended_fallbacks();
    workspaces.push( ws );
  }
   

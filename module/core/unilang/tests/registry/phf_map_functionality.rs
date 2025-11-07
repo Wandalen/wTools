@@ -51,6 +51,7 @@ fn create_test_static_command() -> &'static StaticCommandDefinition
     deprecation_message: "",
     http_method_hint: "GET",
     examples: &[".test_command input_value", ".test_command --help"],
+    auto_help_enabled: true,
   }
 }
 
@@ -74,6 +75,7 @@ const TEST_STATIC_MAP_INTERNAL: phf::Map<&'static str, &'static StaticCommandDef
     deprecation_message: "",
     http_method_hint: "GET",
     examples: &[".test_command"],
+    auto_help_enabled: true,
   },
   "another_command" => &StaticCommandDefinition
   {
@@ -92,6 +94,7 @@ const TEST_STATIC_MAP_INTERNAL: phf::Map<&'static str, &'static StaticCommandDef
     deprecation_message: "",
     http_method_hint: "POST",
     examples: &[],
+    auto_help_enabled: true,
   },
 };
 
@@ -509,6 +512,7 @@ static COMPLEX_COMMAND: StaticCommandDefinition = StaticCommandDefinition
       ".complex_command input.txt --output output.txt",
       ".complex_command input.txt -o output.txt --verbose",
     ],
+    auto_help_enabled: true,
   };
 
 #[test]

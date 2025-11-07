@@ -35,6 +35,35 @@
 //! # }
 //! ```
 //!
+//! ## workspace resolution strategies
+//!
+//! the crate supports multiple resolution strategies to work in both development and
+//! installed contexts. the `workspace()` function tries strategies in priority order:
+//!
+//! 1. **cargo workspace** - detected via `Cargo.toml` metadata (development)
+//! 2. **`WORKSPACE_PATH` env** - set by `.cargo/config.toml` (development)
+//! 3. **git root** - searches for `.git` directory with `Cargo.toml` (development)
+//! 4. **`$PRO` env** - user-configured project root (installed applications)
+//! 5. **`$HOME` directory** - universal fallback (installed applications)
+//! 6. **current directory** - last resort fallback
+//!
+//! ### for installed applications
+//!
+//! when your cli tool is installed via `cargo install`, workspace resolution automatically
+//! falls back to user-configured locations:
+//!
+//! ```bash
+//! # option 1: $PRO (recommended for multi-project users)
+//! export PRO=~/pro
+//! mkdir -p ~/pro/secret
+//!
+//! # option 2: $HOME (simple for casual users)
+//! mkdir -p ~/secret
+//! ```
+//!
+//! this enables installed binaries to load workspace-level secrets and configurations
+//! without requiring `WORKSPACE_PATH` to be set globally.
+//!
 //! ## features
 //!
 //! - **`glob`** : enables pattern-based resource discovery
@@ -259,13 +288,72 @@ impl Workspace
   Ok( Self { root } )
   }
 
+  /// resolve workspace with extended fallback strategies
+  ///
+  /// tries multiple strategies to find workspace root, including user-configured
+  /// locations for installed CLI applications:
+  ///
+  /// 1. cargo workspace detection (developer context)
+  /// 2. `WORKSPACE_PATH` environment variable (cargo operations)
+  /// 3. git repository root with Cargo.toml (developer context)
+  /// 4. `$PRO` environment variable (user-configured project root)
+  /// 5. `$HOME` directory (universal fallback)
+  /// 6. current working directory (last resort)
+  ///
+  /// this method is designed for CLI applications that need to work both during
+  /// development (via `cargo run`) and after installation (via `cargo install`).
+  ///
+  /// # examples
+  ///
+  /// ```rust
+  /// use workspace_tools ::Workspace;
+  ///
+  /// // this will always succeed with some workspace root
+  /// let workspace = Workspace ::resolve_with_extended_fallbacks();
+  /// ```
+  ///
+  /// # resolution priority
+  ///
+  /// **developer contexts** (cargo operations):
+  /// - `from_cargo_workspace()` → finds cargo workspace via metadata
+  /// - `resolve()` → uses `WORKSPACE_PATH` from .cargo/config.toml
+  /// - `from_git_root()` → searches upward for .git + Cargo.toml
+  ///
+  /// **user contexts** (installed binaries):
+  /// - `from_pro_env()` → uses `$PRO` environment variable
+  /// - `from_home_dir()` → uses `$HOME` or `%USERPROFILE%`
+  ///
+  /// **fallback**:
+  /// - `from_cwd()` → current working directory
+  #[ must_use ]
+  #[ inline ]
+  pub fn resolve_with_extended_fallbacks() -> Self
+  {
+  Self ::from_cargo_workspace()
+   .or_else( |_| Self ::resolve() )
+   .or_else( |_| Self ::from_git_root() )
+   .or_else( |_| Self ::from_pro_env() )     // ← NEW: $PRO fallback
+   .or_else( |_| Self ::from_home_dir() )    // ← NEW: $HOME fallback
+   .unwrap_or_else( |_| Self ::from_cwd() )
+  }
+
   /// resolve workspace with fallback strategies
   ///
-  /// tries multiple strategies to resolve workspace root :
-  /// 1. cargo workspace detection (if `cargo_integration` feature enabled)
-  /// 2. environment variable (`WORKSPACE_PATH`)
-  /// 3. current working directory
-  /// 4. git repository root (if .git directory found)
+  /// # deprecated
+  ///
+  /// use `resolve_with_extended_fallbacks()` instead. this method lacks
+  /// support for installed CLI application contexts ($PRO and $HOME fallbacks).
+  ///
+  /// # migration
+  ///
+  /// ```rust
+  /// // old:
+  /// # use workspace_tools ::Workspace;
+  /// let ws = Workspace ::resolve_or_fallback();
+  ///
+  /// // new:
+  /// let ws = Workspace ::resolve_with_extended_fallbacks();
+  /// ```
   ///
   /// # examples
   ///
@@ -275,6 +363,10 @@ impl Workspace
   /// // this will always succeed with some workspace root
   /// let workspace = Workspace ::resolve_or_fallback();
   /// ```
+  #[ deprecated(
+  since = "0.8.0",
+  note = "use `resolve_with_extended_fallbacks()` for installed CLI app support"
+ ) ]
   #[ must_use ]
   #[ inline ]
   pub fn resolve_or_fallback() -> Self
@@ -338,6 +430,108 @@ impl Workspace
   {
   let root = env ::current_dir().unwrap_or_else( |_| PathBuf ::from( "/" ) );
   Self { root }
+  }
+
+  /// create workspace from $PRO environment variable
+  ///
+  /// intended for users who organize projects under a common root directory.
+  /// the $PRO environment variable should point to the projects root.
+  ///
+  /// # setup
+  ///
+  /// ```bash
+  /// # linux/mac
+  /// export PRO=~/pro
+  /// echo 'export PRO=~/pro' >> ~/.bashrc
+  ///
+  /// # windows
+  /// set PRO=%USERPROFILE%\pro
+  /// setx PRO "%USERPROFILE%\pro"
+  /// ```
+  ///
+  /// # examples
+  ///
+  /// ```rust
+  /// use workspace_tools ::Workspace;
+  ///
+  /// // user has: export PRO=~/pro
+  /// # std ::env ::set_var( "PRO", std ::env ::current_dir().unwrap() );
+  /// let workspace = Workspace ::from_pro_env().unwrap();
+  /// // workspace.root() → /home/user/pro
+  /// ```
+  ///
+  /// # Errors
+  ///
+  /// returns error if:
+  /// - $PRO environment variable is not set
+  /// - path specified by $PRO does not exist
+  ///
+  /// # use cases
+  ///
+  /// - installed CLI tools needing workspace-level secrets
+  /// - multi-project users with organized directory structure
+  /// - CI/CD environments with standardized project layouts
+  #[ inline ]
+  pub fn from_pro_env() -> Result< Self >
+  {
+  let pro_path = env ::var( "PRO" )
+   .map_err( |_| WorkspaceError::EnvironmentVariableMissing( "PRO".to_string() ) )?;
+
+  let root = PathBuf ::from( pro_path );
+
+  if !root.exists()
+  {
+   return Err( WorkspaceError::PathNotFound( root ) );
+  }
+
+  let root = Self ::cleanup_path( root );
+  Ok( Self { root } )
+  }
+
+  /// create workspace from user home directory
+  ///
+  /// universal fallback using the standard home directory location.
+  /// works cross-platform by checking both unix ($HOME) and windows (%USERPROFILE%).
+  ///
+  /// # examples
+  ///
+  /// ```rust
+  /// use workspace_tools ::Workspace;
+  ///
+  /// let workspace = Workspace ::from_home_dir().unwrap();
+  /// // linux/mac: workspace.root() → /home/user
+  /// // windows:   workspace.root() → C:\Users\user
+  /// ```
+  ///
+  /// # Errors
+  ///
+  /// returns error if:
+  /// - neither $HOME nor %USERPROFILE% environment variables are set
+  /// - resolved path does not exist
+  ///
+  /// # use cases
+  ///
+  /// - simple secret storage in ~/secret/ directory
+  /// - casual users without complex project organization
+  /// - minimal configuration requirement for CLI tools
+  #[ inline ]
+  pub fn from_home_dir() -> Result< Self >
+  {
+  let home_path = env ::var( "HOME" )
+   .or_else( |_| env ::var( "USERPROFILE" ) )  // windows compatibility
+   .map_err( |_| WorkspaceError::EnvironmentVariableMissing(
+  "HOME or USERPROFILE".to_string()
+ ) )?;
+
+  let root = PathBuf ::from( home_path );
+
+  if !root.exists()
+  {
+   return Err( WorkspaceError::PathNotFound( root ) );
+  }
+
+  let root = Self ::cleanup_path( root );
+  Ok( Self { root } )
   }
 
   /// get workspace root directory
@@ -1607,7 +1801,7 @@ impl Workspace
   // inject each secret into the configuration
   for ( key, secret_value ) in secrets
   {
-   config.inject_secret( &key, secret_value.expose_secret().to_string() )?;
+   config.inject_secret( &key, secret_value.expose_secret().clone() )?;
   }
 
   // validate the final configuration
@@ -2423,13 +2617,22 @@ pub mod testing
   }
 }
 
-/// convenience function to get workspace instance
+/// convenience function to get workspace instance with extended fallbacks
 ///
-/// equivalent to `Workspace ::resolve()`
+/// uses `Workspace ::resolve_with_extended_fallbacks()` which tries multiple
+/// strategies including $PRO and $HOME for installed CLI applications.
+/// always succeeds by falling back through multiple strategies.
+///
+/// # note
+///
+/// this function always succeeds (never returns Err), but maintains `Result`
+/// return type for backward compatibility. you can safely `.unwrap()` the result.
 ///
 /// # Errors
 ///
-/// returns error if workspace resolution fails
+/// this function never returns an error. it always succeeds by falling back
+/// through multiple resolution strategies. the `Result` return type is maintained
+/// for backward compatibility only.
 ///
 /// # examples
 ///
@@ -2437,14 +2640,23 @@ pub mod testing
 /// # fn main() -> Result< (), workspace_tools ::WorkspaceError > {
 /// use workspace_tools ::workspace;
 ///
-/// # std ::env ::set_var( "WORKSPACE_PATH", std ::env ::current_dir().unwrap() );
+/// // works without WORKSPACE_PATH set (uses fallbacks)
 /// let ws = workspace()?;
 /// let config_dir = ws.config_dir();
 /// # Ok(())
 /// # }
 /// ```
+///
+/// # resolution priority
+///
+/// 1. cargo workspace (development context)
+/// 2. `WORKSPACE_PATH` environment variable
+/// 3. git repository root
+/// 4. `$PRO` environment variable (installed apps)
+/// 5. `$HOME` directory (universal fallback)
+/// 6. current working directory
 #[ inline ]
 pub fn workspace() -> Result< Workspace >
 {
-  Workspace ::resolve()
+  Ok( Workspace ::resolve_with_extended_fallbacks() )
 }

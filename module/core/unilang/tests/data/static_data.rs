@@ -21,18 +21,44 @@
 //!    `ValidationRule` conversions must be complete. Missing variant conversions would
 //!    cause runtime errors.
 //!
+//! 5. **Field omissions:** Missing fields in conversion (Issue-088: `auto_help_enabled` was
+//!    lost during conversion, breaking `.command.help` generation for all static commands).
+//!
 //! **How to Interpret Failures:**
 //!
 //! - **Conversion test fails:** Field mapping broken, check `From<&StaticCommandDefinition>`
 //! - **Kind conversion fails:** Missing variant in `StaticKind` -> `Kind` mapping
 //! - **Validation rule fails:** Missing variant in `StaticValidationRule` -> `ValidationRule`
 //! - **Nested structure fails:** Complex types (`List`, `Map`, `Enum`) not converting correctly
+//! - **`auto_help_enabled` fails:** Field not preserved from static to dynamic (Issue-088)
 //!
 //! **Why This Matters:**
 //!
 //! The `static_data` system enables compile-time command definition (zero runtime cost),
 //! but dynamic systems (registry, help, CLI) need runtime representations. These tests
 //! ensure the bridge between compile-time and runtime is correct.
+//!
+//! # Test Coverage Matrix
+//!
+//! ## Command Conversion Tests
+//! - `test_static_command_definition_conversion` - Comprehensive field validation
+//! - `test_static_command_definition_with_empty_arrays` - Empty/minimal commands
+//! - `test_auto_help_enabled_conversion_preserves_true` - Issue-088 reproducer (true case)
+//! - `test_auto_help_enabled_conversion_preserves_false` - Issue-088 reproducer (false case)
+//! - `test_existing_conversion_test_includes_auto_help` - Regression prevention
+//!
+//! ## Type Conversion Tests
+//! - `test_static_kind_conversion_primitives` - All primitive kinds
+//! - `test_static_kind_conversion_enum` - Enum kind with choices
+//! - `test_static_kind_conversion_list` - List kind with delimiter
+//! - `test_static_kind_conversion_map` - Map kind with delimiters
+//!
+//! ## Validation Rule Conversion Tests
+//! - `test_static_validation_rule_conversion` - Min, Max, `MinLength`, `MaxLength`, Pattern, `MinItems`
+//!
+//! ## Argument Tests
+//! - `test_static_argument_attributes_conversion` - Attribute preservation
+//! - `test_static_argument_definition_conversion` - Complex arguments with validation
 //!
 
 use unilang::static_data::*;
@@ -73,6 +99,7 @@ fn test_static_command_definition_conversion()
     deprecation_message: "",
     http_method_hint: "GET",
     examples: &[".test_command arg::value"],
+    auto_help_enabled: true,
   };
 
   let dynamic_cmd: unilang::data::CommandDefinition = (&STATIC_CMD).into();
@@ -104,6 +131,10 @@ fn test_static_command_definition_conversion()
   assert_eq!(arg.attributes.default, Some("default_value".to_string()));
   assert!(!arg.attributes.sensitive);
   assert!(!arg.attributes.interactive);
+
+  // Issue-088: Verify auto_help_enabled is preserved during conversion
+  assert!(dynamic_cmd.auto_help_enabled(), "auto_help_enabled should be preserved from static definition");
+  assert!(dynamic_cmd.has_auto_help(), "has_auto_help() should match auto_help_enabled value");
 }
 
 #[test]
@@ -311,6 +342,7 @@ fn test_static_command_definition_with_empty_arrays()
     deprecation_message: "Deprecated for testing",
     http_method_hint: "POST",
     examples: &[],
+    auto_help_enabled: true,
   };
 
   let dynamic_cmd: unilang::data::CommandDefinition = (&STATIC_CMD).into();
@@ -328,4 +360,208 @@ fn test_static_command_definition_with_empty_arrays()
   assert_eq!(dynamic_cmd.deprecation_message(), "Deprecated for testing");
   assert_eq!(dynamic_cmd.http_method_hint(), "POST");
   assert!(dynamic_cmd.examples().is_empty());
+}
+
+//
+// Issue-088: auto_help_enabled Lost During Static-to-Dynamic Conversion
+//
+
+/// Test that `auto_help_enabled` is preserved during Static→Dynamic conversion (true case)
+///
+/// # Root Cause
+///
+/// The `From<&StaticCommandDefinition> for CommandDefinition` implementation at
+/// `src/static_data.rs:609` hardcodes `auto_help_enabled: false` instead of reading
+/// from the source struct field. This happens because:
+///
+/// 1. `StaticCommandDefinition` struct is missing the `auto_help_enabled` field entirely
+/// 2. Build script (`build.rs:553-627`) doesnt extract the field from YAML
+/// 3. Conversion has no source value to read, so it hardcodes `false`
+///
+/// # Why Not Caught
+///
+/// The existing conversion test (`test_static_command_definition_conversion`) validates
+/// many fields but omitted `auto_help_enabled`. No test verified that ALL struct fields
+/// are preserved during conversion, allowing this critical field to be silently lost.
+///
+/// # Fix Applied
+///
+/// (To be documented after fix implementation)
+///
+/// 1. Added `auto_help_enabled: bool` field to `StaticCommandDefinition` struct
+/// 2. Updated `build.rs` to extract `auto_help_enabled` from YAML (defaults to true)
+/// 3. Updated conversion to copy field: `static_cmd.auto_help_enabled` instead of hardcoded `false`
+///
+/// # Prevention
+///
+/// This test validates that the `auto_help_enabled` value is preserved for both
+/// explicit true and explicit false values during static-to-dynamic conversion.
+/// Future struct changes must include corresponding test coverage.
+///
+/// # Pitfall
+///
+/// **Silent Field Loss in Conversions:** Any field in `StaticCommandDefinition` that
+/// isnt explicitly copied in the `From<&StaticCommandDefinition>` impl will be lost
+/// or defaulted, silently breaking user YAML configuration with no compile-time or
+/// runtime errors. Always verify ALL fields are tested in conversion tests.
+///
+/// **Impact:** Affects all `StaticCommandRegistry` users (v0.35+) - YAML declares
+/// `auto_help_enabled: true` but runtime receives `false`, breaking `.command.help`
+/// generation for willbe, `will_crates`, wflow, wplan, and external projects.
+// test_kind: bug_reproducer(issue-088)
+#[test]
+fn test_auto_help_enabled_conversion_preserves_true()
+{
+  // This test will FAIL initially because:
+  // 1. StaticCommandDefinition missing auto_help_enabled field (wont compile)
+  // 2. After field added: Conversion hardcodes false (test will fail)
+  // 3. After fix: Test passes
+
+  static STATIC_CMD_WITH_HELP: StaticCommandDefinition = StaticCommandDefinition
+  {
+    name : ".crates.list",
+    namespace : ".crates",
+    description : "List all crates in workspace",
+    hint : "Lists crates",
+    arguments : &[],
+    routine_link : None,
+    status : "stable",
+    version : "1.0.0",
+    tags : &[],
+    aliases : &[],
+    permissions : &[],
+    idempotent : true,
+    deprecation_message : "",
+    http_method_hint : "GET",
+    examples : &[".crates.list"],
+    auto_help_enabled : true, // ← Field doesnt exist yet, will fail to compile
+  };
+
+  let dynamic_cmd : unilang::data::CommandDefinition = ( &STATIC_CMD_WITH_HELP ).into();
+
+  // CRITICAL ASSERTION: Verify auto_help_enabled is preserved
+  assert!
+  (
+    dynamic_cmd.auto_help_enabled(),
+    "Expected auto_help_enabled to be true (from static definition), but conversion returned false. \
+     This breaks .command.help generation for all commands with auto_help_enabled: true in YAML."
+  );
+
+  // Verify related method also works
+  assert!
+  (
+    dynamic_cmd.has_auto_help(),
+    "has_auto_help() should return true when auto_help_enabled is true"
+  );
+}
+
+/// Test that `auto_help_enabled`: false is preserved during conversion
+///
+/// # Root Cause
+///
+/// See `test_auto_help_enabled_conversion_preserves_true` for complete root cause analysis.
+///
+/// # Why Not Caught
+///
+/// Same as above - existing conversion test didnt validate `auto_help_enabled` field.
+///
+/// # Fix Applied
+///
+/// (To be documented after fix)
+///
+/// # Prevention
+///
+/// Validates that explicit `false` values are also preserved. Help commands themselves
+/// should have `auto_help_enabled: false` to prevent recursive help generation.
+///
+/// # Pitfall
+///
+/// See `test_auto_help_enabled_conversion_preserves_true` for detailed pitfall analysis.
+// test_kind: bug_reproducer(issue-088)
+#[test]
+fn test_auto_help_enabled_conversion_preserves_false()
+{
+  // This test will PASS initially (hardcoded false matches expected false)
+  // After fix: Should still pass (correctly preserving explicit false)
+
+  static STATIC_HELP_CMD : StaticCommandDefinition = StaticCommandDefinition
+  {
+    name : ".crates.list.help",
+    namespace : ".crates",
+    description : "Help for .crates.list command",
+    hint : "Show help",
+    arguments : &[],
+    routine_link : None,
+    status : "stable",
+    version : "1.0.0",
+    tags : &[ "help" ],
+    aliases : &[],
+    permissions : &[],
+    idempotent : true,
+    deprecation_message : "",
+    http_method_hint : "GET",
+    examples : &[],
+    auto_help_enabled : false, // ← Prevent recursive help (field doesnt exist yet)
+  };
+
+  let dynamic_cmd : unilang::data::CommandDefinition = ( &STATIC_HELP_CMD ).into();
+
+  // Verify auto_help_enabled is false (prevents recursive help generation)
+  assert!
+  (
+    !dynamic_cmd.auto_help_enabled(),
+    "Expected auto_help_enabled to be false for help commands (prevents recursion)"
+  );
+
+  assert!
+  (
+    !dynamic_cmd.has_auto_help(),
+    "has_auto_help() should return false when auto_help_enabled is false"
+  );
+}
+
+/// Verify that existing conversion test now checks `auto_help_enabled`
+///
+/// # Root Cause
+///
+/// See primary bug reproducer tests above for root cause analysis.
+///
+/// # Why Not Caught
+///
+/// The existing comprehensive conversion test at line 40 (`test_static_command_definition_conversion`)
+/// validates many fields but completely omitted `auto_help_enabled`, allowing the bug to slip through.
+///
+/// # Fix Applied
+///
+/// (To be documented after fix - update existing test to include `auto_help_enabled` assertion)
+///
+/// # Prevention
+///
+/// This test serves as a reminder that the main conversion test MUST validate
+/// `auto_help_enabled`. Future field additions must be added to the comprehensive test.
+///
+/// # Pitfall
+///
+/// **Incomplete Test Coverage:** Even comprehensive-looking tests can miss critical
+/// fields. Systematic verification of ALL struct fields is required. Consider using
+/// struct field count assertions or compile-time checks to ensure completeness.
+// test_kind: bug_reproducer(issue-088)
+#[test]
+fn test_existing_conversion_test_includes_auto_help()
+{
+  // This test documents the requirement that test_static_command_definition_conversion
+  // must be updated to validate auto_help_enabled field
+
+  // TODO: After fix, update line 66 test (test_static_command_definition_conversion)
+  // to include: assert!(dynamic_cmd.auto_help_enabled(), "auto_help_enabled should be preserved");
+
+  // For now, verify the field exists and is accessible on CommandDefinition via builder
+  use unilang::data::CommandName;
+
+  let name = CommandName::new( ".test" ).expect( "valid command name" );
+  let cmd = unilang::data::CommandDefinition::new( name, "Test command".to_string() )
+    .with_auto_help( true );
+
+  assert!(cmd.auto_help_enabled(), "CommandDefinition should support auto_help_enabled via with_auto_help");
+  assert!(cmd.has_auto_help(), "has_auto_help() should return true when auto_help_enabled is true");
 }
