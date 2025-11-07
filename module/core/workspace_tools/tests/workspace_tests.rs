@@ -269,14 +269,15 @@ fn test_error_display()
 
 /// test workspace creation with testing utilities
 #[ test ]
+#[ cfg( feature = "testing" ) ]
 fn test_testing_utilities()
 {
   use workspace_tools ::testing :: { create_test_workspace, create_test_workspace_with_structure };
-  
+
   // test basic workspace creation
   let ( _temp_dir, workspace ) = create_test_workspace();
   assert!( workspace.root().exists() );
-  
+
   // test workspace with structure
   let ( _temp_dir, workspace ) = create_test_workspace_with_structure();
   assert!( workspace.config_dir().exists() );

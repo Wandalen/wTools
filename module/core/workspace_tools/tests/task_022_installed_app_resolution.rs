@@ -569,6 +569,7 @@ mod integration_tests
   env ::set_current_dir( test_cwd.path() ).ok();
 
   // Application code: get workspace and load secrets
+  #[ cfg_attr( not( feature = "secrets" ), allow( unused_variables ) ) ]
   let workspace = Workspace ::resolve_with_extended_fallbacks();
 
   #[ cfg( feature = "secrets" ) ]
@@ -627,6 +628,7 @@ mod integration_tests
   env ::set_current_dir( test_cwd.path() ).ok();
 
   // Application code: get workspace and load secrets
+  #[ cfg_attr( not( feature = "secrets" ), allow( unused_variables ) ) ]
   let workspace = Workspace ::resolve_with_extended_fallbacks();
 
   #[ cfg( feature = "secrets" ) ]

@@ -14,6 +14,7 @@ use workspace_tools ::testing;
 use std ::fs;
 
 /// Test Phase 1 : Enhanced error handling and validation
+#[ cfg( feature = "secrets" ) ]
 mod phase_1_enhanced_error_handling
 {
   use super :: *;
@@ -115,6 +116,7 @@ mod phase_1_enhanced_error_handling
 }
 
 /// Test Phase 2 : API method improvements
+#[ cfg( feature = "secrets" ) ]
 mod phase_2_api_improvements
 {
   use super :: *;
@@ -253,6 +255,7 @@ mod phase_2_api_improvements
 }
 
 /// Test Phase 3 : Error message improvements
+#[ cfg( feature = "secrets" ) ]
 mod phase_3_error_improvements
 {
   use super :: *;
@@ -308,6 +311,7 @@ mod phase_3_error_improvements
 }
 
 /// Test Phase 4 : Backward compatibility
+#[ cfg( feature = "secrets" ) ]
 mod phase_4_backward_compatibility
 {
   use super :: *;
@@ -366,6 +370,7 @@ mod phase_4_backward_compatibility
 }
 
 /// Integration tests combining multiple features
+#[ cfg( feature = "secrets" ) ]
 mod integration_tests
 {
   use super :: *;
