@@ -544,6 +544,13 @@ impl MultiYamlAggregator
       content.push_str( &format!( "  examples: {},\n", examples_const_name ) );
     }
 
+    // Fix(issue-088): Include auto_help_enabled field
+    // Root cause: MultiYamlAggregator was not updated when StaticCommandDefinition struct gained this field
+    // Pitfall: When adding fields to StaticCommandDefinition, ALL code generators must be updated:
+    //   1. build.rs (direct PHF generation) - FIXED
+    //   2. MultiYamlAggregator::generate_command_definition_body() - FIXED HERE
+    content.push_str( &format!( "  auto_help_enabled: {},\n", cmd.auto_help_enabled() ) );
+
     content
   }
 
