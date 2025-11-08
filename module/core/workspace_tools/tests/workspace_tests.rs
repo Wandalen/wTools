@@ -91,22 +91,27 @@ fn test_workspace_validation_invalid_path()
 {
   // Save original env var to restore later
   let original_workspace_path = env ::var( "WORKSPACE_PATH" ).ok();
-  
+
+  // Use platform-appropriate nonexistent path
+  #[ cfg( windows ) ]
+  let invalid_path = PathBuf ::from( "C:\\nonexistent\\workspace\\path\\12345" );
+  #[ cfg( not( windows ) ) ]
   let invalid_path = PathBuf ::from( "/nonexistent/workspace/path/12345" );
+
   env ::set_var( "WORKSPACE_PATH", &invalid_path );
-  
+
   let result = Workspace ::resolve();
-  
+
   // Restore original environment immediately after resolve
   match original_workspace_path
   {
   Some( path ) => env ::set_var( "WORKSPACE_PATH", path ),
   None => env ::remove_var( "WORKSPACE_PATH" ),
  }
-  
+
   // Now check the result
   assert!( result.is_err() );
-  
+
   match result.unwrap_err()
   {
   WorkspaceError ::PathNotFound( path ) =>
