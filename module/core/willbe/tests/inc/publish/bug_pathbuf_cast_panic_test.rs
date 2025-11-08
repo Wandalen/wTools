@@ -103,12 +103,13 @@ use super :: *;
 // test_kind: bug_reproducer(issue-publish-pathbuf-cast)
 
 #[ test ]
-#[ should_panic( expected = "Unknown cast variant. Got `List([String(\"dry:0\")])` and try to cast to `std ::path ::PathBuf`" ) ]
+#[ should_panic( expected = "Unknown cast variant" ) ]
 fn publish_with_malformed_property_pathbuf_cast_panics()
 {
   // This test demonstrates the panic that occurred in the original buggy code
-  // when running `will .publish dry:0` where "dry:0" (without space) is
-  // treated as a subject argument and then incorrectly cast to PathBuf
+  // when attempting to cast a List subject to PathBuf.
+  // Note: After parser improvements, "dry:0" is now correctly parsed as a property,
+  // so we use a different subject argument to trigger the PathBuf cast panic.
 
   use wca :: { CommandsAggregator, Type };
 
@@ -138,7 +139,8 @@ fn publish_with_malformed_property_pathbuf_cast_panics()
    .end()
   .perform();
 
-  let args = vec![ ".publish".to_string(), "dry:0".to_string() ];
+  // Use a regular path as subject to trigger the PathBuf cast issue
+  let args = vec![ ".publish".to_string(), "some_path".to_string() ];
 
   // This WILL panic, which is what we expect to demonstrate the bug
   ca.perform( args ).ok();
@@ -148,7 +150,9 @@ fn publish_with_malformed_property_pathbuf_cast_panics()
 fn publish_with_malformed_property_correct_type_handling()
 {
   // This test demonstrates the CORRECT approach - using Vec<String>
-  // to match the List command definition, which prevents the panic
+  // to match the List command definition, which prevents the panic.
+  // After parser improvements, "dry:0" is now correctly parsed as a property,
+  // not a subject, so patterns will use the default value.
 
   use wca :: { CommandsAggregator, Type };
 
@@ -171,8 +175,13 @@ fn publish_with_malformed_property_correct_type_handling()
     let patterns: Vec< String > = o.args.get_owned( 0 )
      .unwrap_or_else( || vec![ "./".into() ] );
 
-    // Now we can safely work with the patterns
-    assert_eq!( patterns, vec![ "dry:0" ] );
+    // After parser fix, "dry:0" is correctly parsed as property, not subject
+    // So patterns will be empty and use default "./"
+    assert_eq!( patterns, vec![ "./" ] );
+
+    // Verify dry property was correctly parsed
+    let dry: bool = o.props.get_owned( "dry" ).unwrap_or( true );
+    assert_eq!( dry, false ); // dry:0 means false
 
     Ok( () )
    })
@@ -183,7 +192,7 @@ fn publish_with_malformed_property_correct_type_handling()
 
   // This should succeed without panic
   let result = ca.perform( args );
-  assert!( result.is_ok(), "Should successfully handle subject argument with correct type" );
+  assert!( result.is_ok(), "Should successfully handle property with correct type" );
 }
 
 #[ test ]
