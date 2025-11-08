@@ -46,10 +46,39 @@ mod private
   // argument is accessed multiple times, retrieve it once and reuse the variable to prevent
   // inconsistent type expectations.
 
-  let patterns: Vec< _ > = o
+  let patterns: Vec< String > = o
   .args
   .get_owned( 0 )
   .unwrap_or_else( || vec![ "./".into() ] );
+
+  // Validate patterns - detect common syntax mistakes
+  for pattern in &patterns
+  {
+   // Check if pattern looks like a malformed property (contains ":" without spaces)
+   if pattern.contains( ':' ) && !pattern.contains( " : " )
+   {
+    // Could be a valid path like "C:\\" or "http://", so only warn for common property names
+    let looks_like_property = [ "dry", "temp", "channel", "verbosity" ]
+     .iter()
+     .any( | prop | pattern.starts_with( prop ) && pattern.contains( ':' ) );
+
+    if looks_like_property
+    {
+     return Err
+     (
+      error ::untyped ::format_err!
+      (
+       "Invalid property syntax: '{}'\n\
+        Properties require spaces around the colon.\n\
+        Did you mean: '{} : {}'?",
+       pattern,
+       pattern.split( ':' ).next().unwrap(),
+       pattern.split( ':' ).nth( 1 ).unwrap_or( "" )
+      )
+     );
+   }
+  }
+ }
 
   let args_line = patterns.join( "," );
 
