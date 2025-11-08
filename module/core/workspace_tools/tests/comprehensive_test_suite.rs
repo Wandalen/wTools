@@ -121,6 +121,9 @@ fn create_test_workspace_with_structure() -> ( TempDir, Workspace )
   fs ::create_dir_all( workspace.tests_dir() ).ok();
   fs ::create_dir_all( workspace.workspace_dir() ).ok();
 
+  #[ cfg( feature = "secrets" ) ]
+  fs ::create_dir_all( workspace.secret_dir() ).ok();
+
   ( temp_dir, workspace )
 }
 

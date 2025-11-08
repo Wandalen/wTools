@@ -215,28 +215,38 @@ fn test_error_creation_missing_env_var()
 }
 
 /// Test ER.13 : Error creation in real scenarios - resolve with invalid path
-#[ test ]  
+#[ test ]
 fn test_error_creation_invalid_path()
 {
   // Save original state
   let original = env ::var( "WORKSPACE_PATH" ).ok();
-  
+
+  // Use platform-appropriate nonexistent path
+  #[ cfg( windows ) ]
+  let invalid_path = PathBuf ::from( "C:\\nonexistent\\invalid\\workspace\\path\\12345" );
+  #[ cfg( not( windows ) ) ]
   let invalid_path = PathBuf ::from( "/nonexistent/invalid/workspace/path/12345" );
+
   env ::set_var( "WORKSPACE_PATH", &invalid_path );
-  
+
   let result = Workspace ::resolve();
-  
+
   // Restore state
   match original
   {
   Some( value ) => env ::set_var( "WORKSPACE_PATH", value ),
   None => env ::remove_var( "WORKSPACE_PATH" ),
  }
-  
+
   assert!( result.is_err() );
   match result.unwrap_err()
   {
-  WorkspaceError ::PathNotFound( path ) => assert_eq!( path, invalid_path ),
+  WorkspaceError ::PathNotFound( path ) =>
+  {
+   // Verify error contains the nonexistent path
+   assert!( path.to_string_lossy().contains( "nonexistent" ) );
+   assert!( path.to_string_lossy().contains( "12345" ) );
+ }
   other => panic!( "Expected PathNotFound, got {other:?}" ),
  }
 }

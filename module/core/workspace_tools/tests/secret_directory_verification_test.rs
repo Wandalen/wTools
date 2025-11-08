@@ -3,8 +3,11 @@
 //! These tests verify that the secret management functionality correctly uses
 //! the `secret` directory (not `.secrets`) and properly handles secret files.
 
+#[ cfg( feature = "secrets" ) ]
 use workspace_tools ::Workspace;
+#[ cfg( feature = "secrets" ) ]
 use std ::fs;
+#[ cfg( feature = "secrets" ) ]
 use tempfile ::TempDir;
 
 /// helper to create test workspace with standard directory structure
@@ -21,6 +24,7 @@ fn create_test_workspace_with_structure() -> ( TempDir, Workspace )
   fs ::create_dir_all( workspace.docs_dir() ).ok();
   fs ::create_dir_all( workspace.tests_dir() ).ok();
   fs ::create_dir_all( workspace.workspace_dir() ).ok();
+  fs ::create_dir_all( workspace.secret_dir() ).ok();
 
   ( temp_dir, workspace )
 }
