@@ -34,7 +34,7 @@
 //! - Start with initial set (packages with local changes)
 //! - Iterate: find packages with stale dependencies, add to set
 //! - Repeat until fixed point (no new packages added)
-//! - Safeguard: MAX_ITERATIONS=100 to prevent infinite loops
+//! - Safeguard: `MAX_ITERATIONS=100` to prevent infinite loops
 //!
 //! # Known Pitfalls
 //!
@@ -71,7 +71,7 @@
 //! **Why:** If A publishes with old C (from crates.io), but C is about to publish
 //! new version, dependency resolution fails. Must use fresh versions.
 //!
-//! **Lesson:** Check for BeingPublished staleness SEPARATELY from version incompatibility.
+//! **Lesson:** Check for `BeingPublished` staleness SEPARATELY from version incompatibility.
 //!
 //! ## Fixed-Point Iteration Can Be Slow
 //!
@@ -82,7 +82,7 @@
 //! - Large workspace (100+ packages): 5-10 iterations
 //! - Pathological (deep chains): 20+ iterations
 //!
-//! **Mitigation:** MAX_ITERATIONS=100 safeguard prevents infinite loops but allows
+//! **Mitigation:** `MAX_ITERATIONS=100` safeguard prevents infinite loops but allows
 //! even worst-case scenarios to complete.
 //!
 //! # Architecture Decision: Why Two Separate Functions?
@@ -133,16 +133,16 @@ mod private
   /// # Returns
   ///
   /// Complete set of package names that need publishing (including cascades)
-  #[must_use] 
-  pub fn compute_transitive_closure
+  #[must_use]
+  pub fn compute_transitive_closure< S: ::std::hash::BuildHasher >
   (
     workspace: &Workspace,
-    initial_set: &collection ::HashSet< String >,
+    initial_set: &::std::collections::HashSet< String, S >,
   )
   -> collection ::HashSet< String >
   {
     const MAX_ITERATIONS: usize = 100;
-    let mut publishing = initial_set.clone();
+    let mut publishing: collection ::HashSet< String > = initial_set.iter().cloned().collect();
     let mut iteration = 0;
 
     loop
@@ -189,11 +189,11 @@ mod private
   /// # Returns
   ///
   /// `HashMap` mapping package names to their list of stale dependencies
-  #[must_use] 
-  pub fn detect_stale_dependencies
+  #[must_use]
+  pub fn detect_stale_dependencies< S: ::std::hash::BuildHasher >
   (
     workspace: &Workspace,
-    publishing: &collection ::HashSet< String >,
+    publishing: &::std::collections::HashSet< String, S >,
   )
   -> collection ::HashMap< String, Vec< stale_dependency ::StaleDependency > >
   {
@@ -228,10 +228,9 @@ mod private
         if let Some( workspace_version ) = workspace_versions.get( &dep_name )
         {
           let req_str = dep.req().to_string();
-          let required = match VersionReq ::from_str( &req_str )
+          let Ok( required ) = VersionReq ::from_str( &req_str ) else
           {
-            Ok( req ) => req,
-            Err( _ ) => continue, // Skip invalid version requirements
+            continue // Skip invalid version requirements
           };
 
           // Check if dependency is being published

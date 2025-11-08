@@ -27,11 +27,11 @@
 //!    - Example: `willbe` depends on `wca`, `wca` is being published → `willbe` cascades
 //!    - Contains list of triggering packages
 //!
-//! # Design Decision: Why Separate LocalChanges and VersionBump?
+//! # Design Decision: Why Separate `LocalChanges` and `VersionBump`?
 //!
 //! These could be merged into a single "Modified" variant. We keep them separate because:
 //!
-//! - **User Intent:** LocalChanges = unintentional changes, VersionBump = intentional
+//! - **User Intent:** `LocalChanges` = unintentional changes, `VersionBump` = intentional
 //! - **Workflow:** Different actions needed (commit vs publish)
 //! - **Future:** May want different handling (e.g., warn on uncommitted changes)
 //!
@@ -59,18 +59,18 @@
 //! - Primary reason is "most important" for user communication
 //!
 //! **Priority order (if multiple apply):**
-//! 1. LocalChanges (most urgent - uncommitted changes)
-//! 2. StaleDependencies (critical - version conflicts)
-//! 3. CascadeEffect (automatic - triggered by others)
-//! 4. VersionBump (rare - explicit user action)
+//! 1. `LocalChanges` (most urgent - uncommitted changes)
+//! 2. `StaleDependencies` (critical - version conflicts)
+//! 3. `CascadeEffect` (automatic - triggered by others)
+//! 4. `VersionBump` (rare - explicit user action)
 //!
-//! ## CascadeEffect Can Chain Deeply
+//! ## `CascadeEffect` Can Chain Deeply
 //!
 //! In a chain A→B→C→D, if D has local changes:
-//! - D: LocalChanges
-//! - C: CascadeEffect (triggered by D)
-//! - B: CascadeEffect (triggered by C)
-//! - A: CascadeEffect (triggered by B)
+//! - D: `LocalChanges`
+//! - C: `CascadeEffect` (triggered by D)
+//! - B: `CascadeEffect` (triggered by C)
+//! - A: `CascadeEffect` (triggered by B)
 //!
 //! The `triggered_by` field only shows immediate triggers, not full chain.
 //! To see full chain, must trace recursively through publish plan.

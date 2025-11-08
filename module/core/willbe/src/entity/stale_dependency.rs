@@ -48,24 +48,24 @@
 //!
 //! # Design Decision: Why Two Separate Staleness Reasons?
 //!
-//! We could use a single `Stale` reason. Separating into IncompatibleVersion and
-//! BeingPublished enables:
+//! We could use a single `Stale` reason. Separating into `IncompatibleVersion` and
+//! `BeingPublished` enables:
 //!
 //! - **Different User Messages:**
-//!   - IncompatibleVersion: "Update your dependency requirement"
-//!   - BeingPublished: "Dependency being published, cascade required"
+//!   - `IncompatibleVersion`: "Update your dependency requirement"
+//!   - `BeingPublished`: "Dependency being published, cascade required"
 //!
 //! - **Different Handling:**
-//!   - IncompatibleVersion: May want to auto-fix requirement
-//!   - BeingPublished: Always requires republishing
+//!   - `IncompatibleVersion`: May want to auto-fix requirement
+//!   - `BeingPublished`: Always requires republishing
 //!
 //! - **Debugging:**
-//!   - IncompatibleVersion: Semver issue
-//!   - BeingPublished: Batch publishing issue
+//!   - `IncompatibleVersion`: Semver issue
+//!   - `BeingPublished`: Batch publishing issue
 //!
 //! # Known Pitfalls
 //!
-//! ## BeingPublished Can Have Compatible Versions
+//! ## `BeingPublished` Can Have Compatible Versions
 //!
 //! Confusing scenario: `is_compatible()` returns `true` but dependency is still stale.
 //!
@@ -105,7 +105,7 @@
 //! ```
 //!
 //! In `StaleDependency`, `name` is `PackageName` (newtype), not `String`.
-//! When comparing with HashMap keys (often `String`), must convert properly.
+//! When comparing with `HashMap` keys (often `String`), must convert properly.
 //!
 //! **Lesson:** Be explicit about `String` vs `PackageName` conversions.
 
