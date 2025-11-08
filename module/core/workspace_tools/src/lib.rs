@@ -1024,10 +1024,7 @@ impl Workspace
   pub fn load_secrets_from_file( &self, filename: &str ) -> Result< HashMap< String, String > >
   {
   Self::warn_if_path_like( filename );
-  let secret_file = self.secret_file( filename );
-  self.check_secret_file_exists( filename, &secret_file )?;
-  let content = Self::read_secret_file( &secret_file )?;
-  Ok( Self::parse_key_value_file( &content ) )
+  self.try_load_secrets_with_fallback( filename )
   }
 
   /// load a specific secret key with fallback to environment
@@ -1164,42 +1161,157 @@ impl Workspace
   }
   }
 
-  /// check if secret file exists and provide helpful error if not
+  /// try loading secrets from fallback chain
   ///
-  /// returns error with context about available files if the requested file doesn't exist
-  /// error message includes absolute path tried for easier debugging
-  fn check_secret_file_exists( &self, filename: &str, secret_file: &Path ) -> Result< () >
+  /// implements automatic fallback with proper corner case handling:
+  /// 1. local workspace: `workspace_root/secret/{filename}`
+  /// 2. `$PRO` workspace: `$PRO/secret/{filename}` (if `$PRO` set and valid)
+  /// 3. `$HOME` directory: `$HOME/secret/{filename}` (if `$HOME`/`$USERPROFILE` set and valid)
+  ///
+  /// uses path canonicalization to avoid reading same file multiple times
+  fn try_load_secrets_with_fallback( &self, filename: &str ) -> Result< HashMap< String, String > >
   {
-  if !secret_file.exists()
-  {
-   let available = self.list_secrets_files().unwrap_or_default();
-   let suggestion = if available.is_empty()
-   {
-  format!( "\n  No files found in secrets directory: {}", self.secret_dir().display() )
-  }
-   else
-   {
-  format!( "\n  Available files: {}", available.join( ", " ) )
- };
+  let mut tried_paths = Vec ::new();
+  let mut canonical_paths = std ::collections ::HashSet ::new();
 
-   return Err( WorkspaceError::ConfigurationError(
-  format!(
-   "Secrets file '{}' not found at absolute path: {}{}",
+  // 1. try local workspace first
+  let local_path = self.secret_file( filename );
+  tried_paths.push( format!( "  - {} (local workspace)", local_path.display() ) );
+
+  if let Some( canonical ) = Self::try_canonicalize( &local_path )
+  {
+   canonical_paths.insert( canonical );
+   if local_path.exists()
+   {
+     match Self::read_secret_file_validated( &local_path )
+     {
+       Ok( content ) => return Ok( Self::parse_key_value_file( &content ) ),
+       Err( e ) => return Err( e ),
+     }
+   }
+  }
+
+  // 2. try $PRO workspace if different
+  if let Ok( pro_env ) = env::var( "PRO" )
+  {
+   if !pro_env.trim().is_empty()
+   {
+     if let Ok( pro_ws ) = Workspace::from_pro_env()
+     {
+       let pro_path = pro_ws.secret_file( filename );
+       if let Some( canonical ) = Self::try_canonicalize( &pro_path )
+       {
+         if !canonical_paths.contains( &canonical )
+         {
+           canonical_paths.insert( canonical );
+           tried_paths.push( format!( "  - {} ($PRO workspace)", pro_path.display() ) );
+           if pro_path.exists()
+           {
+             match Self::read_secret_file_validated( &pro_path )
+             {
+               Ok( content ) => return Ok( Self::parse_key_value_file( &content ) ),
+               Err( e ) => return Err( e ),
+             }
+           }
+         }
+       }
+     }
+   }
+  }
+
+  // 3. try $HOME workspace if different
+  #[ cfg( not( target_os = "windows" ) ) ]
+  let home_env_var = "HOME";
+  #[ cfg( target_os = "windows" ) ]
+  let home_env_var = "USERPROFILE";
+
+  if let Ok( home_env ) = env::var( home_env_var )
+  {
+   if !home_env.trim().is_empty()
+   {
+     if let Ok( home_ws ) = Workspace::from_home_dir()
+     {
+       let home_path = home_ws.secret_file( filename );
+       if let Some( canonical ) = Self::try_canonicalize( &home_path )
+       {
+         if !canonical_paths.contains( &canonical )
+         {
+           canonical_paths.insert( canonical );
+           tried_paths.push( format!( "  - {} ($HOME directory)", home_path.display() ) );
+           if home_path.exists()
+           {
+             match Self::read_secret_file_validated( &home_path )
+             {
+               Ok( content ) => return Ok( Self::parse_key_value_file( &content ) ),
+               Err( e ) => return Err( e ),
+             }
+           }
+         }
+       }
+     }
+   }
+  }
+
+  // none found - return error with helpful message including available files
+  let mut error_msg = format!(
+   "Secrets file '{}' not found in any location.\n\nTried:\n{}",
    filename,
-   secret_file.display(),
-   suggestion
- )
- ) );
-  }
-  Ok( () )
+   tried_paths.join( "\n" )
+  );
+
+  if let Ok( available_files ) = self.list_secrets_files()
+  {
+   if !available_files.is_empty()
+   {
+     error_msg.push_str( "\n\nAvailable files: " );
+     error_msg.push_str( &available_files.join( ", " ) );
+   }
   }
 
-  /// read secret file with proper error handling
+  error_msg.push_str( "\n\nCreate secret file in one of the above locations." );
+  Err( WorkspaceError::ConfigurationError( error_msg ) )
+  }
+
+  /// try to canonicalize path, return None if it fails
   ///
-  /// wraps `fs::read_to_string` with workspace-specific error messages
-  /// includes absolute path in error for debugging
-  fn read_secret_file( path: &Path ) -> Result< String >
+  /// used for path deduplication to handle symlinks and path normalization
+  fn try_canonicalize( path: &Path ) -> Option< PathBuf >
   {
+  path.canonicalize().ok()
+  }
+
+  /// read secret file with validation checks
+  ///
+  /// validates file type (must be regular file) and size (max 10MB)
+  /// provides clear error messages for common issues
+  fn read_secret_file_validated( path: &Path ) -> Result< String >
+  {
+  let metadata = fs::metadata( path )
+   .map_err( | e | WorkspaceError::IoError( format!( "Failed to read secrets file\n  Absolute path: {}\n  Error: {}", path.display(), e ) ) )?;
+
+  // validate file type - must be regular file
+  if !metadata.is_file()
+  {
+   let file_type = if metadata.is_dir() { "directory" }
+     else if metadata.file_type().is_symlink() { "symbolic link" }
+     else { "special file (device, socket, or pipe)" };
+
+   return Err( WorkspaceError::ConfigurationError( format!(
+     "Secrets file is a {}, not a regular file\n  Path: {}",
+     file_type, path.display()
+   ) ) );
+  }
+
+  // validate file size - max 10MB to prevent OOM
+  const MAX_SIZE: u64 = 10 * 1024 * 1024;
+  if metadata.len() > MAX_SIZE
+  {
+   return Err( WorkspaceError::ConfigurationError( format!(
+     "Secrets file too large ({} bytes, max {} bytes)\n  Path: {}\n  Hint: Secret files should be small key-value files",
+     metadata.len(), MAX_SIZE, path.display()
+   ) ) );
+  }
+
   fs::read_to_string( path )
    .map_err( | e | WorkspaceError::IoError( format!( "Failed to read secrets file\n  Absolute path: {}\n  Error: {}", path.display(), e ) ) )
   }
@@ -1344,19 +1456,7 @@ impl Workspace
   pub fn load_secrets_from_path( &self, relative_path: &str ) -> Result< HashMap< String, String > >
   {
   let secret_file = self.join( relative_path );
-
-  if !secret_file.exists()
-  {
-   return Err( WorkspaceError::ConfigurationError(
-  format!(
-   "Secrets file not found at path: {} (resolved to: {})",
-   relative_path,
-   secret_file.display()
- )
- ) );
-  }
-
-  let content = Self::read_secret_file( &secret_file )?;
+  let content = Self::read_secret_file_validated( &secret_file )?;
   Ok( Self::parse_key_value_file( &content ) )
   }
 
@@ -1387,17 +1487,7 @@ impl Workspace
   /// returns error if the file cannot be read, doesn't exist, or contains invalid format
   pub fn load_secrets_from_absolute_path( &self, absolute_path: &Path ) -> Result< HashMap< String, String > >
   {
-  if !absolute_path.exists()
-  {
-   return Err( WorkspaceError::ConfigurationError(
-  format!(
-   "Failed to load secrets from absolute path\n  Tried absolute path: {}",
-   absolute_path.display()
- )
- ) );
-  }
-
-  let content = Self::read_secret_file( absolute_path )?;
+  let content = Self::read_secret_file_validated( absolute_path )?;
   Ok( Self::parse_key_value_file( &content ) )
   }
 

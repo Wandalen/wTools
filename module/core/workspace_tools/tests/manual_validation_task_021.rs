@@ -24,8 +24,9 @@ fn test_manual_enhanced_error_handling()
   Err( e ) =>
   {
    let error_msg = e.to_string();
-   assert!( error_msg.contains( "not found at" ), "Error should contain path info" );
+   assert!( error_msg.contains( "not found" ), "Error should contain path info" );
    assert!( error_msg.contains( "nonexistent.env" ), "Error should contain filename" );
+   assert!( error_msg.contains( "Tried:" ), "Error should list tried locations" );
  }
  }
 
@@ -37,6 +38,7 @@ fn test_manual_enhanced_error_handling()
   {
    let error_msg = e.to_string();
    assert!( error_msg.contains( "config/secrets.env" ), "Error should contain path parameter" );
+   assert!( error_msg.contains( "not found" ), "Error should indicate file not found" );
  }
  }
 
@@ -200,7 +202,8 @@ fn test_manual_api_huggingface_scenario()
   {
    let error_msg = e.to_string();
    // Should get warning about path separators and helpful error about file not found
-   assert!( error_msg.contains( "not found at" ), "Should provide helpful error" );
+   assert!( error_msg.contains( "not found" ), "Should provide helpful error" );
+   assert!( error_msg.contains( "Tried:" ), "Should list tried locations" );
  }
  }
 

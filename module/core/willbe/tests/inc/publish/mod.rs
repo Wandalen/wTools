@@ -1,6 +1,6 @@
 use super :: *;
 
-/// Tests for data structures (PublishReason, StaleDependency)
+/// Tests for data structures (`PublishReason`, `StaleDependency`)
 mod data_structures_test;
 
 /// Bug documentation for dependency staleness issue

@@ -145,9 +145,8 @@ fn test_path_error_messages()
   assert!( result.is_err() );
 
   let error_msg = result.unwrap_err().to_string();
-  assert!( error_msg.contains( "not found at path" ) );
+  assert!( error_msg.contains( "Failed to read secrets file" ) || error_msg.contains( "not found" ) );
   assert!( error_msg.contains( "nonexistent/secrets.env" ) );
-  assert!( error_msg.contains( "resolved to: " ) );
 }
 
 #[ cfg( not( feature = "secrets" ) ) ]

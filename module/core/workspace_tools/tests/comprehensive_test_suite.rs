@@ -980,7 +980,8 @@ VALID_KEY=valid_value
   let result = workspace.load_secrets_from_file( "nonexistent.env" );
   assert!( result.is_err(), "should return error for nonexistent file" );
   let error_msg = result.unwrap_err().to_string();
-  assert!( error_msg.contains( "not found at" ), "error should contain path information" );
+  assert!( error_msg.contains( "not found" ), "error should contain path information" );
+  assert!( error_msg.contains( "Tried:" ), "error should list tried locations" );
  }
 
   /// test s2.5 : load secrets with file read error

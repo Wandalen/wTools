@@ -47,8 +47,8 @@ fn test_reproduce_path_vs_filename_confusion()
   // New improved behavior: returns helpful error instead of empty HashMap
   assert!( result.is_err() );
   let error_msg = result.unwrap_err().to_string();
-  assert!( error_msg.contains( "not found at" ) );
-  assert!( error_msg.contains( "No files found in secrets directory" ) );
+  assert!( error_msg.contains( "not found" ) );
+  assert!( error_msg.contains( "No files found in secrets directory" ) || error_msg.contains( "Tried:" ) );
 
   // What the developer actually wanted was this path to work :
   println!( "What developer wanted to access: {}", nested_secret_file.display() );
@@ -108,7 +108,7 @@ fn test_should_warn_about_path_like_parameters()
   // It now returns helpful errors instead of empty HashMap
   assert!( result.is_err() );
   let error_msg = result.unwrap_err().to_string();
-  assert!( error_msg.contains( "not found at" ) );
+  assert!( error_msg.contains( "not found" ) );
 
   // Should have emitted a warning to stderr (we can't easily test this in unit tests)
  }

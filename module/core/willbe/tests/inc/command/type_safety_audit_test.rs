@@ -61,8 +61,6 @@ fn command_type_consistency_audit_results()
   // ✅ readme.*       - (no subjects)            → N/A
   //
   // All commands now correctly match their grammar definitions.
-
-  assert!( true, "Audit completed successfully" );
 }
 
 #[ test ]
@@ -206,6 +204,6 @@ fn malformed_property_syntax_detection_logic()
 
    let is_malformed = contains_colon && !contains_spaced_colon && looks_like_property;
 
-   assert_eq!( is_malformed, should_detect, "{}", desc );
+   assert_eq!( is_malformed, should_detect, "{desc}" );
  }
 }

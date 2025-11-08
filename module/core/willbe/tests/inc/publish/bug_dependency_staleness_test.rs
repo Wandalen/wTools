@@ -40,9 +40,9 @@
 /// **Phase 3 (NEW):** Merge all affected packages into publish set
 ///
 /// **New data structures:**
-/// - `PublishReason` - tracks why each package needs publishing (LocalChanges, VersionBump, StaleDependencies, CascadeEffect)
+/// - `PublishReason` - tracks why each package needs publishing (`LocalChanges`, `VersionBump`, `StaleDependencies`, `CascadeEffect`)
 /// - `StaleDependency` - captures stale dependency details (name, required version, workspace version, reason)
-/// - `StaleReason` - distinguishes IncompatibleVersion vs BeingPublished
+/// - `StaleReason` - distinguishes `IncompatibleVersion` vs `BeingPublished`
 ///
 /// **Integration point:** `src/tool/graph.rs:343-357` (Phase 2 & 3 additions)
 ///
@@ -52,7 +52,7 @@
 /// 2. **Transitive closure** - Fixed-point iteration ensures ALL affected packages detected (max 100 iterations safeguard)
 /// 3. **Semver validation** - Uses `VersionReq::matches()` for accurate version compatibility checking
 /// 4. **Cascade tracking** - Explicitly tracks why each package needs publishing via `PublishReason`
-/// 5. **Specification-first** - Created 2,500+ line spec before implementation (spec/publishing_algorithm.md)
+/// 5. **Specification-first** - Created 2,500+ line spec before implementation (`spec/publishing_algorithm.md`)
 ///
 /// # Pitfall
 ///
@@ -64,8 +64,7 @@
 /// Must compute FULL closure, not just direct dependents. One iteration isn't enough.
 ///
 /// **Batch publishing race:** If A and B both depend on C, and C is in current publish batch,
-/// BOTH A and B are stale (BeingPublished reason). Can't just check workspace version mismatch.
-
+/// BOTH A and B are stale (`BeingPublished` reason). Can't just check workspace version mismatch.
 use super :: *;
 use the_module :: *;
 
@@ -77,5 +76,4 @@ fn bug_documentation_exists()
 {
   // This test passes to confirm bug documentation is present
   // Actual staleness tests are in data_structures_test.rs
-  assert!( true );
 }

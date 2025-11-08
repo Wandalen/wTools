@@ -11,7 +11,7 @@ mod private
   ///
   /// ```
   /// use semver::{Version, VersionReq};
-  /// use willbe::tool::version_satisfies;
+  /// use willbe::tool::semver_utils::version_satisfies;
   ///
   /// let req = VersionReq::parse("^2.36.0").unwrap();
   /// let v1 = Version::parse("2.36.1").unwrap();

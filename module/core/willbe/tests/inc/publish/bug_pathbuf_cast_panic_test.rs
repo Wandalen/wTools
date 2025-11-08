@@ -181,7 +181,7 @@ fn publish_with_malformed_property_correct_type_handling()
 
     // Verify dry property was correctly parsed
     let dry: bool = o.props.get_owned( "dry" ).unwrap_or( true );
-    assert_eq!( dry, false ); // dry:0 means false
+    assert!( !dry ); // dry:0 means false
 
     Ok( () )
    })
