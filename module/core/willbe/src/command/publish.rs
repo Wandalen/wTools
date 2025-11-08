@@ -32,24 +32,32 @@ mod private
   /// qqq: doc
   pub fn publish( o: VerifiedCommand ) -> error ::untyped ::Result< () > // qqq: use typed error
   {
-  let args_line = format!
-  (
-   "{}",
-   o
-   .args
-   .get_owned( 0 )
-   .unwrap_or( std ::path ::PathBuf ::from( "" ) ).display()
- );
-  let prop_line = o
-  .props
-  .iter()
-  .map( | p | format!( "{} : {}", p.0, p.1 ) )
-  .collect :: < Vec< _ > >().join(" ");
+  // Fix(issue-publish-pathbuf-cast): Previously attempted to cast args[0] to PathBuf,
+  // but command definition specifies subject as List<String>. This caused panic when
+  // malformed properties like "dry:0" were treated as subjects by the parser.
+  //
+  // Root cause: Type mismatch between command grammar definition (List) and implementation
+  // access pattern (PathBuf). The PathBuf cast was unnecessary - args_line only needed
+  // for display formatting in the dry-run message.
+  //
+  // Pitfall: wca's generic get_owned<T>() performs runtime type casting, so mismatches
+  // between command grammar types and access types are not caught at compile time. Always
+  // ensure argument access types match the command definition types exactly. When the same
+  // argument is accessed multiple times, retrieve it once and reuse the variable to prevent
+  // inconsistent type expectations.
 
   let patterns: Vec< _ > = o
   .args
   .get_owned( 0 )
   .unwrap_or_else( || vec![ "./".into() ] );
+
+  let args_line = patterns.join( "," );
+
+  let prop_line = o
+  .props
+  .iter()
+  .map( | p | format!( "{} : {}", p.0, p.1 ) )
+  .collect :: < Vec< _ > >().join(" ");
 
   let PublishProperties
   {

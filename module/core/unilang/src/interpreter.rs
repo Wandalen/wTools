@@ -78,6 +78,16 @@ impl< 'a > Interpreter< 'a >
       // Following the governing principle: minimum implicit magic!
       // Command names are now required to have dot prefixes and are used as-is
       let full_command_name = command.definition.full_name();
+
+      eprintln!( "[PANIC TEST 2] About to execute command: {}", full_command_name );
+
+      // Special handling for .help - generate dynamic help using HelpGenerator
+      // instead of using the broken mandatory help routine with hardcoded text
+      if full_command_name == ".help"
+      {
+        panic!( "[PANIC TEST] .help intercepted in interpreter!" );
+      }
+
       let routine = self.registry.get_routine( &full_command_name ).ok_or_else( ||
       {
         Error::Execution( ErrorData::new(
