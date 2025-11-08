@@ -311,7 +311,7 @@ impl< 'a > SemanticAnalyzer< 'a >
       {
         return self.generate_help_listing();
       }
-      
+
       let command_path_refs : Vec< &str > = instruction.command_path_slices.iter().map( std::string::String::as_str ).collect();
       let command_name = crate::interner::intern_command_name( &command_path_refs );
 

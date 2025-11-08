@@ -79,13 +79,19 @@ impl< 'a > Interpreter< 'a >
       // Command names are now required to have dot prefixes and are used as-is
       let full_command_name = command.definition.full_name();
 
-      eprintln!( "[PANIC TEST 2] About to execute command: {}", full_command_name );
-
       // Special handling for .help - generate dynamic help using HelpGenerator
       // instead of using the broken mandatory help routine with hardcoded text
       if full_command_name == ".help"
       {
-        panic!( "[PANIC TEST] .help intercepted in interpreter!" );
+        let help_gen = crate::help::HelpGenerator::new( self.registry );
+        let help_content = help_gen.list_commands_filtered( None );
+
+        return Ok( vec![ OutputData
+        {
+          content : help_content,
+          format : "text".to_string(),
+          execution_time_ms : Some( 0 ),
+        }]);
       }
 
       let routine = self.registry.get_routine( &full_command_name ).ok_or_else( ||
