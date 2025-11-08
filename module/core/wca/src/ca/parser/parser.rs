@@ -73,6 +73,29 @@ mod private
  }
  }
 
+  // Checks if string looks like Windows path or URL (not a property)
+  fn looks_like_path_or_url( input: &str ) -> bool
+  {
+   // URL schemes
+   if input.contains( "://" ) { return true; }
+
+   // Windows drive letters or time format
+   if input.len() >= 2
+   {
+  let bytes = input.as_bytes();
+  if bytes[ 0 ].is_ascii_alphabetic() && bytes[ 1 ] == b':'
+  {
+   if input.len() > 2 && ( bytes[ 2 ] == b'\\' || bytes[ 2 ] == b'/' )
+   { return true; }
+   if input.chars().all( | c | c.is_ascii_digit() || c == ':' )
+   { return true; }
+ }
+ }
+
+   // Windows backslashes
+   input.contains( '\\' )
+ }
+
   // returns ParsedCommand and relative position of the last parsed item
   // aaa: use typed error
   fn parse_command( args: &[ String ] ) -> Result< ( ParsedCommand, usize ), ParserError >
@@ -150,6 +173,28 @@ mod private
    else
    {
   return Err( ParserError ::UnexpectedInput { expected: "property value".into(), input: "end of input".into() } );
+ }
+ }
+  // Check for property without spaces: "key:value" or "key: value"
+  else if item.contains( ':' ) && !Self ::looks_like_path_or_url( item )
+  {
+   properties_turn = true;
+   if let Some( ( name, value ) ) = item.split_once( ':' )
+   {
+  let value = value.trim();
+  if !value.is_empty()
+  {
+   properties.insert( name.to_string(), value.to_string() );
+ }
+  else if args.len() > i + 1
+  {
+   properties.insert( name.to_string(), args[ i + 1 ].clone() );
+   i += 1;
+ }
+  else
+  {
+   return Err( ParserError ::UnexpectedInput { expected: "property value".into(), input: "end of input".into() } );
+ }
  }
  }
   // prop: value | prop: value
