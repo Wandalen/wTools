@@ -241,7 +241,7 @@ mod private
   template.archive.set_value( "branches", Value ::String( branches_str ) );
 
   // Materialize the template
-  template.archive.materialize( path ).map_err( | e | error ::untyped ::format_err!( "{}", e ) )?;
+  template.archive.materialize( path ).map_err( | e | error ::untyped ::format_err!( "{e}" ) )?;
 
   Ok( () )
  }

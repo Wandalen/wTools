@@ -304,6 +304,17 @@ mod private
   let mut nodes = HashSet ::new();
   let mut cleared_graph = Graph ::new();
 
+  // Fix(issue-willbe-dependency-staleness): Enhanced to detect stale dependencies and cascade effects
+  // Root cause: Original implementation only checked publish_need() which detects local changes,
+  //             missing packages whose dependencies were bumped (dependency staleness).
+  //             When former v2.36→v2.37, wca (requiring former ~2.36.0) wasn't detected for republishing,
+  //             causing version conflict: willbe requires wca ~0.36.0 → former ~2.36.0 BUT former v2.37.0 already published.
+  // Pitfall: Semver requirements like ~2.36.0 are strict (2.36.x only). After dependency bumps, ALL dependents
+  //          must be checked for staleness, not just packages with local changes. Transitive closure is critical.
+
+  // Phase 1: Detect packages with local changes (original behavior)
+  let mut packages_with_changes = HashSet ::new();
+
   for root in roots
   {
    let root = graph.node_indices().find( | &i | graph[ i ] == *root ).unwrap();
@@ -332,9 +343,28 @@ mod private
   if publish_need( package, temp_path.clone(), workspace.target_directory() ).unwrap()
   {
    nodes.insert( n );
+   packages_with_changes.insert( graph[ n ].clone() );
  }
  }
  }
+
+  // Phase 2: Compute transitive closure to include packages with stale dependencies
+  let packages_to_publish = entity ::staleness ::compute_transitive_closure
+  (
+   workspace,
+   &packages_with_changes,
+ );
+
+  // Phase 3: Add all packages from closure to node set
+  for package_name in &packages_to_publish
+  {
+   if let Some( node_idx ) = graph.node_indices().find( | &i | &graph[ i ] == package_name )
+   {
+  nodes.insert( node_idx );
+ }
+ }
+
+  // Build final graph with all packages that need publishing
   let mut new_map = HashMap ::new();
   for node in nodes.iter().copied() { new_map.insert( node, cleared_graph.add_node( graph[ node ].clone() ) ); }
 

@@ -142,7 +142,7 @@ mod private
    // prop: value
    else if args.len() > i + 1
    {
-  properties.insert( name.to_string(), args[ i + 1 ].to_string() );
+  properties.insert( name.to_string(), args[ i + 1 ].clone() );
   i += 1;
  }
    // we can identify this as a subject, can't we?
@@ -176,7 +176,7 @@ mod private
 
   else if !properties_turn
   {
-   subjects.push( item.to_string() );
+   subjects.push( item.clone() );
  }
   else
   {

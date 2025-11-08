@@ -57,6 +57,10 @@ crate ::mod_interface!
   layer repository;
   orphan use super ::repository;
 
+  /// Semantic versioning utilities.
+  layer semver_utils;
+  orphan use super ::semver_utils;
+
   exposed use ::former ::
   {
   Former,

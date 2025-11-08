@@ -374,7 +374,7 @@ mod private
  }
 
   // Materialize the template
-  template.materialize( path ).map_err( | e | error ::untyped ::format_err!( "{}", e ) )?;
+  template.materialize( path ).map_err( | e | error ::untyped ::format_err!( "{e}" ) )?;
 
   Ok( () )
  }

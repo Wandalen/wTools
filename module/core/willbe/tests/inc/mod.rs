@@ -17,6 +17,9 @@ mod helper;
 
 mod package;
 
+/// Publishing algorithm tests
+mod publish;
+
 // aaa: for Petro: for Bohdan: for Nikita: sort out test files to be consistent with src files
 // sorted
 

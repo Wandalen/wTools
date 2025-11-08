@@ -65,6 +65,18 @@ crate ::mod_interface!
   layer publish;
   orphan use super ::publish;
 
+  /// Publish reason types.
+  layer publish_reason;
+  orphan use super ::publish_reason;
+
+  /// Stale dependency tracking.
+  layer stale_dependency;
+  orphan use super ::stale_dependency;
+
+  /// Dependency staleness detection.
+  layer staleness;
+  orphan use super ::staleness;
+
   /// Facade for `preatytable` crate.
   layer table;
   orphan use super ::table;
