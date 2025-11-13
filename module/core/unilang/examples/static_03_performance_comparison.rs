@@ -54,6 +54,7 @@ const MOCK_STATIC_MAP_INTERNAL: phf::Map<&'static str, &'static StaticCommandDef
     http_method_hint: "GET",
     examples: &[],
     auto_help_enabled: true,
+    category: "",
   },
 };
 

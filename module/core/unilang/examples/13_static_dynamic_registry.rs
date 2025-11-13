@@ -55,6 +55,7 @@ fn main() -> Result< (), unilang::error::Error >
     http_method_hint: "GET",
     examples: &["demo.static_example input::hello"],
     auto_help_enabled: true,
+    category: "",
   };
 
   println!( "📋 Static Command Definition:" );

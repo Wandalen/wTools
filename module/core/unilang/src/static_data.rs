@@ -154,6 +154,11 @@ mod private
     /// a corresponding `.command.help` variant. Set to `false` for help commands
     /// themselves to prevent recursive help generation.
     pub auto_help_enabled : bool,
+    /// Category for grouping commands in help output.
+    ///
+    /// Commands with the same category are displayed together in help text.
+    /// Empty string means no specific category (will be shown in default section).
+    pub category : &'static str,
   }
 
   impl StaticCommandDefinition
@@ -197,6 +202,7 @@ mod private
         http_method_hint : "GET",
         examples : &[],
         auto_help_enabled : true, // Default: enable automatic .command.help generation
+        category : "", // Default: no specific category
       }
     }
 
@@ -305,6 +311,14 @@ mod private
     pub const fn with_auto_help_enabled( mut self, enabled : bool ) -> Self
     {
       self.auto_help_enabled = enabled;
+      self
+    }
+
+    /// Sets the category for the command.
+    #[ must_use ]
+    pub const fn with_category( mut self, category : &'static str ) -> Self
+    {
+      self.category = category;
       self
     }
   }
@@ -739,7 +753,14 @@ mod private
       // or defaulted, silently breaking user configuration. Always ensure ALL fields are mapped
       // in From implementations and validated by conversion tests.
       .with_auto_help( static_cmd.auto_help_enabled )
-      .with_category( "" )
+      // Fix(issue-089): Use static_cmd.category instead of hardcoded ""
+      //
+      // Root cause: Conversion was hardcoding empty string, discarding YAML category value.
+      // This broke command grouping in help output - all categories from YAML were lost.
+      //
+      // Pitfall: Same as issue-088. Any field added to StaticCommandDefinition must be explicitly
+      // mapped in this conversion, otherwise YAML configuration will be silently ignored.
+      .with_category( static_cmd.category )
       .with_short_desc( "" )
       .with_hidden_from_list( false )
       .with_priority( 0 )

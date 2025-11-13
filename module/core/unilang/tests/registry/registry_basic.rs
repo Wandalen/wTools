@@ -29,6 +29,7 @@ const TEST_STATIC_COMMANDS_INTERNAL: phf::Map<&'static str, &'static StaticComma
     http_method_hint: "POST",
     examples: &[],
     auto_help_enabled: true,
+    category: "",
   },
 };
 

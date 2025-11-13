@@ -100,6 +100,7 @@ fn test_static_command_definition_conversion()
     http_method_hint: "GET",
     examples: &[".test_command arg::value"],
     auto_help_enabled: true,
+    category: "",
   };
 
   let dynamic_cmd: unilang::data::CommandDefinition = (&STATIC_CMD).into();
@@ -343,6 +344,7 @@ fn test_static_command_definition_with_empty_arrays()
     http_method_hint: "POST",
     examples: &[],
     auto_help_enabled: true,
+    category: "",
   };
 
   let dynamic_cmd: unilang::data::CommandDefinition = (&STATIC_CMD).into();
@@ -435,6 +437,7 @@ fn test_auto_help_enabled_conversion_preserves_true()
     http_method_hint : "GET",
     examples : &[".crates.list"],
     auto_help_enabled : true, // ← Field doesnt exist yet, will fail to compile
+    category : "",
   };
 
   let dynamic_cmd : unilang::data::CommandDefinition = ( &STATIC_CMD_WITH_HELP ).into();
@@ -502,6 +505,7 @@ fn test_auto_help_enabled_conversion_preserves_false()
     http_method_hint : "GET",
     examples : &[],
     auto_help_enabled : false, // ← Prevent recursive help (field doesnt exist yet)
+    category : "",
   };
 
   let dynamic_cmd : unilang::data::CommandDefinition = ( &STATIC_HELP_CMD ).into();
@@ -564,4 +568,213 @@ fn test_existing_conversion_test_includes_auto_help()
 
   assert!(cmd.auto_help_enabled(), "CommandDefinition should support auto_help_enabled via with_auto_help");
   assert!(cmd.has_auto_help(), "has_auto_help() should return true when auto_help_enabled is true");
+}
+
+//
+// Issue-089: Category Field Preservation Bug Reproducers
+//
+
+/// Reproduces category field loss during Static→Dynamic conversion.
+///
+/// Static command definitions with non-empty category values were incorrectly
+/// converted to empty string, breaking command grouping in help output.
+///
+/// ## Root Cause
+///
+/// The `From<&StaticCommandDefinition>` impl in `src/static_data.rs` was hardcoding
+/// `.with_category( "" )` instead of using `static_cmd.category`. This discarded
+/// all YAML-configured category values, making all commands appear uncategorized
+/// in help output regardless of YAML configuration.
+///
+/// ## Why Not Caught Initially
+///
+/// Issue-088 added `auto_help_enabled` field but didnt add category field validation.
+/// The existing comprehensive conversion test didnt validate category preservation,
+/// allowing the same silent field loss pattern to recur.
+///
+/// ## Fix Applied
+///
+/// Changed `.with_category( "" )` to `.with_category( static_cmd.category )` in
+/// the Static→Dynamic conversion impl. Now the conversion preserves the exact
+/// category value from `StaticCommandDefinition` instead of discarding it.
+///
+/// ## Prevention
+///
+/// All struct fields must be explicitly tested in conversion tests. The fix
+/// includes adding category assertions to the comprehensive conversion test
+/// and creating dedicated category-specific conversion tests.
+///
+/// ## Pitfall
+///
+/// **Silent Field Loss Pattern (Issue-088 + Issue-089):** When adding fields to
+/// `StaticCommandDefinition`, ALL code paths must be updated: (1) struct field,
+/// (2) build.rs extraction, (3) build.rs PHF generation, (4) Static→Dynamic
+/// conversion, (5) `MultiYamlAggregator` generation. Missing ANY step causes
+/// silent data loss with no compile-time or runtime errors.
+// test_kind: bug_reproducer(issue-089)
+#[test]
+fn test_category_conversion_preserves_non_empty_value()
+{
+  // Minimal reproducer: Static command with category should preserve it in Dynamic
+  static STATIC_CMD : StaticCommandDefinition = StaticCommandDefinition
+  {
+    name : ".deploy",
+    namespace : "ops",
+    description : "Deploy application",
+    hint : "",
+    arguments : &[],
+    routine_link : None,
+    status : "stable",
+    version : "1.0.0",
+    tags : &[],
+    aliases : &[],
+    permissions : &[],
+    idempotent : false,
+    deprecation_message : "",
+    http_method_hint : "",
+    examples : &[],
+    auto_help_enabled : true,
+    category : "deployment_operations", // BUG: This will be lost in conversion
+  };
+
+  // Convert to dynamic
+  let dynamic_cmd : unilang::data::CommandDefinition = ( &STATIC_CMD ).into();
+
+  // WILL FAIL: Conversion hardcodes empty string, losing "deployment_operations"
+  assert_eq!(
+    dynamic_cmd.category(),
+    "deployment_operations",
+    "Category field must be preserved during Static→Dynamic conversion, not hardcoded to empty string"
+  );
+}
+
+/// Reproduces category field handling for empty string values.
+///
+/// Commands without specific category should have empty string preserved,
+/// not converted to different default value.
+///
+/// ## Root Cause
+///
+/// Same as `test_category_conversion_preserves_non_empty_value` - hardcoded
+/// empty string in conversion. While the output matches input for empty case,
+/// this test documents that empty is intentional, not accidental.
+///
+/// ## Why Not Caught Initially
+///
+/// Empty string is a valid category value (uncategorized commands). Without
+/// explicit test, its unclear if empty→empty is correct behavior or bug.
+///
+/// ## Fix Applied
+///
+/// Using `static_cmd.category` preserves empty string correctly. This test
+/// ensures the fix doesnt break the empty string case.
+///
+/// ## Prevention
+///
+/// Boundary condition tests (empty strings, nulls, zeros) must be explicit
+/// even when default behavior appears correct. Prevents regressions during
+/// refactoring.
+///
+/// ## Pitfall
+///
+/// **Untested Boundary Conditions:** Just because current code "works" for
+/// boundary cases doesnt mean its intentional. Explicit tests prevent
+/// accidental breakage and document expected behavior.
+// test_kind: bug_reproducer(issue-089)
+#[test]
+fn test_category_conversion_preserves_empty_string()
+{
+  static STATIC_CMD : StaticCommandDefinition = StaticCommandDefinition
+  {
+    name : ".help",
+    namespace : "",
+    description : "Show help",
+    hint : "",
+    arguments : &[],
+    routine_link : None,
+    status : "stable",
+    version : "1.0.0",
+    tags : &[],
+    aliases : &[],
+    permissions : &[],
+    idempotent : true,
+    deprecation_message : "",
+    http_method_hint : "",
+    examples : &[],
+    auto_help_enabled : false,
+    category : "", // Empty category = uncategorized
+  };
+
+  let dynamic_cmd : unilang::data::CommandDefinition = ( &STATIC_CMD ).into();
+
+  // Should preserve empty string
+  assert_eq!(
+    dynamic_cmd.category(),
+    "",
+    "Empty category must be preserved (indicates uncategorized command)"
+  );
+}
+
+/// Reproduces category field handling for special characters and spaces.
+///
+/// Category names with spaces, special characters should be preserved exactly
+/// without transformation (lowercase, trim, sanitization).
+///
+/// ## Root Cause
+///
+/// Hardcoded empty string loses ALL category values including those with
+/// special formatting. This test ensures the fix preserves exact strings.
+///
+/// ## Why Not Caught Initially
+///
+/// No edge case testing for category field. Only happy path was considered.
+///
+/// ## Fix Applied
+///
+/// Direct field copy preserves exact string value without transformation.
+///
+/// ## Prevention
+///
+/// Edge case tests (unicode, special chars, spaces) must be included for
+/// all string fields to prevent unexpected transformations.
+///
+/// ## Pitfall
+///
+/// **String Field Transformations:** Never assume string fields should be
+/// normalized (trim, lowercase, sanitize). Preserve exact user input unless
+/// specification explicitly requires transformation. Category names are
+/// user-facing and should appear exactly as configured.
+// test_kind: bug_reproducer(issue-089)
+#[test]
+fn test_category_conversion_preserves_special_characters()
+{
+  static STATIC_CMD : StaticCommandDefinition = StaticCommandDefinition
+  {
+    name : ".test",
+    namespace : "",
+    description : "Test",
+    hint : "",
+    arguments : &[],
+    routine_link : None,
+    status : "stable",
+    version : "1.0.0",
+    tags : &[],
+    aliases : &[],
+    permissions : &[],
+    idempotent : false,
+    deprecation_message : "",
+    http_method_hint : "",
+    examples : &[],
+    auto_help_enabled : true,
+    category : "Git Operations / Advanced", // Spaces and special chars
+  };
+
+  let dynamic_cmd : unilang::data::CommandDefinition = ( &STATIC_CMD ).into();
+
+  // WILL FAIL: Conversion loses this value
+  assert_eq!(
+    dynamic_cmd.category(),
+    "Git Operations / Advanced",
+    "Category with spaces and special characters must be preserved exactly"
+  );
 }

@@ -580,6 +580,8 @@ fn generate_command_const(f: &mut BufWriter<File>, index: usize, cmd_value: &ser
   let http_method_hint = cmd_value["http_method_hint"].as_str().unwrap_or("");
   // Fix(issue-088): Extract auto_help_enabled from YAML (defaults to true)
   let auto_help_enabled = cmd_value["auto_help_enabled"].as_bool().unwrap_or(true);
+  // Fix(issue-089): Extract category from YAML (defaults to empty string)
+  let category = cmd_value["category"].as_str().unwrap_or("");
 
   // Generate arguments array
   if let Some(arguments) = cmd_value["arguments"].as_sequence()
@@ -643,6 +645,8 @@ fn generate_command_const(f: &mut BufWriter<File>, index: usize, cmd_value: &ser
   writeln!(f, "  examples: CMD_{index}_EXAMPLES,").unwrap();
   // Fix(issue-088): Include auto_help_enabled field in generated PHF const
   writeln!(f, "  auto_help_enabled: {auto_help_enabled},").unwrap();
+  // Fix(issue-089): Include category field in generated PHF const
+  writeln!(f, "  category: \"{}\",", escape_string(category)).unwrap();
   writeln!(f, "}};").unwrap();
   writeln!(f).unwrap();
 }

@@ -23,26 +23,37 @@ use proc_macro::TokenStream;
 /// the most efficient splitting strategy at compile time.
 /// 
 /// # Examples
-/// 
-/// ```rust,ignore
-/// # use strs_tools_meta::optimize_split;
+///
+/// Basic usage with different delimiter patterns. See `tests/optimize_split_tests.rs`
+/// for comprehensive executable examples.
+///
+/// Single character delimiter:
+/// ```rust
 /// // Simple comma splitting - generates optimized code
-/// let result = optimize_split!("field1,field2,field3", ",");
-/// 
+/// let result = strs_tools_meta::optimize_split!("field1,field2,field3", ",");
+/// assert_eq!( result, vec![ "field1", "field2", "field3" ] );
+/// ```
+///
+/// Multiple delimiters:
+/// ```rust
 /// // Multiple delimiters - generates multi-delimiter optimization
-/// let result = optimize_split!(input_str, [",", ";", ":"]);
-/// 
+/// let input_str = "a,b;c:d";
+/// let result = strs_tools_meta::optimize_split!(input_str, [",", ";", ":"]);
+/// assert_eq!( result, vec![ "a", "b", "c", "d" ] );
+/// ```
+///
+/// Complex patterns with options:
+/// ```rust
 /// // Complex patterns - generates pattern-specific optimization
-/// let result = optimize_split!(data, [",", "->", "::"], preserve_delimiters = true);
+/// let data = "a,b->c::d";
+/// let result = strs_tools_meta::optimize_split!(data, [",", "->", "::"], preserve_delimiters = true);
+/// assert_eq!( result, vec![ "a", ",", "b", "->", "c", "::", "d" ] );
 /// ```
 /// 
-/// # Debug Attribute
-/// 
-/// The `debug` attribute enables diagnostic output for macro expansion:
-/// ```rust,ignore
-/// #[ optimize_split( debug ) ]
-/// let result = optimize_split!(input, ",");
-/// ```
+/// # Debug Mode
+///
+/// The `debug` parameter enables diagnostic output during macro expansion.
+/// See `tests/optimize_split_tests.rs::tc8_debug_mode` for usage example.
 #[ cfg( feature = "optimize_split" ) ]
 #[ proc_macro ]
 pub fn optimize_split( input: TokenStream ) -> TokenStream
@@ -62,22 +73,29 @@ pub fn optimize_split( input: TokenStream ) -> TokenStream
 ///
 /// # Examples
 ///
-/// ```rust,ignore
-/// # use strs_tools_meta::optimize_match;
-/// // Single pattern matching
-/// let matched = optimize_match!(input, "prefix_");
+/// Basic usage with different pattern matching strategies. See `tests/optimize_match_tests.rs`
+/// for comprehensive executable examples.
 ///
-/// // Multiple pattern matching with priorities  
-/// let result = optimize_match!(text, ["http://", "https://", "ftp://"], strategy = "first_match");
+/// Single pattern matching:
+/// ```rust
+/// // Single pattern matching
+/// let input = "prefix_value";
+/// let matched = strs_tools_meta::optimize_match!(input, "prefix_");
+/// assert_eq!( matched, Some( 0 ) );
 /// ```
-/// 
-/// # Debug Attribute
-/// 
-/// The `debug` attribute enables diagnostic output for macro expansion:
-/// ```rust,ignore
-/// #[ optimize_match( debug ) ]
-/// let result = optimize_match!(input, ["http://", "https://"]);
+///
+/// Multiple pattern matching:
+/// ```rust
+/// // Multiple pattern matching with priorities
+/// let text = "https://example.com";
+/// let result = strs_tools_meta::optimize_match!(text, ["http://", "https://", "ftp://"], strategy = "first_match");
+/// assert_eq!( result, Some( 0 ) );
 /// ```
+///
+/// # Debug Mode
+///
+/// The `debug` parameter enables diagnostic output during macro expansion.
+/// See `tests/optimize_match_tests.rs::tc6_debug_mode` for usage example.
 #[ cfg( feature = "optimize_match" ) ]
 #[ proc_macro ]
 pub fn optimize_match( input: TokenStream ) -> TokenStream

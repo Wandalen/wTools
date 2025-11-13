@@ -727,6 +727,10 @@ impl< 'a > HelpGenerator< 'a >
       "removal_operations" => "REMOVAL OPERATIONS".to_string(),
       "github_integration" => "GITHUB INTEGRATION".to_string(),
       "help" => "HELP & INFORMATION".to_string(),
+      "authentication" => "AUTHENTICATION".to_string(),
+      "ignore_management" => "IGNORE MANAGEMENT".to_string(),
+      "pull_requests" => "PULL REQUESTS".to_string(),
+      "utilities" => "UTILITIES".to_string(),
       _ => category.to_uppercase(),
     }
   }

@@ -154,6 +154,7 @@ pub mod math_cli_static {
   http_method_hint: "",
   examples: &[],
   auto_help_enabled: true,
+  category: "",
  };
 
   /// Static multiply command definition
@@ -174,6 +175,7 @@ pub mod math_cli_static {
   http_method_hint: "",
   examples: &[],
   auto_help_enabled: true,
+  category: "",
  };
 
   static COMMANDS: &[&StaticCommandDefinition] = &[&ADD_COMMAND, &MULTIPLY_COMMAND];

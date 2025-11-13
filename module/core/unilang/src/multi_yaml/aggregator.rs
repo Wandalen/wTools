@@ -551,6 +551,12 @@ impl MultiYamlAggregator
     //   2. MultiYamlAggregator::generate_command_definition_body() - FIXED HERE
     content.push_str( &format!( "  auto_help_enabled: {},\n", cmd.auto_help_enabled() ) );
 
+    // Fix(issue-089): Include category field
+    // Root cause: MultiYamlAggregator wasnt updated when StaticCommandDefinition gained category field
+    // Pitfall: Same as issue-088. When adding fields to StaticCommandDefinition, ALL code generators
+    // must be updated, including this method and any direct PHF generation in build.rs files
+    content.push_str( &format!( "  category: \"{}\",\n", Self::escape_string( cmd.category() ) ) );
+
     content
   }
 
