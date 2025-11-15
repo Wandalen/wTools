@@ -1239,7 +1239,7 @@ pub fn aggregate_cli_complex() -> Result< CommandRegistry, Error >
   ///
   /// Then in your code:
   ///
-  /// ```rust,ignore
+  /// ```ignore
   /// // Generated at compile-time by build system
   /// include!(concat!(env!("OUT_DIR"), "/static_commands.rs"));
   ///
@@ -1249,7 +1249,7 @@ pub fn aggregate_cli_complex() -> Result< CommandRegistry, Error >
   ///
   /// ## Example Usage (Runtime Aggregation)
   ///
-  /// ```rust,ignore
+  /// ```ignore
   /// use std::path::PathBuf;
   /// use unilang::multi_yaml::create_aggregated_registry;
   ///

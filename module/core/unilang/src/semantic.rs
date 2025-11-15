@@ -19,12 +19,12 @@
 //! - Error messages for interactive arguments are deliberately generic to avoid information leakage
 //!
 //! ## REPL Integration Pattern
-//! ```rust,ignore
+//! ```ignore
 //! # use unilang::semantic::SemanticAnalyzer;
 //! # use unilang::error::Error;
 //! # let semantic_analyzer = SemanticAnalyzer::new(&[], &registry);
 //! match semantic_analyzer.analyze() {
-//!     Err(Error::Execution(error_data)) 
+//!     Err(Error::Execution(error_data))
 //!         if error_data.code == "UNILANG_ARGUMENT_INTERACTIVE_REQUIRED" => {
 //!         // Handle secure input prompting at REPL level
 //!         prompt_for_secure_input(&error_data.message);

@@ -12,7 +12,7 @@
 //! - Feature flag gated for optional dependency management
 //!
 //! **❌ TESTING VIOLATIONS TO AVOID:**
-//! ```rust,ignore
+//! ```no_run
 //! // WRONG - Do not create SIMD performance tests in tests/
 //! #[test]
 //! fn test_simd_performance() {
@@ -29,7 +29,7 @@
 //! ```
 //!
 //! **✅ CORRECT Testing Approach:**
-//! ```rust,ignore
+//! ```no_run
 //! // Test correctness, not performance
 //! #[test]
 //! fn test_simd_correctness() {
