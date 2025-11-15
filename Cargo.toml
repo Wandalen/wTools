@@ -114,12 +114,12 @@ version = "~0.1.4"
 path = "module/alias/std_x"
 
 [workspace.dependencies.unilang_parser]
-version = "~0.26.0"
+version = "~0.27.0"
 path = "module/core/unilang_parser"
 default-features = false
 
 [workspace.dependencies.unilang]
-version = "~0.39.0"
+version = "~0.40.0"
 path = "module/core/unilang"
 default-features = false
 
@@ -167,7 +167,7 @@ default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.collection_tools]
-version = "~0.32.0"
+version = "~0.33.0"
 path = "module/core/collection_tools"
 default-features = false
 
@@ -175,13 +175,13 @@ default-features = false
 ## derive
 
 [workspace.dependencies.derive_tools]
-version = "~0.55.0"
+version = "~0.56.0"
 path = "module/core/derive_tools"
 default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.derive_tools_meta]
-version = "~0.54.0"
+version = "~0.55.0"
 path = "module/core/derive_tools_meta"
 default-features = false
 # features = [ "enabled" ]
@@ -233,25 +233,25 @@ path = "module/alias/fundamental_data_type"
 default-features = false
 
 [workspace.dependencies.variadic_from]
-version = "~0.49.0"
+version = "~0.50.0"
 path = "module/core/variadic_from"
 default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.variadic_from_meta]
-version = "~0.20.0"
+version = "~0.21.0"
 path = "module/core/variadic_from_meta"
 default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.clone_dyn]
-version = "~0.52.0"
+version = "~0.53.0"
 path = "module/core/clone_dyn"
 default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.clone_dyn_meta]
-version = "~0.49.0"
+version = "~0.50.0"
 path = "module/core/clone_dyn_meta"
 # features = [ "enabled" ]
 
@@ -299,17 +299,17 @@ path = "module/core/for_each"
 default-features = false
 
 [workspace.dependencies.former]
-version = "~2.37.0"
+version = "~2.38.0"
 path = "module/core/former"
 default-features = false
 
 [workspace.dependencies.former_meta]
-version = "~2.35.0"
+version = "~2.36.0"
 path = "module/core/former_meta"
 default-features = false
 
 [workspace.dependencies.former_types]
-version = "~2.31.0"
+version = "~2.32.0"
 path = "module/core/former_types"
 default-features = false
 
@@ -324,7 +324,7 @@ path = "module/core/component_model_meta"
 default-features = false
 
 [workspace.dependencies.component_model_types]
-version = "~0.18.0"
+version = "~0.19.0"
 path = "module/core/component_model_types"
 default-features = false
 
@@ -338,12 +338,12 @@ version = "~0.13.0"
 path = "module/core/impls_index_meta"
 
 [workspace.dependencies.mod_interface]
-version = "~0.52.0"
+version = "~0.53.0"
 path = "module/core/mod_interface"
 default-features = false
 
 [workspace.dependencies.mod_interface_meta]
-version = "~0.50.0"
+version = "~0.51.0"
 path = "module/core/mod_interface_meta"
 default-features = false
 
@@ -369,7 +369,7 @@ default-features = false
 ## macro tools
 
 [workspace.dependencies.macro_tools]
-version = "~0.75.0"
+version = "~0.76.0"
 path = "module/core/macro_tools"
 default-features = false
 
@@ -453,12 +453,12 @@ default-features = false
 ## string tools
 
 [workspace.dependencies.strs_tools]
-version = "~0.35.0"
+version = "~0.36.0"
 path = "module/core/strs_tools"
 default-features = false
 
 [workspace.dependencies.strs_tools_meta]
-version = "~0.12.0"
+version = "~0.13.0"
 path = "module/core/strs_tools_meta"
 default-features = false
 
