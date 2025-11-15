@@ -10,7 +10,7 @@
 //! ## Why This Matters
 //!
 //! The build script is layer 2 of the three-layer data integrity chain:
-//! YAML → **Build Script** → StaticCommandDefinition → From conversion
+//! YAML → **Build Script** → `StaticCommandDefinition` → From conversion
 //!
 //! If the build script doesn't extract and output the category field, all YAML
 //! category values are lost. These tests prevent:
@@ -57,7 +57,7 @@ fn codegen_outputs_category_line()
   let unilang_build_dirs : Vec< _ > = match fs::read_dir( &out_dir )
   {
     Ok( entries ) => entries
-      .filter_map( | e | e.ok() )
+      .filter_map( Result::ok )
       .filter( | e | e.file_name().to_string_lossy().starts_with( "unilang-" ) )
       .collect(),
     Err( _ ) => return, // Build dir doesn't exist yet, skip test
@@ -144,7 +144,7 @@ fn codegen_empty_category_format()
 // Test: codegen category position after auto_help
 //
 
-/// Verifies that category field appears after auto_help_enabled in generated struct.
+/// Verifies that category field appears after `auto_help_enabled` in generated struct.
 ///
 /// This prevents field ordering breaking PHF map compilation.
 #[ test ]
@@ -156,7 +156,7 @@ fn codegen_category_position_after_auto_help()
   let unilang_build_dirs : Vec< _ > = match fs::read_dir( &out_dir )
   {
     Ok( entries ) => entries
-      .filter_map( | e | e.ok() )
+      .filter_map( Result::ok )
       .filter( | e | e.file_name().to_string_lossy().starts_with( "unilang-" ) )
       .collect(),
     Err( _ ) => return,
@@ -201,11 +201,11 @@ fn codegen_category_position_after_auto_help()
 #[ test ]
 fn codegen_category_with_special_markdown_chars()
 {
-  let test_input = r#"Code: *bold*, _italic_, [link], `backtick`"#;
+  let test_input = r"Code: *bold*, _italic_, [link], `backtick`";
   let escaped = escape_string_like_build_rs( test_input );
 
   // Should escape backslashes and quotes
-  assert!( !escaped.contains( r#"""# ) || escaped.contains( r#"\""# ), "Quotes should be escaped if present" );
+  assert!( !escaped.contains( '"' ) || escaped.contains( r#"\""# ), "Quotes should be escaped if present" );
 }
 
 //
@@ -241,7 +241,7 @@ fn codegen_multiple_commands_different_categories()
   let unilang_build_dirs : Vec< _ > = match fs::read_dir( &out_dir )
   {
     Ok( entries ) => entries
-      .filter_map( | e | e.ok() )
+      .filter_map( Result::ok )
       .filter( | e | e.file_name().to_string_lossy().starts_with( "unilang-" ) )
       .collect(),
     Err( _ ) => return,

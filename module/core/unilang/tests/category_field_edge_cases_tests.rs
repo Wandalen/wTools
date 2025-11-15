@@ -366,7 +366,7 @@ fn duplicate_category_names()
 // Test: category case sensitivity
 //
 
-/// Verifies that categories are case sensitive (Git_Ops != git_ops).
+/// Verifies that categories are case sensitive (`Git_Ops` != `git_ops`).
 ///
 /// This prevents unexpected case-insensitive merging.
 #[ test ]
