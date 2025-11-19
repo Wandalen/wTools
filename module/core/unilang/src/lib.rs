@@ -210,3 +210,19 @@ mod_interface::mod_interface!
   // to avoid polluting production dependencies. Use unilang_benchmarks for all
   // benchmarking needs.
 }
+
+/// Re-export unilang_parser crate as parser module.
+///
+/// Provides full access to the parser infrastructure including:
+/// - `Parser` and `UnilangParserOptions` for parsing
+/// - `GenericInstruction` and `Argument` for results
+/// - `cli_parser` module for CLI parameter parsing
+/// - `prelude` for convenient imports
+///
+/// # Example
+///
+/// ```rust,ignore
+/// use unilang::parser::{Parser, UnilangParserOptions};
+/// use unilang::parser::cli_parser::{parse_cli_args, CliParams};
+/// ```
+pub use unilang_parser as parser;

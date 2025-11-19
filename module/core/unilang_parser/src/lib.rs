@@ -126,6 +126,8 @@ pub mod instruction;
 pub mod item_adapter;
 /// Contains the core parsing engine.
 pub mod parser_engine;
+/// CLI parameter parsing convenience API.
+pub mod cli_parser;
 
 /// Prelude for commonly used items.
 pub mod prelude
@@ -135,6 +137,7 @@ pub mod prelude
   pub use super ::instruction :: { GenericInstruction, Argument };
   pub use super ::item_adapter :: *;
   pub use super ::parser_engine :: *;
+  pub use super ::cli_parser :: *;
 }
 
 pub use prelude :: *;
