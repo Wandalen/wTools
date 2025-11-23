@@ -1025,6 +1025,59 @@ impl Default for CommandRegistry
   }
 }
 
+/// Conversion from StaticCommandRegistry to CommandRegistry.
+///
+/// This enables the pattern: `Pipeline::new(static_registry.into())`
+///
+/// # Fix(H15): StaticCommandRegistry now converts to CommandRegistry
+///
+/// Root cause: Pipeline requires CommandRegistry but static definitions produce
+/// StaticCommandRegistry. This bridge enables seamless conversion.
+///
+/// Pitfall: If build.rs validation is disabled, conversion may fail on invalid commands.
+///
+/// # Examples
+///
+/// ```rust,ignore
+/// use unilang::registry::{StaticCommandRegistry, CommandRegistry};
+/// use unilang::pipeline::Pipeline;
+///
+/// // Create static registry from compile-time commands
+/// let static_registry = StaticCommandRegistry::from_commands(&STATIC_COMMANDS);
+///
+/// // Convert to CommandRegistry for Pipeline
+/// let command_registry: CommandRegistry = static_registry.into();
+/// let pipeline = Pipeline::new(command_registry);
+/// ```
+#[ cfg( feature = "static_registry" ) ]
+impl From< StaticCommandRegistry > for CommandRegistry
+{
+  fn from( static_reg : StaticCommandRegistry ) -> Self
+  {
+    #[ allow( deprecated ) ]
+    let mut registry = CommandRegistry::new();
+
+    // Convert all commands from static registry to command registry
+    for ( name, cmd ) in static_reg.commands()
+    {
+      // Since build.rs validates commands, registration should not fail
+      // But we handle errors gracefully in case validation is bypassed
+      if let Err( e ) = registry.register( cmd.clone() )
+      {
+        log::warn!(
+          "Unexpected: Command '{}' registration failed during StaticCommandRegistry conversion: {}",
+          name, e
+        );
+      }
+    }
+
+    // Note: Routines are not transferred because they are runtime-specific
+    // and StaticCommandRegistry routines need to be re-registered with CommandRegistry
+
+    registry
+  }
+}
+
 impl CommandRegistryTrait for CommandRegistry {
   fn command(&self, name: &str) -> Option<crate::data::CommandDefinition> {
     self.command(name)

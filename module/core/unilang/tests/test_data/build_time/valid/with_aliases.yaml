@@ -1,0 +1,35 @@
+---
+# Valid YAML: Command with aliases for testing alias resolution
+# Test case for H8: Command alias resolution NOT implemented
+# This fixture validates that aliases are properly handled in static registry
+- name: ".test.aliased"
+  namespace: ""
+  description: "Command with aliases for testing alias resolution"
+  short_desc: "Aliased command"
+  hidden_from_list: false
+  priority: 5
+  group: "testing"
+  arguments:
+    - name: "value"
+      kind: "String"
+      description: "Value parameter"
+      attributes:
+        optional: true
+        multiple: false
+        interactive: false
+        sensitive: false
+      validation_rules: []
+      hint: "Optional value"
+      aliases: ["v", "val"]
+      tags: []
+  status: "stable"
+  version: "1.0.0"
+  tags: ["alias-test"]
+  aliases: ["ta", "aliased", "alias_test"]
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+  examples:
+    - ".test.aliased"
+    - "ta value::test"

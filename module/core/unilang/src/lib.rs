@@ -178,6 +178,10 @@ mod_interface::mod_interface!
   /// Command validation utilities.
   layer command_validation;
 
+  /// Core validation logic shared between runtime and build.rs.
+  /// This module can be included in build.rs via include!() since it has no dependencies.
+  layer validation_core;
+
   /// Semantic analysis and validation.
   layer semantic;
 
