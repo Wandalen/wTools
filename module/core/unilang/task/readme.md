@@ -5,10 +5,14 @@
 | Order | ID | Advisability | Value | Easiness | Safety | Priority | Status | Task | Description |
 |-------|----|--------------:|------:|---------:|-------:|---------:|--------|------|-------------|
 | 1 | 084 | 0 | 8 | 7 | 8 | 0 | ✅ (Completed) | [help_formatting_improvements](./completed/084_help_formatting_improvements.md) | Already implemented - All features exist: categorization, prefix filtering, hidden commands |
-| 2 | 086 | 3780 | 9 | 6 | 7 | 10 | 🔄 (Planned) | [prevent_argv_misuse_pitfall](./086_prevent_argv_misuse_pitfall.md) | Prevent argv→string→split misuse through API redesign and documentation |
+| 2 | 086 | 3780 | 9 | 6 | 7 | 10 | ✅ (Completed) | [prevent_argv_misuse_pitfall](./completed/086_prevent_argv_misuse_pitfall.md) | Prevent argv→string→split misuse through API redesign and documentation |
 | 3 | 087 | 3240 | 9 | 6 | 6 | 10 | 🔄 (Planned) | [prevent_command_help_divergence](./087_prevent_command_help_divergence.md) | Make command/help divergence impossible through registry API enforcement |
 | 4 | 085 | 2000 | 10 | 4 | 5 | 10 | 🔄 (Planned) | [make_illegal_states_unrepresentable](./085_make_illegal_states_unrepresentable.md) | Redesign API using typestate pattern to make illegal states unrepresentable |
-| 5 | 083 | 0 | 6 | 4 | 5 | 0 | ✅ (Completed) | [implement_preserved_quotes_stripping](./completed/083_implement_preserved_quotes_stripping.md) | Obsolete - Solved via issue-084 with different approach (preserve quotes, don't strip) |
+| 5 | 088 | 1890 | 9 | 7 | 6 | 5 | ✅ (Completed) | [fix_auto_help_enabled_conversion_bug](./completed/088_fix_auto_help_enabled_conversion_bug.md) | Fix auto_help_enabled lost during Static-to-Dynamic conversion |
+| 6 | 089 | 1792 | 8 | 7 | 8 | 4 | ✅ (Completed) | [extract_output_truncation](./completed/089_extract_output_truncation.md) | Extract output truncation utilities (head/tail/width) with ANSI/Unicode support |
+| 7 | 090 | 1152 | 6 | 8 | 8 | 3 | ✅ (Completed) | [extract_config_extraction_functions](./completed/090_extract_config_extraction_functions.md) | Extract config value extraction functions for CliParamsAdvanced ecosystem |
+| 7 | 091 | 560 | 5 | 7 | 8 | 2 | ❌ (Rejected) | [extract_verbosity_logging](./091_extract_verbosity_logging.md) | Extract verbosity-based logging - REJECTED: Use tracing crate instead |
+| 8 | 083 | 0 | 6 | 4 | 5 | 0 | ✅ (Completed) | [implement_preserved_quotes_stripping](./completed/083_implement_preserved_quotes_stripping.md) | Obsolete - Solved via issue-084 with different approach (preserve quotes, don't strip) |
 | 6 | 078 | 1440 | 9 | 8 | 5 | 4 | ✅ (Completed) | [update_cargo_dependencies](./completed/078_update_cargo_dependencies.md) | Update Cargo dependencies for new functionality |
 | 7 | 082 | 1134 | 9 | 9 | 7 | 2 | ✅ (Completed) | [fix_whitespace_detection_bug](./completed/082_fix_whitespace_detection_bug.md) | Fix whitespace detection bug in parse_from_argv |
 | 8 | 056 | 1080 | 9 | 6 | 5 | 4 | ✅ (Completed) | [write_tests_for_static_data_structures_extension](./completed/056_write_tests_for_static_data_structures_extension.md) | Write tests for static data structures extension |

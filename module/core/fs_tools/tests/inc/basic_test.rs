@@ -1,19 +1,19 @@
 #[ allow( unused_imports ) ]
 use super :: *;
 
-// Test file for basic TempDir functionality.
+// Test file for basic `TempDir` functionality.
 //
 // ## Test Matrix
 //
 // | ID   | Aspect Tested        | Expected Behavior                          |
 // |------|----------------------|--------------------------------------------|
-// | T1.1 | TempDir creation     | TempDir::new() returns valid instance      |
+// | T1.1 | TempDir creation     | `TempDir::new()` returns valid instance    |
 // | T1.2 | Path access          | Can access base_path field                 |
-// | T1.3 | Default values       | Fields initialize to empty PathBuf         |
+// | T1.3 | Default values       | Fields initialize to empty `PathBuf`       |
 //
-// Note: TempDir is only available when no_std feature is disabled.
+// Note: `TempDir` is only available when `no_std` feature is disabled.
 
-/// Tests that TempDir can be created with new().
+/// Tests that `TempDir` can be created with `new()`.
 /// Test Combination: T1.1
 #[ test ]
 #[ cfg( not( feature = "no_std" ) ) ]
@@ -24,7 +24,7 @@ fn temp_dir_creation()
   assert!( temp_dir.base_path.as_os_str().is_empty() );
 }
 
-/// Tests that TempDir fields are accessible.
+/// Tests that `TempDir` fields are accessible.
 /// Test Combination: T1.2
 #[ test ]
 #[ cfg( not( feature = "no_std" ) ) ]

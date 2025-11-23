@@ -271,11 +271,12 @@ impl< T : std::fmt::Display > TableShapedView for TreeNode< T >
 ///
 /// Used to provide semantic meaning to column data and enable
 /// type-aware formatting in different output formats.
-#[ derive( Debug, Clone, PartialEq, Eq ) ]
+#[ derive( Debug, Clone, PartialEq, Eq, Default ) ]
 #[ cfg_attr( feature = "serde_support", derive( serde::Serialize, serde::Deserialize ) ) ]
 pub enum DataType
 {
   /// String data
+  #[ default ]
   String,
   /// Integer number
   Integer,
@@ -283,14 +284,6 @@ pub enum DataType
   Boolean,
   /// File system path
   Path,
-}
-
-impl Default for DataType
-{
-  fn default() -> Self
-  {
-    Self::String
-  }
 }
 
 /// Metadata describing table structure and column types

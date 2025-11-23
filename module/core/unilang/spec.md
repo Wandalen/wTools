@@ -644,6 +644,74 @@ pub static STATIC_COMMANDS: StaticCommandMap =
 
 This ensures implementation details remain internal while exposing a clean, dependency-free API to users.
 
+#### 7.4. Config Value Extraction Utilities
+
+**Requires feature**: `json_parser`
+
+The `unilang` framework provides generic utilities for extracting typed values from configuration maps. These utilities work with `HashMap<String, (JsonValue, S)>` where `S` is any source-tracking type (e.g., `config_hierarchy::ConfigSource`).
+
+**Type Alias:**
+*   `ConfigMap<S>` - Alias for `HashMap<String, (JsonValue, S)>`
+
+**Extraction Functions:**
+All functions are generic over source type `S` and return `Option<T>`:
+*   `extract_u8<S>(config, key) -> Option<u8>` - Extract u8, returns None on overflow
+*   `extract_u16<S>(config, key) -> Option<u16>` - Extract u16
+*   `extract_u32<S>(config, key) -> Option<u32>` - Extract u32
+*   `extract_u64<S>(config, key) -> Option<u64>` - Extract u64
+*   `extract_i32<S>(config, key) -> Option<i32>` - Extract i32
+*   `extract_i64<S>(config, key) -> Option<i64>` - Extract i64
+*   `extract_f64<S>(config, key) -> Option<f64>` - Extract f64
+*   `extract_bool<S>(config, key) -> Option<bool>` - Extract bool
+*   `extract_string<S>(config, key) -> Option<String>` - Extract string (returns None for null)
+*   `extract_string_array<S>(config, key) -> Option<Vec<String>>` - Extract array of strings
+
+**Usage Example:**
+```rust
+use std::collections::HashMap;
+use serde_json::json;
+use unilang::config_extraction::{ ConfigMap, extract_u8, extract_bool };
+
+let mut config: ConfigMap<()> = HashMap::new();
+config.insert("verbosity".into(), (json!(3), ()));
+config.insert("debug".into(), (json!(true), ()));
+
+assert_eq!(extract_u8(&config, "verbosity"), Some(3));
+assert_eq!(extract_bool(&config, "debug"), Some(true));
+```
+
+#### 7.5. Output Truncation Utilities
+
+The `unilang` framework provides ANSI-aware and Unicode-aware output truncation utilities for CLI applications.
+
+**Structures:**
+*   `TruncationConfig` - Configuration for head/tail/width truncation with fields:
+    - `head: Option<usize>` - Show only first N lines
+    - `tail: Option<usize>` - Show only last N lines
+    - `width: Option<usize>` - Maximum visible characters per line
+    - `output_filter: OutputFilter` - Which stream to process
+*   `OutputFilter` - Enum for stream selection: `Both`, `Stdout`, `Stderr`
+*   `TruncatedOutput` - Result containing:
+    - `content: String` - Processed content
+    - `lines_omitted: usize` - Number of lines omitted
+    - `width_truncated: bool` - Whether any line was width-truncated
+
+**Functions:**
+*   `apply_truncation(stdout, stderr, config) -> TruncatedOutput` - Main entry point
+*   `truncate_head(text, lines) -> String` - Truncate to first N lines
+*   `truncate_tail(text, lines) -> String` - Truncate to last N lines
+*   `truncate_width(text, max_width) -> String` - Truncate line width (ANSI-aware)
+
+**ANSI Handling Requirements:**
+*   ANSI escape sequences **must** be preserved during width truncation
+*   ANSI codes count as zero width (invisible characters)
+*   Reset code (`\x1b[0m`) **must** be added if truncation occurs mid-formatting
+
+**Unicode Handling Requirements:**
+*   Width **must** be measured in grapheme clusters, not bytes or codepoints
+*   Multi-byte UTF-8 (emojis, CJK) **must** be handled correctly
+*   Width truncation adds `→` indicator when truncated
+
 ### 8. Cross-Cutting Concerns (Error Handling, Security, Verbosity)
 
 *   **Error Handling:** All recoverable errors **must** be propagated as `unilang::Error`, which wraps an `ErrorData` struct containing a machine-readable `code` (typed `ErrorCode` enum) and a human-readable `message`. The framework defines the following standard error codes via the `ErrorCode` enum:

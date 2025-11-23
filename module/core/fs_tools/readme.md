@@ -7,23 +7,90 @@
 
 Tools to manipulate files.
 
-### To add to your project
+## Features
 
-```sh
-cargo add fs_tools --dev
+- **TempDir**: Temporary directory management with RAII cleanup
+  - `full_path()` - Compose path from base/prefix/postfix components
+  - `create()` - Create directory (parent must exist)
+  - `create_all()` - Create directory with all parents
+  - Automatic cleanup on drop for created directories
+- **glob** (optional): Unix shell-style pattern matching via re-export
+
+## Basic Usage
+
+### TempDir with RAII Cleanup
+
+```rust
+use fs_tools::TempDir;
+use std::path::PathBuf;
+
+let mut temp = TempDir::new();
+temp.base_path = std::env::temp_dir();
+temp.prefix_path = PathBuf::from( "my_app" );
+temp.postfix_path = PathBuf::from( "session_1" );
+
+// Create directory (enables automatic cleanup)
+let path = temp.create_all().expect( "failed to create" );
+assert!( path.is_dir() );
+
+// Directory is automatically removed when `temp` goes out of scope
 ```
 
-### Try out from the repository
+### Glob Pattern Matching
 
-```sh
-git clone https://github.com/Wandalen/wTools
-cd wTools
-cd examples/test_trivial
-cargo run
+```rust
+use fs_tools::glob::glob;
+
+// Find all Rust files in current directory
+for entry in glob( "*.rs" ).expect( "valid pattern" )
+{
+  if let Ok( path ) = entry
+  {
+    println!( "{:?}", path );
+  }
+}
 ```
 
+### Recursive Glob
 
-### Try out from the repository
+```rust
+use fs_tools::glob::glob;
+
+// Find all Rust files recursively
+for entry in glob( "src/**/*.rs" ).expect( "valid pattern" )
+{
+  if let Ok( path ) = entry
+  {
+    println!( "{:?}", path );
+  }
+}
+```
+
+### Pattern Matching
+
+```rust
+use fs_tools::glob::Pattern;
+
+let pattern = Pattern::new( "*.rs" ).expect( "valid pattern" );
+
+assert!( pattern.matches( "lib.rs" ) );
+assert!( !pattern.matches( "Cargo.toml" ) );
+```
+
+## To add to your project
+
+```sh
+# Basic (TempDir only)
+cargo add fs_tools
+
+# With glob support
+cargo add fs_tools --features glob
+
+# All features
+cargo add fs_tools --features full
+```
+
+## Try out from the repository
 
 ```sh
 git clone https://github.com/Wandalen/wTools

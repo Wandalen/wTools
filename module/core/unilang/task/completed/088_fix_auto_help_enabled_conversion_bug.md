@@ -1,9 +1,10 @@
 # Unilang Critical Bug: `auto_help_enabled` Lost During Static-to-Dynamic Conversion
 
 **Date**: 2025-11-06
+**Completed**: 2025-11-06
 **Priority**: HIGH
 **Category**: Bug Fix - Data Integrity
-**Status**: Open
+**Status**: Completed
 **Affects**: v0.35.0+
 **Discovered In**: willbe/will_crates integration
 

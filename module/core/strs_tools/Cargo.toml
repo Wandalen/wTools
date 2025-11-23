@@ -78,6 +78,13 @@ string_parse_number = ["dep:lexical", "enabled"]
 # Request parsing functionality (depends on string_split + string_isolate)
 string_parse_request = ["string_split", "string_isolate", "enabled"]
 
+# ANSI escape sequence utilities (Tier 1: zero-dependency, char-based)
+# Requires alloc for String/Vec operations
+ansi = ["enabled", "use_alloc"]
+
+# ANSI escape sequence utilities (Tier 2: Unicode grapheme-aware)
+ansi_unicode = ["ansi", "dep:unicode-segmentation"]
+
 # ========================================
 # PERFORMANCE FEATURES (optional optimizations)
 # ========================================
@@ -145,6 +152,9 @@ memchr = { workspace = true, optional = true }
 aho-corasick = { workspace = true, optional = true }
 bytecount = { workspace = true, optional = true }
 lazy_static = { version = "1.4", optional = true }
+
+# ANSI utilities Unicode support (optional)
+unicode-segmentation = { workspace = true, optional = true }
 
 
 [dev-dependencies]

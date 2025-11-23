@@ -98,12 +98,13 @@ impl TreeConfig
 }
 
 /// Border rendering variant for tables
-#[ derive( Debug, Clone, Copy, PartialEq, Eq ) ]
+#[ derive( Debug, Clone, Copy, PartialEq, Eq, Default ) ]
 pub enum BorderVariant
 {
   /// No borders, space-separated columns
   None,
   /// ASCII borders with pipes: | + -
+  #[ default ]
   Ascii,
   /// Full ASCII grid with row separators: +---+
   AsciiGrid,
@@ -113,16 +114,8 @@ pub enum BorderVariant
   Markdown,
 }
 
-impl Default for BorderVariant
-{
-  fn default() -> Self
-  {
-    Self::Ascii
-  }
-}
-
 /// Header separator line variant
-#[ derive( Debug, Clone, Copy, PartialEq, Eq ) ]
+#[ derive( Debug, Clone, Copy, PartialEq, Eq, Default ) ]
 pub enum HeaderSeparatorVariant
 {
   /// No separator line below header
@@ -130,19 +123,12 @@ pub enum HeaderSeparatorVariant
   /// Dashes only: -----
   Dash,
   /// ASCII grid separator: +-----+
+  #[ default ]
   AsciiGrid,
   /// Unicode separator: ├─────┤
   Unicode,
   /// Markdown separator: |-----|
   Markdown,
-}
-
-impl Default for HeaderSeparatorVariant
-{
-  fn default() -> Self
-  {
-    Self::AsciiGrid
-  }
 }
 
 /// Column separator parameter
@@ -509,24 +495,17 @@ impl TableConfig
 }
 
 /// Where to place alignment padding in key-value pairs
-#[ derive( Debug, Clone, Copy, PartialEq, Eq ) ]
+#[ derive( Debug, Clone, Copy, PartialEq, Eq, Default ) ]
 pub enum PaddingSide
 {
   /// Pad keys before separator: "Name   | Value"
   /// Keys align at separator, values start at same column
+  #[ default ]
   BeforeSeparator,
 
   /// Pad values after separator: "Name: Value"
   /// Separators follow keys immediately, values align at same column
   AfterSeparator,
-}
-
-impl Default for PaddingSide
-{
-  fn default() -> Self
-  {
-    Self::BeforeSeparator
-  }
 }
 
 /// Formatter parameters for expanded (vertical record) output

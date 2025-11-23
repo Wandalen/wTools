@@ -723,3 +723,63 @@ This task is COMPLETE when:
 ---
 
 **MAKE MISUSE IMPOSSIBLE. FIX THIS NOW.**
+
+---
+
+## RESOLUTION
+
+**Status**: Completed (2025-11-23)
+
+### Implementation Summary
+
+Task 086 core demands were implemented across Phase 1 and Phase 2. Phase 3/4 items remain as optional future enhancements per original task design.
+
+### Files Created/Modified
+
+**Documentation (DEMAND 1, 6):**
+- `unilang_parser/src/lib.rs:61-119` - CLI integration guidance with correct/incorrect examples
+- `unilang_parser/docs/cli_integration.md` - 314-line comprehensive guide
+
+**Runtime Detection (DEMAND 3):**
+- `unilang_parser/src/parser_engine.rs:1186-1275` - `detect_argv_misuse()` function with two heuristics:
+  - Path-like splits detection (e.g., `["src/my", "project"]`)
+  - Consecutive short tokens detection (3+ in a row)
+
+**Error Messages (DEMAND 4):**
+- Helpful warnings in `detect_argv_misuse()` show:
+  - Wrong approach vs correct approach
+  - Link to `docs/cli_integration.md`
+  - Explanation of shell tokenization
+
+**Tests:**
+- `unilang_parser/tests/argv_multiword_bug_test.rs:1088-1229` - Misuse detection tests
+
+### Acceptance Criteria Verification
+
+| Criterion | Status | Evidence |
+|-----------|--------|----------|
+| New dev knows to use `parse_from_argv` | ✅ | lib.rs:61-119 clear guidance |
+| Misuse gets runtime warning | ✅ | detect_argv_misuse() |
+| Error messages mention pitfall | ✅ | Warnings in parser_engine.rs |
+| Doc examples show correct usage | ✅ | lib.rs + cli_integration.md |
+| Tests validate usage/detection | ✅ | argv_multiword_bug_test.rs |
+| Migration guide exists | ✅ | cli_integration.md decision tree |
+
+### Deferred Items (Future Enhancement)
+
+Per original task Phase 3-4 categorization, these remain optional:
+- **DEMAND 2**: API deprecation (`parse_single_instruction` not deprecated)
+- **DEMAND 5**: Compile-time marker types (`ShellArgv`, `ReplInput`)
+- **DEMAND 7**: Clippy lint (low priority)
+
+### Key Design Decisions
+
+1. **Warnings, not errors**: Misuse detection emits warnings but doesn't prevent parsing. This allows gradual migration without breaking existing code.
+
+2. **Heuristic detection**: Two-heuristic approach catches common patterns without false positives on legitimate usage.
+
+3. **Documentation-first**: Clear documentation in crate-level docs ensures new developers find guidance immediately.
+
+### Validation
+
+All 792 tests pass (ctest3). No breaking changes introduced.
