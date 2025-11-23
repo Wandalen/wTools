@@ -14,10 +14,8 @@ This document serves as the **single source of truth** for all project work.
 | Order | ID | Advisability | Value | Easiness | Safety | Priority | Status | Task | Description |
 |-------|-----|--------------|-------|----------|--------|----------|--------|------|-------------|
 | 1 | [010](completed/010_extract_formatting_utilities_from_wplan.md) | 0 | 9 | 6 | 8 | 0 | ✅ (Completed) | Extract Formatting Utilities from wplan | Extract ANSI handling utilities from wplan (byte formatting rejected - doesn't fit strs_tools scope) |
-| 2 | [006](006_streaming_lazy_evaluation.md) | 400 | 8 | 5 | 5 | 2 | 🔄 (Planned) | Streaming Lazy Evaluation | Implement streaming and lazy evaluation for O(n) to O(1) memory usage reduction |
-| 4 | [007](completed/007_specialized_algorithms.md) | 0 | 8 | 5 | 5 | 0 | ✅ (Completed) | Specialized Algorithms | SingleCharSplitIterator, Boyer-Moore, smart_split with auto-selection - 17 tests pass |
-| 6 | [005](005_unicode_optimization.md) | 350 | 7 | 5 | 5 | 2 | 🔄 (Planned) | Unicode Optimization | Implement Unicode optimization for 3-8x improvement in Unicode-heavy text processing |
-| 7 | [001](completed/001_simd_optimization.md) | 0 | 10 | 5 | 5 | 0 | ✅ (Completed) | SIMD Optimization | Implement SIMD-optimized string operations with automatic fallback for 13-202x performance improvements |
+| 2 | [007](completed/007_specialized_algorithms.md) | 0 | 8 | 5 | 5 | 0 | ✅ (Completed) | Specialized Algorithms | SingleCharSplitIterator, Boyer-Moore, smart_split with auto-selection - 17 tests pass |
+| 3 | [001](completed/001_simd_optimization.md) | 0 | 10 | 5 | 5 | 0 | ✅ (Completed) | SIMD Optimization | Implement SIMD-optimized string operations with automatic fallback for 13-202x performance improvements |
 | 8 | [002](completed/002_zero_copy_optimization.md) | 0 | 10 | 5 | 5 | 0 | ✅ (Completed) | Zero Copy Optimization | Implement zero-copy string operations with copy-on-write semantics for 2-5x memory reduction |
 | 9 | [003](completed/003_compile_time_pattern_optimization.md) | 0 | 10 | 5 | 5 | 0 | ✅ (Completed) | Compile Time Pattern Optimization | Implement compile-time pattern optimization with procedural macros for zero runtime overhead |
 | 10 | [008](completed/008_parser_integration.md) | 0 | 10 | 5 | 5 | 0 | ✅ (Completed) | Parser Integration | Implement parser integration optimization for 30-60% improvement in parsing pipelines |

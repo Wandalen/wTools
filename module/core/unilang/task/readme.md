@@ -6,7 +6,7 @@
 |-------|----|--------------:|------:|---------:|-------:|---------:|--------|------|-------------|
 | 1 | 084 | 0 | 8 | 7 | 8 | 0 | ✅ (Completed) | [help_formatting_improvements](./completed/084_help_formatting_improvements.md) | Already implemented - All features exist: categorization, prefix filtering, hidden commands |
 | 2 | 086 | 3780 | 9 | 6 | 7 | 10 | ✅ (Completed) | [prevent_argv_misuse_pitfall](./completed/086_prevent_argv_misuse_pitfall.md) | Prevent argv→string→split misuse through API redesign and documentation |
-| 3 | 087 | 3240 | 9 | 6 | 6 | 10 | 🔄 (Planned) | [prevent_command_help_divergence](./087_prevent_command_help_divergence.md) | Make command/help divergence impossible through registry API enforcement |
+| 3 | 087 | 0 | 9 | 6 | 6 | 0 | ✅ (Completed) | [prevent_command_help_divergence](./completed/087_prevent_command_help_divergence.md) | Make command/help divergence impossible through registry API enforcement - Phase 1 complete: auto-help generation, format_command_listing(), validate_help_completeness() |
 | 4 | 085 | 2000 | 10 | 4 | 5 | 10 | 🔄 (Planned) | [make_illegal_states_unrepresentable](./085_make_illegal_states_unrepresentable.md) | Redesign API using typestate pattern to make illegal states unrepresentable |
 | 5 | 088 | 1890 | 9 | 7 | 6 | 5 | ✅ (Completed) | [fix_auto_help_enabled_conversion_bug](./completed/088_fix_auto_help_enabled_conversion_bug.md) | Fix auto_help_enabled lost during Static-to-Dynamic conversion |
 | 6 | 089 | 1792 | 8 | 7 | 8 | 4 | ✅ (Completed) | [extract_output_truncation](./completed/089_extract_output_truncation.md) | Extract output truncation utilities (head/tail/width) with ANSI/Unicode support |

@@ -14,8 +14,7 @@
 //! Composes `base_path`/`prefix_path`/`postfix_path` into single `PathBuf`.
 //! Essential for actual filesystem operations.
 
-use super::*;
-use std::fs;
+#[ cfg( not( feature = "no_std" ) ) ]
 use std::path::PathBuf;
 
 // ══════════════════════════════════════════════════════════════════════════════

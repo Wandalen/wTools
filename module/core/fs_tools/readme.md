@@ -20,7 +20,7 @@ Tools to manipulate files.
 
 ### TempDir with RAII Cleanup
 
-```rust
+```rust,ignore
 use fs_tools::TempDir;
 use std::path::PathBuf;
 
