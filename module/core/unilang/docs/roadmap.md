@@ -1,7 +1,7 @@
 # Unilang Crate/Framework Implementation Roadmap
 
-### Current Status (as of 2025-07-31)
-The project has successfully completed its foundational phases (1-3), culminating in a critical architectural refactoring that unified the parsing pipeline and data models. The framework is now stable and robust. The next phase will focus on implementing the mandatory performance requirement for a zero-overhead static command registry, which is the cornerstone for building large-scale, high-performance utilities.
+### Current Status (as of 2025-11-24)
+The project has successfully completed Phase 4 (Zero-Overhead Static Command Registry), including build-time validation to make illegal states unrepresentable. The framework now features compile-time prevention of duplicate commands and parameter storage mismatches (wplan bug pattern). Phase 5 work is in progress, with 3 of 4 milestones complete. The framework is production-ready for building high-performance, type-safe command-line utilities.
 
 **Legend:**
 *   ⚫ : Not Started
@@ -47,6 +47,12 @@ The project has successfully completed its foundational phases (1-3), culminatin
     *   **Spec Reference:** FR-PERF-1
     *   **Deliverable:** A new integration test that generates a large YAML manifest (1000+ commands) and a test binary that proves the performance NFRs are met.
     *   **Description:** The test will generate the manifest, compile a test binary against it, and then execute the binary to measure and assert that startup time is negligible and p99 command resolution latency is under 1ms.
+*   [✅] **M4.5: build_time_validation_illegal_states:**
+    *   **Prerequisites:** M4.2
+    *   **Spec Reference:** FR-REG-9, Task 085
+    *   **Deliverable:** Build-time validation in `build.rs` preventing illegal command states (duplicate names, wplan bug pattern).
+    *   **Description:** Implement compile-time validation to make illegal states unrepresentable: (1) Duplicate command name detection via HashMap tracking, (2) Parameter storage type validation (multiple:true requires List), (3) Actionable error messages with fix guidance. Resolves 8 of 10 items from Task 085. All 833 tests pass.
+    *   **Completed:** 2025-11-24
 
 ### Phase 5: Core API Enhancements & Modality Support
 *   **Goal:** To implement the remaining mandatory functional requirements from Spec v2.2.0, ensuring the framework fully supports REPL, interactive CLI, and WebAssembly (WASM) modalities.

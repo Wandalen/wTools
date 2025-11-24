@@ -587,6 +587,7 @@ fn generate_empty_phf(dest_path: &Path)
 }
 
 #[cfg(feature = "static_registry")]
+#[allow(clippy::too_many_lines)]
 fn generate_static_commands(dest_path: &Path, command_definitions: &[serde_yaml::Value])
 {
   let mut f = BufWriter::new(File::create(dest_path).unwrap());
@@ -614,6 +615,10 @@ fn generate_static_commands(dest_path: &Path, command_definitions: &[serde_yaml:
   }
   writeln!(f).unwrap();
 
+  // Task 085 Item #3: Detect duplicate command names at build time
+  // Track seen command names to prevent duplicates
+  let mut seen_command_names : std::collections::HashMap< String, usize > = std::collections::HashMap::new();
+
   // Validate and generate const data for each command
   // Fix(H27, H37): Validate commands at build time to prevent runtime panics
   for (i, cmd_value) in command_definitions.iter().enumerate()
@@ -631,12 +636,109 @@ fn generate_static_commands(dest_path: &Path, command_definitions: &[serde_yaml:
          ║ BUILD ERROR: Invalid command definition                                       ║\n\
          ╟──────────────────────────────────────────────────────────────────────────────╢\n\
          ║ {e:<76} ║\n\
-         ╟──────────────────────────────────────────────────────────────────────────────╢\n\
+         ╟──────────────────────────────────────────────────────────────────════════────╢\n\
          ║ Fix: Ensure command names start with '.' (e.g., '.help', '.chat')             ║\n\
          ║      Ensure non-empty namespaces start with '.' (e.g., '.session')            ║\n\
          ║      Ensure version is not empty (e.g., '1.0.0')                              ║\n\
          ╚══════════════════════════════════════════════════════════════════════════════╝\n"
       );
+    }
+
+    // Task 085 Item #3: Check for duplicate command names
+    // Compute full name using same logic as PHF generation
+    use build_validation::compute_full_name;
+    let full_name = compute_full_name(namespace, name);
+
+    if let Some(first_index) = seen_command_names.get(&full_name)
+    {
+      panic!(
+        "\n╔══════════════════════════════════════════════════════════════════════════════╗\n\
+         ║ BUILD ERROR: Duplicate command name detected                                  ║\n\
+         ╟──────────────────────────────────────────────────────────────────────────────╢\n\
+         ║ Command '{}' is defined multiple times in YAML manifest{}║\n\
+         ║                                                                                ║\n\
+         ║ First occurrence: command index {}{}║\n\
+         ║ Duplicate found:  command index {}{}║\n\
+         ╟──────────────────────────────────────────────────────────────────────────────╢\n\
+         ║ Fix: Rename one of the commands or remove the duplicate entry.                ║\n\
+         ║      All command names must be unique across the entire manifest.             ║\n\
+         ║                                                                                ║\n\
+         ║ Task 085 Item #3: Prevents silent overwrites and confusing behavior           ║\n\
+         ╚══════════════════════════════════════════════════════════════════════════════╝\n",
+        full_name,
+        " ".repeat(51 - full_name.len().min(51)),
+        first_index,
+        " ".repeat(67 - first_index.to_string().len()),
+        i,
+        " ".repeat(67 - i.to_string().len())
+      );
+    }
+
+    seen_command_names.insert(full_name.clone(), i);
+
+    // Task 085 Item #5: Validate parameter storage types (prevent wplan bug)
+    // Check that multiple:true parameters use List storage type
+    if let Some(arguments) = cmd_value["arguments"].as_sequence()
+    {
+      for arg in arguments
+      {
+        let arg_name = arg["name"].as_str().unwrap_or("");
+        let multiple = arg["attributes"]["multiple"].as_bool().unwrap_or(false);
+
+        if multiple
+        {
+          // Check if kind is a List
+          let is_list = if let Some(kind_str) = arg["kind"].as_str()
+          {
+            // Simple string kind - check if it contains "List"
+            kind_str.contains("List")
+          }
+          else if let Some(_kind_map) = arg["kind"].as_mapping()
+          {
+            // Complex kind structure like {List: ["String", null]}
+            // If it has a "List" key or contains List, it's valid
+            arg["kind"].as_mapping()
+              .and_then(|m| m.keys().next())
+              .and_then(|k| k.as_str())
+              .is_some_and(|k| k == "List")
+          }
+          else
+          {
+            false
+          };
+
+          if !is_list
+          {
+            let kind_debug = format!("{:?}", arg["kind"]);
+            panic!(
+              "\n╔══════════════════════════════════════════════════════════════════════════════╗\n\
+               ║ BUILD ERROR: Invalid parameter definition (wplan bug pattern)                 ║\n\
+               ╟──────────────────────────────────────────────────────────────────────────────╢\n\
+               ║ Command:   {}{}║\n\
+               ║ Parameter: {}{}║\n\
+               ║ Problem:   multiple:true but storage type is NOT List                         ║\n\
+               ║                                                                                ║\n\
+               ║ Current kind: {}{}║\n\
+               ║                                                                                ║\n\
+               ║ This causes silent data loss when multiple values overwrite each other.       ║\n\
+               ╟──────────────────────────────────────────────────────────────────────────────╢\n\
+               ║ Fix: Change parameter kind to List storage:                                   ║\n\
+               ║                                                                                ║\n\
+               ║   kind: {{List: [\"String\", null]}}  # For string values                        ║\n\
+               ║   kind: {{List: [\"Integer\", null]}} # For integer values                       ║\n\
+               ║                                                                                ║\n\
+               ║ Task 085 Item #5: Prevents the wplan bug pattern                              ║\n\
+               ╚══════════════════════════════════════════════════════════════════════════════╝\n",
+              full_name,
+              " ".repeat(68 - full_name.len().min(68)),
+              arg_name,
+              " ".repeat(68 - arg_name.len().min(68)),
+              kind_debug,
+              " ".repeat(63 - kind_debug.len().min(63))
+            );
+          }
+        }
+      }
     }
 
     generate_command_const(&mut f, i, cmd_value);
