@@ -615,7 +615,7 @@ version = "~0.20.0"
 path = "module/core/crates_tools"
 
 [workspace.dependencies.benchkit]
-version = "~0.15.0"
+version = "~0.16.0"
 path = "module/core/benchkit"
 
 ## steps
