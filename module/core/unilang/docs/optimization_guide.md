@@ -164,7 +164,7 @@ println!("Cache hit rate: {:.1}%", metrics.cache_hit_rate() * 100.0);
 3. Check `perf stat` for hardware counter analysis
 
 **Focus areas:**
-- Command lookup hot path (should be dominated by PHF hash)
+- Command lookup hot path (should be dominated by static map lookup)
 - Semantic analysis overhead (argument parsing/validation)
 - Memory allocations during command execution
 
@@ -173,7 +173,7 @@ println!("Cache hit rate: {:.1}%", metrics.cache_hit_rate() * 100.0);
 ### Scaling Behavior
 
 **Registry size vs lookup time:**
-- Static registry: O(1) regardless of size (PHF guarantees)
+- Static registry: O(1) regardless of size (compile-time optimized)
 - Runtime registry: O(1) average case (HashMap)
 - No degradation observed up to 1,000,000 commands
 
@@ -196,7 +196,7 @@ println!("Cache hit rate: {:.1}%", metrics.cache_hit_rate() * 100.0);
    - Further improvements possible
 
 3. **Command lookup** (~80-100ns for static, ~200ns for runtime HashMap)
-   - Static: Already optimal (PHF)
+   - Static: Already optimal (compile-time optimized)
    - Runtime: Acceptable overhead
 
 ## Future Optimization Opportunities

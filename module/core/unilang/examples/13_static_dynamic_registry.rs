@@ -205,15 +205,20 @@ fn main() -> Result< (), unilang::error::Error >
 
   println!( "\n📝 Generated Code Structure:" );
   println!( r#"
-// Generated in static_commands.rs (internal implementation):
-const STATIC_COMMANDS_INTERNAL: phf::Map<&'static str, &'static StaticCommandDefinition> = phf_map! {{
-  ".perf.cmd_1" => &CMD_0,
-  ".perf.cmd_2" => &CMD_1,
-  // ... millions of commands with O(1) lookup
-}};
+// Generated in static_commands.rs by build.rs:
+// The internal implementation uses optimized static maps for O(1) lookup.
+// Users interact with the public API only:
 
-// Public API - implementation details hidden
-pub static STATIC_COMMANDS: StaticCommandMap = StaticCommandMap::from_phf_internal(&STATIC_COMMANDS_INTERNAL);
+/// Static command definitions generated from YAML
+pub static STATIC_COMMANDS: StaticCommandMap = StaticCommandMap::from_definitions(&[
+  StaticCommandDefinition {{ name: ".perf.cmd_1", ... }},
+  StaticCommandDefinition {{ name: ".perf.cmd_2", ... }},
+  // ... commands with O(1) lookup
+]);
+
+// In your application - use the recommended approach:
+let registry = StaticCommandRegistry::from_commands(&STATIC_COMMANDS);
+let pipeline = Pipeline::new(registry.into());
 "# );
 
   println!( "=== Advantages of Hybrid Approach ===\n" );

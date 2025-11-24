@@ -437,7 +437,7 @@ tests/
 
 | Aspect | Compile-Time | Runtime |
 |--------|--------------|---------|
-| Lookup | ~80ns (PHF) | ~4,200ns (HashMap) |
+| Lookup | ~80ns (static map) | ~4,200ns (HashMap) |
 | Flexibility | Requires recompile | Dynamic changes |
 | Use Case | Production CLI | Plugins, development |
 
