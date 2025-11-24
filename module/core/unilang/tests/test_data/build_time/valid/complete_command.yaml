@@ -1,0 +1,39 @@
+---
+# Valid YAML: Complete command with all fields including the 4 missing ones
+# Test case for H5: StaticCommandDefinition MISSING 4 fields
+# This fixture validates that all fields can be properly extracted
+- name: ".test.complete"
+  namespace: ""
+  description: "Complete command with all fields for feature parity testing"
+  short_desc: "Complete test command"
+  hidden_from_list: false
+  priority: 10
+  group: "testing"
+  arguments:
+    - name: "input"
+      kind: "String"
+      description: "Input parameter"
+      attributes:
+        optional: false
+        multiple: false
+        interactive: false
+        sensitive: false
+      validation_rules:
+        - type: "MinLength"
+          value: 1
+        - type: "MaxLength"
+          value: 100
+      hint: "Enter input value"
+      aliases: ["i", "in"]
+      tags: ["required"]
+  status: "stable"
+  version: "2.0.0"
+  tags: ["validation", "complete"]
+  aliases: ["tc", "complete"]
+  permissions: ["read"]
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "POST"
+  examples:
+    - ".test.complete input::value"
+    - ".test.complete i::short_alias"

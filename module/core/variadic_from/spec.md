@@ -1,6 +1,42 @@
-# Technical Specification: `variadic_from` Crate (v1.1)
+# variadic_from
+
+Variadic constructors for Rust structs with automatic `From` trait implementations.
+
+## Overview
+
+The `variadic_from` crate provides a powerful procedural macro and helper traits to simplify the creation of flexible constructors for Rust structs. It automates the implementation of `From`-like traits, allowing structs to be instantiated from a variable number of arguments or tuples, reducing boilerplate and enhancing code readability.
 
 **Note:** This specification governs the behavior of both the `variadic_from` crate, which provides the user-facing traits and macros, and the `variadic_from_meta` crate, which implements the procedural derive macro. Together, they form a single functional unit.
+
+### Scope
+
+#### Responsibility
+
+variadic_from is responsible for generating flexible constructors for structs with 1-3 fields. It provides the `From1`, `From2`, `From3` traits, the `from!` macro for invocation, and the `VariadicFrom` derive macro for automatic implementation.
+
+#### In-Scope
+
+- **FromN traits**: `From1`, `From2`, `From3` for variadic conversion
+- **from! macro**: Unified construction interface dispatching to appropriate trait
+- **VariadicFrom derive**: Automatic trait implementation for structs
+- **Tuple conversion**: `From<(T1, ...)>` implementations alongside `FromN`
+- **Blanket implementations**: Allow `From1<(T1, T2)>` to delegate to `From2`
+- **Compile-time validation**: Error for >3 arguments
+
+#### Out-of-Scope
+
+- **>3 fields**: No support for structs with more than 3 fields
+- **Enums**: Only structs are supported
+- **Runtime dispatching**: All conversions are compile-time
+- **Generic field type coercion**: No automatic type conversion
+
+#### Boundaries
+
+- **Upstream**: Depends on `variadic_from_meta` for proc macro
+- **Downstream**: Used by structs needing flexible constructors
+- **Field count boundary**: 1-3 fields only (0 or >3 generates no code)
+
+## Technical Specification (v1.1)
 
 ### 1. Introduction & Core Concepts
 

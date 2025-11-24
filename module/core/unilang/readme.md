@@ -66,12 +66,12 @@ Developer writes YAML
    build.rs (automatic)
    - Discovers YAML files
    - Validates definitions
-   - Generates PHF map
+   - Generates static command map
          |
          v
    OUT_DIR/static_commands.rs
    static STATIC_COMMANDS: [...]
-   // PHF map with O(1) lookups
+   // Static commands with O(1) lookups
          |
          v
    Binary compiled
@@ -89,7 +89,7 @@ User: ".greet name::Alice"
          |
          v
   Static Registry Lookup
-   O(1) PHF map access
+   O(1) static map access
    ~80ns (no hashing!)
          |
          v
@@ -350,7 +350,7 @@ fn main() -> Result< (), unilang::Error >
 | Runtime (HashMap) | ~4,000ns | Hash tables + allocations | Larger |
 
 **Benchmark Results:**
-- **Static lookups:** ~80-100ns (PHF map + zero allocations)
+- **Static lookups:** ~80-100ns (static map + zero allocations)
 - **Runtime lookups:** ~4,000-5,000ns (HashMap + semantic analysis)
 - **Performance gain:** 50x faster command resolution
 
@@ -363,7 +363,7 @@ fn main() -> Result< (), unilang::Error >
 **Tool:** `cargo run --example static_03_performance_comparison`
 
 **What's measured:**
-- Static: PHF map lookup + CommandDefinition retrieval
+- Static: Static map lookup + CommandDefinition retrieval
 - Runtime: HashMap lookup + CommandDefinition retrieval
 - Excludes parsing (measured separately with SIMD benchmarks)
 
@@ -380,7 +380,7 @@ How unilang differs from popular Rust CLI frameworks:
 
 | Feature | unilang | clap | structopt | argh |
 |---------|---------|------|-----------|------|
-| **Command Lookup** | O(1) static PHF | Runtime HashMap | Runtime | Runtime |
+| **Command Lookup** | O(1) static | Runtime HashMap | Runtime | Runtime |
 | **Definition Style** | YAML/JSON/Rust DSL | Rust builder API | Derive macros | Derive macros |
 | **Modality Support** | CLI, REPL, Web API | CLI only | CLI only | CLI only |
 | **Multi-file Organization** | Auto-discovery | Manual | Manual | Manual |

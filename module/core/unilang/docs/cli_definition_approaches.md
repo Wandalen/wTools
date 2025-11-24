@@ -334,7 +334,7 @@ let registry = CommandRegistry::builder()
 - ⚠️ Requires named functions (no inline closures)
 - ⚠️ Static lifetime constraints on all data
 
-**Example**: `examples/21_rust_dsl_static_phf.rs`
+**Example**: `examples/21_rust_dsl_static.rs`
 
 ---
 
@@ -494,7 +494,7 @@ unilang = { version = "0.28", features = ["full"] }
 
 | Feature Flag | Purpose | Enables Dependency |
 |--------------|---------|-------------------|
-| `static_registry` | Static command registry | `phf` |
+| `static_registry` | Static command registry | (internal) |
 | `yaml_parser` | YAML parsing | `serde_yaml` |
 | `json_parser` | JSON parsing | `serde_json` |
 | `multi_file` | Multi-file discovery | `walkdir` |

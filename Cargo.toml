@@ -778,6 +778,11 @@ default-features = false
 [workspace.dependencies.bytecount]
 version = "0.6"
 
+## External - Unicode support for strs_tools ANSI utilities
+
+[workspace.dependencies.unicode-segmentation]
+version = "1.10"
+
 ## workspace_tools dependencies
 
 [workspace.dependencies.tempfile]

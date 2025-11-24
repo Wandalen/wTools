@@ -1,0 +1,17 @@
+---
+# Invalid YAML: Command with empty name
+# This should cause build.rs validation to fail
+# Test case for basic validation - name cannot be empty
+- name: ""
+  namespace: ".test"
+  description: "This command has empty name - should fail validation"
+  arguments: []
+  status: "stable"
+  version: "1.0.0"
+  tags: []
+  aliases: []
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+  examples: []

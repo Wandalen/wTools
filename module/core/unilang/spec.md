@@ -137,6 +137,22 @@ This section lists the specific, testable functions the `unilang` framework **mu
     - **Build Modes:** `build_static()` for compile-time registry (`StaticCommandMap` wrapper), `build_hybrid()` for mixed static/dynamic
     - **Prefix Application:** Automatic prefix prepending to all commands in a module (e.g., prefix `.db` + command `.migrate` → `.db.migrate`)
     - This enables organizations to consolidate multiple CLI tools while maintaining clear separation of concerns and preventing naming conflicts
+*   **FR-REG-8 (Static Registry Feature Parity):** The `StaticCommandRegistry` **must** have complete feature parity with `CommandRegistry`. Specifically:
+    - **Validation:** `StaticCommandRegistry::register()` **must** validate command definitions using the same rules as `CommandRegistry::register()`
+    - **Auto-Help Generation:** Static commands **must** automatically generate `.command.help` counterparts, identical to `CommandRegistry::register_with_auto_help()`
+    - **Global Help Registration:** When registering static commands, the framework **must** also register the global `.help` command if not already present
+    - **Alias Resolution:** `StaticCommandRegistry::command()` **must** resolve aliases to canonical command names, not just exact matches
+    - **Complete Field Set:** `StaticCommandDefinition` **must** include all fields from `CommandDefinition`, including `short_desc`, `hidden_from_list`, `priority`, and `group` (with defaults for backward compatibility)
+    - **Conversion Bridge:** The framework **must** provide `From<StaticCommandRegistry> for CommandRegistry` conversion to enable `Pipeline::new(static_registry.into())` usage pattern
+    - **Purpose:** This parity ensures the "define once, use everywhere" vision applies equally to static and dynamic command definitions, allowing seamless migration between approaches
+*   **FR-REG-9 (Build-Time Validation):** The `build.rs` script **must** validate all command definitions at compile time with actionable error messages:
+    - **Command Name Validation:** All command names **must** be validated using the same rules as runtime (dot prefix, valid characters)
+    - **Version Validation:** Version strings **must** be validated as non-empty
+    - **Field Extraction:** All command fields including `validation_rules` **must** be extracted from YAML/JSON manifests
+    - **Error Handling:** Invalid manifests **must** cause `cargo build` to fail with clear error messages including file path and line number
+    - **No Silent Failures:** The script **must not** use `unwrap()` on user-provided data; all errors must be actionable
+    - **Shared Validation:** Validation logic **should** be shared between build.rs and runtime to avoid duplication (via `include!()` or module extraction)
+    - **Compile-Time Guarantee:** If build.rs validates successfully, the `From<StaticCommandDefinition> for CommandDefinition` conversion **must not** panic at runtime
 
 #### 4.2. Argument Parsing & Type System
 *   **FR-ARG-1 (Type Support):** The framework **must** support parsing and type-checking for the following `Kind`s: `String`, `Integer`, `Float`, `Boolean`, `Path`, `File`, `Directory`, `Enum`, `Url`, `DateTime`, `Pattern`, `List`, `Map`, `JsonString`, and `Object`.
@@ -644,6 +660,74 @@ pub static STATIC_COMMANDS: StaticCommandMap =
 
 This ensures implementation details remain internal while exposing a clean, dependency-free API to users.
 
+#### 7.4. Config Value Extraction Utilities
+
+**Requires feature**: `json_parser`
+
+The `unilang` framework provides generic utilities for extracting typed values from configuration maps. These utilities work with `HashMap<String, (JsonValue, S)>` where `S` is any source-tracking type (e.g., `config_hierarchy::ConfigSource`).
+
+**Type Alias:**
+*   `ConfigMap<S>` - Alias for `HashMap<String, (JsonValue, S)>`
+
+**Extraction Functions:**
+All functions are generic over source type `S` and return `Option<T>`:
+*   `extract_u8<S>(config, key) -> Option<u8>` - Extract u8, returns None on overflow
+*   `extract_u16<S>(config, key) -> Option<u16>` - Extract u16
+*   `extract_u32<S>(config, key) -> Option<u32>` - Extract u32
+*   `extract_u64<S>(config, key) -> Option<u64>` - Extract u64
+*   `extract_i32<S>(config, key) -> Option<i32>` - Extract i32
+*   `extract_i64<S>(config, key) -> Option<i64>` - Extract i64
+*   `extract_f64<S>(config, key) -> Option<f64>` - Extract f64
+*   `extract_bool<S>(config, key) -> Option<bool>` - Extract bool
+*   `extract_string<S>(config, key) -> Option<String>` - Extract string (returns None for null)
+*   `extract_string_array<S>(config, key) -> Option<Vec<String>>` - Extract array of strings
+
+**Usage Example:**
+```rust
+use std::collections::HashMap;
+use serde_json::json;
+use unilang::config_extraction::{ ConfigMap, extract_u8, extract_bool };
+
+let mut config: ConfigMap<()> = HashMap::new();
+config.insert("verbosity".into(), (json!(3), ()));
+config.insert("debug".into(), (json!(true), ()));
+
+assert_eq!(extract_u8(&config, "verbosity"), Some(3));
+assert_eq!(extract_bool(&config, "debug"), Some(true));
+```
+
+#### 7.5. Output Truncation Utilities
+
+The `unilang` framework provides ANSI-aware and Unicode-aware output truncation utilities for CLI applications.
+
+**Structures:**
+*   `TruncationConfig` - Configuration for head/tail/width truncation with fields:
+    - `head: Option<usize>` - Show only first N lines
+    - `tail: Option<usize>` - Show only last N lines
+    - `width: Option<usize>` - Maximum visible characters per line
+    - `output_filter: OutputFilter` - Which stream to process
+*   `OutputFilter` - Enum for stream selection: `Both`, `Stdout`, `Stderr`
+*   `TruncatedOutput` - Result containing:
+    - `content: String` - Processed content
+    - `lines_omitted: usize` - Number of lines omitted
+    - `width_truncated: bool` - Whether any line was width-truncated
+
+**Functions:**
+*   `apply_truncation(stdout, stderr, config) -> TruncatedOutput` - Main entry point
+*   `truncate_head(text, lines) -> String` - Truncate to first N lines
+*   `truncate_tail(text, lines) -> String` - Truncate to last N lines
+*   `truncate_width(text, max_width) -> String` - Truncate line width (ANSI-aware)
+
+**ANSI Handling Requirements:**
+*   ANSI escape sequences **must** be preserved during width truncation
+*   ANSI codes count as zero width (invisible characters)
+*   Reset code (`\x1b[0m`) **must** be added if truncation occurs mid-formatting
+
+**Unicode Handling Requirements:**
+*   Width **must** be measured in grapheme clusters, not bytes or codepoints
+*   Multi-byte UTF-8 (emojis, CJK) **must** be handled correctly
+*   Width truncation adds `→` indicator when truncated
+
 ### 8. Cross-Cutting Concerns (Error Handling, Security, Verbosity)
 
 *   **Error Handling:** All recoverable errors **must** be propagated as `unilang::Error`, which wraps an `ErrorData` struct containing a machine-readable `code` (typed `ErrorCode` enum) and a human-readable `message`. The framework defines the following standard error codes via the `ErrorCode` enum:
@@ -1025,6 +1109,8 @@ As you build the system, please use this document to log your key implementation
 | ❌ | **FR-REG-5:** The framework must support command aliases. When an alias is invoked, the framework must execute the corresponding canonical command. | |
 | ✅ | **FR-REG-6:** The framework must enforce explicit command naming with dot-prefixed command names. Runtime API must reject registrations lacking dot prefix. Build-time YAML manifests may use two valid formats (compound names or separate namespace) that both produce dot-prefixed commands. | Implemented with runtime validation in `src/command_validation.rs:48-76` and build.rs transformations in `build.rs:208-223`. Two YAML formats documented and tested: Format 1 (compound names) recommended for examples, Format 2 (separate namespace) valid for production. All 608 tests passing including test data files using both formats. |
 | ✅ | **FR-REG-7:** The framework must provide a CliBuilder API for aggregating multiple CLI modules with namespace isolation, conflict detection, and prefix application. Supports static/hybrid build modes for performance. | Implemented in `src/multi_yaml/aggregator.rs` and `src/multi_yaml/cli_builder.rs`. Comprehensive test coverage in `tests/cli/cli_builder_api.rs` (25+ tests) covering module registration, prefix application, conflict detection, namespace isolation, and build modes. Examples: `examples/22_minimal_cli_aggregation.rs`. All tests passing. |
+| ✅ | **FR-REG-8:** StaticCommandRegistry must have complete feature parity with CommandRegistry: validation during registration, auto-help generation, global .help registration, alias resolution, complete field set (including short_desc, hidden_from_list, priority, group), and From<StaticCommandRegistry> for CommandRegistry conversion bridge. | Task 087. Implemented: (1) `From<StaticCommandRegistry> for CommandRegistry` conversion bridge in `src/registry.rs:1028-1045`, (2) Validation happens in `CommandDefinition` builder at earliest point, (3) Auto-help generated during conversion via `CommandRegistry::register()`, (4) Aliases preserved through conversion. Tests: `tests/feature_parity_test.rs` (9 tests), `tests/static_registry_conversion_test.rs` (4 tests). |
+| ✅ | **FR-REG-9:** build.rs must validate all command definitions at compile time with actionable error messages: command name validation, version validation, complete field extraction including validation_rules, no silent failures (no unwrap on user data), shared validation logic, and compile-time guarantee that From conversion cannot panic. | Task 087. Implemented: (1) `build_validation` module in `build.rs:287-373` with `validate_command()`, `validate_version()`, `compute_full_name()`, (2) Shared validation logic in `src/validation_core.rs` (6 functions), (3) Build-time validation at line 627 with actionable error box, (4) Supports both YAML formats per FR-REG-6. Tests: `tests/build_validation_test.rs` (9 tests), `tests/validation_core_test.rs` (19 tests). |
 | ❌ | **FR-ARG-1:** The framework must support parsing and type-checking for the following `Kind`s: `String`, `Integer`, `Float`, `Boolean`, `Path`, `File`, `Directory`, `Enum`, `Url`, `DateTime`, `Pattern`, `List`, `Map`, `JsonString`, and `Object`. | |
 | ❌ | **FR-ARG-2:** The framework must correctly bind positional arguments from a `GenericInstruction` to the corresponding `ArgumentDefinition`s in the order they are defined. | |
 | ❌ | **FR-ARG-3:** The framework must correctly bind named arguments (`name::value`) from a `GenericInstruction` to the corresponding `ArgumentDefinition`, regardless of order. | |

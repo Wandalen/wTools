@@ -13,7 +13,9 @@ categories = [ "text-processing", "data-structures", "visualization" ]
 workspace = true
 
 [dependencies]
-# Core has zero dependencies
+# ANSI-aware string utilities (from strs_tools)
+strs_tools = { workspace = true, features = [ "ansi" ] }
+
 # Optional dependencies for data format serialization
 serde = { workspace = true, features = ["derive"], optional = true }
 serde_json = { workspace = true, optional = true }

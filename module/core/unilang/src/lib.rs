@@ -178,6 +178,10 @@ mod_interface::mod_interface!
   /// Command validation utilities.
   layer command_validation;
 
+  /// Core validation logic shared between runtime and build.rs.
+  /// This module can be included in build.rs via include!() since it has no dependencies.
+  layer validation_core;
+
   /// Semantic analysis and validation.
   layer semantic;
 
@@ -205,6 +209,16 @@ mod_interface::mod_interface!
   /// **Requires feature**: `yaml_parser`
   #[ cfg( feature = "yaml_parser" ) ]
   layer build_helpers;
+
+  /// Config value extraction utilities.
+  /// Generic extractors for `HashMap<String, (JsonValue, S)>` config maps.
+  /// **Requires feature**: `json_parser`
+  #[ cfg( feature = "json_parser" ) ]
+  layer config_extraction;
+
+  /// Output processing utilities for CLI applications.
+  /// Includes ANSI-aware and Unicode-aware truncation.
+  layer output;
 
   // NOTE: Benchmark modules have been moved to unilang_benchmarks workspace crate
   // to avoid polluting production dependencies. Use unilang_benchmarks for all

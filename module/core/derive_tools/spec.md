@@ -1,338 +1,796 @@
-# Technical Specification: `derive_tools`
+# Specification: derive_tools
 
-### Project Goal
+## Overview
 
-To create a comprehensive, standalone, and idiomatic procedural macro library, `derive_tools`, that provides a suite of essential derive macros for common Rust traits. This library will be self-contained, with no external dependencies on other macro-providing crates, establishing its own clear design principles and implementation patterns.
+**derive_tools** is a comprehensive facade crate aggregating derive macros from multiple sources - both workspace-internal and external - providing a unified, feature-gated interface for deriving common Rust traits. It serves as the workspace's one-stop solution for ergonomic trait implementations, eliminating boilerplate through 30+ derive macros spanning arithmetic operations, conversions, display formatting, enum utilities, and trait object cloning.
 
-### Problem Solved
+**Version:** 0.56.0
+**Status:** Experimental
+**Category:** Development Tools (Derive Macros)
+**Dependents:** Unknown (likely most workspace crates)
 
-Rust developers frequently wrap primitive types or compose structs that require boilerplate implementations for common traits (e.g., `From`, `Deref`, `AsRef`). By creating a first-party, full-scale `derive_tools` library, we can:
+### Scope
 
-1.  **Eliminate External Dependencies:** Gives us full control over the implementation, features, and error handling.
-2.  **Establish a Canonical Toolset:** Provide a single, consistent, and well-documented set of derive macros that follow a unified design philosophy.
-3.  **Improve Developer Ergonomics:** Reduce boilerplate code for common patterns in a way that is predictable, robust, and easy to debug.
-4.  **Eliminate External Dependencies**: Remove the reliance on derive_more, strum, parse-display, and other similar crates, giving us full control over the implementation, features, and error handling.
+#### Responsibility
 
-### Ubiquitous Language (Vocabulary)
+Aggregate and re-export derive macros from workspace (derive_tools_meta, variadic_from, clone_dyn) and external sources (derive_more, strum, parse-display), providing a unified feature-gated interface for ergonomic trait derivation across the workspace.
 
-*   **`derive_tools`**: The user-facing facade crate. It provides the derive macros (e.g., `#[derive(From)]`) and is the only crate a user should list as a dependency.
-*   **`derive_tools_meta`**: The procedural macro implementation crate. It contains all the `#[proc_macro_derive]` logic and is a private dependency of `derive_tools`.
-*   **`macro_tools`**: The foundational utility crate providing abstractions over `syn`, `quote`, and `proc_macro2`. It is a private dependency of `derive_tools_meta`.
-*   **Master Attribute**: The primary control attribute `#[derive_tools(...)]` used to configure behavior for multiple macros at once.
-*   **Macro Attribute**: An attribute specific to a single macro, like `#[from(...)]` or `#[display(...)]`.
-*   **Container**: The struct or enum to which a derive macro is applied.
-*   **Newtype Pattern**: A common Rust pattern of wrapping a single type in a struct to create a new, distinct type (e.g., `struct MyId(u64);`).
+#### In-Scope
 
-### Architectural Principles
+1. **Workspace Derive Macros (derive_tools_meta)**
+   - `From` - core::convert::From trait
+   - `InnerFrom` - Conversion from inner type
+   - `New` - Constructor methods
+   - `Not` - Bitwise/logical negation
+   - `VariadicFrom` - Variadic From implementations
+   - `AsMut` / `AsRef` - Reference conversions
+   - `Deref` / `DerefMut` - Smart pointer dereferencing
+   - `Index` / `IndexMut` - Indexing operations
+   - `Phantom` - PhantomData field management
 
-1.  **Two-Crate Structure**: The framework will always maintain a two-crate structure: a user-facing facade crate (`derive_tools`) and a procedural macro implementation crate (`derive_tools_meta`).
-2.  **Abstraction over `syn`/`quote`**: All procedural macro logic within `derive_tools_meta` **must** exclusively use the `macro_tools` crate for AST parsing, manipulation, and code generation. Direct usage of `syn`, `quote`, or `proc_macro2` is forbidden.
-3.  **Convention over Configuration**: Macros should work out-of-the-box for the most common use cases (especially the newtype pattern) with zero configuration. Attributes should only be required to handle ambiguity or to enable non-default behavior.
-4.  **Clear and Actionable Error Messages**: Compilation errors originating from the macros must be clear, point to the exact location of the issue in the user's code, and suggest a correct alternative whenever possible.
-5.  **Orthogonality**: Each macro should be independent and address a single concern. Deriving one trait should not implicitly alter the behavior of another, with the noted exception of `Phantom`.
+2. **Arithmetic Derives (derive_more)**
+   - `Add` / `Sub` - Addition and subtraction
+   - `Mul` / `Div` - Multiplication and division
+   - `AddAssign` / `SubAssign` - Compound assignment
+   - `MulAssign` / `DivAssign` - Compound assignment
+   - `Sum` - Iterator summation
 
-### Macro Design & Implementation Rules
+3. **Conversion Derives (derive_more)**
+   - `Into` - Conversion into target type
+   - `TryInto` - Fallible conversion
+   - `IntoIterator` - Iterator conversion
+   - `Constructor` - Struct constructors
 
-#### Design Rules
-1.  **Consistency**: All macros must use a consistent attribute syntax.
-2.  **Explicitness over Magic**: Prefer explicit user configuration (e.g., `#[error(source)]`) over implicit "magical" behaviors (e.g., auto-detecting a source field). Auto-detection should be a documented fallback, not the primary mechanism.
-3.  **Scoped Attributes**: Field-level attributes always take precedence over container-level attributes.
+4. **Enum Utilities (derive_more + strum)**
+   - `IsVariant` - Variant checking methods
+   - `Unwrap` - Variant extraction
+   - Strum enum utilities (AsRefStr, Display, EnumIter, etc.)
+   - Perfect hash functions (strum_phf feature)
 
-#### Codestyle Rules
-1.  **Repository as Single Source of Truth**: The project's version control repository is the single source of truth for all artifacts.
-2.  **Naming Conventions**: All asset names (files, variables, etc.) **must** use `snake_case`.
-3.  **Modular Implementation**: Each derive macro implementation in `derive_tools_meta` must reside in its own module.
-4.  **Testing**: Every public-facing feature of a macro must have at least one corresponding test case, including `trybuild` tests for all limitations.
+5. **Display/Parsing (parse-display)**
+   - `Display` - Custom Display formatting
+   - `FromStr` - String parsing
 
-### Core Macro Attribute Syntax
+6. **Trait Object Cloning (clone_dyn)**
+   - `CloneDyn` - Clone for trait objects
+   - no_std compatible trait object cloning
 
-The framework uses a master attribute `#[derive_tools(...)]` for global configuration, alongside macro-specific attributes.
+7. **Variadic From (variadic_from)**
+   - Type-level variadic From implementations
+   - Multi-argument From constructors
 
-*   **Master Attribute**: `#[derive_tools( skip( <Trait1>, <Trait2>, ... ) )]`
-    *   Used on fields to exclude them from specific derive macro implementations. This is the preferred way to handle fields that do not implement a given trait.
-*   **Macro-Specific Attributes**: `#[<macro_name>( ... )]`
-    *   Used for configurations that only apply to a single macro (e.g., `#[display("...")]` or `#[add(Rhs = i32)]`).
+8. **Feature Architecture**
+   - `enabled` - Master switch (default)
+   - ~30 individual derive features (e.g., `derive_from`, `derive_add`)
+   - Granular dependency control
+   - `no_std` / `use_alloc` support
 
----
-### Macro-Specific Specifications
+9. **Traditional Namespace Organization**
+   - Standard namespaces: own, orphan, exposed, prelude
+   - Dependency namespace for explicit access
+   - Feature-gated re-exports
 
-#### `From` Macro
-*   **Purpose**: To automatically implement the `core::convert::From` trait. The `Into` macro is intentionally not provided; users should rely on the blanket `Into` implementation provided by the standard library when `From` is implemented.
-*   **Behavior and Rules**:
-    *   **Single-Field Structs**: By default, generates a `From<InnerType>` implementation for the container.
-    *   **Multi-Field Structs**: By default, generates a `From` implementation from a tuple of all field types, in the order they are defined.
-    *   **Enums**: The macro can be used on enum variants to generate `From` implementations that construct a specific variant.
-*   **Attribute Syntax**:
-    *   `#[from(forward)]`: (Container-level, single-field structs only) Generates a generic `impl<T> From<T> for Container where InnerType: From<T>`. This allows the container to be constructed from anything the inner type can be constructed from.
-    *   `#[from((Type1, Type2, ...))]`: (Container-level, multi-field structs only) Specifies an explicit tuple type to convert from. The number of types in the tuple must match the number of fields in the struct.
-    *   `#[from]`: (Enum-variant-level) Marks a variant as the target for a `From` implementation. The implementation will be `From<FieldType>` for single-field variants, or `From<(Field1Type, ...)>` for multi-field variants.
-*   **Interaction with `Phantom` Macro**: The `_phantom` field added by `derive(Phantom)` is automatically ignored and is not included in the tuple for multi-field struct implementations.
-*   **Limitations**: Cannot be applied to unions. For enums, only one variant can be the target for a given source type to avoid ambiguity.
+10. **Unified Documentation**
+    - Single import point: `use derive_tools::*;`
+    - Consistent attribute syntax across derives
+    - Comprehensive examples for each derive
 
-#### `AsRef` Macro
-*   **Purpose**: To implement `core::convert::AsRef<T>`.
-*   **Behavior and Rules**:
-    *   **Single-Field Structs**: By default, implements `AsRef<InnerType>`.
-    *   **Multi-Field Structs**: By default, does nothing. An explicit field-level attribute is required.
-*   **Attribute Syntax**:
-    *   `#[as_ref]`: (Field-level) Marks the target field in a multi-field struct. Implements `AsRef<FieldType>`. This is mandatory for this case.
-    *   `#[as_ref(forward)]`: (Container or Field-level) Forwards the `AsRef` implementation from the inner field. Generates `impl<T: ?Sized> AsRef<T> for Container where FieldType: AsRef<T>`.
-    *   `#[as_ref(Type1, Type2, ...)]`: (Container or Field-level) Generates specific `AsRef` implementations for the listed types, assuming the inner field also implements them.
-*   **Interaction with `Phantom` Macro**: The `_phantom` field is ignored and cannot be selected as the target.
-*   **Limitations**: Cannot be applied to enums or unions.
+#### Out-of-Scope
 
-#### `AsMut` Macro
-*   **Purpose**: To implement `core::convert::AsMut<T>`.
-*   **Prerequisites**: The container must also implement `AsRef<T>` for the same type `T`.
-*   **Behavior and Rules**:
-    *   **Single-Field Structs**: By default, implements `AsMut<InnerType>`.
-    *   **Multi-Field Structs**: By default, does nothing. An explicit field-level attribute is required.
-*   **Attribute Syntax**:
-    *   `#[as_mut]`: (Field-level) Marks the target field in a multi-field struct. Implements `AsMut<FieldType>`.
-    *   `#[as_mut(forward)]`: (Container or Field-level) Forwards the `AsMut` implementation from the inner field.
-    *   `#[as_mut(Type1, ...)]`: (Container or Field-level) Generates implementations for specific types.
-*   **Interaction with `Phantom` Macro**: The `_phantom` field is ignored and cannot be selected as the target.
-*   **Limitations**: Cannot be applied to enums or unions.
+1. **NOT Custom Proc Macro Implementation**
+   - Aggregates existing macros, doesn't implement new ones directly
+   - Custom workspace macros in derive_tools_meta
+   - **Rationale:** Facade pattern for unification
 
-#### `Deref` Macro
-*   **Purpose**: To implement `core::ops::Deref`.
-*   **Behavior and Rules**:
-    *   **Single-Field Structs**: By default, dereferences to the inner type.
-    *   **Multi-Field Structs**: By default, does nothing. An explicit field-level attribute is required.
-*   **Attribute Syntax**:
-    *   `#[deref]`: (Field-level) Marks the target field in a multi-field struct.
-    *   `#[deref(forward)]`: (Container or Field-level) Forwards the `Deref` implementation, setting `Target` to the inner field's `Target`.
-*   **Interaction with `Phantom` Macro**: The `_phantom` field is ignored and cannot be selected as the target.
-*   **Limitations**: Cannot be applied to enums or unions.
+2. **NOT Runtime Trait Implementation**
+   - No dynamic trait dispatch beyond clone_dyn
+   - Compile-time code generation only
+   - **Rationale:** Derive macros are compile-time
 
-#### `DerefMut` Macro
-*   **Purpose**: To implement `core::ops::DerefMut`.
-*   **Prerequisites**: The container must also implement `Deref`.
-*   **Behavior and Rules**:
-    *   **Single-Field Structs**: By default, mutably dereferences to the inner type.
-    *   **Multi-Field Structs**: By default, does nothing. An explicit field-level attribute is required.
-*   **Attribute Syntax**:
-    *   `#[deref_mut]`: (Field-level) Marks the target field in a multi-field struct.
-    *   `#[deref_mut(forward)]`: (Container or Field-level) Forwards the `DerefMut` implementation.
-*   **Interaction with `Phantom` Macro**: The `_phantom` field is ignored and cannot be selected as the target.
-*   **Limitations**: Cannot be applied to enums or unions.
+3. **NOT Custom Syntax Beyond Attributes**
+   - Standard `#[derive(...)]` syntax
+   - No procedural attribute macros
+   - **Rationale:** Simplicity and familiarity
 
-#### `Index` Macro
-*   **Purpose**: To implement `core::ops::Index<Idx>`.
-*   **Behavior and Rules**:
-    *   **Single-Field Structs**: By default, forwards the `Index` implementation to the inner field.
-    *   **Multi-Field Structs**: By default, does nothing. An explicit field-level attribute is required.
-*   **Attribute Syntax**:
-    *   `#[index]`: (Field-level) Marks the target field in a multi-field struct.
-*   **Interaction with `Phantom` Macro**: The `_phantom` field is ignored and cannot be selected as the target.
-*   **Limitations**: Cannot be applied to enums or unions. The target field must implement `Index`.
+4. **NOT Auto-Trait Implementation**
+   - Doesn't implement Send/Sync/Unpin automatically
+   - Only explicit user-requested traits
+   - **Rationale:** Auto-traits are compiler magic
 
-#### `IndexMut` Macro
-*   **Purpose**: To implement `core::ops::IndexMut<Idx>`.
-*   **Prerequisites**: The container must also implement `Index<Idx>`.
-*   **Behavior and Rules**:
-    *   **Single-Field Structs**: By default, forwards the `IndexMut` implementation.
-    *   **Multi-Field Structs**: By default, does nothing. An explicit field-level attribute is required.
-*   **Attribute Syntax**:
-    *   `#[index_mut]`: (Field-level) Marks the target field in a multi-field struct.
-*   **Interaction with `Phantom` Macro**: The `_phantom` field is ignored and cannot be selected as the target.
-*   **Limitations**: Cannot be applied to enums or unions. The target field must implement `IndexMut`.
+5. **NOT Generic Derive Dispatch**
+   - No single "derive everything" macro
+   - Each derive must be explicit
+   - **Rationale:** Clarity over convenience
 
-#### `Not` Macro
-*   **Purpose**: To implement `core::ops::Not`.
-*   **Default Behavior**: Performs element-wise negation on all fields.
-*   **Attribute Syntax**:
-    *   `#[derive_tools( skip( Not ) )]`: (Field-level) Excludes a field from the operation.
-*   **Interaction with `Phantom` Macro**: The `_phantom` field is automatically ignored.
-*   **Limitations**: Cannot be applied to enums or unions. All non-skipped fields must implement `Not`.
+6. **NOT Foreign Trait Derivation**
+   - Cannot derive traits from external crates (beyond aggregated ones)
+   - Only known trait implementations
+   - **Rationale:** Orphan rules and proc macro limitations
 
-#### `Add` Macro
-*   **Purpose**: To implement `core::ops::Add`.
-*   **Default Behavior**: Performs element-wise addition on all fields against a `rhs` of type `Self`.
-*   **Attribute Syntax**:
-    *   `#[derive_tools( skip( Add ) )]`: (Field-level) Excludes a field from the operation.
-    *   `#[add( Rhs = i32 )]`: (Container-level) Specifies a right-hand-side type for the operation.
-*   **Interaction with `Phantom` Macro**: The `_phantom` field is automatically ignored.
-*   **Limitations**: Cannot be applied to enums or unions. All non-skipped fields must implement `Add`.
+7. **NOT Dynamic Derive Selection**
+   - Feature flags determined at compile-time
+   - No conditional derive based on runtime config
+   - **Rationale:** Derive macros are compile-time
 
-#### `Sub` Macro
-*   **Purpose**: To implement `core::ops::Sub`.
-*   **Default Behavior**: Performs element-wise subtraction on all fields against a `rhs` of type `Self`.
-*   **Attribute Syntax**:
-    *   `#[derive_tools( skip( Sub ) )]`: (Field-level) Excludes a field from the operation.
-    *   `#[sub( Rhs = i32 )]`: (Container-level) Specifies a right-hand-side type for the operation.
-*   **Interaction with `Phantom` Macro**: The `_phantom` field is automatically ignored.
-*   **Limitations**: Cannot be applied to enums or unions. All non-skipped fields must implement `Sub`.
+8. **NOT Custom Error Types**
+   - Macros use default error handling from sources
+   - No unified error type across derives
+   - **Rationale:** Each source has own error handling
 
-#### `Mul` Macro
-*   **Purpose**: To implement `core::ops::Mul`.
-*   **Default Behavior**: Performs element-wise multiplication on all fields against a `rhs` of type `Self`.
-*   **Attribute Syntax**:
-    *   `#[derive_tools( skip( Mul ) )]`: (Field-level) Excludes a field from the operation.
-    *   `#[mul( Rhs = i32 )]`: (Container-level) Specifies a right-hand-side type for the operation.
-*   **Interaction with `Phantom` Macro**: The `_phantom` field is automatically ignored.
-*   **Limitations**: Cannot be applied to enums or unions. All non-skipped fields must implement `Mul`.
+#### Boundaries
 
-#### `Div` Macro
-*   **Purpose**: To implement `core::ops::Div`.
-*   **Default Behavior**: Performs element-wise division on all fields against a `rhs` of type `Self`.
-*   **Attribute Syntax**:
-    *   `#[derive_tools( skip( Div ) )]`: (Field-level) Excludes a field from the operation.
-    *   `#[div( Rhs = i32 )]`: (Container-level) Specifies a right-hand-side type for the operation.
-*   **Interaction with `Phantom` Macro**: The `_phantom` field is automatically ignored.
-*   **Limitations**: Cannot be applied to enums or unions. All non-skipped fields must implement `Div`.
+- **derive_tools vs derive_more**: derive_tools aggregates derive_more; derive_more is standalone
+- **derive_tools vs derive_tools_meta**: derive_tools is facade; derive_tools_meta implements workspace derives
+- **derive_tools vs std derives**: derive_tools provides additional derives; std provides core derives (Clone, Debug, etc.)
 
-#### `AddAssign` Macro
-*   **Purpose**: To implement `core::ops::AddAssign`.
-*   **Default Behavior**: Performs in-place element-wise addition on all fields.
-*   **Attribute Syntax**:
-    *   `#[derive_tools( skip( AddAssign ) )]`: (Field-level) Excludes a field from the operation.
-*   **Interaction with `Phantom` Macro**: The `_phantom` field is automatically ignored.
-*   **Limitations**: Cannot be applied to enums or unions. All non-skipped fields must implement `AddAssign`.
+## Architecture
 
-#### `SubAssign` Macro
-*   **Purpose**: To implement `core::ops::SubAssign`.
-*   **Default Behavior**: Performs in-place element-wise subtraction on all fields.
-*   **Attribute Syntax**:
-    *   `#[derive_tools( skip( SubAssign ) )]`: (Field-level) Excludes a field from the operation.
-*   **Interaction with `Phantom` Macro**: The `_phantom` field is automatically ignored.
-*   **Limitations**: Cannot be applied to enums or unions. All non-skipped fields must implement `SubAssign`.
+### Dependency Structure
 
-#### `MulAssign` Macro
-*   **Purpose**: To implement `core::ops::MulAssign`.
-*   **Default Behavior**: Performs in-place element-wise multiplication on all fields.
-*   **Attribute Syntax**:
-    *   `#[derive_tools( skip( MulAssign ) )]`: (Field-level) Excludes a field from the operation.
-*   **Interaction with `Phantom` Macro**: The `_phantom` field is automatically ignored.
-*   **Limitations**: Cannot be applied to enums or unions. All non-skipped fields must implement `MulAssign`.
+```
+derive_tools (facade, aggregation)
+├── Internal Dependencies (workspace)
+│   ├── derive_tools_meta (proc macros: From, AsMut, Deref, Index, etc.)
+│   ├── variadic_from (variadic From implementations)
+│   └── clone_dyn (trait object cloning)
+├── External Dependencies (crates.io)
+│   ├── derive_more (optional, arithmetic/conversion derives)
+│   ├── strum (optional, enum utilities)
+│   └── parse-display (optional, Display/FromStr)
+└── Dev Dependencies
+    ├── test_tools (workspace, testing)
+    └── macro_tools (workspace, macro utilities for tests)
+```
 
-#### `DivAssign` Macro
-*   **Purpose**: To implement `core::ops::DivAssign`.
-*   **Default Behavior**: Performs in-place element-wise division on all fields.
-*   **Attribute Syntax**:
-    *   `#[derive_tools( skip( DivAssign ) )]`: (Field-level) Excludes a field from the operation.
-*   **Interaction with `Phantom` Macro**: The `_phantom` field is automatically ignored.
-*   **Limitations**: Cannot be applied to enums or unions. All non-skipped fields must implement `DivAssign`.
+**Note:** All production dependencies are optional and feature-gated
 
-#### `InnerFrom` Macro
-*   **Purpose**: To implement `core::convert::From<Container>` for the inner type(s) of a struct.
-*   **Default Behavior**:
-    *   **Single-Field Structs**: Implements `From<Container>` for the inner field's type.
-    *   **Multi-Field Structs**: Implements `From<Container>` for a tuple containing all field types.
-*   **Interaction with `Phantom` Macro**: The `_phantom` field is automatically ignored.
-*   **Limitations**: Cannot be applied to enums or unions.
+### Module Organization
 
-#### `VariadicFrom` Macro
-*   **Purpose**: To generate a generic `From` implementation from a tuple of convertible types.
-*   **Default Behavior**: Generates `impl<T1, ...> From<(T1, ...)> for Container` where each `Tn` can be converted into the corresponding field's type.
-*   **Interaction with `Phantom` Macro**: The `_phantom` field is automatically ignored.
-*   **Limitations**: Cannot be applied to enums, unions, or unit structs.
+```
+derive_tools
+├── lib.rs (facade aggregation)
+│   ├── Re-exports from derive_tools_meta
+│   ├── Re-exports from derive_more module
+│   ├── Re-exports from strum
+│   ├── Re-exports from parse-display
+│   ├── Re-exports from clone_dyn
+│   └── Re-exports from variadic_from
+├── dependency/ - Explicit dependency access
+│   ├── derive_tools_meta
+│   ├── derive_more
+│   ├── strum
+│   ├── parse_display
+│   ├── clone_dyn
+│   └── variadic_from
+└── Standard namespaces: own, orphan, exposed, prelude
+```
 
-#### `Display` Macro
-*   **Purpose**: To implement `core::fmt::Display`.
-*   **Behavior**: Uses a format string to define the implementation.
-*   **Attribute**: `#[display("...")]` is required for all but the simplest cases.
+**Pattern:** Pure facade with traditional namespace organization
 
-#### `FromStr` Macro
-*   **Purpose**: To implement `core::str::FromStr`.
-*   **Behavior**: Uses a `#[display("...")]` attribute to define the parsing format, relying on a dependency like `parse-display`.
-*   **Attribute**: `#[display( ... )]` is used to define the parsing format.
+### Feature Architecture
 
-#### `IntoIterator` Macro
-*   **Purpose**: To implement `core::iter::IntoIterator`.
-*   **Default Behavior**: For a single-field struct, it forwards the implementation. For multi-field structs, a field must be explicitly marked.
-*   **Attribute Syntax**:
-    *   `#[into_iterator]`: (Field-level) Marks the target field for iteration.
-    *   `#[into_iterator( owned, ref, ref_mut )]`: (Container or Field-level) Specifies which iterator types to generate.
-*   **Interaction with `Phantom` Macro**: The `_phantom` field is ignored and cannot be selected as the target.
-*   **Limitations**: The target field must implement the corresponding `IntoIterator` traits. Cannot be applied to enums or unions.
+```
+enabled (master switch, default)
+│
+├── Workspace Derives
+│   ├── derive_from (From trait)
+│   ├── derive_inner_from (InnerFrom)
+│   ├── derive_new (New constructor)
+│   ├── derive_not (Not trait)
+│   ├── derive_variadic_from (VariadicFrom)
+│   ├── derive_as_mut / derive_as_ref
+│   ├── derive_deref / derive_deref_mut
+│   ├── derive_index / derive_index_mut
+│   └── derive_phantom (PhantomData)
+│
+├── derive_more Derivatives (require derive_more dependency)
+│   ├── derive_add / derive_add_assign
+│   ├── derive_mul / derive_mul_assign
+│   ├── derive_constructor
+│   ├── derive_error
+│   ├── derive_into / derive_try_into
+│   ├── derive_into_iterator
+│   ├── derive_sum
+│   ├── derive_is_variant
+│   └── derive_unwrap
+│
+├── Enum Utilities
+│   ├── derive_strum (enable strum derives)
+│   └── strum_phf (perfect hash functions)
+│
+├── Display/Parsing
+│   ├── derive_display (parse-display)
+│   └── derive_from_str (parse-display)
+│
+├── Trait Objects
+│   └── derive_clone_dyn (clone_dyn)
+│
+└── Variadic
+    ├── type_variadic_from (types only)
+    └── derive_variadic_from (derive + types)
 
-#### `IsVariant` Macro
-*   **Purpose**: For enums, to generate `is_variant()` predicate methods.
-*   **Behavior**: Generates methods for each variant unless skipped with `#[is_variant(skip)]`.
-*   **Limitations**: Can only be applied to enums.
+full (all features)
+no_std (embedded support)
+use_alloc (no_std + allocation)
+```
 
-#### `Unwrap` Macro
-*   **Purpose**: For enums, to generate panicking `unwrap_variant()` methods.
-*   **Behavior**: Generates `unwrap_variant_name`, `..._ref`, and `..._mut` methods for each variant unless skipped with `#[unwrap(skip)]`.
-*   **Limitations**: Can only be applied to enums.
+**Default Features:** `enabled` + most individual derives (~25 features)
 
-#### `New` Macro
-*   **Purpose**: To generate a flexible `new()` constructor for a struct.
-*   **Default Behavior**: Generates a public function `pub fn new(...) -> Self` that takes all struct fields as arguments in their defined order.
-*   **Attribute Syntax**:
-    *   `#[new(default)]`: (Field-level) Excludes the field from the `new()` constructor's arguments. The field will be initialized using `Default::default()` in the function body.
-*   **Interaction with `Phantom` Macro**: The `_phantom` field is automatically handled. It is not included as an argument in the `new()` constructor and is initialized with `core::marker::PhantomData` in the function body.
-*   **Generated Code Logic**:
-    *   For `struct MyType<T> { field: T, #[new(default)] id: u32 }` that also derives `Phantom`, the generated code will be:
-        ```rust
-        impl< T > MyType< T >
-        {
-          pub fn new( field : T ) -> Self
-          {
-            Self
-            {
-              field,
-              id: core::default::Default::default(),
-              _phantom: core::marker::PhantomData,
-            }
-          }
-        }
-        ```
-*   **Limitations**: Cannot be applied to enums or unions. Any field not marked `#[new(default)]` must have its type specified as an argument.
+### Derive Flow
 
-#### `Default` Macro
-*   **Purpose**: To implement the standard `core::default::Default` trait.
-*   **Default Behavior**: Implements `default()` by calling `Default::default()` on every field.
-*   **Interaction with `Phantom` Macro**: The `_phantom` field is automatically handled and initialized with `core::marker::PhantomData`.
-*   **Limitations**: Cannot be applied to enums or unions. All fields must implement `Default`.
+#### Basic Derive Flow
 
-#### `Error` Macro
-*   **Purpose**: To implement `std::error::Error`.
-*   **Prerequisites**: The container must implement `Debug` and `Display`.
-*   **Recommended Usage**: Explicitly mark the source of an error using `#[error(source)]` on a field.
-*   **Fallback Behavior**: If no field is marked, the macro will attempt to find a source by looking for a field named `source`, then for the first field that implements `Error`.
-*   **Attribute**: `#[error(source)]` is the primary attribute.
+```
+#[derive(From)]
+struct Wrapper(i32);
+  ↓
+Compiler invokes From proc macro
+  ↓
+derive_tools_meta::From expands
+  ↓
+impl From<i32> for Wrapper {
+  fn from(value: i32) -> Self {
+    Self(value)
+  }
+}
+  ↓
+Generated code compiled into user's crate
+```
 
-#### `Phantom` Macro
-*   **Purpose**: To add a `_phantom: PhantomData<...>` field to a struct to handle unused generic parameters.
-*   **Design Note**: This macro modifies the struct definition directly.
-*   **Interaction with Other Macros**:
-    *   **Core Issue**: This macro adds a `_phantom` field *before* other derive macros are expanded. Other macros must be implemented to gracefully handle this modification.
-    *   **`New` Macro**: The generated `new()` constructor **must not** include `_phantom` in its arguments. It **must** initialize the field with `core::marker::PhantomData`.
-    *   **`Default` Macro**: The generated `default()` method **must** initialize `_phantom` with `core::marker::PhantomData`.
-    *   **`From` / `InnerFrom` Macros**: These macros **must** ignore any field named `_phantom` when constructing the tuple representation of the struct.
-*   **Limitations**: Can only be applied to structs.
+#### Facade Re-export Flow
 
-### Meta-Requirements
+```
+use derive_tools::*;
+  ↓
+Import exposed namespace
+  ↓
+Access to all enabled derive macros:
+  ├─ derive_tools_meta::* (workspace)
+  ├─ derive_more::* (external)
+  ├─ strum::* (external)
+  ├─ parse_display::* (external)
+  ├─ clone_dyn::* (workspace)
+  └─ variadic_from::* (workspace)
+```
 
-This specification document must be maintained according to the following rules:
+## Public API
 
-1.  **Deliverables**: Any change to this specification must ensure that both `specification.md` and `spec_addendum.md` are correctly defined as project deliverables.
-2.  **Ubiquitous Language**: All terms defined in the `Ubiquitous Language (Vocabulary)` section must be used consistently throughout this document.
-3.  **Single Source of Truth**: The version control repository is the single source of truth for this document.
-4.  **Naming Conventions**: All examples and definitions within this document must adhere to the project's naming conventions.
-5.  **Structure**: The overall structure of this document must be maintained.
+### Workspace Derives (derive_tools_meta)
 
-### Conformance Check Procedure
+```rust
+#[cfg(feature = "derive_from")]
+pub use derive_tools_meta::From;
 
-To verify that the final implementation of `derive_tools` conforms to this specification, the following checks must be performed and must all pass:
+#[cfg(feature = "derive_inner_from")]
+pub use derive_tools_meta::InnerFrom;
 
-1.  **Static Analysis & Code Review**:
-    *   Run `cargo clippy --workspace -- -D warnings` and confirm there are no warnings.
-    *   Manually review the `derive_tools_meta` crate to ensure no direct `use` of `syn`, `quote`, or `proc_macro2` exists.
-    *   Confirm that the project structure adheres to the two-crate architecture.
-    *   Confirm that all code adheres to the rules defined in `codestyle.md`.
+#[cfg(feature = "derive_new")]
+pub use derive_tools_meta::New;
 
-2.  **Testing**:
-    *   Run `cargo test --workspace --all-features` and confirm that all tests pass.
-    *   For each macro, create a dedicated test file (`tests/inc/<macro_name>_test.rs`) that includes:
-        *   Positive use cases for all major behaviors (e.g., single-field, multi-field, forwarding).
-        *   Edge cases (e.g., generics, lifetimes).
-        *   At least one `trybuild` test case for each limitation listed in the specification to ensure it produces a clear compile-time error.
-        *   A dedicated test case to verify the interaction with the `Phantom` macro, where applicable.
+#[cfg(feature = "derive_not")]
+pub use derive_tools_meta::Not;
 
-3.  **Documentation & Deliverables**:
-    *   Ensure all public-facing macros and types in the `derive_tools` crate are documented with examples.
-    *   Confirm that this `specification.md` document is up-to-date with the final implementation.
-    *   Confirm that the `spec_addendum.md` template is available as a deliverable.
+#[cfg(feature = "derive_variadic_from")]
+pub use derive_tools_meta::VariadicFrom;
+
+#[cfg(feature = "derive_as_mut")]
+pub use derive_tools_meta::AsMut;
+
+#[cfg(feature = "derive_as_ref")]
+pub use derive_tools_meta::AsRef;
+
+#[cfg(feature = "derive_deref")]
+pub use derive_tools_meta::Deref;
+
+#[cfg(feature = "derive_deref_mut")]
+pub use derive_tools_meta::DerefMut;
+
+#[cfg(feature = "derive_index")]
+pub use derive_tools_meta::Index;
+
+#[cfg(feature = "derive_index_mut")]
+pub use derive_tools_meta::IndexMut;
+
+#[cfg(feature = "derive_phantom")]
+pub use derive_tools_meta::Phantom;
+```
+
+### External Derives (derive_more)
+
+```rust
+#[cfg(feature = "derive_add")]
+pub use ::derive_more::{Add, Sub};
+
+#[cfg(feature = "derive_add_assign")]
+pub use ::derive_more::{AddAssign, SubAssign};
+
+#[cfg(feature = "derive_mul")]
+pub use ::derive_more::{Mul, Div};
+
+#[cfg(feature = "derive_mul_assign")]
+pub use ::derive_more::{MulAssign, DivAssign};
+
+#[cfg(feature = "derive_constructor")]
+pub use ::derive_more::Constructor;
+
+#[cfg(feature = "derive_error")]
+pub use ::derive_more::Error;
+
+#[cfg(feature = "derive_into")]
+pub use ::derive_more::Into;
+
+#[cfg(feature = "derive_try_into")]
+pub use ::derive_more::TryInto;
+
+#[cfg(feature = "derive_into_iterator")]
+pub use ::derive_more::IntoIterator;
+
+#[cfg(feature = "derive_sum")]
+pub use ::derive_more::Sum;
+
+#[cfg(feature = "derive_is_variant")]
+pub use ::derive_more::IsVariant;
+
+#[cfg(feature = "derive_unwrap")]
+pub use ::derive_more::Unwrap;
+```
+
+### Display/Parsing Derives
+
+```rust
+#[cfg(feature = "derive_display")]
+pub use ::parse_display::Display;
+
+#[cfg(feature = "derive_from_str")]
+pub use ::parse_display::FromStr;
+```
+
+### Enum Utilities
+
+```rust
+#[cfg(feature = "derive_strum")]
+pub use ::strum::*; // All strum derives
+```
+
+### Trait Object Cloning
+
+```rust
+#[cfg(feature = "derive_clone_dyn")]
+pub use ::clone_dyn::exposed::*;
+```
+
+### Variadic From
+
+```rust
+#[cfg(any(feature = "derive_variadic_from", feature = "type_variadic_from"))]
+pub use variadic_from as variadic;
+```
+
+### Dependency Namespace
+
+```rust
+pub mod dependency {
+  pub use ::derive_tools_meta;
+
+  #[cfg(feature = "derive_clone_dyn")]
+  pub use ::clone_dyn::{self, dependency::*};
+
+  #[cfg(any(feature = "derive_variadic_from", feature = "type_variadic_from"))]
+  pub use ::variadic_from::{self, dependency::*};
+
+  #[cfg(feature = "derive_more")]
+  pub use ::derive_more;
+
+  #[cfg(feature = "derive_strum")]
+  pub use ::strum;
+
+  #[cfg(feature = "parse_display")]
+  pub use ::parse_display;
+}
+```
+
+## Usage Patterns
+
+### Pattern 1: Basic From Derive
+
+```rust
+use derive_tools::*;
+
+#[derive(From, PartialEq, Debug)]
+struct UserId(u64);
+
+let id: UserId = 42u64.into();
+assert_eq!(id, UserId(42));
+```
+
+### Pattern 2: Display and FromStr
+
+```rust
+use derive_tools::*;
+use std::str::FromStr;
+
+#[derive(From, Display, FromStr, PartialEq, Debug)]
+#[display("{0}")]
+struct Percentage(i32);
+
+// Derived Display
+let p = Percentage(75);
+assert_eq!(format!("{}", p), "75");
+
+// Derived FromStr
+let p = Percentage::from_str("42").unwrap();
+assert_eq!(p, Percentage(42));
+```
+
+### Pattern 3: Arithmetic Operations
+
+```rust
+use derive_tools::*;
+
+#[derive(From, Add, Mul, PartialEq, Debug)]
+struct Distance(f64);
+
+let d1 = Distance(10.0);
+let d2 = Distance(20.0);
+let sum = d1 + d2;
+assert_eq!(sum, Distance(30.0));
+```
+
+### Pattern 4: Deref for Newtype
+
+```rust
+use derive_tools::*;
+
+#[derive(From, Deref, DerefMut)]
+struct Username(String);
+
+let mut name = Username("alice".to_string());
+name.push_str("_42"); // Deref to String
+assert_eq!(&*name, "alice_42");
+```
+
+### Pattern 5: Enum IsVariant
+
+```rust
+use derive_tools::*;
+
+#[derive(IsVariant)]
+enum Status {
+  Active,
+  Inactive,
+  Pending(String),
+}
+
+let status = Status::Active;
+assert!(status.is_active());
+assert!(!status.is_inactive());
+```
+
+### Pattern 6: Constructor Derive
+
+```rust
+use derive_tools::*;
+
+#[derive(Constructor)]
+struct Point {
+  x: i32,
+  y: i32,
+}
+
+let p = Point::new(10, 20);
+assert_eq!(p.x, 10);
+assert_eq!(p.y, 20);
+```
+
+### Pattern 7: AsRef and AsMut
+
+```rust
+use derive_tools::*;
+
+#[derive(AsRef, AsMut)]
+struct Wrapper(Vec<i32>);
+
+let mut w = Wrapper(vec![1, 2, 3]);
+let v: &Vec<i32> = w.as_ref();
+assert_eq!(v.len(), 3);
+
+let v_mut: &mut Vec<i32> = w.as_mut();
+v_mut.push(4);
+assert_eq!(w.0.len(), 4);
+```
+
+### Pattern 8: Error Derive
+
+```rust
+use derive_tools::*;
+
+#[derive(Error, Debug)]
+#[error("Invalid value: {value}")]
+struct ValidationError {
+  value: String,
+}
+
+let err = ValidationError {
+  value: "bad".to_string(),
+};
+println!("{}", err); // "Invalid value: bad"
+```
+
+### Pattern 9: Variadic From
+
+```rust
+use derive_tools::*;
+
+#[derive(VariadicFrom)]
+struct Config {
+  host: String,
+  port: u16,
+}
+
+// Can construct from multiple argument counts
+let cfg = Config::from(("localhost".to_string(), 8080u16));
+```
+
+### Pattern 10: Clone for Trait Objects
+
+```rust
+use derive_tools::*;
+
+#[derive(CloneDyn)]
+trait MyTrait: CloneDyn {}
+
+// Now can clone Box<dyn MyTrait>
+```
+
+## Dependencies and Consumers
+
+### Direct Dependencies
+
+**Workspace:**
+- `derive_tools_meta` (optional, most derives) - Custom workspace derive macros
+- `variadic_from` (optional) - Variadic From implementations
+- `clone_dyn` (optional) - Trait object cloning
+
+**External:**
+- `derive_more` (optional) - Comprehensive derive macro collection
+- `strum` (optional) - Enum utilities and derives
+- `parse-display` (optional) - Display/FromStr parsing
+
+**Build:**
+- `cfg_aliases` (workspace) - Feature flag aliases
+
+**Dev:**
+- `test_tools` (workspace) - Testing utilities
+- `macro_tools` (workspace) - Macro testing utilities
+
+### Consumers (Unknown)
+
+**Likely used by:**
+- Most workspace crates for trait derives
+- Application code for reducing boilerplate
+- Library code for ergonomic APIs
+
+**Usage Pattern:** Workspace crates use derive_tools as primary derive macro source, enabling specific features as needed for trait implementations.
+
+## Design Rationale
+
+### Why Facade Pattern?
+
+Aggregates multiple derive macro sources into single crate:
+
+**Benefits:**
+1. **Single Import**: One `use derive_tools::*;` for all derives
+2. **Unified Documentation**: Centralized derive reference
+3. **Feature Control**: Granular dependency management
+4. **Version Control**: Single version for all workspace derives
+
+**Tradeoff:** Indirection layer, but provides consistency
+
+### Why Feature-Gate Everything?
+
+Each derive has its own feature flag:
+
+**Rationale:**
+1. **Compile Time**: Only compile needed derives
+2. **Dependencies**: Minimize external dependencies
+3. **Binary Size**: Exclude unused macro code
+4. **Flexibility**: Fine-grained control
+
+**Default:** Enable most common derives for convenience
+
+### Why Mix Internal and External?
+
+Combines workspace and crates.io derives:
+
+**Rationale:**
+1. **Completeness**: Fill gaps in external crates
+2. **Control**: Own critical derive implementations
+3. **Standards**: Use proven external solutions when available
+4. **Flexibility**: Choose best-of-breed for each derive
+
+**Pattern:** Internal for workspace-specific, external for standard
+
+### Why Traditional Namespaces?
+
+Uses own/orphan/exposed/prelude pattern:
+
+**Rationale:**
+1. **Consistency**: Matches other workspace crates
+2. **Control**: Fine-grained re-export control
+3. **Documentation**: Clear import paths
+4. **Compatibility**: Standard Rust patterns
+
+**Benefit:** Familiar to workspace developers
+
+### Why Dependency Namespace?
+
+Explicit `dependency` module:
+
+**Rationale:**
+1. **Explicit Access**: Direct access to source crates
+2. **Debugging**: Check which crate provides derive
+3. **Advanced Usage**: Access non-derive items
+4. **Transparency**: Clear dependency relationships
+
+**Use Case:** When you need source-specific features
+
+### Why No Custom Implementations?
+
+Aggregates existing macros instead of reimplementing:
+
+**Rationale:**
+1. **Maintenance**: Don't maintain duplicate implementations
+2. **Quality**: Use battle-tested external crates
+3. **Focus**: Focus on workspace-specific derives only
+4. **Community**: Leverage ecosystem expertise
+
+**Exception:** Workspace derives in derive_tools_meta
+
+### Why Not One Giant Derive?
+
+Requires explicit derive for each trait:
+
+**Rationale:**
+1. **Explicitness**: Clear what traits are implemented
+2. **Compile Errors**: Better error messages
+3. **Opt-In**: Users choose what to derive
+4. **No Magic**: Predictable behavior
+
+**Tradeoff:** More verbose but clearer
+
+## Testing Strategy
+
+### Test Coverage
+
+**test_tools Available:**
+- Can use test_tools for comprehensive testing
+- Integration tests with derived traits
+
+### Test Files
+
+```
+tests/
+├── derive_from_tests.rs - From derive tests
+├── derive_display_tests.rs - Display/FromStr tests
+├── derive_arithmetic_tests.rs - Add/Mul etc. tests
+└── integration/ - Cross-derive integration tests
+```
+
+### Test Focus
+
+1. **Individual Derives**: Each derive tested in isolation
+2. **Combinations**: Multiple derives on same type
+3. **Edge Cases**: Empty structs, unit variants, etc.
+4. **Feature Gates**: Test with different feature combinations
+5. **Error Messages**: Verify helpful compilation errors
+
+### Known Test Limitations
+
+1. **Proc Macro Testing**: Cannot test expansion directly
+2. **Compilation Tests**: Rely on successful compilation
+3. **Error Testing**: trybuild for compile-fail tests
+4. **Feature Matrix**: Combinatorial explosion of features
+
+## Future Considerations
+
+### Potential Enhancements
+
+1. **More Workspace Derives**: Expand derive_tools_meta coverage
+2. **Better Error Messages**: Improve proc macro diagnostics
+3. **Documentation Generation**: Auto-generate derive docs
+4. **Derive Combinations**: Optimize common derive sets
+5. **Attribute Validation**: Better attribute error checking
+6. **no_std Expansion**: More no_std compatible derives
+7. **Async Derives**: Async trait implementations
+
+### Breaking Changes to Consider
+
+1. **Rename Features**: Shorter feature names
+2. **Change Defaults**: Adjust default feature set
+3. **Remove External Deps**: Replace with workspace impls
+4. **Unified Attributes**: Common attribute syntax
+5. **Namespace Simplification**: Flatten module structure
+
+### Known Limitations
+
+1. **Proc Macro Limitations**: Cannot access type information across crates
+2. **Feature Overhead**: Many features slow down compilation
+3. **Documentation**: Each derive documented separately
+4. **Error Messages**: Vary by source crate
+5. **No Dynamic Selection**: All features compile-time only
+
+## Adoption Guidelines
+
+### When to Use derive_tools
+
+**Good Candidates:**
+- Newtype pattern wrappers
+- Data transfer objects
+- Configuration structs
+- Value objects
+- Enums with common operations
+- Trait object wrappers
+
+**Poor Candidates:**
+- Complex trait implementations requiring custom logic
+- Performance-critical code paths (proc macros have overhead)
+- Foreign traits (orphan rules)
+- Dynamic trait selection
+
+### Choosing Which Derives
+
+```rust
+// Newtype wrapper: From + Deref + AsRef
+#[derive(From, Deref, AsRef)]
+struct UserId(u64);
+
+// Data object: Display + FromStr + Constructor
+#[derive(Display, FromStr, Constructor)]
+#[display("{name}:{age}")]
+struct Person { name: String, age: u32 }
+
+// Numeric wrapper: arithmetic operations
+#[derive(From, Add, Mul, AddAssign)]
+struct Meters(f64);
+
+// Enum: variant utilities
+#[derive(IsVariant, Unwrap)]
+enum Result { Ok(i32), Err(String) }
+```
+
+### Best Practices
+
+1. **Minimal Features**: Only enable derives you need
+2. **Default First**: Start with default features
+3. **Combine Derives**: Use multiple compatible derives
+4. **Test Compilation**: Verify derives work as expected
+5. **Read Source Docs**: Check source crate documentation
+6. **Use Attributes**: Configure derives with attributes
+
+## Related Crates
+
+**Dependencies:**
+- **derive_more**: Comprehensive derive macro collection
+- **strum**: Enum utilities and string conversions
+- **parse-display**: Display/FromStr with custom syntax
+- **derive_tools_meta**: wTools workspace custom derives
+- **variadic_from**: Variadic From implementations
+- **clone_dyn**: Clone for trait objects
+
+**Alternatives:**
+- **bon**: Builder pattern derives
+- **getset**: Getter/setter derives
+- **educe**: Extended derive macros
+- **smart-default**: Default with customization
+
+## References
+
+- [API Documentation](https://docs.rs/derive_tools)
+- [Repository](https://github.com/Wandalen/wTools/tree/master/module/core/derive_tools)
+- [readme.md](./readme.md)
+- [derive_more](https://docs.rs/derive_more) - Arithmetic and conversion derives
+- [strum](https://docs.rs/strum) - Enum utilities
+- [parse-display](https://docs.rs/parse-display) - Display/FromStr parsing
+- [derive_tools_meta](../derive_tools_meta/readme.md) - Workspace custom derives
+- [variadic_from](../variadic_from/readme.md) - Variadic From implementations
+- [clone_dyn](../clone_dyn/readme.md) - Trait object cloning

@@ -76,16 +76,18 @@ fn demonstrate_yaml_workflow()
   println!( "Step 3: Generated Static Command Map" );
   println!( "```rust" );
   println!( "// Generated in OUT_DIR/aggregated_commands.rs" );
-  println!( "use phf::{{phf_map, Map}};" );
-  println!( "use unilang::static_data::StaticCommandDefinition;" );
+  println!( "// Internal implementation uses optimized static maps for O(1) lookup." );
+  println!( "// Users interact with the public API only:" );
+  println!( "use unilang::static_data::{{StaticCommandMap, StaticCommandDefinition}};" );
   println!();
-  println!( "pub static AGGREGATED_COMMANDS: Map<&'static str, &'static StaticCommandDefinition> = phf_map! {{" );
-  println!( "  \".db.migrate\" => &DB_MIGRATE_CMD," );
-  println!( "  \".db.backup\" => &DB_BACKUP_CMD," );
-  println!( "  \".fs.copy\" => &FS_COPY_CMD," );
-  println!( "  \".net.ping\" => &NET_PING_CMD," );
+  println!( "/// Aggregated commands with O(1) lookup" );
+  println!( "pub static AGGREGATED_COMMANDS: StaticCommandMap = StaticCommandMap::from_definitions(&[" );
+  println!( "  DB_MIGRATE_CMD,  // .db.migrate" );
+  println!( "  DB_BACKUP_CMD,   // .db.backup" );
+  println!( "  FS_COPY_CMD,     // .fs.copy" );
+  println!( "  NET_PING_CMD,    // .net.ping" );
   println!( "  // ... all commands with prefixes applied" );
-  println!( "}};" );
+  println!( "]);" );
   println!( "```" );
   println!();
 

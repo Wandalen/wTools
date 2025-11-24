@@ -280,8 +280,103 @@ mod type_hints
   }
 }
 
+// Build-time validation module
+// Fix(H37): build.rs does NOT use validation functions
+// Root cause: validation was only implemented in runtime, not build-time
+// Pitfall: Build scripts can silently generate bad code without validation
+#[cfg(feature = "static_registry")]
+mod build_validation
+{
+  /// Validates version string is non-empty.
+  pub fn validate_version( version : &str, name : &str, file_path : &str ) -> Result< (), String >
+  {
+    if version.is_empty()
+    {
+      return Err( format!(
+        "In file '{file_path}': Command '{name}' has empty version. Version string cannot be empty."
+      ));
+    }
+
+    Ok(())
+  }
+
+  /// Computes full command name from namespace and name.
+  /// Handles both YAML formats (per FR-REG-6):
+  /// - Format 1: name: ".version" (compound name with dot)
+  /// - Format 2: namespace: "system", name: "status" (separate, dots added)
+  ///
+  /// This mirrors the logic in `generate_static_commands` for PHF key generation.
+  pub fn compute_full_name( namespace : &str, name : &str ) -> String
+  {
+    if namespace.is_empty()
+    {
+      // If name already has dot, use as-is; otherwise add dot
+      if name.starts_with( '.' )
+      {
+        name.to_string()
+      }
+      else
+      {
+        format!( ".{name}" )
+      }
+    }
+    else
+    {
+      // Namespace present: add dot if missing
+      let ns = if namespace.starts_with( '.' )
+      {
+        namespace.to_string()
+      }
+      else
+      {
+        format!( ".{namespace}" )
+      };
+      format!( "{ns}.{name}" )
+    }
+  }
+
+  /// Validates a complete command definition.
+  /// This validates the FINAL `full_name` after dots are properly added.
+  /// Supports both YAML formats (FR-REG-6).
+  ///
+  /// This is called for each command during build to ensure the From conversion
+  /// will not panic at runtime.
+  pub fn validate_command(
+    name : &str,
+    namespace : &str,
+    version : &str,
+    file_path : &str,
+  ) -> Result< (), String >
+  {
+    // Name must not be empty
+    if name.is_empty()
+    {
+      return Err( format!(
+        "In file '{file_path}': Command name cannot be empty"
+      ));
+    }
+
+    // Validate version
+    validate_version( version, name, file_path )?;
+
+    // Compute and validate full name (after dot normalization)
+    let full_name = compute_full_name( namespace, name );
+    if !full_name.starts_with( '.' )
+    {
+      return Err( format!(
+        "In file '{file_path}': Invalid command '{name}'. Final full name '{full_name}' must start with dot prefix."
+      ));
+    }
+
+    Ok(())
+  }
+}
+
 #[cfg(feature = "static_registry")]
 use type_hints::{ TypeAnalyzer, HintGenerator };
+
+#[cfg(feature = "static_registry")]
+use build_validation::validate_command;
 
 fn main()
 {
@@ -519,9 +614,31 @@ fn generate_static_commands(dest_path: &Path, command_definitions: &[serde_yaml:
   }
   writeln!(f).unwrap();
 
-  // Generate const data for each command
+  // Validate and generate const data for each command
+  // Fix(H27, H37): Validate commands at build time to prevent runtime panics
   for (i, cmd_value) in command_definitions.iter().enumerate()
   {
+    let name = cmd_value["name"].as_str().unwrap_or("");
+    let namespace = cmd_value["namespace"].as_str().unwrap_or("");
+    let version = cmd_value["version"].as_str().unwrap_or("");
+
+    // Validate command definition before generating code
+    // This ensures From<StaticCommandDefinition> cannot panic at runtime
+    if let Err(e) = validate_command(name, namespace, version, "unilang.commands.yaml")
+    {
+      panic!(
+        "\n╔══════════════════════════════════════════════════════════════════════════════╗\n\
+         ║ BUILD ERROR: Invalid command definition                                       ║\n\
+         ╟──────────────────────────────────────────────────────────────────────────────╢\n\
+         ║ {e:<76} ║\n\
+         ╟──────────────────────────────────────────────────────────────────────────────╢\n\
+         ║ Fix: Ensure command names start with '.' (e.g., '.help', '.chat')             ║\n\
+         ║      Ensure non-empty namespaces start with '.' (e.g., '.session')            ║\n\
+         ║      Ensure version is not empty (e.g., '1.0.0')                              ║\n\
+         ╚══════════════════════════════════════════════════════════════════════════════╝\n"
+      );
+    }
+
     generate_command_const(&mut f, i, cmd_value);
   }
 

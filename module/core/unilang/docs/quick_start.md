@@ -7,7 +7,7 @@ This guide will take you from zero to a working CLI application with compile-tim
 **What you WON'T need to write**:
 - ❌ Custom build.rs (unilang provides this)
 - ❌ YAML parsing code (happens at compile-time)
-- ❌ PHF map generation (automatic)
+- ❌ Static map generation (automatic)
 - ❌ Build dependencies (already included)
 
 ---
@@ -45,7 +45,7 @@ unilang = "0.30"
 
 **What this does**:
 - Adds unilang with default features
-- Automatically includes serde_yaml, walkdir, phf (you don't add these)
+- Automatically includes required dependencies (you don't add these)
 - Enables multi-file YAML auto-discovery
 - Includes unilang's build.rs automatically
 
@@ -88,7 +88,7 @@ Create `commands.yaml` in your project root:
 - Defines 2 commands: `.greet` (optional arg) and `.goodbye` (required arg)
 - Will be discovered automatically by unilang's build.rs during `cargo build`
 - Parsed at compile-time, not runtime
-- Generates optimized PHF map for O(1) lookups
+- Generates optimized static map for O(1) lookups
 
 **Troubleshooting**:
 - **YAML syntax error** → Use a YAML validator or check indentation (use spaces, not tabs)
@@ -163,7 +163,7 @@ cargo build
 ╟──────────────────────────────────────────────────────────╢
 ║  Found 1 YAML file                                       ║
 ║    - commands.yaml                                       ║
-║  Generated PHF map with 2 commands                       ║
+║  Generated static map with 2 commands                    ║
 ║  Lookup time: ~80ns (zero runtime overhead)             ║
 ║                                                          ║
 ║  ✅ You did NOT need to write build.rs                  ║
@@ -180,7 +180,7 @@ cargo build
 **This output proves**:
 - Unilang discovered your YAML file
 - Commands were parsed at compile-time
-- PHF map was generated automatically
+- Static map was generated automatically
 - You didn't need to write build.rs
 
 **To suppress this output** (for CI builds):
@@ -258,14 +258,14 @@ Lookup time: ~80ns
 ```
 manual-cli/
 ├── Cargo.toml           (20+ lines with build-dependencies)
-├── build.rs             (220 lines - YAML discovery, parsing, PHF codegen)
+├── build.rs             (220 lines - YAML discovery, parsing, static map codegen)
 ├── commands.yaml        (15 lines)
 └── src/main.rs          (50+ lines - manual registry, parsing)
 ────────────────────────
 Total: ~300+ lines
 Build time: ~10 seconds
-Lookup time: ~4,000ns (50x slower if using HashMap instead of PHF)
-Common mistakes: Fake PHF (OnceLock<HashMap>), duplicate dependencies
+Lookup time: ~4,000ns (50x slower if using HashMap instead of static map)
+Common mistakes: Lazy static map (OnceLock<HashMap>), duplicate dependencies
 ```
 
 **Real-world example**: See [`willbe/module/lib/build.rs`](https://github.com/Wandalen/wTools/tree/master/module/willbe/module/lib/build.rs) (220 lines of unnecessary code with 50x performance degradation).
@@ -455,13 +455,13 @@ What happens when you run `cargo build`:
    └→ unilang's build.rs runs
        ├→ Discovers *.yaml files in your project root
        ├→ Parses YAML at compile-time
-       ├→ Generates PHF map code
+       ├→ Generates static map code
        ├→ Writes static_commands.rs to OUT_DIR
        └→ Prints build summary
 
 3. Cargo builds your project
    └→ Your code includes static_commands.rs via include!()
-       └→ PHF map compiled into your binary
+       └→ Static map compiled into your binary
 
 4. Result: Zero runtime overhead
    └→ O(1) command lookup (~80ns)
@@ -485,7 +485,7 @@ What happens when you run `cargo build`:
 
 **You've learned**:
 - ✅ How to create a zero-overhead CLI in 5 minutes
-- ✅ What unilang does automatically (build.rs, YAML parsing, PHF generation)
+- ✅ What unilang does automatically (build.rs, YAML parsing, static map generation)
 - ✅ What you DON'T need to write (220 lines of boilerplate)
 - ✅ How to avoid common mistakes (custom build.rs, duplicate deps)
 - ✅ How to verify everything works (build output, testing, health check)

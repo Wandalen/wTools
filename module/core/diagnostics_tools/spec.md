@@ -1,374 +1,771 @@
-# spec
+# Specification: diagnostics_tools
 
-- **Name:** `diagnostics_tools` Crate
-- **Version:** 1.0.0
-- **Date:** 2025-07-26
+## Overview
 
-### Part I: Public Contract (Mandatory Requirements)
+**diagnostics_tools** is a comprehensive testing and debugging utilities crate providing enhanced runtime assertions with colorful diffs, compile-time validation macros, and memory layout verification. It serves as a drop-in replacement for standard Rust assertions with significantly better error messages, zero-cost compile-time checks, and low-level memory safety validation for workspace development and testing.
 
-#### 1. Goal
+**Version:** 0.11.0
+**Status:** Experimental
+**Category:** Development Tools (Testing/Diagnostics)
+**Dependents:** Unknown (likely all workspace crates for testing)
 
-To provide a comprehensive, ergonomic, and unified suite of diagnostic assertion tools for the Rust ecosystem. The crate aims to enhance the development and debugging experience by offering both powerful compile-time checks and informative, "pretty" run-time assertions that go beyond the standard library's capabilities.
+### Scope
 
-#### 2. Deliverables
+#### Responsibility
 
-Upon completion, the project will deliver the following:
+Provide enhanced assertion macros for runtime testing with colorful diffs, compile-time validation for feature flags and configurations, and memory layout verification for low-level programming, serving as the workspace's primary diagnostic infrastructure for improved debugging and testing experience.
 
-1.  **Published Crate:** The `diagnostics_tools` crate, version `1.0.0`, published and available on `crates.io`.
-2.  **Source Code Repository:** Full access to the final Git repository, including all source code, tests, and documentation.
-3.  **Public Documentation:** Comprehensive documentation for the public API, automatically generated and hosted on `docs.rs`.
+#### In-Scope
 
-#### 3. Vision & Scope
+1. **Runtime Assertions (RTA)**
+   - `a_true!(condition)` / `a_false!(condition)` - Boolean checks
+   - `a_id!(left, right)` / `a_not_id!(left, right)` - Equality with diffs
+   - Debug variants: `a_dbg_true!`, `a_dbg_false!`, `a_dbg_id!`, `a_dbg_not_id!`
+   - Integration with `pretty_assertions` for colorful output
+   - Custom error messages support
 
-##### 3.1. Vision
+2. **Compile-Time Assertions (CTA)**
+   - `cta_true!(condition)` - Meta condition validation
+   - Feature flag validation at compile-time
+   - Target platform verification
+   - Zero runtime cost
+   - compile_error! integration
 
-The `diagnostics_tools` crate will be the go-to assertion library for Rust developers who require more power and better ergonomics than the standard library provides. It will unify compile-time and run-time diagnostics under a single, consistent API, improving developer confidence and accelerating debugging. By providing clear, "pretty" diffs for run-time failures and robust static checks for memory layout and type constraints, it will help prevent entire classes of bugs, from simple logic errors to complex memory safety issues.
+3. **Memory Layout Validation**
+   - `cta_type_same_size!(T1, T2)` - Type size comparison
+   - `cta_type_same_align!(T1, T2)` - Alignment verification
+   - `cta_ptr_same_size!(ptr1, ptr2)` - Pointer size checks
+   - `cta_mem_same_size!(val1, val2)` - Value memory footprint
+   - Const evaluation for zero cost
 
-##### 3.2. In Scope
+4. **Feature Architecture**
+   - `enabled` - Master switch (default)
+   - `diagnostics_runtime_assertions` - RTA macros (default)
+   - `diagnostics_compiletime_assertions` - CTA macros (default)
+   - `diagnostics_memory_layout` - Layout validation (default)
+   - `no_std` / `use_alloc` - Embedded support
 
-The following features and capabilities are explicitly in scope for version 1.0.0:
+5. **Traditional Module Organization**
+   - Nested `diag` module with submodules: rta, cta, layout
+   - Standard namespaces: own, orphan, exposed, prelude
+   - Feature-gated module exposure
+   - Macro re-exports
 
-*   **Run-Time Assertions (RTA):** A family of macros for checking conditions at run-time, which panic with informative, colored diffs on failure.
-*   **Compile-Time Assertions (CTA):** A family of macros for statically asserting conditions at compile-time, causing a compilation failure with a clear error message if the condition is not met.
-*   **Debug-Only Assertions:** A complete set of `_dbg` suffixed variants for all run-time assertions that are only compiled in debug builds, ensuring zero performance cost in release builds.
-*   **Memory Layout Assertions:** A specialized set of compile-time assertions to validate the size and alignment of types and memory regions.
-*   **Granular Feature Gating:** The ability to enable or disable major assertion families (`rta`, `cta`, `layout`) via Cargo feature flags to minimize dependencies and compile times.
-*   **`no_std` Compatibility:** Core assertion logic will be compatible with `no_std` environments, gated by a `no_std` feature flag.
+6. **Enhanced Error Messages**
+   - Colorful diff output via pretty_assertions
+   - Line-by-line comparison for complex structures
+   - Context-aware error formatting
+   - Better panic messages
 
-##### 3.3. Out of Scope
+7. **Namespace Aliases**
+   - `assert_eq` → `a_id` (orphan namespace)
+   - `assert_ne` → `a_not_id` (orphan namespace)
+   - Drop-in replacement capability
 
-The following are explicitly out of scope for this crate:
+8. **Comprehensive Examples**
+   - 6 numbered examples with progressive learning path
+   - Real-world usage scenarios
+   - Migration guides and documentation
 
-*   **Test Runner / Framework:** The crate provides assertion macros, but it is not a test runner. It is designed to be used *within* existing test frameworks like `cargo test`.
-*   **General-Purpose Logging:** It is not a logging framework (like `log` or `tracing`).
-*   **Benchmarking Utilities:** It will not provide tools for performance benchmarking.
-*   **Formal Verification or Property-Based Testing:** It will not include advanced testing paradigms like those found in `proptest` or formal verifiers like `Kani`.
+#### Out-of-Scope
 
-#### 4. Success Metrics
+1. **NOT Procedural Macros**
+   - Uses declarative macros only
+   - No custom derive macros
+   - **Rationale:** Simplicity and compile-time performance
 
-The success of the `diagnostics_tools` crate will be measured by the following criteria after the 1.0.0 release:
+2. **NOT Custom Test Framework**
+   - No test runner replacement
+   - Works with standard #[test]
+   - **Rationale:** Complement existing tools, not replace
 
-*   **Adoption:** Achieving over 10,000 downloads on `crates.io` within the first 6 months.
-*   **Community Engagement:** Receiving at least 5 non-trivial community contributions (e.g., well-documented bug reports, feature requests, or pull requests) within the first year.
-*   **Reliability:** Maintaining a panic-free record in the core assertion logic. Panics must only originate from intended assertion failures triggered by user code.
+3. **NOT Benchmarking**
+   - No performance measurement utilities
+   - No timing facilities
+   - **Rationale:** Use criterion or other benchmarking crates
 
-#### 5. Ubiquitous Language (Vocabulary)
+4. **NOT Mocking**
+   - No mock object generation
+   - No stub creation
+   - **Rationale:** Use dedicated mocking libraries
 
-*   **Assertion:** A check that a condition is true. A failed assertion results in a controlled, immediate termination of the program (a `panic`) or compilation (`compile_error!`).
-*   **RTA (Run-Time Assertion):** An assertion checked when the program is executing. Example: `a_id!`.
-*   **CTA (Compile-Time Assertion):** An assertion checked by the compiler before the program is run. Example: `cta_true!`.
-*   **Layout Assertion:** A specialized CTA that checks memory properties like size and alignment. Example: `cta_type_same_size!`.
-*   **Pretty Diff:** A user-friendly, typically colored, output format that visually highlights the difference between two values in a failed equality assertion.
-*   **Feature Gate:** A Cargo feature flag (e.g., `diagnostics_runtime_assertions`) used to enable or disable a family of assertions and their associated dependencies.
+5. **NOT Property Testing**
+   - No quickcheck/proptest integration
+   - No randomized testing
+   - **Rationale:** Use dedicated property testing crates
 
-#### 6. System Actors
+6. **NOT Snapshot Testing**
+   - No snapshot generation/comparison
+   - No golden file management
+   - **Rationale:** Use insta or similar crates
 
-*   **Rust Developer:** The primary user of the crate. They write code and use `diagnostics_tools` to enforce invariants, write tests, and debug issues in their own projects, which may range from command-line applications to embedded systems.
+7. **NOT Runtime Performance Profiling**
+   - No CPU/memory profiling
+   - No allocation tracking
+   - **Rationale:** Use perf, valgrind, or similar tools
 
-#### 7. User Stories
+8. **NOT Custom Panic Handlers**
+   - No panic hook modification
+   - Uses standard panic mechanism
+   - **Rationale:** Avoid interfering with user panic handling
 
-*   **US-1 (Diagnosing Test Failures):** As a Rust Developer, I want to assert that two complex structs are equal in my tests and see a clear, colored diff in the console when they are not, so that I can immediately spot the field that has the wrong value without manual inspection.
-*   **US-2 (Ensuring Memory Safety):** As a Rust Developer writing `unsafe` code, I want to assert at compile-time that a generic type `T` has the exact same size and alignment as a `u64`, so that I can prevent buffer overflows and memory corruption when performing manual memory manipulation.
-*   **US-3 (Zero-Cost Abstractions):** As a Rust Developer building a high-performance library, I want to add expensive validation checks that run during development and testing but are completely compiled out of release builds, so that I can ensure correctness without sacrificing production performance.
-*   **US-4 (Embedded Development):** As a Rust Developer for bare-metal devices, I want to use basic compile-time assertions in my `no_std` environment, so that I can enforce type-level invariants without pulling in unnecessary dependencies.
+#### Boundaries
 
-#### 8. Functional Requirements (Core Macro Families)
+- **diagnostics_tools vs assert!**: diagnostics_tools provides better error messages; assert! is standard
+- **diagnostics_tools vs pretty_assertions**: diagnostics_tools wraps pretty_assertions with additional features
+- **diagnostics_tools vs static_assertions**: diagnostics_tools provides runtime + compile-time; static_assertions is compile-time only
 
-##### 8.1. Run-Time Assertions (RTA)
+## Architecture
 
-*   **FR-1 (Equality Assertion):** The `a_id!(left, right, ...)` macro **must** assert that `left` and `right` are equal using the `PartialEq` trait.
-    *   On failure, it **must** panic and display a "pretty diff" that clearly highlights the differences between the two values.
-    *   It **must** accept an optional trailing format string and arguments for a custom panic message (e.g., `a_id!(a, b, "Custom message: {}", c)`).
-*   **FR-2 (Inequality Assertion):** The `a_not_id!(left, right, ...)` macro **must** assert that `left` and `right` are not equal using the `PartialEq` trait.
-    *   On failure, it **must** panic and display a message showing the value that was unexpectedly equal on both sides.
-    *   It **must** accept an optional trailing format string and arguments for a custom panic message.
-*   **FR-3 (True Assertion):** The `a_true!(expr, ...)` macro **must** assert that a boolean expression evaluates to `true`. It **must** behave identically to the standard library's `assert!`.
-*   **FR-4 (False Assertion):** The `a_false!(expr, ...)` macro **must** assert that a boolean expression evaluates to `false`. It **must** behave identically to `assert!(!expr)`.
-*   **FR-5 (Debug-Only Assertions):** For every RTA macro (e.g., `a_id`), there **must** be a corresponding `_dbg` suffixed version (e.g., `a_dbg_id!`).
-    *   These `_dbg` macros **must** have the exact same behavior as their counterparts when compiled in a debug profile (`debug_assertions` is on).
-    *   These `_dbg` macros **must** be compiled out completely and have zero run-time cost when compiled in a release profile (`debug_assertions` is off).
+### Dependency Structure
 
-##### 8.2. Compile-Time Assertions (CTA)
+```
+diagnostics_tools (testing utilities)
+├── Internal Dependencies
+│   └── (none - foundational utility)
+├── External Dependencies
+│   └── pretty_assertions (optional, feature: diagnostics_runtime_assertions)
+└── Dev Dependencies
+    ├── test_tools (workspace, testing)
+    ├── trybuild (crates.io, compile-fail tests)
+    ├── strip-ansi-escapes (crates.io, test output parsing)
+    └── serde_json (crates.io, test data)
+```
 
-*   **FR-6 (Compile-Time True Assertion):** The `cta_true!(condition, ...)` macro **must** assert that a meta condition is true at compile time.
-    *   If the condition is false, it **must** produce a compile-time error.
-    *   The error message **must** clearly state the condition that failed.
-    *   It **must** accept an optional custom error message.
-*   **FR-7 (Type Size Assertion):** The `cta_type_same_size!(T1, T2)` macro **must** assert that two types `T1` and `T2` have the same size in bytes, as reported by `core::mem::size_of`.
-    *   On failure, it **must** produce a compile-time error.
-*   **FR-8 (Type Alignment Assertion):** The `cta_type_same_align!(T1, T2)` macro **must** assert that two types `T1` and `T2` have the same memory alignment, as reported by `core::mem::align_of`.
-    *   On failure, it **must** produce a compile-time error.
-*   **FR-9 (Memory Size Assertion):** The `cta_mem_same_size!(v1, v2)` macro **must** assert that the memory occupied by two values `v1` and `v2` is identical in size.
-    *   On failure, it **must** produce a compile-time error.
+**Note:** Single optional production dependency (pretty_assertions)
 
-#### 9. Non-Functional Requirements
-
-*   **NFR-1 (Performance):** All `_dbg` suffixed macros **must** have zero performance overhead in release builds. The expressions within them **must not** be evaluated.
-*   **NFR-2 (Usability):** The macro names and arguments **must** be consistent across families (e.g., `a_id!`, `a_dbg_id!`). Panic messages for RTAs **must** be clear, informative, and easy to read in a standard terminal.
-*   **NFR-3 (Compatibility):** The crate **must** be compatible with `no_std` environments when the `no_std` feature is enabled. The crate **must** compile and pass all tests on the latest stable Rust toolchain.
-*   **NFR-4 (Documentation):** Every public macro **must** be documented with a clear explanation of its purpose and at least one working code example using `rustdoc` conventions.
-*   **NFR-5 (Reliability):** The crate **must** have a comprehensive test suite that covers both the success and failure (panic/compile error) cases for every public macro.
-
-#### 10. Public API & Feature Flags
-
-##### 10.1. Public Macros
-
-The primary way to use the crate is via the `diagnostics_tools::prelude::*` import. The following macros **must** be available through this prelude, controlled by their respective feature flags.
-
-| Macro | Family | Feature Flag | Description |
-| :--- | :--- | :--- | :--- |
-| `a_id!` | RTA | `diagnostics_runtime_assertions` | Asserts two values are equal. |
-| `a_not_id!` | RTA | `diagnostics_runtime_assertions` | Asserts two values are not equal. |
-| `a_true!` | RTA | `diagnostics_runtime_assertions` | Asserts a boolean is true. |
-| `a_false!` | RTA | `diagnostics_runtime_assertions` | Asserts a boolean is false. |
-| `a_dbg_id!` | RTA | `diagnostics_runtime_assertions` | Debug-only version of `a_id!`. |
-| `a_dbg_not_id!`| RTA | `diagnostics_runtime_assertions` | Debug-only version of `a_dbg_not_id!`. |
-| `a_dbg_true!` | RTA | `diagnostics_runtime_assertions` | Debug-only version of `a_true!`. |
-| `a_dbg_false!` | RTA | `diagnostics_runtime_assertions` | Debug-only version of `a_false!`. |
-| `cta_true!` | CTA | `diagnostics_compiletime_assertions`| Asserts a meta condition at compile-time. |
-| `cta_type_same_size!` | Layout | `diagnostics_memory_layout` | Asserts two types have the same size. |
-| `cta_type_same_align!` | Layout | `diagnostics_memory_layout` | Asserts two types have the same alignment. |
-| `cta_mem_same_size!` | Layout | `diagnostics_memory_layout` | Asserts two values occupy the same memory size. |
-
-##### 10.2. Cargo Feature Flags
-
-The crate's functionality **must** be controlled by the following feature flags:
-
-| Feature | Description | Enables | Default |
-| :--- | :--- | :--- | :--- |
-| `default` | Enables the most common set of features for standard development. | `enabled`, `diagnostics_runtime_assertions`, `diagnostics_compiletime_assertions`, `diagnostics_memory_layout` | Yes |
-| `full` | Enables all available features. | `enabled`, `diagnostics_runtime_assertions`, `diagnostics_compiletime_assertions`, `diagnostics_memory_layout` | No |
-| `enabled` | A master switch to enable any functionality. | - | No |
-| `diagnostics_runtime_assertions` | Enables all RTA macros and the `pretty_assertions` dependency. | `a_id!`, `a_not_id!`, etc. | Yes |
-| `diagnostics_compiletime_assertions` | Enables core CTA macros. | `cta_true!` | Yes |
-| `diagnostics_memory_layout` | Enables memory layout assertion macros. | `cta_type_same_size!`, etc. | Yes |
-| `no_std` | Enables compatibility with `no_std` environments. | - | No |
-
-### Part II: Internal Design (Design Recommendations)
-
-*This part of the specification provides a recommended approach for implementation. The developer has the final authority to modify this design, provided the Public Contract defined in Part I is fulfilled.*
-
-#### 11. Crate Module Structure
-
-It is recommended that the crate's internal module structure mirrors the feature gating strategy for clarity and maintainability.
+### Module Organization
 
 ```
 diagnostics_tools
-├── src
-│   ├── lib.rs              // Main entry point, feature gating, top-level module organization.
-│   └── diag                // Top-level module for all diagnostic tools.
-│       ├── mod.rs          // Declares and conditionally compiles sub-modules.
-│       │
-│       ├── rta.rs          // [Feature: diagnostics_runtime_assertions]
-│       │                   // Implementation of all run-time assertion macros (a_id!, a_true!, etc.).
-│       │                   // Contains the dependency on `pretty_assertions`.
-│       │
-│       ├── cta.rs          // [Feature: diagnostics_compiletime_assertions]
-│       │                   // Implementation of general compile-time assertions (cta_true!).
-│       │
-│       └── layout.rs       // [Feature: diagnostics_memory_layout]
-│                           // Implementation of memory layout assertions (cta_type_same_size!, etc.).
+├── lib.rs (top-level aggregation)
+├── diag/ (main diagnostic module)
+│   ├── mod.rs - Module aggregation
+│   ├── rta.rs - Runtime assertions (feature: diagnostics_runtime_assertions)
+│   ├── cta.rs - Compile-time assertions (feature: diagnostics_compiletime_assertions)
+│   └── layout.rs - Memory layout (feature: diagnostics_memory_layout)
+└── Standard namespaces: own, orphan, exposed, prelude
+```
+
+**Pattern:** Traditional namespace organization with feature-gated submodules
+
+### Feature Architecture
+
+```
+enabled (master switch, default)
+├── diagnostics_runtime_assertions (default)
+│   ├── Enables pretty_assertions dependency
+│   ├── a_true!, a_false!, a_id!, a_not_id!
+│   └── a_dbg_true!, a_dbg_false!, a_dbg_id!, a_dbg_not_id!
 │
-└── Cargo.toml              // Manifest with feature flag definitions.
+├── diagnostics_compiletime_assertions (default)
+│   └── cta_true! - Meta condition validation
+│
+├── diagnostics_memory_layout (default)
+│   ├── cta_type_same_size!, cta_type_same_align!
+│   └── cta_ptr_same_size!, cta_mem_same_size!
+│
+full (all features, same as default)
+│
+no_std (embedded support)
+└── use_alloc (allocation in no_std)
 ```
 
-This structure ensures that each feature-gated component is self-contained, making it easy to reason about the impact of enabling or disabling features.
+**Default Features:** `enabled`, `diagnostics_runtime_assertions`, `diagnostics_compiletime_assertions`, `diagnostics_memory_layout`
 
-#### 12. Architectural & Flow Diagrams
+### Assertion Flow
 
-To clarify the system's structure and behavior, the following diagrams are recommended.
+#### Runtime Assertion Flow
 
-##### 12.1. Use Case Diagram
-
-This diagram provides a high-level map of the crate's functional scope, showing the primary features available to the developer.
-
-```mermaid
-graph TD
-    actor Dev as "Rust Developer"
-
-    subgraph diagnostics_tools Crate
-        Usecase1["Assert Equality (a_id!)"]
-        Usecase2["Assert Conditions (a_true!)"]
-        Usecase3["Assert at Compile-Time (cta_true!)"]
-        Usecase4["Assert Memory Layout (cta_type_same_size!)"]
-        Usecase5["Use Debug-Only Assertions (a_dbg_id!)"]
-    end
-
-    Dev --> Usecase1
-    Dev --> Usecase2
-    Dev --> Usecase3
-    Dev --> Usecase4
-    Dev --> Usecase5
+```
+a_id!(left, right)
+  ↓
+pretty_assertions::assert_eq!(left, right)
+  ↓
+Compare values
+  ├─ Equal → Continue execution
+  └─ Not Equal → Format diff
+      ↓
+      Display colorful diff
+      ↓
+      panic!()
 ```
 
-##### 12.2. High-Level Architecture Diagram
+#### Compile-Time Assertion Flow
 
-This diagram illustrates the logical components of the crate and their relationship to the feature flags and external dependencies.
-
-```mermaid
-graph TD
-    subgraph User's Crate
-        UserCode[User Code e.g., `main.rs` or `tests.rs`]
-    end
-
-    subgraph diagnostics_tools Crate
-        direction LR
-        Prelude["prelude::*"] -- exposes --> RTA_Macros["a_id!, a_true!, ..."]
-        Prelude -- exposes --> CTA_Macros["cta_true!, ..."]
-        Prelude -- exposes --> Layout_Macros["cta_type_same_size!, ..."]
-
-        subgraph Module: `diag::rta`
-            direction TB
-            RTA_Macros -- implemented in --> RTA_Impl
-        end
-
-        subgraph Module: `diag::cta`
-            direction TB
-            CTA_Macros -- implemented in --> CTA_Impl
-        end
-
-        subgraph Module: `diag::layout`
-            direction TB
-            Layout_Macros -- implemented in --> Layout_Impl
-        end
-    end
-
-    subgraph External Dependencies
-        PrettyAssertions["pretty_assertions"]
-    end
-
-    UserCode -- "use diagnostics_tools::prelude::*;" --> Prelude
-
-    RTA_Impl -- "delegates to" --> PrettyAssertions
-
-    FeatureRTA["Feature: `diagnostics_runtime_assertions`"] -- "enables" --> Module: `diag::rta`
-    FeatureCTA["Feature: `diagnostics_compiletime_assertions`"] -- "enables" --> Module: `diag::cta`
-    FeatureLayout["Feature: `diagnostics_memory_layout`"] -- "enables" --> Module: `diag::layout`
-
-    style Module: `diag::rta` fill:#f9f,stroke:#333,stroke-width:2px
-    style Module: `diag::cta` fill:#ccf,stroke:#333,stroke-width:2px
-    style Module: `diag::layout` fill:#cfc,stroke:#333,stroke-width:2px
+```
+cta_true!(condition)
+  ↓
+#[cfg(not(condition))]
+  ↓
+compile_error!("Does not hold: condition")
+  ↓
+Compilation fails with clear message
 ```
 
-##### 12.3. Sequence Diagram: Failing `a_id!` Assertion
+#### Memory Layout Validation Flow
 
-This diagram shows the sequence of events when a run-time equality assertion fails.
-
-```mermaid
-sequenceDiagram
-    actor Dev as Rust Developer
-    participant UserTest as User's Test Code
-    participant Macro as a_id! Macro
-    participant PrettyA as pretty_assertions::assert_eq!
-    participant RustPanic as Rust Panic Handler
-
-    Dev->>UserTest: Executes `cargo test`
-    activate UserTest
-    UserTest->>Macro: a_id!(5, 10)
-    activate Macro
-    Macro->>PrettyA: Calls assert_eq!(5, 10)
-    activate PrettyA
-    PrettyA-->>RustPanic: Panics with formatted diff string
-    deactivate PrettyA
-    deactivate Macro
-    RustPanic-->>Dev: Prints "pretty diff" to console
-    deactivate UserTest
+```
+cta_type_same_size!(T1, T2)
+  ↓
+const _: fn() = || {
+  let _: [(); size_of::<T1>()] = [(); size_of::<T2>()];
+};
+  ↓
+Const evaluation
+  ├─ Same size → Compile succeeds
+  └─ Different size → Compilation fails
 ```
 
-#### 13. Error Handling & Panic Behavior
+## Public API
 
-*   **Run-Time Failures:** It is recommended that all run-time assertion macros delegate their core logic directly to the `pretty_assertions` crate. This ensures consistent, high-quality output for diffs without reinventing the logic. The macros should act as a thin, ergonomic wrapper.
-*   **Compile-Time Failures:** All compile-time assertion failures **must** use the `core::compile_error!` macro. The error messages should be designed to be as informative as possible within the constraints of the macro system, clearly stating what was expected versus what was found.
+### Runtime Assertion Macros
 
-### Part III: Project & Process Governance
+```rust
+/// Assert boolean is true
+#[macro_export]
+macro_rules! a_true {
+  () => {};
+  ($($Rest: tt)*) => { assert!($($Rest)*); };
+}
 
-#### 14. Open Questions
+/// Assert boolean is false
+#[macro_export]
+macro_rules! a_false {
+  () => {};
+  ($($Rest: tt)*) => { assert!(! $($Rest)*); };
+}
 
-*   **Q1:** Should the `diagnostics_memory_layout` feature be merged into `diagnostics_compiletime_assertions`? Pro: Simplifies feature set. Con: Users may want CTAs without the more specialized layout assertions.
-*   **Q2:** Is there a need for a `a_panic!` macro that asserts a code block panics, similar to `std::panic::catch_unwind` but in assertion form?
-*   **Q3:** What is the MSRV (Minimum Supported Rust Version) policy? Should it be the latest stable, or track back a certain number of versions?
+/// Assert equality with diff (uses pretty_assertions)
+#[macro_export]
+macro_rules! a_id {
+  ($left: expr, $right: expr $(,)?) => {
+    $crate::dependency::pretty_assertions::assert_eq!($left, $right);
+  };
+  ($left: expr, $right: expr, $($arg: tt)*) => {
+    $crate::dependency::pretty_assertions::assert_eq!($left, $right, $($arg)+);
+  };
+}
 
-#### 15. Stakeholder Changelog
+/// Assert inequality with diff
+#[macro_export]
+macro_rules! a_not_id {
+  ($left: expr, $right: expr $(,)?) => {
+    $crate::dependency::pretty_assertions::assert_ne!($left, $right);
+  };
+  ($left: expr, $right: expr, $($arg: tt)*) => {
+    $crate::dependency::pretty_assertions::assert_ne!($left, $right, $($arg)+);
+  };
+}
+```
 
-*This section is for non-technical stakeholders and provides a high-level summary of major changes between specification versions.*
-*   **v1.0.0 (2025-07-26):** Initial specification created. Defines the full scope for the crate, including run-time, compile-time, and memory layout assertions.
+### Debug Assertion Macros
 
-#### 16. Core Principles of Development
+```rust
+/// Debug version of a_true! (only in debug builds)
+#[macro_export]
+macro_rules! a_dbg_true {
+  () => {};
+  ($($Rest: tt)*) => { debug_assert!($($Rest)*); };
+}
 
-##### 1. Single Source of Truth
-The project's Git repository **must** be the absolute single source of truth for all project-related information. This includes specifications, documentation, source code, configuration files, and architectural diagrams.
+/// Debug version of a_false!
+#[macro_export]
+macro_rules! a_dbg_false {
+  () => {};
+  ($($Rest: tt)*) => { debug_assert!(! $($Rest)*); };
+}
 
-##### 2. Documentation-First Development
-All changes to the system's functionality or architecture **must** be documented in the relevant specification files *before* implementation begins. The workflow is:
-1.  **Propose:** A change is proposed by creating a new branch and modifying the documentation.
-2.  **Review:** The change is submitted as a Pull Request (PR) for team review.
-3.  **Implement:** Implementation work starts only after the documentation PR is approved and merged.
+/// Debug version of a_id! (calls a_id! if debug_assertions)
+#[macro_export]
+macro_rules! a_dbg_id {
+  ($($arg: tt)*) => {
+    if cfg!(debug_assertions) {
+      $crate::a_id!($($arg)*);
+    }
+  };
+}
 
-##### 3. Review-Driven Change Control
-All modifications to the repository, without exception, **must** go through a formal Pull Request review. Each PR **must** have a clear description of its purpose and be approved by at least one other designated reviewer before being merged.
+/// Debug version of a_not_id!
+#[macro_export]
+macro_rules! a_dbg_not_id {
+  ($($arg: tt)*) => {
+    if cfg!(debug_assertions) {
+      $crate::a_not_id!($($arg)*);
+    }
+  };
+}
+```
 
-##### 4. Radical Transparency and Auditability
-The development process **must** be fully transparent and auditable. All significant decisions and discussions **must** be captured in writing within the relevant Pull Request or a linked issue tracker. The repository's history should provide a clear, chronological narrative of the project's evolution.
+### Compile-Time Assertion Macros
 
-##### 5. Dependency Management
-All external dependencies listed in `Cargo.toml` **must** use specific, compatible version ranges (e.g., `~1.4` or `1.4.0`) rather than wildcards (`*`). This mitigates the risk of breaking changes from upstream dependencies automatically disrupting the build.
+```rust
+/// Compile-time boolean assertion
+#[macro_export]
+macro_rules! cta_true {
+  () => {};
+  ($($Cond: meta)+, $Msg: expr $(,)?) => {
+    #[cfg(not($($Cond)+))]
+    core::compile_error!($Msg);
+  };
+  ($($Cond: tt)*) => {
+    #[cfg(not($($Cond)*))]
+    core::compile_error!(
+      concat!(
+        "Does not hold: \n  ",
+        stringify!($($Cond)*),
+      )
+    );
+  };
+}
+```
 
-### Appendix: Addendum
+### Memory Layout Macros
 
----
+```rust
+/// Assert two types have same size
+#[macro_export]
+macro_rules! cta_type_same_size {
+  ($Type1: ty, $Type2: ty $(,)?) => {{
+    const _: fn() = || {
+      let _: [(); core::mem::size_of::<$Type1>()] =
+             [(); core::mem::size_of::<$Type2>()];
+    };
+    true
+  }};
+}
 
-#### Purpose
-This document is intended to be completed by the **Developer** during the implementation phase. It is used to capture the final, as-built details of the **Internal Design**, especially where the implementation differs from the initial `Design Recommendations` in `specification.md`.
+/// Assert two types have same alignment
+#[macro_export]
+macro_rules! cta_type_same_align {
+  ($Type1: ty, $Type2: ty $(,)?) => {{
+    const _: fn() = || {
+      let _: [(); core::mem::align_of::<$Type1>()] =
+             [(); core::mem::align_of::<$Type2>()];
+    };
+    true
+  }};
+}
 
-#### Instructions for the Developer
-As you build the system, please use this document to log your key implementation decisions, the final data models, environment variables, and other details. This creates a crucial record for future maintenance, debugging, and onboarding.
+/// Assert two pointers reference same-sized memory
+#[macro_export]
+macro_rules! cta_ptr_same_size {
+  ($Ins1: expr, $Ins2: expr $(,)?) => {{
+    #[allow(unsafe_code, unknown_lints, forget_copy, forget_non_drop, useless_transmute)]
+    let _ = || unsafe {
+      let mut ins1 = core::ptr::read($Ins1);
+      core::ptr::write(&mut ins1, core::mem::transmute(core::ptr::read($Ins2)));
+      core::mem::forget(ins1);
+    };
+    true
+  }};
+}
 
----
+/// Assert two values have same memory size
+#[macro_export]
+macro_rules! cta_mem_same_size {
+  ($Ins1: expr, $Ins2: expr $(,)?) => {{
+    $crate::cta_ptr_same_size!(&$Ins1, &$Ins2)
+  }};
+}
+```
 
-#### Conformance Checklist
-*This checklist is the definitive list of acceptance criteria for the project. Before final delivery, each item must be verified as complete and marked with `✅`. Use the 'Verification Notes' column to link to evidence (e.g., test results, screen recordings).*
+### Namespace Aliases
 
-| Status | Requirement | Verification Notes |
-| :--- | :--- | :--- |
-| ❌ | **FR-1:** The `a_id!(left, right, ...)` macro **must** assert that `left` and `right` are equal using the `PartialEq` trait. | |
-| ❌ | **FR-2:** The `a_not_id!(left, right, ...)` macro **must** assert that `left` and `right` are not equal using the `PartialEq` trait. | |
-| ❌ | **FR-3:** The `a_true!(expr, ...)` macro **must** assert that a boolean expression evaluates to `true`. | |
-| ❌ | **FR-4:** The `a_false!(expr, ...)` macro **must** assert that a boolean expression evaluates to `false`. | |
-| ❌ | **FR-5:** For every RTA macro, there **must** be a corresponding `_dbg` suffixed version that is compiled out in release builds. | |
-| ❌ | **FR-6:** The `cta_true!(condition, ...)` macro **must** assert that a meta condition is true at compile time. | |
-| ❌ | **FR-7:** The `cta_type_same_size!(T1, T2)` macro **must** assert that two types `T1` and `T2` have the same size in bytes. | |
-| ❌ | **FR-8:** The `cta_type_same_align!(T1, T2)` macro **must** assert that two types `T1` and `T2` have the same memory alignment. | |
-| ❌ | **FR-9:** The `cta_mem_same_size!(v1, v2)` macro **must** assert that the memory occupied by two values `v1` and `v2` is identical in size. | |
-| ❌ | **US-1:** As a Rust Developer, I want to see a clear, colored diff in the console when an equality test fails. | |
-| ❌ | **US-2:** As a Rust Developer, I want to assert at compile-time that a generic type `T` has the same size and alignment as a `u64`. | |
-| ❌ | **US-3:** As a Rust Developer, I want to add validation checks that are compiled out of release builds. | |
-| ❌ | **US-4:** As a Rust Developer, I want to use basic compile-time assertions in my `no_std` environment. | |
+```rust
+// In orphan namespace:
+pub use a_id as assert_eq;
+pub use a_not_id as assert_ne;
+```
 
-#### Finalized Internal Design Decisions
-*A space for the developer to document key implementation choices for the system's internal design, especially where they differ from the initial recommendations in `specification.md`.*
+## Usage Patterns
 
--   [Decision 1: Reason...]
--   [Decision 2: Reason...]
+### Pattern 1: Basic Runtime Assertions
 
-#### Finalized Internal Data Models
-*The definitive, as-built schema for all databases, data structures, and objects used internally by the system.*
+```rust
+use diagnostics_tools::*;
 
--   N/A (This crate does not define complex internal data models).
+fn main() {
+  let number = 42;
 
-#### Environment Variables
-*List all environment variables required to run the application. Include the variable name, a brief description of its purpose, and an example value (use placeholders for secrets).*
+  // Boolean assertions
+  a_true!(number > 0, "Expected positive number");
+  a_false!(number < 0, "Number should not be negative");
 
--   N/A (This crate does not require environment variables for its operation).
+  // Works without custom messages too
+  a_true!(number % 2 == 0);
+}
+```
 
-#### Finalized Library & Tool Versions
-*List the critical libraries, frameworks, or tools used and their exact locked versions (e.g., from `package.json` or `requirements.txt`).*
+### Pattern 2: Equality Assertions with Diffs
 
--   `rustc`: `[Version]`
--   `pretty_assertions`: `~1.4.0`
+```rust
+use diagnostics_tools::*;
 
-#### Deployment Checklist
-*A step-by-step guide for deploying the application from scratch. Include steps for setting up the environment, running migrations, and starting the services.*
+fn test_vectors() {
+  let expected = vec![1, 2, 3];
+  let actual = vec![1, 2, 4];
 
-1.  Run tests: `cargo test --all-features`
-2.  Perform a dry run publish: `cargo publish --dry-run --allow-dirty`
-3.  Publish to crates.io: `cargo publish`
+  // This will show a beautiful colorful diff:
+  // [
+  //     1,
+  //     2,
+  // <   3,
+  // >   4,
+  // ]
+  a_id!(expected, actual);
+}
+```
+
+### Pattern 3: Debug-Only Assertions
+
+```rust
+use diagnostics_tools::*;
+
+fn expensive_validation(data: &Vec<i32>) {
+  // Only runs in debug builds
+  a_dbg_true!(data.len() < 1000, "Debug build: data too large");
+  a_dbg_id!(data.first(), &Some(&42));
+}
+```
+
+### Pattern 4: Compile-Time Feature Validation
+
+```rust
+use diagnostics_tools::*;
+
+// Ensure we're on 64-bit platform
+cta_true!(target_pointer_width = "64");
+
+// Validate feature flags
+cta_true!(feature = "enabled");
+
+// Check OS compatibility
+cta_true!(any(
+  target_os = "linux",
+  target_os = "windows",
+  target_os = "macos"
+));
+```
+
+### Pattern 5: Memory Layout Validation
+
+```rust
+use diagnostics_tools::*;
+
+// Ensure types have same size (for unsafe transmute)
+fn validate_layout() {
+  // Compile-time check
+  cta_type_same_size!(u32, i32);
+  cta_type_same_align!(u32, i32);
+
+  // Now safe to transmute
+  let unsigned: u32 = 42;
+  let signed: i32 = unsafe { std::mem::transmute(unsigned) };
+}
+```
+
+### Pattern 6: Drop-In Replacement for std::assert
+
+```rust
+use diagnostics_tools::*;
+
+// Before: Standard assertions
+assert_eq!(vec![1, 2], vec![1, 3]); // Cryptic error
+
+// After: Enhanced assertions
+a_id!(vec![1, 2], vec![1, 3]); // Beautiful diff
+
+// Or use namespace alias:
+use diagnostics_tools::orphan::*;
+assert_eq!(vec![1, 2], vec![1, 3]); // Now uses a_id!
+```
+
+### Pattern 7: Type Size Assumptions
+
+```rust
+use diagnostics_tools::*;
+
+// Document and verify size assumptions
+fn optimized_storage() {
+  // Ensure Option<&T> has same size as *const T (null optimization)
+  cta_type_same_size!(Option<&u32>, *const u32);
+
+  // Verify enum layout assumptions
+  cta_type_same_size!(Result<(), ()>, bool);
+}
+```
+
+### Pattern 8: Platform-Specific Validation
+
+```rust
+use diagnostics_tools::*;
+
+#[cfg(target_os = "linux")]
+fn linux_specific() {
+  // Ensure we're actually on Linux
+  cta_true!(target_os = "linux");
+
+  // Verify architecture
+  cta_true!(target_arch = "x86_64");
+}
+```
+
+## Dependencies and Consumers
+
+### Direct Dependencies
+
+**External:**
+- `pretty_assertions` (optional, feature: `diagnostics_runtime_assertions`) - Colorful assertion diffs
+
+**Dev:**
+- `test_tools` (workspace) - Testing utilities
+- `trybuild` (crates.io) - Compile-fail tests
+- `strip-ansi-escapes` (crates.io) - ANSI code stripping for tests
+- `serde_json` (crates.io) - Test data handling
+
+### Consumers (Unknown)
+
+**Likely used by:**
+- All workspace crates for testing
+- Development utilities
+- Integration test suites
+- Documentation examples
+
+**Usage Pattern:** Workspace crates use diagnostics_tools as primary assertion library for enhanced error messages and compile-time validation, replacing standard assert! macros.
+
+## Design Rationale
+
+### Why Wrap Standard Assertions?
+
+Uses macros wrapping assert! and pretty_assertions:
+
+**Benefits:**
+1. **Drop-In Replacement**: Minimal code changes
+2. **Better Errors**: Colorful diffs for complex structures
+3. **Consistent API**: Same interface as standard assertions
+4. **Zero Cost**: Compiles to same code
+
+**Tradeoff:** Extra dependency (pretty_assertions) for better UX
+
+### Why Three Feature Categories?
+
+Separate features for runtime, compile-time, and layout:
+
+**Rationale:**
+1. **Granular Control**: Enable only what you need
+2. **Dependency Management**: pretty_assertions only when needed
+3. **Compile-Time Options**: Some users only want CTA
+4. **Flexibility**: Can disable runtime checks in release
+
+**Default:** All three enabled for full functionality
+
+### Why Debug Variants?
+
+`a_dbg_*` macros for debug-only assertions:
+
+**Rationale:**
+1. **Performance**: Expensive checks only in debug builds
+2. **Development**: Catch bugs during development
+3. **Release Optimization**: Zero cost in release builds
+4. **Standard Practice**: Mirrors std::debug_assert!
+
+**Pattern:** Same as Rust's debug_assert! / assert! split
+
+### Why Declarative Macros Only?
+
+No procedural macros, only macro_rules!:
+
+**Benefits:**
+1. **Fast Compilation**: No proc-macro overhead
+2. **Simplicity**: Easy to understand and debug
+3. **Portability**: Works everywhere Rust works
+4. **No Dependencies**: No syn/quote/proc-macro2
+
+**Tradeoff:** Less powerful than proc macros, but sufficient
+
+### Why Memory Layout Macros?
+
+`cta_type_same_size!` and similar:
+
+**Rationale:**
+1. **Safety**: Validate unsafe code assumptions
+2. **Documentation**: Make requirements explicit
+3. **Compile-Time**: Zero runtime cost
+4. **Const Evaluation**: Fails at compile time if wrong
+
+**Use Case:** Systems programming, FFI, optimization
+
+### Why Namespace Aliases?
+
+`assert_eq` → `a_id` in orphan namespace:
+
+**Benefits:**
+1. **Migration Path**: Easier to switch from std
+2. **Drop-In Replacement**: Import orphan namespace
+3. **Compatibility**: Works with existing code patterns
+
+**Mechanism:** Re-export with different names
+
+### Why No Custom Test Framework?
+
+Doesn't replace #[test]:
+
+**Rationale:**
+1. **Compatibility**: Works with existing test infrastructure
+2. **Simplicity**: No test runner complexity
+3. **Flexibility**: Use with any test framework
+4. **Focus**: Better assertions, not test orchestration
+
+**Benefit:** Complement existing tools
+
+### Why pretty_assertions Dependency?
+
+Uses external crate for colorful output:
+
+**Rationale:**
+1. **Proven Solution**: Well-tested library
+2. **Maintenance**: Don't reinvent wheel
+3. **Features**: Comprehensive diff formatting
+4. **Optional**: Can disable with features
+
+**Tradeoff:** External dependency for better UX
+
+## Testing Strategy
+
+### Test Coverage
+
+**test_tools Available:**
+- Can use test_tools for comprehensive testing
+- Integration tests with other workspace crates
+
+### Test Files
+
+```
+tests/
+├── trybuild.rs - Compile-fail tests (harness = false)
+├── runtime_assertion_tests.rs - RTA macro tests
+└── trybuild/ - Compile-fail test cases
+    └── *.rs - Expected compilation failures
+```
+
+### Test Focus
+
+1. **Runtime Assertions**: Verify macros expand correctly, error messages
+2. **Compile-Time Assertions**: Use trybuild for compile-fail tests
+3. **Memory Layout**: Verify size/align checks work
+4. **Debug Variants**: Test debug_assertions cfg logic
+5. **Feature Combinations**: Test with different feature sets
+
+### Compile-Fail Testing
+
+Uses `trybuild` to verify compile-time assertions fail correctly:
+
+```rust
+#[test]
+fn test_compile_failures() {
+  let t = trybuild::TestCases::new();
+  t.compile_fail("tests/trybuild/*.rs");
+}
+```
+
+### Known Test Limitations
+
+1. **ANSI Output**: Tests must strip ANSI codes from pretty_assertions
+2. **Compile-Fail Fragility**: trybuild tests depend on exact error messages
+3. **Platform-Specific**: Some CTA tests only work on specific platforms
+
+## Future Considerations
+
+### Potential Enhancements
+
+1. **More CTA Macros**: `cta_false!`, `cta_id!`, etc.
+2. **Custom Diff Formatting**: Configurable diff styles
+3. **Integration with test_tools**: Enhanced test utilities
+4. **Snapshot Testing**: Optional snapshot comparison
+5. **Better Error Context**: More information in panics
+6. **Performance Assertions**: Runtime performance checks
+7. **Async Assertions**: Special handling for async code
+
+### Breaking Changes to Consider
+
+1. **Rename Macros**: Remove underscore prefix (e.g., `a_id` → `aid`)
+2. **Return Values**: Make assertions return Result instead of panic
+3. **Proc Macros**: Add derive macros for custom assertions
+4. **Default Features**: Change default feature set
+
+### Known Limitations
+
+1. **No Async Support**: Assertions are synchronous only
+2. **No Custom Formatters**: Fixed diff format from pretty_assertions
+3. **Macro Hygiene**: Some edge cases with macro expansion
+4. **Error Messages**: Limited customization of panic messages
+5. **No Soft Assertions**: All assertions panic on failure
+
+## Adoption Guidelines
+
+### When to Use diagnostics_tools
+
+**Good Candidates:**
+- All test code for better error messages
+- Development assertions for debugging
+- Compile-time platform validation
+- Memory layout verification for unsafe code
+- Feature flag validation
+
+**Poor Candidates:**
+- Production error handling (use Result)
+- Performance-critical paths (minimal overhead but still some)
+- no_std without alloc (pretty_assertions needs formatting)
+
+### Migration from std::assert
+
+```rust
+// Before: Standard assertions
+assert!(condition);
+assert_eq!(left, right);
+assert_ne!(left, right);
+
+// After: Enhanced assertions
+use diagnostics_tools::*;
+a_true!(condition);
+a_id!(left, right);
+a_not_id!(left, right);
+
+// Or use namespace alias for drop-in replacement:
+use diagnostics_tools::orphan::*;
+// Now assert_eq! and assert_ne! use enhanced versions
+```
+
+### Best Practices
+
+1. **Always Use in Tests**: Better error messages save debugging time
+2. **Compile-Time First**: Use CTA when possible for zero cost
+3. **Document Assumptions**: Use CTA to make requirements explicit
+4. **Custom Messages**: Add context to runtime assertions
+5. **Debug Variants**: Use for expensive checks
+6. **Validate Early**: Add assertions at function entry points
+
+## Related Crates
+
+- **pretty_assertions**: Colorful assertion diffs (dependency)
+- **static_assertions**: Compile-time assertions only
+- **trybuild**: Compile-fail testing (dev dependency)
+- **assert_fs**: Filesystem assertion utilities
+- **claim**: Alternative assertion macros
+- **test_tools**: wTools testing utilities (workspace)
+
+## References
+
+- [API Documentation](https://docs.rs/diagnostics_tools)
+- [Repository](https://github.com/Wandalen/wTools/tree/master/module/core/diagnostics_tools)
+- [readme.md](./readme.md)
+- [pretty_assertions](https://docs.rs/pretty_assertions)
+- [trybuild](https://docs.rs/trybuild)
+- [Examples](./examples/)
+  - [001_basic_runtime_assertions.rs](./examples/001_basic_runtime_assertions.rs)
+  - [002_better_error_messages.rs](./examples/002_better_error_messages.rs)
+  - [003_compile_time_checks.rs](./examples/003_compile_time_checks.rs)
+  - [004_memory_layout_validation.rs](./examples/004_memory_layout_validation.rs)
+  - [005_debug_variants.rs](./examples/005_debug_variants.rs)
+  - [006_real_world_usage.rs](./examples/006_real_world_usage.rs)

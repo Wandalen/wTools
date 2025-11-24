@@ -6,7 +6,7 @@ This document is the **single source of truth** for all issue tracking in this c
 
 | Order | ID | Severity | First Seen | Regressions | Status | Issue | Summary |
 |-------|-----|----------|------------|-------------|--------|-------|---------|
-| 1 | [001](001_escaped_quotes_in_quoted_strings.md) | Critical | 2025-11-01 | 0 | 🟢 (Closed) | [Escaped Quotes in Quoted Strings](001_escaped_quotes_in_quoted_strings.md) | Escape sequence handling bug (misdiagnosed - already implemented) |
+| 1 | [001](closed/001_escaped_quotes_in_quoted_strings.md) | Critical | 2025-11-01 | 0 | 🟢 (Closed) | [Escaped Quotes in Quoted Strings](closed/001_escaped_quotes_in_quoted_strings.md) | Escape sequence handling bug (misdiagnosed - already implemented) |
 
 ## Statistics
 

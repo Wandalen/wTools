@@ -1,0 +1,17 @@
+---
+# Invalid YAML: Command with empty version string
+# This should cause build.rs validation to fail
+# Test case for H31: From conversion uses expect() - version validation needed
+- name: ".test.empty_version"
+  namespace: ""
+  description: "This command has empty version - should fail validation"
+  arguments: []
+  status: "stable"
+  version: ""
+  tags: []
+  aliases: []
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+  examples: []

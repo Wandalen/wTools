@@ -212,6 +212,9 @@ simd-json = { version = "0.13", optional = true } # SIMD-optimized JSON parsing
 memchr = { version = "2.7", optional = true } # SIMD-optimized byte searching (6x faster than std)
 bytecount = { version = "0.6", optional = true } # SIMD byte counting and operations
 
+# CLI output utilities
+unicode-segmentation = { workspace = true } # Unicode grapheme cluster handling for truncation
+
 # NOTE: Benchmark dependencies have been moved to unilang_benchmarks workspace crate
 # to avoid polluting the production dependency tree
 

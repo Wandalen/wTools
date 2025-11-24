@@ -1,0 +1,17 @@
+---
+# Invalid YAML: Command name missing required dot prefix
+# This should cause build.rs validation to fail with clear error message
+# Test case for H27: build.rs does NOT validate command names
+- name: "invalid_no_dot"
+  namespace: ""
+  description: "This command has no dot prefix - should fail validation"
+  arguments: []
+  status: "stable"
+  version: "1.0.0"
+  tags: []
+  aliases: []
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+  examples: []
