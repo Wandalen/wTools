@@ -13,7 +13,7 @@ use super :: *;
 //
 // Note: TempDir is only available when no_std feature is disabled.
 
-/// Tests that TempDir can be created with new().
+/// Tests that `TempDir` can be created with `new()`.
 /// Test Combination: T1.1
 #[ test ]
 #[ cfg( not( feature = "no_std" ) ) ]
@@ -24,16 +24,16 @@ fn temp_dir_creation()
   assert!( temp_dir.base_path.as_os_str().is_empty() );
 }
 
-/// Tests that TempDir fields are accessible.
+/// Tests that `TempDir` fields are accessible.
 /// Test Combination: T1.2
 #[ test ]
 #[ cfg( not( feature = "no_std" ) ) ]
 fn temp_dir_path_access()
 {
   let temp_dir = the_module::TempDir::new();
-  let _path = &temp_dir.base_path;
-  let _prefix = &temp_dir.prefix_path;
-  let _postfix = &temp_dir.postfix_path;
+  let _ = &temp_dir.base_path;
+  let _ = &temp_dir.prefix_path;
+  let _ = &temp_dir.postfix_path;
   // Test passes if all fields are accessible
 }
 

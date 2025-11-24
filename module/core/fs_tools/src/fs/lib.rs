@@ -10,6 +10,9 @@
 /// Collection of primal data types.
 pub mod fs;
 
+/// Path traversal utilities.
+pub mod path;
+
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency {}
@@ -24,6 +27,9 @@ pub mod own
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super ::fs ::orphan :: *;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super ::path ::orphan :: *;
 }
 
 #[ doc( inline ) ]
@@ -49,14 +55,20 @@ pub mod exposed
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super ::fs ::exposed :: *;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super ::path ::exposed :: *;
 }
 
 /// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
-pub mod prelude 
+pub mod prelude
 {
   use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super ::fs ::prelude :: *;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super ::path ::prelude :: *;
 }

@@ -26,9 +26,18 @@ mod private
   }
 
   #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
+  impl Default for TempDir
+  {
+    fn default() -> Self
+    {
+      Self::new()
+    }
+  }
+
+  #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
   impl TempDir
   {
-    /// Creates a new TempDir instance with empty paths.
+    /// Creates a new `TempDir` instance with empty paths.
     ///
     /// # Examples
     ///
@@ -40,6 +49,7 @@ mod private
     /// assert!( temp_dir.base_path.as_os_str().is_empty() );
     /// # }
     /// ```
+    #[ must_use ]
     pub fn new() -> Self
     {
       Self
