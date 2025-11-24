@@ -256,7 +256,7 @@ path = "module/core/clone_dyn_meta"
 # features = [ "enabled" ]
 
 [workspace.dependencies.clone_dyn_types]
-version = "~0.42.0"
+version = "~0.43.0"
 path = "module/core/clone_dyn_types"
 default-features = false
 # features = [ "enabled" ]
