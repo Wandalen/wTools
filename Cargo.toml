@@ -611,7 +611,7 @@ version = "~0.6.0"
 path = "module/core/deterministic_rand"
 
 [workspace.dependencies.crates_tools]
-version = "~0.20.0"
+version = "~0.21.0"
 path = "module/core/crates_tools"
 
 [workspace.dependencies.benchkit]
