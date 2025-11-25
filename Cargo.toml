@@ -607,7 +607,7 @@ path = "module/core/unitore"
 default-features = false
 
 [workspace.dependencies.deterministic_rand]
-version = "~0.6.0"
+version = "~0.7.0"
 path = "module/core/deterministic_rand"
 
 [workspace.dependencies.crates_tools]
