@@ -1,5 +1,6 @@
 //! integration tests moved from `examples/006_testing_integration.rs` to comply with "no tests in examples" requirement
 
+#[ cfg( feature = "testing" ) ]
 use workspace_tools ::testing :: { create_test_workspace, create_test_workspace_with_structure };
 
 #[ cfg( feature = "testing" ) ]

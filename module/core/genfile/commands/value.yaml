@@ -1,0 +1,96 @@
+---
+# Value management commands - FR4: Value Management
+
+- name: ".value.set"
+  namespace: ""
+  description: "Set a parameter value for template rendering"
+  hint: "Set parameter value"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags: ["value", "set"]
+  permissions: []
+  idempotent: false
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".value.set name::host value::\"localhost\""
+    - ".value.set name::port value::\"3000\" verbosity::2"
+  arguments:
+    - name: "name"
+      description: "Parameter name"
+      kind: "String"
+      hint: "Parameter name"
+      attributes: {optional: false, default: null, sensitive: false, interactive: false, multiple: false}
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "value"
+      description: "Parameter value"
+      kind: "String"
+      hint: "Value"
+      attributes: {optional: false, default: null, sensitive: false, interactive: false, multiple: false}
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity level"
+      attributes: {optional: true, default: "1", sensitive: false, interactive: false, multiple: false}
+      validation_rules: []
+      aliases: []
+      tags: []
+
+- name: ".value.list"
+  namespace: ""
+  description: "List all parameter values"
+  hint: "List values"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags: ["value", "list"]
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".value.list"
+    - ".value.list verbosity::2"
+  arguments:
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity level"
+      attributes: {optional: true, default: "1", sensitive: false, interactive: false, multiple: false}
+      validation_rules: []
+      aliases: []
+      tags: []
+
+- name: ".value.clear"
+  namespace: ""
+  description: "Clear all parameter values"
+  hint: "Clear values"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags: ["value", "clear"]
+  permissions: []
+  idempotent: false
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".value.clear"
+    - ".value.clear verbosity::2"
+  arguments:
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity level"
+      attributes: {optional: true, default: "1", sensitive: false, interactive: false, multiple: false}
+      validation_rules: []
+      aliases: []
+      tags: []

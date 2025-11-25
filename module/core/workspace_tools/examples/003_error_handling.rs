@@ -20,14 +20,14 @@ fn main() -> Result< (), Box< dyn core ::error ::Error > >
   Err( WorkspaceError ::EnvironmentVariableMissing( var ) ) =>
   {
    println!( "   ✅ caught missing env var: {var}" );
-   println!( "   💡 solution: set WORKSPACE_PATH or use resolve_or_fallback()" );
+   println!( "   💡 solution: set WORKSPACE_PATH or use resolve_with_extended_fallbacks()" );
  }
   Err( e ) => println!( "   unexpected error: {e}" ),
  }
   
   // 2. fallback resolution (never fails)
   println!( "\n2️⃣  using fallback resolution: " );
-  let ws = Workspace ::resolve_or_fallback();
+  let ws = Workspace ::resolve_with_extended_fallbacks();
   println!( "   ✅ fallback workspace: {}", ws.root().display() );
   println!( "   💡 this method always succeeds with some valid workspace" );
   
@@ -142,7 +142,7 @@ fn main() -> Result< (), Box< dyn core ::error ::Error > >
   println!( "   • use specific error matching instead of generic Error" );
   println!( "   • provide helpful error messages to users" );
   println!( "   • validate workspace early in application lifecycle" );
-  println!( "   • consider using resolve_or_fallback() for flexibility" );
+  println!( "   • consider using resolve_with_extended_fallbacks() for flexibility" );
   println!( "   • handle path not found gracefully" );
   
   println!( "\n🎯 next: run example 004 to learn about resource discovery" );

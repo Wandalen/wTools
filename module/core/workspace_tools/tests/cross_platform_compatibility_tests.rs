@@ -3,21 +3,29 @@
 //! These tests ensure `workspace_tools` works correctly on all platforms
 //! by handling platform-specific path differences and behaviors.
 
-#![ allow( unused_imports ) ]
+use workspace_tools :: { Workspace, WorkspaceError };
+use std :: { env, fs, path ::PathBuf };
+use tempfile :: { TempDir, NamedTempFile };
 
-use workspace_tools ::
+/// helper to create test workspace with standard directory structure
+fn create_test_workspace_with_structure() -> ( TempDir, Workspace )
 {
-  Workspace,
-  WorkspaceError,
-  testing ::create_test_workspace_with_structure,
-};
-use std ::
-{
-  env,
-  fs,
-  path ::PathBuf,
-};
-use tempfile ::NamedTempFile;
+  let temp_dir = TempDir ::new().expect( "Failed to create temp directory" );
+  let workspace = Workspace ::new( temp_dir.path() );
+
+  // create standard directories
+  fs ::create_dir_all( workspace.config_dir() ).ok();
+  fs ::create_dir_all( workspace.data_dir() ).ok();
+  fs ::create_dir_all( workspace.logs_dir() ).ok();
+  fs ::create_dir_all( workspace.docs_dir() ).ok();
+  fs ::create_dir_all( workspace.tests_dir() ).ok();
+  fs ::create_dir_all( workspace.workspace_dir() ).ok();
+
+  #[ cfg( feature = "secrets" ) ]
+  fs ::create_dir_all( workspace.secret_dir() ).ok();
+
+  ( temp_dir, workspace )
+}
 
 /// Tests platform-appropriate absolute path handling
 #[ test ]

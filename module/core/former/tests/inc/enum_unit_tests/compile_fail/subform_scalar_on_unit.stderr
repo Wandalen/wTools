@@ -1,7 +1,6 @@
-error: TEST ERROR: #[subform_scalar] cannot be used on unit variants. V3
- --> tests/inc/enum_unit_tests/compile_fail/subform_scalar_on_unit.rs:3:10
+error: #[ subform_scalar ] cannot be used on unit variants. Unit variants have no fields to form. Consider removing the #[ subform_scalar ] attribute.
+ --> tests/inc/enum_unit_tests/compile_fail/subform_scalar_on_unit.rs:6:3
   |
-3 | #[derive(Former)]
-  |          ^^^^^^
-  |
-  = note: this error originates in the derive macro `Former` (in Nightly builds, run with -Z macro-backtrace for more info)
+6 | /   #[ subform_scalar ] // This should cause a compile error
+7 | |   MyUnit,
+  | |________^

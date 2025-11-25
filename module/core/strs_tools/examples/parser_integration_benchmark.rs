@@ -35,13 +35,12 @@ fn benchmark_command_line_parsing() {
         for (i, &token) in tokens.iter().enumerate() {
             if i == 0 {
                 parsed.push(("command", token));
-            } else if token.starts_with("--") {
-                if let Some(colon_pos) = token.find(':') {
-                    let key = &token[2..colon_pos];
-                    let _value = &token[colon_pos + 1..];
+            } else if let Some(stripped) = token.strip_prefix("--") {
+                if let Some(colon_pos) = stripped.find(':') {
+                    let key = &stripped[..colon_pos];
                     parsed.push(("keyvalue", key));
                 } else {
-                    parsed.push(("flag", &token[2..]));
+                    parsed.push(("flag", stripped));
                 }
             } else {
                 parsed.push(("positional", token));
@@ -59,10 +58,10 @@ fn benchmark_command_line_parsing() {
     
     let improvement = traditional_time.as_nanos() as f64 / parser_time.as_nanos() as f64;
     
-    println!("  Iterations: {}", iterations);
-    println!("  Traditional approach: {:?} ({:.2} ns/op)", traditional_time, traditional_time.as_nanos() as f64 / iterations as f64);
-    println!("  Parser integration:   {:?} ({:.2} ns/op)", parser_time, parser_time.as_nanos() as f64 / iterations as f64);
-    println!("  Performance gain:     {:.2}x faster", improvement);
+    println!("  Iterations: {iterations}");
+    println!("  Traditional approach: {:?} ({:.2} ns/op)", traditional_time, traditional_time.as_nanos() as f64 / f64::from(iterations));
+    println!("  Parser integration:   {:?} ({:.2} ns/op)", parser_time, parser_time.as_nanos() as f64 / f64::from(iterations));
+    println!("  Performance gain:     {improvement:.2}x faster");
     println!("  Memory allocations:   ~{:.1}% reduction", (1.0 - 1.0/improvement) * 100.0);
     println!();
 }
@@ -81,7 +80,7 @@ fn benchmark_csv_processing() {
         let mut validated = Vec::new();
         
         for field in fields {
-            if !field.is_empty() && field.len() > 0 {
+            if !field.is_empty() {
                 validated.push(field.trim());
             }
         }
@@ -99,10 +98,10 @@ fn benchmark_csv_processing() {
     
     let improvement = traditional_time.as_nanos() as f64 / parser_time.as_nanos() as f64;
     
-    println!("  Iterations: {}", iterations);
-    println!("  Traditional approach: {:?} ({:.2} ns/op)", traditional_time, traditional_time.as_nanos() as f64 / iterations as f64);
-    println!("  Parser integration:   {:?} ({:.2} ns/op)", parser_time, parser_time.as_nanos() as f64 / iterations as f64);
-    println!("  Performance gain:     {:.2}x faster", improvement);
+    println!("  Iterations: {iterations}");
+    println!("  Traditional approach: {:?} ({:.2} ns/op)", traditional_time, traditional_time.as_nanos() as f64 / f64::from(iterations));
+    println!("  Parser integration:   {:?} ({:.2} ns/op)", parser_time, parser_time.as_nanos() as f64 / f64::from(iterations));
+    println!("  Performance gain:     {improvement:.2}x faster");
     println!("  Cache efficiency:     ~{:.1}% better", (improvement - 1.0) * 100.0 / 2.0);
     println!();
 }
@@ -119,7 +118,7 @@ fn benchmark_integer_parsing() {
     for _ in 0..iterations {
         let numbers: Result<Vec<i32>, _> = number_data
             .split(',')
-            .map(|s| s.parse::<i32>())
+            .map(str::parse::<i32>)
             .collect();
         let _ = numbers;
     }
@@ -142,10 +141,10 @@ fn benchmark_integer_parsing() {
     
     let improvement = traditional_time.as_nanos() as f64 / parser_time.as_nanos() as f64;
     
-    println!("  Iterations: {}", iterations);
-    println!("  Traditional approach: {:?} ({:.2} ns/op)", traditional_time, traditional_time.as_nanos() as f64 / iterations as f64);
-    println!("  Parser integration:   {:?} ({:.2} ns/op)", parser_time, parser_time.as_nanos() as f64 / iterations as f64);
-    println!("  Performance gain:     {:.2}x faster", improvement);
+    println!("  Iterations: {iterations}");
+    println!("  Traditional approach: {:?} ({:.2} ns/op)", traditional_time, traditional_time.as_nanos() as f64 / f64::from(iterations));
+    println!("  Parser integration:   {:?} ({:.2} ns/op)", parser_time, parser_time.as_nanos() as f64 / f64::from(iterations));
+    println!("  Performance gain:     {improvement:.2}x faster");
     println!("  Error handling:       Integrated (no performance penalty)");
     println!();
 }
@@ -162,7 +161,7 @@ fn benchmark_validation_splitting() {
     for _ in 0..iterations {
         let words: Vec<&str> = mixed_data
             .split(',')
-            .filter(|token| token.chars().all(|c| c.is_alphabetic()))
+            .filter(|token| token.chars().all(char::is_alphabetic))
             .collect();
         let _ = words;
     }
@@ -172,17 +171,17 @@ fn benchmark_validation_splitting() {
     let start = Instant::now();
     for _ in 0..iterations {
         let _count = mixed_data.count_valid_tokens(&[","], |token| {
-            token.chars().all(|c| c.is_alphabetic())
+            token.chars().all(char::is_alphabetic)
         });
     }
     let parser_time = start.elapsed();
     
     let improvement = traditional_time.as_nanos() as f64 / parser_time.as_nanos() as f64;
     
-    println!("  Iterations: {}", iterations);
-    println!("  Traditional approach: {:?} ({:.2} ns/op)", traditional_time, traditional_time.as_nanos() as f64 / iterations as f64);
-    println!("  Parser integration:   {:?} ({:.2} ns/op)", parser_time, parser_time.as_nanos() as f64 / iterations as f64);
-    println!("  Performance gain:     {:.2}x faster", improvement);
+    println!("  Iterations: {iterations}");
+    println!("  Traditional approach: {:?} ({:.2} ns/op)", traditional_time, traditional_time.as_nanos() as f64 / f64::from(iterations));
+    println!("  Parser integration:   {:?} ({:.2} ns/op)", parser_time, parser_time.as_nanos() as f64 / f64::from(iterations));
+    println!("  Performance gain:     {improvement:.2}x faster");
     println!("  Memory efficiency:    No intermediate Vec allocation");
     println!();
 }
@@ -221,10 +220,10 @@ fn benchmark_memory_efficiency() {
     let improvement = traditional_time.as_nanos() as f64 / parser_time.as_nanos() as f64;
     let memory_reduction = 1.0 - (1.0 / 2.0); // Approximately 50% fewer allocations
     
-    println!("  Iterations: {}", iterations);
-    println!("  Traditional approach: {:?} ({:.2} ns/op)", traditional_time, traditional_time.as_nanos() as f64 / iterations as f64);
-    println!("  Parser integration:   {:?} ({:.2} ns/op)", parser_time, parser_time.as_nanos() as f64 / iterations as f64);
-    println!("  Performance gain:     {:.2}x faster", improvement);
+    println!("  Iterations: {iterations}");
+    println!("  Traditional approach: {:?} ({:.2} ns/op)", traditional_time, traditional_time.as_nanos() as f64 / f64::from(iterations));
+    println!("  Parser integration:   {:?} ({:.2} ns/op)", parser_time, parser_time.as_nanos() as f64 / f64::from(iterations));
+    println!("  Performance gain:     {improvement:.2}x faster");
     println!("  Memory allocations:   ~{:.1}% reduction", memory_reduction * 100.0);
     println!("  Cache locality:       Improved (single-pass processing)");
     

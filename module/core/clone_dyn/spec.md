@@ -1,3 +1,40 @@
+# clone_dyn
+
+Enable cloning of trait objects (`dyn Trait`) via procedural macro.
+
+## Overview
+
+The `clone_dyn` ecosystem provides a simple and ergonomic solution for cloning trait objects in Rust. By applying the `#[clone_dyn]` procedural macro to a trait definition, the necessary boilerplate code is automatically generated, overcoming the standard library's limitation where the `Clone` trait is not object-safe.
+
+### Scope
+
+#### Responsibility
+
+clone_dyn is responsible for enabling cloning of trait objects (`Box<dyn Trait>`) through a procedural macro. It generates the required `impl Clone` blocks and manages the underlying type-erased cloning mechanism via the `CloneDyn` trait.
+
+#### In-Scope
+
+- **`#[clone_dyn]` macro**: Procedural attribute macro for trait definitions
+- **`CloneDyn` trait**: Object-safe marker trait enabling type-erased cloning
+- **`clone_into_box()` function**: Core unsafe function performing trait object cloning
+- **Auto-trait combinations**: Generated impls for `dyn Trait`, `dyn Trait + Send`, `dyn Trait + Sync`, `dyn Trait + Send + Sync`
+- **Three-crate ecosystem**: `clone_dyn` (facade), `clone_dyn_meta` (proc-macro), `clone_dyn_types` (core traits)
+
+#### Out-of-Scope
+
+- **Non-Box smart pointers**: Only `Box<dyn Trait>` is supported, not `Rc`/`Arc`
+- **Custom clone behavior**: Always uses standard Clone, no customization
+- **Runtime type inspection**: No downcasting or type identification
+- **Serialization**: No serde integration
+
+#### Boundaries
+
+- **Upstream**: Depends on `macro_tools` for proc-macro implementation
+- **Downstream**: Used by any code needing clonable trait objects
+- **Crate boundary**: Facade (`clone_dyn`) re-exports from `clone_dyn_meta` and `clone_dyn_types`
+
+## Technical Specification
+
 ### Project Goal
 
 To provide Rust developers with a simple and ergonomic solution for cloning trait objects (`dyn Trait`). This is achieved by offering a procedural macro (`#[clone_dyn]`) that automatically generates the necessary boilerplate code, overcoming the standard library's limitation where the `Clone` trait is not object-safe. The ecosystem is designed to be a "one-liner" solution that is both easy to use and maintain.

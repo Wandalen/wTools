@@ -1,0 +1,126 @@
+---
+# Template materialization commands - FR6: Template Materialization
+#
+# Commands for rendering template archives to destination directories.
+
+- name: ".materialize"
+  namespace: ""
+  description: "Render template archive to destination directory with parameter substitution"
+  hint: "Materialize templates to files"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags:
+    - "materialize"
+    - "render"
+    - "template"
+  permissions: []
+  idempotent: false
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".materialize destination::\"./output\""
+    - ".materialize destination::\"./my-project\" verbosity::2"
+    - ".materialize destination::\"./preview\" dry::1"
+  arguments:
+    - name: "destination"
+      description: "Output directory for materialized files"
+      kind: "Path"
+      hint: "Destination directory path"
+      attributes:
+        optional: false
+        default: null
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity level"
+      attributes:
+        optional: true
+        default: "1"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "dry"
+      description: "Dry run mode (0 or 1)"
+      kind: "Boolean"
+      hint: "Dry run flag"
+      attributes:
+        optional: true
+        default: "0"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+
+- name: ".unpack"
+  namespace: ""
+  description: "Unpack raw template files to destination without rendering"
+  hint: "Unpack templates without substitution"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags:
+    - "unpack"
+    - "extract"
+    - "template"
+  permissions: []
+  idempotent: false
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".unpack destination::\"./template-files\""
+    - ".unpack destination::\"./output\" verbosity::2"
+    - ".unpack destination::\"./preview\" dry::1"
+  arguments:
+    - name: "destination"
+      description: "Output directory for unpacked template files"
+      kind: "Path"
+      hint: "Destination directory path"
+      attributes:
+        optional: false
+        default: null
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity level"
+      attributes:
+        optional: true
+        default: "1"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "dry"
+      description: "Dry run mode (0 or 1)"
+      kind: "Boolean"
+      hint: "Dry run flag"
+      attributes:
+        optional: true
+        default: "0"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []

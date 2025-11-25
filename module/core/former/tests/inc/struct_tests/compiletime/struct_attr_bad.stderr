@@ -1,5 +1,5 @@
 error: cannot find attribute `defaultx` in this scope
- --> tests/inc/struct_tests/compiletime/struct_attr_bad.rs:4:4
+ --> tests/inc/struct_tests/compiletime/struct_attr_bad.rs:5:4
   |
-4 | #[ defaultx ]
+5 | #[ defaultx ]
   |    ^^^^^^^^

@@ -1,0 +1,113 @@
+---
+# Content management commands - FR5: Content Management
+
+- name: ".content.internalize"
+  namespace: ""
+  description: "Convert file references to inline content"
+  hint: "Internalize file refs"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags: ["content", "internalize"]
+  permissions: []
+  idempotent: false
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".content.internalize"
+    - ".content.internalize verbosity::2 dry::1"
+  arguments:
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity level"
+      attributes: {optional: true, default: "1", sensitive: false, interactive: false, multiple: false}
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "dry"
+      description: "Dry run mode (0 or 1)"
+      kind: "Boolean"
+      hint: "Dry run flag"
+      attributes: {optional: true, default: "0", sensitive: false, interactive: false, multiple: false}
+      validation_rules: []
+      aliases: []
+      tags: []
+
+- name: ".content.externalize"
+  namespace: ""
+  description: "Convert inline content to file references"
+  hint: "Externalize inline content"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags: ["content", "externalize"]
+  permissions: []
+  idempotent: false
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".content.externalize output_dir::\"./content\""
+    - ".content.externalize output_dir::\"./refs\" verbosity::2"
+  arguments:
+    - name: "output_dir"
+      description: "Directory to write externalized content"
+      kind: "Directory"
+      hint: "Output directory"
+      attributes: {optional: false, default: null, sensitive: false, interactive: false, multiple: false}
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity level"
+      attributes: {optional: true, default: "1", sensitive: false, interactive: false, multiple: false}
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "dry"
+      description: "Dry run mode (0 or 1)"
+      kind: "Boolean"
+      hint: "Dry run flag"
+      attributes: {optional: true, default: "0", sensitive: false, interactive: false, multiple: false}
+      validation_rules: []
+      aliases: []
+      tags: []
+
+- name: ".content.list"
+  namespace: ""
+  description: "List content modes for all files"
+  hint: "List content modes"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags: ["content", "list"]
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".content.list"
+    - ".content.list filter::inline verbosity::2"
+  arguments:
+    - name: "filter"
+      description: "Filter by content type (inline or reference)"
+      kind:
+        Enum: ["inline", "reference"]
+      hint: "Content type filter"
+      attributes: {optional: true, default: null, sensitive: false, interactive: false, multiple: false}
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity level"
+      attributes: {optional: true, default: "1", sensitive: false, interactive: false, multiple: false}
+      validation_rules: []
+      aliases: []
+      tags: []

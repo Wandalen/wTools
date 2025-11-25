@@ -10,9 +10,44 @@
 /// Collection of primal data types.
 pub mod fs;
 
+/// Path traversal utilities.
+pub mod path;
+
+/// Re-export of the glob crate for filesystem pattern matching.
+///
+/// Provides Unix shell-style glob pattern matching for finding files
+/// and directories. Available when the `glob` feature is enabled.
+///
+/// # Example
+///
+/// ```
+/// # #[ cfg( feature = "glob" ) ]
+/// # {
+/// use fs_tools::glob::glob;
+///
+/// // Find all Rust files in current directory
+/// for entry in glob( "*.rs" ).expect( "valid pattern" )
+/// {
+///   if let Ok( path ) = entry
+///   {
+///     println!( "{:?}", path );
+///   }
+/// }
+/// # }
+/// ```
+#[ cfg( feature = "glob" ) ]
+#[ doc( inline ) ]
+pub use ::glob;
+
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
-pub mod dependency {}
+pub mod dependency
+{
+  /// Re-export of the glob crate.
+  #[ cfg( feature = "glob" ) ]
+  #[ doc( inline ) ]
+  pub use ::glob;
+}
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
@@ -24,6 +59,9 @@ pub mod own
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super ::fs ::orphan :: *;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super ::path ::orphan :: *;
 }
 
 #[ doc( inline ) ]
@@ -49,14 +87,20 @@ pub mod exposed
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super ::fs ::exposed :: *;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super ::path ::exposed :: *;
 }
 
 /// Prelude to use essentials: `use my_module ::prelude :: *`.
 #[ allow( unused_imports ) ]
-pub mod prelude 
+pub mod prelude
 {
   use super :: *;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super ::fs ::prelude :: *;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super ::path ::prelude :: *;
 }

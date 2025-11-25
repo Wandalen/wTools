@@ -35,6 +35,35 @@
 //! # }
 //! ```
 //!
+//! ## workspace resolution strategies
+//!
+//! the crate supports multiple resolution strategies to work in both development and
+//! installed contexts. the `workspace()` function tries strategies in priority order:
+//!
+//! 1. **cargo workspace** - detected via `Cargo.toml` metadata (development)
+//! 2. **`WORKSPACE_PATH` env** - set by `.cargo/config.toml` (development)
+//! 3. **git root** - searches for `.git` directory with `Cargo.toml` (development)
+//! 4. **`$PRO` env** - user-configured project root (installed applications)
+//! 5. **`$HOME` directory** - universal fallback (installed applications)
+//! 6. **current directory** - last resort fallback
+//!
+//! ### for installed applications
+//!
+//! when your cli tool is installed via `cargo install`, workspace resolution automatically
+//! falls back to user-configured locations:
+//!
+//! ```bash
+//! # option 1: $PRO (recommended for multi-project users)
+//! export PRO=~/pro
+//! mkdir -p ~/pro/secret
+//!
+//! # option 2: $HOME (simple for casual users)
+//! mkdir -p ~/secret
+//! ```
+//!
+//! this enables installed binaries to load workspace-level secrets and configurations
+//! without requiring `WORKSPACE_PATH` to be set globally.
+//!
 //! ## features
 //!
 //! - **`glob`** : enables pattern-based resource discovery
@@ -214,7 +243,9 @@ impl Workspace
   #[ inline ]
   pub fn new< P: Into< PathBuf > >( root: P ) -> Self
   {
-  Self { root: root.into() }
+  let root = root.into();
+  let root = Self ::cleanup_path( root );
+  Self { root }
   }
 
   /// resolve workspace from environment variables
@@ -257,13 +288,72 @@ impl Workspace
   Ok( Self { root } )
   }
 
+  /// resolve workspace with extended fallback strategies
+  ///
+  /// tries multiple strategies to find workspace root, including user-configured
+  /// locations for installed CLI applications:
+  ///
+  /// 1. cargo workspace detection (developer context)
+  /// 2. `WORKSPACE_PATH` environment variable (cargo operations)
+  /// 3. git repository root with Cargo.toml (developer context)
+  /// 4. `$PRO` environment variable (user-configured project root)
+  /// 5. `$HOME` directory (universal fallback)
+  /// 6. current working directory (last resort)
+  ///
+  /// this method is designed for CLI applications that need to work both during
+  /// development (via `cargo run`) and after installation (via `cargo install`).
+  ///
+  /// # examples
+  ///
+  /// ```rust
+  /// use workspace_tools ::Workspace;
+  ///
+  /// // this will always succeed with some workspace root
+  /// let workspace = Workspace ::resolve_with_extended_fallbacks();
+  /// ```
+  ///
+  /// # resolution priority
+  ///
+  /// **developer contexts** (cargo operations):
+  /// - `from_cargo_workspace()` → finds cargo workspace via metadata
+  /// - `resolve()` → uses `WORKSPACE_PATH` from .cargo/config.toml
+  /// - `from_git_root()` → searches upward for .git + Cargo.toml
+  ///
+  /// **user contexts** (installed binaries):
+  /// - `from_pro_env()` → uses `$PRO` environment variable
+  /// - `from_home_dir()` → uses `$HOME` or `%USERPROFILE%`
+  ///
+  /// **fallback**:
+  /// - `from_cwd()` → current working directory
+  #[ must_use ]
+  #[ inline ]
+  pub fn resolve_with_extended_fallbacks() -> Self
+  {
+  Self ::from_cargo_workspace()
+   .or_else( |_| Self ::resolve() )
+   .or_else( |_| Self ::from_git_root() )
+   .or_else( |_| Self ::from_pro_env() )     // ← NEW: $PRO fallback
+   .or_else( |_| Self ::from_home_dir() )    // ← NEW: $HOME fallback
+   .unwrap_or_else( |_| Self ::from_cwd() )
+  }
+
   /// resolve workspace with fallback strategies
   ///
-  /// tries multiple strategies to resolve workspace root :
-  /// 1. cargo workspace detection (if `cargo_integration` feature enabled)
-  /// 2. environment variable (`WORKSPACE_PATH`)
-  /// 3. current working directory
-  /// 4. git repository root (if .git directory found)
+  /// # deprecated
+  ///
+  /// use `resolve_with_extended_fallbacks()` instead. this method lacks
+  /// support for installed CLI application contexts ($PRO and $HOME fallbacks).
+  ///
+  /// # migration
+  ///
+  /// ```rust
+  /// // old:
+  /// # use workspace_tools ::Workspace;
+  /// let ws = Workspace ::resolve_or_fallback();
+  ///
+  /// // new:
+  /// let ws = Workspace ::resolve_with_extended_fallbacks();
+  /// ```
   ///
   /// # examples
   ///
@@ -273,6 +363,10 @@ impl Workspace
   /// // this will always succeed with some workspace root
   /// let workspace = Workspace ::resolve_or_fallback();
   /// ```
+  #[ deprecated(
+  since = "0.8.0",
+  note = "use `resolve_with_extended_fallbacks()` for installed CLI app support"
+ ) ]
   #[ must_use ]
   #[ inline ]
   pub fn resolve_or_fallback() -> Self
@@ -338,7 +432,142 @@ impl Workspace
   Self { root }
   }
 
+  /// create workspace from $PRO environment variable
+  ///
+  /// intended for users who organize projects under a common root directory.
+  /// the $PRO environment variable should point to the projects root.
+  ///
+  /// # setup
+  ///
+  /// ```bash
+  /// # linux/mac
+  /// export PRO=~/pro
+  /// echo 'export PRO=~/pro' >> ~/.bashrc
+  ///
+  /// # windows
+  /// set PRO=%USERPROFILE%\pro
+  /// setx PRO "%USERPROFILE%\pro"
+  /// ```
+  ///
+  /// # examples
+  ///
+  /// ```rust
+  /// use workspace_tools ::Workspace;
+  ///
+  /// // user has: export PRO=~/pro
+  /// # std ::env ::set_var( "PRO", std ::env ::current_dir().unwrap() );
+  /// let workspace = Workspace ::from_pro_env().unwrap();
+  /// // workspace.root() → /home/user/pro
+  /// ```
+  ///
+  /// # Errors
+  ///
+  /// returns error if:
+  /// - $PRO environment variable is not set
+  /// - path specified by $PRO does not exist
+  ///
+  /// # use cases
+  ///
+  /// - installed CLI tools needing workspace-level secrets
+  /// - multi-project users with organized directory structure
+  /// - CI/CD environments with standardized project layouts
+  #[ inline ]
+  pub fn from_pro_env() -> Result< Self >
+  {
+  let pro_path = env ::var( "PRO" )
+   .map_err( |_| WorkspaceError::EnvironmentVariableMissing( "PRO".to_string() ) )?;
+
+  let root = PathBuf ::from( pro_path );
+
+  if !root.exists()
+  {
+   return Err( WorkspaceError::PathNotFound( root ) );
+  }
+
+  let root = Self ::cleanup_path( root );
+  Ok( Self { root } )
+  }
+
+  /// create workspace from user home directory
+  ///
+  /// universal fallback using the standard home directory location.
+  /// works cross-platform by checking both unix ($HOME) and windows (%USERPROFILE%).
+  ///
+  /// # examples
+  ///
+  /// ```rust
+  /// use workspace_tools ::Workspace;
+  ///
+  /// let workspace = Workspace ::from_home_dir().unwrap();
+  /// // linux/mac: workspace.root() → /home/user
+  /// // windows:   workspace.root() → C:\Users\user
+  /// ```
+  ///
+  /// # Errors
+  ///
+  /// returns error if:
+  /// - neither $HOME nor %USERPROFILE% environment variables are set
+  /// - resolved path does not exist
+  ///
+  /// # use cases
+  ///
+  /// - simple secret storage in ~/secret/ directory
+  /// - casual users without complex project organization
+  /// - minimal configuration requirement for CLI tools
+  #[ inline ]
+  pub fn from_home_dir() -> Result< Self >
+  {
+  let home_path = env ::var( "HOME" )
+   .or_else( |_| env ::var( "USERPROFILE" ) )  // windows compatibility
+   .map_err( |_| WorkspaceError::EnvironmentVariableMissing(
+  "HOME or USERPROFILE".to_string()
+ ) )?;
+
+  let root = PathBuf ::from( home_path );
+
+  if !root.exists()
+  {
+   return Err( WorkspaceError::PathNotFound( root ) );
+  }
+
+  let root = Self ::cleanup_path( root );
+  Ok( Self { root } )
+  }
+
   /// get workspace root directory
+  ///
+  /// # Path Normalization Guarantees
+  ///
+  /// the returned path is guaranteed to be:
+  /// - absolute (not relative)
+  /// - normalized (no `/./ ` or trailing `/.`)
+  /// - preserves symlinks (does not resolve to canonical path)
+  ///
+  /// # examples
+  ///
+  /// ```rust
+  /// # fn main() -> Result< (), workspace_tools ::WorkspaceError > {
+  /// use workspace_tools ::workspace;
+  ///
+  /// # std ::env ::set_var( "WORKSPACE_PATH", std ::env ::current_dir().unwrap() );
+  /// let ws = workspace()?;
+  /// let root = ws.root();
+  ///
+  /// // always absolute
+  /// assert!( root.is_absolute() );
+  ///
+  /// // never contains "/./"
+  /// assert!( !root.to_string_lossy().contains( "/./" ) );
+  ///
+  /// // never ends with "/."
+  /// assert!( !root.to_string_lossy().ends_with( "/." ) );
+  ///
+  /// // clean path joining
+  /// let secret_dir = root.join( "secret" );
+  /// // produces: "/path/to/workspace/secret" not "/path/to/workspace/./secret"
+  /// # Ok(())
+  /// # }
+  /// ```
   #[ must_use ]
   #[ inline ]
   pub fn root( &self ) -> &Path
@@ -514,7 +743,67 @@ impl Workspace
   {
   let value = env ::var( key )
    .map_err( |_| WorkspaceError::EnvironmentVariableMissing( key.to_string() ) )?;
-  Ok( PathBuf ::from( value ) )
+
+  // reject empty paths
+  if value.is_empty()
+  {
+   return Err( WorkspaceError::PathNotFound( PathBuf ::from( "" ) ) );
+  }
+
+  let path = PathBuf ::from( value );
+
+  // if relative path, resolve against current directory
+  let absolute = if path.is_relative()
+  {
+   env ::current_dir()
+    .map_err( | e | WorkspaceError::IoError( e.to_string() ) )?
+    .join( path )
+  }
+  else
+  {
+   path
+  };
+
+  // normalize to remove trailing "." and other redundancies
+  Ok( Self ::cleanup_path( absolute ) )
+  }
+
+  /// cleanup path by removing redundant components
+  ///
+  /// removes trailing `/.` and `/./` components without resolving symlinks
+  fn cleanup_path< P: AsRef< Path > >( path: P ) -> PathBuf
+  {
+  // manual normalization without canonicalization (preserves symlinks)
+  let mut normalized = PathBuf::new();
+  let mut components = path.as_ref().components().peekable();
+
+  while let Some( component ) = components.next()
+  {
+   use std ::path ::Component;
+   match component
+   {
+    Component ::CurDir =>
+    {
+     // skip "." unless it's the only component
+     if normalized.as_os_str().is_empty() && components.peek().is_none()
+     {
+      normalized.push( "." );
+     }
+    }
+    Component ::ParentDir =>
+    {
+     // handle ".." by popping parent
+     if !normalized.pop()
+     {
+      // if we cant pop (at root), keep the ParentDir
+      normalized.push( component );
+     }
+    }
+    _ => normalized.push( component ),
+   }
+  }
+
+  normalized
   }
 
   /// find configuration file by name
@@ -679,16 +968,16 @@ impl Workspace
 {
   /// get secrets directory path
   ///
-  /// returns `workspace_root/.secret`
+  /// returns `workspace_root/secret`
   #[ must_use ]
   pub fn secret_dir( &self ) -> PathBuf
   {
-  self.root.join( ".secret" )
+  self.root.join( "secret" )
   }
 
   /// get path to secret configuration file
   ///
-  /// returns `workspace_root/.secret/{name}`
+  /// returns `workspace_root/secret/{name}`
   #[ must_use ]
   pub fn secret_file( &self, name: &str ) -> PathBuf
   {
@@ -698,11 +987,11 @@ impl Workspace
   /// load secrets from a file in the workspace secrets directory
   ///
   /// supports shell script format (KEY=value lines) and loads secrets from filenames
-  /// within the workspace `.secret/` directory
+  /// within the workspace `secret/` directory
   ///
   /// # Path Resolution
   ///
-  /// Files are resolved as: `workspace_root/.secret/{filename}`
+  /// Files are resolved as: `workspace_root/secret/{filename}`
   ///
   /// **Important** : This method expects a filename, not a path. If you need to load
   /// from a path, use `load_secrets_from_path()` instead.
@@ -717,8 +1006,8 @@ impl Workspace
   /// let ws = workspace()?;
   ///
   /// // ✅ Correct usage - simple filenames only
-  /// // let secrets = ws.load_secrets_from_file( "-secrets.sh" )?;      // -> .secret/-secrets.sh
-  /// // let dev = ws.load_secrets_from_file( "development.env" )?;      // -> .secret/development.env
+  /// // let secrets = ws.load_secrets_from_file( "-secrets.sh" )?;      // -> secret/-secrets.sh
+  /// // let dev = ws.load_secrets_from_file( "development.env" )?;      // -> secret/development.env
   ///
   /// // ❌ Common mistake - using paths (will emit warning)
   /// // let secrets = ws.load_secrets_from_file( "config/secrets.env" )?; // DON'T DO THIS
@@ -734,53 +1023,18 @@ impl Workspace
   /// returns error if the file cannot be read, doesn't exist, or contains invalid format
   pub fn load_secrets_from_file( &self, filename: &str ) -> Result< HashMap< String, String > >
   {
-  // validate parameter doesn't look like a path
-  if filename.contains( '/' ) || filename.contains( '\\' )
-  {
-   eprintln!(
-  "⚠️  Warning: '{filename}' contains path separators. Use load_secrets_from_path() for paths."
- );
-  }
-
-  let secret_file = self.secret_file( filename );
-
-  if !secret_file.exists()
-  {
-   // enhanced error: provide context about what files are available
-   let available = self.list_secrets_files().unwrap_or_default();
-   let suggestion = if available.is_empty()
-   {
-  format!( "\nNo files found in secrets directory: {}", self.secret_dir().display() )
-  }
-   else
-   {
-  format!( "\nAvailable files: {}", available.join( ", " ) )
- };
-
-   return Err( WorkspaceError::ConfigurationError(
-  format!(
-   "Secrets file '{}' not found at {}.{}",
-   filename,
-   secret_file.display(),
-   suggestion
- )
- ) );
-  }
-
-  let content = fs ::read_to_string( &secret_file )
-   .map_err( | e | WorkspaceError::IoError( format!( "failed to read {} : {}", secret_file.display(), e ) ) )?;
-
-  Ok( Self ::parse_key_value_file( &content ) )
+  Self::warn_if_path_like( filename );
+  self.try_load_secrets_with_fallback( filename )
   }
 
   /// load a specific secret key with fallback to environment
   ///
   /// tries to load from secret file first, then falls back to environment variable
-  /// this method uses filename-based resolution (looks in .secret/ directory)
+  /// this method uses filename-based resolution (looks in secret/ directory)
   ///
   /// # Path Resolution
   ///
-  /// Files are resolved as: `workspace_root/.secret/{filename}`
+  /// Files are resolved as: `workspace_root/secret/{filename}`
   ///
   /// # Fallback Strategy
   ///
@@ -798,7 +1052,7 @@ impl Workspace
   /// let ws = workspace()?;
   ///
   /// // ✅ Correct usage - filename only
-  /// match ws.load_secret_key( "API_KEY", "-secrets.sh" )  // -> .secret/-secrets.sh
+  /// match ws.load_secret_key( "API_KEY", "-secrets.sh" )  // -> secret/-secrets.sh
   /// {
   ///     Ok( key ) => println!( "loaded api key from file or environment" ),
   ///     Err( e ) => println!( "api key not found: {}", e ),
@@ -815,6 +1069,8 @@ impl Workspace
   /// returns error if the key is not found in either the secret file or environment variables
   pub fn load_secret_key( &self, key_name: &str, filename: &str ) -> Result< String >
   {
+  let secret_file_path = self.secret_file( filename );
+
   // try loading from secret file first
   if let Ok( secrets ) = self.load_secrets_from_file( filename )
   {
@@ -831,7 +1087,7 @@ impl Workspace
    "{} not found in secrets file '{}' (resolved to: {}) or environment variables",
    key_name,
    filename,
-   self.secret_file( filename ).display()
+   secret_file_path.display()
  )
  ))
   }
@@ -891,9 +1147,178 @@ impl Workspace
   secrets
   }
 
+  /// warn if filename contains path separators
+  ///
+  /// emits warning to stderr if filename looks like a path rather than a simple filename
+  /// this helps users understand they should use path-specific methods for paths
+  fn warn_if_path_like( filename: &str )
+  {
+  if filename.contains( '/' ) || filename.contains( '\\' )
+  {
+   eprintln!(
+  "⚠️  Warning: '{filename}' contains path separators. Use load_secrets_from_path() for paths."
+ );
+  }
+  }
+
+  /// try loading secrets from fallback chain
+  ///
+  /// implements automatic fallback with proper corner case handling:
+  /// 1. local workspace: `workspace_root/secret/{filename}`
+  /// 2. `$PRO` workspace: `$PRO/secret/{filename}` (if `$PRO` set and valid)
+  /// 3. `$HOME` directory: `$HOME/secret/{filename}` (if `$HOME`/`$USERPROFILE` set and valid)
+  ///
+  /// uses path canonicalization to avoid reading same file multiple times
+  fn try_load_secrets_with_fallback( &self, filename: &str ) -> Result< HashMap< String, String > >
+  {
+  let mut tried_paths = Vec ::new();
+  let mut canonical_paths = std ::collections ::HashSet ::new();
+
+  // 1. try local workspace first
+  let local_path = self.secret_file( filename );
+  tried_paths.push( format!( "  - {} (local workspace)", local_path.display() ) );
+
+  if let Some( canonical ) = Self::try_canonicalize( &local_path )
+  {
+   canonical_paths.insert( canonical );
+   if local_path.exists()
+   {
+     match Self::read_secret_file_validated( &local_path )
+     {
+       Ok( content ) => return Ok( Self::parse_key_value_file( &content ) ),
+       Err( e ) => return Err( e ),
+     }
+   }
+  }
+
+  // 2. try $PRO workspace if different
+  if let Ok( pro_env ) = env::var( "PRO" )
+  {
+   if !pro_env.trim().is_empty()
+   {
+     if let Ok( pro_ws ) = Workspace::from_pro_env()
+     {
+       let pro_path = pro_ws.secret_file( filename );
+       if let Some( canonical ) = Self::try_canonicalize( &pro_path )
+       {
+         if !canonical_paths.contains( &canonical )
+         {
+           canonical_paths.insert( canonical );
+           tried_paths.push( format!( "  - {} ($PRO workspace)", pro_path.display() ) );
+           if pro_path.exists()
+           {
+             match Self::read_secret_file_validated( &pro_path )
+             {
+               Ok( content ) => return Ok( Self::parse_key_value_file( &content ) ),
+               Err( e ) => return Err( e ),
+             }
+           }
+         }
+       }
+     }
+   }
+  }
+
+  // 3. try $HOME workspace if different
+  #[ cfg( not( target_os = "windows" ) ) ]
+  let home_env_var = "HOME";
+  #[ cfg( target_os = "windows" ) ]
+  let home_env_var = "USERPROFILE";
+
+  if let Ok( home_env ) = env::var( home_env_var )
+  {
+   if !home_env.trim().is_empty()
+   {
+     if let Ok( home_ws ) = Workspace::from_home_dir()
+     {
+       let home_path = home_ws.secret_file( filename );
+       if let Some( canonical ) = Self::try_canonicalize( &home_path )
+       {
+         if !canonical_paths.contains( &canonical )
+         {
+           canonical_paths.insert( canonical );
+           tried_paths.push( format!( "  - {} ($HOME directory)", home_path.display() ) );
+           if home_path.exists()
+           {
+             match Self::read_secret_file_validated( &home_path )
+             {
+               Ok( content ) => return Ok( Self::parse_key_value_file( &content ) ),
+               Err( e ) => return Err( e ),
+             }
+           }
+         }
+       }
+     }
+   }
+  }
+
+  // none found - return error with helpful message including available files
+  let mut error_msg = format!(
+   "Secrets file '{}' not found in any location.\n\nTried:\n{}",
+   filename,
+   tried_paths.join( "\n" )
+  );
+
+  if let Ok( available_files ) = self.list_secrets_files()
+  {
+   if !available_files.is_empty()
+   {
+     error_msg.push_str( "\n\nAvailable files: " );
+     error_msg.push_str( &available_files.join( ", " ) );
+   }
+  }
+
+  error_msg.push_str( "\n\nCreate secret file in one of the above locations." );
+  Err( WorkspaceError::ConfigurationError( error_msg ) )
+  }
+
+  /// try to canonicalize path, return None if it fails
+  ///
+  /// used for path deduplication to handle symlinks and path normalization
+  fn try_canonicalize( path: &Path ) -> Option< PathBuf >
+  {
+  path.canonicalize().ok()
+  }
+
+  /// read secret file with validation checks
+  ///
+  /// validates file type (must be regular file) and size (max 10MB)
+  /// provides clear error messages for common issues
+  fn read_secret_file_validated( path: &Path ) -> Result< String >
+  {
+  let metadata = fs::metadata( path )
+   .map_err( | e | WorkspaceError::IoError( format!( "Failed to read secrets file\n  Absolute path: {}\n  Error: {}", path.display(), e ) ) )?;
+
+  // validate file type - must be regular file
+  if !metadata.is_file()
+  {
+   let file_type = if metadata.is_dir() { "directory" }
+     else if metadata.file_type().is_symlink() { "symbolic link" }
+     else { "special file (device, socket, or pipe)" };
+
+   return Err( WorkspaceError::ConfigurationError( format!(
+     "Secrets file is a {}, not a regular file\n  Path: {}",
+     file_type, path.display()
+   ) ) );
+  }
+
+  // validate file size - max 10MB to prevent OOM
+  const MAX_SIZE: u64 = 10 * 1024 * 1024;
+  if metadata.len() > MAX_SIZE
+  {
+   return Err( WorkspaceError::ConfigurationError( format!(
+     "Secrets file too large ({} bytes, max {} bytes)\n  Path: {}\n  Hint: Secret files should be small key-value files",
+     metadata.len(), MAX_SIZE, path.display()
+   ) ) );
+  }
+
+  fs::read_to_string( path )
+   .map_err( | e | WorkspaceError::IoError( format!( "Failed to read secrets file\n  Absolute path: {}\n  Error: {}", path.display(), e ) ) )
+  }
+
   /// list available secrets files in the secrets directory
   ///
-  /// returns vector of filenames (not full paths) found in .secret/ directory
+  /// returns vector of filenames (not full paths) found in secret/ directory
   ///
   /// # examples
   ///
@@ -1020,7 +1445,7 @@ impl Workspace
   /// // let secrets = ws.load_secrets_from_path( "config/secrets.env" )?;
   ///
   /// // load from nested directory
-  /// // let nested = ws.load_secrets_from_path( "lib/project/.secret/api.env" )?;
+  /// // let nested = ws.load_secrets_from_path( "lib/project/secret/api.env" )?;
   /// # Ok(())
   /// # }
   /// ```
@@ -1031,22 +1456,8 @@ impl Workspace
   pub fn load_secrets_from_path( &self, relative_path: &str ) -> Result< HashMap< String, String > >
   {
   let secret_file = self.join( relative_path );
-
-  if !secret_file.exists()
-  {
-   return Err( WorkspaceError::ConfigurationError(
-  format!(
-   "Secrets file not found at path: {} (resolved to: {})",
-   relative_path,
-   secret_file.display()
- )
- ) );
-  }
-
-  let content = fs ::read_to_string( &secret_file )
-   .map_err( | e | WorkspaceError::IoError( format!( "failed to read {} : {}", secret_file.display(), e ) ) )?;
-
-  Ok( Self ::parse_key_value_file( &content ) )
+  let content = Self::read_secret_file_validated( &secret_file )?;
+  Ok( Self::parse_key_value_file( &content ) )
   }
 
   /// load secrets from absolute path
@@ -1076,20 +1487,8 @@ impl Workspace
   /// returns error if the file cannot be read, doesn't exist, or contains invalid format
   pub fn load_secrets_from_absolute_path( &self, absolute_path: &Path ) -> Result< HashMap< String, String > >
   {
-  if !absolute_path.exists()
-  {
-   return Err( WorkspaceError::ConfigurationError(
-  format!(
-   "Secrets file not found at absolute path: {}",
-   absolute_path.display()
- )
- ) );
-  }
-
-  let content = fs ::read_to_string( absolute_path )
-   .map_err( | e | WorkspaceError::IoError( format!( "failed to read {} : {}", absolute_path.display(), e ) ) )?;
-
-  Ok( Self ::parse_key_value_file( &content ) )
+  let content = Self::read_secret_file_validated( absolute_path )?;
+  Ok( Self::parse_key_value_file( &content ) )
   }
 
   /// load secrets with verbose debug information
@@ -1173,17 +1572,55 @@ impl Workspace
 }
 
 #[ cfg( feature = "secure" ) ]
+/// trait for converting plain types to secure memory-protected types
+///
+/// this trait provides a generic way to convert regular strings and collections
+/// into their secure counterparts that use memory protection and zeroization
+trait AsSecure
+{
+  /// the secure version of this type
+  type Secure;
+
+  /// convert this value into its secure equivalent
+  fn into_secure( self ) -> Self::Secure;
+}
+
+#[ cfg( feature = "secure" ) ]
+impl AsSecure for String
+{
+  type Secure = SecretString;
+
+  fn into_secure( self ) -> Self::Secure
+  {
+  SecretString::new( self )
+  }
+}
+
+#[ cfg( feature = "secure" ) ]
+impl AsSecure for HashMap< String, String >
+{
+  type Secure = HashMap< String, SecretString >;
+
+  fn into_secure( self ) -> Self::Secure
+  {
+  self.into_iter()
+   .map( | ( key, value ) | ( key, SecretString::new( value ) ) )
+   .collect()
+  }
+}
+
+#[ cfg( feature = "secure" ) ]
 impl Workspace
 {
   /// load secrets from a file in the workspace secrets directory with memory-safe handling
   ///
   /// returns secrets as `SecretString` types for enhanced security
   /// supports shell script format (KEY=value lines) and loads secrets from filenames
-  /// within the workspace `.secret/` directory
+  /// within the workspace `secret/` directory
   ///
   /// # Path Resolution
   ///
-  /// Files are resolved as: `workspace_root/.secret/{filename}`
+  /// Files are resolved as: `workspace_root/secret/{filename}`
   ///
   /// **Important** : This method expects a filename, not a path. If you need to load
   /// from a path, use `load_secrets_from_path_secure()` instead.
@@ -1199,8 +1636,8 @@ impl Workspace
   /// let ws = workspace()?;
   ///
   /// // ✅ Correct usage - simple filenames only
-  /// // let secrets = ws.load_secrets_secure( "-secrets.sh" )?;         // -> .secret/-secrets.sh
-  /// // let dev = ws.load_secrets_secure( "development.env" )?;         // -> .secret/development.env
+  /// // let secrets = ws.load_secrets_secure( "-secrets.sh" )?;         // -> secret/-secrets.sh
+  /// // let dev = ws.load_secrets_secure( "development.env" )?;         // -> secret/development.env
   ///
   /// // Access secret values (requires explicit expose_secret() call)
   /// // if let Some( api_key ) = secrets.get( "API_KEY" )
@@ -1222,51 +1659,7 @@ impl Workspace
   /// returns error if the file cannot be read, doesn't exist, or contains invalid format
   pub fn load_secrets_secure( &self, filename: &str ) -> Result< HashMap< String, SecretString > >
   {
-  // validate parameter doesn't look like a path
-  if filename.contains( '/' ) || filename.contains( '\\' )
-  {
-   eprintln!(
-  "⚠️  Warning: '{filename}' contains path separators. Use load_secrets_from_path() for paths."
- );
-  }
-
-  let secret_file = self.secret_file( filename );
-
-  if !secret_file.exists()
-  {
-   // enhanced error: provide context about what files are available
-   let available = self.list_secrets_files().unwrap_or_default();
-   let suggestion = if available.is_empty()
-   {
-  format!( "\nNo files found in secrets directory: {}", self.secret_dir().display() )
-  }
-   else
-   {
-  format!( "\nAvailable files: {}", available.join( ", " ) )
- };
-
-   return Err( WorkspaceError::ConfigurationError(
-  format!(
-   "Secrets file '{}' not found at {}.{}",
-   filename,
-   secret_file.display(),
-   suggestion
- )
- ) );
-  }
-
-  let content = fs ::read_to_string( &secret_file )
-   .map_err( | e | WorkspaceError::IoError( format!( "failed to read {} : {}", secret_file.display(), e ) ) )?;
-
-  let parsed = Self ::parse_key_value_file( &content );
-  let mut secure_secrets = HashMap ::new();
-
-  for ( key, value ) in parsed
-  {
-  secure_secrets.insert( key, SecretString ::new( value ) );
-  }
-
-  Ok( secure_secrets )
+  self.load_secrets_from_file( filename ).map( AsSecure::into_secure )
   }
 
   /// load a specific secret key with memory-safe handling and fallback to environment
@@ -1288,7 +1681,7 @@ impl Workspace
   /// # std ::env ::set_var( "WORKSPACE_PATH", std ::env ::current_dir().unwrap() );
   /// let ws = workspace()?;
   ///
-  /// // looks for API_KEY in .secret/-secrets.sh, then in environment
+  /// // looks for API_KEY in secret/-secrets.sh, then in environment
   /// match ws.load_secret_key_secure( "API_KEY", "-secrets.sh" )
   /// {
   ///     Ok( key ) => println!( "loaded api key: {}", key.expose_secret() ),
@@ -1299,28 +1692,7 @@ impl Workspace
   /// ```
   pub fn load_secret_key_secure( &self, key_name: &str, filename: &str ) -> Result< SecretString >
   {
-  // try loading from secret file first
-  if let Ok( secrets ) = self.load_secrets_secure( filename )
-  {
-   if let Some( value ) = secrets.get( key_name )
-   {
-  return Ok( value.clone() );
-  }
-  }
-
-  // fallback to environment variable
-  match env ::var( key_name )
-  {
-   Ok( value ) => Ok( SecretString ::new( value ) ),
-   Err( _ ) => Err( WorkspaceError::ConfigurationError(
-  format!(
-   "{} not found in secrets file '{}' (resolved to: {}) or environment variables",
-   key_name,
-   filename,
-   self.secret_file( filename ).display()
- )
- ))
-  }
+  self.load_secret_key( key_name, filename ).map( AsSecure::into_secure )
   }
 
   /// get environment variable as `SecretString` for memory-safe handling
@@ -1430,8 +1802,7 @@ impl Workspace
   {
   // load the configuration file
   let config_path = self.join( config_file );
-  let config_content = std ::fs ::read_to_string( &config_path )
-   .map_err( | e | WorkspaceError::IoError( format!( "failed to read config {} : {}", config_path.display(), e ) ) )?;
+  let config_content = Self::read_file_to_string( &config_path )?;
 
   // load secrets securely
   let secrets = self.load_secrets_secure( secret_file )?;
@@ -1506,7 +1877,7 @@ impl Workspace
   /// let ws = workspace()?;
   /// let mut config = AppConfig { database_url: String ::new(), api_key: String ::new() };
   ///
-  /// // config gets secrets injected from .secret/-config.sh
+  /// // config gets secrets injected from secret/-config.sh
   /// config = ws.load_config_with_secrets( config, "-config.sh" )?;
   /// # }
   /// # Ok(())
@@ -1520,7 +1891,7 @@ impl Workspace
   // inject each secret into the configuration
   for ( key, secret_value ) in secrets
   {
-   config.inject_secret( &key, secret_value.expose_secret().to_string() )?;
+   config.inject_secret( &key, secret_value.expose_secret().clone() )?;
   }
 
   // validate the final configuration
@@ -1559,15 +1930,7 @@ impl Workspace
   /// returns error if the file cannot be read, doesn't exist, or contains invalid format
   pub fn load_secrets_from_path_secure( &self, relative_path: &str ) -> Result< HashMap< String, SecretString > >
   {
-  let secrets = self.load_secrets_from_path( relative_path )?;
-  let mut secure_secrets = HashMap ::new();
-
-  for ( key, value ) in secrets
-  {
-  secure_secrets.insert( key, SecretString ::new( value ) );
-  }
-
-  Ok( secure_secrets )
+  self.load_secrets_from_path( relative_path ).map( AsSecure::into_secure )
   }
 
   /// load secrets from absolute path with memory-safe handling
@@ -1598,15 +1961,7 @@ impl Workspace
   /// returns error if the file cannot be read, doesn't exist, or contains invalid format
   pub fn load_secrets_from_absolute_path_secure( &self, absolute_path: &Path ) -> Result< HashMap< String, SecretString > >
   {
-  let secrets = self.load_secrets_from_absolute_path( absolute_path )?;
-  let mut secure_secrets = HashMap ::new();
-
-  for ( key, value ) in secrets
-  {
-  secure_secrets.insert( key, SecretString ::new( value ) );
-  }
-
-  Ok( secure_secrets )
+  self.load_secrets_from_absolute_path( absolute_path ).map( AsSecure::into_secure )
   }
 
   /// load secrets with verbose debug information and memory-safe handling
@@ -1639,15 +1994,7 @@ impl Workspace
   /// returns error if the file cannot be read, doesn't exist, or contains invalid format
   pub fn load_secrets_with_debug_secure( &self, secret_file_name: &str ) -> Result< HashMap< String, SecretString > >
   {
-  let secrets = self.load_secrets_with_debug( secret_file_name )?;
-  let mut secure_secrets = HashMap ::new();
-
-  for ( key, value ) in secrets
-  {
-  secure_secrets.insert( key, SecretString ::new( value ) );
-  }
-
-  Ok( secure_secrets )
+  self.load_secrets_with_debug( secret_file_name ).map( AsSecure::into_secure )
   }
 
 }
@@ -1677,6 +2024,7 @@ impl Workspace
   pub fn from_cargo_workspace() -> Result< Self >
   {
   let workspace_root = Self ::find_cargo_workspace()?;
+  let workspace_root = Self ::cleanup_path( workspace_root );
   Ok( Self { root: workspace_root } )
   }
 
@@ -1704,6 +2052,9 @@ impl Workspace
   {
    manifest_path.to_path_buf()
  };
+
+  // normalize the path before creating workspace
+  let workspace_root = Self ::cleanup_path( workspace_root );
 
   Ok( Self { root: workspace_root } )
   }
@@ -1843,9 +2194,76 @@ impl Workspace
   }
 }
 
+#[ cfg( any( feature = "serde", feature = "validation", feature = "secure" ) ) ]
+impl Workspace
+{
+  /// internal helper to read file with error wrapping
+  ///
+  /// provides consistent error messages across all file reading operations
+  fn read_file_to_string< P: AsRef< Path > >( path: P ) -> Result< String >
+  {
+    let path = path.as_ref();
+    std ::fs ::read_to_string( path )
+      .map_err( | e | WorkspaceError::IoError(
+        format!( "failed to read {}: {}", path.display(), e )
+      ) )
+  }
+
+  /// internal helper to detect file format from extension
+  ///
+  /// returns format string (toml/json/yaml/yml) based on file extension
+  fn detect_format< P: AsRef< Path > >( path: P ) -> String
+  {
+    path.as_ref()
+      .extension()
+      .and_then( | ext | ext.to_str() )
+      .unwrap_or( "toml" )
+      .to_string()
+  }
+}
+
 #[ cfg( feature = "serde" ) ]
 impl Workspace
 {
+
+  /// internal helper to parse config content based on format
+  fn parse_content< T >( content: &str, format: &str ) -> Result< T >
+  where
+    T: serde ::de ::DeserializeOwned,
+  {
+    match format
+    {
+      "toml" => toml ::from_str( content )
+        .map_err( | e | WorkspaceError::SerdeError( format!( "toml error: {e}" ) ) ),
+      "json" => serde_json ::from_str( content )
+        .map_err( | e | WorkspaceError::SerdeError( format!( "json error: {e}" ) ) ),
+      "yaml" | "yml" => serde_yaml ::from_str( content )
+        .map_err( | e | WorkspaceError::SerdeError( format!( "yaml error: {e}" ) ) ),
+      _ => Err( WorkspaceError::ConfigurationError(
+        format!( "unsupported format: {format}" )
+      ) ),
+    }
+  }
+
+  /// internal helper to serialize config content based on format
+  fn serialize_content< T >( config: &T, format: &str ) -> Result< String >
+  where
+    T: serde ::Serialize,
+  {
+    match format
+    {
+      "toml" => toml ::to_string_pretty( config )
+        .map_err( | e | WorkspaceError::SerdeError( format!( "toml error: {e}" ) ) ),
+      "json" => serde_json ::to_string_pretty( config )
+        .map_err( | e | WorkspaceError::SerdeError( format!( "json error: {e}" ) ) ),
+      "yaml" | "yml" => serde_yaml ::to_string( config )
+        .map_err( | e | WorkspaceError::SerdeError( format!( "yaml error: {e}" ) ) ),
+      _ => Err( WorkspaceError::ConfigurationError(
+        format!( "unsupported format: {format}" )
+      ) ),
+    }
+  }
+
   /// load configuration with automatic format detection
   ///
   /// # Errors
@@ -1891,23 +2309,9 @@ impl Workspace
   P: AsRef< Path >,
   {
   let path = path.as_ref();
-  let content = std ::fs ::read_to_string( path )
-   .map_err( | e | WorkspaceError::IoError( format!( "failed to read {} : {}", path.display(), e ) ) )?;
-
-  let extension = path.extension()
-   .and_then( | ext | ext.to_str() )
-   .unwrap_or( "toml" );
-
-  match extension
-  {
-   "toml" => toml ::from_str( &content )
-  .map_err( | e | WorkspaceError::SerdeError( format!( "toml deserialization error: {e}" ) ) ),
-   "json" => serde_json ::from_str( &content )
-  .map_err( | e | WorkspaceError::SerdeError( format!( "json deserialization error: {e}" ) ) ),
-   "yaml" | "yml" => serde_yaml ::from_str( &content )
-  .map_err( | e | WorkspaceError::SerdeError( format!( "yaml deserialization error: {e}" ) ) ),
-   _ => Err( WorkspaceError::ConfigurationError( format!( "unsupported config format: {extension}" ) ) ),
-  }
+  let content = Self::read_file_to_string( path )?;
+  let format = Self::detect_format( path );
+  Self::parse_content( &content, &format )
   }
 
   /// save configuration with format matching the original
@@ -1936,35 +2340,23 @@ impl Workspace
   P: AsRef< Path >,
   {
   let path = path.as_ref();
-  let extension = path.extension()
-   .and_then( | ext | ext.to_str() )
-   .unwrap_or( "toml" );
-
-  let content = match extension
-  {
-   "toml" => toml ::to_string_pretty( config )
-  .map_err( | e | WorkspaceError::SerdeError( format!( "toml serialization error: {e}" ) ) )?,
-   "json" => serde_json ::to_string_pretty( config )
-  .map_err( | e | WorkspaceError::SerdeError( format!( "json serialization error: {e}" ) ) )?,
-   "yaml" | "yml" => serde_yaml ::to_string( config )
-  .map_err( | e | WorkspaceError::SerdeError( format!( "yaml serialization error: {e}" ) ) )?,
-   _ => return Err( WorkspaceError::ConfigurationError( format!( "unsupported config format: {extension}" ) ) ),
- };
+  let format = Self::detect_format( path );
+  let content = Self::serialize_content( config, &format )?;
 
   // ensure parent directory exists
   if let Some( parent ) = path.parent()
   {
    std ::fs ::create_dir_all( parent )
-  .map_err( | e | WorkspaceError::IoError( format!( "failed to create directory {} : {}", parent.display(), e ) ) )?;
+  .map_err( | e | WorkspaceError::IoError( format!( "failed to create directory {}: {}", parent.display(), e ) ) )?;
   }
 
   // atomic write using temporary file
-  let temp_path = path.with_extension( format!( "{extension}.tmp" ) );
+  let temp_path = path.with_extension( format!( "{format}.tmp" ) );
   std ::fs ::write( &temp_path, content )
-   .map_err( | e | WorkspaceError::IoError( format!( "failed to write temporary file {} : {}", temp_path.display(), e ) ) )?;
-  
+   .map_err( | e | WorkspaceError::IoError( format!( "failed to write temporary file {}: {}", temp_path.display(), e ) ) )?;
+
   std ::fs ::rename( &temp_path, path )
-   .map_err( | e | WorkspaceError::IoError( format!( "failed to rename {} to {} : {}", temp_path.display(), path.display(), e ) ) )?;
+   .map_err( | e | WorkspaceError::IoError( format!( "failed to rename {} to {}: {}", temp_path.display(), path.display(), e ) ) )?;
 
   Ok( () )
   }
@@ -2086,6 +2478,51 @@ impl< 'de > serde ::Deserialize< 'de > for WorkspacePath
 #[ cfg( feature = "validation" ) ]
 impl Workspace
 {
+  /// internal helper to parse content to JSON value for validation
+  fn parse_to_json( content: &str, format: &str ) -> Result< serde_json ::Value >
+  {
+    match format
+    {
+      "toml" =>
+      {
+        let toml_value: toml ::Value = toml ::from_str( content )
+          .map_err( | e | WorkspaceError::SerdeError( format!( "toml parse: {e}" ) ) )?;
+        serde_json ::to_value( toml_value )
+          .map_err( | e | WorkspaceError::SerdeError( format!( "toml→json: {e}" ) ) )
+      }
+      "json" => serde_json ::from_str( content )
+        .map_err( | e | WorkspaceError::SerdeError( format!( "json parse: {e}" ) ) ),
+      "yaml" | "yml" =>
+      {
+        let yaml_value: serde_yaml ::Value = serde_yaml ::from_str( content )
+          .map_err( | e | WorkspaceError::SerdeError( format!( "yaml parse: {e}" ) ) )?;
+        serde_json ::to_value( yaml_value )
+          .map_err( | e | WorkspaceError::SerdeError( format!( "yaml→json: {e}" ) ) )
+      }
+      _ => Err( WorkspaceError::ConfigurationError(
+        format!( "unsupported format: {format}" )
+      ) ),
+    }
+  }
+
+  /// internal helper to validate JSON against schema
+  fn validate_against_schema(
+    json_value: &serde_json ::Value,
+    schema: &Validator
+  ) -> Result< () >
+  {
+    if let Err( validation_errors ) = schema.validate( json_value )
+    {
+      let errors: Vec< String > = validation_errors
+        .map( | error | format!( "{}: {}", error.instance_path, error ) )
+        .collect();
+      return Err( WorkspaceError::ValidationError(
+        format!( "validation failed: {}", errors.join( "; " ) )
+      ) );
+    }
+    Ok( () )
+  }
+
   /// load and validate configuration against a json schema
   ///
   /// # Errors
@@ -2152,47 +2589,18 @@ impl Workspace
   P: AsRef< Path >,
   {
   let path = path.as_ref();
-  let content = std ::fs ::read_to_string( path )
-   .map_err( | e | WorkspaceError::IoError( format!( "failed to read {} : {}", path.display(), e ) ) )?;
-
-  let extension = path.extension()
-   .and_then( | ext | ext.to_str() )
-   .unwrap_or( "toml" );
+  let content = Self::read_file_to_string( path )?;
+  let format = Self::detect_format( path );
 
   // parse to json value first for validation
-  let json_value = match extension
-  {
-   "toml" =>
-   {
-  let toml_value: toml ::Value = toml ::from_str( &content )
-   .map_err( | e | WorkspaceError::SerdeError( format!( "toml parsing error: {e}" ) ) )?;
-  serde_json ::to_value( toml_value )
-   .map_err( | e | WorkspaceError::SerdeError( format!( "toml to json conversion error: {e}" ) ) )?
-  }
-   "json" => serde_json ::from_str( &content )
-  .map_err( | e | WorkspaceError::SerdeError( format!( "json parsing error: {e}" ) ) )?,
-   "yaml" | "yml" =>
-   {
-  let yaml_value: serde_yaml ::Value = serde_yaml ::from_str( &content )
-   .map_err( | e | WorkspaceError::SerdeError( format!( "yaml parsing error: {e}" ) ) )?;
-  serde_json ::to_value( yaml_value )
-   .map_err( | e | WorkspaceError::SerdeError( format!( "yaml to json conversion error: {e}" ) ) )?
-  }
-   _ => return Err( WorkspaceError::ConfigurationError( format!( "unsupported config format: {extension}" ) ) ),
- };
-  
+  let json_value = Self::parse_to_json( &content, &format )?;
+
   // validate against schema
-  if let Err( validation_errors ) = schema.validate( &json_value )
-  {
-   let errors: Vec< String > = validation_errors
-  .map( | error | format!( "{} : {}", error.instance_path, error ) )
-  .collect();
-   return Err( WorkspaceError::ValidationError( format!( "validation failed: {}", errors.join( "; " ) ) ) );
-  }
-  
+  Self::validate_against_schema( &json_value, schema )?;
+
   // if validation passes, deserialize to target type
   serde_json ::from_value( json_value )
-   .map_err( | e | WorkspaceError::SerdeError( format!( "deserialization error: {e}" ) ) )
+    .map_err( | e | WorkspaceError::SerdeError( format!( "deserialization error: {e}" ) ) )
   }
   
   /// validate configuration content against schema without loading
@@ -2203,37 +2611,10 @@ impl Workspace
   pub fn validate_config_content( content: &str, schema: &Validator, format: &str ) -> Result< () >
   {
   // parse content to json value
-  let json_value = match format
-  {
-   "toml" =>
-   {
-  let toml_value: toml ::Value = toml ::from_str( content )
-   .map_err( | e | WorkspaceError::SerdeError( format!( "toml parsing error: {e}" ) ) )?;
-  serde_json ::to_value( toml_value )
-   .map_err( | e | WorkspaceError::SerdeError( format!( "toml to json conversion error: {e}" ) ) )?
-  }
-   "json" => serde_json ::from_str( content )
-  .map_err( | e | WorkspaceError::SerdeError( format!( "json parsing error: {e}" ) ) )?,
-   "yaml" | "yml" =>
-   {
-  let yaml_value: serde_yaml ::Value = serde_yaml ::from_str( content )
-   .map_err( | e | WorkspaceError::SerdeError( format!( "yaml parsing error: {e}" ) ) )?;
-  serde_json ::to_value( yaml_value )
-   .map_err( | e | WorkspaceError::SerdeError( format!( "yaml to json conversion error: {e}" ) ) )?
-  }
-   _ => return Err( WorkspaceError::ConfigurationError( format!( "unsupported config format: {format}" ) ) ),
- };
-  
+  let json_value = Self::parse_to_json( content, format )?;
+
   // validate against schema
-  if let Err( validation_errors ) = schema.validate( &json_value )
-  {
-   let errors: Vec< String > = validation_errors
-  .map( | error | format!( "{} : {}", error.instance_path, error ) )
-  .collect();
-   return Err( WorkspaceError::ValidationError( format!( "validation failed: {}", errors.join( "; " ) ) ) );
-  }
-  
-  Ok( () )
+  Self::validate_against_schema( &json_value, schema )
   }
 }
 
@@ -2326,13 +2707,22 @@ pub mod testing
   }
 }
 
-/// convenience function to get workspace instance
+/// convenience function to get workspace instance with extended fallbacks
 ///
-/// equivalent to `Workspace ::resolve()`
+/// uses `Workspace ::resolve_with_extended_fallbacks()` which tries multiple
+/// strategies including $PRO and $HOME for installed CLI applications.
+/// always succeeds by falling back through multiple strategies.
+///
+/// # note
+///
+/// this function always succeeds (never returns Err), but maintains `Result`
+/// return type for backward compatibility. you can safely `.unwrap()` the result.
 ///
 /// # Errors
 ///
-/// returns error if workspace resolution fails
+/// this function never returns an error. it always succeeds by falling back
+/// through multiple resolution strategies. the `Result` return type is maintained
+/// for backward compatibility only.
 ///
 /// # examples
 ///
@@ -2340,14 +2730,23 @@ pub mod testing
 /// # fn main() -> Result< (), workspace_tools ::WorkspaceError > {
 /// use workspace_tools ::workspace;
 ///
-/// # std ::env ::set_var( "WORKSPACE_PATH", std ::env ::current_dir().unwrap() );
+/// // works without WORKSPACE_PATH set (uses fallbacks)
 /// let ws = workspace()?;
 /// let config_dir = ws.config_dir();
 /// # Ok(())
 /// # }
 /// ```
+///
+/// # resolution priority
+///
+/// 1. cargo workspace (development context)
+/// 2. `WORKSPACE_PATH` environment variable
+/// 3. git repository root
+/// 4. `$PRO` environment variable (installed apps)
+/// 5. `$HOME` directory (universal fallback)
+/// 6. current working directory
 #[ inline ]
 pub fn workspace() -> Result< Workspace >
 {
-  Workspace ::resolve()
+  Ok( Workspace ::resolve_with_extended_fallbacks() )
 }

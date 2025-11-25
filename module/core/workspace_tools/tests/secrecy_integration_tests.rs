@@ -181,7 +181,7 @@ fn test_secure_error_handling()
   let result = workspace.load_secrets_secure( "-nonexistent.env" );
   assert!( result.is_err() ); // Now returns explicit error instead of empty HashMap
   let error_msg = result.unwrap_err().to_string();
-  assert!( error_msg.contains( "not found at" ) );
+  assert!( error_msg.contains( "not found" ) );
   
   // Test loading specific key from non-existent file (no env fallback)
   let result = workspace.load_secret_key_secure( "MISSING_KEY", "-nonexistent.env" );

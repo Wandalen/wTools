@@ -1,0 +1,30 @@
+- name: ".example"
+  namespace: ""
+  description: "Example command from external YAML module"
+  hint: "External command for testing"
+  status: "stable"
+  version: "1.0.0"
+  aliases: ["ext"]
+  tags: ["testing", "external"]
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+  auto_help_enabled: true
+  examples:
+    - ".example input::test_value"
+  arguments:
+    - name: "input"
+      description: "Input parameter"
+      kind: "String"
+      hint: "Input value"
+      attributes:
+        optional: true
+        multiple: false
+        is_default_arg: false
+        interactive: false
+        sensitive: false
+      validation_rules: []
+      default_value: "default"
+      aliases: ["i"]
+      tags: ["input"]

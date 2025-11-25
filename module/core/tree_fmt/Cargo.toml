@@ -1,0 +1,109 @@
+[package]
+name = "tree_fmt"
+version = "0.5.0"
+edition = "2021"
+authors = [ "wandalen <wandalen@obox.systems>" ]
+license = "MIT"
+repository = "https://github.com/Wandalen/willbe/tree/master/module/tree_fmt"
+description = "Multi-format data visualization library with 10 formatters, 31 variants, and granular per-variant feature flags for minimal binary size"
+keywords = [ "tree", "table", "formatter", "hierarchical", "display" ]
+categories = [ "text-processing", "data-structures", "visualization" ]
+
+[lints]
+workspace = true
+
+[dependencies]
+# ANSI-aware string utilities (from strs_tools)
+strs_tools = { workspace = true, features = [ "ansi" ] }
+
+# Optional dependencies for data format serialization
+serde = { workspace = true, features = ["derive"], optional = true }
+serde_json = { workspace = true, optional = true }
+serde_yaml = { workspace = true, optional = true }
+toml = { workspace = true, optional = true }
+
+[dev-dependencies]
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }
+toml = { workspace = true }
+
+[features]
+default = [ "table_plain", "expanded_postgres", "tree_hierarchical", "format_logfmt" ]
+
+# Legacy integration flag
+integration = []
+
+# Serialization support (required for json/yaml/toml)
+serde_support = [ "dep:serde" ]
+
+# TableFormatter variants
+table_plain = []
+table_minimal = []
+table_bordered = []
+table_markdown = []
+table_grid = []
+table_unicode = []
+table_csv = []
+table_tsv = []
+table_compact = []
+
+# ExpandedFormatter variants
+expanded_postgres = []
+expanded_property = []
+
+# TreeFormatter variants
+tree_hierarchical = []
+tree_aligned = []
+tree_aggregated = []
+
+# TextFormatter (all 5 variants: Bullets, Numbered, Sections, KeyValue, Compact)
+format_text = []
+
+# JsonFormatter (Pretty/Compact modes at runtime)
+format_json = [ "serde_support", "dep:serde_json" ]
+
+# YamlFormatter
+format_yaml = [ "serde_support", "dep:serde_yaml" ]
+
+# TomlFormatter
+format_toml = [ "serde_support", "dep:toml" ]
+
+# LogfmtFormatter
+format_logfmt = []
+
+# HtmlFormatter variants
+html_minimal = []
+html_bootstrap = []
+html_tailwind = []
+html_custom = []
+
+# SqlFormatter variants
+sql_ansi = []
+sql_postgres = []
+sql_mysql = []
+sql_sqlite = []
+
+# Color themes (optional enhancement)
+themes = []
+
+# Meta-features for convenience
+format_table_visual = [ "table_plain", "table_minimal", "table_bordered", "table_markdown", "table_grid", "table_unicode", "table_compact" ]
+format_table_export = [ "table_csv", "table_tsv" ]
+format_table = [ "format_table_visual", "format_table_export" ]
+
+format_expanded = [ "expanded_postgres", "expanded_property" ]
+
+format_tree = [ "tree_hierarchical", "tree_aligned", "tree_aggregated" ]
+
+format_html_basic = [ "html_minimal", "html_custom" ]
+format_html_frameworks = [ "html_bootstrap", "html_tailwind" ]
+format_html = [ "format_html_basic", "format_html_frameworks" ]
+
+format_sql = [ "sql_ansi", "sql_postgres", "sql_mysql", "sql_sqlite" ]
+
+# Legacy bundles (maintained for backward compatibility)
+visual_formats = [ "format_table", "format_expanded", "format_tree", "format_logfmt" ]
+web_formats = [ "format_html", "format_sql" ]
+data_formats = [ "format_json", "format_yaml", "format_toml" ]
+all_formats = [ "visual_formats", "web_formats", "data_formats", "format_text", "themes" ]

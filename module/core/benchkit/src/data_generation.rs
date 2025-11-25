@@ -321,7 +321,7 @@ impl DataGenerator
    DataComplexity ::Simple => result,
    DataComplexity ::Medium => 
    {
-  if index % 10 == 0 
+  if index.is_multiple_of(10) 
   {
    result.push_str("_variant");
  }
@@ -329,7 +329,7 @@ impl DataGenerator
  },
    DataComplexity ::Complex => 
    {
-  if index % 5 == 0 
+  if index.is_multiple_of(5) 
   {
    result.push_str("_complex@#$");
  }
@@ -337,7 +337,7 @@ impl DataGenerator
  },
    DataComplexity ::Full => 
    {
-  if index % 3 == 0 
+  if index.is_multiple_of(3) 
   {
    result.push_str("_full_unicode_🦀_special");
  }

@@ -35,6 +35,43 @@ cargo add former
 
 The default features enable the `Former` derive macro and support for standard collections, covering most common use cases.
 
+## When to Use Former
+
+Former is designed for building complex, nested data structures with compile-time guarantees. Consider using Former when:
+
+✅ **Use Former when you need:**
+- Nested builders (`Parent::former().child().field(x).end()`)
+- Collection building (adding items one-by-one with dedicated subformers)
+- Complex validation logic with custom mutators
+- Subform composition for hierarchical data
+- Compile-time type-safe construction
+
+❌ **Consider simpler alternatives when:**
+- Building simple flat structs (< 5 fields, no nesting)
+- No custom defaults or validation needed
+- Just need a basic `.build()` method
+
+### Decision Matrix
+
+| Fields | Nesting | Collections | Recommendation |
+|--------|---------|-------------|----------------|
+| < 5    | No      | No          | `typed-builder` or manual |
+| 5-10   | No      | No          | Either Former or `typed-builder` |
+| Any    | Yes     | -           | **Former** |
+| Any    | -       | Yes         | **Former** |
+
+**The ROI**: Former's additional complexity pays off when you have ~5+ fields with nesting or need collection builders. For simple cases, the overhead may not be justified.
+
+### Known Limitations
+
+Former has some architectural limitations you should be aware of:
+
+- **Lifetimes**: Cannot use borrowed data (`&'a T`) in Former structs. Use owned types (`String`, `Vec`) or smart pointers (`Arc`, `Cow`). [See workarounds](limitations.md#lifetime-constraints).
+- **Generic Enums**: Currently not supported due to parser limitations. Use concrete types instead. [Details](limitations.md#generic-enum-parsing).
+- **Multi-Variant Enums**: May encounter trait conflicts in complex scenarios. Single-variant enums work perfectly. [Details](limitations.md#trait-conflicts).
+
+📖 **Full limitations documentation**: [limitations.md](limitations.md)
+
 ## Basic Usage
 
 Derive `Former` on your struct and use the generated `::former()` method to start building:

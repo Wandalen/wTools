@@ -34,8 +34,6 @@
 #![ allow( clippy::match_same_arms ) ]
 #![ allow( clippy::empty_line_after_outer_attr ) ]
 #![ allow( clippy::similar_names ) ]
-#![ allow( clippy::uninlined_format_args ) ]
-#![ allow( clippy::format_push_string ) ]
 #![ allow( unused_imports ) ]
 
 #[ cfg( feature = "enabled" ) ]

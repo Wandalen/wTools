@@ -1,0 +1,35 @@
+[
+  {
+    "name": "build_json_cmd",
+    "namespace": ".test",
+    "description": "Command loaded from JSON at build-time",
+    "arguments": [
+      {
+        "name": "param",
+        "kind": "String",
+        "description": "Test parameter",
+        "attributes": {
+          "optional": false,
+          "multiple": false,
+          "interactive": false,
+          "sensitive": false
+        },
+        "validation_rules": [],
+        "hint": "Parameter hint",
+        "aliases": [],
+        "tags": []
+      }
+    ],
+    "status": "stable",
+    "version": "1.0.0",
+    "tags": ["build-time", "json"],
+    "aliases": [],
+    "permissions": [],
+    "idempotent": true,
+    "deprecation_message": "",
+    "http_method_hint": "GET",
+    "examples": [
+      ".test.build_json_cmd param::value"
+    ]
+  }
+]

@@ -8,23 +8,35 @@
 #![ warn( dead_code ) ]
 
 // Declare the top-level modules
+/// Dependencies namespace.
 pub mod dependency;
+/// Meta programming namespace.
 pub mod meta;
+/// Own namespace.
 pub mod own;
+/// Orphan namespace.
 pub mod orphan;
+/// Exposed namespace.
+#[ allow( clippy::module_inception ) ]
 pub mod exposed;
+/// Prelude namespace.
 pub mod prelude;
 
 // Re-export the exposed parts of these modules directly
 #[ cfg( feature = "enabled" ) ]
 pub use dependency::exposed::*;
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub use meta::exposed::*;
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub use own::exposed::*;
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub use orphan::exposed::*;
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub use exposed::exposed::*;
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub use prelude::exposed::*;

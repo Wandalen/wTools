@@ -82,7 +82,7 @@ standalone_build = [
 
   "standalone_error_tools",
   "standalone_collection_tools",
-  "standalone_impls_index",
+  # "standalone_impls_index",  # REMOVED: Creates circular dependency via macro_tools → clone_dyn_types → test_tools → impls_index_meta → macro_tools
   "standalone_mem_tools",
   "standalone_typing_tools",
   "standalone_diagnostics_tools",
@@ -91,7 +91,7 @@ standalone_build = [
 ]
 standalone_error_tools = [ "dep:anyhow", "dep:thiserror", "error_typed", "error_untyped" ]
 standalone_collection_tools = [ "dep:hashbrown", "collection_constructors", "collection_into_constructors" ]
-standalone_impls_index = [ "dep:impls_index_meta" ]
+standalone_impls_index = []  # Empty - impls_index_meta moved to dev-dependencies to break circular dependency
 standalone_mem_tools = []
 standalone_typing_tools = [ "typing_implements", "typing_is_slice", "typing_inspect_type" ]
 standalone_diagnostics_tools = [ "diagnostics_runtime_assertions", "diagnostics_compiletime_assertions", "diagnostics_memory_layout" ]
@@ -152,14 +152,18 @@ anyhow = { workspace = true, optional = true }
 thiserror = { workspace = true, optional = true }
 # collection_tools
 hashbrown = { workspace = true, optional = true }
-# impls_index
-impls_index_meta = { workspace = true, optional = true }
+# impls_index - REMOVED FROM DEPENDENCIES: Moved to dev-dependencies to break circular dependency
+# impls_index_meta = { workspace = true, optional = true }
 # typing_tools
 inspect_type = { workspace = true, optional = true }
 is_slice = { workspace = true, optional = true }
 implements = { workspace = true, optional = true }
 # diagnostics_tools
 pretty_assertions = { workspace = true, optional = true }
+
+[dev-dependencies]
+# impls_index_meta - COMPLETELY REMOVED to break circular dependency cycles throughout workspace
+# Even in dev-dependencies, it creates cycles because test ordering requires tracking dev-deps
 
 [build-dependencies]
 rustc_version = "0.4"

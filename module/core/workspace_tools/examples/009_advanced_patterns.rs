@@ -770,11 +770,12 @@ impl WorkspacePlugin for SecurityScannerPlugin
 {
   fn name( &self ) -> &'static str { "security-scanner" }  
   fn initialize( &mut self, _workspace: &Workspace ) -> Result< (), Box< dyn core ::error ::Error > > { Ok( () ) }
-  fn process( &self, workspace: &Workspace ) -> Result< PluginResult, Box< dyn core ::error ::Error > >
+  fn process( &self, #[ cfg_attr( not( feature = "secrets" ), allow( unused_variables ) ) ] workspace: &Workspace ) -> Result< PluginResult, Box< dyn core ::error ::Error > >
   {
+  #[ cfg_attr( not( feature = "secrets" ), allow( unused_mut ) ) ]
   let mut issues = 0;
   let mut data = HashMap ::new();
-  
+
   // simulate security checks
   #[ cfg( feature = "secrets" ) ]
   {

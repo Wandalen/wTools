@@ -152,7 +152,7 @@ fn cargo_demo()
  }
   
   // demonstrate resolve_or_fallback with cargo priority
-  let workspace = Workspace ::resolve_or_fallback();
+  let workspace = Workspace ::resolve_with_extended_fallbacks();
   println!( "  🎯 Final workspace location: {}", workspace.root().display() );
   
   println!();
@@ -163,7 +163,7 @@ fn serde_demo() -> Result< (), Box< dyn core ::error ::Error > >
 {
   println!( "🔧 Serde Integration Features: " );
   
-  let workspace = Workspace ::resolve_or_fallback();
+  let workspace = Workspace ::resolve_with_extended_fallbacks();
   
   // ensure config directory exists
   let config_dir = workspace.config_dir();

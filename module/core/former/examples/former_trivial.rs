@@ -14,7 +14,7 @@ fn main() {}
 #[cfg(all(feature = "derive_former", feature = "enabled"))]
 fn main() {
   #[ cfg( feature = "enabled" ) ]
-  use former_meta::Former;
+  use former::Former;
 
   // Use attribute debug to print expanded code.
   #[ derive( Debug, PartialEq, Former ) ]

@@ -4,8 +4,6 @@ use super :: *;
 use the_module ::prelude :: *;
 use the_module ::cta_true;
 
-// xxx: temporarily disabled due to macro resolution issues
-/*
 tests_impls! {
 
   #[ cfg( any( feature = "diagnostics_compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) ) ]
@@ -39,4 +37,3 @@ tests_index! {
   cta_true_pass,
 
 }
-*/

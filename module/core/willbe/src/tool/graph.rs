@@ -1,0 +1,399 @@
+/// Define a private namespace for all its items.
+#[ allow( clippy ::std_instead_of_alloc, clippy ::std_instead_of_core ) ]
+mod private
+{
+  #[ allow( unused_imports, clippy ::wildcard_imports ) ]
+  use crate :: *;
+
+  // use crate ::tool :: *;
+  // qqq: bad: for Bohdan: asterist only crate :: * and prelude :: *
+
+  use std ::
+  {
+  ops ::Index,
+  fmt ::Debug,
+  hash ::Hash,
+ };
+  use collection_tools ::collection :: { HashMap, HashSet, VecDeque };
+  use std ::path ::PathBuf;
+  use petgraph ::
+  {
+  graph ::Graph,
+  algo ::toposort as pg_toposort,
+ };
+  use petgraph ::graph ::NodeIndex;
+
+  use petgraph ::prelude :: *;
+
+  use error ::typed ::Error;
+
+  use crate ::entity ::package :: { Package, publish_need };
+  // Explicit import for Result and its variants for pattern matching
+  use std ::result ::Result :: { Ok, Err };
+  // qqq: for Bohdan: bad: tools can't depend on entitties!
+
+  #[ derive( Debug, Error ) ]
+  pub enum GraphError< T: Debug >
+  {
+  #[ error( "Cycle: {0:?}" ) ]
+  Cycle( T ),
+ }
+
+  /// Build a graph from map of packages and its dependencies
+  ///
+  /// Arg :
+  /// - packages - a map, where key is a package identifier and value - the package dependencies identifiers
+  ///
+  /// Returns :
+  /// The graph with all accepted packages
+  ///
+  /// # Panics
+  /// qqq: doc
+  #[ allow( clippy ::implicit_hasher ) ]
+  #[ must_use ]
+  pub fn construct< PackageIdentifier >
+  (
+  packages: &HashMap< PackageIdentifier, HashSet< PackageIdentifier >, >
+ )
+  -> Graph< &PackageIdentifier, &PackageIdentifier >
+  where
+  PackageIdentifier: PartialEq + Eq + Hash,
+  {
+  let nudes: HashSet< _ > = packages
+  .iter()
+  .flat_map( | ( name, dependency ) |
+  {
+   dependency
+   .iter()
+   .chain( Some( name ) )
+ }).collect();
+  let mut deps = Graph ::new();
+  for nude in nudes
+  {
+   deps.add_node( nude );
+ }
+  for ( name, dependencies ) in packages
+  {
+   let root_node = deps.node_indices().find( | i | deps[ *i ] == name ).unwrap();
+   for dep in dependencies
+   {
+  let dep_node = deps.node_indices().find( | i | deps[ *i ] == dep ).unwrap();
+  deps.add_edge(root_node, dep_node, name );
+ }
+ }
+  deps
+ }
+
+  /// Performs a topological sort of a graph of packages
+  ///
+  /// Arg :
+  /// - `graph` - a directed graph of packages and their dependencies.
+  ///
+  /// Returns
+  /// A list that contains the sorted packages identifiers in topological order.
+  ///
+  /// # Panics
+  /// If there is a cycle in the dependency graph
+  ///
+  /// # Errors
+  /// qqq: doc
+  #[ allow( clippy ::needless_pass_by_value ) ]
+  pub fn toposort< 'a, PackageIdentifier: Clone + std ::fmt ::Debug >
+  (
+  graph: Graph< &'a PackageIdentifier, &'a PackageIdentifier >
+ )
+  -> Result< Vec< PackageIdentifier >, GraphError< PackageIdentifier > >
+  {
+  match pg_toposort( &graph, None )
+  {
+   Ok( list ) => Ok
+   (
+  list
+  .iter()
+  .rev()
+  .map( | dep_idx | ( *graph.node_weight( *dep_idx ).unwrap() ).clone() )
+  .collect()
+ ),
+   Err( index ) => Err( GraphError ::Cycle( ( *graph.index( index.node_id() ) ).clone() ) ),
+   // aaa: for Bohdan: bad, make proper error handling
+   // aaa: now returns `GraphError`
+ }
+ }
+
+  /// The function performs a topological sort of a graph with grouping.
+  ///
+  /// # Arguments
+  ///
+  /// * `graph` - A graph represented as an adjacency list. Each node in the graph represents a task, and edges represent dependencies.
+  ///
+  /// # Returns
+  ///
+  /// The function returns a vector of vectors, where each inner vector represents a group of nodes that can be executed in parallel. Tasks within each group are sorted in topological order.
+  ///
+  /// # Panics
+  /// qqq: doc
+  #[ must_use ]
+  #[ allow( clippy ::needless_pass_by_value ) ]
+  pub fn topological_sort_with_grouping< 'a, PackageIdentifier: Clone + std ::fmt ::Debug >
+  (
+  graph: Graph< &'a PackageIdentifier, &'a PackageIdentifier >
+ )
+  -> Vec< Vec< PackageIdentifier > >
+  {
+  let mut in_degree = HashMap ::new();
+  for node in graph.node_indices()
+  {
+   in_degree.insert( node, graph.neighbors_directed( node, Incoming ).count() );
+ }
+
+  let mut roots = VecDeque ::new();
+  for ( node, &degree ) in &in_degree
+  {
+   if degree == 0
+   {
+  roots.push_back( *node );
+ }
+ }
+
+  let mut result = Vec ::new();
+  while !roots.is_empty()
+  {
+   let mut next_roots = Vec ::new();
+   let mut group = Vec ::new();
+   while let Some( node ) = roots.pop_front()
+   {
+  group.push( node );
+  for edge in graph.neighbors( node )
+  {
+   let degree = in_degree.get_mut( &edge ).unwrap();
+   *degree -= 1;
+   if *degree == 0
+   {
+  next_roots.push( edge );
+ }
+ }
+ }
+   roots = VecDeque ::from( next_roots );
+   result.push( group );
+ }
+  result
+  .into_iter()
+  .map
+  (
+   | vec |
+   vec
+   .iter()
+   .map( | dep_idx | ( *graph.node_weight( *dep_idx ).unwrap() ).clone() )
+   .collect()
+ )
+  .rev()
+  .collect()
+ }
+
+  /// Creates a subgraph from the given graph, containing only the nodes and edges reachable from the roots.
+  ///
+  /// # Arguments
+  /// * `graph` - The original graph from which to create the subgraph.
+  /// * `roots` - An array of nodes that will serve as the roots of the subgraph.
+  ///
+  /// # Returns
+  /// A new graph that represents the subgraph.
+  ///
+  /// # Generic Types
+  /// * `N` - The type of the node in the original graph.
+  /// * `E` - The type of the edge in the original graph.
+  ///
+  /// # Constraints
+  /// * `N` must implement the `PartialEq` trait.
+  ///
+  /// # Panics
+  /// qqq: doc
+  #[ allow( clippy ::single_match, clippy ::map_entry ) ]
+  pub fn subgraph< N, E >( graph: &Graph< N, E >, roots: &[ N ] ) -> Graph< NodeIndex, EdgeIndex >
+  where
+  N: PartialEq< N >,
+  {
+  let mut subgraph = Graph ::new();
+  let mut node_map = HashMap ::new();
+
+  for root in roots
+  {
+   let root_id = graph.node_indices().find( | x | graph[ *x ] == *root ).unwrap();
+   let mut dfs = Dfs ::new( graph, root_id );
+   while let Some( nx ) = dfs.next( &graph )
+   {
+  if !node_map.contains_key( &nx )
+  {
+   let sub_node = subgraph.add_node( nx );
+   node_map.insert( nx, sub_node );
+ }
+ }
+ }
+
+  for sub_node_id in node_map.values()
+  {
+   let node_id_graph = subgraph[ *sub_node_id ];
+
+   for edge in graph.edges( node_id_graph )
+   {
+  match ( node_map.get( &edge.source() ), node_map.get( &edge.target() ) )
+  {
+   ( Some( &from ), Some( &to ) ) =>
+   {
+  subgraph.add_edge( from, to, edge.id() );
+ }
+   _ => {}
+ }
+ }
+ }
+
+  subgraph
+ }
+
+  /// Filters a dependency graph to retain only the packages that require publishing.
+  ///
+  /// This function traverses the dependency graph starting from the specified `roots`.
+  /// For each package, it determines if a new version needs to be published by
+  /// packaging it locally (`cargo pack`) and comparing it with the latest version on
+  /// crates.io using the `publish_need` function.
+  ///
+  /// A package is retained in the final graph if :
+  /// 1. It has changed since its last publication.
+  /// 2. One of its dependencies requires publishing (thus forcing a version bump).
+  ///
+  /// This helps in creating a minimal publish plan, avoiding unnecessary publications
+  /// of packages that have not changed.
+  ///
+  /// # Arguments
+  ///
+  /// * `workspace` - The workspace context, used to locate the `target` directory for packaging.
+  /// * `package_map` - A map from package names to `Package` details, used for quick lookups.
+  /// * `graph` - The complete dependency graph of the workspace packages.
+  /// * `roots` - A slice of package names that serve as the starting points for the analysis.
+  /// * `temp_path` - An optional path to a temporary directory for `cargo pack` to use,
+  ///   preventing interference between parallel runs.
+  ///
+  /// # Returns
+  ///
+  /// A `Result` containing a new, filtered `Graph` with only the packages that need
+  /// to be published and their inter-dependencies.
+  ///
+  /// # Errors
+  ///
+  /// Returns an `Err` if the `cargo ::pack` command fails for any of the packages during the check.
+  ///
+  /// # Panics
+  ///
+  /// This function will panic if :
+  /// - A package name from the graph cannot be found in the `package_map`.
+  /// - The graph is inconsistent and a node index is invalid.
+  /// - The `publish_need` check panics (e.g., due to network issues).
+  // qqq: for Bohdan: typed error
+  #[ allow( clippy ::single_match, clippy ::needless_pass_by_value, clippy ::implicit_hasher ) ]
+  pub fn remove_not_required_to_publish
+  (
+  workspace: &Workspace,
+  package_map: &HashMap< String, Package< '_ > >,
+  graph: &Graph< String, String >,
+  roots: &[ String ],
+  temp_path: Option< PathBuf >,
+ )
+  -> error ::untyped ::Result< Graph< String, String > >
+  // qqq: use typed error!
+  {
+  let mut nodes = HashSet ::new();
+  let mut cleared_graph = Graph ::new();
+
+  // Fix(issue-willbe-dependency-staleness): Enhanced to detect stale dependencies and cascade effects
+  // Root cause: Original implementation only checked publish_need() which detects local changes,
+  //             missing packages whose dependencies were bumped (dependency staleness).
+  //             When former v2.36→v2.37, wca (requiring former ~2.36.0) wasn't detected for republishing,
+  //             causing version conflict: willbe requires wca ~0.36.0 → former ~2.36.0 BUT former v2.37.0 already published.
+  // Pitfall: Semver requirements like ~2.36.0 are strict (2.36.x only). After dependency bumps, ALL dependents
+  //          must be checked for staleness, not just packages with local changes. Transitive closure is critical.
+
+  // Phase 1: Detect packages with local changes (original behavior)
+  let mut packages_with_changes = HashSet ::new();
+
+  for root in roots
+  {
+   let root = graph.node_indices().find( | &i | graph[ i ] == *root ).unwrap();
+   // qqq: no unwraps. simulate crash here and check output. it should be verbal
+   let mut dfs = DfsPostOrder ::new( &graph, root );
+   'main: while let Some( n ) = dfs.next( &graph )
+   {
+  for neighbor in graph.neighbors_directed( n, Outgoing )
+  {
+   if nodes.contains( &neighbor )
+   {
+  nodes.insert( n );
+  continue 'main;
+ }
+ }
+  let package = package_map.get( &graph[ n ] ).unwrap();
+  _ = cargo ::pack
+  (
+   cargo ::PackOptions ::former()
+   .path( package.crate_dir().absolute_path().inner() )
+   .option_temp_path( temp_path.clone() )
+   .dry( false )
+   .allow_dirty( true )
+   .form()
+ )?;
+  if publish_need( package, temp_path.clone(), workspace.target_directory() ).unwrap()
+  {
+   nodes.insert( n );
+   packages_with_changes.insert( graph[ n ].clone() );
+ }
+ }
+ }
+
+  // Phase 2: Compute transitive closure to include packages with stale dependencies
+  let packages_to_publish = entity ::staleness ::compute_transitive_closure
+  (
+   workspace,
+   &packages_with_changes,
+ );
+
+  // Phase 3: Add all packages from closure to node set
+  for package_name in &packages_to_publish
+  {
+   if let Some( node_idx ) = graph.node_indices().find( | &i | &graph[ i ] == package_name )
+   {
+  nodes.insert( node_idx );
+ }
+ }
+
+  // Build final graph with all packages that need publishing
+  let mut new_map = HashMap ::new();
+  for node in nodes.iter().copied() { new_map.insert( node, cleared_graph.add_node( graph[ node ].clone() ) ); }
+
+  for sub_node_id in nodes
+  {
+   for edge in graph.edges( sub_node_id )
+   {
+  match ( new_map.get( &edge.source() ), new_map.get( &edge.target() ) )
+  {
+   ( Some( &from ), Some( &to ) ) =>
+   {
+  cleared_graph.add_edge( from, to, graph[ edge.id() ].clone() );
+ }
+   _ => {}
+ }
+ }
+ }
+
+  Ok( cleared_graph )
+ }
+}
+
+//
+
+crate ::mod_interface!
+{
+  own use construct;
+  own use toposort;
+  own use topological_sort_with_grouping;
+  own use subgraph;
+  own use remove_not_required_to_publish;
+}
