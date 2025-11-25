@@ -161,9 +161,9 @@ item: {item_name}
 field_type: {field_type:?}
 field_name: {field_name:?}",
  );
-  if has_debug 
+  if has_debug
   {
-  diag ::report_print(about, original_input, debug.to_string());
+  diag ::report_print(about, original_input, debug.clone());
  }
 
   qt! {

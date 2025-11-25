@@ -1,0 +1,78 @@
+---
+# Archive serialization command - FR7: Archive Serialization
+#
+# Commands for creating portable archives with inlined content.
+
+- name: ".pack"
+  namespace: ""
+  description: "Create portable archive from directory with inline content"
+  hint: "Pack directory to portable archive"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags:
+    - "pack"
+    - "serialize"
+    - "portable"
+  permissions: []
+  idempotent: false
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".pack input::\"./my-template\" output::\"template.json\""
+    - ".pack input::\"./src\" output::\"backup.yaml\" verbosity::2"
+    - ".pack input::\"./templates\" output::\"archive.json\" dry::1"
+  arguments:
+    - name: "input"
+      description: "Source directory to pack"
+      kind: "Directory"
+      hint: "Input directory path"
+      attributes:
+        optional: false
+        default: null
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "output"
+      description: "Output file path (JSON or YAML)"
+      kind: "Path"
+      hint: "Output file path"
+      attributes:
+        optional: false
+        default: null
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity level"
+      attributes:
+        optional: true
+        default: "1"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "dry"
+      description: "Dry run mode (0 or 1)"
+      kind: "Boolean"
+      hint: "Dry run flag"
+      attributes:
+        optional: true
+        default: "0"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []

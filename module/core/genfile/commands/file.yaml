@@ -1,0 +1,216 @@
+---
+# File management commands - FR2: File Operations
+#
+# Commands for adding, removing, listing, and inspecting files in archives.
+
+- name: ".file.add"
+  namespace: ""
+  description: "Add file to current archive"
+  hint: "Add file"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags:
+    - "file"
+    - "add"
+  permissions: []
+  idempotent: false
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".file.add path::src/main.rs content::\"fn main() {}\""
+    - ".file.add path::readme.md from_file::/tmp/template.md"
+  arguments:
+    - name: "path"
+      description: "File path within archive"
+      kind: "Path"
+      hint: "Archive file path"
+      attributes:
+        optional: false
+        default: null
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "content"
+      description: "File content (text)"
+      kind: "String"
+      hint: "Text content"
+      attributes:
+        optional: true
+        default: null
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "from_file"
+      description: "Source file to read content from"
+      kind: "Path"
+      hint: "Source file path"
+      attributes:
+        optional: true
+        default: null
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "write_mode"
+      description: "Write mode (rewrite, append, skip)"
+      kind:
+        Enum:
+          - "rewrite"
+          - "append"
+          - "skip"
+      hint: "Write mode"
+      attributes:
+        optional: true
+        default: "rewrite"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity"
+      attributes:
+        optional: true
+        default: "1"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+
+- name: ".file.remove"
+  namespace: ""
+  description: "Remove file from current archive"
+  hint: "Remove file"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags:
+    - "file"
+    - "remove"
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".file.remove path::src/old.rs"
+  arguments:
+    - name: "path"
+      description: "File path to remove"
+      kind: "Path"
+      hint: "File path"
+      attributes:
+        optional: false
+        default: null
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity"
+      attributes:
+        optional: true
+        default: "1"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+
+- name: ".file.list"
+  namespace: ""
+  description: "List all files in current archive"
+  hint: "List files"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags:
+    - "file"
+    - "list"
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".file.list"
+    - ".file.list verbosity::2"
+  arguments:
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity"
+      attributes:
+        optional: true
+        default: "1"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+
+- name: ".file.show"
+  namespace: ""
+  description: "Show file content from archive"
+  hint: "Show file content"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags:
+    - "file"
+    - "show"
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".file.show path::src/main.rs"
+  arguments:
+    - name: "path"
+      description: "File path to show"
+      kind: "Path"
+      hint: "File path"
+      attributes:
+        optional: false
+        default: null
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity"
+      attributes:
+        optional: true
+        default: "1"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []

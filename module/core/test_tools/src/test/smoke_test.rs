@@ -767,7 +767,7 @@ mod private {
           
           #[cfg(not(unix))]
           {
-            Err(format!("Failed to remove directory: {}", e).into())
+            Err(format!("Failed to remove directory: {e}").into())
           }
         }
       }

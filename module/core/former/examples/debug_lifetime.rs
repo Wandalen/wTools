@@ -3,7 +3,7 @@
 #![allow(missing_docs)]
 
 #[ cfg( feature = "enabled" ) ]
-use former_meta::Former;
+use former::Former;
 
 #[ derive( Debug, PartialEq, Former ) ]
 // #[ debug ] // Commented out - debug attribute only for temporary debugging

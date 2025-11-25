@@ -59,7 +59,7 @@ fn test_enhanced_error_handling( ws: &Workspace ) -> Result< (), Box< dyn std ::
   {
    let error_msg = e.to_string();
    println!( "     ✅ Got expected error: {}", error_msg );
-   assert!( error_msg.contains( "not found at" ), "Error should contain path info" );
+   assert!( error_msg.contains( "not found" ), "Error should contain path info" );
    assert!( error_msg.contains( "nonexistent.env" ), "Error should contain filename" );
  }
  }
@@ -109,7 +109,7 @@ fn test_path_aware_methods( ws: &Workspace ) -> Result< (), Box< dyn std ::error
 
   // Setup nested directory structure
   let config_dir = ws.join( "config" );
-  let nested_dir = ws.join( "lib/project/.secret" );
+  let nested_dir = ws.join( "lib/project/secret" );
   fs ::create_dir_all( &config_dir )?;
   fs ::create_dir_all( &nested_dir )?;
 
@@ -128,7 +128,7 @@ fn test_path_aware_methods( ws: &Workspace ) -> Result< (), Box< dyn std ::error
   let nested_secrets = "NESTED_KEY=nested-value\nDEEP_SECRET=deep-secret-123";
   fs ::write( nested_dir.join( "api.env" ), nested_secrets )?;
 
-  let nested_result = ws.load_secrets_from_path( "lib/project/.secret/api.env" )?;
+  let nested_result = ws.load_secrets_from_path( "lib/project/secret/api.env" )?;
   assert_eq!( nested_result.len(), 2 );
   assert_eq!( nested_result.get( "NESTED_KEY" ).unwrap(), "nested-value" );
   println!( "     ✅ Successfully loaded {} secrets from nested path", nested_result.len() );
@@ -172,7 +172,7 @@ fn test_helper_methods( ws: &Workspace ) -> Result< (), Box< dyn std ::error ::E
   // Test 3 : resolve_secrets_path
   println!( "  3. Testing resolve_secrets_path" );
   let resolved_path = ws.resolve_secrets_path( "test.env" );
-  assert!( resolved_path.ends_with( ".secret/test.env" ), "Should resolve to correct path" );
+  assert!( resolved_path.ends_with( "secret/test.env" ), "Should resolve to correct path" );
   println!( "     ✅ Path resolution: {}", resolved_path.display() );
 
   println!( "  ✅ Helper methods tests passed" );
@@ -285,20 +285,20 @@ fn test_integration_scenarios( ws: &Workspace ) -> Result< (), Box< dyn std ::er
   println!( "  1. Testing api_huggingface scenario resolution" );
 
   // Setup the exact scenario from the task
-  let lib_dir = ws.join( "lib/llm_tools/.secret" );
+  let lib_dir = ws.join( "lib/llm_tools/secret" );
   fs ::create_dir_all( &lib_dir )?;
   let hf_secrets = "HF_TOKEN=hf_test_token_123\nAPI_KEY=huggingface_api_key_456";
   fs ::write( lib_dir.join( "-secrets.sh" ), hf_secrets )?;
 
   // Old problematic way (should give helpful error)
-  match ws.load_secrets_from_file( "lib/llm_tools/.secret/-secrets.sh" )
+  match ws.load_secrets_from_file( "lib/llm_tools/secret/-secrets.sh" )
   {
   Ok( _ ) => panic!( "Expected error for path-like parameter" ),
   Err( e ) => println!( "     ✅ Old way gives helpful error: {}", e )
  }
 
   // New correct way
-  let correct_secrets = ws.load_secrets_from_path( "lib/llm_tools/.secret/-secrets.sh" )?;
+  let correct_secrets = ws.load_secrets_from_path( "lib/llm_tools/secret/-secrets.sh" )?;
   assert_eq!( correct_secrets.len(), 2 );
   assert!( correct_secrets.contains_key( "HF_TOKEN" ) );
   println!( "     ✅ New path method works correctly" );

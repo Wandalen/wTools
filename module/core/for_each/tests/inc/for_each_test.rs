@@ -1,24 +1,19 @@
 use super :: *;
+use test_tools :: a_id;
 
-tests_impls!
+#[ test ]
+fn braces_unwrap_test()
 {
-
-  //
-
-  fn braces_unwrap_test()
-  {
   // let mut GOT: String = String ::new();
   let mut GOT: String = String ::new();
   macro_rules! test_with
   {
-   (
-  $( $Arg: tt )*
- ) =>
-   {{
-  GOT += stringify!( $( $Arg )* );
-  GOT += ";";
- }};
- }
+    ( $( $Arg: tt )* ) =>
+    {{
+      GOT += stringify!( $( $Arg )* );
+      GOT += ";";
+    }};
+  }
 
   /* test.case( "sample1" ) */
   {
@@ -578,13 +573,13 @@ tests_impls!
 
  }
 
-  ///
-  /// Tests macro crate ::for_each!().
-  ///
+///
+/// Tests macro crate ::for_each!().
+///
 
-
-  fn for_each_test()
-  {
+#[ test ]
+fn for_each_test()
+{
   let mut GOT: String = String ::new();
 
   macro_rules! test_with
@@ -838,41 +833,34 @@ tests_impls!
  }
 
   ///
-  /// Higher order cases
-  ///
+/// Higher order cases
+///
 
-
-  fn for_each_higher_order_test()
-  {
+#[ test ]
+fn for_each_higher_order_test()
+{
   let mut GOT: String = String ::new();
   macro_rules! test_with
   {
-   (
-  $( $Arg: tt )*
- ) =>
-   {{
-  GOT += stringify!( $( $Arg )* );
-  GOT += ";";
- }};
- }
+    ( $( $Arg: tt )* ) =>
+    {{
+      GOT += stringify!( $( $Arg )* );
+      GOT += ";";
+    }};
+  }
 
   macro_rules! for_each_float
   {
-
-   (
-  $Callback: path
-  $( where $( $Args: tt )* )?
- ) =>
-   {
-  the_module ::for_each!
-  (
-   $Callback where
-   $( $( $Args )* )?
-   @Each f32 f64
- );
- };
-
- }
+    ( $Callback: path $( where $( $Args: tt )* )? ) =>
+    {
+      the_module ::for_each!
+      (
+        $Callback where
+        $( $( $Args )* )?
+        @Each f32 f64
+      );
+    };
+  }
 
   /* test.case( "manual" ) */
 
@@ -918,13 +906,4 @@ tests_impls!
 
  }
 
-}
-
 //
-
-tests_index!
-{
-  braces_unwrap_test,
-  for_each_test,
-  for_each_higher_order_test,
-}

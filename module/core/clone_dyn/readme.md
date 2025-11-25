@@ -53,49 +53,13 @@ impl Trait1 for i32
 <details>
 <summary>If you use multithreading or asynchronous paradigms implement trait `Clone` also for `Send` and `Sync`</summary>
 
-```rust, ignore
+When using `clone_dyn` with multithreaded or asynchronous code, the `#[clone_dyn]` macro automatically generates `Clone` implementations for all four trait object variants:
+- `Box<dyn Trait>`
+- `Box<dyn Trait + Send>`
+- `Box<dyn Trait + Sync>`
+- `Box<dyn Trait + Send + Sync>`
 
-#[ allow( non_local_definitions ) ]
-impl< 'c, T > Clone for Box< dyn IterTrait< 'c, T > + 'c >
-{
-  #[ inline ]
-  fn clone( &self ) -> Self
-  {
-    clone_dyn::clone_into_box( &**self )
-  }
-}
-
-#[ allow( non_local_definitions ) ]
-impl< 'c, T > Clone for Box< dyn IterTrait< 'c, T > + Send + 'c >
-{
-  #[ inline ]
-  fn clone( &self ) -> Self
-  {
-    clone_dyn::clone_into_box( &**self )
-  }
-}
-
-#[ allow( non_local_definitions ) ]
-impl< 'c, T > Clone for Box< dyn IterTrait< 'c, T > + Sync + 'c >
-{
-  #[ inline ]
-  fn clone( &self ) -> Self
-  {
-    clone_dyn::clone_into_box( &**self )
-  }
-}
-
-#[ allow( non_local_definitions ) ]
-impl< 'c, T > Clone for Box< dyn IterTrait< 'c, T > + Send + Sync + 'c >
-{
-  #[ inline ]
-  fn clone( &self ) -> Self
-  {
-    clone_dyn::clone_into_box( &**self )
-  }
-}
-
-```
+For a complete working example demonstrating this pattern with iterators, see [examples/clone_dyn_trivial.rs](./examples/clone_dyn_trivial.rs).
 
 </details>
 

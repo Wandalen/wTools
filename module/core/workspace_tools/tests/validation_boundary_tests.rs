@@ -218,24 +218,30 @@ fn test_workspace_creation_empty_path()
 #[ test ]
 fn test_workspace_creation_root_directory()
 {
-  // Save original state  
+  // Save original state
   let original = env ::var( "WORKSPACE_PATH" ).ok();
-  
-  env ::set_var( "WORKSPACE_PATH", "/" );
-  
+
+  // Use platform-appropriate root path
+  #[ cfg( windows ) ]
+  let root_path = "C:\\";
+  #[ cfg( not( windows ) ) ]
+  let root_path = "/";
+
+  env ::set_var( "WORKSPACE_PATH", root_path );
+
   let result = Workspace ::resolve();
-  
+
   // Restore state
   match original
   {
   Some( value ) => env ::set_var( "WORKSPACE_PATH", value ),
   None => env ::remove_var( "WORKSPACE_PATH" ),
  }
-  
+
   // Root directory should work (if accessible)
   if let Ok( workspace ) = result
   {
-  assert_eq!( workspace.root(), PathBuf ::from( "/" ) );
+  assert_eq!( workspace.root(), PathBuf ::from( root_path ) );
  }
   // If it fails, it should be due to permissions, not path resolution
 }

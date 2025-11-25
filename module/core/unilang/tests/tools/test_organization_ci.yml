@@ -1,0 +1,201 @@
+# GitHub Actions workflow for test organization validation
+#
+# This workflow validates that all test files follow the systematic
+# organization principles defined in tests/readme.md. It runs on
+# pull requests and pushes to prevent organizational regression.
+#
+# Place this file in: .github/workflows/test_organization.yml
+
+name: Test Organization Validation
+
+on:
+  push:
+    branches: [ master, main, develop ]
+    paths:
+      - 'tests/**/*.rs'
+      - 'module/move/unilang/tests/**/*.rs'
+  pull_request:
+    branches: [ master, main, develop ]
+    paths:
+      - 'tests/**/*.rs'
+      - 'module/move/unilang/tests/**/*.rs'
+
+jobs:
+  validate-test-organization:
+    runs-on: ubuntu-latest
+    name: Validate Test Organization
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+
+    - name: Find tests directory
+      id: find-tests
+      run: |
+        if [ -d "tests/unit" ]; then
+          echo "tests_dir=tests" >> $GITHUB_OUTPUT
+          echo "project_type=root" >> $GITHUB_OUTPUT
+        elif [ -d "module/move/unilang/tests/unit" ]; then
+          echo "tests_dir=module/move/unilang/tests" >> $GITHUB_OUTPUT
+          echo "project_type=module" >> $GITHUB_OUTPUT
+        else
+          echo "tests_dir=" >> $GITHUB_OUTPUT
+          echo "project_type=none" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Skip if no organized test structure
+      if: steps.find-tests.outputs.project_type == 'none'
+      run: |
+        echo "::notice::No organized test structure found, skipping validation"
+        exit 0
+
+    - name: Validate prohibited naming patterns
+      if: steps.find-tests.outputs.project_type != 'none'
+      run: |
+        echo "🔍 Checking for prohibited task-based naming patterns..."
+
+        # Define prohibited patterns
+        PROHIBITED_PATTERNS="task_|issue_|fix_|bug_|feature_|enhancement_"
+
+        # Find files with prohibited patterns
+        VIOLATIONS=$(find ${{ steps.find-tests.outputs.tests_dir }} -name "*.rs" -type f | \
+          grep -E "($PROHIBITED_PATTERNS)" || true)
+
+        if [ -n "$VIOLATIONS" ]; then
+          echo "❌ Files with prohibited naming patterns found:"
+          echo "$VIOLATIONS" | sed 's/^/  - /'
+          echo ""
+          echo "These files violate the systematic organization standards."
+          echo "Please rename them to use feature-based naming."
+          echo "See tests/readme.md for naming conventions."
+          exit 1
+        else
+          echo "✅ No prohibited naming patterns found"
+        fi
+
+    - name: Validate directory structure
+      if: steps.find-tests.outputs.project_type != 'none'
+      run: |
+        echo "🏗️ Validating directory structure..."
+
+        TESTS_DIR="${{ steps.find-tests.outputs.tests_dir }}"
+        ALLOWED_DIRS="unit integration acceptance regression inc tools"
+
+        # Check for unauthorized top-level directories
+        for dir in $(find "$TESTS_DIR" -mindepth 1 -maxdepth 1 -type d -exec basename {} \;); do
+          if ! echo "$ALLOWED_DIRS" | grep -q "\b$dir\b"; then
+            echo "❌ Unauthorized directory: $TESTS_DIR/$dir"
+            echo "Allowed directories: $ALLOWED_DIRS"
+            exit 1
+          fi
+        done
+
+        echo "✅ Directory structure is valid"
+
+    - name: Validate nesting depth
+      if: steps.find-tests.outputs.project_type != 'none'
+      run: |
+        echo "📏 Checking directory nesting depth..."
+
+        TESTS_DIR="${{ steps.find-tests.outputs.tests_dir }}"
+        MAX_DEPTH=4
+
+        # Find files with excessive nesting
+        DEEP_FILES=$(find "$TESTS_DIR" -name "*.rs" -type f | \
+          awk -F'/' -v max="$MAX_DEPTH" -v tests_dir="$TESTS_DIR" \
+          'NF - split(tests_dir, a, "/") > max { print $0 }' || true)
+
+        if [ -n "$DEEP_FILES" ]; then
+          echo "❌ Files with excessive nesting depth found:"
+          echo "$DEEP_FILES" | sed 's/^/  - /'
+          echo ""
+          echo "Maximum allowed depth: $MAX_DEPTH levels"
+          exit 1
+        else
+          echo "✅ Directory nesting depth is appropriate"
+        fi
+
+    - name: Validate category-specific conventions
+      if: steps.find-tests.outputs.project_type != 'none'
+      run: |
+        echo "📋 Validating category-specific naming conventions..."
+
+        TESTS_DIR="${{ steps.find-tests.outputs.tests_dir }}"
+        VIOLATIONS=""
+
+        # Check unit tests don't suggest integration
+        UNIT_VIOLATIONS=$(find "$TESTS_DIR/unit" -name "*.rs" -type f 2>/dev/null | \
+          grep -E "(integration|end_to_end)" || true)
+        if [ -n "$UNIT_VIOLATIONS" ]; then
+          VIOLATIONS="$VIOLATIONS\nUnit tests suggesting integration:\n$UNIT_VIOLATIONS"
+        fi
+
+        # Check acceptance tests indicate user scenarios
+        if [ -d "$TESTS_DIR/acceptance" ]; then
+          ACCEPTANCE_VIOLATIONS=$(find "$TESTS_DIR/acceptance" -name "*.rs" -type f 2>/dev/null | \
+            grep -v -E "(cli|user|scenario)" || true)
+          if [ -n "$ACCEPTANCE_VIOLATIONS" ]; then
+            VIOLATIONS="$VIOLATIONS\nAcceptance tests not indicating user scenarios:\n$ACCEPTANCE_VIOLATIONS"
+          fi
+        fi
+
+        # Check regression tests indicate bug prevention
+        if [ -d "$TESTS_DIR/regression" ]; then
+          REGRESSION_VIOLATIONS=$(find "$TESTS_DIR/regression" -name "*.rs" -type f 2>/dev/null | \
+            grep -v -E "(regression|fix)" || true)
+          if [ -n "$REGRESSION_VIOLATIONS" ]; then
+            VIOLATIONS="$VIOLATIONS\nRegression tests not indicating bug prevention:\n$REGRESSION_VIOLATIONS"
+          fi
+        fi
+
+        if [ -n "$VIOLATIONS" ]; then
+          echo -e "⚠️ Category convention violations found:$VIOLATIONS"
+          echo ""
+          echo "Please ensure filenames follow category-specific conventions."
+          echo "See tests/readme.md for detailed guidelines."
+          exit 1
+        else
+          echo "✅ Category-specific conventions are followed"
+        fi
+
+    - name: Generate organization report
+      if: steps.find-tests.outputs.project_type != 'none'
+      run: |
+        echo "📊 Generating test organization report..."
+
+        TESTS_DIR="${{ steps.find-tests.outputs.tests_dir }}"
+
+        echo "## Test Organization Report"
+        echo ""
+
+        # Count files by category
+        for category in unit integration acceptance regression inc tools; do
+          if [ -d "$TESTS_DIR/$category" ]; then
+            count=$(find "$TESTS_DIR/$category" -name "*.rs" -type f | wc -l)
+            echo "- **$category:** $count files"
+          fi
+        done
+
+        total=$(find "$TESTS_DIR" -name "*.rs" -type f | wc -l)
+        echo ""
+        echo "**Total test files:** $total"
+        echo ""
+        echo "✅ **All test files comply with systematic organization standards!**"
+
+    - name: Check for readme.md existence
+      if: steps.find-tests.outputs.project_type != 'none'
+      run: |
+        TESTS_DIR="${{ steps.find-tests.outputs.tests_dir }}"
+        if [ ! -f "$TESTS_DIR/readme.md" ]; then
+          echo "⚠️ Missing tests/readme.md documentation"
+          echo "The systematic organization documentation should be present"
+          exit 1
+        else
+          echo "✅ Organization documentation present"
+        fi

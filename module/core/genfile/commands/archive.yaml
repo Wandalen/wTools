@@ -1,0 +1,299 @@
+---
+# Archive lifecycle commands - FR1: Archive Lifecycle Management
+#
+# Commands for creating, loading, saving, and managing template archives.
+
+- name: ".archive.new"
+  namespace: ""
+  description: "Create new empty template archive"
+  hint: "Initialize new archive"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags:
+    - "archive"
+    - "create"
+  permissions: []
+  idempotent: false
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".archive.new name::\"my-template\""
+    - ".archive.new name::\"api-scaffold\" description::\"REST API template\""
+  arguments:
+    - name: "name"
+      description: "Archive name"
+      kind: "String"
+      hint: "Name for the archive"
+      attributes:
+        optional: false
+        default: null
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "description"
+      description: "Archive description"
+      kind: "String"
+      hint: "Optional description"
+      attributes:
+        optional: true
+        default: ""
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity level"
+      attributes:
+        optional: true
+        default: "1"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+
+- name: ".archive.load"
+  namespace: ""
+  description: "Load archive from JSON or YAML file"
+  hint: "Load existing archive"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags:
+    - "archive"
+    - "load"
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".archive.load path::\"template.json\""
+    - ".archive.load path::\"./archives/api.yaml\" verbosity::2"
+  arguments:
+    - name: "path"
+      description: "Path to archive file (JSON or YAML)"
+      kind: "Path"
+      hint: "Archive file path"
+      attributes:
+        optional: false
+        default: null
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity level"
+      attributes:
+        optional: true
+        default: "1"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+
+- name: ".archive.save"
+  namespace: ""
+  description: "Save current archive to JSON or YAML file"
+  hint: "Save archive to file"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags:
+    - "archive"
+    - "save"
+  permissions: []
+  idempotent: false
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".archive.save path::\"output.json\""
+    - ".archive.save path::\"template.yaml\" format::yaml pretty::0"
+  arguments:
+    - name: "path"
+      description: "Output file path"
+      kind: "Path"
+      hint: "Output file path"
+      attributes:
+        optional: false
+        default: null
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "format"
+      description: "Serialization format (json or yaml)"
+      kind:
+        Enum:
+          - "json"
+          - "yaml"
+      hint: "Format (auto-detect from extension)"
+      attributes:
+        optional: true
+        default: "json"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "pretty"
+      description: "Pretty-print JSON (0 or 1)"
+      kind: "Boolean"
+      hint: "Pretty-print flag"
+      attributes:
+        optional: true
+        default: "1"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity level"
+      attributes:
+        optional: true
+        default: "1"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "dry"
+      description: "Dry run mode (0 or 1)"
+      kind: "Boolean"
+      hint: "Dry run flag"
+      attributes:
+        optional: true
+        default: "0"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+
+- name: ".archive.from_directory"
+  namespace: ""
+  description: "Create archive from filesystem directory"
+  hint: "Create from directory"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags:
+    - "archive"
+    - "create"
+    - "directory"
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".archive.from_directory source::\"./templates\" mode::reference"
+    - ".archive.from_directory source::\"./src\" mode::inline exclude_pattern::\"**/target/**\""
+  arguments:
+    - name: "source"
+      description: "Source directory to scan"
+      kind: "Directory"
+      hint: "Source directory path"
+      attributes:
+        optional: false
+        default: null
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "mode"
+      description: "Content mode: inline (embedded) or reference (file refs)"
+      kind:
+        Enum:
+          - "inline"
+          - "reference"
+      hint: "Content mode"
+      attributes:
+        optional: true
+        default: "reference"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "recursive"
+      description: "Scan subdirectories recursively (0 or 1)"
+      kind: "Boolean"
+      hint: "Recursive scan flag"
+      attributes:
+        optional: true
+        default: "1"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "include_pattern"
+      description: "Include files matching glob pattern"
+      kind: "String"
+      hint: "Include pattern"
+      attributes:
+        optional: true
+        default: null
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "exclude_pattern"
+      description: "Exclude files matching glob pattern"
+      kind: "String"
+      hint: "Exclude pattern"
+      attributes:
+        optional: true
+        default: null
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity level"
+      attributes:
+        optional: true
+        default: "1"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []

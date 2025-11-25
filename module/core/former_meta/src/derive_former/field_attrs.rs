@@ -70,7 +70,6 @@
 
 use macro_tools ::
 {
-  ct,
   Result,
   AttributeComponent,
   AttributePropertyComponent,
@@ -234,22 +233,14 @@ impl FieldAttributes
   {
   let mut result = Self ::default();
   // Known attributes for error reporting
-  let known_attributes = ct ::concatcp!(
-   "Known field attributes are: ",
-   "debug", // Assuming debug might be handled elsewhere
-   ", ",
+  let known_attributes = format!(
+   "Known field attributes are: debug, {}, {}, {}, {}, {}, {}.",
    AttributeConfig ::KEYWORD,
-   ", ",
    AttributeScalarSetter ::KEYWORD,
-   ", ",
    AttributeSubformScalarSetter ::KEYWORD,
-   ", ",
    AttributeSubformCollectionSetter ::KEYWORD,
-   ", ",
    AttributeSubformEntrySetter ::KEYWORD,
-   ", ",
-   AttributePropertyFormerIgnore ::KEYWORD,
-   ".",
+   AttributePropertyFormerIgnore ::KEYWORD
  );
 
   // Helper closure to create a syn ::Error for unknown attributes
@@ -437,12 +428,10 @@ impl syn ::parse ::Parse for AttributeConfig
   let mut result = Self ::default();
 
   let error = |ident: &syn ::Ident| -> syn ::Error {
-   let known = ct ::concatcp!(
-  "Known entries of attribute ",
+   let known = format!(
+  "Known entries of attribute {} are: {}.",
   AttributeConfig ::KEYWORD,
-  " are: ",
-  DefaultMarker ::KEYWORD, // <<< Use Marker ::KEYWORD
-  ".",
+  DefaultMarker ::KEYWORD // <<< Use Marker ::KEYWORD
  );
    syn_err!(
   ident,
@@ -580,16 +569,12 @@ impl syn ::parse ::Parse for AttributeScalarSetter
   let mut result = Self ::default();
 
   let error = |ident: &syn ::Ident| -> syn ::Error {
-   let known = ct ::concatcp!(
-  "Known entries of attribute ",
+   let known = format!(
+  "Known entries of attribute {} are: {}, {}, {}.",
   AttributeScalarSetter ::KEYWORD,
-  " are: ",
   AttributePropertyName ::KEYWORD,
-  ", ",
   AttributePropertySetter ::KEYWORD,
-  ", ",
-  AttributePropertyDebug ::KEYWORD,
-  ".",
+  AttributePropertyDebug ::KEYWORD
  );
    syn_err!(
   ident,
@@ -727,16 +712,12 @@ impl syn ::parse ::Parse for AttributeSubformScalarSetter
   let mut result = Self ::default();
 
   let error = |ident: &syn ::Ident| -> syn ::Error {
-   let known = ct ::concatcp!(
-  "Known entries of attribute ",
+   let known = format!(
+  "Known entries of attribute {} are: {}, {}, {}.",
   AttributeSubformScalarSetter ::KEYWORD,
-  " are: ",
   AttributePropertyName ::KEYWORD,
-  ", ",
   AttributePropertySetter ::KEYWORD,
-  ", ",
-  AttributePropertyDebug ::KEYWORD,
-  ".",
+  AttributePropertyDebug ::KEYWORD
  );
    syn_err!(
   ident,
@@ -888,18 +869,13 @@ impl syn ::parse ::Parse for AttributeSubformCollectionSetter
   let mut result = Self ::default();
 
   let error = |ident: &syn ::Ident| -> syn ::Error {
-   let known = ct ::concatcp!(
-  "Known entries of attribute ",
+   let known = format!(
+  "Known entries of attribute {} are: {}, {}, {}, {}.",
   AttributeSubformCollectionSetter ::KEYWORD,
-  " are: ",
   AttributePropertyName ::KEYWORD,
-  ", ",
   AttributePropertySetter ::KEYWORD,
-  ", ",
   AttributePropertyDebug ::KEYWORD,
-  ", ",
-  DefinitionMarker ::KEYWORD, // <<< Use Marker ::KEYWORD
-  ".",
+  DefinitionMarker ::KEYWORD // <<< Use Marker ::KEYWORD
  );
    syn_err!(
   ident,
@@ -1039,16 +1015,12 @@ impl syn ::parse ::Parse for AttributeSubformEntrySetter
   let mut result = Self ::default();
 
   let error = |ident: &syn ::Ident| -> syn ::Error {
-   let known = ct ::concatcp!(
-  "Known entries of attribute ",
+   let known = format!(
+  "Known entries of attribute {} are: {}, {}, {}.",
   AttributeSubformEntrySetter ::KEYWORD,
-  " are: ",
   AttributePropertyName ::KEYWORD,
-  ", ",
   AttributePropertySetter ::KEYWORD,
-  ", ",
-  AttributePropertyDebug ::KEYWORD,
-  ".",
+  AttributePropertyDebug ::KEYWORD
  );
    syn_err!(
   ident,

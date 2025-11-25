@@ -307,6 +307,7 @@ For custom behavior, implement traits manually:
 ```rust
 use component_model::prelude::*;
 
+#[ derive( Default ) ]
 struct Database
 {
   url : String,
@@ -329,10 +330,9 @@ impl< T : Into< usize > > Assign< usize, T > for Database
   }
 }
 
-let config = DatabaseConfig::default()
+let config = Database::default()
 .impute( "postgres.example.com" )    // String
-.impute( 5432 )                      // i32  
-.impute( 30u64 );                    // Duration from seconds
+.impute( 5usize );                   // usize pool_size
 ```
 
 ### HTTP Client Builders
@@ -436,7 +436,7 @@ struct DatabaseConfig
 
 let config = DatabaseConfig::default()
 .impute( "postgres.example.com" )    // String
-.impute( 5432 )                      // i32  
+.impute( 5432 )                      // i32
 .impute( 30u64 );                    // Duration from seconds
 ```
 

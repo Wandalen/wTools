@@ -10,8 +10,6 @@ use the_module ::cta_mem_same_size;
 // qqq: do negative testing /* aaa: Dmytro: done */
 // zzz: continue here
 
-// xxx: temporarily disabled due to macro resolution issues
-/*
 tests_impls! {
 
   #[ cfg( any( feature = "diagnostics_compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) ) ]
@@ -82,4 +80,3 @@ tests_index! {
   cta_mem_same_size_pass,
 
 }
-*/

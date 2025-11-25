@@ -1,5 +1,3 @@
-#![ cfg_attr( feature = "no_std", no_std ) ]
-
 use mod_interface_meta ::mod_interface;
 
 /// Internal namespace.

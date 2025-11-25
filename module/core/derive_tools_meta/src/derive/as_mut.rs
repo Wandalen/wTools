@@ -242,7 +242,7 @@ where
 item: {item_name}
 field: {variant_name}",
  );
-  diag ::report_print(about, original_input, debug.to_string());
+  diag ::report_print(about, original_input, debug.clone());
  }
 
   Ok(qt! {

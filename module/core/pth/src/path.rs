@@ -669,7 +669,7 @@ mod private
   #[ cfg( feature = "no_std" ) ]
   extern crate alloc;
   #[ cfg( feature = "no_std" ) ]
-  use alloc :: { string :: { String, ToString }, vec ::Vec };
+  use alloc :: { string :: String, vec ::Vec };
 
   let orig_paths: Vec< String > = paths.map( std ::string ::ToString ::to_string ).collect();
 
@@ -717,7 +717,7 @@ mod private
   .max_by_key( std ::string ::String ::len )
   .unwrap_or_default();
 
-  let mut result = common_dir.to_string();
+  let mut result = common_dir;
 
   if result.is_empty()
   {

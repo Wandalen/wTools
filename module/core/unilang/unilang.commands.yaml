@@ -1,0 +1,130 @@
+---
+# Static command definitions for unilang
+# These commands are compiled into the binary for zero-overhead access
+- name: "version"
+  namespace: ""
+  description: "Show version information"
+  hint: "Displays the application version"
+  arguments: []
+  routine_link: null
+  status: "stable"
+  version: "1.0.0"
+  tags: []
+  aliases:
+    - "v"
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+  examples: []
+
+- name: "help"
+  namespace: ""
+  description: "Show help information"
+  hint: "Displays help for commands"
+  arguments: []
+  routine_link: null
+  status: "stable"
+  version: "1.0.0"
+  tags: []
+  aliases:
+    - "h"
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+  examples: []
+
+- name: "status"
+  namespace: "system"
+  description: "Show system status"
+  hint: "Displays system status information"
+  arguments: []
+  routine_link: null
+  status: "stable"
+  version: "1.0.0"
+  tags: []
+  aliases: []
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+  examples: []
+
+- name: "info"
+  namespace: "system"
+  description: "Show system information"
+  hint: "Displays detailed system information"
+  arguments: []
+  routine_link: null
+  status: "stable"
+  version: "1.0.0"
+  tags: []
+  aliases: []
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+  examples: []
+
+- name: "stats"
+  namespace: "performance"
+  description: "Show performance statistics"
+  hint: "Displays performance metrics"
+  arguments: []
+  routine_link: null
+  status: "stable"
+  version: "1.0.0"
+  tags: []
+  aliases: []
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+  examples: []
+
+- name: "search"
+  namespace: "test"
+  description: "Test command for quoted value parsing"
+  hint: "Used to test multi-word quoted value parsing"
+  arguments:
+    - name: "query"
+      description: "Search query (supports multi-word quoted values)"
+      kind: "String"
+      hint: "The search query text"
+      attributes:
+        optional: false
+        multiple: false
+        is_default_arg: false
+        interactive: false
+        sensitive: false
+      validation_rules: []
+      default_value: null
+      aliases: ["q"]
+      tags: ["search"]
+    - name: "title"
+      description: "Optional title filter"
+      kind: "String"
+      hint: "Filter by title"
+      attributes:
+        optional: true
+        multiple: false
+        is_default_arg: false
+        interactive: false
+        sensitive: false
+      validation_rules: []
+      default_value: null
+      aliases: ["t"]
+      tags: ["filter"]
+  routine_link: null
+  status: "stable"
+  version: "1.0.0"
+  tags: ["testing", "parsing"]
+  aliases: []
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+  examples:
+    - ".test.search query::\"rust programming\""
+    - ".test.search query::\"llm rust\" title::\"Tutorial\""

@@ -67,7 +67,7 @@
 //! - **Memory Efficiency** : References used where possible to avoid unnecessary cloning
 //! - **Error Early** : Invalid attributes cause immediate parsing failure with clear messages
 
-use macro_tools :: { ct, Result, AttributeComponent, AttributePropertyComponent, AttributePropertyOptionalSingletone, syn, return_syn_err, syn_err, qt, Token, proc_macro2 ::TokenStream };
+use macro_tools :: { Result, AttributeComponent, AttributePropertyComponent, AttributePropertyOptionalSingletone, syn, return_syn_err, syn_err, qt, Token, proc_macro2 ::TokenStream };
 
 use component_model_types :: { Assign, OptionExt };
 
@@ -512,14 +512,11 @@ impl syn ::parse ::Parse for AttributeMutator
   let mut result = Self ::default();
 
   let error = |ident: &syn ::Ident| -> syn ::Error {
-   let known = ct ::concatcp!(
-  "Known entries of attribute ",
+   let known = format!(
+  "Known entries of attribute {} are: {}, {}.",
   AttributeMutator ::KEYWORD,
-  " are: ",
   AttributePropertyCustom ::KEYWORD,
-  ", ",
-  AttributePropertyDebug ::KEYWORD,
-  ".",
+  AttributePropertyDebug ::KEYWORD
  );
    syn_err!(
   ident,

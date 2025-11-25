@@ -17,8 +17,35 @@ Apply macro for each element of a list.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
-[lints]
-workspace = true
+[lints.rust]
+rust_2018_idioms = { level = "warn", priority = -1 }
+future_incompatible = { level = "warn", priority = -1 }
+missing_docs = "warn"
+missing_debug_implementations = "warn"
+unsafe-code = "deny"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+undocumented_unsafe_blocks = "deny"
+std_instead_of_core = "warn"
+doc_include_without_cfg = "warn"
+missing_inline_in_public_items = "allow"
+single_call_fn = "allow"
+inline_always = "allow"
+module_name_repetitions = "allow"
+absolute_paths = "allow"
+wildcard_imports = "allow"
+std_instead_of_alloc = "allow"
+items_after_statements = "allow"
+cast_precision_loss = "allow"
+pub_use = "allow"
+question_mark_used = "allow"
+implicit_return = "allow"
+arbitrary_source_item_ordering = "allow"
+mod_module_files = "allow"
+missing_docs_in_private_items = "allow"
+large_enum_variant = "allow"
+struct_excessive_bools = "allow"
 
 [package.metadata.docs.rs]
 features = [ "full" ]
@@ -62,4 +89,4 @@ enabled = []
 [dependencies]
 
 [dev-dependencies]
-test_tools = { workspace = true, features = [ "full" ] }
+test_tools = { version = "~0.16.0", path = "../test_tools", features = [ "full" ] }

@@ -169,49 +169,15 @@ fn main()
 <details>
 <summary>If you use multithreading or asynchronous paradigms implement trait `Clone` also for `Send` and `Sync`</summary>
 
-```rust, ignore
+When using `clone_dyn_types` with multithreaded or asynchronous code, you need to implement `Clone` for all trait object variants:
+- `Box<dyn Trait>`
+- `Box<dyn Trait + Send>`
+- `Box<dyn Trait + Sync>`
+- `Box<dyn Trait + Send + Sync>`
 
-#[ allow( non_local_definitions ) ]
-impl< 'c, T > Clone for Box< dyn IterTrait< 'c, T > + 'c >
-{
-  #[ inline ]
-  fn clone( &self ) -> Self
-  {
-    clone_dyn_types::clone_into_box( &**self )
-  }
-}
+The example above demonstrates implementing `Clone` for the base variant. Follow the same pattern for the `Send`, `Sync`, and `Send + Sync` variants by calling `clone_into_box()` in each implementation.
 
-#[ allow( non_local_definitions ) ]
-impl< 'c, T > Clone for Box< dyn IterTrait< 'c, T > + Send + 'c >
-{
-  #[ inline ]
-  fn clone( &self ) -> Self
-  {
-    clone_dyn_types::clone_into_box( &**self )
-  }
-}
-
-#[ allow( non_local_definitions ) ]
-impl< 'c, T > Clone for Box< dyn IterTrait< 'c, T > + Sync + 'c >
-{
-  #[ inline ]
-  fn clone( &self ) -> Self
-  {
-    clone_dyn_types::clone_into_box( &**self )
-  }
-}
-
-#[ allow( non_local_definitions ) ]
-impl< 'c, T > Clone for Box< dyn IterTrait< 'c, T > + Send + Sync + 'c >
-{
-  #[ inline ]
-  fn clone( &self ) -> Self
-  {
-    clone_dyn_types::clone_into_box( &**self )
-  }
-}
-
-```
+For a complete working example with all variants, see [../clone_dyn/examples/clone_dyn_trivial.rs](../clone_dyn/examples/clone_dyn_trivial.rs) which uses the `#[clone_dyn]` macro to automatically generate all four implementations.
 
 </details>
 

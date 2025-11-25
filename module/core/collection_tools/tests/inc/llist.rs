@@ -1,4 +1,6 @@
 use super :: *;
+#[ allow( unused_imports ) ]
+use the_module ::Llist;
 
 #[ test ]
 fn reexport() 

@@ -1,0 +1,120 @@
+---
+# Parameter management commands - FR3: Parameter Management
+
+- name: ".parameter.add"
+  namespace: ""
+  description: "Add a parameter definition to the archive with metadata"
+  hint: "Add parameter"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags: ["parameter", "add"]
+  permissions: []
+  idempotent: false
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".parameter.add name::host mandatory::true description::\"Server hostname\""
+    - ".parameter.add name::port mandatory::false default::\"8080\""
+  arguments:
+    - name: "name"
+      description: "Parameter name"
+      kind: "String"
+      hint: "Parameter name"
+      attributes: {optional: false, default: null, sensitive: false, interactive: false, multiple: false}
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "mandatory"
+      description: "Whether this parameter is required (0 or 1)"
+      kind: "Boolean"
+      hint: "Is mandatory"
+      attributes: {optional: true, default: "0", sensitive: false, interactive: false, multiple: false}
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "default"
+      description: "Default value for the parameter"
+      kind: "String"
+      hint: "Default value"
+      attributes: {optional: true, default: null, sensitive: false, interactive: false, multiple: false}
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "description"
+      description: "Parameter description"
+      kind: "String"
+      hint: "Description"
+      attributes: {optional: true, default: "", sensitive: false, interactive: false, multiple: false}
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity level"
+      attributes: {optional: true, default: "1", sensitive: false, interactive: false, multiple: false}
+      validation_rules: []
+      aliases: []
+      tags: []
+
+- name: ".parameter.list"
+  namespace: ""
+  description: "List all parameter definitions in the archive"
+  hint: "List parameters"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags: ["parameter", "list"]
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".parameter.list"
+    - ".parameter.list verbosity::2"
+  arguments:
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity level"
+      attributes: {optional: true, default: "1", sensitive: false, interactive: false, multiple: false}
+      validation_rules: []
+      aliases: []
+      tags: []
+
+- name: ".parameter.remove"
+  namespace: ""
+  description: "Remove a parameter definition from the archive"
+  hint: "Remove parameter"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags: ["parameter", "remove"]
+  permissions: []
+  idempotent: false
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".parameter.remove name::host"
+    - ".parameter.remove name::port verbosity::2"
+  arguments:
+    - name: "name"
+      description: "Parameter name to remove"
+      kind: "String"
+      hint: "Parameter name"
+      attributes: {optional: false, default: null, sensitive: false, interactive: false, multiple: false}
+      validation_rules: []
+      aliases: []
+      tags: []
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity level"
+      attributes: {optional: true, default: "1", sensitive: false, interactive: false, multiple: false}
+      validation_rules: []
+      aliases: []
+      tags: []

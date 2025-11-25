@@ -7,16 +7,29 @@
 //! | T1.3 | Error Handling    | Missing  | Proper error returned |
 //! | T1.4 | Directory Creation| Standard | All directories created |
 
-#![ allow( unused_imports ) ]
+use workspace_tools :: { Workspace, WorkspaceError };
+use std :: { path ::PathBuf, fs };
+use tempfile ::TempDir;
 
-use workspace_tools ::
+/// helper to create test workspace with standard directory structure
+fn create_test_workspace_with_structure() -> ( TempDir, Workspace )
 {
-  Workspace,
-  WorkspaceError,
-  workspace,
-  testing ::create_test_workspace_with_structure,
-};
-use std ::path ::PathBuf;
+  let temp_dir = TempDir ::new().expect( "Failed to create temp directory" );
+  let workspace = Workspace ::new( temp_dir.path() );
+
+  // create standard directories
+  fs ::create_dir_all( workspace.config_dir() ).ok();
+  fs ::create_dir_all( workspace.data_dir() ).ok();
+  fs ::create_dir_all( workspace.logs_dir() ).ok();
+  fs ::create_dir_all( workspace.docs_dir() ).ok();
+  fs ::create_dir_all( workspace.tests_dir() ).ok();
+  fs ::create_dir_all( workspace.workspace_dir() ).ok();
+
+  #[ cfg( feature = "secrets" ) ]
+  fs ::create_dir_all( workspace.secret_dir() ).ok();
+
+  ( temp_dir, workspace )
+}
 
 /// Tests that workspace creation works with explicit parameters.
 /// Test Combination: T1.1

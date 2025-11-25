@@ -1,5 +1,3 @@
-#![ cfg_attr( feature = "no_std", no_std ) ]
-
 /// Internal namespace.
 mod private
 {
