@@ -63,6 +63,10 @@ pub mod string;
 #[ cfg( all( feature = "enabled", feature = "simd" ) ) ]
 pub mod simd;
 
+/// ANSI escape sequence handling utilities.
+#[ cfg( all( feature = "enabled", feature = "ansi" ) ) ]
+pub mod ansi;
+
 /// Re-export compile-time optimization macros.
 #[ cfg( all( feature = "enabled", feature = "compile_time_optimizations" ) ) ]
 #[ allow( unused_imports ) ]
@@ -84,6 +88,8 @@ pub mod own
   pub use super::string;
   #[ cfg( feature = "simd" ) ]
   pub use super::simd;
+  #[ cfg( feature = "ansi" ) ]
+  pub use super::ansi;
   #[ cfg( test ) ]
   pub use super::string::orphan::*;
 }

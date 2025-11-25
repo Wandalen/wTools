@@ -1,0 +1,28 @@
+---
+# Test YAML file for build-time static registry generation
+- name: "build_yaml_cmd"
+  namespace: ".test"
+  description: "Command loaded from YAML at build-time"
+  arguments:
+    - name: "param"
+      kind: "String"
+      description: "Test parameter"
+      attributes:
+        optional: false
+        multiple: false
+        interactive: false
+        sensitive: false
+      validation_rules: []
+      hint: "Parameter hint"
+      aliases: []
+      tags: []
+  status: "stable"
+  version: "1.0.0"
+  tags: ["build-time", "yaml"]
+  aliases: []
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+  examples:
+    - ".test.build_yaml_cmd param::value"

@@ -3,7 +3,7 @@
 #![allow(missing_docs, dead_code)]
 
 #[ cfg( feature = "enabled" ) ]
-use former_meta::Former;
+use former::Former;
 
 #[ derive( Debug, Former ) ]
 pub struct Minimal<'a> {

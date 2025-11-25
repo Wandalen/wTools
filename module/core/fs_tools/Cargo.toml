@@ -29,12 +29,15 @@ all-features = false
 
 [features]
 default = [ "enabled" ]
-full = [ "enabled" ]
+full = [ "enabled", "glob" ]
 no_std = []
 use_alloc = [ "no_std" ]
 enabled = []
+glob = [ "enabled", "dep:glob" ]
 
 [dependencies]
+glob = { workspace = true, optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }
+tempfile = "3.8"

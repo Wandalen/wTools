@@ -158,7 +158,7 @@ fn test_m_t3_3_leading_trailing_space_preserve_all()
   .stripping(false)
   .quoting(false)
   .perform();
-  let expected = vec![
+  let expected = [
   ("", SplitType ::Delimited, 0, 0),
   (" ", SplitType ::Delimiter, 0, 1),
   ("a", SplitType ::Delimited, 1, 2),

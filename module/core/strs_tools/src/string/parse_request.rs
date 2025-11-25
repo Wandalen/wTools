@@ -419,7 +419,7 @@ pub mod private {
           for a in (0..pairs.len() - 1).step_by(2) {
             let left = &pairs[a];
             let right_str = &pairs[a + 1];
-            let mut right = OpType::Primitive(pairs[a + 1].to_string());
+            let mut right = OpType::Primitive(pairs[a + 1].clone());
 
             if self.parsing_arrays.0
             // Accessing newtype field
@@ -434,12 +434,12 @@ pub mod private {
             {
               if let Some(op) = map.get(left) {
                 let value = op.clone().append(right);
-                map.insert(left.to_string(), value);
+                map.insert(left.clone(), value);
               } else {
-                map.insert(left.to_string(), right);
+                map.insert(left.clone(), right);
               }
             } else {
-              map.insert(left.to_string(), right);
+              map.insert(left.clone(), right);
             }
           }
         } else {

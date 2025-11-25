@@ -237,7 +237,7 @@ fn test_m_t3_15_no_quoting_preserve_all_no_strip()
   .stripping( false )
   .quoting( false ) // Quoting disabled
   .perform();
-  let expected = vec![
+  let expected = [
   ("a", SplitType ::Delimited, 0, 1),
   (" ", SplitType ::Delimiter, 1, 2),
   ("'b", SplitType ::Delimited, 2, 4), // 'b is a segment

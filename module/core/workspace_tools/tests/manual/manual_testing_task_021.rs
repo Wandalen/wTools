@@ -59,7 +59,7 @@ fn test_enhanced_error_handling( ws: &Workspace ) -> Result< (), Box< dyn std ::
   {
    let error_msg = e.to_string();
    println!( "     ✅ Got expected error: {}", error_msg );
-   assert!( error_msg.contains( "not found at" ), "Error should contain path info" );
+   assert!( error_msg.contains( "not found" ), "Error should contain path info" );
    assert!( error_msg.contains( "nonexistent.env" ), "Error should contain filename" );
  }
  }

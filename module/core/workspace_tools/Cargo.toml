@@ -1,6 +1,6 @@
 [package]
 name = "workspace_tools"
-version = "0.7.0"
+version = "0.10.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -52,3 +52,4 @@ zeroize = { version = "1.7", optional = true }
 
 [dev-dependencies]
 # Test utilities - using minimal local dependencies only
+tempfile = { workspace = true }

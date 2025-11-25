@@ -1,6 +1,6 @@
 [package]
 name = "component_model_types"
-version = "0.14.0"
+version = "0.20.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -48,4 +48,4 @@ collection_tools = { workspace = true, features = [ "collection_constructors" ] 
 
 
 [dev-dependencies]
-test_tools = { workspace = true, features = [ "full" ] }
+# test_tools = { workspace = true, features = [ "full" ] }  # REMOVED: Creates circular dependency via component_model_types → test_tools → impls_index_meta → macro_tools → component_model_types

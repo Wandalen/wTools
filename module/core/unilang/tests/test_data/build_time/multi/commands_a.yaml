@@ -1,0 +1,14 @@
+---
+- name: "multi_yaml_a"
+  namespace: ".multitest"
+  description: "First YAML command in multi-file setup"
+  arguments: []
+  status: "stable"
+  version: "1.0.0"
+  tags: ["multi", "yaml"]
+  aliases: []
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+  examples: []

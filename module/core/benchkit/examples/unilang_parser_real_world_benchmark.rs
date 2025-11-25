@@ -411,7 +411,7 @@ fn analyze_parser_memory_efficiency(workload: &ParserWorkload) -> Result< () >
   // Simulate argument parsing with more allocations
   let named_args: Vec< String > = tokens.iter()
    .filter(|t| t.contains(" :: "))
-   .map(|t| t.to_string())
+   .cloned()
    .collect();
   total_allocations += tokens.len() + named_args.len();
  }

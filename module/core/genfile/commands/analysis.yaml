@@ -1,0 +1,144 @@
+---
+# Analysis and information commands - FR8: Archive Analysis
+#
+# Commands for inspecting and understanding template archives:
+# - .info - Archive metadata and statistics
+# - .discover.parameters - Auto-detect template parameters
+# - .status - Archive readiness check
+# - .analyze - Comprehensive analysis
+
+- name: ".info"
+  namespace: ""
+  description: "Display archive metadata and statistics"
+  hint: "Show archive information"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags:
+    - "info"
+    - "metadata"
+    - "inspect"
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".info"
+    - ".info verbosity::2"
+  arguments:
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity level"
+      attributes:
+        optional: true
+        default: "1"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+
+- name: ".discover.parameters"
+  namespace: ""
+  description: "Auto-detect template parameters in archive files"
+  hint: "Discover template variables"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags:
+    - "discover"
+    - "parameters"
+    - "detect"
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".discover.parameters"
+    - ".discover.parameters verbosity::2"
+  arguments:
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity level"
+      attributes:
+        optional: true
+        default: "1"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+
+- name: ".status"
+  namespace: ""
+  description: "Show archive readiness and completeness status"
+  hint: "Check archive status"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags:
+    - "status"
+    - "readiness"
+    - "check"
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".status"
+    - ".status verbosity::2"
+  arguments:
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity level"
+      attributes:
+        optional: true
+        default: "1"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []
+
+- name: ".analyze"
+  namespace: ""
+  description: "Comprehensive archive analysis including all insights"
+  hint: "Analyze archive"
+  status: "stable"
+  version: "0.1.0"
+  aliases: []
+  tags:
+    - "analyze"
+    - "inspect"
+    - "comprehensive"
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: ""
+  auto_help_enabled: true
+  examples:
+    - ".analyze"
+    - ".analyze verbosity::2"
+  arguments:
+    - name: "verbosity"
+      description: "Output verbosity level (0-5)"
+      kind: "Integer"
+      hint: "Verbosity level"
+      attributes:
+        optional: true
+        default: "1"
+        sensitive: false
+        interactive: false
+        multiple: false
+      validation_rules: []
+      aliases: []
+      tags: []

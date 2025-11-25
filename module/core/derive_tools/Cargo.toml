@@ -1,6 +1,6 @@
 [package]
 name = "derive_tools"
-version = "0.50.0"
+version = "0.57.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -211,4 +211,4 @@ macro_tools = { workspace = true, features = ["enabled", "diag", "attr"] }
 test_tools = { workspace = true, features = [ "full" ] }
 
 [build-dependencies]
-cfg_aliases = "0.1.1"
+cfg_aliases = { workspace = true }

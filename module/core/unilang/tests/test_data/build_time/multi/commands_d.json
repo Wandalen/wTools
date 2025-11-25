@@ -1,0 +1,17 @@
+[
+  {
+    "name": "multi_json_d",
+    "namespace": ".multitest",
+    "description": "Second JSON command in multi-file setup",
+    "arguments": [],
+    "status": "stable",
+    "version": "1.0.0",
+    "tags": ["multi", "json"],
+    "aliases": [],
+    "permissions": [],
+    "idempotent": true,
+    "deprecation_message": "",
+    "http_method_hint": "GET",
+    "examples": []
+  }
+]

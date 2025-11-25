@@ -102,6 +102,7 @@ fn test_workspace_new_normalizes()
 }
 
 #[ test ]
+#[ cfg( feature = "secrets" ) ]
 fn test_joined_paths_remain_clean() -> Result< (), WorkspaceError >
 {
   let temp_dir = tempfile ::tempdir().unwrap();

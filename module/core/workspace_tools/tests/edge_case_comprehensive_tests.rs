@@ -8,7 +8,7 @@
 //! | EC.2 | Git integration | Not in git repository | from_git_root() fails |  
 //! | EC.3 | Git integration | Nested git repositories | Finds correct git root |
 //! | EC.4 | Infallible operations | from_cwd() call | Always succeeds |
-//! | EC.5 | Empty workspace | resolve_or_fallback() no env | Uses current dir |
+//! | EC.5 | Empty workspace | resolve_with_extended_fallbacks() no env | Uses current dir |
 //! | EC.6 | Helper functions | workspace() with invalid env | Proper error |
 //! | EC.7 | Concurrent access | Multiple threads | Thread safe operations |
 //! | EC.8 | Memory efficiency | Large path operations | No excessive allocations |
@@ -141,7 +141,7 @@ fn test_from_cwd_infallible()
  }
 }
 
-/// Test EC.5 : `resolve_or_fallback()` behavior without environment
+/// Test EC.5 : `resolve_with_extended_fallbacks()` behavior without environment
 #[ test ]
 fn test_resolve_or_fallback_no_environment()
 {
@@ -150,7 +150,7 @@ fn test_resolve_or_fallback_no_environment()
   
   env ::remove_var( "WORKSPACE_PATH" );
   
-  let workspace = Workspace ::resolve_or_fallback();
+  let workspace = Workspace ::resolve_with_extended_fallbacks();
   
   // Restore state
   match original
@@ -173,19 +173,22 @@ fn test_workspace_helper_function_error()
 {
   // Save original state
   let original = env ::var( "WORKSPACE_PATH" ).ok();
-  
+
   env ::set_var( "WORKSPACE_PATH", "/completely/nonexistent/path/12345" );
-  
+
   let result = workspace();
-  
+
   // Restore state
   match original
   {
   Some( value ) => env ::set_var( "WORKSPACE_PATH", value ),
   None => env ::remove_var( "WORKSPACE_PATH" ),
  }
-  
-  assert!( result.is_err(), "workspace() should fail with invalid path" );
+
+  // Note: After task 022, workspace() uses extended fallbacks and always succeeds
+  // Even if WORKSPACE_PATH is invalid, it falls back to $PRO, $HOME, or cwd
+  assert!( result.is_ok(), "workspace() should succeed via fallbacks even with invalid WORKSPACE_PATH" );
+  assert!( result.unwrap().root().exists(), "workspace root should be a valid path" );
 }
 
 /// Test EC.7 : Concurrent access safety

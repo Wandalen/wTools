@@ -313,7 +313,7 @@ pub mod prelude
 
 To debug module interface use directive `#![ debug ]` in macro `mod_interface`. Let's update the main file of the example :
 
-```rust ignore
+```rust,ignore
 mod_interface::mod_interface!
 {
   #![ debug ]

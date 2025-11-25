@@ -1,11 +1,10 @@
-#![ cfg_attr( feature = "no_std", no_std ) ]
-
 /// Internal namespace.
 mod private
 {
 }
 
 /// Exposed namespace of the module.
+#[ allow( clippy::module_inception ) ]
 pub mod exposed
 {
   #[ doc( inline ) ]

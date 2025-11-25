@@ -1,0 +1,67 @@
+[package]
+name = "unilang_benchmarks"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.70"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+]
+license = "MIT"
+readme = "readme.md"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/unilang_benchmarks"
+description = """
+Performance benchmarks for the unilang framework. This crate is separate from the main unilang crate to avoid polluting production dependencies.
+"""
+publish = false  # Internal benchmarking crate, not for publication
+
+[lints]
+workspace = true
+
+[dependencies]
+# Main unilang crate (with all features for comprehensive benchmarking)
+unilang = { workspace = true, features = ["full"] }
+unilang_parser = { workspace = true, features = ["simd"] }
+
+# Benchmarking framework
+benchkit = { workspace = true, features = [ "enabled", "markdown_reports", "data_generators", "statistical_analysis" ] }
+
+# Benchmark dependencies
+clap = { workspace = true }
+pico-args = { workspace = true }
+num_cpus = { workspace = true }
+rand = { workspace = true }
+sysinfo = { workspace = true }
+
+# Core dependencies for benchmarks
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+
+[dev-dependencies]
+criterion = { workspace = true }
+tempfile = { workspace = true }
+serde_yaml = { workspace = true }
+phf = { workspace = true, features = ["macros"] }
+
+[[bench]]
+name = "throughput_benchmark"
+harness = false
+
+[[bench]]
+name = "string_interning_benchmark"
+harness = false
+
+[[bench]]
+name = "simd_json_benchmark"
+harness = false
+
+[[bench]]
+name = "integrated_string_interning_benchmark"
+harness = false
+
+[[bench]]
+name = "throughput_benchmark_original"
+harness = false
+
+[[bench]]
+name = "strs_tools_benchmark"
+harness = false

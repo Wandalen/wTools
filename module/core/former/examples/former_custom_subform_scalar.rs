@@ -41,7 +41,7 @@ fn main() {}
 ))]
 fn main() {
   #[ cfg( feature = "enabled" ) ]
-  use former_meta::Former;
+  use former::Former;
 
   // Child struct with Former derived for builder pattern support
   #[ derive( Debug, PartialEq, Former ) ]

@@ -55,7 +55,7 @@ mod private
   /// async fn main()
   /// {
   ///   let num = MyNumber ::async_from( "42".to_string() ).await;
-  ///   println!( "Converted: {}", num.0 );
+  ///   assert_eq!( num.0, 42, "AsyncFrom should convert '42' to 42" );
   /// }
   /// ```
   #[ cfg( feature = "async_from" ) ]
@@ -98,7 +98,7 @@ mod private
   /// async fn main()
   /// {
   ///   let num: MyNumber = "42".to_string().async_into().await;
-  ///   println!( "Converted: {}", num.0 );
+  ///   assert_eq!( num.0, 42, "AsyncInto should convert '42' to 42" );
   /// }
   /// ```
   #[ async_trait ]
@@ -160,11 +160,9 @@ mod private
   /// #[ tokio ::main ]
   /// async fn main()
   /// {
-  ///   match MyNumber ::async_try_from( "42".to_string() ).await
-  ///   {
-  ///     Ok( my_num ) => println!( "Converted successfully: {}", my_num.0 ),
-  ///     Err( e ) => println!( "Conversion failed: {:?}", e ),
-  /// }
+  ///   let result = MyNumber ::async_try_from( "42".to_string() ).await;
+  ///   assert!( result.is_ok(), "AsyncTryFrom should succeed for valid input" );
+  ///   assert_eq!( result.unwrap().0, 42, "AsyncTryFrom should convert '42' to 42" );
   /// }
   /// ```
   #[ async_trait ]
@@ -213,11 +211,8 @@ mod private
   /// async fn main()
   /// {
   ///   let result: Result< MyNumber, _ > = "42".to_string().async_try_into().await;
-  ///   match result
-  ///   {
-  ///     Ok( my_num ) => println!( "Converted successfully using AsyncTryInto: {}", my_num.0 ),
-  ///     Err( e ) => println!( "Conversion failed using AsyncTryInto: {:?}", e ),
-  /// }
+  ///   assert!( result.is_ok(), "AsyncTryInto should succeed for valid input" );
+  ///   assert_eq!( result.unwrap().0, 42, "AsyncTryInto should convert '42' to 42" );
   /// }
   /// ```
   #[ async_trait ]

@@ -1,15 +1,16 @@
 //! Smoke testing of the package.
 
-#[ ignore = "temporarily disabled due to test_tools ::test module gating issues" ]
 #[ test ]
-fn local_smoke_test() 
+fn smoke_test()
 {
-  // xxx: temporarily disabled due to test_tools ::test module gating issues
-}
+  // Verify crate imports and basic functionality
+  use data_type as the_module;
 
-#[ ignore = "temporarily disabled due to test_tools ::test module gating issues" ]
-#[ test ]
-fn published_smoke_test() 
-{
-  // xxx: temporarily disabled due to test_tools ::test module gating issues
+  // Verify Either is accessible (when feature enabled)
+  #[ cfg( feature = "either" ) ]
+  {
+    let _ = the_module ::Either ::Left::< i32, () >( 42 );
+  }
+
+  // Basic compilation smoke test - if this compiles and runs, the crate works
 }

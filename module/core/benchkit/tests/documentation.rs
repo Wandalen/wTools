@@ -43,7 +43,7 @@ fn test_documentation_update() -> Result< () >
   assert!(updated_content.contains("This should remain"));
   
   // Cleanup
-  let _ = std ::fs ::remove_file(temp_file);
-  
+  std ::fs ::remove_file(&temp_file).expect("Failed to cleanup test file");
+
   Ok(())
 }

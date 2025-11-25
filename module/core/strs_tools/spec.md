@@ -297,6 +297,75 @@ A thin wrapper around the `lexical` crate for parsing numbers, managed by the `s
 
 *   Re-exports functions like `parse<T>()` and `parse_partial<T>()` from the `lexical` crate.
 
+### 2.6. Module: `ansi`
+
+#### Purpose
+
+ANSI escape sequence handling for terminal output formatting. Provides utilities for parsing, stripping, detecting, and truncating text containing ANSI color codes while preserving formatting integrity.
+
+This module consolidates ANSI handling previously duplicated in `tree_fmt` and `wplan_client`, providing a single authoritative implementation for the entire wTools ecosystem.
+
+#### Core Data Structures & API
+
+*   **`enum Segment<'a>`**: Represents either an ANSI escape code (invisible) or visible text content
+    *   `Ansi(&'a str)` - ANSI escape sequence
+    *   `Text(&'a str)` - Visible text
+*   **`struct TruncateOptions`**: Configuration for ANSI-aware truncation
+    *   `max_width: usize` - Maximum visible character count
+    *   `indicator: String` - Truncation indicator (default: "→")
+    *   `add_reset: bool` - Add reset code if truncating mid-format
+*   **`parse_segments(text: &str) -> Vec<Segment<'_>>`**: Parse text into ANSI and text segments
+*   **`visual_len(text: &str) -> usize`**: Calculate visible character count (char-based, Tier 1)
+*   **`visual_len_unicode(text: &str) -> usize`**: Calculate visible character count (grapheme-based, Tier 2, requires `ansi_unicode` feature)
+*   **`strip(text: &str) -> String`**: Remove all ANSI escape sequences
+*   **`has_ansi(text: &str) -> bool`**: Check if text contains ANSI codes
+*   **`has_unclosed_formatting(text: &str) -> bool`**: Detect unclosed ANSI formatting
+*   **`truncate(text: &str, options: &TruncateOptions) -> String`**: ANSI-aware truncation (char-based, Tier 1)
+*   **`truncate_unicode(text: &str, options: &TruncateOptions) -> String`**: ANSI-aware truncation (grapheme-based, Tier 2, requires `ansi_unicode` feature)
+*   **`pad_to_width(text: &str, target_width: usize, align_right: bool) -> String`**: ANSI-aware padding
+
+#### Feature Tiers
+
+Two-tier architecture for different use cases:
+
+*   **Tier 1** (feature `ansi`): Zero-dependency, char-based utilities
+    *   Best for: ASCII/Latin text, embedded systems, WASM, minimal binary size
+    *   Limitations: Approximate for Unicode (combining marks, CJK, emoji)
+    *   Performance: Fastest (~100ns/KB for visual_len)
+
+*   **Tier 2** (feature `ansi_unicode`): Full Unicode support via `unicode-segmentation`
+    *   Best for: Internationalized text, accurate truncation, standard CLI apps
+    *   Accurate handling: Grapheme clusters, CJK double-width, combining marks, emoji
+    *   Performance: Fast (~5µs/KB for visual_len_unicode)
+
+#### Architecture Compliance
+
+The ANSI module strictly adheres to all four architectural principles:
+
+1. **Consumer Owns Unescaping**: ANSI escape codes are formatting metadata, not content escaping. The module correctly handles ANSI as invisible formatting without interpreting content escape sequences.
+2. **Panic on Invalid Configuration**: `TruncateOptions` follows the Former pattern - invalid configurations panic as developer errors.
+3. **Composition of Layers**: `truncate()` composes `parse_segments()` + `visual_len()` primitives.
+4. **Graceful Handling of Malformed Input**: Malformed ANSI sequences (missing 'm', incomplete ESC) are treated as visible text, never panic.
+
+#### Performance Characteristics
+
+| Operation | Tier 1 (char) | Tier 2 (grapheme) | Complexity |
+|-----------|---------------|-------------------|------------|
+| `parse_segments()` | ~1µs/KB | ~1µs/KB | O(n) |
+| `visual_len()` | ~100ns/KB | ~5µs/KB | O(n) |
+| `strip()` | ~500ns/KB | ~500ns/KB | O(n) |
+| `truncate()` | ~10µs/KB | ~12µs/KB | O(n) |
+
+All operations are single-pass with minimal allocations.
+
+#### Migration Path
+
+Consolidates and replaces:
+*   `tree_fmt::helpers::{visual_len, pad_to_width}` → `strs_tools::ansi::{visual_len, pad_to_width}`
+*   `wplan_client` internal ANSI utilities → `strs_tools::ansi::*`
+
+See `docs/migration_ansi.md` for detailed migration guide.
+
 ---
 
 ### Section 3: Verification

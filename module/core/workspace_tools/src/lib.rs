@@ -35,6 +35,35 @@
 //! # }
 //! ```
 //!
+//! ## workspace resolution strategies
+//!
+//! the crate supports multiple resolution strategies to work in both development and
+//! installed contexts. the `workspace()` function tries strategies in priority order:
+//!
+//! 1. **cargo workspace** - detected via `Cargo.toml` metadata (development)
+//! 2. **`WORKSPACE_PATH` env** - set by `.cargo/config.toml` (development)
+//! 3. **git root** - searches for `.git` directory with `Cargo.toml` (development)
+//! 4. **`$PRO` env** - user-configured project root (installed applications)
+//! 5. **`$HOME` directory** - universal fallback (installed applications)
+//! 6. **current directory** - last resort fallback
+//!
+//! ### for installed applications
+//!
+//! when your cli tool is installed via `cargo install`, workspace resolution automatically
+//! falls back to user-configured locations:
+//!
+//! ```bash
+//! # option 1: $PRO (recommended for multi-project users)
+//! export PRO=~/pro
+//! mkdir -p ~/pro/secret
+//!
+//! # option 2: $HOME (simple for casual users)
+//! mkdir -p ~/secret
+//! ```
+//!
+//! this enables installed binaries to load workspace-level secrets and configurations
+//! without requiring `WORKSPACE_PATH` to be set globally.
+//!
 //! ## features
 //!
 //! - **`glob`** : enables pattern-based resource discovery
@@ -259,13 +288,72 @@ impl Workspace
   Ok( Self { root } )
   }
 
+  /// resolve workspace with extended fallback strategies
+  ///
+  /// tries multiple strategies to find workspace root, including user-configured
+  /// locations for installed CLI applications:
+  ///
+  /// 1. cargo workspace detection (developer context)
+  /// 2. `WORKSPACE_PATH` environment variable (cargo operations)
+  /// 3. git repository root with Cargo.toml (developer context)
+  /// 4. `$PRO` environment variable (user-configured project root)
+  /// 5. `$HOME` directory (universal fallback)
+  /// 6. current working directory (last resort)
+  ///
+  /// this method is designed for CLI applications that need to work both during
+  /// development (via `cargo run`) and after installation (via `cargo install`).
+  ///
+  /// # examples
+  ///
+  /// ```rust
+  /// use workspace_tools ::Workspace;
+  ///
+  /// // this will always succeed with some workspace root
+  /// let workspace = Workspace ::resolve_with_extended_fallbacks();
+  /// ```
+  ///
+  /// # resolution priority
+  ///
+  /// **developer contexts** (cargo operations):
+  /// - `from_cargo_workspace()` → finds cargo workspace via metadata
+  /// - `resolve()` → uses `WORKSPACE_PATH` from .cargo/config.toml
+  /// - `from_git_root()` → searches upward for .git + Cargo.toml
+  ///
+  /// **user contexts** (installed binaries):
+  /// - `from_pro_env()` → uses `$PRO` environment variable
+  /// - `from_home_dir()` → uses `$HOME` or `%USERPROFILE%`
+  ///
+  /// **fallback**:
+  /// - `from_cwd()` → current working directory
+  #[ must_use ]
+  #[ inline ]
+  pub fn resolve_with_extended_fallbacks() -> Self
+  {
+  Self ::from_cargo_workspace()
+   .or_else( |_| Self ::resolve() )
+   .or_else( |_| Self ::from_git_root() )
+   .or_else( |_| Self ::from_pro_env() )     // ← NEW: $PRO fallback
+   .or_else( |_| Self ::from_home_dir() )    // ← NEW: $HOME fallback
+   .unwrap_or_else( |_| Self ::from_cwd() )
+  }
+
   /// resolve workspace with fallback strategies
   ///
-  /// tries multiple strategies to resolve workspace root :
-  /// 1. cargo workspace detection (if `cargo_integration` feature enabled)
-  /// 2. environment variable (`WORKSPACE_PATH`)
-  /// 3. current working directory
-  /// 4. git repository root (if .git directory found)
+  /// # deprecated
+  ///
+  /// use `resolve_with_extended_fallbacks()` instead. this method lacks
+  /// support for installed CLI application contexts ($PRO and $HOME fallbacks).
+  ///
+  /// # migration
+  ///
+  /// ```rust
+  /// // old:
+  /// # use workspace_tools ::Workspace;
+  /// let ws = Workspace ::resolve_or_fallback();
+  ///
+  /// // new:
+  /// let ws = Workspace ::resolve_with_extended_fallbacks();
+  /// ```
   ///
   /// # examples
   ///
@@ -275,6 +363,10 @@ impl Workspace
   /// // this will always succeed with some workspace root
   /// let workspace = Workspace ::resolve_or_fallback();
   /// ```
+  #[ deprecated(
+  since = "0.8.0",
+  note = "use `resolve_with_extended_fallbacks()` for installed CLI app support"
+ ) ]
   #[ must_use ]
   #[ inline ]
   pub fn resolve_or_fallback() -> Self
@@ -338,6 +430,108 @@ impl Workspace
   {
   let root = env ::current_dir().unwrap_or_else( |_| PathBuf ::from( "/" ) );
   Self { root }
+  }
+
+  /// create workspace from $PRO environment variable
+  ///
+  /// intended for users who organize projects under a common root directory.
+  /// the $PRO environment variable should point to the projects root.
+  ///
+  /// # setup
+  ///
+  /// ```bash
+  /// # linux/mac
+  /// export PRO=~/pro
+  /// echo 'export PRO=~/pro' >> ~/.bashrc
+  ///
+  /// # windows
+  /// set PRO=%USERPROFILE%\pro
+  /// setx PRO "%USERPROFILE%\pro"
+  /// ```
+  ///
+  /// # examples
+  ///
+  /// ```rust
+  /// use workspace_tools ::Workspace;
+  ///
+  /// // user has: export PRO=~/pro
+  /// # std ::env ::set_var( "PRO", std ::env ::current_dir().unwrap() );
+  /// let workspace = Workspace ::from_pro_env().unwrap();
+  /// // workspace.root() → /home/user/pro
+  /// ```
+  ///
+  /// # Errors
+  ///
+  /// returns error if:
+  /// - $PRO environment variable is not set
+  /// - path specified by $PRO does not exist
+  ///
+  /// # use cases
+  ///
+  /// - installed CLI tools needing workspace-level secrets
+  /// - multi-project users with organized directory structure
+  /// - CI/CD environments with standardized project layouts
+  #[ inline ]
+  pub fn from_pro_env() -> Result< Self >
+  {
+  let pro_path = env ::var( "PRO" )
+   .map_err( |_| WorkspaceError::EnvironmentVariableMissing( "PRO".to_string() ) )?;
+
+  let root = PathBuf ::from( pro_path );
+
+  if !root.exists()
+  {
+   return Err( WorkspaceError::PathNotFound( root ) );
+  }
+
+  let root = Self ::cleanup_path( root );
+  Ok( Self { root } )
+  }
+
+  /// create workspace from user home directory
+  ///
+  /// universal fallback using the standard home directory location.
+  /// works cross-platform by checking both unix ($HOME) and windows (%USERPROFILE%).
+  ///
+  /// # examples
+  ///
+  /// ```rust
+  /// use workspace_tools ::Workspace;
+  ///
+  /// let workspace = Workspace ::from_home_dir().unwrap();
+  /// // linux/mac: workspace.root() → /home/user
+  /// // windows:   workspace.root() → C:\Users\user
+  /// ```
+  ///
+  /// # Errors
+  ///
+  /// returns error if:
+  /// - neither $HOME nor %USERPROFILE% environment variables are set
+  /// - resolved path does not exist
+  ///
+  /// # use cases
+  ///
+  /// - simple secret storage in ~/secret/ directory
+  /// - casual users without complex project organization
+  /// - minimal configuration requirement for CLI tools
+  #[ inline ]
+  pub fn from_home_dir() -> Result< Self >
+  {
+  let home_path = env ::var( "HOME" )
+   .or_else( |_| env ::var( "USERPROFILE" ) )  // windows compatibility
+   .map_err( |_| WorkspaceError::EnvironmentVariableMissing(
+  "HOME or USERPROFILE".to_string()
+ ) )?;
+
+  let root = PathBuf ::from( home_path );
+
+  if !root.exists()
+  {
+   return Err( WorkspaceError::PathNotFound( root ) );
+  }
+
+  let root = Self ::cleanup_path( root );
+  Ok( Self { root } )
   }
 
   /// get workspace root directory
@@ -830,10 +1024,7 @@ impl Workspace
   pub fn load_secrets_from_file( &self, filename: &str ) -> Result< HashMap< String, String > >
   {
   Self::warn_if_path_like( filename );
-  let secret_file = self.secret_file( filename );
-  self.check_secret_file_exists( filename, &secret_file )?;
-  let content = Self::read_secret_file( &secret_file )?;
-  Ok( Self::parse_key_value_file( &content ) )
+  self.try_load_secrets_with_fallback( filename )
   }
 
   /// load a specific secret key with fallback to environment
@@ -970,42 +1161,157 @@ impl Workspace
   }
   }
 
-  /// check if secret file exists and provide helpful error if not
+  /// try loading secrets from fallback chain
   ///
-  /// returns error with context about available files if the requested file doesn't exist
-  /// error message includes absolute path tried for easier debugging
-  fn check_secret_file_exists( &self, filename: &str, secret_file: &Path ) -> Result< () >
+  /// implements automatic fallback with proper corner case handling:
+  /// 1. local workspace: `workspace_root/secret/{filename}`
+  /// 2. `$PRO` workspace: `$PRO/secret/{filename}` (if `$PRO` set and valid)
+  /// 3. `$HOME` directory: `$HOME/secret/{filename}` (if `$HOME`/`$USERPROFILE` set and valid)
+  ///
+  /// uses path canonicalization to avoid reading same file multiple times
+  fn try_load_secrets_with_fallback( &self, filename: &str ) -> Result< HashMap< String, String > >
   {
-  if !secret_file.exists()
-  {
-   let available = self.list_secrets_files().unwrap_or_default();
-   let suggestion = if available.is_empty()
-   {
-  format!( "\n  No files found in secrets directory: {}", self.secret_dir().display() )
-  }
-   else
-   {
-  format!( "\n  Available files: {}", available.join( ", " ) )
- };
+  let mut tried_paths = Vec ::new();
+  let mut canonical_paths = std ::collections ::HashSet ::new();
 
-   return Err( WorkspaceError::ConfigurationError(
-  format!(
-   "Secrets file '{}' not found at absolute path: {}{}",
+  // 1. try local workspace first
+  let local_path = self.secret_file( filename );
+  tried_paths.push( format!( "  - {} (local workspace)", local_path.display() ) );
+
+  if let Some( canonical ) = Self::try_canonicalize( &local_path )
+  {
+   canonical_paths.insert( canonical );
+   if local_path.exists()
+   {
+     match Self::read_secret_file_validated( &local_path )
+     {
+       Ok( content ) => return Ok( Self::parse_key_value_file( &content ) ),
+       Err( e ) => return Err( e ),
+     }
+   }
+  }
+
+  // 2. try $PRO workspace if different
+  if let Ok( pro_env ) = env::var( "PRO" )
+  {
+   if !pro_env.trim().is_empty()
+   {
+     if let Ok( pro_ws ) = Workspace::from_pro_env()
+     {
+       let pro_path = pro_ws.secret_file( filename );
+       if let Some( canonical ) = Self::try_canonicalize( &pro_path )
+       {
+         if !canonical_paths.contains( &canonical )
+         {
+           canonical_paths.insert( canonical );
+           tried_paths.push( format!( "  - {} ($PRO workspace)", pro_path.display() ) );
+           if pro_path.exists()
+           {
+             match Self::read_secret_file_validated( &pro_path )
+             {
+               Ok( content ) => return Ok( Self::parse_key_value_file( &content ) ),
+               Err( e ) => return Err( e ),
+             }
+           }
+         }
+       }
+     }
+   }
+  }
+
+  // 3. try $HOME workspace if different
+  #[ cfg( not( target_os = "windows" ) ) ]
+  let home_env_var = "HOME";
+  #[ cfg( target_os = "windows" ) ]
+  let home_env_var = "USERPROFILE";
+
+  if let Ok( home_env ) = env::var( home_env_var )
+  {
+   if !home_env.trim().is_empty()
+   {
+     if let Ok( home_ws ) = Workspace::from_home_dir()
+     {
+       let home_path = home_ws.secret_file( filename );
+       if let Some( canonical ) = Self::try_canonicalize( &home_path )
+       {
+         if !canonical_paths.contains( &canonical )
+         {
+           canonical_paths.insert( canonical );
+           tried_paths.push( format!( "  - {} ($HOME directory)", home_path.display() ) );
+           if home_path.exists()
+           {
+             match Self::read_secret_file_validated( &home_path )
+             {
+               Ok( content ) => return Ok( Self::parse_key_value_file( &content ) ),
+               Err( e ) => return Err( e ),
+             }
+           }
+         }
+       }
+     }
+   }
+  }
+
+  // none found - return error with helpful message including available files
+  let mut error_msg = format!(
+   "Secrets file '{}' not found in any location.\n\nTried:\n{}",
    filename,
-   secret_file.display(),
-   suggestion
- )
- ) );
-  }
-  Ok( () )
+   tried_paths.join( "\n" )
+  );
+
+  if let Ok( available_files ) = self.list_secrets_files()
+  {
+   if !available_files.is_empty()
+   {
+     error_msg.push_str( "\n\nAvailable files: " );
+     error_msg.push_str( &available_files.join( ", " ) );
+   }
   }
 
-  /// read secret file with proper error handling
+  error_msg.push_str( "\n\nCreate secret file in one of the above locations." );
+  Err( WorkspaceError::ConfigurationError( error_msg ) )
+  }
+
+  /// try to canonicalize path, return None if it fails
   ///
-  /// wraps `fs::read_to_string` with workspace-specific error messages
-  /// includes absolute path in error for debugging
-  fn read_secret_file( path: &Path ) -> Result< String >
+  /// used for path deduplication to handle symlinks and path normalization
+  fn try_canonicalize( path: &Path ) -> Option< PathBuf >
   {
+  path.canonicalize().ok()
+  }
+
+  /// read secret file with validation checks
+  ///
+  /// validates file type (must be regular file) and size (max 10MB)
+  /// provides clear error messages for common issues
+  fn read_secret_file_validated( path: &Path ) -> Result< String >
+  {
+  let metadata = fs::metadata( path )
+   .map_err( | e | WorkspaceError::IoError( format!( "Failed to read secrets file\n  Absolute path: {}\n  Error: {}", path.display(), e ) ) )?;
+
+  // validate file type - must be regular file
+  if !metadata.is_file()
+  {
+   let file_type = if metadata.is_dir() { "directory" }
+     else if metadata.file_type().is_symlink() { "symbolic link" }
+     else { "special file (device, socket, or pipe)" };
+
+   return Err( WorkspaceError::ConfigurationError( format!(
+     "Secrets file is a {}, not a regular file\n  Path: {}",
+     file_type, path.display()
+   ) ) );
+  }
+
+  // validate file size - max 10MB to prevent OOM
+  const MAX_SIZE: u64 = 10 * 1024 * 1024;
+  if metadata.len() > MAX_SIZE
+  {
+   return Err( WorkspaceError::ConfigurationError( format!(
+     "Secrets file too large ({} bytes, max {} bytes)\n  Path: {}\n  Hint: Secret files should be small key-value files",
+     metadata.len(), MAX_SIZE, path.display()
+   ) ) );
+  }
+
   fs::read_to_string( path )
    .map_err( | e | WorkspaceError::IoError( format!( "Failed to read secrets file\n  Absolute path: {}\n  Error: {}", path.display(), e ) ) )
   }
@@ -1150,19 +1456,7 @@ impl Workspace
   pub fn load_secrets_from_path( &self, relative_path: &str ) -> Result< HashMap< String, String > >
   {
   let secret_file = self.join( relative_path );
-
-  if !secret_file.exists()
-  {
-   return Err( WorkspaceError::ConfigurationError(
-  format!(
-   "Secrets file not found at path: {} (resolved to: {})",
-   relative_path,
-   secret_file.display()
- )
- ) );
-  }
-
-  let content = Self::read_secret_file( &secret_file )?;
+  let content = Self::read_secret_file_validated( &secret_file )?;
   Ok( Self::parse_key_value_file( &content ) )
   }
 
@@ -1193,17 +1487,7 @@ impl Workspace
   /// returns error if the file cannot be read, doesn't exist, or contains invalid format
   pub fn load_secrets_from_absolute_path( &self, absolute_path: &Path ) -> Result< HashMap< String, String > >
   {
-  if !absolute_path.exists()
-  {
-   return Err( WorkspaceError::ConfigurationError(
-  format!(
-   "Failed to load secrets from absolute path\n  Tried absolute path: {}",
-   absolute_path.display()
- )
- ) );
-  }
-
-  let content = Self::read_secret_file( absolute_path )?;
+  let content = Self::read_secret_file_validated( absolute_path )?;
   Ok( Self::parse_key_value_file( &content ) )
   }
 
@@ -1607,7 +1891,7 @@ impl Workspace
   // inject each secret into the configuration
   for ( key, secret_value ) in secrets
   {
-   config.inject_secret( &key, secret_value.expose_secret().to_string() )?;
+   config.inject_secret( &key, secret_value.expose_secret().clone() )?;
   }
 
   // validate the final configuration
@@ -2423,13 +2707,22 @@ pub mod testing
   }
 }
 
-/// convenience function to get workspace instance
+/// convenience function to get workspace instance with extended fallbacks
 ///
-/// equivalent to `Workspace ::resolve()`
+/// uses `Workspace ::resolve_with_extended_fallbacks()` which tries multiple
+/// strategies including $PRO and $HOME for installed CLI applications.
+/// always succeeds by falling back through multiple strategies.
+///
+/// # note
+///
+/// this function always succeeds (never returns Err), but maintains `Result`
+/// return type for backward compatibility. you can safely `.unwrap()` the result.
 ///
 /// # Errors
 ///
-/// returns error if workspace resolution fails
+/// this function never returns an error. it always succeeds by falling back
+/// through multiple resolution strategies. the `Result` return type is maintained
+/// for backward compatibility only.
 ///
 /// # examples
 ///
@@ -2437,14 +2730,23 @@ pub mod testing
 /// # fn main() -> Result< (), workspace_tools ::WorkspaceError > {
 /// use workspace_tools ::workspace;
 ///
-/// # std ::env ::set_var( "WORKSPACE_PATH", std ::env ::current_dir().unwrap() );
+/// // works without WORKSPACE_PATH set (uses fallbacks)
 /// let ws = workspace()?;
 /// let config_dir = ws.config_dir();
 /// # Ok(())
 /// # }
 /// ```
+///
+/// # resolution priority
+///
+/// 1. cargo workspace (development context)
+/// 2. `WORKSPACE_PATH` environment variable
+/// 3. git repository root
+/// 4. `$PRO` environment variable (installed apps)
+/// 5. `$HOME` directory (universal fallback)
+/// 6. current working directory
 #[ inline ]
 pub fn workspace() -> Result< Workspace >
 {
-  Workspace ::resolve()
+  Ok( Workspace ::resolve_with_extended_fallbacks() )
 }

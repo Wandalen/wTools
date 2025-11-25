@@ -16,7 +16,7 @@ fn main() {}
 ))]
 fn main() {
   #[ cfg( feature = "enabled" ) ]
-  use former_meta::Former;
+  use former::Former;
   // use former as the_module; // Commented out - unused import
 
   #[ derive( Default, Debug, PartialEq, Former ) ]
