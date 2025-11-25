@@ -756,7 +756,7 @@ version = "~2.0.100"
 default-features = false
 
 [workspace.dependencies.const_format]
-version = "~0.2.32"
+version = "~0.2.35"
 default-features = false
 # proc-macro2 = { version = "~1.0.78", default-features = false, features = [] }
 # quote = { version = "~1.0.35", default-features = false, features = [] }
