@@ -304,7 +304,7 @@ path = "module/core/former"
 default-features = false
 
 [workspace.dependencies.former_meta]
-version = "~2.36.0"
+version = "~2.37.0"
 path = "module/core/former_meta"
 default-features = false
 
