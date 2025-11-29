@@ -6,6 +6,7 @@ extern crate alloc;
 
 use alloc::string::String;
 use super::{ Segment, parse_segments };
+use super::strip::strip;
 
 /// Configuration options for ANSI-aware truncation.
 ///
@@ -162,6 +163,180 @@ pub fn truncate( text : &str, options : &TruncateOptions ) -> String
 pub fn truncate_unicode( text : &str, options : &TruncateOptions ) -> String
 {
   truncate_internal( text, options, &GraphemeCounter )
+}
+
+/// Truncate ANSI text only if it exceeds maximum width.
+///
+/// Unlike `truncate()` which unconditionally reserves space for the suffix,
+/// this function first checks if truncation is needed by comparing
+/// `visual_len(text)` with `max_width`. Only truncates when text genuinely
+/// exceeds the limit.
+///
+/// # Bug Fix
+///
+/// This function prevents incorrect truncation of text that fits exactly
+/// within the width limit. For example, "hello" (5 visible chars) with
+/// `max_width=5` returns "hello" unchanged, not "hell→".
+///
+/// # Arguments
+///
+/// * `text` - Input text potentially containing ANSI escape sequences
+/// * `max_width` - Maximum visible character width
+/// * `options` - Truncation configuration (suffix, reset behavior)
+///
+/// # Returns
+///
+/// Original text if it fits, truncated text if it exceeds max_width.
+///
+/// # Examples
+///
+/// ```rust
+/// # #[ cfg( feature = "ansi" ) ]
+/// # {
+/// use strs_tools::ansi::{ truncate_if_needed, TruncateOptions };
+///
+/// let opts = TruncateOptions::new( 5 ).with_suffix( "→" );
+///
+/// // Fits exactly - no truncation
+/// assert_eq!( truncate_if_needed( "hello", 5, &opts ), "hello" );
+///
+/// // Exceeds limit - truncated
+/// let result = truncate_if_needed( "hello world", 5, &opts );
+/// assert!( result.contains( "→" ) );
+///
+/// // ANSI codes don't count toward width
+/// let ansi_text = "\x1b[31mhello\x1b[0m";
+/// assert!( truncate_if_needed( ansi_text, 5, &opts ).contains( "hello" ) );
+/// # }
+/// ```
+///
+/// # Performance
+///
+/// - Time complexity: O(n)
+/// - Only performs truncation when necessary
+/// - Single width calculation per call
+pub fn truncate_if_needed( text : &str, max_width : usize, options : &TruncateOptions ) -> String
+{
+  truncate_if_needed_internal( text, max_width, options, &CharCounter )
+}
+
+/// Unicode-aware version of `truncate_if_needed()`.
+///
+/// Uses grapheme clusters for accurate width calculation of CJK characters,
+/// emoji, and combining marks.
+#[ cfg( feature = "ansi_unicode" ) ]
+pub fn truncate_if_needed_unicode( text : &str, max_width : usize, options : &TruncateOptions ) -> String
+{
+  truncate_if_needed_internal( text, max_width, options, &GraphemeCounter )
+}
+
+fn truncate_if_needed_internal< C : VisibleCounter >(
+  text : &str,
+  max_width : usize,
+  options : &TruncateOptions,
+  counter : &C
+) -> String
+{
+  // Fix(bug-width-truncation): Check boundary before truncating
+  //
+  // Root cause: truncate() reserves space for suffix within max_width,
+  // so calling it unconditionally truncates text that fits exactly.
+  //
+  // Pitfall: Always validate width boundary before calling truncate().
+  // Don't assume truncate() handles this internally.
+
+  let visible_width = counter.count( &strip( text ) );
+
+  if visible_width > max_width
+  {
+    truncate_internal( text, options, counter )
+  }
+  else
+  {
+    text.to_string()
+  }
+}
+
+/// Truncate each line in a text block to maximum width.
+///
+/// Applies `truncate_if_needed()` to each line independently, tracking
+/// whether any line required truncation. Returns both the processed text
+/// and a boolean flag indicating if truncation occurred.
+///
+/// # Arguments
+///
+/// * `text` - Multi-line text potentially containing ANSI escape sequences
+/// * `max_width` - Maximum visible character width per line
+/// * `options` - Truncation configuration
+///
+/// # Returns
+///
+/// Tuple of (processed_text, any_line_truncated).
+///
+/// # Examples
+///
+/// ```rust
+/// # #[ cfg( feature = "ansi" ) ]
+/// # {
+/// use strs_tools::ansi::{ truncate_lines, TruncateOptions };
+///
+/// let text = "short\nthis is a very long line\nmedium";
+/// let opts = TruncateOptions::new( 10 ).with_suffix( "→" );
+///
+/// let ( result, truncated ) = truncate_lines( text, 10, &opts );
+/// assert!( truncated ); // Long line was truncated
+///
+/// let lines : Vec< &str > = result.lines().collect();
+/// assert!( lines[ 0 ].contains( "short" ) );
+/// assert!( lines[ 1 ].contains( "→" ) ); // Truncation indicator
+/// # }
+/// ```
+///
+/// # Performance
+///
+/// - Time complexity: O(n × m) where n is text length, m is average line count
+/// - Single-pass processing
+/// - Minimal allocations (one String per line)
+pub fn truncate_lines( text : &str, max_width : usize, options : &TruncateOptions ) -> ( String, bool )
+{
+  truncate_lines_internal( text, max_width, options, &CharCounter )
+}
+
+/// Unicode-aware version of `truncate_lines()`.
+#[ cfg( feature = "ansi_unicode" ) ]
+pub fn truncate_lines_unicode( text : &str, max_width : usize, options : &TruncateOptions ) -> ( String, bool )
+{
+  truncate_lines_internal( text, max_width, options, &GraphemeCounter )
+}
+
+fn truncate_lines_internal< C : VisibleCounter >(
+  text : &str,
+  max_width : usize,
+  options : &TruncateOptions,
+  counter : &C
+) -> ( String, bool )
+{
+  let mut any_truncated = false;
+
+  let lines : alloc::vec::Vec< String > = text
+    .lines()
+    .map( | line |
+    {
+      let visible_width = counter.count( &strip( line ) );
+
+      if visible_width > max_width
+      {
+        any_truncated = true;
+        truncate_internal( line, options, counter )
+      }
+      else
+      {
+        line.to_string()
+      }
+    } )
+    .collect();
+
+  ( lines.join( "\n" ), any_truncated )
 }
 
 // ==================== Internal Implementation ====================

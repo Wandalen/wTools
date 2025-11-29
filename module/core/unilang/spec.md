@@ -698,37 +698,57 @@ assert_eq!(extract_u8(&config, "verbosity"), Some(3));
 assert_eq!(extract_bool(&config, "debug"), Some(true));
 ```
 
-#### 7.5. Output Truncation Utilities
+#### 7.5. Output Truncation Utilities (DEPRECATED)
 
-The `unilang` framework provides ANSI-aware and Unicode-aware output truncation utilities for CLI applications.
+**DEPRECATION NOTICE: This functionality is deprecated in unilang 0.31.0 and will be removed in 0.32.0.**
 
-**Structures:**
-*   `TruncationConfig` - Configuration for head/tail/width truncation with fields:
-    - `head: Option<usize>` - Show only first N lines
-    - `tail: Option<usize>` - Show only last N lines
-    - `width: Option<usize>` - Maximum visible characters per line
-    - `output_filter: OutputFilter` - Which stream to process
-*   `OutputFilter` - Enum for stream selection: `Both`, `Stdout`, `Stderr`
-*   `TruncatedOutput` - Result containing:
-    - `content: String` - Processed content
-    - `lines_omitted: usize` - Number of lines omitted
-    - `width_truncated: bool` - Whether any line was width-truncated
+Use `cli_tools::cli_output` instead. Output formatting violates the framework's architectural boundary (FR-SCOPE-2: "The framework provides the data and structure for different modalities but does not render the UI itself").
 
-**Functions:**
-*   `apply_truncation(stdout, stderr, config) -> TruncatedOutput` - Main entry point
-*   `truncate_head(text, lines) -> String` - Truncate to first N lines
-*   `truncate_tail(text, lines) -> String` - Truncate to last N lines
-*   `truncate_width(text, max_width) -> String` - Truncate line width (ANSI-aware)
+**Rationale for Removal:**
 
-**ANSI Handling Requirements:**
-*   ANSI escape sequences **must** be preserved during width truncation
-*   ANSI codes count as zero width (invisible characters)
-*   Reset code (`\x1b[0m`) **must** be added if truncation occurs mid-formatting
+1. **Architectural Violation**: CLI output processing is presentation-layer functionality, not command framework responsibility
+2. **Code Duplication**: The implementation was 90% duplicated with general-purpose string utilities (449 duplicate lines)
+3. **Single Source of Truth**: CLI utilities belong in `cli_tools`, not command framework
 
-**Unicode Handling Requirements:**
-*   Width **must** be measured in grapheme clusters, not bytes or codepoints
-*   Multi-byte UTF-8 (emojis, CJK) **must** be handled correctly
-*   Width truncation adds `→` indicator when truncated
+**Migration Path:**
+
+*Deprecated (unilang 0.31.x - 0.43.x):*
+```rust
+use unilang::output::*;
+
+let config = TruncationConfig {
+  head: Some(10),
+  width: Some(80),
+  ..Default::default()
+};
+let result = apply_truncation(stdout, stderr, &config);
+```
+
+*Preferred (cli_tools 0.1.0+):*
+```rust
+use cli_tools::cli_output::*;
+
+let config = OutputConfig::default()
+  .with_head(10)
+  .with_width(80);
+let result = process_output(stdout, stderr, &config);
+```
+
+**API Mapping:**
+- `TruncationConfig` → `cli_tools::cli_output::OutputConfig` (builder pattern)
+- `apply_truncation()` → `cli_tools::cli_output::process_output()`
+- `TruncatedOutput` → `cli_tools::cli_output::ProcessedOutput`
+- `OutputFilter` → `cli_tools::cli_output::StreamFilter`
+- `truncate_head()` → `strs_tools::string::lines::head()`
+- `truncate_tail()` → `strs_tools::string::lines::tail()`
+- `truncate_width()` → `strs_tools::ansi::truncate_if_needed()`
+
+**Evolution History:**
+1. **v0.30.x**: Original implementation in `unilang::output`
+2. **v0.31.0-0.43.0**: Temporarily migrated to `strs_tools::cli_output`
+3. **v0.44.0+**: Moved to dedicated `cli_tools::cli_output` crate (proper architectural separation)
+
+See `cli_tools` specification for complete documentation of CLI output processing utilities.
 
 ### 8. Cross-Cutting Concerns (Error Handling, Security, Verbosity)
 

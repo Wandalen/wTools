@@ -1,5 +1,63 @@
 # Changelog
 
+### 2025-11-29 - Deprecation: Output Processing Module (v0.43.0)
+
+**Deprecation:** The `unilang::output` module is deprecated and will be removed in v0.32.0.
+
+**Rationale:**
+1. **Architectural Violation**: Output formatting violates FR-SCOPE-2 (framework does not render UI)
+2. **Code Duplication**: 90% duplication with `strs_tools::ansi` module (449 duplicate lines)
+3. **Single Source of Truth**: String utilities belong in `strs_tools`, not command framework
+
+**Migration Path:** Use `cli_tools::cli_output` instead.
+
+**Evolution:**
+1. **v0.30.x**: Original implementation in `unilang::output` (449 lines)
+2. **v0.31.0-0.43.0**: Migrated to `strs_tools::cli_output` (eliminated duplication)
+3. **v0.44.0+**: Now in dedicated `cli_tools` crate (proper architectural separation)
+
+**Old (unilang 0.43.x):**
+```rust
+use unilang::output::*;
+let config = TruncationConfig { head: Some(10), ..Default::default() };
+let result = apply_truncation(stdout, stderr, &config);
+```
+
+**New (cli_tools 0.1.0+):**
+```rust
+use cli_tools::cli_output::*;
+let config = OutputConfig::default().with_head(10);
+let result = process_output(stdout, stderr, &config);
+```
+
+**API Mapping:**
+- `TruncationConfig` → `cli_tools::cli_output::OutputConfig`
+- `apply_truncation()` → `cli_tools::cli_output::process_output()`
+- `TruncatedOutput` → `cli_tools::cli_output::ProcessedOutput`
+- `OutputFilter` → `cli_tools::cli_output::StreamFilter`
+- `truncate_head()` → `strs_tools::string::lines::head()`
+- `truncate_tail()` → `strs_tools::string::lines::tail()`
+- `truncate_width()` → `strs_tools::ansi::truncate_if_needed()`
+
+**Improvements in New API:**
+- Builder pattern for cleaner configuration
+- Configurable truncation suffix (vs hardcoded arrow)
+- Proper width boundary detection (doesn't truncate text that fits exactly)
+- Two-tier Unicode support (char-based vs grapheme-aware)
+
+**Backward Compatibility:** Deprecated re-exports maintain full backward compatibility in 0.43.x. Update before 0.32.0 release.
+
+**Files Modified:**
+- `src/lib.rs` - Made output layer conditional on `output_processing` feature
+- `src/output/mod.rs` - Replaced with deprecated re-exports (now point to cli_tools)
+- `src/output/truncation.rs` - Deleted (449 lines)
+- `Cargo.toml` - Added `cli_tools` dependency, deprecated `output_processing` feature
+- `tests/output_truncation.rs` - Updated to use `cli_tools` directly
+
+**Semver:** Minor version (0.43.0) - deprecation with backward compatibility, removal planned for 0.32.0
+
+---
+
 ### 2025-11-13 - Feature: Issue-089 - Category Field for Command Grouping (v0.40.0)
 
 **Feature:** Added `category` field to `StaticCommandDefinition` to enable command grouping in CLI help output.

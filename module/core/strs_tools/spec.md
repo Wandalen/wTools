@@ -322,6 +322,15 @@ This module consolidates ANSI handling previously duplicated in `tree_fmt` and `
 *   **`has_unclosed_formatting(text: &str) -> bool`**: Detect unclosed ANSI formatting
 *   **`truncate(text: &str, options: &TruncateOptions) -> String`**: ANSI-aware truncation (char-based, Tier 1)
 *   **`truncate_unicode(text: &str, options: &TruncateOptions) -> String`**: ANSI-aware truncation (grapheme-based, Tier 2, requires `ansi_unicode` feature)
+*   **`truncate_if_needed(text: &str, max_width: usize, options: &TruncateOptions) -> String`**: ANSI-aware truncation with boundary detection (char-based, Tier 1)
+    - Only truncates if `visual_len(text) > max_width`
+    - Prevents incorrect truncation of text that fits exactly within width limit
+    - Contains bug fix for width boundary detection
+*   **`truncate_if_needed_unicode(text: &str, max_width: usize, options: &TruncateOptions) -> String`**: Unicode-aware version (grapheme-based, Tier 2, requires `ansi_unicode` feature)
+*   **`truncate_lines(text: &str, max_width: usize, options: &TruncateOptions) -> (String, bool)`**: Multi-line ANSI truncation with tracking
+    - Returns tuple of (result_text, any_line_truncated)
+    - Applies boundary detection to each line independently
+*   **`truncate_lines_unicode(text: &str, max_width: usize, options: &TruncateOptions) -> (String, bool)`**: Unicode-aware version (requires `ansi_unicode` feature)
 *   **`pad_to_width(text: &str, target_width: usize, align_right: bool) -> String`**: ANSI-aware padding
 
 #### Feature Tiers
@@ -365,6 +374,61 @@ Consolidates and replaces:
 *   `wplan_client` internal ANSI utilities → `strs_tools::ansi::*`
 
 See `docs/migration_ansi.md` for detailed migration guide.
+
+---
+
+### 2.7. Module: `cli_output` (MOVED)
+
+**This module has been moved to the `cli_tools` crate.**
+
+Use `cli_tools::cli_output` instead. See `cli_tools` crate documentation.
+
+#### Migration Path
+
+**Old (strs_tools 0.37.x):**
+```rust
+use strs_tools::cli_output::*;
+
+let config = OutputConfig::default()
+  .with_head(10)
+  .with_width(80);
+let result = process_output(stdout, stderr, &config);
+```
+
+**New (cli_tools 0.1.0+):**
+```rust
+use cli_tools::cli_output::*;
+
+let config = OutputConfig::default()
+  .with_head(10)
+  .with_width(80);
+let result = process_output(stdout, stderr, &config);
+```
+
+#### Rationale
+
+CLI-specific functionality separated from general-purpose string utilities
+to maintain clear architectural boundaries:
+- **strs_tools**: General-purpose string/ANSI manipulation (any application)
+- **cli_tools**: CLI-application-specific helpers (command-line tools only)
+
+#### General-Purpose ANSI Functions (Remain in strs_tools)
+
+The following general-purpose ANSI truncation functions remain in `strs_tools::ansi`:
+
+*   **`truncate_if_needed(text: &str, max_width: usize, options: &TruncateOptions) -> String`**
+    - Boundary-aware single-line truncation
+    - Only truncates if `visual_len(text) > max_width`
+    - Contains bug fix for width boundary detection
+
+*   **`truncate_lines(text: &str, max_width: usize, options: &TruncateOptions) -> (String, bool)`**
+    - Boundary-aware multi-line truncation
+    - Returns tuple of (result_text, any_line_truncated)
+    - Applies boundary detection to each line independently
+
+These functions are general-purpose text transformation utilities suitable
+for any application requiring ANSI-aware width truncation (terminals, logs,
+any width-constrained display).
 
 ---
 
