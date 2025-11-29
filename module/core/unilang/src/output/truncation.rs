@@ -212,19 +212,24 @@ fn select_streams(stdout: &str, stderr: &str, filter: &OutputFilter) -> String
     OutputFilter::Stderr => stderr.to_string(),
     OutputFilter::Both =>
     {
+      // Fix(issue-stderr-ordering): stderr MUST appear before stdout
+      // Root cause: Alphabetical ordering (stdout first) violated CLI convention
+      //             that errors should be visible immediately without scrolling.
+      // Pitfall: Stream ordering is easy to overlook in tests. Always test not
+      //          just "is content present" but "is content in correct order".
       let mut merged = String::with_capacity(stdout.len() + stderr.len());
-      if !stdout.is_empty()
+      if !stderr.is_empty()
       {
-        merged.push_str(stdout);
+        merged.push_str(stderr);
         // Ensure newline between streams
-        if !stdout.ends_with('\n') && !stderr.is_empty()
+        if !stderr.ends_with('\n') && !stdout.is_empty()
         {
           merged.push('\n');
         }
       }
-      if !stderr.is_empty()
+      if !stdout.is_empty()
       {
-        merged.push_str(stderr);
+        merged.push_str(stdout);
       }
       merged
     }
