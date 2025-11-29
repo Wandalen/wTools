@@ -6,11 +6,11 @@
 
 **Rationale:** Separated from `strs_tools` to maintain clear architectural boundaries.
 - `strs_tools`: General-purpose string/ANSI manipulation
-- `cli_tools`: CLI-specific application helpers
+- `cli_fmt`: CLI-specific application helpers
 
 **Modules:**
-- `cli_output` - CLI output processing
-  - Migrated from `strs_tools::cli_output` (which replaced `unilang::output`)
+- `output` - CLI output processing
+  - Migrated from `strs_tools::output` (which replaced `unilang::output`)
   - Head/tail line filtering
   - ANSI-aware width truncation
   - Stream merging (stdout/stderr)
@@ -22,7 +22,7 @@
   - `string::lines::{head, tail, head_and_tail}` - Line filtering
 
 **Migration from strs_tools:**
-- Change: `use strs_tools::cli_output::*` → `use cli_tools::cli_output::*`
+- Change: `use strs_tools::output::*` → `use cli_fmt::output::*`
 - API unchanged - drop-in replacement
 
 **Tests:** 31 comprehensive tests

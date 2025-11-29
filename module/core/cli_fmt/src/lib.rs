@@ -1,11 +1,11 @@
-//! CLI application building blocks.
+//! CLI output formatting utilities.
 //!
 //! This crate provides utilities for building command-line applications,
 //! including output processing, formatting, and other CLI-specific helpers.
 //!
 //! # Modules
 //!
-//! - `cli_output` - Process command output (head/tail filtering, width truncation, stream merging)
+//! - `output` - Process command output (head/tail filtering, width truncation, stream merging)
 //!
 //! # Architecture
 //!
@@ -14,14 +14,14 @@
 //!
 //! **Distinction:**
 //! - `strs_tools`: Generic string/ANSI utilities (any application)
-//! - `cli_tools`: CLI-specific helpers (command-line tools only)
+//! - `cli_fmt`: CLI-specific helpers (command-line tools only)
 //!
 //! # Examples
 //!
 //! ```rust
-//! # #[ cfg( feature = "cli_output" ) ]
+//! # #[ cfg( feature = "output" ) ]
 //! # {
-//! use cli_tools::cli_output::*;
+//! use cli_fmt::output::*;
 //!
 //! let config = OutputConfig::default()
 //!   .with_head( 10 )
@@ -37,20 +37,21 @@
 #![ warn( missing_docs ) ]
 
 /// CLI output processing.
-#[ cfg( feature = "cli_output" ) ]
-pub mod cli_output;
+#[ cfg( feature = "output" ) ]
+pub mod output;
 
 /// Namespace with dependencies.
 pub mod dependency
 {
+  #[ cfg( feature = "enabled" ) ]
   pub use ::strs_tools;
 }
 
 /// Own namespace of the module.
 pub mod own
 {
-  #[ cfg( feature = "cli_output" ) ]
-  pub use super::cli_output::orphan::*;
+  #[ cfg( feature = "output" ) ]
+  pub use super::output::orphan::*;
 }
 
 /// Orphan namespace of the module.
@@ -61,12 +62,13 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ cfg( feature = "output" ) ]
   pub use super::own::*;
 }
 
-/// Prelude to use essentials: `use cli_tools::prelude::*`.
+/// Prelude to use essentials: `use cli_fmt::prelude::*`.
 pub mod prelude
 {
-  #[ cfg( feature = "cli_output" ) ]
-  pub use super::cli_output::orphan::*;
+  #[ cfg( feature = "output" ) ]
+  pub use super::output::orphan::*;
 }

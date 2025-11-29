@@ -4,8 +4,8 @@
 //!
 //! **This module is deprecated and will be removed in unilang 0.32.0.**
 //!
-//! Use `cli_tools::cli_output` instead. This module now re-exports from
-//! cli_tools to maintain backward compatibility.
+//! Use `cli_fmt::output` instead. This module now re-exports from
+//! cli_fmt to maintain backward compatibility.
 //!
 //! ## Migration Guide
 //!
@@ -23,7 +23,7 @@
 //!
 //! **After:**
 //! ```rust,ignore
-//! use cli_tools::cli_output::*;
+//! use cli_fmt::output::*;
 //!
 //! let config = OutputConfig::new()
 //!   .with_head(10)
@@ -46,21 +46,21 @@
 #[ cfg( feature = "output_processing" ) ]
 #[ deprecated(
   since = "0.31.0",
-  note = "Use cli_tools::cli_output::OutputConfig instead. See module docs for migration guide."
+  note = "Use cli_fmt::output::OutputConfig instead. See module docs for migration guide."
 ) ]
-pub use cli_tools::cli_output::OutputConfig as TruncationConfig;
+pub use cli_fmt::output::OutputConfig as TruncationConfig;
 
 #[ cfg( feature = "output_processing" ) ]
-#[ deprecated( since = "0.31.0", note = "Use cli_tools::cli_output::StreamFilter" ) ]
-pub use cli_tools::cli_output::StreamFilter as OutputFilter;
+#[ deprecated( since = "0.31.0", note = "Use cli_fmt::output::StreamFilter" ) ]
+pub use cli_fmt::output::StreamFilter as OutputFilter;
 
 #[ cfg( feature = "output_processing" ) ]
-#[ deprecated( since = "0.31.0", note = "Use cli_tools::cli_output::ProcessedOutput" ) ]
-pub use cli_tools::cli_output::ProcessedOutput as TruncatedOutput;
+#[ deprecated( since = "0.31.0", note = "Use cli_fmt::output::ProcessedOutput" ) ]
+pub use cli_fmt::output::ProcessedOutput as TruncatedOutput;
 
 #[ cfg( feature = "output_processing" ) ]
-#[ deprecated( since = "0.31.0", note = "Use cli_tools::cli_output::process_output" ) ]
-pub use cli_tools::cli_output::process_output as apply_truncation;
+#[ deprecated( since = "0.31.0", note = "Use cli_fmt::output::process_output" ) ]
+pub use cli_fmt::output::process_output as apply_truncation;
 
 #[ cfg( feature = "output_processing" ) ]
 #[ deprecated( since = "0.31.0", note = "Use strs_tools::string::lines::head" ) ]

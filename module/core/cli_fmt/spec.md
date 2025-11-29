@@ -1,4 +1,4 @@
-# Technical Specification: `cli_tools`
+# Technical Specification: `cli_fmt`
 
 ## Section 1: Overview
 
@@ -8,20 +8,20 @@ CLI application building blocks for command-line tools. Provides utilities speci
 
 ### 1.2. Architectural Distinction
 
-**cli_tools vs strs_tools:**
+**cli_fmt vs strs_tools:**
 
 - **`strs_tools`**: General-purpose string/ANSI manipulation (any application)
   - Pure text transformation utilities
   - No assumptions about use case (terminals, logs, files, any display)
   - Reusable across web apps, embedded systems, servers, CLI tools
 
-- **`cli_tools`**: CLI-application-specific helpers (command-line tools only)
+- **`cli_fmt`**: CLI-application-specific helpers (command-line tools only)
   - Policy decisions specific to CLI conventions
   - Stream ordering (stderr before stdout)
   - Output formats specific to command execution
   - CLI-focused configuration and APIs
 
-**Policy Decisions in cli_tools:**
+**Policy Decisions in cli_fmt:**
 - Stream merging: stderr appears before stdout (CLI convention)
 - Output filtering: head/tail semantics match Unix tools
 - Builder pattern: optimized for CLI configuration chains
@@ -30,19 +30,19 @@ CLI application building blocks for command-line tools. Provides utilities speci
 
 **Evolution:**
 1. **v0.30.x**: Original implementation in `unilang::output` (449 lines)
-2. **v0.31.0-0.43.0**: Migrated to `strs_tools::cli_output` (eliminated duplication)
-3. **v0.44.0+**: Moved to dedicated `cli_tools` crate (proper architectural separation)
+2. **v0.31.0-0.43.0**: Migrated to `strs_tools::output` (eliminated duplication)
+3. **v0.44.0+**: Moved to dedicated `cli_fmt` crate (proper architectural separation)
 
 **Rationale for Separation:**
 - Architectural boundary: CLI-specific ≠ general-purpose string utilities
-- Single Responsibility: strs_tools focuses on text manipulation, cli_tools on CLI helpers
+- Single Responsibility: strs_tools focuses on text manipulation, cli_fmt on CLI helpers
 - Future growth: Room for additional CLI utilities (progress bars, tables, prompts)
 
 ---
 
 ## Section 2: Module Specifications
 
-### 2.1. Module: `cli_output`
+### 2.1. Module: `output`
 
 #### Purpose
 
@@ -142,18 +142,23 @@ This module uses the following general-purpose functions from `strs_tools`:
 - **`strs_tools::string::lines::tail()`** - Extract last N lines
 - **`strs_tools::string::lines::head_and_tail()`** - Extract first N and last M lines
 
-These functions were extracted from cli_output to make them available as general-purpose
+These functions were extracted from output to make them available as general-purpose
 utilities for any application requiring ANSI-aware text processing.
 
 #### Feature Dependencies
 
-*   **`cli_output`**: Main feature flag (requires `enabled`, `std`, `string_split`)
+*   **`enabled`**: Master switch that activates core dependencies (included in default features)
+*   **`std`**: Standard library support (included in default features)
+*   **`full`**: Convenience feature enabling all functionality (`enabled` + `output` + `ansi_unicode`)
+*   **`output`**: Main feature flag (requires `enabled`, `std`, `string_split`)
 *   **`ansi_unicode`**: Optional, enables grapheme-based Unicode support (passes through to strs_tools)
+*   **`string_split`**: Internal feature for string splitting functionality
+*   **`use_alloc`**: Allocation support (for no_std environments with allocator)
 
 #### Usage Example
 
 ```rust
-use cli_tools::cli_output::*;
+use cli_fmt::output::*;
 
 // Show first 5 and last 5 lines, max 80 chars width
 let config = OutputConfig::default()
@@ -170,7 +175,7 @@ println!("Width truncated: {}", result.width_truncated);
 
 #### Migration from unilang::output
 
-| Old (unilang 0.31.x) | New (cli_tools) |
+| Old (unilang 0.31.x) | New (cli_fmt) |
 |---------------------|------------------|
 | `TruncationConfig { head: Some(10), .. }` | `OutputConfig::default().with_head(10)` |
 | `apply_truncation(stdout, stderr, &config)` | `process_output(stdout, stderr, &config)` |
@@ -232,7 +237,7 @@ CLI tools often need to inform users about data omissions for transparency.
 
 ## Section 4: Future Roadmap
 
-Potential additions to cli_tools (as separate modules):
+Potential additions to cli_fmt (as separate modules):
 
 - **Progress Bars**: CLI progress indication
 - **Tables**: Formatted table output with ANSI support
@@ -248,7 +253,7 @@ general-purpose utilities in strs_tools where applicable.
 ## Section 5: Testing
 
 **Test Coverage:**
-- 31 integration tests (cli_output module)
+- 31 integration tests (output module)
 - 4 doc tests
 - Total: 35 tests
 
@@ -260,7 +265,7 @@ general-purpose utilities in strs_tools where applicable.
 - Combined operations (head+tail+width)
 - Unicode handling
 
-**Test Location:** `tests/cli_output.rs`
+**Test Location:** `tests/output.rs`
 
 ---
 

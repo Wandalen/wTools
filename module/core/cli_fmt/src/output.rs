@@ -43,9 +43,9 @@
 //! # Examples
 //!
 //! ```rust
-//! # #[ cfg( all( feature = "cli_output", feature = "std" ) ) ]
+//! # #[ cfg( all( feature = "output", feature = "std" ) ) ]
 //! # {
-//! use cli_tools::cli_output::*;
+//! use cli_fmt::output::*;
 //!
 //! let config = OutputConfig::default()
 //!   .with_head( 10 )
@@ -229,9 +229,9 @@ impl OutputConfig
 /// # Examples
 ///
 /// ```rust
-/// # #[ cfg( all( feature = "cli_output", feature = "std" ) ) ]
+/// # #[ cfg( all( feature = "output", feature = "std" ) ) ]
 /// # {
-/// use cli_tools::cli_output::*;
+/// use cli_fmt::output::*;
 ///
 /// let config = OutputConfig::new()
 ///   .with_head( 5 )
@@ -287,9 +287,9 @@ pub fn process_output(
 /// # Examples
 ///
 /// ```rust
-/// # #[ cfg( all( feature = "cli_output", feature = "std" ) ) ]
+/// # #[ cfg( all( feature = "output", feature = "std" ) ) ]
 /// # {
-/// use cli_tools::cli_output::{ merge_streams, StreamFilter };
+/// use cli_fmt::output::{ merge_streams, StreamFilter };
 ///
 /// // Both streams (stderr first)
 /// let result = merge_streams( "out", "err", &StreamFilter::Both );

@@ -20,10 +20,10 @@
 //! | ANSI | adds reset on truncate | ✓ |
 //! | integration | combined operations | ✓ |
 //!
-//! **Note:** This test file now uses `cli_tools` directly rather than the deprecated
+//! **Note:** This test file now uses `cli_fmt` directly rather than the deprecated
 //! `unilang::output` module to avoid deprecation warnings.
 
-use cli_tools::cli_output::*;
+use cli_fmt::output::*;
 use strs_tools::string::lines::*;
 use strs_tools::ansi::{ truncate, TruncateOptions };
 

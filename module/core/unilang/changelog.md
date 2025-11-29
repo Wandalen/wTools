@@ -9,12 +9,12 @@
 2. **Code Duplication**: 90% duplication with `strs_tools::ansi` module (449 duplicate lines)
 3. **Single Source of Truth**: String utilities belong in `strs_tools`, not command framework
 
-**Migration Path:** Use `cli_tools::cli_output` instead.
+**Migration Path:** Use `cli_fmt::output` instead.
 
 **Evolution:**
 1. **v0.30.x**: Original implementation in `unilang::output` (449 lines)
 2. **v0.31.0-0.43.0**: Migrated to `strs_tools::cli_output` (eliminated duplication)
-3. **v0.44.0+**: Now in dedicated `cli_tools` crate (proper architectural separation)
+3. **v0.44.0+**: Now in dedicated `cli_fmt` crate (proper architectural separation)
 
 **Old (unilang 0.43.x):**
 ```rust
@@ -23,18 +23,18 @@ let config = TruncationConfig { head: Some(10), ..Default::default() };
 let result = apply_truncation(stdout, stderr, &config);
 ```
 
-**New (cli_tools 0.1.0+):**
+**New (cli_fmt 0.1.0+):**
 ```rust
-use cli_tools::cli_output::*;
+use cli_fmt::output::*;
 let config = OutputConfig::default().with_head(10);
 let result = process_output(stdout, stderr, &config);
 ```
 
 **API Mapping:**
-- `TruncationConfig` → `cli_tools::cli_output::OutputConfig`
-- `apply_truncation()` → `cli_tools::cli_output::process_output()`
-- `TruncatedOutput` → `cli_tools::cli_output::ProcessedOutput`
-- `OutputFilter` → `cli_tools::cli_output::StreamFilter`
+- `TruncationConfig` → `cli_fmt::output::OutputConfig`
+- `apply_truncation()` → `cli_fmt::output::process_output()`
+- `TruncatedOutput` → `cli_fmt::output::ProcessedOutput`
+- `OutputFilter` → `cli_fmt::output::StreamFilter`
 - `truncate_head()` → `strs_tools::string::lines::head()`
 - `truncate_tail()` → `strs_tools::string::lines::tail()`
 - `truncate_width()` → `strs_tools::ansi::truncate_if_needed()`
@@ -49,10 +49,10 @@ let result = process_output(stdout, stderr, &config);
 
 **Files Modified:**
 - `src/lib.rs` - Made output layer conditional on `output_processing` feature
-- `src/output/mod.rs` - Replaced with deprecated re-exports (now point to cli_tools)
+- `src/output/mod.rs` - Replaced with deprecated re-exports (now point to cli_fmt)
 - `src/output/truncation.rs` - Deleted (449 lines)
-- `Cargo.toml` - Added `cli_tools` dependency, deprecated `output_processing` feature
-- `tests/output_truncation.rs` - Updated to use `cli_tools` directly
+- `Cargo.toml` - Added `cli_fmt` dependency, deprecated `output_processing` feature
+- `tests/output_truncation.rs` - Updated to use `cli_fmt` directly
 
 **Semver:** Minor version (0.43.0) - deprecation with backward compatibility, removal planned for 0.32.0
 

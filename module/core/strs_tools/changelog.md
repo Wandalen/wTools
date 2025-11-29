@@ -1,13 +1,13 @@
-* [v0.39.0 | 2025-11-29] Moved cli_output to cli_tools crate
-  - **BREAKING CHANGE**: Removed `cli_output` module → moved to `cli_tools` crate
-  - **Migration**: Change `use strs_tools::cli_output::*` to `use cli_tools::cli_output::*`
+* [v0.39.0 | 2025-11-29] Moved cli_output to cli_fmt crate
+  - **BREAKING CHANGE**: Removed `cli_output` module → moved to `cli_fmt` crate
+  - **Migration**: Change `use strs_tools::cli_output::*` to `use cli_fmt::output::*`
   - **Rationale**: Separate CLI-specific helpers from general-purpose string utilities
   - **Removed**: `cli_output` feature flag (no longer needed)
   - **Preserved**: General-purpose ANSI functions remain in `ansi` module
     - `ansi::truncate_if_needed()` - Boundary-aware truncation
     - `ansi::truncate_lines()` - Multi-line truncation with tracking
   - **Files Deleted**: `src/cli_output.rs` (474 lines), `tests/cli_output.rs` (352 lines)
-  - **See**: cli_tools v0.1.0 for replacement functionality
+  - **See**: cli_fmt v0.1.0 for replacement functionality
 
 * [v0.38.0 | 2025-11-29] Enhanced ANSI truncation with boundary detection
   - **New Function**: `ansi::truncate_if_needed()` - Truncate only if text exceeds max_width
@@ -18,7 +18,7 @@
   - **Unicode Support**: Both char-based (Tier 1) and grapheme-based (Tier 2) versions
   - **Tests**: 6 new tests for boundary detection
   - **Files Modified**: `src/ansi/truncate.rs`, `src/ansi/mod.rs`, `spec.md`
-  - **Preparation**: Extract general-purpose logic before moving cli_output to cli_tools crate
+  - **Preparation**: Extract general-purpose logic before moving cli_output to cli_fmt crate
 
 * [v0.37.0 | 2025-11-29] Added `cli_output` module for unified CLI output processing
   - **New Module**: `cli_output` - ANSI-aware CLI output processing with head/tail filtering, width truncation, and stream merging

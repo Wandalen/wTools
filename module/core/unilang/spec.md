@@ -702,13 +702,13 @@ assert_eq!(extract_bool(&config, "debug"), Some(true));
 
 **DEPRECATION NOTICE: This functionality is deprecated in unilang 0.31.0 and will be removed in 0.32.0.**
 
-Use `cli_tools::cli_output` instead. Output formatting violates the framework's architectural boundary (FR-SCOPE-2: "The framework provides the data and structure for different modalities but does not render the UI itself").
+Use `cli_fmt::output` instead. Output formatting violates the framework's architectural boundary (FR-SCOPE-2: "The framework provides the data and structure for different modalities but does not render the UI itself").
 
 **Rationale for Removal:**
 
 1. **Architectural Violation**: CLI output processing is presentation-layer functionality, not command framework responsibility
 2. **Code Duplication**: The implementation was 90% duplicated with general-purpose string utilities (449 duplicate lines)
-3. **Single Source of Truth**: CLI utilities belong in `cli_tools`, not command framework
+3. **Single Source of Truth**: CLI utilities belong in `cli_fmt`, not command framework
 
 **Migration Path:**
 
@@ -724,9 +724,9 @@ let config = TruncationConfig {
 let result = apply_truncation(stdout, stderr, &config);
 ```
 
-*Preferred (cli_tools 0.1.0+):*
+*Preferred (cli_fmt 0.1.0+):*
 ```rust
-use cli_tools::cli_output::*;
+use cli_fmt::output::*;
 
 let config = OutputConfig::default()
   .with_head(10)
@@ -735,10 +735,10 @@ let result = process_output(stdout, stderr, &config);
 ```
 
 **API Mapping:**
-- `TruncationConfig` → `cli_tools::cli_output::OutputConfig` (builder pattern)
-- `apply_truncation()` → `cli_tools::cli_output::process_output()`
-- `TruncatedOutput` → `cli_tools::cli_output::ProcessedOutput`
-- `OutputFilter` → `cli_tools::cli_output::StreamFilter`
+- `TruncationConfig` → `cli_fmt::output::OutputConfig` (builder pattern)
+- `apply_truncation()` → `cli_fmt::output::process_output()`
+- `TruncatedOutput` → `cli_fmt::output::ProcessedOutput`
+- `OutputFilter` → `cli_fmt::output::StreamFilter`
 - `truncate_head()` → `strs_tools::string::lines::head()`
 - `truncate_tail()` → `strs_tools::string::lines::tail()`
 - `truncate_width()` → `strs_tools::ansi::truncate_if_needed()`
@@ -746,9 +746,9 @@ let result = process_output(stdout, stderr, &config);
 **Evolution History:**
 1. **v0.30.x**: Original implementation in `unilang::output`
 2. **v0.31.0-0.43.0**: Temporarily migrated to `strs_tools::cli_output`
-3. **v0.44.0+**: Moved to dedicated `cli_tools::cli_output` crate (proper architectural separation)
+3. **v0.44.0+**: Moved to dedicated `cli_fmt::output` crate (proper architectural separation)
 
-See `cli_tools` specification for complete documentation of CLI output processing utilities.
+See `cli_fmt` specification for complete documentation of CLI output processing utilities.
 
 ### 8. Cross-Cutting Concerns (Error Handling, Security, Verbosity)
 

@@ -457,9 +457,9 @@ version = "~0.37.0"
 path = "module/core/strs_tools"
 default-features = false
 
-[workspace.dependencies.cli_tools]
+[workspace.dependencies.cli_fmt]
 version = "~0.1.0"
-path = "module/core/cli_tools"
+path = "module/core/cli_fmt"
 default-features = false
 
 [workspace.dependencies.strs_tools_meta]

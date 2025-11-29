@@ -46,7 +46,7 @@
 //! | ANSI | adds reset on truncate | ✓ |
 //! | integration | combined operations | ✓ |
 
-use cli_tools::cli_output::*;
+use cli_fmt::output::*;
 use strs_tools::string::lines::*;
 
 // ============================================================================

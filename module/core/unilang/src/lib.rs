@@ -217,7 +217,7 @@ mod_interface::mod_interface!
   layer config_extraction;
 
   /// Output processing utilities for CLI applications (DEPRECATED in 0.31.0).
-  /// **Use `strs_tools::cli_output` instead** - this module will be removed in 0.32.0.
+  /// **Use `cli_fmt::output` instead** - this module will be removed in 0.32.0.
   /// Includes deprecated re-exports for backward compatibility.
   #[ cfg( feature = "output_processing" ) ]
   layer output;

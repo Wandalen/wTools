@@ -379,9 +379,9 @@ See `docs/migration_ansi.md` for detailed migration guide.
 
 ### 2.7. Module: `cli_output` (MOVED)
 
-**This module has been moved to the `cli_tools` crate.**
+**This module has been moved to the `cli_fmt` crate.**
 
-Use `cli_tools::cli_output` instead. See `cli_tools` crate documentation.
+Use `cli_fmt::output` instead. See `cli_fmt` crate documentation.
 
 #### Migration Path
 
@@ -395,9 +395,9 @@ let config = OutputConfig::default()
 let result = process_output(stdout, stderr, &config);
 ```
 
-**New (cli_tools 0.1.0+):**
+**New (cli_fmt 0.1.0+):**
 ```rust
-use cli_tools::cli_output::*;
+use cli_fmt::output::*;
 
 let config = OutputConfig::default()
   .with_head(10)
@@ -410,7 +410,7 @@ let result = process_output(stdout, stderr, &config);
 CLI-specific functionality separated from general-purpose string utilities
 to maintain clear architectural boundaries:
 - **strs_tools**: General-purpose string/ANSI manipulation (any application)
-- **cli_tools**: CLI-application-specific helpers (command-line tools only)
+- **cli_fmt**: CLI-application-specific helpers (command-line tools only)
 
 #### General-Purpose ANSI Functions (Remain in strs_tools)
 
