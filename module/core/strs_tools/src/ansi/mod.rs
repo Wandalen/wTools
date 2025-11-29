@@ -52,11 +52,19 @@ pub mod own
   pub use super::detect::{ has_ansi, has_unclosed_formatting };
   pub use super::truncate::truncate;
 
+  // ANSI truncation with boundary detection
+  pub use super::truncate::truncate_if_needed;
+  pub use super::truncate::truncate_lines;
+
   // Re-export Tier 2 functions (unicode)
   #[ cfg( feature = "ansi_unicode" ) ]
   pub use super::visual::visual_len_unicode;
   #[ cfg( feature = "ansi_unicode" ) ]
   pub use super::truncate::truncate_unicode;
+  #[ cfg( feature = "ansi_unicode" ) ]
+  pub use super::truncate::truncate_if_needed_unicode;
+  #[ cfg( feature = "ansi_unicode" ) ]
+  pub use super::truncate::truncate_lines_unicode;
 }
 
 /// Parented namespace of the module.

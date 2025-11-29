@@ -22,6 +22,9 @@ pub mod parser;
 /// Specialized high-performance string splitting algorithms.
 #[ cfg( all( feature = "string_split", feature = "specialized_algorithms", feature = "std" ) ) ]
 pub mod specialized;
+/// Line-based text operations (head/tail).
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
+pub mod lines;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
@@ -51,6 +54,8 @@ pub mod own
   pub use super ::parser :: { ParserIntegrationExt, CommandParser, ParsedToken, ParseError, parse_and_split };
   #[ cfg( all( feature = "string_split", feature = "specialized_algorithms", feature = "std" ) ) ]
   pub use super ::specialized :: { smart_split, SingleCharSplitIterator, BoyerMooreSplitIterator, SplitResult, SplitAlgorithm, AlgorithmSelector };
+  #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
+  pub use super ::lines ::orphan :: *;
 }
 
 /// Parented namespace of the module.
@@ -87,6 +92,8 @@ pub mod exposed
   pub use super ::parser :: { ParserIntegrationExt, ParsedToken, parse_and_split };
   #[ cfg( all( feature = "string_split", feature = "specialized_algorithms", feature = "std" ) ) ]
   pub use super ::specialized :: { smart_split, SingleCharSplitIterator, BoyerMooreSplitIterator };
+  #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
+  pub use super ::lines ::exposed :: *;
 }
 
 /// Namespace of the module to include with `use module :: *`.

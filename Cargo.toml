@@ -453,8 +453,13 @@ default-features = false
 ## string tools
 
 [workspace.dependencies.strs_tools]
-version = "~0.37.0"
+version = "~0.39.0"
 path = "module/core/strs_tools"
+default-features = false
+
+[workspace.dependencies.cli_fmt]
+version = "~0.2.0"
+path = "module/core/cli_fmt"
 default-features = false
 
 [workspace.dependencies.strs_tools_meta]
@@ -607,7 +612,7 @@ path = "module/core/unitore"
 default-features = false
 
 [workspace.dependencies.deterministic_rand]
-version = "~0.6.0"
+version = "~0.7.0"
 path = "module/core/deterministic_rand"
 
 [workspace.dependencies.crates_tools]
