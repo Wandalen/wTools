@@ -68,13 +68,33 @@ SIMD is enabled by default. To disable for minimal builds:
 unilang = { version = "0.28", default-features = false, features = ["enabled", "approach_yaml_multi_build"] }
 ```
 
-**3. Avoid Runtime Registration**
+**3. Choose Registration Strategy by Use Case**
 
-Runtime registration (`CommandRegistry::new()` + `command_add_runtime()`) is deprecated:
-- 50x slower than static registration
-- Higher memory overhead
-- No compile-time validation
-- Only appropriate for REPL/plugin systems
+**For Production CLIs:** Use static registration (50x faster)
+```toml
+[dependencies]
+unilang = { version = "0.28", default-features = false, features = ["enabled", "approach_yaml_multi_build"] }
+```
+
+**For REPL/Plugins:** Runtime registration is appropriate
+```rust
+let mut registry = CommandRegistry::new();
+```
+
+**Performance comparison:**
+- Static registration: ~80ns lookup (⚡ recommended for production)
+- Runtime registration: ~500ns-4μs lookup (✅ appropriate for REPL/plugins)
+- **Trade-off:** 10-50x performance vs. runtime flexibility
+
+**When to use runtime registration:**
+- ✅ REPL applications - Commands defined interactively
+- ✅ Plugin systems - Commands loaded dynamically
+- ✅ Prototyping - Rapid development iteration
+
+**When to avoid runtime registration:**
+- ⚠️ Production CLIs with 100+ commands
+- ⚠️ Performance-critical applications
+- ⚠️ Embedded systems with strict latency requirements
 
 ### For REPL/Interactive Applications
 

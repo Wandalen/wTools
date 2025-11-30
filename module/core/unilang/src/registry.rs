@@ -353,17 +353,21 @@ impl CommandRegistry
   ///
   /// Creates a new, empty `CommandRegistry` for runtime command registration.
   ///
-  /// ## ⚠️ Deprecation Notice
+  /// ## ⚠️ Performance Notice
   ///
   /// Runtime command registration has **10-50x slower performance** than compile-time registration.
-  /// For production applications, use `StaticCommandRegistry::from_commands(&STATIC_COMMANDS)` with
-  /// build.rs generation for zero-cost lookups.
   ///
-  /// ## When Runtime Registration Is Appropriate
+  /// ## When to Use This Constructor
   ///
+  /// ✅ **Appropriate for:**
   /// - REPL applications requiring interactive command definition
   /// - Plugin systems with runtime command loading
-  /// - Prototyping and development workflows
+  /// - Prototyping and rapid development workflows
+  ///
+  /// ⚡ **For production CLIs, use instead:**
+  /// ```ignore
+  /// StaticCommandRegistry::from_commands(&STATIC_COMMANDS)  // 50x faster
+  /// ```
   ///
   /// ## Recommended Alternative for Production
   ///
@@ -376,7 +380,6 @@ impl CommandRegistry
   /// let registry = StaticCommandRegistry::from_commands(&STATIC_COMMANDS);
   /// ```
   ///
-  #[ deprecated( since = "0.27.0", note = "Runtime registration has 10-50x slower performance. Use compile-time registration for production: StaticCommandRegistry::from_commands(&STATIC_COMMANDS)" ) ]
   #[ must_use ]
   pub fn new() -> Self
   {
@@ -499,21 +502,20 @@ impl CommandRegistry
   ///
   /// Registers a command with its executable routine at runtime.
   ///
-  /// ## ⚠️ Deprecation Notice
+  /// ## ⚠️ Performance Notice
   ///
   /// Runtime command registration has **10-50x slower performance** than compile-time registration.
-  /// For production CLI applications, use static command definitions generated at build time.
   ///
-  /// ## When Runtime Registration Is Appropriate
+  /// ## When to Use This Method
   ///
+  /// ✅ **Appropriate for:**
   /// - REPL applications requiring interactive command definition
   /// - Plugin systems where commands are loaded from external sources
-  /// - Prototyping and development workflows
+  /// - Prototyping and rapid development workflows
   ///
-  /// ## Recommended Alternative for Production
-  ///
-  /// Use `build.rs` to generate static command registries from YAML or procedural definitions,
-  /// then load them with `StaticCommandRegistry::from_commands(&STATIC_COMMANDS)` for zero-cost lookups.
+  /// ⚡ **For production CLI applications:**
+  /// Use static command definitions generated at build time via `build.rs` and loaded with
+  /// `StaticCommandRegistry::from_commands(&STATIC_COMMANDS)` for zero-cost lookups.
   ///
   /// # Arguments
   ///
@@ -526,7 +528,6 @@ impl CommandRegistry
   /// is already registered and cannot be overwritten (e.g., if it was
   /// a compile-time registered command).
   ///
-  #[ deprecated( since = "0.27.0", note = "Runtime registration has 10-50x slower performance. Use compile-time registration for production. Only use for REPL, plugins, or prototyping." ) ]
   pub fn command_add_runtime( &mut self, command_def : &CommandDefinition, routine : CommandRoutine ) -> Result< (), Error >
   {
     // EXPLICIT COMMAND NAMING ENFORCEMENT (FR-REG-6)

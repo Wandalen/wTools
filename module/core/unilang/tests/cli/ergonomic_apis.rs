@@ -288,7 +288,6 @@ fn test_aggregate_cli_complex_macro()
 fn test_backward_compatibility_with_existing_apis()
 {
   // Test that we can still use the existing CommandRegistry API
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
 
   let cmd = CommandDefinition::former()

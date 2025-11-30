@@ -51,8 +51,6 @@ fn main() -> Result< (), unilang::error::Error >
   println!( "=== Validation Rules Demo ===\n" );
 
   // Create a new command registry to hold our validation demonstration command
-  #[allow(deprecated)]
-  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
 
   // Define a command that showcases different types of validation rules.
@@ -353,8 +351,6 @@ fn main() -> Result< (), unilang::error::Error >
     })
   });
 
-  #[allow(deprecated)]
-  #[allow(deprecated)]
   registry.command_add_runtime( &validation_demo, validation_routine )?;
   println!( "✓ Registered validation demonstration command" );
 

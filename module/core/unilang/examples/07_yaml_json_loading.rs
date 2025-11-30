@@ -330,7 +330,6 @@ fn main() -> Result< (), unilang::error::Error >
 
   // Step 5: Combine both registries
   println!( "\n🔗 Combining registries..." );
-  #[allow(deprecated)]
   let mut combined_registry = CommandRegistry::new();
 
   // Add YAML commands

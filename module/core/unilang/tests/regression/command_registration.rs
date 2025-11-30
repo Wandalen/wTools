@@ -29,11 +29,7 @@ fn test_correct_dot_command_registration()
     .description( "Test chat command registered correctly" )
     .end();
 
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
-  #[allow(deprecated)]
-    #[allow(deprecated)]
     let registration_result = registry.command_add_runtime( &test_cmd, Box::new( create_test_command_handler ) );
   
   assert!( registration_result.is_ok(), "Command registration should succeed" );
@@ -72,8 +68,6 @@ fn test_multiple_corrected_commands()
     ( ".test_version", "Show version information" ),
   ];
   
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
   
   // Register all commands WITH explicit dot prefix
@@ -85,7 +79,6 @@ fn test_multiple_corrected_commands()
       .description( *description )
       .end();
 
-    #[allow(deprecated)]
         let result = registry.command_add_runtime( &cmd, Box::new( create_test_command_handler ) );
     assert!( result.is_ok(), "Failed to register command '{}'", name );
     println!( "✅ Registered: '{}'", name );
@@ -127,11 +120,7 @@ fn test_namespaced_commands_work_correctly()
     .description( "List available sessions" )
     .end();
 
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
-  #[allow(deprecated)]
-    #[allow(deprecated)]
     let result = registry.command_add_runtime( &session_cmd, Box::new( create_test_command_handler ) );
   assert!( result.is_ok(), "Namespaced command registration should succeed" );
   

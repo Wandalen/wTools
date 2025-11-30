@@ -35,8 +35,6 @@ fn test_reject_commands_without_dot_prefix()
 #[test] 
 fn test_reject_invalid_namespace()
 {
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
   
   // This should be REJECTED - namespace without dot prefix
@@ -48,8 +46,6 @@ fn test_reject_invalid_namespace()
   // Manually set invalid namespace after creation
   invalid_cmd.namespace = "session".to_string(); // ❌ Namespace missing dot
   
-  #[allow(deprecated)]
-    #[allow(deprecated)]
     let result = registry.command_add_runtime(&invalid_cmd, Box::new(dummy_handler));
   
   // Should fail with explicit error message
@@ -67,8 +63,6 @@ fn test_reject_invalid_namespace()
 #[test]
 fn test_accept_correctly_formatted_commands()
 {
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
   
   // Root-level command - should be accepted
@@ -77,8 +71,6 @@ fn test_accept_correctly_formatted_commands()
     .description( "Correctly formatted root command" )
     .end(); // ✅ Empty namespace for root
   
-  #[allow(deprecated)]
-    #[allow(deprecated)]
     let result = registry.command_add_runtime(&root_cmd, Box::new(dummy_handler));
   assert!(result.is_ok(), "Correctly formatted root command should be accepted");
   println!("✅ Accepted correctly formatted root command");
@@ -92,8 +84,6 @@ fn test_accept_correctly_formatted_commands()
   // Set valid namespace
   namespaced_cmd.namespace = ".session".to_string(); // ✅ Correct namespace with dot
   
-  #[allow(deprecated)]
-    #[allow(deprecated)]
     let result2 = registry.command_add_runtime(&namespaced_cmd, Box::new(dummy_handler));
   assert!(result2.is_ok(), "Correctly formatted namespaced command should be accepted");
   println!("✅ Accepted correctly formatted namespaced command");
@@ -112,8 +102,6 @@ fn test_principle_minimum_implicit_magic()
   println!("   - Explicit validation with clear error messages");
   println!("   - What you register is exactly what gets executed\n");
 
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
 
   // Test valid command with explicit dot prefix
@@ -122,7 +110,6 @@ fn test_principle_minimum_implicit_magic()
     .description( "Testing name: .chat" )
     .end();
 
-  #[allow(deprecated)]
     let result = registry.command_add_runtime(&cmd, Box::new(dummy_handler));
 
   assert!(result.is_ok(), "Command '.chat' should be accepted");

@@ -21,7 +21,6 @@ fn main() -> Result< (), unilang::error::Error >
   println!( "=== Semantic Analysis Demo ===\n" );
 
   // Step 1: Set up a registry with test commands
-  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
 
   // Math command for testing
@@ -103,7 +102,6 @@ fn main() -> Result< (), unilang::error::Error >
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &math_command, math_routine )?;
 
   // Text processing command for testing
@@ -191,7 +189,6 @@ fn main() -> Result< (), unilang::error::Error >
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &text_command, text_routine )?;
 
   println!( "✓ Registered test commands for semantic analysis" );

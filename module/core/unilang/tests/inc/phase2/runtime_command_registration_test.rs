@@ -100,8 +100,6 @@ fn analyze_and_run(
 #[test]
 fn test_register_and_execute_simple_command() {
   // Test Matrix Row: T1.1
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
   let command_def = CommandDefinition {
     name: ".simple_cmd".to_string(),
@@ -126,8 +124,6 @@ fn test_register_and_execute_simple_command() {
     examples: vec![],
     http_method_hint: String::new(),
   };
-  #[allow(deprecated)]
-    #[allow(deprecated)]
     registry.command_add_runtime(&command_def, Box::new(dummy_routine)).unwrap();
 
   let result = analyze_and_run("test.simple_cmd", vec![], std::collections::HashMap::new(), &registry);
@@ -138,8 +134,6 @@ fn test_register_and_execute_simple_command() {
 #[test]
 fn test_register_command_with_arguments() {
   // Test Matrix Row: T1.2
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
   let command_def = CommandDefinition {
     name: ".arg_cmd".to_string(),
@@ -179,7 +173,6 @@ fn test_register_command_with_arguments() {
     examples: vec![],
     http_method_hint: String::new(),
   };
-  #[allow(deprecated)]
   registry
         .command_add_runtime(&command_def, Box::new(arg_test_routine))
     .unwrap();
@@ -202,8 +195,6 @@ fn test_register_command_with_arguments() {
 #[test]
 fn test_register_duplicate_command() {
   // Test Matrix Row: T1.3
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
   let command_def = CommandDefinition {
     name: ".duplicate_cmd".to_string(),
@@ -228,12 +219,8 @@ fn test_register_duplicate_command() {
     examples: vec![],
     http_method_hint: String::new(),
   };
-  #[allow(deprecated)]
-    #[allow(deprecated)]
     registry.command_add_runtime(&command_def, Box::new(dummy_routine)).unwrap();
 
-  #[allow(deprecated)]
-    #[allow(deprecated)]
     let result = registry.command_add_runtime(&command_def, Box::new(dummy_routine));
   assert!(result.is_err());
   assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == unilang::data::ErrorCode::CommandAlreadyExists ));
@@ -242,8 +229,6 @@ fn test_register_duplicate_command() {
 #[test]
 fn test_execute_non_existent_command() {
   // Test Matrix Row: T1.4
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let registry = CommandRegistry::new();
   let result = analyze_and_run(".non_existent_cmd", vec![], std::collections::HashMap::new(), &registry);
   assert!(result.is_err());
@@ -253,8 +238,6 @@ fn test_execute_non_existent_command() {
 #[test]
 fn test_execute_command_with_missing_argument() {
   // Test Matrix Row: T1.5
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
   let command_def = CommandDefinition {
     name: ".missing_arg_cmd".to_string(),
@@ -294,8 +277,6 @@ fn test_execute_command_with_missing_argument() {
     examples: vec![],
     http_method_hint: String::new(),
   };
-  #[allow(deprecated)]
-    #[allow(deprecated)]
     registry.command_add_runtime(&command_def, Box::new(dummy_routine)).unwrap();
 
   let result = analyze_and_run("test.missing_arg_cmd", vec![], std::collections::HashMap::new(), &registry);
@@ -306,8 +287,6 @@ fn test_execute_command_with_missing_argument() {
 #[test]
 fn test_execute_command_with_invalid_arg_type() {
   // Test Matrix Row: T1.6
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
   let command_def = CommandDefinition {
     name: ".invalid_type_cmd".to_string(),
@@ -347,8 +326,6 @@ fn test_execute_command_with_invalid_arg_type() {
     examples: vec![],
     http_method_hint: String::new(),
   };
-  #[allow(deprecated)]
-    #[allow(deprecated)]
     registry.command_add_runtime(&command_def, Box::new(dummy_routine)).unwrap();
 
   let mut named_args = std::collections::HashMap::new();

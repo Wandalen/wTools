@@ -32,7 +32,6 @@ use unilang::help::HelpVerbosity;
 use unilang::interpreter::ExecutionContext;
 use unilang::semantic::VerifiedCommand;
 
-#[allow(deprecated)]
 fn main()
 {
   // Create a registry and add a command with rich metadata

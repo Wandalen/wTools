@@ -241,7 +241,6 @@ impl CommandResult
   /// use unilang::pipeline::Pipeline;
   /// use unilang::registry::CommandRegistry;
   ///
-  /// # #[allow(deprecated)]
   /// # let registry = CommandRegistry::new();
   /// # let pipeline = Pipeline::new(registry);
   /// let result = pipeline.process_command_simple(".help");
@@ -291,7 +290,6 @@ impl CommandResult
   /// use unilang::pipeline::Pipeline;
   /// use unilang::registry::CommandRegistry;
   ///
-  /// # #[allow(deprecated)]
   /// # let registry = CommandRegistry::new();
   /// # let pipeline = Pipeline::new(registry);
   /// let result = pipeline.process_command_simple(".");  // List all commands
@@ -771,7 +769,6 @@ impl Pipeline
   /// use unilang::registry::CommandRegistry;
   /// use unilang::interpreter::ExecutionContext;
   ///
-  /// # #[allow(deprecated)]
   /// # let registry = CommandRegistry::new();
   /// # let pipeline = Pipeline::new(registry);
   /// # let context = ExecutionContext::default();

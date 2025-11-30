@@ -17,7 +17,6 @@ fn main() -> Result< (), unilang::error::Error >
 {
   println!( "=== Namespaces and Aliases Demo ===\n" );
 
-  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
 
   // Step 1: Commands in the 'math' namespace
@@ -98,7 +97,6 @@ fn main() -> Result< (), unilang::error::Error >
     }
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &add_command, add_routine )?;
 
   // .math.multiply command
@@ -177,7 +175,6 @@ fn main() -> Result< (), unilang::error::Error >
     }
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &multiply_command, multiply_routine )?;
 
   // Step 2: Commands in the 'text' namespace
@@ -242,7 +239,6 @@ fn main() -> Result< (), unilang::error::Error >
     }
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &uppercase_command, uppercase_routine )?;
 
   // Step 3: Commands in the 'file' namespace
@@ -328,7 +324,6 @@ fn main() -> Result< (), unilang::error::Error >
     }
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &list_command, list_routine )?;
 
   println!( "✓ Registered commands in multiple namespaces with aliases" );

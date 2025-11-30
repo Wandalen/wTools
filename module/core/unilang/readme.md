@@ -206,12 +206,12 @@ Check that you have at least one `.yaml` file with commands, or enable a differe
 
 **Symptom:** Lookups still slow after switching to build-time approach
 
-**Cause:** Still using deprecated runtime registration APIs
+**Cause:** Using runtime registration in production CLI (10-50x performance penalty)
 
 **Solution:**
 ```rust,ignore
-// ❌ Wrong - still using runtime API (deprecated)
-#[allow(deprecated)]
+// ❌ Wrong for production CLIs - 10-50x slower than static registration
+// ✅ Appropriate for REPL/plugins/prototyping where flexibility > performance
 let registry = CommandRegistry::new();
 
 // ✅ Correct - using static registry
@@ -384,13 +384,15 @@ How unilang differs from popular Rust CLI frameworks:
 | **Definition Style** | YAML/JSON/Rust DSL | Rust builder API | Derive macros | Derive macros |
 | **Modality Support** | CLI, REPL, Web API | CLI only | CLI only | CLI only |
 | **Multi-file Organization** | Auto-discovery | Manual | Manual | Manual |
-| **Runtime Registration** | Hybrid (deprecated) | No | No | No |
+| **Runtime Registration** | Hybrid (10-50x slower†) | No | No | No |
 | **Build-time Validation** | Yes | No | Yes (compile) | Yes (compile) |
 | **REPL Support** | Built-in | Manual | Manual | Manual |
 | **Help Generation** | Auto + 3 operators | Auto | Auto | Auto |
 | **Performance** | ~80ns lookup | ~200-500ns | ~200-500ns | ~100-300ns |
 | **CLI Aggregation** | Built-in | Manual | Manual | Manual |
 | **Learning Curve** | Medium | Low | Low | Very Low |
+
+† Runtime registration appropriate for REPL applications, plugin systems, and prototyping. Not recommended for production CLIs due to performance penalty.
 
 ### When to Choose unilang
 
@@ -873,15 +875,26 @@ cd www && python3 -m http.server 8000
 
 ## Migration from Runtime to Build-Time
 
-**⚠️ DEPRECATION NOTICE:** Runtime command registration (`CommandRegistry::new()` and `command_add_runtime()`) is deprecated. This section exists solely for migrating legacy code to the recommended build-time approach.
+**⚠️ PERFORMANCE NOTICE:** Runtime command registration (`CommandRegistry::new()` and `command_add_runtime()`) has **10-50x slower performance** than compile-time registration.
 
-Migrate from runtime registration (slow, deprecated) to build-time registration (50x faster, recommended) in 4 steps.
+**When to use runtime registration:**
+- ✅ **REPL applications** - Commands defined interactively
+- ✅ **Plugin systems** - Commands loaded dynamically at runtime
+- ✅ **Prototyping** - Rapid development iteration
+
+**When to use compile-time registration:**
+- ⚡ **Production CLIs** - Performance-critical applications
+- ⚡ **Large command sets** - 100+ commands benefit from ~80ns PHF lookups
+- ⚡ **Embedded systems** - Zero-overhead static dispatch
+
+This section helps migrate performance-critical code from runtime to compile-time registration for **50x speedup**.
+
+Migrate from runtime registration (10-50x slower) to build-time registration (⚡ 50x faster) in 4 steps when performance matters.
 
 ### Step 1: Extract Command Definitions to YAML
 
-**Before (Runtime, in main.rs):** ⚠️ **DEPRECATED - Do not use in new code**
+**Before (Runtime, in main.rs):** ⚠️ **NOT RECOMMENDED FOR PRODUCTION CLIs** (10-50x slower)
 ```rust,ignore
-#[allow(deprecated)]  // Required: These APIs are deprecated
 let mut registry = CommandRegistry::new();
 
 let greet_cmd = CommandDefinition {
@@ -919,7 +932,6 @@ let greet_cmd = CommandDefinition {
   auto_help_enabled: false,
 };
 
-#[allow(deprecated)]
 registry.command_add_runtime(&greet_cmd, greet_routine)?;
 ```
 
@@ -986,16 +998,14 @@ fn main()
 
 ### Step 4: Update Code to Use Static Registry
 
-**Before (Runtime):** ⚠️ **DEPRECATED**
+**Before (Runtime):** ⚠️ **10-50x SLOWER** (not recommended for production)
 ```rust,ignore
 use unilang::prelude::*;
 
 fn main() -> Result<(), unilang::Error> {
-  #[allow(deprecated)]  // Required: deprecated API
   let mut registry = CommandRegistry::new();
 
-  // Manual registration (slow, deprecated)
-  #[allow(deprecated)]  // Required: deprecated API
+  // Manual registration (10-50x slower than static)
   registry.command_add_runtime(&greet_cmd, greet_routine)?;
 
   let pipeline = Pipeline::new(registry);

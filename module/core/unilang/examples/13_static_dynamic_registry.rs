@@ -13,7 +13,6 @@ fn main() -> Result< (), unilang::error::Error >
   println!( "=== Static and Dynamic Command Registry Demo ===\n" );
 
   // Step 1: Create registry (includes static commands from build process)
-  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   println!( "✓ Registry initialized with {} static commands", registry.commands().len() );
 
@@ -133,7 +132,6 @@ fn main() -> Result< (), unilang::error::Error >
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &dynamic_cmd, dynamic_routine )?;
   println!( "✓ Dynamic command registered successfully" );
 

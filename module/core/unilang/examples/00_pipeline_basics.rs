@@ -14,7 +14,6 @@ fn main() -> Result<(), unilang::Error> {
     println!("=== Pipeline API Basics ===\n");
     
     // Step 1: Set up a registry with some commands
-    #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
     
     // Register a simple math command
@@ -66,7 +65,6 @@ fn main() -> Result<(), unilang::Error> {
         }
     });
     
-    #[allow(deprecated)]
     registry.command_add_runtime(&add_cmd, add_routine)?;
     
     // Step 2: Create a Pipeline

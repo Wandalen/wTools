@@ -122,7 +122,6 @@ fn setup_registry_with_routine( command_def: &CommandDefinition ) -> CommandRegi
     }
   );
 
-  #[allow(deprecated)]
   registry.command_add_runtime( command_def, routine ).unwrap();
   registry
 }
@@ -284,7 +283,6 @@ fn test_backward_compatibility_single_parameter_integration()
     }
   );
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &single_param_cmd, routine ).unwrap();
 
   let parser = Parser::new( UnilangParserOptions::default() );
@@ -393,7 +391,6 @@ fn test_quote_handling_integration()
     }
   );
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &quote_test_cmd, routine ).unwrap();
 
   let parser = Parser::new( UnilangParserOptions::default() );
@@ -517,7 +514,6 @@ fn test_multiple_parameter_performance()
     }
   );
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &perf_test_cmd, routine ).unwrap();
 
   let parser = Parser::new( UnilangParserOptions::default() );

@@ -1,5 +1,40 @@
 # Changelog
 
+### 2025-11-30 - IMPORTANT: Runtime Registration Messaging Update (v0.45.0)
+
+**TL;DR:** Runtime registration is NOT deprecated. It's a performance trade-off with legitimate use cases.
+
+**What changed:**
+- Removed misleading `#[deprecated]` attribute from `CommandRegistry::new()` and `command_add_runtime()`
+- Updated all documentation to emphasize performance trade-offs rather than deprecation
+- Clarified appropriate use cases: REPL applications, plugin systems, prototyping
+
+**Why:**
+- Runtime registration is REQUIRED by spec (FR-REG-2) and will not be removed
+- Has legitimate ongoing use cases (REPL, plugins, prototyping)
+- `#[deprecated]` attribute implies future removal, which is incorrect
+- Performance penalty (10-50x slower) is the key consideration, not lifecycle status
+
+**For REPL/plugin developers:**
+- ✅ Continue using `CommandRegistry::new()` - this is correct for your use case
+- ✅ Remove `#[allow(deprecated)]` attributes - no longer needed
+- ✅ Understand the performance trade-off (flexibility vs speed)
+
+**For production CLI developers:**
+- ⚡ Consider migrating to `StaticCommandRegistry` for 50x speedup
+- ⚡ See migration guide: docs/optimization_guide.md
+- ⚡ Static registration provides ~80ns lookups vs ~500ns-4μs runtime
+
+**Documentation updates:**
+- readme.md: Replaced "deprecation notice" with "performance notice"
+- All examples: Updated headers to show appropriate use cases
+- Source code: Removed `#[deprecated]` attribute, enhanced doc comments
+- spec.md: Added design decision rationale to FR-REG-2
+
+**No breaking changes:** This is a documentation-only update.
+
+---
+
 ### 2025-11-29 - Deprecation: Output Processing Module (v0.43.0)
 
 **Deprecation:** The `unilang::output` module is deprecated and will be removed in v0.32.0.

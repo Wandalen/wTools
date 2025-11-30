@@ -1282,14 +1282,13 @@ pub fn aggregate_cli_complex() -> Result< CommandRegistry, Error >
     aggregator.aggregate()?;
 
     // Create runtime registry for dynamic command loading
-    // NOTE: CommandRegistry::new() is marked deprecated to guide external users
-    // toward compile-time registration. However, this function intentionally
-    // provides RUNTIME aggregation for plugin systems and dynamic scenarios.
-    // The #[allow(deprecated)] is justified because:
-    // 1. This is a documented runtime approach (approach_yaml_runtime + multi_file)
-    // 2. Function documentation warns users about 50x performance penalty
-    // 3. Valid use case: dynamic plugin systems that cannot use compile-time generation
-    #[ allow( deprecated ) ]
+    // NOTE: This function intentionally provides RUNTIME aggregation for plugin
+    // systems and dynamic scenarios where compile-time registration is not possible.
+    // Runtime registration is appropriate for:
+    // 1. This documented runtime approach (approach_yaml_runtime + multi_file)
+    // 2. Plugin systems with dynamic command loading
+    // 3. REPL applications with interactive command definition
+    // Performance trade-off: 10-50x slower than compile-time registration
     let mut registry = crate::CommandRegistry::new();
     aggregator.register_with_hybrid_registry( &mut registry )?;
 

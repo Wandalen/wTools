@@ -14,8 +14,6 @@ use unilang::semantic::SemanticAnalyzer;
 use unilang::types::Value;
 
 fn setup_test_environment(command: CommandDefinition) -> CommandRegistry {
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
   registry.register(command);
   registry

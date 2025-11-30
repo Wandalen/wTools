@@ -19,7 +19,6 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
   println!( "=== Basic REPL Loop Example ===\n" );
 
   // Step 1: Create command registry with sample commands
-  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   register_sample_commands( &mut registry )?;
 
@@ -84,7 +83,6 @@ fn register_sample_commands( registry : &mut CommandRegistry ) -> Result< (), un
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &echo_cmd, echo_routine )?;
 
   // Math command
@@ -158,7 +156,6 @@ fn register_sample_commands( registry : &mut CommandRegistry ) -> Result< (), un
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &math_cmd, math_routine )?;
 
   println!( "✓ Registered {} sample commands", registry.commands().len() );

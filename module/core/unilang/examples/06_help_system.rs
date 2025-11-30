@@ -39,7 +39,6 @@ fn main() -> Result< (), unilang::error::Error >
 
   // Initialize the command registry - this will store all our command definitions
   // and their associated runtime implementations
-  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
 
   // Step 1: Create a well-documented command that showcases all help system features
@@ -407,7 +406,6 @@ fn main() -> Result< (), unilang::error::Error >
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &process_command, process_routine )?;
 
   // Step 2: Create a simple command for comparison
@@ -443,7 +441,6 @@ fn main() -> Result< (), unilang::error::Error >
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &simple_command, ping_routine )?;
 
   println!( "✓ Registered commands with comprehensive documentation" );

@@ -16,7 +16,6 @@ fn main() -> Result< (), unilang::error::Error >
 {
   println!( "=== Argument Types Demo ===\n" );
 
-  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
 
   // Step 1: Command with various basic argument types
@@ -184,7 +183,6 @@ fn main() -> Result< (), unilang::error::Error >
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &types_demo, types_routine )?;
   println!( "✓ Registered command with various argument types" );
 

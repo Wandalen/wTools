@@ -62,8 +62,6 @@ fn test_pipeline_with_custom_verbosity()
   use unilang_parser::UnilangParserOptions;
 
   // Create a pipeline with quiet verbosity
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let registry = CommandRegistry::new();
   let quiet_options = UnilangParserOptions { verbosity: 0, ..Default::default() };
   
