@@ -3,6 +3,22 @@
 //! Provides the core CommandDefinition struct with private fields, validated
 //! newtype wrappers, and a type-state builder pattern that enforces required
 //! fields at compile time.
+//!
+//! # Module Organization
+//!
+//! **Why is CommandDefinitionBuilder in the same module?**
+//!
+//! The builder MUST be co-located with CommandDefinition due to Rust privacy rules.
+//! The type-state builder pattern requires direct access to CommandDefinition's
+//! private fields to construct instances. Extracting the builder to a separate
+//! module would require either:
+//! - Making all fields public (defeats the entire private fields design)
+//! - Adding a public constructor with all fields (bypasses builder pattern)
+//! - Complex friend module patterns (not idiomatic Rust)
+//!
+//! This is a fundamental Rust privacy constraint, not a design flaw. The builder
+//! and struct must remain together to maintain encapsulation while supporting
+//! the builder pattern.
 
 use super::validated_types::{ CommandName, NamespaceType, VersionType };
 use super::command_status::{ CommandStatus, construct_full_command_name };
@@ -121,9 +137,16 @@ pub struct CommandDefinition
   arguments : Vec< ArgumentDefinition >,
   /// Optional link to the routine that executes this command
   routine_link : Option< String >,
-  /// TEMPORARY: Public namespace field for test compatibility (String type)
-  /// This allows tests to mutate namespace for validation testing
-  /// TODO: Remove once all tests are migrated to builder pattern and use NamespaceType
+  /// TEMPORARY: Public namespace field for validation testing (String type)
+  ///
+  /// This field remains public to allow validation tests to create invalid states
+  /// (e.g., namespace without dot prefix) for testing error handling. The field is
+  /// intentionally String rather than NamespaceType to enable testing invalid values.
+  ///
+  /// **Used by**: tests/registry/validation_enforcement.rs, tests/semantic/command_validation.rs
+  ///
+  /// **Future**: Could be made private once validation testing strategy is redesigned
+  /// to use builder pattern with validation bypass or test-only constructors.
   pub namespace : String,
   /// Short hint for the command
   hint : String,

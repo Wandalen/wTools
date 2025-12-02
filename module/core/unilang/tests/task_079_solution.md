@@ -131,7 +131,7 @@ Result:         ✅ Value::List(["echo a", "echo b"])
   - ✅ Real cargo commands (`cargo build`, `cargo test`, etc.)
   - ✅ Single-word commands (no re-quoting needed)
 
-### 3. `tests/task_079_SOLUTION.md` (THIS FILE)
+### 3. `tests/task_079_solution.md` (THIS FILE)
 - **Purpose**: Comprehensive documentation of solution
 
 ## Next Steps for wrun
