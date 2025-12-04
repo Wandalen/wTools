@@ -2,7 +2,7 @@
 //!
 //! This example demonstrates CLI aggregation with correct naming conventions:
 //! - All commands start with dot prefix (`.`)
-//! - Multi-word commands use dots as delimiters (`.db.migrate`, not `db migrate`)
+//! - Multi-word commands use dots as delimiters (`.svc1.migrate`, not `db migrate`)
 //! - Commands are aggregated from multiple modules into a unified interface
 //!
 //! **Usage:**
@@ -26,7 +26,7 @@ fn create_db_commands() -> Vec< CommandDefinition >
   [
     CommandDefinition::former()
       .name( ".migrate" )
-      .namespace( ".db" )
+      .namespace( ".svc1" )
       .description( "Run database migrations".to_string() )
       .arguments( vec!
       [
@@ -45,7 +45,7 @@ fn create_db_commands() -> Vec< CommandDefinition >
       .end(),
     CommandDefinition::former()
       .name( ".backup" )
-      .namespace( ".db" )
+      .namespace( ".svc1" )
       .description( "Create database backup".to_string() )
       .arguments( vec!
       [
@@ -66,7 +66,7 @@ fn create_db_commands() -> Vec< CommandDefinition >
 }
 
 // =============================================================================
-// File System Module Commands
+// Generic Module 2 Commands
 // =============================================================================
 
 fn create_fs_commands() -> Vec< CommandDefinition >
@@ -75,7 +75,7 @@ fn create_fs_commands() -> Vec< CommandDefinition >
   [
     CommandDefinition::former()
       .name( ".copy" )
-      .namespace( ".fs" )
+      .namespace( ".cmd2" )
       .description( "Copy files or directories".to_string() )
       .arguments( vec!
       [
@@ -106,7 +106,7 @@ fn create_fs_commands() -> Vec< CommandDefinition >
       .end(),
     CommandDefinition::former()
       .name( ".list" )
-      .namespace( ".fs" )
+      .namespace( ".cmd2" )
       .description( "List directory contents".to_string() )
       .arguments( vec!
       [
@@ -224,7 +224,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
     registry.command_add_runtime( &cmd, routine )?;
   }
 
-  // Register file system commands
+  // Register generic commands
   for cmd in fs_commands
   {
     let routine : CommandRoutine = match cmd.name().to_string().as_str()
@@ -246,7 +246,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
 
   // Database commands
   println!( "1. Database migration (default direction):" );
-  let result = pipeline.process_command_simple( ".db.migrate" );
+  let result = pipeline.process_command_simple( ".svc1.migrate" );
   if result.success
   {
     println!( "   ✓ {}", result.outputs[ 0 ].content );
@@ -254,7 +254,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   println!();
 
   println!( "2. Database migration (down):" );
-  let result = pipeline.process_command_simple( ".db.migrate direction::down" );
+  let result = pipeline.process_command_simple( ".svc1.migrate direction::down" );
   if result.success
   {
     println!( "   ✓ {}", result.outputs[ 0 ].content );
@@ -262,24 +262,24 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   println!();
 
   println!( "3. Database backup:" );
-  let result = pipeline.process_command_simple( ".db.backup path::./my-backup.sql" );
+  let result = pipeline.process_command_simple( ".svc1.backup path::./my-backup.sql" );
   if result.success
   {
     println!( "   ✓ {}", result.outputs[ 0 ].content );
   }
   println!();
 
-  // File system commands
-  println!( "4. File system copy:" );
-  let result = pipeline.process_command_simple( ".fs.copy source::./src destination::./dest recursive::true" );
+  // generic commands
+  println!( "4. Generic copy:" );
+  let result = pipeline.process_command_simple( ".cmd2.copy source::./src destination::./dest recursive::true" );
   if result.success
   {
     println!( "   ✓ {}", result.outputs[ 0 ].content );
   }
   println!();
 
-  println!( "5. File system list:" );
-  let result = pipeline.process_command_simple( ".fs.list path::/tmp" );
+  println!( "5. Generic list:" );
+  let result = pipeline.process_command_simple( ".cmd2.list path::/tmp" );
   if result.success
   {
     println!( "   ✓ {}", result.outputs[ 0 ].content );
@@ -287,7 +287,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   println!();
 
   println!( "=== Key Points ===" );
-  println!( "✓ All commands start with dot prefix (.db.migrate, .fs.copy)" );
+  println!( "✓ All commands start with dot prefix (.svc1.migrate, .cmd2.copy)" );
   println!( "✓ Multi-word commands use dots as delimiters, not spaces" );
   println!( "✓ Commands from different modules are aggregated into single interface" );
   println!( "✓ Namespace isolation prevents naming conflicts" );

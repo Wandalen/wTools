@@ -90,7 +90,7 @@ fn main() -> Result< (), unilang::error::Error >
     // Path argument
     ArgumentDefinition {
       name: "path".to_string(),
-      description: "A file system path".to_string(),
+      description: "A generic path".to_string(),
       kind: Kind::Path,
       hint: "File or directory path".to_string(),
       attributes: ArgumentAttributes { optional: true, ..Default::default() },

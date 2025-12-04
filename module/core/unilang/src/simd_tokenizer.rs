@@ -328,8 +328,8 @@ mod tests
   #[ test ]
   fn test_command_tokenization()
   {
-    let tokens = SIMDTokenizer::tokenize_command( ".math.add arg1::5 arg2::3" );
-    let expected = vec![ "", "math", "add arg1", "", "5 arg2", "", "3" ];
+    let tokens = SIMDTokenizer::tokenize_command( ".cmd1.add arg1::5 arg2::3" );
+    let expected = vec![ "", "cmd1", "add arg1", "", "5 arg2", "", "3" ];
     assert_eq!( tokens, expected );
   }
 

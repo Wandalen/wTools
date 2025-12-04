@@ -18,7 +18,7 @@
 //!
 //! // Valid names
 //! assert!( validate_command_name( ".hello" ).is_ok() );
-//! assert!( validate_command_name( ".video.search" ).is_ok() );
+//! assert!( validate_command_name( ".cmd1.process" ).is_ok() );
 //!
 //! // Invalid names
 //! assert!( validate_command_name( "hello" ).is_err() );
@@ -26,10 +26,10 @@
 //!
 //! // Valid namespaces
 //! assert!( validate_namespace( "" ).is_ok() );           // Empty is OK
-//! assert!( validate_namespace( ".video" ).is_ok() );
+//! assert!( validate_namespace( ".cmd1" ).is_ok() );
 //!
 //! // Invalid namespaces
-//! assert!( validate_namespace( "video" ).is_err() );     // Missing dot
+//! assert!( validate_namespace( "cmd1" ).is_err() );     // Missing dot
 //! ```
 
 /// Internal namespace.
@@ -97,8 +97,8 @@ pub fn validate_namespace( namespace : &str ) -> Result< (), Error >
 
 /// Validates parameter storage types match their multiple attribute.
 ///
-/// Prevents the wplan bug pattern where `multiple: true` is used with
-/// non-List storage types, causing silent data loss when multiple values
+/// Prevents silent data loss where `multiple: true` is used with
+/// non-List storage types, causing multiple values to silently
 /// overwrite each other.
 ///
 /// # Errors
@@ -152,7 +152,7 @@ pub fn validate_parameter_storage_types( cmd : &CommandDefinition ) -> Result< (
           return Err( Error::Registration( format!(
             "Parameter '{}' in command '{}' has multiple:true but storage type is {:?}. \
             Parameters accepting multiple values must use Kind::List storage to prevent data loss. \
-            \n\nThis prevents the wplan bug pattern where multiple values silently overwrite each other. \
+            \n\nWithout List storage, multiple values silently overwrite each other instead of accumulating. \
             \n\nChange to: Kind::List( Box::new( Kind::String ), None ) or similar List variant.",
             arg.name,
             cmd.name().as_str(),
@@ -235,7 +235,7 @@ pub fn is_help_command( full_name : &str ) -> bool
 /// use unilang::command_validation::make_help_command_name;
 ///
 /// assert_eq!( make_help_command_name( ".hello" ), ".hello.help" );
-/// assert_eq!( make_help_command_name( ".video.search" ), ".video.search.help" );
+/// assert_eq!( make_help_command_name( ".cmd1.process" ), ".cmd1.process.help" );
 /// ```
 #[ must_use ]
 pub fn make_help_command_name( full_name : &str ) -> String

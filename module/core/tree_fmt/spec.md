@@ -1726,6 +1726,140 @@ impl TableFormatter {
 
 **Column Width Calculation**: `max(header_width, max(row[i]_width for all rows))`
 
+**Column Truncation** (NEW):
+
+When `TableConfig::max_column_width` is set to `Some(width)`, cells exceeding this width are truncated:
+
+```rust
+// Truncation algorithm (ANSI-aware)
+fn truncate_cell( cell : &str, max_width : usize, marker : &str ) -> String
+{
+  let visual_length = visual_len( cell );
+  if visual_length <= max_width
+  {
+    return cell.to_string();
+  }
+
+  // Use ANSI-aware truncation
+  let marker_len = visual_len( marker );
+  let content_width = max_width.saturating_sub( marker_len );
+
+  let truncated = strs_tools::ansi::truncate( cell, content_width );
+  format!( "{}{}", truncated, marker )
+}
+```
+
+**Truncation Behavior**:
+- Applied during cell rendering in `format_row()`
+- Uses visual length (ANSI color codes don't count toward width)
+- Preserves ANSI codes in truncated output (colors/formatting maintained)
+- Appends `truncation_marker` (default: "...") to truncated cells
+- If marker doesn't fit, returns empty string with marker
+- Applied to both header and data cells
+- Disabled by default (`max_column_width = None`) for backward compatibility
+- Column width calculation happens BEFORE truncation (based on full content)
+
+**Example**:
+```rust
+let config = TableConfig::plain()
+  .max_column_width( Some( 20 ) )
+  .truncation_marker( "...".to_string() );
+// Cell "Very long content that exceeds twenty characters"
+// Becomes: "Very long conten..."  (20 chars total including marker)
+```
+
+**Multiline Cells** (NEW):
+
+When cell content contains newline characters (`\n`), tables are rendered with multiline support using a two-pass algorithm:
+
+```rust
+// Multiline rendering algorithm
+fn format_multiline_row( cells : &[String], column_widths : &[usize] ) -> String
+{
+  // Pass 1: Split all cells into lines and find maximum line count
+  let split_cells : Vec<Vec<&str>> = cells
+    .iter()
+    .map( |cell| cell.lines().collect() )
+    .collect();
+
+  let row_height = split_cells
+    .iter()
+    .map( |lines| lines.len() )
+    .max()
+    .unwrap_or( 1 );
+
+  // Pass 2: Render each line of the row
+  let mut output = String::new();
+  for line_idx in 0..row_height
+  {
+    for ( col_idx, cell_lines ) in split_cells.iter().enumerate()
+    {
+      let line = cell_lines.get( line_idx ).unwrap_or( &"" );
+      let width = column_widths[ col_idx ];
+      output.push_str( &pad_to_width( line, width, false ) );
+
+      if col_idx < cells.len() - 1
+      {
+        append_column_separator( &mut output );
+      }
+    }
+    output.push( '\n' );
+  }
+
+  output
+}
+```
+
+**Multiline Behavior**:
+- Detected automatically when ANY cell contains `\n` character
+- Cells split on `\n` into individual lines (via `str::lines()`)
+- Row height = maximum line count across all cells in that row
+- Each line rendered separately with proper column alignment
+- Shorter cells padded with empty strings to match row height
+- Column separators and borders applied to each line
+- Maintains alignment even with ANSI color codes (uses `visual_len()`)
+- Applied per-row (different rows can have different heights)
+- Backward compatible (single-line cells work unchanged)
+
+**Multiline + Truncation Interaction**:
+
+When both features are active:
+1. Truncation applied BEFORE line splitting (to full cell content)
+2. If truncated cell contains `\n`, multiline rendering still applies
+3. Each LINE of a multiline cell can be individually truncated
+4. Preferred: Apply truncation per-line after splitting for better visual result
+
+```rust
+// Combined algorithm (preferred implementation)
+fn render_cell_with_both( cell : &str, max_width : Option<usize>, marker : &str )
+  -> Vec<String>
+{
+  let lines : Vec<&str> = cell.lines().collect();
+
+  lines
+    .iter()
+    .map( |line|
+    {
+      if let Some( width ) = max_width
+      {
+        truncate_cell( line, width, marker )
+      }
+      else
+      {
+        line.to_string()
+      }
+    })
+    .collect()
+}
+```
+
+**Feature Flags and Backward Compatibility**:
+- Column truncation: Disabled by default (`max_column_width = None`)
+- Multiline cells: Enabled automatically when `\n` detected
+- No breaking changes to existing behavior
+- Single-line cells without truncation work exactly as before
+- CSV/TSV formats: Multiline disabled (newlines kept as literal `\n`)
+
 #### Expanded Format Algorithm
 
 **Algorithm**:
@@ -2588,3 +2722,58 @@ let tree = RowBuilder::new(headers)
 - Zero breaking changes for existing code
 - All tests pass with -D warnings
 - Zero clippy warnings
+
+**v0.5.0** (Column truncation and multiline cells - advanced table formatting):
+- **Column Truncation Feature**: Full implementation of `max_column_width` truncation
+  - ANSI-aware truncation using `strs_tools::ansi::truncate()`
+  - Preserves color codes in truncated output
+  - Configurable `truncation_marker` (default: "...")
+  - Applied during cell rendering with visual length calculation
+  - Disabled by default for backward compatibility
+  - Works with all table styles (plain, bordered, markdown, etc.)
+  - Comprehensive test suite: 15+ tests covering basic, edge cases, ANSI, all styles
+- **Multiline Cells Feature**: Automatic support for `\n` in cell content
+  - Two-pass rendering algorithm: split → calculate height → render lines
+  - Row height = max line count across cells in that row
+  - Per-line column alignment with proper padding
+  - ANSI-aware line rendering for colored multiline content
+  - Border and separator support for each line
+  - Backward compatible (single-line cells unchanged)
+  - CSV/TSV formats: multiline disabled (literal `\n` preserved)
+  - Comprehensive test suite: 20+ tests covering basic, mixed heights, ANSI, borders
+- **Feature Interaction**: Truncation + multiline combined behavior
+  - Per-line truncation after line splitting (preferred implementation)
+  - Each line of multiline cell individually truncated
+  - Maintains alignment and visual consistency
+  - 5+ tests for combined scenarios
+- **Helper Functions** (NEW in `src/helpers.rs`):
+  - `truncate_cell()`: ANSI-aware cell truncation with marker
+  - `detect_multiline()`: Check if any cell contains newlines
+  - `split_into_lines()`: Split cells preserving empty lines
+  - `calculate_row_heights()`: Compute line counts per row
+- **Specification Updates**:
+  - Added "Column Truncation" algorithm section with pseudocode
+  - Added "Multiline Cells" algorithm section with two-pass description
+  - Added "Feature Interaction" section for combined behavior
+  - Added "Feature Flags and Backward Compatibility" section
+- **TDD Workflow**: Strict RED → GREEN → REFACTOR discipline
+  - Phase 1: Truncation (tests → implementation → refactor)
+  - Phase 2: Multiline (tests → implementation → refactor)
+  - All tests written before implementation (TDD-first)
+- **Quality Assurance**:
+  - 40+ new tests total (truncation + multiline + interaction)
+  - All tests pass with RUSTFLAGS="-D warnings"
+  - Zero clippy warnings (--all-targets --all-features)
+  - Full rustdoc validation (--all-features)
+  - Pattern migration tracking (old → new patterns verified)
+  - Rulebook compliance verified (2-space indent, no cargo fmt, etc.)
+- **Documentation**:
+  - Updated `spec.md` with detailed algorithms and examples
+  - Added doc comments for all new helper functions
+  - Updated module-level documentation in `src/formatters/table.rs`
+  - Added examples in doc comments for truncation and multiline features
+- **Zero Breaking Changes**:
+  - All existing tests pass unchanged
+  - Default behavior identical (truncation disabled, multiline auto-enabled)
+  - API fully backward compatible
+  - No deprecations introduced

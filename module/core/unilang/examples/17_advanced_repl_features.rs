@@ -39,12 +39,12 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
 #[allow(clippy::too_many_lines)]
 fn register_comprehensive_commands( registry : &mut CommandRegistry ) -> Result< (), Error >
 {
-  // File system commands
+  // Generic listing commands
   let ls_cmd = CommandDefinition::former()
   .name( ".list" )
-  .namespace( ".fs" )
+  .namespace( ".cmd2" )
   .description( "List files and directories".to_string() )
-  .hint( "File system listing" )
+  .hint( "Generic listing operation" )
   .status( "stable" )
   .version( "1.0.0" )
   .aliases( vec![ ".ls".to_string(), ".dir".to_string() ] )

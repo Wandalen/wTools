@@ -4,7 +4,7 @@
 
 extern crate alloc;
 
-use alloc::string::String;
+use alloc::string::{ String, ToString };
 use super::{ Segment, parse_segments };
 use super::strip::strip;
 

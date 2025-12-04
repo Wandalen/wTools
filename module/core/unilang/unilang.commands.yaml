@@ -1,7 +1,7 @@
 ---
 # Static command definitions for unilang
 # These commands are compiled into the binary for zero-overhead access
-- name: "version"
+- name: ".version"
   namespace: ""
   description: "Show version information"
   hint: "Displays the application version"
@@ -18,7 +18,7 @@
   http_method_hint: "GET"
   examples: []
 
-- name: "help"
+- name: ".help"
   namespace: ""
   description: "Show help information"
   hint: "Displays help for commands"
@@ -35,8 +35,8 @@
   http_method_hint: "GET"
   examples: []
 
-- name: "status"
-  namespace: "system"
+- name: ".status"
+  namespace: ".system"
   description: "Show system status"
   hint: "Displays system status information"
   arguments: []
@@ -51,8 +51,8 @@
   http_method_hint: "GET"
   examples: []
 
-- name: "info"
-  namespace: "system"
+- name: ".info"
+  namespace: ".system"
   description: "Show system information"
   hint: "Displays detailed system information"
   arguments: []
@@ -67,8 +67,8 @@
   http_method_hint: "GET"
   examples: []
 
-- name: "stats"
-  namespace: "performance"
+- name: ".stats"
+  namespace: ".performance"
   description: "Show performance statistics"
   hint: "Displays performance metrics"
   arguments: []
@@ -83,8 +83,8 @@
   http_method_hint: "GET"
   examples: []
 
-- name: "search"
-  namespace: "test"
+- name: ".search"
+  namespace: ".test"
   description: "Test command for quoted value parsing"
   hint: "Used to test multi-word quoted value parsing"
   arguments:

@@ -275,7 +275,7 @@ impl CommandRegistry
   /// commands appear in help listings.
   ///
   /// This prevents the help divergence bug where commands are registered but invisible
-  /// in help output (discovered in production: wflow's .languages command).
+  /// in help output.
   ///
   /// **Validation:** This method validates the command definition before registration,
   /// checking for proper naming conventions, namespace format, and parameter storage types.
@@ -681,7 +681,7 @@ impl CommandRegistry
   /// It works with both static and dynamic commands.
   ///
   /// # Arguments
-  /// * `command_name` - The full name of the command (e.g., ".example" or ".fs.list")
+  /// * `command_name` - The full name of the command (e.g., ".example" or ".cmd2.list")
   ///
   /// # Returns
   /// * `Option<String>` - Formatted help text, or None if command not found
@@ -750,7 +750,7 @@ impl CommandRegistry
       let mut help_content = String::new();
       help_content.push_str( "Available Commands:\n\n" );
       help_content.push_str( "Use '.command.help' to get detailed help for any specific command.\n" );
-      help_content.push_str( "Examples: '.video.search.help', '.math.add.help'\n\n" );
+      help_content.push_str( "Examples: '.cmd1.process.help', '.cmd2.list.help'\n\n" );
       help_content.push_str( "Global Commands:\n" );
       help_content.push_str( "  .help    Display this help information\n" );
 
@@ -848,6 +848,14 @@ impl CommandRegistry
     for ( _command_name, static_cmd ) in static_commands.entries()
     {
       let dynamic_cmd = crate::data::CommandDefinition::from( *static_cmd );
+
+      // Skip .help command if it already exists (mandatory global help is registered in new())
+      // The mandatory help is non-negotiable and takes precedence over static definitions
+      if dynamic_cmd.full_name() == ".help" && registry.dynamic_commands.contains_key(".help")
+      {
+        continue;
+      }
+
       registry.register( dynamic_cmd )
         .expect( "Static commands should always be valid - this is a build-time generation bug" );
     }

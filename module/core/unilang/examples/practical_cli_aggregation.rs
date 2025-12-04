@@ -456,7 +456,7 @@ fn main() -> Result<(), unilang::Error>
   println!( "   Database administration commands:" );
   for (name, _cmd) in dba_cli.commands()
   {
-    if name.starts_with( ".db." )
+    if name.starts_with( ".svc1." )
     {
       println!( "     {name}" );
     }

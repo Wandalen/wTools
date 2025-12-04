@@ -1037,7 +1037,7 @@ impl Pipeline
   /// usage examples, and metadata.
   ///
   /// # Arguments
-  /// * `command_name` - The full name of the command to get help for (e.g., ".example" or ".fs.list")
+  /// * `command_name` - The full name of the command to get help for (e.g., ".example" or ".cmd2.list")
   /// * `context` - The execution context for the help request
   ///
   /// # Returns

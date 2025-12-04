@@ -16,14 +16,14 @@ use unilang::prelude::*;
 // Example CLI Modules - Demonstrating Export Pattern
 // =============================================================================
 
-/// Create math commands for demonstration
-fn create_math_commands() -> Vec<CommandDefinition>
+/// Create generic commands for demonstration
+fn create_cmd1_commands() -> Vec<CommandDefinition>
 {
   vec![
     CommandDefinition::former()
       .name( ".add" )
       .description( "Add two numbers".to_string() )
-      .hint( "Mathematical addition".to_string() )
+      .hint( "Generic addition operation".to_string() )
       .arguments( vec![
         ArgumentDefinition::former()
           .name( "a" )
@@ -44,7 +44,7 @@ fn create_math_commands() -> Vec<CommandDefinition>
     CommandDefinition::former()
       .name( ".multiply" )
       .description( "Multiply two numbers".to_string() )
-      .hint( "Mathematical multiplication".to_string() )
+      .hint( "Generic multiplication operation".to_string() )
       .arguments( vec![
         ArgumentDefinition::former()
           .name( "x" )
@@ -65,7 +65,7 @@ fn create_math_commands() -> Vec<CommandDefinition>
   ]
 }
 
-/// Create file system commands for demonstration
+/// Create generic commands for demonstration
 fn create_file_commands() -> Vec<CommandDefinition>
 {
   vec![
@@ -182,11 +182,11 @@ fn main() -> Result<(), unilang::Error>
     .app_name( "unified_cli" )
     .auto_help( true )
     .detect_conflicts( true )
-    // Add math module with "math" prefix -> .math.add, .math.multiply
-    .static_module_with_prefix( "math", "math", create_math_commands() )
-    // Add file module with "fs" prefix -> .fs.list, .fs.copy
-    .static_module_with_prefix( "file", "fs", create_file_commands() )
-    // Add database module with "db" prefix -> .db.connect, .db.migrate
+    // Add generic module 1 with "cmd1" prefix -> .cmd1.add, .cmd1.multiply
+    .static_module_with_prefix( "cmd1", "cmd1", create_cmd1_commands() )
+    // Add file module with "cmd2" prefix -> .cmd2.list, .cmd2.copy
+    .static_module_with_prefix( "file", "cmd2", create_file_commands() )
+    // Add database module with "db" prefix -> .svc1.connect, .svc1.migrate
     .static_module_with_prefix( "database", "db", create_database_commands() )
     .build()?;
 
@@ -204,12 +204,12 @@ fn main() -> Result<(), unilang::Error>
   // Step 2: Demonstrate the aggregated CLI in action
   println!( "✅ CLI built successfully!" );
   println!();
-  println!( "🧮 Testing Math Module:" );
+  println!( "🧮 Testing Generic Module 1:" );
 
-  // Test math commands
+  // Test generic commands
   let test_commands = vec![
-    ".math.add a::15 b::25",
-    ".math.multiply x::7 y::8",
+    ".cmd1.add a::15 b::25",
+    ".cmd1.multiply x::7 y::8",
   ];
 
   for cmd_str in &test_commands
@@ -229,8 +229,8 @@ fn main() -> Result<(), unilang::Error>
 
   println!( "📁 Testing File Module:" );
   let file_commands = vec![
-    ".fs.list path::/home/user",
-    ".fs.copy source::readme.txt dest::backup.txt",
+    ".cmd2.list path::/home/user",
+    ".cmd2.copy source::readme.txt dest::backup.txt",
   ];
 
   for cmd_str in &file_commands
@@ -250,8 +250,8 @@ fn main() -> Result<(), unilang::Error>
 
   println!( "🗄️ Testing Database Module:" );
   let db_commands = vec![
-    ".db.connect host::production.db port::5432",
-    ".db.migrate direction::up",
+    ".svc1.connect host::production.svc1 port::5432",
+    ".svc1.migrate direction::up",
   ];
 
   for cmd_str in &db_commands
@@ -284,9 +284,9 @@ fn main() -> Result<(), unilang::Error>
 
   // Step 3: Demonstrate namespace isolation and conflict detection
   println!( "🔍 Testing Namespace Isolation:" );
-  println!( "   ✅ Math commands isolated under .math namespace" );
-  println!( "   ✅ File commands isolated under .fs namespace" );
-  println!( "   ✅ Database commands isolated under .db namespace" );
+  println!( "   ✅ Generic commands isolated under .cmd1 namespace" );
+  println!( "   ✅ File commands isolated under .cmd2 namespace" );
+  println!( "   ✅ Database commands isolated under .svc1 namespace" );
   println!( "   ✅ No command name conflicts possible" );
   println!();
 
@@ -300,7 +300,7 @@ fn main() -> Result<(), unilang::Error>
 
   println!( "🎉 Summary:" );
   println!( "  ✅ Successfully aggregated CLIs from 3 separate modules" );
-  println!( "  ✅ Combined them with intuitive prefixes (math, fs, db)" );
+  println!( "  ✅ Combined them with intuitive prefixes (cmd1, cmd2, svc1)" );
   println!( "  ✅ Type safety and validation maintained" );
   println!( "  ✅ Ergonomic CliBuilder API that's hard to misuse" );
   println!( "  ✅ Automatic namespace isolation prevents conflicts" );

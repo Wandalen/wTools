@@ -58,10 +58,10 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
 /// Register demo commands showcasing different help convention features
 fn register_demo_commands( registry : &mut CommandRegistry ) -> Result< (), Error >
 {
-  // Command 1: File system command with comprehensive help
+  // Command 1: Generic command with comprehensive help
   let fs_list_cmd = CommandDefinition::former()
-    .name( ".fs.list" )
-    .namespace( ".fs" )
+    .name( ".cmd2.list" )
+    .namespace( ".cmd2" )
     .description( "List files and directories with advanced filtering options" )
     .hint( "Advanced file listing" )
     .status( "stable" )
@@ -69,8 +69,8 @@ fn register_demo_commands( registry : &mut CommandRegistry ) -> Result< (), Erro
     .tags( vec![ "filesystem".to_string(), "utility".to_string() ] )
     .aliases( vec![ ".ls".to_string(), ".dir".to_string() ] )
     .examples( vec![
-      ".fs.list path::/home/user".to_string(),
-      ".fs.list /tmp show_hidden::true".to_string(),
+      ".cmd2.list path::/home/user".to_string(),
+      ".cmd2.list /tmp show_hidden::true".to_string(),
       ".ls -a".to_string()
     ])
     .arguments( vec![
@@ -252,7 +252,7 @@ fn register_demo_commands( registry : &mut CommandRegistry ) -> Result< (), Erro
   registry.register_with_auto_help( sys_info_cmd, info_routine )?;
 
   println!( "✓ Registered 3 demo commands with automatic help generation:" );
-  println!( "  • .fs.list (comprehensive arguments and validation)" );
+  println!( "  • .cmd2.list (comprehensive arguments and validation)" );
   println!( "  • .net.ping (network utility with aliases)" );
   println!( "  • .sys.info (minimal command example)" );
 
@@ -268,24 +268,24 @@ fn demonstrate_help_access_methods( pipeline : &Pipeline ) -> Result< (), Box< d
 
   // Method 1: Traditional ? operator
   println!( "=== Method 1: Traditional ? Operator ===" );
-  println!( "Command: .fs.list ?" );
-  let result1 = pipeline.process_command( ".fs.list ?", context.clone() );
+  println!( "Command: .cmd2.list ?" );
+  let result1 = pipeline.process_command( ".cmd2.list ?", context.clone() );
   display_result( &result1, "Traditional ? operator" );
 
   println!( "\n" );
 
   // Method 2: New ?? parameter
   println!( "=== Method 2: New ?? Parameter ===" );
-  println!( "Command: .fs.list ??" );
-  let result2 = pipeline.process_command( ".fs.list \"??\"", context.clone() );
+  println!( "Command: .cmd2.list ??" );
+  let result2 = pipeline.process_command( ".cmd2.list \"??\"", context.clone() );
   display_result( &result2, "?? parameter" );
 
   println!( "\n" );
 
   // Method 3: Automatic .command.help
   println!( "=== Method 3: Automatic .command.help ===" );
-  println!( "Command: .fs.list.help" );
-  let result3 = pipeline.process_command( ".fs.list.help", context.clone() );
+  println!( "Command: .cmd2.list.help" );
+  let result3 = pipeline.process_command( ".cmd2.list.help", context.clone() );
   display_result( &result3, ".command.help" );
 
   println!( "\n" );
@@ -323,7 +323,7 @@ fn demonstrate_help_access_methods( pipeline : &Pipeline ) -> Result< (), Box< d
   // Interactive demo
   println!( "\n=== Interactive Demo ===" );
   println!( "Try these commands to explore help functionality:" );
-  println!( "  .fs.list path::/tmp ??          # Get help with partial arguments" );
+  println!( "  .cmd2.list path::/tmp ??          # Get help with partial arguments" );
   println!( "  .net.ping.help                   # Direct help command access" );
   println!( "  .sys.info ?                      # Traditional help operator" );
   println!( "  .                                # List all available commands" );

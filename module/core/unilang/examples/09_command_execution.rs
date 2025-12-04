@@ -92,7 +92,7 @@ fn main() -> Result< (), unilang::error::Error >
   .idempotent( true )
   .deprecation_message( String::new() )
   .http_method_hint( "GET".to_string() )
-  .examples( vec![ "system.status --verbose".to_string() ] )
+  .examples( vec![ "system.status verbose::true".to_string() ] )
   .arguments( vec!
   [
     ArgumentDefinition {
@@ -158,18 +158,18 @@ fn main() -> Result< (), unilang::error::Error >
   // 3. Command that can fail with error
   let divide_command = CommandDefinition::former()
   .name( ".divide" )
-  .namespace( ".math".to_string() )
+  .namespace( ".cmd1".to_string() )
   .description( "Divides two numbers with error handling".to_string() )
   .hint( "Safe division operation" )
   .status( "stable" )
   .version( "1.2.0" )
   .aliases( vec![ ".div".to_string() ] )
-  .tags( vec![ "math".to_string(), "arithmetic".to_string() ] )
+  .tags( vec![ "cmd1".to_string(), "generic".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
   .deprecation_message( String::new() )
   .http_method_hint( "GET".to_string() )
-  .examples( vec![ "math.divide 10 2".to_string(), "math.divide 15 0".to_string() ] )
+  .examples( vec![ "cmd1.divide dividend::10 divisor::2".to_string(), "cmd1.divide dividend::15 divisor::0".to_string() ] )
   .arguments( vec!
   [
     ArgumentDefinition {
@@ -366,14 +366,14 @@ fn main() -> Result< (), unilang::error::Error >
 
   let test_cases = [
     // Successful executions
-    ( ".hello Alice", "Simple successful execution" ),
-    ( "system.status --verbose", "Command with context and detailed output" ),
-    ( "math.divide 42.0 6.0", "Mathematical operation" ),
-    ( "data.analyze --numbers 1.5,2.3,4.1,3.7,5.2,2.8,4.6", "Complex data processing" ),
+    ( ".hello name::Alice", "Simple successful execution" ),
+    ( "system.status verbose::true", "Command with context and detailed output" ),
+    ( "cmd1.divide dividend::42.0 divisor::6.0", "Generic operation" ),
+    ( "data.analyze numbers::1.5,2.3,4.1,3.7,5.2,2.8,4.6", "Complex data processing" ),
 
     // Error cases
-    ( "math.divide 10.0 0.0", "Division by zero error" ),
-    ( "data.analyze --numbers 5.0", "Insufficient data error (needs 2+ numbers)" ),
+    ( "cmd1.divide dividend::10.0 divisor::0.0", "Division by zero error" ),
+    ( "data.analyze numbers::5.0", "Insufficient data error (needs 2+ numbers)" ),
   ];
 
   println!( "\n=== Command Execution Test Cases ===" );
@@ -432,9 +432,9 @@ fn main() -> Result< (), unilang::error::Error >
 
   let batch_commands = vec!
   [
-    ".hello John",
-    ".hello Jane",
-    "math.divide 100.0 4.0",
+    ".hello name::John",
+    ".hello name::Jane",
+    "cmd1.divide dividend::100.0 divisor::4.0",
     "system.status",
   ];
 

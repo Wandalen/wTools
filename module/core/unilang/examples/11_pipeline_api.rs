@@ -267,7 +267,7 @@ fn setup_demo_registry() -> Result< CommandRegistry, unilang::error::Error >
   // Calculator commands
   setup_calc_commands( &mut registry )?;
 
-  // Text processing commands
+  // Generic processing commands
   setup_text_commands( &mut registry )?;
 
   // Utility commands
@@ -289,7 +289,7 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   .status( "stable" )
   .version( "1.0.0" )
   .aliases( vec![ ".plus".to_string() ] )
-  .tags( vec![ "math".to_string() ] )
+  .tags( vec![ "cmd1".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
   .deprecation_message( String::new() )
@@ -346,7 +346,7 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   .status( "stable" )
   .version( "1.0.0" )
   .aliases( vec![ ".mul".to_string(), ".times".to_string() ] )
-  .tags( vec![ "math".to_string() ] )
+  .tags( vec![ "cmd1".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
   .deprecation_message( String::new() )
@@ -403,7 +403,7 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   .status( "stable" )
   .version( "1.0.0" )
   .aliases( vec![ ".div".to_string() ] )
-  .tags( vec![ "math".to_string() ] )
+  .tags( vec![ "cmd1".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
   .deprecation_message( String::new() )
@@ -464,12 +464,12 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   Ok(())
 }
 
-/// Set up text processing commands
+/// Set up generic processing commands
 fn setup_text_commands( registry : &mut CommandRegistry ) -> Result< (), unilang::error::Error >
 {
   let reverse_cmd = CommandDefinition::former()
   .name( ".reverse" )
-  .namespace( ".text".to_string() )
+  .namespace( ".cmd3".to_string() )
   .description( "Reverses a text string".to_string() )
   .hint( "String reversal" )
   .status( "stable" )

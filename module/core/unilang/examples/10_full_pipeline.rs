@@ -266,7 +266,7 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   // File listing command
   let list_command = CommandDefinition::former()
   .name( ".list" )
-  .namespace( ".file".to_string() )
+  .namespace( ".cmd2".to_string() )
   .description( "Lists files and directories with various formatting options".to_string() )
   .hint( "Directory listing utility" )
   .status( "stable" )
@@ -378,7 +378,7 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   // File sync command
   let sync_command = CommandDefinition::former()
   .name( ".sync" )
-  .namespace( ".file".to_string() )
+  .namespace( ".cmd2".to_string() )
   .description( "Synchronizes files between source and target directories".to_string() )
   .hint( "File synchronization utility" )
   .status( "beta" )
@@ -495,13 +495,13 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   Ok(())
 }
 
-/// Set up text processing commands
+/// Set up generic processing commands
 #[allow(clippy::too_many_lines)]
 fn setup_text_commands( registry : &mut CommandRegistry ) -> Result< (), unilang::error::Error >
 {
   let analyze_command = CommandDefinition::former()
   .name( ".analyze" )
-  .namespace( ".text".to_string() )
+  .namespace( ".cmd3".to_string() )
   .description( "Analyzes text with various metrics and statistics".to_string() )
   .hint( "Text analysis and metrics" )
   .status( "stable" )
@@ -639,7 +639,7 @@ fn setup_network_commands( registry : &mut CommandRegistry ) -> Result< (), unil
 {
   let ping_command = CommandDefinition::former()
   .name( ".ping" )
-  .namespace( ".network".to_string() )
+  .namespace( ".action".to_string() )
   .description( "Tests network connectivity to a host".to_string() )
   .hint( "Network connectivity test" )
   .status( "stable" )

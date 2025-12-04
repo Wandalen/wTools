@@ -85,21 +85,21 @@ fn register_sample_commands( registry : &mut CommandRegistry ) -> Result< (), un
 
   registry.command_add_runtime( &echo_cmd, echo_routine )?;
 
-  // Math command
-  let math_cmd = CommandDefinition::former()
+  // Generic command
+  let cmd1_cmd = CommandDefinition::former()
   .name( ".add" )
-  .namespace( ".math" )
+  .namespace( ".cmd1" )
   .description( "Adds two numbers".to_string() )
   .hint( "Simple addition" )
   .status( "stable" )
   .version( "1.0.0" )
   .aliases( vec![ ".plus".to_string() ] )
-  .tags( vec![ "math".to_string(), "arithmetic".to_string() ] )
+  .tags( vec![ "cmd1".to_string(), "generic".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
   .deprecation_message( String::new() )
   .http_method_hint( "POST".to_string() )
-  .examples( vec![ "math.add a::5 b::3".to_string() ] )
+  .examples( vec![ "cmd1.add a::5 b::3".to_string() ] )
   .arguments( vec!
   [
     ArgumentDefinition {
@@ -131,7 +131,7 @@ fn register_sample_commands( registry : &mut CommandRegistry ) -> Result< (), un
   ])
   .end();
 
-  let math_routine = Box::new( | cmd : unilang::semantic::VerifiedCommand, _ctx : ExecutionContext |
+  let cmd1_routine = Box::new( | cmd : unilang::semantic::VerifiedCommand, _ctx : ExecutionContext |
   {
     let a = cmd.arguments.get( "a" )
       .and_then( |v| v.as_integer() )
@@ -146,7 +146,7 @@ fn register_sample_commands( registry : &mut CommandRegistry ) -> Result< (), un
     let result = a + b;
     let result_msg = format!( "{a} + {b} = {result}" );
     
-    println!( "🧮 Math: {result_msg}" );
+    println!( "🧮 Generic: {result_msg}" );
     
     Ok( OutputData
     {
@@ -156,7 +156,7 @@ fn register_sample_commands( registry : &mut CommandRegistry ) -> Result< (), un
     })
   });
 
-  registry.command_add_runtime( &math_cmd, math_routine )?;
+  registry.command_add_runtime( &cmd1_cmd, cmd1_routine )?;
 
   println!( "✓ Registered {} sample commands", registry.commands().len() );
 
@@ -256,8 +256,8 @@ fn display_help()
   println!( "📋 Available Commands:" );
   println!( "  • echo message::'text'        - Echo a message" );
   println!( "  • print message::'text'       - Alias for echo" );
-  println!( "  • math.add a::5 b::3          - Add two numbers" );
-  println!( "  • plus a::10 b::20            - Alias for math.add" );
+  println!( "  • cmd1.add a::5 b::3          - Add two numbers" );
+  println!( "  • plus a::10 b::20            - Alias for cmd1.add" );
   
   println!( "\n🛠️ REPL Commands:" );
   println!( "  • help                        - Show this help" );
@@ -265,7 +265,7 @@ fn display_help()
   
   println!( "\n💡 Examples:" );
   println!( "  echo message::'Hello REPL!'" );
-  println!( "  math.add a::42 b::58" );
+  println!( "  cmd1.add a::42 b::58" );
   println!( "  print text::'Stateless operation demo'" );
   
   println!( "\n🔄 Key Features:" );

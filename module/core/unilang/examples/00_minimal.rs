@@ -40,5 +40,10 @@ fn main()
   let result = pipeline.process_command_simple( ".greet name::Alice" );
 
   println!( "Success: {}", result.success );
-  println!( "Output: {}", result.outputs[ 0 ].content );
+  println!( "Error: {:?}", result.error );
+  println!( "Outputs count: {}", result.outputs.len() );
+  if !result.outputs.is_empty()
+  {
+    println!( "Output: {}", result.outputs[ 0 ].content );
+  }
 }
