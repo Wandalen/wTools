@@ -722,6 +722,7 @@ impl< 'a > HelpGenerator< 'a >
   {
     match category
     {
+      // Legacy categories (for other CLIs like wip)
       "repository_management" => "REPOSITORY MANAGEMENT".to_string(),
       "git_operations" => "GIT OPERATIONS".to_string(),
       "removal_operations" => "REMOVAL OPERATIONS".to_string(),
@@ -731,6 +732,15 @@ impl< 'a > HelpGenerator< 'a >
       "ignore_management" => "IGNORE MANAGEMENT".to_string(),
       "pull_requests" => "PULL REQUESTS".to_string(),
       "utilities" => "UTILITIES".to_string(),
+
+      // wplan/dream/wish categories
+      "daemon_lifecycle" => "DAEMON LIFECYCLE".to_string(),
+      "job_management" => "JOB MANAGEMENT".to_string(),
+      "job_monitoring" => "JOB MONITORING".to_string(),
+      "ai_assistance" => "AI ASSISTANCE".to_string(),
+      "variable_storage" => "VARIABLE STORAGE".to_string(),
+      "system" => "SYSTEM".to_string(),
+
       _ => category.to_uppercase(),
     }
   }
