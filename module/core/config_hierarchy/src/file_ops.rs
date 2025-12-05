@@ -5,7 +5,7 @@ use std::
   collections::HashMap,
   fs::{ self, OpenOptions },
   path::Path,
-  io::Read,
+  io::{ Read, Write, Seek, SeekFrom },
 };
 use serde_json::Value as JsonValue;
 use fs2::FileExt;
@@ -182,13 +182,31 @@ where
   // Apply modifications
   modify_fn( &mut config )?;
 
-  // Save while still holding lock
-  let result = build_and_write_config( &config, config_path );
+  // Extract created_at timestamp from the content we already read
+  let created_at = if content.trim().is_empty()
+  {
+    None
+  }
+  else
+  {
+    extract_created_at_from_yaml_string( &content )
+  };
+
+  // Build YAML string
+  let yaml_string = build_config_yaml_string( &config, created_at )?;
+
+  // Write to the already-opened file handle (cross-platform compatible)
+  file.set_len( 0 )
+    .map_err( | e | format!( "Failed to truncate config file: {e}" ) )?;
+  file.seek( SeekFrom::Start( 0 ) )
+    .map_err( | e | format!( "Failed to seek in config file: {e}" ) )?;
+  file.write_all( yaml_string.as_bytes() )
+    .map_err( | e | format!( "Failed to write config file: {e}" ) )?;
 
   // Release lock (automatic when file dropped)
   drop( file );
 
-  result
+  Ok( () )
 }
 
 /// Ensure config directory exists
@@ -220,6 +238,50 @@ fn build_and_write_config( config : &HashMap< String, JsonValue >, config_path :
     None
   };
 
+  // Build YAML string
+  let yaml_string = build_config_yaml_string( config, created_at )?;
+
+  // Write to file
+  fs::write( config_path, yaml_string )
+    .map_err( | e | format!( "Failed to write config file: {e}" ) )?;
+
+  Ok( () )
+}
+
+/// Extract `created_at` timestamp from existing config file
+#[ inline ]
+fn extract_created_at_timestamp( config_path : &Path ) -> Option< String >
+{
+  let content = fs::read_to_string( config_path ).ok()?;
+  extract_created_at_from_yaml_string( &content )
+}
+
+/// Extract `created_at` timestamp from YAML string
+#[ inline ]
+fn extract_created_at_from_yaml_string( content : &str ) -> Option< String >
+{
+  let yaml_value : serde_yaml::Value = serde_yaml::from_str( content ).ok()?;
+
+  if let serde_yaml::Value::Mapping( map ) = yaml_value
+  {
+    if let Some( serde_yaml::Value::Mapping( metadata_map ) ) =
+      map.get( serde_yaml::Value::String( "metadata".to_string() ) )
+    {
+      if let Some( serde_yaml::Value::String( created_str ) ) =
+        metadata_map.get( serde_yaml::Value::String( "created_at".to_string() ) )
+      {
+        return Some( created_str.clone() );
+      }
+    }
+  }
+
+  None
+}
+
+/// Build YAML string for config with metadata
+#[ inline ]
+fn build_config_yaml_string( config : &HashMap< String, JsonValue >, created_at : Option< String > ) -> Result< String, String >
+{
   // Create YAML structure
   let mut root_map = serde_yaml::Mapping::new();
 
@@ -261,34 +323,6 @@ fn build_and_write_config( config : &HashMap< String, JsonValue >, config_path :
   );
 
   let yaml_value = serde_yaml::Value::Mapping( root_map );
-  let yaml_string = serde_yaml::to_string( &yaml_value )
-    .map_err( | e | format!( "Failed to serialize YAML: {e}" ) )?;
-
-  fs::write( config_path, yaml_string )
-    .map_err( | e | format!( "Failed to write config file: {e}" ) )?;
-
-  Ok( () )
-}
-
-/// Extract `created_at` timestamp from existing config file
-#[ inline ]
-fn extract_created_at_timestamp( config_path : &Path ) -> Option< String >
-{
-  let content = fs::read_to_string( config_path ).ok()?;
-  let yaml_value : serde_yaml::Value = serde_yaml::from_str( &content ).ok()?;
-
-  if let serde_yaml::Value::Mapping( map ) = yaml_value
-  {
-    if let Some( serde_yaml::Value::Mapping( metadata_map ) ) =
-      map.get( serde_yaml::Value::String( "metadata".to_string() ) )
-    {
-      if let Some( serde_yaml::Value::String( created_str ) ) =
-        metadata_map.get( serde_yaml::Value::String( "created_at".to_string() ) )
-      {
-        return Some( created_str.clone() );
-      }
-    }
-  }
-
-  None
+  serde_yaml::to_string( &yaml_value )
+    .map_err( | e | format!( "Failed to serialize YAML: {e}" ) )
 }
