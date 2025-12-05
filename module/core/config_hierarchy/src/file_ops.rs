@@ -5,6 +5,7 @@ use std::
   collections::HashMap,
   fs::{ self, OpenOptions },
   path::Path,
+  io::{ Read, Seek, SeekFrom },
 };
 use serde_json::Value as JsonValue;
 use fs2::FileExt;
@@ -118,7 +119,7 @@ where
   ensure_config_dir_exists( config_path )?;
 
   // Open or create config file
-  let file = OpenOptions::new()
+  let mut file = OpenOptions::new()
     .read( true )
     .write( true )
     .create( true )
@@ -130,8 +131,53 @@ where
   file.lock_exclusive()
     .map_err( | e | format!( "Failed to acquire file lock: {e}" ) )?;
 
-  // Load current config
-  let mut config = load_config_file( config_path )?;
+  // Load current config from the already-opened file handle
+  let mut content = String::new();
+  file.read_to_string( &mut content )
+    .map_err( | e | format!( "Failed to read config file {}: {e}", config_path.display() ) )?;
+
+  let mut config = if content.trim().is_empty()
+  {
+    HashMap::new()
+  }
+  else
+  {
+    let yaml_value : serde_yaml::Value = serde_yaml::from_str( &content )
+      .map_err( | e | format!( "Failed to parse YAML in {}: {e}", config_path.display() ) )?;
+
+    let mut parsed_config = HashMap::new();
+
+    if let serde_yaml::Value::Mapping( map ) = yaml_value
+    {
+      // Look for parameters section first
+      if let Some( params_value ) = map.get( serde_yaml::Value::String( "parameters".to_string() ) )
+      {
+        if let serde_yaml::Value::Mapping( params_map ) = params_value
+        {
+          for ( key, value ) in params_map
+          {
+            if let serde_yaml::Value::String( key_str ) = key
+            {
+              parsed_config.insert( key_str.clone(), yaml_to_json( value ) );
+            }
+          }
+        }
+      }
+      // Fall back to root level if no parameters section
+      else
+      {
+        for ( key, value ) in &map
+        {
+          if let serde_yaml::Value::String( key_str ) = key
+          {
+            parsed_config.insert( key_str.clone(), yaml_to_json( value ) );
+          }
+        }
+      }
+    }
+
+    parsed_config
+  };
 
   // Apply modifications
   modify_fn( &mut config )?;
