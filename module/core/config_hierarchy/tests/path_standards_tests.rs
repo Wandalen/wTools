@@ -7,6 +7,20 @@ use std::collections::HashMap;
 use serde_json::Value as JsonValue;
 use serial_test::serial;
 
+/// Check if path contains pattern with either Unix or Windows separator
+fn contains_with_separator( path : &str, pattern : &str ) -> bool
+{
+  path.contains( pattern ) ||
+  path.contains( &pattern.replace( '/', "\\" ) )
+}
+
+/// Check if path ends with pattern using either Unix or Windows separator
+fn ends_with_separator( path : &str, pattern : &str ) -> bool
+{
+  path.ends_with( pattern ) ||
+  path.ends_with( &pattern.replace( '/', "\\" ) )
+}
+
 struct TestApp;
 
 impl ConfigPaths for TestApp
@@ -63,11 +77,11 @@ fn test_global_path_has_dot_prefix()
   let path_str = path.to_string_lossy();
 
   // Should contain .testapp not testapp
-  assert!( path_str.contains( "/.testapp/" ), "Global path must use .testapp (got: {path_str})" );
-  assert!( !path_str.contains( "/testapp/" ), "Global path must not use testapp without dot (got: {path_str})" );
+  assert!( contains_with_separator( &path_str, "/.testapp/" ), "Global path must use .testapp (got: {path_str})" );
+  assert!( !contains_with_separator( &path_str, "/testapp/" ), "Global path must not use testapp without dot (got: {path_str})" );
 
   // Should be in .persistent/.testapp
-  assert!( path_str.contains( ".persistent/.testapp" ), "Global path must be in .persistent/.testapp (got: {path_str})" );
+  assert!( contains_with_separator( &path_str, ".persistent/.testapp" ), "Global path must be in .persistent/.testapp (got: {path_str})" );
 
   std::env::remove_var( "PRO" );
 }
@@ -87,7 +101,7 @@ fn test_global_dir_structure()
   assert!( dir_str.ends_with( ".testapp" ), "Global dir must end with .testapp (got: {dir_str})" );
 
   // Should be .persistent/.testapp
-  assert!( dir_str.ends_with( ".persistent/.testapp" ), "Global dir must be .persistent/.testapp (got: {dir_str})" );
+  assert!( ends_with_separator( &dir_str, ".persistent/.testapp" ), "Global dir must be .persistent/.testapp (got: {dir_str})" );
 
   std::env::remove_var( "PRO" );
 }
@@ -122,8 +136,8 @@ fn test_local_configs_use_dot_prefix()
   for path in &configs
   {
     let path_str = path.to_string_lossy();
-    assert!( path_str.contains( "/.testapp/" ), "Local path must use .testapp (got: {path_str})" );
-    assert!( !path_str.contains( "/testapp/" ), "Local path must not use testapp without dot (got: {path_str})" );
+    assert!( contains_with_separator( &path_str, "/.testapp/" ), "Local path must use .testapp (got: {path_str})" );
+    assert!( !contains_with_separator( &path_str, "/testapp/" ), "Local path must not use testapp without dot (got: {path_str})" );
   }
 }
 
@@ -139,7 +153,7 @@ fn test_derived_paths_consistency()
   let global_path_str = global_path.to_string_lossy();
 
   // Both should use .testapp
-  assert!( global_path_str.contains( "/.testapp/" ), "Global must use .testapp" );
+  assert!( contains_with_separator( &global_path_str, "/.testapp/" ), "Global must use .testapp" );
 
   std::env::remove_var( "PRO" );
 }
@@ -164,7 +178,7 @@ fn test_no_flexibility_all_paths_derived()
   let path_str = path.to_string_lossy();
 
   // Should automatically use .anotherapp
-  assert!( path_str.contains( "/.anotherapp/" ), "Should derive .anotherapp from app_name" );
+  assert!( contains_with_separator( &path_str, "/.anotherapp/" ), "Should derive .anotherapp from app_name" );
 
   std::env::remove_var( "PRO" );
 }
@@ -181,8 +195,8 @@ fn test_config_manager_uses_standard_paths()
   let path_str = path.to_string_lossy();
 
   // Should use .testapp
-  assert!( path_str.contains( "/.testapp/" ), "ConfigManager must use .testapp (got: {path_str})" );
-  assert!( path_str.contains( ".persistent/.testapp" ), "ConfigManager must use .persistent/.testapp" );
+  assert!( contains_with_separator( &path_str, "/.testapp/" ), "ConfigManager must use .testapp (got: {path_str})" );
+  assert!( contains_with_separator( &path_str, ".persistent/.testapp" ), "ConfigManager must use .persistent/.testapp" );
 
   std::env::remove_var( "PRO" );
 }
