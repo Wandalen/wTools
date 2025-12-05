@@ -5,7 +5,7 @@ use std::
   collections::HashMap,
   fs::{ self, OpenOptions },
   path::Path,
-  io::{ Read, Seek, SeekFrom },
+  io::Read,
 };
 use serde_json::Value as JsonValue;
 use fs2::FileExt;
@@ -158,7 +158,7 @@ where
           {
             if let serde_yaml::Value::String( key_str ) = key
             {
-              parsed_config.insert( key_str.clone(), yaml_to_json( value ) );
+              parsed_config.insert( key_str.clone(), yaml_to_json( value.clone() ) );
             }
           }
         }
@@ -170,7 +170,7 @@ where
         {
           if let serde_yaml::Value::String( key_str ) = key
           {
-            parsed_config.insert( key_str.clone(), yaml_to_json( value ) );
+            parsed_config.insert( key_str.clone(), yaml_to_json( value.clone() ) );
           }
         }
       }
