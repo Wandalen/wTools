@@ -1,0 +1,100 @@
+[package]
+name = "config_hierarchy"
+version = "0.1.0"
+edition = "2021"
+authors = [ "wandalen <wandalen@obox.systems>" ]
+license = "MIT"
+repository = "https://github.com/Wandalen/wTools"
+description = "Generic hierarchical configuration management with 6-level priority system and source tracking"
+categories = [ "config", "filesystem" ]
+keywords = [ "config", "configuration", "hierarchy", "yaml", "settings" ]
+
+[package.metadata]
+stability = "experimental"
+module_name = "config_hierarchy"
+
+[lints]
+workspace = true
+
+[lib]
+name = "config_hierarchy"
+path = "src/lib.rs"
+
+[features]
+default = [ "enabled" ]
+full = [
+  "enabled",
+  "file_ops",
+  "migration",
+  "display",
+  "display_table",
+  "display_json",
+  "display_yaml",
+]
+enabled = ["dep:serde", "dep:serde_json"]
+
+# File operations (needs YAML, locking, timestamps)
+file_ops = [ "dep:serde_yaml", "dep:fs2", "dep:chrono" ]
+
+# Migration support (needs file ops)
+migration = [ "file_ops" ]
+
+# Display foundation
+display = []
+
+# Display formatters
+display_table = [ "display", "dep:tree_fmt" ]
+display_json = [ "display" ]
+display_yaml = [ "display", "dep:serde_yaml" ]
+
+[dependencies]
+serde = { workspace = true, features = [ "derive" ], optional = true }
+serde_json = { workspace = true, optional = true }
+
+# Optional - file operations
+serde_yaml = { workspace = true, optional = true }
+chrono = { workspace = true, features = [ "clock" ], optional = true }
+fs2 = { workspace = true, optional = true }
+
+# Optional - display
+tree_fmt = { workspace = true, features = [ "format_table" ], optional = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+serial_test = { workspace = true }
+
+[[test]]
+name = "basic_operations_tests"
+path = "tests/basic_operations_tests.rs"
+
+[[test]]
+name = "hierarchy_tests"
+path = "tests/hierarchy_tests.rs"
+
+[[test]]
+name = "type_detection_tests"
+path = "tests/type_detection_tests.rs"
+
+[[test]]
+name = "concurrent_access_tests"
+path = "tests/concurrent_access_tests.rs"
+
+[[test]]
+name = "edge_cases_tests"
+path = "tests/edge_cases_tests.rs"
+
+[[test]]
+name = "path_standards_tests"
+path = "tests/path_standards_tests.rs"
+
+[[test]]
+name = "dual_pattern_tests"
+path = "tests/dual_pattern_tests.rs"
+
+[[test]]
+name = "feature_tests"
+path = "tests/feature_tests.rs"
+
+[[test]]
+name = "display_tests"
+path = "tests/display_tests.rs"
