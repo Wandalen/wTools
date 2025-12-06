@@ -224,3 +224,105 @@ fn test_parameter_name_with_hyphens()
   let loaded = TestConfig::load_config_file( &config_path ).unwrap();
   assert_eq!( loaded.get( "some-hyphenated-param" ), Some( &JsonValue::String( "hyphenated".into() ) ) );
 }
+
+// Bug reproducer: Empty app_name creates invalid paths
+//
+// ## Root Cause
+// ConfigPaths::app_name() can return empty string, which creates paths like
+// `/path/./config.yaml` instead of `/path/.appname/config.yaml`. The empty
+// string concatenates with prefix (`.` or `-`) to form `./` or `-/`, which
+// are valid directory references but not subdirectories.
+//
+// ## Why Not Caught
+// No validation exists for app_name() return value. It's a user-provided trait
+// implementation with no constraints.
+//
+// ## Fix Applied
+// Added validation in path construction functions to detect empty app_name
+// and return error. Users must provide non-empty application name.
+//
+// ## Prevention
+// Add documentation requirement that app_name() must return non-empty string.
+// Consider adding validation helper or compile-time constraint in future.
+//
+// ## Pitfall
+// Empty strings in path construction create valid but semantically wrong paths.
+// Always validate user inputs even from trait implementations.
+#[ test ]
+#[ should_panic( expected = "app_name must not be empty" ) ]
+fn test_empty_app_name_rejected()
+{
+  struct EmptyAppName;
+  impl ConfigDefaults for EmptyAppName
+  {
+    fn get_defaults() -> HashMap< String, JsonValue > { HashMap::new() }
+    fn get_parameter_names() -> Vec< &'static str > { vec![] }
+  }
+
+  impl ConfigPaths for EmptyAppName
+  {
+    fn app_name() -> &'static str { "" }  // EMPTY - should be rejected
+  }
+
+  impl ConfigValidator for EmptyAppName
+  {
+    fn validate_parameter( _: &str, _: &JsonValue ) -> Result< (), ValidationError > { Ok( () ) }
+    fn validate_all( _: &HashMap< String, ( JsonValue, ConfigSource ) > ) -> Vec< ValidationError > { Vec::new() }
+  }
+
+  type EmptyConfig = ConfigManager< EmptyAppName, EmptyAppName, EmptyAppName >;
+
+  // Should panic when trying to get path with empty app_name
+  let _path = EmptyConfig::get_local_config_path().unwrap();
+}
+
+// Bug reproducer: Path traversal via app_name
+//
+// ## Root Cause
+// ConfigPaths::app_name() is used directly in path construction without
+// sanitization. User can include `../` to escape intended config directory,
+// potentially accessing files outside application's config scope.
+//
+// ## Why Not Caught
+// No path sanitization or validation of app_name content. Assumed trait
+// implementation would provide safe values.
+//
+// ## Fix Applied
+// Added validation to reject app_name containing path separators (`/`, `\`)
+// or parent directory references (`..`). Only alphanumeric, hyphens, underscores,
+// and dots (not `..`) are allowed.
+//
+// ## Prevention
+// Document security requirements for ConfigPaths trait implementations.
+// Add validation helpers for common security checks.
+//
+// ## Pitfall
+// User-provided strings in filesystem paths require sanitization even when
+// from trait implementations. Never trust input for path construction.
+#[ test ]
+#[ should_panic( expected = "app_name contains invalid characters" ) ]
+fn test_path_traversal_rejected()
+{
+  struct PathTraversalAttack;
+  impl ConfigDefaults for PathTraversalAttack
+  {
+    fn get_defaults() -> HashMap< String, JsonValue > { HashMap::new() }
+    fn get_parameter_names() -> Vec< &'static str > { vec![] }
+  }
+
+  impl ConfigPaths for PathTraversalAttack
+  {
+    fn app_name() -> &'static str { "../../etc/passwd" }  // PATH TRAVERSAL ATTACK
+  }
+
+  impl ConfigValidator for PathTraversalAttack
+  {
+    fn validate_parameter( _: &str, _: &JsonValue ) -> Result< (), ValidationError > { Ok( () ) }
+    fn validate_all( _: &HashMap< String, ( JsonValue, ConfigSource ) > ) -> Vec< ValidationError > { Vec::new() }
+  }
+
+  type AttackConfig = ConfigManager< PathTraversalAttack, PathTraversalAttack, PathTraversalAttack >;
+
+  // Should panic when detecting path traversal attempt
+  let _path = AttackConfig::get_local_config_path().unwrap();
+}

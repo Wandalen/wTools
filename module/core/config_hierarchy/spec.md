@@ -86,9 +86,40 @@ pub trait ConfigDefaults
 pub trait ConfigPaths
 {
   fn app_name() -> &'static str;
-  fn env_var_prefix() -> &'static str;
-  fn local_config_dir_name() -> &'static str;
-  fn global_config_subdirs() -> Vec< &'static str >;
+  // REQUIRED: Must return non-empty string without path separators (`/`, `\`) or
+  // parent directory references (`..`). Validated at runtime to prevent path traversal
+  // vulnerabilities and invalid path generation.
+
+  // Environment Variable Configuration (3 optional methods with defaults)
+  fn env_var_prefix() -> &'static str { /* app_name().to_uppercase() */ }
+  fn env_var_separator() -> &'static str { "_" }
+  fn env_var_casing() -> EnvVarCasing { EnvVarCasing::UpperCase }
+
+  // Local Path Configuration (3 optional methods with defaults)
+  fn local_permanent_prefix() -> &'static str { "." }
+  fn local_temporary_prefix() -> &'static str { "-" }
+  fn local_config_filename() -> &'static str { "config.yaml" }
+
+  // Global Path Configuration (2 optional methods with defaults)
+  fn global_persistent_dir() -> &'static str { ".persistent" }
+  fn global_config_filename() -> &'static str { "config.yaml" }
+
+  // Environment Variable Names (4 optional methods with defaults)
+  fn pro_env_var() -> &'static str { "PRO" }
+  fn home_env_var() -> &'static str { "HOME" }
+  fn xdg_config_home_var() -> &'static str { "XDG_CONFIG_HOME" }
+  fn appdata_var() -> &'static str { "APPDATA" }
+
+  // OS-Specific Path Bases (2 optional methods with defaults)
+  fn linux_config_base() -> &'static str { ".config" }
+  fn macos_config_base() -> &'static str { "Library/Application Support" }
+}
+
+pub enum EnvVarCasing
+{
+  UpperCase,           // MYAPP_TIMEOUT (default)
+  LowerCase,           // myapp_timeout
+  PreserveAppName,     // myapp_TIMEOUT
 }
 
 pub trait ConfigValidator
@@ -97,6 +128,8 @@ pub trait ConfigValidator
   fn validate_all( config : &HashMap< String, ( JsonValue, ConfigSource ) > ) -> Vec< ValidationError >;
 }
 ```
+
+**Note on Configurability**: Current version (v0.1.0) implements convention-over-configuration with zero-config defaults. Users specify only `app_name()` and all paths/patterns derive automatically from standard conventions. Advanced users can override any of the 14 optional methods to customize environment variable formats, path prefixes, filenames, and OS-specific directories while maintaining backward compatibility.
 
 ### Main Type
 
@@ -135,15 +168,15 @@ where
 Priority from highest to lowest:
 
 1. **Runtime** — Explicit parameters passed at execution (highest priority)
-2. **Environment** — Environment variables matching `{PREFIX}_{PARAM}` pattern
-3. **Local (Current)** — Config files in current working directory:
-   - `-{app}/config.yaml` (temporary, higher priority)
-   - `.{app}/config.yaml` (permanent, lower priority)
+2. **Environment** — Environment variables matching `{PREFIX}_{PARAM}` pattern (customizable via `ConfigPaths`)
+3. **Local (Current)** — Config files in current working directory (customizable via `ConfigPaths`):
+   - `-{app}/config.yaml` (temporary, higher priority) — default pattern
+   - `.{app}/config.yaml` (permanent, lower priority) — default pattern
 4. **Local (Parents)** — Config files in ancestor directories (nearest first):
    - `-{app}/config.yaml` (temporary, higher priority within same directory)
    - `.{app}/config.yaml` (permanent, lower priority within same directory)
    - Directory depth trumps pattern type (current `.{app}` beats parent `-{app}`)
-5. **Global** — `$PRO/{app}/config.yaml` or OS-specific config directory
+5. **Global** — `$PRO/{app}/config.yaml` or OS-specific config directory (customizable via `ConfigPaths`)
 6. **Defaults** — Application-defined default values (lowest priority)
 
 Higher priority sources override lower priority sources. Source tracking records which level provided each value.
@@ -192,7 +225,45 @@ All configuration key-value pairs stored as YAML mapping.
 3. **Fail-safe defaults** — Missing files/values handled gracefully
 4. **Explicit source tracking** — Always know where each value came from
 5. **Concurrent safety** — File locking prevents race conditions
-6. **No mocking in tests** — 39 tests using real file I/O with tempfile
+6. **Input validation** — User-provided trait values validated to prevent security vulnerabilities
+7. **No mocking in tests** — 109 tests using real file I/O with tempfile
+
+## Security Considerations
+
+### app_name Validation
+
+The `ConfigPaths::app_name()` method is validated at runtime to prevent security vulnerabilities:
+
+**Validation Rules:**
+- Must not be empty (prevents invalid paths like `./config.yaml`)
+- Must not contain path separators: `/` or `\` (prevents directory traversal)
+- Must not contain parent directory references: `..` (prevents path traversal attacks)
+
+**Rationale:**
+
+Empty `app_name` creates invalid paths that reference the current directory instead of a subdirectory:
+```
+Local:  /current/dir/./config.yaml  (INVALID)
+Global: $PRO/.persistent/./config.yaml  (INVALID)
+```
+
+Path separators enable traversal attacks:
+```rust
+impl ConfigPaths for Malicious {
+  fn app_name() -> &'static str { "../../etc/passwd" }
+}
+// Generates: /path/.../../etc/passwd/config.yaml (SECURITY RISK)
+```
+
+**Behavior:**
+- Path discovery functions return `Err(String)` with descriptive message for invalid `app_name`
+- `discover_local_configs()` silently skips invalid app names (to avoid breaking discovery)
+- User-facing APIs panic with clear error messages during path construction
+
+**Recommended Values:**
+- Alphanumeric characters, hyphens, underscores: `my-app`, `my_app123`
+- Unicode characters are supported (emoji, CJK): `测试应用🚀`
+- Avoid whitespace (works but may cause shell issues)
 
 ## Dependencies
 
@@ -207,13 +278,19 @@ All configuration key-value pairs stored as YAML mapping.
 
 ## Test Coverage
 
-- **Basic Operations:** 8 tests (load/save/delete, metadata)
-- **Hierarchy Resolution:** 9 tests (priority, source tracking)
-- **Type Detection:** 9 tests (bool/int/float/string, unicode)
+- **Basic Operations:** 17 tests (load/save/delete, metadata, paths)
+- **Configurability:** 8 tests (custom trait implementations)
 - **Concurrent Access:** 2 tests (locking, multi-process)
-- **Edge Cases:** 11 tests (corrupted files, special chars, unicode, long values)
+- **Display Formats:** 12 tests (ConfigSource Display trait)
+- **Dual Patterns:** 5 tests (permanent vs temporary directories)
+- **Edge Cases:** 16 tests (corrupted files, special chars, unicode, long values, security)
+- **Features:** 7 tests (optional feature testing)
+- **Hierarchy Resolution:** 8 tests (priority, source tracking)
+- **Path Standards:** 6 tests (cross-platform path compliance)
+- **Scope Operations:** 22 tests (parameter scope management)
+- **Type Detection:** 6 tests (bool/int/float/string, unicode)
 
-**Total: 39 tests, 100% passing, zero mocking**
+**Total: 109 tests, 100% passing, zero mocking**
 
 ## Module Structure
 
@@ -232,10 +309,16 @@ src/
 
 tests/
 ├── basic_operations_tests.rs
-├── hierarchy_tests.rs
-├── type_detection_tests.rs
+├── configurability_tests.rs
 ├── concurrent_access_tests.rs
-└── edge_cases_tests.rs
+├── display_tests.rs
+├── dual_patterns_tests.rs
+├── edge_cases_tests.rs
+├── features_tests.rs
+├── hierarchy_tests.rs
+├── path_standards_tests.rs
+├── scope_tests.rs
+└── type_detection_tests.rs
 ```
 
 ## Usage Pattern

@@ -2,7 +2,7 @@ use std::{ env, collections::HashMap };
 use serde_json::Value as JsonValue;
 use crate::
 {
-  ConfigSource, ConfigDefaults, ConfigPaths,
+  ConfigSource, ConfigDefaults, ConfigPaths, EnvVarCasing,
   type_detection::detect_and_convert_value,
 };
 
@@ -32,9 +32,22 @@ where
     return ( detect_and_convert_value( value_str ), ConfigSource::Runtime );
   }
 
-  // 2. Environment variables (derived from app_name)
-  let env_prefix = P::app_name().to_uppercase();
-  let env_name = format!( "{}_{}", env_prefix, param_name.to_uppercase() );
+  // 2. Environment variables (using P::env_var_prefix(), P::env_var_separator(), P::env_var_casing())
+  let env_prefix = P::env_var_prefix();
+  let separator = P::env_var_separator();
+
+  // Apply casing based on P::env_var_casing()
+  // Note: UpperCase and PreserveAppName both uppercase parameters, but differ in prefix handling
+  // (UpperCase uppercases prefix, PreserveAppName preserves app_name casing in prefix)
+  #[allow(clippy::match_same_arms)]
+  let param_part = match P::env_var_casing()
+  {
+    EnvVarCasing::UpperCase => param_name.to_uppercase(),
+    EnvVarCasing::LowerCase => param_name.to_lowercase(),
+    EnvVarCasing::PreserveAppName => param_name.to_uppercase(),
+  };
+
+  let env_name = format!( "{env_prefix}{separator}{param_part}" );
   if let Ok( value_str ) = env::var( &env_name )
   {
     return ( detect_and_convert_value( &value_str ), ConfigSource::Environment );

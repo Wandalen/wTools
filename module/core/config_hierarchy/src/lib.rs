@@ -39,7 +39,7 @@ pub use error::ValidationError;
 #[ cfg( feature = "enabled" ) ]
 pub use source::ConfigSource;
 #[ cfg( feature = "enabled" ) ]
-pub use traits::{ ConfigDefaults, ConfigPaths, ConfigValidator };
+pub use traits::{ ConfigDefaults, ConfigPaths, ConfigValidator, EnvVarCasing };
 #[ cfg( feature = "enabled" ) ]
 pub use type_detection::detect_and_convert_value;
 #[ cfg( feature = "enabled" ) ]
