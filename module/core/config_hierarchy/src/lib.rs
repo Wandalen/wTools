@@ -27,9 +27,6 @@ mod manager;
 #[ cfg( feature = "file_ops" ) ]
 mod file_ops;
 
-#[ cfg( feature = "migration" ) ]
-mod migration;
-
 #[ cfg( feature = "display" ) ]
 pub mod display;
 
@@ -61,7 +58,3 @@ pub use conversion::{ yaml_to_json, json_to_yaml };
 
 #[ cfg( feature = "file_ops" ) ]
 pub use file_ops::{ load_config_file, save_config_file, delete_config_file, atomic_config_modify };
-
-// Migration exports
-#[ cfg( feature = "migration" ) ]
-pub use migration::{ find_legacy_global_config, migrate_global_config, get_global_config_path_with_migration };

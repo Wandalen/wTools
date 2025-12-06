@@ -86,16 +86,6 @@ fn test_file_ops_feature_available()
 }
 
 #[ test ]
-#[ cfg( feature = "migration" ) ]
-fn test_migration_feature_available()
-{
-  // Migration functions should be available
-  let path_result = TestConfig::get_global_config_path();
-  // May fail if $PRO not set, but function should exist
-  let _ = path_result;
-}
-
-#[ test ]
 #[ cfg( feature = "display_table" ) ]
 fn test_display_table_feature_available()
 {
@@ -142,27 +132,6 @@ fn test_display_yaml_feature_available()
   let yaml = TestConfig::format_config_yaml( &config, &errors, &options );
   assert!( yaml.contains( "configuration:" ) );
   assert!( yaml.contains( "timeout" ) );
-}
-
-#[ test ]
-#[ cfg( all( feature = "file_ops", feature = "migration" ) ) ]
-fn test_combined_file_ops_migration()
-{
-  use tempfile::tempdir;
-
-  // Global config operations should work with both features
-  let temp_dir = tempdir().expect( "Failed to create temp dir" );
-  std::env::set_var( "PRO", temp_dir.path() );
-
-  let path = TestConfig::get_global_config_path();
-  assert!( path.is_ok() );
-
-  let mut config = HashMap::new();
-  config.insert( "timeout".to_string(), JsonValue::Number( 90.into() ) );
-
-  let save_result = TestConfig::save_global_config( &config );
-  // May fail if directory creation fails, but function should exist
-  let _ = save_result;
 }
 
 #[ test ]

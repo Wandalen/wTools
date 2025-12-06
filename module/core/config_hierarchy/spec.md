@@ -129,7 +129,7 @@ pub trait ConfigValidator
 }
 ```
 
-**Note on Configurability**: Current version (v0.1.0) implements convention-over-configuration with zero-config defaults. Users specify only `app_name()` and all paths/patterns derive automatically from standard conventions. Advanced users can override any of the 14 optional methods to customize environment variable formats, path prefixes, filenames, and OS-specific directories while maintaining backward compatibility.
+**Note on Configurability**: Current version (v0.2.0) implements convention-over-configuration with zero-config defaults. Users specify only `app_name()` and all paths/patterns derive automatically from standard conventions. Advanced users can override any of the 14 optional methods to customize environment variable formats, path prefixes, filenames, and OS-specific directories while maintaining backward compatibility.
 
 ### Main Type
 

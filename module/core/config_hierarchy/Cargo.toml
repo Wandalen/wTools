@@ -25,7 +25,6 @@ default = [ "enabled" ]
 full = [
   "enabled",
   "file_ops",
-  "migration",
   "display",
   "display_table",
   "display_json",
@@ -35,9 +34,6 @@ enabled = ["dep:serde", "dep:serde_json"]
 
 # File operations (needs YAML, locking, timestamps)
 file_ops = [ "dep:serde_yaml", "dep:fs2", "dep:chrono" ]
-
-# Migration support (needs file ops)
-migration = [ "file_ops" ]
 
 # Display foundation
 display = []

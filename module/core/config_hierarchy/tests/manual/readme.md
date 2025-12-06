@@ -9,7 +9,6 @@ Since config_hierarchy is primarily a library (not a CLI tool), manual testing f
 - Source tracking accuracy
 - Configuration file format support (YAML/JSON/TOML)
 - Integration with real applications
-- Migration from old config paths
 - Multi-tool configuration scenarios
 
 ## Prerequisites
@@ -555,58 +554,9 @@ EOF
 - Multi-format support works
 - No conflicts between formats
 
-### Test 10: Configuration Migration
-
-**Objective**: Verify auto-migration from old paths
-
-**Setup**:
-```bash
-# Create old-format config
-mkdir -p .oldapp
-cat > .oldapp/config.yaml <<'EOF'
-old_param: "migrated-value"
-EOF
-```
-
-**Create Test**:
-```bash
-cat > test_migration.rs <<'EOF'
-fn main() {
-    println!("Test 10: Configuration Migration\n");
-
-    // If migration feature enabled
-    #[cfg(feature = "migration")]
-    {
-        let config = TestConfig::resolve_all_config(&HashMap::new());
-
-        if let Some((value, _)) = config.get("old_param") {
-            assert_eq!(*value, json!("migrated-value"));
-            println!("✅ Old config migrated successfully");
-        }
-    }
-
-    #[cfg(not(feature = "migration"))]
-    {
-        println!("⚠ Migration feature not enabled");
-    }
-
-    println!("\n✅ Test 10 passed!");
-}
-EOF
-```
-
-**Expected Results**:
-- ✅ Old config paths detected
-- ✅ Values migrated automatically
-- ✅ New path created
-
-**Success Criteria**:
-- Migration works when enabled
-- Backward compatibility maintained
-
 ## Integration Tests
 
-### Test 11: Multi-Tool Configuration
+### Test 10: Multi-Tool Configuration
 
 **Objective**: Verify multiple tools share global config
 
@@ -720,7 +670,6 @@ EOF
 - [ ] Multiple formats work together
 
 **Features**:
-- [ ] Migration feature works (if enabled)
 - [ ] Validation integration works
 - [ ] Multi-tool scenarios work
 

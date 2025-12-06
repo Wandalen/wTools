@@ -4,14 +4,13 @@ A robust, production-ready hierarchical configuration management system for Rust
 
 ## Overview
 
-`config_hierarchy` provides a flexible framework for managing application configuration across multiple sources with clear precedence rules. It eliminates configuration ambiguity by tracking the exact source of every configuration value and supports multiple storage formats, output representations, and automated migration strategies.
+`config_hierarchy` provides a flexible framework for managing application configuration across multiple sources with clear precedence rules. It eliminates configuration ambiguity by tracking the exact source of every configuration value and supports multiple storage formats and output representations.
 
 **Key Capabilities:**
 - **Priority-based resolution** across 6 configuration layers
 - **Source tracking** for every configuration value
 - **Atomic file operations** with cross-platform file locking
 - **Multiple formats** for input (YAML/JSON/TOML) and output (table/JSON/YAML)
-- **Automatic migration** from legacy configuration paths
 - **Type detection** with intelligent string-to-type conversion
 - **Trait-based architecture** for application-specific customization
 
@@ -37,7 +36,7 @@ Add `config_hierarchy` to your project's `Cargo.toml`:
 
 ```toml
 [dependencies]
-config_hierarchy = { version = "0.1", features = ["full"] }
+config_hierarchy = { version = "0.2", features = ["full"] }
 ```
 
 ### Feature Flags
@@ -48,7 +47,6 @@ The crate provides granular feature flags for selective capability inclusion:
 |---------|-------------|----------|
 | `default` | Core resolution engine | Configuration hierarchy, source tracking, type detection |
 | `file_ops` | File persistence layer | YAML I/O, atomic writes, file locking, path discovery |
-| `migration` | Legacy path support | Automatic migration from deprecated configuration locations |
 | `display_table` | Table output formatter | Tabular configuration display with tree formatting |
 | `display_json` | JSON output formatter | JSON serialization for configuration data |
 | `display_yaml` | YAML output formatter | YAML serialization for configuration data |
@@ -341,25 +339,6 @@ println!( "{}", format_config_yaml( &config, &[], &options ) );
 # }
 ```
 
-### Configuration Migration
-
-Automatically migrate from legacy configuration paths:
-
-```rust,no_run
-# #[ cfg( feature = "migration" ) ]
-# {
-# use config_hierarchy::migrate_global_config;
-# use std::path::Path;
-# fn example() -> Result< (), String > {
-// Migrate from old global config to new location
-let old_path = Path::new( "/old/path/config.yaml" );
-let new_path = Path::new( "/new/path/.myapp/config.yaml" );
-migrate_global_config( old_path, new_path )?;
-# Ok( () )
-# }
-# }
-```
-
 ### Type Detection
 
 Configuration values are automatically typed from strings:
@@ -448,7 +427,6 @@ Test coverage includes:
 - Concurrent file access with locking
 - Cross-platform path handling
 - Type detection and conversion
-- Migration strategies
 - Display formatters
 
 ## License

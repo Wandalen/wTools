@@ -5,18 +5,12 @@ use crate::
 {
   ConfigDefaults, ConfigPaths, ConfigValidator,
   ConfigSource, ValidationError,
-  path_discovery::{ get_global_config_dir, get_local_config_path, discover_local_configs },
+  path_discovery::{ get_global_config_dir, get_global_config_path, get_local_config_path, discover_local_configs },
   hierarchy::{ resolve_config_value, resolve_all_config },
 };
 
 #[ cfg( feature = "file_ops" ) ]
-use crate::file_ops::{ load_config_file, save_config_file, delete_config_file };
-
-#[ cfg( all( feature = "file_ops", feature = "migration" ) ) ]
-use crate::file_ops::atomic_config_modify;
-
-#[ cfg( feature = "migration" ) ]
-use crate::migration::get_global_config_path_with_migration;
+use crate::file_ops::{ load_config_file, save_config_file, delete_config_file, atomic_config_modify };
 
 /// Generic configuration manager with hierarchical resolution
 ///
@@ -87,19 +81,15 @@ where
     get_global_config_dir::< P >()
   }
 
-  /// Get global config file path with automatic migration support
-  ///
-  /// If old-style config exists (without dot), it will be automatically migrated to new location
+  /// Get global config file path
   ///
   /// # Errors
   ///
-  /// Returns error if environment variables are unavailable or migration fails
-  #[ cfg( feature = "migration" ) ]
+  /// Returns error if environment variables are unavailable
   #[ inline ]
   pub fn get_global_config_path() -> Result< PathBuf, String >
   {
-    let ( path, _migrated ) = get_global_config_path_with_migration::< P >()?;
-    Ok( path )
+    get_global_config_path::< P >()
   }
 
   /// Get local config file path in current directory
@@ -162,7 +152,7 @@ where
   /// # Errors
   ///
   /// Returns error if config path unavailable or file write fails
-  #[ cfg( all( feature = "file_ops", feature = "migration" ) ) ]
+  #[ cfg( feature = "file_ops" ) ]
   #[ inline ]
   pub fn save_global_config( config : &HashMap< String, JsonValue > ) -> Result< (), String >
   {
@@ -220,7 +210,7 @@ where
   /// # Errors
   ///
   /// Returns error if config path unavailable or file delete fails
-  #[ cfg( all( feature = "file_ops", feature = "migration" ) ) ]
+  #[ cfg( feature = "file_ops" ) ]
   #[ inline ]
   pub fn delete_global_config() -> Result< bool, String >
   {
@@ -233,7 +223,7 @@ where
   /// # Errors
   ///
   /// Returns error if config path unavailable, file lock fails, or `modify_fn` returns error
-  #[ cfg( all( feature = "file_ops", feature = "migration" ) ) ]
+  #[ cfg( feature = "file_ops" ) ]
   #[ inline ]
   pub fn atomic_config_modify< F >( modify_fn : F ) -> Result< (), String >
   where

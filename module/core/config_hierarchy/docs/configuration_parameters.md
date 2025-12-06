@@ -28,6 +28,8 @@ All optional parameters have sensible defaults. Override only if needed.
 | `global_config_filename()` | `"config.yaml"` | Global config filename | `app.yaml` |
 | `pro_env_var()` | `"PRO"` | Environment variable for workspace root | `WORKSPACE` |
 | `home_env_var()` | `"HOME"` | Environment variable for home directory | `USERPROFILE` |
+| `xdg_config_home_var()` | `"XDG_CONFIG_HOME"` | Linux XDG Base Directory variable | `XDG_CONFIG` |
+| `appdata_var()` | `"APPDATA"` | Windows application data variable | `LOCALAPPDATA` |
 
 ### Environment Variable Configuration
 
@@ -43,7 +45,6 @@ All optional parameters have sensible defaults. Override only if needed.
 |-----------|---------|-------------|
 | `linux_config_base()` | `".config"` | Linux config directory relative to $HOME |
 | `macos_config_base()` | `"Library/Application Support"` | macOS config directory relative to $HOME |
-| `windows_config_base()` | `None` | Windows config directory (None = use %APPDATA%) |
 
 ## Usage Example
 

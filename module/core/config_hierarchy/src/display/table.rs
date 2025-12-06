@@ -126,10 +126,7 @@ where
 #[ must_use ]
 pub fn format_sources_table< P : ConfigPaths >() -> String
 {
-  use crate::path_discovery::{ discover_local_configs };
-
-  #[ cfg( feature = "migration" ) ]
-  use crate::migration::get_global_config_path_with_migration;
+  use crate::path_discovery::{ discover_local_configs, get_global_config_path };
 
   let mut output = String::new();
   let _ = writeln!( output, "Configuration sources:\n" );
@@ -166,54 +163,26 @@ pub fn format_sources_table< P : ConfigPaths >() -> String
     }
   }
 
-  // Global config (migration-aware if feature enabled)
-  #[ cfg( feature = "migration" ) ]
+  // Global config
+  match get_global_config_path::< P >()
   {
-    match get_global_config_path_with_migration::< P >()
+    Ok( path ) =>
     {
-      Ok( ( path, _ ) ) =>
-      {
-        let status = if path.exists() { "active" } else { "not found" };
-        sources_builder = sources_builder.add_row( vec![
-          "global".into(),
-          status.into(),
-          path.display().to_string(),
-        ] );
-      },
-      Err( _ ) =>
-      {
-        sources_builder = sources_builder.add_row( vec![
-          "global".into(),
-          "error".into(),
-          "(path unavailable)".into(),
-        ] );
-      },
-    }
-  }
-
-  #[ cfg( not( feature = "migration" ) ) ]
-  {
-    use crate::path_discovery::get_global_config_path;
-    match get_global_config_path::< P >()
+      let status = if path.exists() { "active" } else { "not found" };
+      sources_builder = sources_builder.add_row( vec![
+        "global".into(),
+        status.into(),
+        path.display().to_string(),
+      ] );
+    },
+    Err( _ ) =>
     {
-      Ok( path ) =>
-      {
-        let status = if path.exists() { "active" } else { "not found" };
-        sources_builder = sources_builder.add_row( vec![
-          "global".into(),
-          status.into(),
-          path.display().to_string(),
-        ] );
-      },
-      Err( _ ) =>
-      {
-        sources_builder = sources_builder.add_row( vec![
-          "global".into(),
-          "error".into(),
-          "(path unavailable)".into(),
-        ] );
-      },
-    }
+      sources_builder = sources_builder.add_row( vec![
+        "global".into(),
+        "error".into(),
+        "(path unavailable)".into(),
+      ] );
+    },
   }
 
   // Built-in defaults (always active)
