@@ -18,8 +18,6 @@ fn test_dot_command_shows_help_instead_of_panicking()
   // This test specifically covers the bug where "." caused a panic
   // Now it should return a help listing instead
   
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
   
   // Add a test command
@@ -57,8 +55,6 @@ fn test_dot_command_shows_help_instead_of_panicking()
 fn test_dot_command_with_minimal_commands()
 {
   // Test dot command with only built-in commands (like .version)
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let registry = CommandRegistry::new();
   
   let program = ".";
@@ -87,8 +83,6 @@ fn test_dot_command_with_minimal_commands()
 #[test] 
 fn test_dot_command_lists_multiple_commands()
 {
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
   
   // Add multiple test commands
@@ -133,8 +127,6 @@ fn test_empty_command_path_edge_case()
   // This tests the specific edge case that was causing the panic:
   // When command_path_slices is empty, accessing index 0 panicked
   
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let registry = CommandRegistry::new();
   
   // Create a GenericInstruction with empty command_path_slices 

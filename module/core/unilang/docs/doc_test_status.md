@@ -10,20 +10,20 @@ This document categorizes all 19 intentionally ignored doc tests in the unilang 
 
 **Initial State:** 34 ignored doc tests
 **Enabled:** 14 doc tests
-**Removed:** 1 deprecated API doc test
+**Removed:** 1 obsolete doc test for removed API
 **Final State:** 19 ignored doc tests
 
 ### enabled tests
 
 **src/registry.rs** (5 tests enabled)
-- `set_registry_mode` (line 567) - Added `#[allow(deprecated)]`
+- `set_registry_mode` (line 567) - Uses runtime API (appropriate for examples)
 - `register_with_auto_help` (line 629) - Fixed method call order and OutputData construction
-- `get_help_for_command` (line 673) - Added `#[allow(deprecated)]`
+- `get_help_for_command` (line 673) - Uses runtime API (appropriate for examples)
 - `command_with_routine` (line 952) - Removed unnecessary ignore marker
 - `StaticCommandRegistry` (line 1029) - Added missing RegistryMode import
 
 **src/pipeline.rs** (9 tests enabled)
-- `process_command` (line 618) - Fixed deprecated API and command naming
+- `process_command` (line 618) - Updated to use runtime registration API correctly
 - `process_command_from_argv` (line 742, 770) - Simplified complex examples (2 tests)
 - `process_command_from_argv_simple` (line 877) - Removed env::args() dependency
 - `process_batch` (line 912) - Fixed command naming
@@ -139,8 +139,7 @@ When adding new doc tests:
 1. Default to runnable examples (`cargo test --doc` should pass)
 2. Only add `ignore` attribute for valid reasons (see categories above)
 3. Document complex examples inline with `#` hidden lines for setup
-4. Use `#[allow(deprecated)]` for showing old APIs alongside new ones
-5. Wrap examples requiring `?` operator in `# fn example() -> Result<(), unilang::Error> { ... }`
+4. Wrap examples requiring `?` operator in `# fn example() -> Result<(), unilang::Error> { ... }`
 
 ## references
 

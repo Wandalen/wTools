@@ -675,7 +675,6 @@ fn demonstrate_complex_features() -> Result< (), unilang::error::Error >
     {
       println!( "✅ Complex command loaded successfully" );
 
-      #[allow(deprecated)]
       let mut registry = CommandRegistry::new();
       for cmd in commands
       {

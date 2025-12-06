@@ -20,16 +20,15 @@ fn main()
 Result< (), Error >
 {
   // 1. Initialize Command Registry
-  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
 
   // 2. Define and Register Commands with Routines
 
-  // .math.add command
-  let math_add_def = CommandDefinition::former()
+  // .cmd1.add command
+  let cmd1_add_def = CommandDefinition::former()
   .name( ".add" )
   .description( "Adds two numbers." )
-  .namespace( ".math" )
+  .namespace( ".cmd1" )
   .hint( "Adds two numbers." )
   .status( "stable" )
   .version( "1.0.0" )
@@ -62,7 +61,7 @@ Result< (), Error >
   )
   .end();
 
-  let math_add_routine : CommandRoutine = Box::new( | cmd, _ctx |
+  let cmd1_add_routine : CommandRoutine = Box::new( | cmd, _ctx |
   {
     let a = cmd.arguments.get( "a" ).unwrap();
     let b = cmd.arguments.get( "b" ).unwrap();
@@ -79,14 +78,13 @@ Result< (), Error >
     }
     unreachable!();
   });
-  #[allow(deprecated)]
-  registry.command_add_runtime( &math_add_def, math_add_routine )?;
+  registry.command_add_runtime( &cmd1_add_def, cmd1_add_routine )?;
 
-  // .math.sub command
-  let math_sub_def = CommandDefinition::former()
+  // .cmd1.sub command
+  let cmd1_sub_def = CommandDefinition::former()
   .name( ".sub" )
   .description( "Subtracts two numbers." )
-  .namespace( ".math" )
+  .namespace( ".cmd1" )
   .hint( "Subtracts two numbers." )
   .status( "beta" )
   .version( "0.9.0" )
@@ -119,7 +117,7 @@ Result< (), Error >
   )
   .end();
 
-  let math_sub_routine : CommandRoutine = Box::new( | cmd, _ctx |
+  let cmd1_sub_routine : CommandRoutine = Box::new( | cmd, _ctx |
   {
     let x = cmd.arguments.get( "x" ).unwrap();
     let y = cmd.arguments.get( "y" ).unwrap();
@@ -136,8 +134,7 @@ Result< (), Error >
     }
     unreachable!();
   });
-  #[allow(deprecated)]
-  registry.command_add_runtime( &math_sub_def, math_sub_routine )?;
+  registry.command_add_runtime( &cmd1_sub_def, cmd1_sub_routine )?;
 
   // .greet command
   let greet_def = CommandDefinition::former()
@@ -182,7 +179,6 @@ Result< (), Error >
       execution_time_ms : None,
     })
   });
-  #[allow(deprecated)]
   registry.command_add_runtime( &greet_def, greet_routine )?;
 
   // .config.set command
@@ -238,7 +234,6 @@ Result< (), Error >
       execution_time_ms : None,
     })
   });
-  #[allow(deprecated)]
   registry.command_add_runtime( &config_set_def, config_set_routine )?;
   let args : Vec< String > = std::env::args().skip( 1 ).collect();
 

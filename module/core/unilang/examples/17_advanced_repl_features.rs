@@ -20,7 +20,6 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "=== Advanced REPL Features Demo ===\n" );
 
-  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
   register_comprehensive_commands( &mut registry )?;
 
@@ -40,12 +39,12 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
 #[allow(clippy::too_many_lines)]
 fn register_comprehensive_commands( registry : &mut CommandRegistry ) -> Result< (), Error >
 {
-  // File system commands
+  // Generic listing commands
   let ls_cmd = CommandDefinition::former()
   .name( ".list" )
-  .namespace( ".fs" )
+  .namespace( ".cmd2" )
   .description( "List files and directories".to_string() )
-  .hint( "File system listing" )
+  .hint( "Generic listing operation" )
   .status( "stable" )
   .version( "1.0.0" )
   .aliases( vec![ ".ls".to_string(), ".dir".to_string() ] )
@@ -95,7 +94,6 @@ fn register_comprehensive_commands( registry : &mut CommandRegistry ) -> Result<
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &ls_cmd, ls_routine )?;
 
   // Network commands
@@ -168,7 +166,6 @@ fn register_comprehensive_commands( registry : &mut CommandRegistry ) -> Result<
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &ping_cmd, ping_routine )?;
 
   // Data processing command
@@ -267,7 +264,6 @@ fn register_comprehensive_commands( registry : &mut CommandRegistry ) -> Result<
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &process_cmd, process_routine )?;
 
   println!( "✓ Registered {} commands for advanced REPL demo", registry.commands().len() );

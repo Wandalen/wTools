@@ -4,23 +4,27 @@
 //!
 //! | Category | Test | Status |
 //! |----------|------|--------|
-//! | u8 | extract existing value | ✓ |
-//! | u8 | extract missing key | ✓ |
-//! | u8 | extract overflow value | ✓ |
-//! | u16 | extract existing value | ✓ |
-//! | u32 | extract existing value | ✓ |
-//! | u64 | extract existing value | ✓ |
-//! | i32 | extract positive value | ✓ |
-//! | i32 | extract negative value | ✓ |
-//! | i64 | extract existing value | ✓ |
-//! | f64 | extract existing value | ✓ |
-//! | bool | extract true | ✓ |
-//! | bool | extract false | ✓ |
-//! | string | extract normal string | ✓ |
-//! | string | extract null returns None | ✓ |
-//! | string_array | extract array | ✓ |
-//! | string_array | extract empty array | ✓ |
-//! | generic | works with different source types | ✓ |
+//! | `u8` | extract existing value | ✓ |
+//! | `u8` | extract missing key | ✓ |
+//! | `u8` | extract overflow value | ✓ |
+//! | `u16` | extract existing value | ✓ |
+//! | `u32` | extract existing value | ✓ |
+//! | `u64` | extract existing value | ✓ |
+//! | `i32` | extract positive value | ✓ |
+//! | `i32` | extract negative value | ✓ |
+//! | `i64` | extract existing value | ✓ |
+//! | `f64` | extract existing value | ✓ |
+//! | `bool` | extract true | ✓ |
+//! | `bool` | extract false | ✓ |
+//! | `string` | extract normal string | ✓ |
+//! | `string` | extract null returns None | ✓ |
+//! | `string_array` | extract array | ✓ |
+//! | `string_array` | extract empty array | ✓ |
+//! | `generic` | works with different source types | ✓ |
+//!
+//! **Requires:** `json_parser` feature to be enabled.
+
+#![cfg(feature = "json_parser")]
 
 use std::collections::HashMap;
 use serde_json::json;

@@ -13,7 +13,6 @@ fn main() -> Result< (), unilang::error::Error >
 {
   println!( "=== Advanced Types and Validation Demo ===\n" );
 
-  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
 
   // Step 1: Command with advanced argument types
@@ -256,7 +255,6 @@ fn main() -> Result< (), unilang::error::Error >
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &advanced_cmd, advanced_routine )?;
   println!( "✓ Registered advanced types command\n" );
 
@@ -407,8 +405,8 @@ fn main() -> Result< (), unilang::error::Error >
   println!( "  • Component extraction (host, path, query)" );
   println!( "  • Security validation for web APIs" );
 
-  println!( "\n📁 File System Types:" );
-  println!( "  • Path: Generic file system paths" );
+  println!( "\n📁 Path Types:" );
+  println!( "  • Path: Generic paths" );
   println!( "  • File: Validates file existence" );
   println!( "  • Directory: Validates directory existence" );
   println!( "  • Cross-platform path handling" );
@@ -423,7 +421,7 @@ fn main() -> Result< (), unilang::error::Error >
   println!( "\n# Pattern and datetime:" );
   println!( r"cargo run --bin unilang_cli advanced_types regex::'\\d{{4}}-\\d{{2}}-\\d{{2}}' timestamp::'2023-12-25T15:30:00Z'" );
   
-  println!( "\n# File system types:" );
+  println!( "\n# Path types:" );
   println!( r"cargo run --bin unilang_cli adv input_file::/tmp/data.txt output_dir::/tmp" );
 
   println!( "\n💡 The advanced type system supports complex real-world scenarios while" );

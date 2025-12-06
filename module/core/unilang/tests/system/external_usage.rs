@@ -8,8 +8,6 @@ fn test_external_usage_with_prelude()
   use unilang::prelude::*;
   
   // Create a registry - the most basic operation
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
   
   // Create a simple command
@@ -31,8 +29,6 @@ fn test_external_usage_with_prelude()
   });
   
   // Register the command
-  #[allow(deprecated)]
-    #[allow(deprecated)]
     registry.command_add_runtime( &cmd, routine ).unwrap();
   
   // Use Pipeline API
@@ -60,8 +56,6 @@ fn test_external_usage_with_specific_imports()
     Pipeline,
   };
   
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
   
   // Create a command with arguments
@@ -93,8 +87,6 @@ fn test_external_usage_with_specific_imports()
     })
   });
   
-  #[allow(deprecated)]
-    #[allow(deprecated)]
     registry.command_add_runtime( &cmd, routine ).unwrap();
   
   let pipeline = Pipeline::new( registry );
@@ -115,8 +107,6 @@ fn test_external_usage_with_module_imports()
   use unilang::semantic::VerifiedCommand;
   use unilang::interpreter::ExecutionContext;
   
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
   
   let cmd = CommandDefinition::former()
@@ -135,8 +125,6 @@ fn test_external_usage_with_module_imports()
     })
   });
   
-  #[allow(deprecated)]
-    #[allow(deprecated)]
     registry.command_add_runtime( &cmd, routine ).unwrap();
   
   let pipeline = Pipeline::new( registry );
@@ -152,8 +140,6 @@ fn test_external_usage_error_handling()
 {
   use unilang::prelude::*;
   
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let registry = CommandRegistry::new();
   let pipeline = Pipeline::new( registry );
   
@@ -171,8 +157,6 @@ fn test_external_usage_batch_processing()
   use unilang::prelude::*;
   use unilang::{ VerifiedCommand, ExecutionContext };
   
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
   
   let cmd = CommandDefinition::former()
@@ -191,8 +175,6 @@ fn test_external_usage_batch_processing()
     })
   });
   
-  #[allow(deprecated)]
-    #[allow(deprecated)]
     registry.command_add_runtime( &cmd, routine ).unwrap();
   
   let pipeline = Pipeline::new( registry );

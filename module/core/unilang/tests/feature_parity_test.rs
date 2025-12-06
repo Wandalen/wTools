@@ -121,7 +121,6 @@ fn test_static_register_validates_namespace()
     .end();
 
   // CommandRegistry correctly rejects this
-  #[allow(deprecated)]
   let mut dynamic_reg = unilang::registry::CommandRegistry::new();
   let result = dynamic_reg.register( invalid_cmd.clone() );
 
@@ -349,7 +348,6 @@ fn test_static_register_detects_duplicates()
   // assert!( result.is_err(), "Duplicate registration should fail" );
 
   // For now, just verify CommandRegistry has this behavior
-  #[allow(deprecated)]
   let mut dynamic_reg = unilang::registry::CommandRegistry::new();
   let _ = dynamic_reg.register( cmd1 );
   let result = dynamic_reg.register( cmd2 );

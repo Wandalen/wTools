@@ -253,7 +253,7 @@ impl< 'a > HelpGenerator< 'a >
     .or_else( ||
     {
       // If command_name is "echo", try ".system.echo"
-      // If command_name is "math.add", it should already be found.
+      // If command_name is "cmd1.add", it should already be found.
       // This handles cases where the user provides just the command name without namespace,
       // or a partial namespace.
       // For now, a simple check for "echo" to ".system.echo"
@@ -684,55 +684,54 @@ impl< 'a > HelpGenerator< 'a >
     summary
   }
 
-  /// Auto-categorize command based on its name pattern
-  fn auto_categorize( &self, name : &str ) -> String
+  /// Returns empty string (categories must be explicit via `CommandDefinition::category()`)
+  fn auto_categorize( &self, _name : &str ) -> String
   {
-    if name.starts_with( ".git" )
-    {
-      "git_operations".to_string()
-    }
-    else if name.starts_with( ".remove" )
-    {
-      "removal_operations".to_string()
-    }
-    else if name.starts_with( ".orgs" ) || name.starts_with( ".users" ) || name.starts_with( ".discover" )
-    {
-      "github_integration".to_string()
-    }
-    else if name.starts_with( ".add" ) || name.starts_with( ".clone" ) || name.starts_with( ".list" ) || name.starts_with( ".init" )
-    {
-      "repository_management".to_string()
-    }
-    else if name == ".status" || name.starts_with( ".pull" ) || name.starts_with( ".push" ) || name.starts_with( ".sync" ) || name.starts_with( ".update" )
-    {
-      "git_operations".to_string()
-    }
-    else if name == "." || name == ".help"
-    {
-      "help".to_string()
-    }
-    else
-    {
-      String::new()
-    }
+    String::new()
   }
 
-  /// Format category name for display
+  /// Test helper: Expose auto_categorize for testing
+  ///
+  /// This public method allows tests to verify that `auto_categorize()` returns
+  /// empty string for all inputs, enforcing the architectural requirement that
+  /// categories must be explicit via `CommandDefinition::category()`.
+  ///
+  /// **Note:** This method is intended for testing only. Production code should
+  /// rely on explicit categorization via `CommandDefinition::category()`.
+  pub fn auto_categorize_for_test( &self, name : &str ) -> String
+  {
+    self.auto_categorize( name )
+  }
+
+  /// Generic snake_case → Title Case transformation
+  ///
+  /// Transforms category names like "git_operations" → "Git Operations"
+  /// using a domain-agnostic algorithm (no hardcoded mappings).
   fn format_category_name( &self, category : &str ) -> String
   {
-    match category
-    {
-      "repository_management" => "REPOSITORY MANAGEMENT".to_string(),
-      "git_operations" => "GIT OPERATIONS".to_string(),
-      "removal_operations" => "REMOVAL OPERATIONS".to_string(),
-      "github_integration" => "GITHUB INTEGRATION".to_string(),
-      "help" => "HELP & INFORMATION".to_string(),
-      "authentication" => "AUTHENTICATION".to_string(),
-      "ignore_management" => "IGNORE MANAGEMENT".to_string(),
-      "pull_requests" => "PULL REQUESTS".to_string(),
-      "utilities" => "UTILITIES".to_string(),
-      _ => category.to_uppercase(),
-    }
+    category
+      .split( '_' )
+      .map( |word| {
+        let mut chars = word.chars();
+        match chars.next()
+        {
+          None => String::new(),
+          Some( first ) => first.to_uppercase().collect::<String>() + chars.as_str(),
+        }
+      })
+      .collect::<Vec<_>>()
+      .join( " " )
+  }
+
+  /// Test helper: Expose format_category_name for testing
+  ///
+  /// This public method allows tests to verify that `format_category_name()` uses
+  /// a generic snake_case → Title Case transformation algorithm.
+  ///
+  /// **Note:** This method is intended for testing only.
+  pub fn format_category_name_for_test( &self, category : &str ) -> String
+  {
+    self.format_category_name( category )
   }
 }
 

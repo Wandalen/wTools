@@ -33,9 +33,9 @@ pub fn export() -> CliModule {
 ```rust
 // In your main application
 let unified_cli = CliAggregator::new()
-    .add_module(math_cli::export(), Some("math"))?     // .math.add
-    .add_module(file_cli::export(), Some("fs"))?       // .fs.list
-    .add_module(db_cli::export(), Some("db"))?         // .db.connect
+    .add_module(cmd1_cli::export(), Some("cmd1"))?     // .cmd1.process
+    .add_module(cmd2_cli::export(), Some("cmd2"))?     // .cmd2.list
+    .add_module(svc1_cli::export(), Some("svc1"))?     // .svc1.connect
     .main_command("info", "Show CLI info", handler)?
     .build();
 ```
@@ -66,9 +66,9 @@ let unified_cli = CliAggregator::new()
 
 ### Individual Module Testing
 ```bash
-# Test math module independently
-cargo run --example math_cli
-> .add a::10 b::5
+# Test cmd1 module independently
+cargo run --example cmd1_cli
+> .process a::10 b::5
 Result: 10 + 5 = 15
 ```
 
@@ -76,13 +76,13 @@ Result: 10 + 5 = 15
 ```bash
 # Test unified CLI with prefixes
 cargo run --example unified_cli
-> .math.add a::20 b::15        # Math module
+> .cmd1.process a::20 b::15    # Cmd1 module
 Result: 20 + 15 = 35
 
-> .fs.list path::/tmp          # File module
-Result: 📁 Listing files...
+> .cmd2.list path::/tmp        # Cmd2 module
+Result: 📁 Listing...
 
-> .db.connect host::prod       # Database module
+> .svc1.connect host::prod     # Svc1 module
 Result: 🔌 Connected to prod...
 
 > .info                        # Main CLI info
@@ -92,9 +92,9 @@ Result: 🎯 Unified CLI v1.0...
 ### Help System
 ```bash
 # All help methods work with prefixes
-> .math.add.help              # Auto-generated help
-> .fs.copy "??"               # Help parameter
-> .db.connect ?               # Traditional help operator
+> .cmd1.process.help          # Auto-generated help
+> .cmd2.copy "??"             # Help parameter
+> .svc1.connect ?             # Traditional help operator
 > .                           # List all commands
 ```
 

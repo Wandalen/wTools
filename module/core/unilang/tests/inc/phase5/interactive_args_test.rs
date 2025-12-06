@@ -15,8 +15,6 @@ use unilang_parser::{ GenericInstruction, SourceLocation };
 fn test_interactive_argument_signaling()
 {
   // Create a command with an interactive argument
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
   
   let command_def = CommandDefinition
@@ -166,8 +164,6 @@ fn test_interactive_argument_signaling()
 fn test_interactive_optional_argument()
 {
   // Test that optional interactive arguments don't trigger the error
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
   
   let command_def = CommandDefinition

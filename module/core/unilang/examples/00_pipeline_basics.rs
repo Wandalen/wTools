@@ -14,15 +14,14 @@ fn main() -> Result<(), unilang::Error> {
     println!("=== Pipeline API Basics ===\n");
     
     // Step 1: Set up a registry with some commands
-    #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
-    
-    // Register a simple math command
+
+    // Register a simple generic command
     let add_cmd = CommandDefinition::former()
-        .name( ".add" )
-        .namespace( ".math" )
-        .description( "Adds two numbers" )
-        .hint( "Addition operation" )
+        .name( ".process" )
+        .namespace( ".cmd1" )
+        .description( "Processes two values" )
+        .hint( "Generic processing operation" )
         .arguments( vec![
             ArgumentDefinition {
                 name: "a".to_string(),
@@ -66,7 +65,6 @@ fn main() -> Result<(), unilang::Error> {
         }
     });
     
-    #[allow(deprecated)]
     registry.command_add_runtime(&add_cmd, add_routine)?;
     
     // Step 2: Create a Pipeline
@@ -75,34 +73,34 @@ fn main() -> Result<(), unilang::Error> {
     
     // Step 3: Execute commands using process_command_simple()
     println!("--- Simple Command Execution ---");
-    
+
     // Success case
-    let result = pipeline.process_command_simple(".math.add a::5 b::3");
-    println!("Command: .math.add a::5 b::3");
+    let result = pipeline.process_command_simple(".cmd1.process a::5 b::3");
+    println!("Command: .cmd1.process a::5 b::3");
     println!("Success: {}", result.success);
     println!("Output: {}", result.outputs[0].content);
     println!("Error: {:?}\n", result.error);
     
     // Error case - missing argument
-    let result = pipeline.process_command_simple(".math.add a::5");
-    println!("Command: .math.add a::5 (missing b)");
+    let result = pipeline.process_command_simple(".cmd1.process a::5");
+    println!("Command: .cmd1.process a::5 (missing b)");
     println!("Success: {}", result.success);
     println!("Output: {:?}", result.outputs.first().map(|o| &o.content));
     println!("Error: {:?}\n", result.error);
     
     // Error case - invalid command
-    let result = pipeline.process_command_simple(".math.multiply a::5 b::3");
-    println!("Command: .math.multiply a::5 b::3 (unknown command)");
+    let result = pipeline.process_command_simple(".cmd1.execute a::5 b::3");
+    println!("Command: .cmd1.execute a::5 b::3 (unknown command)");
     println!("Success: {}", result.success);
     println!("Error: {:?}\n", result.error);
     
     // Step 4: Batch Processing
     println!("--- Batch Processing ---");
     let commands = vec![
-        ".math.add a::1 b::2",
-        ".math.add a::10 b::20",
-        ".math.add a::100 b::200",
-        ".math.add a::invalid b::3",  // This will fail
+        ".cmd1.process a::1 b::2",
+        ".cmd1.process a::10 b::20",
+        ".cmd1.process a::100 b::200",
+        ".cmd1.process a::invalid b::3",  // This will fail
     ];
     
     let batch_result = pipeline.process_batch(&commands, ExecutionContext::default());

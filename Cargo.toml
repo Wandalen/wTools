@@ -119,7 +119,7 @@ path = "module/core/unilang_parser"
 default-features = false
 
 [workspace.dependencies.unilang]
-version = "~0.43.0"
+version = "~0.45.0"
 path = "module/core/unilang"
 default-features = false
 
@@ -213,7 +213,7 @@ default-features = false
 # # xxx : remove features, maybe
 
 [workspace.dependencies.tree_fmt]
-version = "~0.5.0"
+version = "~0.6.0"
 path = "module/core/tree_fmt"
 default-features = false
 
@@ -453,8 +453,13 @@ default-features = false
 ## string tools
 
 [workspace.dependencies.strs_tools]
-version = "~0.37.0"
+version = "~0.40.0"
 path = "module/core/strs_tools"
+default-features = false
+
+[workspace.dependencies.cli_fmt]
+version = "~0.2.0"
+path = "module/core/cli_fmt"
 default-features = false
 
 [workspace.dependencies.strs_tools_meta]
@@ -511,6 +516,14 @@ default-features = false
 # package = "process_tools"
 # version = "~0.9.0"
 # default-features = false
+
+
+## config tools
+
+[workspace.dependencies.config_hierarchy]
+version = "~0.4.0"
+path = "module/core/config_hierarchy"
+default-features = false
 
 
 ## test
@@ -607,7 +620,7 @@ path = "module/core/unitore"
 default-features = false
 
 [workspace.dependencies.deterministic_rand]
-version = "~0.6.0"
+version = "~0.7.0"
 path = "module/core/deterministic_rand"
 
 [workspace.dependencies.crates_tools]
@@ -800,11 +813,17 @@ version = "0.8.23"
 [workspace.dependencies.chrono]
 version = "0.4.34"
 
+[workspace.dependencies.fs2]
+version = "0.4.3"
+
+[workspace.dependencies.serial_test]
+version = "3.2.0"
+
 [workspace.dependencies.criterion]
 version = "0.5.1"
 
 [workspace.dependencies.workspace_tools]
-version = "~0.10.0"
+version = "~0.11.0"
 path = "module/core/workspace_tools"
 default-features = false
 

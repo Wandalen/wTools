@@ -28,8 +28,8 @@ use unilang::static_data::StaticCommandDefinition;
 /// aggregate_cli! {
 ///     name: "MyUnifiedCLI",
 ///     modules: [
-///         { module: math_cli, prefix: "math" },
-///         { module: file_cli, prefix: "fs" },
+///         { module: cmd1_cli, prefix: "cmd1" },
+///         { module: file_cli, prefix: "cmd2" },
 ///         { module: db_cli, prefix: None },  // No prefix
 /// ]
 /// }
@@ -127,8 +127,8 @@ pub trait StaticCliModule {
 // Example CLI Modules with Static Definitions
 // =============================================================================
 
-/// Math CLI module with compile-time definitions
-pub mod math_cli_static {
+/// Generic CLI module with compile-time definitions
+pub mod cmd1_cli_static {
   use super::*;
   use unilang::static_data::StaticCommandDefinition;
 
@@ -179,11 +179,11 @@ pub mod math_cli_static {
 
   static COMMANDS: &[&StaticCommandDefinition] = &[&ADD_COMMAND, &MULTIPLY_COMMAND];
 
-  /// Math CLI module implementation
+  /// Generic CLI module implementation
   #[ derive( Debug ) ]
-  pub struct MathCliModule;
+  pub struct Cmd1CliModule;
 
-  impl StaticCliModule for MathCliModule
+  impl StaticCliModule for Cmd1CliModule
   {
   fn static_commands() -> &'static [&'static StaticCommandDefinition]
   {
@@ -192,12 +192,12 @@ pub mod math_cli_static {
 
   fn module_name() -> &'static str
   {
-  "math"
+  "cmd1"
  }
 
   fn module_description() -> &'static str
   {
-  "Mathematical operations"
+  "Generic operations"
  }
  }
 }
@@ -213,7 +213,7 @@ pub mod math_cli_static {
 ///
 /// // Define CLI modules with static commands
 /// #[cli_module]
-/// mod math_cli {
+/// mod cmd1_cli {
 ///     #[command(name = "add", description = "Add two numbers")]
 ///     fn add(a: i64, b: i64) -> String {
 ///         format!("{} + {} = {}", a, b, a + b)
@@ -237,8 +237,8 @@ pub mod math_cli_static {
 /// aggregate_cli! {
 ///     name: UnifiedCLI,
 ///     modules: [
-///         math_cli => "math",  // .math.add, .math.multiply
-///         file_cli => "fs",    // .fs.list
+///         cmd1_cli => "cmd1",  // .cmd1.add, .cmd1.multiply
+///         file_cli => "cmd2",    // .cmd2.list
 /// ]
 /// }
 /// ```
@@ -301,8 +301,8 @@ pub mod generated_example {
   // use unilang::static_data::StaticCommandMap;
   //
   // pub static UNIFIED_CLI_COMMANDS: StaticCommandMap = StaticCommandMap::from_definitions(&[
-  //   &math_cli_static::ADD_COMMAND,
-  //   &math_cli_static::MULTIPLY_COMMAND,
+  //   &cmd1_cli_static::ADD_COMMAND,
+  //   &cmd1_cli_static::MULTIPLY_COMMAND,
   //   // Additional commands with prefixes applied
   // ]);
   //

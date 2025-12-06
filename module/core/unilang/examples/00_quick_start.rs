@@ -1,17 +1,20 @@
 #![allow(clippy::all)]
-//! # Quick Start Example
+//! # Quick Start Example - Runtime Registration
 //!
-//! **⚠️ DEPRECATION NOTICE:** This example uses deprecated runtime command registration APIs
-//! (`CommandRegistry::new()` and `command_add_runtime()`).
+//! **⚠️ PERFORMANCE NOTICE:** This example demonstrates runtime command registration,
+//! which has **10-50x slower performance** than compile-time registration.
 //!
-//! **Performance Impact:** 10-50x slower lookup performance than recommended build-time approach.
+//! **When runtime registration IS appropriate:**
+//! - ✅ REPL applications with interactive command loading
+//! - ✅ Plugin systems with runtime command discovery
+//! - ✅ Rapid prototyping and development iteration
 //!
-//! **For production applications, use:** `static_01_basic_compile_time.rs` instead.
+//! **When to use compile-time registration instead:**
+//! - ⚡ Production CLIs (see `static_01_basic_compile_time.rs`)
+//! - ⚡ Performance-critical applications
+//! - ⚡ Large command sets (100+ commands)
 //!
-//! **When to use runtime registration:**
-//! - REPL applications requiring dynamic command loading
-//! - Plugin systems with runtime command discovery
-//! - Rapid prototyping (temporary use only)
+//! **Performance comparison:** ~500ns (runtime) vs ~80ns (compile-time) per lookup.
 //!
 //! Run with: `cargo run --example 00_quick_start`
 
@@ -19,7 +22,6 @@ use unilang::prelude::*;
 
 fn main() -> Result<(), unilang::Error> {
     // Create a command registry
-    #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
     
     // Define a simple greeting command
@@ -64,9 +66,8 @@ fn main() -> Result<(), unilang::Error> {
             execution_time_ms: None,
         })
     });
-    
+
     // Register the command
-    #[allow(deprecated)]
     registry.command_add_runtime(&greet_cmd, greet_routine)?;
     
     // Use the Pipeline API to execute commands

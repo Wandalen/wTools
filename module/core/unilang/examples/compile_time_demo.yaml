@@ -2,142 +2,145 @@
 # This YAML file demonstrates how multiple CLI modules can be aggregated
 # at compile-time using the existing build.rs infrastructure
 #
-# NAMING CONVENTION: Use compound names with dots (e.g., ".math.add") and empty namespace
+# NAMING CONVENTION: Use compound names with dots (e.g., ".cmd1.action1") and empty namespace
 # to demonstrate the recommended command naming format that users will see and use.
+#
+# NOTE: Generic command names are used to emphasize that unilang is a domain-agnostic
+# framework applicable to ANY application domain, not just specific use cases.
 
-# Math CLI Module Commands
-- name: ".math.add"
+# Generic Module 1 Commands
+- name: ".cmd1.process"
   namespace: ""
-  description: "Add two numbers"
-  hint: "Mathematical addition"
+  description: "Process two values"
+  hint: "Generic processing operation"
   arguments:
-    - name: "a"
-      description: "First number"
+    - name: "input1"
+      description: "First input value"
       kind: "Integer"
-      hint: "First number"
+      hint: "First input"
       attributes:
         optional: false
-    - name: "b"
-      description: "Second number"
+    - name: "input2"
+      description: "Second input value"
       kind: "Integer"
-      hint: "Second number"
+      hint: "Second input"
       attributes:
         optional: false
   status: "stable"
   version: "1.0.0"
-  tags: ["math", "arithmetic"]
+  tags: ["generic", "processing"]
   aliases: []
   permissions: []
   idempotent: true
   examples:
-    - ".math.add a::10 b::5"
-    - ".math.add a::100 b::200"
+    - ".cmd1.process input1::10 input2::5"
+    - ".cmd1.process input1::100 input2::200"
 
-- name: ".math.multiply"
+- name: ".cmd1.execute"
   namespace: ""
-  description: "Multiply two numbers"
-  hint: "Mathematical multiplication"
+  description: "Execute operation on two values"
+  hint: "Generic execution operation"
   arguments:
-    - name: "x"
-      description: "First number"
+    - name: "value1"
+      description: "First value"
       kind: "Integer"
-      hint: "First number"
+      hint: "First value"
       attributes:
         optional: false
-    - name: "y"
-      description: "Second number"
+    - name: "value2"
+      description: "Second value"
       kind: "Integer"
-      hint: "Second number"
+      hint: "Second value"
       attributes:
         optional: false
   status: "stable"
   version: "1.0.0"
-  tags: ["math", "arithmetic"]
+  tags: ["generic", "execution"]
   aliases: []
   permissions: []
   idempotent: true
   examples:
-    - ".math.multiply x::7 y::8"
+    - ".cmd1.execute value1::7 value2::8"
 
-# File CLI Module Commands
-- name: ".fs.list"
+# Generic Module 2 Commands
+- name: ".cmd2.list"
   namespace: ""
-  description: "List files in directory"
-  hint: "File system listing"
+  description: "List items"
+  hint: "Generic listing operation"
   arguments:
-    - name: "path"
-      description: "Directory path to list"
+    - name: "target"
+      description: "Target to list"
       kind: "String"
-      hint: "Directory path"
+      hint: "Target identifier"
       attributes:
         optional: true
-        default: "."
+        default: "default"
   status: "stable"
   version: "1.0.0"
-  tags: ["filesystem", "directory"]
+  tags: ["generic", "listing"]
   aliases: ["ls"]
   permissions: []
   idempotent: true
   examples:
-    - ".fs.list"
-    - ".fs.list path::/home/user"
+    - ".cmd2.list"
+    - ".cmd2.list target::custom"
 
-- name: ".fs.copy"
+- name: ".cmd2.copy"
   namespace: ""
-  description: "Copy a file"
-  hint: "File system copy"
+  description: "Copy an item"
+  hint: "Generic copy operation"
   arguments:
     - name: "source"
-      description: "Source file path"
+      description: "Source identifier"
       kind: "String"
-      hint: "Source file"
+      hint: "Source"
       attributes:
         optional: false
       aliases: ["src"]
     - name: "destination"
-      description: "Destination file path"
+      description: "Destination identifier"
       kind: "String"
-      hint: "Destination file"
+      hint: "Destination"
       attributes:
         optional: false
       aliases: ["dest", "dst"]
   status: "stable"
   version: "1.0.0"
-  tags: ["filesystem", "copy"]
+  tags: ["generic", "copy"]
   aliases: ["cp"]
   permissions: []
   idempotent: false
   examples:
-    - ".fs.copy source::file1.txt destination::file2.txt"
+    - ".cmd2.copy source::item1 destination::item2"
 
-# Database CLI Module Commands
-- name: ".db.connect"
+# Generic Service Commands
+- name: ".svc1.connect"
   namespace: ""
-  description: "Connect to database"
-  hint: "Database connection"
+  description: "Connect to service"
+  hint: "Generic service connection"
   arguments:
-    - name: "host"
-      description: "Database host"
+    - name: "endpoint"
+      description: "Service endpoint"
       kind: "String"
-      hint: "DB host"
+      hint: "Endpoint address"
       attributes:
         optional: true
-        default: "localhost"
+        default: "default"
     - name: "port"
-      description: "Database port"
+      description: "Service port"
       kind: "Integer"
-      hint: "DB port"
+      hint: "Port number"
       attributes:
         optional: true
-        default: "5432"
+        default: "8080"
   status: "stable"
   version: "1.0.0"
-  tags: ["database", "connection"]
+  tags: ["generic", "connection"]
   aliases: []
-  permissions: ["db_access"]
+  permissions: ["service_access"]
   idempotent: true
   examples:
-    - ".db.connect"
-    - ".db.connect host::production.db port::5432"
+    - ".svc1.connect"
+    - ".svc1.connect endpoint::remote port::8080"
 
 # Note: .version, .help, .info commands are defined in unilang.commands.yaml

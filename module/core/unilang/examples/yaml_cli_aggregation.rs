@@ -82,9 +82,9 @@ fn demonstrate_yaml_workflow()
   println!();
   println!( "/// Aggregated commands with O(1) lookup" );
   println!( "pub static AGGREGATED_COMMANDS: StaticCommandMap = StaticCommandMap::from_definitions(&[" );
-  println!( "  DB_MIGRATE_CMD,  // .db.migrate" );
-  println!( "  DB_BACKUP_CMD,   // .db.backup" );
-  println!( "  FS_COPY_CMD,     // .fs.copy" );
+  println!( "  DB_MIGRATE_CMD,  // .svc1.migrate" );
+  println!( "  DB_BACKUP_CMD,   // .svc1.backup" );
+  println!( "  FS_COPY_CMD,     // .cmd2.copy" );
   println!( "  NET_PING_CMD,    // .net.ping" );
   println!( "  // ... all commands with prefixes applied" );
   println!( "]);" );
@@ -101,8 +101,8 @@ fn demonstrate_yaml_workflow()
   println!( "  let pipeline = Pipeline::new(registry);" );
   println!();
   println!( "  // Zero-cost command execution with proper prefixes" );
-  println!( "  pipeline.process_command_simple(\".tool.db.migrate direction::up\")?;" );
-  println!( "  pipeline.process_command_simple(\".tool.fs.copy src::data dest::backup\")?;" );
+  println!( "  pipeline.process_command_simple(\".tool.svc1.migrate direction::up\")?;" );
+  println!( "  pipeline.process_command_simple(\".tool.cmd2.copy src::data dest::backup\")?;" );
   println!( "  pipeline.process_command_simple(\".tool.net.ping host::example.com\")?;" );
   println!( "  Ok(())" );
   println!( "}}" );
@@ -132,7 +132,7 @@ fn demonstrate_static_aggregation()
       {
         name: "filesystem".to_string(),
         yaml_path: "filesystem/commands.yaml".to_string(),
-        prefix: Some( "fs".to_string() ),
+        prefix: Some( "cmd2".to_string() ),
         enabled: true,
       },
       ModuleConfig
@@ -186,10 +186,10 @@ fn demonstrate_static_aggregation()
 
   println!( "3. **YAML File Processing**" );
   println!( "   Expected command structure after aggregation:" );
-  println!( "   - .tool.db.migrate  (from database/commands.yaml)" );
-  println!( "   - .tool.db.backup   (from database/commands.yaml)" );
-  println!( "   - .tool.fs.copy     (from filesystem/commands.yaml)" );
-  println!( "   - .tool.fs.move     (from filesystem/commands.yaml)" );
+  println!( "   - .tool.svc1.migrate  (from database/commands.yaml)" );
+  println!( "   - .tool.svc1.backup   (from database/commands.yaml)" );
+  println!( "   - .tool.cmd2.copy     (from filesystem/commands.yaml)" );
+  println!( "   - .tool.cmd2.move     (from filesystem/commands.yaml)" );
   println!( "   - .tool.net.ping    (from network/commands.yaml)" );
   println!( "   - .tool.net.trace   (from network/commands.yaml)" );
   println!();
@@ -217,7 +217,7 @@ fn demonstrate_static_aggregation()
   println!( "```yaml" );
   println!( "# database/commands.yaml" );
   println!( "- name: \"migrate\"" );
-  println!( "  namespace: \"\"  # Will become .db.migrate with prefix" );
+  println!( "  namespace: \"\"  # Will become .svc1.migrate with prefix" );
   println!( "  description: \"Run database migrations\"" );
   println!( "  arguments:" );
   println!( "    - name: \"direction\"" );

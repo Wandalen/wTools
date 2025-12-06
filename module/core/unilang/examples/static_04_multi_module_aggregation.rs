@@ -91,7 +91,7 @@ fn create_filesystem_commands() -> Vec<CommandDefinition>
   vec![
     CommandDefinition::former()
       .name( ".copy" )
-      .namespace( ".fs" )
+      .namespace( ".cmd2" )
       .description( "Copy files or directories".to_string() )
       .hint( "File copy operation".to_string() )
       .arguments( vec![
@@ -124,7 +124,7 @@ fn create_filesystem_commands() -> Vec<CommandDefinition>
       .end(),
     CommandDefinition::former()
       .name( ".move" )
-      .namespace( ".fs" )
+      .namespace( ".cmd2" )
       .description( "Move or rename files and directories".to_string() )
       .hint( "File move operation".to_string() )
       .arguments( vec![
@@ -146,7 +146,7 @@ fn create_filesystem_commands() -> Vec<CommandDefinition>
       .end(),
     CommandDefinition::former()
       .name( ".list" )
-      .namespace( ".fs" )
+      .namespace( ".cmd2" )
       .description( "List directory contents".to_string() )
       .hint( "Directory listing".to_string() )
       .arguments( vec![

@@ -766,7 +766,8 @@ fn generate_static_commands(dest_path: &Path, command_definitions: &[serde_yaml:
     }
     else
     {
-      format!("{namespace}.{name}")
+      // Strip leading dot from name to avoid double dots like ".system..status"
+      format!("{namespace}.{}", name.trim_start_matches('.'))
     };
 
     writeln!(f, "  \"{full_name}\" => &CMD_{i},").unwrap();

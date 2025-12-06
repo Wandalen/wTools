@@ -28,7 +28,6 @@ fn main() -> Result< (), unilang::error::Error >
   println!( "🏗️  PHASE 1: Setting up Command Registry" );
   println!( "==========================================" );
 
-  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
 
   // Create a comprehensive file management system
@@ -267,7 +266,7 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   // File listing command
   let list_command = CommandDefinition::former()
   .name( ".list" )
-  .namespace( ".file".to_string() )
+  .namespace( ".cmd2".to_string() )
   .description( "Lists files and directories with various formatting options".to_string() )
   .hint( "Directory listing utility" )
   .status( "stable" )
@@ -374,13 +373,12 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     }
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &list_command, list_routine )?;
 
   // File sync command
   let sync_command = CommandDefinition::former()
   .name( ".sync" )
-  .namespace( ".file".to_string() )
+  .namespace( ".cmd2".to_string() )
   .description( "Synchronizes files between source and target directories".to_string() )
   .hint( "File synchronization utility" )
   .status( "beta" )
@@ -492,19 +490,18 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &sync_command, sync_routine )?;
 
   Ok(())
 }
 
-/// Set up text processing commands
+/// Set up generic processing commands
 #[allow(clippy::too_many_lines)]
 fn setup_text_commands( registry : &mut CommandRegistry ) -> Result< (), unilang::error::Error >
 {
   let analyze_command = CommandDefinition::former()
   .name( ".analyze" )
-  .namespace( ".text".to_string() )
+  .namespace( ".cmd3".to_string() )
   .description( "Analyzes text with various metrics and statistics".to_string() )
   .hint( "Text analysis and metrics" )
   .status( "stable" )
@@ -632,7 +629,6 @@ fn setup_text_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &analyze_command, analyze_routine )?;
 
   Ok(())
@@ -643,7 +639,7 @@ fn setup_network_commands( registry : &mut CommandRegistry ) -> Result< (), unil
 {
   let ping_command = CommandDefinition::former()
   .name( ".ping" )
-  .namespace( ".network".to_string() )
+  .namespace( ".action".to_string() )
   .description( "Tests network connectivity to a host".to_string() )
   .hint( "Network connectivity test" )
   .status( "stable" )
@@ -732,7 +728,6 @@ fn setup_network_commands( registry : &mut CommandRegistry ) -> Result< (), unil
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &ping_command, ping_routine )?;
 
   Ok(())
@@ -786,7 +781,6 @@ fn setup_utility_commands( registry : &mut CommandRegistry ) -> Result< (), unil
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &echo_command, echo_routine )?;
 
   // Timestamp command
@@ -862,7 +856,6 @@ fn setup_utility_commands( registry : &mut CommandRegistry ) -> Result< (), unil
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &timestamp_command, timestamp_routine )?;
 
   Ok(())

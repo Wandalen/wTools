@@ -7,17 +7,7 @@
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 #![ cfg_attr( not( doc ), doc = "Universal language processing" ) ]
 
-// TEMPORARY: Suppress clippy pedantic lints pending systematic cleanup
-// TODO(cleanup): Remove these allows and fix underlying issues
-// Tracking: 205 clippy errors exist as of 2025-10-25
-#![ allow( clippy::format_push_string ) ]           // 73 occurrences - use write! instead
-#![ allow( clippy::missing_errors_doc ) ]           // 19 occurrences - add # Errors sections
-#![ allow( clippy::unused_self ) ]                  // 10 occurrences - remove unused self params
-#![ allow( clippy::match_same_arms ) ]              // 8 occurrences - consolidate identical arms
-#![ allow( clippy::doc_markdown ) ]                 // 35 occurrences - add backticks to identifiers
-#![ allow( clippy::must_use_candidate ) ]           // 3 occurrences - add #[must_use] messages
-#![ allow( clippy::needless_pass_by_value ) ]       // 1 occurrence - use references where possible
-#![ allow( clippy::missing_panics_doc ) ]           // 1 occurrence - document panic conditions
+// All clippy pedantic lints have been resolved as of Phase 9 completion
 
 //!
 //! ## Design Rules Compliance Notice
@@ -216,8 +206,10 @@ mod_interface::mod_interface!
   #[ cfg( feature = "json_parser" ) ]
   layer config_extraction;
 
-  /// Output processing utilities for CLI applications.
-  /// Includes ANSI-aware and Unicode-aware truncation.
+  /// Output processing utilities for CLI applications (DEPRECATED in 0.31.0).
+  /// **Use `cli_fmt::output` instead** - this module will be removed in 0.32.0.
+  /// Includes deprecated re-exports for backward compatibility.
+  #[ cfg( feature = "output_processing" ) ]
   layer output;
 
   // NOTE: Benchmark modules have been moved to unilang_benchmarks workspace crate

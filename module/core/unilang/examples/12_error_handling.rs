@@ -16,7 +16,6 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "=== Error Handling and Type Validation Demo ===\n" );
 
-  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
 
   // Step 1: Command with strict validation rules
@@ -125,7 +124,6 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &validate_cmd, validate_routine )?;
   println!( "✓ Registered validation test command" );
 

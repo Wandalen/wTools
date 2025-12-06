@@ -203,6 +203,7 @@ mod private {
 
     /// Sets the internal state of the iterator, for testing purposes.
     // Test helper methods are pub
+    #[ allow( dead_code ) ]
     pub fn set_test_state(
       &mut self,
       iterable: &'a str,
@@ -217,16 +218,19 @@ mod private {
     }
 
     /// Gets the current iterable string, for testing purposes.
+    #[ allow( dead_code ) ]
     pub fn get_test_iterable(&self) -> &'a str {
       self.iterable
     }
     /// Gets the current offset within the original string, for testing purposes.
+    #[ allow( dead_code ) ]
     pub fn get_test_current_offset(&self) -> usize {
       self.current_offset
     }
     /// Gets the currently active quote character, if any, for testing purposes.
     // pub fn get_test_active_quote_char(&self) -> Option< char > { self.active_quote_char } // Removed
     /// Gets the internal counter value, for testing purposes.
+    #[ allow( dead_code ) ]
     pub fn get_test_counter(&self) -> i32 {
       self.counter
     }
@@ -663,6 +667,7 @@ mod private {
   impl<'a, D: Searcher + Default + Clone> SplitOptions<'a, D> {
     /// Consumes the options and returns a `SplitFastIterator`.
     // This is inside pub mod private, so pub fn makes it pub
+    #[ allow( dead_code ) ]
     pub fn split_fast(self) -> SplitFastIterator<'a, D> {
       SplitFastIterator::new(&self)
     }

@@ -33,7 +33,7 @@ Ridiculous/impractical approaches have been excluded (e.g., Windows Registry, HT
 | 4 | JSON file → Build-time static | `approach_json_single_build` | ❌ | ✅ YES | ✅ Very Easy | ⚡ Best | ⚠️ Medium | JSON-first projects (simple) |
 | 5 | JSON files → Build-time static | `approach_json_multi_build` | ❌ | ✅ YES | ✅ Easy | ⚡ Best | ⚠️ Medium | JSON-first projects (large) |
 | 6 | JSON file → Runtime | `approach_json_runtime` | ❌ | ✅ YES | ✅ Very Easy | ⚠️ Slow | ✅ High | Runtime config loading |
-| 7 | Rust DSL (builder) | *(always available)* | ✅ Core API | ✅ YES | 🔥 Hard | ⚠️ Slow (~4,200ns) | ✅ Highest | Tests, full control |
+| 7 | Rust DSL (builder) | *(always available)* | ✅ Core API | ✅ YES | 🔥 Hard | ⚠️ Slower (~500ns) | ✅ Highest | REPL, plugins, tests |
 | 8 | Rust DSL (const fn) → Static | `approach_rust_dsl_const` | ❌ | ✅ YES | 🔥 Hard | ⚡ Best (~80ns) | ⚠️ Medium | High-perf DSL |
 | 9 | Declarative macro → Static | `approach_macro_declarative` | ❌ | ❌ NO | ⚠️ Medium | ⚡ Best | ⚠️ Medium | Clean syntax (future) |
 | 10 | Proc macro (derive) → Static | `approach_macro_proc` | ❌ | ❌ NO | ✅ Easy | ⚡ Best | ⚠️ Low | Derive-style like clap (future) |
@@ -767,7 +767,7 @@ Based on goal: **"Make YAML + build-time static the obvious default choice"**
 1. ✅ Update `readme.md` - YAML-first quick start
 2. ✅ Add "Getting Started" guide showing YAML → build-time static workflow
 3. ✅ Document build.rs configuration (env vars, discovery paths)
-4. ✅ Add deprecation notices to runtime registration docs
+4. ✅ Add performance guidance to runtime registration docs (not deprecated - appropriate for REPL/plugins)
 5. ✅ Create migration guide (runtime → compile-time)
 
 ### Phase 2: Developer Experience (2-3 weeks)

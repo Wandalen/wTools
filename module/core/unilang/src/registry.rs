@@ -35,9 +35,15 @@ mod private
   use crate::error::Error; // Import Error for Result type
   use crate::interpreter::ExecutionContext;
   use std::collections::HashMap;
-  use indexmap::IndexMap;
-  use lru::LruCache;
-  use std::num::NonZeroUsize;
+
+  pub mod performance_metrics;
+  pub use performance_metrics::PerformanceMetrics;
+
+  pub mod dynamic_command_map;
+  pub use dynamic_command_map::DynamicCommandMap;
+
+  pub mod command_registry_builder;
+  pub use command_registry_builder::CommandRegistryBuilder;
 
 /// Type alias for a command routine.
 /// A routine takes a `VerifiedCommand` and an `ExecutionContext`, and returns a `Result` of `OutputData` or `ErrorData`.
@@ -145,44 +151,6 @@ fn format_command_help( cmd_def : &CommandDefinition ) -> String
   help
 }
 
-/// Performance metrics for command registry operations.
-///
-/// **DESIGN RULE NOTICE:** This struct is for PRODUCTION performance tracking only.
-///
-/// ❌ **DO NOT** use this for performance testing in `tests/` directory:
-/// ```no_run
-/// // WRONG - This violates design rules
-/// #[test]
-/// fn test_performance() {
-///     let start = std::time::Instant::now();
-///     // ... operation
-///     let metrics = registry.performance_metrics();
-///     assert!(metrics.cache_hits > 0); // Performance assertion in test - VIOLATION
-/// }
-/// ```
-///
-/// ✅ **CORRECT** use for production monitoring:
-/// ```ignore
-/// // Production code monitoring
-/// let metrics = registry.performance_metrics();
-/// log::info!("Cache hit rate: {:.2}%", metrics.cache_hit_rate());
-/// ```
-///
-/// **For performance testing, use `benchkit` framework separately.**
-#[derive(Debug, Default, Clone)]
-pub struct PerformanceMetrics {
-  /// Number of cache hits
-  pub cache_hits: u64,
-  /// Number of cache misses
-  pub cache_misses: u64,
-  /// Total number of lookups performed
-  pub total_lookups: u64,
-  /// Number of static command lookups
-  pub static_lookups: u64,
-  /// Number of dynamic command lookups
-  pub dynamic_lookups: u64,
-}
-
 /// Common trait for command registries to enable interoperability.
 ///
 /// This trait defines the minimal interface required by components like
@@ -199,135 +167,6 @@ pub trait CommandRegistryTrait {
 
   /// Get formatted help text for a command.
   fn get_help_for_command(&self, command_name: &str) -> Option<String>;
-}
-
-impl PerformanceMetrics {
-  /// Calculate cache hit rate as a value between 0.0 and 1.0
-  pub fn cache_hit_rate(&self) -> f64 {
-    if self.total_lookups == 0 {
-      0.0
-    } else {
-      self.cache_hits as f64 / self.total_lookups as f64
-    }
-  }
-
-  /// Calculate ratio of static vs dynamic lookups
-  pub fn static_ratio(&self) -> f64 {
-    if self.total_lookups == 0 {
-      0.0
-    } else {
-      self.static_lookups as f64 / self.total_lookups as f64
-    }
-  }
-}
-
-/// Optimized dynamic command storage with intelligent caching
-#[derive(Debug)]
-pub struct DynamicCommandMap {
-  /// Registry operation mode
-  mode: RegistryMode,
-  /// Primary command storage using IndexMap for cache locality
-  commands: IndexMap<String, CommandDefinition>,
-  /// LRU cache for hot commands
-  lookup_cache: LruCache<String, CommandDefinition>,
-  /// Performance metrics tracking
-  metrics: PerformanceMetrics,
-}
-
-impl DynamicCommandMap {
-  /// Create a new optimized dynamic command map
-  pub fn new(mode: RegistryMode) -> Self {
-    Self {
-      mode,
-      commands: IndexMap::new(),
-      lookup_cache: LruCache::new(NonZeroUsize::new(256).unwrap()), // 256 hot commands for better performance
-      metrics: PerformanceMetrics::default(),
-    }
-  }
-
-  /// Get a command with intelligent caching
-  pub fn get(&mut self, name: &str) -> Option<CommandDefinition> {
-    self.metrics.total_lookups += 1;
-
-    // Check cache first for hot commands
-    if let Some(cmd) = self.lookup_cache.get(name) {
-      self.metrics.cache_hits += 1;
-      return Some(cmd.clone());
-    }
-
-    // Check main storage
-    if let Some(cmd) = self.commands.get(name) {
-      self.metrics.cache_misses += 1;
-      self.metrics.dynamic_lookups += 1;
-
-      // Cache the command for future access
-      self.lookup_cache.put(name.to_string(), cmd.clone());
-      return Some(cmd.clone());
-    }
-
-    None
-  }
-
-  /// Insert a command into the map
-  pub fn insert(&mut self, name: String, command: CommandDefinition) {
-    self.commands.insert(name.clone(), command.clone());
-    // Preemptively cache newly inserted commands as they're likely to be accessed soon
-    // This significantly improves cache hit rates during testing and real-world usage
-    self.lookup_cache.put(name, command);
-  }
-
-  /// Check if a command exists
-  pub fn contains_key(&self, name: &str) -> bool {
-    self.lookup_cache.contains(name) || self.commands.contains_key(name)
-  }
-
-  /// Remove a command
-  pub fn remove(&mut self, name: &str) -> Option<CommandDefinition> {
-    // Remove from cache first
-    self.lookup_cache.pop(name);
-    // Remove from main storage
-    self.commands.shift_remove(name)
-  }
-
-  /// Get performance metrics
-  pub fn metrics(&self) -> &PerformanceMetrics {
-    &self.metrics
-  }
-
-  /// Get mutable performance metrics
-  pub fn metrics_mut(&mut self) -> &mut PerformanceMetrics {
-    &mut self.metrics
-  }
-
-  /// Get registry mode
-  pub fn mode(&self) -> RegistryMode {
-    self.mode
-  }
-
-  /// Set registry mode
-  pub fn set_mode(&mut self, mode: RegistryMode) {
-    self.mode = mode;
-  }
-
-  /// Get all commands (for compatibility)
-  pub fn iter(&self) -> impl Iterator<Item = (&String, &CommandDefinition)> {
-    self.commands.iter()
-  }
-
-  /// Clear the cache (useful for testing)
-  pub fn clear_cache(&mut self) {
-    self.lookup_cache.clear();
-  }
-
-  /// Get cache capacity
-  pub fn cache_capacity(&self) -> usize {
-    self.lookup_cache.cap().get()
-  }
-
-  /// Get a command without updating cache or metrics (for backward compatibility)
-  pub fn get_readonly(&self, name: &str) -> Option<CommandDefinition> {
-    self.commands.get(name).cloned()
-  }
 }
 
 ///
@@ -353,17 +192,21 @@ impl CommandRegistry
   ///
   /// Creates a new, empty `CommandRegistry` for runtime command registration.
   ///
-  /// ## ⚠️ Deprecation Notice
+  /// ## ⚠️ Performance Notice
   ///
   /// Runtime command registration has **10-50x slower performance** than compile-time registration.
-  /// For production applications, use `StaticCommandRegistry::from_commands(&STATIC_COMMANDS)` with
-  /// build.rs generation for zero-cost lookups.
   ///
-  /// ## When Runtime Registration Is Appropriate
+  /// ## When to Use This Constructor
   ///
+  /// ✅ **Appropriate for:**
   /// - REPL applications requiring interactive command definition
   /// - Plugin systems with runtime command loading
-  /// - Prototyping and development workflows
+  /// - Prototyping and rapid development workflows
+  ///
+  /// ⚡ **For production CLIs, use instead:**
+  /// ```ignore
+  /// StaticCommandRegistry::from_commands(&STATIC_COMMANDS)  // 50x faster
+  /// ```
   ///
   /// ## Recommended Alternative for Production
   ///
@@ -376,7 +219,6 @@ impl CommandRegistry
   /// let registry = StaticCommandRegistry::from_commands(&STATIC_COMMANDS);
   /// ```
   ///
-  #[ deprecated( since = "0.27.0", note = "Runtime registration has 10-50x slower performance. Use compile-time registration for production: StaticCommandRegistry::from_commands(&STATIC_COMMANDS)" ) ]
   #[ must_use ]
   pub fn new() -> Self
   {
@@ -433,7 +275,7 @@ impl CommandRegistry
   /// commands appear in help listings.
   ///
   /// This prevents the help divergence bug where commands are registered but invisible
-  /// in help output (discovered in production: wflow's .languages command).
+  /// in help output.
   ///
   /// **Validation:** This method validates the command definition before registration,
   /// checking for proper naming conventions, namespace format, and parameter storage types.
@@ -499,21 +341,20 @@ impl CommandRegistry
   ///
   /// Registers a command with its executable routine at runtime.
   ///
-  /// ## ⚠️ Deprecation Notice
+  /// ## ⚠️ Performance Notice
   ///
   /// Runtime command registration has **10-50x slower performance** than compile-time registration.
-  /// For production CLI applications, use static command definitions generated at build time.
   ///
-  /// ## When Runtime Registration Is Appropriate
+  /// ## When to Use This Method
   ///
+  /// ✅ **Appropriate for:**
   /// - REPL applications requiring interactive command definition
   /// - Plugin systems where commands are loaded from external sources
-  /// - Prototyping and development workflows
+  /// - Prototyping and rapid development workflows
   ///
-  /// ## Recommended Alternative for Production
-  ///
-  /// Use `build.rs` to generate static command registries from YAML or procedural definitions,
-  /// then load them with `StaticCommandRegistry::from_commands(&STATIC_COMMANDS)` for zero-cost lookups.
+  /// ⚡ **For production CLI applications:**
+  /// Use static command definitions generated at build time via `build.rs` and loaded with
+  /// `StaticCommandRegistry::from_commands(&STATIC_COMMANDS)` for zero-cost lookups.
   ///
   /// # Arguments
   ///
@@ -526,7 +367,6 @@ impl CommandRegistry
   /// is already registered and cannot be overwritten (e.g., if it was
   /// a compile-time registered command).
   ///
-  #[ deprecated( since = "0.27.0", note = "Runtime registration has 10-50x slower performance. Use compile-time registration for production. Only use for REPL, plugins, or prototyping." ) ]
   pub fn command_add_runtime( &mut self, command_def : &CommandDefinition, routine : CommandRoutine ) -> Result< (), Error >
   {
     // EXPLICIT COMMAND NAMING ENFORCEMENT (FR-REG-6)
@@ -841,7 +681,7 @@ impl CommandRegistry
   /// It works with both static and dynamic commands.
   ///
   /// # Arguments
-  /// * `command_name` - The full name of the command (e.g., ".example" or ".fs.list")
+  /// * `command_name` - The full name of the command (e.g., ".example" or ".cmd2.list")
   ///
   /// # Returns
   /// * `Option<String>` - Formatted help text, or None if command not found
@@ -910,7 +750,7 @@ impl CommandRegistry
       let mut help_content = String::new();
       help_content.push_str( "Available Commands:\n\n" );
       help_content.push_str( "Use '.command.help' to get detailed help for any specific command.\n" );
-      help_content.push_str( "Examples: '.video.search.help', '.math.add.help'\n\n" );
+      help_content.push_str( "Examples: '.cmd1.process.help', '.cmd2.list.help'\n\n" );
       help_content.push_str( "Global Commands:\n" );
       help_content.push_str( "  .help    Display this help information\n" );
 
@@ -1008,6 +848,14 @@ impl CommandRegistry
     for ( _command_name, static_cmd ) in static_commands.entries()
     {
       let dynamic_cmd = crate::data::CommandDefinition::from( *static_cmd );
+
+      // Skip .help command if it already exists (mandatory global help is registered in new())
+      // The mandatory help is non-negotiable and takes precedence over static definitions
+      if dynamic_cmd.full_name() == ".help" && registry.dynamic_commands.contains_key(".help")
+      {
+        continue;
+      }
+
       registry.register( dynamic_cmd )
         .expect( "Static commands should always be valid - this is a build-time generation bug" );
     }
@@ -1102,243 +950,6 @@ impl CommandRegistryTrait for CommandRegistry {
 /// This provides a convenient way to construct a `CommandRegistry` by
 /// chaining `command` calls.
 #[ allow( missing_debug_implementations ) ]
-pub struct CommandRegistryBuilder
-{
-  registry : CommandRegistry,
-  /// Accumulated errors during registration (command_name, error)
-  errors : Vec< ( String, Error ) >,
-}
-
-impl Default for CommandRegistryBuilder
-{
-  fn default() -> Self
-  {
-    Self
-    {
-      registry : CommandRegistry::default(),
-      errors : Vec::new(),
-    }
-  }
-}
-
-impl CommandRegistryBuilder
-{
-  ///
-  /// Creates a new `CommandRegistryBuilder`.
-  ///
-  #[ must_use ]
-  pub fn new() -> Self
-  {
-    Self::default()
-  }
-
-  ///
-  /// Adds a command to the registry being built.
-  ///
-  /// # Errors
-  ///
-  /// Returns `Error::Registration` if command validation fails or if duplicate detected.
-  pub fn command( mut self, command : CommandDefinition ) -> Result< Self, Error >
-  {
-    self.registry.register( command )?;
-    Ok( self )
-  }
-
-  ///
-  /// Loads command definitions from a YAML string and adds them to the registry.
-  ///
-  /// **Requires feature**: `yaml_parser` (enabled by YAML approaches)
-  ///
-  /// # Errors
-  ///
-  /// Returns an `Error` if the YAML string is invalid or if routine links cannot be resolved.
-  #[ cfg( feature = "yaml_parser" ) ]
-  pub fn load_from_yaml_str( mut self, yaml_str : &str ) -> Result< Self, Error >
-  {
-    let command_defs = crate::loader::load_command_definitions_from_yaml_str( yaml_str )?;
-    for command_def in command_defs
-    {
-      if let Some( link ) = command_def.routine_link()
-      {
-        let routine = crate::loader::resolve_routine_link( link )?;
-        #[ allow( deprecated ) ]
-        self.registry.command_add_runtime( &command_def, routine )?;
-      }
-      else
-      {
-        self.registry.register( command_def )?;
-      }
-    }
-    Ok( self )
-  }
-
-  ///
-  /// Loads command definitions from a JSON string and adds them to the registry.
-  ///
-  /// **Requires feature**: `json_parser` (enabled by JSON approaches)
-  ///
-  /// # Errors
-  ///
-  /// Returns an `Error` if the JSON string is invalid or if routine links cannot be resolved.
-  #[ cfg( feature = "json_parser" ) ]
-  pub fn load_from_json_str( mut self, json_str : &str ) -> Result< Self, Error >
-  {
-    let command_defs = crate::loader::load_command_definitions_from_json_str( json_str )?;
-    for command_def in command_defs
-    {
-      if let Some( link ) = command_def.routine_link()
-      {
-        let routine = crate::loader::resolve_routine_link( link )?;
-        #[ allow( deprecated ) ]
-        self.registry.command_add_runtime( &command_def, routine )?;
-      }
-      else
-      {
-        self.registry.register( command_def )?;
-      }
-    }
-    Ok( self )
-  }
-
-  ///
-  /// Adds a command with inline routine using a fluent builder.
-  ///
-  /// This provides Row 7 (Rust DSL → Dynamic HashMap) functionality,
-  /// allowing commands and routines to be defined together inline.
-  ///
-  /// # Arguments
-  /// * `name` - Command name (must start with '.')
-  /// * `description` - Command description
-  /// * `routine` - Inline closure for command execution
-  ///
-  /// # Examples
-  /// ```rust
-  /// use unilang::registry::CommandRegistry;
-  ///
-  /// let registry = CommandRegistry::builder()
-  ///   .command_with_routine(
-  ///     ".greet",
-  ///     "Greets user by name",
-  ///     |_cmd, _ctx| {
-  ///       Ok(unilang::data::OutputData {
-  ///         content: "Hello!".to_string(),
-  ///         format: "text".to_string(),
-  ///         execution_time_ms: None,
-  ///       })
-  ///     }
-  ///   )
-  ///   .build();
-  /// ```
-  #[ must_use ]
-  pub fn command_with_routine<F>(
-    mut self,
-    name : &str,
-    description : &str,
-    routine : F
-  ) -> Self
-  where
-    F : Fn( crate::semantic::VerifiedCommand, ExecutionContext ) -> Result< OutputData, ErrorData > + Send + Sync + 'static
-  {
-    use crate::data::{ CommandName, CommandStatus, VersionType };
-
-    let cmd = CommandDefinition::new(
-      CommandName::new( name ).expect( "valid command name" ),
-      description.to_string(),
-    )
-    .with_status( CommandStatus::Active )
-    .with_version( VersionType::new( "1.0.0" ).expect( "valid version" ) )
-    .with_auto_help( true )
-    .with_idempotent( true )
-    .with_http_method_hint( "GET" );
-
-    // Register with routine - collect errors for later checking
-    #[ allow( deprecated ) ]
-    if let Err( e ) = self.registry.command_add_runtime( &cmd, Box::new( routine ) )
-    {
-      self.errors.push( ( name.to_string(), e ) );
-    }
-
-    self
-  }
-
-  ///
-  /// Builds and returns the `CommandRegistry`, ignoring any registration errors.
-  ///
-  /// **Warning:** This method silently ignores registration errors. Use `build_checked()`
-  /// if you need to ensure all commands were registered successfully.
-  ///
-  /// # Examples
-  /// ```rust
-  /// use unilang::registry::CommandRegistry;
-  ///
-  /// let registry = CommandRegistry::builder()
-  ///   .command_with_routine(".test", "Test command", |_, _| {
-  ///     Ok(unilang::data::OutputData {
-  ///       content: "Success".to_string(),
-  ///       format: "text".to_string(),
-  ///       execution_time_ms: None,
-  ///     })
-  ///   })
-  ///   .build();
-  /// ```
-  #[ must_use ]
-  pub fn build( self ) -> CommandRegistry
-  {
-    self.registry
-  }
-
-  ///
-  /// Builds and returns the `CommandRegistry`, returning an error if any registration failed.
-  ///
-  /// This method provides proper error propagation, ensuring that all registration errors
-  /// are caught and reported. Use this method instead of `build()` when you need to
-  /// guarantee that all commands were successfully registered.
-  ///
-  /// # Errors
-  ///
-  /// Returns an error if any command failed to register. The error will contain details
-  /// about all failed registrations.
-  ///
-  /// # Examples
-  /// ```rust
-  /// use unilang::registry::CommandRegistry;
-  ///
-  /// let result = CommandRegistry::builder()
-  ///   .command_with_routine(".test", "Test command", |_, _| {
-  ///     Ok(unilang::data::OutputData {
-  ///       content: "Success".to_string(),
-  ///       format: "text".to_string(),
-  ///       execution_time_ms: None,
-  ///     })
-  ///   })
-  ///   .build_checked();
-  ///
-  /// match result {
-  ///   Ok(registry) => println!("All commands registered successfully"),
-  ///   Err(e) => eprintln!("Registration failed: {}", e),
-  /// }
-  /// ```
-  pub fn build_checked( self ) -> Result< CommandRegistry, Error >
-  {
-    if self.errors.is_empty()
-    {
-      Ok( self.registry )
-    }
-    else
-    {
-      // Construct detailed error message with all failures
-      let mut error_message = String::from( "Command registration failed for the following commands:\n" );
-
-      for ( cmd_name, err ) in &self.errors
-      {
-        error_message.push_str( &format!( "  - '{}': {}\n", cmd_name, err ) );
-      }
-
-      Err( Error::Registration( error_message ) )
-    }
-  }
-}
-
 /// Static command registry with hybrid lookup functionality.
 ///
 /// **Requires feature**: `static_registry` (automatically enabled by approach features like

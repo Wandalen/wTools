@@ -18,8 +18,6 @@ use unilang::registry::CommandRegistry;
 #[ test ]
 fn test_command_registry_key_mismatch()
 {
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
 
   let command_def = CommandDefinition::former()

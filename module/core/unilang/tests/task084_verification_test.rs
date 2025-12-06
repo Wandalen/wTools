@@ -210,10 +210,10 @@ fn test_task084_objective3_auto_categorization()
   println!( "=== Categorized Command List ===" );
   println!( "{}", categorized_list );
 
-  // Should contain category headers
-  assert!( categorized_list.contains( "REPOSITORY MANAGEMENT" ), "Should have REPOSITORY MANAGEMENT category" );
-  assert!( categorized_list.contains( "GIT OPERATIONS" ), "Should have GIT OPERATIONS category" );
-  assert!( categorized_list.contains( "REMOVAL OPERATIONS" ), "Should have REMOVAL OPERATIONS category" );
+  // Should contain category headers (Title Case format after decoupling migration)
+  assert!( categorized_list.contains( "Repository Management" ), "Should have Repository Management category" );
+  assert!( categorized_list.contains( "Git Operations" ), "Should have Git Operations category" );
+  assert!( categorized_list.contains( "Removal Operations" ), "Should have Removal Operations category" );
 
   // Commands should appear under correct categories
   // (We can't easily test exact positioning without parsing, but headers prove categorization works)
@@ -306,7 +306,7 @@ fn test_task084_acceptance_criteria()
 
   // ✅ `wip .` shows categorized command list (no `.help` variants)
   let full_list = help_gen.list_commands();
-  assert!( full_list.contains( "REPOSITORY MANAGEMENT" ) );
+  assert!( full_list.contains( "Repository Management" ) );
   assert!( !full_list.contains( ".add.help" ) );
 
   // ✅ `wip .git` shows only git-prefixed commands

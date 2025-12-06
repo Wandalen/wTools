@@ -30,7 +30,6 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "=== Interactive REPL Mode Demo ===\n" );
 
-  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
 
   // Step 1: Register commands with interactive arguments
@@ -146,7 +145,6 @@ fn register_interactive_commands( registry : &mut CommandRegistry ) -> Result< (
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &login_cmd, login_routine )?;
 
   // Command with optional interactive input
@@ -229,7 +227,6 @@ fn register_interactive_commands( registry : &mut CommandRegistry ) -> Result< (
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &config_cmd, config_routine )?;
 
   // Regular command for comparison
@@ -266,7 +263,6 @@ fn register_interactive_commands( registry : &mut CommandRegistry ) -> Result< (
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &info_cmd, info_routine )?;
 
   // Note: .version is a static command that appears in help but has no executable routine

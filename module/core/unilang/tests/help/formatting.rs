@@ -18,8 +18,6 @@ fn test_help_formatting_is_readable()
   // This test ensures help output follows the improved formatting specification
   
   // Create a command with multiple arguments to test formatting
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
   
   let test_cmd = CommandDefinition::former()
@@ -162,8 +160,6 @@ fn test_help_formatting_visual_hierarchy()
 {
   // This test verifies that help output has clear visual hierarchy
   
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
   
   let test_cmd = CommandDefinition::former()

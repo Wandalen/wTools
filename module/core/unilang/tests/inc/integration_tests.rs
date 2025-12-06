@@ -28,8 +28,6 @@ fn basic_integration_test()
 fn basic_integration_test_with_new_parser()
 {
   // Test Matrix Row: T3.1
-  #[allow(deprecated)]
-  #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
   registry.register( CommandDefinition
   {
@@ -86,8 +84,6 @@ fn basic_integration_test_with_new_parser()
     let b = cmd.arguments.get( "b" ).unwrap().as_integer().unwrap();
     Ok( unilang::data::OutputData { content : ( a + b ).to_string(), format : "text".to_string() } )
   });
-  #[allow(deprecated)]
-    #[allow(deprecated)]
     registry.command_add_runtime( &registry.get( "add" ).unwrap(), add_routine ).unwrap();
 
   let parser = Parser::new( UnilangParserOptions::default() );

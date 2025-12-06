@@ -246,6 +246,16 @@ impl TableFormatter
   /// ```
   ///
   /// This ensures consistency across all table styles without breaking CSV/TSV formats.
+  ///
+  /// ## Multiline Cell Support
+  ///
+  /// When any cell contains `\n` characters, the row is rendered using multiline algorithm:
+  /// - Each cell split into lines via `str::lines()`
+  /// - Row height = max lines across all cells
+  /// - Each line rendered separately with borders/separators
+  /// - Shorter cells padded with empty strings
+  ///
+  /// **CSV/TSV Exception**: Multiline disabled per spec (line 1861) - newlines kept as literal "\n"
   fn format_row(
     &self,
     output : &mut String,
@@ -254,13 +264,51 @@ impl TableFormatter
     _is_header : bool
   )
   {
-    use crate::config::HeaderSeparatorVariant;
-
     // CSV/TSV formats should NOT pad cells for alignment
-    let should_pad = !matches!(
+    let is_csv_or_tsv = matches!(
       &self.config.column_separator,
       crate::config::ColumnSeparator::Character( ',' | '\t' )
     );
+    let should_pad = !is_csv_or_tsv;
+
+    // CSV/TSV: Escape newlines to literal "\n" strings (per spec line 1861)
+    let cells_prepared : Vec<String> = if is_csv_or_tsv
+    {
+      cells
+        .iter()
+        .map( |cell| cell.replace( '\n', "\\n" ) )
+        .collect()
+    }
+    else
+    {
+      cells.to_vec()
+    };
+
+    // Check if any cell contains multiline content (skip for CSV/TSV)
+    let has_multiline = !is_csv_or_tsv && cells_prepared.iter().any( |cell| cell.contains( '\n' ) );
+
+    if has_multiline
+    {
+      // Use multiline rendering algorithm from spec (lines 1777-1810)
+      self.format_multiline_row( output, &cells_prepared, column_widths );
+    }
+    else
+    {
+      // Single-line rendering (existing logic)
+      self.format_single_line_row( output, &cells_prepared, column_widths, should_pad );
+    }
+  }
+
+  /// Format a single-line row (no multiline cells)
+  fn format_single_line_row(
+    &self,
+    output : &mut String,
+    cells : &[ String ],
+    column_widths : &[ usize ],
+    should_pad : bool
+  )
+  {
+    use crate::config::HeaderSeparatorVariant;
 
     // Add leading border pipe if header separator variant uses pipes.
     // This maintains consistency with header separator formatting - if the separator
@@ -286,14 +334,35 @@ impl TableFormatter
         output.push_str( &" ".repeat( self.config.inner_padding ) );
       }
 
-      // Render cell content (padded for aligned formats, raw for CSV/TSV)
-      if should_pad
+      // Apply truncation if max_column_width is set
+      //
+      // Key Decision: Truncate BEFORE padding (not after)
+      // - Rationale: pad_to_width expects final content, not pre-padded
+      // - Order: truncate → pad → render
+      // - Multiline: truncate_cell handles per-line truncation internally
+      //
+      // Pitfall: DON'T truncate based on `width` (column width from calculate_column_widths)
+      // - `width` reflects CURRENT content, may be wider than max_column_width
+      // - Always use max_column_width for truncation limit, not calculated width
+      // - Example: If content is 50 chars and max_column_width=20, truncate to 20
+      //   (not to calculated width of 50)
+      let cell_content = if let Some( max_width ) = self.config.max_column_width
       {
-        output.push_str( &pad_to_width( cell, width, align_right ) );
+        crate::helpers::truncate_cell( cell, max_width, &self.config.truncation_marker )
       }
       else
       {
-        output.push_str( cell );
+        cell.clone()
+      };
+
+      // Render cell content (padded for aligned formats, raw for CSV/TSV)
+      if should_pad
+      {
+        output.push_str( &pad_to_width( &cell_content, width, align_right ) );
+      }
+      else
+      {
+        output.push_str( &cell_content );
       }
 
       // Add column separator (except after last column)
@@ -316,6 +385,95 @@ impl TableFormatter
     }
 
     output.push( '\n' );
+  }
+
+  /// Format a multiline row using two-pass algorithm (spec lines 1777-1810)
+  ///
+  /// Algorithm:
+  /// 1. Split all cells into lines and find max line count (row height)
+  /// 2. Render each line of the row with borders and separators
+  /// 3. Pad shorter cells with empty strings to match row height
+  fn format_multiline_row(
+    &self,
+    output : &mut String,
+    cells : &[ String ],
+    column_widths : &[ usize ]
+  )
+  {
+    use crate::config::HeaderSeparatorVariant;
+
+    // Pass 1: Split all cells into lines and find maximum line count
+    let split_cells : Vec<Vec<&str>> = cells
+      .iter()
+      .map( |cell| cell.lines().collect() )
+      .collect();
+
+    let row_height = split_cells
+      .iter()
+      .map( std::vec::Vec::len )
+      .max()
+      .unwrap_or( 1 );
+
+    let needs_border_pipes = matches!(
+      self.config.header_separator_variant,
+      HeaderSeparatorVariant::AsciiGrid | HeaderSeparatorVariant::Markdown
+    );
+
+    // Pass 2: Render each line of the row
+    for line_idx in 0..row_height
+    {
+      // Add leading border pipe if needed
+      if needs_border_pipes
+      {
+        output.push( '|' );
+      }
+
+      for ( col_idx, cell_lines ) in split_cells.iter().enumerate()
+      {
+        let line = cell_lines.get( line_idx ).unwrap_or( &"" );
+        let width = column_widths.get( col_idx ).copied().unwrap_or( 10 );
+        let align_right = self.config.align_right.get( col_idx ).copied().unwrap_or( false );
+
+        // Add padding before cell if outer_padding enabled
+        if col_idx == 0 && self.config.outer_padding
+        {
+          output.push_str( &" ".repeat( self.config.inner_padding ) );
+        }
+
+        // Apply truncation to individual line if max_column_width is set
+        let line_content = if let Some( max_width ) = self.config.max_column_width
+        {
+          crate::helpers::truncate_cell( line, max_width, &self.config.truncation_marker )
+        }
+        else
+        {
+          (*line).to_string()
+        };
+
+        // Pad and render line
+        output.push_str( &pad_to_width( &line_content, width, align_right ) );
+
+        // Add column separator (except after last column)
+        if col_idx < cells.len() - 1
+        {
+          self.append_column_separator( output );
+        }
+
+        // Add padding after last cell if outer_padding enabled
+        if col_idx == cells.len() - 1 && self.config.outer_padding
+        {
+          output.push_str( &" ".repeat( self.config.inner_padding ) );
+        }
+      }
+
+      // Add trailing border pipe if needed
+      if needs_border_pipes
+      {
+        output.push( '|' );
+      }
+
+      output.push( '\n' );
+    }
   }
 
   /// Append column separator based on formatter parameters
@@ -450,7 +608,8 @@ impl TableFormatter
     // Consider header widths (using visual length for ANSI-aware calculation)
     for ( idx, header ) in headers.iter().enumerate()
     {
-      widths[ idx ] = visual_len( header );
+      let header_width = visual_len( header );
+      widths[ idx ] = header_width;
     }
 
     // Consider row widths (using visual length for ANSI-aware calculation)
@@ -460,8 +619,19 @@ impl TableFormatter
       {
         if idx < widths.len()
         {
-          widths[ idx ] = widths[ idx ].max( visual_len( cell ) );
+          let cell_width = visual_len( cell );
+          widths[ idx ] = widths[ idx ].max( cell_width );
         }
+      }
+    }
+
+    // Cap column widths at max_column_width if configured
+    // This ensures truncated columns don't get padded back to original size
+    if let Some( max_width ) = self.config.max_column_width
+    {
+      for width in &mut widths
+      {
+        *width = (*width).min( max_width );
       }
     }
 

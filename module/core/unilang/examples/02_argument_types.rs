@@ -16,7 +16,6 @@ fn main() -> Result< (), unilang::error::Error >
 {
   println!( "=== Argument Types Demo ===\n" );
 
-  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
 
   // Step 1: Command with various basic argument types
@@ -91,7 +90,7 @@ fn main() -> Result< (), unilang::error::Error >
     // Path argument
     ArgumentDefinition {
       name: "path".to_string(),
-      description: "A file system path".to_string(),
+      description: "A generic path".to_string(),
       kind: Kind::Path,
       hint: "File or directory path".to_string(),
       attributes: ArgumentAttributes { optional: true, ..Default::default() },
@@ -184,7 +183,6 @@ fn main() -> Result< (), unilang::error::Error >
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &types_demo, types_routine )?;
   println!( "✓ Registered command with various argument types" );
 

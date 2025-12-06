@@ -21,24 +21,23 @@ fn main() -> Result< (), unilang::error::Error >
   println!( "=== Semantic Analysis Demo ===\n" );
 
   // Step 1: Set up a registry with test commands
-  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
 
-  // Math command for testing
-  let math_command = CommandDefinition::former()
+  // Generic command for testing
+  let cmd1_command = CommandDefinition::former()
   .name( ".calculate" )
-  .namespace( ".math".to_string() )
-  .description( "Performs mathematical calculations".to_string() )
+  .namespace( ".cmd1".to_string() )
+  .description( "Performs generic calculations".to_string() )
   .hint( "Calculator utility" )
   .status( "stable" )
   .version( "1.0.0" )
   .aliases( vec![ ".calc".to_string() ] )
-  .tags( vec![ "math".to_string() ] )
+  .tags( vec![ "cmd1".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
   .deprecation_message( String::new() )
   .http_method_hint( "GET".to_string() )
-  .examples( vec![ "math.calculate --x 10 --y 5 --operation add".to_string() ] )
+  .examples( vec![ "cmd1.calculate x::10 y::5 operation::add".to_string() ] )
   .arguments( vec!
   [
     ArgumentDefinition {
@@ -63,7 +62,7 @@ fn main() -> Result< (), unilang::error::Error >
     },
     ArgumentDefinition {
       name: "operation".to_string(),
-      description: "Mathematical operation to perform".to_string(),
+      description: "Generic operation to perform".to_string(),
       kind: Kind::Enum( vec![ "add".to_string(), "subtract".to_string(), "multiply".to_string(), "divide".to_string() ] ),
       hint: "Operation type".to_string(),
       attributes: ArgumentAttributes {
@@ -78,7 +77,7 @@ fn main() -> Result< (), unilang::error::Error >
   ])
   .end();
 
-  let math_routine = Box::new( | cmd : unilang::semantic::VerifiedCommand, _ctx |
+  let cmd1_routine = Box::new( | cmd : unilang::semantic::VerifiedCommand, _ctx |
   {
     let x = cmd.arguments.get( "x" ).and_then( | v | if let Value::Integer( i ) = v { Some( i ) } else { None } ).unwrap_or( &0 );
     let y = cmd.arguments.get( "y" ).and_then( | v | if let Value::Integer( i ) = v { Some( i ) } else { None } ).unwrap_or( &0 );
@@ -103,15 +102,14 @@ fn main() -> Result< (), unilang::error::Error >
     })
   });
 
-  #[allow(deprecated)]
-  registry.command_add_runtime( &math_command, math_routine )?;
+  registry.command_add_runtime( &cmd1_command, cmd1_routine )?;
 
-  // Text processing command for testing
+  // Generic processing command for testing
   let text_command = CommandDefinition::former()
   .name( ".process" )
-  .namespace( ".text".to_string() )
+  .namespace( ".cmd3".to_string() )
   .description( "Processes text with various transformations".to_string() )
-  .hint( "Text processing utility" )
+  .hint( "Generic processing utility" )
   .status( "stable" )
   .version( "2.0.0" )
   .aliases( vec![ ".transform".to_string() ] )
@@ -120,7 +118,7 @@ fn main() -> Result< (), unilang::error::Error >
   .idempotent( true )
   .deprecation_message( String::new() )
   .http_method_hint( "POST".to_string() )
-  .examples( vec![ "text.process 'hello world' --operations upper,reverse".to_string() ] )
+  .examples( vec![ "cmd3.process input::'hello world' operations::upper,reverse".to_string() ] )
   .arguments( vec!
   [
     ArgumentDefinition {
@@ -180,7 +178,7 @@ fn main() -> Result< (), unilang::error::Error >
       };
     }
 
-    println!( "Text processing: '{input}' -> '{result}'" );
+    println!( "Generic processing: '{input}' -> '{result}'" );
     println!( "Operations applied: {operations:?}" );
 
     Ok( OutputData
@@ -191,7 +189,6 @@ fn main() -> Result< (), unilang::error::Error >
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &text_command, text_routine )?;
 
   println!( "✓ Registered test commands for semantic analysis" );
@@ -203,15 +200,15 @@ fn main() -> Result< (), unilang::error::Error >
   let test_command_strings = vec!
   [
     // Valid cases
-    ( "math.calculate --x 15 --y 3 --operation multiply", "Valid named arguments" ),
-    ( "math.calculate 20 4 --op divide", "Positional args with alias" ),
-    ( "text.process 'Hello World'", "Default values used" ),
-    ( "text.process 'Test String' --operations upper,reverse,trim", "List argument" ),
+    ( "cmd1.calculate x::15 y::3 operation::multiply", "Valid named arguments" ),
+    ( "cmd1.calculate x::20 y::4 op::divide", "Named args with alias" ),
+    ( "cmd3.process input::'Hello World'", "Default values used" ),
+    ( "cmd3.process input::'Test String' operations::upper,reverse,trim", "List argument" ),
 
     // Invalid cases
     ( "nonexistent.command", "Non-existent command" ),
-    ( "math.calculate --x 10", "Missing required argument" ),
-    ( "math.calculate --x 2000 --y 5", "Validation rule failure" ),
+    ( "cmd1.calculate x::10", "Missing required argument" ),
+    ( "cmd1.calculate x::2000 y::5", "Validation rule failure" ),
   ];
 
   for ( i, ( cmd_str, description ) ) in test_command_strings.iter().enumerate()
@@ -263,9 +260,9 @@ fn main() -> Result< (), unilang::error::Error >
 
   let test_commands = vec!
   [
-    "math.calculate --x 100 --y 25 --operation divide",
-    "text.process 'semantic analysis demo' --operations upper,reverse",
-    "calc 50 75", // Using alias and positional args
+    "cmd1.calculate x::100 y::25 operation::divide",
+    "cmd3.process input::'semantic analysis demo' operations::upper,reverse",
+    "calc x::50 y::75", // Using alias with named args
   ];
 
   for cmd_str in test_commands

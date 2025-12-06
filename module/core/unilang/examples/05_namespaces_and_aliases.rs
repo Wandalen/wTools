@@ -17,28 +17,27 @@ fn main() -> Result< (), unilang::error::Error >
 {
   println!( "=== Namespaces and Aliases Demo ===\n" );
 
-  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
 
-  // Step 1: Commands in the 'math' namespace
+  // Step 1: Commands in the 'cmd1' namespace
 
-  // .math.add command with aliases
+  // .cmd1.add command with aliases
   let add_command = CommandDefinition::former()
   .name( ".add" )
-  .namespace( ".math".to_string() )
+  .namespace( ".cmd1".to_string() )
   .description( "Adds two or more numbers".to_string() )
-  .hint( "Mathematical addition" )
+  .hint( "Generic addition operation" )
   .status( "stable" )
   .version( "1.2.0" )
   .aliases( vec![ ".sum".to_string(), ".plus".to_string(), ".+".to_string() ] )
-  .tags( vec![ "arithmetic".to_string(), "basic".to_string() ] )
+  .tags( vec![ "generic".to_string(), "basic".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
   .deprecation_message( String::new() )
   .http_method_hint( "GET".to_string() )
   .examples( vec!
   [
-    "math.add numbers::1,2,3".to_string(),
+    "cmd1.add numbers::1,2,3".to_string(),
     "sum numbers::10,20".to_string(),
     "+ numbers::5,7".to_string()
   ])
@@ -98,26 +97,25 @@ fn main() -> Result< (), unilang::error::Error >
     }
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &add_command, add_routine )?;
 
-  // .math.multiply command
+  // .cmd1.multiply command
   let multiply_command = CommandDefinition::former()
   .name( ".multiply" )
-  .namespace( ".math".to_string() )
+  .namespace( ".cmd1".to_string() )
   .description( "Multiplies two or more numbers".to_string() )
-  .hint( "Mathematical multiplication" )
+  .hint( "Generic multiplication operation" )
   .status( "stable" )
   .version( "1.1.0" )
   .aliases( vec![ ".mul".to_string(), ".times".to_string(), ".*".to_string() ] )
-  .tags( vec![ "arithmetic".to_string(), "basic".to_string() ] )
+  .tags( vec![ "generic".to_string(), "basic".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
   .deprecation_message( String::new() )
   .http_method_hint( "GET".to_string() )
   .examples( vec!
   [
-    "math.multiply 2 3 4".to_string(),
+    "cmd1.multiply 2 3 4".to_string(),
     "mul 5 6".to_string(),
     "* 7 8".to_string()
   ])
@@ -177,16 +175,15 @@ fn main() -> Result< (), unilang::error::Error >
     }
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &multiply_command, multiply_routine )?;
 
-  // Step 2: Commands in the 'text' namespace
+  // Step 2: Commands in the 'cmd3' namespace
 
   let uppercase_command = CommandDefinition::former()
   .name( ".upper" )
-  .namespace( ".text".to_string() )
+  .namespace( ".cmd3".to_string() )
   .description( "Converts text to uppercase".to_string() )
-  .hint( "Text case conversion" )
+  .hint( "Generic case conversion" )
   .status( "stable" )
   .version( "2.0.0" )
   .aliases( vec![ ".uppercase".to_string(), ".caps".to_string(), ".UP".to_string() ] )
@@ -197,7 +194,7 @@ fn main() -> Result< (), unilang::error::Error >
   .http_method_hint( "POST".to_string() )
   .examples( vec!
   [
-    "text.upper 'hello world'".to_string(),
+    "cmd3.upper 'hello world'".to_string(),
     "uppercase 'convert me'".to_string(),
     "caps test".to_string()
   ])
@@ -242,14 +239,13 @@ fn main() -> Result< (), unilang::error::Error >
     }
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &uppercase_command, uppercase_routine )?;
 
   // Step 3: Commands in the 'file' namespace
 
   let list_command = CommandDefinition::former()
   .name( ".list" )
-  .namespace( ".file".to_string() )
+  .namespace( ".cmd2".to_string() )
   .description( "Lists files in a directory".to_string() )
   .hint( "Directory listing" )
   .status( "beta" )
@@ -262,7 +258,7 @@ fn main() -> Result< (), unilang::error::Error >
   .http_method_hint( "GET".to_string() )
   .examples( vec!
   [
-    "file.list /home/user".to_string(),
+    "cmd2.list /home/user".to_string(),
     "ls .".to_string(),
     "dir /tmp".to_string()
   ])
@@ -328,7 +324,6 @@ fn main() -> Result< (), unilang::error::Error >
     }
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &list_command, list_routine )?;
 
   println!( "✓ Registered commands in multiple namespaces with aliases" );
@@ -341,23 +336,23 @@ fn main() -> Result< (), unilang::error::Error >
 
   println!( "\n=== Namespace Organization ===" );
   println!( "Commands are organized into logical namespaces:" );
-  println!( "  • .math.*     - Mathematical operations" );
-  println!( "  • .text.*     - Text processing utilities" );
-  println!( "  • .file.*     - File system operations" );
+  println!( "  • .cmd1.*     - Generic module 1 operations" );
+  println!( "  • .cmd3.*     - Generic module 3 operations" );
+  println!( "  • .cmd2.*     - Generic module 2 operations" );
   println!( "  • (global)    - Commands without namespace prefix" );
 
   println!( "\n=== Alias System ===" );
   println!( "Commands can have multiple aliases for convenience:" );
-  println!( "  • .math.add     → sum, plus, +" );
-  println!( "  • .math.multiply → mul, times, *" );
-  println!( "  • .text.upper   → uppercase, caps, UP" );
-  println!( "  • .file.list    → ls, dir, show" );
+  println!( "  • .cmd1.add     → sum, plus, +" );
+  println!( "  • .cmd1.multiply → mul, times, *" );
+  println!( "  • .cmd3.upper   → uppercase, caps, UP" );
+  println!( "  • .cmd2.list    → ls, dir, show" );
 
   println!( "\n=== Usage Examples ===" );
   println!( "# Using full namespace:" );
-  println!( "cargo run --bin unilang_cli math.add numbers::1,2,3,4" );
-  println!( "cargo run --bin unilang_cli text.upper text::'hello world'" );
-  println!( "cargo run --bin unilang_cli file.list path::/tmp" );
+  println!( "cargo run --bin unilang_cli cmd1.add numbers::1,2,3,4" );
+  println!( "cargo run --bin unilang_cli cmd3.upper text::'hello world'" );
+  println!( "cargo run --bin unilang_cli cmd2.list path::/tmp" );
 
   println!( "\n# Using aliases:" );
   println!( "cargo run --bin unilang_cli sum numbers::10,20,30" );
@@ -366,9 +361,9 @@ fn main() -> Result< (), unilang::error::Error >
   println!( "cargo run --bin unilang_cli ls path::." );
 
   println!( "\n# Getting help for specific commands:" );
-  println!( "cargo run --bin unilang_cli help math.add" );
+  println!( "cargo run --bin unilang_cli help cmd1.add" );
   println!( "cargo run --bin unilang_cli help sum" );
-  println!( "cargo run --bin unilang_cli help text.upper" );
+  println!( "cargo run --bin unilang_cli help cmd3.upper" );
 
   Ok(())
 }

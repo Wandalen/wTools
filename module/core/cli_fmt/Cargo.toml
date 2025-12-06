@@ -1,0 +1,36 @@
+[package]
+name = "cli_fmt"
+version = "0.2.0"
+edition = "2021"
+authors = [ "wTools Contributors" ]
+license = "MIT"
+description = "CLI output formatting utilities for command-line applications"
+repository = "https://github.com/Wandalen/wTools"
+documentation = "https://docs.rs/cli_fmt"
+keywords = [ "cli", "command-line", "output", "formatting", "display" ]
+categories = [ "command-line-utilities", "development-tools" ]
+
+[lints]
+workspace = true
+
+[dependencies]
+strs_tools = { workspace = true, features = [ "ansi", "string_split", "std" ], optional = true }
+
+[dev-dependencies]
+
+[features]
+# Default provides core functionality including output module
+default = [ "enabled", "std", "output" ]
+
+# Master switch - activates core dependencies
+enabled = [ "dep:strs_tools" ]
+std = []
+use_alloc = []
+string_split = []
+ansi_unicode = [ "strs_tools/ansi_unicode" ]
+
+# Individual modules
+output = [ "enabled", "std", "string_split" ]
+
+# Composite features - enables all functionality
+full = [ "enabled", "output", "ansi_unicode" ]

@@ -262,13 +262,12 @@ fn main() -> Result< (), unilang::error::Error >
 /// Set up a demo registry with various commands for testing
 fn setup_demo_registry() -> Result< CommandRegistry, unilang::error::Error >
 {
-  #[allow(deprecated)]
   let mut registry = CommandRegistry::new();
 
   // Calculator commands
   setup_calc_commands( &mut registry )?;
 
-  // Text processing commands
+  // Generic processing commands
   setup_text_commands( &mut registry )?;
 
   // Utility commands
@@ -290,7 +289,7 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   .status( "stable" )
   .version( "1.0.0" )
   .aliases( vec![ ".plus".to_string() ] )
-  .tags( vec![ "math".to_string() ] )
+  .tags( vec![ "cmd1".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
   .deprecation_message( String::new() )
@@ -336,7 +335,6 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &add_cmd, add_routine )?;
 
   // Multiply command
@@ -348,7 +346,7 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   .status( "stable" )
   .version( "1.0.0" )
   .aliases( vec![ ".mul".to_string(), ".times".to_string() ] )
-  .tags( vec![ "math".to_string() ] )
+  .tags( vec![ "cmd1".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
   .deprecation_message( String::new() )
@@ -394,7 +392,6 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &multiply_cmd, multiply_routine )?;
 
   // Divide command (with error handling)
@@ -406,7 +403,7 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   .status( "stable" )
   .version( "1.0.0" )
   .aliases( vec![ ".div".to_string() ] )
-  .tags( vec![ "math".to_string() ] )
+  .tags( vec![ "cmd1".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
   .deprecation_message( String::new() )
@@ -462,18 +459,17 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &divide_cmd, divide_routine )?;
 
   Ok(())
 }
 
-/// Set up text processing commands
+/// Set up generic processing commands
 fn setup_text_commands( registry : &mut CommandRegistry ) -> Result< (), unilang::error::Error >
 {
   let reverse_cmd = CommandDefinition::former()
   .name( ".reverse" )
-  .namespace( ".text".to_string() )
+  .namespace( ".cmd3".to_string() )
   .description( "Reverses a text string".to_string() )
   .hint( "String reversal" )
   .status( "stable" )
@@ -515,7 +511,6 @@ fn setup_text_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &reverse_cmd, reverse_routine )?;
 
   Ok(())
@@ -556,7 +551,6 @@ fn setup_util_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     })
   });
 
-  #[allow(deprecated)]
   registry.command_add_runtime( &timestamp_cmd, timestamp_routine )?;
 
   Ok(())

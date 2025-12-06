@@ -34,7 +34,6 @@ fn main()
 
 #[allow(clippy::field_reassign_with_default)]
 #[allow(clippy::too_many_lines)]
-#[allow(deprecated)]
 fn run() -> Result< (), unilang::error::Error >
 {
   // 1. Initialize Command Registry

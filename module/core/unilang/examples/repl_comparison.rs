@@ -55,7 +55,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("=== REPL Feature Comparison Demo ===\n");
 
     // Setup common registry and pipeline
-    #[allow(deprecated)]
     let mut registry = CommandRegistry::new();
     setup_demo_commands(&mut registry)?;
     let pipeline = Pipeline::new(registry);
@@ -143,7 +142,6 @@ fn setup_demo_commands(registry: &mut CommandRegistry) -> Result<(), Error> {
         })
     });
 
-    #[allow(deprecated)]
     registry.command_add_runtime(&demo_cmd, demo_routine)?;
 
     // Interactive command for secure input demo
@@ -188,7 +186,6 @@ fn setup_demo_commands(registry: &mut CommandRegistry) -> Result<(), Error> {
         })
     });
 
-    #[allow(deprecated)]
     registry.command_add_runtime(&secure_cmd, secure_routine)?;
 
     Ok(())
