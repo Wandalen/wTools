@@ -521,7 +521,7 @@ default-features = false
 ## config tools
 
 [workspace.dependencies.config_hierarchy]
-version = "~0.3.0"
+version = "~0.4.0"
 path = "module/core/config_hierarchy"
 default-features = false
 
