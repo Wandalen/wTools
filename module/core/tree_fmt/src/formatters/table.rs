@@ -315,12 +315,20 @@ impl TableFormatter
     // line has pipes, all rows must also have pipes for proper alignment.
     let needs_border_pipes = matches!(
       self.config.header_separator_variant,
-      HeaderSeparatorVariant::AsciiGrid | HeaderSeparatorVariant::Markdown
+      HeaderSeparatorVariant::AsciiGrid | HeaderSeparatorVariant::Markdown | HeaderSeparatorVariant::Unicode
     );
 
     if needs_border_pipes
     {
-      output.push( '|' );
+      let border_char = if matches!( self.config.header_separator_variant, HeaderSeparatorVariant::Unicode )
+      {
+        '│'
+      }
+      else
+      {
+        '|'
+      };
+      output.push( border_char );
     }
 
     for ( idx, cell ) in cells.iter().enumerate()
@@ -381,7 +389,15 @@ impl TableFormatter
     // Add trailing border pipe if header separator style uses pipes
     if needs_border_pipes
     {
-      output.push( '|' );
+      let border_char = if matches!( self.config.header_separator_variant, HeaderSeparatorVariant::Unicode )
+      {
+        '│'
+      }
+      else
+      {
+        '|'
+      };
+      output.push( border_char );
     }
 
     output.push( '\n' );
@@ -416,7 +432,7 @@ impl TableFormatter
 
     let needs_border_pipes = matches!(
       self.config.header_separator_variant,
-      HeaderSeparatorVariant::AsciiGrid | HeaderSeparatorVariant::Markdown
+      HeaderSeparatorVariant::AsciiGrid | HeaderSeparatorVariant::Markdown | HeaderSeparatorVariant::Unicode
     );
 
     // Pass 2: Render each line of the row
@@ -425,7 +441,15 @@ impl TableFormatter
       // Add leading border pipe if needed
       if needs_border_pipes
       {
-        output.push( '|' );
+        let border_char = if matches!( self.config.header_separator_variant, HeaderSeparatorVariant::Unicode )
+        {
+          '│'
+        }
+        else
+        {
+          '|'
+        };
+        output.push( border_char );
       }
 
       for ( col_idx, cell_lines ) in split_cells.iter().enumerate()
@@ -469,7 +493,15 @@ impl TableFormatter
       // Add trailing border pipe if needed
       if needs_border_pipes
       {
-        output.push( '|' );
+        let border_char = if matches!( self.config.header_separator_variant, HeaderSeparatorVariant::Unicode )
+        {
+          '│'
+        }
+        else
+        {
+          '|'
+        };
+        output.push( border_char );
       }
 
       output.push( '\n' );

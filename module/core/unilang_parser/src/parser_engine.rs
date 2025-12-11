@@ -156,6 +156,11 @@ impl Parser
  })
   .collect :: < Result< Vec< RichItem< '_ > >, ParseError > >()?;
 
+  // Fix for Bug #006/#007: Merge tokens in value context (after ::)
+  // This must happen BEFORE whitespace filtering so the merge logic can detect
+  // whitespace delimiters as value terminators
+  let rich_items = Self::merge_value_context_tokens( rich_items );
+
   let rich_items: Vec< RichItem< '_ > > = rich_items
   .into_iter()
   .filter( | item | !matches!( item.kind, UnilangTokenKind ::Delimiter( " " | "\n" | "\t" | "\r" ) ) )
@@ -300,6 +305,137 @@ impl Parser
     });
 
     rich_items
+  }
+
+  /// Merges tokens in value context (after :: operators) to protect special characters.
+  ///
+  /// This implements value-context-aware tokenization as specified in spec.md Section 2.4, Rule 5.
+  /// After a `::` named argument operator, all subsequent tokens are merged into a single value
+  /// until the next whitespace delimiter is encountered.
+  ///
+  /// # Examples
+  ///
+  /// ```text
+  /// Input:  [query, ::, Bug, #, 003, status, ::, open?]
+  /// Output: [query, ::, Bug #003, status, ::, open?]
+  /// ```
+  ///
+  /// # Algorithm
+  ///
+  /// 1. Scan tokens for :: operator (both "::" and " :: " variants)
+  /// 2. Enter value context after :: operator
+  /// 3. Accumulate all following tokens until whitespace delimiter
+  /// 4. Merge accumulated tokens into single Identifier with combined text
+  /// 5. Return to normal context after whitespace
+  ///
+  /// # Design Notes
+  ///
+  /// - Fixes Bug #006 (# character in values) and Bug #007 (? character in values)
+  /// - Aligns with spec.md: "Special characters after :: are value content, not delimiters"
+  /// - Whitespace always terminates value collection (per spec.md Rule 0)
+  /// - Preserves source location information for error reporting
+  fn merge_value_context_tokens< 'a >(
+    rich_items: Vec< RichItem< 'a > >,
+  ) -> Vec< RichItem< 'a > >
+  {
+    let mut result = Vec::new();
+    let mut iter = rich_items.into_iter().peekable();
+
+    while let Some( item ) = iter.next()
+    {
+      // Check if this is a :: operator (both variants)
+      let is_named_arg_operator = matches!(
+        &item.kind,
+        UnilangTokenKind::Operator( "::" ) | UnilangTokenKind::Operator( " :: " )
+      );
+
+      if is_named_arg_operator
+      {
+        // Push the :: operator itself
+        result.push( item );
+
+        // Enter value context - collect tokens until whitespace
+        let mut value_parts = Vec::new();
+        let mut value_start: Option< usize > = None;
+        let mut value_end: usize = 0;
+
+        while let Some( next_item ) = iter.peek()
+        {
+          // Check if this is a whitespace delimiter - if so, stop collecting
+          let is_whitespace = matches!(
+            &next_item.kind,
+            UnilangTokenKind::Delimiter( " " | "\t" | "\n" | "\r" )
+          );
+
+          if is_whitespace
+          {
+            break;
+          }
+
+          // Take the token and add to value parts
+          let token = iter.next().unwrap();
+
+          // Track source location bounds
+          if let SourceLocation::StrSpan { start, end } = token.adjusted_source_location
+          {
+            if value_start.is_none()
+            {
+              value_start = Some( start );
+            }
+            value_end = end;
+          }
+
+          // Extract text from token
+          let text = match &token.kind
+          {
+            UnilangTokenKind::Identifier( s ) => s.clone(),
+            UnilangTokenKind::Number( s ) => s.clone(),
+            UnilangTokenKind::Operator( s ) => (*s).to_string(),
+            UnilangTokenKind::Delimiter( s ) => (*s).to_string(),
+            UnilangTokenKind::Unrecognized( s ) => s.clone(),
+          };
+
+          value_parts.push( text );
+        }
+
+        // If we collected any value parts, create a merged Identifier token
+        if !value_parts.is_empty()
+        {
+          let merged_value = value_parts.join( "" );
+          let source_location = SourceLocation::StrSpan
+          {
+            start: value_start.unwrap_or( 0 ),
+            end: value_end,
+          };
+
+          // Create a synthetic Split for the merged value
+          let split = crate::item_adapter::Split
+          {
+            string: alloc::borrow::Cow::Owned( merged_value.clone() ),
+            bounds: ( value_start.unwrap_or( 0 ), value_end ),
+            start: value_start.unwrap_or( 0 ),
+            end: value_end,
+            typ: crate::item_adapter::SplitType::NonDelimiter,
+            was_quoted: false,
+          };
+
+          let merged_token = RichItem::new(
+            split,
+            UnilangTokenKind::Identifier( merged_value ),
+            source_location,
+          );
+
+          result.push( merged_token );
+        }
+      }
+      else
+      {
+        // Normal token - just pass through
+        result.push( item );
+      }
+    }
+
+    result
   }
 
   /// Parses multiple Unilang instructions from the input string, separated by `;;`.

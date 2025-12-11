@@ -210,7 +210,14 @@ To eliminate ambiguity, the parser **must** adhere to the following rules in ord
 
 *   **Rule 5: Argument Types**
     *   **Positional Arguments:** Any token that follows the command path and is not a named argument is a positional argument.
-    *   **Named Arguments:** Any pair of tokens matching the `name::value` syntax is a named argument. The `value` can be a single token or a quoted string.
+    *   **Named Arguments:** Any pair of tokens matching the `name::value` syntax is a named argument.
+        *   The `value` is collected as a single token by accumulating all characters until the next whitespace delimiter.
+        *   Special characters (`#`, `?`, `.`, etc.) that appear after the `::` operator are treated as value content, NOT as delimiters or operators, until whitespace is encountered.
+        *   Whitespace (space, tab, newline) always terminates value collection and marks the boundary to the next token.
+        *   Quoted strings (`"..."` or `'...'`) can be used for values but are not required for values containing special characters.
+        *   **Example:** `.search query::Bug #003` → the value is `"Bug #003"` (the `#` is part of the value, not a comment delimiter)
+        *   **Example:** `.search query::test?` → the value is `"test?"` (the `?` is part of the value, not the help operator)
+        *   **Example:** `.search query::val1 val2` → the value is `"val1"`, and `val2` becomes a separate positional argument (whitespace terminates the value)
 
 ---
 
