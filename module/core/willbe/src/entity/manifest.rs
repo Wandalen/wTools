@@ -153,6 +153,119 @@ mod private
  }
    true
  }
+
+  /// Resolves workspace-inherited field value.
+  ///
+  /// When a package uses workspace inheritance (e.g., `version.workspace = true`),
+  /// this function locates the workspace root `Cargo.toml` and extracts the value
+  /// from `[workspace.package]` section.
+  ///
+  /// # Arguments
+  ///
+  /// * `field_name` - Name of the field to resolve (e.g., "version", "edition", "license")
+  ///
+  /// # Returns
+  ///
+  /// Returns the resolved field value as a string if found.
+  ///
+  /// # Errors
+  ///
+  /// Returns error if:
+  /// - Cannot locate workspace root manifest
+  /// - Cannot read workspace manifest file
+  /// - Field not found in workspace.package section
+  /// - Field value is not a string
+  pub fn resolve_workspace_field( &self, field_name: &str ) -> Result< String, ManifestError >
+  {
+   // Find workspace root by traversing up from current manifest
+   let mut current_dir = self.manifest_file.parent()
+   .ok_or_else( || ManifestError ::Io( io ::Error ::new( io ::ErrorKind ::NotFound, "Cannot find parent directory" ) ) )?;
+
+   // Search for workspace Cargo.toml by going up directories
+   loop
+   {
+  let workspace_manifest = current_dir.join( "Cargo.toml" );
+
+  if workspace_manifest.exists()
+  {
+   let workspace_content = fs ::read_to_string( &workspace_manifest )?;
+   let workspace_doc = workspace_content.parse :: < toml_edit ::Document >()
+   .map_err( | e | io ::Error ::new( io ::ErrorKind ::InvalidData, e ) )?;
+
+   // Check if this is a workspace manifest
+   if let Some( workspace ) = workspace_doc.get( "workspace" )
+   {
+    // Try to get field from [workspace.package]
+    if let Some( workspace_package ) = workspace.get( "package" )
+    {
+     if let Some( field_value ) = workspace_package.get( field_name )
+     {
+      if let Some( value_str ) = field_value.as_str()
+      {
+       return Result ::Ok( value_str.to_string() );
+      }
+     }
+    }
+   }
+  }
+
+  // Move up to parent directory
+  let parent = current_dir.parent();
+  if parent.is_none() || parent == Some( current_dir )
+  {
+   // Reached filesystem root without finding workspace
+   break;
+  }
+  current_dir = parent.unwrap();
+ }
+
+   Err( ManifestError ::CannotFindValue( format!( "workspace.package.{}", field_name ) ) )
+ }
+
+  /// Gets package version, handling both direct and workspace-inherited values.
+  ///
+  /// This function properly resolves the version field whether it's:
+  /// - A direct string value: `version = "0.2.0"`
+  /// - Workspace-inherited: `version.workspace = true`
+  ///
+  /// # Returns
+  ///
+  /// Returns the version string if found.
+  ///
+  /// # Errors
+  ///
+  /// Returns error if:
+  /// - Version field is missing
+  /// - Version field has invalid format
+  /// - Workspace inheritance is declared but cannot be resolved
+  pub fn version( &self ) -> Result< String, ManifestError >
+  {
+   let data = &self.data;
+
+   // First, try to get version as a direct string
+   if let Some( version_str ) = data.get( "package" )
+   .and_then( | p | p.get( "version" ) )
+   .and_then( | v | v.as_str() )
+   {
+  return Result ::Ok( version_str.to_string() );
+ }
+
+   // Check if version uses workspace inheritance
+   if let Some( version_value ) = data.get( "package" ).and_then( | p | p.get( "version" ) )
+   {
+  if let Some( version_table ) = version_value.as_table()
+  {
+   if version_table.get( "workspace" ).and_then( | v | v.as_bool() ) == Some( true )
+   {
+    // Resolve from workspace
+    return self.resolve_workspace_field( "version" );
+   }
+  }
+ }
+
+   // Version field is missing or has invalid format
+   Err( ManifestError ::CannotFindValue( "package.version".to_string() ) )
+ }
  }
 
   /// Retrieves the repository URL of a package from its `Cargo.toml` file.
