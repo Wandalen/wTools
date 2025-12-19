@@ -70,6 +70,7 @@ fn from_static_preserves_non_empty_category()
     examples : &[],
     auto_help_enabled : true,
     category : "git_ops",
+    show_version_in_help : true,
   };
 
   let dynamic_cmd : CommandDefinition = ( &STATIC_CMD ).into();
@@ -106,6 +107,7 @@ fn from_static_preserves_empty_category()
     examples : &[],
     auto_help_enabled : true,
     category : "",
+    show_version_in_help : true,
   };
 
   let dynamic_cmd : CommandDefinition = ( &STATIC_CMD ).into();
@@ -142,6 +144,7 @@ fn from_static_with_all_fields_preserves_category()
     examples : &[ "example" ],
     auto_help_enabled : false,
     category : "test_category",
+    show_version_in_help : true,
   };
 
   let dynamic_cmd : CommandDefinition = ( &STATIC_CMD ).into();
@@ -180,6 +183,7 @@ fn conversion_doesnt_modify_category()
     examples : &[],
     auto_help_enabled : true,
     category : "  MiXeD_CaSe_WiTh_SpAcEs  ",
+    show_version_in_help : true,
   };
 
   let dynamic_cmd : CommandDefinition = ( &STATIC_CMD ).into();
@@ -218,6 +222,7 @@ fn issue_088_regression_both_fields_preserved()
     examples : &[],
     auto_help_enabled : false,
     category : "test",
+    show_version_in_help : true,
   };
 
   let dynamic_cmd : CommandDefinition = ( &STATIC_CMD ).into();

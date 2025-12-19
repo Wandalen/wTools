@@ -73,6 +73,7 @@ fn category_very_long_name_200_chars()
     examples : &[],
     auto_help_enabled : true,
     category : LONG_CAT,
+    show_version_in_help : true,
   };
 
   let dynamic_cmd : CommandDefinition = ( &STATIC_CMD ).into();
@@ -111,6 +112,7 @@ fn category_with_unicode_emoji()
     examples : &[],
     auto_help_enabled : true,
     category : "🔧 Operations",
+    show_version_in_help : true,
   };
 
   let dynamic_cmd : CommandDefinition = ( &STATIC_CMD ).into();
@@ -165,6 +167,7 @@ fn category_with_all_special_markdown_chars()
     examples : &[],
     auto_help_enabled : true,
     category : "Code: *bold*, _italic_, [link]",
+    show_version_in_help : true,
   };
 
   let dynamic_cmd : CommandDefinition = ( &STATIC_CMD ).into();
@@ -201,6 +204,7 @@ fn category_only_whitespace()
     examples : &[],
     auto_help_enabled : true,
     category : "   ",
+    show_version_in_help : true,
   };
 
   let dynamic_cmd : CommandDefinition = ( &STATIC_CMD ).into();
@@ -237,6 +241,7 @@ fn all_commands_same_category()
     examples : &[],
     auto_help_enabled : true,
     category : "same_category",
+    show_version_in_help : true,
   };
 
   static CMD2 : StaticCommandDefinition = StaticCommandDefinition
@@ -258,6 +263,7 @@ fn all_commands_same_category()
     examples : &[],
     auto_help_enabled : true,
     category : "same_category",
+    show_version_in_help : true,
   };
 
   let d1 : CommandDefinition = ( &CMD1 ).into();
@@ -296,6 +302,7 @@ fn all_commands_empty_category()
     examples : &[],
     auto_help_enabled : true,
     category : "",
+    show_version_in_help : true,
   };
 
   let d1 : CommandDefinition = ( &CMD1 ).into();
@@ -332,6 +339,7 @@ fn duplicate_category_names()
     examples : &[],
     auto_help_enabled : true,
     category : "duplicate",
+    show_version_in_help : true,
   };
 
   static CMD2 : StaticCommandDefinition = StaticCommandDefinition
@@ -353,6 +361,7 @@ fn duplicate_category_names()
     examples : &[],
     auto_help_enabled : true,
     category : "duplicate",
+    show_version_in_help : true,
   };
 
   let d1 : CommandDefinition = ( &CMD1 ).into();
@@ -391,6 +400,7 @@ fn category_case_sensitivity()
     examples : &[],
     auto_help_enabled : true,
     category : "Git_Ops",
+    show_version_in_help : true,
   };
 
   static CMD2 : StaticCommandDefinition = StaticCommandDefinition
@@ -412,6 +422,7 @@ fn category_case_sensitivity()
     examples : &[],
     auto_help_enabled : true,
     category : "git_ops",
+    show_version_in_help : true,
   };
 
   let d1 : CommandDefinition = ( &CMD1 ).into();
@@ -449,6 +460,7 @@ fn category_with_path_separators()
     examples : &[],
     auto_help_enabled : true,
     category : "file/operations",
+    show_version_in_help : true,
   };
 
   let dynamic_cmd : CommandDefinition = ( &STATIC_CMD ).into();
@@ -485,6 +497,7 @@ fn category_with_injection_chars()
     examples : &[],
     auto_help_enabled : true,
     category : "'; DROP TABLE commands; --",
+    show_version_in_help : true,
   };
 
   let dynamic_cmd : CommandDefinition = ( &STATIC_CMD ).into();

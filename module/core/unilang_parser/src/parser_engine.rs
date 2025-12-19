@@ -334,9 +334,9 @@ impl Parser
   /// - Aligns with spec.md: "Special characters after :: are value content, not delimiters"
   /// - Whitespace always terminates value collection (per spec.md Rule 0)
   /// - Preserves source location information for error reporting
-  fn merge_value_context_tokens< 'a >(
-    rich_items: Vec< RichItem< 'a > >,
-  ) -> Vec< RichItem< 'a > >
+  fn merge_value_context_tokens(
+    rich_items: Vec< RichItem< '_ > >,
+  ) -> Vec< RichItem< '_ > >
   {
     let mut result = Vec::new();
     let mut iter = rich_items.into_iter().peekable();
@@ -346,7 +346,7 @@ impl Parser
       // Check if this is a :: operator (both variants)
       let is_named_arg_operator = matches!(
         &item.kind,
-        UnilangTokenKind::Operator( "::" ) | UnilangTokenKind::Operator( " :: " )
+        UnilangTokenKind::Operator( "::" | " :: " )
       );
 
       if is_named_arg_operator
@@ -388,11 +388,11 @@ impl Parser
           // Extract text from token
           let text = match &token.kind
           {
-            UnilangTokenKind::Identifier( s ) => s.clone(),
-            UnilangTokenKind::Number( s ) => s.clone(),
-            UnilangTokenKind::Operator( s ) => (*s).to_string(),
-            UnilangTokenKind::Delimiter( s ) => (*s).to_string(),
-            UnilangTokenKind::Unrecognized( s ) => s.clone(),
+            UnilangTokenKind::Identifier( s )
+            | UnilangTokenKind::Number( s )
+            | UnilangTokenKind::Unrecognized( s ) => s.clone(),
+            UnilangTokenKind::Operator( s )
+            | UnilangTokenKind::Delimiter( s ) => (*s).to_string(),
           };
 
           value_parts.push( text );

@@ -31,6 +31,7 @@ fn test_static_command_definition_creation()
     examples: &["test_command --help"],
     auto_help_enabled: true,
     category: "",
+    show_version_in_help: true,
   };
 
   assert_eq!( static_cmd.name, "test_command" );
@@ -163,6 +164,7 @@ fn test_conversion_static_to_dynamic_command()
     examples: &[ ".test_cmd --help" ],
     auto_help_enabled: true,
     category: "",
+    show_version_in_help: true,
   };
 
   let dynamic_cmd: CommandDefinition = ( &STATIC_CMD ).into();
@@ -378,6 +380,7 @@ fn test_phf_map_compatibility()
       examples: &[],
       auto_help_enabled: true,
       category: "",
+      show_version_in_help: true,
     },
   };
 
@@ -439,6 +442,7 @@ fn test_static_command_with_arguments()
     examples: &[ ".process --files file1.txt,file2.txt" ],
     auto_help_enabled: true,
     category: "",
+    show_version_in_help: true,
   };
 
   // Test the command structure
@@ -478,6 +482,7 @@ fn test_static_command_serialization_roundtrip()
     examples: &[ "serialize_test" ],
     auto_help_enabled: true,
     category: "",
+    show_version_in_help: true,
   };
 
   // Convert to dynamic and verify data integrity
@@ -525,6 +530,7 @@ fn test_static_command_map_wrapper()
       examples: &[],
       auto_help_enabled: true,
       category: "",
+      show_version_in_help: true,
     },
     "cmd2" => &StaticCommandDefinition
     {
@@ -545,6 +551,7 @@ fn test_static_command_map_wrapper()
       examples: &[],
       auto_help_enabled: true,
       category: "",
+      show_version_in_help: true,
     },
   };
 

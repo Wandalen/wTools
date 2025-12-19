@@ -53,6 +53,7 @@ fn create_test_static_command() -> &'static StaticCommandDefinition
     examples: &[".test_command input_value", ".test_command --help"],
     auto_help_enabled: true,
     category: "",
+    show_version_in_help: true,
   }
 }
 
@@ -78,6 +79,7 @@ const TEST_STATIC_MAP_INTERNAL: phf::Map<&'static str, &'static StaticCommandDef
     examples: &[".test_command"],
     auto_help_enabled: true,
     category: "",
+    show_version_in_help: true,
   },
   "another_command" => &StaticCommandDefinition
   {
@@ -98,6 +100,7 @@ const TEST_STATIC_MAP_INTERNAL: phf::Map<&'static str, &'static StaticCommandDef
     examples: &[],
     auto_help_enabled: true,
     category: "",
+    show_version_in_help: true,
   },
 };
 
@@ -517,6 +520,7 @@ static COMPLEX_COMMAND: StaticCommandDefinition = StaticCommandDefinition
     ],
     auto_help_enabled: true,
     category: "",
+    show_version_in_help: true,
   };
 
 #[test]

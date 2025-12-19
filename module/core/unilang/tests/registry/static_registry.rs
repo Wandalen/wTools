@@ -40,6 +40,7 @@ const TEST_STATIC_COMMANDS_INTERNAL: phf::Map<&'static str, &'static StaticComma
     examples: &[ ".test.version", ".test.version --help" ],
     auto_help_enabled: true,
     category: "",
+    show_version_in_help: true,
   },
 
   ".test.add" => &StaticCommandDefinition
@@ -98,6 +99,7 @@ const TEST_STATIC_COMMANDS_INTERNAL: phf::Map<&'static str, &'static StaticComma
     examples: &[ ".test.add 5 3", ".test.add --a 10 --b 20" ],
     auto_help_enabled: true,
     category: "",
+    show_version_in_help: true,
   },
 
   ".test.file.copy" => &StaticCommandDefinition
@@ -174,6 +176,7 @@ const TEST_STATIC_COMMANDS_INTERNAL: phf::Map<&'static str, &'static StaticComma
     examples: &[ ".test.file.copy input.txt output.txt", ".test.file.copy --source data.json --destination backup.json --overwrite true" ],
     auto_help_enabled: true,
     category: "",
+    show_version_in_help: true,
   },
 
   ".test.deprecated" => &StaticCommandDefinition
@@ -195,6 +198,7 @@ const TEST_STATIC_COMMANDS_INTERNAL: phf::Map<&'static str, &'static StaticComma
     examples: &[],
     auto_help_enabled: true,
     category: "",
+    show_version_in_help: true,
   },
 };
 

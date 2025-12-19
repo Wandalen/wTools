@@ -185,6 +185,8 @@ pub struct CommandDefinition
   priority : i32,
   /// Explicit group membership for related commands
   group : String,
+  /// Control whether version is displayed in help output
+  show_version_in_help : bool,
 }
 
 impl CommandDefinition
@@ -262,6 +264,7 @@ impl CommandDefinition
       hidden_from_list : false,
       priority : 0,
       group : String::new(),
+      show_version_in_help : true,
     }
   }
 
@@ -414,6 +417,13 @@ impl CommandDefinition
   pub fn group( &self ) -> &str
   {
     &self.group
+  }
+
+  /// Returns whether version should be displayed in help output
+  #[ must_use ]
+  pub fn show_version_in_help( &self ) -> bool
+  {
+    self.show_version_in_help
   }
 
   // ===================================================================
@@ -588,6 +598,14 @@ impl CommandDefinition
     self
   }
 
+  /// Sets whether version is displayed in help output
+  #[ must_use ]
+  pub fn with_show_version_in_help( mut self, show : bool ) -> Self
+  {
+    self.show_version_in_help = show;
+    self
+  }
+
   // ===================================================================
   // Helper Methods (ported from CommandDefinition)
   // ===================================================================
@@ -694,6 +712,7 @@ impl CommandDefinition
       hidden_from_list : true, // Hide .help variants from brief listings
       priority : 999, // Low priority (shown last if visible)
       group : String::new(),
+      show_version_in_help : true, // Inherit default behavior
     }
   }
 }
@@ -710,7 +729,7 @@ impl serde::Serialize for CommandDefinition
   {
     use serde::ser::SerializeStruct;
 
-    let mut state = serializer.serialize_struct( "CommandDefinition", 21 )?;
+    let mut state = serializer.serialize_struct( "CommandDefinition", 22 )?;
 
     state.serialize_field( "name", &self.name )?;
     state.serialize_field( "description", &self.description )?;
@@ -733,6 +752,7 @@ impl serde::Serialize for CommandDefinition
     state.serialize_field( "hidden_from_list", &self.hidden_from_list )?;
     state.serialize_field( "priority", &self.priority )?;
     state.serialize_field( "group", &self.group )?;
+    state.serialize_field( "show_version_in_help", &self.show_version_in_help )?;
 
     state.end()
   }
@@ -772,6 +792,7 @@ impl< 'de > serde::Deserialize< 'de > for CommandDefinition
       HiddenFromList,
       Priority,
       Group,
+      ShowVersionInHelp,
     }
 
     struct CommandDefinitionVisitor;
@@ -811,6 +832,7 @@ impl< 'de > serde::Deserialize< 'de > for CommandDefinition
         let mut hidden_from_list : Option< bool > = None;
         let mut priority : Option< i32 > = None;
         let mut group : Option< String > = None;
+        let mut show_version_in_help : Option< bool > = None;
 
         while let Some( key ) = map.next_key()?
         {
@@ -984,6 +1006,14 @@ impl< 'de > serde::Deserialize< 'de > for CommandDefinition
               }
               group = Some( map.next_value()? );
             },
+            Field::ShowVersionInHelp =>
+            {
+              if show_version_in_help.is_some()
+              {
+                return Err( de::Error::duplicate_field( "show_version_in_help" ) );
+              }
+              show_version_in_help = Some( map.next_value()? );
+            },
           }
         }
 
@@ -1014,6 +1044,7 @@ impl< 'de > serde::Deserialize< 'de > for CommandDefinition
         let hidden_from_list = hidden_from_list.unwrap_or( false );
         let priority = priority.unwrap_or( 0 );
         let group = group.unwrap_or_default();
+        let show_version_in_help = show_version_in_help.unwrap_or( true );
 
         Ok( CommandDefinition
         {
@@ -1038,6 +1069,7 @@ impl< 'de > serde::Deserialize< 'de > for CommandDefinition
           hidden_from_list,
           priority,
           group,
+          show_version_in_help,
         })
       }
     }
@@ -1064,6 +1096,7 @@ impl< 'de > serde::Deserialize< 'de > for CommandDefinition
       "hidden_from_list",
       "priority",
       "group",
+      "show_version_in_help",
     ];
 
     deserializer.deserialize_struct( "CommandDefinition", FIELDS, CommandDefinitionVisitor )
@@ -1174,6 +1207,7 @@ impl< 'de > serde::Deserialize< 'de > for CommandDefinition
     hidden_from_list : bool,
     priority : i32,
     group : String,
+    show_version_in_help : bool,
     _marker : PhantomData< ( Name, Description, Namespace, Hint, Status, Version ) >,
   }
 
@@ -1206,6 +1240,7 @@ impl< 'de > serde::Deserialize< 'de > for CommandDefinition
         hidden_from_list : false,
         priority : 0,
         group : String::new(),
+        show_version_in_help : true,
         _marker : PhantomData,
       }
     }
@@ -1253,6 +1288,7 @@ impl< 'de > serde::Deserialize< 'de > for CommandDefinition
         hidden_from_list : self.hidden_from_list,
         priority : self.priority,
         group : self.group,
+        show_version_in_help : self.show_version_in_help,
         _marker : PhantomData,
       }
     }
@@ -1291,6 +1327,7 @@ impl< 'de > serde::Deserialize< 'de > for CommandDefinition
         hidden_from_list : self.hidden_from_list,
         priority : self.priority,
         group : self.group,
+        show_version_in_help : self.show_version_in_help,
         _marker : PhantomData,
       }
     }
@@ -1329,6 +1366,7 @@ impl< 'de > serde::Deserialize< 'de > for CommandDefinition
         hidden_from_list : self.hidden_from_list,
         priority : self.priority,
         group : self.group,
+        show_version_in_help : self.show_version_in_help,
         _marker : PhantomData,
       }
     }
@@ -1367,6 +1405,7 @@ impl< 'de > serde::Deserialize< 'de > for CommandDefinition
         hidden_from_list : self.hidden_from_list,
         priority : self.priority,
         group : self.group,
+        show_version_in_help : self.show_version_in_help,
         _marker : PhantomData,
       }
     }
@@ -1405,6 +1444,7 @@ impl< 'de > serde::Deserialize< 'de > for CommandDefinition
         hidden_from_list : self.hidden_from_list,
         priority : self.priority,
         group : self.group,
+        show_version_in_help : self.show_version_in_help,
         _marker : PhantomData,
       }
     }
@@ -1443,6 +1483,7 @@ impl< 'de > serde::Deserialize< 'de > for CommandDefinition
         hidden_from_list : self.hidden_from_list,
         priority : self.priority,
         group : self.group,
+        show_version_in_help : self.show_version_in_help,
         _marker : PhantomData,
       }
     }
@@ -1559,6 +1600,13 @@ impl< 'de > serde::Deserialize< 'de > for CommandDefinition
       self.group = group.into();
       self
     }
+
+    /// Sets whether version is displayed in help output (optional field, defaults to true).
+    pub fn show_version_in_help( mut self, show : bool ) -> Self
+    {
+      self.show_version_in_help = show;
+      self
+    }
   }
 
   // Generic end() method for partial builder - allows building with just name and description
@@ -1663,6 +1711,7 @@ impl< 'de > serde::Deserialize< 'de > for CommandDefinition
         hidden_from_list : self.hidden_from_list,
         priority : self.priority,
         group : self.group,
+        show_version_in_help : self.show_version_in_help,
       }
     }
   }
@@ -1731,6 +1780,7 @@ impl< 'de > serde::Deserialize< 'de > for CommandDefinition
         hidden_from_list : self.hidden_from_list,
         priority : self.priority,
         group : self.group,
+        show_version_in_help : self.show_version_in_help,
       }
     }
   }

@@ -30,6 +30,7 @@ const TEST_STATIC_COMMANDS_INTERNAL: phf::Map<&'static str, &'static StaticComma
     examples: &[],
     auto_help_enabled: true,
     category: "",
+    show_version_in_help: true,
   },
 };
 

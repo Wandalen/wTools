@@ -65,6 +65,7 @@ fn old_yaml_without_category_loads_successfully()
     examples : &[],
     auto_help_enabled : true,
     category : "", // Build script defaults to "" when YAML lacks category
+    show_version_in_help : true,
   };
 
   // Convert to dynamic - should succeed
@@ -104,6 +105,7 @@ fn old_yaml_produces_same_behavior()
     examples : &[],
     auto_help_enabled : true,
     category : "", // Old YAML → empty category
+    show_version_in_help : true,
   };
 
   let dynamic_cmd : CommandDefinition = ( &OLD_CMD ).into();
@@ -146,6 +148,7 @@ fn mixed_old_and_new_yaml()
     examples : &[],
     auto_help_enabled : true,
     category : "",
+    show_version_in_help : true,
   };
 
   // New-style command (has category in YAML)
@@ -168,6 +171,7 @@ fn mixed_old_and_new_yaml()
     examples : &[],
     auto_help_enabled : true,
     category : "utilities",
+    show_version_in_help : true,
   };
 
   // Both should convert successfully
@@ -212,6 +216,7 @@ fn generated_code_backward_compatible()
       examples : &[],
       auto_help_enabled : true,
       category : "", // Old YAML defaults to empty
+      show_version_in_help : true,
     },
   };
 

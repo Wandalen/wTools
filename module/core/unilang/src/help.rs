@@ -173,6 +173,108 @@ impl HelpVerbosity
   }
 }
 
+/// Global configuration for help output display.
+///
+/// This struct controls which metadata fields appear in help output
+/// across all commands. Per-command settings (like `show_version_in_help`)
+/// can override these defaults.
+///
+/// # Environment Variable Support
+///
+/// - `UNILANG_HELP_HIDE_VERSION=1` - Disables version display globally
+///
+/// # Examples
+///
+/// ```rust
+/// use unilang::help::HelpDisplayOptions;
+///
+/// // Default: show everything
+/// let options = HelpDisplayOptions::default();
+/// assert!( options.show_version );
+///
+/// // Hide version globally
+/// let options = HelpDisplayOptions::default().hide_version();
+/// assert!( !options.show_version );
+///
+/// // Read from environment
+/// let options = HelpDisplayOptions::default().with_env_overrides();
+/// ```
+#[ derive( Debug, Clone, PartialEq, Eq ) ]
+pub struct HelpDisplayOptions
+{
+  /// Show version in help output (default: true)
+  pub show_version : bool,
+  /// Show status in help output (default: true)
+  pub show_status : bool,
+  /// Show aliases in help output (default: true)
+  pub show_aliases : bool,
+  /// Show tags in help output at detailed verbosity (default: true)
+  pub show_tags : bool,
+}
+
+impl Default for HelpDisplayOptions
+{
+  fn default() -> Self
+  {
+    Self
+    {
+      show_version : true,
+      show_status : true,
+      show_aliases : true,
+      show_tags : true,
+    }
+  }
+}
+
+impl HelpDisplayOptions
+{
+  /// Create options with version display disabled.
+  #[ must_use ]
+  pub fn hide_version( mut self ) -> Self
+  {
+    self.show_version = false;
+    self
+  }
+
+  /// Create options with status display disabled.
+  #[ must_use ]
+  pub fn hide_status( mut self ) -> Self
+  {
+    self.show_status = false;
+    self
+  }
+
+  /// Create options with aliases display disabled.
+  #[ must_use ]
+  pub fn hide_aliases( mut self ) -> Self
+  {
+    self.show_aliases = false;
+    self
+  }
+
+  /// Create options with tags display disabled.
+  #[ must_use ]
+  pub fn hide_tags( mut self ) -> Self
+  {
+    self.show_tags = false;
+    self
+  }
+
+  /// Check environment variable overrides and apply them.
+  ///
+  /// Supported environment variables:
+  /// - `UNILANG_HELP_HIDE_VERSION=1` - Hides version from help output
+  #[ must_use ]
+  pub fn with_env_overrides( mut self ) -> Self
+  {
+    if std::env::var( "UNILANG_HELP_HIDE_VERSION" ).is_ok()
+    {
+      self.show_version = false;
+    }
+    self
+  }
+}
+
 ///
 /// Generates help information for commands.
 ///
@@ -311,8 +413,15 @@ impl< 'a > HelpGenerator< 'a >
   {
     let mut help = String::new();
 
-    // Command header with version
-    writeln!( &mut help, "Usage: {} (v{})", command.name().as_str(), command.version().as_str() ).unwrap();
+    // Command header with optional version
+    if command.show_version_in_help()
+    {
+      writeln!( &mut help, "Usage: {} (v{})", command.name().as_str(), command.version().as_str() ).unwrap();
+    }
+    else
+    {
+      writeln!( &mut help, "Usage: {}", command.name().as_str() ).unwrap();
+    }
     writeln!( &mut help, "{}\n", command.description() ).unwrap();
 
     // Status information
@@ -386,14 +495,21 @@ impl< 'a > HelpGenerator< 'a >
   fn format_detailed( &self, command : &crate::CommandDefinition ) -> String
   {
     let mut help = String::new();
-    writeln!
-    (
-      &mut help,
-      "Usage: {} (v{})",
-      command.name().as_str(),
-      command.version().as_str()
-    )
-    .unwrap();
+    if command.show_version_in_help()
+    {
+      writeln!
+      (
+        &mut help,
+        "Usage: {} (v{})",
+        command.name().as_str(),
+        command.version().as_str()
+      )
+      .unwrap();
+    }
+    else
+    {
+      writeln!( &mut help, "Usage: {}", command.name().as_str() ).unwrap();
+    }
     if !command.aliases().is_empty()
     {
       writeln!( &mut help, "Aliases: {}", command.aliases().join( ", " ) ).unwrap();
@@ -481,7 +597,14 @@ impl< 'a > HelpGenerator< 'a >
     {
       writeln!( &mut help, "  {}", command.hint() ).unwrap();
     }
-    writeln!( &mut help, "\n  Status: {} (v{})", command.status(), command.version().as_str() ).unwrap();
+    if command.show_version_in_help()
+    {
+      writeln!( &mut help, "\n  Status: {} (v{})", command.status(), command.version().as_str() ).unwrap();
+    }
+    else
+    {
+      writeln!( &mut help, "\n  Status: {}", command.status() ).unwrap();
+    }
     if !command.aliases().is_empty()
     {
       writeln!( &mut help, "  Aliases: {}", command.aliases().join( ", " ) ).unwrap();
@@ -741,7 +864,9 @@ mod_interface::mod_interface!
 {
   exposed use private::HelpGenerator;
   exposed use private::HelpVerbosity;
+  exposed use private::HelpDisplayOptions;
 
   prelude use private::HelpGenerator;
   prelude use private::HelpVerbosity;
+  prelude use private::HelpDisplayOptions;
 }

@@ -55,6 +55,7 @@ fn main() -> Result< (), unilang::error::Error >
     examples: &["demo.static_example input::hello"],
     auto_help_enabled: true,
     category: "",
+    show_version_in_help: true,
   };
 
   println!( "📋 Static Command Definition:" );

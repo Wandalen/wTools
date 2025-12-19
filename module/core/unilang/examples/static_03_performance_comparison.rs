@@ -53,6 +53,7 @@ const TEST_COMMAND_0000: StaticCommandDefinition = StaticCommandDefinition
   examples: &[],
   auto_help_enabled: true,
   category: "",
+  show_version_in_help: true,
 };
 
 /// Static commands array for performance testing

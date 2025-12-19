@@ -154,6 +154,7 @@ pub mod cmd1_cli_static {
   examples: &[],
   auto_help_enabled: true,
   category: "",
+  show_version_in_help: true,
  };
 
   /// Static multiply command definition
@@ -175,6 +176,7 @@ pub mod cmd1_cli_static {
   examples: &[],
   auto_help_enabled: true,
   category: "",
+  show_version_in_help: true,
  };
 
   static COMMANDS: &[&StaticCommandDefinition] = &[&ADD_COMMAND, &MULTIPLY_COMMAND];

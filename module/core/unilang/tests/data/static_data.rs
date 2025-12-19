@@ -101,6 +101,7 @@ fn test_static_command_definition_conversion()
     examples: &[".test_command arg::value"],
     auto_help_enabled: true,
     category: "",
+    show_version_in_help: true,
   };
 
   let dynamic_cmd: unilang::data::CommandDefinition = (&STATIC_CMD).into();
@@ -345,6 +346,7 @@ fn test_static_command_definition_with_empty_arrays()
     examples: &[],
     auto_help_enabled: true,
     category: "",
+    show_version_in_help: true,
   };
 
   let dynamic_cmd: unilang::data::CommandDefinition = (&STATIC_CMD).into();
@@ -438,6 +440,7 @@ fn test_auto_help_enabled_conversion_preserves_true()
     examples : &[".crates.list"],
     auto_help_enabled : true, // ← Field doesnt exist yet, will fail to compile
     category : "",
+    show_version_in_help : true,
   };
 
   let dynamic_cmd : unilang::data::CommandDefinition = ( &STATIC_CMD_WITH_HELP ).into();
@@ -506,6 +509,7 @@ fn test_auto_help_enabled_conversion_preserves_false()
     examples : &[],
     auto_help_enabled : false, // ← Prevent recursive help (field doesnt exist yet)
     category : "",
+    show_version_in_help : true,
   };
 
   let dynamic_cmd : unilang::data::CommandDefinition = ( &STATIC_HELP_CMD ).into();
@@ -635,6 +639,7 @@ fn test_category_conversion_preserves_non_empty_value()
     examples : &[],
     auto_help_enabled : true,
     category : "deployment_operations", // BUG: This will be lost in conversion
+    show_version_in_help : true,
   };
 
   // Convert to dynamic
@@ -703,6 +708,7 @@ fn test_category_conversion_preserves_empty_string()
     examples : &[],
     auto_help_enabled : false,
     category : "", // Empty category = uncategorized
+    show_version_in_help : true,
   };
 
   let dynamic_cmd : unilang::data::CommandDefinition = ( &STATIC_CMD ).into();
@@ -767,6 +773,7 @@ fn test_category_conversion_preserves_special_characters()
     examples : &[],
     auto_help_enabled : true,
     category : "Git Operations / Advanced", // Spaces and special chars
+    show_version_in_help : true,
   };
 
   let dynamic_cmd : unilang::data::CommandDefinition = ( &STATIC_CMD ).into();

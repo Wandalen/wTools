@@ -91,7 +91,7 @@ fn format_command_help( cmd_def : &CommandDefinition ) -> String
     help.push_str( &format!( "Hint: {}\n", cmd_def.hint() ) );
   }
 
-  if !cmd_def.version().as_str().is_empty()
+  if cmd_def.show_version_in_help() && !cmd_def.version().as_str().is_empty()
   {
     help.push_str( &format!( "Version: {}\n", cmd_def.version().as_str() ) );
   }

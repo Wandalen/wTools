@@ -159,6 +159,11 @@ mod private
     /// Commands with the same category are displayed together in help text.
     /// Empty string means no specific category (will be shown in default section).
     pub category : &'static str,
+    /// Control whether version is displayed in help output.
+    ///
+    /// When `true` (default), version is shown in help text.
+    /// Set to `false` to hide version from help output.
+    pub show_version_in_help : bool,
   }
 
   impl StaticCommandDefinition
@@ -203,6 +208,7 @@ mod private
         examples : &[],
         auto_help_enabled : true, // Default: enable automatic .command.help generation
         category : "", // Default: no specific category
+        show_version_in_help : true, // Default: show version in help output
       }
     }
 
@@ -319,6 +325,17 @@ mod private
     pub const fn with_category( mut self, category : &'static str ) -> Self
     {
       self.category = category;
+      self
+    }
+
+    /// Sets whether version is displayed in help output.
+    ///
+    /// When `true` (default), version is shown in help text.
+    /// Set to `false` to hide version from help output.
+    #[ must_use ]
+    pub const fn with_show_version_in_help( mut self, show : bool ) -> Self
+    {
+      self.show_version_in_help = show;
       self
     }
   }
@@ -765,6 +782,7 @@ mod private
       .with_hidden_from_list( false )
       .with_priority( 0 )
       .with_group( "" )
+      .with_show_version_in_help( static_cmd.show_version_in_help )
     }
   }
 
