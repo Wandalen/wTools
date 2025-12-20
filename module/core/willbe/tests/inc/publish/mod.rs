@@ -11,3 +11,6 @@ mod integration_staleness_test;
 
 /// Bug documentation for PathBuf cast panic with malformed properties
 mod bug_pathbuf_cast_panic_test;
+
+/// Bug documentation for tree-scoped dependency version update issue
+mod bug_tree_scoped_version_update_test;

@@ -503,7 +503,7 @@ default-features = false
 ## process tools
 
 [workspace.dependencies.process_tools]
-version = "~0.25.0"
+version = "~0.26.0"
 path = "module/core/process_tools"
 default-features = false
 
@@ -576,7 +576,7 @@ default-features = false
 ## ca
 
 [workspace.dependencies.wca]
-version = "~0.40.0"
+version = "~0.41.0"
 path = "module/core/wca"
 
 ## willbe
