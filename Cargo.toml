@@ -584,7 +584,7 @@ path = "module/core/wca"
 ## willbe
 
 [workspace.dependencies.willbe]
-version = "~0.31.0"
+version = "~0.32.0"
 path = "module/core/willbe"
 
 [workspace.dependencies.willbe2]
