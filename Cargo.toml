@@ -21,6 +21,8 @@ exclude = [
 
   # NOTE: module/move directory is now empty - all crates moved to core or postponed
 ]
+dev-dependencies = {}
+build-dependencies = {}
 # default-members = [ "module/core/wtools" ]
 
 [workspace.metadata]
@@ -576,7 +578,7 @@ default-features = false
 ## ca
 
 [workspace.dependencies.wca]
-version = "~0.41.0"
+version = "~0.42.0"
 path = "module/core/wca"
 
 ## willbe
