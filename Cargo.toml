@@ -215,7 +215,7 @@ default-features = false
 # # xxx : remove features, maybe
 
 [workspace.dependencies.tree_fmt]
-version = "~0.7.0"
+version = "~0.8.0"
 path = "module/core/tree_fmt"
 default-features = false
 
