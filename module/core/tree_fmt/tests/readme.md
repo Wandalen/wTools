@@ -9,6 +9,37 @@ Contains all functional and integration tests for tree_fmt library. Tests valida
 - 49 unit tests + 30 doc tests covering all library functionality
 - All test files under 300 lines for maintainability
 
+## Responsibility Table
+
+| File | Responsibility |
+|------|----------------|
+| `aligned_tree_basic.rs` | Test basic aligned tree formatting |
+| `aligned_tree_configuration.rs` | Test aligned tree configuration options |
+| `aligned_tree_edge_cases.rs` | Test aligned tree edge cases |
+| `builder.rs` | Test TreeBuilder path-based construction |
+| `column_data.rs` | Test column data handling |
+| `column_truncation.rs` | Test column width truncation |
+| `data.rs` | Test core data structures |
+| `debug_alignment.rs` | Test debug output alignment |
+| `flatten_config.rs` | Test FlattenConfig customization |
+| `fluent_api.rs` | Test fluent RowBuilder API |
+| `formatters.rs` | Test TableShapedFormatter trait |
+| `html.rs` | Test HTML output format |
+| `logfmt.rs` | Test logfmt output format |
+| `manual/` | Store manual testing procedures |
+| `multiline_cells.rs` | Test multiline cell support |
+| `reproduce_alignment_problem.rs` | Reproduce historical alignment bugs |
+| `reproduce_willbe3_alignment.rs` | Reproduce willbe3 alignment issue |
+| `sql.rs` | Test SQL output format |
+| `table_styles_compatibility.rs` | Test table style compatibility |
+| `table_styles_outputs.rs` | Test table style outputs |
+| `table_styles_presets.rs` | Test table style presets |
+| `text_cli_help.rs` | Test CLI help text formatting |
+| `themes.rs` | Test visual themes |
+| `unicode_display_width_alignment.rs` | Test Unicode display width alignment |
+| `unified_format_trait.rs` | Test unified format trait |
+| `verify_alignment_correct.rs` | Verify alignment correctness |
+
 ## Test Files
 - **data.rs** (14 tests) - Core data structures (`TreeNode`, `RowBuilder`, `TableView` trait)
 - **builder.rs** (15 tests) - `TreeBuilder` path-based construction, batch creation

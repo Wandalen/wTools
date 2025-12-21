@@ -15,6 +15,7 @@ workspace = true
 [dependencies]
 # ANSI-aware string utilities (from strs_tools)
 strs_tools = { workspace = true, features = [ "ansi" ] }
+unicode-width = "0.1"
 
 # Optional dependencies for data format serialization
 serde = { workspace = true, features = ["derive"], optional = true }

@@ -1498,13 +1498,100 @@ for formatter in formatters {
 }
 ```
 
-### ANSI Support
+### ANSI and Unicode Support
 
 ```rust
-// Helper functions for ANSI color code handling
+// Helper functions for ANSI color code and Unicode display width handling
 pub fn visual_len(text: &str) -> usize;
 pub fn pad_to_width(text: &str, target_width: usize, align_right: bool) -> String;
 ```
+
+#### `visual_len()`
+
+Calculates the visible character count (Unicode codepoints), ignoring ANSI escape sequences.
+
+**Measurement**: Character count using `chars().count()` (not display width).
+
+**Behavior**:
+- ANSI escape sequences: 0 (filtered out)
+- ASCII characters: 1 per char
+- Cyrillic/Latin characters: 1 per char
+- CJK characters: 1 per char (codepoint count, not display width)
+- Emoji: 1 per codepoint (may be multiple codepoints for complex emoji)
+
+**Note**: This function counts Unicode codepoints, not terminal display width. For display-width-aware operations, use `unicode-width` crate.
+
+#### `pad_to_width()` - Display Width Aware (v0.5.0+)
+
+Pads string to specified display width, handling wide Unicode characters correctly.
+
+**Measurement**: Display width using East Asian Width property (`unicode-width` crate).
+
+**API Contract**:
+```rust
+/// Pads string to target display width with spaces.
+///
+/// Uses display width (terminal columns) instead of character count.
+/// Correctly handles:
+/// - Wide characters (CJK, emoji): 2 display width
+/// - Normal characters (ASCII, Cyrillic, Latin): 1 display width
+/// - Zero-width characters (combining marks): 0 display width
+/// - ANSI escape sequences: 0 display width (filtered out)
+///
+/// If text display width already >= target_width, returns text unchanged.
+///
+/// # Arguments
+///
+/// * `text` - Input text (may contain ANSI codes)
+/// * `target_width` - Target display width in terminal columns
+/// * `align_right` - If true, pad left; if false, pad right
+///
+/// # Returns
+///
+/// Padded string with correct display width for terminal alignment.
+///
+/// # Examples
+///
+/// ```rust
+/// use tree_fmt::pad_to_width;
+///
+/// // ASCII text (1 display width per char)
+/// let padded = pad_to_width("Hello", 10, false);
+/// assert_eq!(unicode_width::UnicodeWidthStr::width(padded.as_str()), 10);
+///
+/// // CJK text (2 display width per char)
+/// let padded = pad_to_width("日本語", 10, false);  // 3 chars, 6 display width
+/// assert_eq!(unicode_width::UnicodeWidthStr::width(padded.as_str()), 10);
+///
+/// // Emoji text (2 display width per char)
+/// let padded = pad_to_width("🎉", 10, false);  // 1 char, 2 display width
+/// assert_eq!(unicode_width::UnicodeWidthStr::width(padded.as_str()), 10);
+/// ```
+///
+/// # Fix(issue-003)
+///
+/// Root cause: Previous implementation mixed character-count-based padding
+/// with Rust's display-width-based formatting (`{:<N}`), causing
+/// misalignment with wide Unicode characters (CJK, emoji).
+///
+/// Pitfall: Always use display width for terminal alignment, not char count.
+/// Display width ≠ char count ≠ byte count for Unicode.
+/// CJK/emoji have display width = 2, not 1.
+pub fn pad_to_width(text: &str, target_width: usize, align_right: bool) -> String;
+```
+
+**Character Width Reference**:
+
+| Character Type | Example | Byte Count | Char Count | Display Width |
+|----------------|---------|------------|------------|---------------|
+| ASCII | "Hello" | 5 | 5 | 5 |
+| Cyrillic | "Привіт" | 12 | 6 | 6 |
+| CJK | "日本語" | 9 | 3 | **6** |
+| Emoji | "🎉" | 4 | 1 | **2** |
+| Combining | "é" (e + ◌́) | 3 | 2 | 1 |
+| ANSI | "\x1b[31mtext\x1b[0m" | 14 | 4 (visible) | 4 |
+
+**Key Insight**: Multi-byte encoding (byte count > char count) does NOT imply wide display (Cyrillic is multi-byte but 1 display width). Only CJK and emoji have display width = 2.
 
 ## Functional Requirements
 

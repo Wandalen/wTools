@@ -73,6 +73,8 @@
 //! See integration tests for real-world scenarios with colored output. All formatters
 //! use these functions throughout for consistent ANSI-aware behavior.
 
+use unicode_width::{ UnicodeWidthStr, UnicodeWidthChar };
+
 // Re-export ANSI utilities from strs_tools for backward compatibility
 pub use strs_tools::ansi::visual_len;
 pub use strs_tools::ansi::pad_to_width;
@@ -143,23 +145,55 @@ pub fn truncate_cell( text : &str, max_width : usize, marker : &str ) -> String
 /// Truncate a single line of text (internal helper)
 ///
 /// Does not handle newlines - use `truncate_cell` for multiline text.
+///
+/// # Fix(issue-003)
+///
+/// Root cause: Used character count (`visual_len()`) instead of display width,
+/// causing CJK/emoji text (width=2 per char) to not truncate properly.
+///
+/// Pitfall: Always use `unicode_width` crate for terminal width calculations.
+/// Character count ≠ display width for CJK, emoji, combining marks.
 fn truncate_single_line( text : &str, max_width : usize, marker : &str ) -> String
 {
-  let text_visual_len = visual_len( text );
+  // Calculate display width of visible text (excluding ANSI codes)
+  // by manually parsing and measuring
+  let mut visible_width : usize = 0;
+  let mut in_escape = false;
+
+  for ch in text.chars()
+  {
+    if ch == '\x1b'
+    {
+      in_escape = true;
+      continue;
+    }
+
+    if in_escape
+    {
+      if ch == 'm'
+      {
+        in_escape = false;
+      }
+      continue;
+    }
+
+    // Count display width of visible characters
+    visible_width += ch.width().unwrap_or( 1 );
+  }
 
   // No truncation needed
-  if text_visual_len <= max_width
+  if visible_width <= max_width
   {
     return text.to_string();
   }
 
   // Calculate space available for content (reserve space for marker)
-  let marker_len = visual_len( marker );
-  let content_width = max_width.saturating_sub( marker_len );
+  let marker_width = marker.width();
+  let content_width = max_width.saturating_sub( marker_width );
 
   // Build truncated string while preserving ANSI codes
   let mut result = String::new();
-  let mut visual_count = 0;
+  let mut visual_count : usize = 0;
   let mut in_escape = false;
 
   for ch in text.chars()
@@ -182,11 +216,13 @@ fn truncate_single_line( text : &str, max_width : usize, marker : &str ) -> Stri
       continue;
     }
 
-    // Regular visible character
-    if visual_count < content_width
+    // Regular visible character - use actual display width
+    let char_width = ch.width().unwrap_or( 1 );
+
+    if visual_count + char_width <= content_width
     {
       result.push( ch );
-      visual_count += 1;
+      visual_count += char_width;
     }
     else
     {
