@@ -16,6 +16,9 @@ Define your command-line utility interface once and get consistent interaction a
 """
 categories = [ "command-line-interface", "command-line-utilities" ]
 keywords = [ "wtools", "CLI", "CUI", "user-interface" ]
+dependencies = {}
+dev-dependencies = {}
+build-dependencies = {}
 # Note: stress_test_bin in tests/ causes a harmless warning about duplicate targets
 
 [lints]
