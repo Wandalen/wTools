@@ -1,5 +1,7 @@
+//! Test for `config_add` functionality.
+
 use std ::path ::PathBuf;
-use gluesql ::sled_storage ::sled ::Config;
+use gluesql_sled_storage ::sled ::Config;
 use unitore ::
 {
   sled_adapter ::FeedStorage,
@@ -15,7 +17,7 @@ async fn config_add() -> Result< () >
   let temp_path = pth ::path ::unique_folder_name().unwrap();
 
   let config = Config ::default()
-  .path( format!( "./{}", temp_path ) )
+  .path( format!( "./{temp_path}" ) )
   .temporary( true )
   ;
 
@@ -31,7 +33,7 @@ async fn config_add() -> Result< () >
   ;
 
   assert!( feeds_links.len() == 1 );
-  assert!( feeds_links.contains( &format!( "https: //www.nasa.gov/feed/" ) ) );
+  assert!( feeds_links.contains( &"https://www.nasa.gov/feed/".to_string() ) );
 
   Ok( () )
 }

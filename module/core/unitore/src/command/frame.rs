@@ -1,7 +1,7 @@
 //! Frame commands.
 
 use crate :: *;
-use gluesql ::sled_storage ::sled ::Config;
+use gluesql_sled_storage ::sled ::Config;
 use wca :: { Command, VerifiedCommand };
 use sled_adapter ::FeedStorage;
 use action :: { Report, frame :: { frames_list, frames_download } };
@@ -14,6 +14,8 @@ pub struct FrameCommand;
 impl FrameCommand
 {
   /// Create command that lists all frames in storage.
+  /// # Errors
+  /// Returns error if operation fails.
   pub fn list() -> Result< Command >
   {
   let rt  = tokio ::runtime ::Runtime ::new()?;
@@ -45,7 +47,7 @@ impl FrameCommand
    match res
    {
   Ok( report ) => report.report(),
-  Err( err ) => println!( "{:?}", err ),
+  Err( err ) => println!( "{err:?}" ),
  }
   
  })
@@ -54,6 +56,8 @@ impl FrameCommand
  }
 
   /// Creates command that downloads frames from feeds specified in config files.
+  /// # Errors
+  /// Returns error if operation fails.
   pub fn download() -> Result< Command >
   {
   let rt  = tokio ::runtime ::Runtime ::new()?;
@@ -85,7 +89,7 @@ impl FrameCommand
    match res
    {
   Ok( report ) => report.report(),
-  Err( err ) => println!( "{:?}", err ),
+  Err( err ) => println!( "{err:?}" ),
  }
  })
   .end() )

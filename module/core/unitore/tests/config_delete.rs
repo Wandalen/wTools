@@ -1,6 +1,8 @@
+//! Test for `config_delete` functionality.
+
 use gluesql ::
 {
-  sled_storage ::sled ::Config,
+  gluesql_sled_storage ::sled ::Config,
   prelude ::Payload ::Select,
 };
 use unitore ::
@@ -19,7 +21,7 @@ async fn config_delete() -> Result< () >
   let temp_path = pth ::path ::unique_folder_name().unwrap();
 
   let config = Config ::default()
-  .path( format!( "./{}", temp_path ) )
+  .path( format!( "./{temp_path}" ) )
   .temporary( true )
   ;
 
@@ -30,14 +32,12 @@ async fn config_delete() -> Result< () >
 
   let list = feed_storage.config_list().await?;
 
-  if let Select{ labels: _, rows } = list
-  {
-  assert!( rows.len() == 0 )
- }
+  let Select{ labels: _, rows } = list
   else
   {
-  assert!( false );
- }
+  panic!( "Expected Select payload" );
+ };
+  assert!( rows.is_empty() );
 
   Ok( () )
 }

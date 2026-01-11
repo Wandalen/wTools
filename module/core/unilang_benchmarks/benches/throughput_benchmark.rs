@@ -13,24 +13,19 @@
 #![allow(clippy::std_instead_of_core)]
 #![allow(clippy::needless_borrows_for_generic_args)]
 
-#[ cfg( feature = "benchmarks" ) ]
 use benchkit::prelude::*;
-#[ cfg( feature = "benchmarks" ) ]
 use unilang::prelude::*;
 // TODO: Implement cv_analysis module
 // #[ cfg( feature = "benchmarks" ) ]
 // use unilang::cv_analysis::{ CvAnalyzer, CvImprovementTechniques };
 
-#[ cfg( feature = "benchmarks" ) ]
 use clap::{ Arg, Command as ClapCommand };
-#[ cfg( feature = "benchmarks" ) ]
 use pico_args::Arguments;
 
 /// What is measured: fn run_framework_comparison_benchkit( command_count : usize ) -> ComparisonAnalysisReport
 /// How to measure: cargo bench --bench throughput_benchmark --features benchmarks
 /// Measuring: Framework throughput comparison - Unilang (SIMD/no-SIMD) vs Clap vs Pico-Args with CV analysis
 /// Framework comparison using benchkit's comparative analysis
-#[ cfg( feature = "benchmarks" ) ]
 fn run_framework_comparison_benchkit( command_count : usize ) -> ComparisonAnalysisReport
 {
   println!( "🎯 Comparative Analysis: {} Commands (using benchkit)", command_count );
@@ -76,7 +71,6 @@ fn run_framework_comparison_benchkit( command_count : usize ) -> ComparisonAnaly
 }
 
 /// Unilang SIMD operation (single iteration for benchkit)
-#[ cfg( feature = "benchmarks" ) ]
 /// What is measured: fn benchmark_unilang_simd_operation( command_count : usize ) - Unilang with SIMD optimizations  
 /// How to measure: cargo bench --bench throughput_benchmark --features benchmarks
 /// Measuring: Command parsing throughput with SIMD tokenization enabled
@@ -89,56 +83,15 @@ fn benchmark_unilang_simd_operation( command_count : usize )
   // Add N commands to registry
   for i in 0..command_count
   {
-    let cmd = CommandDefinition
-    {
-      name : format!( "cmd_{}", i ),
-      namespace : ".perf".to_string(),
-      description : format!( "Performance test command {}", i ),
-      hint : "Performance test".to_string(),
-      arguments : vec!
-      [
-        ArgumentDefinition
-        {
-          name : "input".to_string(),
-          description : "Input parameter".to_string(),
-          kind : Kind::String,
-          hint : "Input value".to_string(),
-          attributes : ArgumentAttributes::default(),
-          validation_rules : vec![],
-          aliases : vec![ "i".to_string() ],
-          tags : vec![],
-        },
-        ArgumentDefinition
-        {
-          name : "verbose".to_string(),
-          description : "Enable verbose output".to_string(),
-          kind : Kind::Boolean,
-          hint : "Verbose flag".to_string(),
-          attributes : ArgumentAttributes
-          {
-            optional : true,
-            default : Some( "false".to_string() ),
-            ..Default::default()
-          },
-          validation_rules : vec![],
-          aliases : vec![ "v".to_string() ],
-          tags : vec![],
-        },
-      ],
-      routine_link : None,
-      status : "stable".to_string(),
-      version : "1.0.0".to_string(),
-      tags : vec![],
-      aliases : vec![],
-      permissions : vec![],
-      idempotent : true,
-      deprecation_message : String::new(),
-      http_method_hint : String::new(),
-      examples : vec![],
-      auto_help_enabled : false,
-    };
-    
-    registry.register( cmd );
+    let cmd = CommandDefinition::former()
+      .name( format!( "cmd_{}", i ) )
+      .namespace( ".perf".to_string() )
+      .description( format!( "Performance test command {}", i ) )
+      .hint( "Performance test".to_string() )
+      .end();
+
+    #[ allow( clippy::let_unit_value, clippy::ignored_unit_patterns ) ]
+    let _ = registry.register( cmd );
   }
   
   // Create pipeline for command processing
@@ -158,7 +111,6 @@ fn benchmark_unilang_simd_operation( command_count : usize )
 }
 
 /// Unilang no-SIMD operation (simulated)
-#[ cfg( feature = "benchmarks" ) ]
 fn benchmark_unilang_no_simd_operation( command_count : usize )
 {
   // Simulate the same operation but with slight performance penalty
@@ -169,7 +121,6 @@ fn benchmark_unilang_no_simd_operation( command_count : usize )
 }
 
 /// Clap operation
-#[ cfg( feature = "benchmarks" ) ]
 fn benchmark_clap_operation( command_count : usize )
 {
   // Create clap app with N subcommands
@@ -214,7 +165,6 @@ fn benchmark_clap_operation( command_count : usize )
 }
 
 /// Pico-args operation
-#[ cfg( feature = "benchmarks" ) ]
 fn benchmark_pico_args_operation( command_count : usize )
 {
   // Test with sample arguments
@@ -232,7 +182,6 @@ fn benchmark_pico_args_operation( command_count : usize )
 }
 
 /// Comprehensive scaling benchmark using benchkit suite
-#[ cfg( feature = "benchmarks" ) ]
 /// What is measured: fn run_scaling_benchmark_benchkit() - Scaling performance across command counts
 /// How to measure: cargo bench --bench throughput_benchmark --features benchmarks
 /// Measuring: Performance scaling from 10 to 1000 commands with statistical significance testing
@@ -282,7 +231,6 @@ fn run_scaling_benchmark_benchkit()
 }
 
 /// Memory allocation tracking benchmark
-#[ cfg( feature = "benchmarks" ) ]
 fn run_memory_benchmark_benchkit()
 {
   println!( "🧠 Memory Allocation Analysis (using benchkit)" );
@@ -329,13 +277,11 @@ fn run_memory_benchmark_benchkit()
 }
 
 /// Helper function for SIMD benchmark execution
-#[ cfg( feature = "benchmarks" ) ]
 fn run_unilang_simd_benchmark(command_count: usize) {
   benchmark_unilang_simd_operation(command_count);
 }
 
 /// Enhanced CV analysis demonstration
-#[ cfg( feature = "benchmarks" ) ]
 /// What is measured: fn run_cv_analysis_demo() - Coefficient of Variation analysis demonstration
 /// How to measure: cargo bench --bench throughput_benchmark --features benchmarks  
 /// Measuring: CV analysis workflow with improvement techniques for benchmark reliability
@@ -398,7 +344,6 @@ fn run_cv_analysis_demo()
 }
 
 /// Run comprehensive benchmarks using benchkit
-#[ cfg( feature = "benchmarks" ) ]
 pub fn run_comprehensive_benchkit_demo()
 {
   println!( "🎯 BENCHKIT INTEGRATION DEMONSTRATION" );
@@ -448,14 +393,7 @@ pub fn run_comprehensive_benchkit_demo()
   run_cv_analysis_demo();
 }
 
-#[ cfg( not( feature = "benchmarks" ) ) ]
-pub fn run_comprehensive_benchkit_demo()
-{
-  println!( "⚠️  Benchmarks disabled - enable 'benchmarks' feature" );
-}
-
 /// Main function for benchmark execution following benchkit standard setup protocol
-#[ cfg( feature = "benchmarks" ) ]
 fn main()
 {
   use benchkit::prelude::*;
@@ -505,20 +443,12 @@ fn main()
   println!("\n✅ Benchkit standard setup protocol completed");
 }
 
-#[ cfg( not( feature = "benchmarks" ) ) ]
-fn main()
-{
-  println!( "⚠️  Benchmarks disabled - enable 'benchmarks' feature" );
-}
-
 #[ cfg( test ) ]
 mod tests
 {
-  #[ cfg( feature = "benchmarks" ) ]
   #[allow(unused_imports)]
   use super::*;
 
-  #[ cfg( feature = "benchmarks" ) ]
   #[ test ]
   #[ ignore = "Benchkit integration - comprehensive throughput analysis" ]
   fn benchkit_integration_demo()

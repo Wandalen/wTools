@@ -12,9 +12,12 @@ fn main() -> Result< (), unilang::error::Error >
 {
   println!( "=== YAML and JSON Command Loading Demo ===\n" );
 
+  // Fix(issue-command-name-format): Command names must have dot prefix
+  // Root cause: Validation requires all command names start with '.'
+  // Pitfall: YAML command names need '.' prefix just like runtime registration
   // Step 1: Define commands in YAML format
   let yaml_commands = r#"
-- name: "backup"
+- name: ".backup"
   namespace: ".system"
   description: "Creates a backup of specified files and directories"
   hint: "Backup utility with compression"
@@ -27,7 +30,7 @@ fn main() -> Result< (), unilang::error::Error >
   deprecation_message: ""
   http_method_hint: "POST"
   examples:
-    - "system.backup source::/home/user destination::/backup/user.tar.gz"
+    - ".system.backup source::/home/user destination::/backup/user.tar.gz"
     - "bak source::~/documents destination::backup.zip compress::gzip"
   arguments:
     - name: "source"
@@ -87,7 +90,7 @@ fn main() -> Result< (), unilang::error::Error >
       aliases: ["x", "ignore"]
       tags: ["filtering"]
 
-- name: "restore"
+- name: ".restore"
   namespace: ".system"
   description: "Restores files from a backup archive"
   hint: "Restore from backup archives"
@@ -100,7 +103,7 @@ fn main() -> Result< (), unilang::error::Error >
   deprecation_message: ""
   http_method_hint: "POST"
   examples:
-    - "system.restore archive::backup.tar.gz target::/restore/location"
+    - ".system.restore archive::backup.tar.gz target::/restore/location"
     - "restore archive::~/backup.zip target::. verify::true"
   arguments:
     - name: "archive"
@@ -151,7 +154,7 @@ fn main() -> Result< (), unilang::error::Error >
   let json_commands = r#"
 [
   {
-    "name": "monitor",
+    "name": ".monitor",
     "namespace": ".system",
     "description": "Monitors system resources and performance metrics",
     "hint": "Real-time system monitoring",
@@ -164,7 +167,7 @@ fn main() -> Result< (), unilang::error::Error >
     "deprecation_message": "",
     "http_method_hint": "GET",
     "examples": [
-      "system.monitor interval::5 metrics::cpu,memory",
+      ".system.monitor interval::5 metrics::cpu,memory",
       "monitor interval::1 metrics::all format::json"
     ],
     "arguments": [
@@ -197,7 +200,7 @@ fn main() -> Result< (), unilang::error::Error >
           "interactive": false,
           "sensitive": false
         },
-        "validation_rules": ["min_length:1"],
+        "validation_rules": ["minlength:1"],
         "default_value": "cpu,memory,disk",
         "aliases": ["m", "stats"],
         "tags": ["monitoring"]
@@ -239,7 +242,7 @@ fn main() -> Result< (), unilang::error::Error >
     ]
   },
   {
-    "name": "deploy",
+    "name": ".deploy",
     "namespace": ".app",
     "description": "Deploys applications to various environments",
     "hint": "Application deployment utility",
@@ -252,7 +255,7 @@ fn main() -> Result< (), unilang::error::Error >
     "deprecation_message": "",
     "http_method_hint": "POST",
     "examples": [
-      "app.deploy env::production version::2.1.0",
+      ".app.deploy env::production version::2.1.0",
       "deploy env::staging version::latest rollback-on-failure::true"
     ],
     "arguments": [
@@ -285,7 +288,7 @@ fn main() -> Result< (), unilang::error::Error >
           "interactive": false,
           "sensitive": false
         },
-        "validation_rules": ["regex:^[0-9]+\\.[0-9]+\\.[0-9]+.*$"],
+        "validation_rules": ["pattern:^[0-9]+\\.[0-9]+\\.[0-9]+.*$"],
         "default_value": null,
         "aliases": ["v", "ver", "tag"],
         "tags": ["required", "versioning"]
@@ -332,16 +335,25 @@ fn main() -> Result< (), unilang::error::Error >
   println!( "\n🔗 Combining registries..." );
   let mut combined_registry = CommandRegistry::new();
 
+  // Fix(issue-duplicate-commands): Skip already-registered commands to avoid duplicate errors
+  // Root cause: Builder auto-registers built-in commands (.help, .version, etc.) in both registries
+  // Pitfall: When combining registries, built-in commands cause duplicate registration errors
   // Add YAML commands
-  for ( _name, command ) in yaml_registry.commands()
+  for ( name, command ) in yaml_registry.commands()
   {
-    combined_registry.register( command ).expect( "Valid commands should register successfully" );
+    if combined_registry.command( &name ).is_none()
+    {
+      combined_registry.register( command ).expect( "Valid commands should register successfully" );
+    }
   }
 
   // Add JSON commands
-  for ( _name, command ) in json_registry.commands()
+  for ( name, command ) in json_registry.commands()
   {
-    combined_registry.register( command ).expect( "Valid commands should register successfully" );
+    if combined_registry.command( &name ).is_none()
+    {
+      combined_registry.register( command ).expect( "Valid commands should register successfully" );
+    }
   }
 
   println!( "✓ Combined registry has {} total commands", combined_registry.commands().len() );
@@ -354,13 +366,13 @@ fn main() -> Result< (), unilang::error::Error >
 
   // Step 7: Show detailed help for specific commands
   println!( "\n=== YAML-Loaded Command Details ===" );
-  if let Some( backup_help ) = help_generator.command( "system.backup" )
+  if let Some( backup_help ) = help_generator.command( ".system.backup" )
   {
     println!( "{backup_help}" );
   }
 
   println!( "\n=== JSON-Loaded Command Details ===" );
-  if let Some( monitor_help ) = help_generator.command( "system.monitor" )
+  if let Some( monitor_help ) = help_generator.command( ".system.monitor" )
   {
     println!( "{monitor_help}" );
   }
@@ -390,9 +402,9 @@ fn main() -> Result< (), unilang::error::Error >
 
   println!( "\n=== Usage Examples ===" );
   println!( "# Test the loaded commands:" );
-  println!( "cargo run --bin unilang_cli system.backup --help" );
-  println!( "cargo run --bin unilang_cli system.monitor --help" );
-  println!( "cargo run --bin unilang_cli app.deploy --help" );
+  println!( "cargo run --bin unilang_cli .system.backup --help" );
+  println!( "cargo run --bin unilang_cli .system.monitor --help" );
+  println!( "cargo run --bin unilang_cli .app.deploy --help" );
 
   println!( "\n# Using aliases:" );
   println!( "cargo run --bin unilang_cli bak --help" );

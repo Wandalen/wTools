@@ -20,11 +20,45 @@ mod implementation
 
 
 ///
-/// Reflect structure of any kind.
+/// Derive macro to generate reflection capabilities for types.
 ///
-/// ### Sample `::trivial`.
+/// This procedural macro generates code that enables runtime type introspection
+/// for structs. The current implementation is a stub returning empty `TokenStream`,
+/// awaiting full Entity trait implementation.
 ///
-/// qqq: write, please
+/// ### Basic Usage
+///
+/// ```rust
+/// use reflect_tools_meta::Reflect;
+///
+/// #[ derive( Reflect ) ]
+/// struct Person
+/// {
+///   name: String,
+///   age: u32,
+/// }
+/// ```
+///
+/// ### Debug Mode
+///
+/// Use the `#[debug]` attribute to print macro expansion details during compilation:
+///
+/// ```rust
+/// use reflect_tools_meta::Reflect;
+///
+/// #[ derive( Reflect ) ]
+/// #[ debug ]
+/// struct Config
+/// {
+///   host: String,
+/// }
+/// ```
+///
+/// ### Implementation Note
+///
+/// The current implementation is a stub that parses the input struct definition
+/// and returns empty `TokenStream`. Full Entity trait generation is pending.
+/// See parent `reflect_tools` crate for complete reflection functionality.
 ///
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "reflect_derive" ) ]

@@ -12,13 +12,10 @@
 #![allow(clippy::cast_possible_truncation)]
 #![allow(clippy::cast_sign_loss)]
 
-#[ cfg( feature = "benchmarks" ) ]
 use std::time::Instant;
-#[ cfg( feature = "benchmarks" ) ]
 use unilang::interner::{ StringInterner, intern_command_name };
 
 #[ derive( Debug, Clone ) ]
-#[ cfg( feature = "benchmarks" ) ]
 struct StringInterningResult
 {
   test_name : String,
@@ -33,7 +30,6 @@ struct StringInterningResult
 }
 
 /// Benchmark traditional string construction (current hot path)
-#[ cfg( feature = "benchmarks" ) ]
 fn benchmark_string_construction( command_slices : &[ &[ &str ] ], iterations : usize ) -> StringInterningResult
 {
   let mut times = Vec::with_capacity( iterations );
@@ -81,7 +77,6 @@ fn benchmark_string_construction( command_slices : &[ &[ &str ] ], iterations : 
 }
 
 /// Benchmark string interning (cache miss scenario)
-#[ cfg( feature = "benchmarks" ) ]
 fn benchmark_string_interning_miss( command_slices : &[ &[ &str ] ], iterations : usize ) -> StringInterningResult
 {
   let mut times = Vec::with_capacity( iterations );
@@ -124,7 +119,6 @@ fn benchmark_string_interning_miss( command_slices : &[ &[ &str ] ], iterations 
 }
 
 /// Benchmark string interning (cache hit scenario)
-#[ cfg( feature = "benchmarks" ) ]
 fn benchmark_string_interning_hit( command_slices : &[ &[ &str ] ], iterations : usize ) -> StringInterningResult
 {
   let mut times = Vec::with_capacity( iterations );
@@ -169,7 +163,6 @@ fn benchmark_string_interning_hit( command_slices : &[ &[ &str ] ], iterations :
 }
 
 /// Benchmark global string interning convenience functions
-#[ cfg( feature = "benchmarks" ) ]
 fn benchmark_global_interner( command_slices : &[ &[ &str ] ], iterations : usize ) -> StringInterningResult
 {
   let mut times = Vec::with_capacity( iterations );
@@ -211,7 +204,6 @@ fn benchmark_global_interner( command_slices : &[ &[ &str ] ], iterations : usiz
   }
 }
 
-#[ cfg( feature = "benchmarks" ) ]
 fn print_result( result : &StringInterningResult )
 {
   println!( "=== {} ===" , result.test_name );
@@ -226,7 +218,6 @@ fn print_result( result : &StringInterningResult )
   println!();
 }
 
-#[ cfg( feature = "benchmarks" ) ]
 fn run_string_interning_benchmarks()
 {
   println!( "🚀 String Interning Performance Benchmarks" );
@@ -317,15 +308,7 @@ fn run_string_interning_benchmarks()
   println!( "- P99 under 500μs target: {}", if target_latency_met { "PASSED" } else { "FAILED" } );
 }
 
-#[ cfg( feature = "benchmarks" ) ]
 fn main()
 {
   run_string_interning_benchmarks();
-}
-
-#[ cfg( not( feature = "benchmarks" ) ) ]
-fn main()
-{
-  println!( "String interning benchmarks require the 'benchmarks' feature flag." );
-  println!( "Run with: cargo run --bin string_interning_benchmark --features benchmarks" );
 }

@@ -91,13 +91,13 @@ pub mod exposed
   #[ cfg(any(feature = "use_alloc", not(feature = "no_std"))) ]
   #[ cfg( feature = "collection_constructors" ) ]
   #[ allow( clippy ::useless_attribute, clippy ::pub_use ) ]
-  pub use crate :: { vec as dlist, deque, llist, hset, hmap, bmap, bset };
+  pub use crate :: { vec as dlist, deque, llist, hset, hmap, bmap, bset, heap };
 
   #[ doc( inline ) ]
   #[ cfg(any(feature = "use_alloc", not(feature = "no_std"))) ]
   #[ cfg( feature = "collection_into_constructors" ) ]
   #[ allow( clippy ::useless_attribute, clippy ::pub_use ) ]
-  pub use crate :: { into_vec, into_vec as into_dlist, into_vecd, into_llist, into_hset, into_hmap, into_bmap, into_bset };
+  pub use crate :: { into_vec, into_vec as into_dlist, into_vecd, into_llist, into_hset, into_hmap, into_bmap, into_bset, into_heap };
 
   // #[ cfg( feature = "reexports" ) ]
   #[ cfg(any(feature = "use_alloc", not(feature = "no_std"))) ]

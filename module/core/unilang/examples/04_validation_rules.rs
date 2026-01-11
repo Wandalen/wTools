@@ -56,9 +56,12 @@ fn main() -> Result< (), unilang::error::Error >
   // Define a command that showcases different types of validation rules.
   // This command demonstrates how validation rules are applied to arguments
   // and how they prevent invalid data from reaching the command execution.
+  // Fix(issue-namespace-format): Namespace must have dot prefix
+  // Root cause: Validation requires non-empty namespaces start with '.'
+  // Pitfall: All namespaces must be either empty "" or start with dot
   let validation_demo = CommandDefinition::former()
   .name( ".validate" )
-  .namespace( "validation".to_string() )
+  .namespace( ".validation".to_string() )
   .description( "Demonstrates argument validation rules".to_string() )
   .hint( "Shows different validation constraints" )
   .status( "stable" )
@@ -71,8 +74,8 @@ fn main() -> Result< (), unilang::error::Error >
   .http_method_hint( "POST".to_string() )
   .examples( vec!
   [
-    "validation.validate age::25 name::Alice email::alice@example.com".to_string(),
-    "validation.validate score::85.5 password::secretkey123".to_string(),
+    ".validation.validate age::25 name::Alice email::alice@example.com".to_string(),
+    ".validation.validate score::85.5 password::secretkey123".to_string(),
   ])
   .arguments( vec!
   [
@@ -394,44 +397,44 @@ fn main() -> Result< (), unilang::error::Error >
   println!( "\n=== Example Usage with Expected Results ===" );
   
   println!( "\n✅ VALID EXAMPLES (all validation rules pass):" );
-  println!( "cargo run --bin unilang_cli validation.validate age::25 name::Alice" );
+  println!( "cargo run --bin unilang_cli .validation.validate age::25 name::Alice" );
   println!( "  → age=25 (within 0-120 range), name='Alice' (2+ chars)" );
   println!();
-  println!( "cargo run --bin unilang_cli validation.validate score::95.5 email::alice@example.com" );
+  println!( "cargo run --bin unilang_cli .validation.validate score::95.5 email::alice@example.com" );
   println!( "  → score=95.5 (within 0-100 range), email matches pattern" );
   println!();
-  println!( "cargo run --bin unilang_cli validation.validate password::mypass123 website::https://example.com" );
+  println!( "cargo run --bin unilang_cli .validation.validate password::mypass123 website::https://example.com" );
   println!( "  → password=8+ chars with letters+numbers, website uses HTTPS" );
   println!();
-  println!( "cargo run --bin unilang_cli validation.validate tags::'web,api,rust'" );
+  println!( "cargo run --bin unilang_cli .validation.validate tags::'web,api,rust'" );
   println!( "  → tags list has 3 items (≥ 2 required)" );
 
   println!( "\n❌ INVALID EXAMPLES (validation will fail with specific error messages):" );
   println!();
-  println!( "cargo run --bin unilang_cli validation.validate age::150" );
+  println!( "cargo run --bin unilang_cli .validation.validate age::150" );
   println!( "  → ERROR: Value 150 exceeds maximum 120 for argument 'age'" );
   println!();
-  println!( "cargo run --bin unilang_cli validation.validate age::-5" );
+  println!( "cargo run --bin unilang_cli .validation.validate age::-5" );
   println!( "  → ERROR: Value -5 is below minimum 0 for argument 'age'" );
   println!();
-  println!( "cargo run --bin unilang_cli validation.validate name::A" );
+  println!( "cargo run --bin unilang_cli .validation.validate name::A" );
   println!( "  → ERROR: String 'A' is too short (minimum 2 characters) for argument 'name'" );
   println!();
-  println!( "cargo run --bin unilang_cli validation.validate email::invalid-email" );
+  println!( "cargo run --bin unilang_cli .validation.validate email::invalid-email" );
   println!( "  → ERROR: String 'invalid-email' does not match required pattern for argument 'email'" );
   println!();
-  println!( "cargo run --bin unilang_cli validation.validate password::short" );
+  println!( "cargo run --bin unilang_cli .validation.validate password::short" );
   println!( "  → ERROR: String 'short' is too short (minimum 8 characters) for argument 'password'" );
   println!();
-  println!( "cargo run --bin unilang_cli validation.validate password::verylongpassword" );
+  println!( "cargo run --bin unilang_cli .validation.validate password::verylongpassword" );
   println!( "  → ERROR: String 'verylongpassword' does not match required pattern for argument 'password'" );
   println!( "    (Pattern requires both letters AND numbers)" );
   println!();
-  println!( "cargo run --bin unilang_cli validation.validate website::http://example.com" );
+  println!( "cargo run --bin unilang_cli .validation.validate website::http://example.com" );
   println!( "  → ERROR: String 'http://example.com' does not match required pattern for argument 'website'" );
   println!( "    (Must start with 'https://' for security)" );
   println!();
-  println!( "cargo run --bin unilang_cli validation.validate tags::solo" );
+  println!( "cargo run --bin unilang_cli .validation.validate tags::solo" );
   println!( "  → ERROR: Collection has 1 items but minimum 2 required for argument 'tags'" );
 
   println!( "\n=== Tips for Combining Validation Rules ===" );

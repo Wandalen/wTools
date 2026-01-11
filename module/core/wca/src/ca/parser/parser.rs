@@ -79,24 +79,26 @@ mod private
    // URL schemes
    if input.contains( "://" ) { return true; }
 
-   // Windows drive letters or time format
-   if input.len() >= 2
+   // Windows drive letters
+   if input.len() >= 3
    {
   let bytes = input.as_bytes();
   if bytes[ 0 ].is_ascii_alphabetic() && bytes[ 1 ] == b':'
   {
-   if input.len() > 2 && ( bytes[ 2 ] == b'\\' || bytes[ 2 ] == b'/' )
-   { return true; }
-   if input.chars().all( | c | c.is_ascii_digit() || c == ':' )
-   { return true; }
+   // C:\ or C:/ patterns
+   if bytes[ 2 ] == b'\\' || bytes[ 2 ] == b'/' { return true; }
  }
  }
 
-   // Windows backslashes
-   input.contains( '\\' )
- }
+   // UNC paths (\\server\share)
+   if input.starts_with( "\\\\" ) { return true; }
 
-  // returns ParsedCommand and relative position of the last parsed item
+   // Time format (digits and colons only)
+   if input.len() >= 2 && input.chars().all( | c | c.is_ascii_digit() || c == ':' )
+   { return true; }
+
+   false
+ }
   // aaa: use typed error
   fn parse_command( args: &[ String ] ) -> Result< ( ParsedCommand, usize ), ParserError >
   {
@@ -182,37 +184,42 @@ mod private
    if let Some( ( name, value ) ) = item.split_once( ':' )
    {
   let value = value.trim();
-  if !value.is_empty()
+  // If value is empty, try to get from next arg
+  if value.is_empty()
   {
-   properties.insert( name.to_string(), value.to_string() );
+   if args.len() > i + 1
+   {
+  properties.insert( name.to_string(), args[ i + 1 ].clone() );
+  i += 1;
  }
-  else if args.len() > i + 1
-  {
-   properties.insert( name.to_string(), args[ i + 1 ].clone() );
-   i += 1;
+   else
+   {
+  return Err( ParserError ::UnexpectedInput { expected: "property value".into(), input: "end of input".into() } );
+ }
  }
   else
   {
-   return Err( ParserError ::UnexpectedInput { expected: "property value".into(), input: "end of input".into() } );
+   properties.insert( name.to_string(), value.to_string() );
  }
  }
  }
   // prop: value | prop: value
   else if args.len() > i + 1 && args[ i + 1 ].starts_with( " : " )
   {
-   // : value
-   if args[ i + 1 ].len() > 1
+   let stripped = args[ i + 1 ].strip_prefix( " : " ).unwrap();
+   // : value (has content after " : ")
+   if !stripped.is_empty()
    {
-  properties.insert( args[ i ].clone(), args[ i + 1 ].strip_prefix( " : " ).unwrap().to_string() );
+  properties.insert( args[ i ].clone(), stripped.to_string() );
   i += 1;
  }
-   // : value
+   // : value (next arg is exactly " : ", value follows)
    else if args.len() > i + 2
    {
   properties.insert( args[ i ].clone(), args[ i + 2 ].clone() );
   i += 2;
  }
-   // :
+   // : (no value)
    else
    {
   return Err( ParserError ::UnexpectedInput { expected: "property value".into(), input: "end of input".into() } );

@@ -7,13 +7,10 @@
 #![allow(clippy::cast_possible_truncation)]
 #![allow(clippy::cast_sign_loss)]
 
-#[ cfg( feature = "benchmarks" ) ]
 use std::time::Instant;
-#[ cfg( feature = "benchmarks" ) ]
 use unilang::prelude::*;
 
 #[ derive( Debug, Clone ) ]
-#[ cfg( feature = "benchmarks" ) ]
 struct IntegratedBenchmarkResult
 {
   test_name : String,
@@ -24,7 +21,6 @@ struct IntegratedBenchmarkResult
   p99_latency_ns : u64,
 }
 
-#[ cfg( feature = "benchmarks" ) ]
 fn create_test_registry() -> CommandRegistry
 {
   #[allow(deprecated)]
@@ -56,33 +52,20 @@ fn create_test_registry() -> CommandRegistry
   
   for ( name, desc ) in commands
   {
-    let cmd_def = CommandDefinition
-    {
-      name : name.to_string(),
-      description : desc.to_string(),
-      arguments : vec![],
-      routine_link : None,
-      namespace : "test".to_string(),
-      hint : "Test command".to_string(),
-      status : "stable".to_string(),
-      version : "1.0.0".to_string(),
-      tags : vec![],
-      aliases : vec![],
-      permissions : vec![],
-      idempotent : true,
-      deprecation_message : String::new(),
-      http_method_hint : String::new(),
-      examples : vec![],
-      auto_help_enabled : false,
-    };
-    
-    registry.register( cmd_def );
+    let cmd_def = CommandDefinition::former()
+      .name( name.to_string() )
+      .description( desc.to_string() )
+      .namespace( "test".to_string() )
+      .hint( "Test command".to_string() )
+      .end();
+
+    #[ allow( clippy::let_unit_value, clippy::ignored_unit_patterns ) ]
+    let _ = registry.register( cmd_def );
   }
   
   registry
 }
 
-#[ cfg( feature = "benchmarks" ) ]
 fn benchmark_integrated_pipeline( iterations : usize, repeat_factor : usize ) -> IntegratedBenchmarkResult
 {
   let registry = create_test_registry();
@@ -144,7 +127,6 @@ fn benchmark_integrated_pipeline( iterations : usize, repeat_factor : usize ) ->
   }
 }
 
-#[ cfg( feature = "benchmarks" ) ]
 fn benchmark_cache_warmup_effect() -> Vec< IntegratedBenchmarkResult >
 {
   let mut results = Vec::new();
@@ -167,7 +149,6 @@ fn benchmark_cache_warmup_effect() -> Vec< IntegratedBenchmarkResult >
   results
 }
 
-#[ cfg( feature = "benchmarks" ) ]
 fn print_result( result : &IntegratedBenchmarkResult )
 {
   println!( "=== {} ===" , result.test_name );
@@ -179,7 +160,6 @@ fn print_result( result : &IntegratedBenchmarkResult )
   println!();
 }
 
-#[ cfg( feature = "benchmarks" ) ]
 fn run_integrated_benchmark()
 {
   println!( "🚀 Integrated String Interning Pipeline Benchmark" );
@@ -240,15 +220,7 @@ fn run_integrated_benchmark()
   println!( "- P99 under 500μs target: {}", if latency_target_met { "PASSED" } else { "FAILED" } );
 }
 
-#[ cfg( feature = "benchmarks" ) ]
 fn main()
 {
   run_integrated_benchmark();
-}
-
-#[ cfg( not( feature = "benchmarks" ) ) ]
-fn main()
-{
-  println!( "Integrated string interning benchmark requires the 'benchmarks' feature flag." );
-  println!( "Run with: cargo run --bin integrated_string_interning_benchmark --features benchmarks" );
 }

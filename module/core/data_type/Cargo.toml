@@ -57,8 +57,11 @@ use_alloc = [ "no_std" ]
 enabled = []
 
 dt_interval = [ "interval_adapter/enabled" ]
-dt_collection = [ "collection_tools/enabled" ]
+dt_collection = [ "collection_tools/enabled", "collection_tools/collection_constructors" ]
 dt_either = [ "either" ]
+
+# Test infrastructure features
+diagnostics_runtime_assertions = []
 
 # qqq : for Anton : integrate all features of collection_tools into data_type and reuse tests
 

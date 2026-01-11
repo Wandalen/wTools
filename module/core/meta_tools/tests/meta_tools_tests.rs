@@ -1,3 +1,5 @@
+//! Tests for `meta_tools` crate.
+
 // #![ deny( rust_2018_idioms ) ]
 // #![ deny( missing_debug_implementations ) ]
 // #![ deny( missing_docs ) ]

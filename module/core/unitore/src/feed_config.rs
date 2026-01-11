@@ -11,7 +11,7 @@ pub struct SubscriptionConfig
 {
   /// Update period.
   #[ serde(with = "humantime_serde") ]
-  pub update_period: std ::time ::Duration,
+  pub update_period: core ::time ::Duration,
   /// Resource link.
   pub link: url ::Url,
 }
@@ -32,21 +32,24 @@ pub struct Subscriptions
 ///
 /// # Returns
 ///
-/// Result with list of feed subscriptions serialized as SubscriptionConfig.
-pub fn read( file_path: String ) -> Result< Vec< SubscriptionConfig > >
+/// Result with list of feed subscriptions serialized as `SubscriptionConfig`.
+///
+/// # Errors
+/// Returns error if operation fails.
+pub fn read( file_path: &str ) -> Result< Vec< SubscriptionConfig > >
 {
   let read_file = OpenOptions ::new()
   .read( true )
-  .open( &file_path )
-  .context( format!( "Problem reading config file {}", file_path ) )?
+  .open( file_path )
+  .context( format!( "Problem reading config file {file_path}" ) )?
   ;
 
   let mut reader = BufReader ::new( read_file );
   let mut buffer: Vec< u8 > = Vec ::new();
-  reader.read_to_end( &mut buffer ).context( format!( "Problem reading config file {}", file_path ) )?;
+  reader.read_to_end( &mut buffer ).context( format!( "Problem reading config file {file_path}" ) )?;
 
   let feeds: Subscriptions = toml ::from_str( &String ::from_utf8( buffer )? )
-  .context( format!( "Problem parsing config file {}", file_path ) )?
+  .context( format!( "Problem parsing config file {file_path}" ) )?
   ;
 
   Ok( feeds.config )

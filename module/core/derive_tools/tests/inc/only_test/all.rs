@@ -4,7 +4,7 @@ use super ::derives ::a_id;
 fn basic_test()
 {
 
-  a_id!( IsTransparent ::default(), IsTransparent( true ) );
+  a_id!( IsTransparent ::default(), IsTransparent( false ) );
 
   // From
 

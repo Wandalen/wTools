@@ -21,7 +21,7 @@ fn main() -> Result< (), Box< dyn core ::error ::Error > >
 
   // Example 1 : Single instruction with mixed argument types
   println!( "1. Single Instruction with Mixed Arguments: " );
-  let input_single = "log.level severity :: \"debug\" message :: 'Hello, Unilang!' --verbose";
+  let input_single = "log.level severity :: \"debug\" message :: 'Hello, Unilang!' verbose :: true";
   println!( "   Input: {input_single}" );
 
   let instruction = parser.parse_single_instruction( input_single )?;
@@ -44,7 +44,7 @@ fn main() -> Result< (), Box< dyn core ::error ::Error > >
 
   // Example 3 : Multiple instructions (command sequence)
   println!( "\n3. Multiple Instructions (Command Sequence) : " );
-  let input_multiple = "system.info ? ;; file.read path :: \"/etc/hosts\" --binary ;; user.add 'John Doe' email ::john.doe@example.com";
+  let input_multiple = "system.info ? ;; file.read path :: \"/etc/hosts\" binary :: true ;; user.add 'John Doe' email ::john.doe@example.com";
   println!( "   Input: {input_multiple}" );
 
   let instructions = parser.parse_multiple_instructions( input_multiple )?;
@@ -68,7 +68,7 @@ fn main() -> Result< (), Box< dyn core ::error ::Error > >
   println!
   (
    "     -> Binary mode: {}",
-   instruction.positional_arguments.iter().any( | arg | arg.value == "--binary" )
+   instruction.named_arguments.get( "binary" ).is_some_and( | arg | arg[0].value == "true" )
  );
  },
    2 =>

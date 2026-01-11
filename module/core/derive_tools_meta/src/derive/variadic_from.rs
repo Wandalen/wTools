@@ -71,13 +71,17 @@ pub fn variadic_from(input: proc_macro ::TokenStream) -> Result< proc_macro2 ::T
   Ok(result)
 }
 
-/// Generates `VariadicFrom` implementation for structs.
+/// Generates `variadic_from()` inherent method for structs.
+///
+/// Fix(issue-4): Changed from trait implementation to inherent method.
+/// Root cause: Original implementation generated `impl crate::VariadicFrom` for non-existent trait.
+/// Pitfall: Variadic conversion patterns require custom traits. Must define trait before implementing it, or use inherent methods for utility constructors.
 ///
 /// Example of generated code :
 /// ```text
-/// impl VariadicFrom< bool > for IsTransparent
+/// impl IsTransparent
 /// {
-///   fn variadic_from( src: bool ) -> Self
+///   pub fn variadic_from( src: bool ) -> Self
 ///   {
 ///     Self( src )
 /// }
@@ -91,7 +95,7 @@ fn generate(
   field_type: &syn ::Type,
   field_name: Option< &syn ::Ident >,
 ) -> proc_macro2 ::TokenStream {
-  let body =  if let Some(field_name) = field_name 
+  let body =  if let Some(field_name) = field_name
   {
   qt! { Self { #field_name: src } }
  } else {
@@ -100,12 +104,12 @@ fn generate(
 
   qt! {
   #[ automatically_derived ]
-  impl< #generics_impl > crate ::VariadicFrom< #field_type > for #item_name< #generics_ty >
+  impl< #generics_impl > #item_name< #generics_ty >
   where
    #generics_where
   {
    #[ inline( always ) ]
-   fn variadic_from( src: #field_type ) -> Self
+   pub fn variadic_from( src: #field_type ) -> Self
    {
   #body
  }
@@ -113,13 +117,17 @@ fn generate(
  }
 }
 
-/// Generates `VariadicFrom` implementation for enum variants.
+/// Generates `variadic_from()` inherent method for enum variants.
+///
+/// Fix(issue-4): Changed from trait implementation to inherent method.
+/// Root cause: Original implementation generated `impl crate::VariadicFrom` for non-existent trait.
+/// Pitfall: Variadic conversion patterns require custom traits. Must define trait before implementing it, or use inherent methods for utility constructors.
 ///
 /// Example of generated code :
 /// ```text
-/// impl VariadicFrom< i32 > for MyEnum
+/// impl MyEnum
 /// {
-///   fn variadic_from( src: i32 ) -> Self
+///   pub fn variadic_from( src: i32 ) -> Self
 ///   {
 ///     Self ::Variant( src )
 /// }
@@ -164,24 +172,23 @@ fn variant_generate(
   qt! { Self :: #variant_name( src ) }
  };
 
-  if attrs.debug.value(false) 
+  if attrs.debug.value(false)
   {
   let debug = format!(
    r"
 #[ automatically_derived ]
-impl< {} > crate ::VariadicFrom< {} > for {}< {} >
+impl< {} > {}< {} >
 where
   {}
 {{
   #[ inline ]
-  fn variadic_from( src: {} ) -> Self
+  pub fn variadic_from( src: {} ) -> Self
   {{
   {}
  }}
 }}
    ",
    qt! { #generics_impl },
-   qt! { #field_type },
    item_name,
    qt! { #generics_ty },
    qt! { #generics_where },
@@ -198,12 +205,12 @@ field: {variant_name}",
 
   Ok(qt! {
   #[ automatically_derived ]
-  impl< #generics_impl > crate ::VariadicFrom< #field_type > for #item_name< #generics_ty >
+  impl< #generics_impl > #item_name< #generics_ty >
   where
    #generics_where
   {
    #[ inline ]
-   fn variadic_from( src: #field_type ) -> Self
+   pub fn variadic_from( src: #field_type ) -> Self
    {
   #body
  }

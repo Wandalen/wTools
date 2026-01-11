@@ -19,10 +19,11 @@
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
-  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
-  pub use ::meta_tools::former;
-  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
-  pub use ::meta_tools::options;
+  // zzz : removed dead code referencing non-existent features
+  // #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
+  // pub use ::meta_tools::former;
+  // #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
+  // pub use ::meta_tools::options;
   #[ cfg( feature = "meta" ) ]
   pub use ::meta_tools;
   #[ cfg( feature = "mem" ) ]
@@ -98,14 +99,15 @@ pub mod own
   #[ allow( unused_imports ) ]
   pub use ::derive_tools as derive;
 
-  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use ::meta_tools::former as former;
-  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use ::meta_tools::options as options;
+  // zzz : removed dead code referencing non-existent features
+  // #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use ::meta_tools::former as former;
+  // #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use ::meta_tools::options as options;
 }
 
 #[ doc( inline ) ]
@@ -149,10 +151,11 @@ pub mod exposed
   #[ cfg( feature = "derive" ) ]
   pub use super::derive::exposed::*;
 
-  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
-  pub use super::former::exposed::*;
-  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
-  pub use super::options::exposed::*;
+  // zzz : removed dead code referencing non-existent features
+  // #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
+  // pub use super::former::exposed::*;
+  // #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
+  // pub use super::options::exposed::*;
 
 }
 
@@ -208,12 +211,14 @@ pub mod prelude
   #[ allow( unused_imports ) ]
   pub use super::derive::prelude::clone_dyn;
 
-  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::former::prelude::*;
-  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::options::prelude::*;
+  // zzz : removed dead code referencing non-existent features
+  // These features (former, meta_former, options, meta_options) are commented out in Cargo.toml
+  // #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::former::prelude::*;
+  // #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::options::prelude::*;
 }

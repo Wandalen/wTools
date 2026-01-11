@@ -5,6 +5,14 @@
 
 #![ allow( dead_code ) ]
 #![ allow( unused_imports ) ]
+#![ allow( clippy::must_use_candidate ) ]
+#![ allow( clippy::type_complexity ) ]
+#![ allow( clippy::missing_panics_doc ) ]
+#![ allow( clippy::cast_possible_truncation ) ]
+#![ allow( clippy::cast_sign_loss ) ]
+#![ allow( clippy::std_instead_of_core ) ]
+#![ allow( clippy::doc_markdown ) ]
+#![ allow( clippy::needless_pass_by_value ) ]
 
 /// Internal namespace.
 mod private
@@ -34,6 +42,7 @@ mod private
   impl BenchmarkResult
   {
     /// Calculate relative performance compared to baseline
+    #[ must_use ]
     pub fn relative_performance( &self, baseline_time : f64 ) -> f64
     {
       if baseline_time == 0.0
@@ -47,6 +56,7 @@ mod private
     }
 
     /// Format time in human-readable units
+    #[ must_use ]
     pub fn format_time( &self ) -> String
     {
       let time_ms = self.average_time_nanos / 1_000_000.0;
@@ -54,21 +64,24 @@ mod private
       
       if time_ms >= 1000.0
       {
-        format!( "{:.2}s ±{:.2}s", time_ms / 1000.0, std_dev_ms / 1000.0 )
+        let time_s = time_ms / 1000.0;
+        let std_dev_s = std_dev_ms / 1000.0;
+        format!( "{time_s:.2}s ±{std_dev_s:.2}s" )
       }
       else if time_ms >= 1.0
       {
-        format!( "{:.2}ms ±{:.2}ms", time_ms, std_dev_ms )
+        format!( "{time_ms:.2}ms ±{std_dev_ms:.2}ms" )
       }
       else
       {
         let time_us = self.average_time_nanos / 1_000.0;
         let std_dev_us = self.std_dev_nanos / 1_000.0;
-        format!( "{:.2}µs ±{:.2}µs", time_us, std_dev_us )
+        format!( "{time_us:.2}µs ±{std_dev_us:.2}µs" )
       }
     }
 
     /// Calculate coefficient of variation as percentage
+    #[ must_use ]
     pub fn coefficient_of_variation( &self ) -> f64
     {
       if self.average_time_nanos == 0.0
@@ -145,7 +158,7 @@ mod private
     /// Description of what is being measured
     description : String,
     /// List of algorithms to compare
-    algorithms : Vec< ( String, Box< dyn Fn( &T ) -> () + Send + Sync > ) >,
+    algorithms : Vec< ( String, Box< dyn Fn( &T ) + Send + Sync > ) >,
     /// Test data for different size categories
     test_data : HashMap< BenchmarkDataSize, T >,
   }
@@ -187,7 +200,7 @@ mod private
     /// Add algorithm to comparison
     pub fn add_algorithm< F >( &mut self, name : &str, algorithm : F ) -> &mut Self
     where
-      F : Fn( &T ) -> () + Send + Sync + 'static,
+      F : Fn( &T ) + Send + Sync + 'static,
     {
       self.algorithms.push( ( name.to_string(), Box::new( algorithm ) ) );
       self
@@ -203,10 +216,9 @@ mod private
     /// Run all algorithms for a specific data size and return comparison results
     pub fn run_comparison( &self, size : BenchmarkDataSize, iterations : usize ) -> ComparativeResults
     {
-      let test_data = match self.test_data.get( &size )
+      let Some( test_data ) = self.test_data.get( &size ) else
       {
-        Some( data ) => data,
-        None => panic!( "No test data available for size {:?}", size ),
+        panic!( "No test data available for size {size:?}" )
       };
 
       let mut results = Vec::new();
@@ -227,6 +239,7 @@ mod private
           let start = std::time::Instant::now();
           algorithm( test_data );
           let duration = start.elapsed();
+          #[allow(clippy::cast_possible_truncation)]
           times.push( duration.as_nanos() as u64 );
         }
 
@@ -283,11 +296,10 @@ mod private
     {
       // Sort by average time to establish baseline (fastest = 1.00x)
       results.sort_by( | a, b | a.average_time_nanos.partial_cmp( &b.average_time_nanos ).unwrap() );
-      
+
       let baseline_time = results.first()
-        .map( | r | r.average_time_nanos )
-        .unwrap_or( 1.0 );
-        
+        .map_or( 1.0, | r | r.average_time_nanos );
+
       let fastest_algorithm = results.first()
         .map( | r | r.algorithm_name.clone() )
         .unwrap_or_default();
@@ -307,13 +319,18 @@ mod private
     pub fn generate_comparison_table( &self ) -> String
     {
       let mut table = String::new();
-      
-      writeln!( &mut table, "## {} Comparison", self.benchmark_name ).unwrap();
-      writeln!( &mut table, "" ).unwrap();
-      writeln!( &mut table, "**What is measured**: {}", self.description ).unwrap();
-      writeln!( &mut table, "**Data size**: {} ({})", self.data_size.format_info(), self.data_size.value() ).unwrap();
-      writeln!( &mut table, "**Winner**: {} 🏆", self.fastest_algorithm ).unwrap();
-      writeln!( &mut table, "" ).unwrap();
+      let benchmark_name = &self.benchmark_name;
+      let description = &self.description;
+      let data_size_info = self.data_size.format_info();
+      let data_size_value = self.data_size.value();
+      let fastest = &self.fastest_algorithm;
+
+      writeln!( &mut table, "## {benchmark_name} Comparison" ).unwrap();
+      writeln!( &mut table ).unwrap();
+      writeln!( &mut table, "**What is measured**: {description}" ).unwrap();
+      writeln!( &mut table, "**Data size**: {data_size_info} ({data_size_value})" ).unwrap();
+      writeln!( &mut table, "**Winner**: {fastest} 🏆" ).unwrap();
+      writeln!( &mut table ).unwrap();
       
       writeln!( &mut table, "| Algorithm | Average Time | Std Dev | Min | Max | Relative Performance |" ).unwrap();
       writeln!( &mut table, "|-----------|--------------|---------|-----|-----|---------------------|" ).unwrap();
@@ -321,28 +338,30 @@ mod private
       for result in &self.results
       {
         let relative = result.relative_performance( self.baseline_time );
+        let performance_indicator_owned;
         let performance_indicator = if relative <= 1.0
         {
           "1.00x (baseline) 🏆"
         }
         else
         {
-          &format!( "{:.2}x slower", relative )
+          performance_indicator_owned = format!( "{relative:.2}x slower" );
+          &performance_indicator_owned
         };
-        
+
+        let algo_name = &result.algorithm_name;
+        let fmt_time = result.format_time();
+        let std_dev_us = result.std_dev_nanos / 1000.0;
+        let min_us = result.min_time_nanos as f64 / 1000.0;
+        let max_us = result.max_time_nanos as f64 / 1000.0;
+
         writeln!(
           &mut table,
-          "| {} | {} | {:.2}µs | {:.2}µs | {:.2}µs | {} |",
-          result.algorithm_name,
-          result.format_time(),
-          result.std_dev_nanos / 1000.0,
-          result.min_time_nanos as f64 / 1000.0,
-          result.max_time_nanos as f64 / 1000.0,
-          performance_indicator
+          "| {algo_name} | {fmt_time} | {std_dev_us:.2}µs | {min_us:.2}µs | {max_us:.2}µs | {performance_indicator} |"
         ).unwrap();
       }
-      
-      writeln!( &mut table, "" ).unwrap();
+
+      writeln!( &mut table ).unwrap();
       table
     }
 
@@ -407,44 +426,48 @@ mod private
     pub fn generate_comprehensive_report( &self ) -> String
     {
       let mut report = String::new();
-      
-      writeln!( &mut report, "# {} - Comprehensive Size Analysis", self.benchmark.name ).unwrap();
-      writeln!( &mut report, "" ).unwrap();
-      writeln!( &mut report, "{}", self.benchmark.description ).unwrap();
-      writeln!( &mut report, "" ).unwrap();
-      
+      let bench_name = &self.benchmark.name;
+      let bench_desc = &self.benchmark.description;
+
+      writeln!( &mut report, "# {bench_name} - Comprehensive Size Analysis" ).unwrap();
+      writeln!( &mut report ).unwrap();
+      writeln!( &mut report, "{bench_desc}" ).unwrap();
+      writeln!( &mut report ).unwrap();
+
       // Results for each size
       for size in BenchmarkDataSize::all()
       {
         if let Some( results ) = self.results.get( &size )
         {
-          writeln!( &mut report, "{}", results.generate_comparison_table() ).unwrap();
+          let comparison_table = results.generate_comparison_table();
+          writeln!( &mut report, "{comparison_table}" ).unwrap();
         }
       }
-      
+
       // Summary analysis
       writeln!( &mut report, "## Performance Summary" ).unwrap();
-      writeln!( &mut report, "" ).unwrap();
-      
+      writeln!( &mut report ).unwrap();
+
       for size in BenchmarkDataSize::all()
       {
         if let Some( results ) = self.results.get( &size )
         {
-          writeln!( 
-            &mut report, 
-            "- **{}**: {} wins with {:.2}x performance advantage",
-            size.format_info(),
-            results.fastest_algorithm,
-            results.performance_range()
+          let size_info = size.format_info();
+          let fastest = &results.fastest_algorithm;
+          let perf_range = results.performance_range();
+          writeln!(
+            &mut report,
+            "- **{size_info}**: {fastest} wins with {perf_range:.2}x performance advantage"
           ).unwrap();
         }
       }
-      
-      writeln!( &mut report, "" ).unwrap();
+
+      writeln!( &mut report ).unwrap();
       report
     }
   }
 }
 
 // Types are already public through `pub mod comparative_benchmark_structure` in lib.rs
-// No need for mod_interface exportspub use private::*;
+// No need for mod_interface exports
+pub use private::*;

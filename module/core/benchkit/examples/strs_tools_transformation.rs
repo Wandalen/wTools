@@ -289,10 +289,13 @@ fn generate_comprehensive_strs_tools_report() -> Result< () >
  });
   
   let report = comparison.run();
-  
+
   // Generate comprehensive report
   let comprehensive_report = generate_comprehensive_markdown_report(&report);
-  
+
+  // Create output directory if it doesn't exist
+  std ::fs ::create_dir_all("target")?;
+
   // Save report (temporary file with hyphen prefix)
   std ::fs ::write("target/-strs_tools_benchkit_report.md", &comprehensive_report)?;
   println!("    📄 Report saved: target/-strs_tools_benchkit_report.md");

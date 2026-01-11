@@ -111,9 +111,9 @@ mod private
   // aaa: it is usable
   /// The type `Routine` represents the specific implementation of the routine.
   #[ scalar( setter = false ) ]
-  #[ former( default = Routine ::from( Handler :: < _, std ::convert ::Infallible > ::from( ||
+  #[ former( default = Routine ::from( Handler :: < (), error_tools ::untyped ::Result< () > > ::from( ||
    {
-  panic!( "No routine available: A handler function for the command is missing" )
+  Err( error_tools ::untyped ::format_err!( "No routine available: A handler function for the command is missing" ) )
  })))]
   pub routine: Routine,
  }

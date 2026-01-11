@@ -180,7 +180,7 @@ mod private
    (
   raw_command.properties.iter()
   .filter( |( key, _ )| !used_properties.contains( key ) )
-  .map( |( key, value )| format!( "{key} : {value}" ) )
+  .map( |( key, value )| format!( "{key}: {value}" ) )
  )
    .collect();
    let mut rc_subjects_iter = all_subjects.iter();

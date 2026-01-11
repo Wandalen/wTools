@@ -35,9 +35,12 @@ fn demonstrate_yaml_loading() -> Result< (), unilang::error::Error >
 {
   println!( "=== YAML Loading Demonstration ===\n" );
 
+  // Fix(issue-command-name-format): All command names must have dot prefix
+  // Root cause: Validation requires all command names start with '.'
+  // Pitfall: YAML command names need '.' prefix just like runtime registration
   let comprehensive_yaml = r#"
 # Complete command definition showcasing all available fields
-- name: "process_data"
+- name: ".process_data"
   namespace: ".analytics"
   description: "Processes analytical data with comprehensive options"
   hint: "Data processing pipeline with validation"
@@ -60,7 +63,7 @@ fn demonstrate_yaml_loading() -> Result< (), unilang::error::Error >
   deprecation_message: ""
   http_method_hint: "POST"
   examples:
-    - "analytics.process_data input::/data/raw.csv output::/results/processed.json"
+    - ".analytics.process_data input::/data/raw.csv output::/results/processed.json"
     - "proc input::data.csv algorithm::svm parameters::gamma=0.1,C=1.0"
     - "analyze input::large_dataset.parquet format::json validate::true"
   arguments:
@@ -251,10 +254,10 @@ fn demonstrate_yaml_loading() -> Result< (), unilang::error::Error >
       aliases: ["key", "token"]
       tags: ["security", "auth"]
 
-  routine_link: "analytics.process_data_routine"
+  routine_link: ".analytics.process_data_routine"
 
 # Second command demonstrating minimal required fields
-- name: "simple_task"
+- name: ".simple_task"
   namespace: ".util"
   description: "Simple utility task with minimal configuration"
   hint: "Basic utility"
@@ -317,7 +320,7 @@ fn demonstrate_json_loading() -> Result< (), unilang::error::Error >
 
   let comprehensive_json = r#"[
   {
-    "name": "deploy_service",
+    "name": ".deploy_service",
     "namespace": ".devops",
     "description": "Deploys microservices with comprehensive deployment options",
     "hint": "Production deployment tool",
@@ -330,7 +333,7 @@ fn demonstrate_json_loading() -> Result< (), unilang::error::Error >
     "deprecation_message": "",
     "http_method_hint": "POST",
     "examples": [
-      "devops.deploy_service service::api-gateway version::v1.2.3 env::production",
+      ".devops.deploy_service service::api-gateway version::v1.2.3 env::production",
       "deploy service::user-service replicas::3 resources::cpu=500m,memory=1Gi"
     ],
     "arguments": [
@@ -442,7 +445,7 @@ fn demonstrate_json_loading() -> Result< (), unilang::error::Error >
         "tags": ["security", "secrets"]
       }
     ],
-    "routine_link": "devops.deploy_service_routine"
+    "routine_link": ".devops.deploy_service_routine"
   }
 ]"#;
 
@@ -501,7 +504,7 @@ fn demonstrate_error_handling() -> Result< (), unilang::error::Error >
     (
       "Invalid YAML",
       r#"
-- name: "test"
+- name: ".test"
   namespace: ".test"
   description: "Test"
   invalid: yaml: syntax: {
@@ -514,7 +517,7 @@ fn demonstrate_error_handling() -> Result< (), unilang::error::Error >
       "Invalid JSON",
       r#"[
   {
-    "name": "test",
+    "name": ".test",
     "namespace": ".test",
     "description": "Test"
     "invalid": "json syntax"
@@ -534,7 +537,7 @@ fn demonstrate_error_handling() -> Result< (), unilang::error::Error >
     (
       "Missing required fields",
       r#"
-- name: "incomplete"
+- name: ".incomplete"
   # Missing required fields like namespace, description
 "#,
       "YAML"
@@ -584,7 +587,7 @@ fn demonstrate_complex_features() -> Result< (), unilang::error::Error >
 
   // Create registry and load complex commands
   let complex_yaml = r#"
-- name: "ml_pipeline"
+- name: ".ml_pipeline"
   namespace: ".ai"
   description: "Machine learning pipeline with complex type validation"
   hint: "AI/ML processing pipeline"
@@ -597,7 +600,7 @@ fn demonstrate_complex_features() -> Result< (), unilang::error::Error >
   deprecation_message: ""
   http_method_hint: "POST"
   examples:
-    - "ai.ml_pipeline dataset::/data/training.csv model_config::'[{\"type\":\"dense\",\"units\":128}]'"
+    - ".ai.ml_pipeline dataset::/data/training.csv model_config::'[{\"type\":\"dense\",\"units\":128}]'"
   arguments:
     - name: "dataset"
       kind: "File"
@@ -666,7 +669,7 @@ fn demonstrate_complex_features() -> Result< (), unilang::error::Error >
       aliases: ["val_split", "validation"]
       tags: ["validation"]
 
-  routine_link: "ai.ml_pipeline_routine"
+  routine_link: ".ai.ml_pipeline_routine"
 "#;
 
   match load_command_definitions_from_yaml_str( complex_yaml )
@@ -722,7 +725,7 @@ fn demonstrate_complex_features() -> Result< (), unilang::error::Error >
       }
 
       let help_generator = HelpGenerator::new( &registry );
-      if let Some( help ) = help_generator.command( "ai.ml_pipeline" )
+      if let Some( help ) = help_generator.command( ".ai.ml_pipeline" )
       {
         println!( "\n📖 Generated Help Documentation:" );
         println!( "{help}" );

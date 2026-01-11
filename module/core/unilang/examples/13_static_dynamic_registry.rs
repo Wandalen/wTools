@@ -37,13 +37,16 @@ fn main() -> Result< (), unilang::error::Error >
     tags: &["required"],
   };
 
+  // Fix(issue-command-name-format): Command name must have dot prefix
+  // Root cause: Validation requires all command names start with '.'
+  // Pitfall: Static command names need '.' prefix just like dynamic registration
   static STATIC_CMD: StaticCommandDefinition = StaticCommandDefinition {
-    name: "static_example",
+    name: ".static_example",
     namespace: ".demo",
     description: "Example of a static command definition",
     hint: "Static command demo",
     arguments: &[STATIC_ARG],
-    routine_link: Some("demo.static_example"),
+    routine_link: Some(".demo.static_example"),
     status: "stable",
     version: "1.0.0",
     tags: &["demo", "static"],
@@ -52,7 +55,7 @@ fn main() -> Result< (), unilang::error::Error >
     idempotent: true,
     deprecation_message: "",
     http_method_hint: "GET",
-    examples: &["demo.static_example input::hello"],
+    examples: &[".demo.static_example input::hello"],
     auto_help_enabled: true,
     category: "",
     show_version_in_help: true,

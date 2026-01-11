@@ -4,7 +4,7 @@
 //!
 //! # Purpose
 //!
-//! Validates fs_tools::path module functions for upward directory traversal
+//! Validates `fs_tools::path` module functions for upward directory traversal
 //! and hierarchical file collection. These utilities are critical for finding
 //! project roots, configuration files, and workspace boundaries.
 //!
@@ -17,7 +17,7 @@
 //!
 //! **Why this matters:** Running tests with `--all-features` activates BOTH `enabled`
 //! and `no_std` features simultaneously. Since path functions use `std::fs` and `std::io`,
-//! they cannot exist in no_std mode. The conditional compilation on this test file
+//! they cannot exist in `no_std` mode. The conditional compilation on this test file
 //! ensures tests are skipped (not failed) when `no_std` is active.
 //!
 //! **Root Cause:** Feature flags are not mutually exclusive in Cargo. `--all-features`
@@ -31,17 +31,17 @@
 //!
 //! Tests are organized into four categories:
 //!
-//! 1. **traverse_upward tests** (5+ tests)
+//! 1. **`traverse_upward` tests** (5+ tests)
 //!    - Generic upward traversal with custom predicates
 //!    - Tests depth limits, target finding, and edge cases
 //!
-//! 2. **collect_files_in_ancestors tests** (8+ tests)
+//! 2. **`collect_files_in_ancestors` tests** (8+ tests)
 //!    - Hierarchical file collection from root to target
 //!    - Tests ordering, deduplication, symlink handling, depth limits
 //!
 //! 3. **Helper function tests** (12+ tests)
-//!    - file_upward_find, dir_upward_find, matching_upward_find
-//!    - Tests convenience wrappers built on traverse_upward
+//!    - `file_upward_find`, `dir_upward_find`, `matching_upward_find`
+//!    - Tests convenience wrappers built on `traverse_upward`
 //!
 //! 4. **Edge case tests** (8+ tests)
 //!    - Unicode filenames, deep hierarchies, symlink loops

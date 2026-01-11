@@ -35,16 +35,10 @@
 #![ cfg( feature = "integration" ) ]
 #![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
-use tree_fmt::{ RowBuilder, TableFormatter, TableConfig };
+mod inc;
 
-// Helper function to create sample data
-fn sample_data() -> tree_fmt::TreeNode< String >
-{
-  RowBuilder::new( vec![ "NAME".into(), "AGE".into(), "CITY".into() ] )
-    .add_row( vec![ "Alice".into(), "30".into(), "NYC".into() ] )
-    .add_row( vec![ "Bob".into(), "25".into(), "LA".into() ] )
-    .build()
-}
+use tree_fmt::{ RowBuilder, TableFormatter, TableConfig };
+use inc::sample_data;
 
 // =============================================================================
 // Plain Style Output Tests (Process Monitoring Style)

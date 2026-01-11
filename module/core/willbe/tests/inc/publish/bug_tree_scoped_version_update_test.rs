@@ -55,13 +55,13 @@
 /// - Fixed: Checks `[dependencies]`, `[dev-dependencies]`, `[build-dependencies]`
 /// - Preserves version operators (~, ^, =) when updating versions
 ///
-/// **Phase 4:** Enhanced `version::revert()` to mirror bump() behavior
+/// **Phase 4:** Enhanced `version::revert()` to mirror `bump()` behavior
 /// - Original: Only reverted `[dependencies]`, only handled ~ operator
 /// - Fixed: Reverts all 3 sections, handles all operators (~, ^, =)
 /// - Critical for error recovery - ensures complete rollback on publication failure
 ///
 /// **Integration points:**
-/// - `src/entity/publish.rs:116` - workspace-wide dependency list (find_workspace_dependents)
+/// - `src/entity/publish.rs:116` - workspace-wide dependency list (`find_workspace_dependents`)
 /// - `src/entity/version.rs:240` - multi-section dependency updates (bump)
 /// - `src/entity/version.rs:302` - multi-section dependency revert (revert)
 ///

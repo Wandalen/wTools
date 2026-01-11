@@ -13,28 +13,29 @@ use cli_table ::
 /// Separates usage of cli-table library behind facade for convenient changes in future.
 pub struct ReportTable( TableDisplay );
 
-impl std ::fmt ::Display for ReportTable
+impl core ::fmt ::Display for ReportTable
 {
-  fn fmt( &self, f: &mut std ::fmt ::Formatter< '_ > ) -> std ::fmt ::Result
+  fn fmt( &self, f: &mut core ::fmt ::Formatter< '_ > ) -> core ::fmt ::Result
   {
   write!( f, "{}", self.0 )
  }
 }
 
-impl std ::fmt ::Debug for ReportTable
+impl core ::fmt ::Debug for ReportTable
 {
-  fn fmt( &self, f: &mut std ::fmt ::Formatter< '_ > ) -> std ::fmt ::Result
+  fn fmt( &self, f: &mut core ::fmt ::Formatter< '_ > ) -> core ::fmt ::Result
   {
   write!( f, "{}", self.0 )
  }
 }
 
 /// Transform 2-dimensional vec of String data into displayable table with plain rows.
+#[must_use] 
 pub fn plain_table( rows: Vec< Vec< String > > ) -> Option< ReportTable >
 {
   let rows = rows
   .into_iter()
-  .map( | row | row.into_iter().map( | cell_val | cell_val.cell() ).collect :: < Vec< _ > >() )
+  .map( | row | row.into_iter().map( cli_table::Cell::cell ).collect :: < Vec< _ > >() )
   .collect :: < Vec< _ > >()
   ;
 
@@ -43,15 +44,16 @@ pub fn plain_table( rows: Vec< Vec< String > > ) -> Option< ReportTable >
   .separator( Separator ::builder().build() )
   ;
 
-  table_struct.display().map( | table | ReportTable( table ) ).ok()
+  table_struct.display().map( ReportTable ).ok()
 }
 
 /// Create displayable table with header from headers vec and 2-dimensional vec of String data.
+#[must_use] 
 pub fn table_with_headers( headers: Vec< String >, rows: Vec< Vec< String > > ) -> Option< ReportTable >
 {
   let rows = rows
   .into_iter()
-  .map( | row | row.into_iter().map( | cell_val | cell_val.cell() ).collect :: < Vec< _ > >() )
+  .map( | row | row.into_iter().map( cli_table::Cell::cell ).collect :: < Vec< _ > >() )
   .collect :: < Vec< _ > >()
   ;
 
@@ -67,15 +69,16 @@ pub fn table_with_headers( headers: Vec< String >, rows: Vec< Vec< String > > ) 
   .separator( Separator ::builder().build() )
   ;
 
-  table_struct.display().map( | table | ReportTable( table ) ).ok()
+  table_struct.display().map( ReportTable ).ok()
 }
 
 /// Transform 2-dimensional vec of String data into displayable table with plain rows and bottom border.
+#[must_use] 
 pub fn plain_with_border( rows: Vec< Vec< String > > ) -> Option< ReportTable >
 {
   let rows = rows
   .into_iter()
-  .map( | row | row.into_iter().map( | cell_val | cell_val.cell() ).collect :: < Vec< _ > >() )
+  .map( | row | row.into_iter().map( cli_table::Cell::cell ).collect :: < Vec< _ > >() )
   .collect :: < Vec< _ > >()
   ;
 
@@ -84,5 +87,5 @@ pub fn plain_with_border( rows: Vec< Vec< String > > ) -> Option< ReportTable >
   .separator( Separator ::builder().build() )
   ;
 
-  table_struct.display().map( | table | ReportTable( table ) ).ok()
+  table_struct.display().map( ReportTable ).ok()
 }

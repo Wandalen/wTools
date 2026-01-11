@@ -33,7 +33,7 @@ The tool to make CLI ( commands user interface ). It is able to aggregate extern
         .end()
       .command( "exit" )
         .hint( "just exit" )
-        .routine( || { println!( "exit" ); std::process::exit( 0 ) } )
+        .routine::<_, (), _>( || { println!( "exit" ); std::process::exit( 0 ) } )
         .end()
       .perform();
 

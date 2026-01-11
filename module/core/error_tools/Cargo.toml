@@ -39,6 +39,7 @@ full = [ "enabled" ]
 no_std = []
 use_alloc = [ "no_std" ]
 enabled = []
+diagnostics_runtime_assertions = []
 
 error_typed = [ "thiserror" ]
 error_untyped = [ "anyhow" ]

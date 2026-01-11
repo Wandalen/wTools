@@ -63,6 +63,9 @@ const PERFORMANCE_TEST_COMMANDS_INTERNAL: phf::Map<&'static str, &'static Static
     deprecation_message: "",
     http_method_hint: "GET",
     examples: &[],
+    auto_help_enabled: true,
+    category: "",
+    show_version_in_help: true,
   },
   ".perf_test_2" => &StaticCommandDefinition
   {
@@ -81,6 +84,9 @@ const PERFORMANCE_TEST_COMMANDS_INTERNAL: phf::Map<&'static str, &'static Static
     deprecation_message: "",
     http_method_hint: "GET",
     examples: &[],
+    auto_help_enabled: true,
+    category: "",
+    show_version_in_help: true,
   },
   ".perf_test_3" => &StaticCommandDefinition
   {
@@ -99,6 +105,9 @@ const PERFORMANCE_TEST_COMMANDS_INTERNAL: phf::Map<&'static str, &'static Static
     deprecation_message: "",
     http_method_hint: "GET",
     examples: &[],
+    auto_help_enabled: true,
+    category: "",
+    show_version_in_help: true,
   },
 };
 
@@ -167,8 +176,10 @@ fn test_command_registry_performance_metrics()
     .hint( "Test".to_string() )
     .end();
 
-  registry.register( cmd1 );
-  registry.register( cmd2 );
+  #[ allow( clippy::let_unit_value, clippy::ignored_unit_patterns ) ]
+  let _ = registry.register( cmd1 );
+  #[ allow( clippy::let_unit_value, clippy::ignored_unit_patterns ) ]
+  let _ = registry.register( cmd2 );
 
   // Get initial metrics
   let initial_metrics = registry.performance_metrics();
@@ -228,7 +239,8 @@ fn test_hybrid_registry_performance_metrics()
     .hint( "Dynamic".to_string() )
     .end();
 
-  registry.register( dynamic_cmd );
+  #[ allow( clippy::let_unit_value, clippy::ignored_unit_patterns ) ]
+  let _ = registry.register( dynamic_cmd );
 
   // Perform mixed lookups
   let _static_cmd = registry.command_with_metrics( ".perf_test_1" ); // Static
@@ -285,7 +297,8 @@ fn test_cache_performance_patterns()
       .description( format!( "Cache test command {i}" ) )
       .hint( "Cache test".to_string() )
       .end();
-    registry.register( cmd );
+    #[ allow( clippy::let_unit_value, clippy::ignored_unit_patterns ) ]
+    let _ = registry.register( cmd );
   }
 
   // Perform repeated lookups to test cache behavior
@@ -375,7 +388,8 @@ fn test_registry_mode_impact_on_metrics()
   for (_name, static_cmd) in PERFORMANCE_TEST_COMMANDS.entries()
   {
     let dynamic_cmd: CommandDefinition = (*static_cmd).into();
-    dynamic_registry.register( dynamic_cmd );
+    #[ allow( clippy::let_unit_value, clippy::ignored_unit_patterns ) ]
+    let _ = dynamic_registry.register( dynamic_cmd );
   }
 
   let test_commands = vec![ ".perf_test_1", ".perf_test_2", ".perf_test_3" ];

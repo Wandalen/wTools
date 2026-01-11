@@ -14,8 +14,13 @@
 //! Composes `base_path`/`prefix_path`/`postfix_path` into single `PathBuf`.
 //! Essential for actual filesystem operations.
 
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "enabled" ) ]
 use std::path::PathBuf;
+#[ cfg( feature = "enabled" ) ]
+use std::fs;
+
+#[ cfg( feature = "enabled" ) ]
+use fs_tools as the_module;
 
 // ══════════════════════════════════════════════════════════════════════════════
 // `full_path()` tests
@@ -23,7 +28,7 @@ use std::path::PathBuf;
 
 /// Tests that `full_path()` joins all path components correctly.
 #[ test ]
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "enabled" ) ]
 fn full_path_joins_components()
 {
   let mut temp_dir = the_module::TempDir::new();
@@ -37,7 +42,7 @@ fn full_path_joins_components()
 
 /// Tests that `full_path()` handles empty components.
 #[ test ]
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "enabled" ) ]
 fn full_path_handles_empty_components()
 {
   let mut temp_dir = the_module::TempDir::new();
@@ -50,7 +55,7 @@ fn full_path_handles_empty_components()
 
 /// Tests that `full_path()` with only postfix works.
 #[ test ]
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "enabled" ) ]
 fn full_path_postfix_only()
 {
   let mut temp_dir = the_module::TempDir::new();
@@ -67,7 +72,7 @@ fn full_path_postfix_only()
 /// Tests that `create()` creates directory and returns path.
 /// Note: `create()` requires parent directory to exist, unlike `create_all()`.
 #[ test ]
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "enabled" ) ]
 fn create_creates_directory()
 {
   let mut temp_dir = the_module::TempDir::new();
@@ -86,7 +91,7 @@ fn create_creates_directory()
 
 /// Tests that `create()` fails if parent doesn't exist.
 #[ test ]
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "enabled" ) ]
 fn create_fails_without_parent()
 {
   let mut temp_dir = the_module::TempDir::new();
@@ -103,7 +108,7 @@ fn create_fails_without_parent()
 
 /// Tests that `create_all()` creates nested directories.
 #[ test ]
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "enabled" ) ]
 fn create_all_creates_nested_directories()
 {
   let mut temp_dir = the_module::TempDir::new();
@@ -121,7 +126,7 @@ fn create_all_creates_nested_directories()
 
 /// Tests that `create_all()` is idempotent (doesn't fail if exists).
 #[ test ]
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "enabled" ) ]
 fn create_all_idempotent()
 {
   let mut temp_dir = the_module::TempDir::new();
@@ -141,7 +146,7 @@ fn create_all_idempotent()
 
 /// Tests that Drop cleans up created directory.
 #[ test ]
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "enabled" ) ]
 fn drop_cleans_up_created_directory()
 {
   let path_to_check;
@@ -163,7 +168,7 @@ fn drop_cleans_up_created_directory()
 
 /// Tests that Drop doesn't clean up manually set paths (not created by us).
 #[ test ]
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "enabled" ) ]
 fn drop_does_not_cleanup_manual_paths()
 {
   // Create a real directory manually
@@ -186,7 +191,7 @@ fn drop_does_not_cleanup_manual_paths()
 
 /// Tests that Drop handles already-deleted directory gracefully.
 #[ test ]
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "enabled" ) ]
 fn drop_handles_already_deleted()
 {
   let mut temp_dir = the_module::TempDir::new();

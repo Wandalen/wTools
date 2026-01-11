@@ -86,8 +86,7 @@ fn get_arg_value( instruction: &unilang_parser::instruction::GenericInstruction,
   .named_arguments
   .get( name )
   .and_then( | args | args.first() )
-  .map( | arg | arg.value.clone() )
-  .unwrap_or_else( || panic!( "Argument '{}' not found", name ) )
+  .map_or_else( || panic!( "Argument '{name}' not found" ), | arg | arg.value.clone() )
 }
 
 #[ test ]
@@ -387,10 +386,10 @@ fn test_regression_hash_outside_value_still_errors()
   // Verify it's specifically a syntax error about the # character
   if let Err( e ) = result
   {
-    let error_msg = format!( "{:?}", e );
+    let error_msg = format!( "{e:?}" );
     assert!(
-      error_msg.contains( "#" ) || error_msg.contains( "Unexpected token" ),
-      "Error should mention # or unexpected token, got: {}", error_msg
+      error_msg.contains( '#' ) || error_msg.contains( "Unexpected token" ),
+      "Error should mention # or unexpected token, got: {error_msg}"
     );
   }
 }

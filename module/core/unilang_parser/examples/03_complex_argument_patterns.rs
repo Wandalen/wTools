@@ -2,7 +2,7 @@
 //!
 //! This example demonstrates :
 //! - Mixed positional and named arguments
-//! - Flag-like arguments (starting with --)
+//! - Boolean named arguments (flag-like behavior using `key::true` syntax)
 //! - Complex real-world command patterns
 
 use unilang_parser :: { Parser, UnilangParserOptions };
@@ -15,7 +15,7 @@ fn main() -> Result< (), Box< dyn core ::error ::Error > >
   println!( "=== Mixed Argument Types ===" );
   let cmd = parser.parse_single_instruction
   (
-  "server.deploy production config :: \"/etc/app.conf\" replicas :: 3 --verbose --dry-run"
+  "server.deploy production config :: \"/etc/app.conf\" replicas :: 3 verbose :: true dry_run :: true"
  )?;
 
   println!( "Command: {:?}", cmd.command_path_slices );
@@ -42,7 +42,7 @@ fn main() -> Result< (), Box< dyn core ::error ::Error > >
   println!( "\n=== File Operation Example ===" );
   let cmd2 = parser.parse_single_instruction
   (
-  "file.backup \"/home/user/documents\" destination :: \"/backup/daily\" compress ::true --incremental"
+  "file.backup \"/home/user/documents\" destination :: \"/backup/daily\" compress :: true incremental :: true"
  )?;
 
   println!( "Backup command: {:?}", cmd2.command_path_slices );

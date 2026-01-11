@@ -49,7 +49,7 @@ tests_impls! {
   options.src = the_module ::string ::parse_request ::private ::ParseSrc( src );
   let req = options.parse();
   let mut exp = parse ::Request ::default();
-  exp.key_val_delimeter = " : ";
+  exp.key_val_delimeter = ": ";
   exp.commands_delimeter = ";";
   a_id!( req, exp );
 
@@ -59,7 +59,7 @@ tests_impls! {
   let req = options.parse();
   let mut exp = parse ::Request ::default();
   exp.original = " ";
-  exp.key_val_delimeter = " : ";
+  exp.key_val_delimeter = ": ";
   exp.commands_delimeter = ";";
   a_id!( req, exp );
 
@@ -69,7 +69,7 @@ tests_impls! {
   let req = options.parse();
   let mut exp = parse ::Request ::default();
   exp.original = "  \t ";
-  exp.key_val_delimeter = " : ";
+  exp.key_val_delimeter = ": ";
   exp.commands_delimeter = ";";
   a_id!( req, exp );
  }
@@ -87,7 +87,7 @@ tests_impls! {
   exp.subject = "subj".to_string();
   exp.subjects = vec![ "subj".to_string() ];
   exp.maps = vec![ HashMap ::new() ];
-  exp.key_val_delimeter = " : ";
+  exp.key_val_delimeter = ": ";
   exp.commands_delimeter = ";";
   a_id!( req, exp );
 
@@ -100,7 +100,7 @@ tests_impls! {
   exp.subject = "subj with space".to_string();
   exp.subjects = vec![ "subj with space".to_string() ];
   exp.maps = vec![ HashMap ::new() ];
-  exp.key_val_delimeter = " : ";
+  exp.key_val_delimeter = ": ";
   exp.commands_delimeter = ";";
   a_id!( req, exp );
 
@@ -116,7 +116,7 @@ tests_impls! {
   exp.subjects = vec![ "subj".to_string() ];
   exp.map = options_map.clone();
   exp.maps = vec![ options_map.clone() ];
-  exp.key_val_delimeter = " : ";
+  exp.key_val_delimeter = ": ";
   exp.commands_delimeter = ";";
   a_id!( req, exp );
 
@@ -133,7 +133,7 @@ tests_impls! {
   exp.subjects = vec![ "subj".to_string() ];
   exp.map = options_map.clone();
   exp.maps = vec![ options_map.clone() ];
-  exp.key_val_delimeter = " : ";
+  exp.key_val_delimeter = ": ";
   exp.commands_delimeter = ";";
   a_id!( req, exp );
 
@@ -148,7 +148,7 @@ tests_impls! {
   exp.subject = "subj1".to_string();
   exp.subjects = vec![ "subj1".to_string(), "subj2".to_string() ];
   exp.maps = vec![ HashMap ::new(), HashMap ::new() ];
-  exp.key_val_delimeter = " : ";
+  exp.key_val_delimeter = ": ";
   exp.commands_delimeter = ";";
   a_id!( req, exp );
 
@@ -164,7 +164,7 @@ tests_impls! {
   exp.subjects = vec![ "subj1".to_string(), "subj2".to_string() ];
   exp.map = options_map.clone();
   exp.maps = vec![ options_map.clone(), HashMap ::new() ];
-  exp.key_val_delimeter = " : ";
+  exp.key_val_delimeter = ": ";
   exp.commands_delimeter = ";";
   a_id!( req, exp );
 
@@ -182,7 +182,7 @@ tests_impls! {
   exp.subjects = vec![ "subj1".to_string(), "subj2".to_string() ];
   exp.map = options1.clone();
   exp.maps = vec![ options1.clone(), options2.clone() ];
-  exp.key_val_delimeter = " : ";
+  exp.key_val_delimeter = ": ";
   exp.commands_delimeter = ";";
   a_id!( req, exp );
 
@@ -202,7 +202,7 @@ tests_impls! {
   exp.subjects = vec![ "subj1".to_string(), "subj2".to_string() ];
   exp.map = options1.clone();
   exp.maps = vec![ options1.clone(), options2.clone() ];
-  exp.key_val_delimeter = " : ";
+  exp.key_val_delimeter = ": ";
   exp.commands_delimeter = ";";
   a_id!( req, exp );
  }
@@ -224,7 +224,7 @@ tests_impls! {
   exp.subjects = vec![ "subj".to_string() ];
   exp.map = options_map.clone();
   exp.maps = vec![ options_map.clone() ];
-  exp.key_val_delimeter = " : ";
+  exp.key_val_delimeter = ": ";
   exp.commands_delimeter = ";";
   a_id!( req, exp );
 
@@ -241,7 +241,7 @@ tests_impls! {
   exp.subjects = vec![ "subj".to_string() ];
   exp.map = options_map.clone();
   exp.maps = vec![ options_map.clone() ];
-  exp.key_val_delimeter = " : ";
+  exp.key_val_delimeter = ": ";
   exp.commands_delimeter = ";";
   a_id!( req, exp );
  }
@@ -263,7 +263,7 @@ tests_impls! {
   exp.subjects = vec![ "subj".to_string() ];
   exp.map = options_map.clone();
   exp.maps = vec![ options_map.clone() ];
-  exp.key_val_delimeter = " : ";
+  exp.key_val_delimeter = ": ";
   exp.commands_delimeter = ";";
   a_id!( req, exp );
 
@@ -280,7 +280,7 @@ tests_impls! {
   exp.subjects = vec![ "subj".to_string() ];
   exp.map = options_map.clone();
   exp.maps = vec![ options_map.clone() ];
-  exp.key_val_delimeter = " : ";
+  exp.key_val_delimeter = ": ";
   exp.commands_delimeter = ";";
   a_id!( req, exp );
 
@@ -300,7 +300,7 @@ tests_impls! {
   exp.subjects = vec![ "subj".to_string() ];
   exp.map = options_map.clone();
   exp.maps = vec![ options_map.clone() ];
-  exp.key_val_delimeter = " : ";
+  exp.key_val_delimeter = ": ";
   exp.commands_delimeter = ";";
   a_id!( req, exp );
 
@@ -318,7 +318,7 @@ tests_impls! {
   exp.subjects = vec![ "subj".to_string() ];
   exp.map = options_map.clone();
   exp.maps = vec![ options_map.clone() ];
-  exp.key_val_delimeter = " : ";
+  exp.key_val_delimeter = ": ";
   exp.commands_delimeter = ";";
   a_id!( req, exp );
 
@@ -336,7 +336,7 @@ tests_impls! {
   exp.subjects = vec![ "subj".to_string() ];
   exp.map = options_map.clone();
   exp.maps = vec![ options_map.clone() ];
-  exp.key_val_delimeter = " : ";
+  exp.key_val_delimeter = ": ";
   exp.commands_delimeter = ";";
   a_id!( req, exp );
  }

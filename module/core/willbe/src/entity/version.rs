@@ -248,17 +248,17 @@ mod private
    if let Some( previous_version ) = dependency.get( "version" ).and_then( | v | v.as_str() ).map( std ::string ::ToString ::to_string )
    {
     // Preserve version operator prefix (~, ^, =)
-    let (operator, _) = if previous_version.starts_with('~')
+    let (operator, _) = if let Some( stripped ) = previous_version.strip_prefix('~')
     {
-   ("~", &previous_version[1..])
+   ("~", stripped)
   }
-    else if previous_version.starts_with('^')
+    else if let Some( stripped ) = previous_version.strip_prefix('^')
     {
-   ("^", &previous_version[1..])
+   ("^", stripped)
   }
-    else if previous_version.starts_with('=')
+    else if let Some( stripped ) = previous_version.strip_prefix('=')
     {
-   ("=", &previous_version[1..])
+   ("=", stripped)
   }
     else
     {

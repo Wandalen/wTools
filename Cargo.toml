@@ -14,15 +14,13 @@ exclude = [
   "module/postponed/*",
   "module/step/*",
 
-  # Core exclusions: umbrella crates and circular dependency prevention
-  "module/core/wtools",        # Top-level umbrella crate re-exporting all tools
-  "module/core/for_each",      # Used by meta_tools (circular dependency prevention)
+  # Core exclusions: umbrella crates
+  # NOTE: wtools is now included in workspace (no circular dependency, needs workspace deps)
+  # NOTE: for_each is now included in workspace (no circular dependency detected)
   # NOTE: unitore is included despite compilation errors (uses workspace dependencies)
 
   # NOTE: module/move directory is now empty - all crates moved to core or postponed
 ]
-dev-dependencies = {}
-build-dependencies = {}
 # default-members = [ "module/core/wtools" ]
 
 [workspace.metadata]
@@ -47,6 +45,8 @@ missing_docs = "warn"
 missing_debug_implementations = "warn"
 # Denies all unsafe code usage.
 unsafe-code = "deny"
+# Allow test_tools macros to reference their internal feature flags
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(feature, values("diagnostics_runtime_assertions", "diagnostics_compiletime_assertions", "diagnostics_memory_layout"))'] }
 
 [workspace.lints.clippy]
 # Denies pedantic lints, enforcing strict coding styles and conventions.

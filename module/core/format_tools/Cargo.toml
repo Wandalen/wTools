@@ -40,6 +40,11 @@ enabled = [
   "former/enabled",
 ]
 
+# Required for test_tools macros that check cfg features in the destination crate
+diagnostics_runtime_assertions = []
+diagnostics_compiletime_assertions = []
+diagnostics_memory_layout = []
+
 [dependencies]
 # derive_tools = { workspace = true, features = [ "derive_from", "derive_inner_from" ] }
 reflect_tools = { workspace = true, features = [ "reflect_types" ] }

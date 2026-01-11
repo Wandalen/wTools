@@ -47,6 +47,18 @@
 #![ warn( rust_2018_idioms ) ]
 #![ warn( missing_debug_implementations ) ]
 #![ warn( missing_docs ) ]
+#![ allow( clippy::must_use_candidate ) ]
+#![ allow( clippy::type_complexity ) ]
+#![ allow( clippy::missing_panics_doc ) ]
+#![ allow( clippy::cast_possible_truncation ) ]
+#![ allow( clippy::cast_sign_loss ) ]
+#![ allow( clippy::std_instead_of_core ) ]
+#![ allow( clippy::doc_markdown ) ]
+#![ allow( clippy::needless_pass_by_value ) ]
+#![ allow( clippy::uninlined_format_args ) ]
+#![ allow( clippy::format_in_format_args ) ]
+#![ allow( clippy::unreadable_literal ) ]
+#![ allow( clippy::similar_names ) ]
 
 // Re-export main crate for benchmark access
 pub use unilang;

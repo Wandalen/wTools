@@ -8,18 +8,13 @@
 #![allow(clippy::similar_names)]
 #![allow(clippy::uninlined_format_args)]
 
-#[ cfg( feature = "benchmarks" ) ]
 use benchkit::prelude::*;
-#[ cfg( feature = "benchmarks" ) ]
 use unilang::prelude::*;
 
-#[ cfg( feature = "benchmarks" ) ]
 use clap::{ Arg, Command as ClapCommand };
-#[ cfg( feature = "benchmarks" ) ]
 use pico_args::Arguments;
 
 /// Framework comparison using benchkit's comparative analysis
-#[ cfg( feature = "benchmarks" ) ]
 fn run_framework_comparison_benchkit( command_count : usize ) -> ComparisonAnalysisReport
 {
   println!( "🎯 Comparative Analysis: {} Commands (using benchkit)", command_count );
@@ -65,7 +60,6 @@ fn run_framework_comparison_benchkit( command_count : usize ) -> ComparisonAnaly
 }
 
 /// Unilang SIMD operation (single iteration for benchkit)
-#[ cfg( feature = "benchmarks" ) ]
 fn benchmark_unilang_simd_operation( command_count : usize )
 {
   // Create command registry with N commands
@@ -75,56 +69,15 @@ fn benchmark_unilang_simd_operation( command_count : usize )
   // Add N commands to registry
   for i in 0..command_count
   {
-    let cmd = CommandDefinition
-    {
-      name : format!( "cmd_{}", i ),
-      namespace : ".perf".to_string(),
-      description : format!( "Performance test command {}", i ),
-      hint : "Performance test".to_string(),
-      arguments : vec!
-      [
-        ArgumentDefinition
-        {
-          name : "input".to_string(),
-          description : "Input parameter".to_string(),
-          kind : Kind::String,
-          hint : "Input value".to_string(),
-          attributes : ArgumentAttributes::default(),
-          validation_rules : vec![],
-          aliases : vec![ "i".to_string() ],
-          tags : vec![],
-        },
-        ArgumentDefinition
-        {
-          name : "verbose".to_string(),
-          description : "Enable verbose output".to_string(),
-          kind : Kind::Boolean,
-          hint : "Verbose flag".to_string(),
-          attributes : ArgumentAttributes
-          {
-            optional : true,
-            default : Some( "false".to_string() ),
-            ..Default::default()
-          },
-          validation_rules : vec![],
-          aliases : vec![ "v".to_string() ],
-          tags : vec![],
-        },
-      ],
-      routine_link : None,
-      status : "stable".to_string(),
-      version : "1.0.0".to_string(),
-      tags : vec![],
-      aliases : vec![],
-      permissions : vec![],
-      idempotent : true,
-      deprecation_message : String::new(),
-      http_method_hint : String::new(),
-      examples : vec![],
-      auto_help_enabled : false,
-    };
-    
-    registry.register( cmd );
+    let cmd = CommandDefinition::former()
+      .name( format!( "cmd_{}", i ) )
+      .namespace( ".perf".to_string() )
+      .description( format!( "Performance test command {}", i ) )
+      .hint( "Performance test".to_string() )
+      .end();
+
+    #[ allow( clippy::let_unit_value, clippy::ignored_unit_patterns ) ]
+    let _ = registry.register( cmd );
   }
   
   // Create pipeline for command processing
@@ -144,7 +97,6 @@ fn benchmark_unilang_simd_operation( command_count : usize )
 }
 
 /// Unilang no-SIMD operation (simulated)
-#[ cfg( feature = "benchmarks" ) ]
 fn benchmark_unilang_no_simd_operation( command_count : usize )
 {
   // Simulate the same operation but with slight performance penalty
@@ -155,7 +107,6 @@ fn benchmark_unilang_no_simd_operation( command_count : usize )
 }
 
 /// Clap operation
-#[ cfg( feature = "benchmarks" ) ]
 fn benchmark_clap_operation( command_count : usize )
 {
   // Create clap app with N subcommands
@@ -200,7 +151,6 @@ fn benchmark_clap_operation( command_count : usize )
 }
 
 /// Pico-args operation
-#[ cfg( feature = "benchmarks" ) ]
 fn benchmark_pico_args_operation( command_count : usize )
 {
   // Test with sample arguments
@@ -218,7 +168,6 @@ fn benchmark_pico_args_operation( command_count : usize )
 }
 
 /// Comprehensive scaling benchmark using benchkit suite
-#[ cfg( feature = "benchmarks" ) ]
 fn run_scaling_benchmark_benchkit()
 {
   println!( "🚀 Benchkit-Powered Scaling Analysis" );
@@ -252,7 +201,6 @@ fn run_scaling_benchmark_benchkit()
 }
 
 /// Memory allocation tracking benchmark
-#[ cfg( feature = "benchmarks" ) ]
 fn run_memory_benchmark_benchkit()
 {
   println!( "🧠 Memory Allocation Analysis (using benchkit)" );
@@ -296,7 +244,6 @@ fn run_memory_benchmark_benchkit()
 }
 
 /// Run comprehensive benchmarks using benchkit
-#[ cfg( feature = "benchmarks" ) ]
 pub fn run_comprehensive_benchkit_demo()
 {
   println!( "🎯 BENCHKIT INTEGRATION DEMONSTRATION" );
@@ -326,33 +273,18 @@ pub fn run_comprehensive_benchkit_demo()
   println!( "  • Consistent API across all benchmark types" );
 }
 
-#[ cfg( not( feature = "benchmarks" ) ) ]
-pub fn run_comprehensive_benchkit_demo()
-{
-  println!( "⚠️  Benchmarks disabled - enable 'benchmarks' feature" );
-}
-
 /// Main function for benchmark execution
-#[ cfg( feature = "benchmarks" ) ]
 fn main()
 {
   run_comprehensive_benchkit_demo();
 }
 
-#[ cfg( not( feature = "benchmarks" ) ) ]
-fn main()
-{
-  println!( "⚠️  Benchmarks disabled - enable 'benchmarks' feature" );
-}
-
 #[ cfg( test ) ]
 mod tests
 {
-  #[ cfg( feature = "benchmarks" ) ]
   #[allow(unused_imports)]
   use super::*;
 
-  #[ cfg( feature = "benchmarks" ) ]
   #[ test ]
   #[ ignore = "Benchkit integration demo - run explicitly" ]
   fn benchkit_integration_demo()

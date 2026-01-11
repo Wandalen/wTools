@@ -43,7 +43,7 @@ fn main() -> Result< (), Box< dyn core ::error ::Error > >
   println!( "\n=== Development Workflow Example ===" );
   let dev_workflow = parser.parse_multiple_instructions
   (
-  "git.add . ;; git.commit message :: \"Update parser\" ;; git.push origin ::main ;; deploy.staging"
+  "git.add \".\" ;; git.commit message :: \"Update parser\" ;; git.push origin :: main ;; deploy.staging"
  )?;
 
   for ( i, cmd ) in dev_workflow.iter().enumerate()

@@ -1,11 +1,19 @@
 //! Execute plan.
 
 use crate :: *;
-use wca :: { Dictionary, Executor, Parser, Verifier };
+use wca :: { Dictionary, Executor };
+use wca ::parser ::Parser;
+use wca ::verifier ::Verifier;
 use error_tools ::untyped ::Result;
 
 /// Run feed updates.
-pub fn execute() -> Result< (), Box< dyn std ::error ::Error + Send + Sync > >
+///
+/// # Errors
+/// Returns error if operation fails.
+///
+/// # Panics
+/// Panics if parser fails to parse command arguments.
+pub fn execute() -> Result< (), Box< dyn core ::error ::Error + Send + Sync > >
 {
   // init parser
   let parser = Parser;

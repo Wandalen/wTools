@@ -3,7 +3,7 @@
 use std ::path ::PathBuf;
 
 use crate :: *;
-use gluesql ::sled_storage ::sled ::Config;
+use gluesql_sled_storage ::sled ::Config;
 use wca :: { Command, Type, VerifiedCommand };
 use sled_adapter ::FeedStorage;
 use action :: { Report, config :: { config_add, config_delete, config_list } };
@@ -16,8 +16,11 @@ pub struct ConfigCommand;
 impl ConfigCommand
 {
   /// Create command for adding config.
+  /// # Errors
+  /// Returns error if operation fails.
   pub fn add() -> Result< Command >
   {
+  #[ allow( clippy ::needless_pass_by_value ) ]
   #[ tokio ::main ]
   async fn add_command( o: VerifiedCommand )
   {
@@ -28,16 +31,16 @@ impl ConfigCommand
    .unwrap_or_else( || String ::from( "./_data" ) );
    let config = Config ::default().path( path_to_storage );
    
-   let res = ( || async
+   let res = async
    {
   let feed_storage = FeedStorage ::init_storage( &config ).await?;
   config_add( feed_storage, &path ).await
- } )().await;
+ }.await;
   
    match res
    {
   Ok( report ) => report.report(),
-  Err( err ) => println!( "{:?}", err ),
+  Err( err ) => println!( "{err:?}" ),
  }
  }
   
@@ -64,8 +67,11 @@ impl ConfigCommand
  }
 
   /// Create command for deleting config.
+  /// # Errors
+  /// Returns error if operation fails.
   pub fn delete() -> Result< Command >
   {
+  #[ allow( clippy ::needless_pass_by_value ) ]
   #[ tokio ::main ]
   async fn delete_command( o: VerifiedCommand )
   {
@@ -76,16 +82,16 @@ impl ConfigCommand
    .unwrap_or_else( || String ::from( "./_data" ) );
    let config = Config ::default().path( path_to_storage );
 
-   let res = ( || async
+   let res = async
    {
   let feed_storage = FeedStorage ::init_storage( &config ).await?;
   config_delete( feed_storage, &path ).await
- } )().await;
+ }.await;
 
    match res
    {
   Ok( report ) => report.report(),
-  Err( err ) => println!( "{:?}", err ),
+  Err( err ) => println!( "{err:?}" ),
  }
  }
 
@@ -104,6 +110,8 @@ impl ConfigCommand
  }
 
   /// Create command for listing all config files in storage.
+  /// # Errors
+  /// Returns error if operation fails.
   pub fn list() -> Result< Command >
   {
   let rt  = tokio ::runtime ::Runtime ::new()?;
@@ -135,7 +143,7 @@ impl ConfigCommand
    match res
    {
   Ok( report ) => report.report(),
-  Err( err ) => println!( "{:?}", err ),
+  Err( err ) => println!( "{err:?}" ),
  }
   
  })

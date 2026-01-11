@@ -30,6 +30,12 @@ default = [ "enabled" ]
 full = [ "enabled", "on_unknown_suggest" ]
 enabled = []
 
+# diagnostics features from test_tools
+diagnostics_runtime_assertions = []
+diagnostics_compiletime_assertions = []
+diagnostics_memory_layout = []
+no_std = []
+
 # This configuration suggests an action to be done when the command is unknown. In this case, when an unknown command is encountered, the system might suggest alternatives
 on_unknown_suggest = [ "dep:textdistance" ]
 

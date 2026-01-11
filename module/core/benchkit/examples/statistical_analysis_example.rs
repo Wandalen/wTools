@@ -98,7 +98,10 @@ fn main() -> Result< () >
   // Generate research-grade statistical report
   let statistical_report = report_generator.generate_statistical_report();
   println!("{statistical_report}");
-  
+
+  // Create output directory if it doesn't exist
+  std ::fs ::create_dir_all("target")?;
+
   // Save report to file
   let report_path = "target/statistical_analysis_report.md";
   std ::fs ::write(report_path, &statistical_report)?;

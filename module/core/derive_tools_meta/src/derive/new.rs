@@ -51,11 +51,11 @@ pub fn new(input: proc_macro ::TokenStream) -> Result< proc_macro2 ::TokenStream
   Ok(result)
 }
 
-/// Generates `New` implementation for unit structs.
+/// Generates `new()` constructor for unit structs.
 ///
 /// Example of generated code :
 /// ```text
-/// impl New for MyUnit
+/// impl MyUnit
 /// {
 ///   fn new() -> Self
 ///   {
@@ -71,24 +71,24 @@ fn generate_unit(
 ) -> proc_macro2 ::TokenStream {
   qt! {
   #[ automatically_derived ]
-  impl< #generics_impl > crate ::New for #item_name< #generics_ty >
+  impl< #generics_impl > #item_name< #generics_ty >
   where
    #generics_where
   {
    #[ inline( always ) ]
-   fn new() -> Self
+   pub fn new() -> Self
    {
-  Self {}
+  Self
  }
  }
  }
 }
 
-/// Generates `New` implementation for structs with fields.
+/// Generates `new()` constructor for structs with fields.
 ///
 /// Example of generated code :
 /// ```text
-/// impl New for MyStruct
+/// impl MyStruct
 /// {
 ///   fn new( field1: i32, field2: i32 ) -> Self
 ///   {
@@ -117,7 +117,7 @@ fn generate_struct(
  })
   .collect :: < Vec< _ >>();
 
-  let body =  if fields.is_empty() 
+  let body =  if fields.is_empty()
   {
   qt! { Self {} }
  } else {
@@ -126,12 +126,12 @@ fn generate_struct(
 
   qt! {
   #[ automatically_derived ]
-  impl< #generics_impl > crate ::New for #item_name< #generics_ty >
+  impl< #generics_impl > #item_name< #generics_ty >
   where
    #generics_where
   {
    #[ inline( always ) ]
-   fn new( #( #fields_params ),* ) -> Self
+   pub fn new( #( #fields_params ),* ) -> Self
    {
   #body
  }

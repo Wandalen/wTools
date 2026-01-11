@@ -77,16 +77,17 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
   println!();
 
   // Access the filesystem via reference to read results
-  // Note: Template doesn't provide direct filesystem access after materialization,
-  // so for this example we'll show that materialization happened successfully
-  println!( "Files were written to the internal filesystem:" );
-  println!( "  /output/greeting.txt" );
-  println!( "  /output/config.txt" );
+  println!( "Generated files:" );
   println!();
-  println!( "Note: Template API owns the filesystem, so you cannot" );
-  println!( "easily read back the results when using MemoryFileSystem." );
+
+  let greeting_content = template.filesystem().read( &PathBuf::from( "/output/greeting.txt" ) )?;
+  println!( "--- /output/greeting.txt ---" );
+  println!( "{greeting_content}" );
   println!();
-  println!( "For testing with readable results, use TemplateArchive instead." );
+
+  let config_content = template.filesystem().read( &PathBuf::from( "/output/config.txt" ) )?;
+  println!( "--- /output/config.txt ---" );
+  println!( "{config_content}" );
   println!();
 
   println!( "=== Advantages of Template API ===" );

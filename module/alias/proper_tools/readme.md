@@ -7,13 +7,23 @@
 
 Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.
 
-<!-- ### Basic use-case
+## Status
+
+⚠️ **EXPERIMENTAL - PLACEHOLDER MODULE**
+
+This module is currently a minimal placeholder awaiting definition and implementation. It provides only a skeleton structure with a single placeholder function `f1()`.
+
+See [`spec.md`](./spec.md) for detailed status, roadmap, and design decisions.
+
+### Current Functionality
 
 ```rust
 use proper_tools::*;
 
 fn main()
 {
+  // Only placeholder function available
+  f1();
 }
 ```
 
@@ -23,11 +33,21 @@ fn main()
 cargo add proper_tools
 ```
 
+**Note:** This crate currently provides minimal functionality. Review the [specification](./spec.md) for planned features and implementation status.
+
 ### Try out from the repository
 
-``` shell test
+```shell
 git clone https://github.com/Wandalen/wTools
-cd wTools
+cd wTools/module/alias/proper_tools
 cargo run --example proper_tools_trivial
-cargo run
-``` -->
+```
+
+### Examples
+
+- [`proper_tools_trivial`](./examples/proper_tools_trivial.rs) - Minimal usage demonstration
+
+### Documentation
+
+- [Specification](./spec.md) - Complete specification including roadmap and open questions
+- [API Documentation](https://docs.rs/proper_tools) - Generated API docs on docs.rs

@@ -47,9 +47,8 @@ DOCUMENTATION:
 
 EXIT CODES:
   0  Success
-  1  General error (issues found, I/O error)
-  2  Invalid parameters
-  3  Validation failure (path doesn't exist, project exists)
+  1  Error (validation failed, issues found, I/O error, already exists, path missing)
+  2  Unknown command (missing dot-prefix)
 ".to_string()
 }
 
@@ -106,9 +105,7 @@ EXAMPLES:
 
 EXIT CODES:
   0  Project created successfully
-  1  Failed to create (I/O error, permissions)
-  2  Invalid parameters (invalid project name)
-  3  Project directory already exists
+  1  Error (validation failed, I/O error, permissions, already exists, invalid parameters)
 ".to_string()
 }
 
@@ -168,8 +165,6 @@ EXAMPLES:
 
 EXIT CODES:
   0  All checks passed
-  1  Issues found
-  2  Invalid parameters
-  3  Cannot access path
+  1  Error (issues found, validation failed, cannot access path, invalid parameters)
 ".to_string()
 }

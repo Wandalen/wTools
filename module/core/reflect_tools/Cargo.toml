@@ -40,6 +40,7 @@ enabled = [
 ]
 reflect_types = []
 reflect_newtype = []
+diagnostics_runtime_assertions = []
 
 [dependencies]
 reflect_tools_meta = { workspace = true, features = [] }

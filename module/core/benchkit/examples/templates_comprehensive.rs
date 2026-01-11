@@ -67,9 +67,9 @@ fn create_comprehensive_results() -> HashMap< String, BenchmarkResult >
   // Memory-intensive algorithm - consistently slow
   let memory_intensive_times = vec![
   Duration ::from_millis( 2 ), Duration ::from_millis( 2 ) + Duration ::from_micros( 100 ),
-  Duration ::from_millis( 2 ) - Duration ::from_micros( 50 ), Duration ::from_millis( 2 ) + Duration ::from_micros( 80 ),
-  Duration ::from_millis( 2 ) - Duration ::from_micros( 30 ), Duration ::from_millis( 2 ) + Duration ::from_micros( 120 ),
-  Duration ::from_millis( 2 ) - Duration ::from_micros( 70 ), Duration ::from_millis( 2 ) + Duration ::from_micros( 90 ),
+  Duration ::from_millis( 2 ).checked_sub( Duration ::from_micros( 50 ) ).unwrap(), Duration ::from_millis( 2 ) + Duration ::from_micros( 80 ),
+  Duration ::from_millis( 2 ).checked_sub( Duration ::from_micros( 30 ) ).unwrap(), Duration ::from_millis( 2 ) + Duration ::from_micros( 120 ),
+  Duration ::from_millis( 2 ).checked_sub( Duration ::from_micros( 70 ) ).unwrap(), Duration ::from_millis( 2 ) + Duration ::from_micros( 90 ),
   Duration ::from_millis( 2 ), Duration ::from_millis( 2 ) + Duration ::from_micros( 60 )
  ];
   results.insert( "memory_intensive_algorithm".to_string(), BenchmarkResult ::new( "memory_intensive_algorithm", memory_intensive_times ) );

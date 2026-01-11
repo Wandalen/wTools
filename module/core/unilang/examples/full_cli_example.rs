@@ -237,9 +237,12 @@ Result< (), Error >
   registry.command_add_runtime( &config_set_def, config_set_routine )?;
   let args : Vec< String > = std::env::args().skip( 1 ).collect();
 
+  // Fix(issue-empty-args): Show help when no arguments provided instead of failing with HelpRequested error
+  // Root cause: Parser/analyzer returns HelpRequested error on empty string input
+  // Pitfall: Examples should handle empty args gracefully, not propagate help-request as error
   // 3. Parse Command Line Arguments
-  // Handle 'help' command manually
-  if args.first().is_some_and( | arg | arg == "help" )
+  // Handle no arguments or 'help' command
+  if args.is_empty() || args.first().is_some_and( | arg | arg == "help" )
   {
     let help_generator = unilang::help::HelpGenerator::new( &registry );
     if let Some( command_name ) = args.get( 1 )

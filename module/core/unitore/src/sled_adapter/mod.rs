@@ -11,9 +11,9 @@ use gluesql ::
   ast_builder :: { table, Build, Execute },
   store :: { GStore, GStoreMut },
  },
-  prelude ::Glue,
-  sled_storage :: { sled ::Config, SledStorage },
+  prelude :: { Glue, SledStorage },
 };
+use gluesql_sled_storage ::sled ::Config;
 use action ::query ::QueryReport;
 
 mod frame;
@@ -25,9 +25,9 @@ mod config;
 #[ derive( Clone ) ]
 pub struct FeedStorage< S: GStore + GStoreMut + Send >( Arc< Mutex< Glue< S > > > );
 
-impl< S: GStore + GStoreMut + Send > std ::fmt ::Debug for FeedStorage< S >
+impl< S: GStore + GStoreMut + Send > core ::fmt ::Debug for FeedStorage< S >
 {
-  fn fmt( &self, f: &mut std ::fmt ::Formatter< '_ > ) -> std ::fmt ::Result
+  fn fmt( &self, f: &mut core ::fmt ::Formatter< '_ > ) -> core ::fmt ::Result
   {
   writeln!( f, "GlueSQL storage" )
  }
@@ -36,10 +36,12 @@ impl< S: GStore + GStoreMut + Send > std ::fmt ::Debug for FeedStorage< S >
 impl FeedStorage< SledStorage >
 {
   /// Initialize new storage from configuration, create feed table.
+  /// # Errors
+  /// Returns error if operation fails.
   pub async fn init_storage( config: &Config ) -> Result< Self >
   {
   let storage = SledStorage ::try_from( config.clone() )
-  .context( format!( "Failed to initialize storage with config {:?}", config ) )?
+  .context( format!( "Failed to initialize storage with config {config:?}" ) )?
   ;
 
   let mut glue = Glue ::new( storage );

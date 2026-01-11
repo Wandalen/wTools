@@ -7,11 +7,11 @@ use super :: *;
 #[ cfg( any( feature = "meta_idents_concat", feature = "meta_idents_concat" ) ) ]
 mod indents_concat_test;
 
-#[ cfg( any( feature = "meta_for_each" ) ) ]
+#[ cfg( feature = "meta_for_each" ) ]
 #[ path = "../../../for_each/tests/inc/mod.rs" ]
 mod for_each_test;
 
-#[ cfg( any( feature = "meta_impls_index" ) ) ]
+#[ cfg( feature = "meta_impls_index" ) ]
 #[ path = "../../../impls_index/tests/inc/mod.rs" ]
 mod impls_index;
 

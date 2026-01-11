@@ -13,6 +13,7 @@ Contains all functional and integration tests for tree_fmt library. Tests valida
 
 | File | Responsibility |
 |------|----------------|
+| `inc/` | Shared test utilities and helpers |
 | `aligned_tree_basic.rs` | Test basic aligned tree formatting |
 | `aligned_tree_configuration.rs` | Test aligned tree configuration options |
 | `aligned_tree_edge_cases.rs` | Test aligned tree edge cases |

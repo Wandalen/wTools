@@ -18,10 +18,13 @@ fn main() -> Result< (), unilang::error::Error >
 
   let mut registry = CommandRegistry::new();
 
+  // Fix(issue-namespace-format): Namespace must have dot prefix
+  // Root cause: Validation requires non-empty namespaces start with '.'
+  // Pitfall: All namespaces must be either empty "" or start with dot ".collections"
   // Step 1: Command demonstrating List types
   let list_demo = CommandDefinition::former()
   .name( ".list_demo" )
-  .namespace( "collections".to_string() )
+  .namespace( ".collections".to_string() )
   .description( "Demonstrates List argument types with various delimiters".to_string() )
   .hint( "Shows how to work with lists" )
   .status( "stable" )
@@ -34,8 +37,8 @@ fn main() -> Result< (), unilang::error::Error >
   .http_method_hint( "POST".to_string() )
   .examples( vec!
   [
-    "collections.list_demo numbers::1,2,3,4".to_string(),
-    "collections.list_demo words::apple|banana|cherry".to_string(),
+    ".collections.list_demo numbers::1,2,3,4".to_string(),
+    ".collections.list_demo words::apple|banana|cherry".to_string(),
   ])
   .arguments( vec!
   [
@@ -110,7 +113,7 @@ fn main() -> Result< (), unilang::error::Error >
   // Step 2: Command demonstrating Map types
   let map_demo = CommandDefinition::former()
   .name( ".map_demo" )
-  .namespace( "collections".to_string() )
+  .namespace( ".collections".to_string() )
   .description( "Demonstrates Map argument types with custom delimiters".to_string() )
   .hint( "Shows how to work with key-value maps" )
   .status( "stable" )
@@ -123,8 +126,8 @@ fn main() -> Result< (), unilang::error::Error >
   .http_method_hint( "POST".to_string() )
   .examples( vec!
   [
-    "collections.map_demo config::name=John,age=30,city=NYC".to_string(),
-    "collections.map_demo scores::Alice:95|Bob:87|Carol:92".to_string(),
+    ".collections.map_demo config::name=John,age=30,city=NYC".to_string(),
+    ".collections.map_demo scores::Alice:95|Bob:87|Carol:92".to_string(),
   ])
   .arguments( vec!
   [
@@ -229,13 +232,13 @@ fn main() -> Result< (), unilang::error::Error >
 
   println!( "\n=== Example Usage ===" );
   println!( "# List examples:" );
-  println!( "cargo run --bin unilang_cli collections.list_demo numbers::1,2,3,4,5" );
-  println!( "cargo run --bin unilang_cli collections.list_demo words::apple|banana|cherry" );
-  println!( "cargo run --bin unilang_cli collections.list_demo files::'file1.txt file2.txt file3.txt'" );
+  println!( "cargo run --bin unilang_cli .collections.list_demo numbers::1,2,3,4,5" );
+  println!( "cargo run --bin unilang_cli .collections.list_demo words::apple|banana|cherry" );
+  println!( "cargo run --bin unilang_cli .collections.list_demo files::'file1.txt file2.txt file3.txt'" );
 
   println!( "\n# Map examples:" );
-  println!( "cargo run --bin unilang_cli collections.map_demo config::name=John,age=30,city=NYC" );
-  println!( "cargo run --bin unilang_cli collections.map_demo scores::Alice:95|Bob:87|Carol:92" );
+  println!( "cargo run --bin unilang_cli .collections.map_demo config::name=John,age=30,city=NYC" );
+  println!( "cargo run --bin unilang_cli .collections.map_demo scores::Alice:95|Bob:87|Carol:92" );
 
   Ok( () )
 }

@@ -1,7 +1,7 @@
 //! Feed operation with Sled storage.
 
 use crate :: *;
-use std ::time ::Duration;
+use core ::time ::Duration;
 use error_tools :: { untyped ::Result, untyped ::Context };
 use gluesql ::
 {
@@ -12,7 +12,7 @@ use gluesql ::
   data ::Value,
   chrono ::SecondsFormat,
  },
-  sled_storage ::SledStorage,
+  prelude ::SledStorage,
 };
 use entity ::
 {
@@ -25,7 +25,7 @@ use action ::
   frame :: { UpdateReport, SelectedEntries, FramesReport },
 };
 use sled_adapter ::FeedStorage;
-use wca ::iter_tools ::Itertools;
+use itertools ::Itertools;
 
 #[ async_trait ::async_trait( ?Send ) ]
 impl FeedStore for FeedStorage< SledStorage >
@@ -40,18 +40,13 @@ impl FeedStore for FeedStorage< SledStorage >
   ;
 
   let mut report = FeedsReport ::new();
-  match res
-  {
-   Payload ::Select { labels: label_vec, rows: rows_vec } =>
+  if let Payload ::Select { labels: label_vec, rows: rows_vec } = res {
+   report.0 = SelectedEntries
    {
-  report.0 = SelectedEntries
-  {
-   selected_rows: rows_vec,
-   selected_columns: label_vec,
- }
- },
-   _ => {},
- }
+    selected_rows: rows_vec,
+    selected_columns: label_vec,
+  }
+  }
 
   Ok( report )
  }
@@ -62,18 +57,18 @@ impl FeedStore for FeedStorage< SledStorage >
   {
    let _update = table( "feed" )
    .update()
-   .set( "title", feed.title.map( text ).unwrap_or( null() ) )
+   .filter( col( "link" ).eq( feed.link.to_string() ) )
+   .set( "title", feed.title.map_or( null(), text ) )
    .set(
   "updated",
-  feed.updated.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat ::Millis, true ) ) ).unwrap_or( null() ),
+  feed.updated.map_or( null(), | d | timestamp( d.to_rfc3339_opts( SecondsFormat ::Millis, true ) ) ),
  )
-   .set( "authors", feed.authors.map( text ).unwrap_or( null() ) )
-   .set( "description", feed.description.map( text ).unwrap_or( null() ) )
+   .set( "authors", feed.authors.map_or( null(), text ) )
+   .set( "description", feed.description.map_or( null(), text ) )
    .set(
   "published",
-  feed.published.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat ::Millis, true ) ) ).unwrap_or( null() ),
+  feed.published.map_or( null(), | d | timestamp( d.to_rfc3339_opts( SecondsFormat ::Millis, true ) ) ),
  )
-   .filter( col( "link" ).eq( feed.link.to_string() ) )
    .execute( &mut *self.0.lock().await )
    .await
    .context( "Failed to insert feed" )?
@@ -112,11 +107,11 @@ impl FeedStore for FeedStorage< SledStorage >
   frames_report.existing_frames = rows.len();
   let existing_entries = rows.iter()
   .map( | r | ( r.get( "id" ).map( | &val | val.clone() ), r.get( "published" ).map( | &val | val.clone() ) ) )
-  .flat_map( | ( id, published ) |
+  .filter_map( | ( id, published ) |
    id.map( | id |
   (
    id,
-   published.map( | date |
+   published.and_then( | date |
   {
    match date
    {
@@ -124,11 +119,10 @@ impl FeedStore for FeedStorage< SledStorage >
   _ => None,
  }
  } )
-   .flatten()
  )
  )
  )
-  .flat_map( | ( id, published ) | match id { Value ::Str( id ) => Some( ( id, published ) ), _ => None } )
+  .filter_map( | ( id, published ) | match id { Value ::Str( id ) => Some( ( id, published ) ), _ => None } )
   .collect_vec()
   ;
 
@@ -171,7 +165,7 @@ impl FeedStore for FeedStorage< SledStorage >
 
   async fn feeds_save( &mut self, feed: Vec< Feed > ) -> Result< Payload >
   {
-  let feeds_rows: Vec< Vec< ExprNode< 'static > > > = feed.into_iter().map( | feed | feed.into() ).collect_vec();
+  let feeds_rows: Vec< Vec< ExprNode< 'static > > > = feed.into_iter().map( Into ::into ).collect_vec();
 
   let insert = table( "feed" )
   .insert()

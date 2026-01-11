@@ -1,7 +1,7 @@
 //! Feed storage entity and storage functions.
 
 use crate :: *;
-use std ::time ::Duration;
+use core ::time ::Duration;
 use error_tools ::untyped ::Result;
 use gluesql ::core ::
 {
@@ -41,6 +41,7 @@ pub struct Feed
 impl Feed
 {
   /// Create new feed item from source url and update period.
+  #[must_use] 
   pub fn new( link: url ::Url, update_period: Duration, config: String ) -> Self
   {
   Self
@@ -58,6 +59,7 @@ impl Feed
 }
 
 /// Functionality of feed storage.
+#[ allow( clippy ::struct_field_names ) ]
 #[ mockall ::automock ]
 #[ async_trait ::async_trait( ?Send ) ]
 pub trait FeedStore
@@ -85,8 +87,8 @@ pub trait FeedStore
 // aaa: updated description
 
 
-/// Get convenient format of frame item for using with GlueSQL expression builder.
-/// Converts from Feed struct into vec of GlueSQL expression nodes. 
+/// Get convenient format of frame item for using with `GlueSQL` expression builder.
+/// Converts from Feed struct into vec of `GlueSQL` expression nodes. 
 impl From< Feed > for Vec< ExprNode< 'static > >
 {
   fn from( value: Feed ) -> Self
@@ -94,11 +96,11 @@ impl From< Feed > for Vec< ExprNode< 'static > >
   vec!
   [
    text( value.link.to_string() ),
-   value.title.map( text ).unwrap_or( null() ),
-   value.updated.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat ::Millis, true ) ) ).unwrap_or( null() ),
-   value.authors.map( text ).unwrap_or( null() ),
-   value.description.map( text ).unwrap_or( null() ),
-   value.published.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat ::Millis, true ) ) ).unwrap_or( null() ),
+   value.title.map_or( null(), text ),
+   value.updated.map_or( null(), | d | timestamp( d.to_rfc3339_opts( SecondsFormat ::Millis, true ) ) ),
+   value.authors.map_or( null(), text ),
+   value.description.map_or( null(), text ),
+   value.published.map_or( null(), | d | timestamp( d.to_rfc3339_opts( SecondsFormat ::Millis, true ) ) ),
    text( value.update_period.as_secs().to_string() ),
    text( value.config_file ),
  ]

@@ -175,6 +175,10 @@ mod private
   /// - Cannot read workspace manifest file
   /// - Field not found in workspace.package section
   /// - Field value is not a string
+  ///
+  /// # Panics
+  ///
+  /// Panics if parent directory traversal encounters an invalid state (should not occur in practice).
   pub fn resolve_workspace_field( &self, field_name: &str ) -> Result< String, ManifestError >
   {
    // Find workspace root by traversing up from current manifest
@@ -219,7 +223,7 @@ mod private
   current_dir = parent.unwrap();
  }
 
-   Err( ManifestError ::CannotFindValue( format!( "workspace.package.{}", field_name ) ) )
+   Err( ManifestError ::CannotFindValue( format!( "workspace.package.{field_name}" ) ) )
  }
 
   /// Gets package version, handling both direct and workspace-inherited values.
@@ -255,7 +259,7 @@ mod private
    {
   if let Some( version_table ) = version_value.as_table()
   {
-   if version_table.get( "workspace" ).and_then( | v | v.as_bool() ) == Some( true )
+   if version_table.get( "workspace" ).and_then( toml_edit::Item::as_bool ) == Some( true )
    {
     // Resolve from workspace
     return self.resolve_workspace_field( "version" );

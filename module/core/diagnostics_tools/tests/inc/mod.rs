@@ -1,11 +1,9 @@
 use super :: *;
 use test_tools :: *;
 
-#[ cfg( any( feature = "diagnostics_runtime_assertions", feature = "diagnostics_runtime_assertions" ) ) ]
+#[ cfg( feature = "diagnostics_compiletime_assertions" ) ]
 mod cta_test;
+#[ cfg( feature = "diagnostics_memory_layout" ) ]
 mod layout_test;
-#[ cfg( any(
-  feature = "diagnostics_compiletime_assertions",
-  feature = "diagnostics_compiletime_assertions"
-) ) ]
+#[ cfg( feature = "diagnostics_runtime_assertions" ) ]
 mod rta_test;

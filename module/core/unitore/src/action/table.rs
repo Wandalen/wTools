@@ -1,7 +1,7 @@
 //! Tables metadata actions and reports.
 
 use crate :: *;
-use gluesql ::prelude ::Payload;
+use gluesql ::prelude :: { Payload, SledStorage };
 use std ::collections ::HashMap;
 use action ::Report;
 use sled_adapter ::FeedStorage;
@@ -9,9 +9,16 @@ use entity ::table ::TableStore;
 use error_tools ::untyped ::Result;
 
 /// Get labels of column for specified table.
+///
+/// # Errors
+/// Returns error if operation fails.
+///
+/// # Panics
+/// Panics if column data is not in expected format.
+#[ allow( clippy ::too_many_lines ) ]
 pub async fn table_list
 (
-  mut storage: FeedStorage< gluesql ::sled_storage ::SledStorage >,
+  mut storage: FeedStorage< SledStorage >,
   table_name: Option< String >,
 ) -> Result< impl Report >
 {
@@ -24,7 +31,7 @@ pub async fn table_list
   {
   let tables = storage.tables_list().await?;
 
-  let names = tables.0.keys().map( | k | k.clone() ).collect :: < Vec< _ > >();
+  let names = tables.0.keys().cloned().collect :: < Vec< _ > >();
   table_names.extend( names.into_iter() );
  }
 
@@ -232,24 +239,27 @@ pub async fn table_list
 }
 
 /// Get information about tables in storage.
-pub async fn tables_list( mut storage: FeedStorage< gluesql ::sled_storage ::SledStorage > ) -> Result< impl Report >
+///
+/// # Errors
+/// Returns error if operation fails.
+pub async fn tables_list( mut storage: FeedStorage< SledStorage > ) -> Result< impl Report >
 {
   storage.tables_list().await
 }
 
-const EMPTY_CELL: &'static str = "";
+const EMPTY_CELL: &str = "";
 
 /// Information about execution of table columns commands.
 #[ derive( Debug ) ]
 pub struct TablesColumnsReport( pub Vec< ColumnsReport > );
 
-impl std ::fmt ::Display for TablesColumnsReport
+impl core ::fmt ::Display for TablesColumnsReport
 {
-  fn fmt( &self, f: &mut std ::fmt ::Formatter< '_ > ) -> std ::fmt ::Result
+  fn fmt( &self, f: &mut core ::fmt ::Formatter< '_ > ) -> core ::fmt ::Result
   {
   for report in &self.0
   {
-   writeln!( f, "{}", report )?;
+   writeln!( f, "{report}" )?;
  }
   
   Ok( () )
@@ -270,6 +280,7 @@ pub struct ColumnsReport
 impl ColumnsReport
 {
   /// Create new table columns report.
+  #[must_use] 
   pub fn new( table_name: String, table_description: String, columns: HashMap< String, String > ) -> Self
   {
   Self
@@ -281,49 +292,46 @@ impl ColumnsReport
  }
 }
 
-impl std ::fmt ::Display for ColumnsReport
+impl core ::fmt ::Display for ColumnsReport
 {
-  fn fmt( &self, f: &mut std ::fmt ::Formatter< '_ > ) -> std ::fmt ::Result
+  fn fmt( &self, f: &mut core ::fmt ::Formatter< '_ > ) -> core ::fmt ::Result
   {
   writeln!( f, "Table name: {}", self.table_name )?;
   writeln!( f, "Description: {}", self.table_description )?;
 
-  if !self.columns.is_empty()
-  {
-   writeln!( f, "Columns: " )?;
-   let mut rows = Vec ::new();
-   for ( label, desc ) in &self.columns
-   {
-  rows.push
-  (
+  if self.columns.is_empty() {
+    writeln!( f, "No columns" )?;
+  } else {
+    writeln!( f, "Columns: " )?;
+    let mut rows = Vec ::new();
+    for ( label, desc ) in &self.columns
+    {
+   rows.push
+   (
+    vec!
+    [
+   EMPTY_CELL.to_owned(),
+   label.clone(),
+   desc.clone(),
+  ]
+  );
+  }
+    let table = tool ::table_display ::table_with_headers
+    (
    vec!
    [
-  EMPTY_CELL.to_owned(),
-  label.clone(),
-  desc.clone(),
- ]
- );
- }
-   let table = tool ::table_display ::table_with_headers
-   (
-  vec!
-  [
-   EMPTY_CELL.to_owned(),
-   "label".to_owned(),
-   "description".to_owned(),
- ],
-  rows,
- );
+    EMPTY_CELL.to_owned(),
+    "label".to_owned(),
+    "description".to_owned(),
+  ],
+   rows,
+  );
 
-   if let Some( table ) = table
-   {
-  writeln!( f, "{}", table )?;
- }
- }
-  else
-  {
-   writeln!( f, "No columns" )?;
- }
+    if let Some( table ) = table
+    {
+   writeln!( f, "{table}" )?;
+  }
+  }
 
   Ok( () )
  }
@@ -339,6 +347,8 @@ pub struct TablesReport( pub HashMap< String, ( String, Vec< String > ) > );
 impl TablesReport
 {
   /// Create new report from payload.
+  #[must_use]
+  #[ allow( clippy ::needless_pass_by_value ) ]
   pub fn new( payload: Vec< Payload > ) -> Self
   {
   let mut result = std ::collections ::HashMap ::new();
@@ -366,22 +376,19 @@ impl TablesReport
  }
 }
 
-impl std ::fmt ::Display for TablesReport
+impl core ::fmt ::Display for TablesReport
 {
-  fn fmt( &self, f: &mut std ::fmt ::Formatter< '_ > ) -> std ::fmt ::Result
+  fn fmt( &self, f: &mut core ::fmt ::Formatter< '_ > ) -> core ::fmt ::Result
   {
   writeln!( f, "Storage tables: " )?;
   let mut rows = Vec ::new();
   for ( table_name, ( desc, columns ) ) in &self.0
   {
-   let columns_str = if !columns.is_empty()
-   {
-  format!( "{};", columns.join( ", " ) )
- }
-   else
-   {
-  String ::from( "No columns" )
- };
+   let columns_str = if columns.is_empty() {
+    String ::from( "No columns" )
+   } else {
+    format!( "{};", columns.join( ", " ) )
+   };
 
    rows.push
    (
@@ -408,7 +415,7 @@ impl std ::fmt ::Display for TablesReport
  );
   if let Some( table ) = table
   {
-   writeln!( f, "{}", table )?;
+   writeln!( f, "{table}" )?;
  }
 
   Ok( () )
