@@ -13,9 +13,6 @@ Parser for Unilang CLI instruction syntax.
 documentation = "https://docs.rs/unilang_parser"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/unilang_parser"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/unilang_parser"
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
 
 [features]
 default = [
