@@ -37,7 +37,7 @@ walkdir = "2"
 genfile_core = { workspace = true, features = [ "full" ] }
 
 # CLI framework with Multi-YAML support
-unilang = { workspace = true, features = [
+unilang = { version = "~0.46.0", features = [
   "enabled",
   "repl",
   "enhanced_repl",

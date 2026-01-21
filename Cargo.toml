@@ -115,25 +115,6 @@ path = "module/alias/std_tools"
 version = "~0.1.4"
 path = "module/alias/std_x"
 
-[workspace.dependencies.unilang_parser]
-version = "~0.30.0"
-path = "module/core/unilang_parser"
-default-features = false
-
-[workspace.dependencies.unilang]
-version = "~0.46.0"
-path = "module/core/unilang"
-default-features = false
-
-[workspace.dependencies.unilang_benchmarks]
-version = "~0.1.0"
-path = "module/core/unilang_benchmarks"
-default-features = false
-
-[workspace.dependencies.unilang_meta]
-version = "~0.1.0"
-path = "module/core/unilang_meta"
-default-features = false
 
 
 ## data_type
@@ -865,6 +846,12 @@ version = "0.30"
 
 [workspace.dependencies.phf]
 version = "0.11"
+
+[workspace.dependencies.crossterm]
+version = "0.29.0"
+
+[workspace.dependencies.unicode-width]
+version = "0.2.2"
 
 [patch.crates-io]
 former_meta = { path = "module/core/former_meta" }
