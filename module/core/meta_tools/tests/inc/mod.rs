@@ -16,5 +16,6 @@ mod for_each_test;
 mod impls_index;
 
 // #[ cfg( any( feature = "mod_interface", feature = "meta_mod_interface" ) ) ]
+#[ allow( unused_imports ) ]
 #[ path = "../../../mod_interface/tests/inc/mod.rs" ]
 mod mod_interface;

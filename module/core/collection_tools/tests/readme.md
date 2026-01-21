@@ -7,7 +7,7 @@ Test suite for collection_tools crate.
 | File | Responsibility |
 |------|----------------|
 | `heap_macro_availability_test.rs` | Verifies heap macro public API accessibility (bug reproducer for issue-1) |
-| `manual_corner_cases_test.rs` | Tests collection macro edge cases and corner conditions |
+| `manual_corner_cases_test.rs` | Comprehensive collection macro corner case tests (empty collections, heap ordering, heterogeneous types, complex types, move semantics) |
 | `smoke_test.rs` | Smoke testing (disabled due to circular dependency) |
 | `tests.rs` | Test aggregation entry point |
 | `inc/` | Subdirectory containing modular collection tests |
@@ -18,7 +18,18 @@ Test suite for collection_tools crate.
 - `heap_macro_availability_test.rs`: Permanent regression test for Issue #1 (heap macro accessibility bug)
 
 ### Corner Case Tests
-- `manual_corner_cases_test.rs`: Comprehensive edge case coverage (single elements, trailing commas, capacity, duplicates, large collections)
+- `manual_corner_cases_test.rs`: Comprehensive edge case coverage
+  - Empty collections (all 8 collection types)
+  - Single element collections
+  - Trailing comma support
+  - Capacity pre-allocation verification
+  - Duplicate key behavior (HashMap, BTreeMap)
+  - Large collections (10-20 elements)
+  - Type inference scenarios
+  - BinaryHeap max-heap ordering verification
+  - Into macros with heterogeneous types (mixing &str and String)
+  - Complex nested types (Vec<Vec<T>>, HashMap<K, Vec<V>>, tuples, Options, Results)
+  - Non-Copy types and move semantics (String, Box, custom structs)
 
 ### Modular Tests (`inc/`)
 The `inc/` subdirectory contains modular tests for each collection type:
@@ -36,6 +47,6 @@ The `inc/` subdirectory contains modular tests for each collection type:
 
 ## Test Coverage
 
-- **Functional Tests**: 57 tests across all collection constructors
+- **Functional Tests**: 95+ tests across all collection constructors (8 empty + 38 new corner cases + existing tests)
 - **Doc Tests**: 60 documentation examples
-- **Edge Cases**: Single elements, trailing commas, capacity, duplicates, large collections
+- **Edge Cases**: Empty collections, single elements, trailing commas, capacity, duplicates, large collections, heap ordering, heterogeneous types, nested types, move semantics

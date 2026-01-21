@@ -7,8 +7,6 @@ use std ::
   io ::Write,
 };
 
-pub const BINARY_NAME: &str = "will"; // fix clippy
-
 #[ derive(Debug) ]
 pub struct ProjectBuilder 
 {

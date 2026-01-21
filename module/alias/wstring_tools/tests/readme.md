@@ -10,6 +10,7 @@ Test suite for the wstring_tools alias crate.
 | wstring_tools_tests.rs | Re-exports comprehensive strs_tools test suite |
 | example_compilation_test.rs | Verifies examples compile and execute correctly |
 | split_corner_cases_test.rs | Comprehensive corner case validation for split functionality |
+| readme_example_verification_test.rs | Verifies README.md code examples are functional and accurate |
 
 ## Test Strategy
 

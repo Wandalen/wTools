@@ -44,6 +44,7 @@ Organizes all automated tests for async conversion traits (AsyncFrom, AsyncInto,
 |------|----------------|
 | `tests.rs` | Test harness entry point and module setup |
 | `manual_corner_cases_test.rs` | Comprehensive corner case validation (edge cases, boundaries, concurrency) |
+| `additional_corner_cases_test.rs` | Additional corner case validation (readme examples, parsing edge cases, format validation) |
 | `inc/mod.rs` | Test module declarations |
 | `inc/basic_test.rs` | Integration tests for async conversion traits |
 
