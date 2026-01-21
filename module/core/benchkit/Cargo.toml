@@ -16,9 +16,6 @@ Non-restrictive alternative to criterion, designed for easy integration and mark
 """
 categories = [ "development-tools", "development-tools::profiling" ]
 keywords = [ "benchmark", "performance", "toolkit", "markdown", "reports" ]
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
 
 [package.metadata.docs.rs]
 features = [ "full" ]

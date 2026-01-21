@@ -186,8 +186,9 @@ production = ["sqlx_query/sqlx_compiletime_checks"]
 | `full` | - | All features (same as enabled) |
 | `no_std` | - | no_std compatibility |
 | `use_alloc` | - | alloc in no_std |
+| `sqlx_compiletime_checks` | - | Enable runtime mode (disable compile-time checks) |
 
-**Note**: The `sqlx_compiletime_checks` feature is expected to be defined in the *consumer's* crate, not in sqlx_query itself. The macros check for this feature at expansion time.
+**Note**: The `sqlx_compiletime_checks` feature controls the query checking mode. When enabled, macros expand to runtime query functions (faster builds, no database required at compile time). When disabled (default), macros expand to compile-time checked macros (slower builds, database required at compile time).
 
 ## Dependencies and Consumers
 

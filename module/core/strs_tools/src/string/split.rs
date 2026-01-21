@@ -45,6 +45,12 @@ mod simd;
 #[ cfg( feature = "simd" ) ]
 pub use simd::{ SIMDSplitIterator, simd_split_cached, get_or_create_cached_patterns };
 
+// Alloc types needed by public API
+#[ cfg( feature = "std" ) ]
+use std::{ vec, vec::Vec, string::String };
+#[ cfg( all( feature = "use_alloc", not( feature = "std" ) ) ) ]
+use alloc::{ vec, vec::Vec, string::String };
+
 /// Internal implementation details for string splitting.
 mod private {
   #[ cfg( feature = "std" ) ]

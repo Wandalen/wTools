@@ -40,6 +40,12 @@ pub mod private
  }
 
   #[ inline( always ) ]
+  fn is_ordered( &self ) -> bool
+  {
+   false // HashSets do not guarantee element order
+ }
+
+  #[ inline( always ) ]
   fn len( &self ) -> usize
   {
    self.len

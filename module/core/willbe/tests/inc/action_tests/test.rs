@@ -176,7 +176,7 @@ fn call_from_workspace_root()
 }
 
 #[ test ]
-fn plan() 
+fn plan()
 {
   let temp = TempDir ::new().unwrap();
   let temp = &temp;
@@ -186,7 +186,7 @@ fn plan()
   .test_file(
    r"
   #[ test ]
-  fn should_pass() 
+  fn should_pass()
   {
   assert!(true);
  }
@@ -196,19 +196,28 @@ fn plan()
   .unwrap();
   let abs = AbsolutePath ::try_from(project).unwrap();
 
+  // Check available toolchains to avoid environmental dependency
+  let available = available_channels(&abs).unwrap();
+  let mut channels_to_test = [ Channel ::Stable ].into_iter().collect :: < std ::collections ::HashSet< _ > >();
+  if available.contains(&Channel ::Nightly)
+  {
+    channels_to_test.insert(Channel ::Nightly);
+ }
+
   let args = TestsCommandOptions ::former()
   .dir(abs)
-  .channels([Channel ::Stable, Channel ::Nightly])
+  .channels(channels_to_test.clone())
   .optimizations([Optimization ::Debug, Optimization ::Release])
   .with_none_features(true);
-  
+
   #[ cfg( feature = "progress_bar" ) ]
   let args = args.with_progress(false);
-  
+
   let args = args.form();
 
   let rep = test(args, true).unwrap().success_reports[0].clone().tests;
 
+  // Always check stable variants
   assert!(rep
   .contains_key(
    &TestVariant ::former()
@@ -220,27 +229,32 @@ fn plan()
   assert!(rep
   .contains_key(
    &TestVariant ::former()
-  .optimization(Optimization ::Debug)
-  .channel(Channel ::Nightly)
-  .features(BTreeSet ::default())
-  .form()
- ));
-  assert!(rep
-  .contains_key(
-   &TestVariant ::former()
   .optimization(Optimization ::Release)
   .channel(Channel ::Stable)
   .features(BTreeSet ::default())
   .form()
  ));
-  assert!(rep
-  .contains_key(
-   &TestVariant ::former()
-  .optimization(Optimization ::Release)
-  .channel(Channel ::Nightly)
-  .features(BTreeSet ::default())
-  .form()
- ));
+
+  // Only check nightly variants if nightly is available
+  if channels_to_test.contains(&Channel ::Nightly)
+  {
+    assert!(rep
+    .contains_key(
+     &TestVariant ::former()
+    .optimization(Optimization ::Debug)
+    .channel(Channel ::Nightly)
+    .features(BTreeSet ::default())
+    .form()
+   ));
+    assert!(rep
+    .contains_key(
+     &TestVariant ::former()
+    .optimization(Optimization ::Release)
+    .channel(Channel ::Nightly)
+    .features(BTreeSet ::default())
+    .form()
+   ));
+ }
 }
 
 #[ test ]

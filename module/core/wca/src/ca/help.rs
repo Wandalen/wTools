@@ -213,8 +213,8 @@ mod private
    {
   HelpVariants ::All =>
   {
-   self.general_help( helper, dictionary, order );
-   self.subject_command_help( helper, dictionary, order );
+   // Register unified help command that handles both cases without mutual delegation
+   self.unified_help( helper, dictionary, order );
    // self.dot_command_help( helper, dictionary );
  },
   HelpVariants ::General => self.general_help( helper, dictionary, order ),
@@ -222,6 +222,93 @@ mod private
   _ => unimplemented!()
   // HelpVariants ::DotCommand => self.dot_command_help( helper, dictionary ),
  }
+ }
+
+  // Unified .help command (handles both with and without subject)
+  #[ allow( clippy ::unused_self ) ]
+  fn unified_help( &self, helper: &HelpGeneratorFn, dictionary: &mut Dictionary, order: Order )
+  {
+   let phrase = "help".to_string();
+
+   let grammar = dictionary.clone();
+   let generator = helper.clone();
+
+   let routine = move | o: VerifiedCommand |
+   {
+  // If no subject provided, show general help
+  if o.args.0.is_empty()
+  {
+   let format_prop: String = o.props.get_owned( "format" ).unwrap_or_default();
+   let format = match format_prop.as_str()
+   {
+    "md" | "markdown" => HelpFormat ::Markdown,
+    _ => HelpFormat ::Another,
+  };
+   if format == HelpFormat ::Markdown
+   {
+    println!( "Help command\n{text}", text = md_generator( &grammar, order ) );
+  }
+   else
+   {
+    let options = HelpGeneratorOptions ::former()
+    .command_prefix( "." )
+    .description_detailing( LevelOfDetail ::Simple )
+    .subject_detailing( LevelOfDetail ::Simple )
+    .property_detailing( LevelOfDetail ::Simple )
+    .order( order );
+    println!
+    (
+   "Help command\n\n{text}",
+   text = generator.exec
+   (
+    &grammar,
+    options.form()
+  )
+  );
+  }
+  }
+  // If subject provided, show help for that specific command
+  else
+  {
+   let command = o.args.get_owned :: < String >( 0 ).unwrap();
+   let cmd = grammar.commands
+   .get( &command )
+   .ok_or_else( || format_err!( "Can not found help for command `{command}`" ) )?;
+
+   let args = HelpGeneratorOptions ::former()
+   .command_prefix( "." )
+   .for_commands( [ cmd ] )
+   .description_detailing( LevelOfDetail ::Detailed )
+   .subject_detailing( LevelOfDetail ::Simple )
+   .property_detailing( LevelOfDetail ::Simple )
+   .with_footer( true )
+   .order( order );
+
+   let text = generator.exec( &grammar, args.form() );
+
+   println!( "Help command\n\n{text}" );
+  }
+
+  Ok :: < _, error_tools ::untyped ::Error >( () )
+ };
+
+   let help = Command ::former()
+   .hint( "prints full information about a specified command" )
+   .subject()
+   .hint( "command name" )
+   .kind( Type ::String )
+   .optional( true )
+   .end()
+   .property( "format" )
+   .hint( "help generates in format witch you write" )
+   .kind( Type ::String )
+   .optional( true )
+   .end()
+   .phrase( &phrase )
+   .routine( routine )
+   .form();
+
+   dictionary.register( help );
  }
 
   // .help

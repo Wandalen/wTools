@@ -6,13 +6,23 @@ Tests organized by functionality: smoke tests for basic crate health, derive com
 
 The Reflect derive implementation is a stub (returns empty `TokenStream`), so tests focus on compilation success and macro infrastructure rather than runtime behavior.
 
+## Responsibility Table
+
+| File | Responsibility |
+|------|----------------|
+| `readme.md` | Document test organization and adding new tests guidance |
+| `smoke_test.rs` | Validate crate compilation in local and published contexts |
+| `reflect_derive_test.rs` | Test Reflect derive compilation for common struct variations |
+| `corner_cases_test.rs` | Test Reflect derive compilation for edge cases and boundary conditions |
+
 ## Directory Structure
 
 ```
 tests/
 ├── readme.md              # This file
 ├── smoke_test.rs          # Basic smoke tests (local + published)
-└── reflect_derive_test.rs # Reflect derive compilation tests
+├── reflect_derive_test.rs # Reflect derive compilation tests
+└── corner_cases_test.rs   # Corner case and edge case compilation tests
 ```
 
 ### Scope
@@ -39,7 +49,8 @@ Validates procedural macro functionality for `reflect_tools_meta` crate. Provide
 | Domain | Test Location | What It Tests |
 |--------|---------------|---------------|
 | Basic health | `smoke_test.rs` | Crate compiles, local + published modes work |
-| Derive compilation | `reflect_derive_test.rs` | Reflect macro compiles for various struct types |
+| Derive compilation | `reflect_derive_test.rs` | Reflect macro compiles for common struct types |
+| Edge cases | `corner_cases_test.rs` | Reflect macro handles boundary conditions and unusual syntax |
 | Runtime behavior | (future) | Entity trait implementations when stub replaced |
 
 ## Adding New Tests

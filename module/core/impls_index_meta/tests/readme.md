@@ -11,12 +11,22 @@ Tests for this proc macro crate are minimal, focusing on basic macro functionali
 | File | Responsibility |
 |------|----------------|
 | smoke_test.rs | Verify impls3 procedural macro compiles and expands correctly |
+| corner_cases_test.rs | Comprehensive corner case testing for all function variants and edge cases |
 
 ## Test Coverage
 
-### Core Functionality
+### Core Functionality (smoke_test.rs)
 - impls3 macro basic expansion with simple functions
 - Procedural macro compilation and code generation
+- Optional functions with `?` prefix
+- Multiple functions in single block
+- Generic functions
+
+### Advanced Corner Cases (corner_cases_test.rs)
+- Function variants (lifetimes, where clauses, async, const, unsafe)
+- Attribute handling (inline, doc comments, cfg, multiple attributes)
+- Edge cases (empty block, mixed optional/required, complex types, impl Trait, default type params)
+- Integration scenarios (multiple mixed features)
 
 ## Test Execution
 

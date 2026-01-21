@@ -21,8 +21,6 @@ exclude = [
 
   # NOTE: module/move directory is now empty - all crates moved to core or postponed
 ]
-dev-dependencies = {}
-build-dependencies = {}
 # default-members = [ "module/core/wtools" ]
 
 [workspace.metadata]

@@ -83,6 +83,58 @@ wca = {{path = "{}"}}"#,
 }
 
 #[ test ]
+fn bug_reproducer_help_should_not_execute_command()
+{
+  let temp = assert_fs ::TempDir ::new().unwrap();
+
+  let toml = format!(
+  r#"[package]
+name = "wca_hello_test_help_execution_bug"
+version = "0.1.0"
+edition = "2021"
+[dependencies]
+wca = {{path = "{}"}}"#,
+  env!("CARGO_MANIFEST_DIR").replace('\\', "/")
+ );
+
+  let main = r#"use wca :: { Type, VerifiedCommand };
+  fn main()
+  {
+   let ca = wca ::CommandsAggregator ::former()
+   .command( "echo" )
+  .hint( "prints all subjects and properties" )
+  .subject().hint( "Subject" ).kind( Type ::String ).optional( true ).end()
+  .property( "property" ).hint( "simple property" ).kind( Type ::String ).optional( true ).end()
+  .routine( | _o: VerifiedCommand | { println!( "COMMAND EXECUTED" ) } )
+  .end()
+   .perform();
+
+   let args = std ::env ::args().skip( 1 ).collect :: < Vec< String > >();
+   ca.perform( args ).unwrap();
+ }
+  "#;
+  File ::create(temp.path().join("Cargo.toml"))
+  .unwrap()
+  .write_all(toml.as_bytes())
+  .unwrap();
+  DirBuilder ::new().create(temp.join("src")).unwrap();
+  File ::create(temp.path().join("src").join("main.rs"))
+  .unwrap()
+  .write_all(main.as_bytes())
+  .unwrap();
+
+  let result = start_sync("cargo", ["r", ".help", "echo"], temp.path());
+
+  // Help for specific command should NOT execute the command
+  assert!(!result.contains("COMMAND EXECUTED"),
+    "Help command should not execute the target command. Output was: {result}");
+
+  // Should contain help text for the echo command
+  assert!(result.contains("prints all subjects and properties"),
+    "Help output should contain command description. Output was: {result}");
+}
+
+#[ test ]
 fn help_command_with_nature_order()
 {
   let temp = assert_fs ::TempDir ::new().unwrap();

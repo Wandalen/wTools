@@ -24,3 +24,6 @@ mod without_ext;
 
 #[ cfg( feature = "path_unique_folder_name" ) ]
 mod path_unique_folder_name;
+
+#[ path = "../manual/corner_case_verification.rs" ]
+mod corner_case_verification;

@@ -584,8 +584,8 @@ mod private
 
   /// Replaces the existing path extension with the provided extension.
   ///
-  /// If the input path is empty or contains non-ASCII characters, or if the provided extension is empty or contains non-ASCII characters,
-  /// the function returns None.
+  /// If the input path is empty or contains non-ASCII characters, or if the provided extension contains non-ASCII characters,
+  /// the function returns None. If the extension is empty, the function removes the existing extension.
   /// Otherwise, it returns an Option containing the modified path with the new extension.
   ///
   /// # Arguments
@@ -626,6 +626,9 @@ mod private
  }
 
   let without_ext = without_ext( path )?;
+  // Fix(issue-documentation-change-ext): Documentation incorrectly claimed empty extension returns None.
+  // Root cause: Documentation was not updated when implementation was designed to remove extension for empty string.
+  // Pitfall: Always verify documentation matches implementation behavior, especially for edge cases.
   if ext.is_empty()
   {
    Some( without_ext )

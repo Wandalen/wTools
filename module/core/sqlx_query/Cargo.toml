@@ -30,6 +30,11 @@ no_std = []
 use_alloc = [ "no_std" ]
 enabled = []
 
+# Feature defined by consumer crate to control compile-time vs runtime query checking.
+# When enabled: macros expand to runtime query functions (faster builds, no DB at compile time)
+# When disabled: macros expand to compile-time checked macros (slower builds, DB required)
+sqlx_compiletime_checks = []
+
 [dependencies]
 
 [dev-dependencies]

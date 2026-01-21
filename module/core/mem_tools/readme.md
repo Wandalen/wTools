@@ -17,7 +17,7 @@ Performant size / pointer / region / data comparing.
 
 use mem_tools as mem;
 
-// Are two pointers are the same, not taking into accoint type.
+// Are two pointers the same, not taking into account type.
 // Unlike `std::ptr::eq()` does not require arguments to have the same type.
 let src1 = ( 1, );
 let src2 = ( 1, );

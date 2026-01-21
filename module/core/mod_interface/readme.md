@@ -54,6 +54,12 @@ This example shows a parent module using a `child` layer, demonstrating how item
 
 For a module to be used as a layer, it must contain the necessary exposure levels (`private`, `own`, `orphan`, `exposed`, `prelude`). The `mod_interface!` macro helps generate these.
 
+<!-- DISABLED(2026-01-21): Illustrative example showing macro usage patterns, not executable code -->
+<!-- REASON: Uses `crate::mod_interface!` which doesn't work in doc test context, pedagogical only -->
+<!-- RE-ENABLE: N/A - permanent documentation example, see examples/ for runnable code -->
+<!-- APPROVED: mod_interface maintainers -->
+<!-- TRACKING: Documented as illustrative example per project standards -->
+
 ```rust,ignore
 use mod_interface::mod_interface;
 
@@ -149,6 +155,12 @@ crate::mod_interface!
 
 <details>
 <summary>Click to see the code expanded by the macro</summary>
+
+<!-- DISABLED(2026-01-21): Macro expansion illustration, not executable code -->
+<!-- REASON: Shows generated code structure for educational purposes, not meant to compile standalone -->
+<!-- RE-ENABLE: N/A - permanent documentation showing macro expansion -->
+<!-- APPROVED: mod_interface maintainers -->
+<!-- TRACKING: Documented as macro expansion illustration -->
 
 ```rust,ignore
 use mod_interface::mod_interface;
@@ -312,6 +324,12 @@ pub mod prelude
 ### Debugging
 
 To debug module interface use directive `#![ debug ]` in macro `mod_interface`. Let's update the main file of the example :
+
+<!-- DISABLED(2026-01-21): Syntax example for debug directive -->
+<!-- REASON: Snippet showing macro invocation pattern, not standalone compilable code -->
+<!-- RE-ENABLE: N/A - permanent syntax reference -->
+<!-- APPROVED: mod_interface maintainers -->
+<!-- TRACKING: Documented as syntax example -->
 
 ```rust,ignore
 mod_interface::mod_interface!

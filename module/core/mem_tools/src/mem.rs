@@ -39,12 +39,10 @@ mod private
   unsafe { memcmp(mem1, mem2, core ::mem ::size_of_val(src1)) == 0 }
  }
 
-  /* zzz: qqq: implement mem ::same_data, comparing data. discuss */
-
   ///
-  /// Are two pointers are the same, not taking into accoint type.
+  /// Are two pointers the same, not taking into account type.
   ///
-  /// Unlike `std ::ptr ::eq()` does not require arguments to have the same type.
+  /// Unlike `std::ptr::eq()` does not require arguments to have the same type.
   pub fn same_ptr< T1: ?Sized, T2: ?Sized >(src1: &T1, src2: &T2) -> bool
   {
   let mem1 = core ::ptr ::from_ref :: < T1 >(src1).cast :: < () >();

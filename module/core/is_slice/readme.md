@@ -33,5 +33,5 @@ cargo add is_slice
 ```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd examples/is_slice_trivial
-cargo run
+cargo run --example is_slice_trivial
+```

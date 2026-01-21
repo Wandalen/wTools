@@ -1,10 +1,16 @@
-//! qqq: write proper description
+//! Basic usage example for `mem_tools` crate.
+//!
+//! Demonstrates the three core comparison functions:
+//! - `same_ptr()` - Type-agnostic pointer equality check
+//! - `same_size()` - Memory size comparison across types
+//! - `same_region()` - Combined pointer and size validation
+
 use mem_tools as mem;
 
 fn main() 
 {
-  // Are two pointers are the same, not taking into accoint type.
-  // Unlike `std ::ptr ::eq()` does not require arguments to have the same type.
+  // Are two pointers the same, not taking into account type.
+  // Unlike `std::ptr::eq()` does not require arguments to have the same type.
   let src1 = (1,);
   let src2 = (1,);
   assert!(!mem ::same_ptr(&src1, &src2));

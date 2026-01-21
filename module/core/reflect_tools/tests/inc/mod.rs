@@ -38,5 +38,6 @@ mod group1
   mod hashset_test;
   mod hashmap_test;
   mod array_test;
+  mod is_ordered_test;
 
 }

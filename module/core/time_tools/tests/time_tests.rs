@@ -169,6 +169,71 @@ fn test_monotonic_property()
   assert!( s2 - s1 >= 1, "Time should advance at least 1 second" );
 }
 
+/// Tests that rapid sequential calls maintain monotonicity.
+///
+/// Makes 1000 calls to now() in rapid succession without sleep.
+/// Verifies that time never goes backwards even under rapid polling.
+///
+/// # Test Coverage
+///
+/// - 1000 rapid sequential calls without delays
+/// - Monotonicity verification (no backwards time jumps)
+/// - Real-world usage pattern (polling loops)
+#[ test ]
+#[ cfg( feature = "time_now" ) ]
+#[ cfg( not( feature = "no_std" ) ) ]
+fn test_rapid_sequential_monotonicity()
+{
+  let mut prev = the_module ::now();
+  let mut violations = 0;
+
+  for i in 0..1000
+  {
+    let current = the_module ::now();
+
+    if current < prev
+    {
+      eprintln!( "Violation at iteration {i}: time went backwards! prev={prev}, current={current}" );
+      violations += 1;
+    }
+
+    prev = current;
+  }
+
+  assert_eq!( violations, 0, "Time went backwards {violations} times out of 1000 calls" );
+}
+
+/// Tests that rapid calls across different units maintain consistency.
+///
+/// Makes 100 rapid calls cycling through s::now(), ms::now(), and ns::now()
+/// and verifies that unit conversions remain mathematically consistent.
+///
+/// # Test Coverage
+///
+/// - Rapid cross-unit calls (100 iterations)
+/// - Unit conversion accuracy under load
+/// - No timing race conditions between units
+#[ test ]
+#[ cfg( feature = "time_now" ) ]
+#[ cfg( not( feature = "no_std" ) ) ]
+fn test_rapid_cross_unit_consistency()
+{
+  for i in 0..100
+  {
+    let ms = the_module ::now();
+    let s = the_module ::s ::now();
+    let ns = the_module ::ns ::now();
+
+    // ms/1000 should equal s (with tolerance for rounding)
+    let diff_s = ( ms / 1000 - s ).abs();
+    assert!( diff_s <= 1, "Iteration {i}: ms and s inconsistent (diff: {diff_s} s)" );
+
+    // ns/1_000_000 should equal ms (with tolerance for execution time)
+    let diff_ms = ( ns / 1_000_000 - ms ).abs();
+    assert!( diff_ms <= 10, "Iteration {i}: ns and ms inconsistent (diff: {diff_ms} ms)" );
+  }
+}
+
 /// Tests no_std compilation compatibility.
 ///
 /// This is a compile-time check. If this test compiles with

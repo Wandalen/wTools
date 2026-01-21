@@ -1,0 +1,310 @@
+//! Edge case and corner case tests for process_tools.
+//!
+//! Tests covering extreme scenarios, boundary conditions, and unusual inputs.
+
+use process_tools::process;
+use std::collections::HashMap;
+
+#[ test ]
+fn test_report_display_formatting()
+{
+  let report = process::Run::former()
+    .bin_path( "echo" )
+    .args( vec![ "test_output".into() ] )
+    .current_path( "." )
+    .run()
+    .expect( "echo should succeed" );
+
+  // Test Display trait implementation
+  let formatted = format!( "{}", report );
+
+  // Should contain command
+  assert!( formatted.contains( "echo" ) );
+
+  // Should contain output
+  assert!( formatted.contains( "test_output" ) );
+}
+
+#[ test ]
+fn test_report_clone()
+{
+  let report1 = process::Run::former()
+    .bin_path( "echo" )
+    .args( vec![ "test".into() ] )
+    .current_path( "." )
+    .run()
+    .expect( "echo should succeed" );
+
+  let report2 = report1.clone();
+
+  assert_eq!( report1.command, report2.command );
+  assert_eq!( report1.out, report2.out );
+  assert_eq!( report1.err, report2.err );
+  assert_eq!( report1.current_path, report2.current_path );
+}
+
+#[ test ]
+fn test_empty_stdout_empty_stderr()
+{
+  // Use 'true' command which produces no output
+  let cmd = if cfg!( target_os = "windows" )
+  {
+    "cmd /c exit 0"
+  }
+  else
+  {
+    "true"
+  };
+
+  let report = process::Run::former()
+    .current_path( "." )
+    .run_with_shell( cmd )
+    .expect( "silent command should succeed" );
+
+  // Both stdout and stderr should be empty
+  assert!( report.out.is_empty() );
+  assert!( report.err.is_empty() );
+}
+
+#[ test ]
+fn test_large_output()
+{
+  // Generate moderately large output (not huge, but enough to test buffering)
+  // Use seq command which is POSIX-compatible and works on both Unix and Linux
+  let cmd = if cfg!( target_os = "windows" )
+  {
+    "for /L %i in (1,1,100) do @echo Line %i"
+  }
+  else
+  {
+    "i=1; while [ $i -le 100 ]; do echo Line $i; i=$((i + 1)); done"
+  };
+
+  let report = process::Run::former()
+    .current_path( "." )
+    .run_with_shell( cmd )
+    .expect( "large output command should succeed" );
+
+  // Should contain many lines (using 100 instead of 1000 for speed)
+  let line_count = report.out.lines().count();
+  assert!( line_count >= 100, "Expected at least 100 lines, got {}", line_count );
+}
+
+#[ test ]
+fn test_unicode_in_output()
+{
+  let cmd = if cfg!( target_os = "windows" )
+  {
+    "echo Hello世界🌍"
+  }
+  else
+  {
+    "echo 'Hello世界🌍'"
+  };
+
+  let report = process::Run::former()
+    .current_path( "." )
+    .run_with_shell( cmd )
+    .expect( "unicode command should succeed" );
+
+  assert!( report.out.contains( "Hello" ) );
+  // Unicode handling may vary by platform/locale
+}
+
+#[ test ]
+fn test_args_with_spaces()
+{
+  let report = process::Run::former()
+    .bin_path( "echo" )
+    .args( vec![ "arg with spaces".into() ] )
+    .current_path( "." )
+    .run()
+    .expect( "echo with spaced arg should succeed" );
+
+  assert!( report.out.contains( "arg with spaces" ) );
+}
+
+#[ test ]
+fn test_multiple_environment_variables()
+{
+  let mut env = HashMap::new();
+  env.insert( "VAR1".to_string(), "value1".to_string() );
+  env.insert( "VAR2".to_string(), "value2".to_string() );
+  env.insert( "VAR3".to_string(), "value3".to_string() );
+
+  let cmd = if cfg!( target_os = "windows" )
+  {
+    "echo %VAR1% %VAR2% %VAR3%"
+  }
+  else
+  {
+    "echo $VAR1 $VAR2 $VAR3"
+  };
+
+  let report = process::Run::former()
+    .current_path( "." )
+    .env_variable( env )
+    .run_with_shell( cmd )
+    .expect( "multiple env vars should succeed" );
+
+  assert!( report.out.contains( "value1" ) );
+  assert!( report.out.contains( "value2" ) );
+  assert!( report.out.contains( "value3" ) );
+}
+
+#[ test ]
+fn test_env_variable_empty_value()
+{
+  let mut env = HashMap::new();
+  env.insert( "EMPTY_VAR".to_string(), "".to_string() );
+
+  let cmd = if cfg!( target_os = "windows" )
+  {
+    "echo '%EMPTY_VAR%'"
+  }
+  else
+  {
+    "echo '$EMPTY_VAR'"
+  };
+
+  let report = process::Run::former()
+    .current_path( "." )
+    .env_variable( env )
+    .run_with_shell( cmd )
+    .expect( "empty env var should succeed" );
+
+  // Empty variable may be rendered as empty string or literal $EMPTY_VAR
+  assert!( !report.out.is_empty() );
+}
+
+#[ test ]
+fn test_relative_current_path()
+{
+  // Use relative path (current directory)
+  let report = process::Run::former()
+    .bin_path( "echo" )
+    .args( vec![ "test".into() ] )
+    .current_path( "." )
+    .run()
+    .expect( "relative path should work" );
+
+  assert!( report.out.contains( "test" ) );
+}
+
+#[ test ]
+fn test_builder_minimal_configuration()
+{
+  // Minimal configuration - only bin_path and current_path
+  let report = process::Run::former()
+    .bin_path( "echo" )
+    .current_path( "." )
+    .run()
+    .expect( "minimal config should succeed" );
+
+  // Echo with no args on some systems outputs nothing, on others a newline
+  assert!( report.error.is_ok() );
+}
+
+#[ test ]
+fn test_shell_complex_expression()
+{
+  let cmd = if cfg!( target_os = "windows" )
+  {
+    "echo a && echo b"
+  }
+  else
+  {
+    "echo a && echo b"
+  };
+
+  let report = process::Run::former()
+    .current_path( "." )
+    .run_with_shell( cmd )
+    .expect( "complex shell expression should succeed" );
+
+  assert!( report.out.contains( 'a' ) );
+  assert!( report.out.contains( 'b' ) );
+}
+
+#[ test ]
+fn test_stderr_only_output()
+{
+  let cmd = if cfg!( target_os = "windows" )
+  {
+    "echo error 1>&2"
+  }
+  else
+  {
+    "echo error >&2"
+  };
+
+  let report = process::Run::former()
+    .current_path( "." )
+    .joining_streams( false )
+    .run_with_shell( cmd )
+    .expect( "stderr output should succeed" );
+
+  // Stdout should be empty, stderr should have content
+  assert!( report.out.trim().is_empty() );
+  assert!( report.err.contains( "error" ) );
+}
+
+#[ test ]
+fn test_stdout_only_output()
+{
+  let report = process::Run::former()
+    .bin_path( "echo" )
+    .args( vec![ "stdout_only".into() ] )
+    .current_path( "." )
+    .joining_streams( false )
+    .run()
+    .expect( "stdout output should succeed" );
+
+  // Stdout should have content, stderr should be empty
+  assert!( report.out.contains( "stdout_only" ) );
+  assert!( report.err.is_empty() );
+}
+
+#[ test ]
+fn test_report_debug_formatting()
+{
+  let report = process::Run::former()
+    .bin_path( "echo" )
+    .args( vec![ "test".into() ] )
+    .current_path( "." )
+    .run()
+    .expect( "echo should succeed" );
+
+  // Test Debug trait implementation
+  let debug_output = format!( "{report:?}" );
+
+  // Should contain Report struct name
+  assert!( debug_output.contains( "Report" ) );
+}
+
+#[ test ]
+fn test_empty_shell_command_behavior()
+{
+  // Test what happens with empty string - behavior may vary
+  let result = process::Run::former()
+    .current_path( "." )
+    .run_with_shell( "" );
+
+  // Platform-dependent: may succeed (no-op) or fail (empty command)
+  // Just verify it doesn't panic
+  let _ignore = result;
+}
+
+#[ test ]
+fn test_whitespace_only_args()
+{
+  let report = process::Run::former()
+    .bin_path( "echo" )
+    .args( vec![ "   ".into() ] )
+    .current_path( "." )
+    .run()
+    .expect( "echo with whitespace arg should succeed" );
+
+  // Echo will output the whitespace
+  assert!( !report.out.is_empty() );
+}

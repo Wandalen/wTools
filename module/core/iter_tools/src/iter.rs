@@ -264,7 +264,6 @@ pub mod orphan
   Itertools,
  };
 
-  #[ cfg(not(feature = "no_std")) ]
   #[ doc( inline ) ]
   pub use core::iter::zip;
 }
