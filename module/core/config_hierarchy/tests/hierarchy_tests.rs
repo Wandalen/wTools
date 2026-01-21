@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use serde_json::Value as JsonValue;
 use tempfile::TempDir;
 use std::env;
+use serial_test::serial;
 
 struct TestDefaults;
 impl ConfigDefaults for TestDefaults
@@ -46,13 +47,34 @@ impl ConfigValidator for TestValidator
 type TestConfig = ConfigManager< TestDefaults, TestPaths, TestValidator >;
 
 #[ test ]
+#[ serial ]
 fn test_default_source()
 {
+  // Save and unset all environment variables that could affect config resolution
+  let original_pro = env::var( "PRO" );
+  let original_home = env::var( "HOME" );
+  let original_userprofile = env::var( "USERPROFILE" );
+  let original_xdg_config = env::var( "XDG_CONFIG_HOME" );
+  let original_appdata = env::var( "APPDATA" );
+
+  env::remove_var( "PRO" );
+  env::remove_var( "HOME" );
+  env::remove_var( "USERPROFILE" );
+  env::remove_var( "XDG_CONFIG_HOME" );
+  env::remove_var( "APPDATA" );
+
   let runtime_params = HashMap::new();
   let ( value, source ) = TestConfig::resolve_config_value( "param1", &runtime_params );
 
   assert_eq!( value, JsonValue::String( "default".into() ) );
   assert!( matches!( source, ConfigSource::Default ) );
+
+  // Restore environment variables
+  if let Ok( val ) = original_pro { env::set_var( "PRO", val ); }
+  if let Ok( val ) = original_home { env::set_var( "HOME", val ); }
+  if let Ok( val ) = original_userprofile { env::set_var( "USERPROFILE", val ); }
+  if let Ok( val ) = original_xdg_config { env::set_var( "XDG_CONFIG_HOME", val ); }
+  if let Ok( val ) = original_appdata { env::set_var( "APPDATA", val ); }
 }
 
 #[ test ]
@@ -68,6 +90,7 @@ fn test_runtime_overrides_default()
 }
 
 #[ test ]
+#[ serial ]
 fn test_env_overrides_default()
 {
   env::set_var( "TESTAPP_ENVPARAM", "env_value" );
@@ -82,6 +105,7 @@ fn test_env_overrides_default()
 }
 
 #[ test ]
+#[ serial ]
 fn test_runtime_overrides_env()
 {
   env::set_var( "TESTAPP_TESTPARAM", "env_value" );
@@ -98,6 +122,7 @@ fn test_runtime_overrides_env()
 }
 
 #[ test ]
+#[ serial ]
 fn test_global_config_overrides_default()
 {
   let temp_dir = TempDir::new().unwrap();
@@ -127,8 +152,22 @@ fn test_global_config_overrides_default()
 }
 
 #[ test ]
+#[ serial ]
 fn test_resolve_all_config()
 {
+  // Save and unset all environment variables that could affect config resolution
+  let original_pro = env::var( "PRO" );
+  let original_home = env::var( "HOME" );
+  let original_userprofile = env::var( "USERPROFILE" );
+  let original_xdg_config = env::var( "XDG_CONFIG_HOME" );
+  let original_appdata = env::var( "APPDATA" );
+
+  env::remove_var( "PRO" );
+  env::remove_var( "HOME" );
+  env::remove_var( "USERPROFILE" );
+  env::remove_var( "XDG_CONFIG_HOME" );
+  env::remove_var( "APPDATA" );
+
   let runtime_params = HashMap::new();
   let all_config = TestConfig::resolve_all_config( &runtime_params );
 
@@ -138,9 +177,17 @@ fn test_resolve_all_config()
   let ( value1, source1 ) = &all_config[ "param1" ];
   assert_eq!( value1, &JsonValue::String( "default".into() ) );
   assert!( matches!( source1, ConfigSource::Default ) );
+
+  // Restore environment variables
+  if let Ok( val ) = original_pro { env::set_var( "PRO", val ); }
+  if let Ok( val ) = original_home { env::set_var( "HOME", val ); }
+  if let Ok( val ) = original_userprofile { env::set_var( "USERPROFILE", val ); }
+  if let Ok( val ) = original_xdg_config { env::set_var( "XDG_CONFIG_HOME", val ); }
+  if let Ok( val ) = original_appdata { env::set_var( "APPDATA", val ); }
 }
 
 #[ test ]
+#[ serial ]
 fn test_unknown_parameter_returns_null()
 {
   let runtime_params = HashMap::new();
@@ -151,6 +198,7 @@ fn test_unknown_parameter_returns_null()
 }
 
 #[ test ]
+#[ serial ]
 fn test_case_sensitive_env_var()
 {
   env::set_var( "TESTAPP_PARAM_WITH_CASE", "value" );
@@ -164,6 +212,7 @@ fn test_case_sensitive_env_var()
 }
 
 #[ test ]
+#[ serial ]
 fn test_type_detection_in_hierarchy()
 {
   env::set_var( "TESTAPP_BOOL_PARAM", "true" );
