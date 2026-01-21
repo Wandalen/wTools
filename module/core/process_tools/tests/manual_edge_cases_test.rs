@@ -1,4 +1,4 @@
-//! Edge case and corner case tests for process_tools.
+//! Edge case and corner case tests for `process_tools`.
 //!
 //! Tests covering extreme scenarios, boundary conditions, and unusual inputs.
 
@@ -16,7 +16,7 @@ fn test_report_display_formatting()
     .expect( "echo should succeed" );
 
   // Test Display trait implementation
-  let formatted = format!( "{}", report );
+  let formatted = format!( "{report}" );
 
   // Should contain command
   assert!( formatted.contains( "echo" ) );
@@ -87,7 +87,7 @@ fn test_large_output()
 
   // Should contain many lines (using 100 instead of 1000 for speed)
   let line_count = report.out.lines().count();
-  assert!( line_count >= 100, "Expected at least 100 lines, got {}", line_count );
+  assert!( line_count >= 100, "Expected at least 100 lines, got {line_count}" );
 }
 
 #[ test ]
@@ -156,7 +156,7 @@ fn test_multiple_environment_variables()
 fn test_env_variable_empty_value()
 {
   let mut env = HashMap::new();
-  env.insert( "EMPTY_VAR".to_string(), "".to_string() );
+  env.insert( "EMPTY_VAR".to_string(), String::new() );
 
   let cmd = if cfg!( target_os = "windows" )
   {
@@ -208,14 +208,7 @@ fn test_builder_minimal_configuration()
 #[ test ]
 fn test_shell_complex_expression()
 {
-  let cmd = if cfg!( target_os = "windows" )
-  {
-    "echo a && echo b"
-  }
-  else
-  {
-    "echo a && echo b"
-  };
+  let cmd = "echo a && echo b";
 
   let report = process::Run::former()
     .current_path( "." )

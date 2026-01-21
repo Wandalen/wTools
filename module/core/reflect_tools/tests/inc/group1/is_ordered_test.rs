@@ -16,7 +16,7 @@ use test_tools ::a_id;
 //
 
 /// Reproduces bug where `HashMap.is_ordered()` incorrectly returned true.
-/// HashMap does not guarantee element order, so `is_ordered()` must return false.
+/// `HashMap` does not guarantee element order, so `is_ordered()` must return false.
 // test_kind: bug_reproducer(issue-manual-test-001)
 #[ test ]
 fn hashmap_is_ordered_returns_false()
@@ -45,7 +45,7 @@ fn hashmap_is_ordered_returns_false()
 }
 
 /// Reproduces bug where `HashSet.is_ordered()` incorrectly returned true.
-/// HashSet does not guarantee element order, so `is_ordered()` must return false.
+/// `HashSet` does not guarantee element order, so `is_ordered()` must return false.
 // test_kind: bug_reproducer(issue-manual-test-001)
 #[ test ]
 fn hashset_is_ordered_returns_false()

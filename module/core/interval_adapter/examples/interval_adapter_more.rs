@@ -1,4 +1,12 @@
-//! qqq: write proper description
+//! Advanced `IterableInterval` usage with custom interval construction.
+//!
+//! Demonstrates multiple ways to construct intervals that work with `IterableInterval` trait:
+//! standard `Range`/`RangeInclusive` types, tuple conversion `(0, 3).into_interval()`, and
+//! explicit `Bound` tuples. All four construction methods produce identical iteration results,
+//! showing the flexibility of the interval abstraction.
+//!
+//! Expected output: Prints 0,1,2,3 four times (once per construction method), demonstrating
+//! that all approaches are functionally equivalent.
 fn main() 
 {
   use interval_adapter :: { IterableInterval, IntoInterval, Bound };

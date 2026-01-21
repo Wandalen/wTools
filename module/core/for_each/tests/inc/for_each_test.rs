@@ -45,7 +45,7 @@ fn braces_unwrap_test()
   @SRC{ { a, b, c, } }
  );
    // generates :
-   // dbg!( prefix, a, b, c, psotfix );
+   // dbg!( prefix, a, b, c, postfix );
    the_module ::braces_unwrap!
    (
   dbg where
@@ -54,7 +54,7 @@ fn braces_unwrap_test()
   @SRC{ a, b, c, }
  );
    // generates :
-   // dbg!( prefix, a, b, c, psotfix );
+   // dbg!( prefix, a, b, c, postfix );
  }
 
   /* test.case( "function-style" ) */

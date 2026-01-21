@@ -56,14 +56,19 @@ mod_interface! {
   /// Transitive `TryFrom` and `TryInto`.
   layer transitive;
 
-  #[ cfg( feature = "path_utf8" ) ]
-  own use ::camino :: { Utf8Path, Utf8PathBuf };
+  // xxx : mod_interface! macro doesn't support ::external_crate:: syntax
+  // Issue: `own use ::camino::` causes "expected identifier, found ::" error
+  // Temporary workaround: Comment out until mod_interface! macro is fixed
+  // #[ cfg( feature = "path_utf8" ) ]
+  // own use ::camino::{ Utf8Path, Utf8PathBuf };
 
   // #[ cfg( not( feature = "no_std" ) ) ]
-  // own use ::std ::path :: { PathBuf, Path, Component };
+  // own use ::std::path::{ PathBuf, Path, Component };
 
-  exposed use ::std ::path :: { Path, PathBuf };
+  #[ cfg( not( feature = "no_std" ) ) ]
+  exposed use ::std::path::{ Path, PathBuf };
 
-  own use ::std ::borrow ::Cow;
+  #[ cfg( not( feature = "no_std" ) ) ]
+  own use ::std::borrow::Cow;
 
 }

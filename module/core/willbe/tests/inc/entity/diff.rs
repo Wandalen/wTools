@@ -84,13 +84,19 @@ fn prepare(tmp: &TempDir, name: &str, manifest_dir_path: &Path) -> PathBuf
   dir.to_path_buf()
 }
 
-fn crate_file_path(manifest_dir_path: &Path) -> PathBuf 
+fn crate_file_path(manifest_dir_path: &Path) -> PathBuf
 {
   _ = cargo ::pack(cargo ::PackOptions ::former().path(manifest_dir_path).dry(false).form()).expect("Failed to package a package");
 
   let absolute = CrateDir ::try_from(manifest_dir_path).unwrap();
   let package = Package ::try_from(absolute).unwrap();
-  manifest_dir_path.join("target").join("package").join(format!(
+
+  // Respect CARGO_TARGET_DIR environment variable if set, otherwise use local target/
+  let target_dir = std ::env ::var("CARGO_TARGET_DIR")
+  .map( | p | PathBuf ::from(p) )
+  .unwrap_or_else( | _ | manifest_dir_path.join("target") );
+
+  target_dir.join("package").join(format!(
   "{}-{}.crate",
   package.name().unwrap(),
   package.version().unwrap()

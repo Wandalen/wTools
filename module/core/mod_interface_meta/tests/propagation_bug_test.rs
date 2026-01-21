@@ -3,8 +3,6 @@
 //! This test demonstrates that items declared with explicit visibility
 //! (own/orphan/exposed use) do NOT propagate to higher layers as expected.
 
-use mod_interface_meta::mod_interface;
-
 /// Test: own use should propagate to orphan, exposed, prelude
 mod test_own_propagation
 {

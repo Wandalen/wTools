@@ -1,4 +1,10 @@
-//! qqq: write proper description
+//! Basic usage of `IterableInterval` trait with standard range types.
+//!
+//! Demonstrates how to write generic functions that accept any iterable interval type,
+//! allowing callers to use either half-open `Range` (0..4) or closed `RangeInclusive` (0..=3)
+//! interchangeably. Both produce identical iteration results.
+//!
+//! Expected output: Prints 0,1,2,3 twice (once per function call).
 fn main() 
 {
   use interval_adapter ::IterableInterval;

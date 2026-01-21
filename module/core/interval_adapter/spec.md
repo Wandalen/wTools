@@ -4,7 +4,7 @@
 
 **interval_adapter** is a zero-dependency no_std crate providing a unified interface for Rust's diverse range types. It abstracts over Range, RangeInclusive, and all standard library range variants with traits for both iterable and non-iterable intervals, solving the problem of writing generic functions that accept any interval type while preserving type safety and zero-cost abstractions.
 
-**Version:** 0.38.0
+**Version:** 0.39.0
 **Status:** Production
 **Category:** Type Utilities (Interval/Range Abstraction)
 **Dependents:** 3 workspace crates (likely range-handling utilities)

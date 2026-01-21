@@ -418,8 +418,13 @@ mod ip_01_mix_all_item_types
   fn trait_exported()
   {
     // Compile-time check that trait is accessible
-    fn check_trait<T : orphan::MyTrait>() {}
-    let _ = check_trait::<()>;
+    // Define a type that implements the trait
+    struct TestType;
+    impl orphan::MyTrait for TestType {}
+
+    // Verify we can use the trait bound
+    fn check_trait<T : orphan::MyTrait>(_: T) {}
+    check_trait(TestType);
   }
 
   #[ test ]

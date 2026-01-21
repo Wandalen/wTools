@@ -166,7 +166,7 @@ mod private
   ///   @SRC{ { a, b, c, } }
   /// );
   /// // generates :
-  /// // dbg!( prefix, a, b, c, psotfix );
+  /// // dbg!( prefix, a, b, c, postfix );
   /// braces_unwrap!
   /// (
   ///   dbg where
@@ -175,7 +175,7 @@ mod private
   ///   @SRC{ a, b, c, }
   /// );
   /// // generates :
-  /// // dbg!( prefix, a, b, c, psotfix );
+  /// // dbg!( prefix, a, b, c, postfix );
   /// ```
   ///
   #[ macro_export ]
@@ -226,7 +226,7 @@ mod private
  );
  };
 
-  // with prefix and psotfix
+  // with prefix and postfix
 
   /* 0 */
   (

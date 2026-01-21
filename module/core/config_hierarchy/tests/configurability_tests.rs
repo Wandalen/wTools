@@ -4,6 +4,7 @@
 
 use config_hierarchy::{ ConfigPaths, EnvVarCasing };
 use config_hierarchy::{ get_local_config_path, get_global_config_path, get_global_config_dir, discover_local_configs, resolve_config_value };
+use serial_test::serial;
 
 // Custom implementation with non-standard values
 struct CustomPaths;
@@ -83,6 +84,7 @@ fn custom_local_config_filename_actually_used()
 /// This test cannot be faked because default directory is `".persistent"` but custom is `".global_storage"`.
 /// Must actually call trait method to produce custom directory name.
 #[test]
+#[serial]
 fn custom_global_persistent_dir_actually_used()
 {
   use std::env;
@@ -113,6 +115,7 @@ fn custom_global_persistent_dir_actually_used()
 /// This test cannot be faked because default global filename is `"config.yaml"` but custom is `"app_settings.toml"`.
 /// Only way to produce custom filename is to actually call the trait method.
 #[test]
+#[serial]
 fn custom_global_config_filename_actually_used()
 {
   use std::env;
@@ -144,6 +147,7 @@ fn custom_global_config_filename_actually_used()
 /// but custom prefix is `MYPREFIX`. Setting both env vars and verifying only custom prefix works proves
 /// the trait method is called, not hardcoded uppercase app name.
 #[test]
+#[serial]
 fn custom_env_var_prefix_actually_used()
 {
   use config_hierarchy::ConfigDefaults;
@@ -192,6 +196,7 @@ fn custom_env_var_prefix_actually_used()
 /// is `"__"` (double underscore). Setting both env vars and verifying only double underscore works
 /// proves the trait method is called for separator, not hardcoded string.
 #[test]
+#[serial]
 fn custom_env_var_separator_actually_used()
 {
   use config_hierarchy::ConfigDefaults;
@@ -238,7 +243,13 @@ fn custom_env_var_separator_actually_used()
 /// This test cannot be faked because default casing is `UpperCase` (would look for `MAXRETRIES`) but
 /// custom casing is `LowerCase` (looks for `maxretries`). Setting both env vars and verifying only
 /// lowercase works proves the trait method is called for casing transformation, not hardcoded `.to_uppercase()`.
+///
+/// **Platform Note**: This test is ignored on Windows because Windows environment variables are
+/// case-insensitive, making it impossible to have both `MYPREFIX__maxretries` and `MYPREFIX__MAXRETRIES`
+/// simultaneously. The test would fail not due to code issues, but due to platform limitations.
 #[test]
+#[serial]
+#[cfg_attr(windows, ignore = "Windows env vars are case-insensitive")]
 fn custom_env_var_casing_actually_used()
 {
   use config_hierarchy::ConfigDefaults;

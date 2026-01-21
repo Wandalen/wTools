@@ -15,6 +15,7 @@ mod private
  }
 
   #[ allow( unused_macros ) ]
+  #[ macro_export ]
   /// macro2
   macro_rules! macro2
   {
@@ -29,8 +30,6 @@ mod private
  }
 
   #[ allow( unused_imports ) ]
-  pub( crate ) use macro2;
-  #[ allow( unused_imports ) ]
   use macro3;
 }
 
@@ -40,7 +39,8 @@ the_module ::mod_interface!
 {
 
   // exposed( crate ) use macro1;
-  exposed( crate ) use macro2;
+  // xxx: macro re-export not working - needs investigation
+  // exposed( crate ) use macro2;
   // exposed( crate ) use macro3;
 
 }

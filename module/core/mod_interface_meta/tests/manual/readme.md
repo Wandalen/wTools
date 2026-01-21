@@ -99,12 +99,51 @@ Based on corner case matrix in `-corner_cases_matrix.md`:
 | Integration | IP-03 | **PASSED** | empty body works |
 | Integration | IP-04 | **PASSED** | private content works |
 
+### Session 2: Propagation Bug Fixes and Rename Support (2026-01-21)
+
+**Test Scope**: Fixing propagation bugs discovered in Session 1 and verifying all working functionality.
+
+**Method**: Applied TDD workflow - fixed `record_use_explicit` to propagate items through namespace hierarchy, added rename support, verified with comprehensive test suite.
+
+**Fixes Applied**:
+
+#### Fix 1: Namespace Propagation (Issue-001)
+- **Location**: `src/impls.rs` lines 245-309 (`record_use_explicit` function)
+- **Root Cause**: Function only added items to declared layer without generating re-exports for higher layers
+- **Fix**: Added match statement to generate explicit re-exports using `super::[layer]::#final_ident` pattern
+- **Verification**: All propagation tests pass (UC-01, UC-02, UC-03, propagation_bug_test.rs: 4/4)
+
+#### Fix 2: Rename Support (Use ... as Alias)
+- **Location**: `src/impls.rs` lines 220-236 (final_ident extraction)
+- **Root Cause**: Propagation used original path instead of alias name
+- **Fix**: Extract final identifier from UseTree (alias if present, otherwise last path segment)
+- **Verification**: UC-09 rename test passes (2/2 tests)
+
+#### Fix 3: Result Type Consistency
+- **Location**: `src/impls.rs` lines 160-197 (`record_use_implicit`), lines 472-477 (call sites)
+- **Root Cause**: `record_use_implicit` returned `()` while `record_use_explicit` returned `Result`, causing type mismatch in try_for_each closure
+- **Fix**: Changed `record_use_implicit` signature to return `syn::Result<()>`, added `?` operators at call sites
+- **Verification**: Compilation succeeds without type errors
+
+**Test Results**: 32/32 passing tests
+- Working corner cases: 22/22 ✅
+- Integration tests: 5/5 ✅
+- Propagation bug tests: 4/4 ✅
+- Smoke test: 1/1 ✅
+
+**Still Broken** (Unimplemented Features):
+- UC-05: Bare `use` syntax (requires parser changes)
+- MM-01-04, MM-07: Micro-modules require filesystem files (expected Rust behavior)
+- UC-14: Mixed implicit/explicit use (depends on UC-05)
+
 ## Lessons Learned
 
-1. **Propagation is broken**: The core architectural feature (four-layer namespace propagation) doesn't work as documented.
+1. **Propagation fix requires relative paths**: Using `super::[layer]::#ident` instead of `__all__::[layer]::#ident` avoids privacy violations and double-prefixing.
 
-2. **Documentation doesn't match implementation**: spec.md shows bare `use` syntax that the macro doesn't support.
+2. **Rename handling needs final identifier extraction**: Can't blindly re-export paths - must use the alias name for propagated imports.
 
-3. **Test methodology worked**: Creating comprehensive corner case matrix before testing revealed multiple critical bugs efficiently.
+3. **Result type consistency is critical**: When refactoring function signatures to return Result, update ALL call sites atomically to avoid type mismatches.
 
-4. **Need source code investigation**: To fix propagation bugs, must examine how the macro generates re-export code for each layer.
+4. **Test methodology worked**: Creating comprehensive corner case matrix before testing revealed multiple critical bugs efficiently.
+
+5. **Bare use syntax not yet supported**: Requires additional parser/record handling beyond current implementation.
