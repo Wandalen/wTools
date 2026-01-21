@@ -9,6 +9,9 @@ use action ::Report;
 use error_tools ::untyped ::Result;
 
 /// Execute query specified in query string.
+///
+/// # Errors
+/// Returns error if operation fails.
 pub async fn query_execute
 (
   mut storage: impl Store,
@@ -18,15 +21,15 @@ pub async fn query_execute
   storage.query_execute( query_str ).await
 }
 
-const EMPTY_CELL: &'static str = "";
+const EMPTY_CELL: &str = "";
 
 /// Information about result of execution of custom query.
 #[ derive( Debug ) ]
 pub struct QueryReport( pub Vec< gluesql ::prelude ::Payload > );
 
-impl std ::fmt ::Display for QueryReport
+impl core ::fmt ::Display for QueryReport
 {
-  fn fmt( &self, f: &mut std ::fmt ::Formatter< '_ > ) -> std ::fmt ::Result
+  fn fmt( &self, f: &mut core ::fmt ::Formatter< '_ > ) -> core ::fmt ::Result
   {
   for payload in &self.0
   {
@@ -41,10 +44,10 @@ impl std ::fmt ::Display for QueryReport
  }
  },
   Payload ::Create => writeln!( f, "Table created" )?,
-  Payload ::Insert( number ) => writeln!( f, "Inserted {} rows", number )?,
-  Payload ::Delete( number ) => writeln!( f, "Deleted {} rows", number )?,
-  Payload ::Update( number ) => writeln!( f, "Updated {} rows", number )?,
-  Payload ::DropTable => writeln!( f, "Table dropped" )?,
+  Payload ::Insert( number ) => writeln!( f, "Inserted {number} rows" )?,
+  Payload ::Delete( number ) => writeln!( f, "Deleted {number} rows" )?,
+  Payload ::Update( number ) => writeln!( f, "Updated {number} rows" )?,
+  Payload ::DropTable( _ ) => writeln!( f, "Table dropped" )?,
   Payload ::Select { labels: label_vec, rows: rows_vec } =>
   {
    writeln!( f, "Selected entries: " )?;
@@ -64,7 +67,7 @@ impl std ::fmt ::Display for QueryReport
   let table = tool ::table_display ::plain_table( rows );
   if let Some( table ) = table
   {
-   writeln!( f, "{}", table )?;
+   writeln!( f, "{table}" )?;
  }
  }
  },
@@ -73,7 +76,7 @@ impl std ::fmt ::Display for QueryReport
   Payload ::Commit => writeln!( f, "Transaction commited" )?,
   Payload ::Rollback => writeln!( f, "Transaction rolled back" )?,
   _ => {},
- };
+ }
  }
 
   Ok( () )

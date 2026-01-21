@@ -551,10 +551,10 @@ mod private {
     }
 
     /// Execute smoke testing by running cargo test and cargo run.
-    /// 
-    /// Enhanced implementation of FR-6 and FR-7 requirements for US-3: executes both `cargo test` and `cargo run` 
-    /// within the temporary project with robust error handling, timeout management, 
-    /// comprehensive success verification, consumer usability validation, and automatic cleanup 
+    ///
+    /// Enhanced implementation of FR-6 and FR-7 requirements for US-3: executes both `cargo test` and `cargo run`
+    /// within the temporary project with robust error handling, timeout management,
+    /// comprehensive success verification, consumer usability validation, and automatic cleanup
     /// regardless of success or failure.
     ///
     /// # Errors
@@ -567,17 +567,23 @@ mod private {
         let mut test_path = self.test_path.clone();
 
         let test_name = format!("{}{}", self.dependency_name, self.test_postfix);
-        test_path.push(test_name);
+        test_path.push(test_name.clone());
 
         // Verify project directory exists before executing commands
         if !test_path.exists() {
           return Err(format!("Project directory does not exist: {}", test_path.display()).into());
         }
 
+        // Set unique cargo target directory to avoid build cache interference in parallel tests
+        // This prevents cargo from reusing cached artifacts from other concurrent smoke tests
+        // Use the full test_path (which includes random suffix) to ensure uniqueness
+        let cargo_target_dir = test_path.join("target");
+
         // Execute cargo test with enhanced error handling
         println!("Executing cargo test in: {}", test_path.display());
         let output = std::process::Command::new("cargo")
           .current_dir(test_path.clone())
+          .env("CARGO_TARGET_DIR", &cargo_target_dir)
           .args(["test", "--color", "never"]) // Disable color for cleaner output parsing
           .output()
           .map_err(|e| format!("Failed to execute cargo test command: {e}"))?;
@@ -615,6 +621,7 @@ mod private {
         println!("Executing cargo run --release in: {}", test_path.display());
         let output = std::process::Command::new("cargo")
           .current_dir(test_path.clone())
+          .env("CARGO_TARGET_DIR", &cargo_target_dir)
           .args(["run", "--release", "--color", "never"]) // Disable color for cleaner output
           .output()
           .map_err(|e| format!("Failed to execute cargo run command: {e}"))?;

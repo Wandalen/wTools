@@ -32,6 +32,7 @@ full = [ "enabled" ]
 enabled = [ "interval_adapter/enabled" ]
 no_std = []
 use_alloc = [ "no_std" ]
+diagnostics_runtime_assertions = []
 
 [dependencies]
 interval_adapter = { workspace = true }

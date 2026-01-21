@@ -237,18 +237,36 @@ mod private
    else if let Some( item ) = data.get_mut( "workspace" ) { item }
    else
    { return Err( format_err!( "{report:?}\nThe manifest nor the package and nor the workspace" ) ); };
-   if let Some( dependency ) = item.get_mut( "dependencies" ).and_then( | ds | ds.get_mut( name ) )
+   // Fix(issue-001): Check all 3 dependency sections, not just [dependencies]
+   // Root cause: Original code missed dev-dependencies and build-dependencies
+   // Pitfall: Cargo has 3 dependency sections - all must be updated for consistency
+
+   for section in [ "dependencies", "dev-dependencies", "build-dependencies" ]
    {
-  if let Some( previous_version ) = dependency.get( "version" ).and_then( | v | v.as_str() ).map( std ::string ::ToString ::to_string )
+  if let Some( dependency ) = item.get_mut( section ).and_then( | ds | ds.get_mut( name ) )
   {
-   if previous_version.starts_with('~')
+   if let Some( previous_version ) = dependency.get( "version" ).and_then( | v | v.as_str() ).map( std ::string ::ToString ::to_string )
    {
-  dependency[ "version" ] = value( format!( "~{new_version}" ) );
- }
-   else
-   {
-  dependency[ "version" ] = value( new_version.clone() );
- }
+    // Preserve version operator prefix (~, ^, =)
+    let (operator, _) = if let Some( stripped ) = previous_version.strip_prefix('~')
+    {
+   ("~", stripped)
+  }
+    else if let Some( stripped ) = previous_version.strip_prefix('^')
+    {
+   ("^", stripped)
+  }
+    else if let Some( stripped ) = previous_version.strip_prefix('=')
+    {
+   ("=", stripped)
+  }
+    else
+    {
+   ("", previous_version.as_str())
+  };
+
+    dependency[ "version" ] = value( format!( "{operator}{new_version}" ) );
+  }
  }
  }
    if !o.dry 
@@ -281,37 +299,48 @@ mod private
   let Some( old_version ) = report.old_version.as_ref() else { return Ok( () ) };
   let Some( new_version ) = report.new_version.as_ref() else { return Ok( () ) };
 
+  // Fix(issue-001): Check all 3 dependency sections to match bump() behavior
+  // Root cause: Original code only reverted [dependencies], missing dev/build-dependencies
+  // Pitfall: Revert must mirror bump operations exactly to maintain consistency
   let dependencies = | item_maybe_with_dependencies: &mut toml_edit ::Item |
   {
-   if let Some( dependency ) = item_maybe_with_dependencies.get_mut( "dependencies" ).and_then( | ds | ds.get_mut( name ) )
+   for section in [ "dependencies", "dev-dependencies", "build-dependencies" ]
    {
-  if let Some( current_version ) = dependency.get( "version" ).and_then( | v | v.as_str() ).map( std ::string ::ToString ::to_string )
+  if let Some( dependency ) = item_maybe_with_dependencies.get_mut( section ).and_then( | ds | ds.get_mut( name ) )
   {
-   let version = &mut dependency[ "version" ];
-   if let Some( current_version ) = current_version.strip_prefix( '~' )
+   if let Some( current_version ) = dependency.get( "version" ).and_then( | v | v.as_str() ).map( std ::string ::ToString ::to_string )
    {
-  if current_version != new_version
-  {
+    let version = &mut dependency[ "version" ];
+
+    // Preserve version operator prefix (~, ^, =) to match bump() behavior
+    let (operator, version_without_prefix) = if let Some( v ) = current_version.strip_prefix( '~' )
+    {
+   ("~", v)
+  }
+    else if let Some( v ) = current_version.strip_prefix( '^' )
+    {
+   ("^", v)
+  }
+    else if let Some( v ) = current_version.strip_prefix( '=' )
+    {
+   ("=", v)
+  }
+    else
+    {
+   ("", current_version.as_str())
+  };
+
+    if version_without_prefix != new_version
+    {
    return Err( format_err!
    (
-  "The current version of the package does not match the expected one. Expected: `{new_version}` Current: `{}`",
-  version.as_str().unwrap_or_default()
- ));
- }
-  *version = value( format!( "~{old_version}" ) );
- }
-   else
-   {
-  if version.as_str().unwrap() != new_version
-  {
-   return Err( format_err!
-   (
-  "The current version of the package does not match the expected one. Expected: `{new_version}` Current: `{}`",
-  version.as_str().unwrap_or_default()
- ));
- }
-  *version = value( old_version.clone() );
- }
+    "The current version of the package does not match the expected one. Expected: `{new_version}` Current: `{}`",
+    version.as_str().unwrap_or_default()
+  ));
+  }
+
+    *version = value( format!( "{operator}{old_version}" ) );
+  }
  }
  }
 

@@ -1,3 +1,5 @@
+//! Tests for `meta_tools` crate.
+
 // #![ deny( rust_2018_idioms ) ]
 // #![ deny( missing_debug_implementations ) ]
 // #![ deny( missing_docs ) ]
@@ -6,6 +8,7 @@
 use ::meta_tools as the_module;
 #[ allow( unused_imports ) ]
 use test_tools ::exposed :: *;
+#[ macro_use ]
 #[ path="../../../../module/step/meta/src/module/aggregating.rs" ]
 mod aggregating;
 

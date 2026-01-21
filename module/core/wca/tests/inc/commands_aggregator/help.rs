@@ -35,13 +35,13 @@ where
 }
 
 #[ test ]
-fn help_command_with_optional_params() 
+fn help_command_with_optional_params()
 {
   let temp = assert_fs ::TempDir ::new().unwrap();
 
   let toml = format!(
   r#"[package]
-name = "wca_hello_test"
+name = "wca_hello_test_optional_params"
 version = "0.1.0"
 edition = "2021"
 [dependencies]
@@ -83,13 +83,13 @@ wca = {{path = "{}"}}"#,
 }
 
 #[ test ]
-fn help_command_with_nature_order() 
+fn help_command_with_nature_order()
 {
   let temp = assert_fs ::TempDir ::new().unwrap();
 
   let toml = format!(
   r#"[package]
-name = "wca_hello_test"
+name = "wca_hello_test_nature_order"
 version = "0.1.0"
 edition = "2021"
 [dependencies]
@@ -152,13 +152,13 @@ wca = {{path = "{}"}}"#,
 }
 
 #[ test ]
-fn help_command_with_lexicography_order() 
+fn help_command_with_lexicography_order()
 {
   let temp = assert_fs ::TempDir ::new().unwrap();
 
   let toml = format!(
   r#"[package]
-name = "wca_hello_test"
+name = "wca_hello_test_lexicography_order"
 version = "0.1.0"
 edition = "2021"
 [dependencies]

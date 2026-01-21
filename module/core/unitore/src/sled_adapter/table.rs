@@ -5,7 +5,7 @@ use error_tools ::untyped ::Result;
 use gluesql ::
 {
   core ::executor ::Payload,
-  sled_storage ::SledStorage,
+  prelude ::SledStorage,
 };
 use entity ::table ::TableStore;
 use action ::table ::TablesReport;
@@ -27,7 +27,7 @@ impl TableStore for FeedStorage< SledStorage >
   async fn table_list( &mut self, table_name: String ) -> Result< Vec< Payload > >
   {
   let glue = &mut *self.0.lock().await;
-  let query_str = format!( "SELECT * FROM GLUE_TABLE_COLUMNS WHERE TABLE_NAME='{}'", table_name );
+  let query_str = format!( "SELECT * FROM GLUE_TABLE_COLUMNS WHERE TABLE_NAME='{table_name}'" );
   let payloads = glue.execute( &query_str ).await?;
 
   Ok( payloads )

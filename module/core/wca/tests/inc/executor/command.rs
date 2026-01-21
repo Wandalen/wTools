@@ -117,7 +117,7 @@ tests_impls! {
   // without subject (should still work as subject is optional)
   let raw_command = parser.parse( [ ".command" ] ).unwrap().commands.remove( 0 );
   let grammar_command = verifier.to_command( dictionary, raw_command );
-  a_true!( grammar_command.is_err() );
+  a_true!( grammar_command.is_ok() );
  }
 
   fn with_context()

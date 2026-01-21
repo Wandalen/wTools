@@ -11,12 +11,12 @@ use gluesql ::
   executor ::Payload,
   data ::Value,
  },
-  sled_storage ::SledStorage,
+  prelude ::SledStorage,
 };
 use entity ::frame :: { FrameStore, Frame };
 use action ::frame :: { SelectedEntries, FramesReport, ListReport };
 use sled_adapter ::FeedStorage;
-use wca ::iter_tools ::Itertools;
+use itertools ::Itertools;
 
 #[ async_trait ::async_trait( ?Send ) ]
 impl FrameStore for FeedStorage< SledStorage >
@@ -69,7 +69,7 @@ impl FrameStore for FeedStorage< SledStorage >
 
   async fn frames_save( &mut self, frames: Vec< Frame > ) -> Result< Payload >
   {
-  let entries_rows: Vec< Vec< ExprNode< 'static > > > = frames.into_iter().map( | entry | entry.into() ).collect_vec();
+  let entries_rows: Vec< Vec< ExprNode< 'static > > > = frames.into_iter().map( Into ::into ).collect_vec();
 
   let insert = table( "frame" )
   .insert()
@@ -101,19 +101,19 @@ impl FrameStore for FeedStorage< SledStorage >
 
   async fn frames_update( &mut self, feed: Vec< Frame > ) -> Result< () >
   {
-  let entries_rows: Vec< Vec< ExprNode< 'static > > > = feed.into_iter().map( | entry | entry.into() ).collect_vec();
+  let entries_rows: Vec< Vec< ExprNode< 'static > > > = feed.into_iter().map( Into ::into ).collect_vec();
 
   for entry in entries_rows
   {
    let _update = table( "frame" )
    .update()
-   .set( "title", entry[ 1 ].to_owned() )
-   .set( "content", entry[ 4 ].to_owned() )
-   .set( "links", entry[ 5 ].to_owned() )
-   .set( "summary", entry[ 6 ].to_owned() )
-   .set( "published", entry[ 8 ].to_owned() )
-   .set( "media", entry[ 9 ].to_owned() )
-   .filter( col( "id" ).eq( entry[ 0 ].to_owned() ) )
+   .filter( col( "id" ).eq( entry[ 0 ].clone() ) )
+   .set( "title", entry[ 1 ].clone() )
+   .set( "content", entry[ 4 ].clone() )
+   .set( "links", entry[ 5 ].clone() )
+   .set( "summary", entry[ 6 ].clone() )
+   .set( "published", entry[ 8 ].clone() )
+   .set( "media", entry[ 9 ].clone() )
    .execute( &mut *self.0.lock().await )
    .await
    .context( "Failed to update frames" )?

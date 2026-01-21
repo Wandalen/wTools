@@ -1,25 +1,9 @@
 //! Smoke testing of the package.
 
-#[ ignore = "temporarily disabled due to test_tools ::test module gating issues" ]
-#[ test ]
-fn local_smoke_test() 
-{
-  // xxx: temporarily disabled due to test_tools ::test module gating issues
-}
-
-#[ ignore = "temporarily disabled due to test_tools ::test module gating issues" ]
-#[ test ]
-fn published_smoke_test() 
-{
-  // xxx: temporarily disabled due to test_tools ::test module gating issues
-}
-
 #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
-#[ ignore = "temporarily disabled due to string_split feature being gated" ]
 #[ test ]
-fn debug_strs_tools_semicolon_only() 
+fn debug_strs_tools_semicolon_only()
 {
-  // xxx: temporarily disabled due to string_split feature being gated
   let input = ";;";
   let splits: Vec< _ > = strs_tools ::string ::split()
   .src(input)
@@ -46,11 +30,9 @@ fn debug_strs_tools_semicolon_only()
 }
 
 #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
-#[ ignore = "temporarily disabled due to string_split feature being gated" ]
 #[ test ]
-fn debug_strs_tools_trailing_semicolon_space() 
+fn debug_strs_tools_trailing_semicolon_space()
 {
-  // xxx: temporarily disabled due to string_split feature being gated
   let input = "cmd1 ;; ";
   let splits: Vec< _ > = strs_tools ::string ::split()
   .src(input)
@@ -86,11 +68,9 @@ fn debug_strs_tools_trailing_semicolon_space()
 }
 
 #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
-#[ ignore = "temporarily disabled due to string_split feature being gated" ]
 #[ test ]
-fn debug_strs_tools_only_semicolon() 
+fn debug_strs_tools_only_semicolon()
 {
-  // xxx: temporarily disabled due to string_split feature being gated
   let input = ";;";
   let splits: Vec< _ > = strs_tools ::string ::split()
   .src(input)

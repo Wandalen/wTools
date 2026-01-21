@@ -37,7 +37,10 @@ pub fn clone_dyn(attr_input: proc_macro ::TokenStream, item_input: proc_macro ::
    #generics_where
   {
    #[ inline ]
-   fn clone( &self ) -> Self { clone_dyn ::clone_into_box( &**self ) }
+   fn clone( &self ) -> Self
+   {
+    clone_dyn ::clone_into_box( &**self )
+   }
  }
 
   #[ allow( non_local_definitions ) ]
@@ -47,7 +50,10 @@ pub fn clone_dyn(attr_input: proc_macro ::TokenStream, item_input: proc_macro ::
    #generics_where
   {
    #[ inline ]
-   fn clone( &self ) -> Self { clone_dyn ::clone_into_box( &**self ) }
+   fn clone( &self ) -> Self
+   {
+    clone_dyn ::clone_into_box( &**self )
+   }
  }
 
   #[ allow( non_local_definitions ) ]
@@ -57,7 +63,10 @@ pub fn clone_dyn(attr_input: proc_macro ::TokenStream, item_input: proc_macro ::
    #generics_where
   {
    #[ inline ]
-   fn clone( &self ) -> Self { clone_dyn ::clone_into_box( &**self ) }
+   fn clone( &self ) -> Self
+   {
+    clone_dyn ::clone_into_box( &**self )
+   }
  }
 
   #[ allow( non_local_definitions ) ]
@@ -67,7 +76,10 @@ pub fn clone_dyn(attr_input: proc_macro ::TokenStream, item_input: proc_macro ::
    #generics_where
   {
    #[ inline ]
-   fn clone( &self ) -> Self { clone_dyn ::clone_into_box( &**self ) }
+   fn clone( &self ) -> Self
+   {
+    clone_dyn ::clone_into_box( &**self )
+   }
  }
 
  };

@@ -11,14 +11,19 @@ Tests are organized by functional domain (what is being tested) rather than by m
 ```
 tests/
 ├── readme.md          # This file
-└── smoke_test.rs      # Basic API accessibility tests
+├── smoke_test.rs      # Basic API accessibility tests
+├── placeholder_test.rs # Comprehensive placeholder function testing
+└── manual/            # Manual testing procedures and plans
+    └── readme.md      # Comprehensive manual testing plan
 ```
 
-## Domain Map
+## Responsibility Table
 
-| Domain | Test Location | What It Tests |
-|--------|---------------|---------------|
-| API Surface | `smoke_test.rs` | Module imports, basic function accessibility |
+| File | Responsibility |
+|------|----------------|
+| `smoke_test.rs` | Validate API accessibility |
+| `placeholder_test.rs` | Test placeholder function behavior |
+| `manual/` | Document manual testing procedures |
 
 ## Adding New Tests
 
@@ -27,12 +32,12 @@ tests/
 
 **Q: Testing new file manipulation functionality?**
 → Create new file named after the functionality domain (e.g., `file_read.rs`, `path_operations.rs`)
-→ Update this readme.md with new domain entry
+→ Update this readme.md Responsibility Table with new file entry
 
 **Q: Testing entirely new domain?**
 → 1. Create new file `<domain_name>.rs`
-→ 2. Update this readme.md with new domain entry
-→ 3. Add to domain map table above
+→ 2. Update this readme.md Responsibility Table with new file entry
+→ 3. Add row to Responsibility Table above
 
 ## File Naming Conventions
 
@@ -53,4 +58,5 @@ All tests in this suite MUST:
 ## Current Test Coverage
 
 - ✅ Basic smoke tests (API accessibility)
+- ✅ Placeholder function behavior (side effects, concurrency, stability)
 - ⏳ File manipulation utilities (pending implementation)

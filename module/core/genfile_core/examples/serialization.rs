@@ -14,6 +14,7 @@ use genfile_core::
 };
 use std::path::PathBuf;
 
+#[ allow( clippy::too_many_lines ) ]
 fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "=== Serialization Example ===" );
@@ -27,7 +28,7 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
   // Add template files
   archive.add_text_file(
     PathBuf::from( "app.conf" ),
-    "server_name={{server_name}}\nport={{port}}\ndebug={{debug}}\n",
+    "server_name={{server_name}}\nport={{port}}\ndebug={{debug}}\ntags={{tags}}\n",
     WriteMode::Rewrite
   );
 
@@ -78,12 +79,21 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
     description: Some( "Log output destination".into() ),
   });
 
-  // Set values
+  archive.add_parameter( ParameterDescriptor
+  {
+    parameter: "tags".into(),
+    is_mandatory: false,
+    default_value: Some( "production, web".into() ),
+    description: Some( "Comma-separated tags".into() ),
+  });
+
+  // Set values (demonstrates all 4 Value variants: String, Number, Bool, List)
   archive.set_value( "server_name", Value::String( "production.example.com".into() ) );
   archive.set_value( "port", Value::Number( 443 ) );
   archive.set_value( "debug", Value::Bool( false ) );
   archive.set_value( "log_level", Value::String( "warn".into() ) );
   archive.set_value( "log_output", Value::String( "/var/log/app.log".into() ) );
+  archive.set_value( "tags", Value::List( vec![ "production".into(), "web".into(), "secure".into() ] ) );
 
   println!( "Original archive:" );
   println!( "  Name: {}", archive.name );

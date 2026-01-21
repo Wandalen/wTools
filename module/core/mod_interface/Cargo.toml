@@ -1,6 +1,6 @@
 [package]
 name = "mod_interface"
-version = "0.54.0"
+version = "0.55.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -29,6 +29,7 @@ all-features = false
 default = [ "enabled" ]
 full = [ "enabled" ]
 enabled = [ "mod_interface_meta/enabled" ]
+diagnostics_runtime_assertions = []
 
 # keep these examples in directories
 

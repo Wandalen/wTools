@@ -50,7 +50,7 @@ fn deref_test()
   #[ allow( clippy ::no_effect_underscore_binding ) ]
   {
   let got_tmp = "hello".to_string();
-  let _got = IsTransparentComplex :: < '_, '_, String, str, 0 >(&got_tmp, core ::marker ::PhantomData);
-  a_id!(*_got, &got_tmp);
+  let got = IsTransparentComplex :: < '_, '_, String, str, 0 >(&got_tmp, core ::marker ::PhantomData);
+  a_id!(*got, &got_tmp);
  }
 }

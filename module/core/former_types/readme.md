@@ -23,7 +23,7 @@ fn main() {}
 #[ cfg( all( feature = "types_former", feature = "enabled" ) ) ]
 fn main()
 {
-  use component_model_types::Assign;
+  use component_model_types ::Assign;
 
   #[ derive( Default, PartialEq, Debug ) ]
   struct Person
@@ -52,10 +52,18 @@ fn main()
     }
   }
 
-  let mut got : Person = Default::default();
+  let mut got : Person = Person ::default();
   got.assign( 13 );
   got.assign( "John" );
-  assert_eq!( got, Person { age : 13, name : "John".to_string() } );
+  assert_eq!
+  (
+    got,
+    Person
+    {
+      age : 13,
+      name : "John".to_string()
+    }
+  );
   dbg!( got );
   // > Person {
   // >   age: 13,

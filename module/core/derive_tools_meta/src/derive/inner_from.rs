@@ -52,13 +52,17 @@ pub fn inner_from(input: proc_macro ::TokenStream) -> Result< proc_macro2 ::Toke
   Ok(result)
 }
 
-/// Generates `InnerFrom` implementation for structs.
+/// Generates `inner_from()` inherent method for structs.
+///
+/// Fix(issue-3): Changed from trait implementation to inherent method.
+/// Root cause: Original implementation generated `impl crate::InnerFrom` for non-existent trait.
+/// Pitfall: Proc macros that generate trait implementations must verify the trait exists and is in scope. Inherent implementations are safer for utility methods like constructors.
 ///
 /// Example of generated code :
 /// ```text
-/// impl InnerFrom< bool > for IsTransparent
+/// impl IsTransparent
 /// {
-///   fn inner_from( src: bool ) -> Self
+///   pub fn inner_from( src: bool ) -> Self
 ///   {
 ///     Self( src )
 /// }
@@ -72,7 +76,7 @@ fn generate(
   field_type: &syn ::Type,
   field_name: Option< &syn ::Ident >,
 ) -> proc_macro2 ::TokenStream {
-  let body =  if let Some(field_name) = field_name 
+  let body =  if let Some(field_name) = field_name
   {
   qt! { Self { #field_name: src } }
  } else {
@@ -81,12 +85,12 @@ fn generate(
 
   qt! {
   #[ automatically_derived ]
-  impl< #generics_impl > crate ::InnerFrom< #field_type > for #item_name< #generics_ty >
+  impl< #generics_impl > #item_name< #generics_ty >
   where
    #generics_where
   {
    #[ inline( always ) ]
-   fn inner_from( src: #field_type ) -> Self
+   pub fn inner_from( src: #field_type ) -> Self
    {
   #body
  }

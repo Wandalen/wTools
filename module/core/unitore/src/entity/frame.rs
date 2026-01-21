@@ -44,7 +44,7 @@ pub struct Frame
 
 // qqq: not obvious
 // aaa: added explanation
-/// Convert from feed_rs feed entry and feed link to Frame struct for convenient use and storage.
+/// Convert from `feed_rs` feed entry and feed link to Frame struct for convenient use and storage.
 impl From< ( feed_rs ::model ::Entry, String ) > for Frame
 {
   fn from( ( entry, feed_link ) : ( feed_rs ::model ::Entry, String ) ) -> Self
@@ -86,21 +86,21 @@ impl From< ( feed_rs ::model ::Entry, String ) > for Frame
    id: entry.id,
    title: entry.title.map( | title | title.content ).clone(),
    stored_time: entry.updated,
-   authors: ( !authors.is_empty() ).then( || authors ),
+   authors: ( !authors.is_empty() ).then_some(authors),
    // qqq: why join?
    // aaa: fixed, saved as list
    content,
-   links: ( !links.is_empty() ).then( || links ),
+   links: ( !links.is_empty() ).then_some(links),
    // qqq: why join?
    // aaa: fixed, saved as list
    summary: entry.summary.map( | c | c.content ).clone(),
-   categories: ( !categories.is_empty() ).then( || categories ),
+   categories: ( !categories.is_empty() ).then_some(categories),
    // qqq: why join?
    // aaa: fixed, saved as list
-   published: entry.published.clone(),
+   published: entry.published,
    source: entry.source.clone(),
    rights: entry.rights.map( | r | r.content ).clone(),
-   media: ( !media.is_empty() ).then( || media ),
+   media: ( !media.is_empty() ).then_some(media),
    // qqq: why join?
    // aaa: fixed, saved as list
    language: entry.language.clone(),
@@ -131,84 +131,75 @@ pub trait FrameStore
 // qqq: what is it for and why?
 // aaa: added explanation
 
-/// Get convenient frame format for using with GlueSQL expression builder.
-/// Converts from Frame struct into vec of GlueSQL expression nodes. 
+/// Get convenient frame format for using with `GlueSQL` expression builder.
+/// Converts from Frame struct into vec of `GlueSQL` expression nodes. 
 impl From< Frame > for Vec< ExprNode< 'static > >
 {
   fn from( entry: Frame ) -> Self
   {
   let title = entry.title
-  .map( | title | text( title ) )
-  .unwrap_or( null() )
+  .map_or( null(), text )
   ;
 
   let stored_time = entry.stored_time
-  .map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat ::Millis, true ) ) )
-  .unwrap_or( null() )
+  .map_or( null(), | d | timestamp( d.to_rfc3339_opts( SecondsFormat ::Millis, true ) ) )
   ;
 
   let authors = entry.authors
-  .map( | authors |
+  .map_or( null(), | authors |
    text
    (
-  format!( "[{}]", authors.into_iter().map( | a | format!( "\"{}\"", a ) ).collect :: < Vec< _ > >().join( ", " ) )
+  format!( "[{}]", authors.into_iter().map( | a | format!( "\"{a}\"" ) ).collect :: < Vec< _ > >().join( ", " ) )
  )
  )
-  .unwrap_or( null() )
   ;
 
   let content = entry.content
-  .map( | content | text( content ) )
-  .unwrap_or( null() )
+  .map_or( null(), text )
   ;
 
   let links = entry.links
-  .map( | links |
+  .map_or( null(), | links |
    text
    (
-  format!( "[{}]", links.into_iter().map( | link | format!( "\"{}\"", link ) ).collect :: < Vec< _ > >().join( ", " ) ) 
+  format!( "[{}]", links.into_iter().map( | link | format!( "\"{link}\"" ) ).collect :: < Vec< _ > >().join( ", " ) ) 
  )
  )
-  .unwrap_or( null() )
   ;
 
   let summary = entry.summary
-  .map( | summary | text( summary ) )
-  .unwrap_or( null() )
+  .map_or( null(), text )
   ;
 
   let categories = entry.categories
-  .map( | categories |
+  .map_or( null(), | categories |
    text
    (
   format!
   (
    "[{}]",
-   categories.into_iter().map( | category | format!( "\"{}\"", category ) ).collect :: < Vec< _ > >().join( ", " ),
+   categories.into_iter().map( | category | format!( "\"{category}\"" ) ).collect :: < Vec< _ > >().join( ", " ),
  ) 
  )
  )
-  .unwrap_or( null() )
   ;
 
   let published = entry.published
-  .map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat ::Millis, true ) ) )
-  .unwrap_or( null() )
+  .map_or( null(), | d | timestamp( d.to_rfc3339_opts( SecondsFormat ::Millis, true ) ) )
   ;
 
-  let source = entry.source.map( | s | text( s ) ).unwrap_or( null() );
-  let rights = entry.rights.map( | r | text( r ) ).unwrap_or( null() );
+  let source = entry.source.map_or( null(), text );
+  let rights = entry.rights.map_or( null(), text );
   let media = entry.media
-  .map( | media |
+  .map_or( null(), | media |
    text
    (
-  format!( "[{}]", media.into_iter().map( | media | format!( "\"{}\"", media ) ).collect :: < Vec< _ > >().join( ", " ) ) 
+  format!( "[{}]", media.into_iter().map( | media | format!( "\"{media}\"" ) ).collect :: < Vec< _ > >().join( ", " ) ) 
  )
  )
-  .unwrap_or( null() )
   ;
 
-  let language = entry.language.clone().map( text ).unwrap_or( null() );
+  let language = entry.language.clone().map_or( null(), text );
 
   vec!
   [
@@ -232,33 +223,33 @@ impl From< Frame > for Vec< ExprNode< 'static > >
 
 // qqq: RowValue or CellValue?
 // aaa: fixed name
-/// GlueSQL Value wrapper for display.
+/// `GlueSQL` Value wrapper for display.
 #[ derive( Debug ) ]
 pub struct CellValue< 'a >( pub &'a gluesql ::prelude ::Value );
 
-impl std ::fmt ::Display for CellValue< '_ >
+impl core ::fmt ::Display for CellValue< '_ >
 {
-  fn fmt( &self, f: &mut std ::fmt ::Formatter< '_ > ) -> std ::fmt ::Result
+  fn fmt( &self, f: &mut core ::fmt ::Formatter< '_ > ) -> core ::fmt ::Result
   {
   use gluesql ::prelude ::Value :: *;
   match &self.0
   {
-   Bool( val ) => write!( f, "{}", val )?,
-   I8( val ) => write!( f, "{}", val )?,
-   I16( val ) => write!( f, "{}", val )?,
-   I32( val ) => write!( f, "{}", val )?,
-   I64( val ) => write!( f, "{}", val )?,
-   I128( val ) => write!( f, "{}", val )?,
-   U8( val ) => write!( f, "{}", val )?,
-   U16( val ) => write!( f, "{}", val )?,
-   U32( val ) => write!( f, "{}", val )?,
-   U64( val ) => write!( f, "{}", val )?,
-   U128( val ) => write!( f, "{}", val )?,
-   F32( val ) => write!( f, "{}", val )?,
-   F64( val ) => write!( f, "{}", val )?,
-   Str( val ) => write!( f, "{}", val )?,
+   Bool( val ) => write!( f, "{val}" )?,
+   I8( val ) => write!( f, "{val}" )?,
+   I16( val ) => write!( f, "{val}" )?,
+   I32( val ) => write!( f, "{val}" )?,
+   I64( val ) => write!( f, "{val}" )?,
+   I128( val ) => write!( f, "{val}" )?,
+   U8( val ) => write!( f, "{val}" )?,
+   U16( val ) => write!( f, "{val}" )?,
+   U32( val ) => write!( f, "{val}" )?,
+   U64( val ) => write!( f, "{val}" )?,
+   U128( val ) => write!( f, "{val}" )?,
+   F32( val ) => write!( f, "{val}" )?,
+   F64( val ) => write!( f, "{val}" )?,
+   Str( val ) => write!( f, "{val}" )?,
    Null => write!( f, "Null" )?,
-   Timestamp( val ) => write!( f, "{}", val )?,
+   Timestamp( val ) => write!( f, "{val}" )?,
    _ => write!( f, "" )?,
  }
 
@@ -270,7 +261,7 @@ impl From< CellValue< '_ > > for String
 {
   fn from( value: CellValue< '_ > ) -> Self
   {
-  use gluesql ::core ::data ::Value :: *;
+  use gluesql ::core ::data ::Value::Str;
   match &value.0
   {
    Str( val ) => val.clone(),

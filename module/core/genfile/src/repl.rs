@@ -48,6 +48,7 @@ pub fn run_repl(
   println!();
 
   let mut session_count = 0u32;
+  let mut had_errors = false;
 
   loop
   {
@@ -95,6 +96,7 @@ pub fn run_repl(
         }
         else
         {
+          had_errors = true;
           eprintln!( "{}", result.error.unwrap_or_default() );
         }
       },
@@ -107,5 +109,13 @@ pub fn run_repl(
   }
 
   println!( "\nGoodbye!" );
-  Ok( () )
+
+  if had_errors
+  {
+    Err( "One or more commands failed during REPL session".into() )
+  }
+  else
+  {
+    Ok( () )
+  }
 }

@@ -3,12 +3,12 @@ use super :: *;
 #[ derive( Debug, Clone, Copy, PartialEq ) ]
 pub struct IsTransparent(bool);
 
-impl Default for IsTransparent 
+impl Default for IsTransparent
 {
   #[ inline( always ) ]
-  fn default() -> Self 
+  fn default() -> Self
   {
-  Self(true)
+  Self(false)
  }
 }
 

@@ -73,6 +73,166 @@
 //! See integration tests for real-world scenarios with colored output. All formatters
 //! use these functions throughout for consistent ANSI-aware behavior.
 
+use unicode_width::{ UnicodeWidthStr, UnicodeWidthChar };
+
 // Re-export ANSI utilities from strs_tools for backward compatibility
 pub use strs_tools::ansi::visual_len;
 pub use strs_tools::ansi::pad_to_width;
+
+/// Truncate text to maximum visual width with ANSI code preservation
+///
+/// Truncates text to fit within `max_width` visual characters, appending
+/// `marker` if truncation occurs. Preserves ANSI color codes in the output.
+///
+/// For multiline text (containing `\n`), each line is truncated independently.
+///
+/// # Arguments
+///
+/// * `text` - Input text (may contain ANSI codes and newlines)
+/// * `max_width` - Maximum visual width per line (ANSI codes don't count)
+/// * `marker` - String to append when truncated (default: "...")
+///
+/// # Returns
+///
+/// Truncated string with preserved ANSI codes and marker appended.
+/// If text fits within `max_width`, returns original text unchanged.
+/// For multiline text, each line is truncated independently.
+///
+/// # Examples
+///
+/// ```
+/// use tree_fmt::truncate_cell;
+///
+/// // Basic truncation
+/// let result = truncate_cell( "Very long text here", 10, "..." );
+/// assert_eq!( result, "Very lo..." );
+///
+/// // Multiline truncation (per-line)
+/// let result = truncate_cell( "Long line 1\nLong line 2", 8, "..." );
+/// assert!( result.contains( "..." ) );  // Both lines truncated
+///
+/// // ANSI codes preserved
+/// let colored = "\x1b[31mRed text\x1b[0m";
+/// let result = truncate_cell( colored, 5, "..." );
+/// assert!( result.contains( "\x1b[31m" ) );  // Color preserved
+/// ```
+///
+/// # Implementation Details
+///
+/// For single-line text: character-by-character iteration tracking visual
+/// position while skipping ANSI escape sequences (`\x1b[...m` pattern).
+///
+/// For multiline text: splits on `\n`, truncates each line independently,
+/// then joins back with `\n`. This ensures proper per-line truncation.
+pub fn truncate_cell( text : &str, max_width : usize, marker : &str ) -> String
+{
+  // Handle multiline cells: truncate each line independently
+  if text.contains( '\n' )
+  {
+    let lines : Vec<&str> = text.lines().collect();
+    let truncated_lines : Vec<String> = lines
+      .iter()
+      .map( |line| truncate_single_line( line, max_width, marker ) )
+      .collect();
+
+    return truncated_lines.join( "\n" );
+  }
+
+  // Single line: use direct truncation
+  truncate_single_line( text, max_width, marker )
+}
+
+/// Truncate a single line of text (internal helper)
+///
+/// Does not handle newlines - use `truncate_cell` for multiline text.
+///
+/// # Fix(issue-003)
+///
+/// Root cause: Used character count (`visual_len()`) instead of display width,
+/// causing CJK/emoji text (width=2 per char) to not truncate properly.
+///
+/// Pitfall: Always use `unicode_width` crate for terminal width calculations.
+/// Character count ≠ display width for CJK, emoji, combining marks.
+fn truncate_single_line( text : &str, max_width : usize, marker : &str ) -> String
+{
+  // Calculate display width of visible text (excluding ANSI codes)
+  // by manually parsing and measuring
+  let mut visible_width : usize = 0;
+  let mut in_escape = false;
+
+  for ch in text.chars()
+  {
+    if ch == '\x1b'
+    {
+      in_escape = true;
+      continue;
+    }
+
+    if in_escape
+    {
+      if ch == 'm'
+      {
+        in_escape = false;
+      }
+      continue;
+    }
+
+    // Count display width of visible characters
+    visible_width += ch.width().unwrap_or( 1 );
+  }
+
+  // No truncation needed
+  if visible_width <= max_width
+  {
+    return text.to_string();
+  }
+
+  // Calculate space available for content (reserve space for marker)
+  let marker_width = marker.width();
+  let content_width = max_width.saturating_sub( marker_width );
+
+  // Build truncated string while preserving ANSI codes
+  let mut result = String::new();
+  let mut visual_count : usize = 0;
+  let mut in_escape = false;
+
+  for ch in text.chars()
+  {
+    // Track ANSI escape sequences
+    if ch == '\x1b'
+    {
+      in_escape = true;
+      result.push( ch );
+      continue;
+    }
+
+    if in_escape
+    {
+      result.push( ch );
+      if ch == 'm'
+      {
+        in_escape = false;
+      }
+      continue;
+    }
+
+    // Regular visible character - use actual display width
+    let char_width = ch.width().unwrap_or( 1 );
+
+    if visual_count + char_width <= content_width
+    {
+      result.push( ch );
+      visual_count += char_width;
+    }
+    else
+    {
+      // Reached truncation point
+      break;
+    }
+  }
+
+  // Append marker
+  result.push_str( marker );
+
+  result
+}

@@ -37,6 +37,51 @@ mod private
   pub dry: bool,
  }
 
+  /// Finds all workspace members that depend on the specified crate.
+  ///
+  /// This function scans ALL workspace members (workspace-scoped) rather than just
+  /// the dependency tree of a specific crate (tree-scoped). This is critical for
+  /// ensuring that when a workspace dependency is bumped, every workspace member
+  /// that depends on it gets its `Cargo.toml` updated.
+  ///
+  /// # Arguments
+  /// * `workspace` - The workspace to scan
+  /// * `crate_name` - Name of the crate to find dependents for
+  ///
+  /// # Returns
+  /// Vector of `CrateDir` for each workspace member that depends on `crate_name`
+  ///
+  /// # Example
+  /// If workspace has: `crate_a`, `crate_b`, `crate_c`
+  /// And `crate_b` and `crate_c` both depend on `crate_a`
+  /// Then `find_workspace_dependents( workspace, "crate_a" )` returns `[crate_b_dir, crate_c_dir]`
+  fn find_workspace_dependents
+  (
+  workspace: &Workspace,
+  crate_name: &str,
+ ) -> Vec< CrateDir >
+  {
+  workspace
+  .packages()
+  .filter_map( | pkg |
+  {
+  // Check if this package depends on crate_name
+  let has_dependency = pkg
+  .dependencies()
+  .any( | dep | dep.name() == crate_name );
+
+  if has_dependency
+  {
+  pkg.crate_dir().ok()
+ }
+  else
+  {
+  None
+ }
+ })
+  .collect()
+ }
+
   /// Represents a planner for publishing a single package.
   #[ derive( Debug, former ::Former ) ]
   #[ perform( fn build() -> PackagePublishInstruction ) ]
@@ -67,8 +112,25 @@ mod private
  };
    let old_version: Version = self.package.version().as_ref().unwrap().try_into().unwrap();
    let new_version = old_version.clone().bump();
-   // bump the package version in dependents (so far, only workspace)
-   let dependencies = vec![ CrateDir ::try_from( workspace_root.clone() ).unwrap() ];
+
+   // Fix(issue-001): Find ALL workspace members depending on this crate for version updates
+   // Root cause: Original code only updated workspace root, missing individual member manifests
+   // Pitfall: Workspace dependency bumps affect ALL workspace members, not just publication tree
+
+   // Get workspace to scan all members
+   let workspace = Workspace ::try_from( self.workspace_dir.clone() ).unwrap();
+   let package_name = self.package.name().unwrap();
+
+   // Get all workspace members that depend on the package being published
+   let mut dependencies = find_workspace_dependents( &workspace, package_name );
+
+   // Also include workspace root if it has workspace-level dependencies
+   let workspace_root_dir = CrateDir ::try_from( workspace_root.clone() ).unwrap();
+   if !dependencies.contains( &workspace_root_dir )
+   {
+  dependencies.push( workspace_root_dir );
+ }
+
    let bump = version ::BumpOptions
    {
   crate_dir: crate_dir.clone(),

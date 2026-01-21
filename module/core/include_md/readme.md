@@ -7,7 +7,11 @@
 
 Include markdown file or its section.
 
-### Basic use-case
+**⚠️ Status: Placeholder Crate**
+
+This crate is currently a placeholder with no functionality implemented. The `include_md!` macro and related features described below are planned but not yet available. See `spec.md` for the complete specification of intended functionality.
+
+### Basic use-case (Planned)
 
 <!-- {{# generate.module{} #}} -->
 
@@ -25,8 +29,6 @@ cargo add include_md
 ### Try out from the repository
 
 ``` shell test
-git clone https://github.com/Wandalen/wTools
-cd wTools
-cd sample/move/include_md_trivial
-cargo run
+# Note: Example not yet implemented
+# Planned location: sample/rust/include_md_trivial
 ```

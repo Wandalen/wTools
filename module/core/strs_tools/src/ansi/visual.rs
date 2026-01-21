@@ -92,20 +92,24 @@ pub fn visual_len_unicode( text : &str ) -> usize
     .sum()
 }
 
-/// Pad text to target width while respecting ANSI codes.
+/// Pad text to target display width while respecting ANSI codes and wide Unicode characters.
 ///
-/// Adds spaces to reach the target width based on visible character count.
-/// ANSI escape sequences are preserved but don't count toward width.
+/// Uses display width (terminal columns) instead of character count.
+/// Correctly handles:
+/// - Wide characters (CJK, emoji): 2 display width
+/// - Normal characters (ASCII, Cyrillic): 1 display width
+/// - Zero-width characters (combining marks): 0 display width
+/// - ANSI escape sequences: 0 display width (filtered out)
 ///
 /// # Arguments
 ///
 /// * `text` - Input text potentially containing ANSI escape sequences
-/// * `target_width` - Desired visible width
+/// * `target_width` - Desired display width in terminal columns
 /// * `align_right` - If true, pad on the left; if false, pad on the right
 ///
 /// # Returns
 ///
-/// Padded string with ANSI codes preserved.
+/// Padded string with correct display width for terminal alignment.
 ///
 /// # Examples
 ///
@@ -125,11 +129,37 @@ pub fn visual_len_unicode( text : &str ) -> usize
 ///   pad_to_width( "\x1b[31mhi\x1b[0m", 5, false ),
 ///   "\x1b[31mhi\x1b[0m   "
 /// );
+///
+/// // CJK characters (wide, 2 display width per char)
+/// let padded = pad_to_width( "日本語", 10, false );  // 3 chars, 6 display width
+/// // Result: "日本語    " (6 + 4 spaces = 10 display width)
 /// # }
 /// ```
+///
+/// # Fix(issue-003)
+///
+/// Root cause: Previous implementation mixed character-count-based padding
+/// with Rust's display-width-based formatting (`{:<N}`), causing
+/// misalignment with wide Unicode characters (CJK, emoji).
+///
+/// Pitfall: Always use display width for terminal alignment, not char count.
+/// Display width ≠ char count ≠ byte count for Unicode.
+/// CJK/emoji have display width = 2, not 1.
 pub fn pad_to_width( text : &str, target_width : usize, align_right : bool ) -> String
 {
-  let current_width = visual_len( text );
+  use unicode_width::UnicodeWidthStr;
+
+  // Calculate display width of visible text (excluding ANSI codes)
+  let visible_text : String = parse_segments( text )
+    .iter()
+    .filter_map( | seg | match seg
+    {
+      Segment::Text( t ) => Some( *t ),
+      Segment::Ansi( _ ) => None,
+    })
+    .collect();
+
+  let current_width = visible_text.width();
 
   if current_width >= target_width
   {

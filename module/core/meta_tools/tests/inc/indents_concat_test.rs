@@ -1,4 +1,5 @@
 use super :: *;
+use test_tools::a_id;
 
 //
 
@@ -11,13 +12,15 @@ tests_impls!
 
   //
 
+  #[allow(unused_variables)]
+  #[allow(unused_assignments)]
   fn basic()
   {
   let mut a = 0;
 
-  println!( "MODULES_PATH: {}", env!( "MODULES_PATH" ) );
-  println!( "WORKSPACE_PATH: {}", env!( "WORKSPACE_PATH" ) );
+  // Environment variables for path resolution
   // xxx: add to program_tools :: { path ::modules(), path ::workspace() }
+  // Note: MODULES_PATH and WORKSPACE_PATH are optional compile-time env vars
 
   macro_rules! macro1
   {

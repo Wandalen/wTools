@@ -27,6 +27,10 @@ path = "src/fs/lib.rs"
 features = [ "full" ]
 all-features = false
 
+[package.metadata.willbe]
+features = [ "full" ]
+all_features = false
+
 [features]
 default = [ "enabled" ]
 full = [ "enabled", "glob" ]

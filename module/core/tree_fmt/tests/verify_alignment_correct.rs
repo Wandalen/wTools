@@ -3,18 +3,10 @@
 #![ cfg( feature = "integration" ) ]
 #![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
-use tree_fmt::{ TreeNode, ColumnData, TreeFormatter, visual_len };
+mod inc;
 
-/// Calculate visual position of a substring in a string
-fn visual_position( line : &str, target : &str ) -> Option< usize >
-{
-  // Find byte position first
-  let byte_pos = line.find( target )?;
-
-  // Calculate visual position by counting chars up to byte_pos
-  let before = &line[ ..byte_pos ];
-  Some( visual_len( before ) )
-}
+use tree_fmt::{ TreeNode, ColumnData, TreeFormatter };
+use inc::visual_position;
 
 #[ test ]
 fn test_verify_willbe3_alignment_is_correct()

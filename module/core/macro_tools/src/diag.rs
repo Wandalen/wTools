@@ -3,10 +3,8 @@
 //!
 
 /// Define a private namespace for all its items.
-mod private 
+mod private
 {
-
-  use crate :: *;
 
   /// Adds indentation and optional prefix/postfix to each line of the given string.
   ///

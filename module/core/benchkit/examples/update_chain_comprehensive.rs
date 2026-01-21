@@ -47,10 +47,10 @@ fn create_sample_results() -> HashMap< String, BenchmarkResult >
   // Slow algorithm
   let slow_times = vec![
   Duration ::from_millis( 1 ), Duration ::from_millis( 1 ) + Duration ::from_micros( 50 ),
-  Duration ::from_millis( 1 ) - Duration ::from_micros( 30 ), Duration ::from_millis( 1 ) + Duration ::from_micros( 20 ),
-  Duration ::from_millis( 1 ) - Duration ::from_micros( 10 ), Duration ::from_millis( 1 ) + Duration ::from_micros( 40 ),
-  Duration ::from_millis( 1 ) - Duration ::from_micros( 20 ), Duration ::from_millis( 1 ) + Duration ::from_micros( 30 ),
-  Duration ::from_millis( 1 ), Duration ::from_millis( 1 ) - Duration ::from_micros( 15 )
+  Duration ::from_millis( 1 ).checked_sub( Duration ::from_micros( 30 ) ).unwrap(), Duration ::from_millis( 1 ) + Duration ::from_micros( 20 ),
+  Duration ::from_millis( 1 ).checked_sub( Duration ::from_micros( 10 ) ).unwrap(), Duration ::from_millis( 1 ) + Duration ::from_micros( 40 ),
+  Duration ::from_millis( 1 ).checked_sub( Duration ::from_micros( 20 ) ).unwrap(), Duration ::from_millis( 1 ) + Duration ::from_micros( 30 ),
+  Duration ::from_millis( 1 ), Duration ::from_millis( 1 ).checked_sub( Duration ::from_micros( 15 ) ).unwrap()
  ];
   results.insert( "slow_algorithm".to_string(), BenchmarkResult ::new( "slow_algorithm", slow_times ) );
   

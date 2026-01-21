@@ -1,3 +1,5 @@
+//! Basic integration tests for unitore.
+
 use feed_rs ::parser as feed_parser;
 use error_tools ::untyped ::Result;
 

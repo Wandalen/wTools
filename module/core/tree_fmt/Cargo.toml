@@ -1,6 +1,6 @@
 [package]
 name = "tree_fmt"
-version = "0.5.0"
+version = "0.8.0"
 edition = "2021"
 authors = [ "wandalen <wandalen@obox.systems>" ]
 license = "MIT"
@@ -15,6 +15,7 @@ workspace = true
 [dependencies]
 # ANSI-aware string utilities (from strs_tools)
 strs_tools = { workspace = true, features = [ "ansi" ] }
+unicode-width = "0.1"
 
 # Optional dependencies for data format serialization
 serde = { workspace = true, features = ["derive"], optional = true }

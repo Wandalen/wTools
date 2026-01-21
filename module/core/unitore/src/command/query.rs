@@ -1,7 +1,7 @@
 //! Query command.
 
 use crate :: *;
-use gluesql ::sled_storage ::sled ::Config;
+use gluesql_sled_storage ::sled ::Config;
 use wca :: { Command, Type, VerifiedCommand };
 use sled_adapter ::FeedStorage;
 use action :: { Report, query ::query_execute };
@@ -14,6 +14,8 @@ pub struct QueryCommand;
 impl QueryCommand
 {
   /// Creates command for custom query execution.
+  /// # Errors
+  /// Returns error if operation fails.
   pub fn execute() -> Result< Command >
   {
   let rt  = tokio ::runtime ::Runtime ::new()?;
@@ -60,7 +62,7 @@ impl QueryCommand
    match res
    {
   Ok( report ) => report.report(),
-  Err( err ) => println!( "{:?}", err ),
+  Err( err ) => println!( "{err:?}" ),
  }
  }
   

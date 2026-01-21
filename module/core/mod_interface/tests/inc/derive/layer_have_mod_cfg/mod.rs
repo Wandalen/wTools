@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 #![allow(clippy ::doc_markdown)]
 use super :: *;
+#[allow(unused_imports)]
 use test_tools ::a_id;
 use test_tools ::a_true;
 mod tools 

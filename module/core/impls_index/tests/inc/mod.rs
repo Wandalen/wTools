@@ -4,7 +4,6 @@ use test_tools ::a_id;
 use super ::
 {
   the_module,
-  // only_for_terminal_module,
   // a_id,
 };
 
@@ -13,6 +12,7 @@ mod impls1_test;
 mod impls2_test;
 mod impls3_test;
 mod impls_basic_test;
+mod impls_optional_test;
 
 mod index_test;
 mod tests_index_test;

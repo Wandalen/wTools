@@ -1,6 +1,20 @@
 #[ cfg(not(feature = "no_std")) ]
 use std ::time;
 
+/// Private helper: Get Duration since UNIX epoch.
+///
+/// # Panics
+///
+/// Panics if the system clock is set to a time before the UNIX epoch
+/// (1970-01-01 00:00:00 UTC).
+#[ cfg(not(feature = "no_std")) ]
+fn duration_since_epoch() -> time ::Duration
+{
+  time ::SystemTime ::now()
+    .duration_since(time ::UNIX_EPOCH)
+    .expect("System clock is before UNIX epoch (1970-01-01). Please check your system time configuration.")
+}
+
 ///
 /// Get current time. Units are milliseconds.
 ///
@@ -18,17 +32,15 @@ use std ::time;
 ///
 #[ cfg(not(feature = "no_std")) ]
 #[ allow( clippy ::cast_possible_truncation ) ]
-#[ must_use ] pub fn now() -> i64 {
-  time ::SystemTime ::now()
-    .duration_since(time ::UNIX_EPOCH)
-    .expect("System clock is before UNIX epoch (1970-01-01). Please check your system time configuration.")
-    .as_millis() as i64
+#[ must_use ] pub fn now() -> i64
+{
+  duration_since_epoch().as_millis() as i64
 }
 
 ///
 /// Default units are seconds.
 ///
-pub mod s 
+pub mod s
 {
   #[ allow( unused_imports ) ]
   use super :: *;
@@ -46,18 +58,16 @@ pub mod s
   ///
   #[ cfg(not(feature = "no_std")) ]
   #[ allow( clippy ::cast_possible_wrap ) ]
-  #[ must_use ] pub fn now() -> i64 {
-    time ::SystemTime ::now()
-      .duration_since(time ::UNIX_EPOCH)
-      .expect("System clock is before UNIX epoch (1970-01-01). Please check your system time configuration.")
-      .as_secs() as i64
+  #[ must_use ] pub fn now() -> i64
+  {
+    duration_since_epoch().as_secs() as i64
   }
 }
 
 ///
 /// Default units are milliseconds.
 ///
-pub mod ms 
+pub mod ms
 {
   #[ allow( unused_imports ) ]
   use super :: *;
@@ -75,11 +85,9 @@ pub mod ms
   ///
   #[ cfg(not(feature = "no_std")) ]
   #[ allow( clippy ::cast_possible_truncation ) ]
-  #[ must_use ] pub fn now() -> i64 {
-    time ::SystemTime ::now()
-      .duration_since(time ::UNIX_EPOCH)
-      .expect("System clock is before UNIX epoch (1970-01-01). Please check your system time configuration.")
-      .as_millis() as i64
+  #[ must_use ] pub fn now() -> i64
+  {
+    duration_since_epoch().as_millis() as i64
   }
 }
 
@@ -89,7 +97,7 @@ pub mod ms
 ///
 /// Default units are nanoseconds.
 ///
-pub mod ns 
+pub mod ns
 {
   #[ allow( unused_imports ) ]
   use super :: *;
@@ -113,10 +121,8 @@ pub mod ns
   ///
   #[ cfg(not(feature = "no_std")) ]
   #[ allow( clippy ::cast_possible_truncation ) ]
-  #[ must_use ] pub fn now() -> i64 {
-    time ::SystemTime ::now()
-      .duration_since(time ::UNIX_EPOCH)
-      .expect("System clock is before UNIX epoch (1970-01-01). Please check your system time configuration.")
-      .as_nanos() as i64
+  #[ must_use ] pub fn now() -> i64
+  {
+    duration_since_epoch().as_nanos() as i64
   }
 }

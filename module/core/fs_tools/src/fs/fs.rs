@@ -1,16 +1,16 @@
 /// Define a private namespace for all its items.
 mod private
 {
-  #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
+  #[ cfg( feature = "enabled" ) ]
   extern crate std;
 
-  #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
+  #[ cfg( feature = "enabled" ) ]
   use std::path::PathBuf;
 
-  #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
+  #[ cfg( feature = "enabled" ) ]
   use std::fs;
 
-  #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
+  #[ cfg( feature = "enabled" ) ]
   use std::io;
 
   /// Temporary directory management structure with RAII cleanup.
@@ -44,7 +44,7 @@ mod private
   ///
   /// // Directory is automatically removed when `temp` goes out of scope
   /// ```
-  #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
+  #[ cfg( feature = "enabled" ) ]
   #[ derive( Debug ) ]
   pub struct TempDir
   {
@@ -59,7 +59,7 @@ mod private
     created_path : Option< PathBuf >,
   }
 
-  #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
+  #[ cfg( feature = "enabled" ) ]
   impl Default for TempDir
   {
     fn default() -> Self
@@ -68,7 +68,7 @@ mod private
     }
   }
 
-  #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
+  #[ cfg( feature = "enabled" ) ]
   impl TempDir
   {
     /// Creates a new `TempDir` instance with empty paths.
@@ -222,7 +222,7 @@ mod private
     }
   }
 
-  #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
+  #[ cfg( feature = "enabled" ) ]
   impl Drop for TempDir
   {
     /// Removes the directory if it was created by `create()` or `create_all()`.
@@ -270,7 +270,7 @@ pub mod exposed
   use super :: *;
   #[ doc( inline ) ]
   pub use prelude :: *;
-  #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
+  #[ cfg( feature = "enabled" ) ]
   #[ doc( inline ) ]
   pub use super::private::TempDir;
 }

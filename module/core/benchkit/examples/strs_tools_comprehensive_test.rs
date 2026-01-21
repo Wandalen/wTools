@@ -403,7 +403,10 @@ fn test_comprehensive_reporting() -> Result< () >
   
   // Generate comprehensive report
   let comprehensive_report = generate_full_report(&test_data, &results);
-  
+
+  // Create output directory if it doesn't exist
+  std ::fs ::create_dir_all("target")?;
+
   // Save comprehensive report
   let report_path = "target/strs_tools_comprehensive_test_report.md";
   std ::fs ::write(report_path, comprehensive_report)?;

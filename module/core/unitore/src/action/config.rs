@@ -11,14 +11,17 @@ use entity ::
   config :: { ConfigStore, Config },
 };
 use action ::Report;
-use gluesql :: { prelude ::Payload, sled_storage ::SledStorage };
+use gluesql ::prelude :: { Payload, SledStorage };
 
 /// Add configuration file with subscriptions to storage.
+///
+/// # Errors
+/// Returns error if operation fails.
 pub async fn config_add( mut storage: FeedStorage< SledStorage >, path: &PathBuf ) -> Result< impl Report >
 {
   let path = pth ::path ::normalize( path );
 
-  let mut err_str = format!( "Invalid path for config file {:?}", path );
+  let mut err_str = format!( "Invalid path for config file {}", path.display() );
 
   let start = path.components().next();
   if let Some( start ) = start
@@ -31,7 +34,7 @@ pub async fn config_add( mut storage: FeedStorage< SledStorage >, path: &PathBuf
    {
   abs_path.push( component );
  }
-   err_str = format!( "Invalid path for config file {:?}", abs_path );
+   err_str = format!( "Invalid path for config file {}", abs_path.display() );
  }
  }
 
@@ -49,7 +52,7 @@ pub async fn config_add( mut storage: FeedStorage< SledStorage >, path: &PathBuf
   .context( "Added 0 config files.\n Failed to add config file to storage." )?
   ;
 
-  let feeds = feed_config ::read( config.path() )?
+  let feeds = feed_config ::read( &config.path() )?
   .into_iter()
   .map( | feed | Feed ::new( feed.link, feed.update_period, config.path() ) )
   .collect :: < Vec< _ > >()
@@ -61,10 +64,13 @@ pub async fn config_add( mut storage: FeedStorage< SledStorage >, path: &PathBuf
 }
 
 /// Remove configuration file from storage.
+///
+/// # Errors
+/// Returns error if operation fails.
 pub async fn config_delete( mut storage: FeedStorage< SledStorage >, path: &PathBuf ) -> Result< impl Report >
 {
   let path = pth ::path ::normalize( path );
-  let path = path.canonicalize().context( format!( "Invalid path for config file {:?}", path ) )?;
+  let path = path.canonicalize().context( format!( "Invalid path for config file {}", path.display() ) )?;
   let config = Config ::new( path.to_string_lossy().to_string() );
 
   Ok( ConfigReport ::new(
@@ -76,7 +82,10 @@ pub async fn config_delete( mut storage: FeedStorage< SledStorage >, path: &Path
 }
 
 /// List all files with subscriptions that are currently in storage.
-pub async fn config_list( mut storage: FeedStorage< SledStorage >, _args: &wca ::Args ) -> Result< impl Report >
+///
+/// # Errors
+/// Returns error if operation fails.
+pub async fn config_list( mut storage: FeedStorage< SledStorage >, _args: &wca ::executor ::Args ) -> Result< impl Report >
 {
   Ok( ConfigReport ::new( storage.config_list().await? ) )
 }
@@ -92,23 +101,24 @@ pub struct ConfigReport
 impl ConfigReport
 {
   /// Create new report for config report with provided payload.
+  #[must_use] 
   pub fn new( payload: Payload ) -> Self
   {
   Self { payload, new_feeds: None }
  }
 }
 
-impl std ::fmt ::Display for ConfigReport
+impl core ::fmt ::Display for ConfigReport
 {
-  fn fmt( &self, f: &mut std ::fmt ::Formatter< '_ > ) -> std ::fmt ::Result
+  fn fmt( &self, f: &mut core ::fmt ::Formatter< '_ > ) -> core ::fmt ::Result
   {
-  const EMPTY_CELL: &'static str = "";
+  const EMPTY_CELL: &str = "";
 
   match &self.payload
   {
    Payload ::Insert( number ) =>
    {
-  writeln!( f, "Added {} config file(s)", number )?;
+  writeln!( f, "Added {number} config file(s)" )?;
   writeln!(
    f,
    "Added {} feed(s)",
@@ -124,7 +134,7 @@ impl std ::fmt ::Display for ConfigReport
    .unwrap_or_default(),
  )?;
  },
-   Payload ::Delete( number ) => writeln!( f, "Deleted {} config file", number )?,
+   Payload ::Delete( number ) => writeln!( f, "Deleted {number} config file" )?,
    Payload ::Select { labels: _label_vec, rows: rows_vec } =>
    {
   writeln!( f, "Selected configs: " )?;
@@ -137,11 +147,11 @@ impl std ::fmt ::Display for ConfigReport
   let table = tool ::table_display ::plain_table( rows );
   if let Some( table ) = table
   {
-   write!( f, "{}", table )?;
+   write!( f, "{table}" )?;
  }
  },
    _ => {},
- };
+ }
 
   Ok( () )
  }

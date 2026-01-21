@@ -29,6 +29,7 @@ cargo run --example former_trivial
 | Group                | Example File                                                                 | Description                                                                                          |
 |----------------------|------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------|
 | **Basic Usage**      | [former_trivial.rs](./former_trivial.rs)                                     | Basic derive usage with required/optional fields.                                                    |
+|                      | [basic_test.rs](./basic_test.rs)                                             | Simple former test with basic struct (single field).                                                 |
 |                      | [former_many_fields.rs](./former_many_fields.rs)                             | Derive usage with various field types (primitives, String, Option, Vec, HashMap) using scalar setters. |
 | **Collections**      | [former_collection_vector.rs](./former_collection_vector.rs)                 | Building a `Vec` using `#[ subform_collection ]` and `.add()`.                                       |
 |                      | [former_collection_hashmap.rs](./former_collection_hashmap.rs)               | Building a `HashMap` using `#[ subform_collection ]` and `.add( ( k, v ) )`.                          |
@@ -45,4 +46,10 @@ cargo run --example former_trivial
 |                      | [former_custom_definition.rs](./former_custom_definition.rs)                 | Defining a custom `FormerDefinition` and `FormingEnd` to change the formed type.                   |
 |                      | [former_custom_collection.rs](./former_custom_collection.rs)                 | Implementing `Collection` traits for a custom collection type.                                       |
 | **Component Model**  | [former_component_from.rs](./former_component_from.rs)                       | Using `#[ derive( ComponentFrom ) ]` for type-based field extraction.                                |
+| **Lifetimes**        | [lifetime_test.rs](./lifetime_test.rs)                                       | Former with lifetime parameters (basic example).                                                     |
+|                      | [lifetime_test2.rs](./lifetime_test2.rs)                                     | Former with lifetime parameters (advanced patterns).                                                 |
+|                      | [minimal_lifetime_test.rs](./minimal_lifetime_test.rs)                       | Minimal example demonstrating lifetime handling.                                                     |
+|                      | [debug_lifetime.rs](./debug_lifetime.rs)                                     | Debugging generated code for structs with lifetimes.                                                 |
+| **Integration**      | [former_with_serde.rs](./former_with_serde.rs)                               | Documentation-only example showing Former + Serde patterns (requires serde deps to compile).         |
 | **Debugging**        | [former_debug.rs](./former_debug.rs)                                         | Using the struct-level `#[ debug ]` attribute to view generated code.                                |
+|                      | [former_trivial_expanded.rs](./former_trivial_expanded.rs)                   | Shows the fully expanded output of the Former derive macro for educational purposes.                 |

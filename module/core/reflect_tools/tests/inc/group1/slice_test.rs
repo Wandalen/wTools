@@ -18,7 +18,7 @@ fn reflect_slice_test()
 
   a_id!( reflect( &slice ).is_container(), true );
   a_id!( reflect( &slice ).len(), 3 );
-  a_id!( reflect( &slice ).type_name(), "&[ i32]" );
+  a_id!( reflect( &slice ).type_name(), "&[i32]" );
   a_id!( reflect( &slice ).type_id(), core ::any ::TypeId ::of :: < &[ i32 ] >() );
 
   let expected = [

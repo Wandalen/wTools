@@ -156,7 +156,7 @@ mod private
 
  }
 
-  // xxx: qqq: improve a_id and other similar macroses, make sure message is visible int console
+  // xxx: qqq: improve a_id and other similar macros, make sure message is visible in console
   // a_id!( exp, got, "Failed: path_with_trailing_dot_or_dotdot_segments. Expected: '{}', got: '{}'", exp, got );
 
   ///

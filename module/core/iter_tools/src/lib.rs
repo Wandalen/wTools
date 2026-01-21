@@ -68,16 +68,16 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use prelude::*;
   #[ doc( inline ) ]
-  pub use super ::iter ::exposed :: *;
+  pub use super::iter::exposed::*;
 }
 
-/// Prelude to use essentials: `use my_module ::prelude :: *`.
+/// Prelude to use essentials: `use my_module::prelude::*`.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod prelude 
+pub mod prelude
 {
   use super::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super ::iter ::prelude :: *;
+  pub use super::iter::prelude::*;
 }

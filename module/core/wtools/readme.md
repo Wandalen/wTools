@@ -18,6 +18,5 @@ cargo add wtools
 ```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd examples/wtools_trivial
-cargo run
+cargo run --example wtools_trivial
 ```

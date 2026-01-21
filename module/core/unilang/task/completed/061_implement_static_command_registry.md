@@ -1,1 +1,0 @@
-# Implement Static Command Registry

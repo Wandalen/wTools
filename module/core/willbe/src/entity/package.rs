@@ -149,21 +149,27 @@ mod private
  }
 
   /// Package version
+  ///
+  /// Resolves the package version whether it's defined directly in the package
+  /// manifest or inherited from the workspace using `version.workspace = true`.
+  ///
+  /// # Returns
+  ///
+  /// Returns the version string if found.
+  ///
   /// # Errors
-  /// qqq: doc
-  /// # Panics
-  /// qqq: doc
+  ///
+  /// Returns error if:
+  /// - Version field is missing or invalid
+  /// - Workspace inheritance is declared but cannot be resolved
   pub fn version( &self ) -> Result< String, PackageError >
   {
    match self
    {
   Self ::Manifest( package ) =>
   {
-   // let data = package.data.as_ref().ok_or_else( || PackageError ::Manifest( ManifestError ::EmptyManifestData ) )?;
-   let data = &package.data;
-
-   // Unwrap safely because of the `Package` type guarantee
-   Result ::Ok( data[ "package" ][ "version" ].as_str().unwrap().to_string() )
+   // Use Manifest::version() which handles both direct and workspace-inherited versions
+   package.version().map_err( PackageError ::Manifest )
  }
   Self ::WorkspacePackageRef( package ) =>
   {
