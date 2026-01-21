@@ -21,6 +21,8 @@ exclude = [
 
   # NOTE: module/move directory is now empty - all crates moved to core or postponed
 ]
+dev-dependencies = {}
+build-dependencies = {}
 # default-members = [ "module/core/wtools" ]
 
 [workspace.metadata]
@@ -411,7 +413,7 @@ default-features = false
 ## error
 
 [workspace.dependencies.error_tools]
-version = "~0.36.0"
+version = "~0.37.0"
 path = "module/core/error_tools"
 default-features = false
 
