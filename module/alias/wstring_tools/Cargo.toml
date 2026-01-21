@@ -25,10 +25,9 @@ features = [ "full" ]
 all-features = false
 
 include = [
-  "/rust/impl/wstring_tools_lib.rs",
   "/Cargo.toml",
   "/readme.md",
-  "/License",
+  "/license",
 ]
 
 [features]
@@ -49,7 +48,7 @@ full = [
   "parse_number",
 ]
 enabled = []
-# use_std = [ "strs_tools/use_std" ]
+std = [ "strs_tools/std" ]
 no_std = [ "strs_tools/no_std" ]
 use_alloc = [ "strs_tools/use_alloc" ]
 
@@ -57,7 +56,7 @@ indentation = [ "strs_tools/string_indentation" ]
 isolate = [ "strs_tools/string_isolate" ]
 parse_request  = [ "split", "isolate", "strs_tools/string_parse_request" ]
 parse_number = [ "strs_tools/string_parse_number" ]
-split = [ "strs_tools/string_split" ]
+split = [ "std", "strs_tools/string_split" ]
 
 # [lib]
 # name = "wstring_tools"

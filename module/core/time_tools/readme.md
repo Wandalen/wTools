@@ -14,10 +14,12 @@ A minimal, zero-dependency crate providing simple functions for obtaining curren
 <!-- {{# generate.module{} #}} -->
 
 ```rust
+# #[ cfg( not( feature = "no_std" ) ) ]
+# {
 use time_tools ::*;
 
 // Get milliseconds since UNIX epoch (default)
-let now_ms = now();
+let now_ms = now::now();
 println!( "Current time: {} ms since epoch", now_ms );
 
 // Get time in different units
@@ -26,6 +28,7 @@ let now_ns = ns ::now(); // Nanoseconds
 
 // Unit conversions are consistent
 assert_eq!( now_ms / 1000, now_s );
+# }
 ```
 
 ## API Reference
@@ -41,10 +44,13 @@ Returns current time in **milliseconds** since UNIX epoch.
 This is the default and most commonly used function.
 
 ```rust
-use time_tools ::now;
+# #[ cfg( not( feature = "no_std" ) ) ]
+# {
+use time_tools ::now ::now;
 
 let timestamp_ms = now();
 println!( "Current time: {} ms since epoch", timestamp_ms );
+# }
 ```
 
 **Panics:** If system time is before UNIX epoch (1970-01-01). This indicates a misconfigured system clock.
@@ -60,10 +66,13 @@ Returns current time in **milliseconds** since UNIX epoch.
 Explicit milliseconds module, functionally identical to `now()`.
 
 ```rust
+# #[ cfg( not( feature = "no_std" ) ) ]
+# {
 use time_tools ::ms;
 
 let timestamp_ms = ms ::now();
 println!( "Current time: {} milliseconds", timestamp_ms );
+# }
 ```
 
 **Panics:** If system time is before UNIX epoch (1970-01-01).
@@ -79,10 +88,13 @@ Returns current time in **seconds** since UNIX epoch.
 Use for coarse-grained timing where second precision is sufficient.
 
 ```rust
+# #[ cfg( not( feature = "no_std" ) ) ]
+# {
 use time_tools ::s;
 
 let timestamp_s = s ::now();
 println!( "Current time: {} seconds since epoch", timestamp_s );
+# }
 ```
 
 **Panics:** If system time is before UNIX epoch (1970-01-01).
@@ -98,10 +110,13 @@ Returns current time in **nanoseconds** since UNIX epoch.
 Use for high-precision timing within a single process. Note that this is still wall-clock time, not monotonic.
 
 ```rust
+# #[ cfg( not( feature = "no_std" ) ) ]
+# {
 use time_tools ::ns;
 
 let timestamp_ns = ns ::now();
 println!( "Current time: {} nanoseconds", timestamp_ns );
+# }
 ```
 
 **Panics:** If system time is before UNIX epoch (1970-01-01).
@@ -115,66 +130,80 @@ println!( "Current time: {} nanoseconds", timestamp_ns );
 ### Basic Time Retrieval
 
 ```rust
+# #[ cfg( not( feature = "no_std" ) ) ]
+# {
 use time_tools ::*;
 
 // Default: milliseconds (most common use case)
-let now_ms = now();
+let now_ms = now::now();
 
 // Explicit unit selection
 let seconds = s ::now();
 let milliseconds = ms ::now();
 let nanoseconds = ns ::now();
+# }
 ```
 
 ### Cross-Unit Conversion Verification
 
 ```rust
+# #[ cfg( not( feature = "no_std" ) ) ]
+# {
 use time_tools ::*;
 
-let now_ms = now();
+let now_ms = now::now();
 let now_s = s ::now();
 let now_ns = ns ::now();
 
 // Verify unit relationships
 assert_eq!( now_ms / 1000, now_s );
 assert_eq!( now_ns / 1_000_000, now_ms );
+# }
 ```
 
 ### Measuring Elapsed Time
 
 ```rust
+# #[ cfg( not( feature = "no_std" ) ) ]
+# {
 use time_tools ::*;
 
-let start = now();
+let start = now::now();
 
 // Do some work...
 std ::thread ::sleep( std ::time ::Duration ::from_millis( 100 ) );
 
-let end = now();
+let end = now::now();
 let elapsed_ms = end - start;
 
 println!( "Operation took {} ms", elapsed_ms );
+# }
 ```
 
 ### Integration with std::time::Duration
 
 ```rust
+# #[ cfg( not( feature = "no_std" ) ) ]
+# {
 use time_tools ::*;
 use std ::time ::Duration;
 
 // Create a duration from time_tools timestamp difference
-let start = now();
+let start = now::now();
 std ::thread ::sleep( Duration ::from_millis( 50 ) );
-let elapsed_ms = now() - start;
+let elapsed_ms = now::now() - start;
 
 // Convert to Duration if needed
 let duration = Duration ::from_millis( elapsed_ms as u64 );
 println!( "Elapsed: {:?}", duration );
+# }
 ```
 
 ### High-Precision Timing
 
 ```rust
+# #[ cfg( not( feature = "no_std" ) ) ]
+# {
 use time_tools ::ns;
 
 let start_ns = ns ::now();
@@ -185,12 +214,15 @@ let end_ns = ns ::now();
 let elapsed_ns = end_ns - start_ns;
 
 println!( "Operation took {} nanoseconds", elapsed_ns );
+# }
 ```
 
 ### Simple Logging with Timestamps
 
 ```rust
-use time_tools ::now;
+# #[ cfg( not( feature = "no_std" ) ) ]
+# {
+use time_tools ::now ::now;
 
 fn log_event( message : &str )
 {
@@ -200,6 +232,7 @@ fn log_event( message : &str )
 
 log_event( "Application started" );
 log_event( "Processing complete" );
+# }
 ```
 
 ## Performance Characteristics

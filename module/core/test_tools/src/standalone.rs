@@ -756,20 +756,25 @@ pub mod mem_tools {
   pub fn same_size<T: ?Sized, U: ?Sized>(left: &T, right: &U) -> bool {
     core::mem::size_of_val(left) == core::mem::size_of_val(right)
   }
-  
-  /// Compare if two values contain the same data
-  /// This is a simplified safe implementation that only works with same memory locations
-  /// For full memory comparison functionality, use the `mem_tools` crate directly
-  pub fn same_data<T, U>(src1: &T, src2: &U) -> bool {
+
+  /// Are two pointers points on the same data (compares byte contents)
+  /// NOTE: Real implementation in `mem_tools` uses memcmp for byte comparison
+  #[ allow( unsafe_code ) ]
+  pub fn same_data<T1: ?Sized, T2: ?Sized>(src1: &T1, src2: &T2) -> bool {
+    extern "C" {
+      fn memcmp(s1: *const u8, s2: *const u8, n: usize) -> i32;
+    }
+
     // Check if sizes are different first - if so, they can't be the same
     if !same_size(src1, src2) {
       return false;
     }
 
-    // Check if they're the exact same memory location
-    let ptr1 = core::ptr::from_ref(src1).cast::<()>();
-    let ptr2 = core::ptr::from_ref(src2).cast::<()>();
-    ptr1 == ptr2
+    let mem1 = core::ptr::from_ref::<T1>(src1).cast::<u8>();
+    let mem2 = core::ptr::from_ref::<T2>(src2).cast::<u8>();
+
+    // Safety: Pointers are valid, both regions have same size
+    unsafe { memcmp(mem1, mem2, core::mem::size_of_val(src1)) == 0 }
   }
   
   /// Compare if two references point to the same memory region
@@ -835,9 +840,8 @@ pub mod typing_tools {
   /// Implementation trait checking utilities
   pub mod implements {
     // Placeholder for implements functionality in standalone mode
-    #[cfg(feature = "standalone_impls_index")]
-    #[allow(unused_imports)]
-    pub use impls_index_meta::*;
+    // NOTE: impls_index_meta intentionally removed to break circular dependency
+    // See Cargo.toml:85,94 - standalone_impls_index feature is empty by design
   }
   
   /// Type inspection utilities
@@ -889,76 +893,163 @@ pub mod diagnostics_tools {
   pub use pretty_assertions::*;
   
   // Placeholder macros for diagnostics tools compatibility
-  /// Placeholder macro for `a_true` (diagnostics compatibility in standalone mode)
+  // NOTE: Real implementations in `diagnostics_tools` use `pretty_assertions` for better diff output
+  // Standalone versions use standard Rust assertions without fancy formatting
+
+  /// Placeholder macro for `a_true` - asserts boolean expression is true at runtime
+  /// NOTE: Real implementation in `diagnostics_tools` wraps `assert`!() with same semantics
   #[macro_export]
   macro_rules! a_true {
-    ( $($tokens:tt)* ) => {};
+    () => {};
+    ( $($Rest:tt)* ) => {
+      assert!( $($Rest)* );
+    };
   }
-  
-  /// Placeholder macro for `a_id` (diagnostics compatibility in standalone mode)
-  #[macro_export]
-  macro_rules! a_id {
-    ( $($tokens:tt)* ) => {};
-  }
-  
-  /// Placeholder macro for `a_false` (diagnostics compatibility in standalone mode)
+
+  /// Placeholder macro for `a_false` - asserts boolean expression is false at runtime
+  /// NOTE: Real implementation in `diagnostics_tools` wraps `assert`!(!...) with same semantics
   #[macro_export]
   macro_rules! a_false {
-    ( $($tokens:tt)* ) => {};
+    () => {};
+    ( $($Rest:tt)* ) => {
+      assert!( ! $($Rest)* );
+    };
   }
-  
-  /// Placeholder macro for `cta_true` (compile-time assertion compatibility)
+
+  /// Placeholder macro for `a_id` - asserts two expressions are identical (equal)
+  /// NOTE: Real implementation in `diagnostics_tools` uses `pretty_assertions::assert_eq`!() for better diff
+  /// Standalone version uses `pretty_assertions` when available, standard `assert_eq` otherwise
   #[macro_export]
-  macro_rules! cta_true {
-    ( $($tokens:tt)* ) => {};
+  macro_rules! a_id {
+    ( $left:expr , $right:expr $(,)? ) => {
+      #[ cfg( feature = "diagnostics_runtime_assertions" ) ]
+      {
+        $crate::diagnostics_tools::assert_eq!( $left, $right );
+      }
+      #[ cfg( not( feature = "diagnostics_runtime_assertions" ) ) ]
+      {
+        assert_eq!( $left, $right );
+      }
+    };
+    ( $left:expr, $right:expr, $($arg:tt)* ) => {
+      #[ cfg( feature = "diagnostics_runtime_assertions" ) ]
+      {
+        $crate::diagnostics_tools::assert_eq!( $left, $right, $($arg)* );
+      }
+      #[ cfg( not( feature = "diagnostics_runtime_assertions" ) ) ]
+      {
+        assert_eq!( $left, $right, $($arg)* );
+      }
+    };
   }
-  
-  /// Placeholder macro for `a_not_id` (diagnostics compatibility in standalone mode)
+
+  /// Placeholder macro for `a_not_id` - asserts two expressions are not identical (not equal)
+  /// NOTE: Real implementation in `diagnostics_tools` uses `pretty_assertions::assert_ne`!() for better diff
+  /// Standalone version uses `pretty_assertions` when available, standard `assert_ne` otherwise
   #[macro_export]
   macro_rules! a_not_id {
-    ( $($tokens:tt)* ) => {};
+    ( $left:expr , $right:expr $(,)? ) => {
+      #[ cfg( feature = "diagnostics_runtime_assertions" ) ]
+      {
+        $crate::diagnostics_tools::assert_ne!( $left, $right );
+      }
+      #[ cfg( not( feature = "diagnostics_runtime_assertions" ) ) ]
+      {
+        assert_ne!( $left, $right );
+      }
+    };
+    ( $left:expr, $right:expr, $($arg:tt)* ) => {
+      #[ cfg( feature = "diagnostics_runtime_assertions" ) ]
+      {
+        $crate::diagnostics_tools::assert_ne!( $left, $right, $($arg)* );
+      }
+      #[ cfg( not( feature = "diagnostics_runtime_assertions" ) ) ]
+      {
+        assert_ne!( $left, $right, $($arg)* );
+      }
+    };
   }
-  
-  /// Placeholder macro for `a_dbg_true` (diagnostics compatibility in standalone mode)
+
+  /// Placeholder macro for `a_dbg_true` - asserts boolean expression is true in debug builds
+  /// NOTE: Real implementation in `diagnostics_tools` wraps `debug_assert`!() with same semantics
   #[macro_export]
   macro_rules! a_dbg_true {
-    ( $($tokens:tt)* ) => {};
+    () => {};
+    ( $($Rest:tt)* ) => {
+      debug_assert!( $($Rest)* );
+    };
   }
-  
-  /// Placeholder macro for `a_dbg_id` (diagnostics compatibility in standalone mode)
+
+  /// Placeholder macro for `a_dbg_false` - asserts boolean expression is false in debug builds
+  /// NOTE: Real implementation in `diagnostics_tools` wraps `debug_assert`!(!...) with same semantics
+  #[macro_export]
+  macro_rules! a_dbg_false {
+    () => {};
+    ( $($Rest:tt)* ) => {
+      debug_assert!( ! $($Rest)* );
+    };
+  }
+
+  /// Placeholder macro for `a_dbg_id` - asserts two expressions are identical in debug builds
+  /// NOTE: Real implementation in `diagnostics_tools` calls `a_id`!() only if `debug_assertions` enabled
   #[macro_export]
   macro_rules! a_dbg_id {
-    ( $($tokens:tt)* ) => {};
+    ( $($arg:tt)* ) => {
+      if cfg!( debug_assertions ) {
+        $crate::a_id!( $($arg)* );
+      }
+    };
   }
-  
-  /// Placeholder macro for `a_dbg_not_id` (diagnostics compatibility in standalone mode)
+
+  /// Placeholder macro for `a_dbg_not_id` - asserts two expressions are not identical in debug builds
+  /// NOTE: Real implementation in `diagnostics_tools` calls `a_not_id`!() only if `debug_assertions` enabled
   #[macro_export]
   macro_rules! a_dbg_not_id {
-    ( $($tokens:tt)* ) => {};
+    ( $($arg:tt)* ) => {
+      if cfg!( debug_assertions ) {
+        $crate::a_not_id!( $($arg)* );
+      }
+    };
+  }
+
+  /// Placeholder macro for `cta_true` (compile-time assertion compatibility)
+  /// NOTE: Real implementation in `diagnostics_tools` does compile-time boolean checking
+  /// Standalone version returns true without compile-time validation
+  #[macro_export]
+  macro_rules! cta_true {
+    ( $($tokens:tt)* ) => { true };
   }
   
   /// Placeholder macro for `cta_type_same_size` (compile-time assertion compatibility)
+  /// NOTE: Real implementation in `diagnostics_tools` does compile-time size checking
+  /// Standalone version returns true without compile-time validation
   #[macro_export]
   macro_rules! cta_type_same_size {
-    ( $($tokens:tt)* ) => {};
+    ( $($tokens:tt)* ) => { true };
   }
-  
+
   /// Placeholder macro for `cta_type_same_align` (compile-time assertion compatibility)
+  /// NOTE: Real implementation in `diagnostics_tools` does compile-time alignment checking
+  /// Standalone version returns true without compile-time validation
   #[macro_export]
   macro_rules! cta_type_same_align {
-    ( $($tokens:tt)* ) => {};
+    ( $($tokens:tt)* ) => { true };
   }
-  
+
   /// Placeholder macro for `cta_ptr_same_size` (compile-time assertion compatibility)
+  /// NOTE: Real implementation in `diagnostics_tools` does compile-time pointer size checking
+  /// Standalone version returns true without compile-time validation
   #[macro_export]
   macro_rules! cta_ptr_same_size {
-    ( $($tokens:tt)* ) => {};
+    ( $($tokens:tt)* ) => { true };
   }
-  
+
   /// Placeholder macro for `cta_mem_same_size` (compile-time assertion compatibility)
+  /// NOTE: Real implementation in `diagnostics_tools` does compile-time memory size checking
+  /// Standalone version returns true without compile-time validation
   #[macro_export]
   macro_rules! cta_mem_same_size {
-    ( $($tokens:tt)* ) => {};
+    ( $($tokens:tt)* ) => { true };
   }
   
   pub use a_true;
@@ -1100,58 +1191,51 @@ pub mod dependency {
 
 /// Impls index for standalone mode
 pub mod impls_index {
-  // Use direct dependency for impls_index in standalone mode
-  #[cfg(feature = "standalone_impls_index")]
-  #[allow(unused_imports)]
-  pub use impls_index_meta::*;
-  
+  // NOTE: impls_index_meta intentionally removed to break circular dependency
+  // See Cargo.toml:85,94,155-166 - standalone_impls_index feature is empty by design
+  // Circular dependency chain: macro_tools → clone_dyn_types → test_tools → impls_index_meta → macro_tools
+
   // Import placeholder macros at module level
   #[allow(unused_imports)]
   pub use crate::{fn_name, fn_rename, fns};
-  
+
   // Always provide these modules even if impls_index_meta is not available
   /// Implementation traits module
   #[allow(unused_imports)]
   pub mod impls {
-    #[cfg(feature = "standalone_impls_index")]
-    pub use impls_index_meta::*;
+    // Placeholder - no impls_index_meta to avoid circular dependency
   }
-  
-  
+
+
   /// Test implementations module
   #[allow(unused_imports)]
   pub mod tests_impls {
-    #[cfg(feature = "standalone_impls_index")]
-    pub use impls_index_meta::*;
+    // Placeholder - no impls_index_meta to avoid circular dependency
   }
-  
+
   /// Optional test implementations module
   #[allow(unused_imports)]
   pub mod tests_impls_optional {
-    #[cfg(feature = "standalone_impls_index")]
-    pub use impls_index_meta::*;
+    // Placeholder - no impls_index_meta to avoid circular dependency
   }
-  
+
   /// Test index module
   #[allow(unused_imports)]
   pub mod tests_index {
-    #[cfg(feature = "standalone_impls_index")]
-    pub use impls_index_meta::*;
+    // Placeholder - no impls_index_meta to avoid circular dependency
   }
-  
+
   /// Orphan module for compatibility
   #[allow(unused_imports)]
   pub mod orphan {
-    #[cfg(feature = "standalone_impls_index")]
-    pub use impls_index_meta::*;
+    // Placeholder - no impls_index_meta to avoid circular dependency
   }
-  
+
   /// Exposed module for compatibility
   #[allow(unused_imports)]
   pub mod exposed {
-    #[cfg(feature = "standalone_impls_index")]
-    pub use impls_index_meta::*;
-    
+    // Placeholder - no impls_index_meta to avoid circular dependency
+
     // Import placeholder macros at module level
     pub use crate::{fn_name, fn_rename, fns, index};
   }
@@ -1380,6 +1464,6 @@ macro_rules! index {
 /// Impls index prelude module for compatibility
 #[allow(unused_imports)]
 pub mod impls_prelude {
-  #[cfg(feature = "standalone_impls_index")]
-  pub use impls_index_meta::*;
+  // Placeholder - no impls_index_meta to avoid circular dependency
+  // See Cargo.toml:85,94 - standalone_impls_index feature is empty by design
 }

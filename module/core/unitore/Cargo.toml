@@ -14,6 +14,9 @@ Feed reader with the ability to set updates frequency.
 categories = [ "development-tools" ]
 keywords = [ "rss-feed", "atom-feed" ]
 repository = "https://github.com/Wandalen/wTools/tree/alpha/module/core/unitore"
+dependencies = {}
+dev-dependencies = {}
+build-dependencies = {}
 
 [lints]
 workspace = true
@@ -46,7 +49,9 @@ serde = "1.0.196"
 url = { version = "2.0", features = ["serde"] }
 humantime-serde = "1.1.1"
 gluesql = "0.16.3"
+gluesql_sled_storage = "0.16.3"
 async-trait = "0.1.41"
+itertools = "0.14.0"
 wca = { workspace = true }
 mockall = "0.12.1"
 cli-table = "0.4.7"

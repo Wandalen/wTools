@@ -29,7 +29,10 @@ fn main() -> Result< () >
   ("Medium Framework".to_string(), create_test_result("medium", 600.0)),
   ("Slow Framework".to_string(), create_test_result("slow", 300.0)),
  ];
-  
+
+  // Create output directory if it doesn't exist
+  std ::fs ::create_dir_all("target")?;
+
   // Generate scaling chart
   let scaling_path = Path ::new("target/scaling_chart.svg");
   plots ::scaling_analysis_chart(

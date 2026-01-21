@@ -24,23 +24,17 @@ Then follow the **Learning Path** below for a structured progression.
 | **[001_fluent_builder.rs](./001_fluent_builder.rs)** | Builder Pattern | Chainable `impute()` method for fluent APIs |
 | **[002_multiple_components.rs](./002_multiple_components.rs)** | Bulk Operations | Assigning multiple components from tuples |
 
-### 🟡 **Creation Patterns**  
+### 🟡 **Advanced Patterns**
 | Example | Focus | Description |
 |---------|--------|-------------|
-| **[003_component_from.rs](./003_component_from.rs)** | Object Creation | Creating objects FROM single components |
-| **[004_from_components.rs](./004_from_components.rs)** | Bulk Creation | Creating objects FROM multiple components |
+| **[003_component_from.rs](./003_component_from.rs)** | Advanced Assignment | Order-independent component assignment patterns |
+| **[004_working_example.rs](./004_working_example.rs)** | Real-World Usage | Practical configuration management with environment variants |
 
-### 🟠 **Real-World Usage**
+### 🟠 **Edge Cases & Debugging**
 | Example | Focus | Description |
 |---------|--------|-------------|
-| **[006_real_world_config.rs](./006_real_world_config.rs)** | Configuration | Practical config management system |
-| **[005_manual_implementation.rs](./005_manual_implementation.rs)** | Customization | Custom trait implementations with validation |
-
-### 🔴 **Advanced Topics**
-| Example | Focus | Description |
-|---------|--------|-------------|
-| **[007_advanced_patterns.rs](./007_advanced_patterns.rs)** | Advanced Usage | Generics, nesting, optional components |
-| **[008_performance_comparison.rs](./008_performance_comparison.rs)** | Performance | Benchmarks and zero-cost abstraction proof |
+| **[boolean_assignment_error.rs](./boolean_assignment_error.rs)** | Type Ambiguity | Demonstrates solutions for boolean field ambiguity |
+| **[debug_macro_output.rs](./debug_macro_output.rs)** | Macro Debugging | Inspect generated code with `#[debug]` attribute |
 
 ## 🚀 Running Examples
 
@@ -52,8 +46,8 @@ cargo run --example <example_name>
 **Examples:**
 ```bash
 cargo run --example 000_basic_assignment
-cargo run --example 006_real_world_config
-cargo run --example 008_performance_comparison
+cargo run --example 004_working_example
+cargo run --example debug_macro_output
 ```
 
 ## 💡 Key Concepts Demonstrated
@@ -90,14 +84,14 @@ let config : Config = FromComponents::from_components((
 ));
 ```
 
-## 📊 **Performance Highlights**
+## 📊 **Performance Characteristics**
 
-From `008_performance_comparison.rs`:
+Component model derives provide:
 
-- ✅ **Zero memory overhead** vs traditional structs
-- ✅ **Zero runtime cost** - compiles to optimized assembly
-- ✅ **Comparable performance** to hand-written builders
-- ✅ **Type safety** without performance penalty
+- ✅ **Zero memory overhead** - No additional fields or vtables
+- ✅ **Zero runtime cost** - All resolved at compile time via generics
+- ✅ **Inline expansion** - Methods marked `#[inline(always)]` for optimization
+- ✅ **Type safety** - Compile-time type checking without performance penalty
 
 ## 🎯 **Use Cases Covered**
 
@@ -120,15 +114,18 @@ All examples demonstrate these derives:
 #[derive(FromComponents)]      // Create from multiple components
 ```
 
-## 📖 **Legacy Examples** 
+## 📖 **Complete Example List**
 
-The following are legacy examples from the previous codebase (may use older patterns):
+All 8 examples currently available:
 
-| Group | Example | Description |
-|-------|---------|-------------|
-| **Legacy Usage** | `component_model_many_fields.rs` | Various field types with scalar setters |
-| **Legacy Collections** | `component_model_collection_*.rs` | Collection building patterns |
-| **Legacy Customization** | `component_model_custom_*.rs` | Custom defaults and setters |
+1. `component_model_trivial.rs` - Quick 30-second introduction
+2. `000_basic_assignment.rs` - Type-driven field assignment fundamentals
+3. `001_fluent_builder.rs` - Chainable fluent API pattern
+4. `002_multiple_components.rs` - Bulk component assignment from tuples
+5. `003_component_from.rs` - Advanced order-independent assignment
+6. `004_working_example.rs` - Real-world configuration management
+7. `boolean_assignment_error.rs` - Handling type ambiguity with booleans
+8. `debug_macro_output.rs` - Inspecting macro-generated code
 
 ---
 

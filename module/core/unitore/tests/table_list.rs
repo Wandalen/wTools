@@ -1,6 +1,8 @@
+//! Test for `table_list` functionality.
+
 use gluesql ::
 {
-  sled_storage ::sled ::Config,
+  gluesql_sled_storage ::sled ::Config,
   prelude :: { Payload, Value ::Str },
 };
 use unitore ::
@@ -16,7 +18,7 @@ async fn table_list() -> Result< () >
   let temp_path = pth ::path ::unique_folder_name().unwrap();
 
   let config = Config ::default()
-  .path( format!( "./{}", temp_path ) )
+  .path( format!( "./{temp_path}" ) )
   .temporary( true )
   ;
 

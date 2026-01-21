@@ -115,24 +115,61 @@ fn main()
 fn demonstrate_failures()
 {
   println!( "\n6. What error messages look like: " );
-  println!( "   (Uncomment code in demonstrate_failures() to see actual diffs)" );
-  
-  // Uncomment these to see beautiful error diffs :
-  
-  // Different vectors :
-  // let actual = vec![ 1, 2, 3 ];
-  // let expected = vec![ 1, 2, 4 ];  
-  // a_id!( actual, expected );
-  
-  // Different structs :
-  // let user1 = User { name: "Alice".to_string(), age: 30, email: "alice@example.com".to_string(), active: true };
-  // let user2 = User { name: "Alice".to_string(), age: 31, email: "alice@example.com".to_string(), active: true };
-  // a_id!( user1, user2 );
-  
-  // Different strings :
-  // let actual = "Hello, World!";
-  // let expected = "Hello, Universe!";
-  // a_id!( actual, expected );
-  
-  println!( "   💡 Uncomment examples above to see colorful diff output!" );
+  println!( "   Below are demonstrations of diff output when assertions fail.\n" );
+
+  // Different vectors - demonstrate diff output
+  println!( "   Example: Different vectors (element mismatch)" );
+  println!( "   Comparing vec![ 1, 2, 3 ] with vec![ 1, 2, 4 ]" );
+  let result = std ::panic ::catch_unwind( ||
+  {
+    let actual = vec![ 1, 2, 3 ];
+    let expected = vec![ 1, 2, 4 ];
+    a_id!( actual, expected );
+  } );
+  if result.is_err()
+  {
+    println!( "   ✓ Diff shown above highlights the mismatch at index 2\n" );
+  }
+
+  // Different structs - demonstrate diff output
+  println!( "   Example: Different structs (age field differs)" );
+  println!( "   Comparing User {{ age: 30 }} with User {{ age: 31 }}" );
+  let result = std ::panic ::catch_unwind( ||
+  {
+    let user1 = User
+    {
+      name: "Alice".to_string(),
+      age: 30,
+      email: "alice@example.com".to_string(),
+      active: true
+    };
+    let user2 = User
+    {
+      name: "Alice".to_string(),
+      age: 31,
+      email: "alice@example.com".to_string(),
+      active: true
+    };
+    a_id!( user1, user2 );
+  } );
+  if result.is_err()
+  {
+    println!( "   ✓ Diff shown above highlights the age field difference\n" );
+  }
+
+  // Different strings - demonstrate diff output
+  println!( "   Example: Different strings (word mismatch)" );
+  println!( "   Comparing \"Hello, World!\" with \"Hello, Universe!\"" );
+  let result = std ::panic ::catch_unwind( ||
+  {
+    let actual = "Hello, World!";
+    let expected = "Hello, Universe!";
+    a_id!( actual, expected );
+  } );
+  if result.is_err()
+  {
+    println!( "   ✓ Diff shown above highlights the string difference\n" );
+  }
+
+  println!( "   💡 Notice the colorful diff output showing exactly what differs!" );
 }

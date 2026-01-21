@@ -40,7 +40,8 @@ clone_dyn_meta is responsible for providing the procedural macro implementation 
 ```
 clone_dyn_meta/
 ├── src/
-│   └── lib.rs              # Proc-macro entry point
+│   ├── lib.rs              # Proc-macro entry point (public API)
+│   └── clone_dyn.rs        # Implementation logic (private module)
 ├── Cargo.toml
 ├── readme.md
 └── spec.md

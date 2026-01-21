@@ -1,8 +1,8 @@
 use super :: *;
 
 // use the_module :: *;
-use assert_cmd ::Command;
-use inc ::helper :: { ProjectBuilder, BINARY_NAME };
+use assert_cmd ::cargo ::cargo_bin_cmd;
+use inc ::helper ::ProjectBuilder;
 
 use assert_fs ::TempDir;
 
@@ -26,8 +26,7 @@ fn status_code_1_on_failure()
   .build(temp)
   .unwrap();
 
-  Command ::cargo_bin(BINARY_NAME)
-  .unwrap()
+  cargo_bin_cmd!("will")
   .args([".tests.run", "with_nightly: 0"])
   .current_dir(project)
   .assert()
@@ -54,8 +53,7 @@ fn status_code_not_zero_on_failure()
   .build(temp)
   .unwrap();
 
-  Command ::cargo_bin(BINARY_NAME)
-  .unwrap()
+  cargo_bin_cmd!("will")
   .args([".tests.run", "with_nightly: 0"])
   .current_dir(project)
   .assert()
@@ -82,8 +80,7 @@ fn status_code_not_zero_on_compile_error()
   .build(temp)
   .unwrap();
 
-  Command ::cargo_bin(BINARY_NAME)
-  .unwrap()
+  cargo_bin_cmd!("will")
   .args([".tests.run", "with_nightly: 0"])
   .current_dir(project)
   .assert()

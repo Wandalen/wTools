@@ -1,3 +1,5 @@
+//! Test implementations for memory comparison functions.
+
 use super :: *;
 // tests_impls and tests_index are macros available from test_tools crate root
 use test_tools ::diagnostics_tools ::a_true;

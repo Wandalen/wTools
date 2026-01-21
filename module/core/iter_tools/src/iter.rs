@@ -2,11 +2,11 @@
 mod private 
 {
   #[ allow( unused_imports ) ]
-  use crate :: *;
-  // use ::itertools ::process_results;
+  use crate:: *;
+  // use::itertools::process_results;
 
   #[ cfg( feature = "iter_trait" ) ]
-  use clone_dyn_types ::CloneDyn;
+  use clone_dyn_types::CloneDyn;
 
   /// Trait that encapsulates an iterator with specific characteristics and implemetning `CloneDyn`.
   ///
@@ -20,7 +20,7 @@ mod private
   ///
   /// # Example
   /// ```rust
-  /// use iter_tools ::_IterTrait;
+  /// use iter_tools::_IterTrait;
   ///
   /// // Example struct that implements Iterator, ExactSizeIterator, DoubleEndedIterator, and CloneDyn.
   /// #[ derive( Clone ) ]
@@ -33,7 +33,7 @@ mod private
   /// {
   ///   type Item = i32;
   ///
-  ///   fn next( &mut self ) -> Option< Self ::Item >
+  ///   fn next( &mut self ) -> Option< Self::Item >
   ///   {
   ///     // implementation
   ///     Some( 1 )
@@ -51,7 +51,7 @@ mod private
   ///
   /// impl DoubleEndedIterator for MyIterator
   /// {
-  ///   fn next_back( &mut self ) -> Option< Self ::Item >
+  ///   fn next_back( &mut self ) -> Option< Self::Item >
   ///   {
   ///     // implementation
   ///     Some( 1 )
@@ -113,7 +113,7 @@ mod private
   #[ inline ]
   fn clone( &self ) -> Self 
   {
-   clone_dyn_types ::clone_into_box(&**self)
+   clone_dyn_types::clone_into_box(&**self)
  }
  }
 
@@ -125,7 +125,7 @@ mod private
   #[ inline ]
   fn clone( &self ) -> Self 
   {
-   clone_dyn_types ::clone_into_box(&**self)
+   clone_dyn_types::clone_into_box(&**self)
  }
  }
 
@@ -137,7 +137,7 @@ mod private
   #[ inline ]
   fn clone( &self ) -> Self 
   {
-   clone_dyn_types ::clone_into_box(&**self)
+   clone_dyn_types::clone_into_box(&**self)
  }
  }
 
@@ -149,7 +149,7 @@ mod private
   #[ inline ]
   fn clone( &self ) -> Self 
   {
-   clone_dyn_types ::clone_into_box(&**self)
+   clone_dyn_types::clone_into_box(&**self)
  }
  }
 
@@ -167,32 +167,32 @@ mod private
   #[ cfg(any(not(feature = "no_std"), feature = "use_alloc")) ]
   pub trait IterExt
   where
-  Self: core ::iter ::Iterator,
+  Self: core::iter::Iterator,
   {
-  /// Iterate each element and return `core ::Result ::Err` if any element is error.
+  /// Iterate each element and return `core::Result::Err` if any element is error.
   /// # Errors
   /// qqq: errors
-  fn map_result< F, RE, El >(self, f: F) -> core ::result ::Result< Vec< El >, RE>
+  fn map_result< F, RE, El >(self, f: F) -> core::result::Result< Vec< El >, RE>
   where
    Self: Sized + Clone,
-   F: FnMut(< Self as core ::iter ::Iterator > ::Item) -> core ::result ::Result< El, RE >,
-   RE: core ::fmt ::Debug;
+   F: FnMut(< Self as core::iter::Iterator >::Item) -> core::result::Result< El, RE >,
+   RE: core::fmt::Debug;
  }
 
   #[ cfg( feature = "iter_ext" ) ]
   #[ cfg(any(not(feature = "no_std"), feature = "use_alloc")) ]
   impl< Iterator > IterExt for Iterator
   where
-  Iterator: core ::iter ::Iterator,
+  Iterator: core::iter::Iterator,
   {
-  fn map_result< F, RE, El >(self, f: F) -> core ::result ::Result< Vec< El >, RE>
+  fn map_result< F, RE, El >(self, f: F) -> core::result::Result< Vec< El >, RE>
   where
    Self: Sized + Clone,
-   F: FnMut(< Self as core ::iter ::Iterator > ::Item) -> core ::result ::Result< El, RE >,
-   RE: core ::fmt ::Debug,
+   F: FnMut(< Self as core::iter::Iterator >::Item) -> core::result::Result< El, RE >,
+   RE: core::fmt::Debug,
   {
    let vars_maybe = self.map(f);
-   let vars: Vec< _ > = ::itertools ::process_results(vars_maybe, |iter| iter.collect())?;
+   let vars: Vec< _ > =::itertools::process_results(vars_maybe, |iter| iter.collect())?;
    Ok(vars)
  }
  }
@@ -200,16 +200,16 @@ mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own :: *;
+pub use own:: *;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod own 
 {
 
-  use super :: *;
+  use super:: *;
   #[ doc( inline ) ]
-  pub use orphan :: *;
+  pub use orphan:: *;
 }
 
 /// Orphan namespace of the module.
@@ -217,13 +217,13 @@ pub mod own
 pub mod orphan 
 {
 
-  use super :: *;
+  use super:: *;
 
   #[ doc( inline ) ]
-  pub use exposed :: *;
+  pub use exposed:: *;
 
   #[ doc( inline ) ]
-  pub use ::itertools :: {
+  pub use::itertools:: {
   all,
   any,
   assert_equal,
@@ -266,7 +266,7 @@ pub mod orphan
 
   #[ cfg(not(feature = "no_std")) ]
   #[ doc( inline ) ]
-  pub use core ::iter ::zip;
+  pub use core::iter::zip;
 }
 
 /// Exposed namespace of the module.
@@ -274,33 +274,33 @@ pub mod orphan
 pub mod exposed 
 {
 
-  use super :: *;
+  use super:: *;
 
   #[ doc( inline ) ]
-  pub use prelude :: *;
+  pub use prelude:: *;
 
   #[ doc( inline ) ]
   #[ cfg( feature = "iter_trait" ) ]
-  pub use private :: { _IterTrait, IterTrait };
+  pub use private:: { _IterTrait, IterTrait };
 
   #[ doc( inline ) ]
   #[ cfg( feature = "iter_trait" ) ]
   #[ cfg(any(not(feature = "no_std"), feature = "use_alloc")) ]
-  pub use private ::BoxedIter;
+  pub use private::BoxedIter;
 }
 
-/// Prelude to use essentials: `use my_module ::prelude :: *`.
+/// Prelude to use essentials: `use my_module::prelude:: *`.
 #[ allow( unused_imports ) ]
 pub mod prelude 
 {
 
-  use super :: *;
+  use super:: *;
 
   #[ doc( inline ) ]
-  pub use ::itertools :: { Diff, Either, EitherOrBoth, FoldWhile, MinMaxResult, Position, Itertools, PeekingNext };
+  pub use::itertools:: { Diff, Either, EitherOrBoth, FoldWhile, MinMaxResult, Position, Itertools, PeekingNext };
 
   #[ doc( inline ) ]
   #[ cfg( feature = "iter_ext" ) ]
   #[ cfg(any(not(feature = "no_std"), feature = "use_alloc")) ]
-  pub use private ::IterExt;
+  pub use private::IterExt;
 }

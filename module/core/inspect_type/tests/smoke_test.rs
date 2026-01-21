@@ -1,13 +1,4 @@
 //! Smoke testing of the package.
-
-// #[ test ]
-// fn local_smoke_test()
-// {
-// ::test_tools ::test ::smoke_test ::smoke_test_for_local_run();
-// }
-//
-// #[ test ]
-// fn published_smoke_test()
-// {
-// ::test_tools ::test ::smoke_test ::smoke_test_for_published_run();
-// }
+//!
+//! Note: This crate intentionally avoids `test_tools` dependency to prevent
+//! circular dependencies, as `inspect_type` is a foundational utility.

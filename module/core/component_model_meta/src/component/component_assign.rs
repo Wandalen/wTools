@@ -1,7 +1,7 @@
 
 use super :: *;
 // Use re-exports from macro_tools
-use macro_tools :: { qt, attr, diag, Result, proc_macro2 ::TokenStream, syn ::Index };
+use macro_tools :: { qt, attr, diag, Result, proc_macro2 ::TokenStream, syn ::Index, quote };
 
 ///
 /// Generates implementations of the `Assign` trait for each field of a struct.
@@ -13,19 +13,46 @@ pub fn component_assign(input: proc_macro ::TokenStream) -> Result< proc_macro2 
   let has_debug = attr ::has_debug(parsed.attrs.iter())?;
   let item_name = &parsed.ident.clone();
 
+  // Collect unique field types to avoid conflicting trait implementations
+  let mut seen_types = std ::collections ::HashSet ::new();
+
   // Directly iterate over fields and handle named/unnamed cases
-  let for_fields =  match &parsed.fields 
+  let for_fields =  match &parsed.fields
   {
   syn ::Fields ::Named(fields_named) =>
   {
    fields_named.named.iter()
-   .map( | field | for_each_field( field, None, item_name ) ) // Pass None for index
+   .filter_map( | field |
+   {
+  let field_type = &field.ty;
+  let type_string = quote ::quote!( #field_type ).to_string();
+
+  // Only generate Assign impl for first occurrence of each type
+  if seen_types.insert( type_string )
+  {
+   Some( for_each_field( field, None, item_name ) )
+ } else {
+   None // Skip duplicate types
+ }
+ })
    .collect :: < Result< Vec< _ > > >()?
  }
   syn ::Fields ::Unnamed(fields_unnamed) =>
   {
    fields_unnamed.unnamed.iter().enumerate()
-   .map( |( index, field )| for_each_field( field, Some( index ), item_name ) ) // Pass Some(index)
+   .filter_map( |( index, field )|
+   {
+  let field_type = &field.ty;
+  let type_string = quote ::quote!( #field_type ).to_string();
+
+  // Only generate Assign impl for first occurrence of each type
+  if seen_types.insert( type_string )
+  {
+   Some( for_each_field( field, Some( index ), item_name ) )
+ } else {
+   None // Skip duplicate types
+ }
+ })
    .collect :: < Result< Vec< _ > > >()?
  }
   syn ::Fields ::Unit =>

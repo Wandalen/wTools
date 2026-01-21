@@ -1,6 +1,6 @@
 [package]
 name = "error_tools"
-version = "0.36.0"
+version = "0.37.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -39,6 +39,7 @@ full = [ "enabled" ]
 no_std = []
 use_alloc = [ "no_std" ]
 enabled = []
+diagnostics_runtime_assertions = []
 
 error_typed = [ "thiserror" ]
 error_untyped = [ "anyhow" ]

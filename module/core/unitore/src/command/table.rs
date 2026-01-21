@@ -1,7 +1,7 @@
 //! Table and columns commands.
 
 use crate :: *;
-use gluesql ::sled_storage ::sled ::Config;
+use gluesql_sled_storage ::sled ::Config;
 use wca :: { Command, Type, VerifiedCommand };
 use sled_adapter ::FeedStorage;
 use action :: { Report, table :: { table_list, tables_list } };
@@ -14,6 +14,8 @@ pub struct TableCommand;
 impl TableCommand
 {
   /// Creates command to list info about tables in storage.
+  /// # Errors
+  /// Returns error if operation fails.
   pub fn list() -> Result< Command >
   {
   let rt  = tokio ::runtime ::Runtime ::new()?;
@@ -48,7 +50,7 @@ impl TableCommand
   match res
   {
    Ok( report ) => report.report(),
-   Err( err ) => println!( "{:?}", err ),
+   Err( err ) => println!( "{err:?}" ),
  }
  })
    .end()
@@ -63,6 +65,8 @@ pub struct TablesCommand;
 impl TablesCommand
 {
   /// Creates command to list info about table columns in storage.
+  /// # Errors
+  /// Returns error if operation fails.
   pub fn list() -> Result< Command >
   {
 
@@ -96,7 +100,7 @@ impl TablesCommand
   match res
   {
    Ok( report ) => report.report(),
-   Err( err ) => println!( "{:?}", err ),
+   Err( err ) => println!( "{err:?}" ),
  }
  })
    .end()

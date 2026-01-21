@@ -871,9 +871,9 @@ mod private
   use std ::path ::PathBuf;
   let new_path = Path ::new( new_path.as_ref() );
   let mut main_file_path = Path ::new( file_path.as_ref() );
-  if old_path.is_some()
+  if let Some( old_path ) = old_path
   {
-   let common = path_common( vec![ file_path.as_ref().to_str().unwrap(), old_path.unwrap().as_ref().to_str().unwrap() ].into_iter() )?;
+   let common = path_common( vec![ file_path.as_ref().to_str().unwrap(), old_path.as_ref().to_str().unwrap() ].into_iter() )?;
 
    main_file_path = match main_file_path.strip_prefix( common )
    {

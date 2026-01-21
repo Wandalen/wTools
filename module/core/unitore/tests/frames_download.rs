@@ -1,3 +1,5 @@
+//! Test for `frames_download` functionality.
+
 use feed_rs ::parser as feed_parser;
 use gluesql ::
 {
@@ -6,9 +8,9 @@ use gluesql ::
   chrono :: { DateTime, Utc },
   data ::Value
  },
-  sled_storage ::sled ::Config,
+  gluesql_sled_storage ::sled ::Config,
 };
-use wca ::iter_tools ::Itertools;
+use itertools ::Itertools;
 use unitore ::
 {
   feed_config ::SubscriptionConfig,
@@ -23,7 +25,7 @@ async fn test_save() -> Result< () >
   let temp_path = pth ::path ::unique_folder_name().unwrap();
 
   let config = Config ::default()
-  .path( format!( "./{}", temp_path ) )
+  .path( format!( "./{temp_path}" ) )
   .temporary( true )
   ;
 
@@ -31,14 +33,14 @@ async fn test_save() -> Result< () >
 
   let feed_config = SubscriptionConfig
   {
-  update_period: std ::time ::Duration ::from_secs( 1000 ),
-  link: url ::Url ::parse( "https: //www.nasa.gov/feed/" )?,
+  update_period: core ::time ::Duration ::from_secs( 1000 ),
+  link: url ::Url ::parse( "https://www.nasa.gov/feed/" )?,
  };
 
   let mut feeds = Vec ::new();
 
   let feed = feed_parser ::parse( include_str!("./fixtures/plain_feed.xml").as_bytes() )?;
-  feeds.push( ( feed, feed_config.update_period.clone(), feed_config.link.clone() ) );
+  feeds.push( ( feed, feed_config.update_period, feed_config.link.clone() ) );
   feed_storage.feeds_process( feeds ).await?;
 
   let entries = feed_storage.frames_list().await?;
@@ -55,7 +57,7 @@ async fn test_update() -> Result< () >
   let temp_path = pth ::path ::unique_folder_name().unwrap();
 
   let config = Config ::default()
-  .path( format!( "./{}", temp_path ) )
+  .path( format!( "./{temp_path}" ) )
   .temporary( true )
   ;
 
@@ -63,19 +65,19 @@ async fn test_update() -> Result< () >
 
   let feed_config = SubscriptionConfig
   {
-  update_period: std ::time ::Duration ::from_secs( 1000 ),
-  link: url ::Url ::parse( "https: //www.nasa.gov/feed/" )?,
+  update_period: core ::time ::Duration ::from_secs( 1000 ),
+  link: url ::Url ::parse( "https://www.nasa.gov/feed/" )?,
  };
 
   // initial fetch
   let feed = feed_parser ::parse( include_str!("./fixtures/plain_feed.xml").as_bytes() )?;
-  let feeds = vec![ ( feed, feed_config.update_period.clone(), feed_config.link.clone() ) ];
+  let feeds = vec![ ( feed, feed_config.update_period, feed_config.link.clone() ) ];
   feed_storage.feeds_process( feeds ).await?;
 
   // updated fetch
   let feed = feed_parser ::parse( include_str!("./fixtures/updated_one_frame.xml").as_bytes() )?;
 
-  let feeds = vec![ ( feed, feed_config.update_period.clone(), feed_config.link.clone() ) ];
+  let feeds = vec![ ( feed, feed_config.update_period, feed_config.link.clone() ) ];
   feed_storage.feeds_process( feeds ).await?;
 
   // check
@@ -83,8 +85,7 @@ async fn test_update() -> Result< () >
 
   let entries = payload.0
   .iter()
-  .map( | val | val.selected_frames.selected_rows.clone() )
-  .flatten()
+  .flat_map(| val | val.selected_frames.selected_rows.clone())
   .collect :: < Vec< _ > >()
   ;
 
@@ -113,7 +114,7 @@ async fn test_update() -> Result< () >
   // check date
   let updated = entries.iter().find
   (
-  | ( id, _published ) | id == "https: //www.nasa.gov/?post_type=image-article&p=631537"
+  | ( id, _published ) | id == "https://www.nasa.gov/?post_type=image-article&p=631537"
  );
   assert!( updated.is_some() );
   let _updated = updated.unwrap();

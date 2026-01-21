@@ -1,6 +1,9 @@
-//! qqq: write proper description
+//! Demonstrates basic string splitting functionality using `wstring_tools`.
+//!
+//! This example shows how to use the `split()` builder to tokenize strings with
+//! custom delimiters, both when delimiters are present and absent.
 #[ allow( unused_imports ) ]
-use strs_tools::*;
+use wstring_tools::*;
 
 fn main()
 {

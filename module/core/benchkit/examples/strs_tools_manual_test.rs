@@ -278,10 +278,13 @@ fn test_report_generation() -> Result< () >
  });
 
   let report = comparison.run();
-  
+
   // Generate markdown report
   let markdown_report = generate_comprehensive_markdown_report(&report);
-  
+
+  // Create output directory if it doesn't exist
+  std ::fs ::create_dir_all("target")?;
+
   // Save report to test file
   let report_path = "target/manual_test_report.md";
   std ::fs ::write(report_path, &markdown_report)?;

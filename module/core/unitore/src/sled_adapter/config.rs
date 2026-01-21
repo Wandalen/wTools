@@ -1,7 +1,7 @@
 //! Config file operation with Sled storage.
 
 use crate :: *;
-use error_tools :: { err, untyped ::Result };
+use error_tools ::untyped :: { anyhow, Result };
 use gluesql ::
 {
   core ::
@@ -9,7 +9,7 @@ use gluesql ::
   ast_builder :: { col, table, text, Execute, },
   executor ::Payload,
  },
-  sled_storage ::SledStorage,
+  prelude ::SledStorage,
 };
 use entity ::config :: { Config, ConfigStore };
 use sled_adapter ::FeedStorage;
@@ -42,7 +42,7 @@ impl ConfigStore for FeedStorage< SledStorage >
 
   if res == Payload ::Delete( 0 )
   {
-   return Err( err!( format!( "Config file with path {} not found in storage", config.path() ) ) )
+   return Err( anyhow!( format!( "Config file with path {} not found in storage", config.path() ) ) )
  }
 
   Ok( res )

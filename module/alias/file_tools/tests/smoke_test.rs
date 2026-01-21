@@ -24,6 +24,7 @@
 /// The test succeeds if `f1()` executes without panic. Any panic will cause
 /// test failure, providing loud failure feedback.
 #[ test ]
+#[ cfg( feature = "enabled" ) ]
 fn local_smoke_test()
 {
   // Calling f1() - if it panics, the test fails loudly
@@ -38,6 +39,7 @@ fn local_smoke_test()
 /// The test succeeds if `f1()` executes without panic. Any panic will cause
 /// test failure, providing loud failure feedback.
 #[ test ]
+#[ cfg( feature = "enabled" ) ]
 fn published_smoke_test()
 {
   // Calling f1() - if it panics, the test fails loudly

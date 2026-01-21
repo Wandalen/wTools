@@ -19,7 +19,7 @@ pub mod table;
 // qqq: what is it for? purpose?
 // aaa: added explanation
 /// General report trait for commands return type.
-pub trait Report: std ::fmt ::Display + std ::fmt ::Debug
+pub trait Report: core ::fmt ::Display + core ::fmt ::Debug
 {
   /// Print report of executed command.
   fn report( &self )

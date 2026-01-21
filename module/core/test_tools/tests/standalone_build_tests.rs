@@ -294,8 +294,8 @@ mod standalone_build_tests
   #[ cfg(not(all(feature = "standalone_build", not(feature = "normal_build")))) ]
   {
    // In normal mode, verify normal features work
-   assert!(cfg!(feature = "normal_build"), "normal_build feature should be enabled");
-   
+   const { assert!(cfg!(feature = "normal_build"), "normal_build feature should be enabled"); }
+
    // Test passed - functionality verified
  }
  }

@@ -9,8 +9,8 @@ authors = [
 license = "MIT"
 readme = "readme.md"
 documentation = "https://docs.rs/include_md"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/move/include_md"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/include_md"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/include_md"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/include_md"
 description = """
 Include markdown file or its section.
 """

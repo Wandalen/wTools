@@ -69,6 +69,7 @@ mod private
   /// If enabled - shows complete description of subjects and properties
   pub with_footer: bool,
   /// Order of property and commands.
+  #[ former( default = Order ::default() ) ]
   pub order: Order,
  }
 
@@ -121,7 +122,7 @@ mod private
   LevelOfDetail ::None => String ::new(),
   _ if command.subjects.is_empty() => String ::new(),
   LevelOfDetail ::Simple => "< properties >".into(),
-  LevelOfDetail ::Detailed => command.properties( dictionary.order ).iter().map( | ( n, v ) |
+  LevelOfDetail ::Detailed => command.properties( o.order ).iter().map( | ( n, v ) |
   {
    format!( "< {} : {}{:?} >", if v.optional { "?" } else { "" }, n, v.kind )
  }).collect :: < Vec< _ > >().join( " " ),
@@ -133,7 +134,7 @@ mod private
   {
    format!( "- {} [{}{:?}]", subj.hint, if subj.optional { "?" } else { "" }, subj.kind )
  }).join( "\n\t" );
-  let full_properties = format_table( command.properties( dictionary.order ).into_iter().map( | ( name, value ) |
+  let full_properties = format_table( command.properties( o.order ).into_iter().map( | ( name, value ) |
   {
    [ name.clone(), format!( "- {} [{}{:?}]", value.hint, if value.optional { "?" } else { "" }, value.kind ) ]
  })).unwrap().replace( '\n', "\n\t" );
@@ -174,7 +175,12 @@ mod private
  }
   else
   {
-   let rows = dictionary.commands()
+   let commands_iter = match o.order
+   {
+  Order ::Nature => dictionary.commands.iter().collect :: < Vec< _ > >(),
+  Order ::Lexicography => dictionary.commands.iter().sorted_by_key( | ( key, _ ) | *key ).collect :: < Vec< _ > >(),
+ };
+   let rows = commands_iter
    .into_iter()
    .map( | ( _, cmd ) | cmd )
    .map( for_single_command )
@@ -208,11 +214,11 @@ mod private
   HelpVariants ::All =>
   {
    self.general_help( helper, dictionary, order );
-   self.subject_command_help( helper, dictionary );
+   self.subject_command_help( helper, dictionary, order );
    // self.dot_command_help( helper, dictionary );
  },
   HelpVariants ::General => self.general_help( helper, dictionary, order ),
-  HelpVariants ::SubjectCommand => self.subject_command_help( helper, dictionary ),
+  HelpVariants ::SubjectCommand => self.subject_command_help( helper, dictionary, order ),
   _ => unimplemented!()
   // HelpVariants ::DotCommand => self.dot_command_help( helper, dictionary ),
  }
@@ -253,7 +259,8 @@ mod private
    .command_prefix( "." )
    .description_detailing( LevelOfDetail ::Simple )
    .subject_detailing( LevelOfDetail ::Simple )
-   .property_detailing( LevelOfDetail ::Simple );
+   .property_detailing( LevelOfDetail ::Simple )
+   .order( order );
    println!
    (
   "Help command\n\n{text}",
@@ -285,7 +292,7 @@ mod private
 
   // .help command_name
   #[ allow( clippy ::unused_self ) ]
-  fn subject_command_help( &self, helper: &HelpGeneratorFn, dictionary: &mut Dictionary )
+  fn subject_command_help( &self, helper: &HelpGeneratorFn, dictionary: &mut Dictionary, order: Order )
   {
    let phrase = "help".to_string();
 
@@ -313,7 +320,8 @@ mod private
   .description_detailing( LevelOfDetail ::Detailed )
   .subject_detailing( LevelOfDetail ::Simple )
   .property_detailing( LevelOfDetail ::Simple )
-  .with_footer( true );
+  .with_footer( true )
+  .order( order );
 
   let text = generator.exec( &grammar, args.form() );
 

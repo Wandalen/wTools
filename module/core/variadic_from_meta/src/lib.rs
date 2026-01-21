@@ -231,7 +231,7 @@ fn generate_from_tuple_impl(context: &VariadicFromContext< '_ >, from_fn_args: &
   fn from( #from_fn_arg1: #field_type ) -> Self
   {
    // Delegate to From1 trait method
-   Self::from1( #from_fn_arg1.clone() ) // Fixed: Added #
+   Self::from1( #from_fn_arg1.clone() )
  }
  }
  });
@@ -251,7 +251,7 @@ fn generate_from_tuple_impl(context: &VariadicFromContext< '_ >, from_fn_args: &
   fn from( ( #from_fn_args_pattern ) : ( #tuple_types ) ) -> Self
   {
    // Delegate to From2 trait method
-   Self::from2( #from_fn_arg1.clone(), #from_fn_arg2.clone() ) // Fixed: Added #
+   Self::from2( #from_fn_arg1.clone(), #from_fn_arg2.clone() )
  }
  }
  });
@@ -273,7 +273,7 @@ fn generate_from_tuple_impl(context: &VariadicFromContext< '_ >, from_fn_args: &
   fn from( ( #from_fn_args_pattern ) : ( #tuple_types ) ) -> Self
   {
    // Delegate to From3 trait method
-   Self::from3( #from_fn_arg1.clone(), #from_fn_arg2.clone(), #from_fn_arg3.clone() ) // Fixed: Added #
+   Self::from3( #from_fn_arg1.clone(), #from_fn_arg2.clone(), #from_fn_arg3.clone() )
  }
  }
  });

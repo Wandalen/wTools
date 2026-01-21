@@ -28,16 +28,18 @@ impl FeedClient
   ///
   /// # Returns
   ///
-  /// Result with fetched feed as feed_rs Feed struct.
+  /// Result with fetched feed as `feed_rs` Feed struct.
+  /// # Errors
+  /// Returns error if operation fails.
   pub async fn fetch( &self, source: url ::Url ) -> Result< feed_rs ::model ::Feed >
   {
   let https = HttpsConnector ::new();
   let client = Client ::builder( TokioExecutor ::new() ).build :: < _, Empty< Bytes > >( https );
-  let link = source.to_string().parse().context( format!( "Failed to parse source link {}", source ) )?;
+  let link = source.to_string().parse().context( format!( "Failed to parse source link {source}" ) )?;
   let mut res = client
   .get( link )
   .await
-  .context( format!( "Failed to fetch frames from source {}", source ) )?
+  .context( format!( "Failed to fetch frames from source {source}" ) )?
   ;
 
   let mut feed = Vec ::new();

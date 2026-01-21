@@ -18,7 +18,7 @@ fn reflect_vec_test()
 
   a_id!( reflect( &vec ).is_container(), true );
   a_id!( reflect( &vec ).len(), 3 );
-  a_id!( reflect( &vec ).type_name(), "alloc ::vec ::Vec< i32 >" );
+  a_id!( reflect( &vec ).type_name(), "alloc::vec::Vec<i32>" );
   a_id!( reflect( &vec ).type_id(), core ::any ::TypeId ::of :: < Vec< i32 > >() );
 
   let expected = [
@@ -31,7 +31,7 @@ fn reflect_vec_test()
   let vec: Vec< String > = Vec ::new();
   a_id!( reflect( &vec ).is_container(), true );
   a_id!( reflect( &vec ).len(), 0 );
-  a_id!( reflect( &vec ).type_name(), "alloc ::vec ::Vec< alloc ::string ::String >" );
+  a_id!( reflect( &vec ).type_name(), "alloc::vec::Vec<alloc::string::String>" );
   a_id!( reflect( &vec ).type_id(), core ::any ::TypeId ::of :: < Vec< String > >() );
 
   a_id!( reflect( &vec ).elements().collect :: < Vec< _ > >(), Vec ::new() );

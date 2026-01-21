@@ -9,3 +9,5 @@ use test_tools :: *;
 
 #[ cfg( feature = "enabled" ) ]
 mod inc;
+
+mod feature_conflict_all_features_bug;

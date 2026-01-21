@@ -5,13 +5,16 @@
 
 Collection of algorithms and structures to handle files properly.
 
-<!-- ### Basic use-case
+<!-- TODO: Add usage examples once file manipulation functionality is implemented
+
+### Basic use-case
 
 ```rust
 use file_tools::*;
 
 fn main()
 {
+  // TODO: Example usage will be added when specification is defined
 }
 ```
 
@@ -21,11 +24,4 @@ fn main()
 cargo add file_tools
 ```
 
-### Try out from the repository
-
-``` shell test
-git clone https://github.com/Wandalen/wTools
-cd wTools
-cargo run --example file_tools_trivial
-cargo run
-``` -->
+-->

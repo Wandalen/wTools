@@ -1,6 +1,6 @@
 [package]
 name = "derive_tools"
-version = "0.57.0"
+version = "0.58.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -187,6 +187,13 @@ derive_not = [ "derive_tools_meta/derive_not" ]
 derive_phantom = [ "derive_tools_meta/derive_phantom" ]
 
 parse_display = [ "parse-display" ]
+
+# test_tools passthrough features for cfg validation (Rust 1.80+ check-cfg)
+# These features are used by test_tools macros (a_id!, etc.) in cfg predicates.
+# They must be declared here so cfg checks pass, even if not explicitly enabled.
+diagnostics_runtime_assertions = []
+diagnostics_compiletime_assertions = []
+diagnostics_memory_layout = []
 
 
 [dependencies]

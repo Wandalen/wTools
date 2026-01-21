@@ -171,3 +171,171 @@ mod clone_trait_objects
     assert_eq!( cloned_dog.make_sound(), "Woof!" );
   }
 }
+
+#[ cfg( feature = "enabled" ) ]
+mod clone_corner_cases
+{
+  use clone_dyn_types :: { CloneDyn, clone, clone_into_box };
+
+  #[ test ]
+  fn clone_single_element_slice()
+  {
+    let data = vec![ 42 ];
+    let slice : &[ i32 ] = &data;
+
+    let _cloned = clone_into_box( &slice as &dyn CloneDyn );
+  }
+
+  #[ test ]
+  fn clone_large_slice()
+  {
+    let data : Vec< i32 > = ( 0..10000 ).collect();
+    let slice : &[ i32 ] = &data;
+
+    let _cloned = clone_into_box( &slice as &dyn CloneDyn );
+  }
+
+  #[ test ]
+  fn clone_slice_with_strings()
+  {
+    let data = vec![ String :: from( "hello" ), String :: from( "world" ) ];
+    let slice : &[ String ] = &data;
+
+    let _cloned = clone_into_box( &slice as &dyn CloneDyn );
+  }
+
+  #[ test ]
+  fn clone_zero_sized_type()
+  {
+    #[ derive( Clone, Debug, PartialEq ) ]
+    struct ZeroSized;
+
+    let original = ZeroSized;
+    let cloned = clone( &original );
+
+    assert_eq!( original, cloned );
+  }
+
+  #[ test ]
+  fn clone_type_with_drop()
+  {
+    use core :: sync :: atomic :: { AtomicBool, Ordering };
+
+    static DROPPED : AtomicBool = AtomicBool :: new( false );
+
+    #[ derive( Clone ) ]
+    struct WithDrop
+    {
+      value : i32,
+    }
+
+    impl Drop for WithDrop
+    {
+      fn drop( &mut self )
+      {
+        DROPPED.store( true, Ordering :: Relaxed );
+      }
+    }
+
+    let original = WithDrop { value : 42 };
+    let cloned = clone( &original );
+
+    assert_eq!( original.value, cloned.value );
+    drop( original );
+    assert!( DROPPED.load( Ordering :: Relaxed ) );
+  }
+
+  #[ test ]
+  fn clone_very_long_string()
+  {
+    let text : String = "a".repeat( 100_000 );
+    let str_slice : &str = &text;
+
+    let _cloned = clone_into_box( &str_slice as &dyn CloneDyn );
+  }
+}
+
+#[ cfg( feature = "enabled" ) ]
+mod clone_iterator_from_example
+{
+  use clone_dyn_types :: CloneDyn;
+
+  /// Reproduces the iterator trait from the trivial example for testing.
+  pub trait IterTrait< 'a, T >
+  where
+    T : 'a,
+    Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator,
+    Self : CloneDyn,
+  {
+  }
+
+  impl< 'a, T, I > IterTrait< 'a, T > for I
+  where
+    T : 'a,
+    Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator,
+    Self : CloneDyn,
+  {
+  }
+
+  #[ allow( non_local_definitions ) ]
+  impl< 'c, T > Clone for Box< dyn IterTrait< 'c, T > + 'c >
+  {
+    fn clone( &self ) -> Self
+    {
+      clone_dyn_types :: clone_into_box( &**self )
+    }
+  }
+
+  pub fn get_iter< 'a >( src : Option< &'a Vec< i32 > > ) -> Box< dyn IterTrait< 'a, &'a i32 > + 'a >
+  {
+    match &src
+    {
+      Some( src ) => Box :: new( src.iter() ),
+      _ => Box :: new( core :: iter :: empty() ),
+    }
+  }
+
+  #[ test ]
+  fn clone_iterator_with_some_data()
+  {
+    let data = vec![ 1, 2, 3 ];
+    let iter = get_iter( Some( &data ) );
+    let cloned = iter.clone();
+
+    let count1 : usize = cloned.count();
+    let count2 : usize = iter.count();
+
+    assert_eq!( count1, 3 );
+    assert_eq!( count2, 3 );
+  }
+
+  #[ test ]
+  fn clone_iterator_with_none()
+  {
+    let iter = get_iter( None );
+    let cloned = iter.clone();
+
+    let count1 : usize = cloned.count();
+    let count2 : usize = iter.count();
+
+    assert_eq!( count1, 0, "Cloned empty iterator should have 0 elements" );
+    assert_eq!( count2, 0, "Original empty iterator should have 0 elements" );
+  }
+
+  #[ test ]
+  fn clone_iterator_independence()
+  {
+    let data = vec![ 10, 20, 30 ];
+    let iter = get_iter( Some( &data ) );
+    let cloned = iter.clone();
+
+    // Consume cloned iterator
+    let cloned_sum : i32 = cloned.copied().sum();
+
+    // Original iterator should still be usable
+    let original_sum : i32 = iter.copied().sum();
+
+    assert_eq!( cloned_sum, 60 );
+    assert_eq!( original_sum, 60 );
+  }
+}

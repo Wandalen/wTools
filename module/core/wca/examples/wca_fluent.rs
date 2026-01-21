@@ -47,7 +47,7 @@ fn main() -> error_tools ::error ::untyped ::Result< () >
   .end()
   .routine(|o: VerifiedCommand| {
    println!("Returns an error");
-   Err(o.args.get_owned :: < String >(0).unwrap_or_default().to_string())
+   Err(o.args.get_owned :: < String >(0).unwrap_or_default().clone())
  })
   .end()
   .command("exit")

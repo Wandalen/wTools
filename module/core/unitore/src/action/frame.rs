@@ -10,18 +10,24 @@ use entity ::
 };
 use gluesql ::prelude :: { Payload, Value, SledStorage };
 use feed_config;
-use error_tools :: { err, untyped ::Result };
+use error_tools ::untyped :: { anyhow, Result };
 use action ::Report;
 
 // qqq: review the whole project and make sure all names are consitant: actions, commands, its tests
 
 /// List all frames.
+///
+/// # Errors
+/// Returns error if operation fails.
 pub async fn frames_list( mut storage: FeedStorage< SledStorage > ) -> Result< impl Report >
 {
   storage.frames_list().await
 }
 
 /// Update all frames from config files saved in storage.
+///
+/// # Errors
+/// Returns error if operation fails.
 pub async fn frames_download
 (
   mut storage: FeedStorage< SledStorage >
@@ -32,7 +38,7 @@ pub async fn frames_download
   {
   Payload ::Select { labels: _, rows: rows_vec } =>
   {
-   rows_vec.into_iter().filter_map( | val |
+   rows_vec.iter().filter_map( | val |
    {
   match &val[ 0 ]
   {
@@ -47,13 +53,13 @@ pub async fn frames_download
   let mut subscriptions = Vec ::new();
   for config in &configs
   {
-  let sub_vec = feed_config ::read( config.to_owned() )?;
+  let sub_vec = feed_config ::read( config )?;
   subscriptions.extend( sub_vec );
  }
 
   if subscriptions.is_empty()
   {
-  return Err( err!( format!
+  return Err( anyhow!( format!
   (
    "Failed to download frames.\n Config file(s) {} contain no feed subscriptions!",
    configs.join( ", " )
@@ -65,14 +71,14 @@ pub async fn frames_download
   for subscription in  subscriptions
   {
   let feed = client.fetch( subscription.link.clone() ).await?;
-  feeds.push( ( feed, subscription.update_period.clone(), subscription.link ) );
+  feeds.push( ( feed, subscription.update_period, subscription.link ) );
  }
   storage.feeds_process( feeds ).await
 
 }
 
-const EMPTY_CELL: &'static str = "";
-const INDENT_CELL: &'static str = "  ";
+const EMPTY_CELL: &str = "";
+const INDENT_CELL: &str = "  ";
 
 /// Information about result of execution of command for frames.
 #[ derive( Debug ) ]
@@ -95,6 +101,7 @@ pub struct FramesReport
 impl FramesReport
 {
   /// Create new report.
+  #[must_use] 
   pub fn new( feed_link: String ) -> Self
   {
   Self
@@ -109,15 +116,15 @@ impl FramesReport
  }
 }
 
-impl std ::fmt ::Display for FramesReport
+impl core ::fmt ::Display for FramesReport
 {
-  fn fmt( &self, f: &mut std ::fmt ::Formatter< '_ > ) -> std ::fmt ::Result
+  fn fmt( &self, f: &mut core ::fmt ::Formatter< '_ > ) -> core ::fmt ::Result
   {
-  let initial = vec![ vec![ format!( "Feed title: {}", self.feed_link ) ] ];
-  let table = tool ::table_display ::table_with_headers( initial[ 0 ].clone(), Vec ::new() );
+  let initial = [ [ format!( "Feed title: {}", self.feed_link ) ] ];
+  let table = tool ::table_display ::table_with_headers( initial[ 0 ].to_vec(), Vec ::new() );
   if let Some( table ) = table
   {
-   write!( f, "{}", table )?;
+   write!( f, "{table}" )?;
  }
 
   let mut rows = vec!
@@ -135,7 +142,7 @@ impl std ::fmt ::Display for FramesReport
   let table = tool ::table_display ::plain_table( rows );
   if let Some( table ) = table
   {
-   write!( f, "{}", table )?;
+   write!( f, "{table}" )?;
  }
 
   for frame in &self.selected_frames.selected_rows
@@ -147,13 +154,13 @@ impl std ::fmt ::Display for FramesReport
   textwrap ::fill( &String ::from( frame[ 0 ].clone() ), 120 ),
  ];
    let mut rows = Vec ::new();
-   for i in 1..self.selected_frames.selected_columns.len()
+   for ( column_name, frame_value ) in self.selected_frames.selected_columns.iter().skip( 1 ).zip( frame.iter().skip( 1 ) )
    {
   let inner_row = vec!
   [
    INDENT_CELL.to_owned(),
-   self.selected_frames.selected_columns[ i ].clone(),
-   textwrap ::fill( &String ::from( frame[ i ].clone() ), 120 ),
+   column_name.clone(),
+   textwrap ::fill( &String ::from( frame_value.clone() ), 120 ),
  ];
   rows.push( inner_row );
  }
@@ -161,7 +168,7 @@ impl std ::fmt ::Display for FramesReport
    let table = tool ::table_display ::table_with_headers( first_row, rows );
    if let Some( table ) = table
    {
-  writeln!( f, "{}", table )?;
+  writeln!( f, "{table}" )?;
  }
  }
 
@@ -173,6 +180,7 @@ impl Report for FramesReport {}
 
 /// Items retrieved by select queries from storage.
 #[ derive( Debug ) ]
+#[derive(Default)]
 pub struct SelectedEntries
 {
   /// Labels of selected columns.
@@ -181,28 +189,30 @@ pub struct SelectedEntries
   pub selected_rows: Vec< Vec< Value > >,
 }
 
+
 impl SelectedEntries
 {
   /// Create new empty selected entries struct.
+  #[must_use]
   pub fn new() -> Self
   {
-  SelectedEntries { selected_columns: Vec ::new(), selected_rows: Vec ::new() }
+  Self ::default()
  }
 }
 
-impl std ::fmt ::Display for SelectedEntries
+impl core ::fmt ::Display for SelectedEntries
 {
-  fn fmt( &self, f: &mut std ::fmt ::Formatter< '_ > ) -> std ::fmt ::Result
+  fn fmt( &self, f: &mut core ::fmt ::Formatter< '_ > ) -> core ::fmt ::Result
   {
   if !self.selected_columns.is_empty()
   {
    for row in &self.selected_rows
    {
-  for i in 0..self.selected_columns.len()
+  for ( column_name, cell_value ) in self.selected_columns.iter().zip( row.iter() )
   {
-   write!( f, "{} : {}, ", self.selected_columns[ i ], CellValue( &row[ i ] ) )?;
+   write!( f, "{} : {}, ", column_name, CellValue( cell_value ) )?;
  }
-  writeln!( f, "" )?;
+  writeln!( f )?;
  }
  }
 
@@ -214,13 +224,13 @@ impl std ::fmt ::Display for SelectedEntries
 #[ derive( Debug ) ]
 pub struct UpdateReport( pub Vec< FramesReport > );
 
-impl std ::fmt ::Display for UpdateReport
+impl core ::fmt ::Display for UpdateReport
 {
-  fn fmt( &self, f: &mut std ::fmt ::Formatter< '_ > ) -> std ::fmt ::Result
+  fn fmt( &self, f: &mut core ::fmt ::Formatter< '_ > ) -> core ::fmt ::Result
   {
   for report in &self.0
   {
-   writeln!( f, "{}", report )?;
+   writeln!( f, "{report}" )?;
  }
   writeln!( f, "Total new feeds dowloaded: {}", self.0.iter().filter( | fr_report | fr_report.is_new_feed ).count() )?;
   writeln!
@@ -242,13 +252,13 @@ impl Report for UpdateReport {}
 #[ derive( Debug ) ]
 pub struct ListReport( pub Vec< FramesReport > );
 
-impl std ::fmt ::Display for ListReport
+impl core ::fmt ::Display for ListReport
 {
-  fn fmt( &self, f: &mut std ::fmt ::Formatter< '_ > ) -> std ::fmt ::Result
+  fn fmt( &self, f: &mut core ::fmt ::Formatter< '_ > ) -> core ::fmt ::Result
   {
   for report in &self.0
   {
-   write!( f, "{}", report )?;
+   write!( f, "{report}" )?;
  }
   writeln!
   (
@@ -262,7 +272,7 @@ impl std ::fmt ::Display for ListReport
    "Total frames in storage: {}",
    self.0.iter().fold( 0, | acc, fr_report | acc + fr_report.selected_frames.selected_rows.len() )
  )?;
-  writeln!( f, "" )?;
+  writeln!( f )?;
 
   Ok( () )
  }

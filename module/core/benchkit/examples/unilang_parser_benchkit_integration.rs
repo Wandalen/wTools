@@ -457,7 +457,10 @@ fn test_parser_comprehensive_reporting() -> Result< () >
   
   // Generate parser-specific comprehensive report
   let comprehensive_report = generate_parser_report(&parser_workload, &parser_results);
-  
+
+  // Create output directory if it doesn't exist
+  std ::fs ::create_dir_all("target")?;
+
   // Save parser report (temporary file with hyphen prefix)
   let report_path = "target/-unilang_parser_benchkit_report.md";
   std ::fs ::write(report_path, comprehensive_report)?;

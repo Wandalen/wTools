@@ -24,48 +24,50 @@
 fn main() {}
 
 #[ cfg(all(feature = "types_former", feature = "enabled")) ]
-fn main() 
+fn main()
 {
   use component_model_types ::Assign;
 
   #[ derive( Default, PartialEq, Debug ) ]
-  struct Person 
+  struct Person
   {
-  age: i32,
-  name: String,
- }
+    age : i32,
+    name : String,
+  }
 
   impl< IntoT > Assign< i32, IntoT > for Person
   where
-  IntoT: Into< i32 >,
+    IntoT : Into< i32 >,
   {
-  fn assign(&mut self, component: IntoT) 
-  {
-   self.age = component.into();
- }
- }
+    fn assign( &mut self, component : IntoT )
+    {
+      self.age = component.into();
+    }
+  }
 
   impl< IntoT > Assign< String, IntoT > for Person
   where
-  IntoT: Into< String >,
+    IntoT : Into< String >,
   {
-  fn assign(&mut self, component: IntoT) 
-  {
-   self.name = component.into();
- }
- }
+    fn assign( &mut self, component : IntoT )
+    {
+      self.name = component.into();
+    }
+  }
 
-  let mut got: Person = Person ::default();
-  got.assign(13);
-  got.assign("John");
-  assert_eq!(
-  got,
-  Person {
-   age: 13,
-   name: "John".to_string()
- }
- );
-  dbg!(got);
+  let mut got : Person = Person ::default();
+  got.assign( 13 );
+  got.assign( "John" );
+  assert_eq!
+  (
+    got,
+    Person
+    {
+      age : 13,
+      name : "John".to_string()
+    }
+  );
+  dbg!( got );
   // > Person {
   // >   age: 13,
   // >   name: "John",

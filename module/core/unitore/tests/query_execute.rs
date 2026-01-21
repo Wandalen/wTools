@@ -1,3 +1,5 @@
+//! Test for `query_execute` functionality.
+
 use feed_rs ::parser as feed_parser;
 use unitore ::
 {
@@ -11,9 +13,11 @@ use gluesql ::
 {
   prelude :: { Payload :: { self, Select }, Value :: { Str, Timestamp } },
   core ::chrono ::NaiveDateTime,
-  sled_storage ::sled,
+  gluesql_sled_storage ::sled,
 };
-use wca :: { VerifiedCommand, CommandsAggregator, Type, Parser, Dictionary, Verifier, Executor };
+use wca :: { VerifiedCommand, CommandsAggregator, Type, Dictionary, Executor };
+use wca ::parser ::Parser;
+use wca ::verifier ::Verifier;
 use error_tools ::untyped ::Result;
 use mockall ::predicate;
 use std ::path ::PathBuf;
@@ -87,7 +91,7 @@ async fn query_feeds() -> Result< () >
   let temp_path = pth ::path ::unique_folder_name().unwrap();
 
   let config = sled ::Config ::default()
-  .path( format!( "./{}", temp_path ) )
+  .path( format!( "./{temp_path}" ) )
   .temporary( true )
   ;
 
@@ -97,16 +101,14 @@ async fn query_feeds() -> Result< () >
   let entries = feed_storage.query_execute( "SELECT link FROM feed".to_string() ).await?;
 
   assert!( !entries.0.is_empty() );
-  if let Select { labels, rows } = &entries.0[ 0 ]
+  let Select { labels, rows } = &entries.0[ 0 ]
+  else
   {
+  panic!( "Expected Select payload" );
+ };
   assert_eq!( labels.len(), 1 );
   assert_eq!( labels[ 0 ], "link" );
   assert_eq!( rows.len(), 1 );
- }
-  else
-  {
-  assert!( false )
- }
 
   Ok( () )
 }
@@ -117,41 +119,39 @@ async fn query_frames() -> Result< () >
   let temp_path = pth ::path ::unique_folder_name().unwrap();
 
   let config = sled ::Config ::default()
-  .path( format!( "./{}", temp_path ) )
+  .path( format!( "./{temp_path}" ) )
   .temporary( true )
   ;
 
   let mut feed_storage = FeedStorage ::init_storage( &config ).await?;
   let feed_config = SubscriptionConfig
   {
-  update_period: std ::time ::Duration ::from_secs( 1000 ),
-  link: url ::Url ::parse( "https: //www.nasa.gov/feed/" )?,
+  update_period: core ::time ::Duration ::from_secs( 1000 ),
+  link: url ::Url ::parse( "https://www.nasa.gov/feed/" )?,
  };
   let mut feeds = Vec ::new();
 
   let feed = feed_parser ::parse( include_str!("./fixtures/plain_feed.xml").as_bytes() )?;
-  feeds.push( ( feed, feed_config.update_period.clone(), feed_config.link.clone() ) );
+  feeds.push( ( feed, feed_config.update_period, feed_config.link.clone() ) );
   feed_storage.feeds_process( feeds ).await?;
 
   let entries = feed_storage.query_execute( "SELECT title, published FROM frame ORDER BY published".to_string() ).await?;
 
   assert!( !entries.0.is_empty() );
 
-  if let Select { labels, rows } = &entries.0[ 0 ]
+  let Select { labels, rows } = &entries.0[ 0 ]
+  else
   {
+  panic!( "Expected Select payload" );
+ };
   assert_eq!( labels.len(), 2 );
   assert!( labels.contains( &String ::from( "title" ) ) );
   assert!( labels.contains( &String ::from( "published" ) ) );
   assert_eq!( rows.len(), 10 );
   assert_eq!( rows[ 0 ][ 0 ], Str( "8 Must-Have NASA Resources for Science Teachers in 2024".to_string() ) );
-  assert_eq!( rows[ 0 ][ 1 ], Timestamp( NaiveDateTime ::parse_from_str( "13 Mar 2024 16 : 31 : 23", "%d %b %Y %H: %M: %S" )? ) );
+  assert_eq!( rows[ 0 ][ 1 ], Timestamp( NaiveDateTime ::parse_from_str( "13 Mar 2024 16:31:23", "%d %b %Y %H:%M:%S" )? ) );
   assert_eq!( rows[ 9 ][ 0 ], Str( "Icing Cloud Characterization Engineer Emily Timko".to_string() ) );
-  assert_eq!( rows[ 9 ][ 1 ], Timestamp( NaiveDateTime ::parse_from_str( "14 Mar 2024 14 : 27 : 52", "%d %b %Y %H: %M: %S" )? ) );
- }
-  else
-  {
-  assert!( false )
- }
+  assert_eq!( rows[ 9 ][ 1 ], Timestamp( NaiveDateTime ::parse_from_str( "14 Mar 2024 14:27:52", "%d %b %Y %H:%M:%S" )? ) );
 
   Ok( () )
 }
@@ -163,25 +163,23 @@ async fn query_configs() -> Result< () >
   let temp_path = pth ::path ::unique_folder_name().unwrap();
 
   let config = sled ::Config ::default()
-  .path( format!( "./{}", temp_path ) )
+  .path( format!( "./{temp_path}" ) )
   .temporary( true )
   ;
 
   let mut feed_storage = FeedStorage ::init_storage( &config ).await?;
-  let _res = feed_storage.query_execute( format!( "INSERT INTO config VALUES ('{}') ", path.to_string_lossy().to_string() ) ).await?;
+  let _res = feed_storage.query_execute( format!( "INSERT INTO config VALUES ('{}') ", path.to_string_lossy() ) ).await?;
   let res = feed_storage.config_list().await?;
 
-  if let Payload ::Select{ labels, rows } = &res
+  let Payload ::Select{ labels, rows } = &res
+  else
   {
+  panic!( "Expected Select payload" );
+ };
   assert_eq!( labels.len(), 1 );
   assert!( labels.contains( &String ::from( "path" ) ) );
   assert_eq!( rows.len(), 1 );
   assert_eq!( rows[ 0 ][ 0 ], Str( path.to_string_lossy().to_string() ) );
- }
-  else
-  {
-  assert!( false );
- }
 
   Ok( () )
 }

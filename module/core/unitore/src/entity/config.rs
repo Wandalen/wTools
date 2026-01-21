@@ -10,12 +10,14 @@ pub struct Config( pub String );
 impl Config
 {
   /// Create new config with provided path.
+  #[must_use] 
   pub fn new( path: String ) -> Self
   {
   Self( path )
  }
 
   /// Get path of config file.
+  #[must_use] 
   pub fn path( &self ) -> String
   {
   self.0.clone()

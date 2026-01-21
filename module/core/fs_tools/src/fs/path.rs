@@ -45,13 +45,13 @@
 /// Define a private namespace for all its items.
 mod private
 {
-  #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
+  #[ cfg( feature = "enabled" ) ]
   extern crate std;
 
-  #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
+  #[ cfg( feature = "enabled" ) ]
   use std::path::{ Path, PathBuf };
 
-  #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
+  #[ cfg( feature = "enabled" ) ]
   use std::io;
 
   /// Traverse upward through directory tree looking for target.
@@ -90,7 +90,7 @@ mod private
   /// );
   /// # }
   /// ```
-  #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
+  #[ cfg( feature = "enabled" ) ]
   #[ inline ]
   pub fn traverse_upward< T, F >( start_dir: &Path, predicate: F, max_depth: usize ) -> Option< T >
   where
@@ -156,7 +156,7 @@ mod private
   /// );
   /// # }
   /// ```
-  #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
+  #[ cfg( feature = "enabled" ) ]
   pub fn collect_files_in_ancestors< F >(
     target: &Path,
     predicate: F,
@@ -268,7 +268,7 @@ mod private
   /// }
   /// # }
   /// ```
-  #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
+  #[ cfg( feature = "enabled" ) ]
   #[ inline ]
   #[ must_use ]
   pub fn file_upward_find( start: &Path, filename: &str, max_depth: usize ) -> Option< PathBuf >
@@ -313,7 +313,7 @@ mod private
   /// }
   /// # }
   /// ```
-  #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
+  #[ cfg( feature = "enabled" ) ]
   #[ inline ]
   #[ must_use ]
   pub fn dir_upward_find( start: &Path, dirname: &str, max_depth: usize ) -> Option< PathBuf >
@@ -361,7 +361,7 @@ mod private
   /// );
   /// # }
   /// ```
-  #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
+  #[ cfg( feature = "enabled" ) ]
   #[ inline ]
   pub fn matching_upward_find< F >( start: &Path, predicate: F, max_depth: usize ) -> Option< PathBuf >
   where
@@ -414,7 +414,7 @@ pub mod exposed
   use super :: *;
   #[ doc( inline ) ]
   pub use prelude :: *;
-  #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
+  #[ cfg( feature = "enabled" ) ]
   #[ doc( inline ) ]
   pub use super::private::
   {

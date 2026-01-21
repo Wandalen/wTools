@@ -30,6 +30,9 @@ pub mod error_tests;
 pub mod collection_tests;
 
 /// impl and index macros.
+/// NOTE: impls_index tests require impls_index crate which is not available in standalone_build mode
+/// due to circular dependency: test_tools → impls_index → impls_index_meta → macro_tools → ... → test_tools
+#[ cfg( not( feature = "standalone_build" ) ) ]
 #[ path = "../../../../core/impls_index/tests/inc/mod.rs" ]
 pub mod impls_index_tests;
 

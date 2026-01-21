@@ -1,3 +1,11 @@
+#![ allow( unused_variables ) ]
+#![ allow( unused_assignments ) ]
+#![ allow( unexpected_cfgs ) ]
+#![ allow( non_snake_case ) ]
+#![ allow( clippy::manual_string_new ) ]
+#![ allow( clippy::too_many_lines ) ]
+#![ allow( clippy::doc_markdown ) ]
+
 use super :: *;
 use test_tools :: a_id;
 
