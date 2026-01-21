@@ -4,7 +4,7 @@
 //!
 //! | Test ID | Test Case | Description |
 //! |---------|-----------|-------------|
-//! | TED-01 | examples_readme_accuracy | Verifies all documented examples exist and all existing examples are documented |
+//! | TED-01 | `examples_readme_accuracy` | Verifies all documented examples exist and all existing examples are documented |
 //!
 //! # Root Cause
 //!

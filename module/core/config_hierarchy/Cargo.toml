@@ -21,7 +21,7 @@ name = "config_hierarchy"
 path = "src/lib.rs"
 
 [features]
-default = [ "enabled" ]
+default = [ "enabled", "file_ops" ]
 full = [
   "enabled",
   "file_ops",
@@ -62,10 +62,12 @@ serial_test = { workspace = true }
 [[test]]
 name = "basic_operations_tests"
 path = "tests/basic_operations_tests.rs"
+required-features = ["file_ops"]
 
 [[test]]
 name = "hierarchy_tests"
 path = "tests/hierarchy_tests.rs"
+required-features = ["file_ops"]
 
 [[test]]
 name = "type_detection_tests"
@@ -74,10 +76,12 @@ path = "tests/type_detection_tests.rs"
 [[test]]
 name = "concurrent_access_tests"
 path = "tests/concurrent_access_tests.rs"
+required-features = ["file_ops"]
 
 [[test]]
 name = "edge_cases_tests"
 path = "tests/edge_cases_tests.rs"
+required-features = ["file_ops"]
 
 [[test]]
 name = "path_standards_tests"
@@ -86,6 +90,7 @@ path = "tests/path_standards_tests.rs"
 [[test]]
 name = "dual_pattern_tests"
 path = "tests/dual_pattern_tests.rs"
+required-features = ["file_ops"]
 
 [[test]]
 name = "feature_tests"
@@ -94,3 +99,13 @@ path = "tests/feature_tests.rs"
 [[test]]
 name = "display_tests"
 path = "tests/display_tests.rs"
+required-features = ["display"]
+
+[[test]]
+name = "scope_operations_tests"
+path = "tests/scope_operations_tests.rs"
+required-features = ["file_ops"]
+
+[[test]]
+name = "configurability_tests"
+path = "tests/configurability_tests.rs"
