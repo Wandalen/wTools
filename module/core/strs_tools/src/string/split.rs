@@ -48,9 +48,9 @@ pub use simd::{ SIMDSplitIterator, simd_split_cached, get_or_create_cached_patte
 /// Internal implementation details for string splitting.
 mod private {
   #[ cfg( feature = "std" ) ]
-  use std::borrow::Cow;
+  use std::{ borrow::Cow, vec, vec::Vec, string::{ String, ToString } };
   #[ cfg( all( feature = "use_alloc", not( feature = "std" ) ) ) ]
-  use alloc::borrow::Cow;
+  use alloc::{ borrow::Cow, vec, vec::Vec, string::{ String, ToString } };
   #[ cfg( all( feature = "string_parse_request", feature = "std" ) ) ]
   use crate::string::parse_request::OpType;
   use super::SplitFlags; // Import SplitFlags from parent module
