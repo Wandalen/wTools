@@ -21,6 +21,8 @@ exclude = [
 
   # NOTE: module/move directory is now empty - all crates moved to core or postponed
 ]
+dev-dependencies = {}
+build-dependencies = {}
 # default-members = [ "module/core/wtools" ]
 
 [workspace.metadata]
@@ -138,7 +140,7 @@ version = "~0.1.0"
 path = "module/core/type_constructor_derive_pair_meta"
 
 [workspace.dependencies.interval_adapter]
-version = "~0.39.0"
+version = "~0.40.0"
 path = "module/core/interval_adapter"
 default-features = false
 # features = [ "enabled" ]
@@ -150,7 +152,7 @@ default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.collection_tools]
-version = "~0.34.0"
+version = "~0.35.0"
 path = "module/core/collection_tools"
 default-features = false
 
@@ -239,7 +241,7 @@ path = "module/core/clone_dyn_meta"
 # features = [ "enabled" ]
 
 [workspace.dependencies.clone_dyn_types]
-version = "~0.43.0"
+version = "~0.44.0"
 path = "module/core/clone_dyn_types"
 default-features = false
 # features = [ "enabled" ]
@@ -264,7 +266,7 @@ default-features = false
 ## iter
 
 [workspace.dependencies.iter_tools]
-version = "~0.43.0"
+version = "~0.44.0"
 path = "module/core/iter_tools"
 default-features = false
 
@@ -307,7 +309,7 @@ path = "module/core/component_model_meta"
 default-features = false
 
 [workspace.dependencies.component_model_types]
-version = "~0.20.0"
+version = "~0.21.0"
 path = "module/core/component_model_types"
 default-features = false
 
@@ -352,7 +354,7 @@ default-features = false
 ## macro tools
 
 [workspace.dependencies.macro_tools]
-version = "~0.78.0"
+version = "~0.79.0"
 path = "module/core/macro_tools"
 default-features = false
 
@@ -446,7 +448,7 @@ path = "module/core/cli_fmt"
 default-features = false
 
 [workspace.dependencies.strs_tools_meta]
-version = "~0.15.0"
+version = "~0.16.0"
 path = "module/core/strs_tools_meta"
 default-features = false
 
