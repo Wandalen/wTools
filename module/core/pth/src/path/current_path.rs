@@ -23,6 +23,9 @@ mod private
   borrow ::Cow,
  };
 
+  #[ cfg( feature = "path_utf8" ) ]
+  use camino :: Utf8PathBuf;
+
   /// Symbolize current path.
   #[ derive( Clone, Copy, Debug, Default, PartialEq, Eq ) ]
   pub struct CurrentPath;

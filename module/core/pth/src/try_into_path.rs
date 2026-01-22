@@ -26,6 +26,9 @@ mod private
   #[ cfg( feature = "no_std" ) ]
   use alloc ::string ::String;
 
+  #[ cfg( feature = "path_utf8" ) ]
+  use camino :: { Utf8Path, Utf8PathBuf };
+
   /// A trait for converting various types into a `PathBuf`.
   ///
   /// This trait is used to convert any path-like type into an owned `PathBuf`.

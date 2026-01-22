@@ -8,6 +8,9 @@ mod private
 
   use std ::path ::Path;
 
+  #[ cfg( feature = "path_utf8" ) ]
+  use camino :: Utf8Path;
+
   /// A trait for converting various types into a reference to a `Path`.
   ///
   /// This trait is used to avoid redundant allocation of memory by providing a reference to a `Path`.
