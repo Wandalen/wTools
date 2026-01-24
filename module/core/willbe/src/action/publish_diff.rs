@@ -105,12 +105,13 @@ mod private
   /// # Errors
   ///
   /// Returns an error if there's an issue with path conversion, packing the local crate,
+  /// downloading the published version from crates.io (e.g., 403 Forbidden, 404 Not Found, network errors),
   /// or if the internal `list` action returns an unexpected format.
   ///
   /// # Panics
   ///
-  /// This function may panic if the internal `list_all` action fails, if it's unable to download
-  /// the package from crates.io, or if a dependency tree walk encounters an unexpected structure.
+  /// This function may panic if the internal `list_all` action fails or if a dependency tree walk
+  /// encounters an unexpected structure.
   #[ cfg_attr( feature = "tracing", tracing ::instrument ) ]
   pub fn publish_diff( o: PublishDiffOptions ) -> Result< PublishDiffReport >
   // qqq: don't use 1-prameter Result
@@ -165,7 +166,11 @@ mod private
   .dry( false ).form()
  )?;
    let l = CrateArchive ::read( packed_crate ::local_path( name, version, workspace.target_directory() )? )?;
-   let r = CrateArchive ::download_crates_io( name, version ).unwrap();
+   // Fix(issue-publish-diff-403): Handle download errors gracefully instead of panicking
+   // Root cause: Using .unwrap() on download_crates_io Result causes panic on HTTP errors (403, 404, network failures)
+   // Pitfall: Never unwrap() network operations - they can fail for many legitimate reasons (unpublished crates, network issues, rate limiting)
+   let r = CrateArchive ::download_crates_io( name, version )
+   .map_err( | e | format_err!( "Failed to download published version of '{name} {version}' from crates.io. This may occur if the crate hasn't been published yet, access is restricted, or due to network issues. Error: {e}" ) )?;
 
 
    if let Some( out_path ) = &o.keep_archive

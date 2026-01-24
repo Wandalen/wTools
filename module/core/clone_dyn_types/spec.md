@@ -95,12 +95,12 @@ where
 
 | Type Category | Support | Example | Special Handling |
 |--------------|---------|---------|------------------|
-| Sized Clone types | ✅ Full | `i32`, `String`, `Vec<T>` | Direct Clone delegation |
+| Sized Clone types | ✅ Full | `i32`, `String`, `Vec<T>` | Direct Clone delegation via blanket impl |
 | Slices | ✅ Full | `[T]` | Requires double reference (`&&[T]`) for coercion |
 | String slices | ✅ Full | `str` | Requires double reference (`&&str`) for coercion |
 | Trait objects | ✅ Full | `dyn Trait` | User implements Clone for Box<dyn Trait> |
-| Tuples | ✅ Up to 16 | `(T1, T2, ...)` | Macro-generated implementations |
-| Arrays | ✅ Up to 32 | `[T; N]` | Macro-generated implementations |
+| Tuples | ✅ Up to arity 12 | `(T1, T2, ...)` | Via blanket impl (Rust std Clone limit) |
+| Arrays | ✅ All sizes | `[T; N]` | Via blanket impl (tested to size 128+) |
 
 ## Public API
 
@@ -198,6 +198,10 @@ Tests organized by domain (what is tested):
 - `clone_slices`: Slice types `[T]`
 - `clone_str_slices`: String slice type `str`
 - `clone_trait_objects`: Boxed trait objects `Box<dyn Trait>`
+- `clone_tuples`: Tuple types of various arities (0-12 elements)
+- `clone_arrays`: Array types of various sizes (0-128+ elements)
+- `clone_corner_cases`: Edge cases (large slices, ZST, Drop types, long strings)
+- `clone_iterator`: Iterator state preservation and independence
 
 ### Coverage Requirements
 
@@ -212,6 +216,22 @@ Tests organized by domain (what is tested):
    - Empty slices/strings
    - Unicode string handling
    - Trait object cloning with methods
+
+3. **Tuple Tests** (tests/clone_tuples_test.rs):
+   - Empty tuple, arities 1-12
+   - Mixed element types
+   - Nested tuples
+   - Trait objects containing tuples
+
+4. **Array Tests** (tests/clone_arrays_test.rs):
+   - Sizes 0, 1, 3, 8, 16, 32, 64, 128
+   - Arrays of strings, tuples
+   - Trait objects containing arrays
+
+5. **Corner Case Tests** (tests/additional_corner_cases_test.rs):
+   - Iterator state preservation
+   - Iterator cloning independence
+   - Large data structures
 
 ### Test Quality Standards
 
@@ -244,15 +264,13 @@ macro_tools → clone_dyn_types → test_tools → impls_index_meta → macro_to
 
 1. **Double Reference for DST**: Slices and str require `&&T` for trait object coercion
 2. **Manual Box Clone impl**: Users must implement `Clone for Box<dyn Trait>` manually
-3. **Array Size Limit**: Array implementations limited to size 32
-4. **Tuple Size Limit**: Tuple implementations limited to arity 16
+3. **Tuple Arity Limit**: Tuple support limited to arity 12 (Rust std Clone implementation limit)
 
 ## Future Considerations
 
 1. **const fn support**: When const traits stabilize
-2. **Extended array sizes**: If const generics improve
-3. **Allocation API**: When Allocator trait stabilizes
-4. **Dyn-safe Clone**: If Rust gains object-safe Clone mechanism
+2. **Allocation API**: When Allocator trait stabilizes
+3. **Dyn-safe Clone**: If Rust gains object-safe Clone mechanism
 
 ## Compliance
 

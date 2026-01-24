@@ -93,8 +93,7 @@ fn crate_file_path(manifest_dir_path: &Path) -> PathBuf
 
   // Respect CARGO_TARGET_DIR environment variable if set, otherwise use local target/
   let target_dir = std ::env ::var("CARGO_TARGET_DIR")
-  .map( | p | PathBuf ::from(p) )
-  .unwrap_or_else( | _ | manifest_dir_path.join("target") );
+  .map_or_else( | _ | manifest_dir_path.join("target"), PathBuf ::from );
 
   target_dir.join("package").join(format!(
   "{}-{}.crate",

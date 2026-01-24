@@ -12,6 +12,10 @@
 //! | `test_option_ext_some_to_some` | Update existing `Some` value | `Some(10)` → `Some(20)` | Value updated via `option_assign()` | ✅ |
 //! | `test_assign_empty_string` | Assign empty string | Empty `""` | Empty string stored correctly | ✅ |
 //! | `test_type_conversion_integers` | Type conversions for integers | `u8`, `i16` → `i32` | All conversions work via `Into` | ✅ |
+//! | `test_partial_assignment_preserves_defaults` | Partial assignment | Only one field assigned | Unassigned fields retain default values | ✅ |
+//! | `test_owned_string_assignment` | Owned String assignment | `String::from()` | Owned strings work, not just `&str` | ✅ |
+//! | `test_unicode_string_assignment` | Unicode string support | Non-ASCII characters | Unicode preserved correctly | ✅ |
+//! | `test_boundary_values_integers` | Integer boundary values | `i32::MIN`, `i32::MAX`, `0` | Extreme values handled correctly | ✅ |
 //!
 //! ## Corner Cases Covered
 //!
@@ -20,6 +24,10 @@
 //! - ✅ `OptionExt` with `Some` → `Some` transition (not just `None` → `Some`)
 //! - ✅ Empty string edge case
 //! - ✅ Type conversions with different integer types
+//! - ✅ Partial assignment (default value preservation)
+//! - ✅ Owned String type (not just `&str`)
+//! - ✅ Unicode string support
+//! - ✅ Integer boundary values (`i32::MIN`, `i32::MAX`, zero)
 
 /// Verifies `impute()` method enables builder pattern with method chaining.
 ///
@@ -251,4 +259,185 @@ fn test_type_conversion_integers()
   // Test direct i32
   metrics.assign( 42 );
   assert_eq!( metrics.count, 42 );
+}
+
+/// Verifies partial assignment preserves default values for unassigned fields.
+///
+/// Tests that:
+/// 1. Assigning only one field leaves other fields at default values
+/// 2. Default values are not corrupted by partial assignment
+/// 3. Both partial assignment scenarios work (age-only, name-only)
+///
+/// Critical for builder patterns where not all fields may be set.
+#[ test ]
+#[ cfg( feature = "types_component_assign" ) ]
+fn test_partial_assignment_preserves_defaults()
+{
+  use component_model_types::Assign;
+
+  #[ derive( Default, Debug ) ]
+  struct Person
+  {
+    age : i32,
+    name : String,
+  }
+
+  impl< IntoT > Assign< i32, IntoT > for Person
+  where
+    IntoT : Into< i32 >,
+  {
+    fn assign( &mut self, component : IntoT )
+    {
+      self.age = component.into();
+    }
+  }
+
+  impl< IntoT > Assign< String, IntoT > for Person
+  where
+    IntoT : Into< String >,
+  {
+    fn assign( &mut self, component : IntoT )
+    {
+      self.name = component.into();
+    }
+  }
+
+  // Test 1: Assign only age, name stays default
+  let mut person1 = Person::default();
+  person1.assign( 30 );
+  assert_eq!( person1.age, 30 );
+  assert_eq!( person1.name, "" );
+
+  // Test 2: Assign only name, age stays default
+  let mut person2 = Person::default();
+  person2.assign( "Alice" );
+  assert_eq!( person2.age, 0 );
+  assert_eq!( person2.name, "Alice" );
+}
+
+/// Verifies owned String type assignment works (not just &str).
+///
+/// Tests that:
+/// 1. `String::from()` can be assigned (owned String)
+/// 2. `String` type implements `Into<String>`
+/// 3. Owned strings are not just borrowed
+///
+/// Ensures flexibility in string assignment beyond string literals.
+#[ test ]
+#[ cfg( feature = "types_component_assign" ) ]
+fn test_owned_string_assignment()
+{
+  use component_model_types::Assign;
+
+  #[ derive( Default, Debug ) ]
+  struct Record
+  {
+    label : String,
+  }
+
+  impl< IntoT > Assign< String, IntoT > for Record
+  where
+    IntoT : Into< String >,
+  {
+    fn assign( &mut self, component : IntoT )
+    {
+      self.label = component.into();
+    }
+  }
+
+  let mut record = Record::default();
+
+  // Assign owned String (not &str)
+  let owned_string = String::from( "Owned Label" );
+  record.assign( owned_string );
+
+  assert_eq!( record.label, "Owned Label" );
+}
+
+/// Verifies Unicode string assignment preserves non-ASCII characters.
+///
+/// Tests that:
+/// 1. Unicode characters are stored correctly
+/// 2. Multi-byte characters (emoji, CJK, accented) are preserved
+/// 3. String length correctly handles multi-byte chars
+///
+/// Edge case: Unicode handling often reveals encoding issues.
+#[ test ]
+#[ cfg( feature = "types_component_assign" ) ]
+fn test_unicode_string_assignment()
+{
+  use component_model_types::Assign;
+
+  #[ derive( Default, Debug ) ]
+  struct Greeting
+  {
+    message : String,
+  }
+
+  impl< IntoT > Assign< String, IntoT > for Greeting
+  where
+    IntoT : Into< String >,
+  {
+    fn assign( &mut self, component : IntoT )
+    {
+      self.message = component.into();
+    }
+  }
+
+  let mut greeting = Greeting::default();
+
+  // Assign Unicode string (emoji, CJK, accented characters)
+  greeting.assign( "Hello 世界 🌍 José" );
+
+  assert_eq!( greeting.message, "Hello 世界 🌍 José" );
+  assert!( greeting.message.contains( "世界" ) );
+  assert!( greeting.message.contains( "🌍" ) );
+  assert!( greeting.message.contains( "José" ) );
+}
+
+/// Verifies integer boundary values are handled correctly.
+///
+/// Tests that:
+/// 1. `i32::MIN` can be assigned without overflow
+/// 2. `i32::MAX` can be assigned without overflow
+/// 3. Zero is handled correctly (not treated as null/unset)
+///
+/// Critical edge case: boundary values often reveal arithmetic bugs.
+#[ test ]
+#[ cfg( feature = "types_component_assign" ) ]
+fn test_boundary_values_integers()
+{
+  use component_model_types::Assign;
+
+  #[ derive( Default, Debug ) ]
+  struct Limits
+  {
+    value : i32,
+  }
+
+  impl< IntoT > Assign< i32, IntoT > for Limits
+  where
+    IntoT : Into< i32 >,
+  {
+    fn assign( &mut self, component : IntoT )
+    {
+      self.value = component.into();
+    }
+  }
+
+  let mut limits = Limits::default();
+
+  // Test i32::MIN
+  limits.assign( i32::MIN );
+  assert_eq!( limits.value, i32::MIN );
+  assert_eq!( limits.value, -2_147_483_648 );
+
+  // Test i32::MAX
+  limits.assign( i32::MAX );
+  assert_eq!( limits.value, i32::MAX );
+  assert_eq!( limits.value, 2_147_483_647 );
+
+  // Test zero (distinct from uninitialized)
+  limits.assign( 0 );
+  assert_eq!( limits.value, 0 );
 }

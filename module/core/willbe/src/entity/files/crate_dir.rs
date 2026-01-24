@@ -27,7 +27,8 @@ use std ::
 // {
 //   Result,
 // };
-use pth :: { AbsolutePath, Utf8Path, Utf8PathBuf };
+use pth :: { AbsolutePath };
+use camino :: { Utf8Path, Utf8PathBuf };
 
 /// Path to crate directory
 #[ derive( Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]

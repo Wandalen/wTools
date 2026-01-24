@@ -128,14 +128,15 @@ willbe exposes three binary entry points that all delegate to the same logic:
 Publish crates in dependency order.
 
 ```bash
-# Publish all modified crates
+# Publish all modified crates from current directory
 will .publish
 
 # Dry run (show what would be published)
 will .publish dry:1
 
-# Publish specific packages
-will .publish packages:[ crate1, crate2 ]
+# Publish specific crates by path patterns (comma-separated)
+will .publish crate1,crate2 dry:1
+will .publish ./module/core/* dry:1
 ```
 
 #### `.test`
@@ -143,14 +144,15 @@ will .publish packages:[ crate1, crate2 ]
 Run tests with various configurations.
 
 ```bash
-# Run all tests
+# Run all tests from current directory
 will .test
 
 # Test with specific power level (feature combinations)
 will .test power:2
 
-# Test specific packages
-will .test packages:[ crate1 ]
+# Test specific crate by path
+will .test /path/to/crate power:2
+will .test ./crate_name dry:1
 ```
 
 #### `.list`
@@ -158,14 +160,14 @@ will .test packages:[ crate1 ]
 List workspace crates.
 
 ```bash
-# List all crates
+# List all crates from current directory
 will .list
 
 # List with tree format
 will .list format:tree
 
-# Filter by path pattern
-will .list path_glob:module/core/*
+# List from specific crate directory (absolute path)
+will .list /absolute/path/to/crate
 ```
 
 #### `.cicd.renew`

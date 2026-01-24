@@ -23,7 +23,8 @@ use std ::
   io,
 };
 
-use pth :: { AbsolutePath, Utf8Path, Utf8PathBuf };
+use pth :: { AbsolutePath };
+use camino :: { Utf8Path, Utf8PathBuf };
 
 // use error ::
 // {

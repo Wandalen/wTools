@@ -97,6 +97,17 @@ async fn main()
       Err( e ) => panic!( "Unexpected error: {e:?}" ),
     }
 
+    // Using AsyncTryInto with invalid input
+    let result : Result< ValidatedNumber, _ > = "not_a_number".to_string().async_try_into().await;
+    match result
+    {
+      Ok( _num ) => panic!( "Should have failed for invalid input" ),
+      Err( _e ) =>
+      {
+        println!( "AsyncTryInto: Correctly rejected invalid input 'not_a_number'" );
+      }
+    }
+
     println!( "\nAll async conversion examples completed successfully!" );
   }
 }

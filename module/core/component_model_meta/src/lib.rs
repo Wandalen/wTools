@@ -558,10 +558,28 @@ pub fn from_components(input: proc_macro::TokenStream) -> proc_macro::TokenStrea
 /// - Handles type conflicts gracefully by skipping conflicting implementations.
 /// 
 /// # Attributes
-/// 
+///
 /// - `debug` : Optional attribute to enable debug-level output during macro expansion.
 /// - `component` : Optional field-level attribute for customizing component behavior.
-/// 
+///
+/// # Limitations
+///
+/// `ComponentModel` only supports structs with named fields. It does not support:
+///
+/// - Tuple structs: `struct Point(i32, i32);` will produce a compilation error
+/// - Unit structs: `struct Unit;` will produce a compilation error
+/// - Enums and unions
+///
+/// For tuple structs, use the individual derives `ComponentFrom` and `Assign` instead:
+///
+/// ```rust
+/// use component_model_meta:: { ComponentFrom, Assign as AssignDerive };
+/// use component_model_types::Assign;
+///
+/// #[ derive( Default, ComponentFrom, AssignDerive ) ]
+/// struct Point( i32, i32 );
+/// ```
+///
 /// # Examples
 /// 
 /// ```rust
