@@ -23,7 +23,7 @@ mod private
   borrow ::Cow,
  };
 
-  #[ cfg( feature = "path_utf8" ) ]
+  #[ cfg( all( feature = "path_utf8", not( feature = "no_std" ) ) ) ]
   use camino :: Utf8PathBuf;
 
   /// Symbolize current path.
