@@ -156,52 +156,49 @@ mod private
   ///
   /// Handle record "use" with implicit visibility.
   ///
-  fn record_use_implicit(record: &Record, c: &'_ mut RecordContext< '_ >) -> syn ::Result< () > 
+  /// # Fix(issue-001): Bare use statement propagation
+  ///
+  /// Root cause: Previous implementation tried to use wildcard re-exports from layer::*
+  /// which don't work because layers (__all__::own, etc.) are private modules.
+  ///
+  /// Pitfall: Wildcard re-exports only work when the source module is accessible.
+  /// Private modules can't be re-exported with wildcards. Must add items directly
+  /// to each layer using the adjusted path.
+  ///
+  fn record_use_implicit(record: &Record, c: &'_ mut RecordContext< '_ >) -> syn ::Result< () >
   {
   let attrs1 = &record.attrs;
   let path = record.use_elements.as_ref().unwrap();
+  let adjusted_path = path.prefixed_with_all();
 
-  let path =  if let Some(rename) = &path.rename 
-  {
-   let pure_path = path.pure_without_super_path()?;
-   c.clauses_map.get_mut(&ClauseImmediates ::Kind()).unwrap().push(qt! {
-  pub use #pure_path as #rename;
- });
-   parse_qt! { #rename }
- } else {
-   path.clone()
- };
-
-  let adjsuted_path = path.prefixed_with_all();
-
+  // Fix(issue-001): Add to all four layers directly
+  // Can't use wildcard re-exports from private __all__ modules
   c.clauses_map.get_mut(&ClauseKind::Own).unwrap().push(qt! {
    #[ doc( inline ) ]
    #[ allow( unused_imports ) ]
    #attrs1
-   pub use #adjsuted_path ::orphan :: *;
+   pub use #adjusted_path;
  });
 
-  // export layer as own field of current layer
-  let prefixed_with_super_maybe = path.prefixed_with_super_maybe();
-  c.clauses_map.get_mut(&ClauseKind::Own).unwrap().push(qt! {
+  c.clauses_map.get_mut(&ClauseKind::Orphan).unwrap().push(qt! {
    #[ doc( inline ) ]
    #[ allow( unused_imports ) ]
    #attrs1
-   pub use #prefixed_with_super_maybe;
+   pub use #adjusted_path;
  });
 
   c.clauses_map.get_mut(&ClauseKind::Exposed).unwrap().push(qt! {
    #[ doc( inline ) ]
    #[ allow( unused_imports ) ]
    #attrs1
-   pub use #adjsuted_path ::exposed :: *;
+   pub use #adjusted_path;
  });
 
   c.clauses_map.get_mut(&ClauseKind::Prelude).unwrap().push(qt! {
    #[ doc( inline ) ]
    #[ allow( unused_imports ) ]
    #attrs1
-   pub use #adjsuted_path ::prelude :: *;
+   pub use #adjusted_path;
  });
 
   Ok(())

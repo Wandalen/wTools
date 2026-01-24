@@ -56,6 +56,7 @@
 //!   the mandatory testing architecture pattern.
 
 #[ cfg( all( feature = "use_alloc", not( feature = "std" ) ) ) ]
+#[ allow( unused_extern_crates ) ]
 extern crate alloc;
 
 /// String tools.

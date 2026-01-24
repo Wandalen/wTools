@@ -510,39 +510,48 @@ mod private {
       /* write code */
       test_path.push("src");
       test_path.push("main.rs");
-      
-      // Generate appropriate code based on configured dependencies
-      let main_code = if self.code.is_empty() {
-        if self.dependencies.is_empty() {
+
+      // Generate code with proper main function handling
+      // Fix(issue-smoke_test_nested_main): When user provides code with fn main(),
+      // don't wrap it in another fn main() as that creates dead code warnings
+      let code = if self.code.is_empty() {
+        // Auto-generate code from dependencies - needs main() wrapper
+        let use_statements = if self.dependencies.is_empty() {
           // Legacy behavior - use main dependency name
           format!("use {};", self.dependency_name)
         } else {
           // Use configured dependencies
-          let mut use_statements = Vec::new();
+          let mut statements = Vec::new();
           for (dep_name, config) in &self.dependencies {
             if !config.dev && !config.optional {
               // Only use non-dev, non-optional dependencies in main code
-              use_statements.push(format!("use {dep_name};"));
+              statements.push(format!("use {dep_name};"));
             }
           }
-          if use_statements.is_empty() {
+          if statements.is_empty() {
             // Fallback if no usable dependencies
             "// No dependencies configured for main code".to_string()
           } else {
-            use_statements.join("\n          ")
+            statements.join("\n          ")
           }
-        }
-      } else {
-        self.code.clone()
-      };
-      
-      let code = format!(
-        "#[ allow( unused_imports ) ]
+        };
+
+        format!(
+          "#[ allow( unused_imports ) ]
         fn main()
         {{
-          {main_code}
+          {use_statements}
         }}"
-      );
+        )
+      } else {
+        // User-provided code - use as-is (may already contain fn main())
+        format!(
+          "#[ allow( unused_imports ) ]
+        {}"
+          , self.code
+        )
+      };
+
       println!("\n{code}\n");
       std::fs::write(&test_path, code)
         .map_err(|e| format!("Failed to write main.rs: {e}"))?;
