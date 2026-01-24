@@ -8,9 +8,6 @@ repository = "https://github.com/Wandalen/willbe/tree/master/module/tree_fmt"
 description = "Multi-format data visualization library with 10 formatters, 31 variants, and granular per-variant feature flags for minimal binary size"
 keywords = [ "tree", "table", "formatter", "hierarchical", "display" ]
 categories = [ "text-processing", "data-structures", "visualization" ]
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
 
 [lints]
 workspace = true
