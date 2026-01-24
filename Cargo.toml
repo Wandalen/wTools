@@ -423,7 +423,7 @@ path = "module/alias/werror"
 ## genfile
 
 [workspace.dependencies.genfile_core]
-version = "~0.8.0"
+version = "~0.9.0"
 path = "module/core/genfile_core"
 default-features = false
 
@@ -473,7 +473,7 @@ path = "module/alias/proper_tools"
 default-features = false
 
 [workspace.dependencies.pth]
-version = "~0.31.0"
+version = "~0.32.0"
 path = "module/core/pth"
 default-features = false
 
@@ -486,7 +486,7 @@ default-features = false
 ## process tools
 
 [workspace.dependencies.process_tools]
-version = "~0.27.0"
+version = "~0.28.0"
 path = "module/core/process_tools"
 default-features = false
 
