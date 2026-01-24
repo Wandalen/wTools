@@ -3,6 +3,7 @@ mod private
 {
 
   use crate :: *;
+  use collection_tools :: collection;
 
   use std ::fmt;
   use process_tools ::process;

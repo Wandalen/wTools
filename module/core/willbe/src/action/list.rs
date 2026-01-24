@@ -4,6 +4,7 @@ mod private
 {
 
   use crate :: *;
+  use collection_tools :: collection;
 
   use std :: { fmt, str };
   use petgraph ::
@@ -478,7 +479,7 @@ mod private
   // let is_package = manifest.package_is().context( "try to identify manifest type" ).err_with( report.clone() )?;
 
   let tree_package_report =
-  | manifest_file: ManifestFile, report: &mut ListReport, visited: &mut HashSet< DependencyId > |
+  | manifest_file: ManifestFile, report: &mut ListReport, visited: &mut collection ::HashSet< DependencyId > |
   {
 
    let package = workspace
@@ -839,7 +840,7 @@ mod private
   fn rearrange_duplicates_resolver
   (
   report: &mut [ ListNodeReport ],
-  required: &mut HashMap< usize, Vec< ListNodeReport > >
+  required: &mut collection ::HashMap< usize, Vec< ListNodeReport > >
  )
   {
   for node in report

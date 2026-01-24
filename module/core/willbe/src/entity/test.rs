@@ -4,6 +4,7 @@ mod private
 
 
   use crate :: *;
+  use collection_tools :: collection;
 
   use table :: *;
   // qqq: for Bohdan no asterisk imports, but in special cases

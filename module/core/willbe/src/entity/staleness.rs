@@ -114,6 +114,7 @@
 mod private
 {
   use crate :: *;
+  use collection_tools :: collection;
   use semver ::{ Version, VersionReq };
   use std ::str ::FromStr;
 

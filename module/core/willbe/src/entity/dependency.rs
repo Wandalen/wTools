@@ -3,6 +3,7 @@ mod private
 
 
   use crate :: *;
+  use collection_tools :: collection;
 
   // use crates_tools ::CrateArchive;
   // use workspace ::Workspace;

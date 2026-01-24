@@ -94,7 +94,7 @@ component_model = { workspace = true, features = [ "default" ] }
 iter_tools = { workspace = true, features = [ "default" ] }
 mod_interface = { workspace = true, features = [ "default" ] }
 wca = { workspace = true, features = [ "default" ] }
-pth = { workspace = true, features = [ "default", "path_utf8" ] }
+pth = { workspace = true, features = [ "default", "path_utf8", "path_unique_folder_name" ] }
 process_tools = { workspace = true, features = [ "default" ] }
 derive_tools = { workspace = true, features = [ "default" ] }  # derive_tools is a basic dependency required for compilation.
 data_type = { workspace = true, features = [ "either" ] }

@@ -4,6 +4,7 @@ mod private
 {
 
   use crate :: *;
+  use collection_tools :: collection;
   use std :: { env, fmt, fs };
   use
   {
