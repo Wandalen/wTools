@@ -21,6 +21,8 @@ exclude = [
 
   # NOTE: module/move directory is now empty - all crates moved to core or postponed
 ]
+dev-dependencies = {}
+build-dependencies = {}
 # default-members = [ "module/core/wtools" ]
 
 [workspace.metadata]
@@ -120,7 +122,7 @@ path = "module/alias/std_x"
 ## data_type
 
 [workspace.dependencies.data_type]
-version = "~0.22.0"
+version = "~0.23.0"
 path = "module/core/data_type"
 default-features = false
 
