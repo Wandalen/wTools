@@ -2,11 +2,13 @@ use super :: *;
 
 // use the_module :: *;
 use inc ::helper ::ProjectBuilder;
+use assert_cmd ::Command;
 
 use assert_fs ::TempDir;
 
 #[ test ]
-fn status_code_1_on_failure() 
+#[ allow( deprecated ) ]
+fn status_code_1_on_failure()
 {
   let temp = TempDir ::new().unwrap();
   let temp = &temp;
@@ -25,7 +27,7 @@ fn status_code_1_on_failure()
   .build(temp)
   .unwrap();
 
-  assert_cmd ::cargo_bin_cmd!("will")
+  Command ::cargo_bin("will").unwrap()
   .args([".tests.run", "with_nightly: 0"])
   .current_dir(project)
   .assert()
@@ -33,7 +35,8 @@ fn status_code_1_on_failure()
 }
 
 #[ test ]
-fn status_code_not_zero_on_failure() 
+#[ allow( deprecated ) ]
+fn status_code_not_zero_on_failure()
 {
   let temp = TempDir ::new().unwrap();
   let temp = &temp;
@@ -52,7 +55,7 @@ fn status_code_not_zero_on_failure()
   .build(temp)
   .unwrap();
 
-  assert_cmd ::cargo_bin_cmd!("will")
+  Command ::cargo_bin("will").unwrap()
   .args([".tests.run", "with_nightly: 0"])
   .current_dir(project)
   .assert()
@@ -60,7 +63,8 @@ fn status_code_not_zero_on_failure()
 }
 
 #[ test ]
-fn status_code_not_zero_on_compile_error() 
+#[ allow( deprecated ) ]
+fn status_code_not_zero_on_compile_error()
 {
   let temp = TempDir ::new().unwrap();
   let temp = &temp;
@@ -79,7 +83,7 @@ fn status_code_not_zero_on_compile_error()
   .build(temp)
   .unwrap();
 
-  assert_cmd ::cargo_bin_cmd!("will")
+  Command ::cargo_bin("will").unwrap()
   .args([".tests.run", "with_nightly: 0"])
   .current_dir(project)
   .assert()
