@@ -286,7 +286,8 @@ mod private
   repository ::readme_path( path.parent().unwrap().as_ref() )
   // .ok_or_else :: < error ::untyped ::Error, _ >( || error ::untyped ::format_err!( "Fail to find README.md at {}", &path ) )
   .err_with_report( &report )?
- );
+ )
+   .err_with_report( &report )?;
 
    let pakage = Package ::try_from
    (

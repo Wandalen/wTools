@@ -105,6 +105,7 @@ mod private {
     }
 
     /// Prefix path with `super::` if it's appropriate to avoid "re-export of crate public `child`" problem.
+    #[ allow( dead_code ) ]
     pub fn prefixed_with_super_maybe(&self) -> Self {
       // use syn::UseTree::*;
       if self.private_prefix_is_needed() {

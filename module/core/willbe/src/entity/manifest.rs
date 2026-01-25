@@ -188,11 +188,11 @@ mod private
    // Search for workspace Cargo.toml by going up directories
    loop
    {
-  let workspace_manifest = current_dir.join( "Cargo.toml" );
+  let workspace_manifest = current_dir.join( "Cargo.toml" )?;
 
   if workspace_manifest.exists()
   {
-   let workspace_content = fs ::read_to_string( &workspace_manifest )?;
+   let workspace_content = fs ::read_to_string( workspace_manifest )?;
    let workspace_doc = workspace_content.parse :: < toml_edit ::Document >()
    .map_err( | e | io ::Error ::new( io ::ErrorKind ::InvalidData, e ) )?;
 

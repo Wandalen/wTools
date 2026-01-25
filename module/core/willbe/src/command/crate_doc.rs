@@ -33,7 +33,7 @@ mod private
   {
    // If relative, resolve it against the current directory
    let current_dir = AbsolutePath ::try_from( std ::env ::current_dir()? )?;
-   current_dir.join( path_arg.clone() ) // Clone path_arg as join consumes it
+   current_dir.join( path_arg.clone() )? // Clone path_arg as join consumes it
  }
   else
   {

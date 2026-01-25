@@ -90,7 +90,7 @@ impl From< CrateDir > for ManifestFile
 {
   fn from( src: CrateDir ) -> Self
   {
-  Self( src.absolute_path().join( "Cargo.toml" ) )
+  Self( src.absolute_path().join( "Cargo.toml" ).expect( "Failed to join Cargo.toml path" ) )
  }
 }
 

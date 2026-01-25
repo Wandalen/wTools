@@ -1,6 +1,6 @@
 use super :: *;
 use the_module ::query :: { parse, ParseResult, Value };
-use the_module ::collection ::HashMap;
+use std ::collections ::HashMap;
 use core ::str ::FromStr;
 
 #[ test ]

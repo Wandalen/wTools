@@ -14,6 +14,7 @@ use super :: *;
 use the_module :: *;
 use the_module ::stale_dependency ::{ StaleDependency, StaleReason };
 use the_module ::staleness ::{ detect_stale_dependencies, compute_transitive_closure };
+use std ::collections ::HashSet;
 
 #[ test ]
 fn original_bug_scenario_staleness_detection()
@@ -26,7 +27,7 @@ fn original_bug_scenario_staleness_detection()
   use semver :: { Version, VersionReq };
 
   // Simulate the scenario: former is being published (version bumped)
-  let mut publishing = the_module ::collection ::HashSet ::new();
+  let mut publishing = HashSet ::new();
   publishing.insert( "former".to_string() );
 
   // In a real workspace, detect_stale_dependencies would analyze all packages
@@ -61,7 +62,7 @@ fn transitive_closure_includes_cascade()
   // Without the fix, only former would be published, causing the version conflict
 
   // Initial set: only former (has version bump)
-  let mut initial = the_module ::collection ::HashSet ::new();
+  let mut initial = HashSet ::new();
   initial.insert( "former".to_string() );
 
   // After Phase 2 (staleness detection), wca is added
@@ -157,7 +158,7 @@ fn fixed_point_convergence()
   // If D bumped, iteration 1 adds C, iteration 2 adds B, iteration 3 adds A
   // Should converge in 3 iterations
 
-  let mut current = the_module ::collection ::HashSet ::new();
+  let mut current = HashSet ::new();
   current.insert( "D".to_string() );
 
   // Simulate iteration 1: C depends on D

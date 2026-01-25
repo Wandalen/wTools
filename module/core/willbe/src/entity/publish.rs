@@ -143,7 +143,7 @@ mod private
    let git_options = entity ::git ::GitOptions
    {
   git_root: workspace_root,
-  items: dependencies.iter().chain( [ &crate_dir ] ).map( | d | d.clone().absolute_path().join( "Cargo.toml" ) ).collect(),
+  items: dependencies.iter().chain( [ &crate_dir ] ).map( | d | d.clone().absolute_path().join( "Cargo.toml" ).expect( "Failed to join Cargo.toml path" ) ).collect(),
   message: format!( "{}-v{}", self.package.name().unwrap(), new_version ),
   dry: self.dry,
  };

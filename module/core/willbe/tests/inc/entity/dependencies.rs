@@ -21,12 +21,12 @@ fn arrange(asset_name: &str) -> (TempDir, Workspace)
   let root_path = workspace.workspace_root();
   let assets_relative_path = std ::path ::Path ::new(ASSET_PATH);
   let assets_path = root_path
-  .join("module")
-  .join("move")
-  .join("willbe")
-  .join(assets_relative_path);
+  .join("module").unwrap()
+  .join("move").unwrap()
+  .join("willbe").unwrap()
+  .join(assets_relative_path).unwrap();
   let temp = TempDir ::new().unwrap();
-  temp.copy_from(assets_path.join(asset_name), &[ "**"]).unwrap();
+  temp.copy_from(assets_path.join(asset_name).unwrap(), &[ "**"]).unwrap();
 
   let temp_crate_dir = CrateDir ::try_from(AbsolutePath ::try_from(temp.to_path_buf()).unwrap()).unwrap();
   let workspace = Workspace ::try_from(temp_crate_dir).unwrap();

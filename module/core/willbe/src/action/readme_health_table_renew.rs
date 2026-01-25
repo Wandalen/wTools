@@ -274,7 +274,7 @@ mod private
  )?;
 
   let read_me_path = workspace_root
-  .join( repository ::readme_path( &workspace_root )? );
+  .join( repository ::readme_path( &workspace_root )? )?;
   let mut file = OpenOptions ::new()
   .read( true )
   .write( true )
@@ -368,7 +368,7 @@ mod private
   (
    workspace
    .workspace_root()
-   .join( &table_parameters.base_path ).to_path_buf(),
+   .join( &table_parameters.base_path )?.to_path_buf(),
    workspace
    .packages()
  )?;
@@ -383,7 +383,7 @@ mod private
    stability_get
    (
   // qqq: the folder name may not match the package name
-  &workspace.workspace_root().join( &table_parameters.base_path ).join( &package_name )
+  &workspace.workspace_root().join( &table_parameters.base_path )?.join( &package_name )?
  )?
  )
  }
@@ -395,8 +395,8 @@ mod private
    {
   let module_path = workspace
   .workspace_root()
-  .join( &table_parameters.base_path )
-  .join( &package_name );
+  .join( &table_parameters.base_path )?
+  .join( &package_name )?;
   // parameters.core_url = repo_url( &module_path )
   parameters.core_url = repo_url( &module_path.clone().try_into()? )
   .context
@@ -410,8 +410,8 @@ specify the correct path to the main repository in Cargo.toml of workspace (in t
 OR in Cargo.toml of each module (in the [package] section named repository, specify the full path to the module) for example {} OR\
 ensure that at least one remotest is present in git. ",
   module_path.display(),
-  workspace.workspace_root().join( "Cargo.toml" ).display(),
-  module_path.join( "Cargo.toml" ).display()
+  workspace.workspace_root().join( "Cargo.toml" )?.display(),
+  module_path.join( "Cargo.toml" )?.display()
  )
  )?;
   parameters.user_and_repo = url ::git_info_extract( &parameters.core_url )?;

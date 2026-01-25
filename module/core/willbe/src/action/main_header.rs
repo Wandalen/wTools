@@ -229,7 +229,8 @@ mod private
   (
    repository ::readme_path( &workspace_root )
    .err_with_report( &report )?
- );
+ )
+  .err_with_report( &report )?;
 
   report.found_file = Some( read_me_path.clone().to_path_buf() );
 

@@ -158,14 +158,14 @@ mod private
   ///
   /// # Fix(issue-001): Bare use statement propagation
   ///
-  /// Root cause: Previous implementation tried to use wildcard re-exports from layer::*
-  /// which don't work because layers (__all__::own, etc.) are private modules.
+  /// Root cause: Previous implementation tried to use wildcard re-exports from `layer::*`
+  /// which don't work because layers (`__all__::own`, etc.) are private modules.
   ///
   /// Pitfall: Wildcard re-exports only work when the source module is accessible.
   /// Private modules can't be re-exported with wildcards. Must add items directly
   /// to each layer using the adjusted path.
   ///
-  fn record_use_implicit(record: &Record, c: &'_ mut RecordContext< '_ >) -> syn ::Result< () >
+  fn record_use_implicit(record: &Record, c: &'_ mut RecordContext< '_ >)
   {
   let attrs1 = &record.attrs;
   let path = record.use_elements.as_ref().unwrap();
@@ -200,8 +200,6 @@ mod private
    #attrs1
    pub use #adjusted_path;
  });
-
-  Ok(())
  }
 
   ///
@@ -381,9 +379,9 @@ mod private
   Use(_) =>
   {
    let vis = &record.vis;
-   if vis == &Visibility ::Inherited 
+   if vis == &Visibility ::Inherited
    {
-  record_use_implicit(record, &mut record_context)?;
+  record_use_implicit(record, &mut record_context);
  } else {
   record_use_explicit(record, &mut record_context)?;
  }
