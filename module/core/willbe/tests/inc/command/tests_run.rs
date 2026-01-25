@@ -25,7 +25,7 @@ fn status_code_1_on_failure()
   .build(temp)
   .unwrap();
 
-  assert_cmd ::cargo ::cargo_bin_cmd!("will")
+  assert_cmd ::cargo_bin_cmd!("will")
   .args([".tests.run", "with_nightly: 0"])
   .current_dir(project)
   .assert()
@@ -52,7 +52,7 @@ fn status_code_not_zero_on_failure()
   .build(temp)
   .unwrap();
 
-  assert_cmd ::cargo ::cargo_bin_cmd!("will")
+  assert_cmd ::cargo_bin_cmd!("will")
   .args([".tests.run", "with_nightly: 0"])
   .current_dir(project)
   .assert()
@@ -79,7 +79,7 @@ fn status_code_not_zero_on_compile_error()
   .build(temp)
   .unwrap();
 
-  assert_cmd ::cargo ::cargo_bin_cmd!("will")
+  assert_cmd ::cargo_bin_cmd!("will")
   .args([".tests.run", "with_nightly: 0"])
   .current_dir(project)
   .assert()
