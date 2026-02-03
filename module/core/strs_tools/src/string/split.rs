@@ -473,7 +473,7 @@ mod private {
                 } else if c == '\\' {
                   escaped = true;
                   current_char_offset += c.len_utf8();
-                } else if c == self.active_quote_char.unwrap()
+                } else if c == first_char_iterable
                 // Found unescaped quote
                 {
                   // Check if this is truly a closing quote or the start of an adjacent quoted section

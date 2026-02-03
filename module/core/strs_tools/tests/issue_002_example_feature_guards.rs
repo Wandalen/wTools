@@ -34,7 +34,7 @@
 //! - Rationale: `no_std` is often included in default features for portability
 //! - Pattern `all(feature = "X", not(feature = "no_std"))` excludes defaults
 //! - Use `feature = "std"` explicitly if std environment required
-//! - Use `feature = "X"` alone if feature works in both no_std and std
+//! - Use `feature = "X"` alone if feature works in both `no_std` and std
 
 // test_kind: bug_reproducer(issue-002)
 

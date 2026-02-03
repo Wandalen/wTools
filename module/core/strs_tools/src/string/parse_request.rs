@@ -337,7 +337,7 @@ pub mod private {
         let subject;
         let mut map: HashMap<String, OpType<String>> = HashMap::new();
 
-        if map_entries.1.is_some() {
+        if let Some(map_entry_1) = map_entries.1 {
           let mut options = isolate_right();
           options.src = Src( map_entries.0 );
           options.delimiter = Delimiter( " " );
@@ -346,7 +346,7 @@ pub mod private {
           map_entries.0 = subject_and_key.2;
 
           let mut join = String::from(map_entries.0);
-          join.push_str(map_entries.1.unwrap());
+          join.push_str(map_entry_1);
           join.push_str(map_entries.2);
 
           let mut splits = split()
