@@ -501,6 +501,14 @@ default-features = false
 # default-features = false
 
 
+## claude tools
+
+[workspace.dependencies.claude_runner]
+version = "~0.1.0"
+path = "module/core/claude_runner"
+default-features = false
+
+
 ## config tools
 
 [workspace.dependencies.config_hierarchy]
