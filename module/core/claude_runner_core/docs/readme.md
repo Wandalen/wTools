@@ -1,6 +1,6 @@
 # docs/
 
-This directory contains supplementary documentation for the `claude_runner` crate beyond the primary specification (spec.md) and test documentation (tests/readme.md).
+This directory contains supplementary documentation for the `claude_runner_core` crate beyond the primary specification (spec.md) and test documentation (tests/readme.md).
 
 ## Responsibility Table
 

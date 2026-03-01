@@ -11,7 +11,7 @@
 //! - Methods can be called in any order
 //! - Final command builds successfully
 
-use claude_runner::{ ClaudeCommand, ActionMode, LogLevel };
+use claude_runner_core::{ ClaudeCommand, ActionMode, LogLevel };
 
 #[test]
 fn with_bash_timeout_ms_method_exists() {

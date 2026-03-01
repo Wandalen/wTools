@@ -503,9 +503,9 @@ default-features = false
 
 ## claude tools
 
-[workspace.dependencies.claude_runner]
+[workspace.dependencies.claude_runner_core]
 version = "~0.1.0"
-path = "module/core/claude_runner"
+path = "module/core/claude_runner_core"
 default-features = false
 
 

@@ -1,21 +1,21 @@
-//! Responsibility Boundary Test: `claude_runner` MUST be ONLY execution point
+//! Responsibility Boundary Test: `claude_runner_core` MUST be ONLY execution point
 //!
 //! # Test Purpose
 //!
 //! Enforce single execution point: `Command::new("claude")` MUST appear exactly once
-//! in the entire workspace, and that occurrence MUST be in `claude_runner` crate.
+//! in the entire workspace, and that occurrence MUST be in `claude_runner_core` crate.
 //!
 //! # Responsibility Split
 //!
-//! - **`claude_runner`** (THIS crate): Claude Code process execution (ONLY location)
+//! - **`claude_runner_core`** (THIS crate): Claude Code process execution (ONLY location)
 //! - **`claude_session`**: Session storage paths (NO execution)
-//! - **`dream_agent`**: Orchestration (uses `claude_runner`, does NOT execute directly)
+//! - **`dream_agent`**: Orchestration (uses `claude_runner_core`, does NOT execute directly)
 //!
 //! # Verification Method
 //!
 //! 1. Grep entire module/ directory for `Command::new\s*\(\s*"claude"\s*\)` (extended regex)
 //! 2. Count occurrences (must equal 1)
-//! 3. Verify that occurrence is in `claude_runner/src/`
+//! 3. Verify that occurrence is in `claude_runner_core/src/`
 //!
 //! **Pattern Specificity**: Uses `\s*\(\s*"claude"\s*\)` to match exactly `Command::new("claude")`
 //! with optional whitespace, avoiding false positives from similar binaries like
@@ -95,19 +95,19 @@ fn single_execution_point_in_workspace() {
      \n\
      Single Execution Point Rule:\n\
      - Command::new(\"claude\") MUST appear exactly once\n\
-     - That occurrence MUST be in claude_runner/src/executor.rs or similar\n\
+     - That occurrence MUST be in claude_runner_core/src/executor.rs or similar\n\
      \n\
      Fix:\n\
-     - If 0 occurrences: Implement execute() method in claude_runner\n\
-     - If 2+ occurrences: Remove duplicate calls, use claude_runner::execute() instead",
+     - If 0 occurrences: Implement execute() method in claude_runner_core\n\
+     - If 2+ occurrences: Remove duplicate calls, use claude_runner_core::execute() instead",
     match_lines.join("\n")
   );
 }
 
 #[test]
 fn execution_point_in_claude_runner_only() {
-  // Verify: The single Command::new("claude") is in claude_runner crate
-  // Rationale: Execution belongs in claude_runner, not claude_session or dream_agent
+  // Verify: The single Command::new("claude") is in claude_runner_core crate
+  // Rationale: Execution belongs in claude_runner_core, not claude_session or dream_agent
 
   let module_dir = Path::new(env!("CARGO_MANIFEST_DIR"))
     .parent()
@@ -134,20 +134,20 @@ fn execution_point_in_claude_runner_only() {
     return;
   }
 
-  // Verify all matches are in claude_runner
+  // Verify all matches are in claude_runner_core
   for line in &match_lines {
     assert!(
-      line.contains("claude_runner/"),
-      "BOUNDARY VIOLATION: Command::new(\"claude\") found outside claude_runner\n\
+      line.contains("claude_runner_core/"),
+      "BOUNDARY VIOLATION: Command::new(\"claude\") found outside claude_runner_core\n\
        \n\
        Found: {line}\n\
        \n\
        Responsibility Boundary:\n\
-       - claude_runner: Process execution (ONLY location for Command::new)\n\
+       - claude_runner_core: Process execution (ONLY location for Command::new)\n\
        - claude_session: Session storage (NO Command::new)\n\
        - dream_agent: Orchestration (NO Command::new)\n\
        \n\
-       Fix: Move execution to claude_runner, use builder pattern from other crates"
+       Fix: Move execution to claude_runner_core, use builder pattern from other crates"
     );
   }
 }
@@ -245,14 +245,14 @@ fn no_deprecated_execution_methods() {
 
 #[test]
 fn builder_pattern_api_documented() {
-  // Verify: claude_runner/readme.md documents builder pattern usage
+  // Verify: claude_runner_core/readme.md documents builder pattern usage
   // Rationale: Documentation must show correct API usage
 
   let readme_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("readme.md");
 
   assert!(
     readme_path.exists(),
-    "DOCUMENTATION MISSING: claude_runner/readme.md not found\n\
+    "DOCUMENTATION MISSING: claude_runner_core/readme.md not found\n\
      \n\
      Spec Before Code Rule:\n\
      - readme.md must exist BEFORE implementation\n\

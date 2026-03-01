@@ -14,7 +14,7 @@
 /// # Examples
 ///
 /// ```
-/// use claude_runner::ActionMode;
+/// use claude_runner_core::ActionMode;
 ///
 /// let mode = ActionMode::Ask;  // Default: prompt user for each tool
 /// let mode = ActionMode::Allow;  // Auto-approve all tools (use with caution)
@@ -36,7 +36,7 @@ impl ActionMode {
   /// # Examples
   ///
   /// ```
-  /// use claude_runner::ActionMode;
+  /// use claude_runner_core::ActionMode;
   ///
   /// assert_eq!( ActionMode::Ask.as_str(), "ask" );
   /// assert_eq!( ActionMode::Allow.as_str(), "allow" );
@@ -74,7 +74,7 @@ impl Default for ActionMode {
 /// # Examples
 ///
 /// ```
-/// use claude_runner::LogLevel;
+/// use claude_runner_core::LogLevel;
 ///
 /// let level = LogLevel::Info;   // Default: standard information
 /// let level = LogLevel::Debug;  // Verbose debugging output
@@ -100,7 +100,7 @@ impl LogLevel {
   /// # Examples
   ///
   /// ```
-  /// use claude_runner::LogLevel;
+  /// use claude_runner_core::LogLevel;
   ///
   /// assert_eq!( LogLevel::Error.as_str(), "error" );
   /// assert_eq!( LogLevel::Warn.as_str(), "warn" );
@@ -135,7 +135,7 @@ impl Default for LogLevel {
 /// # Examples
 ///
 /// ```no_run
-/// use claude_runner::ClaudeCommand;
+/// use claude_runner_core::ClaudeCommand;
 ///
 /// let output = ClaudeCommand::new()
 ///   .with_message( "hello" )

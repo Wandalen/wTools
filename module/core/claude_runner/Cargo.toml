@@ -5,7 +5,7 @@ edition = "2021"
 authors = [ "Kostiantyn Wandalen <wandalen@obox.systems>" ]
 license = "MIT"
 readme = "readme.md"
-description = "Claude Code process execution with builder pattern"
+description = "CLI for executing Claude Code with configurable builder pattern"
 
 [lints]
 workspace = true
@@ -13,10 +13,14 @@ workspace = true
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-enabled = [ "dep:error_tools", "error_tools/enabled", "error_tools/error_untyped" ]
+enabled = [
+  "dep:claude_runner_core",
+  "claude_runner_core/enabled",
+  "dep:error_tools",
+  "error_tools/enabled",
+  "error_tools/error_untyped",
+]
 
 [dependencies]
+claude_runner_core = { workspace = true, optional = true }
 error_tools = { workspace = true, optional = true }
-
-[dev-dependencies]
-test_tools = { workspace = true, features = [ "full" ] }

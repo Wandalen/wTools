@@ -8,7 +8,7 @@
 //! # Quick Start
 //!
 //! ```no_run
-//! use claude_runner::ClaudeCommand;
+//! use claude_runner_core::ClaudeCommand;
 //!
 //! let cmd = ClaudeCommand::new()
 //!   .with_working_directory( "/tmp/work" )
@@ -34,7 +34,7 @@
 //! ## Old Pattern 1: Factory Method (Doesn't Exist)
 //!
 //! ```compile_fail
-//! use claude_runner::ClaudeCommand;
+//! use claude_runner_core::ClaudeCommand;
 //!
 //! // ERROR: generate() method doesn't exist
 //! let cmd = ClaudeCommand::generate("/tmp", "msg", 1000, Strategy::Fresh);
@@ -43,7 +43,7 @@
 //! ## Old Pattern 2: Direct Construction (Fields Private)
 //!
 //! ```compile_fail
-//! use claude_runner::ClaudeCommand;
+//! use claude_runner_core::ClaudeCommand;
 //! use std::path::PathBuf;
 //!
 //! // ERROR: fields are private
@@ -59,7 +59,7 @@
 //! ## New Pattern: Builder Only
 //!
 //! ```no_run
-//! use claude_runner::ClaudeCommand;
+//! use claude_runner_core::ClaudeCommand;
 //!
 //! // the ONLY way to construct ClaudeCommand
 //! let output = ClaudeCommand::new()

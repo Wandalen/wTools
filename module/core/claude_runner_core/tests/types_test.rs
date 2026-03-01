@@ -11,7 +11,7 @@
 //! - `ActionMode::default()` returns `Ask` (security)
 //! - `LogLevel::default()` returns `Info`
 
-use claude_runner::{ ActionMode, LogLevel };
+use claude_runner_core::{ ActionMode, LogLevel };
 
 #[test]
 fn action_mode_as_str_conversions() {

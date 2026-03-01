@@ -20,7 +20,7 @@ use error_tools::{ Result, Error };
 /// # Example
 ///
 /// ```no_run
-/// use claude_runner::ClaudeCommand;
+/// use claude_runner_core::ClaudeCommand;
 ///
 /// let result = ClaudeCommand::new()
 ///   .with_working_directory( "/home/user/project" )
@@ -64,7 +64,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let cmd = ClaudeCommand::new();
   /// ```
@@ -119,7 +119,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let cmd = ClaudeCommand::new()
   ///   .with_working_directory("/home/user/project");
@@ -136,7 +136,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let cmd = ClaudeCommand::new()
   ///   .with_max_output_tokens(200_000);
@@ -153,7 +153,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let cmd = ClaudeCommand::new()
   ///   .with_continue_conversation(true);
@@ -170,7 +170,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let cmd = ClaudeCommand::new()
   ///   .with_message("Explain this code");
@@ -187,7 +187,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let cmd = ClaudeCommand::new()
   ///   .with_arg("--dangerously-skip-permissions");
@@ -204,7 +204,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let cmd = ClaudeCommand::new()
   ///   .with_args(vec!["--dangerously-skip-permissions", "-c"]);
@@ -225,7 +225,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let cmd = ClaudeCommand::new()
   ///   .with_model("claude-opus-4-5");
@@ -243,7 +243,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let cmd = ClaudeCommand::new()
   ///   .with_api_key("sk-ant-...");
@@ -261,7 +261,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let cmd = ClaudeCommand::new()
   ///   .with_verbose(true);
@@ -280,7 +280,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let cmd = ClaudeCommand::new()
   ///   .with_system_prompt("You are a helpful coding assistant");
@@ -300,7 +300,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let cmd = ClaudeCommand::new()
   ///   .with_bash_timeout_ms(3_600_000);  // 1 hour
@@ -319,7 +319,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let cmd = ClaudeCommand::new()
   ///   .with_bash_max_timeout_ms(7_200_000);  // 2 hours
@@ -339,7 +339,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let cmd = ClaudeCommand::new()
   ///   .with_auto_continue(true);
@@ -359,7 +359,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let cmd = ClaudeCommand::new()
   ///   .with_telemetry(false);
@@ -378,7 +378,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let cmd = ClaudeCommand::new()
   ///   .with_auto_approve_tools(false);  // Explicit denial
@@ -397,7 +397,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::{ ClaudeCommand, ActionMode };
+  /// use claude_runner_core::{ ClaudeCommand, ActionMode };
   ///
   /// let cmd = ClaudeCommand::new()
   ///   .with_action_mode(ActionMode::Ask);
@@ -416,7 +416,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::{ ClaudeCommand, LogLevel };
+  /// use claude_runner_core::{ ClaudeCommand, LogLevel };
   ///
   /// let cmd = ClaudeCommand::new()
   ///   .with_log_level(LogLevel::Debug);
@@ -435,7 +435,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let cmd = ClaudeCommand::new()
   ///   .with_temperature(0.7);
@@ -454,7 +454,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let cmd = ClaudeCommand::new()
   ///   .with_sandbox_mode(true);
@@ -473,7 +473,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let cmd = ClaudeCommand::new()
   ///   .with_session_dir("/tmp/sessions");
@@ -492,7 +492,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let cmd = ClaudeCommand::new()
   ///   .with_top_p(0.9);
@@ -511,7 +511,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let cmd = ClaudeCommand::new()
   ///   .with_top_k(40);
@@ -533,7 +533,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let cmd = ClaudeCommand::new()
   ///   .with_skip_permissions( true );
@@ -554,7 +554,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let desc = ClaudeCommand::new()
   ///   .with_working_directory( "/tmp" )
@@ -610,7 +610,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let env = ClaudeCommand::new().describe_env();
   ///
@@ -679,7 +679,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```no_run
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let result = ClaudeCommand::new()
   ///   .with_max_output_tokens( 200_000 )
@@ -714,7 +714,7 @@ impl ClaudeCommand {
   /// # Example
   ///
   /// ```no_run
-  /// use claude_runner::ClaudeCommand;
+  /// use claude_runner_core::ClaudeCommand;
   ///
   /// let exit_status = ClaudeCommand::new()
   ///   .with_max_output_tokens( 200_000 )

@@ -3,7 +3,7 @@
 //! Verifies the `--dangerously-skip-permissions` flag is correctly
 //! added or omitted based on the builder configuration.
 
-use claude_runner::ClaudeCommand;
+use claude_runner_core::ClaudeCommand;
 
 #[test]
 fn with_skip_permissions_true_adds_flag()

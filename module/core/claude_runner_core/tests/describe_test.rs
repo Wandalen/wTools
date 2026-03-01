@@ -49,7 +49,7 @@
 //!   Root cause: `msg.replace('"', "\\\"")` applied without first escaping backslashes.
 //!   Prevention: Always escape `\` before `"` when building double-quoted shell strings.
 
-use claude_runner::{ ClaudeCommand, ActionMode, LogLevel };
+use claude_runner_core::{ ClaudeCommand, ActionMode, LogLevel };
 
 // ============================================================================
 // describe() tests

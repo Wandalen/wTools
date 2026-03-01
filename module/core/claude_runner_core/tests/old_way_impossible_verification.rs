@@ -8,7 +8,7 @@
 //!
 //! **Problem:** Token limit bug (32K → "exceeded maximum" errors)
 //! **Root Cause:** Duplicate execution logic, no environment variable support
-//! **Solution:** Single execution point in `claude_runner` with builder pattern
+//! **Solution:** Single execution point in `claude_runner_core` with builder pattern
 //!
 //! ## Enforcement Level: 4 (Compile Error)
 //!
@@ -43,7 +43,7 @@
 //! ### Pattern 2: Use `generate()` factory method
 //!
 //! ```rust,compile_fail
-//! use claude_runner::ClaudeCommand;
+//! use claude_runner_core::ClaudeCommand;
 //!
 //! let cmd = ClaudeCommand::generate(
 //!   "/tmp/session",
@@ -56,12 +56,12 @@
 //! **Compiler Error:** "no function or associated item named `generate` found"
 //!
 //! **Why:** Builder pattern replaces factory methods. Only `ClaudeCommand::new()`
-//! exists in `claude_runner`.
+//! exists in `claude_runner_core`.
 //!
 //! ### Pattern 3: Use deprecated `execute_non_interactive()`
 //!
 //! ```rust,compile_fail
-//! use claude_runner::ClaudeCommand;
+//! use claude_runner_core::ClaudeCommand;
 //!
 //! let cmd = ClaudeCommand::new()
 //!   .with_working_directory("/tmp/session");
@@ -78,7 +78,7 @@
 //! ### Pattern 4: Direct construction (bypass builder)
 //!
 //! ```rust,compile_fail
-//! use claude_runner::ClaudeCommand;
+//! use claude_runner_core::ClaudeCommand;
 //! # use std::path::PathBuf;
 //!
 //! let cmd = ClaudeCommand {
@@ -123,7 +123,7 @@
 //! ## Correct Usage (New Way)
 //!
 //! ```
-//! use claude_runner::ClaudeCommand;
+//! use claude_runner_core::ClaudeCommand;
 //!
 //! // Builder pattern with explicit token limit
 //! let result = ClaudeCommand::new()
@@ -138,11 +138,11 @@
 //!
 //! ```text
 //! dream_agent (orchestration)
-//!   └→ claude_runner::ClaudeCommand::new()
+//!   └→ claude_runner_core::ClaudeCommand::new()
 //!        .with_max_output_tokens(200_000)
 //!        .execute()
 //!
-//! claude_runner (execution ONLY)
+//! claude_runner_core (execution ONLY)
 //!   └→ Command::new("claude")  ← SINGLE POINT
 //!
 //! claude_session (storage ONLY)
@@ -160,8 +160,8 @@ fn verify_old_patterns_impossible()
 
   // If this test compiles, it means:
   // 1. claude_session doesn't export ClaudeCommand ✓
-  // 2. claude_runner doesn't have generate() method ✓
-  // 3. claude_runner doesn't have execute_non_interactive() ✓
+  // 2. claude_runner_core doesn't have generate() method ✓
+  // 3. claude_runner_core doesn't have execute_non_interactive() ✓
   // 4. ClaudeCommand fields are private ✓
 
   // Verification happens at compile time via compile_fail tests above
@@ -173,7 +173,7 @@ fn verify_new_pattern_required()
   // This test documents that the ONLY way to use Claude Code execution
   // is through the builder pattern with explicit configuration.
 
-  use claude_runner::ClaudeCommand;
+  use claude_runner_core::ClaudeCommand;
 
   // This is the ONLY valid pattern:
   let cmd = ClaudeCommand::new()
@@ -193,7 +193,7 @@ fn verify_token_limit_default()
   // Verify that ClaudeCommand::new() sets 200K token limit by default
   // This prevents regression to 32K default
 
-  use claude_runner::ClaudeCommand;
+  use claude_runner_core::ClaudeCommand;
 
   // Default construction should set 200K tokens
   let cmd = ClaudeCommand::new();

@@ -3,7 +3,7 @@
 //! Verifies the `ExecutionOutput` type provides correct field access,
 //! Display formatting, and derived trait behavior.
 
-use claude_runner::ExecutionOutput;
+use claude_runner_core::ExecutionOutput;
 
 #[test]
 fn execution_output_has_all_fields()

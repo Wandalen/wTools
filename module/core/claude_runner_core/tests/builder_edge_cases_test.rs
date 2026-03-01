@@ -33,13 +33,13 @@
 //! inadvertently changed it to 32K, causing "exceeded maximum output" errors for users relying on defaults.
 //!
 //! **Fix:** Updated `ClaudeCommand::new()` to set `max_output_tokens: Some(200_000)` matching
-//! specification (claude_runner/src/command.rs:52-57). Added explicit documentation comment.
+//! specification (claude_runner_core/src/command.rs:52-57). Added explicit documentation comment.
 //!
 //! **Prevention:** Test `default_token_limit_200k_bug_token_limit` validates default by inspecting
 //! environment variable without explicit setter call. Always verify defaults match specification
 //! when refactoring APIs. Test implicit contracts (defaults, initial state) explicitly.
 
-use claude_runner::ClaudeCommand;
+use claude_runner_core::ClaudeCommand;
 
 /// Reproduces token-limit-default bug where default was incorrectly set to 32K instead of 200K.
 ///
@@ -59,7 +59,7 @@ use claude_runner::ClaudeCommand;
 /// ## Fix Applied
 ///
 /// Updated `ClaudeCommand::new()` to set `max_output_tokens: Some(200_000)` matching
-/// the specification (claude_runner/src/command.rs:52-57). Added explicit documentation
+/// the specification (claude_runner_core/src/command.rs:52-57). Added explicit documentation
 /// comment explaining the default value and its importance.
 ///
 /// ## Prevention

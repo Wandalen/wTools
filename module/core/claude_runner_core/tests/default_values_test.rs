@@ -20,7 +20,7 @@
 //! `auto_continue` would be false (blocks automation), telemetry would be true
 //! (privacy issue), token limit would be 32K (causes errors).
 
-use claude_runner::ClaudeCommand;
+use claude_runner_core::ClaudeCommand;
 
 #[test]
 fn default_max_output_tokens_is_200k() {

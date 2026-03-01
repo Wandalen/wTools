@@ -24,7 +24,7 @@
 //! cargo test --test manual_execution_test manual_test_1_default_token_limit -- --ignored --nocapture
 //! ```
 
-use claude_runner::ClaudeCommand;
+use claude_runner_core::ClaudeCommand;
 
 /// Safely truncates a UTF-8 string to approximately `max_bytes` bytes,
 /// ensuring we don't cut in the middle of a multi-byte character.
@@ -533,7 +533,7 @@ fn manual_test_18_action_mode_allow() {
   // Test: ActionMode::Allow setting (auto-approve tools)
   // Expected: Command runs with allow action mode
 
-  use claude_runner::ActionMode;
+  use claude_runner_core::ActionMode;
 
   println!("\n=== TEST 18: Action Mode Allow ===");
 
@@ -561,7 +561,7 @@ fn manual_test_19_log_level_debug() {
   // Test: LogLevel::Debug setting
   // Expected: More verbose logging output
 
-  use claude_runner::LogLevel;
+  use claude_runner_core::LogLevel;
 
   println!("\n=== TEST 19: Log Level Debug ===");
 

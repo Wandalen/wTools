@@ -10,7 +10,7 @@
 //! - Environment variable names match Claude Code expectations
 //! - Values are correctly formatted (strings, booleans, numbers)
 
-use claude_runner::{ ClaudeCommand, ActionMode, LogLevel };
+use claude_runner_core::{ ClaudeCommand, ActionMode, LogLevel };
 
 #[test]
 fn bash_timeout_sets_env_var() {

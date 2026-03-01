@@ -13,7 +13,7 @@
 //! - Token limit bug (32K default caused "exceeded maximum" errors)
 //! - Mixed responsibilities (`claude_session` handled both storage AND execution)
 //!
-//! **Solution:** Consolidated to single execution point in `claude_runner` with
+//! **Solution:** Consolidated to single execution point in `claude_runner_core` with
 //! builder pattern API.
 //!
 //! # Architecture After Migration
@@ -27,7 +27,7 @@
 //!         .execute()
 //!   └→ uses check_session_exists() from claude_session
 //!
-//! claude_runner (execution ONLY)
+//! claude_runner_core (execution ONLY)
 //!   └→ Command::new("claude")  ← SINGLE POINT
 //!
 //! claude_session (session storage ONLY)
@@ -84,7 +84,7 @@ fn migration_complete_validation() {
   // - Default 32K token limit (bug)
 
   // AFTER:
-  // - 1x Command::new("claude") in claude_runner
+  // - 1x Command::new("claude") in claude_runner_core
   // - ClaudeCommand::new().with_*() builder pattern
   // - Single execute() method
   // - Explicit 200K token limit (bug fix)

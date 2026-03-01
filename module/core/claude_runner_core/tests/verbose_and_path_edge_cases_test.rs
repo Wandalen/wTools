@@ -15,7 +15,7 @@
 //! | Paths | Very long path | ✓ |
 //! | Paths | Path with newlines | ✓ |
 
-use claude_runner::ClaudeCommand;
+use claude_runner_core::ClaudeCommand;
 
 // ============================================================================
 // Verbose Flag Edge Cases

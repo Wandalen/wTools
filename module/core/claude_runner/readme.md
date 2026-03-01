@@ -2,142 +2,82 @@
 
 > **Workspace:** [wtools](https://github.com/Wandalen/wTools) — `module/core/claude_runner`
 
-Claude Code process execution with builder pattern and single execution point.
+CLI for executing Claude Code with configurable builder-pattern parameters.
 
 ### Responsibility Table
 
 | Entity | Responsibility | Input→Output | Scope | Out of Scope |
 |--------|---------------|--------------|-------|--------------|
-| claude_runner | Claude Code process execution | ClaudeCommand Config → Process Output | Command building, process spawning, output capture, token limits | ❌ Session storage paths → `claude_session`<br>❌ Continuation detection → `claude_session`<br>❌ Context injection → `dream_agent`<br>❌ Parameter parsing → `dream_agent`<br>❌ Session strategy → `dream_agent` |
+| claude_runner | Claude Code CLI launcher | CLI args → process exit code | Arg parsing, dry-run, help | ❌ Process execution → `claude_runner_core`<br>❌ Session paths → `claude_session`<br>❌ Config loading → `config_hierarchy` |
 
 ### Scope
 
 **Responsibility:**
-- Claude Code process execution (Command::new("claude"))
-- Builder pattern API (ClaudeCommand::new().with_*())
-- Token limit configuration (200K default)
-- Process output capture (stdout/stderr)
-- Single execution point (duplication = 1x)
+- Parse CLI flags into `ClaudeCommand` builder calls
+- Dry-run mode: print command/env without invoking Claude
+- Help text and usage documentation
+- Exit code propagation
 
 **In Scope:**
-- ClaudeCommand::new() builder entry point
-- with_working_directory(), with_max_output_tokens(), with_continue_conversation(), etc. (40+ methods)
-- execute() terminal method with process spawning
-- stdout/stderr capture and parsing
-- Exit code handling and error mapping
+- `-m/--message`, `-d/--dir`, `-c/--continue`, `--max-tokens`
+- `--skip-permissions`, `--dry-run`, `--session-dir`, `--model`
+- `-h/--help` usage output
 
 **Out of Scope:**
-- ❌ Session storage path resolution → delegated to `claude_session` crate
-- ❌ Continuation detection → delegated to `claude_session` crate
-- ❌ Context injection from wplan → delegated to `dream_agent` crate
-- ❌ Parameter parsing from CLI → delegated to `dream_agent` crate
-- ❌ Session lifecycle strategy → delegated to `dream_agent` crate
-
-## Features
-
-- **Builder Pattern**: Fluent API with method chaining (NO deprecated factories)
-- **Token Limit Fix**: Explicit 200K token default (prevents "exceeded maximum" errors)
-- **Single Execution Point**: Consolidates duplicate Command::new("claude") calls
-- **Type Safety**: Builder pattern enforces correct configuration
-- **Minimal Dependencies**: Only error_tools + standard library
+- ❌ Process execution → `claude_runner_core`
+- ❌ Session storage paths → `claude_session`
+- ❌ Configuration loading → `config_hierarchy`
 
 ## Usage
 
-```rust
-use claude_runner::ClaudeCommand;
+```sh
+# Execute Claude with a message
+claude_runner --message "Explain this code"
 
-// Basic execution
-let result = ClaudeCommand::new()
-  .with_working_directory("/home/user/project")
-  .with_max_output_tokens(200_000)
-  .with_continue_conversation(true)
-  .execute()?;
+# Continue conversation in a working directory
+claude_runner -m "Fix the bug" --dir /path/to/project --continue
 
-println!("Output: {}", result);
+# Dry run: show what would be executed
+claude_runner --message "Do something" --dry-run
 
-// Advanced configuration
-let result = ClaudeCommand::new()
-  .with_working_directory("/tmp/work")
-  .with_max_output_tokens(200_000)
-  .with_model("claude-opus-4-5")
-  .with_verbose(true)
-  .with_system_prompt("You are a helpful coding assistant")
-  .with_message("Fix the bug in main.rs")
-  .execute()?;
+# Skip permissions for automation
+claude_runner --message "Run tests" --skip-permissions
 ```
+
+## Options
+
+| Flag | Short | Description | Default |
+|------|-------|-------------|---------|
+| `--message <MSG>` | `-m` | Prompt message | — |
+| `--dir <PATH>` | `-d` | Working directory | current dir |
+| `--continue` | `-c` | Continue conversation | false |
+| `--max-tokens <N>` | — | Max output tokens | 200000 |
+| `--skip-permissions` | — | Skip permission prompts | false |
+| `--dry-run` | — | Print command, don't execute | false |
+| `--session-dir <PATH>` | — | Session storage directory | auto |
+| `--model <NAME>` | — | Claude model | default |
+| `--help` | `-h` | Show help | — |
 
 ## Architecture
 
 ```
-Builder Pattern Flow:
-
-ClaudeCommand::new()
-  └→ with_working_directory()      (fluent method chaining)
-  └→ with_max_output_tokens()
-  └→ with_continue_conversation()
-  └→ execute()                     ← SINGLE execution point
-      └→ CommandBuilder::build()   (construct std::process::Command)
-      └→ Command::new("claude")    ← ONLY location in entire codebase
-      └→ ProcessExecutor::run()    (spawn, capture output)
-      └→ Return ExecutionResult
-```
-
-## Migration from Old API
-
-**Before (DEPRECATED - DO NOT USE):**
-```rust
-// Factory method (DEPRECATED)
-ClaudeCommand::generate(/* 40 parameters */)
-
-// Mixed execution (DEPRECATED)
-session.execute_interactive()
-session.execute_non_interactive()
-
-// Duplicate execution points (2x)
-Command::new("claude")  // Location 1
-Command::new("claude")  // Location 2
-```
-
-**After (THIS CRATE):**
-```rust
-// Builder pattern (CORRECT)
-ClaudeCommand::new()
-  .with_*()
-  .execute()
-
-// Single execution point (1x)
-Command::new("claude")  // ONLY in claude_runner::execute()
-```
-
-## Token Limit Bug Fix
-
-**Problem:** Default Claude Code token limit is 32K, causing "exceeded maximum" errors
-
-**Solution:** Set explicit max_output_tokens to 200K:
-
-```rust
-ClaudeCommand::new()
-  .with_max_output_tokens(200_000)  // Explicit token limit
-  .execute()?
+claude_runner (CLI)
+  └→ parse_args()          (std::env::args parsing)
+  └→ run(args)             (translate args → builder calls)
+      └→ ClaudeCommand::new()
+          .with_working_directory()
+          .with_message()
+          .with_continue_conversation()
+          .execute()        ← in claude_runner_core ONLY
 ```
 
 ## Dependencies
 
-- **error_tools**: Workspace-standard error handling (Result, Error types)
-
-Total: 1 workspace dependency (wtools), 0 external direct dependencies
+- **claude_runner_core**: All process execution logic
+- **error_tools**: Workspace-standard error handling
 
 ## Testing
 
-```bash
-cargo nextest run
+```sh
+cargo nextest run -p claude_runner
 ```
-
-## Critical Execution Rule
-
-**Command::new("claude") MUST appear exactly once:**
-- ✅ Single occurrence in claude_runner::execute()
-- ❌ Zero occurrences in dream_agent
-- ❌ Zero occurrences in claude_session
-
-Verification: `grep -r "Command::new.*claude" src/` should find exactly 1 match.

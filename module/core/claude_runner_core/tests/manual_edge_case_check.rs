@@ -1,6 +1,6 @@
 //! Manual Edge Case Verification Tests
 //!
-//! Comprehensive testing of corner cases and boundary conditions for `claude_runner`
+//! Comprehensive testing of corner cases and boundary conditions for `claude_runner_core`
 //! builder pattern implementation. These tests verify the builder handles edge cases
 //! that aren't typically exercised by standard test suites.
 //!
@@ -168,7 +168,7 @@
 //! - Memory pressure scenarios (OOM behavior)
 //! - Signal handling during execution (SIGTERM, SIGINT)
 
-use claude_runner::{ ClaudeCommand, ActionMode, LogLevel };
+use claude_runner_core::{ ClaudeCommand, ActionMode, LogLevel };
 
 #[test]
 fn manual_unicode_in_message() {

@@ -26,7 +26,7 @@
 //! NOT `"1.0"` or `"0.0"`. Both `describe_env()` and `build_command()` use the same
 //! formatting so they remain consistent. The tests pin this behavior explicitly.
 
-use claude_runner::ClaudeCommand;
+use claude_runner_core::ClaudeCommand;
 
 // ============================================================================
 // Temperature Edge Cases
