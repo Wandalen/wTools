@@ -19,8 +19,10 @@ enabled = [
   "dep:error_tools",
   "error_tools/enabled",
   "error_tools/error_untyped",
+  "dep:unilang",
 ]
 
 [dependencies]
 claude_runner_core = { workspace = true, optional = true }
 error_tools = { workspace = true, optional = true }
+unilang = { workspace = true, optional = true }

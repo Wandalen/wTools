@@ -508,6 +508,10 @@ version = "~0.1.0"
 path = "module/core/claude_runner_core"
 default-features = false
 
+[workspace.dependencies.unilang]
+version = "~0.48.0"
+default-features = false
+
 
 ## config tools
 
