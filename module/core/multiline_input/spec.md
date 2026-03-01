@@ -685,7 +685,7 @@ fn main() {
 }
 ```
 
-### Example 4: Integration with `.plan.please`
+### Example 4: Integration with `.plan.claude`
 
 ```rust
 // In wplan/src/job_routines.rs
