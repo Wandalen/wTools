@@ -3,7 +3,7 @@ name = "strs_tools_meta"
 version = "0.16.0"
 edition = "2021"
 authors = [
-  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Kostiantyn Mysnyk <wandalen@obox.systems>",
 ]
 license = "MIT"
 description = "Procedural macros for strs_tools compile-time optimizations. Its meta module. Don't use directly."

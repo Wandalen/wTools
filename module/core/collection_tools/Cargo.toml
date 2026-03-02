@@ -3,7 +3,7 @@ name = "collection_tools"
 version = "0.36.0"
 edition = "2021"
 authors = [
-  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Kostiantyn Mysnyk <wandalen@obox.systems>",
 ]
 license = "MIT"
 readme = "readme.md"

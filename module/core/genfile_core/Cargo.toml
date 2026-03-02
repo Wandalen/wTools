@@ -3,7 +3,7 @@ name = "genfile_core"
 version = "0.9.0"
 edition = "2021"
 authors = [
-  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Kostiantyn Mysnyk <wandalen@obox.systems>",
 ]
 license = "MIT"
 readme = "readme.md"
