@@ -28,6 +28,8 @@
 //! - Empty `--model ""` is accepted: appears as empty model arg (CC12)
 //! - Empty `--session-dir ""` is accepted: passthrough with empty env var (C3)
 //! - `--dir` with spaces: `cd` output is unquoted (human-readable per FR-21, not shell-safe)
+//! - `--verbose` prints assembled env + command to stderr before execution — FR-12
+//! - `--verbose` does not write the command description to stdout — FR-12
 
 use std::process::Command;
 

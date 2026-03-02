@@ -26,7 +26,7 @@
 //! - Positional + `-m` flag → non-zero exit (reverse conflict; CC3 bug-reproducer)
 //! - Duplicate `--message` flags → non-zero exit (CC4 bug-reproducer)
 //! - Error output goes to stderr (not stdout) — FR-10
-//! - `--help` contains all 8 option lines — FR-9
+//! - `--help` contains all 10 option lines — FR-9
 //! - `--max-tokens 0` and `--max-tokens 4294967295` are valid u32 boundaries
 //! - Duplicate `--dir`/`--model`/`--session-dir` flags: last value wins (B4/B5/B6)
 //! - `--help` with an unknown flag still errors (D3): strict parsing, no pre-scan for --help
