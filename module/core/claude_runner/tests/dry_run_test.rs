@@ -224,6 +224,46 @@ fn empty_session_dir_accepted_produces_empty_env_var() {
   );
 }
 
+// FR-12: --verbose prints assembled command to stderr before execution.
+// Safe to test in CI: eprintln! writes preview to stderr BEFORE execute() is called,
+// so the preview always appears in stderr regardless of whether claude is installed.
+#[test]
+fn verbose_prints_command_to_stderr()
+{
+  let bin = env!( "CARGO_BIN_EXE_claude_runner" );
+  let out = std::process::Command::new( bin )
+    .args( [ "--message", "verbose-preview", "--verbose" ] )
+    .output()
+    .expect( "Failed to invoke claude_runner binary" );
+  // stderr always has the preview (eprintln! runs before execute())
+  let stderr = String::from_utf8_lossy( &out.stderr );
+  assert!(
+    stderr.contains( "CLAUDE_CODE_MAX_OUTPUT_TOKENS=" ),
+    "--verbose must print env vars to stderr. Got:\n{stderr}"
+  );
+  assert!(
+    stderr.contains( "claude" ),
+    "--verbose must print claude command to stderr. Got:\n{stderr}"
+  );
+}
+
+// FR-12: --verbose must not write the command description to stdout.
+// Claude's real stdout output must remain uncontaminated by the diagnostic preview.
+#[test]
+fn verbose_stdout_clean()
+{
+  let bin = env!( "CARGO_BIN_EXE_claude_runner" );
+  let out = std::process::Command::new( bin )
+    .args( [ "--message", "verbose-stdout-clean", "--verbose" ] )
+    .output()
+    .expect( "Failed to invoke claude_runner binary" );
+  let stdout = String::from_utf8_lossy( &out.stdout );
+  assert!(
+    !stdout.contains( "CLAUDE_CODE_MAX_OUTPUT_TOKENS=" ),
+    "--verbose must not write command description to stdout. Got:\n{stdout}"
+  );
+}
+
 // C4: --dir path containing spaces produces an unquoted `cd` line.
 // This is intentional per FR-21 (describe() is human-readable, not shell-safe).
 // Actual execution uses std::process::Command::current_dir() which is shell-safe.

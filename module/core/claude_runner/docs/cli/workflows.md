@@ -11,8 +11,9 @@ Usage scenarios for the `claude_runner` CLI showing common invocation patterns.
 | 5 | Resource-controlled run | `.run` | Cap token usage for cost control |
 | 6 | Model selection | `.run` | Target a specific Claude model |
 | 7 | Full pipeline | `.run` | Complex invocation with multiple options |
+| 8 | Verbose preview | `.run` | Preview command on stderr, then execute |
 
-**Total:** 7 workflows
+**Total:** 8 workflows
 
 ---
 
@@ -55,13 +56,17 @@ Preview the exact `claude` invocation that would run, without executing it. Usef
 
 ```bash
 claude_runner "Fix the tests" --dir /project --max-tokens 50000 --dry-run
-# CLAUDE_DIR=/project
-# claude --max-tokens 50000 "Fix the tests"
+# CLAUDE_CODE_MAX_OUTPUT_TOKENS=50000
+# [… other env vars …]
+# cd /project
+# claude "Fix the tests"
 # (No Claude process is started)
 
 claude_runner --dry-run
+# CLAUDE_CODE_MAX_OUTPUT_TOKENS=200000
+# [… other env vars …]
 # claude
-# (Shows minimal invocation with no options)
+# (Shows minimal invocation — no message, no flags)
 ```
 
 **Applicable when:** You want to verify parameter assembly before committing to a real API call, or when debugging unexpected behavior.
@@ -138,9 +143,11 @@ claude_runner "Implement OAuth callback handler" \
   --skip-permissions \
   --continue \
   --dry-run
-# CLAUDE_DIR=~/projects/auth_service
-# CLAUDE_SESSION_DIR=~/.claude_sessions/auth_project
-# claude --model claude-opus-4-6 --max-tokens 150000 --dangerously-skip-permissions --continue "Implement OAuth callback handler"
+# CLAUDE_CODE_MAX_OUTPUT_TOKENS=150000
+# [… other env vars …]
+# CLAUDE_CODE_SESSION_DIR=~/.claude_sessions/auth_project
+# cd ~/projects/auth_service
+# claude -c --dangerously-skip-permissions --model claude-opus-4-6 "Implement OAuth callback handler"
 
 # Execute
 claude_runner "Implement OAuth callback handler" \
@@ -154,3 +161,27 @@ claude_runner "Implement OAuth callback handler" \
 ```
 
 **Applicable when:** Running Claude in automated or CI/CD pipelines where full parameter control is needed and interactive prompts must be suppressed.
+
+---
+
+### Workflow :: 8. Verbose Preview
+
+Print the assembled command to stderr for auditing, then execute immediately — no separate dry-run step needed.
+
+```bash
+claude_runner "Fix the bug in auth.rs" --dir ~/projects/app --verbose
+# (stderr) CLAUDE_CODE_MAX_OUTPUT_TOKENS=200000
+# (stderr) [… other env vars …]
+# (stderr) cd /home/user/projects/app
+# (stderr) claude "Fix the bug in auth.rs"
+# [Claude output streamed to stdout]
+
+claude_runner "Run tests" --dir ~/project --model claude-opus-4-6 --verbose
+# (stderr) CLAUDE_CODE_MAX_OUTPUT_TOKENS=200000
+# (stderr) [… other env vars …]
+# (stderr) cd /home/user/project
+# (stderr) claude --model claude-opus-4-6 "Run tests"
+# [Claude output streamed to stdout]
+```
+
+**Applicable when:** You want to verify the assembled invocation without a two-step dry-run → real-run workflow. The preview appears on stderr so Claude's stdout output remains uncontaminated and pipeable.

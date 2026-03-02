@@ -8,9 +8,9 @@
 
 | ID | Test Name | Category | Priority |
 |----|-----------|----------|----------|
-| EC-1 | Absolute path → `CLAUDE_SESSION_DIR` set | Edge Cases | P0 |
+| EC-1 | Absolute path → `CLAUDE_CODE_SESSION_DIR` set | Edge Cases | P0 |
 | EC-2 | Relative path accepted | Edge Cases | P1 |
-| EC-3 | Omitted → `CLAUDE_SESSION_DIR` not set | Edge Cases | P0 |
+| EC-3 | Omitted → `CLAUDE_CODE_SESSION_DIR` not set | Edge Cases | P0 |
 | EC-4 | `--session-dir` without value → error: `--session-dir requires a value` | Edge Cases | P0 |
 | EC-5 | Duplicate `--session-dir` → last value wins | Edge Cases | P0 |
 | EC-6 | Path with spaces accepted | Edge Cases | P1 |
@@ -31,18 +31,21 @@
 
 ## Edge Cases
 
-### EC-1: Absolute path → `CLAUDE_SESSION_DIR` set
+### EC-1: Absolute path → `CLAUDE_CODE_SESSION_DIR` set
 
-**Goal:** Verify an absolute path is forwarded as `CLAUDE_SESSION_DIR` in the process environment.
+**Goal:** Verify an absolute path is forwarded as `CLAUDE_CODE_SESSION_DIR` in the process environment.
 **Command:** `claude_runner "task" --session-dir /home/user/.sessions --dry-run`
 **Expected Output:**
 ```
-CLAUDE_SESSION_DIR=/home/user/.sessions
+CLAUDE_CODE_MAX_OUTPUT_TOKENS=200000
+[…]
+CLAUDE_CODE_SESSION_DIR=/home/user/.sessions
 claude "task"
 ```
+*(where `[…]` = `CLAUDE_CODE_BASH_TIMEOUT`, `CLAUDE_CODE_BASH_MAX_TIMEOUT`, `CLAUDE_CODE_AUTO_CONTINUE`, `CLAUDE_CODE_TELEMETRY`)*
 **Verification:**
 - Exit code is 0
-- stdout contains `CLAUDE_SESSION_DIR=/home/user/.sessions`
+- stdout contains `CLAUDE_CODE_SESSION_DIR=/home/user/.sessions`
 **Pass Criteria:** Exit 0; env var present with exact path
 **Source:** [session_dir:: parameter](../../params.md#parameter--7-session_dir)
 
@@ -52,30 +55,31 @@ claude "task"
 
 **Goal:** Verify a relative path is accepted without normalization by the adapter.
 **Command:** `claude_runner "task" --session-dir ./sessions --dry-run`
-**Expected Output:**
+**Expected Output:** *(env var block; key line:)*
 ```
-CLAUDE_SESSION_DIR=./sessions
-claude "task"
+CLAUDE_CODE_SESSION_DIR=./sessions
 ```
 **Verification:**
 - Exit code is 0
-- `CLAUDE_SESSION_DIR` set to the relative path string as-is
+- stdout contains `CLAUDE_CODE_SESSION_DIR=./sessions`
 **Pass Criteria:** Exit 0; relative path forwarded verbatim
 **Source:** [session_dir:: parameter](../../params.md#parameter--7-session_dir); [PathArg type](../../types.md#type--patharg)
 
 ---
 
-### EC-3: Omitted → `CLAUDE_SESSION_DIR` not set
+### EC-3: Omitted → `CLAUDE_CODE_SESSION_DIR` not set
 
-**Goal:** Verify omitting `--session-dir` results in no `CLAUDE_SESSION_DIR` in the environment output.
+**Goal:** Verify omitting `--session-dir` results in no `CLAUDE_CODE_SESSION_DIR` in the environment output.
 **Command:** `claude_runner "task" --dry-run`
-**Expected Output:**
+**Expected Output:** *(env var block; session dir absent)*
 ```
+CLAUDE_CODE_MAX_OUTPUT_TOKENS=200000
+[…]
 claude "task"
 ```
 **Verification:**
 - Exit code is 0
-- stdout does NOT contain `CLAUDE_SESSION_DIR`
+- stdout does NOT contain `CLAUDE_CODE_SESSION_DIR`
 **Pass Criteria:** Exit 0; no session-dir env var when parameter omitted
 **Source:** [session_dir:: parameter](../../params.md#parameter--7-session_dir)
 
@@ -98,14 +102,14 @@ claude "task"
 
 **Goal:** Verify that when `--session-dir` appears multiple times, the last value is used.
 **Command:** `claude_runner "task" --session-dir /first --session-dir /last --dry-run`
-**Expected Output:**
+**Expected Output:** *(env var block; key line:)*
 ```
-CLAUDE_SESSION_DIR=/last
-claude "task"
+CLAUDE_CODE_SESSION_DIR=/last
 ```
 **Verification:**
 - Exit code is 0
-- `CLAUDE_SESSION_DIR` is `/last`, not `/first`
+- stdout contains `CLAUDE_CODE_SESSION_DIR=/last`
+- stdout does NOT contain `CLAUDE_CODE_SESSION_DIR=/first`
 **Pass Criteria:** Exit 0; last-wins semantics enforced
 **Source:** [session_dir:: parameter](../../params.md#parameter--7-session_dir)
 
@@ -115,14 +119,13 @@ claude "task"
 
 **Goal:** Verify paths containing spaces are handled when quoted in the shell.
 **Command:** `claude_runner "task" --session-dir "/my sessions/project" --dry-run`
-**Expected Output:**
+**Expected Output:** *(env var block; key line:)*
 ```
-CLAUDE_SESSION_DIR=/my sessions/project
-claude "task"
+CLAUDE_CODE_SESSION_DIR=/my sessions/project
 ```
 **Verification:**
 - Exit code is 0
-- `CLAUDE_SESSION_DIR` preserves the internal spaces
+- stdout contains `CLAUDE_CODE_SESSION_DIR=/my sessions/project` (internal spaces preserved)
 **Pass Criteria:** Exit 0; path with spaces forwarded verbatim
 **Source:** [PathArg type](../../types.md#type--patharg)
 
@@ -132,14 +135,14 @@ claude "task"
 
 **Goal:** Verify the typical use case of specifying a session directory and continuing a previous conversation in it.
 **Command:** `claude_runner "Next task" --session-dir /home/user/.sessions/proj --continue --dry-run`
-**Expected Output:**
+**Expected Output:** *(env var block; key lines:)*
 ```
-CLAUDE_SESSION_DIR=/home/user/.sessions/proj
-claude --continue "Next task"
+CLAUDE_CODE_SESSION_DIR=/home/user/.sessions/proj
+claude -c "Next task"
 ```
 **Verification:**
 - Exit code is 0
-- `CLAUDE_SESSION_DIR` set
-- `--continue` present in claude command
+- stdout contains `CLAUDE_CODE_SESSION_DIR=/home/user/.sessions/proj`
+- stdout contains ` -c` in the claude command
 **Pass Criteria:** Exit 0; both parameters active in same invocation
 **Source:** [session_dir:: parameter](../../params.md#parameter--7-session_dir); [continue:: parameter](../../params.md#parameter--3-continue)

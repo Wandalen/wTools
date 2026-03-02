@@ -10,7 +10,7 @@
 |----|-----------|----------|----------|
 | EC-1 | `--dry-run` present → prints command, no claude process started | Edge Cases | P0 |
 | EC-2 | `--dry-run` absent → claude executes normally | Edge Cases | P0 |
-| EC-3 | `--dry-run` + `--dir` → `CLAUDE_DIR=...` appears in output | Edge Cases | P0 |
+| EC-3 | `--dry-run` + `--dir` → `cd <path>` prefix appears in output | Edge Cases | P0 |
 | EC-4 | `--dry-run` + `--message` → message appears in command output | Edge Cases | P0 |
 | EC-5 | `--dry-run` + `--model` → `--model` flag appears in command output | Edge Cases | P0 |
 | EC-6 | `--dry-run` no options → bare `claude` command shown | Edge Cases | P1 |
@@ -64,20 +64,19 @@ claude "Fix the bug"
 
 ---
 
-### EC-3: `--dry-run` + `--dir` → `CLAUDE_DIR` in output
+### EC-3: `--dry-run` + `--dir` → `cd <path>` prefix in output
 
-**Goal:** Verify that `--dir` combined with `--dry-run` shows `CLAUDE_DIR=...` as an env var prefix in output.
+**Goal:** Verify that `--dir` combined with `--dry-run` shows a `cd /tmp/project` line in the assembled describe() output.
 **Command:** `claude_runner "task" --dir /tmp/project --dry-run`
-**Expected Output:**
+**Expected Output:** *(env var block precedes; see dir:: format note)*
 ```
-CLAUDE_DIR=/tmp/project
+cd /tmp/project
 claude "task"
 ```
 **Verification:**
 - Exit code is 0
-- First line of stdout is `CLAUDE_DIR=/tmp/project`
-- Second line is the claude command
-**Pass Criteria:** Exit 0; env var line present before command line
+- stdout contains `cd /tmp/project`
+**Pass Criteria:** Exit 0; `cd` prefix present before command line
 **Source:** [dry:: parameter](../../params.md#parameter--6-dry); [dir:: parameter](../../params.md#parameter--2-dir)
 
 ---
@@ -114,19 +113,23 @@ claude --model claude-opus-4-6 "task"
 
 ---
 
-### EC-6: `--dry-run` no options → bare `claude` command
+### EC-6: `--dry-run` no options → env vars + bare `claude` command
 
-**Goal:** Verify that `--dry-run` with no other flags produces a minimal bare `claude` command.
+**Goal:** Verify that `--dry-run` with no other flags produces the default env vars followed by a bare `claude` command.
 **Command:** `claude_runner --dry-run`
 **Expected Output:**
 ```
-claude --max-tokens 200000
+CLAUDE_CODE_MAX_OUTPUT_TOKENS=200000
+[…]
+claude
 ```
+*(where `[…]` = `CLAUDE_CODE_BASH_TIMEOUT=3600000`, `CLAUDE_CODE_BASH_MAX_TIMEOUT=7200000`, `CLAUDE_CODE_AUTO_CONTINUE=true`, `CLAUDE_CODE_TELEMETRY=false`)*
 **Verification:**
 - Exit code is 0
-- stdout starts with `claude`
-- Only the default `--max-tokens 200000` present (no other flags)
-**Pass Criteria:** Exit 0; minimal command with only defaults shown
+- stdout contains `CLAUDE_CODE_MAX_OUTPUT_TOKENS=200000` (default, from `describe_env()`)
+- stdout contains `claude` (the command, from `describe()`)
+- No `--model`, `-c`, or `--dangerously-skip-permissions` flags present
+**Pass Criteria:** Exit 0; env var block + bare command; no extra flags
 **Source:** [dry:: parameter](../../params.md#parameter--6-dry)
 
 ---
@@ -137,26 +140,30 @@ claude --max-tokens 200000
 **Command:** `claude_runner --dry-run --model nonexistent-model-xyz`
 **Expected Output:**
 ```
-claude --model nonexistent-model-xyz --max-tokens 200000
+CLAUDE_CODE_MAX_OUTPUT_TOKENS=200000
+[…]
+claude --model nonexistent-model-xyz
 ```
 **Verification:**
 - Exit code is 0
+- stdout contains `CLAUDE_CODE_MAX_OUTPUT_TOKENS=200000`
+- stdout contains `nonexistent-model-xyz` (model name forwarded verbatim)
 - No error from adapter (unknown model is not validated at parse time)
 **Pass Criteria:** Exit 0; dry-run never fails due to parameter values
 **Source:** [dry:: parameter](../../params.md#parameter--6-dry)
 
 ---
 
-### EC-8: `--dry-run` + `--continue` → `--continue` in output
+### EC-8: `--dry-run` + `--continue` → `-c` in output
 
-**Goal:** Verify `--continue` flag appears in the dry-run command output.
+**Goal:** Verify `--continue` flag appears as `-c` in the dry-run command output.
 **Command:** `claude_runner "Next step" --continue --dry-run`
-**Expected Output:**
+**Expected Output:** *(env var block precedes)*
 ```
-claude --continue "Next step"
+claude -c "Next step"
 ```
 **Verification:**
 - Exit code is 0
-- `--continue` present in stdout
-**Pass Criteria:** Exit 0; continue flag visible in dry-run representation
+- stdout contains ` -c` in the claude command
+**Pass Criteria:** Exit 0; `-c` flag visible in dry-run representation
 **Source:** [dry:: parameter](../../params.md#parameter--6-dry); [continue:: parameter](../../params.md#parameter--3-continue)

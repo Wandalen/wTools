@@ -10,8 +10,9 @@
 | 6 | `--dry-run` | `bool` | false | 1 | Print command without executing | ✅ |
 | 7 | `--session-dir` | [`PathArg`](types.md#type--patharg) | — | 1 | Session storage directory | ✅ |
 | 8 | `--model` | [`ModelName`](types.md#type--modelname) | — | 1 | Claude model to use | ✅ |
+| 9 | `--verbose` / `-v` | `bool` | false | 1 | Print assembled command to stderr, then execute | ✅ |
 
-**Total:** 8 parameters
+**Total:** 9 parameters
 
 ---
 
@@ -37,7 +38,7 @@ Filesystem directory where Claude Code executes its session. Use this to point C
 - **Default:** Current working directory of the invoking shell
 - **Commands:** [`.run`](commands.md#command--1-run)
 - **Aliases:** `-d`, `--dir`
-- **Purpose:** Sets the `CLAUDE_DIR` environment variable so Claude Code operates with the given path as its working directory root.
+- **Purpose:** Prepends `cd /path` to the assembled command (via `with_working_directory()`), so the invocation shell changes into the given directory before running `claude`.
 - **Group:** [Environment](parameter_groups.md#group--2-environment)
 
 ---
@@ -50,7 +51,7 @@ Boolean flag that resumes an existing Claude Code conversation rather than start
 - **Default:** false
 - **Commands:** [`.run`](commands.md#command--1-run)
 - **Aliases:** `-c`, `--continue`
-- **Purpose:** Passes `--continue` to the `claude` process, which loads the most recent conversation session from the session directory.
+- **Purpose:** Passes `-c` to the `claude` process, which loads the most recent conversation session from the session directory.
 - **Group:** [Behavior Flags](parameter_groups.md#group--3-behavior-flags)
 
 ---
@@ -63,7 +64,7 @@ Maximum number of tokens Claude may output in a single response. Use this to cap
 - **Default:** 200000
 - **Commands:** [`.run`](commands.md#command--1-run)
 - **Aliases:** `--max-tokens`
-- **Valid Values:** Any u32 ≥1 (0–4294967295)
+- **Valid Values:** Any u32 (0–4294967295)
 - **Purpose:** Passes `--max-tokens N` to the `claude` process; Claude stops generating once the limit is reached, which may result in a truncated response.
 - **Group:** [Resource Control](parameter_groups.md#group--4-resource-control)
 
@@ -91,7 +92,7 @@ Boolean flag that suppresses execution and instead prints the environment variab
 - **Default:** false
 - **Commands:** [`.run`](commands.md#command--1-run)
 - **Aliases:** `--dry-run`
-- **Purpose:** Outputs `describe_env()` (environment variables like `CLAUDE_DIR`) then `describe()` (the full `claude` invocation string), then exits with code 0; no API call is made.
+- **Purpose:** Outputs `describe_env()` (environment variables like `CLAUDE_CODE_MAX_OUTPUT_TOKENS`) then `describe()` (the full `claude` invocation string), then exits with code 0; no API call is made.
 - **Group:** [Behavior Flags](parameter_groups.md#group--3-behavior-flags)
 
 ---
@@ -104,7 +105,7 @@ Directory where Claude Code stores its conversation session files. Use this to p
 - **Default:** — (Claude Code uses its own default session location)
 - **Commands:** [`.run`](commands.md#command--1-run)
 - **Aliases:** `--session-dir`
-- **Purpose:** Sets the `CLAUDE_SESSION_DIR` environment variable so Claude Code stores and reads session state from the specified directory.
+- **Purpose:** Sets the `CLAUDE_CODE_SESSION_DIR` environment variable so Claude Code stores and reads session state from the specified directory.
 - **Group:** [Environment](parameter_groups.md#group--2-environment)
 
 ---
@@ -120,3 +121,18 @@ Claude model identifier selecting which model to use for this invocation. Use th
 - **Valid Values:** Any Claude model identifier; e.g. `claude-opus-4-6`, `claude-sonnet-4-6`, `claude-haiku-4-5-20251001`
 - **Purpose:** Passes `--model NAME` to the `claude` process; unknown model names are rejected by Claude Code at startup with an error message.
 - **Group:** [Resource Control](parameter_groups.md#group--4-resource-control)
+
+---
+
+### Parameter :: 9. `verbose::`
+
+Boolean flag that prints the assembled environment variables and command line to **stderr** before executing. Use this to audit the exact invocation without separating preview and execution into two steps.
+
+- **Type:** `bool`
+- **Default:** false
+- **Commands:** [`.run`](commands.md#command--1-run)
+- **Aliases:** `-v`, `--verbose`
+- **Purpose:** Immediately before calling `builder.execute()`, writes `describe_env()` then `describe()` to stderr. Execution proceeds normally after printing. Output goes to stderr so Claude's real stdout remains uncontaminated.
+- **Interaction:** Superseded by `dry::` — when both `--verbose` and `--dry-run` are set, `--dry-run` wins and `--verbose` is a no-op (the dry-run stdout path exits before the verbose `eprintln!` is reached).
+- **Group:** [Behavior Flags](parameter_groups.md#group--3-behavior-flags)
+- **FR:** FR-12

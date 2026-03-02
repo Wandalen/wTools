@@ -6,7 +6,7 @@ Semantic groupings of `.run` parameters by concern. `claude_runner` has a single
 |---|-------|------------|---------|
 | 1 | Input | message | What to send Claude |
 | 2 | Environment | dir, session_dir | Where Claude executes |
-| 3 | Behavior Flags | continue, skip_permissions, dry | How to execute |
+| 3 | Behavior Flags | continue, skip_permissions, dry, verbose | How to execute |
 | 4 | Resource Control | max_tokens, model | What resources to use |
 
 **Total:** 4 groups
@@ -32,7 +32,7 @@ Controls where Claude Code executes and where it persists session state. These p
   - [`dir::`](params.md#parameter--2-dir) — Working directory Claude Code operates in
   - [`session_dir::`](params.md#parameter--7-session_dir) — Directory for session storage files
 - **Commands using this group:** [`.run`](commands.md#command--1-run)
-- **Coherence validation:** All parameters in this group control *where* Claude runs or stores data. Both set environment variables consumed by the `claude` process.
+- **Coherence validation:** All parameters in this group control *where* Claude runs or stores data. `dir` prepends a `cd /path` shell prefix; `session_dir` sets `CLAUDE_CODE_SESSION_DIR`; both shape the filesystem context the `claude` process sees.
 
 ---
 
@@ -44,8 +44,9 @@ Boolean switches that alter execution mode without affecting the prompt content 
   - [`continue::`](params.md#parameter--3-continue) — Resume an existing conversation instead of starting fresh
   - [`skip_permissions::`](params.md#parameter--5-skip_permissions) — Bypass interactive tool permission prompts
   - [`dry::`](params.md#parameter--6-dry) — Print command without executing it
+  - [`verbose::`](params.md#parameter--9-verbose) — Print command to stderr, then execute normally
 - **Commands using this group:** [`.run`](commands.md#command--1-run)
-- **Coherence validation:** All parameters in this group are boolean flags that modify execution behavior. They are orthogonal — any combination is valid. `dry` short-circuits execution entirely; `continue` and `skip_permissions` apply only when executing.
+- **Coherence validation:** All parameters in this group are boolean flags that modify execution behavior. They are orthogonal — any combination is valid. `dry` short-circuits execution entirely (supersedes `verbose`); `continue` and `skip_permissions` apply only when executing; `verbose` adds stderr preview without affecting the execution path.
 
 ---
 

@@ -2,7 +2,7 @@
 
 | # | Command | Purpose | Params | Status |
 |---|---------|---------|--------|--------|
-| 1 | `.run` | Execute Claude Code with configurable parameters | 8 | ✅ |
+| 1 | `.run` | Execute Claude Code with configurable parameters | 9 | ✅ |
 | 2 | `.help` | Print usage information and exit | 0 | ✅ |
 
 **Total:** 2 commands
@@ -32,6 +32,7 @@ claude_runner "MESSAGE" --dir /path --model claude-opus-4-6 --max-tokens 50000 -
 | `max_tokens::` | [`TokenCount`](params.md#parameter--4-max_tokens) | Maximum output tokens | 200000 |
 | `skip_permissions::` | `bool` | Skip tool permission prompts | false |
 | `dry::` | `bool` | Print command without executing | false |
+| `verbose::` | `bool` | Print command to stderr, then execute | false |
 | `session_dir::` | [`PathArg`](params.md#parameter--7-session_dir) | Session storage directory | — |
 | `model::` | [`ModelName`](params.md#parameter--8-model) | Claude model to use | — |
 
@@ -55,7 +56,14 @@ claude_runner "Refactor auth module" --dir ~/projects/app --model claude-opus-4-
 # [Claude output using Opus in ~/projects/app]
 
 claude_runner "Continue the previous work" --continue --dry-run
-# claude --continue "Continue the previous work"
+# claude -c "Continue the previous work"
+
+claude_runner "Debug the failing test" --dir ~/projects/app --verbose
+# (stderr) CLAUDE_CODE_MAX_OUTPUT_TOKENS=200000
+# (stderr) [... other env vars ...]
+# (stderr) cd /home/user/projects/app
+# (stderr) claude "Debug the failing test"
+# [Claude output streamed to stdout]
 ```
 
 ---
@@ -89,6 +97,7 @@ claude_runner --help
 #       --max-tokens <N>       Max output tokens (default: 200000)
 #       --skip-permissions     Skip tool permission prompts
 #       --dry-run              Print command without executing
+#   -v, --verbose              Print command to stderr, then execute
 #       --session-dir <PATH>   Session storage directory
 #       --model <NAME>         Claude model to use
 #   -h, --help                 Show this help

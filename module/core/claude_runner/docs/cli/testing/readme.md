@@ -15,7 +15,8 @@ testing/
 │   ├── skip_permissions.md
 │   ├── dry.md
 │   ├── session_dir.md
-│   └── model.md
+│   ├── model.md
+│   └── verbose.md
 ├── param_group/           # Tier 2: group corner cases (testers)
 │   ├── input.md
 │   ├── environment.md
@@ -57,10 +58,10 @@ testing/
 
 | Tier | Files | Tests | Categories |
 |------|-------|-------|------------|
-| param/ | 8 | 58 | EC (58) |
+| param/ | 9 | 64 | EC (64) |
 | param_group/ | 4 | 16 | CC (15), CD (1) |
-| command/ | 2 | 31 | IT (22), CSB (5), RWS (4) |
-| **Total** | **14** | **105** | |
+| command/ | 2 | 32 | IT (23), CSB (5), RWS (4) |
+| **Total** | **15** | **112** | |
 
 ## Navigation
 
@@ -76,6 +77,7 @@ testing/
 | [dry.md](param/dry.md) | `dry::` | bool | 8 |
 | [session_dir.md](param/session_dir.md) | `session_dir::` | PathArg | 7 |
 | [model.md](param/model.md) | `model::` | ModelName | 7 |
+| [verbose.md](param/verbose.md) | `verbose::` | bool | 6 |
 
 ### param_group/ — Group Corner Cases
 
@@ -83,12 +85,12 @@ testing/
 |------|-------|------------|-------|
 | [input.md](param_group/input.md) | Input | message | 3 |
 | [environment.md](param_group/environment.md) | Environment | dir, session_dir | 4 |
-| [behavior_flags.md](param_group/behavior_flags.md) | Behavior Flags | continue, skip_permissions, dry | 5 |
+| [behavior_flags.md](param_group/behavior_flags.md) | Behavior Flags | continue, skip_permissions, dry, verbose | 5 |
 | [resource_control.md](param_group/resource_control.md) | Resource Control | max_tokens, model | 4 |
 
 ### command/ — Command Integration Tests
 
 | File | Command | IT | CSB | RWS | Total |
 |------|---------|----|-----|-----|-------|
-| [run.md](command/run.md) | `.run` | 12 | 4 | 4 | 20 |
+| [run.md](command/run.md) | `.run` | 13 | 4 | 4 | 21 |
 | [help.md](command/help.md) | `.help` | 10 | 1 | 0 | 11 |

@@ -27,20 +27,22 @@
 
 ## Corner Cases
 
-### CC-1: `--max-tokens` + `--model` both specified → both in claude argv
+### CC-1: `--max-tokens` + `--model` both specified → both appear in output
 
-**Goal:** Verify that specifying both `--max-tokens` and `--model` together produces a command with both flags correctly assembled.
+**Goal:** Verify that specifying both `--max-tokens` and `--model` together produces output with the token env var and the model flag.
 **Command:** `claude_runner "task" --max-tokens 50000 --model claude-opus-4-6 --dry-run`
-**Expected Output:**
+**Expected Output:** *(key lines shown)*
 ```
-claude --model claude-opus-4-6 --max-tokens 50000 "task"
+CLAUDE_CODE_MAX_OUTPUT_TOKENS=50000
+[…]
+claude --model claude-opus-4-6 "task"
 ```
 **Verification:**
 - Exit code is 0
-- `--max-tokens 50000` present in stdout
-- `--model claude-opus-4-6` present in stdout
-- Both flags appear together without conflict
-**Pass Criteria:** Exit 0; both resource-control flags coexist in assembled command
+- stdout contains `CLAUDE_CODE_MAX_OUTPUT_TOKENS=50000` (env var, not a command flag)
+- stdout contains `--model claude-opus-4-6` (in the claude command)
+- Both appear without conflict
+**Pass Criteria:** Exit 0; token count in env var; model flag in command
 **Source:** [Resource Control group](../../parameter_groups.md#group--4-resource-control)
 
 ---
@@ -49,13 +51,15 @@ claude --model claude-opus-4-6 --max-tokens 50000 "task"
 
 **Goal:** Verify the adapter applies no semantic validation of the token count against message length; the pair is forwarded to Claude Code as-is.
 **Command:** `claude_runner "$(python3 -c "print('word ' * 200)")" --max-tokens 1 --dry-run`
-**Expected Output:**
+**Expected Output:** *(key lines shown)*
 ```
-claude --max-tokens 1 "<large message>"
+CLAUDE_CODE_MAX_OUTPUT_TOKENS=1
+[…]
+claude "<large message>"
 ```
 **Verification:**
 - Exit code is 0
-- `--max-tokens 1` present in stdout
+- stdout contains `CLAUDE_CODE_MAX_OUTPUT_TOKENS=1`
 - Full large message present in stdout
 - No adapter-level rejection of the tiny token count vs. large input
 **Pass Criteria:** Exit 0; adapter does not validate token count against message size
@@ -67,13 +71,14 @@ claude --max-tokens 1 "<large message>"
 
 **Goal:** Verify that an invalid model name combined with `--dry-run` produces output without any model validation, demonstrating that dry-run shows what would be attempted.
 **Command:** `claude_runner "task" --model definitely-not-a-real-model --dry-run`
-**Expected Output:**
+**Expected Output:** *(env var block precedes)*
 ```
 claude --model definitely-not-a-real-model "task"
 ```
 **Verification:**
 - Exit code is 0
-- `--model definitely-not-a-real-model` present in stdout
+- stdout contains `--model definitely-not-a-real-model` in the claude command
+- stdout contains `CLAUDE_CODE_MAX_OUTPUT_TOKENS=200000` (default)
 - No validation error from adapter
 **Pass Criteria:** Exit 0; adapter defers model validation to Claude Code; dry-run shows the would-be command
 **Source:** [Resource Control group](../../parameter_groups.md#group--4-resource-control); [ModelName type](../../types.md#type--modelname)
@@ -87,10 +92,13 @@ claude --model definitely-not-a-real-model "task"
 **Command B (omitted):** `claude_runner "task" --dry-run`
 **Expected Output (both):**
 ```
-claude --max-tokens 200000 "task"
+CLAUDE_CODE_MAX_OUTPUT_TOKENS=200000
+[…]
+claude "task"
 ```
 **Verification:**
 - Exit code is 0 for both
+- stdout contains `CLAUDE_CODE_MAX_OUTPUT_TOKENS=200000` for both
 - stdout is identical for both commands
 **Pass Criteria:** Exit 0; default value (200000) always applied; explicit and implicit paths produce identical output
 **Source:** [Resource Control group](../../parameter_groups.md#group--4-resource-control); [TokenCount type](../../types.md#type--tokencount)

@@ -46,12 +46,15 @@
 **Command:** `claude_runner --dry-run`
 **Expected Output:**
 ```
-claude --max-tokens 200000
+CLAUDE_CODE_MAX_OUTPUT_TOKENS=200000
+[…]
+claude
 ```
 **Verification:**
 - Exit code is 0
 - No error about missing message
-- Dry-run output shows `claude` command without a message argument
+- stdout contains `CLAUDE_CODE_MAX_OUTPUT_TOKENS=200000` (default env var)
+- stdout contains `claude` (command without message argument)
 **Pass Criteria:** Exit 0; message-less invocation accepted by adapter
 **Source:** [Input group](../../parameter_groups.md#group--1-input)
 

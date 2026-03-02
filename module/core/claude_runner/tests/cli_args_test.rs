@@ -206,7 +206,7 @@ fn help_lists_all_options() {
   let stdout = String::from_utf8_lossy( &out.stdout );
   for flag in &[
     "--message", "--dir", "--continue", "--max-tokens",
-    "--skip-permissions", "--dry-run", "--session-dir", "--model", "--help",
+    "--skip-permissions", "--dry-run", "--session-dir", "--model", "--help", "--verbose",
   ] {
     assert!( stdout.contains( flag ), "--help missing option {flag}. Got:\n{stdout}" );
   }
@@ -315,6 +315,22 @@ fn duplicate_session_dir_flag_uses_last_value() {
   let stdout = String::from_utf8_lossy( &out.stdout );
   assert!( stdout.contains( "CLAUDE_CODE_SESSION_DIR=/last" ), "last --session-dir must win. Got:\n{stdout}" );
   assert!( !stdout.contains( "CLAUDE_CODE_SESSION_DIR=/first" ), "first --session-dir must be overridden. Got:\n{stdout}" );
+}
+
+// FR-12: --verbose flag must be accepted; --dry-run prevents actual execution so test is CI-safe.
+#[test]
+fn verbose_flag_accepted()
+{
+  let out = run_cli( &[ "--message", "hi", "--verbose", "--dry-run" ] );
+  assert!( out.status.success(), "--verbose flag must be accepted" );
+}
+
+// FR-12: -v is a spec-defined alias for --verbose; must produce identical behavior.
+#[test]
+fn short_verbose_flag_works()
+{
+  let out = run_cli( &[ "--message", "hi", "-v", "--dry-run" ] );
+  assert!( out.status.success(), "-v short flag must work same as --verbose" );
 }
 
 // D3: --help does not suppress parse errors for unknown flags.

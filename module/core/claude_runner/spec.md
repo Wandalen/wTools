@@ -37,6 +37,7 @@ All process spawning lives exclusively in `claude_runner_core::ClaudeCommand::ex
 - Argument parsing via `std::env::args()`
 - Help text output (`--help`)
 - Dry-run mode (`--dry-run`): print command without invoking Claude
+- Verbose mode (`--verbose`): print command to stderr, then execute
 - Exit code propagation from Claude process
 - Error messages to stderr
 
@@ -83,6 +84,12 @@ Providing both (in any order) or duplicate `--message` flags must produce an err
 ### FR-11: Exit Code Propagation
 When Claude exits non-zero, `claude_runner` must exit with code 1 and print the exit code.
 
+### FR-12: Verbose Mode
+`claude_runner` must accept `-v/--verbose` to print the assembled environment variables
+and command line to **stderr** before executing. Unlike `--dry-run`, execution proceeds
+normally after printing. When both `--verbose` and `--dry-run` are specified, `--dry-run`
+takes precedence and `--verbose` is a no-op.
+
 ## Non-Functional Requirements
 
 ### NFR-1: Minimal Dependencies
@@ -106,6 +113,7 @@ OPTIONS:
       --max-tokens <N>       Max output tokens (default: 200000)
       --skip-permissions     Skip tool permission prompts
       --dry-run              Print command without executing
+  -v, --verbose              Print command to stderr, then execute
       --session-dir <PATH>   Session storage directory
       --model <NAME>         Claude model to use
   -h, --help                 Show this help

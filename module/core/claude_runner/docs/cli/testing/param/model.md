@@ -53,11 +53,14 @@ claude --model claude-opus-4-6 "task"
 **Command:** `claude_runner "task" --dry-run`
 **Expected Output:**
 ```
-claude --max-tokens 200000 "task"
+CLAUDE_CODE_MAX_OUTPUT_TOKENS=200000
+[…]
+claude "task"
 ```
 **Verification:**
 - Exit code is 0
 - stdout does NOT contain `--model`
+- stdout contains `CLAUDE_CODE_MAX_OUTPUT_TOKENS=200000` (default env var)
 **Pass Criteria:** Exit 0; no model flag when parameter omitted
 **Source:** [model:: parameter](../../params.md#parameter--8-model)
 

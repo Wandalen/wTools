@@ -30,21 +30,31 @@
 
 ---
 
+## Output Format Note
+
+`--dir` produces a `cd <path>` prefix line in `describe()`, **not** an environment variable.
+Full dry-run output: env var block from `describe_env()` (always includes `CLAUDE_CODE_MAX_OUTPUT_TOKENS=200000`,
+`CLAUDE_CODE_BASH_TIMEOUT=3600000`, `CLAUDE_CODE_BASH_MAX_TIMEOUT=7200000`, `CLAUDE_CODE_AUTO_CONTINUE=true`,
+`CLAUDE_CODE_TELEMETRY=false`) followed by the `cd <path>` line and then the `claude` invocation.
+Expected output blocks below show only the lines relevant to each test case.
+
+---
+
 ## Edge Cases
 
 ### EC-1: Absolute path accepted
 
-**Goal:** Verify an absolute path is accepted and forwarded as `CLAUDE_DIR`.
+**Goal:** Verify an absolute path is accepted and produces a `cd /tmp` prefix in the dry-run output.
 **Command:** `claude_runner "task" --dir /tmp --dry-run`
-**Expected Output:**
+**Expected Output:** *(env var block precedes; see format note above)*
 ```
-CLAUDE_DIR=/tmp
+cd /tmp
 claude "task"
 ```
 **Verification:**
 - Exit code is 0
-- stdout contains `CLAUDE_DIR=/tmp`
-**Pass Criteria:** Exit 0; env var present with exact path
+- stdout contains `cd /tmp`
+**Pass Criteria:** Exit 0; `cd` prefix present with exact path
 **Source:** [dir:: parameter](../../params.md#parameter--2-dir)
 
 ---
@@ -53,14 +63,14 @@ claude "task"
 
 **Goal:** Verify a relative path is accepted without normalization by the adapter.
 **Command:** `claude_runner "task" --dir ./relative/path --dry-run`
-**Expected Output:**
+**Expected Output:** *(env var block precedes; see format note above)*
 ```
-CLAUDE_DIR=./relative/path
+cd ./relative/path
 claude "task"
 ```
 **Verification:**
 - Exit code is 0
-- `CLAUDE_DIR` set to the relative path string as-is
+- stdout contains `cd ./relative/path`
 **Pass Criteria:** Exit 0; path forwarded verbatim (no resolution)
 **Source:** [dir:: parameter](../../params.md#parameter--2-dir); [PathArg type](../../types.md#type--patharg)
 
@@ -71,15 +81,15 @@ claude "task"
 **Goal:** Verify shell-expanded tilde paths are accepted (the shell expands `~` before `claude_runner` sees the argument).
 **Setup:** Shell must expand `~` (standard behavior in bash/zsh)
 **Command:** `claude_runner "task" --dir ~/projects --dry-run`
-**Expected Output:**
+**Expected Output:** *(env var block precedes; see format note above)*
 ```
-CLAUDE_DIR=/home/<user>/projects
+cd /home/<user>/projects
 claude "task"
 ```
 **Verification:**
 - Exit code is 0
-- `CLAUDE_DIR` contains the expanded absolute path, not the literal `~`
-**Pass Criteria:** Exit 0; tilde-expanded path present in env var
+- stdout contains `cd /home/` (tilde-expanded absolute path, not literal `~`)
+**Pass Criteria:** Exit 0; tilde-expanded path present in cd line
 **Source:** [PathArg type](../../types.md#type--patharg)
 
 ---
@@ -88,15 +98,15 @@ claude "task"
 
 **Goal:** Verify paths containing spaces are handled when quoted in the shell.
 **Command:** `claude_runner "task" --dir "/path with spaces" --dry-run`
-**Expected Output:**
+**Expected Output:** *(env var block precedes; see format note above)*
 ```
-CLAUDE_DIR=/path with spaces
+cd /path with spaces
 claude "task"
 ```
 **Verification:**
 - Exit code is 0
-- `CLAUDE_DIR` preserves the internal spaces
-**Pass Criteria:** Exit 0; path with spaces forwarded verbatim
+- stdout contains `cd /path with spaces` (unquoted — human-readable per FR-21)
+**Pass Criteria:** Exit 0; path with spaces forwarded verbatim in cd line
 **Source:** [PathArg type](../../types.md#type--patharg)
 
 ---
@@ -105,14 +115,14 @@ claude "task"
 
 **Goal:** Verify the adapter applies no filesystem existence check; Claude Code validates at runtime.
 **Command:** `claude_runner "task" --dir /this/does/not/exist --dry-run`
-**Expected Output:**
+**Expected Output:** *(env var block precedes; see format note above)*
 ```
-CLAUDE_DIR=/this/does/not/exist
+cd /this/does/not/exist
 claude "task"
 ```
 **Verification:**
 - Exit code is 0 (adapter succeeds)
-- `CLAUDE_DIR` set to the nonexistent path
+- stdout contains `cd /this/does/not/exist`
 - No error from `claude_runner` itself
 **Pass Criteria:** Exit 0; adapter defers existence validation to Claude Code
 **Source:** [PathArg type](../../types.md#type--patharg)
@@ -136,15 +146,16 @@ claude "task"
 
 **Goal:** Verify `-d` is a recognized alias for `--dir`.
 **Command:** `claude_runner "task" -d /tmp --dry-run`
-**Expected Output:**
+**Expected Output:** *(env var block precedes; see format note above)*
 ```
-CLAUDE_DIR=/tmp
+cd /tmp
 claude "task"
 ```
 **Verification:**
 - Exit code is 0
+- stdout contains `cd /tmp`
 - Output identical to EC-1
-**Pass Criteria:** Exit 0; `-d` produces same result as `--dir`
+**Pass Criteria:** Exit 0; `-d` produces same cd prefix as `--dir`
 **Source:** [dir:: parameter](../../params.md#parameter--2-dir)
 
 ---
@@ -153,13 +164,14 @@ claude "task"
 
 **Goal:** Verify that when `--dir` appears multiple times, only the last value is used.
 **Command:** `claude_runner "task" --dir /first --dir /last --dry-run`
-**Expected Output:**
+**Expected Output:** *(env var block precedes; see format note above)*
 ```
-CLAUDE_DIR=/last
+cd /last
 claude "task"
 ```
 **Verification:**
 - Exit code is 0
-- `CLAUDE_DIR` is `/last`, not `/first`
+- stdout contains `cd /last`
+- stdout does NOT contain `cd /first`
 **Pass Criteria:** Exit 0; last-wins semantics enforced silently
 **Source:** [dir:: parameter](../../params.md#parameter--2-dir)

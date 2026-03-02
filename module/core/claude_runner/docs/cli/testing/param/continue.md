@@ -8,7 +8,7 @@
 
 | ID | Test Name | Category | Priority |
 |----|-----------|----------|----------|
-| EC-1 | `--continue` present → `--continue` added to claude argv | Edge Cases | P0 |
+| EC-1 | `--continue` present → `-c` added to claude argv | Edge Cases | P0 |
 | EC-2 | `-c` short form accepted | Edge Cases | P0 |
 | EC-3 | `--continue` absent → flag not added to claude argv | Edge Cases | P0 |
 | EC-4 | `--continue` is boolean (takes no value argument) | Edge Cases | P0 |
@@ -30,18 +30,18 @@
 
 ## Edge Cases
 
-### EC-1: `--continue` present → `--continue` added to claude argv
+### EC-1: `--continue` present → `-c` added to claude argv
 
-**Goal:** Verify `--continue` causes the `--continue` flag to appear in the assembled claude command.
+**Goal:** Verify `--continue` causes the `-c` flag to appear in the assembled claude command.
 **Command:** `claude_runner "Next step" --continue --dry-run`
-**Expected Output:**
+**Expected Output:** *(env var block precedes)*
 ```
-claude --continue "Next step"
+claude -c "Next step"
 ```
 **Verification:**
 - Exit code is 0
-- stdout contains `--continue` in the claude invocation
-**Pass Criteria:** Exit 0; `--continue` present in dry-run output
+- stdout contains ` -c` in the claude invocation
+**Pass Criteria:** Exit 0; `-c` present in dry-run output
 **Source:** [continue:: parameter](../../params.md#parameter--3-continue)
 
 ---
@@ -50,9 +50,9 @@ claude --continue "Next step"
 
 **Goal:** Verify `-c` is a recognized alias for `--continue`.
 **Command:** `claude_runner "Next step" -c --dry-run`
-**Expected Output:**
+**Expected Output:** *(env var block precedes)*
 ```
-claude --continue "Next step"
+claude -c "Next step"
 ```
 **Verification:**
 - Exit code is 0
@@ -64,16 +64,16 @@ claude --continue "Next step"
 
 ### EC-3: `--continue` absent → flag not added to claude argv
 
-**Goal:** Verify that when `--continue` is omitted, the claude command contains no `--continue` flag.
+**Goal:** Verify that when `--continue` is omitted, the claude command contains no `-c` flag.
 **Command:** `claude_runner "Fresh task" --dry-run`
-**Expected Output:**
+**Expected Output:** *(env var block precedes)*
 ```
 claude "Fresh task"
 ```
 **Verification:**
 - Exit code is 0
-- stdout does NOT contain `--continue`
-**Pass Criteria:** Exit 0; `--continue` absent from dry-run output
+- stdout does NOT contain ` -c`
+**Pass Criteria:** Exit 0; `-c` absent from dry-run output
 **Source:** [continue:: parameter](../../params.md#parameter--3-continue)
 
 ---
@@ -82,9 +82,9 @@ claude "Fresh task"
 
 **Goal:** Verify `--continue` requires no following value; the next token is treated as a separate argument.
 **Command:** `claude_runner --continue "My task" --dry-run`
-**Expected Output:**
+**Expected Output:** *(env var block precedes)*
 ```
-claude --continue "My task"
+claude -c "My task"
 ```
 **Verification:**
 - Exit code is 0
@@ -98,13 +98,13 @@ claude --continue "My task"
 
 **Goal:** Verify that `--continue` and an explicit `--message` can be combined without conflict.
 **Command:** `claude_runner --continue --message "Continue refactoring" --dry-run`
-**Expected Output:**
+**Expected Output:** *(env var block precedes)*
 ```
-claude --continue "Continue refactoring"
+claude -c "Continue refactoring"
 ```
 **Verification:**
 - Exit code is 0
-- Both `--continue` flag and message text present in output
+- Both `-c` flag and message text present in output
 **Pass Criteria:** Exit 0; continue flag and message coexist
 **Source:** [continue:: parameter](../../params.md#parameter--3-continue)
 
@@ -114,12 +114,12 @@ claude --continue "Continue refactoring"
 
 **Goal:** Verify that specifying `--continue` multiple times does not cause an error; the boolean stays true.
 **Command:** `claude_runner --continue --continue "task" --dry-run`
-**Expected Output:**
+**Expected Output:** *(env var block precedes)*
 ```
-claude --continue "task"
+claude -c "task"
 ```
 **Verification:**
 - Exit code is 0
-- `--continue` appears exactly once in output (not duplicated)
+- `-c` appears exactly once in output (not duplicated)
 **Pass Criteria:** Exit 0; duplicate boolean flag handled gracefully
 **Source:** [continue:: parameter](../../params.md#parameter--3-continue)

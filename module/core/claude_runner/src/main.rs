@@ -50,6 +50,7 @@ fn print_help()
   println!( "      --max-tokens <N>       Max output tokens (default: 200000)" );
   println!( "      --skip-permissions     Skip tool permission prompts" );
   println!( "      --dry-run              Print command without executing" );
+  println!( "  -v, --verbose              Print command to stderr, then execute" );
   println!( "      --session-dir <PATH>   Session storage directory" );
   println!( "      --model <NAME>         Claude model to use" );
   println!( "  -h, --help                 Show this help" );
@@ -75,6 +76,7 @@ fn argv_to_unilang_tokens( argv : &[ String ] ) -> Result< Vec< String > >
   let mut do_continue      = false;
   let mut skip_permissions = false;
   let mut dry              = false;
+  let mut verbose          = false;
 
   let mut i = 0;
   while i < argv.len()
@@ -85,6 +87,7 @@ fn argv_to_unilang_tokens( argv : &[ String ] ) -> Result< Vec< String > >
       "-c" | "--continue"     => { do_continue      = true; }
       "--skip-permissions"    => { skip_permissions = true; }
       "--dry-run"             => { dry              = true; }
+      "-v" | "--verbose"      => { verbose          = true; }
       "-m" | "--message"      =>
       {
         i += 1;
@@ -151,6 +154,7 @@ fn argv_to_unilang_tokens( argv : &[ String ] ) -> Result< Vec< String > >
   if do_continue                 { tokens.push( "continue::1".to_string() ); }
   if skip_permissions            { tokens.push( "skip_permissions::1".to_string() ); }
   if dry                         { tokens.push( "dry::1".to_string() ); }
+  if verbose                     { tokens.push( "verbose::1".to_string() ); }
 
   Ok( tokens )
 }
@@ -173,6 +177,7 @@ fn build_registry() -> CommandRegistry
     ArgumentDefinition::new( "max_tokens",       Kind::Integer ).with_optional( None::< String > ),
     ArgumentDefinition::new( "skip_permissions", Kind::Boolean ).with_optional( None::< String > ),
     ArgumentDefinition::new( "dry",              Kind::Boolean ).with_optional( None::< String > ),
+    ArgumentDefinition::new( "verbose",          Kind::Boolean ).with_optional( None::< String > ),
     ArgumentDefinition::new( "session_dir",      Kind::String  ).with_optional( None::< String > ),
     ArgumentDefinition::new( "model",            Kind::String  ).with_optional( None::< String > ),
   ])
@@ -212,14 +217,21 @@ fn build_registry() -> CommandRegistry
       builder = builder.with_message( s.clone() );
     }
 
-    if matches!( cmd.arguments.get( "dry" ), Some( Value::Boolean( true ) ) )
+    let is_dry     = matches!( cmd.arguments.get( "dry" ),     Some( Value::Boolean( true ) ) );
+    let is_verbose = matches!( cmd.arguments.get( "verbose" ), Some( Value::Boolean( true ) ) );
+
+    if is_dry || is_verbose
     {
       let env     = builder.describe_env();
       let command = builder.describe();
-      let mut out = String::new();
-      if !env.is_empty() { out.push_str( &env ); out.push( '\n' ); }
-      out.push_str( &command );
-      return Ok( OutputData { content : out, format : "text".to_string(), execution_time_ms : None } );
+      let mut preview = String::new();
+      if !env.is_empty() { preview.push_str( &env ); preview.push( '\n' ); }
+      preview.push_str( &command );
+      if is_dry
+      {
+        return Ok( OutputData { content : preview, format : "text".to_string(), execution_time_ms : None } );
+      }
+      eprintln!( "{preview}" );  // verbose: stderr only; fall through to execute
     }
 
     let output = builder.execute().map_err( | e |
