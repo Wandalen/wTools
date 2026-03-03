@@ -30,6 +30,12 @@
 //! - `--max-tokens 0` and `--max-tokens 4294967295` are valid u32 boundaries
 //! - Duplicate `--dir`/`--model`/`--session-dir` flags: last value wins (B4/B5/B6)
 //! - `--help` with an unknown flag still errors (D3): strict parsing, no pre-scan for --help
+//! - `--max-tokens 4294967296` (u32 overflow) exits non-zero — different code path from NaN
+//! - Duplicate `--max-tokens` flags: last value wins, no error (B7)
+//! - `--help` after valid flags still shows help and discards other flags (D4)
+//! - `--` (double dash) is unsupported: treated as unknown argument and exits non-zero (C5)
+//! - `--max-tokens -1` (negative integer) exits non-zero — signed-integer boundary
+//! - Boolean flags (`--continue`, etc.) are idempotent: duplicate accepted, not errored
 
 use std::process::Command;
 
@@ -345,4 +351,94 @@ fn help_flag_does_not_suppress_parse_error() {
   assert!( stderr.contains( "Error:" ), "error must go to stderr. Got: {stderr}" );
   // No help text should appear on stdout when there's a parse error
   assert!( out.stdout.is_empty(), "stdout must be empty on parse error. Got: {}", String::from_utf8_lossy( &out.stdout ) );
+}
+
+// FR-4: --max-tokens must reject values outside u32 range.
+// 4294967295 (u32::MAX) is valid; 4294967296 is one past the limit.
+// This exercises the overflow code path, distinct from NaN ("not-a-number").
+#[test]
+fn max_tokens_overflow_exits_nonzero()
+{
+  let out = run_cli( &[ "--message", "hi", "--max-tokens", "4294967296", "--dry-run" ] );
+  assert!( !out.status.success(), "--max-tokens 4294967296 (u32::MAX+1) must exit non-zero" );
+  let stderr = String::from_utf8_lossy( &out.stderr );
+  assert!(
+    stderr.contains( "invalid --max-tokens value" ),
+    "error must name the bad value. Got: {stderr}"
+  );
+}
+
+// B7: duplicate --max-tokens flags; last value wins, no error.
+// Same last-wins semantics as --dir, --model, --session-dir (B4/B5/B6).
+#[test]
+fn max_tokens_duplicate_uses_last_value()
+{
+  let out = run_cli( &[ "--message", "hi", "--max-tokens", "100", "--max-tokens", "50000", "--dry-run" ] );
+  assert!( out.status.success(), "duplicate --max-tokens must exit 0 (last wins)" );
+  let stdout = String::from_utf8_lossy( &out.stdout );
+  assert!(
+    stdout.contains( "CLAUDE_CODE_MAX_OUTPUT_TOKENS=50000" ),
+    "last --max-tokens must win. Got:\n{stdout}"
+  );
+  assert!(
+    !stdout.contains( "CLAUDE_CODE_MAX_OUTPUT_TOKENS=100\n" ),
+    "first --max-tokens must be overridden. Got:\n{stdout}"
+  );
+}
+
+// D4: --help wins even after valid preceding flags; those flags are discarded.
+// The adapter performs a full sequential parse, then routes to .help if the help
+// flag was set. Preceding valid flags are parsed (no error) but their values ignored.
+#[test]
+fn flags_before_help_are_discarded()
+{
+  let out = run_cli( &[ "--dir", "/tmp", "--message", "ignore-me", "--help" ] );
+  assert!( out.status.success(), "--help must exit 0 even after valid flags" );
+  let stdout = String::from_utf8_lossy( &out.stdout );
+  assert!(
+    stdout.contains( "USAGE:" ),
+    "--help must print USAGE even when preceded by valid flags. Got:\n{stdout}"
+  );
+}
+
+// C5: `--` (POSIX end-of-flags sentinel) is NOT supported by claude_runner.
+// The parser treats `--` as an unknown argument and exits with an error.
+#[test]
+fn double_dash_exits_nonzero()
+{
+  let out = run_cli( &[ "--", "message-after-dash-dash", "--dry-run" ] );
+  assert!( !out.status.success(), "`--` must exit non-zero (unsupported, unknown argument)" );
+  let stderr = String::from_utf8_lossy( &out.stderr );
+  assert!( stderr.contains( "Error:" ), "error must go to stderr. Got: {stderr}" );
+}
+
+// FR-4: --max-tokens must reject negative integers (they fail u32 parse).
+// Distinct from the non-numeric case ("abc"); covers the signed-integer boundary.
+#[test]
+fn max_tokens_negative_exits_nonzero()
+{
+  let out = run_cli( &[ "--message", "hi", "--max-tokens", "-1", "--dry-run" ] );
+  assert!( !out.status.success(), "--max-tokens -1 (negative) must exit non-zero" );
+  let stderr = String::from_utf8_lossy( &out.stderr );
+  assert!(
+    stderr.contains( "invalid --max-tokens value" ),
+    "error must name the bad value. Got: {stderr}"
+  );
+}
+
+// Boolean flags (--continue, --skip-permissions, --dry-run, --verbose) are idempotent:
+// specifying a boolean flag twice is accepted with no error and the flag is set once.
+// Unlike --message (which errors on duplicates), booleans have no positional alternative
+// so "last wins" vs "error on duplicate" does not apply — idempotent is the right behavior.
+#[test]
+fn boolean_flag_duplicate_is_idempotent()
+{
+  let out = run_cli( &[ "--message", "hi", "--continue", "--continue", "--dry-run" ] );
+  assert!(
+    out.status.success(),
+    "Duplicate --continue must be accepted (idempotent). exit: {}",
+    out.status.code().unwrap_or( -1 )
+  );
+  let stdout = String::from_utf8_lossy( &out.stdout );
+  assert!( stdout.contains( " -c" ), "--continue must still add -c in command. Got:\n{stdout}" );
 }
