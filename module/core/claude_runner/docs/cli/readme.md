@@ -28,6 +28,15 @@ claude_runner [MESSAGE] [OPTIONS]
 **Design Completeness:** 100%
 **Implementation Status:** 100% (2/2 commands implemented)
 
+## Design Documentation
+
+For developers working on the CLI implementation, see the [Design Documentation](design/readme.md) which includes:
+- Architecture diagrams and system layers
+- API reference for unilang and core library
+- Implementation guide with checklists
+- Command design principles and patterns
+- Best practices and troubleshooting guides
+
 ## Navigation
 
 - [Commands](commands.md)
