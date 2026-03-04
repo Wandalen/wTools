@@ -30,6 +30,9 @@
 //! - `--dir` with spaces: `cd` output is unquoted (human-readable per FR-21, not shell-safe)
 //! - `--verbose` prints assembled env + command to stderr before execution — FR-12
 //! - `--verbose` does not write the command description to stdout — FR-12
+//! - `--verbose` + `--dry-run`: dry-run takes precedence, preview goes to stdout, stderr empty — FR-12
+//! - All 5 Tier-1 default env vars appear in output (not just max-tokens)
+//! - No message provided: `--dry-run` outputs bare `claude` command with no message arg — FR-1
 
 use std::process::Command;
 
@@ -49,7 +52,7 @@ fn run_dry( args: &[ &str ] ) -> String {
 }
 
 #[test]
-fn default_env_vars_present() {
+fn default_env_vars_appear_in_output() {
   // Default ClaudeCommand sets CLAUDE_CODE_MAX_OUTPUT_TOKENS=200000
   let output = run_dry( &[ "--message", "test", "--dry-run" ] );
   assert!(
@@ -252,7 +255,7 @@ fn verbose_prints_command_to_stderr()
 // FR-12: --verbose must not write the command description to stdout.
 // Claude's real stdout output must remain uncontaminated by the diagnostic preview.
 #[test]
-fn verbose_stdout_clean()
+fn verbose_stdout_has_no_env_output()
 {
   let bin = env!( "CARGO_BIN_EXE_claude_runner" );
   let out = std::process::Command::new( bin )
@@ -279,4 +282,67 @@ fn dir_with_spaces_produces_unquoted_cd_line() {
     output.contains( "cd /path/with spaces" ),
     "Path with spaces must appear unquoted in cd line (FR-21 human-readable). Got:\n{output}"
   );
+}
+
+// FR-12: when both --verbose and --dry-run are given, --dry-run takes precedence.
+// The preview goes to stdout (dry-run path fires first), eprintln! is never reached,
+// so stderr is empty. Verifies the spec: "--verbose is a no-op when --dry-run is set".
+#[test]
+fn dry_run_overrides_verbose()
+{
+  let bin = env!( "CARGO_BIN_EXE_claude_runner" );
+  let out = std::process::Command::new( bin )
+    .args( [ "--message", "prec-test", "--verbose", "--dry-run" ] )
+    .output()
+    .expect( "Failed to invoke claude_runner binary" );
+  assert!( out.status.success(), "--verbose + --dry-run must exit 0" );
+  let stdout = String::from_utf8_lossy( &out.stdout );
+  let stderr = String::from_utf8_lossy( &out.stderr );
+  // dry-run path: preview must appear on stdout
+  assert!(
+    stdout.contains( "CLAUDE_CODE_MAX_OUTPUT_TOKENS=" ),
+    "--dry-run must put env vars on stdout. Got:\n{stdout}"
+  );
+  assert!(
+    stdout.contains( "claude" ),
+    "--dry-run must put command on stdout. Got:\n{stdout}"
+  );
+  // verbose is suppressed: stderr must be empty (eprintln! never fires)
+  assert!(
+    stderr.is_empty(),
+    "--verbose must be no-op when --dry-run also set; stderr must be empty. Got:\n{stderr}"
+  );
+}
+
+// No-message case: --dry-run with no message produces a bare `claude` command with
+// no message argument. Verifies FR-1 optional-message behavior at the output level:
+// the adapter correctly omits the message token when no message is provided.
+#[test]
+fn dry_run_without_message_shows_bare_command()
+{
+  let output = run_dry( &[ "--dry-run" ] );
+  let last_line = output.trim_end().lines().last().unwrap_or_default();
+  assert_eq!(
+    last_line, "claude",
+    "Bare --dry-run must end with 'claude' command (no message arg). Got:\n{output}"
+  );
+}
+
+// Tier-1 automation defaults: all four remaining env vars must appear alongside max-tokens.
+// These vars fix automation-blocking defaults in standard Claude Code CLI.
+#[test]
+fn tier1_default_env_vars_all_appear()
+{
+  let output = run_dry( &[ "--message", "test", "--dry-run" ] );
+  for var in &[
+    "CLAUDE_CODE_BASH_TIMEOUT=3600000",
+    "CLAUDE_CODE_BASH_MAX_TIMEOUT=7200000",
+    "CLAUDE_CODE_AUTO_CONTINUE=true",
+    "CLAUDE_CODE_TELEMETRY=false",
+  ] {
+    assert!(
+      output.contains( var ),
+      "Tier-1 default env var missing: {var}. Got:\n{output}"
+    );
+  }
 }

@@ -18,15 +18,17 @@
 | IT-8 | Output contains `--dry-run` flag | Integration Tests | P0 |
 | IT-9 | Output contains `--skip-permissions` flag | Integration Tests | P0 |
 | IT-10 | Output contains `--model` flag | Integration Tests | P1 |
+| IT-11 | Output contains `--verbose` flag | Integration Tests | P1 |
 | CSB-1 | Unknown flag before `--help` → exit 1 (error, not help) | Command-Specific Behavior | P0 |
+| CSB-2 | Valid flags before `--help` → help wins; flags discarded | Command-Specific Behavior | P1 |
 
 ## Test Coverage Summary
 
 | Category | Count | Coverage |
 |----------|-------|----------|
-| Integration Tests | 10 | 100% |
-| Command-Specific Behavior | 1 | 100% |
-| **Total** | **11** | **100%** |
+| Integration Tests | 11 | 100% |
+| Command-Specific Behavior | 2 | 100% |
+| **Total** | **13** | **100%** |
 
 **Cross-References:**
 - Help flag parsing → `../param/` (no dedicated param file — help is CLI-level)
@@ -175,6 +177,19 @@ exit_code=0
 
 ---
 
+### IT-11: Output contains `--verbose` flag
+
+**Goal:** Verify the help text lists `--verbose` (and its `-v` short form) so users know how to enable the diagnostic preview of the assembled command before execution.
+**Command:** `claude_runner --help | grep -c -- "--verbose"`
+**Expected Output:** `1` or more
+**Verification:**
+- Exit code of grep is 0 (match found)
+- `--verbose` present in help text
+**Pass Criteria:** `--verbose` flag documented in help output
+**Source:** [verbose:: parameter](../../params.md#parameter--9-verbose); [`.help` command](../../commands.md#command--2-help); FR-12
+
+---
+
 ## Command-Specific Behavior
 
 ### CSB-1: Unknown flag before `--help` → exit 1, not help
@@ -192,3 +207,19 @@ Error: unknown argument: --unknown-flag
 - `--help` is not processed when parsing fails on an earlier token
 **Pass Criteria:** Exit 1; parse error on unknown flag precedes help processing; help text suppressed
 **Source:** [`.help` command](../../commands.md#command--2-help); [`.run` command](../../commands.md#command--1-run)
+
+---
+
+### CSB-2: Valid flags before `--help` → help wins; flags discarded
+
+**Goal:** Verify that valid flags appearing before `--help` in argv are parsed without error but then discarded. The adapter performs a full sequential parse, sets `help=true` when it encounters `--help`, and routes to `.help` after the complete parse — so preceding valid flags have no effect on output.
+**Command:** `claude_runner --dir /tmp --message "ignore-me" --help`
+**Expected Output:** Same as bare `claude_runner --help`
+**Verification:**
+- Exit code is 0
+- stdout contains `USAGE:` (help text shown)
+- stdout does NOT contain `/tmp` (preceding `--dir` value discarded)
+- stdout does NOT contain `ignore-me` (preceding `--message` value discarded)
+- stderr is empty
+**Pass Criteria:** Exit 0; full help text shown; valid preceding flags have no observable effect
+**Source:** [`.help` command](../../commands.md#command--2-help); D4 behavior

@@ -60,8 +60,8 @@ testing/
 |------|-------|-------|------------|
 | param/ | 9 | 64 | EC (64) |
 | param_group/ | 4 | 16 | CC (15), CD (1) |
-| command/ | 2 | 32 | IT (23), CSB (5), RWS (4) |
-| **Total** | **15** | **112** | |
+| command/ | 2 | 39 | IT (26), CSB (9), RWS (4) |
+| **Total** | **15** | **119** | |
 
 ## Navigation
 
@@ -92,5 +92,5 @@ testing/
 
 | File | Command | IT | CSB | RWS | Total |
 |------|---------|----|-----|-----|-------|
-| [run.md](command/run.md) | `.run` | 13 | 4 | 4 | 21 |
-| [help.md](command/help.md) | `.help` | 10 | 1 | 0 | 11 |
+| [run.md](command/run.md) | `.run` | 15 | 7 | 4 | 26 |
+| [help.md](command/help.md) | `.help` | 11 | 2 | 0 | 13 |

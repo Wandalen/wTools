@@ -21,10 +21,15 @@
 | IT-11 | `--session-dir` sets `CLAUDE_CODE_SESSION_DIR` env var | Integration Tests | P1 |
 | IT-12 | `--model` passes `--model NAME` to claude | Integration Tests | P1 |
 | IT-13 | `--verbose` prints command to stderr then executes | Integration Tests | P0 |
+| IT-14 | All 5 Tier-1 default env vars appear in dry-run output | Integration Tests | P0 |
+| IT-15 | No message provided: `--dry-run` outputs bare `claude` command | Integration Tests | P1 |
 | CSB-1 | Duplicate `--dir` → last value wins | Command-Specific Behavior | P0 |
 | CSB-2 | Positional + `--message` simultaneously → conflict error | Command-Specific Behavior | P0 |
 | CSB-3 | Claude stderr forwarded to stderr (not mixed with stdout) | Command-Specific Behavior | P1 |
 | CSB-4 | Non-zero Claude exit code → `claude_runner` exits non-zero | Command-Specific Behavior | P0 |
+| CSB-5 | `--` (double dash) is an unknown argument → exit 1 | Command-Specific Behavior | P1 |
+| CSB-6 | `--max-tokens -1` (negative integer) → exit 1 | Command-Specific Behavior | P1 |
+| CSB-7 | Duplicate boolean flag (`--continue --continue`) is idempotent → exit 0 | Command-Specific Behavior | P1 |
 | RWS-1 | Developer runs quick fix on current project | Real-World Scenarios | P1 |
 | RWS-2 | CI pipeline with full parameter set | Real-World Scenarios | P1 |
 | RWS-3 | Preview invocation with `--dry-run`, then execute for real | Real-World Scenarios | P1 |
@@ -34,10 +39,10 @@
 
 | Category | Count | Coverage |
 |----------|-------|----------|
-| Integration Tests | 13 | 100% |
-| Command-Specific Behavior | 4 | 100% |
+| Integration Tests | 15 | 100% |
+| Command-Specific Behavior | 7 | 100% |
 | Real-World Scenarios | 4 | 100% |
-| **Total** | **21** | **100%** |
+| **Total** | **26** | **100%** |
 
 **Cross-References:**
 - Parameter edge cases → `../param/*.md`
@@ -282,6 +287,47 @@ claude --model claude-opus-4-6 "task"
 
 ---
 
+### IT-14: All 5 Tier-1 default env vars appear in dry-run output
+
+**Goal:** Verify that every Tier-1 automation-friendly default set by `ClaudeCommand::new()` appears in the dry-run output, not only `CLAUDE_CODE_MAX_OUTPUT_TOKENS`.
+**Setup:** Invoke with `--dry-run` to capture the full env var block without requiring Claude.
+**Command:** `claude_runner --message "test" --dry-run`
+**Expected Output:**
+```
+CLAUDE_CODE_MAX_OUTPUT_TOKENS=200000
+CLAUDE_CODE_BASH_TIMEOUT=3600000
+CLAUDE_CODE_BASH_MAX_TIMEOUT=7200000
+CLAUDE_CODE_AUTO_CONTINUE=true
+CLAUDE_CODE_TELEMETRY=false
+claude "test"
+```
+**Verification:**
+- Exit code is 0
+- stdout contains all 5 Tier-1 env var lines with their exact default values
+**Pass Criteria:** Exit 0; all 5 automation defaults present; none silently dropped
+**Source:** [`.run` command](../../commands.md#command--1-run); `claude_runner_core::ClaudeCommand::new()`
+
+---
+
+### IT-15: No message provided: `--dry-run` outputs bare `claude` command
+
+**Goal:** Verify that when no message is provided, `--dry-run` outputs the env var block followed by a bare `claude` command with no message argument. Confirms FR-1 optional-message behavior at the output level.
+**Command:** `claude_runner --dry-run`
+**Expected Output:**
+```
+CLAUDE_CODE_MAX_OUTPUT_TOKENS=200000
+... (other tier-1 defaults)
+claude
+```
+**Verification:**
+- Exit code is 0
+- stdout last line is exactly `claude` (no message arg, no quotes)
+- All 5 Tier-1 env vars are present
+**Pass Criteria:** Exit 0; last line of output is bare `claude` with no arguments
+**Source:** [message:: parameter](../../params.md#parameter--1-message); FR-1 optional message
+
+---
+
 ## Command-Specific Behavior
 
 ### CSB-1: Duplicate `--dir` → last value wins
@@ -346,6 +392,53 @@ Error: --message conflicts with a previously set message (positional or duplicat
 - `claude_runner` does not exit 0 when the underlying claude process fails
 **Pass Criteria:** Non-zero exit propagated; `claude_runner` exit reflects claude subprocess outcome
 **Source:** [`.run` command](../../commands.md#command--1-run); Exit Codes: 0 | 1 | 2
+
+---
+
+### CSB-5: `--` (double dash) is an unknown argument → exit 1
+
+**Goal:** Verify that `--` (the POSIX end-of-flags sentinel) is NOT supported. The parser treats it as an unknown argument and exits with an error.
+**Command:** `claude_runner -- "message"`
+**Expected Output (stderr):** `Error: unknown argument: --`
+**Verification:**
+- Exit code is 1
+- stderr contains `Error:`
+- stdout is empty
+- `--` is not treated as an end-of-flags separator (no positional parsing after `--`)
+**Pass Criteria:** Exit 1; `--` rejected as unknown argument; error on stderr
+**Source:** [`.run` command](../../commands.md#command--1-run)
+
+---
+
+### CSB-6: `--max-tokens -1` (negative integer) → exit 1
+
+**Goal:** Verify that negative integers are rejected as invalid `--max-tokens` values. The parameter type is `u32`, which excludes all signed-integer values including `-1`.
+**Command:** `claude_runner --message "hi" --max-tokens -1`
+**Expected Output (stderr):** `Error: invalid --max-tokens value: -1`
+**Verification:**
+- Exit code is 1
+- stderr contains `invalid --max-tokens value`
+- Distinct from the non-numeric case ("abc"): same error format, different boundary
+**Pass Criteria:** Exit 1; error message names the bad value; signed-integer boundary enforced
+**Source:** [max_tokens:: parameter](../../params.md#parameter--4-max_tokens); FR-4
+
+---
+
+### CSB-7: Duplicate boolean flag (`--continue --continue`) is idempotent → exit 0
+
+**Goal:** Verify that specifying a boolean flag twice is silently accepted (idempotent), unlike `--message` which errors on duplicates. Boolean flags have no positional alternative, so the distinction between first and second occurrence is meaningless.
+**Command:** `claude_runner --message "hi" --continue --continue --dry-run`
+**Expected Output:**
+```
+(env var block)
+claude -c "hi"
+```
+**Verification:**
+- Exit code is 0
+- stdout contains ` -c` (flag set once, not doubled)
+- No error or warning about duplicate boolean flag
+**Pass Criteria:** Exit 0; flag applied once; no error for idempotent boolean spec
+**Source:** [continue:: parameter](../../params.md#parameter--3-continue); FR-3
 
 ---
 
