@@ -871,3 +871,4 @@ version = "0.2.2"
 [patch.crates-io]
 former_meta = { path = "module/core/former_meta" }
 # const_format = { version = "0.2.32", default-features = false, features = [] }
+members = ["module/core/claude_runner"]

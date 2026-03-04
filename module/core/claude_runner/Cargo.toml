@@ -1,11 +1,19 @@
 [package]
 name = "claude_runner"
-version = "0.1.0"
-edition = "2021"
-authors = [ "Kostiantyn Mysnyk <wandalen@obox.systems>" ]
-license = "MIT"
-readme = "readme.md"
-description = "CLI for executing Claude Code with configurable builder pattern"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[lib]
+name = "claude_runner"
+path = "src/lib.rs"
+
+[[bin]]
+name = "claude_runner"
+path = "src/main.rs"
+required-features = ["enabled"]
 
 [lints]
 workspace = true
@@ -14,15 +22,26 @@ workspace = true
 default = [ "enabled" ]
 full = [ "enabled" ]
 enabled = [
-  "dep:claude_runner_core",
-  "claude_runner_core/enabled",
-  "dep:error_tools",
-  "error_tools/enabled",
-  "error_tools/error_untyped",
+  "dep:dream_agent", "dream_agent/enabled",
   "dep:unilang",
+  "dep:wplan_core",
+  "dep:wplan", "wplan/enabled",
+  "dep:phf",
 ]
 
 [dependencies]
-claude_runner_core = { workspace = true, optional = true }
-error_tools = { workspace = true, optional = true }
-unilang = { workspace = true, optional = true }
+dream_agent    = { workspace = true, optional = true }
+unilang        = { workspace = true, features = ["approach_yaml_multi_build"], optional = true }
+wplan_core     = { workspace = true, optional = true }
+wplan          = { workspace = true, features = ["enabled"], optional = true }
+phf            = { workspace = true, features = ["macros"], optional = true }
+
+[build-dependencies]
+unilang = { workspace = true, features = ["approach_yaml_multi_build"] }
+serde = { workspace = true, features = ["derive"] }
+serde_yaml.workspace = true
+version_bump = { workspace = true, features = ["enabled"] }
+
+[dev-dependencies]
+test_tools = { workspace = true }
+edition = "2021"

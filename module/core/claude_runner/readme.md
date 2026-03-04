@@ -1,83 +1,38 @@
 # claude_runner
 
-> **Workspace:** [wtools](https://github.com/Wandalen/wTools) — `module/core/claude_runner`
+Reusable `.claude` and `.plan.claude` unilang commands for willbe binaries.
 
-CLI for executing Claude Code with configurable builder-pattern parameters.
+## Purpose
 
-### Responsibility Table
+Provides AI command routines that any willbe binary can register without duplicating
+YAML definitions or routine logic. Wraps `dream_agent` with unilang command infrastructure.
 
-| Entity | Responsibility | Input→Output | Scope | Out of Scope |
-|--------|---------------|--------------|-------|--------------|
-| claude_runner | Claude Code CLI launcher | CLI args → process exit code | Arg parsing, dry-run, help | ❌ Process execution → `claude_runner_core`<br>❌ Session paths → `claude_session`<br>❌ Config loading → `config_hierarchy` |
+## Files
 
-### Scope
-
-**Responsibility:**
-- Parse CLI flags into `ClaudeCommand` builder calls
-- Dry-run mode: print command/env without invoking Claude
-- Help text and usage documentation
-- Exit code propagation
-
-**In Scope:**
-- `-m/--message`, `-d/--dir`, `-c/--continue`, `--max-tokens`
-- `--skip-permissions`, `--dry-run`, `--session-dir`, `--model`
-- `-h/--help` usage output
-
-**Out of Scope:**
-- ❌ Process execution → `claude_runner_core`
-- ❌ Session storage paths → `claude_session`
-- ❌ Configuration loading → `config_hierarchy`
+| File | Responsibility |
+|------|---------------|
+| `Cargo.toml` | Crate manifest with optional feature-gated deps |
+| `src/lib.rs` | Public API: `routines` module + `COMMANDS_YAML` constant |
+| `src/routines.rs` | `.claude`, `.plan.claude`, `.claude.help` routine implementations |
+| `claude.commands.yaml` | Unilang command definitions for all three commands |
 
 ## Usage
 
-```sh
-# Execute Claude with a message
-claude_runner --message "Explain this code"
-
-# Continue conversation in a working directory
-claude_runner -m "Fix the bug" --dir /path/to/project --continue
-
-# Dry run: show what would be executed
-claude_runner --message "Do something" --dry-run
-
-# Skip permissions for automation
-claude_runner --message "Run tests" --skip-permissions
+**Build-time aggregation** (dream-style):
+```rust
+// In build.rs:
+let claude_runner_yaml = manifest_dir.parent().unwrap().join( "claude_runner" ).join( "claude.commands.yaml" );
+let ai_commands = load_yaml_and_transform( &claude_runner_yaml );
 ```
 
-## Options
-
-| Flag | Short | Description | Default |
-|------|-------|-------------|---------|
-| `--message <MSG>` | `-m` | Prompt message | — |
-| `--dir <PATH>` | `-d` | Working directory | current dir |
-| `--continue` | `-c` | Continue conversation | false |
-| `--max-tokens <N>` | — | Max output tokens | 200000 |
-| `--skip-permissions` | — | Skip permission prompts | false |
-| `--dry-run` | — | Print command, don't execute | false |
-| `--session-dir <PATH>` | — | Session storage directory | auto |
-| `--model <NAME>` | — | Claude model | default |
-| `--help` | `-h` | Show help | — |
-
-## Architecture
-
-```
-claude_runner (CLI)
-  └→ parse_args()          (std::env::args parsing)
-  └→ run(args)             (translate args → builder calls)
-      └→ ClaudeCommand::new()
-          .with_working_directory()
-          .with_message()
-          .with_continue_conversation()
-          .execute()        ← in claude_runner_core ONLY
+**Runtime registration** (pr_review-style):
+```rust
+aggregator.add( claude_runner::COMMANDS_YAML );
 ```
 
-## Dependencies
-
-- **claude_runner_core**: All process execution logic
-- **error_tools**: Workspace-standard error handling
-
-## Testing
-
-```sh
-cargo nextest run -p claude_runner
+**Registry mapping:**
+```rust
+".claude"      => claude_runner::routines::claude_routine,
+".plan.claude" => claude_runner::routines::plan_claude_routine,
+".claude.help" => claude_runner::routines::claude_help_routine,
 ```

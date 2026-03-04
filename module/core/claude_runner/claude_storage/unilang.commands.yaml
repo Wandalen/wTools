@@ -1,0 +1,424 @@
+# Claude Code Storage CLI Commands
+# Following unilang v0.35+ schema
+
+- name: ".status"
+  namespace: ""
+  description: "Show Claude Code storage status and statistics"
+  hint: "Show storage status and statistics"
+  version: "1.0.0"
+  status: "stable"
+  aliases: []
+  tags: ["storage", "info"]
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+
+  arguments:
+    - name: "path"
+      kind: "String"
+      description: "Custom storage path (default: ~/.claude/)"
+      hint: "Custom storage path"
+      optional: true
+      validation_rules: []
+      aliases: []
+      tags: []
+
+    - name: "verbosity"
+      kind: "Integer"
+      description: "Output detail level (0-5, default: 1)"
+      hint: "Output verbosity level"
+      optional: true
+      default: "1"
+      validation_rules: []
+      aliases: ["v"]
+      tags: []
+
+  examples:
+    - ".status"
+    - ".status verbosity::2"
+  auto_help_enabled: true
+
+- name: ".list"
+  namespace: ""
+  description: "List projects or sessions in Claude Code storage"
+  hint: "List projects or sessions"
+  version: "1.0.0"
+  status: "stable"
+  aliases: []
+  tags: ["storage", "list"]
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+
+  arguments:
+    - name: "type"
+      kind: "String"
+      description: "Project type filter (uuid, path, or all)"
+      hint: "Project type filter"
+      optional: true
+      default: "all"
+      validation_rules: []
+      aliases: []
+      tags: []
+
+    - name: "verbosity"
+      kind: "Integer"
+      description: "Output detail level (0-5, default: 1)"
+      hint: "Output verbosity level"
+      optional: true
+      default: "1"
+      validation_rules: []
+      aliases: ["v"]
+      tags: []
+
+    - name: "sessions"
+      kind: "Boolean"
+      description: "Show sessions for each project (auto-enabled when session filters provided, explicit 0/1 overrides)"
+      hint: "Show sessions (auto-detected)"
+      optional: true
+      default: "0"
+      validation_rules: []
+      aliases: []
+      tags: []
+
+    - name: "path"
+      kind: "String"
+      description: "Filter projects by path substring (case-insensitive)"
+      hint: "Path substring filter"
+      optional: true
+      validation_rules: []
+      aliases: []
+      tags: ["filter"]
+
+    - name: "agent"
+      kind: "Boolean"
+      description: "Filter sessions by type (0=main only, 1=agent only, unset=all, auto-enables session display)"
+      hint: "Agent session filter (auto-enables)"
+      optional: true
+      validation_rules: []
+      aliases: []
+      tags: ["filter"]
+
+    - name: "min_entries"
+      kind: "Integer"
+      description: "Filter by minimum entry count (auto-enables session display)"
+      hint: "Minimum entries (auto-enables)"
+      optional: true
+      validation_rules: []
+      aliases: []
+      tags: ["filter"]
+
+    - name: "session"
+      kind: "String"
+      description: "Filter sessions by ID substring (case-insensitive, auto-enables session display)"
+      hint: "Session ID substring (auto-enables)"
+      optional: true
+      validation_rules: []
+      aliases: []
+      tags: ["filter"]
+
+  examples:
+    - ".list"
+    - ".list type::uuid"
+    - ".list sessions::1"
+    - ".list path::willbe"
+    - ".list session::commit"
+    - ".list agent::1 min_entries::10"
+    - ".list path::claude_storage session::default"
+    - ".list sessions::0 session::commit"
+  auto_help_enabled: true
+
+- name: ".show"
+  namespace: ""
+  description: "Display session or project details (location-aware, adapts to parameters)"
+  hint: "Show session or project"
+  version: "1.3.0"
+  status: "stable"
+  aliases: []
+  tags: ["storage", "info"]
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+
+  arguments:
+    - name: "session_id"
+      kind: "String"
+      description: "Session ID to display (omit to show project)"
+      hint: "Session ID (optional)"
+      optional: true
+      validation_rules: []
+      aliases: []
+      tags: []
+
+    - name: "project"
+      kind: "String"
+      description: "Project ID (default: current directory)"
+      hint: "Project ID"
+      optional: true
+      validation_rules: []
+      aliases: []
+      tags: []
+
+    - name: "verbosity"
+      kind: "Integer"
+      description: "Output detail level (0-5, default: 1)"
+      hint: "Output verbosity level"
+      optional: true
+      default: "1"
+      validation_rules: []
+      aliases: ["v"]
+      tags: []
+
+    - name: "entries"
+      kind: "Boolean"
+      description: "Show all entries in session"
+      hint: "Show entries"
+      optional: true
+      default: "0"
+      validation_rules: []
+      aliases: []
+      tags: []
+
+    - name: "metadata"
+      kind: "Boolean"
+      description: "Show metadata only (old behavior, default shows conversation content)"
+      hint: "Metadata only mode"
+      optional: true
+      default: "0"
+      validation_rules: []
+      aliases: []
+      tags: []
+
+  examples:
+    - ".show"
+    - ".show session_id::abc123"
+    - ".show project::/home/user1/project"
+    - ".show session_id::abc123 project::/home/user1/project"
+    - ".show session_id::abc123 metadata::1"
+    - ".show session_id::abc123 entries::1"
+  auto_help_enabled: true
+
+- name: ".show.project"
+  namespace: ""
+  description: "Display project details and all sessions (DEPRECATED: use .show instead)"
+  hint: "Show project (deprecated)"
+  version: "1.3.0"
+  status: "deprecated"
+  aliases: []
+  tags: ["storage", "info", "project"]
+  permissions: []
+  idempotent: true
+  deprecation_message: "This command is deprecated. Use '.show' or '.show project::{path}' instead."
+  http_method_hint: "GET"
+
+  arguments:
+    - name: "project"
+      kind: "String"
+      description: "Project path, path-encoded, UUID, or Path(...) from .list output (default: current directory)"
+      hint: "Project identifier"
+      optional: true
+      validation_rules: []
+      aliases: []
+      tags: []
+
+    - name: "verbosity"
+      kind: "Integer"
+      description: "Output detail level (0-5, default: 1)"
+      hint: "Output verbosity"
+      optional: true
+      default: "1"
+      validation_rules: []
+      aliases: ["v"]
+      tags: []
+
+  examples:
+    - ".show.project"
+    - ".show.project /home/user1/pro/lib/willbe/module/willbe3/-commit"
+    - ".show.project Path(\"/home/user1/pro/lib/willbe/module/willbe3/-commit\")"
+    - ".show.project abc-123-def-456"
+    - ".show.project -home-user1-pro"
+  auto_help_enabled: true
+
+- name: ".count"
+  namespace: ""
+  description: "Fast counting of entries, sessions, or projects"
+  hint: "Count storage items"
+  version: "1.0.0"
+  status: "stable"
+  aliases: []
+  tags: ["storage", "count"]
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+
+  arguments:
+    - name: "target"
+      kind: "String"
+      description: "What to count (projects, sessions, entries)"
+      hint: "Target type"
+      optional: true
+      validation_rules: []
+      aliases: []
+      tags: []
+
+    - name: "project"
+      kind: "String"
+      description: "Project ID (for counting sessions or entries)"
+      hint: "Project ID"
+      optional: true
+      validation_rules: []
+      aliases: []
+      tags: []
+
+    - name: "session"
+      kind: "String"
+      description: "Session ID (for counting entries)"
+      hint: "Session ID"
+      optional: true
+      validation_rules: []
+      aliases: []
+      tags: []
+
+  examples:
+    - ".count"
+    - ".count target::sessions project::abc123"
+    - ".count target::entries project::abc123 session::xyz789"
+  auto_help_enabled: true
+
+- name: ".search"
+  namespace: ""
+  description: "Search session content for query string"
+  hint: "Search session content"
+  version: "1.0.0"
+  status: "stable"
+  aliases: []
+  tags: ["storage", "search"]
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+
+  arguments:
+    - name: "query"
+      kind: "String"
+      description: "Search query string (case-insensitive by default)"
+      hint: "Search query"
+      optional: false
+      validation_rules: []
+      aliases: ["q"]
+      tags: []
+
+    - name: "project"
+      kind: "String"
+      description: "Project ID filter (searches only this project)"
+      hint: "Project ID"
+      optional: true
+      validation_rules: []
+      aliases: []
+      tags: ["filter"]
+
+    - name: "session"
+      kind: "String"
+      description: "Session ID filter (searches only this session)"
+      hint: "Session ID"
+      optional: true
+      validation_rules: []
+      aliases: []
+      tags: ["filter"]
+
+    - name: "case_sensitive"
+      kind: "Boolean"
+      description: "Enable case-sensitive matching"
+      hint: "Case-sensitive search"
+      optional: true
+      default: "0"
+      validation_rules: []
+      aliases: []
+      tags: []
+
+    - name: "entry_type"
+      kind: "String"
+      description: "Filter by entry type (user, assistant, or all)"
+      hint: "Entry type filter"
+      optional: true
+      validation_rules: []
+      aliases: []
+      tags: ["filter"]
+
+    - name: "verbosity"
+      kind: "Integer"
+      description: "Output detail level (0-5, default: 1)"
+      hint: "Output verbosity level"
+      optional: true
+      default: "1"
+      validation_rules: []
+      aliases: ["v"]
+      tags: []
+
+  examples:
+    - ".search query::error"
+    - ".search query::\"session management\" case_sensitive::1"
+    - ".search query::help entry_type::user"
+    - ".search query::implement project::abc123"
+  auto_help_enabled: true
+
+- name: ".export"
+  namespace: ""
+  description: "Export session to file (markdown, JSON, or text)"
+  hint: "Export session to file"
+  version: "1.0.0"
+  status: "stable"
+  aliases: []
+  tags: ["storage", "export"]
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+
+  arguments:
+    - name: "session_id"
+      kind: "String"
+      description: "Session ID to export"
+      hint: "Session ID"
+      optional: false
+      validation_rules: []
+      aliases: []
+      tags: []
+
+    - name: "format"
+      kind: "String"
+      description: "Export format (markdown, json, text)"
+      hint: "Export format"
+      optional: true
+      default: "markdown"
+      validation_rules: []
+      aliases: []
+      tags: []
+
+    - name: "output"
+      kind: "String"
+      description: "Output file path"
+      hint: "Output file"
+      optional: false
+      validation_rules: []
+      aliases: []
+      tags: []
+
+    - name: "project"
+      kind: "String"
+      description: "Project ID (if not current directory)"
+      hint: "Project ID"
+      optional: true
+      validation_rules: []
+      aliases: []
+      tags: []
+
+  examples:
+    - ".export session_id::-default_topic format::markdown output::conversation.md"
+    - ".export session_id::abc123 format::json output::session.json"
+    - ".export session_id::-default_topic format::text output::transcript.txt"
+  auto_help_enabled: true
