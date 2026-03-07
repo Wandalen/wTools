@@ -1,0 +1,22 @@
+[package]
+name = "claude_runner_core"
+version = "0.1.0"
+edition = "2021"
+authors = [ "Kostiantyn Mysnyk <wandalen@obox.systems>" ]
+license = "MIT"
+readme = "readme.md"
+description = "Claude Code process execution with builder pattern"
+
+[lints]
+workspace = true
+
+[features]
+default = [ "enabled" ]
+full = [ "enabled" ]
+enabled = [ "dep:error_tools", "error_tools/enabled", "error_tools/error_untyped" ]
+
+[dependencies]
+error_tools = { workspace = true, optional = true }
+
+[dev-dependencies]
+test_tools = { workspace = true, features = [ "full" ] }

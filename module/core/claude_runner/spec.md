@@ -71,6 +71,18 @@ whitespace trimmed). Bare `@varname` (no extension, no `/`) passes through uncha
 
 ## Constraints
 
-- willbe workspace only (depends on wplan_core, dream_agent — not available in wtools)
+- wtools workspace (module/core/claude_runner)
 - No `mod_interface` required at current module count
 - All functionality behind `enabled` feature gate
+
+## Sibling Crates
+
+All in `module/core/` alongside this crate:
+
+| Crate | Role |
+|-------|------|
+| `claude_runner_cli` | Standalone unilang CLI binary (`claude_runner` binary name) |
+| `claude_runner_core` | `ClaudeCommand` process execution library (builder pattern) |
+| `claude_session` | Session storage path resolution and continuation detection |
+| `claude_storage` | CLI tool for exploring Claude Code storage |
+| `claude_storage_core` | Zero-dep core library for Claude storage access |
