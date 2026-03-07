@@ -3,6 +3,7 @@ resolver = "2"
 members = [
   "module/alias/*",
   "module/core/*",
+  "module/experimental/*",
   # NOTE: module/move directory is now empty - all crates moved to core or postponed
 ]
 exclude = [
@@ -101,7 +102,7 @@ struct_excessive_bools = "allow"
 
 [workspace.dependencies.wtools]
 version = "~0.2.20"
-path = "module/core/wtools"
+path = "module/experimental/wtools"
 default-features = false
 
 [workspace.dependencies.non_std]
@@ -172,13 +173,13 @@ default-features = false
 
 [workspace.dependencies.reflect_tools]
 version = "~0.7.0"
-path = "module/core/reflect_tools"
+path = "module/experimental/reflect_tools"
 default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.reflect_tools_meta]
 version = "~0.7.0"
-path = "module/core/reflect_tools_meta"
+path = "module/experimental/reflect_tools_meta"
 default-features = false
 # features = [ "enabled" ]
 
@@ -372,7 +373,7 @@ default-features = false
 
 [workspace.dependencies.time_tools]
 version = "~0.2.0"
-path = "module/core/time_tools"
+path = "module/experimental/time_tools"
 default-features = false
 
 

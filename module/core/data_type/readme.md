@@ -7,6 +7,8 @@
 
 Collection of primal data types.
 
+Facade crate re-exporting intervals (`interval_adapter`), collection constructor macros (`collection_tools`), and sum types (`either`) under a single unified namespace.
+
 ### Basic Use Case :: type constructors
 
 In Rust, you often need to wrap a given type into a new one.
