@@ -5,6 +5,7 @@ use the_module ::qt;
 // | TC011 | Test type parameter extraction with various range patterns | `type_parameters_basic` |
 
 //
+// | TC011 | Test type parameter extraction with various range patterns | `type_parameters_basic` |
 
 #[ test ]
 fn is_optional_with_option_type() 
