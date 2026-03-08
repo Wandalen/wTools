@@ -120,3 +120,7 @@ This preserves familiar `--flag value` syntax while leveraging unilang's command
 - [genfile CLI](../../../../../genfile/docs/cli/readme.md) - Reference implementation of unilang patterns
 - [claude_runner CLI User Reference](../readme.md) - User-facing CLI reference
 - [unilang crate](https://docs.rs/unilang) - Published documentation on crates.io
+
+## Migration Resources
+
+- [Architecture Migration Plan](../../architecture_migration_plan.md) - Subprocess migration plan: remove backward cross-repo dep, move routines to dream_agent

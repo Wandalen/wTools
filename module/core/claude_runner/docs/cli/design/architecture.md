@@ -1,6 +1,26 @@
 # CLI Architecture
 
-Complete architectural overview of `claude_runner` CLI, showing data flow, component relationships, and integration points.
+Complete architectural overview of `claude_runner` CLI binary (`claude_runner_cli` package),
+showing data flow, component relationships, and integration points.
+
+## Architectural Context
+
+`claude_runner` here refers to the **CLI binary** (`claude_runner_cli` crate). This binary
+is invoked as a **subprocess** by `dream_agent` (willbe). The binary has no knowledge of
+session management or context injection — it purely translates CLI flags to `ClaudeCommand`
+builder calls.
+
+**Invocation chain:**
+```
+dream_agent (willbe, orchestrator)
+  → spawns subprocess: claude_runner --message X --dir Y --continue ...
+      → claude_runner_cli (wtools binary, THIS binary)
+          → claude_runner_core ClaudeCommand builder
+              → Command::new("claude")
+```
+
+**Key boundary:** `dream_agent` owns session management, context injection, and parameter
+routing. `claude_runner` binary owns flag-to-builder translation and process spawning.
 
 ## System Overview
 

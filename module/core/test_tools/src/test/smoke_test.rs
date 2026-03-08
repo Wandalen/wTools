@@ -543,11 +543,28 @@ mod private {
           {use_statements}
         }}"
         )
-      } else {
-        // User-provided code - use as-is (may already contain fn main())
+      } else if self.code.contains("fn main()") {
+        // User-provided code already has fn main() — use as-is to avoid dead code warnings
+        // Fix(issue-smoke_test_nested_main): don't double-wrap when fn main() already present
+        // Root cause: wrapping again causes E0201 duplicate main or dead_code warning
+        // Pitfall: stripping whitespace before checking can miss qualified `pub fn main()`
         format!(
           "#[ allow( unused_imports ) ]
         {}"
+          , self.code
+        )
+      } else {
+        // User-provided code without fn main() — wrap it so binary compiles (E0601 fix)
+        // Fix(issue-smoke_test_missing_main): user code snippets (use stmts, expressions)
+        // are placed in main.rs which is a binary — must have fn main() or E0601 fires
+        // Root cause: else branch assumed user code always contained fn main()
+        // Pitfall: code with only use/println! statements has no entry point without this wrap
+        format!(
+          "#[ allow( unused_imports ) ]
+        fn main()
+        {{
+          {}
+        }}"
           , self.code
         )
       };

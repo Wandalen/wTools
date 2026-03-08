@@ -1,9 +1,14 @@
 [package]
 name = "claude_runner"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = [ "Kostiantyn Mysnyk <wandalen@obox.systems>" ]
 license = "MIT"
+readme = "readme.md"
+description = "CLI for executing Claude Code via builder pattern; YAML schema constants for willbe integration"
+
+[lints]
+workspace = true
 
 [lib]
 name = "claude_runner"
@@ -12,32 +17,21 @@ path = "src/lib.rs"
 [[bin]]
 name = "claude_runner"
 path = "src/main.rs"
-required-features = ["enabled"]
+required-features = [ "enabled" ]
 
 [features]
 default = [ "enabled" ]
-full = [ "enabled" ]
+full    = [ "enabled" ]
 enabled = [
-  "dep:dream_agent", "dream_agent/enabled",
+  "dep:claude_runner_core", "claude_runner_core/enabled",
+  "dep:error_tools", "error_tools/enabled", "error_tools/error_untyped",
   "dep:unilang",
-  "dep:wplan_core",
-  "dep:wplan", "wplan/enabled",
-  "dep:phf",
 ]
 
 [dependencies]
-# Cross-repo path deps: paths are relative to this Cargo.toml (../../../../../ = wip_core/)
-dream_agent    = { path = "../../../../../willbe/dev/module/dream_agent", version = "~0.1.39", optional = true }
-unilang        = { version = "~0.48.0", features = [ "approach_yaml_multi_build" ], optional = true }
-wplan_core     = { path = "../../../../../willbe/dev/module/wplan_core", version = "~0.1.0", optional = true }
-wplan          = { path = "../../../../../willbe/dev/module/wplan", version = "~0.1.0", features = [ "enabled" ], optional = true }
-phf            = { version = "~0.13.1", features = [ "macros" ], optional = true }
-
-[build-dependencies]
-unilang      = { version = "~0.48.0", features = [ "approach_yaml_multi_build" ] }
-serde        = { version = "~1.0", features = [ "derive" ] }
-serde_yaml   = { version = "~0.9" }
-version_bump = { path = "../../../../../willbe/dev/module/version_bump", version = "~0.1.0", features = [ "enabled" ] }
+claude_runner_core = { workspace = true, optional = true }
+error_tools        = { workspace = true, optional = true }
+unilang            = { workspace = true, optional = true }
 
 [dev-dependencies]
-test_tools = { version = "~0.16.0" }
+test_tools = { workspace = true, features = [ "full" ] }

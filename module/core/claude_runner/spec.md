@@ -2,78 +2,86 @@
 
 ## Purpose
 
-Provides reusable AI command routines (`.claude`, `.plan.claude`, `.claude.help`) as a
-willbe library crate. Any binary that uses unilang can register these commands without
-duplicating logic.
+Provides reusable AI command YAML definitions and a constants-only public API for willbe
+binaries. Any binary that uses unilang can register `.claude` and `.claude.help` commands
+by pointing at `COMMANDS_YAML`.
+
+`claude_runner` is a **pure constants provider** — it contains no routine logic, no willbe
+dependencies, and no dream_agent coupling.
 
 ## Architecture
 
 ```
-claude_runner
-  └─ routines.rs
-       ├─ claude_routine           → dream_agent::execute_claude → claude binary
-       ├─ plan_claude_routine      → wplan_client::execute_cli → daemon queue
-       ├─ claude_help_routine      → static help text
-       ├─ expand_work_dir_pattern  → Vec<PathBuf> (FR-6: work_dir multi-value)
-       ├─ resolve_file_reference   → String (FR-14: generic @file.ext)
-       └─ resolve_params_at_prefix → batch @file resolution for forwarded params
+claude_runner (wtools lib)
+  └─ COMMANDS_YAML : &str         → absolute path to claude.commands.yaml
+  └─ build_command_registry_from  → builds CommandRegistry from pre-generated static map
+  └─ claude.commands.yaml         → command parameter definitions (source of truth)
 
-claude_runner uses:
-  dream_agent  (session management, ClaudeCommand execution)
-  wplan_core   (DEFAULT_TOPIC, queue resolution, config dir for vars)
-  wplan_client (execute_cli for .plan delegation)
-  unilang      (VerifiedCommand, OutputData, ErrorData types)
-  multiline_input (interactive message collection)
-  libc         (TTY detection)
-  glob         (work_dir glob pattern expansion)
-  fs           (file reading for @file.ext resolution)
+Routines (claude_routine, claude_help_routine) live in dream_agent (willbe).
+dream_agent provides the handlers; claude_runner provides the YAML schema.
 ```
 
-## Commands
+## Separation of Concerns
+
+| Concern | Owner |
+|---------|-------|
+| YAML command parameter definitions | `claude_runner` (THIS crate) |
+| Compile-time static registry generation | `claude_runner` build.rs |
+| Runtime command handlers (routines) | `dream_agent` (willbe) |
+| Claude Code process execution | `claude_runner_core` via `claude_runner_cli` subprocess |
+| Session management | `dream_agent` |
+| Context injection | `dream_agent` |
+
+## Commands Defined
 
 ### `.claude`
 
-Primary AI assistance command. Delegates to `dream_agent::execute_claude` with full
-parameter forwarding. Supports positional args, named parameters, and interactive mode.
-
-### `.plan.claude`
-
-Queues `.claude` invocations via wplan daemon. Constructs `<binary> .claude ...` command
-strings and submits them via `.plan`. Supports multi-directory execution via `work_dir`.
+Primary AI assistance command. Parameters defined in `claude.commands.yaml`. Handlers
+live in `dream_agent::routines`.
 
 ### `.claude.help`
 
-Displays static usage documentation for `.claude` parameters.
+Displays usage documentation for `.claude` parameters. Handler lives in
+`dream_agent::routines`.
 
 ## Public API
 
 ```rust
-pub mod routines;
-pub const COMMANDS_YAML: &str;  // Absolute path to claude.commands.yaml
-
-// Key public functions in routines:
-pub fn expand_work_dir_pattern( pattern : &str ) -> Result< Vec< PathBuf >, String >;
-pub fn resolve_file_reference( value : &str ) -> Result< String, String >;
+pub const COMMANDS_YAML: &str;                      // Absolute path to claude.commands.yaml
+pub fn build_command_registry_from(commands) -> CommandRegistry;  // Build registry (handlers injected externally)
+pub use wplan::execute_with_registry;               // Execute dispatch helper
 ```
 
-### `expand_work_dir_pattern`
+### `COMMANDS_YAML`
 
-Expands `work_dir` parameter to list of directories. Supports `@varname` (variable lookup),
-`@file.ext` (file list), glob patterns, and literal paths with auto-creation.
-Returns `Vec<PathBuf>`. See dream spec FR-6.
+Absolute path to the YAML command definitions file, computed at compile time via
+`env!("CARGO_MANIFEST_DIR")`. Used by consumers in two ways:
 
-### `resolve_file_reference`
+**Build-time aggregation** (PHF static registry):
+```rust
+// In build.rs:
+let ai_yaml = manifest_dir.parent().unwrap().join("claude_runner").join("claude.commands.yaml");
+let commands = load_yaml_and_transform(&ai_yaml);
+```
 
-Resolves `@file.ext` references for generic string parameters. If value starts with `@` and
-contains `.` or `/`, reads the file and returns content as a single `String` (trailing
-whitespace trimmed). Bare `@varname` (no extension, no `/`) passes through unchanged.
-1MB size limit. See dream spec FR-14.
+**Runtime aggregation:**
+```rust
+aggregator.add(claude_runner::COMMANDS_YAML);
+```
+
+### `build_command_registry_from`
+
+Takes the compile-time generated `AGGREGATED_COMMANDS` static map and builds a
+`CommandRegistry`. Handlers are injected by the caller (dream_agent provides them).
+`claude_runner` itself has no knowledge of handler implementations.
 
 ## Constraints
 
-- wtools workspace (module/core/claude_runner)
-- No `mod_interface` required at current module count
+- wtools workspace member (`module/core/claude_runner`)
+- **Zero willbe dependencies** — MUST NOT import dream_agent, wplan, wplan_core, or any willbe crate
 - All functionality behind `enabled` feature gate
+- Routines module MUST NOT exist in this crate (routines belong to dream_agent)
+- No `mod_interface` required at current module count
 
 ## Sibling Crates
 
@@ -86,3 +94,9 @@ All in `module/core/` alongside this crate:
 | `claude_session` | Session storage path resolution and continuation detection |
 | `claude_storage` | CLI tool for exploring Claude Code storage |
 | `claude_storage_core` | Zero-dep core library for Claude storage access |
+
+## Consumers
+
+- `dream_agent` (willbe): imports `COMMANDS_YAML` for command schema; provides runtime handlers
+- dream binary (willbe): uses `build_command_registry_from` after dream_agent injects handlers
+- other willbe binaries: may use `COMMANDS_YAML` for runtime aggregation

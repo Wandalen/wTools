@@ -110,6 +110,18 @@ claude_runner_core depends ONLY on error_tools for error handling. No other exte
 - Session lifecycle strategy (resume/fresh) → dream_agent handles
 - Configuration loading → dream_agent/config_hierarchy handles
 - IPC with wplan_daemon → dream_agent handles
+- **Direct Rust import by dream_agent** → `dream_agent` (willbe) MUST NOT import this crate
+  as a Rust dependency. `dream_agent` invokes the `claude_runner` binary as a subprocess.
+  The process boundary (subprocess invocation) is the ONLY valid interface from willbe to
+  this execution library. Importing `claude_runner_core` from willbe violates architectural
+  isolation between the wtools and willbe repos.
+
+## Consumers
+
+- **`claude_runner_cli`** (wtools binary) — imports as Rust dep; translates CLI flags to builder calls ✅
+- **`dream_agent`** (willbe) — invokes `claude_runner` binary as subprocess; NEVER imports this crate ✅
+- **Other wtools crates** — may import as Rust dep for execution ✅
+- **willbe crates** — FORBIDDEN from importing as Rust dep; use subprocess boundary ❌
 
 ## Vocabulary
 
@@ -262,40 +274,56 @@ Rationale: wtools workspace declares error_tools with `default-features = false`
 
 ### Execution Flow
 
+**POST-MIGRATION target (subprocess boundary):**
+
 ```text
-dream_agent → ClaudeCommand::new()          (builder entry, tier-1 defaults)
-              .with_working_directory()      (configuration)
-              .with_skip_permissions()       (typed safety override)
-              .with_continue_conversation()  (continuation)
-              .execute()                     (SINGLE execution point)
-                  ↓
-              Command::new("claude")         (ONLY here, in command.rs)
-                  ↓
-              Claude Code Process
-                  ↓
-              ExecutionOutput { stdout, stderr, exit_code }
-                  ↓
-              Return to dream_agent
+dream_agent (willbe)
+    → std::process::Command::new("claude_runner")   (subprocess invocation)
+        → claude_runner_cli (arg parser, wtools binary)
+            → ClaudeCommand::new()                  (builder entry)
+                .with_working_directory()
+                .with_skip_permissions()
+                .with_continue_conversation()
+                .execute()                           (SINGLE execution point)
+                    ↓
+                Command::new("claude")               (ONLY here, in command.rs)
+                    ↓
+                Claude Code Process
+                    ↓
+                ExecutionOutput { stdout, stderr, exit_code }
 ```
+
+**PRE-MIGRATION (claude_runner_cli calls directly from dream_agent — being removed):**
+
+```text
+dream_agent → ClaudeCommand::new()          (Rust dep import — VIOLATION)
+              .with_working_directory()
+              .execute()
+                  ↓
+              Command::new("claude")
+```
+
+See `dream_agent/tests/responsibility_subprocess_invocation_test.rs` for migration enforcement tests.
 
 ### Responsibility Boundary
 
 **CRITICAL:** claude_runner_core owns execution ONLY. Storage paths come from claude_session.
 
 ```text
-dream_agent → claude_runner_core (execution) + claude_session (storage paths)
-              ↓                             ↓
-              execute() method              resolve_storage_path()
-              ↓
-              Command::new("claude")        (ONLY in claude_runner_core)
+claude_runner_cli → claude_runner_core (execution) + claude_session (storage paths)
+                    ↓                             ↓
+                    execute() method              resolve_storage_path()
+                    ↓
+                    Command::new("claude")        (ONLY in claude_runner_core)
 ```
 
 **Responsibility Rules:**
 1. claude_runner_core owns Command::new("claude") ✅
 2. claude_runner_core owns process execution ✅
 3. claude_session provides storage paths ✅
-4. dream_agent configures via builder ✅
+4. dream_agent orchestrates via subprocess (NOT Rust dep) ✅
 5. NO Command::new("claude") outside claude_runner_core ✅
+6. NO claude_runner_core import in dream_agent (willbe) ✅
 
 ### Component Roles
 
@@ -453,7 +481,7 @@ The project is considered complete when all items below are verified and marked 
 |--------|-------------|---------------------|----------------|
 | ✅ | **EXEC-1:** Single Command::new("claude") | Verify exactly 1 occurrence in entire crate | `tests/responsibility_single_execution_point_test.rs` |
 | ✅ | **EXEC-2:** Located in execute() method | Verify Command::new("claude") in execute() only | `src/command.rs` |
-| ✅ | **EXEC-3:** NO Command::new("claude") in dream_agent | Verify dream_agent uses builder only | `dream_agent/tests/responsibility_builder_pattern_usage_test.rs` |
+| ✅ | **EXEC-3:** NO Command::new("claude") in dream_agent | Verify dream_agent uses subprocess invocation, not builder | `dream_agent/tests/responsibility_subprocess_invocation_test.rs` |
 | ✅ | **EXEC-4:** NO Command::new("claude") in claude_session | Verify claude_session has zero execution | `claude_session/tests/responsibility_no_process_execution_test.rs` |
 
 **Functional Requirements:**

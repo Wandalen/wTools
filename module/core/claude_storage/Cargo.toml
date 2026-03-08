@@ -14,10 +14,7 @@ categories = [ "development-tools", "command-line-utilities" ]
 workspace = true
 
 [dependencies]
-# Core library for all storage operations
-claude_storage_core = { workspace = true }
-
-# CLI dependencies (optional, only for binary)
+claude_storage_core = { workspace = true, optional = true }
 # NOTE: Do NOT add phf as direct dep - unilang re-exports phf (0.11) and adding phf 0.13 causes version conflict
 unilang = { workspace = true, optional = true, features = [ "approach_yaml_multi_build" ] }
 
@@ -35,6 +32,6 @@ required-features = [ "cli" ]
 
 [features]
 default = [ "enabled", "cli" ]
-enabled = []
+enabled = [ "dep:claude_storage_core" ]
 full = [ "enabled", "cli" ]
 cli = [ "dep:unilang" ]

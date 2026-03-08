@@ -24,6 +24,12 @@ exclude = [
 ]
 # default-members = [ "module/core/wtools" ]
 
+[workspace.package]
+edition = "2021"
+rust-version = "1.61"
+authors = [ "Kostiantyn Mysnyk <wandalen@obox.systems>" ]
+license = "MIT"
+
 [workspace.metadata]
 branches = [ "master", "alpha" ]
 master_branch = "master"
@@ -509,9 +515,9 @@ version = "~0.1.0"
 path = "module/core/claude_runner_core"
 default-features = false
 
-[workspace.dependencies.claude_runner_cli]
-version = "~0.1.0"
-path = "module/core/claude_runner_cli"
+[workspace.dependencies.claude_runner]
+version = "~0.1.1"
+path = "module/core/claude_runner"
 default-features = false
 
 [workspace.dependencies.claude_session]

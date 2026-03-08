@@ -468,7 +468,6 @@ impl Entry
   /// Always returns error as JSON serialization is not yet implemented.
   pub fn to_json_line( &self ) -> Result< String >
   {
-    // TODO: Implement JSON serialization
     Err( Error::write_failed
     (
       "entry",
