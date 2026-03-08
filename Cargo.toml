@@ -105,49 +105,24 @@ version = "~0.2.20"
 path = "module/experimental/wtools"
 default-features = false
 
-[workspace.dependencies.non_std]
-version = "~0.1.4"
-path = "module/alias/non_std"
-
-[workspace.dependencies.std_tools]
-version = "~0.1.4"
-path = "module/alias/std_tools"
-
-[workspace.dependencies.std_x]
-version = "~0.1.4"
-path = "module/alias/std_x"
-
 
 
 ## data_type
 
 [workspace.dependencies.data_type]
 version = "~0.23.0"
-path = "module/core/data_type"
+path = "module/experimental/data_type"
 default-features = false
-
-[workspace.dependencies.type_constructor_meta]
-version = "~0.2.0"
-path = "module/core/type_constructor_meta"
-default-features = false
-
-[workspace.dependencies.type_constructor_make_meta]
-version = "~0.2.0"
-path = "module/core/type_constructor_make_meta"
-
-[workspace.dependencies.type_constructor_derive_pair_meta]
-version = "~0.1.0"
-path = "module/core/type_constructor_derive_pair_meta"
 
 [workspace.dependencies.interval_adapter]
 version = "~0.40.0"
-path = "module/core/interval_adapter"
+path = "module/experimental/interval_adapter"
 default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.winterval]
 version = "~0.3.0"
-path = "module/alias/winterval"
+path = "module/experimental/winterval"
 default-features = false
 # features = [ "enabled" ]
 
@@ -204,17 +179,12 @@ default-features = false
 
 [workspace.dependencies.include_md]
 version = "~0.1.0"
-path = "module/core/include_md"
+path = "module/experimental/include_md"
 default-features = false
 
 [workspace.dependencies.type_constructor]
 version = "~0.3.0"
 path = "module/postponed/type_constructor"
-default-features = false
-
-[workspace.dependencies.fundamental_data_type]
-version = "~0.2.0"
-path = "module/alias/fundamental_data_type"
 default-features = false
 
 [workspace.dependencies.variadic_from]
@@ -251,7 +221,7 @@ default-features = false
 
 [workspace.dependencies.mem_tools]
 version = "~0.9.0"
-path = "module/core/mem_tools"
+path = "module/experimental/mem_tools"
 default-features = false
 
 
@@ -259,7 +229,7 @@ default-features = false
 
 [workspace.dependencies.diagnostics_tools]
 version = "~0.11.0"
-path = "module/core/diagnostics_tools"
+path = "module/experimental/diagnostics_tools"
 default-features = false
 
 
@@ -267,7 +237,7 @@ default-features = false
 
 [workspace.dependencies.iter_tools]
 version = "~0.46.0"
-path = "module/core/iter_tools"
+path = "module/experimental/iter_tools"
 default-features = false
 
 
@@ -275,12 +245,12 @@ default-features = false
 
 [workspace.dependencies.meta_tools]
 version = "~0.12.0"
-path = "module/core/meta_tools"
+path = "module/experimental/meta_tools"
 default-features = false
 
 [workspace.dependencies.for_each]
 version = "~0.10.0"
-path = "module/core/for_each"
+path = "module/experimental/for_each"
 default-features = false
 
 [workspace.dependencies.former]
@@ -300,17 +270,17 @@ default-features = false
 
 [workspace.dependencies.component_model]
 version = "~0.15.0"
-path = "module/core/component_model"
+path = "module/experimental/component_model"
 default-features = false
 
 [workspace.dependencies.component_model_meta]
 version = "~0.15.0"
-path = "module/core/component_model_meta"
+path = "module/experimental/component_model_meta"
 default-features = false
 
 [workspace.dependencies.component_model_types]
 version = "~0.23.0"
-path = "module/core/component_model_types"
+path = "module/experimental/component_model_types"
 default-features = false
 
 [workspace.dependencies.impls_index]
@@ -330,11 +300,6 @@ default-features = false
 [workspace.dependencies.mod_interface_meta]
 version = "~0.56.0"
 path = "module/core/mod_interface_meta"
-default-features = false
-
-[workspace.dependencies.multilayer]
-version = "~0.1.3"
-path = "module/alias/multilayer"
 default-features = false
 
 # [workspace.dependencies.woptions]
@@ -358,16 +323,6 @@ version = "~0.81.0"
 path = "module/core/macro_tools"
 default-features = false
 
-[workspace.dependencies.proc_macro_tools]
-version = "~0.2.0"
-path = "module/alias/proc_macro_tools"
-default-features = false
-
-[workspace.dependencies.wproc_macro]
-version = "~0.1.1"
-path = "module/alias/wproc_macro"
-default-features = false
-
 
 ## time
 
@@ -381,17 +336,12 @@ default-features = false
 
 [workspace.dependencies.typing_tools]
 version = "~0.11.0"
-path = "module/core/typing_tools"
+path = "module/experimental/typing_tools"
 default-features = false
 
 [workspace.dependencies.implements]
 version = "~0.13.0"
-path = "module/core/implements"
-default-features = false
-
-[workspace.dependencies.instance_of]
-version = "~0.2.0"
-path = "module/alias/instance_of"
+path = "module/experimental/implements"
 default-features = false
 
 [workspace.dependencies.inspect_type]
@@ -401,7 +351,7 @@ default-features = false
 
 [workspace.dependencies.is_slice]
 version = "~0.14.0"
-path = "module/core/is_slice"
+path = "module/experimental/is_slice"
 default-features = false
 
 [workspace.dependencies.asbytes]
@@ -416,10 +366,6 @@ default-features = false
 version = "~0.37.0"
 path = "module/core/error_tools"
 default-features = false
-
-[workspace.dependencies.werror]
-version = "~0.4.0"
-path = "module/alias/werror"
 
 
 ## genfile
@@ -461,7 +407,7 @@ path = "module/alias/wstring_tools"
 
 [workspace.dependencies.fs_tools]
 version = "~0.1.0"
-path = "module/core/fs_tools"
+path = "module/experimental/fs_tools"
 default-features = false
 
 [workspace.dependencies.file_tools]
@@ -494,7 +440,7 @@ default-features = false
 
 [workspace.dependencies.program_tools]
 version = "~0.1.0"
-path = "module/core/program_tools"
+path = "module/experimental/program_tools"
 default-features = false
 
 # [workspace.dependencies.process_tools_published]
@@ -507,17 +453,17 @@ default-features = false
 
 [workspace.dependencies.claude_runner_core]
 version = "~0.1.0"
-path = "module/core/claude_runner_core"
+path = "module/experimental/claude_runner_core"
 default-features = false
 
 [workspace.dependencies.claude_runner_cli]
 version = "~0.1.0"
-path = "module/core/claude_runner_cli"
+path = "module/experimental/claude_runner_cli"
 default-features = false
 
 [workspace.dependencies.claude_session]
 version = "~0.1.0"
-path = "module/core/claude_session"
+path = "module/experimental/claude_session"
 default-features = false
 
 [workspace.dependencies.claude_storage]
@@ -542,39 +488,31 @@ default-features = false
 
 [workspace.dependencies.config_hierarchy]
 version = "~0.5.0"
-path = "module/core/config_hierarchy"
+path = "module/experimental/config_hierarchy"
 default-features = false
 
 
 ## test
 
-[workspace.dependencies.wtest]
-version = "~0.4.0"
-path = "module/alias/wtest"
-
 [workspace.dependencies.test_tools]
 version = "~0.16.0"
-path = "module/core/test_tools"
+path = "module/experimental/test_tools"
 
 # [workspace.dependencies.test_tools_stable]
 # package = "test_tools"
 # version = "~0.10.0"
 # features = [ "full" ]
 
-[workspace.dependencies.wtest_basic]
-version = "~0.4.0"
-path = "module/alias/wtest_basic"
-
 
 ## async
 
 [workspace.dependencies.async_from]
 version = "~0.2.0"
-path = "module/core/async_from"
+path = "module/experimental/async_from"
 
 [workspace.dependencies.async_tools]
 version = "~0.1.0"
-path = "module/core/async_tools"
+path = "module/experimental/async_tools"
 
 ## graphs tools
 
@@ -597,25 +535,21 @@ default-features = false
 
 [workspace.dependencies.wca]
 version = "~0.44.0"
-path = "module/core/wca"
+path = "module/experimental/wca"
 
 ## willbe
 
 [workspace.dependencies.willbe]
 version = "~0.33.0"
-path = "module/core/willbe"
+path = "module/experimental/willbe"
 
 [workspace.dependencies.willbe2]
 version = "~0.2.0"
-path = "module/alias/willbe2"
+path = "module/experimental/willbe2"
 default-features = false
 
 
 ## lang
-
-[workspace.dependencies.wlang]
-version = "~0.1.0"
-path = "module/blank/wlang"
 
 
 ## plot
@@ -632,11 +566,11 @@ path = "module/postponed/plot_interface"
 
 [workspace.dependencies.sqlx_query]
 version = "~0.2.1"
-path = "module/core/sqlx_query"
+path = "module/experimental/sqlx_query"
 
 [workspace.dependencies.unitore]
 version = "~0.1.0"
-path = "module/core/unitore"
+path = "module/experimental/unitore"
 default-features = false
 
 [workspace.dependencies.deterministic_rand]
@@ -649,7 +583,7 @@ path = "module/core/crates_tools"
 
 [workspace.dependencies.benchkit]
 version = "~0.17.0"
-path = "module/core/benchkit"
+path = "module/experimental/benchkit"
 
 ## steps
 
