@@ -19,7 +19,7 @@
 //! 2. Used the empty-code path (which auto-generates `fn main() { use ...; }`)
 //!
 //! The case of non-empty user code without `fn main()` was not tested. Edge case tests
-//! existed in `smoke_test_edge_cases.rs` but did not verify that form() added a wrapper.
+//! existed in `smoke_test_edge_cases.rs` but did not verify that `form()` added a wrapper.
 //!
 //! # Fix Applied
 //!
@@ -28,9 +28,9 @@
 //! `fn main() { ... }` to produce a valid binary entry point.
 //!
 //! ```text
-//! if self.code.is_empty()          → auto-generate with use statement
-//! else if code.contains("fn main") → use as-is (no double-wrap)
-//! else                             → wrap in fn main() { ... }  ← FIX
+//! if self.code.is_empty()            → auto-generate with use statement
+//! else if code.contains("fn main")   → use as-is (no double-wrap)
+//! else                               → wrap in `fn main() { ... }`  ← FIX
 //! ```
 //!
 //! # Prevention
@@ -52,10 +52,10 @@
 
 use test_tools::SmokeModuleTest;
 
-/// Verify: code without fn main() gets wrapped in fn main() by form().
+/// Verify: code without `fn main()` gets wrapped in `fn main()` by `form()`.
 ///
 /// This is the primary bug reproducer. Before the fix, a `use` statement
-/// without a wrapping fn main() caused E0601 at cargo build time.
+/// without a wrapping `fn main()` caused E0601 at cargo build time.
 #[ test ]
 fn form_wraps_code_without_fn_main()
 {
@@ -67,17 +67,16 @@ fn form_wraps_code_without_fn_main()
   let form_result = smoke_test.form();
   assert!(
     form_result.is_ok(),
-    "form() should succeed for code without fn main(): {:?}",
-    form_result
+    "form() should succeed for code without fn main(): {form_result:?}"
   );
 
   smoke_test.clean( true ).expect( "cleanup should succeed" );
 }
 
-/// Verify: code with fn main() is NOT double-wrapped.
+/// Verify: code with `fn main()` is NOT double-wrapped.
 ///
-/// Regression guard for fix(issue-smoke_test_nested_main): wrapping code that
-/// already has fn main() would produce E0201 (duplicate main) or dead_code warnings.
+/// Regression guard: wrapping code that already has `fn main()` would produce
+/// E0201 (duplicate main) or `dead_code` warnings.
 #[ test ]
 fn form_preserves_existing_fn_main()
 {
@@ -89,14 +88,13 @@ fn form_preserves_existing_fn_main()
   let form_result = smoke_test.form();
   assert!(
     form_result.is_ok(),
-    "form() should succeed for code with fn main(): {:?}",
-    form_result
+    "form() should succeed for code with fn main(): {form_result:?}"
   );
 
   smoke_test.clean( true ).expect( "cleanup should succeed" );
 }
 
-/// Verify: empty code path still generates auto fn main() with use statement.
+/// Verify: empty code path still generates auto `fn main()` with use statement.
 ///
 /// Baseline: the original empty-code path must remain unaffected by the fix.
 #[ test ]
@@ -110,8 +108,7 @@ fn form_generates_fn_main_for_empty_code()
   let form_result = smoke_test.form();
   assert!(
     form_result.is_ok(),
-    "form() should succeed for empty code: {:?}",
-    form_result
+    "form() should succeed for empty code: {form_result:?}"
   );
 
   smoke_test.clean( true ).expect( "cleanup should succeed" );

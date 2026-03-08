@@ -44,7 +44,7 @@ dream_agent (handlers + orchestration, willbe)
     ├─ claude_help_routine    → static help text
     └─ spawns: claude_runner (subprocess)
 
-claude_runner_plugin (wplan runner plugin binary, in dream_agent crate)
+claude_runner_plugin (wplan runner plugin, standalone willbe crate)
     └─ routes .claude wplan commands → dream_agent::routines
 ```
 

@@ -124,7 +124,7 @@ fn generate_static_commands()
         .expect( "Failed to write static_commands.rs" );
 
       let command_count = commands.len();
-      println!( "cargo:warning=Generated static command registry with {command_count} commands" );
+      eprintln!( "Generated static command registry with {command_count} commands" );
     }
     Err( e ) =>
     {

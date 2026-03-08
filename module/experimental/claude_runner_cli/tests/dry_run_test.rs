@@ -8,7 +8,7 @@
 //!
 //! ## Strategy
 //!
-//! Each test invokes `claude_runner --dry-run` with specific flags and
+//! Each test invokes `claude_runner_cli --dry-run` with specific flags and
 //! asserts that the printed output reflects the expected builder configuration.
 //! This validates the round-trip: CLI flag → builder call → describe output.
 //!
@@ -37,11 +37,11 @@
 use std::process::Command;
 
 fn run_dry( args: &[ &str ] ) -> String {
-  let bin = env!( "CARGO_BIN_EXE_claude_runner" );
+  let bin = env!( "CARGO_BIN_EXE_claude_runner_cli" );
   let out = Command::new( bin )
     .args( args )
     .output()
-    .expect( "Failed to invoke claude_runner binary" );
+    .expect( "Failed to invoke claude_runner_cli binary" );
   assert!(
     out.status.success(),
     "dry-run failed (exit {}): {}",
@@ -130,7 +130,7 @@ fn combined_flags_all_appear() {
 fn dry_run_does_not_invoke_claude_binary() {
   // If --dry-run accidentally executes claude, it would fail on CI (no claude binary).
   // Success here proves only describe() was called.
-  let out = Command::new( env!( "CARGO_BIN_EXE_claude_runner" ) )
+  let out = Command::new( env!( "CARGO_BIN_EXE_claude_runner_cli" ) )
     .args( [ "--message", "test", "--dry-run" ] )
     .output()
     .expect( "Failed to invoke binary" );
@@ -186,11 +186,11 @@ fn empty_message_accepted_and_appears_in_command() {
 // not a CLI validation bug. Test documents the current passthrough behavior.
 #[test]
 fn empty_dir_accepted_produces_cd_with_empty_path() {
-  let bin = env!( "CARGO_BIN_EXE_claude_runner" );
+  let bin = env!( "CARGO_BIN_EXE_claude_runner_cli" );
   let out = std::process::Command::new( bin )
     .args( [ "--message", "hi", "--dir", "", "--dry-run" ] )
     .output()
-    .expect( "Failed to invoke claude_runner binary" );
+    .expect( "Failed to invoke claude_runner_cli binary" );
   assert!(
     out.status.success(),
     "Empty --dir is accepted by CLI (runtime validation is shell's responsibility). exit {}",
@@ -235,11 +235,11 @@ fn empty_session_dir_accepted_produces_empty_env_var() {
 #[test]
 fn verbose_prints_command_to_stderr()
 {
-  let bin = env!( "CARGO_BIN_EXE_claude_runner" );
+  let bin = env!( "CARGO_BIN_EXE_claude_runner_cli" );
   let out = std::process::Command::new( bin )
     .args( [ "--message", "verbose-preview", "--verbose" ] )
     .output()
-    .expect( "Failed to invoke claude_runner binary" );
+    .expect( "Failed to invoke claude_runner_cli binary" );
   // stderr always has the preview (eprintln! runs before execute())
   let stderr = String::from_utf8_lossy( &out.stderr );
   assert!(
@@ -257,11 +257,11 @@ fn verbose_prints_command_to_stderr()
 #[test]
 fn verbose_stdout_has_no_env_output()
 {
-  let bin = env!( "CARGO_BIN_EXE_claude_runner" );
+  let bin = env!( "CARGO_BIN_EXE_claude_runner_cli" );
   let out = std::process::Command::new( bin )
     .args( [ "--message", "verbose-stdout-clean", "--verbose" ] )
     .output()
-    .expect( "Failed to invoke claude_runner binary" );
+    .expect( "Failed to invoke claude_runner_cli binary" );
   let stdout = String::from_utf8_lossy( &out.stdout );
   assert!(
     !stdout.contains( "CLAUDE_CODE_MAX_OUTPUT_TOKENS=" ),
@@ -290,11 +290,11 @@ fn dir_with_spaces_produces_unquoted_cd_line() {
 #[test]
 fn dry_run_overrides_verbose()
 {
-  let bin = env!( "CARGO_BIN_EXE_claude_runner" );
+  let bin = env!( "CARGO_BIN_EXE_claude_runner_cli" );
   let out = std::process::Command::new( bin )
     .args( [ "--message", "prec-test", "--verbose", "--dry-run" ] )
     .output()
-    .expect( "Failed to invoke claude_runner binary" );
+    .expect( "Failed to invoke claude_runner_cli binary" );
   assert!( out.status.success(), "--verbose + --dry-run must exit 0" );
   let stdout = String::from_utf8_lossy( &out.stdout );
   let stderr = String::from_utf8_lossy( &out.stderr );

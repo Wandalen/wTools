@@ -9,9 +9,6 @@ Workspace crates providing core wtools functionality.
 | `async_tools/` | Async utility primitives and helpers. |
 | `benchkit/` | Benchmark framework for performance testing. |
 | `claude_runner/` | Willbe integration lib for `.claude` commands. |
-| `claude_runner_cli/` | Standalone CLI binary wrapping Claude Code. |
-| `claude_runner_core/` | Builder pattern library for Claude process execution. |
-| `claude_session/` | Session path resolution and continuation detection. |
 | `claude_storage/` | CLI tool for exploring Claude Code storage. |
 | `claude_storage_core/` | Zero-dep core library for Claude storage access. |
 | `cli_fmt/` | CLI output formatting utilities. |

@@ -21,7 +21,7 @@ Note: Files prefixed with `-` are temporary/working files per project convention
 
 Run all manual tests:
 ```bash
-cd /home/user1/pro/lib/wip_core/wtools/dev/module/core/claude_runner_core
+cd /home/user1/pro/lib/wip_core/wtools/dev/module/experimental/claude_runner_core
 cargo test --test manual_execution_test -- --ignored --nocapture
 ```
 

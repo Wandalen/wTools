@@ -30,7 +30,6 @@ exclude = [
   "module/core/async_from",
   "module/core/async_tools",
   "module/core/benchkit",
-  "module/core/claude_runner",
   "module/core/claude_session",
   "module/core/component_model",
   "module/core/component_model_meta",
@@ -496,7 +495,7 @@ default-features = false
 
 [workspace.dependencies.claude_runner]
 version = "~0.1.1"
-path = "module/experimental/claude_runner"
+path = "module/core/claude_runner"
 default-features = false
 
 [workspace.dependencies.claude_session]

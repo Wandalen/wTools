@@ -3,7 +3,7 @@
 //! This crate has two roles:
 //!
 //! 1. **Library** — exports [`COMMANDS_YAML`], the path to the `.claude` command schema,
-//!    used by `claude_runner_plugin` (dream_agent) for compile-time wplan registration.
+//!    used by `claude_runner_plugin` (standalone willbe crate) for compile-time wplan registration.
 //!
 //! 2. **Binary** (`claude_runner`) — CLI invoked as a subprocess by `dream_agent`.
 //!    Accepts `--flag value` argv and executes Claude Code via `claude_runner_core`.
@@ -11,7 +11,7 @@
 //! ## Two binaries, two roles
 //!
 //! ```text
-//! claude_runner_plugin (dream_agent binary)
+//! claude_runner_plugin (standalone willbe crate)
 //!   uses lib: claude_runner::COMMANDS_YAML → registers .claude wplan command
 //!   invokes subprocess: claude_runner --message X --dir Y ...
 //!

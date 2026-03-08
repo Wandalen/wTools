@@ -11,7 +11,7 @@ description = "CLI for executing Claude Code with configurable builder pattern"
 workspace = true
 
 [[bin]]
-name = "claude_runner"
+name = "claude_runner_cli"
 path = "src/main.rs"
 required-features = [ "enabled" ]
 

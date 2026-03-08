@@ -8,7 +8,7 @@
 ## Workspace Affiliation
 
 - **Workspace:** wtools (`~/pro/lib/wip_core/wtools/dev`)
-- **Location within workspace:** `module/core/claude_runner_core`
+- **Location within workspace:** `module/experimental/claude_runner_core`
 - **Pattern:** Core utility crate — general-purpose, workspace-agnostic execution logic
 - **Availability:** Path dependency during development; publishable to crates.io
 

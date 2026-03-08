@@ -1,6 +1,6 @@
 # claude_runner
 
-> **Workspace:** [wtools](https://github.com/Wandalen/wTools) — `module/core/claude_runner_cli`
+> **Workspace:** [wtools](https://github.com/Wandalen/wTools) — `module/experimental/claude_runner_cli`
 
 CLI for executing Claude Code with configurable builder-pattern parameters.
 

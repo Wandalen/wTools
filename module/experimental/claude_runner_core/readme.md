@@ -1,6 +1,6 @@
 # claude_runner_core
 
-> **Workspace:** [wtools](https://github.com/Wandalen/wTools) — `module/core/claude_runner_core`
+> **Workspace:** [wtools](https://github.com/Wandalen/wTools) — `module/experimental/claude_runner_core`
 
 Claude Code process execution with builder pattern and single execution point.
 

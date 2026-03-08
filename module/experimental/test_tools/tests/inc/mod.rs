@@ -37,14 +37,14 @@ pub mod collection_tests;
 pub mod impls_index_tests;
 
 /// Memory tools.
-#[ path = "../../../../core/mem_tools/tests/inc/mod.rs" ]
+#[ path = "../../../../experimental/mem_tools/tests/inc/mod.rs" ]
 pub mod mem_tools_tests;
 
 /// Typing tools.
 // #[ path = "../../../../core/typing_tools/tests/inc/mod.rs" ]
 // pub mod typing_tools_tests;  // Disabled - type inference issues with implements! macro
 /// Diagnostics tools.
-#[ path = "../../../../core/diagnostics_tools/tests/inc/mod.rs" ]
+#[ path = "../../../../experimental/diagnostics_tools/tests/inc/mod.rs" ]
 pub mod diagnostics_tools_tests;
 
 // Include top-level tests from constituent crates

@@ -402,7 +402,7 @@ grep "claude_runner" willbe/dev/module/dream_agent/src/cli.rs  # → shows subpr
 
 If the migration breaks the dream binary:
 1. Check `which claude_runner` — binary must be in PATH
-2. Install it: `cargo install --path wtools/module/core/claude_runner_cli`
+2. Install it: `cargo install --path wtools/module/core/claude_runner`
 3. If subprocess invocation fails with "not found", add PATH resolution in execute_claude()
 4. Git revert individual files if needed (each phase is a separate commit)
 
@@ -415,7 +415,7 @@ If the migration breaks the dream binary:
 | P1 | `claude_runner` binary not in PATH at runtime | dream_agent should give clear error: "claude_runner not found in PATH. Install: cargo install claude_runner" |
 | P2 | `verbosity_to_log_level` return type change breaks callers | Check all callers of this function; update call sites |
 | P3 | Interactive mode: subprocess must inherit TTY | Use `cmd.stdin(Stdio::inherit()).stdout(Stdio::inherit())` for interactive mode |
-| P4 | Session dir path escaping | claude_runner_cli must handle session-dir path correctly; verify it passes to `--session-dir` unchanged |
+| P4 | Session dir path escaping | claude_runner must handle session-dir path correctly; verify it passes to `--session-dir` unchanged |
 | P5 | Context injection: newlines in `--message` | Test that multi-line messages (context + user message) survive subprocess arg passing |
 | P6 | wplan dep removal breaks `execute_with_registry` re-export | Find all callers; move re-export or inline usage in dream binary |
 | P7 | `expand_work_dir_pattern` and `resolve_file_reference` move | These must move to dream_agent; claude_runner/spec.md and claude_runner/src/lib.rs no longer export them |

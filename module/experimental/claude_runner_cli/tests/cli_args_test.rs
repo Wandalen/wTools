@@ -8,7 +8,7 @@
 //!
 //! ## Strategy
 //!
-//! All tests invoke the compiled binary via `env!("CARGO_BIN_EXE_claude_runner")`.
+//! All tests invoke the compiled binary via `env!("CARGO_BIN_EXE_claude_runner_cli")`.
 //! `--dry-run` outputs the command line that would be executed, allowing
 //! assertions against the translation of flags → builder calls.
 //!
@@ -40,11 +40,11 @@
 use std::process::Command;
 
 fn run_cli( args: &[ &str ] ) -> std::process::Output {
-  let bin = env!( "CARGO_BIN_EXE_claude_runner" );
+  let bin = env!( "CARGO_BIN_EXE_claude_runner_cli" );
   Command::new( bin )
     .args( args )
     .output()
-    .expect( "Failed to invoke claude_runner binary" )
+    .expect( "Failed to invoke claude_runner_cli binary" )
 }
 
 #[test]

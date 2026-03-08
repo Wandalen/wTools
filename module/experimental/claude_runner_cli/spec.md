@@ -8,9 +8,9 @@
 ## Workspace Affiliation
 
 - **Workspace:** wtools (`~/pro/lib/wip_core/wtools/dev`)
-- **Location within workspace:** `module/core/claude_runner_cli`
+- **Location within workspace:** `module/experimental/claude_runner_cli`
 - **Pattern:** CLI utility — thin wrapper over `claude_runner_core` library
-- **Package name:** `claude_runner_cli` (Cargo package); **binary name:** `claude_runner` (installed binary)
+- **Package name:** `claude_runner_cli` (Cargo package); **binary name:** `claude_runner_cli` (installed binary)
 - **Availability:** Built as binary; not publishable as a library dependency
 
 ## Project Goal

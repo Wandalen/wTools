@@ -31,7 +31,7 @@ dream_agent (willbe) spawns subprocess:
   claude_runner --message X --dir Y [--continue] [--max-tokens N] ...
     → THIS binary (argv → unilang → ClaudeCommand → claude subprocess)
 
-claude_runner_plugin (dream_agent binary) uses the lib constant:
+claude_runner_plugin (standalone willbe crate) uses the lib constant:
   claude_runner::COMMANDS_YAML → compile-time YAML aggregation for wplan runner
 ```
 
@@ -42,7 +42,7 @@ claude_runner_plugin (dream_agent binary) uses the lib constant:
 | YAML command parameter definitions | `claude_runner` lib (THIS crate) |
 | CLI flag-to-builder translation | `claude_runner` binary (THIS crate) |
 | Claude Code process execution | `claude_runner_core` (builder pattern) |
-| Wplan runner plugin (`.claude` command) | `claude_runner_plugin` binary in `dream_agent` |
+| Wplan runner plugin (`.claude` command) | `claude_runner_plugin` crate (willbe) |
 | Runtime command handlers (routines) | `dream_agent::routines` (willbe) |
 | Session management and context injection | `dream_agent` (willbe) |
 | Session storage paths | `claude_session` |
@@ -104,7 +104,7 @@ aggregator.add( claude_runner::COMMANDS_YAML );
 
 ## Constraints
 
-- wtools workspace member (`module/experimental/claude_runner`)
+- wtools workspace member (`module/core/claude_runner`)
 - **Zero willbe dependencies in lib** — `lib.rs` MUST NOT import dream_agent, wplan, wplan_core
 - Binary deps (`claude_runner_core`, `unilang`, `error_tools`) MUST be optional, gated by `enabled`
 - `routines.rs` MUST NOT exist in this crate — routines belong to `dream_agent`
@@ -112,7 +112,7 @@ aggregator.add( claude_runner::COMMANDS_YAML );
 
 ## Sibling Crates
 
-All in `module/experimental/` alongside this crate:
+All in `module/experimental/` (sibling crates in wtools):
 
 | Crate | Role |
 |-------|------|
@@ -124,4 +124,4 @@ All in `module/experimental/` alongside this crate:
 ## Consumers
 
 - `dream_agent` (willbe): spawns `claude_runner` as subprocess for Claude Code execution
-- `claude_runner_plugin` (dream_agent binary): uses `COMMANDS_YAML` for wplan `.claude` command
+- `claude_runner_plugin` (standalone willbe crate): uses `COMMANDS_YAML` for wplan `.claude` command
