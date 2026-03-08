@@ -1,19 +1,24 @@
-//! `claude_runner` — command schema constants for `.claude` unilang commands.
+//! `claude_runner` — CLI binary + command schema constants for `.claude` unilang commands.
 //!
-//! This library provides **command definition constants only** — the YAML file path
-//! for `.claude` and `.claude.help` command schemas for unilang registration.
+//! This crate has two roles:
 //!
-//! ## Architecture
+//! 1. **Library** — exports [`COMMANDS_YAML`], the path to the `.claude` command schema,
+//!    used by `claude_runner_plugin` (dream_agent) for compile-time wplan registration.
+//!
+//! 2. **Binary** (`claude_runner`) — CLI invoked as a subprocess by `dream_agent`.
+//!    Accepts `--flag value` argv and executes Claude Code via `claude_runner_core`.
+//!
+//! ## Two binaries, two roles
 //!
 //! ```text
-//! wplan runner → claude_runner binary → dream_agent::routines::claude_routine
-//!                                           → dream_agent::execute_claude()
-//!                                               → subprocess: claude_runner (cli binary)
-//!                                                   → claude binary
+//! claude_runner_plugin (dream_agent binary)
+//!   uses lib: claude_runner::COMMANDS_YAML → registers .claude wplan command
+//!   invokes subprocess: claude_runner --message X --dir Y ...
+//!
+//! claude_runner (THIS binary, wtools)
+//!   argv_to_unilang_tokens() → ClaudeCommand builder → claude subprocess
 //! ```
 //!
-//! The `claude_runner` binary (runner plugin) routes unilang `.claude` commands to
-//! `dream_agent::routines`, which executes Claude Code via subprocess boundary.
 //! This lib has **zero willbe dependencies** — it is a pure constants crate.
 //!
 //! ## Registering commands in other binaries
