@@ -3,20 +3,20 @@
 //! This crate has two roles:
 //!
 //! 1. **Library** — exports [`COMMANDS_YAML`], the path to the `.claude` command schema,
-//!    used by `claude_runner_plugin` (standalone willbe crate) for compile-time wplan registration.
+//!    used by `dream` (willbe CLI) for compile-time PHF registration via `build.rs`.
 //!
 //! 2. **Binary** (`claude_runner`) — CLI invoked as a subprocess by `dream_agent`.
 //!    Accepts `--flag value` argv and executes Claude Code via `claude_runner_core`.
 //!
-//! ## Two binaries, two roles
+//! ## Two consumers, two roles
 //!
 //! ```text
-//! claude_runner_plugin (standalone willbe crate)
-//!   uses lib: claude_runner::COMMANDS_YAML → registers .claude wplan command
-//!   invokes subprocess: claude_runner --message X --dir Y ...
+//! dream (willbe CLI, build.rs)
+//!   aggregates: claude_runner::COMMANDS_YAML → registers .claude + .claude.help in PHF map
 //!
-//! claude_runner (THIS binary, wtools)
-//!   argv_to_unilang_tokens() → ClaudeCommand builder → claude subprocess
+//! dream_agent (willbe lib)
+//!   spawns subprocess: claude_runner --message X --dir Y ...
+//!     → argv_to_unilang_tokens() → ClaudeCommand builder → claude subprocess
 //! ```
 //!
 //! This lib has **zero willbe dependencies** — it is a pure constants crate.

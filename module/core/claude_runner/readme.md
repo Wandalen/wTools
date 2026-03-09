@@ -44,14 +44,15 @@ dream_agent (handlers + orchestration, willbe)
     ├─ claude_help_routine    → static help text
     └─ spawns: claude_runner (subprocess)
 
-claude_runner_plugin (wplan runner plugin, standalone willbe crate)
-    └─ routes .claude wplan commands → dream_agent::routines
+dream (willbe CLI, build.rs)
+    └─ aggregates claude.commands.yaml → PHF map (.claude, .claude.help)
 ```
 
 ### Separation of Concerns
 
 - `claude_runner` (THIS crate): YAML schema + CLI subprocess. Zero willbe deps in lib.
-- `dream_agent` (willbe): Runtime handlers, execution orchestration, wplan runner plugin.
+- `dream_agent` (willbe): Runtime handlers, execution orchestration (spawns subprocess).
+- `dream` (willbe CLI): Aggregates `claude.commands.yaml` at compile time; PHF registration.
 - `claude_runner_core` (wtools lib): `ClaudeCommand` builder — used by CLI binary.
 
 ### Usage

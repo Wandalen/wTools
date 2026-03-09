@@ -31,8 +31,8 @@ dream_agent (willbe) spawns subprocess:
   claude_runner --message X --dir Y [--continue] [--max-tokens N] ...
     → THIS binary (argv → unilang → ClaudeCommand → claude subprocess)
 
-claude_runner_plugin (standalone willbe crate) uses the lib constant:
-  claude_runner::COMMANDS_YAML → compile-time YAML aggregation for wplan runner
+dream (willbe CLI, build.rs) aggregates at compile time:
+  claude_runner::COMMANDS_YAML → claude.commands.yaml path → PHF map (.claude, .claude.help)
 ```
 
 ## Separation of Concerns
@@ -42,7 +42,7 @@ claude_runner_plugin (standalone willbe crate) uses the lib constant:
 | YAML command parameter definitions | `claude_runner` lib (THIS crate) |
 | CLI flag-to-builder translation | `claude_runner` binary (THIS crate) |
 | Claude Code process execution | `claude_runner_core` (builder pattern) |
-| Wplan runner plugin (`.claude` command) | `claude_runner_plugin` crate (willbe) |
+| PHF command registration (`.claude`, `.claude.help`) | `dream` binary (willbe, via build.rs) |
 | Runtime command handlers (routines) | `dream_agent::routines` (willbe) |
 | Session management and context injection | `dream_agent` (willbe) |
 | Session storage paths | `claude_session` |
@@ -92,9 +92,10 @@ Absolute path to the YAML command definitions file, computed at compile time via
 
 **Build-time aggregation (PHF static registry):**
 ```rust
-// In build.rs of a runner plugin:
-let yaml = claude_runner::COMMANDS_YAML;
-aggregator.add( yaml );
+// In dream/build.rs (cross-repo path from CARGO_MANIFEST_DIR):
+let claude_yaml = manifest_dir
+  .join( "../../../../wtools/dev/module/core/claude_runner/claude.commands.yaml" );
+base_commands.extend( load_yaml_and_transform( &claude_yaml ) );
 ```
 
 **Runtime aggregation:**
@@ -124,4 +125,6 @@ All in `module/experimental/` (sibling crates in wtools):
 ## Consumers
 
 - `dream_agent` (willbe): spawns `claude_runner` as subprocess for Claude Code execution
-- `claude_runner_plugin` (standalone willbe crate): uses `COMMANDS_YAML` for wplan `.claude` command
+- `dream` (willbe CLI): aggregates `claude.commands.yaml` at compile time via `build.rs`; registers `.claude` and `.claude.help` in PHF map
+
+> **Note:** `claude_runner_plugin` was removed from willbe/dev workspace (2026-03-09); preserved in willbe/proset as reference implementation.

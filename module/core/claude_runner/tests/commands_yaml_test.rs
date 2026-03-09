@@ -15,15 +15,17 @@
 //!
 //! 1. `COMMANDS_YAML` constant must point to an existing file.
 //! 2. YAML content must contain `name: .claude` (primary command).
-//! 3. YAML content must NOT contain `name: .please` (deleted command).
-//! 4. YAML content must NOT contain `name: .plan.claude` (moved to wplan runner plugin).
+//! 3. YAML content must contain `name: .claude.help` (help command).
+//! 4. YAML content must NOT contain `name: .please` (deleted command).
+//! 5. YAML content must NOT contain `name: .plan.claude` (moved to wplan runner plugin).
 //!
 //! # Failure Scenarios
 //!
 //! Tests FAIL if:
 //! - `COMMANDS_YAML` path resolves to a missing file (broken constant)
-//! - `.please` command name reappears in the YAML (regression)
 //! - `.claude` command name disappears from the YAML (accidental deletion)
+//! - `.claude.help` command name disappears from the YAML (accidental deletion)
+//! - `.please` command name reappears in the YAML (regression)
 //! - `.plan.claude` reappears in the YAML (moved to wplan runner plugin, must not be here)
 
 #![ allow( unused_crate_dependencies ) ]
@@ -52,6 +54,23 @@ fn commands_yaml_defines_claude_primary()
     "REGRESSION: `.claude` command missing from claude.commands.yaml\n\
      File: {}\n\
      Fix: Add `- name: \".claude\"` command block to the YAML",
+    claude_runner::COMMANDS_YAML
+  );
+}
+
+#[ test ]
+fn commands_yaml_defines_claude_help()
+{
+  // The module doc claims this test file verifies ".claude.help" — enforce it.
+  // If someone deletes the help command from the YAML, users lose `.claude.help` routing.
+  let content = std::fs::read_to_string( claude_runner::COMMANDS_YAML )
+    .expect( "Failed to read claude.commands.yaml" );
+  assert!(
+    content.contains( "- name: \".claude.help\"" ),
+    "REGRESSION: `.claude.help` command missing from claude.commands.yaml\n\
+     File: {}\n\
+     Fix: Add `- name: \".claude.help\"` command block to the YAML.\n\
+     Consumers (dream) register this command in the PHF map for help routing.",
     claude_runner::COMMANDS_YAML
   );
 }
