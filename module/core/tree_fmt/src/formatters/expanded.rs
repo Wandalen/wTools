@@ -35,7 +35,7 @@
 
 use crate::{ TreeNode, ExpandedConfig };
 use crate::data::TableShapedView;
-use crate::helpers::visual_len;
+use crate::ansi_str::visual_len;
 
 /// Initial string capacity for expanded output
 const INITIAL_CAPACITY : usize = 512;

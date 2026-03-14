@@ -129,9 +129,10 @@
 // Module declarations
 mod data;
 mod config;
-mod helpers;
+mod ansi_str;
 mod builder;
 mod table_tree;
+mod wrap;
 pub mod conversions;
 pub mod formatters;
 
@@ -147,7 +148,8 @@ pub use config::{
   TreeConfig, TableConfig, ExpandedConfig, PaddingSide, TreeSymbols,
   BorderVariant, HeaderSeparatorVariant, ColumnSeparator,
 };
-pub use helpers::{ visual_len, pad_to_width, truncate_cell };
+pub use ansi_str::{ visual_len, pad_to_width, truncate_cell };
+pub use wrap::{ WrapConfig, WrapFormatter, BreakStrategy, Overflow };
 pub use builder::TreeBuilder;
 pub use table_tree::RowBuilder;
 

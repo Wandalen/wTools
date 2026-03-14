@@ -6,7 +6,7 @@ Contains all functional and integration tests for tree_fmt library. Tests valida
 ## Organization Principles
 - Tests organized in modular files by functionality domain
 - Domain-based organization: tests grouped by what they test (data structures, builders, formatters)
-- 49 unit tests + 30 doc tests covering all library functionality
+- 321 nextest tests + 73 doc tests covering all library functionality
 - All test files under 300 lines for maintainability
 
 ## Responsibility Table
@@ -40,6 +40,11 @@ Contains all functional and integration tests for tree_fmt library. Tests valida
 | `unicode_display_width_alignment.rs` | Test Unicode display width alignment |
 | `unified_format_trait.rs` | Test unified format trait |
 | `verify_alignment_correct.rs` | Verify alignment correctness |
+| `word_wrap.rs` | Test `WrapFormatter` / `WrapConfig` / `BreakStrategy` / `Overflow` including bug reproducers |
+| `text.rs` | Test TextFormatter general variants: Bullets, Numbered, KeyValue, Compact, Sections |
+| `yaml.rs` | Test YamlFormatter YAML list-of-objects output and round-trip correctness |
+| `json.rs` | Test JsonFormatter JSON array-of-objects output in pretty and compact modes |
+| `toml_fmt.rs` | Test TomlFormatter TOML array-of-tables output and round-trip correctness |
 
 ## Test Files
 - **data.rs** (14 tests) - Core data structures (`TreeNode`, `RowBuilder`, `TableView` trait)

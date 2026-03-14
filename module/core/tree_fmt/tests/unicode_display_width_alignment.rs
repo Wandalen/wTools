@@ -175,58 +175,6 @@ fn bug_reproducer_issue_003_cjk_alignment()
   );
 }
 
-/// Demonstrate the correct solution: display-width-aware padding
-///
-/// This test shows what the fix should achieve - both texts should have
-/// the same display width after padding, ensuring proper alignment.
-#[ test ]
-#[ ignore = "Feature not yet implemented - this test shows expected behavior after fix" ]
-fn correct_behavior_display_width_padding()
-{
-  let ascii_text = "Hello";
-  let cjk_text = "日本語";
-
-  // These would be the new display-width-aware functions
-  // let padded_ascii = pad_to_display_width( ascii_text, 10, false );
-  // let padded_cjk = pad_to_display_width( cjk_text, 10, false );
-
-  // For now, manually demonstrate correct approach using unicode-width
-  let ascii_display_width = unicode_width::UnicodeWidthStr::width( ascii_text );
-  let cjk_display_width = unicode_width::UnicodeWidthStr::width( cjk_text );
-
-  let target_width : usize = 10;
-  let ascii_padding = target_width.saturating_sub( ascii_display_width );
-  let cjk_padding = target_width.saturating_sub( cjk_display_width );
-
-  let padded_ascii = format!( "{}{}", ascii_text, " ".repeat( ascii_padding ) );
-  let padded_cjk = format!( "{}{}", cjk_text, " ".repeat( cjk_padding ) );
-
-  println!( "Display-width-based padding (correct behavior):" );
-  println!( "'{padded_ascii}' | next" );
-  println!( "'{padded_cjk}' | next" );
-  println!();
-
-  // Verify both have same display width
-  let result_ascii = unicode_width::UnicodeWidthStr::width( padded_ascii.as_str() );
-  let result_cjk = unicode_width::UnicodeWidthStr::width( padded_cjk.as_str() );
-
-  assert_eq!(
-    result_ascii,
-    target_width,
-    "ASCII should pad to exactly {target_width} display width"
-  );
-  assert_eq!(
-    result_cjk,
-    target_width,
-    "CJK should pad to exactly {target_width} display width"
-  );
-  assert_eq!(
-    result_ascii,
-    result_cjk,
-    "Both should have identical display width for perfect alignment"
-  );
-}
-
 /// Test emoji alignment (wide characters with display width = 2)
 #[ test ]
 fn bug_reproducer_issue_003_emoji_alignment()
@@ -442,7 +390,7 @@ fn test_zero_width_combining_marks()
 ///
 /// # Root Cause
 ///
-/// In `tree_fmt/src/helpers.rs:189`, `truncate_single_line()` increments
+/// In `tree_fmt/src/ansi_str.rs:189`, `truncate_single_line()` increments
 /// `visual_count += 1` for each character, treating all characters as having
 /// display width = 1. This is incorrect for CJK characters and emoji which have
 /// display width = 2.
@@ -461,7 +409,7 @@ fn test_zero_width_combining_marks()
 ///
 /// # Fix Applied
 ///
-/// Modified `truncate_single_line()` in `src/helpers.rs` to use unicode-width
+/// Modified `truncate_single_line()` in `src/ansi_str.rs` to use unicode-width
 /// crate's `UnicodeWidthChar::width()` when incrementing `visual_count`:
 ///
 /// ```rust

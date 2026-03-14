@@ -96,7 +96,7 @@
 
 use crate::{ TreeNode, TableConfig };
 use crate::data::TableShapedView;
-use crate::helpers::{ visual_len, pad_to_width };
+use crate::ansi_str::{ visual_len, pad_to_width };
 
 /// Initial string capacity for table output
 const INITIAL_CAPACITY : usize = 512;
@@ -356,7 +356,7 @@ impl TableFormatter
       //   (not to calculated width of 50)
       let cell_content = if let Some( max_width ) = self.config.max_column_width
       {
-        crate::helpers::truncate_cell( cell, max_width, &self.config.truncation_marker )
+        crate::ansi_str::truncate_cell( cell, max_width, &self.config.truncation_marker )
       }
       else
       {
@@ -467,7 +467,7 @@ impl TableFormatter
         // Apply truncation to individual line if max_column_width is set
         let line_content = if let Some( max_width ) = self.config.max_column_width
         {
-          crate::helpers::truncate_cell( line, max_width, &self.config.truncation_marker )
+          crate::ansi_str::truncate_cell( line, max_width, &self.config.truncation_marker )
         }
         else
         {

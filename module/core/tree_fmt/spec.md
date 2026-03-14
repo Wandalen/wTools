@@ -970,7 +970,7 @@ src/
 ├── table_tree.rs              # RowBuilder (table-shaped)
 ├── config.rs                  # TreeConfig, TableConfig, ExpandedConfig
 ├── conversions.rs             # Tree↔Table conversions, FlattenConfig
-├── helpers.rs                 # visual_len, pad_to_width
+├── ansi_str.rs                # visual_len, pad_to_width
 └── formatters/
     ├── mod.rs                 # TableShapedFormatter trait, Format trait re-export
     ├── format_trait.rs        # Format trait, FormatError (NEW v0.4.0)
@@ -1592,6 +1592,92 @@ pub fn pad_to_width(text: &str, target_width: usize, align_right: bool) -> Strin
 | ANSI | "\x1b[31mtext\x1b[0m" | 14 | 4 (visible) | 4 |
 
 **Key Insight**: Multi-byte encoding (byte count > char count) does NOT imply wide display (Cyrillic is multi-byte but 1 display width). Only CJK and emoji have display width = 2.
+
+### Word Wrap Utility
+
+`WrapFormatter` and `WrapConfig` provide word-wrapping utilities for string consumers within the `tree_fmt` ecosystem. The primary use case is the kbase validation output renderer, which currently hard-truncates long issue messages; `WrapFormatter` replaces that truncation with proper wrap-to-width behavior. The API is general-purpose and usable by any downstream crate.
+
+#### Enums
+
+```rust
+#[ derive( Debug, Clone, Default, PartialEq ) ]
+pub enum BreakStrategy
+{
+  Word,
+  Hard,
+  #[ default ] WordThenHard,
+}
+```
+
+| Variant | Description |
+|---------|-------------|
+| `Word` | Break at last space before limit; if no space in segment, whole word wraps to next line |
+| `Hard` | Split at exactly `width` chars regardless of word boundaries |
+| `WordThenHard` | Word-boundary first; hard-break only when a single token exceeds available width |
+
+```rust
+#[ derive( Debug, Clone, PartialEq ) ]
+pub enum Overflow
+{
+  Truncate,
+  Ellipsis( String ),
+}
+```
+
+| Variant | Description |
+|---------|-------------|
+| `Truncate` | Discard lines beyond `max_lines` |
+| `Ellipsis( String )` | Append the given string to the last kept line, truncating content so total ≤ `width` |
+
+#### WrapConfig — Fields and Defaults
+
+| Field | Type | Default |
+|-------|------|---------|
+| `width` | `usize` | `80` |
+| `initial_indent` | `String` | `""` |
+| `subsequent_indent` | `String` | `""` |
+| `break_strategy` | `BreakStrategy` | `WordThenHard` |
+| `break_long_words` | `bool` | `true` |
+| `preserve_newlines` | `bool` | `true` |
+| `max_lines` | `Option<usize>` | `None` |
+| `overflow` | `Overflow` | `Truncate` |
+| `tab_width` | `usize` | `4` |
+| `strip_ansi` | `bool` | `false` |
+| `unicode_aware` | `bool` | `false` |
+
+Builder methods (all `#[must_use]`, return `mut self → Self`):
+`width`, `initial_indent`, `subsequent_indent`, `indent` (sets both indent fields to the same value),
+`break_strategy`, `break_long_words`, `preserve_newlines`, `max_lines`, `overflow`, `tab_width`,
+`strip_ansi`, `unicode_aware`.
+
+> **Deferred**: `strip_ansi=true` and `unicode_aware=true` runtime behavior is not yet implemented;
+> fields and builders exist but have no effect on output until a future task enables them.
+
+#### WrapFormatter
+
+```rust
+pub struct WrapFormatter { config : WrapConfig }
+
+impl WrapFormatter
+{
+  pub fn new() -> Self
+  pub fn with_config( config : WrapConfig ) -> Self
+  pub fn wrap( &self, text : &str ) -> Vec< String >
+  pub fn wrap_joined( &self, text : &str ) -> String  // wrap().join("\n")
+}
+```
+
+#### Behavior Contracts
+
+1. A line in `wrap()` output never exceeds `width` chars (measured as char count)
+   **except** when `break_long_words=false` and a single token is longer than the available space.
+2. `initial_indent` is prepended to line 0; `subsequent_indent` to lines 1+. Both count toward `width`.
+3. `preserve_newlines=true`: `\n` in input is a hard break; wrapping restarts with `subsequent_indent`.
+4. `preserve_newlines=false`: `\n` treated as a single space.
+5. `tab_width`: each `\t` in input expanded to `tab_width` spaces before processing.
+6. `max_lines=Some(n)` + `Overflow::Truncate`: output has at most `n` lines.
+7. `max_lines=Some(n)` + `Overflow::Ellipsis(s)`: last kept line has `s` appended,
+   truncating content so the total line length ≤ `width`.
 
 ## Functional Requirements
 
@@ -2833,7 +2919,7 @@ let tree = RowBuilder::new(headers)
   - Each line of multiline cell individually truncated
   - Maintains alignment and visual consistency
   - 5+ tests for combined scenarios
-- **Helper Functions** (NEW in `src/helpers.rs`):
+- **Helper Functions** (in `src/ansi_str.rs`):
   - `truncate_cell()`: ANSI-aware cell truncation with marker
   - `detect_multiline()`: Check if any cell contains newlines
   - `split_into_lines()`: Split cells preserving empty lines

@@ -26,6 +26,13 @@ exclude = [
   "module/alias/willbe2",
   "module/alias/winterval",
 
+  # Exclude broken crates with unresolvable workspace dependencies
+  "module/core/claude_runner",                   # depends on claude_runner_core which was removed in 4c727dfd
+  "module/core/claude_storage",                  # references missing src/bin/claude_storage.rs
+  "module/core/claude_storage_core",             # missing Cargo.toml (directory stub only)
+  "module/experimental/claude_runner_cli",        # depends on claude_runner_core which was removed in 4c727dfd
+  "module/experimental/claude_runner_core",       # directory stub only — Cargo.toml missing
+
   # Exclude module/core stubs whose Cargo.toml moved to module/experimental (renamed by merge, dir still exists)
   "module/core/async_from",
   "module/core/async_tools",
