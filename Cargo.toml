@@ -26,11 +26,19 @@ exclude = [
   "module/alias/willbe2",
   "module/alias/winterval",
 
+  # Moved to ~/pro/lib/wip_core/claude_tools/dev workspace (not wtools scope)
+  "module/core/claude_runner",
+  "module/core/claude_session",
+  "module/core/claude_storage",
+  "module/core/claude_storage_core",
+  "module/experimental/claude_runner_cli",
+  "module/experimental/claude_runner_core",
+  "module/experimental/claude_session",
+
   # Exclude module/core stubs whose Cargo.toml moved to module/experimental (renamed by merge, dir still exists)
   "module/core/async_from",
   "module/core/async_tools",
   "module/core/benchkit",
-  "module/core/claude_session",
   "module/core/component_model",
   "module/core/component_model_meta",
   "module/core/component_model_types",
