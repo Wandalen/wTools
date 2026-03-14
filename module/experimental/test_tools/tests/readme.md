@@ -20,6 +20,7 @@ This directory contains comprehensive tests for the `test_tools` crate, verifyin
 | `single_dependency_access_tests.rs` | Test single-dependency access and isolation (Task 029) |
 | `smoke_module_test_creation.rs` | Test SmokeModuleTest instance creation and initialization (Task 014) |
 | `smoke_test.rs` | Comprehensive smoke testing of the test_tools crate |
+| `smoke_test_form_main_bug.rs` | Bug reproducer: form() must wrap code lacking fn main() (issue-smoke-form-missing-main) |
 | `standalone_basic_test.rs` | Basic standalone build verification without dependencies |
 | `standalone_build_tests.rs` | Test standalone build mode functionality (Task 038) |
 | `tests.rs` | Main test aggregation entry point |

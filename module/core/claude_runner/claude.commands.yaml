@@ -1,0 +1,155 @@
+- name: ".claude"
+  namespace: ""
+  category: "ai_assistance"
+  description: "AI-assisted development using Claude Code with isolated session management. Omit command to open interactive mode."
+  hint: "AI assistance with Claude Code"
+  version: "1.0.0"
+  status: "stable"
+  aliases: []
+  tags: ["ai", "assistant"]
+  permissions: []
+  idempotent: false
+  deprecation_message: ""
+  http_method_hint: "POST"
+
+  arguments:
+    - name: "command"
+      kind: "String"
+      description: "Command for Claude Code (alternative to positional args, handles special characters). Omit to trigger interactive mode."
+      hint: "Command text"
+      optional: true
+      default: ""
+      validation_rules: []
+      aliases: ["m"]
+      tags: []
+
+    - name: "session"
+      kind: "String"
+      description: "Session name within topic (default: default)"
+      hint: "Session name"
+      optional: true
+      default: ""
+      validation_rules: []
+      aliases: []
+      tags: []
+
+    - name: "topic"
+      kind: "String"
+      description: "Topic for context injection and session storage (default: current directory). Special: '.' = use current dir without topic"
+      hint: "Topic for context"
+      optional: true
+      default: ""
+      validation_rules: []
+      aliases: []
+      tags: []
+
+    - name: "job"
+      kind: "String"
+      description: "Inject job context (logs, exit code, timing). Format: topic/job_number or job_number"
+      hint: "Job for context"
+      optional: true
+      default: ""
+      validation_rules: []
+      aliases: []
+      tags: []
+
+    - name: "receiver"
+      kind: "String"
+      description: "Inject receiver context from wplan daemon (topic name for context)"
+      hint: "Receiver context"
+      optional: true
+      default: ""
+      validation_rules: []
+      aliases: []
+      tags: []
+
+    - name: "continuation"
+      kind: "String"
+      description: "Session continuation: resume (continue existing) or fresh (start clean)"
+      hint: "Session continuation"
+      optional: true
+      default: ""
+      validation_rules: []
+      aliases: []
+      tags: []
+
+    - name: "timeout"
+      kind: "Integer"
+      description: "Claude timeout in milliseconds (default: 7200000 = 2 hours)"
+      hint: "Claude timeout (ms)"
+      optional: true
+      default: "7200000"
+      validation_rules: []
+      aliases: []
+      tags: []
+
+    - name: "dry"
+      kind: "Boolean"
+      description: "Show command without executing"
+      hint: "Dry run mode"
+      optional: true
+      default: "false"
+      validation_rules: []
+      aliases: []
+      tags: []
+
+    - name: "verbosity"
+      kind: "Integer"
+      description: "Verbosity level: 0=quiet, 1=normal, 2=verbose, 3=debug, 4=trace, 5=maximum"
+      hint: "Verbosity level"
+      optional: true
+      default: "2"
+      validation_rules: []
+      aliases: ["v"]
+      tags: []
+
+    - name: "ultrathink"
+      kind: "Boolean"
+      description: "Append ' ultrathink' to message for deeper analysis"
+      hint: "Deep thinking mode"
+      optional: true
+      default: "true"
+      validation_rules: []
+      aliases: []
+      tags: []
+
+    - name: "interactive"
+      kind: "Boolean"
+      description: "Execution mode: false=non-interactive (print and exit), true=interactive session"
+      hint: "Interactive mode"
+      optional: true
+      default: "false"
+      validation_rules: []
+      aliases: []
+      tags: []
+
+  examples:
+  - .claude what is 2+2?
+  - .claude hello
+  - .claude session::debug investigate the issue
+  - .claude topic::build why are builds failing?
+  - .claude job::build/42 explain this failure
+  - .claude verbosity::4 show detailed logs
+  - .claude interactive::true
+  - .claude
+  - .claude topic::a
+  auto_help_enabled: false
+- name: ".claude.help"
+  namespace: ""
+  category: "ai_assistance"
+  description: "Show detailed help for .claude command parameters"
+  hint: "Help for .claude command"
+  version: "1.0.0"
+  status: "stable"
+  aliases: []
+  tags: ["help", "documentation"]
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+
+  arguments: []
+
+  examples:
+  - .claude.help
+  auto_help_enabled: false

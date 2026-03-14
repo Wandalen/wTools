@@ -22,8 +22,45 @@ exclude = [
 
   # NOTE: module/move directory is now empty - all crates moved to core or postponed
 
+  # Exclude alias stubs whose Cargo.toml moved to experimental (Cargo.toml renamed, dir still exists)
+  "module/alias/willbe2",
+  "module/alias/winterval",
+
+  # Exclude module/core stubs whose Cargo.toml moved to module/experimental (renamed by merge, dir still exists)
+  "module/core/async_from",
+  "module/core/async_tools",
+  "module/core/benchkit",
+  "module/core/claude_session",
+  "module/core/component_model",
+  "module/core/component_model_meta",
+  "module/core/component_model_types",
+  "module/core/fs_tools",
+  "module/core/implements",
+  "module/core/include_md",
+  "module/core/interval_adapter",
+  "module/core/is_slice",
+  "module/core/iter_tools",
+  "module/core/mem_tools",
+  "module/core/meta_tools",
+  "module/core/program_tools",
+  "module/core/reflect_tools",
+  "module/core/reflect_tools_meta",
+  "module/core/sqlx_query",
+  "module/core/test_tools",
+  "module/core/time_tools",
+  "module/core/typing_tools",
+  "module/core/unitore",
+  "module/core/wca",
+  "module/core/willbe",
+  "module/core/wtools",
 ]
 # default-members = [ "module/core/wtools" ]
+
+[workspace.package]
+edition = "2021"
+rust-version = "1.61"
+authors = [ "Kostiantyn Mysnyk <wandalen@obox.systems>" ]
+license = "MIT"
 
 [workspace.metadata]
 branches = [ "master", "alpha" ]
