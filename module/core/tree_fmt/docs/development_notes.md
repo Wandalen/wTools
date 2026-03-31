@@ -531,20 +531,23 @@ TableConfig::unicode_box()
 
 ### Root Cause
 
-`TableConfig` fields are `pub`, so callers can construct partial configurations via struct
+`TableConfig` fields were `pub`, so callers could construct partial configurations via struct
 literal syntax. Setting two of the three Unicode-related fields and relying on `..default()` for
-the third creates a semantically inconsistent `TableConfig` that compiles fine but renders broken
-output. The struct literal pattern allows callers to forget fields that form a cohesive style
-group.
+the third created a semantically inconsistent `TableConfig` that compiled fine but rendered
+broken output. The struct literal pattern allowed callers to forget fields that form a cohesive
+style group.
 
-### Fix Tracking
+### Fix Applied
 
-The immediate call-site fix (replace all 4 broken struct literals with `TableConfig::unicode_box()`)
-is tracked in **task 241** (`gi/task/241_fix_cli_table_column_separators.md`).
+**Structural fix (task 011 — ✅ DONE, commit `80660b59` 2026-03-31):** `TableConfig` fields
+are now private. Struct literal initialization outside `src/config.rs` is a compile error.
+External callers must use preset constructors (`plain()`, `unicode_box()`, etc.) or builder
+setter methods (`.border_variant()`, `.column_separator()`, etc.).
 
-The structural fix (make `TableConfig` fields private so struct literal initialization outside
-`src/config.rs` is a compile error) is tracked in **task 011**
-(`tree_fmt/task/011_make_table_config_api_misuse_resistant.md`).
+**Call-site fix (task 241 — 🔄 BLOCKING):** The four `style.rs` files in the gi workspace
+(`gi_infra`, `gi_catalog`, `gi_prs`, `gi_users`) still use the old struct literal pattern.
+With fields now private these files fail to compile. Fix tracked in
+`willbe/wip/module/gi/task/241_fix_cli_table_column_separators.md`.
 
 ### Lesson Learned
 
