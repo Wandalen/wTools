@@ -162,7 +162,7 @@ path = "module/experimental/data_type"
 default-features = false
 
 [workspace.dependencies.interval_adapter]
-version = "~0.40.0"
+version = "~0.41.0"
 path = "module/experimental/interval_adapter"
 default-features = false
 # features = [ "enabled" ]
