@@ -62,6 +62,8 @@ exclude = [
   "module/core/willbe",
   "module/core/wtools",
 ]
+dev-dependencies = {}
+build-dependencies = {}
 # default-members = [ "module/core/wtools" ]
 
 [workspace.package]
@@ -256,7 +258,7 @@ path = "module/core/clone_dyn_meta"
 # features = [ "enabled" ]
 
 [workspace.dependencies.clone_dyn_types]
-version = "~0.45.0"
+version = "~0.46.0"
 path = "module/core/clone_dyn_types"
 default-features = false
 # features = [ "enabled" ]
