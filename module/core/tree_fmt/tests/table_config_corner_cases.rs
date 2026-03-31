@@ -983,3 +983,186 @@ fn test_min_column_width_large_value_no_panic()
   );
 }
 
+// ============================================================================
+// 10. Alignment: all lines in a table must have equal char-widths
+// ============================================================================
+
+/// All lines in a `unicode_box()` table must have the same display width.
+///
+/// ## Root Cause (Bug)
+///
+/// `format_header_separator()` Unicode branch used `width + 2` per column
+/// (`"─".repeat(width + 2)`), adding 2 extra fill characters per column.
+/// For N columns this makes the separator `2*(N-1)` chars wider than data rows.
+///
+/// Data rows only add `inner_padding` at the OUTER edges (before first column,
+/// after last column) — middle columns have no padding around the `│` separator.
+/// The separator must follow the same rule.
+///
+/// ## Why Not Caught
+///
+/// Previous tests only checked whether unicode chars were PRESENT, not whether
+/// line lengths matched. No alignment test existed for multi-column unicode_box.
+///
+/// ## Fix Applied
+///
+/// Replace hardcoded `width + 2` loop in the Unicode separator branch with a
+/// call to `format_unicode_horizontal_rule(output, widths, '├', '─', '┼', '┤')`,
+/// which correctly handles inner_padding only at the outer edges.
+///
+/// ## Prevention
+///
+/// Any new horizontal rule helper must be validated: for N cols with widths W_i
+/// and inner_padding P, expected total char-width =
+/// 1 (left) + P + sum(W_i) + (N-1) (mid junctions) + P + 1 (right).
+///
+/// ## Pitfall
+///
+/// Do NOT add inner_padding around every column junction — only at the two outer
+/// table edges. Middle `│` / `┼` / `+` chars are junction-only, not padded.
+#[ cfg_attr( not( test ), allow( dead_code ) ) ]
+#[ cfg_attr( test, test ) ]
+#[ cfg_attr( test, cfg_attr( test, allow( clippy::all, warnings ) ) ) ]
+fn test_unicode_box_all_lines_same_display_width()
+{
+  let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
+    .add_row( vec![ "Alice".into(), "30".into() ] )
+    .add_row( vec![ "Bob".into(), "25".into() ] )
+    .build();
+
+  let output = TableFormatter::with_config( TableConfig::unicode_box() ).format( &tree );
+  let lines : Vec< &str > = output.lines().filter( | l | !l.is_empty() ).collect();
+
+  // Expected structure: top_border + header + header_sep + data*2 + bottom = 6 lines
+  assert!(
+    lines.len() >= 5,
+    "unicode_box with 2 data rows must produce at least 5 non-empty lines; got {}\n{output}",
+    lines.len()
+  );
+
+  // All non-empty lines must have the same display-column count
+  let widths : Vec< usize > = lines.iter().map( | l | l.chars().count() ).collect();
+  let first_width = widths[ 0 ];
+  for ( idx, ( &w, &line ) ) in widths.iter().zip( lines.iter() ).enumerate()
+  {
+    assert_eq!(
+      w, first_width,
+      "Line {idx} has width {w}, expected {first_width}\n  line[{idx}]: {:?}\n  line[0]:    {:?}\nFull output:\n{output}",
+      line, lines[ 0 ]
+    );
+  }
+}
+
+/// All lines in a `markdown()` table must have the same display width.
+///
+/// ## Root Cause (Bug)
+///
+/// `format_header_separator()` Markdown branch used the same `width + 2`
+/// per-column pattern as the Unicode branch — adding 2 extra `'-'` chars per
+/// column, causing the same misalignment for N >= 2 columns.
+///
+/// ## Why Not Caught
+///
+/// Tests only checked structural characters (`|`), not line lengths.
+///
+/// ## Fix Applied
+///
+/// Replace hardcoded `width + 2` with correct outer-only padding logic, matching
+/// how `format_single_line_row` pads data rows.
+///
+/// ## Prevention
+///
+/// Write alignment tests for EVERY table style that uses a header separator.
+/// Run `lines.iter().map(|l| l.chars().count()).collect::<Vec<_>>()` and assert
+/// all counts are equal.
+///
+/// ## Pitfall
+///
+/// Standard Markdown table spec requires at least one `-` per column but does not
+/// mandate exact widths. However, visual alignment in rendered output requires
+/// consistent line lengths.
+#[ cfg_attr( not( test ), allow( dead_code ) ) ]
+#[ cfg_attr( test, test ) ]
+#[ cfg_attr( test, cfg_attr( test, allow( clippy::all, warnings ) ) ) ]
+fn test_markdown_all_lines_same_display_width()
+{
+  let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
+    .add_row( vec![ "Alice".into(), "30".into() ] )
+    .build();
+
+  let output = TableFormatter::with_config( TableConfig::markdown() ).format( &tree );
+  let lines : Vec< &str > = output.lines().filter( | l | !l.is_empty() ).collect();
+
+  assert!(
+    lines.len() >= 3,
+    "markdown with 1 data row must produce at least 3 non-empty lines; got {}\n{output}",
+    lines.len()
+  );
+
+  let widths : Vec< usize > = lines.iter().map( | l | l.chars().count() ).collect();
+  let first_width = widths[ 0 ];
+  for ( idx, ( &w, &line ) ) in widths.iter().zip( lines.iter() ).enumerate()
+  {
+    assert_eq!(
+      w, first_width,
+      "Line {idx} has width {w}, expected {first_width}\n  line[{idx}]: {:?}\n  line[0]:    {:?}\nFull output:\n{output}",
+      line, lines[ 0 ]
+    );
+  }
+}
+
+/// All lines in a `bordered()` table must have the same display width.
+///
+/// Regression guard: AsciiGrid separator alignment must remain correct.
+#[ test ]
+fn test_bordered_all_lines_same_display_width()
+{
+  let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
+    .add_row( vec![ "Alice".into(), "30".into() ] )
+    .build();
+
+  let output = TableFormatter::with_config( TableConfig::bordered() ).format( &tree );
+  let lines : Vec< &str > = output.lines().filter( | l | !l.is_empty() ).collect();
+
+  assert!( lines.len() >= 3 );
+
+  let widths : Vec< usize > = lines.iter().map( | l | l.chars().count() ).collect();
+  let first_width = widths[ 0 ];
+  for ( idx, ( &w, &line ) ) in widths.iter().zip( lines.iter() ).enumerate()
+  {
+    assert_eq!(
+      w, first_width,
+      "bordered line {idx} has width {w}, expected {first_width}\n  line: {:?}\nFull output:\n{output}",
+      line
+    );
+  }
+}
+
+/// All lines in a `grid()` table must have the same display width.
+///
+/// Regression guard: AsciiGrid border + separator alignment must remain correct.
+#[ test ]
+fn test_grid_all_lines_same_display_width()
+{
+  let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
+    .add_row( vec![ "Alice".into(), "30".into() ] )
+    .add_row( vec![ "Bob".into(), "25".into() ] )
+    .build();
+
+  let output = TableFormatter::with_config( TableConfig::grid() ).format( &tree );
+  let lines : Vec< &str > = output.lines().filter( | l | !l.is_empty() ).collect();
+
+  assert!( lines.len() >= 5 );
+
+  let widths : Vec< usize > = lines.iter().map( | l | l.chars().count() ).collect();
+  let first_width = widths[ 0 ];
+  for ( idx, ( &w, &line ) ) in widths.iter().zip( lines.iter() ).enumerate()
+  {
+    assert_eq!(
+      w, first_width,
+      "grid line {idx} has width {w}, expected {first_width}\n  line: {:?}\nFull output:\n{output}",
+      line
+    );
+  }
+}
+
