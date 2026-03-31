@@ -1,7 +1,7 @@
 # module/experimental/willbe/Cargo.toml
 [package]
 name = "willbe"
-version = "0.33.0"
+version = "0.34.0"
 edition = "2021"
 authors = [
   "Kostiantyn Mysnyk <wandalen@obox.systems>",
@@ -18,6 +18,9 @@ Utility to publish multi-crate and multi-workspace environments and maintain the
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 default-run = "will"
+dependencies = {}
+dev-dependencies = {}
+build-dependencies = {}
 
 [lints]
 workspace = true
