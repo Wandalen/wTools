@@ -370,3 +370,93 @@ fn test_t014_n05_grid_one_data_row_no_inter_row_separators()
     "T014-N05: bottom border must be present after last data row, got: {last_line:?}\nFull output:\n{output}"
   );
 }
+
+// ---------------------------------------------------------------------------
+// T014-M: Manual-testing edge cases discovered during corner-case audit
+// ---------------------------------------------------------------------------
+
+/// T014-M01 — Single-column `unicode_box()`: corner chars `┌`/`└` but NO `┬`/`┴` or `┼`.
+///
+/// A single-column table has no inner column junctions; only the outer corner
+/// chars should appear. Using `┬`/`┼`/`┴` would be incorrect.
+#[ test ]
+fn test_t014_m01_single_column_unicode_box_no_mid_junction_chars()
+{
+  let tree = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row( vec![ "Alice".into() ] )
+    .build();
+
+  let output = TableFormatter::with_config( TableConfig::unicode_box() ).format( &tree );
+
+  assert!(
+    !output.contains( '┬' ),
+    "T014-M01: single-column unicode_box must not contain top-junction ┬\nFull output:\n{output}"
+  );
+  assert!(
+    !output.contains( '┼' ),
+    "T014-M01: single-column unicode_box must not contain cross-junction ┼\nFull output:\n{output}"
+  );
+  assert!(
+    !output.contains( '┴' ),
+    "T014-M01: single-column unicode_box must not contain bottom-junction ┴\nFull output:\n{output}"
+  );
+  // Must still have outer corners
+  assert!(
+    output.contains( '┌' ) && output.contains( '┐' ),
+    "T014-M01: single-column unicode_box must have top corners ┌┐\nFull output:\n{output}"
+  );
+  assert!(
+    output.contains( '└' ) && output.contains( '┘' ),
+    "T014-M01: single-column unicode_box must have bottom corners └┘\nFull output:\n{output}"
+  );
+}
+
+/// T014-M02 — Header-only table (0 data rows) with `grid()`: no panic, no inter-row separators.
+///
+/// When there are no data rows the inter-row separator loop is never entered;
+/// top/bottom borders and header separator must still render correctly.
+#[ test ]
+fn test_t014_m02_header_only_table_grid_no_panic()
+{
+  let tree = RowBuilder::new( vec![ "A".into(), "B".into() ] ).build();
+
+  let output = TableFormatter::with_config( TableConfig::grid() ).format( &tree );
+
+  // Must not panic; structure: top_border + header + header_sep + bottom_border
+  let plus_lines : Vec<_> = output.lines().filter( |l| l.starts_with( '+' ) ).collect();
+  assert_eq!(
+    plus_lines.len(), 3,
+    "T014-M02: header-only grid must have 3 '+' lines (top + header_sep + bottom); got {}\nFull output:\n{output}",
+    plus_lines.len()
+  );
+}
+
+/// T014-M03 — Header-only table (0 data rows) with `unicode_box()`: no panic,
+/// bottom border uses `└`/`┘` corners (not `├`/`┤`).
+#[ test ]
+fn test_t014_m03_header_only_table_unicode_no_panic()
+{
+  let tree = RowBuilder::new( vec![ "X".into() ] ).build();
+
+  let output = TableFormatter::with_config( TableConfig::unicode_box() ).format( &tree );
+
+  // Must not panic and output must contain expected corners
+  assert!(
+    output.contains( '┌' ),
+    "T014-M03: header-only unicode_box must start with ┌\nFull output:\n{output}"
+  );
+  assert!(
+    output.contains( '└' ),
+    "T014-M03: header-only unicode_box must end with └ (bottom corner, not ├)\nFull output:\n{output}"
+  );
+  // Must NOT use mid-line chars as the bottom border (common mistake)
+  let last_non_empty = output
+    .lines()
+    .filter( |l| !l.is_empty() )
+    .last()
+    .expect( "no non-empty lines" );
+  assert!(
+    last_non_empty.starts_with( '└' ),
+    "T014-M03: last line must start with └ (bottom border), got: {last_non_empty:?}\nFull output:\n{output}"
+  );
+}

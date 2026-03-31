@@ -215,16 +215,26 @@ impl TableFormatter
     self.format_top_border_if_needed( &mut output, &column_widths );
 
     // Header row — optionally wrapped in ANSI color via temp buffer
+    //
+    // Fix(issue-multiline-color): iterate .lines() instead of single-pair wrap.
+    // Root cause: `trim_end_matches('\n')` + single wrap left intermediate \n
+    //   chars (from multiline cells) inside the color sequence without RESET,
+    //   causing terminal background-color bleed on each sub-line boundary.
+    // Pitfall: never use `trim_end_matches('\n')` + single color/RESET wrap on
+    //   output that may contain intermediate newlines from multiline rendering.
+    //   Always iterate `.lines()` to guarantee RESET before every `\n`.
     let header_color = self.config.header_color_str();
     if self.config.colorize_header_enabled() && !header_color.is_empty()
     {
       let mut row_buf = String::new();
       self.format_row( &mut row_buf, headers, &column_widths, true );
-      let content = row_buf.trim_end_matches( '\n' );
-      output.push_str( header_color );
-      output.push_str( content );
-      output.push_str( ANSI_RESET );
-      output.push( '\n' );
+      for line in row_buf.lines()
+      {
+        output.push_str( header_color );
+        output.push_str( line );
+        output.push_str( ANSI_RESET );
+        output.push( '\n' );
+      }
     }
     else
     {
@@ -254,11 +264,14 @@ impl TableFormatter
       {
         let mut row_buf = String::new();
         self.format_row( &mut row_buf, row, &column_widths, false );
-        let content = row_buf.trim_end_matches( '\n' );
-        output.push_str( color );
-        output.push_str( content );
-        output.push_str( ANSI_RESET );
-        output.push( '\n' );
+        // Fix(issue-multiline-color): same per-line loop as header (see above).
+        for line in row_buf.lines()
+        {
+          output.push_str( color );
+          output.push_str( line );
+          output.push_str( ANSI_RESET );
+          output.push( '\n' );
+        }
       }
 
       if idx < rows.len() - 1
@@ -646,29 +659,19 @@ impl TableFormatter
       }
       HeaderSeparatorVariant::Unicode =>
       {
-        // Unicode box separator: ├─────┼─────┤
-        output.push( '├' );
-        for ( idx, &width ) in column_widths.iter().enumerate()
-        {
-          output.push_str( &"─".repeat( width + 2 ) );
-          if idx < column_widths.len() - 1
-          {
-            output.push( '┼' );
-          }
-        }
-        output.push( '┤' );
-        output.push( '\n' );
+        // Fix(issue-align): delegate to format_unicode_horizontal_rule so outer
+        // padding is added only at the two outer edges — matching data row layout.
+        // Root cause: `width + 2` added padding around every column junction,
+        //   producing separators that were 2*(N-1) chars wider than data rows.
+        // Pitfall: never replicate the padding logic inline here; always delegate
+        //   to format_unicode_horizontal_rule to keep both paths in sync.
+        self.format_unicode_horizontal_rule( output, column_widths, '├', '─', '┼', '┤' );
       }
       HeaderSeparatorVariant::Markdown =>
       {
-        // Markdown separator: |-----|-----|
-        output.push( '|' );
-        for &width in column_widths
-        {
-          output.push_str( &"-".repeat( width + 2 ) );
-          output.push( '|' );
-        }
-        output.push( '\n' );
+        // Fix(issue-align): delegate to format_ascii_horizontal_rule for the same
+        // outer-edge-only padding reason as the Unicode branch above.
+        self.format_ascii_horizontal_rule( output, column_widths, '|', '-', '|', '|' );
       }
     }
   }
@@ -827,9 +830,20 @@ impl TableFormatter
     let mut widths = vec![ 0; headers.len() ];
 
     // Consider header widths (unicode display-width, ANSI-stripped)
+    //
+    // Fix(issue-multiline-width): use max single-line width, not total string width.
+    // Root cause: `unicode_visual_len(cell)` on a multiline string counts `\n` as
+    //   1 display column (via `ch.width().unwrap_or(1)`), producing a column that is
+    //   wider than its widest single line (e.g., "Line1\nLine2" → 11 instead of 5).
+    // Pitfall: never call `unicode_visual_len` on strings that may contain `\n`;
+    //   always split by lines and take the per-line maximum.
     for ( idx, header ) in headers.iter().enumerate()
     {
-      let header_width = unicode_visual_len( header );
+      let header_width = header
+        .lines()
+        .map( unicode_visual_len )
+        .max()
+        .unwrap_or( 0 );
       widths[ idx ] = header_width;
     }
 
@@ -840,7 +854,11 @@ impl TableFormatter
       {
         if idx < widths.len()
         {
-          let cell_width = unicode_visual_len( cell );
+          let cell_width = cell
+            .lines()
+            .map( unicode_visual_len )
+            .max()
+            .unwrap_or( 0 );
           widths[ idx ] = widths[ idx ].max( cell_width );
         }
       }

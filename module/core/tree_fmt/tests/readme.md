@@ -6,8 +6,8 @@ Contains all functional and integration tests for tree_fmt library. Tests valida
 ## Organization Principles
 - Tests organized in modular files by functionality domain
 - Domain-based organization: tests grouped by what they test (data structures, builders, formatters)
-- 392 nextest tests + 75 doc tests covering all library functionality
-- All test files under 300 lines for maintainability
+- Tests cover Tasks 012-015: min_column_width floor, ANSI coloring, border variants, Unicode display width
+- Test files kept under 1000 lines per file (warning threshold); mandatory split at 1500 lines
 
 ## Responsibility Table
 
