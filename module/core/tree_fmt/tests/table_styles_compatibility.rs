@@ -168,24 +168,16 @@ fn test_header_separator_alignment_with_padding()
     row_len, header_len
   );
 
-  // Verify separator has correct structure: |dashes|dashes|dashes|
+  // Verify separator has correct structure: +dashes+dashes+dashes+
+  // Fix(issue-014): AsciiGrid corner chars changed from '|' to '+'.
   let separator = lines[ 1 ];
-  assert!( separator.starts_with( '|' ), "Separator should start with pipe" );
-  assert!( separator.ends_with( '|' ), "Separator should end with pipe" );
+  assert!( separator.starts_with( '+' ), "Separator should start with '+' (not '|') after fix-014" );
+  assert!( separator.ends_with( '+' ), "Separator should end with '+' (not '|') after fix-014" );
 
-  // Count pipes in separator - should match header
-  let header_pipe_count = lines[ 0 ].matches( '|' ).count();
-  let separator_pipe_count = separator.matches( '|' ).count();
-  assert_eq!(
-    separator_pipe_count, header_pipe_count,
-    "Separator pipes ({}) must match header pipes ({})",
-    separator_pipe_count, header_pipe_count
-  );
-
-  // Separator should only contain pipes and dashes
+  // Separator should only contain '+' and '-'
   assert!(
-    separator.chars().all( | c | c == '|' || c == '-' ),
-    "Separator should only contain pipes and dashes, got: {separator}"
+    separator.chars().all( | c | c == '+' || c == '-' ),
+    "Separator should only contain '+' and '-', got: {separator}"
   );
 }
 

@@ -6,7 +6,7 @@ Contains all functional and integration tests for tree_fmt library. Tests valida
 ## Organization Principles
 - Tests organized in modular files by functionality domain
 - Domain-based organization: tests grouped by what they test (data structures, builders, formatters)
-- 352 nextest tests + 75 doc tests covering all library functionality
+- 392 nextest tests + 75 doc tests covering all library functionality
 - All test files under 300 lines for maintainability
 
 ## Responsibility Table
@@ -35,6 +35,8 @@ Contains all functional and integration tests for tree_fmt library. Tests valida
 | `table_styles_compatibility.rs` | Test table style compatibility |
 | `table_styles_outputs.rs` | Test table style outputs |
 | `table_config_corner_cases.rs` | Test TableConfig API corner cases and edge conditions |
+| `table_rendering_borders.rs` | Test border variant rendering: top/bottom borders, inter-row separators, AsciiGrid corners |
+| `table_rendering_colors.rs` | Test ANSI header coloring and alternating-row coloring |
 | `table_styles_presets.rs` | Test table style presets |
 | `text_cli_help.rs` | Test CLI help text formatting |
 | `themes.rs` | Test visual themes |

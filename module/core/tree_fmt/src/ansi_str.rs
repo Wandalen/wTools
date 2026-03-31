@@ -79,6 +79,43 @@ use unicode_width::{ UnicodeWidthStr, UnicodeWidthChar };
 pub use strs_tools::ansi::visual_len;
 pub use strs_tools::ansi::pad_to_width;
 
+/// Returns the display width of `s`, stripping ANSI escape sequences.
+///
+/// Measures terminal display columns using `UnicodeWidthChar::width()`.
+/// Handles all common ANSI color/formatting sequences (`\x1b[...m`).
+///
+/// **Note:** only CSI sequences terminated by ASCII alphabetic chars are handled;
+/// rare non-color sequences (e.g., cursor repositioning) are best-effort.
+pub( crate ) fn unicode_visual_len( s : &str ) -> usize
+{
+  let mut len = 0usize;
+  let mut in_esc = false;
+  for ch in s.chars()
+  {
+    if ch == '\x1b' { in_esc = true; continue; }
+    if in_esc
+    {
+      if ch.is_ascii_alphabetic() { in_esc = false; }
+      continue;
+    }
+    len += ch.width().unwrap_or( 1 );
+  }
+  len
+}
+
+/// Pads `s` to at least `width` display columns.
+///
+/// Returns `s` unchanged if already at or above `width` display columns.
+/// Uses `unicode_visual_len` for display-width measurement, ensuring correct
+/// padding for CJK characters and emoji.
+pub( crate ) fn pad_unicode_width( s : &str, width : usize, align_right : bool ) -> String
+{
+  let content_width = unicode_visual_len( s );
+  if content_width >= width { return s.to_owned(); }
+  let pad = " ".repeat( width - content_width );
+  if align_right { format!( "{pad}{s}" ) } else { format!( "{s}{pad}" ) }
+}
+
 /// Truncate text to maximum visual width with ANSI code preservation
 ///
 /// Truncates text to fit within `max_width` visual characters, appending

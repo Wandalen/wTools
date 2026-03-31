@@ -5,6 +5,10 @@
 | Order | ID | Advisability | Value | Easiness | Safety | Priority | Status | Task | Description |
 |-------|----|--------------:|------:|---------:|-------:|---------:|--------|------|-------------|
 | 1 | [011](completed/011_make_table_config_api_misuse_resistant.md) | 0 | 7 | 4 | 6 | 0 | ✅ (Completed) | Make `TableConfig` API misuse-resistant | Make `TableConfig` fields private so struct literal misconfiguration is a compile error |
+| 12 | [012](completed/012_enforce_min_column_width.md) | 0 | 6 | 7 | 8 | 0 | ✅ (Completed) | Enforce `min_column_width` floor | Floor enforcement after max cap in `calculate_column_widths_for_rows` |
+| 13 | [013](completed/013_ansi_header_row_coloring.md) | 0 | 7 | 5 | 7 | 0 | ✅ (Completed) | ANSI header and alternating-row coloring | Temp-buffer coloring strategy in `format_internal()` |
+| 14 | [014](completed/014_border_variant_rendering.md) | 0 | 8 | 5 | 7 | 0 | ✅ (Completed) | Border variant rendering | Top/bottom borders, inter-row separators, AsciiGrid corner fix |
+| 15 | [015](completed/015_unicode_display_width.md) | 0 | 8 | 6 | 9 | 0 | ✅ (Completed) | Unicode display width fix | Replace char-count with display-width in column calculation and cell padding |
 | 2 | [003](completed/003_fix_unicode_display_width_alignment.md) | 0 | 9 | 5 | 8 | 0 | ✅ (Completed) | Fix Unicode display width alignment bug | Fix character-count vs display-width mismatch causing misalignment with CJK/emoji (wide chars) |
 | 3 | [001](completed/001_implement_multiline_cells_and_column_limits.md) | 0 | 8 | 7 | 5 | 0 | ✅ (Completed) | Implement multiline cell support and column size limits | Add support for multiline cells with automatic wrapping and configurable column width limits with truncation |
 | 4 | [002](completed/002_fix_unicode_table_border_alignment.md) | 0 | 7 | 8 | 9 | 0 | ✅ (Completed) | Fix Unicode table border alignment bug | Add Unicode variant to needs_border_pipes logic for proper vertical pipe rendering |
@@ -18,9 +22,9 @@
 
 ## Statistics
 
-- **Total Tasks:** 11
+- **Total Tasks:** 15
 - **Active:** 0
-- **Completed:** 11
+- **Completed:** 15
 - **Backlog:** 0
 
 ## Issue Index

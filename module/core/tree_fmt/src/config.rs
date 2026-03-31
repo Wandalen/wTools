@@ -178,15 +178,6 @@ impl Default for ColumnSeparator
 ///
 /// ## Known Pitfalls
 ///
-/// **Unimplemented fields** (API promise, not yet rendered by `TableFormatter`):
-/// - `border_variant` — stored and accepted by setter, but `TableFormatter` does not read it
-/// - `colorize_header`, `header_color` — ANSI header color API present, formatter ignores it
-/// - `alternating_rows`, `row_color1`, `row_color2` — row color API present, not rendered
-/// - `min_column_width` — stored but not enforced during column sizing
-///
-/// Setting these fields changes `TableConfig` state but produces no visible output change.
-/// They represent forward-compatible API surface reserved for future formatter enhancements.
-///
 /// **Default column separator**: `TableConfig::default()` (= `new()`) sets
 /// `column_separator: Spaces(2)`, NOT `ColumnSeparator::default()` which is `Character('|')`.
 /// Use `bordered()` if pipe-separated output is required without an explicit setter call.
@@ -557,6 +548,48 @@ impl TableConfig
   pub( crate ) fn col_widths_override( &self ) -> &[ usize ]
   {
     &self.column_widths
+  }
+
+  /// Minimum column width floor (accessor; distinct from `min_column_width` setter)
+  pub( crate ) fn min_col_width( &self ) -> usize
+  {
+    self.min_column_width
+  }
+
+  /// Border rendering variant (accessor; distinct from `border_variant` setter)
+  pub( crate ) fn bdr_variant( &self ) -> BorderVariant
+  {
+    self.border_variant
+  }
+
+  /// Whether header row coloring is enabled
+  pub( crate ) fn colorize_header_enabled( &self ) -> bool
+  {
+    self.colorize_header
+  }
+
+  /// ANSI color string for the header row (empty = none)
+  pub( crate ) fn header_color_str( &self ) -> &str
+  {
+    &self.header_color
+  }
+
+  /// Whether alternating row coloring is enabled
+  pub( crate ) fn alternating_rows_enabled( &self ) -> bool
+  {
+    self.alternating_rows
+  }
+
+  /// ANSI color string for even-indexed data rows (empty = none)
+  pub( crate ) fn row_color1_str( &self ) -> &str
+  {
+    &self.row_color1
+  }
+
+  /// ANSI color string for odd-indexed data rows (empty = none)
+  pub( crate ) fn row_color2_str( &self ) -> &str
+  {
+    &self.row_color2
   }
 }
 

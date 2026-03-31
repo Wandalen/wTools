@@ -2,15 +2,14 @@
 //!
 //! Tests theme application across different formatters and configurations.
 //!
-//! ## Note on Color Field Assertions (v0.10.0)
+//! ## Note on Color Field Assertions (v0.10.0+)
 //!
 //! `TableConfig` fields (`colorize_header`, `header_color`, `alternating_rows`,
-//! `row_color1`, `row_color2`) are private since v0.10.0 and are not yet rendered
-//! by `TableFormatter`. Tests that previously checked these fields directly now
-//! verify the observable API contract: theme application does not panic and
-//! the resulting config correctly renders data.
-//!
-//! Behavioral assertions for `inner_padding` are preserved since it IS rendered.
+//! `row_color1`, `row_color2`) are private since v0.10.0 and are rendered as ANSI
+//! escape codes by `TableFormatter`. When a theme is applied, colored rows begin
+//! with an ANSI escape sequence rather than the border character — so assertions
+//! must use `contains` rather than `starts_with` when checking visible content
+//! that may be preceded by ANSI codes.
 
 #[ cfg( feature = "themes" ) ]
 mod theme_tests
@@ -266,16 +265,17 @@ mod theme_tests
       "dark and light themes should have different header colors"
     );
 
-    // Both preserve inner_padding=2: rows start with "|  " for bordered + inner_padding=2
+    // Both preserve inner_padding=2: output contains "|  " (ANSI-colored rows start with escape
+    // codes, so contains() is required rather than starts_with()).
     let dark_output = TableFormatter::with_config( dark_config ).format( &sample_row() );
     let light_output = TableFormatter::with_config( light_config ).format( &sample_row() );
 
     assert!(
-      dark_output.lines().any( | l | l.starts_with( "|  " ) ),
+      dark_output.lines().any( | l | l.contains( "|  " ) ),
       "dark theme preserves inner_padding=2; output:\n{dark_output}"
     );
     assert!(
-      light_output.lines().any( | l | l.starts_with( "|  " ) ),
+      light_output.lines().any( | l | l.contains( "|  " ) ),
       "light theme preserves inner_padding=2; output:\n{light_output}"
     );
   }
@@ -290,10 +290,11 @@ mod theme_tests
         .min_column_width( 20 )
     );
 
-    // inner_padding=3 preserved: rows start with "|   " (border + 3 spaces)
+    // inner_padding=3 preserved: output contains "|   " (border + 3 spaces). Uses contains()
+    // because nord theme activates ANSI coloring, prepending escape codes before the border char.
     let output = TableFormatter::with_config( config ).format( &sample_row() );
     assert!(
-      output.lines().any( | l | l.starts_with( "|   " ) ),
+      output.lines().any( | l | l.contains( "|   " ) ),
       "inner_padding=3 preserved after nord theme application; output:\n{output}"
     );
     assert!( output.contains( "Alice" ), "themed config must render data; output:\n{output}" );

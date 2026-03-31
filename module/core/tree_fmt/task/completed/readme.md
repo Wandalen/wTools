@@ -19,3 +19,7 @@ Archive of completed tasks documenting bug fixes, feature implementations, and i
 | `004_add_word_wrapping_utility.md` | Document WrapFormatter / WrapConfig implementation with 22 tests |
 | `010_update_stale_test_counts.md` | Document test count update in tests/readme.md after task 004 |
 | `011_make_table_config_api_misuse_resistant.md` | Document TableConfig field-privacy breaking change and all 8 fixed call sites |
+| `012_enforce_min_column_width.md` | Document min_column_width floor enforcement in column width calculation |
+| `013_ansi_header_row_coloring.md` | Document ANSI header coloring and alternating-row coloring implementation |
+| `014_border_variant_rendering.md` | Document top/bottom border and inter-row separator rendering with AsciiGrid corner fix |
+| `015_unicode_display_width.md` | Document Unicode display width fix for column calculation and cell padding |

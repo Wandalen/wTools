@@ -544,10 +544,10 @@ are now private. Struct literal initialization outside `src/config.rs` is a comp
 External callers must use preset constructors (`plain()`, `unicode_box()`, etc.) or builder
 setter methods (`.border_variant()`, `.column_separator()`, etc.).
 
-**Call-site fix (task 241 — 🔄 BLOCKING):** The four `style.rs` files in the gi workspace
-(`gi_infra`, `gi_catalog`, `gi_prs`, `gi_users`) still use the old struct literal pattern.
-With fields now private these files fail to compile. Fix tracked in
-`willbe/wip/module/gi/task/241_fix_cli_table_column_separators.md`.
+**Call-site fix (task 011 — ✅ DONE, commit `80660b59` 2026-03-31):** The `gi_infra` call site
+(`gi_infra/src/formatters/style.rs`) was migrated to `TableConfig::unicode_box()` as part of task
+011. All remaining gi workspace `style.rs` files were updated in the same commit. No blocking
+compile errors remain.
 
 ### Lesson Learned
 
@@ -555,3 +555,45 @@ When multiple config fields must be set consistently to form a valid style (e.g.
 borders require Unicode column separators), keeping those fields public allows callers to set
 some and forget others. Preset constructors (`plain()`, `unicode_box()`, etc.) guarantee
 consistency; struct literals do not.
+
+---
+
+## AsciiGrid Header Separator Corner Character Bug (Diagnosed 2026-04-01)
+
+### Bug Description
+
+`format_header_separator()` in `src/formatters/table.rs` renders the `AsciiGrid` header
+separator line with `'|'` as corner/junction characters, producing:
+
+```
+|---|---|---|
+```
+
+But the spec defines `HeaderSeparatorVariant::AsciiGrid` as `+-----+` — corners must be `'+'`,
+not `'|'`. The rendered rows themselves correctly use `'|'` for column separators (via
+`format_row()` → `needs_border_pipes` branch), so only the separator line corners are wrong.
+
+### Root Cause
+
+The `AsciiGrid` branch in `format_header_separator()` uses `'|'` hard-coded as the left/right
+delimiter and `'+'` as the internal junction. The correct character mapping is:
+
+```
+left corner  : '+'   (was '|')
+fill         : '-'   (correct)
+junction     : '+'   (correct)
+right corner : '+'   (was '|')
+```
+
+### Fix Applied
+
+**Task 014 (border_variant_rendering):** `format_header_separator()` is replaced by a
+parameterized `format_horizontal_ascii_rule(left, fill, mid, right, widths, padding)` helper
+that is called with `('+', '-', '+', '+', ...)` for AsciiGrid, producing the correct `+---+`
+output. The same helper is reused for top/bottom borders and inter-row separators.
+
+### Known Pitfall
+
+Do not confuse `format_row()` column separators (always `'|'` for AsciiGrid data rows, correct)
+with `format_header_separator()` corner characters (must be `'+'` for AsciiGrid, was wrong).
+These are separate code paths; fixing the separator does not affect row rendering.

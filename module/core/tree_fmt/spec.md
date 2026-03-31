@@ -1899,6 +1899,23 @@ impl TableFormatter {
 
 **Column Width Calculation**: `max(header_width, max(row[i]_width for all rows))`
 
+**Min Column Width Floor**: When `TableConfig::min_column_width` is set to a non-zero value, every
+column is widened to at least that many display characters after the max-content calculation:
+
+```
+width = max(header_width, max(row[i]_width))  // content-driven max
+if min_column_width > 0:
+    width = max(width, min_column_width)        // floor applied after max cap
+```
+
+**Interaction with `max_column_width`**: When both are set, `max_column_width` is applied first
+(capping wide content), then `min_column_width` raises any remaining short columns. If
+`min_column_width > max_column_width`, columns settle at `min_column_width` (floor wins).
+
+**Override bypass**: When `TableConfig::column_widths` (the override) is set, it completely
+replaces the calculated widths and both `min_column_width` and `max_column_width` are ignored.
+Override is intended for callers that supply exact widths and need precise control.
+
 **Column Truncation** (NEW):
 
 When `TableConfig::max_column_width` is set to `Some(width)`, cells exceeding this width are truncated:

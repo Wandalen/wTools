@@ -96,10 +96,15 @@
 
 use crate::{ TreeNode, TableConfig };
 use crate::data::TableShapedView;
-use crate::ansi_str::{ visual_len, pad_to_width };
+use crate::ansi_str::{ unicode_visual_len, pad_unicode_width };
 
 /// Initial string capacity for table output
 const INITIAL_CAPACITY : usize = 512;
+
+/// ANSI reset escape code — terminates any active color or style.
+/// Must appear BEFORE `\n` in every colored line to prevent terminal
+/// background-color bleed across the rest of the line.
+const ANSI_RESET : &str = "\x1b[0m";
 
 /// Formatter for rendering tabular data as strings
 ///
@@ -206,17 +211,64 @@ impl TableFormatter
     // Calculate column widths
     let column_widths = self.calculate_column_widths_for_rows( headers, rows );
 
-    // Format header row
-    self.format_row( &mut output, headers, &column_widths, true );
+    // Top border (AsciiGrid / Unicode only)
+    self.format_top_border_if_needed( &mut output, &column_widths );
 
-    // Format header separator
+    // Header row — optionally wrapped in ANSI color via temp buffer
+    let header_color = self.config.header_color_str();
+    if self.config.colorize_header_enabled() && !header_color.is_empty()
+    {
+      let mut row_buf = String::new();
+      self.format_row( &mut row_buf, headers, &column_widths, true );
+      let content = row_buf.trim_end_matches( '\n' );
+      output.push_str( header_color );
+      output.push_str( content );
+      output.push_str( ANSI_RESET );
+      output.push( '\n' );
+    }
+    else
+    {
+      self.format_row( &mut output, headers, &column_widths, true );
+    }
+
+    // Header separator
     self.format_header_separator( &mut output, &column_widths );
 
-    // Format data rows
-    for row in rows
+    // Data rows — optionally alternating color, with inter-row separators
+    for ( idx, row ) in rows.iter().enumerate()
     {
-      self.format_row( &mut output, row, &column_widths, false );
+      let color = if self.config.alternating_rows_enabled()
+      {
+        if idx % 2 == 0 { self.config.row_color1_str() } else { self.config.row_color2_str() }
+      }
+      else
+      {
+        ""
+      };
+
+      if color.is_empty()
+      {
+        self.format_row( &mut output, row, &column_widths, false );
+      }
+      else
+      {
+        let mut row_buf = String::new();
+        self.format_row( &mut row_buf, row, &column_widths, false );
+        let content = row_buf.trim_end_matches( '\n' );
+        output.push_str( color );
+        output.push_str( content );
+        output.push_str( ANSI_RESET );
+        output.push( '\n' );
+      }
+
+      if idx < rows.len() - 1
+      {
+        self.format_inter_row_sep_if_needed( &mut output, &column_widths );
+      }
     }
+
+    // Bottom border (AsciiGrid / Unicode only)
+    self.format_bottom_border_if_needed( &mut output, &column_widths );
 
     output
   }
@@ -345,7 +397,7 @@ impl TableFormatter
       // Apply truncation if max_column_width is set
       //
       // Key Decision: Truncate BEFORE padding (not after)
-      // - Rationale: pad_to_width expects final content, not pre-padded
+      // - Rationale: pad_unicode_width expects final content, not pre-padded
       // - Order: truncate → pad → render
       // - Multiline: truncate_cell handles per-line truncation internally
       //
@@ -366,7 +418,7 @@ impl TableFormatter
       // Render cell content (padded for aligned formats, raw for CSV/TSV)
       if should_pad
       {
-        output.push_str( &pad_to_width( &cell_content, width, align_right ) );
+        output.push_str( &pad_unicode_width( &cell_content, width, align_right ) );
       }
       else
       {
@@ -475,7 +527,7 @@ impl TableFormatter
         };
 
         // Pad and render line
-        output.push_str( &pad_to_width( &line_content, width, align_right ) );
+        output.push_str( &pad_unicode_width( &line_content, width, align_right ) );
 
         // Add column separator (except after last column)
         if col_idx < cells.len() - 1
@@ -565,8 +617,11 @@ impl TableFormatter
       }
       HeaderSeparatorVariant::AsciiGrid =>
       {
-        // Pipe-separated dashes matching cell format: |-----|-----|
-        output.push( '|' );
+        // Grid-style separator matching border rule format: +-----|-----+
+        // Fix(issue-014): corners changed from '|' to '+' for AsciiGrid consistency.
+        // Root cause: '|' was hardcoded, mismatching the '+' used in border rules.
+        // Pitfall: only change the corner/junction chars here; data row pipes stay '|'.
+        output.push( '+' );
         for ( idx, &width ) in column_widths.iter().enumerate()
         {
           // Leading padding for first column
@@ -578,14 +633,14 @@ impl TableFormatter
           // Dashes for content width
           output.push_str( &"-".repeat( width ) );
 
-          // Trailing padding for last column (before the pipe!)
+          // Trailing padding for last column (before the plus!)
           if idx == column_widths.len() - 1 && self.config.has_outer_padding()
           {
             output.push_str( &"-".repeat( self.config.cell_inner_padding() ) );
           }
 
-          // Column separator as pipe (after all content)
-          output.push( '|' );
+          // Column junction as '+' (after all content)
+          output.push( '+' );
         }
         output.push( '\n' );
       }
@@ -618,9 +673,143 @@ impl TableFormatter
     }
   }
 
+  /// Render one ASCII horizontal rule line with parameterized corner/fill/mid chars.
+  ///
+  /// Used for top border, bottom border, header separator, and inter-row separators
+  /// in `BorderVariant::AsciiGrid`. Outer padding (`cell_inner_padding` spaces) is
+  /// replaced by `fill` characters at the table's outer edges.
+  ///
+  /// Example: `widths=[1,1]`, `outer_padding=1`, left='+', fill='-', mid='+', right='+'
+  /// → `+--+--+`
+  fn format_ascii_horizontal_rule(
+    &self,
+    output : &mut String,
+    widths : &[ usize ],
+    left : char,
+    fill : char,
+    mid : char,
+    right : char
+  )
+  {
+    output.push( left );
+    for ( idx, &width ) in widths.iter().enumerate()
+    {
+      if idx == 0 && self.config.has_outer_padding()
+      {
+        output.push_str( &fill.to_string().repeat( self.config.cell_inner_padding() ) );
+      }
+      output.push_str( &fill.to_string().repeat( width ) );
+      if idx == widths.len() - 1 && self.config.has_outer_padding()
+      {
+        output.push_str( &fill.to_string().repeat( self.config.cell_inner_padding() ) );
+      }
+      output.push( if idx < widths.len() - 1 { mid } else { right } );
+    }
+    output.push( '\n' );
+  }
+
+  /// Render one Unicode box-drawing horizontal rule line with parameterized chars.
+  ///
+  /// Same structure as `format_ascii_horizontal_rule`; `'─'` is multi-byte but
+  /// `fill.to_string().repeat(n)` counts chars, not bytes, so it works correctly.
+  ///
+  /// Example: top border → `┌──┬──┐`, bottom → `└──┴──┘`
+  fn format_unicode_horizontal_rule(
+    &self,
+    output : &mut String,
+    widths : &[ usize ],
+    left : char,
+    fill : char,
+    mid : char,
+    right : char
+  )
+  {
+    output.push( left );
+    for ( idx, &width ) in widths.iter().enumerate()
+    {
+      if idx == 0 && self.config.has_outer_padding()
+      {
+        output.push_str( &fill.to_string().repeat( self.config.cell_inner_padding() ) );
+      }
+      output.push_str( &fill.to_string().repeat( width ) );
+      if idx == widths.len() - 1 && self.config.has_outer_padding()
+      {
+        output.push_str( &fill.to_string().repeat( self.config.cell_inner_padding() ) );
+      }
+      output.push( if idx < widths.len() - 1 { mid } else { right } );
+    }
+    output.push( '\n' );
+  }
+
+  /// Emit top border if the border variant requires one.
+  ///
+  /// `AsciiGrid` → `+---+---+`  (ASCII horizontal rule)
+  /// `Unicode`   → `┌───┬───┐`  (Unicode box-drawing top)
+  /// Others      → no-op
+  fn format_top_border_if_needed( &self, output : &mut String, widths : &[ usize ] )
+  {
+    use crate::config::BorderVariant;
+    match self.config.bdr_variant()
+    {
+      BorderVariant::AsciiGrid =>
+      {
+        self.format_ascii_horizontal_rule( output, widths, '+', '-', '+', '+' );
+      }
+      BorderVariant::Unicode =>
+      {
+        self.format_unicode_horizontal_rule( output, widths, '┌', '─', '┬', '┐' );
+      }
+      _ => {}
+    }
+  }
+
+  /// Emit bottom border if the border variant requires one.
+  ///
+  /// `AsciiGrid` → `+---+---+`
+  /// `Unicode`   → `└───┴───┘`
+  /// Others      → no-op
+  fn format_bottom_border_if_needed( &self, output : &mut String, widths : &[ usize ] )
+  {
+    use crate::config::BorderVariant;
+    match self.config.bdr_variant()
+    {
+      BorderVariant::AsciiGrid =>
+      {
+        self.format_ascii_horizontal_rule( output, widths, '+', '-', '+', '+' );
+      }
+      BorderVariant::Unicode =>
+      {
+        self.format_unicode_horizontal_rule( output, widths, '└', '─', '┴', '┘' );
+      }
+      _ => {}
+    }
+  }
+
+  /// Emit an inter-row separator if the border variant requires one.
+  ///
+  /// `AsciiGrid` → `+---+---+`
+  /// `Unicode`   → `├───┼───┤`  (same character set as header separator)
+  /// Others      → no-op
+  fn format_inter_row_sep_if_needed( &self, output : &mut String, widths : &[ usize ] )
+  {
+    use crate::config::BorderVariant;
+    match self.config.bdr_variant()
+    {
+      BorderVariant::AsciiGrid =>
+      {
+        self.format_ascii_horizontal_rule( output, widths, '+', '-', '+', '+' );
+      }
+      BorderVariant::Unicode =>
+      {
+        self.format_unicode_horizontal_rule( output, widths, '├', '─', '┼', '┤' );
+      }
+      _ => {}
+    }
+  }
+
   /// Calculate column widths based on content
   ///
-  /// Uses `visual_len()` to properly handle ANSI color codes in cell content.
+  /// Uses `unicode_visual_len()` for display-width-aware, ANSI-stripping measurement.
   fn calculate_column_widths_for_rows(
     &self,
     headers : &[ String ],
@@ -637,21 +826,21 @@ impl TableFormatter
     // Auto-calculate based on content
     let mut widths = vec![ 0; headers.len() ];
 
-    // Consider header widths (using visual length for ANSI-aware calculation)
+    // Consider header widths (unicode display-width, ANSI-stripped)
     for ( idx, header ) in headers.iter().enumerate()
     {
-      let header_width = visual_len( header );
+      let header_width = unicode_visual_len( header );
       widths[ idx ] = header_width;
     }
 
-    // Consider row widths (using visual length for ANSI-aware calculation)
+    // Consider row widths (unicode display-width, ANSI-stripped)
     for row in rows
     {
       for ( idx, cell ) in row.iter().enumerate()
       {
         if idx < widths.len()
         {
-          let cell_width = visual_len( cell );
+          let cell_width = unicode_visual_len( cell );
           widths[ idx ] = widths[ idx ].max( cell_width );
         }
       }
@@ -664,6 +853,17 @@ impl TableFormatter
       for width in &mut widths
       {
         *width = (*width).min( max_width );
+      }
+    }
+
+    // Enforce min_column_width floor (applied after max cap so min can override max)
+    // Guard: default min is 0, which is a no-op; skip the loop in that case
+    let min = self.config.min_col_width();
+    if min > 0
+    {
+      for width in &mut widths
+      {
+        *width = ( *width ).max( min );
       }
     }
 
