@@ -3,7 +3,6 @@
 //! ## What This Tests
 //!
 //! Tests that ensure v0.3.0 refactoring maintains backward compatibility and prevents regressions:
-//! - Deprecated `show_borders()` method still works correctly
 //! - Default behavior unchanged (bordered output)
 //! - Edge cases (empty tables, single row, wide tables)
 //! - Custom separator configurations
@@ -47,18 +46,6 @@ use inc::sample_data;
 // =============================================================================
 // Backward Compatibility Tests
 // =============================================================================
-
-#[ test ]
-fn test_deprecated_show_borders_maps_to_border_style()
-{
-  #[ allow( deprecated ) ]
-  let config_with_borders = TableConfig::new().show_borders( true );
-  assert_eq!( config_with_borders.border_variant, BorderVariant::Ascii );
-
-  #[ allow( deprecated ) ]
-  let config_without_borders = TableConfig::new().show_borders( false );
-  assert_eq!( config_without_borders.border_variant, BorderVariant::None );
-}
 
 #[ test ]
 fn test_default_behavior_unchanged()

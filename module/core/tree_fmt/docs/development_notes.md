@@ -487,3 +487,68 @@ When updating this project:
 - ✅ Zero knowledge loss from development process
 - ✅ New developers can understand design decisions
 - ✅ Future maintenance is easier, not harder
+
+---
+
+## TableConfig API Misuse Pitfall (Diagnosed 2026-03-31)
+
+### Bug Description
+
+All four `style.rs` files in the gi workspace (`gi_infra`, `gi_catalog`, `gi_prs`, `gi_users`)
+used struct literal syntax to configure a Unicode table:
+
+```rust
+#[ allow( deprecated ) ]
+TableConfig
+{
+  border_variant           : BorderVariant::Unicode,
+  header_separator_variant : HeaderSeparatorVariant::Unicode,
+  outer_padding            : true,
+  inner_padding            : 1,
+  ..TableConfig::default()  // column_separator = Spaces(2) from default — WRONG
+}
+```
+
+`border_variant` and `header_separator_variant` are set to `Unicode`, causing the separator row
+to emit `┼` between columns. But `column_separator` is inherited from `TableConfig::default()`
+as `Spaces(2)`. The result: separator row has `┼` box-drawing but every data row has plain
+spaces — no `│` between columns. Visually broken for all gi table-producing commands.
+
+### Correct Pattern
+
+Use the `unicode_box()` preset, which pairs all three Unicode fields correctly:
+
+```rust
+// CORRECT — all three Unicode-related fields set consistently:
+TableConfig::unicode_box()
+// expands to:
+//   border_variant           : BorderVariant::Unicode,
+//   header_separator_variant : HeaderSeparatorVariant::Unicode,
+//   column_separator         : ColumnSeparator::Character( '│' ),  ← the missing field
+//   outer_padding            : true,
+//   inner_padding            : 1,
+```
+
+### Root Cause
+
+`TableConfig` fields are `pub`, so callers can construct partial configurations via struct
+literal syntax. Setting two of the three Unicode-related fields and relying on `..default()` for
+the third creates a semantically inconsistent `TableConfig` that compiles fine but renders broken
+output. The struct literal pattern allows callers to forget fields that form a cohesive style
+group.
+
+### Fix Tracking
+
+The immediate call-site fix (replace all 4 broken struct literals with `TableConfig::unicode_box()`)
+is tracked in **task 241** (`gi/task/241_fix_cli_table_column_separators.md`).
+
+The structural fix (make `TableConfig` fields private so struct literal initialization outside
+`src/config.rs` is a compile error) is tracked in **task 011**
+(`tree_fmt/task/011_make_table_config_api_misuse_resistant.md`).
+
+### Lesson Learned
+
+When multiple config fields must be set consistently to form a valid style (e.g., Unicode
+borders require Unicode column separators), keeping those fields public allows callers to set
+some and forget others. Preset constructors (`plain()`, `unicode_box()`, etc.) guarantee
+consistency; struct literals do not.

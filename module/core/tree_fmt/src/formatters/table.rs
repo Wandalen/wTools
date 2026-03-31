@@ -266,7 +266,7 @@ impl TableFormatter
   {
     // CSV/TSV formats should NOT pad cells for alignment
     let is_csv_or_tsv = matches!(
-      &self.config.column_separator,
+      self.config.col_sep(),
       crate::config::ColumnSeparator::Character( ',' | '\t' )
     );
     let should_pad = !is_csv_or_tsv;
@@ -314,13 +314,13 @@ impl TableFormatter
     // This maintains consistency with header separator formatting - if the separator
     // line has pipes, all rows must also have pipes for proper alignment.
     let needs_border_pipes = matches!(
-      self.config.header_separator_variant,
+      self.config.header_sep_variant(),
       HeaderSeparatorVariant::AsciiGrid | HeaderSeparatorVariant::Markdown | HeaderSeparatorVariant::Unicode
     );
 
     if needs_border_pipes
     {
-      let border_char = if matches!( self.config.header_separator_variant, HeaderSeparatorVariant::Unicode )
+      let border_char = if matches!( self.config.header_sep_variant(), HeaderSeparatorVariant::Unicode )
       {
         '│'
       }
@@ -334,12 +334,12 @@ impl TableFormatter
     for ( idx, cell ) in cells.iter().enumerate()
     {
       let width = column_widths.get( idx ).copied().unwrap_or( 10 );
-      let align_right = self.config.align_right.get( idx ).copied().unwrap_or( false );
+      let align_right = self.config.col_align_right().get( idx ).copied().unwrap_or( false );
 
       // Add padding before cell if outer_padding enabled (skip for CSV/TSV)
-      if idx == 0 && self.config.outer_padding && should_pad
+      if idx == 0 && self.config.has_outer_padding() && should_pad
       {
-        output.push_str( &" ".repeat( self.config.inner_padding ) );
+        output.push_str( &" ".repeat( self.config.cell_inner_padding() ) );
       }
 
       // Apply truncation if max_column_width is set
@@ -354,9 +354,9 @@ impl TableFormatter
       // - Always use max_column_width for truncation limit, not calculated width
       // - Example: If content is 50 chars and max_column_width=20, truncate to 20
       //   (not to calculated width of 50)
-      let cell_content = if let Some( max_width ) = self.config.max_column_width
+      let cell_content = if let Some( max_width ) = self.config.max_col_width()
       {
-        crate::ansi_str::truncate_cell( cell, max_width, &self.config.truncation_marker )
+        crate::ansi_str::truncate_cell( cell, max_width, self.config.trunc_marker() )
       }
       else
       {
@@ -380,16 +380,16 @@ impl TableFormatter
       }
 
       // Add padding after last cell if outer_padding enabled (skip for CSV/TSV)
-      if idx == cells.len() - 1 && self.config.outer_padding && should_pad
+      if idx == cells.len() - 1 && self.config.has_outer_padding() && should_pad
       {
-        output.push_str( &" ".repeat( self.config.inner_padding ) );
+        output.push_str( &" ".repeat( self.config.cell_inner_padding() ) );
       }
     }
 
     // Add trailing border pipe if header separator style uses pipes
     if needs_border_pipes
     {
-      let border_char = if matches!( self.config.header_separator_variant, HeaderSeparatorVariant::Unicode )
+      let border_char = if matches!( self.config.header_sep_variant(), HeaderSeparatorVariant::Unicode )
       {
         '│'
       }
@@ -431,7 +431,7 @@ impl TableFormatter
       .unwrap_or( 1 );
 
     let needs_border_pipes = matches!(
-      self.config.header_separator_variant,
+      self.config.header_sep_variant(),
       HeaderSeparatorVariant::AsciiGrid | HeaderSeparatorVariant::Markdown | HeaderSeparatorVariant::Unicode
     );
 
@@ -441,7 +441,7 @@ impl TableFormatter
       // Add leading border pipe if needed
       if needs_border_pipes
       {
-        let border_char = if matches!( self.config.header_separator_variant, HeaderSeparatorVariant::Unicode )
+        let border_char = if matches!( self.config.header_sep_variant(), HeaderSeparatorVariant::Unicode )
         {
           '│'
         }
@@ -456,18 +456,18 @@ impl TableFormatter
       {
         let line = cell_lines.get( line_idx ).unwrap_or( &"" );
         let width = column_widths.get( col_idx ).copied().unwrap_or( 10 );
-        let align_right = self.config.align_right.get( col_idx ).copied().unwrap_or( false );
+        let align_right = self.config.col_align_right().get( col_idx ).copied().unwrap_or( false );
 
         // Add padding before cell if outer_padding enabled
-        if col_idx == 0 && self.config.outer_padding
+        if col_idx == 0 && self.config.has_outer_padding()
         {
-          output.push_str( &" ".repeat( self.config.inner_padding ) );
+          output.push_str( &" ".repeat( self.config.cell_inner_padding() ) );
         }
 
         // Apply truncation to individual line if max_column_width is set
-        let line_content = if let Some( max_width ) = self.config.max_column_width
+        let line_content = if let Some( max_width ) = self.config.max_col_width()
         {
-          crate::ansi_str::truncate_cell( line, max_width, &self.config.truncation_marker )
+          crate::ansi_str::truncate_cell( line, max_width, self.config.trunc_marker() )
         }
         else
         {
@@ -484,16 +484,16 @@ impl TableFormatter
         }
 
         // Add padding after last cell if outer_padding enabled
-        if col_idx == cells.len() - 1 && self.config.outer_padding
+        if col_idx == cells.len() - 1 && self.config.has_outer_padding()
         {
-          output.push_str( &" ".repeat( self.config.inner_padding ) );
+          output.push_str( &" ".repeat( self.config.cell_inner_padding() ) );
         }
       }
 
       // Add trailing border pipe if needed
       if needs_border_pipes
       {
-        let border_char = if matches!( self.config.header_separator_variant, HeaderSeparatorVariant::Unicode )
+        let border_char = if matches!( self.config.header_sep_variant(), HeaderSeparatorVariant::Unicode )
         {
           '│'
         }
@@ -511,7 +511,7 @@ impl TableFormatter
   /// Append column separator based on formatter parameters
   fn append_column_separator( &self, output : &mut String )
   {
-    match &self.config.column_separator
+    match self.config.col_sep()
     {
       crate::config::ColumnSeparator::Spaces( n ) =>
       {
@@ -533,7 +533,7 @@ impl TableFormatter
   {
     use crate::config::HeaderSeparatorVariant;
 
-    match self.config.header_separator_variant
+    match self.config.header_sep_variant()
     {
       HeaderSeparatorVariant::None =>
       {
@@ -544,9 +544,9 @@ impl TableFormatter
         // Plain dashes under each column
         for ( idx, &width ) in column_widths.iter().enumerate()
         {
-          if idx == 0 && self.config.outer_padding
+          if idx == 0 && self.config.has_outer_padding()
           {
-            output.push_str( &" ".repeat( self.config.inner_padding ) );
+            output.push_str( &" ".repeat( self.config.cell_inner_padding() ) );
           }
 
           output.push_str( &"-".repeat( width ) );
@@ -556,9 +556,9 @@ impl TableFormatter
             self.append_column_separator( output );
           }
 
-          if idx == column_widths.len() - 1 && self.config.outer_padding
+          if idx == column_widths.len() - 1 && self.config.has_outer_padding()
           {
-            output.push_str( &" ".repeat( self.config.inner_padding ) );
+            output.push_str( &" ".repeat( self.config.cell_inner_padding() ) );
           }
         }
         output.push( '\n' );
@@ -570,18 +570,18 @@ impl TableFormatter
         for ( idx, &width ) in column_widths.iter().enumerate()
         {
           // Leading padding for first column
-          if idx == 0 && self.config.outer_padding
+          if idx == 0 && self.config.has_outer_padding()
           {
-            output.push_str( &"-".repeat( self.config.inner_padding ) );
+            output.push_str( &"-".repeat( self.config.cell_inner_padding() ) );
           }
 
           // Dashes for content width
           output.push_str( &"-".repeat( width ) );
 
           // Trailing padding for last column (before the pipe!)
-          if idx == column_widths.len() - 1 && self.config.outer_padding
+          if idx == column_widths.len() - 1 && self.config.has_outer_padding()
           {
-            output.push_str( &"-".repeat( self.config.inner_padding ) );
+            output.push_str( &"-".repeat( self.config.cell_inner_padding() ) );
           }
 
           // Column separator as pipe (after all content)
@@ -629,9 +629,9 @@ impl TableFormatter
   -> Vec< usize >
   {
     // Use provided widths if available
-    if !self.config.column_widths.is_empty()
+    if !self.config.col_widths_override().is_empty()
     {
-      return self.config.column_widths.clone();
+      return self.config.col_widths_override().to_vec();
     }
 
     // Auto-calculate based on content
@@ -659,7 +659,7 @@ impl TableFormatter
 
     // Cap column widths at max_column_width if configured
     // This ensures truncated columns don't get padded back to original size
-    if let Some( max_width ) = self.config.max_column_width
+    if let Some( max_width ) = self.config.max_col_width()
     {
       for width in &mut widths
       {

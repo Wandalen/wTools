@@ -343,24 +343,24 @@ Beyond style presets, `TableConfig` supports granular control over formatter par
 ```rust
 pub struct TableConfig
 {
-  // Existing fields
-  pub column_widths : Vec< usize >,
-  pub align_right : Vec< bool >,
+  // Fields are private — use preset constructors or builder setters
+  column_widths : Vec< usize >,
+  align_right : Vec< bool >,
 
   // NEW in v0.3.0
-  pub border_variant : BorderVariant,
-  pub header_separator_variant : HeaderSeparatorVariant,
-  pub column_separator : ColumnSeparator,
-  pub outer_padding : bool,
-  pub inner_padding : usize,
-  pub colorize_header : bool,
-  pub header_color : String,
-  pub alternating_rows : bool,
-  pub row_color1 : String,
-  pub row_color2 : String,
-  pub min_column_width : usize,
-  pub max_column_width : Option< usize >,
-  pub truncation_marker : String,
+  border_variant : BorderVariant,
+  header_separator_variant : HeaderSeparatorVariant,
+  column_separator : ColumnSeparator,
+  outer_padding : bool,
+  inner_padding : usize,
+  colorize_header : bool,
+  header_color : String,
+  alternating_rows : bool,
+  row_color1 : String,
+  row_color2 : String,
+  min_column_width : usize,
+  max_column_width : Option< usize >,
+  truncation_marker : String,
 }
 ```
 
@@ -1260,28 +1260,31 @@ pub enum ColumnSeparator
 #### TableConfig
 
 ```rust
-/// Formatter parameters for table output
+/// Formatter parameters for table output.
+///
+/// All fields are private. External callers must use preset constructors
+/// (e.g., `TableConfig::unicode_box()`) or builder setter methods.
+/// Struct literal initialization outside `src/config.rs` is a compile error.
 #[derive(Debug, Clone)]
 pub struct TableConfig {
-  // Legacy fields (v0.1-v0.2)
-  pub show_borders: bool,          // Deprecated: use border_variant
-  pub column_widths: Vec<usize>,
-  pub align_right: Vec<bool>,
+  // Fields are private — use preset constructors or builder setters
+  column_widths: Vec<usize>,
+  align_right: Vec<bool>,
 
   // NEW in v0.3.0
-  pub border_variant: BorderVariant,
-  pub header_separator_variant: HeaderSeparatorVariant,
-  pub column_separator: ColumnSeparator,
-  pub outer_padding: bool,
-  pub inner_padding: usize,
-  pub colorize_header: bool,
-  pub header_color: String,
-  pub alternating_rows: bool,
-  pub row_color1: String,
-  pub row_color2: String,
-  pub min_column_width: usize,
-  pub max_column_width: Option<usize>,
-  pub truncation_marker: String,
+  border_variant: BorderVariant,
+  header_separator_variant: HeaderSeparatorVariant,
+  column_separator: ColumnSeparator,
+  outer_padding: bool,
+  inner_padding: usize,
+  colorize_header: bool,
+  header_color: String,
+  alternating_rows: bool,
+  row_color1: String,
+  row_color2: String,
+  min_column_width: usize,
+  max_column_width: Option<usize>,
+  truncation_marker: String,
 }
 
 impl TableConfig {
@@ -1299,10 +1302,7 @@ impl TableConfig {
   pub fn tsv() -> Self;
   pub fn compact() -> Self;
 
-  // Legacy builders (v0.1-v0.2)
-  #[must_use]
-  #[deprecated(note = "Use border_variant() instead")]
-  pub fn show_borders(self, show: bool) -> Self;
+  // Builders
   #[must_use]
   pub fn column_widths(self, widths: Vec<usize>) -> Self;
   #[must_use]
@@ -2733,7 +2733,7 @@ data  | 1024
 
 ## Versioning
 
-**Current**: v0.4.0 (unified format interface with granular feature flags)
+**Current**: v0.9.0 (see Cargo.toml; version history below records shipped changes)
 
 **Semantic Versioning**:
 - MAJOR: Breaking API changes
@@ -2950,3 +2950,15 @@ let tree = RowBuilder::new(headers)
   - Default behavior identical (truncation disabled, multiline auto-enabled)
   - API fully backward compatible
   - No deprecations introduced
+
+**v0.10.0** (TableConfig API hardening — misuse-resistant configuration):
+- **Breaking**: All `TableConfig` fields made private; struct literal initialization
+  outside `src/config.rs` is a compile error
+- **Removed**: deprecated `show_borders: bool` field and `show_borders()` builder method
+- All 9 preset constructors and all builder setter methods remain unchanged
+- Root cause: `gi_infra::formatters::style::cli_table()` set `header_separator_variant: Unicode`
+  but left `column_separator: Spaces(2)` via `..default()`, producing `┼` in the separator
+  row but spaces between data columns
+- Fix: all `cli_table()` call sites now use `TableConfig::unicode_box()` which pairs all three Unicode fields
+- Additional call sites fixed: `gi_prs`, `gi_users`, `gi_catalog`, `wflow_languages`,
+  `wip/analytics`, `wplan_client`, `wip/github` — all rewritten to use builder pattern

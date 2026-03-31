@@ -18,3 +18,4 @@ Archive of completed tasks documenting bug fixes, feature implementations, and i
 | `009_add_missing_readme_files.md` | Document Responsibility Table readme creation for 3 directories |
 | `004_add_word_wrapping_utility.md` | Document WrapFormatter / WrapConfig implementation with 22 tests |
 | `010_update_stale_test_counts.md` | Document test count update in tests/readme.md after task 004 |
+| `011_make_table_config_api_misuse_resistant.md` | Document TableConfig field-privacy breaking change and all 8 fixed call sites |

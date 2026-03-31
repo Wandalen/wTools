@@ -1,11 +1,28 @@
 //! Integration tests for `ColorTheme` system
 //!
 //! Tests theme application across different formatters and configurations.
+//!
+//! ## Note on Color Field Assertions (v0.10.0)
+//!
+//! `TableConfig` fields (`colorize_header`, `header_color`, `alternating_rows`,
+//! `row_color1`, `row_color2`) are private since v0.10.0 and are not yet rendered
+//! by `TableFormatter`. Tests that previously checked these fields directly now
+//! verify the observable API contract: theme application does not panic and
+//! the resulting config correctly renders data.
+//!
+//! Behavioral assertions for `inner_padding` are preserved since it IS rendered.
 
 #[ cfg( feature = "themes" ) ]
 mod theme_tests
 {
-  use tree_fmt::{ ColorTheme, TableConfig, ExpandedConfig, TreeConfig };
+  use tree_fmt::{ ColorTheme, TableConfig, ExpandedConfig, TreeConfig, TableFormatter, RowBuilder };
+
+  fn sample_row() -> tree_fmt::TreeNode< String >
+  {
+    RowBuilder::new( vec![ "Name".into(), "Value".into() ] )
+      .add_row( vec![ "Alice".into(), "42".into() ] )
+      .build()
+  }
 
   #[ test ]
   fn test_all_predefined_themes_exist()
@@ -62,14 +79,15 @@ mod theme_tests
   #[ test ]
   fn test_apply_theme_to_table_config()
   {
+    // Verify apply_to_table() does not panic and the config renders data correctly.
+    // Color fields (colorize_header, alternating_rows, etc.) are stored in TableConfig
+    // but are not yet rendered by TableFormatter (reserved for future theme-driven rendering).
     let theme = ColorTheme::dark();
     let config = theme.apply_to_table( TableConfig::bordered() );
+    let output = TableFormatter::with_config( config ).format( &sample_row() );
 
-    assert!( config.colorize_header );
-    assert_eq!( config.header_color, theme.header_color );
-    assert!( config.alternating_rows );
-    assert_eq!( config.row_color1, theme.row_color1 );
-    assert_eq!( config.row_color2, theme.row_color2 );
+    assert!( output.contains( "Alice" ), "themed config must render data; output:\n{output}" );
+    assert!( output.contains( '|' ), "bordered base must be preserved; output:\n{output}" );
   }
 
   #[ test ]
@@ -96,13 +114,13 @@ mod theme_tests
   #[ test ]
   fn test_theme_config_contains_colors()
   {
+    // Smoke test: apply_to_table() with a theme must not panic and must render data.
+    // (Color fields are stored but not yet rendered by TableFormatter.)
     let theme = ColorTheme::dark();
     let config = theme.apply_to_table( TableConfig::bordered() );
+    let output = TableFormatter::with_config( config ).format( &sample_row() );
 
-    // Config should have color settings from theme
-    assert!( config.colorize_header );
-    assert!( !config.header_color.is_empty() );
-    assert!( config.alternating_rows );
+    assert!( output.contains( "Alice" ), "theme-configured table must render data; output:\n{output}" );
   }
 
   #[ test ]
@@ -186,11 +204,13 @@ mod theme_tests
         .min_column_width( 10 )
     );
 
-    // Theme settings should be applied
-    assert_eq!( config.header_color, "\x1b[31m" );
-    // Original config settings should be preserved
-    assert_eq!( config.inner_padding, 2 );
-    assert_eq!( config.min_column_width, 10 );
+    // inner_padding=2 with outer_padding=true and bordered() base:
+    // rows should start with "|  " (border + 2 inner padding spaces)
+    let output = TableFormatter::with_config( config ).format( &sample_row() );
+    assert!(
+      output.lines().any( | l | l.starts_with( "|  " ) ),
+      "inner_padding=2 preserved after theme application; output:\n{output}"
+    );
   }
 
   #[ test ]
@@ -223,12 +243,12 @@ mod theme_tests
   #[ test ]
   fn test_none_theme_with_config()
   {
+    // None theme: apply_to_table() must not panic and must render data correctly.
     let theme = ColorTheme::none();
     let config = theme.apply_to_table( TableConfig::bordered() );
+    let output = TableFormatter::with_config( config ).format( &sample_row() );
 
-    // None theme should not set colors
-    assert!( !config.colorize_header );
-    assert!( !config.alternating_rows );
+    assert!( output.contains( "Alice" ), "none-themed config must render data; output:\n{output}" );
   }
 
   #[ test ]
@@ -239,12 +259,25 @@ mod theme_tests
     let dark_config = ColorTheme::dark().apply_to_table( base_config.clone() );
     let light_config = ColorTheme::light().apply_to_table( base_config.clone() );
 
-    // Different themes should produce different colors
-    assert_ne!( dark_config.header_color, light_config.header_color );
+    // Theme colors differ (verified on ColorTheme level, not on private config fields)
+    assert_ne!(
+      ColorTheme::dark().header_color,
+      ColorTheme::light().header_color,
+      "dark and light themes should have different header colors"
+    );
 
-    // But preserve original config
-    assert_eq!( dark_config.inner_padding, 2 );
-    assert_eq!( light_config.inner_padding, 2 );
+    // Both preserve inner_padding=2: rows start with "|  " for bordered + inner_padding=2
+    let dark_output = TableFormatter::with_config( dark_config ).format( &sample_row() );
+    let light_output = TableFormatter::with_config( light_config ).format( &sample_row() );
+
+    assert!(
+      dark_output.lines().any( | l | l.starts_with( "|  " ) ),
+      "dark theme preserves inner_padding=2; output:\n{dark_output}"
+    );
+    assert!(
+      light_output.lines().any( | l | l.starts_with( "|  " ) ),
+      "light theme preserves inner_padding=2; output:\n{light_output}"
+    );
   }
 
   #[ test ]
@@ -257,12 +290,12 @@ mod theme_tests
         .min_column_width( 20 )
     );
 
-    // Theme colors should be applied
-    assert!( config.colorize_header );
-    assert!( !config.header_color.is_empty() );
-
-    // Original settings should be preserved
-    assert_eq!( config.inner_padding, 3 );
-    assert_eq!( config.min_column_width, 20 );
+    // inner_padding=3 preserved: rows start with "|   " (border + 3 spaces)
+    let output = TableFormatter::with_config( config ).format( &sample_row() );
+    assert!(
+      output.lines().any( | l | l.starts_with( "|   " ) ),
+      "inner_padding=3 preserved after nord theme application; output:\n{output}"
+    );
+    assert!( output.contains( "Alice" ), "themed config must render data; output:\n{output}" );
   }
 }

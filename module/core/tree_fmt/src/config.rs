@@ -156,53 +156,82 @@ impl Default for ColumnSeparator
 /// Defines customizable parameters including borders, separators, padding,
 /// and color options. Use preset methods like `bordered()` or `markdown()`
 /// for common configurations, or customize individual parameters.
+///
+/// ## Construction
+///
+/// Use preset constructors or builder setters:
+///
+/// ```rust
+/// use tree_fmt::TableConfig;
+/// let config = TableConfig::unicode_box();
+/// ```
+///
+/// Attempting struct literal construction outside this module is a compile error:
+///
+/// ```compile_fail
+/// let _ = tree_fmt::TableConfig
+/// {
+///   outer_padding : true,
+///   ..Default::default()
+/// };
+/// ```
+///
+/// ## Known Pitfalls
+///
+/// **Unimplemented fields** (API promise, not yet rendered by `TableFormatter`):
+/// - `border_variant` — stored and accepted by setter, but `TableFormatter` does not read it
+/// - `colorize_header`, `header_color` — ANSI header color API present, formatter ignores it
+/// - `alternating_rows`, `row_color1`, `row_color2` — row color API present, not rendered
+/// - `min_column_width` — stored but not enforced during column sizing
+///
+/// Setting these fields changes `TableConfig` state but produces no visible output change.
+/// They represent forward-compatible API surface reserved for future formatter enhancements.
+///
+/// **Default column separator**: `TableConfig::default()` (= `new()`) sets
+/// `column_separator: Spaces(2)`, NOT `ColumnSeparator::default()` which is `Character('|')`.
+/// Use `bordered()` if pipe-separated output is required without an explicit setter call.
 #[ derive( Debug, Clone ) ]
 #[ allow( clippy::struct_excessive_bools ) ]
 pub struct TableConfig
 {
-  /// Show table borders (deprecated - use `border_style`)
-  #[ deprecated( note = "Use border_style instead" ) ]
-  pub show_borders : bool,
   /// Column widths (empty = auto-size)
-  pub column_widths : Vec< usize >,
+  column_widths : Vec< usize >,
   /// Align columns right (false = left align)
-  pub align_right : Vec< bool >,
+  align_right : Vec< bool >,
   /// Border rendering variant
-  pub border_variant : BorderVariant,
+  border_variant : BorderVariant,
   /// Header separator line variant
-  pub header_separator_variant : HeaderSeparatorVariant,
+  header_separator_variant : HeaderSeparatorVariant,
   /// Column separator parameter
-  pub column_separator : ColumnSeparator,
+  column_separator : ColumnSeparator,
   /// Add padding at outer edges of table
-  pub outer_padding : bool,
+  outer_padding : bool,
   /// Number of padding spaces within cells
-  pub inner_padding : usize,
+  inner_padding : usize,
   /// Enable ANSI coloring for header row
-  pub colorize_header : bool,
+  colorize_header : bool,
   /// ANSI color code for header (default: none)
-  pub header_color : String,
+  header_color : String,
   /// Enable alternating row colors
-  pub alternating_rows : bool,
+  alternating_rows : bool,
   /// First row color
-  pub row_color1 : String,
+  row_color1 : String,
   /// Second row color (for alternating)
-  pub row_color2 : String,
+  row_color2 : String,
   /// Minimum width for each column
-  pub min_column_width : usize,
+  min_column_width : usize,
   /// Maximum width for columns (None = unlimited)
-  pub max_column_width : Option< usize >,
+  max_column_width : Option< usize >,
   /// Marker string for truncated content
-  pub truncation_marker : String,
+  truncation_marker : String,
 }
 
 impl Default for TableConfig
 {
   fn default() -> Self
   {
-    #[allow(deprecated)]
     Self
     {
-      show_borders : false,
       column_widths : Vec::new(),
       align_right : Vec::new(),
       border_variant : BorderVariant::None,
@@ -228,25 +257,6 @@ impl TableConfig
   pub fn new() -> Self
   {
     Self::default()
-  }
-
-  /// Set whether to show table borders
-  #[ deprecated( note = "Use border_variant() instead" ) ]
-  #[ must_use ]
-  pub fn show_borders( mut self, show : bool ) -> Self
-  {
-    if show
-    {
-      self.border_variant = BorderVariant::Ascii;
-      self.header_separator_variant = HeaderSeparatorVariant::AsciiGrid;
-    }
-    else
-    {
-      self.border_variant = BorderVariant::None;
-      self.header_separator_variant = HeaderSeparatorVariant::None;
-      self.column_separator = ColumnSeparator::Spaces( 2 );
-    }
-    self
   }
 
   /// Set column widths (empty = auto-size)
@@ -491,6 +501,62 @@ impl TableConfig
   {
     self.truncation_marker = marker;
     self
+  }
+}
+
+/// Internal accessors for formatters (pub(crate) methods, not fields — satisfies AF1).
+///
+/// These methods allow sibling formatter modules (e.g., `formatters::table`) to read
+/// `TableConfig` fields without exposing them as `pub` to external crates.
+/// Accessor names are distinct from setter method names to avoid Rust method name conflicts.
+impl TableConfig
+{
+  /// Column separator (accessor; distinct from `column_separator` setter)
+  pub( crate ) fn col_sep( &self ) -> &ColumnSeparator
+  {
+    &self.column_separator
+  }
+
+  /// Header separator variant (accessor; distinct from `header_separator_variant` setter)
+  pub( crate ) fn header_sep_variant( &self ) -> HeaderSeparatorVariant
+  {
+    self.header_separator_variant
+  }
+
+  /// Column alignment slice (accessor; distinct from `align_right` setter)
+  pub( crate ) fn col_align_right( &self ) -> &[ bool ]
+  {
+    &self.align_right
+  }
+
+  /// Whether outer padding is enabled (accessor; distinct from `outer_padding` setter)
+  pub( crate ) fn has_outer_padding( &self ) -> bool
+  {
+    self.outer_padding
+  }
+
+  /// Inner padding spaces per cell (accessor; distinct from `inner_padding` setter)
+  pub( crate ) fn cell_inner_padding( &self ) -> usize
+  {
+    self.inner_padding
+  }
+
+  /// Maximum column width (accessor; distinct from `max_column_width` setter)
+  pub( crate ) fn max_col_width( &self ) -> Option< usize >
+  {
+    self.max_column_width
+  }
+
+  /// Truncation marker string (accessor; distinct from `truncation_marker` setter)
+  pub( crate ) fn trunc_marker( &self ) -> &str
+  {
+    &self.truncation_marker
+  }
+
+  /// Column widths override slice (accessor; distinct from `column_widths` setter)
+  pub( crate ) fn col_widths_override( &self ) -> &[ usize ]
+  {
+    &self.column_widths
   }
 }
 
