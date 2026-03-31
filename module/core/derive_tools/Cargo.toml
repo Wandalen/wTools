@@ -16,6 +16,9 @@ A collection of derive macros designed to enhance STD.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
+dependencies = {}
+dev-dependencies = {}
+build-dependencies = {}
 
 
 [lints]
