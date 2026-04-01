@@ -2250,13 +2250,12 @@ pub fn visual_len(text: &str) -> usize {
 
 **Coverage**: 100% of public API
 
-**Total Test Count**: 119 tests (85 unit + 34 doc)
+**Total Test Count**: 406 tests (integration via `cargo nextest run --all-features`)
 
 **Test Organization**:
-- All integration tests are gated behind the `integration` feature
-- Feature is enabled by default in `[features]` section
-- Each test file includes `#![ cfg( feature = "integration" ) ]` attribute
-- Allows selective test execution and faster builds when needed
+- All tests live in `tests/` as standalone integration test binaries
+- No feature gates on test files; `integration` feature is a legacy no-op (empty)
+- Authoritative test file index: `tests/readme.md` (Responsibility Table)
 
 ## Cargo Features
 
@@ -2278,7 +2277,7 @@ pub fn visual_len(text: &str) -> usize {
 
 **Other Features**:
 - `serde_support` - Enables serde derives on data structures (required for data formatters)
-- `integration` (default) - Enables all integration tests in `tests/` directory
+- `integration` (default) - **Legacy no-op**; all tests run unconditionally (feature gate removed in task 005)
 
 **Feature Configuration**:
 ```toml
@@ -2750,7 +2749,7 @@ data  | 1024
 
 ## Versioning
 
-**Current**: v0.9.0 (see Cargo.toml; version history below records shipped changes)
+**Current**: v0.10.0 (see Cargo.toml; version history below records shipped changes)
 
 **Semantic Versioning**:
 - MAJOR: Breaking API changes
@@ -2968,14 +2967,27 @@ let tree = RowBuilder::new(headers)
   - API fully backward compatible
   - No deprecations introduced
 
-**v0.10.0** (TableConfig API hardening — misuse-resistant configuration):
+**v0.10.0** (TableConfig API hardening + table rendering enhancements):
 - **Breaking**: All `TableConfig` fields made private; struct literal initialization
-  outside `src/config.rs` is a compile error
-- **Removed**: deprecated `show_borders: bool` field and `show_borders()` builder method
+  outside `src/config.rs` is a compile error (task 011)
+- **Removed**: deprecated `show_borders: bool` field and `show_borders()` builder method (task 011)
 - All 9 preset constructors and all builder setter methods remain unchanged
-- Root cause: `gi_infra::formatters::style::cli_table()` set `header_separator_variant: Unicode`
+- Root cause (task 011): `gi_infra::formatters::style::cli_table()` set `header_separator_variant: Unicode`
   but left `column_separator: Spaces(2)` via `..default()`, producing `┼` in the separator
   row but spaces between data columns
-- Fix: all `cli_table()` call sites now use `TableConfig::unicode_box()` which pairs all three Unicode fields
-- Additional call sites fixed: `gi_prs`, `gi_users`, `gi_catalog`, `wflow_languages`,
+- Fix (task 011): all `cli_table()` call sites now use `TableConfig::unicode_box()` which pairs all three Unicode fields
+- Additional call sites fixed (task 011): `gi_prs`, `gi_users`, `gi_catalog`, `wflow_languages`,
   `wip/analytics`, `wplan_client`, `wip/github` — all rewritten to use builder pattern
+- **`min_column_width` floor enforcement** (task 012): `calculate_column_widths_for_rows()`
+  now applies a `min_column_width` floor after the max-cap step when `min_column_width > 0`;
+  `col_widths_override` early return bypasses both min and max (intentional)
+- **ANSI header and alternating-row coloring** (task 013): `format_internal()` wraps header
+  and data rows in color codes when `colorize_header`/`alternating_rows` config fields are set;
+  `ANSI_RESET` constant ensures RESET is emitted before `\n` in all colored rows
+- **Border variant rendering** (task 014): top/bottom borders and inter-row separators now
+  rendered for `BorderVariant::AsciiGrid` and `BorderVariant::Unicode`; AsciiGrid
+  `format_header_separator()` corner-character bug fixed (`|` → `+`)
+- **Unicode display width fix** (task 015): column widths and cell padding now use
+  `unicode_visual_len()` and `pad_unicode_width()` from `src/ansi_str.rs` instead of
+  char-count functions; CJK and emoji characters now align correctly
+- Total: 406 tests
