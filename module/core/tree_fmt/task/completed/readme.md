@@ -23,3 +23,4 @@ Archive of completed tasks documenting bug fixes, feature implementations, and i
 | `013_ansi_header_row_coloring.md` | Document ANSI header coloring and alternating-row coloring implementation |
 | `014_border_variant_rendering.md` | Document top/bottom border and inter-row separator rendering with AsciiGrid corner fix |
 | `015_unicode_display_width.md` | Document Unicode display width fix for column calculation and cell padding |
+| `016_add_indent_prefix_to_expanded_config.md` | Document indent_prefix field addition to ExpandedConfig |

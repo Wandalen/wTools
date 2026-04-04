@@ -694,7 +694,9 @@ Note: Keys appear in gray in terminal output by default when using `property_sty
 - `key_color`: ANSI color code for keys (default: `\x1b[90m` gray)
 - `record_separator`: Format string for section headers (empty string to disable)
 - `key_value_separator`: Separator between key and value (` | ` or `: `)
-- `show_record_numbers`: Show record numbers in separator (only when separator non-empty)
+- `show_record_numbers`: When `true` (default), replaces `{}` in the separator template with the
+  row number; when `false`, replaces `{}` with `""` so the number is omitted (only when separator
+  non-empty; set `record_separator("")` to suppress the separator entirely)
 
 **Padding Styles:**
 - `BeforeSeparator`: Keys padded before separator - `Name   | Value`
@@ -1341,16 +1343,30 @@ pub struct ExpandedConfig {
   pub record_separator: String,
   pub key_value_separator: String,
   pub show_record_numbers: bool,
+  pub colorize_keys: bool,
+  pub key_color: String,
+  pub padding_side: PaddingSide,
+  pub indent_prefix: String,
 }
 
 impl ExpandedConfig {
   pub fn new() -> Self;
+  pub fn postgres_style() -> Self;
+  pub fn property_style() -> Self;
   #[must_use]
   pub fn record_separator(self, separator: String) -> Self;
   #[must_use]
   pub fn key_value_separator(self, separator: String) -> Self;
   #[must_use]
   pub fn show_record_numbers(self, show: bool) -> Self;
+  #[must_use]
+  pub fn colorize_keys(self, enable: bool) -> Self;
+  #[must_use]
+  pub fn key_color(self, color: String) -> Self;
+  #[must_use]
+  pub fn padding_side(self, side: PaddingSide) -> Self;
+  #[must_use]
+  pub fn indent_prefix(self, prefix: String) -> Self;
 }
 
 /// Formatter parameters for tree output
@@ -1897,7 +1913,18 @@ impl TableFormatter {
 }
 ```
 
-**Column Width Calculation**: `max(header_width, max(row[i]_width for all rows))`
+**Column Width Calculation**: For each column, width is the maximum display width across the header
+and all data cells. For multiline cells (containing `\n`), the cell width is the maximum of its
+individual line widths, NOT the visual length of the raw string:
+
+```
+// Single-line cell: visual_len(cell)
+// Multiline cell: cell.lines().map(visual_len).max()
+width = max(
+  header.lines().map(visual_len).max(),
+  max(row[i].lines().map(visual_len).max() for all rows)
+)
+```
 
 **Min Column Width Floor**: When `TableConfig::min_column_width` is set to a non-zero value, every
 column is widened to at least that many display characters after the max-content calculation:
@@ -2009,6 +2036,9 @@ fn format_multiline_row( cells : &[String], column_widths : &[usize] ) -> String
 - Column separators and borders applied to each line
 - Maintains alignment even with ANSI color codes (uses `visual_len()`)
 - Applied per-row (different rows can have different heights)
+- Column widths computed from maximum single-line width within each cell (via
+  `.lines().map(visual_len).max()`), NOT from the raw cell string which would count
+  `\n` as display width 1
 - Backward compatible (single-line cells work unchanged)
 
 **Multiline + Truncation Interaction**:
@@ -2123,6 +2153,27 @@ pub fn visual_len(text: &str) -> usize {
 - Calculate visible length (excluding ANSI)
 - Add padding to reach target width
 - Preserve ANSI codes in output
+
+**ANSI_RESET Invariant**:
+Every colored line MUST end with `\x1b[0m` (ANSI reset) before the trailing `\n` to prevent
+terminal background-color bleed into subsequent lines. This is enforced in `format_internal()`:
+
+- When `colorize_header` or `alternating_rows` is enabled, the formatter wraps each output line
+  individually: `color_code + line_content + \x1b[0m + \n`
+- For multiline cells (cells containing `\n`), each sub-line is wrapped separately — the row
+  buffer is split on `\n` and each resulting line gets its own color/RESET pair
+- Single-line cells produce one color/RESET pair per row as before
+
+```
+// Per-line color wrapping (multiline-safe)
+for line in row_buf.lines()
+{
+  output.push_str( color );
+  output.push_str( line );
+  output.push_str( ANSI_RESET );  // \x1b[0m before \n
+  output.push( '\n' );
+}
+```
 
 ## Performance Characteristics
 
@@ -2250,7 +2301,7 @@ pub fn visual_len(text: &str) -> usize {
 
 **Coverage**: 100% of public API
 
-**Total Test Count**: 406 tests (integration via `cargo nextest run --all-features`)
+**Total Test Count**: 430 tests (integration via `cargo nextest run --all-features`)
 
 **Test Organization**:
 - All tests live in `tests/` as standalone integration test binaries
@@ -2611,6 +2662,37 @@ Name     = Alice
 Location = New York
 ```
 
+#### Indented Output (NEW v0.11.0)
+
+Indent every key-value line by a fixed prefix string. Useful for rendering key-value blocks
+under a header line printed separately by the caller.
+
+```rust
+use tree_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig };
+
+let tree = RowBuilder::new( vec![ "Visibility".into(), "CloneURL".into() ] )
+  .add_row( vec![ "private".into(), "https://github.com/alice/my-repo.git".into() ] )
+  .build();
+
+let formatter = ExpandedFormatter::with_config(
+  ExpandedConfig::property_style()
+    .indent_prefix( "  ".to_string() )
+);
+let output = formatter.format( &tree );
+```
+
+**Output**:
+```text
+  Visibility: private
+  CloneURL:   https://github.com/alice/my-repo.git
+```
+
+**Characteristics**:
+- `indent_prefix` defaults to `""` (empty) — zero behavioral change for existing callers
+- Applied to every key-value line inside the cell loop
+- NOT applied to record separator lines (`-[ RECORD N ]`) — separators remain flush-left
+- Indent appears before ANSI color codes when `colorize_keys` is enabled
+
 ### Write Trait Support (Zero-Allocation Output)
 
 ```rust
@@ -2749,7 +2831,7 @@ data  | 1024
 
 ## Versioning
 
-**Current**: v0.10.0 (see Cargo.toml; version history below records shipped changes)
+**Current**: v0.11.0 (see Cargo.toml; version history below records shipped changes)
 
 **Semantic Versioning**:
 - MAJOR: Breaking API changes
@@ -2991,3 +3073,30 @@ let tree = RowBuilder::new(headers)
   `unicode_visual_len()` and `pad_unicode_width()` from `src/ansi_str.rs` instead of
   char-count functions; CJK and emoji characters now align correctly
 - Total: 406 tests
+
+**v0.11.0** (Table rendering bug fixes — multiline cells and separator alignment):
+- **Header separator alignment fix**: `format_header_separator()` Unicode and Markdown branches
+  now delegate to `format_unicode_horizontal_rule()` / `format_ascii_horizontal_rule()` helpers
+  instead of computing `width + 2` per column, which produced separators misaligned with data rows
+  when `outer_padding` applied padding only at table edges
+- **Multiline ANSI RESET fix**: `format_internal()` now wraps each sub-line of multiline cells
+  individually with `color…ANSI_RESET…\n` instead of wrapping the entire row buffer once; the
+  previous approach left intermediate `\n` characters without a preceding `\x1b[0m`, causing
+  terminal background-color bleed between lines
+- **Multiline column width fix**: `calculate_column_widths_for_rows()` now computes column widths
+  using per-line max via `.lines().map(unicode_visual_len).max()` instead of `unicode_visual_len(cell)`
+  on the raw cell string; the old approach counted `\n` as display width 1 (because
+  `'\n'.width()` returns `None` → `unwrap_or(1)`), inflating column widths for multiline cells
+- 10 new corner-case tests: 6 color tests (multiline RESET, header RESET, colorize_header false,
+  alternating color2 only, empty header color, integration), 3 border tests (single-column unicode,
+  header-only grid, header-only unicode), 1 multiline width test
+- **`indent_prefix` field for `ExpandedConfig`** (task 016): new `pub indent_prefix: String` field
+  prepended to each key-value line in `ExpandedFormatter`; defaults to `""` (backward-compatible);
+  builder method `indent_prefix(self, prefix: String) -> Self` with `#[must_use]`; both
+  `postgres_style()` and `property_style()` default to empty prefix; 7 new tests (T01–T07)
+- **`show_record_numbers` bug fix**: `show_record_numbers: false` was stored in config but
+  never read in `format()` — method always inserted the row number regardless of the flag;
+  fix passes `""` as replacement when `show_record_numbers` is `false`; 17 new corner-case
+  tests covering `show_record_numbers`, alignment, spacing, and edge cases
+- Zero breaking changes: all existing tests pass unchanged, default behavior identical
+- Total: 430 tests (406 existing + 7 indent_prefix + 17 expanded corner cases)

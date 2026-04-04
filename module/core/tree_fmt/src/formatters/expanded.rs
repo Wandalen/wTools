@@ -129,9 +129,15 @@ impl ExpandedFormatter
       let record_name = &row_node.name;
 
       // Record separator (if configured)
+      // Fix(show_record_numbers_unimplemented): show_record_numbers was stored in config but
+      // never read — the method always replaced {} with the row number regardless of the flag.
+      // Root cause: incomplete implementation; field set but no conditional in format().
+      // Pitfall: config-field tests that only check struct values cannot catch a formatter
+      // that silently ignores a field — always test formatter output, not just config state.
       if !self.config.record_separator.is_empty()
       {
-        output.push_str( &self.config.record_separator.replace( "{}", record_name ) );
+        let record_label = if self.config.show_record_numbers { record_name.as_str() } else { "" };
+        output.push_str( &self.config.record_separator.replace( "{}", record_label ) );
         output.push( '\n' );
       }
       else if idx > 0
@@ -143,6 +149,7 @@ impl ExpandedFormatter
       // Key-value pairs
       for cell in &row_node.children
       {
+        output.push_str( &self.config.indent_prefix );
         let key = &cell.name;
         let value = cell.data.as_ref().map_or( "", String::as_str );
         let key_width = visual_len( key );

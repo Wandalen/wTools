@@ -4,7 +4,8 @@
 
 | Order | ID | Advisability | Value | Easiness | Safety | Priority | Status | Task | Description |
 |-------|----|--------------:|------:|---------:|-------:|---------:|--------|------|-------------|
-| 1 | [011](completed/011_make_table_config_api_misuse_resistant.md) | 0 | 7 | 4 | 6 | 0 | ✅ (Completed) | Make `TableConfig` API misuse-resistant | Make `TableConfig` fields private so struct literal misconfiguration is a compile error |
+| 1 | [016](completed/016_add_indent_prefix_to_expanded_config.md) | 0 | 8 | 8 | 9 | 0 | ✅ (Completed) | Add `indent_prefix` to `ExpandedConfig` | Add indent prefix field so callers can indent key-value lines |
+| 2 | [011](completed/011_make_table_config_api_misuse_resistant.md) | 0 | 7 | 4 | 6 | 0 | ✅ (Completed) | Make `TableConfig` API misuse-resistant | Make `TableConfig` fields private so struct literal misconfiguration is a compile error |
 | 12 | [012](completed/012_enforce_min_column_width.md) | 0 | 6 | 7 | 8 | 0 | ✅ (Completed) | Enforce `min_column_width` floor | Floor enforcement after max cap in `calculate_column_widths_for_rows` |
 | 13 | [013](completed/013_ansi_header_row_coloring.md) | 0 | 7 | 5 | 7 | 0 | ✅ (Completed) | ANSI header and alternating-row coloring | Temp-buffer coloring strategy in `format_internal()` |
 | 14 | [014](completed/014_border_variant_rendering.md) | 0 | 8 | 5 | 7 | 0 | ✅ (Completed) | Border variant rendering | Top/bottom borders, inter-row separators, AsciiGrid corner fix |
@@ -22,9 +23,9 @@
 
 ## Statistics
 
-- **Total Tasks:** 15
+- **Total Tasks:** 16
 - **Active:** 0
-- **Completed:** 15
+- **Completed:** 16
 - **Backlog:** 0
 
 ## Issue Index

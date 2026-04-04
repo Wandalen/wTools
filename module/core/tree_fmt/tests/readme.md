@@ -48,6 +48,8 @@ Contains all functional and integration tests for tree_fmt library. Tests valida
 | `yaml.rs` | Test YamlFormatter YAML list-of-objects output and round-trip correctness |
 | `json.rs` | Test JsonFormatter JSON array-of-objects output in pretty and compact modes |
 | `toml_fmt.rs` | Test TomlFormatter TOML array-of-tables output and round-trip correctness |
+| `expanded_indent_prefix.rs` | Test ExpandedConfig indent_prefix field behavior |
+| `expanded_behavior.rs` | Test ExpandedFormatter corner cases: show_record_numbers, alignment, spacing |
 
 ## Test Files
 - **data.rs** (14 tests) - Core data structures (`TreeNode`, `RowBuilder`, `TableView` trait)

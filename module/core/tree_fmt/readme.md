@@ -98,4 +98,4 @@ cargo doc --open --all-features    # View docs locally
 
 ## License
 
-MIT - **v0.4.0** - [Repository](https://github.com/Wandalen/wTools/tree/master/module/core/tree_fmt)
+MIT - **v0.11.0** - [Repository](https://github.com/Wandalen/wTools/tree/master/module/core/tree_fmt)

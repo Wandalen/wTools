@@ -626,6 +626,8 @@ pub struct ExpandedConfig
   pub key_color : String,
   /// Where to place padding for alignment
   pub padding_side : PaddingSide,
+  /// Prefix string prepended to each key-value line (default: empty)
+  pub indent_prefix : String,
 }
 
 impl Default for ExpandedConfig
@@ -640,6 +642,7 @@ impl Default for ExpandedConfig
       colorize_keys : false,
       key_color : "\x1b[90m".to_string(),  // Gray
       padding_side : PaddingSide::BeforeSeparator,
+      indent_prefix : String::new(),
     }
   }
 }
@@ -670,6 +673,7 @@ impl ExpandedConfig
       colorize_keys : true,  // Gray keys by default for better readability
       key_color : "\x1b[90m".to_string(),
       padding_side : PaddingSide::AfterSeparator,
+      indent_prefix : String::new(),
     }
   }
 
@@ -718,6 +722,14 @@ impl ExpandedConfig
   pub fn padding_side( mut self, side : PaddingSide ) -> Self
   {
     self.padding_side = side;
+    self
+  }
+
+  /// Set indent prefix prepended to each key-value line
+  #[ must_use ]
+  pub fn indent_prefix( mut self, prefix : String ) -> Self
+  {
+    self.indent_prefix = prefix;
     self
   }
 }
