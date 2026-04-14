@@ -19,8 +19,6 @@ assert_eq!( implements!( src => Copy ), false );
 assert_eq!( implements!( src => Clone ), true );
 ```
 
-<!-- # qqq : for Rust dev : please add --> <!-- aaa : done -->
-
 ### To add to your project
 
 ```sh

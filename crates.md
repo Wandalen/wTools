@@ -25,4 +25,3 @@ and narrow individual utilities that are fully covered by an aggregator crate li
 | `crates_tools` | 0.23 | workspace | Download `.crate` archives from crates.io and read local `.crate` files — useful for tooling that inspects published crates. |
 | `macro_tools` | 0.81 | proc-macro | High-level `syn`/`quote`/`proc-macro2` abstractions: attribute parsing, token manipulation, precise span-aware errors. Use when writing proc-macros. |
 | `genfile_core` | 0.9 | codegen | Trait-based file generation: pluggable renderers, archive creation/loading/saving, and directory-to-archive conversion. |
-| `claude_storage_core` | 1.0 | ai | Parse, filter, search, and export Claude Code JSONL conversation storage at `~/.claude/`; zero dependencies. |

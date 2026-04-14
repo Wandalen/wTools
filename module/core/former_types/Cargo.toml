@@ -7,9 +7,9 @@ authors = [
 ]
 license = "MIT"
 readme = "readme.md"
-documentation = "https://docs.rs/former"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/core/former"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/former"
+documentation = "https://docs.rs/former_types"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/former_types"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/former_types"
 description = """
 A flexible implementation of the Builder pattern supporting nested builders and collection-specific subformers. Its compile-time structures and traits that are not generated but reused.
 """

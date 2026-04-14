@@ -88,7 +88,7 @@ f1( .. );
 ### To add to your project
 
 ```sh
-cargo add interval_adaptor
+cargo add interval_adapter
 ```
 
 ### Try out from the repository

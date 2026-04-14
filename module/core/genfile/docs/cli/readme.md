@@ -209,7 +209,7 @@ genfile .materialize destination::"./output" verbosity::2
 
 ## Further Reading
 
-- [CLI Design Rulebook](https://github.com/Wandalen/wTools/blob/master/module/move/willbe/asset/template/module_template/docs/cli_design.md) - Design principles
+- [CLI Design Rulebook](https://github.com/Wandalen/wTools/blob/master/module/experimental/willbe/asset/template/module_template/docs/cli_design.md) - Design principles
 - [GenFile Core](../../src/lib.rs) - Implementation
 - [Tests](../../tests/) - Usage examples
 

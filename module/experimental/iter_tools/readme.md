@@ -50,13 +50,3 @@ cd wTools
 cd examples/iter_tools_trivial
 cargo run
 ```
-
-
-### Try out from the repository
-
-```sh
-git clone https://github.com/Wandalen/wTools
-cd wTools
-cd examples/iter_tools_trivial
-cargo run
-```

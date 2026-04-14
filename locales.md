@@ -48,36 +48,35 @@ All paths are relative to `~/pro/lib/wip_core/wtools/dev`. `task` — Y = `task/
 | 35 | `module/experimental/async_from` | async_from | rust_crate | rs | — | N | 2026-03-15 |
 | 36 | `module/experimental/async_tools` | async_tools | rust_crate | rs | — | N | 2026-03-15 |
 | 37 | `module/experimental/benchkit` | benchkit | rust_crate | rs | — | N | 2026-03-15 |
-| 38 | `module/experimental/claude_runner_cli` | claude_runner_cli | rust_crate | rs | CLI for executing Claude Code with configurable builder | N | 2026-03-15 |
-| 39 | `module/experimental/component_model` | component_model | rust_crate | rs | — | N | 2026-03-15 |
-| 40 | `module/experimental/component_model_meta` | component_model_meta | rust_crate | rs | Proc-macro support for component_model | N | 2026-03-15 |
-| 41 | `module/experimental/component_model_types` | component_model_types | rust_crate | rs | Type definitions for component_model | N | 2026-03-15 |
-| 42 | `module/experimental/config_hierarchy` | config_hierarchy | rust_crate | rs | Generic hierarchical configuration management with 6-layer merging | N | 2026-03-15 |
-| 43 | `module/experimental/data_type` | data_type | rust_crate | rs | — | N | 2026-03-15 |
-| 44 | `module/experimental/diagnostics_tools` | diagnostics_tools | rust_crate | rs | — | N | 2026-03-15 |
-| 45 | `module/experimental/for_each` | for_each | rust_crate | rs | — | N | 2026-03-15 |
-| 46 | `module/experimental/fs_tools` | fs_tools | rust_crate | rs | — | N | 2026-03-15 |
-| 47 | `module/experimental/implements` | implements | rust_crate | rs | — | N | 2026-03-15 |
-| 48 | `module/experimental/include_md` | include_md | rust_crate | rs | — | N | 2026-03-15 |
-| 49 | `module/experimental/interval_adapter` | interval_adapter | rust_crate | rs | — | N | 2026-03-15 |
-| 50 | `module/experimental/is_slice` | is_slice | rust_crate | rs | — | N | 2026-03-15 |
-| 51 | `module/experimental/iter_tools` | iter_tools | rust_crate | rs | — | N | 2026-03-15 |
-| 52 | `module/experimental/mem_tools` | mem_tools | rust_crate | rs | — | N | 2026-03-15 |
-| 53 | `module/experimental/meta_tools` | meta_tools | rust_crate | rs | — | N | 2026-03-15 |
-| 54 | `module/experimental/multiline_input` | multiline_input | rust_crate | rs | Terminal multiline input with rich editing (ENTER to submit) | N | 2026-03-15 |
-| 55 | `module/experimental/program_tools` | program_tools | rust_crate | rs | — | N | 2026-03-15 |
-| 56 | `module/experimental/reflect_tools` | reflect_tools | rust_crate | rs | — | N | 2026-03-15 |
-| 57 | `module/experimental/reflect_tools_meta` | reflect_tools_meta | rust_crate | rs | Proc-macro support for reflect_tools | N | 2026-03-15 |
-| 58 | `module/experimental/sqlx_query` | sqlx_query | rust_crate | rs | — | N | 2026-03-15 |
-| 59 | `module/experimental/test_tools` | test_tools | rust_crate | rs | — | N | 2026-03-15 |
-| 60 | `module/experimental/time_tools` | time_tools | rust_crate | rs | — | N | 2026-03-15 |
-| 61 | `module/experimental/typing_tools` | typing_tools | rust_crate | rs | — | N | 2026-03-15 |
-| 62 | `module/experimental/unitore` | unitore | rust_crate | rs | — | N | 2026-03-15 |
-| 63 | `module/experimental/wca` | wca | rust_crate | rs | — | N | 2026-03-15 |
-| 64 | `module/experimental/willbe` | willbe | rust_crate | rs | — | N | 2026-03-15 |
-| 65 | `module/experimental/willbe2` | willbe2 | rust_crate | rs | — | N | 2026-03-15 |
-| 66 | `module/experimental/winterval` | winterval | rust_crate | rs | — | N | 2026-03-15 |
-| 67 | `module/experimental/wtools` | wtools | rust_crate | rs | — | N | 2026-03-15 |
+| 38 | `module/experimental/component_model` | component_model | rust_crate | rs | — | N | 2026-03-15 |
+| 39 | `module/experimental/component_model_meta` | component_model_meta | rust_crate | rs | Proc-macro support for component_model | N | 2026-03-15 |
+| 40 | `module/experimental/component_model_types` | component_model_types | rust_crate | rs | Type definitions for component_model | N | 2026-03-15 |
+| 41 | `module/experimental/config_hierarchy` | config_hierarchy | rust_crate | rs | Generic hierarchical configuration management with 6-layer merging | N | 2026-03-15 |
+| 42 | `module/experimental/data_type` | data_type | rust_crate | rs | — | N | 2026-03-15 |
+| 43 | `module/experimental/diagnostics_tools` | diagnostics_tools | rust_crate | rs | — | N | 2026-03-15 |
+| 44 | `module/experimental/for_each` | for_each | rust_crate | rs | — | N | 2026-03-15 |
+| 45 | `module/experimental/fs_tools` | fs_tools | rust_crate | rs | — | N | 2026-03-15 |
+| 46 | `module/experimental/implements` | implements | rust_crate | rs | — | N | 2026-03-15 |
+| 47 | `module/experimental/include_md` | include_md | rust_crate | rs | — | N | 2026-03-15 |
+| 48 | `module/experimental/interval_adapter` | interval_adapter | rust_crate | rs | — | N | 2026-03-15 |
+| 49 | `module/experimental/is_slice` | is_slice | rust_crate | rs | — | N | 2026-03-15 |
+| 50 | `module/experimental/iter_tools` | iter_tools | rust_crate | rs | — | N | 2026-03-15 |
+| 51 | `module/experimental/mem_tools` | mem_tools | rust_crate | rs | — | N | 2026-03-15 |
+| 52 | `module/experimental/meta_tools` | meta_tools | rust_crate | rs | — | N | 2026-03-15 |
+| 53 | `module/experimental/multiline_input` | multiline_input | rust_crate | rs | Terminal multiline input with rich editing (ENTER to submit) | N | 2026-03-15 |
+| 54 | `module/experimental/program_tools` | program_tools | rust_crate | rs | — | N | 2026-03-15 |
+| 55 | `module/experimental/reflect_tools` | reflect_tools | rust_crate | rs | — | N | 2026-03-15 |
+| 56 | `module/experimental/reflect_tools_meta` | reflect_tools_meta | rust_crate | rs | Proc-macro support for reflect_tools | N | 2026-03-15 |
+| 57 | `module/experimental/sqlx_query` | sqlx_query | rust_crate | rs | — | N | 2026-03-15 |
+| 58 | `module/experimental/test_tools` | test_tools | rust_crate | rs | — | N | 2026-03-15 |
+| 59 | `module/experimental/time_tools` | time_tools | rust_crate | rs | — | N | 2026-03-15 |
+| 60 | `module/experimental/typing_tools` | typing_tools | rust_crate | rs | — | N | 2026-03-15 |
+| 61 | `module/experimental/unitore` | unitore | rust_crate | rs | — | N | 2026-03-15 |
+| 62 | `module/experimental/wca` | wca | rust_crate | rs | — | N | 2026-03-15 |
+| 63 | `module/experimental/willbe` | willbe | rust_crate | rs | — | N | 2026-03-15 |
+| 64 | `module/experimental/willbe2` | willbe2 | rust_crate | rs | — | N | 2026-03-15 |
+| 65 | `module/experimental/winterval` | winterval | rust_crate | rs | — | N | 2026-03-15 |
+| 66 | `module/experimental/wtools` | wtools | rust_crate | rs | — | N | 2026-03-15 |
 
 ---
 

@@ -7,27 +7,8 @@
 
 Ergonomic subprocess execution with output capture, environment variable management, and CI/CD environment detection. Provides a builder-pattern `Run` type for configuring and launching child processes with full stdout/stderr capture across platforms.
 
-<!-- ### Basic use-case
-
-```rust
-use process_tools::*;
-
-fn main()
-{
-}
-```
-
 ### To add to your project
 
 ```bash
 cargo add process_tools
 ```
-
-### Try out from the repository
-
-``` shell test
-git clone https://github.com/Wandalen/wTools
-cd wTools
-cargo run --example process_tools_trivial
-cargo run
-``` -->

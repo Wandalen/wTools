@@ -7,7 +7,7 @@
 
 A flexible implementation of the Builder pattern supporting nested builders and collection-specific subcomponent_models. Implementation of its derive macro. Should not be used independently, instead use `module::component_model` which relies on the module.
 
-Not intended to be used without runtime. This module and runtime is aggregate in `module::component_model` is [here](https://github.com/Wandalen/wTools/tree/master/module/core/component_model).
+Not intended to be used without runtime. This module and runtime is aggregate in `module::component_model` is [here](https://github.com/Wandalen/wTools/tree/master/module/experimental/component_model).
 
 ### To add to your project
 

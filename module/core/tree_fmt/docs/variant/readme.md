@@ -1,12 +1,12 @@
 # Variant Documentation
 
-This directory contains comprehensive descriptor files for all 32 formatter variants in tree_fmt.
+This directory contains comprehensive descriptor files for all 33 formatter variants in tree_fmt.
 
 ## Overview
 
 Each variant has a dedicated markdown file with all 46 attributes documented:
 
-### TableFormatter (8 variants)
+### TableFormatter (9 variants)
 - [plain](table_plain.md) - Space-separated with dash separator (default)
 - [minimal](table_minimal.md) - No separators
 - [bordered](table_bordered.md) - PostgreSQL-style pipes
@@ -83,7 +83,7 @@ See [variant_attributes.md](../variant_attributes.md) for complete attribute def
 
 | Total Formatters | Total Variants | Default Variants |
 |-----------------|----------------|------------------|
-| 10              | 32             | 10               |
+| 10              | 33             | 10               |
 
 ## Related Documentation
 

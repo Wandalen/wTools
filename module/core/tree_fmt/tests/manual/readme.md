@@ -330,13 +330,13 @@ These tests require human visual verification in a terminal:
 Execute manual test programs in this directory:
 
 ```bash
-# Run all manual tests
+# Run all manual tests via the combined runner
+cargo run --example manual_test_runner
+
+# Or run individual manual test scenarios
 cargo run --example manual_test_001_truncation
 cargo run --example manual_test_002_multiline
 cargo run --example manual_test_003_combined
-
-# Or use test script
-./run_manual_tests.sh
 ```
 
 ### Recording Results

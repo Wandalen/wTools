@@ -8,4 +8,3 @@
 Protocol of modularity unifying interface of a module and introducing layers.
 
 Not intended to be used without runtime. This module and runtime is aggregate in `module::mod_interface` is [here](https://github.com/Wandalen/wTools/tree/master/module/core/mod_interface).
-module and runtime is aggregate in `module::mod_interface` is [here](https://github.com/Wandalen/wTools/tree/master/module/core/mod_interface).

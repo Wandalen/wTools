@@ -262,7 +262,7 @@ cargo add optimization_tools
 ``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd module/move/optimization_tools
+cd module/postponed/optimization_tools
 cargo run --example traveling_salesman
 cargo run --example custom_problem
 ```

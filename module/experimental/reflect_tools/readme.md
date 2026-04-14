@@ -11,7 +11,13 @@ Runtime type reflection system providing traits, descriptors, and utilities for 
 <!-- {{# generate.module{} #}} -->
 
 ```rust
-// xxx : qqq : write please
+use reflect_tools::*;
+
+// Derive `From` and `InnerFrom` for custom types
+#[ derive( From, InnerFrom ) ]
+struct Wrapper( i32 );
+
+let w : Wrapper = 42.into();
 ```
 
 ### To add to your project

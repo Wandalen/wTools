@@ -260,7 +260,7 @@ Since this crate has no executable examples and no execution functionality, manu
 2. **Add program_tools dependency to Cargo.toml:**
    ```toml
    [dependencies]
-   program_tools = { path = "/home/user1/pro/lib/wip_core/wtools/dev/module/core/program_tools" }
+   program_tools = { path = "/home/user1/pro/lib/wip_core/wtools/dev/module/experimental/program_tools" }
    ```
 
 3. **Copy test case code to src/main.rs**

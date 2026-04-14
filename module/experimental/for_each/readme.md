@@ -123,4 +123,3 @@ cd wTools
 cd examples/for_each_trivial
 cargo run
 ```
-<!-- xxx : qqq2 : fix each example instruction -->>

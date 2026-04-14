@@ -23,7 +23,7 @@ Before running manual tests:
 
 1. **Environment Setup:**
    ```bash
-   cd /home/user1/pro/lib/wip_core/wtools/dev/module/core/reflect_tools_meta
+   cd /home/user1/pro/lib/wip_core/wtools/dev/module/experimental/reflect_tools_meta
    ```
 
 2. **Verification Command:**
@@ -65,7 +65,7 @@ Before running manual tests:
 
 2. **Compile with Debug Output:**
    ```bash
-   cd /home/user1/pro/lib/wip_core/wtools/dev/module/core/reflect_tools_meta
+   cd /home/user1/pro/lib/wip_core/wtools/dev/module/experimental/reflect_tools_meta
    rustc --edition 2021 --extern reflect_tools_meta=target/debug/libreflect_tools_meta.so \
      /tmp/test_debug_manual.rs 2>&1 | grep -A 10 "context"
    ```
@@ -188,7 +188,7 @@ When implementation is complete, test these error scenarios:
 
 1. **Run Level 3 Tests:**
    ```bash
-   cd /home/user1/pro/lib/wip_core/wtools/dev/module/core/reflect_tools_meta
+   cd /home/user1/pro/lib/wip_core/wtools/dev/module/experimental/reflect_tools_meta
    RUSTFLAGS="-D warnings" cargo nextest run --all-features && \
    RUSTDOCFLAGS="-D warnings" cargo test --doc --all-features && \
    cargo clippy --all-targets --all-features -- -D warnings

@@ -356,11 +356,3 @@ cd wTools
 cd examples/mod_interface_trivial
 cargo run
 ```
-### Try out from the repository
-
-```sh
-git clone https://github.com/Wandalen/wTools
-cd wTools
-cd examples/mod_interface_trivial
-cargo run
-```

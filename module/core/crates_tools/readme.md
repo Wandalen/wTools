@@ -53,6 +53,6 @@ cargo add crates_tools
 
 ``` shell test
 git clone https://github.com/Wandalen/wTools
-cd wTools/module/move/crates_tools
+cd wTools/module/core/crates_tools
 cargo r --example show_crate_content
 ```

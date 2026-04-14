@@ -32,7 +32,7 @@ will .
 
 ``` shell test
 git clone https://github.com/Wandalen/wTools
-cd wTools/module/move/willbe
+cd wTools/module/experimental/willbe
 cargo install --path .
 will .
 ```

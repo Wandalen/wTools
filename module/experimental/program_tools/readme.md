@@ -7,27 +7,8 @@
 
 Compile and run a Rust program.
 
-<!-- ### Basic use-case
-
-```rust
-use program_tools::*;
-
-fn main()
-{
-}
-```
-
 ### To add to your project
 
 ```bash
 cargo add program_tools
 ```
-
-### Try out from the repository
-
-``` shell test
-git clone https://github.com/Wandalen/wTools
-cd wTools
-cargo run --example program_tools_trivial
-cargo run
-``` -->

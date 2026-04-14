@@ -25,8 +25,8 @@ Macro [types](https://docs.rs/type_constructor/latest/type_constructor/types/mac
 {
   use data_type::prelude::*;
 
-  // qqq : xxx : write please
-
+  // Access interval, collection, and either types from a single crate
+  let _interval = interval_adapter::Interval::new( 0, 10 );
 }
 ```
 
@@ -43,7 +43,7 @@ In this example structure, Struct1 could be constructed either without arguments
 ```rust
 #[ cfg( feature = "make" ) ]
 {
-  use type_constructor::prelude::*;
+  use data_type::prelude::*;
 
   #[ derive( Debug, PartialEq ) ]
   struct Struct1

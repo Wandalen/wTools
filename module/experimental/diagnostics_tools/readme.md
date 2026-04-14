@@ -16,7 +16,7 @@
 Add to your `Cargo.toml`:
 ```toml
 [dependencies]
-diagnostics_tools = "0.11"
+diagnostics_tools = "0.11.0"
 ```
 
 ## Basic Example

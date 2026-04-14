@@ -5,23 +5,8 @@
 
 Collection of algorithms and structures to handle files properly.
 
-<!-- TODO: Add usage examples once file manipulation functionality is implemented
-
-### Basic use-case
-
-```rust
-use file_tools::*;
-
-fn main()
-{
-  // TODO: Example usage will be added when specification is defined
-}
-```
-
 ### To add to your project
 
 ```bash
 cargo add file_tools
 ```
-
--->

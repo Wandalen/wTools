@@ -453,20 +453,9 @@ src/
 
 ## Known Workspace Issues
 
-### `claude_runner_core` Missing from Workspace (resolved in cleaning_5 branch)
+### `claude_runner_core` Missing from Workspace (fully resolved)
 
-**Symptom**: `w3 .test l::3` and all `cargo` commands failed with workspace manifest resolution errors.
-
-**Root Cause**: Commit `4c727dfd` removed `claude_runner_core` as a deprecated crate, but several crates still referenced it as a workspace dependency:
-- `module/core/claude_runner/Cargo.toml` — `claude_runner_core = { workspace = true, optional = true }`; `src/main.rs:30` uses `use claude_runner_core::ClaudeCommand;`
-- `module/experimental/claude_runner_cli/Cargo.toml` — same dependency
-- `module/core/claude_storage/Cargo.toml` — referenced missing bin at `src/bin/claude_storage.rs`
-- `module/experimental/claude_runner_core/` — directory stub with no `Cargo.toml`
-- `module/core/claude_storage_core/` — directory stub with no `Cargo.toml`
-
-**Fix Applied**: Added all five broken crates to the workspace `exclude` list in the root `Cargo.toml`. This unblocks all `cargo` invocations without modifying the broken crates themselves.
-
-**Long-term**: `claude_runner` and `claude_runner_cli` remain broken (missing `ClaudeCommand` source). Proper fix requires restoring `claude_runner_core` or rewriting those binaries.
+All claude-related crates (`claude_runner`, `claude_runner_cli`, `claude_runner_core`, `claude_session`, `claude_storage`, `claude_storage_core`) have been moved to a dedicated repository (`~/pro/lib/wip_core/claude_tools/dev`). Their directories and all references (workspace exclude entries, `locales.md`, `crates.md`) have been removed from wTools.
 
 ## Maintenance Checklist
 

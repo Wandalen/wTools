@@ -317,11 +317,11 @@ fn main()
 
 ```toml
 [dependencies]
-error_tools = { version = "0.26", features = [ "error_typed" ] }  # Only typed errors
+error_tools = { version = "0.38", features = [ "error_typed" ] }  # Only typed errors
 # or
-error_tools = { version = "0.26", features = [ "error_untyped" ] }  # Only untyped errors  
+error_tools = { version = "0.38", features = [ "error_untyped" ] }  # Only untyped errors  
 # or
-error_tools = { version = "0.26" }  # Both (default)
+error_tools = { version = "0.38" }  # Both (default)
 ```
 
 **Available Features:**
