@@ -29,7 +29,7 @@ will .
 
 ``` shell test
 git clone https://github.com/Wandalen/wTools
-cd wTools/module/alias/cargo_will
+cd wTools/module/postponed/cargo_will
 cargo install --path .
 will .
 ```

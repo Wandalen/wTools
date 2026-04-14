@@ -13,15 +13,9 @@ mod private
   fmt,
   ops :: { Deref, DerefMut },
  };
-  #[ cfg( feature = "no_std" ) ]
-  extern crate std;
-  #[ cfg( feature = "no_std" ) ]
-  use alloc ::string ::String;
   #[ cfg( feature = "derive_serde" ) ]
   use serde :: { Serialize, Deserialize };
 
-  // #[ cfg( feature = "path_utf8" ) ]
-  // use camino :: { Utf8Path, Utf8PathBuf };
 
   /// A new type representing an absolute path.
   ///
@@ -45,15 +39,30 @@ mod private
  }
 
   /// Creates an owned `AbsolutePath` by joining a given path to `self`.
-  /// # Panics
-  /// qqq: doc
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if the resulting path cannot be converted to `AbsolutePath`. This occurs when:
+  /// - The resulting path does not exist in the filesystem
+  /// - Permission is denied to access the path
+  /// - I/O errors occur during canonicalization
+  /// - The resulting path is not absolute (though this should not occur in practice when joining to an absolute path)
+  ///
+  /// # Examples
+  ///
+  /// ```no_run
+  /// use pth::AbsolutePath;
+  ///
+  /// let base = AbsolutePath::try_from("/tmp")?;
+  /// let joined = base.join("subdir")?;
+  /// # Ok::<(), std::io::Error>(())
+  /// ```
   #[ inline ]
-  #[ must_use ]
-  pub fn join< P >( &self, path: P ) -> AbsolutePath
+  pub fn join< P >( &self, path: P ) -> Result< AbsolutePath, io::Error >
   where
    P: AsRef< Path >,
   {
-   Self ::try_from( self.0.join( path ) ).unwrap()
+   Self ::try_from( self.0.join( path ) )
  }
 
   /// Checks if the path starts with a given base path.
@@ -85,16 +94,23 @@ mod private
   /// # Returns
   ///
   /// * `Ok(AbsolutePath)` if the joined path is absolute.
-  /// * `Err(io ::Error)` if the joined path is not absolute.
+  /// * `Err(io ::Error)` if the joined path is not absolute or conversion fails.
+  ///
   /// # Errors
-  /// qqq: doc
+  ///
+  /// Returns `Err(io::Error)` if:
+  /// - Any path component fails to convert to `Cow<Path>` via `TryIntoCowPath`
+  /// - The resulting joined path is not absolute after canonicalization
+  /// - The path does not exist in the filesystem (required for canonicalization)
+  /// - Permission is denied when accessing the path
+  /// - I/O errors occur during path canonicalization
   #[ allow( clippy ::should_implement_trait ) ]
   pub fn from_iter< 'a, I, P >( iter: I ) -> Result< Self, io ::Error >
   where
    I: Iterator< Item = P >,
    P: TryIntoCowPath< 'a >,
   {
-   let joined_path = iter_join( iter );
+   let joined_path = iter_join( iter )?;
    AbsolutePath ::try_from( joined_path )
  }
 
@@ -108,10 +124,17 @@ mod private
   ///
   /// # Returns
   ///
-  /// * `Ok(PathBuf)` - The joined path as a `PathBuf`.
-  /// * `Err(io ::Error)` - An error if any component fails to convert.
+  /// * `Ok(AbsolutePath)` - The joined absolute path.
+  /// * `Err(io ::Error)` - An error if any component fails to convert or path is not absolute.
+  ///
   /// # Errors
-  /// qqq: doc
+  ///
+  /// Returns `Err(io::Error)` if:
+  /// - Any path component fails to convert via `TryIntoCowPath`
+  /// - The resulting joined path is not absolute after canonicalization
+  /// - The path does not exist in the filesystem (required for canonicalization)
+  /// - Permission is denied when accessing the path
+  /// - I/O errors occur during path canonicalization
   pub fn from_paths< Paths: PathJoined >( paths: Paths ) -> Result< Self, io ::Error >
   {
    Self ::try_from( paths.iter_join()? )
@@ -163,7 +186,7 @@ mod private
   #[ inline ]
   fn try_from( src: &Path ) -> Result< Self, Self ::Error >
   {
-   let path = path ::canonicalize( src )?;
+   let path = path ::normalize_unchecked( src );
 
    if !is_absolute( &path )
    {

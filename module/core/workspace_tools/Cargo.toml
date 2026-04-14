@@ -1,15 +1,15 @@
 [package]
 name = "workspace_tools"
-version = "0.11.0"
+version = "0.12.0"
 edition = "2021"
 authors = [
-  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Kostiantyn Mysnyk <wandalen@obox.systems>",
 ]
 license = "MIT"
 readme = "readme.md"
 documentation = "https://docs.rs/workspace_tools"
-repository = "https://github.com/Wandalen/workspace_tools"
-homepage = "https://github.com/Wandalen/workspace_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/workspace_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/workspace_tools"
 description = """
 Reliable workspace-relative path resolution for Rust projects. Automatically finds your workspace root and provides consistent file path handling regardless of execution context. Features memory-safe secret management, configuration loading with validation, and resource discovery.
 """

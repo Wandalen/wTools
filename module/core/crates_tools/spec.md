@@ -4,7 +4,7 @@
 
 **crates_tools** is a crate archive analysis utility providing functionality to download, read, and decode `.crate` archive files from crates.io and local filesystem. It enables inspection of packaged Rust crates for purposes such as version comparison, pre-publish security auditing, file size analysis, and content verification without requiring extraction to disk.
 
-**Version:** 0.20.0
+**Version:** 0.21.0
 **Status:** Experimental
 **Category:** Development Tools (Crate Analysis)
 **Dependents:** Unknown (likely workspace tools for crate inspection)

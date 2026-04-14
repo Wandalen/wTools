@@ -25,9 +25,9 @@
 //! ```
 
 #[ cfg( feature = "std" ) ]
-use std::string::String;
+use std::{ vec::Vec, string::{ String, ToString } };
 #[ cfg( all( feature = "use_alloc", not( feature = "std" ) ) ) ]
-use alloc::string::String;
+use alloc::{ vec::Vec, string::{ String, ToString } };
 
 /// Extract first N lines from text.
 ///

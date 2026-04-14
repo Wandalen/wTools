@@ -1,13 +1,6 @@
 mod private
 {
   use crate :: *;
-  #[ cfg(not(feature = "no_std")) ]
-  use std :: { io, path ::PathBuf };
-  
-  #[ cfg(feature = "no_std") ]
-  extern crate std;
-  
-  #[ cfg(feature = "no_std") ]
   use std :: { io, path ::PathBuf };
 
   /// Joins path components into a `PathBuf`.
@@ -22,8 +15,13 @@ mod private
   ///
   /// * `Ok(PathBuf)` - The joined path as a `PathBuf`.
   /// * `Err(io ::Error)` - An error if any component fails to convert.
+  ///
   /// # Errors
-  /// qqq: doc
+  ///
+  /// Returns `Err(io::Error)` if any path component fails to convert to `Cow<Path>` via
+  /// the `TryIntoCowPath` trait. In the current implementation, this never occurs for
+  /// standard types (`&str`, `String`, `PathBuf`, `&Path`), but may fail for custom types
+  /// or future extensions.
   pub fn join< Paths: PathJoined >( paths: Paths ) -> Result< PathBuf, io ::Error >
   {
   paths.iter_join()
@@ -42,8 +40,13 @@ mod private
   ///
   /// * `Ok(PathBuf)` - The joined path as a `PathBuf`.
   /// * `Err(io ::Error)` - An error if any component fails to convert.
+  ///
   /// # Errors
-  /// qqq: doc
+  ///
+  /// Returns `Err(io::Error)` if any path component in the collection fails to convert
+  /// to `Cow<Path>` via the `TryIntoCowPath` trait. For standard types (`&str`, `String`,
+  /// `PathBuf`, `&Path`, `Component`), this conversion is infallible. Custom types
+  /// implementing `TryIntoCowPath` may return errors.
   fn iter_join( self ) -> Result< PathBuf, io ::Error >;
  }
 

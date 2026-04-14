@@ -1,6 +1,5 @@
 //! Reproduce the exact alignment issue seen in willbe3 output
 
-#![ cfg( feature = "integration" ) ]
 #![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 mod inc;

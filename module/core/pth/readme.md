@@ -9,6 +9,40 @@ Collection of algorithms and structures to handle paths properly.
 
 All functions in the crate don't touch file system, but only process paths.
 
+### Scope
+
+**Responsibility:**
+- Pure path manipulation library with zero filesystem access
+- Type-safe absolute path enforcement (AbsolutePath type)
+- Zero-allocation path conversion traits (AsPath, TryIntoPath, TryIntoCowPath)
+- Architecture improvement via absolute path preference
+
+**In Scope:**
+- Path manipulation algorithms (no filesystem access)
+- AbsolutePath type for guaranteed absolute paths
+- AsPath trait (zero-allocation path reference)
+- TryIntoPath trait (owned PathBuf conversion)
+- TryIntoCowPath trait (borrowed/owned optimization)
+- std::path integration (Path, PathBuf, Component types)
+- Current directory access via std::env
+- Error handling via std::io
+
+**Out of Scope:**
+- ❌ Filesystem operations (read, write, exists, create) → use std::fs
+- ❌ no_std support → requires std::path types from stdlib
+- ❌ Path validation → only manipulation, not verification
+- ❌ File metadata access → use std::fs::metadata
+- ❌ Platform-specific path handling → delegates to std::path
+
+## Requirements
+
+This crate requires the Rust standard library (`std`) and is not `no_std` compatible. This is because:
+- Path manipulation relies on `std::path` types (Path, PathBuf, Component) which are not available in `core` or `alloc`
+- Many operations require `std::io` for error handling
+- Some functionality depends on `std::env` for current directory access
+
+If you need path manipulation in `no_std` environments, consider using simple string-based utilities instead.
+
 ### Type `AbsolutePath`
 
 The `AbsolutePath` type ensures that paths are absolute, which helps reduce issues and maintenance costs associated with relative paths. Relative paths can be problematic as they introduce additional variables and complexities, making code analysis, integration, refactoring, and testing more difficult. By using absolute paths, software architecture can be improved, similar to how avoiding global variables can enhance code quality. It is recommended to use relative paths only at the outskirts of an application.

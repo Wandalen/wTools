@@ -9,9 +9,7 @@ Protocol of modularity unifying interface of a module and introducing layers.
 
 ### Basic use-case
 
-```ignore
-```
-<!-- xxx : rewrite -->
+See [API documentation](https://docs.rs/multilayer) for usage details.
 
 ### To add to your project
 

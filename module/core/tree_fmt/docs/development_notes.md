@@ -302,7 +302,7 @@ During rapid development, critical insights were scattered across:
 **Implementation** (v0.4.0 cleanup):
 - Slimmed readme.md from 443 lines to 87 lines
 - Added file-level doc comments to all test files
-- Enhanced module doc comments in tree.rs and helpers.rs
+- Enhanced module doc comments in tree.rs and ansi_str.rs
 - Created this development_notes.md file
 
 **Lesson Learned**: Knowledge preservation is as important as code preservation. Future developers (including future you) will thank you for documenting the "why" not just the "what".
@@ -350,7 +350,7 @@ src/
 ├── table_tree.rs (RowBuilder)
 ├── config.rs (all config structs)
 ├── conversions.rs (tree↔table)
-├── helpers.rs (ANSI utilities)
+├── ansi_str.rs (ANSI utilities)
 └── formatters/
     ├── mod.rs
     ├── format_trait.rs (unified Format trait)
@@ -451,6 +451,12 @@ src/
 4. Update doc comments to reflect new structure
 5. Add to development_notes.md if lessons learned
 
+## Known Workspace Issues
+
+### `claude_runner_core` Missing from Workspace (fully resolved)
+
+All claude-related crates (`claude_runner`, `claude_runner_cli`, `claude_runner_core`, `claude_session`, `claude_storage`, `claude_storage_core`) have been moved to a dedicated repository (`~/pro/lib/wip_core/claude_tools/dev`). Their directories and all references (workspace exclude entries, `locales.md`, `crates.md`) have been removed from wTools.
+
 ## Maintenance Checklist
 
 When updating this project:
@@ -470,3 +476,113 @@ When updating this project:
 - ✅ Zero knowledge loss from development process
 - ✅ New developers can understand design decisions
 - ✅ Future maintenance is easier, not harder
+
+---
+
+## TableConfig API Misuse Pitfall (Diagnosed 2026-03-31)
+
+### Bug Description
+
+All four `style.rs` files in the gi workspace (`gi_infra`, `gi_catalog`, `gi_prs`, `gi_users`)
+used struct literal syntax to configure a Unicode table:
+
+```rust
+#[ allow( deprecated ) ]
+TableConfig
+{
+  border_variant           : BorderVariant::Unicode,
+  header_separator_variant : HeaderSeparatorVariant::Unicode,
+  outer_padding            : true,
+  inner_padding            : 1,
+  ..TableConfig::default()  // column_separator = Spaces(2) from default — WRONG
+}
+```
+
+`border_variant` and `header_separator_variant` are set to `Unicode`, causing the separator row
+to emit `┼` between columns. But `column_separator` is inherited from `TableConfig::default()`
+as `Spaces(2)`. The result: separator row has `┼` box-drawing but every data row has plain
+spaces — no `│` between columns. Visually broken for all gi table-producing commands.
+
+### Correct Pattern
+
+Use the `unicode_box()` preset, which pairs all three Unicode fields correctly:
+
+```rust
+// CORRECT — all three Unicode-related fields set consistently:
+TableConfig::unicode_box()
+// expands to:
+//   border_variant           : BorderVariant::Unicode,
+//   header_separator_variant : HeaderSeparatorVariant::Unicode,
+//   column_separator         : ColumnSeparator::Character( '│' ),  ← the missing field
+//   outer_padding            : true,
+//   inner_padding            : 1,
+```
+
+### Root Cause
+
+`TableConfig` fields were `pub`, so callers could construct partial configurations via struct
+literal syntax. Setting two of the three Unicode-related fields and relying on `..default()` for
+the third created a semantically inconsistent `TableConfig` that compiled fine but rendered
+broken output. The struct literal pattern allowed callers to forget fields that form a cohesive
+style group.
+
+### Fix Applied
+
+**Structural fix (task 011 — ✅ DONE, commit `80660b59` 2026-03-31):** `TableConfig` fields
+are now private. Struct literal initialization outside `src/config.rs` is a compile error.
+External callers must use preset constructors (`plain()`, `unicode_box()`, etc.) or builder
+setter methods (`.border_variant()`, `.column_separator()`, etc.).
+
+**Call-site fix (task 011 — ✅ DONE, commit `80660b59` 2026-03-31):** The `gi_infra` call site
+(`gi_infra/src/formatters/style.rs`) was migrated to `TableConfig::unicode_box()` as part of task
+011. All remaining gi workspace `style.rs` files were updated in the same commit. No blocking
+compile errors remain.
+
+### Lesson Learned
+
+When multiple config fields must be set consistently to form a valid style (e.g., Unicode
+borders require Unicode column separators), keeping those fields public allows callers to set
+some and forget others. Preset constructors (`plain()`, `unicode_box()`, etc.) guarantee
+consistency; struct literals do not.
+
+---
+
+## AsciiGrid Header Separator Corner Character Bug (Diagnosed 2026-04-01)
+
+### Bug Description
+
+`format_header_separator()` in `src/formatters/table.rs` renders the `AsciiGrid` header
+separator line with `'|'` as corner/junction characters, producing:
+
+```
+|---|---|---|
+```
+
+But the spec defines `HeaderSeparatorVariant::AsciiGrid` as `+-----+` — corners must be `'+'`,
+not `'|'`. The rendered rows themselves correctly use `'|'` for column separators (via
+`format_row()` → `needs_border_pipes` branch), so only the separator line corners are wrong.
+
+### Root Cause
+
+The `AsciiGrid` branch in `format_header_separator()` uses `'|'` hard-coded as the left/right
+delimiter and `'+'` as the internal junction. The correct character mapping is:
+
+```
+left corner  : '+'   (was '|')
+fill         : '-'   (correct)
+junction     : '+'   (correct)
+right corner : '+'   (was '|')
+```
+
+### Fix Applied
+
+**Task 014 (border_variant_rendering):** `format_header_separator()` is replaced by a
+parameterized `format_horizontal_ascii_rule(left, fill, mid, right, widths, padding)` helper
+that is called with `('+', '-', '+', '+', ...)` for AsciiGrid, producing the correct `+---+`
+output. The same helper is reused for top/bottom borders and inter-row separators.
+
+### Known Pitfall
+
+Do not confuse `format_row()` column separators (always `'|'` for AsciiGrid data rows, correct)
+with `format_header_separator()` corner characters (must be `'+'` for AsciiGrid, was wrong).
+These are separate code paths; fixing the separator does not affect row rendering.

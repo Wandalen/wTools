@@ -454,3 +454,114 @@ fn zero_sized_types()
   assert!( result.contains( "()" ) );
   assert!( result.contains( " = 0" ) );
 }
+
+// ============================================================================
+// Category 13: Function Types and Closures
+// ============================================================================
+
+#[ test ]
+fn function_pointers()
+{
+  // Function pointer with no parameters
+  fn simple_fn() -> i32 { 42 }
+  let fp : fn() -> i32 = simple_fn;
+  let result = the_module ::inspect_to_str_type_of!( fp );
+  assert!( result.contains( "fn()" ) );
+  assert!( result.contains( " = 8" ) ); // Function pointer is single pointer
+
+  // Function pointer with parameters
+  fn add( a : i32, b : i32 ) -> i32 { a + b }
+  let fp2 : fn( i32, i32 ) -> i32 = add;
+  let result = the_module ::inspect_to_str_type_of!( fp2 );
+  assert!( result.contains( "fn(i32, i32)" ) );
+  assert!( result.contains( " = 8" ) );
+}
+
+#[ test ]
+fn closure_types()
+{
+  // Non-capturing closure
+  let closure = || 42;
+  let result = the_module ::inspect_to_str_type_of!( closure );
+  // Closure types have compiler-generated names
+  assert!( result.contains( " = " ) ); // Has size
+
+  // Capturing closure
+  let x = 10;
+  let capturing_closure = || x + 1;
+  let result = the_module ::inspect_to_str_type_of!( capturing_closure );
+  assert!( result.contains( " = " ) );
+
+  // Closure with parameters
+  let param_closure = | a : i32 | a * 2;
+  let result = the_module ::inspect_to_str_type_of!( param_closure );
+  assert!( result.contains( " = " ) );
+}
+
+// ============================================================================
+// Category 14: Raw Pointers (Unsafe)
+// ============================================================================
+
+#[ test ]
+#[ allow( clippy::borrow_as_ptr ) ]
+fn raw_pointer_types()
+{
+  let value = 42i32;
+
+  // Const raw pointer
+  let const_ptr : *const i32 = &value as *const i32;
+  let result = the_module ::inspect_to_str_type_of!( const_ptr );
+  assert!( result.contains( "*const i32" ) );
+  assert!( result.contains( " = 8" ) ); // Pointer size on 64-bit
+
+  // Mut raw pointer
+  let mut mut_value = 42i32;
+  let mut_ptr : *mut i32 = &mut mut_value as *mut i32;
+  let result = the_module ::inspect_to_str_type_of!( mut_ptr );
+  assert!( result.contains( "*mut i32" ) );
+  assert!( result.contains( " = 8" ) );
+}
+
+// ============================================================================
+// Category 15: Trait Objects (DST - Dynamically Sized Types)
+// ============================================================================
+
+#[ test ]
+fn trait_object_types()
+{
+  use core::fmt::Debug;
+
+  // Reference to trait object (fat pointer)
+  let value : i32 = 42;
+  let trait_obj : &dyn Debug = &value;
+  let result = the_module ::inspect_to_str_type_of!( trait_obj );
+  assert!( result.contains( "dyn" ) );
+  assert!( result.contains( " = 16" ) ); // Fat pointer (data + vtable)
+
+  // Boxed trait object
+  let boxed_trait : Box< dyn Debug > = Box::new( 42i32 );
+  let result = the_module ::inspect_to_str_type_of!( boxed_trait );
+  assert!( result.contains( "Box" ) );
+  assert!( result.contains( "dyn" ) );
+  assert!( result.contains( " = 16" ) ); // Box with fat pointer
+}
+
+// ============================================================================
+// Category 16: Type Alias Resolution
+// ============================================================================
+
+#[ test ]
+fn type_alias_resolution()
+{
+  type MyInt = i32;
+  type MyVec = Vec< i32 >;
+
+  // Type aliases should resolve to underlying type
+  let value : MyInt = 42;
+  let result = the_module ::inspect_to_str_type_of!( value );
+  assert!( result.contains( "i32" ) ); // Not "MyInt"
+
+  let vec_value : MyVec = vec![ 1, 2, 3 ];
+  let result = the_module ::inspect_to_str_type_of!( vec_value );
+  assert!( result.contains( "Vec" ) );
+}

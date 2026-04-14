@@ -1,9 +1,9 @@
 [package]
 name = "clone_dyn"
-version = "0.55.0"
+version = "0.59.0"
 edition = "2021"
 authors = [
-  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Kostiantyn Mysnyk <wandalen@obox.systems>",
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
@@ -16,6 +16,9 @@ Derive to clone dyn structures.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
+dependencies = {}
+dev-dependencies = {}
+build-dependencies = {}
 
 [lints]
 workspace = true

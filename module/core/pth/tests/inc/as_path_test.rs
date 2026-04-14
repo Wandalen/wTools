@@ -1,7 +1,7 @@
 use super :: *;
 
 #[ test ]
-fn as_path_test() 
+fn as_path_test()
 {
   use std ::path :: { Component, Path, PathBuf };
   #[ cfg( feature = "path_utf8" ) ]

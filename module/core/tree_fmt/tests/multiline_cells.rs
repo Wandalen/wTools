@@ -531,3 +531,76 @@ fn test_multiline_each_line_truncated_independently()
     "Both lines should be truncated (found {marker_count} markers)"
   );
 }
+
+/// Column width for a multiline cell must be the MAX single-line display width,
+/// NOT the total display width of the whole string (which would incorrectly count
+/// `\n` as a display character).
+///
+/// ## Root Cause (Bug)
+///
+/// `calculate_column_widths_for_rows()` calls `unicode_visual_len(cell)` on the
+/// whole cell string including embedded `\n` characters. `unicode_visual_len`
+/// uses `ch.width().unwrap_or(1)` which counts `'\n'` as 1 display column
+/// (since `UnicodeWidthChar::width('\n')` returns `None`). For a 2-line cell
+/// `"Line1\nLine2"` (5 + 1 + 5 = 11), this produces column width 11 instead
+/// of the correct 5 (the max of the individual line widths).
+///
+/// ## Why Not Caught
+///
+/// Existing alignment tests check that ALL lines in the output have EQUAL widths,
+/// which holds even with the bug (all lines get the same wrong-but-consistent
+/// width). No test checked the ABSOLUTE column width against the expected value.
+///
+/// ## Fix Applied
+///
+/// In `calculate_column_widths_for_rows()`, replace `unicode_visual_len(cell)` with
+/// `cell.lines().map(|l| unicode_visual_len(l)).max().unwrap_or(0)`, taking the
+/// maximum single-line display width instead of the full-string width.
+///
+/// ## Prevention
+///
+/// Never call `unicode_visual_len` (or any string-length function) on strings that
+/// may contain `\n`; always split into lines and take the max per column.
+///
+/// ## Pitfall
+///
+/// `"".lines()` yields an empty iterator; `.max()` returns `None`; use
+/// `.unwrap_or(0)` to default empty cells to width 0.
+#[ test ]
+fn test_multiline_cell_column_width_is_max_line_width()
+{
+  // Single-column table; header="Col" (3 chars), data="Line1\nLine2" (5 chars per line)
+  // Correct column width = max(3, 5) = 5
+  // Buggy column width   = max(3, unicode_visual_len("Line1\nLine2")) = max(3, 11) = 11
+  let tree = RowBuilder::new( vec![ "Col".into() ] )
+    .add_row( vec![ "Line1\nLine2".into() ] )
+    .build();
+
+  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
+  let lines : Vec<&str> = output.lines().collect();
+
+  // line[0]=header, line[1]=separator, line[2]=sub-line1, line[3]=sub-line2
+  assert!( lines.len() >= 4, "Expected at least 4 output lines; got {}\n{output:?}", lines.len() );
+
+  let sep = lines[ 1 ];
+  // Separator for a 5-char column must be "-----" (5 dashes), not "-----------" (11)
+  assert_eq!(
+    sep.len(), 5,
+    "Column width must be max single-line width (5); separator is {}-char: {:?}\nFull output:\n{output:?}",
+    sep.len(), sep
+  );
+
+  // Sub-lines must be exactly 5 chars (content fits without extra padding)
+  let sub_line1 = lines[ 2 ];
+  let sub_line2 = lines[ 3 ];
+  assert_eq!(
+    sub_line1.len(), 5,
+    "Sub-line1 must be 5 chars, got {} ({:?})\nFull output:\n{output:?}",
+    sub_line1.len(), sub_line1
+  );
+  assert_eq!(
+    sub_line2.len(), 5,
+    "Sub-line2 must be 5 chars, got {} ({:?})\nFull output:\n{output:?}",
+    sub_line2.len(), sub_line2
+  );
+}

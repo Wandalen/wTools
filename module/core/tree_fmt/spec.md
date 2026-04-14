@@ -343,24 +343,24 @@ Beyond style presets, `TableConfig` supports granular control over formatter par
 ```rust
 pub struct TableConfig
 {
-  // Existing fields
-  pub column_widths : Vec< usize >,
-  pub align_right : Vec< bool >,
+  // Fields are private — use preset constructors or builder setters
+  column_widths : Vec< usize >,
+  align_right : Vec< bool >,
 
   // NEW in v0.3.0
-  pub border_variant : BorderVariant,
-  pub header_separator_variant : HeaderSeparatorVariant,
-  pub column_separator : ColumnSeparator,
-  pub outer_padding : bool,
-  pub inner_padding : usize,
-  pub colorize_header : bool,
-  pub header_color : String,
-  pub alternating_rows : bool,
-  pub row_color1 : String,
-  pub row_color2 : String,
-  pub min_column_width : usize,
-  pub max_column_width : Option< usize >,
-  pub truncation_marker : String,
+  border_variant : BorderVariant,
+  header_separator_variant : HeaderSeparatorVariant,
+  column_separator : ColumnSeparator,
+  outer_padding : bool,
+  inner_padding : usize,
+  colorize_header : bool,
+  header_color : String,
+  alternating_rows : bool,
+  row_color1 : String,
+  row_color2 : String,
+  min_column_width : usize,
+  max_column_width : Option< usize >,
+  truncation_marker : String,
 }
 ```
 
@@ -694,7 +694,9 @@ Note: Keys appear in gray in terminal output by default when using `property_sty
 - `key_color`: ANSI color code for keys (default: `\x1b[90m` gray)
 - `record_separator`: Format string for section headers (empty string to disable)
 - `key_value_separator`: Separator between key and value (` | ` or `: `)
-- `show_record_numbers`: Show record numbers in separator (only when separator non-empty)
+- `show_record_numbers`: When `true` (default), replaces `{}` in the separator template with the
+  row number; when `false`, replaces `{}` with `""` so the number is omitted (only when separator
+  non-empty; set `record_separator("")` to suppress the separator entirely)
 
 **Padding Styles:**
 - `BeforeSeparator`: Keys padded before separator - `Name   | Value`
@@ -970,7 +972,7 @@ src/
 ├── table_tree.rs              # RowBuilder (table-shaped)
 ├── config.rs                  # TreeConfig, TableConfig, ExpandedConfig
 ├── conversions.rs             # Tree↔Table conversions, FlattenConfig
-├── helpers.rs                 # visual_len, pad_to_width
+├── ansi_str.rs                # visual_len, pad_to_width
 └── formatters/
     ├── mod.rs                 # TableShapedFormatter trait, Format trait re-export
     ├── format_trait.rs        # Format trait, FormatError (NEW v0.4.0)
@@ -1260,28 +1262,31 @@ pub enum ColumnSeparator
 #### TableConfig
 
 ```rust
-/// Formatter parameters for table output
+/// Formatter parameters for table output.
+///
+/// All fields are private. External callers must use preset constructors
+/// (e.g., `TableConfig::unicode_box()`) or builder setter methods.
+/// Struct literal initialization outside `src/config.rs` is a compile error.
 #[derive(Debug, Clone)]
 pub struct TableConfig {
-  // Legacy fields (v0.1-v0.2)
-  pub show_borders: bool,          // Deprecated: use border_variant
-  pub column_widths: Vec<usize>,
-  pub align_right: Vec<bool>,
+  // Fields are private — use preset constructors or builder setters
+  column_widths: Vec<usize>,
+  align_right: Vec<bool>,
 
   // NEW in v0.3.0
-  pub border_variant: BorderVariant,
-  pub header_separator_variant: HeaderSeparatorVariant,
-  pub column_separator: ColumnSeparator,
-  pub outer_padding: bool,
-  pub inner_padding: usize,
-  pub colorize_header: bool,
-  pub header_color: String,
-  pub alternating_rows: bool,
-  pub row_color1: String,
-  pub row_color2: String,
-  pub min_column_width: usize,
-  pub max_column_width: Option<usize>,
-  pub truncation_marker: String,
+  border_variant: BorderVariant,
+  header_separator_variant: HeaderSeparatorVariant,
+  column_separator: ColumnSeparator,
+  outer_padding: bool,
+  inner_padding: usize,
+  colorize_header: bool,
+  header_color: String,
+  alternating_rows: bool,
+  row_color1: String,
+  row_color2: String,
+  min_column_width: usize,
+  max_column_width: Option<usize>,
+  truncation_marker: String,
 }
 
 impl TableConfig {
@@ -1299,10 +1304,7 @@ impl TableConfig {
   pub fn tsv() -> Self;
   pub fn compact() -> Self;
 
-  // Legacy builders (v0.1-v0.2)
-  #[must_use]
-  #[deprecated(note = "Use border_variant() instead")]
-  pub fn show_borders(self, show: bool) -> Self;
+  // Builders
   #[must_use]
   pub fn column_widths(self, widths: Vec<usize>) -> Self;
   #[must_use]
@@ -1341,16 +1343,30 @@ pub struct ExpandedConfig {
   pub record_separator: String,
   pub key_value_separator: String,
   pub show_record_numbers: bool,
+  pub colorize_keys: bool,
+  pub key_color: String,
+  pub padding_side: PaddingSide,
+  pub indent_prefix: String,
 }
 
 impl ExpandedConfig {
   pub fn new() -> Self;
+  pub fn postgres_style() -> Self;
+  pub fn property_style() -> Self;
   #[must_use]
   pub fn record_separator(self, separator: String) -> Self;
   #[must_use]
   pub fn key_value_separator(self, separator: String) -> Self;
   #[must_use]
   pub fn show_record_numbers(self, show: bool) -> Self;
+  #[must_use]
+  pub fn colorize_keys(self, enable: bool) -> Self;
+  #[must_use]
+  pub fn key_color(self, color: String) -> Self;
+  #[must_use]
+  pub fn padding_side(self, side: PaddingSide) -> Self;
+  #[must_use]
+  pub fn indent_prefix(self, prefix: String) -> Self;
 }
 
 /// Formatter parameters for tree output
@@ -1593,6 +1609,92 @@ pub fn pad_to_width(text: &str, target_width: usize, align_right: bool) -> Strin
 
 **Key Insight**: Multi-byte encoding (byte count > char count) does NOT imply wide display (Cyrillic is multi-byte but 1 display width). Only CJK and emoji have display width = 2.
 
+### Word Wrap Utility
+
+`WrapFormatter` and `WrapConfig` provide word-wrapping utilities for string consumers within the `tree_fmt` ecosystem. The primary use case is the kbase validation output renderer, which currently hard-truncates long issue messages; `WrapFormatter` replaces that truncation with proper wrap-to-width behavior. The API is general-purpose and usable by any downstream crate.
+
+#### Enums
+
+```rust
+#[ derive( Debug, Clone, Default, PartialEq ) ]
+pub enum BreakStrategy
+{
+  Word,
+  Hard,
+  #[ default ] WordThenHard,
+}
+```
+
+| Variant | Description |
+|---------|-------------|
+| `Word` | Break at last space before limit; if no space in segment, whole word wraps to next line |
+| `Hard` | Split at exactly `width` chars regardless of word boundaries |
+| `WordThenHard` | Word-boundary first; hard-break only when a single token exceeds available width |
+
+```rust
+#[ derive( Debug, Clone, PartialEq ) ]
+pub enum Overflow
+{
+  Truncate,
+  Ellipsis( String ),
+}
+```
+
+| Variant | Description |
+|---------|-------------|
+| `Truncate` | Discard lines beyond `max_lines` |
+| `Ellipsis( String )` | Append the given string to the last kept line, truncating content so total ≤ `width` |
+
+#### WrapConfig — Fields and Defaults
+
+| Field | Type | Default |
+|-------|------|---------|
+| `width` | `usize` | `80` |
+| `initial_indent` | `String` | `""` |
+| `subsequent_indent` | `String` | `""` |
+| `break_strategy` | `BreakStrategy` | `WordThenHard` |
+| `break_long_words` | `bool` | `true` |
+| `preserve_newlines` | `bool` | `true` |
+| `max_lines` | `Option<usize>` | `None` |
+| `overflow` | `Overflow` | `Truncate` |
+| `tab_width` | `usize` | `4` |
+| `strip_ansi` | `bool` | `false` |
+| `unicode_aware` | `bool` | `false` |
+
+Builder methods (all `#[must_use]`, return `mut self → Self`):
+`width`, `initial_indent`, `subsequent_indent`, `indent` (sets both indent fields to the same value),
+`break_strategy`, `break_long_words`, `preserve_newlines`, `max_lines`, `overflow`, `tab_width`,
+`strip_ansi`, `unicode_aware`.
+
+> **Deferred**: `strip_ansi=true` and `unicode_aware=true` runtime behavior is not yet implemented;
+> fields and builders exist but have no effect on output until a future task enables them.
+
+#### WrapFormatter
+
+```rust
+pub struct WrapFormatter { config : WrapConfig }
+
+impl WrapFormatter
+{
+  pub fn new() -> Self
+  pub fn with_config( config : WrapConfig ) -> Self
+  pub fn wrap( &self, text : &str ) -> Vec< String >
+  pub fn wrap_joined( &self, text : &str ) -> String  // wrap().join("\n")
+}
+```
+
+#### Behavior Contracts
+
+1. A line in `wrap()` output never exceeds `width` chars (measured as char count)
+   **except** when `break_long_words=false` and a single token is longer than the available space.
+2. `initial_indent` is prepended to line 0; `subsequent_indent` to lines 1+. Both count toward `width`.
+3. `preserve_newlines=true`: `\n` in input is a hard break; wrapping restarts with `subsequent_indent`.
+4. `preserve_newlines=false`: `\n` treated as a single space.
+5. `tab_width`: each `\t` in input expanded to `tab_width` spaces before processing.
+6. `max_lines=Some(n)` + `Overflow::Truncate`: output has at most `n` lines.
+7. `max_lines=Some(n)` + `Overflow::Ellipsis(s)`: last kept line has `s` appended,
+   truncating content so the total line length ≤ `width`.
+
 ## Functional Requirements
 
 ### FR-1: Data Representation
@@ -1811,7 +1913,172 @@ impl TableFormatter {
 }
 ```
 
-**Column Width Calculation**: `max(header_width, max(row[i]_width for all rows))`
+**Column Width Calculation**: For each column, width is the maximum display width across the header
+and all data cells. For multiline cells (containing `\n`), the cell width is the maximum of its
+individual line widths, NOT the visual length of the raw string:
+
+```
+// Single-line cell: visual_len(cell)
+// Multiline cell: cell.lines().map(visual_len).max()
+width = max(
+  header.lines().map(visual_len).max(),
+  max(row[i].lines().map(visual_len).max() for all rows)
+)
+```
+
+**Min Column Width Floor**: When `TableConfig::min_column_width` is set to a non-zero value, every
+column is widened to at least that many display characters after the max-content calculation:
+
+```
+width = max(header_width, max(row[i]_width))  // content-driven max
+if min_column_width > 0:
+    width = max(width, min_column_width)        // floor applied after max cap
+```
+
+**Interaction with `max_column_width`**: When both are set, `max_column_width` is applied first
+(capping wide content), then `min_column_width` raises any remaining short columns. If
+`min_column_width > max_column_width`, columns settle at `min_column_width` (floor wins).
+
+**Override bypass**: When `TableConfig::column_widths` (the override) is set, it completely
+replaces the calculated widths and both `min_column_width` and `max_column_width` are ignored.
+Override is intended for callers that supply exact widths and need precise control.
+
+**Column Truncation** (NEW):
+
+When `TableConfig::max_column_width` is set to `Some(width)`, cells exceeding this width are truncated:
+
+```rust
+// Truncation algorithm (ANSI-aware)
+fn truncate_cell( cell : &str, max_width : usize, marker : &str ) -> String
+{
+  let visual_length = visual_len( cell );
+  if visual_length <= max_width
+  {
+    return cell.to_string();
+  }
+
+  // Use ANSI-aware truncation
+  let marker_len = visual_len( marker );
+  let content_width = max_width.saturating_sub( marker_len );
+
+  let truncated = strs_tools::ansi::truncate( cell, content_width );
+  format!( "{}{}", truncated, marker )
+}
+```
+
+**Truncation Behavior**:
+- Applied during cell rendering in `format_row()`
+- Uses visual length (ANSI color codes don't count toward width)
+- Preserves ANSI codes in truncated output (colors/formatting maintained)
+- Appends `truncation_marker` (default: "...") to truncated cells
+- If marker doesn't fit, returns empty string with marker
+- Applied to both header and data cells
+- Disabled by default (`max_column_width = None`) for backward compatibility
+- Column width calculation happens BEFORE truncation (based on full content)
+
+**Example**:
+```rust
+let config = TableConfig::plain()
+  .max_column_width( Some( 20 ) )
+  .truncation_marker( "...".to_string() );
+// Cell "Very long content that exceeds twenty characters"
+// Becomes: "Very long conten..."  (20 chars total including marker)
+```
+
+**Multiline Cells** (NEW):
+
+When cell content contains newline characters (`\n`), tables are rendered with multiline support using a two-pass algorithm:
+
+```rust
+// Multiline rendering algorithm
+fn format_multiline_row( cells : &[String], column_widths : &[usize] ) -> String
+{
+  // Pass 1: Split all cells into lines and find maximum line count
+  let split_cells : Vec<Vec<&str>> = cells
+    .iter()
+    .map( |cell| cell.lines().collect() )
+    .collect();
+
+  let row_height = split_cells
+    .iter()
+    .map( |lines| lines.len() )
+    .max()
+    .unwrap_or( 1 );
+
+  // Pass 2: Render each line of the row
+  let mut output = String::new();
+  for line_idx in 0..row_height
+  {
+    for ( col_idx, cell_lines ) in split_cells.iter().enumerate()
+    {
+      let line = cell_lines.get( line_idx ).unwrap_or( &"" );
+      let width = column_widths[ col_idx ];
+      output.push_str( &pad_to_width( line, width, false ) );
+
+      if col_idx < cells.len() - 1
+      {
+        append_column_separator( &mut output );
+      }
+    }
+    output.push( '\n' );
+  }
+
+  output
+}
+```
+
+**Multiline Behavior**:
+- Detected automatically when ANY cell contains `\n` character
+- Cells split on `\n` into individual lines (via `str::lines()`)
+- Row height = maximum line count across all cells in that row
+- Each line rendered separately with proper column alignment
+- Shorter cells padded with empty strings to match row height
+- Column separators and borders applied to each line
+- Maintains alignment even with ANSI color codes (uses `visual_len()`)
+- Applied per-row (different rows can have different heights)
+- Column widths computed from maximum single-line width within each cell (via
+  `.lines().map(visual_len).max()`), NOT from the raw cell string which would count
+  `\n` as display width 1
+- Backward compatible (single-line cells work unchanged)
+
+**Multiline + Truncation Interaction**:
+
+When both features are active:
+1. Truncation applied BEFORE line splitting (to full cell content)
+2. If truncated cell contains `\n`, multiline rendering still applies
+3. Each LINE of a multiline cell can be individually truncated
+4. Preferred: Apply truncation per-line after splitting for better visual result
+
+```rust
+// Combined algorithm (preferred implementation)
+fn render_cell_with_both( cell : &str, max_width : Option<usize>, marker : &str )
+  -> Vec<String>
+{
+  let lines : Vec<&str> = cell.lines().collect();
+
+  lines
+    .iter()
+    .map( |line|
+    {
+      if let Some( width ) = max_width
+      {
+        truncate_cell( line, width, marker )
+      }
+      else
+      {
+        line.to_string()
+      }
+    })
+    .collect()
+}
+```
+
+**Feature Flags and Backward Compatibility**:
+- Column truncation: Disabled by default (`max_column_width = None`)
+- Multiline cells: Enabled automatically when `\n` detected
+- No breaking changes to existing behavior
+- Single-line cells without truncation work exactly as before
+- CSV/TSV formats: Multiline disabled (newlines kept as literal `\n`)
 
 **Column Truncation** (NEW):
 
@@ -2021,6 +2288,27 @@ pub fn visual_len(text: &str) -> usize {
 - Add padding to reach target width
 - Preserve ANSI codes in output
 
+**ANSI_RESET Invariant**:
+Every colored line MUST end with `\x1b[0m` (ANSI reset) before the trailing `\n` to prevent
+terminal background-color bleed into subsequent lines. This is enforced in `format_internal()`:
+
+- When `colorize_header` or `alternating_rows` is enabled, the formatter wraps each output line
+  individually: `color_code + line_content + \x1b[0m + \n`
+- For multiline cells (cells containing `\n`), each sub-line is wrapped separately — the row
+  buffer is split on `\n` and each resulting line gets its own color/RESET pair
+- Single-line cells produce one color/RESET pair per row as before
+
+```
+// Per-line color wrapping (multiline-safe)
+for line in row_buf.lines()
+{
+  output.push_str( color );
+  output.push_str( line );
+  output.push_str( ANSI_RESET );  // \x1b[0m before \n
+  output.push( '\n' );
+}
+```
+
 ## Performance Characteristics
 
 **Time Complexity**:
@@ -2147,13 +2435,12 @@ pub fn visual_len(text: &str) -> usize {
 
 **Coverage**: 100% of public API
 
-**Total Test Count**: 119 tests (85 unit + 34 doc)
+**Total Test Count**: 430 tests (integration via `cargo nextest run --all-features`)
 
 **Test Organization**:
-- All integration tests are gated behind the `integration` feature
-- Feature is enabled by default in `[features]` section
-- Each test file includes `#![ cfg( feature = "integration" ) ]` attribute
-- Allows selective test execution and faster builds when needed
+- All tests live in `tests/` as standalone integration test binaries
+- No feature gates on test files; `integration` feature is a legacy no-op (empty)
+- Authoritative test file index: `tests/readme.md` (Responsibility Table)
 
 ## Cargo Features
 
@@ -2175,7 +2462,7 @@ pub fn visual_len(text: &str) -> usize {
 
 **Other Features**:
 - `serde_support` - Enables serde derives on data structures (required for data formatters)
-- `integration` (default) - Enables all integration tests in `tests/` directory
+- `integration` (default) - **Legacy no-op**; all tests run unconditionally (feature gate removed in task 005)
 
 **Feature Configuration**:
 ```toml
@@ -2509,6 +2796,37 @@ Name     = Alice
 Location = New York
 ```
 
+#### Indented Output (NEW v0.11.0)
+
+Indent every key-value line by a fixed prefix string. Useful for rendering key-value blocks
+under a header line printed separately by the caller.
+
+```rust
+use tree_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig };
+
+let tree = RowBuilder::new( vec![ "Visibility".into(), "CloneURL".into() ] )
+  .add_row( vec![ "private".into(), "https://github.com/alice/my-repo.git".into() ] )
+  .build();
+
+let formatter = ExpandedFormatter::with_config(
+  ExpandedConfig::property_style()
+    .indent_prefix( "  ".to_string() )
+);
+let output = formatter.format( &tree );
+```
+
+**Output**:
+```text
+  Visibility: private
+  CloneURL:   https://github.com/alice/my-repo.git
+```
+
+**Characteristics**:
+- `indent_prefix` defaults to `""` (empty) — zero behavioral change for existing callers
+- Applied to every key-value line inside the cell loop
+- NOT applied to record separator lines (`-[ RECORD N ]`) — separators remain flush-left
+- Indent appears before ANSI color codes when `colorize_keys` is enabled
+
 ### Write Trait Support (Zero-Allocation Output)
 
 ```rust
@@ -2647,7 +2965,7 @@ data  | 1024
 
 ## Versioning
 
-**Current**: v0.4.0 (unified format interface with granular feature flags)
+**Current**: v0.11.0 (see Cargo.toml; version history below records shipped changes)
 
 **Semantic Versioning**:
 - MAJOR: Breaking API changes
@@ -2833,7 +3151,7 @@ let tree = RowBuilder::new(headers)
   - Each line of multiline cell individually truncated
   - Maintains alignment and visual consistency
   - 5+ tests for combined scenarios
-- **Helper Functions** (NEW in `src/helpers.rs`):
+- **Helper Functions** (in `src/ansi_str.rs`):
   - `truncate_cell()`: ANSI-aware cell truncation with marker
   - `detect_multiline()`: Check if any cell contains newlines
   - `split_into_lines()`: Split cells preserving empty lines
@@ -2864,3 +3182,55 @@ let tree = RowBuilder::new(headers)
   - Default behavior identical (truncation disabled, multiline auto-enabled)
   - API fully backward compatible
   - No deprecations introduced
+
+**v0.10.0** (TableConfig API hardening + table rendering enhancements):
+- **Breaking**: All `TableConfig` fields made private; struct literal initialization
+  outside `src/config.rs` is a compile error (task 011)
+- **Removed**: deprecated `show_borders: bool` field and `show_borders()` builder method (task 011)
+- All 9 preset constructors and all builder setter methods remain unchanged
+- Root cause (task 011): `gi_infra::formatters::style::cli_table()` set `header_separator_variant: Unicode`
+  but left `column_separator: Spaces(2)` via `..default()`, producing `┼` in the separator
+  row but spaces between data columns
+- Fix (task 011): all `cli_table()` call sites now use `TableConfig::unicode_box()` which pairs all three Unicode fields
+- Additional call sites fixed (task 011): `gi_prs`, `gi_users`, `gi_catalog`, `wflow_languages`,
+  `wip/analytics`, `wplan_client`, `wip/github` — all rewritten to use builder pattern
+- **`min_column_width` floor enforcement** (task 012): `calculate_column_widths_for_rows()`
+  now applies a `min_column_width` floor after the max-cap step when `min_column_width > 0`;
+  `col_widths_override` early return bypasses both min and max (intentional)
+- **ANSI header and alternating-row coloring** (task 013): `format_internal()` wraps header
+  and data rows in color codes when `colorize_header`/`alternating_rows` config fields are set;
+  `ANSI_RESET` constant ensures RESET is emitted before `\n` in all colored rows
+- **Border variant rendering** (task 014): top/bottom borders and inter-row separators now
+  rendered for `BorderVariant::AsciiGrid` and `BorderVariant::Unicode`; AsciiGrid
+  `format_header_separator()` corner-character bug fixed (`|` → `+`)
+- **Unicode display width fix** (task 015): column widths and cell padding now use
+  `unicode_visual_len()` and `pad_unicode_width()` from `src/ansi_str.rs` instead of
+  char-count functions; CJK and emoji characters now align correctly
+- Total: 406 tests
+
+**v0.11.0** (Table rendering bug fixes — multiline cells and separator alignment):
+- **Header separator alignment fix**: `format_header_separator()` Unicode and Markdown branches
+  now delegate to `format_unicode_horizontal_rule()` / `format_ascii_horizontal_rule()` helpers
+  instead of computing `width + 2` per column, which produced separators misaligned with data rows
+  when `outer_padding` applied padding only at table edges
+- **Multiline ANSI RESET fix**: `format_internal()` now wraps each sub-line of multiline cells
+  individually with `color…ANSI_RESET…\n` instead of wrapping the entire row buffer once; the
+  previous approach left intermediate `\n` characters without a preceding `\x1b[0m`, causing
+  terminal background-color bleed between lines
+- **Multiline column width fix**: `calculate_column_widths_for_rows()` now computes column widths
+  using per-line max via `.lines().map(unicode_visual_len).max()` instead of `unicode_visual_len(cell)`
+  on the raw cell string; the old approach counted `\n` as display width 1 (because
+  `'\n'.width()` returns `None` → `unwrap_or(1)`), inflating column widths for multiline cells
+- 10 new corner-case tests: 6 color tests (multiline RESET, header RESET, colorize_header false,
+  alternating color2 only, empty header color, integration), 3 border tests (single-column unicode,
+  header-only grid, header-only unicode), 1 multiline width test
+- **`indent_prefix` field for `ExpandedConfig`** (task 016): new `pub indent_prefix: String` field
+  prepended to each key-value line in `ExpandedFormatter`; defaults to `""` (backward-compatible);
+  builder method `indent_prefix(self, prefix: String) -> Self` with `#[must_use]`; both
+  `postgres_style()` and `property_style()` default to empty prefix; 7 new tests (T01–T07)
+- **`show_record_numbers` bug fix**: `show_record_numbers: false` was stored in config but
+  never read in `format()` — method always inserted the row number regardless of the flag;
+  fix passes `""` as replacement when `show_record_numbers` is `false`; 17 new corner-case
+  tests covering `show_record_numbers`, alignment, spacing, and edge cases
+- Zero breaking changes: all existing tests pass unchanged, default behavior identical
+- Total: 430 tests (406 existing + 7 indent_prefix + 17 expanded corner cases)

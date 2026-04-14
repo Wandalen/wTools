@@ -1,9 +1,9 @@
 [package]
 name = "strs_tools"
-version = "0.42.0"
+version = "0.44.0"
 edition = "2021"
 authors = [
-  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Kostiantyn Mysnyk <wandalen@obox.systems>",
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
@@ -19,6 +19,9 @@ keywords = [ "fundamental", "general-purpose" ]
 exclude = [
   "benches/"
 ]
+dependencies = {}
+dev-dependencies = {}
+build-dependencies = {}
 
 [lints]
 workspace = true

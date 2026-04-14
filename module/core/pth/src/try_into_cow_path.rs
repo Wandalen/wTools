@@ -1,10 +1,7 @@
 /// Define a private namespace for all its items.
-#[ allow( clippy ::std_instead_of_alloc, clippy ::std_instead_of_core ) ]
 mod private
 {
   use crate :: *;
-
-  #[ cfg( not( feature = "no_std" ) ) ]
   use std ::
   {
   borrow ::Cow,
@@ -12,20 +9,6 @@ mod private
   path :: { Component, Path, PathBuf },
   string ::String,
  };
-  
-  #[ cfg( feature = "no_std" ) ]
-  extern crate std;
-  
-  #[ cfg( feature = "no_std" ) ]
-  use std ::
-  {
-  borrow ::Cow,
-  io,
-  path :: { Component, Path, PathBuf },
- };
-  
-  #[ cfg( feature = "no_std" ) ]
-  use alloc ::string ::String;
 
   /// A trait for converting various types into a `Cow< Path >`.
   ///
@@ -41,8 +24,15 @@ mod private
   ///
   /// * `Ok(Cow< Path >)` - A `Cow` that may be either borrowed or owned, depending on the input type.
   /// * `Err(io ::Error)` - An error if the conversion fails.
+  ///
   /// # Errors
-  /// qqq: doc
+  ///
+  /// Currently, all standard implementations (`&str`, `String`, `PathBuf`, `&Path`, `Component`,
+  /// and types implementing `AsPath`) never return an error - they always succeed. The `Result`
+  /// return type is maintained for:
+  /// - API consistency and extensibility
+  /// - Future implementations that may need to validate or transform paths
+  /// - Custom types that may have fallible path conversions
   fn try_into_cow_path( self ) -> Result< Cow< 'a, Path >, io ::Error >;
  }
 

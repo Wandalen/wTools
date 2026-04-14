@@ -22,5 +22,6 @@ mod fundamental
   mod to_string_test;
   mod to_string_with_fallback_test;
   mod to_string_with_fallback_corner_cases_test;
+  mod to_string_with_fallback_extended_corner_cases_test;
 
 }

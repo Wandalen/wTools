@@ -1,6 +1,5 @@
 //! Tests for fluent builder APIs and config builder patterns
 
-#![ cfg( feature = "integration" ) ]
 #![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 use tree_fmt::
@@ -117,10 +116,10 @@ fn test_tree_config_builder()
 #[ test ]
 fn test_table_config_builder()
 {
-  use tree_fmt::{ TableConfig, TableFormatter, RowBuilder };
+  use tree_fmt::{ TableConfig, TableFormatter, RowBuilder, BorderVariant };
 
   let config = TableConfig::new()
-    .show_borders( false )
+    .border_variant( BorderVariant::None )
     .column_widths( vec![ 10, 15 ] )
     .align_right( vec![ false, true ] );
 
@@ -153,4 +152,25 @@ fn test_expanded_config_builder()
 
   assert!( output.contains( "--- Record" ) );
   assert!( output.contains( " = " ) );
+}
+
+// T05: Builder chain with .border_variant() and .column_separator() — survives field-privacy change
+#[ test ]
+fn test_table_config_builder_border_and_separator()
+{
+  use tree_fmt::{ TableConfig, TableFormatter, RowBuilder, BorderVariant, ColumnSeparator };
+
+  let config = TableConfig::new()
+  .border_variant( BorderVariant::Unicode )
+  .column_separator( ColumnSeparator::Character( '│' ) );
+
+  let tree = RowBuilder::new( vec![ "Name".into(), "Value".into() ] )
+  .add_row( vec![ "Alice".into(), "42".into() ] )
+  .build();
+
+  let output = TableFormatter::with_config( config ).format( &tree );
+
+  // Verify builder methods compile and produce correct output
+  assert!( output.contains( "Alice" ), "output must contain data; output:\n{output}" );
+  assert!( output.contains( '│' ), "output must contain Unicode │ separator; output:\n{output}" );
 }

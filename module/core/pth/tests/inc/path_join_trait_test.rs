@@ -93,17 +93,6 @@ fn all_types() -> Result< (), io ::Error >
   assert_eq!(joined, expected);
  }
 
-  // // CurrentPath and AbsolutePath
-  // {
-  //   let absolute_path = AbsolutePath ::try_from( "/absolute/path" ).unwrap();
-  //   let current_path = CurrentPath;
-  //   let joined = ( current_path, absolute_path.clone() ).iter_join()?;
-  //   let expected = absolute_path.as_path().to_path_buf();
-  //   println!( "Joined PathBuf: {:?}", joined );
-  //   assert_eq!( joined, expected );
-  // }
-  // // qqq: qqq2: for Denys: bad
-
   // AbsolutePath and Component
   {
   let absolute_path = AbsolutePath ::try_from("/absolute/path").unwrap();

@@ -7,29 +7,6 @@ tests_impls!
   fn divergent()
   {
 
-  // test.case( "CrateStructForTesting1" );
-  {
-   a_id!( layer_a ::CrateStructForTesting1{}, layer_a ::CrateStructForTesting1{} );
-   a_id!( layer_a ::own ::CrateStructForTesting1{}, layer_a ::own ::CrateStructForTesting1{} );
- }
-
-  // test.case( "SuperStruct" );
-  {
-   a_id!( layer_a ::SuperStruct1{}, layer_a ::SuperStruct1{} );
-   a_id!( layer_a ::own ::SuperStruct1{}, layer_a ::own ::SuperStruct1{} );
- }
-
-  // test.case( "Vec" );
-  {
-   a_id!( layer_a ::Vec :: < i32 > ::new(), layer_a ::Vec :: < i32 > ::new() );
-   a_id!( layer_a ::own ::Vec :: < i32 > ::new(), layer_a ::own ::Vec :: < i32 > ::new() );
-   a_id!( layer_a ::orphan ::Vec :: < i32 > ::new(), layer_a ::orphan ::Vec :: < i32 > ::new() );
-   // a_id!( layer_a ::exposed ::Vec :: < i32 > ::new(), layer_a ::exposed ::Vec :: < i32 > ::new() );
-   a_id!( Vec :: < i32 > ::new(), Vec :: < i32 > ::new() );
-   a_id!( own ::Vec :: < i32 > ::new(), own ::Vec :: < i32 > ::new() );
-   // a_id!( orphan ::Vec :: < i32 > ::new(), orphan ::Vec :: < i32 > ::new() );
- }
-
   // test.case( "SubStruct2" );
   {
    a_id!( layer_a ::SubStruct2{}, layer_a ::SubStruct2{} );

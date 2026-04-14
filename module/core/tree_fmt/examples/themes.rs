@@ -90,10 +90,11 @@ fn main()
   // Example 9: Applying themes to TableConfig
   println!( "9. Applying Dark Theme to TableConfig:" );
   let theme = ColorTheme::dark();
-  let config = theme.apply_to_table( TableConfig::bordered() );
-  println!( "   colorize_header: {}", config.colorize_header );
-  println!( "   alternating_rows: {}", config.alternating_rows );
-  println!( "   header_color: {}", config.header_color.escape_debug() );
+  let _config = theme.apply_to_table( TableConfig::bordered() );
+  // Color fields (colorize_header, alternating_rows, header_color) are stored internally
+  // and are reserved for future theme-driven rendering in TableFormatter.
+  println!( "   Theme applied: colorize_header, alternating_rows, header_color set internally" );
+  println!( "   Source theme header_color: {}", ColorTheme::dark().header_color.escape_debug() );
   println!();
 
   // Example 10: Applying themes to ExpandedConfig
@@ -107,14 +108,14 @@ fn main()
   // Example 11: Theme with additional config
   println!( "11. Theme Combined with Custom Configuration:" );
   let theme = ColorTheme::nord();
-  let config = theme.apply_to_table(
+  let _config = theme.apply_to_table(
     TableConfig::bordered()
       .inner_padding( 2 )
       .min_column_width( 15 )
   );
-  println!( "   Inner padding: {}", config.inner_padding );
-  println!( "   Min column width: {}", config.min_column_width );
-  println!( "   Colors applied: colorize_header={}", config.colorize_header );
+  // Config fields are private; the theme is stored internally for future rendering.
+  // Use the config to format a table to see the effect.
+  println!( "   inner_padding=2, min_column_width=15, nord theme applied internally" );
   println!();
 
   // Example 12: Color comparison

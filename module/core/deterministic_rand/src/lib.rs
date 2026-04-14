@@ -21,13 +21,11 @@ pub use hrng_deterministic as hrng;
 #[ cfg(any(not(feature = "determinism"), feature = "no_std")) ]
 pub use hrng_non_deterministic as hrng;
 
-mod private {}
+pub use rand;
 
 mod_interface! {
 
-  own use ::rand :: *;
-
-  use super ::hrng;
+  use super::hrng;
 
   // xxx: make it working
   // #[ cfg( feature = "determinism" ) ]

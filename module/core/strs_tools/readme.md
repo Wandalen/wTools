@@ -105,7 +105,7 @@ Enable SIMD acceleration for demanding applications:
 
 ```toml
 [dependencies]
-strs_tools = { version = "0.30", features = ["simd"] }
+strs_tools = { version = "0.44", features = ["simd"] }
 ```
 
 SIMD features provide significant speedups for:
@@ -119,8 +119,8 @@ Choose only the functionality you need:
 
 ```toml
 [dependencies]
-strs_tools = { 
-    version = "0.30", 
+strs_tools = {
+    version = "0.44",
     features = ["string_split", "string_parse_request"], 
     default-features = false 
 }

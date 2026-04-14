@@ -11,7 +11,7 @@ This solution has a limitation:
 
 - In case entity is a function and trait is `Fn`/`FnMut`/`FnOnce` which current entity does not implement you will get compile-time error instead of `false`.
 
-This is alias for [module::implements](https://github.com/Wandalen/wTools/tree/master/module/core/implements).
+This is alias for [module::implements](https://github.com/Wandalen/wTools/tree/master/module/experimental/implements).
 
 ### Basic use-case
 
@@ -37,6 +37,6 @@ cargo add implements
 ```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd examples/implements_trivial
+cd examples/instance_of_trivial
 cargo run
 ```

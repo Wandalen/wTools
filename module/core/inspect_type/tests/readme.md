@@ -24,7 +24,7 @@ This directory contains all functional tests for the `inspect_type` crate, organ
 - Demonstrates fundamental use cases (slices vs arrays)
 
 ### Corner Cases Tests (`corner_cases_test.rs`)
-Systematic testing across 12 categories:
+Systematic testing across 16 categories:
 1. **Primitive Types** - integers, floats, bool, char
 2. **String Types** - String, &str, &String
 3. **Collections - Arrays** - empty arrays, small arrays, large arrays, array references, slices
@@ -37,6 +37,10 @@ Systematic testing across 12 categories:
 10. **Expression Testing** - literals, arithmetic expressions, method calls
 11. **Macro Output Format** - format correctness, consistency between macros
 12. **Edge Cases** - nested generics, zero-sized types
+13. **Function Types and Closures** - function pointers (with/without params), non-capturing closures, capturing closures, closures with parameters
+14. **Raw Pointers** - const raw pointers (*const T), mut raw pointers (*mut T)
+15. **Trait Objects (DST)** - trait object references (&dyn Trait), boxed trait objects (Box<dyn Trait>)
+16. **Type Alias Resolution** - type aliases resolve to underlying types
 
 ### Example Quality Tests (`example_produces_output_test.rs`)
 - Verifies examples compile and run successfully
@@ -58,12 +62,14 @@ Systematic testing across 12 categories:
 - ✅ Example quality assurance
 - ✅ Zero-sized types
 - ✅ Nested generic types
-- ✅ Reference layers (single, double, triple)
+- ✅ Reference layers (single, double, triple, quad)
+- ✅ Function pointers and closures
+- ✅ Raw pointers (*const T, *mut T)
+- ✅ Trait objects (DST - dynamically sized types)
+- ✅ Type alias resolution transparency
 
 ### Known Limitations
 - Smoke tests disabled due to circular dependency with test_tools
-- Cannot test trait objects extensively (type_name_of_val limitations)
-- Function types testing limited by type name representation
 
 ## Running Tests
 

@@ -10,7 +10,7 @@ fn basic()
   let got: AbsolutePath = path1.try_into().unwrap();
   println!("got: {}", &got);
   println!("path1: {}", &path1);
-  a_id!(&got.to_string(), path1);
+  assert_eq!(&got.to_string(), path1);
 }
 
 #[ test ]
@@ -29,7 +29,6 @@ fn test_to_string_lossy_hard()
 }
 
 #[ test ]
-#[ cfg(not(feature = "no_std")) ]
 fn test_try_from_pathbuf() 
 {
   let path_buf = PathBuf ::from("/path/to/some/file.txt");
@@ -38,7 +37,6 @@ fn test_try_from_pathbuf()
 }
 
 #[ test ]
-#[ cfg(not(feature = "no_std")) ]
 fn test_try_from_path() 
 {
   let path = Path ::new("/path/to/some/file.txt");
@@ -58,7 +56,7 @@ fn test_parent()
 fn test_join() 
 {
   let abs_path: AbsolutePath = "/path/to/some".try_into().unwrap();
-  let joined_path = abs_path.join("file.txt");
+  let joined_path = abs_path.join("file.txt").unwrap();
   assert_eq!(joined_path.to_string_lossy(), "/path/to/some/file.txt");
 }
 
@@ -71,7 +69,6 @@ fn test_relative_path_try_from_str()
 }
 
 #[ test ]
-#[ cfg(not(feature = "no_std")) ]
 fn test_relative_path_try_from_pathbuf() 
 {
   let rel_path_buf = PathBuf ::from("src/main.rs");
@@ -80,7 +77,6 @@ fn test_relative_path_try_from_pathbuf()
 }
 
 #[ test ]
-#[ cfg(not(feature = "no_std")) ]
 fn test_relative_path_try_from_path() 
 {
   let rel_path = Path ::new("src/main.rs");
@@ -101,6 +97,6 @@ fn test_relative_path_parent()
 fn test_relative_path_join() 
 {
   let rel_path = AbsolutePath ::try_from("src").unwrap();
-  let joined = rel_path.join("main.rs");
+  let joined = rel_path.join("main.rs").unwrap();
   assert_eq!(joined.to_string_lossy(), "src/main.rs");
 }

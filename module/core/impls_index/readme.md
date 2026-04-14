@@ -37,7 +37,7 @@ assert_eq!( f1(), 13 );
 ### To add to your project
 
 ```sh
-cargo add impls_index_meta
+cargo add impls_index
 ```
 
 ### Try out from the repository

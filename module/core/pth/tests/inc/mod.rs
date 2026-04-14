@@ -1,5 +1,4 @@
 use super :: *;
-use test_tools :: *;
 
 mod as_path_test;
 mod try_into_cow_path_test;
@@ -19,7 +18,6 @@ mod path_is_glob;
 mod path_normalize;
 mod path_relative;
 mod rebase_path;
-mod transitive;
 mod without_ext;
 
 #[ cfg( feature = "path_unique_folder_name" ) ]

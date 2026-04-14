@@ -1,11 +1,9 @@
 //! Experiment
 
-include!("../../../../module/step/meta/src/module/terminal.rs");
+// include!("../../../../module/step/meta/src/module/terminal.rs");
 
 #[ allow( unused_imports ) ]
 use pth as the_module;
-#[ allow( unused_imports ) ]
-use test_tools :: *;
 
 // #[ cfg( feature = "enabled" ) ]
 // #[ test ]
@@ -16,6 +14,6 @@ use test_tools :: *;
 //   let exp = ".";
 //   let normalized = the_module ::path ::normalize( &path );
 //   let got = normalized.to_str().unwrap();
-//   a_id!( exp, got, "Failed: path_with_dotdot_segments_that_fully_resolve_in_relative_path. Expected: '{}', got: '{}'", exp, got );
+//   assert_eq!( exp, got, "Failed: path_with_dotdot_segments_that_fully_resolve_in_relative_path. Expected: '{}', got: '{}'", exp, got );
 //
 // }
