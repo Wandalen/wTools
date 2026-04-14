@@ -1,9 +1,9 @@
 [package]
 name = "pth"
-version = "0.31.0"
+version = "0.36.0"
 edition = "2021"
 authors = [
-  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Kostiantyn Mysnyk <wandalen@obox.systems>",
 ]
 license = "MIT"
 readme = "readme.md"
@@ -15,41 +15,41 @@ Collection of algorithms and structures to handle paths properly.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
+dependencies = {}
+dev-dependencies = {}
+build-dependencies = {}
 
 [lints]
-workspace = true
 
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
 
 [features]
-default = [
-  "enabled",
-  "path_unique_folder_name",
-  "path_utf8",
-]
+default = [ "enabled" ]
 full = [
   "enabled",
   "derive_serde",
   "path_utf8",
+  "path_unique_folder_name",
 ]
 no_std = []
 # qqq : xxx : negate no_std
 # use_std = []
 use_alloc = [ "no_std" ]
-enabled = [ "mod_interface/enabled" ]
+enabled = [ "dep:mod_interface", "dep:mod_interface_meta", "dep:regex" ]
 
 path_unique_folder_name = []
 derive_serde = [ "serde" ]
 path_utf8 = [ "camino" ]
+mod_interface_meta = ["dep:mod_interface_meta"]
 
 [dependencies]
 # qqq : xxx : make sure all dependencies are in workspace
-regex = { version = "1.10.3", default-features = false }
-mod_interface = { workspace = true }
-serde = { version = "1.0.197", optional = true, features = [ "derive" ] }
-camino = { version = "1.1.7", optional = true, features = [] }
+regex = { workspace = true, optional = true }
+mod_interface = { workspace = true, optional = true }
+serde = { workspace = true, optional = true, features = [ "derive" ] }
+camino = { workspace = true, optional = true }
+mod_interface_meta = { workspace = true, optional = true, features = ["enabled"] }
 
 [dev-dependencies]
-test_tools = { workspace = true, features = [ "full" ] }

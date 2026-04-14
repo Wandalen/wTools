@@ -67,16 +67,16 @@ cargo run --example unified_formats --all-features
 
 ```toml
 # Default (4 formatters)
-tree_fmt = "0.4.0"
+tree_fmt = "0.12.0"
 
 # Minimal (single formatter)
-tree_fmt = { version = "0.4.0", default-features = false, features = [ "table_plain" ] }
+tree_fmt = { version = "0.12.0", default-features = false, features = [ "table_plain" ] }
 
 # Specific use case
-tree_fmt = { version = "0.4.0", features = [ "table_markdown", "format_json" ] }
+tree_fmt = { version = "0.12.0", features = [ "table_markdown", "format_json" ] }
 
 # Everything
-tree_fmt = { version = "0.4.0", features = [ "all_formats" ] }
+tree_fmt = { version = "0.12.0", features = [ "all_formats" ] }
 ```
 
 **31 granular flags available** - each variant has its own flag for minimal binary size.
@@ -98,4 +98,4 @@ cargo doc --open --all-features    # View docs locally
 
 ## License
 
-MIT - **v0.4.0** - [Repository](https://github.com/Wandalen/wTools/tree/master/module/core/tree_fmt)
+MIT - **v0.12.0** - [Repository](https://github.com/Wandalen/wTools/tree/master/module/core/tree_fmt)

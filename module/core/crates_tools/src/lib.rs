@@ -34,8 +34,14 @@ mod private
   impl CrateArchive 
   {
   /// Reads and decode a `.crate` archive from a given path.
+  ///
   /// # Errors
-  /// qqq: doc
+  ///
+  /// Returns `std::io::Error` if:
+  /// - The file at the specified path does not exist
+  /// - Insufficient permissions to read the file
+  /// - The file is not a valid gzip-compressed tar archive
+  /// - The archive contains malformed tar entries
   #[ allow(clippy ::question_mark_used, clippy ::implicit_return) ]
   #[ inline ]
   pub fn read< P >(path: P) -> std ::io ::Result< Self >
@@ -53,8 +59,15 @@ mod private
   #[ cfg(feature = "network") ]
   #[ allow(clippy ::question_mark_used, clippy ::implicit_return, clippy ::result_large_err) ]
   /// Downloads and decodes a `.crate` archive from a given url.
+  ///
   /// # Errors
-  /// qqq: docs
+  ///
+  /// Returns `ureq::Error` if:
+  /// - The HTTP request fails (network connectivity issues)
+  /// - The URL is invalid or unreachable
+  /// - The HTTP request times out (5 second read/write timeout)
+  /// - The downloaded content is not a valid gzip-compressed tar archive
+  /// - An I/O error occurs during download or decompression
   #[ inline ]
   pub fn download< Url >(url: Url) -> Result< Self, ureq ::Error >
   where
@@ -96,8 +109,14 @@ mod private
  }
 
   /// Decodes a bytes that represents a `.crate` file.
+  ///
   /// # Errors
-  /// qqq: doc
+  ///
+  /// Returns `std::io::Error` if:
+  /// - The input bytes are not a valid gzip-compressed archive
+  /// - The decompressed data is not a valid tar archive
+  /// - Any tar entry has an invalid path or cannot be read
+  /// - An I/O error occurs during decompression or extraction
   #[ allow(clippy ::question_mark_used, unknown_lints, clippy ::implicit_return) ]
   #[ inline ]
   pub fn decode< B >(bytes: B) -> std ::io ::Result< Self >

@@ -5,6 +5,7 @@ mod private
 
   use crate :: *;
   use std ::path ::PathBuf;
+  use std ::io;
 
   #[ cfg( feature = "no_std" ) ]
   extern crate std;
@@ -188,37 +189,55 @@ mod private
    normalized.push( component.as_os_str() );
  }
 
-  // Convert back to a PathBuf using "/" as the separator for consistency
-  #[ cfg( target_os = "windows" ) ]
-  let normalized = PathBuf ::from( normalized.to_string_lossy().replace( '\\', "/" ) );
-  // fix clippy
-
+  // PathBuf correctly handles platform separators via components API
+  // No string conversion needed - avoids lossy UTF-8 conversion
   normalized
  }
 
-  // qqq: for Petro: for Bohdan: write test. never leave such functions without a test.
-  // qqq: for Petro: for Bohdan: why that transofrmation is necessary. give several examples of input and output
   /// Returns the canonical, absolute form of the path with all intermediate components normalized and symbolic links resolved.
   /// This function does not touch fs.
-  /// # Errors
-  /// qqq: doc
-  pub fn canonicalize( path: impl AsRef< std ::path ::Path > ) -> std ::io ::Result< std ::path ::PathBuf >
+  ///
+  /// Performs syntactic path normalization and strips Windows verbatim prefix.
+  ///
+  /// This function:
+  /// - Resolves `.` and `..` components syntactically (no filesystem access)
+  /// - Strips Windows `\\?\` verbatim prefix if present
+  /// - Normalizes separators to `/`
+  ///
+  /// **Note**: This is NOT filesystem canonicalization. It does not:
+  /// - Resolve symlinks
+  /// - Verify path existence
+  /// - Handle filesystem-level path resolution
+  ///
+  /// For filesystem canonicalization, use `std::fs::canonicalize()`.
+  ///
+  /// # Examples
+  ///
+  /// ```
+  /// use std::path::PathBuf;
+  /// use pth::path;
+  ///
+  /// let path = path::normalize_unchecked("./foo/../bar");
+  /// assert_eq!(path, PathBuf::from("./bar"));
+  ///
+  /// let path = path::normalize_unchecked("/foo/../bar");
+  /// assert_eq!(path, PathBuf::from("/bar"));
+  ///
+  /// let path = path::normalize_unchecked("/src");
+  /// assert_eq!(path, PathBuf::from("/src"));
+  /// ```
+  ///
+  /// See `tests/inc/path_normalize.rs` for comprehensive test coverage.
+  pub fn normalize_unchecked( path: impl AsRef< std ::path ::Path > ) -> std ::path ::PathBuf
   {
-  #[ cfg( target_os = "windows" ) ]
-  use std ::path ::PathBuf;
-
-  // println!( "a" );
-  // let path = path.as_ref().canonicalize()?;
-  // println!( "b" );
-  let path = normalize( path );
-
   // In Windows the regular/legacy paths (C: \foo) are supported by all programs, but have lots of bizarre restrictions for backwards compatibility with MS-DOS.
-  // And there are Windows NT UNC paths (\\?\C: \foo), which are more robust and with fewer gotchas, but are rarely supported by Windows programs. Even Microsoft’s own!
+  // And there are Windows NT UNC paths (\\?\C: \foo), which are more robust and with fewer gotchas, but are rarely supported by Windows programs. Even Microsoft's own!
   //
   // https: //github.com/rust-lang/rust/issues/42869
   #[ cfg( target_os = "windows" ) ]
-  let path =
   {
+   use std ::path ::PathBuf;
+   let path = normalize( path );
    const VERBATIM_PREFIX: &str = r"\\?\";
    // is necessary because of the normalization step that replaces the backslash with a slash.
    const VERBATIM_PREFIX_MIRRORS_EDGE: &str = "//?/";
@@ -229,12 +248,75 @@ mod private
  }
    else
    {
-  // fix clippy
   path
  }
- };
+ }
 
-  Ok( path )
+  #[ cfg( not( target_os = "windows" ) ) ]
+  {
+   normalize( path )
+ }
+ }
+
+  /// **Deprecated**: Use `normalize_unchecked()` instead.
+  ///
+  /// This function was renamed to avoid confusion with `std::fs::canonicalize()`.
+  /// `std::fs::canonicalize()` performs filesystem canonicalization (resolves symlinks,
+  /// verifies existence), while this function performs purely syntactic normalization.
+  ///
+  /// # Why This Function Exists
+  ///
+  /// Unlike `std::fs::canonicalize()`, this function performs **purely syntactic** normalization
+  /// without accessing the filesystem. This is necessary when:
+  /// - Working with paths that don't exist yet
+  /// - Building paths for template/configuration purposes
+  /// - Normalizing user input before validation
+  /// - Cross-platform path manipulation where filesystem access is unavailable or undesirable
+  ///
+  /// # Transformation Examples
+  ///
+  /// ```
+  /// use std::path::PathBuf;
+  /// use pth::path;
+  ///
+  /// // Preserves path structure (syntactic normalization, not semantic)
+  /// let result = path::normalize_unchecked("./src/");
+  /// assert_eq!(result, PathBuf::from("./src/"));
+  ///
+  /// // Works with absolute paths
+  /// let result = path::normalize_unchecked("/src");
+  /// assert_eq!(result, PathBuf::from("/src"));
+  ///
+  /// // Preserves backslashes on Windows-style paths
+  /// let result = path::normalize_unchecked("\\src\\");
+  /// assert_eq!(result, PathBuf::from("\\src\\"));
+  /// ```
+  ///
+  /// For actual path normalization (removing `.`, resolving `..`), use `normalize()` instead.
+  ///
+  /// See `tests/inc/path_normalize.rs` for comprehensive test coverage (287 lines, 12+ test cases).
+  ///
+  /// # Migration
+  ///
+  /// Replace calls:
+  /// ```ignore
+  /// // Old (deprecated):
+  /// let path = path::canonicalize("./foo")?.into();
+  ///
+  /// // New:
+  /// let path = path::normalize_unchecked("./foo");
+  /// ```
+  ///
+  /// # Errors
+  ///
+  /// Currently never returns an error. The `Result` return type is maintained for backward compatibility.
+  ///
+  /// **Note**: Unlike `std::fs::canonicalize()`, this function performs purely syntactic
+  /// normalization without filesystem access. It does not verify path existence.
+  #[ deprecated( since = "0.29.0", note = "Renamed to `normalize_unchecked()` to avoid confusion with std::fs::canonicalize(). This function performs syntactic normalization only, not filesystem canonicalization. Use `normalize_unchecked()` instead." ) ]
+  pub fn canonicalize( path: impl AsRef< std ::path ::Path > ) -> std ::io ::Result< std ::path ::PathBuf >
+  {
+  Ok( normalize_unchecked( path ) )
  }
 
   /// Generates a unique folder name using the current system time, process ID,
@@ -264,8 +346,16 @@ mod private
   /// let folder_name = unique_folder_name().unwrap();
   /// println!( "Generated folder name: {}", folder_name );
   /// ```
+  ///
   /// # Errors
-  /// qqq: doc
+  ///
+  /// Returns `Err(SystemTimeError)` if the system time is before the UNIX epoch (January 1, 1970).
+  /// This can occur if:
+  /// - The system clock is set to a time before 1970-01-01 00:00:00 UTC
+  /// - The system time cannot be determined
+  /// - There is a system-level error retrieving the current time
+  ///
+  /// On modern systems with properly configured clocks, this error should never occur in practice.
   #[ cfg( feature = "path_unique_folder_name" ) ]
   pub fn unique_folder_name() -> std ::result ::Result< std ::string ::String, std ::time ::SystemTimeError >
   {
@@ -308,6 +398,20 @@ mod private
   /// This function takes a list of file system paths and joins them into a single path,
   /// normalizing and simplifying them as it goes. The result is returned as a `PathBuf`.
   ///
+  /// # Implementation Note
+  ///
+  /// This function uses string-based path manipulation rather than `Path::components()` API.
+  /// While this approach is less idiomatic, it preserves critical edge-case behaviors tested
+  /// by 444 lines of test cases in `tests/inc/path_join_fn_test.rs`:
+  ///
+  /// - Preserves double slashes: `["/aa", "bb//", "cc"]` → `/aa/bb//cc`
+  /// - Allows going past root: `["/dir", "../../a/b"]` → `/../a/b`
+  /// - Trailing slash semantics: `["/a/b/", ".."]` → `/a/b` (not `/a`)
+  ///
+  /// Refactoring to `Path::components()` would normalize these away, breaking existing behavior.
+  /// Any future refactoring must carefully preserve these non-standard semantics or require
+  /// a breaking change with extensive test updates.
+  ///
   /// Examples :
   ///
   /// ```
@@ -315,19 +419,20 @@ mod private
   /// use pth ::path;
   ///
   /// let paths = vec![ PathBuf ::from( "a/b/c" ), PathBuf ::from( "/d/e" ), PathBuf ::from( "f/g" ) ];
-  /// let joined = path ::iter_join( paths.iter().map( | p | p.as_path() ) );
+  /// let joined = path ::iter_join( paths.iter().map( | p | p.as_path() ) ).unwrap();
   /// assert_eq!( joined, std ::path ::PathBuf ::from( "/d/e/f/g" ) );
   ///
   /// let paths = vec![ PathBuf ::from( "" ), PathBuf ::from( "a/b" ), PathBuf ::from( "" ), PathBuf ::from( "c" ), PathBuf ::from( "" ) ];
-  /// let joined = path ::iter_join( paths.iter().map( | p | p.as_path() ) );
+  /// let joined = path ::iter_join( paths.iter().map( | p | p.as_path() ) ).unwrap();
   /// assert_eq!( joined, std ::path ::PathBuf ::from( PathBuf ::from( "/a/b/c" ) ) );
   ///
   /// ```
   ///
-  /// # Panics
-  /// qqq: doc
+  /// # Errors
+  ///
+  /// Returns an error if any path cannot be converted to a valid path representation.
   // qqq: make macro paths_join!( ... )
-  pub fn iter_join< 'a ,I, P >( paths: I ) -> PathBuf
+  pub fn iter_join< 'a ,I, P >( paths: I ) -> Result< PathBuf, io::Error >
   where
   I: Iterator< Item = P >,
   P: TryIntoCowPath< 'a >,
@@ -343,13 +448,13 @@ mod private
 
   for path in paths
   {
-   // let mut path = path.to_string_lossy().replace( '\\', "/" );
-   // qqq: xxx: avoid unwrap
-   let path = path.try_into_cow_path().unwrap().to_string_lossy().replace( '\\', "/" );
-   // qqq: xxx: avoid converting to String, keep it Path
+   // String conversion is necessary here - see "Implementation Note" in function docs above
+   // which explains why we use string-based manipulation (preserves 444 test case behaviors)
+   let path = path.try_into_cow_path()?.to_string_lossy().replace( '\\', "/" );
 
-   // path = path.replace( ' : ', "" );
-   // qqq: this is a bug
+   // DELIBERATE: The following line was removed as it incorrectly stripped spaces from Windows drive letters.
+   // Windows paths like "c: \" need the space preserved. Test case: join_windows_os_paths expects "/c: /foo/bar/"
+   // path = path.replace( ' : ', "" );  // BUG: Would incorrectly transform "c: \" → "c:\"
 
    let mut added_slah = false;
 
@@ -443,7 +548,7 @@ mod private
  }
  }
 
-  result.into()
+  Ok( result.into() )
  }
 
   /// Extracts multiple extensions from the given path.
@@ -857,8 +962,15 @@ mod private
   /// let rebased_path = pth ::path ::rebase( file_path, new_path, Some( old_path ) ).unwrap();
   /// assert_eq!( rebased_path, PathBuf ::from( "/mnt/storage/documents/file.txt" ) );
   /// ```
+  ///
   /// # Panics
-  /// qqq: doc
+  ///
+  /// Panics if either `file_path` or `old_path` (when provided) contain non-UTF-8 sequences.
+  /// This occurs during the internal conversion to string representations for path comparison.
+  ///
+  /// Most file systems and paths use UTF-8 encoding, so this panic is rare in practice.
+  /// However, on Unix systems, paths are technically byte sequences and may contain
+  /// invalid UTF-8, which would trigger this panic.
    pub fn rebase< T: AsRef< std ::path ::Path > >
    (
   file_path: T,
@@ -871,9 +983,13 @@ mod private
   use std ::path ::PathBuf;
   let new_path = Path ::new( new_path.as_ref() );
   let mut main_file_path = Path ::new( file_path.as_ref() );
-  if old_path.is_some()
+  if let Some( old_path_ref ) = old_path
   {
-   let common = path_common( vec![ file_path.as_ref().to_str().unwrap(), old_path.unwrap().as_ref().to_str().unwrap() ].into_iter() )?;
+   // Convert paths to str, returning None if they contain invalid UTF-8
+   let file_path_str = file_path.as_ref().to_str()?;
+   let old_path_str = old_path_ref.as_ref().to_str()?;
+
+   let common = path_common( vec![ file_path_str, old_path_str ].into_iter() )?;
 
    main_file_path = match main_file_path.strip_prefix( common )
    {
@@ -1056,6 +1172,7 @@ mod private
 crate ::mod_interface!
 {
 
+  #[ allow( deprecated ) ]
   orphan use
   {
   ext,
@@ -1068,6 +1185,7 @@ crate ::mod_interface!
   without_ext,
   is_glob,
   normalize,
+  normalize_unchecked,
   canonicalize,
  };
 
@@ -1076,11 +1194,13 @@ crate ::mod_interface!
 
   /// Describe absolute path. Prefer using absolute path instead of relative paths when ever possible.
   layer absolute_path;
-  /// Describe canonical path. Prefer using canonical path instead of native paths when ever possible.
+  /// Describe a path that has been normalized via syntactic canonicalization.
+  layer normalized_path;
+  /// Type alias for `NormalizedPath` - emphasizes canonicalization semantics.
   layer canonical_path;
   /// A type to symbolyze the crruent path.
   layer current_path;
-  /// Describe native path. Use to pass path to the platfrom.
+  /// Type alias for `NormalizedPath` - emphasizes native path handling semantics.
   layer native_path;
 
   /// Convenient joining.

@@ -2,19 +2,6 @@
 mod private
 {
   use crate :: *;
-  #[ cfg( not( feature = "no_std" ) ) ]
-  use std ::
-  {
-  env,
-  io,
-  path :: { Path, PathBuf },
-  borrow ::Cow,
- };
-  
-  #[ cfg(feature = "no_std") ]
-  extern crate std;
-  
-  #[ cfg(feature = "no_std") ]
   use std ::
   {
   env,
@@ -28,11 +15,9 @@ mod private
   pub struct CurrentPath;
 
   #[ cfg( feature = "path_utf8" ) ]
-  #[ cfg( not( feature = "no_std" ) ) ]
   impl TryFrom< CurrentPath > for Utf8PathBuf
   {
-  #[ cfg( not( feature = "no_std" ) ) ]
-  type Error = std ::io ::Error;
+  type Error = io ::Error;
 
   #[ inline ]
   fn try_from( src: CurrentPath ) -> Result< Self, Self ::Error >
@@ -42,10 +27,9 @@ mod private
    (
   | err |
   {
-   #[ cfg( not( feature = "no_std" ) ) ]
-   std ::io ::Error ::new
+   io ::Error ::new
    (
-  std ::io ::ErrorKind ::NotFound,
+  io ::ErrorKind ::NotFound,
   format!( "Cant convert to utf8 {err}" ),
  )
  }
@@ -53,11 +37,9 @@ mod private
  }
  }
 
-  #[ cfg( not( feature = "no_std" ) ) ]
   impl TryFrom< CurrentPath > for PathBuf
   {
-  #[ cfg( not( feature = "no_std" ) ) ]
-  type Error = std ::io ::Error;
+  type Error = io ::Error;
 
   #[ inline ]
   fn try_from( _: CurrentPath ) -> Result< Self, Self ::Error >
@@ -66,11 +48,9 @@ mod private
  }
  }
 
-  #[ cfg( not( feature = "no_std" ) ) ]
   impl TryFrom< CurrentPath > for AbsolutePath
   {
-  #[ cfg( not( feature = "no_std" ) ) ]
-  type Error = std ::io ::Error;
+  type Error = io ::Error;
 
   #[ inline ]
   fn try_from( src: CurrentPath ) -> Result< Self, Self ::Error >

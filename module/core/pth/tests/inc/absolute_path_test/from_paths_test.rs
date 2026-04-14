@@ -1,7 +1,5 @@
 use super :: *;
 
-// xxx: make it working
-
 #[ test ]
 fn test_from_paths_single_absolute_segment() 
 {

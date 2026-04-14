@@ -106,6 +106,59 @@ Exit Code:         0
 - Keys appear in gray by default (automatic with `property_style()`)
 - Values perfectly aligned for easy scanning
 
+### html_format.rs - HTML Table Output
+**Purpose**: Demonstrates `HtmlFormatter` with multiple CSS framework variants
+
+**What it shows**:
+- Minimal HTML table output (no CSS classes)
+- Bootstrap 5 styled tables
+- Tailwind CSS styled tables
+- Custom CSS class configuration
+
+**Run**: `cargo run --example html_format --features format_html`
+
+### sql_format.rs - SQL INSERT Statement Output
+**Purpose**: Demonstrates `SqlFormatter` for generating SQL INSERT statements
+
+**What it shows**:
+- ANSI-standard SQL output
+- PostgreSQL, MySQL, and SQLite dialect variants
+- Proper quoting and escaping for each dialect
+- Batch INSERT generation from tabular data
+
+**Run**: `cargo run --example sql_format --features format_sql`
+
+### themes.rs - Theme System Demonstration
+**Purpose**: Demonstrates the theme system for styled table output
+
+**What it shows**:
+- Built-in theme selection and application
+- Color and style customization via themes
+- Theme composition and override patterns
+- Visual comparison of available themes
+
+**Run**: `cargo run --example themes`
+
+### manual_test_001_truncation.rs - Manual Truncation Tests
+**Purpose**: Manual verification of column truncation behavior
+
+**Run**: `cargo run --example manual_test_001_truncation`
+
+### manual_test_002_multiline.rs - Manual Multiline Tests
+**Purpose**: Manual verification of multiline cell rendering
+
+**Run**: `cargo run --example manual_test_002_multiline`
+
+### manual_test_003_combined.rs - Manual Combined Feature Tests
+**Purpose**: Manual verification of truncation + multiline combined
+
+**Run**: `cargo run --example manual_test_003_combined`
+
+### manual_test_runner.rs - Manual Test Runner
+**Purpose**: Runs all manual test scenarios in sequence for visual inspection
+
+**Run**: `cargo run --example manual_test_runner`
+
 ## Quick Start
 
 ```bash

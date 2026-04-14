@@ -92,19 +92,15 @@ fn main()
    println!( "  [{}] : {}", i, qt!( #param ) );
    
    // If the parameter is itself a generic type, we can extract its parameters too
-   if let Ok( inner_type ) = syn ::parse2 :: < syn ::Type >( qt!( #param ) ) 
+   if let Ok( inner_type ) = syn ::parse2 :: < syn ::Type >( qt!( #param ) )
    {
-  if let Ok( inner_params ) = std ::panic ::catch_unwind( || 
+  let inner_params = typ ::type_parameters( &inner_type, 0..=0 );
+  if !inner_params.is_empty()
   {
-   typ ::type_parameters( &inner_type, 0..=0 )
- }) {
-   if !inner_params.is_empty() 
+   println!( "    Inner parameters: " );
+   for inner in &inner_params
    {
-  println!( "    Inner parameters: " );
-  for inner in &inner_params 
-  {
-   println!( "      - {}", qt!( #inner ) );
- }
+  println!( "      - {}", qt!( #inner ) );
  }
  }
  }

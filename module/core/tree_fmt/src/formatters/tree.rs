@@ -110,7 +110,7 @@
 //! See `tests/reproduce_alignment_problem.rs` for visual demonstration comparing
 //! aligned vs unaligned output.
 
-use crate::{ TreeNode, TreeConfig, TreeSymbols, ColumnData, helpers::{ visual_len, pad_to_width } };
+use crate::{ TreeNode, TreeConfig, TreeSymbols, ColumnData, ansi_str::{ visual_len, pad_to_width } };
 
 /// Initial string capacity for tree output
 const INITIAL_CAPACITY : usize = 1024;

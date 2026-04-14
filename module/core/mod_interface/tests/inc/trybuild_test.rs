@@ -10,22 +10,35 @@ use super :: *;
 // #[ cfg( module_is_terminal ) ]
 #[ test_tools ::nightly ]
 #[ test ]
-fn trybuild_tests() 
+fn trybuild_tests()
 {
-  // qqq: fix test: if run its test with --target-dir flag it's fall (for example: cargo test --target-dir C: \foo\bar )
-  // use test_tools ::dependency ::trybuild;
+  // Fix: Use current_dir instead of exe path to handle custom --target-dir
+  // When CARGO_TARGET_DIR is set to custom location (e.g., /tmp/...),
+  // executable path doesn't contain workspace Cargo.toml, but current_dir does
   println!("current_dir: {:?}", std ::env ::current_dir().unwrap());
   let t = test_tools ::compiletime ::TestCases ::new();
 
-  let current_exe_path = std ::env ::current_exe().expect("No such file or directory");
+  let current_dir_base = std ::env ::current_dir().expect("Could not get current directory");
 
-  let exe_directory = dbg!(current_exe_path.parent().expect("No such file or directory"));
-  fn find_workspace_root(start_path: &std ::path ::Path) -> Option< &std ::path ::Path > 
+  fn find_workspace_root(start_path: &std ::path ::Path) -> Option< &std ::path ::Path >
   {
-  start_path.ancestors().find(|path| path.join("Cargo.toml").exists())
+  start_path.ancestors().find(|path|
+  {
+    let cargo_toml = path.join("Cargo.toml");
+    if !cargo_toml.exists() { return false; }
+    // Check if Cargo.toml contains [workspace] section
+    if let Ok(contents) = std ::fs ::read_to_string(&cargo_toml)
+    {
+      contents.contains("[workspace]")
+    }
+    else
+    {
+      false
+    }
+  })
  }
 
-  let workspace_root = find_workspace_root(exe_directory).expect("No such file or directory");
+  let workspace_root = find_workspace_root(&current_dir_base).expect("Could not find workspace root");
   let current_dir = workspace_root.join("module/core/mod_interface");
 
   // micro module
@@ -65,22 +78,34 @@ only_for_terminal_module! {
   #[ test ]
   fn cta_trybuild_tests()
   {
-  // qqq: fix test: if run its test with --target-dir flag it's fall (for example: cargo test --target-dir C: \foo\bar )
+  // Fix: Use current_dir instead of exe path to handle custom --target-dir
+  // When CARGO_TARGET_DIR is set to custom location (e.g., /tmp/...),
+  // executable path doesn't contain workspace Cargo.toml, but current_dir does
   use test_tools ::dependency ::trybuild;
   println!( "current_dir: {:?}", std ::env ::current_dir().unwrap() );
   let t = test_tools ::compiletime ::TestCases ::new();
 
-  let current_exe_path = std ::env ::current_exe().expect( "No such file or directory" );
+  let current_dir_base = std ::env ::current_dir().expect( "Could not get current directory" );
 
-  let exe_directory = current_exe_path.parent().expect( "No such file or directory" );
   fn find_workspace_root( start_path: &std ::path ::Path ) -> Option< &std ::path ::Path >
   {
-   start_path
-   .ancestors()
-   .find( |path| path.join( "Cargo.toml" ).exists() )
+   start_path.ancestors().find( |path|
+   {
+     let cargo_toml = path.join( "Cargo.toml" );
+     if !cargo_toml.exists() { return false; }
+     // Check if Cargo.toml contains [workspace] section
+     if let Ok( contents ) = std ::fs ::read_to_string( &cargo_toml )
+     {
+       contents.contains( "[workspace]" )
+     }
+     else
+     {
+       false
+     }
+   } )
  }
 
-  let workspace_root = find_workspace_root( exe_directory ).expect( "No such file or directory" );
+  let workspace_root = find_workspace_root( &current_dir_base ).expect( "Could not find workspace root" );
   let current_dir = workspace_root.join( "module/core/mod_interface" );
 
   t.compile_fail( current_dir.join( "tests/inc/derive/micro_modules_bad_vis/trybuild.rs" ) );

@@ -3,7 +3,7 @@ name = "impls_index"
 version = "0.11.0"
 edition = "2021"
 authors = [
-  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Kostiantyn Mysnyk <wandalen@obox.systems>",
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
@@ -28,6 +28,8 @@ all-features = false
 default = [ "enabled" ]
 full = [ "enabled" ]
 enabled = [ "impls_index_meta/enabled" ]
+# Declared to satisfy cfg checks from test_tools dependency macros
+diagnostics_runtime_assertions = []
 
 [dependencies]
 impls_index_meta = { workspace = true }

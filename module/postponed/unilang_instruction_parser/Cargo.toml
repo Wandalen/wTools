@@ -4,7 +4,7 @@ version = "0.2.0"
 edition = "2021"
 license = "MIT"
 readme = "readme.md"
-authors = [ "Kostiantyn Wandalen <wandalen@obox.systems>" ]
+authors = [ "Kostiantyn Mysnyk <wandalen@obox.systems>" ]
 categories = [ "parsing", "command-line-interface" ]
 keywords = [ "parser", "cli", "unilang", "instructions" ]
 description = """
@@ -15,7 +15,7 @@ repository = "https://github.com/Wandalen/wTools/tree/master/module/alias/unilan
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/alias/unilang_instruction_parser"
 
 [dependencies]
-unilang_parser = { workspace = true }
+unilang_parser = "~0.30.0"
 
 
 [features]

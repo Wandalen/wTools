@@ -5,13 +5,8 @@
 #![doc(html_root_url = "https://docs.rs/inspect_type/latest/inspect_type/")]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 #![ cfg_attr( not( doc ), doc = "Type inspection utilities" ) ]
-#![allow(unexpected_cfgs)]
-
-// xxx: qqq: no need in nightly anymore
-// #[ allow( unexpected_cfgs ) ]
-// #[ cfg( RUSTC_IS_NIGHTLY ) ]
-// #[ cfg( not( RUSTC_IS_STABLE ) ) ]
-mod nightly
+/// Type inspection macros and utilities.
+mod inspect
 {
   /// Macro to inspect type of a variable and its size exporting it as a string.
   ///
@@ -90,5 +85,5 @@ pub mod exposed
 pub mod prelude
 {
   #[ doc( inline ) ]
-  pub use crate::nightly::*;
+  pub use crate::inspect::*;
 }

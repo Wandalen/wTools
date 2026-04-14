@@ -1,6 +1,6 @@
 # healthtable
 
-[healthtable](../../Readme.md) - in addition to information about modules, their stability contains the results of CI/CD of the master and alpha branches.
+[healthtable](../../readme.md) - in addition to information about modules, their stability contains the results of CI/CD of the master and alpha branches.
 
 # for_pr_rust_push.yml
 
@@ -30,7 +30,7 @@ actions:
 - install cargo-udeps
 - install cargo-audit
 - checks crate with cargo-udeps
-- checks crete with cargo-audit
+- checks crate with cargo-audit
 - install willbe
 - run tests with all features, with stable and nightly toolchain, with release and debug optimization mode
 

@@ -57,63 +57,8 @@ use std_tools::prelude::*;
 // }
 ```
 
-<!-- ### Basic Use Case :: make - variadic constructor
-
-Implement traits [From_0], [From_1] up to MakeN to provide the interface to construct your structure with a different set of arguments.
-In this example structure, Struct1 could be constructed either without arguments, with a single argument, or with two arguments.
-- Constructor without arguments fills fields with zero.
-- Constructor with a single argument sets both fields to the value of the argument.
-- Constructor with 2 arguments set individual values of each field.
-
-```rust
-use std_tools::prelude::*;
-
-#[ derive( Debug, PartialEq ) ]
-struct Struct1
-{
-  a : i32,
-  b : i32,
-}
-
-impl From_0 for Struct1
-{
-  fn from_0() -> Self
-  {
-    Self { a : 0, b : 0 }
-  }
-}
-
-impl From_1< i32 > for Struct1
-{
-  fn from_1( val : i32 ) -> Self
-  {
-    Self { a : val, b : val }
-  }
-}
-
-impl From_2< i32, i32 > for Struct1
-{
-  fn from_2( val1 : i32, val2 : i32 ) -> Self
-  {
-    Self { a : val1, b : val2 }
-  }
-}
-
-let got : Struct1 = from!();
-let exp = Struct1{ a : 0, b : 0 };
-assert_eq!( got, exp );
-
-let got : Struct1 = from!( 13 );
-let exp = Struct1{ a : 13, b : 13 };
-assert_eq!( got, exp );
-
-let got : Struct1 = from!( 1, 3 );
-let exp = Struct1{ a : 1, b : 3 };
-assert_eq!( got, exp );
-```
-
 ### To add to your project
 
 ```sh
 cargo add std_tools
-``` -->
+```

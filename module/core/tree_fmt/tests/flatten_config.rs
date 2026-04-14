@@ -1,6 +1,5 @@
 //! Tests for FlattenConfig functionality
 
-#![ cfg( feature = "integration" ) ]
 #![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 use tree_fmt::

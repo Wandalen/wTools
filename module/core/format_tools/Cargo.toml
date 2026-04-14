@@ -3,7 +3,7 @@ name = "format_tools"
 version = "0.6.0"
 edition = "2021"
 authors = [
-  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Kostiantyn Mysnyk <wandalen@obox.systems>",
 ]
 license = "MIT"
 readme = "readme.md"
@@ -15,6 +15,9 @@ Collection of mechanisms for formatting and serialization into string.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
+dependencies = {}
+dev-dependencies = {}
+build-dependencies = {}
 
 [lints]
 workspace = true
@@ -39,6 +42,11 @@ enabled = [
   # "derive_tools/enabled",
   "former/enabled",
 ]
+
+# Required for test_tools macros that check cfg features in the destination crate
+diagnostics_runtime_assertions = []
+diagnostics_compiletime_assertions = []
+diagnostics_memory_layout = []
 
 [dependencies]
 # derive_tools = { workspace = true, features = [ "derive_from", "derive_inner_from" ] }

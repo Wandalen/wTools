@@ -55,6 +55,10 @@
 //! - **Testing Isolation** : All tests are in `tests/` directory, never in `src/`, following
 //!   the mandatory testing architecture pattern.
 
+#[ cfg( all( feature = "use_alloc", not( feature = "std" ) ) ) ]
+#[ allow( unused_extern_crates ) ]
+extern crate alloc;
+
 /// String tools.
 #[ cfg( feature = "enabled" ) ]
 pub mod string;

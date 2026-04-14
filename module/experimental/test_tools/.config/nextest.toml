@@ -1,0 +1,8 @@
+# Nextest configuration for test_tools crate
+#
+# Smoke tests create temporary cargo projects and run full builds,
+# requiring significantly more time than standard unit tests.
+
+[profile.default]
+# Extended timeout for all tests - smoke tests need 30-60s for cargo builds
+slow-timeout = { period = "180s", terminate-after = 3 }

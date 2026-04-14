@@ -93,6 +93,6 @@ cargo add format_tools
 ```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd examples/foramt_tools_trivial
+cd examples/format_tools_trivial
 cargo run
 ```

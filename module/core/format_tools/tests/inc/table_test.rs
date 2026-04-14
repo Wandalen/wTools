@@ -289,7 +289,7 @@ fn iterator_over_strings()
 //
 //   let mut output = String ::new();
 //   let mut context = the_module ::print ::Context ::new( &mut output, Default ::default() );
-//   let _got = the_module ::TableFormatter ::fmt( &as_table, &mut context );
+//   let got = the_module ::TableFormatter ::fmt( &as_table, &mut context );
 //   let got = as_table.table_to_string();
 //   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
 //   assert!( got.contains( "│     13     │ [ │ [ │" ) );
@@ -353,10 +353,10 @@ fn test_vector_table()
 
   println!( "{}", output );
 
-  let _exp = r#"│ id │ created_at │     file_ids     │   tools   │
+  let exp =r#"│ id │ created_at │     file_ids     │   tools   │
 ──────────────────────────────────────────────────
 │ 1  │ 1627845583 │ [ file1, file2 ] │           │
 │ 2  │     13     │ [ file3, file4 ] │ [ tool1 ] │"#;
 
-  a_id!( output.as_str(), _exp );
+  a_id!( output.as_str(), exp );
 }

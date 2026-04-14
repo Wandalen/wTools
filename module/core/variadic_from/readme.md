@@ -22,7 +22,7 @@ To get started with `variadic_from`, follow these simple steps:
 
     ```toml
     [dependencies]
-    variadic_from = "0.1" # Or the latest version
+    variadic_from = "0.56" # Or the latest version
     variadic_from_meta = { path = "../variadic_from_meta" } # If using from workspace
     ```
 
@@ -128,7 +128,7 @@ For detailed API documentation, visit [docs.rs/variadic_from](https://docs.rs/va
 
 ### Contributing
 
-We welcome contributions! Please see our [CONTRIBUTING.md](../../../CONTRIBUTING.md) for guidelines on how to contribute.
+We welcome contributions! Please see our [contributing.md](../../../contributing.md) for guidelines on how to contribute.
 
 ### License
 

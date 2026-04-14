@@ -1,3 +1,3 @@
 ## Documentation
 
-- [Rust](./rust/Readme.md)
+- [Rust](./rust/readme.md)

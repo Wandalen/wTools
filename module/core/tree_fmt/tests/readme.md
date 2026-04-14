@@ -6,8 +6,82 @@ Contains all functional and integration tests for tree_fmt library. Tests valida
 ## Organization Principles
 - Tests organized in modular files by functionality domain
 - Domain-based organization: tests grouped by what they test (data structures, builders, formatters)
-- 49 unit tests + 30 doc tests covering all library functionality
-- All test files under 300 lines for maintainability
+- Tests cover Tasks 012-015: min_column_width floor, ANSI coloring, border variants, Unicode display width
+- Test files kept under 1000 lines per file (warning threshold); mandatory split at 1500 lines
+
+## Responsibility Table
+
+| File | Responsibility |
+|------|----------------|
+| `inc/` | Shared test utilities and helpers |
+| `aligned_tree_basic.rs` | Test basic aligned tree formatting |
+| `aligned_tree_configuration.rs` | Test aligned tree configuration options |
+| `aligned_tree_edge_cases.rs` | Test aligned tree edge cases |
+| `builder.rs` | Test TreeBuilder path-based construction |
+| `column_data.rs` | Test column data handling |
+| `column_truncation.rs` | Test column width truncation |
+| `data.rs` | Test core data structures |
+| `debug_alignment.rs` | Test debug output alignment |
+| `flatten_config.rs` | Test FlattenConfig customization |
+| `fluent_api.rs` | Test fluent RowBuilder API |
+| `formatters.rs` | Test TableShapedFormatter trait |
+| `html.rs` | Test HTML output format |
+| `logfmt.rs` | Test logfmt output format |
+| `manual/` | Store manual testing procedures |
+| `multiline_cells.rs` | Test multiline cell support |
+| `reproduce_alignment_problem.rs` | Reproduce historical alignment bugs |
+| `reproduce_willbe3_alignment.rs` | Reproduce willbe3 alignment issue |
+| `sql.rs` | Test SQL output format |
+| `table_styles_compatibility.rs` | Test table style compatibility |
+| `table_styles_outputs.rs` | Test table style outputs |
+| `table_config_corner_cases.rs` | Test TableConfig API corner cases and edge conditions |
+| `table_rendering_borders.rs` | Test border variant rendering: top/bottom borders, inter-row separators, AsciiGrid corners |
+| `table_rendering_colors.rs` | Test ANSI header coloring and alternating-row coloring |
+| `table_styles_presets.rs` | Test table style presets |
+| `text_cli_help.rs` | Test CLI help text formatting |
+| `themes.rs` | Test visual themes |
+| `unicode_display_width_alignment.rs` | Test Unicode display width alignment |
+| `unified_format_trait.rs` | Test unified format trait |
+| `verify_alignment_correct.rs` | Verify alignment correctness |
+| `word_wrap.rs` | Test `WrapFormatter` / `WrapConfig` / `BreakStrategy` / `Overflow` including bug reproducers |
+| `text.rs` | Test TextFormatter general variants: Bullets, Numbered, KeyValue, Compact, Sections |
+| `yaml.rs` | Test YamlFormatter YAML list-of-objects output and round-trip correctness |
+| `json.rs` | Test JsonFormatter JSON array-of-objects output in pretty and compact modes |
+| `toml_fmt.rs` | Test TomlFormatter TOML array-of-tables output and round-trip correctness |
+| `expanded_indent_prefix.rs` | Test ExpandedConfig indent_prefix field behavior |
+| `expanded_behavior.rs` | Test ExpandedFormatter corner cases: show_record_numbers, alignment, spacing |
+
+## Responsibility Table
+
+| File | Responsibility |
+|------|----------------|
+| `inc/` | Shared test utilities and helpers |
+| `aligned_tree_basic.rs` | Test basic aligned tree formatting |
+| `aligned_tree_configuration.rs` | Test aligned tree configuration options |
+| `aligned_tree_edge_cases.rs` | Test aligned tree edge cases |
+| `builder.rs` | Test TreeBuilder path-based construction |
+| `column_data.rs` | Test column data handling |
+| `column_truncation.rs` | Test column width truncation |
+| `data.rs` | Test core data structures |
+| `debug_alignment.rs` | Test debug output alignment |
+| `flatten_config.rs` | Test FlattenConfig customization |
+| `fluent_api.rs` | Test fluent RowBuilder API |
+| `formatters.rs` | Test TableShapedFormatter trait |
+| `html.rs` | Test HTML output format |
+| `logfmt.rs` | Test logfmt output format |
+| `manual/` | Store manual testing procedures |
+| `multiline_cells.rs` | Test multiline cell support |
+| `reproduce_alignment_problem.rs` | Reproduce historical alignment bugs |
+| `reproduce_willbe3_alignment.rs` | Reproduce willbe3 alignment issue |
+| `sql.rs` | Test SQL output format |
+| `table_styles_compatibility.rs` | Test table style compatibility |
+| `table_styles_outputs.rs` | Test table style outputs |
+| `table_styles_presets.rs` | Test table style presets |
+| `text_cli_help.rs` | Test CLI help text formatting |
+| `themes.rs` | Test visual themes |
+| `unicode_display_width_alignment.rs` | Test Unicode display width alignment |
+| `unified_format_trait.rs` | Test unified format trait |
+| `verify_alignment_correct.rs` | Verify alignment correctness |
 
 ## Test Files
 - **data.rs** (14 tests) - Core data structures (`TreeNode`, `RowBuilder`, `TableView` trait)

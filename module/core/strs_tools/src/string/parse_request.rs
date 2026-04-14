@@ -17,9 +17,14 @@ pub mod private {
   #[ cfg( all( feature = "string_split", feature = "string_isolate", feature = "std" ) ) ]
   use crate::string::split::split;
 
+  // Fix(compilation-error-strs-tools): Import Src and Delimiter from isolate::private
+  // Root cause: Src and Delimiter types are in isolate::private module, not re-exported to isolate::
+  // Pitfall: Module re-export structure must match imports - types in private submodules require explicit private:: path
   #[ cfg( all( feature = "string_split", feature = "string_isolate", feature = "std" ) ) ]
   use crate::string::{
-    isolate::isolate_right, // Keep the import for the function
+    isolate::isolate_right,
+    isolate::private::Src,
+    isolate::private::Delimiter,
   };
   use super::*;
 
@@ -151,64 +156,64 @@ pub mod private {
   // }
 
   /// Newtype for the key-value delimiter string slice in `ParseOptions`.
-  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ] // Moved derive here
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash ) ]
   pub struct ParseKeyValDelimeter<'a>(pub &'a str);
 
-  // impl Default for ParseKeyValDelimeter<'_> // Removed manual impl
-  // {
-  //   fn default() -> Self
-  //   {
-  //     Self( ":" )
-  //   }
-  // }
+  impl Default for ParseKeyValDelimeter<'_>
+  {
+    fn default() -> Self
+    {
+      Self( ": " )
+    }
+  }
 
   /// Newtype for the commands delimiter string slice in `ParseOptions`.
-  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ] // Moved derive here
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash ) ]
   pub struct ParseCommandsDelimeter<'a>(pub &'a str);
 
-  // impl Default for ParseCommandsDelimeter<'_> // Removed manual impl
-  // {
-  //   fn default() -> Self
-  //   {
-  //     Self( ";" )
-  //   }
-  // }
+  impl Default for ParseCommandsDelimeter<'_>
+  {
+    fn default() -> Self
+    {
+      Self( ";" )
+    }
+  }
 
   /// Newtype for the quoting boolean flag in `ParseOptions`.
-  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ] // Moved derive here
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash ) ]
   pub struct ParseQuoting(pub bool);
 
-  // impl Default for ParseQuoting // Removed manual impl
-  // {
-  //   fn default() -> Self
-  //   {
-  //     Self( true )
-  //   }
-  // }
+  impl Default for ParseQuoting
+  {
+    fn default() -> Self
+    {
+      Self( true )
+    }
+  }
 
   /// Newtype for the unquoting boolean flag in `ParseOptions`.
-  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ] // Moved derive here
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash ) ]
   pub struct ParseUnquoting(pub bool);
 
-  // impl Default for ParseUnquoting // Removed manual impl
-  // {
-  //   fn default() -> Self
-  //   {
-  //     Self( true )
-  //   }
-  // }
+  impl Default for ParseUnquoting
+  {
+    fn default() -> Self
+    {
+      Self( true )
+    }
+  }
 
   /// Newtype for the `parsing_arrays` boolean flag in `ParseOptions`.
-  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ] // Moved derive here
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash ) ]
   pub struct ParseParsingArrays(pub bool);
 
-  // impl Default for ParseParsingArrays // Removed manual impl
-  // {
-  //   fn default() -> Self
-  //   {
-  //     Self( true )
-  //   }
-  // }
+  impl Default for ParseParsingArrays
+  {
+    fn default() -> Self
+    {
+      Self( true )
+    }
+  }
 
   /// Newtype for the `several_values` boolean flag in `ParseOptions`.
   #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ]
@@ -332,14 +337,16 @@ pub mod private {
         let subject;
         let mut map: HashMap<String, OpType<String>> = HashMap::new();
 
-        if map_entries.1.is_some() {
-          let options = isolate_right(); // Removed mut
-          let subject_and_key = options.isolate(); // Removed field assignments
+        if let Some(map_entry_1) = map_entries.1 {
+          let mut options = isolate_right();
+          options.src = Src( map_entries.0 );
+          options.delimiter = Delimiter( " " );
+          let subject_and_key = options.isolate();
           subject = subject_and_key.0;
           map_entries.0 = subject_and_key.2;
 
           let mut join = String::from(map_entries.0);
-          join.push_str(map_entries.1.unwrap());
+          join.push_str(map_entry_1);
           join.push_str(map_entries.2);
 
           let mut splits = split()
@@ -358,8 +365,10 @@ pub mod private {
             let mut right = splits[a + 2].clone();
 
             while a < (splits.len() - 3) {
-              let options = isolate_right(); // Removed mut
-              let cuts = options.isolate(); // Removed field assignments
+              let mut options = isolate_right();
+              options.src = Src( &splits[a + 2] );
+              options.delimiter = Delimiter( " " );
+              let cuts = options.isolate();
 
               if cuts.1.is_none() {
                 let mut joined = splits[a + 2].clone();
@@ -373,8 +382,10 @@ pub mod private {
                 continue;
               }
 
-              splits[a + 2] = cuts.2.to_string();
-              right = cuts.0.to_string();
+              let cuts_2_owned = cuts.2.to_string();
+              let cuts_0_owned = cuts.0.to_string();
+              splits[a + 2] = cuts_2_owned;
+              right = cuts_0_owned;
               break;
             }
 

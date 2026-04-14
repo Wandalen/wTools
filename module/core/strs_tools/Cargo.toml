@@ -1,9 +1,9 @@
 [package]
 name = "strs_tools"
-version = "0.37.0"
+version = "0.44.0"
 edition = "2021"
 authors = [
-  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Kostiantyn Mysnyk <wandalen@obox.systems>",
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
@@ -19,6 +19,9 @@ keywords = [ "fundamental", "general-purpose" ]
 exclude = [
   "benches/"
 ]
+dependencies = {}
+dev-dependencies = {}
+build-dependencies = {}
 
 [lints]
 workspace = true
@@ -155,6 +158,9 @@ lazy_static = { version = "1.4", optional = true }
 
 # ANSI utilities Unicode support (optional)
 unicode-segmentation = { workspace = true, optional = true }
+
+# Unicode display width calculation for ANSI padding (required for correct alignment)
+unicode-width = "0.1"
 
 
 [dev-dependencies]

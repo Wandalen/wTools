@@ -8,10 +8,10 @@ pub mod isolate;
 #[ cfg( all( feature = "string_parse_number", feature = "std" ) ) ]
 pub mod number;
 /// Parse string.
-#[ cfg( all( feature = "string_parse_request", feature = "std" ) ) ]
+#[ cfg( all( feature = "string_parse_request", any( feature = "std", feature = "use_alloc" ) ) ) ]
 pub mod parse_request;
 /// Split string with a delimiter.
-#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
+#[ cfg( all( feature = "string_split", any( feature = "std", feature = "use_alloc" ) ) ) ]
 pub mod split;
 /// Zero-copy string operations.
 #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
@@ -22,6 +22,9 @@ pub mod parser;
 /// Specialized high-performance string splitting algorithms.
 #[ cfg( all( feature = "string_split", feature = "specialized_algorithms", feature = "std" ) ) ]
 pub mod specialized;
+/// Line-based text operations (head/tail).
+#[ cfg( all( feature = "string_split", any( feature = "std", feature = "use_alloc" ) ) ) ]
+pub mod lines;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
@@ -41,9 +44,9 @@ pub mod own
   #[ cfg( all( feature = "string_parse_number", feature = "std" ) ) ]
   #[ allow( unused_imports ) ]
   pub use super ::number ::orphan :: *;
-  #[ cfg( all( feature = "string_parse_request", feature = "std" ) ) ]
+  #[ cfg( all( feature = "string_parse_request", any( feature = "std", feature = "use_alloc" ) ) ) ]
   pub use super ::parse_request ::orphan :: *;
-  #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
+  #[ cfg( all( feature = "string_split", any( feature = "std", feature = "use_alloc" ) ) ) ]
   pub use super ::split ::orphan :: *;
   #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
   pub use super ::zero_copy :: { ZeroCopyStringExt, ZeroCopySplit, ZeroCopySegment, zero_copy_split };
@@ -51,6 +54,8 @@ pub mod own
   pub use super ::parser :: { ParserIntegrationExt, CommandParser, ParsedToken, ParseError, parse_and_split };
   #[ cfg( all( feature = "string_split", feature = "specialized_algorithms", feature = "std" ) ) ]
   pub use super ::specialized :: { smart_split, SingleCharSplitIterator, BoyerMooreSplitIterator, SplitResult, SplitAlgorithm, AlgorithmSelector };
+  #[ cfg( all( feature = "string_split", any( feature = "std", feature = "use_alloc" ) ) ) ]
+  pub use super ::lines ::orphan :: *;
 }
 
 /// Parented namespace of the module.
@@ -77,9 +82,9 @@ pub mod exposed
   #[ cfg( all( feature = "string_parse_number", feature = "std" ) ) ]
   #[ allow( unused_imports ) ]
   pub use super ::number ::exposed :: *;
-  #[ cfg( all( feature = "string_parse_request", feature = "std" ) ) ]
+  #[ cfg( all( feature = "string_parse_request", any( feature = "std", feature = "use_alloc" ) ) ) ]
   pub use super ::parse_request ::exposed :: *;
-  #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
+  #[ cfg( all( feature = "string_split", any( feature = "std", feature = "use_alloc" ) ) ) ]
   pub use super ::split ::exposed :: *;
   #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
   pub use super ::zero_copy :: { ZeroCopyStringExt, zero_copy_split };
@@ -87,6 +92,8 @@ pub mod exposed
   pub use super ::parser :: { ParserIntegrationExt, ParsedToken, parse_and_split };
   #[ cfg( all( feature = "string_split", feature = "specialized_algorithms", feature = "std" ) ) ]
   pub use super ::specialized :: { smart_split, SingleCharSplitIterator, BoyerMooreSplitIterator };
+  #[ cfg( all( feature = "string_split", any( feature = "std", feature = "use_alloc" ) ) ) ]
+  pub use super ::lines ::exposed :: *;
 }
 
 /// Namespace of the module to include with `use module :: *`.
@@ -103,9 +110,9 @@ pub mod prelude
   #[ cfg( all( feature = "string_parse_number", feature = "std" ) ) ]
   #[ allow( unused_imports ) ]
   pub use super ::number ::prelude :: *;
-  #[ cfg( all( feature = "string_parse_request", feature = "std" ) ) ]
+  #[ cfg( all( feature = "string_parse_request", any( feature = "std", feature = "use_alloc" ) ) ) ]
   pub use super ::parse_request ::prelude :: *;
-  #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
+  #[ cfg( all( feature = "string_split", any( feature = "std", feature = "use_alloc" ) ) ) ]
   pub use super ::split ::prelude :: *;
   #[ cfg( all( feature = "string_split", feature = "std" ) ) ]
   pub use super ::zero_copy ::ZeroCopyStringExt;

@@ -2,29 +2,13 @@
 mod private
 {
   #[ allow( unused_imports, clippy ::wildcard_imports ) ]
-  #[ allow( clippy ::std_instead_of_alloc, clippy ::std_instead_of_core ) ]
   use crate :: *;
-
-  #[ cfg( not( feature = "no_std" ) ) ]
   use std ::
   {
   io,
   path :: { Component, Path, PathBuf },
   string ::String,
  };
-  
-  #[ cfg( feature = "no_std" ) ]
-  extern crate std;
-  
-  #[ cfg( feature = "no_std" ) ]
-  use std ::
-  {
-  io,
-  path :: { Component, Path, PathBuf },
- };
-  
-  #[ cfg( feature = "no_std" ) ]
-  use alloc ::string ::String;
 
   /// A trait for converting various types into a `PathBuf`.
   ///
@@ -39,8 +23,15 @@ mod private
   ///
   /// * `Ok(PathBuf)` - The owned path buffer.
   /// * `Err(io ::Error)` - An error if the conversion fails.
+  ///
   /// # Errors
-  /// qqq: doc
+  ///
+  /// Currently, all standard implementations (`&str`, `String`, `PathBuf`, `&Path`, `Component`,
+  /// and types implementing `AsRef<Path>`) never return an error - they always succeed. The `Result`
+  /// return type is maintained for:
+  /// - API consistency with `TryIntoCowPath` and other fallible conversions
+  /// - Future implementations that may need to validate or transform paths
+  /// - Custom types that may have fallible path conversions
   fn try_into_path( self ) -> Result< PathBuf, io ::Error >;
  }
 

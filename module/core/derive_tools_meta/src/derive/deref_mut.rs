@@ -1,19 +1,23 @@
 use macro_tools ::
 {
-  diag, generic_params, struct_like ::StructLike, Result, qt, attr, syn, proc_macro2, return_syn_err, syn_err, Spanned,
+  diag, struct_like ::StructLike, Result, qt, attr, syn, proc_macro2, return_syn_err, syn_err, Spanned,
 };
 
 ///
 /// Derive macro to implement `DerefMut` when-ever it's possible to do automatically.
 ///
-pub fn deref_mut(input: proc_macro ::TokenStream) -> Result< proc_macro2 ::TokenStream > 
+/// Fix(issue-5): Changed from `generic_params::decompose` to `split_for_impl`.
+/// Root cause: `decompose()` returns `Punctuated` types incompatible with `quote!` macro, causing "expected one of..." errors with generic types.
+/// Pitfall: Always use `split_for_impl()` for trait implementations, not `decompose()`. `split_for_impl()` returns properly formatted `ImplGenerics` and `TypeGenerics`.
+///
+pub fn deref_mut(input: proc_macro ::TokenStream) -> Result< proc_macro2 ::TokenStream >
 {
   let original_input = input.clone();
   let parsed = syn ::parse :: < StructLike >(input)?;
   let has_debug = attr ::has_debug(parsed.attrs().iter())?;
   let item_name = &parsed.ident();
 
-  let (_generics_with_defaults, generics_impl, generics_ty, generics_where) = generic_params ::decompose(parsed.generics());
+  let (generics_impl, generics_ty, generics_where_option) = parsed.generics().split_for_impl();
 
   let result =  match parsed 
   {
@@ -69,7 +73,7 @@ pub fn deref_mut(input: proc_macro ::TokenStream) -> Result< proc_macro2 ::Token
   item_name,
   &generics_impl,
   &generics_ty,
-  &generics_where,
+  generics_where_option,
   &field_type,
   field_name.as_ref(),
  )
@@ -94,11 +98,15 @@ pub fn deref_mut(input: proc_macro ::TokenStream) -> Result< proc_macro2 ::Token
 
 /// Generates `DerefMut` implementation for structs.
 ///
+/// Fix(issue-5): Updated signature to use `ImplGenerics`, `TypeGenerics`, and `WhereClause`.
+/// Root cause: `Punctuated` types don't format correctly in `quote!` macro for generic impl blocks.
+/// Pitfall: Always use `split_for_impl()` types (`ImplGenerics`, `TypeGenerics`, `WhereClause`) for trait implementations.
+///
 /// Example of generated code :
 /// ```text
-/// impl DerefMut for IsTransparent
+/// impl< T > ::core ::ops ::DerefMut for IsTransparent< T >
 /// {
-///   fn deref_mut( &mut self ) -> &mut bool
+///   fn deref_mut( &mut self ) -> &mut T
 /// ///   {
 /// ///     &mut self.0
 /// /// }
@@ -106,13 +114,13 @@ pub fn deref_mut(input: proc_macro ::TokenStream) -> Result< proc_macro2 ::Token
 /// ```
 fn generate(
   item_name: &syn ::Ident,
-  generics_impl: &syn ::punctuated ::Punctuated< syn ::GenericParam, syn ::token ::Comma >,
-  generics_ty: &syn ::punctuated ::Punctuated< syn ::GenericParam, syn ::token ::Comma >,
-  generics_where: &syn ::punctuated ::Punctuated< syn ::WherePredicate, syn ::token ::Comma >,
+  generics_impl: &syn ::ImplGenerics< '_ >,
+  generics_ty: &syn ::TypeGenerics< '_ >,
+  generics_where_option: Option< &syn ::WhereClause >,
   field_type: &syn ::Type,
   field_name: Option< &syn ::Ident >,
 ) -> proc_macro2 ::TokenStream {
-  let body =  if let Some(field_name) = field_name 
+  let body =  if let Some(field_name) = field_name
   {
   qt! { &mut self.#field_name }
  } else {
@@ -122,8 +130,7 @@ fn generate(
   qt! {
   #[ automatically_derived ]
   impl #generics_impl ::core ::ops ::DerefMut for #item_name #generics_ty
-  where
-   #generics_where
+  #generics_where_option
   {
    fn deref_mut( &mut self ) -> &mut #field_type
    {

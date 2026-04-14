@@ -31,6 +31,6 @@ fn from_test()
   a_id!(IsTransparentSimple ::from(true), IsTransparentSimple(true));
 
   // Test for IsTransparentComplex
-  let _got_tmp = "hello".to_string();
-  a_id!(IsTransparentComplex :: < '_, '_, String, str > ::from(&_got_tmp), IsTransparentComplex :: < '_, '_, String, str >(&_got_tmp, core ::marker ::PhantomData));
+  let got_tmp = "hello".to_string();
+  a_id!(IsTransparentComplex :: < '_, '_, String, str > ::from(&got_tmp), IsTransparentComplex :: < '_, '_, String, str >(&got_tmp, core ::marker ::PhantomData));
 }

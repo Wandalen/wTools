@@ -1,5 +1,4 @@
 // module/core/pth/src/lib.rs
-#![ cfg_attr( feature = "no_std", no_std ) ]
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc
 (
@@ -8,17 +7,9 @@
 #![ doc( html_root_url = "https://docs.rs/pth/latest/pth/" ) ]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 #![ cfg_attr( not( doc ), doc = "Path utilities" ) ]
-#![ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 
 #[ cfg( feature = "enabled" ) ]
-use ::mod_interface::mod_interface;
-
-#[ cfg( feature = "no_std" ) ]
-#[ macro_use ]
-extern crate alloc;
-
-#[ cfg( feature = "no_std" ) ]
-extern crate std;
+use ::mod_interface_meta::mod_interface;
 
 // qqq: xxx: implement `pth ::absolute ::join` function or add option to `pth ::path ::join`
 //       Desired Signature Idea 1 : `pub fn join< T1, T2 >(p1: T1, p2: T2) -> io ::Result< AbsolutePath >` (extendable for more args or tuples)
@@ -53,14 +44,8 @@ mod_interface! {
   /// `TryIntoPath` trait.
   layer try_into_cow_path;
 
-  /// Transitive `TryFrom` and `TryInto`.
-  layer transitive;
-
   #[ cfg( feature = "path_utf8" ) ]
   own use ::camino :: { Utf8Path, Utf8PathBuf };
-
-  // #[ cfg( not( feature = "no_std" ) ) ]
-  // own use ::std ::path :: { PathBuf, Path, Component };
 
   exposed use ::std ::path :: { Path, PathBuf };
 

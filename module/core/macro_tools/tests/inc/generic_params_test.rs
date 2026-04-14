@@ -8,6 +8,10 @@ use the_module ::parse_quote;
 // | TC014 | Test decomposing mixed generic types | `decompose_mixed_generics_types` |
 
 //
+// | TC011 | Test decomposing generics with lifetime parameters only | `decompose_generics_with_lifetime_parameters_only` |
+// | TC012 | Test decomposing generics with constants only | `decompose_generics_with_constants_only` |
+// | TC013 | Test decomposing generics with default values | `decompose_generics_with_default_values` |
+// | TC014 | Test decomposing mixed generic types | `decompose_mixed_generics_types` |
 
 #[ test ]
 fn generics_with_where() 

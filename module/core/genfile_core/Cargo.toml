@@ -1,9 +1,9 @@
 [package]
 name = "genfile_core"
-version = "0.7.0"
+version = "0.10.0"
 edition = "2021"
 authors = [
-  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Kostiantyn Mysnyk <wandalen@obox.systems>",
 ]
 license = "MIT"
 readme = "readme.md"
@@ -15,7 +15,9 @@ File generation tools for code generation and template materialization.
 """
 categories = [ "development-tools", "template-engine" ]
 keywords = [ "fundamental", "general-purpose", "template", "codegen" ]
-
+dependencies = {}
+dev-dependencies = {}
+build-dependencies = {}
 
 [lints]
 workspace = true

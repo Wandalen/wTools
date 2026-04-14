@@ -60,7 +60,19 @@ Saved archive to: api.json
 
 ## Documentation
 
-- [API Documentation](https://docs.rs/genfile) - Complete API reference
+### CLI Documentation
+
+Complete command-line interface reference:
+- **[CLI Documentation](docs/cli/readme.md)** - Comprehensive CLI reference (24 commands, 23 parameters, 15 types)
+  - [Quick Start Guide](docs/cli/readme.md#quick-start) - Common workflows and examples
+  - [Commands Reference](docs/cli/commands.md) - All commands indexed by namespace
+  - [Parameters Reference](docs/cli/params.md) - Complete parameter specifications
+  - [Type System](docs/cli/types.md) - Type definitions for implementers
+  - [Tutorial](docs/cli/readme.md#common-workflows) - Step-by-step learning guide
+
+### API Documentation
+
+- [API Documentation](https://docs.rs/genfile) - Complete Rust API reference
 - [Specification](spec.md) - Detailed architecture and design
 - [Examples](https://github.com/Wandalen/wTools/tree/master/module/core/genfile/examples) - Usage examples
 

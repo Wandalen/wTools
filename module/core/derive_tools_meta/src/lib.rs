@@ -28,7 +28,7 @@ mod derive;
 /// #[ derive( AsMut ) ]
 /// struct MyStruct
 /// {
-///   #[ as_mut( original ) ]
+///   #[ as_mut ]
 ///   a: i32,
 ///   b: i32,
 /// }
@@ -59,7 +59,7 @@ pub fn as_mut(input: proc_macro::TokenStream) -> proc_macro::TokenStream
 /// #[ derive( AsRef ) ]
 /// struct MyStruct
 /// {
-///   #[ as_ref( original ) ]
+///   #[ as_ref ]
 ///   a: i32,
 ///   b: i32,
 /// }
@@ -89,7 +89,7 @@ pub fn as_ref(input: proc_macro::TokenStream) -> proc_macro::TokenStream
 /// #[ derive( Deref ) ]
 /// struct MyStruct
 /// {
-///   #[ deref( original ) ]
+///   #[ deref ]
 ///   a: i32,
 ///   b: i32,
 /// }
@@ -119,7 +119,7 @@ pub fn deref(input: proc_macro::TokenStream) -> proc_macro::TokenStream
 /// #[ derive( DerefMut ) ]
 /// struct MyStruct
 /// {
-///   #[ deref_mut( original ) ]
+///   #[ deref_mut ]
 ///   a: i32,
 ///   b: i32,
 /// }

@@ -3,9 +3,6 @@ mod private
 {
   #[ allow( unused_imports, clippy ::wildcard_imports ) ]
   use crate :: *;
-  #[ cfg( feature = "no_std" ) ]
-  extern crate std;
-
   use std ::path ::Path;
 
   /// A trait for converting various types into a reference to a `Path`.

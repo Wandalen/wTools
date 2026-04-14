@@ -122,28 +122,28 @@ mod private
 
   let adjsuted_path = path.prefixed_with_all();
 
-  c.clauses_map.get_mut(&VisOwn ::Kind()).unwrap().push(qt! {
+  c.clauses_map.get_mut(&ClauseKind::Own).unwrap().push(qt! {
    #[ doc( inline ) ]
    #[ allow( unused_imports ) ]
    #attrs1
    pub use #adjsuted_path ::own :: *;
  });
 
-  c.clauses_map.get_mut(&VisOrphan ::Kind()).unwrap().push(qt! {
+  c.clauses_map.get_mut(&ClauseKind::Orphan).unwrap().push(qt! {
    #[ doc( inline ) ]
    #[ allow( unused_imports ) ]
    #attrs1
    pub use #adjsuted_path ::orphan :: *;
  });
 
-  c.clauses_map.get_mut(&VisExposed ::Kind()).unwrap().push(qt! {
+  c.clauses_map.get_mut(&ClauseKind::Exposed).unwrap().push(qt! {
    #[ doc( inline ) ]
    #[ allow( unused_imports ) ]
    #attrs1
    pub use #adjsuted_path ::exposed :: *;
  });
 
-  c.clauses_map.get_mut(&VisPrelude ::Kind()).unwrap().push(qt! {
+  c.clauses_map.get_mut(&ClauseKind::Prelude).unwrap().push(qt! {
    #[ doc( inline ) ]
    #[ allow( unused_imports ) ]
    #attrs1
@@ -156,55 +156,50 @@ mod private
   ///
   /// Handle record "use" with implicit visibility.
   ///
-  fn record_use_implicit(record: &Record, c: &'_ mut RecordContext< '_ >) -> syn ::Result< () > 
+  /// # Fix(issue-001): Bare use statement propagation
+  ///
+  /// Root cause: Previous implementation tried to use wildcard re-exports from `layer::*`
+  /// which don't work because layers (`__all__::own`, etc.) are private modules.
+  ///
+  /// Pitfall: Wildcard re-exports only work when the source module is accessible.
+  /// Private modules can't be re-exported with wildcards. Must add items directly
+  /// to each layer using the adjusted path.
+  ///
+  fn record_use_implicit(record: &Record, c: &'_ mut RecordContext< '_ >)
   {
   let attrs1 = &record.attrs;
   let path = record.use_elements.as_ref().unwrap();
+  let adjusted_path = path.prefixed_with_all();
 
-  let path =  if let Some(rename) = &path.rename 
-  {
-   let pure_path = path.pure_without_super_path()?;
-   c.clauses_map.get_mut(&ClauseImmediates ::Kind()).unwrap().push(qt! {
-  pub use #pure_path as #rename;
- });
-   parse_qt! { #rename }
- } else {
-   path.clone()
- };
-
-  let adjsuted_path = path.prefixed_with_all();
-
-  c.clauses_map.get_mut(&VisOwn ::Kind()).unwrap().push(qt! {
+  // Fix(issue-001): Add to all four layers directly
+  // Can't use wildcard re-exports from private __all__ modules
+  c.clauses_map.get_mut(&ClauseKind::Own).unwrap().push(qt! {
    #[ doc( inline ) ]
    #[ allow( unused_imports ) ]
    #attrs1
-   pub use #adjsuted_path ::orphan :: *;
+   pub use #adjusted_path;
  });
 
-  // export layer as own field of current layer
-  let prefixed_with_super_maybe = path.prefixed_with_super_maybe();
-  c.clauses_map.get_mut(&VisOwn ::Kind()).unwrap().push(qt! {
+  c.clauses_map.get_mut(&ClauseKind::Orphan).unwrap().push(qt! {
    #[ doc( inline ) ]
    #[ allow( unused_imports ) ]
    #attrs1
-   pub use #prefixed_with_super_maybe;
+   pub use #adjusted_path;
  });
 
-  c.clauses_map.get_mut(&VisExposed ::Kind()).unwrap().push(qt! {
+  c.clauses_map.get_mut(&ClauseKind::Exposed).unwrap().push(qt! {
    #[ doc( inline ) ]
    #[ allow( unused_imports ) ]
    #attrs1
-   pub use #adjsuted_path ::exposed :: *;
+   pub use #adjusted_path;
  });
 
-  c.clauses_map.get_mut(&VisPrelude ::Kind()).unwrap().push(qt! {
+  c.clauses_map.get_mut(&ClauseKind::Prelude).unwrap().push(qt! {
    #[ doc( inline ) ]
    #[ allow( unused_imports ) ]
    #attrs1
-   pub use #adjsuted_path ::prelude :: *;
+   pub use #adjusted_path;
  });
-
-  Ok(())
  }
 
   ///
@@ -310,7 +305,7 @@ mod private
    pub mod #path;
  });
 
-  c.clauses_map.get_mut(&VisOwn ::Kind()).unwrap().push(qt! {
+  c.clauses_map.get_mut(&ClauseKind::Own).unwrap().push(qt! {
    #[ doc( inline ) ]
    #[ allow( unused_imports ) ]
    #attrs1
@@ -320,14 +315,14 @@ mod private
 
   // export layer as own field of current layer
   // let prefixed_with_super_maybe = path.prefixed_with_super_maybe();
-  c.clauses_map.get_mut(&VisOwn ::Kind()).unwrap().push(qt! {
+  c.clauses_map.get_mut(&ClauseKind::Own).unwrap().push(qt! {
    #[ doc( inline ) ]
    #[ allow( unused_imports ) ]
    #attrs1
    pub use super :: #path;
  });
 
-  c.clauses_map.get_mut(&VisExposed ::Kind()).unwrap().push(qt! {
+  c.clauses_map.get_mut(&ClauseKind::Exposed).unwrap().push(qt! {
    #[ doc( inline ) ]
    #[ allow( unused_imports ) ]
    #attrs1
@@ -335,7 +330,7 @@ mod private
    pub use __all__ :: #path ::exposed :: *;
  });
 
-  c.clauses_map.get_mut(&VisPrelude ::Kind()).unwrap().push(qt! {
+  c.clauses_map.get_mut(&ClauseKind::Prelude).unwrap().push(qt! {
    #[ doc( inline ) ]
    #[ allow( unused_imports ) ]
    #attrs1
@@ -366,10 +361,10 @@ mod private
   let mut clauses_map: HashMap< _, Vec< proc_macro2 ::TokenStream >> = HashMap ::new();
   clauses_map.insert(ClauseImmediates ::Kind(), Vec ::new());
   //clauses_map.insert( VisPrivate ::Kind(), Vec ::new() );
-  clauses_map.insert(VisOwn ::Kind(), Vec ::new());
-  clauses_map.insert(VisOrphan ::Kind(), Vec ::new());
-  clauses_map.insert(VisExposed ::Kind(), Vec ::new());
-  clauses_map.insert(VisPrelude ::Kind(), Vec ::new());
+  clauses_map.insert(ClauseKind::Own, Vec ::new());
+  clauses_map.insert(ClauseKind::Orphan, Vec ::new());
+  clauses_map.insert(ClauseKind::Exposed, Vec ::new());
+  clauses_map.insert(ClauseKind::Prelude, Vec ::new());
 
   // zzz: test case with several attrs
 
@@ -384,9 +379,9 @@ mod private
   Use(_) =>
   {
    let vis = &record.vis;
-   if vis == &Visibility ::Inherited 
+   if vis == &Visibility ::Inherited
    {
-  record_use_implicit(record, &mut record_context)?;
+  record_use_implicit(record, &mut record_context);
  } else {
   record_use_explicit(record, &mut record_context)?;
  }
@@ -432,10 +427,10 @@ mod private
  })?;
 
   let immediates_clause = clauses_map.get(&ClauseImmediates ::Kind()).unwrap();
-  let own_clause = clauses_map.get(&VisOwn ::Kind()).unwrap();
-  let orphan_clause = clauses_map.get(&VisOrphan ::Kind()).unwrap();
-  let exposed_clause = clauses_map.get(&VisExposed ::Kind()).unwrap();
-  let prelude_clause = clauses_map.get(&VisPrelude ::Kind()).unwrap();
+  let own_clause = clauses_map.get(&ClauseKind::Own).unwrap();
+  let orphan_clause = clauses_map.get(&ClauseKind::Orphan).unwrap();
+  let exposed_clause = clauses_map.get(&ClauseKind::Exposed).unwrap();
+  let prelude_clause = clauses_map.get(&ClauseKind::Prelude).unwrap();
 
   let result = qt! {
 

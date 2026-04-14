@@ -6,10 +6,23 @@
 //!
 
 /// Define a private namespace for all its items.
-mod private 
+mod private
 {
 
   use core :: { ops ::Deref, ops ::DerefMut };
+  // Fix(seed-import-non-deterministic): Missing Seed import caused compilation failure when
+  // determinism feature was disabled. The master_with_seed() function at line 114 uses Seed
+  // type, but the private module didn't import it from crate root.
+  //
+  // Root cause: Asymmetric import patterns between hrng_deterministic (had `use crate::*;`)
+  // and hrng_non_deterministic (missing Seed import). Default-enabled determinism feature
+  // masked the issue by always using the deterministic implementation in normal builds.
+  //
+  // Pitfall: Dual feature-gated implementations can have different import requirements that
+  // aren't caught by default builds. Doc tests compile in different context and don't verify
+  // actual module imports. Always test both feature configurations explicitly.
+  #[ cfg(not(feature = "no_std")) ]
+  use crate ::Seed;
 
   /// Emulates behavior of `Arc< Mutex< ThreadRng >>` for compatibility.
   #[ derive(Debug) ]

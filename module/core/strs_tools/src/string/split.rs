@@ -48,9 +48,9 @@ pub use simd::{ SIMDSplitIterator, simd_split_cached, get_or_create_cached_patte
 /// Internal implementation details for string splitting.
 mod private {
   #[ cfg( feature = "std" ) ]
-  use std::borrow::Cow;
+  use std::{ borrow::Cow, vec, vec::Vec, string::{ String, ToString } };
   #[ cfg( all( feature = "use_alloc", not( feature = "std" ) ) ) ]
-  use alloc::borrow::Cow;
+  use alloc::{ borrow::Cow, vec, vec::Vec, string::{ String, ToString } };
   #[ cfg( all( feature = "string_parse_request", feature = "std" ) ) ]
   use crate::string::parse_request::OpType;
   use super::SplitFlags; // Import SplitFlags from parent module
@@ -203,6 +203,7 @@ mod private {
 
     /// Sets the internal state of the iterator, for testing purposes.
     // Test helper methods are pub
+    #[ allow( dead_code ) ]
     pub fn set_test_state(
       &mut self,
       iterable: &'a str,
@@ -217,16 +218,19 @@ mod private {
     }
 
     /// Gets the current iterable string, for testing purposes.
+    #[ allow( dead_code ) ]
     pub fn get_test_iterable(&self) -> &'a str {
       self.iterable
     }
     /// Gets the current offset within the original string, for testing purposes.
+    #[ allow( dead_code ) ]
     pub fn get_test_current_offset(&self) -> usize {
       self.current_offset
     }
     /// Gets the currently active quote character, if any, for testing purposes.
     // pub fn get_test_active_quote_char(&self) -> Option< char > { self.active_quote_char } // Removed
     /// Gets the internal counter value, for testing purposes.
+    #[ allow( dead_code ) ]
     pub fn get_test_counter(&self) -> i32 {
       self.counter
     }
@@ -469,7 +473,7 @@ mod private {
                 } else if c == '\\' {
                   escaped = true;
                   current_char_offset += c.len_utf8();
-                } else if c == self.active_quote_char.unwrap()
+                } else if c == first_char_iterable
                 // Found unescaped quote
                 {
                   // Check if this is truly a closing quote or the start of an adjacent quoted section
@@ -663,6 +667,7 @@ mod private {
   impl<'a, D: Searcher + Default + Clone> SplitOptions<'a, D> {
     /// Consumes the options and returns a `SplitFastIterator`.
     // This is inside pub mod private, so pub fn makes it pub
+    #[ allow( dead_code ) ]
     pub fn split_fast(self) -> SplitFastIterator<'a, D> {
       SplitFastIterator::new(&self)
     }

@@ -1,9 +1,9 @@
 [package]
 name = "crates_tools"
-version = "0.21.0"
+version = "0.24.0"
 edition = "2021"
 authors = [
-  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Kostiantyn Mysnyk <wandalen@obox.systems>",
   "Bogdan Balushkin <bohdan.b@obox.systems>",
 ]
 license = "MIT"

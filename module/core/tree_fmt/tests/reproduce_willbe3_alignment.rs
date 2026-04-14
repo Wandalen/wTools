@@ -1,20 +1,11 @@
 //! Reproduce the exact alignment issue seen in willbe3 output
 
-#![ cfg( feature = "integration" ) ]
 #![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
-use tree_fmt::{ TreeNode, ColumnData, TreeFormatter, TreeConfig, visual_len };
+mod inc;
 
-/// Calculate visual position of a substring in a string
-fn visual_position( line : &str, target : &str ) -> Option< usize >
-{
-  // Find byte position first
-  let byte_pos = line.find( target )?;
-
-  // Calculate visual position by counting chars up to byte_pos
-  let before = &line[ ..byte_pos ];
-  Some( visual_len( before ) )
-}
+use tree_fmt::{ TreeNode, ColumnData, TreeFormatter, TreeConfig };
+use inc::visual_position;
 
 /// Build the exact tree from willbe3 .crates.list format::tree output
 fn build_willbe3_crate_tree() -> TreeNode< ColumnData >
