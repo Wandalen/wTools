@@ -90,7 +90,13 @@ Desired answer for every question is YES.
 
 ## Outcomes
 
-*(To be filled upon completion)*
+- Created `src/exit_status.rs` with `mod private {}` and 3 public functions
+- `synthetic_exit_status(code)`: cfg-gated — Unix `from_raw(code << 8)` (POSIX waitpid encoding), Windows `from_raw(code as u32)` (direct)
+- `synthetic_success_status()` and `synthetic_failure_status()` convenience wrappers
+- All functions marked `#[must_use]` with doc examples
+- 5 tests in `tests/exit_status_test.rs` covering T01-T05 matrix
+- 3 doc tests passing
+- Level 3 verification: clippy clean, all tests pass
 
 ## Cross-References
 

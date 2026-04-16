@@ -1,6 +1,6 @@
 //! Sub-row detail lines — integration tests
 //!
-//! Covers test matrix T01–T18 from task 017.
+//! Covers test matrix T01–T28 from task 017.
 //! Each test verifies a single aspect of the sub-row detail feature:
 //! API surface, rendering, backward compatibility, and config interaction.
 
@@ -395,4 +395,256 @@ fn t18_single_row_with_detail()
     .collect();
   assert_eq!( detail_lines.len(), 1, "expected exactly one detail line" );
   assert_eq!( detail_lines[ 0 ], "  only row detail" );
+}
+
+// =============================================================================
+// T19 — multi-line detail: every line gets indent prefix
+// =============================================================================
+
+/// Fix(issue-multiline-detail): continuation lines of a multi-line detail
+/// must each receive the indent prefix, not just the first line.
+///
+/// Root cause: single `push_str(indent) + push_str(detail)` emitted the
+/// indent only before the first `\n`; subsequent lines started at column 0.
+///
+/// Pitfall: always use `.lines()` iteration when emitting user-provided
+/// strings that may contain newlines — same pattern as colored row rendering.
+#[ test ]
+fn t19_multiline_detail_all_lines_indented()
+{
+  let view = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row_with_detail( vec![ "Alice".into() ], Some( "line1\nline2\nline3".into() ) )
+    .build_view();
+
+  let out = plain_output( &view );
+
+  let detail_lines : Vec< &str > = out.lines()
+    .filter( | l | l.contains( "line1" ) || l.contains( "line2" ) || l.contains( "line3" ) )
+    .collect();
+
+  assert_eq!( detail_lines.len(), 3, "expected 3 detail lines, got:\n{out}" );
+  assert_eq!( detail_lines[ 0 ], "  line1" );
+  assert_eq!( detail_lines[ 1 ], "  line2" );
+  assert_eq!( detail_lines[ 2 ], "  line3" );
+}
+
+// =============================================================================
+// T20 — alternating row colors: detail lines must NOT be colored
+// =============================================================================
+
+#[ test ]
+fn t20_detail_not_colored_with_alternating_rows()
+{
+  let view = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row_with_detail( vec![ "Alice".into() ], Some( "uncolored-detail".into() ) )
+    .add_row_with_detail( vec![ "Bob".into() ], Some( "uncolored-detail-2".into() ) )
+    .build_view();
+
+  let cfg = TableConfig::plain()
+    .alternating_rows( true )
+    .row_colors( "\x1b[41m".to_string(), "\x1b[42m".to_string() );
+  let fmt = TableFormatter::with_config( cfg );
+  let out = Format::format( &fmt, &view ).unwrap();
+
+  for line in out.lines()
+  {
+    if line.contains( "uncolored-detail" )
+    {
+      assert!(
+        !line.contains( "\x1b[" ),
+        "detail line must not contain ANSI escape codes: {:?}",
+        line
+      );
+    }
+  }
+}
+
+// =============================================================================
+// T21 — bottom border (grid): detail appears before bottom border
+// =============================================================================
+
+#[ test ]
+fn t21_grid_detail_before_bottom_border()
+{
+  let view = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row( vec![ "Alice".into() ] )
+    .add_row_with_detail( vec![ "Bob".into() ], Some( "last-detail".into() ) )
+    .build_view();
+
+  let cfg = TableConfig::grid();
+  let fmt = TableFormatter::with_config( cfg );
+  let out = Format::format( &fmt, &view ).unwrap();
+
+  let pos_detail = out.find( "last-detail" ).expect( "detail missing in grid output" );
+  let pos_bottom = out.rfind( '+' ).expect( "bottom border missing" );
+  assert!( pos_detail < pos_bottom, "detail must appear before bottom border:\n{out}" );
+}
+
+// =============================================================================
+// T22 — row_details shorter than rows: graceful handling
+// =============================================================================
+
+#[ test ]
+fn t22_details_shorter_than_rows()
+{
+  let view = TableView::with_details(
+    TableMetadata::new( vec![ "X".into() ] ),
+    vec![
+      vec![ "A".into() ],
+      vec![ "B".into() ],
+      vec![ "C".into() ],
+    ],
+    vec![ Some( "only-first".into() ) ],
+  );
+
+  let out = plain_output( &view );
+
+  assert!( out.contains( "  only-first" ), "first row detail missing" );
+  let detail_count = out.lines()
+    .filter( | l | l.starts_with( "  " ) && !l.contains( "X" ) && !l.contains( "A" ) && !l.contains( "B" ) && !l.contains( "C" ) )
+    .count();
+  assert_eq!( detail_count, 1, "only row 0 should have detail, got:\n{out}" );
+}
+
+// =============================================================================
+// T23 — whitespace-only detail is rendered (not suppressed)
+// =============================================================================
+
+#[ test ]
+fn t23_whitespace_only_detail_rendered()
+{
+  let view = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row_with_detail( vec![ "Alice".into() ], Some( "   ".into() ) )
+    .build_view();
+
+  let out = plain_output( &view );
+  let lines : Vec< &str > = out.lines().collect();
+
+  // header + separator + data row + detail = 4 lines
+  // whitespace-only is NOT empty, so it should render
+  assert_eq!( lines.len(), 4, "whitespace-only detail must render, got:\n{out}" );
+  assert_eq!( lines[ 3 ], "     ", "indent(2) + 3 spaces" );
+}
+
+// =============================================================================
+// T24 — row_details longer than rows: extra details silently ignored
+// =============================================================================
+
+#[ test ]
+fn t24_details_longer_than_rows()
+{
+  let view = TableView::with_details(
+    TableMetadata::new( vec![ "X".into() ] ),
+    vec![ vec![ "A".into() ] ],
+    vec![
+      Some( "d0".into() ),
+      Some( "d1-orphan".into() ),
+      Some( "d2-orphan".into() ),
+    ],
+  );
+
+  let out = plain_output( &view );
+
+  assert!( out.contains( "  d0" ), "first detail missing" );
+  assert!( !out.contains( "d1-orphan" ), "orphan detail d1 must not appear" );
+  assert!( !out.contains( "d2-orphan" ), "orphan detail d2 must not appear" );
+}
+
+// =============================================================================
+// T25 — CSV format includes detail lines
+// =============================================================================
+
+#[ test ]
+fn t25_csv_with_detail()
+{
+  let view = RowBuilder::new( vec![ "Name".into(), "Val".into() ] )
+    .add_row_with_detail( vec![ "Alice".into(), "1".into() ], Some( "csv-detail".into() ) )
+    .build_view();
+
+  let cfg = TableConfig::csv();
+  let fmt = TableFormatter::with_config( cfg );
+  let out = Format::format( &fmt, &view ).unwrap();
+
+  assert!( out.contains( "csv-detail" ), "detail missing in csv output:\n{out}" );
+}
+
+// =============================================================================
+// T26 — Markdown format includes detail lines
+// =============================================================================
+
+#[ test ]
+fn t26_markdown_with_detail()
+{
+  let view = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row_with_detail( vec![ "Alice".into() ], Some( "md-detail".into() ) )
+    .build_view();
+
+  let cfg = TableConfig::markdown();
+  let fmt = TableFormatter::with_config( cfg );
+  let out = Format::format( &fmt, &view ).unwrap();
+
+  assert!( out.contains( "md-detail" ), "detail missing in markdown output:\n{out}" );
+  // Detail line should NOT have markdown pipes
+  let detail_line = out.lines()
+    .find( | l | l.contains( "md-detail" ) )
+    .unwrap();
+  assert!( !detail_line.contains( '|' ), "detail line must not have markdown pipes" );
+}
+
+// =============================================================================
+// T27 — multiline cell + alternating color + detail triple interaction
+// =============================================================================
+
+#[ test ]
+fn t27_multiline_color_detail_triple()
+{
+  let view = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row_with_detail(
+      vec![ "line1\nline2".into() ],
+      Some( "triple-detail".into() ),
+    )
+    .build_view();
+
+  let cfg = TableConfig::plain()
+    .alternating_rows( true )
+    .row_colors( "\x1b[41m".to_string(), "\x1b[42m".to_string() );
+  let fmt = TableFormatter::with_config( cfg );
+  let out = Format::format( &fmt, &view ).unwrap();
+
+  // Detail must appear after multiline cell content
+  let pos_line2 = out.find( "line2" ).unwrap();
+  let pos_detail = out.find( "triple-detail" ).unwrap();
+  assert!( pos_detail > pos_line2, "detail must follow multiline content:\n{out}" );
+
+  // Detail line must NOT contain ANSI escape codes
+  let detail_line = out.lines()
+    .find( | l | l.contains( "triple-detail" ) )
+    .unwrap();
+  assert!(
+    !detail_line.contains( "\x1b[" ),
+    "detail line must not be colored in triple interaction: {:?}",
+    detail_line,
+  );
+}
+
+// =============================================================================
+// T28 — zero rows: header-only table with empty detail vector
+// =============================================================================
+
+#[ test ]
+fn t28_zero_rows_empty_details()
+{
+  let view = TableView::with_details(
+    TableMetadata::new( vec![ "X".into() ] ),
+    vec![],
+    vec![],
+  );
+
+  let out = plain_output( &view );
+
+  // Should render header only (no panic, no detail lines)
+  assert!( out.contains( "X" ), "header missing" );
+  // No detail content
+  let line_count = out.lines().count();
+  assert!( line_count <= 2, "zero-row table should have at most header + separator, got:\n{out}" );
 }

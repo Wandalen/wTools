@@ -281,14 +281,18 @@ impl TableFormatter
         }
       }
 
-      // Sub-row detail line (if provided and non-empty)
+      // Sub-row detail line(s) — indent every line when detail contains \n
       if let Some( Some( detail ) ) = row_details.get( idx )
       {
         if !detail.is_empty()
         {
-          output.push_str( self.config.detail_indent() );
-          output.push_str( detail );
-          output.push( '\n' );
+          let indent = self.config.detail_indent();
+          for line in detail.lines()
+          {
+            output.push_str( indent );
+            output.push_str( line );
+            output.push( '\n' );
+          }
         }
       }
 

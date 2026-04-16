@@ -130,7 +130,14 @@ Desired answer for every question is YES.
 
 ## Outcomes
 
-*(To be filled upon completion)*
+- Created `src/lifecycle/` module tree with three submodules: `signal.rs`, `check.rs`, `daemon.rs`
+- `signal.rs`: 25 POSIX signals bidirectional mapping via single `SIGNALS` const array (3 functions)
+- `check.rs`: `is_process_alive` via `libc::kill(pid, 0)` with correct ESRCH/EPERM handling, `wait_for_exit` with 50ms polling, `is_pidfile_alive` combining file read + alive check (3 functions)
+- `daemon.rs`: double-fork daemonization with all 5 wplan pitfalls addressed (flock singleton, lock-before-truncate, fd redirect not close, inherited fd cleanup), `DaemonizeOptions` with `#[derive(Former)]`, PID file utilities (5 functions + 1 struct, Unix-only)
+- 16 automated tests across 3 test files covering T01-T12 matrix + 5 extra pidfile/round-trip tests
+- 8 manual test scenarios documented for daemon and process check verification
+- `unsafe-code` override via per-function `#[allow(unsafe_code)]` (Cargo.toml `[lints.rust]` override incompatible with `workspace = true`)
+- Level 3 verification: 57 tests + 17 doc tests + clippy clean
 
 ## Source Analysis
 

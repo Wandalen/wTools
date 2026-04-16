@@ -13,6 +13,13 @@ mod private
   /// # Arguments
   /// - `code` — The exit code to encode (0 = success, non-zero = failure).
   ///
+  /// # Pitfalls
+  ///
+  /// **Valid range is 0–255.** On Unix, only the low 8 bits of `code` are
+  /// preserved in the POSIX `waitpid` status word. Codes outside 0–255
+  /// produce an [`ExitStatus`] with inconsistent semantics — for example,
+  /// `code` 256 yields `code() == Some(0)` yet `success() == false`.
+  ///
   /// # Examples
   ///
   /// ```rust

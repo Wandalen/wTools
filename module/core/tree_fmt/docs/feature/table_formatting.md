@@ -126,7 +126,9 @@ Rendering behavior:
 
 - Detail lines are emitted AFTER all row content lines (including multiline cells) and BEFORE any inter-row separator.
 - Each detail line is prefixed with `sub_row_indent` (default: 2 spaces). Configure via `TableConfig::sub_row_indent( indent )`.
+- Multi-line details (containing `\n`) are split on newlines; every resulting line receives the indent prefix independently.
 - Detail lines do NOT participate in column width calculation — they are metadata, not cell values.
+- Detail lines are NOT colored by alternating row colors — they are metadata outside the color wrapping.
 - For bordered styles (`AsciiGrid`, `Unicode`), detail lines appear outside the cell grid (no border pipes).
 - `None` and empty-string details are suppressed — no blank line emitted.
 - Rows added via `add_row()` or `add_row_mut()` implicitly have `None` detail (no output change).

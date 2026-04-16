@@ -74,4 +74,110 @@ mod inc
     let number = signal ::signal_number( name ).expect( "SIGKILL must be mapped" );
     assert_eq!( signal ::signal_name( number ), name );
   }
+
+  // --- Corner cases ---
+
+  /// Signal 0 (null signal used by `kill(pid, 0)`) is not in the table.
+  #[ test ]
+  fn signal_name_zero_returns_unknown()
+  {
+    assert_eq!( signal ::signal_name( 0 ), "UNKNOWN" );
+  }
+
+  /// Negative signal number returns "UNKNOWN".
+  #[ test ]
+  fn signal_name_negative_returns_unknown()
+  {
+    assert_eq!( signal ::signal_name( -1 ), "UNKNOWN" );
+  }
+
+  /// Signal 26 (one past the last entry) returns "UNKNOWN".
+  #[ test ]
+  fn signal_name_boundary_26_returns_unknown()
+  {
+    assert_eq!( signal ::signal_name( 26 ), "UNKNOWN" );
+  }
+
+  /// `i32::MAX` returns "UNKNOWN".
+  #[ test ]
+  fn signal_name_i32_max_returns_unknown()
+  {
+    assert_eq!( signal ::signal_name( i32 ::MAX ), "UNKNOWN" );
+  }
+
+  /// Empty string returns `None` for `signal_number`.
+  #[ test ]
+  fn signal_number_empty_string()
+  {
+    assert_eq!( signal ::signal_number( "" ), None );
+  }
+
+  /// Lowercase "sigkill" returns None (case-sensitive matching).
+  #[ test ]
+  fn signal_number_lowercase_returns_none()
+  {
+    assert_eq!( signal ::signal_number( "sigkill" ), None );
+  }
+
+  /// "KILL" without SIG prefix returns None.
+  #[ test ]
+  fn signal_number_without_sig_prefix()
+  {
+    assert_eq!( signal ::signal_number( "KILL" ), None );
+  }
+
+  /// "SIG" prefix alone returns None.
+  #[ test ]
+  fn signal_number_sig_prefix_only()
+  {
+    assert_eq!( signal ::signal_number( "SIG" ), None );
+  }
+
+  /// Table has exactly 25 entries.
+  #[ test ]
+  fn all_signals_exact_count()
+  {
+    assert_eq!( signal ::all_signals().len(), 25 );
+  }
+
+  /// No duplicate signal numbers in the table.
+  #[ test ]
+  fn all_signals_no_duplicate_numbers()
+  {
+    let signals = signal ::all_signals();
+    let mut numbers = std ::collections ::HashSet ::new();
+    for &( num, _ ) in signals
+    {
+      assert!( numbers.insert( num ), "duplicate signal number: {num}" );
+    }
+  }
+
+  /// No duplicate signal names in the table.
+  #[ test ]
+  fn all_signals_no_duplicate_names()
+  {
+    let signals = signal ::all_signals();
+    let mut names = std ::collections ::HashSet ::new();
+    for &( _, name ) in signals
+    {
+      assert!( names.insert( name ), "duplicate signal name: {name}" );
+    }
+  }
+
+  /// Round-trip consistency for ALL signals in the table.
+  #[ test ]
+  fn signal_round_trip_all()
+  {
+    for &( num, name ) in signal ::all_signals()
+    {
+      assert_eq!(
+        signal ::signal_name( num ), name,
+        "forward lookup failed for signal {num}"
+      );
+      assert_eq!(
+        signal ::signal_number( name ), Some( num ),
+        "reverse lookup failed for signal {name}"
+      );
+    }
+  }
 }
