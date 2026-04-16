@@ -20,13 +20,14 @@
 | 9 | [005](completed/005_remove_integration_feature_gate.md) | 0 | 5 | 9 | 2 | 9 | ✅ (Completed) | Remove integration feature gate | Remove redundant legacy integration gate from 11 test files |
 | 10 | [004](completed/004_add_word_wrapping_utility.md) | 0 | 9 | 4 | 7 | 2 | ✅ (Completed) | Add word wrapping utility | Add WrapConfig + WrapFormatter with 11 config fields, builder pattern, and full test coverage |
 | 11 | [010](completed/010_update_stale_test_counts.md) | 0 | 4 | 7 | 1 | 9 | ✅ (Completed) | Update stale test counts | Update stale test counts in tests/readme.md after task 004 |
+| 17 | [017](017_add_sub_row_to_table_formatter.md) | 224 | 7 | 8 | 4 | 2 | 📥 (Backlog) | Add sub-row detail lines to `TableFormatter` | Extend `TableFormatter` with optional per-row indented detail lines for `kbase .rulebooks` purpose display |
 
 ## Statistics
 
-- **Total Tasks:** 16
+- **Total Tasks:** 17
 - **Active:** 0
 - **Completed:** 16
-- **Backlog:** 0
+- **Backlog:** 1
 
 ## Issue Index
 
