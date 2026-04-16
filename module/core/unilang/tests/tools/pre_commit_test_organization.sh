@@ -26,7 +26,7 @@ echo -e "${BLUE}🔍 Validating test organization...${NC}"
 REPO_ROOT=$(git rev-parse --show-toplevel)
 
 # Check if we're in a unilang project (look for specific test structure)
-if [ ! -d "$REPO_ROOT/tests/unit" ] && [ ! -d "$REPO_ROOT/module/move/unilang/tests/unit" ]; then
+if [ ! -d "$REPO_ROOT/tests/unit" ] && [ ! -d "$REPO_ROOT/module/core/unilang/tests/unit" ]; then
   echo -e "${YELLOW}⚠️  Test organization validation skipped (not a unilang project)${NC}"
   exit 0
 fi
@@ -35,8 +35,8 @@ fi
 TESTS_DIR=""
 if [ -d "$REPO_ROOT/tests/unit" ]; then
   TESTS_DIR="$REPO_ROOT/tests"
-elif [ -d "$REPO_ROOT/module/move/unilang/tests/unit" ]; then
-  TESTS_DIR="$REPO_ROOT/module/move/unilang/tests"
+elif [ -d "$REPO_ROOT/module/core/unilang/tests/unit" ]; then
+  TESTS_DIR="$REPO_ROOT/module/core/unilang/tests"
 else
   echo -e "${YELLOW}⚠️  Could not locate tests directory${NC}"
   exit 0

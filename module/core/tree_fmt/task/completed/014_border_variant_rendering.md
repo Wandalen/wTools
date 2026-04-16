@@ -1,5 +1,12 @@
 # Border Variant Rendering — Top/Bottom Borders and Inter-Row Separators
 
+## Execution State
+
+- **Executor Type:** any
+- **Actor:** null
+- **Claimed At:** null
+- **Status:** ✅ (Completed)
+
 ## Goal
 
 `TableConfig::border_variant` exists as a field and has a builder setter, but
@@ -200,3 +207,7 @@ pushes should change.
 **AF2 — T014-N01 directly asserts separator content**
 The test must check `output.contains("+---+")` and `!output.contains("|---|")` for a
 `TableConfig::grid()` table with a known data set.
+
+## Outcomes
+
+*(Completed. Task delivered and verified per acceptance criteria.)*

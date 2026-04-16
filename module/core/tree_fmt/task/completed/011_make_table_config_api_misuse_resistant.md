@@ -1,5 +1,12 @@
 # Make `TableConfig` API Misuse-Resistant
 
+## Execution State
+
+- **Executor Type:** any
+- **Actor:** null
+- **Claimed At:** null
+- **Status:** ✅ (Completed)
+
 ## Goal
 
 `TableConfig` fields are currently `pub`, allowing callers to construct partial
@@ -177,3 +184,7 @@ for external callers.
 **AF2 — `cli_table()` actually changed**
 Run: `grep -A 10 "fn cli_table" gi_infra/src/formatters/style.rs`. Must NOT
 contain a struct literal `TableConfig {`. Must contain `TableConfig::unicode_box`.
+
+## Outcomes
+
+*(Completed. Task delivered and verified per acceptance criteria.)*

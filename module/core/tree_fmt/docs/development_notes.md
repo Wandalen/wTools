@@ -133,9 +133,10 @@ v0.2.x only had `show_borders: bool` - binary choice between bordered and border
 - `format_toml` - Requires serde, toml
 
 **Feature Bundles**:
-- `visual_formats` (default) = table + expanded + tree
+- `visual_formats` (default) = table + expanded + tree + logfmt
+- `web_formats` = html + sql
 - `data_formats` = json + yaml + toml
-- `all_formats` = visual + data + text
+- `all_formats` = visual + web + data + text + themes
 
 **serde_support Feature**: Conditionally enables serde derives on data structures only when data formatters are used.
 
@@ -296,7 +297,7 @@ During rapid development, critical insights were scattered across:
 1. **Test doc comments** - Behavioral insights, edge cases, historical bugs
 2. **Code doc comments** - Implementation details, algorithm explanations
 3. **docs/ directory** - Development notes, best practices, lessons learned
-4. **spec.md** - Requirements and API contract only
+4. **docs/api/** - API reference and contracts
 5. **readme.md** - Pure scaffolding for new developers (NOT knowledge storage)
 
 **Implementation** (v0.4.0 cleanup):
@@ -432,7 +433,7 @@ src/
 4. Add to feature bundles if appropriate
 5. Create example in `examples/`
 6. Add integration tests with visual verification
-7. Document in spec.md
+7. Document in docs/ (api/, feature/, or invariant/ as appropriate)
 
 ### When Fixing Bugs
 
@@ -463,7 +464,7 @@ When updating this project:
 - [ ] All 175 integration tests pass
 - [ ] All 65 doc tests pass
 - [ ] Zero clippy warnings with `-D warnings`
-- [ ] spec.md updated if API changed
+- [ ] docs/ updated if API changed (api/, feature/, or invariant/)
 - [ ] Examples still compile and run
 - [ ] readme.md still accurate (but minimal)
 - [ ] New insights documented in code or docs/

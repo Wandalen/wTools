@@ -10,54 +10,30 @@ exclude = [
   # Exclude all hyphen-prefixed files (temporary files, private scripts)
   "-*",
 
-  # Exclude experimental/incomplete modules
-  "module/blank/*",
+  # Exclude non-workspace module groups
   "module/postponed/*",
   "module/step/*",
 
-  # Core exclusions: umbrella crates
-  # NOTE: wtools is now included in workspace (no circular dependency, needs workspace deps)
-  # NOTE: for_each is now included in workspace (no circular dependency detected)
-  # NOTE: unitore is included despite compilation errors (uses workspace dependencies)
-
-  # NOTE: module/move directory is now empty - all crates moved to core or postponed
-
-  # Exclude alias stubs whose Cargo.toml moved to experimental (Cargo.toml renamed, dir still exists)
-  "module/alias/willbe2",
+  # Exclude stub directories remaining after crate moves to module/experimental
+  # These dirs have no Cargo.toml but exist on disk (matched by members globs)
   "module/alias/winterval",
-
-  # Exclude module/core stubs whose Cargo.toml moved to module/experimental (renamed by merge, dir still exists)
-  "module/core/async_from",
   "module/core/async_tools",
-  "module/core/benchkit",
-  "module/core/component_model",
-  "module/core/component_model_meta",
   "module/core/component_model_types",
-  "module/core/config_hierarchy",
-  "module/core/fs_tools",
-  "module/core/implements",
-  "module/core/include_md",
-  "module/core/interval_adapter",
-  "module/core/is_slice",
-  "module/core/iter_tools",
-  "module/core/mem_tools",
   "module/core/meta_tools",
-  "module/core/multiline_input",
-  "module/core/program_tools",
   "module/core/reflect_tools",
-  "module/core/reflect_tools_meta",
   "module/core/sqlx_query",
-  "module/core/test_tools",
-  "module/core/time_tools",
-  "module/core/typing_tools",
-  "module/core/unitore",
-  "module/core/unilang",
-  "module/core/unilang_benchmarks",
   "module/core/unilang_parser",
-  "module/core/cargo_unilang",
+  "module/core/unitore",
   "module/core/wca",
   "module/core/willbe",
   "module/core/wtools",
+
+  # Exclude module/core stubs that still have Cargo.toml (crate moved to module/experimental)
+  "module/core/config_hierarchy",
+  "module/core/multiline_input",
+  "module/core/unilang",
+  "module/core/unilang_benchmarks",
+  "module/core/cargo_unilang",
 ]
 dev-dependencies = {}
 build-dependencies = {}
@@ -835,6 +811,11 @@ version = "1.16"
 
 [workspace.dependencies.sysinfo]
 version = "0.30"
+
+## process_tools dependencies
+
+[workspace.dependencies.libc]
+version = "~0.2"
 
 [workspace.dependencies.phf]
 version = "0.11"

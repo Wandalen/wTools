@@ -2,4 +2,8 @@
 use super :: *;
 
 #[ test ]
-fn basic() {}
+fn basic()
+{
+  // Verify the primary public API surface is reachable.
+  let _ = the_module ::process ::Run ::former();
+}

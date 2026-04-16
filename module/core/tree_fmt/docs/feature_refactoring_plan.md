@@ -243,10 +243,9 @@ all_formats = [
    - Update Cargo Features section with new structure
    - Add usage examples for minimal configurations
 
-2. **Update spec.md**
-   - Document feature flag architecture
-   - Add feature selection guide
-   - Update version history
+2. **Update docs/**
+   - Document feature flag architecture in docs/feature/
+   - Feature selection guide already at docs/feature_selection_guide.md
 
 3. **Update variant descriptors** (docs/variant/*.md)
    - Update feature_flag attribute for each variant

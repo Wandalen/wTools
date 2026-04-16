@@ -31,19 +31,19 @@ mod private
   #[ must_use ]
   pub fn is_cicd() -> bool
   {
-  use std ::env;
-  let ci_vars =
-  [
-   "CI",             // Common in many CI systems
-   "GITHUB_ACTIONS", // GitHub Actions
-   "GITLAB_CI",      // GitLab CI
-   "TRAVIS",         // Travis CI
-   "CIRCLECI",       // CircleCI
-   "JENKINS_URL",    // Jenkins
- ];
+    use std ::env;
+    let ci_vars =
+    [
+      "CI",             // Common in many CI systems
+      "GITHUB_ACTIONS", // GitHub Actions
+      "GITLAB_CI",      // GitLab CI
+      "TRAVIS",         // Travis CI
+      "CIRCLECI",       // CircleCI
+      "JENKINS_URL",    // Jenkins
+    ];
 
-  ci_vars.iter().any( | &var | env ::var( var ).is_ok() )
- }
+    ci_vars.iter().any( | &var | env ::var( var ).is_ok() )
+  }
 
 }
 

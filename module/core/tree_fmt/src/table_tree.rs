@@ -27,6 +27,7 @@ pub struct RowBuilder
   headers : Vec< String >,
   row_count : usize,
   rows : Vec< Vec< String > >,
+  row_details : Vec< Option< String > >,
 }
 
 impl RowBuilder
@@ -40,6 +41,7 @@ impl RowBuilder
       headers,
       row_count : 0,
       rows : Vec::new(),
+      row_details : Vec::new(),
     }
   }
 
@@ -81,7 +83,7 @@ impl RowBuilder
     self.validate_row_length( &row );
     self.row_count += 1;
     let row_name = self.row_count.to_string();
-    self.add_row_internal( row_name, &row );
+    self.add_row_internal( row_name, &row, None );
     self
   }
 
@@ -99,7 +101,7 @@ impl RowBuilder
     self.validate_row_length( &row );
     self.row_count += 1;
     let row_name = self.row_count.to_string();
-    self.add_row_internal( row_name, &row );
+    self.add_row_internal( row_name, &row, None );
   }
 
   /// Add a row with custom row name
@@ -127,7 +129,7 @@ impl RowBuilder
   pub fn add_row_with_name( mut self, row_name : String, row : Vec< String > ) -> Self
   {
     self.validate_row_length( &row );
-    self.add_row_internal( row_name, &row );
+    self.add_row_internal( row_name, &row, None );
     self
   }
 
@@ -143,14 +145,86 @@ impl RowBuilder
   pub fn add_row_with_name_mut( &mut self, row_name : String, row : Vec< String > )
   {
     self.validate_row_length( &row );
-    self.add_row_internal( row_name, &row );
+    self.add_row_internal( row_name, &row, None );
+  }
+
+  /// Add a row with an optional detail annotation line
+  ///
+  /// Consumes and returns `self` for method chaining.
+  /// The detail appears as an indented line below the row in table output.
+  ///
+  /// # Panics
+  ///
+  /// Panics if row length doesnt match headers length
+  ///
+  /// # Examples
+  ///
+  /// ```
+  /// use tree_fmt::RowBuilder;
+  ///
+  /// let view = RowBuilder::new( vec![ "Name".into() ] )
+  ///   .add_row_with_detail( vec![ "Alice".into() ], Some( "note".into() ) )
+  ///   .build_view();
+  ///
+  /// assert_eq!( view.row_details[ 0 ], Some( "note".to_string() ) );
+  /// ```
+  #[ must_use ]
+  #[ allow( clippy::needless_pass_by_value ) ]
+  pub fn add_row_with_detail
+  (
+    mut self,
+    row : Vec< String >,
+    detail : Option< String >,
+  )
+  -> Self
+  {
+    self.validate_row_length( &row );
+    self.row_count += 1;
+    let row_name = self.row_count.to_string();
+    self.add_row_internal( row_name, &row, detail );
+    self
+  }
+
+  /// Add a row with an optional detail annotation line (non-consuming)
+  ///
+  /// This method takes `&mut self` for use in loops or when you need to keep
+  /// the builder mutable.
+  ///
+  /// # Panics
+  ///
+  /// Panics if row length doesnt match headers length
+  ///
+  /// # Examples
+  ///
+  /// ```
+  /// use tree_fmt::RowBuilder;
+  ///
+  /// let mut builder = RowBuilder::new( vec![ "Name".into() ] );
+  /// builder.add_row_with_detail_mut( vec![ "Alice".into() ], Some( "note".into() ) );
+  /// let view = builder.build_view();
+  ///
+  /// assert_eq!( view.row_details[ 0 ], Some( "note".to_string() ) );
+  /// ```
+  #[ allow( clippy::needless_pass_by_value ) ]
+  pub fn add_row_with_detail_mut
+  (
+    &mut self,
+    row : Vec< String >,
+    detail : Option< String >,
+  )
+  {
+    self.validate_row_length( &row );
+    self.row_count += 1;
+    let row_name = self.row_count.to_string();
+    self.add_row_internal( row_name, &row, detail );
   }
 
   /// Internal row addition (no validation)
-  fn add_row_internal( &mut self, row_name : String, row : &[ String ] )
+  fn add_row_internal( &mut self, row_name : String, row : &[ String ], detail : Option< String > )
   {
     // Store row data for TableView
     self.rows.push( row.to_vec() );
+    self.row_details.push( detail );
 
     // Build TreeNode structure for backward compatibility
     let mut row_node = TreeNode::new( row_name, None );
@@ -185,9 +259,10 @@ impl RowBuilder
   /// ```
   pub fn build_view( self ) -> crate::TableView
   {
-    crate::TableView::new(
+    crate::TableView::with_details(
       crate::TableMetadata::new( self.headers ),
-      self.rows
+      self.rows,
+      self.row_details,
     )
   }
 

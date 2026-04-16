@@ -1,0 +1,398 @@
+//! Sub-row detail lines — integration tests
+//!
+//! Covers test matrix T01–T18 from task 017.
+//! Each test verifies a single aspect of the sub-row detail feature:
+//! API surface, rendering, backward compatibility, and config interaction.
+
+#![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
+
+use tree_fmt::{ RowBuilder, TableFormatter, TableConfig, Format, TableView, TableMetadata };
+
+// =============================================================================
+// Helper
+// =============================================================================
+
+fn plain_output( view : &TableView ) -> String
+{
+  let fmt = TableFormatter::with_config( TableConfig::plain() );
+  Format::format( &fmt, view ).unwrap()
+}
+
+// =============================================================================
+// T01 — add_row (no detail) produces no detail line
+// =============================================================================
+
+#[ test ]
+fn t01_add_row_no_detail()
+{
+  let view = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row( vec![ "Alice".into() ] )
+    .build_view();
+
+  let out = plain_output( &view );
+  let lines : Vec< &str > = out.lines().collect();
+
+  // header + separator + data row = 3 lines
+  assert_eq!( lines.len(), 3, "expected exactly 3 lines, got:\n{out}" );
+  assert!( lines[ 2 ].contains( "Alice" ) );
+}
+
+// =============================================================================
+// T02 — add_row_with_detail(Some("text")) emits detail line
+// =============================================================================
+
+#[ test ]
+fn t02_detail_some_text()
+{
+  let view = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row_with_detail( vec![ "Alice".into() ], Some( "extra info".into() ) )
+    .build_view();
+
+  let out = plain_output( &view );
+  let lines : Vec< &str > = out.lines().collect();
+
+  // header + separator + data row + detail = 4 lines
+  assert_eq!( lines.len(), 4, "expected 4 lines, got:\n{out}" );
+  assert_eq!( lines[ 3 ], "  extra info" );
+}
+
+// =============================================================================
+// T03 — add_row_with_detail(None) produces no extra line
+// =============================================================================
+
+#[ test ]
+fn t03_detail_none_produces_no_line()
+{
+  let view_detail = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row_with_detail( vec![ "Alice".into() ], None )
+    .build_view();
+
+  let view_plain = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row( vec![ "Alice".into() ] )
+    .build_view();
+
+  let out_detail = plain_output( &view_detail );
+  let out_plain = plain_output( &view_plain );
+
+  assert_eq!( out_detail, out_plain, "None detail must produce identical output to add_row" );
+}
+
+// =============================================================================
+// T04 — add_row_with_detail(Some("")) suppresses empty detail
+// =============================================================================
+
+#[ test ]
+fn t04_empty_string_detail_suppressed()
+{
+  let view = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row_with_detail( vec![ "Alice".into() ], Some( String::new() ) )
+    .build_view();
+
+  let out = plain_output( &view );
+  let lines : Vec< &str > = out.lines().collect();
+
+  assert_eq!( lines.len(), 3, "empty detail must be suppressed, got:\n{out}" );
+}
+
+// =============================================================================
+// T05 — mixed: first row has detail, second does not
+// =============================================================================
+
+#[ test ]
+fn t05_mixed_detail_first_only()
+{
+  let view = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row_with_detail( vec![ "Alice".into() ], Some( "detail-a".into() ) )
+    .add_row( vec![ "Bob".into() ] )
+    .build_view();
+
+  let out = plain_output( &view );
+
+  assert!( out.contains( "  detail-a" ), "first row detail missing" );
+
+  // Count detail lines (lines starting with 2-space indent that aren't header/data)
+  let detail_count = out.lines()
+    .filter( | l | l.starts_with( "  " ) && !l.contains( "Name" ) && !l.contains( "Alice" ) && !l.contains( "Bob" ) )
+    .count();
+  assert_eq!( detail_count, 1, "only first row should have detail" );
+}
+
+// =============================================================================
+// T06 — both rows have detail
+// =============================================================================
+
+#[ test ]
+fn t06_both_rows_have_detail()
+{
+  let view = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row_with_detail( vec![ "Alice".into() ], Some( "detail-a".into() ) )
+    .add_row_with_detail( vec![ "Bob".into() ], Some( "detail-b".into() ) )
+    .build_view();
+
+  let out = plain_output( &view );
+
+  assert!( out.contains( "  detail-a" ) );
+  assert!( out.contains( "  detail-b" ) );
+
+  // detail-a must appear before detail-b
+  let pos_a = out.find( "detail-a" ).unwrap();
+  let pos_b = out.find( "detail-b" ).unwrap();
+  assert!( pos_a < pos_b, "detail-a must appear before detail-b" );
+}
+
+// =============================================================================
+// T07 — custom indent ">>> "
+// =============================================================================
+
+#[ test ]
+fn t07_custom_indent()
+{
+  let view = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row_with_detail( vec![ "Alice".into() ], Some( "note".into() ) )
+    .build_view();
+
+  let cfg = TableConfig::plain().sub_row_indent( ">>> ".into() );
+  let fmt = TableFormatter::with_config( cfg );
+  let out = Format::format( &fmt, &view ).unwrap();
+
+  assert!( out.contains( ">>> note" ), "custom indent not applied, got:\n{out}" );
+  assert!( !out.contains( "  note" ), "default indent should not appear" );
+}
+
+// =============================================================================
+// T08 — empty indent "" (flush-left)
+// =============================================================================
+
+#[ test ]
+fn t08_empty_indent_flush_left()
+{
+  let view = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row_with_detail( vec![ "Alice".into() ], Some( "flush".into() ) )
+    .build_view();
+
+  let cfg = TableConfig::plain().sub_row_indent( String::new() );
+  let fmt = TableFormatter::with_config( cfg );
+  let out = Format::format( &fmt, &view ).unwrap();
+
+  let detail_line = out.lines().last().unwrap();
+  assert_eq!( detail_line, "flush", "detail should be flush-left with empty indent" );
+}
+
+// =============================================================================
+// T09 — detail does not affect column widths
+// =============================================================================
+
+#[ test ]
+fn t09_sub_row_does_not_affect_column_widths()
+{
+  let view_no_detail = RowBuilder::new( vec![ "A".into() ] )
+    .add_row( vec![ "x".into() ] )
+    .build_view();
+
+  let view_with_detail = RowBuilder::new( vec![ "A".into() ] )
+    .add_row_with_detail(
+      vec![ "x".into() ],
+      Some( "this is a very long detail that should not widen the column".into() ),
+    )
+    .build_view();
+
+  let out_no = plain_output( &view_no_detail );
+  let out_yes = plain_output( &view_with_detail );
+
+  // First line (header) should be identical width
+  let header_no = out_no.lines().next().unwrap();
+  let header_yes = out_yes.lines().next().unwrap();
+  assert_eq!( header_no, header_yes, "column width must not change due to detail text" );
+}
+
+// =============================================================================
+// T10 — AsciiGrid style with three detail rows
+// =============================================================================
+
+#[ test ]
+fn t10_ascii_grid_three_details()
+{
+  let view = RowBuilder::new( vec![ "Name".into(), "Val".into() ] )
+    .add_row_with_detail( vec![ "A".into(), "1".into() ], Some( "d1".into() ) )
+    .add_row_with_detail( vec![ "B".into(), "2".into() ], Some( "d2".into() ) )
+    .add_row_with_detail( vec![ "C".into(), "3".into() ], Some( "d3".into() ) )
+    .build_view();
+
+  let cfg = TableConfig::bordered();
+  let fmt = TableFormatter::with_config( cfg );
+  let out = Format::format( &fmt, &view ).unwrap();
+
+  assert!( out.contains( "  d1" ), "d1 missing in bordered output:\n{out}" );
+  assert!( out.contains( "  d2" ), "d2 missing" );
+  assert!( out.contains( "  d3" ), "d3 missing" );
+}
+
+// =============================================================================
+// T11 — Unicode box style with sub-row
+// =============================================================================
+
+#[ test ]
+fn t11_unicode_box_with_detail()
+{
+  let view = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row_with_detail( vec![ "Alice".into() ], Some( "unicode detail".into() ) )
+    .build_view();
+
+  let cfg = TableConfig::unicode_box();
+  let fmt = TableFormatter::with_config( cfg );
+  let out = Format::format( &fmt, &view ).unwrap();
+
+  assert!( out.contains( "unicode detail" ), "detail missing in unicode output:\n{out}" );
+  // Detail line should NOT have unicode border pipes
+  let detail_line = out.lines()
+    .find( | l | l.contains( "unicode detail" ) )
+    .unwrap();
+  assert!( !detail_line.contains( '│' ), "detail line must not have border pipes" );
+}
+
+// =============================================================================
+// T12 — bordered() style with sub-row
+// =============================================================================
+
+#[ test ]
+fn t12_bordered_with_detail()
+{
+  let view = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row_with_detail( vec![ "Alice".into() ], Some( "bordered detail".into() ) )
+    .build_view();
+
+  let cfg = TableConfig::bordered();
+  let fmt = TableFormatter::with_config( cfg );
+  let out = Format::format( &fmt, &view ).unwrap();
+
+  assert!( out.contains( "bordered detail" ), "detail missing:\n{out}" );
+  let detail_line = out.lines()
+    .find( | l | l.contains( "bordered detail" ) )
+    .unwrap();
+  assert!( !detail_line.contains( '|' ), "detail line must not have border pipes" );
+}
+
+// =============================================================================
+// T13 — Multiline cell + detail
+// =============================================================================
+
+#[ test ]
+fn t13_multiline_cell_with_detail()
+{
+  let view = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row_with_detail( vec![ "line1\nline2".into() ], Some( "after-multi".into() ) )
+    .build_view();
+
+  let out = plain_output( &view );
+
+  // Detail must appear AFTER all multiline cell lines
+  let pos_line2 = out.find( "line2" ).unwrap();
+  let pos_detail = out.find( "after-multi" ).unwrap();
+  assert!(
+    pos_detail > pos_line2,
+    "detail must appear after all multiline lines, got:\n{out}"
+  );
+}
+
+// =============================================================================
+// T14 — Format::format(&formatter, &view) path
+// =============================================================================
+
+#[ test ]
+fn t14_format_trait_path()
+{
+  let view = TableView::with_details(
+    TableMetadata::new( vec![ "Col".into() ] ),
+    vec![ vec![ "val".into() ] ],
+    vec![ Some( "trait-path detail".into() ) ],
+  );
+
+  let fmt = TableFormatter::with_config( TableConfig::plain() );
+  let out = Format::format( &fmt, &view ).unwrap();
+  assert!( out.contains( "  trait-path detail" ), "detail missing via Format trait:\n{out}" );
+}
+
+// =============================================================================
+// T15 — add_row_mut + add_row_with_detail_mut intermixed
+// =============================================================================
+
+#[ test ]
+fn t15_mut_api_intermixed()
+{
+  let mut builder = RowBuilder::new( vec![ "Name".into() ] );
+  builder.add_row_mut( vec![ "Alice".into() ] );
+  builder.add_row_with_detail_mut( vec![ "Bob".into() ], Some( "mut-detail".into() ) );
+  builder.add_row_mut( vec![ "Carol".into() ] );
+
+  let view = builder.build_view();
+  let out = plain_output( &view );
+
+  assert!( out.contains( "  mut-detail" ), "mut detail missing:\n{out}" );
+
+  // Only one detail line
+  let detail_count = out.lines()
+    .filter( | l | l.starts_with( "  " ) && l.contains( "mut-detail" ) )
+    .count();
+  assert_eq!( detail_count, 1 );
+}
+
+// =============================================================================
+// T16 — build_view() produces correct row_details vector
+// =============================================================================
+
+#[ test ]
+fn t16_build_view_row_details_vector()
+{
+  let view = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row( vec![ "A".into() ] )
+    .add_row_with_detail( vec![ "B".into() ], Some( "detail-b".into() ) )
+    .add_row_with_detail( vec![ "C".into() ], None )
+    .build_view();
+
+  assert_eq!( view.row_details.len(), 3, "row_details must parallel rows" );
+  assert_eq!( view.row_details[ 0 ], None );
+  assert_eq!( view.row_details[ 1 ], Some( "detail-b".to_string() ) );
+  assert_eq!( view.row_details[ 2 ], None );
+}
+
+// =============================================================================
+// T17 — TableView::new (old two-arg form) backward compat
+// =============================================================================
+
+#[ test ]
+fn t17_table_view_new_backward_compat()
+{
+  let view = TableView::new(
+    TableMetadata::new( vec![ "X".into() ] ),
+    vec![ vec![ "1".into() ] ],
+  );
+
+  // row_details should be empty
+  assert!( view.row_details.is_empty() );
+
+  // Must render without sub-rows
+  let out = plain_output( &view );
+  let lines : Vec< &str > = out.lines().collect();
+  assert_eq!( lines.len(), 3, "no detail lines for old-form TableView" );
+}
+
+// =============================================================================
+// T18 — single row table with detail
+// =============================================================================
+
+#[ test ]
+fn t18_single_row_with_detail()
+{
+  let view = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
+    .add_row_with_detail( vec![ "Alice".into(), "30".into() ], Some( "only row detail".into() ) )
+    .build_view();
+
+  let out = plain_output( &view );
+
+  // Exactly one detail line
+  let detail_lines : Vec< &str > = out.lines()
+    .filter( | l | l.contains( "only row detail" ) )
+    .collect();
+  assert_eq!( detail_lines.len(), 1, "expected exactly one detail line" );
+  assert_eq!( detail_lines[ 0 ], "  only row detail" );
+}

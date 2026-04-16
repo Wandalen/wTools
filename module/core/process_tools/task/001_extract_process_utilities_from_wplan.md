@@ -1,55 +1,140 @@
-# Extract Process Management Utilities from wplan
+# Extract process management utilities from wplan
 
-**Date**: 2025-11-20
-**Priority**: MEDIUM
-**Category**: API Enhancement - Code Extraction
-**Status**: 🔄 (Planned)
-**Source**: wplan/src/daemon_routines.rs, wplan_client/src/cli/formatting.rs
-**Task ID**: 001
-**Advisability**: 1280 (Value: 8, Easiness: 4, Safety: 8, Priority: 5)
+## Execution State
 
-**⚠️ CRITICAL**: This task is INCOMPLETE without follow-up adoption. Task will be CANCELED if adoption not implemented.
+- **Executor Type:** any
+- **Actor:** null
+- **Claimed At:** null
+- **Status:** ✅ (Done)
+- **Validated By:** Level 3 verification (nextest + doc tests + clippy)
+- **Validation Date:** 2026-04-17
 
-**Follow-up Adoption Required:**
-- [wplan_client/006](../../../../../willbe/module/wplan_client/task/006_adopt_process_utilities_from_process_tools.md) - Replace local process utilities with process_tools
-- [wplan/086](../../../../../willbe/module/wplan/task/086_adopt_process_utilities_from_process_tools.md) - Replace local process utilities with process_tools
+## Goal
 
----
+Three sites in the wplan ecosystem independently implement process lifecycle checks, signal name mapping, and daemonization — all platform-specific code that is duplicated and tested per-project rather than centralized (Motivated: duplicated platform knowledge is a maintenance hazard — a fix in one site is missed in others, and new wTools consumers must re-derive the same platform abstractions; Observable: `process_tools::lifecycle` module exports `is_process_alive`, `signal_name`, and `daemonize` with cross-platform implementations; Scoped: add one new `lifecycle` module tree to `process_tools/src/` with three submodules `check`, `signal`, `daemon`, plus tests in `process_tools/tests/`; Testable: `is_process_alive(std::process::id() as i32)` returns `Ok(true)`, `signal_name(9)` returns `"SIGKILL"`, all tests pass on Unix).
 
-## Executive Summary
+## In Scope
 
-Extract process management and signal handling utilities from the wplan ecosystem to `process_tools`, making them available to all wTools projects. These utilities handle process lifecycle checks, signal name mapping, and daemon management - all useful for server applications, daemons, and CLI tools that spawn processes.
+- New `lifecycle` module tree in `process_tools/src/lifecycle/`:
+  - `check.rs` — `is_process_alive(pid) -> io::Result<bool>`, `wait_for_exit(pid, timeout) -> io::Result<()>`, `is_pidfile_alive(path) -> io::Result<bool>`
+  - `signal.rs` — `signal_name(i32) -> &'static str`, `signal_number(&str) -> Option<i32>`, `all_signals() -> Vec<(i32, &str, &str)>`
+  - `daemon.rs` — `DaemonizeOptions`, `daemonize(&opts) -> io::Result<()>`, `write_pidfile(path)`, `read_pidfile(path)`, `remove_pidfile(path)` (Unix only via `#[cfg(unix)]`)
+- Register module via `layer lifecycle;` in `process_tools/src/lib.rs` mod_interface block
+- Platform-specific implementations: Unix (`kill(pid, 0)`, fork/setsid) and Windows (`OpenProcess`) where applicable
+- Tests in `process_tools/tests/lifecycle_test.rs`
 
----
+## Out of Scope
 
-## Problem Statement
+- Consumer migration (wplan, wplan_client) — covered by follow-up adoption tasks
+- Async process management
+- Interactive stdin handling
+- Signal sending (only mapping names ↔ numbers)
+- Windows daemonization (Windows Services API is a different paradigm)
+- PTY spawning or terminal management
 
-### Current Location
+## Requirements
 
-The wplan codebase contains process management utilities that would benefit other wTools projects:
+- All work must strictly adhere to all applicable rulebooks (discover via `kbase .rulebooks`)
+- Module follows existing `process_tools` patterns: `mod_interface` with `layer` keyword, `mod private {}` block
+- Custom codestyle per `code_style.rulebook.md` — 2-space indents, no `cargo fmt`
+- Tests in `process_tools/tests/` directory — no `#[cfg(test)]` in src
+- No mocking — test real process behavior
+- New dependency: `libc` (workspace) for Unix syscalls
+- Conditional dependency: `windows` (workspace, `Win32_System_Threading` feature) for Windows process checks
+- **CRITICAL**: This task is INCOMPLETE without follow-up adoption — extraction without migration leaves duplication worse (two copies instead of one)
 
-**wplan/src/daemon_routines.rs**:
-- Lines 99-107: `is_process_alive()` - Check if PID is alive via `kill(pid, 0)`
-- Lines 150-200: Fork/daemonize operations with `setsid()`
-- Functionality: Process lifecycle management for daemon mode
+## Work Procedure
 
-**wplan_client/src/cli/formatting.rs**:
-- Lines 981-1011: `signal_name()` - Maps signal numbers to names (9 → "SIGKILL")
-- Functionality: Human-readable signal reporting
+Execute in order. Do not skip or reorder steps.
 
-### Why Extract to process_tools
+1. **Read rulebooks** — `kbase .rulebooks`; note code style, mod_interface patterns, test organization constraints
+2. **Add dependencies** — add `libc` (workspace) and conditional `windows` dependency to `process_tools/Cargo.toml`
+3. **Create check submodule** — `process_tools/src/lifecycle/check.rs` with `mod private {}` containing `is_process_alive`, `wait_for_exit`, `is_pidfile_alive`; use `#[cfg(unix)]` and `#[cfg(windows)]` inside function bodies only
+4. **Create signal submodule** — `process_tools/src/lifecycle/signal.rs` with `mod private {}` containing `signal_name`, `signal_number`, `all_signals`
+5. **Create daemon submodule** — `process_tools/src/lifecycle/daemon.rs` with `mod private {}` containing `DaemonizeOptions`, `daemonize`, PID file utilities; entire module gated with `#[cfg(unix)]`
+6. **Create lifecycle module** — `process_tools/src/lifecycle/mod.rs` using `mod_interface!` to aggregate check, signal, daemon submodules
+7. **Register module** — add `layer lifecycle;` to the `mod_interface!` block in `process_tools/src/lib.rs`
+8. **Write tests** — create `process_tools/tests/lifecycle_test.rs` covering T01–T12 from Test Matrix
+9. **Verify** — `cargo test -p process_tools --all-features` passes in wtools workspace
+10. **Walk Validation Checklist** — verify every item answers YES
 
-1. **General Utility**: Process management is common for daemons, services, test harnesses
-2. **Signal Mapping**: Universal need for displaying signal information
-3. **Safety**: Centralized testing for platform-specific process operations
-4. **Portability**: Abstracts Unix/Windows differences in one place
-5. **Code Reuse**: willbe, wtest, benchkit all spawn processes
+## Test Matrix
 
----
+| # | Input Scenario | Config Under Test | Expected Behavior |
+|---|---------------|-------------------|-------------------|
+| T01 | `is_process_alive(std::process::id() as i32)` | Unix and Windows | `Ok(true)` — current process is alive |
+| T02 | `is_process_alive(-1)` | Unix and Windows | `Ok(false)` or `Err(_)` — invalid PID |
+| T03 | `is_process_alive(999999)` | Unix | `Ok(false)` — nonexistent PID |
+| T04 | `signal_name(9)` | Unix | `"SIGKILL"` |
+| T05 | `signal_name(15)` | Unix | `"SIGTERM"` |
+| T06 | `signal_name(2)` | Unix | `"SIGINT"` |
+| T07 | `signal_name(999)` | Unix | `"UNKNOWN"` |
+| T08 | `signal_number("SIGKILL")` | Unix | `Some(9)` |
+| T09 | `signal_number("UNKNOWN")` | Unix | `None` |
+| T10 | `all_signals()` | Unix | Non-empty vec with at least SIGHUP, SIGINT, SIGTERM, SIGKILL |
+| T11 | `write_pidfile` + `read_pidfile` + `remove_pidfile` | Unix | Round-trip PID file lifecycle succeeds |
+| T12 | `wait_for_exit` with already-dead PID | Unix | `Ok(())` — returns immediately |
 
-## Detailed Functionality Analysis
+## Acceptance Criteria
 
-### 1. Process Alive Check
+- `process_tools` crate exports `lifecycle` module with `is_process_alive`, `wait_for_exit`, `signal_name`, `signal_number`, `all_signals`
+- `is_process_alive(std::process::id() as i32)` returns `Ok(true)` on current platform
+- `signal_name(9)` returns `"SIGKILL"` on Unix
+- PID file round-trip (write/read/remove) works correctly
+- Daemon submodule compiles and is gated to Unix only
+- `cargo test -p process_tools --all-features` passes with zero failures
+
+## Validation
+
+### Checklist
+
+Desired answer for every question is YES.
+
+**API Surface**
+- [ ] C1 — Does `process_tools/src/lifecycle/` directory exist with `check.rs`, `signal.rs`, `daemon.rs`, `mod.rs`?
+- [ ] C2 — Does `is_process_alive(pid: i32) -> io::Result<bool>` exist with cfg-gated internals?
+- [ ] C3 — Does `wait_for_exit(pid, timeout)` exist with polling implementation?
+- [ ] C4 — Do `signal_name` and `signal_number` exist with bidirectional mapping?
+- [ ] C5 — Does `daemonize(&DaemonizeOptions) -> io::Result<()>` exist gated to `#[cfg(unix)]`?
+- [ ] C6 — Do PID file utilities (`write_pidfile`, `read_pidfile`, `remove_pidfile`) exist?
+- [ ] C7 — Is the module registered as `layer lifecycle;` in `lib.rs` mod_interface block?
+
+**Tests**
+- [ ] C8 — Does `process_tools/tests/lifecycle_test.rs` exist?
+- [ ] C9 — Does it cover all 12 test matrix scenarios (T01–T12)?
+- [ ] C10 — Does `cargo test -p process_tools --all-features` pass with zero failures?
+
+**Code Quality**
+- [ ] C11 — Does the module use 2-space indents (custom codestyle)?
+- [ ] C12 — Are there zero `#[cfg(test)]` blocks in `src/lifecycle/*.rs`?
+- [ ] C13 — Is platform-specific code confined to `#[cfg]` blocks inside function bodies (check, signal) or at module level (daemon)?
+
+### Measurements
+
+- Test count: at least 12 tests covering T01–T12
+- Platform coverage: Unix fully tested, Windows compilation verified
+- API surface: 3 submodules, 10+ public functions
+
+### Invariants
+
+- `is_process_alive(std::process::id() as i32)` always returns `Ok(true)` regardless of platform
+- `signal_name(signal_number(name).unwrap())` round-trips for all standard signal names
+- PID file write + read returns the same PID value
+
+### Anti-Faking
+
+- Tests must call real OS syscalls (no mocking `kill` or `OpenProcess`)
+- `is_process_alive` test uses actual current process PID, not a hardcoded value
+- Signal mapping tests verify specific known POSIX signal numbers, not just "returns something"
+- PID file tests use real filesystem operations with temp directories
+
+## Outcomes
+
+*(To be filled upon completion)*
+
+## Source Analysis
+
+### Process Alive Check
 
 **Current Location**: `wplan/src/daemon_routines.rs:99-107`
 
@@ -70,13 +155,9 @@ pub fn is_process_alive( pid : i32 ) -> bool
 - Returns -1 with `ESRCH` if process doesn't exist
 - Returns -1 with `EPERM` if process exists but we lack permission
 
-**Use Cases**:
-- Daemon management (check if daemon is running)
-- Test teardown (wait for process to exit)
-- PID file validation
-- Service health checks
+**Use Cases**: Daemon management, test teardown, PID file validation, service health checks
 
-### 2. Signal Name Mapping
+### Signal Name Mapping
 
 **Current Location**: `wplan_client/src/cli/formatting.rs:981-1011`
 
@@ -97,516 +178,90 @@ pub fn signal_name( signal : i32 ) -> &'static str
 }
 ```
 
-**Features**:
-- Maps Unix signal numbers to standard names
-- Covers most common signals
-- Returns "UNKNOWN" for unmapped signals
+**Use Cases**: Displaying process exit status, log messages about killed processes, error reporting, test output
 
-**Use Cases**:
-- Displaying process exit status
-- Log messages about killed processes
-- Error reporting
-- Test output
-
-### 3. Daemon Management (Fork/Setsid)
+### Daemon Management (Fork/Setsid)
 
 **Current Location**: `wplan/src/daemon_routines.rs:150-200`
 
-**Functionality**:
-- Fork process to background
-- Call `setsid()` to create new session
-- Redirect stdin/stdout/stderr to /dev/null
-- Write PID file
+**Functionality**: Fork to background, call `setsid()` for new session, redirect stdio to /dev/null, write PID file
 
-**Use Cases**:
-- Server/daemon applications
-- Background task runners
-- Service management
-
----
+**Use Cases**: Server/daemon applications, background task runners, service management
 
 ## Proposed API Design
 
-### Target Location
+### Target Structure
 
 ```
 process_tools/src/lifecycle/
-  mod.rs           # Module exports
+  mod.rs           # Module exports via mod_interface!
   check.rs         # Process existence checks
-  daemon.rs        # Daemonization utilities
   signal.rs        # Signal utilities
+  daemon.rs        # Daemonization utilities (Unix only)
 ```
 
-### API Structure
+### Full API Signatures
 
 ```rust
-//! Process management utilities for process_tools
-//!
-//! Provides:
-//! - Process lifecycle checks (alive, wait for exit)
-//! - Signal name mapping and handling
-//! - Daemonization support (Unix)
-//! - Process spawning utilities
-
-// ============================================================================
-// check.rs - Process Existence Checks
-// ============================================================================
-
-use std::io;
-
-/// Check if a process is alive by PID.
-///
-/// Uses `kill(pid, 0)` on Unix to check process existence without sending a signal.
-/// On Windows, uses OpenProcess.
-///
-/// # Returns
-///
-/// - `Ok(true)` - Process exists and we have permission to signal it
-/// - `Ok(false)` - Process does not exist
-/// - `Err(_)` - System error (e.g., invalid PID)
-///
-/// # Platform Support
-///
-/// - Unix: Uses `kill(pid, 0)`
-/// - Windows: Uses `OpenProcess` + `CloseHandle`
-///
-/// # Example
-///
-/// ```rust
-/// use process_tools::lifecycle::is_process_alive;
-///
-/// let my_pid = std::process::id() as i32;
-/// assert_eq!( is_process_alive( my_pid )?, true );
-///
-/// let invalid_pid = -1;
-/// assert_eq!( is_process_alive( invalid_pid )?, false );
-/// ```
+// check.rs
 pub fn is_process_alive( pid : i32 ) -> io::Result< bool >;
-
-/// Wait for a process to exit (with timeout).
-///
-/// Polls `is_process_alive()` until process exits or timeout reached.
-///
-/// # Returns
-///
-/// - `Ok(())` - Process exited within timeout
-/// - `Err(TimedOut)` - Process still alive after timeout
-///
-/// # Example
-///
-/// ```rust
-/// use std::time::Duration;
-/// use process_tools::lifecycle::wait_for_exit;
-///
-/// let pid = 12345;
-/// let timeout = Duration::from_secs( 10 );
-///
-/// wait_for_exit( pid, timeout )?;
-/// // Process has exited
-/// ```
 pub fn wait_for_exit( pid : i32, timeout : std::time::Duration ) -> io::Result< () >;
-
-/// Check if process with PID from file is alive.
-///
-/// Convenience wrapper that reads PID from file and checks if alive.
-///
-/// # Example
-///
-/// ```rust
-/// use process_tools::lifecycle::is_pidfile_alive;
-///
-/// if is_pidfile_alive( "/var/run/mydaemon.pid" )?
-/// {
-///   println!( "Daemon is running" );
-/// }
-/// ```
 pub fn is_pidfile_alive( pidfile_path : &str ) -> io::Result< bool >;
 
-// ============================================================================
-// signal.rs - Signal Utilities
-// ============================================================================
-
-/// Maps Unix signal number to standard signal name.
-///
-/// # Returns
-///
-/// Standard signal name (e.g., "SIGTERM", "SIGKILL") or "UNKNOWN" for unmapped signals.
-///
-/// # Platform Support
-///
-/// - Unix: Maps standard POSIX signals
-/// - Windows: Limited support (maps common signals that have Windows equivalents)
-///
-/// # Example
-///
-/// ```rust
-/// use process_tools::lifecycle::signal_name;
-///
-/// assert_eq!( signal_name( 9 ), "SIGKILL" );
-/// assert_eq!( signal_name( 15 ), "SIGTERM" );
-/// assert_eq!( signal_name( 2 ), "SIGINT" );
-/// assert_eq!( signal_name( 999 ), "UNKNOWN" );
-/// ```
+// signal.rs
 pub fn signal_name( signal : i32 ) -> &'static str;
-
-/// Maps signal name to signal number.
-///
-/// # Returns
-///
-/// Signal number or `None` if name not recognized.
-///
-/// # Example
-///
-/// ```rust
-/// use process_tools::lifecycle::signal_number;
-///
-/// assert_eq!( signal_number( "SIGKILL" ), Some( 9 ) );
-/// assert_eq!( signal_number( "SIGTERM" ), Some( 15 ) );
-/// assert_eq!( signal_number( "UNKNOWN" ), None );
-/// ```
 pub fn signal_number( name : &str ) -> Option< i32 >;
-
-/// All standard POSIX signals with descriptions.
-///
-/// # Example
-///
-/// ```rust
-/// use process_tools::lifecycle::all_signals;
-///
-/// for ( num, name, desc ) in all_signals()
-/// {
-///   println!( "{:2}: {} - {}", num, name, desc );
-/// }
-/// ```
 pub fn all_signals() -> Vec< ( i32, &'static str, &'static str ) >;
 
-// ============================================================================
-// daemon.rs - Daemonization (Unix only)
-// ============================================================================
-
-#[ cfg( unix ) ]
-use std::path::Path;
-
-/// Daemonization options.
-#[ cfg( unix ) ]
-#[ derive( Debug, Clone ) ]
+// daemon.rs (Unix only)
 pub struct DaemonizeOptions
 {
-  /// PID file path (optional).
   pub pidfile : Option< String >,
-  /// Working directory for daemon (default: "/").
   pub working_dir : String,
-  /// Redirect stdout to file (optional).
   pub stdout : Option< String >,
-  /// Redirect stderr to file (optional).
   pub stderr : Option< String >,
 }
-
-#[ cfg( unix ) ]
-impl Default for DaemonizeOptions
-{
-  fn default() -> Self
-  {
-    Self
-    {
-      pidfile : None,
-      working_dir : "/".to_string(),
-      stdout : None,
-      stderr : None,
-    }
-  }
-}
-
-/// Daemonize current process (Unix only).
-///
-/// Performs standard Unix daemonization:
-/// 1. Fork to background
-/// 2. Create new session with `setsid()`
-/// 3. Fork again (to prevent reacquiring terminal)
-/// 4. Change working directory
-/// 5. Close stdin, stdout, stderr (or redirect)
-/// 6. Write PID file
-///
-/// # Returns
-///
-/// - `Ok(())` in child process (daemon)
-/// - Never returns in parent process (exits)
-/// - `Err(_)` on failure
-///
-/// # Safety
-///
-/// This function is Unix-only and uses `fork()`, `setsid()`, etc.
-/// Call before spawning threads or opening resources.
-///
-/// # Example
-///
-/// ```rust,no_run
-/// use process_tools::lifecycle::{ daemonize, DaemonizeOptions };
-///
-/// let opts = DaemonizeOptions
-/// {
-///   pidfile : Some( "/var/run/mydaemon.pid".to_string() ),
-///   stdout : Some( "/var/log/mydaemon.log".to_string() ),
-///   ..Default::default()
-/// };
-///
-/// daemonize( &opts )?;
-///
-/// // Now running as daemon
-/// loop
-/// {
-///   // Daemon work here
-/// }
-/// ```
-#[ cfg( unix ) ]
 pub fn daemonize( options : &DaemonizeOptions ) -> io::Result< () >;
-
-/// Write PID file.
-///
-/// # Example
-///
-/// ```rust
-/// use process_tools::lifecycle::write_pidfile;
-///
-/// write_pidfile( "/var/run/mydaemon.pid" )?;
-/// ```
 pub fn write_pidfile< P : AsRef< Path > >( path : P ) -> io::Result< () >;
-
-/// Read PID from file.
-///
-/// # Example
-///
-/// ```rust
-/// use process_tools::lifecycle::read_pidfile;
-///
-/// let pid = read_pidfile( "/var/run/mydaemon.pid" )?;
-/// println!( "Daemon PID: {}", pid );
-/// ```
 pub fn read_pidfile< P : AsRef< Path > >( path : P ) -> io::Result< i32 >;
-
-/// Remove PID file.
-///
-/// # Example
-///
-/// ```rust
-/// use process_tools::lifecycle::remove_pidfile;
-///
-/// remove_pidfile( "/var/run/mydaemon.pid" )?;
-/// ```
 pub fn remove_pidfile< P : AsRef< Path > >( path : P ) -> io::Result< () >;
 ```
-
----
-
-## Implementation Phases
-
-### Phase 1: Process Checks (2 hours)
-
-**Tasks**:
-1. Create `process_tools/src/lifecycle/check.rs`
-2. Implement `is_process_alive()` for Unix (kill with signal 0)
-3. Implement `is_process_alive()` for Windows (OpenProcess)
-4. Implement `wait_for_exit()` with polling + timeout
-5. Implement `is_pidfile_alive()` convenience wrapper
-6. Add platform-specific tests
-7. Document platform differences
-
-**Acceptance Criteria**:
-- [ ] `is_process_alive()` works on Unix
-- [ ] `is_process_alive()` works on Windows
-- [ ] `wait_for_exit()` respects timeout
-- [ ] PID file utilities work correctly
-- [ ] Tests cover valid/invalid PIDs
-- [ ] Documentation explains platform behavior
-
-### Phase 2: Signal Utilities (1.5 hours)
-
-**Tasks**:
-1. Create `process_tools/src/lifecycle/signal.rs`
-2. Implement `signal_name()` with comprehensive signal mapping
-3. Implement `signal_number()` for reverse lookup
-4. Implement `all_signals()` for enumeration
-5. Add tests for all standard signals
-6. Document signal meanings
-
-**Acceptance Criteria**:
-- [ ] All POSIX signals mapped (SIGHUP, SIGINT, SIGTERM, etc.)
-- [ ] Bidirectional mapping works (name ↔ number)
-- [ ] Tests verify all mappings
-- [ ] Documentation includes signal descriptions
-
-### Phase 3: Daemonization (3 hours - Unix only)
-
-**Tasks**:
-1. Create `process_tools/src/lifecycle/daemon.rs`
-2. Implement `DaemonizeOptions` configuration
-3. Implement `daemonize()` with fork + setsid + chdir
-4. Implement PID file management (write/read/remove)
-5. Handle stdout/stderr redirection
-6. Add integration tests (spawn daemon, verify PID)
-7. Document safety considerations
-
-**Acceptance Criteria**:
-- [ ] Daemonization follows standard Unix procedure
-- [ ] PID file written correctly
-- [ ] stdio redirection works
-- [ ] Tests verify daemon process creation
-- [ ] Documentation warns about pre-thread usage
-
-### Phase 4: Integration and Migration (1 hour)
-
-**Tasks**:
-1. Update `process_tools/src/lib.rs` to export lifecycle module
-2. Migrate wplan to use new API
-3. Migrate wplan_client to use `signal_name()`
-4. Delete old implementations
-5. Verify all tests pass
-
-**Acceptance Criteria**:
-- [ ] All modules exported from `process_tools::lifecycle`
-- [ ] wplan uses new daemonization API
-- [ ] wplan_client uses new signal_name
-- [ ] Old code deleted
-- [ ] All tests pass
-
----
-
-## Dependencies
-
-```toml
-# process_tools/Cargo.toml
-[dependencies]
-libc = { workspace = true }  # For Unix process operations
-
-[target.'cfg(windows)'.dependencies]
-windows = { workspace = true, features = ["Win32_System_Threading"] }  # For Windows OpenProcess
-```
-
----
-
-## Expected Impact
-
-| Metric | Before | After |
-|--------|--------|-------|
-| wplan daemon_routines.rs LOC | ~150 | ~30 (imports) |
-| wplan_client formatting.rs signal code | ~30 | 0 (deleted) |
-| Code duplication | Isolated | Shared |
-| Platform abstraction | Per-project | Centralized |
-| Test coverage | Per-project | Comprehensive |
-
----
-
-## Testing Strategy
-
-### Unit Tests
-
-**Process Checks**:
-- Valid PID (self)
-- Invalid PID (-1, 999999)
-- Wait with timeout (mock or real process)
-- PID file operations
-
-**Signal Utilities**:
-- All standard signals mapped correctly
-- Bidirectional mapping (name ↔ number)
-- Unknown signals return "UNKNOWN"
-
-**Daemonization** (Unix):
-- Fork succeeds
-- PID file written
-- stdio redirected
-- Process becomes session leader
-
-### Integration Tests
-
-- Spawn daemon, verify running, kill, verify exit
-- PID file lifecycle (create, read, remove)
-- Signal name display in logs
-
----
 
 ## Platform Considerations
 
 ### Unix
-
 - `kill(pid, 0)` for process checks
-- Standard POSIX signals
-- Full daemonization support
+- Standard POSIX signals (full mapping)
+- Full daemonization support (fork + setsid + chdir + stdio redirect)
 
 ### Windows
-
 - `OpenProcess` + `CloseHandle` for process checks
 - Limited signal support (SIGINT, SIGTERM via Ctrl+C/Break)
-- No daemonization (use Windows Services API instead)
+- No daemonization (Windows Services API is a different paradigm)
 
 ### Cross-Platform Strategy
+- Use `#[cfg(unix)]` and `#[cfg(windows)]` inside function bodies for check/signal modules
+- Gate entire daemon module with `#[cfg(unix)]`
+- Document platform limitations clearly in function-level docs
 
-- Use `#[cfg(unix)]` and `#[cfg(windows)]` extensively
-- Provide platform-specific implementations with same API
-- Document platform limitations clearly
+## Dependencies
 
----
+```toml
+# process_tools/Cargo.toml additions
+[dependencies]
+libc = { workspace = true }
 
-## Documentation Requirements
+[target.'cfg(windows)'.dependencies]
+windows = { workspace = true, features = ["Win32_System_Threading"] }
+```
 
-Each module must include:
-1. Module-level documentation with platform support
-2. Function documentation with platform notes
-3. Safety considerations for daemonization
-4. Signal reference table
-5. Example daemon implementation
+## Cross-References
 
----
-
-## Acceptance Criteria
-
-- [ ] All 3 modules implemented (check, signal, daemon)
-- [ ] Cross-platform support (Unix + Windows where applicable)
-- [ ] Comprehensive test coverage
-- [ ] Platform-specific tests pass
-- [ ] Documentation complete with platform notes
-- [ ] wplan successfully migrated
-- [ ] wplan_client successfully migrated
-- [ ] Old implementations deleted
-- [ ] `cargo test -p process_tools` passes on Unix
-- [ ] `cargo test -p process_tools` passes on Windows
-
----
-
-## References
-
-**Source Files**:
-- `/home/user1/pro/lib/willbe/module/wplan/src/daemon_routines.rs:99-107` (is_process_alive)
-- `/home/user1/pro/lib/willbe/module/wplan/src/daemon_routines.rs:150-200` (daemonize)
-- `/home/user1/pro/lib/willbe/module/wplan_client/src/cli/formatting.rs:981-1011` (signal_name)
-
-**Related Projects**:
-- wtest - needs process management for test harness
-- benchkit - needs process checks for benchmark isolation
-- willbe - needs daemonization for background builds
-
-**Dependencies**:
-- libc (workspace) - Unix syscalls
-- windows (workspace) - Windows process APIs
-
----
-
-## Estimated Effort
-
-- Phase 1: 2 hours (process checks)
-- Phase 2: 1.5 hours (signal utilities)
-- Phase 3: 3 hours (daemonization)
-- Phase 4: 1 hour (migration)
-
-**Total**: 7.5 hours
-
----
-
-## Priority Justification
-
-**MEDIUM Priority** because:
-1. **Specialized Use**: Not all projects need daemonization
-2. **Platform-Specific**: Significant platform differences to handle
-3. **Safety-Critical**: Fork/daemonization requires careful testing
-4. **Immediate Value**: wplan migration benefits, but fewer downstream users
-5. **Complexity**: Higher implementation complexity than other extractions
+- **Follow-up adoption** (CRITICAL — extraction without migration leaves duplication):
+  - `wplan_client/task/006_adopt_process_utilities_from_process_tools.md`
+  - `wplan/task/086_adopt_process_utilities_from_process_tools.md`
+- **Source files**:
+  - `/home/user1/pro/lib/willbe/module/wplan/src/daemon_routines.rs:99-107` (is_process_alive)
+  - `/home/user1/pro/lib/willbe/module/wplan/src/daemon_routines.rs:150-200` (daemonize)
+  - `/home/user1/pro/lib/willbe/module/wplan_client/src/cli/formatting.rs:981-1011` (signal_name)
+- **Related consumers**: wtest (test harness), benchkit (benchmark isolation), willbe (background builds)

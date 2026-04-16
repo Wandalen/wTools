@@ -1,4 +1,4 @@
-// module/move/willbe/src/action/mod.rs
+// module/experimental/willbe/src/action/mod.rs
 mod private {}
 
 crate ::mod_interface!

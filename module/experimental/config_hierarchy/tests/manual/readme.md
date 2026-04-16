@@ -16,7 +16,7 @@ Since config_hierarchy is primarily a library (not a CLI tool), manual testing f
 ### 1. Build config_hierarchy
 
 ```bash
-cd /home/user1/pro/lib/wTools/module/core/config_hierarchy
+cd /home/user1/pro/lib/wip_core/wtools/dev/module/experimental/config_hierarchy
 cargo build --all-features
 ```
 
@@ -71,7 +71,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-config_hierarchy = { path = "/home/user1/pro/lib/wTools/module/core/config_hierarchy", features = ["full"] }
+config_hierarchy = { path = "/home/user1/pro/lib/wip_core/wtools/dev/module/experimental/config_hierarchy", features = ["full"] }
 serde_json = "1.0"
 EOF
 

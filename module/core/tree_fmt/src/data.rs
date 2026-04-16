@@ -336,6 +336,7 @@ impl TableMetadata
 ///     vec![ "Alice".into(), "30".into() ],
 ///     vec![ "Bob".into(), "25".into() ],
 ///   ],
+///   row_details : vec![],
 /// };
 ///
 /// assert_eq!( view.metadata.column_names.len(), 2 );
@@ -349,6 +350,8 @@ pub struct TableView
   pub metadata : TableMetadata,
   /// Table rows (data)
   pub rows : Vec< Vec< String > >,
+  /// Optional detail line per row (parallel to `rows`)
+  pub row_details : Vec< Option< String > >,
 }
 
 impl TableView
@@ -356,7 +359,19 @@ impl TableView
   /// Create new table view
   pub fn new( metadata : TableMetadata, rows : Vec< Vec< String > > ) -> Self
   {
-    Self { metadata, rows }
+    Self { metadata, rows, row_details : vec![] }
+  }
+
+  /// Create table view with per-row detail lines
+  pub fn with_details
+  (
+    metadata : TableMetadata,
+    rows : Vec< Vec< String > >,
+    row_details : Vec< Option< String > >,
+  )
+  -> Self
+  {
+    Self { metadata, rows, row_details }
   }
 
   /// Convert to `TreeNode` for backward compatibility with visual formatters

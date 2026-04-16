@@ -1,5 +1,12 @@
 # Remove Inline Test Blocks from sql.rs and html.rs
 
+## Execution State
+
+- **Executor Type:** any
+- **Actor:** null
+- **Claimed At:** null
+- **Status:** ✅ (Completed)
+
 ## Goal
 
 The inline `#[cfg(test)] mod tests { ... }` blocks in `src/formatters/sql.rs` and
@@ -76,3 +83,7 @@ No coverage gap resulted from deletion.
 
 **VP2 — Full test suite**
 `w3 .test l::3` — expect 0 failures, 0 warnings.
+
+## Outcomes
+
+*(Completed. Task delivered and verified per acceptance criteria.)*

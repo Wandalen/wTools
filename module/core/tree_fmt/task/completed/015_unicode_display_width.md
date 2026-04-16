@@ -1,5 +1,12 @@
 # Unicode Display Width Fix — Column Calculation and Cell Padding
 
+## Execution State
+
+- **Executor Type:** any
+- **Actor:** null
+- **Claimed At:** null
+- **Status:** ✅ (Completed)
+
 ## Goal
 
 Column widths are currently calculated with `visual_len()` (char count, re-exported from
@@ -208,3 +215,7 @@ Expected: 0 matches. A common mistake is replacing only L369 and missing L478 (m
 **AF2 — ANSI stripping verified**
 T015-P04 must assert `unicode_visual_len("\x1b[31mHello\x1b[0m") == 5`. If this returns 15+
 (counts escape chars), the stripping algorithm is broken.
+
+## Outcomes
+
+*(Completed. Task delivered and verified per acceptance criteria.)*

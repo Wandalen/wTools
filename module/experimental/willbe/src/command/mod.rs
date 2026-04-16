@@ -1,4 +1,4 @@
-// module/move/willbe/src/command/mod.rs
+// module/experimental/willbe/src/command/mod.rs
 /// Define a private namespace for all its items.
 mod private
 {

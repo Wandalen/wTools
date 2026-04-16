@@ -13,12 +13,12 @@ on:
     branches: [ master, main, develop ]
     paths:
       - 'tests/**/*.rs'
-      - 'module/move/unilang/tests/**/*.rs'
+      - 'module/core/unilang/tests/**/*.rs'
   pull_request:
     branches: [ master, main, develop ]
     paths:
       - 'tests/**/*.rs'
-      - 'module/move/unilang/tests/**/*.rs'
+      - 'module/core/unilang/tests/**/*.rs'
 
 jobs:
   validate-test-organization:
@@ -41,8 +41,8 @@ jobs:
         if [ -d "tests/unit" ]; then
           echo "tests_dir=tests" >> $GITHUB_OUTPUT
           echo "project_type=root" >> $GITHUB_OUTPUT
-        elif [ -d "module/move/unilang/tests/unit" ]; then
-          echo "tests_dir=module/move/unilang/tests" >> $GITHUB_OUTPUT
+        elif [ -d "module/core/unilang/tests/unit" ]; then
+          echo "tests_dir=module/core/unilang/tests" >> $GITHUB_OUTPUT
           echo "project_type=module" >> $GITHUB_OUTPUT
         else
           echo "tests_dir=" >> $GITHUB_OUTPUT

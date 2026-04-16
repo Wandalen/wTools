@@ -22,7 +22,7 @@ fn arrange(asset_name: &str) -> (TempDir, Workspace)
   let assets_relative_path = std ::path ::Path ::new(ASSET_PATH);
   let assets_path = root_path
   .join("module").unwrap()
-  .join("move").unwrap()
+  .join("experimental").unwrap()
   .join("willbe").unwrap()
   .join(assets_relative_path).unwrap();
   let temp = TempDir ::new().unwrap();
@@ -36,7 +36,7 @@ fn arrange(asset_name: &str) -> (TempDir, Workspace)
 
 // a -> b -> c
 #[ test ]
-#[ ignore = "Missing test fixtures in module/move/willbe/" ]
+#[ ignore = "Missing test fixtures in module/experimental/willbe/" ]
 fn chain_of_three_packages() 
 {
   // Arrange
@@ -67,7 +67,7 @@ fn chain_of_three_packages()
 
 // a -> b -> c
 #[ test ]
-#[ ignore = "Missing test fixtures in module/move/willbe/" ]
+#[ ignore = "Missing test fixtures in module/experimental/willbe/" ]
 fn chain_of_three_packages_topologically_sorted() 
 {
   // Arrange
@@ -118,7 +118,7 @@ fn chain_of_three_packages_topologically_sorted()
 
 // a -> ( remote, b )
 #[ test ]
-#[ ignore = "Missing test fixtures in module/move/willbe/" ]
+#[ ignore = "Missing test fixtures in module/experimental/willbe/" ]
 fn package_with_remote_dependency() 
 {
   // Arrange
@@ -138,7 +138,7 @@ fn package_with_remote_dependency()
 
 // a -> b -> a
 #[ test ]
-#[ ignore = "Missing test fixtures in module/move/willbe/" ]
+#[ ignore = "Missing test fixtures in module/experimental/willbe/" ]
 fn workspace_with_cyclic_dependency() 
 {
   // Arrange

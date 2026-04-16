@@ -236,7 +236,7 @@ mod private
   /// ``` toml
   /// [package]
   /// name = "test_module"
-  /// repository = "https://github.com/Wandalen/wTools/tree/master/module/move/test_module"
+  /// repository = "https://github.com/Wandalen/wTools/tree/master/module/core/test_module"
   /// ...
   /// [package.metadata]
   /// stability = "stable" (Optional)

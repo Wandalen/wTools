@@ -348,10 +348,10 @@ fn kos_plan()
 //   .packages([ package ])
 //   .form();
 //   dbg!( &mega_plan.plans );
-// //   [module\move\willbe\tests\inc\package.rs: 21 : 3] &mega_plan.plans = [
+// //   [module\experimental\willbe\tests\inc\package.rs: 21 : 3] &mega_plan.plans = [
 // //   PackagePublishInstruction {
 // //     pack: PackOptions {
-// //       path: ".../wTools/module/move/wca",
+// //       path: ".../wTools/module/experimental/wca",
 // //       temp_path: Some(
 // //         "temp",
 // // ),
@@ -360,7 +360,7 @@ fn kos_plan()
 // //     bump: BumpOptions {
 // //       crate_dir: CrateDir(
 // //         AbsolutePath(
-// //           ".../wTools/module/move/wca",
+// //           ".../wTools/module/experimental/wca",
 // // ),
 // // ),
 // //       old_version: Version(
@@ -395,14 +395,14 @@ fn kos_plan()
 // //           ".../wTools/Cargo.toml",
 // // ),
 // //         AbsolutePath(
-// //           ".../wTools/module/move/wca/Cargo.toml",
+// //           ".../wTools/module/experimental/wca/Cargo.toml",
 // // ),
 // // ],
 // //       message: "wca-v0.15.0",
 // //       dry: true,
 // // },
 // //     publish: PublishOptions {
-// //       path: ".../wTools/module/move/wca",
+// //       path: ".../wTools/module/experimental/wca",
 // //       temp_path: Some(
 // //         "temp",
 // // ),
@@ -413,13 +413,13 @@ fn kos_plan()
 // // ]
 //   let mega_plan = perform_packages_publish( mega_plan );
 //   dbg!( mega_plan );
-// //   [module\move\willbe\tests\inc\package.rs: 89 : 3] mega_plan = Ok(
+// //   [module\experimental\willbe\tests\inc\package.rs: 89 : 3] mega_plan = Ok(
 // //   [
 // //     PublishReport {
 // //       get_info: Some(
 // //         Report {
 // //           command: "cargo package --target-dir temp",
-// //           current_path: ".../wTools/module/move/wca",
+// //           current_path: ".../wTools/module/experimental/wca",
 // //           out: "",
 // //           err: "",
 // //           error: Ok(
@@ -443,7 +443,7 @@ fn kos_plan()
 // // },
 // //           changed_files: [
 // //             AbsolutePath(
-// //               ".../wTools/module/move/wca/Cargo.toml",
+// //               ".../wTools/module/experimental/wca/Cargo.toml",
 // // ),
 // //             AbsolutePath(
 // //               ".../wTools/Cargo.toml",
@@ -453,7 +453,7 @@ fn kos_plan()
 // // ),
 // //       add: Some(
 // //         Report {
-// //           command: "git add Cargo.toml module/move/wca/Cargo.toml",
+// //           command: "git add Cargo.toml module/experimental/wca/Cargo.toml",
 // //           current_path: ".../wTools",
 // //           out: "",
 // //           err: "",
@@ -487,7 +487,7 @@ fn kos_plan()
 // //       publish: Some(
 // //         Report {
 // //           command: "cargo publish --target-dir temp",
-// //           current_path: ".../wTools/module/move/wca",
+// //           current_path: ".../wTools/module/experimental/wca",
 // //           out: "",
 // //           err: "",
 // //           error: Ok(

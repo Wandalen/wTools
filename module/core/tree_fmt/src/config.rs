@@ -215,6 +215,8 @@ pub struct TableConfig
   max_column_width : Option< usize >,
   /// Marker string for truncated content
   truncation_marker : String,
+  /// Indent prefix for sub-row detail lines
+  sub_row_indent : String,
 }
 
 impl Default for TableConfig
@@ -238,6 +240,7 @@ impl Default for TableConfig
       min_column_width : 0,
       max_column_width : None,
       truncation_marker : "...".to_string(),
+      sub_row_indent : "  ".to_string(),
     }
   }
 }
@@ -493,6 +496,14 @@ impl TableConfig
     self.truncation_marker = marker;
     self
   }
+
+  /// Set indent prefix for sub-row detail lines
+  #[ must_use ]
+  pub fn sub_row_indent( mut self, indent : String ) -> Self
+  {
+    self.sub_row_indent = indent;
+    self
+  }
 }
 
 /// Internal accessors for formatters (pub(crate) methods, not fields — satisfies AF1).
@@ -590,6 +601,12 @@ impl TableConfig
   pub( crate ) fn row_color2_str( &self ) -> &str
   {
     &self.row_color2
+  }
+
+  /// Sub-row detail line indent prefix (accessor; distinct from `sub_row_indent` setter)
+  pub( crate ) fn detail_indent( &self ) -> &str
+  {
+    &self.sub_row_indent
   }
 }
 

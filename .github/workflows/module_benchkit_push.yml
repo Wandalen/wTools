@@ -18,7 +18,7 @@ jobs :
   test :
     uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
     with :
-      manifest_path : 'module/move/benchkit/Cargo.toml'
+      manifest_path : 'module/experimental/benchkit/Cargo.toml'
       module_name : 'benchkit'
       commit_message : ${{ github.event.head_commit.message }}
       commiter_username:  ${{ github.event.head_commit.committer.username }}

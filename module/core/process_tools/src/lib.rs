@@ -23,4 +23,10 @@ mod_interface! {
   // #[ cfg( not( feature = "no_std" ) ) ]
   layer environment;
 
+  /// Platform-agnostic `ExitStatus` synthesis.
+  layer exit_status;
+
+  /// Process lifecycle management (alive checks, signals, daemonization).
+  layer lifecycle;
+
 }

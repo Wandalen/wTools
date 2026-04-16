@@ -49,6 +49,7 @@ iter_tools = { workspace = true }
 
 ## external
 duct = "0.13.7"
+libc = { workspace = true }
 
 
 [dev-dependencies]

@@ -18,7 +18,7 @@ jobs :
   test :
     uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
     with :
-      manifest_path : 'module/core/include_md/Cargo.toml'
+      manifest_path : 'module/experimental/include_md/Cargo.toml'
       module_name : 'include_md'
       commit_message : ${{ github.event.head_commit.message }}
       commiter_username:  ${{ github.event.head_commit.committer.username }}

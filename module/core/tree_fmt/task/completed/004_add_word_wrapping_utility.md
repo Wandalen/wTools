@@ -1,8 +1,13 @@
 # Add Word Wrapping Utility
 
-## Status: ✅ Completed
+## Execution State
 
-## Validation List
+- **Executor Type:** any
+- **Actor:** null
+- **Claimed At:** null
+- **Status:** ✅ (Completed)
+
+## Acceptance Criteria
 
 **Goal achieved**
 - [x] Does `use tree_fmt::{ WrapConfig, WrapFormatter, BreakStrategy, Overflow };` compile?
@@ -44,16 +49,16 @@
 - [x] Does `tests/readme.md` have a `word_wrap.rs` row in its Responsibility Table?
 - [x] Does the test count prose in `tests/readme.md` match actual `cargo nextest` output?
 
-## Deliverables
+## Outcomes
 
+**Deliverables:**
 - `src/wrap.rs` — `WrapConfig` (11 fields, 12 builder methods), `WrapFormatter` (wrap + wrap_joined), `BreakStrategy`, `Overflow`; all private helpers (hard_chunks, hard_break_str, wrap_words, push_overlong_word, flush_pending, apply_overflow, expand_tabs, char_count, indent_for, available_for)
 - `tests/word_wrap.rs` — 22 tests: T01–T20 + `defaults_match_spec` + `indent_counts_toward_width`
 - `src/lib.rs` — added `mod wrap;` + `pub use wrap::{ WrapConfig, WrapFormatter, BreakStrategy, Overflow };`
 - `src/readme.md` — added `wrap.rs` row
 - `tests/readme.md` — added `word_wrap.rs` row, updated test count to 331 nextest + 73 doc
 
-## Final Test Results
-
+**Test Results:**
 - nextest: 331 passed, 0 failed
 - doc tests: 73 passed, 0 failed
 - clippy: 0 warnings

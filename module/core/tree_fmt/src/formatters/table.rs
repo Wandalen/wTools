@@ -175,7 +175,7 @@ impl TableFormatter
   {
     let headers = tree.extract_headers().unwrap_or_default();
     let rows = tree.to_rows();
-    self.format_internal( &headers, &rows )
+    self.format_internal( &headers, &rows, &[] )
   }
 
   /// Format hierarchical tree as table (flattened)
@@ -204,7 +204,14 @@ impl TableFormatter
   }
 
   /// Internal implementation of table formatting
-  fn format_internal( &self, headers : &[ String ], rows : &[ Vec< String > ] ) -> String
+  fn format_internal
+  (
+    &self,
+    headers : &[ String ],
+    rows : &[ Vec< String > ],
+    row_details : &[ Option< String > ],
+  )
+  -> String
   {
     let mut output = String::with_capacity( INITIAL_CAPACITY );
 
@@ -270,6 +277,17 @@ impl TableFormatter
           output.push_str( color );
           output.push_str( line );
           output.push_str( ANSI_RESET );
+          output.push( '\n' );
+        }
+      }
+
+      // Sub-row detail line (if provided and non-empty)
+      if let Some( Some( detail ) ) = row_details.get( idx )
+      {
+        if !detail.is_empty()
+        {
+          output.push_str( self.config.detail_indent() );
+          output.push_str( detail );
           output.push( '\n' );
         }
       }
@@ -936,6 +954,6 @@ impl super::Format for TableFormatter
 {
   fn format( &self, data : &crate::TableView ) -> Result< String, super::FormatError >
   {
-    Ok( self.format_internal( &data.metadata.column_names, &data.rows ) )
+    Ok( self.format_internal( &data.metadata.column_names, &data.rows, &data.row_details ) )
   }
 }

@@ -90,4 +90,4 @@ See [variant_attributes.md](../variant_attributes.md) for complete attribute def
 - [Table of Variants](../../readme.md#table-of-variants) - Main table with hyperlinks
 - [Variant Attributes List](../variant_attributes.md) - Complete attribute definitions
 - [Main README](../../readme.md) - Project overview
-- [Specification](../../spec.md) - Complete technical specification
+- [API Reference](../api/readme.md) - Type signatures and formatter APIs

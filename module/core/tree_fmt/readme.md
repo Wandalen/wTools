@@ -87,7 +87,7 @@ tree_fmt = { version = "0.12.0", features = [ "all_formats" ] }
 
 ## Documentation & Testing
 
-- **[Complete Specification](./spec.md)** - API contract, design rationale, changelog
+- **[Documentation](./docs/readme.md)** - Architecture, API reference, features, invariants
 - **[Examples](./examples/readme.md)** - Working code for all formatters
 - **[API Docs](https://docs.rs/tree_fmt)** - Generated documentation
 
