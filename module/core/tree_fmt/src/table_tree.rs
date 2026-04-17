@@ -1,6 +1,7 @@
 //! Table-shaped tree construction helpers
 
 use crate::TreeNode;
+use color_tools::ColorfulText;
 
 /// Builder for constructing table-shaped trees
 ///
@@ -27,7 +28,7 @@ pub struct RowBuilder
   headers : Vec< String >,
   row_count : usize,
   rows : Vec< Vec< String > >,
-  row_details : Vec< Option< String > >,
+  row_details : Vec< Option< ColorfulText > >,
 }
 
 impl RowBuilder
@@ -166,7 +167,7 @@ impl RowBuilder
   ///   .add_row_with_detail( vec![ "Alice".into() ], Some( "note".into() ) )
   ///   .build_view();
   ///
-  /// assert_eq!( view.row_details[ 0 ], Some( "note".to_string() ) );
+  /// assert_eq!( view.row_details[ 0 ], Some( tree_fmt::ColorfulText::from( "note" ) ) );
   /// ```
   #[ must_use ]
   #[ allow( clippy::needless_pass_by_value ) ]
@@ -174,7 +175,7 @@ impl RowBuilder
   (
     mut self,
     row : Vec< String >,
-    detail : Option< String >,
+    detail : Option< ColorfulText >,
   )
   -> Self
   {
@@ -203,14 +204,14 @@ impl RowBuilder
   /// builder.add_row_with_detail_mut( vec![ "Alice".into() ], Some( "note".into() ) );
   /// let view = builder.build_view();
   ///
-  /// assert_eq!( view.row_details[ 0 ], Some( "note".to_string() ) );
+  /// assert_eq!( view.row_details[ 0 ], Some( tree_fmt::ColorfulText::from( "note" ) ) );
   /// ```
   #[ allow( clippy::needless_pass_by_value ) ]
   pub fn add_row_with_detail_mut
   (
     &mut self,
     row : Vec< String >,
-    detail : Option< String >,
+    detail : Option< ColorfulText >,
   )
   {
     self.validate_row_length( &row );
@@ -220,7 +221,7 @@ impl RowBuilder
   }
 
   /// Internal row addition (no validation)
-  fn add_row_internal( &mut self, row_name : String, row : &[ String ], detail : Option< String > )
+  fn add_row_internal( &mut self, row_name : String, row : &[ String ], detail : Option< ColorfulText > )
   {
     // Store row data for TableView
     self.rows.push( row.to_vec() );

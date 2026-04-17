@@ -1,12 +1,67 @@
 //! Sub-row detail lines — integration tests
 //!
-//! Covers test matrix T01–T28 from task 017.
-//! Each test verifies a single aspect of the sub-row detail feature:
-//! API surface, rendering, backward compatibility, and config interaction.
+//! Each test verifies exactly one aspect of the sub-row detail feature.
+//! Categories: API surface, rendering, backward compatibility, config interaction,
+//! and Algorithm 3 (per-line ANSI color wrapping) corner cases.
+//!
+//! ## Test Matrix
+//!
+//! ### API Surface
+//! | ID  | Aspect |
+//! |-----|--------|
+//! | T01 | `add_row` (no detail) — no detail line produced |
+//! | T02 | `add_row_with_detail(Some("text"))` — detail line emitted |
+//! | T03 | `add_row_with_detail(None)` — no extra line |
+//! | T04 | `add_row_with_detail(Some(""))` — empty detail suppressed |
+//! | T05 | Mixed rows: first has detail, second does not |
+//! | T06 | Both rows have detail |
+//! | T14 | `Format::format` trait path works with sub-row |
+//! | T15 | Mutable API (`add_row_mut` / `add_row_with_detail_mut`) intermixed |
+//! | T16 | `build_view()` produces `row_details` vector parallel to rows |
+//! | T17 | `TableView::new` (old two-arg form) backward compat — `row_details` empty |
+//! | T18 | Single-row table with detail |
+//!
+//! ### Config Interaction
+//! | ID  | Aspect |
+//! |-----|--------|
+//! | T07 | Custom indent `">>> "` |
+//! | T08 | Empty indent `""` — detail flush-left |
+//! | T09 | Detail does not affect column widths |
+//! | T10 | AsciiGrid style with multiple detail rows |
+//! | T11 | Unicode box style with detail |
+//! | T12 | Bordered style with detail |
+//! | T25 | CSV format includes detail lines |
+//! | T26 | Markdown format — detail without pipes |
+//!
+//! ### Rendering
+//! | ID  | Aspect |
+//! |-----|--------|
+//! | T13 | Multiline cell combined with detail |
+//! | T19 | Multiline detail — every sub-line gets indent |
+//! | T20 | Detail NOT colored by alternating-row ANSI |
+//! | T21 | Grid bottom border — detail appears before it |
+//! | T27 | Multiline cell + alternating color + detail (triple interaction) |
+//!
+//! ### Boundary & Edge Cases
+//! | ID  | Aspect |
+//! |-----|--------|
+//! | T22 | `row_details` shorter than rows — graceful (only paired rows get details) |
+//! | T23 | Whitespace-only detail rendered (not suppressed) |
+//! | T24 | `row_details` longer than rows — extra details silently ignored |
+//! | T28 | Zero rows, empty detail vector — header-only, no panic |
+//!
+//! ### Algorithm 3 — Per-Line ANSI Color Wrapping
+//! | ID  | Aspect |
+//! |-----|--------|
+//! | T29 | `ColorfulText` single-line colored detail has ANSI color + reset |
+//! | T30 | Multiline colored detail: each sub-line gets independent color+reset |
+//! | T31 | Custom indent + colored detail: indent precedes ANSI code |
+//! | T32 | Detail text with trailing `\n` — same output as without (Rust `lines()` strips it) |
+//! | T33 | Detail text `"\n"` only — `is_empty()` false; renders one blank indented line |
 
 #![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
-use tree_fmt::{ RowBuilder, TableFormatter, TableConfig, Format, TableView, TableMetadata };
+use tree_fmt::{ RowBuilder, TableFormatter, TableConfig, Format, TableView, TableMetadata, ColorfulText };
 
 // =============================================================================
 // Helper
@@ -85,7 +140,7 @@ fn t03_detail_none_produces_no_line()
 fn t04_empty_string_detail_suppressed()
 {
   let view = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "Alice".into() ], Some( String::new() ) )
+    .add_row_with_detail( vec![ "Alice".into() ], Some( ColorfulText::from( "" ) ) )
     .build_view();
 
   let out = plain_output( &view );
@@ -351,7 +406,7 @@ fn t16_build_view_row_details_vector()
 
   assert_eq!( view.row_details.len(), 3, "row_details must parallel rows" );
   assert_eq!( view.row_details[ 0 ], None );
-  assert_eq!( view.row_details[ 1 ], Some( "detail-b".to_string() ) );
+  assert_eq!( view.row_details[ 1 ], Some( ColorfulText::from( "detail-b" ) ) );
   assert_eq!( view.row_details[ 2 ], None );
 }
 
@@ -647,4 +702,167 @@ fn t28_zero_rows_empty_details()
   // No detail content
   let line_count = out.lines().count();
   assert!( line_count <= 2, "zero-row table should have at most header + separator, got:\n{out}" );
+}
+
+// =============================================================================
+// T29 — colored ColorfulText detail renders with ANSI escape codes
+// =============================================================================
+
+#[ test ]
+fn t29_colored_detail_ansi_codes()
+{
+  let yellow = "\x1b[33m";
+  let ct = ColorfulText::from( "colored-detail" ).with_color( yellow );
+  let view = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row_with_detail( vec![ "Alice".into() ], Some( ct ) )
+    .build_view();
+
+  let out = plain_output( &view );
+
+  assert!( out.contains( "colored-detail" ), "detail text missing:\n{out}" );
+  let detail_line = out.lines()
+    .find( | l | l.contains( "colored-detail" ) )
+    .unwrap();
+  assert!(
+    detail_line.contains( yellow ),
+    "detail line must contain ANSI color code: {:?}",
+    detail_line,
+  );
+  assert!(
+    detail_line.contains( "\x1b[0m" ),
+    "detail line must contain ANSI reset: {:?}",
+    detail_line,
+  );
+}
+
+// =============================================================================
+// T30 — colored multiline detail: each sub-line gets its own ANSI wrap
+//
+// Algorithm 3 (per-line wrapping): each line in ct.text.lines() is wrapped
+// independently — color + line + RESET + \n. A single .render() call would
+// place the RESET only after the last sub-line, causing terminal bleed.
+// This test is the integration-level proof that Algorithm 3 is in effect.
+// =============================================================================
+
+#[ test ]
+fn t30_colored_multiline_detail_per_line_ansi()
+{
+  let yellow = "\x1b[33m";
+  let reset = "\x1b[0m";
+  let ct = ColorfulText::from( "alpha\nbeta\ngamma" ).with_color( yellow );
+  let view = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row_with_detail( vec![ "Alice".into() ], Some( ct ) )
+    .build_view();
+
+  let out = plain_output( &view );
+  let lines : Vec< &str > = out.lines().collect();
+
+  // Each sub-line must be independently wrapped
+  let alpha_line = lines.iter().find( | l | l.contains( "alpha" ) ).expect( "alpha line missing" );
+  let beta_line  = lines.iter().find( | l | l.contains( "beta" ) ).expect( "beta line missing" );
+  let gamma_line = lines.iter().find( | l | l.contains( "gamma" ) ).expect( "gamma line missing" );
+
+  assert!( alpha_line.contains( yellow ), "alpha line must have ANSI color: {:?}", alpha_line );
+  assert!( alpha_line.contains( reset ), "alpha line must have ANSI reset: {:?}", alpha_line );
+  assert!( beta_line.contains( yellow ), "beta line must have ANSI color: {:?}", beta_line );
+  assert!( beta_line.contains( reset ), "beta line must have ANSI reset: {:?}", beta_line );
+  assert!( gamma_line.contains( yellow ), "gamma line must have ANSI color: {:?}", gamma_line );
+  assert!( gamma_line.contains( reset ), "gamma line must have ANSI reset: {:?}", gamma_line );
+
+  // Exactly 3 resets — one per sub-line, not one for the whole block
+  let reset_count = out.matches( reset ).count();
+  assert_eq!(
+    reset_count, 3,
+    "expected exactly 3 ANSI resets (one per detail sub-line), got {reset_count} in:\n{out}",
+  );
+}
+
+// =============================================================================
+// T31 — custom indent + colored detail: indent precedes ANSI code on each line
+// =============================================================================
+
+#[ test ]
+fn t31_custom_indent_with_colored_detail()
+{
+  let yellow = "\x1b[33m";
+  let indent = ">>> ";
+  let ct = ColorfulText::from( "note" ).with_color( yellow );
+  let config = TableConfig::plain().sub_row_indent( indent.to_string() );
+  let view = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row_with_detail( vec![ "Alice".into() ], Some( ct ) )
+    .build_view();
+
+  let fmt = TableFormatter::with_config( config );
+  let out = Format::format( &fmt, &view ).unwrap();
+
+  let detail_line = out.lines()
+    .find( | l | l.contains( "note" ) )
+    .expect( "detail line not found" );
+
+  let indent_pos = detail_line.find( indent ).expect( "indent not found in detail line" );
+  let ansi_pos = detail_line.find( yellow ).expect( "ANSI code not found in detail line" );
+
+  assert!(
+    indent_pos < ansi_pos,
+    "indent must come before ANSI color code: {:?}",
+    detail_line,
+  );
+}
+
+// =============================================================================
+// T32 — detail text with trailing \n: output identical to text without trailing \n
+//
+// Rust's str::lines() strips the trailing newline — "detail\n" and "detail"
+// yield the same iterator, so the rendered output must be identical.
+// =============================================================================
+
+#[ test ]
+fn t32_detail_trailing_newline_stripped()
+{
+  let view_with = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row_with_detail( vec![ "Alice".into() ], Some( ColorfulText::from( "detail\n" ) ) )
+    .build_view();
+
+  let view_without = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row_with_detail( vec![ "Alice".into() ], Some( ColorfulText::from( "detail" ) ) )
+    .build_view();
+
+  assert_eq!(
+    plain_output( &view_with ),
+    plain_output( &view_without ),
+    "trailing \\n in detail text must produce identical output to detail without trailing \\n",
+  );
+}
+
+// =============================================================================
+// T33 — detail text = "\n" only: not empty; renders one blank indented line
+//
+// "\n".is_empty() == false, so the detail is NOT suppressed by the is_empty()
+// guard. str::lines() yields [""] (one empty string), so the formatter emits
+// one iteration: indent + "" + \n → a line that is just the 2-space indent.
+// Contrast with T04 where "" IS suppressed (is_empty() == true).
+// =============================================================================
+
+#[ test ]
+fn t33_detail_only_newline_renders_blank_line()
+{
+  let ct = ColorfulText::from( "\n" );
+  assert!( !ct.is_empty(), r#"ColorfulText::from("\n") must not be considered empty"# );
+
+  let view = RowBuilder::new( vec![ "Name".into() ] )
+    .add_row_with_detail( vec![ "Alice".into() ], Some( ct ) )
+    .build_view();
+
+  let out = plain_output( &view );
+  let lines : Vec< &str > = out.lines().collect();
+
+  // header + separator + data row + blank detail = 4 lines
+  assert_eq!( lines.len(), 4, "expected 4 lines (header+sep+row+blank detail), got:\n{out}" );
+  // The detail line is exactly the 2-space default indent with no content
+  assert_eq!(
+    lines[ 3 ],
+    "  ",
+    "detail-only-newline must render as just the indent: {:?}",
+    lines[ 3 ],
+  );
 }

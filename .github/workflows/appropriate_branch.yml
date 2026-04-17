@@ -41,13 +41,12 @@ jobs :
           target : ${{ inputs.dst_branch }}
           exclude : ${{ inputs.src_branch }}
           comment : |
-            To maintain stability of the module the repository uses 3-stages system to forward changes from an unstable branch to a stable.
+            To maintain stability of the module the repository uses a 2-stage system to forward changes from an unstable branch to a stable.
             The unstable branch is `alpha`. All user pull requests should be opened to this branch.
-            The staging branch is `beta`. Changes to this branch are forwarded by a pull request from branch `alpha` automatically.
-            The stable branch is `master`. Changes to this branch are forwarded by a pull request from branch `beta` automatically.
+            The stable branch is `master`. Changes to this branch are forwarded by a pull request from branch `alpha` automatically.
 
             The pull request was automatically converted to draft.
-            Please, change base branch taking into account the described system `alpha -> beta -> master`.
+            Please, change base branch taking into account the described system `alpha -> master`.
       - name : Convert to draft
         if : ${{ steps.validation.outputs.wrong-target == 'true' }}
         uses: voiceflow/draft-pr@latest

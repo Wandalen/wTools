@@ -144,6 +144,7 @@ pub use data::{
   TreeNode, ColumnData,
   TableView, TableMetadata, DataType, TableShapedView
 };
+pub use color_tools::ColorfulText;
 pub use config::{
   TreeConfig, TableConfig, ExpandedConfig, PaddingSide, TreeSymbols,
   BorderVariant, HeaderSeparatorVariant, ColumnSeparator,

@@ -215,10 +215,10 @@ mod private
    Result ::Ok( format!
    (
   "{} \
-  [![rust-status](https://github.com/{}/actions/workflows/module_{}_push.yml/badge.svg)](https://github.com/{}/actions/workflows/module_{}_push.yml) \
+  [![rust-status](https://img.shields.io/github/actions/workflow/status/{}/workspace_push.yml?label=&branch=master&job={})](https://github.com/{}/actions/workflows/workspace_push.yml) \
   [![docs.rs](https://img.shields.io/docsrs/{}?color=e3e8f0&logo=docs.rs)](https://docs.rs/{}){}{}",
   stability_generate( &self.stability ),
-  repo_url, self.module_name.to_case( Case ::Snake ), repo_url, self.module_name.to_case( Case ::Snake ),
+  repo_url, self.module_name.to_case( Case ::Snake ), repo_url,
   self.module_name, self.module_name,
   example,
   discord,

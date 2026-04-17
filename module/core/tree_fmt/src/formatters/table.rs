@@ -209,7 +209,7 @@ impl TableFormatter
     &self,
     headers : &[ String ],
     rows : &[ Vec< String > ],
-    row_details : &[ Option< String > ],
+    row_details : &[ Option< color_tools::ColorfulText > ],
   )
   -> String
   {
@@ -281,16 +281,33 @@ impl TableFormatter
         }
       }
 
-      // Sub-row detail line(s) — indent every line when detail contains \n
-      if let Some( Some( detail ) ) = row_details.get( idx )
+      // Sub-row detail line(s) — indent every line; apply per-line ANSI color when set.
+      //
+      // Fix(issue-ansi-color-per-line): iterate ct.text.lines() and wrap each line
+      //   individually with color + line + RESET.
+      // Root cause: calling ct.render() then .lines() would place the ANSI RESET
+      //   at the very end of the whole block; any intermediate \n would cause terminal
+      //   background-color bleed across line boundaries.
+      // Pitfall: never call .render() and then .lines() on the result — always iterate
+      //   .text.lines() and emit color/RESET per output line.
+      if let Some( Some( ct ) ) = row_details.get( idx )
       {
-        if !detail.is_empty()
+        if !ct.is_empty()
         {
           let indent = self.config.detail_indent();
-          for line in detail.lines()
+          for line in ct.text.lines()
           {
             output.push_str( indent );
-            output.push_str( line );
+            if let Some( ref color ) = ct.color
+            {
+              output.push_str( color );
+              output.push_str( line );
+              output.push_str( ANSI_RESET );
+            }
+            else
+            {
+              output.push_str( line );
+            }
             output.push( '\n' );
           }
         }

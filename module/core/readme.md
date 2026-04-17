@@ -6,6 +6,7 @@ Workspace crates providing core wtools functionality.
 |-----------|----------------|
 | `asbytes/` | Conversion of types to byte slices. |
 | `cli_fmt/` | CLI output formatting utilities. |
+| `color_tools/` | Typed text with optional ANSI color abstraction. |
 | `clone_dyn/` | Dynamic dispatch cloning for trait objects. |
 | `clone_dyn_meta/` | Procedural macros for `clone_dyn`. |
 | `clone_dyn_types/` | Types and traits for `clone_dyn`. |

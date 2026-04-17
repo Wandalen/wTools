@@ -36,7 +36,7 @@ pub struct TableView
 {
   pub metadata : TableMetadata,
   pub rows : Vec< Vec< String > >,
-  pub row_details : Vec< Option< String > >,
+  pub row_details : Vec< Option< ColorfulText > >,
 }
 
 impl TableView
@@ -45,7 +45,7 @@ impl TableView
   pub fn with_details(
     metadata : TableMetadata,
     rows : Vec< Vec< String > >,
-    row_details : Vec< Option< String > >,
+    row_details : Vec< Option< ColorfulText > >,
   ) -> Self;
   pub fn to_tree_node( &self ) -> TreeNode< Vec< String > >;
 }

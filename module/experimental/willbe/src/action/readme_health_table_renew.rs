@@ -683,12 +683,11 @@ ensure that at least one remotest is present in git. ",
    | b |
    format!
    (
-  "[![rust-status](https://img.shields.io/github/actions/workflow/status/{}/module_{}_push.yml?label=&branch={})]({}/actions/workflows/module_{}_push.yml?query=branch%3A{})",
+  "[![rust-status](https://img.shields.io/github/actions/workflow/status/{}/workspace_push.yml?label=&branch={}&job={})]({}/actions/workflows/workspace_push.yml?query=branch%3A{})",
   table_parameters.user_and_repo,
-  &module_name.to_case( convert_case ::Case ::Snake ),
   b,
-  table_parameters.core_url,
   &module_name.to_case( convert_case ::Case ::Snake ),
+  table_parameters.core_url,
   b,
  )
  )

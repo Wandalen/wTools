@@ -113,24 +113,31 @@ Every colored line ends with `\x1b[0m` before the trailing `\n` to prevent termi
 
 ## Sub-Row Detail Lines
 
-Optional annotation lines that appear below a data row, outside the cell grid.
+Optional annotation lines that appear below a data row, outside the cell grid. Each detail is typed as `Option<ColorfulText>`, enabling per-row ANSI color without affecting column formatting.
 
 ```rust
+use tree_fmt::{ RowBuilder, ColorfulText };
+
 let view = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
-  .add_row_with_detail( vec![ "Alice".into(), "30".into() ], Some( "Senior engineer".into() ) )
-  .add_row( vec![ "Bob".into(), "25".into() ] )
+  .add_row_with_detail(
+    vec![ "Alice".into(), "30".into() ],
+    Some( ColorfulText::from( "Senior engineer" ).with_color( "\x1b[33m" ) ),
+  )
+  .add_row_with_detail( vec![ "Bob".into(), "25".into() ], Some( "plain note".into() ) )
   .build_view();
 ```
+
+`"plain note".into()` calls `ColorfulText::from(&str)` — transparent, zero-overhead, no color attached. All existing `.into()` call sites remain source-compatible.
 
 Rendering behavior:
 
 - Detail lines are emitted AFTER all row content lines (including multiline cells) and BEFORE any inter-row separator.
 - Each detail line is prefixed with `sub_row_indent` (default: 2 spaces). Configure via `TableConfig::sub_row_indent( indent )`.
-- Multi-line details (containing `\n`) are split on newlines; every resulting line receives the indent prefix independently.
+- Multi-line details (containing `\n`) are split on newlines; every resulting line receives the indent prefix and its own color/reset pair independently (no ANSI bleed across line boundaries).
 - Detail lines do NOT participate in column width calculation — they are metadata, not cell values.
-- Detail lines are NOT colored by alternating row colors — they are metadata outside the color wrapping.
+- Detail lines are NOT colored by alternating row colors — only by the `ColorfulText.color` field.
 - For bordered styles (`AsciiGrid`, `Unicode`), detail lines appear outside the cell grid (no border pipes).
-- `None` and empty-string details are suppressed — no blank line emitted.
+- `None` and empty-text details are suppressed — no blank line emitted.
 - Rows added via `add_row()` or `add_row_mut()` implicitly have `None` detail (no output change).
 
 ## Column Width Calculation Summary

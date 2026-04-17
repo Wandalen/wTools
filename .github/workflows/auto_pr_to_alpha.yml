@@ -10,7 +10,6 @@ on :
       - '!master'
       - '!main'
       - '!alpha'
-      - '!beta'
       - '!*test*'
       - '!*test*/*'
       - '!*/*test*'

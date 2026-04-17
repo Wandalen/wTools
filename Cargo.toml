@@ -35,8 +35,6 @@ exclude = [
   "module/core/unilang_benchmarks",
   "module/core/cargo_unilang",
 ]
-dev-dependencies = {}
-build-dependencies = {}
 # default-members = [ "module/core/wtools" ]
 
 [workspace.package]
@@ -191,6 +189,11 @@ default-features = false
 # default-features = false
 # features = [ "enabled" ]
 # # xxx : remove features, maybe
+
+[workspace.dependencies.color_tools]
+version          = "~0.1.0"
+path             = "module/core/color_tools"
+default-features = false
 
 [workspace.dependencies.tree_fmt]
 version = "~0.12.0"
@@ -475,6 +478,10 @@ version = "~2.0"
 
 [workspace.dependencies.unilang]
 version = "~0.48.0"
+default-features = false
+
+[workspace.dependencies.unilang_parser]
+version = "~0.30.0"
 default-features = false
 
 

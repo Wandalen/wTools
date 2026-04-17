@@ -1,15 +1,13 @@
 use super :: *;
 use assert_fs ::prelude :: *;
 use the_module :: { action };
-use std ::collections ::HashMap;
 
 //
 
 use std :: { fs ::File, io ::Read };
 use std ::fs ::create_dir_all;
-use serde ::Deserialize;
 
-fn arrange(sample_dir: &str) -> assert_fs ::TempDir 
+fn arrange(sample_dir: &str) -> assert_fs ::TempDir
 {
   let root_path = std ::path ::Path ::new(env!("CARGO_MANIFEST_DIR"));
   let assets_relative_path = std ::path ::Path ::new(ASSET_PATH);
@@ -21,89 +19,49 @@ fn arrange(sample_dir: &str) -> assert_fs ::TempDir
   temp
 }
 
-#[ derive(Debug, PartialEq, Deserialize) ]
-struct Workflow 
-{
-  name: String,
-  on: HashMap< String, HashMap<String, Vec<String >>>,
-  env: HashMap< String, String >,
-  jobs: HashMap< String, Job >,
-}
-
-#[ derive(Debug, PartialEq, Deserialize) ]
-struct Job 
-{
-  uses: String,
-  with: With,
-}
-
-#[ derive(Debug, PartialEq, Deserialize) ]
-struct With 
-{
-  manifest_path: String,
-  module_name: String,
-  commit_message: String,
-}
-
 #[ test ]
-fn default_case() 
+fn default_case()
 {
   // Arrange
   let temp = arrange("single_module");
   let base_path = temp.path().join(".github").join("workflows");
-  let file_path = base_path.join("module_test_module_push.yml");
-  let with = With {
-  manifest_path: "test_module/Cargo.toml".into(),
-  module_name: "test_module".into(),
-  commit_message: "${{ github.event.head_commit.message }}".into(),
- };
-  let job = Job {
-  uses: "Username/test/.github/workflows/standard_rust_push.yml@alpha".into(),
-  with,
- };
-  let exp = Workflow {
-  name: "test_module".into(),
-  on: {
-   let mut map = HashMap ::new();
-   let mut push_map = HashMap ::new();
-   push_map.insert(
-  "branches".to_string(),
-  vec!["alpha".to_string(), "beta".to_string(), "master".to_string()],
- );
-   map.insert("push".to_string(), push_map);
-   map
- },
-  env: HashMap ::from_iter([("CARGO_TERM_COLOR".to_string(), "always".to_string())]),
-  jobs: HashMap ::from_iter([("test".to_string(), job)]),
- };
 
   // Act
   () = action ::cicd_renew ::action(&temp).unwrap();
-  dbg!(&file_path);
 
-  // Assert
-  let mut file = File ::open(file_path).unwrap();
+  // Assert — workspace_push.yml is generated with correct content
+  let workspace_push_path = base_path.join("workspace_push.yml");
+  assert!(workspace_push_path.exists(), "workspace_push.yml should be generated");
+  let mut file = File ::open(&workspace_push_path).unwrap();
   let mut content = String ::new();
   _ = file.read_to_string(&mut content).unwrap();
-  let got: Workflow = serde_yaml ::from_str(&content).unwrap();
-  assert_eq!(got, exp);
+  assert!(content.contains("cargo metadata"), "workspace_push.yml should use cargo metadata");
+  assert!(content.contains("all-crates"), "workspace_push.yml should have all-crates fan-in job");
 
+  // Assert — expected infrastructure workflows are generated
   assert!(base_path.join("appropriate_branch.yml").exists());
-  assert!(base_path.join("appropriate_branch_beta.yml").exists());
   assert!(base_path.join("appropriate_branch_master.yml").exists());
-  assert!(base_path.join("auto_merge_to_beta.yml").exists());
   assert!(base_path.join("auto_pr.yml").exists());
   assert!(base_path.join("auto_pr_to_alpha.yml").exists());
-  assert!(base_path.join("auto_pr_to_beta.yml").exists());
   assert!(base_path.join("auto_pr_to_master.yml").exists());
   assert!(base_path.join("runs_clean.yml").exists());
   assert!(base_path.join("standard_rust_pull_request.yml").exists());
   assert!(base_path.join("standard_rust_push.yml").exists());
   assert!(base_path.join("for_pr_rust_push.yml").exists());
-  assert!(base_path.join("standard_rust_scheduled.yml").exists());
-  assert!(base_path.join("standard_rust_status.yml").exists());
-  assert!(base_path.join("status_checks_rules_update.yml").exists());
   assert!(base_path.join("readme.md").exists());
+
+  // Assert — beta branch workflows are NOT generated
+  assert!(!base_path.join("appropriate_branch_beta.yml").exists(), "beta branch workflow should not be generated");
+  assert!(!base_path.join("auto_merge_to_beta.yml").exists(), "beta merge workflow should not be generated");
+  assert!(!base_path.join("auto_pr_to_beta.yml").exists(), "beta PR workflow should not be generated");
+
+  // Assert — removed legacy workflows are NOT generated
+  assert!(!base_path.join("standard_rust_scheduled.yml").exists(), "scheduled workflow should not be generated");
+  assert!(!base_path.join("standard_rust_status.yml").exists(), "status workflow should not be generated");
+  assert!(!base_path.join("status_checks_rules_update.yml").exists(), "rules update workflow should not be generated");
+
+  // Assert — per-crate workflows are NOT generated (replaced by workspace_push.yml)
+  assert!(!base_path.join("module_test_module_push.yml").exists(), "per-crate workflows should not be generated");
 }
 
 // aaa: for Petro: fix styles

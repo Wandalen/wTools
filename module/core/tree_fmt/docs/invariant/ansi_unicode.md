@@ -83,6 +83,43 @@ for line in row_buf.lines()
 
 Single-line cells produce one color/RESET pair per row.
 
+### ColorfulText Detail-Line Pitfall
+
+When rendering `ColorfulText` detail lines, always iterate `ct.text.lines()` — **never** call `ct.render().lines()`.
+
+**Why it matters:** `ct.render()` produces `color_prefix + text + ANSI_RESET` as one string. Calling `.lines()` on that result splits on `\n` within the text, placing the ANSI_RESET token only after the last sub-line. Intermediate lines have no RESET, so the terminal's background color bleeds across line boundaries.
+
+**Correct pattern** (`src/formatters/table.rs`):
+
+```rust
+for line in ct.text.lines()
+{
+  output.push_str( indent );
+  if let Some( ref color ) = ct.color
+  {
+    output.push_str( color );
+    output.push_str( line );
+    output.push_str( ANSI_RESET );
+  }
+  else
+  {
+    output.push_str( line );
+  }
+  output.push( '\n' );
+}
+```
+
+**Wrong pattern** (causes ANSI bleed):
+
+```rust
+// ❌ NEVER do this — RESET lands after last sub-line only:
+for line in ct.render().lines()
+{
+  output.push_str( line );
+  output.push( '\n' );
+}
+```
+
 ## Performance Characteristics
 
 ### Time Complexity

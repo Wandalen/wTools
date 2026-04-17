@@ -6,5 +6,5 @@ Tasks that passed validation.
 
 | Entry | Responsibility |
 |-------|---------------|
-
-*No completed tasks.*
+| 001_extract_process_utilities_from_wplan.md | Extract process lifecycle utilities from wplan to process_tools |
+| 002_add_exit_status_synthesis_api.md | Add platform-agnostic ExitStatus construction API |

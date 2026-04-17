@@ -1,0 +1,22 @@
+[package]
+name        = "color_tools"
+version     = "0.1.0"
+edition     = "2021"
+authors     = [ "wandalen <wandalen@obox.systems>" ]
+license     = "MIT"
+repository  = "https://github.com/Wandalen/wTools/tree/master/module/core/color_tools"
+description = "Typed text-with-optional-ANSI-color abstraction"
+keywords    = [ "ansi", "color", "terminal", "text", "escape" ]
+categories  = [ "text-processing", "command-line-interface" ]
+
+[lints]
+workspace = true
+
+[dependencies]
+serde = { workspace = true, features = [ "derive" ], optional = true }
+
+[features]
+default       = [ "enabled" ]
+full          = [ "enabled" ]
+enabled       = []
+serde_support = [ "dep:serde" ]

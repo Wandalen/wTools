@@ -1,5 +1,7 @@
 //! Core data structures for `tree_fmt`
 
+use color_tools::ColorfulText;
+
 /// Generic tree node that can hold any data type
 ///
 /// Represents a node in a hierarchical tree structure. Each node has a name,
@@ -351,7 +353,7 @@ pub struct TableView
   /// Table rows (data)
   pub rows : Vec< Vec< String > >,
   /// Optional detail line per row (parallel to `rows`)
-  pub row_details : Vec< Option< String > >,
+  pub row_details : Vec< Option< ColorfulText > >,
 }
 
 impl TableView
@@ -367,7 +369,7 @@ impl TableView
   (
     metadata : TableMetadata,
     rows : Vec< Vec< String > >,
-    row_details : Vec< Option< String > >,
+    row_details : Vec< Option< ColorfulText > >,
   )
   -> Self
   {

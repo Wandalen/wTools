@@ -128,6 +128,29 @@ Exit Code:         0
 
 **Run**: `cargo run --example sql_format --features format_sql`
 
+### sub_row_detail.rs - Sub-row Detail Lines
+**Purpose**: Demonstrates per-row detail lines for supplementary context beneath table rows
+
+**What it shows**:
+- Attaching an optional detail string to any row via `add_row_with_detail`
+- Mix of annotated and plain rows in one table
+- Detail indented 2 spaces, no column separators or borders
+- Transparent when unused (normal table rendered unchanged)
+
+**Run**: `cargo run --example sub_row_detail`
+
+**Sample output**:
+```
+Service  Status  Latency
+-------  ------  -------
+auth     ERROR   n/a
+  connection refused: 10.0.1.5:5432
+api-gw   OK      12ms
+worker   WARN    340ms
+  queue depth 4 821 — consider scaling
+cache    OK      1ms
+```
+
 ### themes.rs - Theme System Demonstration
 **Purpose**: Demonstrates the theme system for styled table output
 
@@ -174,6 +197,7 @@ cargo run --example text_format --features format_text  # 6 text variants
 
 # Advanced examples
 cargo run --example command_report      # Property list style
+cargo run --example sub_row_detail      # Per-row detail lines
 ```
 
 ## Common Patterns Demonstrated

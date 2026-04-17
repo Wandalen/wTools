@@ -152,7 +152,7 @@ fn status()
   _ = file.read_to_string(&mut actual).unwrap();
 
   // Assert
-  assert!( actual.contains( "[![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_test_module_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_test_module_push.yml)" ) );
+  assert!( actual.contains( "[![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=test_module)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml)" ) );
 }
 
 #[ test ]

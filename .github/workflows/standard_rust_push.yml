@@ -60,7 +60,7 @@ jobs :
 
       - name: Set MANIFEST_ROOT_PATH
         id: rootpath
-        run: echo "::set-output name=path::$(dirname ${{ inputs.manifest_path }})"
+        run: echo "path=$(dirname ${{ inputs.manifest_path }})" >> $GITHUB_OUTPUT
       - name: Build module
         run: cd ${{ steps.rootpath.outputs.path }} && cargo build && cd -
       - name: Audit the modules
@@ -173,6 +173,6 @@ jobs :
         run: cargo install willbe
       - name: Set MANIFEST_ROOT_PATH
         id: rootpath
-        run: echo "::set-output name=path::$(dirname ${{ inputs.manifest_path }})"
+        run: echo "path=$(dirname ${{ inputs.manifest_path }})" >> $GITHUB_OUTPUT
       - name: Run tests with each feature
         run: will .test ${{ steps.rootpath.outputs.path }}/ dry:0 exclude:'' with_all_features:1 with_debug:1 with_nightly:1 with_none_features:1 with_release:1 with_stable:1

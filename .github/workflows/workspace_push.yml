@@ -1,0 +1,76 @@
+
+name : workspace_push
+
+on :
+  push :
+    branches :
+      - alpha
+      - master
+  schedule :
+    - cron : '0 1 * * *'
+
+concurrency :
+  group : workspace_push_${{ github.ref }}
+  cancel-in-progress : true
+
+env :
+  RUST_BACKTRACE : 1
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  collect :
+    runs-on : ubuntu-latest
+    outputs :
+      matrix : ${{ steps.set-matrix.outputs.matrix }}
+    steps :
+      - uses : actions/checkout@v4
+      - name : Collect workspace crates
+        id : set-matrix
+        run : |
+          MATRIX=$(cargo metadata --no-deps --format-version 1 \
+            | jq -c '[.packages[] | {name: .name, path: (.manifest_path | ltrimstr(env.GITHUB_WORKSPACE + "/") | split("/")[:-1] | join("/"))}]')
+          echo "matrix={\"include\":$MATRIX}" >> $GITHUB_OUTPUT
+
+  test :
+    needs : collect
+    name : ${{ matrix.name }}
+    strategy :
+      fail-fast : false
+      matrix : ${{ fromJSON(needs.collect.outputs.matrix) }}
+    runs-on : ubuntu-latest
+    steps :
+      - name : Install stable toolchain
+        uses : Wandalen/wretry.action/main@master
+        with :
+          action : actions-rs/toolchain@v1
+          with : |
+            toolchain : stable
+            override : true
+          attempt_limit : 3
+          attempt_delay : 10000
+      - name : Install nightly toolchain
+        uses : Wandalen/wretry.action/main@master
+        with :
+          action : actions-rs/toolchain@v1
+          with : |
+            toolchain : nightly
+            override : true
+          attempt_limit : 3
+          attempt_delay : 10000
+      - uses : actions/checkout@v4
+      - name : Install willbe
+        run : cargo install willbe
+      - name : Run tests
+        run : will .test ${{ matrix.path }}/ dry:0 exclude:'' with_all_features:1 with_debug:1 with_nightly:1 with_none_features:1 with_release:1 with_stable:1
+
+  all-crates :
+    needs : test
+    if : always()
+    runs-on : ubuntu-latest
+    steps :
+      - name : Check all crate tests passed
+        run : |
+          if [[ "${{ needs.test.result }}" != "success" ]]; then
+            exit 1
+          fi

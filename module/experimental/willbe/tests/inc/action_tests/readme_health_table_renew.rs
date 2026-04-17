@@ -170,7 +170,7 @@ fn branches_cell()
   _ = file.read_to_string(&mut actual).unwrap();
 
   // qqq: do not do like that. If it will fail how will I know what went wrong? What is the name of the package here?
-  assert!( actual.contains( "[![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/module_willbe_variadic_tag_configurations_full_config_c_push.yml?label=&branch=test_branch1)](https://github.com/SomeName/SomeCrate/C/actions/workflows/module_willbe_variadic_tag_configurations_full_config_c_push.yml?query=branch%3Atest_branch1) | [![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/module_willbe_variadic_tag_configurations_full_config_c_push.yml?label=&branch=test_branch2)](https://github.com/SomeName/SomeCrate/C/actions/workflows/module_willbe_variadic_tag_configurations_full_config_c_push.yml?query=branch%3Atest_branch2)" ) );
+  assert!( actual.contains( "[![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/workspace_push.yml?label=&branch=test_branch1&job=willbe_variadic_tag_configurations_full_config_c)](https://github.com/SomeName/SomeCrate/C/actions/workflows/workspace_push.yml?query=branch%3Atest_branch1) | [![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/workspace_push.yml?label=&branch=test_branch2&job=willbe_variadic_tag_configurations_full_config_c)](https://github.com/SomeName/SomeCrate/C/actions/workflows/workspace_push.yml?query=branch%3Atest_branch2)" ) );
 }
 
 #[ test ]

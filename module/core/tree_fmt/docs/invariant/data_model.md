@@ -52,7 +52,7 @@ pub struct RowBuilder
   headers : Vec< String >,
   row_count : usize,
   rows : Vec< Vec< String > >,
-  row_details : Vec< Option< String > >,
+  row_details : Vec< Option< ColorfulText > >,
 }
 ```
 

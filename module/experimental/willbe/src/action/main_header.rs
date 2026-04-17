@@ -160,7 +160,7 @@ mod private
    (
   format!
   (
-  r"[![{}](https: //img.shields.io/github/actions/workflow/status/{}/standard_rust_scheduled.yml?label={}&logo=github&branch={})](https: //github.com/{}/actions/workflows/standard_rust_scheduled.yml){}
+  r"[![{}](https: //img.shields.io/github/actions/workflow/status/{}/workspace_push.yml?label={}&logo=github&branch={})](https: //github.com/{}/actions/workflows/workspace_push.yml){}
 [![Open in Gitpod](https: //raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https: //gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial_sample/https: //github.com/{})
 [![docs.rs](https: //raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https: //docs.rs/{})",
    self.workspace_name,
