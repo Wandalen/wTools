@@ -26,7 +26,7 @@ Macro [types](https://docs.rs/type_constructor/latest/type_constructor/types/mac
   use data_type::prelude::*;
 
   // Access interval, collection, and either types from a single crate
-  let _interval = interval_adapter::Interval::new( 0, 10 );
+  let _interval = interval_adapter::Interval::new( core::ops::Bound::Included( 0 ), core::ops::Bound::Included( 10 ) );
 }
 ```
 

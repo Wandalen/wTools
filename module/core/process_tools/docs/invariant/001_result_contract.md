@@ -1,13 +1,56 @@
 # Invariant: Result<Report, Report> Contract
 
-### Statement
+### Scope
+
+- **Purpose**: Guarantee that callers are never left without diagnostic context when a subprocess invocation fails.
+- **Responsibility**: Enforces that both branches of `Result<Report, Report>` carry a fully populated `Report`.
+- **In Scope**: `run()` and `run_with_shell()` return type; field population ordering in `process.rs` before the success/failure branch.
+- **Out of Scope**: `Report` field definitions (→ `api/002`); shell selection logic (→ `invariant/002`).
+
+### Invariant Statement
 
 `run()` returns `Result<Report, Report>`. Both the `Ok` and `Err` variants carry a fully populated `Report` containing the command, working directory, stdout, stderr, and error field. This ensures callers never lose diagnostic context on failure: `Err(report)` contains the same fields as `Ok(report)`, with `report.error` set to the failure cause. Code that matches on `Result` can apply identical logging or display logic regardless of branch.
 
-### Violation Consequence
+### Enforcement Mechanism
 
-If a failure path returned only `Error` (not `Report`), callers could not retrieve stdout/stderr context from the failed invocation, making error diagnosis harder and requiring separate state to reconstruct what was executed.
+In `process.rs`, `Report` is constructed and populated with `command`, `current_path`, stdout, and stderr before the success/failure branch is evaluated. Every error return path (`Err(report)`) uses the same `report` variable. There is no code path that returns `Err` with a bare error type.
 
-### Measurement
+Verification command:
 
-`grep -r "Result<Report," src/` must return only `Result<Report, Report>` occurrences. No `Result<Report, Error>` signatures permitted.
+```bash
+grep -n "Result<Report," src/process.rs
+# Must show only: Result<Report, Report>
+# No Result<Report, Error> or Result<Report, _> with different type
+```
+
+### Violation Consequences
+
+If a failure path returned only `Err(Error)` (not `Err(Report)`), callers could not retrieve stdout/stderr context from the failed invocation. Error diagnosis would require separate state to reconstruct what was executed. The uniform `Result<Report, Report>` type allows a single `match` arm to handle both outcomes with identical display code.
+
+### Example
+
+```rust
+use process_tools::process::Run;
+
+// Both branches give full context — same display logic works for both
+let report = match Run::former()
+  .bin_path( "ls" )
+  .args( vec![ "/nonexistent".into() ] )
+  .current_path( "." )
+  .run()
+{
+  Ok( r ) | Err( r ) => r,
+};
+
+// report.command, report.out, report.err are always populated
+println!( "{}", report );
+```
+
+### Cross-References
+
+| Type | File | Responsibility |
+|------|------|----------------|
+| source | [src/process.rs](../../src/process.rs) | Enforces populate-before-branch ordering for `Report` |
+| api | [api/002_report_api.md](../api/002_report_api.md) | `Report` type that both branches carry |
+| api | [api/001_run_api.md](../api/001_run_api.md) | `run()` and `run_with_shell()` return type |
+| feature | [feature/002_output_capture.md](../feature/002_output_capture.md) | Design rationale for always-populated `Report` |

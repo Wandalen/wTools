@@ -25,3 +25,4 @@ Archive of completed tasks documenting bug fixes, feature implementations, and i
 | `015_unicode_display_width.md` | Document Unicode display width fix for column calculation and cell padding |
 | `016_add_indent_prefix_to_expanded_config.md` | Document indent_prefix field addition to ExpandedConfig |
 | `017_add_sub_row_to_table_formatter.md` | Document sub-row detail lines addition to TableFormatter |
+| `018_ansi_colorize_sub_row_details.md` | Document ANSI colorization of sub-row detail lines via ColorfulText |

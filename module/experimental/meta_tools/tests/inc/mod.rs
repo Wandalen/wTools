@@ -9,10 +9,10 @@ mod indents_concat_test;
 mod for_each_test;
 
 #[ cfg( feature = "meta_impls_index" ) ]
-#[ path = "../../../impls_index/tests/inc/mod.rs" ]
+#[ path = "../../../../core/impls_index/tests/inc/mod.rs" ]
 mod impls_index;
 
 // #[ cfg( any( feature = "mod_interface", feature = "meta_mod_interface" ) ) ]
 #[ allow( unused_imports ) ]
-#[ path = "../../../mod_interface/tests/inc/mod.rs" ]
+#[ path = "../../../../core/mod_interface/tests/inc/mod.rs" ]
 mod mod_interface;

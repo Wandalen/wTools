@@ -6,9 +6,11 @@ Task tracking for the process_tools crate.
 
 | Entry | Responsibility |
 |-------|---------------|
-| backlog/ | Tasks reviewed but not yet promoted to active |
-| completed/ | Tasks that passed validation |
-| cancelled/ | Tasks that were stopped or abandoned |
+| `001_extract_process_utilities_from_wplan.md` | Redirect stub → completed/001 |
+| `003_elaborate_docs_to_level2.md` | Redirect stub → completed/003 |
+| `backlog/` | Tasks reviewed but not yet promoted to active |
+| `completed/` | Tasks that passed validation |
+| `cancelled/` | Tasks that were stopped or abandoned |
 
 ---
 
@@ -18,7 +20,7 @@ Task tracking for the process_tools crate.
 |-------|----|--------------|-------|----------|--------|----------|--------|----------|------|---------|
 | 1 | 001 | 1280 | 8 | 4 | 8 | 5 | ✅ | any | [Extract process utilities from wplan](completed/001_extract_process_utilities_from_wplan.md) | Extract process management and signal handling utilities from wplan to process_tools |
 | 2 | 002 | 672 | 6 | 7 | 8 | 2 | ✅ | any | [Add ExitStatus synthesis API](completed/002_add_exit_status_synthesis_api.md) | Add platform-agnostic ExitStatus construction hiding Unix/Windows from_raw differences |
-| 3 | 003 | 480 | 6 | 7 | 9 | 2 | 📥 | any | [Elaborate docs/ to Level 2](003_elaborate_docs_to_level2.md) | Expand Level 1 doc stubs to Level 2 with examples, implementation notes, cross-refs |
+| 3 | 003 | 0 | 6 | 7 | 9 | 0 | ✅ | any | [Elaborate docs/ to Level 2](completed/003_elaborate_docs_to_level2.md) | Expand Level 1 doc stubs to Level 2 with examples, implementation notes, cross-refs |
 
 ---
 
@@ -39,6 +41,6 @@ Task tracking for the process_tools crate.
 
 - **Last Updated:** 2026-04-17
 - **Total Tasks:** 3
-- **Completed:** 2
+- **Completed:** 3
 - **Active:** 0
-- **Backlog:** 1
+- **Backlog:** 0

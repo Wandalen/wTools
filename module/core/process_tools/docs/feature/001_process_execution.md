@@ -1,11 +1,60 @@
 # Feature: Process Execution
 
-### Statement
+### Scope
 
-The `process` layer provides ergonomic subprocess execution via the `Run` builder and `run()` function. It wraps both `duct` (for stream-joining mode) and `std::process::Command` (for separate-stream mode) behind a unified fluent API, so callers configure binary path, arguments, working directory, and environment variables without touching platform-specific types. A cross-platform `run_with_shell()` helper selects `sh -c` on Unix or `cmd /C` on Windows automatically.
+- **Purpose**: Provide ergonomic subprocess execution without exposing platform-specific APIs to callers.
+- **Responsibility**: Owns the `Run` builder, `RunFormer` builder, and `run()` free function as the sole subprocess execution entry points.
+- **In Scope**: Builder construction, argument and environment assembly, backend dispatch (`duct` vs `std::process::Command`), and shell-wrapped execution.
+- **Out of Scope**: Output capture design (→ `feature/002`); exit code synthesis (→ `feature/004`); post-spawn process monitoring (→ `feature/005`).
 
 ### Status
 
 - **Version introduced:** 0.1.0
 - **Stability:** stable
 - **Module path:** `process_tools::process`
+
+### Design
+
+Two execution backends coexist behind `Run::former()`, selected via the `joining_streams` flag:
+
+- **`duct` backend** (`joining_streams = true`) — `duct::cmd()` merges stderr into stdout in a single captured stream. Use when downstream consumers expect a single interleaved output string (e.g., build-tool output where ordering of stdout/stderr matters).
+- **`std::process::Command` backend** (`joining_streams = false`, default) — captures stdout and stderr into separate `String` fields. Use when callers need to distinguish diagnostic output (stderr) from result output (stdout).
+
+Both backends inherit the current process environment automatically; `env_variable` entries are merged on top. Callers never select the backend by name — they set `joining_streams` and the dispatch is encapsulated inside `process.rs`.
+
+`RunFormer::run_with_shell()` performs compile-time platform detection (`cfg!(target_os = "windows")`) and injects the platform-native shell as `bin_path`. This keeps the platform-detection logic in a single location and eliminates `cfg!` guards at every call site.
+
+### Example
+
+```rust
+use process_tools::process::Run;
+
+// Direct execution (no shell)
+let report = Run::former()
+  .bin_path( "echo" )
+  .args( vec![ "hello".into() ] )
+  .current_path( "." )
+  .run()
+  .expect( "echo should succeed" );
+assert!( report.out.contains( "hello" ) );
+
+// Shell execution (pipes, redirections)
+let report = Run::former()
+  .current_path( "." )
+  .run_with_shell( "echo hello | grep hello" )
+  .expect( "piped command should succeed" );
+assert!( report.out.contains( "hello" ) );
+```
+
+### Cross-References
+
+| Type | File | Responsibility |
+|------|------|----------------|
+| source | [src/process.rs](../../src/process.rs) | `Run` struct, `RunFormer` builder, `run()` dispatch |
+| test | [tests/inc/process_run.rs](../../tests/inc/process_run.rs) | Subprocess execution tests |
+| test | [tests/smoke_test.rs](../../tests/smoke_test.rs) | Smoke-level execution check |
+| api | [api/001_run_api.md](../api/001_run_api.md) | `Run` and `RunFormer` type surface |
+| api | [api/002_report_api.md](../api/002_report_api.md) | `Report` return type produced by every invocation |
+| invariant | [invariant/001_result_contract.md](../invariant/001_result_contract.md) | `Result<Report, Report>` guarantees full context on both branches |
+| invariant | [invariant/002_cross_platform_shell.md](../invariant/002_cross_platform_shell.md) | Shell selection is opaque to callers |
+| feature | [feature/002_output_capture.md](002_output_capture.md) | Every execution produces a captured `Report` |

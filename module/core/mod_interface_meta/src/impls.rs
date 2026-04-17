@@ -156,50 +156,104 @@ mod private
   ///
   /// Handle record "use" with implicit visibility.
   ///
-  /// # Fix(issue-001): Bare use statement propagation
+  /// # Fix(issue-001): Layer-aware propagation for module paths
   ///
-  /// Root cause: Previous implementation tried to use wildcard re-exports from `layer::*`
-  /// which don't work because layers (`__all__::own`, etc.) are private modules.
+  /// Root cause: Previous implementation re-exported `super::child` module to all four
+  /// layers unconditionally, never pulling child's items into the parent's namespace.
   ///
-  /// Pitfall: Wildcard re-exports only work when the source module is accessible.
-  /// Private modules can't be re-exported with wildcards. Must add items directly
-  /// to each layer using the adjusted path.
+  /// Pitfall: `` `use super::child` `` must mirror `layer child` semantics — `child::orphan` items
+  /// belong in `own_clause` only (parent-private), `child::exposed` cascades to `exposed_clause`,
+  /// `child::prelude` cascades to `prelude_clause`. Simple-item paths keep all-four-layers behavior.
   ///
-  fn record_use_implicit(record: &Record, c: &'_ mut RecordContext< '_ >)
+  fn record_use_implicit(record: &Record, c: &'_ mut RecordContext< '_ >) -> syn ::Result< () >
   {
   let attrs1 = &record.attrs;
   let path = record.use_elements.as_ref().unwrap();
-  let adjusted_path = path.prefixed_with_all();
 
-  // Fix(issue-001): Add to all four layers directly
-  // Can't use wildcard re-exports from private __all__ modules
-  c.clauses_map.get_mut(&ClauseKind::Own).unwrap().push(qt! {
-   #[ doc( inline ) ]
-   #[ allow( unused_imports ) ]
-   #attrs1
-   pub use #adjusted_path;
- });
+  if path.private_prefix_is_needed()
+  {
+   // Simple item or local path — add to all four layers
+   let adjusted_path = path.prefixed_with_all();
 
-  c.clauses_map.get_mut(&ClauseKind::Orphan).unwrap().push(qt! {
-   #[ doc( inline ) ]
-   #[ allow( unused_imports ) ]
-   #attrs1
-   pub use #adjusted_path;
- });
+   c.clauses_map.get_mut(&ClauseKind::Own).unwrap().push(qt! {
+    #[ doc( inline ) ]
+    #[ allow( unused_imports ) ]
+    #attrs1
+    pub use #adjusted_path;
+  });
 
-  c.clauses_map.get_mut(&ClauseKind::Exposed).unwrap().push(qt! {
-   #[ doc( inline ) ]
-   #[ allow( unused_imports ) ]
-   #attrs1
-   pub use #adjusted_path;
- });
+   c.clauses_map.get_mut(&ClauseKind::Orphan).unwrap().push(qt! {
+    #[ doc( inline ) ]
+    #[ allow( unused_imports ) ]
+    #attrs1
+    pub use #adjusted_path;
+  });
 
-  c.clauses_map.get_mut(&ClauseKind::Prelude).unwrap().push(qt! {
-   #[ doc( inline ) ]
-   #[ allow( unused_imports ) ]
-   #attrs1
-   pub use #adjusted_path;
- });
+   c.clauses_map.get_mut(&ClauseKind::Exposed).unwrap().push(qt! {
+    #[ doc( inline ) ]
+    #[ allow( unused_imports ) ]
+    #attrs1
+    pub use #adjusted_path;
+  });
+
+   c.clauses_map.get_mut(&ClauseKind::Prelude).unwrap().push(qt! {
+    #[ doc( inline ) ]
+    #[ allow( unused_imports ) ]
+    #attrs1
+    pub use #adjusted_path;
+  });
+ }
+  else
+  {
+   // Module path (super::, crate::, ::) — layer-aware propagation matching record_layer semantics
+
+   let path =  if let Some(rename) = &path.rename
+   {
+    let pure_path = path.pure_without_super_path()?;
+    c.clauses_map.get_mut(&ClauseImmediates ::Kind()).unwrap().push(qt! {
+   pub use #pure_path as #rename;
+  });
+    parse_qt! { #rename }
+  } else {
+    path.clone()
+  };
+
+   let adjusted_path = path.prefixed_with_all();
+
+   // Re-export module reference into own (enables own::child access)
+   c.clauses_map.get_mut(&ClauseKind::Own).unwrap().push(qt! {
+    #[ doc( inline ) ]
+    #[ allow( unused_imports ) ]
+    #attrs1
+    pub use #adjusted_path;
+  });
+
+   // child::orphan → own_clause (parent-private; does not reach orphan/exposed/prelude)
+   c.clauses_map.get_mut(&ClauseKind::Own).unwrap().push(qt! {
+    #[ doc( inline ) ]
+    #[ allow( unused_imports ) ]
+    #attrs1
+    pub use #adjusted_path ::orphan :: *;
+  });
+
+   // child::exposed → exposed_clause (cascades to orphan+own+root via layer cascade)
+   c.clauses_map.get_mut(&ClauseKind::Exposed).unwrap().push(qt! {
+    #[ doc( inline ) ]
+    #[ allow( unused_imports ) ]
+    #attrs1
+    pub use #adjusted_path ::exposed :: *;
+  });
+
+   // child::prelude → prelude_clause (cascades to all layers)
+   c.clauses_map.get_mut(&ClauseKind::Prelude).unwrap().push(qt! {
+    #[ doc( inline ) ]
+    #[ allow( unused_imports ) ]
+    #attrs1
+    pub use #adjusted_path ::prelude :: *;
+  });
+ }
+
+  Ok(())
  }
 
   ///
@@ -381,7 +435,7 @@ mod private
    let vis = &record.vis;
    if vis == &Visibility ::Inherited
    {
-  record_use_implicit(record, &mut record_context);
+  record_use_implicit(record, &mut record_context)?;
  } else {
   record_use_explicit(record, &mut record_context)?;
  }

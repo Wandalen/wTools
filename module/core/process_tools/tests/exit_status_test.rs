@@ -134,4 +134,26 @@ mod inc
     assert_eq!( status.code(), Some( 0 ) );
     assert!( status.success(), "raw status happens to be 0" );
   }
+
+  /// PATH regression: synthetic helpers must not inspect PATH.
+  ///
+  /// Before the BB3 fix, `ExitStatus` construction in `wrun_core` called `/usr/bin/true` and
+  /// `/usr/bin/false`. If `PATH` was cleared those helpers returned `Err`, causing an infinite spin.
+  /// This test confirms the `process_tools` API works regardless of `PATH`.
+  // test_kind: bug_reproducer(issue-bb3-synthetic-exit-status)
+  #[ cfg( unix ) ]
+  #[ test ]
+  fn synthetic_status_works_with_empty_path()
+  {
+    let orig = std::env::var( "PATH" ).unwrap_or_default();
+    std::env::set_var( "PATH", "/nonexistent" );
+
+    let success = exit_status ::synthetic_success_status();
+    let failure = exit_status ::synthetic_failure_status();
+
+    std::env::set_var( "PATH", orig );
+
+    assert!( success.success(), "success must not depend on PATH" );
+    assert!( !failure.success(), "failure must not depend on PATH" );
+  }
 }

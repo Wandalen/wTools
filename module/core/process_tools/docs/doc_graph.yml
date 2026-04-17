@@ -1,0 +1,115 @@
+meta:
+  description: Cross-reference graph for all doc instances in process_tools
+  node_count: 11
+  edge_count: 30
+  component_count: 1
+  generated: 2026-04-17
+
+nodes:
+  - id: api/001
+    file: api/001_run_api.md
+    label: Run Builder
+    entity: api
+  - id: api/002
+    file: api/002_report_api.md
+    label: Report
+    entity: api
+  - id: api/003
+    file: api/003_exit_status_api.md
+    label: Exit Status Synthesis
+    entity: api
+  - id: api/004
+    file: api/004_lifecycle_api.md
+    label: Lifecycle Management
+    entity: api
+  - id: feature/001
+    file: feature/001_process_execution.md
+    label: Process Execution
+    entity: feature
+  - id: feature/002
+    file: feature/002_output_capture.md
+    label: Output Capture
+    entity: feature
+  - id: feature/003
+    file: feature/003_environment_detection.md
+    label: CI/CD Environment Detection
+    entity: feature
+  - id: feature/004
+    file: feature/004_exit_status_synthesis.md
+    label: Exit Status Synthesis
+    entity: feature
+  - id: feature/005
+    file: feature/005_lifecycle_management.md
+    label: Process Lifecycle Management
+    entity: feature
+  - id: invariant/001
+    file: invariant/001_result_contract.md
+    label: Result<Report, Report> Contract
+    entity: invariant
+  - id: invariant/002
+    file: invariant/002_cross_platform_shell.md
+    label: Cross-Platform Shell Abstraction
+    entity: invariant
+
+edges:
+  # feature/001 cross-references
+  - { from: feature/001, to: api/001,       via: cross_references }
+  - { from: feature/001, to: api/002,       via: cross_references }
+  - { from: feature/001, to: invariant/001, via: cross_references }
+  - { from: feature/001, to: invariant/002, via: cross_references }
+  - { from: feature/001, to: feature/002,   via: cross_references }
+  # feature/002 cross-references
+  - { from: feature/002, to: api/002,       via: cross_references }
+  - { from: feature/002, to: invariant/001, via: cross_references }
+  - { from: feature/002, to: feature/001,   via: cross_references }
+  # feature/003 cross-references
+  - { from: feature/003, to: api/001,       via: cross_references }
+  - { from: feature/003, to: feature/001,   via: cross_references }
+  # feature/004 cross-references
+  - { from: feature/004, to: api/003,       via: cross_references }
+  - { from: feature/004, to: feature/005,   via: cross_references }
+  # feature/005 cross-references
+  - { from: feature/005, to: api/004,       via: cross_references }
+  - { from: feature/005, to: feature/004,   via: cross_references }
+  - { from: feature/005, to: feature/001,   via: cross_references }
+  # api/001 see also
+  - { from: api/001,     to: feature/001,   via: cross_references }
+  - { from: api/001,     to: api/002,       via: cross_references }
+  - { from: api/001,     to: invariant/001, via: cross_references }
+  - { from: api/001,     to: invariant/002, via: cross_references }
+  # api/002 see also
+  - { from: api/002,     to: feature/002,   via: cross_references }
+  - { from: api/002,     to: api/001,       via: cross_references }
+  - { from: api/002,     to: invariant/001, via: cross_references }
+  # api/003 see also
+  - { from: api/003,     to: feature/004,   via: cross_references }
+  # api/004 see also
+  - { from: api/004,     to: feature/005,   via: cross_references }
+  - { from: api/004,     to: api/003,       via: cross_references }
+  # invariant/001 see also
+  - { from: invariant/001, to: api/002,     via: cross_references }
+  - { from: invariant/001, to: api/001,     via: cross_references }
+  - { from: invariant/001, to: feature/002, via: cross_references }
+  # invariant/002 see also
+  - { from: invariant/002, to: api/001,     via: cross_references }
+  - { from: invariant/002, to: feature/001, via: cross_references }
+
+components:
+  - id: 1
+    label: process_tools documentation corpus
+    size: 11
+    isolated: false
+    nodes:
+      - api/001
+      - api/002
+      - api/003
+      - api/004
+      - feature/001
+      - feature/002
+      - feature/003
+      - feature/004
+      - feature/005
+      - invariant/001
+      - invariant/002
+
+dangling_refs: []

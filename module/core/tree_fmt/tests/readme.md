@@ -50,7 +50,7 @@ Contains all functional and integration tests for tree_fmt library. Tests valida
 | `toml_fmt.rs` | Test TomlFormatter TOML array-of-tables output and round-trip correctness |
 | `expanded_indent_prefix.rs` | Test ExpandedConfig indent_prefix field behavior |
 | `expanded_behavior.rs` | Test ExpandedFormatter corner cases: show_record_numbers, alignment, spacing |
-| `sub_row_test.rs` | Test sub-row detail lines (task 017): API, rendering, config, backward compat |
+| `sub_row_test.rs` | Test sub-row detail lines (tasks 017–018): API, rendering, config, backward compat, ANSI colorization |
 
 ## Test Files
 - **data.rs** (14 tests) - Core data structures (`TreeNode`, `RowBuilder`, `TableView` trait)

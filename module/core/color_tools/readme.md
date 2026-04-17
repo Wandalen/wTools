@@ -32,3 +32,12 @@ println!( "{warn}" );  // prints yellow text to terminal
 |---|---|---|
 | `enabled` | yes | Compile the crate |
 | `serde_support` | no | Derive `Serialize`/`Deserialize` for `ColorfulText` |
+
+## Directory Structure
+
+| Directory | Responsibility |
+|-----------|----------------|
+| `src/` | Crate source: `ColorfulText` struct and impls |
+| `tests/` | Unit and integration tests |
+| `docs/` | Design and API documentation |
+| `task/` | Implementation task history |

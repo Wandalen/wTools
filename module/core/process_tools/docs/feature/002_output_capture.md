@@ -1,11 +1,55 @@
 # Feature: Output Capture
 
-### Statement
+### Scope
 
-Every subprocess invocation returns a `Report` struct that captures the executed command string, working directory, stdout, stderr, and the process result in one value. Both success and failure return a `Report` (via `Result<Report, Report>`), ensuring callers always have full diagnostic context regardless of exit code. The `Display` implementation renders the report with indented output blocks suitable for CLI tools and log output.
+- **Purpose**: Ensure callers always have full diagnostic context after any subprocess invocation, regardless of exit code.
+- **Responsibility**: Owns the `Report` struct that carries command, working directory, stdout, stderr, and error result in one value.
+- **In Scope**: `Report` field layout, `Display` formatting for CLI output, manual `Clone` implementation, and population-before-branch ordering inside `run()`.
+- **Out of Scope**: How the process is spawned (→ `feature/001`); exit code interpretation semantics (→ `feature/004`).
 
 ### Status
 
 - **Version introduced:** 0.1.0
 - **Stability:** stable
 - **Module path:** `process_tools::process::Report`
+
+### Design
+
+`Report` is unconditionally populated before the exit-code check. In `run()`, `command`, `current_path`, stdout, and stderr are stored into the report struct before the success/failure branch. The divergence happens only at the very end — after all fields are filled. This means `Err(report)` is never a partially-filled struct, so callers can apply identical display or logging logic regardless of branch.
+
+The `Display` impl prefixes the command with `>` and the working directory with `@`, then indents stdout/stderr with two spaces (replacing `\n` with `\n  `). Whitespace-only output blocks are suppressed. This format is designed for inline subprocess tracing in CLI tool output.
+
+`Clone` cannot be derived because `error_tools::Error` is not `Clone`. The manual impl stringifies the error via `.to_string()` to preserve the failure message across the clone boundary, accepting the loss of the original error type.
+
+### Example
+
+```rust
+use process_tools::process::Run;
+
+// Both Ok and Err carry a fully populated Report
+let result = Run::former()
+  .bin_path( "cat" )
+  .args( vec![ "/nonexistent".into() ] )
+  .current_path( "." )
+  .run();
+
+let report = result.unwrap_err();
+assert!( !report.command.is_empty() );
+assert!( report.error.is_err() );
+
+// Display renders cleanly for CLI output
+println!( "{}", report );
+// > cat /nonexistent
+//   @ .
+//   cat: /nonexistent: No such file or directory
+```
+
+### Cross-References
+
+| Type | File | Responsibility |
+|------|------|----------------|
+| source | [src/process.rs](../../src/process.rs) | `Report` struct, `Display` impl, `Clone` impl |
+| test | [tests/inc/process_run.rs](../../tests/inc/process_run.rs) | `Report` field population and display tests |
+| api | [api/002_report_api.md](../api/002_report_api.md) | Defines fields and method surface of `Report` |
+| invariant | [invariant/001_result_contract.md](../invariant/001_result_contract.md) | Guarantees `Report` is always fully populated on both branches |
+| feature | [feature/001_process_execution.md](001_process_execution.md) | Execution layer that produces `Report` values |

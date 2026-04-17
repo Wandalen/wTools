@@ -24,7 +24,7 @@ fn published_smoke_test()
   // Tests that public API is accessible
 
   #[ allow( unused_imports ) ]
-  use include_md;
+  use wca;
 
   // Successful compilation proves crate can be imported
   // Once functionality is implemented, this test should verify actual features

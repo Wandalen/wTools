@@ -10,7 +10,9 @@
 // =============================================================================
 
 /// UC-01: Simple identifier with own layer
-/// Tests that `own use` correctly exports to own namespace only
+/// Tests that `` `own use` `` exports to own layer only (not orphan/exposed/prelude).
+/// Items in `own_clause` are accessible via `own::` and root; the cascade runs
+/// prelude → exposed → orphan → own, so own items do not propagate downward.
 mod uc_01_own_use_simple
 {
   use mod_interface_meta::mod_interface;
@@ -30,28 +32,11 @@ mod uc_01_own_use_simple
   {
     assert!( own::my_fn() );
   }
-
-  #[ test ]
-  fn orphan_layer_has_item()
-  {
-    assert!( orphan::my_fn() );
-  }
-
-  #[ test ]
-  fn exposed_layer_has_item()
-  {
-    assert!( exposed::my_fn() );
-  }
-
-  #[ test ]
-  fn prelude_layer_has_item()
-  {
-    assert!( prelude::my_fn() );
-  }
 }
 
 /// UC-02: Simple identifier with orphan layer
-/// Tests that `orphan use` exports to orphan+ layers (not own)
+/// Tests that `` `orphan use` `` exports to orphan+own layers (not exposed/prelude).
+/// Items in `orphan_clause` are accessible via `orphan::`, `own::`, and root.
 mod uc_02_orphan_use_simple
 {
   use mod_interface_meta::mod_interface;
@@ -73,20 +58,15 @@ mod uc_02_orphan_use_simple
   }
 
   #[ test ]
-  fn exposed_layer_has_item()
+  fn own_layer_has_item()
   {
-    assert!( exposed::my_fn() );
-  }
-
-  #[ test ]
-  fn prelude_layer_has_item()
-  {
-    assert!( prelude::my_fn() );
+    assert!( own::my_fn() );
   }
 }
 
 /// UC-03: Simple identifier with exposed layer
-/// Tests that `exposed use` exports to exposed+ layers (not own/orphan)
+/// Tests that `` `exposed use` `` exports to exposed+orphan+own layers (not prelude).
+/// Items in `exposed_clause` are accessible via `exposed::`, `orphan::`, `own::`, and root.
 mod uc_03_exposed_use_simple
 {
   use mod_interface_meta::mod_interface;
@@ -108,9 +88,15 @@ mod uc_03_exposed_use_simple
   }
 
   #[ test ]
-  fn prelude_layer_has_item()
+  fn orphan_layer_has_item()
   {
-    assert!( prelude::my_fn() );
+    assert!( orphan::my_fn() );
+  }
+
+  #[ test ]
+  fn own_layer_has_item()
+  {
+    assert!( own::my_fn() );
   }
 }
 
@@ -258,12 +244,10 @@ mod uc_14_mixed_implicit_explicit
   }
 
   #[ test ]
-  fn explicit_propagates_correctly()
+  fn explicit_in_own_layer_only()
   {
+    // `own use explicit_fn` → own_clause → accessible in own:: and root only
     assert!( own::explicit_fn() );
-    assert!( orphan::explicit_fn() );
-    assert!( exposed::explicit_fn() );
-    assert!( prelude::explicit_fn() );
   }
 }
 
@@ -346,16 +330,8 @@ mod nc_06_only_own_populated
   #[ test ]
   fn own_has_content()
   {
+    // own_clause items are accessible via own:: and root; cascade does not propagate them down
     assert!( own::own_fn() );
-  }
-
-  #[ test ]
-  fn other_layers_propagate()
-  {
-    // own items still propagate through hierarchy
-    assert!( orphan::own_fn() );
-    assert!( exposed::own_fn() );
-    assert!( prelude::own_fn() );
   }
 }
 
