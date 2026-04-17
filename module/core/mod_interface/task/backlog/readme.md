@@ -6,5 +6,4 @@ Tasks reviewed but not yet promoted to active for the `mod_interface` crate.
 
 | Entry | Responsibility |
 |-------|----------------|
-
-*No backlog tasks.*
+| `002_compile_fail_layer_boundary_tests.md` | Add trybuild compile-fail tests for layer isolation |

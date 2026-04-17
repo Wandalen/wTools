@@ -1,4 +1,4 @@
-# Add `ColorfulText` struct to `color_tools`
+# Create `color_tools` crate with `ColorfulText` struct
 
 ## Execution State
 
@@ -11,20 +11,24 @@
 
 ## Goal
 
-Add a `ColorfulText` struct to `color_tools` — a typed wrapper around a plain `String` that
-carries an optional ANSI escape color prefix. Required by `tree_fmt` task 017 (sub-row detail
-lines) and its ANSI extension (task 018), both of which need to pass colored-or-plain text
-through a data pipeline without losing color intent.
+Create the `color_tools` crate at `module/core/color_tools/` — a new workspace member
+providing `ColorfulText`, a typed wrapper around a plain `String` that carries an optional
+ANSI escape color prefix. Required by `tree_fmt` task 017 (sub-row detail lines) and its
+ANSI extension (task 018), both of which need to pass colored-or-plain text through a data
+pipeline without losing color intent.
+
+Crate path: `/home/user1/pro/lib/wip_core/wtools/dev/module/core/color_tools`
 
 ## In Scope
 
-- `src/colorful_text.rs` — new file: `ColorfulText` struct + all impls
-- `src/lib.rs` — re-export `ColorfulText` from the crate root
-- `src/readme.md` — register the new file
+- New crate: `Cargo.toml`, `readme.md`, `src/lib.rs` with `mod_interface` pattern
+- `src/colorful_text.rs` — `ColorfulText` struct + all impls
+- `src/readme.md` — Responsibility Table for source files
 - `tests/colorful_text_test.rs` — 17 tests covering the full API surface
-- `tests/readme.md` — register the new test file
+- `tests/readme.md` — Responsibility Table for test files
+- `docs/` — API and design documentation
 - Optional serde support behind `serde_support` feature flag
-- `readme.md` — document the struct in the crate overview
+- Workspace registration in root `Cargo.toml` (members + workspace.dependencies)
 
 ## Out of Scope
 
@@ -105,16 +109,28 @@ only reset after the last line while intermediate lines stay colored in some ter
 
 ## Outcomes
 
-**Source changes (2 files):**
-- `src/colorful_text.rs` — new: `ColorfulText` struct, 5 methods, 4 trait impls
-- `src/lib.rs` — re-export `ColorfulText`
+**New crate created:** `module/core/color_tools/` (14 files)
 
-**Test file (1 new):**
+**Crate infrastructure (3 files):**
+- `Cargo.toml` — crate manifest with `serde_support` feature flag
+- `readme.md` — crate overview with Directory Structure table
+- `src/lib.rs` — `mod_interface` pattern re-exporting `ColorfulText`
+
+**Source (1 file):**
+- `src/colorful_text.rs` — `ColorfulText` struct, 5 methods, 4 trait impls
+
+**Tests (1 file):**
 - `tests/colorful_text_test.rs` — 17 tests covering T01–T17
 
-**Documentation:**
-- `src/readme.md` — registered `colorful_text.rs`
-- `readme.md` — documented struct in crate overview
-- `tests/readme.md` — registered test file
+**Documentation (6 files):**
+- `src/readme.md` — Responsibility Table for source files
+- `tests/readme.md` — Responsibility Table for test files
+- `docs/readme.md` — docs directory index
+- `docs/feature/readme.md` + `docs/feature/colorful_text.md` — feature doc instance
+- `docs/invariant/readme.md` + `docs/invariant/transparent_conversion.md` — invariant doc instance
+- `docs/api/readme.md` + `docs/api/colorful_text_type.md` — API doc instance
+
+**Workspace registration:**
+- Root `Cargo.toml` — added to `members` list and `workspace.dependencies`
 
 **Verification:** All 17 tests pass, 0 clippy errors, doc tests pass.
