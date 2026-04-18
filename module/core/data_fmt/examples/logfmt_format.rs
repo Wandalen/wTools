@@ -7,11 +7,14 @@
 //!
 //! Run with: `cargo run --example logfmt_format`
 
-use data_fmt::{ RowBuilder, LogfmtFormatter, Format };
+#[ cfg( not( feature = "enabled" ) ) ]
+fn main() {}
 
+#[ cfg( feature = "enabled" ) ]
 #[ allow( clippy::too_many_lines ) ]
 fn main()
 {
+  use data_fmt::{ RowBuilder, LogfmtFormatter, Format };
   println!( "=== Logfmt Structured Logging Example ===\n" );
 
   // Example 1: Application logs with timestamps and levels

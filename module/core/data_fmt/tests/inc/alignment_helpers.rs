@@ -6,7 +6,6 @@
 //!
 //! - `visual_position()` - Calculate visual position of substring considering Unicode
 
-#![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 use data_fmt::visual_len;
 

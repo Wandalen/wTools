@@ -1465,6 +1465,7 @@ impl TableFormatter
   }
 }
 
+#[ allow( deprecated ) ]
 impl super::TableShapedFormatter for TableFormatter
 {
   fn format( &self, tree : &TreeNode< String > ) -> String

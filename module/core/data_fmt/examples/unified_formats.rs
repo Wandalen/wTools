@@ -3,10 +3,13 @@
 //! This example shows how the same data structure (`TableView`) can be formatted
 //! in different ways using the Format trait, enabling format-agnostic code.
 
-use data_fmt::{ RowBuilder, Format };
+#[ cfg( not( feature = "enabled" ) ) ]
+fn main() {}
 
+#[ cfg( feature = "enabled" ) ]
 fn main()
 {
+  use data_fmt::{ RowBuilder, Format };
   // Build sample data once
   let view = RowBuilder::new( vec!
   [

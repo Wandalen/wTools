@@ -1,7 +1,6 @@
 //! Tests for core data structures (TreeNode, RowBuilder, TableShapedView)
 
 #![ cfg( feature = "enabled" ) ]
-#![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 use data_fmt::{ TreeNode, RowBuilder, TableShapedView };
 

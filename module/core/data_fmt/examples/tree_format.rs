@@ -6,10 +6,13 @@
 //! NOTE: For table-shaped data, `TreeFormatter` also implements the `Format` trait.
 //! See `unified_formats.rs` example for format-agnostic code patterns.
 
-use data_fmt::{ TreeNode, TreeFormatter };
+#[ cfg( not( feature = "enabled" ) ) ]
+fn main() {}
 
+#[ cfg( feature = "enabled" ) ]
 fn main()
 {
+  use data_fmt::{ TreeNode, TreeFormatter };
   println!( "=== TreeFormatter: Hierarchical Tree Display ===" );
   println!( "Best for: Nested structures, file systems, organizational charts\n" );
 

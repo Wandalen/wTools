@@ -6,7 +6,6 @@
 //!
 //! - `sample_data()` - Create standard 3x3 table for testing
 
-#![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 use data_fmt::{ RowBuilder, TreeNode };
 

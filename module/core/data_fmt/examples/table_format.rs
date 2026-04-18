@@ -6,10 +6,13 @@
 //! NOTE: `TableFormatter` also implements the `Format` trait for format-agnostic code.
 //! See `unified_formats.rs` example for usage with the unified interface.
 
-use data_fmt::{ RowBuilder, TableFormatter };
+#[ cfg( not( feature = "enabled" ) ) ]
+fn main() {}
 
+#[ cfg( feature = "enabled" ) ]
 fn main()
 {
+  use data_fmt::{ RowBuilder, TableFormatter };
   println!( "=== TableFormatter: Horizontal Tabular Display ===" );
   println!( "Best for: Spreadsheet-like data, comparing multiple rows\n" );
 

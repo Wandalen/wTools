@@ -60,7 +60,6 @@
 //! | T33 | Detail text `"\n"` only — `is_empty()` false; renders one blank indented line |
 
 #![ cfg( feature = "enabled" ) ]
-#![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 use data_fmt::{ RowBuilder, TableFormatter, TableConfig, Format, TableView, TableMetadata, DecoratedText };
 

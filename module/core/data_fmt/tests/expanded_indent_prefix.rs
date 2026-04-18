@@ -2,7 +2,6 @@
 //! Task 016: Add indent_prefix to ExpandedConfig.
 
 #![ cfg( feature = "enabled" ) ]
-#![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig };
 

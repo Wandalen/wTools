@@ -654,32 +654,32 @@ fn explicit_column_flex_mixed_triggers_fold_at_fixed_overflow()
   );
 }
 
-// --- T23: Bug reproducer — Bare fold style must wrap long continuation lines ---
-//
-// ## Root Cause
-// `FoldStyle::Bare` in `render_fold_continuation()` joined values and emitted them
-// unconditionally without a terminal-width check. `Labeled` and `Stacked` both call
-// `WrapFormatter` when `unicode_visual_len(&full_line) > terminal`. `Bare` had no
-// such guard, so long values overflowed the terminal silently.
-//
-// ## Why Not Caught
-// T04 tested `Bare` with short values ("governance", "120", "src") that fit within
-// terminal=40 after folding. No test used a value long enough to trigger the
-// wrapping path in the `Bare` branch.
-//
-// ## Fix Applied
-// Added identical guard to `Bare`: if `unicode_visual_len(&full_line) > terminal &&
-// available > 0`, call `WrapFormatter::with_config(WrapConfig::new().width(available))`
-// and emit one wrapped line per `output_wrapped.lines()` iteration.
-//
-// ## Prevention
-// Every `FoldStyle` variant must have a corresponding long-value test that asserts
-// `max_width <= terminal + 2`. New variants must add this test before implementation.
-//
-// ## Pitfall
-// `Bare` wraps across word or slash boundaries in the raw value — no label prefix is
-// preserved on continuation lines, so multi-line bare output reads as bare text fragments.
-//
+/// --- T23: Bug reproducer — Bare fold style must wrap long continuation lines ---
+///
+/// ## Root Cause
+/// `FoldStyle::Bare` in `render_fold_continuation()` joined values and emitted them
+/// unconditionally without a terminal-width check. `Labeled` and `Stacked` both call
+/// `WrapFormatter` when `unicode_visual_len(&full_line) > terminal`. `Bare` had no
+/// such guard, so long values overflowed the terminal silently.
+///
+/// ## Why Not Caught
+/// T04 tested `Bare` with short values ("governance", "120", "src") that fit within
+/// terminal=40 after folding. No test used a value long enough to trigger the
+/// wrapping path in the `Bare` branch.
+///
+/// ## Fix Applied
+/// Added identical guard to `Bare`: if `unicode_visual_len(&full_line) > terminal &&
+/// available > 0`, call `WrapFormatter::with_config(WrapConfig::new().width(available))`
+/// and emit one wrapped line per `output_wrapped.lines()` iteration.
+///
+/// ## Prevention
+/// Every `FoldStyle` variant must have a corresponding long-value test that asserts
+/// `max_width <= terminal + 2`. New variants must add this test before implementation.
+///
+/// ## Pitfall
+/// `Bare` wraps across word or slash boundaries in the raw value — no label prefix is
+/// preserved on continuation lines, so multi-line bare output reads as bare text fragments.
+///
 // test_kind: bug_reproducer(issue-bare-fold-no-wrap)
 #[ test ]
 fn bare_fold_style_wraps_long_continuation_line()
@@ -711,34 +711,34 @@ fn bare_fold_style_wraps_long_continuation_line()
   );
 }
 
-// --- T24: Bug reproducer — fold_point=0 must not produce empty header row ---
-//
-// ## Root Cause
-// `determine_fold_point()` returned 0 when even column 0's width exceeded the
-// terminal. This made `primary_headers = headers[..0] = []`, causing the header
-// row to render as just border pipes with no visible column names — a direct
-// violation of Invariant 1 (header row never folds / is never empty).
-//
-// ## Why Not Caught
-// T14 used terminal=10 with a 2-char "ID" column as col[0], so fold_point=1 (ID
-// fits). No test used a terminal narrower than the narrowest column, so the
-// fold_point=0 path was never exercised.
-//
-// ## Fix Applied
-// Added `.max(1)` to the return in `determine_fold_point()`: `return i.max(1);`.
-// This ensures at least one column always stays in the primary table regardless
-// of how narrow the terminal is.
-//
-// ## Prevention
-// Add a structural guard: after `determine_fold_point()`, assert
-// `fold_point >= 1 || column_widths.is_empty()` before slicing primary_headers.
-// Test with terminal < min(column_widths) to exercise the clamp.
-//
-// ## Pitfall
-// A single-column table with fold enabled and terminal < col[0].width will also
-// hit this path. After the fix, fold_point=1=column_widths.len() so no folding
-// occurs — the table renders at natural width (correct; can't fold further).
-//
+/// --- T24: Bug reproducer — fold_point=0 must not produce empty header row ---
+///
+/// ## Root Cause
+/// `determine_fold_point()` returned 0 when even column 0's width exceeded the
+/// terminal. This made `primary_headers = headers[..0] = []`, causing the header
+/// row to render as just border pipes with no visible column names — a direct
+/// violation of Invariant 1 (header row never folds / is never empty).
+///
+/// ## Why Not Caught
+/// T14 used terminal=10 with a 2-char "ID" column as col[0], so fold_point=1 (ID
+/// fits). No test used a terminal narrower than the narrowest column, so the
+/// fold_point=0 path was never exercised.
+///
+/// ## Fix Applied
+/// Added `.max(1)` to the return in `determine_fold_point()`: `return i.max(1);`.
+/// This ensures at least one column always stays in the primary table regardless
+/// of how narrow the terminal is.
+///
+/// ## Prevention
+/// Add a structural guard: after `determine_fold_point()`, assert
+/// `fold_point >= 1 || column_widths.is_empty()` before slicing primary_headers.
+/// Test with terminal < min(column_widths) to exercise the clamp.
+///
+/// ## Pitfall
+/// A single-column table with fold enabled and terminal < col[0].width will also
+/// hit this path. After the fix, fold_point=1=column_widths.len() so no folding
+/// occurs — the table renders at natural width (correct; can't fold further).
+///
 // test_kind: bug_reproducer(issue-fold-point-zero)
 #[ test ]
 fn fold_point_zero_preserves_first_column_in_header()

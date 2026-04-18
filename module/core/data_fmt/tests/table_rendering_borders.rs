@@ -47,7 +47,6 @@
 //! | T014-N05 | 1 data row | `grid()` | No inter-row separators; bottom border present |
 
 #![ cfg( feature = "enabled" ) ]
-#![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 mod inc;
 

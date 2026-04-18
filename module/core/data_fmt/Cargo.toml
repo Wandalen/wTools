@@ -13,10 +13,11 @@ categories = [ "text-processing", "data-structures", "visualization" ]
 workspace = true
 
 [dependencies]
+error_tools   = { workspace = true, optional = true }
 # ANSI-aware string utilities (from strs_tools)
-strs_tools = { workspace = true, features = [ "ansi" ] }
-color_tools = { workspace = true, features = [ "enabled" ] }
-unicode-width = "0.1"
+strs_tools    = { workspace = true, features = [ "ansi" ], optional = true }
+color_tools   = { workspace = true, features = [ "enabled" ], optional = true }
+unicode-width = { version = "0.1", optional = true }
 terminal_size = { version = "0.4", optional = true }
 
 # Optional dependencies for data format serialization
@@ -32,11 +33,23 @@ serde_yaml = { workspace = true }
 toml = { workspace = true }
 
 [features]
-default = [ "enabled" ]
-enabled = [ "table_plain", "expanded_postgres", "tree_hierarchical", "format_logfmt" ]
-
-# Legacy integration flag
-integration = []
+default = []
+full    = [ "enabled", "all_formats", "dep:terminal_size" ]
+enabled =
+[
+  "dep:error_tools",
+  "error_tools/enabled",
+  "error_tools/error_typed",
+  "dep:strs_tools",
+  "strs_tools/ansi",
+  "dep:color_tools",
+  "color_tools/enabled",
+  "dep:unicode-width",
+  "table_plain",
+  "expanded_postgres",
+  "tree_hierarchical",
+  "format_logfmt",
+]
 
 # Serialization support (required for json/yaml/toml)
 serde_support = [ "dep:serde", "color_tools/serde_support" ]
@@ -106,8 +119,8 @@ format_html = [ "format_html_basic", "format_html_frameworks" ]
 
 format_sql = [ "sql_ansi", "sql_postgres", "sql_mysql", "sql_sqlite" ]
 
-# Legacy bundles (maintained for backward compatibility)
-visual_formats = [ "format_table", "format_expanded", "format_tree", "format_logfmt" ]
-web_formats = [ "format_html", "format_sql" ]
-data_formats = [ "format_json", "format_yaml", "format_toml" ]
-all_formats = [ "visual_formats", "web_formats", "data_formats", "format_text", "themes" ]
+# Convenience meta-bundles
+format_meta_visual = [ "format_table", "format_expanded", "format_tree", "format_logfmt" ]
+format_meta_web    = [ "format_html", "format_sql" ]
+format_meta_data   = [ "format_json", "format_yaml", "format_toml" ]
+all_formats        = [ "format_meta_visual", "format_meta_web", "format_meta_data", "format_text", "themes" ]

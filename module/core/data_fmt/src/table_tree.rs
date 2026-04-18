@@ -51,7 +51,7 @@ impl RowBuilder
   {
     assert!(
       len == self.headers.len(),
-      "row length {} doesnt match headers length {}",
+      "row length {} doesn't match headers length {}",
       len,
       self.headers.len()
     );
@@ -63,7 +63,7 @@ impl RowBuilder
   ///
   /// # Panics
   ///
-  /// Panics if row length doesnt match headers length
+  /// Panics if row length doesn't match headers length
   ///
   /// # Examples
   ///
@@ -95,7 +95,7 @@ impl RowBuilder
   ///
   /// # Panics
   ///
-  /// Panics if row length doesnt match headers length
+  /// Panics if row length doesn't match headers length
   #[ allow( clippy::needless_pass_by_value ) ]
   pub fn add_row_mut( &mut self, row : Vec< DecoratedText > )
   {
@@ -111,7 +111,7 @@ impl RowBuilder
   ///
   /// # Panics
   ///
-  /// Panics if row length doesnt match headers length
+  /// Panics if row length doesn't match headers length
   ///
   /// # Examples
   ///
@@ -141,7 +141,7 @@ impl RowBuilder
   ///
   /// # Panics
   ///
-  /// Panics if row length doesnt match headers length
+  /// Panics if row length doesn't match headers length
   #[ allow( clippy::needless_pass_by_value ) ]
   pub fn add_row_with_name_mut( &mut self, row_name : String, row : Vec< DecoratedText > )
   {
@@ -156,7 +156,7 @@ impl RowBuilder
   ///
   /// # Panics
   ///
-  /// Panics if row length doesnt match headers length
+  /// Panics if row length doesn't match headers length
   ///
   /// # Examples
   ///
@@ -193,7 +193,7 @@ impl RowBuilder
   ///
   /// # Panics
   ///
-  /// Panics if row length doesnt match headers length
+  /// Panics if row length doesn't match headers length
   ///
   /// # Examples
   ///

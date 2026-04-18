@@ -301,8 +301,6 @@ fn defaults_match_spec()
   assert!( c.max_lines.is_none() );
   assert!( matches!( c.overflow, Overflow::Truncate ) );
   assert_eq!( c.tab_width, 4 );
-  assert!( !c.strip_ansi );
-  assert!( !c.unicode_aware );
 }
 
 /// `initial_indent` and `subsequent_indent` both count toward `width`.
@@ -335,7 +333,7 @@ fn indent_counts_toward_width()
 /// starts with the separator space (e.g. `" world"`), so the next chunk captured
 /// that space as its first character, producing `" worl"` instead of `"world"`.
 ///
-/// ## Why Not Caught Initially
+/// ## Why Not Caught
 /// T01–T20 covered normal word-wrap scenarios but no Hard-strategy test had a
 /// chunk boundary that landed exactly at a word-separator space. Single-word
 /// inputs never produce a remainder starting with a space.
@@ -348,7 +346,7 @@ fn indent_counts_toward_width()
 /// Any future changes to `hard_break_str` must verify that none of the output
 /// lines produced from multi-word input have a leading space.
 ///
-/// ## Pitfall to Avoid
+/// ## Pitfall
 /// Hard-break logic that operates on a pre-joined string treats inter-word
 /// separators as data characters; always strip them after each slice.
 // test_kind: bug_reproducer(issue-004b)
@@ -375,7 +373,7 @@ fn hard_break_bug_continuation_line_leading_space()
 /// count. Continuation chunks landed on lines with `subsequent_indent`, making
 /// `indent + chunk` wider than `width`.
 ///
-/// ## Why Not Caught Initially
+/// ## Why Not Caught
 /// T09 tested the `.indent()` builder that sets *both* indents to the same
 /// value; asymmetric indent tests (`initial_indent != subsequent_indent`) were
 /// absent from the matrix, so the per-line-avail bug was never triggered.
@@ -390,7 +388,7 @@ fn hard_break_bug_continuation_line_leading_space()
 /// per output line, not once at entry. Removed `hard_chunks` to eliminate
 /// the temptation to reuse same-size chunking across lines.
 ///
-/// ## Pitfall to Avoid
+/// ## Pitfall
 /// "Compute once, loop many" is wrong whenever indent may differ between line 0
 /// and subsequent lines. Always derive per-line geometry inside the loop.
 // test_kind: bug_reproducer(issue-004c)
@@ -422,7 +420,7 @@ fn push_overlong_word_bug_subsequent_indent_overflow()
 /// `tab_width=0` is "replace each tab with zero spaces" (i.e. delete it), but
 /// the guard short-circuited the `str::replace` call entirely.
 ///
-/// ## Why Not Caught Initially
+/// ## Why Not Caught
 /// No test exercised `tab_width=0` specifically. The default `tab_width=4` was
 /// covered implicitly (tabs expanded to spaces), but the zero case was not in
 /// the original T01–T20 matrix. Additionally, `split_whitespace` masks the bug
@@ -438,7 +436,7 @@ fn push_overlong_word_bug_subsequent_indent_overflow()
 /// not reintroduce a guard for zero because `" ".repeat(0)` is `""` which is
 /// exactly the desired replacement string.
 ///
-/// ## Pitfall to Avoid
+/// ## Pitfall
 /// Treating a zero-valued numeric argument as "no-op" is often wrong. For
 /// `tab_width`, zero means "expand to 0 spaces" (delete), not "skip expansion".
 /// Verify zero-value semantics explicitly before adding early-return guards.

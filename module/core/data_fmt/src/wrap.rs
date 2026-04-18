@@ -52,10 +52,6 @@ pub struct WrapConfig
   pub overflow : Overflow,
   /// Number of spaces each `\t` expands to before processing. Default: `4`.
   pub tab_width : usize,
-  /// Strip ANSI escape sequences before wrapping. Default: `false`. *Deferred: no effect.*
-  pub strip_ansi : bool,
-  /// Use display width for Unicode chars. Default: `false`. *Deferred: char count used.*
-  pub unicode_aware : bool,
 }
 
 impl WrapConfig
@@ -74,8 +70,6 @@ impl WrapConfig
       max_lines : None,
       overflow : Overflow::Truncate,
       tab_width : 4,
-      strip_ansi : false,
-      unicode_aware : false,
     }
   }
 
@@ -157,22 +151,6 @@ impl WrapConfig
   pub fn tab_width( mut self, width : usize ) -> Self
   {
     self.tab_width = width;
-    self
-  }
-
-  /// Enable or disable ANSI escape sequence stripping. *Deferred: no effect on output.*
-  #[ must_use ]
-  pub fn strip_ansi( mut self, val : bool ) -> Self
-  {
-    self.strip_ansi = val;
-    self
-  }
-
-  /// Enable or disable display-width Unicode handling. *Deferred: char count used.*
-  #[ must_use ]
-  pub fn unicode_aware( mut self, val : bool ) -> Self
-  {
-    self.unicode_aware = val;
     self
   }
 }

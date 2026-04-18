@@ -41,7 +41,6 @@
 //! | T013-N06 | 1 data row | `colorize_header(true)`, no alternating | Only header colored; data row uncolored |
 
 #![ cfg( feature = "enabled" ) ]
-#![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 mod inc;
 

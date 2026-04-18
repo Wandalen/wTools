@@ -6,10 +6,13 @@
 //!
 //! Run: `cargo run --example sub_row_detail`
 
-use data_fmt::{ RowBuilder, TableFormatter, Format, DecoratedText };
+#[ cfg( not( feature = "enabled" ) ) ]
+fn main() {}
 
+#[ cfg( feature = "enabled" ) ]
 fn main()
 {
+  use data_fmt::{ RowBuilder, TableFormatter, Format, DecoratedText };
   println!( "=== Sub-row detail lines ===" );
   println!( "Best for: Per-row context that doesn't belong in a column\n" );
 

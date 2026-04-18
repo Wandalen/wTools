@@ -33,7 +33,6 @@
 //! Split from tests/table_styles.rs in v0.4.0 compliance cleanup.
 
 #![ cfg( feature = "enabled" ) ]
-#![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 mod inc;
 

@@ -1,7 +1,7 @@
 # Tests
 
 ## Purpose
-Contains all functional and integration tests for tree_fmt library. Tests validate the three-format architecture (Table, Expanded, Tree) and all data conversion functionality.
+Contains all functional and integration tests for data_fmt library. Tests validate the three-format architecture (Table, Expanded, Tree) and all data conversion functionality.
 
 ## Organization Principles
 - Tests organized in modular files by functionality domain

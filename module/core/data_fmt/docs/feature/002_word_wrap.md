@@ -67,8 +67,6 @@ pub enum Overflow
 | `max_lines` | `Option< usize >` | `None` |
 | `overflow` | `Overflow` | `Truncate` |
 | `tab_width` | `usize` | `4` |
-| `strip_ansi` | `bool` | `false` |
-| `unicode_aware` | `bool` | `false` |
 
 ### Builder Methods
 
@@ -84,8 +82,6 @@ All builder methods are `#[ must_use ]` and return `Self`:
 8. `max_lines`
 9. `overflow`
 10. `tab_width`
-11. `strip_ansi`
-12. `unicode_aware`
 
 ### WrapFormatter
 
@@ -119,6 +115,3 @@ impl WrapFormatter
 6. `max_lines=Some(n)` + `Overflow::Truncate`: output has at most `n` lines.
 7. `max_lines=Some(n)` + `Overflow::Ellipsis(s)`: last kept line has `s` appended, truncating content so the total line length does not exceed `width`.
 
-### Deferred Features
-
-`strip_ansi=true` and `unicode_aware=true` runtime behavior is not yet implemented. The fields and builder methods exist but have no effect on output until a future task enables them.

@@ -1,35 +1,23 @@
 //! Unified format trait for all formatters
 
 use crate::TableView;
+use error_tools::dependency::thiserror;
 
 /// Error type for formatting operations
-#[ derive( Debug ) ]
+#[ derive( thiserror::Error, Debug ) ]
 pub enum FormatError
 {
   /// Serialization error (requires `serde_support` feature)
   #[ cfg( feature = "serde_support" ) ]
+  #[ error( "Serialization error: {0}" ) ]
   Serialization( String ),
   /// Invalid or malformed data
+  #[ error( "Invalid data: {0}" ) ]
   InvalidData( String ),
   /// Unsupported operation for this formatter
+  #[ error( "Unsupported operation: {0}" ) ]
   UnsupportedOperation( String ),
 }
-
-impl std::fmt::Display for FormatError
-{
-  fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
-  {
-    match self
-    {
-      #[ cfg( feature = "serde_support" ) ]
-      Self::Serialization( msg ) => write!( f, "Serialization error: {msg}" ),
-      Self::InvalidData( msg ) => write!( f, "Invalid data: {msg}" ),
-      Self::UnsupportedOperation( msg ) => write!( f, "Unsupported operation: {msg}" ),
-    }
-  }
-}
-
-impl std::error::Error for FormatError {}
 
 /// Unified formatting interface for all output formats
 ///

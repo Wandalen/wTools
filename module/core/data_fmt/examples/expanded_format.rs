@@ -6,10 +6,13 @@
 //! NOTE: `ExpandedFormatter` also implements the `Format` trait for format-agnostic code.
 //! See `unified_formats.rs` example for usage with the unified interface.
 
-use data_fmt::{ RowBuilder, ExpandedFormatter };
+#[ cfg( not( feature = "enabled" ) ) ]
+fn main() {}
 
+#[ cfg( feature = "enabled" ) ]
 fn main()
 {
+  use data_fmt::{ RowBuilder, ExpandedFormatter };
   println!( "=== ExpandedFormatter: Vertical Record Display ===" );
   println!( "Best for: Database query inspection, detailed record view, wide tables\n" );
 

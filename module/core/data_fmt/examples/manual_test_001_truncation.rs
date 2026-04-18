@@ -3,11 +3,14 @@
 //! This example tests various column truncation scenarios for manual verification.
 //! Run with: `cargo run --example manual_test_001_truncation`
 
-use data_fmt::{ RowBuilder, TableFormatter, TableConfig };
+#[ cfg( not( feature = "enabled" ) ) ]
+fn main() {}
 
+#[ cfg( feature = "enabled" ) ]
 #[ allow( clippy::too_many_lines ) ]
 fn main()
 {
+  use data_fmt::{ RowBuilder, TableFormatter, TableConfig };
   println!( "╔═══════════════════════════════════════════════════════════════════╗" );
   println!( "║  MANUAL TEST 001: Column Truncation                               ║" );
   println!( "╚═══════════════════════════════════════════════════════════════════╝\n" );

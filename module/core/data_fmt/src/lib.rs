@@ -16,6 +16,7 @@
 #![ allow( clippy::must_use_candidate ) ]
 #![ allow( clippy::std_instead_of_core ) ]
 #![ allow( clippy::format_push_string ) ]
+#![ cfg_attr( not( feature = "enabled" ), allow( unused ) ) ]
 //!
 //! The library supports 10 output formats across 33 variants:
 //!
@@ -33,6 +34,8 @@
 //! ## Same data in three visual formats
 //!
 //! ```
+//! # #[ cfg( feature = "enabled" ) ]
+//! # {
 //! use data_fmt::{ RowBuilder, TableFormatter, ExpandedFormatter, TreeFormatter };
 //!
 //! // Create tabular data
@@ -52,11 +55,14 @@
 //! // Tree format (table-shaped tree)
 //! let data_fmt = TreeFormatter::default();
 //! let output = data_fmt.format( &tree, Clone::clone );
+//! # }
 //! ```
 //!
 //! ## Expanded format with colored keys
 //!
 //! ```
+//! # #[ cfg( feature = "enabled" ) ]
+//! # {
 //! use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig };
 //!
 //! let tree = RowBuilder::new( vec![ "Name".into(), "Score".into() ] )
@@ -68,11 +74,14 @@
 //!   ExpandedConfig::new().colorize_keys( true )
 //! );
 //! let output = formatter.format( &tree );
+//! # }
 //! ```
 //!
 //! ## Property list style (colon separator)
 //!
 //! ```
+//! # #[ cfg( feature = "enabled" ) ]
+//! # {
 //! use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig };
 //!
 //! let tree = RowBuilder::new( vec![ "Command".into(), "Status".into() ] )
@@ -85,11 +94,14 @@
 //! // Output:
 //! // Command: build
 //! // Status:  success
+//! # }
 //! ```
 //!
 //! ## Building and formatting a tree
 //!
 //! ```
+//! # #[ cfg( feature = "enabled" ) ]
+//! # {
 //! use data_fmt::{ TreeBuilder, TreeFormatter };
 //!
 //! let tree = TreeBuilder::new( "root" )
@@ -100,11 +112,14 @@
 //! let formatter = TreeFormatter::new();
 //! let output = formatter.format( &tree, | lines | format!( "{} lines", lines ) );
 //! println!( "{}", output );
+//! # }
 //! ```
 //!
 //! ## Building from items
 //!
 //! ```
+//! # #[ cfg( feature = "enabled" ) ]
+//! # {
 //! use data_fmt::TreeBuilder;
 //! use std::path::PathBuf;
 //!
@@ -116,11 +131,14 @@
 //! let tree = TreeBuilder::from_items( &files, | ( path, _size ) : &( PathBuf, i32 ) | {
 //!   path.components().map( | c | c.as_os_str().to_string_lossy().to_string() ).collect()
 //! }, | ( path, size ) : &( PathBuf, i32 ) | ( path.clone(), *size ) );
+//! # }
 //! ```
 //!
 //! ## Formatting a table
 //!
 //! ```
+//! # #[ cfg( feature = "enabled" ) ]
+//! # {
 //! use data_fmt::{ RowBuilder, TableFormatter };
 //!
 //! let tree = RowBuilder::new( vec![ "File".into(), "Lines".into() ] )
@@ -131,37 +149,46 @@
 //! let formatter = TableFormatter::new();
 //! let output = formatter.format( &tree );
 //! println!( "{}", output );
+//! # }
 //! ```
 
 // Module declarations
-mod data;
-mod config;
-mod ansi_str;
-mod builder;
-mod table_tree;
-mod wrap;
-pub mod conversions;
-pub mod formatters;
+#[ cfg( feature = "enabled" ) ] mod data;
+#[ cfg( feature = "enabled" ) ] mod config;
+#[ cfg( feature = "enabled" ) ] mod ansi_str;
+#[ cfg( feature = "enabled" ) ] mod builder;
+#[ cfg( feature = "enabled" ) ] mod table_tree;
+#[ cfg( feature = "enabled" ) ] mod wrap;
+#[ cfg( feature = "enabled" ) ] pub mod conversions;
+#[ cfg( feature = "enabled" ) ] pub mod formatters;
 
 #[ cfg( feature = "themes" ) ]
 pub mod themes;
 
-// Public re-exports - Core data types (always available)
+// Public re-exports - Core data types
+#[ cfg( feature = "enabled" ) ]
 pub use data::{
   TreeNode, ColumnData,
   TableView, TableMetadata, DataType, TableShapedView
 };
+#[ cfg( feature = "enabled" ) ]
 pub use color_tools::DecoratedText;
+#[ cfg( feature = "enabled" ) ]
 pub use config::{
   TreeConfig, TableConfig, ExpandedConfig, PaddingSide, TreeSymbols,
   BorderVariant, HeaderSeparatorVariant, ColumnSeparator, ColumnFlex, FoldStyle,
 };
+#[ cfg( feature = "enabled" ) ]
 pub use ansi_str::{ visual_len, pad_to_width, truncate_cell };
+#[ cfg( feature = "enabled" ) ]
 pub use wrap::{ WrapConfig, WrapFormatter, BreakStrategy, Overflow };
+#[ cfg( feature = "enabled" ) ]
 pub use builder::TreeBuilder;
+#[ cfg( feature = "enabled" ) ]
 pub use table_tree::RowBuilder;
 
-// Format trait (always available)
+// Format trait
+#[ cfg( feature = "enabled" ) ]
 pub use formatters::{ Format, FormatError };
 
 // Conditional formatter exports (feature-gated)
@@ -226,5 +253,7 @@ pub use formatters::{ TextFormatter, TextVariant };
 #[ cfg( feature = "themes" ) ]
 pub use themes::{ ColorTheme, ColorThemeBuilder };
 
-// Backward compatibility trait (always available for now)
+// Backward compatibility trait
+#[ allow( deprecated ) ]
+#[ cfg( feature = "enabled" ) ]
 pub use formatters::TableShapedFormatter;

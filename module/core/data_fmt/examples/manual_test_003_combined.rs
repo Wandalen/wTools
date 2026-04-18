@@ -3,11 +3,14 @@
 //! This example tests the interaction between multiline and truncation features.
 //! Run with: `cargo run --example manual_test_003_combined`
 
-use data_fmt::{ RowBuilder, TableFormatter, TableConfig };
+#[ cfg( not( feature = "enabled" ) ) ]
+fn main() {}
 
+#[ cfg( feature = "enabled" ) ]
 #[ allow( clippy::too_many_lines ) ]
 fn main()
 {
+  use data_fmt::{ RowBuilder, TableFormatter, TableConfig };
   println!( "╔═══════════════════════════════════════════════════════════════════╗" );
   println!( "║  MANUAL TEST 003: Combined Features (Multiline + Truncation)      ║" );
   println!( "╚═══════════════════════════════════════════════════════════════════╝\n" );

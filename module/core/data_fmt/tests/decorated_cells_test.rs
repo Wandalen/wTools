@@ -24,7 +24,6 @@
 //! | P04 | Mixed: colored + plain cells in same row | one colored, one plain | Colored cell has ANSI; plain cell does not |
 
 #![ cfg( feature = "enabled" ) ]
-#![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 use data_fmt::{ RowBuilder, TableFormatter, TableConfig, DecoratedText, Format };
 

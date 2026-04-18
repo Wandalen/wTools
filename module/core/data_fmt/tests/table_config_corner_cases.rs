@@ -72,7 +72,6 @@
 //!   is shorter than the column count, remaining columns get `unwrap_or(10)` default width.
 
 #![ cfg( feature = "enabled" ) ]
-#![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 use data_fmt::
 {

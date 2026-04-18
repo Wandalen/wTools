@@ -28,7 +28,6 @@
 //! ```
 
 #![ cfg( feature = "enabled" ) ]
-#![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 #[ cfg( feature = "format_text" ) ]
 mod cli_help_tests

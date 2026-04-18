@@ -1,9 +1,7 @@
 # Documentation
 
-> **Note:** `data_fmt` has been renamed to [`data_fmt`](https://crates.io/crates/data_fmt).
-
 ## Purpose
-Contains technical documentation for the data_fmt (formerly data_fmt) library implementation.
+Contains technical documentation for the data_fmt library implementation.
 
 ## Responsibility Table
 

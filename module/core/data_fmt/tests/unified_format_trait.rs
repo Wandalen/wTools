@@ -4,7 +4,6 @@
 //! ensuring consistent behavior across different output formats.
 
 #![ cfg( feature = "enabled" ) ]
-#![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 use data_fmt::{ RowBuilder, TableView, TableMetadata, Format, FormatError };
 

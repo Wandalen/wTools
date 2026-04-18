@@ -31,7 +31,6 @@
 //! | E2 | Unicode indent_prefix | "→ " prefix | Lines start with that string |
 
 #![ cfg( feature = "enabled" ) ]
-#![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig };
 

@@ -72,13 +72,29 @@
 #![ cfg( feature = "enabled" ) ]
 use data_fmt::{ truncate_cell, pad_to_width, RowBuilder, TableFormatter, TableConfig };
 
-/// Bug reproducer for issue-003: Unicode display width alignment
+/// Bug reproducer for issue-003: Cyrillic filenames misalign in column padding.
 ///
-/// Demonstrates that Cyrillic/CJK text becomes misaligned when using
-/// character-count-based truncation followed by display-width-based padding.
+/// ## Root Cause
+/// `pad_to_width()` pads by character count; downstream `{:<N}` formats by display
+/// width. For Cyrillic (1 col/char) both agree, but the same code path breaks for
+/// CJK (2 cols/char), so this scenario validates the Cyrillic boundary condition.
 ///
-/// This test reproduces the exact issue from gdrive file listing where
-/// "Владислав Гайдук.jpg" appeared left-shifted compared to "Kyrylo Stepanov.jpeg".
+/// ## Why Not Caught
+/// All padding tests used ASCII-only filenames. The gdrive listing with mixed
+/// Cyrillic/ASCII filenames was never included in the test matrix.
+///
+/// ## Fix Applied
+/// Updated `pad_to_width()` to measure column width via `UnicodeWidthStr::width()`
+/// so padding is display-width-correct for all Unicode categories.
+///
+/// ## Prevention
+/// Any new text-padding function must include a test using both Cyrillic (width-1)
+/// and CJK (width-2) content alongside ASCII.
+///
+/// ## Pitfall
+/// Cyrillic looks correct visually when rendered alone — the bug only surfaces in
+/// side-by-side column alignment where width mismatch shifts subsequent columns.
+// test_kind: bug_reproducer(issue-003)
 #[ test ]
 fn bug_reproducer_issue_003_cyrillic_alignment()
 {
@@ -129,10 +145,28 @@ fn bug_reproducer_issue_003_cyrillic_alignment()
   );
 }
 
-/// Demonstrate alignment issue with CJK characters (wide characters)
+/// Bug reproducer for issue-003: CJK characters misalign with character-count padding.
 ///
-/// CJK characters have display width of 2, making the alignment problem
-/// even more severe than with Cyrillic (which has display width of 1).
+/// ## Root Cause
+/// CJK characters have display width 2 but `pad_to_width()` counts each as width 1,
+/// so padding stops 1 space short per CJK character, leaving the column visually
+/// narrower than the target width.
+///
+/// ## Why Not Caught
+/// No test mixed CJK text with ASCII in a padded-column scenario. Tests verified
+/// string length, not terminal display width.
+///
+/// ## Fix Applied
+/// `pad_to_width()` now uses `UnicodeWidthStr::width()` — pads until display width
+/// reaches the target, not character count.
+///
+/// ## Prevention
+/// Test matrix must cover (ASCII, Cyrillic, CJK, emoji) × (pad, truncate, align).
+///
+/// ## Pitfall
+/// `str.chars().count()` and `UnicodeWidthStr::width()` agree for ASCII and Cyrillic
+/// but diverge for CJK (×2) and emoji (×2). Always use display width for terminals.
+// test_kind: bug_reproducer(issue-003)
 #[ test ]
 fn bug_reproducer_issue_003_cjk_alignment()
 {
@@ -176,7 +210,26 @@ fn bug_reproducer_issue_003_cjk_alignment()
   );
 }
 
-/// Test emoji alignment (wide characters with display width = 2)
+/// Bug reproducer for issue-003: Emoji misalign with character-count padding.
+///
+/// ## Root Cause
+/// Emoji have display width 2; character-count padding produces half the needed
+/// space, causing each emoji to consume an extra column from the alignment budget.
+///
+/// ## Why Not Caught
+/// Emoji were absent from all padding test cases. Terminal rendering differences
+/// also made emoji tests harder without a dedicated display-width library.
+///
+/// ## Fix Applied
+/// `pad_to_width()` now uses `UnicodeWidthStr::width()` so emoji are padded correctly.
+///
+/// ## Prevention
+/// Include emoji in the standard test matrix for all string-width operations.
+///
+/// ## Pitfall
+/// Some terminals render emoji as width-1; `unicode-width` follows the Unicode
+/// standard (mostly width-2). Test against the standard, not terminal behavior.
+// test_kind: bug_reproducer(issue-003)
 #[ test ]
 fn bug_reproducer_issue_003_emoji_alignment()
 {
@@ -288,9 +341,28 @@ fn test_ukrainian_cyrillic_alignment()
   );
 }
 
-/// Test realistic file listing format from gdrive
+/// Bug reproducer for issue-003: Production gdrive listing reveals padding bug.
 ///
-/// This reproduces the exact format that revealed the bug in production use.
+/// ## Root Cause
+/// Real-world file listing mixed ASCII and Cyrillic filenames. `pad_to_width()`
+/// padded by character count; for Cyrillic this matched display width, but the same
+/// path fails for wide characters — this test validates the exact production scenario.
+///
+/// ## Why Not Caught
+/// The gdrive listing was a manual observation, not a programmatic regression test.
+/// No automated test reproduced the mixed-script filename table until this reproducer.
+///
+/// ## Fix Applied
+/// Display-width-aware padding ensures both ASCII and Cyrillic filenames align.
+///
+/// ## Prevention
+/// New format use-cases from production should be added as reproducers immediately
+/// when the bug is filed.
+///
+/// ## Pitfall
+/// The bug looked like a Cyrillic issue, but the real fix handles ALL wide scripts.
+/// A Cyrillic-only fix would have left CJK and emoji broken.
+// test_kind: bug_reproducer(issue-003)
 #[ test ]
 fn bug_reproducer_issue_003_realistic_file_listing()
 {
@@ -389,7 +461,7 @@ fn test_zero_width_combining_marks()
 ///
 /// Bug reproducer for truncation issue discovered during manual testing.
 ///
-/// # Root Cause
+/// ## Root Cause
 ///
 /// In `data_fmt/src/ansi_str.rs:189`, `truncate_single_line()` increments
 /// `visual_count += 1` for each character, treating all characters as having
@@ -400,7 +472,7 @@ fn test_zero_width_combining_marks()
 /// (Unicode codepoints), not **display width** (terminal columns). This causes
 /// CJK/emoji text to truncate at wrong position.
 ///
-/// # Why Not Caught
+/// ## Why Not Caught
 ///
 /// Existing truncation tests in `column_truncation.rs` test ASCII-only content or
 /// don't verify actual display width of truncated result. No tests covered:
@@ -408,7 +480,7 @@ fn test_zero_width_combining_marks()
 /// - Emoji truncation with display width verification
 /// - Mixed-width content truncation (ASCII + CJK + emoji)
 ///
-/// # Fix Applied
+/// ## Fix Applied
 ///
 /// Modified `truncate_single_line()` in `src/ansi_str.rs` to use unicode-width
 /// crate's `UnicodeWidthChar::width()` when incrementing `visual_count`:
@@ -426,7 +498,7 @@ fn test_zero_width_combining_marks()
 /// Also updated initial width calculation to use display-width-aware `visual_len`
 /// or direct unicode-width calculation.
 ///
-/// # Prevention
+/// ## Prevention
 ///
 /// 1. **Add display width tests for all text operations**: Any function that
 ///    manipulates text based on "visual length" or "width" must test with CJK
@@ -439,7 +511,7 @@ fn test_zero_width_combining_marks()
 ///    text width, use `UnicodeWidthStr::width()` or `UnicodeWidthChar::width()`,
 ///    not `chars().count()`.
 ///
-/// # Pitfall
+/// ## Pitfall
 ///
 /// **NEVER use character count (`chars().count()`) when display width matters.**
 ///
@@ -460,6 +532,7 @@ fn test_zero_width_combining_marks()
 /// // CORRECT: Truncates to 5 display width
 /// let truncated = truncate_by_display_width( text, 5, "..." );
 /// ```
+// test_kind: bug_reproducer(issue-003)
 #[ test ]
 fn bug_reproducer_truncate_cjk_display_width()
 {
@@ -501,7 +574,28 @@ fn bug_reproducer_truncate_cjk_display_width()
   );
 }
 
-/// Test truncation with emoji using display width
+/// Bug reproducer for issue-003: Emoji truncation exceeds display-width target.
+///
+/// ## Root Cause
+/// `truncate_cell()` counted characters, not display width. Emoji occupy 2 terminal
+/// columns each, so truncating to N characters can produce up to 2N display columns.
+///
+/// ## Why Not Caught
+/// Truncation tests used ASCII-only content. Emoji were never tested in the
+/// truncation code path.
+///
+/// ## Fix Applied
+/// `truncate_single_line()` uses `UnicodeWidthChar::width()` to accumulate display
+/// width instead of incrementing by 1 per character.
+///
+/// ## Prevention
+/// Any truncation function must test with ASCII (width=1), CJK (width=2), and
+/// emoji (width=2), verifying `UnicodeWidthStr::width(result) <= target_width`.
+///
+/// ## Pitfall
+/// After display-width truncation, the result can be 1 column SHORT of target when
+/// a wide char straddles the boundary — this is correct, not a bug.
+// test_kind: bug_reproducer(issue-003)
 #[ test ]
 fn bug_reproducer_truncate_emoji_display_width()
 {
@@ -538,7 +632,28 @@ fn bug_reproducer_truncate_emoji_display_width()
   );
 }
 
-/// Test truncation with mixed ASCII + CJK + emoji
+/// Bug reproducer for issue-003: Mixed-width content truncation exceeds display budget.
+///
+/// ## Root Cause
+/// When truncating mixed ASCII + CJK + emoji, character-count-based truncation
+/// underestimates wide characters, causing the result to exceed the display-width target.
+///
+/// ## Why Not Caught
+/// No test combined ASCII, CJK, and emoji in a single truncated string. Each
+/// character type was tested in isolation at most.
+///
+/// ## Fix Applied
+/// `truncate_single_line()` accumulates display width via `UnicodeWidthChar::width()`
+/// so all character categories are handled correctly in a single pass.
+///
+/// ## Prevention
+/// Include at least one mixed-content truncation test (ASCII + wide + emoji) in the
+/// test matrix for any text-manipulation function.
+///
+/// ## Pitfall
+/// Mixed-width strings require width-aware operations end-to-end: truncation AND
+/// padding AND alignment must all use display width, or alignment will still break.
+// test_kind: bug_reproducer(issue-003)
 #[ test ]
 fn bug_reproducer_truncate_mixed_width()
 {

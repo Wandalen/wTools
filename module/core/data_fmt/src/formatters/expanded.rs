@@ -280,6 +280,7 @@ impl Default for ExpandedFormatter
   }
 }
 
+#[ allow( deprecated ) ]
 impl super::TableShapedFormatter for ExpandedFormatter
 {
   fn format( &self, tree : &TreeNode< String > ) -> String

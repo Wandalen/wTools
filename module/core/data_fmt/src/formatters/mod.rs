@@ -112,15 +112,19 @@ mod text;
 #[ cfg( feature = "format_text" ) ]
 pub use text::{ TextFormatter, TextVariant };
 
-/// Common trait for formatters that work with table-shaped trees
+/// Common trait for formatters that work with table-shaped trees.
 ///
-/// This trait provides a unified interface for formatters that operate on
-/// table-shaped `TreeNode<String>` structures (those constructed via `RowBuilder`
-/// or formatted via `TableView` trait).
+/// # Deprecation
+///
+/// Use the `Format` trait from `data_fmt::formatters` with `TableView` instead.
+/// `TableShapedFormatter` operates on `TreeNode<String>` directly, bypassing
+/// the unified `Format` interface.
 ///
 /// # Examples
 ///
 /// ```
+/// # #[ cfg( feature = "enabled" ) ]
+/// # {
 /// use data_fmt::{ RowBuilder, formatters::TableShapedFormatter, TableFormatter, ExpandedFormatter };
 ///
 /// let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
@@ -128,12 +132,19 @@ pub use text::{ TextFormatter, TextVariant };
 ///   .build();
 ///
 /// // Use formatters through the trait
+/// #[ allow( deprecated ) ]
 /// let table : &dyn TableShapedFormatter = &TableFormatter::new();
+/// #[ allow( deprecated ) ]
 /// let expanded : &dyn TableShapedFormatter = &ExpandedFormatter::new();
 ///
 /// let table_output = table.format( &tree );
 /// let expanded_output = expanded.format( &tree );
+/// # }
 /// ```
+#[ deprecated(
+  since = "0.1.0",
+  note  = "Use the `Format` trait from `data_fmt::formatters` with `TableView` instead."
+) ]
 pub trait TableShapedFormatter
 {
   /// Format a table-shaped tree as a string

@@ -1,7 +1,6 @@
 //! Verify that alignment is actually correct by measuring visual positions
 
 #![ cfg( feature = "enabled" ) ]
-#![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 mod inc;
 
