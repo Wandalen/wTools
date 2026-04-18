@@ -824,7 +824,7 @@ impl Default for ExpandedConfig
       key_value_separator : " | ".to_string(),
       show_record_numbers : true,
       colorize_keys : false,
-      key_color : "\x1b[90m".to_string(),  // Gray
+      key_color : String::new(),
       padding_side : PaddingSide::BeforeSeparator,
       indent_prefix : String::new(),
     }
@@ -855,7 +855,7 @@ impl ExpandedConfig
       key_value_separator : ": ".to_string(),
       show_record_numbers : false,
       colorize_keys : true,
-      key_color : "\x1b[90m".to_string(),  // Gray
+      key_color : String::new(),
       padding_side : PaddingSide::AfterSeparator,
       indent_prefix : String::new(),
     }

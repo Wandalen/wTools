@@ -56,8 +56,6 @@ pub struct ColorTheme
   pub row_color2 : String,
   /// Tree branch symbol color
   pub branch_color : String,
-  /// ANSI reset sequence used to end a color sequence (usually `"\x1b[0m"`)
-  pub reset : String,
 }
 
 impl ColorTheme
@@ -74,7 +72,6 @@ impl ColorTheme
       row_color1 : "\x1b[0m".to_string(),           // Default
       row_color2 : "\x1b[48;5;235m".to_string(),    // Dark gray background
       branch_color : "\x1b[36m".to_string(),        // Cyan
-      reset : "\x1b[0m".to_string(),
     }
   }
 
@@ -90,7 +87,6 @@ impl ColorTheme
       row_color1 : "\x1b[0m".to_string(),           // Default (black on white)
       row_color2 : "\x1b[48;5;255m".to_string(),    // Light gray background
       branch_color : "\x1b[34m".to_string(),        // Dark blue
-      reset : "\x1b[0m".to_string(),
     }
   }
 
@@ -106,7 +102,6 @@ impl ColorTheme
       row_color1 : "\x1b[38;5;231m".to_string(),    // White text
       row_color2 : "\x1b[48;5;236m".to_string(),    // Dark gray background
       branch_color : "\x1b[32m".to_string(),        // Green
-      reset : "\x1b[0m".to_string(),
     }
   }
 
@@ -122,7 +117,6 @@ impl ColorTheme
       row_color1 : "\x1b[38;5;234m".to_string(),    // Base03
       row_color2 : "\x1b[48;5;235m".to_string(),    // Base02 background
       branch_color : "\x1b[36m".to_string(),        // Cyan
-      reset : "\x1b[0m".to_string(),
     }
   }
 
@@ -138,7 +132,6 @@ impl ColorTheme
       row_color1 : "\x1b[0m".to_string(),           // Default
       row_color2 : "\x1b[48;5;236m".to_string(),    // Polar night background
       branch_color : "\x1b[38;5;150m".to_string(),  // Frost green
-      reset : "\x1b[0m".to_string(),
     }
   }
 
@@ -154,7 +147,6 @@ impl ColorTheme
       row_color1 : "\x1b[38;5;231m".to_string(),    // Foreground white
       row_color2 : "\x1b[48;5;236m".to_string(),    // Selection background
       branch_color : "\x1b[38;5;212m".to_string(),  // Pink
-      reset : "\x1b[0m".to_string(),
     }
   }
 
@@ -168,7 +160,6 @@ impl ColorTheme
       row_color1 : String::new(),
       row_color2 : String::new(),
       branch_color : String::new(),
-      reset : String::new(),
     }
   }
 
@@ -180,7 +171,7 @@ impl ColorTheme
 
   /// Apply theme to `TableConfig`
   ///
-  /// Configures header colors, alternating row colors, and ANSI reset sequence.
+  /// Configures header colors and alternating row colors.
   pub fn apply_to_table( &self, config : TableConfig ) -> TableConfig
   {
     config
@@ -188,7 +179,6 @@ impl ColorTheme
       .header_color( self.header_color.clone() )
       .alternating_rows( !self.row_color2.is_empty() )
       .row_colors( self.row_color1.clone(), self.row_color2.clone() )
-      .color_reset( self.reset.clone() )
   }
 
   /// Apply theme to `ExpandedConfig`
@@ -219,7 +209,6 @@ pub struct ColorThemeBuilder
   row_color1 : Option< String >,
   row_color2 : Option< String >,
   branch_color : Option< String >,
-  reset : Option< String >,
 }
 
 impl ColorThemeBuilder
@@ -264,14 +253,6 @@ impl ColorThemeBuilder
     self
   }
 
-  /// Set reset sequence (default: `"\x1b[0m"`)
-  #[ must_use ]
-  pub fn reset_code( mut self, reset : impl Into< String > ) -> Self
-  {
-    self.reset = Some( reset.into() );
-    self
-  }
-
   /// Build the color theme
   #[ must_use ]
   pub fn build( self ) -> ColorTheme
@@ -283,7 +264,6 @@ impl ColorThemeBuilder
       row_color1 : self.row_color1.unwrap_or_else( || "\x1b[0m".to_string() ),
       row_color2 : self.row_color2.unwrap_or_default(),
       branch_color : self.branch_color.unwrap_or_default(),
-      reset : self.reset.unwrap_or_else( || "\x1b[0m".to_string() ),
     }
   }
 }

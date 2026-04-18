@@ -113,9 +113,9 @@
 //!   ( PathBuf::from( "tests/test.rs" ), 50 ),
 //! ];
 //!
-//! let tree = TreeBuilder::from_items( &files, | ( path, _size ) | {
+//! let tree = TreeBuilder::from_items( &files, | ( path, _size ) : &( PathBuf, i32 ) | {
 //!   path.components().map( | c | c.as_os_str().to_string_lossy().to_string() ).collect()
-//! }, | ( path, size ) | ( path.clone(), *size ) );
+//! }, | ( path, size ) : &( PathBuf, i32 ) | ( path.clone(), *size ) );
 //! ```
 //!
 //! ## Formatting a table
