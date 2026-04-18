@@ -1,7 +1,9 @@
 # Documentation
 
+> **Note:** `tree_fmt` has been renamed to [`data_fmt`](https://crates.io/crates/data_fmt).
+
 ## Purpose
-Contains technical documentation for the tree_fmt library implementation.
+Contains technical documentation for the data_fmt (formerly tree_fmt) library implementation.
 
 ## Navigation Guide
 - **Architecture**: See `architecture.md` for layer design and module structure

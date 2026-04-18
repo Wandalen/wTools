@@ -5,8 +5,8 @@ edition = "2021"
 authors = [ "wandalen <wandalen@obox.systems>" ]
 license = "MIT"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/tree_fmt"
-description = "Multi-format data visualization library with 10 formatters, 31 variants, and granular per-variant feature flags for minimal binary size"
-keywords = [ "tree", "table", "formatter", "hierarchical", "display" ]
+description = "Deprecated: renamed to data_fmt. Multi-format data visualization library with 10 formatters, 31 variants, and granular feature flags"
+keywords = [ "deprecated", "table", "formatter", "data-format", "visualization" ]
 categories = [ "text-processing", "data-structures", "visualization" ]
 
 [lints]

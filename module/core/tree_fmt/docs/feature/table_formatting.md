@@ -140,6 +140,12 @@ Rendering behavior:
 - `None` and empty-text details are suppressed — no blank line emitted.
 - Rows added via `add_row()` or `add_row_mut()` implicitly have `None` detail (no output change).
 
+## Auto-Fit (Terminal-Aware Rendering)
+
+When `auto_wrap` and `auto_fold` are both enabled (the default), `TableFormatter` automatically fits output within terminal width using two cooperating strategies: cell wrapping (grows row height) and column folding (moves overflow columns to continuation lines). Zero configuration required.
+
+See `auto_fit.md` for full behavioral specification, configuration fields, progressive degradation rules, and interaction with other features.
+
 ## Column Width Calculation Summary
 
 The full column width pipeline:

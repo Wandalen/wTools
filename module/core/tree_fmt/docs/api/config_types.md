@@ -58,6 +58,35 @@ pub enum PaddingSide
 }
 ```
 
+## ColumnFlex
+
+Per-column classification for auto-fit budget allocation.
+
+```rust
+#[ derive( Debug, Clone, Copy, PartialEq, Eq ) ]
+pub enum ColumnFlex
+{
+  Fixed,  // keeps natural width; never wrapped or folded
+  Flex,   // shrinks to budget; content wraps if needed
+}
+```
+
+When `TableConfig::column_flex` is empty (default), columns are auto-classified: max cell width ≤ 12 display chars = `Fixed`, otherwise `Flex`.
+
+## FoldStyle
+
+Controls the format of continuation lines when columns are folded.
+
+```rust
+#[ derive( Debug, Clone, Copy, PartialEq, Eq ) ]
+pub enum FoldStyle
+{
+  Bare,      // values only, no labels
+  Labeled,   // "ColName: value" pairs (default)
+  Stacked,   // each folded column on its own line with label
+}
+```
+
 ## TableConfig
 
 Formatter parameters for table output. All fields are private; use preset constructors or builder setters.
@@ -82,6 +111,12 @@ Formatter parameters for table output. All fields are private; use preset constr
 | `max_column_width` | `Option< usize >` | Maximum display width (truncates beyond) |
 | `truncation_marker` | `String` | Appended to truncated cells (default: "...") |
 | `sub_row_indent` | `String` | Prefix for sub-row detail lines (default: "  ") |
+| `terminal_width` | `Option< usize >` | Target width for auto-fit (None = auto-detect; fallback: 120) |
+| `auto_wrap` | `bool` | Auto-wrap flex cells at budget width (default: true) |
+| `auto_fold` | `bool` | Auto-fold overflow columns to continuation lines (default: true) |
+| `column_flex` | `Vec< ColumnFlex >` | Per-column flex classification (empty = auto-classify) |
+| `fold_style` | `FoldStyle` | Continuation line format for folded columns (default: Labeled) |
+| `fold_indent` | `String` | Indent prefix for folded continuation lines (default: "    ") |
 
 ### Preset Constructors
 
@@ -123,6 +158,12 @@ impl TableConfig
   pub fn max_column_width( self, width : Option< usize > ) -> Self;
   pub fn truncation_marker( self, marker : String ) -> Self;
   pub fn sub_row_indent( self, indent : String ) -> Self;
+  pub fn terminal_width( self, width : Option< usize > ) -> Self;
+  pub fn auto_wrap( self, enabled : bool ) -> Self;
+  pub fn auto_fold( self, enabled : bool ) -> Self;
+  pub fn column_flex( self, flex : Vec< ColumnFlex > ) -> Self;
+  pub fn fold_style( self, style : FoldStyle ) -> Self;
+  pub fn fold_indent( self, indent : String ) -> Self;
 }
 ```
 
@@ -132,6 +173,10 @@ impl TableConfig
 2. Cap: `min( width, max_column_width )` if set
 3. Floor: `max( width, min_column_width )` if non-zero
 4. Override: `column_widths` replaces all calculated widths (skips cap/floor)
+5. Auto-fit budget (when `auto_wrap` is true): flex columns shrink to terminal budget; cells auto-wrap
+6. Auto-fold (when `auto_fold` is true and total still exceeds terminal): overflow columns fold to continuation lines
+
+See `../feature/auto_fit.md` for full auto-fit pipeline.
 
 ## ExpandedConfig
 

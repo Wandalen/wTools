@@ -1,13 +1,19 @@
-//! Tree and Table Formatter Module
+//! Multi-Format Data Visualization Library
 //!
-//! Provides abstract, reusable formatters for hierarchical data display.
+//! **Deprecated:** This crate has been renamed to
+//! [`data_fmt`](https://crates.io/crates/data_fmt).
+//! Use `data_fmt` for all new projects — the API is identical.
+//!
+//! 10 formatters, 31 variants, zero core dependencies.
+//! Build your data structure once, then output as table, tree, expanded,
+//! JSON, HTML, SQL, YAML, TOML, logfmt, or text.
 //!
 //! # Features
 //!
-//! - **Generic `TreeNode`**: Works with any data type
+//! - **`RowBuilder`**: Constructs tabular data (headers + rows)
 //! - **`TreeBuilder`**: Constructs trees from flat data with path-based insertion
-//! - **`TreeFormatter`**: Renders trees with configurable symbols and display options
-//! - **`TableFormatter`**: Renders tabular data with borders and alignment
+//! - **10 Formatters**: Table (9 styles), Tree (3), Expanded (2), JSON, HTML (4),
+//!   SQL (4), YAML, TOML, Logfmt, Text (6)
 //! - **String Output**: All formatters return `String`, no direct console output
 
 #![ allow( clippy::missing_inline_in_public_items ) ]
@@ -15,15 +21,20 @@
 #![ allow( clippy::std_instead_of_core ) ]
 #![ allow( clippy::format_push_string ) ]
 //!
-//! The library supports three interchangeable display formats:
+//! The library supports 10 output formats across 31 variants:
 //!
-//! - **Table**: Horizontal tabular display (standard row-column layout)
-//! - **Expanded**: Vertical record display (`PostgreSQL` `\x` mode, key-value pairs)
-//! - **Tree**: Hierarchical tree display (outline with box-drawing characters)
+//! - **Table**: 9 styles (plain, markdown, csv, bordered, grid, unicode, minimal, tsv, compact)
+//! - **Expanded**: Vertical record display (`PostgreSQL` `\x` mode, property list)
+//! - **Tree**: Hierarchical display (hierarchical, aligned, aggregated)
+//! - **JSON/YAML/TOML**: Data serialization formats
+//! - **HTML**: 4 themes (minimal, bootstrap, tailwind, custom)
+//! - **SQL**: 4 dialects (ANSI, PostgreSQL, MySQL, SQLite)
+//! - **Logfmt**: Structured log output
+//! - **Text**: 6 styles (bullets, numbered, sections, key-value, compact, CLI help)
 //!
 //! # Examples
 //!
-//! ## Same data in all three formats
+//! ## Same data in three visual formats
 //!
 //! ```
 //! use tree_fmt::{ RowBuilder, TableFormatter, ExpandedFormatter, TreeFormatter };
