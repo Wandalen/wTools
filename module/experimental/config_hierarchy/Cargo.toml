@@ -8,6 +8,9 @@ repository = "https://github.com/Wandalen/wTools"
 description = "Generic hierarchical configuration management with 6-level priority system and source tracking"
 categories = [ "config", "filesystem" ]
 keywords = [ "config", "configuration", "hierarchy", "yaml", "settings" ]
+dependencies = {}
+dev-dependencies = {}
+build-dependencies = {}
 
 [package.metadata]
 stability = "experimental"

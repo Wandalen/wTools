@@ -1,6 +1,6 @@
 [package]
 name = "variadic_from_meta"
-version = "0.28.0"
+version = "0.29.0"
 edition = "2021"
 authors = [
   "Kostiantyn Mysnyk <wandalen@obox.systems>",
@@ -15,6 +15,9 @@ Variadic from, proc-macro part.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
+dependencies = {}
+dev-dependencies = {}
+build-dependencies = {}
 
 [lints]
 workspace = true
