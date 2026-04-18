@@ -193,7 +193,7 @@ default-features = false
 # # xxx : remove features, maybe
 
 [workspace.dependencies.color_tools]
-version          = "~0.1.0"
+version          = "~0.2.0"
 path             = "module/core/color_tools"
 default-features = false
 
