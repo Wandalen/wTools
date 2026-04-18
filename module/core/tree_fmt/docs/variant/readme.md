@@ -87,4 +87,4 @@ Every variant doc instance must contain these sections in order:
 
 ### Cross-Doc Entity Dependencies
 
-- [Variant Attributes](../variant_attributes.md) — attribute schema for all 46 per-variant attributes
+- [Variant Attributes](../data_structure/001_variant_attributes.md) — attribute schema for all 46 per-variant attributes

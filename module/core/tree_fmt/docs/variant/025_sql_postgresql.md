@@ -1,7 +1,5 @@
 # Variant: SQL PostgreSQL
 
-PostgreSQL-specific INSERT statements with extended syntax support.
-
 ### Scope
 
 - **Purpose**: Provide PostgreSQL-specific INSERT statements with extended syntax support.
@@ -15,7 +13,7 @@ PostgreSQL-specific INSERT statements with extended syntax support.
 |------|------|----------------|
 | source | `src/formatters/sql.rs` | SqlFormatter implementation |
 | test | `tests/sql.rs` | SQL output tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

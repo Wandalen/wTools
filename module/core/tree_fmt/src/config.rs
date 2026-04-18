@@ -165,6 +165,22 @@ pub enum ColumnFlex
   Flex,
 }
 
+/// Determines how overflow columns are rendered as continuation lines below a row.
+///
+/// Used with `TableConfig::fold_style` to control the format of continuation lines
+/// when `auto_fold` moves overflow columns below the primary table row.
+#[ derive( Debug, Clone, Copy, PartialEq, Eq, Default ) ]
+pub enum FoldStyle
+{
+  /// Values only — no column labels on continuation lines.
+  Bare,
+  /// `"ColName: value"` pairs — default continuation format.
+  #[ default ]
+  Labeled,
+  /// Each overflow column on its own indented line with label.
+  Stacked,
+}
+
 /// Formatter parameters for table output
 ///
 /// Defines customizable parameters including borders, separators, padding,
@@ -237,6 +253,12 @@ pub struct TableConfig
   auto_wrap : bool,
   /// Per-column flex classification (empty = auto-classify by heuristic)
   column_flex : Vec< ColumnFlex >,
+  /// Enable column folding: move overflow columns to continuation lines below row
+  auto_fold : bool,
+  /// Format for continuation lines when auto_fold is active
+  fold_style : FoldStyle,
+  /// Indent prefix for continuation lines
+  fold_indent : String,
 }
 
 impl Default for TableConfig
@@ -264,6 +286,9 @@ impl Default for TableConfig
       terminal_width : None,
       auto_wrap : true,
       column_flex : Vec::new(),
+      auto_fold   : true,
+      fold_style  : FoldStyle::Labeled,
+      fold_indent : "    ".to_string(),
     }
   }
 }
@@ -388,6 +413,7 @@ impl TableConfig
       outer_padding : false,
       inner_padding : 0,
       auto_wrap : false,
+      auto_fold : false,
       ..Self::default()
     }
   }
@@ -404,6 +430,7 @@ impl TableConfig
       outer_padding : false,
       inner_padding : 0,
       auto_wrap : false,
+      auto_fold : false,
       ..Self::default()
     }
   }
@@ -553,6 +580,30 @@ impl TableConfig
     self.column_flex = flex;
     self
   }
+
+  /// Enable or disable column folding: overflow columns move to continuation lines
+  #[ must_use ]
+  pub fn auto_fold( mut self, enabled : bool ) -> Self
+  {
+    self.auto_fold = enabled;
+    self
+  }
+
+  /// Set continuation line format for folded overflow columns
+  #[ must_use ]
+  pub fn fold_style( mut self, style : FoldStyle ) -> Self
+  {
+    self.fold_style = style;
+    self
+  }
+
+  /// Set indent prefix for folded continuation lines
+  #[ must_use ]
+  pub fn fold_indent( mut self, indent : String ) -> Self
+  {
+    self.fold_indent = indent;
+    self
+  }
 }
 
 /// Internal accessors for formatters (pub(crate) methods, not fields — satisfies AF1).
@@ -674,6 +725,24 @@ impl TableConfig
   pub( crate ) fn col_flex( &self ) -> &[ ColumnFlex ]
   {
     &self.column_flex
+  }
+
+  /// Whether column folding is enabled (accessor; distinct from `auto_fold` setter)
+  pub( crate ) fn is_auto_fold( &self ) -> bool
+  {
+    self.auto_fold
+  }
+
+  /// Continuation line format for folded overflow columns
+  pub( crate ) fn fold_style_val( &self ) -> FoldStyle
+  {
+    self.fold_style
+  }
+
+  /// Indent prefix for folded continuation lines
+  pub( crate ) fn fold_indent_val( &self ) -> &str
+  {
+    &self.fold_indent
   }
 }
 

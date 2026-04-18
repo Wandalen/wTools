@@ -1,7 +1,5 @@
 # Variant: Tree Aggregated
 
-Tree view with subtree totals and aggregate statistics.
-
 ### Scope
 
 - **Purpose**: Provide a tree view with subtree totals and aggregate statistics.
@@ -15,7 +13,7 @@ Tree view with subtree totals and aggregate statistics.
 |------|------|----------------|
 | source | `src/formatters/tree.rs` | TreeFormatter implementation |
 | test | `tests/aligned_tree_basic.rs` | Tree alignment and rendering tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

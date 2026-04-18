@@ -1,7 +1,5 @@
 # Variant: YAML Standard
 
-Standard YAML format with indentation and flow control. Default and only YAML variant.
-
 ### Scope
 
 - **Purpose**: Provide standard YAML format with indentation and flow control.
@@ -15,7 +13,7 @@ Standard YAML format with indentation and flow control. Default and only YAML va
 |------|------|----------------|
 | source | `src/formatters/yaml.rs` | YamlFormatter implementation |
 | test | `tests/yaml.rs` | YAML output tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

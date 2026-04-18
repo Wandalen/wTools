@@ -1,7 +1,5 @@
 # Variant: Text Numbered
 
-Numbered list format for sequential item display.
-
 ### Scope
 
 - **Purpose**: Provide a numbered list format for sequential item display.
@@ -15,7 +13,7 @@ Numbered list format for sequential item display.
 |------|------|----------------|
 | source | `src/formatters/text.rs` | TextFormatter implementation |
 | test | `tests/text.rs` | Text output tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

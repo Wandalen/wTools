@@ -1,7 +1,5 @@
 # Variant: Logfmt Standard
 
-Logfmt structured logging format with key=value pairs. Default and only logfmt variant.
-
 ### Scope
 
 - **Purpose**: Provide logfmt structured logging format with key=value pairs.
@@ -15,7 +13,7 @@ Logfmt structured logging format with key=value pairs. Default and only logfmt v
 |------|------|----------------|
 | source | `src/formatters/logfmt.rs` | LogfmtFormatter implementation |
 | test | `tests/logfmt.rs` | Logfmt output tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

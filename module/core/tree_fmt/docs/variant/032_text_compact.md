@@ -1,7 +1,5 @@
 # Variant: Text Compact
 
-Dense text output format with minimal spacing for space-constrained display.
-
 ### Scope
 
 - **Purpose**: Provide dense text output with minimal spacing for space-constrained display.
@@ -15,7 +13,7 @@ Dense text output format with minimal spacing for space-constrained display.
 |------|------|----------------|
 | source | `src/formatters/text.rs` | TextFormatter implementation |
 | test | `tests/text.rs` | Text output tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

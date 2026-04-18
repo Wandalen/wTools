@@ -1,7 +1,5 @@
 # Variant: Table Minimal
 
-Space-separated table with no header separator. Maximum simplicity.
-
 ### Scope
 
 - **Purpose**: Provide a space-separated table with no header separator for maximum simplicity.
@@ -15,7 +13,7 @@ Space-separated table with no header separator. Maximum simplicity.
 |------|------|----------------|
 | source | `src/formatters/table.rs` | TableFormatter implementation |
 | test | `tests/table_styles_presets.rs` | Preset configuration and output tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

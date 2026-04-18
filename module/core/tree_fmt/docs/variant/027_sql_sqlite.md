@@ -1,7 +1,5 @@
 # Variant: SQL SQLite
 
-SQLite3-specific INSERT statements with simplified syntax.
-
 ### Scope
 
 - **Purpose**: Provide SQLite3-specific INSERT statements with simplified syntax.
@@ -15,7 +13,7 @@ SQLite3-specific INSERT statements with simplified syntax.
 |------|------|----------------|
 | source | `src/formatters/sql.rs` | SqlFormatter implementation |
 | test | `tests/sql.rs` | SQL output tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

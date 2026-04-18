@@ -1,7 +1,5 @@
 # Variant: Text CLI Help
 
-CLI help text format with section headers and aligned descriptions. Designed for command-line interface help output.
-
 ### Scope
 
 - **Purpose**: Provide CLI help text format with section headers and aligned descriptions.
@@ -15,7 +13,7 @@ CLI help text format with section headers and aligned descriptions. Designed for
 |------|------|----------------|
 | source | `src/formatters/text.rs` | TextFormatter implementation |
 | test | `tests/text.rs` | Text output tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

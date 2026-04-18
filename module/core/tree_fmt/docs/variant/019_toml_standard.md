@@ -1,7 +1,5 @@
 # Variant: TOML Standard
 
-Standard TOML format with sections and key-value pairs. Default and only TOML variant.
-
 ### Scope
 
 - **Purpose**: Provide standard TOML format with sections and key-value pairs.
@@ -15,7 +13,7 @@ Standard TOML format with sections and key-value pairs. Default and only TOML va
 |------|------|----------------|
 | source | `src/formatters/toml_fmt.rs` | TomlFormatter implementation |
 | test | `tests/toml_fmt.rs` | TOML output tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

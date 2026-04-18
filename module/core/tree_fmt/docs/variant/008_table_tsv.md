@@ -1,7 +1,5 @@
 # Variant: Table TSV
 
-Tab-separated values for spreadsheet paste and clipboard data.
-
 ### Scope
 
 - **Purpose**: Provide tab-separated values format for spreadsheet paste and clipboard data.
@@ -15,7 +13,7 @@ Tab-separated values for spreadsheet paste and clipboard data.
 |------|------|----------------|
 | source | `src/formatters/table.rs` | TableFormatter implementation |
 | test | `tests/table_styles_presets.rs` | Preset configuration and output tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

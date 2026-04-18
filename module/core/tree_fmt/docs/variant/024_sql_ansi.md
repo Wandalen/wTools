@@ -1,7 +1,5 @@
 # Variant: SQL ANSI
 
-Standard SQL-compliant INSERT statements. Default SQL variant.
-
 ### Scope
 
 - **Purpose**: Provide standard SQL-compliant INSERT statements as the default SQL variant.
@@ -15,7 +13,7 @@ Standard SQL-compliant INSERT statements. Default SQL variant.
 |------|------|----------------|
 | source | `src/formatters/sql.rs` | SqlFormatter implementation |
 | test | `tests/sql.rs` | SQL output tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

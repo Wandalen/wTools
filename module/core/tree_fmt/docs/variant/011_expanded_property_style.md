@@ -1,7 +1,5 @@
 # Variant: Expanded Property
 
-Property list format with colored keys for enhanced readability.
-
 ### Scope
 
 - **Purpose**: Provide a property list format with colored keys for enhanced readability.
@@ -15,7 +13,7 @@ Property list format with colored keys for enhanced readability.
 |------|------|----------------|
 | source | `src/formatters/expanded.rs` | ExpandedFormatter implementation |
 | test | `tests/expanded_behavior.rs` | Expanded formatter behavior tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

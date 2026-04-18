@@ -1,7 +1,5 @@
 # Variant: HTML Minimal
 
-Plain HTML table with no CSS classes for basic web display.
-
 ### Scope
 
 - **Purpose**: Provide a plain HTML table with no CSS classes for basic web display.
@@ -15,7 +13,7 @@ Plain HTML table with no CSS classes for basic web display.
 |------|------|----------------|
 | source | `src/formatters/html.rs` | HtmlFormatter implementation |
 | test | `tests/html.rs` | HTML output tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 
