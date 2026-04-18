@@ -51,6 +51,7 @@ Contains all functional and integration tests for tree_fmt library. Tests valida
 | `expanded_indent_prefix.rs` | Test ExpandedConfig indent_prefix field behavior |
 | `expanded_behavior.rs` | Test ExpandedFormatter corner cases: show_record_numbers, alignment, spacing |
 | `sub_row_test.rs` | Test sub-row detail lines (tasks 017–018): API, rendering, config, backward compat, ANSI colorization |
+| `auto_wrap_test.rs` | Test cell auto-wrapping with terminal-aware budget allocation (task 019) |
 
 ## Test Files
 - **data.rs** (14 tests) - Core data structures (`TreeNode`, `RowBuilder`, `TableView` trait)

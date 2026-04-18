@@ -7,11 +7,11 @@
 > **Deprecated:** This crate has been renamed to [`data_fmt`](https://crates.io/crates/data_fmt).
 > Use `data_fmt` for all new projects. This is the final release of `tree_fmt`.
 
-Multi-format data visualization library: 10 formatters, 31 variants, zero core dependencies.
+Multi-format data visualization library: 10 formatters, 33 variants, zero core dependencies.
 
 ## Why data_fmt?
 
-**Build once, format anywhere:** Create your data structure once, then output as ASCII table, JSON, HTML, SQL, YAML, tree view, or 6 other formats — without rebuilding data. Features granular compilation (31 flags) and zero core dependencies.
+**Build once, format anywhere:** Create your data structure once, then output as ASCII table, JSON, HTML, SQL, YAML, tree view, or 6 other formats — without rebuilding data. Features granular per-variant compilation and zero core dependencies.
 
 > The name `tree_fmt` was misleading — trees are just 1 of 10 output formats. The crate is a general-purpose **data formatter**, hence the rename to `data_fmt`.
 
@@ -64,7 +64,7 @@ Output:
 | **Logfmt** | Structured logs | Standard | `format_logfmt` | [→](examples/) |
 | **Text** | Docs, CLI help | 6 styles | `format_text` | [→](examples/) |
 
-**Total: 31 variants across 10 formatters** · **[Detailed variant docs →](./docs/)**
+**Total: 33 variants across 10 formatters** · **[Detailed variant docs →](./docs/)**
 
 Run examples:
 ```bash
@@ -91,7 +91,7 @@ data_fmt = { version = "0.1.0", features = [ "table_markdown", "format_json" ] }
 data_fmt = { version = "0.1.0", features = [ "all_formats" ] }
 ```
 
-**31 granular flags available** - each variant has its own flag for minimal binary size.
+**Granular flags available** — most variants have their own feature flag for minimal binary size.
 
 **Meta-features:** `format_table` (all 9 table variants), `format_html` (all 4 HTML variants), `format_sql` (all 4 SQL dialects), `visual_formats`, `data_formats`, `all_formats`
 

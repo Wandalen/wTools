@@ -50,7 +50,7 @@ What do you need to format?
 │
 ├─ Text lists
 │  └─ All variants → format_text
-│     (Bullets, Numbered, Sections, KeyValue, Compact)
+│     (Bullets, Numbered, Sections, KeyValue, Compact, CliHelp)
 │
 ├─ JSON output
 │  └─ format_json (Pretty/Compact modes at runtime)
@@ -174,7 +174,7 @@ tree_fmt = { version = "0.5.0", features = ["all_formats"] }
 ```
 
 **Size**: ~500 KB
-**Formatters**: All 10 formatters with all 32 variants
+**Formatters**: All 10 formatters with all 33 variants
 
 ## Feature Compilation Matrix
 
@@ -210,6 +210,24 @@ tree_fmt = { version = "0.5.0", features = ["all_formats"] }
 
 **Note**: Binary sizes are approximate and depend on optimization level and target platform
 
+## Optional Enhancement Features
+
+| Feature Flag | Dependency | Purpose | Default |
+|-------------|------------|---------|---------|
+| `terminal_size` | `terminal_size` 0.4 | Runtime terminal width auto-detection for auto-fit | No |
+| `serde_support` | `serde` (derive) + `color_tools/serde_support` | Serialization support for data format formatters | No |
+| `themes` | — | Predefined color themes | No |
+
+### Terminal Size Auto-Detection
+
+By default, auto-fit uses a hardcoded 120-column fallback when `terminal_width` is not set explicitly. Enable `terminal_size` for runtime detection:
+
+```toml
+tree_fmt = { version = "0.12", features = ["table_plain", "terminal_size"] }
+```
+
+See `feature/005_auto_fit.md § Terminal Width Detection` for the full three-tier fallback algorithm.
+
 ## Meta-Features
 
 Convenience features that enable multiple variants:
@@ -237,7 +255,7 @@ Convenience features that enable multiple variants:
 | Database | `table_bordered`, `expanded_postgres`, `sql_postgres` | ~180 KB | 3 | 3 |
 | Web | `html_bootstrap`, `format_json` | ~130 KB | 2 | 2 |
 | Config | `format_json`, `format_yaml`, `format_toml` | ~140 KB | 3 | 3 |
-| Full | `all_formats` | ~500 KB | 10 | 31 |
+| Full | `all_formats` | ~500 KB | 10 | 33 |
 
 ## Migration from v0.4.0
 
@@ -337,6 +355,5 @@ tree_fmt = { version = "0.5.0", default-features = false, features = [
 
 ## Related Documentation
 
-- [Feature Refactoring Plan](feature_refactoring_plan.md) - Technical implementation details
 - [Table of Variants](../readme.md#table-of-variants) - Complete variant reference
 - [Main README](../readme.md) - Project overview

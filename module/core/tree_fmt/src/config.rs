@@ -151,6 +151,20 @@ impl Default for ColumnSeparator
   }
 }
 
+/// Column flexibility classification for auto-wrapping budget allocation
+///
+/// Determines how a column's width is handled during auto-fit:
+/// - `Fixed`: keeps natural content width, never wrapped
+/// - `Flex`: shrinks to fit the terminal budget, content wraps at budget boundary
+#[ derive( Debug, Clone, Copy, PartialEq, Eq ) ]
+pub enum ColumnFlex
+{
+  /// Keep natural content width; never wrapped by auto-fit
+  Fixed,
+  /// Shrink to fit budget; content wraps at budget boundary
+  Flex,
+}
+
 /// Formatter parameters for table output
 ///
 /// Defines customizable parameters including borders, separators, padding,
@@ -217,6 +231,12 @@ pub struct TableConfig
   truncation_marker : String,
   /// Indent prefix for sub-row detail lines
   sub_row_indent : String,
+  /// Target terminal width for auto-wrapping (None = auto-detect, fallback 120)
+  terminal_width : Option< usize >,
+  /// Enable cell auto-wrapping at column budget boundary
+  auto_wrap : bool,
+  /// Per-column flex classification (empty = auto-classify by heuristic)
+  column_flex : Vec< ColumnFlex >,
 }
 
 impl Default for TableConfig
@@ -241,6 +261,9 @@ impl Default for TableConfig
       max_column_width : None,
       truncation_marker : "...".to_string(),
       sub_row_indent : "  ".to_string(),
+      terminal_width : None,
+      auto_wrap : true,
+      column_flex : Vec::new(),
     }
   }
 }
@@ -364,6 +387,7 @@ impl TableConfig
       column_separator : ColumnSeparator::Character( ',' ),
       outer_padding : false,
       inner_padding : 0,
+      auto_wrap : false,
       ..Self::default()
     }
   }
@@ -379,6 +403,7 @@ impl TableConfig
       column_separator : ColumnSeparator::Character( '\t' ),
       outer_padding : false,
       inner_padding : 0,
+      auto_wrap : false,
       ..Self::default()
     }
   }
@@ -504,6 +529,30 @@ impl TableConfig
     self.sub_row_indent = indent;
     self
   }
+
+  /// Set target terminal width for auto-wrapping (None = auto-detect)
+  #[ must_use ]
+  pub fn terminal_width( mut self, width : Option< usize > ) -> Self
+  {
+    self.terminal_width = width;
+    self
+  }
+
+  /// Enable or disable cell auto-wrapping at budget boundary
+  #[ must_use ]
+  pub fn auto_wrap( mut self, enabled : bool ) -> Self
+  {
+    self.auto_wrap = enabled;
+    self
+  }
+
+  /// Set per-column flex classification (empty = auto-classify by heuristic)
+  #[ must_use ]
+  pub fn column_flex( mut self, flex : Vec< ColumnFlex > ) -> Self
+  {
+    self.column_flex = flex;
+    self
+  }
 }
 
 /// Internal accessors for formatters (pub(crate) methods, not fields — satisfies AF1).
@@ -607,6 +656,24 @@ impl TableConfig
   pub( crate ) fn detail_indent( &self ) -> &str
   {
     &self.sub_row_indent
+  }
+
+  /// Target terminal width override (accessor; distinct from `terminal_width` setter)
+  pub( crate ) fn term_width( &self ) -> Option< usize >
+  {
+    self.terminal_width
+  }
+
+  /// Whether auto-wrapping is enabled (accessor; distinct from `auto_wrap` setter)
+  pub( crate ) fn is_auto_wrap( &self ) -> bool
+  {
+    self.auto_wrap
+  }
+
+  /// Per-column flex classification (accessor; distinct from `column_flex` setter)
+  pub( crate ) fn col_flex( &self ) -> &[ ColumnFlex ]
+  {
+    &self.column_flex
   }
 }
 

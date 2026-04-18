@@ -1,93 +1,63 @@
-# Variant Documentation
+# Variant Doc Entity
 
-This directory contains comprehensive descriptor files for all 33 formatter variants in tree_fmt.
+### Scope
 
-## Overview
+- **Purpose:** Document every output variant with attributes, examples, and configuration.
+- **Responsibility:** Registry and overview of all variant doc instances (33 total).
+- **In Scope:** Per-variant attribute descriptors (46 attributes each), example output, feature flags.
+- **Out of Scope:** Formatter implementation (see `feature/`), attribute definitions (see `variant_attributes.md`).
 
-Each variant has a dedicated markdown file with all 46 attributes documented:
+### Overview Table
 
-### TableFormatter (9 variants)
-- [plain](table_plain.md) - Space-separated with dash separator (default)
-- [minimal](table_minimal.md) - No separators
-- [bordered](table_bordered.md) - PostgreSQL-style pipes
-- [markdown](table_markdown.md) - GitHub-flavored Markdown
-- [grid](table_grid.md) - Full ASCII grid
-- [unicode_box](table_unicode_box.md) - Unicode box-drawing
-- [csv](table_csv.md) - Comma-separated values
-- [tsv](table_tsv.md) - Tab-separated values
-- [compact](table_compact.md) - Minimal spacing
+| ID | Name | Purpose | Status |
+|----|------|---------|--------|
+| 001 | [Table Plain](001_table_plain.md) | Space-separated with dash separator (default) | ✅ |
+| 002 | [Table Minimal](002_table_minimal.md) | No separators | ✅ |
+| 003 | [Table Bordered](003_table_bordered.md) | PostgreSQL-style pipes | ✅ |
+| 004 | [Table Markdown](004_table_markdown.md) | GitHub-flavored Markdown | ✅ |
+| 005 | [Table Grid](005_table_grid.md) | Full ASCII grid | ✅ |
+| 006 | [Table Unicode Box](006_table_unicode_box.md) | Unicode box-drawing | ✅ |
+| 007 | [Table CSV](007_table_csv.md) | Comma-separated values | ✅ |
+| 008 | [Table TSV](008_table_tsv.md) | Tab-separated values | ✅ |
+| 009 | [Table Compact](009_table_compact.md) | Minimal spacing | ✅ |
+| 010 | [Expanded Postgres](010_expanded_postgres_style.md) | PostgreSQL `\x` mode (default) | ✅ |
+| 011 | [Expanded Property](011_expanded_property_style.md) | Property list style | ✅ |
+| 012 | [Tree Hierarchical](012_tree_hierarchical.md) | Standard tree (default) | ✅ |
+| 013 | [Tree Aligned](013_tree_aligned.md) | Column-aligned tree | ✅ |
+| 014 | [Tree Aggregated](014_tree_aggregated.md) | Tree with subtree totals | ✅ |
+| 015 | [Logfmt Standard](015_logfmt_standard.md) | Structured log key=value (default) | ✅ |
+| 016 | [JSON Pretty](016_json_pretty.md) | Indented JSON (default) | ✅ |
+| 017 | [JSON Compact](017_json_compact.md) | Minified JSON | ✅ |
+| 018 | [YAML Standard](018_yaml_standard.md) | Standard YAML (default) | ✅ |
+| 019 | [TOML Standard](019_toml_standard.md) | Standard TOML (default) | ✅ |
+| 020 | [HTML Minimal](020_html_minimal.md) | Plain semantic HTML (default) | ✅ |
+| 021 | [HTML Bootstrap](021_html_bootstrap.md) | Bootstrap 5 classes | ✅ |
+| 022 | [HTML Tailwind](022_html_tailwind.md) | Tailwind CSS classes | ✅ |
+| 023 | [HTML Custom](023_html_custom.md) | User-provided classes | ✅ |
+| 024 | [SQL ANSI](024_sql_ansi.md) | Standard SQL (default) | ✅ |
+| 025 | [SQL PostgreSQL](025_sql_postgresql.md) | PostgreSQL syntax | ✅ |
+| 026 | [SQL MySQL](026_sql_mysql.md) | MySQL/MariaDB syntax | ✅ |
+| 027 | [SQL SQLite](027_sql_sqlite.md) | SQLite3 syntax | ✅ |
+| 028 | [Text Bullets](028_text_bullets.md) | Bulleted lists (default) | ✅ |
+| 029 | [Text Numbered](029_text_numbered.md) | Numbered lists | ✅ |
+| 030 | [Text Sections](030_text_sections.md) | Section headers | ✅ |
+| 031 | [Text KeyValue](031_text_keyvalue.md) | Key-value pairs | ✅ |
+| 032 | [Text Compact](032_text_compact.md) | Dense text | ✅ |
+| 033 | [Text CliHelp](033_text_cli_help.md) | CLI help format with aligned descriptions | ✅ |
 
-### ExpandedFormatter (2 variants)
-- [postgres_style](expanded_postgres_style.md) - PostgreSQL \x mode (default)
-- [property_style](expanded_property_style.md) - Property lists
+### Organization
 
-### TreeFormatter (3 variants)
-- [hierarchical](tree_hierarchical.md) - Standard tree (default)
-- [aligned](tree_aligned.md) - Column-aligned
-- [aggregated](tree_aggregated.md) - With subtree totals
+- **Table**: 001–009
+- **Expanded**: 010–011
+- **Tree**: 012–014
+- **Logfmt**: 015
+- **JSON**: 016–017
+- **YAML**: 018
+- **TOML**: 019
+- **HTML**: 020–023
+- **SQL**: 024–027
+- **Text**: 028–033
 
-### TextFormatter (6 variants)
-- [Bullets](text_bullets.md) - Bulleted lists (default)
-- [Numbered](text_numbered.md) - Numbered lists
-- [Sections](text_sections.md) - Section headers
-- [KeyValue](text_keyvalue.md) - Key-value pairs
-- [Compact](text_compact.md) - Dense text
-- [CliHelp](text_cli_help.md) - CLI help text with section headers
+### Related
 
-### JsonFormatter (2 variants)
-- [Pretty](json_pretty.md) - Indented JSON (default)
-- [Compact](json_compact.md) - Minified JSON
-
-### YamlFormatter (1 variant)
-- [Standard](yaml_standard.md) - Standard YAML (default)
-
-### TomlFormatter (1 variant)
-- [Standard](toml_standard.md) - Standard TOML (default)
-
-### LogfmtFormatter (1 variant)
-- [Standard](logfmt_standard.md) - Logfmt logging (default)
-
-### HtmlFormatter (4 variants)
-- [Minimal](html_minimal.md) - Plain HTML (default)
-- [Bootstrap](html_bootstrap.md) - Bootstrap 5 classes
-- [Tailwind](html_tailwind.md) - Tailwind CSS classes
-- [Custom](html_custom.md) - User-provided classes
-
-### SqlFormatter (4 variants)
-- [ANSI](sql_ansi.md) - Standard SQL (default)
-- [PostgreSQL](sql_postgresql.md) - PostgreSQL syntax
-- [MySQL](sql_mysql.md) - MySQL/MariaDB syntax
-- [SQLite](sql_sqlite.md) - SQLite3 syntax
-
-## Attribute Structure
-
-Each variant descriptor contains 46 attributes organized into 12 sections:
-
-1. **Identity & Classification** (4 attributes)
-2. **Build & Dependencies** (3 attributes)
-3. **Character Set & Encoding** (4 attributes)
-4. **Visual Structure** (7 attributes)
-5. **Data Representation** (6 attributes)
-6. **Output Characteristics** (4 attributes)
-7. **Usage Context** (5 attributes)
-8. **Technical Details** (4 attributes)
-9. **API & Construction** (4 attributes)
-10. **Performance & Size** (2 attributes)
-11. **Compatibility** (3 attributes)
-12. **Example Output**
-13. **Related Links**
-
-See [variant_attributes.md](../variant_attributes.md) for complete attribute definitions.
-
-## Quick Reference
-
-| Total Formatters | Total Variants | Default Variants |
-|-----------------|----------------|------------------|
-| 10              | 33             | 10               |
-
-## Related Documentation
-
-- [Table of Variants](../../readme.md#table-of-variants) - Main table with hyperlinks
-- [Variant Attributes List](../variant_attributes.md) - Complete attribute definitions
-- [Main README](../../readme.md) - Project overview
-- [API Reference](../api/readme.md) - Type signatures and formatter APIs
+- [Variant Attributes](../variant_attributes.md) — complete attribute definitions (46 attributes)

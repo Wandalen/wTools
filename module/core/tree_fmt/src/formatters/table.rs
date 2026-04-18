@@ -95,8 +95,10 @@
 //! ```
 
 use crate::{ TreeNode, TableConfig };
+use crate::config::ColumnFlex;
 use crate::data::TableShapedView;
 use crate::ansi_str::{ unicode_visual_len, pad_unicode_width };
+use crate::wrap::{ WrapConfig, WrapFormatter };
 
 /// Initial string capacity for table output
 const INITIAL_CAPACITY : usize = 512;
@@ -215,8 +217,21 @@ impl TableFormatter
   {
     let mut output = String::with_capacity( INITIAL_CAPACITY );
 
-    // Calculate column widths
+    // Calculate natural column widths
     let column_widths = self.calculate_column_widths_for_rows( headers, rows );
+
+    // Auto-wrap: compute budgets and pre-wrap flex cells at budget boundary
+    let wrapped_rows_storage;
+    let ( rows, column_widths ) = if self.should_auto_wrap( &column_widths )
+    {
+      let ( wr, cw ) = self.apply_auto_wrap( headers, rows, &column_widths );
+      wrapped_rows_storage = wr;
+      ( wrapped_rows_storage.as_slice(), cw )
+    }
+    else
+    {
+      ( rows, column_widths )
+    };
 
     // Top border (AsciiGrid / Unicode only)
     self.format_top_border_if_needed( &mut output, &column_widths );
@@ -847,6 +862,191 @@ impl TableFormatter
       }
       _ => {}
     }
+  }
+
+  // --- Auto-wrap helpers ---
+
+  /// Resolve effective terminal width from config or fallback
+  fn resolve_terminal_width( &self ) -> usize
+  {
+    if let Some( w ) = self.config.term_width()
+    {
+      return if w == 0 { 1 } else { w };
+    }
+    #[ cfg( feature = "terminal_size" ) ]
+    {
+      if let Some( ( terminal_size::Width( w ), _ ) ) = terminal_size::terminal_size()
+      {
+        return w as usize;
+      }
+    }
+    120
+  }
+
+  /// Visual width of one column separator
+  fn separator_visual_width( &self ) -> usize
+  {
+    match self.config.col_sep()
+    {
+      crate::config::ColumnSeparator::Spaces( n ) => *n,
+      crate::config::ColumnSeparator::Character( _ ) => 1,
+      crate::config::ColumnSeparator::String( s ) => unicode_visual_len( s ),
+    }
+  }
+
+  /// Whether the current style uses border pipe characters at row edges
+  fn needs_border_pipes( &self ) -> bool
+  {
+    use crate::config::HeaderSeparatorVariant;
+    matches!(
+      self.config.header_sep_variant(),
+      HeaderSeparatorVariant::AsciiGrid | HeaderSeparatorVariant::Markdown | HeaderSeparatorVariant::Unicode
+    )
+  }
+
+  /// Compute the total display width of a row given column widths
+  fn compute_total_row_width( &self, column_widths : &[ usize ] ) -> usize
+  {
+    if column_widths.is_empty() { return 0; }
+    let content_width : usize = column_widths.iter().sum();
+    let sep_count = column_widths.len() - 1;
+    let sep_total = self.separator_visual_width() * sep_count;
+    let outer = if self.config.has_outer_padding()
+    {
+      self.config.cell_inner_padding() * 2
+    }
+    else
+    {
+      0
+    };
+    let border = if self.needs_border_pipes() { 2 } else { 0 };
+    content_width + sep_total + outer + border
+  }
+
+  /// Determine if auto-wrapping should be applied
+  fn should_auto_wrap( &self, column_widths : &[ usize ] ) -> bool
+  {
+    if !self.config.is_auto_wrap() { return false; }
+    if !self.config.col_widths_override().is_empty() { return false; }
+    if column_widths.is_empty() { return false; }
+    let is_csv_or_tsv = matches!(
+      self.config.col_sep(),
+      crate::config::ColumnSeparator::Character( ',' | '\t' )
+    );
+    if is_csv_or_tsv { return false; }
+    let total = self.compute_total_row_width( column_widths );
+    let terminal = self.resolve_terminal_width();
+    total > terminal
+  }
+
+  /// Classify columns as Fixed or Flex using explicit config or auto-heuristic
+  fn classify_columns( &self, column_widths : &[ usize ] ) -> Vec< ColumnFlex >
+  {
+    let explicit = self.config.col_flex();
+    if !explicit.is_empty()
+    {
+      let mut result = explicit.to_vec();
+      result.resize( column_widths.len(), ColumnFlex::Flex );
+      return result;
+    }
+    column_widths
+      .iter()
+      .map( | &w | if w <= 12 { ColumnFlex::Fixed } else { ColumnFlex::Flex } )
+      .collect()
+  }
+
+  /// Compute per-column budget widths based on terminal width and flex classification
+  fn compute_column_budgets(
+    &self,
+    column_widths : &[ usize ],
+    flex_map : &[ ColumnFlex ],
+  ) -> Vec< usize >
+  {
+    let terminal = self.resolve_terminal_width();
+    let sep_count = if column_widths.len() > 1 { column_widths.len() - 1 } else { 0 };
+    let overhead = self.separator_visual_width() * sep_count
+      + if self.config.has_outer_padding() { self.config.cell_inner_padding() * 2 } else { 0 }
+      + if self.needs_border_pipes() { 2 } else { 0 };
+
+    let fixed_total : usize = column_widths
+      .iter()
+      .zip( flex_map.iter() )
+      .filter( | ( _, f ) | **f == ColumnFlex::Fixed )
+      .map( | ( w, _ ) | *w )
+      .sum();
+
+    let flex_count = flex_map.iter().filter( | f | **f == ColumnFlex::Flex ).count();
+    if flex_count == 0
+    {
+      return column_widths.to_vec();
+    }
+
+    let budget = terminal.saturating_sub( fixed_total + overhead );
+    let base = budget / flex_count;
+    let remainder = budget % flex_count;
+    let min = self.config.min_col_width();
+
+    let mut budgets = Vec::with_capacity( column_widths.len() );
+    let mut flex_idx = 0;
+    for ( i, &w ) in column_widths.iter().enumerate()
+    {
+      if flex_map[ i ] == ColumnFlex::Fixed
+      {
+        budgets.push( w );
+      }
+      else
+      {
+        let extra = usize::from( flex_idx < remainder );
+        let b = ( base + extra ).max( if min > 0 { min } else { 1 } );
+        budgets.push( b.min( w ) );
+        flex_idx += 1;
+      }
+    }
+    budgets
+  }
+
+  /// Pre-wrap flex-column cells at their budget widths, returning modified rows
+  /// and recalculated column widths
+  fn apply_auto_wrap(
+    &self,
+    headers : &[ String ],
+    rows : &[ Vec< String > ],
+    column_widths : &[ usize ],
+  ) -> ( Vec< Vec< String > >, Vec< usize > )
+  {
+    let flex_map = self.classify_columns( column_widths );
+    let budgets = self.compute_column_budgets( column_widths, &flex_map );
+
+    let mut wrapped_rows : Vec< Vec< String > > = rows.to_vec();
+
+    for ( col_idx, ( &flex, &budget ) ) in flex_map.iter().zip( budgets.iter() ).enumerate()
+    {
+      if flex != ColumnFlex::Flex { continue; }
+      if budget >= column_widths[ col_idx ] { continue; }
+
+      let wrapper = WrapFormatter::with_config(
+        WrapConfig::new().width( budget )
+      );
+
+      for row in &mut wrapped_rows
+      {
+        if col_idx < row.len()
+        {
+          let cell_width = row[ col_idx ]
+            .lines()
+            .map( unicode_visual_len )
+            .max()
+            .unwrap_or( 0 );
+          if cell_width > budget
+          {
+            row[ col_idx ] = wrapper.wrap_joined( &row[ col_idx ] );
+          }
+        }
+      }
+    }
+
+    let new_widths = self.calculate_column_widths_for_rows( headers, &wrapped_rows );
+    ( wrapped_rows, new_widths )
   }
 
   /// Calculate column widths based on content

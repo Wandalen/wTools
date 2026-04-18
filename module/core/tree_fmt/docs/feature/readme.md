@@ -1,14 +1,18 @@
-# Features
+# Feature Doc Entity
 
-## Purpose
-Feature documentation describing what tree_fmt capabilities do and how to use them.
+### Scope
 
-## Responsibility Table
+- **Purpose:** Document what data_fmt capabilities do and how to use them.
+- **Responsibility:** Registry and overview of all feature doc instances.
+- **In Scope:** Table formatting, word wrap, unified format interface, color themes, auto-fit.
+- **Out of Scope:** API signatures (see `api/`), variant output examples (see `variant/`).
 
-| File | Responsibility |
-|------|----------------|
-| `table_formatting.md` | Table styles, multiline cells, truncation, border variants, coloring, sub-row detail lines |
-| `word_wrap.md` | WrapConfig, WrapFormatter, BreakStrategy, Overflow, behavior contracts |
-| `unified_format_interface.md` | Format trait, TableView canonical format, feature flags and bundles |
-| `color_themes.md` | Predefined color themes and custom theme creation |
-| `auto_fit.md` | Terminal-aware auto-fit: cell wrapping, column folding, budget allocation |
+### Overview Table
+
+| ID | Name | Purpose | Status |
+|----|------|---------|--------|
+| 001 | [Table Formatting](001_table_formatting.md) | Table styles, multiline cells, truncation, borders, sub-row details | ✅ |
+| 002 | [Word Wrap](002_word_wrap.md) | WrapConfig, BreakStrategy, Overflow behavior contracts | ✅ |
+| 003 | [Unified Format Interface](003_unified_format_interface.md) | Format trait, TableView canonical format, feature flags | ✅ |
+| 004 | [Color Themes](004_color_themes.md) | Predefined color themes and custom theme creation | ✅ |
+| 005 | [Auto-Fit](005_auto_fit.md) | Terminal-aware auto-fit: cell wrapping, column folding | ✅ |
