@@ -106,6 +106,12 @@ Replace with documentation of new architecture (new branch model, workspace_push
 - Update alpha branch protection: require `all-crates` only
 - Remove all 64 per-crate required checks
 
+#### Phase 7 Outcome (2026-04-18)
+
+- **Beta branch deleted**: `gh api -X DELETE repos/Wandalen/wTools/git/refs/heads/beta` → 204; confirmed 404 ✅
+- **Alpha branch protection**: API returned 404 — current token has `push` but not `admin` scope; no existing protection to remove (no 64-check cleanup needed); **manual action required**: GitHub Settings → Branches → Add rule for `alpha`, require status check `all-crates` ⚠️
+- **Note**: `all-crates` check context confirmed as `all-crates` (no workflow prefix) — use this exact string in the UI
+
 ## References
 
 - Full change list: previous session analysis (session summary in project memory)
