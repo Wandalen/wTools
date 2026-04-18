@@ -501,3 +501,153 @@ fn test_expanded_config_builder_methods()
   assert_eq!( config.key_color, "\x1b[36m" );
   assert_eq!( config.padding_side, PaddingSide::AfterSeparator );
 }
+
+// =============================================================================
+// Corner-case: colorize_keys=true with empty key_color does NOT emit ANSI codes
+//
+// The formatter guards coloring with `!key_color.is_empty()`. Setting
+// `key_color("")` while `colorize_keys=true` must suppress all escape codes.
+// Verifies the guard is in place and respects empty-string-as-disable semantics.
+// =============================================================================
+
+#[ test ]
+fn test_expanded_colorize_keys_empty_key_color_suppresses_ansi()
+{
+  use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig };
+
+  let tree = RowBuilder::new( vec![ "Key".into(), "Other".into() ] )
+    .add_row( vec![ "v1".into(), "v2".into() ] )
+    .build();
+
+  let formatter = ExpandedFormatter::with_config(
+    ExpandedConfig::new()
+      .colorize_keys( true )
+      .key_color( String::new() )   // empty string: guard must block ANSI
+  );
+  let output = formatter.format( &tree );
+
+  assert!(
+    !output.contains( '\x1b' ),
+    "colorize_keys=true with empty key_color must produce zero ANSI codes; got:\n{output:?}"
+  );
+  assert!( output.contains( "Key" ), "key text must still appear" );
+  assert!( output.contains( "v1" ), "value must still appear" );
+}
+
+// =============================================================================
+// Corner-case: property_style() defaults to colorize_keys=true → keys colored
+//
+// ExpandedConfig::property_style() sets colorize_keys=true and key_color=gray.
+// Using it without overriding must produce ANSI-colored keys automatically.
+//
+// All other tests that use property_style() override .colorize_keys(false),
+// leaving the default ON path untested. This test closes that gap.
+// =============================================================================
+
+#[ test ]
+fn test_expanded_property_style_default_colorizes_keys()
+{
+  use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig };
+
+  let tree = RowBuilder::new( vec![ "Name".into(), "Status".into() ] )
+    .add_row( vec![ "alice".into(), "ok".into() ] )
+    .build();
+
+  let formatter = ExpandedFormatter::with_config( ExpandedConfig::property_style() );
+  let output = formatter.format( &tree );
+
+  // property_style() has colorize_keys=true and key_color="\x1b[90m" (gray)
+  assert!(
+    output.contains( "\x1b[90m" ),
+    "property_style() default must color keys gray; got:\n{output:?}"
+  );
+  assert!(
+    output.contains( "\x1b[0m" ),
+    "colored keys must include RESET; got:\n{output:?}"
+  );
+  assert!( output.contains( "alice" ), "value must still appear" );
+}
+
+// =============================================================================
+// Corner-case: RESET appears BEFORE the newline in every colorized key line
+//
+// Terminal background colors bleed across the rest of a line if RESET is placed
+// after `\n` or omitted. For each key-value line with colorized keys, the RESET
+// must appear immediately after the key text and BEFORE the trailing `\n`.
+// =============================================================================
+
+#[ test ]
+fn test_expanded_colorized_key_reset_before_newline()
+{
+  use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig };
+
+  let tree = RowBuilder::new( vec![ "Alpha".into(), "Beta".into(), "Gamma".into() ] )
+    .add_row( vec![ "1".into(), "2".into(), "3".into() ] )
+    .build();
+
+  let formatter = ExpandedFormatter::with_config(
+    ExpandedConfig::new()
+      .colorize_keys( true )
+      .key_color( "\x1b[90m".into() )
+  );
+  let output = formatter.format( &tree );
+
+  // Every line that contains the ANSI color prefix must have RESET before \n.
+  // The invariant: ...color...text...\x1b[0m\n — never ...color...text...\n\x1b[0m
+  for line in output.lines()
+  {
+    if line.contains( "\x1b[90m" )
+    {
+      assert!(
+        line.contains( "\x1b[0m" ),
+        "colored key line must contain RESET before end-of-line; got: {line:?}"
+      );
+      // lines() strips the \n, so if this line ends with \x1b[0m the invariant holds
+      assert!(
+        line.ends_with( "\x1b[0m" ) || line.contains( "\x1b[0m" ),
+        "RESET must appear within the line (before \\n); got: {line:?}"
+      );
+    }
+  }
+}
+
+// =============================================================================
+// Corner-case: multi-record colorize_keys — every key in every record colored
+//
+// When the tree has multiple rows (→ multiple records), the color must be applied
+// to every key-value pair in every record, not just the first.
+// =============================================================================
+
+#[ test ]
+fn test_expanded_colorized_keys_all_records()
+{
+  use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig };
+
+  let tree = RowBuilder::new( vec![ "Field".into() ] )
+    .add_row( vec![ "row0".into() ] )
+    .add_row( vec![ "row1".into() ] )
+    .add_row( vec![ "row2".into() ] )
+    .build();
+
+  let formatter = ExpandedFormatter::with_config(
+    ExpandedConfig::new()
+      .colorize_keys( true )
+      .key_color( "\x1b[90m".into() )
+  );
+  let output = formatter.format( &tree );
+
+  // 3 records × 1 field each = 3 colored key lines
+  let colored_key_count = output.lines()
+    .filter( |line| line.contains( "\x1b[90m" ) )
+    .count();
+
+  assert_eq!(
+    colored_key_count,
+    3,
+    "3 records with 1 key each must produce exactly 3 colored key lines; got:\n{output:?}"
+  );
+  // All values must be present
+  assert!( output.contains( "row0" ) );
+  assert!( output.contains( "row1" ) );
+  assert!( output.contains( "row2" ) );
+}

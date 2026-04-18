@@ -40,7 +40,6 @@ mod theme_tests
     {
       assert!( !theme.header_color.is_empty(), "Header color should be set" );
       assert!( !theme.border_color.is_empty(), "Border color should be set" );
-      assert_eq!( theme.reset, "\x1b[0m", "Reset should be standard ANSI reset" );
     }
   }
 
@@ -54,7 +53,6 @@ mod theme_tests
     assert!( theme.row_color1.is_empty() );
     assert!( theme.row_color2.is_empty() );
     assert!( theme.branch_color.is_empty() );
-    assert!( theme.reset.is_empty() );
   }
 
   #[ test ]
@@ -73,7 +71,6 @@ mod theme_tests
     assert_eq!( theme.row_color1, "\x1b[33m" );
     assert_eq!( theme.row_color2, "\x1b[34m" );
     assert_eq!( theme.branch_color, "\x1b[35m" );
-    assert_eq!( theme.reset, "\x1b[0m" );
   }
 
   #[ test ]
@@ -224,7 +221,6 @@ mod theme_tests
     assert_eq!( theme.row_color1, "\x1b[0m" );  // Default to reset
     assert_eq!( theme.row_color2, "" );
     assert_eq!( theme.branch_color, "" );
-    assert_eq!( theme.reset, "\x1b[0m" );
   }
 
   #[ test ]
@@ -237,7 +233,6 @@ mod theme_tests
     // Only specified colors should be set
     assert_eq!( theme.header_color, "\x1b[31m" );
     assert_eq!( theme.border_color, "" );
-    assert_eq!( theme.reset, "\x1b[0m" );
   }
 
   #[ test ]

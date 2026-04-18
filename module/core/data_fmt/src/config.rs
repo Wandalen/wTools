@@ -806,7 +806,8 @@ pub struct ExpandedConfig
   pub show_record_numbers : bool,
   /// Enable ANSI color for keys
   pub colorize_keys : bool,
-  /// ANSI color code for keys (default: gray)
+  /// ANSI color code for keys; pre-loaded with `"\x1b[90m"` (gray) by default.
+  /// Override via `.key_color()` builder or set to `String::new()` to disable.
   pub key_color : String,
   /// Where to place padding for alignment
   pub padding_side : PaddingSide,
@@ -824,7 +825,7 @@ impl Default for ExpandedConfig
       key_value_separator : " | ".to_string(),
       show_record_numbers : true,
       colorize_keys : false,
-      key_color : String::new(),
+      key_color : "\x1b[90m".to_string(),  // Gray — default color when colorize_keys is enabled
       padding_side : PaddingSide::BeforeSeparator,
       indent_prefix : String::new(),
     }
@@ -855,7 +856,7 @@ impl ExpandedConfig
       key_value_separator : ": ".to_string(),
       show_record_numbers : false,
       colorize_keys : true,
-      key_color : String::new(),
+      key_color : "\x1b[90m".to_string(),  // Gray — default color when colorize_keys is enabled
       padding_side : PaddingSide::AfterSeparator,
       indent_prefix : String::new(),
     }

@@ -48,6 +48,9 @@
 //! | t40 | `Color::Rgb(0,0,0)` and `Rgb(255,255,255)` boundary values in `to_css()` (`html_support`) |
 //! | t41 | `render_html()` preserves Unicode text unchanged (`html_support`) |
 //! | t42 | `with_color_named` called twice — second call's color wins in `render_html()` (`html_support`) |
+//! | t43 | All 8 bright 4-bit `Color` variants produce correct SGR 90-97 codes |
+//! | t44 | `with_color("")` — `is_colored()` = true but render emits text + RESET, no color prefix |
+//! | t45 | `render()` on uncolored text containing embedded `\x1b` escapes passes through verbatim |
 
 use color_tools::DecoratedText;
 
@@ -681,4 +684,80 @@ fn t42_with_color_named_twice_second_wins()
     .with_color_named( Color::Red )
     .with_color_named( Color::Blue );
   assert_eq!( ct.render_html(), "<span style=\"color: blue\">x</span>" );
+}
+
+// =============================================================================
+// t43 — All 8 bright 4-bit Color variants produce correct SGR 90-97 codes
+//
+// t23 covers the 8 normal variants (SGR 30-37); this test covers the 8 bright
+// variants (SGR 90-97). Together they prove all 16 4-bit Color variants are
+// correctly mapped.
+// =============================================================================
+
+#[ test ]
+fn t43_color_bright_4bit_sgr_codes()
+{
+  use color_tools::Color;
+  assert_eq!( Color::BrightBlack.to_ansi(),   "\x1b[90m" );
+  assert_eq!( Color::BrightRed.to_ansi(),     "\x1b[91m" );
+  assert_eq!( Color::BrightGreen.to_ansi(),   "\x1b[92m" );
+  assert_eq!( Color::BrightYellow.to_ansi(),  "\x1b[93m" );
+  assert_eq!( Color::BrightBlue.to_ansi(),    "\x1b[94m" );
+  assert_eq!( Color::BrightMagenta.to_ansi(), "\x1b[95m" );
+  assert_eq!( Color::BrightCyan.to_ansi(),    "\x1b[96m" );
+  assert_eq!( Color::BrightWhite.to_ansi(),   "\x1b[97m" );
+}
+
+// =============================================================================
+// t44 — with_color("") sets is_colored() = true but emits text + RESET only
+//
+// Design boundary: `is_colored()` checks `self.color.is_some()`, so `Some("")`
+// returns true. `render()` then emits `"" + text + "\x1b[0m"` — a RESET with no
+// preceding color code. Callers that check `is_colored()` to infer whether any
+// actual color is present will be misled. This test documents the distinction.
+// =============================================================================
+
+#[ test ]
+fn t44_with_color_empty_string_design_boundary()
+{
+  let ct = DecoratedText::from( "text" ).with_color( "" );
+
+  // is_colored() tests Some/None; an empty string is still Some
+  assert!(
+    ct.is_colored(),
+    "with_color(\"\") stores Some(\"\"), so is_colored must report true"
+  );
+  // render() emits color(="") + text + RESET — no visible color, but reset present
+  assert_eq!(
+    ct.render(),
+    "text\x1b[0m",
+    "with_color(\"\") must produce text + RESET with no color prefix"
+  );
+  // is_empty tests text, not the color or render output
+  assert!( !ct.is_empty(), "non-empty text must not report is_empty" );
+}
+
+// =============================================================================
+// t45 — render() on uncolored text with embedded ANSI escapes passes verbatim
+//
+// render() is a pure string concatenation; it does not parse or transform the
+// text field. Embedded ANSI sequences must survive unchanged.
+// =============================================================================
+
+#[ test ]
+fn t45_render_preserves_embedded_escapes()
+{
+  let text_with_escapes = "\x1b[31mred\x1b[0m normal";
+  let ct = DecoratedText::from( text_with_escapes );
+
+  // Plain render: text returned as-is with no outer wrapping
+  assert_eq!(
+    ct.render(),
+    text_with_escapes,
+    "plain render must pass embedded escapes verbatim"
+  );
+  assert!(
+    !ct.is_colored(),
+    "no outer color was attached"
+  );
 }
