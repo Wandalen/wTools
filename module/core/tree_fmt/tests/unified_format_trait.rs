@@ -21,7 +21,7 @@ fn test_row_builder_produces_table_view()
 
   assert_eq!( view.metadata.column_names.len(), 2 );
   assert_eq!( view.rows.len(), 2 );
-  assert_eq!( view.rows[ 0 ][ 0 ], "Alice" );
+  assert_eq!( view.rows[ 0 ][ 0 ].text, "Alice" );
 }
 
 #[ test ]

@@ -238,6 +238,7 @@ fn test_expanded_formatter_with_colored_keys()
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
       .colorize_keys( true )
+      .key_color( "\x1b[90m".into() )
   );
 
   let output = formatter.format( &tree );
@@ -367,8 +368,12 @@ fn test_expanded_formatter_property_style_with_colors()
     .add_row( vec![ "Value".into() ] )
     .build();
 
-  // property_style() has gray keys enabled by default
-  let formatter = ExpandedFormatter::with_config( ExpandedConfig::property_style() );
+  let formatter = ExpandedFormatter::with_config
+  (
+    ExpandedConfig::property_style()
+      .colorize_keys( true )
+      .key_color( "\x1b[90m".into() )
+  );
   let output = formatter.format( &tree );
 
   assert!( output.contains( "\x1b[90mKey:\x1b[0m" ) );

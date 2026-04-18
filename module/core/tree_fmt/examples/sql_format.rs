@@ -80,8 +80,8 @@ fn main()
   // Example 7: Empty strings as NULL
   println!( "7. Empty Strings Converted to NULL:\n" );
   let null_view = RowBuilder::new( vec![ "name".into(), "email".into(), "phone".into() ] )
-    .add_row( vec![ "Alice".into(), "alice@example.com".into(), String::new() ] )
-    .add_row( vec![ "Bob".into(), String::new(), "555-1234".into() ] )
+    .add_row( vec![ "Alice".into(), "alice@example.com".into(), String::new().into() ] )
+    .add_row( vec![ "Bob".into(), String::new().into(), "555-1234".into() ] )
     .add_row( vec![ "Carol".into(), "carol@example.com".into(), "555-5678".into() ] )
     .build_view();
 
@@ -120,8 +120,8 @@ fn main()
   for i in 1..=100
   {
     builder = builder.add_row( vec![
-      i.to_string(),
-      format!( "user{:03}", i ),
+      i.to_string().into(),
+      format!( "user{:03}", i ).into(),
       if i % 2 == 0 { "1" } else { "0" }.into()
     ] );
   }

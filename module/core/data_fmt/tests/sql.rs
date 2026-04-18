@@ -106,8 +106,8 @@ mod sql_tests
   fn test_sql_empty_as_null()
   {
     let view = RowBuilder::new( vec![ "name".into(), "email".into(), "phone".into() ] )
-      .add_row( vec![ "Alice".into(), "alice@example.com".into(), String::new() ] )
-      .add_row( vec![ "Bob".into(), String::new(), "555-1234".into() ] )
+      .add_row( vec![ "Alice".into(), "alice@example.com".into(), String::new().into() ] )
+      .add_row( vec![ "Bob".into(), String::new().into(), "555-1234".into() ] )
       .build_view();
 
     let formatter = SqlFormatter::new( "contacts" ).empty_as_null( true );
@@ -121,7 +121,7 @@ mod sql_tests
   fn test_sql_empty_without_null_conversion()
   {
     let view = RowBuilder::new( vec![ "col".into() ] )
-      .add_row( vec![ String::new() ] )
+      .add_row( vec![ String::new().into() ] )
       .build_view();
 
     let formatter = SqlFormatter::new( "table" );
@@ -169,7 +169,7 @@ mod sql_tests
 
     for i in 1..=100
     {
-      builder = builder.add_row( vec![ i.to_string(), format!( "User{}", i ) ] );
+      builder = builder.add_row( vec![ i.to_string().into(), format!( "User{}", i ).into() ] );
     }
 
     let view = builder.build_view();

@@ -16,8 +16,9 @@ Public interface of `DecoratedText` — a typed text wrapper with optional ANSI 
 | Operation | Purpose | Parameters | Returns |
 |-----------|---------|------------|---------|
 | `with_color` | Attach a raw ANSI color prefix | ANSI escape string (e.g. `"\x1b[33m"`) | `Self` for builder chaining |
-| `with_color_named` | Attach a semantic color | `Color` variant (e.g. `Color::Yellow`) | `Self`; equivalent to `with_color(color.to_ansi())` |
+| `with_color_named` | Attach a semantic color | `Color` variant (e.g. `Color::Yellow`) | `Self`; stores named_color for HTML output |
 | `render` | Produce terminal-ready string | — | Colored: `prefix + text + reset`; uncolored: plain text |
+| `render_html` | Produce HTML output (feature `html_support`) | — | Named-color: `<span style="color: css">text</span>`; plain/raw: escaped text |
 | `is_colored` | Query whether a color is attached | — | Boolean |
 | `is_empty` | Query whether the text content is empty | — | Boolean (tests text field, not render output) |
 
@@ -34,18 +35,11 @@ Public interface of `DecoratedText` — a typed text wrapper with optional ANSI 
 **Derives:** `Debug`, `Clone`, `PartialEq`, `Eq`, `Default`.
 Optional: `Serialize`, `Deserialize` (feature `serde_support`).
 
+**Conditional field:** `named_color: Option<Color>` (feature `html_support`) — populated by `with_color_named`; skipped in serde output.
+
 ### Color Type
 
-`Color` is a semantic color enum exported at the crate root. Use it with `with_color_named()` to avoid hand-crafting raw ANSI strings.
-
-| Variant | ANSI SGR | CSS (html_support) |
-|---------|----------|--------------------|
-| `Color::Black` .. `Color::White` | `\x1b[30m` .. `\x1b[37m` | CSS keyword |
-| `Color::BrightBlack` .. `Color::BrightWhite` | `\x1b[90m` .. `\x1b[97m` | CSS keyword |
-| `Color::Ansi256(n)` | `\x1b[38;5;{n}m` | `var(--ansi256-{n})` |
-| `Color::Rgb(r,g,b)` | `\x1b[38;2;{r};{g};{b}m` | `rgb(r, g, b)` |
-
-`Color` derives `Debug`, `Clone`, `Copy`, `PartialEq`, `Eq`.
+`Color` is a semantic color enum exported at the crate root. Use it with `with_color_named()` to avoid hand-crafting raw ANSI strings. See [api/002 — Color Type](002_color_type.md) for the full variant table and `to_ansi()` contract.
 
 ### Rendering Targets
 
@@ -68,7 +62,7 @@ fn to_html( ct : &DecoratedText ) -> String
 }
 ```
 
-**Translation note:** Both `with_color(raw_str)` and `with_color_named(Color)` store the ANSI SGR bytes in the `color` field — a translator must parse them to recover semantic intent. For HTML/CSS output, prefer `with_color_named` with the `Rgb` variant so the raw bytes encode the exact color without requiring SGR parsing.
+**Translation note:** For HTML output, prefer `with_color_named(Color)` with the `html_support` feature — `render_html()` produces a typed `<span>` without any ANSI parsing. `with_color(raw_str)` stores raw SGR bytes; `render_html()` cannot derive CSS from them and returns plain escaped text.
 
 ### Error Handling
 
@@ -76,7 +70,7 @@ All operations are infallible by design. No ANSI validation is performed — `wi
 
 ### Compatibility Guarantees
 
-- **Public fields:** `text: String` and `color: Option<String>` are public. Changing their types is a breaking change.
+- **Public fields:** `text: String`, `color: Option<String>`, and (under `html_support`) `named_color: Option<Color>` are public. Changing their types is a breaking change.
 - **Semantic versioning:** Major version bump required for field type changes, method removal, or behavioral changes to `render()`.
 - **No ANSI validation contract:** `with_color` will never validate or reject input — callers may rely on this pass-through behavior.
 
@@ -90,3 +84,5 @@ All operations are infallible by design. No ANSI validation is performed — `wi
 | invariant/002 | [Render Reset Contract](../invariant/002_render_reset_contract.md) | Render behavior |
 | invariant/003 | [Emptiness Semantics](../invariant/003_emptiness_semantics.md) | is_empty semantics |
 | invariant/004 | [Render Is Canonical](../invariant/004_render_is_canonical.md) | Single render path |
+| feature/003 | [HTML Rendering](../feature/003_html_rendering.md) | `render_html()` design, raw-vs-named boundary, CSS mapping |
+| api/002 | [Color Type](002_color_type.md) | Full variant table, `to_ansi()` and `to_css()` contracts |

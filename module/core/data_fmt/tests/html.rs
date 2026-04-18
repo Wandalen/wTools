@@ -145,8 +145,8 @@ mod html_tests
     for i in 1..=10
     {
       builder = builder.add_row( vec![
-        format!( "{}", i ),
-        format!( "User{}", i ),
+        format!( "{}", i ).into(),
+        format!( "User{}", i ).into(),
         "Active".into()
       ] );
     }

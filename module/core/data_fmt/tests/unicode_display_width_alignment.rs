@@ -679,7 +679,7 @@ fn test_t015_p04_ansi_colored_cjk_width_strips_escape_codes()
   let colored_cjk = "\x1b[31m日本\x1b[0m".to_string();  // 4 display, but many bytes
 
   let tree = RowBuilder::new( vec![ "H".into() ] )
-    .add_row( vec![ colored_cjk ] )
+    .add_row( vec![ colored_cjk.into() ] )
     .build();
 
   let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
@@ -758,7 +758,7 @@ fn test_t015_n03_ascii_only_table_output_unchanged()
 fn test_t015_n04_empty_content_padded_to_column_width()
 {
   let tree = RowBuilder::new( vec![ "HHH".into() ] )
-    .add_row( vec![ String::new() ] )
+    .add_row( vec![ String::new().into() ] )
     .build();
 
   let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
@@ -811,7 +811,7 @@ fn test_t015_n06_malformed_ansi_content_no_panic()
   for content in [ partial_esc, incomplete_seq, unterminated ]
   {
     let tree = RowBuilder::new( vec![ "H".into() ] )
-      .add_row( vec![ content.clone() ] )
+      .add_row( vec![ content.clone().into() ] )
       .build();
 
     // Must not panic

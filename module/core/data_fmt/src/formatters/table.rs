@@ -103,8 +103,6 @@ use color_tools::DecoratedText;
 
 /// Initial string capacity for table output
 const INITIAL_CAPACITY : usize = 512;
-/// ANSI SGR reset sequence — terminates any active color or style.
-const ANSI_RESET : &str = "\x1b[0m";
 
 /// Formatter for rendering tabular data as strings
 ///
@@ -174,7 +172,9 @@ impl TableFormatter
   pub fn format( &self, tree : &TreeNode< String > ) -> String
   {
     let headers = tree.extract_headers().unwrap_or_default();
-    let rows = tree.to_rows();
+    let rows : Vec< Vec< DecoratedText > > = tree.to_rows().into_iter()
+      .map( | r | r.into_iter().map( DecoratedText::from ).collect() )
+      .collect();
     self.format_internal( &headers, &rows, &[] )
   }
 
@@ -215,7 +215,7 @@ impl TableFormatter
   {
     let mut output = String::with_capacity( INITIAL_CAPACITY );
 
-    // Calculate natural column widths
+    // Calculate natural column widths (uses .text for ANSI-free measurement)
     let column_widths = self.calculate_column_widths_for_rows( headers, rows );
 
     // Auto-wrap: compute budgets and pre-wrap flex cells at budget boundary
@@ -268,23 +268,23 @@ impl TableFormatter
 
       if color.is_empty()
       {
-        let rendered : Vec< String > = primary_row.iter().map( | ct | ct.render() ).collect();
-        self.format_row( &mut output, &rendered, primary_widths, false );
+        self.format_row_colored( &mut output, primary_row, primary_widths, false );
       }
       else
       {
-        // Row-level color: extract plain text (cell colors not applied when row color is set)
-        let plain_cells : Vec< String > = primary_row.iter()
-          .map( | ct | ct.text.clone() )
+        // Row-level color: strip cell colors (cell RESET would clear row background)
+        let plain_cells : Vec< DecoratedText > = primary_row.iter()
+          .map( | ct | DecoratedText::from( ct.text.as_str() ) )
           .collect();
         let mut row_buf = String::new();
         self.format_row( &mut row_buf, &plain_cells, primary_widths, false );
-        // Fix(issue-multiline-color): same per-line loop as header (see above).
+        // Fix(issue-multiline-color): wrap each output line with row color individually.
+        let reset = self.config.color_reset_str();
         for line in row_buf.lines()
         {
           output.push_str( color );
           output.push_str( line );
-          output.push_str( ANSI_RESET );
+          output.push_str( reset );
           output.push( '\n' );
         }
       }
@@ -316,7 +316,7 @@ impl TableFormatter
       //   .text.lines() and emit color/RESET per output line.
       if let Some( Some( ct ) ) = row_details.get( idx )
       {
-        if !ct.is_empty()
+        if !ct.text.is_empty()
         {
           let indent = self.config.detail_indent();
           for line in ct.text.lines()
@@ -324,9 +324,7 @@ impl TableFormatter
             output.push_str( indent );
             if let Some( ref color ) = ct.color
             {
-              output.push_str( color );
-              output.push_str( line );
-              output.push_str( ANSI_RESET );
+              output.push_str( &DecoratedText::from( line.to_string() ).with_color( color.clone() ).render() );
             }
             else
             {
@@ -373,9 +371,12 @@ impl TableFormatter
     {
       let mut row_buf = String::new();
       self.format_row( &mut row_buf, &header_cells, primary_widths, true );
+      let reset = self.config.color_reset_str();
       for line in row_buf.lines()
       {
-        output.push_str( &DecoratedText::from( line.to_string() ).with_color( header_color.to_string() ).render() );
+        output.push_str( header_color );
+        output.push_str( line );
+        output.push_str( reset );
         output.push( '\n' );
       }
     }
@@ -497,7 +498,25 @@ impl TableFormatter
 
     if has_multiline
     {
-      self.format_multiline_row_colored( output, cells, column_widths );
+      // Per-line color wrapping: emit color+line+RESET for each sub-line to prevent
+      // background-color bleed across \n boundaries (Fix issue-ansi-color-per-line).
+      let cells_colored : Vec< String > = cells.iter()
+        .map( | ct |
+        {
+          if let Some( ref c ) = ct.color
+          {
+            ct.text.lines()
+              .map( | line | DecoratedText::from( line.to_string() ).with_color( c.clone() ).render() )
+              .collect::< Vec< _ > >()
+              .join( "\n" )
+          }
+          else
+          {
+            ct.text.clone()
+          }
+        } )
+        .collect();
+      self.format_multiline_row( output, &cells_colored, column_widths );
     }
     else
     {
@@ -1115,14 +1134,14 @@ impl TableFormatter
   fn apply_auto_wrap(
     &self,
     headers : &[ String ],
-    rows : &[ Vec< String > ],
+    rows : &[ Vec< DecoratedText > ],
     column_widths : &[ usize ],
-  ) -> ( Vec< Vec< String > >, Vec< usize > )
+  ) -> ( Vec< Vec< DecoratedText > >, Vec< usize > )
   {
     let flex_map = self.classify_columns( column_widths );
     let budgets = self.compute_column_budgets( column_widths, &flex_map );
 
-    let mut wrapped_rows : Vec< Vec< String > > = rows.to_vec();
+    let mut wrapped_rows : Vec< Vec< DecoratedText > > = rows.to_vec();
 
     for ( col_idx, ( &flex, &budget ) ) in flex_map.iter().zip( budgets.iter() ).enumerate()
     {
@@ -1138,13 +1157,21 @@ impl TableFormatter
         if col_idx < row.len()
         {
           let cell_width = row[ col_idx ]
+            .text
             .lines()
             .map( unicode_visual_len )
             .max()
             .unwrap_or( 0 );
           if cell_width > budget
           {
-            row[ col_idx ] = wrapper.wrap_joined( &row[ col_idx ] );
+            let wrapped_text = wrapper.wrap_joined( &row[ col_idx ].text );
+            let original_color = row[ col_idx ].color.clone();
+            let mut new_cell = DecoratedText::from( wrapped_text );
+            if let Some( color ) = original_color
+            {
+              new_cell = new_cell.with_color( color );
+            }
+            row[ col_idx ] = new_cell;
           }
         }
       }
@@ -1330,7 +1357,7 @@ impl TableFormatter
   fn calculate_column_widths_for_rows(
     &self,
     headers : &[ String ],
-    rows : &[ Vec< String > ]
+    rows : &[ Vec< DecoratedText > ]
   )
   -> Vec< usize >
   {
@@ -1361,7 +1388,7 @@ impl TableFormatter
       widths[ idx ] = header_width;
     }
 
-    // Consider row widths (unicode display-width, ANSI-stripped)
+    // Consider row widths (unicode display-width, ANSI-stripped; use .text to skip ANSI bytes)
     for row in rows
     {
       for ( idx, cell ) in row.iter().enumerate()
@@ -1369,6 +1396,7 @@ impl TableFormatter
         if idx < widths.len()
         {
           let cell_width = cell
+            .text
             .lines()
             .map( unicode_visual_len )
             .max()

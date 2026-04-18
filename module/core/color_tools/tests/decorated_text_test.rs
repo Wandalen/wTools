@@ -450,3 +450,86 @@ fn t28_with_color_named_is_colored()
   assert!( ct.is_colored(), "with_color_named must set is_colored" );
   assert!( !ct.is_empty(),  "non-empty text must not be empty" );
 }
+
+// =============================================================================
+// t29 — render_html: plain text returns HTML-escaped content, no span
+// =============================================================================
+
+#[ cfg( feature = "html_support" ) ]
+#[ test ]
+fn t29_render_html_plain_no_span()
+{
+  use color_tools::DecoratedText;
+  let ct = DecoratedText::from( "hello world" );
+  assert_eq!( ct.render_html(), "hello world" );
+}
+
+// =============================================================================
+// t30 — render_html: named Yellow color produces span with CSS yellow
+// =============================================================================
+
+#[ cfg( feature = "html_support" ) ]
+#[ test ]
+fn t30_render_html_yellow_span()
+{
+  use color_tools::{ DecoratedText, Color };
+  let ct = DecoratedText::from( "warn" ).with_color_named( Color::Yellow );
+  assert_eq!( ct.render_html(), "<span style=\"color: yellow\">warn</span>" );
+}
+
+// =============================================================================
+// t31 — render_html: Rgb color produces rgb(...) CSS value
+// =============================================================================
+
+#[ cfg( feature = "html_support" ) ]
+#[ test ]
+fn t31_render_html_rgb_span()
+{
+  use color_tools::{ DecoratedText, Color };
+  let ct = DecoratedText::from( "ok" ).with_color_named( Color::Rgb( 255, 165, 0 ) );
+  assert_eq!( ct.render_html(), "<span style=\"color: rgb(255, 165, 0)\">ok</span>" );
+}
+
+// =============================================================================
+// t32 — render_html: text with HTML special chars is escaped
+// =============================================================================
+
+#[ cfg( feature = "html_support" ) ]
+#[ test ]
+fn t32_render_html_escapes_special_chars()
+{
+  use color_tools::DecoratedText;
+  let ct = DecoratedText::from( "<b>test</b> & more" );
+  assert_eq!( ct.render_html(), "&lt;b&gt;test&lt;/b&gt; &amp; more" );
+}
+
+// =============================================================================
+// t33 — render_html: raw-string color produces plain text (no span)
+//
+// Design boundary: with_color(raw_str) cannot produce a <span> because CSS
+// requires semantic Color, not raw ANSI bytes. Only with_color_named sets
+// named_color; with_color(raw_str) leaves named_color as None.
+// =============================================================================
+
+#[ cfg( feature = "html_support" ) ]
+#[ test ]
+fn t33_render_html_raw_color_no_span()
+{
+  use color_tools::DecoratedText;
+  let ct = DecoratedText::from( "text" ).with_color( "\x1b[33m" );
+  assert_eq!( ct.render_html(), "text" );
+  assert!( !ct.render_html().contains( "<span" ), "raw-string color must not produce span" );
+}
+
+// =============================================================================
+// t34 — render_html: 256-color produces CSS custom property
+// =============================================================================
+
+#[ cfg( feature = "html_support" ) ]
+#[ test ]
+fn t34_render_html_ansi256_css_var()
+{
+  use color_tools::{ DecoratedText, Color };
+  let ct = DecoratedText::from( "info" ).with_color_named( Color::Ansi256( 208 ) );
+  assert_eq!( ct.render_html(), "<span style=\"color: var(--ansi256-208)\">info</span>" );
+}

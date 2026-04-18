@@ -53,8 +53,8 @@ impl DecoratedText
 
   /// Attach a semantic color by name. Equivalent to `.with_color( color.to_ansi() )`.
   ///
-  /// Converts the `Color` variant to its ANSI SGR opening sequence and delegates to
-  /// `.with_color()`. Use this when you prefer named colors over raw escape strings.
+  /// Stores both the ANSI string (for `render()`) and, when `html_support` is enabled,
+  /// the original `Color` value so that `render_html()` can produce a typed CSS span.
   ///
   /// # Example
   ///
@@ -66,7 +66,46 @@ impl DecoratedText
   #[ must_use ]
   pub fn with_color_named( self, color : Color ) -> Self
   {
-    self.with_color( color.to_ansi() )
+    let ansi = color.to_ansi();
+    let result = self.with_color( ansi );
+    #[ cfg( feature = "html_support" ) ]
+    let result = { let mut r = result; r.named_color = Some( color ); r };
+    result
+  }
+
+  /// Produce browser-usable HTML output.
+  ///
+  /// Plain text (no `with_color_named`): returns HTML-escaped text with no wrapper.
+  /// Named-color text (via `with_color_named`): returns `<span style="color: {css}">escaped_text</span>`.
+  /// Raw-string-color text (via `with_color`): returns plain escaped text — CSS cannot be
+  /// derived from raw ANSI bytes; use `render()` for terminal output in that case.
+  ///
+  /// # Example
+  ///
+  /// ```
+  /// # #[cfg(feature = "html_support")]
+  /// # {
+  /// use color_tools::{ DecoratedText, Color };
+  /// let ct = DecoratedText::from( "warn" ).with_color_named( Color::Yellow );
+  /// assert_eq!( ct.render_html(), "<span style=\"color: yellow\">warn</span>" );
+  ///
+  /// let plain = DecoratedText::from( "ok" );
+  /// assert_eq!( plain.render_html(), "ok" );
+  /// # }
+  /// ```
+  #[ cfg( feature = "html_support" ) ]
+  #[ must_use ]
+  pub fn render_html( &self ) -> String
+  {
+    let escaped = self.text
+      .replace( '&', "&amp;" )
+      .replace( '<', "&lt;" )
+      .replace( '>', "&gt;" );
+    match &self.named_color
+    {
+      Some( c ) => format!( "<span style=\"color: {}\">{escaped}</span>", c.to_css() ),
+      None      => escaped,
+    }
   }
 
   /// Render to a terminal string.

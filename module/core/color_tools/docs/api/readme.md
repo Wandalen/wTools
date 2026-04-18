@@ -12,3 +12,4 @@
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
 | 001 | [DecoratedText Type](001_decorated_text_type.md) | Public API for constructing, coloring, and rendering text | ✅ |
+| 002 | [Color Type](002_color_type.md) | Public API for the `Color` enum — variants, `to_ansi()`, and SGR mapping | ✅ |

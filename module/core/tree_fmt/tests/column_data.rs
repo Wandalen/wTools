@@ -26,7 +26,7 @@ fn test_column_data_new_single_column()
   assert_eq!( data.columns.len(), 1 );
   assert!( !data.is_empty() );
   assert_eq!( data.len(), 1 );
-  assert_eq!( data.columns[ 0 ], "value" );
+  assert_eq!( data.columns[ 0 ].text, "value" );
 }
 
 #[ test ]
@@ -38,8 +38,8 @@ fn test_column_data_new_two_columns()
   ]);
 
   assert_eq!( data.len(), 2 );
-  assert_eq!( data.columns[ 0 ], "name" );
-  assert_eq!( data.columns[ 1 ], "version" );
+  assert_eq!( data.columns[ 0 ].text, "name" );
+  assert_eq!( data.columns[ 1 ].text, "version" );
 }
 
 #[ test ]
@@ -52,9 +52,9 @@ fn test_column_data_new_three_columns()
   ]);
 
   assert_eq!( data.len(), 3 );
-  assert_eq!( data.columns[ 0 ], "api_ollama" );
-  assert_eq!( data.columns[ 1 ], "v0.1.0" );
-  assert_eq!( data.columns[ 2 ], "(api/ollama)" );
+  assert_eq!( data.columns[ 0 ].text, "api_ollama" );
+  assert_eq!( data.columns[ 1 ].text, "v0.1.0" );
+  assert_eq!( data.columns[ 2 ].text, "(api/ollama)" );
 }
 
 #[ test ]
@@ -67,8 +67,8 @@ fn test_column_data_new_many_columns()
   let data = ColumnData::new( columns );
 
   assert_eq!( data.len(), 10 );
-  assert_eq!( data.columns[ 0 ], "column_0" );
-  assert_eq!( data.columns[ 9 ], "column_9" );
+  assert_eq!( data.columns[ 0 ].text, "column_0" );
+  assert_eq!( data.columns[ 9 ].text, "column_9" );
 }
 
 // =============================================================================
@@ -92,7 +92,7 @@ fn test_column_data_from_pairs_single()
   ]);
 
   assert_eq!( data.len(), 1 );
-  assert_eq!( data.columns[ 0 ], "api_ollama" );
+  assert_eq!( data.columns[ 0 ].text, "api_ollama" );
 }
 
 #[ test ]
@@ -105,9 +105,9 @@ fn test_column_data_from_pairs_multiple()
   ]);
 
   assert_eq!( data.len(), 3 );
-  assert_eq!( data.columns[ 0 ], "api_ollama" );
-  assert_eq!( data.columns[ 1 ], "v0.1.0" );
-  assert_eq!( data.columns[ 2 ], "(api/ollama)" );
+  assert_eq!( data.columns[ 0 ].text, "api_ollama" );
+  assert_eq!( data.columns[ 1 ].text, "v0.1.0" );
+  assert_eq!( data.columns[ 2 ].text, "(api/ollama)" );
 }
 
 #[ test ]
@@ -120,8 +120,8 @@ fn test_column_data_from_pairs_keys_discarded()
 
   // Keys are discarded, only values retained
   assert_eq!( data.len(), 2 );
-  assert_eq!( data.columns[ 0 ], "value1" );
-  assert_eq!( data.columns[ 1 ], "value2" );
+  assert_eq!( data.columns[ 0 ].text, "value1" );
+  assert_eq!( data.columns[ 1 ].text, "value2" );
 }
 
 // =============================================================================
@@ -184,11 +184,11 @@ fn test_column_data_clone_independence()
   let data2 = data1.clone();
 
   // Modify original
-  data1.columns[ 0 ] = "modified".to_string();
+  data1.columns[ 0 ] = "modified".into();
 
   // Clone should be unchanged
-  assert_eq!( data2.columns[ 0 ], "original" );
-  assert_eq!( data1.columns[ 0 ], "modified" );
+  assert_eq!( data2.columns[ 0 ].text, "original" );
+  assert_eq!( data1.columns[ 0 ].text, "modified" );
 }
 
 // =============================================================================
@@ -205,9 +205,9 @@ fn test_column_data_with_empty_strings()
   ]);
 
   assert_eq!( data.len(), 3 );
-  assert_eq!( data.columns[ 0 ], "" );
-  assert_eq!( data.columns[ 1 ], "value" );
-  assert_eq!( data.columns[ 2 ], "" );
+  assert_eq!( data.columns[ 0 ].text, "" );
+  assert_eq!( data.columns[ 1 ].text, "value" );
+  assert_eq!( data.columns[ 2 ].text, "" );
 }
 
 #[ test ]
@@ -220,9 +220,9 @@ fn test_column_data_with_unicode()
   ]);
 
   assert_eq!( data.len(), 3 );
-  assert_eq!( data.columns[ 0 ], "日本語" );
-  assert_eq!( data.columns[ 1 ], "emoji_😀" );
-  assert_eq!( data.columns[ 2 ], "Русский" );
+  assert_eq!( data.columns[ 0 ].text, "日本語" );
+  assert_eq!( data.columns[ 1 ].text, "emoji_😀" );
+  assert_eq!( data.columns[ 2 ].text, "Русский" );
 }
 
 #[ test ]
@@ -232,8 +232,8 @@ fn test_column_data_with_long_strings()
   let data = ColumnData::new( vec![ long_string.clone() ] );
 
   assert_eq!( data.len(), 1 );
-  assert_eq!( data.columns[ 0 ].len(), 1000 );
-  assert_eq!( data.columns[ 0 ], long_string );
+  assert_eq!( data.columns[ 0 ].text.len(), 1000 );
+  assert_eq!( data.columns[ 0 ].text, long_string );
 }
 
 #[ test ]
@@ -246,7 +246,7 @@ fn test_column_data_with_special_chars()
   ]);
 
   assert_eq!( data.len(), 3 );
-  assert!( data.columns[ 0 ].contains( '\t' ) );
-  assert!( data.columns[ 1 ].contains( '\n' ) );
-  assert!( data.columns[ 2 ].contains( '"' ) );
+  assert!( data.columns[ 0 ].text.contains( '\t' ) );
+  assert!( data.columns[ 1 ].text.contains( '\n' ) );
+  assert!( data.columns[ 2 ].text.contains( '"' ) );
 }

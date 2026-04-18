@@ -1,7 +1,7 @@
 meta:
   description: Cross-reference graph for all doc instances in color_tools
-  node_count: 7
-  edge_count: 25
+  node_count: 9
+  edge_count: 31
   component_count: 1
   generated: 2026-04-18
 
@@ -13,6 +13,10 @@ nodes:
   - id: feature/002
     file: feature/002_serde_support.md
     label: serde Support
+    entity: feature
+  - id: feature/003
+    file: feature/003_html_rendering.md
+    label: HTML Rendering
     entity: feature
   - id: invariant/001
     file: invariant/001_transparent_conversion.md
@@ -33,6 +37,10 @@ nodes:
   - id: api/001
     file: api/001_decorated_text_type.md
     label: DecoratedText Type
+    entity: api
+  - id: api/002
+    file: api/002_color_type.md
+    label: Color Type
     entity: api
 
 edges:
@@ -68,19 +76,30 @@ edges:
   - { from: api/001, to: invariant/002, via: cross_references }
   - { from: api/001, to: invariant/003, via: cross_references }
   - { from: api/001, to: invariant/004, via: cross_references }
+  - { from: api/001, to: api/002,       via: cross_references }
+  # api/002 cross-references
+  - { from: api/002, to: api/001,       via: cross_references }
+  - { from: api/002, to: feature/001,   via: cross_references }
+  # feature/003 cross-references
+  - { from: feature/003, to: feature/001, via: cross_references }
+  - { from: feature/003, to: api/001,     via: cross_references }
+  # api/001 → feature/003 (render_html documented in feature/003)
+  - { from: api/001, to: feature/003,   via: cross_references }
 
 components:
   - id: 1
     label: color_tools documentation corpus
-    size: 7
+    size: 9
     isolated: false
     nodes:
       - feature/001
       - feature/002
+      - feature/003
       - invariant/001
       - invariant/002
       - invariant/003
       - invariant/004
       - api/001
+      - api/002
 
 dangling_refs: []

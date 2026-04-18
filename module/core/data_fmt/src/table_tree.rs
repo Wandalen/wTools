@@ -71,8 +71,8 @@ impl RowBuilder
   /// use data_fmt::RowBuilder;
   ///
   /// let tree = RowBuilder::new( vec![ "A".into(), "B".into() ] )
-  ///   .add_row( vec![ "1", "2" ] )
-  ///   .add_row( vec![ "3", "4" ] )
+  ///   .add_row( vec![ "1".into(), "2".into() ] )
+  ///   .add_row( vec![ "3".into(), "4".into() ] )
   ///   .build();
   ///
   /// assert_eq!( tree.children.len(), 2 );
@@ -119,8 +119,8 @@ impl RowBuilder
   /// use data_fmt::RowBuilder;
   ///
   /// let tree = RowBuilder::new( vec![ "Name".into() ] )
-  ///   .add_row_with_name( "Alice".into(), vec![ "30" ] )
-  ///   .add_row_with_name( "Bob".into(), vec![ "25" ] )
+  ///   .add_row_with_name( "Alice".into(), vec![ "30".into() ] )
+  ///   .add_row_with_name( "Bob".into(), vec![ "25".into() ] )
   ///   .build();
   ///
   /// assert_eq!( tree.children[ 0 ].name, "Alice" );
@@ -164,7 +164,7 @@ impl RowBuilder
   /// use data_fmt::RowBuilder;
   ///
   /// let view = RowBuilder::new( vec![ "Name".into() ] )
-  ///   .add_row_with_detail( vec![ "Alice" ], Some( "note".into() ) )
+  ///   .add_row_with_detail( vec![ "Alice".into() ], Some( "note".into() ) )
   ///   .build_view();
   ///
   /// assert_eq!( view.row_details[ 0 ], Some( data_fmt::DecoratedText::from( "note" ) ) );
@@ -201,7 +201,7 @@ impl RowBuilder
   /// use data_fmt::RowBuilder;
   ///
   /// let mut builder = RowBuilder::new( vec![ "Name".into() ] );
-  /// builder.add_row_with_detail_mut( vec![ "Alice" ], Some( "note".into() ) );
+  /// builder.add_row_with_detail_mut( vec![ "Alice".into() ], Some( "note".into() ) );
   /// let view = builder.build_view();
   ///
   /// assert_eq!( view.row_details[ 0 ], Some( data_fmt::DecoratedText::from( "note" ) ) );

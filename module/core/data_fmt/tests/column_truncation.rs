@@ -239,7 +239,7 @@ fn test_truncation_multiple_ansi_codes()
 fn test_truncation_empty_string()
 {
   let data = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row( vec![ String::new() ] )
+    .add_row( vec![ String::new().into() ] )
     .build();
 
   let config = TableConfig::plain()

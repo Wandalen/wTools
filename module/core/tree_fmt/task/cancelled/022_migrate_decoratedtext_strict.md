@@ -5,7 +5,9 @@
 - **Executor Type:** any
 - **Actor:** null
 - **Claimed At:** null
-- **Status:** 🎯 (Available)
+- **Status:** ❌ (Cancelled)
+- **Cancelled At:** 2026-04-18
+- **Cancellation Reason:** `tree_fmt` is now a thin `pub use data_fmt::*` re-export shim. The migration work is owned by `data_fmt/task/001_migrate_decorated_text_strict.md`. Executing this task would duplicate effort on a crate with no independent source files to migrate.
 
 ## Goal
 

@@ -183,6 +183,7 @@ fn test_expanded_indent_prefix_t07_colorize_keys_indent_before_color()
   (
     ExpandedConfig::property_style()
       .colorize_keys( true )
+      .key_color( "\x1b[90m".into() )
       .indent_prefix( "  ".into() )
   );
   let output = formatter.format( &tree );

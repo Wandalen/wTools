@@ -95,3 +95,42 @@ impl Color
     }
   }
 }
+
+#[ cfg( feature = "html_support" ) ]
+impl Color
+{
+  /// Produce the CSS color value for use in HTML `style` attributes.
+  ///
+  /// 4-bit named colors map to CSS keywords; `Rgb` maps to `rgb(r, g, b)`;
+  /// `Ansi256` maps to a CSS custom property `var(--ansi256-N)` (caller must define
+  /// the custom property in their stylesheet).
+  ///
+  /// # Example
+  ///
+  /// ```
+  /// # #[cfg(feature = "html_support")]
+  /// # {
+  /// use color_tools::Color;
+  /// assert_eq!( Color::Yellow.to_css(), "yellow" );
+  /// assert_eq!( Color::Rgb( 255, 165, 0 ).to_css(), "rgb(255, 165, 0)" );
+  /// assert_eq!( Color::Ansi256( 208 ).to_css(), "var(--ansi256-208)" );
+  /// # }
+  /// ```
+  #[ must_use ]
+  pub fn to_css( &self ) -> String
+  {
+    match self
+    {
+      Color::Black   | Color::BrightBlack   => "black".to_owned(),
+      Color::Red     | Color::BrightRed     => "red".to_owned(),
+      Color::Green   | Color::BrightGreen   => "green".to_owned(),
+      Color::Yellow  | Color::BrightYellow  => "yellow".to_owned(),
+      Color::Blue    | Color::BrightBlue    => "blue".to_owned(),
+      Color::Magenta | Color::BrightMagenta => "magenta".to_owned(),
+      Color::Cyan    | Color::BrightCyan    => "cyan".to_owned(),
+      Color::White   | Color::BrightWhite   => "white".to_owned(),
+      Color::Rgb( r, g, b ) => format!( "rgb({r}, {g}, {b})" ),
+      Color::Ansi256( n )   => format!( "var(--ansi256-{n})" ),
+    }
+  }
+}

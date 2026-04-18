@@ -250,6 +250,8 @@ pub struct TableConfig
   row_color1 : String,
   /// Second row color (for alternating)
   row_color2 : String,
+  /// ANSI reset sequence applied after colored rows/headers (default: "\x1b[0m")
+  color_reset : String,
   /// Minimum width for each column
   min_column_width : usize,
   /// Maximum width for columns (None = unlimited)
@@ -290,6 +292,7 @@ impl Default for TableConfig
       alternating_rows : false,
       row_color1 : String::new(),
       row_color2 : String::new(),
+      color_reset : "\x1b[0m".to_string(),
       min_column_width : 0,
       max_column_width : None,
       truncation_marker : "...".to_string(),
@@ -536,6 +539,16 @@ impl TableConfig
     self
   }
 
+  /// Set the ANSI reset sequence used after colored rows and headers
+  ///
+  /// Defaults to `"\x1b[0m"`. Set to `""` to disable ANSI reset (for plain-text output).
+  #[ must_use ]
+  pub fn color_reset( mut self, reset : impl Into< String > ) -> Self
+  {
+    self.color_reset = reset.into();
+    self
+  }
+
   /// Set minimum column width
   #[ must_use ]
   pub fn min_column_width( mut self, width : usize ) -> Self
@@ -714,6 +727,12 @@ impl TableConfig
     &self.row_color2
   }
 
+  /// ANSI reset sequence applied after colored content (default: "\x1b[0m")
+  pub( crate ) fn color_reset_str( &self ) -> &str
+  {
+    &self.color_reset
+  }
+
   /// Sub-row detail line indent prefix (accessor; distinct from `sub_row_indent` setter)
   pub( crate ) fn detail_indent( &self ) -> &str
   {
@@ -835,7 +854,7 @@ impl ExpandedConfig
       key_value_separator : ": ".to_string(),
       show_record_numbers : false,
       colorize_keys : true,
-      key_color : String::new(),
+      key_color : "\x1b[90m".to_string(),  // Gray
       padding_side : PaddingSide::AfterSeparator,
       indent_prefix : String::new(),
     }

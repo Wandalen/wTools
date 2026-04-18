@@ -546,7 +546,7 @@ fn test_single_column_many_rows_renders_all()
   let mut builder = RowBuilder::new( vec![ "Num".into() ] );
   for i in 0..10
   {
-    builder.add_row_mut( vec![ format!( "row{i}" ) ] );
+    builder.add_row_mut( vec![ format!( "row{i}" ).into() ] );
   }
   let tree = builder.build();
 
@@ -588,8 +588,8 @@ fn test_many_columns_single_row_renders_all()
 fn test_empty_cell_content_renders_without_panic()
 {
   let tree = RowBuilder::new( vec![ "A".into(), "B".into() ] )
-    .add_row( vec![ String::new(), "value".into() ] )
-    .add_row( vec![ "content".into(), String::new() ] )
+    .add_row( vec![ String::new().into(), "value".into() ] )
+    .add_row( vec![ "content".into(), String::new().into() ] )
     .build();
 
   for ( name, config ) in [
@@ -628,7 +628,7 @@ fn test_very_long_cell_content_renders_without_truncation_by_default()
 {
   let long = "x".repeat( 120 );
   let tree = RowBuilder::new( vec![ "Col".into() ] )
-    .add_row( vec![ long.clone() ] )
+    .add_row( vec![ long.clone().into() ] )
     .build();
 
   let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
@@ -890,7 +890,7 @@ fn test_min_column_width_does_not_shrink_wider_content()
 {
   let content = "x".repeat( 15 );
   let tree = RowBuilder::new( vec![ "H".into() ] )
-    .add_row( vec![ content.clone() ] )
+    .add_row( vec![ content.clone().into() ] )
     .build();
 
   let output = TableFormatter::with_config(
