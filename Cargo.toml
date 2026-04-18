@@ -294,7 +294,7 @@ path = "module/core/former_meta"
 default-features = false
 
 [workspace.dependencies.former_types]
-version = "~2.37.0"
+version = "~2.38.0"
 path = "module/core/former_types"
 default-features = false
 
