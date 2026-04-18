@@ -4,23 +4,32 @@
 [![Documentation](https://docs.rs/tree_fmt/badge.svg)](https://docs.rs/tree_fmt)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./license)
 
+> **Deprecated:** This crate has been renamed to [`data_fmt`](https://crates.io/crates/data_fmt).
+> Use `data_fmt` for all new projects. This is the final release of `tree_fmt`.
+
 Multi-format data visualization library: 10 formatters, 31 variants, zero core dependencies.
 
-## Why tree_fmt?
+## Why data_fmt?
 
-**Build once, format anywhere:** Create your data structure once, then output as ASCII table, JSON, HTML, SQL, YAML, tree view, or 6 other formats - without rebuilding data. Features granular compilation (31 flags) and zero core dependencies.
+**Build once, format anywhere:** Create your data structure once, then output as ASCII table, JSON, HTML, SQL, YAML, tree view, or 6 other formats — without rebuilding data. Features granular compilation (31 flags) and zero core dependencies.
+
+> The name `tree_fmt` was misleading — trees are just 1 of 10 output formats. The crate is a general-purpose **data formatter**, hence the rename to `data_fmt`.
 
 ## Installation
 
 ```bash
-cargo add tree_fmt  # Default: table, tree, expanded, logfmt
-cargo add tree_fmt --no-default-features --features table_plain  # Minimal
+# Recommended — use the new name
+cargo add data_fmt
+
+# Legacy — still works, final release
+cargo add tree_fmt
 ```
 
 ## Quick Start
 
 ```rust
-use tree_fmt::{ RowBuilder, TableFormatter, Format };
+// use data_fmt::{ RowBuilder, TableFormatter, Format };  // new name
+use tree_fmt::{ RowBuilder, TableFormatter, Format };     // still works
 
 let view = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
   .add_row( vec![ "Alice".into(), "30".into() ] )
@@ -66,17 +75,20 @@ cargo run --example unified_formats --all-features
 ## Feature Flags
 
 ```toml
-# Default (4 formatters)
+# Recommended — use data_fmt (same API, same features)
+data_fmt = "0.1.0"
+
+# Legacy — final tree_fmt release
 tree_fmt = "0.12.0"
 
 # Minimal (single formatter)
-tree_fmt = { version = "0.12.0", default-features = false, features = [ "table_plain" ] }
+data_fmt = { version = "0.1.0", default-features = false, features = [ "table_plain" ] }
 
 # Specific use case
-tree_fmt = { version = "0.12.0", features = [ "table_markdown", "format_json" ] }
+data_fmt = { version = "0.1.0", features = [ "table_markdown", "format_json" ] }
 
 # Everything
-tree_fmt = { version = "0.12.0", features = [ "all_formats" ] }
+data_fmt = { version = "0.1.0", features = [ "all_formats" ] }
 ```
 
 **31 granular flags available** - each variant has its own flag for minimal binary size.
@@ -89,13 +101,32 @@ tree_fmt = { version = "0.12.0", features = [ "all_formats" ] }
 
 - **[Documentation](./docs/readme.md)** - Architecture, API reference, features, invariants
 - **[Examples](./examples/readme.md)** - Working code for all formatters
-- **[API Docs](https://docs.rs/tree_fmt)** - Generated documentation
+- **[API Docs — data_fmt](https://docs.rs/data_fmt)** - Generated documentation (new name)
+- **[API Docs — tree_fmt](https://docs.rs/tree_fmt)** - Generated documentation (this release)
 
 ```bash
 cargo test --all-features           # Run tests
 cargo doc --open --all-features    # View docs locally
 ```
 
+## Migration
+
+Replace in `Cargo.toml`:
+
+```diff
+- tree_fmt = "0.12.0"
++ data_fmt = "0.1.0"
+```
+
+Replace in source:
+
+```diff
+- use tree_fmt::{ RowBuilder, TableFormatter, Format };
++ use data_fmt::{ RowBuilder, TableFormatter, Format };
+```
+
+All types, traits, features, and feature flags are identical.
+
 ## License
 
-MIT - **v0.12.0** - [Repository](https://github.com/Wandalen/wTools/tree/master/module/core/tree_fmt)
+MIT - **v0.12.0** (final `tree_fmt` release) - [Repository](https://github.com/Wandalen/wTools/tree/master/module/core/tree_fmt)
