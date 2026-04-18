@@ -17,6 +17,9 @@ The tool to make CLI ( commands user interface ). It is able to aggregate extern
 """
 categories = [ "command-line-interface", "command-line-utilities" ]
 keywords = [ "wtools", "CLI", "CUI", "user-interface" ]
+dependencies = {}
+dev-dependencies = {}
+build-dependencies = {}
 
 [lints]
 workspace = true
