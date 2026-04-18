@@ -409,7 +409,7 @@ default-features = false
 ## string tools
 
 [workspace.dependencies.strs_tools]
-version = "~0.44.0"
+version = "~0.45.0"
 path = "module/core/strs_tools"
 default-features = false
 

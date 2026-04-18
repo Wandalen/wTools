@@ -9,6 +9,9 @@ repository = "https://github.com/Wandalen/wTools"
 documentation = "https://docs.rs/cli_fmt"
 keywords = [ "cli", "command-line", "output", "formatting", "display" ]
 categories = [ "command-line-utilities", "development-tools" ]
+dependencies = {}
+dev-dependencies = {}
+build-dependencies = {}
 
 [lints]
 workspace = true
