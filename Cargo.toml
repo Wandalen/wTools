@@ -446,7 +446,7 @@ path = "module/alias/proper_tools"
 default-features = false
 
 [workspace.dependencies.pth]
-version = "~0.36.0"
+version = "~0.37.0"
 path = "module/core/pth"
 default-features = false
 
