@@ -13,12 +13,13 @@ Contains technical documentation for the data_fmt (formerly tree_fmt) library im
 | `input_type/` | Rust input types: TableView, TreeNode specializations |
 | `builder/` | Construction helpers: RowBuilder, TreeBuilder |
 | `trait/` | Interface contracts: Format, TableShapedFormatter, TableShapedView |
-| `architecture.md` | Three-layer architecture, module structure, formatter design |
+| `architecture.md` | Three-layer architecture, module structure, formatter design (source document) |
 | `api/` | Public API surface: data types, builders, configs, formatters |
 | `feature/` | Feature docs: table formatting, word wrap, format interface, themes |
 | `invariant/` | Behavioral contracts: data model, ANSI/Unicode handling |
 | `algorithm/` | Non-trivial algorithms: multiline cells, word wrapping, tree alignment |
 | `data_structure/` | Data schemas: attribute schemas, structural type definitions |
+| `pattern/` | Architectural patterns: three-layer architecture, design principles, formatter design |
 | `variant/` | Per-variant output examples and format documentation |
 | `variant_attributes.md` | Attribute reference for all format variant configurations (source document) |
 | `development_notes.md` | Implementation decisions, trade-offs, and technical history |

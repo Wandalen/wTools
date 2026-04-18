@@ -580,6 +580,30 @@ impl TableConfig
     self.column_flex = flex;
     self
   }
+
+  /// Enable or disable column folding: overflow columns move to continuation lines
+  #[ must_use ]
+  pub fn auto_fold( mut self, enabled : bool ) -> Self
+  {
+    self.auto_fold = enabled;
+    self
+  }
+
+  /// Set continuation line format for folded overflow columns
+  #[ must_use ]
+  pub fn fold_style( mut self, style : FoldStyle ) -> Self
+  {
+    self.fold_style = style;
+    self
+  }
+
+  /// Set indent prefix for folded continuation lines
+  #[ must_use ]
+  pub fn fold_indent( mut self, indent : String ) -> Self
+  {
+    self.fold_indent = indent;
+    self
+  }
 }
 
 /// Internal accessors for formatters (pub(crate) methods, not fields — satisfies AF1).
