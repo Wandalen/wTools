@@ -103,7 +103,7 @@ only reset after the last line while intermediate lines stay colored in some ter
 | T12 | `Display` plain | `format!("{ct}")` | Plain text |
 | T13 | `Display` colored | `format!("{ct}")` | Rendered with ANSI |
 | T14 | `with_color` override | Second `.with_color()` call | New color replaces old |
-| T15 | Empty colored `.render()` | `ColorfulText::from("").with_color(...)` | Empty string (no ANSI codes) |
+| T15 | Empty colored `.render()` | `ColorfulText::from("").with_color(...)` | `"\x1b[33m\x1b[0m"` — ANSI prefix + reset, no content between |
 | T16 | Multiline uncolored | `From<"line1\nline2">` | `render()` = `"line1\nline2"` |
 | T17 | Multiline colored single reset | colored multiline | `render()` has one reset at end |
 

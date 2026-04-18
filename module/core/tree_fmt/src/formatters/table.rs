@@ -1135,7 +1135,13 @@ impl TableFormatter
       let sep_total = i.saturating_mul( sep_width );
       if content_so_far + sep_total + overhead > terminal
       {
-        return i;
+        // Fix(issue-fold-point-zero): clamp to 1 so the first column always stays
+        // in the primary table (Invariant 1: header row must never be empty).
+        // Root cause: when col[0] alone exceeded terminal, fold_point=0 produced an
+        //   empty primary header row with no visible column names.
+        // Pitfall: never return 0 here — always return at least 1 so the formatter
+        //   emits at least one column in the primary table row.
+        return i.max( 1 );
       }
     }
     column_widths.len()
@@ -1227,6 +1233,12 @@ impl TableFormatter
       FoldStyle::Bare =>
       {
         // All overflow values on one line without column labels.
+        // Fix(issue-bare-fold-no-wrap): wrap when the joined line exceeds terminal,
+        //   mirroring the Labeled and Stacked wrapping guards.
+        // Root cause: the Bare branch emitted joined values unconditionally without
+        //   checking unicode_visual_len vs terminal, unlike the other two styles.
+        // Pitfall: Bare has no label prefix, so wrapped continuation lines carry only
+        //   value fragments — ensure tests verify wrapping produces ≤ terminal width.
         let values : Vec< &str > = overflow_values.iter()
           .copied()
           .filter( | v | !v.is_empty() )
@@ -1234,7 +1246,20 @@ impl TableFormatter
         if !values.is_empty()
         {
           let vals_joined = values.join( "  " );
-          lines.push( format!( "{indent}{vals_joined}" ) );
+          let full_line = format!( "{indent}{vals_joined}" );
+          if unicode_visual_len( &full_line ) > terminal && available > 0
+          {
+            let fmt = WrapFormatter::with_config( WrapConfig::new().width( available ) );
+            let output_wrapped = fmt.wrap_joined( &vals_joined );
+            for line in output_wrapped.lines()
+            {
+              lines.push( format!( "{indent}{line}" ) );
+            }
+          }
+          else
+          {
+            lines.push( full_line );
+          }
         }
       }
     }

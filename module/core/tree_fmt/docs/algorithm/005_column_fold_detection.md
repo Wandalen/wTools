@@ -13,7 +13,7 @@
 |------|------|----------------|
 | source | `src/formatters/table.rs` | `determine_fold_point`, `render_fold_continuation`, `should_auto_fold` |
 | source | `src/config.rs` | `FoldStyle` enum, `auto_fold`/`fold_style`/`fold_indent` fields |
-| test | `tests/auto_fold_test.rs` | Column folding test scenarios (22 tests) |
+| test | `tests/auto_fold_test.rs` | Column folding test scenarios (24 tests) |
 | doc | `../feature/005_auto_fit.md` | Auto-fit feature overview — Strategy 1 |
 | doc | `../invariant/004_column_fold_invariants.md` | Fold behavioral guarantees |
 | task | `../../task/completed/020_column_folding_with_auto_fold.md` | Implementation task (completed) |
@@ -39,7 +39,7 @@ cumulative = 0
 for each column i in 0..column_count:
   cumulative += budget_width[i] + separator_width
   if cumulative > terminal_width:
-    fold_point = i
+    fold_point = max(i, 1)   // clamp: first column always stays primary
     break
 ```
 
@@ -74,7 +74,7 @@ match fold_style:
       emit: fold_indent + header_name + ": " + cell_value
 ```
 
-Labeled and Stacked produce one line per overflow column. Bare attempts to fit all values on a single line.
+Labeled and Stacked produce one line per overflow column. Bare joins all values on a single line; if that line exceeds the terminal budget, word wrapping is applied (same as Step 5 below).
 
 **Step 5 — Wrap folded values**
 

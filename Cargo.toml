@@ -477,11 +477,11 @@ default-features = false
 version = "~2.0"
 
 [workspace.dependencies.unilang]
-version = "~0.48.0"
+version = "~0.51.0"
 default-features = false
 
 [workspace.dependencies.unilang_parser]
-version = "~0.30.0"
+version = "~0.33.0"
 default-features = false
 
 

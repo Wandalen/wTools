@@ -4,7 +4,7 @@
 
 - **Purpose**: Document the public interface of `ColorfulText` — all methods, trait implementations, and compatibility guarantees.
 - **Responsibility**: Provides the canonical API reference for callers using `ColorfulText` in their own code.
-- **In Scope**: Method signatures, conversion trait implementations, error handling policy, and semver stability guarantees.
+- **In Scope**: Method signatures, conversion trait implementations, rendering targets and translation scope, error handling policy, and semver stability guarantees.
 - **Out of Scope**: Internal implementation details (→ `src/colorful_text.rs`); behavioral contracts (→ `invariant/`).
 
 ### Abstract
@@ -32,6 +32,29 @@ Public interface of `ColorfulText` — a typed text wrapper with optional ANSI c
 
 **Derives:** `Debug`, `Clone`, `PartialEq`, `Eq`, `Default`.
 Optional: `Serialize`, `Deserialize` (feature `serde_support`).
+
+### Rendering Targets
+
+`render()` and `Display` produce **ANSI SGR terminal sequences** only. They are interpreted by xterm-compatible terminal emulators (xterm, iTerm2, Windows Terminal, GNOME Terminal). No other rendering target is built in.
+
+#### Translating to Other Targets
+
+The `text` and `color` fields are `pub`. A caller targeting a non-terminal output (HTML, RTF, log files with color tags, etc.) can read them directly and produce the required format:
+
+```rust
+// Example: naive HTML translator
+fn to_html( ct : &ColorfulText ) -> String
+{
+  match &ct.color
+  {
+    // caller must parse the ANSI SGR string to extract CSS color
+    Some( _ansi ) => format!( "<span class=\"colored\">{}</span>", ct.text ),
+    None          => ct.text.clone(),
+  }
+}
+```
+
+**Translation limitation:** `color` stores raw ANSI SGR bytes, not a semantic value like `Color::Yellow`. A complete translator must parse the SGR parameters to recover semantic intent — a non-trivial task covering 4-bit (30–37), 256-color (38;5;N), and 24-bit (38;2;R;G;B) color encoding schemes. There is no built-in translation API.
 
 ### Error Handling
 
