@@ -1,7 +1,14 @@
-# Feature Docs
+# Feature Doc Entity
 
-## Responsibility Table
+### Scope
 
-| File | Responsibility |
-|------|---------------|
-| `colorful_text.md` | Feature specification for the `ColorfulText` type |
+- **Purpose**: Document features of `color_tools` — what the crate does and why each feature exists.
+- **Responsibility**: Collect one doc instance per user-visible feature; each instance owns scope, design, and cross-references.
+- **In Scope**: Feature specifications — scope, design decisions, constraints, and integration points.
+- **Out of Scope**: Behavioral contracts (→ `invariant/`); API signatures (→ `api/`).
+
+### Overview Table
+
+| ID | Name | Purpose | Status |
+|----|------|---------|--------|
+| 001 | [ColorfulText](001_colorful_text.md) | Typed text wrapper with optional ANSI color prefix | ✅ |

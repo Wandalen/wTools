@@ -1,6 +1,6 @@
 # Source Directory
 
-Implementation of process_tools crate providing subprocess execution and CI/CD environment detection.
+Implementation of process_tools crate providing subprocess execution, output capture, CI/CD environment detection, platform-agnostic exit status synthesis, and process lifecycle management.
 
 ## File Responsibility Table
 

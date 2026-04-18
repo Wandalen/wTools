@@ -1,0 +1,76 @@
+meta:
+  description: Cross-reference graph for all doc instances in color_tools
+  node_count: 6
+  edge_count: 21
+  component_count: 1
+  generated: 2026-04-18
+
+nodes:
+  - id: feature/001
+    file: feature/001_colorful_text.md
+    label: ColorfulText
+    entity: feature
+  - id: invariant/001
+    file: invariant/001_transparent_conversion.md
+    label: Transparent Conversion
+    entity: invariant
+  - id: invariant/002
+    file: invariant/002_render_reset_contract.md
+    label: Render Reset Contract
+    entity: invariant
+  - id: invariant/003
+    file: invariant/003_emptiness_semantics.md
+    label: Emptiness Semantics
+    entity: invariant
+  - id: invariant/004
+    file: invariant/004_render_is_canonical.md
+    label: Render Is Canonical
+    entity: invariant
+  - id: api/001
+    file: api/001_colorful_text_type.md
+    label: ColorfulText Type
+    entity: api
+
+edges:
+  # feature/001 cross-references
+  - { from: feature/001, to: invariant/001, via: cross_references }
+  - { from: feature/001, to: invariant/002, via: cross_references }
+  - { from: feature/001, to: invariant/003, via: cross_references }
+  - { from: feature/001, to: invariant/004, via: cross_references }
+  - { from: feature/001, to: api/001,       via: cross_references }
+  # invariant/001 cross-references
+  - { from: invariant/001, to: feature/001,   via: cross_references }
+  - { from: invariant/001, to: invariant/002, via: cross_references }
+  - { from: invariant/001, to: invariant/004, via: cross_references }
+  # invariant/002 cross-references
+  - { from: invariant/002, to: feature/001,   via: cross_references }
+  - { from: invariant/002, to: invariant/001, via: cross_references }
+  - { from: invariant/002, to: invariant/004, via: cross_references }
+  # invariant/003 cross-references
+  - { from: invariant/003, to: feature/001,   via: cross_references }
+  - { from: invariant/003, to: invariant/002, via: cross_references }
+  # invariant/004 cross-references
+  - { from: invariant/004, to: feature/001,   via: cross_references }
+  - { from: invariant/004, to: invariant/002, via: cross_references }
+  - { from: invariant/004, to: api/001,       via: cross_references }
+  # api/001 cross-references
+  - { from: api/001, to: feature/001,   via: cross_references }
+  - { from: api/001, to: invariant/001, via: cross_references }
+  - { from: api/001, to: invariant/002, via: cross_references }
+  - { from: api/001, to: invariant/003, via: cross_references }
+  - { from: api/001, to: invariant/004, via: cross_references }
+
+components:
+  - id: 1
+    label: color_tools documentation corpus
+    size: 6
+    isolated: false
+    nodes:
+      - feature/001
+      - invariant/001
+      - invariant/002
+      - invariant/003
+      - invariant/004
+      - api/001
+
+dangling_refs: []

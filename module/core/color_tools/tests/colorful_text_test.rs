@@ -21,6 +21,7 @@
 //! | t15 | `.render()` on empty colored text emits `color + reset` with no content |
 //! | t16 | `.render()` on multiline uncolored preserves `\n` verbatim |
 //! | t17 | `.render()` on multiline colored emits exactly ONE reset — not per-line |
+//! | t18 | Serde round-trip: serialize → deserialize preserves both fields |
 
 use color_tools::ColorfulText;
 
@@ -269,4 +270,31 @@ fn t17_render_multiline_colored_single_reset()
     1,
     "render() produces exactly ONE ANSI reset for the whole text — per-line wrapping is the formatter's job",
   );
+}
+
+// =============================================================================
+// t18 — Serde round-trip: serialize → deserialize preserves both fields
+//
+// Tests both plain (color: None) and colored (color: Some) variants.
+// Requires the `serde_support` feature to be enabled.
+// =============================================================================
+
+#[ cfg( feature = "serde_support" ) ]
+#[ test ]
+fn t18_serde_roundtrip()
+{
+  // Plain variant: color field must survive as None
+  let plain = ColorfulText::from( "hello" );
+  let json = serde_json::to_string( &plain ).expect( "serialize plain must succeed" );
+  let restored : ColorfulText = serde_json::from_str( &json ).expect( "deserialize plain must succeed" );
+  assert_eq!( restored.text, plain.text, "text field must survive serde round-trip" );
+  assert_eq!( restored.color, plain.color, "color field must survive serde round-trip as None" );
+
+  // Colored variant: color field must survive as Some(...)
+  let colored = ColorfulText::from( "warn" ).with_color( "\x1b[33m" );
+  let json = serde_json::to_string( &colored ).expect( "serialize colored must succeed" );
+  let restored : ColorfulText = serde_json::from_str( &json ).expect( "deserialize colored must succeed" );
+  assert_eq!( restored.text, colored.text, "text field must survive serde round-trip" );
+  assert_eq!( restored.color, colored.color, "color field must survive serde round-trip as Some" );
+  assert_eq!( restored.render(), colored.render(), "render output must be identical after round-trip" );
 }

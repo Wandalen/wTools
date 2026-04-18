@@ -5,8 +5,6 @@
 #![ doc( html_root_url = "https://docs.rs/color_tools/latest/color_tools/" ) ]
 #![ allow( unused_imports ) ]
 
-// qqq: extend docs
-
 #[ cfg( feature = "enabled" ) ]
 mod private
 {

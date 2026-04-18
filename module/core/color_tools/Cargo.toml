@@ -15,8 +15,11 @@ workspace = true
 [dependencies]
 serde = { workspace = true, features = [ "derive" ], optional = true }
 
+[dev-dependencies]
+serde_json = { workspace = true }
+
 [features]
-default       = [ "enabled" ]
-full          = [ "enabled" ]
+default       = []
+full          = [ "enabled", "serde_support" ]
 enabled       = []
 serde_support = [ "dep:serde" ]

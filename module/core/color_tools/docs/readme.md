@@ -1,9 +1,17 @@
 # Docs
 
+## Scope
+
+Design and API documentation for `color_tools`. Organized as typed doc entity instances: features describe what the crate does, invariants define behavioral contracts, and API docs reference the public interface.
+
+See [entities.md](entities.md) for the complete registry of all doc instances.
+
 ## Responsibility Table
 
-| Directory | Responsibility |
-|-----------|---------------|
-| `feature/` | Feature documentation — what the crate does and why |
-| `invariant/` | Invariant documentation — behavioral contracts that must always hold |
-| `api/` | API reference — public types, methods, and trait implementations |
+| Entity | Responsibility |
+|--------|---------------|
+| [entities.md](entities.md) | Master registry of all doc entity types and instances |
+| [doc_graph.yml](doc_graph.yml) | Cross-reference graph linking all doc instances |
+| [feature/](feature/readme.md) | Feature documentation — what the crate does and why |
+| [invariant/](invariant/readme.md) | Invariant documentation — behavioral contracts that must always hold |
+| [api/](api/readme.md) | API reference — public types, methods, and trait implementations |

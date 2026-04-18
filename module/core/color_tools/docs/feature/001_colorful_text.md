@@ -1,0 +1,45 @@
+# Feature: ColorfulText
+
+### Scope
+
+- **Purpose**: Provide typed text with optional ANSI color prefix for per-instance terminal coloring without global configuration.
+- **Responsibility**: Documents the `ColorfulText` struct — its construction API, rendering contract, emptiness semantics, and integration points.
+- **In Scope**: Builder pattern (`with_color`), rendering behavior, emptiness semantics, serde support, and tree_fmt integration.
+- **Out of Scope**: ANSI validation (caller responsibility); terminal capability detection (caller responsibility); per-line color wrapping (formatter responsibility).
+
+### Abstract
+
+Typed wrapper for text that may optionally carry an ANSI color prefix, enabling per-instance terminal coloring without global configuration. Designed as a transparent drop-in for `String` at call sites that need optional color.
+
+### Design
+
+| Scenario | Behavior |
+|----------|----------|
+| `ColorfulText::from("text")` | `color: None`; `render()` returns raw text clone |
+| `ColorfulText::from("text").with_color("\x1b[33m")` | `color: Some(...)`, `render()` returns `"\x1b[33mtext\x1b[0m"` |
+| `ColorfulText::from("")` | `is_empty()` returns `true`; `render()` returns `""` |
+| `ColorfulText::from("").with_color("\x1b[33m")` | `is_empty()` returns `true` (text is empty regardless of color) |
+
+**Integration with tree_fmt:** `tree_fmt`'s `row_details: Vec<Option<ColorfulText>>` uses this type so per-row detail lines can carry independent ANSI color without affecting the table's `TableConfig`.
+
+**Serde support:** When the `serde_support` feature is enabled, `ColorfulText` derives `Serialize` and `Deserialize`. Both `text` and `color` fields are serialized as-is.
+
+```toml
+color_tools = { workspace = true, features = [ "enabled", "serde_support" ] }
+```
+
+### Constraints
+
+- No ANSI validation — callers are responsible for passing valid escape sequences to `.with_color()`
+- No terminal capability detection — stripping colors for non-TTY output is the caller's responsibility
+- Whole-block rendering — `.render()` wraps the entire text block with one color prefix and one reset; per-line ANSI wrapping is the formatter's responsibility
+
+### Cross-References
+
+| Entity | File | Relationship |
+|--------|------|-------------|
+| invariant/001 | [Transparent Conversion](../invariant/001_transparent_conversion.md) | `From<T>` zero-overhead guarantee |
+| invariant/002 | [Render Reset Contract](../invariant/002_render_reset_contract.md) | Reset-only-when-colored guarantee |
+| invariant/003 | [Emptiness Semantics](../invariant/003_emptiness_semantics.md) | `is_empty()` tests text, not render |
+| invariant/004 | [Render Is Canonical](../invariant/004_render_is_canonical.md) | Single rendering path guarantee |
+| api/001 | [ColorfulText Type](../api/001_colorful_text_type.md) | Public API reference |

@@ -69,6 +69,16 @@ impl ColorfulText
   }
 
   /// Returns `true` when an ANSI color prefix is attached.
+  ///
+  /// # Example
+  ///
+  /// ```
+  /// use color_tools::ColorfulText;
+  /// let plain = ColorfulText::from( "text" );
+  /// assert!( !plain.is_colored() );
+  /// let colored = plain.with_color( "\x1b[31m" );
+  /// assert!( colored.is_colored() );
+  /// ```
   #[ must_use ]
   pub fn is_colored( &self ) -> bool
   {
@@ -80,6 +90,15 @@ impl ColorfulText
   /// Tests `self.text.is_empty()` — NOT `self.render().is_empty()`.
   /// A colored empty text (e.g. `from("").with_color(...)`) is still considered empty
   /// because no visible content will be displayed.
+  ///
+  /// # Example
+  ///
+  /// ```
+  /// use color_tools::ColorfulText;
+  /// assert!( ColorfulText::from( "" ).is_empty() );
+  /// assert!( ColorfulText::from( "" ).with_color( "\x1b[33m" ).is_empty() );
+  /// assert!( !ColorfulText::from( "x" ).is_empty() );
+  /// ```
   #[ must_use ]
   pub fn is_empty( &self ) -> bool
   {

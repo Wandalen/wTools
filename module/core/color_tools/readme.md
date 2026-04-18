@@ -30,7 +30,7 @@ println!( "{warn}" );  // prints yellow text to terminal
 
 | Feature | Enabled by default | Purpose |
 |---|---|---|
-| `enabled` | yes | Compile the crate |
+| `enabled` | no | Compile the crate |
 | `serde_support` | no | Derive `Serialize`/`Deserialize` for `ColorfulText` |
 
 ## Directory Structure
