@@ -7,6 +7,33 @@
 - **In Scope**: Per-variant attribute descriptors (46 attributes each), example output, feature flags.
 - **Out of Scope**: Formatter implementation (see `feature/`), attribute definitions (see `variant_attributes.md`).
 
+### Type-Specific Requirements
+
+Every variant doc instance must contain these sections in order:
+
+| Section | Heading | Required Content |
+|---------|---------|-----------------|
+| Scope | `### Scope` | 4 bullets: Purpose / Responsibility / In Scope / Out of Scope |
+| Cross-References | `### Cross-References` | Table: Type / File / Responsibility |
+| Identity & Classification | `### Identity & Classification` | formatter, variant, is_default, category |
+| Build & Dependencies | `### Build & Dependencies` | feature_flag, runtime_deps, zero_dependency |
+| Character Set & Encoding | `### Character Set & Encoding` | charset, border_charset, requires_unicode_terminal, supports_ansi_colors |
+| Visual Structure | `### Visual Structure` | has_borders, border_style, column_separator, row_separator, header_separator, outer_padding, inner_padding |
+| Data Representation | `### Data Representation` | machine_parseable, human_readable, supports_hierarchical, supports_tabular, preserves_structure, supports_multiline_values |
+| Output Characteristics | `### Output Characteristics` | output_compactness, visual_complexity, alignment, column_alignment |
+| Usage Context | `### Usage Context` | primary_use_case, terminal_optimized, file_export_suitable, streaming_friendly, grep_friendly |
+| Technical Details | `### Technical Details` | escaping_rules, output_format, standards_compliance, supports_custom_colors |
+| API & Construction | `### API & Construction` | constructor, config_type, customizable_parameters, builder_pattern |
+| Performance & Size | `### Performance & Size` | output_overhead, memory_efficiency |
+| Compatibility | `### Compatibility` | works_on_windows, works_in_ci, copy_paste_friendly |
+| Example Output | `### Example Output` | Fenced code block showing representative rendered output |
+
+### Files
+
+| File | Responsibility |
+|------|----------------|
+| `procedure.md` | Instance creation and deprecation procedure |
+
 ### Overview Table
 
 | ID | Name | Purpose | Status |

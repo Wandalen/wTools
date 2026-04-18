@@ -7,6 +7,23 @@
 - **In Scope**: `TableView`, `TreeNode<T>` specializations, their fields and trait bounds.
 - **Out of Scope**: Conceptual shapes (see `input_model/`), formatting output (see `variant/`).
 
+### Type-Specific Requirements
+
+Every input_type doc instance must contain these sections in order:
+
+| Section | Heading | Required Content |
+|---------|---------|-----------------|
+| Scope | `### Scope` | 4 bullets: Purpose / Responsibility / In Scope / Out of Scope |
+| Cross-References | `### Cross-References` | Table: Type / File / Responsibility |
+| Type Definition | `### Type Definition` | Struct fields, generic parameters, trait bounds; source file reference |
+| Specializations | `### Specializations` | Concrete instantiations used in the library (required when the type is generic) |
+
+### Files
+
+| File | Responsibility |
+|------|----------------|
+| `procedure.md` | Instance creation and deprecation procedure |
+
 ### Overview Table
 
 | ID | Name | Purpose | Status |

@@ -7,6 +7,12 @@
 - **In Scope**: Data types, builders, config types, formatter APIs.
 - **Out of Scope**: Behavioral invariants (see `invariant/`), feature guides (see `feature/`).
 
+### Files
+
+| File | Responsibility |
+|------|----------------|
+| `procedure.md` | Instance creation and deprecation procedure |
+
 ### Overview Table
 
 | ID | Name | Purpose | Status |
