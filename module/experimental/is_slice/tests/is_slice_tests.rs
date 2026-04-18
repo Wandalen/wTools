@@ -1,3 +1,5 @@
+#![ cfg( feature = "enabled" ) ]
+
 //! Smoke testing of the package.
 
 // #![ cfg_attr( docsrs, feature( doc_cfg ) ) ]

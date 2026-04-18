@@ -1,9 +1,12 @@
 //! Extended manual test for `is_slice` corner cases not covered by automated tests
 
-use is_slice::is_slice;
+#[ cfg( not( feature = "enabled" ) ) ]
+fn main() {}
 
+#[ cfg( feature = "enabled" ) ]
 fn main()
 {
+  use is_slice :: is_slice;
   println!("=== Extended Manual Testing for is_slice ===\n");
 
   // Test Category 1: Mutable Slices

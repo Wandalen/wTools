@@ -9,21 +9,21 @@
 
 ### Abstract
 
-`ColorfulText::from(text)` — whether `text` is `String` or `&str` — produces a value with `color: None`. No ANSI prefix is injected, no allocation beyond the text itself occurs.
+`DecoratedText::from(text)` — whether `text` is `String` or `&str` — produces a value with `color: None`. No ANSI prefix is injected, no allocation beyond the text itself occurs.
 
 ### Invariant Statement
 
-`From<String>` and `From<&str>` implementations MUST set `color: None`. The resulting `ColorfulText` is a transparent wrapper around the input text with no escape code side effects.
+`From<String>` and `From<&str>` implementations MUST set `color: None`. The resulting `DecoratedText` is a transparent wrapper around the input text with no escape code side effects.
 
 ### Rationale
 
-This invariant enables `ColorfulText` to be a transparent drop-in for `String` at all existing call sites. Code written as `"detail text".into()` or `String::from("x").into()` continues to compile and behave identically after a type migration from `Option<String>` to `Option<ColorfulText>`.
+This invariant enables `DecoratedText` to be a transparent drop-in for `String` at all existing call sites. Code written as `"detail text".into()` or `String::from("x").into()` continues to compile and behave identically after a type migration from `Option<String>` to `Option<DecoratedText>`.
 
 ### Enforcement Mechanism
 
 - Test `t01_from_string_no_color` verifies `From<String>` sets `color: None`.
 - Test `t02_from_str_no_color` verifies `From<&str>` sets `color: None`.
-- Test `t10_roundtrip_uncolored` verifies `String → ColorfulText → String` round-trip preserves text.
+- Test `t10_roundtrip_uncolored` verifies `String → DecoratedText → String` round-trip preserves text.
 
 ### Violation Consequences
 
@@ -32,7 +32,7 @@ Setting `color` to any value in `From<String>` or `From<&str>` would inject invi
 ### Verification
 
 ```rust
-let ct = ColorfulText::from( "test".to_string() );
+let ct = DecoratedText::from( "test".to_string() );
 assert_eq!( ct.color, None );
 assert_eq!( ct.render(), "test" );  // no escape codes
 ```
@@ -41,6 +41,6 @@ assert_eq!( ct.render(), "test" );  // no escape codes
 
 | Entity | File | Relationship |
 |--------|------|-------------|
-| feature/001 | [ColorfulText](../feature/001_colorful_text.md) | Parent feature |
+| feature/001 | [DecoratedText](../feature/001_decorated_text.md) | Parent feature |
 | invariant/002 | [Render Reset Contract](002_render_reset_contract.md) | Sibling — render behavior |
 | invariant/004 | [Render Is Canonical](004_render_is_canonical.md) | Sibling — render delegation |

@@ -321,9 +321,9 @@ fn test_yaml_format_filtered()
 
 #[ test ]
 #[ cfg( feature = "display_table" ) ]
-fn test_table_tree_fmt_reexports()
+fn test_table_data_fmt_reexports()
 {
-  // Verify tree_fmt types are reexported for customization
+  // Verify data_fmt types are reexported for customization
   use config_hierarchy::display::table::{ TreeRowBuilder, TreeTableFormatter, TreeTableConfig };
 
   let builder = TreeRowBuilder::new( vec![ "Col1".into(), "Col2".into() ] );

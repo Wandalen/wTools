@@ -13,7 +13,7 @@
 
 ### Invariant Statement
 
-`ColorfulText::is_empty()` returns `self.text.is_empty()`. The presence or absence of a color prefix does not affect the emptiness result.
+`DecoratedText::is_empty()` returns `self.text.is_empty()`. The presence or absence of a color prefix does not affect the emptiness result.
 
 ### Rationale
 
@@ -21,7 +21,7 @@ Formatters use `is_empty()` to decide whether to render a detail row. An empty t
 
 ### Enforcement Mechanism
 
-- Test `t13_is_empty_checks_text` in `tests/colorful_text_test.rs` verifies empty-uncolored, empty-colored, and non-empty cases.
+- Test `t13_is_empty_checks_text` in `tests/decorated_text_test.rs` verifies empty-uncolored, empty-colored, and non-empty cases.
 - Test `t15_render_empty_colored_text` documents the render-vs-isEmpty design boundary.
 
 ### Violation Consequences
@@ -32,5 +32,5 @@ If `is_empty()` tested `render()` output, colored-but-empty text would report no
 
 | Entity | File | Relationship |
 |--------|------|-------------|
-| feature/001 | [ColorfulText](../feature/001_colorful_text.md) | Parent feature |
+| feature/001 | [DecoratedText](../feature/001_decorated_text.md) | Parent feature |
 | invariant/002 | [Render Reset Contract](002_render_reset_contract.md) | Sibling — render behavior |

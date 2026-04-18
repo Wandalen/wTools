@@ -240,7 +240,7 @@ fn test_side_by_side_comparison()
 fn convert_to_string_tree( node : &TreeNode< ColumnData > ) -> TreeNode< String >
 {
   let data = node.data.as_ref().map( | col_data |
-    col_data.columns.join( " " )
+    col_data.columns.iter().map( | c | c.text.clone() ).collect::< Vec< _ > >().join( " " )
   );
 
   let mut result = TreeNode::new( node.name.clone(), data );

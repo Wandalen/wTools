@@ -26,9 +26,11 @@
 | 20 | [019](completed/019_cell_auto_wrapping_with_budget_allocation.md) | 0 | 8 | 4 | 5 | 0 | ✅ (Completed) | any | Cell auto-wrapping with terminal-aware budget allocation | Terminal width detection, ColumnFlex classification, budget allocation, auto-wrap cells |
 | 21 | [020](completed/020_column_folding_with_auto_fold.md) | 0 | 7 | 4 | 5 | 0 | ✅ (Completed) | any | Column folding with auto-fold | FoldStyle enum, fold detection, continuation line rendering, combination with wrapping |
 
+| 22 | [022](022_migrate_colorful_text_strict.md) | 192 | 8 | 4 | 1 | 6 | 🎯 (Available) | any | Migrate tree_fmt to DecoratedText strictly | Eliminate 42 raw-ANSI-String gaps across data model, formatters, config, and theme layers |
+
 ## Statistics
 
-- **Total Tasks:** 21
+- **Total Tasks:** 22
 - **Active:** 0
 - **Completed:** 21
-- **Available:** 0
+- **Available:** 1

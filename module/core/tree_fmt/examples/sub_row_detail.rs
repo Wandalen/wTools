@@ -6,7 +6,7 @@
 //!
 //! Run: `cargo run --example sub_row_detail`
 
-use tree_fmt::{ RowBuilder, TableFormatter, Format, ColorfulText };
+use tree_fmt::{ RowBuilder, TableFormatter, Format, DecoratedText };
 
 fn main()
 {
@@ -80,14 +80,14 @@ fn main()
   let view4 = RowBuilder::new( vec![ "Service".into(), "Status".into() ] )
   .add_row_with_detail(
     vec![ "auth".into(), "ERROR".into() ],
-    Some( ColorfulText::from( "connection refused: 10.0.1.5:5432" ).with_color( red ) ),
+    Some( DecoratedText::from( "connection refused: 10.0.1.5:5432" ).with_color( red ) ),
   )
   .add_row(
     vec![ "api-gw".into(), "OK".into() ],
   )
   .add_row_with_detail(
     vec![ "worker".into(), "WARN".into() ],
-    Some( ColorfulText::from( "queue depth 4821 — consider scaling" ).with_color( yellow ) ),
+    Some( DecoratedText::from( "queue depth 4821 — consider scaling" ).with_color( yellow ) ),
   )
   .build_view();
 

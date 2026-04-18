@@ -12,7 +12,9 @@
 //! Macro to answer the question: does it implement a trait?
 //!
 
-#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+// `all(doc, feature = "enabled")` — not just `doc`: cfg(doc) is active during `cargo test --doc`,
+// so without the feature guard the readme doc-tests run with no-default-features and fail (API absent).
+#![ cfg_attr( all( doc, feature = "enabled" ), doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 #![ cfg_attr( not( doc ), doc = "Implementation checking utilities" ) ]
 
 // #[ macro_use ]

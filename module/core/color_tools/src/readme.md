@@ -9,4 +9,5 @@ Library source files. Each file owns one cohesive responsibility; `lib.rs` re-ex
 | File | Responsibility |
 |------|----------------|
 | `lib.rs` | Crate root: module declarations, feature gates, public re-exports |
-| `colorful_text.rs` | `ColorfulText` struct: typed text with optional ANSI color |
+| `decorated_text.rs` | `DecoratedText` struct: typed text with optional ANSI color |
+| `color.rs` | `Color` enum: semantic color variants and ANSI SGR encoding |

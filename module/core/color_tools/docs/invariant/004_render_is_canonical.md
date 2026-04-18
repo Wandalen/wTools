@@ -4,19 +4,19 @@
 
 - **Purpose**: Guarantee a single rendering path to prevent `Display` and `From<CT>` from diverging.
 - **Responsibility**: Documents the render-is-canonical invariant and its enforcement in tests t06 and t07.
-- **In Scope**: `Display::fmt` and `From<ColorfulText> for String` delegation to `render()`.
+- **In Scope**: `Display::fmt` and `From<DecoratedText> for String` delegation to `render()`.
 - **Out of Scope**: What `render()` produces (→ `invariant/002`); conversion semantics for input types (→ `invariant/001`).
 
 ### Abstract
 
-All string-producing conversions route through `.render()`. Both `Display::fmt` and `From<ColorfulText> for String` delegate to `.render()`, guaranteeing a single canonical rendering path.
+All string-producing conversions route through `.render()`. Both `Display::fmt` and `From<DecoratedText> for String` delegate to `.render()`, guaranteeing a single canonical rendering path.
 
 ### Invariant Statement
 
-- `impl Display for ColorfulText` calls `f.write_str(&self.render())`.
-- `impl From<ColorfulText> for String` returns `ct.render()`.
+- `impl Display for DecoratedText` calls `f.write_str(&self.render())`.
+- `impl From<DecoratedText> for String` returns `ct.render()`.
 
-No alternative string-conversion path exists. Any future trait impl that produces a `String` from `ColorfulText` must also delegate to `.render()`.
+No alternative string-conversion path exists. Any future trait impl that produces a `String` from `DecoratedText` must also delegate to `.render()`.
 
 ### Rationale
 
@@ -35,6 +35,6 @@ If `Display` bypassed `.render()`, `format!("{ct}")` and `String::from(ct)` coul
 
 | Entity | File | Relationship |
 |--------|------|-------------|
-| feature/001 | [ColorfulText](../feature/001_colorful_text.md) | Parent feature |
+| feature/001 | [DecoratedText](../feature/001_decorated_text.md) | Parent feature |
 | invariant/002 | [Render Reset Contract](002_render_reset_contract.md) | Sibling — render behavior |
-| api/001 | [ColorfulText Type](../api/001_colorful_text_type.md) | Documents the trait impls |
+| api/001 | [DecoratedText Type](../api/001_decorated_text_type.md) | Documents the trait impls |

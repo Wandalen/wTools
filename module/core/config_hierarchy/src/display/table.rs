@@ -2,12 +2,12 @@
 
 use std::collections::HashMap;
 use serde_json::Value as JsonValue;
-use tree_fmt::{ RowBuilder, TableFormatter, TableConfig };
+use data_fmt::{ RowBuilder, TableFormatter, TableConfig };
 use core::fmt::Write;
 use crate::{ ConfigDefaults, ConfigPaths, ConfigSource, ValidationError, json_value_to_display_string };
 
-// Re-export tree_fmt types for customization
-pub use tree_fmt::{ RowBuilder as TreeRowBuilder, TableFormatter as TreeTableFormatter, TableConfig as TreeTableConfig };
+// Re-export data_fmt types for customization
+pub use data_fmt::{ RowBuilder as TreeRowBuilder, TableFormatter as TreeTableFormatter, TableConfig as TreeTableConfig };
 
 /// Format configuration as a table
 ///

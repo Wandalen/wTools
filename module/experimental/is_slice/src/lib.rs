@@ -4,7 +4,9 @@
   html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
 )]
 #![doc(html_root_url = "https://docs.rs/inspect_type/latest/inspect_type/")]
-#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+// `all(doc, feature = "enabled")` — not just `doc`: cfg(doc) is active during `cargo test --doc`,
+// so without the feature guard the readme doc-tests run with no-default-features and fail (API absent).
+#![ cfg_attr( all( doc, feature = "enabled" ), doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 #![ cfg_attr( not( doc ), doc = "Slice checking utilities" ) ]
 
 #[ cfg( feature = "enabled" ) ]

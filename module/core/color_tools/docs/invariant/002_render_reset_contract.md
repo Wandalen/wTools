@@ -18,11 +18,11 @@ When `self.color` is `None`, `.render()` returns `self.text.clone()` — no esca
 
 ### Rationale
 
-Consumers must be able to trust that uncolored `ColorfulText` round-trips through `.render()` without injecting invisible ANSI codes into log files, serialized output, or non-terminal sinks. The reset-only-when-colored guarantee makes the type safe as a transparent `String` substitute.
+Consumers must be able to trust that uncolored `DecoratedText` round-trips through `.render()` without injecting invisible ANSI codes into log files, serialized output, or non-terminal sinks. The reset-only-when-colored guarantee makes the type safe as a transparent `String` substitute.
 
 ### Enforcement Mechanism
 
-- Tests `t04_render_uncolored_no_escape` and `t05_render_colored_has_reset` in `tests/colorful_text_test.rs` verify both branches.
+- Tests `t04_render_uncolored_no_escape` and `t05_render_colored_has_reset` in `tests/decorated_text_test.rs` verify both branches.
 - Test `t09_chain_color_render` validates the exact byte sequence produced.
 
 ### Violation Consequences
@@ -33,6 +33,6 @@ Injecting escape codes into uncolored renders corrupts plain-text consumers (log
 
 | Entity | File | Relationship |
 |--------|------|-------------|
-| feature/001 | [ColorfulText](../feature/001_colorful_text.md) | Parent feature |
+| feature/001 | [DecoratedText](../feature/001_decorated_text.md) | Parent feature |
 | invariant/001 | [Transparent Conversion](001_transparent_conversion.md) | Sibling — conversion guarantee |
 | invariant/004 | [Render Is Canonical](004_render_is_canonical.md) | Sibling — render delegation |

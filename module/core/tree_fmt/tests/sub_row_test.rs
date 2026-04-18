@@ -53,7 +53,7 @@
 //! ### Algorithm 3 — Per-Line ANSI Color Wrapping
 //! | ID  | Aspect |
 //! |-----|--------|
-//! | T29 | `ColorfulText` single-line colored detail has ANSI color + reset |
+//! | T29 | `DecoratedText` single-line colored detail has ANSI color + reset |
 //! | T30 | Multiline colored detail: each sub-line gets independent color+reset |
 //! | T31 | Custom indent + colored detail: indent precedes ANSI code |
 //! | T32 | Detail text with trailing `\n` — same output as without (Rust `lines()` strips it) |
@@ -61,7 +61,7 @@
 
 #![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
-use tree_fmt::{ RowBuilder, TableFormatter, TableConfig, Format, TableView, TableMetadata, ColorfulText };
+use tree_fmt::{ RowBuilder, TableFormatter, TableConfig, Format, TableView, TableMetadata, DecoratedText };
 
 // =============================================================================
 // Helper
@@ -140,7 +140,7 @@ fn t03_detail_none_produces_no_line()
 fn t04_empty_string_detail_suppressed()
 {
   let view = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "Alice".into() ], Some( ColorfulText::from( "" ) ) )
+    .add_row_with_detail( vec![ "Alice".into() ], Some( DecoratedText::from( "" ) ) )
     .build_view();
 
   let out = plain_output( &view );
@@ -406,7 +406,7 @@ fn t16_build_view_row_details_vector()
 
   assert_eq!( view.row_details.len(), 3, "row_details must parallel rows" );
   assert_eq!( view.row_details[ 0 ], None );
-  assert_eq!( view.row_details[ 1 ], Some( ColorfulText::from( "detail-b" ) ) );
+  assert_eq!( view.row_details[ 1 ], Some( DecoratedText::from( "detail-b" ) ) );
   assert_eq!( view.row_details[ 2 ], None );
 }
 
@@ -705,14 +705,14 @@ fn t28_zero_rows_empty_details()
 }
 
 // =============================================================================
-// T29 — colored ColorfulText detail renders with ANSI escape codes
+// T29 — colored DecoratedText detail renders with ANSI escape codes
 // =============================================================================
 
 #[ test ]
 fn t29_colored_detail_ansi_codes()
 {
   let yellow = "\x1b[33m";
-  let ct = ColorfulText::from( "colored-detail" ).with_color( yellow );
+  let ct = DecoratedText::from( "colored-detail" ).with_color( yellow );
   let view = RowBuilder::new( vec![ "Name".into() ] )
     .add_row_with_detail( vec![ "Alice".into() ], Some( ct ) )
     .build_view();
@@ -749,7 +749,7 @@ fn t30_colored_multiline_detail_per_line_ansi()
 {
   let yellow = "\x1b[33m";
   let reset = "\x1b[0m";
-  let ct = ColorfulText::from( "alpha\nbeta\ngamma" ).with_color( yellow );
+  let ct = DecoratedText::from( "alpha\nbeta\ngamma" ).with_color( yellow );
   let view = RowBuilder::new( vec![ "Name".into() ] )
     .add_row_with_detail( vec![ "Alice".into() ], Some( ct ) )
     .build_view();
@@ -786,7 +786,7 @@ fn t31_custom_indent_with_colored_detail()
 {
   let yellow = "\x1b[33m";
   let indent = ">>> ";
-  let ct = ColorfulText::from( "note" ).with_color( yellow );
+  let ct = DecoratedText::from( "note" ).with_color( yellow );
   let config = TableConfig::plain().sub_row_indent( indent.to_string() );
   let view = RowBuilder::new( vec![ "Name".into() ] )
     .add_row_with_detail( vec![ "Alice".into() ], Some( ct ) )
@@ -820,11 +820,11 @@ fn t31_custom_indent_with_colored_detail()
 fn t32_detail_trailing_newline_stripped()
 {
   let view_with = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "Alice".into() ], Some( ColorfulText::from( "detail\n" ) ) )
+    .add_row_with_detail( vec![ "Alice".into() ], Some( DecoratedText::from( "detail\n" ) ) )
     .build_view();
 
   let view_without = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "Alice".into() ], Some( ColorfulText::from( "detail" ) ) )
+    .add_row_with_detail( vec![ "Alice".into() ], Some( DecoratedText::from( "detail" ) ) )
     .build_view();
 
   assert_eq!(
@@ -846,8 +846,8 @@ fn t32_detail_trailing_newline_stripped()
 #[ test ]
 fn t33_detail_only_newline_renders_blank_line()
 {
-  let ct = ColorfulText::from( "\n" );
-  assert!( !ct.is_empty(), r#"ColorfulText::from("\n") must not be considered empty"# );
+  let ct = DecoratedText::from( "\n" );
+  assert!( !ct.is_empty(), r#"DecoratedText::from("\n") must not be considered empty"# );
 
   let view = RowBuilder::new( vec![ "Name".into() ] )
     .add_row_with_detail( vec![ "Alice".into() ], Some( ct ) )

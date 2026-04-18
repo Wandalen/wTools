@@ -43,7 +43,7 @@
 //! T23: `bug_reproducer` — `Bare` fold style wraps long continuation lines
 //! T24: `bug_reproducer` — `fold_point=0` preserves first column in header
 
-use tree_fmt::{ RowBuilder, TableFormatter, TableConfig, ColumnFlex, FoldStyle, ColorfulText };
+use tree_fmt::{ RowBuilder, TableFormatter, TableConfig, ColumnFlex, FoldStyle, DecoratedText };
 
 // --- Shared helpers ---
 
@@ -423,7 +423,7 @@ fn fold_with_sub_row_detail_both_render()
       "b1".into(), "governance".into(), "gov.md".into(),
       "/home/user/governance/".into(), "120".into(), "/home/user/src/".into(),
     ],
-    Some( ColorfulText::from( "See also: governance readme" ) ),
+    Some( DecoratedText::from( "See also: governance readme" ) ),
   )
   .build_view();
 

@@ -124,12 +124,11 @@ fn smoke_test_option_ext()
 /// 2. `collection_tools` dependency accessible via re-export
 /// 3. Basic types from dependencies instantiate correctly
 ///
-/// Always runs regardless of feature flags. Catches circular dependency
-/// issues and ensures minimal crate functionality.
+/// Dependency namespace accessible when `enabled` feature is active.
 #[ test ]
+#[ cfg( feature = "enabled" ) ]
 fn smoke_test_crate_loads()
 {
   // Minimal test that crate compiles and loads
-  // This test always runs regardless of features
   let _ = component_model_types :: dependency :: collection_tools :: Vec ::< i32 > :: new();
 }

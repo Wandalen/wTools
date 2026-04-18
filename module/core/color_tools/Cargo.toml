@@ -20,6 +20,7 @@ serde_json = { workspace = true }
 
 [features]
 default       = []
-full          = [ "enabled", "serde_support" ]
+full          = [ "enabled", "serde_support", "html_support" ]
 enabled       = []
 serde_support = [ "dep:serde" ]
+html_support  = [ "enabled" ]

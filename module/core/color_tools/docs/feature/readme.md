@@ -11,4 +11,5 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | [ColorfulText](001_colorful_text.md) | Typed text wrapper with optional ANSI color prefix | ✅ |
+| 001 | [DecoratedText](001_decorated_text.md) | Typed text wrapper with optional ANSI color prefix | ✅ |
+| 002 | [serde Support](002_serde_support.md) | Opt-in Serialize/Deserialize for DecoratedText | ✅ |

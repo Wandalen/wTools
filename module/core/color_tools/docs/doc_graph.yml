@@ -1,14 +1,18 @@
 meta:
   description: Cross-reference graph for all doc instances in color_tools
-  node_count: 6
-  edge_count: 21
+  node_count: 7
+  edge_count: 25
   component_count: 1
   generated: 2026-04-18
 
 nodes:
   - id: feature/001
-    file: feature/001_colorful_text.md
-    label: ColorfulText
+    file: feature/001_decorated_text.md
+    label: DecoratedText
+    entity: feature
+  - id: feature/002
+    file: feature/002_serde_support.md
+    label: serde Support
     entity: feature
   - id: invariant/001
     file: invariant/001_transparent_conversion.md
@@ -27,12 +31,13 @@ nodes:
     label: Render Is Canonical
     entity: invariant
   - id: api/001
-    file: api/001_colorful_text_type.md
-    label: ColorfulText Type
+    file: api/001_decorated_text_type.md
+    label: DecoratedText Type
     entity: api
 
 edges:
   # feature/001 cross-references
+  - { from: feature/001, to: feature/002,   via: cross_references }
   - { from: feature/001, to: invariant/001, via: cross_references }
   - { from: feature/001, to: invariant/002, via: cross_references }
   - { from: feature/001, to: invariant/003, via: cross_references }
@@ -53,6 +58,10 @@ edges:
   - { from: invariant/004, to: feature/001,   via: cross_references }
   - { from: invariant/004, to: invariant/002, via: cross_references }
   - { from: invariant/004, to: api/001,       via: cross_references }
+  # feature/002 cross-references
+  - { from: feature/002, to: feature/001, via: cross_references }
+  - { from: feature/002, to: api/001,     via: cross_references }
+  - { from: api/001,     to: feature/002, via: cross_references }
   # api/001 cross-references
   - { from: api/001, to: feature/001,   via: cross_references }
   - { from: api/001, to: invariant/001, via: cross_references }
@@ -63,10 +72,11 @@ edges:
 components:
   - id: 1
     label: color_tools documentation corpus
-    size: 6
+    size: 7
     isolated: false
     nodes:
       - feature/001
+      - feature/002
       - invariant/001
       - invariant/002
       - invariant/003

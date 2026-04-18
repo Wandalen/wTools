@@ -33,6 +33,10 @@ impl Custom for CustomType {
     fn custom_method(&self) {}
 }
 
+#[ cfg( not( feature = "enabled" ) ) ]
+fn main() {}
+
+#[ cfg( feature = "enabled" ) ]
 fn main() {
     println!("=== COMPREHENSIVE MANUAL TESTING ===\n");
 

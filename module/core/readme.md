@@ -32,7 +32,8 @@ Workspace crates providing core wtools functionality.
 | `pth/` | Path manipulation utilities. |
 | `strs_tools/` | String manipulation utilities. |
 | `strs_tools_meta/` | Procedural macros for `strs_tools`. |
-| `tree_fmt/` | Tree-structured display formatting. |
+| `data_fmt/` | Multi-format data visualization (10 formatters, 33 variants). |
+| `tree_fmt/` | Deprecated re-export shim; use `data_fmt` instead. |
 | `variadic_from/` | Variadic `From` trait implementations. |
 | `variadic_from_meta/` | Procedural macros for `variadic_from`. |
 | `workspace_tools/` | Workspace management utilities. |

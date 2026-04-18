@@ -11,4 +11,4 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | [ColorfulText Type](001_colorful_text_type.md) | Public API for constructing, coloring, and rendering text | ✅ |
+| 001 | [DecoratedText Type](001_decorated_text_type.md) | Public API for constructing, coloring, and rendering text | ✅ |

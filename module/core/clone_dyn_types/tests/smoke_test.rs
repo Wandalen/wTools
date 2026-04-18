@@ -4,6 +4,8 @@
 //! Note: `test_tools` dependency removed due to circular dependency
 //! (`macro_tools` → `clone_dyn_types` → `test_tools` → `impls_index_meta` → `macro_tools`).
 
+#![ cfg( feature = "enabled" ) ]
+
 #[ test ]
 fn smoke_test_basic_clone()
 {
