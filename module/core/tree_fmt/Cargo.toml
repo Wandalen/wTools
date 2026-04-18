@@ -8,6 +8,9 @@ repository = "https://github.com/Wandalen/wTools/tree/master/module/core/tree_fm
 description = "Deprecated: renamed to data_fmt. Multi-format data visualization library with 10 formatters, 33 variants, and granular feature flags"
 keywords = [ "deprecated", "table", "formatter", "data-format", "visualization" ]
 categories = [ "text-processing", "data-structures", "visualization" ]
+dependencies = {}
+dev-dependencies = {}
+build-dependencies = {}
 
 [lints]
 workspace = true
