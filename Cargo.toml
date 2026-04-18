@@ -198,7 +198,7 @@ path             = "module/core/color_tools"
 default-features = false
 
 [workspace.dependencies.tree_fmt]
-version = "~0.12.0"
+version = "~0.13.0"
 path = "module/core/tree_fmt"
 default-features = false
 
