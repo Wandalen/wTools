@@ -24,7 +24,7 @@ Contains all functional and integration tests for tree_fmt library. Tests valida
 | `debug_alignment.rs` | Test debug output alignment |
 | `flatten_config.rs` | Test FlattenConfig customization |
 | `fluent_api.rs` | Test fluent RowBuilder API |
-| `formatters.rs` | Test TableShapedFormatter trait |
+| `formatters.rs` | Test TableShapedFormatter trait and ExpandedFormatter coloring behaviors |
 | `html.rs` | Test HTML output format |
 | `logfmt.rs` | Test logfmt output format |
 | `manual/` | Store manual testing procedures |
@@ -59,7 +59,7 @@ Contains all functional and integration tests for tree_fmt library. Tests valida
 - **data.rs** (14 tests) - Core data structures (`TreeNode`, `RowBuilder`, `TableView` trait)
 - **builder.rs** (15 tests) - `TreeBuilder` path-based construction, batch creation
 - **fluent_api.rs** (8 tests) - Fluent RowBuilder API, config builder patterns, builder-formatter integration
-- **formatters.rs** (8 tests) - TableShapedFormatter trait, generic TableView, Write trait support
+- **formatters.rs** (12 tests) - TableShapedFormatter trait, generic TableView, Write trait support, ExpandedFormatter key-color corner cases
 - **flatten_config.rs** (4 tests) - FlattenConfig customization and integration
 
 ## Test Coverage by Category
@@ -83,11 +83,12 @@ Contains all functional and integration tests for tree_fmt library. Tests valida
 - Config builders: TreeConfig, TableConfig, ExpandedConfig fluent APIs
 - Integration: fluent builder with formatter trait polymorphism
 
-### Formatters & Traits (formatters.rs - 8 tests)
+### Formatters & Traits (formatters.rs - 12 tests)
 - TableShapedFormatter trait: polymorphism with `Box<dyn>`, reference usage
 - Generic TableView: works with integers, floats, custom Display types
 - Write trait support: stdout output, multiple formatters, zero-allocation I/O
 - Generic type integration with formatters
+- ExpandedFormatter key-color: `colorize_keys=true` + empty `key_color` suppresses ANSI; `property_style()` default emits gray SGR 90; per-line RESET-before-newline invariant; all records receive color
 
 ### Tree Flattening (flatten_config.rs - 4 tests)
 - FlattenConfig: column selection, custom column names, path-only mode
