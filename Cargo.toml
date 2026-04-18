@@ -202,11 +202,6 @@ version = "~0.1.0"
 path = "module/core/data_fmt"
 default-features = false
 
-[workspace.dependencies.tree_fmt]
-version = "~0.13.0"
-path = "module/core/tree_fmt"
-default-features = false
-
 [workspace.dependencies.include_md]
 version = "~0.1.0"
 path = "module/experimental/include_md"

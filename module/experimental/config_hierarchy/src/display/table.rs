@@ -2,12 +2,12 @@
 
 use std::collections::HashMap;
 use serde_json::Value as JsonValue;
-use tree_fmt::{ RowBuilder, TableFormatter, TableConfig };
+use data_fmt::{ RowBuilder, TableFormatter, TableConfig };
 use core::fmt::Write;
 use crate::{ ConfigDefaults, ConfigPaths, ConfigSource, ValidationError, json_value_to_display_string };
 
-// Re-export tree_fmt types for customization
-pub use tree_fmt::{ RowBuilder as TreeRowBuilder, TableFormatter as TreeTableFormatter, TableConfig as TreeTableConfig };
+// Re-export data_fmt types for customization
+pub use data_fmt::{ RowBuilder as TreeRowBuilder, TableFormatter as TreeTableFormatter, TableConfig as TreeTableConfig };
 
 /// Format configuration as a table
 ///
@@ -99,10 +99,10 @@ where
       .map_or_else( || "-".to_string(), json_value_to_display_string );
 
     builder = builder.add_row( vec![
-      key.clone(),
-      value_str,
-      default_str,
-      source.display_name(),
+      key.clone().into(),
+      value_str.into(),
+      default_str.into(),
+      source.display_name().into(),
     ] );
   }
 
@@ -148,7 +148,7 @@ pub fn format_sources_table< P : ConfigPaths >() -> String
     sources_builder = sources_builder.add_row( vec![
       "local".into(),
       "not found".into(),
-      format!( "(no {}/config.yaml in tree)", local_dir_name ),
+      format!( "(no {local_dir_name}/config.yaml in tree)" ).into(),
     ] );
   }
   else
@@ -158,7 +158,7 @@ pub fn format_sources_table< P : ConfigPaths >() -> String
       sources_builder = sources_builder.add_row( vec![
         "local".into(),
         "active".into(),
-        path.display().to_string(),
+        path.display().to_string().into(),
       ] );
     }
   }
@@ -172,7 +172,7 @@ pub fn format_sources_table< P : ConfigPaths >() -> String
       sources_builder = sources_builder.add_row( vec![
         "global".into(),
         status.into(),
-        path.display().to_string(),
+        path.display().to_string().into(),
       ] );
     },
     Err( _ ) =>
