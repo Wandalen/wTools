@@ -31,4 +31,4 @@
 - **Total Tasks:** 21
 - **Active:** 0
 - **Completed:** 18
-- **Backlog:** 3
+- **Available:** 3

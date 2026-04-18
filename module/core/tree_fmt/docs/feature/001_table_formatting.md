@@ -15,6 +15,7 @@
 | test | `tests/table_rendering_borders.rs` | Border and style rendering tests |
 | test | `tests/table_styles_presets.rs` | Preset configuration tests |
 | doc | `../algorithm/001_multiline_cell_rendering.md` | Multiline cell algorithm |
+| doc | `005_auto_fit.md` | Terminal-aware auto-wrapping and column folding |
 
 ### Style Presets
 

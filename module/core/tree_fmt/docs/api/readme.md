@@ -2,10 +2,10 @@
 
 ### Scope
 
-- **Purpose:** Document the public API surface — type signatures, method contracts, configuration options.
-- **Responsibility:** Registry and overview of all API doc instances.
-- **In Scope:** Data types, builders, config types, formatter APIs.
-- **Out of Scope:** Behavioral invariants (see `invariant/`), feature guides (see `feature/`).
+- **Purpose**: Document the public API surface — type signatures, method contracts, configuration options.
+- **Responsibility**: Registry and overview of all API doc instances.
+- **In Scope**: Data types, builders, config types, formatter APIs.
+- **Out of Scope**: Behavioral invariants (see `invariant/`), feature guides (see `feature/`).
 
 ### Overview Table
 

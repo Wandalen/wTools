@@ -39,5 +39,6 @@ println!( "{warn}" );  // prints yellow text to terminal
 |-----------|----------------|
 | `src/` | Crate source: `ColorfulText` struct and impls |
 | `tests/` | Unit and integration tests |
+| `examples/` | Manual color verification binary |
 | `docs/` | Design and API documentation |
 | `task/` | Implementation task history |

@@ -2,10 +2,10 @@
 
 ### Scope
 
-- **Purpose:** Document every output variant with attributes, examples, and configuration.
-- **Responsibility:** Registry and overview of all variant doc instances (33 total).
-- **In Scope:** Per-variant attribute descriptors (46 attributes each), example output, feature flags.
-- **Out of Scope:** Formatter implementation (see `feature/`), attribute definitions (see `variant_attributes.md`).
+- **Purpose**: Document every output variant with attributes, examples, and configuration.
+- **Responsibility**: Registry and overview of all variant doc instances (33 total).
+- **In Scope**: Per-variant attribute descriptors (46 attributes each), example output, feature flags.
+- **Out of Scope**: Formatter implementation (see `feature/`), attribute definitions (see `variant_attributes.md`).
 
 ### Overview Table
 
@@ -58,6 +58,6 @@
 - **SQL**: 024–027
 - **Text**: 028–033
 
-### Related
+### Cross-Doc Entity Dependencies
 
-- [Variant Attributes](../variant_attributes.md) — complete attribute definitions (46 attributes)
+- [Variant Attributes](../variant_attributes.md) — attribute schema for all 46 per-variant attributes

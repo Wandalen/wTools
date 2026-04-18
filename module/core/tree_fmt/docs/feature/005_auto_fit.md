@@ -11,10 +11,20 @@
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/formatters/table.rs` | Auto-wrap budget allocation |
+| source | `src/formatters/table.rs` | Auto-wrap budget allocation and fold rendering |
+| source | `src/config.rs` | ColumnFlex, FoldStyle enums; auto-fit TableConfig fields |
 | source | `src/wrap.rs` | WrapFormatter for cell wrapping |
 | test | `tests/auto_wrap_test.rs` | Auto-wrap test suite (22 cases) |
-| task | `task/020_column_folding_with_auto_fold.md` | Column folding implementation task |
+| test | `tests/terminal_width_test.rs` | Terminal width three-tier fallback tests (to create) |
+| test | `tests/auto_fold_test.rs` | Column folding test suite (to create) |
+| doc | `../algorithm/004_budget_allocation.md` | Budget allocation algorithm |
+| doc | `../algorithm/005_column_fold_detection.md` | Column fold detection algorithm |
+| doc | `../invariant/003_auto_wrap_backward_compat.md` | auto_wrap(false) backward compatibility guarantee |
+| doc | `../invariant/004_column_fold_invariants.md` | Fold behavioral invariants |
+| doc | `../api/003_config_types.md` | TableConfig field reference and builder API |
+| task | `../../task/019_cell_auto_wrapping_with_budget_allocation.md` | Auto-wrap implementation task |
+| task | `../../task/020_column_folding_with_auto_fold.md` | Column folding implementation task |
+| task | `../../task/021_terminal_width_detection_tests.md` | Terminal detection test task |
 
 ### Motivation
 
@@ -63,14 +73,14 @@ b1  governance.rulebook.md  120    23
 
 ### Default Rendering Pipeline
 
-When `auto_wrap` and `auto_fold` are both `true` (default):
+Current pipeline (Strategy 2 implemented; Strategy 1 planned — Task 020):
 
 1. Measure terminal width (auto-detect or use `terminal_width` override; fallback: 120)
 2. Compute natural width of each column from content
 3. If `sum(natural_widths) + separators ≤ terminal_width` — render normally (no intervention)
 4. Classify columns via `column_flex` — `Fixed` columns keep natural width, `Flex` columns share remaining budget
-5. Strategy 2: wrap flex cells that exceed their budget (cell height grows)
-6. If total still exceeds terminal — Strategy 1: fold overflow columns to continuation lines
+5. Strategy 2 (✅): wrap flex cells that exceed their budget (cell height grows)
+6. 🔄 Task 020: If total still exceeds terminal — Strategy 1: fold overflow columns to continuation lines
 7. Render combined result
 
 ### Column Classification
@@ -131,39 +141,38 @@ When neither Tier 1 nor Tier 2 produces a width, the formatter uses **120 column
 
 All fields have sensible defaults — auto-fit works without any configuration.
 
-| Field | Type | Default | Behavior |
-|-------|------|---------|----------|
-| `terminal_width` | `Option<usize>` | `None` (auto-detect) | Target width for budget allocation |
-| `auto_wrap` | `bool` | `true` | Enable Strategy 2 (cell wrapping at budget) |
-| `auto_fold` | `bool` | `true` | Enable Strategy 1 (column folding) |
-| `column_flex` | `Vec<ColumnFlex>` | `vec![]` (auto-classify) | Per-column flex classification |
-| `fold_style` | `FoldStyle` | `Labeled` | Continuation line format |
-| `fold_indent` | `String` | `"    "` (4 spaces) | Indent prefix for continuation lines |
+| Field | Type | Default | Status | Behavior |
+|-------|------|---------|--------|----------|
+| `terminal_width` | `Option<usize>` | `None` (auto-detect) | ✅ | Target width for budget allocation |
+| `auto_wrap` | `bool` | `true` | ✅ | Enable Strategy 2 (cell wrapping at budget) |
+| `column_flex` | `Vec<ColumnFlex>` | `vec![]` (auto-classify) | ✅ | Per-column flex classification |
+| `auto_fold` | `bool` | `true` | 🔄 Task 020 | Enable Strategy 1 (column folding) |
+| `fold_style` | `FoldStyle` | `Labeled` | 🔄 Task 020 | Continuation line format |
+| `fold_indent` | `String` | `"    "` (4 spaces) | 🔄 Task 020 | Indent prefix for continuation lines |
 
 #### Disabling Auto-Fit
 
 ```rust
-// Disable both (pre-auto-fit behavior: unlimited width)
-let config = TableConfig::plain()
-  .auto_wrap( false )
-  .auto_fold( false );
-
-// Disable only folding (wraps cells but never folds columns)
-let config = TableConfig::plain()
-  .auto_fold( false );
-
-// Disable only wrapping (folds columns but truncates, does not wrap)
+// Disable wrapping (pre-auto-fit behavior; auto_fold also unavailable until Task 020)
 let config = TableConfig::plain()
   .auto_wrap( false );
+
+// 🔄 planned (Task 020): disable only folding
+// let config = TableConfig::plain().auto_fold( false );
+
+// 🔄 planned (Task 020): disable both
+// let config = TableConfig::plain().auto_wrap( false ).auto_fold( false );
 ```
 
 ### Progressive Degradation
 
-| Condition | Strategy 2 | Strategy 1 | Result |
+Strategy 2 (✅ implemented); Strategy 1 (🔄 Task 020).
+
+| Condition | Strategy 2 | Strategy 1 🔄 | Result |
 |-----------|-----------|-----------|--------|
 | Fits naturally | not needed | not needed | Normal render |
 | Tight but flex columns absorb | wraps flex cells | not needed | Taller rows |
-| Still overflows after wrapping | wraps remaining | folds overflow cols | Continuation lines with wrapped values |
+| Still overflows after wrapping | wraps remaining | folds overflow cols | Continuation lines with wrapped values (Task 020) |
 | Both disabled | — | — | Unlimited width (pre-auto-fit behavior) |
 
 ### Interaction with Existing Features

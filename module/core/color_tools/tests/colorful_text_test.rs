@@ -8,7 +8,7 @@
 //! | t02 | `From<&str>` produces `color: None` |
 //! | t03 | `.with_color()` sets color field |
 //! | t04 | `.render()` uncolored returns raw text with no escape codes |
-//! | t05 | `.render()` colored starts with code and ends with `\x1b[0m]` |
+//! | t05 | `.render()` colored starts with code and ends with `\x1b[0m` |
 //! | t06 | `From<ColorfulText> for String` equals `.render()` |
 //! | t07 | `Display` output equals `.render()` |
 //! | t08 | `Default` produces empty text, no color |
@@ -22,6 +22,9 @@
 //! | t16 | `.render()` on multiline uncolored preserves `\n` verbatim |
 //! | t17 | `.render()` on multiline colored emits exactly ONE reset — not per-line |
 //! | t18 | Serde round-trip: serialize → deserialize preserves both fields |
+//! | t19 | `Clone` produces equal value for both plain and colored |
+//! | t20 | `PartialEq`/`Eq` — same values equal, different values unequal |
+//! | t21 | `Debug` format includes type name and field values |
 
 use color_tools::ColorfulText;
 
@@ -297,4 +300,49 @@ fn t18_serde_roundtrip()
   assert_eq!( restored.text, colored.text, "text field must survive serde round-trip" );
   assert_eq!( restored.color, colored.color, "color field must survive serde round-trip as Some" );
   assert_eq!( restored.render(), colored.render(), "render output must be identical after round-trip" );
+}
+
+// =============================================================================
+// t19 — Clone: cloned value equals original for both variants
+// =============================================================================
+
+#[ test ]
+fn t19_clone()
+{
+  let plain = ColorfulText::from( "hello" );
+  assert_eq!( plain.clone(), plain, "clone of plain must equal original" );
+
+  let colored = ColorfulText::from( "x" ).with_color( "\x1b[31m" );
+  assert_eq!( colored.clone(), colored, "clone of colored must equal original" );
+}
+
+// =============================================================================
+// t20 — PartialEq/Eq: same values equal, different values unequal
+// =============================================================================
+
+#[ test ]
+fn t20_partial_eq()
+{
+  let a = ColorfulText::from( "same" );
+  let b = ColorfulText::from( "same" );
+  assert_eq!( a, b, "same text and color must be equal" );
+
+  let c = ColorfulText::from( "same" ).with_color( "\x1b[31m" );
+  assert_ne!( a, c, "plain vs colored must differ" );
+
+  let d = ColorfulText::from( "diff" );
+  assert_ne!( a, d, "different text must differ" );
+}
+
+// =============================================================================
+// t21 — Debug: format output contains field values
+// =============================================================================
+
+#[ test ]
+fn t21_debug_format()
+{
+  let ct = ColorfulText::from( "hello" ).with_color( "\x1b[33m" );
+  let dbg = format!( "{ct:?}" );
+  assert!( dbg.contains( "hello" ), "Debug must show text field" );
+  assert!( dbg.contains( "ColorfulText" ), "Debug must show type name" );
 }

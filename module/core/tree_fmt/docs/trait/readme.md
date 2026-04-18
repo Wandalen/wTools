@@ -2,10 +2,10 @@
 
 ### Scope
 
-- **Purpose:** Document interface contracts connecting input types to formatters.
-- **Responsibility:** Registry and overview of all trait doc instances.
-- **In Scope:** `Format`, `TableShapedFormatter`, `TableShapedView` — signatures, implementors, coverage gaps.
-- **Out of Scope:** Formatter implementation details (see `feature/`), variant output (see `variant/`).
+- **Purpose**: Document interface contracts connecting input types to formatters.
+- **Responsibility**: Registry and overview of all trait doc instances.
+- **In Scope**: `Format`, `TableShapedFormatter`, `TableShapedView` — signatures, implementors, coverage gaps.
+- **Out of Scope**: Formatter implementation details (see `feature/`), variant output (see `variant/`).
 
 ### Overview Table
 

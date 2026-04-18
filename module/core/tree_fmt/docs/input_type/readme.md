@@ -2,10 +2,10 @@
 
 ### Scope
 
-- **Purpose:** Document Rust types that carry data into formatters.
-- **Responsibility:** Registry and overview of all input type doc instances.
-- **In Scope:** `TableView`, `TreeNode<T>` specializations, their fields and trait bounds.
-- **Out of Scope:** Conceptual shapes (see `input_model/`), formatting output (see `variant/`).
+- **Purpose**: Document Rust types that carry data into formatters.
+- **Responsibility**: Registry and overview of all input type doc instances.
+- **In Scope**: `TableView`, `TreeNode<T>` specializations, their fields and trait bounds.
+- **Out of Scope**: Conceptual shapes (see `input_model/`), formatting output (see `variant/`).
 
 ### Overview Table
 

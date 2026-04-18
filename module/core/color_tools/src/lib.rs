@@ -44,7 +44,7 @@ pub mod exposed
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
-  pub use super::colorful_text::ColorfulText;
+  pub use super::private::ColorfulText;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

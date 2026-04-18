@@ -83,9 +83,9 @@ pub enum ColumnFlex
 
 When `TableConfig::column_flex` is empty (default), columns are auto-classified: max cell width ≤ 12 display chars = `Fixed`, otherwise `Flex`.
 
-### FoldStyle
+### FoldStyle — 🔄 Planned (Task 020)
 
-Controls the format of continuation lines when columns are folded.
+Controls the format of continuation lines when columns are folded. Not yet in code; added by Task 020.
 
 ```rust
 #[ derive( Debug, Clone, Copy, PartialEq, Eq ) ]
@@ -123,10 +123,10 @@ Formatter parameters for table output. All fields are private; use preset constr
 | `sub_row_indent` | `String` | Prefix for sub-row detail lines (default: "  ") |
 | `terminal_width` | `Option< usize >` | Target width for auto-fit (None = auto-detect via `terminal_size` feature; fallback: 120) |
 | `auto_wrap` | `bool` | Auto-wrap flex cells at budget width (default: true) |
-| `auto_fold` | `bool` | Auto-fold overflow columns to continuation lines (default: true) |
+| `auto_fold` | `bool` 🔄 | Auto-fold overflow columns to continuation lines (default: true) — planned, Task 020 |
 | `column_flex` | `Vec< ColumnFlex >` | Per-column flex classification (empty = auto-classify) |
-| `fold_style` | `FoldStyle` | Continuation line format for folded columns (default: Labeled) |
-| `fold_indent` | `String` | Indent prefix for folded continuation lines (default: "    ") |
+| `fold_style` | `FoldStyle` 🔄 | Continuation line format for folded columns (default: Labeled) — planned, Task 020 |
+| `fold_indent` | `String` 🔄 | Indent prefix for folded continuation lines (default: "    ") — planned, Task 020 |
 
 #### Preset Constructors
 
@@ -170,8 +170,9 @@ impl TableConfig
   pub fn sub_row_indent( self, indent : String ) -> Self;
   pub fn terminal_width( self, width : Option< usize > ) -> Self;
   pub fn auto_wrap( self, enabled : bool ) -> Self;
-  pub fn auto_fold( self, enabled : bool ) -> Self;
   pub fn column_flex( self, flex : Vec< ColumnFlex > ) -> Self;
+  // 🔄 planned (Task 020):
+  pub fn auto_fold( self, enabled : bool ) -> Self;
   pub fn fold_style( self, style : FoldStyle ) -> Self;
   pub fn fold_indent( self, indent : String ) -> Self;
 }

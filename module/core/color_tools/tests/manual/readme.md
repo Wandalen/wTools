@@ -8,7 +8,7 @@ Run with the `enabled` and `serde_support` features active:
 
 ```bash
 cd module/core/color_tools
-cargo run --example manual_color --features enabled
+cargo run --example manual_color --features "enabled,serde_support"
 ```
 
 Or use a quick inline `cargo-script` / `fn main` test binary.

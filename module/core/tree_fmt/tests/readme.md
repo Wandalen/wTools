@@ -52,6 +52,8 @@ Contains all functional and integration tests for tree_fmt library. Tests valida
 | `expanded_behavior.rs` | Test ExpandedFormatter corner cases: show_record_numbers, alignment, spacing |
 | `sub_row_test.rs` | Test sub-row detail lines (tasks 017–018): API, rendering, config, backward compat, ANSI colorization |
 | `auto_wrap_test.rs` | Test cell auto-wrapping with terminal-aware budget allocation (task 019) |
+| `terminal_width_test.rs` | Test terminal width detection three-tier fallback (task 021, to create) |
+| `auto_fold_test.rs` | Test column folding with auto-fold continuation lines (task 020, to create) |
 
 ## Test Files
 - **data.rs** (14 tests) - Core data structures (`TreeNode`, `RowBuilder`, `TableView` trait)

@@ -1,0 +1,381 @@
+meta:
+  module: tree_fmt
+  generated: "2026-04-18"
+  node_count: 60
+
+nodes:
+  # algorithm (5)
+  - id: algorithm/001
+    name: Multiline Cell Rendering
+    status: implemented
+  - id: algorithm/002
+    name: Word Wrapping
+    status: implemented
+  - id: algorithm/003
+    name: Tree Column Alignment
+    status: implemented
+  - id: algorithm/004
+    name: Budget Allocation
+    status: implemented
+  - id: algorithm/005
+    name: Column Fold Detection
+    status: planned
+
+  # api (4)
+  - id: api/001
+    name: Data Types
+    status: implemented
+  - id: api/002
+    name: Builders
+    status: implemented
+  - id: api/003
+    name: Config Types
+    status: implemented
+  - id: api/004
+    name: Formatters
+    status: implemented
+
+  # builder (2)
+  - id: builder/001
+    name: RowBuilder
+    status: implemented
+  - id: builder/002
+    name: TreeBuilder
+    status: implemented
+
+  # feature (5)
+  - id: feature/001
+    name: Table Formatting
+    status: implemented
+  - id: feature/002
+    name: Word Wrap
+    status: implemented
+  - id: feature/003
+    name: Unified Format Interface
+    status: implemented
+  - id: feature/004
+    name: Color Themes
+    status: implemented
+  - id: feature/005
+    name: Auto-Fit
+    status: partial
+
+  # input_model (2)
+  - id: input_model/001
+    name: Tabular
+    status: implemented
+  - id: input_model/002
+    name: Hierarchical
+    status: implemented
+
+  # input_type (2)
+  - id: input_type/001
+    name: TableView
+    status: implemented
+  - id: input_type/002
+    name: TreeNode
+    status: implemented
+
+  # invariant (4)
+  - id: invariant/001
+    name: Data Model
+    status: implemented
+  - id: invariant/002
+    name: ANSI and Unicode
+    status: implemented
+  - id: invariant/003
+    name: Auto-Wrap Backward Compatibility
+    status: implemented
+  - id: invariant/004
+    name: Column Fold Invariants
+    status: planned
+
+  # trait (3)
+  - id: trait/001
+    name: Format
+    status: implemented
+  - id: trait/002
+    name: TableShapedFormatter
+    status: implemented
+  - id: trait/003
+    name: TableShapedView
+    status: implemented
+
+  # variant (33) — listed for completeness; no cross-entity edges
+  - id: variant/001
+    name: Table Plain
+    status: implemented
+  - id: variant/002
+    name: Table Minimal
+    status: implemented
+  - id: variant/003
+    name: Table Bordered
+    status: implemented
+  - id: variant/004
+    name: Table Markdown
+    status: implemented
+  - id: variant/005
+    name: Table Grid
+    status: implemented
+  - id: variant/006
+    name: Table Unicode Box
+    status: implemented
+  - id: variant/007
+    name: Table CSV
+    status: implemented
+  - id: variant/008
+    name: Table TSV
+    status: implemented
+  - id: variant/009
+    name: Table Compact
+    status: implemented
+  - id: variant/010
+    name: Expanded Postgres
+    status: implemented
+  - id: variant/011
+    name: Expanded Property
+    status: implemented
+  - id: variant/012
+    name: Tree Hierarchical
+    status: implemented
+  - id: variant/013
+    name: Tree Aligned
+    status: implemented
+  - id: variant/014
+    name: Tree Aggregated
+    status: implemented
+  - id: variant/015
+    name: Logfmt Standard
+    status: implemented
+  - id: variant/016
+    name: JSON Pretty
+    status: implemented
+  - id: variant/017
+    name: JSON Compact
+    status: implemented
+  - id: variant/018
+    name: YAML Standard
+    status: implemented
+  - id: variant/019
+    name: TOML Standard
+    status: implemented
+  - id: variant/020
+    name: HTML Minimal
+    status: implemented
+  - id: variant/021
+    name: HTML Bootstrap
+    status: implemented
+  - id: variant/022
+    name: HTML Tailwind
+    status: implemented
+  - id: variant/023
+    name: HTML Custom
+    status: implemented
+  - id: variant/024
+    name: SQL ANSI
+    status: implemented
+  - id: variant/025
+    name: SQL PostgreSQL
+    status: implemented
+  - id: variant/026
+    name: SQL MySQL
+    status: implemented
+  - id: variant/027
+    name: SQL SQLite
+    status: implemented
+  - id: variant/028
+    name: Text Bullets
+    status: implemented
+  - id: variant/029
+    name: Text Numbered
+    status: implemented
+  - id: variant/030
+    name: Text Sections
+    status: implemented
+  - id: variant/031
+    name: Text KeyValue
+    status: implemented
+  - id: variant/032
+    name: Text Compact
+    status: implemented
+  - id: variant/033
+    name: Text CliHelp
+    status: implemented
+
+edges:
+  # algorithm cross-references
+  - from: algorithm/001
+    to: feature/002
+    via: cross_references
+  - from: algorithm/002
+    to: feature/005
+    via: body_link
+  - from: algorithm/003
+    to: invariant/001
+    via: cross_references
+  - from: algorithm/004
+    to: feature/005
+    via: cross_references
+  - from: algorithm/004
+    to: api/003
+    via: cross_references
+  - from: algorithm/004
+    to: algorithm/002
+    via: body_link
+  - from: algorithm/005
+    to: feature/005
+    via: cross_references
+  - from: algorithm/005
+    to: invariant/004
+    via: cross_references
+
+  # api cross-references
+  - from: api/001
+    to: input_type/001
+    via: cross_references
+  - from: api/001
+    to: input_type/002
+    via: cross_references
+  - from: api/002
+    to: builder/001
+    via: cross_references
+  - from: api/002
+    to: builder/002
+    via: cross_references
+  - from: api/004
+    to: trait/001
+    via: cross_references
+  - from: api/004
+    to: trait/002
+    via: cross_references
+
+  # builder cross-references
+  - from: builder/001
+    to: api/002
+    via: cross_references
+  - from: builder/001
+    to: input_type/001
+    via: cross_references
+  - from: builder/002
+    to: api/002
+    via: cross_references
+  - from: builder/002
+    to: input_type/002
+    via: cross_references
+
+  # feature cross-references
+  - from: feature/001
+    to: algorithm/001
+    via: cross_references
+  - from: feature/001
+    to: feature/005
+    via: cross_references
+  - from: feature/002
+    to: algorithm/002
+    via: cross_references
+  - from: feature/002
+    to: feature/005
+    via: cross_references
+  - from: feature/003
+    to: trait/001
+    via: cross_references
+  - from: feature/005
+    to: algorithm/004
+    via: cross_references
+  - from: feature/005
+    to: algorithm/005
+    via: cross_references
+  - from: feature/005
+    to: invariant/003
+    via: cross_references
+  - from: feature/005
+    to: invariant/004
+    via: cross_references
+  - from: feature/005
+    to: api/003
+    via: cross_references
+  - from: feature/005
+    to: feature/002
+    via: cross_references
+
+  # input_model cross-references
+  - from: input_model/001
+    to: input_type/001
+    via: cross_references
+  - from: input_model/002
+    to: input_type/002
+    via: cross_references
+
+  # input_type cross-references
+  - from: input_type/001
+    to: input_model/001
+    via: cross_references
+  - from: input_type/001
+    to: api/001
+    via: cross_references
+  - from: input_type/002
+    to: input_model/002
+    via: cross_references
+  - from: input_type/002
+    to: api/001
+    via: cross_references
+
+  # invariant cross-references
+  - from: invariant/001
+    to: builder/001
+    via: cross_references
+  - from: invariant/001
+    to: builder/002
+    via: cross_references
+  - from: invariant/002
+    to: algorithm/001
+    via: body_link
+  - from: invariant/002
+    to: algorithm/003
+    via: cross_references
+  - from: invariant/003
+    to: feature/005
+    via: cross_references
+  - from: invariant/004
+    to: feature/005
+    via: cross_references
+  - from: invariant/004
+    to: algorithm/005
+    via: cross_references
+
+  # trait cross-references
+  - from: trait/001
+    to: feature/003
+    via: cross_references
+  - from: trait/002
+    to: trait/001
+    via: body_link
+  - from: trait/003
+    to: trait/002
+    via: body_link
+  - from: trait/003
+    to: input_model/001
+    via: body_link
+
+components:
+  - name: auto-fit-cluster
+    members: [feature/005, algorithm/004, algorithm/005, invariant/003, invariant/004]
+  - name: table-rendering-cluster
+    members: [feature/001, feature/002, algorithm/001, algorithm/002, algorithm/003]
+  - name: format-trait-cluster
+    members: [feature/003, trait/001, trait/002, trait/003]
+  - name: data-flow-cluster
+    members: [input_model/001, input_model/002, input_type/001, input_type/002, builder/001, builder/002]
+  - name: api-surface-cluster
+    members: [api/001, api/002, api/003, api/004]
+  - name: invariant-cluster
+    members: [invariant/001, invariant/002]
+  - name: variant-catalog
+    members: [variant/001, variant/002, variant/003, variant/004, variant/005, variant/006, variant/007, variant/008, variant/009, variant/010, variant/011, variant/012, variant/013, variant/014, variant/015, variant/016, variant/017, variant/018, variant/019, variant/020, variant/021, variant/022, variant/023, variant/024, variant/025, variant/026, variant/027, variant/028, variant/029, variant/030, variant/031, variant/032, variant/033]
+    gap: "Variant docs are self-contained output examples; they reference variant_attributes.md but not other doc entity types"
+
+  - name: color-themes
+    members: [feature/004]
+    gap: "Color themes doc references config types in body text but no formal cross-reference edges to other doc entities yet"
+
+dangling_refs: []
