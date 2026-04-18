@@ -52,7 +52,7 @@
 /// 2. **Transitive closure** - Fixed-point iteration ensures ALL affected packages detected (max 100 iterations safeguard)
 /// 3. **Semver validation** - Uses `VersionReq::matches()` for accurate version compatibility checking
 /// 4. **Cascade tracking** - Explicitly tracks why each package needs publishing via `PublishReason`
-/// 5. **Specification-first** - Created 2,500+ line spec before implementation (`spec/publishing_algorithm.md`)
+/// 5. **Specification-first** - Created 2,500+ line spec before implementation (`docs/feature/002_enhanced_publish_algorithm.md`)
 ///
 /// # Pitfall
 ///
