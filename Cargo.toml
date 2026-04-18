@@ -277,12 +277,12 @@ path = "module/experimental/for_each"
 default-features = false
 
 [workspace.dependencies.former]
-version = "~2.43.0"
+version = "~2.44.0"
 path = "module/core/former"
 default-features = false
 
 [workspace.dependencies.former_meta]
-version = "~2.41.0"
+version = "~2.42.0"
 path = "module/core/former_meta"
 default-features = false
 
@@ -457,7 +457,7 @@ default-features = false
 ## process tools
 
 [workspace.dependencies.process_tools]
-version = "~0.30.0"
+version = "~0.31.0"
 path = "module/core/process_tools"
 default-features = false
 
