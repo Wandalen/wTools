@@ -51,7 +51,7 @@ jobs :
             components : clippy
           attempt_limit: 3
           attempt_delay: 10000
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install cargo-audit
         run: cargo install cargo-audit
@@ -108,7 +108,7 @@ jobs :
 #            override : true
 #          attempt_limit: 3
 #          attempt_delay: 10000
-#      - uses: actions/checkout@v3
+#      - uses: actions/checkout@v4
 #        with:
 #          ref: alpha
 #
@@ -129,7 +129,7 @@ jobs :
   #            components : miri
   #          attempt_limit: 3
   #          attempt_delay: 10000
-  #      - uses: actions/checkout@v3
+  #      - uses: actions/checkout@v4
   #        with:
   #          ref: alpha
 
@@ -168,9 +168,9 @@ jobs :
             override : true
           attempt_limit: 3
           attempt_delay: 10000
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install will
-        run: cargo install willbe
+        run: cargo +stable install willbe
       - name: Set MANIFEST_ROOT_PATH
         id: rootpath
         run: echo "path=$(dirname ${{ inputs.manifest_path }})" >> $GITHUB_OUTPUT

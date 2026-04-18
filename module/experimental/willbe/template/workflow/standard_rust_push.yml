@@ -51,7 +51,7 @@ jobs :
             components : clippy
           attempt_limit: 3
           attempt_delay: 10000
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install cargo-audit
         run: cargo install cargo-audit
@@ -60,7 +60,7 @@ jobs :
 
       - name: Set MANIFEST_ROOT_PATH
         id: rootpath
-        run: echo "::set-output name=path::$(dirname ${{ inputs.manifest_path }})"
+        run: echo "path=$(dirname ${{ inputs.manifest_path }})" >> $GITHUB_OUTPUT
       - name: Build module
         run: cd ${{ steps.rootpath.outputs.path }} && cargo build && cd -
       - name: Audit the modules
@@ -108,7 +108,7 @@ jobs :
 #            override : true
 #          attempt_limit: 3
 #          attempt_delay: 10000
-#      - uses: actions/checkout@v3
+#      - uses: actions/checkout@v4
 #        with:
 #          ref: alpha
 #
@@ -129,7 +129,7 @@ jobs :
   #            components : miri
   #          attempt_limit: 3
   #          attempt_delay: 10000
-  #      - uses: actions/checkout@v3
+  #      - uses: actions/checkout@v4
   #        with:
   #          ref: alpha
 
@@ -168,11 +168,11 @@ jobs :
             override : true
           attempt_limit: 3
           attempt_delay: 10000
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install will
-        run: cargo install willbe
+        run: cargo +stable install willbe
       - name: Set MANIFEST_ROOT_PATH
         id: rootpath
-        run: echo "::set-output name=path::$(dirname ${{ inputs.manifest_path }})"
+        run: echo "path=$(dirname ${{ inputs.manifest_path }})" >> $GITHUB_OUTPUT
       - name: Run tests with each feature
         run: will .test ${{ steps.rootpath.outputs.path }}/ dry:0 exclude:'' with_all_features:1 with_debug:1 with_nightly:1 with_none_features:1 with_release:1 with_stable:1

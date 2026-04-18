@@ -9,7 +9,7 @@ use gluesql ::
   core ::
   {
   ast_builder :: { table, Build, Execute },
-  store :: { GStore, GStoreMut },
+  store :: { GStore, GStoreMut, Planner },
  },
   prelude :: { Glue, SledStorage },
 };
@@ -23,9 +23,9 @@ mod config;
 
 /// Storage for feed frames.
 #[ derive( Clone ) ]
-pub struct FeedStorage< S: GStore + GStoreMut + Send >( Arc< Mutex< Glue< S > > > );
+pub struct FeedStorage< S: GStore + GStoreMut + Planner + Send >( Arc< Mutex< Glue< S > > > );
 
-impl< S: GStore + GStoreMut + Send > core ::fmt ::Debug for FeedStorage< S >
+impl< S: GStore + GStoreMut + Planner + Send > core ::fmt ::Debug for FeedStorage< S >
 {
   fn fmt( &self, f: &mut core ::fmt ::Formatter< '_ > ) -> core ::fmt ::Result
   {
@@ -105,7 +105,7 @@ pub trait Store
 }
 
 #[ async_trait ::async_trait( ?Send ) ]
-impl< S: GStore + GStoreMut + Send > Store for FeedStorage< S >
+impl< S: GStore + GStoreMut + Planner + Send > Store for FeedStorage< S >
 {
   async fn query_execute( &mut self, query: String ) -> Result< QueryReport >
   {

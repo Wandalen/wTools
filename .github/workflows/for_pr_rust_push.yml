@@ -62,9 +62,9 @@ jobs :
             override : true
           attempt_limit: 3
           attempt_delay: 10000
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install will
-        run: cargo install --git https://github.com/Wandalen/wTools --branch alpha willbe
+        run: cargo +stable install --git https://github.com/Wandalen/wTools --branch alpha willbe
       - name: Set MANIFEST_ROOT_PATH
         id: rootpath
         run: echo "path=$(dirname ${{ inputs.manifest_path }})" >> $GITHUB_OUTPUT

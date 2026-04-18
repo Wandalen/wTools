@@ -60,7 +60,7 @@ jobs :
           attempt_delay : 10000
       - uses : actions/checkout@v4
       - name : Install willbe
-        run : cargo install willbe
+        run : cargo +stable install willbe
       - name : Run tests
         run : will .test ${{ matrix.path }}/ dry:0 exclude:'' with_all_features:1 with_debug:1 with_nightly:1 with_none_features:1 with_release:1 with_stable:1
 

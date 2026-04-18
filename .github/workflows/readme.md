@@ -56,8 +56,9 @@ in-progress runs for the same module and branch with the same test-trigger statu
 
 ## standard_rust_push.yml
 
-Reusable workflow called historically by per-crate push files (now by `workspace_push.yml`
-indirectly via willbe).
+Reusable workflow_call with no active callers. Previously called by per-crate
+`module_*_push.yml` files (now deleted). Retained as reusable infrastructure;
+`cicd_renew` still generates it.
 
 Full test matrix: stable + nightly, debug + release, all features + no features,
 plus `cargo-udeps` and `cargo-audit`.
