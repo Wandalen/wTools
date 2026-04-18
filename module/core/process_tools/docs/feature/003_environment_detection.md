@@ -12,13 +12,13 @@
 - **Version introduced:** 0.5.0
 - **Stability:** stable
 - **Module path:** `process_tools::environment`
-- **Feature gate:** `process_environment_is_cicd` — included in `default`; not included in `full`
+- **Feature gate:** `process_environment_is_cicd` — included in both `default` and `full`
 
 ### Design
 
 Detection is purely environment-variable-based: the function calls `std::env::var()` for each known CI variable and returns `true` on the first hit. No process introspection, no filesystem reads, no external calls. This makes the function `O(n)` in the number of CI platforms checked and free of I/O side effects.
 
-The feature is included in `default`, so most projects get `is_cicd()` without any configuration. Callers that don't need CI detection can exclude it by using `default-features = false` (and omitting `process_environment_is_cicd` from their explicit features list). Projects building with `features = ["full"]` also exclude it and must add it explicitly if needed.
+The feature is included in both `default` and `full`, so projects get `is_cicd()` without any special configuration. Callers that don't need CI detection can exclude it by using `default-features = false` and omitting `process_environment_is_cicd` from their explicit features list.
 
 The supported variables (`CI`, `GITHUB_ACTIONS`, `GITLAB_CI`, `TRAVIS`, `CIRCLECI`, `JENKINS_URL`) are checked by presence — their value is irrelevant. Any truthy or empty value causes a match.
 
