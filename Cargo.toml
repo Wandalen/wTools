@@ -388,7 +388,7 @@ default-features = false
 ## error
 
 [workspace.dependencies.error_tools]
-version = "~0.38.0"
+version = "~0.39.0"
 path = "module/core/error_tools"
 default-features = false
 
