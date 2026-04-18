@@ -15,6 +15,9 @@ Revolutionary type-safe component assignment for Rust. Build complex objects wit
 """
 categories = [ "rust-patterns", "development-tools", "api-bindings", "config" ]
 keywords = [ "builder-pattern", "type-safe", "zero-cost", "fluent-api", "configuration" ]
+dependencies = {}
+dev-dependencies = {}
+build-dependencies = {}
 
 [lints]
 workspace = true
