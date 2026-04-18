@@ -1,6 +1,6 @@
 [package]
 name = "component_model_types"
-version = "0.26.0"
+version = "0.27.0"
 edition = "2021"
 authors = [
   "Kostiantyn Mysnyk <wandalen@obox.systems>",
