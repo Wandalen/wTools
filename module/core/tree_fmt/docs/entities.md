@@ -12,6 +12,7 @@
 | `input_model/` | Registry and overview of all input model doc instances | [input_model/readme.md](input_model/readme.md) | 2 |
 | `input_type/` | Registry and overview of all input type doc instances | [input_type/readme.md](input_type/readme.md) | 2 |
 | `invariant/` | Registry and overview of all invariant doc instances | [invariant/readme.md](invariant/readme.md) | 4 |
+| `pattern/` | Registry and overview of all pattern doc instances | [pattern/readme.md](pattern/readme.md) | 4 |
 | `trait/` | Registry and overview of all trait doc instances | [trait/readme.md](trait/readme.md) | 3 |
 | `variant/` | Registry and overview of all variant doc instances | [variant/readme.md](variant/readme.md) | 33 |
 
@@ -44,6 +45,10 @@
 | invariant | 002 | ANSI and Unicode | [invariant/002_ansi_unicode.md](invariant/002_ansi_unicode.md) |
 | invariant | 003 | Auto-Wrap Backward Compatibility | [invariant/003_auto_wrap_backward_compat.md](invariant/003_auto_wrap_backward_compat.md) |
 | invariant | 004 | Column Fold Invariants | [invariant/004_column_fold_invariants.md](invariant/004_column_fold_invariants.md) |
+| pattern | 001 | Three-Layer Architecture | [pattern/001_three_layer_architecture.md](pattern/001_three_layer_architecture.md) |
+| pattern | 002 | Design Principles | [pattern/002_design_principles.md](pattern/002_design_principles.md) |
+| pattern | 003 | Formatter Design | [pattern/003_formatter_design.md](pattern/003_formatter_design.md) |
+| pattern | 004 | Config Builder Pattern | [pattern/004_config_builder_pattern.md](pattern/004_config_builder_pattern.md) |
 | trait | 001 | Format | [trait/001_format.md](trait/001_format.md) |
 | trait | 002 | TableShapedFormatter | [trait/002_table_shaped_formatter.md](trait/002_table_shaped_formatter.md) |
 | trait | 003 | TableShapedView | [trait/003_table_shaped_view.md](trait/003_table_shaped_view.md) |

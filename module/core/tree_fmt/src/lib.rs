@@ -158,7 +158,7 @@ pub use data::{
 pub use color_tools::ColorfulText;
 pub use config::{
   TreeConfig, TableConfig, ExpandedConfig, PaddingSide, TreeSymbols,
-  BorderVariant, HeaderSeparatorVariant, ColumnSeparator, ColumnFlex,
+  BorderVariant, HeaderSeparatorVariant, ColumnSeparator, ColumnFlex, FoldStyle,
 };
 pub use ansi_str::{ visual_len, pad_to_width, truncate_cell };
 pub use wrap::{ WrapConfig, WrapFormatter, BreakStrategy, Overflow };
