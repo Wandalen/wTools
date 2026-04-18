@@ -18,6 +18,9 @@ Utility to publish multi-crate and multi-workspace environments and maintain the
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 default-run = "will"
+dependencies = {}
+dev-dependencies = {}
+build-dependencies = {}
 
 [lints]
 workspace = true
