@@ -1,6 +1,6 @@
 [package]
 name = "former"
-version = "2.44.0"
+version = "2.45.0"
 edition = "2021"
 authors = [
   "Kostiantyn Mysnyk <wandalen@obox.systems>",
@@ -16,6 +16,9 @@ A flexible implementation of the Builder pattern supporting nested builders and 
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
+dependencies = {}
+dev-dependencies = {}
+build-dependencies = {}
 
 [lints]
 workspace = true

@@ -1,6 +1,6 @@
 [package]
 name = "clone_dyn_meta"
-version = "0.57.0"
+version = "0.58.0"
 edition = "2021"
 authors = [
   "Kostiantyn Mysnyk <wandalen@obox.systems>",

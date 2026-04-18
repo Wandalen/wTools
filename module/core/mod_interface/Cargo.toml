@@ -1,6 +1,6 @@
 [package]
 name = "mod_interface"
-version = "0.60.0"
+version = "0.61.0"
 edition = "2021"
 authors = [
   "Kostiantyn Mysnyk <wandalen@obox.systems>",
@@ -16,6 +16,9 @@ Protocol of modularity unifying interface of a module and introducing layers.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
+dependencies = {}
+dev-dependencies = {}
+build-dependencies = {}
 
 [lints]
 workspace = true

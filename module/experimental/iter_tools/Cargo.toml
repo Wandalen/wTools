@@ -1,6 +1,6 @@
 [package]
 name = "iter_tools"
-version = "0.49.0"
+version = "0.50.0"
 edition = "2021"
 authors = [
   "Kostiantyn Mysnyk <wandalen@obox.systems>",
@@ -16,6 +16,9 @@ Collection of general purpose tools to iterate. Currently it simply reexports it
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
+dependencies = {}
+dev-dependencies = {}
+build-dependencies = {}
 
 [lints]
 workspace = true
