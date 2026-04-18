@@ -66,7 +66,7 @@
 //!
 //! The prefix length formula accounts for tree structure:
 //!
-//! ```rust,ignore
+//! ```text
 //! fn calculate_prefix_len(depth: usize, indent_size: usize, symbols: &TreeSymbols) -> usize {
 //!   if depth == 0 { return 0; }
 //!   let branch_connector_len = visual_len(symbols.branch) + 1; // "├── " or "└── "

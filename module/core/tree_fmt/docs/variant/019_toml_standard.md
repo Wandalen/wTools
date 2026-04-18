@@ -5,7 +5,7 @@
 - **Purpose**: Provide standard TOML format with sections and key-value pairs.
 - **Responsibility**: Complete attribute descriptor for this output variant preset.
 - **In Scope**: All 46 variant attributes, example output, feature flag, compatibility.
-- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../variant_attributes.md`).
+- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../data_structure/001_variant_attributes.md`).
 
 ### Cross-References
 
@@ -107,9 +107,3 @@ Name = "Bob"
 Age = "25"
 City = "LA"
 ```
-
-### Related
-
-- [Table of Variants](../../readme.md#table-of-variants)
-- [TomlFormatter Documentation](../../src/formatters/toml_fmt.rs)
-- [TOML v1.0.0 Spec](https://toml.io/en/v1.0.0)

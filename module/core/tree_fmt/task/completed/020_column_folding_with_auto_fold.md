@@ -5,7 +5,7 @@
 - **Executor Type:** any
 - **Actor:** null
 - **Claimed At:** null
-- **Status:** 🎯 (Available)
+- **Status:** ✅ (Completed)
 - **Validated By:** null
 - **Validation Date:** null
 
@@ -158,66 +158,73 @@ Execute in order. Do not skip or reorder steps.
 Desired answer for every question is YES.
 
 **Config — types and fields**
-- [ ] Does `FoldStyle` enum exist with `Bare`, `Labeled`, `Stacked` variants?
-- [ ] Does `FoldStyle` derive `Default` with `Labeled` as default?
-- [ ] Does `TableConfig` have `auto_fold: bool` field defaulting to `true`?
-- [ ] Does `TableConfig` have `fold_style: FoldStyle` field defaulting to `Labeled`?
-- [ ] Does `TableConfig` have `fold_indent: String` field defaulting to `"    "`?
-- [ ] Do getter methods exist for all three new fields?
-- [ ] Do builder setter methods exist for all three new fields, all `#[must_use]`?
-- [ ] Do CSV and TSV presets set `auto_fold: false`?
+- [x] Does `FoldStyle` enum exist with `Bare`, `Labeled`, `Stacked` variants?
+- [x] Does `FoldStyle` derive `Default` with `Labeled` as default?
+- [x] Does `TableConfig` have `auto_fold: bool` field defaulting to `true`?
+- [x] Does `TableConfig` have `fold_style: FoldStyle` field defaulting to `Labeled`?
+- [x] Does `TableConfig` have `fold_indent: String` field defaulting to `"    "`?
+- [x] Do getter methods exist for all three new fields?
+- [x] Do builder setter methods exist for all three new fields, all `#[must_use]`?
+- [x] Do CSV and TSV presets set `auto_fold: false`?
 
 **Renderer — fold detection and rendering**
-- [ ] Does `format_internal` detect fold point when total width exceeds terminal?
-- [ ] Does `format_internal` skip folding when `auto_fold` is false?
-- [ ] Does `format_internal` skip folding when all columns fit?
-- [ ] Does `determine_fold_point` return the correct column index?
-- [ ] Does `render_fold_continuation` emit labeled format by default?
-- [ ] Does `render_fold_continuation` support all three FoldStyle variants?
-- [ ] Does the header row render ALL columns (never folds)?
+- [x] Does `format_internal` detect fold point when total width exceeds terminal?
+- [x] Does `format_internal` skip folding when `auto_fold` is false?
+- [x] Does `format_internal` skip folding when all columns fit?
+- [x] Does `determine_fold_point` return the correct column index?
+- [x] Does `render_fold_continuation` emit labeled format by default?
+- [x] Does `render_fold_continuation` support all three FoldStyle variants?
+- [x] Does the header row render ALL columns (never folds)?
 
 **Combination with Strategy 2**
-- [ ] Do folded values wrap when they exceed remaining terminal width minus fold indent?
-- [ ] Does the rendering pipeline apply wrapping first, then folding?
+- [x] Do folded values wrap when they exceed remaining terminal width minus fold indent?
+- [x] Does the rendering pipeline apply wrapping first, then folding?
 
 **Re-exports**
-- [ ] Is `FoldStyle` re-exported from `src/lib.rs`?
+- [x] Is `FoldStyle` re-exported from `src/lib.rs`?
 
 **Backward compatibility**
-- [ ] Do all existing tests (including Task 019 auto_wrap tests) pass without modification?
-- [ ] Does `auto_fold(false)` produce identical output to Task 019?
+- [x] Do all existing tests (including Task 019 auto_wrap tests) pass without modification?
+- [x] Does `auto_fold(false)` produce identical output to Task 019?
 
 **Out of Scope confirmation**
-- [ ] Are `ColumnFlex`, `auto_wrap`, `terminal_width` unchanged by this task?
-- [ ] Are other formatters (Expanded, Tree, Text, etc.) unchanged?
+- [x] Are `ColumnFlex`, `auto_wrap`, `terminal_width` unchanged by this task?
+- [x] Are other formatters (Expanded, Tree, Text, etc.) unchanged?
 
 **Build and tests**
-- [ ] Does `RUSTFLAGS="-D warnings" cargo nextest run --all-features` pass?
-- [ ] Does `RUSTDOCFLAGS="-D warnings" cargo test --doc --all-features` pass?
-- [ ] Does `cargo clippy --all-targets --all-features -- -D warnings` pass?
+- [x] Does `RUSTFLAGS="-D warnings" cargo nextest run --all-features` pass? (515/515)
+- [x] Does `RUSTDOCFLAGS="-D warnings" cargo test --doc --all-features` pass? (77 passed, 3 ignored)
+- [x] Does `cargo clippy --all-targets --all-features -- -D warnings` pass? (0 errors)
 
 ### Measurements
 
-- [ ] M1 — `FoldStyle` type present: `grep -c "FoldStyle" src/config.rs` → expected ≥8 (enum + 3 variants + field + default + getter + builder); was: 0
-- [ ] M2 — `auto_fold` field present: `grep -c "auto_fold" src/config.rs` → expected ≥4 (field + default + getter + builder); was: 0
-- [ ] M3 — fold rendering in renderer: `grep -c "fold\|continuation" src/formatters/table.rs` → expected ≥6; was: 0
-- [ ] M4 — new test file exists: `wc -l tests/auto_fold_test.rs` → expected ≥250 lines; was: file does not exist
-- [ ] M5 — full suite green: `RUSTFLAGS="-D warnings" cargo nextest run --all-features 2>&1 | tail -1` → expected "passed"
+- [x] M1 — `FoldStyle` type present: `grep -c "FoldStyle" src/config.rs` → actual: 16 (≥8 required)
+- [x] M2 — `auto_fold` field present: `grep -c "auto_fold" src/config.rs` → actual: ≥4 fields/default/getter/builder
+- [x] M3 — fold rendering in renderer: `grep -c "fold\|continuation" src/formatters/table.rs` → actual: 14 (≥6 required)
+- [x] M4 — new test file exists: `wc -l tests/auto_fold_test.rs` → actual: 653 lines (≥250 required)
+- [x] M5 — full suite green: `RUSTFLAGS="-D warnings" cargo nextest run --all-features` → 515/515 passed
 
 ### Invariants
 
-- [ ] I1 — test suite passes: `RUSTFLAGS="-D warnings" cargo nextest run --all-features` → all tests pass
-- [ ] I2 — compiler clean: `cargo clippy --all-targets --all-features -- -D warnings` → 0 warnings
-- [ ] I3 — doc tests pass: `RUSTDOCFLAGS="-D warnings" cargo test --doc --all-features` → all pass
+- [x] I1 — test suite passes: 515/515 passed, 0 failed, 0 skipped
+- [x] I2 — compiler clean: 0 errors, 0 warnings (`No issues found`)
+- [x] I3 — doc tests pass: 77 passed, 3 ignored, 0 failed
 
 ### Anti-faking checks
 
-- [ ] AF1 — fold actually produces continuation lines: `cargo test labeled_fold_produces_continuation 2>&1 | grep "ok"` → expected 1; fold logic exists but untested = violation
-- [ ] AF2 — header never folds: `cargo test header_row_never_folds 2>&1 | grep "ok"` → expected 1; folded header = broken table
-- [ ] AF3 — CSV does not fold: `cargo test csv_preset_auto_disables_folding 2>&1 | grep "ok"` → expected 1; CSV folding = data corruption
-- [ ] AF4 — combination works: `cargo test fold_plus_wrap_combination 2>&1 | grep "ok"` → expected 1; strategies must compose
-- [ ] AF5 — no assert!(true): `grep -c "assert!( true )" tests/auto_fold_test.rs` → expected 0; trivially-passing tests = violation
+- [x] AF1 — fold actually produces continuation lines: `labeled_fold_produces_continuation` PASS
+- [x] AF2 — header never folds: `header_row_never_folds` PASS
+- [x] AF3 — CSV does not fold: `csv_preset_auto_disables_folding` PASS
+- [x] AF4 — combination works: `fold_plus_wrap_combination` PASS
+- [x] AF5 — no assert!(true): 0 occurrences in `tests/auto_fold_test.rs`
 
 ## Outcomes
 
-*(Empty — populated upon task completion)*
+**Completed:** 2026-04-18
+**M1 — FoldStyle references in config.rs:** 16 (≥8 required)
+**M2 — auto_fold references in config.rs:** ≥4 (field, default, getter, builder, CSV/TSV presets)
+**M3 — fold references in table.rs:** 14 (≥6 required)
+**M4 — test file lines:** 653 (≥250 required)
+**M5 — full suite:** 515/515 passed; 22/22 auto_fold tests pass
+**I1–I3:** Level 3 validation clean (nextest + doc tests + clippy)
+All 28 checklist items checked YES; all 5 anti-faking tests pass.

@@ -5,7 +5,7 @@
 - **Purpose**: Provide standard YAML format with indentation and flow control.
 - **Responsibility**: Complete attribute descriptor for this output variant preset.
 - **In Scope**: All 46 variant attributes, example output, feature flag, compatibility.
-- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../variant_attributes.md`).
+- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../data_structure/001_variant_attributes.md`).
 
 ### Cross-References
 
@@ -105,9 +105,3 @@ rows:
     Age: "25"
     City: LA
 ```
-
-### Related
-
-- [Table of Variants](../../readme.md#table-of-variants)
-- [YamlFormatter Documentation](../../src/formatters/yaml.rs)
-- [YAML 1.2 Spec](https://yaml.org/spec/1.2/spec.html)

@@ -22,13 +22,13 @@
 | 16 | [014](completed/014_border_variant_rendering.md) | 0 | 8 | 5 | 7 | 0 | ✅ (Completed) | any | Border variant rendering | Top/bottom borders, inter-row separators, AsciiGrid corner fix |
 | 17 | [015](completed/015_unicode_display_width.md) | 0 | 8 | 6 | 9 | 0 | ✅ (Completed) | any | Unicode display width fix | Replace char-count with display-width in column calculation and cell padding |
 | 18 | [016](completed/016_add_indent_prefix_to_expanded_config.md) | 0 | 8 | 8 | 9 | 0 | ✅ (Completed) | any | Add `indent_prefix` to `ExpandedConfig` | Add indent prefix field so callers can indent key-value lines |
-| 19 | [021](021_terminal_width_detection_tests.md) | 1008 | 7 | 8 | 9 | 2 | 🎯 (Available) | any | Terminal width detection tests | Test three-tier fallback: explicit override, terminal_size feature, 120-column default |
+| 19 | [021](completed/021_terminal_width_detection_tests.md) | 0 | 7 | 8 | 9 | 0 | ✅ (Completed) | any | Terminal width detection tests | Test three-tier fallback: explicit override, terminal_size feature, 120-column default |
 | 20 | [019](completed/019_cell_auto_wrapping_with_budget_allocation.md) | 0 | 8 | 4 | 5 | 0 | ✅ (Completed) | any | Cell auto-wrapping with terminal-aware budget allocation | Terminal width detection, ColumnFlex classification, budget allocation, auto-wrap cells |
-| 21 | [020](020_column_folding_with_auto_fold.md) | 280 | 7 | 4 | 5 | 2 | 🎯 (Available) | any | Column folding with auto-fold | FoldStyle enum, fold detection, continuation line rendering, combination with wrapping |
+| 21 | [020](completed/020_column_folding_with_auto_fold.md) | 0 | 7 | 4 | 5 | 0 | ✅ (Completed) | any | Column folding with auto-fold | FoldStyle enum, fold detection, continuation line rendering, combination with wrapping |
 
 ## Statistics
 
 - **Total Tasks:** 21
 - **Active:** 0
-- **Completed:** 19
-- **Available:** 2
+- **Completed:** 21
+- **Available:** 0

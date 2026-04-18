@@ -16,7 +16,10 @@
 | test | `tests/auto_wrap_test.rs` | Budget allocation test scenarios (T02–T05, T14–T15) |
 | doc | `../feature/005_auto_fit.md` | Auto-fit feature overview and pipeline |
 | doc | `../api/003_config_types.md` | `ColumnFlex`, `TableConfig` field reference |
-| task | `../../task/019_cell_auto_wrapping_with_budget_allocation.md` | Implementation task |
+
+### Related Tasks
+
+- [`task/019`](../../task/019_cell_auto_wrapping_with_budget_allocation.md) — Implementation task
 
 ### Trigger Condition
 

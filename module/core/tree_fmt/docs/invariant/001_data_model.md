@@ -91,9 +91,9 @@ pub trait TableShapedView
 
 Implemented for `TreeNode< T >` where `T : Display`. The `to_rows()` method converts `T` values to `String` via the `Display` trait.
 
-### Edge Case Contracts (FR-9)
+### Edge Case Contracts
 
-- **FR-9.1**: Empty tables return empty string in all formats
-- **FR-9.2**: Empty trees return empty string when formatted
-- **FR-9.3**: Single-row tables display correctly in all formats
-- **FR-9.4**: Generic `TableShapedView` works with any `T : Display`
+- **EC-1**: Empty tables return empty string in all formats
+- **EC-2**: Empty trees return empty string when formatted
+- **EC-3**: Single-row tables display correctly in all formats
+- **EC-4**: Generic `TableShapedView` works with any `T : Display`

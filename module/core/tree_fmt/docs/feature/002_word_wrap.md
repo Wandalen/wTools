@@ -2,7 +2,7 @@
 
 ### Scope
 
-- **Purpose**: Provide general-purpose word-wrapping utilities for string consumers within the tree_fmt ecosystem via `WrapFormatter` and `WrapConfig`.
+- **Purpose**: Provide general-purpose word-wrapping utilities for string consumers within the data_fmt ecosystem via `WrapFormatter` and `WrapConfig`.
 - **Responsibility**: Document word wrap configuration, strategies, and formatter behavior.
 - **In Scope**: Break strategies, overflow handling, WrapConfig fields, WrapFormatter API, and behavior contracts.
 - **Out of Scope**: Algorithm details (see `../algorithm/`), API signatures (see `../api/`).

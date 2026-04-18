@@ -5,7 +5,7 @@
 - **Purpose**: Provide a numbered list format for sequential item display.
 - **Responsibility**: Complete attribute descriptor for this output variant preset.
 - **In Scope**: All 46 variant attributes, example output, feature flag, compatibility.
-- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../variant_attributes.md`).
+- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../data_structure/001_variant_attributes.md`).
 
 ### Cross-References
 
@@ -100,8 +100,3 @@
 1. Name: Alice, Age: 30, City: NYC
 2. Name: Bob, Age: 25, City: LA
 ```
-
-### Related
-
-- [Table of Variants](../../readme.md#table-of-variants)
-- [TextFormatter Documentation](../../src/formatters/text.rs)

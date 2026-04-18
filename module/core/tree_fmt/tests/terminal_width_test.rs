@@ -70,7 +70,7 @@ fn narrow_table() -> TreeNode< String >
 
 fn max_visual_line_width( output : &str ) -> usize
 {
-  output.lines().map( | l | tree_fmt::visual_len( l ) ).max().unwrap_or( 0 )
+  output.lines().map( tree_fmt::visual_len ).max().unwrap_or( 0 )
 }
 
 // --- T1: Default config falls back to 120-column budget (Tier 3) ---

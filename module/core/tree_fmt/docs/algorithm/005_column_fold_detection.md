@@ -11,12 +11,12 @@
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/formatters/table.rs` | `determine_fold_point`, `render_fold_continuation` (to create) |
-| source | `src/config.rs` | `FoldStyle` enum, `auto_fold`/`fold_style`/`fold_indent` fields (to create) |
-| test | `tests/auto_fold_test.rs` | Column folding test scenarios (to create) |
+| source | `src/formatters/table.rs` | `determine_fold_point`, `render_fold_continuation`, `should_auto_fold` |
+| source | `src/config.rs` | `FoldStyle` enum, `auto_fold`/`fold_style`/`fold_indent` fields |
+| test | `tests/auto_fold_test.rs` | Column folding test scenarios (22 tests) |
 | doc | `../feature/005_auto_fit.md` | Auto-fit feature overview — Strategy 1 |
 | doc | `../invariant/004_column_fold_invariants.md` | Fold behavioral guarantees |
-| task | `../../task/020_column_folding_with_auto_fold.md` | Implementation task |
+| task | `../../task/completed/020_column_folding_with_auto_fold.md` | Implementation task (completed) |
 
 ### Trigger Condition
 

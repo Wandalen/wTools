@@ -5,7 +5,7 @@
 - **Purpose**: Provide a column-aligned tree view with metadata columns for structured display.
 - **Responsibility**: Complete attribute descriptor for this output variant preset.
 - **In Scope**: All 46 variant attributes, example output, feature flag, compatibility.
-- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../variant_attributes.md`).
+- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../data_structure/001_variant_attributes.md`).
 
 ### Cross-References
 
@@ -103,8 +103,3 @@ Root                Size    Modified
 └── Bob             980B    2024-01-14
     └── Age: 25     96B     2024-01-14
 ```
-
-### Related
-
-- [Table of Variants](../../readme.md#table-of-variants)
-- [TreeFormatter Documentation](../../src/formatters/tree.rs)

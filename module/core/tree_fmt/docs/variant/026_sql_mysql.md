@@ -5,7 +5,7 @@
 - **Purpose**: Provide MySQL/MariaDB-specific INSERT statements with dialect support.
 - **Responsibility**: Complete attribute descriptor for this output variant preset.
 - **In Scope**: All 46 variant attributes, example output, feature flag, compatibility.
-- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../variant_attributes.md`).
+- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../data_structure/001_variant_attributes.md`).
 
 ### Cross-References
 
@@ -100,9 +100,3 @@
 INSERT INTO `table_name` (`Name`, `Age`, `City`) VALUES ('Alice', '30', 'NYC');
 INSERT INTO `table_name` (`Name`, `Age`, `City`) VALUES ('Bob', '25', 'LA');
 ```
-
-### Related
-
-- [Table of Variants](../../readme.md#table-of-variants)
-- [SqlFormatter Documentation](../../src/formatters/sql.rs)
-- [MySQL INSERT](https://dev.mysql.com/doc/refman/8.0/en/insert.html)

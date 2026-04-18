@@ -5,7 +5,7 @@
 - **Purpose**: Provide CLI help text format with section headers and aligned descriptions.
 - **Responsibility**: Complete attribute descriptor for this output variant preset.
 - **In Scope**: All 46 variant attributes, example output, feature flag, compatibility.
-- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../variant_attributes.md`).
+- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../data_structure/001_variant_attributes.md`).
 
 ### Cross-References
 
@@ -132,7 +132,7 @@ EXAMPLES:
 ### Example Code
 
 ```rust
-use tree_fmt::{ RowBuilder, TextFormatter, TextVariant, Format };
+use data_fmt::{ RowBuilder, TextFormatter, TextVariant, Format };
 
 let help_view = RowBuilder::new( vec![ "Term".into(), "Description".into() ] )
   .add_row( vec![ "USAGE".into(), "".into() ] )
@@ -161,9 +161,3 @@ let output = formatter.format( &help_view ).unwrap();
 - Configuration parameter descriptions
 - API endpoint documentation in CLI tools
 - Plugin/extension help systems
-
-### Related
-
-- [Table of Variants](../../readme.md#table-of-variants)
-- [TextFormatter Documentation](../../src/formatters/text.rs)
-- [Example: text_format.rs](../../examples/text_format.rs)

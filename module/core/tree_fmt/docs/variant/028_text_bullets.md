@@ -5,7 +5,7 @@
 - **Purpose**: Provide a bulleted list format as the default text variant for simple itemized display.
 - **Responsibility**: Complete attribute descriptor for this output variant preset.
 - **In Scope**: All 46 variant attributes, example output, feature flag, compatibility.
-- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../variant_attributes.md`).
+- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../data_structure/001_variant_attributes.md`).
 
 ### Cross-References
 
@@ -100,8 +100,3 @@
 • Name: Alice, Age: 30, City: NYC
 • Name: Bob, Age: 25, City: LA
 ```
-
-### Related
-
-- [Table of Variants](../../readme.md#table-of-variants)
-- [TextFormatter Documentation](../../src/formatters/text.rs)

@@ -233,38 +233,26 @@ impl TableFormatter
       ( rows, column_widths )
     };
 
-    // Top border (AsciiGrid / Unicode only)
-    self.format_top_border_if_needed( &mut output, &column_widths );
-
-    // Header row — optionally wrapped in ANSI color via temp buffer
-    //
-    // Fix(issue-multiline-color): iterate .lines() instead of single-pair wrap.
-    // Root cause: `trim_end_matches('\n')` + single wrap left intermediate \n
-    //   chars (from multiline cells) inside the color sequence without RESET,
-    //   causing terminal background-color bleed on each sub-line boundary.
-    // Pitfall: never use `trim_end_matches('\n')` + single color/RESET wrap on
-    //   output that may contain intermediate newlines from multiline rendering.
-    //   Always iterate `.lines()` to guarantee RESET before every `\n`.
-    let header_color = self.config.header_color_str();
-    if self.config.colorize_header_enabled() && !header_color.is_empty()
+    // Fold: first column where cumulative width exceeds terminal becomes fold_point.
+    // Columns 0..fold_point render in the primary table; fold_point..N appear as continuation lines.
+    // fold_point == column_widths.len() when all columns fit (no fold) or fold is disabled.
+    let fold_point = if self.should_auto_fold()
     {
-      let mut row_buf = String::new();
-      self.format_row( &mut row_buf, headers, &column_widths, true );
-      for line in row_buf.lines()
-      {
-        output.push_str( header_color );
-        output.push_str( line );
-        output.push_str( ANSI_RESET );
-        output.push( '\n' );
-      }
+      self.determine_fold_point( &column_widths )
     }
     else
     {
-      self.format_row( &mut output, headers, &column_widths, true );
-    }
+      column_widths.len()
+    };
+    let primary_widths : &[ usize ] = &column_widths[ ..fold_point ];
+    let primary_headers : &[ String ] = &headers[ ..fold_point ];
 
-    // Header separator
-    self.format_header_separator( &mut output, &column_widths );
+    // Top border (AsciiGrid / Unicode only)
+    self.format_top_border_if_needed( &mut output, primary_widths );
+
+    // Header row + separator (only primary columns; overflow headers appear as fold labels)
+    self.format_header_with_color( &mut output, primary_headers, primary_widths );
+    self.format_header_separator( &mut output, primary_widths );
 
     // Data rows — optionally alternating color, with inter-row separators
     for ( idx, row ) in rows.iter().enumerate()
@@ -278,14 +266,16 @@ impl TableFormatter
         ""
       };
 
+      let primary_row = &row[ ..fold_point ];
+
       if color.is_empty()
       {
-        self.format_row( &mut output, row, &column_widths, false );
+        self.format_row( &mut output, primary_row, primary_widths, false );
       }
       else
       {
         let mut row_buf = String::new();
-        self.format_row( &mut row_buf, row, &column_widths, false );
+        self.format_row( &mut row_buf, primary_row, primary_widths, false );
         // Fix(issue-multiline-color): same per-line loop as header (see above).
         for line in row_buf.lines()
         {
@@ -294,6 +284,22 @@ impl TableFormatter
           output.push_str( ANSI_RESET );
           output.push( '\n' );
         }
+      }
+
+      // Fold continuation lines — overflow columns rendered below primary row.
+      // Emitted before sub-row detail lines per algorithm/005 rendering order.
+      if fold_point < column_widths.len()
+      {
+        let overflow_hdrs : Vec< &str > = headers[ fold_point.. ]
+          .iter()
+          .map( String::as_str )
+          .collect();
+        let overflow_vals : Vec< &str > = row[ fold_point.. ]
+          .iter()
+          .map( String::as_str )
+          .collect();
+        let continuation = self.render_fold_continuation( &overflow_hdrs, &overflow_vals );
+        output.push_str( &continuation );
       }
 
       // Sub-row detail line(s) — indent every line; apply per-line ANSI color when set.
@@ -330,14 +336,49 @@ impl TableFormatter
 
       if idx < rows.len() - 1
       {
-        self.format_inter_row_sep_if_needed( &mut output, &column_widths );
+        self.format_inter_row_sep_if_needed( &mut output, primary_widths );
       }
     }
 
     // Bottom border (AsciiGrid / Unicode only)
-    self.format_bottom_border_if_needed( &mut output, &column_widths );
+    self.format_bottom_border_if_needed( &mut output, primary_widths );
 
     output
+  }
+
+  /// Format the header row, applying ANSI color per-line when header colorization is enabled.
+  ///
+  /// # Fix(issue-multiline-color)
+  ///
+  /// Iterates `.lines()` instead of single-pair wrap to avoid background-color bleed.
+  /// Root cause: `trim_end_matches('\n')` + single wrap left intermediate `\n` chars inside
+  /// the color sequence without RESET, causing bleed on each sub-line boundary.
+  /// Pitfall: never use single color/RESET wrap on output that may contain intermediate newlines.
+  fn format_header_with_color
+  (
+    &self,
+    output : &mut String,
+    primary_headers : &[ String ],
+    primary_widths : &[ usize ],
+  )
+  {
+    let header_color = self.config.header_color_str();
+    if self.config.colorize_header_enabled() && !header_color.is_empty()
+    {
+      let mut row_buf = String::new();
+      self.format_row( &mut row_buf, primary_headers, primary_widths, true );
+      for line in row_buf.lines()
+      {
+        output.push_str( header_color );
+        output.push_str( line );
+        output.push_str( ANSI_RESET );
+        output.push( '\n' );
+      }
+    }
+    else
+    {
+      self.format_row( output, primary_headers, primary_widths, true );
+    }
   }
 
   /// Format a single row (header or data)
@@ -939,6 +980,22 @@ impl TableFormatter
     total > terminal
   }
 
+  /// Determine if column folding should be applied.
+  ///
+  /// Mirrors `should_auto_wrap` guard logic: fold is a form of terminal adaptation
+  /// and is disabled by the same conditions that disable wrapping.
+  fn should_auto_fold( &self ) -> bool
+  {
+    if !self.config.is_auto_fold() { return false; }
+    if !self.config.is_auto_wrap() { return false; }
+    if !self.config.col_widths_override().is_empty() { return false; }
+    let is_csv_or_tsv = matches!(
+      self.config.col_sep(),
+      crate::config::ColumnSeparator::Character( ',' | '\t' )
+    );
+    !is_csv_or_tsv
+  }
+
   /// Classify columns as Fixed or Flex using explicit config or auto-heuristic
   fn classify_columns( &self, column_widths : &[ usize ] ) -> Vec< ColumnFlex >
   {
@@ -1047,6 +1104,151 @@ impl TableFormatter
 
     let new_widths = self.calculate_column_widths_for_rows( headers, &wrapped_rows );
     ( wrapped_rows, new_widths )
+  }
+
+  // --- Fold helpers ---
+
+  /// Find the first column index where including it would cause the row to exceed the terminal.
+  ///
+  /// Returns `column_widths.len()` when all columns fit (no fold needed).
+  /// Uses the same overhead accounting as `compute_total_row_width` so fold detection
+  /// is consistent with the auto-wrap trigger condition.
+  fn determine_fold_point( &self, column_widths : &[ usize ] ) -> usize
+  {
+    let terminal = self.resolve_terminal_width();
+    let sep_width = self.separator_visual_width();
+    let outer = if self.config.has_outer_padding()
+    {
+      self.config.cell_inner_padding() * 2
+    }
+    else
+    {
+      0
+    };
+    let border = if self.needs_border_pipes() { 2 } else { 0 };
+    let overhead = outer + border;
+
+    let mut content_so_far = 0usize;
+    for ( i, &w ) in column_widths.iter().enumerate()
+    {
+      content_so_far += w;
+      let sep_total = i.saturating_mul( sep_width );
+      if content_so_far + sep_total + overhead > terminal
+      {
+        return i;
+      }
+    }
+    column_widths.len()
+  }
+
+  /// Render continuation lines for overflow columns below a data row.
+  ///
+  /// Supports three `FoldStyle` variants:
+  /// - `Labeled` (default): all overflow columns joined as "Col: val  Col2: val2" on one line,
+  ///   wrapped at terminal width when the joined line exceeds the available budget.
+  /// - `Stacked`: each overflow column on its own indented labeled line, wrapped per-column.
+  /// - `Bare`: all overflow values joined on one line without labels.
+  fn render_fold_continuation(
+    &self,
+    overflow_headers : &[ &str ],
+    overflow_values : &[ &str ],
+  ) -> String
+  {
+    use crate::config::FoldStyle;
+
+    let indent = self.config.fold_indent_val();
+    let terminal = self.resolve_terminal_width();
+    let indent_width = unicode_visual_len( indent );
+    let available = terminal.saturating_sub( indent_width );
+
+    let mut lines : Vec< String > = Vec::new();
+
+    match self.config.fold_style_val()
+    {
+      FoldStyle::Labeled =>
+      {
+        // All overflow columns joined as "Col: val  Col2: val2" on one continuation line.
+        // Wrapped at available width when the joined content is too long.
+        let pairs : Vec< String > = overflow_headers.iter()
+          .zip( overflow_values.iter() )
+          .filter( | ( _, v ) | !v.is_empty() )
+          .map( | ( h, v ) | format!( "{}: {}", h, v.trim_end() ) )
+          .collect();
+        if !pairs.is_empty()
+        {
+          let joined = pairs.join( "  " );
+          let full_line = format!( "{indent}{joined}" );
+          if unicode_visual_len( &full_line ) > terminal && available > 0
+          {
+            let fmt = WrapFormatter::with_config( WrapConfig::new().width( available ) );
+            let output_wrapped = fmt.wrap_joined( &joined );
+            for line in output_wrapped.lines()
+            {
+              lines.push( format!( "{indent}{line}" ) );
+            }
+          }
+          else
+          {
+            lines.push( full_line );
+          }
+        }
+      }
+      FoldStyle::Stacked =>
+      {
+        // Each overflow column on its own indented labeled line.
+        for ( header, value ) in overflow_headers.iter().zip( overflow_values.iter() )
+        {
+          if value.is_empty() { continue; }
+          let label = format!( "{header}: " );
+          let label_width = unicode_visual_len( &label );
+          let value_str = value.trim_end();
+          let full_line = format!( "{indent}{label}{value_str}" );
+          if unicode_visual_len( &full_line ) > terminal && available > label_width
+          {
+            let value_available = available.saturating_sub( label_width );
+            let fmt = WrapFormatter::with_config( WrapConfig::new().width( value_available ) );
+            let output_wrapped = fmt.wrap_joined( value_str );
+            let mut it = output_wrapped.lines();
+            if let Some( first ) = it.next()
+            {
+              lines.push( format!( "{indent}{label}{first}" ) );
+              for rest in it
+              {
+                lines.push( format!( "{indent}{rest}" ) );
+              }
+            }
+          }
+          else
+          {
+            lines.push( full_line );
+          }
+        }
+      }
+      FoldStyle::Bare =>
+      {
+        // All overflow values on one line without column labels.
+        let values : Vec< &str > = overflow_values.iter()
+          .copied()
+          .filter( | v | !v.is_empty() )
+          .collect();
+        if !values.is_empty()
+        {
+          let vals_joined = values.join( "  " );
+          lines.push( format!( "{indent}{vals_joined}" ) );
+        }
+      }
+    }
+
+    if lines.is_empty()
+    {
+      String::new()
+    }
+    else
+    {
+      let mut result = lines.join( "\n" );
+      result.push( '\n' );
+      result
+    }
   }
 
   /// Calculate column widths based on content

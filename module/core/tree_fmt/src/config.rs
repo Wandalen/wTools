@@ -255,7 +255,7 @@ pub struct TableConfig
   column_flex : Vec< ColumnFlex >,
   /// Enable column folding: move overflow columns to continuation lines below row
   auto_fold : bool,
-  /// Format for continuation lines when auto_fold is active
+  /// Format for continuation lines when `auto_fold` is active
   fold_style : FoldStyle,
   /// Indent prefix for continuation lines
   fold_indent : String,

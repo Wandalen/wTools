@@ -129,7 +129,7 @@ Every colored line ends with `\x1b[0m` before the trailing `\n` to prevent termi
 Optional annotation lines that appear below a data row, outside the cell grid. Each detail is typed as `Option<ColorfulText>`, enabling per-row ANSI color without affecting column formatting.
 
 ```rust
-use tree_fmt::{ RowBuilder, ColorfulText };
+use data_fmt::{ RowBuilder, ColorfulText };
 
 let view = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
   .add_row_with_detail(
@@ -157,7 +157,7 @@ Rendering behavior:
 
 When `auto_wrap` and `auto_fold` are both enabled (the default), `TableFormatter` automatically fits output within terminal width using two cooperating strategies: cell wrapping (grows row height) and column folding (moves overflow columns to continuation lines). Zero configuration required.
 
-See `auto_fit.md` for full behavioral specification, configuration fields, progressive degradation rules, and interaction with other features.
+See `005_auto_fit.md` for full behavioral specification, configuration fields, progressive degradation rules, and interaction with other features.
 
 ### Column Width Calculation Summary
 

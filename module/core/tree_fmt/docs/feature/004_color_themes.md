@@ -78,7 +78,7 @@ Dark theme with vibrant colors.
 Themes work with all three visual formatter configs via `with_theme()`.
 
 ```rust
-use tree_fmt::{ RowBuilder, TableFormatter, TableConfig, ColorTheme };
+use data_fmt::{ RowBuilder, TableFormatter, TableConfig, ColorTheme };
 
 let data = RowBuilder::new( vec![ "Name".into(), "Status".into() ] )
   .add_row( vec![ "Alice".into(), "Active".into() ] )
@@ -114,7 +114,7 @@ Themes automatically configure the relevant fields on each config type:
 Build a custom theme using the builder API.
 
 ```rust
-use tree_fmt::ColorTheme;
+use data_fmt::ColorTheme;
 
 let custom_theme = ColorTheme::custom()
   .header_color( "\x1b[38;5;208m" )  // Orange
@@ -146,7 +146,7 @@ The `themes` feature is optional. Guard theme usage with `cfg`:
 ```rust
 #[ cfg( feature = "themes" ) ]
 {
-  use tree_fmt::ColorTheme;
+  use data_fmt::ColorTheme;
   let config = TableConfig::bordered().with_theme( ColorTheme::Dark );
 }
 ```

@@ -5,7 +5,7 @@
 - **Purpose**: Provide a property list format with colored keys for enhanced readability.
 - **Responsibility**: Complete attribute descriptor for this output variant preset.
 - **In Scope**: All 46 variant attributes, example output, feature flag, compatibility.
-- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../variant_attributes.md`).
+- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../data_structure/001_variant_attributes.md`).
 
 ### Cross-References
 
@@ -105,8 +105,3 @@ Name: Bob
 Age:  25
 City: LA
 ```
-
-### Related
-
-- [Table of Variants](../../readme.md#table-of-variants)
-- [ExpandedFormatter Documentation](../../src/formatters/expanded.rs)

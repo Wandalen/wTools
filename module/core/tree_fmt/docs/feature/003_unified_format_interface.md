@@ -103,16 +103,16 @@ all_formats = [ "visual_formats", "web_formats", "data_formats", "format_text", 
 
 ```toml
 # Default: visual formatters only (table, expanded, tree)
-tree_fmt = "0.4.0"
+data_fmt = "0.4.0"
 
 # Add JSON support
-tree_fmt = { version = "0.4.0", features = [ "format_json" ] }
+data_fmt = { version = "0.4.0", features = [ "format_json" ] }
 
 # All formatters
-tree_fmt = { version = "0.4.0", features = [ "all_formats" ] }
+data_fmt = { version = "0.4.0", features = [ "all_formats" ] }
 
 # Minimal: only table formatter
-tree_fmt = { version = "0.4.0", default-features = false, features = [ "format_table" ] }
+data_fmt = { version = "0.4.0", default-features = false, features = [ "format_table" ] }
 ```
 
 ### Usage Pattern
@@ -120,7 +120,7 @@ tree_fmt = { version = "0.4.0", default-features = false, features = [ "format_t
 Build data once with `build_view()`, then format with any formatter through the `Format` trait.
 
 ```rust
-use tree_fmt::{ RowBuilder, Format };
+use data_fmt::{ RowBuilder, Format };
 
 // Build data once
 let view = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
@@ -130,7 +130,7 @@ let view = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
 // Format as JSON
 #[ cfg( feature = "format_json" ) ]
 {
-  use tree_fmt::JsonFormatter;
+  use data_fmt::JsonFormatter;
   let json = JsonFormatter::new();
   let output = Format::format( &json, &view )?;
 }
@@ -138,7 +138,7 @@ let view = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
 // Format as table
 #[ cfg( feature = "format_table" ) ]
 {
-  use tree_fmt::TableFormatter;
+  use data_fmt::TableFormatter;
   let table = TableFormatter::with_config( TableConfig::plain() );
   let output = Format::format( &table, &view )?;
 }

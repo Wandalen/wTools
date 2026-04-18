@@ -1,13 +1,46 @@
 # Doc Entities
 
+## Entity Tree
+
+```
+docs/
+├── algorithm/           Collection Entity   1st
+├── api/                 Collection Entity   1st
+├── builder/             Collection Entity   1st
+├── data_structure/      Collection Entity   1st
+├── feature/             Collection Entity   1st
+├── input_model/         Collection Entity   1st
+├── input_type/          Collection Entity   1st
+├── invariant/           Collection Entity   1st
+├── pattern/             Collection Entity   1st
+├── trait/               Collection Entity   1st
+└── variant/             Collection Entity   1st
+```
+
+## Entities
+
+| Entity | Type | Latent? | Purpose |
+|--------|------|---------|---------|
+| [algorithm/](algorithm/) | Collection | | Non-trivial algorithm documentation instances |
+| [api/](api/) | Collection | | Public API surface documentation instances |
+| [builder/](builder/) | Collection | | Construction helper documentation instances |
+| [data_structure/](data_structure/) | Collection | | Data schema and structure documentation instances |
+| [feature/](feature/) | Collection | | Feature documentation instances |
+| [input_model/](input_model/) | Collection | | Input data shape documentation instances |
+| [input_type/](input_type/) | Collection | | Rust input type documentation instances |
+| [invariant/](invariant/) | Collection | | Behavioral contract documentation instances |
+| [pattern/](pattern/) | Collection | | Architectural pattern documentation instances |
+| [trait/](trait/) | Collection | | Trait interface documentation instances |
+| [variant/](variant/) | Collection | | Output variant documentation instances |
+
 ## Master Doc Entities Table
 
 | Type | Purpose | Master File | Instances |
 |------|---------|-------------|----------:|
 | `algorithm/` | Registry and overview of all algorithm doc instances | [algorithm/readme.md](algorithm/readme.md) | 5 |
-| `data_structure/` | Registry and overview of all data structure doc instances | [data_structure/readme.md](data_structure/readme.md) | 1 |
 | `api/` | Registry and overview of all API doc instances | [api/readme.md](api/readme.md) | 4 |
 | `builder/` | Registry and overview of all builder doc instances | [builder/readme.md](builder/readme.md) | 2 |
+| `data_structure/` | Registry and overview of all data structure doc instances | [data_structure/readme.md](data_structure/readme.md) | 1 |
 | `feature/` | Registry and overview of all feature doc instances | [feature/readme.md](feature/readme.md) | 5 |
 | `input_model/` | Registry and overview of all input model doc instances | [input_model/readme.md](input_model/readme.md) | 2 |
 | `input_type/` | Registry and overview of all input type doc instances | [input_type/readme.md](input_type/readme.md) | 2 |

@@ -5,7 +5,7 @@
 - **Executor Type:** any
 - **Actor:** null
 - **Claimed At:** null
-- **Status:** 🎯 (Available)
+- **Status:** ✅ (Completed)
 
 ## Goal
 
@@ -84,21 +84,21 @@ Execute in order. Do not skip or reorder steps.
 Desired answer for every question is YES.
 
 **Functional correctness**
-- [ ] Does explicit `terminal_width(Some(80))` produce output with all lines ≤ 80 chars?
-- [ ] Does default config (no terminal_width) produce output consistent with 120-column budget?
-- [ ] Does `terminal_width(Some(0))` avoid panic?
-- [ ] Does `auto_wrap(false)` bypass terminal-aware wrapping entirely?
-- [ ] Does CSV config bypass auto-fit regardless of terminal_width?
+- [x] Does explicit `terminal_width(Some(80))` produce output with all lines ≤ 80 chars?
+- [x] Does default config (no terminal_width) produce output consistent with 120-column budget?
+- [x] Does `terminal_width(Some(0))` avoid panic?
+- [x] Does `auto_wrap(false)` bypass terminal-aware wrapping entirely?
+- [x] Does CSV config bypass auto-fit regardless of terminal_width?
 
 **Test quality**
-- [ ] Does `tests/terminal_width_test.rs` exist and contain all 7 test scenarios?
-- [ ] Does each test use real `TableFormatter` rendering (no mocks)?
-- [ ] Does the test file have a doc comment explaining its scope?
+- [x] Does `tests/terminal_width_test.rs` exist and contain all 7 test scenarios?
+- [x] Does each test use real `TableFormatter` rendering (no mocks)?
+- [x] Does the test file have a doc comment explaining its scope?
 
 **Out of Scope confirmation**
-- [ ] Are `docs/` files unchanged by this task?
-- [ ] Is `src/formatters/table.rs` unchanged by this task?
-- [ ] Is `src/config.rs` unchanged by this task?
+- [x] Are `docs/` files unchanged by this task?
+- [x] Is `src/formatters/table.rs` unchanged by this task? (Task 021 itself made no src changes; Phase 4 fold changes belong to Task 020)
+- [x] Is `src/config.rs` unchanged by this task?
 
 ### Measurements
 
@@ -126,4 +126,9 @@ Expected: 0 (within this task's changes). Why: this is a test-only task; source 
 
 ## Outcomes
 
-[Empty — populated upon task completion]
+**Completed:** 2026-04-18
+**M1 — test count:** 7/7 passed (`cargo nextest run --test terminal_width_test --all-features`)
+**M2 — full suite:** 515/515 passed at Level 3 (nextest + doc tests + clippy clean)
+**AF1 — TableFormatter usage:** 8 occurrences in test file (≥7 required)
+**AF2 — terminal_width usage:** 8 occurrences in test file (≥5 required)
+All 11 checklist items checked YES.

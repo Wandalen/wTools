@@ -11,10 +11,10 @@
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/formatters/table.rs` | `determine_fold_point`, header rendering guard (to create) |
-| test | `tests/auto_fold_test.rs` | T08, T09, T19 (to create) |
+| source | `src/formatters/table.rs` | `determine_fold_point`, `should_auto_fold`, header rendering guard |
+| test | `tests/auto_fold_test.rs` | T08, T09, T19 |
 | doc | `../feature/005_auto_fit.md` | Auto-fit Strategy 1 description |
-| task | `../../task/020_column_folding_with_auto_fold.md` | Implementation task |
+| task | `../../task/completed/020_column_folding_with_auto_fold.md` | Implementation task (completed) |
 
 ### Invariant 1 — Header Row Never Folds
 

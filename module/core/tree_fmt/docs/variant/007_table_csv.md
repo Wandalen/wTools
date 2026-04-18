@@ -5,7 +5,7 @@
 - **Purpose**: Provide comma-separated values format for data export and Excel import.
 - **Responsibility**: Complete attribute descriptor for this output variant preset.
 - **In Scope**: All 46 variant attributes, example output, feature flag, compatibility.
-- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../variant_attributes.md`).
+- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../data_structure/001_variant_attributes.md`).
 
 ### Cross-References
 
@@ -101,9 +101,3 @@ Name,Age,City
 Alice,30,NYC
 Bob,25,LA
 ```
-
-### Related
-
-- [Table of Variants](../../readme.md#table-of-variants)
-- [TableFormatter Documentation](../../src/formatters/table.rs)
-- [CSV RFC4180](https://tools.ietf.org/html/rfc4180)

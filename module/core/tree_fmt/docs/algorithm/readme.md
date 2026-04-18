@@ -21,4 +21,4 @@
 | 002 | [Word Wrapping](002_word_wrapping.md) | Word/hard/hybrid break strategies for text wrapping | ✅ |
 | 003 | [Tree Column Alignment](003_tree_column_alignment.md) | Two-pass prefix-aware column alignment for tree output | ✅ |
 | 004 | [Budget Allocation](004_budget_allocation.md) | Terminal-width-aware column budget allocation and flex classification | ✅ |
-| 005 | [Column Fold Detection](005_column_fold_detection.md) | Fold point detection and continuation line partitioning | 🔄 |
+| 005 | [Column Fold Detection](005_column_fold_detection.md) | Fold point detection and continuation line partitioning | ✅ |

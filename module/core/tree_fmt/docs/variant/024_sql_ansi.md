@@ -5,7 +5,7 @@
 - **Purpose**: Provide standard SQL-compliant INSERT statements as the default SQL variant.
 - **Responsibility**: Complete attribute descriptor for this output variant preset.
 - **In Scope**: All 46 variant attributes, example output, feature flag, compatibility.
-- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../variant_attributes.md`).
+- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../data_structure/001_variant_attributes.md`).
 
 ### Cross-References
 
@@ -100,9 +100,3 @@
 INSERT INTO table_name (Name, Age, City) VALUES ('Alice', '30', 'NYC');
 INSERT INTO table_name (Name, Age, City) VALUES ('Bob', '25', 'LA');
 ```
-
-### Related
-
-- [Table of Variants](../../readme.md#table-of-variants)
-- [SqlFormatter Documentation](../../src/formatters/sql.rs)
-- [SQL-92 Standard](https://en.wikipedia.org/wiki/SQL-92)

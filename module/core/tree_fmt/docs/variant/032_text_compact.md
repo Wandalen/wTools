@@ -5,7 +5,7 @@
 - **Purpose**: Provide dense text output with minimal spacing for space-constrained display.
 - **Responsibility**: Complete attribute descriptor for this output variant preset.
 - **In Scope**: All 46 variant attributes, example output, feature flag, compatibility.
-- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../variant_attributes.md`).
+- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../data_structure/001_variant_attributes.md`).
 
 ### Cross-References
 
@@ -99,8 +99,3 @@
 ```
 Alice,30,NYC;Bob,25,LA
 ```
-
-### Related
-
-- [Table of Variants](../../readme.md#table-of-variants)
-- [TextFormatter Documentation](../../src/formatters/text.rs)

@@ -24,5 +24,5 @@ Contains technical documentation for the data_fmt (formerly tree_fmt) library im
 | `variant_attributes.md` | Attribute reference for all format variant configurations (source document) |
 | `development_notes.md` | Implementation decisions, trade-offs, and technical history |
 | `feature_selection_guide.md` | Guide to choosing the right feature flags for use cases |
-| `entities.md` | Master doc entity index: all 9 entity types, all 60 doc instances |
-| `doc_graph.yml` | Cross-entity dependency graph: 60 nodes, 46 edges, 8 components |
+| `entities.md` | Master doc entity index: all entity types and doc instances |
+| `doc_graph.yml` | Cross-entity dependency graph: nodes, edges, and components |

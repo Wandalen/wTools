@@ -62,7 +62,7 @@ pub enum FormatError
 ### Usage
 
 ```rust
-use tree_fmt::{ RowBuilder, Format };
+use data_fmt::{ RowBuilder, Format };
 
 let view = RowBuilder::new( vec![ "Name".into() ] )
   .add_row( vec![ "Alice".into() ] )

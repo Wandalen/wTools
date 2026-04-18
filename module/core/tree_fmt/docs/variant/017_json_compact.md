@@ -5,7 +5,7 @@
 - **Purpose**: Provide minified JSON output with no whitespace in single-line format.
 - **Responsibility**: Complete attribute descriptor for this output variant preset.
 - **In Scope**: All 46 variant attributes, example output, feature flag, compatibility.
-- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../variant_attributes.md`).
+- **Out of Scope**: Formatter implementation (see source), attribute schema (see `../data_structure/001_variant_attributes.md`).
 
 ### Cross-References
 
@@ -99,9 +99,3 @@
 ```json
 {"rows":[{"Name":"Alice","Age":"30","City":"NYC"},{"Name":"Bob","Age":"25","City":"LA"}]}
 ```
-
-### Related
-
-- [Table of Variants](../../readme.md#table-of-variants)
-- [JsonFormatter Documentation](../../src/formatters/json.rs)
-- [JSON RFC8259](https://tools.ietf.org/html/rfc8259)

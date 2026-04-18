@@ -105,7 +105,7 @@ impl Format for JsonFormatter
   /// row becomes a self-describing object with column names as keys.
   ///
   /// **Input** (`TableView` structure):
-  /// ```rust,ignore
+  /// ```text
   /// TableView {
   ///   metadata: TableMetadata {
   ///     column_names: ["Name", "Age", "City"]
@@ -138,7 +138,7 @@ impl Format for JsonFormatter
   ///
   /// If you need the complete `TableView` structure (with metadata), serialize
   /// the `TableView` directly using serde instead of using this formatter:
-  /// ```rust,ignore
+  /// ```text
   /// let json = serde_json::to_string(&table_view)?;
   /// ```
   ///
