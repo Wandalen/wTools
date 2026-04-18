@@ -32,7 +32,7 @@ nodes:
     file: algorithm/005_column_fold_detection.md
     label: Column Fold Detection
     entity: algorithm
-    status: planned
+    status: implemented
 
   # api (4)
   - id: api/001
@@ -100,7 +100,7 @@ nodes:
     file: feature/005_auto_fit.md
     label: Auto-Fit
     entity: feature
-    status: partial
+    status: implemented
 
   # input_model (2)
   - id: input_model/001
@@ -146,7 +146,7 @@ nodes:
     file: invariant/004_column_fold_invariants.md
     label: Column Fold Invariants
     entity: invariant
-    status: planned
+    status: implemented
 
   # pattern (4)
   - id: pattern/001
@@ -740,10 +740,4 @@ components:
     nodes: [feature/004]
     gap: "Color themes doc references config types in body text but no formal cross-reference edges to other doc entity instances"
 
-dangling_refs:
-  - from: feature/005
-    ref: tests/terminal_width_test.rs
-    note: "(to create) — referenced in Cross-References but test file does not yet exist"
-  - from: feature/005
-    ref: tests/auto_fold_test.rs
-    note: "(to create) — referenced in Cross-References but test file does not yet exist"
+dangling_refs: []
