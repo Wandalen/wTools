@@ -27,6 +27,27 @@
 //! | t19 | `Clone` produces equal value for both plain and colored |
 //! | t20 | `PartialEq`/`Eq` — same values equal, different values unequal |
 //! | t21 | `Debug` format includes type name and field values |
+//! | t22 | `Color::Yellow.to_ansi()` returns `"\x1b[33m"` (spot-check SGR code) |
+//! | t23 | All 16 4-bit `Color` variants produce correct SGR codes |
+//! | t24 | `Color::Ansi256(n).to_ansi()` returns `"\x1b[38;5;N m"` format |
+//! | t25 | `Color::Rgb(r,g,b).to_ansi()` returns `"\x1b[38;2;r;g;bm"` format |
+//! | t26 | `Color` derives `Clone`, `Copy`, `PartialEq`, `Debug` |
+//! | t27 | `with_color_named` round-trip: `render()` equals explicit `with_color(to_ansi())` |
+//! | t28 | `with_color_named` sets `is_colored()` true |
+//! | t29 | `render_html()` on plain text returns escaped text, no `<span>` (`html_support`) |
+//! | t30 | `render_html()` with named yellow → `<span style="color: yellow">` (`html_support`) |
+//! | t31 | `render_html()` with `Rgb` named → `<span style="color: rgb(r, g, b)">` (`html_support`) |
+//! | t32 | `render_html()` escapes `<`, `>`, `&` in text content (`html_support`) |
+//! | t33 | `render_html()` with raw-string color produces no `<span>` (design boundary, `html_support`) |
+//! | t34 | `render_html()` with `Ansi256` named → `<span style="color: var(--ansi256-N)">` (`html_support`) |
+//! | t35 | `with_color` after `with_color_named` clears `named_color` → `render_html()` produces no span (`html_support`) |
+//! | t36 | `render_html()` on empty text with named color → span with empty body (`html_support`) |
+//! | t37 | `render_html()` does NOT escape `"` or `'` (only `&`, `<`, `>` are HTML body escapes) (`html_support`) |
+//! | t38 | All 8 Bright variants produce same `to_css()` keyword as their normal counterparts (`html_support`) |
+//! | t39 | `Color::Ansi256(0)` and `Ansi256(255)` boundary values in `to_css()` (`html_support`) |
+//! | t40 | `Color::Rgb(0,0,0)` and `Rgb(255,255,255)` boundary values in `to_css()` (`html_support`) |
+//! | t41 | `render_html()` preserves Unicode text unchanged (`html_support`) |
+//! | t42 | `with_color_named` called twice — second call's color wins in `render_html()` (`html_support`) |
 
 use color_tools::DecoratedText;
 
@@ -532,4 +553,132 @@ fn t34_render_html_ansi256_css_var()
   use color_tools::{ DecoratedText, Color };
   let ct = DecoratedText::from( "info" ).with_color_named( Color::Ansi256( 208 ) );
   assert_eq!( ct.render_html(), "<span style=\"color: var(--ansi256-208)\">info</span>" );
+}
+
+// =============================================================================
+// t35 — with_color after with_color_named must clear named_color
+//
+// Root cause of bug: with_color() did not clear the named_color field, so
+// render_html() would still produce a span from the old named color even after
+// the caller overrode the color with a raw ANSI string.
+// test_kind: bug_reproducer(issue-none)
+// =============================================================================
+
+#[ cfg( feature = "html_support" ) ]
+#[ test ]
+fn t35_with_color_after_with_color_named_clears_span()
+{
+  use color_tools::{ DecoratedText, Color };
+  let ct = DecoratedText::from( "text" )
+    .with_color_named( Color::Yellow )
+    .with_color( "\x1b[31m" );
+  // render() must use the raw ANSI red
+  assert!( ct.render().starts_with( "\x1b[31m" ), "raw color must be used by render()" );
+  // render_html() must produce NO span — raw ANSI string carries no CSS info,
+  // and named_color must have been cleared by with_color
+  assert_eq!( ct.render_html(), "text",
+    "with_color after with_color_named must clear named_color" );
+}
+
+// =============================================================================
+// t36 — render_html: named color + empty text produces empty span
+// =============================================================================
+
+#[ cfg( feature = "html_support" ) ]
+#[ test ]
+fn t36_render_html_empty_text_with_named_color()
+{
+  use color_tools::{ DecoratedText, Color };
+  let ct = DecoratedText::from( "" ).with_color_named( Color::Blue );
+  assert_eq!( ct.render_html(), "<span style=\"color: blue\"></span>" );
+}
+
+// =============================================================================
+// t37 — render_html does NOT escape " or ' (only &, <, > are HTML body escapes)
+// =============================================================================
+
+#[ cfg( feature = "html_support" ) ]
+#[ test ]
+fn t37_render_html_does_not_escape_quotes()
+{
+  use color_tools::DecoratedText;
+  let ct = DecoratedText::from( "say \"hi\" and 'bye'" );
+  // In HTML body text, double and single quotes need no escaping
+  assert_eq!( ct.render_html(), "say \"hi\" and 'bye'" );
+}
+
+// =============================================================================
+// t38 — All 8 Bright Color variants map to same CSS keyword as normal variant
+//
+// CSS has no "bright" semantic equivalents; the distinction is terminal-only
+// (SGR 90–97 vs 30–37). render_html() intentionally uses the same keyword.
+// =============================================================================
+
+#[ cfg( feature = "html_support" ) ]
+#[ test ]
+fn t38_bright_variants_css_same_as_normal()
+{
+  use color_tools::Color;
+  assert_eq!( Color::BrightBlack.to_css(),   Color::Black.to_css()   );
+  assert_eq!( Color::BrightRed.to_css(),     Color::Red.to_css()     );
+  assert_eq!( Color::BrightGreen.to_css(),   Color::Green.to_css()   );
+  assert_eq!( Color::BrightYellow.to_css(),  Color::Yellow.to_css()  );
+  assert_eq!( Color::BrightBlue.to_css(),    Color::Blue.to_css()    );
+  assert_eq!( Color::BrightMagenta.to_css(), Color::Magenta.to_css() );
+  assert_eq!( Color::BrightCyan.to_css(),    Color::Cyan.to_css()    );
+  assert_eq!( Color::BrightWhite.to_css(),   Color::White.to_css()   );
+}
+
+// =============================================================================
+// t39 — Ansi256 boundary values: 0 and 255
+// =============================================================================
+
+#[ cfg( feature = "html_support" ) ]
+#[ test ]
+fn t39_ansi256_boundary_values_css()
+{
+  use color_tools::Color;
+  assert_eq!( Color::Ansi256( 0 ).to_css(),   "var(--ansi256-0)"   );
+  assert_eq!( Color::Ansi256( 255 ).to_css(), "var(--ansi256-255)" );
+}
+
+// =============================================================================
+// t40 — Rgb boundary values: (0,0,0) and (255,255,255)
+// =============================================================================
+
+#[ cfg( feature = "html_support" ) ]
+#[ test ]
+fn t40_rgb_boundary_values_css()
+{
+  use color_tools::Color;
+  assert_eq!( Color::Rgb( 0, 0, 0 ).to_css(),         "rgb(0, 0, 0)"         );
+  assert_eq!( Color::Rgb( 255, 255, 255 ).to_css(), "rgb(255, 255, 255)" );
+}
+
+// =============================================================================
+// t41 — render_html preserves Unicode text unchanged
+// =============================================================================
+
+#[ cfg( feature = "html_support" ) ]
+#[ test ]
+fn t41_render_html_preserves_unicode()
+{
+  use color_tools::DecoratedText;
+  let ct = DecoratedText::from( "héllo 日本語 😀" );
+  assert_eq!( ct.render_html(), "héllo 日本語 😀" );
+}
+
+// =============================================================================
+// t42 — with_color_named called twice: second call's color wins
+// =============================================================================
+
+#[ cfg( feature = "html_support" ) ]
+#[ test ]
+fn t42_with_color_named_twice_second_wins()
+{
+  use color_tools::{ DecoratedText, Color };
+  let ct = DecoratedText::from( "x" )
+    .with_color_named( Color::Red )
+    .with_color_named( Color::Blue );
+  assert_eq!( ct.render_html(), "<span style=\"color: blue\">x</span>" );
 }

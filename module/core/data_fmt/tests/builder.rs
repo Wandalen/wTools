@@ -1,5 +1,6 @@
 //! Tests for TreeBuilder
 
+#![ cfg( feature = "enabled" ) ]
 #![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 use data_fmt::TreeBuilder;

@@ -102,6 +102,7 @@
 //! with very tall cells (100+ lines), consider if table format is appropriate
 //! or if alternative display (expanded format, tree format) would be better.
 
+#![ cfg( feature = "enabled" ) ]
 use data_fmt::{ RowBuilder, TableFormatter, TableConfig };
 
 // ============================================================================

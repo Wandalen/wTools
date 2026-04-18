@@ -36,6 +36,7 @@
 //!
 //! See tests/reproduce_alignment_problem.rs for detailed visual demonstration.
 
+#![ cfg( feature = "enabled" ) ]
 #![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 use tree_fmt::{ TreeNode, ColumnData, TreeFormatter };

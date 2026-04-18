@@ -55,6 +55,7 @@
 //!   are stored but not read by `TableFormatter`. Tests covering these fields must be
 //!   behavioral smoke tests (verify no panic + data renders), not output-character assertions.
 
+#![ cfg( feature = "enabled" ) ]
 #![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 mod inc;

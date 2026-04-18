@@ -23,6 +23,7 @@
 //!
 //! Split from tests/aligned_tree.rs in v0.4.0 compliance cleanup.
 
+#![ cfg( feature = "enabled" ) ]
 #![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 use tree_fmt::{ TreeNode, ColumnData, TreeFormatter, TreeConfig };

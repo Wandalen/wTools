@@ -1,6 +1,6 @@
 //! Data conversion utilities between tree representations
 
-use crate::{ TreeNode, RowBuilder };
+use crate::{ TreeNode, RowBuilder, DecoratedText };
 
 /// Formatter parameters for tree flattening
 #[ derive( Debug, Clone ) ]
@@ -132,7 +132,7 @@ pub fn flatten_to_table_tree_with_config< T : std::fmt::Display >(
     ( "path".into(), "name".into(), "depth".into(), "data".into() )
   );
 
-  let mut headers = Vec::new();
+  let mut headers : Vec< String > = Vec::new();
   if config.include_path { headers.push( path_name ); }
   if config.include_name { headers.push( name_name ); }
   if config.include_depth { headers.push( depth_name ); }
@@ -166,7 +166,7 @@ fn traverse_and_flatten_with_config< T : std::fmt::Display >(
     .map( ToString::to_string )
     .unwrap_or_default();
 
-  let mut row : Vec< color_tools::DecoratedText > = Vec::new();
+  let mut row : Vec< DecoratedText > = Vec::new();
   if config.include_path { row.push( current_path.clone().into() ); }
   if config.include_name { row.push( node.name.clone().into() ); }
   if config.include_depth { row.push( depth.to_string().into() ); }

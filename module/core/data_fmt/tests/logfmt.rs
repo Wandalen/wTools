@@ -38,6 +38,7 @@
 //! - Input: `msg` = `"line1\nline2"`
 //! - Output: `msg="line1\nline2"`
 
+#![ cfg( feature = "enabled" ) ]
 #![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 use data_fmt::{ RowBuilder, LogfmtFormatter, Format };

@@ -2,6 +2,7 @@
 //!
 //! Tests SQL INSERT statement generation across different dialects.
 
+#![ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "format_sql" ) ]
 mod sql_tests
 {
@@ -169,7 +170,7 @@ mod sql_tests
 
     for i in 1..=100
     {
-      builder = builder.add_row( vec![ i.to_string().into(), format!( "User{}", i ).into() ] );
+      builder = builder.add_row( vec![ i.to_string().into(), format!( "User{i}" ).into() ] );
     }
 
     let view = builder.build_view();

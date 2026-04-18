@@ -71,6 +71,7 @@
 //! - `column_widths` override takes precedence over auto-sizing entirely; if the slice
 //!   is shorter than the column count, remaining columns get `unwrap_or(10)` default width.
 
+#![ cfg( feature = "enabled" ) ]
 #![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 use tree_fmt::

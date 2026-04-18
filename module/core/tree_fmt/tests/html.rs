@@ -2,6 +2,7 @@
 //!
 //! Tests HTML table generation with various themes and configurations.
 
+#![ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "format_html" ) ]
 mod html_tests
 {
@@ -145,8 +146,8 @@ mod html_tests
     for i in 1..=10
     {
       builder = builder.add_row( vec![
-        format!( "{}", i ).into(),
-        format!( "User{}", i ).into(),
+        format!( "{i}" ).into(),
+        format!( "User{i}" ).into(),
         "Active".into()
       ] );
     }

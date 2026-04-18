@@ -1,5 +1,6 @@
 //! Debug alignment calculation
 
+#![ cfg( feature = "enabled" ) ]
 #![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 use tree_fmt::{ TreeNode, ColumnData, TreeFormatter, visual_len };

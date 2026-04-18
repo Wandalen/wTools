@@ -26,7 +26,8 @@ toml = { workspace = true }
 unicode-width = "0.1"
 
 [features]
-default = [ "table_plain", "expanded_postgres", "tree_hierarchical", "format_logfmt" ]
+default = [ "enabled" ]
+enabled = [ "table_plain", "expanded_postgres", "tree_hierarchical", "format_logfmt" ]
 
 # Legacy integration flag
 integration = []

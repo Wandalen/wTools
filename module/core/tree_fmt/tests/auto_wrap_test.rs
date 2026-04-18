@@ -17,6 +17,7 @@
 //! T21: Sub-row detail + wrapping
 //! T22: Format trait path (`build_view`)
 
+#![ cfg( feature = "enabled" ) ]
 use tree_fmt::{ RowBuilder, TableFormatter, TableConfig, ColumnFlex, Format };
 
 // --- T01: Table fits naturally within 120 cols ---

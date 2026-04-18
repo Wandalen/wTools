@@ -3,6 +3,7 @@
 //! Validates TOML array-of-tables output format (`[[row]]` sections),
 //! empty table handling, and round-trip parse correctness.
 
+#![ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "format_toml" ) ]
 mod toml_tests
 {
@@ -38,7 +39,7 @@ mod toml_tests
   fn toml_formatter_empty_table()
   {
     let view = TableView::new(
-      TableMetadata::new( vec![ "Column".into() ] ),
+      TableMetadata::new( vec![ "Column".to_string() ] ),
       vec![]
     );
 

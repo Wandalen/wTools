@@ -1,5 +1,6 @@
 //! Tests for ColumnData structure
 
+#![ cfg( feature = "enabled" ) ]
 #![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 use tree_fmt::ColumnData;

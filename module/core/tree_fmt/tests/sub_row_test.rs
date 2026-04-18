@@ -59,6 +59,7 @@
 //! | T32 | Detail text with trailing `\n` — same output as without (Rust `lines()` strips it) |
 //! | T33 | Detail text `"\n"` only — `is_empty()` false; renders one blank indented line |
 
+#![ cfg( feature = "enabled" ) ]
 #![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 use tree_fmt::{ RowBuilder, TableFormatter, TableConfig, Format, TableView, TableMetadata, DecoratedText };
@@ -357,7 +358,7 @@ fn t13_multiline_cell_with_detail()
 fn t14_format_trait_path()
 {
   let view = TableView::with_details(
-    TableMetadata::new( vec![ "Col".into() ] ),
+    TableMetadata::new( vec![ "Col".to_string() ] ),
     vec![ vec![ "val".into() ] ],
     vec![ Some( "trait-path detail".into() ) ],
   );
@@ -418,7 +419,7 @@ fn t16_build_view_row_details_vector()
 fn t17_table_view_new_backward_compat()
 {
   let view = TableView::new(
-    TableMetadata::new( vec![ "X".into() ] ),
+    TableMetadata::new( vec![ "X".to_string() ] ),
     vec![ vec![ "1".into() ] ],
   );
 
@@ -543,7 +544,7 @@ fn t21_grid_detail_before_bottom_border()
 fn t22_details_shorter_than_rows()
 {
   let view = TableView::with_details(
-    TableMetadata::new( vec![ "X".into() ] ),
+    TableMetadata::new( vec![ "X".to_string() ] ),
     vec![
       vec![ "A".into() ],
       vec![ "B".into() ],
@@ -589,7 +590,7 @@ fn t23_whitespace_only_detail_rendered()
 fn t24_details_longer_than_rows()
 {
   let view = TableView::with_details(
-    TableMetadata::new( vec![ "X".into() ] ),
+    TableMetadata::new( vec![ "X".to_string() ] ),
     vec![ vec![ "A".into() ] ],
     vec![
       Some( "d0".into() ),
@@ -690,7 +691,7 @@ fn t27_multiline_color_detail_triple()
 fn t28_zero_rows_empty_details()
 {
   let view = TableView::with_details(
-    TableMetadata::new( vec![ "X".into() ] ),
+    TableMetadata::new( vec![ "X".to_string() ] ),
     vec![],
     vec![],
   );

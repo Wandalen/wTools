@@ -121,7 +121,7 @@ fn main()
   {
     builder = builder.add_row( vec![
       i.to_string().into(),
-      format!( "user{:03}", i ).into(),
+      format!( "user{i:03}" ).into(),
       if i % 2 == 0 { "1" } else { "0" }.into()
     ] );
   }

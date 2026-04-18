@@ -3,6 +3,7 @@
 //! Validates YAML list-of-objects output format, empty table handling,
 //! special character handling, and round-trip parse correctness.
 
+#![ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "format_yaml" ) ]
 mod yaml_tests
 {
@@ -40,7 +41,7 @@ mod yaml_tests
   fn yaml_formatter_empty_table()
   {
     let view = TableView::new(
-      TableMetadata::new( vec![ "Column".into() ] ),
+      TableMetadata::new( vec![ "Column".to_string() ] ),
       vec![]
     );
 

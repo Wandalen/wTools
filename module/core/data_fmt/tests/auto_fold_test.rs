@@ -43,6 +43,7 @@
 //! T23: `bug_reproducer` — `Bare` fold style wraps long continuation lines
 //! T24: `bug_reproducer` — `fold_point=0` preserves first column in header
 
+#![ cfg( feature = "enabled" ) ]
 use data_fmt::{ RowBuilder, TableFormatter, TableConfig, ColumnFlex, FoldStyle, DecoratedText };
 
 // --- Shared helpers ---

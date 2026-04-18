@@ -69,6 +69,7 @@
 //! println!("{:<10} next", text);  // Now aligned correctly
 //! ```
 
+#![ cfg( feature = "enabled" ) ]
 use tree_fmt::{ truncate_cell, pad_to_width, RowBuilder, TableFormatter, TableConfig };
 
 /// Bug reproducer for issue-003: Unicode display width alignment

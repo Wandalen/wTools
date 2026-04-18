@@ -71,6 +71,7 @@
 //! - `tests/table_styles_*.rs`: Table rendering without truncation
 //! - Integration tests: Real-world usage with colored output
 
+#![ cfg( feature = "enabled" ) ]
 use tree_fmt::{ RowBuilder, TableFormatter, TableConfig };
 
 // ============================================================================

@@ -4,6 +4,7 @@
 //! Bug reproducers (`// test_kind: bug_reproducer`) are appended at the end.
 //! All tests are written TDD: Red state first, then implementation added.
 
+#![ cfg( feature = "enabled" ) ]
 use data_fmt::{ WrapConfig, WrapFormatter, BreakStrategy, Overflow };
 
 /// T01 — empty string returns empty vec.

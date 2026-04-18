@@ -635,6 +635,7 @@ impl TableConfig
 /// These methods allow sibling formatter modules (e.g., `formatters::table`) to read
 /// `TableConfig` fields without exposing them as `pub` to external crates.
 /// Accessor names are distinct from setter method names to avoid Rust method name conflicts.
+#[ allow( dead_code ) ]
 impl TableConfig
 {
   /// Column separator (accessor; distinct from `column_separator` setter)
@@ -823,7 +824,7 @@ impl Default for ExpandedConfig
       key_value_separator : " | ".to_string(),
       show_record_numbers : true,
       colorize_keys : false,
-      key_color : String::new(),  // Gray
+      key_color : "\x1b[90m".to_string(),  // Gray
       padding_side : PaddingSide::BeforeSeparator,
       indent_prefix : String::new(),
     }

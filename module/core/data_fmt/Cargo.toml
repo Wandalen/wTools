@@ -32,7 +32,8 @@ serde_yaml = { workspace = true }
 toml = { workspace = true }
 
 [features]
-default = [ "table_plain", "expanded_postgres", "tree_hierarchical", "format_logfmt" ]
+default = [ "enabled" ]
+enabled = [ "table_plain", "expanded_postgres", "tree_hierarchical", "format_logfmt" ]
 
 # Legacy integration flag
 integration = []

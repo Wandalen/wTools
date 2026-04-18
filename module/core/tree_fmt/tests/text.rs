@@ -4,6 +4,7 @@
 //! plus the builder pattern (indent/separator configuration).
 //! `CliHelp` variant is tested separately in `text_cli_help.rs`.
 
+#![ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "format_text" ) ]
 mod text_tests
 {

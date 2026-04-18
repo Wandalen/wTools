@@ -11,6 +11,7 @@
 //! must use `contains` rather than `starts_with` when checking visible content
 //! that may be preceded by ANSI codes.
 
+#![ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "themes" ) ]
 mod theme_tests
 {

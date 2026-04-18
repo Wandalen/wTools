@@ -40,6 +40,7 @@
 //! | T013-N05 | grid + colors | `grid()` + `colorize_header(true)` | Borders AND color both in output |
 //! | T013-N06 | 1 data row | `colorize_header(true)`, no alternating | Only header colored; data row uncolored |
 
+#![ cfg( feature = "enabled" ) ]
 #![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 mod inc;

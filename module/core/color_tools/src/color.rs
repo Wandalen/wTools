@@ -105,6 +105,11 @@ impl Color
   /// `Ansi256` maps to a CSS custom property `var(--ansi256-N)` (caller must define
   /// the custom property in their stylesheet).
   ///
+  /// Bright variants (`BrightRed`, `BrightYellow`, …) intentionally map to the same
+  /// CSS keyword as their normal counterparts — CSS has no "bright" semantic equivalents.
+  /// The distinction is terminal-only (SGR 90–97 vs. 30–37); HTML rendering cannot
+  /// reproduce it without custom per-theme CSS.
+  ///
   /// # Example
   ///
   /// ```

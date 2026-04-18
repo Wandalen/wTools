@@ -3,6 +3,7 @@
 //! Validates JSON array-of-objects output in both pretty and compact modes,
 //! empty table handling, builder pattern, and round-trip parse correctness.
 
+#![ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "format_json" ) ]
 mod json_tests
 {
@@ -63,7 +64,7 @@ mod json_tests
   fn json_formatter_empty_table()
   {
     let view = TableView::new(
-      TableMetadata::new( vec![ "Column".into() ] ),
+      TableMetadata::new( vec![ "Column".to_string() ] ),
       vec![]
     );
 

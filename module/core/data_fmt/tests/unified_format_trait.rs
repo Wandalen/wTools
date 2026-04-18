@@ -3,6 +3,7 @@
 //! Tests all formatters through the common Format trait interface,
 //! ensuring consistent behavior across different output formats.
 
+#![ cfg( feature = "enabled" ) ]
 #![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 use data_fmt::{ RowBuilder, TableView, TableMetadata, Format, FormatError };
@@ -28,7 +29,7 @@ fn test_row_builder_produces_table_view()
 fn test_table_view_direct_construction()
 {
   let view = TableView::new(
-    TableMetadata::new( vec![ "Col1".into(), "Col2".into() ] ),
+    TableMetadata::new( vec![ "Col1".to_string(), "Col2".to_string() ] ),
     vec![
       vec![ "A".into(), "B".into() ],
       vec![ "C".into(), "D".into() ],
@@ -99,7 +100,7 @@ mod table_format_tests
   fn test_table_formatter_empty_view()
   {
     let view = TableView::new(
-      TableMetadata::new( vec![ "Col".into() ] ),
+      TableMetadata::new( vec![ "Col".to_string() ] ),
       vec![]
     );
 
@@ -427,7 +428,7 @@ fn test_same_data_all_formats()
 fn test_empty_table_all_formats()
 {
   let view = TableView::new(
-    TableMetadata::new( vec![ "Col".into() ] ),
+    TableMetadata::new( vec![ "Col".to_string() ] ),
     vec![]
   );
 

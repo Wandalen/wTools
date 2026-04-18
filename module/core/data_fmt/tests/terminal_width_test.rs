@@ -16,6 +16,7 @@
 //! - Tier 3 (120-column hardcoded fallback): test 1 — valid in CI/non-TTY environments;
 //!   may differ in an interactive terminal session where Tier 2 activates first
 
+#![ cfg( feature = "enabled" ) ]
 use data_fmt::{ RowBuilder, TableFormatter, TableConfig, TreeNode };
 
 // --- Test helpers ---

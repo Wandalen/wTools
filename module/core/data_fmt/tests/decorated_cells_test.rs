@@ -23,6 +23,7 @@
 //! | P03 | Multi-line colored cell | `{text:"a\nb", color:"\x1b[32m"}` | Each sub-line ends with `\x1b[0m` before `\n`; 2 colored lines total |
 //! | P04 | Mixed: colored + plain cells in same row | one colored, one plain | Colored cell has ANSI; plain cell does not |
 
+#![ cfg( feature = "enabled" ) ]
 #![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 use data_fmt::{ RowBuilder, TableFormatter, TableConfig, DecoratedText, Format };
@@ -48,7 +49,7 @@ use data_fmt::{ RowBuilder, TableFormatter, TableConfig, DecoratedText, Format }
 #[ test ]
 fn test_p01_colored_cell_renders_ansi_in_output()
 {
-  let view = RowBuilder::new( vec![ "Status".to_string() ] )
+  let view = RowBuilder::new( vec![ "Status".into() ] )
     .add_row( vec![ DecoratedText::from( "warn" ).with_color( "\x1b[33m" ) ] )
     .build_view();
 
@@ -73,7 +74,7 @@ fn test_p01_colored_cell_renders_ansi_in_output()
 #[ test ]
 fn test_p02_plain_decorated_cell_no_ansi_codes()
 {
-  let view = RowBuilder::new( vec![ "Col".to_string() ] )
+  let view = RowBuilder::new( vec![ "Col".into() ] )
     .add_row( vec![ DecoratedText::from( "plain" ) ] )
     .build_view();
 
@@ -120,7 +121,7 @@ fn test_p03_multiline_colored_cell_per_line_reset_no_bleed()
 {
   let cell = DecoratedText::from( "line_a\nline_b" ).with_color( "\x1b[32m" );
 
-  let view = RowBuilder::new( vec![ "Col".to_string() ] )
+  let view = RowBuilder::new( vec![ "Col".into() ] )
     .add_row( vec![ cell ] )
     .build_view();
 
@@ -159,7 +160,7 @@ fn test_p03_multiline_colored_cell_per_line_reset_no_bleed()
 #[ test ]
 fn test_p04_mixed_colored_and_plain_cells_in_row()
 {
-  let view = RowBuilder::new( vec![ "Status".to_string(), "Note".to_string() ] )
+  let view = RowBuilder::new( vec![ "Status".into(), "Note".into() ] )
     .add_row( vec![
       DecoratedText::from( "warn" ).with_color( "\x1b[33m" ),
       DecoratedText::from( "plain note" ),

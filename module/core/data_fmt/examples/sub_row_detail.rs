@@ -20,9 +20,9 @@ fn main()
   println!( "-- Basic: mixed detail --" );
 
   let view = RowBuilder::new( vec![
-    DecoratedText::from( "Service" ),
-    DecoratedText::from( "Status" ),
-    DecoratedText::from( "Latency" ),
+    "Service".into(),
+    "Status".into(),
+    "Latency".into(),
   ])
   .add_row_with_detail(
     vec![ DecoratedText::from( "auth" ), DecoratedText::from( "ERROR" ), DecoratedText::from( "n/a" ) ],
@@ -42,7 +42,7 @@ fn main()
 
   println!( "-- All rows annotated --" );
 
-  let view2 = RowBuilder::new( vec![ DecoratedText::from( "File" ), DecoratedText::from( "Result" ) ] )
+  let view2 = RowBuilder::new( vec![ "File".into(), "Result".into() ] )
   .add_row_with_detail(
     vec![ DecoratedText::from( "main.rs" ),   DecoratedText::from( "ok" ) ],
     Some( DecoratedText::from( "compiled in 0.4s" ) ),
@@ -63,7 +63,7 @@ fn main()
 
   println!( "-- No details (normal table, feature transparent) --" );
 
-  let view3 = RowBuilder::new( vec![ DecoratedText::from( "Name" ), DecoratedText::from( "Score" ) ] )
+  let view3 = RowBuilder::new( vec![ "Name".into(), "Score".into() ] )
   .add_row( vec![ DecoratedText::from( "Alice" ), DecoratedText::from( "92" ) ] )
   .add_row( vec![ DecoratedText::from( "Bob" ),   DecoratedText::from( "78" ) ] )
   .build_view();
@@ -77,7 +77,7 @@ fn main()
   let red    = "\x1b[31m";
   let yellow = "\x1b[33m";
 
-  let view4 = RowBuilder::new( vec![ DecoratedText::from( "Service" ), DecoratedText::from( "Status" ) ] )
+  let view4 = RowBuilder::new( vec![ "Service".into(), "Status".into() ] )
   .add_row_with_detail(
     vec![ DecoratedText::from( "auth" ), DecoratedText::from( "ERROR" ) ],
     Some( DecoratedText::from( "connection refused: 10.0.1.5:5432" ).with_color( red ) ),

@@ -48,6 +48,15 @@ impl DecoratedText
   pub fn with_color( mut self, ansi : impl Into< String > ) -> Self
   {
     self.color = Some( ansi.into() );
+    // Fix(issue-none): clear any previously stored named_color so that
+    // render_html() doesn't emit a stale CSS span after the caller overrides
+    // the color with a raw ANSI string.
+    // Root cause: with_color only updated `color`, leaving `named_color`
+    //   pointing at whatever with_color_named had set earlier.
+    // Pitfall: always pair raw-ANSI and typed-color state together;
+    //   they describe the same semantic slot.
+    #[ cfg( feature = "html_support" ) ]
+    { self.named_color = None; }
     self
   }
 

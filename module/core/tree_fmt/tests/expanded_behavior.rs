@@ -30,6 +30,7 @@
 //! | E1 | Tab character as indent_prefix | "\t" prefix | Tab at start of each kv line |
 //! | E2 | Unicode indent_prefix | "→ " prefix | Lines start with that string |
 
+#![ cfg( feature = "enabled" ) ]
 #![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 use tree_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig };

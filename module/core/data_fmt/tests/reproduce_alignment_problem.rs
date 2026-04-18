@@ -5,6 +5,7 @@
 //! - Deep dependency tree
 //! - Demonstrates alignment vs non-alignment
 
+#![ cfg( feature = "enabled" ) ]
 #![ allow( clippy::all, clippy::pedantic, clippy::nursery, warnings ) ]
 
 mod inc;
