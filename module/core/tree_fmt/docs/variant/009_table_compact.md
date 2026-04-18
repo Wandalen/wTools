@@ -1,7 +1,5 @@
 # Variant: Table Compact
 
-Single-space separator with minimal padding for narrow terminals.
-
 ### Scope
 
 - **Purpose**: Provide a single-space separator table with minimal padding for narrow terminals.
@@ -15,7 +13,7 @@ Single-space separator with minimal padding for narrow terminals.
 |------|------|----------------|
 | source | `src/formatters/table.rs` | TableFormatter implementation |
 | test | `tests/table_styles_presets.rs` | Preset configuration and output tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

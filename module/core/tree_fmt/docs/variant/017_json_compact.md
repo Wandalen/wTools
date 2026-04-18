@@ -1,7 +1,5 @@
 # Variant: JSON Compact
 
-Minified JSON output with no whitespace, single-line format.
-
 ### Scope
 
 - **Purpose**: Provide minified JSON output with no whitespace in single-line format.
@@ -15,7 +13,7 @@ Minified JSON output with no whitespace, single-line format.
 |------|------|----------------|
 | source | `src/formatters/json.rs` | JsonFormatter implementation |
 | test | `tests/json.rs` | JSON output tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

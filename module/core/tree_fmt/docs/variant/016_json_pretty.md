@@ -1,7 +1,5 @@
 # Variant: JSON Pretty
 
-Human-readable JSON with indentation and newlines. Default JSON variant.
-
 ### Scope
 
 - **Purpose**: Provide human-readable JSON output with indentation and newlines.
@@ -15,7 +13,7 @@ Human-readable JSON with indentation and newlines. Default JSON variant.
 |------|------|----------------|
 | source | `src/formatters/json.rs` | JsonFormatter implementation |
 | test | `tests/json.rs` | JSON output tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

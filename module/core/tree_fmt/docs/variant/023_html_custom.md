@@ -1,7 +1,5 @@
 # Variant: HTML Custom
 
-HTML table with user-provided CSS classes for customized styling.
-
 ### Scope
 
 - **Purpose**: Provide an HTML table with user-provided CSS classes for customized styling.
@@ -15,7 +13,7 @@ HTML table with user-provided CSS classes for customized styling.
 |------|------|----------------|
 | source | `src/formatters/html.rs` | HtmlFormatter implementation |
 | test | `tests/html.rs` | HTML output tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

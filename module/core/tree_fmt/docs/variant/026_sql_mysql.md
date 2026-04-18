@@ -1,7 +1,5 @@
 # Variant: SQL MySQL
 
-MySQL/MariaDB-specific INSERT statements with dialect support.
-
 ### Scope
 
 - **Purpose**: Provide MySQL/MariaDB-specific INSERT statements with dialect support.
@@ -15,7 +13,7 @@ MySQL/MariaDB-specific INSERT statements with dialect support.
 |------|------|----------------|
 | source | `src/formatters/sql.rs` | SqlFormatter implementation |
 | test | `tests/sql.rs` | SQL output tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

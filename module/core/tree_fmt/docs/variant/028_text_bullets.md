@@ -1,7 +1,5 @@
 # Variant: Text Bullets
 
-Bulleted list format. Default text variant for simple itemized display.
-
 ### Scope
 
 - **Purpose**: Provide a bulleted list format as the default text variant for simple itemized display.
@@ -15,7 +13,7 @@ Bulleted list format. Default text variant for simple itemized display.
 |------|------|----------------|
 | source | `src/formatters/text.rs` | TextFormatter implementation |
 | test | `tests/text.rs` | Text output tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

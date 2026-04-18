@@ -1,7 +1,5 @@
 # Variant: Expanded Postgres
 
-Vertical record display with field separators. Default variant optimized for PostgreSQL \x mode.
-
 ### Scope
 
 - **Purpose**: Provide vertical record display with field separators optimized for PostgreSQL \x mode.
@@ -15,7 +13,7 @@ Vertical record display with field separators. Default variant optimized for Pos
 |------|------|----------------|
 | source | `src/formatters/expanded.rs` | ExpandedFormatter implementation |
 | test | `tests/expanded_behavior.rs` | Expanded formatter behavior tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

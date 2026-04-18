@@ -1,7 +1,5 @@
 # Variant: Tree Hierarchical
 
-Standard tree view with Unicode box-drawing characters. Default tree variant.
-
 ### Scope
 
 - **Purpose**: Provide a standard tree view with Unicode box-drawing characters as the default tree variant.
@@ -15,7 +13,7 @@ Standard tree view with Unicode box-drawing characters. Default tree variant.
 |------|------|----------------|
 | source | `src/formatters/tree.rs` | TreeFormatter implementation |
 | test | `tests/aligned_tree_basic.rs` | Tree alignment and rendering tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

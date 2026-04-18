@@ -1,7 +1,5 @@
 # Variant: Tree Aligned
 
-Column-aligned tree view with metadata columns for structured display.
-
 ### Scope
 
 - **Purpose**: Provide a column-aligned tree view with metadata columns for structured display.
@@ -15,7 +13,7 @@ Column-aligned tree view with metadata columns for structured display.
 |------|------|----------------|
 | source | `src/formatters/tree.rs` | TreeFormatter implementation |
 | test | `tests/aligned_tree_basic.rs` | Tree alignment and rendering tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

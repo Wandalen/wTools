@@ -5,6 +5,7 @@
 | Type | Purpose | Master File | Instances |
 |------|---------|-------------|----------:|
 | `algorithm/` | Registry and overview of all algorithm doc instances | [algorithm/readme.md](algorithm/readme.md) | 5 |
+| `data_structure/` | Registry and overview of all data structure doc instances | [data_structure/readme.md](data_structure/readme.md) | 1 |
 | `api/` | Registry and overview of all API doc instances | [api/readme.md](api/readme.md) | 4 |
 | `builder/` | Registry and overview of all builder doc instances | [builder/readme.md](builder/readme.md) | 2 |
 | `feature/` | Registry and overview of all feature doc instances | [feature/readme.md](feature/readme.md) | 5 |
@@ -29,6 +30,7 @@
 | api | 004 | Formatters | [api/004_formatters.md](api/004_formatters.md) |
 | builder | 001 | RowBuilder | [builder/001_row_builder.md](builder/001_row_builder.md) |
 | builder | 002 | TreeBuilder | [builder/002_tree_builder.md](builder/002_tree_builder.md) |
+| data_structure | 001 | Variant Attributes | [data_structure/001_variant_attributes.md](data_structure/001_variant_attributes.md) |
 | feature | 001 | Table Formatting | [feature/001_table_formatting.md](feature/001_table_formatting.md) |
 | feature | 002 | Word Wrap | [feature/002_word_wrap.md](feature/002_word_wrap.md) |
 | feature | 003 | Unified Format Interface | [feature/003_unified_format_interface.md](feature/003_unified_format_interface.md) |

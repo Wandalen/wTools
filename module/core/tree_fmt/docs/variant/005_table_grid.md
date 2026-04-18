@@ -1,7 +1,5 @@
 # Variant: Table Grid
 
-Full ASCII grid with intersections for formal reports.
-
 ### Scope
 
 - **Purpose**: Provide a full ASCII grid with intersections for formal report output.
@@ -15,7 +13,7 @@ Full ASCII grid with intersections for formal reports.
 |------|------|----------------|
 | source | `src/formatters/table.rs` | TableFormatter implementation |
 | test | `tests/table_styles_presets.rs` | Preset configuration and output tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

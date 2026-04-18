@@ -1,7 +1,5 @@
 # Variant: Table Unicode Box
 
-Unicode box-drawing characters for modern terminal UIs.
-
 ### Scope
 
 - **Purpose**: Provide table rendering with Unicode box-drawing characters for modern terminal UIs.
@@ -15,7 +13,7 @@ Unicode box-drawing characters for modern terminal UIs.
 |------|------|----------------|
 | source | `src/formatters/table.rs` | TableFormatter implementation |
 | test | `tests/table_styles_presets.rs` | Preset configuration and output tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

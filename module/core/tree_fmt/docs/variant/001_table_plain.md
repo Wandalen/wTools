@@ -1,7 +1,5 @@
 # Variant: Table Plain
 
-Space-separated table with dash header separator. Default variant optimized for CLI tools.
-
 ### Scope
 
 - **Purpose**: Provide a space-separated table with dash header separator optimized for CLI tools.
@@ -15,7 +13,7 @@ Space-separated table with dash header separator. Default variant optimized for 
 |------|------|----------------|
 | source | `src/formatters/table.rs` | TableFormatter implementation |
 | test | `tests/table_styles_presets.rs` | Preset configuration and output tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 

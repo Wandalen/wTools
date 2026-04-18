@@ -1,7 +1,5 @@
 # Variant: HTML Bootstrap
 
-HTML table with Bootstrap 5 CSS classes for styled web display.
-
 ### Scope
 
 - **Purpose**: Provide an HTML table with Bootstrap 5 CSS classes for styled web display.
@@ -15,7 +13,7 @@ HTML table with Bootstrap 5 CSS classes for styled web display.
 |------|------|----------------|
 | source | `src/formatters/html.rs` | HtmlFormatter implementation |
 | test | `tests/html.rs` | HTML output tests |
-| doc | `../variant_attributes.md` | Attribute definitions for all variants |
+| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 
 ### Identity & Classification
 
