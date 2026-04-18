@@ -41,23 +41,9 @@ jobs :
     runs-on : ubuntu-latest
     steps :
       - name : Install stable toolchain
-        uses : Wandalen/wretry.action/main@master
-        with :
-          action : actions-rs/toolchain@v1
-          with : |
-            toolchain : stable
-            override : true
-          attempt_limit : 3
-          attempt_delay : 10000
+        uses : dtolnay/rust-toolchain@stable
       - name : Install nightly toolchain
-        uses : Wandalen/wretry.action/main@master
-        with :
-          action : actions-rs/toolchain@v1
-          with : |
-            toolchain : nightly
-            override : true
-          attempt_limit : 3
-          attempt_delay : 10000
+        uses : dtolnay/rust-toolchain@nightly
       - uses : actions/checkout@v4
       - name : Install willbe
         run : cargo +stable install willbe

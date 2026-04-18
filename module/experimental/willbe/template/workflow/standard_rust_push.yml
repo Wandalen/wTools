@@ -42,15 +42,9 @@ jobs :
     runs-on: ubuntu-latest
     steps:
       - name: Install latest nightly toolchain
-        uses: Wandalen/wretry.action/main@master
+        uses: dtolnay/rust-toolchain@nightly
         with:
-          action: actions-rs/toolchain@v1
-          with: |
-            toolchain : nightly
-            override : true
-            components : clippy
-          attempt_limit: 3
-          attempt_delay: 10000
+          components: clippy
       - uses: actions/checkout@v4
 
       - name: Install cargo-audit
@@ -151,23 +145,9 @@ jobs :
     runs-on : ${{ matrix.os }}
     steps :
       - name : Install latest stable toolchain
-        uses : Wandalen/wretry.action/main@master
-        with :
-          action : actions-rs/toolchain@v1
-          with : |
-            toolchain : stable
-            override : true
-          attempt_limit : 3
-          attempt_delay: 10000
-      - name: Install latest nightly toolchain
-        uses: Wandalen/wretry.action/main@master
-        with:
-          action: actions-rs/toolchain@v1
-          with: |
-            toolchain : nightly
-            override : true
-          attempt_limit: 3
-          attempt_delay: 10000
+        uses : dtolnay/rust-toolchain@stable
+      - name : Install latest nightly toolchain
+        uses : dtolnay/rust-toolchain@nightly
       - uses: actions/checkout@v4
       - name: Install will
         run: cargo +stable install willbe
