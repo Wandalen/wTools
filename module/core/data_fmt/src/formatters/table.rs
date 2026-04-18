@@ -521,7 +521,7 @@ impl TableFormatter
     else
     {
       // Single-line: render each cell with its color (ct.render() is safe — no internal \n)
-      let cells_rendered : Vec< String > = cells.iter().map( | ct | ct.render() ).collect();
+      let cells_rendered : Vec< String > = cells.iter().map( DecoratedText::render ).collect();
       self.format_single_line_row( output, &cells_rendered, column_widths, true );
     }
   }

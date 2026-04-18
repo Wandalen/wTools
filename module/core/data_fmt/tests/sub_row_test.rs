@@ -80,8 +80,8 @@ fn plain_output( view : &TableView ) -> String
 #[ test ]
 fn t01_add_row_no_detail()
 {
-  let view = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row( vec![ "Alice".into() ] )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row( vec![ DecoratedText::from( "Alice" ) ] )
     .build_view();
 
   let out = plain_output( &view );
@@ -99,8 +99,8 @@ fn t01_add_row_no_detail()
 #[ test ]
 fn t02_detail_some_text()
 {
-  let view = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "Alice".into() ], Some( "extra info".into() ) )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "Alice" ) ], Some( DecoratedText::from( "extra info" ) ) )
     .build_view();
 
   let out = plain_output( &view );
@@ -118,12 +118,12 @@ fn t02_detail_some_text()
 #[ test ]
 fn t03_detail_none_produces_no_line()
 {
-  let view_detail = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "Alice".into() ], None )
+  let view_detail = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "Alice" ) ], None )
     .build_view();
 
-  let view_plain = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row( vec![ "Alice".into() ] )
+  let view_plain = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row( vec![ DecoratedText::from( "Alice" ) ] )
     .build_view();
 
   let out_detail = plain_output( &view_detail );
@@ -139,8 +139,8 @@ fn t03_detail_none_produces_no_line()
 #[ test ]
 fn t04_empty_string_detail_suppressed()
 {
-  let view = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "Alice".into() ], Some( DecoratedText::from( "" ) ) )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "Alice" ) ], Some( DecoratedText::from( "" ) ) )
     .build_view();
 
   let out = plain_output( &view );
@@ -156,9 +156,9 @@ fn t04_empty_string_detail_suppressed()
 #[ test ]
 fn t05_mixed_detail_first_only()
 {
-  let view = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "Alice".into() ], Some( "detail-a".into() ) )
-    .add_row( vec![ "Bob".into() ] )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "Alice" ) ], Some( DecoratedText::from( "detail-a" ) ) )
+    .add_row( vec![ DecoratedText::from( "Bob" ) ] )
     .build_view();
 
   let out = plain_output( &view );
@@ -179,9 +179,9 @@ fn t05_mixed_detail_first_only()
 #[ test ]
 fn t06_both_rows_have_detail()
 {
-  let view = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "Alice".into() ], Some( "detail-a".into() ) )
-    .add_row_with_detail( vec![ "Bob".into() ], Some( "detail-b".into() ) )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "Alice" ) ], Some( DecoratedText::from( "detail-a" ) ) )
+    .add_row_with_detail( vec![ DecoratedText::from( "Bob" ) ], Some( DecoratedText::from( "detail-b" ) ) )
     .build_view();
 
   let out = plain_output( &view );
@@ -202,11 +202,11 @@ fn t06_both_rows_have_detail()
 #[ test ]
 fn t07_custom_indent()
 {
-  let view = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "Alice".into() ], Some( "note".into() ) )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "Alice" ) ], Some( DecoratedText::from( "note" ) ) )
     .build_view();
 
-  let cfg = TableConfig::plain().sub_row_indent( ">>> ".into() );
+  let cfg = TableConfig::plain().sub_row_indent( ">>> ".to_string() );
   let fmt = TableFormatter::with_config( cfg );
   let out = Format::format( &fmt, &view ).unwrap();
 
@@ -221,8 +221,8 @@ fn t07_custom_indent()
 #[ test ]
 fn t08_empty_indent_flush_left()
 {
-  let view = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "Alice".into() ], Some( "flush".into() ) )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "Alice" ) ], Some( DecoratedText::from( "flush" ) ) )
     .build_view();
 
   let cfg = TableConfig::plain().sub_row_indent( String::new() );
@@ -240,14 +240,14 @@ fn t08_empty_indent_flush_left()
 #[ test ]
 fn t09_sub_row_does_not_affect_column_widths()
 {
-  let view_no_detail = RowBuilder::new( vec![ "A".into() ] )
-    .add_row( vec![ "x".into() ] )
+  let view_no_detail = RowBuilder::new( vec![ DecoratedText::from( "A" ) ] )
+    .add_row( vec![ DecoratedText::from( "x" ) ] )
     .build_view();
 
-  let view_with_detail = RowBuilder::new( vec![ "A".into() ] )
+  let view_with_detail = RowBuilder::new( vec![ DecoratedText::from( "A" ) ] )
     .add_row_with_detail(
-      vec![ "x".into() ],
-      Some( "this is a very long detail that should not widen the column".into() ),
+      vec![ DecoratedText::from( "x" ) ],
+      Some( DecoratedText::from( "this is a very long detail that should not widen the column" ) ),
     )
     .build_view();
 
@@ -267,10 +267,10 @@ fn t09_sub_row_does_not_affect_column_widths()
 #[ test ]
 fn t10_ascii_grid_three_details()
 {
-  let view = RowBuilder::new( vec![ "Name".into(), "Val".into() ] )
-    .add_row_with_detail( vec![ "A".into(), "1".into() ], Some( "d1".into() ) )
-    .add_row_with_detail( vec![ "B".into(), "2".into() ], Some( "d2".into() ) )
-    .add_row_with_detail( vec![ "C".into(), "3".into() ], Some( "d3".into() ) )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ), DecoratedText::from( "Val" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "A" ), DecoratedText::from( "1" ) ], Some( DecoratedText::from( "d1" ) ) )
+    .add_row_with_detail( vec![ DecoratedText::from( "B" ), DecoratedText::from( "2" ) ], Some( DecoratedText::from( "d2" ) ) )
+    .add_row_with_detail( vec![ DecoratedText::from( "C" ), DecoratedText::from( "3" ) ], Some( DecoratedText::from( "d3" ) ) )
     .build_view();
 
   let cfg = TableConfig::bordered();
@@ -289,8 +289,8 @@ fn t10_ascii_grid_three_details()
 #[ test ]
 fn t11_unicode_box_with_detail()
 {
-  let view = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "Alice".into() ], Some( "unicode detail".into() ) )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "Alice" ) ], Some( DecoratedText::from( "unicode detail" ) ) )
     .build_view();
 
   let cfg = TableConfig::unicode_box();
@@ -312,8 +312,8 @@ fn t11_unicode_box_with_detail()
 #[ test ]
 fn t12_bordered_with_detail()
 {
-  let view = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "Alice".into() ], Some( "bordered detail".into() ) )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "Alice" ) ], Some( DecoratedText::from( "bordered detail" ) ) )
     .build_view();
 
   let cfg = TableConfig::bordered();
@@ -334,8 +334,8 @@ fn t12_bordered_with_detail()
 #[ test ]
 fn t13_multiline_cell_with_detail()
 {
-  let view = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "line1\nline2".into() ], Some( "after-multi".into() ) )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "line1\nline2" ) ], Some( DecoratedText::from( "after-multi" ) ) )
     .build_view();
 
   let out = plain_output( &view );
@@ -357,9 +357,9 @@ fn t13_multiline_cell_with_detail()
 fn t14_format_trait_path()
 {
   let view = TableView::with_details(
-    TableMetadata::new( vec![ "Col".into() ] ),
-    vec![ vec![ "val".into() ] ],
-    vec![ Some( "trait-path detail".into() ) ],
+    TableMetadata::new( vec![ DecoratedText::from( "Col" ) ] ),
+    vec![ vec![ DecoratedText::from( "val" ) ] ],
+    vec![ Some( DecoratedText::from( "trait-path detail" ) ) ],
   );
 
   let fmt = TableFormatter::with_config( TableConfig::plain() );
@@ -374,10 +374,10 @@ fn t14_format_trait_path()
 #[ test ]
 fn t15_mut_api_intermixed()
 {
-  let mut builder = RowBuilder::new( vec![ "Name".into() ] );
-  builder.add_row_mut( vec![ "Alice".into() ] );
-  builder.add_row_with_detail_mut( vec![ "Bob".into() ], Some( "mut-detail".into() ) );
-  builder.add_row_mut( vec![ "Carol".into() ] );
+  let mut builder = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] );
+  builder.add_row_mut( vec![ DecoratedText::from( "Alice" ) ] );
+  builder.add_row_with_detail_mut( vec![ DecoratedText::from( "Bob" ) ], Some( DecoratedText::from( "mut-detail" ) ) );
+  builder.add_row_mut( vec![ DecoratedText::from( "Carol" ) ] );
 
   let view = builder.build_view();
   let out = plain_output( &view );
@@ -398,10 +398,10 @@ fn t15_mut_api_intermixed()
 #[ test ]
 fn t16_build_view_row_details_vector()
 {
-  let view = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row( vec![ "A".into() ] )
-    .add_row_with_detail( vec![ "B".into() ], Some( "detail-b".into() ) )
-    .add_row_with_detail( vec![ "C".into() ], None )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row( vec![ DecoratedText::from( "A" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "B" ) ], Some( DecoratedText::from( "detail-b" ) ) )
+    .add_row_with_detail( vec![ DecoratedText::from( "C" ) ], None )
     .build_view();
 
   assert_eq!( view.row_details.len(), 3, "row_details must parallel rows" );
@@ -418,8 +418,8 @@ fn t16_build_view_row_details_vector()
 fn t17_table_view_new_backward_compat()
 {
   let view = TableView::new(
-    TableMetadata::new( vec![ "X".into() ] ),
-    vec![ vec![ "1".into() ] ],
+    TableMetadata::new( vec![ DecoratedText::from( "X" ) ] ),
+    vec![ vec![ DecoratedText::from( "1" ) ] ],
   );
 
   // row_details should be empty
@@ -438,8 +438,8 @@ fn t17_table_view_new_backward_compat()
 #[ test ]
 fn t18_single_row_with_detail()
 {
-  let view = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
-    .add_row_with_detail( vec![ "Alice".into(), "30".into() ], Some( "only row detail".into() ) )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ), DecoratedText::from( "Age" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "Alice" ), DecoratedText::from( "30" ) ], Some( DecoratedText::from( "only row detail" ) ) )
     .build_view();
 
   let out = plain_output( &view );
@@ -467,8 +467,8 @@ fn t18_single_row_with_detail()
 #[ test ]
 fn t19_multiline_detail_all_lines_indented()
 {
-  let view = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "Alice".into() ], Some( "line1\nline2\nline3".into() ) )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "Alice" ) ], Some( DecoratedText::from( "line1\nline2\nline3" ) ) )
     .build_view();
 
   let out = plain_output( &view );
@@ -490,9 +490,9 @@ fn t19_multiline_detail_all_lines_indented()
 #[ test ]
 fn t20_detail_not_colored_with_alternating_rows()
 {
-  let view = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "Alice".into() ], Some( "uncolored-detail".into() ) )
-    .add_row_with_detail( vec![ "Bob".into() ], Some( "uncolored-detail-2".into() ) )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "Alice" ) ], Some( DecoratedText::from( "uncolored-detail" ) ) )
+    .add_row_with_detail( vec![ DecoratedText::from( "Bob" ) ], Some( DecoratedText::from( "uncolored-detail-2" ) ) )
     .build_view();
 
   let cfg = TableConfig::plain()
@@ -521,9 +521,9 @@ fn t20_detail_not_colored_with_alternating_rows()
 #[ test ]
 fn t21_grid_detail_before_bottom_border()
 {
-  let view = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row( vec![ "Alice".into() ] )
-    .add_row_with_detail( vec![ "Bob".into() ], Some( "last-detail".into() ) )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row( vec![ DecoratedText::from( "Alice" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "Bob" ) ], Some( DecoratedText::from( "last-detail" ) ) )
     .build_view();
 
   let cfg = TableConfig::grid();
@@ -543,13 +543,13 @@ fn t21_grid_detail_before_bottom_border()
 fn t22_details_shorter_than_rows()
 {
   let view = TableView::with_details(
-    TableMetadata::new( vec![ "X".into() ] ),
+    TableMetadata::new( vec![ DecoratedText::from( "X" ) ] ),
     vec![
-      vec![ "A".into() ],
-      vec![ "B".into() ],
-      vec![ "C".into() ],
+      vec![ DecoratedText::from( "A" ) ],
+      vec![ DecoratedText::from( "B" ) ],
+      vec![ DecoratedText::from( "C" ) ],
     ],
-    vec![ Some( "only-first".into() ) ],
+    vec![ Some( DecoratedText::from( "only-first" ) ) ],
   );
 
   let out = plain_output( &view );
@@ -568,8 +568,8 @@ fn t22_details_shorter_than_rows()
 #[ test ]
 fn t23_whitespace_only_detail_rendered()
 {
-  let view = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "Alice".into() ], Some( "   ".into() ) )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "Alice" ) ], Some( DecoratedText::from( "   " ) ) )
     .build_view();
 
   let out = plain_output( &view );
@@ -589,12 +589,12 @@ fn t23_whitespace_only_detail_rendered()
 fn t24_details_longer_than_rows()
 {
   let view = TableView::with_details(
-    TableMetadata::new( vec![ "X".into() ] ),
-    vec![ vec![ "A".into() ] ],
+    TableMetadata::new( vec![ DecoratedText::from( "X" ) ] ),
+    vec![ vec![ DecoratedText::from( "A" ) ] ],
     vec![
-      Some( "d0".into() ),
-      Some( "d1-orphan".into() ),
-      Some( "d2-orphan".into() ),
+      Some( DecoratedText::from( "d0" ) ),
+      Some( DecoratedText::from( "d1-orphan" ) ),
+      Some( DecoratedText::from( "d2-orphan" ) ),
     ],
   );
 
@@ -612,8 +612,8 @@ fn t24_details_longer_than_rows()
 #[ test ]
 fn t25_csv_with_detail()
 {
-  let view = RowBuilder::new( vec![ "Name".into(), "Val".into() ] )
-    .add_row_with_detail( vec![ "Alice".into(), "1".into() ], Some( "csv-detail".into() ) )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ), DecoratedText::from( "Val" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "Alice" ), DecoratedText::from( "1" ) ], Some( DecoratedText::from( "csv-detail" ) ) )
     .build_view();
 
   let cfg = TableConfig::csv();
@@ -630,8 +630,8 @@ fn t25_csv_with_detail()
 #[ test ]
 fn t26_markdown_with_detail()
 {
-  let view = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "Alice".into() ], Some( "md-detail".into() ) )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "Alice" ) ], Some( DecoratedText::from( "md-detail" ) ) )
     .build_view();
 
   let cfg = TableConfig::markdown();
@@ -653,10 +653,10 @@ fn t26_markdown_with_detail()
 #[ test ]
 fn t27_multiline_color_detail_triple()
 {
-  let view = RowBuilder::new( vec![ "Name".into() ] )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
     .add_row_with_detail(
-      vec![ "line1\nline2".into() ],
-      Some( "triple-detail".into() ),
+      vec![ DecoratedText::from( "line1\nline2" ) ],
+      Some( DecoratedText::from( "triple-detail" ) ),
     )
     .build_view();
 
@@ -690,7 +690,7 @@ fn t27_multiline_color_detail_triple()
 fn t28_zero_rows_empty_details()
 {
   let view = TableView::with_details(
-    TableMetadata::new( vec![ "X".into() ] ),
+    TableMetadata::new( vec![ DecoratedText::from( "X" ) ] ),
     vec![],
     vec![],
   );
@@ -713,8 +713,8 @@ fn t29_colored_detail_ansi_codes()
 {
   let yellow = "\x1b[33m";
   let ct = DecoratedText::from( "colored-detail" ).with_color( yellow );
-  let view = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "Alice".into() ], Some( ct ) )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "Alice" ) ], Some( ct ) )
     .build_view();
 
   let out = plain_output( &view );
@@ -750,8 +750,8 @@ fn t30_colored_multiline_detail_per_line_ansi()
   let yellow = "\x1b[33m";
   let reset = "\x1b[0m";
   let ct = DecoratedText::from( "alpha\nbeta\ngamma" ).with_color( yellow );
-  let view = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "Alice".into() ], Some( ct ) )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "Alice" ) ], Some( ct ) )
     .build_view();
 
   let out = plain_output( &view );
@@ -788,8 +788,8 @@ fn t31_custom_indent_with_colored_detail()
   let indent = ">>> ";
   let ct = DecoratedText::from( "note" ).with_color( yellow );
   let config = TableConfig::plain().sub_row_indent( indent.to_string() );
-  let view = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "Alice".into() ], Some( ct ) )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "Alice" ) ], Some( ct ) )
     .build_view();
 
   let fmt = TableFormatter::with_config( config );
@@ -819,12 +819,12 @@ fn t31_custom_indent_with_colored_detail()
 #[ test ]
 fn t32_detail_trailing_newline_stripped()
 {
-  let view_with = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "Alice".into() ], Some( DecoratedText::from( "detail\n" ) ) )
+  let view_with = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "Alice" ) ], Some( DecoratedText::from( "detail\n" ) ) )
     .build_view();
 
-  let view_without = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "Alice".into() ], Some( DecoratedText::from( "detail" ) ) )
+  let view_without = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "Alice" ) ], Some( DecoratedText::from( "detail" ) ) )
     .build_view();
 
   assert_eq!(
@@ -849,8 +849,8 @@ fn t33_detail_only_newline_renders_blank_line()
   let ct = DecoratedText::from( "\n" );
   assert!( !ct.is_empty(), r#"DecoratedText::from("\n") must not be considered empty"# );
 
-  let view = RowBuilder::new( vec![ "Name".into() ] )
-    .add_row_with_detail( vec![ "Alice".into() ], Some( ct ) )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "Name" ) ] )
+    .add_row_with_detail( vec![ DecoratedText::from( "Alice" ) ], Some( ct ) )
     .build_view();
 
   let out = plain_output( &view );

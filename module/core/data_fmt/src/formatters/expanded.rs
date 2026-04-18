@@ -190,7 +190,7 @@ impl ExpandedFormatter
             // Apply color to key+separator (without trailing spaces) if enabled
             if self.config.colorize_keys && !self.config.key_color.is_empty()
             {
-              let key_with_sep = format!( "{}{}", key, sep_trimmed );
+              let key_with_sep = format!( "{key}{sep_trimmed}" );
               output.push_str( &DecoratedText::from( key_with_sep ).with_color( self.config.key_color.clone() ).render() );
             }
             else

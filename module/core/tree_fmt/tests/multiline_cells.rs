@@ -445,7 +445,7 @@ fn test_very_tall_cell()
   let content = lines.join( "\n" );
 
   let data = RowBuilder::new( vec![ "Tall".into() ] )
-    .add_row( vec![ content ] )
+    .add_row( vec![ content.into() ] )
     .build();
 
   let formatter = TableFormatter::new();

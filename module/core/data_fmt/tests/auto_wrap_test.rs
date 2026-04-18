@@ -17,16 +17,16 @@
 //! T21: Sub-row detail + wrapping
 //! T22: Format trait path (`build_view`)
 
-use data_fmt::{ RowBuilder, TableFormatter, TableConfig, ColumnFlex, Format };
+use data_fmt::{ RowBuilder, TableFormatter, TableConfig, ColumnFlex, Format, DecoratedText };
 
 // --- T01: Table fits naturally within 120 cols ---
 
 #[ test ]
 fn auto_wrap_natural_fit_no_wrapping()
 {
-  let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
-    .add_row( vec![ "Alice".into(), "30".into() ] )
-    .add_row( vec![ "Bob".into(), "25".into() ] )
+  let tree = RowBuilder::new( vec![ DecoratedText::from( "Name" ), DecoratedText::from( "Age" ) ] )
+    .add_row( vec![ DecoratedText::from( "Alice" ), DecoratedText::from( "30" ) ] )
+    .add_row( vec![ DecoratedText::from( "Bob" ), DecoratedText::from( "25" ) ] )
     .build();
 
   let fmt_wrap = TableFormatter::with_config(
@@ -47,8 +47,8 @@ fn auto_wrap_natural_fit_no_wrapping()
 fn auto_wrap_wraps_flex_column()
 {
   let long_path = "this/is/a/very/long/path/that/exceeds/the/terminal/width/significantly";
-  let tree = RowBuilder::new( vec![ "ID".into(), "Path".into() ] )
-    .add_row( vec![ "1".into(), long_path.into() ] )
+  let tree = RowBuilder::new( vec![ DecoratedText::from( "ID" ), DecoratedText::from( "Path" ) ] )
+    .add_row( vec![ DecoratedText::from( "1" ), long_path.into() ] )
     .build();
 
   let formatter = TableFormatter::with_config(
@@ -80,8 +80,8 @@ fn auto_wrap_wraps_flex_column()
 #[ test ]
 fn auto_wrap_all_fixed_no_wrapping()
 {
-  let tree = RowBuilder::new( vec![ "A".into(), "B".into(), "C".into() ] )
-    .add_row( vec![ "x".into(), "y".into(), "z".into() ] )
+  let tree = RowBuilder::new( vec![ DecoratedText::from( "A" ), DecoratedText::from( "B" ), DecoratedText::from( "C" ) ] )
+    .add_row( vec![ DecoratedText::from( "x" ), DecoratedText::from( "y" ), DecoratedText::from( "z" ) ] )
     .build();
 
   let formatter = TableFormatter::with_config(
@@ -101,8 +101,8 @@ fn auto_wrap_two_flex_columns_share_budget()
 {
   let long1 = "aaaa bbbb cccc dddd eeee ffff gggg hhhh";
   let long2 = "1111 2222 3333 4444 5555 6666 7777 8888";
-  let tree = RowBuilder::new( vec![ "ID".into(), "Col1".into(), "Col2".into() ] )
-    .add_row( vec![ "1".into(), long1.into(), long2.into() ] )
+  let tree = RowBuilder::new( vec![ DecoratedText::from( "ID" ), DecoratedText::from( "Col1" ), DecoratedText::from( "Col2" ) ] )
+    .add_row( vec![ DecoratedText::from( "1" ), long1.into(), long2.into() ] )
     .build();
 
   let formatter = TableFormatter::with_config(
@@ -124,7 +124,7 @@ fn auto_wrap_two_flex_columns_share_budget()
 fn auto_wrap_explicit_column_flex_override()
 {
   let long_content = "this is a long string that should wrap because it exceeds budget";
-  let tree = RowBuilder::new( vec![ "Col1".into(), "Col2".into(), "Col3".into() ] )
+  let tree = RowBuilder::new( vec![ DecoratedText::from( "Col1" ), DecoratedText::from( "Col2" ), DecoratedText::from( "Col3" ) ] )
     .add_row( vec![
       long_content.into(),
       long_content.into(),
@@ -153,8 +153,8 @@ fn auto_wrap_explicit_column_flex_override()
 fn auto_wrap_false_is_byte_identical()
 {
   let long_path = "this/is/a/very/long/path/that/definitely/exceeds/eighty/columns/wide";
-  let tree = RowBuilder::new( vec![ "ID".into(), "Path".into() ] )
-    .add_row( vec![ "1".into(), long_path.into() ] )
+  let tree = RowBuilder::new( vec![ DecoratedText::from( "ID" ), DecoratedText::from( "Path" ) ] )
+    .add_row( vec![ DecoratedText::from( "1" ), long_path.into() ] )
     .build();
 
   let fmt_disabled = TableFormatter::with_config(
@@ -179,8 +179,8 @@ fn auto_wrap_false_is_byte_identical()
 fn csv_preset_auto_disables_wrapping()
 {
   let long = "this,is,a,very,long,value,that,exceeds,terminal,width";
-  let tree = RowBuilder::new( vec![ "ID".into(), "Data".into() ] )
-    .add_row( vec![ "1".into(), long.into() ] )
+  let tree = RowBuilder::new( vec![ DecoratedText::from( "ID" ), DecoratedText::from( "Data" ) ] )
+    .add_row( vec![ DecoratedText::from( "1" ), long.into() ] )
     .build();
 
   let formatter = TableFormatter::with_config(
@@ -200,8 +200,8 @@ fn csv_preset_auto_disables_wrapping()
 fn tsv_preset_auto_disables_wrapping()
 {
   let long = "this\tvalue\tis\tvery\tlong\tand\texceeds\tterminal\twidth\tboundary";
-  let tree = RowBuilder::new( vec![ "ID".into(), "Data".into() ] )
-    .add_row( vec![ "1".into(), long.into() ] )
+  let tree = RowBuilder::new( vec![ DecoratedText::from( "ID" ), DecoratedText::from( "Data" ) ] )
+    .add_row( vec![ DecoratedText::from( "1" ), long.into() ] )
     .build();
 
   let formatter = TableFormatter::with_config(
@@ -220,8 +220,8 @@ fn tsv_preset_auto_disables_wrapping()
 fn auto_wrap_multiline_alignment()
 {
   let long = "alpha bravo charlie delta echo foxtrot golf hotel india";
-  let tree = RowBuilder::new( vec![ "ID".into(), "Description".into() ] )
-    .add_row( vec![ "1".into(), long.into() ] )
+  let tree = RowBuilder::new( vec![ DecoratedText::from( "ID" ), DecoratedText::from( "Description" ) ] )
+    .add_row( vec![ DecoratedText::from( "1" ), long.into() ] )
     .build();
 
   let formatter = TableFormatter::with_config(
@@ -249,8 +249,8 @@ fn auto_wrap_multiline_alignment()
 fn auto_wrap_ansi_colors_preserved()
 {
   let colored = "\x1b[32mgreen text that is quite long and should wrap at budget\x1b[0m";
-  let tree = RowBuilder::new( vec![ "ID".into(), "Status".into() ] )
-    .add_row( vec![ "1".into(), colored.into() ] )
+  let tree = RowBuilder::new( vec![ DecoratedText::from( "ID" ), DecoratedText::from( "Status" ) ] )
+    .add_row( vec![ DecoratedText::from( "1" ), colored.into() ] )
     .build();
 
   let formatter = TableFormatter::with_config(
@@ -274,8 +274,8 @@ fn auto_wrap_ansi_colors_preserved()
 fn auto_wrap_bordered_style()
 {
   let long = "bordered content that should wrap within the budget allocation";
-  let tree = RowBuilder::new( vec![ "ID".into(), "Content".into() ] )
-    .add_row( vec![ "1".into(), long.into() ] )
+  let tree = RowBuilder::new( vec![ DecoratedText::from( "ID" ), DecoratedText::from( "Content" ) ] )
+    .add_row( vec![ DecoratedText::from( "1" ), long.into() ] )
     .build();
 
   let formatter = TableFormatter::with_config(
@@ -304,8 +304,8 @@ fn auto_wrap_bordered_style()
 fn auto_wrap_unicode_box_style()
 {
   let long = "unicode box content that should wrap within the budget allocation";
-  let tree = RowBuilder::new( vec![ "ID".into(), "Content".into() ] )
-    .add_row( vec![ "1".into(), long.into() ] )
+  let tree = RowBuilder::new( vec![ DecoratedText::from( "ID" ), DecoratedText::from( "Content" ) ] )
+    .add_row( vec![ DecoratedText::from( "1" ), long.into() ] )
     .build();
 
   let formatter = TableFormatter::with_config(
@@ -332,8 +332,8 @@ fn auto_wrap_unicode_box_style()
 fn auto_wrap_with_existing_newlines()
 {
   let content_with_newline = "first line\nsecond line that is long enough to wrap at budget";
-  let tree = RowBuilder::new( vec![ "ID".into(), "Content".into() ] )
-    .add_row( vec![ "1".into(), content_with_newline.into() ] )
+  let tree = RowBuilder::new( vec![ DecoratedText::from( "ID" ), DecoratedText::from( "Content" ) ] )
+    .add_row( vec![ DecoratedText::from( "1" ), content_with_newline.into() ] )
     .build();
 
   let formatter = TableFormatter::with_config(
@@ -355,8 +355,8 @@ fn auto_wrap_with_existing_newlines()
 fn auto_wrap_min_column_width_wins()
 {
   let long = "content that should respect minimum column width setting";
-  let tree = RowBuilder::new( vec![ "ID".into(), "Data".into() ] )
-    .add_row( vec![ "1".into(), long.into() ] )
+  let tree = RowBuilder::new( vec![ DecoratedText::from( "ID" ), DecoratedText::from( "Data" ) ] )
+    .add_row( vec![ DecoratedText::from( "1" ), long.into() ] )
     .build();
 
   let formatter = TableFormatter::with_config(
@@ -384,8 +384,8 @@ fn auto_wrap_min_column_width_wins()
 fn auto_wrap_column_widths_override_bypass()
 {
   let long = "this should not be wrapped because column_widths is explicitly set";
-  let tree = RowBuilder::new( vec![ "ID".into(), "Data".into() ] )
-    .add_row( vec![ "1".into(), long.into() ] )
+  let tree = RowBuilder::new( vec![ DecoratedText::from( "ID" ), DecoratedText::from( "Data" ) ] )
+    .add_row( vec![ DecoratedText::from( "1" ), long.into() ] )
     .build();
 
   let fmt_override = TableFormatter::with_config(
@@ -413,8 +413,8 @@ fn auto_wrap_column_widths_override_bypass()
 fn auto_wrap_single_row()
 {
   let long = "single row content that must wrap at the budget boundary cleanly";
-  let tree = RowBuilder::new( vec![ "ID".into(), "Description".into() ] )
-    .add_row( vec![ "1".into(), long.into() ] )
+  let tree = RowBuilder::new( vec![ DecoratedText::from( "ID" ), DecoratedText::from( "Description" ) ] )
+    .add_row( vec![ DecoratedText::from( "1" ), long.into() ] )
     .build();
 
   let formatter = TableFormatter::with_config(
@@ -435,8 +435,8 @@ fn auto_wrap_single_row()
 fn auto_wrap_empty_table_headers_only()
 {
   let view = RowBuilder::new( vec![
-    "ID".into(),
-    "VeryLongHeaderName".into(),
+    DecoratedText::from( "ID" ),
+    DecoratedText::from( "VeryLongHeaderName" ),
   ] )
     .build_view();
 
@@ -455,8 +455,8 @@ fn auto_wrap_empty_table_headers_only()
 #[ test ]
 fn auto_wrap_terminal_width_zero()
 {
-  let tree = RowBuilder::new( vec![ "A".into(), "B".into() ] )
-    .add_row( vec![ "x".into(), "y".into() ] )
+  let tree = RowBuilder::new( vec![ DecoratedText::from( "A" ), DecoratedText::from( "B" ) ] )
+    .add_row( vec![ DecoratedText::from( "x" ), DecoratedText::from( "y" ) ] )
     .build();
 
   let formatter = TableFormatter::with_config(
@@ -474,9 +474,9 @@ fn auto_wrap_terminal_width_zero()
 fn auto_wrap_heuristic_short_is_fixed()
 {
   // All columns ≤ 12 chars → all Fixed → no wrapping even with tight terminal
-  let tree = RowBuilder::new( vec![ "ID".into(), "Name".into(), "Age".into() ] )
-    .add_row( vec![ "1".into(), "Alice".into(), "30".into() ] )
-    .add_row( vec![ "2".into(), "Bob".into(), "25".into() ] )
+  let tree = RowBuilder::new( vec![ DecoratedText::from( "ID" ), DecoratedText::from( "Name" ), DecoratedText::from( "Age" ) ] )
+    .add_row( vec![ DecoratedText::from( "1" ), DecoratedText::from( "Alice" ), DecoratedText::from( "30" ) ] )
+    .add_row( vec![ DecoratedText::from( "2" ), DecoratedText::from( "Bob" ), DecoratedText::from( "25" ) ] )
     .build();
 
   let fmt_wrap = TableFormatter::with_config(
@@ -500,8 +500,8 @@ fn auto_wrap_heuristic_short_is_fixed()
 fn auto_wrap_heuristic_long_is_flex()
 {
   let long = "this is definitely longer than twelve characters";
-  let tree = RowBuilder::new( vec![ "ID".into(), "Description".into() ] )
-    .add_row( vec![ "1".into(), long.into() ] )
+  let tree = RowBuilder::new( vec![ DecoratedText::from( "ID" ), DecoratedText::from( "Description" ) ] )
+    .add_row( vec![ DecoratedText::from( "1" ), long.into() ] )
     .build();
 
   let formatter = TableFormatter::with_config(
@@ -522,13 +522,13 @@ fn auto_wrap_heuristic_long_is_flex()
 #[ test ]
 fn auto_wrap_with_sub_row_detail()
 {
-  let view = RowBuilder::new( vec![ "ID".into(), "Description".into() ] )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "ID" ), DecoratedText::from( "Description" ) ] )
     .add_row_with_detail(
       vec![
-        "1".into(),
-        "a long description that should wrap at the budget boundary properly".into(),
+        DecoratedText::from( "1" ),
+        DecoratedText::from( "a long description that should wrap at the budget boundary properly" ),
       ],
-      Some( "detail: additional info here".into() ),
+      Some( DecoratedText::from( "detail: additional info here" ) ),
     )
     .build_view();
 
@@ -555,8 +555,8 @@ fn auto_wrap_with_sub_row_detail()
 fn auto_wrap_format_trait_path()
 {
   let long = "format trait path content that must wrap at the terminal budget boundary";
-  let view = RowBuilder::new( vec![ "ID".into(), "Content".into() ] )
-    .add_row( vec![ "1".into(), long.into() ] )
+  let view = RowBuilder::new( vec![ DecoratedText::from( "ID" ), DecoratedText::from( "Content" ) ] )
+    .add_row( vec![ DecoratedText::from( "1" ), long.into() ] )
     .build_view();
 
   let formatter = TableFormatter::with_config(

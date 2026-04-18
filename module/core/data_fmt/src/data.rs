@@ -97,7 +97,7 @@ impl ColumnData
   /// ```
   pub fn new( columns : Vec< String > ) -> Self
   {
-    Self { columns : columns.into_iter().map( | s | DecoratedText::from( s ) ).collect() }
+    Self { columns : columns.into_iter().map( DecoratedText::from ).collect() }
   }
 
   /// Create column data from key-value pairs
@@ -148,7 +148,7 @@ impl std::fmt::Display for ColumnData
 {
   fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
   {
-    let rendered : Vec< String > = self.columns.iter().map( | c | c.render() ).collect();
+    let rendered : Vec< String > = self.columns.iter().map( DecoratedText::render ).collect();
     write!( f, "{}", rendered.join( " | " ) )
   }
 }

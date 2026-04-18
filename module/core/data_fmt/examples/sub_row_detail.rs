@@ -20,20 +20,20 @@ fn main()
   println!( "-- Basic: mixed detail --" );
 
   let view = RowBuilder::new( vec![
-    "Service".into(),
-    "Status".into(),
-    "Latency".into(),
+    DecoratedText::from( "Service" ),
+    DecoratedText::from( "Status" ),
+    DecoratedText::from( "Latency" ),
   ])
   .add_row_with_detail(
-    vec![ "auth".into(), "ERROR".into(), "n/a".into() ],
-    Some( "connection refused: 10.0.1.5:5432".into() ),
+    vec![ DecoratedText::from( "auth" ), DecoratedText::from( "ERROR" ), DecoratedText::from( "n/a" ) ],
+    Some( DecoratedText::from( "connection refused: 10.0.1.5:5432" ) ),
   )
-  .add_row(    vec![ "api-gw".into(),  "OK".into(), "12ms".into() ] )
+  .add_row(    vec![ DecoratedText::from( "api-gw" ),  DecoratedText::from( "OK" ), DecoratedText::from( "12ms" ) ] )
   .add_row_with_detail(
-    vec![ "worker".into(), "WARN".into(),  "340ms".into() ],
-    Some( "queue depth 4 821 — consider scaling".into() ),
+    vec![ DecoratedText::from( "worker" ), DecoratedText::from( "WARN" ),  DecoratedText::from( "340ms" ) ],
+    Some( DecoratedText::from( "queue depth 4 821 — consider scaling" ) ),
   )
-  .add_row(    vec![ "cache".into(),   "OK".into(), "1ms".into() ] )
+  .add_row(    vec![ DecoratedText::from( "cache" ),   DecoratedText::from( "OK" ), DecoratedText::from( "1ms" ) ] )
   .build_view();
 
   println!( "{}", Format::format( &fmt, &view ).unwrap() );
@@ -42,18 +42,18 @@ fn main()
 
   println!( "-- All rows annotated --" );
 
-  let view2 = RowBuilder::new( vec![ "File".into(), "Result".into() ] )
+  let view2 = RowBuilder::new( vec![ DecoratedText::from( "File" ), DecoratedText::from( "Result" ) ] )
   .add_row_with_detail(
-    vec![ "main.rs".into(),   "ok".into() ],
-    Some( "compiled in 0.4s".into() ),
+    vec![ DecoratedText::from( "main.rs" ),   DecoratedText::from( "ok" ) ],
+    Some( DecoratedText::from( "compiled in 0.4s" ) ),
   )
   .add_row_with_detail(
-    vec![ "parser.rs".into(), "FAIL".into() ],
-    Some( "error[E0308] mismatched types at line 42".into() ),
+    vec![ DecoratedText::from( "parser.rs" ), DecoratedText::from( "FAIL" ) ],
+    Some( DecoratedText::from( "error[E0308] mismatched types at line 42" ) ),
   )
   .add_row_with_detail(
-    vec![ "tests.rs".into(),  "ok".into() ],
-    Some( "3 tests passed".into() ),
+    vec![ DecoratedText::from( "tests.rs" ),  DecoratedText::from( "ok" ) ],
+    Some( DecoratedText::from( "3 tests passed" ) ),
   )
   .build_view();
 
@@ -63,9 +63,9 @@ fn main()
 
   println!( "-- No details (normal table, feature transparent) --" );
 
-  let view3 = RowBuilder::new( vec![ "Name".into(), "Score".into() ] )
-  .add_row( vec![ "Alice".into(), "92".into() ] )
-  .add_row( vec![ "Bob".into(),   "78".into() ] )
+  let view3 = RowBuilder::new( vec![ DecoratedText::from( "Name" ), DecoratedText::from( "Score" ) ] )
+  .add_row( vec![ DecoratedText::from( "Alice" ), DecoratedText::from( "92" ) ] )
+  .add_row( vec![ DecoratedText::from( "Bob" ),   DecoratedText::from( "78" ) ] )
   .build_view();
 
   println!( "{}", Format::format( &fmt, &view3 ).unwrap() );
@@ -77,16 +77,16 @@ fn main()
   let red    = "\x1b[31m";
   let yellow = "\x1b[33m";
 
-  let view4 = RowBuilder::new( vec![ "Service".into(), "Status".into() ] )
+  let view4 = RowBuilder::new( vec![ DecoratedText::from( "Service" ), DecoratedText::from( "Status" ) ] )
   .add_row_with_detail(
-    vec![ "auth".into(), "ERROR".into() ],
+    vec![ DecoratedText::from( "auth" ), DecoratedText::from( "ERROR" ) ],
     Some( DecoratedText::from( "connection refused: 10.0.1.5:5432" ).with_color( red ) ),
   )
   .add_row(
-    vec![ "api-gw".into(), "OK".into() ],
+    vec![ DecoratedText::from( "api-gw" ), DecoratedText::from( "OK" ) ],
   )
   .add_row_with_detail(
-    vec![ "worker".into(), "WARN".into() ],
+    vec![ DecoratedText::from( "worker" ), DecoratedText::from( "WARN" ) ],
     Some( DecoratedText::from( "queue depth 4821 — consider scaling" ).with_color( yellow ) ),
   )
   .build_view();
