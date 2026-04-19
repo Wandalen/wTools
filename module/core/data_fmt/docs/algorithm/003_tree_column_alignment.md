@@ -14,6 +14,10 @@
 | source | `src/formatters/tree.rs` | TreeFormatter column alignment |
 | test | `tests/aligned_tree_basic.rs` | Tree alignment test suite |
 
+### Abstract
+
+A two-phase algorithm for rendering tree nodes with multi-column data so that columns align vertically across all tree depths. Phase 1 traverses the tree depth-first, measuring the maximum effective width per column and accounting for variable-length tree prefix symbols at each depth. Phase 2 re-traverses the tree, rendering each node using the measured widths to produce aligned column output.
+
 ### Source Location
 
 `src/formatters/tree.rs` — `format_aligned()` (lines 255-295) orchestrates the two phases. Phase 1: `calculate_column_widths()` (lines 298-317) + `traverse_for_widths()` (lines 320-368). Phase 2: `format_aligned_node()` (lines 388-492).

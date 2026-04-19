@@ -1,4 +1,4 @@
-//! Integration tests for LogfmtFormatter
+//! Integration tests for `LogfmtFormatter`
 //!
 //! ## What This Tests
 //!
@@ -23,17 +23,17 @@
 //!
 //! ## Critical Test Cases
 //!
-//! ### Escaping Spaces (test_logfmt_escaping_spaces)
+//! ### Escaping Spaces (`test_logfmt_escaping_spaces`)
 //! Values with spaces must be quoted:
 //! - Input: `msg` = `"hello world"`
 //! - Output: `msg="hello world"`
 //!
-//! ### Escaping Quotes (test_logfmt_escaping_quotes)
+//! ### Escaping Quotes (`test_logfmt_escaping_quotes`)
 //! Quotes must be backslash-escaped:
 //! - Input: `msg` = `say "hello"`
 //! - Output: `msg="say \"hello\""`
 //!
-//! ### Escaping Newlines (test_logfmt_newlines)
+//! ### Escaping Newlines (`test_logfmt_newlines`)
 //! Newlines replaced with literal \n:
 //! - Input: `msg` = `"line1\nline2"`
 //! - Output: `msg="line1\nline2"`

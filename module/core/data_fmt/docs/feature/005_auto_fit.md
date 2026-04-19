@@ -11,7 +11,7 @@
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/formatters/table.rs` | Auto-wrap budget allocation and fold rendering |
+| source | `src/formatters/table/mod.rs` | Auto-wrap budget allocation and fold rendering |
 | source | `src/config.rs` | ColumnFlex, FoldStyle enums; auto-fit TableConfig fields |
 | source | `src/wrap.rs` | WrapFormatter for cell wrapping |
 | test | `tests/auto_wrap_test.rs` | Auto-wrap test suite (22 cases) |
@@ -23,17 +23,19 @@
 | doc | `../invariant/004_column_fold_invariants.md` | Fold behavioral invariants |
 | doc | `../api/003_config_types.md` | TableConfig field reference and builder API |
 
-### Related Tasks
+### Design
+
+#### Related Tasks
 
 - [`task/019`](../../task/019_cell_auto_wrapping_with_budget_allocation.md) — Auto-wrap implementation task
 - [`task/020`](../../task/020_column_folding_with_auto_fold.md) — Column folding implementation task
 - [`task/021`](../../task/021_terminal_width_detection_tests.md) — Terminal detection test task
 
-### Motivation
+#### Motivation
 
 CLI tables with long path or description columns overflow standard 80/120-column terminals. Before auto-fit, callers had three poor options: truncate (loses information), add a wide column (overflows), or manually pre-process strings. Auto-fit solves this at the formatter level.
 
-### Strategies
+#### Strategies
 
 #### Strategy 2 — Cell Auto-Wrapping
 
@@ -74,7 +76,7 @@ b1  governance.rulebook.md  120    23
           governance.rulebook.md
 ```
 
-### Default Rendering Pipeline
+#### Default Rendering Pipeline
 
 Current pipeline (both strategies implemented):
 
@@ -86,7 +88,7 @@ Current pipeline (both strategies implemented):
 6. Strategy 1 (✅): If total still exceeds terminal — fold overflow columns to continuation lines
 7. Render combined result
 
-### Column Classification
+#### Column Classification
 
 Each column is classified as `Fixed` or `Flex`:
 
@@ -97,7 +99,7 @@ Each column is classified as `Fixed` or `Flex`:
 
 Auto-classification applies when `column_flex` is empty (default). Callers can override with explicit `ColumnFlex` assignments per column.
 
-### Terminal Width Detection
+#### Terminal Width Detection
 
 The auto-fit pipeline begins by resolving the effective terminal width. The `resolve_terminal_width()` method uses a three-tier fallback:
 
@@ -140,7 +142,7 @@ When neither Tier 1 nor Tier 2 produces a width, the formatter uses **120 column
 | Libraries producing strings | Tier 1 or Tier 3: caller decides width; no TTY assumption |
 | CI/CD log output | Tier 3: 120 column fallback is usually appropriate |
 
-### Configuration
+#### Configuration
 
 All fields have sensible defaults — auto-fit works without any configuration.
 
@@ -167,7 +169,7 @@ let config = TableConfig::plain().auto_fold( false );
 let config = TableConfig::plain().auto_wrap( false ).auto_fold( false );
 ```
 
-### Progressive Degradation
+#### Progressive Degradation
 
 Strategy 2 (✅ implemented); Strategy 1 (✅ implemented).
 
@@ -178,7 +180,7 @@ Strategy 2 (✅ implemented); Strategy 1 (✅ implemented).
 | Still overflows after wrapping | wraps remaining | folds overflow cols | Continuation lines with wrapped values |
 | Both disabled | — | — | Unlimited width (pre-auto-fit behavior) |
 
-### Interaction with Existing Features
+#### Interaction with Existing Features
 
 - **Column truncation** (`max_column_width`): When `auto_wrap` is true and `ColumnOverflow::Wrap` applies, wrapping takes precedence over truncation for flex columns. Fixed columns and explicit `ColumnOverflow::Truncate` still truncate.
 - **Multiline cells**: Auto-wrapped cells produce multiline output via the same pipeline as manual `\n` cells.
@@ -186,7 +188,7 @@ Strategy 2 (✅ implemented); Strategy 1 (✅ implemented).
 - **ANSI coloring**: Wrapped and folded lines respect the per-line color/reset algorithm (no ANSI bleed).
 - **CSV/TSV**: Auto-fit is automatically disabled for `csv()` and `tsv()` presets (data formats must not wrap or fold).
 
-### See Also
+#### See Also
 
 - `table_formatting.md` — base table features (multiline cells, truncation, coloring, sub-rows)
 - `../api/config_types.md § TableConfig` — field reference and builder API

@@ -16,121 +16,38 @@
 | doc | `../builder/001_row_builder.md` | RowBuilder construction patterns |
 | doc | `../builder/002_tree_builder.md` | TreeBuilder construction patterns |
 
-### RowBuilder
+### Abstract
 
-Fluent builder for constructing table-shaped trees from header + row data.
+Three builder types and two conversion functions form the construction API. `RowBuilder` assembles tabular data row by row from headers and string values, producing either `TableView` (modern path) or `TreeNode< String >` (legacy path). `TreeBuilder< T >` assembles hierarchical trees from path-based insertions, creating intermediate directory nodes automatically. `FlattenConfig` and the `flatten_to_table_tree` functions convert a hierarchical `TreeNode< T >` into a flat table-shaped tree, extracting path, name, depth, and data as columns.
 
-```rust
-pub struct RowBuilder
-{
-  root : TreeNode< String >,
-  headers : Vec< String >,
-  row_count : usize,
-  rows : Vec< Vec< String > >,
-  row_details : Vec< Option< String > >,
-}
+### Operations
 
-impl RowBuilder
-{
-  pub fn new( headers : Vec< String > ) -> Self;
+#### RowBuilder
 
-  // Fluent API (consuming self, chainable)
-  #[ must_use ]
-  pub fn add_row( self, row : Vec< String > ) -> Self;
-  #[ must_use ]
-  pub fn add_row_with_name( self, row_name : String, row : Vec< String > ) -> Self;
-  #[ must_use ]
-  pub fn add_row_with_detail( self, row : Vec< String >, detail : Option< String > ) -> Self;
+Fluent and mutable builder for constructing table-shaped data from headers and rows. Initialized with `RowBuilder::new( headers : Vec< String > )`.
 
-  // Mutable API (for programmatic / loop-based construction)
-  pub fn add_row_mut( &mut self, row : Vec< String > );
-  pub fn add_row_with_name_mut( &mut self, row_name : String, row : Vec< String > );
-  pub fn add_row_with_detail_mut( &mut self, row : Vec< String >, detail : Option< String > );
+**Fluent API** (consuming self, chainable): `add_row( row )`, `add_row_with_name( name, row )`, `add_row_with_detail( row, detail )`. All are `#[ must_use ]`.
 
-  // Terminal operations
-  pub fn build( self ) -> TreeNode< String >;
-  pub fn build_view( self ) -> TableView;
-}
-```
+**Mutable API** (for loop-based construction): `add_row_mut( &mut self, row )`, `add_row_with_name_mut( &mut self, name, row )`, `add_row_with_detail_mut( &mut self, row, detail )`.
 
-- **Invariant**: All rows must have length equal to `headers.len()`.
-- **Invariant**: `rows` and `row_details` vectors are always parallel (same length).
-- `build()` returns a `TreeNode< String >` for use with visual formatters.
-- `build_view()` returns a `TableView` for use with the unified `Format` trait.
+**Terminal operations**: `build_view( self ) -> TableView` (modern path; use with `Format` trait) and `build( self ) -> TreeNode< String >` (legacy path; use with `TableShapedFormatter`).
 
-### TreeBuilder< T >
+#### TreeBuilder< T >
 
-Path-based tree construction. Intermediate directory nodes are created automatically.
+Path-based tree constructor. Initialized with `TreeBuilder::new( root_name )`. `insert( self, path : &[ &str ], data : T ) -> Self` traverses or creates intermediate directory nodes and places `data` at the leaf. `from_items< I, P >( root_name, items : I ) -> Self` batch-constructs from an iterator of `( path, data )` pairs (requires `T : Clone`). Terminal operation: `build( self ) -> TreeNode< T >`.
 
-```rust
-pub struct TreeBuilder< T >
-{
-  root : TreeNode< T >,
-}
+#### FlattenConfig
 
-impl< T > TreeBuilder< T >
-{
-  pub fn new( root_name : impl Into< String > ) -> Self;
-  pub fn insert( self, path : &[ &str ], data : T ) -> Self;
-  pub fn build( self ) -> TreeNode< T >;
-}
+Configuration for which columns to include when flattening a hierarchical tree to a table-shaped tree. Boolean fields `include_path`, `include_name`, `include_depth`, `include_data` control column inclusion (all default to `true`). Optional `column_names` tuple overrides the default column name strings `"path"`, `"name"`, `"depth"`, `"data"`. All builder setters are `#[ must_use ]` and return `Self`.
 
-impl< T : Clone > TreeBuilder< T >
-{
-  pub fn from_items< I, P >( root_name : impl Into< String >, items : I ) -> Self
-  where
-    I : IntoIterator< Item = ( P, T ) >,
-    P : AsRef< [ String ] >;
-}
-```
+#### Flatten Functions
 
-- `insert` splits the path into components, traverses/creates intermediate nodes, and places `data` at the leaf.
-- `from_items` batch-constructs from an iterator of `( path, data )` pairs.
+`flatten_to_table_tree< T : Display >( tree : &TreeNode< T > ) -> TreeNode< String >` produces a table-shaped tree with four default columns. `flatten_to_table_tree_with_config< T : Display >( tree, config : &FlattenConfig ) -> TreeNode< String >` applies a `FlattenConfig` to control column inclusion and naming. Both perform a DFS traversal emitting one row per node.
 
-### FlattenConfig
+### Error Handling
 
-Configuration for `flatten_to_table_tree` column selection and naming.
+Builder construction does not return `Result`. `RowBuilder` panics if a row's length does not equal `headers.len()`. `TreeBuilder::insert` with an empty path slice inserts directly at the root. Flatten functions propagate no errors; `Display` conversion is infallible.
 
-```rust
-pub struct FlattenConfig
-{
-  pub include_path : bool,
-  pub include_name : bool,
-  pub include_depth : bool,
-  pub include_data : bool,
-  pub column_names : Option< ( String, String, String, String ) >,
-}
+### Compatibility Guarantees
 
-impl FlattenConfig
-{
-  pub fn new() -> Self;
-
-  #[ must_use ]
-  pub fn include_path( self, include : bool ) -> Self;
-  #[ must_use ]
-  pub fn include_name( self, include : bool ) -> Self;
-  #[ must_use ]
-  pub fn include_depth( self, include : bool ) -> Self;
-  #[ must_use ]
-  pub fn include_data( self, include : bool ) -> Self;
-  #[ must_use ]
-  pub fn column_names( self, path : String, name : String, depth : String, data : String ) -> Self;
-}
-```
-
-Defaults: all four columns included, names = `"path"`, `"name"`, `"depth"`, `"data"`.
-
-### Flatten Functions
-
-```rust
-/// Flatten hierarchical tree to table-shaped tree with default columns
-pub fn flatten_to_table_tree< T : Display >( tree : &TreeNode< T > ) -> TreeNode< String >;
-
-/// Flatten with custom column selection and naming
-pub fn flatten_to_table_tree_with_config< T : Display >(
-  tree : &TreeNode< T >,
-  config : &FlattenConfig,
-) -> TreeNode< String >;
-```
-
-DFS traversal produces one row per node with columns: path, name, depth, data (configurable via `FlattenConfig`).
+`RowBuilder::build()` and `RowBuilder::build_view()` are both stable and present; callers can migrate incrementally from the legacy `build()` path to `build_view()` without removing existing code. The fluent and mutable APIs are additive — callers using `add_row` continue working after new `add_row_with_detail` methods were introduced. `FlattenConfig` defaults all fields to `true` for maximum column inclusion; new optional columns added in future versions will also default to `true`.

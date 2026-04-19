@@ -14,11 +14,13 @@
 | source | `../architecture.md` | Original combined architecture document (retained per migration rules) |
 | doc | `../invariant/001_data_model.md` | Invariants derived from these principles |
 
-### Description
+### Problem
 
-These principles were established at library inception to ensure the design remains coherent as new formatters and features are added. Each principle constrains a specific design dimension. Decisions that would violate any principle require explicit documentation of the trade-off.
+Without an explicit set of governing principles, individual design decisions accumulate inconsistently. New formatters, features, or dependencies get added without accounting for their effect on the overall system. Over time, the library loses coherence: some formatters have dependencies while others claim to be zero-cost, some APIs are flexible while others are rigid, and callers face an unpredictable surface.
 
-### Structure
+### Solution
+
+Eleven named principles constrain specific design dimensions. Each principle governs a distinct aspect: data model uniformity, API unification, feature granularity, dependency minimization, genericity, ANSI handling, output flexibility, ergonomic construction, and modular code structure.
 
 | # | Principle | Scope |
 |---|-----------|-------|
@@ -34,9 +36,13 @@ These principles were established at library inception to ensure the design rema
 | 10 | **Helper Traits** — ergonomic builders and traits for table-shaped trees | Builders layer |
 | 11 | **Modular Architecture** — separated concerns across 16 source modules | Code structure |
 
-### Rationale
+### Applicability
 
-Principles 1 and 5 (Single Data Structure + Mutual Replaceability) together enforce that no formatter receives a data type it cannot handle, keeping the API surface minimal. Principles 4 and 6 (Granular Features + Minimal Dependencies) ensure users pay only for what they enable. Principle 8 (ANSI-Aware) is non-negotiable for terminal-facing output where naive string length breaks column alignment.
+Invoke these principles when evaluating new feature proposals, choosing between design alternatives, or deciding whether to accept a trade-off. Any proposed change that would violate a principle requires explicit documentation of the trade-off accepted and why the benefit outweighs the cost.
+
+### Consequences
+
+Principles 1 and 5 (Single Data Structure + Mutual Replaceability) together enforce that no formatter receives a data type it cannot handle, keeping the API surface minimal. Principles 4 and 6 (Granular Features + Minimal Dependencies) ensure users pay only for what they enable. Principle 8 (ANSI-Aware) is non-negotiable for terminal-facing output where naive string length breaks column alignment. Decisions that violate any principle must be explicitly documented.
 
 ### Sources
 

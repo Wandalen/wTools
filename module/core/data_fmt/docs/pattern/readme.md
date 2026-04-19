@@ -7,24 +7,6 @@
 - **In Scope**: Three-layer architecture, design principles, formatter design, config builder pattern.
 - **Out of Scope**: API signatures (see `api/`), behavioral contracts (see `invariant/`), algorithm pseudocode (see `algorithm/`).
 
-### Type-Specific Requirements
-
-Every pattern doc instance must contain these sections in order:
-
-| Section | Heading | Required Content |
-|---------|---------|--------------------|
-| Scope | `### Scope` | 4 bullets: Purpose / Responsibility / In Scope / Out of Scope |
-| Cross-References | `### Cross-References` | Table: Type / File / Responsibility |
-| Description | `### Description` | Narrative overview of the pattern and its motivation |
-| Structure | `### Structure` | Diagram, pseudocode, or structured description of the pattern components |
-| Rationale | `### Rationale` | Why this pattern was chosen over alternatives |
-
-### Files
-
-| File | Responsibility |
-|------|----------------|
-| `procedure.md` | Instance creation and deprecation procedure |
-
 ### Overview Table
 
 | ID | Name | Purpose | Status |

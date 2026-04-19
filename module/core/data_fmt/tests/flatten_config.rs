@@ -1,4 +1,4 @@
-//! Tests for FlattenConfig functionality
+//! Tests for `FlattenConfig` functionality
 
 #![ cfg( feature = "enabled" ) ]
 

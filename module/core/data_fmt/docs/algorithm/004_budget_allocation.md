@@ -11,11 +11,15 @@
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/formatters/table.rs` | `classify_columns`, `compute_column_budgets` |
+| source | `src/formatters/table/mod.rs` | `classify_columns`, `compute_column_budgets` |
 | source | `src/config.rs` | `ColumnFlex` enum, `terminal_width` field |
 | test | `tests/auto_wrap_test.rs` | Budget allocation test scenarios (T02–T05, T14–T15) |
 | doc | `../feature/005_auto_fit.md` | Auto-fit feature overview and pipeline |
 | doc | `../api/003_config_types.md` | `ColumnFlex`, `TableConfig` field reference |
+
+### Abstract
+
+An O(C) algorithm that distributes available terminal width among table columns so flex columns receive a wrapping budget. Fixed columns (narrow content, max cell width ≤ 12) retain their natural width. Flex columns (wide content) share the remaining budget equally, with remainder characters distributed left-to-right. No flex column is expanded beyond its natural content width.
 
 ### Related Tasks
 

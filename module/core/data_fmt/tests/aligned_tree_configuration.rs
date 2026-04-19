@@ -1,8 +1,8 @@
-//! Configuration tests for TreeFormatter aligned tree functionality
+//! Configuration tests for `TreeFormatter` aligned tree functionality
 //!
 //! ## What This Tests
 //!
-//! Tests that TreeConfig options properly affect aligned tree output:
+//! Tests that `TreeConfig` options properly affect aligned tree output:
 //! - `column_separator` - Spacing between columns (default: 2 spaces)
 //! - `min_column_width` - Minimum width enforcement per column
 //! - `show_root` - Root node visibility toggle
@@ -21,7 +21,7 @@
 //! - Reports: Wider spacing for readability (pipe separator)
 //! - Narrow terminals: Minimum width constraints prevent wrapping
 //!
-//! Split from tests/aligned_tree.rs in v0.4.0 compliance cleanup.
+//! Split from `tests/aligned_tree.rs` in v0.4.0 compliance cleanup.
 
 #![ cfg( feature = "enabled" ) ]
 
@@ -117,7 +117,7 @@ fn test_aligned_tree_min_column_width()
 
   // With min width of 10, there should be significant spacing
   let lines : Vec< &str > = output.lines().collect();
-  let data_line = lines.iter().find( | l | l.contains( "a" ) ).unwrap();
+  let data_line = lines.iter().find( | l | l.contains( 'a' ) ).unwrap();
 
   // Check that line is longer than it would be without min width
   assert!( data_line.len() > 15 ); // "├──a" + spacing + "b" + spacing

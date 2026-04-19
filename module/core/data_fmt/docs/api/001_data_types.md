@@ -16,151 +16,44 @@
 | doc | `../input_type/001_table_view.md` | TableView type details |
 | doc | `../input_type/002_tree_node.md` | TreeNode type details |
 
-### TreeNode< T >
+### Abstract
 
-Universal hierarchical data structure. All formatters consume this type.
+The core data layer consists of five types and one extraction trait. `TreeNode< T >` is the universal hierarchical container for both tree-structured and tabular data. `TableView` is the canonical flat representation consumed by all `Format`-trait formatters. `TableMetadata` carries column names and type classifications alongside a `TableView`. `ColumnData` wraps multi-column values for use with aligned tree rendering. `TreeSymbols` customizes box-drawing characters for tree output. The `TableShapedView` trait provides generic extraction of headers and rows from any `TreeNode< T : Display >`.
 
-```rust
-#[ derive( Debug, Clone ) ]
-pub struct TreeNode< T >
-{
-  pub name : String,
-  pub data : Option< T >,
-  pub children : Vec< TreeNode< T > >,
-}
+### Operations
 
-impl< T > TreeNode< T >
-{
-  pub const fn new( name : String, data : Option< T > ) -> Self;
-}
-```
+#### TreeNode< T >
 
-- **Invariant**: Directory nodes have `data = None`, leaf nodes have `data = Some( T )`.
-- **Generic**: Works with any `T`. Use `T : Display` for conversion utilities.
+A generic tree node with three public fields: `name : String` (node label), `data : Option< T >` (leaf payload; `None` for directory nodes, `Some( T )` for data-bearing leaf nodes), and `children : Vec< TreeNode< T > >` (child nodes). Constructed via `TreeNode::new( name, data )`. Generic over any `T`; use `T : Display` to enable `TableShapedView` extraction and `TableView` conversion.
 
-### TableView
+#### TableView
 
-Canonical data format for the unified `Format` trait. All formatters accept `&TableView`.
+The canonical interchange format for the `Format` trait. Holds `metadata : TableMetadata`, `rows : Vec< Vec< String > >`, and `row_details : Vec< Option< DecoratedText > >`. The primary construction path is `RowBuilder::build_view()`. Two direct constructors exist for advanced use: `TableView::new( metadata, rows )` (defaults `row_details` to empty) and `TableView::with_details( metadata, rows, row_details )` (explicit parallel vector). Converts back to `TreeNode< Vec< String > >` via `TableView::to_tree_node()` for visual formatters that predate the `Format` trait.
 
-```rust
-#[ derive( Debug, Clone ) ]
-pub struct TableView
-{
-  pub metadata : TableMetadata,
-  pub rows : Vec< Vec< String > >,
-  pub row_details : Vec< Option< DecoratedText > >,
-}
+#### TableMetadata
 
-impl TableView
-{
-  pub fn new( metadata : TableMetadata, rows : Vec< Vec< String > > ) -> Self;
-  pub fn with_details(
-    metadata : TableMetadata,
-    rows : Vec< Vec< String > >,
-    row_details : Vec< Option< DecoratedText > >,
-  ) -> Self;
-  pub fn to_tree_node( &self ) -> TreeNode< Vec< String > >;
-}
-```
+Semantic column metadata carried alongside a `TableView`. Holds `column_names : Vec< String >` and `column_types : Vec< DataType >`. Two constructors: `TableMetadata::new( column_names )` (all types default to `DataType::String`) and `TableMetadata::with_types( column_names, column_types )` (explicit per-column types).
 
-- `new()` defaults `row_details` to `vec![]` (backward compatible).
-- `with_details()` accepts an explicit `row_details` vector parallel to `rows`.
-- Build via `RowBuilder::build_view()`. Convert back to `TreeNode` with `to_tree_node()` for backward compatibility with visual formatters.
+#### DataType
 
-### TableMetadata
+Enum classifying column value types for type-aware formatters. Variants: `String` (default), `Integer`, `Boolean`, `Path`. Implements `Default` (returns `String`). Used by formatters that render column values differently based on their semantic type.
 
-Semantic column metadata attached to `TableView`.
+#### ColumnData
 
-```rust
-#[ derive( Debug, Clone ) ]
-pub struct TableMetadata
-{
-  pub column_names : Vec< String >,
-  pub column_types : Vec< DataType >,
-}
+Multi-column payload for use with `TreeNode< ColumnData >` and `TreeFormatter::format_aligned`. Wraps `columns : Vec< String >`. Constructed via `ColumnData::new( columns )` or `ColumnData::from_pairs( &[( &str, &str )] )`. Provides `len()` and `is_empty()` to report column count. `Display` implementation joins columns with two spaces.
 
-impl TableMetadata
-{
-  /// Create with column names; all types default to DataType::String
-  pub fn new( column_names : Vec< String > ) -> Self;
-  /// Create with explicit per-column types
-  pub fn with_types( column_names : Vec< String >, column_types : Vec< DataType > ) -> Self;
-}
-```
+#### TreeSymbols
 
-### DataType
+Customizable box-drawing characters for tree output, passed to `TreeFormatter::with_symbols()`. Four `&'static str` fields: `branch` (branch connector, default `"├── "`), `last_branch` (last-child connector, default `"└── "`), `vertical` (continuation line, default `"│   "`), and `space` (blank continuation, default `"    "`).
 
-Column type classification for type-aware formatting.
+#### TableShapedView Trait
 
-```rust
-#[ derive( Debug, Clone, PartialEq, Eq, Default ) ]
-pub enum DataType
-{
-  #[ default ]
-  String,
-  Integer,
-  Boolean,
-  Path,
-}
-```
+Implemented for `TreeNode< T >` where `T : Display`. Three methods: `is_table_shaped()` (checks whether the tree encodes row/column structure), `extract_headers()` (returns `Option< Vec< String > >` of column names if table-shaped), and `to_rows()` (converts leaf `T` values to `String` via `Display` for row extraction). Used internally by `TableFormatter` and `ExpandedFormatter`.
 
-### ColumnData
+### Error Handling
 
-Multi-column data payload for `TreeNode< ColumnData >`, used with `TreeFormatter::format_aligned`.
+Data type construction does not return errors. `RowBuilder` enforces at construction time that each row has the same length as the header vector. `TableView::with_details` requires `row_details.len() == rows.len()`. No `Result`-returning constructors exist in this surface.
 
-```rust
-#[ derive( Debug, Clone ) ]
-pub struct ColumnData
-{
-  pub columns : Vec< String >,
-}
+### Compatibility Guarantees
 
-impl ColumnData
-{
-  pub fn new( columns : Vec< String > ) -> Self;
-  pub fn from_pairs( pairs : Vec< ( &str, &str ) > ) -> Self;
-  pub fn len( &self ) -> usize;
-  pub fn is_empty( &self ) -> bool;
-}
-
-impl std::fmt::Display for ColumnData { /* joins columns with "  " */ }
-```
-
-### TreeSymbols
-
-Box-drawing characters for tree rendering.
-
-```rust
-#[ derive( Debug, Clone ) ]
-pub struct TreeSymbols
-{
-  pub branch : &'static str,
-  pub last_branch : &'static str,
-  pub vertical : &'static str,
-  pub space : &'static str,
-}
-```
-
-Default symbols: `branch = "├── "`, `last_branch = "└── "`, `vertical = "│   "`, `space = "    "`.
-
-### TableShapedView Trait
-
-Trait for extracting tabular data from tree structures.
-
-```rust
-pub trait TableShapedView
-{
-  fn extract_headers( &self ) -> Option< Vec< String > >;
-  fn is_table_shaped( &self ) -> bool;
-  fn to_rows( &self ) -> Vec< Vec< String > >;
-}
-
-impl< T : std::fmt::Display > TableShapedView for TreeNode< T >
-{
-  fn extract_headers( &self ) -> Option< Vec< String > >;
-  fn is_table_shaped( &self ) -> bool;
-  fn to_rows( &self ) -> Vec< Vec< String > >;
-}
-```
-
-Converts `T` to `String` via `Display` trait. Used internally by `TableFormatter` and `ExpandedFormatter` to extract headers and rows from a `TreeNode`.
+`TreeNode< T >`, `TableView`, and `TableMetadata` are stable public types. `TableView::new()` defaults `row_details` to an empty vector for backward compatibility with callers predating `DecoratedText` support. `TableShapedView` is implemented for any `TreeNode< T : Display >` — callers that add `Display` to custom `T` types gain trait coverage automatically. `ColumnData` and `TreeSymbols` are stable. `DataType` supports additive new variants without breaking existing match arms when used with `_` fallback patterns.

@@ -1,8 +1,8 @@
-//! Tests for TextFormatter CliHelp variant
+//! Tests for `TextFormatter` `CliHelp` variant
 //!
 //! ## What This Tests
 //!
-//! Tests the CliHelp variant which formats data as CLI help text with:
+//! Tests the `CliHelp` variant which formats data as CLI help text with:
 //! - Section headers (all caps followed by colon)
 //! - Indented content under sections
 //! - Aligned key-value descriptions
@@ -10,7 +10,7 @@
 //!
 //! ## Data Structure Convention
 //!
-//! For CliHelp variant, data is structured as:
+//! For `CliHelp` variant, data is structured as:
 //! - Row with uppercase first column + empty second column = section header
 //! - Row with both columns = key-description pair (aligned)
 //! - Row with content in first column only = simple indented line
@@ -56,13 +56,13 @@ mod cli_help_tests
     assert!( output.contains( "Output format:" ) );
 
     // Descriptions should align vertically
-    let lines : Vec< &str > = output.lines().collect();
-    let line1 = lines.iter().find( | l | l.contains( "key::string" ) ).unwrap();
-    let line2 = lines.iter().find( | l | l.contains( "format::string" ) ).unwrap();
+    let output_lines : Vec< &str > = output.lines().collect();
+    let key_line = output_lines.iter().find( | l | l.contains( "key::string" ) ).unwrap();
+    let fmt_line = output_lines.iter().find( | l | l.contains( "format::string" ) ).unwrap();
 
     // Find where descriptions start (should be same column)
-    let desc1_start = line1.find( "Show" ).unwrap();
-    let desc2_start = line2.find( "Output" ).unwrap();
+    let desc1_start = key_line.find( "Show" ).unwrap();
+    let desc2_start = fmt_line.find( "Output" ).unwrap();
     assert_eq!( desc1_start, desc2_start, "Descriptions should align vertically" );
   }
 
@@ -111,9 +111,9 @@ mod cli_help_tests
     assert!( output.contains( "  unikit .config format::json" ) );
 
     // Simple lines should not have extra alignment padding
-    let lines : Vec< &str > = output.lines().collect();
-    let line1 = lines.iter().find( | l | l.contains( "unikit .config" ) && !l.contains( "::" ) ).unwrap();
-    assert!( line1.starts_with( "  " ), "Should start with 2-space indent" );
+    let output_lines : Vec< &str > = output.lines().collect();
+    let config_line = output_lines.iter().find( | l | l.contains( "unikit .config" ) && !l.contains( "::" ) ).unwrap();
+    assert!( config_line.starts_with( "  " ), "Should start with 2-space indent" );
   }
 
   #[ test ]
@@ -207,9 +207,9 @@ mod cli_help_tests
 
     // Headers should not be indented
     let lines : Vec< &str > = output.lines().collect();
-    for line in lines.iter()
+    for line in &lines
     {
-      if line.contains( ":" ) && line.chars().next().unwrap().is_uppercase()
+      if line.contains( ':' ) && line.chars().next().unwrap().is_uppercase()
       {
         assert!( !line.starts_with( ' ' ), "Section headers should not be indented" );
       }
@@ -273,7 +273,7 @@ mod cli_help_tests
   #[ test ]
   fn test_cli_help_single_section_only()
   {
-    let view = RowBuilder::new( vec![ "Header".into(), "".into() ] )
+    let view = RowBuilder::new( vec![ "Header".into(), String::new() ] )
       .add_row( vec![ "SECTION".into(), "".into() ] )
       .build_view();
 

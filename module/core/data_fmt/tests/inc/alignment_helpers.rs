@@ -22,6 +22,7 @@ use data_fmt::visual_len;
 /// ## Returns
 ///
 /// `Some(usize)` with visual position if found, `None` if target not in line
+#[ allow( dead_code ) ]
 pub fn visual_position( line : &str, target : &str ) -> Option< usize >
 {
   let byte_pos = line.find( target )?;

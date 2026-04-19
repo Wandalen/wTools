@@ -11,7 +11,7 @@
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/formatters/table.rs` | TableFormatter implementation |
+| source | `src/formatters/table/mod.rs` | TableFormatter implementation |
 | test | `tests/table_styles_presets.rs` | Preset configuration and output tests |
 | doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
 

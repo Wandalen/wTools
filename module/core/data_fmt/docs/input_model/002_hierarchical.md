@@ -15,7 +15,7 @@
 | test | `tests/data.rs` | Data model tests |
 | doc | `../input_type/002_tree_node.md` | Rust type documentation |
 
-### Structure
+### Data Shape
 
 ```text
 root
@@ -44,17 +44,12 @@ root
 | `TreeNode<ColumnData>` | Multi-column aligned tree | `TreeFormatter::format_aligned()` |
 | `TreeNode<T>` + aggregation | Tree with computed directory totals | `TreeFormatter::format_with_aggregation()` |
 
-### Builder
+### Downstream Connections
 
-`TreeBuilder<T>` constructs hierarchical data from flat path-based insertions:
+**Rust types representing this model:**
 
-```rust
-let tree = TreeBuilder::new( "root" )
-  .insert( &[ "src", "main.rs" ], 150 )
-  .insert( &[ "src", "lib.rs" ], 300 )
-  .build();
-```
+`TreeNode<T>` is the only Rust type for hierarchical input. Produced by `TreeBuilder<T>::build()` (path-based insertions) or by direct construction.
 
-### Accepted By
+**Formatters that consume hierarchical input:**
 
-Only `TreeFormatter` — via direct methods, not via a trait.
+Only `TreeFormatter` — via direct methods, not via a trait. `TreeFormatter` is the exclusive consumer of hierarchical data.

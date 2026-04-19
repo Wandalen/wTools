@@ -7,12 +7,6 @@
 - **In Scope**: Data model invariants, ANSI/Unicode handling rules, auto-fit behavioral guarantees.
 - **Out of Scope**: API details (see `api/`), formatting features (see `feature/`).
 
-### Files
-
-| File | Responsibility |
-|------|----------------|
-| `procedure.md` | Instance creation and deprecation procedure |
-
 ### Overview Table
 
 | ID | Name | Purpose | Status |

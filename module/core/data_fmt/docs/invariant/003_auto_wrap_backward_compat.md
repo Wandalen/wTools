@@ -11,7 +11,7 @@
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/formatters/table.rs` | `should_auto_wrap` guard, `format_internal` pipeline |
+| source | `src/formatters/table/mod.rs` | `should_auto_wrap` guard, `format_internal` pipeline |
 | test | `tests/auto_wrap_test.rs` | T06 (`auto_wrap_false_is_byte_identical`) |
 | doc | `../feature/005_auto_fit.md` | Auto-fit feature: "when auto_wrap is false — no wrapping triggered" |
 | task | `../../task/019_cell_auto_wrapping_with_budget_allocation.md` | Implementation task — Acceptance Criteria |

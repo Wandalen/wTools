@@ -8,9 +8,6 @@ repository = "https://github.com/Wandalen/wTools/tree/master/module/core/data_fm
 description = "Multi-format data visualization library with 10 formatters, 33 variants, and granular feature flags"
 keywords = [ "table", "formatter", "data-format", "visualization", "tree" ]
 categories = [ "text-processing", "data-structures", "visualization" ]
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
 
 [lints]
 workspace = true
@@ -37,9 +34,9 @@ toml = { workspace = true }
 
 [features]
 default = []
-full    = [ "enabled", "all_formats", "dep:terminal_size" ]
-enabled =
-[
+full          = [ "enabled", "all_formats", "terminal_size" ]
+terminal_size = [ "dep:terminal_size" ]
+enabled = [
   "dep:error_tools",
   "error_tools/enabled",
   "error_tools/error_typed",

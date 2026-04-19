@@ -16,7 +16,9 @@
 | doc | `../algorithm/002_word_wrapping.md` | Word wrapping algorithm |
 | doc | `005_auto_fit.md` | Auto-fit uses WrapFormatter for cell budget wrapping |
 
-### BreakStrategy Enum
+### Design
+
+#### BreakStrategy Enum
 
 Controls how lines are broken when text exceeds the configured width.
 
@@ -36,7 +38,7 @@ pub enum BreakStrategy
 | `Hard` | Split at exactly `width` characters regardless of word boundaries |
 | `WordThenHard` | Word-boundary first; hard-break only when a single token exceeds available width (default) |
 
-### Overflow Enum
+#### Overflow Enum
 
 Controls what happens when output exceeds `max_lines`.
 
@@ -54,7 +56,7 @@ pub enum Overflow
 | `Truncate` | Discard lines beyond `max_lines` |
 | `Ellipsis( String )` | Append the given string to the last kept line, truncating content so total line length does not exceed `width` |
 
-### WrapConfig Fields and Defaults
+#### WrapConfig Fields and Defaults
 
 | Field | Type | Default |
 |-------|------|---------|
@@ -68,7 +70,7 @@ pub enum Overflow
 | `overflow` | `Overflow` | `Truncate` |
 | `tab_width` | `usize` | `4` |
 
-### Builder Methods
+#### Builder Methods
 
 All builder methods are `#[ must_use ]` and return `Self`:
 
@@ -83,7 +85,7 @@ All builder methods are `#[ must_use ]` and return `Self`:
 9. `overflow`
 10. `tab_width`
 
-### WrapFormatter
+#### WrapFormatter
 
 ```rust
 pub struct WrapFormatter
@@ -105,7 +107,7 @@ impl WrapFormatter
 - `wrap( text )` -- returns wrapped lines as a vector.
 - `wrap_joined( text )` -- returns wrapped lines joined by `"\n"`.
 
-### Behavior Contracts
+#### Behavior Contracts
 
 1. A line in `wrap()` output never exceeds `width` chars (measured as char count) **except** when `break_long_words=false` and a single token is longer than the available space.
 2. `initial_indent` is prepended to line 0; `subsequent_indent` to lines 1+. Both count toward `width`.
@@ -114,4 +116,3 @@ impl WrapFormatter
 5. `tab_width`: each `\t` in input expanded to `tab_width` spaces before processing.
 6. `max_lines=Some(n)` + `Overflow::Truncate`: output has at most `n` lines.
 7. `max_lines=Some(n)` + `Overflow::Ellipsis(s)`: last kept line has `s` appended, truncating content so the total line length does not exceed `width`.
-

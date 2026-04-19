@@ -7,7 +7,7 @@
 - **In Scope**: Per-variant attribute descriptors (46 attributes each), example output, feature flags.
 - **Out of Scope**: Formatter implementation (see `feature/`), attribute definitions (see `data_structure/001_variant_attributes.md`).
 
-### Type-Specific Requirements
+#### Type-Specific Requirements
 
 Every variant doc instance must contain these sections in order:
 
@@ -27,12 +27,6 @@ Every variant doc instance must contain these sections in order:
 | Performance & Size | `### Performance & Size` | output_overhead, memory_efficiency |
 | Compatibility | `### Compatibility` | works_on_windows, works_in_ci, copy_paste_friendly |
 | Example Output | `### Example Output` | Fenced code block showing representative rendered output |
-
-### Files
-
-| File | Responsibility |
-|------|----------------|
-| `procedure.md` | Instance creation and deprecation procedure |
 
 ### Overview Table
 

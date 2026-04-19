@@ -16,20 +16,7 @@
 | doc | `../api/002_builders.md` | Public API surface |
 | doc | `../input_type/001_table_view.md` | Output type documentation |
 
-### Definition
-
-```rust
-pub struct RowBuilder
-{
-  root : TreeNode< String >,
-  headers : Vec< String >,
-  row_count : usize,
-  rows : Vec< Vec< String > >,
-  row_details : Vec< Option< DecoratedText > >,
-}
-```
-
-### API
+### Construction API
 
 | Method | Consumes Self | Output |
 |--------|:------------:|--------|
@@ -71,3 +58,11 @@ let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
   .add_row( vec![ "Alice".into(), "30".into() ] )
   .build();
 ```
+
+### Invariants
+
+Pre/post conditions enforced at construction time:
+
+- **Row length**: every row added via any `add_row*` method must have length exactly equal to `headers.len()`. Violated at insertion time causes an immediate panic. Downstream formatters never encounter ragged rows.
+- **Parallel vectors**: `rows` and `row_details` are always the same length throughout the builder's lifetime. Every internal row insertion updates both vectors simultaneously; rows without explicit detail receive `None`.
+- **Empty headers allowed**: constructing with an empty `headers` vec is valid; all subsequently added rows must also be empty.

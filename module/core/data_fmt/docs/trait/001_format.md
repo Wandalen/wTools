@@ -15,25 +15,13 @@
 | test | `tests/unified_format_trait.rs` | Format trait tests |
 | doc | `../feature/003_unified_format_interface.md` | Feature-level documentation |
 
-### Definition
+### Signature
 
-```rust
-pub trait Format
-{
-  fn format( &self, data : &TableView ) -> Result< String, FormatError >;
-}
-```
+`Format` is a trait with one required method: `format( &self, data : &TableView ) -> Result< String, FormatError >`. Takes an immutable reference to self and an immutable reference to `TableView`; returns a formatted string or a `FormatError`.
 
 ### Error Type
 
-```rust
-pub enum FormatError
-{
-  Serialization( String ),      // serde_support only
-  InvalidData( String ),
-  UnsupportedOperation( String ),
-}
-```
+`FormatError` has three variants. `Serialization( String )` is available only with the `serde_support` feature and is emitted by JSON/YAML/TOML formatters on serialization failure. `InvalidData( String )` signals structurally invalid input for the requested format. `UnsupportedOperation( String )` signals an operation not supported by the given formatter configuration. Without `serde_support`, only `InvalidData` and `UnsupportedOperation` are present.
 
 ### Implementors
 
@@ -48,11 +36,11 @@ pub enum FormatError
 | `TomlFormatter` | `format_toml` | serde, toml |
 | `TextFormatter` | `format_text` | none |
 
-### Not Implemented By
+### Coverage Gaps
 
 | Formatter | Reason | Alternative |
 |-----------|--------|-------------|
-| `ExpandedFormatter` | Uses `TableShapedFormatter` only | `TableShapedFormatter::format( &TreeNode<String> )` |
+| `ExpandedFormatter` | Uses deprecated `TableShapedFormatter` only | `TableShapedFormatter::format( &TreeNode<String> )` — deprecated |
 | `TreeFormatter` | Requires generic `T` + render closure | Direct methods: `format()`, `format_aligned()`, `format_with_aggregation()` |
 
 ### Input Type

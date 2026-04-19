@@ -7,7 +7,7 @@
 - **In Scope**: `Format`, `TableShapedFormatter`, `TableShapedView` — signatures, implementors, coverage gaps.
 - **Out of Scope**: Formatter implementation details (see `feature/`), variant output (see `variant/`).
 
-### Type-Specific Requirements
+#### Type-Specific Requirements
 
 Every trait doc instance must contain these sections in order:
 
@@ -18,12 +18,6 @@ Every trait doc instance must contain these sections in order:
 | Signature | `### Signature` | Full trait method signatures with parameter types and return types |
 | Implementors | `### Implementors` | All known types that implement this trait, with the relevant type bounds |
 | Coverage Gaps | `### Coverage Gaps` | Known missing implementations or types that should implement but don't |
-
-### Files
-
-| File | Responsibility |
-|------|----------------|
-| `procedure.md` | Instance creation and deprecation procedure |
 
 ### Overview Table
 

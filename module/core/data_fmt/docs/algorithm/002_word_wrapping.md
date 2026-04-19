@@ -15,6 +15,10 @@
 | test | `tests/word_wrap.rs` | Word wrapping test suite |
 | doc | `../feature/002_word_wrap.md` | Feature-level word wrap documentation |
 
+### Abstract
+
+A text wrapping algorithm that breaks input strings into lines fitting within a configured width using configurable break strategies. Supports word-boundary breaking, hard character splitting, and a hybrid default mode that word-wraps first and hard-breaks only overlong tokens. Handles indentation, newline preservation, tab expansion, line limits, and overflow policies.
+
 ### Source Location
 
 `src/wrap.rs` — `WrapFormatter::wrap()` (lines 213-240) dispatches to `wrap_words()` (lines 391-442) or `hard_break_str()` (lines 298-326). Overlong words handled by `push_overlong_word()` (lines 329-370).
@@ -54,7 +58,7 @@ Greedy word packing: accumulate words until adding the next word would exceed av
 
 Same as Word, but `push_overlong_word` hard-breaks overlong tokens character-by-character instead of emitting them as one oversized line.
 
-### Core Algorithm — `wrap_words`
+### Algorithm
 
 ```
 pending = []      // words accumulated for current line

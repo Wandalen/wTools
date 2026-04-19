@@ -15,7 +15,7 @@
 | test | `tests/data.rs` | Data model tests |
 | doc | `../input_type/001_table_view.md` | Rust type documentation |
 
-### Structure
+### Data Shape
 
 ```text
 headers:  [ "Name",  "Age",  "City"    ]
@@ -33,19 +33,17 @@ row 1:    [ "Bob",   "25",   "London"  ]
 - Column order is stable across all rows.
 - Cell values are strings at the model level; `DataType` metadata provides optional semantic typing.
 
-### Rust Types
+### Downstream Connections
+
+**Rust types representing this model:**
 
 | Type | Role |
 |------|------|
 | `TableView` | Canonical representation (modern path) |
 | `TreeNode<String>` | Legacy representation (table encoded as tree) |
 
-### Builder
+Both are produced by `RowBuilder`: `build_view()` returns `TableView`; `build()` returns `TreeNode<String>`.
 
-`RowBuilder` produces both representations from the same builder chain:
-- `build_view()` → `TableView`
-- `build()` → `TreeNode<String>`
+**Formatters that consume tabular input:**
 
-### Accepted By
-
-All 10 formatters accept tabular input — 8 via the `Format` trait (`&TableView`) and 2 via `TableShapedFormatter` (`&TreeNode<String>`).
+All 10 formatters accept tabular input — 8 via the `Format` trait (`&TableView`) and 2 via the deprecated `TableShapedFormatter` (`&TreeNode<String>`).

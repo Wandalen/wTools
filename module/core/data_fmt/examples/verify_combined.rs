@@ -1,7 +1,7 @@
-//! Manual Test 003: Combined Features (Multiline + Truncation)
+//! Visual Verification: Combined Features (Multiline + Truncation)
 //!
 //! This example tests the interaction between multiline and truncation features.
-//! Run with: `cargo run --example manual_test_003_combined`
+//! Run with: `cargo run --example verify_combined`
 
 #[ cfg( not( feature = "enabled" ) ) ]
 fn main() {}

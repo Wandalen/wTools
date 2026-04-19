@@ -30,7 +30,7 @@
 //! Added in v0.3.0 when comprehensive table style parametrization was introduced.
 //! These tests caught several alignment bugs during development that unit tests missed.
 //!
-//! Split from tests/table_styles.rs in v0.4.0 compliance cleanup.
+//! Split from `tests/table_styles.rs` in v0.4.0 compliance cleanup.
 
 #![ cfg( feature = "enabled" ) ]
 
@@ -61,8 +61,8 @@ fn test_plain_style_output()
   assert!( output.contains( "----" ) );
 
   // Should NOT have pipes or boxes
-  assert!( !output.contains( "|" ) );
-  assert!( !output.contains( "+" ) );
+  assert!( !output.contains( '|' ) );
+  assert!( !output.contains( '+' ) );
 
   // Should have data
   assert!( output.contains( "Alice" ) );
@@ -114,7 +114,7 @@ fn test_minimal_style_output()
   assert!( !has_dash_line, "Minimal style should not have dash separator" );
 
   // Should NOT have borders
-  assert!( !output.contains( "|" ) );
+  assert!( !output.contains( '|' ) );
 }
 
 // =============================================================================

@@ -3,35 +3,35 @@
 ## Entity Tree
 
 ```
-docs/
-├── algorithm/           Collection Entity   1st
-├── api/                 Collection Entity   1st
-├── builder/             Collection Entity   1st
-├── data_structure/      Collection Entity   1st
-├── feature/             Collection Entity   1st
-├── input_model/         Collection Entity   1st
-├── input_type/          Collection Entity   1st
-├── invariant/           Collection Entity   1st
-├── pattern/             Collection Entity   1st
-├── trait/               Collection Entity   1st
-└── variant/             Collection Entity   1st
+docs/                            structural container
+├── algorithm/                   Collection Entity   1st
+├── api/                         Collection Entity   1st
+├── builder/                     Collection Entity   1st
+├── data_structure/              Collection Entity   1st
+├── feature/                     Collection Entity   1st
+├── input_model/                 Collection Entity   1st
+├── input_type/                  Collection Entity   1st
+├── invariant/                   Collection Entity   1st
+├── pattern/                     Collection Entity   1st
+├── trait/                       Collection Entity   1st
+└── variant/                     Collection Entity   1st
 ```
 
 ## Entities
 
 | Entity | Type | Latent? | Purpose |
 |--------|------|---------|---------|
-| [algorithm/](algorithm/) | Collection | | Non-trivial algorithm documentation instances |
-| [api/](api/) | Collection | | Public API surface documentation instances |
-| [builder/](builder/) | Collection | | Construction helper documentation instances |
-| [data_structure/](data_structure/) | Collection | | Data schema and structure documentation instances |
-| [feature/](feature/) | Collection | | Feature documentation instances |
-| [input_model/](input_model/) | Collection | | Input data shape documentation instances |
-| [input_type/](input_type/) | Collection | | Rust input type documentation instances |
-| [invariant/](invariant/) | Collection | | Behavioral contract documentation instances |
-| [pattern/](pattern/) | Collection | | Architectural pattern documentation instances |
-| [trait/](trait/) | Collection | | Trait interface documentation instances |
-| [variant/](variant/) | Collection | | Output variant documentation instances |
+| [algorithm/](algorithm/) | Collection | | Registry of algorithm doc instances |
+| [api/](api/) | Collection | | Registry of API doc instances |
+| [builder/](builder/) | Collection | | Registry of builder doc instances |
+| [data_structure/](data_structure/) | Collection | | Registry of data structure doc instances |
+| [feature/](feature/) | Collection | | Registry of feature doc instances |
+| [input_model/](input_model/) | Collection | | Registry of input model doc instances |
+| [input_type/](input_type/) | Collection | | Registry of input type doc instances |
+| [invariant/](invariant/) | Collection | | Registry of invariant doc instances |
+| [pattern/](pattern/) | Collection | | Registry of pattern doc instances |
+| [trait/](trait/) | Collection | | Registry of trait doc instances |
+| [variant/](variant/) | Collection | | Registry of variant doc instances |
 
 ## Master Doc Entities Table
 

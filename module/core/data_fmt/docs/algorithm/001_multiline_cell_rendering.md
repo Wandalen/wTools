@@ -11,12 +11,16 @@
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/formatters/table.rs` | TableFormatter multiline cell rendering |
+| source | `src/formatters/table/mod.rs` | TableFormatter multiline cell rendering |
 | test | `tests/multiline_cells.rs` | Multiline cell rendering test suite |
+
+### Abstract
+
+A two-pass algorithm for rendering table rows that contain newline characters. Pass 1 measures the maximum line count across all cells in the row to determine row height. Pass 2 emits one physical output line per sub-line index, padding shorter cells with empty space to maintain column alignment and border continuity across all sub-lines.
 
 ### Source Location
 
-`src/formatters/table.rs` — `format_multiline_row()` (lines 510-613), called from `format_row()` (lines 391-403).
+`src/formatters/table/mod.rs` — `format_multiline_row()` (lines 510-613), called from `format_row()` (lines 391-403).
 
 ### Trigger Condition
 

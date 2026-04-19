@@ -14,261 +14,54 @@
 | source | `src/config.rs` | Configuration type definitions |
 | test | `tests/table_config_corner_cases.rs` | Config edge case tests |
 
-### BorderVariant
+### Abstract
 
-```rust
-#[ derive( Debug, Clone, Copy, PartialEq, Eq ) ]
-pub enum BorderVariant
-{
-  None,       // No borders, space-separated
-  Ascii,      // Pipe borders: | + -
-  AsciiGrid,  // Full ASCII grid: +---+
-  Unicode,    // Unicode box drawing
-  Markdown,   // Markdown table: | col |
-}
-```
+Three config structs and six supporting enums form the configuration API. `TableConfig` governs all `TableFormatter` rendering parameters: borders, separators, column sizing, coloring, and auto-fit. `ExpandedConfig` controls `ExpandedFormatter` key-value presentation. `TreeConfig` controls `TreeFormatter` structure and indentation. The six enum types — `BorderVariant`, `HeaderSeparatorVariant`, `ColumnSeparator`, `PaddingSide`, `ColumnFlex`, and `FoldStyle` — are embedded in the config structs or passed as builder arguments.
 
-### HeaderSeparatorVariant
+### Operations
 
-```rust
-#[ derive( Debug, Clone, Copy, PartialEq, Eq ) ]
-pub enum HeaderSeparatorVariant
-{
-  None,       // No separator line
-  Dash,       // Dash-only: -----
-  AsciiGrid,  // ASCII grid: +-----+
-  Unicode,    // Unicode: ├─────┤
-  Markdown,   // Markdown: |-----|
-}
-```
+#### BorderVariant
 
-### ColumnSeparator
+Controls outer border rendering for `TableConfig`. Five variants: `None` (no borders, space-separated), `Ascii` (pipe borders using `|` and `-`), `AsciiGrid` (full grid with `+` at intersections), `Unicode` (box-drawing characters), `Markdown` (GitHub-flavored markdown table format with `|`).
 
-```rust
-#[ derive( Debug, Clone, PartialEq, Eq ) ]
-pub enum ColumnSeparator
-{
-  Spaces( usize ),    // N spaces between columns
-  Character( char ),  // Single character (|, comma, tab)
-  String( String ),   // Custom string separator
-}
-```
+#### HeaderSeparatorVariant
 
-### PaddingSide
+Controls the separator line drawn below the header row. Five variants: `None`, `Dash` (plain dashes), `AsciiGrid` (dash-plus separator), `Unicode` (box-drawing junction), `Markdown` (pipe-dash separator).
 
-Controls alignment padding placement in expanded format key-value pairs.
+#### ColumnSeparator
 
-```rust
-pub enum PaddingSide
-{
-  /// Pad keys before separator: "Name   | Value"
-  BeforeSeparator,
-  /// Pad values after separator: "Name: Value"
-  AfterSeparator,
-}
-```
+Controls the delimiter between columns. Three variants: `Spaces( usize )` (N space characters between columns), `Character( char )` (single character such as `|`, `,`, or `\t`), `String( String )` (arbitrary multi-character separator).
 
-### ColumnFlex
+#### PaddingSide
 
-Per-column classification for auto-fit budget allocation.
+Controls alignment padding placement in `ExpandedFormatter` key-value output. `BeforeSeparator` pads keys to align separators vertically; `AfterSeparator` pads values after the separator character.
 
-```rust
-#[ derive( Debug, Clone, Copy, PartialEq, Eq ) ]
-pub enum ColumnFlex
-{
-  Fixed,  // keeps natural width; never wrapped or folded
-  Flex,   // shrinks to budget; content wraps if needed
-}
-```
+#### ColumnFlex
 
-When `TableConfig::column_flex` is empty (default), columns are auto-classified: max cell width ≤ 12 display chars = `Fixed`, otherwise `Flex`.
+Per-column classification for the auto-fit budget allocation algorithm. `Fixed` columns retain their natural content width and are never wrapped or folded. `Flex` columns shrink to the allocated budget and their content wraps when needed. When `TableConfig::column_flex` is empty (the default), columns are auto-classified: max cell display width ≤ 12 = `Fixed`, otherwise `Flex`.
 
-### FoldStyle
+#### FoldStyle
 
-Controls the format of continuation lines when columns are folded.
+Controls how overflow columns are formatted in continuation lines. `Labeled` (default) emits `"ColName: value"` pairs. `Bare` joins all overflow values on one line. `Stacked` emits one labeled line per overflow column.
 
-```rust
-#[ derive( Debug, Clone, Copy, PartialEq, Eq ) ]
-pub enum FoldStyle
-{
-  Bare,      // values only, no labels
-  Labeled,   // "ColName: value" pairs (default)
-  Stacked,   // each folded column on its own line with label
-}
-```
+#### TableConfig
 
-### TableConfig
+All fields are private; accessed via preset constructors and builder setters. Nine preset constructors: `plain()`, `minimal()`, `bordered()`, `markdown()`, `grid()`, `unicode_box()`, `csv()`, `tsv()`, `compact()`. All return fully configured instances. Builder setters cover: column widths, alignment, border variant, header separator variant, column separator, outer and inner padding, header coloring, alternating row colors, min/max column width, truncation marker, sub-row indent, terminal width, auto-wrap, column flex assignments, auto-fold, fold style, and fold indent. All setters are `#[ must_use ]` and return `Self`.
 
-Formatter parameters for table output. All fields are private; use preset constructors or builder setters.
+**Width calculation order** (when auto-fit fields are combined): (1) content-driven max per column; (2) cap at `max_column_width` if set; (3) raise to `min_column_width` floor if non-zero; (4) `column_widths` override replaces all calculated widths; (5) auto-fit budget shrinks flex columns to terminal budget; (6) auto-fold moves remaining overflow columns to continuation lines.
 
-#### Fields (private)
+#### ExpandedConfig
 
-| Field | Type | Purpose |
-|-------|------|---------|
-| `column_widths` | `Vec< usize >` | Manual column width overrides |
-| `align_right` | `Vec< bool >` | Per-column right-alignment flags |
-| `border_variant` | `BorderVariant` | Border rendering style |
-| `header_separator_variant` | `HeaderSeparatorVariant` | Header separator style |
-| `column_separator` | `ColumnSeparator` | Inter-column separator |
-| `outer_padding` | `bool` | Padding outside border edges |
-| `inner_padding` | `usize` | Spaces inside cell boundaries |
-| `colorize_header` | `bool` | Apply ANSI color to header row |
-| `header_color` | `String` | ANSI color code for header |
-| `alternating_rows` | `bool` | Alternate row background colors |
-| `row_color1` | `String` | Even row ANSI color |
-| `row_color2` | `String` | Odd row ANSI color |
-| `min_column_width` | `usize` | Minimum display width per column |
-| `max_column_width` | `Option< usize >` | Maximum display width (truncates beyond) |
-| `truncation_marker` | `String` | Appended to truncated cells (default: "...") |
-| `sub_row_indent` | `String` | Prefix for sub-row detail lines (default: "  ") |
-| `terminal_width` | `Option< usize >` | Target width for auto-fit (None = auto-detect via `terminal_size` feature; fallback: 120) |
-| `auto_wrap` | `bool` | Auto-wrap flex cells at budget width (default: true) |
-| `auto_fold` | `bool` | Auto-fold overflow columns to continuation lines (default: true) |
-| `column_flex` | `Vec< ColumnFlex >` | Per-column flex classification (empty = auto-classify) |
-| `fold_style` | `FoldStyle` | Continuation line format for folded columns (default: Labeled) |
-| `fold_indent` | `String` | Indent prefix for folded continuation lines (default: "    ") |
+Controls `ExpandedFormatter` output. Fields: `record_separator`, `key_value_separator`, `show_record_numbers`, `colorize_keys`, `key_color`, `padding_side`, `indent_prefix`. Two preset constructors: `new()` / `postgres_style()` (aligned keys, pipe separator) and `property_style()` (colon separator, after-separator padding). All builder setters return `Self` and are `#[ must_use ]`.
 
-#### Preset Constructors
+#### TreeConfig
 
-```rust
-impl TableConfig
-{
-  pub fn new() -> Self;          // Default (bordered)
-  pub fn plain() -> Self;        // Space-separated, dash separator
-  pub fn minimal() -> Self;      // Space-separated, no separator
-  pub fn bordered() -> Self;     // Pipe borders, dash+plus separator
-  pub fn markdown() -> Self;     // Markdown table syntax
-  pub fn grid() -> Self;         // Full ASCII grid (+---+)
-  pub fn unicode_box() -> Self;  // Unicode box drawing
-  pub fn csv() -> Self;          // Comma-separated
-  pub fn tsv() -> Self;          // Tab-separated
-  pub fn compact() -> Self;      // Minimal spacing
-}
-```
+Controls `TreeFormatter` output. Six fields: `show_branches` (draw branch connector symbols), `show_root` (render root node), `indent_size` (spaces per depth level, default 4), `max_depth` (depth cutoff), `column_separator` (string between aligned columns), `min_column_width` (minimum per-column display width). Constructor: `new()`. All builder setters return `Self` and are `#[ must_use ]`.
 
-#### Builder Methods
+### Error Handling
 
-All return `Self`, all marked `#[ must_use ]`.
+Config construction does not return errors. Preset constructors always succeed. Builder setters perform no validation at call time — invalid combinations (e.g., `min_column_width` > `max_column_width`) are resolved at render time with defined behavior (floor wins over cap). Terminal width of `0` is clamped to `1` at render time to prevent division-by-zero in budget allocation.
 
-```rust
-impl TableConfig
-{
-  pub fn column_widths( self, widths : Vec< usize > ) -> Self;
-  pub fn align_right( self, align : Vec< bool > ) -> Self;
-  pub fn border_variant( self, variant : BorderVariant ) -> Self;
-  pub fn header_separator_variant( self, variant : HeaderSeparatorVariant ) -> Self;
-  pub fn column_separator( self, sep : ColumnSeparator ) -> Self;
-  pub fn outer_padding( self, enabled : bool ) -> Self;
-  pub fn inner_padding( self, spaces : usize ) -> Self;
-  pub fn colorize_header( self, enabled : bool ) -> Self;
-  pub fn header_color( self, color : String ) -> Self;
-  pub fn alternating_rows( self, enabled : bool ) -> Self;
-  pub fn row_colors( self, color1 : String, color2 : String ) -> Self;
-  pub fn min_column_width( self, width : usize ) -> Self;
-  pub fn max_column_width( self, width : Option< usize > ) -> Self;
-  pub fn truncation_marker( self, marker : String ) -> Self;
-  pub fn sub_row_indent( self, indent : String ) -> Self;
-  pub fn terminal_width( self, width : Option< usize > ) -> Self;
-  pub fn auto_wrap( self, enabled : bool ) -> Self;
-  pub fn column_flex( self, flex : Vec< ColumnFlex > ) -> Self;
-  pub fn auto_fold( self, enabled : bool ) -> Self;
-  pub fn fold_style( self, style : FoldStyle ) -> Self;
-  pub fn fold_indent( self, indent : String ) -> Self;
-}
-```
+### Compatibility Guarantees
 
-#### Width Calculation Order
-
-1. Content-driven max: `max( header_width, max( row_widths ) )`
-2. Cap: `min( width, max_column_width )` if set
-3. Floor: `max( width, min_column_width )` if non-zero
-4. Override: `column_widths` replaces all calculated widths (skips cap/floor)
-5. Auto-fit budget (when `auto_wrap` is true): flex columns shrink to terminal budget; cells auto-wrap
-6. Auto-fold (when `auto_fold` is true and total still exceeds terminal): overflow columns fold to continuation lines
-
-See `../feature/auto_fit.md` for full auto-fit pipeline.
-
-### ExpandedConfig
-
-Formatter parameters for expanded (vertical record) output.
-
-```rust
-#[ derive( Debug, Clone ) ]
-pub struct ExpandedConfig
-{
-  pub record_separator : String,
-  pub key_value_separator : String,
-  pub show_record_numbers : bool,
-  pub colorize_keys : bool,
-  pub key_color : String,
-  pub padding_side : PaddingSide,
-  pub indent_prefix : String,
-}
-```
-
-#### Preset Constructors
-
-```rust
-impl ExpandedConfig
-{
-  pub fn new() -> Self;              // Default (postgres style)
-  pub fn postgres_style() -> Self;   // Aligned keys, pipe separator
-  pub fn property_style() -> Self;   // Colon separator, after-separator padding
-}
-```
-
-#### Builder Methods
-
-All return `Self`, all marked `#[ must_use ]`.
-
-```rust
-impl ExpandedConfig
-{
-  pub fn record_separator( self, separator : String ) -> Self;
-  pub fn key_value_separator( self, separator : String ) -> Self;
-  pub fn show_record_numbers( self, show : bool ) -> Self;
-  pub fn colorize_keys( self, enable : bool ) -> Self;
-  pub fn key_color( self, color : String ) -> Self;
-  pub fn padding_side( self, side : PaddingSide ) -> Self;
-  pub fn indent_prefix( self, prefix : String ) -> Self;
-}
-```
-
-### TreeConfig
-
-Formatter parameters for hierarchical tree output.
-
-```rust
-#[ derive( Debug, Clone ) ]
-pub struct TreeConfig
-{
-  pub show_branches : bool,
-  pub show_root : bool,
-  pub indent_size : usize,
-  pub max_depth : Option< usize >,
-  pub column_separator : String,
-  pub min_column_width : usize,
-}
-```
-
-#### Constructor and Builders
-
-```rust
-impl TreeConfig
-{
-  pub fn new() -> Self;
-
-  #[ must_use ]
-  pub fn show_branches( self, show : bool ) -> Self;
-  #[ must_use ]
-  pub fn show_root( self, show : bool ) -> Self;
-  #[ must_use ]
-  pub fn indent_size( self, size : usize ) -> Self;
-  #[ must_use ]
-  pub fn max_depth( self, depth : Option< usize > ) -> Self;
-  #[ must_use ]
-  pub fn column_separator( self, separator : String ) -> Self;
-  #[ must_use ]
-  pub fn min_column_width( self, width : usize ) -> Self;
-}
-```
+All preset constructors are stable and produce output byte-identical across minor versions. New builder setters are additive — callers that chain only the setters they need are unaffected by new fields. `TableConfig::csv()` and `TableConfig::tsv()` automatically disable auto-fit features regardless of manual settings; this coupling is stable. `ExpandedConfig::postgres_style()` and `property_style()` maintain their named formatting characteristics across versions.

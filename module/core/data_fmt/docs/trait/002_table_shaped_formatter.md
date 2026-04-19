@@ -14,14 +14,11 @@
 | source | `src/formatters/mod.rs` | TableShapedFormatter trait definition |
 | test | `tests/formatters.rs` | Formatter trait tests |
 
-### Definition
+### Signature
 
-```rust
-pub trait TableShapedFormatter
-{
-  fn format( &self, tree : &TreeNode< String > ) -> String;
-}
-```
+> **Deprecated since 0.1.0.** Use `Format` trait with `RowBuilder::build_view()` instead.
+
+`TableShapedFormatter` has one method: `format( &self, tree : &TreeNode< String > ) -> String`. Takes an immutable reference to self and an immutable reference to a table-encoded `TreeNode<String>`; returns a formatted string without error handling. Unlike `Format`, there is no `Result` wrapper — formatting is infallible.
 
 ### Implementors
 
@@ -29,6 +26,13 @@ pub trait TableShapedFormatter
 |-----------|:------------------------:|
 | `TableFormatter` | yes |
 | `ExpandedFormatter` | **no** |
+
+### Coverage Gaps
+
+| Formatter | Status | Note |
+|-----------|--------|------|
+| `ExpandedFormatter` | Implements `TableShapedFormatter` but not `Format` | No modern `Format` impl exists — callers must continue using the deprecated path |
+| All other formatters | Do not implement `TableShapedFormatter` | Intentional — they implement `Format` directly with the modern `TableView` input |
 
 ### Input Type
 
@@ -48,7 +52,7 @@ Produced by `RowBuilder::build()`.
 | Output | `String` | `Result<String, FormatError>` |
 | Implementors | 2 | 8 |
 | Error handling | None (infallible) | `FormatError` |
-| Status | Legacy | Current |
+| Status | **Deprecated** | Current |
 
 ### Migration Path
 

@@ -16,84 +16,33 @@
 | test | `tests/data.rs` | Data type invariant tests |
 | test | `tests/builder.rs` | Builder contract tests |
 
-### TreeNode Design Invariants
+### Invariant Statement
 
-#### Directory vs File Nodes
+#### TreeNode Design
 
-- **Directory nodes**: `data = None`, may have children
-- **File (leaf) nodes**: `data = Some(T)`, typically no children
+Directory nodes hold `data = None` and may have any number of children. File (leaf) nodes hold `data = Some(T)` and typically have no children. Hierarchical trees allow unlimited nesting depth; any node may have zero or more children; the tree is generic over `T` with minimal trait bounds.
 
-#### Hierarchical Trees
+Table-shaped trees encode tabular data as a specific tree structure. The root holds row nodes as direct children. Each row node holds column-named children that carry cell values as `data`. The table validation invariant requires that all row nodes have identical child structure — same column names in the same order.
 
-- Unlimited nesting depth
-- Any node may have zero or more children
-- Generic over `T` with minimal trait bounds
+#### RowBuilder
 
-#### Table-Shaped Trees
+Every row added via any `add_row*` method must have length exactly equal to `headers.len()`. The builder enforces this at construction time so that downstream formatters never encounter ragged rows.
 
-Table-shaped trees encode tabular data as a specific tree structure:
+The parallel vectors invariant holds throughout the builder's lifetime: `rows` and `row_details` are always the same length. Every internal row insertion pushes to both vectors simultaneously. Rows added without an explicit detail receive `None`.
 
-```
-root
-  1 (row name)
-    sid: "3"
-    sname: "Alice"
-    gap: "5"
-  2 (row name)
-    sid: "6"
-    sname: "Joe"
-    gap: "1"
-```
+#### TableView
 
-Structural rules:
+`TableView` is the format-agnostic data structure consumed by all formatters. It holds extracted headers and rows as plain string vectors, decoupled from `TreeNode` internals. The `TableShapedView` trait provides generic extraction from any `TreeNode< T >` where `T : Display`, converting `T` values to `String` via the `Display` trait.
 
-- Root has row nodes as direct children
-- Each row node has column-named children holding cell values
-- **Table validation invariant**: all row nodes must have identical child structure (same column names in the same order)
+### Enforcement Mechanism
 
-### RowBuilder Invariants
+Row length validation is enforced by `RowBuilder` at the point of insertion — the builder panics immediately if row length does not match `headers.len()`. The parallel vectors invariant is maintained by the single internal insertion method that always updates both vectors atomically. `TableView` is constructed only via `build_view()` or `TableShapedView::to_table_view()`, both of which produce a well-formed state.
 
-Every row added via `add_row()`, `add_row_mut()`, or `add_row_with_detail()` must have length equal to `headers.len()`. The builder enforces this at construction time so that downstream formatters never encounter ragged rows.
-
-**Parallel vectors invariant**: `rows` and `row_details` are always the same length. Every `add_row_internal()` call pushes to both vectors simultaneously. Rows added without explicit detail get `None`.
-
-```rust
-pub struct RowBuilder
-{
-  root : TreeNode< String >,
-  headers : Vec< String >,
-  row_count : usize,
-  rows : Vec< Vec< String > >,
-  row_details : Vec< Option< DecoratedText > >,
-}
-```
-
-Construction patterns:
-
-- **Fluent**: `RowBuilder::new( headers ).add_row( r1 ).add_row_with_detail( r2, detail ).build_view()`
-- **Mutable**: call `builder.add_row_mut( row )` / `builder.add_row_with_detail_mut( row, detail )` in a loop, then `builder.build_view()`
-- **Manual**: use `TreeBuilder` for custom row naming
-
-### TableView as Canonical Interchange Format
-
-`TableView` is the format-agnostic data structure that all formatters can consume. It holds extracted headers and rows as plain `Vec< String >` values, decoupled from `TreeNode` internals.
-
-`TableShapedView` trait provides generic extraction:
-
-```rust
-pub trait TableShapedView
-{
-  fn extract_headers( &self ) -> Option< Vec< String > >;
-  fn is_table_shaped( &self ) -> bool;
-  fn to_rows( &self ) -> Vec< Vec< String > >;
-}
-```
-
-Implemented for `TreeNode< T >` where `T : Display`. The `to_rows()` method converts `T` values to `String` via the `Display` trait.
-
-### Edge Case Contracts
+### Violation Consequences
 
 - **EC-1**: Empty tables return empty string in all formats
 - **EC-2**: Empty trees return empty string when formatted
 - **EC-3**: Single-row tables display correctly in all formats
 - **EC-4**: Generic `TableShapedView` works with any `T : Display`
+
+Violating the row length invariant causes an immediate panic at insertion time. Violating the parallel vectors invariant would produce mismatched row/detail rendering — detail annotations would appear on incorrect rows. Violating the table-shaped tree column structure invariant causes formatters to produce incorrect or misaligned column output.

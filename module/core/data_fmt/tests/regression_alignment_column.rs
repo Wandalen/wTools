@@ -9,7 +9,7 @@
 
 mod inc;
 
-use data_fmt::{ TreeNode, ColumnData, TreeFormatter, TreeConfig };
+use data_fmt::{ TreeNode, ColumnData, TreeFormatter };
 use inc::visual_position;
 
 /// Build the exact tree structure from the original problem statement
@@ -82,7 +82,7 @@ fn test_reproduce_original_problem_aligned_solution()
   let output = formatter.format_aligned( &tree );
 
   println!( "\n✅ DESIRED OUTPUT (with TreeFormatter):" );
-  println!( "{}", output );
+  println!( "{output}" );
 
   // Verify alignment by checking VISUAL column positions
   let lines : Vec< &str > = output.lines().collect();
@@ -96,7 +96,7 @@ fn test_reproduce_original_problem_aligned_solution()
     )
     .collect();
 
-  println!( "\nVersion column VISUAL positions: {:?}", version_positions );
+  println!( "\nVersion column VISUAL positions: {version_positions:?}" );
 
   // All version strings should start at the same column position
   if version_positions.len() > 1
@@ -106,11 +106,10 @@ fn test_reproduce_original_problem_aligned_solution()
     {
       assert_eq!(
         *pos, first_pos,
-        "Version column not aligned! Found positions: {:?}",
-        version_positions
+        "Version column not aligned! Found positions: {version_positions:?}"
       );
     }
-    println!( "✅ Version column aligned at position {}", first_pos );
+    println!( "✅ Version column aligned at position {first_pos}" );
   }
 
   // Verify path column alignment (VISUAL positions)
@@ -118,7 +117,7 @@ fn test_reproduce_original_problem_aligned_solution()
     .filter_map( | line | visual_position( line, "(" ) )
     .collect();
 
-  println!( "Path column VISUAL positions: {:?}", path_positions );
+  println!( "Path column VISUAL positions: {path_positions:?}" );
 
   if path_positions.len() > 1
   {
@@ -127,11 +126,10 @@ fn test_reproduce_original_problem_aligned_solution()
     {
       assert_eq!(
         *pos, first_pos,
-        "Path column not aligned! Found positions: {:?}",
-        path_positions
+        "Path column not aligned! Found positions: {path_positions:?}"
       );
     }
-    println!( "✅ Path column aligned at position {}", first_pos );
+    println!( "✅ Path column aligned at position {first_pos}" );
   }
 
   // Verify specific content
@@ -159,10 +157,10 @@ fn test_reproduce_original_problem_show_unaligned()
   let tree_string = convert_to_string_tree( &tree_columnar );
 
   let formatter = TreeFormatter::new();
-  let output = formatter.format( &tree_string, | data | format!( " {}", data ) );
+  let output = formatter.format( &tree_string, | data | format!( " {data}" ) );
 
   println!( "\n❌ PROBLEM: Unaligned output (old TreeFormatter):" );
-  println!( "{}", output );
+  println!( "{output}" );
 
   // Show that columns are NOT aligned (even visually, because no TreeFormatter)
   let lines : Vec< &str > = output.lines().collect();
@@ -174,7 +172,7 @@ fn test_reproduce_original_problem_show_unaligned()
     )
     .collect();
 
-  println!( "\nVersion VISUAL positions (NOT aligned): {:?}", version_positions );
+  println!( "\nVersion VISUAL positions (NOT aligned): {version_positions:?}" );
 
   // Verify that positions are different (showing the problem)
   if version_positions.len() > 1
@@ -204,15 +202,15 @@ fn test_side_by_side_comparison()
   // Unaligned version (for comparison)
   let tree_string = convert_to_string_tree( &tree );
   let formatter_unaligned = TreeFormatter::new();
-  let output_unaligned = formatter_unaligned.format( &tree_string, | data | format!( " {}", data ) );
+  let output_unaligned = formatter_unaligned.format( &tree_string, | data | format!( " {data}" ) );
 
   println!( "\n✅ ALIGNED (TreeFormatter):" );
   println!( "{}", "-".repeat( 60 ) );
-  println!( "{}", output_aligned );
+  println!( "{output_aligned}" );
 
   println!( "\n❌ UNALIGNED (Regular TreeFormatter):" );
   println!( "{}", "-".repeat( 60 ) );
-  println!( "{}", output_unaligned );
+  println!( "{output_unaligned}" );
 
   println!( "\n📊 COMPARISON RESULT:" );
   println!( "  - Aligned version: Columns line up vertically" );
@@ -236,7 +234,7 @@ fn test_side_by_side_comparison()
   }
 }
 
-/// Helper to convert ColumnData tree to String tree
+/// Helper to convert `ColumnData` tree to String tree
 fn convert_to_string_tree( node : &TreeNode< ColumnData > ) -> TreeNode< String >
 {
   let data = node.data.as_ref().map( | col_data |

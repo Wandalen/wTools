@@ -1,4 +1,4 @@
-//! Manual test runner for Unicode display width corner cases.
+//! Visual verification runner for Unicode display width corner cases.
 //!
 //! Executes high-priority manual test cases for Unicode handling including:
 //! - Emoji with skin tone modifiers
@@ -7,7 +7,7 @@
 //! - Mixed-width strings (ASCII + CJK + emoji)
 //! - Edge cases (empty strings, full-width punctuation, etc.)
 //!
-//! Run with: `cargo run --example manual_test_runner`
+//! Run with: `cargo run --example verify_runner`
 
 #[ cfg( not( feature = "enabled" ) ) ]
 fn main() {}

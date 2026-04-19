@@ -7,5 +7,7 @@
 pub mod alignment_helpers;
 pub mod test_helpers;
 
+#[ allow( unused_imports ) ]
 pub use alignment_helpers::visual_position;
+#[ allow( unused_imports ) ]
 pub use test_helpers::sample_data;

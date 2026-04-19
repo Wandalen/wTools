@@ -16,16 +16,7 @@
 | doc | `../api/002_builders.md` | Public API surface |
 | doc | `../input_type/002_tree_node.md` | Output type documentation |
 
-### Definition
-
-```rust
-pub struct TreeBuilder< T >
-{
-  root : TreeNode< T >,
-}
-```
-
-### API
+### Construction API
 
 | Method | Bound | Output |
 |--------|-------|--------|
@@ -78,3 +69,12 @@ Hierarchical — see `input_model/hierarchical.md`.
 | `format( tree, render_fn )` | `TreeNode<T>` (any `T`) |
 | `format_aligned( tree )` | `TreeNode<ColumnData>` |
 | `format_with_aggregation( tree, ... )` | `TreeNode<T>` (any `T`) |
+
+### Invariants
+
+Pre/post conditions enforced at construction time:
+
+- **Intermediate nodes**: every non-terminal path element that does not already exist is created as a directory node (`data = None`). Callers cannot produce a tree with missing interior nodes.
+- **Leaf placement**: the final element of each `insert()` path is always a leaf with `data = Some(T)`. A path with zero elements panics.
+- **Type uniformity**: all leaf nodes carry the same type `T`. Mixed-type trees are not possible — the type is fixed at `TreeBuilder<T>` construction.
+- **Batch equivalence**: `from_items( items, path_fn, data_fn )` produces the same tree as calling `insert()` for each item individually with the extracted path and data.

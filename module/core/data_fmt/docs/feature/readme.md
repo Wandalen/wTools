@@ -7,12 +7,6 @@
 - **In Scope**: Table formatting, word wrap, unified format interface, color themes, auto-fit.
 - **Out of Scope**: API signatures (see `api/`), variant output examples (see `variant/`).
 
-### Files
-
-| File | Responsibility |
-|------|----------------|
-| `procedure.md` | Instance creation and deprecation procedure |
-
 ### Overview Table
 
 | ID | Name | Purpose | Status |

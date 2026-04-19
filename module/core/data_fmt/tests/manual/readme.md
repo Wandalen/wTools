@@ -1,6 +1,6 @@
-# Manual Testing Plan for tree_fmt v0.5.0
+# Manual Testing Plan for data_fmt
 
-This document describes manual testing procedures for verifying column truncation and multiline cell features in tree_fmt.
+This document describes manual testing procedures for verifying column truncation and multiline cell features in data_fmt.
 
 ## Features Under Test
 
@@ -323,7 +323,7 @@ These tests require human visual verification in a terminal:
 ### Prerequisites
 - Terminal with ANSI color support (for color tests)
 - Unicode-capable terminal (for unicode marker tests)
-- tree_fmt v0.5.0 installed
+- data_fmt installed
 
 ### Running Tests
 
@@ -331,12 +331,12 @@ Execute manual test programs in this directory:
 
 ```bash
 # Run all manual tests via the combined runner
-cargo run --example manual_test_runner
+cargo run --example verify_runner
 
 # Or run individual manual test scenarios
-cargo run --example manual_test_001_truncation
-cargo run --example manual_test_002_multiline
-cargo run --example manual_test_003_combined
+cargo run --example verify_truncation
+cargo run --example verify_multiline
+cargo run --example verify_combined
 ```
 
 ### Recording Results

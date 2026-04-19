@@ -1,14 +1,13 @@
-//! Tests for TreeBuilder
+//! Tests for `TreeBuilder`
 
 #![ cfg( feature = "enabled" ) ]
 
-use data_fmt::TreeBuilder;
 use std::path::PathBuf;
 
 // Phase 2: TreeBuilder Tests (15 tests)
 // =============================================================================
 
-/// Test TreeBuilder creation
+/// Test `TreeBuilder` creation
 #[ test ]
 fn test_tree_builder_new()
 {
@@ -123,8 +122,8 @@ fn test_tree_builder_from_items()
   ];
 
   let tree = TreeBuilder::from_items( &items, | item | {
-    item.path.split( '/' ).map( | s | s.to_string() ).collect()
-  }, | item | item.clone() );
+    item.path.split( '/' ).map( ToString::to_string ).collect()
+  }, Clone::clone );
 
   assert_eq!( tree.children.len(), 2 );
 }
@@ -136,7 +135,7 @@ fn test_tree_builder_empty()
   use data_fmt::TreeBuilder;
 
   let items : Vec< String > = vec![];
-  let tree = TreeBuilder::from_items( &items, | _item | vec![], | item | item.clone() );
+  let tree = TreeBuilder::from_items( &items, | _item | vec![], Clone::clone );
 
   assert_eq!( tree.children.len(), 0 );
 }
@@ -169,7 +168,7 @@ fn test_tree_builder_wide()
   let mut builder = TreeBuilder::new( "root" );
   for i in 0..10
   {
-    builder = builder.insert( &[ &format!( "dir{}", i ), "file.txt" ], i );
+    builder = builder.insert( &[ &format!( "dir{i}" ), "file.txt" ], i );
   }
   let tree = builder.build();
 
@@ -223,7 +222,7 @@ fn test_tree_builder_empty_components()
   assert_eq!( tree.children[ 0 ].name, "dir" );
 }
 
-/// Test build from PathBuf items
+/// Test build from `PathBuf` items
 #[ test ]
 fn test_tree_builder_from_pathbufs()
 {
@@ -237,9 +236,9 @@ fn test_tree_builder_from_pathbufs()
 
   let tree = TreeBuilder::from_items( &paths, | path | {
     path.components().map( | c | c.as_os_str().to_string_lossy().to_string() ).collect()
-  }, | path | path.clone() );
+  }, Clone::clone );
 
-  assert!( tree.children.len() > 0 );
+  assert!( !tree.children.is_empty() );
 }
 
 /// Test builder chaining

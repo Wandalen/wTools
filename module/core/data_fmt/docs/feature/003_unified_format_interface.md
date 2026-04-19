@@ -15,14 +15,16 @@
 | test | `tests/unified_format_trait.rs` | Format trait tests |
 | doc | `../trait/001_format.md` | Format trait contract |
 
-### Design Goals
+### Design
+
+#### Design Goals
 
 1. **Unified interface** -- same API for all formatters (table, json, yaml, toml, text, etc.).
 2. **Canonical data format** -- `TableView` struct as common interchange format between data producers and formatters.
 3. **Granular features** -- each formatter behind an optional feature flag; unused formatters compile to zero code and zero dependencies.
 4. **Zero-cost abstractions** -- no runtime overhead from the trait dispatch; unused formats add nothing to the binary.
 
-### Core Types
+#### Core Types
 
 #### TableView
 
@@ -47,7 +49,7 @@ pub trait Format
 
 Every formatter implements `Format`. Callers build a `TableView` once and pass it to any formatter.
 
-### Formatter Registry
+#### Formatter Registry
 
 | Formatter | Feature Flag | Dependencies | Use Case |
 |-----------|-------------|--------------|----------|
@@ -62,22 +64,30 @@ Every formatter implements `Format`. Callers build a `TableView` once and pass i
 | `TomlFormatter` | `format_toml` | serde, toml | Rust config files |
 | `TextFormatter` | `format_text` | None | Human-readable lists |
 
-### Feature Bundles
+#### Feature Bundles
 
 | Bundle | Includes |
 |--------|----------|
-| `visual_formats` (default) | `format_table` + `format_expanded` + `format_tree` + `format_logfmt` |
-| `web_formats` | `format_html` + `format_sql` |
-| `data_formats` | `format_json` + `format_yaml` + `format_toml` |
-| `all_formats` | `visual_formats` + `web_formats` + `data_formats` + `format_text` + `themes` |
+| `format_meta_visual` | `format_table` + `format_expanded` + `format_tree` + `format_logfmt` |
+| `format_meta_web` | `format_html` + `format_sql` |
+| `format_meta_data` | `format_json` + `format_yaml` + `format_toml` |
+| `all_formats` | `format_meta_visual` + `format_meta_web` + `format_meta_data` + `format_text` + `themes` |
 
 #### Feature Configuration
 
 ```toml
 [features]
-default = [ "integration", "visual_formats" ]
-integration = []
-serde_support = [ "dep:serde" ]
+default       = []
+full          = [ "enabled", "all_formats", "terminal_size" ]
+terminal_size = [ "dep:terminal_size" ]
+enabled = [
+  "dep:error_tools", "error_tools/enabled",
+  "dep:strs_tools", "strs_tools/ansi",
+  "dep:color_tools", "color_tools/enabled",
+  "dep:unicode-width",
+  "table_plain", "expanded_postgres", "tree_hierarchical", "format_logfmt",
+]
+serde_support = [ "dep:serde", "color_tools/serde_support" ]
 
 # Individual formatter meta-features (aggregate granular variant flags)
 format_table = [ "format_table_visual", "format_table_export" ]
@@ -93,29 +103,29 @@ format_logfmt = []
 themes = []
 
 # Convenience bundles
-visual_formats = [ "format_table", "format_expanded", "format_tree", "format_logfmt" ]
-web_formats = [ "format_html", "format_sql" ]
-data_formats = [ "format_json", "format_yaml", "format_toml" ]
-all_formats = [ "visual_formats", "web_formats", "data_formats", "format_text", "themes" ]
+format_meta_visual = [ "format_table", "format_expanded", "format_tree", "format_logfmt" ]
+format_meta_web    = [ "format_html", "format_sql" ]
+format_meta_data   = [ "format_json", "format_yaml", "format_toml" ]
+all_formats = [ "format_meta_visual", "format_meta_web", "format_meta_data", "format_text", "themes" ]
 ```
 
 #### Cargo.toml Usage
 
 ```toml
-# Default: visual formatters only (table, expanded, tree)
-data_fmt = "0.4.0"
+# Standard workspace integration (enabled = core deps + default visual formatters)
+data_fmt = { version = "0.1.0", features = [ "enabled" ] }
 
 # Add JSON support
-data_fmt = { version = "0.4.0", features = [ "format_json" ] }
+data_fmt = { version = "0.1.0", features = [ "enabled", "format_json" ] }
 
 # All formatters
-data_fmt = { version = "0.4.0", features = [ "all_formats" ] }
+data_fmt = { version = "0.1.0", features = [ "full" ] }
 
-# Minimal: only table formatter
-data_fmt = { version = "0.4.0", default-features = false, features = [ "format_table" ] }
+# Minimal: only the plain table variant (no core deps)
+data_fmt = { version = "0.1.0", features = [ "table_plain" ] }
 ```
 
-### Usage Pattern
+#### Usage Pattern
 
 Build data once with `build_view()`, then format with any formatter through the `Format` trait.
 
@@ -144,7 +154,7 @@ let view = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
 }
 ```
 
-### Migration from TreeNode
+#### Migration from TreeNode
 
 The existing `RowBuilder` API is unchanged. The new `build_view()` method is additive.
 

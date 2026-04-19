@@ -711,7 +711,7 @@ fn bare_fold_style_wraps_long_continuation_line()
   );
 }
 
-/// --- T24: Bug reproducer — fold_point=0 must not produce empty header row ---
+/// --- T24: Bug reproducer — `fold_point=0` must not produce empty header row ---
 ///
 /// ## Root Cause
 /// `determine_fold_point()` returned 0 when even column 0's width exceeded the
@@ -720,9 +720,9 @@ fn bare_fold_style_wraps_long_continuation_line()
 /// violation of Invariant 1 (header row never folds / is never empty).
 ///
 /// ## Why Not Caught
-/// T14 used terminal=10 with a 2-char "ID" column as col[0], so fold_point=1 (ID
+/// T14 used terminal=10 with a 2-char "ID" column as col[0], so `fold_point=1` (ID
 /// fits). No test used a terminal narrower than the narrowest column, so the
-/// fold_point=0 path was never exercised.
+/// `fold_point=0` path was never exercised.
 ///
 /// ## Fix Applied
 /// Added `.max(1)` to the return in `determine_fold_point()`: `return i.max(1);`.
@@ -731,12 +731,12 @@ fn bare_fold_style_wraps_long_continuation_line()
 ///
 /// ## Prevention
 /// Add a structural guard: after `determine_fold_point()`, assert
-/// `fold_point >= 1 || column_widths.is_empty()` before slicing primary_headers.
-/// Test with terminal < min(column_widths) to exercise the clamp.
+/// `fold_point >= 1 || column_widths.is_empty()` before slicing `primary_headers`.
+/// Test with terminal < `min(column_widths)` to exercise the clamp.
 ///
 /// ## Pitfall
 /// A single-column table with fold enabled and terminal < col[0].width will also
-/// hit this path. After the fix, fold_point=1=column_widths.len() so no folding
+/// hit this path. After the fix, `fold_point=1=column_widths.len()` so no folding
 /// occurs — the table renders at natural width (correct; can't fold further).
 ///
 // test_kind: bug_reproducer(issue-fold-point-zero)

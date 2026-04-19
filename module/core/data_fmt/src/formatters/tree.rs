@@ -107,7 +107,7 @@
 //! - **v0.2.0**: Added `AlignedTreeFormatter` with two-pass algorithm
 //! - **v0.4.0**: Merged into `TreeFormatter` as `format_aligned()` method
 //!
-//! See `tests/reproduce_alignment_problem.rs` for visual demonstration comparing
+//! See `tests/regression_alignment_column.rs` for visual demonstration comparing
 //! aligned vs unaligned output.
 
 use crate::{ TreeNode, TreeConfig, TreeSymbols, ColumnData, ansi_str::{ visual_len, pad_to_width } };

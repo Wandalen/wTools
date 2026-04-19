@@ -27,7 +27,7 @@
 //! | T07 | Custom indent `">>> "` |
 //! | T08 | Empty indent `""` — detail flush-left |
 //! | T09 | Detail does not affect column widths |
-//! | T10 | AsciiGrid style with multiple detail rows |
+//! | T10 | `AsciiGrid` style with multiple detail rows |
 //! | T11 | Unicode box style with detail |
 //! | T12 | Bordered style with detail |
 //! | T25 | CSV format includes detail lines |
@@ -507,8 +507,7 @@ fn t20_detail_not_colored_with_alternating_rows()
     {
       assert!(
         !line.contains( "\x1b[" ),
-        "detail line must not contain ANSI escape codes: {:?}",
-        line
+        "detail line must not contain ANSI escape codes: {line:?}"
       );
     }
   }
@@ -556,7 +555,7 @@ fn t22_details_shorter_than_rows()
 
   assert!( out.contains( "  only-first" ), "first row detail missing" );
   let detail_count = out.lines()
-    .filter( | l | l.starts_with( "  " ) && !l.contains( "X" ) && !l.contains( "A" ) && !l.contains( "B" ) && !l.contains( "C" ) )
+    .filter( | l | l.starts_with( "  " ) && !l.contains( 'X' ) && !l.contains( 'A' ) && !l.contains( 'B' ) && !l.contains( 'C' ) )
     .count();
   assert_eq!( detail_count, 1, "only row 0 should have detail, got:\n{out}" );
 }
@@ -677,8 +676,7 @@ fn t27_multiline_color_detail_triple()
     .unwrap();
   assert!(
     !detail_line.contains( "\x1b[" ),
-    "detail line must not be colored in triple interaction: {:?}",
-    detail_line,
+    "detail line must not be colored in triple interaction: {detail_line:?}"
   );
 }
 
@@ -698,7 +696,7 @@ fn t28_zero_rows_empty_details()
   let out = plain_output( &view );
 
   // Should render header only (no panic, no detail lines)
-  assert!( out.contains( "X" ), "header missing" );
+  assert!( out.contains( 'X' ), "header missing" );
   // No detail content
   let line_count = out.lines().count();
   assert!( line_count <= 2, "zero-row table should have at most header + separator, got:\n{out}" );
@@ -725,13 +723,11 @@ fn t29_colored_detail_ansi_codes()
     .unwrap();
   assert!(
     detail_line.contains( yellow ),
-    "detail line must contain ANSI color code: {:?}",
-    detail_line,
+    "detail line must contain ANSI color code: {detail_line:?}",
   );
   assert!(
     detail_line.contains( "\x1b[0m" ),
-    "detail line must contain ANSI reset: {:?}",
-    detail_line,
+    "detail line must contain ANSI reset: {detail_line:?}",
   );
 }
 
@@ -762,12 +758,12 @@ fn t30_colored_multiline_detail_per_line_ansi()
   let beta_line  = lines.iter().find( | l | l.contains( "beta" ) ).expect( "beta line missing" );
   let gamma_line = lines.iter().find( | l | l.contains( "gamma" ) ).expect( "gamma line missing" );
 
-  assert!( alpha_line.contains( yellow ), "alpha line must have ANSI color: {:?}", alpha_line );
-  assert!( alpha_line.contains( reset ), "alpha line must have ANSI reset: {:?}", alpha_line );
-  assert!( beta_line.contains( yellow ), "beta line must have ANSI color: {:?}", beta_line );
-  assert!( beta_line.contains( reset ), "beta line must have ANSI reset: {:?}", beta_line );
-  assert!( gamma_line.contains( yellow ), "gamma line must have ANSI color: {:?}", gamma_line );
-  assert!( gamma_line.contains( reset ), "gamma line must have ANSI reset: {:?}", gamma_line );
+  assert!( alpha_line.contains( yellow ), "alpha line must have ANSI color: {alpha_line:?}" );
+  assert!( alpha_line.contains( reset ), "alpha line must have ANSI reset: {alpha_line:?}" );
+  assert!( beta_line.contains( yellow ), "beta line must have ANSI color: {beta_line:?}" );
+  assert!( beta_line.contains( reset ), "beta line must have ANSI reset: {beta_line:?}" );
+  assert!( gamma_line.contains( yellow ), "gamma line must have ANSI color: {gamma_line:?}" );
+  assert!( gamma_line.contains( reset ), "gamma line must have ANSI reset: {gamma_line:?}" );
 
   // Exactly 3 resets — one per sub-line, not one for the whole block
   let reset_count = out.matches( reset ).count();
@@ -804,8 +800,7 @@ fn t31_custom_indent_with_colored_detail()
 
   assert!(
     indent_pos < ansi_pos,
-    "indent must come before ANSI color code: {:?}",
-    detail_line,
+    "indent must come before ANSI color code: {detail_line:?}",
   );
 }
 

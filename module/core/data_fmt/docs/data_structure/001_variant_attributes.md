@@ -14,7 +14,11 @@
 | doc  | `../variant/readme.md` | Variant doc entity master file — consumes this schema |
 | source | `../variant_attributes.md` | Original combined source document (retained per migration rules) |
 
-### Schema
+### Abstract
+
+A 46-attribute schema describing every output format variant in the library. Attributes are organized across 10 groups covering identity, build requirements, character encoding, visual structure, data representation, output characteristics, usage context, technical details, API surface, performance, and compatibility. Every variant doc instance fills out all 46 attributes to enable uniform comparison and selection across formatters.
+
+### Structure
 
 The schema defines 46 attributes across 10 groups. Every variant doc instance fills out all 46 attributes.
 
@@ -118,6 +122,10 @@ The schema defines 46 attributes across 10 groups. Every variant doc instance fi
 | 44 | `works_on_windows` | Windows console compatible without modification | `Yes`, `No`, `Partial` |
 | 45 | `works_in_ci` | Renders correctly in CI/CD environments | `Yes`, `No` |
 | 46 | `copy_paste_friendly` | Easy to copy from terminal and paste elsewhere | `Yes`, `No`, `Partial` |
+
+### Operations
+
+Variant doc instances consume this schema by filling out all 46 attributes in an attribute table. Attributes are referenced by name (column 2) — variant docs must use the exact attribute names defined here. When comparing variants, readers join on attribute name to produce side-by-side comparisons. When adding a new variant, the author consults this doc to know which attributes to document and what value vocabulary is expected for each.
 
 ### Sources
 

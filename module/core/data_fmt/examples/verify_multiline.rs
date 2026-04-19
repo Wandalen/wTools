@@ -1,7 +1,7 @@
-//! Manual Test 002: Multiline Cells Feature
+//! Visual Verification: Multiline Cells Feature
 //!
 //! This example tests multiline cell rendering for manual verification.
-//! Run with: `cargo run --example manual_test_002_multiline`
+//! Run with: `cargo run --example verify_multiline`
 
 #[ cfg( not( feature = "enabled" ) ) ]
 fn main() {}

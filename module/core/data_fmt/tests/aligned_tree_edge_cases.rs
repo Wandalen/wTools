@@ -1,4 +1,4 @@
-//! Edge case tests for TreeFormatter aligned tree functionality
+//! Edge case tests for `TreeFormatter` aligned tree functionality
 //!
 //! ## What This Tests
 //!
@@ -11,7 +11,7 @@
 //!
 //! ## Key Insights Captured
 //!
-//! 1. **Unicode Handling**: visual_len() must handle multi-byte chars correctly
+//! 1. **Unicode Handling**: `visual_len()` must handle multi-byte chars correctly
 //! 2. **Empty Data Graceful Handling**: Empty columns should not break layout
 //! 3. **Robustness**: Algorithm should never panic, even with unusual inputs
 //! 4. **Real-World Simulation**: Crate dependency tree with realistic structure
@@ -19,15 +19,15 @@
 //! ## Critical Edge Case: Unicode and Emoji
 //!
 //! **Problem**: Unicode characters like "日本語" and "😀" take multiple bytes but display as single characters
-//! **Solution**: visual_len() counts display width, not byte length
-//! **Test**: test_aligned_tree_unicode_columns verifies mixed unicode/ascii alignment
+//! **Solution**: `visual_len()` counts display width, not byte length
+//! **Test**: `test_aligned_tree_unicode_columns` verifies mixed unicode/ascii alignment
 //!
 //! ## Why These Tests Matter
 //!
 //! Real-world data contains unicode, emojis, empty fields, and inconsistent structure.
 //! These tests ensure the alignment algorithm is production-ready.
 //!
-//! Split from tests/aligned_tree.rs in v0.4.0 compliance cleanup.
+//! Split from `tests/aligned_tree.rs` in v0.4.0 compliance cleanup.
 
 #![ cfg( feature = "enabled" ) ]
 
@@ -45,9 +45,9 @@ fn test_aligned_tree_empty_columns()
   root.children.push( TreeNode::new(
     "child1".to_string(),
     Some( ColumnData::new( vec![
-      "".to_string(),
+      String::new(),
       "value".to_string(),
-      "".to_string()
+      String::new()
     ]))
   ));
 
@@ -128,7 +128,7 @@ fn test_aligned_tree_crate_list_simulation()
   let mut root = TreeNode::new( "workspace".to_string(), None );
 
   // Root crate with dependencies
-  let mut api_ollama = TreeNode::new(
+  let api_ollama = TreeNode::new(
     "api_ollama".to_string(),
     Some( ColumnData::new( vec![
       "api_ollama".to_string(),

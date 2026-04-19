@@ -16,7 +16,7 @@
 | doc | `../input_model/001_tabular.md` | Conceptual data shape |
 | doc | `../api/001_data_types.md` | Public API surface |
 
-### Definition
+### Type Definition
 
 ```rust
 pub struct TableView

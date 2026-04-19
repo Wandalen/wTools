@@ -1,6 +1,7 @@
 //! Tests for fluent builder APIs and config builder patterns
 
 #![ cfg( feature = "enabled" ) ]
+#![ allow( deprecated ) ]
 
 use data_fmt::
 {
@@ -108,7 +109,7 @@ fn test_tree_config_builder()
     .build();
 
   let formatter = TreeFormatter::with_config( config );
-  let output = formatter.format( &tree, | n | format!( "{}", n ) );
+  let output = formatter.format( &tree, | n | format!( "{n}" ) );
 
   assert!( output.contains( "root" ) );
 }

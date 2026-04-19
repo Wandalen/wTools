@@ -1,4 +1,4 @@
-//! Tests for ColumnData structure
+//! Tests for `ColumnData` structure
 
 #![ cfg( feature = "enabled" ) ]
 
@@ -61,7 +61,7 @@ fn test_column_data_new_three_columns()
 fn test_column_data_new_many_columns()
 {
   let columns : Vec< String > = ( 0..10 )
-    .map( | i | format!( "column_{}", i ) )
+    .map( | i | format!( "column_{i}" ) )
     .collect();
 
   let data = ColumnData::new( columns );
@@ -132,7 +132,7 @@ fn test_column_data_from_pairs_keys_discarded()
 fn test_column_data_display_empty()
 {
   let data = ColumnData::new( vec![] );
-  let output = format!( "{}", data );
+  let output = format!( "{data}" );
 
   assert_eq!( output, "" );
 }
@@ -141,7 +141,7 @@ fn test_column_data_display_empty()
 fn test_column_data_display_single()
 {
   let data = ColumnData::new( vec![ "value".to_string() ] );
-  let output = format!( "{}", data );
+  let output = format!( "{data}" );
 
   assert_eq!( output, "value" );
 }
@@ -154,7 +154,7 @@ fn test_column_data_display_multiple()
     "version".to_string(),
     "path".to_string()
   ]);
-  let output = format!( "{}", data );
+  let output = format!( "{data}" );
 
   assert_eq!( output, "name | version | path" );
 }
@@ -199,9 +199,9 @@ fn test_column_data_clone_independence()
 fn test_column_data_with_empty_strings()
 {
   let data = ColumnData::new( vec![
-    "".to_string(),
+    String::new(),
     "value".to_string(),
-    "".to_string()
+    String::new()
   ]);
 
   assert_eq!( data.len(), 3 );

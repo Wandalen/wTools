@@ -8,6 +8,26 @@ Demonstrates all three output formats (Table, Expanded, Tree) and library featur
 - **Comprehensive overview**: `unified_formats.rs` demonstrates the unified Format trait with multiple formatters
 - All examples follow "concise but informative" design with clear doc comments
 
+## Responsibility Table
+
+| File | Responsibility |
+|------|----------------|
+| `command_report.rs` | Demonstrates property-list style for command execution output |
+| `expanded_format.rs` | Demonstrates ExpandedFormatter: vertical record display (PostgreSQL style) |
+| `html_format.rs` | Demonstrates HtmlFormatter with Bootstrap, Tailwind, and minimal variants |
+| `logfmt_format.rs` | Demonstrates LogfmtFormatter for machine-parseable structured logs |
+| `sql_format.rs` | Demonstrates SqlFormatter: ANSI, PostgreSQL, MySQL, SQLite dialects |
+| `sub_row_detail.rs` | Demonstrates per-row detail lines for supplementary row context |
+| `table_format.rs` | Demonstrates TableFormatter: horizontal row-and-column table output |
+| `text_format.rs` | Demonstrates TextFormatter with 6 variants: bullets, numbered, etc. |
+| `themes.rs` | Demonstrates the theme system for styled table output |
+| `tree_format.rs` | Demonstrates TreeFormatter for hierarchical data visualization |
+| `unified_formats.rs` | Demonstrates the unified Format trait across multiple output formatters |
+| `verify_truncation.rs` | Visual verification: column truncation behavior |
+| `verify_multiline.rs` | Visual verification: multiline cell rendering |
+| `verify_combined.rs` | Visual verification: truncation and multiline combined |
+| `verify_runner.rs` | Runs all visual verification scenarios in sequence |
+
 ## Available Examples
 
 ### unified_formats.rs - Unified Format Interface
@@ -162,25 +182,25 @@ cache    OK      1ms
 
 **Run**: `cargo run --example themes`
 
-### manual_test_001_truncation.rs - Manual Truncation Tests
-**Purpose**: Manual verification of column truncation behavior
+### verify_truncation.rs - Column Truncation Verification
+**Purpose**: Visual verification of column truncation behavior
 
-**Run**: `cargo run --example manual_test_001_truncation`
+**Run**: `cargo run --example verify_truncation`
 
-### manual_test_002_multiline.rs - Manual Multiline Tests
-**Purpose**: Manual verification of multiline cell rendering
+### verify_multiline.rs - Multiline Cell Verification
+**Purpose**: Visual verification of multiline cell rendering
 
-**Run**: `cargo run --example manual_test_002_multiline`
+**Run**: `cargo run --example verify_multiline`
 
-### manual_test_003_combined.rs - Manual Combined Feature Tests
-**Purpose**: Manual verification of truncation + multiline combined
+### verify_combined.rs - Combined Feature Verification
+**Purpose**: Visual verification of truncation + multiline combined
 
-**Run**: `cargo run --example manual_test_003_combined`
+**Run**: `cargo run --example verify_combined`
 
-### manual_test_runner.rs - Manual Test Runner
-**Purpose**: Runs all manual test scenarios in sequence for visual inspection
+### verify_runner.rs - Verification Runner
+**Purpose**: Runs all visual verification scenarios in sequence
 
-**Run**: `cargo run --example manual_test_runner`
+**Run**: `cargo run --example verify_runner`
 
 ## Quick Start
 

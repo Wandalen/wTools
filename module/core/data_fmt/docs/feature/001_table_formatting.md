@@ -11,13 +11,15 @@
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/formatters/table.rs` | TableFormatter implementation |
+| source | `src/formatters/table/mod.rs` | TableFormatter implementation |
 | test | `tests/table_rendering_borders.rs` | Border and style rendering tests |
 | test | `tests/table_styles_presets.rs` | Preset configuration tests |
 | doc | `../algorithm/001_multiline_cell_rendering.md` | Multiline cell algorithm |
 | doc | `005_auto_fit.md` | Terminal-aware auto-wrapping and column folding |
 
-### Style Presets
+### Design
+
+#### Style Presets
 
 `TableConfig` provides 9 preset constructors. Each returns a fully configured instance ready for use.
 
@@ -33,7 +35,7 @@
 | `tsv()` | Tab-separated values | `TableConfig::tsv()` |
 | `compact()` | Minimal spacing for maximum density | `TableConfig::compact()` |
 
-### Multiline Cells
+#### Multiline Cells
 
 When any cell contains `\n`, the formatter activates multiline rendering automatically using a two-pass algorithm.
 
@@ -50,7 +52,7 @@ Behavior details:
 - Single-line cells work identically to pre-multiline behavior.
 - CSV/TSV formats disable multiline rendering and keep `\n` as literal characters.
 
-### Column Truncation
+#### Column Truncation
 
 Controlled by two `TableConfig` fields:
 
@@ -71,7 +73,7 @@ Truncation is ANSI-aware: `visual_len()` excludes escape codes from the width co
 
 When both features are active, truncation is applied per-line after splitting on `\n`. Each sub-line is independently truncated to `max_column_width`, producing a clean visual result.
 
-### Min Column Width Floor
+#### Min Column Width Floor
 
 `min_column_width : usize` widens every column to at least the given display-character count. Applied after the content-driven max and after the `max_column_width` cap:
 
@@ -87,7 +89,7 @@ If `min_column_width > max_column_width`, columns settle at `min_column_width` (
 
 When `TableConfig::column_widths` is set explicitly, it replaces calculated widths entirely. Both `min_column_width` and `max_column_width` are ignored. This is intended for callers that need exact control.
 
-### ANSI Header and Row Coloring
+#### ANSI Header and Row Coloring
 
 Two independent color features controlled via `TableConfig` builder methods:
 
@@ -108,7 +110,7 @@ let config = TableConfig::plain()
 
 Every colored line ends with `\x1b[0m` before the trailing `\n` to prevent terminal background-color bleed. For multiline cells, each sub-line is wrapped with its own color/RESET pair.
 
-### Border Variant Rendering
+#### Border Variant Rendering
 
 `BorderVariant` controls the overall border style:
 
@@ -124,7 +126,7 @@ Every colored line ends with `\x1b[0m` before the trailing `\n` to prevent termi
 
 `HeaderSeparatorVariant` and `ColumnSeparator` provide independent control over the separator line below the header and the delimiter between columns, respectively.
 
-### Sub-Row Detail Lines
+#### Sub-Row Detail Lines
 
 Optional annotation lines that appear below a data row, outside the cell grid. Each detail is typed as `Option<DecoratedText>`, enabling per-row ANSI color without affecting column formatting.
 
@@ -150,16 +152,16 @@ Rendering behavior:
 - Detail lines do NOT participate in column width calculation — they are metadata, not cell values.
 - Detail lines are NOT colored by alternating row colors — only by the `DecoratedText.color` field.
 - For bordered styles (`AsciiGrid`, `Unicode`), detail lines appear outside the cell grid (no border pipes).
-- `None` and empty-text details are suppressed — no blank line emitted.
+- `None` and empty-text details are suppressed -- no blank line emitted.
 - Rows added via `add_row()` or `add_row_mut()` implicitly have `None` detail (no output change).
 
-### Auto-Fit (Terminal-Aware Rendering)
+#### Auto-Fit (Terminal-Aware Rendering)
 
 When `auto_wrap` and `auto_fold` are both enabled (the default), `TableFormatter` automatically fits output within terminal width using two cooperating strategies: cell wrapping (grows row height) and column folding (moves overflow columns to continuation lines). Zero configuration required.
 
 See `005_auto_fit.md` for full behavioral specification, configuration fields, progressive degradation rules, and interaction with other features.
 
-### Column Width Calculation Summary
+#### Column Width Calculation Summary
 
 The full column width pipeline:
 

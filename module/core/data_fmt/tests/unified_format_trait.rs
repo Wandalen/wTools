@@ -87,11 +87,11 @@ mod table_format_tests
     {
       let formatter = TableFormatter::with_config( config );
       let result = Format::format( &formatter, &view );
-      assert!( result.is_ok(), "{} preset should format successfully", name );
+      assert!( result.is_ok(), "{name} preset should format successfully" );
 
       let output = result.unwrap();
-      assert!( !output.is_empty(), "{} preset should produce output", name );
-      assert!( output.contains( "A" ), "{} preset should contain data", name );
+      assert!( !output.is_empty(), "{name} preset should produce output" );
+      assert!( output.contains( 'A' ), "{name} preset should contain data" );
     }
   }
 
@@ -356,10 +356,10 @@ mod text_format_tests
     {
       let formatter = TextFormatter::new( style );
       let result = Format::format( &formatter, &view );
-      assert!( result.is_ok(), "{:?} style should format successfully", style );
+      assert!( result.is_ok(), "{style:?} style should format successfully" );
 
       let output = result.unwrap();
-      assert!( !output.is_empty(), "{:?} style should produce output", style );
+      assert!( !output.is_empty(), "{style:?} style should produce output" );
     }
   }
 
@@ -473,12 +473,12 @@ fn test_format_error_display()
   #[ cfg( feature = "serde_support" ) ]
   {
     let err = FormatError::Serialization( "test error".to_string() );
-    let display = format!( "{}", err );
+    let display = format!( "{err}" );
     assert!( display.contains( "Serialization error" ) );
     assert!( display.contains( "test error" ) );
   }
 
   let err = FormatError::InvalidData( "invalid".to_string() );
-  let display = format!( "{}", err );
+  let display = format!( "{err}" );
   assert!( display.contains( "Invalid data" ) );
 }

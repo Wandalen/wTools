@@ -1,4 +1,4 @@
-//! Basic formatting tests for TreeFormatter aligned tree functionality
+//! Basic formatting tests for `TreeFormatter` aligned tree functionality
 //!
 //! ## What This Tests
 //!
@@ -14,11 +14,11 @@
 //!
 //! ## Historical Context
 //!
-//! Added in v0.2.0 when AlignedTreeFormatter was introduced to solve the "ragged output"
+//! Added in v0.2.0 when `AlignedTreeFormatter` was introduced to solve the "ragged output"
 //! problem. These tests verify the two-pass algorithm (width calculation, then formatting)
 //! works correctly for common cases.
 //!
-//! Split from tests/aligned_tree.rs (501 lines) in v0.4.0 compliance cleanup.
+//! Split from `tests/aligned_tree.rs` (501 lines) in v0.4.0 compliance cleanup.
 //!
 //! ## Why Alignment Matters
 //!
@@ -34,7 +34,7 @@
 //! └── very_long_name  v2.0  (path2)
 //! ```
 //!
-//! See tests/reproduce_alignment_problem.rs for detailed visual demonstration.
+//! See `tests/regression_alignment_column.rs` for detailed visual demonstration.
 
 #![ cfg( feature = "enabled" ) ]
 
@@ -134,12 +134,12 @@ fn test_aligned_tree_two_siblings_alignment()
   assert_eq!( lines.len(), 2 ); // 2 children (root not shown by default)
 
   // Find lines with data
-  let line1 = lines.iter().find( | l | l.contains( "short" ) ).unwrap();
-  let line2 = lines.iter().find( | l | l.contains( "longer_name" ) ).unwrap();
+  let short_row = lines.iter().find( | l | l.contains( "short" ) ).unwrap();
+  let long_row = lines.iter().find( | l | l.contains( "longer_name" ) ).unwrap();
 
   // Check that version column (v1.0, v2.0) starts at same position
-  let v10_pos = line1.find( "v1.0" ).unwrap();
-  let v20_pos = line2.find( "v2.0" ).unwrap();
+  let v10_pos = short_row.find( "v1.0" ).unwrap();
+  let v20_pos = long_row.find( "v2.0" ).unwrap();
   assert_eq!( v10_pos, v20_pos, "Version column should be aligned" );
 }
 
@@ -175,7 +175,7 @@ fn test_aligned_tree_two_levels()
 
   assert!( output.contains( "parent_name" ) );
   assert!( output.contains( "child_name" ) );
-  assert!( output.contains( "│" ) || output.contains( " " ) ); // Continuation or space
+  assert!( output.contains( "│" ) || output.contains( ' ' ) ); // Continuation or space
 }
 
 #[ test ]
@@ -230,10 +230,10 @@ fn test_aligned_tree_many_siblings()
   for i in 0..10
   {
     root.children.push( TreeNode::new(
-      format!( "child{}", i ),
+      format!( "child{i}" ),
       Some( ColumnData::new( vec![
-        format!( "name_{}", i ),
-        format!( "v{}.0", i )
+        format!( "name_{i}" ),
+        format!( "v{i}.0" )
       ]))
     ));
   }

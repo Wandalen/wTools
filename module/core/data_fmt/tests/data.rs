@@ -1,4 +1,4 @@
-//! Tests for core data structures (TreeNode, RowBuilder, TableShapedView)
+//! Tests for core data structures (`TreeNode`, `RowBuilder`, `TableShapedView`)
 
 #![ cfg( feature = "enabled" ) ]
 
@@ -8,7 +8,7 @@ use data_fmt::{ TreeNode, RowBuilder, TableShapedView };
 // TreeNode Tests
 // =============================================================================
 
-/// Test TreeNode creation with data
+/// Test `TreeNode` creation with data
 #[ test ]
 fn test_tree_node_with_data()
 {
@@ -19,7 +19,7 @@ fn test_tree_node_with_data()
   assert!( node.children.is_empty() );
 }
 
-/// Test TreeNode creation without data (directory node)
+/// Test `TreeNode` creation without data (directory node)
 #[ test ]
 fn test_tree_node_directory()
 {
@@ -30,7 +30,7 @@ fn test_tree_node_directory()
   assert!( node.children.is_empty() );
 }
 
-/// Test adding children to TreeNode
+/// Test adding children to `TreeNode`
 #[ test ]
 fn test_tree_node_add_children()
 {
@@ -46,7 +46,7 @@ fn test_tree_node_add_children()
   assert_eq!( root.children[ 1 ].name, "child2" );
 }
 
-/// Test deep nesting in TreeNode
+/// Test deep nesting in `TreeNode`
 #[ test ]
 fn test_tree_node_deep_nesting()
 {
@@ -65,7 +65,7 @@ fn test_tree_node_deep_nesting()
   assert_eq!( root.children[ 0 ].children[ 0 ].children[ 0 ].data, Some( 42u64 ) );
 }
 
-/// Test TreeNode clone
+/// Test `TreeNode` clone
 #[ test ]
 fn test_tree_node_clone()
 {
@@ -76,17 +76,17 @@ fn test_tree_node_clone()
   assert_eq!( original.data, cloned.data );
 }
 
-/// Test TreeNode debug formatting
+/// Test `TreeNode` debug formatting
 #[ test ]
 fn test_tree_node_debug()
 {
   let node = TreeNode::new( "test".to_string(), Some( 42u64 ) );
-  let debug_str = format!( "{:?}", node );
+  let debug_str = format!( "{node:?}" );
 
   assert!( debug_str.contains( "TreeNode" ) );
 }
 
-/// Test empty TreeNode
+/// Test empty `TreeNode`
 #[ test ]
 fn test_tree_node_empty()
 {
@@ -97,7 +97,7 @@ fn test_tree_node_empty()
   assert!( node.children.is_empty() );
 }
 
-/// Test single TreeNode
+/// Test single `TreeNode`
 #[ test ]
 fn test_tree_node_single()
 {
@@ -107,21 +107,21 @@ fn test_tree_node_single()
   assert_eq!( node.data, Some( "value".to_string() ) );
 }
 
-/// Test wide TreeNode (many children)
+/// Test wide `TreeNode` (many children)
 #[ test ]
 fn test_tree_node_wide()
 {
   let mut root = TreeNode::new( "root".to_string(), None::<u64> );
 
-  for i in 0..10
+  for i in 0u64..10
   {
-    root.children.push( TreeNode::new( format!( "child{}", i ), Some( i as u64 ) ) );
+    root.children.push( TreeNode::new( format!( "child{i}" ), Some( i ) ) );
   }
 
   assert_eq!( root.children.len(), 10 );
 }
 
-/// Test large TreeNode
+/// Test large `TreeNode`
 #[ test ]
 fn test_tree_node_large()
 {
@@ -129,10 +129,10 @@ fn test_tree_node_large()
 
   for i in 0..100
   {
-    let mut child = TreeNode::new( format!( "branch{}", i ), None );
+    let mut child = TreeNode::new( format!( "branch{i}" ), None );
     for j in 0..10
     {
-      child.children.push( TreeNode::new( format!( "leaf{}-{}", i, j ), Some( format!( "data{}-{}", i, j ) ) ) );
+      child.children.push( TreeNode::new( format!( "leaf{i}-{j}" ), Some( format!( "data{i}-{j}" ) ) ) );
     }
     root.children.push( child );
   }

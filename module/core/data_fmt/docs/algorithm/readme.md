@@ -7,12 +7,6 @@
 - **In Scope**: Multiline cell rendering, word wrapping, tree column alignment, budget allocation, fold detection.
 - **Out of Scope**: Simple formatting logic, configuration details (see `api/config_types`).
 
-### Files
-
-| File | Responsibility |
-|------|----------------|
-| `procedure.md` | Instance creation and deprecation procedure |
-
 ### Overview Table
 
 | ID | Name | Purpose | Status |

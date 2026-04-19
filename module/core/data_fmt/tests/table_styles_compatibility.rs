@@ -9,13 +9,13 @@
 //!
 //! ## Critical Regression Tests
 //!
-//! ### Header Separator Alignment Bug (test_header_separator_alignment_with_padding)
-//! **Bug**: Header separator line length didn't match header/row lengths when inner_padding > 0
+//! ### Header Separator Alignment Bug (`test_header_separator_alignment_with_padding`)
+//! **Bug**: Header separator line length didn't match header/row lengths when `inner_padding` > 0
 //! **Symptom**: Misaligned table boxes, pipes didn't line up vertically
-//! **Fix**: Separator generation now accounts for inner_padding
+//! **Fix**: Separator generation now accounts for `inner_padding`
 //! **Test**: Verifies all lines have same length and pipe count
 //!
-//! ### Double Pipe Bug (test_default_table_no_double_pipes)
+//! ### Double Pipe Bug (`test_default_table_no_double_pipes`)
 //! **Bug**: Some configurations produced `||` (double pipes) in output
 //! **Symptom**: Visually broken tables with extra pipes
 //! **Fix**: Border pipe logic ensures single pipes only
@@ -24,13 +24,13 @@
 //! ## Why Backward Compatibility Matters
 //!
 //! v0.3.0 was a major refactoring introducing:
-//! - BorderVariant, HeaderSeparatorVariant, ColumnSeparator enums
+//! - `BorderVariant`, `HeaderSeparatorVariant`, `ColumnSeparator` enums
 //! - 9 style preset constructors
 //! - Comprehensive parametrization
 //!
 //! Existing code using v0.2.x API must continue working without changes.
 //!
-//! Split from tests/table_styles.rs in v0.4.0 compliance cleanup.
+//! Split from `tests/table_styles.rs` in v0.4.0 compliance cleanup.
 
 #![ cfg( feature = "enabled" ) ]
 
@@ -105,8 +105,8 @@ fn test_wide_table_plain_style()
 
   assert!( output.contains( "COL1" ) );
   assert!( output.contains( "COL5" ) );
-  assert!( output.contains( "A" ) );
-  assert!( output.contains( "E" ) );
+  assert!( output.contains( 'A' ) );
+  assert!( output.contains( 'E' ) );
 }
 
 #[ test ]
@@ -164,8 +164,7 @@ fn test_header_separator_alignment_with_padding()
 
   assert_eq!(
     row_len, header_len,
-    "Row line length ({}) must match header length ({})",
-    row_len, header_len
+    "Row line length ({row_len}) must match header length ({header_len})",
   );
 
   // Verify separator has correct structure: +dashes+dashes+dashes+

@@ -17,6 +17,7 @@ use data_fmt::{ RowBuilder, TreeNode };
 /// - Bob, 25, LA
 ///
 /// Used across table formatting tests for consistency.
+#[ allow( dead_code ) ]
 pub fn sample_data() -> TreeNode< String >
 {
   RowBuilder::new( vec![ "NAME".into(), "AGE".into(), "CITY".into() ] )

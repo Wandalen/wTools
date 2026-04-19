@@ -21,7 +21,7 @@ Contains all functional and integration tests for data_fmt library. Tests valida
 | `column_data.rs` | Test column data handling |
 | `column_truncation.rs` | Test column width truncation |
 | `data.rs` | Test core data structures |
-| `debug_alignment.rs` | Test debug output alignment |
+| `debug_output_format.rs` | Test debug output formatting |
 | `decorated_cells_test.rs` | Test per-cell DecoratedText coloring and per-line ANSI reset invariant |
 | `flatten_config.rs` | Test FlattenConfig customization |
 | `fluent_api.rs` | Test fluent RowBuilder API |
@@ -30,8 +30,8 @@ Contains all functional and integration tests for data_fmt library. Tests valida
 | `logfmt.rs` | Test logfmt output format |
 | `manual/` | Store manual testing procedures |
 | `multiline_cells.rs` | Test multiline cell support |
-| `reproduce_alignment_problem.rs` | Reproduce historical alignment bugs |
-| `reproduce_willbe3_alignment.rs` | Reproduce willbe3 alignment issue |
+| `regression_alignment_column.rs` | Regression guard for historical column alignment bugs |
+| `regression_willbe3_alignment.rs` | Regression guard for willbe3 alignment issue |
 | `sql.rs` | Test SQL output format |
 | `table_styles_compatibility.rs` | Test table style compatibility |
 | `table_styles_outputs.rs` | Test table style outputs |

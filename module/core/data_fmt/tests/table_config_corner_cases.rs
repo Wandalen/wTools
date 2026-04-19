@@ -21,7 +21,7 @@
 //! - `column_widths(vec![5, 10])` — fixed widths respected
 //! - `max_column_width(None)` — no truncation
 //!
-//! ### 3. unicode_box() Critical Invariants (bug-011 regression)
+//! ### 3. `unicode_box()` Critical Invariants (bug-011 regression)
 //! - Single column: still uses `│`
 //! - Five columns: all separators are `│`
 //! - No plain-dash-only separator rows
@@ -44,7 +44,7 @@
 //! - Header with empty column name
 //! - Very long content (100+ chars)
 //!
-//! ### 7. Truncation Edge Cases (not covered in column_truncation.rs)
+//! ### 7. Truncation Edge Cases (not covered in `column_truncation.rs`)
 //! - `max_column_width(Some(0))` — zero-width limit
 //! - Marker wider than content slot — graceful handling
 //!
@@ -52,14 +52,14 @@
 //! - All 9 presets render without panic
 //! - `compact()` produces denser output than `plain()`
 //!
-//! ### 9. min_column_width Floor Enforcement (Task 012)
+//! ### 9. `min_column_width` Floor Enforcement (Task 012)
 //! - T012-P01: short content raised to floor
 //! - T012-P02: min and max both honored together
 //! - T012-P03: min=0 (default) is a no-op (regression guard)
 //! - T012-P04: content at exact floor width — no over-expansion (regression guard)
 //! - T012-N01: min wins over max for short content (floor applied after max cap)
 //! - T012-N02: content > floor — content width wins (regression guard)
-//! - T012-N03: `column_widths` override bypasses min_column_width
+//! - T012-N03: `column_widths` override bypasses `min_column_width`
 //! - T012-N04: empty cell content — floor applied when content shorter than floor
 //! - T012-N05: very large min value — no panic
 //!
@@ -123,7 +123,7 @@ fn test_inner_padding_zero_removes_cell_spaces()
   // With inner_padding=0, rows should start with "|" immediately (no "|  " prefix)
   // bordered() + AsciiGrid separator → rows have leading pipe
   let data_lines : Vec< &str > = output.lines()
-    .filter( | l | l.contains( "1" ) || l.contains( "A" ) )
+    .filter( | l | l.contains( '1' ) || l.contains( 'A' ) )
     .collect();
 
   assert!(
@@ -158,7 +158,7 @@ fn test_inner_padding_three_adds_cell_spaces()
 }
 
 /// `outer_padding(false)` — no outer padding space in space-separated format.
-/// Uses plain() base (Spaces separator) to avoid border pipe interference.
+/// Uses `plain()` base (Spaces separator) to avoid border pipe interference.
 #[ test ]
 fn test_outer_padding_false_with_spaces_separator()
 {
@@ -204,7 +204,7 @@ fn test_column_separator_pipe_character_appears_in_output()
     "Character('|') separator must produce | in output; output:\n{output}"
   );
   assert!(
-    output.contains( "x" ) && output.contains( "y" ),
+    output.contains( 'x' ) && output.contains( 'y' ),
     "Output must contain data; output:\n{output}"
   );
 }
@@ -264,7 +264,7 @@ fn test_align_right_mixed_produces_different_padding()
 // 3. unicode_box() Critical Invariants
 // ============================================================================
 
-/// Single-column unicode_box table must still use `│` separator.
+/// Single-column `unicode_box` table must still use `│` separator.
 /// Regression guard: single-column tables might skip separator logic.
 #[ test ]
 fn test_unicode_box_single_column_uses_unicode_separator()
@@ -300,7 +300,7 @@ fn test_unicode_box_single_column_uses_unicode_separator()
   }
 }
 
-/// Five-column unicode_box table — all inter-column separators must be `│`.
+/// Five-column `unicode_box` table — all inter-column separators must be `│`.
 /// Regression: multi-column rendering must not regress to spaces.
 #[ test ]
 fn test_unicode_box_five_columns_all_use_unicode_separator()
@@ -316,7 +316,7 @@ fn test_unicode_box_five_columns_all_use_unicode_separator()
   // Every data row must contain │
   for line in output.lines()
   {
-    if line.contains( "a" ) || line.contains( "b" ) || line.contains( "C1" )
+    if line.contains( 'a' ) || line.contains( 'b' ) || line.contains( "C1" )
     {
       assert!(
         line.contains( '│' ),
@@ -332,7 +332,7 @@ fn test_unicode_box_five_columns_all_use_unicode_separator()
   );
 }
 
-/// unicode_box header separator must never be a plain-dash line.
+/// `unicode_box` header separator must never be a plain-dash line.
 /// This is the core invariant of bug-011 — the header sep must use Unicode chars.
 #[ test ]
 fn test_unicode_box_no_plain_dash_separator()
@@ -408,7 +408,7 @@ fn test_align_right_fewer_entries_than_columns_no_panic()
   ).format( &tree );
 
   assert!(
-    output.contains( "1" ) && output.contains( "2" ) && output.contains( "3" ),
+    output.contains( '1' ) && output.contains( '2' ) && output.contains( '3' ),
     "align_right with fewer entries than columns must render all columns; output:\n{output}"
   );
 }
@@ -427,7 +427,7 @@ fn test_align_right_more_entries_than_columns_no_panic()
   ).format( &tree );
 
   assert!(
-    output.contains( "x" ),
+    output.contains( 'x' ),
     "align_right with more entries than columns must not panic and must render data; output:\n{output}"
   );
 }
@@ -451,12 +451,12 @@ fn test_column_widths_wider_than_content_adds_padding()
 
   // The row should be padded to 20 chars for the column (plus any outer padding)
   assert!(
-    output.contains( "A" ),
+    output.contains( 'A' ),
     "column_widths wider than content must still render; output:\n{output}"
   );
 
   // Line should be at least 20 chars wide (content padded to width)
-  let data_line = output.lines().find( | l | l.contains( "A" ) ).unwrap();
+  let data_line = output.lines().find( | l | l.contains( 'A' ) ).unwrap();
   assert!(
     data_line.len() >= 20,
     "padded column line must be at least 20 chars; line={data_line:?}; output:\n{output}"
@@ -644,7 +644,7 @@ fn test_very_long_cell_content_renders_without_truncation_by_default()
 // ============================================================================
 
 /// `max_column_width(Some(0))` — zero-width limit; must not panic.
-/// With a zero-width limit, the content slot is saturating_sub(marker_len) = 0,
+/// With a zero-width limit, the content slot is `saturating_sub(marker_len)` = 0,
 /// so only the marker (or nothing) is emitted.
 #[ test ]
 fn test_max_column_width_zero_no_panic()
@@ -661,8 +661,8 @@ fn test_max_column_width_zero_no_panic()
   assert!( !output.is_empty(), "max_column_width(0) must produce non-empty output; output:{output:?}" );
 }
 
-/// Column truncation: content at exactly max_column_width is NOT truncated.
-/// This is already tested in column_truncation.rs but repeated here to anchor
+/// Column truncation: content at exactly `max_column_width` is NOT truncated.
+/// This is already tested in `column_truncation.rs` but repeated here to anchor
 /// the invariant in the corner-cases file.
 #[ test ]
 fn test_truncation_at_exact_max_width_no_truncation_marker()
@@ -742,10 +742,10 @@ fn test_compact_denser_than_plain()
 
   // compact should produce shorter lines than plain (1-space vs 2-space separator)
   let compact_data : Vec< &str > = compact_out.lines()
-    .filter( | l | l.contains( "x" ) )
+    .filter( | l | l.contains( 'x' ) )
     .collect();
   let plain_data : Vec< &str > = plain_out.lines()
-    .filter( | l | l.contains( "x" ) )
+    .filter( | l | l.contains( 'x' ) )
     .collect();
 
   if !compact_data.is_empty() && !plain_data.is_empty()
@@ -763,7 +763,7 @@ fn test_compact_denser_than_plain()
 // ============================================================================
 
 /// T012-P01: `min_column_width(10)` on short content → all columns padded to ≥ 10.
-/// plain() inner_padding=0 makes column width equal to rendered line length for single
+/// `plain()` `inner_padding=0` makes column width equal to rendered line length for single
 /// column tables, so `line.len() >= 10` directly verifies the floor is applied.
 #[ test ]
 fn test_min_column_width_raises_short_content_to_floor()
@@ -907,7 +907,7 @@ fn test_min_column_width_does_not_shrink_wider_content()
 }
 
 /// T012-N03: `column_widths([2])` override + `min_column_width(10)` — override wins.
-/// When `column_widths` override is set, min_column_width is bypassed entirely.
+/// When `column_widths` override is set, `min_column_width` is bypassed entirely.
 /// This tests the documented behavioral contract: override = exact widths, no limits.
 #[ test ]
 fn test_column_widths_override_bypasses_min_column_width()
@@ -964,7 +964,7 @@ fn test_min_column_width_applied_when_content_is_empty()
 }
 
 /// T012-N05: very large `min_column_width` — no panic during rendering.
-/// Uses 10_000 rather than usize::MAX to avoid OOM; verifies no arithmetic overflow.
+/// Uses `10_000` rather than `usize::MAX` to avoid OOM; verifies no arithmetic overflow.
 #[ test ]
 fn test_min_column_width_large_value_no_panic()
 {
@@ -1113,7 +1113,7 @@ fn test_markdown_all_lines_same_display_width()
 
 /// All lines in a `bordered()` table must have the same display width.
 ///
-/// Regression guard: AsciiGrid separator alignment must remain correct.
+/// Regression guard: `AsciiGrid` separator alignment must remain correct.
 #[ test ]
 fn test_bordered_all_lines_same_display_width()
 {
@@ -1132,15 +1132,14 @@ fn test_bordered_all_lines_same_display_width()
   {
     assert_eq!(
       w, first_width,
-      "bordered line {idx} has width {w}, expected {first_width}\n  line: {:?}\nFull output:\n{output}",
-      line
+      "bordered line {idx} has width {w}, expected {first_width}\n  line: {line:?}\nFull output:\n{output}"
     );
   }
 }
 
 /// All lines in a `grid()` table must have the same display width.
 ///
-/// Regression guard: AsciiGrid border + separator alignment must remain correct.
+/// Regression guard: `AsciiGrid` border + separator alignment must remain correct.
 #[ test ]
 fn test_grid_all_lines_same_display_width()
 {
@@ -1160,8 +1159,7 @@ fn test_grid_all_lines_same_display_width()
   {
     assert_eq!(
       w, first_width,
-      "grid line {idx} has width {w}, expected {first_width}\n  line: {:?}\nFull output:\n{output}",
-      line
+      "grid line {idx} has width {w}, expected {first_width}\n  line: {line:?}\nFull output:\n{output}"
     );
   }
 }

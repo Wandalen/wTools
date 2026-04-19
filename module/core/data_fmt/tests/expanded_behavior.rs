@@ -75,21 +75,18 @@ fn test_expanded_show_record_numbers_false_suppresses_number()
   assert!
   (
     !output.contains( "-[ RECORD 1 ]" ),
-    "show_record_numbers(false) must suppress number '1' from separator; got:\n{}",
-    output,
+    "show_record_numbers(false) must suppress number '1' from separator; got:\n{output}",
   );
   assert!
   (
     !output.contains( "-[ RECORD 2 ]" ),
-    "show_record_numbers(false) must suppress number '2' from separator; got:\n{}",
-    output,
+    "show_record_numbers(false) must suppress number '2' from separator; got:\n{output}",
   );
   // Separator still appears (not suppressed entirely)
   assert!
   (
     output.contains( "-[ RECORD" ),
-    "show_record_numbers(false) must keep the separator text (just drop the number); got:\n{}",
-    output,
+    "show_record_numbers(false) must keep the separator text (just drop the number); got:\n{output}",
   );
 }
 
@@ -111,14 +108,12 @@ fn test_expanded_show_record_numbers_true_keeps_number()
   assert!
   (
     output.contains( "-[ RECORD 1 ]" ),
-    "show_record_numbers(true) must keep number in separator; got:\n{}",
-    output,
+    "show_record_numbers(true) must keep number in separator; got:\n{output}",
   );
   assert!
   (
     output.contains( "-[ RECORD 2 ]" ),
-    "show_record_numbers(true) must keep number in separator; got:\n{}",
-    output,
+    "show_record_numbers(true) must keep number in separator; got:\n{output}",
   );
 }
 
@@ -142,8 +137,7 @@ fn test_expanded_show_record_numbers_false_empty_separator_no_effect()
   assert!
   (
     !output.contains( "RECORD" ),
-    "empty separator must produce no separator lines; got:\n{}",
-    output,
+    "empty separator must produce no separator lines; got:\n{output}",
   );
 }
 
@@ -166,8 +160,7 @@ fn test_expanded_show_record_numbers_false_separator_without_placeholder()
   assert!
   (
     output.contains( "---" ),
-    "separator without {{}} should be output verbatim; got:\n{}",
-    output,
+    "separator without {{}} should be output verbatim; got:\n{output}",
   );
 }
 
@@ -195,11 +188,11 @@ fn test_expanded_show_record_numbers_false_with_indent_prefix()
       // Separator: not indented, no number
       assert!(
         !line.starts_with( "  " ),
-        "separator must not be indented; got: {:?}", line
+        "separator must not be indented; got: {line:?}"
       );
       assert!(
-        !line.contains( "1" ) && !line.contains( "2" ),
-        "separator must have no number when show_record_numbers=false; got: {:?}", line
+        !line.contains( '1' ) && !line.contains( '2' ),
+        "separator must have no number when show_record_numbers=false; got: {line:?}"
       );
     }
     else
@@ -207,7 +200,7 @@ fn test_expanded_show_record_numbers_false_with_indent_prefix()
       // Key-value: indented
       assert!(
         line.starts_with( "  " ),
-        "kv line must be indented; got: {:?}", line
+        "kv line must be indented; got: {line:?}"
       );
     }
   }
@@ -234,14 +227,12 @@ fn test_expanded_before_separator_alignment_with_indent()
   assert!
   (
     output.contains( ">> A       |" ),
-    "short key must be padded to align with longest key (indent included); got:\n{}",
-    output,
+    "short key must be padded to align with longest key (indent included); got:\n{output}",
   );
   assert!
   (
     output.contains( ">> LongKey |" ),
-    "longest key should have no extra padding; got:\n{}",
-    output,
+    "longest key should have no extra padding; got:\n{output}",
   );
 }
 
@@ -266,14 +257,12 @@ fn test_expanded_after_separator_alignment_with_indent()
   assert!
   (
     output.contains( "  A:       x" ),
-    "short key with AfterSeparator must be padded; got:\n{}",
-    output,
+    "short key with AfterSeparator must be padded; got:\n{output}",
   );
   assert!
   (
     output.contains( "  LongKey: y" ),
-    "longest key with AfterSeparator must have 1 space (from sep only); got:\n{}",
-    output,
+    "longest key with AfterSeparator must have 1 space (from sep only); got:\n{output}",
   );
 }
 
@@ -324,8 +313,7 @@ fn test_expanded_indent_prefix_with_empty_cell_value()
   assert!
   (
     output.lines().any( | l | l.starts_with( "  Key" ) ),
-    "empty value line must still have indent prefix; got:\n{}",
-    output,
+    "empty value line must still have indent prefix; got:\n{output}",
   );
 }
 
@@ -349,15 +337,13 @@ fn test_expanded_property_style_blank_line_between_records_only()
   assert!
   (
     !output.starts_with( '\n' ),
-    "output must not start with blank line; got:\n{:?}",
-    output,
+    "output must not start with blank line; got:\n{output:?}",
   );
   // Must NOT end with double newline (extra blank line at end)
   assert!
   (
     !output.ends_with( "\n\n" ),
-    "output must not end with extra blank line; got:\n{:?}",
-    output,
+    "output must not end with extra blank line; got:\n{output:?}",
   );
   // Must have exactly 2 blank lines (between 3 records = 2 gaps)
   let blank_line_count = output.lines().filter( | l | l.trim().is_empty() ).count();
@@ -365,9 +351,7 @@ fn test_expanded_property_style_blank_line_between_records_only()
   (
     blank_line_count,
     2,
-    "3 property-style records must produce exactly 2 blank separator lines; got {}; output:\n{}",
-    blank_line_count,
-    output,
+    "3 property-style records must produce exactly 2 blank separator lines; got {blank_line_count}; output:\n{output}",
   );
 }
 
@@ -388,13 +372,12 @@ fn test_expanded_no_separator_blank_lines_between_records()
 
   assert!(
     !output.starts_with( '\n' ),
-    "output must not start with blank line; got:\n{:?}", output,
+    "output must not start with blank line; got:\n{output:?}",
   );
   let blank_line_count = output.lines().filter( | l | l.trim().is_empty() ).count();
   assert_eq!(
     blank_line_count, 1,
-    "2 records with no separator must have exactly 1 blank line between them; got {}",
-    blank_line_count,
+    "2 records with no separator must have exactly 1 blank line between them; got {blank_line_count}",
   );
 }
 
@@ -415,8 +398,7 @@ fn test_expanded_single_record_empty_separator_no_blanks()
   let blank_line_count = output.lines().filter( | l | l.trim().is_empty() ).count();
   assert_eq!(
     blank_line_count, 0,
-    "single record with empty separator must have no blank lines; got {}",
-    blank_line_count,
+    "single record with empty separator must have no blank lines; got {blank_line_count}",
   );
 }
 
@@ -441,12 +423,11 @@ fn test_expanded_separator_without_placeholder_verbatim()
   let sep_count = output.lines().filter( | l | *l == "---" ).count();
   assert_eq!(
     sep_count, 2,
-    "separator without {{}} must appear verbatim for each record; got {} times; output:\n{}",
-    sep_count, output,
+    "separator without {{}} must appear verbatim for each record; got {sep_count} times; output:\n{output}",
   );
 }
 
-/// D2: Single-column table — no padding applied (only column so max_key_width == key_width).
+/// D2: Single-column table — no padding applied (only column so `max_key_width` == `key_width`).
 #[ test ]
 fn test_expanded_single_column_no_padding()
 {
@@ -463,8 +444,7 @@ fn test_expanded_single_column_no_padding()
   assert!
   (
     output.contains( "Title |" ),
-    "single column must output key without extra padding; got:\n{}",
-    output,
+    "single column must output key without extra padding; got:\n{output}",
   );
 }
 
@@ -482,9 +462,9 @@ fn test_expanded_all_same_width_keys_no_extra_padding()
   let output = formatter.format( &tree );
 
   // All keys are 3 chars — no trailing spaces before separator
-  assert!( output.contains( "Aaa |" ), "got:\n{}", output );
-  assert!( output.contains( "Bbb |" ), "got:\n{}", output );
-  assert!( output.contains( "Ccc |" ), "got:\n{}", output );
+  assert!( output.contains( "Aaa |" ), "got:\n{output}" );
+  assert!( output.contains( "Bbb |" ), "got:\n{output}" );
+  assert!( output.contains( "Ccc |" ), "got:\n{output}" );
 }
 
 // ── E: prefix edge cases ──────────────────────────────────────────────────────
@@ -510,8 +490,7 @@ fn test_expanded_tab_indent_prefix()
       assert!
       (
         line.starts_with( '\t' ),
-        "tab prefix: kv line must start with tab; got: {:?}",
-        line,
+        "tab prefix: kv line must start with tab; got: {line:?}",
       );
     }
   }
@@ -538,8 +517,7 @@ fn test_expanded_unicode_indent_prefix()
       assert!
       (
         line.starts_with( "→ " ),
-        "unicode prefix: kv line must start with '→ '; got: {:?}",
-        line,
+        "unicode prefix: kv line must start with '→ '; got: {line:?}",
       );
     }
   }

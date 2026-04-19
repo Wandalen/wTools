@@ -1,5 +1,5 @@
 //! Tests for `indent_prefix` field on `ExpandedConfig`.
-//! Task 016: Add indent_prefix to ExpandedConfig.
+//! Task 016: Add `indent_prefix` to `ExpandedConfig`.
 
 #![ cfg( feature = "enabled" ) ]
 
@@ -22,8 +22,7 @@ fn test_expanded_indent_prefix_t01_property_default_no_indent()
     assert!
     (
       !line.starts_with( ' ' ),
-      "default property_style should not indent, but got: {:?}",
-      line,
+      "default property_style should not indent, but got: {line:?}",
     );
   }
   assert!( output.contains( "Key" ) );
@@ -50,8 +49,7 @@ fn test_expanded_indent_prefix_t02_property_two_space_indent()
     assert!
     (
       line.starts_with( "  " ),
-      "each key-value line must start with 2-space indent, got: {:?}",
-      line,
+      "each key-value line must start with 2-space indent, got: {line:?}",
     );
   }
   // property_style colorizes keys, so "Name" is wrapped in ANSI codes
@@ -83,8 +81,7 @@ fn test_expanded_indent_prefix_t03_postgres_indent_separator_unaffected()
       assert!
       (
         !line.starts_with( "  " ),
-        "record separator must not be indented, got: {:?}",
-        line,
+        "record separator must not be indented, got: {line:?}",
       );
     }
     else
@@ -93,8 +90,7 @@ fn test_expanded_indent_prefix_t03_postgres_indent_separator_unaffected()
       assert!
       (
         line.starts_with( "  " ),
-        "key-value line must start with 2-space indent, got: {:?}",
-        line,
+        "key-value line must start with 2-space indent, got: {line:?}",
       );
     }
   }
@@ -127,8 +123,7 @@ fn test_expanded_indent_prefix_t04_two_records_custom_prefix()
     assert!
     (
       line.starts_with( "> " ),
-      "all kv lines must start with '> ', got: {:?}",
-      line,
+      "all kv lines must start with '> ', got: {line:?}",
     );
   }
 }
@@ -147,10 +142,10 @@ fn test_expanded_indent_prefix_t05_empty_data_no_panic()
   );
   let output = formatter.format( &tree );
 
-  assert!( output.trim().is_empty(), "empty data should produce empty output, got: {:?}", output );
+  assert!( output.trim().is_empty(), "empty data should produce empty output, got: {output:?}" );
 }
 
-/// T06: Explicit empty string indent_prefix — identical to default, no prefix.
+/// T06: Explicit empty string `indent_prefix` — identical to default, no prefix.
 #[ test ]
 fn test_expanded_indent_prefix_t06_explicit_empty_string()
 {
@@ -194,8 +189,7 @@ fn test_expanded_indent_prefix_t07_colorize_keys_indent_before_color()
     assert!
     (
       line.starts_with( "  \x1b[" ),
-      "indent must precede ANSI color code, got: {:?}",
-      line,
+      "indent must precede ANSI color code, got: {line:?}",
     );
   }
 }

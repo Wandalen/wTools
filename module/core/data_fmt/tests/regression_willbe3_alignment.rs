@@ -7,7 +7,7 @@ mod inc;
 use data_fmt::{ TreeNode, ColumnData, TreeFormatter, TreeConfig };
 use inc::visual_position;
 
-/// Build the exact tree from willbe3 .crates.list format::tree output
+/// Build the exact tree from willbe3 `.crates.list` `format::tree` output
 fn build_willbe3_crate_tree() -> TreeNode< ColumnData >
 {
   let mut root = TreeNode::new( "workspace".to_string(), None );
@@ -120,7 +120,7 @@ fn test_reproduce_willbe3_alignment_issue()
   let output = formatter.format_aligned( &tree );
 
   println!( "\nGenerated output:" );
-  println!( "{}", output );
+  println!( "{output}" );
 
   // Verify alignment programmatically
   let lines : Vec< &str > = output.lines().collect();
@@ -157,7 +157,7 @@ fn test_reproduce_willbe3_alignment_issue()
 
     if all_aligned
     {
-      println!( "\n✅ All version columns aligned at position {}", first_pos );
+      println!( "\n✅ All version columns aligned at position {first_pos}" );
     }
     else
     {
@@ -169,7 +169,7 @@ fn test_reproduce_willbe3_alignment_issue()
       {
         if *pos != first_pos
         {
-          println!( "   Line {} differs: position {} instead of {}", idx, pos, first_pos );
+          println!( "   Line {idx} differs: position {pos} instead of {first_pos}" );
         }
       }
     }
@@ -194,12 +194,12 @@ fn test_reproduce_willbe3_alignment_issue()
     println!( "\nPath column positions:" );
     for ( idx, pos ) in &path_positions
     {
-      println!( "  Line {}: position {}", idx, pos );
+      println!( "  Line {idx}: position {pos}" );
     }
 
     if all_aligned
     {
-      println!( "✅ All path columns aligned at position {}", first_pos );
+      println!( "✅ All path columns aligned at position {first_pos}" );
     }
     else
     {
@@ -226,7 +226,7 @@ fn test_manual_inspection_willbe3_format()
 
   let output = formatter.format_aligned( &tree );
 
-  println!( "{}", output );
+  println!( "{output}" );
 
   println!( "\nExpected behavior:" );
   println!( "- Version column (0.1.0, 0.2.0) should align vertically" );

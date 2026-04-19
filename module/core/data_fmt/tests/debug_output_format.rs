@@ -64,16 +64,16 @@ fn test_debug_alignment_calculation()
   let output = formatter.format_aligned( &root );
 
   println!( "\nGenerated output:" );
-  println!( "{}", output );
+  println!( "{output}" );
 
   let lines : Vec< &str > = output.lines().collect();
   println!( "\nLine analysis:" );
   for (i, line) in lines.iter().enumerate() {
-    println!( "Line {}: len={}, bytes={}", i, visual_len(line), line.len() );
-    println!( "  Content: {:?}", line );
+    println!( "Line {i}: len={}, bytes={}", visual_len(line), line.len() );
+    println!( "  Content: {line:?}" );
 
     if let Some(pos) = line.find(" v") {
-      println!( "  Version at position: {}", pos );
+      println!( "  Version at position: {pos}" );
     }
   }
 }

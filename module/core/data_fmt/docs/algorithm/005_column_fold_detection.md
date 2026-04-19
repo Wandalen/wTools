@@ -11,12 +11,16 @@
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/formatters/table.rs` | `determine_fold_point`, `render_fold_continuation`, `should_auto_fold` |
+| source | `src/formatters/table/mod.rs` | `determine_fold_point`, `render_fold_continuation`, `should_auto_fold` |
 | source | `src/config.rs` | `FoldStyle` enum, `auto_fold`/`fold_style`/`fold_indent` fields |
 | test | `tests/auto_fold_test.rs` | Column folding test scenarios (24 tests) |
 | doc | `../feature/005_auto_fit.md` | Auto-fit feature overview — Strategy 1 |
 | doc | `../invariant/004_column_fold_invariants.md` | Fold behavioral guarantees |
 | task | `../../task/completed/020_column_folding_with_auto_fold.md` | Implementation task (completed) |
+
+### Abstract
+
+An O(C) algorithm that determines which columns must fold to continuation lines when total row width exceeds terminal width. Columns are scanned left-to-right accumulating widths; the first column that pushes the cumulative total past the terminal limit becomes the fold point. Primary columns (before the fold point) render in the table row; overflow columns render as labeled continuation lines below it.
 
 ### Trigger Condition
 

@@ -372,8 +372,7 @@ fn test_t013_m01_multiline_data_row_reset_before_each_newline()
     {
       assert!(
         line.ends_with( "\x1b[0m" ),
-        "T013-M01: colored sub-line {idx} must end with RESET \\x1b[0m\n  line: {:?}\nFull output:\n{output:?}",
-        line
+        "T013-M01: colored sub-line {idx} must end with RESET \\x1b[0m\n  line: {line:?}\nFull output:\n{output:?}"
       );
     }
   }
@@ -412,8 +411,7 @@ fn test_t013_m02_multiline_header_reset_before_each_newline()
     {
       assert!(
         line.ends_with( "\x1b[0m" ),
-        "T013-M02: colored sub-line {idx} must end with RESET \\x1b[0m\n  line: {:?}\nFull output:\n{output:?}",
-        line
+        "T013-M02: colored sub-line {idx} must end with RESET \\x1b[0m\n  line: {line:?}\nFull output:\n{output:?}"
       );
     }
   }
@@ -581,8 +579,7 @@ fn test_t013_m06_multiline_colored_row_correct_width_and_reset()
     {
       assert!(
         line.ends_with( "\x1b[0m" ),
-        "T013-M06: colored sub-line {idx} must end with RESET\n  line: {:?}\nFull output:\n{output:?}",
-        line
+        "T013-M06: colored sub-line {idx} must end with RESET\n  line: {line:?}\nFull output:\n{output:?}"
       );
     }
   }

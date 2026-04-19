@@ -17,28 +17,17 @@
 | doc | `../api/001_data_types.md` | Data types in Layer 1 |
 | doc | `../api/002_builders.md` | Builders in Layer 2 |
 
-### Description
+### Problem
 
-The library uses a strict three-layer architecture to separate concerns: data representation, ergonomic construction, and format-specific rendering. All data flows downward from Layer 1 through Layer 2 into Layer 3. Formatters never reach back into data; data is agnostic to formatting.
+The library must serve as a generic multi-format data visualization tool — the same data must appear as horizontal tables, vertical records, hierarchical trees, JSON, YAML, and more. Without architectural separation, each formatter would need direct knowledge of how to traverse and interpret data, creating tight coupling between data representation and output format. A caller switching formatters would need to change how it constructs or passes data.
 
-The library is a generic multi-format data visualization library with a unified format interface. It provides reusable formatters for displaying data in multiple formats (Table, Expanded, Tree, Logfmt, JSON, YAML, TOML, Text) with seamless conversion between representations, enabling the same data to appear as horizontal tables, vertical records, or hierarchical trees.
+### Solution
 
-### Structure
+A strict three-layer architecture separates concerns: data representation, ergonomic construction, and format-specific rendering. All data flows downward from Layer 1 through Layer 2 into Layer 3. Formatters never reach back into data; data is agnostic to formatting.
 
 #### Layer 1: Data (TreeNode)
 
-`TreeNode< T >` is the single data structure serving both hierarchical and tabular use cases:
-
-```rust
-pub struct TreeNode< T >
-{
-  pub name : String,
-  pub data : Option< T >,
-  pub children : Vec< TreeNode< T > >,
-}
-```
-
-Hierarchical trees use `data = None` for directories and `data = Some(T)` for files. Table-shaped trees encode rows as children of root, with each row's children named after columns.
+`TreeNode< T >` is the single data structure serving both hierarchical and tabular use cases. Hierarchical trees use `data = None` for directories and `data = Some(T)` for files. Table-shaped trees encode rows as children of root, with each row's children named after columns.
 
 #### Layer 2: Builders and Traits
 
@@ -77,10 +66,10 @@ src/
   wrap.rs                    # WrapConfig, WrapFormatter, BreakStrategy, Overflow
   themes.rs                  # ColorTheme predefined and custom themes
   formatters/
-    mod.rs                   # TableShapedFormatter trait, Format trait re-export
+    mod.rs                   # TableShapedFormatter trait (deprecated), Format trait re-export
     format_trait.rs          # Format trait, FormatError
     tree.rs                  # TreeFormatter with format() and format_aligned()
-    table.rs                 # TableFormatter
+    table/                   # TableFormatter (split into directory)
     expanded.rs              # ExpandedFormatter
     logfmt.rs                # LogfmtFormatter
     html.rs                  # HtmlFormatter
@@ -91,9 +80,13 @@ src/
     text.rs                  # TextFormatter
 ```
 
-### Rationale
+### Applicability
 
-The three-layer separation ensures formatters remain interchangeable: the same `TreeNode< T >` or `TableView` can be passed to any formatter without modification. Layer 2's `TableShapedView` trait decouples formatter logic from tree internals, so table-shaped formatters operate on flat vectors of strings rather than traversing tree structure directly. This enables the mutual replaceability design principle.
+Apply this pattern when organizing a library that renders the same data in multiple output formats. The three-layer separation is appropriate when: (1) multiple output formats must share a common data representation; (2) formatters must be interchangeable without caller code changes; (3) new formatters must be addable without modifying existing data or builder code.
+
+### Consequences
+
+The three-layer separation ensures formatters remain interchangeable: the same `TreeNode< T >` or `TableView` can be passed to any formatter without modification. Layer 2's `TableShapedView` trait decouples formatter logic from tree internals, so table-shaped formatters operate on flat vectors of strings rather than traversing tree structure directly. This enables the mutual replaceability design principle. The cost is that the tree encoding for tabular data is non-obvious — callers must use the builders rather than constructing trees directly.
 
 ### Sources
 

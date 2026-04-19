@@ -1,4 +1,4 @@
-//! DecoratedText cell integration tests
+//! `DecoratedText` cell integration tests
 //!
 //! ## What This Tests
 //!
@@ -134,8 +134,7 @@ fn test_p03_multiline_colored_cell_per_line_reset_no_bleed()
     {
       assert!(
         line.ends_with( "\x1b[0m" ),
-        "P03: colored line {idx} must end with RESET \\x1b[0m\n  line: {:?}\nFull output:\n{output:?}",
-        line
+        "P03: colored line {idx} must end with RESET \\x1b[0m\n  line: {line:?}\nFull output:\n{output:?}"
       );
     }
   }

@@ -1,6 +1,7 @@
 //! Tests for formatters, traits, generic types, and write support
 
 #![ cfg( feature = "enabled" ) ]
+#![ allow( deprecated ) ]
 
 use data_fmt::
 {
@@ -84,10 +85,10 @@ fn test_generic_table_view_with_integers()
   assert!( root.is_table_shaped() );
 
   // Extract rows (converts T to String via Display)
-  let rows = root.to_rows();
-  assert_eq!( rows.len(), 2 );
-  assert_eq!( rows[ 0 ], vec![ "100", "200" ] );
-  assert_eq!( rows[ 1 ], vec![ "300", "400" ] );
+  let extracted_rows = root.to_rows();
+  assert_eq!( extracted_rows.len(), 2 );
+  assert_eq!( extracted_rows[ 0 ], vec![ "100", "200" ] );
+  assert_eq!( extracted_rows[ 1 ], vec![ "300", "400" ] );
 }
 
 #[ test ]
@@ -116,9 +117,9 @@ fn test_generic_table_view_with_custom_type()
     ok : bool,
   }
 
-  impl std::fmt::Display for Status
+  impl core::fmt::Display for Status
   {
-    fn fmt( &self, f : &mut std::fmt::Formatter ) -> std::fmt::Result
+    fn fmt( &self, f : &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
     {
       write!( f, "{}:{}", self.code, if self.ok { "OK" } else { "ERR" } )
     }
@@ -199,8 +200,8 @@ fn test_write_trait_multiple_formatters()
   ExpandedFormatter::new().write_to( &tree, &mut buf2 ).unwrap();
   let out2 = String::from_utf8( buf2.into_inner() ).unwrap();
 
-  assert!( out1.contains( "Y" ) );
-  assert!( out2.contains( "Y" ) );
+  assert!( out1.contains( 'Y' ) );
+  assert!( out2.contains( 'Y' ) );
   assert_ne!( out1, out2 ); // Different formats
 }
 
@@ -316,7 +317,7 @@ fn test_expanded_formatter_property_style_basic()
   assert!( output.contains( "Name: Alice" ) );
   assert!( output.contains( "Age:  30" ) );  // Note extra space for alignment
   assert!( !output.contains( "RECORD" ) );
-  assert!( !output.contains( "|" ) );
+  assert!( !output.contains( '|' ) );
 }
 
 #[ test ]
@@ -454,13 +455,13 @@ fn test_expanded_formatter_no_record_separator()
     .build();
 
   let formatter = ExpandedFormatter::with_config(
-    ExpandedConfig::new().record_separator( "".to_string() )
+    ExpandedConfig::new().record_separator( String::new() )
   );
   let output = formatter.format( &tree );
 
   assert!( !output.contains( "RECORD" ) );
-  assert!( !output.contains( "[" ) );
-  assert!( !output.contains( "]" ) );
+  assert!( !output.contains( '[' ) );
+  assert!( !output.contains( ']' ) );
 }
 
 #[ test ]
@@ -495,8 +496,8 @@ fn test_expanded_config_builder_methods()
 
   assert_eq!( config.record_separator, "---" );
   assert_eq!( config.key_value_separator, " = " );
-  assert_eq!( config.show_record_numbers, false );
-  assert_eq!( config.colorize_keys, true );
+  assert!( !config.show_record_numbers );
+  assert!( config.colorize_keys );
   assert_eq!( config.key_color, "\x1b[36m" );
   assert_eq!( config.padding_side, PaddingSide::AfterSeparator );
 }

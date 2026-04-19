@@ -133,10 +133,15 @@ v0.2.x only had `show_borders: bool` - binary choice between bordered and border
 - `format_toml` - Requires serde, toml
 
 **Feature Bundles**:
-- `visual_formats` (default) = table + expanded + tree + logfmt
-- `web_formats` = html + sql
-- `data_formats` = json + yaml + toml
+- `format_meta_visual` = table + expanded + tree + logfmt
+- `format_meta_web` = html + sql
+- `format_meta_data` = json + yaml + toml
 - `all_formats` = visual + web + data + text + themes
+
+**Workspace Pattern** (`default = []`, `enabled`, `full`):
+- `default = []` — zero features by default (workspace compliance)
+- `enabled` — activates core deps + default visual formatters
+- `full` — `enabled` + `all_formats` + `terminal_size`
 
 **serde_support Feature**: Conditionally enables serde derives on data structures only when data formatters are used.
 
@@ -181,7 +186,7 @@ Three types of values require special handling:
 **Implementation Approach**:
 - Created as standalone formatter (not table style)
 - Implements unified `Format` trait
-- Feature flag: `format_logfmt` (included in `visual_formats` bundle)
+- Feature flag: `format_logfmt` (included in `format_meta_visual` bundle)
 - Zero dependencies (pure stdlib)
 
 ### Why Standalone Formatter vs Table Style
@@ -411,7 +416,7 @@ src/
 - Visual verification tests print actual output
 
 **Critical Tests**:
-- `reproduce_alignment_problem.rs` - Visual demonstration of alignment fix
+- `regression_alignment_column.rs` - Regression guard for historical column alignment bugs
 - `table_styles_compatibility.rs` - Ensures backward compatibility
 - `verify_alignment_correct.rs` - Programmatic alignment verification
 
@@ -552,7 +557,7 @@ consistency; struct literals do not.
 
 ### Bug Description
 
-`format_header_separator()` in `src/formatters/table.rs` renders the `AsciiGrid` header
+`format_header_separator()` in `src/formatters/table/mod.rs` renders the `AsciiGrid` header
 separator line with `'|'` as corner/junction characters, producing:
 
 ```

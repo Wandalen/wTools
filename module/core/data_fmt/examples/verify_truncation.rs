@@ -1,7 +1,7 @@
-//! Manual Test 001: Column Truncation Feature
+//! Visual Verification: Column Truncation Feature
 //!
 //! This example tests various column truncation scenarios for manual verification.
-//! Run with: `cargo run --example manual_test_001_truncation`
+//! Run with: `cargo run --example verify_truncation`
 
 #[ cfg( not( feature = "enabled" ) ) ]
 fn main() {}

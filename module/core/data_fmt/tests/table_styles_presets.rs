@@ -23,8 +23,8 @@
 //!
 //! 1. **Preset Correctness**: Each preset produces expected border/separator characters
 //! 2. **Builder Pattern**: Fluent API allows combining presets with custom options
-//! 3. **Enum Defaults**: BorderVariant, HeaderSeparatorVariant, ColumnSeparator have sensible defaults
-//! 4. **Color/min_column_width**: These TableConfig fields are not read by TableFormatter;
+//! 3. **Enum Defaults**: `BorderVariant`, `HeaderSeparatorVariant`, `ColumnSeparator` have sensible defaults
+//! 4. **Color/`min_column_width`**: These `TableConfig` fields are not read by `TableFormatter`;
 //!    tests that set them are smoke tests documenting API contract for future implementation.
 //!
 //! ## Design Rationale
@@ -38,7 +38,7 @@
 //! These tests ensure each preset produces the intended style and that builder
 //! methods properly override preset defaults.
 //!
-//! Split from tests/table_styles.rs (509 lines) in v0.4.0 compliance cleanup.
+//! Split from `tests/table_styles.rs` (509 lines) in v0.4.0 compliance cleanup.
 //!
 //! ## Common Pitfalls to Avoid
 //!

@@ -72,10 +72,10 @@ src/
   wrap.rs                    # WrapConfig, WrapFormatter, BreakStrategy, Overflow
   themes.rs                  # ColorTheme predefined and custom themes
   formatters/
-    mod.rs                   # TableShapedFormatter trait, Format trait re-export
+    mod.rs                   # TableShapedFormatter trait (deprecated), Format trait re-export
     format_trait.rs          # Format trait, FormatError
     tree.rs                  # TreeFormatter with format() and format_aligned()
-    table.rs                 # TableFormatter
+    table/                   # TableFormatter (split into directory)
     expanded.rs              # ExpandedFormatter
     logfmt.rs                # LogfmtFormatter
     html.rs                  # HtmlFormatter
@@ -92,14 +92,7 @@ src/
 
 `TreeFormatter` renders `TreeNode< T >` directly using method-level generics rather than relying on `TableShapedView`. Its `format()` and `format_aligned()` methods accept `&TreeNode< T >` where `T : Display`, producing box-drawing output with configurable symbols and indentation.
 
-The `TableShapedFormatter` trait provides polymorphism between `TableFormatter` and `ExpandedFormatter`:
-
-```rust
-pub trait TableShapedFormatter
-{
-  fn format( &self, tree : &TreeNode< String > ) -> String;
-}
-```
+The `TableShapedFormatter` trait is deprecated (since 0.1.0). The `Format` trait is the canonical interface for all formatters. See `docs/trait/002_table_shaped_formatter.md` for migration guidance.
 
 All formatters support both `format()` (returns `String`) and `write_to()` (writes to any `io::Write`).
 

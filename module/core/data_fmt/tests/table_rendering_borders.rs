@@ -5,13 +5,13 @@
 //! Top/bottom border rendering and inter-row separator behavior for
 //! `BorderVariant::AsciiGrid` and `BorderVariant::Unicode`. Also confirms
 //! that `BorderVariant::Ascii` and `BorderVariant::Markdown` do NOT add
-//! top/bottom borders, and validates the AsciiGrid header separator
+//! top/bottom borders, and validates the `AsciiGrid` header separator
 //! corner-character fix (`|---|` → `+---+`).
 //!
 //! ## Root Cause Background
 //!
 //! `format_internal()` never read `border_variant`. Top/bottom horizontal rules
-//! and inter-row separators were silently missing. The AsciiGrid header separator
+//! and inter-row separators were silently missing. The `AsciiGrid` header separator
 //! also used `'|'` as corners instead of `'+'`, making it visually inconsistent
 //! with the border rules added in this task.
 //!
@@ -22,7 +22,7 @@
 //! - Added `format_top_border_if_needed()`, `format_bottom_border_if_needed()`,
 //!   `format_inter_row_sep_if_needed()` wrapper methods.
 //! - Updated `format_internal()` to call the three wrappers.
-//! - Changed `format_header_separator()` AsciiGrid corner `'|'` → `'+'`.
+//! - Changed `format_header_separator()` `AsciiGrid` corner `'|'` → `'+'`.
 //!
 //! ## Test Matrix
 //!
@@ -58,7 +58,7 @@ use data_fmt::{ RowBuilder, TableFormatter, TableConfig };
 
 /// T014-P01 — `TableConfig::grid()` renders top and bottom `+...+` borders.
 ///
-/// AsciiGrid variant MUST emit a `+` border line before the header row
+/// `AsciiGrid` variant MUST emit a `+` border line before the header row
 /// and after the last data row.
 #[ test ]
 fn test_t014_p01_grid_has_top_and_bottom_borders()
@@ -76,7 +76,7 @@ fn test_t014_p01_grid_has_top_and_bottom_borders()
     "T014-P01: expected top border starting and ending with '+', got: {first_line:?}\nFull output:\n{output}"
   );
 
-  let last_line = output.lines().filter( |l| !l.is_empty() ).last().expect( "output has no non-empty lines" );
+  let last_line = output.lines().rfind( |l| !l.is_empty() ).expect( "output has no non-empty lines" );
   assert!(
     last_line.starts_with( '+' ) && last_line.ends_with( '+' ),
     "T014-P01: expected bottom border starting and ending with '+', got: {last_line:?}\nFull output:\n{output}"
@@ -102,7 +102,7 @@ fn test_t014_p02_unicode_box_has_top_and_bottom_borders()
     "T014-P02: expected top border '┌...┐', got: {first_line:?}\nFull output:\n{output}"
   );
 
-  let last_line = output.lines().filter( |l| !l.is_empty() ).last().expect( "no non-empty lines" );
+  let last_line = output.lines().rfind( |l| !l.is_empty() ).expect( "no non-empty lines" );
   assert!(
     last_line.starts_with( '└' ) && last_line.ends_with( '┘' ),
     "T014-P02: expected bottom border '└...┘', got: {last_line:?}\nFull output:\n{output}"
@@ -134,7 +134,7 @@ fn test_t014_p03_bordered_no_top_bottom_borders()
     "T014-P03: bordered() first line should be header row starting with '|', got: {first_line:?}"
   );
 
-  let last_line = output.lines().filter( |l| !l.is_empty() ).last().expect( "no non-empty lines" );
+  let last_line = output.lines().rfind( |l| !l.is_empty() ).expect( "no non-empty lines" );
   assert!(
     !last_line.starts_with( '+' ) && !last_line.starts_with( '┌' ) && !last_line.starts_with( '└' ),
     "T014-P03: bordered() must NOT have a bottom border, got: {last_line:?}\nFull output:\n{output}"
@@ -166,7 +166,7 @@ fn test_t014_p04_plain_no_borders()
 
 /// T014-P05 — `TableConfig::grid()` with 3 data rows produces 2 inter-row separators.
 ///
-/// AsciiGrid inter-row separators appear BETWEEN consecutive data rows.
+/// `AsciiGrid` inter-row separators appear BETWEEN consecutive data rows.
 /// 3 data rows → 2 inter-row gaps → 2 inter-row separator lines.
 /// Combined with top border, header separator, and bottom border:
 /// total lines starting with `+` = 5.
@@ -193,10 +193,10 @@ fn test_t014_p05_grid_inter_row_separators()
 // T014-N: Negative / edge tests
 // ---------------------------------------------------------------------------
 
-/// T014-N01 — AsciiGrid header separator uses `+` corners, NOT `|` corners.
+/// T014-N01 — `AsciiGrid` header separator uses `+` corners, NOT `|` corners.
 ///
 /// Bug: `format_header_separator()` pushed `'|'` for the leading and per-column
-/// delimiters in the AsciiGrid branch, producing `|---|` instead of `+---+`.
+/// delimiters in the `AsciiGrid` branch, producing `|---|` instead of `+---+`.
 /// This test verifies the fix.
 ///
 /// ## Root Cause
@@ -288,8 +288,7 @@ fn test_t014_n03_unicode_bottom_border_starts_with_corner_not_tee()
 
   let last_line = output
     .lines()
-    .filter( |l| !l.is_empty() )
-    .last()
+    .rfind( |l| !l.is_empty() )
     .expect( "no non-empty lines" );
 
   assert!(
@@ -340,7 +339,7 @@ fn test_t014_n04_markdown_no_top_bottom_borders()
 /// no gaps, so no inter-row separators are emitted. The bottom border is still
 /// present after the one data row.
 ///
-/// Expected structure: top(+) → header(|) → header_sep(+) → data_row(|) → bottom(+)
+/// Expected structure: top(+) → header(|) → `header_sep`(+) → `data_row`(|) → bottom(+)
 /// Total `+` lines: 3.
 #[ test ]
 fn test_t014_n05_grid_one_data_row_no_inter_row_separators()
@@ -361,8 +360,7 @@ fn test_t014_n05_grid_one_data_row_no_inter_row_separators()
   // Bottom border must be present (last non-empty line starts with '+')
   let last_line = output
     .lines()
-    .filter( |l| !l.is_empty() )
-    .last()
+    .rfind( |l| !l.is_empty() )
     .expect( "no non-empty lines" );
 
   assert!(
@@ -452,8 +450,7 @@ fn test_t014_m03_header_only_table_unicode_no_panic()
   // Must NOT use mid-line chars as the bottom border (common mistake)
   let last_non_empty = output
     .lines()
-    .filter( |l| !l.is_empty() )
-    .last()
+    .rfind( |l| !l.is_empty() )
     .expect( "no non-empty lines" );
   assert!(
     last_non_empty.starts_with( '└' ),

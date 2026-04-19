@@ -15,208 +15,79 @@
 | test | `tests/formatters.rs` | Formatter integration tests |
 | doc | `../trait/001_format.md` | Format trait contract |
 
-### Format Trait
+### Abstract
 
-Unified interface implemented by all formatters. Accepts `&TableView` (built via `RowBuilder::build_view()`).
+Ten formatters implement the unified `Format` trait and accept `&TableView`. Three visual formatters (`TableFormatter`, `ExpandedFormatter`, `TreeFormatter`) also accept `&TreeNode< T >` via legacy methods. Seven additional formatters (`LogfmtFormatter`, `HtmlFormatter`, `SqlFormatter`, `JsonFormatter`, `YamlFormatter`, `TomlFormatter`, `TextFormatter`) are gated behind feature flags. Two ANSI/Unicode helper functions (`visual_len`, `pad_to_width`) support width-aware rendering. The deprecated `TableShapedFormatter` trait remains for backward compatibility.
 
-```rust
-pub trait Format
-{
-  fn format( &self, data : &TableView ) -> Result< String, FormatError >;
-}
-```
+### Operations
 
-### FormatError
+#### Format Trait
 
-```rust
-#[ derive( Debug ) ]
-pub enum FormatError
-{
-  #[ cfg( feature = "serde_support" ) ]
-  Serialization( String ),
-  InvalidData( String ),
-  UnsupportedOperation( String ),
-}
+The unified interface implemented by all formatters. Takes `&self` and `&TableView`, returns `Result< String, FormatError >`. Callers build a `TableView` once via `RowBuilder::build_view()` and pass it to any formatter through this trait.
 
-impl std::fmt::Display for FormatError { ... }
-impl std::error::Error for FormatError {}
-```
+#### FormatError
 
-### TableShapedFormatter Trait
+Error type returned by `Format::format`. Three variants: `Serialization( String )` (only available with the `serde_support` feature; emitted by JSON/YAML/TOML formatters on serialization failure), `InvalidData( String )` (input data is structurally invalid for the requested format), `UnsupportedOperation( String )` (operation not supported by the given formatter configuration). Implements `Display` and `std::error::Error`.
 
-Polymorphism trait for visual formatters that consume `TreeNode< String >`.
+#### TableFormatter
 
-```rust
-pub trait TableShapedFormatter
-{
-  fn format( &self, tree : &TreeNode< String > ) -> String;
-}
-```
+Horizontal tabular display with configurable borders, column sizing, and coloring. Constructed via `TableFormatter::new()` (default config) or `TableFormatter::with_config( config : TableConfig )`. Key methods: `format( &self, tree : &TreeNode< String > ) -> String` (table-shaped tree via `TableShapedView`), `format_tree< T : Display >( &self, tree : &TreeNode< T > ) -> String` (hierarchical tree auto-flattened to path/name/depth/data columns), `write_to< W : Write >( &self, tree, writer )` (streaming output). Implements `Format` for the canonical `TableView` path.
 
-Enables trait object dispatch:
+#### ExpandedFormatter
 
-```rust
-let formatters : Vec< Box< dyn TableShapedFormatter > > = vec![
-  Box::new( TableFormatter::new() ),
-  Box::new( ExpandedFormatter::new() ),
-];
-```
+Vertical record display rendering one record per row as labeled key-value pairs. Constructed via `ExpandedFormatter::new()` or `ExpandedFormatter::with_config( config : ExpandedConfig )`. Implements the deprecated `TableShapedFormatter` trait (not `Format`). Methods: `format( &self, tree : &TreeNode< String > ) -> String`, `format_tree< T : Display >( &self, tree : &TreeNode< T > ) -> String`, `write_to< W : Write >( &self, tree, writer )`.
 
-### TableFormatter
+#### TreeFormatter
 
-Horizontal tabular display with configurable borders, alignment, and column limits.
+Hierarchical tree display with box-drawing characters. Constructed via `TreeFormatter::new()`, `TreeFormatter::with_config( config : TreeConfig )`, or `TreeFormatter::with_symbols( symbols : TreeSymbols )`. Three format methods: `format< T, F >( &self, tree : &TreeNode< T >, render_item : F ) -> String` (custom render closure), `format_aligned( &self, tree : &TreeNode< ColumnData > ) -> String` (column-aligned output), `format_with_aggregation< T, V, A, F, D, C >( &self, tree, grand_total, ... ) -> String` (subtree totals and percentages). Streaming output via `write_to< T, F, W >( &self, tree, writer, render_item )`.
 
-```rust
-impl TableFormatter
-{
-  pub fn new() -> Self;
-  pub const fn with_config( config : TableConfig ) -> Self;
+#### TableShapedFormatter Trait (Deprecated)
 
-  /// Format table-shaped tree (headers/rows via TableShapedView)
-  pub fn format( &self, tree : &TreeNode< String > ) -> String;
-  /// Format hierarchical tree (auto-flattens to path/name/depth/data)
-  pub fn format_tree< T : Display >( &self, tree : &TreeNode< T > ) -> String;
-  /// Write directly to io::Write
-  pub fn write_to< W : std::io::Write >( &self, tree : &TreeNode< String >, writer : &mut W ) -> std::io::Result< () >;
-}
+Legacy polymorphism trait for visual formatters that consume `&TreeNode< String >`. Deprecated since `0.1.0` — use `Format` with `TableView` instead. Implemented by `TableFormatter` and `ExpandedFormatter`. `TreeFormatter` does not implement it.
 
-impl TableShapedFormatter for TableFormatter { ... }
-impl Format for TableFormatter { ... }
-```
+#### Additional Formatters
 
-### ExpandedFormatter
+Seven feature-gated formatters, all implementing `Format`:
 
-Vertical record display (one record per row, key-value pairs).
-
-```rust
-impl ExpandedFormatter
-{
-  pub fn new() -> Self;
-  pub const fn with_config( config : ExpandedConfig ) -> Self;
-
-  pub fn format( &self, tree : &TreeNode< String > ) -> String;
-  pub fn format_tree< T : Display >( &self, tree : &TreeNode< T > ) -> String;
-  pub fn write_to< W : std::io::Write >( &self, tree : &TreeNode< String >, writer : &mut W ) -> std::io::Result< () >;
-}
-
-impl TableShapedFormatter for ExpandedFormatter { ... }
-impl Format for ExpandedFormatter { ... }
-```
-
-### TreeFormatter
-
-Hierarchical tree display with box-drawing characters. Supports custom renderers, column alignment, and aggregation.
-
-```rust
-impl TreeFormatter
-{
-  pub fn new() -> Self;
-  pub fn with_config( config : TreeConfig ) -> Self;
-  pub fn with_symbols( symbols : TreeSymbols ) -> Self;
-
-  /// Format with custom render closure
-  pub fn format< T, F >( &self, tree : &TreeNode< T >, render_item : F ) -> String
-  where
-    F : Fn( &T ) -> String;
-
-  /// Format with column-aligned data
-  pub fn format_aligned( &self, tree : &TreeNode< ColumnData > ) -> String;
-
-  /// Format with aggregated directory totals and percentages
-  pub fn format_with_aggregation< T, V, A, F, D, C >(
-    &self,
-    tree : &TreeNode< T >,
-    grand_total : V,
-    aggregate_fn : A,
-    convert_to_f64 : C,
-    render_file : F,
-    render_directory : D,
-  ) -> String
-  where
-    V : Copy + std::ops::Add< Output = V > + Default + std::iter::Sum,
-    A : Fn( &T ) -> V,
-    C : Fn( V ) -> f64,
-    F : Fn( &T, V, f64 ) -> String,
-    D : Fn( &str, V, f64 ) -> String;
-
-  /// Write directly to io::Write
-  pub fn write_to< T, F, W >(
-    &self,
-    tree : &TreeNode< T >,
-    writer : &mut W,
-    render_item : F,
-  ) -> std::io::Result< () >
-  where
-    F : Fn( &T ) -> String,
-    W : std::io::Write;
-}
-```
-
-### Additional Formatters
-
-These formatters implement the `Format` trait and are gated behind feature flags.
-
-| Formatter | Feature Flag | Dependencies | Purpose |
-|-----------|-------------|--------------|---------|
-| `LogfmtFormatter` | `format_logfmt` | None | Structured logging (`key=value` pairs) |
-| `HtmlFormatter` | `format_html` | None | HTML `<table>` output with CSS variants |
-| `SqlFormatter` | `format_sql` | None | SQL INSERT statements |
+| Formatter | Feature Flag | External Deps | Output |
+|-----------|-------------|---------------|--------|
+| `LogfmtFormatter` | `format_logfmt` | None | `key=value` structured log pairs |
+| `HtmlFormatter` | `format_html` | None | HTML `<table>` with CSS variants |
+| `SqlFormatter` | `format_sql` | None | SQL `INSERT` statements |
 | `JsonFormatter` | `format_json` | serde, serde_json | JSON array of row objects |
 | `YamlFormatter` | `format_yaml` | serde, serde_yaml | YAML sequence of mappings |
 | `TomlFormatter` | `format_toml` | serde, toml | TOML array of tables |
-| `TextFormatter` | `format_text` | None | Plain text (6 styles: bullets, numbered, sections, key-value, compact, cli-help) |
+| `TextFormatter` | `format_text` | None | Plain text (6 styles) |
 
-All implement:
+#### ANSI/Unicode Helpers
 
-```rust
-impl Format for XxxFormatter
-{
-  fn format( &self, data : &TableView ) -> Result< String, FormatError >;
-}
-```
+`visual_len( text : &str ) -> usize` — counts visible Unicode codepoints, excluding ANSI escape sequences. Uses character count (not display width); ANSI sequences contribute zero. `pad_to_width( text : &str, target_width : usize, align_right : bool ) -> String` — pads a string to a target display width using East Asian Width for terminal column alignment (CJK and emoji count as 2 display columns). Returns text unchanged when display width already meets or exceeds target.
+
+### Error Handling
+
+`Format::format` returns `Result< String, FormatError >`. `TableFormatter`, `ExpandedFormatter`, and `TreeFormatter` return `Ok` for all valid inputs; they do not emit `FormatError` in practice. `JsonFormatter`, `YamlFormatter`, and `TomlFormatter` may return `FormatError::Serialization` when serialization fails. `FormatError::Serialization` is only present when the `serde_support` feature is enabled; without it, the error type has two variants.
 
 ### Feature Flags
 
-#### Individual Formatters
-
-| Feature | Formatter | External Dependencies |
-|---------|-----------|----------------------|
-| `format_table` | TableFormatter | None |
-| `format_expanded` | ExpandedFormatter | None |
-| `format_tree` | TreeFormatter | None |
-| `format_logfmt` | LogfmtFormatter | None |
-| `format_html` | HtmlFormatter | None |
-| `format_sql` | SqlFormatter | None |
-| `format_text` | TextFormatter | None |
-| `format_json` | JsonFormatter | serde, serde_json |
-| `format_yaml` | YamlFormatter | serde, serde_yaml |
-| `format_toml` | TomlFormatter | serde, toml |
-
-#### Bundles
-
-| Bundle | Includes |
-|--------|----------|
-| `visual_formats` (default) | `format_table` + `format_expanded` + `format_tree` + `format_logfmt` |
-| `web_formats` | `format_html` + `format_sql` |
-| `data_formats` | `format_json` + `format_yaml` + `format_toml` |
-| `all_formats` | `visual_formats` + `web_formats` + `data_formats` + `format_text` + `themes` |
-
-#### Other Features
-
-| Feature | Purpose |
+| Feature | Enables |
 |---------|---------|
-| `themes` | Predefined color schemes for visual formatters |
-| `serde_support` | Enables serde derives on data structures (required by data formatters) |
-| `integration` | Legacy no-op (all tests run unconditionally) |
+| `format_table` | `TableFormatter` |
+| `format_expanded` | `ExpandedFormatter` |
+| `format_tree` | `TreeFormatter` |
+| `format_logfmt` | `LogfmtFormatter` |
+| `format_html` | `HtmlFormatter` |
+| `format_sql` | `SqlFormatter` |
+| `format_json` | `JsonFormatter` + `serde_support` |
+| `format_yaml` | `YamlFormatter` + `serde_support` |
+| `format_toml` | `TomlFormatter` + `serde_support` |
+| `format_text` | `TextFormatter` |
+| `format_meta_visual` | `format_table` + `format_expanded` + `format_tree` + `format_logfmt` |
+| `format_meta_web` | `format_html` + `format_sql` |
+| `format_meta_data` | `format_json` + `format_yaml` + `format_toml` |
+| `all_formats` | All formatters + `themes` |
+| `enabled` | Core deps + default visual formatters |
+| `full` | `enabled` + `all_formats` + `terminal_size` |
 
-### ANSI / Unicode Helpers
+### Compatibility Guarantees
 
-```rust
-/// Visual character count ignoring ANSI escape sequences (codepoint count, not display width)
-pub fn visual_len( text : &str ) -> usize;
-
-/// Pad string to target display width (display-width-aware via unicode-width crate)
-pub fn pad_to_width( text : &str, target_width : usize, align_right : bool ) -> String;
-```
-
-`visual_len` counts Unicode codepoints. `pad_to_width` uses East Asian Width for terminal column alignment (CJK/emoji = 2 columns).
+The `Format` trait signature (`format( &self, data : &TableView ) -> Result< String, FormatError >`) is stable. The deprecated `TableShapedFormatter` trait is preserved for backward compatibility and will not be removed in `0.x` versions. Formatter constructors `new()` and `with_config()` are stable. `visual_len` and `pad_to_width` are stable utility functions. Feature flag names are stable — adding a formatter never changes an existing flag's behavior.

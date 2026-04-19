@@ -16,7 +16,7 @@
 | doc | `../input_model/002_hierarchical.md` | Conceptual data shape |
 | doc | `../api/001_data_types.md` | Public API surface |
 
-### Definition
+### Type Definition
 
 ```rust
 pub struct TreeNode< T >
@@ -46,7 +46,7 @@ root
 ```
 
 - **Produced by:** `RowBuilder::build()`
-- **Consumed by:** `TableShapedFormatter` trait (Table, Expanded)
+- **Consumed by:** `TableShapedFormatter` trait (deprecated — Table, Expanded)
 - **Input model:** Tabular (legacy encoding)
 
 #### TreeNode<T> — Generic Hierarchical

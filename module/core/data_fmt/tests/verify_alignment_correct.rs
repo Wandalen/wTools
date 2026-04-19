@@ -45,7 +45,7 @@ fn test_verify_willbe3_alignment_is_correct()
   let output = formatter.format_aligned( &root );
 
   println!( "\nGenerated output:" );
-  println!( "{}", output );
+  println!( "{output}" );
 
   let lines : Vec< &str > = output.lines().collect();
 
@@ -55,8 +55,8 @@ fn test_verify_willbe3_alignment_is_correct()
     let byte_pos = line.find( " v" );
     let visual_pos = visual_position( line, " v" );
 
-    println!( "Line {}: byte_pos={:?}, visual_pos={:?}", i, byte_pos, visual_pos );
-    println!( "  {}", line );
+    println!( "Line {i}: byte_pos={byte_pos:?}, visual_pos={visual_pos:?}" );
+    println!( "  {line}" );
   }
 
   // Get visual positions
@@ -64,7 +64,7 @@ fn test_verify_willbe3_alignment_is_correct()
     .filter_map( | line | visual_position( line, " v" ) )
     .collect();
 
-  println!( "\nVisual positions of ' v': {:?}", visual_positions );
+  println!( "\nVisual positions of ' v': {visual_positions:?}" );
 
   // All should be the same
   if visual_positions.len() > 1
@@ -74,7 +74,7 @@ fn test_verify_willbe3_alignment_is_correct()
 
     if all_same
     {
-      println!( "✅ All columns aligned at visual position {}", first );
+      println!( "✅ All columns aligned at visual position {first}" );
     }
     else
     {

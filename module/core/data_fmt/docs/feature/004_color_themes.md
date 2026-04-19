@@ -15,6 +15,8 @@
 | test | `tests/themes.rs` | Theme application tests |
 | test | `tests/table_rendering_colors.rs` | Color rendering tests |
 
+### Design
+
 **Feature flag**: `themes` (zero dependencies, optional enhancement)
 
 #### Predefined Themes
@@ -73,7 +75,7 @@ Dark theme with vibrant colors.
 - Alternating rows: Background + selection background
 - Tree branches: Pink
 
-### Usage
+#### Usage
 
 Themes work with all three visual formatter configs via `with_theme()`.
 
@@ -109,7 +111,7 @@ Themes automatically configure the relevant fields on each config type:
 - **ExpandedConfig**: `key_color`, record separator colors
 - **TreeConfig**: Branch symbol colors, data colors
 
-### Custom Theme Creation
+#### Custom Theme Creation
 
 Build a custom theme using the builder API.
 
@@ -128,18 +130,18 @@ let formatter = TableFormatter::with_config(
 );
 ```
 
-### Color Reset Behavior
+#### Color Reset Behavior
 
 All themes include automatic color reset (`\x1b[0m`) after every colored element. This prevents color bleeding into subsequent terminal output. Each colored line is wrapped as `color + content + \x1b[0m + \n`.
 
-### Terminal Compatibility
+#### Terminal Compatibility
 
 - Uses standard ANSI escape codes
 - 256-color support (`\x1b[38;5;Nm` format)
 - Gracefully degrades in non-color terminals
 - No-color mode: `ColorTheme::None` disables all colors
 
-### Feature Flag Integration
+#### Feature Flag Integration
 
 The `themes` feature is optional. Guard theme usage with `cfg`:
 
