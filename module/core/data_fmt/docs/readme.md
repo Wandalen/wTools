@@ -18,6 +18,7 @@ Contains technical documentation for the data_fmt library implementation.
 | `algorithm/` | Non-trivial algorithms: multiline cells, word wrapping, tree alignment |
 | `data_structure/` | Data schemas: attribute schemas, structural type definitions |
 | `pattern/` | Architectural patterns: three-layer architecture, design principles, formatter design |
+| `formatter/` | Formatter structs: trait, input type, variant selection mechanism |
 | `variant/` | Per-variant output examples and format documentation |
 | `variant_attributes.md` | Attribute reference for all format variant configurations (source document) |
 | `development_notes.md` | Implementation decisions, trade-offs, and technical history |

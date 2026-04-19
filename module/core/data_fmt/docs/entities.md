@@ -9,6 +9,7 @@ docs/                            structural container
 ├── builder/                     Collection Entity   1st
 ├── data_structure/              Collection Entity   1st
 ├── feature/                     Collection Entity   1st
+├── formatter/                   Collection Entity   1st
 ├── input_model/                 Collection Entity   1st
 ├── input_type/                  Collection Entity   1st
 ├── invariant/                   Collection Entity   1st
@@ -26,6 +27,7 @@ docs/                            structural container
 | [builder/](builder/) | Collection | | Registry of builder doc instances |
 | [data_structure/](data_structure/) | Collection | | Registry of data structure doc instances |
 | [feature/](feature/) | Collection | | Registry of feature doc instances |
+| [formatter/](formatter/) | Collection | | Registry of formatter doc instances |
 | [input_model/](input_model/) | Collection | | Registry of input model doc instances |
 | [input_type/](input_type/) | Collection | | Registry of input type doc instances |
 | [invariant/](invariant/) | Collection | | Registry of invariant doc instances |
@@ -42,6 +44,7 @@ docs/                            structural container
 | `builder/` | Registry and overview of all builder doc instances | [builder/readme.md](builder/readme.md) | 2 |
 | `data_structure/` | Registry and overview of all data structure doc instances | [data_structure/readme.md](data_structure/readme.md) | 1 |
 | `feature/` | Registry and overview of all feature doc instances | [feature/readme.md](feature/readme.md) | 5 |
+| `formatter/` | Registry and overview of all formatter doc instances | [formatter/readme.md](formatter/readme.md) | 10 |
 | `input_model/` | Registry and overview of all input model doc instances | [input_model/readme.md](input_model/readme.md) | 2 |
 | `input_type/` | Registry and overview of all input type doc instances | [input_type/readme.md](input_type/readme.md) | 2 |
 | `invariant/` | Registry and overview of all invariant doc instances | [invariant/readme.md](invariant/readme.md) | 4 |
@@ -70,6 +73,16 @@ docs/                            structural container
 | feature | 003 | Unified Format Interface | [feature/003_unified_format_interface.md](feature/003_unified_format_interface.md) |
 | feature | 004 | Color Themes | [feature/004_color_themes.md](feature/004_color_themes.md) |
 | feature | 005 | Auto-Fit | [feature/005_auto_fit.md](feature/005_auto_fit.md) |
+| formatter | 001 | TableFormatter | [formatter/001_table_formatter.md](formatter/001_table_formatter.md) |
+| formatter | 002 | ExpandedFormatter | [formatter/002_expanded_formatter.md](formatter/002_expanded_formatter.md) |
+| formatter | 003 | TreeFormatter | [formatter/003_tree_formatter.md](formatter/003_tree_formatter.md) |
+| formatter | 004 | LogfmtFormatter | [formatter/004_logfmt_formatter.md](formatter/004_logfmt_formatter.md) |
+| formatter | 005 | JsonFormatter | [formatter/005_json_formatter.md](formatter/005_json_formatter.md) |
+| formatter | 006 | YamlFormatter | [formatter/006_yaml_formatter.md](formatter/006_yaml_formatter.md) |
+| formatter | 007 | TomlFormatter | [formatter/007_toml_formatter.md](formatter/007_toml_formatter.md) |
+| formatter | 008 | HtmlFormatter | [formatter/008_html_formatter.md](formatter/008_html_formatter.md) |
+| formatter | 009 | SqlFormatter | [formatter/009_sql_formatter.md](formatter/009_sql_formatter.md) |
+| formatter | 010 | TextFormatter | [formatter/010_text_formatter.md](formatter/010_text_formatter.md) |
 | input_model | 001 | Tabular | [input_model/001_tabular.md](input_model/001_tabular.md) |
 | input_model | 002 | Hierarchical | [input_model/002_hierarchical.md](input_model/002_hierarchical.md) |
 | input_type | 001 | TableView | [input_type/001_table_view.md](input_type/001_table_view.md) |
