@@ -537,7 +537,7 @@ default-features = false
 ## ca
 
 [workspace.dependencies.wca]
-version = "~0.45.0"
+version = "~0.46.0"
 path = "module/experimental/wca"
 
 ## willbe
