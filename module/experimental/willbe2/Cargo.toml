@@ -16,6 +16,9 @@ Utility to publish multi-crate and multi-workspace environments and maintain the
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
+dependencies = {}
+dev-dependencies = {}
+build-dependencies = {}
 # qqq : better classification is necessary
 
 [lints]

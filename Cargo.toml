@@ -543,7 +543,7 @@ path = "module/experimental/wca"
 ## willbe
 
 [workspace.dependencies.willbe]
-version = "~0.34.0"
+version = "~0.35.0"
 path = "module/experimental/willbe"
 
 [workspace.dependencies.willbe2]
