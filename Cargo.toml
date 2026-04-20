@@ -802,7 +802,7 @@ version = "~1.0"
 version = "~0.4"
 
 [workspace.dependencies.strip-ansi-escapes]
-version = "0.1.1"
+version = "0.2.1"
 
 [workspace.dependencies.cfg_aliases]
 version = "0.1.1"
