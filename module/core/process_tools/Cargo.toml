@@ -46,7 +46,7 @@ error_tools = { workspace = true, features = [ "error_untyped" ] }
 iter_tools = { workspace = true }
 
 ## external
-duct = "0.13.7"
+duct = "1.1.1"
 libc = { workspace = true }
 
 
