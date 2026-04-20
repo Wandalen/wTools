@@ -47,7 +47,7 @@ serde_json = { workspace = true, optional = true }
 serde_yaml = { workspace = true, optional = true }
 jsonschema = { version = "0.20", optional = true }
 schemars = { version = "0.8", optional = true }
-secrecy = { version = "0.8", optional = true, features = [ "serde" ] }
+secrecy = { version = "0.10", optional = true, features = [ "serde" ] }
 zeroize = { version = "1.7", optional = true }
 
 [dev-dependencies]
