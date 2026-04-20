@@ -768,7 +768,7 @@ version = "0.3.2"
 version = "0.18.1"
 
 [workspace.dependencies.toml]
-version = "0.8.23"
+version = "1.1.2"
 
 [workspace.dependencies.chrono]
 version = "0.4.34"

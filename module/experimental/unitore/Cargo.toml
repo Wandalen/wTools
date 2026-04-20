@@ -42,7 +42,7 @@ hyper-tls = "0.6.0"
 hyper-util = { version = "0.1", features = [ "client", "http2", "http1" ] }
 http-body-util = "0.1"
 feed-rs = "1.4.0"
-toml = "0.8.10"
+toml = "1.1.2"
 serde = "1.0.196"
 url = { version = "2.0", features = ["serde"] }
 humantime-serde = "1.1.1"
