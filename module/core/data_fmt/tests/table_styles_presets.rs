@@ -472,3 +472,32 @@ fn bug_reproducer_issue_011_unicode_box_column_separator_mismatch()
     "unicode_box header separator must use ┼ or ├, not plain dashes; output:\n{output}"
   );
 }
+
+#[ test ]
+fn test_inner_padding_applied_between_all_cells()
+{
+  let tree = sample_data();
+
+  let styles : &[ ( &str, TableConfig ) ] = &[
+    ( "grid",     TableConfig::grid() ),
+    ( "bordered", TableConfig::bordered() ),
+    ( "markdown", TableConfig::markdown() ),
+    ( "unicode",  TableConfig::unicode_box() ),
+  ];
+
+  for ( name, cfg ) in styles
+  {
+    let output = TableFormatter::with_config( cfg.clone() ).format( &tree );
+    // Every content line must have a space on both sides of every column separator.
+    // "Alice|" or "|Alice" means padding was only applied at outer edges, not between
+    // cells — the bug this test guards against.
+    for line in output.lines().filter( | l | l.contains( "Alice" ) || l.contains( "NAME" ) )
+    {
+      assert!(
+        !line.contains( "Alice|" ) && !line.contains( "|Alice" )
+        && !line.contains( "NAME|" ) && !line.contains( "|NAME" ),
+        "{name}: inner padding missing around separator in: {line:?}\nfull output:\n{output}"
+      );
+    }
+  }
+}
