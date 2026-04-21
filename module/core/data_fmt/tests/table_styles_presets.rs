@@ -476,6 +476,8 @@ fn bug_reproducer_issue_011_unicode_box_column_separator_mismatch()
 #[ test ]
 fn test_inner_padding_applied_between_all_cells()
 {
+  // Padding must appear on both sides of every column separator, not only at row edges.
+  // Regression: `| Alice|  30 |` — trailing padding after Alice was missing.
   let tree = sample_data();
 
   let styles : &[ ( &str, TableConfig ) ] = &[
@@ -488,9 +490,6 @@ fn test_inner_padding_applied_between_all_cells()
   for ( name, cfg ) in styles
   {
     let output = TableFormatter::with_config( cfg.clone() ).format( &tree );
-    // Every content line must have a space on both sides of every column separator.
-    // "Alice|" or "|Alice" means padding was only applied at outer edges, not between
-    // cells — the bug this test guards against.
     for line in output.lines().filter( | l | l.contains( "Alice" ) || l.contains( "NAME" ) )
     {
       assert!(
