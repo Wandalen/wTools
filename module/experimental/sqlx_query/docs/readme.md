@@ -1,0 +1,8 @@
+# Docs
+
+Design and API documentation for `sqlx_query`.
+
+## Responsibility Table
+
+| Entity | Responsibility |
+|--------|----------------|
