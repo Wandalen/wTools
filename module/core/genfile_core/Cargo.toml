@@ -27,26 +27,19 @@ features = [ "full" ]
 all-features = false
 
 [features]
-default = [
-  "archive",
-  "template",
-  "renderer",
-  "filesystem",
-  "serialization",
-  "binary",
-]
-
+default = [ "enabled" ]
 full = [
-  "archive",
-  "template",
-  "renderer",
-  "filesystem",
-  "serialization",
-  "json",
-  "yaml",
-  "binary",
+  "enabled",
   "external_content",
   "parameter_discovery",
+]
+enabled = [
+  "archive",
+  "template",
+  "renderer",
+  "filesystem",
+  "serialization",
+  "binary",
 ]
 
 # High-level archive API with self-contained template archives
@@ -125,9 +118,9 @@ serde_json = { version = "1.0", optional = true }
 serde_yaml = { version = "0.9", optional = true }
 base64 = { version = "0.22", optional = true }
 regex = { version = "1.11", optional = true }
-error_tools = { workspace = true, features = [ "error_typed" ] }
-collection_tools = { workspace = true }
-mod_interface = { workspace = true }
+error_tools = { workspace = true, features = [ "error_typed" ], optional = true }
+collection_tools = { workspace = true, optional = true }
+mod_interface = { workspace = true, optional = true }
 
 [dev-dependencies]
 

@@ -31,9 +31,6 @@ default = [ "enabled" ]
 full = [ "enabled" ]
 enabled = []
 
-[build-dependencies]
-# Build-time YAML processing
-walkdir = "2"
 
 [dependencies]
 # Core functionality

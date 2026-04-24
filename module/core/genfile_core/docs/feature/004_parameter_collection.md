@@ -1,0 +1,26 @@
+# Feature: Parameter Collection
+
+### Scope
+
+- **Purpose**: Aggregates all parameter descriptors for a template and exposes validation utilities.
+- **Responsibility**: Documents the `Parameters` collection type and its methods.
+- **In Scope**: Storing multiple descriptors, listing mandatory parameters, validation support.
+- **Out of Scope**: Individual parameter metadata (→ 003), runtime value assignment (→ 005).
+
+### Design
+
+`Parameters` wraps a collection of `ParameterDescriptor` instances. It provides a `list_mandatory()` method returning names of all parameters marked mandatory, which the generation layer uses to detect missing values before rendering. The collection supports the builder pattern for construction.
+
+### Cross-References
+
+| Type | File | Responsibility |
+|------|------|----------------|
+| source | `src/parameter.rs` | `Parameters` collection implementation |
+| doc | `docs/feature/003_parameter_definition.md` | Individual descriptors stored in this collection |
+| doc | `docs/feature/015_missing_mandatory_detection.md` | Uses `list_mandatory()` to detect gaps |
+
+### Sources
+
+| File | Notes |
+|------|-------|
+| [`../../spec.md`](../../spec.md) | FR4 in original spec; combined source migrated to feature/ |
