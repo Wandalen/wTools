@@ -11,14 +11,21 @@ fn main()
   {
   /* delimeter exists */
   let src = "abc def";
-  let iter = string::split().src(src).delimeter(" ").stripping(false).perform();
-  let iterated = iter.map(String::from).collect::< Vec< _ >>();
-  assert_eq!(iterated, vec!["abc", " ", "def"]);
+  let iter = string::split()
+  .src( src )
+  .delimeter( " " )
+  .stripping( false )
+  .perform();
+  let iterated = iter.map( String::from ).collect::< Vec< _ > >();
+  assert_eq!( iterated, vec![ "abc", " ", "def" ] );
 
   /* delimeter not exists */
   let src = "abc def";
-  let iter = string::split().src(src).delimeter("g").perform();
-  let iterated = iter.map(String::from).collect::< Vec< _ >>();
-  assert_eq!(iterated, vec!["abc def"]);
+  let iter = string::split()
+  .src( src )
+  .delimeter( "g" )
+  .perform();
+  let iterated = iter.map( String::from ).collect::< Vec< _ > >();
+  assert_eq!( iterated, vec![ "abc def" ] );
  }
 }

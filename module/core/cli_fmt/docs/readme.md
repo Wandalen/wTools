@@ -6,3 +6,6 @@ Design and API documentation for `cli_fmt`.
 
 | Entity | Responsibility |
 |--------|----------------|
+| `feature/` | Behavioral feature specifications |
+| `api/` | API contracts and usage reference |
+| `invariant/` | Architectural invariants and design decisions |

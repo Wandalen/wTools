@@ -1,0 +1,15 @@
+# Feature Doc Entity
+
+### Scope
+
+- **Purpose**: Document functional capabilities of the `clone_dyn` facade crate.
+- **Responsibility**: Describe the macro-based and manual clone developer interaction models.
+- **In Scope**: `#[clone_dyn]` macro usage, manual Clone implementation pattern.
+- **Out of Scope**: Proc-macro internals (clone_dyn_meta), runtime trait impls (clone_dyn_types).
+
+### Overview Table
+
+| ID | Name | Purpose | Status |
+|----|------|---------|--------|
+| 001 | macro_usage | `#[clone_dyn]` macro-based cloning pattern | active |
+| 002 | manual_impl | Manual Clone implementation without macro | active |

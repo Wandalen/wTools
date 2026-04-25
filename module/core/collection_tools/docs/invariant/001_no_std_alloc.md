@@ -14,7 +14,9 @@
 | source | `src/collection/hash_map.rs` | Conditional `HashMap` re-export |
 | source | `src/collection/hash_set.rs` | Conditional `HashSet` re-export |
 | doc | `../api/001_collection_macros.md` | Collection type re-export table |
-| doc | `../feature/001_collection_constructors.md` | Feature depending on this invariant |
+| doc | `../feature/001_collection_constructors.md` | Strict macros whose HashMap/HashSet depend on this invariant |
+| doc | `../feature/002_into_constructors.md` | Into-based macros whose HashMap/HashSet depend on this invariant |
+| doc | `002_capacity_preallocated.md` | Sibling invariant governing capacity pre-allocation |
 
 ### Invariant Statement
 
@@ -22,10 +24,10 @@ When both `no_std` and `use_alloc` features are active, `collection_tools::HashM
 
 The selection rule is:
 
-```
-no_std + use_alloc  →  hashbrown::HashMap, hashbrown::HashSet
-otherwise           →  std::collections::HashMap, std::collections::HashSet
-```
+| Feature Configuration | `HashMap` / `HashSet` source |
+|-----------------------|------------------------------|
+| `no_std` + `use_alloc` both active | `hashbrown` crate |
+| all other configurations (std enabled) | standard library |
 
 All other collection types follow a simpler rule: when `use_alloc` is active they come from `alloc::collections::*`; otherwise from `std::collections::*`.
 
@@ -39,4 +41,6 @@ The invariant cannot be violated at runtime — configuration is resolved entire
 
 ### Sources
 
-Migrated from `../../spec.md`. Sections contributing to this instance: "Architecture → Feature-Based Collection Source", "Design Rationale → Why Conditional hashbrown Dependency", "Overview → In-Scope → No-std Support". Sibling extractions: `../api/001_collection_macros.md`, `../feature/001_collection_constructors.md`, `../feature/002_into_constructors.md`, `002_capacity_preallocated.md`.
+| File | Notes |
+|------|-------|
+| [../../spec.md](../../spec.md) | Migrated; sections: Architecture → Feature-Based Collection Source, Design Rationale → Why Conditional hashbrown Dependency, Overview → No-std Support; siblings: api/001, feature/001, feature/002, invariant/002 |

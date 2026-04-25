@@ -35,30 +35,30 @@ The collection constructor macros provide ergonomic, variadic initialization of 
 
 Strict macros require all arguments to share the same type. The collection type is inferred from the elements or from context.
 
-| Macro | Collection | Signature Pattern |
-|-------|-----------|------------------|
-| `vec!` | `Vec<T>` | `vec!( $( $item:expr ),* $(,)? )` |
-| `hmap!` | `HashMap<K, V>` | `hmap!( $( $key:expr => $value:expr ),* $(,)? )` |
-| `hset!` | `HashSet<T>` | `hset!( $( $item:expr ),* $(,)? )` |
-| `bmap!` | `BTreeMap<K, V>` | `bmap!( $( $key:expr => $value:expr ),* $(,)? )` |
-| `bset!` | `BTreeSet<T>` | `bset!( $( $item:expr ),* $(,)? )` |
-| `llist!` | `LinkedList<T>` | `llist!( $( $item:expr ),* $(,)? )` |
-| `deque!` | `VecDeque<T>` | `deque!( $( $item:expr ),* $(,)? )` |
+| Macro | Collection | Arguments |
+|-------|-----------|-----------|
+| `vec!` | `Vec<T>` | zero or more elements |
+| `hmap!` | `HashMap<K, V>` | zero or more `key => value` pairs |
+| `hset!` | `HashSet<T>` | zero or more elements |
+| `bmap!` | `BTreeMap<K, V>` | zero or more `key => value` pairs |
+| `bset!` | `BTreeSet<T>` | zero or more elements |
+| `llist!` | `LinkedList<T>` | zero or more elements |
+| `deque!` | `VecDeque<T>` | zero or more elements |
 | `dlist!` | `Vec<T>` | permanent alias for `vec!` |
 
 #### Into-based Constructor Macros (feature = `collection_into_constructors`)
 
 Into-based macros call `.into()` on each element before insertion. The target element type `T` must be specified via type annotation; it cannot always be inferred.
 
-| Macro | Collection | Signature Pattern |
-|-------|-----------|------------------|
-| `into_vec!` | `Vec<T>` | `into_vec!( $( $item:expr ),* $(,)? )` |
-| `into_hmap!` | `HashMap<K, V>` | `into_hmap!( $( $key:expr => $value:expr ),* $(,)? )` |
-| `into_hset!` | `HashSet<T>` | `into_hset!( $( $item:expr ),* $(,)? )` |
-| `into_bmap!` | `BTreeMap<K, V>` | `into_bmap!( $( $key:expr => $value:expr ),* $(,)? )` |
-| `into_bset!` | `BTreeSet<T>` | `into_bset!( $( $item:expr ),* $(,)? )` |
-| `into_llist!` | `LinkedList<T>` | `into_llist!( $( $item:expr ),* $(,)? )` |
-| `into_vecd!` | `VecDeque<T>` | `into_vecd!( $( $item:expr ),* $(,)? )` |
+| Macro | Collection | Arguments |
+|-------|-----------|-----------|
+| `into_vec!` | `Vec<T>` | zero or more elements, each coerced to T |
+| `into_hmap!` | `HashMap<K, V>` | zero or more `key => value` pairs, each coerced to target type |
+| `into_hset!` | `HashSet<T>` | zero or more elements, each coerced to T |
+| `into_bmap!` | `BTreeMap<K, V>` | zero or more `key => value` pairs, each coerced to target type |
+| `into_bset!` | `BTreeSet<T>` | zero or more elements, each coerced to T |
+| `into_llist!` | `LinkedList<T>` | zero or more elements, each coerced to T |
+| `into_vecd!` | `VecDeque<T>` | zero or more elements, each coerced to T |
 | `into_dlist!` | `Vec<T>` | permanent alias for `into_vec!` |
 
 #### Macro Expansion Contract
@@ -76,16 +76,16 @@ For into-based macros, each argument is wrapped in `.into()` before the insert c
 
 All standard collections are re-exported through `collection_tools` with automatic source selection governed by feature flags. See `../invariant/001_no_std_alloc.md` for the switching rule.
 
-| Type | std source | no_std + use_alloc source |
-|------|-----------|--------------------------|
-| `HashMap` | `std::collections::HashMap` | `hashbrown::HashMap` |
-| `HashSet` | `std::collections::HashSet` | `hashbrown::HashSet` |
-| `Vec` | `std::vec::Vec` | `alloc::vec::Vec` |
-| `BTreeMap` | `std::collections::BTreeMap` | `alloc::collections::BTreeMap` |
-| `BTreeSet` | `std::collections::BTreeSet` | `alloc::collections::BTreeSet` |
-| `LinkedList` | `std::collections::LinkedList` | `alloc::collections::LinkedList` |
-| `VecDeque` | `std::collections::VecDeque` | `alloc::collections::VecDeque` |
-| `BinaryHeap` | `std::collections::BinaryHeap` | `alloc::collections::BinaryHeap` |
+| Collection Type | Source (std) | Source (no_std + use_alloc) |
+|----------------|-------------|------------------------------|
+| `HashMap` | standard library | `hashbrown` crate |
+| `HashSet` | standard library | `hashbrown` crate |
+| `Vec` | standard library | `alloc` crate |
+| `BTreeMap` | standard library | `alloc` crate |
+| `BTreeSet` | standard library | `alloc` crate |
+| `LinkedList` | standard library | `alloc` crate |
+| `VecDeque` | standard library | `alloc` crate |
+| `BinaryHeap` | standard library | `alloc` crate |
 
 ### Error Handling
 
@@ -102,4 +102,6 @@ No runtime errors. All macros are purely syntactic expansions resolved at compil
 
 ### Sources
 
-Migrated from `../../spec.md`. Sections contributing to this instance: "Public API → Strict Constructor Macros", "Public API → Into-based Constructor Macros", "Public API → Collection Type Re-exports", "Architecture → Macro Expansion Pattern". Sibling extractions: `../feature/001_collection_constructors.md`, `../feature/002_into_constructors.md`, `../invariant/001_no_std_alloc.md`, `../invariant/002_capacity_preallocated.md`.
+| File | Notes |
+|------|-------|
+| [../../spec.md](../../spec.md) | Migrated; sections: Public API → Strict Constructor Macros, Public API → Into-based Constructor Macros, Public API → Collection Type Re-exports, Architecture → Macro Expansion Pattern; siblings: feature/001, feature/002, invariant/001, invariant/002 |

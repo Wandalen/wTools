@@ -22,12 +22,13 @@ tests/
 
 | File | Responsibility |
 |------|----------------|
-| `smoke_test.rs` | Validates basic clone() and clone_into_box() functionality without external dependencies |
-| `tests.rs` | Validates comprehensive CloneDyn trait implementations across type categories (generic types, slices, str slices, trait objects) |
-| `clone_arrays_test.rs` | Validates array cloning for sizes 0 through 128 via blanket CloneDyn impl |
-| `clone_tuples_test.rs` | Validates tuple cloning for arities 0 through 12 and mixed element types |
-| `additional_corner_cases_test.rs` | Validates iterator edge cases: partial consumption, double-ended, large, full consumption |
-| `inc/mod.rs` | Manages external test integration (currently disabled due to circular dependency) |
+| `smoke_test.rs` | Validate clone() and clone_into_box() without external dependencies |
+| `tests.rs` | Validate CloneDyn impls across generic, slice, str, and trait-object categories |
+| `clone_arrays_test.rs` | Validate array cloning for sizes 0 through 128 via blanket impl |
+| `clone_tuples_test.rs` | Validate tuple cloning for arities 0 through 12 and mixed element types |
+| `additional_corner_cases_test.rs` | Validate iterator edge cases: partial, double-ended, large, empty |
+| `inc/` | Manage external test integration (disabled: circular dependency) |
+| `manual/` | Manual testing procedures for example compilation and helper functions |
 
 ### Scope
 

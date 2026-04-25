@@ -1,22 +1,5 @@
 # Doc Entities
 
-## Entity Tree
-
-```
-docs/                            structural container
-├── api/                         Collection Entity   1st
-├── feature/                     Collection Entity   1st
-└── invariant/                   Collection Entity   1st
-```
-
-## Entities
-
-| Entity | Type | Latent? | Purpose |
-|--------|------|---------|---------|
-| [api/](api/) | Collection | | Registry of API doc instances |
-| [feature/](feature/) | Collection | | Registry of feature doc instances |
-| [invariant/](invariant/) | Collection | | Registry of invariant doc instances |
-
 ## Master Doc Entities Table
 
 | Type | Purpose | Master File | Instances |

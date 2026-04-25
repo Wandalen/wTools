@@ -24,7 +24,7 @@ features = [ "full" ]
 all-features = false
 
 [features]
-default = [ "enabled", "as_bytes", "into_bytes", "derive", "must_cast" ] # Added into_bytes
+default = []
 full = [
   "enabled",
   "as_bytes",

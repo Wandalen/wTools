@@ -76,8 +76,8 @@ All operations are infallible by design. No ANSI validation is performed — `wi
 
 ### Cross-References
 
-| Entity | File | Relationship |
-|--------|------|-------------|
+| Type | File | Responsibility |
+|------|------|----------------|
 | feature/001 | [DecoratedText](../feature/001_decorated_text.md) | Feature specification |
 | feature/002 | [serde Support](../feature/002_serde_support.md) | Optional serde derives |
 | invariant/001 | [Transparent Conversion](../invariant/001_transparent_conversion.md) | Conversion guarantee |

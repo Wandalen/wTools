@@ -1,5 +1,20 @@
 # Changelog
 
+## [v0.4.0 | 2026-04-19] Dependency version bump
+
+**Updated:** Dependency version alignment with workspace release.
+
+## [v0.3.0 | 2025-12-19] Dependency version bump
+
+**Updated:** Dependency version alignment with workspace release.
+
+## [v0.2.0 | 2025-11-29] Renamed from cli_tools; stream ordering fix
+
+**Renamed:** `cli_tools` → `cli_fmt` to reflect scope (CLI formatting utilities).
+
+**Fixed:** Correct stream ordering in merged output — stderr now appears before stdout
+as required by CLI convention.
+
 ## [v0.1.0 | 2025-11-29] Initial Release
 
 **Created:** New crate for CLI-application-specific utilities.
@@ -26,4 +41,3 @@
 - API unchanged - drop-in replacement
 
 **Tests:** 31 comprehensive tests
-**Documentation:** Full specification in spec.md

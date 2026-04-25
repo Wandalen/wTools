@@ -20,7 +20,7 @@ This document describes manual testing procedures for the `clone_dyn` crate, whi
 
 1. **Test with all features enabled:**
    ```bash
-   cd /home/user1/pro/lib/wip_core/wtools/dev/module/core/clone_dyn
+   cd ../..
    cargo run --example clone_dyn_trivial --all-features
    ```
 

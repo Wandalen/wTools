@@ -13,7 +13,7 @@ This document defines the comprehensive manual testing plan for the proper_tools
 **Placeholder Status:** The crate currently provides only a single placeholder function `f1()` with no parameters or return value. Most verification is handled by automated tests.
 
 **Automated Test Coverage:**
-- ✅ Compilation verification (smoke tests)
+- ✅ Compilation verification (examples build and run)
 - ✅ Example execution (examples_exist.rs)
 - ✅ Documentation accuracy (metadata_correctness.rs)
 - ✅ Feature flag behavior (clippy, doc tests)
@@ -277,7 +277,6 @@ cargo run
 - [ ] Installation instructions work
 - [ ] Example code compiles and runs
 - [ ] Status warnings are accurate
-- [ ] Links to spec.md work
 - [ ] Badges display correctly
 - [ ] Usage examples match actual API
 
@@ -289,8 +288,8 @@ cargo run
 
 ### Session 1: Initial Manual Testing (2026-01-04)
 
-**Tester:** [Original tester - referenced in spec.md]
-**Issues Found:** 7 (documented in spec.md § 12)
+**Tester:** [Original tester - session 2026-01-04]
+**Issues Found:** 7 (details not preserved in documentation)
 
 **Note:** Details of these 7 issues were not preserved in manual testing documentation. Going forward, all issues must be documented here with reproduction steps.
 

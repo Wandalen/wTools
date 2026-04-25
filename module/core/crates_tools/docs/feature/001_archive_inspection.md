@@ -22,34 +22,28 @@
 
 #### Loading Archives
 
-`CrateArchive` supports three loading paths:
+`CrateArchive` supports four loading paths:
 
-- **`read(path)`** — Reads a `.crate` file from the filesystem. Returns `io::Result<Self>`.
-- **`decode(bytes)`** — Decodes raw gzip-compressed tar bytes already in memory. Returns `io::Result<Self>`. Used when bytes arrive from any source (custom download, test fixtures, embedded data).
-- **`download_crates_io(name, version)`** — Downloads by crate name and exact version from `crates.io`. Feature-gated on `network`. Returns `Result<Self, ureq::Error>`.
-- **`download(url)`** — Downloads from any arbitrary URL. Feature-gated on `network`. Returns `Result<Self, ureq::Error>`.
+- **`read`** — Loads from a filesystem path.
+- **`decode`** — Decodes raw bytes already in memory. Useful for bytes from any source: custom download, test fixtures, embedded data.
+- **`download_crates_io`** — Downloads from crates.io by exact crate name and version. Requires the `network` feature.
+- **`download`** — Downloads from any URL pointing directly to a `.crate` file. Requires the `network` feature.
 
-All paths produce an identical `CrateArchive` containing every file from the archive stored as `HashMap< PathBuf, Vec< u8 > >`.
+All four paths produce an equivalent in-memory archive. See [CrateArchive API](../api/001_crate_archive.md) for full contracts, error types, and timeout configuration.
 
 #### Inspecting Contents
 
-Once loaded, two read-only methods provide content access:
+Once loaded, two read-only operations provide content access:
 
-- **`list()`** — Returns `Vec< &Path >` of all file paths in the archive. Order is non-deterministic (HashMap iteration).
-- **`content_bytes(path)`** — Returns `Option< &[u8] >` for a given path. Returns `None` if path is not in the archive.
+- **`list`** — Enumerates all file paths in the archive. Order is non-deterministic.
+- **`content_bytes`** — Retrieves the byte content for a given path. A missing path is distinct from an empty file — absent paths return cleanly.
+
+See [CrateArchive API](../api/001_crate_archive.md) for the full access contract.
 
 #### Archive Path Format
 
-Archive paths include the crate name and version prefix as encoded by `cargo package`. For example, a crate named `my_crate` at version `1.0.0` stores files as `my_crate-1.0.0/src/lib.rs`. This prefix is included verbatim in `list()` output and must be provided when calling `content_bytes()`.
+Archive paths include the crate name and version prefix as encoded by `cargo package`. For example, a crate named `my_crate` at version `1.0.0` stores files as `my_crate-1.0.0/src/lib.rs`. This prefix is included verbatim in `list` output and must be provided when calling `content_bytes`.
 
 #### Feature Flags
-
-```toml
-[features]
-default = ["enabled"]
-full    = ["enabled"]
-enabled = ["dep:flate2", "dep:tar", "network"]
-network = ["dep:ureq"]
-```
 
 All functionality requires the `enabled` feature (on by default). Network-based download methods additionally require the `network` feature (also on by default via `enabled`).

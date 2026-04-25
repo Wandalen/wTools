@@ -1,3 +1,5 @@
+<!-- SOURCE DOCUMENT — migrated to docs/api/001_config_paths_trait.md. Retained for reference only. -->
+
 # Configuration Parameters
 
 Complete reference for all configurable parameters in the `ConfigPaths` trait.

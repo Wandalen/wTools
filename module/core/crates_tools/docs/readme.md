@@ -8,7 +8,7 @@ Design and API documentation for `crates_tools`.
 
 | File | Responsibility |
 |------|----------------|
-| `feature/` | Feature guides: archive inspection capability |
-| `invariant/` | Behavioral contracts: in-memory storage, blocking network |
-| `api/` | Public API surface: CrateArchive struct and methods |
-| `entities.md` | Master doc entity index: all entity types and doc instances |
+| `feature/` | Document feature guides for archive inspection |
+| `invariant/` | Document behavioral contracts for storage and network invariants |
+| `api/` | Document public API surface for the CrateArchive type |
+| `entities.md` | Index all active doc entity types and instances |

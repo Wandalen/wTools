@@ -2,7 +2,7 @@
 
 This directory contains all automated tests for the cli_fmt crate.
 
-### Scope
+## Scope
 
 **Responsibilities:**
 Validates core CLI output processing functionality including stream merging, head/tail filtering, and ANSI-aware width truncation. Tests are organized by functional domain, with comprehensive coverage of OutputConfig behavior, process_output integration, and ANSI preservation.
@@ -23,10 +23,10 @@ Validates core CLI output processing functionality including stream merging, hea
 
 ## Responsibility Table
 
-| Entity | Responsibility | Scope | Out of Scope |
-|--------|----------------|-------|--------------|
-| `readme.md` | Document test organization | Test directory structure, navigation, principles | Test implementation details, actual test code |
-| `output.rs` | Validate CLI output processing | OutputConfig tests, stream filtering, head/tail, width truncation, ANSI preservation, bug reproducers | Performance measurement, benchmarks, manual tests |
+| Entity | Responsibility |
+|--------|----------------|
+| `readme.md` | Document test organization and navigation |
+| `output.rs` | Validate CLI output processing behavior |
 
 ## Organization Principles
 
@@ -67,5 +67,5 @@ cargo test --test output
 ## Navigation
 
 - CLI output processing tests: `output.rs`
-- Test matrix and bug documentation: See `output.rs` file header (lines 5-47)
-- Bug reproducer documentation: See `output.rs` lines 5-27 (width truncation boundary detection)
+- Test matrix and bug documentation: See `output.rs` file header (lines 5-53)
+- Bug reproducer documentation: See `output.rs` lines 5-33 (width truncation boundary detection)

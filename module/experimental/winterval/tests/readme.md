@@ -4,7 +4,7 @@
 
 ### Responsibilities
 
-Document test organization strategy for winterval alias crate, including smoke tests validating basic compilation/execution and test propagation from core interval_adapter crate.
+Document test organization strategy for winterval crate, including smoke tests validating basic compilation/execution and test propagation from core interval_adapter crate.
 
 ### In Scope
 
@@ -29,7 +29,7 @@ Document test organization strategy for winterval alias crate, including smoke t
 
 ## Test Strategy
 
-This alias crate uses **test propagation pattern** to avoid duplication while ensuring correctness:
+This re-export crate uses **test propagation pattern** to avoid duplication while ensuring correctness:
 
 1. **Minimal Smoke Tests** (`smoke_test.rs`):
    - Verify facade crate compiles successfully
@@ -45,5 +45,5 @@ This alias crate uses **test propagation pattern** to avoid duplication while en
 3. **Rationale**:
    - Avoids duplicating interval_adapter's comprehensive test suite
    - Focuses facade tests on facade-specific concerns (compilation, re-exports)
-   - Follows Anti-Duplication Principle (organizational_principles.rulebook.md)
+   - Follows Anti-Duplication Principle (principles.rulebook.md)
    - Validates the re-export mechanism itself works correctly

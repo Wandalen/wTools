@@ -11,8 +11,8 @@
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/as_bytes.rs` | `impl< T: Pod > AsBytes for ...` bounds |
-| source | `src/into_bytes.rs` | `impl< T: Pod > IntoBytes for ...` bounds |
+| source | `src/as_bytes.rs` | AsBytes trait and Pod-bound implementations |
+| source | `src/into_bytes.rs` | IntoBytes trait and Pod-bound implementations |
 | test | `tests/inc/as_bytes_test.rs` | Tests verifying Pod-typed conversions |
 | test | `tests/inc/into_bytes_test.rs` | Tests verifying Pod-typed conversions |
 | doc | `../feature/001_byte_conversion.md` | Feature relying on this safety model |

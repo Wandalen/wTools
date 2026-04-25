@@ -2,7 +2,7 @@
 //!
 //! Ported from `unilang::output` module tests.
 //!
-//! ## Critical Bug Fix: Width Truncation Boundary Detection
+//! ## Critical Bug Fix: Width Truncation Boundary Detection (issue-none)
 //!
 //! **Bug (pre-migration):** Text exactly matching `max_width` was incorrectly truncated.
 //!
@@ -11,6 +11,12 @@
 //! - Input: "hello" (5 visible chars)
 //! - Old behavior: Truncated to "hell→" (incorrectly assumed truncation needed)
 //! - Correct behavior: Should return "hello" unchanged (fits exactly)
+//!
+//! **Why Not Caught:** No regression test existed before migration. The code was ported
+//! from `strs_tools::output`, which delegated unconditionally to `truncate_lines()` without
+//! testing the exact-width boundary case. Visual inspection of typical usage (long lines)
+//! passed; the failure required input where `visible_len(line) == max_width`, a case not
+//! covered by any existing test at the time of extraction.
 //!
 //! **Fix Applied:** Check `visual_len(line) > max_width` before calling `truncate()`.
 //! Only invoke truncation when line genuinely exceeds the limit.
@@ -251,6 +257,7 @@ fn head_tail_exact_fit()
 // Width truncation tests
 // ============================================================================
 
+// test_kind: bug_reproducer(issue-none)
 #[ test ]
 fn width_no_truncation_needed()
 {
@@ -281,6 +288,7 @@ fn width_zero_disables()
   assert!( !result.width_truncated );
 }
 
+// test_kind: bug_reproducer(issue-none)
 #[ test ]
 fn width_custom_suffix()
 {

@@ -605,9 +605,9 @@ fn for_each_test()
   {
    the_module ::for_each!( dbg, "a", "b", "c" );
    // generates
-   dbg!( "a" );
-   dbg!( "b" );
-   dbg!( "c" );
+   // dbg!( "a" );
+   // dbg!( "b" );
+   // dbg!( "c" );
  }
 
   /* test.case( "sample: map-style" ) */
@@ -620,9 +620,9 @@ fn for_each_test()
   @Each "a" "b" "c"
  };
    // generates
-   dbg!( "prefix".to_string() + "a" + "postfix" );
-   dbg!( "prefix".to_string() + "b" + "postfix" );
-   dbg!( "prefix".to_string() + "c" + "postfix" );
+   // dbg!( "prefix".to_string() + "a" + "postfix" );
+   // dbg!( "prefix".to_string() + "b" + "postfix" );
+   // dbg!( "prefix".to_string() + "c" + "postfix" );
  }
 
   /* test.case( "sample: more than single token" ) */
@@ -635,9 +635,9 @@ fn for_each_test()
   @Each { "a" + "1" } { "b" + "2" } { "c" + "3" }
  };
    // generates
-   dbg!( "prefix".to_string() + "a" + "1" + "postfix" );
-   dbg!( "prefix".to_string() + "b" + "2" + "postfix" );
-   dbg!( "prefix".to_string() + "c" + "3" + "postfix" );
+   // dbg!( "prefix".to_string() + "a" + "1" + "postfix" );
+   // dbg!( "prefix".to_string() + "b" + "2" + "postfix" );
+   // dbg!( "prefix".to_string() + "c" + "3" + "postfix" );
  }
 
   /* test.case( "sample: callbackless" ) */
@@ -648,9 +648,9 @@ fn for_each_test()
   @Each ( "a" ) ( "b" ) ( "c" )
  };
    // generates
-   dbg!( "a" );
-   dbg!( "b" );
-   dbg!( "c" );
+   // dbg!( "a" );
+   // dbg!( "b" );
+   // dbg!( "c" );
  }
 
   // function-style

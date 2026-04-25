@@ -4,38 +4,15 @@ CLI output formatting utilities for command-line applications.
 
 ## Purpose
 
-This crate provides utilities specifically designed for building command-line applications,
-including output processing, formatting, and other CLI-specific helpers.
+Provides utilities specifically designed for building command-line applications: output
+processing with head/tail filtering, ANSI-aware width truncation, and stream merging.
 
-## Distinction from strs_tools
-
-- **strs_tools**: General-purpose string and ANSI manipulation (any application)
-- **cli_fmt**: CLI-application-specific functionality (command-line tools only)
-
-### Scope
-
-**Responsibilities:**
-Provides CLI-application-specific output processing utilities for command-line tools. Focuses on stream selection, line filtering (head/tail), and ANSI-aware width truncation. Delegates to strs_tools for general-purpose string and ANSI manipulation. Designed for command-line applications requiring output formatting and processing.
-
-**In Scope:**
-- CLI output processing with stream selection (stdout, stderr, both)
-- Head/tail line filtering for limiting output volume
-- ANSI-aware width truncation with configurable suffixes
-- Stream merging with stderr-before-stdout ordering convention
-- Builder pattern configuration API for ergonomic usage
-- Integration with strs_tools for underlying string operations
-
-**Out of Scope:**
-- General-purpose string manipulation (see strs_tools crate)
-- ANSI escape code generation (see strs_tools crate)
-- Progress bars, tables, or interactive prompts (see indicatif, tabled crates)
-- Terminal control or cursor manipulation (see crossterm crate)
-- Configuration file parsing (see config, serde crates)
-- Command-line argument parsing (see clap crate)
+See [docs/invariant/001_architectural_boundary.md](docs/invariant/001_architectural_boundary.md)
+for the `cli_fmt` vs `strs_tools` design boundary.
 
 ## Modules
 
-- `output` - Process command output with head/tail filtering, width truncation, and stream merging
+- `output` — Process command output with head/tail filtering, width truncation, and stream merging
 
 ## Usage
 
@@ -43,16 +20,19 @@ Provides CLI-application-specific output processing utilities for command-line t
 use cli_fmt::output::*;
 
 let config = OutputConfig::default()
-  .with_head(10)
-  .with_width(80);
+  .with_head( 10 )
+  .with_width( 80 );
 
-let result = process_output(stdout_str, stderr_str, &config);
-println!("{}", result.content);
+let result = process_output( stdout_str, stderr_str, &config );
+println!( "{}", result.content );
 ```
 
 ## Features
 
-- `output` - Output processing module (enabled by default)
+- `enabled` — master switch; activates core dependencies
+- `output` — output processing module (requires `enabled`)
+- `full` — enables all functionality (`enabled` + `output` + `ansi_unicode`)
+- `ansi_unicode` — grapheme-based Unicode width support (opt-in)
 
 ## License
 

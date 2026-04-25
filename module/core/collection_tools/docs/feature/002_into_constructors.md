@@ -19,8 +19,17 @@
 | source | `src/collection/vec_deque.rs` | `into_vecd!` implementation |
 | source | `src/collection/vector.rs` | `into_vec!` implementation |
 | source | `src/collection/mod.rs` | `count!` macro used for capacity pre-allocation |
+| test | `tests/smoke_test.rs` | Smoke tests including into-based constructor macros |
+| test | `tests/inc/hmap.rs` | `into_hmap!` macro tests |
+| test | `tests/inc/hset.rs` | `into_hset!` macro tests |
+| test | `tests/inc/vec.rs` | `into_vec!` macro tests |
+| test | `tests/inc/bmap.rs` | `into_bmap!` macro tests |
+| test | `tests/inc/bset.rs` | `into_bset!` macro tests |
+| test | `tests/inc/llist.rs` | `into_llist!` macro tests |
+| test | `tests/inc/deque.rs` | `into_vecd!` macro tests |
 | doc | `../api/001_collection_macros.md` | Complete macro signature contract |
 | doc | `001_collection_constructors.md` | Strict-type counterpart |
+| doc | `../invariant/001_no_std_alloc.md` | Invariant governing HashMap/HashSet source (out of scope here; see invariant for full coverage) |
 | doc | `../invariant/002_capacity_preallocated.md` | Invariant guaranteeing pre-allocation |
 
 ### Design
@@ -44,35 +53,11 @@ Each strict macro has an into-based counterpart:
 
 #### Type Annotations
 
-Because `.into()` requires knowing the target type `T`, the compiler cannot always infer it from the arguments alone. Explicit type annotations are required in most cases:
-
-```rust
-use collection_tools::*;
-use std::borrow::Cow;
-
-// Type annotation required — compiler cannot infer String from mixed sources
-let vec : Vec< String > = into_vec!( "&str", "String".to_string(), Cow::from( "Cow" ) );
-
-// Key and value types both need annotation
-let map : HashMap< String, String > = into_hmap!( "key" => "value", "key2".to_string() => "value2" );
-
-// Without annotation, compilation fails:
-// let vec = into_vec!( "a", "b" ); // Error: type annotations needed
-```
+Because coercion requires a known target type, the compiler cannot always infer `T` from the arguments alone. Explicit type annotation on the binding is required in most cases — the argument types alone do not determine the target. Without annotation, compilation fails with a type-inference error. For map macros, both the key and value types each need annotation.
 
 #### Tradeoff vs Strict Macros
 
-Into macros trade implicit type inference for flexibility. Prefer strict macros when all elements have the same type; use into macros when elements come from heterogeneous sources that share a common `Into<T>` target:
-
-```rust
-use collection_tools::*;
-
-// Prefer strict — type is uniform, no annotation needed
-let ids = hset! { 1u32, 2, 3 };
-
-// Use into — sources are heterogeneous, annotation required
-let labels : Vec< String > = into_vec!( "static", label_var, name.clone() );
-```
+Into macros trade implicit type inference for flexibility. Prefer strict macros when all elements already share the same type — inference works automatically and no annotation is needed. Use into macros when elements come from heterogeneous sources that share a common target type — the annotation cost is worth the initialization flexibility.
 
 #### Feature Gate
 
@@ -80,4 +65,6 @@ All into-based macros are gated on `feature = "collection_into_constructors"`, w
 
 ### Sources
 
-Migrated from `../../spec.md`. Sections contributing to this instance: "Overview → In-Scope → Variadic Constructor Macros (Into-based)", "Architecture → Macro Expansion Pattern", "Usage Patterns → Pattern 2", "Usage Patterns → Pattern 6", "Design Rationale → Why Two Classes of Macros", "Adoption Guidelines". Sibling extractions: `../api/001_collection_macros.md`, `001_collection_constructors.md`, `../invariant/001_no_std_alloc.md`, `../invariant/002_capacity_preallocated.md`.
+| File | Notes |
+|------|-------|
+| [../../spec.md](../../spec.md) | Migrated; sections: Overview → Variadic Constructor Macros (Into-based), Architecture → Macro Expansion Pattern, Usage Patterns → Pattern 2/6, Design Rationale → Why Two Classes of Macros, Adoption Guidelines; siblings: api/001, feature/001, invariant/001, invariant/002 |

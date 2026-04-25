@@ -1,3 +1,8 @@
+<!-- SOURCE DOCUMENT — migrated to docs/ instances. Retained for reference only. -->
+<!-- Canonical locations: docs/feature/001_config_hierarchy.md, docs/invariant/001_resolution_hierarchy.md, -->
+<!-- docs/api/001_config_paths_trait.md, docs/api/002_config_defaults_trait.md, docs/api/003_config_validator_trait.md, -->
+<!-- docs/algorithm/001_type_detection.md, docs/format/001_config_file_format.md -->
+
 # config_hierarchy
 
 - **Name:** config_hierarchy

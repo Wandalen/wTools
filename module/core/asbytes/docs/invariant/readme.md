@@ -11,5 +11,5 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | [POD Safety](001_pod_safety.md) | All generic type parameters must implement `bytemuck::Pod` | ✅ |
+| 001 | [POD Safety](001_pod_safety.md) | All generic type parameters must be POD-safe | ✅ |
 | 002 | [Native Byte Order](002_native_endian.md) | Byte output uses host-native endianness; no conversion performed | ✅ |

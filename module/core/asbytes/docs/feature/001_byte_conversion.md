@@ -4,7 +4,7 @@
 
 - **Purpose**: Enable ergonomic, safe access to raw byte representations of POD types and standard collections.
 - **Responsibility**: Document the byte viewing and consuming capability and its usage patterns.
-- **In Scope**: `AsBytes` trait (borrow as `&[u8]`); `IntoBytes` trait (consume to `Vec<u8>`); implementations for `Vec`, slices, arrays, tuples, `String`, `&str`, `VecDeque`, `CString`, `Box`; `bytemuck` re-exports.
+- **In Scope**: `AsBytes` trait (borrow as a byte slice); `IntoBytes` trait (consume to owned byte vector); implementations for vectors, slices, arrays, tuples, strings, double-ended queues, null-terminated C strings, and boxed values; `bytemuck` re-exports.
 - **Out of Scope**: Endianness conversion; streaming byte production; parsing bytes back to types; non-POD types.
 
 ### Cross-References
@@ -24,60 +24,29 @@
 
 #### Viewing Data as Bytes (AsBytes)
 
-`AsBytes` provides a zero-copy `&[u8]` view of POD data. The original value remains owned and accessible after calling `as_bytes()`.
+`AsBytes` provides a zero-copy byte-slice view of POD data. The original value remains owned and accessible after calling `as_bytes`. A vector of POD items, for example, exposes all element bytes as a contiguous slice without copying; the collection remains usable afterward. `byte_size` returns the total byte count; `len` returns the element count.
 
-```rust
-use asbytes::AsBytes;
-
-#[ repr( C ) ]
-#[ derive( Clone, Copy, asbytes::Pod, asbytes::Zeroable ) ]
-struct Point { x : f32, y : f32 }
-
-let points : Vec< Point > = vec![ Point { x : 1.0, y : 2.0 } ];
-let bytes : &[ u8 ] = points.as_bytes();      // 8 bytes, no copy
-println!( "Size: {} bytes, {} elements", points.byte_size(), points.len() );
-// points is still accessible here
-```
-
-Single POD items are wrapped in a one-element tuple to obtain a byte view:
-
-```rust
-let point = Point { x : 5.0, y : 6.0 };
-let bytes : &[ u8 ] = ( point, ).as_bytes();  // 8 bytes
-```
+Single POD items are wrapped in a one-element tuple to obtain a byte view. Wrapping as `(item,)` and calling `as_bytes` reinterprets the single item's memory as bytes without consuming the item.
 
 #### Consuming Data into Bytes (IntoBytes)
 
-`IntoBytes` consumes the value and produces an owned `Vec<u8>`. Use this when the byte vector must outlive the source, be passed to an I/O sink, or be manipulated independently.
-
-```rust
-use asbytes::IntoBytes;
-use std::io::Write;
-
-fn send_data< T : IntoBytes, W : Write >( data : T, writer : &mut W ) -> std::io::Result< () >
-{
-  writer.write_all( &data.into_bytes() )
-}
-
-let mut buf = Vec::new();
-send_data( vec![ 1u32, 2, 3 ], &mut buf ).unwrap();  // 12 bytes
-send_data( String::from( "hello" ), &mut buf ).unwrap();
-```
+`IntoBytes` consumes the value and produces an owned byte vector. Use this when the byte vector must outlive the source, be passed to an I/O sink, or be manipulated independently. A function parameterized over `IntoBytes` can accept any supported type — POD collections, strings, or C strings — and forward the bytes to any byte sink without knowing the source type at the call site.
 
 #### Single Item Pattern
 
-Both traits use a one-element tuple `(item,)` to handle single POD items uniformly. This avoids a separate blanket impl for `T: Pod` which would conflict with collection impls.
+Both traits use a one-element tuple to handle single POD items uniformly. This avoids a blanket implementation over all POD types that would conflict with the collection implementations.
 
 #### Feature Flags
 
 ```toml
 [features]
-default     = [ "enabled", "as_bytes", "into_bytes", "derive", "must_cast" ]
+default     = []
+full        = [ "enabled", "as_bytes", "into_bytes", "derive", "must_cast" ]
 enabled     = []
 as_bytes    = [ "dep:bytemuck" ]
 into_bytes  = [ "as_bytes" ]
-derive      = [ "bytemuck/derive" ]
-must_cast   = [ "bytemuck/must_cast" ]
+derive      = [ "bytemuck?/derive" ]
+must_cast   = [ "bytemuck?/must_cast" ]
 ```
 
-`as_bytes` and `into_bytes` can be used independently. `into_bytes` depends on `as_bytes` for its implementations. Both require the `enabled` flag to be active (on by default).
+`as_bytes` and `into_bytes` can be enabled independently. `into_bytes` depends on `as_bytes` for its implementations. Use `features = ["full"]` to enable all byte conversion functionality.

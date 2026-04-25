@@ -2,10 +2,11 @@
 
 Example programs demonstrating wstring_tools functionality.
 
-## Organization
+## Responsibility Table
 
 | File | Responsibility |
 |------|----------------|
+| readme.md | Examples directory overview and responsibility table |
 | wstring_toolst_trivial_sample.rs | Basic string splitting demonstration |
 
 ## Usage

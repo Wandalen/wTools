@@ -11,8 +11,8 @@
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/as_bytes.rs` | `bytemuck::cast_slice` / `bytemuck::bytes_of` — native memory as-is |
-| source | `src/into_bytes.rs` | Same underlying cast functions |
+| source | `src/as_bytes.rs` | Byte-cast functions producing native-order slices |
+| source | `src/into_bytes.rs` | Byte-cast functions for consuming conversions |
 | doc | `../feature/001_byte_conversion.md` | Feature context where this applies |
 | doc | `../api/001_as_bytes_trait.md` | AsBytes producing native-order bytes |
 | doc | `../api/002_into_bytes_trait.md` | IntoBytes producing native-order bytes |

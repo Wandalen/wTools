@@ -19,6 +19,14 @@
 | source | `src/collection/vec_deque.rs` | `deque!` implementation |
 | source | `src/collection/vector.rs` | `vec!` implementation |
 | source | `src/collection/mod.rs` | `count!` macro used for capacity pre-allocation |
+| test | `tests/smoke_test.rs` | Smoke tests covering all strict constructor macros |
+| test | `tests/inc/hmap.rs` | `hmap!` macro tests |
+| test | `tests/inc/hset.rs` | `hset!` macro tests |
+| test | `tests/inc/vec.rs` | `vec!` macro tests |
+| test | `tests/inc/bmap.rs` | `bmap!` macro tests |
+| test | `tests/inc/bset.rs` | `bset!` macro tests |
+| test | `tests/inc/llist.rs` | `llist!` macro tests |
+| test | `tests/inc/deque.rs` | `deque!` macro tests |
 | doc | `../api/001_collection_macros.md` | Complete macro signature contract |
 | doc | `002_into_constructors.md` | Into-based counterpart for heterogeneous types |
 | doc | `../invariant/001_no_std_alloc.md` | Invariant governing HashMap/HashSet source |
@@ -45,33 +53,11 @@ Each standard collection has a corresponding strict macro:
 
 #### Type Inference
 
-Strict macros infer the element and key/value types from arguments. No type annotation is typically required when all elements share the same type:
-
-```rust
-use collection_tools::*;
-
-let map = hmap! { "one" => 1, "two" => 2, "three" => 3 };
-let set = hset! { 1, 2, 3, 4, 5 };
-let bmap = bmap! { 1 => "one", 2 => "two" };
-
-// Explicit annotation remains valid
-let map : HashMap< &str, i32 > = hmap! { "one" => 1 };
-```
+Strict macros infer the element and key/value types from the argument expressions. When all elements share the same type, no annotation is required. An explicit type annotation on the binding remains valid and takes precedence over inference.
 
 #### Capacity Pre-allocation
 
-Every macro pre-allocates the exact required capacity before inserting any element, using the `count!` macro at compile time. This avoids the common pitfall of starting with capacity 0 and triggering one or more reallocations during construction:
-
-```rust
-use collection_tools::*;
-
-// Equivalent to HashMap::with_capacity(3) + 3 inserts — zero reallocations
-let map = hmap! { 1 => "a", 2 => "b", 3 => "c" };
-
-// vs. the standard approach which starts at capacity 0:
-// let mut map = HashMap::new();
-// map.insert(1, "a"); // may reallocate
-```
+Every macro pre-allocates for exactly N elements before the first insert, where N is the number of arguments at the call site. This is equivalent to constructing with capacity N then inserting — zero reallocations occur during construction. The standard approach without pre-allocation starts at capacity zero and triggers one or more reallocations during insertion.
 
 #### Feature Gate
 
@@ -79,4 +65,6 @@ All strict macros are gated on `feature = "collection_constructors"`, which is e
 
 ### Sources
 
-Migrated from `../../spec.md`. Sections contributing to this instance: "Overview → In-Scope → Variadic Constructor Macros (Strict)", "Architecture → Macro Expansion Pattern", "Usage Patterns → Pattern 1", "Usage Patterns → Pattern 4", "Usage Patterns → Pattern 5", "Design Rationale → Why Variadic Constructor Macros", "Adoption Guidelines". Sibling extractions: `../api/001_collection_macros.md`, `002_into_constructors.md`, `../invariant/001_no_std_alloc.md`, `../invariant/002_capacity_preallocated.md`.
+| File | Notes |
+|------|-------|
+| [../../spec.md](../../spec.md) | Migrated; sections: Overview → Variadic Constructor Macros (Strict), Architecture → Macro Expansion Pattern, Usage Patterns → Pattern 1/4/5, Design Rationale → Why Variadic Constructor Macros, Adoption Guidelines; siblings: api/001, feature/002, invariant/001, invariant/002 |

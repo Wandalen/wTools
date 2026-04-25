@@ -1,9 +1,9 @@
 meta:
   description: Cross-reference graph for all doc instances in color_tools
   node_count: 9
-  edge_count: 31
+  edge_count: 32
   component_count: 1
-  generated: 2026-04-18
+  generated: 2026_04_18
 
 nodes:
   - id: feature/001
@@ -46,11 +46,18 @@ nodes:
 edges:
   # feature/001 cross-references
   - { from: feature/001, to: feature/002,   via: cross_references }
+  - { from: feature/001, to: feature/003,   via: cross_references }
   - { from: feature/001, to: invariant/001, via: cross_references }
   - { from: feature/001, to: invariant/002, via: cross_references }
   - { from: feature/001, to: invariant/003, via: cross_references }
   - { from: feature/001, to: invariant/004, via: cross_references }
   - { from: feature/001, to: api/001,       via: cross_references }
+  # feature/002 cross-references
+  - { from: feature/002, to: feature/001, via: cross_references }
+  - { from: feature/002, to: api/001,     via: cross_references }
+  # feature/003 cross-references
+  - { from: feature/003, to: feature/001, via: cross_references }
+  - { from: feature/003, to: api/001,     via: cross_references }
   # invariant/001 cross-references
   - { from: invariant/001, to: feature/001,   via: cross_references }
   - { from: invariant/001, to: invariant/002, via: cross_references }
@@ -66,25 +73,18 @@ edges:
   - { from: invariant/004, to: feature/001,   via: cross_references }
   - { from: invariant/004, to: invariant/002, via: cross_references }
   - { from: invariant/004, to: api/001,       via: cross_references }
-  # feature/002 cross-references
-  - { from: feature/002, to: feature/001, via: cross_references }
-  - { from: feature/002, to: api/001,     via: cross_references }
-  - { from: api/001,     to: feature/002, via: cross_references }
   # api/001 cross-references
   - { from: api/001, to: feature/001,   via: cross_references }
+  - { from: api/001, to: feature/002,   via: cross_references }
+  - { from: api/001, to: feature/003,   via: cross_references }
   - { from: api/001, to: invariant/001, via: cross_references }
   - { from: api/001, to: invariant/002, via: cross_references }
   - { from: api/001, to: invariant/003, via: cross_references }
   - { from: api/001, to: invariant/004, via: cross_references }
   - { from: api/001, to: api/002,       via: cross_references }
   # api/002 cross-references
-  - { from: api/002, to: api/001,       via: cross_references }
-  - { from: api/002, to: feature/001,   via: cross_references }
-  # feature/003 cross-references
-  - { from: feature/003, to: feature/001, via: cross_references }
-  - { from: feature/003, to: api/001,     via: cross_references }
-  # api/001 → feature/003 (render_html documented in feature/003)
-  - { from: api/001, to: feature/003,   via: cross_references }
+  - { from: api/002, to: api/001,     via: cross_references }
+  - { from: api/002, to: feature/001, via: cross_references }
 
 components:
   - id: 1

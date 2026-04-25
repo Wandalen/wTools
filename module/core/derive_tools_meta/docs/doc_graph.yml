@@ -1,0 +1,89 @@
+meta:
+  generated: 2026_04_25
+  node_count: 6
+  edge_count: 16
+  component_count: 1
+
+nodes:
+  - id: feature/001_derive_macros
+    type: feature
+    name: Derive Macros
+  - id: api/001_derive_api
+    type: api
+    name: Derive API
+  - id: invariant/001_proc_macro_separation
+    type: invariant
+    name: Proc-Macro Crate Separation
+  - id: invariant/002_selective_compilation
+    type: invariant
+    name: Selective Compilation
+  - id: integration/001_macro_tools
+    type: integration
+    name: macro_tools
+  - id: integration/002_derive_tools
+    type: integration
+    name: derive_tools
+
+edges:
+  - from: feature/001_derive_macros
+    to: api/001_derive_api
+    label: interface of macros described here
+  - from: feature/001_derive_macros
+    to: invariant/001_proc_macro_separation
+    label: why this crate is separate
+  - from: feature/001_derive_macros
+    to: invariant/002_selective_compilation
+    label: selective compilation contract
+  - from: feature/001_derive_macros
+    to: integration/002_derive_tools
+    label: consumer facade for macros
+  - from: api/001_derive_api
+    to: feature/001_derive_macros
+    label: behavioral description of macros
+  - from: api/001_derive_api
+    to: invariant/001_proc_macro_separation
+    label: why no direct public API
+  - from: api/001_derive_api
+    to: integration/001_macro_tools
+    label: syntax parsing dependency
+  - from: api/001_derive_api
+    to: integration/002_derive_tools
+    label: stable public API layer
+  - from: invariant/001_proc_macro_separation
+    to: feature/001_derive_macros
+    label: macros governed by this invariant
+  - from: invariant/001_proc_macro_separation
+    to: api/001_derive_api
+    label: interface declared by this crate
+  - from: invariant/001_proc_macro_separation
+    to: integration/002_derive_tools
+    label: consumer facade required by this invariant
+  - from: invariant/002_selective_compilation
+    to: feature/001_derive_macros
+    label: full macro collection in scope
+  - from: invariant/002_selective_compilation
+    to: api/001_derive_api
+    label: per-flag availability documented here
+  - from: integration/001_macro_tools
+    to: api/001_derive_api
+    label: macros implemented using macro_tools
+  - from: integration/001_macro_tools
+    to: feature/001_derive_macros
+    label: behavioral description of macros
+  - from: integration/002_derive_tools
+    to: invariant/001_proc_macro_separation
+    label: separation rationale
+
+components:
+  - id: 1
+    size: 6
+    isolated: false
+    members:
+      - feature/001_derive_macros
+      - api/001_derive_api
+      - invariant/001_proc_macro_separation
+      - invariant/002_selective_compilation
+      - integration/001_macro_tools
+      - integration/002_derive_tools
+
+dangling_refs: []

@@ -4,14 +4,14 @@
 
 - **Purpose**: Define the storage contract that all archive content is held in memory after loading.
 - **Responsibility**: Documents the in-memory storage guarantee and its consequences.
-- **In Scope**: Internal storage type, read-only access, no disk extraction guarantee.
-- **Out of Scope**: Network download details (see `002_blocking_network.md`), API signatures (see `../api/`).
+- **In Scope**: In-memory data model, read-only access, no disk extraction guarantee.
+- **Out of Scope**: Network download details (see `002_blocking_network.md`), API contracts (see `../api/`).
 
 ### Cross-References
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/lib.rs` | CrateArchive(HashMap< PathBuf, Vec< u8 > >) definition |
+| source | `src/lib.rs` | CrateArchive path-to-bytes mapping definition |
 | test | `tests/smoke_test.rs` | Basic archive decode contract tests |
 | test | `tests/corner_cases_comprehensive.rs` | Edge cases for archive content access |
 | doc | `../feature/001_archive_inspection.md` | Feature relying on this storage model |
@@ -19,16 +19,16 @@
 
 ### Invariant Statement
 
-`CrateArchive` stores the complete archive as `HashMap< PathBuf, Vec< u8 > >`. After any successful load (via `read`, `decode`, or `download*`), all file contents are fully materialized in memory. No deferred loading, streaming, or lazy evaluation occurs.
+`CrateArchive` stores the complete archive as an in-memory mapping from file path to byte content. After any successful load, all file contents are fully materialized in memory. No deferred loading, streaming, or lazy evaluation occurs.
 
-Access via `list()` and `content_bytes()` is always O(1) per file after the initial load. The HashMap maps each archive file path (as `PathBuf`) to its full byte content (`Vec< u8 >`). The bytes are the raw file content exactly as encoded in the tar entry.
+Access via `list` and `content_bytes` is always constant-time per file after the initial load. Each file path maps to its full byte content exactly as encoded in the tar entry.
 
 ### Enforcement Mechanism
 
-Enforced structurally: `CrateArchive( HashMap< PathBuf, Vec< u8 > > )` is the sole representation. The `decode()` method iterates the tar archive exactly once at load time, inserting all entries into the HashMap. No path to partial materialization exists in the API.
+Enforced structurally: the sole internal representation is a complete path-to-bytes mapping. The decoding step iterates the tar archive exactly once at load time, inserting all entries before returning. No path to partial materialization exists in the API.
 
 ### Violation Consequences
 
 - **Memory pressure**: Large archives consume proportional heap. No size limit is enforced; the caller is responsible for choosing appropriate crates.
 - **No streaming**: Files cannot be accessed incrementally during download. The full archive must be received before any content is readable.
-- **Borrow lifetime**: Content returned by `content_bytes()` borrows from `CrateArchive`. The archive must remain live for the duration of any borrow.
+- **Lifetime dependency**: Byte content retrieved via `content_bytes` is tied to the archive's lifetime. The archive must remain in scope for the duration of any access derived from it.

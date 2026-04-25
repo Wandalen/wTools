@@ -11,5 +11,5 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | [AsBytes Trait](001_as_bytes_trait.md) | Borrow data as `&[u8]` without consuming | ✅ |
-| 002 | [IntoBytes Trait](002_into_bytes_trait.md) | Consume data into owned `Vec<u8>` | ✅ |
+| 001 | [AsBytes Trait](001_as_bytes_trait.md) | Borrow data as a byte slice without consuming | ✅ |
+| 002 | [IntoBytes Trait](002_into_bytes_trait.md) | Consume data into an owned byte vector | ✅ |

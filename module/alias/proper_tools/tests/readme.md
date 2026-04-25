@@ -7,14 +7,13 @@ Automated test suite for proper_tools crate.
 | File | Responsibility |
 |------|----------------|
 | `examples_exist.rs` | Verify examples directory structure and compilation |
-| `metadata_correctness.rs` | Validate Cargo.toml, spec.md, readme.md accuracy |
-| `smoke_test.rs` | Basic functionality smoke tests (local and published) |
+| `metadata_correctness.rs` | Validate Cargo.toml metadata accuracy |
 | `manual/` | Document manual testing procedures and test plans |
 
 ## Test Organization
 
 - **Integration Tests**: All test files in this directory are integration tests
-- **Test Coverage**: Metadata verification, example validation, basic smoke tests
+- **Test Coverage**: Metadata verification, example validation
 - **Manual Testing**: Manual testing procedures documented in `manual/readme.md`
 - **Documentation**: Each test file contains comprehensive documentation following 5-section bug reproducer format where applicable
 
@@ -27,7 +26,6 @@ cargo test --all-features
 # Run specific test file
 cargo test --test examples_exist --all-features
 cargo test --test metadata_correctness --all-features
-cargo test --test smoke_test --all-features
 
 # Run with nextest
 cargo nextest run --all-features

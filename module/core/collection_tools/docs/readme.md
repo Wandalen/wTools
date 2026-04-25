@@ -1,13 +1,17 @@
 # Docs
 
-Design and API documentation for `collection_tools`.
+## Scope
+
+Design and API documentation for `collection_tools`. Organized as typed doc entity instances: features describe what the crate does, invariants define behavioral contracts, and API docs reference the public interface.
+
+See [entities.md](entities.md) for the complete registry of all doc instances.
 
 ## Responsibility Table
 
-| Entity | Responsibility |
-|--------|----------------|
-| `api/` | Public API surface: all 16 variadic constructor macro signatures |
-| `feature/` | Feature guides: strict and into-based collection constructors |
-| `invariant/` | Behavioral contracts: no-std allocation selection, capacity pre-allocation |
-| `entities.md` | Master doc entity index: all entity types and doc instances |
-| `doc_graph.yml` | Cross-entity dependency graph for all doc instances |
+| File | Responsibility |
+|------|----------------|
+| [entities.md](entities.md) | Master registry of all doc entity types and instances |
+| [doc_graph.yml](doc_graph.yml) | Cross-reference graph linking all doc instances |
+| [feature/](feature/readme.md) | Feature documentation — what the crate does and when to use it |
+| [invariant/](invariant/readme.md) | Invariant documentation — behavioral contracts that must always hold |
+| [api/](api/readme.md) | API reference — public macro signatures, expansion contracts, and re-exports |

@@ -2,9 +2,9 @@
 
 Design and API documentation for `mod_interface_meta`.
 
-## Responsibility Table
+#### Responsibility Table
 
-| Entity | Responsibility |
+| File | Responsibility |
 |--------|----------------|
 | api/ | DSL operations and directive contract for the mod_interface! macro |
 | entities.md | Cross-entity index: all doc entity types and doc instances |

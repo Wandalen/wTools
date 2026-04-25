@@ -15,7 +15,6 @@ mod private
   /// Apply a macro for each element of a list.
   ///
   /// See module-level documentation for detailed examples and usage.
-  #[ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/readme.md" ) ) ) ]
   #[ macro_export ]
   macro_rules! for_each
   {

@@ -32,6 +32,7 @@ println!( "{warn}" );  // prints yellow text to terminal
 |---|---|---|
 | `enabled` | no | Compile the crate |
 | `serde_support` | no | Derive `Serialize`/`Deserialize` for `DecoratedText` |
+| `html_support`  | no | Add `render_html()` to `DecoratedText` and `to_css()` to `Color` |
 
 ## Directory Structure
 

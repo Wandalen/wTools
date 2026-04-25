@@ -1,4 +1,4 @@
-//! Verification test for README.md code example accuracy
+//! Verification test for readme.md code example accuracy
 //!
 //! This test file verifies that code examples in readme.md are functional
 //! and use correct feature flags.
@@ -31,7 +31,7 @@ fn readme_example_with_correct_std_feature()
   assert_eq!( iterated, vec![ "abc def" ] );
 }
 
-/// Reproduces bug where README.md used non-existent feature `use_std`
+/// Reproduces bug where readme.md used non-existent feature `use_std`
 ///
 /// # Root Cause
 ///

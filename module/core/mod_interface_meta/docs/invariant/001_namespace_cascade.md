@@ -37,4 +37,4 @@ If any re-export in the chain were absent, items declared at a lower layer would
 
 | File | Notes |
 |------|-------|
-| [../../spec.md](../../spec.md) | Combined source; Design Rationale section describes the four-layer system and its purpose |
+| [../../spec.md](../../spec.md) | Combined source; Design Rationale section describes the four-layer system and its purpose. spec.md has been deleted — Sources entry retained as migration record. |

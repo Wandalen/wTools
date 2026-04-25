@@ -35,4 +35,6 @@ The invariant cannot be violated by caller code. It can only be broken by modify
 
 ### Sources
 
-Migrated from `../../spec.md`. Sections contributing to this instance: "Architecture → Macro Expansion Pattern", "Design Rationale → Why count! Macro for Capacity", "Overview → In-Scope → Helper Macros". Sibling extractions: `../api/001_collection_macros.md`, `../feature/001_collection_constructors.md`, `../feature/002_into_constructors.md`, `001_no_std_alloc.md`.
+| File | Notes |
+|------|-------|
+| [../../spec.md](../../spec.md) | Migrated; sections: Architecture → Macro Expansion Pattern, Design Rationale → Why count! Macro for Capacity, Overview → Helper Macros; siblings: api/001, feature/001, feature/002, invariant/001 |

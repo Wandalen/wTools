@@ -2,22 +2,22 @@
 
 ### Scope
 
-- **Purpose**: Organize module items into four visibility layers via a compile-time DSL.
+- **Purpose**: Organize module items into four visibility layers via a compile-time DSL, enabling precise propagation control through module hierarchies.
 - **Responsibility**: Navigational hub for all source, test, and doc artifacts of the mod_interface! macro.
-- **In Scope**: DSL syntax, namespace directive semantics, layer composition, and all associated artifacts.
+- **In Scope**: Namespace directive semantics, layer composition, cascade structure, and all associated artifacts.
 - **Out of Scope**: Runtime behavior; this macro generates code at compile time only.
 
 ### Design
 
-The `mod_interface!` macro accepts a body of namespace directives and generates four named namespace modules: `own`, `orphan`, `exposed`, `prelude`. Each module re-exports the one below it, forming a cascade where items declared at a lower layer are accessible from all higher layers.
+The macro accepts a body of namespace directives and generates four named namespace modules: own, orphan, exposed, prelude. Each module re-exports the one below it, forming a cascade where items declared at a lower layer are accessible from all higher layers.
 
-Namespace directives assign items to layers:
-- `own use path` — item accessible from `own` and all layers above it
-- `orphan use path` — item accessible from `orphan` and all layers above it
-- `exposed use path` — item accessible from `exposed` and all layers above it
-- `prelude use path` — item accessible from all four layers
+Namespace directives assign items to layers based on their intended propagation:
+- Own: item accessible only within this module; not propagated to parent modules.
+- Orphan: item propagated to the immediate parent module.
+- Exposed: item propagated to all ancestor modules.
+- Prelude: item propagated to all ancestors and intended for glob import.
 
-The `layer submodule` directive integrates an existing Rust submodule: its `orphan`, `exposed`, and `prelude` sub-namespaces are wired into the parent's cascade.
+The layer directive integrates an existing Rust submodule into the parent's cascade. The submodule's orphan, exposed, and prelude namespaces are wired into the parent's corresponding namespaces following the propagation invariant.
 
 This crate (`mod_interface_meta`) is the proc-macro companion and should not be used directly. The `mod_interface` facade crate re-exports the macro with documentation.
 
@@ -40,4 +40,4 @@ This crate (`mod_interface_meta`) is the proc-macro companion and should not be 
 
 | File | Notes |
 |------|-------|
-| [../../spec.md](../../spec.md) | Combined source; Overview, Scope, Architecture, Design Rationale, and Related Crates sections contributed to this doc instance |
+| [../../spec.md](../../spec.md) | Combined source; Overview, Scope, Architecture, Design Rationale, and Related Crates sections contributed to this doc instance. spec.md has been deleted — Sources entry retained as migration record. |

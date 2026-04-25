@@ -1,9 +1,9 @@
 meta:
   module: collection_tools
   description: Cross-entity dependency graph for collection_tools documentation
-  generated: "2026-04-24"
+  generated: "2026-04-25"
   node_count: 5
-  edge_count: 17
+  edge_count: 20
   component_count: 1
 
 nodes:
@@ -75,6 +75,9 @@ edges:
     to: feature/001
     via: cross_references
   - from: feature/002
+    to: invariant/001
+    via: cross_references
+  - from: feature/002
     to: invariant/002
     via: cross_references
 
@@ -84,6 +87,12 @@ edges:
     via: cross_references
   - from: invariant/001
     to: feature/001
+    via: cross_references
+  - from: invariant/001
+    to: feature/002
+    via: cross_references
+  - from: invariant/001
+    to: invariant/002
     via: cross_references
 
   # invariant/002 cross-references
@@ -101,7 +110,7 @@ edges:
     via: cross_references
 
 components:
-  - id: collection-tools-cluster
+  - id: 1
     label: Collection Tools Cluster
     size: 5
     isolated: false
