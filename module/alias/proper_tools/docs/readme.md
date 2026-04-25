@@ -4,7 +4,7 @@
 
 Design and API documentation for `proper_tools`.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

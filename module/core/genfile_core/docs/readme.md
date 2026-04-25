@@ -2,7 +2,7 @@
 
 Architectural and design documentation for the `genfile_core` library.
 
-## Responsibility Table
+### Responsibility Table
 
 | File/Directory | Responsibility |
 |---|---|

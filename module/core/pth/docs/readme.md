@@ -2,7 +2,7 @@
 
 Design and API documentation for `pth`.
 
-## Responsibility Table
+### Responsibility Table
 
-| Entity | Responsibility |
+| File | Responsibility |
 |--------|----------------|

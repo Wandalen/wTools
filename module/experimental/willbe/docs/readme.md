@@ -4,7 +4,7 @@
 
 Technical documentation for `willbe`, the multi-crate workspace publish and consistency tool.
 
-## Responsibility Table
+### Responsibility Table
 
 | Entry | Responsibility |
 |-------|----------------|

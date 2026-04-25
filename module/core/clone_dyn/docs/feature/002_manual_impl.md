@@ -9,31 +9,15 @@
 
 ### Design
 
-Depend on `clone_dyn` with only the `clone_dyn_types` feature (omit `derive_clone_dyn`):
+The manual pattern requires two additions: `clone_dyn::CloneDyn` as a supertrait in the trait definition, and an explicit `Clone` implementation for `Box<dyn Trait>` that delegates to `clone_dyn::clone_into_box`. This is runtime-equivalent to the macro path — the macro produces exactly this code — but trades ergonomics for explicit visibility and avoids proc-macro compilation overhead.
 
-```rust
-trait MyTrait: clone_dyn::CloneDyn
-{
-  fn method( &self );
-}
-
-impl Clone for Box< dyn MyTrait >
-{
-  fn clone( &self ) -> Self
-  {
-    clone_dyn::clone_into_box( &**self )
-  }
-}
-```
-
-This pattern is runtime-equivalent to the macro path. It exists for:
-- Users who want to see exactly what the macro generates.
-- Conditional compilation scenarios.
-- Custom `Clone` behavior (the impl body can be modified).
+This pattern is useful for: understanding what the macro generates, conditional compilation scenarios, and custom clone behavior (the impl body can be modified, unlike the macro-generated one).
 
 ### Cross-References
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| feature | `001_macro_usage.md` | Macro-based alternative |
-| api | `../api/001_facade_api.md` | `clone_into_box` and `CloneDyn` re-exports |
+| doc | `001_macro_usage.md` | Macro-based alternative |
+| doc | `../api/001_facade_api.md` | `clone_into_box` and `CloneDyn` re-exports |
+| source | `../../src/lib.rs` | Facade re-exports wiring |
+| test | `../../tests/inc/basic_manual.rs` | Manual implementation tests |

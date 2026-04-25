@@ -9,28 +9,16 @@
 
 ### Design
 
-`Clone::clone() -> Self` is not object-safe — `Self` requires compile-time size knowledge. This crate solves it via two steps:
+Annotating a trait definition with `#[clone_dyn]` is the only change required to make `Box<dyn Trait>` cloneable. The macro injects `where Self: CloneDyn` into the trait's where clause (providing an object-safe clone indirection method) and emits four `Clone` impl blocks for `Box<dyn Trait + 'c>`, covering the base, `+Send`, `+Sync`, and `+Send+Sync` variants. No changes are required on trait implementors or at call sites.
 
-1. The `#[clone_dyn]` macro adds `where Self: CloneDyn` as a supertrait bound. `CloneDyn` provides a `__clone_dyn` method returning a type-erased raw heap pointer.
-2. The macro emits four `impl Clone for Box<dyn Trait + 'c>` blocks (base, `+Send`, `+Sync`, `+Send+Sync`), each calling `clone_dyn_types::clone_into_box(&**self)`.
-
-Usage:
-
-```rust
-#[ clone_dyn ]
-pub trait MyTrait
-{
-  fn method( &self );
-}
-// Box<dyn MyTrait> is now Clone
-```
-
-The one-liner form is the primary ergonomics goal: no boilerplate on trait implementors, no manual `impl Clone` blocks.
+The one-liner form is the primary ergonomics goal: zero boilerplate for users beyond the attribute itself.
 
 ### Cross-References
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| feature | `002_manual_impl.md` | Alternative pattern without macro |
-| invariant | `../invariant/001_box_only.md` | Box-only restriction on generated impls |
-| api | `../api/001_facade_api.md` | Re-export surface and feature flags |
+| doc | `002_manual_impl.md` | Alternative pattern without macro |
+| doc | `../invariant/001_box_only.md` | Box-only restriction on generated impls |
+| doc | `../api/001_facade_api.md` | Re-export surface and feature flags |
+| source | `../../src/lib.rs` | Facade re-exports wiring |
+| test | `../../tests/inc/basic.rs` | Macro-based cloning tests |

@@ -4,7 +4,7 @@
 
 Design and API documentation for `for_each`. Organized as typed doc entity instances: features describe what the crate does, and API docs reference the public macro interface.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

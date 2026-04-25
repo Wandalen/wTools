@@ -4,7 +4,7 @@
 
 Design and API documentation for `crates_tools`.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

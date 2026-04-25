@@ -4,7 +4,7 @@
 
 Design and API documentation for `asbytes`.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

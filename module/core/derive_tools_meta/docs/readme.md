@@ -6,7 +6,7 @@ Design and API documentation for `derive_tools_meta`. Organized as typed doc ent
 
 See [entities.md](entities.md) for the complete registry of all doc instances.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

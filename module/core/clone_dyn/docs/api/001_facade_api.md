@@ -43,5 +43,5 @@ All errors are compile-time only. No runtime error types are exported. Macro mis
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| feature | `../feature/001_macro_usage.md` | How to use the re-exported macro |
-| invariant | `../invariant/001_box_only.md` | Box-only constraint on all exports |
+| doc | `../feature/001_macro_usage.md` | How to use the re-exported macro |
+| doc | `../invariant/001_box_only.md` | Box-only constraint on all exports |

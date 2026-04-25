@@ -3,7 +3,7 @@
 ## Purpose
 Contains technical documentation for the data_fmt library implementation.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

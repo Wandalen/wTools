@@ -2,7 +2,7 @@
 
 Design and API documentation for `wca`.
 
-## Responsibility Table
+### Responsibility Table
 
-| Entity | Responsibility |
+| File | Responsibility |
 |--------|----------------|

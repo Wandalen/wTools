@@ -50,14 +50,16 @@ enabled = []
 # [[test]]
 # name = "for_each_smoke_test"
 # path = "tests/_integration_test/smoke_test.rs"
-#
-# [[example]]
-# name = "for_each_trivial"
-# path = "examples/for_each_trivial/src/main.rs"
-#
-# [[example]]
-# name = "for_each_map_style"
-# path = "examples/for_each_map_style/src/main.rs"
+
+[[example]]
+name = "for_each_trivial"
+path = "examples/for_each_trivial.rs"
+required-features = [ "enabled" ]
+
+[[example]]
+name = "for_each_map_style_sample"
+path = "examples/for_each_map_style_sample.rs"
+required-features = [ "enabled" ]
 
 [dependencies]
 

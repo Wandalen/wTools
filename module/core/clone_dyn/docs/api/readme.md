@@ -11,4 +11,4 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | facade_api | Re-exports, feature flags, and stability guarantees | active |
+| 001 | facade_api | Re-exports, feature flags, and stability guarantees | ✅ |

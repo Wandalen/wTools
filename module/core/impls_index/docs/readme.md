@@ -2,7 +2,7 @@
 
 Design and API documentation for `impls_index`.
 
-## Responsibility Table
+### Responsibility Table
 
-| Entity | Responsibility |
+| File | Responsibility |
 |--------|----------------|

@@ -2,7 +2,7 @@
 
 Design and API documentation for `variadic_from_meta`.
 
-## Responsibility Table
+### Responsibility Table
 
-| Entity | Responsibility |
+| File | Responsibility |
 |--------|----------------|

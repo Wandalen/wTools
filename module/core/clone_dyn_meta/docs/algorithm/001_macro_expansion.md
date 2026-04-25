@@ -1,4 +1,4 @@
-# 001 Macro Expansion
+# Algorithm: Macro Expansion
 
 Code generation pipeline for the `#[clone_dyn]` attribute macro (`src/clone_dyn.rs`).
 
@@ -9,7 +9,11 @@ Code generation pipeline for the `#[clone_dyn]` attribute macro (`src/clone_dyn.
 - **In Scope:** `src/clone_dyn.rs` function `clone_dyn`, attribute parsing via `ItemAttributes`, generic decomposition, where clause extension, `qt!` generation, debug path.
 - **Out of Scope:** The `CloneDyn` trait itself (in `clone_dyn_types`), `clone_into_box` runtime (in `clone_dyn`), caller-visible contract (`api/001_clone_dyn_attr.md`).
 
-### Pipeline
+### Abstract
+
+Transforms a `#[clone_dyn]`-annotated `syn::ItemTrait` into the original trait plus four `Clone` impl blocks for `Box<dyn Trait>` across `Send`/`Sync` combinations, using `macro_tools` for all AST manipulation.
+
+### Algorithm
 
 #### Step 1 — Parse Attribute Properties
 
@@ -46,8 +50,8 @@ When `has_debug` is `true`, `diag::report_print` formats and prints both the ori
 
 ### Cross-References
 
-- **Feature:** `feature/001_clone_dyn_macro.md` — what this algorithm achieves and why
-- **API:** `api/001_clone_dyn_attr.md` — caller-visible contract this algorithm satisfies
-- **Source:** `src/clone_dyn.rs` lines 1–94 — canonical implementation
-- **Upstream:** `macro_tools::generic_params::decompose` — generic decomposition utility
-- **Runtime:** `clone_dyn::clone_into_box` — the object-safe clone dispatch (not in this crate)
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | `../feature/001_clone_dyn_macro.md` | What this algorithm achieves and why |
+| doc | `../api/001_clone_dyn_attr.md` | Caller-visible contract this algorithm satisfies |
+| source | `../../src/clone_dyn.rs` | Canonical implementation (lines 1–94) |

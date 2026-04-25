@@ -2,7 +2,7 @@
 
 Architectural and design documentation for the `genfile` CLI application.
 
-## Responsibility Table
+### Responsibility Table
 
 | File/Directory | Responsibility |
 |---|---|

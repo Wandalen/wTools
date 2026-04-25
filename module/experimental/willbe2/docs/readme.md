@@ -2,7 +2,7 @@
 
 Design and API documentation for `willbe2`.
 
-## Responsibility Table
+### Responsibility Table
 
-| Entity | Responsibility |
+| File | Responsibility |
 |--------|----------------|

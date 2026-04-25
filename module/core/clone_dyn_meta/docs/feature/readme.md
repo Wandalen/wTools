@@ -9,8 +9,8 @@ Feature behavioral specifications for `clone_dyn_meta`.
 - **In Scope:** Feature scope, design rationale, attribute configuration, dependency boundaries.
 - **Out of Scope:** Public API contracts (`api/`), internal algorithm steps (`algorithm/`).
 
-### Overview
+### Overview Table
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | clone_dyn_macro | `#[clone_dyn]` feature scope, rationale, and attribute properties | L2 |
+| 001 | clone_dyn_macro | `#[clone_dyn]` feature scope, rationale, and attribute properties | ✅ |

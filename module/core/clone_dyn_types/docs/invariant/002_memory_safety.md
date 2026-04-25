@@ -2,11 +2,12 @@
 
 ### Scope
 
-**Purpose**: Guarantee soundness of all unsafe pointer operations in `clone_into_box`.
-**In Scope**: The `unsafe` block in `clone_into_box`; the `__clone_dyn` return value contract.
-**Out of Scope**: Safe `CloneDyn` impls in user code; safe wrapper functions.
+- **Purpose**: Guarantee soundness of all unsafe pointer operations in `clone_into_box`.
+- **Responsibility**: Define the invariants that all callers and impls of `__clone_dyn` must uphold.
+- **In Scope**: The `unsafe` block in `clone_into_box`; the `__clone_dyn` return value contract.
+- **Out of Scope**: Safe `CloneDyn` impls in user code; safe wrapper functions.
 
-### Statement
+### Invariant Statement
 
 All of the following MUST hold for every call to `clone_into_box`:
 1. The `*mut ()` returned by `__clone_dyn` points to a heap allocation that exactly
@@ -16,7 +17,7 @@ All of the following MUST hold for every call to `clone_into_box`:
 3. `Box::from_raw` is called exactly once on the reconstructed fat pointer.
 4. No double-free and no memory leak occur across any execution path.
 
-### Enforcement
+### Enforcement Mechanism
 
 - Miri (`cargo +nightly miri test`) detects undefined behavior and double-free at runtime.
 - ASAN (`-Zsanitizer=address` under nightly) detects heap corruption.
@@ -31,6 +32,8 @@ No recovery path; the program is in an undefined state.
 
 ### Cross-References
 
-- `algorithm/001_fat_pointer_surgery.md` — the implementation these invariants govern
-- `pattern/001_sealed_trait.md` — sealing mechanism that enforces the contract
-- `api/001_clone_dyn_trait.md` — `__clone_dyn` method whose return value is governed here
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | `../algorithm/001_fat_pointer_surgery.md` | Implementation these invariants govern |
+| doc | `../pattern/001_sealed_trait.md` | Sealing mechanism that enforces the contract |
+| doc | `../api/001_clone_dyn_trait.md` | `__clone_dyn` method whose return value is governed here |

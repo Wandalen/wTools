@@ -11,5 +11,5 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | macro_usage | `#[clone_dyn]` macro-based cloning pattern | active |
-| 002 | manual_impl | Manual Clone implementation without macro | active |
+| 001 | macro_usage | `#[clone_dyn]` macro-based cloning pattern | ✅ |
+| 002 | manual_impl | Manual Clone implementation without macro | ✅ |

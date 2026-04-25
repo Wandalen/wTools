@@ -4,7 +4,7 @@
 
 Design and API documentation for `component_model`. Organized as typed doc entity instances: feature/ documents user-facing capabilities, and pattern/ captures the architectural design decisions behind this crate.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

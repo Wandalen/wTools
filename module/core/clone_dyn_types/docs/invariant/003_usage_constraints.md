@@ -2,11 +2,12 @@
 
 ### Scope
 
-**Purpose**: Document required usage patterns the type system cannot fully enforce.
-**In Scope**: Caller obligations for `clone_into_box` and `CloneDyn`-bound traits.
-**Out of Scope**: Internal unsafe block invariants (see `invariant/002_memory_safety.md`).
+- **Purpose**: Document required usage patterns the type system cannot fully enforce.
+- **Responsibility**: Specify caller obligations for correct use of `clone_into_box` and `CloneDyn`.
+- **In Scope**: Caller obligations for `clone_into_box` and `CloneDyn`-bound traits.
+- **Out of Scope**: Internal unsafe block invariants (see `invariant/002_memory_safety.md`).
 
-### Statement
+### Invariant Statement
 
 The following constraints MUST be satisfied by all callers:
 1. **DST coercion**: Slices (`[T]`) and `str` MUST be passed via double-reference
@@ -16,7 +17,7 @@ The following constraints MUST be satisfied by all callers:
 3. **Tuple arity**: `CloneDyn` is not implemented for tuples with arity > 12 because
    Rust std does not implement `Clone` for them.
 
-### Enforcement
+### Enforcement Mechanism
 
 - Constraint 1: compile-time type error (E0277) — self-enforcing.
 - Constraint 2: missing-impl compile error — self-enforcing.
@@ -32,5 +33,7 @@ All three constraints are enforced by the Rust compiler. No runtime checks requi
 
 ### Cross-References
 
-- `api/002_clone_into_box.md` — the function where constraint 1 applies
-- `feature/003_type_coverage.md` — type support scope including the arity limit
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | `../api/002_clone_into_box.md` | Function where constraint 1 applies |
+| doc | `../feature/003_type_coverage.md` | Type support scope including the arity limit |

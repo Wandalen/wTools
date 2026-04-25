@@ -2,9 +2,9 @@
 
 Design and API documentation for `workspace_tools`.
 
-## Responsibility Table
+### Responsibility Table
 
-| Entity | Responsibility |
+| File | Responsibility |
 |--------|----------------|
 | `feature/` | Functional capability scope, design, and cross-references |
 | `api/` | Public API surface documentation |

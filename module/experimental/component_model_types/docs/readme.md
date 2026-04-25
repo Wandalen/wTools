@@ -4,7 +4,7 @@
 
 Design and API documentation for `component_model_types`. Organized as typed doc entity instances: api/ documents the trait interface, invariant/ captures behavioral constraints, and feature/ describes the capabilities this crate enables.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

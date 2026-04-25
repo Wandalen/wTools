@@ -2,7 +2,7 @@
 
 Design and API documentation for `is_slice`.
 
-## Responsibility Table
+### Responsibility Table
 
-| Entity | Responsibility |
+| File | Responsibility |
 |--------|----------------|

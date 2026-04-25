@@ -1,4 +1,4 @@
-# Api Doc Entity
+# API Doc Entity
 
 Public API contracts for `clone_dyn_meta`.
 
@@ -9,8 +9,8 @@ Public API contracts for `clone_dyn_meta`.
 - **In Scope:** Attribute macro signatures, parameter tables, input constraints, generated impl descriptions.
 - **Out of Scope:** Feature rationale (`feature/`), internal implementation (`algorithm/`).
 
-### Overview
+### Overview Table
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | clone_dyn_attr | `#[clone_dyn]` invocation contract, parameters, and generated output | L2 |
+| 001 | clone_dyn_attr | `#[clone_dyn]` invocation contract, parameters, and generated output | ✅ |

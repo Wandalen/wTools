@@ -1,12 +1,14 @@
-# Pattern
+# Pattern Doc Entity
 
 ### Scope
 
-Pattern instances document architectural design patterns used in `clone_dyn_types` —
-why specific design choices were made.
+- **Purpose**: Document architectural design patterns employed in `clone_dyn_types`.
+- **Responsibility**: Explain the problem, solution, applicability, and consequences of each pattern.
+- **In Scope**: Sealed trait pattern for `CloneDyn`.
+- **Out of Scope**: Feature behavioral specs (`feature/`), invariants (`invariant/`).
 
-### Overview
+### Overview Table
 
-| # | ID | Name | Status |
-|---|-----|------|--------|
-| 1 | 001 | Sealed Trait | Implemented |
+| ID | Name | Purpose | Status |
+|----|------|---------|--------|
+| 001 | Sealed Trait | Prevent external CloneDyn implementations | ✅ |

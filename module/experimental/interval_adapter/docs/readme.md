@@ -8,7 +8,7 @@ Typed doc entity instances covering the full scope of `interval_adapter`: API tr
 
 See [entities.md](entities.md) for the complete registry of all doc instances.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

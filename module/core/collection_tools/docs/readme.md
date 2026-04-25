@@ -6,7 +6,7 @@ Design and API documentation for `collection_tools`. Organized as typed doc enti
 
 See [entities.md](entities.md) for the complete registry of all doc instances.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

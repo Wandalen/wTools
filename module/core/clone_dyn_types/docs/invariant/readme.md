@@ -1,14 +1,16 @@
-# Invariant
+# Invariant Doc Entity
 
 ### Scope
 
-Invariant instances document measurable constraints and non-functional requirements
-for `clone_dyn_types` — what must always hold regardless of context.
+- **Purpose**: Document constraints that `clone_dyn_types` must maintain at all times.
+- **Responsibility**: Specify measurable invariants with enforcement and violation consequences.
+- **In Scope**: Zero-dependency constraint, memory safety guarantees, caller usage constraints.
+- **Out of Scope**: Feature behaviors (`feature/`), public API contracts (`api/`).
 
-### Overview
+### Overview Table
 
-| # | ID | Name | Status |
-|---|-----|------|--------|
-| 1 | 001 | Zero Dependencies | Implemented |
-| 2 | 002 | Memory Safety | Implemented |
-| 3 | 003 | Usage Constraints | Implemented |
+| ID | Name | Purpose | Status |
+|----|------|---------|--------|
+| 001 | Zero Dependencies | Zero production dependencies in Cargo.toml | ✅ |
+| 002 | Memory Safety | Soundness of all unsafe pointer operations | ✅ |
+| 003 | Usage Constraints | Caller obligations for DST coercion and arity | ✅ |

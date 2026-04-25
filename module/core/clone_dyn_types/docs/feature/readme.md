@@ -1,14 +1,16 @@
-# Feature
+# Feature Doc Entity
 
 ### Scope
 
-Feature instances document behavioral requirements for `clone_dyn_types` —
-what the crate does and what guarantees it provides to callers.
+- **Purpose**: Document behavioral capabilities of the `clone_dyn_types` crate.
+- **Responsibility**: Describe each feature's scope, design, and cross-references.
+- **In Scope**: No-std support, DST cloning capabilities, supported type coverage.
+- **Out of Scope**: Internal algorithm steps (`algorithm/`), public API contracts (`api/`).
 
-### Overview
+### Overview Table
 
-| # | ID | Name | Status |
-|---|-----|------|--------|
-| 1 | 001 | No-Std Support | Implemented |
-| 2 | 002 | DST Cloning | Implemented |
-| 3 | 003 | Type Coverage | Implemented |
+| ID | Name | Purpose | Status |
+|----|------|---------|--------|
+| 001 | No-Std Support | `#![no_std] + alloc` compatibility guarantee | ✅ |
+| 002 | DST Cloning | Boxed trait object and DST clone capability | ✅ |
+| 003 | Type Coverage | Supported concrete types for CloneDyn | ✅ |

@@ -31,7 +31,7 @@ use std::process::Command;
 fn test_for_each_trivial_output_not_duplicated()
 {
   let output = Command::new( "cargo" )
-    .args( [ "run", "--example", "for_each_trivial" ] )
+    .args( [ "run", "--example", "for_each_trivial", "--features", "enabled" ] )
     .current_dir( env!( "CARGO_MANIFEST_DIR" ) )
     .output()
     .expect( "Failed to execute example" );
@@ -77,7 +77,7 @@ fn test_for_each_trivial_output_not_duplicated()
 fn test_for_each_map_style_output_not_duplicated()
 {
   let output = Command::new( "cargo" )
-    .args( [ "run", "--example", "for_each_map_style_sample" ] )
+    .args( [ "run", "--example", "for_each_map_style_sample", "--features", "enabled" ] )
     .current_dir( env!( "CARGO_MANIFEST_DIR" ) )
     .output()
     .expect( "Failed to execute example" );

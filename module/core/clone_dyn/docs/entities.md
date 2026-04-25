@@ -2,18 +2,18 @@
 
 ## Master Doc Entities Table
 
-| ID | Type | Name | Status |
-|----|------|------|--------|
-| E001 | api | Public API Surface | active |
-| E002 | feature | Cloning Features | active |
-| E003 | invariant | Behavioral Contracts | active |
+| Type | Purpose | Master File | Instances |
+|------|---------|-------------|-----------|
+| `api/` | Public facade API contracts | [readme.md](api/readme.md) | 1 |
+| `feature/` | Behavioral feature specifications | [readme.md](feature/readme.md) | 2 |
+| `invariant/` | Behavioral contracts | [readme.md](invariant/readme.md) | 2 |
 
 ## Master Doc Instances Table
 
-| ID | Type | Name | File | Status |
-|----|------|------|------|--------|
-| 001 | api | Facade Public Surface | `api/001_facade_api.md` | active |
-| 002 | feature | Macro-Based Cloning | `feature/001_macro_usage.md` | active |
-| 003 | feature | Manual Clone Implementation | `feature/002_manual_impl.md` | active |
-| 004 | invariant | Box-Only Restriction | `invariant/001_box_only.md` | active |
-| 005 | invariant | Quality Standards | `invariant/002_quality_standards.md` | active |
+| Entity | ID | Name | File |
+|--------|----|------|------|
+| api | 001 | Facade Public Surface | [api/001_facade_api.md](api/001_facade_api.md) |
+| feature | 001 | Macro-Based Cloning | [feature/001_macro_usage.md](feature/001_macro_usage.md) |
+| feature | 002 | Manual Clone Implementation | [feature/002_manual_impl.md](feature/002_manual_impl.md) |
+| invariant | 001 | Box-Only Restriction | [invariant/001_box_only.md](invariant/001_box_only.md) |
+| invariant | 002 | Quality Standards | [invariant/002_quality_standards.md](invariant/002_quality_standards.md) |

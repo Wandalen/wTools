@@ -2,9 +2,9 @@
 
 Design and API documentation for `cli_fmt`.
 
-## Responsibility Table
+### Responsibility Table
 
-| Entity | Responsibility |
+| File | Responsibility |
 |--------|----------------|
 | `feature/` | Behavioral feature specifications |
 | `api/` | API contracts and usage reference |

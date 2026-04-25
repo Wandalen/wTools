@@ -11,4 +11,4 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | macro_tools_only | All syntax operations via macro_tools, no direct syn/quote/proc-macro2 | active |
+| 001 | macro_tools_only | All syntax operations via macro_tools, no direct syn/quote/proc-macro2 | ✅ |

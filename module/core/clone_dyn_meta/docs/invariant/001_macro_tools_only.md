@@ -25,4 +25,4 @@ Direct dependency bypasses `macro_tools`' version management, potentially introd
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| feature | `../feature/001_clone_dyn_macro.md` | Implementation that must follow this constraint |
+| doc | `../feature/001_clone_dyn_macro.md` | Implementation that must follow this constraint |

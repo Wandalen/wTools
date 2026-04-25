@@ -18,7 +18,7 @@ All three crates (`clone_dyn`, `clone_dyn_meta`, `clone_dyn_types`) must at all 
 ### Enforcement Mechanism
 
 - CI runs `RUSTFLAGS="-D warnings" cargo nextest run --all-features` and `cargo clippy --all-targets --all-features -- -D warnings` on every push.
-- Manual test procedure verifies feature combinations: see `../../../tests/manual/readme.md`.
+- Manual test procedure verifies feature combinations: see `../../tests/manual/readme.md`.
 
 ### Violation Consequences
 
@@ -28,4 +28,4 @@ A lint warning or undocumented public item is a blocking PR failure. Test failur
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| api | `../api/001_facade_api.md` | All public items subject to this invariant |
+| doc | `../api/001_facade_api.md` | All public items subject to this invariant |

@@ -6,7 +6,7 @@ Design and API documentation for `color_tools`. Organized as typed doc entity in
 
 See [entities.md](entities.md) for the complete registry of all doc instances.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|---------------|

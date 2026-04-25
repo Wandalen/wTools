@@ -2,7 +2,7 @@
 
 Design and API documentation for `data_type`.
 
-## Responsibility Table
+### Responsibility Table
 
-| Entity | Responsibility |
+| File | Responsibility |
 |--------|----------------|

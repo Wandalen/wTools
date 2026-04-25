@@ -2,7 +2,7 @@
 
 Design and API documentation for `former_types`.
 
-## Responsibility Table
+### Responsibility Table
 
-| Entity | Responsibility |
+| File | Responsibility |
 |--------|----------------|

@@ -2,7 +2,7 @@
 
 Design and API documentation for `sqlx_query`.
 
-## Responsibility Table
+### Responsibility Table
 
-| Entity | Responsibility |
+| File | Responsibility |
 |--------|----------------|

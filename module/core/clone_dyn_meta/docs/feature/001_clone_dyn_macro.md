@@ -1,4 +1,4 @@
-# 001 Clone Dyn Macro
+# Feature: Clone Dyn Macro
 
 The `#[clone_dyn]` procedural attribute macro that enables `Box<dyn Trait>` cloning.
 
@@ -9,7 +9,7 @@ The `#[clone_dyn]` procedural attribute macro that enables `Box<dyn Trait>` clon
 - **In Scope:** Trait definitions annotated with `#[clone_dyn]`, generic trait parameters, where clause extension, optional `debug` property for expansion introspection.
 - **Out of Scope:** Runtime cloning behavior, non-trait items (structs/enums/functions), user-facing API (route through `clone_dyn` facade), direct end-user use.
 
-### Design Rationale
+### Design
 
 Rust's compilation model requires proc-macro crates to be separate from library crates. This crate is the proc-macro implementation; the `clone_dyn` facade crate re-exports the macro with a more ergonomic API. Direct use of this crate by end-users is not intended.
 
@@ -33,8 +33,9 @@ Rust's compilation model requires proc-macro crates to be separate from library 
 
 ### Cross-References
 
-- **Algorithm:** `algorithm/001_macro_expansion.md` — step-by-step code generation logic
-- **API:** `api/001_clone_dyn_attr.md` — invocation contract and output specification
-- **Upstream:** `macro_tools` crate
-- **Upstream:** `component_model_types` crate
-- **Downstream:** `clone_dyn` facade crate
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | `../algorithm/001_macro_expansion.md` | Step-by-step code generation logic |
+| doc | `../api/001_clone_dyn_attr.md` | Invocation contract and output specification |
+| source | `../../src/clone_dyn.rs` | Canonical implementation |
+| test | `../../tests/smoke_test.rs` | Feature smoke test |

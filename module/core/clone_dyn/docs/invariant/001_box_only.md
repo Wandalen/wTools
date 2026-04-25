@@ -25,5 +25,5 @@ Adding `Rc`/`Arc` support would require: new generated impl variants in the macr
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| feature | `../feature/001_macro_usage.md` | Macro that generates Box-only impls |
-| api | `../api/001_facade_api.md` | Public surface constrained to Box |
+| doc | `../feature/001_macro_usage.md` | Macro that generates Box-only impls |
+| doc | `../api/001_facade_api.md` | Public surface constrained to Box |

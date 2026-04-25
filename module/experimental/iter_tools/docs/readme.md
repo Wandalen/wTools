@@ -2,7 +2,7 @@
 
 Design and API documentation for `iter_tools`.
 
-## Responsibility Table
+### Responsibility Table
 
-| Entity | Responsibility |
+| File | Responsibility |
 |--------|----------------|

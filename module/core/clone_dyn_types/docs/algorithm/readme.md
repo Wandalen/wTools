@@ -1,12 +1,14 @@
-# Algorithm
+# Algorithm Doc Entity
 
 ### Scope
 
-Algorithm instances document implementation algorithms for `clone_dyn_types` —
-how internal mechanisms work.
+- **Purpose**: Document the internal algorithms of `clone_dyn_types` for contributors.
+- **Responsibility**: Specify algorithm steps, inputs, outputs, and correctness requirements.
+- **In Scope**: Fat pointer surgery in `clone_into_box`.
+- **Out of Scope**: Public API contracts (`api/`), caller-facing behavioral specs (`feature/`).
 
-### Overview
+### Overview Table
 
-| # | ID | Name | Status |
-|---|-----|------|--------|
-| 1 | 001 | Fat Pointer Surgery | Implemented |
+| ID | Name | Purpose | Status |
+|----|------|---------|--------|
+| 001 | Fat Pointer Surgery | DST clone via fat pointer data component swap | ✅ |

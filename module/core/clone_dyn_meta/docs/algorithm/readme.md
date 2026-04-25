@@ -9,8 +9,8 @@ Code generation algorithm documentation for `clone_dyn_meta`.
 - **In Scope:** `src/clone_dyn.rs` step-by-step logic, generic decomposition, where clause extension, `qt!` token generation.
 - **Out of Scope:** Public API contract (`api/`), feature rationale (`feature/`), runtime clone behavior (in `clone_dyn` / `clone_dyn_types`).
 
-### Overview
+### Overview Table
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | macro_expansion | Full expansion pipeline from `(attr, item)` input to generated impls | L2 |
+| 001 | macro_expansion | Full expansion pipeline from `(attr, item)` input to generated impls | ✅ |
