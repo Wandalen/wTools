@@ -13,16 +13,14 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 
 This module is currently a minimal placeholder awaiting definition and implementation. It provides only a skeleton structure with a single placeholder function `f1()`.
 
-See [`spec.md`](./spec.md) for detailed status, roadmap, and design decisions.
-
 ### Current Functionality
 
 ```rust
+// requires --features enabled
 use proper_tools::*;
 
 fn main()
 {
-  // Only placeholder function available
   f1();
 }
 ```
@@ -32,8 +30,6 @@ fn main()
 ```bash
 cargo add proper_tools
 ```
-
-**Note:** This crate currently provides minimal functionality. Review the [specification](./spec.md) for planned features and implementation status.
 
 ### Try out from the repository
 
@@ -49,5 +45,4 @@ cargo run --example proper_tools_trivial
 
 ### Documentation
 
-- [Specification](./spec.md) - Complete specification including roadmap and open questions
 - [API Documentation](https://docs.rs/proper_tools) - Generated API docs on docs.rs

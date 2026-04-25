@@ -178,8 +178,3 @@ When manual testing reveals issues:
 3. **Mark corner case** as failing in checklist
 4. **Document workaround** if any exists
 
-## References
-
-- test_organization.rulebook.md § Manual Testing Organization
-- test_organization.rulebook.md § Comprehensive Corner Case Coverage
-- Crate specification (pending creation)

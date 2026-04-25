@@ -8,4 +8,5 @@
 #![ cfg_attr( not( doc ), doc = "Proper tools collection" ) ]
 
 /// A placeholder function for the `proper_tools` module.
+#[ cfg( feature = "enabled" ) ]
 pub fn f1() {}

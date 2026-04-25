@@ -2,7 +2,7 @@
 
 Design and API documentation for `file_tools`.
 
-## Responsibility Table
+### Responsibility Table
 
-| Entity | Responsibility |
-|--------|----------------|
+| Directory | Responsibility |
+|-----------|----------------|

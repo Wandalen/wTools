@@ -6,18 +6,7 @@ Test suite for the file_tools crate.
 
 Tests are organized by functional domain (what is being tested) rather than by methodology (how it's tested). As this crate evolves, tests should be grouped by the file manipulation functionality they verify (e.g., file reading, writing, path operations) rather than by test type (unit, integration).
 
-## Directory Structure
-
-```
-tests/
-├── readme.md          # This file
-├── smoke_test.rs      # Basic API accessibility tests
-├── placeholder_test.rs # Comprehensive placeholder function testing
-└── manual/            # Manual testing procedures and plans
-    └── readme.md      # Comprehensive manual testing plan
-```
-
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|
