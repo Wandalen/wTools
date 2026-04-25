@@ -1,13 +1,11 @@
 # Feature: Clone Dyn Macro
 
-The `#[clone_dyn]` procedural attribute macro that enables `Box<dyn Trait>` cloning.
-
 ### Scope
 
-- **Purpose:** Provide compile-time code generation that makes annotated trait definitions cloneable as boxed trait objects.
-- **Responsibility:** Inject `Self: clone_dyn::CloneDyn` into the trait's where clause and emit four `Clone` impl blocks for `Box<dyn Trait>` across `Send`/`Sync` marker combinations.
-- **In Scope:** Trait definitions annotated with `#[clone_dyn]`, generic trait parameters, where clause extension, optional `debug` property for expansion introspection.
-- **Out of Scope:** Runtime cloning behavior, non-trait items (structs/enums/functions), user-facing API (route through `clone_dyn` facade), direct end-user use.
+- **Purpose**: Provide compile-time code generation that makes annotated trait definitions cloneable as boxed trait objects.
+- **Responsibility**: Inject `Self: clone_dyn::CloneDyn` into the trait's where clause and emit four `Clone` impl blocks for `Box<dyn Trait>` across `Send`/`Sync` marker combinations.
+- **In Scope**: Trait definitions annotated with `#[clone_dyn]`, generic trait parameters, where clause extension, optional `debug` property for expansion introspection.
+- **Out of Scope**: Runtime cloning behavior, non-trait items (structs/enums/functions), user-facing API (route through `clone_dyn` facade), direct end-user use.
 
 ### Design
 

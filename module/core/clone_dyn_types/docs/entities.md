@@ -3,17 +3,17 @@
 ## Master Doc Entities Table
 
 | Type | Purpose | Master File | Instances |
-|------|---------|-------------|-----------|
-| `algorithm/` | Fat pointer DST cloning algorithm | [readme.md](algorithm/readme.md) | 1 |
-| `api/` | Public trait and function contracts | [readme.md](api/readme.md) | 2 |
-| `feature/` | Behavioral feature specifications | [readme.md](feature/readme.md) | 3 |
-| `invariant/` | Runtime and structural invariants | [readme.md](invariant/readme.md) | 3 |
-| `pattern/` | Architectural design patterns | [readme.md](pattern/readme.md) | 1 |
+|------|---------|-------------|----------:|
+| `algorithm/` | Implementation algorithms: how DST cloning works | [algorithm/readme.md](algorithm/readme.md) | 1 |
+| `api/` | Public API contracts: traits and functions | [api/readme.md](api/readme.md) | 2 |
+| `feature/` | Behavioral requirements: what the crate does | [feature/readme.md](feature/readme.md) | 3 |
+| `invariant/` | Constraints: what must always hold | [invariant/readme.md](invariant/readme.md) | 3 |
+| `pattern/` | Architectural design patterns | [pattern/readme.md](pattern/readme.md) | 1 |
 
 ## Master Doc Instances Table
 
 | Entity | ID | Name | File |
-|--------|----|------|------|
+|--------|-----|------|------|
 | algorithm | 001 | Fat Pointer Surgery | [algorithm/001_fat_pointer_surgery.md](algorithm/001_fat_pointer_surgery.md) |
 | api | 001 | CloneDyn Trait | [api/001_clone_dyn_trait.md](api/001_clone_dyn_trait.md) |
 | api | 002 | Clone Into Box | [api/002_clone_into_box.md](api/002_clone_into_box.md) |

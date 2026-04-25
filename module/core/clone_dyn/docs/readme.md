@@ -12,6 +12,7 @@ and public API contracts for the `clone_dyn` facade crate.
 | Collection | Description |
 |------------|-------------|
 | `api/` | Public API contracts: re-exports and feature flags |
+| `doc_graph.yml` | Cross-reference graph of doc instances |
 | `entities.md` | Master doc entities and instances index |
 | `feature/` | Behavioral requirements: macro-based and manual clone patterns |
 | `invariant/` | Constraints: box-only restriction and quality standards |

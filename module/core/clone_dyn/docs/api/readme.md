@@ -11,4 +11,4 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | facade_api | Re-exports, feature flags, and stability guarantees | ✅ |
+| 001 | [Facade Public Surface](001_facade_api.md) | Re-exports, feature flags, and stability guarantees | ✅ |

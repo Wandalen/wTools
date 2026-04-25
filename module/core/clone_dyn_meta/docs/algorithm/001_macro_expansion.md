@@ -1,13 +1,11 @@
 # Algorithm: Macro Expansion
 
-Code generation pipeline for the `#[clone_dyn]` attribute macro (`src/clone_dyn.rs`).
-
 ### Scope
 
-- **Purpose:** Document how `clone_dyn.rs` transforms a trait definition into the trait plus four `Clone` impls.
-- **Responsibility:** Specify each processing step, its inputs, outputs, and failure modes.
-- **In Scope:** `src/clone_dyn.rs` function `clone_dyn`, attribute parsing via `ItemAttributes`, generic decomposition, where clause extension, `qt!` generation, debug path.
-- **Out of Scope:** The `CloneDyn` trait itself (in `clone_dyn_types`), `clone_into_box` runtime (in `clone_dyn`), caller-visible contract (`api/001_clone_dyn_attr.md`).
+- **Purpose**: Document how `clone_dyn.rs` transforms a trait definition into the trait plus four `Clone` impls.
+- **Responsibility**: Specify each processing step, its inputs, outputs, and failure modes.
+- **In Scope**: `src/clone_dyn.rs` function `clone_dyn`, attribute parsing via `ItemAttributes`, generic decomposition, where clause extension, `qt!` generation, debug path.
+- **Out of Scope**: The `CloneDyn` trait itself (in `clone_dyn_types`), `clone_into_box` runtime (in `clone_dyn`), caller-visible contract (`api/001_clone_dyn_attr.md`).
 
 ### Abstract
 

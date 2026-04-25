@@ -1,13 +1,11 @@
 # API: Clone Dyn Attribute
 
-Public API contract for the `#[clone_dyn]` attribute macro.
-
 ### Scope
 
-- **Purpose:** Define the caller-visible contract for `#[clone_dyn]`: valid forms, accepted properties, input requirements, and guaranteed outputs.
-- **Responsibility:** Be the authoritative specification that callers and the `clone_dyn` facade rely on.
-- **In Scope:** Valid invocation forms, attribute properties, trait item constraints, generated impl guarantees.
-- **Out of Scope:** Internal parsing logic (`algorithm/001_macro_expansion.md`), end-user ergonomics (handled by `clone_dyn` facade).
+- **Purpose**: Define the caller-visible contract for `#[clone_dyn]`: valid forms, accepted properties, input requirements, and guaranteed outputs.
+- **Responsibility**: Be the authoritative specification that callers and the `clone_dyn` facade rely on.
+- **In Scope**: Valid invocation forms, attribute properties, trait item constraints, generated impl guarantees.
+- **Out of Scope**: Internal parsing logic (`algorithm/001_macro_expansion.md`), end-user ergonomics (handled by `clone_dyn` facade).
 
 ### Abstract
 

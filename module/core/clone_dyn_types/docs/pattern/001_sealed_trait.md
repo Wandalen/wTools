@@ -2,18 +2,18 @@
 
 ### Scope
 
-**Purpose**: Prevent external implementations of `CloneDyn` to guarantee memory safety.
-**In Scope**: `Sealed` supertrait; `DontCallMe` marker; `CloneDyn: Sealed` relationship.
-**Out of Scope**: Public API surface; external crate usage patterns.
+- **Purpose**: Prevent external implementations of `CloneDyn` to guarantee memory safety.
+- **Responsibility**: Document the mechanism, applicability, and trade-offs of the sealed trait pattern as applied to `CloneDyn`.
+- **In Scope**: `Sealed` supertrait; `DontCallMe` marker; `CloneDyn: Sealed` relationship.
+- **Out of Scope**: Public API surface; external crate usage patterns.
 
-### Statement
+### Problem
 
-The sealed trait pattern uses a private supertrait (`Sealed`) and a private marker
-type (`DontCallMe`) to prevent external crates from implementing `CloneDyn`, while
-keeping the trait itself `pub`. All `CloneDyn` implementations are confined to
-this crate where they can be verified for soundness.
+`CloneDyn::__clone_dyn` returns a raw `*mut ()`. Any unsound external implementation could return a mistyped or invalid pointer, causing undefined behavior in `clone_into_box`. The type system alone cannot prevent external `impl CloneDyn for T` blocks — `pub` traits are normally open for implementation.
 
-### Components
+### Solution
+
+A private `Sealed` supertrait (in `mod private`) is added to `CloneDyn`. The `__clone_dyn` method takes a private `DontCallMe` marker parameter. Because `Sealed` is inaccessible outside the crate, no external type can satisfy `CloneDyn: Sealed`, making external `impl CloneDyn` impossible at compile time. All implementations are confined to this crate where they can be verified for soundness.
 
 | Component | Responsibility |
 |-----------|----------------|
@@ -21,14 +21,17 @@ this crate where they can be verified for soundness.
 | `DontCallMe` | Private marker struct; prevents direct `__clone_dyn` invocation |
 | `CloneDyn: Sealed` | Public trait with private supertrait; external impl impossible |
 
-### Why This Pattern
+### Applicability
 
-`CloneDyn::__clone_dyn` returns a raw `*mut ()`. Any unsound external implementation
-could return a mistyped or invalid pointer, causing undefined behavior in
-`clone_into_box`. Sealing eliminates this attack surface entirely — only
-crate-internal implementations exist, all verified for correctness.
+Use when a public trait exposes an unsafe method whose correctness invariants cannot be statically verified for arbitrary implementations. Appropriate when all valid implementations can be provided within the defining crate and external customisation must be prohibited.
+
+### Consequences
+
+External crates see a fully public `CloneDyn` trait but cannot implement it — the compiler error is clear (`Sealed` not in scope). Documentation must note the sealed status. The trade-off is no user customisation of the clone mechanism, which is intentional for memory safety.
 
 ### Cross-References
 
-- `invariant/002_memory_safety.md` — safety guarantee this pattern enforces
-- `api/001_clone_dyn_trait.md` — `CloneDyn` definition that uses this pattern
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | `../invariant/002_memory_safety.md` | Safety guarantee this pattern enforces |
+| doc | `../api/001_clone_dyn_trait.md` | `CloneDyn` definition that uses this pattern |

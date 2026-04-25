@@ -17,4 +17,5 @@ public API contracts, implementation algorithms, and architectural patterns for 
 | `api/` | Public API contracts: traits and functions |
 | `algorithm/` | Implementation algorithms: how DST cloning works |
 | `pattern/` | Architectural design patterns |
+| `doc_graph.yml` | Cross-reference graph of doc instances |
 | `entities.md` | Master doc entities and instances index |

@@ -1,0 +1,94 @@
+meta:
+  description: Cross-reference graph for all doc instances in clone_dyn_types
+  node_count: 10
+  edge_count: 25
+  component_count: 1
+  generated: 2026-04-25
+
+nodes:
+  - id: feature/001
+    file: feature/001_no_std_support.md
+    label: No-Std Support
+    entity: feature
+  - id: feature/002
+    file: feature/002_dst_cloning.md
+    label: DST Cloning
+    entity: feature
+  - id: feature/003
+    file: feature/003_type_coverage.md
+    label: Type Coverage
+    entity: feature
+  - id: invariant/001
+    file: invariant/001_zero_dependencies.md
+    label: Zero Dependencies
+    entity: invariant
+  - id: invariant/002
+    file: invariant/002_memory_safety.md
+    label: Memory Safety
+    entity: invariant
+  - id: invariant/003
+    file: invariant/003_usage_constraints.md
+    label: Usage Constraints
+    entity: invariant
+  - id: api/001
+    file: api/001_clone_dyn_trait.md
+    label: CloneDyn Trait
+    entity: api
+  - id: api/002
+    file: api/002_clone_into_box.md
+    label: Clone Into Box
+    entity: api
+  - id: algorithm/001
+    file: algorithm/001_fat_pointer_surgery.md
+    label: Fat Pointer Surgery
+    entity: algorithm
+  - id: pattern/001
+    file: pattern/001_sealed_trait.md
+    label: Sealed Trait
+    entity: pattern
+
+edges:
+  - { from: feature/001, to: invariant/001, via: cross_references }
+  - { from: feature/001, to: api/001, via: cross_references }
+  - { from: feature/002, to: algorithm/001, via: cross_references }
+  - { from: feature/002, to: api/001, via: cross_references }
+  - { from: feature/002, to: api/002, via: cross_references }
+  - { from: feature/002, to: pattern/001, via: cross_references }
+  - { from: feature/003, to: invariant/003, via: cross_references }
+  - { from: feature/003, to: feature/002, via: cross_references }
+  - { from: invariant/001, to: feature/001, via: cross_references }
+  - { from: invariant/002, to: algorithm/001, via: cross_references }
+  - { from: invariant/002, to: pattern/001, via: cross_references }
+  - { from: invariant/002, to: api/001, via: cross_references }
+  - { from: invariant/003, to: api/002, via: cross_references }
+  - { from: invariant/003, to: feature/003, via: cross_references }
+  - { from: api/001, to: pattern/001, via: cross_references }
+  - { from: api/001, to: api/002, via: cross_references }
+  - { from: api/001, to: invariant/002, via: cross_references }
+  - { from: api/002, to: algorithm/001, via: cross_references }
+  - { from: api/002, to: api/001, via: cross_references }
+  - { from: api/002, to: invariant/003, via: cross_references }
+  - { from: algorithm/001, to: invariant/002, via: cross_references }
+  - { from: algorithm/001, to: api/001, via: cross_references }
+  - { from: algorithm/001, to: api/002, via: cross_references }
+  - { from: pattern/001, to: invariant/002, via: cross_references }
+  - { from: pattern/001, to: api/001, via: cross_references }
+
+components:
+  - id: 1
+    label: clone_dyn_types documentation corpus
+    size: 10
+    isolated: false
+    nodes:
+      - feature/001
+      - feature/002
+      - feature/003
+      - invariant/001
+      - invariant/002
+      - invariant/003
+      - api/001
+      - api/002
+      - algorithm/001
+      - pattern/001
+
+dangling_refs: []

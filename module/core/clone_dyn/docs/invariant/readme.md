@@ -11,5 +11,5 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | box_only | `Box<dyn Trait>` is the only supported smart pointer | ✅ |
-| 002 | quality_standards | Code quality, test coverage, and documentation NFRs | ✅ |
+| 001 | [Box-Only Restriction](001_box_only.md) | `Box<dyn Trait>` is the only supported smart pointer | ✅ |
+| 002 | [Quality Standards](002_quality_standards.md) | Code quality, test coverage, and documentation NFRs | ✅ |

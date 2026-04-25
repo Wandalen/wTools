@@ -11,4 +11,4 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | Sealed Trait | Prevent external CloneDyn implementations | ✅ |
+| 001 | [Sealed Trait](001_sealed_trait.md) | Prevent external CloneDyn implementations | ✅ |

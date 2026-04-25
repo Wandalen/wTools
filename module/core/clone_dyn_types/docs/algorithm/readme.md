@@ -11,4 +11,4 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | Fat Pointer Surgery | DST clone via fat pointer data component swap | ✅ |
+| 001 | [Fat Pointer Surgery](001_fat_pointer_surgery.md) | DST clone via fat pointer data component swap | ✅ |
