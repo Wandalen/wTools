@@ -38,7 +38,7 @@ Organizes all automated tests for async conversion traits (AsyncFrom, AsyncInto,
 - Manual testing (not applicable to trait definitions)
 - Runtime-specific behavior (traits are runtime-agnostic)
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

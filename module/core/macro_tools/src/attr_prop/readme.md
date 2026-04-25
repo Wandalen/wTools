@@ -10,7 +10,7 @@ Paired modules for each property type: base type handles required properties, `_
 
 Each property type provides trait implementations for parsing, conversion, and assignment following the component model pattern.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

@@ -4,7 +4,7 @@
 
 Library source files. Each file owns one cohesive responsibility; `lib.rs` re-exports the public API.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

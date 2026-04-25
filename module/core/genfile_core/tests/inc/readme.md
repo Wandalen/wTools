@@ -2,7 +2,7 @@
 
 Test modules for genfile_core crate, organized by functional domain.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility | Notes |
 |------|----------------|-------|

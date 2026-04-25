@@ -12,7 +12,7 @@ Domain-based organization with flat structure for root tests and grouped increme
 - **inc/ tests**: Incremental unit tests per module, one test file per source module
 - **Bug reproducers**: Tests marked with `bug_reproducer` attribute preserving specific issue fixes
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

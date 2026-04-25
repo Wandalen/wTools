@@ -3,7 +3,7 @@
 ## Purpose
 Contains one source file per output format family, each implementing the `Format` trait for its domain.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

@@ -2,7 +2,7 @@
 
 This directory contains all unit tests for the multiline_input crate.
 
-## Responsibility Table
+### Responsibility Table
 
 | Test Suite | Responsibility | In Scope | Out of Scope (See) |
 |------------|----------------|----------|-------------------|

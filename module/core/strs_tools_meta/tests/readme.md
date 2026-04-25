@@ -10,7 +10,7 @@ This directory contains comprehensive integration tests for the `optimize_split`
 
 Tests are organized by macro functionality with dedicated test modules for each procedural macro. The `integration_tests.rs` file serves as the main entry point importing feature-gated test modules.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

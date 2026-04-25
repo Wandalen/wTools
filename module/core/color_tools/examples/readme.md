@@ -1,6 +1,6 @@
 # examples
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

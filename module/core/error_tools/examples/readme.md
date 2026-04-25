@@ -2,7 +2,7 @@
 
 This directory contains usage demonstration examples for error_tools.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|---------------|

@@ -2,7 +2,7 @@
 
 Test suite for the wstring_tools alias crate.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

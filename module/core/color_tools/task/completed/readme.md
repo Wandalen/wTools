@@ -4,7 +4,7 @@
 
 Archive of completed tasks documenting feature implementations and improvements delivered to color_tools.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

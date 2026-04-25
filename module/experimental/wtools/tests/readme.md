@@ -6,7 +6,7 @@ Test suite for wtools aggregating crate validating public API re-exports and exa
 
 Tests are organized in flat structure focused on aggregating crate verification rather than functional domain testing (functional tests belong in constituent crates: iter_tools, meta_tools, etc.).
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

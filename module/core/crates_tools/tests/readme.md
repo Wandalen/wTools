@@ -2,7 +2,7 @@
 
 This directory contains all functional tests for the `crates_tools` crate.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

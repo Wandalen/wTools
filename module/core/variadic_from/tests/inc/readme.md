@@ -2,7 +2,7 @@
 
 Modular test components included by parent test files for comprehensive `VariadicFrom` derive macro validation.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

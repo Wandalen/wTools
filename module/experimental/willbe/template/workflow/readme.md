@@ -8,7 +8,7 @@ feature → alpha → master
 
 Pull requests flow: `feature` branches PR into `alpha`; `alpha` PRs into `master`.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

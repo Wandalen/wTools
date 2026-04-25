@@ -21,10 +21,10 @@ Validates core CLI output processing functionality including stream merging, hea
 - ANSI escape code generation tests (belongs in strs_tools)
 - General string manipulation tests (belongs in strs_tools)
 
-## Responsibility Table
+### Responsibility Table
 
-| Entity | Responsibility |
-|--------|----------------|
+| File | Responsibility |
+|------|----------------|
 | `readme.md` | Document test organization and navigation |
 | `output.rs` | Validate CLI output processing behavior |
 

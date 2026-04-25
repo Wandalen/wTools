@@ -2,7 +2,7 @@
 
 Modular compile-fail test cases included by parent compile-fail test aggregator.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

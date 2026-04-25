@@ -25,7 +25,7 @@ tests/
     └── glob_test.rs       # Glob re-export integration tests
 ```
 
-## Responsibility Table
+### Responsibility Table
 
 | File/Directory | Responsibility |
 |----------------|----------------|

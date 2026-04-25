@@ -2,7 +2,7 @@
 
 Automated test suite for proper_tools crate.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

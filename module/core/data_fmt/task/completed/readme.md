@@ -4,7 +4,7 @@
 
 Archive of completed tasks for data_fmt.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

@@ -4,7 +4,7 @@
 
 Core filesystem utilities module providing temporary directory path management and path traversal functionality.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

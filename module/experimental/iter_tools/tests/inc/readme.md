@@ -2,7 +2,7 @@
 
 Functional test modules for iter_tools crate.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

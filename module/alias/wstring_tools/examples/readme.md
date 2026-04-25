@@ -2,7 +2,7 @@
 
 Example programs demonstrating wstring_tools functionality.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

@@ -2,10 +2,10 @@
 
 Manual testing plan for `wstring_tools`.
 
-## Responsibility Table
+### Responsibility Table
 
-| Entity | Responsibility |
-|--------|----------------|
+| File | Responsibility |
+|------|----------------|
 | readme.md | Manual testing plan and responsibility table |
 
 ## Manual Test Plan

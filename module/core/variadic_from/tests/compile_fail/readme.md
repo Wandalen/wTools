@@ -2,7 +2,7 @@
 
 Validation that invalid usage of `VariadicFrom` derive macro and `from!` macro produces expected compile-time errors.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

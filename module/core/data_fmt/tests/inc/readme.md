@@ -3,7 +3,7 @@
 ## Purpose
 Shared test infrastructure included by integration test files via `mod inc`.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

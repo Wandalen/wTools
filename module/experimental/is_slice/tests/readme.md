@@ -6,7 +6,7 @@ Test suite for the is_slice crate.
 
 Tests are organized using flat structure with `inc/` subdirectory for test implementations.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

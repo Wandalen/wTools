@@ -8,7 +8,7 @@ Demonstrates all three output formats (Table, Expanded, Tree) and library featur
 - **Comprehensive overview**: `unified_formats.rs` demonstrates the unified Format trait with multiple formatters
 - All examples follow "concise but informative" design with clear doc comments
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

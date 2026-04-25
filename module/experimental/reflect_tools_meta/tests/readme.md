@@ -6,7 +6,7 @@ Tests organized by functionality: smoke tests for basic crate health, derive com
 
 The Reflect derive implementation is a stub (returns empty `TokenStream`), so tests focus on compilation success and macro infrastructure rather than runtime behavior.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

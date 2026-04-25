@@ -2,7 +2,7 @@
 
 Source code for asbytes crate, implementing byte conversion traits.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

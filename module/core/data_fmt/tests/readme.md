@@ -9,7 +9,7 @@ Contains all functional and integration tests for data_fmt library. Tests valida
 - Tests cover Tasks 012-015: min_column_width floor, ANSI coloring, border variants, Unicode display width
 - Test files kept under 1000 lines per file (warning threshold); mandatory split at 1500 lines
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

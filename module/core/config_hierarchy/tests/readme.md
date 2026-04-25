@@ -2,7 +2,7 @@
 
 This directory contains all functional and integration tests for the crate.
 
-## Responsibility Table
+### Responsibility Table
 
 | Test Suite | Responsibility | In Scope | Out of Scope (See) |
 |------------|----------------|----------|-------------------|

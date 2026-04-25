@@ -2,7 +2,7 @@
 
 This directory contains test files for the component_model_meta crate.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

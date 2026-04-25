@@ -2,7 +2,7 @@
 
 Test suite for the `variadic_from` crate, verifying derive macro functionality, trait implementations, and compile-time error handling.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

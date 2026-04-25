@@ -6,7 +6,7 @@ Test suite for iter_tools crate.
 
 Tests are organized with smoke tests at root level and functional tests in the `inc/` subdirectory following the standard test aggregator pattern.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

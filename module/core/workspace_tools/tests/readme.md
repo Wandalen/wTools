@@ -29,7 +29,7 @@ Validates all workspace_tools functionality including workspace resolution, path
 - Implementation details testing (black-box testing only)
 - External tool testing (git, cargo commands tested only through integration)
 
-## Responsibility Table
+### Responsibility Table
 
 ### Core Functionality Tests
 

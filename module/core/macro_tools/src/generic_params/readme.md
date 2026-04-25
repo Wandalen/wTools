@@ -10,7 +10,7 @@ Three focused modules implementing distinct generic parameter transformations: c
 
 Each module implements specific transformation operations on `syn::Generics` for generating appropriate generic parameter lists in different contexts (impl blocks, type definitions, where clauses).
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

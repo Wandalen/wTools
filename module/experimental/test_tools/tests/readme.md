@@ -2,7 +2,7 @@
 
 This directory contains comprehensive tests for the `test_tools` crate, verifying all functional requirements, user stories, and implementation details.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

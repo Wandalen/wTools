@@ -20,7 +20,7 @@ Document test organization strategy for winterval crate, including smoke tests v
 - Manual testing (simple alias crate requires no manual procedures)
 - Feature-specific testing (features delegate to interval_adapter)
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

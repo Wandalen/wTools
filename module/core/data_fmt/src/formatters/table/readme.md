@@ -3,7 +3,7 @@
 ## Purpose
 Contains the `TableFormatter` implementation split across focused source files.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

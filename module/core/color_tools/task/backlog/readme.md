@@ -1,6 +1,6 @@
 # Backlog
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

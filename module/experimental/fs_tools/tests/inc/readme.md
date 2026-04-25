@@ -4,7 +4,7 @@
 
 Core functionality test modules organized by functional domain.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

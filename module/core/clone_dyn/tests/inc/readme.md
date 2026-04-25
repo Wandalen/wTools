@@ -2,7 +2,7 @@
 
 Test implementations organized by functional domain.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

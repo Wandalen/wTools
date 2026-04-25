@@ -1,6 +1,6 @@
 # interval_adapter Tests
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

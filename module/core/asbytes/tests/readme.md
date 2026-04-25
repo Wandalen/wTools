@@ -21,7 +21,7 @@ Run specific test module:
 cargo test --test tests --all-features
 ```
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

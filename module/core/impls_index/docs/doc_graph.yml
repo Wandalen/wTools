@@ -1,0 +1,84 @@
+meta:
+  description: Cross-reference graph for all doc instances in impls_index
+  node_count: 9
+  edge_count: 20
+  component_count: 1
+  generated: 2026_04_25
+
+nodes:
+  - id: feature/001
+    file: feature/001_function_indexing.md
+    label: Function Indexing
+    entity: feature
+  - id: feature/002
+    file: feature/002_test_indexing.md
+    label: Test Indexing
+    entity: feature
+  - id: feature/003
+    file: feature/003_function_utilities.md
+    label: Function Utilities
+    entity: feature
+  - id: api/001
+    file: api/001_indexing_macros.md
+    label: Indexing Macros
+    entity: api
+  - id: api/002
+    file: api/002_invocation_macros.md
+    label: Invocation Macros
+    entity: api
+  - id: api/003
+    file: api/003_utility_macros.md
+    label: Utility Macros
+    entity: api
+  - id: invariant/001
+    file: invariant/001_unused_macro_enforcement.md
+    label: Unused Macro Enforcement
+    entity: invariant
+  - id: invariant/002
+    file: invariant/002_compile_time_resolution.md
+    label: Compile-Time Resolution
+    entity: invariant
+  - id: pattern/001
+    file: pattern/001_two_crate_proc_macro.md
+    label: Two-Crate Proc Macro
+    entity: pattern
+
+edges:
+  - { from: feature/001, to: api/001, via: cross_references }
+  - { from: feature/001, to: invariant/001, via: cross_references }
+  - { from: feature/002, to: api/001, via: cross_references }
+  - { from: feature/002, to: api/002, via: cross_references }
+  - { from: feature/002, to: invariant/001, via: cross_references }
+  - { from: feature/003, to: api/003, via: cross_references }
+  - { from: api/001, to: feature/001, via: cross_references }
+  - { from: api/001, to: feature/002, via: cross_references }
+  - { from: api/001, to: invariant/001, via: cross_references }
+  - { from: api/001, to: invariant/002, via: cross_references }
+  - { from: api/002, to: feature/001, via: cross_references }
+  - { from: api/002, to: feature/002, via: cross_references }
+  - { from: api/003, to: feature/003, via: cross_references }
+  - { from: api/003, to: api/001, via: cross_references }
+  - { from: invariant/001, to: feature/001, via: cross_references }
+  - { from: invariant/001, to: feature/002, via: cross_references }
+  - { from: invariant/001, to: api/001, via: cross_references }
+  - { from: invariant/002, to: api/001, via: cross_references }
+  - { from: invariant/002, to: pattern/001, via: cross_references }
+  - { from: pattern/001, to: invariant/002, via: cross_references }
+
+components:
+  - id: 1
+    label: impls_index documentation corpus
+    size: 9
+    isolated: false
+    nodes:
+      - feature/001
+      - feature/002
+      - feature/003
+      - api/001
+      - api/002
+      - api/003
+      - invariant/001
+      - invariant/002
+      - pattern/001
+
+dangling_refs: []

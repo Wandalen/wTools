@@ -1,6 +1,6 @@
 # Tasks
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|
