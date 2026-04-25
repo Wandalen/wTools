@@ -4,10 +4,10 @@
 
 | Type | Purpose | Master File | Instances |
 |------|---------|-------------|----------:|
-| `api/` | Public API contracts: macros and their invocation rules | [api/readme.md](api/readme.md) | 3 |
-| `feature/` | Behavioral requirements: what the crate does | [feature/readme.md](feature/readme.md) | 3 |
-| `invariant/` | Constraints: what must always hold | [invariant/readme.md](invariant/readme.md) | 2 |
-| `pattern/` | Architectural design patterns | [pattern/readme.md](pattern/readme.md) | 1 |
+| `api/` | Define operations, error handling, and compatibility guarantees for each macro group. | [api/readme.md](api/readme.md) | 3 |
+| `feature/` | Track all implemented features as navigational hubs pointing to source, tests, and design artifacts. | [feature/readme.md](feature/readme.md) | 3 |
+| `invariant/` | Specify invariant statements, enforcement mechanisms, and consequences of violation. | [invariant/readme.md](invariant/readme.md) | 2 |
+| `pattern/` | Describe reusable design solutions, their applicability, and trade-offs. | [pattern/readme.md](pattern/readme.md) | 1 |
 
 ## Master Doc Instances Table
 

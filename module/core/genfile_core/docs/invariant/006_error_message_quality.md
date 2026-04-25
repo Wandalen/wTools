@@ -4,7 +4,7 @@
 
 - **Purpose**: Ensures error messages provide enough context to diagnose failures without reading source code.
 - **Responsibility**: Documents the diagnostic context requirement for all error messages.
-- **In Scope**: All `Error` variants; their display messages must include file paths, parameter names, or template context.
+- **In Scope**: All error variants; their display messages must include file paths, parameter names, or template context.
 - **Out of Scope**: CLI error formatting (→ genfile crate `error.rs`), log verbosity levels.
 
 ### Invariant Statement
@@ -13,7 +13,7 @@ All error messages must include sufficient context — relevant file paths, para
 
 ### Enforcement Mechanism
 
-Manual review during code review; supplemented by error message tests that assert presence of contextual information in error strings. Each `Error` variant's `Display` implementation is reviewed for completeness.
+Manual review during code review; supplemented by error message tests that assert presence of contextual information in error strings. Each error variant's display implementation is reviewed for completeness.
 
 ### Violation Consequences
 
@@ -23,7 +23,7 @@ Opaque error messages cause users to give up or file bugs that cannot be reprodu
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/error.rs` | `Error` enum and `Display` implementations |
+| source | `src/error.rs` | Typed error enum and display implementations |
 | doc | `docs/feature/016_typed_errors.md` | Typed error variants documented here |
 
 ### Sources

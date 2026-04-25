@@ -13,5 +13,5 @@ See [entities.md](entities.md) for the complete registry of all doc instances.
 | [entities.md](entities.md) | Master registry of all doc entity types and instances |
 | [doc_graph.yml](doc_graph.yml) | Cross-reference graph linking all doc instances |
 | [feature/](feature/readme.md) | Feature documentation — what the crate does and why |
-| [api/](api/readme.md) | API reference — public types and trait implementations |
+| [api/](api/readme.md) | API reference — public operation sets and compatibility contracts |
 | [invariant/](invariant/readme.md) | Invariant documentation — behavioral contracts that must always hold |

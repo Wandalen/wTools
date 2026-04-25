@@ -29,21 +29,19 @@ mod inspect
         result
       }
     }};
-  ( $( $src: expr ),+ $(,)? ) =>
-  {
-    ( $( $crate::dbg!( $src ) ),+ )
-  };
  }
 
   /// Macro to inspect type of a variable and its size printing into stdout and exporting it as a string.
   #[ macro_export ]
-  macro_rules! inspect_type_of {
-  ( $src: expr ) => {{
-   let result = $crate::inspect_to_str_type_of!($src);
-   println!("{}", result);
-   result
- }};
- }
+  macro_rules! inspect_type_of
+  {
+    ( $src: expr ) =>
+    {{
+      let result = $crate::inspect_to_str_type_of!( $src );
+      println!( "{}", result );
+      result
+    }};
+  }
 
   pub use inspect_to_str_type_of;
   pub use inspect_type_of;

@@ -12,7 +12,7 @@
 
 | Entity | ID | Name | File |
 |--------|-----|------|------|
-| api | 001 | Error-With-Report Trait | [api/001_err_with_trait.md](api/001_err_with_trait.md) |
+| api | 001 | Error-With-Report Operation Set | [api/001_err_with_trait.md](api/001_err_with_trait.md) |
 | api | 002 | Debug Assertion Macros | [api/002_debug_assertions.md](api/002_debug_assertions.md) |
 | feature | 001 | Error Facade | [feature/001_error_facade.md](feature/001_error_facade.md) |
 | feature | 002 | Typed Errors | [feature/002_typed_errors.md](feature/002_typed_errors.md) |

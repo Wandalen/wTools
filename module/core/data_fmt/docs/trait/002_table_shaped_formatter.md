@@ -18,7 +18,7 @@
 
 > **Deprecated since 0.1.0.** Use `Format` trait with `RowBuilder::build_view()` instead.
 
-`TableShapedFormatter` has one method: `format( &self, tree : &TreeNode< String > ) -> String`. Takes an immutable reference to self and an immutable reference to a table-encoded `TreeNode<String>`; returns a formatted string without error handling. Unlike `Format`, there is no `Result` wrapper — formatting is infallible.
+`TableShapedFormatter` has one method. It takes an immutable reference to self and an immutable reference to a table-encoded tree; returns a formatted string without error handling. Unlike `Format`, formatting is infallible — there is no error wrapper.
 
 ### Implementors
 
@@ -36,7 +36,7 @@
 
 ### Input Type
 
-`TreeNode<String>` — a table encoded as a tree where:
+Table-encoded tree — a tree where:
 - Root's children are rows (named `"1"`, `"2"`, ...)
 - Each row's children are cells (named by column header, data = cell value)
 
@@ -48,8 +48,8 @@ Produced by `RowBuilder::build()`.
 
 | Aspect | `TableShapedFormatter` | `Format` |
 |--------|----------------------|----------|
-| Input | `&TreeNode<String>` | `&TableView` |
-| Output | `String` | `Result<String, FormatError>` |
+| Input | table-encoded tree | `&TableView` |
+| Output | formatted string (infallible) | formatted string or error |
 | Implementors | 2 | 8 |
 | Error handling | None (infallible) | `FormatError` |
 | Status | **Deprecated** | Current |

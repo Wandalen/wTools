@@ -28,7 +28,7 @@ There is exactly one implementation: a blanket impl for all tree nodes whose dat
 
 ### Coverage Gaps
 
-No known gaps for the current use case. `TableView` makes this trait largely redundant for new code — it stores headers and rows directly without tree encoding. `TableShapedView` exists for backward compatibility with the `TreeNode<String>` path used by `TableShapedFormatter`.
+No known gaps for the current use case. `TableView` makes this trait largely redundant for new code — it stores headers and rows directly without tree encoding. `TableShapedView` exists for backward compatibility with the table-encoded tree path used by `TableShapedFormatter`.
 
 ### Methods
 
@@ -44,4 +44,4 @@ The tree produced by `RowBuilder::build()` implements `TableShapedView`. `TableF
 
 ### Relationship to TableView
 
-`TableView` makes this trait largely redundant for new code — it stores headers and rows directly without tree encoding. `TableShapedView` exists for backward compatibility with the `TreeNode<String>` path.
+`TableView` makes this trait largely redundant for new code — it stores headers and rows directly without tree encoding. `TableShapedView` exists for backward compatibility with the table-encoded tree path.

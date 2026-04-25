@@ -13,13 +13,13 @@ All operations performed by `impls_index` macros — wrapping functions in named
 
 ### Enforcement Mechanism
 
-The entire `impls_index` crate consists of declarative macros (`macro_rules!`) and one proc macro (`impls3!`/`impls!` via `impls_index_meta`). Both mechanism types operate exclusively during the compiler's macro expansion pass, which precedes code generation. Neither mechanism has any runtime representation.
+The crate is composed entirely of declarative and procedural macro mechanisms. Both mechanism types operate exclusively during the compiler's expansion phase, which precedes code generation. Neither has any runtime representation — they produce code at build time and are absent from the running program.
 
-The crate declares `#![no_std]`, confirming that no standard library runtime services (allocator, OS interface, thread-local storage) are required or imported. This declaration is a structural proof point: a crate with runtime dependencies cannot declare `no_std` without explicit opt-in configuration.
+The crate carries a no-standard-library declaration, confirming that no runtime services (allocator, operating system interface, thread-local storage) are required or imported. This declaration is a structural proof: a crate with runtime dependencies cannot carry this declaration without explicit remediation. The absence of this declaration from any future version of the crate would be an immediate signal of invariant breakage.
 
 ### Violation Consequences
 
-This invariant cannot be violated through normal use of the current API — the macro system provides the enforcement by construction. A future change introducing runtime state (such as a function registry, lazy initialization table, or dynamic dispatch mechanism) would break this invariant. Such a change would also invalidate the `no_std` declaration, require an allocator, and introduce initialization order dependencies between compilation units. These downstream effects serve as additional protection against accidental runtime state introduction.
+This invariant cannot be violated through normal use of the current API — the macro system provides the enforcement by construction. A future change introducing runtime state (such as a function registry, lazy initialization table, or dynamic dispatch mechanism) would break this invariant. Such a change would also invalidate the no-standard-library declaration, require an allocator, and introduce initialization order dependencies between compilation units. These downstream effects serve as additional protection against accidental runtime state introduction.
 
 ### Cross-References
 

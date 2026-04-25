@@ -27,28 +27,28 @@ root
 ```
 
 - **Nodes** — named entities in a parent-child hierarchy.
-- **Leaf data** — typed payload on terminal nodes (`data = Some(T)`).
-- **Directory nodes** — interior nodes without payload (`data = None`).
+- **Leaf data** — typed payload on terminal nodes (data present).
+- **Directory nodes** — interior nodes without payload (no data).
 
 ### Invariants
 
 - Every tree has exactly one root node.
-- A node's name is a plain `String`, not a path — hierarchy is expressed through nesting, not separators.
-- Leaf data type `T` is uniform across the entire tree.
+- A node's name is a plain string value, not a path — hierarchy is expressed through nesting, not separators.
+- The data payload type is uniform across the entire tree.
 
 ### Specializations
 
-| Type Parameter | Purpose | Formatter Method |
-|---------------|---------|------------------|
-| `TreeNode<T>` | Generic tree with typed leaves | `TreeFormatter::format()` |
-| `TreeNode<ColumnData>` | Multi-column aligned tree | `TreeFormatter::format_aligned()` |
-| `TreeNode<T>` + aggregation | Tree with computed directory totals | `TreeFormatter::format_with_aggregation()` |
+| Tree Variant | Purpose | Formatter Method |
+|--------------|---------|------------------|
+| Generic tree (typed leaves) | Generic hierarchical display | `TreeFormatter::format()` |
+| Multi-column tree (ColumnData leaves) | Aligned multi-column display | `TreeFormatter::format_aligned()` |
+| Aggregating tree | Tree with computed directory totals | `TreeFormatter::format_with_aggregation()` |
 
 ### Downstream Connections
 
-**Rust types representing this model:**
+**Data structure representing this model:**
 
-`TreeNode<T>` is the only Rust type for hierarchical input. Produced by `TreeBuilder<T>::build()` (path-based insertions) or by direct construction.
+The tree node type is the only data structure for hierarchical input. Produced by `TreeBuilder::build()` (path-based insertions) or by direct construction.
 
 **Formatters that consume hierarchical input:**
 

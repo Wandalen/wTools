@@ -1,6 +1,6 @@
 # Docs
 
-## Scope
+### Scope
 
 Design and API documentation for `async_tools`.
 
@@ -8,3 +8,4 @@ Design and API documentation for `async_tools`.
 
 | File | Responsibility |
 |--------|----------------|
+| `feature/` | Feature scope and design rationale for async toolkit capabilities |

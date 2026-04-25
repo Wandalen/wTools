@@ -35,8 +35,6 @@ exclude = [
   "module/core/unilang_benchmarks",
   "module/core/cargo_unilang",
 ]
-dev-dependencies = {}
-build-dependencies = {}
 # default-members = [ "module/core/wtools" ]
 
 [workspace.package]
@@ -688,6 +686,9 @@ version = "0.3.31"
 
 [workspace.dependencies.futures-util]
 version = "0.3.31"
+
+[workspace.dependencies.futures]
+version = "0.3"
 
 [workspace.dependencies.regex]
 version = "1.11.1"

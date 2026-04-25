@@ -23,7 +23,7 @@
 | Trait | Status | Note |
 |-------|--------|------|
 | `Format` | ❌ Not implemented | `ExpandedFormatter` cannot be used through the unified `Format` interface |
-| `TableShapedFormatter` | ⚠️ Deprecated since 0.1.0 | Only available interface — takes `&TreeNode<String>`, returns `String` |
+| `TableShapedFormatter` | ⚠️ Deprecated since 0.1.0 | Only available interface — takes a table-encoded tree, returns formatted string |
 
 `ExpandedFormatter` is the only formatter with zero `Format` implementations. All callers must use the deprecated `TableShapedFormatter` path until this is remediated.
 
@@ -31,7 +31,7 @@
 
 | Input Type | Path | Via |
 |------------|------|-----|
-| `TreeNode<String>` | Legacy only | `TableShapedFormatter` trait (deprecated) |
+| table-encoded tree | Legacy only | `TableShapedFormatter` trait (deprecated) |
 
 `TableView` is not accepted. Use `RowBuilder::build()` (not `build_view()`) to produce the required input.
 

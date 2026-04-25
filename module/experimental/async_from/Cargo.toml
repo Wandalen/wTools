@@ -24,7 +24,7 @@ features = [ "full" ]
 all-features = false
 
 [features]
-default = [ "enabled", "async_from", "async_try_from" ]
+default = []
 full = [
   "enabled",
   "async_from",
@@ -40,4 +40,4 @@ async-trait = { workspace = true }
 [dev-dependencies]
 # test_tools = { workspace = true, features = [ "full" ] }
 tokio = { workspace = true, features = [ "rt-multi-thread", "time", "macros" ] }
-futures = "0.3"
+futures = { workspace = true }

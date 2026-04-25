@@ -1,7 +1,7 @@
 meta:
   description: Cross-reference graph for all doc instances in impls_index
   node_count: 9
-  edge_count: 20
+  edge_count: 21
   component_count: 1
   generated: 2026_04_25
 
@@ -45,6 +45,7 @@ nodes:
 
 edges:
   - { from: feature/001, to: api/001, via: cross_references }
+  - { from: feature/001, to: api/002, via: cross_references }
   - { from: feature/001, to: invariant/001, via: cross_references }
   - { from: feature/002, to: api/001, via: cross_references }
   - { from: feature/002, to: api/002, via: cross_references }

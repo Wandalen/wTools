@@ -13,7 +13,7 @@ For every item I declared with a layer directive, I is accessible from all layer
 
 ### Enforcement Mechanism
 
-Each generated namespace module contains a `pub use` import of the module directly below it in the hierarchy:
+Each generated namespace module contains a wildcard re-export of the module directly below it in the hierarchy:
 - `own` re-exports `orphan`
 - `orphan` re-exports `exposed`
 - `exposed` re-exports `prelude`
@@ -29,12 +29,8 @@ If any re-export in the chain were absent, items declared at a lower layer would
 | Type | File | Responsibility |
 |------|------|----------------|
 | source | `src/impls.rs` | Generates the cascade re-exports in the four namespace module declarations |
-| source | `src/visibility.rs` | ClauseKind enum defining the four layer values |
+| source | `src/visibility.rs` | Layer kind classification and valid name enumeration |
 | test | `tests/propagation_bug_test.rs` | Verifies cascade propagation correctness across all four layers |
+| doc | `docs/api/001_mod_interface_macro.md` | DSL operations whose semantics depend on this cascade |
 | doc | `docs/feature/001_mod_interface.md` | Feature hub for the mod_interface! macro |
 
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Combined source; Design Rationale section describes the four-layer system and its purpose. spec.md has been deleted — Sources entry retained as migration record. |

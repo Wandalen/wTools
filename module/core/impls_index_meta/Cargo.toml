@@ -16,9 +16,6 @@ Several of macros to put each function under a named macro to index every functi
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
 
 [lints]
 workspace = true
@@ -29,7 +26,7 @@ all-features = false
 
 
 [features]
-default = [ "enabled" ]
+default = []
 full = [ "enabled" ]
 # The 'enabled' feature activates core dependencies
 enabled = [ "macro_tools/enabled" ]
@@ -39,6 +36,6 @@ proc-macro = true
 
 [dependencies]
 # Use macro_tools as per Design Rulebook requirement - provides syn, quote, proc-macro2 re-exports
-macro_tools = { workspace = true, features = [ "default" ] }
+macro_tools = { workspace = true, features = [ "enabled" ] }
 
 [dev-dependencies]

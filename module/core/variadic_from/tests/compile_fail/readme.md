@@ -13,11 +13,11 @@ Validation that invalid usage of `VariadicFrom` derive macro and `from!` macro p
 | `test_from_macro_too_many_args.rs` | Verify from! macro rejects >3 arguments |
 | `test_from_macro_too_many_args.stderr` | Expected compile error for >3 arguments |
 
-## Test Methodology
+### Test Methodology
 
 These tests use `trybuild` to verify that invalid code produces expected compile errors, ensuring:
 - Struct field count boundaries (0 and >3) are enforced
 - `from!` macro argument limits are validated at compile time
 - Error messages are clear and actionable
 
-Validates specification requirements in `../../spec.md` § 3.1 and § 3.2.
+Validates correctness properties documented in `../../docs/invariant/`.

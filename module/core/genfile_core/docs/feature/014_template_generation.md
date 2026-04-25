@@ -3,7 +3,7 @@
 ### Scope
 
 - **Purpose**: Executes end-to-end file generation: render templates and write output files to disk.
-- **Responsibility**: Documents the `materialize` / `generate` operation on `Template` and `TemplateArchive`.
+- **Responsibility**: Documents the materialize and generate operations on the template holder and template archive.
 - **In Scope**: Iterating file descriptors, rendering templates, writing output via the filesystem abstraction.
 - **Out of Scope**: Missing mandatory detection (→ 015), individual component setup (→ 003-012).
 
@@ -15,8 +15,9 @@ Generation iterates all file descriptors. For each descriptor flagged as a templ
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/template.rs` | `Template::materialize()` implementation |
-| source | `src/archive.rs` | `TemplateArchive::materialize()` implementation |
+| source | `src/template.rs` | Template holder materialize implementation |
+| source | `src/archive.rs` | Template archive materialize implementation |
+| test | `tests/` | Template generation end-to-end tests |
 | doc | `docs/feature/013_template_holder.md` | Struct that owns this operation |
 | doc | `docs/feature/015_missing_mandatory_detection.md` | Pre-generation validation step |
 

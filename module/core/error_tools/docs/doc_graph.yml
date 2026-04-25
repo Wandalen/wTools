@@ -3,7 +3,7 @@ meta:
   node_count: 9
   edge_count: 20
   component_count: 1
-  generated: 2026_04_25
+  generated: 2026-04-25
 nodes:
   - id: feature/001
     file: feature/001_error_facade.md
@@ -23,7 +23,7 @@ nodes:
     entity: feature
   - id: api/001
     file: api/001_err_with_trait.md
-    label: Error-With-Report Trait
+    label: Error-With-Report Operation Set
     entity: api
   - id: api/002
     file: api/002_debug_assertions.md

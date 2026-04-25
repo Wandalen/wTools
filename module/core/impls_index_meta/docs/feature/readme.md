@@ -11,4 +11,4 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | Macro Code Generation | Parses function definitions and emits macro_rules! wrappers | Active |
+| 001 | Macro Code Generation | Parses function definitions and emits named macro wrappers | Active |

@@ -12,16 +12,12 @@ Diagnostic-purpose tools to inspect type of a variable and its size.
 <!-- {{# generate.module{} #}} -->
 
 ```rust
-// #![ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
 pub use inspect_type::*;
 
-#[ cfg( feature = "nightly" ) ]
-{
-  inspect_type_of!( &[ 1, 2, 3 ][ .. ] );
-  // < sizeof( &[1, 2, 3][..] : &[i32] ) = 16
-  inspect_type_of!( &[ 1, 2, 3 ] );
-  // < sizeof( &[1, 2, 3] : &[i32; 3] ) = 8
-}
+inspect_type_of!( &[ 1, 2, 3 ][ .. ] );
+// < sizeof( &[1, 2, 3][..] : &[i32] ) = 16
+inspect_type_of!( &[ 1, 2, 3 ] );
+// < sizeof( &[1, 2, 3] : &[i32; 3] ) = 8
 ```
 
 ### To add to your project
@@ -36,3 +32,4 @@ cargo add inspect_type
 git clone https://github.com/Wandalen/wTools
 cd wTools
 cargo run --example inspect_type_trivial
+```

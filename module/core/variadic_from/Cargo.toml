@@ -16,9 +16,6 @@ Variadic from.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
 
 [lints]
 workspace = true

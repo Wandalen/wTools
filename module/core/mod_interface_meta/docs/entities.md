@@ -4,9 +4,9 @@
 
 | Type | Purpose | Master File | Instances |
 |------|---------|-------------|----------:|
-| `api/` | DSL operations and directive contract for the mod_interface! macro | [api/readme.md](api/readme.md) | 1 |
-| `feature/` | Navigational hubs for user-facing macro capabilities and their artifacts | [feature/readme.md](feature/readme.md) | 1 |
-| `invariant/` | Properties that must always hold in the namespace layer system | [invariant/readme.md](invariant/readme.md) | 1 |
+| `api/` | Catalog of api/ doc instances covering DSL operations and their semantics | [api/readme.md](api/readme.md) | 1 |
+| `feature/` | Catalog of feature doc instances covering the mod_interface! macro and its DSL | [feature/readme.md](feature/readme.md) | 1 |
+| `invariant/` | Catalog of invariant doc instances governing the namespace layer system | [invariant/readme.md](invariant/readme.md) | 1 |
 
 ## Master Doc Instances Table
 

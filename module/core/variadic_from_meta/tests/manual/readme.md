@@ -8,7 +8,7 @@ This directory contains manual testing procedures and test cases for corner case
 
 ### 1. Boundary Conditions
 - **0-field structs (unit structs)**: Verify macro generates no code
-- **4+ field structs**: Verify macro generates no code per spec §3.1
+- **4+ field structs**: Verify macro generates no code — see [`variadic_from/docs/invariant/001_field_count_boundary.md`](../../../variadic_from/docs/invariant/001_field_count_boundary.md)
 
 ### 2. Type Complexity
 - **String types**: Verify cloning behavior for convenience implementations

@@ -27,19 +27,19 @@ A strict three-layer architecture separates concerns: data representation, ergon
 
 #### Layer 1: Data (TreeNode)
 
-`TreeNode< T >` is the single data structure serving both hierarchical and tabular use cases. Hierarchical trees use absent data for directory nodes and present data for leaf nodes. Table-shaped trees encode rows as children of root, with each row's children named after columns.
+`TreeNode` is the single data structure serving both hierarchical and tabular use cases. Hierarchical trees use absent data for directory nodes and present data for leaf nodes. Table-shaped trees encode rows as children of root, with each row's children named after columns.
 
 #### Layer 2: Builders and Traits
 
 Ergonomic construction and generic extraction for table-shaped trees:
 
 - `RowBuilder` — fluent and mutable APIs for building table-shaped trees
-- `TableShapedView` trait — generic extraction of headers and rows from any `TreeNode< T >` where `T : Display`
+- `TableShapedView` trait — generic extraction of headers and rows from any tree node whose data supports display formatting
 - `TableView` — canonical interchange struct holding `headers` and `rows` for format-agnostic code
 
 #### Layer 3: Formatters
 
-Format-specific renderers that consume `TreeNode< T >` or `TableView`:
+Format-specific renderers that consume `TreeNode` or `TableView`:
 
 - `TableFormatter` — horizontal tabular display (9 style presets)
 - `ExpandedFormatter` — vertical record display (PostgreSQL and property styles)
@@ -73,7 +73,7 @@ Apply this pattern when organizing a library that renders the same data in multi
 
 ### Consequences
 
-The three-layer separation ensures formatters remain interchangeable: the same `TreeNode< T >` or `TableView` can be passed to any formatter without modification. Layer 2's `TableShapedView` trait decouples formatter logic from tree internals, so table-shaped formatters operate on flat vectors of strings rather than traversing tree structure directly. This enables the mutual replaceability design principle. The cost is that the tree encoding for tabular data is non-obvious — callers must use the builders rather than constructing trees directly.
+The three-layer separation ensures formatters remain interchangeable: the same `TreeNode` or `TableView` can be passed to any formatter without modification. Layer 2's `TableShapedView` trait decouples formatter logic from tree internals, so table-shaped formatters operate on flat vectors of strings rather than traversing tree structure directly. This enables the mutual replaceability design principle. The cost is that the tree encoding for tabular data is non-obvious — callers must use the builders rather than constructing trees directly.
 
 ### Sources
 

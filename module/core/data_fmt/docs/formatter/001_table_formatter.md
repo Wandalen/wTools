@@ -30,8 +30,8 @@
 
 | Trait | Status | Note |
 |-------|--------|------|
-| `Format` | ✅ Active | Primary path — takes `&TableView`, returns `Result<String, FormatError>` |
-| `TableShapedFormatter` | ⚠️ Deprecated since 0.1.0 | Legacy path — takes `&TreeNode<String>`, returns `String` |
+| `Format` | ✅ Active | Primary path — takes a `TableView`, returns formatted string or error |
+| `TableShapedFormatter` | ⚠️ Deprecated since 0.1.0 | Legacy path — takes a table-encoded tree, returns formatted string |
 
 `TableFormatter` is the only formatter implementing both traits. New code must use `Format`.
 
@@ -40,7 +40,7 @@
 | Input Type | Path | Via |
 |------------|------|-----|
 | `TableView` | Modern | `Format` trait |
-| `TreeNode<String>` | Legacy (deprecated) | `TableShapedFormatter` trait |
+| table-encoded tree | Legacy (deprecated) | `TableShapedFormatter` trait |
 
 ### Variants
 

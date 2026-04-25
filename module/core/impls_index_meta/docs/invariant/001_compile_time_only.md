@@ -15,9 +15,9 @@ Conversely, any violation of the accepted input grammar (non-function items, mal
 
 ### Enforcement Mechanism
 
-- Input parsed via `syn` in `src/impls.rs`; parse failure returns a compile error via `syn::Error::into_compile_error()`
-- The proc-macro entry point in `src/lib.rs` returns `proc_macro::TokenStream`; no `panic!` or `unwrap()` in the code generation path
-- Non-function items (structs, consts, etc.) are rejected at parse time with "Expected a function item"
+- Parse failures produce compile-time diagnostics at the macro invocation site
+- Non-function items (structs, consts, enums, etc.) are rejected during parsing with a descriptive error message
+- The code generation path contains no fallible runtime operations — any input violation surfaces as a compile error, never as a runtime failure
 
 ### Violation Consequences
 
@@ -27,7 +27,4 @@ Generating invalid `macro_rules!` output or panicking in the proc-macro would co
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| Source | `src/impls.rs` | Contains parse + emit logic; enforces this invariant |
-| Source | `src/lib.rs` | Entry point; returns compile errors via `TokenStream` |
-| Feature | `docs/feature/001_macro_code_generation.md` | Describes the generation pipeline this invariant governs |
-| Test | `tests/corner_cases_test.rs` | Compilation tests verify the guarantee across all input variants |
+| feature | `../feature/001_macro_code_generation.md` | The generation feature this invariant governs |

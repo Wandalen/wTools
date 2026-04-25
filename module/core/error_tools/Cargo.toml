@@ -30,12 +30,8 @@ all-features = false
 # = features
 
 [features]
-default = [
-  "enabled",
-  "error_typed",
-  "error_untyped",
-]
-full = [ "enabled" ]
+default = []
+full = [ "enabled", "error_typed", "error_untyped" ]
 no_std = []
 use_alloc = [ "no_std" ]
 enabled = []

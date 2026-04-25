@@ -15,8 +15,9 @@ Before generation, the system compares the mandatory parameter list from the par
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/template.rs` | `get_missing_mandatory()` / `get_undefined_parameters()` implementation |
-| doc | `docs/feature/004_parameter_collection.md` | `list_mandatory()` method used here |
+| source | `src/template.rs` | Missing-mandatory detection implementation |
+| test | `tests/` | Missing mandatory parameter detection tests |
+| doc | `docs/feature/004_parameter_collection.md` | List-mandatory method used here |
 | doc | `docs/feature/014_template_generation.md` | Triggered before generation |
 
 ### Sources

@@ -3,7 +3,7 @@
 ### Scope
 
 - **Purpose**: Decouples template rendering from any specific engine via a pluggable trait.
-- **Responsibility**: Documents the `TemplateRenderer` trait and its contract.
+- **Responsibility**: Documents the template renderer trait and its contract.
 - **In Scope**: Trait definition, render method signature (conceptually), extensibility.
 - **Out of Scope**: Handlebars implementation (→ 007), value serialization (→ 005).
 
@@ -15,7 +15,8 @@ The template renderer trait defines a render method accepting a template string 
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/renderer.rs` | `TemplateRenderer` trait definition |
+| source | `src/renderer.rs` | Template renderer trait definition |
+| test | `tests/` | Template renderer trait implementation tests |
 | doc | `docs/feature/007_handlebars_renderer.md` | Default implementation of this trait |
 | doc | `docs/feature/014_template_generation.md` | Consumes a renderer during generation |
 

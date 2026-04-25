@@ -40,7 +40,7 @@
 
 | Formatter | Reason | Alternative |
 |-----------|--------|-------------|
-| `ExpandedFormatter` | Uses deprecated `TableShapedFormatter` only | `TableShapedFormatter::format( &TreeNode<String> )` — deprecated |
+| `ExpandedFormatter` | Uses deprecated `TableShapedFormatter` only | via the deprecated `TableShapedFormatter` interface |
 | `TreeFormatter` | Requires generic `T` + render closure | Direct methods: `format()`, `format_aligned()`, `format_with_aggregation()` |
 
 ### Input Type
@@ -49,4 +49,4 @@
 
 ### Usage
 
-Any `Format`-implementing formatter accepts a `TableView` produced by `RowBuilder::build_view()`. The caller invokes the formatter's `format` method, which returns a `Result<String, FormatError>`.
+Any `Format`-implementing formatter accepts a `TableView` produced by `RowBuilder::build_view()`. The caller invokes the formatter's `format` method, which returns a formatted string or a `FormatError`.

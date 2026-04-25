@@ -15,7 +15,7 @@
 | source | `src/config.rs` | `TreeConfig`, `TreeSymbols` |
 | doc | `../api/004_formatters.md` | Operation signatures |
 | doc | `../input_model/002_hierarchical.md` | Hierarchical input model |
-| doc | `../input_type/002_tree_node.md` | `TreeNode<T>` type specializations |
+| doc | `../input_type/002_tree_node.md` | `TreeNode` type specializations |
 | doc | `../variant/012_tree_hierarchical.md` | Variant: hierarchical |
 | doc | `../variant/013_tree_aligned.md` | Variant: aligned |
 | doc | `../variant/014_tree_aggregated.md` | Variant: aggregated |
@@ -25,7 +25,7 @@
 | Trait | Status | Note |
 |-------|--------|------|
 | `Format` | ❌ Not implemented | Generic render closure cannot fit `Format` signature |
-| `TableShapedFormatter` | ❌ Not implemented | Operates on `TreeNode<T>`, not `TreeNode<String>` table encoding |
+| `TableShapedFormatter` | ❌ Not implemented | Operates on hierarchical tree data, not the table-encoded tree format |
 
 `TreeFormatter` implements no shared trait. Variant selection is done by calling the appropriate method directly. It cannot be used polymorphically through any interface.
 
@@ -33,11 +33,11 @@
 
 | Input Type | Path | Via |
 |------------|------|-----|
-| `TreeNode<T: Display>` | Hierarchical — custom render | `::format(tree, render_fn)` |
-| `TreeNode<ColumnData>` | Hierarchical — multi-column aligned | `::format_aligned(tree)` |
-| `TreeNode<T>` + aggregation spec | Hierarchical — subtree totals | `::format_with_aggregation(tree, …)` |
+| Generic tree (display-capable data) | Hierarchical — custom render | `::format(tree, render_fn)` |
+| Multi-column tree (ColumnData leaves) | Hierarchical — multi-column aligned | `::format_aligned(tree)` |
+| Aggregating tree + aggregation spec | Hierarchical — subtree totals | `::format_with_aggregation(tree, …)` |
 
-`TreeFormatter` is the exclusive consumer of the hierarchical input model. No other formatter accepts `TreeNode<T>`.
+`TreeFormatter` is the exclusive consumer of the hierarchical input model. No other formatter accepts hierarchical tree data.
 
 ### Variants
 

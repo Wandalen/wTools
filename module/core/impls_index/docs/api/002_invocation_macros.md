@@ -19,8 +19,8 @@ Two macros are available in this group:
 - **`tests_index!`** — A direct alias for `index!`. Identical in all behavior. Provided as a semantic companion to `tests_impls!` for readability in test modules.
 
 Invocation list syntax:
-- Plain name: `f1,` — calls `f1!()` and emits `fn f1(…) { … }`.
-- Rename: `f1 as f1_alias,` — calls `f1!(as f1_alias)` and emits `fn f1_alias(…) { … }`.
+- Plain name: each listed name causes the corresponding macro to emit its function definition unchanged.
+- Rename: a `Name as Alias` entry passes a rename instruction to the corresponding macro, producing a function under the alias name instead.
 - Trailing comma: permitted but not required.
 
 ### Error Handling

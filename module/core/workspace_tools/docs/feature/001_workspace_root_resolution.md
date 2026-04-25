@@ -4,18 +4,18 @@
 
 **Purpose**: Provide reliable workspace root detection for Rust projects running across diverse execution contexts (cargo development, CI, installed binaries, Docker).
 **Responsibility**: Resolve the workspace root path via a prioritized multi-strategy fallback chain and expose workspace-relative path construction and standard directory accessors.
-**In Scope**: `workspace()` free function, `Workspace::new()`, `resolve()`, `resolve_with_extended_fallbacks()`, all `from_*()` named constructors, `root()`, `join()`, standard directory accessors (`config_dir()`, `data_dir()`, `logs_dir()`, `docs_dir()`, `tests_dir()`), path normalization.
+**In Scope**: Workspace root detection via multi-strategy fallback, named single-strategy constructors, path construction relative to the root, standard directory accessors, and path normalization.
 **Out of Scope**: File content reading, configuration parsing, secret loading, build system integration, git operations beyond workspace root detection.
 
 ### Design
 
-The central type is `Workspace` — a lightweight, cloneable handle to a single normalized absolute path. Resolution proceeds through six ordered strategies; the first to succeed wins. See `docs/pattern/001_workspace_resolution_fallback.md` for the full chain and the rationale for the priority ordering.
+The workspace handle is a lightweight, cloneable value wrapping one normalized absolute path. Resolution proceeds through six ordered strategies; the first to succeed wins. See `docs/pattern/001_workspace_resolution_fallback.md` for the full chain and the rationale for the priority ordering.
 
 Path normalization strips trailing `/.` components automatically on construction. This prevents path comparison failures when cargo workspace metadata returns a path ending with `/.`, a regression that was triggered in dependent projects and fixed in task 022.
 
-Standard directory accessors implement convention over configuration: `config_dir()`, `data_dir()`, `logs_dir()`, `docs_dir()`, and `tests_dir()` return deterministic sub-paths relative to the workspace root without requiring any configuration file. Projects can rely on this convention to discover structure without explicit wiring.
+Standard directory accessors implement convention over configuration: the five named accessors (`config`, `data`, `logs`, `docs`, `tests`) return deterministic sub-paths relative to the workspace root without requiring any configuration file. Projects can rely on this convention to discover structure without explicit wiring.
 
-Named constructors (`from_cargo_workspace()`, `from_git_root()`, `from_pro_env()`, etc.) expose individual strategies. Callers who know their execution context can select a single strategy rather than running the full fallback chain.
+Named single-strategy constructors expose each resolution strategy individually. Callers who know their execution context can bypass the full fallback chain by choosing the constructor that matches their context.
 
 ### Cross-References
 

@@ -14,9 +14,6 @@ Feed reader with the ability to set updates frequency.
 categories = [ "development-tools" ]
 keywords = [ "rss-feed", "atom-feed" ]
 repository = "https://github.com/Wandalen/wTools/tree/alpha/module/experimental/unitore"
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
 
 [lints]
 workspace = true
@@ -34,7 +31,7 @@ full = [
 enabled = []
 
 [dependencies]
-error_tools = { workspace = true, features = [ "default" ] }
+error_tools = { workspace = true, features = [ "enabled", "error_untyped" ] }
 pth = { workspace = true, features = [ "default", "path_unique_folder_name" ] }
 tokio = { version = "1.36.0", features = [ "rt", "rt-multi-thread", "io-std", "macros" ] }
 hyper = { version = "1.1.0", features = [ "client" ] }

@@ -15,9 +15,6 @@ File generation tools for code generation and template materialization.
 """
 categories = [ "development-tools", "template-engine" ]
 keywords = [ "fundamental", "general-purpose", "template", "codegen" ]
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
 
 [lints]
 workspace = true

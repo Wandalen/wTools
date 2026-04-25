@@ -76,6 +76,6 @@ Build data once with `RowBuilder::build_view()` to produce a `TableView`, then p
 
 The existing `RowBuilder` API is unchanged. The new `build_view()` method is additive.
 
-- `RowBuilder::build()` -- still returns `TreeNode< String >` (unchanged).
+- `RowBuilder::build()` -- still returns a table-encoded tree (unchanged).
 - `RowBuilder::build_view()` -- returns `TableView` (new).
 - `TableView::to_tree_node()` -- converts back to `TreeNode` for backward compatibility.

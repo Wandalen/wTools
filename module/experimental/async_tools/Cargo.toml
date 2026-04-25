@@ -24,7 +24,7 @@ features = [ "full" ]
 all-features = false
 
 [features]
-default = [ "enabled", "async_from", "async_try_from" ]
+default = []
 full = [
   "enabled",
   "async_from",

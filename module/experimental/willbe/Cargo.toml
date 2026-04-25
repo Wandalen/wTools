@@ -18,9 +18,6 @@ Utility to publish multi-crate and multi-workspace environments and maintain the
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 default-run = "will"
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
 
 [lints]
 workspace = true
@@ -90,7 +87,7 @@ assert_fs = "1.1.3"
 ## internal
 # qqq : optimize features
 crates_tools = { workspace = true }
-error_tools = { workspace = true, features = [ "default", "error_typed", "error_untyped" ] }
+error_tools = { workspace = true, features = [ "error_typed", "error_untyped" ] }
 genfile_core = { workspace = true, features = [ "default" ] }
 former = { workspace = true, features = [ "default" ] }
 component_model = { workspace = true, features = [ "default" ] }

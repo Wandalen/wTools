@@ -1,0 +1,125 @@
+meta:
+  description: Cross-reference graph for all doc instances in variadic_from
+  node_count: 6
+  edge_count: 18
+  component_count: 1
+  generated: 2026-04-25
+
+nodes:
+  - id: algorithm/001
+    file: algorithm/001_variadic_from_derive.md
+    label: VariadicFrom Derive
+    entity: algorithm
+
+  - id: api/001
+    file: api/001_from_n_traits.md
+    label: FromN Traits
+    entity: api
+
+  - id: api/002
+    file: api/002_from_macro.md
+    label: from! Macro
+    entity: api
+
+  - id: feature/001
+    file: feature/001_variadic_construction.md
+    label: Variadic Construction
+    entity: feature
+
+  - id: invariant/001
+    file: invariant/001_field_count_boundary.md
+    label: Field Count Boundary
+    entity: invariant
+
+  - id: invariant/002
+    file: invariant/002_compile_time_arg_count.md
+    label: Compile-Time Arg Count
+    entity: invariant
+
+edges:
+  - from: feature/001
+    to: api/001
+    via: cross_references
+
+  - from: feature/001
+    to: api/002
+    via: cross_references
+
+  - from: feature/001
+    to: algorithm/001
+    via: cross_references
+
+  - from: feature/001
+    to: invariant/001
+    via: cross_references
+
+  - from: feature/001
+    to: invariant/002
+    via: cross_references
+
+  - from: api/001
+    to: api/002
+    via: cross_references
+
+  - from: api/001
+    to: algorithm/001
+    via: cross_references
+
+  - from: api/001
+    to: feature/001
+    via: cross_references
+
+  - from: api/002
+    to: api/001
+    via: cross_references
+
+  - from: api/002
+    to: invariant/002
+    via: cross_references
+
+  - from: api/002
+    to: feature/001
+    via: cross_references
+
+  - from: algorithm/001
+    to: api/001
+    via: cross_references
+
+  - from: algorithm/001
+    to: invariant/001
+    via: cross_references
+
+  - from: algorithm/001
+    to: feature/001
+    via: cross_references
+
+  - from: invariant/001
+    to: algorithm/001
+    via: cross_references
+
+  - from: invariant/001
+    to: feature/001
+    via: cross_references
+
+  - from: invariant/002
+    to: api/002
+    via: cross_references
+
+  - from: invariant/002
+    to: feature/001
+    via: cross_references
+
+components:
+  - id: 1
+    label: Main corpus
+    size: 6
+    isolated: false
+    nodes:
+      - algorithm/001
+      - api/001
+      - api/002
+      - feature/001
+      - invariant/001
+      - invariant/002
+
+dangling_refs: []

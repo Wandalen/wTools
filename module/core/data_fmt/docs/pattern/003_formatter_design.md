@@ -23,13 +23,13 @@ The formatter layer must support multiple formatter types with different data re
 
 ### Solution
 
-The formatter layer uses two orthogonal trait axes. The `Format` trait provides the universal output interface shared by every formatter. The `TableShapedFormatter` trait (deprecated) provides polymorphism for the subset of formatters that operate on flat row/column data extracted via `TableShapedView`. Tree-specific formatters bypass `TableShapedView` and operate on `TreeNode< T >` directly.
+The formatter layer uses two orthogonal trait axes. The `Format` trait provides the universal output interface shared by every formatter. The `TableShapedFormatter` trait (deprecated) provides polymorphism for the subset of formatters that operate on flat row/column data extracted via `TableShapedView`. Tree-specific formatters bypass `TableShapedView` and operate on hierarchical tree data directly.
 
 #### TableShapedView Decoupling
 
-`TableFormatter` and `ExpandedFormatter` use the `TableShapedView` trait to extract headers and rows from any `TreeNode< T >` where `T : Display`. This decouples formatting logic from tree internals — formatters work with flat vectors of strings.
+`TableFormatter` and `ExpandedFormatter` use the `TableShapedView` trait to extract headers and rows from any tree node whose data supports display formatting. This decouples formatting logic from tree internals — formatters work with flat vectors of strings.
 
-`TreeFormatter` renders `TreeNode< T >` directly using method-level generics rather than relying on `TableShapedView`. Its format methods accept `&TreeNode< T >` where `T : Display`, producing box-drawing output with configurable symbols and indentation.
+`TreeFormatter` renders hierarchical tree data directly using method-level generics rather than relying on `TableShapedView`. Its format methods accept tree references directly, producing box-drawing output with configurable symbols and indentation.
 
 #### TableShapedFormatter Trait (Deprecated)
 
@@ -46,7 +46,7 @@ All formatters support both output modes:
 
 ### Applicability
 
-Apply this pattern when adding a new formatter to the library. New formatters must implement `Format` (not `TableShapedFormatter`). Use `TableShapedView` to extract flat row/column data when the formatter produces tabular output; operate on `TreeNode< T >` directly when the formatter produces hierarchical output.
+Apply this pattern when adding a new formatter to the library. New formatters must implement `Format` (not `TableShapedFormatter`). Use `TableShapedView` to extract flat row/column data when the formatter produces tabular output; operate on tree data directly when the formatter produces hierarchical output.
 
 ### Consequences
 

@@ -4,7 +4,7 @@
 
 - **Purpose**: Document construction helpers that produce input types from user data.
 - **Responsibility**: Registry and overview of all builder doc instances.
-- **In Scope**: `RowBuilder`, `TreeBuilder<T>`, their APIs and output types.
+- **In Scope**: `RowBuilder`, `TreeBuilder`, their APIs and output types.
 - **Out of Scope**: Input type internals (see `input_type/`), formatter behavior (see `feature/`).
 
 #### Type-Specific Requirements

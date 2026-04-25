@@ -41,4 +41,4 @@ Every formatter doc instance must contain these sections in order:
 - [trait/001_format.md](../trait/001_format.md) — `Format` trait contract and implementor matrix
 - [trait/002_table_shaped_formatter.md](../trait/002_table_shaped_formatter.md) — deprecated `TableShapedFormatter` trait
 - [input_type/001_table_view.md](../input_type/001_table_view.md) — `TableView` input type
-- [input_type/002_tree_node.md](../input_type/002_tree_node.md) — `TreeNode<T>` input type
+- [input_type/002_tree_node.md](../input_type/002_tree_node.md) — `TreeNode` input type

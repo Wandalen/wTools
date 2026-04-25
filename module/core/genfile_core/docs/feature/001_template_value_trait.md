@@ -15,9 +15,9 @@ The library exposes a template value trait with three required methods: conversi
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/value.rs` | Trait definition and `Value` enum implementation |
+| source | `src/value.rs` | Trait definition and built-in value type implementation |
 | test | `tests/` | Value trait contract tests |
-| doc | `docs/feature/002_default_value_type.md` | Built-in value enum that implements this trait |
+| doc | `docs/feature/002_default_value_type.md` | Built-in value type that implements this trait |
 
 ### Sources
 

@@ -3,7 +3,7 @@
 ### Scope
 
 - **Purpose**: Provides an in-memory filesystem implementation enabling fast, isolated unit tests.
-- **Responsibility**: Documents `MemoryFileSystem` and its in-memory semantics.
+- **Responsibility**: Documents the in-memory file system implementation and its in-memory semantics.
 - **In Scope**: In-memory storage, no real disk access, full read/write round-trip in memory.
 - **Out of Scope**: The trait contract (→ 010), production implementation (→ 011).
 
@@ -15,8 +15,9 @@ The in-memory file system stores file content in a map from path to byte vector.
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/filesystem.rs` | `MemoryFileSystem` implementation |
-| doc | `docs/feature/010_file_system_trait.md` | Trait that `MemoryFileSystem` implements |
+| source | `src/filesystem.rs` | In-memory file system implementation |
+| test | `tests/` | In-memory file system round-trip tests |
+| doc | `docs/feature/010_file_system_trait.md` | Trait that the in-memory file system implements |
 | doc | `docs/invariant/002_memory_efficiency.md` | Memory ceiling that applies to this implementation |
 
 ### Sources

@@ -24,13 +24,13 @@ Each example demonstrates a specific aspect of error_tools:
 
 ```bash
 # Run individual examples
-cargo run --example error_tools_trivial
-cargo run --example replace_anyhow
-cargo run --example replace_thiserror
-cargo run --example err_with_example
+cargo run --features full --example error_tools_trivial
+cargo run --features full --example replace_anyhow
+cargo run --features full --example replace_thiserror
+cargo run --features full --example err_with_example
 
 # Run all examples
 for example in error_tools_trivial replace_anyhow replace_thiserror err_with_example; do
-  cargo run --example $example
+  cargo run --features full --example $example
 done
 ```

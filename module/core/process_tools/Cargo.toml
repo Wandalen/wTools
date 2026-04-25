@@ -15,9 +15,6 @@ Collection of algorithms and structures to handle processes properly.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
 
 [lints]
 workspace = true
@@ -27,7 +24,7 @@ features = [ "full" ]
 all-features = false
 
 [features]
-default = [ "enabled", "process_environment_is_cicd" ]
+default = []
 full = [ "enabled", "process_environment_is_cicd" ]
 enabled = [
   "mod_interface/enabled",

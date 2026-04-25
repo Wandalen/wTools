@@ -503,20 +503,19 @@ fn closure_types()
 // ============================================================================
 
 #[ test ]
-#[ allow( clippy::borrow_as_ptr ) ]
 fn raw_pointer_types()
 {
   let value = 42i32;
 
   // Const raw pointer
-  let const_ptr : *const i32 = &value as *const i32;
+  let const_ptr : *const i32 = std::ptr::addr_of!( value );
   let result = the_module ::inspect_to_str_type_of!( const_ptr );
   assert!( result.contains( "*const i32" ) );
   assert!( result.contains( " = 8" ) ); // Pointer size on 64-bit
 
   // Mut raw pointer
   let mut mut_value = 42i32;
-  let mut_ptr : *mut i32 = &mut mut_value as *mut i32;
+  let mut_ptr : *mut i32 = std::ptr::addr_of_mut!( mut_value );
   let result = the_module ::inspect_to_str_type_of!( mut_ptr );
   assert!( result.contains( "*mut i32" ) );
   assert!( result.contains( " = 8" ) );

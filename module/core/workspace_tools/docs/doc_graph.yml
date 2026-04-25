@@ -1,0 +1,99 @@
+meta:
+  description: Cross-reference graph for all doc instances in workspace_tools
+  node_count: 8
+  edge_count: 18
+  component_count: 1
+  generated: 2026-04-25
+
+nodes:
+  - id: api/001
+    file: api/001_workspace.md
+    label: Workspace
+    entity: api
+
+  - id: feature/001
+    file: feature/001_workspace_root_resolution.md
+    label: Workspace Root Resolution
+    entity: feature
+
+  - id: feature/002
+    file: feature/002_configuration_loading.md
+    label: Configuration Loading
+    entity: feature
+
+  - id: feature/003
+    file: feature/003_secret_management.md
+    label: Secret Management
+    entity: feature
+
+  - id: feature/004
+    file: feature/004_resource_discovery.md
+    label: Resource Discovery
+    entity: feature
+
+  - id: feature/005
+    file: feature/005_configuration_validation.md
+    label: Configuration Validation
+    entity: feature
+
+  - id: feature/006
+    file: feature/006_testing_support.md
+    label: Testing Support
+    entity: feature
+
+  - id: pattern/001
+    file: pattern/001_workspace_resolution_fallback.md
+    label: Workspace Resolution Fallback Chain
+    entity: pattern
+
+edges:
+  # feature/001 outbound
+  - { from: feature/001, to: api/001,     via: cross_references }
+  - { from: feature/001, to: pattern/001, via: cross_references }
+
+  # feature/002 outbound
+  - { from: feature/002, to: api/001,     via: cross_references }
+  - { from: feature/002, to: feature/005, via: cross_references }
+
+  # feature/003 outbound
+  - { from: feature/003, to: api/001,     via: cross_references }
+
+  # feature/004 outbound
+  - { from: feature/004, to: api/001,     via: cross_references }
+
+  # feature/005 outbound
+  - { from: feature/005, to: api/001,     via: cross_references }
+  - { from: feature/005, to: feature/002, via: cross_references }
+
+  # feature/006 outbound
+  - { from: feature/006, to: api/001,     via: cross_references }
+
+  # api/001 outbound
+  - { from: api/001, to: feature/001, via: cross_references }
+  - { from: api/001, to: feature/002, via: cross_references }
+  - { from: api/001, to: feature/003, via: cross_references }
+  - { from: api/001, to: feature/004, via: cross_references }
+  - { from: api/001, to: feature/005, via: cross_references }
+  - { from: api/001, to: feature/006, via: cross_references }
+  - { from: api/001, to: pattern/001, via: cross_references }
+
+  # pattern/001 outbound
+  - { from: pattern/001, to: feature/001, via: cross_references }
+  - { from: pattern/001, to: api/001,     via: cross_references }
+
+components:
+  - id: 1
+    label: workspace_tools documentation corpus
+    size: 8
+    isolated: false
+    nodes:
+      - api/001
+      - feature/001
+      - feature/002
+      - feature/003
+      - feature/004
+      - feature/005
+      - feature/006
+      - pattern/001
+
+dangling_refs: []

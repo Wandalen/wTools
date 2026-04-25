@@ -28,8 +28,7 @@
 *   Files to Include:
     *   `module/core/error_tools/src/lib.rs`
     *   `module/core/error_tools/Cargo.toml`
-    *   `module/core/error_tools/src/error.rs` (if exists)
-    *   `module/core/error_tools/src/orphan.rs` (if exists)
+    *   `module/core/error_tools/src/error/mod.rs`
 
 ### Expected Behavior Rules / Specifications
 *   The `error_tools` crate must compile successfully in a `no_std` environment.
@@ -50,7 +49,7 @@
 *   **Steps:**
     *   Step 1: Modify `module/core/error_tools/Cargo.toml` to ensure `anyhow` and `thiserror` dependencies explicitly enable their `no_std` features.
     *   Step 2: Modify `module/core/error_tools/src/lib.rs` to ensure `alloc` is available when `no_std` is enabled.
-    *   Step 3: Conditionally compile `std`-dependent modules (`error`, `orphan`, `exposed`, `prelude`) using `#[cfg(not(feature = "no_std"))]` or refactor them to be `no_std` compatible.
+    *   Step 3: Conditionally compile the `error` module — currently gated with `#[cfg(feature = "enabled")]` in `src/lib.rs`. The `assert` sub-module (`src/error/assert.rs`) contains inline `mod` blocks `own`, `orphan`, `exposed`, `prelude`; `src/error/mod.rs` contains the `private` block with `ErrWith`, `ResultWithReport`, `ErrorTrait`.
     *   Step 4: Perform Increment Verification.
 *   **Increment Verification:**
     *   Execute `timeout 90 cargo check -p error_tools --features "no_std"`.
@@ -74,6 +73,6 @@
 *   N/A
 
 ### Notes & Insights
-*   The `error_tools` crate's `error` and `orphan` modules are conditionally compiled with `#[cfg(not(feature = "no_std"))]`, which suggests they are not `no_std` compatible by default.
+*   The `error_tools` crate's `error` module is conditionally compiled with `#[cfg(feature = "enabled")]` in `src/lib.rs` — not `no_std` — so it is currently active whenever `enabled` is set, regardless of `no_std`. Inline namespace blocks (`own`, `orphan`, `exposed`, `prelude`) live in `src/error/assert.rs`; the `private` block with `ErrWith`/`ResultWithReport`/`ErrorTrait` lives in `src/error/mod.rs`.
 
 ### Changelog

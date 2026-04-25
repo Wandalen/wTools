@@ -51,9 +51,33 @@ mod private
  }
  }
 
-  /// Retrieves a list of available channels.
+  /// Classify one line from `rustup toolchain list` into a `Channel`, if recognised.
   ///
-  /// This function takes a path and returns a `Result` with a vector of strings representing the available channels.
+  /// Handles both aliased toolchains (`stable-aarch64-…`, `nightly-…`) and
+  /// version-pinned toolchains (`1.94.1-aarch64-…`).
+  fn classify_toolchain( line: &str ) -> Option< Channel >
+  {
+  // Strip trailing annotations such as "(active, default)".
+  let name = line.split_whitespace().next().unwrap_or( "" );
+  if name.is_empty() { return None; }
+
+  if name.starts_with( "stable" )  { return Some( Channel ::Stable  ); }
+  if name.starts_with( "nightly" ) { return Some( Channel ::Nightly ); }
+
+  // Fix(issue-NNN): Detect version-pinned stable toolchains (e.g. "1.94.1-aarch64-unknown-linux-gnu").
+  // Root cause: such names start with a digit, not "stable", so the old split_once('-') check missed them.
+  // Pitfall: split_once('-') on a version-pinned name yields the major-version digit, not the channel name.
+  if name.chars().next().is_some_and( | c | c.is_ascii_digit() )
+  && !name.contains( "nightly" )
+  && !name.contains( "beta" )
+  {
+   return Some( Channel ::Stable );
+  }
+
+  None
+  }
+
+  /// Retrieves the set of rust channels available via the local rustup installation.
   ///
   /// # Errors
   /// qqq: doc
@@ -69,21 +93,60 @@ mod private
   .current_path( path.as_ref().to_path_buf() )
   .run().map_err :: < Error, _ >( | report | error ::untyped ::format_err!( report.to_string() ) )?;
 
-  let list = report
-  .out
-  .lines()
-  // toolchain with a name without `-` may exist, but we are looking at specific ones
-  .filter_map( | l | l.split_once( '-' ) )
-  .filter_map( |( c, _ ) | match c
-  {
-   "stable" => Some( Channel ::Stable ),
-   "nightly" => Some( Channel ::Nightly ),
-   _ => None
- })
-  .collect();
+  Ok( report.out.lines().filter_map( classify_toolchain ).collect() )
+  }
 
-  Ok( list )
- }
+  /// Returns the rustup toolchain identifier to pass to `rustup run` for the given channel.
+  ///
+  /// When the named alias (e.g. `stable-aarch64-unknown-linux-gnu`) is installed, returns the
+  /// bare channel string (`"stable"`) so that `rustup run stable` keeps working.  When only a
+  /// version-pinned toolchain is installed (e.g. `1.94.1-aarch64-unknown-linux-gnu`), returns
+  /// its full name so `rustup run 1.94.1-aarch64-unknown-linux-gnu` is used instead.
+  ///
+  /// # Errors
+  /// Returns an error when no toolchain is found for the requested channel.
+  // qqq: typed error
+  pub fn toolchain_name< P >( channel: Channel, path: P ) -> error ::untyped ::Result< String >
+  where
+  P: AsRef< Path >,
+  {
+  let ( program, options ) = ( "rustup", [ "toolchain", "list" ] );
+  let report = Run ::former()
+  .bin_path( program )
+  .args( options.into_iter().map( OsString ::from ).collect :: < Vec< _ > >() )
+  .current_path( path.as_ref().to_path_buf() )
+  .run().map_err :: < Error, _ >( | report | error ::untyped ::format_err!( report.to_string() ) )?;
+
+  let channel_str = channel.to_string();
+
+  // Prefer the channel alias (e.g. "stable-aarch64-…") — `rustup run stable` then works.
+  for line in report.out.lines()
+  {
+   let name = line.split_whitespace().next().unwrap_or( "" );
+   if name.starts_with( &channel_str ) { return Ok( channel_str ); }
+  }
+
+  // Fall back to a version-pinned toolchain that maps to the requested channel.
+  for line in report.out.lines()
+  {
+   let name = line.split_whitespace().next().unwrap_or( "" );
+   let matches = match channel
+   {
+  Channel ::Stable =>
+   name.chars().next().is_some_and( | c | c.is_ascii_digit() )
+   && !name.contains( "nightly" )
+   && !name.contains( "beta" ),
+  Channel ::Nightly => name.contains( "nightly" ),
+   };
+   if matches { return Ok( name.to_string() ); }
+  }
+
+  error ::untyped ::bail!
+  (
+  "No installed toolchain for channel `{channel_str}`. \
+Try to install it with `rustup install {channel_str}`"
+  )
+  }
 }
 
 //
@@ -92,4 +155,5 @@ crate ::mod_interface!
 {
   own use Channel;
   own use available_channels;
+  own use toolchain_name;
 }

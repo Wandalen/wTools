@@ -1,0 +1,145 @@
+meta:
+  description: Cross-reference graph for all doc instances in macro_tools
+  node_count: 12
+  edge_count: 20
+  component_count: 5
+  generated: 2026-04-25
+
+nodes:
+  - id: api/001
+    file: api/001_attribute_component_api.md
+    label: Attribute Component API
+    entity: api
+  - id: api/002
+    file: api/002_assign_api.md
+    label: Assign API
+    entity: api
+  - id: feature/001
+    file: feature/001_attribute_parsing.md
+    label: Attribute Parsing
+    entity: feature
+  - id: feature/002
+    file: feature/002_type_analysis.md
+    label: Type Analysis
+    entity: feature
+  - id: feature/003
+    file: feature/003_generic_parameters.md
+    label: Generic Parameters
+    entity: feature
+  - id: feature/004
+    file: feature/004_syntax_tree_helpers.md
+    label: Syntax Tree Helpers
+    entity: feature
+  - id: feature/005
+    file: feature/005_error_diagnostics.md
+    label: Error Diagnostics
+    entity: feature
+  - id: feature/006
+    file: feature/006_code_generation_support.md
+    label: Code Generation Support
+    entity: feature
+  - id: invariant/001
+    file: invariant/001_unified_versioning.md
+    label: Unified Versioning
+    entity: invariant
+  - id: invariant/002
+    file: invariant/002_span_aware_errors.md
+    label: Span-Aware Errors
+    entity: invariant
+  - id: pattern/001
+    file: pattern/001_abstraction_layer.md
+    label: Abstraction Layer
+    entity: pattern
+  - id: pattern/002
+    file: pattern/002_property_based_attributes.md
+    label: Property-Based Attributes
+    entity: pattern
+
+edges:
+  - { from: feature/001, to: api/001,       via: cross_references }
+  - { from: feature/001, to: api/002,       via: cross_references }
+  - { from: feature/001, to: pattern/002,   via: cross_references }
+  - { from: feature/001, to: feature/005,   via: cross_references }
+  - { from: feature/005, to: invariant/002, via: cross_references }
+  - { from: feature/005, to: feature/001,   via: cross_references }
+  - { from: api/001,     to: feature/001,   via: cross_references }
+  - { from: api/001,     to: api/002,       via: cross_references }
+  - { from: api/001,     to: pattern/002,   via: cross_references }
+  - { from: api/001,     to: pattern/001,   via: cross_references }
+  - { from: api/002,     to: feature/001,   via: cross_references }
+  - { from: api/002,     to: api/001,       via: cross_references }
+  - { from: api/002,     to: pattern/002,   via: cross_references }
+  - { from: pattern/001, to: invariant/001, via: cross_references }
+  - { from: pattern/001, to: api/001,       via: cross_references }
+  - { from: pattern/002, to: api/001,       via: cross_references }
+  - { from: pattern/002, to: api/002,       via: cross_references }
+  - { from: pattern/002, to: feature/001,   via: cross_references }
+  - { from: invariant/001, to: pattern/001, via: cross_references }
+  - { from: invariant/002, to: feature/005, via: cross_references }
+
+components:
+  - id: 1
+    label: Attribute parsing and pattern cluster
+    size: 8
+    isolated: false
+    nodes:
+      - api/001
+      - api/002
+      - feature/001
+      - feature/005
+      - invariant/001
+      - invariant/002
+      - pattern/001
+      - pattern/002
+
+  - id: 2
+    label: Type Analysis
+    size: 1
+    isolated: true
+    nodes:
+      - feature/002
+    gap: >
+      feature/002 (Type Analysis) has no doc-to-doc cross-references because it is a
+      self-contained capability. Connect it to the main cluster by adding a cross-reference
+      from feature/001 (Attribute Parsing) when attribute properties use type analysis,
+      or from feature/004 (Syntax Tree Helpers) when type-based item parsing is described.
+
+  - id: 3
+    label: Generic Parameters
+    size: 1
+    isolated: true
+    nodes:
+      - feature/003
+    gap: >
+      feature/003 (Generic Parameters) has no doc-to-doc cross-references because it is a
+      self-contained capability. Connect it to the main cluster by adding a cross-reference
+      from feature/001 (Attribute Parsing) when generic constraints appear in attribute types,
+      or from feature/004 (Syntax Tree Helpers) when generic parameters are extracted from items.
+
+  - id: 4
+    label: Syntax Tree Helpers
+    size: 1
+    isolated: true
+    nodes:
+      - feature/004
+    gap: >
+      feature/004 (Syntax Tree Helpers) has no doc-to-doc cross-references because it is a
+      self-contained capability. Connect it to the main cluster by adding a cross-reference
+      from feature/001 (Attribute Parsing) when attribute structs use struct_like parsing,
+      or from feature/003 (Generic Parameters) when generic parameter extraction is described
+      alongside item traversal.
+
+  - id: 5
+    label: Code Generation Support
+    size: 1
+    isolated: true
+    nodes:
+      - feature/006
+    gap: >
+      feature/006 (Code Generation Support) has no doc-to-doc cross-references because it is a
+      self-contained capability. Connect it to the main cluster by adding a cross-reference
+      from feature/001 (Attribute Parsing) when generated token streams are produced from
+      parsed attributes, or from feature/005 (Error Diagnostics) when error formatting uses
+      token stream utilities.
+
+dangling_refs: []

@@ -1,0 +1,61 @@
+meta:
+  description: Cross-reference graph for all doc instances in inspect_type
+  node_count: 5
+  edge_count: 13
+  component_count: 1
+  generated: 2026-04-25
+
+nodes:
+  - id: feature/001
+    file: feature/001_type_inspection.md
+    label: Type Inspection
+    entity: feature
+
+  - id: api/001
+    file: api/001_inspect_to_str_type_of.md
+    label: inspect_to_str_type_of
+    entity: api
+
+  - id: api/002
+    file: api/002_inspect_type_of.md
+    label: inspect_type_of
+    entity: api
+
+  - id: invariant/001
+    file: invariant/001_zero_dependencies.md
+    label: Zero Runtime Dependencies
+    entity: invariant
+
+  - id: invariant/002
+    file: invariant/002_fixed_output_format.md
+    label: Fixed Output Format
+    entity: invariant
+
+edges:
+  - { from: feature/001, to: api/001,      via: cross_references }
+  - { from: feature/001, to: api/002,      via: cross_references }
+  - { from: feature/001, to: invariant/001, via: cross_references }
+  - { from: feature/001, to: invariant/002, via: cross_references }
+  - { from: api/001,     to: feature/001,  via: cross_references }
+  - { from: api/001,     to: api/002,      via: cross_references }
+  - { from: api/001,     to: invariant/002, via: cross_references }
+  - { from: api/002,     to: feature/001,  via: cross_references }
+  - { from: api/002,     to: api/001,      via: cross_references }
+  - { from: api/002,     to: invariant/002, via: cross_references }
+  - { from: invariant/001, to: feature/001, via: cross_references }
+  - { from: invariant/002, to: api/001,    via: cross_references }
+  - { from: invariant/002, to: api/002,    via: cross_references }
+
+components:
+  - id: 1
+    label: inspect_type documentation corpus
+    size: 5
+    isolated: false
+    nodes:
+      - feature/001
+      - api/001
+      - api/002
+      - invariant/001
+      - invariant/002
+
+dangling_refs: []

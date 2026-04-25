@@ -3,8 +3,8 @@
 ### Scope
 
 **Purpose**: Load secret credentials from workspace-relative files while preventing accidental disclosure through logging or debug output.
-**Responsibility**: Parse KEY=VALUE secret files, provide plaintext and memory-safe (SecretString) access, and search a three-directory fallback chain so installed applications find secrets regardless of invocation context.
-**In Scope**: `load_secrets_from_file()`, `load_secret_key()`, `env_secret()`, `load_secrets_with_fallback()`, `load_secret_key_with_fallback()` (secrets feature); `load_secrets_secure()`, `load_secret_key_secure()`, `validate_secret()`, `load_config_with_secrets()`, `load_config_with_secret_injection()` (secure feature).
+**Responsibility**: Parse KEY=VALUE secret files, provide plaintext and memory-safe secret access, and search a three-directory fallback chain so installed applications find secrets regardless of invocation context.
+**In Scope**: Plaintext secret loading from files and environment, directory fallback chain search (requires `secrets` feature); memory-safe secret wrapping, strength validation, and config injection (requires `secure` feature).
 **Out of Scope**: Encryption at rest, cloud secret stores (AWS/GCP/Azure), audit logging of secret accesses, key rotation.
 
 ### Design
@@ -13,9 +13,9 @@ Secret files use a shell-compatible KEY=VALUE format. Both bare `KEY=VALUE` and 
 
 The fallback chain searches three locations in priority order: (1) `secret/` inside the active workspace root, (2) `$PRO/secret/` for shared project credentials, (3) `$HOME/secret/` for machine-wide defaults. Locations are canonicalized before comparison so the same physical directory reachable via different paths is only searched once.
 
-The `secure` feature wraps secrets in `SecretString` from the `secrecy` crate. `SecretString` requires an explicit `.expose_secret()` call to access the value, preventing accidental logging. The `Debug` implementation redacts the value with `[REDACTED]`. Memory is zeroed on drop via `zeroize`.
+The `secure` feature wraps secrets in a memory-safe handle that requires an explicit exposure call to read the value, preventing accidental inclusion in log output. The debug representation redacts the value entirely. Memory is zeroed when the handle is dropped, preventing secrets from lingering in heap memory after use.
 
-`load_config_with_secret_injection()` performs template-based injection — it reads a config file, replaces `${KEY}` placeholders with values from the secrets file, and returns the rendered string. This avoids embedding secrets in config files on disk.
+Template-based injection reads a config file, replaces named placeholders with values from the secrets file, and returns the rendered string. This avoids embedding secrets in config files on disk.
 
 ### Cross-References
 

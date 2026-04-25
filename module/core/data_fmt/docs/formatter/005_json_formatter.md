@@ -21,7 +21,7 @@
 
 | Trait | Status | Note |
 |-------|--------|------|
-| `Format` | ✅ Active | Takes `&TableView`, returns `Result<String, FormatError>` |
+| `Format` | ✅ Active | Takes a `TableView`, returns formatted string or error |
 
 `FormatError::Serialization` is only present when `serde_support` feature is enabled. Without it, only `InvalidData` and `UnsupportedOperation` variants exist.
 

@@ -56,8 +56,8 @@ Behavior details:
 
 Controlled by two `TableConfig` fields:
 
-- `max_column_width : Option< usize >` -- cells wider than this value are truncated. Disabled by default (`None`).
-- `truncation_marker : String` -- appended to truncated content. Defaults to `"..."`.
+- `max_column_width` — cells wider than this value are truncated. Disabled by default.
+- `truncation_marker` — appended to truncated content. Defaults to `"..."`.
 
 For example, a 20-character limit with a `"..."` marker shortens `"Very long content that exceeds twenty characters"` to `"Very long conten..."` (20 chars total, marker included).
 
@@ -69,7 +69,7 @@ When both features are active, truncation is applied per-line after splitting on
 
 #### Min Column Width Floor
 
-`min_column_width : usize` widens every column to at least the given display-character count. Width starts from the content-driven maximum, is then capped at `max_column_width` (if set), and is finally raised to `min_column_width` if the result falls below it.
+`min_column_width` widens every column to at least the given display-character count. Width starts from the content-driven maximum, is then capped at `max_column_width` (if set), and is finally raised to `min_column_width` if the result falls below it.
 
 If `min_column_width > max_column_width`, columns settle at `min_column_width` (floor wins).
 
@@ -105,7 +105,7 @@ Every colored line ends with `\x1b[0m` before the trailing `\n` to prevent termi
 
 #### Sub-Row Detail Lines
 
-Optional annotation lines that appear below a data row, outside the cell grid. Each detail is typed as `Option<DecoratedText>`, enabling per-row ANSI color without affecting column formatting. Detail lines are added via `RowBuilder::add_row_with_detail`, which accepts an `Option<DecoratedText>` alongside the row data. Plain string references convert via `Into<DecoratedText>` transparently, with no ANSI color attached and zero runtime overhead.
+Optional annotation lines that appear below a data row, outside the cell grid. Each detail may carry an ANSI color code for per-row coloring without affecting column formatting. Detail lines are added via `RowBuilder::add_row_with_detail`, which accepts an optional detail annotation alongside the row data. Plain string references convert to decorated text automatically, with no ANSI color attached and zero runtime overhead.
 
 Rendering behavior:
 
@@ -113,10 +113,10 @@ Rendering behavior:
 - Each detail line is prefixed with `sub_row_indent` (default: 2 spaces). Configure via `TableConfig::sub_row_indent( indent )`.
 - Multi-line details (containing `\n`) are split on newlines; every resulting line receives the indent prefix and its own color/reset pair independently (no ANSI bleed across line boundaries).
 - Detail lines do NOT participate in column width calculation — they are metadata, not cell values.
-- Detail lines are NOT colored by alternating row colors — only by the `DecoratedText.color` field.
+- Detail lines are NOT colored by alternating row colors — only by the detail's own color field.
 - For bordered styles (`AsciiGrid`, `Unicode`), detail lines appear outside the cell grid (no border pipes).
-- `None` and empty-text details are suppressed -- no blank line emitted.
-- Rows added via `add_row()` or `add_row_mut()` implicitly have `None` detail (no output change).
+- Absent and empty-text details are suppressed -- no blank line emitted.
+- Rows added via `add_row()` or `add_row_mut()` implicitly have no annotation (no output change).
 
 #### Auto-Fit (Terminal-Aware Rendering)
 
@@ -128,7 +128,7 @@ See `005_auto_fit.md` for full behavioral specification, configuration fields, p
 
 The full column width pipeline:
 
-1. **Content-driven max** -- for each column, take the maximum display width across header and all data cells. Multiline cells use `.lines().map( visual_len ).max()`.
+1. **Content-driven max** -- for each column, take the maximum display width across header and all data cells. Multiline cells use the maximum single-line display width across all sub-lines.
 2. **Max cap** -- if `max_column_width` is set, cap each column at that value.
 3. **Min floor** -- if `min_column_width > 0`, raise any column below it.
 4. **Override bypass** -- if `column_widths` is set explicitly, skip steps 1-3 entirely.

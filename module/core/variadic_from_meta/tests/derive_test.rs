@@ -1,17 +1,18 @@
-//! Comprehensive conformance tests for `#[derive(VariadicFrom)]` proc macro.
+//! Conformance tests for `#[derive(VariadicFrom)]` proc macro.
 //!
-//! Implements all conformance checks defined in specification §10.
+//! Verifies the impl sets documented in
+//! [`docs/api/001_variadic_from_derive.md`](../docs/api/001_variadic_from_derive.md).
 //!
 //! ## Test Coverage Matrix
 //!
 //! | Check | Description | Test Function | Status |
 //! |-------|-------------|---------------|--------|
-//! | §10.1 | Derive on 1-field struct | `test_conformance_1_field_struct` | ✅ |
-//! | §10.2 | Derive on 2-field named struct (different types) | `test_conformance_2_field_different_types` | ✅ |
-//! | §10.3 | Derive on 3-field unnamed struct (same type) | `test_conformance_3_field_same_type` | ✅ |
-//! | §10.4 | from! macro correctness | `test_conformance_from_macro` | ✅ |
-//! | §10.6 | Tuple conversion correctness | `test_conformance_tuple_conversion` | ✅ |
-//! | §10.9 | Generics handling | `test_conformance_generics` | ✅ |
+//! | 1 | Derive on 1-field struct | `test_conformance_1_field_struct` | ✅ |
+//! | 2 | Derive on 2-field named struct (different types) | `test_conformance_2_field_different_types` | ✅ |
+//! | 3 | Derive on 3-field unnamed struct (same type) | `test_conformance_3_field_same_type` | ✅ |
+//! | 4 | from! macro correctness | `test_conformance_from_macro` | ✅ |
+//! | 5 | Tuple conversion correctness | `test_conformance_tuple_conversion` | ✅ |
+//! | 6 | Generics handling | `test_conformance_generics` | ✅ |
 //!
 //! ## Related Tests
 //!
@@ -20,23 +21,23 @@
 //!
 //! ## Note
 //!
-//! These tests verify the proc macro generates correct code according to specification.
+//! These tests verify the proc macro generates correct code.
 //! The comprehensive test matrix with all permutations (named/tuple, 1/2/3 fields, etc.)
 //! is maintained in the `variadic_from` crate to avoid duplication while this file
-//! focuses on the specific conformance checks mandated by spec §10.
+//! focuses on the conformance checks documented in
+//! [`docs/api/001_variadic_from_derive.md`](../docs/api/001_variadic_from_derive.md).
 
 #![ allow( unused_imports ) ]
 use variadic_from ::exposed ::*;
 use variadic_from_meta ::VariadicFrom;
 
-// §10.1: Derive on 1-Field Struct
+// Derive on 1-Field Struct
 
-/// Conformance Check 1: Apply #[derive(VariadicFrom)] to a struct with 1 field.
+/// Apply `#[derive(VariadicFrom)]` to a 1-field struct.
 ///
-/// **Expected:** The code compiles. `impl From1` and `impl From<T>` are generated
-/// and work as expected.
+/// **Expected:** `impl From1` and `impl From<T>` are generated and work as expected.
 ///
-/// **Specification Reference:** §10.1
+/// **Reference:** [`docs/api/001_variadic_from_derive.md`](../docs/api/001_variadic_from_derive.md)
 #[ test ]
 fn test_conformance_1_field_struct()
 {
@@ -55,15 +56,14 @@ fn test_conformance_1_field_struct()
   assert_eq!( x, OneField { value: 100 } );
 }
 
-// §10.2: Derive on 2-Field Named Struct (Different Types)
+// Derive on 2-Field Named Struct (Different Types)
 
-/// Conformance Check 2: Apply #[derive(VariadicFrom)] to a named struct with 2
-/// fields of different types.
+/// Apply `#[derive(VariadicFrom)]` to a named struct with 2 fields of different types.
 ///
-/// **Expected:** The code compiles. `impl From2` and `impl From<(T1, T2)>` are
-/// generated. The convenience `impl From1<T1>` is **not** generated.
+/// **Expected:** `impl From2` and `impl From<(T1, T2)>` are generated.
+/// The convenience `impl From1<T1>` is **not** generated (types differ).
 ///
-/// **Specification Reference:** §10.2
+/// **Reference:** [`docs/api/001_variadic_from_derive.md`](../docs/api/001_variadic_from_derive.md)
 #[ test ]
 fn test_conformance_2_field_different_types()
 {
@@ -103,15 +103,14 @@ fn test_conformance_2_field_different_types()
   // let x = TwoFields ::from1( 42 );
 }
 
-// §10.3: Derive on 3-Field Unnamed Struct (Same Type)
+// Derive on 3-Field Unnamed Struct (Same Type)
 
-/// Conformance Check 3: Apply #[derive(VariadicFrom)] to an unnamed (tuple) struct
-/// with 3 fields of the same type.
+/// Apply `#[derive(VariadicFrom)]` to a tuple struct with 3 fields of the same type.
 ///
-/// **Expected:** The code compiles. `impl From3`, `impl From<(T, T, T)>`, and
-/// convenience `impl From1<T>` and `impl From2<T, T>` are generated.
+/// **Expected:** `impl From3`, `impl From<(T, T, T)>`, and convenience
+/// `impl From1<T>` and `impl From2<T, T>` are all generated.
 ///
-/// **Specification Reference:** §10.3
+/// **Reference:** [`docs/api/001_variadic_from_derive.md`](../docs/api/001_variadic_from_derive.md)
 #[ test ]
 fn test_conformance_3_field_same_type()
 {
@@ -135,16 +134,15 @@ fn test_conformance_3_field_same_type()
   assert_eq!( p, Point3D( 20, 30, 30 ) );
 }
 
-// §10.4: from! Macro Correctness
+// from! Macro Correctness
 
-/// Conformance Check 4: Call from!(), from!(a), from!(a, b), and from!(a, b, c)
-/// on conforming types.
+/// Call `from!()`, `from!(a)`, `from!(a, b)` on conforming types.
 ///
 /// **Expected:** All calls compile and produce the correct struct instances.
 ///
-/// **Specification Reference:** §10.4
+/// **Reference:** [`docs/api/001_variadic_from_derive.md`](../docs/api/001_variadic_from_derive.md)
 ///
-/// **Note:** The from! macro is defined in the `variadic_from` crate, not in
+/// **Note:** The `from!` macro is defined in the `variadic_from` crate, not in
 /// `variadic_from_meta`, but this test verifies the generated code works with it.
 #[ test ]
 fn test_conformance_from_macro()
@@ -169,14 +167,13 @@ fn test_conformance_from_macro()
   assert_eq!( p, TwoFieldsSame { x: 10, y: 20 } );
 }
 
-// §10.6: Tuple Conversion Correctness
+// Tuple Conversion Correctness
 
-/// Conformance Check 6: Use `(a, b).into()` and `MyStruct::from((a, b))` on a
-/// derived 2-field struct.
+/// Use `(a, b).into()` and `MyStruct::from((a, b))` on a derived 2-field struct.
 ///
 /// **Expected:** Both conversions compile and produce the correct struct instance.
 ///
-/// **Specification Reference:** §10.6
+/// **Reference:** [`docs/api/001_variadic_from_derive.md`](../docs/api/001_variadic_from_derive.md)
 #[ test ]
 fn test_conformance_tuple_conversion()
 {
@@ -192,15 +189,14 @@ fn test_conformance_tuple_conversion()
   assert_eq!( p, Pair( 100, "century".to_string() ) );
 }
 
-// §10.9: Generics Handling
+// Generics Handling
 
-/// Conformance Check 9: Apply #[derive(VariadicFrom)] to a struct with generic
-/// parameters and a where clause.
+/// Apply `#[derive(VariadicFrom)]` to a struct with generic parameters and a where clause.
 ///
-/// **Expected:** The generated `impl` blocks correctly include the generics and
-/// `where` clause, and the code compiles.
+/// **Expected:** All generated `impl` blocks correctly propagate the generics and
+/// `where` clause.
 ///
-/// **Specification Reference:** §10.9
+/// **Reference:** [`docs/api/001_variadic_from_derive.md`](../docs/api/001_variadic_from_derive.md)
 #[ test ]
 fn test_conformance_generics()
 {

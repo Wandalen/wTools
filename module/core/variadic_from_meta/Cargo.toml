@@ -15,9 +15,6 @@ Variadic from, proc-macro part.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
 
 [lints]
 workspace = true
@@ -33,6 +30,6 @@ test_tools = { workspace = true, features = [ "full" ] }
 variadic_from = { workspace = true, features = [ "full" ] }
 
 [features]
-default = [ "enabled" ]
+default = []
 full = [ "enabled" ]
 enabled = []

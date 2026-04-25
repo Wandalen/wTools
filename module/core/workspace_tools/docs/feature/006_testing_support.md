@@ -3,13 +3,13 @@
 ### Scope
 
 **Purpose**: Create isolated temporary workspace environments for testing workspace-dependent code without polluting the real workspace.
-**Responsibility**: Provision a fully-structured temporary workspace (with standard sub-directories) backed by a `TempDir` that cleans up automatically when dropped.
-**In Scope**: `testing::create_test_workspace_with_structure()` (gated on the `testing` feature).
+**Responsibility**: Provision a fully-structured temporary workspace (with standard sub-directories) backed by a handle that cleans up the directory automatically when released.
+**In Scope**: Temporary workspace creation with pre-populated standard sub-directories (requires `testing` feature).
 **Out of Scope**: Fixture file management, mock generation, test runner integration, assertion helpers.
 
 ### Design
 
-`create_test_workspace_with_structure()` returns a `(TempDir, Workspace)` pair. The caller holds the `TempDir` handle; dropping it removes the entire temporary directory tree. As long as the handle is in scope, the workspace is valid and writable.
+The factory function returns a temporary directory handle paired with a workspace rooted inside it. The caller holds the handle; releasing it removes the entire temporary directory tree. As long as the handle is live, the workspace is valid and writable.
 
 The function pre-creates the standard sub-directories (`config/`, `data/`, `logs/`, `docs/`, `tests/`), so tests can immediately write files to these paths without additional setup.
 

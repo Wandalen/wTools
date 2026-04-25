@@ -4,6 +4,12 @@
 
 Manual testing plan for the `impls_index_meta` procedural macro crate. This crate provides the `impls3!` macro for function indexing.
 
+## Prerequisites
+
+- Rust toolchain with proc-macro support installed
+- `cargo nextest` available for running automated test equivalents
+- Project built with `cargo build --all-features`
+
 ## Test Categories
 
 ### 1. Function Variants
@@ -231,3 +237,7 @@ impls3!
 - All tests should be executed as compilation tests
 - Use `? fn` prefix for optional functions to avoid unused macro warnings
 - Tests are primarily for this proc-macro crate; behavioral tests are in parent `impls_index` crate
+
+## Known Issues
+
+None currently known.

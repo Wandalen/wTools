@@ -3,7 +3,7 @@
 ### Scope
 
 - **Purpose**: Aggregates all parameter descriptors for a template and exposes validation utilities.
-- **Responsibility**: Documents the `Parameters` collection type and its methods.
+- **Responsibility**: Documents the parameter collection type and its methods.
 - **In Scope**: Storing multiple descriptors, listing mandatory parameters, validation support.
 - **Out of Scope**: Individual parameter metadata (→ 003), runtime value assignment (→ 005).
 
@@ -15,9 +15,10 @@ The parameter collection wraps a list of parameter descriptors. It provides a me
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/parameter.rs` | `Parameters` collection implementation |
+| source | `src/parameter.rs` | Parameter collection implementation |
+| test | `tests/` | Parameter collection and mandatory listing tests |
 | doc | `docs/feature/003_parameter_definition.md` | Individual descriptors stored in this collection |
-| doc | `docs/feature/015_missing_mandatory_detection.md` | Uses `list_mandatory()` to detect gaps |
+| doc | `docs/feature/015_missing_mandatory_detection.md` | Uses the list-mandatory method to detect gaps |
 
 ### Sources
 

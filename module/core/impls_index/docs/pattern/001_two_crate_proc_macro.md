@@ -9,14 +9,14 @@
 
 ### Problem
 
-Rust requires proc macros to reside in a dedicated crate with `proc-macro = true` declared in its manifest. Mixing proc macro code with regular library code in one crate is not permitted by the toolchain. Additionally, proc macro crates carry heavy build-time dependencies (syn, quote, proc-macro2 and their transitive graph) that should not be forced on users who only need the simpler declarative macro variants.
+Rust requires proc macros to reside in a dedicated crate with a dedicated manifest flag designating it as a proc macro crate. Mixing proc macro code with regular library code in one crate is not permitted by the toolchain. Additionally, proc macro crates carry heavy build-time dependencies that should not be forced on users who only need the simpler declarative macro variants.
 
 ### Solution
 
 Split into two crates:
 
 - **Runtime crate** (`impls_index`): contains declarative macros and re-exports the proc macro from the companion crate. Users add only this crate to their dependency list. Feature-gated to control conditional compilation.
-- **Proc macro crate** (`impls_index_meta`): contains only the proc macro implementation (`impls3!`). Its build-time dependencies (`macro_tools`, which wraps `syn`, `quote`, `proc-macro2`) are isolated here and do not affect compile times for users who do not enable the proc macro feature.
+- **Proc macro crate** (`impls_index_meta`): contains only the proc macro implementation (`impls3!`). Its heavy build-time proc macro framework dependencies are isolated here and do not affect compile times for users who do not enable the proc macro feature.
 
 The runtime crate re-exports the proc macro directly into its own namespace, so callers use `impls_index::impls3!` without knowing about or depending on the companion crate. The companion crate is a transparent implementation detail managed by the workspace.
 

@@ -16,9 +16,6 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
 
 [lints]
 workspace = true
@@ -173,7 +170,7 @@ string_split = [ "string", "strs_tools/string_split", "strs_tools/string_parse_r
 
 # error
 
-error = [ "error_tools" ]
+error = [ "error_tools", "error_tools/enabled" ]
 error_default = [
   "error",
   "error_typed",
@@ -436,7 +433,7 @@ time_tools = { workspace = true, optional = true, features = [ "default" ] }
 strs_tools = { workspace = true, optional = true, features = [ "default" ] }
 
 # err
-error_tools = { workspace = true, optional = true, features = [ "default" ] }
+error_tools = { workspace = true, optional = true, features = [] }
 
 # derive
 derive_tools = { workspace = true, optional = true, features = [ "default" ] }

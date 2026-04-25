@@ -4,14 +4,14 @@
 
 **Purpose**: Locate project files and workspace resources via glob patterns relative to the workspace root.
 **Responsibility**: Expand a glob pattern anchored at the workspace root and return the set of matching absolute file paths.
-**In Scope**: `find_resources()` (gated on the `glob` feature).
+**In Scope**: Glob-pattern file discovery anchored at the workspace root (requires `glob` feature).
 **Out of Scope**: File content reading, directory creation, file watching, filtering by metadata (size, mtime), non-glob path searches.
 
 ### Design
 
-`find_resources()` prepends the workspace root to the provided pattern before glob expansion, ensuring all results are absolute paths within the workspace. Patterns follow the standard `glob` crate syntax (`**/*.rs`, `config/*.toml`, etc.).
+The workspace root is prepended to the provided pattern before expansion, ensuring all results are absolute paths within the workspace. Patterns follow standard glob syntax (`**/*.rs`, `config/*.toml`, etc.).
 
-Results are returned as `Vec<PathBuf>`. Ordering follows the glob crate's filesystem traversal order, which is deterministic for a given directory state but not guaranteed to be sorted lexicographically.
+Results are returned as an ordered list of absolute paths. Ordering follows the filesystem traversal order, which is deterministic for a given directory state but not guaranteed to be sorted lexicographically.
 
 The feature's design is intentionally minimal — a single method with a single responsibility. More complex operations (filtering, transformation, content reading) are left to callers to avoid scope creep.
 

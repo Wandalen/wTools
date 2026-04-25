@@ -2,7 +2,7 @@
 
 ### Scope
 
-- **Purpose**: Document the `TreeNode<T>` generic Rust struct used for both hierarchical and legacy tabular input.
+- **Purpose**: Document the `TreeNode` generic struct used for both hierarchical and legacy tabular input.
 - **Responsibility**: Document TreeNode struct definition, specializations, and trait implementations.
 - **In Scope**: Struct fields, type parameter specializations, trait implementations, and usage patterns.
 - **Out of Scope**: Conceptual shape (see `../input_model/`), formatter behavior (see `../feature/`).
@@ -18,7 +18,7 @@
 
 ### Type Definition
 
-`TreeNode< T >` has three public fields: `name` holds the node label; `data` holds an optional payload — absent for directory (intermediate) nodes and present for leaf nodes; `children` holds a list of child nodes of the same type.
+`TreeNode` has three public fields: `name` holds the node label; `data` holds an optional payload — absent for directory (intermediate) nodes and present for leaf nodes; `children` holds a list of child nodes of the same type.
 
 ### Specializations
 

@@ -5,7 +5,7 @@
 - **Purpose**: Document the public programmatic interface of the mod_interface! proc-macro.
 - **Responsibility**: Catalog of api/ doc instances covering DSL operations and their semantics.
 - **In Scope**: Macro DSL syntax, directive semantics, error conditions, and compatibility guarantees.
-- **Out of Scope**: Internal expansion mechanics; those belong in algorithm/ or feature/ doc instances.
+- **Out of Scope**: Internal expansion mechanics; those belong in feature/ navigational hubs or dedicated algorithm doc instances if created.
 
 ### Overview Table
 

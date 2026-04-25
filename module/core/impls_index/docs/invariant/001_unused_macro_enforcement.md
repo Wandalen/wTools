@@ -4,7 +4,7 @@
 
 - **Purpose**: Ensure every function indexed with a strict macro is intentionally materialized, preventing silent dead code accumulation.
 - **Responsibility**: Define the unused-macro enforcement invariant for strict indexing macros (`impls1!`, `impls2!`, `impls3!`, `tests_impls!`).
-- **In Scope**: Compile-time enforcement via deny lint; behavior of strict vs optional macro variants.
+- **In Scope**: Compile-time enforcement via unused-declaration denial attribute; behavior of strict vs optional macro variants.
 - **Out of Scope**: Optional variants that explicitly relax this invariant (`impls_optional!`, `tests_impls_optional!`).
 
 ### Invariant Statement
@@ -15,9 +15,9 @@ Formally: for every `f` indexed in a strict `impls` call, there exists exactly o
 
 ### Enforcement Mechanism
 
-Each strict indexing macro wraps its generated named macro in a `deny(unused_macros)` lint attribute. The Rust compiler treats any macro definition under this lint that is never invoked as a hard error. This check fires during the compilation of the crate containing the `index!` call — before code generation, linking, or test execution.
+Each strict indexing macro marks its generated named macro with a compiler-enforced unused-declaration denial attribute. The compiler treats any macro definition under this attribute that is never invoked as a hard error. This check fires during compilation of the crate containing the `index!` call — before code generation, linking, or test execution.
 
-The optional variants (`impls_optional!`, `tests_impls_optional!`) emit `allow(unused_macros)` instead, explicitly opting out of enforcement for scenarios where conditional compilation or partial usage is intentional.
+The optional variants (`impls_optional!`, `tests_impls_optional!`) mark their macros with a corresponding allowance attribute instead, explicitly opting out of enforcement for scenarios where conditional compilation or partial usage is intentional.
 
 ### Violation Consequences
 
@@ -29,7 +29,7 @@ If the intention is to allow some indexed functions to remain unused, switch to 
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/implsindex/impls.rs` | Emits `deny(unused_macros)` / `allow(unused_macros)` around generated macros |
+| source | `src/implsindex/impls.rs` | Emits unused-declaration denial or allowance attributes around generated macros |
 | doc | `docs/feature/001_function_indexing.md` | Feature description covering strict vs optional distinction |
 | doc | `docs/feature/002_test_indexing.md` | Feature description — enforcement applies to `tests_impls!` strict variant |
 | doc | `docs/api/001_indexing_macros.md` | API contract describing enforcement behavior per macro variant |

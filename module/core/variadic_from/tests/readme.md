@@ -12,11 +12,11 @@ Test suite for the `variadic_from` crate, verifying derive macro functionality, 
 | `inc/` | Included test modules and utilities |
 | `compile_fail/` | Compile-fail test cases with expected error output |
 
-## Test Organization
+### Test Organization
 
 This directory follows domain-based organization:
 - **Smoke tests:** Basic compilation and functionality verification
 - **Derive tests:** Comprehensive testing of `VariadicFrom` derive macro behavior
 - **Compile-fail tests:** Validation of expected compile-time errors
 
-All tests verify the specification defined in `../spec.md`.
+All tests verify the design documented in `../docs/`.

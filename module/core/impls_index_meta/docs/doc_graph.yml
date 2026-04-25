@@ -1,0 +1,26 @@
+nodes:
+  - id: feature_001
+    file: feature/001_macro_code_generation.md
+    type: feature
+    name: Macro Code Generation
+    status: active
+  - id: invariant_001
+    file: invariant/001_compile_time_only.md
+    type: invariant
+    name: Compile-Time Only
+    status: active
+
+edges:
+  - from: feature_001
+    to: invariant_001
+    label: governed_by
+  - from: invariant_001
+    to: feature_001
+    label: governs
+
+components:
+  - id: macro_codegen
+    nodes: [ feature_001, invariant_001 ]
+    description: Macro code generation feature and its compile-time guarantee
+
+gaps: []

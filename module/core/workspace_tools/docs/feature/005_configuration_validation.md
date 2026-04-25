@@ -3,15 +3,15 @@
 ### Scope
 
 **Purpose**: Validate configuration files against a JSON Schema derived from the target type before returning the deserialized value, catching structural errors before they cause runtime failures.
-**Responsibility**: Load a config file, generate a JSON Schema from the target struct via `schemars`, validate the raw content against that schema, and return detailed per-field errors on failure.
-**In Scope**: `load_config_with_validation()` (gated on the `validation` feature, which also activates `serde`).
+**Responsibility**: Load a config file, derive a JSON Schema from the target type, validate the raw content against that schema, and return detailed per-field errors on failure.
+**In Scope**: Schema-validated configuration loading (requires `validation` feature, which also activates `serde`).
 **Out of Scope**: Runtime value validation (business logic), schema authoring tools, non-JSON-Schema validation formats, validation of non-config data.
 
 ### Design
 
-Validation is integrated into the load step, not a separate pass. `load_config_with_validation()` loads the file, deserializes to the intermediate JSON/TOML/YAML representation, then validates against the generated schema before deserializing into the target struct. All schema violations are collected and returned as a single error with per-field detail, not just the first error.
+Validation is integrated into the load step, not a separate pass. The operation loads the file, deserializes to an intermediate representation, then validates against the generated schema before converting into the target structure. All schema violations are collected and returned as a single error with per-field detail, not just the first error.
 
-Schema generation uses `schemars` via `#[derive(JsonSchema)]` on the target type. The schema is generated at runtime from the type definition, requiring no separate schema file on disk.
+Schema generation derives from the target type definition at runtime via an annotation, requiring no separate schema file on disk.
 
 The `validation` feature depends on `serde` — enabling validation automatically enables configuration loading, ensuring callers do not need to manage feature dependency manually.
 

@@ -3,7 +3,7 @@
 ### Scope
 
 - **Purpose**: Controls how generated file content is written to disk.
-- **Responsibility**: Documents the `WriteMode` enum and its variants.
+- **Responsibility**: Documents the write mode type and its variants.
 - **In Scope**: Rewrite mode behavior (overwrite or create); extensibility for future modes.
 - **Out of Scope**: File system execution (→ 010, 011), file descriptor setup (→ 008).
 
@@ -15,7 +15,8 @@ The write mode is a discriminated type where the rewrite variant unconditionally
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/file_descriptor.rs` | `WriteMode` enum definition |
+| source | `src/file_descriptor.rs` | Write mode type definition |
+| test | `tests/` | Write mode behavior tests |
 | doc | `docs/feature/008_file_descriptor.md` | Descriptor that carries the write mode |
 | doc | `docs/feature/010_file_system_trait.md` | Trait that executes the write |
 

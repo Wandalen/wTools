@@ -24,7 +24,7 @@ Define a prioritized list of resolution strategies. Attempt each in order; retur
 | 5 | `$HOME` directory | Home directory is available | Installed tools with per-user config |
 | 6 | Current working directory | Always available | Last-resort fallback |
 
-Individual strategies are exposed as named constructors (`from_cargo_workspace()`, `from_git_root()`, `from_pro_env()`, etc.) for callers that know their context and want to skip the chain.
+Individual strategies are exposed as named single-strategy constructors for callers that know their context and want to skip the chain.
 
 All resolved paths are normalized: trailing `/.` components are stripped, and deduplication uses canonicalized paths to avoid treating the same physical location as two distinct results.
 

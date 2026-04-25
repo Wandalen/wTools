@@ -3,7 +3,7 @@
 ### Scope
 
 - **Purpose**: Enables defining named template parameters with metadata for validation and documentation.
-- **Responsibility**: Documents the `ParameterDescriptor` type and its attributes.
+- **Responsibility**: Documents the parameter descriptor type and its attributes.
 - **In Scope**: Parameter name, mandatory flag, default value, and description attributes; builder pattern.
 - **Out of Scope**: Parameter collections (→ 004), runtime value assignment (→ 005).
 
@@ -15,7 +15,8 @@ A parameter descriptor stores metadata for a single template parameter: its name
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/parameter.rs` | `ParameterDescriptor` struct and builder |
+| source | `src/parameter.rs` | Parameter descriptor struct and builder |
+| test | `tests/` | Parameter descriptor construction and attribute tests |
 | doc | `docs/feature/004_parameter_collection.md` | Collection containing these descriptors |
 
 ### Sources

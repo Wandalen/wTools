@@ -356,11 +356,11 @@ mod private
 
   impl SingleTestOptions
   {
-  fn as_rustup_args( &self ) -> Vec< String >
+  fn as_rustup_args( &self, toolchain: &str ) -> Vec< String >
   {
    debug_assert!( !self.with_default_features ); // aaa: remove later
    debug_assert!( !self.with_all_features ); // aaa: remove later
-   [ "run".into(), self.channel.to_string(), "cargo".into(), "test".into() ]
+   [ "run".into(), toolchain.to_string(), "cargo".into(), "test".into() ]
    .into_iter()
    .chain( if self.optimization == optimization ::Optimization ::Release { Some( "--release".into() ) } else { None } )
    .chain( if self.with_default_features { None } else { Some( "--no-default-features".into() ) } )
@@ -400,7 +400,20 @@ mod private
   where
   P: AsRef< path ::Path >
   {
-  let ( program, args ) = ( "rustup", options.as_rustup_args() );
+  // Fix(issue-NNN): Resolve actual rustup toolchain identifier; "rustup run stable" fails when
+  // only a version-pinned toolchain (e.g. "1.94.1-aarch64-unknown-linux-gnu") is installed.
+  // Root cause: Channel::Stable formats as "stable" but rustup requires the alias to exist.
+  // Pitfall: systems provisioned with version-pinned toolchains never install the channel alias.
+  let toolchain = crate ::channel ::toolchain_name( options.channel, path.as_ref() )
+  .map_err( | e | Report
+  {
+   command: String ::new(),
+   out: String ::new(),
+   err: e.to_string(),
+   current_path: path.as_ref().to_path_buf(),
+   error: Err( format_err!( "{e}" ) ),
+  })?;
+  let ( program, args ) = ( "rustup", options.as_rustup_args( &toolchain ) );
 
   if options.dry
   {

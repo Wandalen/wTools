@@ -3,7 +3,7 @@
 ### Scope
 
 - **Purpose**: Provides a built-in value enum covering common data types without requiring custom implementations.
-- **Responsibility**: Documents the `Value` enum and its supported variants.
+- **Responsibility**: Documents the built-in value type and its supported variants.
 - **In Scope**: String, Number, Bool, and List variants; their template string conversions.
 - **Out of Scope**: Custom value types (→ 001), value storage at runtime (→ 005).
 
@@ -15,9 +15,10 @@ The library provides a built-in value type with four variants — String, Number
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/value.rs` | `Value` enum definition |
-| doc | `docs/feature/001_template_value_trait.md` | Trait that `Value` implements |
-| doc | `docs/feature/005_value_storage.md` | Runtime storage for `Value` instances |
+| source | `src/value.rs` | Built-in value type definition |
+| test | `tests/` | Value type variant and conversion tests |
+| doc | `docs/feature/001_template_value_trait.md` | Trait that the built-in value type implements |
+| doc | `docs/feature/005_value_storage.md` | Runtime storage for value instances |
 
 ### Sources
 

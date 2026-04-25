@@ -13,7 +13,7 @@ In-memory template operations must not allocate more than 10MB of heap memory fo
 
 ### Enforcement Mechanism
 
-Measured via memory profiling during test suite execution. The in-memory design (no streaming) means all content fits in heap; the constraint bounds aggregate allocation. `MemoryFileSystem` tests are the primary verification workload.
+Measured via memory profiling during test suite execution. The in-memory design (no streaming) means all content fits in heap; the constraint bounds aggregate allocation. In-memory file system tests are the primary verification workload.
 
 ### Violation Consequences
 

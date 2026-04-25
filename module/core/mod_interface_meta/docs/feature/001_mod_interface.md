@@ -17,7 +17,7 @@ Namespace directives assign items to layers based on their intended propagation:
 - Exposed: item propagated to all ancestor modules.
 - Prelude: item propagated to all ancestors and intended for glob import.
 
-The layer directive integrates an existing Rust submodule into the parent's cascade. The submodule's orphan, exposed, and prelude namespaces are wired into the parent's corresponding namespaces following the propagation invariant.
+The layer directive integrates an existing submodule into the parent's cascade. The submodule's orphan, exposed, and prelude namespaces are wired into the parent's corresponding namespaces following the propagation invariant.
 
 This crate (`mod_interface_meta`) is the proc-macro companion and should not be used directly. The `mod_interface` facade crate re-exports the macro with documentation.
 
@@ -27,17 +27,13 @@ This crate (`mod_interface_meta`) is the proc-macro companion and should not be 
 |------|------|----------------|
 | source | `src/lib.rs` | Proc-macro entry point; routes token stream to impls |
 | source | `src/impls.rs` | Core expansion; directive handlers; namespace module generation |
-| source | `src/record.rs` | AST record types for parsed DSL directives |
-| source | `src/visibility.rs` | ClauseKind enum; layer-to-namespace mapping |
-| source | `src/use_tree.rs` | UseTree parsing; path prefix logic |
+| source | `src/record.rs` | Parsed directive record types |
+| source | `src/visibility.rs` | Layer kind classification; layer-to-namespace mapping |
+| source | `src/use_tree.rs` | Path tree parsing; path prefix logic |
 | test | `tests/smoke_test.rs` | Compile-time importability check |
 | test | `tests/integration_test.rs` | Four-layer namespace integration tests |
 | test | `tests/corner_cases_test.rs` | Corner case coverage for all directive forms |
+| test | `tests/propagation_bug_test.rs` | Cascade propagation correctness verification |
 | doc | `docs/api/001_mod_interface_macro.md` | DSL operations, directives, and error conditions |
 | doc | `docs/invariant/001_namespace_cascade.md` | Four-layer cascade propagation invariant |
 
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Combined source; Overview, Scope, Architecture, Design Rationale, and Related Crates sections contributed to this doc instance. spec.md has been deleted — Sources entry retained as migration record. |

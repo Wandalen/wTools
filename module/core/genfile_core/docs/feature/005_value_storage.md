@@ -3,7 +3,7 @@
 ### Scope
 
 - **Purpose**: Provides generic runtime storage for parameter values during template generation.
-- **Responsibility**: Documents the `Values<V>` container and its insertion and serialization behavior.
+- **Responsibility**: Documents the value storage container and its insertion and serialization behavior.
 - **In Scope**: Key-to-value mapping, conditional insertion, serialization to string map for renderers.
 - **Out of Scope**: Value type definitions (→ 001, 002), parameter metadata (→ 003).
 
@@ -15,9 +15,10 @@ The value storage wraps a map of parameter names to optional values. The insert-
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/values.rs` | `Values<V>` implementation |
-| doc | `docs/feature/001_template_value_trait.md` | Trait bound required by `Values<V>` |
-| doc | `docs/feature/014_template_generation.md` | Consumes `Values` during generation |
+| source | `src/values.rs` | Value storage container implementation |
+| test | `tests/` | Value storage insertion and serialization tests |
+| doc | `docs/feature/001_template_value_trait.md` | Trait bound required by the value storage container |
+| doc | `docs/feature/014_template_generation.md` | Consumes the value storage during generation |
 
 ### Sources
 
