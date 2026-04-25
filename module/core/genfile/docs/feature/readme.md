@@ -4,7 +4,7 @@
 
 - **Purpose**: Documents functional requirements and user-facing capabilities of the genfile CLI.
 - **Responsibility**: Index of all feature doc instances for genfile.
-- **In Scope**: Functional requirements FR1-FR10 migrated from spec.md.
+- **In Scope**: Functional requirements FR1-FR10.
 - **Out of Scope**: Non-functional constraints (→ `invariant/`), CLI command reference (→ `cli/`).
 
 ### Overview Table

@@ -88,7 +88,7 @@ daemon::daemonize( &opts ).expect( "daemonization failed" );
 | Type | File | Responsibility |
 |------|------|----------------|
 | source | [src/lifecycle/daemon.rs](../../src/lifecycle/daemon.rs) | Double-fork daemonization and PID file management |
-| feature | [feature/005_lifecycle_management.md](../feature/005_lifecycle_management.md) | Design rationale for the daemon sub-module |
-| invariant | [invariant/003_pidfile_format.md](../invariant/003_pidfile_format.md) | PID file decimal format shared with the check module |
-| api | [api/005_check_api.md](005_check_api.md) | `is_pidfile_alive()` reads PID files written by this module |
-| guide | [guide/001_daemon_monitoring.md](../guide/001_daemon_monitoring.md) | End-to-end daemon monitoring workflow |
+| doc | [feature/005_lifecycle_management.md](../feature/005_lifecycle_management.md) | Design rationale for the daemon sub-module |
+| doc | [invariant/003_pidfile_format.md](../invariant/003_pidfile_format.md) | PID file decimal format shared with the check module |
+| doc | [api/005_check_api.md](005_check_api.md) | `is_pidfile_alive()` reads PID files written by this module |
+| doc | [guide/001_daemon_monitoring.md](../guide/001_daemon_monitoring.md) | End-to-end daemon monitoring workflow |

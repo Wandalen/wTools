@@ -9,7 +9,7 @@
 
 ### Design
 
-Generation iterates all `FileDescriptor` instances. For each descriptor flagged as a template, the renderer substitutes parameter values; for static descriptors, content is copied verbatim. The computed output path joins the base directory with the descriptor's relative path. Each file is written via the `FileSystem` abstraction using the descriptor's `WriteMode`. The operation returns a `MaterializationReport` listing all written files or the first error encountered.
+Generation iterates all file descriptors. For each descriptor flagged as a template, the renderer substitutes parameter values; for static descriptors, content is copied verbatim. The computed output path joins the base directory with the descriptor's relative path. Each file is written via the file system abstraction using the descriptor's write mode. The operation returns a generation report listing all written files or the first error encountered.
 
 ### Cross-References
 
@@ -24,4 +24,4 @@ Generation iterates all `FileDescriptor` instances. For each descriptor flagged 
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | FR14 in original spec; combined source migrated to feature/ |
+| [`../../spec.md`](../../spec.md) | FR14 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

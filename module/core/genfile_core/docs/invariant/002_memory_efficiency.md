@@ -29,4 +29,4 @@ Exceeding 10MB heap for typical workloads makes genfile_core an unsuitable libra
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | NFR2 in original spec; combined source migrated to invariant/ |
+| [`../../spec.md`](../../spec.md) | NFR2 in original spec; combined source migrated to invariant/. spec.md has been deleted — Sources entry retained as migration record. |

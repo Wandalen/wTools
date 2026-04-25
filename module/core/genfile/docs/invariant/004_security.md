@@ -30,4 +30,4 @@ Path traversal allows an attacker to overwrite arbitrary files outside the inten
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | NFR4 in original spec; combined source migrated to invariant/ |
+| `spec.md` (deleted) | NFR4 in original spec; combined source migrated to invariant/. spec.md has been deleted — Sources entry retained as migration record. |

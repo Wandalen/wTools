@@ -50,6 +50,6 @@ println!( "{}", report );
 |------|------|----------------|
 | source | [src/process.rs](../../src/process.rs) | `Report` struct, `Display` impl, `Clone` impl |
 | test | [tests/inc/process_run.rs](../../tests/inc/process_run.rs) | `Report` field population and display tests |
-| api | [api/002_report_api.md](../api/002_report_api.md) | Defines fields and method surface of `Report` |
-| invariant | [invariant/001_result_contract.md](../invariant/001_result_contract.md) | Guarantees `Report` is always fully populated on both branches |
-| feature | [feature/001_process_execution.md](001_process_execution.md) | Execution layer that produces `Report` values |
+| doc | [api/002_report_api.md](../api/002_report_api.md) | Defines fields and method surface of `Report` |
+| doc | [invariant/001_result_contract.md](../invariant/001_result_contract.md) | Guarantees `Report` is always fully populated on both branches |
+| doc | [feature/001_process_execution.md](001_process_execution.md) | Execution layer that produces `Report` values |

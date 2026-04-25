@@ -1,0 +1,78 @@
+meta:
+  description: Cross-reference graph for all doc instances in config_hierarchy
+  node_count: 7
+  edge_count: 24
+  component_count: 1
+  generated: 2026_04_25
+
+nodes:
+  - id: algorithm/001
+    file: algorithm/001_type_detection.md
+    label: Type Detection
+    entity: algorithm
+  - id: api/001
+    file: api/001_config_paths_trait.md
+    label: ConfigPaths Trait
+    entity: api
+  - id: api/002
+    file: api/002_config_defaults_trait.md
+    label: ConfigDefaults Trait
+    entity: api
+  - id: api/003
+    file: api/003_config_validator_trait.md
+    label: ConfigValidator Trait
+    entity: api
+  - id: feature/001
+    file: feature/001_config_hierarchy.md
+    label: Config Hierarchy
+    entity: feature
+  - id: format/001
+    file: format/001_config_file_format.md
+    label: Config File Format
+    entity: format
+  - id: invariant/001
+    file: invariant/001_resolution_hierarchy.md
+    label: Resolution Hierarchy
+    entity: invariant
+
+edges:
+  - { from: algorithm/001, to: invariant/001,  via: cross_references }
+  - { from: algorithm/001, to: feature/001,    via: cross_references }
+  - { from: api/001,       to: invariant/001,  via: cross_references }
+  - { from: api/001,       to: format/001,     via: cross_references }
+  - { from: api/001,       to: api/002,        via: cross_references }
+  - { from: api/001,       to: api/003,        via: cross_references }
+  - { from: api/002,       to: invariant/001,  via: cross_references }
+  - { from: api/002,       to: api/001,        via: cross_references }
+  - { from: api/002,       to: api/003,        via: cross_references }
+  - { from: api/003,       to: api/001,        via: cross_references }
+  - { from: api/003,       to: api/002,        via: cross_references }
+  - { from: api/003,       to: feature/001,    via: cross_references }
+  - { from: feature/001,   to: invariant/001,  via: cross_references }
+  - { from: feature/001,   to: api/001,        via: cross_references }
+  - { from: feature/001,   to: api/002,        via: cross_references }
+  - { from: feature/001,   to: api/003,        via: cross_references }
+  - { from: feature/001,   to: format/001,     via: cross_references }
+  - { from: feature/001,   to: algorithm/001,  via: cross_references }
+  - { from: format/001,    to: feature/001,    via: cross_references }
+  - { from: format/001,    to: api/001,        via: cross_references }
+  - { from: format/001,    to: invariant/001,  via: cross_references }
+  - { from: invariant/001, to: feature/001,    via: cross_references }
+  - { from: invariant/001, to: api/001,        via: cross_references }
+  - { from: invariant/001, to: algorithm/001,  via: cross_references }
+
+components:
+  - id: 1
+    label: Main corpus
+    size: 7
+    isolated: false
+    nodes:
+      - algorithm/001
+      - api/001
+      - api/002
+      - api/003
+      - feature/001
+      - format/001
+      - invariant/001
+
+dangling_refs: []

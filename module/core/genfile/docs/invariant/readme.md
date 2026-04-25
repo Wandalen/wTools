@@ -3,7 +3,7 @@
 ### Scope
 
 - **Purpose**: Documents non-functional constraints with measurable thresholds for the genfile CLI.
-- **Responsibility**: Index of all invariant doc instances migrated from NFR sections of spec.md.
+- **Responsibility**: Index of all invariant doc instances for genfile.
 - **In Scope**: Performance, usability, error handling, security, testing, and documentation constraints.
 - **Out of Scope**: Functional requirements (→ `feature/`), CLI command reference (→ `cli/`).
 

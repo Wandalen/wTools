@@ -1,10 +1,10 @@
 meta:
   module: data_fmt
   description: Cross-entity dependency graph for data_fmt documentation
-  generated: "2026-04-18"
-  node_count: 65
-  edge_count: 90
-  component_count: 10
+  generated: 2026_04_18
+  node_count: 75
+  edge_count: 145
+  component_count: 11
 
 nodes:
   # algorithm (5)
@@ -100,6 +100,58 @@ nodes:
     file: feature/005_auto_fit.md
     label: Auto-Fit
     entity: feature
+    status: implemented
+
+  # formatter (10)
+  - id: formatter/001
+    file: formatter/001_table_formatter.md
+    label: TableFormatter
+    entity: formatter
+    status: implemented
+  - id: formatter/002
+    file: formatter/002_expanded_formatter.md
+    label: ExpandedFormatter
+    entity: formatter
+    status: implemented
+  - id: formatter/003
+    file: formatter/003_tree_formatter.md
+    label: TreeFormatter
+    entity: formatter
+    status: implemented
+  - id: formatter/004
+    file: formatter/004_logfmt_formatter.md
+    label: LogfmtFormatter
+    entity: formatter
+    status: implemented
+  - id: formatter/005
+    file: formatter/005_json_formatter.md
+    label: JsonFormatter
+    entity: formatter
+    status: implemented
+  - id: formatter/006
+    file: formatter/006_yaml_formatter.md
+    label: YamlFormatter
+    entity: formatter
+    status: implemented
+  - id: formatter/007
+    file: formatter/007_toml_formatter.md
+    label: TomlFormatter
+    entity: formatter
+    status: implemented
+  - id: formatter/008
+    file: formatter/008_html_formatter.md
+    label: HtmlFormatter
+    entity: formatter
+    status: implemented
+  - id: formatter/009
+    file: formatter/009_sql_formatter.md
+    label: SqlFormatter
+    entity: formatter
+    status: implemented
+  - id: formatter/010
+    file: formatter/010_text_formatter.md
+    label: TextFormatter
+    entity: formatter
     status: implemented
 
   # input_model (2)
@@ -544,6 +596,173 @@ edges:
     to: input_model/001
     via: body_link
 
+  # formatter cross-references
+  - from: formatter/001
+    to: api/004
+    via: cross_references
+  - from: formatter/001
+    to: trait/001
+    via: cross_references
+  - from: formatter/001
+    to: trait/002
+    via: cross_references
+  - from: formatter/001
+    to: variant/001
+    via: cross_references
+  - from: formatter/001
+    to: variant/002
+    via: cross_references
+  - from: formatter/001
+    to: variant/003
+    via: cross_references
+  - from: formatter/001
+    to: variant/004
+    via: cross_references
+  - from: formatter/001
+    to: variant/005
+    via: cross_references
+  - from: formatter/001
+    to: variant/006
+    via: cross_references
+  - from: formatter/001
+    to: variant/007
+    via: cross_references
+  - from: formatter/001
+    to: variant/008
+    via: cross_references
+  - from: formatter/001
+    to: variant/009
+    via: cross_references
+  - from: formatter/002
+    to: api/004
+    via: cross_references
+  - from: formatter/002
+    to: trait/002
+    via: cross_references
+  - from: formatter/002
+    to: variant/010
+    via: cross_references
+  - from: formatter/002
+    to: variant/011
+    via: cross_references
+  - from: formatter/003
+    to: api/004
+    via: cross_references
+  - from: formatter/003
+    to: input_model/002
+    via: cross_references
+  - from: formatter/003
+    to: input_type/002
+    via: cross_references
+  - from: formatter/003
+    to: variant/012
+    via: cross_references
+  - from: formatter/003
+    to: variant/013
+    via: cross_references
+  - from: formatter/003
+    to: variant/014
+    via: cross_references
+  - from: formatter/004
+    to: api/004
+    via: cross_references
+  - from: formatter/004
+    to: trait/001
+    via: cross_references
+  - from: formatter/004
+    to: variant/015
+    via: cross_references
+  - from: formatter/005
+    to: api/004
+    via: cross_references
+  - from: formatter/005
+    to: trait/001
+    via: cross_references
+  - from: formatter/005
+    to: variant/016
+    via: cross_references
+  - from: formatter/005
+    to: variant/017
+    via: cross_references
+  - from: formatter/006
+    to: api/004
+    via: cross_references
+  - from: formatter/006
+    to: trait/001
+    via: cross_references
+  - from: formatter/006
+    to: variant/018
+    via: cross_references
+  - from: formatter/007
+    to: api/004
+    via: cross_references
+  - from: formatter/007
+    to: trait/001
+    via: cross_references
+  - from: formatter/007
+    to: variant/019
+    via: cross_references
+  - from: formatter/008
+    to: api/004
+    via: cross_references
+  - from: formatter/008
+    to: trait/001
+    via: cross_references
+  - from: formatter/008
+    to: variant/020
+    via: cross_references
+  - from: formatter/008
+    to: variant/021
+    via: cross_references
+  - from: formatter/008
+    to: variant/022
+    via: cross_references
+  - from: formatter/008
+    to: variant/023
+    via: cross_references
+  - from: formatter/009
+    to: api/004
+    via: cross_references
+  - from: formatter/009
+    to: trait/001
+    via: cross_references
+  - from: formatter/009
+    to: variant/024
+    via: cross_references
+  - from: formatter/009
+    to: variant/025
+    via: cross_references
+  - from: formatter/009
+    to: variant/026
+    via: cross_references
+  - from: formatter/009
+    to: variant/027
+    via: cross_references
+  - from: formatter/010
+    to: api/004
+    via: cross_references
+  - from: formatter/010
+    to: trait/001
+    via: cross_references
+  - from: formatter/010
+    to: variant/028
+    via: cross_references
+  - from: formatter/010
+    to: variant/029
+    via: cross_references
+  - from: formatter/010
+    to: variant/030
+    via: cross_references
+  - from: formatter/010
+    to: variant/031
+    via: cross_references
+  - from: formatter/010
+    to: variant/032
+    via: cross_references
+  - from: formatter/010
+    to: variant/033
+    via: cross_references
+
   # variant cross-references (all 33 variants reference data_structure/001)
   - from: variant/001
     to: data_structure/001
@@ -739,5 +958,21 @@ components:
     isolated: true
     nodes: [feature/004]
     gap: "Color themes doc references config types in body text but no formal cross-reference edges to other doc entity instances"
+
+  - id: formatter-catalog
+    label: Formatter Catalog
+    size: 10
+    isolated: false
+    nodes:
+      - formatter/001
+      - formatter/002
+      - formatter/003
+      - formatter/004
+      - formatter/005
+      - formatter/006
+      - formatter/007
+      - formatter/008
+      - formatter/009
+      - formatter/010
 
 dangling_refs: []

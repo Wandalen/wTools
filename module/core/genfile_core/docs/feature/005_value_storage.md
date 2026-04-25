@@ -9,7 +9,7 @@
 
 ### Design
 
-`Values<V>` wraps a map of parameter names to optional values. The `insert_if_empty` method inserts a value only when the key has no existing entry, enabling default propagation without overwriting explicit values. Serialization converts all values to a string map (`BTreeMap<String, String>`) for consumption by template renderers. The generic `V: TemplateValue` bound keeps the storage layer independent of specific value types.
+The value storage wraps a map of parameter names to optional values. The insert-if-empty method inserts a value only when the key has no existing entry, enabling default propagation without overwriting explicit values. Serialization converts all values to a string-keyed string map for consumption by template renderers. The generic value type parameter keeps the storage layer independent of specific value types.
 
 ### Cross-References
 
@@ -23,4 +23,4 @@
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | FR5 in original spec; combined source migrated to feature/ |
+| [`../../spec.md`](../../spec.md) | FR5 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

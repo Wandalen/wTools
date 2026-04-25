@@ -55,8 +55,22 @@ docs/cli/
 ├── params.md              # Parameter specifications (23 parameters)
 ├── types.md               # Type system definitions (15 types)
 ├── parameter_groups.md    # Shared parameter sets (3 groups)
-└── dictionary.md          # Domain terminology (9 terms)
+├── dictionary.md          # Domain terminology (9 terms)
+└── maintenance.md         # Update procedures when commands change
 ```
+
+### Responsibility Table
+
+| File | Responsibility |
+|------|----------------|
+| [commands.md](commands.md) | Index of all 24 commands by namespace |
+| [params.md](params.md) | Specifications for all 23 parameters |
+| [types.md](types.md) | Semantic type definitions for 15 types |
+| [parameter_groups.md](parameter_groups.md) | Three shared parameter group definitions |
+| [dictionary.md](dictionary.md) | Domain terminology glossary (9 terms) |
+| [tutorial.md](tutorial.md) | Hands-on beginner lessons (4 lessons) |
+| [maintenance.md](maintenance.md) | Update procedures when commands change |
+| [commands/](commands/readme.md) | Namespace-organized command specifications |
 
 ## Quick Start
 
@@ -216,5 +230,5 @@ genfile .materialize destination::"./output" verbosity::2
 ---
 
 **Documentation Version:** 1.0.0
-**Last Updated:** 2026-02-08
-**CLI Version:** genfile 0.3.0
+**Last Updated:** 2026-04-25
+**CLI Version:** genfile 0.4.0

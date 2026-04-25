@@ -2,15 +2,16 @@
 
 ### Scope
 
-**Purpose:** Enforce a coherent feature flag dependency so that heap allocation in constrained environments is always paired with standard-library exclusion.
-
-**Responsibility:** Mandate that the `use_alloc` feature is never activated without also activating `no_std`.
+- **Purpose**: Enforce a coherent feature flag dependency so that heap allocation in constrained environments is always paired with standard-library exclusion.
+- **Responsibility**: Documents the alloc-requires-no_std invariant — its statement, Cargo-level enforcement, and violation consequences.
+- **In Scope**: The dependency rule that `use_alloc` cannot be activated without `no_std`.
+- **Out of Scope**: The no_std feature itself or allocation-free error API design — see `feature/004_no_std_support.md`.
 
 ### Cross-References
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| Feature | feature/004_no_std_support.md | No-std and alloc feature pair |
+| doc | [feature/004_no_std_support.md](../feature/004_no_std_support.md) | No-std and alloc feature pair |
 
 ### Invariant Statement
 

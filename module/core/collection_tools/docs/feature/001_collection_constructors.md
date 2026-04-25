@@ -67,4 +67,4 @@ All strict macros are gated on `feature = "collection_constructors"`, which is e
 
 | File | Notes |
 |------|-------|
-| [../../spec.md](../../spec.md) | Migrated; sections: Overview → Variadic Constructor Macros (Strict), Architecture → Macro Expansion Pattern, Usage Patterns → Pattern 1/4/5, Design Rationale → Why Variadic Constructor Macros, Adoption Guidelines; siblings: api/001, feature/002, invariant/001, invariant/002 |
+| [../../spec.md](../../spec.md) | Migrated; sections: Overview → Variadic Constructor Macros (Strict), Architecture → Macro Expansion Pattern, Usage Patterns → Pattern 1/4/5, Design Rationale → Why Variadic Constructor Macros, Adoption Guidelines; siblings: api/001, feature/002, invariant/001, invariant/002. spec.md has been deleted — Sources entry retained as migration record. |

@@ -2,14 +2,14 @@
 
 ### Scope
 
-- Instances document how this crate integrates with external systems and consumers.
-- Each instance covers one external dependency or consumer relationship.
-- Audience: contributors evaluating dependency changes or tracing cross-crate behavior.
-- Does not describe internal implementation — see `feature/` and `api/` instances.
+- **Purpose**: Document how `derive_tools_meta` integrates with external systems and consumers.
+- **Responsibility**: Master index for all integration doc instances in this crate.
+- **In Scope**: Instance 001 — macro_tools dependency; Instance 002 — derive_tools consumer facade.
+- **Out of Scope**: Internal implementation — see `feature/` and `api/` instances.
 
 ### Overview Table
 
-| ID | File | Name |
-|----|------|------|
-| 001 | [001_macro_tools.md](001_macro_tools.md) | macro_tools |
-| 002 | [002_derive_tools.md](002_derive_tools.md) | derive_tools |
+| ID | Name | Purpose | Status |
+|----|------|---------|--------|
+| 001 | [macro_tools](001_macro_tools.md) | Syntax parsing utilities used in macro expansion | ✅ |
+| 002 | [derive_tools](002_derive_tools.md) | Consumer facade that re-exports macros from this crate | ✅ |

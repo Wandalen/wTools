@@ -2,25 +2,17 @@
 
 ### Scope
 
-**Purpose:** Enable structured, named error types with compile-time field capture.
-
-**Responsibility:** Re-export the derive macro and associated types from the `thiserror` library under the `error_tools` namespace, so consumers can define typed error enums without a direct `thiserror` dependency.
-
-**In Scope:**
-- Re-exporting the error derivation macro for use in consumer crates
-- Providing access to `thiserror` via the `dependency` module when explicit namespace access is required
-
-**Out of Scope:**
-- Defining specific typed error variants (consumer responsibility)
-- Controlling error display formatting beyond what the derive macro provides
-- Integration with untyped error handling (see Error Facade feature)
+- **Purpose**: Enable structured, named error types with compile-time field capture.
+- **Responsibility**: Documents the typed error backend feature — its activation, design, and relationship to the facade.
+- **In Scope**: Re-exporting the error derivation macro and providing access to the thiserror namespace via the dependency module.
+- **Out of Scope**: Defining specific typed error variants, controlling display formatting, or integrating with untyped error handling.
 
 ### Cross-References
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| Feature | feature/001_error_facade.md | Unified facade that includes this component |
-| Invariant | invariant/002_zero_cost_facade.md | Pure re-export mandate |
+| doc | [feature/001_error_facade.md](001_error_facade.md) | Unified facade that includes this component |
+| doc | [invariant/002_zero_cost_facade.md](../invariant/002_zero_cost_facade.md) | Pure re-export mandate |
 
 ### Design
 

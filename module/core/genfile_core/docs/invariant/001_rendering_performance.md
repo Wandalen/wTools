@@ -29,4 +29,4 @@ Exceeding 100ms renders genfile_core unsuitable as a dependency for interactive 
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | NFR1 in original spec; combined source migrated to invariant/ |
+| [`../../spec.md`](../../spec.md) | NFR1 in original spec; combined source migrated to invariant/. spec.md has been deleted — Sources entry retained as migration record. |

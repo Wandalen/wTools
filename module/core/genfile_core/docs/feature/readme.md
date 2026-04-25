@@ -4,7 +4,7 @@
 
 - **Purpose**: Documents functional requirements and user-facing capabilities of the genfile_core library.
 - **Responsibility**: Index of all feature doc instances for genfile_core.
-- **In Scope**: Functional requirements FR1-FR17 migrated from spec.md.
+- **In Scope**: Functional requirements and capabilities of the genfile_core library.
 - **Out of Scope**: Non-functional constraints (→ `invariant/`), API contracts (→ `api/`).
 
 ### Overview Table

@@ -2,15 +2,16 @@
 
 ### Scope
 
-**Purpose:** Guarantee consistent error handling behaviour across the workspace by preventing mixed error frameworks.
-
-**Responsibility:** Mandate that consuming crates import error handling primitives exclusively through `error_tools`, with no direct imports from `anyhow` or `thiserror`.
+- **Purpose**: Guarantee consistent error handling behaviour across the workspace by preventing mixed error frameworks.
+- **Responsibility**: Documents the exclusive dependency invariant — its statement, enforcement points, and violation consequences.
+- **In Scope**: The mandate that consumers import error primitives only through `error_tools`, never from `anyhow` or `thiserror` directly.
+- **Out of Scope**: Implementation of specific error types or error display formatting — consumer responsibility.
 
 ### Cross-References
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| Feature | feature/001_error_facade.md | Facade that owns the error namespace |
+| doc | [feature/001_error_facade.md](../feature/001_error_facade.md) | Facade that owns the error namespace |
 
 ### Invariant Statement
 

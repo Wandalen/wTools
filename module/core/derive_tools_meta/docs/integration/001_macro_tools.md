@@ -2,10 +2,10 @@
 
 ### Scope
 
-- Documents the dependency relationship with `macro_tools`.
-- Covers what this crate uses from `macro_tools` and why.
-- Audience: contributors modifying macro implementations or updating dependencies.
-- Does not describe the `macro_tools` crate itself.
+- **Purpose**: Document the dependency relationship with `macro_tools`.
+- **Responsibility**: Explain what this crate uses from `macro_tools` and why it is a required dependency.
+- **In Scope**: Syntax parsing utilities, integration points, and compatibility requirements.
+- **Out of Scope**: The `macro_tools` crate itself and its own features.
 
 ### System Description
 
@@ -37,9 +37,5 @@ all macros provided by this crate.
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| api | docs/api/001_derive_api.md | Macros implemented using macro_tools |
-| feature | docs/feature/001_derive_macros.md | Behavioral description of the macros |
-
-### Sources
-
-- [../../spec.md](../../spec.md) — Dependencies and Boundaries sections
+| doc | `../api/001_derive_api.md` | Macros implemented using macro_tools |
+| doc | `../feature/001_derive_macros.md` | Behavioral description of the macros |

@@ -41,6 +41,6 @@ assert_eq!( ct.render(), "test" );  // no escape codes
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| feature/001 | [DecoratedText](../feature/001_decorated_text.md) | Parent feature |
-| invariant/002 | [Render Reset Contract](002_render_reset_contract.md) | Sibling — render behavior |
-| invariant/004 | [Render Is Canonical](004_render_is_canonical.md) | Sibling — render delegation |
+| doc | [DecoratedText](../feature/001_decorated_text.md) | Parent feature |
+| doc | [Render Reset Contract](002_render_reset_contract.md) | Sibling — render behavior |
+| doc | [Render Is Canonical](004_render_is_canonical.md) | Sibling — render delegation |

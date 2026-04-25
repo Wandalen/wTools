@@ -1,12 +1,16 @@
-# genfile_core Documentation
+# Docs
 
-Architectural and design documentation for the `genfile_core` library.
+## Scope
+
+Design and API documentation for `genfile_core`. Organized as typed doc entity instances: features describe what the library does, invariants define behavioral contracts and performance thresholds.
+
+See [entities.md](entities.md) for the complete registry of all doc instances.
 
 ### Responsibility Table
 
-| File/Directory | Responsibility |
-|---|---|
-| `feature/` | Feature doc entity — functional requirements and capabilities |
-| `invariant/` | Invariant doc entity — non-functional constraints with measurable thresholds |
-| `entities.md` | Master index of all doc entity types and instances |
-| `features.md` | Legacy feature table (source document; superseded by `feature/`) |
+| File | Responsibility |
+|------|----------------|
+| [entities.md](entities.md) | Master registry of all doc entity types and instances |
+| [doc_graph.yml](doc_graph.yml) | Doc instance dependency graph for genfile_core |
+| [feature/](feature/readme.md) | Feature documentation — what the library provides and why |
+| [invariant/](invariant/readme.md) | Invariant documentation — performance and quality contracts |

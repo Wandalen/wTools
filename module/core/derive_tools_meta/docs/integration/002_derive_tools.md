@@ -2,10 +2,10 @@
 
 ### Scope
 
-- Documents the consumer relationship with `derive_tools`.
-- Covers how `derive_tools` re-exports and surfaces this crate's macros.
-- Audience: contributors understanding the two-crate split or adding new macros.
-- Does not describe the `derive_tools` crate's own features.
+- **Purpose**: Document the consumer relationship with `derive_tools`.
+- **Responsibility**: Explain how `derive_tools` re-exports and surfaces this crate's macros.
+- **In Scope**: Re-export mechanism, two-crate split rationale, and compatibility requirements.
+- **Out of Scope**: The `derive_tools` crate's own features — see its docs/.
 
 ### System Description
 
@@ -40,10 +40,6 @@ a version bump in `derive_tools`.
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| invariant | docs/invariant/001_proc_macro_separation.md | Why this crate and derive_tools are separate |
-| feature | docs/feature/001_derive_macros.md | Macro collection re-exported by derive_tools |
-| api | docs/api/001_derive_api.md | Macro interface re-exported by derive_tools |
-
-### Sources
-
-- [../../spec.md](../../spec.md) — Consumers and Related Crates sections
+| doc | `../invariant/001_proc_macro_separation.md` | Why this crate and derive_tools are separate |
+| doc | `../feature/001_derive_macros.md` | Macro collection re-exported by derive_tools |
+| doc | `../api/001_derive_api.md` | Macro interface re-exported by derive_tools |

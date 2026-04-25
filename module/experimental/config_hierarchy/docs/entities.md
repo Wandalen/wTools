@@ -1,23 +1,23 @@
-# config_hierarchy Doc Entities
+# Doc Entities
 
 ## Master Doc Entities Table
 
-| Entity Type | Directory | Instances | Status |
-|-------------|-----------|-----------|--------|
-| feature | feature/ | 1 | active |
-| invariant | invariant/ | 1 | active |
-| api | api/ | 3 | active |
-| algorithm | algorithm/ | 1 | active |
-| format | format/ | 1 | active |
+| Type | Purpose | Master File | Instances |
+|------|---------|-------------|----------:|
+| `algorithm/` | Algorithm documentation — logic, inputs, and outputs | [algorithm/readme.md](algorithm/readme.md) | 1 |
+| `api/` | Public interface — traits, their operations, and compatibility | [api/readme.md](api/readme.md) | 3 |
+| `feature/` | Feature specifications — what the crate does and why | [feature/readme.md](feature/readme.md) | 1 |
+| `format/` | Format documentation — data model and encoding structure | [format/readme.md](format/readme.md) | 1 |
+| `invariant/` | Behavioral contracts that must always hold | [invariant/readme.md](invariant/readme.md) | 1 |
 
 ## Master Doc Instances Table
 
-| NNN | Type | Name | File | Status |
-|-----|------|------|------|--------|
-| 001 | feature | Config Hierarchy | feature/001_config_hierarchy.md | active |
-| 001 | invariant | Resolution Hierarchy | invariant/001_resolution_hierarchy.md | active |
-| 001 | api | ConfigPaths Trait | api/001_config_paths_trait.md | active |
-| 002 | api | ConfigDefaults Trait | api/002_config_defaults_trait.md | active |
-| 003 | api | ConfigValidator Trait | api/003_config_validator_trait.md | active |
-| 001 | algorithm | Type Detection | algorithm/001_type_detection.md | active |
-| 001 | format | Config File Format | format/001_config_file_format.md | active |
+| Entity | ID | Name | File |
+|--------|----|------|------|
+| algorithm | 001 | Type Detection | [algorithm/001_type_detection.md](algorithm/001_type_detection.md) |
+| api | 001 | ConfigPaths Trait | [api/001_config_paths_trait.md](api/001_config_paths_trait.md) |
+| api | 002 | ConfigDefaults Trait | [api/002_config_defaults_trait.md](api/002_config_defaults_trait.md) |
+| api | 003 | ConfigValidator Trait | [api/003_config_validator_trait.md](api/003_config_validator_trait.md) |
+| feature | 001 | Config Hierarchy | [feature/001_config_hierarchy.md](feature/001_config_hierarchy.md) |
+| format | 001 | Config File Format | [format/001_config_file_format.md](format/001_config_file_format.md) |
+| invariant | 001 | Resolution Hierarchy | [invariant/001_resolution_hierarchy.md](invariant/001_resolution_hierarchy.md) |

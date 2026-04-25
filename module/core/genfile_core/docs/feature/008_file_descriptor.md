@@ -9,7 +9,7 @@
 
 ### Design
 
-A `FileDescriptor` pairs a relative output path with content (either a template string for rendering or static content to copy verbatim) and a `WriteMode` controlling how the file is written. The `is_template` flag determines whether the renderer is invoked. Descriptors are constructed via the `former` builder pattern.
+A file descriptor pairs a relative output path with content (either a template string for rendering or static content to copy verbatim) and a write mode controlling how the file is written. The template flag determines whether the renderer is invoked. Descriptors are constructed via the former builder pattern.
 
 ### Cross-References
 
@@ -23,4 +23,4 @@ A `FileDescriptor` pairs a relative output path with content (either a template 
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | FR8 in original spec; combined source migrated to feature/ |
+| [`../../spec.md`](../../spec.md) | FR8 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

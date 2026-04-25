@@ -9,7 +9,7 @@
 
 ### Design
 
-`RealFileSystem` implements the `FileSystem` trait using standard I/O operations. On write, it creates all parent directories before writing the file. On read, it reads bytes from the given path. All OS errors are wrapped in the typed `Error::Fs` variant for uniform handling upstream.
+The real file system implementation uses standard I/O operations. On write, it creates all parent directories before writing the file. On read, it reads bytes from the given path. All OS errors are wrapped in a typed filesystem error variant for uniform handling upstream.
 
 ### Cross-References
 
@@ -22,4 +22,4 @@
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | FR11 in original spec; combined source migrated to feature/ |
+| [`../../spec.md`](../../spec.md) | FR11 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

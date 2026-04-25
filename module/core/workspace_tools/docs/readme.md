@@ -1,5 +1,7 @@
 # Docs
 
+## Scope
+
 Design and API documentation for `workspace_tools`.
 
 ### Responsibility Table

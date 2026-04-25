@@ -9,7 +9,7 @@
 
 ### Design
 
-`Parameters` wraps a collection of `ParameterDescriptor` instances. It provides a `list_mandatory()` method returning names of all parameters marked mandatory, which the generation layer uses to detect missing values before rendering. The collection supports the builder pattern for construction.
+The parameter collection wraps a list of parameter descriptors. It provides a method returning the names of all parameters marked mandatory, which the generation layer uses to detect missing values before rendering. The collection supports the builder pattern for construction.
 
 ### Cross-References
 
@@ -23,4 +23,4 @@
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | FR4 in original spec; combined source migrated to feature/ |
+| [`../../spec.md`](../../spec.md) | FR4 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

@@ -57,4 +57,4 @@ Do not apply when:
 | source | `src/lib.rs` | The absorption crate — re-exports only, no implementation |
 | source | `component_model_meta/src/lib.rs` | Macro crate depending on types crate |
 | source | `component_model_types/src/component.rs` | Types crate — shared trait definitions |
-| feature | [feature/001_component_model.md](../feature/001_component_model.md) | User-facing feature enabled by this pattern |
+| doc | [feature/001_component_model.md](../feature/001_component_model.md) | User-facing feature enabled by this pattern |

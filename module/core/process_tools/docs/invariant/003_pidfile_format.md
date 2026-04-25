@@ -34,5 +34,5 @@ If `write_pidfile` were changed to write a hex value (e.g., `format!("0x{:x}", p
 |------|------|----------------|
 | source | [src/lifecycle/daemon.rs](../../src/lifecycle/daemon.rs) | `write_pidfile()`, `read_pidfile()`, `write_pidfile_locked()` |
 | source | [src/lifecycle/check.rs](../../src/lifecycle/check.rs) | `is_pidfile_alive()` reads PID files written by the daemon module |
-| api | [api/006_daemon_api.md](../api/006_daemon_api.md) | PID file management function signatures |
-| api | [api/005_check_api.md](../api/005_check_api.md) | `is_pidfile_alive()` reads the format defined by this invariant |
+| doc | [api/006_daemon_api.md](../api/006_daemon_api.md) | PID file management function signatures |
+| doc | [api/005_check_api.md](../api/005_check_api.md) | `is_pidfile_alive()` reads the format defined by this invariant |

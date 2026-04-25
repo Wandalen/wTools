@@ -1,7 +1,7 @@
 meta:
   module: collection_tools
   description: Cross-entity dependency graph for collection_tools documentation
-  generated: "2026-04-25"
+  generated: 2026_04_25
   node_count: 5
   edge_count: 20
   component_count: 1

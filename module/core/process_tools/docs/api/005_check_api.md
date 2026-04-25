@@ -61,8 +61,8 @@ assert!( alive );
 | Type | File | Responsibility |
 |------|------|----------------|
 | source | [src/lifecycle/check.rs](../../src/lifecycle/check.rs) | PID liveness probing and poll-based exit waiting |
-| feature | [feature/005_lifecycle_management.md](../feature/005_lifecycle_management.md) | Design rationale for PID-only process monitoring |
-| invariant | [invariant/004_eperm_means_alive.md](../invariant/004_eperm_means_alive.md) | `EPERM` from `kill(pid,0)` means process is alive |
-| invariant | [invariant/003_pidfile_format.md](../invariant/003_pidfile_format.md) | PID file decimal format shared with the daemon module |
-| api | [api/006_daemon_api.md](006_daemon_api.md) | Daemon PID file writes that `is_pidfile_alive()` reads |
-| guide | [guide/001_daemon_monitoring.md](../guide/001_daemon_monitoring.md) | End-to-end daemon monitoring workflow using these functions |
+| doc | [feature/005_lifecycle_management.md](../feature/005_lifecycle_management.md) | Design rationale for PID-only process monitoring |
+| doc | [invariant/004_eperm_means_alive.md](../invariant/004_eperm_means_alive.md) | `EPERM` from `kill(pid,0)` means process is alive |
+| doc | [invariant/003_pidfile_format.md](../invariant/003_pidfile_format.md) | PID file decimal format shared with the daemon module |
+| doc | [api/006_daemon_api.md](006_daemon_api.md) | Daemon PID file writes that `is_pidfile_alive()` reads |
+| doc | [guide/001_daemon_monitoring.md](../guide/001_daemon_monitoring.md) | End-to-end daemon monitoring workflow using these functions |

@@ -23,4 +23,4 @@ Archives can be created empty with a name and optional description, loaded from 
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | FR1 in original spec; combined source migrated to feature/ |
+| `spec.md` (deleted) | FR1 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

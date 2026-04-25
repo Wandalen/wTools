@@ -62,7 +62,7 @@ assert!( report.out.contains( "hello" ) );
 | Type | File | Responsibility |
 |------|------|----------------|
 | source | [src/process.rs](../../src/process.rs) | `Run` struct, `RunFormer` builder, and `run()` implementation |
-| feature | [feature/001_process_execution.md](../feature/001_process_execution.md) | High-level design rationale for the execution layer |
-| api | [api/002_report_api.md](002_report_api.md) | `Report` type returned by `run()` |
-| invariant | [invariant/001_result_contract.md](../invariant/001_result_contract.md) | `Result<Report, Report>` contract |
-| invariant | [invariant/002_cross_platform_shell.md](../invariant/002_cross_platform_shell.md) | Shell selection invariant for `run_with_shell()` |
+| doc | [feature/001_process_execution.md](../feature/001_process_execution.md) | High-level design rationale for the execution layer |
+| doc | [api/002_report_api.md](002_report_api.md) | `Report` type returned by `run()` |
+| doc | [invariant/001_result_contract.md](../invariant/001_result_contract.md) | `Result<Report, Report>` contract |
+| doc | [invariant/002_cross_platform_shell.md](../invariant/002_cross_platform_shell.md) | Shell selection invariant for `run_with_shell()` |

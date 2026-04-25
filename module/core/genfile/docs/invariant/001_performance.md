@@ -13,7 +13,7 @@ Typical command execution (archive load, parameter set, file add) must complete 
 
 ### Enforcement Mechanism
 
-Measured via benchmark tests in `benches/`. The CLI spawns `cargo run` per command in integration tests; standalone binary execution is significantly faster. Formal benchmarks are the authoritative measurement.
+Measured via integration tests that time command sequences end-to-end. Standalone binary execution is significantly faster than test-harness invocations, which include compilation overhead. No formal benchmark suite exists yet; integration test timing serves as the practical measurement baseline.
 
 ### Violation Consequences
 
@@ -29,4 +29,4 @@ Excessive latency makes the CLI unsuitable for interactive use in REPL mode and 
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | NFR1 in original spec; combined source migrated to invariant/ |
+| `spec.md` (deleted) | NFR1 in original spec; combined source migrated to invariant/. spec.md has been deleted — Sources entry retained as migration record. |

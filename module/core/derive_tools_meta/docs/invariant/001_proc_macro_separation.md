@@ -2,10 +2,10 @@
 
 ### Scope
 
-- Defines the structural constraint that keeps macro implementations in a dedicated crate.
-- Covers the reason this crate exists separately from its consumer facade.
-- Audience: contributors who might consider merging this crate into another.
-- Does not cover the public API contract — see `api/001_derive_api.md`.
+- **Purpose**: Define the structural constraint that keeps macro implementations in a dedicated proc-macro crate.
+- **Responsibility**: Document why this crate exists separately from its consumer facade and the enforcement mechanism.
+- **In Scope**: Proc-macro crate requirement, enforcement mechanism, and violation consequences.
+- **Out of Scope**: Public API contract — see `api/001_derive_api.md`.
 
 ### Invariant Statement
 
@@ -39,10 +39,6 @@ implementations here.
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| feature | docs/feature/001_derive_macros.md | Behavioral description of the macros |
-| api | docs/api/001_derive_api.md | Public interface declared by this crate |
-| integration | docs/integration/002_derive_tools.md | derive_tools as the consumer-facing facade |
-
-### Sources
-
-- [../../spec.md](../../spec.md) — Design Rationale: Why Separate Crate section
+| doc | `../feature/001_derive_macros.md` | Behavioral description of the macros |
+| doc | `../api/001_derive_api.md` | Public interface declared by this crate |
+| doc | `../integration/002_derive_tools.md` | derive_tools as the consumer-facing facade |

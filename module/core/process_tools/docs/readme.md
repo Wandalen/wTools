@@ -1,6 +1,6 @@
 # Documentation
 
-## Purpose
+## Scope
 
 Technical documentation for the `process_tools` crate: subprocess execution, output capture, exit status synthesis, and process lifecycle management.
 

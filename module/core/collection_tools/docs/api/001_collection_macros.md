@@ -104,4 +104,4 @@ No runtime errors. All macros are purely syntactic expansions resolved at compil
 
 | File | Notes |
 |------|-------|
-| [../../spec.md](../../spec.md) | Migrated; sections: Public API → Strict Constructor Macros, Public API → Into-based Constructor Macros, Public API → Collection Type Re-exports, Architecture → Macro Expansion Pattern; siblings: feature/001, feature/002, invariant/001, invariant/002 |
+| [../../spec.md](../../spec.md) | Migrated; sections: Public API → Strict Constructor Macros, Public API → Into-based Constructor Macros, Public API → Collection Type Re-exports, Architecture → Macro Expansion Pattern; siblings: feature/001, feature/002, invariant/001, invariant/002. spec.md has been deleted — Sources entry retained as migration record. |

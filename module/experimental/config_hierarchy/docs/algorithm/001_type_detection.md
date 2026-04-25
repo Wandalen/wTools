@@ -51,5 +51,5 @@ O(1) per value — all checks are constant-time string comparisons or scalar par
 
 | Type | Target | Relationship |
 |------|--------|-------------|
-| invariant | invariant/001_resolution_hierarchy.md | applied at levels 2 (env) and 3–5 (file values) |
-| feature | feature/001_config_hierarchy.md | type detection is part of this feature |
+| doc | invariant/001_resolution_hierarchy.md | applied at levels 2 (env) and 3–5 (file values) |
+| doc | feature/001_config_hierarchy.md | type detection is part of this feature |

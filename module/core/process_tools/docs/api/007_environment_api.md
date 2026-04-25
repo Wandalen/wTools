@@ -62,4 +62,4 @@ Detection is presence-based: `std::env::var(var).is_ok()`. Variable value is irr
 |------|------|----------------|
 | source | [src/environment.rs](../../src/environment.rs) | `is_cicd()` implementation and CI variable list |
 | test | [tests/inc/environment_is_cicd.rs](../../tests/inc/environment_is_cicd.rs) | CI variable detection tests |
-| feature | [feature/003_environment_detection.md](../feature/003_environment_detection.md) | Design rationale and feature gate design |
+| doc | [feature/003_environment_detection.md](../feature/003_environment_detection.md) | Design rationale and feature gate design |

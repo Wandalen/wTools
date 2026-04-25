@@ -22,4 +22,4 @@ Internalization fetches all external content references (file paths, URLs) and e
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | FR5 in original spec; combined source migrated to feature/ |
+| `spec.md` (deleted) | FR5 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

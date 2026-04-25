@@ -57,5 +57,5 @@ assert!( table.len() >= 25 );
 | Type | File | Responsibility |
 |------|------|----------------|
 | source | [src/lifecycle/signal.rs](../../src/lifecycle/signal.rs) | Signal table and bidirectional lookup implementation |
-| feature | [feature/005_lifecycle_management.md](../feature/005_lifecycle_management.md) | Design rationale for the single-source-of-truth signal table |
-| api | [api/005_check_api.md](005_check_api.md) | PID liveness checking (uses signal concepts but not this table) |
+| doc | [feature/005_lifecycle_management.md](../feature/005_lifecycle_management.md) | Design rationale for the single-source-of-truth signal table |
+| doc | [api/005_check_api.md](005_check_api.md) | PID liveness checking (uses signal concepts but not this table) |

@@ -17,7 +17,7 @@
 
 ### Signature
 
-`Format` is a trait with one required method: `format( &self, data : &TableView ) -> Result< String, FormatError >`. Takes an immutable reference to self and an immutable reference to `TableView`; returns a formatted string or a `FormatError`.
+`Format` is a trait with one required method. It accepts an immutable reference to a `TableView` and returns either a formatted string or a `FormatError`.
 
 ### Error Type
 
@@ -49,14 +49,4 @@
 
 ### Usage
 
-```rust
-use data_fmt::{ RowBuilder, Format };
-
-let view = RowBuilder::new( vec![ "Name".into() ] )
-  .add_row( vec![ "Alice".into() ] )
-  .build_view();
-
-// Any Format implementor works
-let formatter = TableFormatter::new();
-let output = Format::format( &formatter, &view )?;
-```
+Any `Format`-implementing formatter accepts a `TableView` produced by `RowBuilder::build_view()`. The caller invokes the formatter's `format` method, which returns a `Result<String, FormatError>`.

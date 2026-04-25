@@ -28,26 +28,13 @@
 
 #### TableView
 
-The canonical data format consumed by all formatters.
-
-```rust
-pub struct TableView
-{
-  pub metadata : TableMetadata,
-  pub rows : Vec< Vec< String > >,
-}
-```
+The canonical data format consumed by all formatters. It holds a `TableMetadata` header and rows as a two-dimensional collection of string values.
 
 #### Format Trait
 
-```rust
-pub trait Format
-{
-  fn format( &self, data : &TableView ) -> Result< String, FormatError >;
-}
-```
+The `Format` trait defines a single method that accepts a `TableView` reference and returns a formatted string or an error.
 
-Every formatter implements `Format`. Callers build a `TableView` once and pass it to any formatter.
+Eight of ten formatters implement `Format`. `ExpandedFormatter` uses the deprecated `TableShapedFormatter` path; `TreeFormatter` uses direct method dispatch. Callers build a `TableView` once and pass it to any `Format`-implementing formatter.
 
 #### Formatter Registry
 
@@ -75,84 +62,15 @@ Every formatter implements `Format`. Callers build a `TableView` once and pass i
 
 #### Feature Configuration
 
-```toml
-[features]
-default       = []
-full          = [ "enabled", "all_formats", "terminal_size" ]
-terminal_size = [ "dep:terminal_size" ]
-enabled = [
-  "dep:error_tools", "error_tools/enabled",
-  "dep:strs_tools", "strs_tools/ansi",
-  "dep:color_tools", "color_tools/enabled",
-  "dep:unicode-width",
-  "table_plain", "expanded_postgres", "tree_hierarchical", "format_logfmt",
-]
-serde_support = [ "dep:serde", "color_tools/serde_support" ]
-
-# Individual formatter meta-features (aggregate granular variant flags)
-format_table = [ "format_table_visual", "format_table_export" ]
-format_expanded = [ "expanded_postgres", "expanded_property" ]
-format_tree = [ "tree_hierarchical", "tree_aligned", "tree_aggregated" ]
-format_html = [ "format_html_basic", "format_html_frameworks" ]
-format_sql = [ "sql_ansi", "sql_postgres", "sql_mysql", "sql_sqlite" ]
-format_json = [ "serde_support", "dep:serde_json" ]
-format_yaml = [ "serde_support", "dep:serde_yaml" ]
-format_toml = [ "serde_support", "dep:toml" ]
-format_text = []
-format_logfmt = []
-themes = []
-
-# Convenience bundles
-format_meta_visual = [ "format_table", "format_expanded", "format_tree", "format_logfmt" ]
-format_meta_web    = [ "format_html", "format_sql" ]
-format_meta_data   = [ "format_json", "format_yaml", "format_toml" ]
-all_formats = [ "format_meta_visual", "format_meta_web", "format_meta_data", "format_text", "themes" ]
-```
+The `default` feature is empty — all formatters are opt-in. The `enabled` feature activates core dependencies and four default formatters: `table_plain`, `expanded_postgres`, `tree_hierarchical`, and `format_logfmt`. The `full` feature enables everything including `all_formats` and `terminal_size`. Each formatter meta-feature aggregates its variant flags (e.g., `format_table` includes all nine table variants). JSON, YAML, and TOML formatters require serde and pull it in via `serde_support` internally.
 
 #### Cargo.toml Usage
 
-```toml
-# Standard workspace integration (enabled = core deps + default visual formatters)
-data_fmt = { version = "0.1.0", features = [ "enabled" ] }
-
-# Add JSON support
-data_fmt = { version = "0.1.0", features = [ "enabled", "format_json" ] }
-
-# All formatters
-data_fmt = { version = "0.1.0", features = [ "full" ] }
-
-# Minimal: only the plain table variant (no core deps)
-data_fmt = { version = "0.1.0", features = [ "table_plain" ] }
-```
+Standard workspace integration uses the `enabled` feature for core dependencies and default visual formatters. Adding any formatter meta-feature (e.g., `format_json`) to the features list activates that formatter. Use `full` for all formatters including `terminal_size`. For the smallest binary, specify only the specific variant flag needed (e.g., `table_plain`) without `enabled`.
 
 #### Usage Pattern
 
-Build data once with `build_view()`, then format with any formatter through the `Format` trait.
-
-```rust
-use data_fmt::{ RowBuilder, Format };
-
-// Build data once
-let view = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
-  .add_row( vec![ "Alice".into(), "30".into() ] )
-  .build_view();
-
-// Format as JSON
-#[ cfg( feature = "format_json" ) ]
-{
-  use data_fmt::JsonFormatter;
-  let json = JsonFormatter::new();
-  let output = Format::format( &json, &view )?;
-}
-
-// Format as table
-#[ cfg( feature = "format_table" ) ]
-{
-  use data_fmt::TableFormatter;
-  let table = TableFormatter::with_config( TableConfig::plain() );
-  let output = Format::format( &table, &view )?;
-}
-```
+Build data once with `RowBuilder::build_view()` to produce a `TableView`, then pass it to any `Format`-implementing formatter. Each formatter is conditionally available based on its feature flag; callers wrap formatter code in the appropriate `cfg(feature = "...")` guard.
 
 #### Migration from TreeNode
 

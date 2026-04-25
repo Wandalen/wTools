@@ -1,6 +1,6 @@
 # Documentation
 
-## Purpose
+## Scope
 
 Persistent development knowledge for the multiline_input crate.
 

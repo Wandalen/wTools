@@ -60,5 +60,5 @@ assert!( report.out.contains( "hello" ) );
 | Type | File | Responsibility |
 |------|------|----------------|
 | source | [src/process.rs](../../src/process.rs) | `RunFormer::run_with_shell()` platform branch implementation |
-| api | [api/001_run_api.md](../api/001_run_api.md) | `RunFormer::run_with_shell()` definition |
-| feature | [feature/001_process_execution.md](../feature/001_process_execution.md) | Design rationale for the unified execution API |
+| doc | [api/001_run_api.md](../api/001_run_api.md) | `RunFormer::run_with_shell()` definition |
+| doc | [feature/001_process_execution.md](../feature/001_process_execution.md) | Design rationale for the unified execution API |

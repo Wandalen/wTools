@@ -45,5 +45,5 @@ assert!( !custom.success() );
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| api | [api/003_exit_status_api.md](../api/003_exit_status_api.md) | Full function signatures and platform encoding detail |
-| feature | [feature/004_exit_status_synthesis.md](../feature/004_exit_status_synthesis.md) | Design rationale for synthetic status construction |
+| doc | [api/003_exit_status_api.md](../api/003_exit_status_api.md) | Full function signatures and platform encoding detail |
+| doc | [feature/004_exit_status_synthesis.md](../feature/004_exit_status_synthesis.md) | Design rationale for synthetic status construction |

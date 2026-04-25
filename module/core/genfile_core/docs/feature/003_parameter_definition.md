@@ -9,7 +9,7 @@
 
 ### Design
 
-A `ParameterDescriptor` stores metadata for a single template parameter: its name, whether it is mandatory, an optional default value, and an optional description. Parameters are constructed via the `former` builder pattern. The mandatory flag drives validation in the collection layer — parameters without values at generation time cause an error when mandatory.
+A parameter descriptor stores metadata for a single template parameter: its name, whether it is mandatory, an optional default value, and an optional description. Parameters are constructed via the former builder pattern. The mandatory flag drives validation in the collection layer — parameters without values at generation time cause an error when mandatory.
 
 ### Cross-References
 
@@ -22,4 +22,4 @@ A `ParameterDescriptor` stores metadata for a single template parameter: its nam
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | FR3 in original spec; combined source migrated to feature/ |
+| [`../../spec.md`](../../spec.md) | FR3 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

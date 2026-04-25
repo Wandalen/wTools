@@ -1,4 +1,4 @@
-# API: Clone Into Box
+# API: clone_into_box and clone
 
 ### Scope
 

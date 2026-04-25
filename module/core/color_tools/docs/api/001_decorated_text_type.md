@@ -78,11 +78,11 @@ All operations are infallible by design. No ANSI validation is performed — `wi
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| feature/001 | [DecoratedText](../feature/001_decorated_text.md) | Feature specification |
-| feature/002 | [serde Support](../feature/002_serde_support.md) | Optional serde derives |
-| invariant/001 | [Transparent Conversion](../invariant/001_transparent_conversion.md) | Conversion guarantee |
-| invariant/002 | [Render Reset Contract](../invariant/002_render_reset_contract.md) | Render behavior |
-| invariant/003 | [Emptiness Semantics](../invariant/003_emptiness_semantics.md) | is_empty semantics |
-| invariant/004 | [Render Is Canonical](../invariant/004_render_is_canonical.md) | Single render path |
-| feature/003 | [HTML Rendering](../feature/003_html_rendering.md) | `render_html()` design, raw-vs-named boundary, CSS mapping |
-| api/002 | [Color Type](002_color_type.md) | Full variant table, `to_ansi()` and `to_css()` contracts |
+| doc | [DecoratedText](../feature/001_decorated_text.md) | Feature specification |
+| doc | [serde Support](../feature/002_serde_support.md) | Optional serde derives |
+| doc | [Transparent Conversion](../invariant/001_transparent_conversion.md) | Conversion guarantee |
+| doc | [Render Reset Contract](../invariant/002_render_reset_contract.md) | Render behavior |
+| doc | [Emptiness Semantics](../invariant/003_emptiness_semantics.md) | is_empty semantics |
+| doc | [Render Is Canonical](../invariant/004_render_is_canonical.md) | Single render path |
+| doc | [HTML Rendering](../feature/003_html_rendering.md) | `render_html()` design, raw-vs-named boundary, CSS mapping |
+| doc | [Color Type](002_color_type.md) | Full variant table, `to_ansi()` and `to_css()` contracts |

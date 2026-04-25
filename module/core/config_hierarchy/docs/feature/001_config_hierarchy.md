@@ -2,96 +2,69 @@
 
 ### Scope
 
-- **What**: Layered configuration resolution from multiple prioritized sources
-- **Who**: CLI applications using `ConfigManager< D, P, V >`
-- **When**: Application startup and per-value config lookup
-- **Out of scope**: File format (→ format/001), resolution order invariant (→ invariant/001), trait API (→ api/)
+- **Purpose**: Specify the layered configuration resolution system for CLI applications.
+- **Responsibility**: Documents the resolution flow, path discovery rules, persistence model, and validation integration of the configuration framework.
+- **In Scope**: Multi-source resolution with priority ordering, path discovery, file persistence, type detection, validation hooks, and source tracking.
+- **Out of Scope**: File format (→ format/001), resolution order invariant (→ invariant/001), trait contracts (→ api/).
 
 ### Abstract
 
-Provides a reusable, trait-based configuration framework for CLI applications that need to resolve settings from multiple sources with clear precedence rules, automatic type detection, source tracking, and validation. Users implement three traits (`ConfigDefaults`, `ConfigPaths`, `ConfigValidator`) and compose a zero-cost `ConfigManager< D, P, V >` type from them. All methods on `ConfigManager` are static — the struct holds no data beyond `PhantomData` markers.
+Provides a reusable, trait-based configuration framework for CLI applications that resolve settings from multiple sources with clear precedence rules, automatic type detection, source tracking, and validation. Applications implement three configuration traits and compose a manager type from them.
 
-### Behavior
+### Design
 
-#### Configuration Resolution
+#### Resolution
 
-- Resolves a single parameter from all sources following the 6-level priority hierarchy (see invariant/001)
-- Resolves all parameters into a complete `HashMap< String, ( JsonValue, ConfigSource ) >`
-- Tracks source provenance for every resolved value via `ConfigSource` enum
-- Handles missing files and missing values gracefully without panicking
-- Supports runtime parameter overrides as highest-priority input
-
-#### Persistence and I/O
-
-Requires `file_ops` feature.
-
-- Loads YAML configuration files from discovered paths
-- Saves configuration with automatic metadata generation (`created_at`, `last_modified`)
-- Deletes configuration files when requested
-- Supports atomic read-modify-write via `atomic_config_modify()`
-- Uses `fs2` file locking to prevent concurrent write corruption
+Resolves a single parameter or the complete parameter set from all sources following the 6-level priority hierarchy (see invariant/001). Tracks source provenance for every resolved value. Handles missing files and missing values gracefully. Supports runtime parameter overrides as the highest-priority input.
 
 #### Path Discovery
 
-- Resolves global configuration under `$PRO/.persistent/.{app_name}/config.yaml`
-- Discovers local configurations using dual-pattern support:
+- Global configuration resolves under `$PRO/.persistent/.{app_name}/config.yaml`
+- Local configurations are discovered using dual-pattern support:
   - `-{app_name}/{config_filename}` — temporary, gitignored (higher priority within same directory)
   - `.{app_name}/{config_filename}` — permanent, version-controlled (lower priority within same directory)
 - Walks parent directories from CWD to filesystem root, nearest ancestor first
 - Directory depth takes absolute precedence over pattern type
 
-#### Validation
+#### Persistence and I/O
 
-- Single-parameter validation via `ConfigValidator::validate_parameter()`
-- Cross-parameter validation via `ConfigValidator::validate_all()`
-- Both methods called independently; all errors collected before reporting
-- `NoValidator` stub available for applications not needing validation
+Requires the I/O feature to be activated.
+
+- Loads configuration files from discovered paths
+- Saves configuration with automatic metadata generation
+- Supports atomic read-modify-write operations
+- Uses file locking to prevent concurrent write corruption
 
 #### Type Detection
 
-Automatic string-to-typed-value conversion applied to all env var and file values:
+Automatic string-to-typed-value conversion is applied to all environment variable and file values. See algorithm/001 for the complete detection algorithm.
 
-- Boolean: `"true"` / `"yes"` / `"1"` / `"on"` → `Bool(true)` (case-insensitive)
-- Boolean: `"false"` / `"no"` / `"0"` / `"off"` → `Bool(false)` (case-insensitive)
-- Integer: `"42"`, `"-100"` → `Number`
-- Float: `"3.14"`, `"1.23e-4"` → `Number`
-- Fallback: all other strings → `String`
+#### Validation
 
-#### Concurrency Control
+Per-parameter and cross-parameter validation hooks are called after resolution. All errors are collected before reporting. Applications not requiring validation use the provided no-op implementation.
 
-Requires `file_ops` feature.
+#### Security
 
-- File-based advisory locking via `fs2`
-- `atomic_config_modify()` provides transaction-like read-modify-write
-- Safe concurrent reads from multiple processes
+The application name is validated before any path construction:
+- Must not be empty
+- Must not contain path separator characters
+- Must not contain path traversal sequences
 
-### Security
+Path discovery returns an error for invalid application names.
 
-`ConfigPaths::app_name()` is validated at runtime before any path construction:
+### Key Design Decisions
 
-- Must not be empty — prevents paths like `.//config.yaml`
-- Must not contain `/` or `\` — prevents directory traversal
-- Must not contain `..` — prevents path traversal attacks
-
-Path discovery functions return `Err(String)` for invalid app names. `discover_local_configs()` silently skips invalid app names to avoid breaking the discovery loop.
-
-**Recommended values**: alphanumeric characters, hyphens, underscores (`my-app`, `my_app_123`). Unicode is supported; whitespace should be avoided (works but causes shell issues).
-
-### Rationale
-
-1. **Zero-cost abstractions** — `PhantomData`-based generics; `ConfigManager` has no runtime storage
-2. **Trait-based customization** — Applications control all behavior via three traits; the crate provides only wiring
-3. **Fail-safe defaults** — Missing files and missing keys handled without error propagation
-4. **Explicit source tracking** — Every resolved value carries its provenance for debugging
-5. **No mocking in tests** — All 109 tests use real file I/O via `tempfile` crate
+- All manager methods are stateless — the manager type holds no runtime data beyond type markers
+- Missing files and missing keys are handled without error propagation
+- Every resolved value carries source provenance for debugging
 
 ### Cross-References
 
-| Type | File | Relationship |
-|------|------|-------------|
-| invariant | invariant/001_resolution_hierarchy.md | resolution order this feature implements |
-| api | api/001_config_paths_trait.md | required trait for path configuration |
-| api | api/002_config_defaults_trait.md | required trait for default values |
-| api | api/003_config_validator_trait.md | optional trait for validation |
-| format | format/001_config_file_format.md | file format used by this feature |
-| algorithm | algorithm/001_type_detection.md | type detection algorithm applied during resolution |
+| Type | File                                  | Responsibility                                  |
+|------|---------------------------------------|-------------------------------------------------|
+| doc  | invariant/001_resolution_hierarchy.md | Resolution order this feature implements        |
+| doc  | api/001_config_paths_trait.md         | Required trait for path configuration           |
+| doc  | api/002_config_defaults_trait.md      | Required trait for default values               |
+| doc  | api/003_config_validator_trait.md     | Optional trait for validation                   |
+| doc  | format/001_config_file_format.md      | File format used by this feature                |
+| doc  | algorithm/001_type_detection.md       | Type detection applied during resolution        |

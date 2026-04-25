@@ -36,9 +36,8 @@ The builder maintains both representations internally in parallel:
 
 ```text
 RowBuilder
-├── rows: Vec<Vec<String>>          → build_view() → TableView
-├── row_details: Vec<Option<CT>>    ↗
-└── root: TreeNode<String>          → build()      → TreeNode<String>
+├── rows (+ row_details)  → build_view() → TableView
+└── root tree             → build()      → tree structure
 ```
 
 ### Input Model
@@ -47,17 +46,7 @@ Tabular — see `input_model/tabular.md`.
 
 ### Usage
 
-```rust
-// Modern path (Format trait, 8 formatters)
-let view = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
-  .add_row( vec![ "Alice".into(), "30".into() ] )
-  .build_view();
-
-// Legacy path (TableShapedFormatter, 2 formatters)
-let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
-  .add_row( vec![ "Alice".into(), "30".into() ] )
-  .build();
-```
+Construct a builder with `RowBuilder::new( headers )`, add rows via `add_row` or `add_row_mut`, then finalize. Call `build_view()` for the modern `Format`-trait path (8 formatters), or `build()` for the legacy `TableShapedFormatter` path (2 formatters).
 
 ### Invariants
 

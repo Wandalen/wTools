@@ -2,7 +2,7 @@
 
 ### Scope
 
-- **Purpose**: Document each formatter struct — the Rust rendering component that converts `TableView` or `TreeNode<T>` into a specific output format family.
+- **Purpose**: Document each formatter — the rendering component that converts structured data into a specific output format family.
 - **Responsibility**: Registry and overview of all formatter doc instances.
 - **In Scope**: Trait implementations, accepted input types, variant selection mechanism, feature flag, deprecation status.
 - **Out of Scope**: Per-variant preset details (see `../variant/`), operation signatures (see `../api/004_formatters.md`), format output semantics (see `../variant/`).

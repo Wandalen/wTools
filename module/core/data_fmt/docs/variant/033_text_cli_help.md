@@ -129,23 +129,6 @@ EXAMPLES:
   myapp test --config test.toml
 ```
 
-### Example Code
-
-```rust
-use data_fmt::{ RowBuilder, TextFormatter, TextVariant, Format };
-
-let help_view = RowBuilder::new( vec![ "Term".into(), "Description".into() ] )
-  .add_row( vec![ "USAGE".into(), "".into() ] )
-  .add_row( vec![ "myapp [options]".into(), "".into() ] )
-  .add_row( vec![ "OPTIONS".into(), "".into() ] )
-  .add_row( vec![ "--verbose".into(), "Enable verbose output".into() ] )
-  .add_row( vec![ "--help".into(), "Show this help message".into() ] )
-  .build_view();
-
-let formatter = TextFormatter::cli_help();
-let output = formatter.format( &help_view ).unwrap();
-```
-
 ### Key Features
 
 - **Section headers**: Automatically detected and formatted with colon suffix

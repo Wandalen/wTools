@@ -53,8 +53,8 @@ assert!( report.out.contains( "hello" ) );
 | source | [src/process.rs](../../src/process.rs) | `Run` struct, `RunFormer` builder, `run()` dispatch |
 | test | [tests/inc/process_run.rs](../../tests/inc/process_run.rs) | Subprocess execution tests |
 | test | [tests/smoke_test.rs](../../tests/smoke_test.rs) | Smoke-level execution check |
-| api | [api/001_run_api.md](../api/001_run_api.md) | `Run` and `RunFormer` type surface |
-| api | [api/002_report_api.md](../api/002_report_api.md) | `Report` return type produced by every invocation |
-| invariant | [invariant/001_result_contract.md](../invariant/001_result_contract.md) | `Result<Report, Report>` guarantees full context on both branches |
-| invariant | [invariant/002_cross_platform_shell.md](../invariant/002_cross_platform_shell.md) | Shell selection is opaque to callers |
-| feature | [feature/002_output_capture.md](002_output_capture.md) | Every execution produces a captured `Report` |
+| doc | [api/001_run_api.md](../api/001_run_api.md) | `Run` and `RunFormer` type surface |
+| doc | [api/002_report_api.md](../api/002_report_api.md) | `Report` return type produced by every invocation |
+| doc | [invariant/001_result_contract.md](../invariant/001_result_contract.md) | `Result<Report, Report>` guarantees full context on both branches |
+| doc | [invariant/002_cross_platform_shell.md](../invariant/002_cross_platform_shell.md) | Shell selection is opaque to callers |
+| doc | [feature/002_output_capture.md](002_output_capture.md) | Every execution produces a captured `Report` |

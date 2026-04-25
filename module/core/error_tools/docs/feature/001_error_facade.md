@@ -2,32 +2,22 @@
 
 ### Scope
 
-**Purpose:** Provide a single unified entry point for all error handling primitives.
-
-**Responsibility:** Aggregate typed and untyped error handling under one namespace, eliminating direct dependencies on upstream error libraries from consumer crates.
-
-**In Scope:**
-- Re-exporting typed error handling primitives under the crate namespace
-- Re-exporting untyped error handling primitives under the crate namespace
-- Exposing the error-with-report mechanism for paired result handling
-- Exposing debug assertion macros for identity and non-identity checks
-
-**Out of Scope:**
-- Defining new error types (consumer responsibility)
-- Custom error formatting or rendering
-- Error serialization or transport
+- **Purpose**: Provide a single unified entry point for all error handling primitives.
+- **Responsibility**: Documents the error facade feature — its scope, design, and cross-references to all related artifacts.
+- **In Scope**: Re-exporting typed errors, untyped errors, error-with-report mechanism, and debug assertion macros under one namespace.
+- **Out of Scope**: Defining new error types, custom formatting, serialization, or transport — consumer responsibility.
 
 ### Cross-References
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| Feature | feature/002_typed_errors.md | Typed error derivation via thiserror |
-| Feature | feature/003_untyped_errors.md | Untyped dynamic errors via anyhow |
-| Feature | feature/004_no_std_support.md | Optional constrained-environment support |
-| API | api/001_err_with_trait.md | Error-with-report trait and result alias |
-| API | api/002_debug_assertions.md | Debug-only identity assertion macros |
-| Invariant | invariant/001_exclusive_dependency.md | Sole error framework mandate |
-| Invariant | invariant/002_zero_cost_facade.md | Pure re-export with no overhead |
+| doc | [feature/002_typed_errors.md](002_typed_errors.md) | Typed error derivation via thiserror |
+| doc | [feature/003_untyped_errors.md](003_untyped_errors.md) | Untyped dynamic errors via anyhow |
+| doc | [feature/004_no_std_support.md](004_no_std_support.md) | Optional constrained-environment support |
+| doc | [api/001_err_with_trait.md](../api/001_err_with_trait.md) | Error-with-report trait and result alias |
+| doc | [api/002_debug_assertions.md](../api/002_debug_assertions.md) | Debug-only identity assertion macros |
+| doc | [invariant/001_exclusive_dependency.md](../invariant/001_exclusive_dependency.md) | Sole error framework mandate |
+| doc | [invariant/002_zero_cost_facade.md](../invariant/002_zero_cost_facade.md) | Pure re-export with no overhead |
 
 ### Design
 

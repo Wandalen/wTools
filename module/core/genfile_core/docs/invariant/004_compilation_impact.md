@@ -29,4 +29,4 @@ A large compilation overhead discourages adoption and slows CI across the wTools
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | NFR4 in original spec; combined source migrated to invariant/ |
+| [`../../spec.md`](../../spec.md) | NFR4 in original spec; combined source migrated to invariant/. spec.md has been deleted — Sources entry retained as migration record. |

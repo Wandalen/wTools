@@ -67,6 +67,6 @@ println!( "Display output:\n{}", report );
 | Type | File | Responsibility |
 |------|------|----------------|
 | source | [src/process.rs](../../src/process.rs) | `Report` struct, `Display` impl, and manual `Clone` impl |
-| feature | [feature/002_output_capture.md](../feature/002_output_capture.md) | Design rationale for why `Report` is always fully populated |
-| api | [api/001_run_api.md](001_run_api.md) | `RunFormer::run()` produces `Report` values |
-| invariant | [invariant/001_result_contract.md](../invariant/001_result_contract.md) | Guarantees `Report` fields are populated on both `Ok` and `Err` branches |
+| doc | [feature/002_output_capture.md](../feature/002_output_capture.md) | Design rationale for why `Report` is always fully populated |
+| doc | [api/001_run_api.md](001_run_api.md) | `RunFormer::run()` produces `Report` values |
+| doc | [invariant/001_result_contract.md](../invariant/001_result_contract.md) | Guarantees `Report` fields are populated on both `Ok` and `Err` branches |

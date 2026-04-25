@@ -1,19 +1,17 @@
 # Docs
 
-Design and API documentation for `clone_dyn_meta`.
+## Scope
 
-### Scope
+Design and API documentation for `clone_dyn_meta`. Organized as typed doc entity instances: features describe what the crate does, invariants define behavioral contracts, API docs reference the public interface, and algorithm docs describe code generation logic.
 
-Comprehensive design documentation covering procedural macro implementation,
-architectural constraints, public API contracts, and code generation algorithms
-for the `clone_dyn_meta` crate.
+See [entities.md](entities.md) for the complete registry of all doc instances.
 
-### Collections
+### Responsibility Table
 
-| Collection | Description |
-|------------|-------------|
-| `algorithm/` | Code generation algorithm: how the proc-macro transforms trait definitions |
-| `api/` | Public API contracts: `#[clone_dyn]` attribute macro |
-| `entities.md` | Master doc entities and instances index |
-| `feature/` | Behavioral requirements: procedural macro implementation |
-| `invariant/` | Constraints: macro_tools standardization |
+| File | Responsibility |
+|------|----------------|
+| [entities.md](entities.md) | Master registry of all doc entity types and instances |
+| [algorithm/](algorithm/readme.md) | Algorithm documentation — code generation logic |
+| [api/](api/readme.md) | API reference — attribute macro and its applicability |
+| [feature/](feature/readme.md) | Feature documentation — what the crate does and why |
+| [invariant/](invariant/readme.md) | Invariant documentation — behavioral contracts that must always hold |

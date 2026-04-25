@@ -9,7 +9,7 @@
 
 ### Design
 
-`Template<V, R, FS>` is the low-level orchestrator. It holds a list of `FileDescriptor` instances, a `Parameters` collection, a `Values<V>` map, a renderer of type `R`, and a filesystem of type `FS`. Generic type parameters enable compile-time specialization for specific value types, renderers, and filesystems. Most consumers prefer the higher-level `TemplateArchive` API; `Template` is for cases requiring custom types.
+The template holder is the low-level orchestrator. It holds a list of file descriptors, a parameter collection, a value map, a renderer, and a file system. Generic type parameters enable compile-time specialization for specific value types, renderers, and file systems. Most consumers prefer the higher-level archive API; the template holder is for cases requiring custom types.
 
 ### Cross-References
 
@@ -22,4 +22,4 @@
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | FR13 in original spec; combined source migrated to feature/ |
+| [`../../spec.md`](../../spec.md) | FR13 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

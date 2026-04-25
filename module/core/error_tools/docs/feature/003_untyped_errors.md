@@ -2,26 +2,17 @@
 
 ### Scope
 
-**Purpose:** Enable lightweight, context-enriched error propagation without defining named error types.
-
-**Responsibility:** Re-export the dynamic error type, context-chaining trait, and error construction macros from the `anyhow` library under the `error_tools` namespace, so consumers can handle arbitrary errors without a direct `anyhow` dependency.
-
-**In Scope:**
-- Re-exporting the boxed dynamic error type and its result alias
-- Re-exporting context-chaining methods for attaching human-readable messages to propagated errors
-- Re-exporting error construction macros for creating ad-hoc error values inline
-
-**Out of Scope:**
-- Typed error derivation (see Typed Errors feature)
-- Structured error recovery or matching on error variants
-- Serialization of dynamic error chains
+- **Purpose**: Enable lightweight, context-enriched error propagation without defining named error types.
+- **Responsibility**: Documents the untyped error backend feature — its activation, re-exported surface, and relationship to the facade.
+- **In Scope**: Re-exporting the dynamic error type, context-chaining trait, and error construction macros from anyhow.
+- **Out of Scope**: Typed error derivation, structured error recovery or matching on variants, and serialization of dynamic error chains.
 
 ### Cross-References
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| Feature | feature/001_error_facade.md | Unified facade that includes this component |
-| Invariant | invariant/002_zero_cost_facade.md | Pure re-export mandate |
+| doc | [feature/001_error_facade.md](001_error_facade.md) | Unified facade that includes this component |
+| doc | [invariant/002_zero_cost_facade.md](../invariant/002_zero_cost_facade.md) | Pure re-export mandate |
 
 ### Design
 

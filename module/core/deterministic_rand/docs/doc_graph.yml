@@ -1,0 +1,76 @@
+meta:
+  description: Cross-reference graph for all doc instances in deterministic_rand
+  node_count: 6
+  edge_count: 9
+  component_count: 1
+  generated: 2026_04_25
+
+nodes:
+  - id: feature/001
+    file: feature/001_hierarchical_rng.md
+    label: Hierarchical RNG
+    entity: feature
+  - id: feature/002
+    file: feature/002_switchable_determinism.md
+    label: Switchable Determinism
+    entity: feature
+  - id: feature/003
+    file: feature/003_deterministic_iteration.md
+    label: Deterministic Iteration
+    entity: feature
+  - id: invariant/001
+    file: invariant/001_child_index_determinism.md
+    label: Child Index Determinism
+    entity: invariant
+  - id: invariant/002
+    file: invariant/002_seed_reproducibility.md
+    label: Seed Reproducibility
+    entity: invariant
+  - id: api/001
+    file: api/001_public_api.md
+    label: Public API
+    entity: api
+
+edges:
+  - from: feature/001
+    to: invariant/001
+    via: cross_references
+  - from: feature/001
+    to: invariant/002
+    via: cross_references
+  - from: feature/001
+    to: api/001
+    via: cross_references
+  - from: feature/002
+    to: feature/001
+    via: cross_references
+  - from: feature/002
+    to: invariant/001
+    via: cross_references
+  - from: feature/003
+    to: feature/002
+    via: cross_references
+  - from: api/001
+    to: feature/001
+    via: cross_references
+  - from: api/001
+    to: invariant/001
+    via: cross_references
+  - from: api/001
+    to: invariant/002
+    via: cross_references
+
+components:
+  - id: 1
+    label: Core graph
+    size: 6
+    isolated: false
+    nodes:
+      - feature/001
+      - feature/002
+      - feature/003
+      - invariant/001
+      - invariant/002
+      - api/001
+
+dangling_refs: []

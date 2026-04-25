@@ -79,7 +79,7 @@ match check::wait_for_exit( pid_i32, Duration::from_secs( 30 ) )
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| api | [api/005_check_api.md](../api/005_check_api.md) | `is_process_alive()`, `wait_for_exit()`, `is_pidfile_alive()` |
-| api | [api/006_daemon_api.md](../api/006_daemon_api.md) | `write_pidfile()`, `read_pidfile()`, `remove_pidfile()`, `daemonize()` |
-| invariant | [invariant/003_pidfile_format.md](../invariant/003_pidfile_format.md) | PID file decimal format contract |
-| invariant | [invariant/004_eperm_means_alive.md](../invariant/004_eperm_means_alive.md) | EPERM interpretation for privileged daemons |
+| doc | [api/005_check_api.md](../api/005_check_api.md) | `is_process_alive()`, `wait_for_exit()`, `is_pidfile_alive()` |
+| doc | [api/006_daemon_api.md](../api/006_daemon_api.md) | `write_pidfile()`, `read_pidfile()`, `remove_pidfile()`, `daemonize()` |
+| doc | [invariant/003_pidfile_format.md](../invariant/003_pidfile_format.md) | PID file decimal format contract |
+| doc | [invariant/004_eperm_means_alive.md](../invariant/004_eperm_means_alive.md) | EPERM interpretation for privileged daemons |

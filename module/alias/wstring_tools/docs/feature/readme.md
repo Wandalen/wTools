@@ -1,10 +1,14 @@
-# Feature Instances
+# Feature Doc Entity
 
-Feature behavioral requirements for `wstring_tools`.
+### Scope
 
-## Responsibility Table
+- **Purpose**: Document what `wstring_tools` does and why each alias capability exists.
+- **Responsibility**: Master index for all feature doc instances in this crate.
+- **In Scope**: Instance 001 — alias contract, feature flag mapping, and activation sets.
+- **Out of Scope**: Public interface contracts — see `strs_tools` API documentation.
 
-| Entity | Responsibility |
-|--------|----------------|
-| readme.md | Responsibility table for feature instances |
-| alias_contract.md | Re-export alias contract and feature activation rules |
+### Overview Table
+
+| ID | Name | Purpose | Status |
+|----|------|---------|--------|
+| 001 | [Alias Contract](alias_contract.md) | Re-export alias contract and feature activation rules | ✅ |

@@ -9,7 +9,7 @@
 
 ### Design
 
-A `TemplateArchive` is self-contained: it stores parameter values alongside template files and metadata in a single JSON or YAML document. Loading an archive restores all parameter values, so no external state is needed for generation. External content references (`FileRef`, `UrlRef`) are allowed only for file content, not for parameter values. The archive can be internalized — converting all external content references to inline — to produce a fully portable, single-file artifact.
+A template archive is self-contained: it stores parameter values alongside template files and metadata in a single JSON or YAML document. Loading an archive restores all parameter values, so no external state is needed for generation. External content references (file or URL references) are allowed only for file content, not for parameter values. The archive can be internalized — converting all external content references to inline — to produce a fully portable, single-file artifact.
 
 ### Cross-References
 
@@ -22,4 +22,4 @@ A `TemplateArchive` is self-contained: it stores parameter values alongside temp
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | FR17 in original spec; combined source migrated to feature/ |
+| [`../../spec.md`](../../spec.md) | FR17 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

@@ -42,5 +42,5 @@ The supported variables (`CI`, `GITHUB_ACTIONS`, `GITLAB_CI`, `TRAVIS`, `CIRCLEC
 |------|------|----------------|
 | source | [src/environment.rs](../../src/environment.rs) | `is_cicd()` implementation and CI variable list |
 | test | [tests/inc/environment_is_cicd.rs](../../tests/inc/environment_is_cicd.rs) | CI variable detection tests |
-| api | [api/007_environment_api.md](../api/007_environment_api.md) | `is_cicd()` function signature and detection contract |
-| feature | [feature/001_process_execution.md](001_process_execution.md) | Primary execution feature; CI detection complements it |
+| doc | [api/007_environment_api.md](../api/007_environment_api.md) | `is_cicd()` function signature and detection contract |
+| doc | [feature/001_process_execution.md](001_process_execution.md) | Primary execution feature; CI detection complements it |

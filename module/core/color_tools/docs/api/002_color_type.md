@@ -68,5 +68,5 @@ assert_eq!( Color::Ansi256( 208 ).to_ansi(), "\x1b[38;5;208m" );
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| api/001 | [DecoratedText Type](001_decorated_text_type.md) | `with_color_named(Color)` attaches `Color` to `DecoratedText` |
-| feature/001 | [DecoratedText](../feature/001_decorated_text.md) | Color parameter syntax specification |
+| doc | [DecoratedText Type](001_decorated_text_type.md) | `with_color_named(Color)` attaches `Color` to `DecoratedText` |
+| doc | [DecoratedText](../feature/001_decorated_text.md) | Color parameter syntax specification |

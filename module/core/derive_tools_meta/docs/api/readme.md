@@ -2,13 +2,13 @@
 
 ### Scope
 
-- Instances document the public interface exposed by `derive_tools_meta`.
-- Each instance covers one logical grouping of public entry points.
-- Audience: contributors adding new macros or reviewing the interface contract.
-- Does not describe behavioral rationale — see `feature/` and `invariant/` instances.
+- **Purpose**: Document the public interface exposed by `derive_tools_meta`.
+- **Responsibility**: Master index for all API doc instances in this crate.
+- **In Scope**: Instance 001 — derive macro names, applicability, and feature flags.
+- **Out of Scope**: Behavioral rationale — see `feature/` and `invariant/` instances.
 
 ### Overview Table
 
-| ID | File | Name |
-|----|------|------|
-| 001 | [001_derive_api.md](001_derive_api.md) | Derive API |
+| ID | Name | Purpose | Status |
+|----|------|---------|--------|
+| 001 | [Derive API](001_derive_api.md) | Public derive macro interface — names, applicability, and feature flags | ✅ |

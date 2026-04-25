@@ -1,21 +1,19 @@
 # Docs
 
-Design and API documentation for `clone_dyn_types`.
+## Scope
 
-### Scope
+Design and API documentation for `clone_dyn_types`. Organized as typed doc entity instances: features describe what the crate does, invariants define safety contracts, API docs reference the public interface, algorithm docs describe DST cloning logic, and pattern docs capture architectural decisions.
 
-Comprehensive design documentation covering behavioral requirements, safety invariants,
-public API contracts, implementation algorithms, and architectural patterns for the
-`clone_dyn_types` crate.
+See [entities.md](entities.md) for the complete registry of all doc instances.
 
-### Collections
+### Responsibility Table
 
-| Collection | Description |
-|------------|-------------|
-| `feature/` | Behavioral requirements: what the crate does |
-| `invariant/` | Constraints: what must always hold |
-| `api/` | Public API contracts: traits and functions |
-| `algorithm/` | Implementation algorithms: how DST cloning works |
-| `pattern/` | Architectural design patterns |
-| `doc_graph.yml` | Cross-reference graph of doc instances |
-| `entities.md` | Master doc entities and instances index |
+| File | Responsibility |
+|------|----------------|
+| [entities.md](entities.md) | Master registry of all doc entity types and instances |
+| [doc_graph.yml](doc_graph.yml) | Cross-reference graph linking all doc instances |
+| [feature/](feature/readme.md) | Feature documentation — what the crate does and why |
+| [invariant/](invariant/readme.md) | Invariant documentation — safety contracts that must always hold |
+| [api/](api/readme.md) | API reference — public traits and functions |
+| [algorithm/](algorithm/readme.md) | Algorithm documentation — DST cloning implementation |
+| [pattern/](pattern/readme.md) | Pattern documentation — architectural design patterns |

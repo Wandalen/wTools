@@ -33,7 +33,7 @@ input text
       if Hard strategy → hard_break_str
       else → wrap_words (Word or WordThenHard)
   → enforce max_lines + overflow policy
-  → Vec<String> output
+  → output lines
 ```
 
 ### Break Strategies

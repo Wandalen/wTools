@@ -12,14 +12,14 @@ The test suite is organized into three domains:
 2. **Assumption Tests** (`assumption_test.rs`) - RNG behavior assumptions
 3. **Integration Tests** (`basic_test.rs`) - End-to-end determinism validation
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|
-| smoke_test.rs | Basic smoke tests for quick validation |
-| assumption_test.rs | Validate RNG behavior assumptions (streams, sampling) |
-| basic_test.rs | Parallel Monte Carlo tests proving determinism |
-| seed_import_non_deterministic_bug_test.rs | Reproduce and verify fix for Seed import in non-deterministic mode |
+| `smoke_test.rs` | Basic smoke tests for quick validation |
+| `assumption_test.rs` | Validate RNG behavior assumptions (streams, sampling) |
+| `basic_test.rs` | Parallel Monte Carlo tests proving determinism |
+| `seed_import_non_deterministic_bug_test.rs` | Reproduce and verify fix for Seed import in non-deterministic mode |
 
 ## Test Coverage
 

@@ -67,4 +67,4 @@ assert_eq!( custom.code(), Some( 42 ) );
 | Type | File | Responsibility |
 |------|------|----------------|
 | source | [src/exit_status.rs](../../src/exit_status.rs) | `synthetic_exit_status` and convenience wrapper implementations |
-| feature | [feature/004_exit_status_synthesis.md](../feature/004_exit_status_synthesis.md) | Design rationale and platform encoding explanation |
+| doc | [feature/004_exit_status_synthesis.md](../feature/004_exit_status_synthesis.md) | Design rationale and platform encoding explanation |

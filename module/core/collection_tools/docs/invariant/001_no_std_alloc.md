@@ -43,4 +43,4 @@ The invariant cannot be violated at runtime — configuration is resolved entire
 
 | File | Notes |
 |------|-------|
-| [../../spec.md](../../spec.md) | Migrated; sections: Architecture → Feature-Based Collection Source, Design Rationale → Why Conditional hashbrown Dependency, Overview → No-std Support; siblings: api/001, feature/001, feature/002, invariant/002 |
+| [../../spec.md](../../spec.md) | Migrated; sections: Architecture → Feature-Based Collection Source, Design Rationale → Why Conditional hashbrown Dependency, Overview → No-std Support; siblings: api/001, feature/001, feature/002, invariant/002. spec.md has been deleted — Sources entry retained as migration record. |

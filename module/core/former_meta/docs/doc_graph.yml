@@ -1,0 +1,130 @@
+meta:
+  description: Cross-reference graph for all doc instances in former_meta
+  node_count: 7
+  edge_count: 19
+  component_count: 1
+  generated: 2026_04_25
+
+nodes:
+  - id: api/001
+    file: api/001_derive_api.md
+    label: Derive API
+    entity: api
+
+  - id: feature/001
+    file: feature/001_former_derive.md
+    label: Former Derive Macro
+    entity: feature
+
+  - id: integration/001
+    file: integration/001_macro_tools.md
+    label: macro_tools
+    entity: integration
+
+  - id: integration/002
+    file: integration/002_former_types.md
+    label: former_types
+    entity: integration
+
+  - id: integration/003
+    file: integration/003_former.md
+    label: former
+    entity: integration
+
+  - id: invariant/001
+    file: invariant/001_proc_macro_separation.md
+    label: Proc-Macro Crate Separation
+    entity: invariant
+
+  - id: invariant/002
+    file: invariant/002_feature_flag_gating.md
+    label: Feature Flag Gating
+    entity: invariant
+
+edges:
+  # feature/001 cross-references
+  - from: feature/001
+    to: api/001
+    via: cross_references
+  - from: feature/001
+    to: invariant/001
+    via: cross_references
+  - from: feature/001
+    to: invariant/002
+    via: cross_references
+  - from: feature/001
+    to: integration/003
+    via: cross_references
+
+  # api/001 cross-references
+  - from: api/001
+    to: feature/001
+    via: cross_references
+  - from: api/001
+    to: invariant/002
+    via: cross_references
+  - from: api/001
+    to: integration/003
+    via: cross_references
+
+  # invariant/001 cross-references
+  - from: invariant/001
+    to: feature/001
+    via: cross_references
+  - from: invariant/001
+    to: integration/003
+    via: cross_references
+  - from: invariant/001
+    to: integration/002
+    via: cross_references
+
+  # invariant/002 cross-references
+  - from: invariant/002
+    to: api/001
+    via: cross_references
+  - from: invariant/002
+    to: feature/001
+    via: cross_references
+
+  # integration/001 cross-references
+  - from: integration/001
+    to: api/001
+    via: cross_references
+  - from: integration/001
+    to: feature/001
+    via: cross_references
+
+  # integration/002 cross-references
+  - from: integration/002
+    to: invariant/001
+    via: cross_references
+  - from: integration/002
+    to: feature/001
+    via: cross_references
+
+  # integration/003 cross-references
+  - from: integration/003
+    to: invariant/001
+    via: cross_references
+  - from: integration/003
+    to: feature/001
+    via: cross_references
+  - from: integration/003
+    to: api/001
+    via: cross_references
+
+components:
+  - id: 1
+    label: former_meta doc corpus
+    size: 7
+    isolated: false
+    nodes:
+      - api/001
+      - feature/001
+      - integration/001
+      - integration/002
+      - integration/003
+      - invariant/001
+      - invariant/002
+
+dangling_refs: []

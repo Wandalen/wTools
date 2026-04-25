@@ -1,0 +1,140 @@
+# Doc instance dependency graph for genfile_core
+# Generated from Cross-References tables (doc-type entries only)
+# Nodes: entity/NNN format; edges are directed (source references target)
+
+nodes:
+  - feature/001
+  - feature/002
+  - feature/003
+  - feature/004
+  - feature/005
+  - feature/006
+  - feature/007
+  - feature/008
+  - feature/009
+  - feature/010
+  - feature/011
+  - feature/012
+  - feature/013
+  - feature/014
+  - feature/015
+  - feature/016
+  - feature/017
+  - invariant/001
+  - invariant/002
+  - invariant/003
+  - invariant/004
+  - invariant/005
+  - invariant/006
+  - invariant/007
+
+edges:
+  # feature/001: Template Value Trait
+  - [ feature/001, feature/002 ]
+
+  # feature/002: Default Value Type
+  - [ feature/002, feature/001 ]
+  - [ feature/002, feature/005 ]
+
+  # feature/003: Parameter Definition
+  - [ feature/003, feature/004 ]
+
+  # feature/004: Parameter Collection
+  - [ feature/004, feature/003 ]
+  - [ feature/004, feature/015 ]
+
+  # feature/005: Value Storage
+  - [ feature/005, feature/001 ]
+  - [ feature/005, feature/014 ]
+
+  # feature/006: Template Renderer Trait
+  - [ feature/006, feature/007 ]
+  - [ feature/006, feature/014 ]
+
+  # feature/007: Handlebars Renderer
+  - [ feature/007, feature/006 ]
+  - [ feature/007, invariant/001 ]
+
+  # feature/008: File Descriptor
+  - [ feature/008, feature/009 ]
+  - [ feature/008, feature/014 ]
+
+  # feature/009: Write Mode Support
+  - [ feature/009, feature/008 ]
+  - [ feature/009, feature/010 ]
+
+  # feature/010: File System Trait
+  - [ feature/010, feature/011 ]
+  - [ feature/010, feature/012 ]
+
+  # feature/011: Real File System
+  - [ feature/011, feature/010 ]
+
+  # feature/012: Memory File System
+  - [ feature/012, feature/010 ]
+  - [ feature/012, invariant/002 ]
+
+  # feature/013: Template Holder
+  - [ feature/013, feature/014 ]
+
+  # feature/014: Template Generation
+  - [ feature/014, feature/013 ]
+  - [ feature/014, feature/015 ]
+
+  # feature/015: Missing Mandatory Detection
+  - [ feature/015, feature/004 ]
+  - [ feature/015, feature/014 ]
+
+  # feature/016: Typed Errors
+  - [ feature/016, feature/014 ]
+  - [ feature/016, invariant/006 ]
+
+  # feature/017: Archive Self-Containment
+  - [ feature/017, feature/014 ]
+
+  # invariant/001: Rendering Performance
+  - [ invariant/001, feature/007 ]
+
+  # invariant/002: Memory Efficiency
+  - [ invariant/002, feature/012 ]
+
+  # invariant/006: Error Message Quality
+  - [ invariant/006, feature/016 ]
+
+components:
+  # Component 1: main connected cluster (20 nodes)
+  # All feature and invariant nodes reachable through the feature/014 hub
+  # are part of one component.
+
+  # Isolated nodes: invariant/003, invariant/004, invariant/005, invariant/007
+  # These invariants reference only source, test, or config entries in their
+  # Cross-References tables — no doc-type edges connect them to the main graph.
+
+  - id: isolated/invariant-003
+    nodes: [ invariant/003 ]
+    gap: >
+      Test Coverage invariant references only the tests/ directory (source/test
+      entries), with no cross-references to other doc instances. It is isolated
+      by design — coverage is a process metric, not tied to a specific feature.
+
+  - id: isolated/invariant-004
+    nodes: [ invariant/004 ]
+    gap: >
+      Compilation Impact invariant references only Cargo.toml configuration
+      (config entry), with no cross-references to other doc instances. It is
+      isolated by design — build time is a workspace-level metric, not feature-specific.
+
+  - id: isolated/invariant-005
+    nodes: [ invariant/005 ]
+    gap: >
+      Documentation Coverage invariant references only source code (source entry),
+      with no cross-references to other doc instances. It governs all public items
+      uniformly rather than any one feature.
+
+  - id: isolated/invariant-007
+    nodes: [ invariant/007 ]
+    gap: >
+      Backward Compatibility invariant references only Cargo.toml (config entry),
+      with no cross-references to other doc instances. Semver compliance is a
+      release-process constraint that spans the entire public API rather than
+      any specific feature.

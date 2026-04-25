@@ -33,7 +33,7 @@ The single import point (`use component_model::*`) gives access to the derive ma
 | source | `component_model_types/src/component.rs` | Assign, OptionExt, AssignWithType trait definitions |
 | test | `tests/tests.rs` | Integration test suite for derive macros |
 | test | `tests/smoke_test.rs` | Smoke tests verifying basic build and publish health |
-| pattern | [pattern/001_absorption_pattern.md](../pattern/001_absorption_pattern.md) | Why the feature is split across three crates |
+| doc | [pattern/001_absorption_pattern.md](../pattern/001_absorption_pattern.md) | Why the feature is split across three crates |
 | doc | `component_model_meta/docs/api/001_derive_macros.md` | Derive macro API reference |
 | doc | `component_model_types/docs/api/001_assign_trait.md` | Assign trait API reference |
 | doc | `component_model_types/docs/feature/001_component_assignment.md` | Component assignment feature (types crate view) |

@@ -27,7 +27,7 @@ A strict three-layer architecture separates concerns: data representation, ergon
 
 #### Layer 1: Data (TreeNode)
 
-`TreeNode< T >` is the single data structure serving both hierarchical and tabular use cases. Hierarchical trees use `data = None` for directories and `data = Some(T)` for files. Table-shaped trees encode rows as children of root, with each row's children named after columns.
+`TreeNode< T >` is the single data structure serving both hierarchical and tabular use cases. Hierarchical trees use absent data for directory nodes and present data for leaf nodes. Table-shaped trees encode rows as children of root, with each row's children named after columns.
 
 #### Layer 2: Builders and Traits
 
@@ -50,35 +50,22 @@ Format-specific renderers that consume `TreeNode< T >` or `TableView`:
 - `JsonFormatter`, `YamlFormatter`, `TomlFormatter` — serialization formats
 - `TextFormatter` — plain text output (6 styles)
 
-All formatters implement the `Format` trait for a unified API.
+Eight of ten formatters implement the `Format` trait for a unified API; `ExpandedFormatter` and `TreeFormatter` use legacy or direct-dispatch paths.
 
 #### Module File Structure
 
-```
-src/
-  lib.rs                     # Re-exports public API
-  data.rs                    # TreeNode, TableView struct, TableShapedView trait
-  builder.rs                 # TreeBuilder (hierarchical)
-  table_tree.rs              # RowBuilder (table-shaped)
-  config.rs                  # TreeConfig, TableConfig, ExpandedConfig
-  conversions.rs             # Tree<->Table conversions, FlattenConfig
-  ansi_str.rs                # visual_len, pad_to_width, truncate_cell
-  wrap.rs                    # WrapConfig, WrapFormatter, BreakStrategy, Overflow
-  themes.rs                  # ColorTheme predefined and custom themes
-  formatters/
-    mod.rs                   # TableShapedFormatter trait (deprecated), Format trait re-export
-    format_trait.rs          # Format trait, FormatError
-    tree.rs                  # TreeFormatter with format() and format_aligned()
-    table/                   # TableFormatter (split into directory)
-    expanded.rs              # ExpandedFormatter
-    logfmt.rs                # LogfmtFormatter
-    html.rs                  # HtmlFormatter
-    sql.rs                   # SqlFormatter
-    json.rs                  # JsonFormatter
-    yaml.rs                  # YamlFormatter
-    toml_fmt.rs              # TomlFormatter
-    text.rs                  # TextFormatter
-```
+| Module | Responsibility |
+|--------|----------------|
+| `lib.rs` | Re-exports public API |
+| `data.rs` | Core data types and view trait |
+| `builder.rs` | TreeBuilder for hierarchical trees |
+| `table_tree.rs` | RowBuilder for table-shaped trees |
+| `config.rs` | All configuration types |
+| `conversions.rs` | Tree-to-table conversion utilities |
+| `ansi_str.rs` | ANSI-aware string width utilities |
+| `wrap.rs` | Word-wrap config and formatter |
+| `themes.rs` | Color theme definitions |
+| `formatters/` | Per-formatter modules, one per formatter type |
 
 ### Applicability
 

@@ -1,8 +1,10 @@
 # Docs
 
+## Scope
+
 Design and API documentation for `mod_interface`.
 
-#### Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

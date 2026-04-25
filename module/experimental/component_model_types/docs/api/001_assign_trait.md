@@ -55,5 +55,5 @@ All assignment operations are infallible by design. There is no validation at as
 |------|------|----------------|
 | source | `src/component.rs` | Defines Assign, OptionExt, AssignWithType traits and blanket impls |
 | source | `src/popular_types/std_types.rs` | PopularType marker trait definition |
-| feature | [feature/001_component_assignment.md](../feature/001_component_assignment.md) | End-to-end feature this API enables |
-| invariant | [invariant/001_orphan_rule.md](../invariant/001_orphan_rule.md) | Why standard library impls cannot live here |
+| doc | [feature/001_component_assignment.md](../feature/001_component_assignment.md) | End-to-end feature this API enables |
+| doc | [invariant/001_orphan_rule.md](../invariant/001_orphan_rule.md) | Why standard library impls cannot live here |

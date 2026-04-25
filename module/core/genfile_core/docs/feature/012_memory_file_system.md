@@ -9,7 +9,7 @@
 
 ### Design
 
-`MemoryFileSystem` stores file content in a map from path to byte vector. Writes add or replace entries; reads return the stored bytes or an error for missing paths. The `create_dir_all` operation is a no-op since in-memory storage requires no directory creation. No real filesystem operations are performed, making tests fast and side-effect free.
+The in-memory file system stores file content in a map from path to byte vector. Writes add or replace entries; reads return the stored bytes or an error for missing paths. The create-directory-all operation is a no-op since in-memory storage requires no directory creation. No real filesystem operations are performed, making tests fast and side-effect free.
 
 ### Cross-References
 
@@ -17,9 +17,10 @@
 |------|------|----------------|
 | source | `src/filesystem.rs` | `MemoryFileSystem` implementation |
 | doc | `docs/feature/010_file_system_trait.md` | Trait that `MemoryFileSystem` implements |
+| doc | `docs/invariant/002_memory_efficiency.md` | Memory ceiling that applies to this implementation |
 
 ### Sources
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | FR12 in original spec; combined source migrated to feature/ |
+| [`../../spec.md`](../../spec.md) | FR12 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

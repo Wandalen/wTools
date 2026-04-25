@@ -30,4 +30,4 @@ Inconsistent exit codes break shell scripts and CI pipelines that check `$?`. Si
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | NFR3 in original spec; combined source migrated to invariant/ |
+| `spec.md` (deleted) | NFR3 in original spec; combined source migrated to invariant/. spec.md has been deleted — Sources entry retained as migration record. |

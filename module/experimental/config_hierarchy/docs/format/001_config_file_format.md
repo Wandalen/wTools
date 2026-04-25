@@ -61,6 +61,6 @@ The crate does not validate the file structure on read beyond what `serde_yaml` 
 
 | Type | Target | Relationship |
 |------|--------|-------------|
-| feature | feature/001_config_hierarchy.md | file format used by this feature |
-| api | api/001_config_paths_trait.md | `local_config_filename()` controls the filename |
-| invariant | invariant/001_resolution_hierarchy.md | files at these paths feed into resolution |
+| doc | feature/001_config_hierarchy.md | file format used by this feature |
+| doc | api/001_config_paths_trait.md | `local_config_filename()` controls the filename |
+| doc | invariant/001_resolution_hierarchy.md | files at these paths feed into resolution |

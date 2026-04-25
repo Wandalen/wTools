@@ -1,9 +1,14 @@
-# API
+# API Doc Entity
 
-API contracts and usage reference for `cli_fmt`.
+### Scope
 
-## Responsibility Table
+- **Purpose**: Document the public interface exposed by `cli_fmt`.
+- **Responsibility**: Master index for all API doc instances in this crate.
+- **In Scope**: Instance 001 — output processing function, configuration, and result types.
+- **Out of Scope**: Behavioral rationale — see `feature/` and `invariant/` instances.
 
-| Entity | Responsibility |
-|--------|----------------|
-| `001_output_api.md` | API contract for the output processing module |
+### Overview Table
+
+| ID | Name | Purpose | Status |
+|----|------|---------|--------|
+| 001 | [Output API](001_output_api.md) | Output processing contract — config, result, and processor function | ✅ |

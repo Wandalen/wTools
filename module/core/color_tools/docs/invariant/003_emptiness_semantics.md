@@ -32,5 +32,5 @@ If `is_empty()` tested `render()` output, colored-but-empty text would report no
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| feature/001 | [DecoratedText](../feature/001_decorated_text.md) | Parent feature |
-| invariant/002 | [Render Reset Contract](002_render_reset_contract.md) | Sibling — render behavior |
+| doc | [DecoratedText](../feature/001_decorated_text.md) | Parent feature |
+| doc | [Render Reset Contract](002_render_reset_contract.md) | Sibling — render behavior |

@@ -30,4 +30,4 @@ Missing documentation is the primary barrier to adoption. Users cannot discover 
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | NFR6 in original spec; combined source migrated to invariant/ |
+| `spec.md` (deleted) | NFR6 in original spec; combined source migrated to invariant/. spec.md has been deleted — Sources entry retained as migration record. |

@@ -9,7 +9,7 @@
 
 ### Design
 
-The `Error` enum covers all genfile_core failure modes: `Render` (template engine failure), `MissingParameters` (mandatory parameters unfilled before generation), `Fs` (wrapping `std::io::Error` for filesystem failures), and `InvalidTemplate` (malformed template syntax). All variants implement `std::error::Error`. The crate uses `error_tools` for error infrastructure. Callers can match variants to distinguish user-fixable errors (MissingParameters) from system errors (Fs).
+The typed error covers all genfile_core failure modes: render failure (template engine failure), missing parameters (mandatory parameters unfilled before generation), filesystem I/O (wrapping OS-level filesystem errors), and invalid template (malformed template syntax). All variants satisfy the standard error contract. Callers can match variants to distinguish user-fixable errors (missing parameters) from system errors (filesystem I/O).
 
 ### Cross-References
 
@@ -17,9 +17,10 @@ The `Error` enum covers all genfile_core failure modes: `Render` (template engin
 |------|------|----------------|
 | source | `src/error.rs` | `Error` enum definition |
 | doc | `docs/feature/014_template_generation.md` | Primary error return site |
+| doc | `docs/invariant/006_error_message_quality.md` | Quality constraint that applies to these error variants |
 
 ### Sources
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | FR16 in original spec; combined source migrated to feature/ |
+| [`../../spec.md`](../../spec.md) | FR16 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

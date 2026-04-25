@@ -21,10 +21,6 @@
 
 An O(C) algorithm that distributes available terminal width among table columns so flex columns receive a wrapping budget. Fixed columns (narrow content, max cell width ≤ 12) retain their natural width. Flex columns (wide content) share the remaining budget equally, with remainder characters distributed left-to-right. No flex column is expanded beyond its natural content width.
 
-### Related Tasks
-
-- [`task/019`](../../task/019_cell_auto_wrapping_with_budget_allocation.md) — Implementation task
-
 ### Trigger Condition
 
 Budget allocation runs when all three conditions hold:

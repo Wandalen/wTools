@@ -1,0 +1,67 @@
+meta:
+  generated: 2026_04_25
+  node_count: 5
+  edge_count: 10
+  component_count: 1
+
+nodes:
+  - id: feature/001_aggregate_facade
+    type: feature
+    name: Aggregate Facade
+  - id: api/001_workspace_derives
+    type: api
+    name: Workspace Derives
+  - id: api/002_external_derives
+    type: api
+    name: External Derives
+  - id: invariant/001_pure_facade
+    type: invariant
+    name: Pure Facade
+  - id: integration/001_derive_tools_meta
+    type: integration
+    name: derive_tools_meta
+
+edges:
+  - from: feature/001_aggregate_facade
+    to: api/001_workspace_derives
+    label: workspace macros re-exported by this facade
+  - from: feature/001_aggregate_facade
+    to: api/002_external_derives
+    label: external macros re-exported by this facade
+  - from: feature/001_aggregate_facade
+    to: invariant/001_pure_facade
+    label: why this crate must not implement its own macros
+  - from: feature/001_aggregate_facade
+    to: integration/001_derive_tools_meta
+    label: workspace companion implementing the custom macros
+  - from: api/001_workspace_derives
+    to: feature/001_aggregate_facade
+    label: aggregate facade context
+  - from: api/001_workspace_derives
+    to: api/002_external_derives
+    label: companion external derives interface
+  - from: api/001_workspace_derives
+    to: integration/001_derive_tools_meta
+    label: crate that implements these macros
+  - from: api/002_external_derives
+    to: feature/001_aggregate_facade
+    label: aggregate facade context
+  - from: invariant/001_pure_facade
+    to: integration/001_derive_tools_meta
+    label: correct location for custom derive implementations
+  - from: integration/001_derive_tools_meta
+    to: invariant/001_pure_facade
+    label: why this crate and derive_tools are separate
+
+components:
+  - id: 1
+    size: 5
+    isolated: false
+    members:
+      - feature/001_aggregate_facade
+      - api/001_workspace_derives
+      - api/002_external_derives
+      - invariant/001_pure_facade
+      - integration/001_derive_tools_meta
+
+dangling_refs: []

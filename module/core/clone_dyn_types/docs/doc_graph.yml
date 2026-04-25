@@ -3,7 +3,7 @@ meta:
   node_count: 10
   edge_count: 25
   component_count: 1
-  generated: 2026-04-25
+  generated: 2026_04_25
 
 nodes:
   - id: feature/001
@@ -36,7 +36,7 @@ nodes:
     entity: api
   - id: api/002
     file: api/002_clone_into_box.md
-    label: Clone Into Box
+    label: clone_into_box and clone
     entity: api
   - id: algorithm/001
     file: algorithm/001_fat_pointer_surgery.md

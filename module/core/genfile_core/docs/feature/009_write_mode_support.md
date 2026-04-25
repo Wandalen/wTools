@@ -9,7 +9,7 @@
 
 ### Design
 
-`WriteMode` is an enum where the `Rewrite` variant unconditionally overwrites an existing file or creates a new one. It is stored inside `FileDescriptor` and consumed by the file system layer during generation. Additional modes (e.g., merge, skip-if-exists) may be added in future versions.
+The write mode is a discriminated type where the rewrite variant unconditionally overwrites an existing file or creates a new one. It is stored inside the file descriptor and consumed by the file system layer during generation. Additional modes (e.g., merge, skip-if-exists) may be added in future versions.
 
 ### Cross-References
 
@@ -23,4 +23,4 @@
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | FR9 in original spec; combined source migrated to feature/ |
+| [`../../spec.md`](../../spec.md) | FR9 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

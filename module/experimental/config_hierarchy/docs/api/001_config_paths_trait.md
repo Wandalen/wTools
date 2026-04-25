@@ -123,7 +123,7 @@ fn env_var_prefix() -> &'static str { "MYAPP" }
 
 | Type | Target | Relationship |
 |------|--------|-------------|
-| invariant | invariant/001_resolution_hierarchy.md | path formulas defined by this trait govern the invariant |
-| format | format/001_config_file_format.md | files at these paths use this format |
-| api | api/002_config_defaults_trait.md | companion required trait |
-| api | api/003_config_validator_trait.md | companion optional trait |
+| doc | invariant/001_resolution_hierarchy.md | path formulas defined by this trait govern the invariant |
+| doc | format/001_config_file_format.md | files at these paths use this format |
+| doc | api/002_config_defaults_trait.md | companion required trait |
+| doc | api/003_config_validator_trait.md | companion optional trait |

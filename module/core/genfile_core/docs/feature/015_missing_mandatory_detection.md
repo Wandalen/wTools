@@ -9,7 +9,7 @@
 
 ### Design
 
-Before generation, the system compares the mandatory parameter list from `Parameters` against keys present in `Values`. Any mandatory parameter with a `None` value is collected and returned as a list of missing names. An empty list means all mandatory parameters are satisfied and generation can proceed. This check prevents partial or corrupted output from missing substitutions.
+Before generation, the system compares the mandatory parameter list from the parameter collection against keys present in the value map. Any mandatory parameter with no assigned value is collected and returned as a list of missing names. An empty list means all mandatory parameters are satisfied and generation can proceed. This check prevents partial or corrupted output from missing substitutions.
 
 ### Cross-References
 
@@ -23,4 +23,4 @@ Before generation, the system compares the mandatory parameter list from `Parame
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | FR15 in original spec; combined source migrated to feature/ |
+| [`../../spec.md`](../../spec.md) | FR15 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

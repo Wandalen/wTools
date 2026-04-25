@@ -89,9 +89,9 @@ Path discovery functions return `Err(String)` for invalid app names. `discover_l
 
 | Type | Target | Relationship |
 |------|--------|-------------|
-| invariant | invariant/001_resolution_hierarchy.md | resolution order this feature implements |
-| api | api/001_config_paths_trait.md | required trait for path configuration |
-| api | api/002_config_defaults_trait.md | required trait for default values |
-| api | api/003_config_validator_trait.md | optional trait for validation |
-| format | format/001_config_file_format.md | file format used by this feature |
-| algorithm | algorithm/001_type_detection.md | type detection algorithm applied during resolution |
+| doc | invariant/001_resolution_hierarchy.md | resolution order this feature implements |
+| doc | api/001_config_paths_trait.md | required trait for path configuration |
+| doc | api/002_config_defaults_trait.md | required trait for default values |
+| doc | api/003_config_validator_trait.md | optional trait for validation |
+| doc | format/001_config_file_format.md | file format used by this feature |
+| doc | algorithm/001_type_detection.md | type detection algorithm applied during resolution |

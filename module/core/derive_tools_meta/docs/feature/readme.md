@@ -2,13 +2,13 @@
 
 ### Scope
 
-- Instances describe what `derive_tools_meta` does and why each capability exists.
-- Each instance covers one cohesive behavioral area of the crate.
-- Audience: contributors and consumers deciding whether this crate meets their needs.
-- Does not cover implementation mechanics or public interface contracts.
+- **Purpose**: Document what `derive_tools_meta` does and why each capability exists.
+- **Responsibility**: Master index for all feature doc instances in this crate.
+- **In Scope**: Instance 001 — derive macro collection for common trait implementations.
+- **Out of Scope**: Implementation mechanics and public interface contracts — see `api/` instances.
 
 ### Overview Table
 
-| ID | File | Name |
-|----|------|------|
-| 001 | [001_derive_macros.md](001_derive_macros.md) | Derive Macros |
+| ID | Name | Purpose | Status |
+|----|------|---------|--------|
+| 001 | [Derive Macros](001_derive_macros.md) | Collection of derive macros for common trait implementations | ✅ |

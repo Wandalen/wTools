@@ -22,4 +22,4 @@ Files can be added as text templates or binary content, either inline or from an
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | FR2 in original spec; combined source migrated to feature/ |
+| `spec.md` (deleted) | FR2 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

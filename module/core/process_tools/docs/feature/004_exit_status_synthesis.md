@@ -51,5 +51,5 @@ assert_eq!( custom.code(), Some( 42 ) );
 |------|------|----------------|
 | source | [src/exit_status.rs](../../src/exit_status.rs) | `synthetic_exit_status` and convenience wrapper implementations |
 | test | [tests/exit_status_test.rs](../../tests/exit_status_test.rs) | Synthesis correctness and platform encoding tests |
-| api | [api/003_exit_status_api.md](../api/003_exit_status_api.md) | Full function signatures and parameter contracts |
-| feature | [feature/005_lifecycle_management.md](005_lifecycle_management.md) | Lifecycle check results can be propagated as synthetic statuses |
+| doc | [api/003_exit_status_api.md](../api/003_exit_status_api.md) | Full function signatures and parameter contracts |
+| doc | [feature/005_lifecycle_management.md](005_lifecycle_management.md) | Lifecycle check results can be propagated as synthetic statuses |

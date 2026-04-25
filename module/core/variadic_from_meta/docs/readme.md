@@ -1,5 +1,7 @@
 # Docs
 
+## Scope
+
 Design and API documentation for `variadic_from_meta`.
 
 ### Responsibility Table

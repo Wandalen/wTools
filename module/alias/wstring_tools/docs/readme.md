@@ -1,10 +1,11 @@
 # Docs
 
-Design and API documentation for `wstring_tools`.
+## Scope
+
+Design and API documentation for `wstring_tools`. Documents the alias contract between `wstring_tools` and `strs_tools`.
 
 ### Responsibility Table
 
 | File | Responsibility |
-|--------|----------------|
-| readme.md | Responsibility table and docs directory overview |
-| feature/ | Feature behavioral requirement instances |
+|------|----------------|
+| [feature/](feature/readme.md) | Feature documentation — alias contract and feature activation rules |

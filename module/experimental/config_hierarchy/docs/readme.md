@@ -1,5 +1,7 @@
 # config_hierarchy Docs
 
+## Scope
+
 | Directory | Responsibility |
 |-----------|---------------|
 | feature/ | Feature behavioral specifications |

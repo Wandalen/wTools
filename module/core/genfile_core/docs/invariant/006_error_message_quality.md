@@ -30,4 +30,4 @@ Opaque error messages cause users to give up or file bugs that cannot be reprodu
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | NFR6 in original spec; combined source migrated to invariant/ |
+| [`../../spec.md`](../../spec.md) | NFR6 in original spec; combined source migrated to invariant/. spec.md has been deleted — Sources entry retained as migration record. |

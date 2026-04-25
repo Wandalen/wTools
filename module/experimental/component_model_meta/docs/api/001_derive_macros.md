@@ -60,5 +60,5 @@ All macros fail at compile time with diagnostic messages when applied to unsuppo
 | source | `src/lib.rs` | Proc-macro entry points for all five derives |
 | source | `src/component/component_model.rs` | ComponentModel unified derive implementation |
 | source | `src/component/component_assign.rs` | Assign derive implementation |
-| algorithm | [algorithm/001_popular_type_generation.md](../algorithm/001_popular_type_generation.md) | How popular type Assign impls are generated |
+| doc | [algorithm/001_popular_type_generation.md](../algorithm/001_popular_type_generation.md) | How popular type Assign impls are generated |
 | doc | `component_model_types/docs/api/001_assign_trait.md` | The Assign trait these macros implement |

@@ -22,4 +22,4 @@ The pack command internalizes all external content references (file refs, URL re
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | FR7 in original spec; combined source migrated to feature/ |
+| `spec.md` (deleted) | FR7 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

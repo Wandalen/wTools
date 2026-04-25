@@ -30,5 +30,5 @@ Builder chaining is supported through the consuming `impute()` method, which ret
 |------|------|----------------|
 | source | `src/component.rs` | Assign, OptionExt, AssignWithType trait definitions |
 | source | `src/popular_types/std_types.rs` | PopularType marker trait |
-| api | [api/001_assign_trait.md](../api/001_assign_trait.md) | Full API reference for all four traits |
-| invariant | [invariant/001_orphan_rule.md](../invariant/001_orphan_rule.md) | Why standard library impls are macro-generated |
+| doc | [api/001_assign_trait.md](../api/001_assign_trait.md) | Full API reference for all four traits |
+| doc | [invariant/001_orphan_rule.md](../invariant/001_orphan_rule.md) | Why standard library impls are macro-generated |

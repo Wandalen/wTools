@@ -264,7 +264,7 @@ Former supports `no_std` with `use_alloc` feature:
 
 ```toml
 [dependencies]
-former = { version = "2.31", default-features = false, features = ["use_alloc"] }
+former = { version = "2.45", default-features = false, features = ["use_alloc"] }
 ```
 
 Benefits:
@@ -431,7 +431,6 @@ Avoid Former if:
 
 ## Further Reading
 
-- [Benchmarking Infrastructure](../benches/README.md) - Run benchmarks yourself
 - [Specification § 9: Performance Characteristics](../spec.md#9-performance-characteristics) - Formal guarantees
 - [Advanced Usage](../advanced.md#custom-definitions) - Customizing for performance
 

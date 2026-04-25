@@ -1,6 +1,6 @@
 # Docs
 
-## Purpose
+## Scope
 
 Design and API documentation for `crates_tools`.
 

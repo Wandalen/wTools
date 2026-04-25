@@ -57,5 +57,5 @@ assert!( result.unwrap_or( false ) );
 | Type | File | Responsibility |
 |------|------|----------------|
 | source | [src/lifecycle/check.rs](../../src/lifecycle/check.rs) | `EPERM` match arm in `is_process_alive()` |
-| api | [api/005_check_api.md](../api/005_check_api.md) | `is_process_alive()` function contract |
-| feature | [feature/005_lifecycle_management.md](../feature/005_lifecycle_management.md) | Rationale for `kill(pid,0)` probe approach |
+| doc | [api/005_check_api.md](../api/005_check_api.md) | `is_process_alive()` function contract |
+| doc | [feature/005_lifecycle_management.md](../feature/005_lifecycle_management.md) | Rationale for `kill(pid,0)` probe approach |

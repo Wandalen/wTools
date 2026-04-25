@@ -1,0 +1,173 @@
+meta:
+  description: Cross-reference graph for all doc instances in format_tools
+  node_count: 17
+  edge_count: 52
+  component_count: 1
+  generated: 2026_04_25
+
+nodes:
+  - id: api/001
+    file: api/001_fallback_conversion_api.md
+    label: Fallback Conversion API
+    entity: api
+  - id: api/002
+    file: api/002_field_macros_api.md
+    label: Field Macros API
+    entity: api
+  - id: api/003
+    file: api/003_table_formatting_api.md
+    label: Table Formatting API
+    entity: api
+  - id: api/004
+    file: api/004_wrapper_types_api.md
+    label: Wrapper Types API
+    entity: api
+  - id: data_structure/001
+    file: data_structure/001_input_extract.md
+    label: Input Extract
+    entity: data_structure
+  - id: data_structure/002
+    file: data_structure/002_context.md
+    label: Context
+    entity: data_structure
+  - id: feature/001
+    file: feature/001_fallback_string_conversion.md
+    label: Fallback String Conversion
+    entity: feature
+  - id: feature/002
+    file: feature/002_table_formatting.md
+    label: Table Formatting
+    entity: feature
+  - id: feature/003
+    file: feature/003_field_formatting_macros.md
+    label: Field Formatting Macros
+    entity: feature
+  - id: feature/004
+    file: feature/004_text_manipulation.md
+    label: Text Manipulation
+    entity: feature
+  - id: feature/005
+    file: feature/005_reflect_integration.md
+    label: reflect_tools Integration
+    entity: feature
+  - id: invariant/001
+    file: invariant/001_pure_data_transformation.md
+    label: Pure Data Transformation
+    entity: invariant
+  - id: invariant/002
+    file: invariant/002_no_color_styling.md
+    label: No Color Styling
+    entity: invariant
+  - id: invariant/003
+    file: invariant/003_synchronous_only.md
+    label: Synchronous Only
+    entity: invariant
+  - id: invariant/004
+    file: invariant/004_declarative_macros_only.md
+    label: Declarative Macros Only
+    entity: invariant
+  - id: pattern/001
+    file: pattern/001_fallback_chain.md
+    label: Fallback Chain
+    entity: pattern
+  - id: pattern/002
+    file: pattern/002_format_strategy.md
+    label: Format Strategy
+    entity: pattern
+
+edges:
+  # feature/001 outgoing
+  - { from: feature/001, to: api/001,        via: cross_references }
+  - { from: feature/001, to: pattern/001,    via: cross_references }
+  - { from: feature/001, to: invariant/003,  via: cross_references }
+  - { from: feature/001, to: invariant/004,  via: cross_references }
+  # feature/002 outgoing
+  - { from: feature/002, to: api/003,           via: cross_references }
+  - { from: feature/002, to: pattern/002,        via: cross_references }
+  - { from: feature/002, to: data_structure/001, via: cross_references }
+  - { from: feature/002, to: data_structure/002, via: cross_references }
+  - { from: feature/002, to: invariant/001,      via: cross_references }
+  - { from: feature/002, to: invariant/002,      via: cross_references }
+  # feature/003 outgoing
+  - { from: feature/003, to: api/002,       via: cross_references }
+  - { from: feature/003, to: feature/001,   via: cross_references }
+  - { from: feature/003, to: invariant/003, via: cross_references }
+  - { from: feature/003, to: invariant/004, via: cross_references }
+  # feature/004 outgoing
+  - { from: feature/004, to: invariant/001, via: cross_references }
+  - { from: feature/004, to: invariant/003, via: cross_references }
+  # feature/005 outgoing
+  - { from: feature/005, to: feature/002, via: cross_references }
+  - { from: feature/005, to: api/003,     via: cross_references }
+  # invariant/001 outgoing
+  - { from: invariant/001, to: data_structure/002, via: cross_references }
+  - { from: invariant/001, to: feature/002,        via: cross_references }
+  - { from: invariant/001, to: feature/004,        via: cross_references }
+  # invariant/002 outgoing
+  - { from: invariant/002, to: feature/002, via: cross_references }
+  # invariant/003 outgoing
+  - { from: invariant/003, to: feature/001, via: cross_references }
+  - { from: invariant/003, to: feature/002, via: cross_references }
+  # invariant/004 outgoing
+  - { from: invariant/004, to: feature/001, via: cross_references }
+  - { from: invariant/004, to: feature/003, via: cross_references }
+  - { from: invariant/004, to: api/001,     via: cross_references }
+  # api/001 outgoing
+  - { from: api/001, to: feature/001,   via: cross_references }
+  - { from: api/001, to: api/004,       via: cross_references }
+  - { from: api/001, to: pattern/001,   via: cross_references }
+  - { from: api/001, to: invariant/004, via: cross_references }
+  # api/002 outgoing
+  - { from: api/002, to: feature/003,   via: cross_references }
+  - { from: api/002, to: api/001,       via: cross_references }
+  - { from: api/002, to: invariant/004, via: cross_references }
+  # api/003 outgoing
+  - { from: api/003, to: feature/002,         via: cross_references }
+  - { from: api/003, to: data_structure/001,  via: cross_references }
+  - { from: api/003, to: data_structure/002,  via: cross_references }
+  - { from: api/003, to: pattern/002,         via: cross_references }
+  # api/004 outgoing
+  - { from: api/004, to: api/001,     via: cross_references }
+  - { from: api/004, to: pattern/001, via: cross_references }
+  # data_structure/001 outgoing
+  - { from: data_structure/001, to: api/003,     via: cross_references }
+  - { from: data_structure/001, to: feature/002, via: cross_references }
+  # data_structure/002 outgoing
+  - { from: data_structure/002, to: api/003,       via: cross_references }
+  - { from: data_structure/002, to: invariant/001, via: cross_references }
+  - { from: data_structure/002, to: feature/002,   via: cross_references }
+  # pattern/001 outgoing
+  - { from: pattern/001, to: feature/001, via: cross_references }
+  - { from: pattern/001, to: api/001,     via: cross_references }
+  - { from: pattern/001, to: api/004,     via: cross_references }
+  # pattern/002 outgoing
+  - { from: pattern/002, to: feature/002,         via: cross_references }
+  - { from: pattern/002, to: api/003,             via: cross_references }
+  - { from: pattern/002, to: data_structure/001,  via: cross_references }
+  - { from: pattern/002, to: data_structure/002,  via: cross_references }
+
+components:
+  - id: 1
+    label: format_tools doc corpus
+    size: 17
+    isolated: false
+    nodes:
+      - api/001
+      - api/002
+      - api/003
+      - api/004
+      - data_structure/001
+      - data_structure/002
+      - feature/001
+      - feature/002
+      - feature/003
+      - feature/004
+      - feature/005
+      - invariant/001
+      - invariant/002
+      - invariant/003
+      - invariant/004
+      - pattern/001
+      - pattern/002
+
+dangling_refs: []

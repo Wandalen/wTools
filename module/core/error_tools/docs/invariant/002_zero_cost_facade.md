@@ -2,17 +2,18 @@
 
 ### Scope
 
-**Purpose:** Guarantee that the error facade introduces no runtime overhead compared to using upstream libraries directly.
-
-**Responsibility:** Mandate that all re-exports in `error_tools` are direct re-exports with no wrapper types, no adapter functions, and no intermediate allocations.
+- **Purpose**: Guarantee that the error facade introduces no runtime overhead compared to using upstream libraries directly.
+- **Responsibility**: Documents the zero-cost facade invariant — its statement, enforcement points, and violation consequences.
+- **In Scope**: The mandate that all re-exports are direct, introducing no wrapper types, adapter functions, or intermediate allocations.
+- **Out of Scope**: Performance of the underlying upstream libraries themselves — those are upstream concerns.
 
 ### Cross-References
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| Feature | feature/001_error_facade.md | Facade subject to this invariant |
-| Feature | feature/002_typed_errors.md | Typed component — re-export only |
-| Feature | feature/003_untyped_errors.md | Untyped component — re-export only |
+| doc | [feature/001_error_facade.md](../feature/001_error_facade.md) | Facade subject to this invariant |
+| doc | [feature/002_typed_errors.md](../feature/002_typed_errors.md) | Typed component — re-export only |
+| doc | [feature/003_untyped_errors.md](../feature/003_untyped_errors.md) | Untyped component — re-export only |
 
 ### Invariant Statement
 

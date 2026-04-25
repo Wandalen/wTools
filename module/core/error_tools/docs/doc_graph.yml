@@ -1,61 +1,71 @@
 meta:
-  description: Cross-reference graph for error_tools documentation
+  description: Cross-reference graph for all doc instances in error_tools
   node_count: 9
-  edge_count: 10
+  edge_count: 20
   component_count: 1
-  generated: 2026-04-25
+  generated: 2026_04_25
 nodes:
-  - id: feat:001
+  - id: feature/001
     file: feature/001_error_facade.md
     label: Error Facade
     entity: feature
-  - id: feat:002
+  - id: feature/002
     file: feature/002_typed_errors.md
     label: Typed Errors
     entity: feature
-  - id: feat:003
+  - id: feature/003
     file: feature/003_untyped_errors.md
     label: Untyped Errors
     entity: feature
-  - id: feat:004
+  - id: feature/004
     file: feature/004_no_std_support.md
     label: No-Std Support
     entity: feature
-  - id: api:001
+  - id: api/001
     file: api/001_err_with_trait.md
     label: Error-With-Report Trait
     entity: api
-  - id: api:002
+  - id: api/002
     file: api/002_debug_assertions.md
     label: Debug Assertion Macros
     entity: api
-  - id: inv:001
+  - id: invariant/001
     file: invariant/001_exclusive_dependency.md
     label: Exclusive Error Dependency
     entity: invariant
-  - id: inv:002
+  - id: invariant/002
     file: invariant/002_zero_cost_facade.md
     label: Zero-Cost Facade
     entity: invariant
-  - id: inv:003
+  - id: invariant/003
     file: invariant/003_alloc_requirement.md
     label: Alloc Feature Requires No-Std
     entity: invariant
 edges:
-  - {from: feat:001, to: feat:002, via: includes}
-  - {from: feat:001, to: feat:003, via: includes}
-  - {from: feat:001, to: feat:004, via: includes}
-  - {from: feat:001, to: api:001, via: exposes}
-  - {from: feat:001, to: api:002, via: exposes}
-  - {from: feat:001, to: inv:001, via: governed-by}
-  - {from: feat:001, to: inv:002, via: governed-by}
-  - {from: feat:002, to: inv:002, via: governed-by}
-  - {from: feat:003, to: inv:002, via: governed-by}
-  - {from: feat:004, to: inv:003, via: governed-by}
+  - {from: feature/001, to: feature/002, via: cross_references}
+  - {from: feature/001, to: feature/003, via: cross_references}
+  - {from: feature/001, to: feature/004, via: cross_references}
+  - {from: feature/001, to: api/001, via: cross_references}
+  - {from: feature/001, to: api/002, via: cross_references}
+  - {from: feature/001, to: invariant/001, via: cross_references}
+  - {from: feature/001, to: invariant/002, via: cross_references}
+  - {from: feature/002, to: feature/001, via: cross_references}
+  - {from: feature/002, to: invariant/002, via: cross_references}
+  - {from: feature/003, to: feature/001, via: cross_references}
+  - {from: feature/003, to: invariant/002, via: cross_references}
+  - {from: feature/004, to: feature/001, via: cross_references}
+  - {from: feature/004, to: invariant/003, via: cross_references}
+  - {from: api/001, to: feature/001, via: cross_references}
+  - {from: api/002, to: feature/001, via: cross_references}
+  - {from: invariant/001, to: feature/001, via: cross_references}
+  - {from: invariant/002, to: feature/001, via: cross_references}
+  - {from: invariant/002, to: feature/002, via: cross_references}
+  - {from: invariant/002, to: feature/003, via: cross_references}
+  - {from: invariant/003, to: feature/004, via: cross_references}
 components:
   - id: 1
     label: error_tools
     size: 9
     isolated: false
-    nodes: [feat:001, feat:002, feat:003, feat:004, api:001, api:002, inv:001, inv:002, inv:003]
+    nodes: [feature/001, feature/002, feature/003, feature/004, api/001, api/002, invariant/001, invariant/002, invariant/003]
 dangling_refs: []

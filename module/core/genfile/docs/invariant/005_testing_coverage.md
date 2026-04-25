@@ -9,7 +9,7 @@
 
 ### Invariant Statement
 
-Code coverage must be ≥80% measured by `cargo tarpaulin`. All 27 commands must have integration tests. Tests must use `CARGO_MANIFEST_DIR`-based path resolution for cross-platform compatibility. Total test suite execution must complete within 30 seconds.
+Code coverage must be ≥80% measured by `cargo tarpaulin`. All 24 commands must have integration tests. Tests must use `CARGO_MANIFEST_DIR`-based path resolution for cross-platform compatibility. Total test suite execution must complete within 30 seconds.
 
 ### Enforcement Mechanism
 
@@ -29,4 +29,4 @@ Untested commands may silently regress. Platform-specific test failures on Windo
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | NFR5 in original spec; combined source migrated to invariant/ |
+| `spec.md` (deleted) | NFR5 in original spec; combined source migrated to invariant/. spec.md has been deleted — Sources entry retained as migration record. |

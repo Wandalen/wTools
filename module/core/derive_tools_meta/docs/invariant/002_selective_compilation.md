@@ -2,10 +2,10 @@
 
 ### Scope
 
-- Defines the feature-flag contract that governs which macros are compiled.
-- Covers the constraint that each macro must be independently disableable.
-- Audience: contributors adding new macros or modifying the feature set.
-- Does not cover which features are enabled by default — see `Cargo.toml`.
+- **Purpose**: Define the feature-flag contract that governs which macros are compiled.
+- **Responsibility**: Document the selective compilation invariant — each macro must be independently disableable.
+- **In Scope**: Feature flag structure, enforcement mechanism, and violation consequences.
+- **Out of Scope**: Which features are enabled by default — see `Cargo.toml`.
 
 ### Invariant Statement
 
@@ -42,9 +42,5 @@ feature convention for this project.
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| feature | docs/feature/001_derive_macros.md | Full macro collection covered by this contract |
-| api | docs/api/001_derive_api.md | Individual macro availability per flag |
-
-### Sources
-
-- [../../spec.md](../../spec.md) — Feature Flags table and Design Rationale: Why Feature-Gated Derives section
+| doc | `../feature/001_derive_macros.md` | Full macro collection covered by this contract |
+| doc | `../api/001_derive_api.md` | Individual macro availability per flag |

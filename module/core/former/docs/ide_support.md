@@ -159,7 +159,7 @@ pub struct MyStruct {
 With `former_diagnostics_print_generated` feature:
 ```toml
 [dependencies]
-former = { version = "2.31", features = ["former_diagnostics_print_generated"] }
+former = { version = "2.45", features = ["former_diagnostics_print_generated"] }
 ```
 
 Then:
@@ -237,10 +237,6 @@ Feature requests: https://github.com/intellij-rust/intellij-rust/issues
 2. **Former-specific LSP plugin**: Custom language server
    - Effort: High (6+ months development)
    - Benefit: Perfect autocomplete, go-to-definition
-
-3. **Documentation generation**: Auto-generate docs for formers
-   - Status: Planned for Former v3.0
-   - Would add rustdoc comments to generated methods
 
 ---
 

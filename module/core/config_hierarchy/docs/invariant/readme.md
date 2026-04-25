@@ -2,13 +2,13 @@
 
 ### Scope
 
-- **What**: System invariants that must hold across all config_hierarchy implementations
-- **Who**: Developers implementing or testing config resolution logic
-- **When**: Verifying correctness of resolution behavior
-- **Out of scope**: Feature descriptions (→ feature/), API signatures (→ api/)
+- **Purpose**: Preserve invariant definitions that guarantee correctness of configuration resolution.
+- **Responsibility**: Documents each invariant's statement, enforcement mechanism, and consequences.
+- **In Scope**: Configuration resolution ordering and correctness properties that must always hold.
+- **Out of Scope**: Feature descriptions (→ feature/), API signatures (→ api/).
 
 ### Overview Table
 
-| NNN | Name | Status |
-|-----|------|--------|
-| 001 | Resolution Hierarchy | active |
+| ID  | Name                                                | Purpose                                    | Status |
+|-----|-----------------------------------------------------|--------------------------------------------|--------|
+| 001 | [Resolution Hierarchy](001_resolution_hierarchy.md) | Priority ordering of configuration sources | ✅     |

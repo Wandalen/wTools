@@ -29,4 +29,4 @@ Inconsistent CLI conventions frustrate users who internalize patterns from one c
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | NFR2 in original spec; combined source migrated to invariant/ |
+| `spec.md` (deleted) | NFR2 in original spec; combined source migrated to invariant/. spec.md has been deleted — Sources entry retained as migration record. |

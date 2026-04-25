@@ -1,0 +1,108 @@
+meta:
+  description: Cross-reference graph for all doc instances in former_types
+  node_count: 8
+  edge_count: 27
+  component_count: 1
+  generated: 2026_04_25
+
+nodes:
+  - id: algorithm/001
+    file: algorithm/001_formation_lifecycle.md
+    label: Formation Lifecycle
+    entity: algorithm
+
+  - id: api/001
+    file: api/001_former_definition.md
+    label: Former Definition Traits
+    entity: api
+
+  - id: api/002
+    file: api/002_formation_process.md
+    label: Formation Process Traits
+    entity: api
+
+  - id: api/003
+    file: api/003_storage.md
+    label: Storage Traits
+    entity: api
+
+  - id: api/004
+    file: api/004_collection.md
+    label: Collection Traits
+    entity: api
+
+  - id: feature/001
+    file: feature/001_builder_trait_infrastructure.md
+    label: Builder Trait Infrastructure
+    entity: feature
+
+  - id: feature/002
+    file: feature/002_collection_subformer.md
+    label: Collection Subformer
+    entity: feature
+
+  - id: invariant/001
+    file: invariant/001_formation_integrity.md
+    label: Formation Integrity
+    entity: invariant
+
+edges:
+  # api/001 outgoing
+  - { from: api/001, to: algorithm/001, via: cross_references }
+  - { from: api/001, to: feature/001,   via: cross_references }
+
+  # api/002 outgoing
+  - { from: api/002, to: api/001,       via: cross_references }
+  - { from: api/002, to: algorithm/001, via: cross_references }
+  - { from: api/002, to: feature/001,   via: cross_references }
+  - { from: api/002, to: feature/002,   via: cross_references }
+
+  # api/003 outgoing
+  - { from: api/003, to: api/001,       via: cross_references }
+  - { from: api/003, to: algorithm/001, via: cross_references }
+  - { from: api/003, to: invariant/001, via: cross_references }
+
+  # api/004 outgoing
+  - { from: api/004, to: api/002,       via: cross_references }
+  - { from: api/004, to: feature/002,   via: cross_references }
+
+  # algorithm/001 outgoing
+  - { from: algorithm/001, to: api/001,       via: cross_references }
+  - { from: algorithm/001, to: api/002,       via: cross_references }
+  - { from: algorithm/001, to: api/003,       via: cross_references }
+  - { from: algorithm/001, to: invariant/001, via: cross_references }
+  - { from: algorithm/001, to: feature/001,   via: cross_references }
+
+  # invariant/001 outgoing
+  - { from: invariant/001, to: api/001,       via: cross_references }
+  - { from: invariant/001, to: api/003,       via: cross_references }
+  - { from: invariant/001, to: algorithm/001, via: cross_references }
+
+  # feature/001 outgoing
+  - { from: feature/001, to: api/001,       via: cross_references }
+  - { from: feature/001, to: api/002,       via: cross_references }
+  - { from: feature/001, to: api/003,       via: cross_references }
+  - { from: feature/001, to: algorithm/001, via: cross_references }
+  - { from: feature/001, to: invariant/001, via: cross_references }
+
+  # feature/002 outgoing
+  - { from: feature/002, to: api/004,     via: cross_references }
+  - { from: feature/002, to: api/002,     via: cross_references }
+  - { from: feature/002, to: feature/001, via: cross_references }
+
+components:
+  - id: 1
+    label: former_types documentation corpus
+    size: 8
+    isolated: false
+    nodes:
+      - algorithm/001
+      - api/001
+      - api/002
+      - api/003
+      - api/004
+      - feature/001
+      - feature/002
+      - invariant/001
+
+dangling_refs: []

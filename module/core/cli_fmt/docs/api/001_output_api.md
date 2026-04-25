@@ -1,88 +1,51 @@
-# Output Module API
+# API: Output Module
 
-### Purpose
+### Scope
 
-Unified CLI output processing: head/tail filtering, ANSI-aware width truncation, and stream
-merging via a builder-pattern configuration API. Returns processed content and metadata
-(lines omitted, truncation flag) for caller transparency.
+- **Purpose**: Document the public interface for CLI output processing in `cli_fmt`.
+- **Responsibility**: Reference for the processing function, configuration type, stream filter, and result type.
+- **In Scope**: Processing entry point, stream merging helper, configuration options, filter variants, and result structure.
+- **Out of Scope**: Processing logic and behavioral decisions — see `feature/001_output_processing.md`.
 
-### Signature
+### Abstract
 
-```rust
-pub fn process_output( stdout : &str, stderr : &str, config : &OutputConfig ) -> ProcessedOutput
-pub fn merge_streams( stdout : &str, stderr : &str, filter : &StreamFilter ) -> String
-```
+The output processing API provides a single entry-point function that accepts raw
+stdout and stderr strings plus a configuration value and returns processed output with
+metadata. A stream merging helper is also available for cases where only the merging
+stage is needed.
 
-### Parameters
+Both functions are infallible — they perform no I/O and cannot produce errors.
 
-**`OutputConfig`** — builder-pattern configuration:
+### Operations
 
-| Method | Type | Default | Effect |
-|--------|------|---------|--------|
-| `.with_head( n )` | `usize` | none | Retain first N lines |
-| `.with_tail( n )` | `usize` | none | Retain last N lines |
-| `.with_width( n )` | `usize` | none | Max visible chars per line; 0 = no limit |
-| `.with_suffix( s )` | `impl Into<String>` | `"→"` | Suffix appended to truncated lines |
-| `.with_stream_filter( f )` | `StreamFilter` | `Both` | Which streams to include |
-| `.with_unicode_aware( b )` | `bool` | `false` | Grapheme-based width (requires `ansi_unicode` feature) |
+**Process output** — applies stream selection, line filtering, and width truncation
+in sequence. Accepts separate stdout and stderr strings and an output configuration.
+Returns a processed output value containing the result text and accuracy metadata.
 
-**`StreamFilter`** variants:
+**Merge streams** — combines stdout and stderr into a single string according to the
+stream filter. Does not apply line filtering or width truncation.
 
-| Variant | Behavior |
-|---------|----------|
-| `Both` | Stderr before stdout (CLI convention) |
-| `Stdout` | Stdout only |
-| `Stderr` | Stderr only |
+**Output configuration** — a builder-pattern value for specifying processing options:
+- Head limit: retain only the first N lines of combined output.
+- Tail limit: retain only the last N lines of combined output.
+- Width limit: maximum visible character width per line; zero disables truncation.
+- Truncation suffix: marker appended to lines that were width-truncated.
+- Stream filter: which streams to include and in what order.
+- Unicode-aware mode: opt-in grapheme-based width measurement.
 
-### Returns
+**Stream filter** — a three-variant value selecting which streams to include:
+- Both streams: stderr placed before stdout (errors visible before normal output).
+- Stdout only: stderr discarded.
+- Stderr only: stdout discarded.
 
-**`ProcessedOutput`**:
+**Processed output** — the result value containing:
+- Content string: the processed output, ready for display.
+- Lines omitted count: number of lines removed by head/tail filtering; zero when no filtering applied or when head and tail windows overlap.
+- Width truncated flag: true if any line was shortened by the width limit.
 
-| Field | Type | Meaning |
-|-------|------|---------|
-| `content` | `String` | Processed output text, ready to display |
-| `lines_omitted` | `usize` | Count of lines removed by head/tail filtering |
-| `width_truncated` | `bool` | Whether any line was truncated by the width limit |
+### Cross-References
 
-### Errors
-
-None — `process_output()` and `merge_streams()` are infallible.
-
-### Examples
-
-```rust
-use cli_fmt::output::*;
-
-let config = OutputConfig::default()
-  .with_head( 10 )
-  .with_tail( 5 )
-  .with_width( 80 )
-  .with_stream_filter( StreamFilter::Both );
-
-let result = process_output( stdout_str, stderr_str, &config );
-println!( "{}", result.content );
-if result.lines_omitted > 0
-{
-  eprintln!( "({} lines omitted)", result.lines_omitted );
-}
-```
-
-**Migration from `strs_tools::output` / `unilang::output`:**
-
-| Old | New |
-|-----|-----|
-| `TruncationConfig { head: Some( 10 ), .. }` | `OutputConfig::default().with_head( 10 )` |
-| `apply_truncation( stdout, stderr, &config )` | `process_output( stdout, stderr, &config )` |
-| `TruncatedOutput` | `ProcessedOutput` |
-| `OutputFilter::Both` | `StreamFilter::Both` |
-| `truncate_head( text, 10 )` | `strs_tools::string::lines::head( text, 10 )` |
-| `truncate_tail( text, 10 )` | `strs_tools::string::lines::tail( text, 10 )` |
-
-**Performance:**
-
-| Operation | Complexity | Notes |
-|-----------|------------|-------|
-| `process_output()` | O(n) | Single pass through text |
-| Stream merging | O(n) | Simple string concatenation |
-| Line filtering | O(n) | `strs_tools::string::lines` |
-| Width truncation | O(n × m) | n = text length, m = average line count |
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | [`../feature/001_output_processing.md`](../feature/001_output_processing.md) | Behavioral description of output processing |
+| doc | [`../invariant/001_architectural_boundary.md`](../invariant/001_architectural_boundary.md) | Why these types live here and not in strs_tools |

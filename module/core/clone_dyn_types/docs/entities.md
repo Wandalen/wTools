@@ -16,7 +16,7 @@
 |--------|-----|------|------|
 | algorithm | 001 | Fat Pointer Surgery | [algorithm/001_fat_pointer_surgery.md](algorithm/001_fat_pointer_surgery.md) |
 | api | 001 | CloneDyn Trait | [api/001_clone_dyn_trait.md](api/001_clone_dyn_trait.md) |
-| api | 002 | Clone Into Box | [api/002_clone_into_box.md](api/002_clone_into_box.md) |
+| api | 002 | clone_into_box and clone | [api/002_clone_into_box.md](api/002_clone_into_box.md) |
 | feature | 001 | No-Std Support | [feature/001_no_std_support.md](feature/001_no_std_support.md) |
 | feature | 002 | DST Cloning | [feature/002_dst_cloning.md](feature/002_dst_cloning.md) |
 | feature | 003 | Type Coverage | [feature/003_type_coverage.md](feature/003_type_coverage.md) |

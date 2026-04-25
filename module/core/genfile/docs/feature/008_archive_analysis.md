@@ -15,11 +15,11 @@ Analysis commands operate on the currently loaded archive without modifying it. 
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/handlers/info.rs` | Handler implementations for analysis commands |
+| source | `src/handlers/analysis.rs` | Handler implementations for analysis commands |
 | config | `commands/analysis.yaml` | Authoritative command specs for analysis group |
 
 ### Sources
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | FR8 in original spec; combined source migrated to feature/ |
+| `spec.md` (deleted) | FR8 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

@@ -28,10 +28,7 @@ all-features = false
 
 [features]
 
-default = [
-  "enabled",
-
-]
+default = []
 
 full = [
   "enabled",

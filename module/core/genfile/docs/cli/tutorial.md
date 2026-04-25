@@ -796,7 +796,7 @@ Practice loading, modifying, and resaving archives:
 
 **Examples:** See [commands/operations.md](commands/operations.md) for `.materialize` workflows
 
-**Issues:** Common problems and solutions in MAINTENANCE.md
+**Issues:** Common problems and solutions in [maintenance.md](maintenance.md)
 
 **Verbosity Levels:**
 - `verbosity::0` - Silent (only errors)

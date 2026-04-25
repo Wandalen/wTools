@@ -104,6 +104,6 @@ type AppConfig = ConfigManager< AppDefaults, AppPaths, NoValidator >;
 
 | Type | Target | Relationship |
 |------|--------|-------------|
-| api | api/001_config_paths_trait.md | companion required trait |
-| api | api/002_config_defaults_trait.md | companion required trait |
-| feature | feature/001_config_hierarchy.md | validation is part of this feature |
+| doc | api/001_config_paths_trait.md | companion required trait |
+| doc | api/002_config_defaults_trait.md | companion required trait |
+| doc | feature/001_config_hierarchy.md | validation is part of this feature |

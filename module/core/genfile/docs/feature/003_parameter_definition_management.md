@@ -22,4 +22,4 @@ Parameters are defined with a name, optional description, a mandatory flag, and 
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | FR3 in original spec; combined source migrated to feature/ |
+| `spec.md` (deleted) | FR3 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

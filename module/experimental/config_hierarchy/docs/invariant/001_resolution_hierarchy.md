@@ -77,6 +77,6 @@ If the `sources` slice is assembled in incorrect order (e.g., for hypothetical f
 
 | Type | Target | Relationship |
 |------|--------|-------------|
-| feature | feature/001_config_hierarchy.md | feature this invariant governs |
-| api | api/001_config_paths_trait.md | methods controlling env var format and path construction |
-| algorithm | algorithm/001_type_detection.md | applied to values found at each level |
+| doc | feature/001_config_hierarchy.md | feature this invariant governs |
+| doc | api/001_config_paths_trait.md | methods controlling env var format and path construction |
+| doc | algorithm/001_type_detection.md | applied to values found at each level |

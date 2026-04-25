@@ -51,6 +51,6 @@ println!( "{}", report );
 | Type | File | Responsibility |
 |------|------|----------------|
 | source | [src/process.rs](../../src/process.rs) | Enforces populate-before-branch ordering for `Report` |
-| api | [api/002_report_api.md](../api/002_report_api.md) | `Report` type that both branches carry |
-| api | [api/001_run_api.md](../api/001_run_api.md) | `run()` and `run_with_shell()` return type |
-| feature | [feature/002_output_capture.md](../feature/002_output_capture.md) | Design rationale for always-populated `Report` |
+| doc | [api/002_report_api.md](../api/002_report_api.md) | `Report` type that both branches carry |
+| doc | [api/001_run_api.md](../api/001_run_api.md) | `run()` and `run_with_shell()` return type |
+| doc | [feature/002_output_capture.md](../feature/002_output_capture.md) | Design rationale for always-populated `Report` |

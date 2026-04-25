@@ -2,10 +2,10 @@
 
 ### Scope
 
-- Documents the derive macros that form the public interface of this crate.
-- Covers the name, purpose, and applicability conditions of each macro.
-- Audience: contributors implementing or extending the macro collection.
-- Does not cover the `derive_tools` facade or consumer usage patterns.
+- **Purpose**: Document the derive macros that form the public interface of this crate.
+- **Responsibility**: Reference for the name, purpose, and applicability conditions of each macro.
+- **In Scope**: Delegation, conversion, construction, indexing, reference conversion, variadic, logical, and phantom macros.
+- **Out of Scope**: The `derive_tools` facade and consumer usage patterns.
 
 ### Abstract
 
@@ -61,11 +61,7 @@ implementation details are not stable.
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| feature | docs/feature/001_derive_macros.md | Behavioral description of the macro collection |
-| invariant | docs/invariant/001_proc_macro_separation.md | Why this crate does not provide a public API directly |
-| integration | docs/integration/001_macro_tools.md | macro_tools dependency used for syntax parsing |
-| integration | docs/integration/002_derive_tools.md | derive_tools as the stable public API layer |
-
-### Sources
-
-- [../../spec.md](../../spec.md) — Public API and Feature Flags sections
+| doc | `../feature/001_derive_macros.md` | Behavioral description of the macro collection |
+| doc | `../invariant/001_proc_macro_separation.md` | Why this crate does not provide a public API directly |
+| doc | `../integration/001_macro_tools.md` | macro_tools dependency used for syntax parsing |
+| doc | `../integration/002_derive_tools.md` | derive_tools as the stable public API layer |

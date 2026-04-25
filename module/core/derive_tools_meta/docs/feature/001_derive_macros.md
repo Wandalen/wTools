@@ -2,10 +2,10 @@
 
 ### Scope
 
-- Describes the derive macro collection provided by this crate.
-- Covers the categories of boilerplate that the macros eliminate.
-- Audience: Rust developers evaluating whether to depend on `derive_tools`.
-- Does not specify individual macro behavior — see `api/001_derive_api.md`.
+- **Purpose**: Describe the derive macro collection provided by this crate.
+- **Responsibility**: Document the categories of boilerplate the macros eliminate and the design of selective compilation.
+- **In Scope**: Delegation, conversion, construction, indexing, and logical operation macro categories.
+- **Out of Scope**: Individual macro behavior — see `api/001_derive_api.md`.
 
 ### Design
 
@@ -41,11 +41,7 @@ included in the build, minimizing compile time.
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| api | docs/api/001_derive_api.md | Public interface of each derive macro |
-| invariant | docs/invariant/001_proc_macro_separation.md | Why this crate is separate from derive_tools |
-| invariant | docs/invariant/002_selective_compilation.md | Feature-flag selective compilation contract |
-| integration | docs/integration/002_derive_tools.md | derive_tools as the consumer facade |
-
-### Sources
-
-- [../../spec.md](../../spec.md) — Overview, Scope, and Public API sections
+| doc | `../api/001_derive_api.md` | Public interface of each derive macro |
+| doc | `../invariant/001_proc_macro_separation.md` | Why this crate is separate from derive_tools |
+| doc | `../invariant/002_selective_compilation.md` | Feature-flag selective compilation contract |
+| doc | `../integration/002_derive_tools.md` | derive_tools as the consumer facade |

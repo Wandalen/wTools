@@ -9,7 +9,7 @@
 
 ### Design
 
-The `TemplateRenderer` trait defines a `render` method accepting a template string and a serializable value map, returning a rendered string or an error. This abstraction allows consumers to swap rendering engines (e.g., Tera, Minijinja, custom) without changing calling code. The default implementation uses Handlebars; custom renderers implement the trait directly.
+The template renderer trait defines a render method accepting a template string and a serializable value map, returning a rendered string or an error. This abstraction allows consumers to swap rendering engines (e.g., Tera, Minijinja, custom) without changing calling code. The default implementation uses Handlebars; custom renderers implement the trait directly.
 
 ### Cross-References
 
@@ -23,4 +23,4 @@ The `TemplateRenderer` trait defines a `render` method accepting a template stri
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | FR6 in original spec; combined source migrated to feature/ |
+| [`../../spec.md`](../../spec.md) | FR6 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

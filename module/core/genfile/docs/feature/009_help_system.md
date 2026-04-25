@@ -22,4 +22,4 @@ Universal help (`.` or `.help`) lists all registered non-help commands with thei
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | FR9 in original spec; combined source migrated to feature/ |
+| `spec.md` (deleted) | FR9 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

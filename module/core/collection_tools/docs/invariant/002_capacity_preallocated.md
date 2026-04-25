@@ -37,4 +37,4 @@ The invariant cannot be violated by caller code. It can only be broken by modify
 
 | File | Notes |
 |------|-------|
-| [../../spec.md](../../spec.md) | Migrated; sections: Architecture → Macro Expansion Pattern, Design Rationale → Why count! Macro for Capacity, Overview → Helper Macros; siblings: api/001, feature/001, feature/002, invariant/001 |
+| [../../spec.md](../../spec.md) | Migrated; sections: Architecture → Macro Expansion Pattern, Design Rationale → Why count! Macro for Capacity, Overview → Helper Macros; siblings: api/001, feature/001, feature/002, invariant/001. spec.md has been deleted — Sources entry retained as migration record. |

@@ -34,5 +34,5 @@ The recognition step uses the rendered string representation of each field's typ
 |------|------|----------------|
 | source | `src/popular_types.rs` | Implementation of `generate_popular_type_assigns()` |
 | source | `src/component/component_model.rs` | Call site — invoked during ComponentModel derive expansion |
-| api | [api/001_derive_macros.md](../api/001_derive_macros.md) | Derive macro that invokes this algorithm |
-| invariant | `component_model_types/docs/invariant/001_orphan_rule.md` | The constraint this algorithm works around |
+| doc | [api/001_derive_macros.md](../api/001_derive_macros.md) | Derive macro that invokes this algorithm |
+| doc | `component_model_types/docs/invariant/001_orphan_rule.md` | The constraint this algorithm works around |

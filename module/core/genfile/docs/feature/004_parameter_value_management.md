@@ -22,4 +22,4 @@ Values can be set for any defined parameter; setting an undefined parameter prod
 
 | File | Notes |
 |------|-------|
-| [`../../spec.md`](../../spec.md) | FR4 in original spec; combined source migrated to feature/ |
+| `spec.md` (deleted) | FR4 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

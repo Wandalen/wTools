@@ -77,31 +77,7 @@ Dark theme with vibrant colors.
 
 #### Usage
 
-Themes work with all three visual formatter configs via `with_theme()`.
-
-```rust
-use data_fmt::{ RowBuilder, TableFormatter, TableConfig, ColorTheme };
-
-let data = RowBuilder::new( vec![ "Name".into(), "Status".into() ] )
-  .add_row( vec![ "Alice".into(), "Active".into() ] )
-  .add_row( vec![ "Bob".into(), "Pending".into() ] )
-  .build_view();
-
-// Table with Dark theme
-let formatter = TableFormatter::with_config(
-  TableConfig::bordered().with_theme( ColorTheme::Dark )
-);
-
-// Expanded with Monokai theme
-let formatter = ExpandedFormatter::with_config(
-  ExpandedConfig::postgres_style().with_theme( ColorTheme::Monokai )
-);
-
-// Tree with Nord theme
-let formatter = TreeFormatter::with_config(
-  TreeConfig::new().with_theme( ColorTheme::Nord )
-);
-```
+Themes work with all three visual formatter configs. Applying a theme to a config instance sets all relevant color fields automatically — the caller does not need to configure individual ANSI codes. Each visual formatter config type (`TableConfig`, `ExpandedConfig`, `TreeConfig`) exposes a method to apply a theme and returns a configured instance ready for use.
 
 #### Theme Application
 
@@ -113,22 +89,7 @@ Themes automatically configure the relevant fields on each config type:
 
 #### Custom Theme Creation
 
-Build a custom theme using the builder API.
-
-```rust
-use data_fmt::ColorTheme;
-
-let custom_theme = ColorTheme::custom()
-  .header_color( "\x1b[38;5;208m" )  // Orange
-  .border_color( "\x1b[38;5;240m" )  // Gray
-  .row_color1( "\x1b[0m" )           // Default
-  .row_color2( "\x1b[48;5;235m" )    // Dark gray bg
-  .build();
-
-let formatter = TableFormatter::with_config(
-  TableConfig::bordered().with_theme( custom_theme )
-);
-```
+Build a custom theme by specifying individual color components: header color, border color, and alternating row colors. The resulting theme is applied to any visual formatter config instance the same way as a predefined theme.
 
 #### Color Reset Behavior
 
@@ -143,12 +104,4 @@ All themes include automatic color reset (`\x1b[0m`) after every colored element
 
 #### Feature Flag Integration
 
-The `themes` feature is optional. Guard theme usage with `cfg`:
-
-```rust
-#[ cfg( feature = "themes" ) ]
-{
-  use data_fmt::ColorTheme;
-  let config = TableConfig::bordered().with_theme( ColorTheme::Dark );
-}
-```
+The `themes` feature is optional. Guard theme usage with a `cfg(feature = "themes")` attribute when compiling without the feature enabled.

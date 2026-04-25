@@ -78,6 +78,6 @@ Neither method returns a `Result`. Both are expected to be pure and infallible. 
 
 | Type | Target | Relationship |
 |------|--------|-------------|
-| invariant | invariant/001_resolution_hierarchy.md | defaults are the lowest-priority level (priority 6) |
-| api | api/001_config_paths_trait.md | companion required trait |
-| api | api/003_config_validator_trait.md | companion optional trait |
+| doc | invariant/001_resolution_hierarchy.md | defaults are the lowest-priority level (priority 6) |
+| doc | api/001_config_paths_trait.md | companion required trait |
+| doc | api/003_config_validator_trait.md | companion optional trait |

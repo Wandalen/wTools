@@ -2,13 +2,13 @@
 
 ### Scope
 
-- **What**: Behavioral specifications for config_hierarchy features
-- **Who**: Implementors adding or modifying crate behavior
-- **When**: Before implementing or modifying any feature
-- **Out of scope**: API contracts (→ api/), file format details (→ format/)
+- **Purpose**: Provide a navigational hub for each user-facing feature of config_hierarchy.
+- **Responsibility**: Cross-references all source, test, and doc artifacts for each feature.
+- **In Scope**: Feature scope, key design decisions, and pointers to all implementing artifacts.
+- **Out of Scope**: API contracts (→ api/), file format encoding (→ format/), algorithm internals (→ algorithm/).
 
 ### Overview Table
 
-| NNN | Name | Status |
-|-----|------|--------|
-| 001 | Config Hierarchy | active |
+| ID  | Name                                        | Purpose                                               | Status |
+|-----|---------------------------------------------|-------------------------------------------------------|--------|
+| 001 | [Config Hierarchy](001_config_hierarchy.md) | Layered configuration resolution for CLI applications | ✅     |

@@ -58,8 +58,8 @@ All `check` and `signal` functions compile only on Unix; the non-Unix stubs retu
 | test | [tests/lifecycle_check_test.rs](../../tests/lifecycle_check_test.rs) | PID probe and wait_for_exit tests |
 | test | [tests/lifecycle_signal_test.rs](../../tests/lifecycle_signal_test.rs) | Signal name/number lookup tests |
 | test | [tests/lifecycle_daemon_test.rs](../../tests/lifecycle_daemon_test.rs) | Daemonization and PID file tests |
-| api | [api/004_signal_api.md](../api/004_signal_api.md) | Signal name/number lookup function signatures |
-| api | [api/005_check_api.md](../api/005_check_api.md) | Process liveness check function signatures |
-| api | [api/006_daemon_api.md](../api/006_daemon_api.md) | Daemonization and PID file management API |
-| feature | [feature/004_exit_status_synthesis.md](004_exit_status_synthesis.md) | Lifecycle outcomes can be represented as synthetic exit statuses |
-| feature | [feature/001_process_execution.md](001_process_execution.md) | Execution layer; lifecycle covers the post-spawn monitoring gap |
+| doc | [api/004_signal_api.md](../api/004_signal_api.md) | Signal name/number lookup function signatures |
+| doc | [api/005_check_api.md](../api/005_check_api.md) | Process liveness check function signatures |
+| doc | [api/006_daemon_api.md](../api/006_daemon_api.md) | Daemonization and PID file management API |
+| doc | [feature/004_exit_status_synthesis.md](004_exit_status_synthesis.md) | Lifecycle outcomes can be represented as synthetic exit statuses |
+| doc | [feature/001_process_execution.md](001_process_execution.md) | Execution layer; lifecycle covers the post-spawn monitoring gap |

@@ -17,7 +17,7 @@
 
 ### Abstract
 
-Ten formatters implement the unified `Format` trait and accept `&TableView`. Three visual formatters (`TableFormatter`, `ExpandedFormatter`, `TreeFormatter`) also accept `&TreeNode< T >` via legacy methods. Seven additional formatters (`LogfmtFormatter`, `HtmlFormatter`, `SqlFormatter`, `JsonFormatter`, `YamlFormatter`, `TomlFormatter`, `TextFormatter`) are gated behind feature flags. Two ANSI/Unicode helper functions (`visual_len`, `pad_to_width`) support width-aware rendering. The deprecated `TableShapedFormatter` trait remains for backward compatibility.
+Eight of ten formatters implement the unified `Format` trait and accept `&TableView`. `ExpandedFormatter` implements the deprecated `TableShapedFormatter` trait instead; `TreeFormatter` uses direct method dispatch without either trait. Three visual formatters (`TableFormatter`, `ExpandedFormatter`, `TreeFormatter`) also accept `&TreeNode< T >` via legacy methods. Seven additional formatters (`LogfmtFormatter`, `HtmlFormatter`, `SqlFormatter`, `JsonFormatter`, `YamlFormatter`, `TomlFormatter`, `TextFormatter`) are gated behind feature flags. Two ANSI/Unicode helper functions (`visual_len`, `pad_to_width`) support width-aware rendering. The deprecated `TableShapedFormatter` trait remains for backward compatibility.
 
 ### Operations
 
