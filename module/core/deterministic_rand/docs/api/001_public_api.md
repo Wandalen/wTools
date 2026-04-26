@@ -25,7 +25,7 @@ The public interface is identical in both deterministic and non-deterministic co
 **Shared Generator Reference**
 
 - Lock the shared reference to obtain exclusive access for a series of draws.
-- The reference is cloneable; multiple owners may hold a reference and take turns locking.
+- Multiple independent copies of the reference may be held by different owners; each owner may lock and use the generator in turn.
 
 **Master Seed**
 
@@ -41,14 +41,14 @@ The public interface is identical in both deterministic and non-deterministic co
 
 ### Error Handling
 
-- Locking the shared generator reference may fail if the lock is poisoned (a thread panicked while holding it). The caller receives a standard lock-poisoning error and must decide whether to recover or propagate.
+- Locking the shared generator reference may fail if the internal lock is in a failed state due to a prior holder panicking. The caller receives an error and must decide whether to recover or propagate.
 - No other public operations produce errors under normal usage. Construction and child spawning are infallible.
 
 ### Compatibility Guarantees
 
 - The type signatures of all public items are stable within a minor version series.
-- When the `determinism` feature is active, the numeric output sequence for a given seed is stable within a patch version series. A minor version bump may change the sequence and will be documented in the changelog.
-- When the `determinism` feature is inactive, no output stability guarantees apply.
+- When compiled with the deterministic backend, the numeric output sequence for a given seed is stable within a patch version series. A minor version bump may change the sequence and will be documented in the changelog.
+- When compiled without the deterministic backend, no output stability guarantees apply.
 
 ### Cross-References
 

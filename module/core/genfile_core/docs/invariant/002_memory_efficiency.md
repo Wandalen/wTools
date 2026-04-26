@@ -24,9 +24,3 @@ Exceeding 10MB heap for typical workloads makes genfile_core an unsuitable libra
 | Type | File | Responsibility |
 |------|------|----------------|
 | doc | `docs/feature/012_memory_file_system.md` | Primary testing workload for this constraint |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [`../../spec.md`](../../spec.md) | NFR2 in original spec; combined source migrated to invariant/. spec.md has been deleted — Sources entry retained as migration record. |

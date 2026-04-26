@@ -9,10 +9,9 @@
 
 ### Invariant Statement
 
-This crate must always be declared as a proc-macro crate (`[lib] proc-macro = true` in
-`Cargo.toml`). It must not export regular library items such as types, traits, or
-functions intended for runtime use. All runtime contracts belong in `former_types` or
-`former`.
+This crate must always be declared as a proc-macro crate. It must not export regular
+library items such as types, traits, or functions intended for runtime use. All runtime
+contracts belong in `former_types` or `former`.
 
 ### Enforcement Mechanism
 
@@ -35,3 +34,4 @@ to preserve usability.
 | doc | `../feature/001_former_derive.md` | The macro capability constrained by this invariant |
 | doc | `../integration/003_former.md` | Consumer facade enabled by this separation |
 | doc | `../integration/002_former_types.md` | Runtime type crate separate from this proc-macro crate |
+| config | `../../Cargo.toml` | Declares proc-macro = true enforcing this structural invariant |

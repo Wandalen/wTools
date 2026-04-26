@@ -7,7 +7,7 @@
 - **In Scope**: `TableView`, `TreeNode` specializations, and their fields.
 - **Out of Scope**: Conceptual shapes (see `input_model/`), formatting output (see `variant/`).
 
-#### Type-Specific Requirements
+### Type-Specific Requirements
 
 Every input_type doc instance must contain these sections in order:
 
@@ -17,6 +17,12 @@ Every input_type doc instance must contain these sections in order:
 | Cross-References | `### Cross-References` | Table: Type / File / Responsibility |
 | Type Definition | `### Type Definition` | Struct fields, generic parameters, trait bounds; source file reference |
 | Specializations | `### Specializations` | Concrete instantiations used in the library (required when the type is generic) |
+
+### Infrastructure
+
+| File | Responsibility |
+|------|----------------|
+| `procedure.md` | Operational procedure for creating and updating input type doc instances |
 
 ### Overview Table
 

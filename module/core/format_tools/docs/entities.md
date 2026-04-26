@@ -4,7 +4,7 @@
 
 | Type | Purpose | Master File | Instances |
 |------|---------|-------------|----------:|
-| `api/` | Public interface groups: macros, traits, and type groups | [api/readme.md](api/readme.md) | 4 |
+| `api/` | Public interface groups: macros, interfaces, and type groups | [api/readme.md](api/readme.md) | 4 |
 | `data_structure/` | Core data structures used in the table formatting pipeline | [data_structure/readme.md](data_structure/readme.md) | 2 |
 | `feature/` | User-facing formatting capabilities and their artifact navigation hubs | [feature/readme.md](feature/readme.md) | 5 |
 | `invariant/` | Architectural constraints that must always hold for format_tools | [invariant/readme.md](invariant/readme.md) | 4 |

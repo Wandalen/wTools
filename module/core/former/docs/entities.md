@@ -1,5 +1,25 @@
 # Doc Entities
 
+## Entity Tree
+
+```
+algorithm/                          Collection Entity   1st
+api/                                Collection Entity   1st
+feature/                            Collection Entity   1st
+invariant/                          Collection Entity   1st
+pattern/                            Collection Entity   1st
+```
+
+## Entities
+
+| Entity | Type | Latent? | Purpose |
+|--------|------|---------|---------|
+| [algorithm/](algorithm/) | Collection | | Algorithm doc instances — computational procedures used during macro expansion |
+| [api/](api/) | Collection | | API doc instances — attribute contracts for macro configuration |
+| [feature/](feature/) | Collection | | Feature doc instances — user-facing macro capabilities |
+| [invariant/](invariant/) | Collection | | Invariant doc instances — hard constraints on supported types |
+| [pattern/](pattern/) | Collection | | Pattern doc instances — design patterns implemented or enabled by the macro |
+
 ## Master Doc Entities Table
 
 | Type | Purpose | Master File | Instances |

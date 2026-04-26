@@ -45,6 +45,6 @@ This invariant cannot be violated — the absent methods cannot be called. Calle
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| feature/001 | [Generic Interval Parameter](../feature/001_generic_interval_parameter.md) | What the crate does provide |
-| feature/002 | [Non-Iterable Intervals](../feature/002_non_iterable_intervals.md) | Bound-query operations that are in scope |
-| api/001 | [Interval Traits](../api/001_interval_traits.md) | Complete method table — scope of API |
+| doc | [feature/001_generic_interval_parameter.md](../feature/001_generic_interval_parameter.md) | What the crate does provide |
+| doc | [feature/002_non_iterable_intervals.md](../feature/002_non_iterable_intervals.md) | Bound-query operations that are in scope |
+| doc | [api/001_interval_traits.md](../api/001_interval_traits.md) | Complete method table — scope of API |

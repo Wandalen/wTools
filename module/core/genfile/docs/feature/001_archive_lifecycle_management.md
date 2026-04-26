@@ -18,9 +18,3 @@ Archives can be created empty with a name and optional description, loaded from 
 | source | `src/handlers/archive.rs` | Handler implementations for all four commands |
 | config | `commands/archive.yaml` | Authoritative command specs for archive group |
 | doc | `docs/cli/commands/archive.md` | CLI reference documentation |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| `spec.md` (deleted) | FR1 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

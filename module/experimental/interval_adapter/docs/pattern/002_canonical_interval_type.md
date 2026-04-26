@@ -2,18 +2,18 @@
 
 ### Scope
 
-- **Purpose**: Document why `Interval<T>` exists as a concrete type that unifies all interval representations into a single storable form.
+- **Purpose**: Document why `Interval` exists as a concrete type that unifies all interval representations into a single storable form.
 - **Responsibility**: Problem statement, solution structure, applicability, and consequences of the canonical type approach.
 - **In Scope**: The rationale for a concrete canonical type over trait objects, the uniformity benefit, and the conversion tradeoff.
-- **Out of Scope**: Trait hierarchy design (→ `pattern/001`); `Interval<T>` struct details (→ `data_structure/001`); `IntoInterval` signatures (→ `api/002`).
+- **Out of Scope**: Trait hierarchy design (→ `pattern/001`); `Interval` struct details (→ `data_structure/001`); `IntoInterval` signatures (→ `api/002`).
 
 ### Cross-References
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| data_structure/001 | [Interval](../data_structure/001_interval.md) | `Interval<T>` struct definition and field layout |
-| api/002 | [Conversion Traits](../api/002_conversion_traits.md) | `IntoInterval` trait enabling conversion |
-| pattern/001 | [Two-Trait Hierarchy](001_two_trait_hierarchy.md) | Complementary pattern governing the trait layer |
+| doc | [data_structure/001_interval.md](../data_structure/001_interval.md) | Interval struct definition and field layout |
+| doc | [api/002_conversion_traits.md](../api/002_conversion_traits.md) | IntoInterval trait enabling conversion |
+| doc | [pattern/001_two_trait_hierarchy.md](001_two_trait_hierarchy.md) | Complementary pattern governing the trait layer |
 
 ### Problem
 
@@ -21,31 +21,13 @@ Generic code working with intervals may need to store an interval in a struct fi
 
 ### Solution
 
-Provide a single concrete type, `Interval<T>`, that stores any interval as a `(Bound<T>, Bound<T>)` pair:
+Provide a single concrete type, `Interval`, that stores any interval as a pair of bound values — one for the left endpoint and one for the right. Both fields are private; all access goes through the trait methods.
 
-```rust
-pub struct Interval< T = isize >
-{
-  _left  : Bound< T >,
-  _right : Bound< T >,
-}
-```
-
-All interval types implement `IntoInterval<T>`, converting to `Interval<T>` at the point of storage. Once stored as `Interval<T>`, the value implements both `NonIterableInterval<T>` and `IterableInterval<T>` (for bounded cases), so all interval operations remain available without any further conversion.
+All interval types implement `IntoInterval`, converting to `Interval` at the point of storage. Once stored as `Interval`, the value implements both `NonIterableInterval` and `IterableInterval` (for bounded cases), so all interval operations remain available without any further conversion.
 
 **Converting to canonical form:**
 
-```rust
-use interval_adapter::{ IntoInterval, Interval };
-
-// At struct field:
-struct Window { range : Interval< i32 > }
-
-// At call site — any interval type works:
-let w1 = Window { range : ( 0..10 ).into_interval() };
-let w2 = Window { range : ( 0..=9 ).into_interval() };
-let w3 = Window { range : ( 0, 9 ).into_interval() };
-```
+When storing an interval in a struct field, declare the field using `Interval` and convert at the call site using `into_interval`. Any interval type — half-open ranges, closed ranges, tuples, and arrays — converts to `Interval` via this method, so the struct field accepts all of them uniformly.
 
 ### Applicability
 
@@ -58,10 +40,10 @@ Apply this pattern when a library must accept multiple concrete types implementi
 ### Consequences
 
 **Benefits:**
-- `Interval<T>` is `Copy` — passes by value without cloning overhead.
-- Single iterator implementation (`IntervalIterator<T>`) covers all interval types after conversion.
+- `Interval` is `Copy` — passes by value without cloning overhead.
+- A single iterator implementation (`IntervalIterator`) covers all interval types after conversion.
 - Struct fields, return types, and collections use a single concrete type.
 
 **Tradeoff:**
-- Conversion from source type to `Interval<T>` incurs a small construction overhead — two `Bound<T>` values are constructed rather than borrowing the original range.
-- Callers that work exclusively with a single range type (e.g., always `Range<i32>`) pay an unnecessary conversion cost.
+- Conversion from source type to `Interval` incurs a small construction overhead — two bound values are constructed rather than borrowing the original range.
+- Callers that work exclusively with a single concrete range type pay an unnecessary conversion cost.

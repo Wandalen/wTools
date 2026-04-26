@@ -1,5 +1,14 @@
 # Doc Entities
 
+## Entity Tree
+
+```
+docs/
+├── api/                            Collection Entity   1st
+├── feature/                        Collection Entity   1st
+└── invariant/                      Collection Entity   1st
+```
+
 ## Master Doc Entities Table
 
 | Type | Purpose | Master File | Instances |

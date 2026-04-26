@@ -2,10 +2,10 @@
 
 ### Scope
 
-- **What**: Contract for validating resolved configuration values in `ConfigManager`
-- **Who**: Application developers adding per-parameter or cross-parameter validation
-- **When**: Implementing `ConfigValidator`; optional — use `NoValidator` stub when not needed
-- **Out of scope**: Path configuration (→ api/001), default values (→ api/002)
+- **Purpose**: Define the contract for validating resolved configuration values in ConfigManager.
+- **Responsibility**: Document both validation hooks, the NoValidator stub, and compatibility notes.
+- **In Scope**: Implementing ConfigValidator; optional — use NoValidator stub when not needed.
+- **Out of Scope**: Path configuration (→ api/001), default values (→ api/002).
 
 ### Abstract
 
@@ -102,8 +102,8 @@ type AppConfig = ConfigManager< AppDefaults, AppPaths, NoValidator >;
 
 ### Cross-References
 
-| Type | Target | Relationship |
-|------|--------|-------------|
-| doc | api/001_config_paths_trait.md | companion required trait |
-| doc | api/002_config_defaults_trait.md | companion required trait |
-| doc | feature/001_config_hierarchy.md | validation is part of this feature |
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | `../api/001_config_paths_trait.md` | Companion required trait |
+| doc | `../api/002_config_defaults_trait.md` | Companion required trait |
+| doc | `../feature/001_config_hierarchy.md` | Feature that uses this validation contract |

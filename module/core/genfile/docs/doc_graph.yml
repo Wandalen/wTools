@@ -72,75 +72,75 @@ nodes:
     entity: invariant
 
 edges:
-  - {from: invariant/001, to: feature/010, via: cross_references}
-  - {from: invariant/003, to: feature/006, via: cross_references}
-  - {from: invariant/004, to: feature/006, via: cross_references}
+  - {from: invariant/001, to: feature/010, label: cross-reference }
+  - {from: invariant/003, to: feature/006, label: cross-reference }
+  - {from: invariant/004, to: feature/006, label: cross-reference }
 
 components:
   - id: 1
     label: performance-repl
     size: 2
     isolated: false
-    nodes: [invariant/001, feature/010]
+    members: [invariant/001, feature/010]
   - id: 2
     label: security-materialization
     size: 3
     isolated: false
-    nodes: [invariant/003, invariant/004, feature/006]
+    members: [invariant/003, invariant/004, feature/006]
   - id: 3
     label: archive-lifecycle
     size: 1
     isolated: true
-    nodes: [feature/001]
+    members: [feature/001]
   - id: 4
     label: file-content
     size: 1
     isolated: true
-    nodes: [feature/002]
+    members: [feature/002]
   - id: 5
     label: param-definition
     size: 1
     isolated: true
-    nodes: [feature/003]
+    members: [feature/003]
   - id: 6
     label: param-value
     size: 1
     isolated: true
-    nodes: [feature/004]
+    members: [feature/004]
   - id: 7
     label: content-source
     size: 1
     isolated: true
-    nodes: [feature/005]
+    members: [feature/005]
   - id: 8
     label: archive-serialization
     size: 1
     isolated: true
-    nodes: [feature/007]
+    members: [feature/007]
   - id: 9
     label: archive-analysis
     size: 1
     isolated: true
-    nodes: [feature/008]
+    members: [feature/008]
   - id: 10
     label: help-system
     size: 1
     isolated: true
-    nodes: [feature/009]
+    members: [feature/009]
   - id: 11
     label: usability
     size: 1
     isolated: true
-    nodes: [invariant/002]
+    members: [invariant/002]
   - id: 12
     label: testing-coverage
     size: 1
     isolated: true
-    nodes: [invariant/005]
+    members: [invariant/005]
   - id: 13
     label: documentation
     size: 1
     isolated: true
-    nodes: [invariant/006]
+    members: [invariant/006]
 
 dangling_refs: []

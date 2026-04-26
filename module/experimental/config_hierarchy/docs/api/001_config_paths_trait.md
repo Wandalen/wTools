@@ -2,10 +2,10 @@
 
 ### Scope
 
-- **What**: Contract for supplying path and naming configuration to `ConfigManager`
-- **Who**: Application developers implementing path customization; users adding `config_hierarchy`
-- **When**: Implementing `ConfigPaths`; only `app_name()` is required
-- **Out of scope**: Default values (→ api/002), validation (→ api/003), file format (→ format/001)
+- **Purpose**: Define the contract for supplying path and naming configuration to ConfigManager.
+- **Responsibility**: Document all path derivation methods, defaults, env var naming, and OS-specific fallbacks.
+- **In Scope**: All 15 ConfigPaths methods; path derivation formulas; env var naming; only app_name() is required.
+- **Out of Scope**: Default values (→ api/002), validation (→ api/003), file format (→ format/001).
 
 ### Abstract
 
@@ -121,9 +121,9 @@ fn env_var_prefix() -> &'static str { "MYAPP" }
 
 ### Cross-References
 
-| Type | Target | Relationship |
-|------|--------|-------------|
-| doc | invariant/001_resolution_hierarchy.md | path formulas defined by this trait govern the invariant |
-| doc | format/001_config_file_format.md | files at these paths use this format |
-| doc | api/002_config_defaults_trait.md | companion required trait |
-| doc | api/003_config_validator_trait.md | companion optional trait |
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | `../invariant/001_resolution_hierarchy.md` | Path formulas defined by this trait govern the invariant |
+| doc | `../format/001_config_file_format.md` | Files at these paths use this format |
+| doc | `../api/002_config_defaults_trait.md` | Companion required trait |
+| doc | `../api/003_config_validator_trait.md` | Companion optional trait |

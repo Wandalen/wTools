@@ -47,9 +47,3 @@ The macro generates four named namespace modules (own, orphan, exposed, prelude)
 | doc | `docs/pattern/001_exposure_level_cascade.md` | Five-layer cascade architectural pattern |
 | doc | `docs/pattern/002_absorption_pattern.md` | Meta/runtime crate split pattern |
 | task | `task/completed/001_fix_use_layer_reexports.md` | Fix for layer-aware propagation in record_use_implicit |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Combined source; Overview, Scope (In-Scope items 1-8, Out-of-Scope), Architecture (Absorption Pattern, Module Organization, Exposure Level Architecture), Usage Patterns, Design Rationale, and Adoption Guidelines sections contributed to this doc instance. spec.md has been deleted — Sources entry retained as migration record. |

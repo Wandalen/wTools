@@ -27,8 +27,8 @@ Contains: an ordered list of column name strings; a sequence of rows where each 
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/format/table.rs` | Table construction utilities that produce InputExtract |
-| source | `src/format/output_format.rs` | Formatter interface that consumes InputExtract |
-| test | `tests/inc/table_test.rs` | InputExtract construction and formatting tests |
+| source | `src/format/table.rs` | Table construction utilities that produce this structure |
+| source | `src/format/output_format.rs` | Formatter interface that consumes this structure |
+| test | `tests/inc/table_test.rs` | Input structure construction and formatting tests |
 | doc | `docs/api/003_table_formatting_api.md` | API that operates on this structure |
 | doc | `docs/feature/002_table_formatting.md` | Feature that uses this structure |

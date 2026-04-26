@@ -24,9 +24,3 @@ Breaking changes in minor/patch releases invalidate dependent projects' `Cargo.l
 | Type | File | Responsibility |
 |------|------|----------------|
 | config | `Cargo.toml` | Version declaration governing semver policy |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [`../../spec.md`](../../spec.md) | NFR7 in original spec; combined source migrated to invariant/. spec.md has been deleted — Sources entry retained as migration record. |

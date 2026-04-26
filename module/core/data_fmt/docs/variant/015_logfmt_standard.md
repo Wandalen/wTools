@@ -24,7 +24,7 @@
 
 ### Build & Dependencies
 
-- **feature_flag**: default
+- **feature_flag**: format_logfmt
 - **runtime_deps**: None
 - **zero_dependency**: Yes
 

@@ -31,5 +31,5 @@ Multiple successive entry builder invocations accumulate entries into the collec
 
 | File | Notes |
 |------|-------|
-| [../../spec.md](../../spec.md) | Primary source — section 2.4.2 field attribute table, subform_entry entry |
-| [../../advanced.md](../../advanced.md) | Combined source; entry subformer mechanics and collection accumulation described |
+| [../../spec.md](../../spec.md) | Primary source — section 2.4.2 field attribute table, subform_entry entry; also produced 12 sibling instances — see entities.md |
+| [../../advanced.md](../../advanced.md) | Combined source; entry subformer mechanics and collection accumulation described; also produced 5 sibling instances: feature/001–004, pattern/002 |

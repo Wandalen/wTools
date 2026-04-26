@@ -36,6 +36,6 @@ Callers that depend on non-empty iteration must validate before constructing an 
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| data_structure/001 | [Interval](../data_structure/001_interval.md) | `Interval::new()` — no validation in constructor |
-| data_structure/002 | [IntervalIterator](../data_structure/002_interval_iterator.md) | Immediate `None` for reversed intervals |
-| invariant/001 | [Integer Endpoints Only](001_integer_endpoints_only.md) | Type constraint (orthogonal invariant) |
+| doc | [data_structure/001_interval.md](../data_structure/001_interval.md) | Interval::new() — no validation in constructor |
+| doc | [data_structure/002_interval_iterator.md](../data_structure/002_interval_iterator.md) | Immediate None for reversed intervals |
+| doc | [invariant/001_integer_endpoints_only.md](001_integer_endpoints_only.md) | Type constraint (orthogonal invariant) |

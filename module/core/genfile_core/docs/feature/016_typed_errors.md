@@ -19,9 +19,3 @@ The typed error covers all genfile_core failure modes: render failure (template 
 | test | `tests/` | Typed error variant and display tests |
 | doc | `docs/feature/014_template_generation.md` | Primary error return site |
 | doc | `docs/invariant/006_error_message_quality.md` | Quality constraint that applies to these error variants |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [`../../spec.md`](../../spec.md) | FR16 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

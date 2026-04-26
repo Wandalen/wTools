@@ -7,7 +7,7 @@
 - **In Scope**: Trait implementations, accepted input types, variant selection mechanism, feature flag, deprecation status.
 - **Out of Scope**: Per-variant preset details (see `../variant/`), operation signatures (see `../api/004_formatters.md`), format output semantics (see `../variant/`).
 
-#### Type-Specific Requirements
+### Type-Specific Requirements
 
 Every formatter doc instance must contain these sections in order:
 
@@ -18,6 +18,12 @@ Every formatter doc instance must contain these sections in order:
 | Trait | `### Trait` | Which trait(s) implemented; deprecation status of each |
 | Input | `### Input` | Accepted Rust input type(s); which path each serves |
 | Variants | `### Variants` | Variant list with selection mechanism per variant |
+
+### Infrastructure
+
+| File | Responsibility |
+|------|----------------|
+| `procedure.md` | Operational procedure for creating and updating formatter doc instances |
 
 ### Overview Table
 

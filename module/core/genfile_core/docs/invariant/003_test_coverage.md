@@ -24,9 +24,3 @@ Coverage below 80% indicates under-tested paths that may contain latent bugs. Te
 | Type | File | Responsibility |
 |------|------|----------------|
 | test | `tests/` | Primary test suite that drives coverage |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [`../../spec.md`](../../spec.md) | NFR3 in original spec; combined source migrated to invariant/. spec.md has been deleted — Sources entry retained as migration record. |

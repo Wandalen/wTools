@@ -19,9 +19,3 @@ The handlebars renderer wraps the Handlebars engine with HTML escaping disabled,
 | test | `tests/` | Handlebars rendering and template substitution tests |
 | doc | `docs/feature/006_template_renderer_trait.md` | Trait that this renderer implements |
 | doc | `docs/invariant/001_rendering_performance.md` | Performance bound that applies to this renderer |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [`../../spec.md`](../../spec.md) | FR7 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

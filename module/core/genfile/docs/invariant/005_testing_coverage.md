@@ -24,9 +24,3 @@ Untested commands may silently regress. Platform-specific test failures on Windo
 | Type | File | Responsibility |
 |------|------|----------------|
 | test | `tests/test_utils.rs` | Cross-platform test infrastructure |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| `spec.md` (deleted) | NFR5 in original spec; combined source migrated to invariant/. spec.md has been deleted — Sources entry retained as migration record. |

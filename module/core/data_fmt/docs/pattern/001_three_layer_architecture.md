@@ -11,7 +11,7 @@
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `../architecture.md` | Original combined architecture document (retained per migration rules) |
+| doc | `../architecture.md` | Original combined architecture document (retained per migration rules) |
 | doc | `../feature/001_table_formatting.md` | Table formatting feature consuming Layer 3 |
 | doc | `../api/004_formatters.md` | Formatter API surface in Layer 3 |
 | doc | `../api/001_data_types.md` | Data types in Layer 1 |
@@ -74,9 +74,3 @@ Apply this pattern when organizing a library that renders the same data in multi
 ### Consequences
 
 The three-layer separation ensures formatters remain interchangeable: the same `TreeNode` or `TableView` can be passed to any formatter without modification. Layer 2's `TableShapedView` trait decouples formatter logic from tree internals, so table-shaped formatters operate on flat vectors of strings rather than traversing tree structure directly. This enables the mutual replaceability design principle. The cost is that the tree encoding for tabular data is non-obvious — callers must use the builders rather than constructing trees directly.
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../architecture.md](../architecture.md) | Original source; sections "Three-Layer Architecture" and "Module File Structure" extracted into this instance |

@@ -29,4 +29,4 @@ Compilation fails with a trait conflict error indicating conflicting implementat
 
 | File | Notes |
 |------|-------|
-| [../../limitations.md](../../limitations.md) | Primary source — Trait Conflict Limitation section (Limitation 3): verified error, workaround, and engineering trade-off analysis |
+| [../../limitations.md](../../limitations.md) | Primary source — Trait Conflict Limitation section (Limitation 3): verified error, workaround, and engineering trade-off analysis; also produced 3 sibling instances: feature/002, invariant/001–002 |

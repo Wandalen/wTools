@@ -14,6 +14,7 @@
 | source | `src/themes.rs` | Theme definitions |
 | test | `tests/themes.rs` | Theme application tests |
 | test | `tests/table_rendering_colors.rs` | Color rendering tests |
+| doc | `../api/003_config_types.md` | Config types that themes apply to |
 
 ### Design
 
@@ -77,15 +78,15 @@ Dark theme with vibrant colors.
 
 #### Usage
 
-Themes work with all three visual formatter configs. Applying a theme to a config instance sets all relevant color fields automatically — the caller does not need to configure individual ANSI codes. Each visual formatter config type (`TableConfig`, `ExpandedConfig`, `TreeConfig`) exposes a method to apply a theme and returns a configured instance ready for use.
+Themes work with all three visual formatter configs. Applying a theme to a config instance sets all relevant color fields automatically — the caller does not need to configure individual ANSI codes. Each visual formatter config type exposes a method to apply a theme and returns a configured instance ready for use.
 
 #### Theme Application
 
 Themes automatically configure the relevant fields on each config type:
 
-- **TableConfig**: `header_color`, `alternating_rows`, `row_color1`, `row_color2`, border colors
-- **ExpandedConfig**: `key_color`, record separator colors
-- **TreeConfig**: Branch symbol colors, data colors
+- **Table config**: header color, alternating row colors, border colors
+- **Expanded config**: key color, record separator colors
+- **Tree config**: branch symbol colors, data colors
 
 #### Custom Theme Creation
 
@@ -93,15 +94,15 @@ Build a custom theme by specifying individual color components: header color, bo
 
 #### Color Reset Behavior
 
-All themes include automatic color reset (`\x1b[0m`) after every colored element. This prevents color bleeding into subsequent terminal output. Each colored line is wrapped as `color + content + \x1b[0m + \n`.
+All themes include automatic color reset after every colored element. This prevents color bleeding into subsequent terminal output. Each colored line wraps content with the chosen color and a terminal reset sequence.
 
 #### Terminal Compatibility
 
 - Uses standard ANSI escape codes
-- 256-color support (`\x1b[38;5;Nm` format)
+- 256-color support
 - Gracefully degrades in non-color terminals
-- No-color mode: `ColorTheme::None` disables all colors
+- No-color mode disables all colors
 
 #### Feature Flag Integration
 
-The `themes` feature is optional. Guard theme usage with a `cfg(feature = "themes")` attribute when compiling without the feature enabled.
+The `themes` feature is optional. Guard theme usage with the appropriate feature gate when compiling without the feature enabled.

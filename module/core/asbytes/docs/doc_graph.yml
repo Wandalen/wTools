@@ -33,35 +33,35 @@ nodes:
 
 edges:
   # api/001 cross-references
-  - { from: api/001, to: feature/001,    via: cross_references }
-  - { from: api/001, to: api/002,        via: cross_references }
+  - { from: api/001, to: feature/001,    label: cross-reference }
+  - { from: api/001, to: api/002,        label: cross-reference }
   - { from: api/001, to: invariant/001,  via: cross_references }
   - { from: api/001, to: invariant/002,  via: cross_references }
   # api/002 cross-references
-  - { from: api/002, to: feature/001,    via: cross_references }
-  - { from: api/002, to: api/001,        via: cross_references }
+  - { from: api/002, to: feature/001,    label: cross-reference }
+  - { from: api/002, to: api/001,        label: cross-reference }
   - { from: api/002, to: invariant/001,  via: cross_references }
   - { from: api/002, to: invariant/002,  via: cross_references }
   # feature/001 cross-references
-  - { from: feature/001, to: api/001,       via: cross_references }
-  - { from: feature/001, to: api/002,       via: cross_references }
-  - { from: feature/001, to: invariant/001, via: cross_references }
-  - { from: feature/001, to: invariant/002, via: cross_references }
+  - { from: feature/001, to: api/001,       label: cross-reference }
+  - { from: feature/001, to: api/002,       label: cross-reference }
+  - { from: feature/001, to: invariant/001, label: cross-reference }
+  - { from: feature/001, to: invariant/002, label: cross-reference }
   # invariant/001 cross-references
-  - { from: invariant/001, to: feature/001, via: cross_references }
-  - { from: invariant/001, to: api/001,     via: cross_references }
-  - { from: invariant/001, to: api/002,     via: cross_references }
+  - { from: invariant/001, to: feature/001, label: cross-reference }
+  - { from: invariant/001, to: api/001,     label: cross-reference }
+  - { from: invariant/001, to: api/002,     label: cross-reference }
   # invariant/002 cross-references
-  - { from: invariant/002, to: feature/001, via: cross_references }
-  - { from: invariant/002, to: api/001,     via: cross_references }
-  - { from: invariant/002, to: api/002,     via: cross_references }
+  - { from: invariant/002, to: feature/001, label: cross-reference }
+  - { from: invariant/002, to: api/001,     label: cross-reference }
+  - { from: invariant/002, to: api/002,     label: cross-reference }
 
 components:
   - id: 1
     label: Full byte conversion documentation graph
     size: 5
     isolated: false
-    nodes:
+    members:
       - api/001
       - api/002
       - feature/001

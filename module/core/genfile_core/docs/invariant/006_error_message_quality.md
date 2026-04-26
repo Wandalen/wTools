@@ -25,9 +25,3 @@ Opaque error messages cause users to give up or file bugs that cannot be reprodu
 |------|------|----------------|
 | source | `src/error.rs` | Typed error enum and display implementations |
 | doc | `docs/feature/016_typed_errors.md` | Typed error variants documented here |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [`../../spec.md`](../../spec.md) | NFR6 in original spec; combined source migrated to invariant/. spec.md has been deleted — Sources entry retained as migration record. |

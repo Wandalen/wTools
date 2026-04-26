@@ -10,9 +10,9 @@ See [entities.md](entities.md) for the complete registry of all doc entity types
 
 | File | Responsibility |
 |------|----------------|
-| [entities.md](entities.md) | Master registry of all doc entity types and instances |
-| [doc_graph.yml](doc_graph.yml) | Cross-reference graph linking all doc instances |
-| [feature/](feature/readme.md) | Feature documentation — what the crate does and why |
-| [api/](api/readme.md) | API reference — public macro entry points and attribute contracts |
-| [invariant/](invariant/readme.md) | Invariant documentation — behavioral contracts that must always hold |
-| [integration/](integration/readme.md) | Integration documentation — external dependencies and consumers |
+| `entities.md` | Catalogues all doc entity types and their instance file paths |
+| `doc_graph.yml` | Maps cross-reference relationships across all doc instances |
+| `feature/` | Documents behavioral capabilities and design of this crate |
+| `api/` | Defines public macro entry points and attribute contracts |
+| `invariant/` | Specifies behavioral constraints that must always hold |
+| `integration/` | Documents integration relationships with external dependencies |

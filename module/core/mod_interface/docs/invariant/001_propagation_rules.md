@@ -49,9 +49,3 @@ Violation of rule 5 (own items propagated): items marked own-only would leak to 
 | doc | `docs/feature/001_layered_module_interface.md` | Feature hub for the mod_interface! macro |
 | doc | `../mod_interface_meta/docs/invariant/001_namespace_cascade.md` | Within-module cascade invariant (own ⊇ orphan ⊇ exposed ⊇ prelude) |
 | task | `task/completed/001_fix_use_layer_reexports.md` | Root cause and fix for violation of rules 1-4 in record_use_implicit |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Combined source; Scope item 3 (Propagation Rules) and Architecture section (Propagation Flow diagram) contributed to this doc instance. spec.md has been deleted — Sources entry retained as migration record. |

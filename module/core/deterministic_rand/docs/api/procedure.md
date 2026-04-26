@@ -16,7 +16,7 @@
    `| api | NNN | Name | [api/NNN_name.md](api/NNN_name.md) |`
 6. Update the **Instances** count in `docs/entities.md` **Master Doc Entities Table** for the `api/` row.
 7. Add a node to `docs/doc_graph.yml` under `nodes`:
-   `- id: api/NNN, file: api/NNN_name.md, label: Name, entity: api, status: planned`
+   `- id: api/NNN, file: api/NNN_name.md, label: Name, entity: api`
 8. Update `node_count` in `doc_graph.yml` `meta`.
 9. Add edges for every doc listed in the new instance's `### Cross-References`; update `edge_count` in `meta`.
 10. Update or add the new node to the appropriate `components` entry; update `size`.
@@ -25,6 +25,6 @@
 
 1. Do **not** delete `NNN_name.md` or remove its Overview Table row — ID permanence is required.
 2. Change the row status in **Overview Table** to `❌`.
-3. Update `docs/entities.md` Master Doc Instances Table: append `(deprecated)` to the Name column.
+3. Remove the row for this instance from `docs/entities.md` Master Doc Instances Table in the same session.
 4. Remove the node from `doc_graph.yml` `nodes`; remove all edges referencing this node.
 5. Update `node_count` and `edge_count` in `meta`; update the relevant component `nodes` list and `size`.

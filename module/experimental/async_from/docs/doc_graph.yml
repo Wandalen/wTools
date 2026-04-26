@@ -136,7 +136,7 @@ edges:
 
 components:
   - id: main
-    nodes:
+    members:
       - feature/001
       - feature/002
       - api/001

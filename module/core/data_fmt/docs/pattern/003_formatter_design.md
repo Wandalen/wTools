@@ -11,7 +11,7 @@
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `../architecture.md` | Original combined architecture document (retained per migration rules) |
+| doc | `../architecture.md` | Original combined architecture document (retained per migration rules) |
 | doc | `../trait/001_format.md` | Format trait definition |
 | doc | `../trait/002_table_shaped_formatter.md` | TableShapedFormatter trait definition |
 | doc | `../trait/003_table_shaped_view.md` | TableShapedView trait definition |
@@ -51,9 +51,3 @@ Apply this pattern when adding a new formatter to the library. New formatters mu
 ### Consequences
 
 Decoupling via `TableShapedView` prevents formatters from depending on tree traversal details. The `Format` trait is the canonical extension point — new formatters implement `Format`, not the deprecated `TableShapedFormatter`. The dual `format()`/`write_to()` surface satisfies both in-memory and streaming output needs without separate formatter types. The deprecated `TableShapedFormatter` adds maintenance burden but is preserved for backward compatibility in 0.x versions.
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../architecture.md](../architecture.md) | Original source; section "Formatter Design" extracted into this instance |

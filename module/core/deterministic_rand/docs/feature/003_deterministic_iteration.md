@@ -2,9 +2,9 @@
 
 ### Scope
 
-- **Purpose**: Provide an iterator extension that sorts elements only when the determinism feature is active, eliminating HashMap/HashSet ordering as a source of non-determinism.
+- **Purpose**: Provide an iterator extension that sorts elements only when the determinism feature is active, eliminating hash collection ordering as a source of non-determinism.
 - **Responsibility**: Define the conditional-sort extension trait and its no-op contract in non-deterministic mode.
-- **In Scope**: The extension trait, conditional sort behavior, HashMap/HashSet key ordering use case.
+- **In Scope**: The extension trait, conditional sort behavior, hash collection key ordering use case.
 - **Out of Scope**: The backend selection mechanism (→ `feature/002`), the hierarchical generator model (→ `feature/001`), API signatures (→ `api/001`).
 
 ### Design

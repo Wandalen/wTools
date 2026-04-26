@@ -9,9 +9,9 @@
 
 ### Abstract
 
-`former_meta` exposes one proc-macro entry point: `Former`. It is applied via
-`#[derive(Former)]` on struct or enum items. All other names in this crate are
-implementation details not intended for direct use.
+`former_meta` exposes one proc-macro entry point: `Former`. It is used as a derive macro
+applied to struct or enum items. All other names in this crate are implementation details
+not intended for direct use.
 
 ### Operations
 
@@ -20,7 +20,7 @@ implementation details not intended for direct use.
 `Former` — applicable to structs with named fields and to enums. Requires the
 `derive_former` feature flag to be active.
 
-**Struct-level attributes** (placed on the annotated item or inside `#[former(...)]`)
+**Struct-level attributes** (placed on the annotated item or via the `former` group attribute)
 
 - `debug` — emit debug output during macro expansion
 - `perform` — configure the terminal method name (default: `form`)
@@ -29,12 +29,12 @@ implementation details not intended for direct use.
 
 **Field-level attributes** (placed on individual struct fields)
 
-- `#[scalar]` / `#[former(scalar)]` — generate a scalar setter for this field
-- `#[subform_scalar]` — generate a subform scalar setter (delegates to a nested former)
-- `#[subform_collection]` — generate a subform collection setter (delegates to a collection former)
-- `#[subform_entry]` — generate a subform entry setter (delegates to an entry former)
-- `#[former_ignore]` — suppress all setter generation for this field
-- `#[arg_for_constructor]` — mark field as a required constructor argument
+- `scalar` — generate a scalar setter for this field (also accessible via the `former` group attribute)
+- `subform_scalar` — generate a subform scalar setter (delegates to a nested former)
+- `subform_collection` — generate a subform collection setter (delegates to a collection former)
+- `subform_entry` — generate a subform entry setter (delegates to an entry former)
+- `former_ignore` — suppress all setter generation for this field
+- `arg_for_constructor` — mark field as a required constructor argument
 
 **Enum variant attributes** (placed on enum variants)
 
@@ -61,6 +61,8 @@ emitted for standalone use). Its contract is stable once `derive_former` is enab
 
 | Type | File | Responsibility |
 |------|------|----------------|
+| source | `../../src/lib.rs` | Declares the Former proc-macro entry point |
+| test | `../../tests/smoke_test.rs` | Smoke tests exercising the public macro API |
 | doc | `../feature/001_former_derive.md` | Behavioral description of what the macro generates |
 | doc | `../invariant/002_feature_flag_gating.md` | derive_former feature flag gates this API |
 | doc | `../integration/003_former.md` | Consumer facade that re-exports this macro |

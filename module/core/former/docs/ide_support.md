@@ -195,8 +195,9 @@ assert_former_exists::<MyStructFormerDefinition>();
 
 When autocomplete fails, refer to:
 - [examples/](../examples/) directory
-- [spec.md](../spec.md) for generated API reference
-- [advanced.md](../advanced.md) for subformer patterns
+- [api/001_item_attributes.md](api/001_item_attributes.md) for item-level attribute reference
+- [api/002_field_attributes.md](api/002_field_attributes.md) for field-level attribute reference
+- [pattern/002_subformer_composition.md](pattern/002_subformer_composition.md) for subformer patterns
 
 ### Use `cargo expand`
 

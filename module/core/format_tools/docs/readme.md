@@ -1,6 +1,6 @@
 # Docs
 
-## Scope
+### Scope
 
 Design and API documentation for `format_tools`.
 

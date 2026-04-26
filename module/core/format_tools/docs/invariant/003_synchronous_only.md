@@ -9,11 +9,11 @@
 
 ### Invariant Statement
 
-All formatting operations in format_tools are synchronous: they execute to completion within the calling thread and return a result directly. No function in format_tools is declared asynchronous, returns a future, or registers a waker. Verified by: no `async` keyword in `src/`; no async-runtime dependencies (tokio, async-std, smol) in Cargo.toml.
+All formatting operations in format_tools are synchronous: they execute to completion within the calling thread and return a result directly. No function in format_tools is declared asynchronous, returns a future, or registers a waker. Verified by: no asynchronous keywords in source files; no async-runtime dependencies in Cargo.toml.
 
 ### Enforcement Mechanism
 
-No async runtime is listed in dependencies. No `async fn` appears in source. Absence verified by `cargo tree` and source search. Code review enforces at contribution time.
+No async runtime is listed in dependencies. No asynchronous functions appear in source. Absence verified by dependency inspection and source search. Code review enforces at contribution time.
 
 ### Violation Consequences
 

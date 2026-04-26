@@ -9,11 +9,11 @@
 
 ### Invariant Statement
 
-No byte sequence produced by format_tools formatting operations contains ANSI escape sequences, terminal color codes, or any control character intended for terminal interpretation. All separators, borders, and labels are plain printable ASCII. Verified by: no color crate dependencies in Cargo.toml; no escape character literals (`\x1b`, `\033`) in source files.
+No byte sequence produced by format_tools formatting operations contains ANSI escape sequences, terminal color codes, or any control character intended for terminal interpretation. All separators, borders, and labels are plain printable ASCII. Verified by: no color crate dependencies in Cargo.toml; no ANSI escape character literals in source files.
 
 ### Enforcement Mechanism
 
-No color crate is listed as a dependency. Absence of color dependencies verified via `cargo tree`. Source files contain no escape character constants. Code review enforces this at contribution time.
+No color crate is listed as a dependency. Absence of color dependencies verified by dependency inspection. Source files contain no escape character constants. Code review enforces this at contribution time.
 
 ### Violation Consequences
 

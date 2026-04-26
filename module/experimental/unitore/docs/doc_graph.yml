@@ -32,20 +32,20 @@ nodes:
     entity: invariant
 
 edges:
-  - {from: api/001, to: feature/001, via: cross_references}
-  - {from: api/001, to: feature/002, via: cross_references}
-  - {from: api/001, to: feature/003, via: cross_references}
-  - {from: feature/001, to: api/001, via: cross_references}
-  - {from: feature/001, to: invariant/002, via: cross_references}
-  - {from: feature/002, to: api/001, via: cross_references}
-  - {from: feature/002, to: invariant/001, via: cross_references}
-  - {from: feature/002, to: invariant/002, via: cross_references}
-  - {from: feature/003, to: api/001, via: cross_references}
-  - {from: invariant/001, to: feature/002, via: cross_references}
-  - {from: invariant/002, to: feature/001, via: cross_references}
-  - {from: invariant/002, to: feature/002, via: cross_references}
+  - {from: api/001, to: feature/001, label: cross-reference }
+  - {from: api/001, to: feature/002, label: cross-reference }
+  - {from: api/001, to: feature/003, label: cross-reference }
+  - {from: feature/001, to: api/001, label: cross-reference }
+  - {from: feature/001, to: invariant/002, label: cross-reference }
+  - {from: feature/002, to: api/001, label: cross-reference }
+  - {from: feature/002, to: invariant/001, label: cross-reference }
+  - {from: feature/002, to: invariant/002, label: cross-reference }
+  - {from: feature/003, to: api/001, label: cross-reference }
+  - {from: invariant/001, to: feature/002, label: cross-reference }
+  - {from: invariant/002, to: feature/001, label: cross-reference }
+  - {from: invariant/002, to: feature/002, label: cross-reference }
 
 components:
   - id: main
-    nodes: [api/001, feature/001, feature/002, feature/003, invariant/001, invariant/002]
+    members: [api/001, feature/001, feature/002, feature/003, invariant/001, invariant/002]
     note: Single connected component — all doc instances are reachable from any entry point

@@ -2,10 +2,10 @@
 
 ### Scope
 
-- **What**: Contract for supplying default configuration values to `ConfigManager`
-- **Who**: Application developers providing fallback values for all known parameters
-- **When**: Implementing `ConfigDefaults`; always required
-- **Out of scope**: Path configuration (→ api/001), validation (→ api/003)
+- **Purpose**: Define the contract for supplying default configuration values to ConfigManager.
+- **Responsibility**: Document the two required methods, their behavior, and compatibility notes.
+- **In Scope**: Implementing ConfigDefaults; get_defaults() and get_parameter_names() methods.
+- **Out of Scope**: Path configuration (→ api/001), validation (→ api/003).
 
 ### Abstract
 
@@ -76,8 +76,8 @@ Neither method returns a `Result`. Both are expected to be pure and infallible. 
 
 ### Cross-References
 
-| Type | Target | Relationship |
-|------|--------|-------------|
-| doc | invariant/001_resolution_hierarchy.md | defaults are the lowest-priority level (priority 6) |
-| doc | api/001_config_paths_trait.md | companion required trait |
-| doc | api/003_config_validator_trait.md | companion optional trait |
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | `../invariant/001_resolution_hierarchy.md` | Defaults are the lowest-priority level (priority 6) |
+| doc | `../api/001_config_paths_trait.md` | Companion required trait |
+| doc | `../api/003_config_validator_trait.md` | Companion optional trait |

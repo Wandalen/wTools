@@ -17,9 +17,3 @@ Files can be added as text templates or binary content, either inline or from an
 |------|------|----------------|
 | source | `src/handlers/file.rs` | Handler implementations for file commands |
 | config | `commands/file.yaml` | Authoritative command specs for file group |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| `spec.md` (deleted) | FR2 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

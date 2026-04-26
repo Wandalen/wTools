@@ -19,9 +19,3 @@ The template renderer trait defines a render method accepting a template string 
 | test | `tests/` | Template renderer trait implementation tests |
 | doc | `docs/feature/007_handlebars_renderer.md` | Default implementation of this trait |
 | doc | `docs/feature/014_template_generation.md` | Consumes a renderer during generation |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [`../../spec.md`](../../spec.md) | FR6 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

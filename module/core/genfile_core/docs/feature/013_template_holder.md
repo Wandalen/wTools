@@ -18,9 +18,3 @@ The template holder is the low-level orchestrator. It holds a list of file descr
 | source | `src/template.rs` | Template holder struct definition and implementation |
 | test | `tests/` | Template holder construction and composition tests |
 | doc | `docs/feature/014_template_generation.md` | Generation operations on this struct |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [`../../spec.md`](../../spec.md) | FR13 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

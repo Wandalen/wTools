@@ -11,7 +11,7 @@
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `../architecture.md` | Original combined architecture document (retained per migration rules) |
+| doc | `../architecture.md` | Original combined architecture document (retained per migration rules) |
 | doc | `../invariant/001_data_model.md` | Invariants derived from these principles |
 
 ### Problem
@@ -43,9 +43,3 @@ Invoke these principles when evaluating new feature proposals, choosing between 
 ### Consequences
 
 Principles 1 and 5 (Single Data Structure + Mutual Replaceability) together enforce that no formatter receives a data type it cannot handle, keeping the API surface minimal. Principles 4 and 6 (Granular Features + Minimal Dependencies) ensure users pay only for what they enable. Principle 8 (ANSI-Aware) is non-negotiable for terminal-facing output where naive string length breaks column alignment. Decisions that violate any principle must be explicitly documented.
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../architecture.md](../architecture.md) | Original source; section "Design Principles" extracted into this instance |

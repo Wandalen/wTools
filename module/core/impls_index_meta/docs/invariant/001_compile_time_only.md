@@ -7,7 +7,7 @@
 - **In Scope**: Parse errors, unsupported item types, malformed input
 - **Out of Scope**: Runtime behavior of the generated function bodies (governed by caller code)
 
-### Statement
+### Invariant Statement
 
 If `impls3! { ... }` compiles without error, the generated `macro_rules!` definitions are syntactically and structurally valid Rust. No failure mode can arise from the macro infrastructure after compilation.
 
@@ -27,4 +27,4 @@ Generating invalid `macro_rules!` output or panicking in the proc-macro would co
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| feature | `../feature/001_macro_code_generation.md` | The generation feature this invariant governs |
+| doc | `../feature/001_macro_code_generation.md` | The generation feature this invariant governs |

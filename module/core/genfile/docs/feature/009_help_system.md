@@ -17,9 +17,3 @@ Universal help (`.` or `.help`) lists all registered non-help commands with thei
 |------|------|----------------|
 | source | `src/commands/mod.rs` | Registry that enables auto-generated help |
 | doc | `docs/cli/readme.md` | CLI documentation including help system overview |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| `spec.md` (deleted) | FR9 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

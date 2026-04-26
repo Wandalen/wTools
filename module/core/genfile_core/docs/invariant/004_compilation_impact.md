@@ -24,9 +24,3 @@ A large compilation overhead discourages adoption and slows CI across the wTools
 | Type | File | Responsibility |
 |------|------|----------------|
 | config | `Cargo.toml` | Dependency declarations that drive compilation cost |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [`../../spec.md`](../../spec.md) | NFR4 in original spec; combined source migrated to invariant/. spec.md has been deleted — Sources entry retained as migration record. |

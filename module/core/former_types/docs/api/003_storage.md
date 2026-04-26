@@ -32,12 +32,6 @@ Compile-time only. Storage types that fail to satisfy the required constraints p
 
 The Storage associated type declaration is stable within a major version. Changing the preform method signature in StoragePreform constitutes a breaking change.
 
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Combined source; storage section extracted here; remaining content migrated to api/001, api/002, api/004, algorithm/001, invariant/001, feature/001, feature/002 |
-
 ### Cross-References
 
 | Type | File | Responsibility |
@@ -46,3 +40,4 @@ The Storage associated type declaration is stable within a major version. Changi
 | doc | api/001_former_definition.md | Definition traits that reference the storage type |
 | doc | algorithm/001_formation_lifecycle.md | Lifecycle step where storage is consumed and converted |
 | doc | invariant/001_formation_integrity.md | Default-constructibility invariant enforced on storage |
+| doc | feature/001_builder_trait_infrastructure.md | End-to-end capability that depends on the storage layer |

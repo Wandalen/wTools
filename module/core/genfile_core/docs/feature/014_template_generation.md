@@ -20,9 +20,3 @@ Generation iterates all file descriptors. For each descriptor flagged as a templ
 | test | `tests/` | Template generation end-to-end tests |
 | doc | `docs/feature/013_template_holder.md` | Struct that owns this operation |
 | doc | `docs/feature/015_missing_mandatory_detection.md` | Pre-generation validation step |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [`../../spec.md`](../../spec.md) | FR14 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

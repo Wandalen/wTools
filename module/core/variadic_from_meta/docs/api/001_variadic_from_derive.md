@@ -51,6 +51,22 @@ All generated impl blocks propagate the struct's generic parameters verbatim, in
 
 Generated impls reference `::variadic_from::exposed::From1`, `::variadic_from::exposed::From2`, and `::variadic_from::exposed::From3` using absolute crate paths. Renaming `variadic_from` via a `package` alias in Cargo.toml will cause the generated code to reference a non-existent path and fail to compile.
 
+### Error Handling
+
+All errors are compile-time diagnostics. No runtime errors are produced.
+
+**Unsupported item kind** — applying the derive to a unit struct, an enum, or any non-struct item emits a compile error at the attribute site with a descriptive message.
+
+**Incorrect crate path** — if `variadic_from` is renamed via a Cargo.toml `package` alias, the generated absolute crate path becomes invalid and the consumer crate fails to compile with a path-not-found error.
+
+**Unsupported field count** — structs with zero or four-or-more fields compile without error but receive no generated implementations.
+
+### Compatibility Guarantees
+
+The generated impl contract (which field-count combinations produce which impl sets) is stable across patch and minor versions. Changes to generated behavior require a major version bump.
+
+This crate is an internal proc-macro dependency. Consumers depend on `variadic_from`, which re-exports the derive and provides the stable public interface.
+
 ### Cross-References
 
 | Type | File | Responsibility |

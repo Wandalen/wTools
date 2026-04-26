@@ -34,15 +34,17 @@ The parallel vectors invariant holds throughout the builder's lifetime: `rows` a
 
 `TableView` is the format-agnostic data structure consumed by all formatters. It holds extracted headers and rows as plain string vectors, decoupled from `TreeNode` internals. The `TableShapedView` trait provides generic extraction from any tree node whose data type supports display formatting, converting data values to strings automatically.
 
+#### Edge Case Contracts
+
+- **EC-1**: Empty tables return empty string in all formats
+- **EC-2**: Empty trees return empty string when formatted
+- **EC-3**: Single-row tables display correctly in all formats
+- **EC-4**: Generic display-capable data types work with the tabular extraction trait
+
 ### Enforcement Mechanism
 
 Row length validation is enforced by `RowBuilder` at the point of insertion — the builder panics immediately if row length does not match `headers.len()`. The parallel vectors invariant is maintained by the single internal insertion method that always updates both vectors atomically. `TableView` is constructed only via `build_view()` or `TableShapedView::to_table_view()`, both of which produce a well-formed state.
 
 ### Violation Consequences
-
-- **EC-1**: Empty tables return empty string in all formats
-- **EC-2**: Empty trees return empty string when formatted
-- **EC-3**: Single-row tables display correctly in all formats
-- **EC-4**: Generic `TableShapedView` works with any display-capable data type
 
 Violating the row length invariant causes an immediate panic at insertion time. Violating the parallel vectors invariant would produce mismatched row/detail rendering — detail annotations would appear on incorrect rows. Violating the table-shaped tree column structure invariant causes formatters to produce incorrect or misaligned column output.

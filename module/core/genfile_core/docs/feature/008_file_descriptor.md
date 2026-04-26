@@ -19,9 +19,3 @@ A file descriptor pairs a relative output path with content (either a template s
 | test | `tests/` | File descriptor construction and field tests |
 | doc | `docs/feature/009_write_mode_support.md` | Write mode type referenced by this descriptor |
 | doc | `docs/feature/014_template_generation.md` | Iterates descriptors during generation |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [`../../spec.md`](../../spec.md) | FR8 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

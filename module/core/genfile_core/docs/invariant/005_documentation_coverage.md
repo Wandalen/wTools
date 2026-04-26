@@ -24,9 +24,3 @@ Missing documentation makes the library harder to adopt. Users cannot understand
 | Type | File | Responsibility |
 |------|------|----------------|
 | source | `src/lib.rs` | Missing documentation attribute enforcement |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [`../../spec.md`](../../spec.md) | NFR5 in original spec; combined source migrated to invariant/. spec.md has been deleted — Sources entry retained as migration record. |

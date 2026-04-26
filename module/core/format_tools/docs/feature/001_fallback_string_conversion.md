@@ -11,7 +11,7 @@
 
 The fallback conversion mechanism lets callers specify a prioritized list of formatting strategies. The primary strategy is attempted first; if the value does not satisfy the required interface, the chain advances to the next strategy automatically at compile time. This eliminates conditional formatting code at the call site.
 
-The chain supports up to three levels: primary, first fallback, and second fallback. Strategy markers are zero-size types — they carry no data but direct the compile-time dispatch to the correct formatting path. The entire mechanism resolves at compile time; the marker types optimize away with no runtime overhead.
+The chain supports up to three levels: primary, first fallback, and second fallback. Strategy markers are data-free types — they carry no data but direct the compile-time dispatch to the correct formatting path. The entire mechanism resolves at compile time; the marker types optimize away with no runtime overhead.
 
 The return value is a borrowed-or-owned string container, enabling zero-copy returns when the formatted output can reference existing data without allocation.
 

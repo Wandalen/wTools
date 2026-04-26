@@ -41,3 +41,4 @@ signatures must be validated against all generated former patterns.
 |------|------|----------------|
 | doc | `../invariant/001_proc_macro_separation.md` | Why runtime types live in former_types not here |
 | doc | `../feature/001_former_derive.md` | The generated output that references former_types |
+| config | `../../Cargo.toml` | Declares former_types dependency with types_former feature |

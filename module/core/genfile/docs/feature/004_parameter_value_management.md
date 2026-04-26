@@ -17,9 +17,3 @@ Values can be set for any defined parameter; setting an undefined parameter prod
 |------|------|----------------|
 | source | `src/handlers/value.rs` | Handler implementations for value commands |
 | config | `commands/value.yaml` | Authoritative command specs for value group |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| `spec.md` (deleted) | FR4 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

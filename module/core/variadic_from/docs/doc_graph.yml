@@ -39,82 +39,82 @@ nodes:
 edges:
   - from: feature/001
     to: api/001
-    via: cross_references
+    label: cross-reference
 
   - from: feature/001
     to: api/002
-    via: cross_references
+    label: cross-reference
 
   - from: feature/001
     to: algorithm/001
-    via: cross_references
+    label: cross-reference
 
   - from: feature/001
     to: invariant/001
-    via: cross_references
+    label: cross-reference
 
   - from: feature/001
     to: invariant/002
-    via: cross_references
+    label: cross-reference
 
   - from: api/001
     to: api/002
-    via: cross_references
+    label: cross-reference
 
   - from: api/001
     to: algorithm/001
-    via: cross_references
+    label: cross-reference
 
   - from: api/001
     to: feature/001
-    via: cross_references
+    label: cross-reference
 
   - from: api/002
     to: api/001
-    via: cross_references
+    label: cross-reference
 
   - from: api/002
     to: invariant/002
-    via: cross_references
+    label: cross-reference
 
   - from: api/002
     to: feature/001
-    via: cross_references
+    label: cross-reference
 
   - from: algorithm/001
     to: api/001
-    via: cross_references
+    label: cross-reference
 
   - from: algorithm/001
     to: invariant/001
-    via: cross_references
+    label: cross-reference
 
   - from: algorithm/001
     to: feature/001
-    via: cross_references
+    label: cross-reference
 
   - from: invariant/001
     to: algorithm/001
-    via: cross_references
+    label: cross-reference
 
   - from: invariant/001
     to: feature/001
-    via: cross_references
+    label: cross-reference
 
   - from: invariant/002
     to: api/002
-    via: cross_references
+    label: cross-reference
 
   - from: invariant/002
     to: feature/001
-    via: cross_references
+    label: cross-reference
 
 components:
   - id: 1
     label: Main corpus
     size: 6
     isolated: false
-    nodes:
+    members:
       - algorithm/001
       - api/001
       - api/002

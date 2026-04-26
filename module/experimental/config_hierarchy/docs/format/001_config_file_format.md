@@ -2,10 +2,10 @@
 
 ### Scope
 
-- **What**: YAML structure for configuration files read and written by config_hierarchy
-- **Who**: Users authoring config files; implementors parsing or generating them
-- **When**: Writing any config file at paths discovered by path_discovery
-- **Out of scope**: Resolution order (→ invariant/001), path conventions (→ api/001), type conversion (→ algorithm/001)
+- **Purpose**: Document the YAML structure for configuration files read and written by config_hierarchy.
+- **Responsibility**: Define the file schema, valid field values, and validation behavior.
+- **In Scope**: Writing any config file at paths discovered by path discovery; metadata and parameters sections.
+- **Out of Scope**: Resolution order (→ invariant/001), path conventions (→ api/001), type conversion (→ algorithm/001).
 
 ### Abstract
 
@@ -59,8 +59,8 @@ The crate does not validate the file structure on read beyond what `serde_yaml` 
 
 ### Cross-References
 
-| Type | Target | Relationship |
-|------|--------|-------------|
-| doc | feature/001_config_hierarchy.md | file format used by this feature |
-| doc | api/001_config_paths_trait.md | `local_config_filename()` controls the filename |
-| doc | invariant/001_resolution_hierarchy.md | files at these paths feed into resolution |
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | `../feature/001_config_hierarchy.md` | Feature that uses this file format |
+| doc | `../api/001_config_paths_trait.md` | local_config_filename() controls the filename |
+| doc | `../invariant/001_resolution_hierarchy.md` | Files at these paths feed into resolution |

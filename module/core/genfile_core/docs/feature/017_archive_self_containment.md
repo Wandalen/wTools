@@ -18,9 +18,3 @@ A template archive is self-contained: it stores parameter values alongside templ
 | source | `src/archive.rs` | Template archive struct and serialization logic |
 | test | `tests/` | Archive self-containment and serialization tests |
 | doc | `docs/feature/014_template_generation.md` | Generation using an archive's stored values |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [`../../spec.md`](../../spec.md) | FR17 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

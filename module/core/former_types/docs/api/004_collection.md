@@ -46,12 +46,6 @@ Single-entry insertion returns a boolean success indicator for insertions that c
 
 The four core collection traits are stable within a major version. Per-collection definition and builder type aliases are stable; their type parameter order is fixed. Extension traits adding new methods are additive and non-breaking.
 
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Combined source; collection traits section extracted here; remaining content migrated to api/001, api/002, api/003, algorithm/001, invariant/001, feature/001, feature/002 |
-
 ### Cross-References
 
 | Type | File | Responsibility |

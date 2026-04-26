@@ -38,9 +38,10 @@ Same stability guarantees as item-level attributes: stable within major versions
 | doc | [feature/003_subform_scalar.md](../feature/003_subform_scalar.md) | Feature using the scalar subformer attribute |
 | doc | [feature/004_subform_collection.md](../feature/004_subform_collection.md) | Feature using the collection subformer attribute |
 | doc | [feature/005_subform_entry.md](../feature/005_subform_entry.md) | Feature using the entry subformer attribute |
+| doc | [feature/006_standalone_constructors.md](../feature/006_standalone_constructors.md) | Feature using the ignore attribute for SC-2 partial construction |
 
 ### Sources
 
 | File | Notes |
 |------|-------|
-| [../../spec.md](../../spec.md) | Primary source — section 2.4.2 Field-Level/Variant-Level Attributes table and section 2.4.3 Attribute Precedence and Interaction Rules |
+| [../../spec.md](../../spec.md) | Primary source — section 2.4.2 field-level attribute table: attribute names, effects, and precedence rules; also produced 12 sibling instances — see entities.md |

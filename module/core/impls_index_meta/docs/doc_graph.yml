@@ -1,26 +1,34 @@
+meta:
+  description: Cross-reference graph for all doc instances in impls_index_meta
+  generated: 2026_04_25
+  node_count: 2
+  edge_count: 2
+  component_count: 1
+
 nodes:
-  - id: feature_001
+  - id: feature/001
     file: feature/001_macro_code_generation.md
-    type: feature
-    name: Macro Code Generation
-    status: active
-  - id: invariant_001
+    label: Macro Code Generation
+    entity: feature
+  - id: invariant/001
     file: invariant/001_compile_time_only.md
-    type: invariant
-    name: Compile-Time Only
-    status: active
+    label: Compile-Time Only
+    entity: invariant
 
 edges:
-  - from: feature_001
-    to: invariant_001
-    label: governed_by
-  - from: invariant_001
-    to: feature_001
-    label: governs
+  - from: feature/001
+    to: invariant/001
+    label: compile-time only guarantee for this feature
+  - from: invariant/001
+    to: feature/001
+    label: the generation feature this invariant governs
 
 components:
-  - id: macro_codegen
-    nodes: [ feature_001, invariant_001 ]
-    description: Macro code generation feature and its compile-time guarantee
+  - id: 1
+    size: 2
+    isolated: false
+    members:
+      - feature/001
+      - invariant/001
 
-gaps: []
+dangling_refs: []

@@ -19,9 +19,3 @@ The library provides a built-in value type with four variants — String, Number
 | test | `tests/` | Value type variant and conversion tests |
 | doc | `docs/feature/001_template_value_trait.md` | Trait that the built-in value type implements |
 | doc | `docs/feature/005_value_storage.md` | Runtime storage for value instances |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [`../../spec.md`](../../spec.md) | FR2 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

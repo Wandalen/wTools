@@ -28,4 +28,4 @@ The exclude attribute on a field causes that field to be omitted from the standa
 
 | File | Notes |
 |------|-------|
-| [../../spec.md](../../spec.md) | Primary source — section 2.3 Standalone Constructor Behavior, SC-1 and SC-2 rules |
+| [../../spec.md](../../spec.md) | Primary source — section 2.5 Standalone Constructor Generation: SC-1 full construction rule, SC-2 partial construction rule, and field exclusion model; also produced 12 sibling instances — see entities.md |

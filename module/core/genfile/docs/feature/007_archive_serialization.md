@@ -17,9 +17,3 @@ The pack command internalizes all external content references (file refs, URL re
 |------|------|----------------|
 | source | `src/handlers/pack.rs` | Handler implementation for `.pack` command |
 | config | `commands/pack.yaml` | Authoritative command spec |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| `spec.md` (deleted) | FR7 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

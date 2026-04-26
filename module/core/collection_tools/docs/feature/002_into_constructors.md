@@ -62,9 +62,3 @@ Into macros trade implicit type inference for flexibility. Prefer strict macros 
 #### Feature Gate
 
 All into-based macros are gated on `feature = "collection_into_constructors"`, which is enabled by default. This feature is independent of `collection_constructors`; each can be enabled or disabled separately without affecting the other.
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Migrated; sections: Overview → Variadic Constructor Macros (Into-based), Architecture → Macro Expansion Pattern, Usage Patterns → Pattern 2/6, Design Rationale → Why Two Classes of Macros, Adoption Guidelines; siblings: api/001, feature/001, invariant/001, invariant/002. spec.md has been deleted — Sources entry retained as migration record. |

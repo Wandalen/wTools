@@ -9,15 +9,15 @@
 
 ### Invariant Statement
 
-All formatting operations in format_tools accept values and produce strings. No formatting operation accepts or returns an I/O handle, writes to a file descriptor, spawns a process, queries terminal state, or makes a system call. Verified by: no I/O interface implementations in `src/format/`; no operating system API imports.
+All formatting operations in format_tools accept values and produce strings. No formatting operation accepts or returns an I/O handle, writes to a file descriptor, spawns a process, queries terminal state, or makes a system call. Verified by: no I/O interface implementations in the format module; no operating system API imports.
 
 ### Enforcement Mechanism
 
-The module boundary enforces this constraint structurally: `src/format/` imports no I/O libraries. Output accumulates in an in-memory buffer (see data_structure/002_context.md). Callers receive the finished string and decide where to write it. Verified via dependency inspection (`cargo tree`) and code review.
+The module boundary enforces this constraint structurally: the format module imports no I/O libraries. Output accumulates in an in-memory buffer (see data_structure/002_context.md). Callers receive the finished string and decide where to write it. Verified via dependency inspection and code review.
 
 ### Violation Consequences
 
-Introducing I/O operations into formatting code would couple format_tools to the execution environment, break portability to embedded and no_std targets, and force callers to manage I/O context alongside formatting configuration — conflating two independent concerns.
+Introducing I/O operations into formatting code would couple format_tools to the execution environment, break portability to embedded and bare-metal targets without standard library support, and force callers to manage I/O context alongside formatting configuration — conflating two independent concerns.
 
 ### Cross-References
 

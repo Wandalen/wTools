@@ -11,9 +11,10 @@
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| api/001 | [Interval Traits](../api/001_interval_traits.md) | Trait signatures for both layers |
-| feature/002 | [Non-Iterable Intervals](../feature/002_non_iterable_intervals.md) | Feature built on `NonIterableInterval` |
-| invariant/001 | [Integer Endpoints Only](../invariant/001_integer_endpoints_only.md) | Additional constraint enforced at the trait level |
+| doc | [api/001_interval_traits.md](../api/001_interval_traits.md) | Trait signatures for both layers |
+| doc | [feature/002_non_iterable_intervals.md](../feature/002_non_iterable_intervals.md) | Feature built on NonIterableInterval |
+| doc | [invariant/001_integer_endpoints_only.md](../invariant/001_integer_endpoints_only.md) | Additional constraint enforced at the trait level |
+| doc | [pattern/002_canonical_interval_type.md](002_canonical_interval_type.md) | Complementary pattern governing the concrete type layer |
 
 ### Problem
 
@@ -22,28 +23,14 @@ Rust's standard range types include both bounded (`Range`, `RangeInclusive`) and
 1. Accept only bounded ranges (losing the ability to describe unbounded intervals), or
 2. Accept all ranges — including unbounded ones — and risk creating infinite iteration loops.
 
-A single trait covering all range types cannot expose `IntoIterator` without silently allowing infinite loops over `RangeFull` or `RangeFrom`.
+A single trait covering all range types cannot expose iteration without silently allowing infinite loops over `RangeFull` or `RangeFrom`.
 
 ### Solution
 
-Split the interface into two traits with a strict hierarchy:
-
-```rust
-// All intervals — bounded and unbounded.
-trait NonIterableInterval< T > {
-  fn left( &self ) -> Bound< T >;
-  fn right( &self ) -> Bound< T >;
-  fn closed_left( &self ) -> T;
-  fn closed_right( &self ) -> T;
-  // ...
-}
-
-// Only bounded intervals — requires IntoIterator.
-trait IterableInterval< T > : NonIterableInterval< T > + IntoIterator< Item = T > {}
-```
+Split the interface into two traits in a strict hierarchy: a base trait covers all interval types including unbounded ones and exposes only bound-query operations; an extended trait adds an iteration requirement and is implemented only by types that also support the iteration protocol — bounded ranges only.
 
 - `NonIterableInterval` is implemented for all range types, including unbounded ones.
-- `IterableInterval` is implemented only for types that also implement `IntoIterator` — bounded ranges only.
+- `IterableInterval` is implemented only for types that also support the iteration protocol — bounded ranges only.
 - Unbounded types (`RangeFull`, `RangeFrom`, `RangeTo`, `RangeToInclusive`) never implement `IterableInterval`.
 
 The compiler enforces the split: a function taking `impl IterableInterval` cannot be called with a `RangeFull` argument. The error appears at the call site, not inside the function body.

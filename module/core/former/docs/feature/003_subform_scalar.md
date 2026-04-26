@@ -33,5 +33,5 @@ Note: for fields whose type is a primitive or does not derive a builder, the pla
 
 | File | Notes |
 |------|-------|
-| [../../spec.md](../../spec.md) | Primary source — section 2.4.2 field attribute table, subform_scalar entry |
-| [../../advanced.md](../../advanced.md) | Combined source; subformer delegation mechanics described in FormingEnd sections |
+| [../../spec.md](../../spec.md) | Primary source — section 2.4.2 field attribute table, subform_scalar entry; also produced 12 sibling instances — see entities.md |
+| [../../advanced.md](../../advanced.md) | Combined source; subformer delegation mechanics described in FormingEnd sections; also produced 5 sibling instances: feature/001–002, feature/004–005, pattern/002 |

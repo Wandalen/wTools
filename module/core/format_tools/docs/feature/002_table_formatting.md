@@ -27,7 +27,7 @@ Column headers are optional. All separators and borders use plain ASCII characte
 | source | `src/format/output_format/table.rs` | Grid table layout implementation |
 | source | `src/format/output_format/records.rs` | Vertical records layout implementation |
 | source | `src/format/output_format/keys.rs` | Key-value layout implementation |
-| source | `src/format/as_table.rs` | Table conversion trait |
+| source | `src/format/as_table.rs` | Table conversion interface |
 | source | `src/format/table.rs` | Table construction utilities |
 | test | `tests/inc/format_table_test.rs` | Grid table layout tests |
 | test | `tests/inc/format_records_test.rs` | Records layout tests |

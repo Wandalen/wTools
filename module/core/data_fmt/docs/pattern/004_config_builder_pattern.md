@@ -11,7 +11,7 @@
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `../architecture.md` | Original combined architecture document (retained per migration rules) |
+| doc | `../architecture.md` | Original combined architecture document (retained per migration rules) |
 | doc | `../api/003_config_types.md` | Config type API signatures |
 | doc | `../builder/001_row_builder.md` | RowBuilder construction helper |
 | doc | `../builder/002_tree_builder.md` | TreeBuilder construction helper |
@@ -45,9 +45,3 @@ Apply this pattern for any formatter config struct with more than 2–3 fields. 
 ### Consequences
 
 The fluent builder pattern avoids large positional argument lists and allows callers to set only the fields relevant to their use case. Because configs are value types passed at construction, formatters are immutable after construction — the same formatter instance can be reused across multiple `format()` calls without shared mutable state. The trade-off is that all builder methods must be `#[ must_use ]` to prevent silent no-ops from call sites that forget to chain the result.
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../architecture.md](../architecture.md) | Original source; section "Configuration Builder Pattern" extracted into this instance |

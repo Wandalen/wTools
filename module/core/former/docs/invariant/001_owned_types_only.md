@@ -30,5 +30,5 @@ Compilation fails with a lifetime error. The error is non-recoverable by configu
 
 | File | Notes |
 |------|-------|
-| [../../limitations.md](../../limitations.md) | Primary source — Lifetime Constraint Limitation section (Limitation 2): verified examples and workaround guidance |
-| [../../spec.md](../../spec.md) | Secondary source — section 3.1 Setter Method Implementation: move semantics rationale explaining why owned types are required |
+| [../../limitations.md](../../limitations.md) | Primary source — Lifetime Constraint Limitation section (Limitation 2): verified examples and workaround guidance; also produced 3 sibling instances: feature/002, invariant/002–003 |
+| [../../spec.md](../../spec.md) | Secondary source — section 3.1 Setter Method Implementation: move semantics rationale explaining why owned types are required; also produced 12 sibling instances — see entities.md |

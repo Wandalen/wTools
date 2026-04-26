@@ -20,7 +20,7 @@ Contains technical documentation for the data_fmt library implementation.
 | `pattern/` | Documents architectural patterns and design principles |
 | `formatter/` | Documents individual formatter structs and dispatch |
 | `variant/` | Documents per-variant output format and attributes |
-| `variant_attributes.md` | Documents attribute reference for all variants |
+| `variant_attributes.md` | Legacy reference listing all 46 variant attributes with examples |
 | `development_notes.md` | Records implementation decisions and technical history |
 | `feature_selection_guide.md` | Guides feature flag selection for use cases |
 | `entities.md` | Indexes all doc entity types and instances |

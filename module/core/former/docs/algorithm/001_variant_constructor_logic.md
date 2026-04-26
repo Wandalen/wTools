@@ -55,4 +55,4 @@ The full 14-rule table covers all valid combinations. Rules 1a–1g cover scalar
 
 | File | Notes |
 |------|-------|
-| [../../spec.md](../../spec.md) | Primary source — section 2.2 Enum Variant Constructor Logic (14-rule table), section 2.1.3 Behavioral Categories, and addendum handler reliability notes |
+| [../../spec.md](../../spec.md) | Primary source — section 2.2 Enum Variant Constructor Logic: 14-rule decision table, axis definitions, and four constructor outcomes; also produced 12 sibling instances — see entities.md |

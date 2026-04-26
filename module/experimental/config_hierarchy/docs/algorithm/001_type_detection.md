@@ -2,10 +2,10 @@
 
 ### Scope
 
-- **What**: String-to-typed-value conversion applied to all env var and file config values
-- **Who**: `src/type_detection.rs` and all callers that read string-form config values
-- **When**: Converting any string value from env vars or YAML scalar strings
-- **Out of scope**: YAML structured types (parsed natively by serde_yaml), runtime params (passed as `String` and converted the same way)
+- **Purpose**: Document the string-to-typed-value conversion algorithm applied to env var and file config values.
+- **Responsibility**: Define the detection steps, detection table, and complexity guarantee.
+- **In Scope**: String values from environment variables and YAML scalar strings.
+- **Out of Scope**: YAML structured types (parsed natively by serde_yaml), runtime params (passed as String and converted the same way).
 
 ### Abstract
 
@@ -49,7 +49,7 @@ O(1) per value — all checks are constant-time string comparisons or scalar par
 
 ### Cross-References
 
-| Type | Target | Relationship |
-|------|--------|-------------|
-| doc | invariant/001_resolution_hierarchy.md | applied at levels 2 (env) and 3–5 (file values) |
-| doc | feature/001_config_hierarchy.md | type detection is part of this feature |
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | `../invariant/001_resolution_hierarchy.md` | Applied at resolution levels 2 (env) and 3–5 (file values) |
+| doc | `../feature/001_config_hierarchy.md` | Feature that uses this type detection algorithm |

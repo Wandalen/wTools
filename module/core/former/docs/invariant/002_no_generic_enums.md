@@ -29,4 +29,4 @@ Compilation fails with a parser error at the generic parameter site. The error m
 
 | File | Notes |
 |------|-------|
-| [../../limitations.md](../../limitations.md) | Primary source — Generic Enum Parsing Limitation section (Limitation 1): verified error, workaround, and trade-off analysis |
+| [../../limitations.md](../../limitations.md) | Primary source — Generic Enum Parsing Limitation section (Limitation 1): verified error, workaround, and trade-off analysis; also produced 3 sibling instances: feature/002, invariant/001, invariant/003 |

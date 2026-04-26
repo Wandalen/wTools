@@ -45,5 +45,5 @@ Apply when:
 
 | File | Notes |
 |------|-------|
-| [../../spec.md](../../spec.md) | Primary source — section 1.2 Guiding Principles and section 1.3 Key Terminology defining Former, Storage, and Definition |
-| [../../readme.md](../../readme.md) | Combined source; basic usage and rationale described for end users |
+| [../../spec.md](../../spec.md) | Primary source — section 1.1 Background and section 1.2 Guiding Principles: motivating problem, solution structure, and design rationale; also produced 12 sibling instances — see entities.md |
+| [../../readme.md](../../readme.md) | Secondary source — overview section: builder pattern context within the former crate |

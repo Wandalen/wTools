@@ -41,4 +41,4 @@ Attribute names and semantics are stable within a major version. New attributes 
 
 | File | Notes |
 |------|-------|
-| [../../spec.md](../../spec.md) | Primary source — section 2.4.1 Item-Level Attributes table with all five attributes and their semantics |
+| [../../spec.md](../../spec.md) | Primary source — section 2.4.1 item-level attribute table: attribute names, effects, and interaction rules; also produced 12 sibling instances — see entities.md |

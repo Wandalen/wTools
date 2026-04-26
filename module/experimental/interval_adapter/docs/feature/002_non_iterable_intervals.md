@@ -4,7 +4,7 @@
 
 - **Purpose**: Enable querying bounds of unbounded intervals (`RangeFrom`, `RangeFull`, `RangeTo`) without attempting iteration.
 - **Responsibility**: Documents `NonIterableInterval` usage for unbounded ranges — what methods are available and how closed-form conversion behaves at unbounded ends.
-- **In Scope**: `NonIterableInterval` with unbounded types, `left()`/`right()` semantics, `closed_left()`/`closed_right()` semantics for `Unbounded`, and design rationale.
+- **In Scope**: `NonIterableInterval` with unbounded types, `left`/`right` semantics, `closed_left`/`closed_right` semantics for `Unbounded`, and design rationale.
 - **Out of Scope**: Bounded interval iteration (→ `feature/001`); `BoundExt` internals (→ `api/002`); iteration step behavior (→ `data_structure/002`).
 
 ### Abstract
@@ -55,7 +55,8 @@ Unbounded intervals implement `NonIterableInterval` but not `IterableInterval`. 
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| api/001 | [Interval Traits](../api/001_interval_traits.md) | Trait split between iterable and non-iterable |
-| api/002 | [Conversion Traits](../api/002_conversion_traits.md) | `BoundExt::into_left_closed` / `into_right_closed` sentinel values |
-| pattern/001 | [Two-Trait Hierarchy](../pattern/001_two_trait_hierarchy.md) | Design rationale for the split |
-| feature/001 | [Generic Interval Parameter](001_generic_interval_parameter.md) | Bounded interval iteration |
+| doc | [api/001_interval_traits.md](../api/001_interval_traits.md) | Trait split between iterable and non-iterable |
+| doc | [api/002_conversion_traits.md](../api/002_conversion_traits.md) | BoundExt closed-form conversion and Unbounded sentinel values |
+| doc | [pattern/001_two_trait_hierarchy.md](../pattern/001_two_trait_hierarchy.md) | Design rationale for the split |
+| doc | [feature/001_generic_interval_parameter.md](001_generic_interval_parameter.md) | Bounded interval iteration |
+| doc | [invariant/003_no_set_operations.md](../invariant/003_no_set_operations.md) | Set operations absent from the interval interface |

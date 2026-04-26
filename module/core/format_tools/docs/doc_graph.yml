@@ -77,81 +77,80 @@ nodes:
 
 edges:
   # feature/001 outgoing
-  - { from: feature/001, to: api/001,        via: cross_references }
-  - { from: feature/001, to: pattern/001,    via: cross_references }
-  - { from: feature/001, to: invariant/003,  via: cross_references }
-  - { from: feature/001, to: invariant/004,  via: cross_references }
+  - { from: feature/001, to: api/001,        label: cross-reference }
+  - { from: feature/001, to: pattern/001,    label: cross-reference }
+  - { from: feature/001, to: invariant/003,  label: cross-reference }
+  - { from: feature/001, to: invariant/004,  label: cross-reference }
   # feature/002 outgoing
-  - { from: feature/002, to: api/003,           via: cross_references }
-  - { from: feature/002, to: pattern/002,        via: cross_references }
-  - { from: feature/002, to: data_structure/001, via: cross_references }
-  - { from: feature/002, to: data_structure/002, via: cross_references }
-  - { from: feature/002, to: invariant/001,      via: cross_references }
-  - { from: feature/002, to: invariant/002,      via: cross_references }
+  - { from: feature/002, to: api/003,           label: cross-reference }
+  - { from: feature/002, to: pattern/002,        label: cross-reference }
+  - { from: feature/002, to: data_structure/001, label: cross-reference }
+  - { from: feature/002, to: data_structure/002, label: cross-reference }
+  - { from: feature/002, to: invariant/001,      label: cross-reference }
+  - { from: feature/002, to: invariant/002,      label: cross-reference }
   # feature/003 outgoing
-  - { from: feature/003, to: api/002,       via: cross_references }
-  - { from: feature/003, to: feature/001,   via: cross_references }
-  - { from: feature/003, to: invariant/003, via: cross_references }
-  - { from: feature/003, to: invariant/004, via: cross_references }
+  - { from: feature/003, to: api/002,       label: cross-reference }
+  - { from: feature/003, to: feature/001,   label: cross-reference }
+  - { from: feature/003, to: invariant/003, label: cross-reference }
+  - { from: feature/003, to: invariant/004, label: cross-reference }
   # feature/004 outgoing
-  - { from: feature/004, to: invariant/001, via: cross_references }
-  - { from: feature/004, to: invariant/003, via: cross_references }
+  - { from: feature/004, to: invariant/001, label: cross-reference }
+  - { from: feature/004, to: invariant/003, label: cross-reference }
   # feature/005 outgoing
-  - { from: feature/005, to: feature/002, via: cross_references }
-  - { from: feature/005, to: api/003,     via: cross_references }
+  - { from: feature/005, to: feature/002, label: cross-reference }
+  - { from: feature/005, to: api/003,     label: cross-reference }
   # invariant/001 outgoing
-  - { from: invariant/001, to: data_structure/002, via: cross_references }
-  - { from: invariant/001, to: feature/002,        via: cross_references }
-  - { from: invariant/001, to: feature/004,        via: cross_references }
+  - { from: invariant/001, to: data_structure/002, label: cross-reference }
+  - { from: invariant/001, to: feature/002,        label: cross-reference }
+  - { from: invariant/001, to: feature/004,        label: cross-reference }
   # invariant/002 outgoing
-  - { from: invariant/002, to: feature/002, via: cross_references }
+  - { from: invariant/002, to: feature/002, label: cross-reference }
   # invariant/003 outgoing
-  - { from: invariant/003, to: feature/001, via: cross_references }
-  - { from: invariant/003, to: feature/002, via: cross_references }
+  - { from: invariant/003, to: feature/001, label: cross-reference }
+  - { from: invariant/003, to: feature/002, label: cross-reference }
   # invariant/004 outgoing
-  - { from: invariant/004, to: feature/001, via: cross_references }
-  - { from: invariant/004, to: feature/003, via: cross_references }
-  - { from: invariant/004, to: api/001,     via: cross_references }
+  - { from: invariant/004, to: feature/001, label: cross-reference }
+  - { from: invariant/004, to: feature/003, label: cross-reference }
+  - { from: invariant/004, to: api/001,     label: cross-reference }
   # api/001 outgoing
-  - { from: api/001, to: feature/001,   via: cross_references }
-  - { from: api/001, to: api/004,       via: cross_references }
-  - { from: api/001, to: pattern/001,   via: cross_references }
-  - { from: api/001, to: invariant/004, via: cross_references }
+  - { from: api/001, to: feature/001,   label: cross-reference }
+  - { from: api/001, to: api/004,       label: cross-reference }
+  - { from: api/001, to: pattern/001,   label: cross-reference }
+  - { from: api/001, to: invariant/004, label: cross-reference }
   # api/002 outgoing
-  - { from: api/002, to: feature/003,   via: cross_references }
-  - { from: api/002, to: api/001,       via: cross_references }
-  - { from: api/002, to: invariant/004, via: cross_references }
+  - { from: api/002, to: feature/003,   label: cross-reference }
+  - { from: api/002, to: api/001,       label: cross-reference }
+  - { from: api/002, to: invariant/004, label: cross-reference }
   # api/003 outgoing
-  - { from: api/003, to: feature/002,         via: cross_references }
-  - { from: api/003, to: data_structure/001,  via: cross_references }
-  - { from: api/003, to: data_structure/002,  via: cross_references }
-  - { from: api/003, to: pattern/002,         via: cross_references }
+  - { from: api/003, to: feature/002,         label: cross-reference }
+  - { from: api/003, to: data_structure/001,  label: cross-reference }
+  - { from: api/003, to: data_structure/002,  label: cross-reference }
+  - { from: api/003, to: pattern/002,         label: cross-reference }
   # api/004 outgoing
-  - { from: api/004, to: api/001,     via: cross_references }
-  - { from: api/004, to: pattern/001, via: cross_references }
+  - { from: api/004, to: api/001,     label: cross-reference }
+  - { from: api/004, to: pattern/001, label: cross-reference }
   # data_structure/001 outgoing
-  - { from: data_structure/001, to: api/003,     via: cross_references }
-  - { from: data_structure/001, to: feature/002, via: cross_references }
+  - { from: data_structure/001, to: api/003,     label: cross-reference }
+  - { from: data_structure/001, to: feature/002, label: cross-reference }
   # data_structure/002 outgoing
-  - { from: data_structure/002, to: api/003,       via: cross_references }
-  - { from: data_structure/002, to: invariant/001, via: cross_references }
-  - { from: data_structure/002, to: feature/002,   via: cross_references }
+  - { from: data_structure/002, to: api/003,       label: cross-reference }
+  - { from: data_structure/002, to: invariant/001, label: cross-reference }
+  - { from: data_structure/002, to: feature/002,   label: cross-reference }
   # pattern/001 outgoing
-  - { from: pattern/001, to: feature/001, via: cross_references }
-  - { from: pattern/001, to: api/001,     via: cross_references }
-  - { from: pattern/001, to: api/004,     via: cross_references }
+  - { from: pattern/001, to: feature/001, label: cross-reference }
+  - { from: pattern/001, to: api/001,     label: cross-reference }
+  - { from: pattern/001, to: api/004,     label: cross-reference }
   # pattern/002 outgoing
-  - { from: pattern/002, to: feature/002,         via: cross_references }
-  - { from: pattern/002, to: api/003,             via: cross_references }
-  - { from: pattern/002, to: data_structure/001,  via: cross_references }
-  - { from: pattern/002, to: data_structure/002,  via: cross_references }
+  - { from: pattern/002, to: feature/002,         label: cross-reference }
+  - { from: pattern/002, to: api/003,             label: cross-reference }
+  - { from: pattern/002, to: data_structure/001,  label: cross-reference }
+  - { from: pattern/002, to: data_structure/002,  label: cross-reference }
 
 components:
   - id: 1
-    label: format_tools doc corpus
     size: 17
     isolated: false
-    nodes:
+    members:
       - api/001
       - api/002
       - api/003

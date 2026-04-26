@@ -24,4 +24,4 @@ Parsing collects all function items from the token stream. Code emission convert
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| invariant | `../invariant/001_compile_time_only.md` | Compile-time only guarantee for this feature |
+| doc | `../invariant/001_compile_time_only.md` | Compile-time only guarantee for this feature |

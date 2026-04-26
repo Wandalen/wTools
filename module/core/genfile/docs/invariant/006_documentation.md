@@ -25,9 +25,3 @@ Missing documentation is the primary barrier to adoption. Users cannot discover 
 |------|------|----------------|
 | source | `src/lib.rs` | `#![deny(missing_docs)]` enforcement |
 | doc | `docs/cli/readme.md` | CLI design documentation for contributors |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| `spec.md` (deleted) | NFR6 in original spec; combined source migrated to invariant/. spec.md has been deleted — Sources entry retained as migration record. |

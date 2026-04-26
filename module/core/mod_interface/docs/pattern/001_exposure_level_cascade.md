@@ -64,9 +64,3 @@ Do not apply when:
 | doc | `docs/feature/001_layered_module_interface.md` | Feature hub for the mod_interface! macro |
 | doc | `docs/invariant/001_propagation_rules.md` | Child-to-parent propagation invariants for the cascade |
 | doc | `../mod_interface_meta/docs/invariant/001_namespace_cascade.md` | Within-module cascade invariant (own ⊇ orphan ⊇ exposed ⊇ prelude) |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Combined source; Architecture (Exposure Level Architecture), Design Rationale (Why Five Exposure Levels, Why Not Use Standard pub/pub(crate)?), and Adoption Guidelines sections contributed to this doc instance. spec.md has been deleted — Sources entry retained as migration record. |

@@ -59,7 +59,8 @@ fn clamp_to( range : impl IntoInterval< i32 > ) -> Interval< i32 > {
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| api/001 | [Interval Traits](../api/001_interval_traits.md) | `IterableInterval` and `NonIterableInterval` signatures |
-| api/002 | [Conversion Traits](../api/002_conversion_traits.md) | `IntoInterval` for canonical conversion |
-| data_structure/001 | [Interval](../data_structure/001_interval.md) | Storage type for converted intervals |
-| feature/002 | [Non-Iterable Intervals](002_non_iterable_intervals.md) | Accepting unbounded intervals via `NonIterableInterval` |
+| doc | [api/001_interval_traits.md](../api/001_interval_traits.md) | IterableInterval and NonIterableInterval signatures |
+| doc | [api/002_conversion_traits.md](../api/002_conversion_traits.md) | IntoInterval for canonical conversion |
+| doc | [data_structure/001_interval.md](../data_structure/001_interval.md) | Storage type for converted intervals |
+| doc | [feature/002_non_iterable_intervals.md](002_non_iterable_intervals.md) | Accepting unbounded intervals via NonIterableInterval |
+| doc | [invariant/003_no_set_operations.md](../invariant/003_no_set_operations.md) | Set operations absent from the interval interface |

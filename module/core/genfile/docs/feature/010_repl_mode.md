@@ -18,9 +18,3 @@ When invoked with no arguments, genfile starts a REPL that reads commands line-b
 | source | `src/repl.rs` | REPL loop implementation |
 | source | `src/handlers/shared_state.rs` | Thread-local archive state backing the session |
 | source | `src/main.rs` | Entry point that dispatches to REPL or CLI mode |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| `spec.md` (deleted) | FR10 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

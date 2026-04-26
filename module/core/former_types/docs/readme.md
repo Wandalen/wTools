@@ -1,9 +1,5 @@
 # Docs
 
-## Scope
-
-Design and API documentation for `former_types`.
-
 ### Responsibility Table
 
 | File | Responsibility |

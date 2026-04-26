@@ -11,16 +11,18 @@
 
 `interval_adapter` is declared `#![no_std]` and has zero production dependencies. It uses only `core` library types (`core::ops::Bound`, `core::ops::RangeBounds`). The `use_alloc` feature enables allocation support when the environment provides an allocator. This makes the crate suitable for embedded systems, kernels, and WASM environments without any configuration changes.
 
-### Feature Flags
+### Design
+
+#### Feature Flags
 
 | Feature | Default | Enables |
 |---------|---------|---------|
-| `enabled` | on | All functionality; master switch |
-| `no_std` | on | `#![no_std]` — uses only `core` |
+| `enabled` | off | All functionality; master switch |
+| `no_std` | off | `#![no_std]` — uses only `core` |
 | `use_alloc` | off | `extern crate alloc` for heap allocation |
 | `full` | off | All features: `enabled` + `no_std` + `use_alloc` |
 
-### Configuration
+#### Configuration
 
 **Standard (std) environments:**
 ```toml
@@ -39,7 +41,7 @@ interval_adapter = { workspace = true, features = [ "enabled", "no_std" ] }
 
 ### Constraints
 
-- No heap allocation in core functionality — `Interval<T>` and `IntervalIterator<T>` are stack-allocated.
+- No heap allocation in core functionality — `Interval` and `IntervalIterator` are stack-allocated.
 - `RangeBounds` and `Bound` are re-exported from `core::ops`, not `std::ops`.
 - The `use_alloc` feature is provided for completeness; the current API does not require allocation.
 
@@ -47,5 +49,5 @@ interval_adapter = { workspace = true, features = [ "enabled", "no_std" ] }
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| data_structure/001 | [Interval](../data_structure/001_interval.md) | Stack-allocated canonical type |
-| data_structure/002 | [IntervalIterator](../data_structure/002_interval_iterator.md) | Stack-allocated iterator |
+| doc | [data_structure/001_interval.md](../data_structure/001_interval.md) | Stack-allocated canonical type |
+| doc | [data_structure/002_interval_iterator.md](../data_structure/002_interval_iterator.md) | Stack-allocated iterator |

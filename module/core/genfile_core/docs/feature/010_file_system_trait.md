@@ -19,9 +19,3 @@ The file system trait defines three operations: write (file path + bytes → dis
 | test | `tests/` | File system trait implementation tests |
 | doc | `docs/feature/011_real_file_system.md` | Production implementation |
 | doc | `docs/feature/012_memory_file_system.md` | In-memory testing implementation |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [`../../spec.md`](../../spec.md) | FR10 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

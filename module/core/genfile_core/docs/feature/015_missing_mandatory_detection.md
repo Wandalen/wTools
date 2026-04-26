@@ -19,9 +19,3 @@ Before generation, the system compares the mandatory parameter list from the par
 | test | `tests/` | Missing mandatory parameter detection tests |
 | doc | `docs/feature/004_parameter_collection.md` | List-mandatory method used here |
 | doc | `docs/feature/014_template_generation.md` | Triggered before generation |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [`../../spec.md`](../../spec.md) | FR15 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

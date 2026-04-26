@@ -19,9 +19,3 @@ The parameter collection wraps a list of parameter descriptors. It provides a me
 | test | `tests/` | Parameter collection and mandatory listing tests |
 | doc | `docs/feature/003_parameter_definition.md` | Individual descriptors stored in this collection |
 | doc | `docs/feature/015_missing_mandatory_detection.md` | Uses the list-mandatory method to detect gaps |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [`../../spec.md`](../../spec.md) | FR4 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

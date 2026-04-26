@@ -9,11 +9,11 @@
 
 ### Abstract
 
-All interval endpoint types must implement `EndPointTrait<T>`, which requires `PartialOrd + Sub<Output = T> + Add<Output = T> + Clone + Copy + Sized`. While `f32` and `f64` technically satisfy these bounds, the `isize: Into<T>` constraint required by `BoundExt`, `NonIterableInterval`, and `IntervalIterator` excludes them in practice, since `isize` does not implement `Into<f32>`. Integer types (`i8`, `i16`, `i32`, `i64`, `i128`, `isize`, `u8`, `u16`, `u32`, `u64`, `u128`, `usize`) all satisfy both constraints.
+All interval endpoint types must implement `EndPointTrait<T>`, which requires `PartialOrd + Sub<Output = T> + Add<Output = T> + Clone + Copy + Sized`. While `f32` and `f64` technically satisfy these bounds, the integer-compatibility constraint required by `BoundExt`, `NonIterableInterval`, and `IntervalIterator` excludes them in practice, since there is no integer-to-float coercion in the required direction. Integer types (`i8`, `i16`, `i32`, `i64`, `i128`, `isize`, `u8`, `u16`, `u32`, `u64`, `u128`, `usize`) all satisfy both constraints.
 
 ### Invariant Statement
 
-`interval_adapter` does not provide iteration or closed-form conversion for floating-point endpoint types. `f32` and `f64` do not satisfy the `isize: Into<T>` bound required by `NonIterableInterval`, `IterableInterval`, and `BoundExt`. Attempts to use float endpoints produce a compile-time error.
+`interval_adapter` does not provide iteration or closed-form conversion for floating-point endpoint types. `f32` and `f64` do not satisfy the integer-compatibility constraint required by `NonIterableInterval`, `IterableInterval`, and `BoundExt`. Attempts to use float endpoints produce a compile-time error.
 
 ### Rationale
 
@@ -21,7 +21,7 @@ Iteration over floating-point intervals is ambiguous: there is no canonical "nex
 
 ### Enforcement Mechanism
 
-The `isize: Into<T>` where-clause on `NonIterableInterval`, `IterableInterval`, `BoundExt`, and `IntervalIterator` is evaluated at compile time. Any attempt to instantiate these traits with a float type fails with a trait bound error. No runtime check is required.
+The integer-compatibility constraint on `NonIterableInterval`, `IterableInterval`, `BoundExt`, and `IntervalIterator` is evaluated at compile time. Any attempt to instantiate these traits with a float type fails with a trait bound error. No runtime check is required.
 
 ### Violation Consequences
 
@@ -31,6 +31,8 @@ This invariant cannot be violated at runtime — it is enforced entirely at comp
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| api/001 | [Interval Traits](../api/001_interval_traits.md) | Traits with `EndPointTrait` and `isize: Into<T>` bounds |
-| api/002 | [Conversion Traits](../api/002_conversion_traits.md) | `EndPointTrait` definition and `BoundExt` constraint |
-| data_structure/002 | [IntervalIterator](../data_structure/002_interval_iterator.md) | Iterator with `EndPointTrait` constraint |
+| doc | [api/001_interval_traits.md](../api/001_interval_traits.md) | Traits with EndPointTrait and integer-compatibility constraint |
+| doc | [api/002_conversion_traits.md](../api/002_conversion_traits.md) | EndPointTrait definition and BoundExt constraint |
+| doc | [data_structure/002_interval_iterator.md](../data_structure/002_interval_iterator.md) | Iterator with EndPointTrait constraint |
+| doc | [invariant/002_no_validation.md](002_no_validation.md) | Orthogonal invariant on construction validation |
+| doc | [pattern/001_two_trait_hierarchy.md](../pattern/001_two_trait_hierarchy.md) | Trait split where integer constraint is enforced |

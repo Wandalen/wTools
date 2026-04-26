@@ -35,12 +35,6 @@ All constraints are verified at compile time. Unsatisfied trait bounds or missin
 
 Associated type sets are stable within a major version. Adding new required associated types or strengthening bounds constitutes a breaking change requiring a major version increment.
 
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Combined source; definition traits section extracted here; remaining content migrated to api/002, api/003, api/004, algorithm/001, invariant/001, feature/001, feature/002 |
-
 ### Cross-References
 
 | Type | File | Responsibility |
@@ -48,3 +42,6 @@ Associated type sets are stable within a major version. Adding new required asso
 | source | ../../src/definition.rs | Definition layer trait implementations |
 | doc | algorithm/001_formation_lifecycle.md | Lifecycle that instantiates and sequences these definitions |
 | doc | feature/001_builder_trait_infrastructure.md | End-to-end capability built on these traits |
+| doc | api/002_formation_process.md | Process traits that operate within this definition layer |
+| doc | api/003_storage.md | Storage type declared as associated type here |
+| doc | invariant/001_formation_integrity.md | Invariant enforced on the types declared here |

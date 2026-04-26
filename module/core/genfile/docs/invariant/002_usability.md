@@ -24,9 +24,3 @@ Inconsistent CLI conventions frustrate users who internalize patterns from one c
 | Type | File | Responsibility |
 |------|------|----------------|
 | doc | `docs/cli/readme.md` | CLI design documentation |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| `spec.md` (deleted) | NFR2 in original spec; combined source migrated to invariant/. spec.md has been deleted — Sources entry retained as migration record. |

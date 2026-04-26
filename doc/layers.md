@@ -19,79 +19,80 @@ Layers are ordered bottom-up: lower layers have fewer internal dependencies; hig
 
 Total: 69 crates (3 alias + 34 core + 32 experimental)
 
-## Full Table
+## Crate Layer Assignments
 
-| Crate | Module | L# | Layer | Purpose |
-|-------|--------|----|-------|---------|
-| `error_tools` | core | 1 | Foundation | Provide a unified error handling namespace across the workspace |
-| `data_type` | experimental | 1 | Foundation | Supply foundational type aliases and primal data structures |
-| `diagnostics_tools` | experimental | 1 | Foundation | Provide runtime assertion helpers with rich diagnostic context |
-| `mem_tools` | experimental | 1 | Foundation | Offer safe memory introspection and alignment utilities |
-| `asbytes` | core | 2 | Primitives | Enable zero-copy viewing of POD types as byte slices |
-| `deterministic_rand` | core | 2 | Primitives | Generate hierarchical seeded random numbers with switchable determinism |
-| `implements` | experimental | 2 | Primitives | Answer at compile time whether a type implements a trait |
-| `inspect_type` | core | 2 | Primitives | Print exact Rust type names and sizes at compile time |
-| `interval_adapter` | experimental | 2 | Primitives | Unify open, closed, and half-open range types behind one adapter |
-| `is_slice` | experimental | 2 | Primitives | Answer at compile time whether an expression is a slice |
-| `time_tools` | experimental | 2 | Primitives | Provide minimal time measurement and timestamp utilities |
-| `typing_tools` | experimental | 2 | Primitives | Express compile-time type constraints and type guards |
-| `winterval` | experimental | 2 | Primitives | Re-export interval_adapter as a standalone dependency |
-| `macro_tools` | core | 3 | Macro Framework | Supply all primitives needed to author procedural macros |
-| `meta_tools` | experimental | 3 | Macro Framework | Provide token-level macro utilities for metaprogramming |
-| `clone_dyn_meta` | core | 3 | Macro Framework | Generate clone_dyn derive implementation (use clone_dyn directly) |
-| `component_model_meta` | experimental | 3 | Macro Framework | Generate component_model derive implementation (use component_model directly) |
-| `derive_tools_meta` | core | 3 | Macro Framework | Generate derive_tools implementations (use derive_tools directly) |
-| `former_meta` | core | 3 | Macro Framework | Generate former builder derive implementation (use former directly) |
-| `impls_index_meta` | core | 3 | Macro Framework | Generate impls_index macro wrappers (use impls_index directly) |
-| `mod_interface_meta` | core | 3 | Macro Framework | Generate mod_interface namespace macros (use mod_interface directly) |
-| `reflect_tools_meta` | experimental | 3 | Macro Framework | Generate reflect_tools introspection code (use reflect_tools directly) |
-| `strs_tools_meta` | core | 3 | Macro Framework | Generate strs_tools compile-time operations (use strs_tools directly) |
-| `variadic_from_meta` | core | 3 | Macro Framework | Generate variadic_from From impls (use variadic_from directly) |
-| `clone_dyn` | core | 4 | Patterns | Make dyn trait objects cloneable via a single derive macro |
-| `clone_dyn_types` | core | 4 | Patterns | Expose shared trait contracts consumed by clone_dyn users |
-| `component_model` | experimental | 4 | Patterns | Enable type-driven field assignment on complex objects |
-| `component_model_types` | experimental | 4 | Patterns | Expose shared traits for the component_model pattern |
-| `derive_tools` | core | 4 | Patterns | Add Into, TryInto, IsVariant, and other missing std derives |
-| `former` | core | 4 | Patterns | Build complex objects with nested subformers via one derive |
-| `former_types` | core | 4 | Patterns | Expose compile-time trait contracts reused by former consumers |
-| `impls_index` | core | 4 | Patterns | Wrap impl methods in named macros for navigable indexing |
-| `mod_interface` | core | 4 | Patterns | Replace dozens of pub use declarations with a single macro |
-| `reflect_tools` | experimental | 4 | Patterns | Inspect struct fields by name and type at runtime |
-| `variadic_from` | core | 4 | Patterns | Derive From implementations for tuples of 1 to N elements |
-| `async_from` | experimental | 5 | Collections | Provide async versions of From, Into, TryFrom, and TryInto |
-| `async_tools` | experimental | 5 | Collections | Supply practical helpers for async task spawning and joining |
-| `collection_tools` | core | 5 | Collections | Create std collections inline with ergonomic literal macros |
-| `for_each` | experimental | 5 | Collections | Apply any macro to every item in a compile-time list |
-| `iter_tools` | experimental | 5 | Collections | Expose the full itertools combinator library via workspace facade |
-| `cli_fmt` | core | 6 | String & Format | Structure and colorize CLI terminal output consistently |
-| `color_tools` | core | 6 | String & Format | Add ANSI color and text escape formatting to terminal output |
-| `data_fmt` | core | 6 | String & Format | Render data as aligned tables and nested tree structures |
-| `format_tools` | core | 6 | String & Format | Extend std formatting with structural display and string helpers |
-| `include_md` | experimental | 6 | String & Format | Include a markdown file or named section at compile time |
-| `strs_tools` | core | 6 | String & Format | Manipulate strings with splitting, indentation, and pattern tools |
-| `wstring_tools` | alias | 6 | String & Format | Alias — recommended single dependency for all string utilities |
-| `config_hierarchy` | core | 7 | Path & Process | Load layered YAML config with environment variable overrides |
-| `config_hierarchy` | experimental | 7 | Path & Process | Evolve config_hierarchy with experimental extensions |
-| `fs_tools` | experimental | 7 | Path & Process | Read, write, and traverse files with ergonomic error context |
-| `process_tools` | core | 7 | Path & Process | Spawn child processes and capture output reliably |
-| `program_tools` | experimental | 7 | Path & Process | Compile and run a Rust source file on demand |
-| `pth` | core | 7 | Path & Process | Normalize, resolve, and join paths with workspace-aware helpers |
-| `workspace_tools` | core | 7 | Path & Process | Resolve paths relative to workspace root from any execution context |
-| `file_tools` | alias | 7 | Path & Process | Alias — recommended single dependency for all filesystem utilities |
-| `benchkit` | experimental | 8 | Tooling | Benchmark performance and publish markdown reports |
-| `crates_tools` | core | 8 | Tooling | Parse Cargo.toml and analyze crate metadata programmatically |
-| `genfile_core` | core | 8 | Tooling | Materialize project scaffolding from versioned template archives |
-| `genfile` | core | 8 | Tooling | Manage code generation template archives from the command line |
-| `multiline_input` | core | 8 | Tooling | Read multi-line terminal input with readline and paste handling |
-| `multiline_input` | experimental | 8 | Tooling | Evolve multiline_input with experimental input handling |
-| `test_tools` | experimental | 8 | Tooling | Provide rich assertions and test organization for nextest |
-| `wca` | experimental | 8 | Tooling | Define CLI commands as Rust functions with help and errors built in |
-| `sqlx_query` | experimental | 9 | Application | Switch between SQLx compile-time and runtime query macros by feature |
-| `unitore` | experimental | 9 | Application | Subscribe to RSS and Atom feeds with configurable update intervals |
-| `willbe` | experimental | 9 | Application | Publish, version-bump, and consistency-check a Cargo workspace |
-| `willbe2` | experimental | 9 | Application | Reimagine willbe with improved architecture |
-| `wtools` | experimental | 9 | Application | Aggregate the complete workspace toolkit in one dependency |
-| `proper_tools` | alias | 9 | Application | Alias — recommended starting point for general-purpose wTools use |
+| Crate | Module | L# | Layer | Purpose | Deps | Int | =L | ↓L | ↑L |
+|-------|--------|----|-------|---------|------|-----|----|----|-----|
+| `error_tools` | core | 1 | Foundation | Provide a unified error handling namespace across the workspace | 2 | 0 | 0 | 0 | 0 |
+| `data_type` | experimental | 1 | Foundation | Supply foundational type aliases and primal data structures | 3 | 2 | 0 | 0 | 2 |
+| `diagnostics_tools` | experimental | 1 | Foundation | Provide runtime assertion helpers with rich diagnostic context | 1 | 0 | 0 | 0 | 0 |
+| `mem_tools` | experimental | 1 | Foundation | Offer safe memory introspection and alignment utilities | 0 | 0 | 0 | 0 | 0 |
+| `asbytes` | core | 2 | Primitives | Enable zero-copy viewing of POD types as byte slices | 1 | 0 | 0 | 0 | 0 |
+| `deterministic_rand` | core | 2 | Primitives | Generate hierarchical seeded random numbers with switchable determinism | 6 | 2 | 0 | 0 | 2 |
+| `implements` | experimental | 2 | Primitives | Answer at compile time whether a type implements a trait | 0 | 0 | 0 | 0 | 0 |
+| `inspect_type` | core | 2 | Primitives | Print exact Rust type names and sizes at compile time | 0 | 0 | 0 | 0 | 0 |
+| `interval_adapter` | experimental | 2 | Primitives | Unify open, closed, and half-open range types behind one adapter | 0 | 0 | 0 | 0 | 0 |
+| `is_slice` | experimental | 2 | Primitives | Answer at compile time whether an expression is a slice | 0 | 0 | 0 | 0 | 0 |
+| `time_tools` | experimental | 2 | Primitives | Provide minimal time measurement and timestamp utilities | 0 | 0 | 0 | 0 | 0 |
+| `typing_tools` | experimental | 2 | Primitives | Express compile-time type constraints and type guards | 3 | 3 | 3 | 0 | 0 |
+| `winterval` | experimental | 2 | Primitives | Re-export interval_adapter as a standalone dependency | 1 | 1 | 1 | 0 | 0 |
+| `macro_tools` | core | 3 | Macro Framework | Supply all primitives needed to author procedural macros | 9 | 4 | 0 | 1 | 3 |
+| `meta_tools` | experimental | 3 | Macro Framework | Provide token-level macro utilities for metaprogramming | 6 | 5 | 2 | 0 | 3 |
+| `clone_dyn_meta` | core | 3 | Macro Framework | Generate clone_dyn derive implementation (use clone_dyn directly) | 2 | 2 | 1 | 0 | 1 |
+| `component_model_meta` | experimental | 3 | Macro Framework | Generate component_model derive implementation (use component_model directly) | 3 | 2 | 1 | 0 | 1 |
+| `derive_tools_meta` | core | 3 | Macro Framework | Generate derive_tools implementations (use derive_tools directly) | 3 | 3 | 1 | 0 | 2 |
+| `former_meta` | core | 3 | Macro Framework | Generate former builder derive implementation (use former directly) | 5 | 4 | 1 | 0 | 3 |
+| `impls_index_meta` | core | 3 | Macro Framework | Generate impls_index macro wrappers (use impls_index directly) | 1 | 1 | 1 | 0 | 0 |
+| `mod_interface_meta` | core | 3 | Macro Framework | Generate mod_interface namespace macros (use mod_interface directly) | 2 | 2 | 1 | 0 | 1 |
+| `reflect_tools_meta` | experimental | 3 | Macro Framework | Generate reflect_tools introspection code (use reflect_tools directly) | 1 | 1 | 1 | 0 | 0 |
+| `strs_tools_meta` | core | 3 | Macro Framework | Generate strs_tools compile-time operations (use strs_tools directly) | 1 | 1 | 1 | 0 | 0 |
+| `variadic_from_meta` | core | 3 | Macro Framework | Generate variadic_from From impls (use variadic_from directly) | 1 | 1 | 1 | 0 | 0 |
+| `clone_dyn` | core | 4 | Patterns | Make dyn trait objects cloneable via a single derive macro | 2 | 2 | 1 | 1 | 0 |
+| `clone_dyn_types` | core | 4 | Patterns | Expose shared trait contracts consumed by clone_dyn users | 0 | 0 | 0 | 0 | 0 |
+| `component_model` | experimental | 4 | Patterns | Enable type-driven field assignment on complex objects | 2 | 2 | 1 | 1 | 0 |
+| `component_model_types` | experimental | 4 | Patterns | Expose shared traits for the component_model pattern | 1 | 1 | 0 | 0 | 1 |
+| `derive_tools` | core | 4 | Patterns | Add Into, TryInto, IsVariant, and other missing std derives | 6 | 3 | 2 | 1 | 0 |
+| `former` | core | 4 | Patterns | Build complex objects with nested subformers via one derive | 4 | 4 | 1 | 1 | 2 |
+| `former_types` | core | 4 | Patterns | Expose compile-time trait contracts reused by former consumers | 2 | 2 | 1 | 0 | 1 |
+| `impls_index` | core | 4 | Patterns | Wrap impl methods in named macros for navigable indexing | 1 | 1 | 0 | 1 | 0 |
+| `mod_interface` | core | 4 | Patterns | Replace dozens of pub use declarations with a single macro | 1 | 1 | 0 | 1 | 0 |
+| `reflect_tools` | experimental | 4 | Patterns | Inspect struct fields by name and type at runtime | 3 | 3 | 1 | 1 | 1 |
+| `variadic_from` | core | 4 | Patterns | Derive From implementations for tuples of 1 to N elements | 1 | 1 | 0 | 1 | 0 |
+| `async_from` | experimental | 5 | Collections | Provide async versions of From, Into, TryFrom, and TryInto | 1 | 0 | 0 | 0 | 0 |
+| `async_tools` | experimental | 5 | Collections | Supply practical helpers for async task spawning and joining | 2 | 1 | 1 | 0 | 0 |
+| `collection_tools` | core | 5 | Collections | Create std collections inline with ergonomic literal macros | 1 | 0 | 0 | 0 | 0 |
+| `for_each` | experimental | 5 | Collections | Apply any macro to every item in a compile-time list | 0 | 0 | 0 | 0 | 0 |
+| `iter_tools` | experimental | 5 | Collections | Expose the full itertools combinator library via workspace facade | 2 | 1 | 0 | 1 | 0 |
+| `cli_fmt` | core | 6 | String & Format | Structure and colorize CLI terminal output consistently | 1 | 1 | 1 | 0 | 0 |
+| `color_tools` | core | 6 | String & Format | Add ANSI color and text escape formatting to terminal output | 1 | 0 | 0 | 0 | 0 |
+| `data_fmt` | core | 6 | String & Format | Render data as aligned tables and nested tree structures | 9 | 3 | 2 | 1 | 0 |
+| `format_tools` | core | 6 | String & Format | Extend std formatting with structural display and string helpers | 3 | 3 | 0 | 3 | 0 |
+| `include_md` | experimental | 6 | String & Format | Include a markdown file or named section at compile time | 0 | 0 | 0 | 0 | 0 |
+| `strs_tools` | core | 6 | String & Format | Manipulate strings with splitting, indentation, and pattern tools | 9 | 2 | 0 | 2 | 0 |
+| `wstring_tools` | alias | 6 | String & Format | Alias — recommended single dependency for all string utilities | 1 | 1 | 1 | 0 | 0 |
+| `config_hierarchy` | core | 7 | Path & Process | Load layered YAML config with environment variable overrides | 6 | 1 | 0 | 1 | 0 |
+| `config_hierarchy` | experimental | 7 | Path & Process | Evolve config_hierarchy with experimental extensions | 6 | 1 | 0 | 1 | 0 |
+| `fs_tools` | experimental | 7 | Path & Process | Read, write, and traverse files with ergonomic error context | 1 | 0 | 0 | 0 | 0 |
+| `process_tools` | core | 7 | Path & Process | Spawn child processes and capture output reliably | 6 | 4 | 0 | 4 | 0 |
+| `program_tools` | experimental | 7 | Path & Process | Compile and run a Rust source file on demand | 5 | 5 | 1 | 4 | 0 |
+| `pth` | core | 7 | Path & Process | Normalize, resolve, and join paths with workspace-aware helpers | 5 | 2 | 0 | 2 | 0 |
+| `workspace_tools` | core | 7 | Path & Process | Resolve paths relative to workspace root from any execution context | 11 | 0 | 0 | 0 | 0 |
+| `file_tools` | alias | 7 | Path & Process | Alias — recommended single dependency for all filesystem utilities | 1 | 1 | 1 | 0 | 0 |
+| `benchkit` | experimental | 8 | Tooling | Benchmark performance and publish markdown reports | 9 | 1 | 0 | 1 | 0 |
+| `crates_tools` | core | 8 | Tooling | Parse Cargo.toml and analyze crate metadata programmatically | 3 | 0 | 0 | 0 | 0 |
+| `genfile_core` | core | 8 | Tooling | Materialize project scaffolding from versioned template archives | 9 | 3 | 0 | 3 | 0 |
+| `genfile` | core | 8 | Tooling | Manage code generation template archives from the command line | 4 | 3 | 1 | 2 | 0 |
+| `multiline_input` | core | 8 | Tooling | Read multi-line terminal input with readline and paste handling | 4 | 1 | 0 | 1 | 0 |
+| `multiline_input` | experimental | 8 | Tooling | Evolve multiline_input with experimental input handling | 4 | 1 | 0 | 1 | 0 |
+| `test_tools` | experimental | 8 | Tooling | Provide rich assertions and test organization for nextest | 11 | 3 | 0 | 3 | 0 |
+| `wca` | experimental | 8 | Tooling | Define CLI commands as Rust functions with help and errors built in | 7 | 4 | 0 | 4 | 0 |
+| `sqlx_query` | experimental | 9 | Application | Switch between SQLx compile-time and runtime query macros by feature | 0 | 0 | 0 | 0 | 0 |
+| `unitore` | experimental | 9 | Application | Subscribe to RSS and Atom feeds with configurable update intervals | 20 | 3 | 0 | 3 | 0 |
+| `willbe` | experimental | 9 | Application | Publish, version-bump, and consistency-check a Cargo workspace | 40 | 14 | 0 | 14 | 0 |
+| `willbe2` | experimental | 9 | Application | Reimagine willbe with improved architecture | 1 | 1 | 1 | 0 | 0 |
+| `wtools` | experimental | 9 | Application | Aggregate the complete workspace toolkit in one dependency | 12 | 11 | 0 | 11 | 0 |
+| `proper_tools` | alias | 9 | Application | Alias — recommended starting point for general-purpose wTools use | 0 | 0 | 0 | 0 | 0 |
+
 
 ## Crate Profiles
 

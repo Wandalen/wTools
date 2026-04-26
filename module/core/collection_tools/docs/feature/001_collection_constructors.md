@@ -62,9 +62,3 @@ Every macro pre-allocates for exactly N elements before the first insert, where 
 #### Feature Gate
 
 All strict macros are gated on `feature = "collection_constructors"`, which is enabled by default via the `enabled` meta-feature. When `collection_constructors` is absent from the active feature set, none of the strict macros are compiled.
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Migrated; sections: Overview → Variadic Constructor Macros (Strict), Architecture → Macro Expansion Pattern, Usage Patterns → Pattern 1/4/5, Design Rationale → Why Variadic Constructor Macros, Adoption Guidelines; siblings: api/001, feature/002, invariant/001, invariant/002. spec.md has been deleted — Sources entry retained as migration record. |

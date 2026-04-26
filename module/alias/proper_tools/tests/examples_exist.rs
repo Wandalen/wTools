@@ -1,7 +1,7 @@
 //! Test to verify required examples exist
 //!
 //! This test reproduces Issue #1 and #2 from manual testing session 2026-01-04:
-//! - Issue #1: Example `proper_tools_trivial` referenced in readme:32 doesn't exist
+//! - Issue #1: Example `proper_tools_trivial` referenced in readme:44 doesn't exist
 //! - Issue #2: No examples/ directory in crate root
 //!
 //! This is a regression guard ensuring examples remain present after implementation.
@@ -37,7 +37,7 @@ fn test_proper_tools_trivial_example_exists()
   assert!
   (
     example_file.exists(),
-    "examples/proper_tools_trivial.rs must exist (referenced in readme.md:32)"
+    "examples/proper_tools_trivial.rs must exist (referenced in readme.md:44)"
   );
 
   assert!

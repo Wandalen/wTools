@@ -29,12 +29,6 @@ Absent mutation-before-completion ordering: formation could complete before the 
 
 Formed-entity type mismatch: callers would receive a value whose type does not match the declared formed-entity type, breaking type safety at the call site.
 
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Combined source; design rationale and architecture sections extracted here |
-
 ### Cross-References
 
 | Type | File | Responsibility |
@@ -42,3 +36,4 @@ Formed-entity type mismatch: callers would receive a value whose type does not m
 | doc | api/001_former_definition.md | Definition traits where storage and formed-entity bounds are declared |
 | doc | api/003_storage.md | Storage trait enforcing default-constructibility |
 | doc | algorithm/001_formation_lifecycle.md | Lifecycle procedure this invariant governs |
+| doc | feature/001_builder_trait_infrastructure.md | Feature that depends on this correctness guarantee |

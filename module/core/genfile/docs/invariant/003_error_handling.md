@@ -25,9 +25,3 @@ Inconsistent exit codes break shell scripts and CI pipelines that check `$?`. Si
 |------|------|----------------|
 | source | `src/error.rs` | Error formatting helpers enforcing the message format |
 | doc | `docs/feature/006_template_materialization.md` | Primary user of path validation |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| `spec.md` (deleted) | NFR3 in original spec; combined source migrated to invariant/. spec.md has been deleted — Sources entry retained as migration record. |

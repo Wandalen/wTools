@@ -18,9 +18,3 @@ The library exposes a template value trait with three required methods: conversi
 | source | `src/value.rs` | Trait definition and built-in value type implementation |
 | test | `tests/` | Value trait contract tests |
 | doc | `docs/feature/002_default_value_type.md` | Built-in value type that implements this trait |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [`../../spec.md`](../../spec.md) | FR1 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

@@ -19,9 +19,3 @@ The value storage wraps a map of parameter names to optional values. The insert-
 | test | `tests/` | Value storage insertion and serialization tests |
 | doc | `docs/feature/001_template_value_trait.md` | Trait bound required by the value storage container |
 | doc | `docs/feature/014_template_generation.md` | Consumes the value storage during generation |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [`../../spec.md`](../../spec.md) | FR5 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

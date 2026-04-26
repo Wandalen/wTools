@@ -25,9 +25,3 @@ Path traversal allows an attacker to overwrite arbitrary files outside the inten
 |------|------|----------------|
 | source | `src/handlers/materialize.rs` | Primary path validation call site |
 | doc | `docs/feature/006_template_materialization.md` | Feature where path validation is critical |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| `spec.md` (deleted) | NFR4 in original spec; combined source migrated to invariant/. spec.md has been deleted — Sources entry retained as migration record. |

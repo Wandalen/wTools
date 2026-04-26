@@ -2,12 +2,12 @@
 
 ### Scope
 
-- **What**: Priority ordering of configuration sources for all resolution operations
-- **Who**: All callers of `resolve_config_value` and `resolve_all_config`
-- **When**: Every config value lookup, regardless of source mix
-- **Out of scope**: File format (→ format/001), trait signatures (→ api/), type conversion (→ algorithm/001)
+- **Purpose**: Define the priority ordering of configuration sources for all resolution operations.
+- **Responsibility**: Document the ordering contract that all callers of resolution functions must follow.
+- **In Scope**: Every config value lookup; six-level priority hierarchy; dual-pattern directory rule; environment variable format; global path construction.
+- **Out of Scope**: File format (→ format/001), trait signatures (→ api/), type conversion (→ algorithm/001).
 
-### Statement
+### Invariant Statement
 
 Configuration sources are resolved in strict priority order from highest to lowest:
 
@@ -60,7 +60,7 @@ OS-specific fallback path (when `$PRO` is not set):
 - macOS: `$HOME/Library/Application Support/{app_name}/`
 - Windows: `%APPDATA%/{app_name}/`
 
-### Enforcement
+### Enforcement Mechanism
 
 The ordering is enforced structurally in `src/hierarchy.rs`:
 
@@ -75,8 +75,8 @@ If the `sources` slice is assembled in incorrect order (e.g., for hypothetical f
 
 ### Cross-References
 
-| Type | Target | Relationship |
-|------|--------|-------------|
-| doc | feature/001_config_hierarchy.md | feature this invariant governs |
-| doc | api/001_config_paths_trait.md | methods controlling env var format and path construction |
-| doc | algorithm/001_type_detection.md | applied to values found at each level |
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | `../feature/001_config_hierarchy.md` | Feature this invariant governs |
+| doc | `../api/001_config_paths_trait.md` | Methods controlling env var format and path construction |
+| doc | `../algorithm/001_type_detection.md` | Type detection applied to values found at each level |

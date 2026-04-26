@@ -2,14 +2,14 @@
 
 ### Scope
 
-- **Purpose**: Provide zero-size strategy marker types that direct the compile-time fallback dispatch to the correct formatting approach.
+- **Purpose**: Provide data-free strategy marker types that direct the compile-time fallback dispatch to the correct formatting approach.
 - **Responsibility**: Documents the wrapper type API — the available markers, their roles, and the reference adapter types.
 - **In Scope**: Strategy markers (display, debug, reference) and reference adapter types used in fallback chains.
 - **Out of Scope**: The fallback chain mechanism itself (→ api/001), optional value wrapping internals.
 
 ### Abstract
 
-Wrapper types are zero-size marker types used as strategy arguments to the fallback conversion macro and trait. Each marker designates a formatting approach: format using the display trait, format using the debug trait, or format via a reference adapter. The markers carry no data and optimize away at compile time.
+Wrapper types are data-free marker types used as strategy arguments to the fallback conversion macro and interface. Each marker designates a formatting approach: format using the display interface, format using the debug interface, or format via a reference adapter. The markers carry no data and optimize away at compile time.
 
 Reference adapters extend the chain mechanism to borrowed values: they wrap a reference to a value together with its strategy configuration, enabling the fallback mechanism to operate on references without extra allocation.
 

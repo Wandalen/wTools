@@ -11,7 +11,7 @@
 
 A master generator initialized with seed S always produces the same sequence of values V₁, V₂, ... Vₙ when:
 
-- The `determinism` feature is active
+- The deterministic backend is active
 - The same sequence of operations is performed (same draws and same child spawns in the same order)
 - The crate version is within the same stable series
 
@@ -21,7 +21,7 @@ This invariant enables test assertions that hard-code expected values, and enabl
 
 The deterministic backend uses a stream cipher whose output is fully specified by its key and nonce. The master seed is mapped to the cipher key in a stable, documented way. No platform-dependent entropy (system time, memory addresses, thread IDs) enters the cipher initialization path.
 
-String seeds are converted to byte arrays via a stable hash. Byte array seeds are used directly. The mapping from seed value to cipher state is part of the public contract and does not change across patch versions.
+Text seeds are converted to byte sequences via a stable hash. Byte sequence seeds are used directly. The mapping from seed value to cipher state is part of the public contract and does not change across patch versions.
 
 ### Violation Consequences
 
@@ -35,6 +35,8 @@ If this invariant is broken:
 
 | Type | File | Responsibility |
 |------|------|----------------|
+| doc | [feature/001_hierarchical_rng.md](../feature/001_hierarchical_rng.md) | Feature whose reproducibility guarantee this invariant governs |
+| doc | [api/001_public_api.md](../api/001_public_api.md) | Public interface that carries the seed reproducibility contract |
 | source | [src/seed.rs](../../src/seed.rs) | Master seed type and seed-to-bytes conversion |
 | source | [src/hrng_deterministic.rs](../../src/hrng_deterministic.rs) | Deterministic backend; maps seed to cipher state |
 | test | [tests/basic_test.rs](../../tests/basic_test.rs) | Tests with hard-coded expected values that validate reproducibility |

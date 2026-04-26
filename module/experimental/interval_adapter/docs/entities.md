@@ -1,16 +1,28 @@
 # Doc Entities
 
-## Master Doc Entities Table
+## Entity Tree
 
-| Type | Purpose | Master File | Instances |
-|------|---------|-------------|----------:|
-| `api/` | Public traits, types, and method signatures | [api/readme.md](api/readme.md) | 2 |
-| `data_structure/` | Canonical data type definitions | [data_structure/readme.md](data_structure/readme.md) | 2 |
-| `feature/` | User-visible capabilities and usage patterns | [feature/readme.md](feature/readme.md) | 3 |
-| `invariant/` | Behavioral constraints and out-of-scope boundaries | [invariant/readme.md](invariant/readme.md) | 3 |
-| `pattern/` | Architectural decisions and design rationale | [pattern/readme.md](pattern/readme.md) | 2 |
+```
+docs/                               Composite Entity    1st
+├── api/                            Collection Entity   2nd
+├── data_structure/                 Collection Entity   2nd
+├── feature/                        Collection Entity   2nd
+├── invariant/                      Collection Entity   2nd
+└── pattern/                        Collection Entity   2nd
+```
 
-## Master Doc Instances Table
+## Entities
+
+| Entity | Type | Latent? | Purpose |
+|--------|------|---------|---------|
+| [docs/](readme.md) | Composite | | Documentation hierarchy for interval_adapter |
+| [api/](api/readme.md) | Collection | | Public API documentation |
+| [data_structure/](data_structure/readme.md) | Collection | | Canonical data type definitions |
+| [feature/](feature/readme.md) | Collection | | User-visible capabilities and usage patterns |
+| [invariant/](invariant/readme.md) | Collection | | Behavioral constraints and out-of-scope boundaries |
+| [pattern/](pattern/readme.md) | Collection | | Architectural decisions and design rationale |
+
+## Doc Instances
 
 | Entity | ID | Name | File |
 |--------|----|------|------|

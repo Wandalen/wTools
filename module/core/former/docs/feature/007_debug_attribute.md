@@ -31,4 +31,4 @@ The debug attribute may appear standalone on the type or inside the former attri
 
 | File | Notes |
 |------|-------|
-| [../../spec.md](../../spec.md) | Primary source — section 4.1 Debug Attribute Specification; four phases, feature flag gating |
+| [../../spec.md](../../spec.md) | Primary source — section 2.6 Debug Attribute: four diagnostic phases, feature-flag gating, and zero-cost guarantee; also produced 12 sibling instances — see entities.md |

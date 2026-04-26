@@ -31,9 +31,3 @@ Eight standard collections receive wiring: each gets a definition type set, a fu
 | doc | api/004_collection.md | Collection traits API contract |
 | doc | api/002_formation_process.md | FormingEnd and FormerBegin used by CollectionFormer |
 | doc | feature/001_builder_trait_infrastructure.md | Core builder infrastructure this capability extends |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Combined source; collection traits, collection-specific types, and usage patterns sections extracted here |

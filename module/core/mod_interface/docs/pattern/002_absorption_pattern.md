@@ -55,9 +55,3 @@ This pattern applies to all proc-macro crates in the wTools workspace.
 | source | `../mod_interface_meta/src/lib.rs` | Proc-macro entry point in the meta crate |
 | doc | `docs/feature/001_layered_module_interface.md` | Feature hub noting the bootstrap constraint and absorption pattern |
 | doc | `docs/pattern/001_exposure_level_cascade.md` | Five-layer cascade that motivates this two-crate structure |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Combined source; Architecture (Absorption Pattern, Dependency Structure) and Design Rationale (Why Absorption Pattern) sections contributed to this doc instance. spec.md has been deleted — Sources entry retained as migration record. |

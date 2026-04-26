@@ -32,9 +32,3 @@ Enforced by the macro expansion pattern itself. The `count!` helper produces a c
 ### Violation Consequences
 
 The invariant cannot be violated by caller code. It can only be broken by modifying the macro definitions themselves to omit the `with_capacity` call. If violated, the resulting collection would reallocate one or more times during insertion, degrading performance but producing a correct result.
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Migrated; sections: Architecture → Macro Expansion Pattern, Design Rationale → Why count! Macro for Capacity, Overview → Helper Macros; siblings: api/001, feature/001, feature/002, invariant/001. spec.md has been deleted — Sources entry retained as migration record. |

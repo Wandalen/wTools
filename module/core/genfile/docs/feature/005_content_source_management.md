@@ -17,9 +17,3 @@ Internalization fetches all external content references (file paths, URLs) and e
 |------|------|----------------|
 | source | `src/handlers/content.rs` | Handler implementations for content commands |
 | config | `commands/content.yaml` | Authoritative command specs for content group |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| `spec.md` (deleted) | FR5 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

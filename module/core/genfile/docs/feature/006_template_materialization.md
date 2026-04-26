@@ -17,9 +17,3 @@ Materialization validates that all mandatory parameters have values, then render
 |------|------|----------------|
 | source | `src/handlers/materialize.rs` | Handler implementations for materialize/unpack commands |
 | config | `commands/materialize.yaml` | Authoritative command specs |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| `spec.md` (deleted) | FR6 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

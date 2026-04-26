@@ -31,12 +31,6 @@ The completion handler receives the fully accumulated storage and the optional c
 
 **Ordering guarantee**: Mutation always runs after the last accumulation write. Completion always runs after mutation. The ordering between any two accumulation writes is determined solely by the call order at the use site.
 
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Combined source; architecture and formation lifecycle sections extracted here |
-
 ### Cross-References
 
 | Type | File | Responsibility |

@@ -15,7 +15,7 @@ Given a parent generator initialized with a fixed seed, spawning a child with a 
 - The timing of spawning relative to parent draws
 - The thread that performs the spawning
 
-This invariant holds only when the `determinism` feature is active.
+This invariant holds only when compiled with the deterministic backend.
 
 ### Enforcement Mechanism
 
@@ -29,11 +29,13 @@ If this invariant is broken:
 
 - Parallel simulations produce different results when run with different thread schedules.
 - Reproducibility claims cannot be verified: re-running with the same seed gives different output.
-- Tests guarded by `#[cfg(feature = "determinism")]` become fragile and may fail non-deterministically.
+- Tests that execute only in deterministic mode become fragile and may fail non-deterministically.
 
 ### Cross-References
 
 | Type | File | Responsibility |
 |------|------|----------------|
+| doc | [feature/001_hierarchical_rng.md](../feature/001_hierarchical_rng.md) | Feature whose parent-child model depends on this invariant |
+| doc | [api/001_public_api.md](../api/001_public_api.md) | Public interface that carries the child spawning contract |
 | source | [src/hrng_deterministic.rs](../../src/hrng_deterministic.rs) | Deterministic backend; enforces offspring generator separation |
 | test | [tests/basic_test.rs](../../tests/basic_test.rs) | Monte Carlo tests that would fail if this invariant breaks |

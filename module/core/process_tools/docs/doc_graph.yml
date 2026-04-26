@@ -81,82 +81,82 @@ nodes:
 
 edges:
   # feature/001 cross-references
-  - { from: feature/001, to: api/001,       via: cross_references }
-  - { from: feature/001, to: api/002,       via: cross_references }
-  - { from: feature/001, to: invariant/001, via: cross_references }
-  - { from: feature/001, to: invariant/002, via: cross_references }
+  - { from: feature/001, to: api/001,       label: cross-reference }
+  - { from: feature/001, to: api/002,       label: cross-reference }
+  - { from: feature/001, to: invariant/001, label: cross-reference }
+  - { from: feature/001, to: invariant/002, label: cross-reference }
   - { from: feature/001, to: feature/002,   via: cross_references }
   # feature/002 cross-references
-  - { from: feature/002, to: api/002,       via: cross_references }
-  - { from: feature/002, to: invariant/001, via: cross_references }
+  - { from: feature/002, to: api/002,       label: cross-reference }
+  - { from: feature/002, to: invariant/001, label: cross-reference }
   - { from: feature/002, to: feature/001,   via: cross_references }
   # feature/003 cross-references
-  - { from: feature/003, to: api/007,       via: cross_references }
+  - { from: feature/003, to: api/007,       label: cross-reference }
   - { from: feature/003, to: feature/001,   via: cross_references }
   # feature/004 cross-references
-  - { from: feature/004, to: api/003,       via: cross_references }
+  - { from: feature/004, to: api/003,       label: cross-reference }
   - { from: feature/004, to: feature/005,   via: cross_references }
   # feature/005 cross-references
-  - { from: feature/005, to: api/004,       via: cross_references }
-  - { from: feature/005, to: api/005,       via: cross_references }
-  - { from: feature/005, to: api/006,       via: cross_references }
+  - { from: feature/005, to: api/004,       label: cross-reference }
+  - { from: feature/005, to: api/005,       label: cross-reference }
+  - { from: feature/005, to: api/006,       label: cross-reference }
   - { from: feature/005, to: feature/004,   via: cross_references }
   - { from: feature/005, to: feature/001,   via: cross_references }
   # api/001 cross-references
   - { from: api/001,     to: feature/001,   via: cross_references }
-  - { from: api/001,     to: api/002,       via: cross_references }
-  - { from: api/001,     to: invariant/001, via: cross_references }
-  - { from: api/001,     to: invariant/002, via: cross_references }
+  - { from: api/001,     to: api/002,       label: cross-reference }
+  - { from: api/001,     to: invariant/001, label: cross-reference }
+  - { from: api/001,     to: invariant/002, label: cross-reference }
   # api/002 cross-references
   - { from: api/002,     to: feature/002,   via: cross_references }
-  - { from: api/002,     to: api/001,       via: cross_references }
-  - { from: api/002,     to: invariant/001, via: cross_references }
+  - { from: api/002,     to: api/001,       label: cross-reference }
+  - { from: api/002,     to: invariant/001, label: cross-reference }
   # api/003 cross-references
   - { from: api/003,     to: feature/004,   via: cross_references }
   # api/004 cross-references
   - { from: api/004,     to: feature/005,   via: cross_references }
-  - { from: api/004,     to: api/005,       via: cross_references }
+  - { from: api/004,     to: api/005,       label: cross-reference }
   # api/005 cross-references
   - { from: api/005,     to: feature/005,   via: cross_references }
-  - { from: api/005,     to: invariant/004, via: cross_references }
-  - { from: api/005,     to: invariant/003, via: cross_references }
-  - { from: api/005,     to: api/006,       via: cross_references }
-  - { from: api/005,     to: guide/001,     via: cross_references }
+  - { from: api/005,     to: invariant/004, label: cross-reference }
+  - { from: api/005,     to: invariant/003, label: cross-reference }
+  - { from: api/005,     to: api/006,       label: cross-reference }
+  - { from: api/005,     to: guide/001,     label: cross-reference }
   # api/006 cross-references
   - { from: api/006,     to: feature/005,   via: cross_references }
-  - { from: api/006,     to: invariant/003, via: cross_references }
-  - { from: api/006,     to: api/005,       via: cross_references }
-  - { from: api/006,     to: guide/001,     via: cross_references }
+  - { from: api/006,     to: invariant/003, label: cross-reference }
+  - { from: api/006,     to: api/005,       label: cross-reference }
+  - { from: api/006,     to: guide/001,     label: cross-reference }
   # api/007 cross-references
   - { from: api/007,     to: feature/003,   via: cross_references }
   # guide/001 cross-references
-  - { from: guide/001,   to: api/005,       via: cross_references }
-  - { from: guide/001,   to: api/006,       via: cross_references }
-  - { from: guide/001,   to: invariant/003, via: cross_references }
-  - { from: guide/001,   to: invariant/004, via: cross_references }
+  - { from: guide/001,   to: api/005,       label: cross-reference }
+  - { from: guide/001,   to: api/006,       label: cross-reference }
+  - { from: guide/001,   to: invariant/003, label: cross-reference }
+  - { from: guide/001,   to: invariant/004, label: cross-reference }
   # guide/002 cross-references
-  - { from: guide/002,   to: api/003,       via: cross_references }
+  - { from: guide/002,   to: api/003,       label: cross-reference }
   - { from: guide/002,   to: feature/004,   via: cross_references }
   # invariant/001 cross-references
-  - { from: invariant/001, to: api/002,     via: cross_references }
-  - { from: invariant/001, to: api/001,     via: cross_references }
-  - { from: invariant/001, to: feature/002, via: cross_references }
+  - { from: invariant/001, to: api/002,     label: cross-reference }
+  - { from: invariant/001, to: api/001,     label: cross-reference }
+  - { from: invariant/001, to: feature/002, label: cross-reference }
   # invariant/002 cross-references
-  - { from: invariant/002, to: api/001,     via: cross_references }
-  - { from: invariant/002, to: feature/001, via: cross_references }
+  - { from: invariant/002, to: api/001,     label: cross-reference }
+  - { from: invariant/002, to: feature/001, label: cross-reference }
   # invariant/003 cross-references
-  - { from: invariant/003, to: api/006,     via: cross_references }
-  - { from: invariant/003, to: api/005,     via: cross_references }
+  - { from: invariant/003, to: api/006,     label: cross-reference }
+  - { from: invariant/003, to: api/005,     label: cross-reference }
   # invariant/004 cross-references
-  - { from: invariant/004, to: api/005,     via: cross_references }
-  - { from: invariant/004, to: feature/005, via: cross_references }
+  - { from: invariant/004, to: api/005,     label: cross-reference }
+  - { from: invariant/004, to: feature/005, label: cross-reference }
 
 components:
   - id: 1
     label: process_tools documentation corpus
     size: 18
     isolated: false
-    nodes:
+    members:
       - api/001
       - api/002
       - api/003

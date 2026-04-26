@@ -19,9 +19,3 @@ The write mode is a discriminated type where the rewrite variant unconditionally
 | test | `tests/` | Write mode behavior tests |
 | doc | `docs/feature/008_file_descriptor.md` | Descriptor that carries the write mode |
 | doc | `docs/feature/010_file_system_trait.md` | Trait that executes the write |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [`../../spec.md`](../../spec.md) | FR9 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

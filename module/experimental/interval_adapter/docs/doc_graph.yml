@@ -1,0 +1,162 @@
+meta:
+  description: Cross-reference graph for all doc instances in interval_adapter
+  node_count: 12
+  edge_count: 56
+  component_count: 1
+  generated: 2026_04_26
+
+nodes:
+  - id: api/001
+    file: api/001_interval_traits.md
+    label: Interval Traits
+    entity: api
+  - id: api/002
+    file: api/002_conversion_traits.md
+    label: Conversion Traits
+    entity: api
+  - id: data_structure/001
+    file: data_structure/001_interval.md
+    label: Interval
+    entity: data_structure
+  - id: data_structure/002
+    file: data_structure/002_interval_iterator.md
+    label: IntervalIterator
+    entity: data_structure
+  - id: feature/001
+    file: feature/001_generic_interval_parameter.md
+    label: Generic Interval Parameter
+    entity: feature
+  - id: feature/002
+    file: feature/002_non_iterable_intervals.md
+    label: Non-Iterable Intervals
+    entity: feature
+  - id: feature/003
+    file: feature/003_no_std_support.md
+    label: no_std Support
+    entity: feature
+  - id: invariant/001
+    file: invariant/001_integer_endpoints_only.md
+    label: Integer Endpoints Only
+    entity: invariant
+  - id: invariant/002
+    file: invariant/002_no_validation.md
+    label: No Validation
+    entity: invariant
+  - id: invariant/003
+    file: invariant/003_no_set_operations.md
+    label: No Set Operations
+    entity: invariant
+  - id: pattern/001
+    file: pattern/001_two_trait_hierarchy.md
+    label: Two-Trait Hierarchy
+    entity: pattern
+  - id: pattern/002
+    file: pattern/002_canonical_interval_type.md
+    label: Canonical Interval Type
+    entity: pattern
+
+edges:
+  # api/001 <-> api/002
+  - { from: api/001, to: api/002, via: cross_references }
+  - { from: api/002, to: api/001, via: cross_references }
+  # api/001 <-> data_structure/001
+  - { from: api/001, to: data_structure/001, via: cross_references }
+  - { from: data_structure/001, to: api/001, via: cross_references }
+  # api/001 <-> data_structure/002
+  - { from: api/001, to: data_structure/002, via: cross_references }
+  - { from: data_structure/002, to: api/001, via: cross_references }
+  # api/001 <-> feature/001
+  - { from: api/001, to: feature/001, via: cross_references }
+  - { from: feature/001, to: api/001, via: cross_references }
+  # api/001 <-> feature/002
+  - { from: api/001, to: feature/002, via: cross_references }
+  - { from: feature/002, to: api/001, via: cross_references }
+  # api/001 <-> invariant/001
+  - { from: api/001, to: invariant/001, via: cross_references }
+  - { from: invariant/001, to: api/001, via: cross_references }
+  # api/001 <-> invariant/003
+  - { from: api/001, to: invariant/003, via: cross_references }
+  - { from: invariant/003, to: api/001, via: cross_references }
+  # api/001 <-> pattern/001
+  - { from: api/001, to: pattern/001, via: cross_references }
+  - { from: pattern/001, to: api/001, via: cross_references }
+  # api/002 <-> data_structure/001
+  - { from: api/002, to: data_structure/001, via: cross_references }
+  - { from: data_structure/001, to: api/002, via: cross_references }
+  # api/002 <-> feature/001
+  - { from: api/002, to: feature/001, via: cross_references }
+  - { from: feature/001, to: api/002, via: cross_references }
+  # api/002 <-> feature/002
+  - { from: api/002, to: feature/002, via: cross_references }
+  - { from: feature/002, to: api/002, via: cross_references }
+  # api/002 <-> invariant/001
+  - { from: api/002, to: invariant/001, via: cross_references }
+  - { from: invariant/001, to: api/002, via: cross_references }
+  # api/002 <-> pattern/002
+  - { from: api/002, to: pattern/002, via: cross_references }
+  - { from: pattern/002, to: api/002, via: cross_references }
+  # data_structure/001 <-> data_structure/002
+  - { from: data_structure/001, to: data_structure/002, via: cross_references }
+  - { from: data_structure/002, to: data_structure/001, via: cross_references }
+  # data_structure/001 <-> feature/001
+  - { from: data_structure/001, to: feature/001, via: cross_references }
+  - { from: feature/001, to: data_structure/001, via: cross_references }
+  # data_structure/001 <-> feature/003
+  - { from: data_structure/001, to: feature/003, via: cross_references }
+  - { from: feature/003, to: data_structure/001, via: cross_references }
+  # data_structure/001 <-> invariant/002
+  - { from: data_structure/001, to: invariant/002, via: cross_references }
+  - { from: invariant/002, to: data_structure/001, via: cross_references }
+  # data_structure/001 <-> pattern/002
+  - { from: data_structure/001, to: pattern/002, via: cross_references }
+  - { from: pattern/002, to: data_structure/001, via: cross_references }
+  # data_structure/002 <-> feature/003
+  - { from: data_structure/002, to: feature/003, via: cross_references }
+  - { from: feature/003, to: data_structure/002, via: cross_references }
+  # data_structure/002 <-> invariant/001
+  - { from: data_structure/002, to: invariant/001, via: cross_references }
+  - { from: invariant/001, to: data_structure/002, via: cross_references }
+  # data_structure/002 <-> invariant/002
+  - { from: data_structure/002, to: invariant/002, via: cross_references }
+  - { from: invariant/002, to: data_structure/002, via: cross_references }
+  # feature/001 <-> feature/002
+  - { from: feature/001, to: feature/002, via: cross_references }
+  - { from: feature/002, to: feature/001, via: cross_references }
+  # feature/001 <-> invariant/003
+  - { from: feature/001, to: invariant/003, via: cross_references }
+  - { from: invariant/003, to: feature/001, via: cross_references }
+  # feature/002 <-> invariant/003
+  - { from: feature/002, to: invariant/003, via: cross_references }
+  - { from: invariant/003, to: feature/002, via: cross_references }
+  # feature/002 <-> pattern/001
+  - { from: feature/002, to: pattern/001, via: cross_references }
+  - { from: pattern/001, to: feature/002, via: cross_references }
+  # invariant/001 <-> invariant/002
+  - { from: invariant/001, to: invariant/002, via: cross_references }
+  - { from: invariant/002, to: invariant/001, via: cross_references }
+  # invariant/001 <-> pattern/001
+  - { from: invariant/001, to: pattern/001, via: cross_references }
+  - { from: pattern/001, to: invariant/001, via: cross_references }
+  # pattern/001 <-> pattern/002
+  - { from: pattern/001, to: pattern/002, via: cross_references }
+  - { from: pattern/002, to: pattern/001, via: cross_references }
+
+components:
+  - id: 1
+    size: 12
+    isolated: false
+    members:
+      - api/001
+      - api/002
+      - data_structure/001
+      - data_structure/002
+      - feature/001
+      - feature/002
+      - feature/003
+      - invariant/001
+      - invariant/002
+      - invariant/003
+      - pattern/001
+      - pattern/002
+
+dangling_refs: []

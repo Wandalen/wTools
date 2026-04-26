@@ -13,9 +13,9 @@ A caller wants to format a value using the most informative formatter available 
 
 ### Solution
 
-Use zero-size marker types as strategy tokens. The primary marker directs a generic function to try the preferred approach. If the type does not satisfy the required interface, the compiler selects a blanket implementation that delegates to the next marker in the chain — the first fallback. The same mechanism applies recursively for a second fallback.
+Use data-free marker types as strategy tokens. The primary marker directs a generic function to try the preferred approach. If the type does not satisfy the required interface, the compiler selects a blanket implementation that delegates to the next marker in the chain — the first fallback. The same mechanism applies recursively for a second fallback.
 
-The chain is fully resolved at compile time through trait resolution. No runtime branching, no dynamic dispatch, no overhead. The marker types contain no data and occupy no memory.
+The chain is fully resolved at compile time through compile-time interface dispatch. No runtime branching, no dynamic dispatch, no overhead. The marker types contain no data and occupy no memory.
 
 In format_tools: wrapper types serve as strategy markers. The fallback conversion macro constructs the appropriate wrapper chain and invokes the generic dispatch function, which resolves to the first applicable strategy.
 
@@ -31,7 +31,7 @@ Apply this pattern when:
 
 **Benefits**: Zero runtime cost; failures caught at compile time; call sites remain clean with no conditional logic; new fallback levels can be added by extending the chain.
 
-**Trade-offs**: Compile error messages for unsatisfied chains can be complex; the chain depth is fixed at compile time (not dynamically adjustable); understanding the dispatch requires familiarity with trait resolution.
+**Trade-offs**: Compile error messages for unsatisfied chains can be complex; the chain depth is fixed at compile time (not dynamically adjustable); understanding the dispatch requires familiarity with compile-time interface dispatch.
 
 ### Cross-References
 

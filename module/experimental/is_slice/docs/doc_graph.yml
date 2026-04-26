@@ -27,12 +27,12 @@ nodes:
     entity: invariant
 
 edges:
-  - { from: feature/001,   to: api/001,       via: cross_references }
-  - { from: feature/001,   to: invariant/001, via: cross_references }
-  - { from: feature/001,   to: invariant/002, via: cross_references }
+  - { from: feature/001,   to: api/001,       label: cross-reference }
+  - { from: feature/001,   to: invariant/001, label: cross-reference }
+  - { from: feature/001,   to: invariant/002, label: cross-reference }
   - { from: api/001,       to: feature/001,   via: cross_references }
-  - { from: api/001,       to: invariant/001, via: cross_references }
-  - { from: api/001,       to: invariant/002, via: cross_references }
+  - { from: api/001,       to: invariant/001, label: cross-reference }
+  - { from: api/001,       to: invariant/002, label: cross-reference }
   - { from: invariant/001, to: feature/001,   via: cross_references }
   - { from: invariant/002, to: feature/001,   via: cross_references }
 
@@ -41,7 +41,7 @@ components:
     label: is_slice documentation corpus
     size: 4
     isolated: false
-    nodes:
+    members:
       - feature/001
       - api/001
       - invariant/001

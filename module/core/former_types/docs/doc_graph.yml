@@ -1,7 +1,7 @@
 meta:
   description: Cross-reference graph for all doc instances in former_types
   node_count: 8
-  edge_count: 27
+  edge_count: 34
   component_count: 1
   generated: 2026_04_25
 
@@ -48,54 +48,61 @@ nodes:
 
 edges:
   # api/001 outgoing
-  - { from: api/001, to: algorithm/001, via: cross_references }
-  - { from: api/001, to: feature/001,   via: cross_references }
+  - { from: api/001, to: algorithm/001,   via: cross_references }
+  - { from: api/001, to: feature/001,     label: cross-reference }
+  - { from: api/001, to: api/002,         label: cross-reference }
+  - { from: api/001, to: api/003,         label: cross-reference }
+  - { from: api/001, to: invariant/001,   via: cross_references }
 
   # api/002 outgoing
-  - { from: api/002, to: api/001,       via: cross_references }
-  - { from: api/002, to: algorithm/001, via: cross_references }
+  - { from: api/002, to: api/001,       label: cross-reference }
+  - { from: api/002, to: algorithm/001, label: cross-reference }
   - { from: api/002, to: feature/001,   via: cross_references }
   - { from: api/002, to: feature/002,   via: cross_references }
+  - { from: api/002, to: api/004,       label: cross-reference }
 
   # api/003 outgoing
-  - { from: api/003, to: api/001,       via: cross_references }
-  - { from: api/003, to: algorithm/001, via: cross_references }
-  - { from: api/003, to: invariant/001, via: cross_references }
+  - { from: api/003, to: api/001,       label: cross-reference }
+  - { from: api/003, to: algorithm/001, label: cross-reference }
+  - { from: api/003, to: invariant/001, label: cross-reference }
+  - { from: api/003, to: feature/001,   via: cross_references }
 
   # api/004 outgoing
-  - { from: api/004, to: api/002,       via: cross_references }
+  - { from: api/004, to: api/002,       label: cross-reference }
   - { from: api/004, to: feature/002,   via: cross_references }
 
   # algorithm/001 outgoing
-  - { from: algorithm/001, to: api/001,       via: cross_references }
-  - { from: algorithm/001, to: api/002,       via: cross_references }
-  - { from: algorithm/001, to: api/003,       via: cross_references }
-  - { from: algorithm/001, to: invariant/001, via: cross_references }
+  - { from: algorithm/001, to: api/001,       label: cross-reference }
+  - { from: algorithm/001, to: api/002,       label: cross-reference }
+  - { from: algorithm/001, to: api/003,       label: cross-reference }
+  - { from: algorithm/001, to: invariant/001, label: cross-reference }
   - { from: algorithm/001, to: feature/001,   via: cross_references }
 
   # invariant/001 outgoing
-  - { from: invariant/001, to: api/001,       via: cross_references }
-  - { from: invariant/001, to: api/003,       via: cross_references }
-  - { from: invariant/001, to: algorithm/001, via: cross_references }
+  - { from: invariant/001, to: api/001,       label: cross-reference }
+  - { from: invariant/001, to: api/003,       label: cross-reference }
+  - { from: invariant/001, to: algorithm/001, label: cross-reference }
+  - { from: invariant/001, to: feature/001,   via: cross_references }
 
   # feature/001 outgoing
-  - { from: feature/001, to: api/001,       via: cross_references }
-  - { from: feature/001, to: api/002,       via: cross_references }
-  - { from: feature/001, to: api/003,       via: cross_references }
-  - { from: feature/001, to: algorithm/001, via: cross_references }
-  - { from: feature/001, to: invariant/001, via: cross_references }
+  - { from: feature/001, to: api/001,       label: cross-reference }
+  - { from: feature/001, to: api/002,       label: cross-reference }
+  - { from: feature/001, to: api/003,       label: cross-reference }
+  - { from: feature/001, to: algorithm/001, label: cross-reference }
+  - { from: feature/001, to: invariant/001, label: cross-reference }
+  - { from: feature/001, to: feature/002,   via: cross_references }
 
   # feature/002 outgoing
-  - { from: feature/002, to: api/004,     via: cross_references }
-  - { from: feature/002, to: api/002,     via: cross_references }
-  - { from: feature/002, to: feature/001, via: cross_references }
+  - { from: feature/002, to: api/004,     label: cross-reference }
+  - { from: feature/002, to: api/002,     label: cross-reference }
+  - { from: feature/002, to: feature/001, label: cross-reference }
 
 components:
   - id: 1
     label: former_types documentation corpus
     size: 8
     isolated: false
-    nodes:
+    members:
       - algorithm/001
       - api/001
       - api/002

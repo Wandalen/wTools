@@ -13,7 +13,7 @@ The field formatting macros eliminate repetitive field extraction and formatting
 
 Key naming is automatic: the macro derives the display key from the last segment of the field expression path. For example, referencing `person.name` produces `"name"` as the key. When the automatic name is not suitable, a custom key name can be provided explicitly.
 
-Each macro accepts a strategy chain identical to the fallback conversion mechanism: a primary formatter and one or two fallbacks. This ensures every field produces a string regardless of which formatting traits the field type implements.
+Each macro accepts a strategy chain identical to the fallback conversion mechanism: a primary formatter and one or two fallbacks. This ensures every field produces a string regardless of which formatting interfaces the field type satisfies.
 
 The macros are declarative (not procedural), keeping compile times low and avoiding heavyweight macro-expansion infrastructure.
 
@@ -21,7 +21,7 @@ The macros are declarative (not procedural), keeping compile times low and avoid
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/format.rs` | Macro definitions: _field! and _field_with_key! |
+| source | `src/format.rs` | Primary field formatting macro definitions |
 | test | `tests/inc/to_string_with_fallback_test.rs` | Field macro test suite |
 | test | `tests/inc/to_string_example.rs` | Field macro usage examples |
 | doc | `docs/api/002_field_macros_api.md` | Public API for field formatting macros |

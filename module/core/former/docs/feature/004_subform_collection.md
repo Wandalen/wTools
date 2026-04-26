@@ -31,5 +31,5 @@ The aggregate builder handles collection construction semantics (ordering, uniqu
 
 | File | Notes |
 |------|-------|
-| [../../spec.md](../../spec.md) | Primary source — section 2.4.2 field attribute table, subform_collection entry |
-| [../../advanced.md](../../advanced.md) | Combined source; collection subformer mechanics and VectorFormer usage described |
+| [../../spec.md](../../spec.md) | Primary source — section 2.4.2 field attribute table, subform_collection entry; also produced 12 sibling instances — see entities.md |
+| [../../advanced.md](../../advanced.md) | Combined source; collection subformer mechanics and VectorFormer usage described; also produced 5 sibling instances: feature/001–003, feature/005, pattern/002 |

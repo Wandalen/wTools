@@ -49,9 +49,3 @@ The DSL forms described here constitute the public interface of the mod_interfac
 | test | `../mod_interface_meta/tests/smoke_test.rs` | Basic directive smoke check |
 | doc | `docs/feature/001_layered_module_interface.md` | Feature hub for the mod_interface! macro |
 | doc | `docs/invariant/001_propagation_rules.md` | Propagation invariants governing layer assignment semantics |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Combined source; Public API (Macro, Usage Syntax, Required Module Structure) and Scope item 4 (Layer Directives) sections contributed to this doc instance. spec.md has been deleted — Sources entry retained as migration record. |

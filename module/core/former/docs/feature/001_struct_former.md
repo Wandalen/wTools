@@ -32,5 +32,5 @@ The generated builder is named after the source type. Fields may carry a declare
 
 | File | Notes |
 |------|-------|
-| [../../spec.md](../../spec.md) | Primary source — sections 1–3: struct former behavior, generated code architecture, setter design |
-| [../../advanced.md](../../advanced.md) | Combined source covering all feature types; Former/Storage/Definition concepts in depth |
+| [../../spec.md](../../spec.md) | Primary source — section 2.1 Target Type Classification, 2.3 Struct Builder Generation, 3.1 Setter Method Implementation: move semantics and owned-type rationale; also produced 12 sibling instances — see entities.md |
+| [../../advanced.md](../../advanced.md) | Combined source; struct builder lifecycle, storage types, and mutator customization described in foundational sections; also produced 5 sibling instances: feature/002–005, pattern/002 |

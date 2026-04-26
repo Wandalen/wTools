@@ -37,12 +37,6 @@ All formation contracts are compile-time. FormingEnd implementations that accept
 
 The three trait signatures are stable within a major version. Adding parameters to FormingEnd's call method or changing the FormerBegin parameter set constitutes a breaking change.
 
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Combined source; formation process section extracted here; remaining content migrated to api/001, api/003, api/004, algorithm/001, invariant/001, feature/001, feature/002 |
-
 ### Cross-References
 
 | Type | File | Responsibility |
@@ -52,3 +46,4 @@ The three trait signatures are stable within a major version. Adding parameters 
 | doc | algorithm/001_formation_lifecycle.md | Lifecycle sequence that orders these three phases |
 | doc | feature/001_builder_trait_infrastructure.md | End-to-end capability using these traits |
 | doc | feature/002_collection_subformer.md | FormerBegin usage in collection subformers |
+| doc | api/004_collection.md | Collection builder that uses FormerBegin and FormingEnd |

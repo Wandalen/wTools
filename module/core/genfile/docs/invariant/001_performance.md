@@ -24,9 +24,3 @@ Excessive latency makes the CLI unsuitable for interactive use in REPL mode and 
 | Type | File | Responsibility |
 |------|------|----------------|
 | doc | `docs/feature/010_repl_mode.md` | REPL startup is one of the measured targets |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| `spec.md` (deleted) | NFR1 in original spec; combined source migrated to invariant/. spec.md has been deleted — Sources entry retained as migration record. |

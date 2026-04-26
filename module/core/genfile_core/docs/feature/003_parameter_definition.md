@@ -18,9 +18,3 @@ A parameter descriptor stores metadata for a single template parameter: its name
 | source | `src/parameter.rs` | Parameter descriptor struct and builder |
 | test | `tests/` | Parameter descriptor construction and attribute tests |
 | doc | `docs/feature/004_parameter_collection.md` | Collection containing these descriptors |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [`../../spec.md`](../../spec.md) | FR3 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

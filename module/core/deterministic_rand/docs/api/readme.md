@@ -11,4 +11,4 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | [Public API](001_public_api.md) | Complete public surface: Hrng, SharedGenerator, Seed, IfDeterminismIteratorExt | ✅ |
+| 001 | [Public API](001_public_api.md) | Complete public surface: hierarchical generator, shared reference, seed, and iterator extension | ✅ |

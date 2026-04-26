@@ -28,22 +28,22 @@ nodes:
     entity: api
 
 edges:
-  - { from: feature/001, to: feature/002, via: cross_references }
-  - { from: feature/001, to: invariant/001, via: cross_references }
-  - { from: feature/001, to: api/001, via: cross_references }
-  - { from: feature/002, to: feature/001, via: cross_references }
-  - { from: feature/002, to: api/001, via: cross_references }
-  - { from: invariant/001, to: feature/001, via: cross_references }
-  - { from: invariant/001, to: api/001, via: cross_references }
-  - { from: invariant/002, to: api/001, via: cross_references }
-  - { from: api/001, to: feature/001, via: cross_references }
-  - { from: api/001, to: invariant/001, via: cross_references }
+  - { from: feature/001, to: feature/002, label: cross-reference }
+  - { from: feature/001, to: invariant/001, label: cross-reference }
+  - { from: feature/001, to: api/001, label: cross-reference }
+  - { from: feature/002, to: feature/001, label: cross-reference }
+  - { from: feature/002, to: api/001, label: cross-reference }
+  - { from: invariant/001, to: feature/001, label: cross-reference }
+  - { from: invariant/001, to: api/001, label: cross-reference }
+  - { from: invariant/002, to: api/001, label: cross-reference }
+  - { from: api/001, to: feature/001, label: cross-reference }
+  - { from: api/001, to: invariant/001, label: cross-reference }
 
 components:
   - id: 1
     label: clone_dyn documentation corpus
     size: 5
     isolated: false
-    nodes: [feature/001, feature/002, invariant/001, invariant/002, api/001]
+    members: [feature/001, feature/002, invariant/001, invariant/002, api/001]
 
 dangling_refs: []

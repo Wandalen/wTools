@@ -38,9 +38,3 @@ Enforced via `#[cfg(...)]` conditional compilation in each collection source fil
 ### Violation Consequences
 
 The invariant cannot be violated at runtime — configuration is resolved entirely at compile time. Attempting to use `HashMap` in a `no_std` environment without `use_alloc` will produce a compile error because `std::collections` is unavailable without `std`. Enabling `use_alloc` without `no_std` is benign: the `std` branch takes precedence and `hashbrown` is not activated.
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Migrated; sections: Architecture → Feature-Based Collection Source, Design Rationale → Why Conditional hashbrown Dependency, Overview → No-std Support; siblings: api/001, feature/001, feature/002, invariant/002. spec.md has been deleted — Sources entry retained as migration record. |

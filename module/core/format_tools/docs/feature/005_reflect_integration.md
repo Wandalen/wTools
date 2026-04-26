@@ -20,8 +20,8 @@ This integration is optional: raw vector-based table construction is available w
 | Type | File | Responsibility |
 |------|------|----------------|
 | source | `src/lib.rs` | Re-exports field reflection and iterator interfaces from reflect_tools |
-| source | `src/format/as_table.rs` | Table conversion trait for reflection-based formatting |
+| source | `src/format/as_table.rs` | Table conversion interface for reflection-based formatting |
 | test | `tests/inc/fields_test.rs` | Field reflection interface integration tests |
 | test | `tests/inc/collection_test.rs` | Collection integration with reflection |
 | doc | `docs/feature/002_table_formatting.md` | Table formatting that consumes reflected fields |
-| doc | `docs/api/003_table_formatting_api.md` | AsTable trait API |
+| doc | `docs/api/003_table_formatting_api.md` | Table conversion interface API |

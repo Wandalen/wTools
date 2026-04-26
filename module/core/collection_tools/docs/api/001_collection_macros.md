@@ -99,9 +99,3 @@ No runtime errors. All macros are purely syntactic expansions resolved at compil
 - Zero-element invocation (e.g., `hmap!()`) is valid and produces an empty pre-allocated collection with capacity 0.
 - Re-exported types match the standard library API surface exactly; no wrapper types are introduced.
 - The `collection_constructors` and `collection_into_constructors` features are independent and can be enabled or disabled separately.
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Migrated; sections: Public API → Strict Constructor Macros, Public API → Into-based Constructor Macros, Public API → Collection Type Re-exports, Architecture → Macro Expansion Pattern; siblings: feature/001, feature/002, invariant/001, invariant/002. spec.md has been deleted — Sources entry retained as migration record. |

@@ -18,9 +18,3 @@ The real file system implementation uses standard I/O operations. On write, it c
 | source | `src/filesystem.rs` | Real file system implementation |
 | test | `tests/` | Real file system I/O operation tests |
 | doc | `docs/feature/010_file_system_trait.md` | Trait that the real file system implements |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [`../../spec.md`](../../spec.md) | FR11 in original spec; combined source migrated to feature/. spec.md has been deleted — Sources entry retained as migration record. |

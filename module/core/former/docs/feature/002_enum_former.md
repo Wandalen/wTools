@@ -41,6 +41,6 @@ Constraints:
 
 | File | Notes |
 |------|-------|
-| [../../spec.md](../../spec.md) | Primary source — section 2.1 Target Type Classification, 2.2 Enum Variant Constructor Logic, 2.1.3 Behavioral Categories |
-| [../../limitations.md](../../limitations.md) | Combined source for all three enum-related invariants |
-| [../../advanced.md](../../advanced.md) | Combined source; enum former internals described in architectural sections |
+| [../../spec.md](../../spec.md) | Primary source — section 2.1 Target Type Classification, 2.2 Enum Variant Constructor Logic, 2.1.3 Behavioral Categories; also produced 12 sibling instances — see entities.md |
+| [../../limitations.md](../../limitations.md) | Combined source for all three enum-related invariants; also produced 3 sibling instances: invariant/001–003 |
+| [../../advanced.md](../../advanced.md) | Combined source; enum former internals described in architectural sections; also produced 5 sibling instances: feature/001, feature/003–005, pattern/002 |

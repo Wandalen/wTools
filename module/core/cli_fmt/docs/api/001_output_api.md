@@ -43,6 +43,14 @@ stream filter. Does not apply line filtering or width truncation.
 - Lines omitted count: number of lines removed by head/tail filtering; zero when no filtering applied or when head and tail windows overlap.
 - Width truncated flag: true if any line was shortened by the width limit.
 
+### Error Handling
+
+Both public functions are infallible. They perform no I/O and accept any string input. No error type is returned and no panics occur.
+
+### Compatibility Guarantees
+
+The function signatures, configuration fields, and result structure are stable across patch and minor versions. New configuration options may be added in minor versions with backward-compatible defaults. Changes to existing option semantics require a major version bump.
+
 ### Cross-References
 
 | Type | File | Responsibility |

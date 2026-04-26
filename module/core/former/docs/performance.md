@@ -429,12 +429,5 @@ Avoid Former if:
 
 ---
 
-## Further Reading
-
-- [Specification § 9: Performance Characteristics](../spec.md#9-performance-characteristics) - Formal guarantees
-- [Advanced Usage](../advanced.md#custom-definitions) - Customizing for performance
-
----
-
 **Last Updated**: 2025-10-19
 **Benchmarks Run On**: aarch64-unknown-linux-gnu, rustc 1.81.0

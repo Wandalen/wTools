@@ -40,3 +40,4 @@ by this crate.
 |------|------|----------------|
 | doc | `../api/001_derive_api.md` | Macros implemented using macro_tools |
 | doc | `../feature/001_former_derive.md` | Behavioral description of the macros |
+| config | `../../Cargo.toml` | Declares macro_tools as an enabled-feature dependency |

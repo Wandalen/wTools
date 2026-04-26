@@ -45,5 +45,5 @@ This re-export crate uses **test propagation pattern** to avoid duplication whil
 3. **Rationale**:
    - Avoids duplicating interval_adapter's comprehensive test suite
    - Focuses facade tests on facade-specific concerns (compilation, re-exports)
-   - Follows Anti-Duplication Principle (principles.rulebook.md)
+   - Follows Anti-Duplication Principle.
    - Validates the re-export mechanism itself works correctly

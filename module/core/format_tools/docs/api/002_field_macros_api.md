@@ -13,7 +13,7 @@ The field macros format individual struct fields as key-value pairs, deriving th
 
 ### Operations
 
-**Field macro (automatic key)**: Accepts a field expression and a strategy chain (two or three formatters). Derives the display key from the last segment of the expression path. Returns a formatted key-value pair as a string. Example: referencing `record.age` produces key `"age"`.
+**Field macro (automatic key)**: Accepts a field expression and a strategy chain (two or three formatters). Derives the display key from the last segment of the expression path. Returns a formatted key-value pair as a string.
 
 **Field macro (custom key)**: Accepts a field expression, an explicit key name, and a strategy chain. Uses the provided key name instead of the derived one. Useful when the field name is not descriptive enough or when a different display name is required.
 
@@ -31,7 +31,7 @@ Both macros are stable. Key derivation from expression paths is stable. Strategy
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/format.rs` | Field macro implementations: _field!, _field_with_key! |
+| source | `src/format.rs` | Field formatting macro implementations |
 | test | `tests/inc/to_string_with_fallback_test.rs` | Field macro test suite |
 | test | `tests/inc/to_string_example.rs` | Usage examples |
 | doc | `docs/feature/003_field_formatting_macros.md` | Feature description |

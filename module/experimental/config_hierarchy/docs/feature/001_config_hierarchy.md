@@ -2,12 +2,12 @@
 
 ### Scope
 
-- **What**: Layered configuration resolution from multiple prioritized sources
-- **Who**: CLI applications using `ConfigManager< D, P, V >`
-- **When**: Application startup and per-value config lookup
-- **Out of scope**: File format (→ format/001), resolution order invariant (→ invariant/001), trait API (→ api/)
+- **Purpose**: Describe layered configuration resolution from multiple prioritized sources.
+- **Responsibility**: Document the trait-based configuration framework and its resolution behavior.
+- **In Scope**: Application startup and per-value config lookup; resolution, persistence, path discovery, validation, type detection, and concurrency control.
+- **Out of Scope**: File format (→ format/001), resolution order invariant (→ invariant/001), trait API (→ api/).
 
-### Abstract
+### Design
 
 Provides a reusable, trait-based configuration framework for CLI applications that need to resolve settings from multiple sources with clear precedence rules, automatic type detection, source tracking, and validation. Users implement three traits (`ConfigDefaults`, `ConfigPaths`, `ConfigValidator`) and compose a zero-cost `ConfigManager< D, P, V >` type from them. All methods on `ConfigManager` are static — the struct holds no data beyond `PhantomData` markers.
 
@@ -87,11 +87,11 @@ Path discovery functions return `Err(String)` for invalid app names. `discover_l
 
 ### Cross-References
 
-| Type | Target | Relationship |
-|------|--------|-------------|
-| doc | invariant/001_resolution_hierarchy.md | resolution order this feature implements |
-| doc | api/001_config_paths_trait.md | required trait for path configuration |
-| doc | api/002_config_defaults_trait.md | required trait for default values |
-| doc | api/003_config_validator_trait.md | optional trait for validation |
-| doc | format/001_config_file_format.md | file format used by this feature |
-| doc | algorithm/001_type_detection.md | type detection algorithm applied during resolution |
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | `../invariant/001_resolution_hierarchy.md` | Resolution order this feature implements |
+| doc | `../api/001_config_paths_trait.md` | Required trait for path configuration |
+| doc | `../api/002_config_defaults_trait.md` | Required trait for default values |
+| doc | `../api/003_config_validator_trait.md` | Optional trait for validation |
+| doc | `../format/001_config_file_format.md` | File format used by this feature |
+| doc | `../algorithm/001_type_detection.md` | Type detection algorithm applied during resolution |

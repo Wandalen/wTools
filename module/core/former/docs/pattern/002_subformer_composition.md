@@ -51,5 +51,5 @@ Apply when:
 
 | File | Notes |
 |------|-------|
-| [../../spec.md](../../spec.md) | Primary source — section 1.2 Guiding Principles (Composition over Configuration), section 1.3 Definition/Subformer terminology |
-| [../../advanced.md](../../advanced.md) | Primary source; FormingEnd trait and completion callback mechanics described in detail |
+| [../../spec.md](../../spec.md) | Primary source — section 1.2 Guiding Principles (Composition over Configuration), section 1.3 Definition/Subformer terminology; also produced 12 sibling instances — see entities.md |
+| [../../advanced.md](../../advanced.md) | Primary source; FormingEnd trait and completion callback mechanics described in detail; also produced 5 sibling instances: feature/001–005 |

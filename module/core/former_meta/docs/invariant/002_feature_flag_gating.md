@@ -20,10 +20,10 @@ must not compile successfully.
 
 ### Enforcement Mechanism
 
-Feature flag gating is implemented via `#[cfg(feature = "derive_former")]` attributes on
-the proc-macro entry point functions in `src/lib.rs`. The Rust compiler enforces that
-feature-gated items are absent when the flag is not active. The feature dependency
-relationship is declared in `Cargo.toml`.
+Feature flag gating is implemented by applying conditional compilation attributes to each
+proc-macro entry point. The compiler enforces that gated items are absent when the flag is
+not active. The feature dependency relationship between each macro flag and the shared
+enabled flag is declared in the crate manifest.
 
 ### Violation Consequences
 
@@ -36,5 +36,7 @@ explicitly disabled it. Both directions of violation degrade the opt-in contract
 
 | Type | File | Responsibility |
 |------|------|----------------|
+| source | `../../src/lib.rs` | Proc-macro entry points gated by the derive_former feature |
+| config | `../../Cargo.toml` | Declares derive_former feature and its enabled dependency |
 | doc | `../api/001_derive_api.md` | The macro API gated by this invariant |
 | doc | `../feature/001_former_derive.md` | The behavior enabled by derive_former flag |

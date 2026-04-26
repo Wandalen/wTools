@@ -30,9 +30,4 @@ The design choice of associated types over generic parameters means each entity 
 | doc | api/003_storage.md | Storage traits API contract |
 | doc | algorithm/001_formation_lifecycle.md | Four-step formation procedure |
 | doc | invariant/001_formation_integrity.md | Formation correctness guarantee |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Combined source; overview, architecture, public API, design rationale, and usage patterns sections extracted here |
+| doc | feature/002_collection_subformer.md | Collection subformer capability that extends this infrastructure |

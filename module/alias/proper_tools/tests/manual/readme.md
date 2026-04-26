@@ -2,7 +2,7 @@
 
 **Crate:** proper_tools v0.1.0
 **Status:** PLACEHOLDER - Minimal functionality
-**Last Updated:** 2026-01-21
+**Last Updated:** 2026-04-26
 
 ## Purpose
 
@@ -222,8 +222,8 @@ cargo build --target wasm32-unknown-unknown --no-default-features --features no_
 cargo new test_proper_tools_integration
 cd test_proper_tools_integration
 
-# Add dependency
-cargo add proper_tools
+# Add dependency with enabled feature
+cargo add proper_tools --features enabled
 
 # Create test code
 cat > src/main.rs << 'EOF'
@@ -245,7 +245,7 @@ cargo run
 - [ ] Function calls succeed
 - [ ] No surprising behavior
 
-**Status:** ✅ PASS (2026-01-21)
+**Status:** ⏸️ PENDING (re-test after feature flag update)
 
 ---
 
@@ -317,65 +317,6 @@ cargo run
 **Issues Deferred:**
 - Cross-platform testing (macOS, Windows, WASM) - requires access to those platforms
 - docs.rs validation - requires crate publication
-
----
-
-## Future Expansion
-
-When proper_tools gains actual functionality beyond the placeholder `f1()`, this manual testing plan must be expanded to include:
-
-### Planned Test Categories (For Future Implementation)
-
-1. **Utility Function Behavior**
-   - Correctness verification for each utility
-   - Edge case handling
-   - Error message clarity
-
-2. **API Usability Testing**
-   - Ergonomics of public API
-   - Documentation completeness
-   - Example quality
-
-3. **Performance Characteristics**
-   - Acceptable performance for typical use cases
-   - No surprising slowness
-   - Memory usage reasonable
-
-4. **Error Handling Quality**
-   - Error messages are helpful
-   - Errors occur at appropriate times
-   - Recovery mechanisms work
-
-5. **Interoperability**
-   - Works with other wTools modules
-   - Compatible with common Rust ecosystem crates
-   - No surprising interactions
-
-### Template for Future Test Cases
-
-```markdown
-#### TC-X.Y: [Test Name]
-
-**Objective:** [What this test verifies]
-
-**Prerequisites:** [What must be set up first]
-
-**Steps:**
-1. [Step 1]
-2. [Step 2]
-3. [Step 3]
-
-**Expected Result:**
-[What should happen]
-
-**Verification Checklist:**
-- [ ] [Check 1]
-- [ ] [Check 2]
-
-**Status:** [⏸️ PENDING | ✅ PASS | ❌ FAIL]
-
-**Notes:** [Any important observations]
-```
 
 ---
 
