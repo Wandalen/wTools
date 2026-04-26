@@ -1,7 +1,7 @@
 meta:
   description: Cross-reference graph for all doc instances in implements
-  node_count: 5
-  edge_count: 12
+  node_count: 7
+  edge_count: 30
   component_count: 1
   generated: 2026_04_26
 
@@ -31,24 +31,52 @@ nodes:
     label: Zero Runtime Dependencies
     entity: invariant
 
+  - id: invariant/003
+    file: invariant/003_fn_trait_limitation.md
+    label: Fn Trait Limitation
+    entity: invariant
+
+  - id: pattern/001
+    file: pattern/001_autoref_specialization.md
+    label: Autoref Specialization
+    entity: pattern
+
 edges:
   - { from: feature/001,   to: api/001,       via: cross_references }
   - { from: feature/001,   to: api/002,       via: cross_references }
   - { from: feature/001,   to: invariant/001, via: cross_references }
   - { from: feature/001,   to: invariant/002, via: cross_references }
+  - { from: feature/001,   to: invariant/003, via: cross_references }
+  - { from: feature/001,   to: pattern/001,   via: cross_references }
   - { from: api/001,       to: feature/001,   via: cross_references }
   - { from: api/001,       to: api/002,       via: cross_references }
   - { from: api/001,       to: invariant/001, via: cross_references }
+  - { from: api/001,       to: invariant/002, via: cross_references }
+  - { from: api/001,       to: invariant/003, via: cross_references }
+  - { from: api/001,       to: pattern/001,   via: cross_references }
   - { from: api/002,       to: feature/001,   via: cross_references }
   - { from: api/002,       to: api/001,       via: cross_references }
   - { from: api/002,       to: invariant/001, via: cross_references }
+  - { from: api/002,       to: invariant/002, via: cross_references }
+  - { from: api/002,       to: invariant/003, via: cross_references }
+  - { from: api/002,       to: pattern/001,   via: cross_references }
   - { from: invariant/001, to: feature/001,   via: cross_references }
+  - { from: invariant/001, to: api/001,       via: cross_references }
+  - { from: invariant/001, to: api/002,       via: cross_references }
   - { from: invariant/002, to: feature/001,   via: cross_references }
+  - { from: invariant/003, to: feature/001,   via: cross_references }
+  - { from: invariant/003, to: api/001,       via: cross_references }
+  - { from: invariant/003, to: api/002,       via: cross_references }
+  - { from: invariant/003, to: pattern/001,   via: cross_references }
+  - { from: pattern/001,   to: feature/001,   via: cross_references }
+  - { from: pattern/001,   to: api/001,       via: cross_references }
+  - { from: pattern/001,   to: api/002,       via: cross_references }
+  - { from: pattern/001,   to: invariant/003, via: cross_references }
 
 components:
   - id: 1
     label: implements documentation corpus
-    size: 5
+    size: 7
     isolated: false
     nodes:
       - feature/001
@@ -56,5 +84,7 @@ components:
       - api/002
       - invariant/001
       - invariant/002
+      - invariant/003
+      - pattern/001
 
 dangling_refs: []

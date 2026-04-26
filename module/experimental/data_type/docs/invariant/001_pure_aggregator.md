@@ -9,11 +9,15 @@
 
 ### Cross-References
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | [feature/001_either_type.md](../feature/001_either_type.md) | Either type pass-through subject to this invariant |
-| doc | [feature/002_interval_integration.md](../feature/002_interval_integration.md) | Interval integration pass-through subject to this invariant |
-| doc | [feature/003_collection_integration.md](../feature/003_collection_integration.md) | Collection integration pass-through subject to this invariant |
+| Type   | File | Responsibility |
+|--------|------|----------------|
+| source | [`src/dt.rs`](../../src/dt.rs) | Private module (empty) and re-export chain — structural enforcement |
+| source | [`src/lib.rs`](../../src/lib.rs) | Facade entry point — no native type or function definitions |
+| doc    | [feature/001_either_type.md](../feature/001_either_type.md) | Either type pass-through subject to this invariant |
+| doc    | [feature/002_interval_integration.md](../feature/002_interval_integration.md) | Interval integration pass-through subject to this invariant |
+| doc    | [feature/003_collection_integration.md](../feature/003_collection_integration.md) | Collection integration pass-through subject to this invariant |
+| doc    | [api/001_namespace_chain.md](../api/001_namespace_chain.md) | Namespace chain where the pure re-export contract operates |
+| doc    | [pattern/001_facade_reexport.md](../pattern/001_facade_reexport.md) | Facade design rationale behind the pure aggregator choice |
 
 ### Invariant Statement
 

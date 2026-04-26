@@ -7,12 +7,6 @@
 - **In Scope**: a_true, a_false, a_id, a_not_id, a_dbg_true, a_dbg_false, a_dbg_id, a_dbg_not_id.
 - **Out of Scope**: Internal delegation to pretty_assertions, debug_assert expansion internals.
 
-### Cross-References
-
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | [feature/001_runtime_assertions.md](../feature/001_runtime_assertions.md) | Runtime assertions feature context |
-
 ### Abstract
 
 A macro set for expressing program invariants that are checked at runtime. Available when the diagnostics_runtime_assertions feature is enabled. Provides always-active and debug-only variants, covering boolean checks and equality comparisons with enhanced diff output.
@@ -42,3 +36,11 @@ All macros invoke panic on assertion failure, consistent with standard Rust asse
 ### Compatibility Guarantees
 
 The always-active macro set (a_true, a_false, a_id, a_not_id) is stable across minor versions. The debug-only variants (a_dbg_*) are stable across minor versions and preserve their no-op-in-release guarantee. The assert_eq / assert_ne re-export aliases are stable. The diagnostics_runtime_assertions feature name is permanent.
+
+### Cross-References
+
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | [feature/001_runtime_assertions.md](../feature/001_runtime_assertions.md) | Runtime assertions feature context |
+| source | [src/diag/rta.rs](../../src/diag/rta.rs) | Runtime assertion macro implementations |
+| test | [tests/inc/rta_test.rs](../../tests/inc/rta_test.rs) | Behavioral tests for runtime assertion macros |

@@ -9,7 +9,7 @@
 
 ### Abstract
 
-`interval_adapter` is a type-unification abstraction, not a computational geometry library. It provides a unified trait interface and canonical storage type for standard Rust range types, but deliberately excludes all operations that treat intervals as mathematical sets.
+`interval_adapter` is a type-unification abstraction, not a computational geometry library. It provides a unified trait interface and canonical storage type for standard range types, but deliberately excludes all operations that treat intervals as mathematical sets.
 
 ### Invariant Statement
 
@@ -17,21 +17,21 @@ The following operations are not provided and will never be added to the core cr
 
 | Absent Operation | Category |
 |-----------------|----------|
-| `contains(value)` | Set membership |
-| `overlaps(other)` | Set relation |
-| `union(other)` | Set algebra |
-| `intersection(other)` | Set algebra |
-| `difference(other)` | Set algebra |
-| `interval + scalar` | Interval arithmetic |
-| `interval * scalar` | Interval arithmetic |
-| `interval + interval` | Interval arithmetic |
+| Containment check | Set membership |
+| Overlap test | Set relation |
+| Union | Set algebra |
+| Intersection | Set algebra |
+| Difference | Set algebra |
+| Interval + scalar | Interval arithmetic |
+| Interval × scalar | Interval arithmetic |
+| Interval + interval | Interval arithmetic |
 
 ### Rationale
 
-Each absent operation belongs to a different problem domain — computational geometry, interval arithmetic, or set theory — that is wider than the crate's scope of providing a unified type interface for Rust range types. Adding them would:
+Each absent operation belongs to a different problem domain — computational geometry, interval arithmetic, or set theory — that is wider than the crate's scope of providing a unified type interface for range types. Adding them would:
 1. Significantly expand the API surface and maintenance burden.
 2. Require design decisions (e.g., how to represent union of disjoint intervals) that belong in specialized crates.
-3. Conflict with the zero-dependency, `no_std` mandate for `use_alloc`-free environments.
+3. Conflict with the zero-dependency, no-standard-library mandate for allocation-free environments.
 
 ### Enforcement Mechanism
 

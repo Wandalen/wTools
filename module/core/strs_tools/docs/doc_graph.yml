@@ -1,0 +1,202 @@
+generated: 2026_04_26
+nodes:
+  - id: F-001
+    file: feature/001_string_splitting.md
+    label: String Splitting
+    type: feature
+  - id: F-002
+    file: feature/002_text_indentation.md
+    label: Text Indentation
+    type: feature
+  - id: F-003
+    file: feature/003_string_isolation.md
+    label: String Isolation
+    type: feature
+  - id: F-004
+    file: feature/004_number_parsing.md
+    label: Number Parsing
+    type: feature
+  - id: F-005
+    file: feature/005_command_parsing.md
+    label: Command Parsing
+    type: feature
+  - id: F-006
+    file: feature/006_ansi_utilities.md
+    label: ANSI Utilities
+    type: feature
+  - id: F-007
+    file: feature/007_simd_acceleration.md
+    label: SIMD Acceleration
+    type: feature
+  - id: F-008
+    file: feature/008_parser_integration.md
+    label: Parser Integration
+    type: feature
+  - id: A-001
+    file: api/001_split_api.md
+    label: Split API
+    type: api
+  - id: A-002
+    file: api/002_string_utilities_api.md
+    label: String Utilities API
+    type: api
+  - id: A-003
+    file: api/003_parser_integration_api.md
+    label: Parser Integration API
+    type: api
+  - id: I-001
+    file: invariant/001_zero_copy_contract.md
+    label: Zero-Copy Contract
+    type: invariant
+  - id: I-002
+    file: invariant/002_feature_gating_contract.md
+    label: Feature Gating Contract
+    type: invariant
+  - id: I-003
+    file: invariant/003_simd_fallback_contract.md
+    label: SIMD Fallback Contract
+    type: invariant
+  - id: I-004
+    file: invariant/004_no_std_alloc_contract.md
+    label: No-Std Alloc Contract
+    type: invariant
+  - id: G-001
+    file: algorithm/001_simd_delimiter_search.md
+    label: SIMD Delimiter Search
+    type: algorithm
+  - id: G-002
+    file: algorithm/002_single_char_splitting.md
+    label: Single-Char Splitting
+    type: algorithm
+  - id: G-003
+    file: algorithm/003_boyer_moore_splitting.md
+    label: Boyer-Moore Splitting
+    type: algorithm
+
+edges:
+  - from: F-001
+    to: A-001
+    via: cross_references
+  - from: A-001
+    to: F-001
+    via: cross_references
+  - from: F-001
+    to: I-001
+    via: cross_references
+  - from: I-001
+    to: F-001
+    via: cross_references
+  - from: F-001
+    to: G-002
+    via: cross_references
+  - from: G-002
+    to: F-001
+    via: cross_references
+  - from: F-001
+    to: G-003
+    via: cross_references
+  - from: G-003
+    to: F-001
+    via: cross_references
+  - from: F-002
+    to: A-002
+    via: cross_references
+  - from: A-002
+    to: F-002
+    via: cross_references
+  - from: F-003
+    to: A-002
+    via: cross_references
+  - from: A-002
+    to: F-003
+    via: cross_references
+  - from: F-004
+    to: A-002
+    via: cross_references
+  - from: A-002
+    to: F-004
+    via: cross_references
+  - from: F-005
+    to: A-002
+    via: cross_references
+  - from: A-002
+    to: F-005
+    via: cross_references
+  - from: F-006
+    to: A-002
+    via: cross_references
+  - from: A-002
+    to: F-006
+    via: cross_references
+  - from: F-007
+    to: G-001
+    via: cross_references
+  - from: G-001
+    to: F-007
+    via: cross_references
+  - from: F-007
+    to: I-003
+    via: cross_references
+  - from: I-003
+    to: F-007
+    via: cross_references
+  - from: F-008
+    to: A-003
+    via: cross_references
+  - from: A-003
+    to: F-008
+    via: cross_references
+  - from: A-001
+    to: I-001
+    via: cross_references
+  - from: I-001
+    to: A-001
+    via: cross_references
+  - from: G-001
+    to: I-003
+    via: cross_references
+  - from: I-003
+    to: G-001
+    via: cross_references
+  - from: G-002
+    to: G-003
+    via: cross_references
+  - from: G-003
+    to: G-002
+    via: cross_references
+  - from: I-002
+    to: F-007
+    via: cross_references
+  - from: F-007
+    to: I-002
+    via: cross_references
+  - from: I-004
+    to: F-001
+    via: cross_references
+  - from: F-001
+    to: I-004
+    via: cross_references
+  - from: I-004
+    to: F-002
+    via: cross_references
+  - from: F-002
+    to: I-004
+    via: cross_references
+  - from: I-004
+    to: F-003
+    via: cross_references
+  - from: F-003
+    to: I-004
+    via: cross_references
+  - from: I-004
+    to: F-004
+    via: cross_references
+  - from: F-004
+    to: I-004
+    via: cross_references
+  - from: I-004
+    to: I-002
+    via: cross_references
+  - from: I-002
+    to: I-004
+    via: cross_references

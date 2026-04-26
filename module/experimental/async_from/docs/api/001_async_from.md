@@ -33,5 +33,6 @@ Gated behind the `async_from` feature flag. Implementations require the implemen
 | test | `tests/additional_corner_cases_test.rs` | AsyncFrom corner cases (zero, max, negative, overflow, format parsing) |
 | doc | `docs/feature/001_infallible_async_conversion.md` | Feature scope and design rationale |
 | doc | `docs/api/002_async_into.md` | AsyncInto blanket derived from this trait |
+| doc | `docs/api/003_async_try_from.md` | Fallible async conversion counterpart |
 | doc | `docs/invariant/001_send_bounds.md` | Thread-safety constraint on blanket impl |
 | doc | `docs/pattern/001_std_mirror_pattern.md` | Std mirror design pattern |

@@ -35,5 +35,6 @@ Traits are additive — a struct may implement any combination of From1, From2, 
 | source | [`src/variadic.rs`](../../src/variadic.rs) | Trait definitions for From1, From2, From3 |
 | doc | [`docs/api/002_from_macro.md`](002_from_macro.md) | from! macro that dispatches to these traits |
 | doc | [`docs/algorithm/001_variadic_from_derive.md`](../algorithm/001_variadic_from_derive.md) | Derive algorithm generating FromN implementations |
+| doc | [`../../../variadic_from_meta/docs/api/001_variadic_from_derive.md`](../../../variadic_from_meta/docs/api/001_variadic_from_derive.md) | Derive macro API: accepted struct forms and generated impl contract |
 | doc | [`docs/feature/001_variadic_construction.md`](../feature/001_variadic_construction.md) | Feature hub for variadic construction |
 | test | [`tests/variadic_from_tests.rs`](../../tests/variadic_from_tests.rs) | FromN trait usage and derive tests |

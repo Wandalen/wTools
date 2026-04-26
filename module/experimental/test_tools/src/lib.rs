@@ -99,19 +99,6 @@
 //! - **Task 003 : ** Added this embedded documentation to prevent regressions
 //!
 
-// xxx: remove
-//! ```rust
-//! println!("-- doc test: printing Cargo feature environment variables --");
-//!  for (key, val) in std::env::vars()
-//!    {
-//!  if key.starts_with("CARGO_FEATURE_")
-//!    {
-//!         println!("{}={}", key, val);
-//! }
-//! }
-//! ```
-
-// xxx2: try to repurpose top-level lib.rs fiel for only top level features
 
 /// Namespace with dependencies.
 #[ allow( unused_imports ) ]

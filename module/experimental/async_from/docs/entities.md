@@ -1,15 +1,15 @@
 # Doc Entities
 
-### Master Doc Entities Table
+## Master Doc Entities Table
 
 | Type | Purpose | Master File | Instances |
 |------|---------|-------------|----------:|
-| `api/` | Documents each public trait's operations, bounds, and compatibility guarantees | [api/readme.md](api/readme.md) | 4 |
-| `feature/` | Defines feature scope, design rationale, and cross-references for user-facing capabilities | [feature/readme.md](feature/readme.md) | 2 |
-| `invariant/` | States correctness properties with enforcement mechanism and violation consequences | [invariant/readme.md](invariant/readme.md) | 2 |
+| `api/` | Documents each public trait's operations, error handling, and compatibility guarantees | [api/readme.md](api/readme.md) | 4 |
+| `feature/` | Defines feature scope, design rationale, and cross-references for each implemented feature | [feature/readme.md](feature/readme.md) | 2 |
+| `invariant/` | Document each invariant with a precise statement, enforcement mechanism, and consequences of violation | [invariant/readme.md](invariant/readme.md) | 2 |
 | `pattern/` | Defines the problem, solution, applicability, and consequences of each pattern applied in this crate's design | [pattern/readme.md](pattern/readme.md) | 1 |
 
-### Master Doc Instances Table
+## Master Doc Instances Table
 
 | Entity | ID | Name | File |
 |--------|-----|------|------|

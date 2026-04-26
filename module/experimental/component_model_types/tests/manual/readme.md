@@ -169,7 +169,7 @@ Manual testing procedures for component_model_types crate. Covers example execut
 
 ### Test Session: 2026-01-21
 
-**Tester**: Claude
+**Tester**: dev session
 **Environment**: Linux 6.8.0-90-generic, Rust 1.70+
 
 #### Procedure 1: Example Execution

@@ -13,11 +13,15 @@ Runtime type reflection system providing traits, descriptors, and utilities for 
 ```rust
 use reflect_tools::*;
 
-// Derive `From` and `InnerFrom` for custom types
-#[ derive( From, InnerFrom ) ]
-struct Wrapper( i32 );
-
-let w : Wrapper = 42.into();
+let value = vec![ 1i32, 2, 3 ];
+let entity = value.reflect();
+println!( "{}", entity.type_name() );    // "Vec"
+println!( "{}", entity.len() );          // 3
+println!( "{}", entity.is_container() ); // true
+for kv in entity.elements()
+{
+  println!( "{:?}", kv );
+}
 ```
 
 ### To add to your project

@@ -34,6 +34,9 @@ The async_trait macro adds a heap allocation per call by boxing the returned fut
 | Type | File | Responsibility |
 |------|------|----------------|
 | source | `src/lib.rs` | All four trait definitions implementing this pattern |
+| test | `tests/inc/basic_test.rs` | Validates all four async traits apply the std mirror pattern correctly |
+| doc | `docs/feature/001_infallible_async_conversion.md` | Infallible conversion feature applying this pattern |
+| doc | `docs/feature/002_fallible_async_conversion.md` | Fallible conversion feature applying this pattern |
 | doc | `docs/api/001_async_from.md` | AsyncFrom API |
 | doc | `docs/api/002_async_into.md` | AsyncInto blanket API |
 | doc | `docs/api/003_async_try_from.md` | AsyncTryFrom API |

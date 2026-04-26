@@ -2,10 +2,10 @@
 
 ### Scope
 
-**Purpose**: Locate project files and workspace resources via glob patterns relative to the workspace root.
-**Responsibility**: Expand a glob pattern anchored at the workspace root and return the set of matching absolute file paths.
-**In Scope**: Glob-pattern file discovery anchored at the workspace root (requires `glob` feature).
-**Out of Scope**: File content reading, directory creation, file watching, filtering by metadata (size, mtime), non-glob path searches.
+- **Purpose**: Locate project files and workspace resources via glob patterns relative to the workspace root.
+- **Responsibility**: Expand a glob pattern anchored at the workspace root and return the set of matching absolute file paths.
+- **In Scope**: Glob-pattern file discovery anchored at the workspace root (requires `glob` feature).
+- **Out of Scope**: File content reading, directory creation, file watching, filtering by metadata (size, mtime), non-glob path searches.
 
 ### Design
 
@@ -19,7 +19,8 @@ The feature's design is intentionally minimal — a single method with a single 
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| Source | `src/lib.rs` | Glob impl block, `find_resources()` |
-| Test | `tests/comprehensive_test_suite.rs` | Full coverage including glob patterns |
-| Test | `tests/feature_combination_tests.rs` | Feature flag combination correctness |
-| Doc | `docs/api/001_workspace.md` | `find_resources()` method signature |
+| source | `src/lib.rs` | Glob-based resource discovery impl |
+| config | `Cargo.toml` | `glob` feature flag and its optional dependency declaration |
+| test | `tests/comprehensive_test_suite.rs` | Full coverage including glob patterns |
+| test | `tests/feature_combination_tests.rs` | Feature flag combination correctness |
+| doc | `docs/api/001_workspace.md` | `find_resources()` method signature |

@@ -12,4 +12,4 @@
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
 | 001 | [Two-Trait Hierarchy](001_two_trait_hierarchy.md) | Why iterable and non-iterable are separate traits | ✅ |
-| 002 | [Canonical Interval Type](002_canonical_interval_type.md) | Why `Interval<T>` unifies all range representations | ✅ |
+| 002 | [Canonical Interval Type](002_canonical_interval_type.md) | Why the canonical type unifies all range representations | ✅ |

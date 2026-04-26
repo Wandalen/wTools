@@ -3,7 +3,7 @@
 ### Scope
 
 - **Purpose**: Collect navigational hubs linking all artifacts for each user-facing slice detection capability.
-- **Responsibility**: Index of feature doc instances for the is_slice crate.
+- **Responsibility**: Master index for all slice detection feature doc instances.
 - **In Scope**: User-facing capabilities of the is_slice crate.
 - **Out of Scope**: API contracts (→ api/), correctness invariants (→ invariant/), internal implementation.
 

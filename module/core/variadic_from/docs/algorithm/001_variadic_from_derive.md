@@ -39,6 +39,7 @@ Type identity for the convenience check uses textual comparison of the type repr
 | Type | File | Responsibility |
 |------|------|----------------|
 | source | [`../../../variadic_from_meta/src/lib.rs`](../../../variadic_from_meta/src/lib.rs) | Proc-macro implementation of the derive algorithm |
+| doc | [`../../../variadic_from_meta/docs/api/001_variadic_from_derive.md`](../../../variadic_from_meta/docs/api/001_variadic_from_derive.md) | API contract for the derive macro this algorithm implements |
 | doc | [`docs/api/001_from_n_traits.md`](../api/001_from_n_traits.md) | FromN traits that this algorithm generates implementations for |
 | doc | [`docs/invariant/001_field_count_boundary.md`](../invariant/001_field_count_boundary.md) | Field count boundary invariant enforced by phase 1 |
 | doc | [`docs/feature/001_variadic_construction.md`](../feature/001_variadic_construction.md) | Feature hub for variadic construction |

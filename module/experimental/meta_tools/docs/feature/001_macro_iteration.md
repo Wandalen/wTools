@@ -17,8 +17,8 @@ The feature is controlled by the `meta_for_each` flag. Disabling the flag remove
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| Source | `src/dependency.rs` | `for_each::*` re-export under `meta_for_each` feature |
-| Source | `src/exposed.rs` | Exposed namespace re-export |
-| Test | `tests/inc/mod.rs` | Cross-crate inclusion of `for_each` test suite |
-| Test | `tests/corner_cases_comprehensive.rs` | Edge cases: single element, unicode, mixed literals, nesting |
-| Doc | `docs/api/001_macros.md` | `for_each!` macro signature and usage |
+| source | `src/dependency.rs` | `for_each::*` re-export under `meta_for_each` feature |
+| source | `src/exposed.rs` | Exposed namespace re-export |
+| test | `tests/inc/mod.rs` | Cross-crate inclusion of `for_each` test suite |
+| test | `tests/corner_cases_comprehensive.rs` | Edge cases: single element, unicode, mixed literals, nesting |
+| doc | `docs/api/001_macros.md` | `for_each!` macro signature and usage |

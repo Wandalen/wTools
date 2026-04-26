@@ -15,7 +15,7 @@
 
 ### Design
 
-`Report` is unconditionally populated before the exit-code check. In `run()`, `command`, `current_path`, stdout, and stderr are stored into the report struct before the success/failure branch. The divergence happens only at the very end — after all fields are filled. This means `Err(report)` is never a partially-filled struct, so callers can apply identical display or logging logic regardless of branch.
+`Report` is unconditionally populated before the exit-code check. In `run()`, `command`, `current_path`, stdout, and stderr are stored into the report struct before the success/failure branch. The divergence happens only at the very end — after all fields are filled. This means the failure path never carries a partially-filled report, so callers can apply identical display or logging logic regardless of branch.
 
 The `Display` impl prefixes the command with `>` and the working directory with `@`, then indents stdout/stderr with two spaces (replacing `\n` with `\n  `). Whitespace-only output blocks are suppressed. This format is designed for inline subprocess tracing in CLI tool output.
 

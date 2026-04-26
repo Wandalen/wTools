@@ -27,13 +27,7 @@ all-features = false
 
 
 [features]
-default = [
-  "enabled",
-
-  "diagnostics_runtime_assertions",
-  "diagnostics_compiletime_assertions",
-  "diagnostics_memory_layout",
-]
+default = []
 full = [
   "enabled",
 

@@ -13,6 +13,8 @@ tests/
 ├── manual_corner_cases_test.rs       # Comprehensive corner case validation
 ├── additional_corner_cases_test.rs   # Readme examples and parsing edge cases
 ├── send_bounds_validation_test.rs    # Send bounds in multi-threaded runtime
+├── manual/                           # Manual testing plan (N/A for this crate)
+│   └── readme.md                     # Manual testing plan
 └── inc/                              # Test implementation modules
     ├── mod.rs                        # Module declarations
     └── basic_test.rs                 # Integration tests
@@ -48,6 +50,7 @@ Organizes all automated tests for async conversion traits (AsyncFrom, AsyncInto,
 | `manual_corner_cases_test.rs` | Comprehensive corner case validation (edge cases, boundaries, concurrency) |
 | `additional_corner_cases_test.rs` | Additional corner case validation (readme examples, parsing edge cases, format validation) |
 | `send_bounds_validation_test.rs` | Validate Send bounds in multi-threaded runtime |
+| `manual/readme.md` | Manual testing plan (not applicable for this trait-only crate) |
 | `inc/mod.rs` | Test module declarations |
 | `inc/basic_test.rs` | Integration tests for async conversion traits |
 

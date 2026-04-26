@@ -27,6 +27,7 @@ For structs where all fields share the same type, a convenience From1 is generat
 | doc | [`docs/api/001_from_n_traits.md`](../api/001_from_n_traits.md) | FromN trait API specification |
 | doc | [`docs/api/002_from_macro.md`](../api/002_from_macro.md) | from! macro API specification |
 | doc | [`docs/algorithm/001_variadic_from_derive.md`](../algorithm/001_variadic_from_derive.md) | Derive algorithm generating FromN impls |
+| doc | [`../../../variadic_from_meta/docs/api/001_variadic_from_derive.md`](../../../variadic_from_meta/docs/api/001_variadic_from_derive.md) | Derive macro API: accepted struct forms and generated impl contract |
 | doc | [`docs/invariant/001_field_count_boundary.md`](../invariant/001_field_count_boundary.md) | Field count boundary: 0 or >3 fields generate no code |
 | doc | [`docs/invariant/002_compile_time_arg_count.md`](../invariant/002_compile_time_arg_count.md) | Argument count: >3 args produce compile error |
 | test | [`tests/variadic_from_tests.rs`](../../tests/variadic_from_tests.rs) | Comprehensive derive and trait tests |

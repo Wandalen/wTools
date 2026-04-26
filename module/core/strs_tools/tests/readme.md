@@ -7,10 +7,10 @@ Comprehensive test suite for the strs_tools core crate.
 | File | Responsibility |
 |------|----------------|
 | ansi_truncate_tests.rs | ANSI truncation with boundary detection tests |
-| compile_time_pattern_optimization_test.rs | Compile-time pattern optimization macro verification |
 | debug_hang_split_issue.rs | Debugging tests for split hang issues |
 | debug_split_issue.rs | Debugging tests for split functionality issues |
 | issue_001_mre.rs | Minimal reproducible example for escaped quotes bug (ISSUE-001) |
+| issue_002_example_feature_guards.rs | Feature guard correctness for the `enabled` feature |
 | namespace_verification_test.rs | Namespace pattern verification tests |
 | parser_integration_comprehensive_test.rs | Comprehensive parser integration functionality tests |
 | smoke_test.rs | Basic package smoke tests |

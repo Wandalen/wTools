@@ -15,7 +15,7 @@
 
 | Symbol | Kind | Notes |
 |--------|------|-------|
-| `is_cicd()` | free fn | `#[must_use]`; requires `process_environment_is_cicd` feature |
+| `is_cicd()` | free fn | must-use; requires `process_environment_is_cicd` feature |
 
 **Detection table** — variables checked, in order:
 
@@ -28,19 +28,19 @@
 | `CIRCLECI` | CircleCI |
 | `JENKINS_URL` | Jenkins |
 
-Detection is presence-based: `std::env::var(var).is_ok()`. Variable value is irrelevant — `CI=0` and `CI=true` both return `true`.
+Detection is presence-based — only variable existence is checked, not its value. `CI=0` and `CI=true` are both detected as CI.
 
 ### Error Handling
 
-`is_cicd()` is infallible and returns only `bool`. No `Result`, no panics, no I/O, no filesystem access.
+`is_cicd()` is infallible and returns a boolean. It never fails, panics, does I/O, or accesses the filesystem.
 
 ### Compatibility Guarantees
 
-- **Platform:** all targets — no `#[cfg(unix)]` restriction.
+- **Platform:** all targets — no Unix-only restriction.
 - **Feature gate:** `process_environment_is_cicd`, included in both `default` and `full`. To opt out: `default-features = false` and omit this feature from the explicit list.
 - **Detection order:** variables are checked in the order listed above; first match returns `true`. Order is stable.
 - **Presence semantics:** only variable existence is checked, not value. This matches the convention of all major CI systems.
-- **`#[must_use]`:** unused return value is a compile-time warning.
+- **Must-use:** unused return value is a compile-time warning.
 - **Stability:** stable since 0.5.0.
 
 ### Example

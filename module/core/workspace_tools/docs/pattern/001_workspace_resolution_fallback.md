@@ -2,10 +2,10 @@
 
 ### Scope
 
-**Purpose**: Enable a library or tool to locate a workspace root reliably across all execution environments without requiring explicit configuration in each context.
-**Responsibility**: Define an ordered sequence of resolution strategies where each strategy targets one execution context; the first to succeed provides the workspace root.
-**In Scope**: Strategy ordering, per-strategy trigger conditions, named-constructor exposure of individual strategies, path deduplication via canonicalization.
-**Out of Scope**: Application-level path routing, git operations, build system integration, multi-workspace topologies.
+- **Purpose**: Enable a library or tool to locate a workspace root reliably across all execution environments without requiring explicit configuration in each context.
+- **Responsibility**: Define an ordered sequence of resolution strategies where each strategy targets one execution context; the first to succeed provides the workspace root.
+- **In Scope**: Strategy ordering, per-strategy trigger conditions, named-constructor exposure of individual strategies, path deduplication via canonicalization.
+- **Out of Scope**: Application-level path routing, git operations, build system integration, multi-workspace topologies.
 
 ### Problem
 
@@ -56,10 +56,10 @@ Do not apply when:
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| Source | `src/lib.rs` | `resolve()`, `resolve_with_extended_fallbacks()`, all `from_*()` methods |
-| Test | `tests/workspace_tests.rs` | Resolution strategy correctness |
-| Test | `tests/task_022_installed_app_resolution.rs` | Installed-app resolution (strategies 4–6) |
-| Test | `tests/test_fallback_integration.rs` | Fallback chain integration |
-| Task | `task/completed/023_extend_workspace_resolution_for_installed_applications.md` | Added strategies 4–6 |
-| Doc | `docs/feature/001_workspace_root_resolution.md` | Feature scope and usage |
-| Doc | `docs/api/001_workspace.md` | Named constructor signatures |
+| source | `src/lib.rs` | `resolve()`, `resolve_with_extended_fallbacks()`, all `from_*()` methods |
+| test | `tests/workspace_tests.rs` | Resolution strategy correctness |
+| test | `tests/task_022_installed_app_resolution.rs` | Installed-app resolution (strategies 4–6) |
+| test | `tests/test_fallback_integration.rs` | Fallback chain integration |
+| task | `task/completed/023_extend_workspace_resolution_for_installed_applications.md` | Added strategies 4–6 |
+| doc | `docs/feature/001_workspace_root_resolution.md` | Feature scope and usage |
+| doc | `docs/api/001_workspace.md` | Named constructor signatures |

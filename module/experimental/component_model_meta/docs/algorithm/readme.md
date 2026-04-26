@@ -11,4 +11,5 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | [Popular Type Generation](001_popular_type_generation.md) | String-matching algorithm for generating Assign impls for standard library types | ✅ |
+| 001 | [Popular Type Generation](001_popular_type_generation.md) | String-matching approach to generate Assign impls for standard library types | ✅ |
+| 002 | [Type Deduplication](002_type_deduplication.md) | HashSet-based dedup preventing conflicting impl errors for same-type fields | ✅ |

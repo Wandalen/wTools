@@ -7,12 +7,6 @@
 - **In Scope**: a_dbg_true, a_dbg_false, a_dbg_id, a_dbg_not_id behavior under release compilation.
 - **Out of Scope**: Always-active assertion macros (a_true, a_false, a_id, a_not_id) — those run unconditionally.
 
-### Cross-References
-
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | [feature/001_runtime_assertions.md](../feature/001_runtime_assertions.md) | Runtime assertions feature subject to this invariant |
-
 ### Invariant Statement
 
 All a_dbg_* macros expand conditionally on cfg(debug_assertions). In release builds (where debug_assertions is not set), the expansion is a no-op — no code is generated and no runtime cost is incurred.
@@ -25,3 +19,11 @@ All a_dbg_* macros expand conditionally on cfg(debug_assertions). In release bui
 ### Violation Consequences
 
 Any change that causes a_dbg_* macros to execute in release builds would silently impose pretty_assertions overhead on release binaries and defeat the purpose of having debug-only variants.
+
+### Cross-References
+
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | [feature/001_runtime_assertions.md](../feature/001_runtime_assertions.md) | Runtime assertions feature subject to this invariant |
+| source | [src/diag/rta.rs](../../src/diag/rta.rs) | a_dbg_* macro implementations that enforce this invariant |
+| test | [tests/inc/rta_test.rs](../../tests/inc/rta_test.rs) | Tests exercising debug-variant no-op behavior |

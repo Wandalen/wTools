@@ -12,4 +12,5 @@
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
 | 001 | [Value Not Consumed](001_value_not_consumed.md) | The inspected expression is never moved or dropped by the macro | ✅ |
-| 002 | [Zero Runtime Dependencies](002_zero_runtime_dependencies.md) | No transitive runtime deps introduced into caller projects | ✅ |
+| 002 | [Zero Runtime Dependencies](002_zero_runtime_dependencies.md) | No transitive runtime deps introduced into caller projects      | ✅ |
+| 003 | [Fn Trait Limitation](003_fn_trait_limitation.md)             | Callable trait check on named function items yields compile error | ✅ |

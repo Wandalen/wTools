@@ -11,4 +11,5 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | [Orphan Rule Constraint](001_orphan_rule.md) | Standard library types cannot be given Assign impls in this crate | ✅ |
+| 001 | [Orphan Rule Constraint](001_orphan_rule.md) | Standard library types cannot be given Assign implementations in this crate | ✅ |
+| 002 | [Types Crate Pattern](002_types_crate_pattern.md) | This crate must not depend on runtime or macro crates to prevent cycles | ✅ |

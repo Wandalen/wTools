@@ -25,14 +25,7 @@ features = [ "full" ]
 all-features = false
 
 [features]
-default = [
-  "enabled",
-
-  "meta_for_each",
-  "meta_impls_index",
-  "mod_interface",
-  "meta_idents_concat",
-]
+default = []
 full = [
   "enabled",
 

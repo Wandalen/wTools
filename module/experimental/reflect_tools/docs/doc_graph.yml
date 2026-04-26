@@ -1,0 +1,130 @@
+meta:
+  description: Cross-reference graph for all doc instances in reflect_tools
+  node_count: 8
+  edge_count: 21
+  component_count: 1
+  generated: 2026_04_26
+
+nodes:
+  - id: feature/001
+    file: feature/001_entity_reflection.md
+    label: Entity Reflection
+    entity: feature
+  - id: feature/002
+    file: feature/002_fields_iteration.md
+    label: Fields Iteration
+    entity: feature
+  - id: api/001
+    file: api/001_reflection_api.md
+    label: Reflection API
+    entity: api
+  - id: api/002
+    file: api/002_fields_api.md
+    label: Fields API
+    entity: api
+  - id: invariant/001
+    file: invariant/001_container_ordering.md
+    label: Container Ordering
+    entity: invariant
+  - id: invariant/002
+    file: invariant/002_element_iteration_contract.md
+    label: Element Iteration Contract
+    entity: invariant
+  - id: data_structure/001
+    file: data_structure/001_optional_cow.md
+    label: OptionalCow
+    entity: data_structure
+  - id: data_structure/002
+    file: data_structure/002_primitive.md
+    label: Primitive
+    entity: data_structure
+
+edges:
+  # feature/001 → 5 targets
+  - from: feature/001
+    to: api/001
+    via: cross_references
+  - from: feature/001
+    to: invariant/001
+    via: cross_references
+  - from: feature/001
+    to: invariant/002
+    via: cross_references
+  - from: feature/001
+    to: data_structure/002
+    via: cross_references
+  - from: feature/001
+    to: feature/002
+    via: cross_references
+  # feature/002 → 2 targets
+  - from: feature/002
+    to: api/002
+    via: cross_references
+  - from: feature/002
+    to: data_structure/001
+    via: cross_references
+  # api/001 → 4 targets
+  - from: api/001
+    to: feature/001
+    via: cross_references
+  - from: api/001
+    to: invariant/001
+    via: cross_references
+  - from: api/001
+    to: invariant/002
+    via: cross_references
+  - from: api/001
+    to: data_structure/002
+    via: cross_references
+  # api/002 → 2 targets
+  - from: api/002
+    to: feature/002
+    via: cross_references
+  - from: api/002
+    to: data_structure/001
+    via: cross_references
+  # invariant/001 → 2 targets
+  - from: invariant/001
+    to: api/001
+    via: cross_references
+  - from: invariant/001
+    to: feature/001
+    via: cross_references
+  # invariant/002 → 2 targets
+  - from: invariant/002
+    to: api/001
+    via: cross_references
+  - from: invariant/002
+    to: feature/001
+    via: cross_references
+  # data_structure/001 → 2 targets
+  - from: data_structure/001
+    to: api/002
+    via: cross_references
+  - from: data_structure/001
+    to: feature/002
+    via: cross_references
+  # data_structure/002 → 2 targets
+  - from: data_structure/002
+    to: api/001
+    via: cross_references
+  - from: data_structure/002
+    to: feature/001
+    via: cross_references
+
+components:
+  - id: 1
+    label: Full reflection documentation corpus
+    size: 8
+    isolated: false
+    nodes:
+      - feature/001
+      - feature/002
+      - api/001
+      - api/002
+      - invariant/001
+      - invariant/002
+      - data_structure/001
+      - data_structure/002
+
+dangling_refs: []

@@ -1,7 +1,7 @@
 meta:
   description: Cross-reference graph for all doc instances in is_slice
   node_count: 4
-  edge_count: 8
+  edge_count: 10
   component_count: 1
   generated: 2026_04_26
 
@@ -34,7 +34,9 @@ edges:
   - { from: api/001,       to: invariant/001, via: cross_references }
   - { from: api/001,       to: invariant/002, via: cross_references }
   - { from: invariant/001, to: feature/001,   via: cross_references }
+  - { from: invariant/001, to: api/001,       via: cross_references }
   - { from: invariant/002, to: feature/001,   via: cross_references }
+  - { from: invariant/002, to: api/001,       via: cross_references }
 
 components:
   - id: 1

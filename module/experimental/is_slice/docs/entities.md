@@ -4,9 +4,9 @@
 
 | Type | Purpose | Master File | Instances |
 |------|---------|-------------|----------:|
-| `api/` | Documents public macro APIs — operations, error handling, compatibility | [api/readme.md](api/readme.md) | 1 |
-| `feature/` | Navigational hubs linking all artifacts for user-facing features | [feature/readme.md](feature/readme.md) | 1 |
-| `invariant/` | Documents correctness properties the crate must maintain | [invariant/readme.md](invariant/readme.md) | 2 |
+| `api/` | Master index for all is_slice macro API doc instances. | [api/readme.md](api/readme.md) | 1 |
+| `feature/` | Master index for all slice detection feature doc instances. | [feature/readme.md](feature/readme.md) | 1 |
+| `invariant/` | Master index for all is_slice correctness invariant doc instances. | [invariant/readme.md](invariant/readme.md) | 2 |
 
 ## Master Doc Instances Table
 

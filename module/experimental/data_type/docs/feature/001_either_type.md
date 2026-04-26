@@ -9,9 +9,14 @@
 
 ### Cross-References
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | [invariant/001_pure_aggregator.md](../invariant/001_pure_aggregator.md) | All exposed items are pass-throughs from upstream crates |
+| Type   | File | Responsibility |
+|--------|------|----------------|
+| source | [`src/dt.rs`](../../src/dt.rs) | dt_either exposed re-export — Either type pass-through |
+| config | [`Cargo.toml`](../../Cargo.toml) | dt_either feature flag declaration |
+| test   | [`tests/smoke_test.rs`](../../tests/smoke_test.rs) | Smoke test — Either accessibility under dt_either feature |
+| test   | [`tests/inc/either_test.rs`](../../tests/inc/either_test.rs) | Either Left/Right construction and flip method tests |
+| doc    | [invariant/001_pure_aggregator.md](../invariant/001_pure_aggregator.md) | All exposed items are pass-throughs from upstream crates |
+| doc    | [api/001_namespace_chain.md](../api/001_namespace_chain.md) | Public namespace that exposes this feature's items |
 
 ### Design
 

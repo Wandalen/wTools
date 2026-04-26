@@ -9,9 +9,14 @@
 
 ### Cross-References
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | [invariant/001_pure_aggregator.md](../invariant/001_pure_aggregator.md) | All exposed items are pass-throughs from upstream crates |
+| Type   | File | Responsibility |
+|--------|------|----------------|
+| source | [`src/dt.rs`](../../src/dt.rs) | dt_interval exposed and prelude re-export — interval_adapter delegation |
+| config | [`Cargo.toml`](../../Cargo.toml) | dt_interval feature flag declaration |
+| test   | [`tests/smoke_test.rs`](../../tests/smoke_test.rs) | Smoke test — crate compilation with all features |
+| test   | [`tests/inc/mod.rs`](../../tests/inc/mod.rs) | Test module — includes interval_adapter suite under dt_interval feature |
+| doc    | [invariant/001_pure_aggregator.md](../invariant/001_pure_aggregator.md) | All exposed items are pass-throughs from upstream crates |
+| doc    | [api/001_namespace_chain.md](../api/001_namespace_chain.md) | Public namespace that exposes this feature's items |
 
 ### Design
 

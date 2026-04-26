@@ -2,10 +2,10 @@
 
 ### Scope
 
-**Purpose**: Load typed configuration from TOML, JSON, and YAML files located relative to the workspace root using serde deserialization.
-**Responsibility**: Detect file format by extension, deserialize file content into caller-defined structs, and support layered merging where later files override earlier ones.
-**In Scope**: Typed configuration loading, format detection, layered merge, priority search, and writing configuration to disk (all require `serde` feature).
-**Out of Scope**: Schema validation (see `feature/005_configuration_validation.md`), config file watching or hot-reload, remote configuration sources, encryption of config values.
+- **Purpose**: Load typed configuration from TOML, JSON, and YAML files located relative to the workspace root using serde deserialization.
+- **Responsibility**: Detect file format by extension, deserialize file content into caller-defined structs, and support layered merging where later files override earlier ones.
+- **In Scope**: Typed configuration loading, format detection, layered merge, priority search, and writing configuration to disk (all require `serde` feature).
+- **Out of Scope**: Schema validation (see `feature/005_configuration_validation.md`), config file watching or hot-reload, remote configuration sources, encryption of config values.
 
 ### Design
 
@@ -21,10 +21,11 @@ Typed configuration can be serialized back to TOML and written to a workspace-re
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| Source | `src/lib.rs` | Serde impl block, `ConfigMerge`, `WorkspaceDeserializer` |
-| Test | `tests/serde_integration_tests.rs` | Integration with serde for configuration deserialization |
-| Test | `tests/comprehensive_test_suite.rs` | Full coverage matrix including config loading |
-| Test | `tests/feature_combination_tests.rs` | Feature flag combination correctness |
-| Task | `task/completed/005_serde_integration.md` | Initial serde configuration loading implementation |
-| Doc | `docs/api/001_workspace.md` | Configuration loading method signatures |
-| Doc | `docs/feature/005_configuration_validation.md` | Schema validation on top of config loading |
+| source | `src/lib.rs` | Config loading, merging, and format detection impl |
+| config | `Cargo.toml` | `serde` feature flag and its optional dependency declarations |
+| test | `tests/serde_integration_tests.rs` | Integration with serde for configuration deserialization |
+| test | `tests/comprehensive_test_suite.rs` | Full coverage matrix including config loading |
+| test | `tests/feature_combination_tests.rs` | Feature flag combination correctness |
+| task | `task/completed/005_serde_integration.md` | Initial serde configuration loading implementation |
+| doc | `docs/api/001_workspace.md` | Configuration loading method signatures |
+| doc | `docs/feature/005_configuration_validation.md` | Schema validation on top of config loading |

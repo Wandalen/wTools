@@ -30,11 +30,12 @@ tests/
     │   ├── fields_llist.rs            # Fields for LinkedList
     │   ├── fields_test.rs             # Fields general tests
     │   └── fields_vec.rs              # Fields for Vec
-    └── group1/                         # Reflection tests (15 files + subdir)
+    └── group1/                         # Reflection tests (12 files + subdir)
         ├── array_test.rs              # Array reflection
         ├── common_test.rs             # Comprehensive primitive reflection
         ├── hashmap_test.rs            # HashMap reflection
         ├── hashset_test.rs            # HashSet reflection
+        ├── is_ordered_test.rs         # Container ordering invariant
         ├── newtype_experiment.rs      # Newtype pattern experiments
         ├── primitive_test.rs          # Primitive data wrapper
         ├── slice_test.rs              # Slice reflection
@@ -51,14 +52,16 @@ tests/
 
 ## Domain Map
 
-| Domain | Scope | Test Files |
-|--------|-------|------------|
+| Domain | Description | Test Files |
+|--------|-------------|------------|
 | **Fields Trait** | `Fields` trait implementation for standard collections | `fundamental/fields_*.rs` (8 files) |
 | **Primitive Reflection** | Reflection on integers, floats, references | `group1/common_test.rs`, `group1/primitive_test.rs` |
 | **Collection Reflection** | Reflection on Vec, HashMap, HashSet, arrays, slices | `group1/vec_test.rs`, `group1/array_test.rs`, `group1/slice_test.rs`, `group1/hashmap_test.rs`, `group1/hashset_test.rs` |
+| **Container Ordering** | is_ordered() correctness for container types | `group1/is_ordered_test.rs` |
 | **Struct Reflection** | Reflection on structs (plain, nested, with lifetimes) | `group1/struct_*.rs` (3 manual test files) + `group1/only_test/reflect_struct*.rs` (3 compile tests) |
 | **Newtype Experiments** | Experimental newtype pattern support | `group1/newtype_experiment.rs` |
 | **Integration** | Smoke tests for local and published crate | `smoke_test.rs` |
+| **Test Entry** | Main test module aggregator | `tests.rs` |
 
 ## Scope
 

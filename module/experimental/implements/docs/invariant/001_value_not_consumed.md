@@ -13,7 +13,7 @@ For all expressions passed to `implements` or `instance_of`: the macro takes a s
 
 ### Enforcement Mechanism
 
-The internal mechanism constructs a `PhantomData` value by calling a helper function that accepts a shared reference — not the value itself. The `PhantomData` is a zero-sized type that carries no data and is immediately discarded after method resolution. The original expression is therefore not touched beyond the initial borrow, which ends within the macro expansion. The Rust borrow checker enforces that the temporary borrow is well-formed and does not outlive the expression.
+The internal mechanism constructs a phantom type value by calling a helper function that accepts a shared reference — not the value itself. The phantom type is a zero-sized marker that carries no data and is immediately discarded after method resolution. The original expression is therefore not touched beyond the initial borrow, which ends within the macro expansion. The Rust borrow checker enforces that the temporary borrow is well-formed and does not outlive the expression.
 
 ### Violation Consequences
 

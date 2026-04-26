@@ -9,9 +9,14 @@
 
 ### Cross-References
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | [invariant/001_pure_aggregator.md](../invariant/001_pure_aggregator.md) | All exposed items are pass-throughs from upstream crates |
+| Type   | File | Responsibility |
+|--------|------|----------------|
+| source | [`src/dt.rs`](../../src/dt.rs) | dt_collection exposed and prelude re-export — collection_tools delegation |
+| config | [`Cargo.toml`](../../Cargo.toml) | dt_collection feature flag — enables types and collection_constructors |
+| test   | [`tests/smoke_test.rs`](../../tests/smoke_test.rs) | Smoke test — crate compilation with all features |
+| test   | [`tests/collection_macros_feature_test.rs`](../../tests/collection_macros_feature_test.rs) | hmap!/hset!/bmap!/bset! availability under dt_collection feature |
+| doc    | [invariant/001_pure_aggregator.md](../invariant/001_pure_aggregator.md) | All exposed items are pass-throughs from upstream crates |
+| doc    | [api/001_namespace_chain.md](../api/001_namespace_chain.md) | Public namespace that exposes this feature's items |
 
 ### Design
 

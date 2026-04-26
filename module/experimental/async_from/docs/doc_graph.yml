@@ -1,141 +1,196 @@
+meta:
+  description: Cross-reference graph of all doc instances in async_from
+  node_count: 9
+  edge_count: 44
+  component_count: 1
+  generated: 2026_04_26
+
 nodes:
   - id: feature/001
     file: feature/001_infallible_async_conversion.md
-    title: "Feature: Infallible Async Conversion"
+    label: "Infallible Async Conversion"
+    entity: feature
   - id: feature/002
     file: feature/002_fallible_async_conversion.md
-    title: "Feature: Fallible Async Conversion"
+    label: "Fallible Async Conversion"
+    entity: feature
   - id: api/001
     file: api/001_async_from.md
-    title: "API: AsyncFrom"
+    label: "AsyncFrom"
+    entity: api
   - id: api/002
     file: api/002_async_into.md
-    title: "API: AsyncInto"
+    label: "AsyncInto"
+    entity: api
   - id: api/003
     file: api/003_async_try_from.md
-    title: "API: AsyncTryFrom"
+    label: "AsyncTryFrom"
+    entity: api
   - id: api/004
     file: api/004_async_try_into.md
-    title: "API: AsyncTryInto"
+    label: "AsyncTryInto"
+    entity: api
   - id: invariant/001
     file: invariant/001_send_bounds.md
-    title: "Invariant: Send Bounds on Async Conversions"
+    label: "Send Bounds on Async Conversions"
+    entity: invariant
   - id: invariant/002
     file: invariant/002_blanket_impl_chain.md
-    title: "Invariant: Blanket Impl Non-Conflict"
+    label: "Blanket Impl Non-Conflict"
+    entity: invariant
   - id: pattern/001
     file: pattern/001_std_mirror_pattern.md
-    title: "Pattern: Std Mirror Pattern"
+    label: "Std Mirror Pattern"
+    entity: pattern
 
 edges:
-  # feature/001 outgoing
+  # feature/001 outgoing (5)
+  - from: feature/001
+    to: feature/002
+    via: cross_references
   - from: feature/001
     to: api/001
-    via: cross_referencess AsyncFrom API
+    via: cross_references
   - from: feature/001
     to: api/002
-    via: cross_referencess AsyncInto API
+    via: cross_references
   - from: feature/001
     to: invariant/001
-    via: cross_referencess Send bounds invariant
+    via: cross_references
   - from: feature/001
     to: pattern/001
-    via: cross_referencess std mirror pattern
-  # feature/002 outgoing
+    via: cross_references
+  # feature/002 outgoing (5)
+  - from: feature/002
+    to: feature/001
+    via: cross_references
   - from: feature/002
     to: api/003
-    via: cross_referencess AsyncTryFrom API
+    via: cross_references
   - from: feature/002
     to: api/004
-    via: cross_referencess AsyncTryInto API
+    via: cross_references
   - from: feature/002
     to: invariant/001
-    via: cross_referencess Send bounds invariant
+    via: cross_references
   - from: feature/002
     to: pattern/001
-    via: cross_referencess std mirror pattern
-  # api/001 outgoing
+    via: cross_references
+  # api/001 outgoing (5)
   - from: api/001
     to: feature/001
-    via: cross_referencess infallible feature
+    via: cross_references
   - from: api/001
     to: api/002
-    via: cross_referencess AsyncInto blanket
+    via: cross_references
+  - from: api/001
+    to: api/003
+    via: cross_references
   - from: api/001
     to: invariant/001
-    label: governed by Send bounds invariant
+    via: cross_references
   - from: api/001
     to: pattern/001
-    label: implements std mirror pattern
-  # api/002 outgoing
+    via: cross_references
+  # api/002 outgoing (5)
   - from: api/002
     to: api/001
-    label: blanket impl derived from AsyncFrom
+    via: cross_references
   - from: api/002
     to: feature/001
-    via: cross_referencess infallible feature
+    via: cross_references
   - from: api/002
     to: invariant/001
-    label: enforces Send bounds
+    via: cross_references
   - from: api/002
     to: invariant/002
-    label: subject to blanket non-conflict
-  # api/003 outgoing
+    via: cross_references
+  - from: api/002
+    to: pattern/001
+    via: cross_references
+  # api/003 outgoing (5)
+  - from: api/003
+    to: api/001
+    via: cross_references
   - from: api/003
     to: feature/002
-    via: cross_referencess fallible feature
+    via: cross_references
   - from: api/003
     to: api/004
-    via: cross_referencess AsyncTryInto blanket
+    via: cross_references
   - from: api/003
     to: invariant/001
-    label: governed by Send bounds invariant
+    via: cross_references
   - from: api/003
     to: pattern/001
-    label: implements std mirror pattern
-  # api/004 outgoing
+    via: cross_references
+  # api/004 outgoing (5)
   - from: api/004
     to: api/003
-    label: blanket impl derived from AsyncTryFrom
+    via: cross_references
   - from: api/004
     to: feature/002
-    via: cross_referencess fallible feature
+    via: cross_references
   - from: api/004
     to: invariant/001
-    label: enforces Send bounds
+    via: cross_references
   - from: api/004
     to: invariant/002
-    label: subject to blanket non-conflict
-  # invariant/001 outgoing
+    via: cross_references
+  - from: api/004
+    to: pattern/001
+    via: cross_references
+  # invariant/001 outgoing (6)
+  - from: invariant/001
+    to: api/001
+    via: cross_references
   - from: invariant/001
     to: api/002
-    via: cross_referencess AsyncInto blanket impl
+    via: cross_references
+  - from: invariant/001
+    to: api/003
+    via: cross_references
   - from: invariant/001
     to: api/004
-    via: cross_referencess AsyncTryInto blanket impl
-  # invariant/002 outgoing
+    via: cross_references
+  - from: invariant/001
+    to: feature/001
+    via: cross_references
+  - from: invariant/001
+    to: feature/002
+    via: cross_references
+  # invariant/002 outgoing (2)
   - from: invariant/002
     to: api/002
-    via: cross_referencess AsyncInto blanket impl
+    via: cross_references
   - from: invariant/002
     to: api/004
-    via: cross_referencess AsyncTryInto blanket impl
-  # pattern/001 outgoing
+    via: cross_references
+  # pattern/001 outgoing (6)
   - from: pattern/001
     to: api/001
-    via: cross_referencess AsyncFrom API
+    via: cross_references
   - from: pattern/001
     to: api/002
-    via: cross_referencess AsyncInto API
+    via: cross_references
   - from: pattern/001
     to: api/003
-    via: cross_referencess AsyncTryFrom API
+    via: cross_references
   - from: pattern/001
     to: api/004
-    via: cross_referencess AsyncTryInto API
+    via: cross_references
+  - from: pattern/001
+    to: feature/001
+    via: cross_references
+  - from: pattern/001
+    to: feature/002
+    via: cross_references
 
 components:
-  - id: main
+  - id: 1
+    label: All async_from doc instances
+    size: 9
+    isolated: false
     nodes:
       - feature/001
       - feature/002
@@ -146,6 +201,5 @@ components:
       - invariant/001
       - invariant/002
       - pattern/001
-    description: All doc instances form a single connected component
 
 dangling_refs: []

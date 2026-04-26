@@ -2,14 +2,14 @@
 
 ### Scope
 
-**Purpose**: Expose a workspace root handle and resolution utilities as the sole public interface of `workspace_tools`.
-**Responsibility**: Define the `Workspace` struct, the `workspace()` free function, and all feature-gated method groups for path operations, configuration loading, secret management, resource discovery, and validation.
-**In Scope**: `Workspace` struct, `workspace()` free function, all `impl Workspace` method groups, `WorkspaceError` enum, `Result<T>` alias, `SecretInjectable` trait, `AsSecure` trait, `testing` module.
-**Out of Scope**: Internal helpers (`cleanup_path`, `detect_format`, `parse_content`), serde trait implementations, derive macro internals.
+- **Purpose**: Expose a workspace root handle and resolution utilities as the sole public interface of `workspace_tools`.
+- **Responsibility**: Define the workspace root handle type, the auto-detect entry-point function, and all feature-gated method groups for path operations, configuration loading, secret management, resource discovery, and validation.
+- **In Scope**: The workspace root handle type and its constructor functions, all feature-gated method groups, the error type and all its variants, the secret-injection and type-conversion traits, and the testing utility module.
+- **Out of Scope**: Internal helper functions, serde trait implementations, derive macro internals.
 
 ### Abstract
 
-`workspace_tools` exposes a single library root with no public sub-modules except the `testing` feature. The central type is `Workspace` — a cloneable, hashable struct wrapping one normalized absolute path (the workspace root).
+`workspace_tools` exposes a single library root with no public sub-modules except the `testing` feature. The central type is a cloneable, hashable handle wrapping one normalized absolute path (the workspace root).
 
 The API is feature-gated in layers: the core path API is always available; `serde`, `secrets`, `secure`, `glob`, and `validation` each add method groups. Enabling `secure` automatically enables `secrets`; enabling `validation` automatically enables `serde`. The `full` feature enables everything.
 
@@ -89,9 +89,9 @@ The API is feature-gated in layers: the core path API is always available; `serd
 
 #### Memory-Safe Secrets (`secure` feature, implies `secrets`)
 
-`Workspace::load_secrets_secure(file)` — loads secrets wrapped in `SecretString`; value requires explicit exposure call to read; memory is zeroed on drop.
+`Workspace::load_secrets_secure(file)` — loads secrets as memory-safe handles that require explicit exposure to read; memory is zeroed on drop.
 
-`Workspace::load_secret_key_secure(key, file)` — loads a single secret as `SecretString`.
+`Workspace::load_secret_key_secure(key, file)` — loads a single secret as a memory-safe handle.
 
 `Workspace::validate_secret(secret)` — checks a secret string against minimum strength requirements.
 
@@ -113,11 +113,11 @@ The API is feature-gated in layers: the core path API is always available; `serd
 
 #### Testing Utilities (`testing` feature)
 
-`testing::create_test_workspace_with_structure()` — creates a temporary directory-backed workspace with all standard sub-directories pre-populated; returns a `(TempDir, Workspace)` pair; dropping `TempDir` removes the directory.
+`testing::create_test_workspace_with_structure()` — creates a temporary directory-backed workspace with all standard sub-directories pre-populated; returns a temporary directory handle paired with a workspace rooted inside it; releasing the handle removes the entire directory tree.
 
 ### Error Handling
 
-All fallible operations return `Result<T>` where the error type is `WorkspaceError`. `WorkspaceError` is non-exhaustive — match arms must include a catch-all branch to remain compatible with future additions.
+All fallible operations return a result wrapping the crate's non-exhaustive error type. New error variants may be added in minor releases; match arms must include a catch-all branch to remain compatible with future additions.
 
 Error categories:
 
@@ -138,23 +138,24 @@ Display messages include actionable context: the offending path, key name, or er
 
 ### Compatibility Guarantees
 
-The public API follows semantic versioning. `WorkspaceError` is non-exhaustive — new variants may be added in minor releases without a major version bump. Feature flags are strictly additive — enabling additional features never removes or changes existing methods. Methods present without any feature gate are stable across all minor releases.
+The public API follows semantic versioning. The error type is non-exhaustive — new variants may be added in minor releases without a major version bump. Feature flags are strictly additive — enabling additional features never removes or changes existing methods. Methods present without any feature gate are stable across all minor releases.
 
 ### Cross-References
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| Source | `src/lib.rs` | Entire public API implementation |
-| Test | `tests/workspace_tests.rs` | Core creation and path methods |
-| Test | `tests/error_handling_comprehensive_tests.rs` | WorkspaceError variants and Display |
-| Test | `tests/serde_integration_tests.rs` | Configuration loading methods |
-| Test | `tests/secrecy_integration_tests.rs` | Memory-safe secret methods |
-| Test | `tests/comprehensive_test_suite.rs` | Full API coverage matrix |
-| Test | `tests/backward_compatibility_validation.rs` | API stability across versions |
-| Doc | `docs/feature/001_workspace_root_resolution.md` | Root resolution feature scope |
-| Doc | `docs/feature/002_configuration_loading.md` | Configuration loading feature scope |
-| Doc | `docs/feature/003_secret_management.md` | Secret management feature scope |
-| Doc | `docs/feature/004_resource_discovery.md` | Resource discovery feature scope |
-| Doc | `docs/feature/005_configuration_validation.md` | Configuration validation feature scope |
-| Doc | `docs/feature/006_testing_support.md` | Testing support feature scope |
-| Doc | `docs/pattern/001_workspace_resolution_fallback.md` | Resolution strategy design |
+| source | `src/lib.rs` | Entire public API implementation |
+| config | `Cargo.toml` | All feature flags (`serde`, `glob`, `secrets`, `secure`, `validation`, `testing`) and their optional dependency declarations |
+| test | `tests/workspace_tests.rs` | Core creation and path methods |
+| test | `tests/error_handling_comprehensive_tests.rs` | WorkspaceError variants and Display |
+| test | `tests/serde_integration_tests.rs` | Configuration loading methods |
+| test | `tests/secrecy_integration_tests.rs` | Memory-safe secret methods |
+| test | `tests/comprehensive_test_suite.rs` | Full API coverage matrix |
+| test | `tests/backward_compatibility_validation.rs` | API stability across versions |
+| doc | `docs/feature/001_workspace_root_resolution.md` | Root resolution feature scope |
+| doc | `docs/feature/002_configuration_loading.md` | Configuration loading feature scope |
+| doc | `docs/feature/003_secret_management.md` | Secret management feature scope |
+| doc | `docs/feature/004_resource_discovery.md` | Resource discovery feature scope |
+| doc | `docs/feature/005_configuration_validation.md` | Configuration validation feature scope |
+| doc | `docs/feature/006_testing_support.md` | Testing support feature scope |
+| doc | `docs/pattern/001_workspace_resolution_fallback.md` | Resolution strategy design |

@@ -1,8 +1,7 @@
 # Benchmarking Lessons Learned: From unilang and strs_tools Development
 
-**Author**: AI Assistant (Claude)  
-**Context**: Real-world benchmarking experience during performance optimization  
-**Date**: 2025-08-08  
+**Context**: Real-world benchmarking experience during performance optimization
+**Date**: 2025-08-08
 **Source Projects**: unilang SIMD integration, strs_tools performance analysis
 
 ---

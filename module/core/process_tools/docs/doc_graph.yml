@@ -96,6 +96,7 @@ edges:
   # feature/004 cross-references
   - { from: feature/004, to: api/003,       via: cross_references }
   - { from: feature/004, to: feature/005,   via: cross_references }
+  - { from: feature/004, to: guide/002,     via: cross_references }
   # feature/005 cross-references
   - { from: feature/005, to: api/004,       via: cross_references }
   - { from: feature/005, to: api/005,       via: cross_references }
@@ -135,8 +136,6 @@ edges:
   - { from: guide/001,   to: api/006,       via: cross_references }
   - { from: guide/001,   to: invariant/003, via: cross_references }
   - { from: guide/001,   to: invariant/004, via: cross_references }
-  # feature/004 cross-references (additional)
-  - { from: feature/004, to: guide/002,     via: cross_references }
   # guide/002 cross-references
   - { from: guide/002,   to: api/003,       via: cross_references }
   - { from: guide/002,   to: feature/004,   via: cross_references }

@@ -11,4 +11,4 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | [Derive Macros](001_derive_macros.md) | Five derive macros for component model patterns: ComponentModel, Assign, ComponentsAssign, ComponentFrom, FromComponents | ✅ |
+| 001 | [Derive Macros](001_derive_macros.md) | Five derive macros generating component trait impls for named structs | ✅ |

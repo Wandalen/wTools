@@ -4,12 +4,12 @@
 
 - **Purpose**: Ensure platform-specific shell selection never leaks into caller code so automation scripts require no platform guards.
 - **Responsibility**: Enforces that `RunFormer::run_with_shell()` is the sole location of the Unix/Windows shell branch in this crate.
-- **In Scope**: Shell selection logic in `run_with_shell()`; guarantee that no call sites contain `cfg!(target_os)` for shell choice.
+- **In Scope**: Shell selection logic in `run_with_shell()`; guarantee that no call sites contain compile-time platform guards for shell choice.
 - **Out of Scope**: Shell command syntax differences; environment variable handling; output capture.
 
 ### Invariant Statement
 
-`run_with_shell(exec_path)` always invokes the platform-native shell: `sh -c` on Unix and `cmd /C` on Windows, determined via `cfg!(target_os)` at compile time. Callers pass a shell command string and receive a `Report` identical in structure to direct execution. No platform-detection logic leaks into call sites — the abstraction is complete.
+`run_with_shell(exec_path)` always invokes the platform-native shell: `sh -c` on Unix and `cmd /C` on Windows, determined at compile time. Callers pass a shell command string and receive a `Report` identical in structure to direct execution. No platform-detection logic leaks into call sites — the abstraction is complete.
 
 ### Enforcement Mechanism
 
@@ -25,7 +25,7 @@ grep -rn "run_with_shell" src/
 
 ### Violation Consequences
 
-If callers had to choose the shell themselves, cross-platform automation code would need a `cfg!(target_os)` guard at every invocation. Shell feature usage (pipes, redirections, environment variable expansion) would diverge silently across platforms when callers forget the guard. The invariant keeps that complexity at one location.
+If callers had to choose the shell themselves, cross-platform automation code would need a platform guard at every invocation. Shell feature usage (pipes, redirections, environment variable expansion) would diverge silently across platforms when callers forget the guard. The invariant keeps that complexity at one location.
 
 ### Example
 

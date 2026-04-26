@@ -1,11 +1,11 @@
 //!
-//! Comprehensive manual test covering all spec.md patterns and corner cases.
+//! Comprehensive manual test covering all docs/ patterns and corner cases.
 //!
 //! This test validates:
-//! - Pattern 1: Basic iteration with re-exports (spec.md § Usage Patterns § Pattern 1)
-//! - Pattern 2: Clonable boxed iterators (spec.md § Usage Patterns § Pattern 2)
-//! - Pattern 3: Result-oriented processing (spec.md § Usage Patterns § Pattern 3)
-//! - Pattern 4: Advanced combinators (spec.md § Usage Patterns § Pattern 4)
+//! - Pattern 1: Basic iteration with re-exports (feature/001_itertools_reexports.md)
+//! - Pattern 2: Clonable boxed iterators (feature/002_clonable_boxed_iterators.md)
+//! - Pattern 3: Result-oriented processing (feature/003_iter_ext.md)
+//! - Pattern 4: Advanced combinators (feature/001_itertools_reexports.md)
 //! - Corner cases: empty iterators, single elements, error handling
 //! - Edge cases: Send/Sync variants, lifetime handling
 //!
@@ -54,7 +54,7 @@ fn test_pattern_1_basic_iteration()
 
   use iter_tools::*;
 
-  // Test case: min() with normal vec (spec.md Pattern 1)
+  // Test case: min() with normal vec (feature/001_itertools_reexports.md)
   {
     let vec = vec![ 5, 1, -2 ];
     let min_val = min( &vec );
@@ -70,7 +70,7 @@ fn test_pattern_1_basic_iteration()
     println!( "✓ max() with normal vec" );
   }
 
-  // Test case: zip() with equal length iterators (spec.md Pattern 1, readme.md)
+  // Test case: zip() with equal length iterators (feature/001_itertools_reexports.md, readme.md)
   {
     let vec = vec![ 5, 1, -2 ];
     let added = vec![ "a", "b", "c" ];
@@ -224,7 +224,7 @@ fn test_pattern_2_clonable_boxed_iterators()
 
   use iter_tools::{ BoxedIter, _IterTrait };
 
-  // Test case: BoxedIter basic clone and collect (spec.md Pattern 2)
+  // Test case: BoxedIter basic clone and collect (feature/002_clonable_boxed_iterators.md)
   {
     fn get_iterator< 'a >( data: &'a [ i32 ] ) -> BoxedIter< 'a, &'a i32 >
     {
@@ -345,7 +345,7 @@ fn test_pattern_3_result_oriented()
 
   use iter_tools::IterExt;
 
-  // Test case: map_result with all success (spec.md Pattern 3)
+  // Test case: map_result with all success (feature/003_iter_ext.md)
   {
     let items = vec![ "1", "2", "3" ];
     let result = items.iter().map_result( | s | s.parse::< i32 >() );
@@ -353,7 +353,7 @@ fn test_pattern_3_result_oriented()
     println!( "✓ map_result with all success" );
   }
 
-  // Test case: map_result with middle element error (spec.md Pattern 3)
+  // Test case: map_result with middle element error (feature/003_iter_ext.md)
   {
     let items = vec![ "1", "2", "invalid", "4" ];
     let result = items.iter().map_result( | s | s.parse::< i32 >() );
@@ -422,7 +422,7 @@ fn test_pattern_4_advanced_combinators()
 
   use iter_tools::*;
 
-  // Test case: interleave with equal length iterators (spec.md Pattern 4)
+  // Test case: interleave with equal length iterators (feature/001_itertools_reexports.md)
   {
     let a = vec![ 1, 2, 3 ];
     let b = vec![ 10, 20, 30 ];
@@ -431,7 +431,7 @@ fn test_pattern_4_advanced_combinators()
     println!( "✓ interleave with equal length iterators" );
   }
 
-  // Test case: intersperse with normal iterator (spec.md Pattern 4)
+  // Test case: intersperse with normal iterator (feature/001_itertools_reexports.md)
   {
     let data = vec![ 1, 2, 3 ];
     let with_sep: Vec< _ > = intersperse( data.iter(), &0 ).cloned().collect();

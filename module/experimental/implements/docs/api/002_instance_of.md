@@ -32,4 +32,7 @@ Identical to `implements`. The alias is unconditional — wherever `implements` 
 | test | `tests/inc/test_cases.rs` | instance_of_basic test case |
 | doc | `docs/feature/001_trait_implementation_check.md` | End-to-end feature context |
 | doc | `docs/api/001_implements.md` | Primary macro this alias wraps |
-| doc | `docs/invariant/001_value_not_consumed.md` | Non-consuming evaluation guarantee |
+| doc | `docs/invariant/001_value_not_consumed.md`         | Non-consuming evaluation guarantee                                                     |
+| doc | `docs/invariant/002_zero_runtime_dependencies.md` | Zero runtime dependency constraint                                                     |
+| doc | `docs/invariant/003_fn_trait_limitation.md`        | Compile error when checked against callable traits on named function items             |
+| doc | `docs/pattern/001_autoref_specialization.md` | Internal mechanism this macro implements                                               |

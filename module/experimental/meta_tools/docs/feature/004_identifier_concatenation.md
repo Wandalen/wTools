@@ -17,8 +17,8 @@ The feature is controlled by `meta_idents_concat`. Disabling it removes the `pas
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| Source | `src/dependency.rs` | `paste::paste as meta_idents_concat` re-export |
-| Source | `src/exposed.rs` | Exposed namespace re-export |
-| Test | `tests/inc/indents_concat_test.rs` | Basic identifier construction test |
-| Test | `tests/corner_cases_comprehensive.rs` | Edge cases: paste basic, multiple macros in same scope |
-| Doc | `docs/api/001_macros.md` | `meta_idents_concat!` macro signature and syntax |
+| source | `src/dependency.rs` | `paste::paste as meta_idents_concat` re-export |
+| source | `src/exposed.rs` | Exposed namespace re-export |
+| test | `tests/inc/indents_concat_test.rs` | Basic identifier construction test |
+| test | `tests/corner_cases_comprehensive.rs` | Edge cases: paste basic, multiple macros in same scope |
+| doc | `docs/api/001_macros.md` | `meta_idents_concat!` macro signature and syntax |

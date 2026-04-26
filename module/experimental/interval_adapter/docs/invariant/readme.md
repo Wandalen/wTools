@@ -11,6 +11,6 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | [Integer Endpoints Only](001_integer_endpoints_only.md) | Interval endpoints must satisfy `EndPointTrait` — no floats | ✅ |
+| 001 | [Integer Endpoints Only](001_integer_endpoints_only.md) | Interval endpoints must satisfy the endpoint constraint — no floats | ✅ |
 | 002 | [No Validation](002_no_validation.md) | Left ≤ right is not checked — caller is responsible | ✅ |
 | 003 | [No Set Operations](003_no_set_operations.md) | No union, intersection, containment, or arithmetic on intervals | ✅ |

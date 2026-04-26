@@ -3,7 +3,7 @@
 ### Scope
 
 - **Purpose**: Document all public macros exported by is_slice — their operations, error handling, and compatibility contracts.
-- **Responsibility**: Index of API doc instances for the is_slice crate.
+- **Responsibility**: Master index for all is_slice macro API doc instances.
 - **In Scope**: Publicly exported macros and their behavioural contracts.
 - **Out of Scope**: Internal implementation (→ src/), feature-level context (→ feature/), invariants (→ invariant/).
 

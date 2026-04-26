@@ -21,6 +21,8 @@ The feature flag `async_try_from` is independent of `async_from` — a crate may
 | test | `tests/inc/basic_test.rs` | Integration tests for AsyncTryFrom and AsyncTryInto |
 | test | `tests/additional_corner_cases_test.rs` | Readme examples and fallible conversion corner cases |
 | test | `tests/manual_corner_cases_test.rs` | Edge cases including parse error propagation |
+| test | `tests/send_bounds_validation_test.rs` | Thread-safety bounds for blanket impls in multi-threaded runtimes |
+| doc | `docs/feature/001_infallible_async_conversion.md` | Complementary infallible conversion feature |
 | doc | `docs/api/003_async_try_from.md` | AsyncTryFrom public API contract |
 | doc | `docs/api/004_async_try_into.md` | AsyncTryInto public API contract |
 | doc | `docs/invariant/001_send_bounds.md` | Thread-safety requirement on async trait methods |

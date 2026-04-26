@@ -2,10 +2,10 @@
 
 ### Scope
 
-**Purpose**: Provide reliable workspace root detection for Rust projects running across diverse execution contexts (cargo development, CI, installed binaries, Docker).
-**Responsibility**: Resolve the workspace root path via a prioritized multi-strategy fallback chain and expose workspace-relative path construction and standard directory accessors.
-**In Scope**: Workspace root detection via multi-strategy fallback, named single-strategy constructors, path construction relative to the root, standard directory accessors, and path normalization.
-**Out of Scope**: File content reading, configuration parsing, secret loading, build system integration, git operations beyond workspace root detection.
+- **Purpose**: Provide reliable workspace root detection for Rust projects running across diverse execution contexts (cargo development, CI, installed binaries, Docker).
+- **Responsibility**: Resolve the workspace root path via a prioritized multi-strategy fallback chain and expose workspace-relative path construction and standard directory accessors.
+- **In Scope**: Workspace root detection via multi-strategy fallback, named single-strategy constructors, path construction relative to the root, standard directory accessors, and path normalization.
+- **Out of Scope**: File content reading, configuration parsing, secret loading, build system integration, git operations beyond workspace root detection.
 
 ### Design
 
@@ -21,14 +21,14 @@ Named single-strategy constructors expose each resolution strategy individually.
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| Source | `src/lib.rs` | `Workspace` struct, all creation methods, path methods, normalization |
-| Test | `tests/workspace_tests.rs` | Core workspace creation, resolution, and path operations |
-| Test | `tests/path_operations_comprehensive_tests.rs` | Path manipulation, normalization, and canonicalization |
-| Test | `tests/path_normalization_tests.rs` | Workspace root path normalization (trailing components) |
-| Test | `tests/cargo_integration_tests.rs` | Integration with cargo workspace and metadata |
-| Test | `tests/cross_platform_compatibility_tests.rs` | Platform-specific path handling |
-| Task | `task/completed/001_cargo_integration.md` | Cargo auto-detection implementation |
-| Task | `task/completed/022_fix_workspace_root_path_normalization.md` | Path normalization bug fix |
-| Task | `task/completed/023_extend_workspace_resolution_for_installed_applications.md` | Extended fallback chain |
-| Doc | `docs/pattern/001_workspace_resolution_fallback.md` | Fallback chain strategy and rationale |
-| Doc | `docs/api/001_workspace.md` | Full public API surface |
+| source | `src/lib.rs` | Workspace struct, resolution methods, path accessors, normalization logic |
+| test | `tests/workspace_tests.rs` | Core workspace creation, resolution, and path operations |
+| test | `tests/path_operations_comprehensive_tests.rs` | Path manipulation, normalization, and canonicalization |
+| test | `tests/path_normalization_tests.rs` | Workspace root path normalization (trailing components) |
+| test | `tests/cargo_integration_tests.rs` | Integration with cargo workspace and metadata |
+| test | `tests/cross_platform_compatibility_tests.rs` | Platform-specific path handling |
+| task | `task/completed/001_cargo_integration.md` | Cargo auto-detection implementation |
+| task | `task/completed/022_fix_workspace_root_path_normalization.md` | Path normalization bug fix |
+| task | `task/completed/023_extend_workspace_resolution_for_installed_applications.md` | Extended fallback chain |
+| doc | `docs/pattern/001_workspace_resolution_fallback.md` | Fallback chain strategy and rationale |
+| doc | `docs/api/001_workspace.md` | Full public API surface |

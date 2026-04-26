@@ -24,14 +24,7 @@ all-features = false
 # = features
 
 [features]
-default = [
-  "enabled",
-
-  "integration",
-  "markdown_reports",
-  "data_generators",
-  "criterion_compat",
-]
+default = []
 
 full = [
   "enabled",
@@ -50,7 +43,7 @@ full = [
 ]
 
 # Core functionality
-enabled = []
+enabled = [ "dep:error_tools", "error_tools/enabled", "error_tools/error_untyped" ]
 
 # Testing features
 integration = []
@@ -82,7 +75,7 @@ workspace = true
 
 [dependencies]
 # Core dependencies
-error_tools = { workspace = true, features = [ "enabled" ] }
+error_tools = { workspace = true, optional = true }
 
 # Feature-gated dependencies - using workspace where available
 serde_json = { workspace = true, optional = true }

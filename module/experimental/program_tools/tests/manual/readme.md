@@ -1,16 +1,16 @@
 # Manual Testing Plan: program_tools
 
-## Scope
+### Scope
 
-This crate implements **data structures only** (Source, Program, Plan) with Former builder pattern integration. No compilation or execution functionality is currently implemented (see spec.md:60-98).
+This crate implements **data structures only** (Source, Program, Plan) with Former builder pattern integration. No compilation or execution functionality is currently implemented.
 
-## Testing Objectives
+### Testing Objectives
 
 Validate builder API construction for all three data structures across comprehensive corner cases including edge cases, empty inputs, large data, and special characters.
 
-## Manual Test Cases
+### Manual Test Cases
 
-### 1. Source Builder API
+#### 1. Source Builder API
 
 **Test Case 1.1: Empty file_path**
 ```rust
@@ -76,7 +76,7 @@ println!("Special chars: {:?}", source);
 // Status: ✅ PASS if exact preservation
 ```
 
-### 2. Program Builder API
+#### 2. Program Builder API
 
 **Test Case 2.1: Zero sources (empty program)**
 ```rust
@@ -141,7 +141,7 @@ println!("Duplicate paths: {:?}", program.source);
 // Status: ✅ PASS if both exist with same path
 ```
 
-### 3. Plan Builder API
+#### 3. Plan Builder API
 
 **Test Case 3.1: Minimal plan (program with zero sources)**
 ```rust
@@ -188,7 +188,7 @@ let plan = Plan::former()
 // Status: ✅ PASS if compiles (Former guarantees)
 ```
 
-### 4. Debug Trait Validation
+#### 4. Debug Trait Validation
 
 **Test Case 4.1: Debug formatting for all structs**
 ```rust
@@ -221,7 +221,7 @@ println!("Plan: {:?}", plan);
 // Status: ✅ PASS if no panics
 ```
 
-### 5. Namespace Validation
+#### 5. Namespace Validation
 
 **Test Case 5.1: Exposed namespace**
 ```rust
@@ -246,7 +246,7 @@ use program_tools::prelude::*;
 // Status: ℹ️ CHECK documentation for prelude contents
 ```
 
-## Manual Execution Instructions
+### Manual Execution Instructions
 
 Since this crate has no executable examples and no execution functionality, manual testing requires:
 
@@ -272,7 +272,7 @@ Since this crate has no executable examples and no execution functionality, manu
 
 5. **Verify output matches expected behavior**
 
-## Test Results Tracking
+### Test Results Tracking
 
 | Test ID | Description | Status | Notes |
 |---------|-------------|--------|-------|
@@ -292,9 +292,10 @@ Since this crate has no executable examples and no execution functionality, manu
 | 5.1 | Exposed namespace | ✅ Covered | tests/inc/basic.rs uses the_module |
 | 5.2 | Prelude namespace | ⏳ Pending | |
 
-## Known Limitations
+### Known Limitations
 
-Per spec.md:60-98, the following are **intentionally NOT implemented**:
+The following are **intentionally NOT implemented** at this stage:
+
 - Compilation execution (no cargo/rustc)
 - Process management (no spawning/capture)
 - Cargo.toml generation
@@ -306,6 +307,6 @@ Per spec.md:60-98, the following are **intentionally NOT implemented**:
 
 Manual testing focuses ONLY on data structure construction via Former builders.
 
-## Conclusion
+### Conclusion
 
 This manual testing plan validates the builder API for program_tools' data structures. Most corner cases should be converted to automated tests in tests/inc/ to prevent regressions. Manual testing serves to verify behavior before adding automated coverage.

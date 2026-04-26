@@ -1,28 +1,16 @@
 # Doc Entities
 
-## Entity Tree
+## Master Doc Entities Table
 
-```
-docs/                               Composite Entity    1st
-├── api/                            Collection Entity   2nd
-├── data_structure/                 Collection Entity   2nd
-├── feature/                        Collection Entity   2nd
-├── invariant/                      Collection Entity   2nd
-└── pattern/                        Collection Entity   2nd
-```
+| Type | Purpose | Master File | Instances |
+|------|---------|-------------|----------:|
+| `api/` | One doc instance per public API surface: signatures, method tables, and compatibility guarantees | [api/readme.md](api/readme.md) | 2 |
+| `data_structure/` | One doc instance per canonical struct: field layout, construction, and iteration contracts | [data_structure/readme.md](data_structure/readme.md) | 2 |
+| `feature/` | One doc instance per user-visible feature: design, constraints, and integration points | [feature/readme.md](feature/readme.md) | 3 |
+| `invariant/` | One doc instance per out-of-scope constraint: invariant statement, rationale, and enforcement | [invariant/readme.md](invariant/readme.md) | 3 |
+| `pattern/` | One doc instance per architectural decision: problem, solution, applicability, and consequences | [pattern/readme.md](pattern/readme.md) | 2 |
 
-## Entities
-
-| Entity | Type | Latent? | Purpose |
-|--------|------|---------|---------|
-| [docs/](readme.md) | Composite | | Documentation hierarchy for interval_adapter |
-| [api/](api/readme.md) | Collection | | Public API documentation |
-| [data_structure/](data_structure/readme.md) | Collection | | Canonical data type definitions |
-| [feature/](feature/readme.md) | Collection | | User-visible capabilities and usage patterns |
-| [invariant/](invariant/readme.md) | Collection | | Behavioral constraints and out-of-scope boundaries |
-| [pattern/](pattern/readme.md) | Collection | | Architectural decisions and design rationale |
-
-## Doc Instances
+## Master Doc Instances Table
 
 | Entity | ID | Name | File |
 |--------|----|------|------|

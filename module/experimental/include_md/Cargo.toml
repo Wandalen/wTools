@@ -26,14 +26,14 @@ all-features = false
 
 
 include = [
-  "/rust/impl/_blank",
+  "/src",
   "/Cargo.toml",
   "/readme.md",
-  "/License",
+  "/license",
 ]
 
 [features]
-default = [ "enabled" ]
+default = []
 full = [ "enabled" ]
 no_std = []
 use_alloc = [ "no_std" ]

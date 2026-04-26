@@ -13,7 +13,7 @@ The check is performed using autoref specialization: a temporary phantom value i
 
 Two names are provided for the same behaviour: `implements` and `instance_of`. Both accept the same input form and produce identical output. The alias exists to serve callers who prefer the phrasing "is this value an instance of this trait" over "does this value implement this trait".
 
-The macro accepts compound trait bounds using the same syntax as Rust's where-clause bounds. Checking against multiple traits at once is supported by expressing them in conjunction.
+The macro accepts compound trait bounds expressed in conjunction. Checking against multiple traits at once is supported by expressing them together in a single bound.
 
 ### Cross-References
 
@@ -26,4 +26,6 @@ The macro accepts compound trait bounds using the same syntax as Rust's where-cl
 | doc | `docs/api/001_implements.md` | implements macro — accepted inputs and return contract |
 | doc | `docs/api/002_instance_of.md` | instance_of macro — alias for implements |
 | doc | `docs/invariant/001_value_not_consumed.md` | Non-consuming evaluation guarantee |
-| doc | `docs/invariant/002_zero_runtime_dependencies.md` | Zero runtime dependency constraint |
+| doc | `docs/invariant/002_zero_runtime_dependencies.md` | Zero runtime dependency constraint                                         |
+| doc | `docs/invariant/003_fn_trait_limitation.md`        | Known compile error with callable trait bounds on named function items     |
+| doc | `docs/pattern/001_autoref_specialization.md`       | Internal mechanism this feature is built on                                |

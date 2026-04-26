@@ -16,7 +16,7 @@
 Add to your `Cargo.toml`:
 ```toml
 [dependencies]
-diagnostics_tools = "0.11.0"
+diagnostics_tools = { version = "0.11.0", features = [ "full" ] }
 ```
 
 ## Basic Example
@@ -68,17 +68,6 @@ fn main()
 - `cta_ptr_same_size!(ptr1, ptr2)` - Validate pointer sizes
 - `cta_mem_same_size!(value1, value2)` - Compare memory footprints
 
-## Learning Path
-
-Explore our numbered examples to learn progressively:
-
-1. [`001_basic_runtime_assertions.rs`](examples/001_basic_runtime_assertions.rs) - Start here!
-2. [`002_better_error_messages.rs`](examples/002_better_error_messages.rs) - See the difference
-3. [`003_compile_time_checks.rs`](examples/003_compile_time_checks.rs) - Prevent bugs early
-4. [`004_memory_layout_validation.rs`](examples/004_memory_layout_validation.rs) - Low-level validation
-5. [`005_debug_variants.rs`](examples/005_debug_variants.rs) - Development helpers
-6. [`006_real_world_usage.rs`](examples/006_real_world_usage.rs) - Practical scenarios
-
 ## Use Cases
 
 - **🧪 Testing**: Get clearer test failure messages
@@ -90,9 +79,7 @@ Explore our numbered examples to learn progressively:
 ## Documentation
 
 - [API Reference](https://docs.rs/diagnostics_tools) - Complete API documentation
-- [`TECHNICAL_DETAILS.md`](TECHNICAL_DETAILS.md) - Implementation details
-- [`MIGRATION_GUIDE.md`](MIGRATION_GUIDE.md) - Switching from standard assertions
-- [`FEATURES.md`](FEATURES.md) - Feature flags and configuration
+- [`docs/`](docs/readme.md) - Design and API documentation
 
 ## Try It Online
 

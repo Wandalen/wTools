@@ -9,7 +9,7 @@
 
 ### Abstract
 
-`process_tools::lifecycle::daemon` (Unix only) provides two capabilities: PID file management (write/read/remove) and POSIX double-fork daemonization via `daemonize()`. `DaemonizeOptions` follows the same `Former`-derived builder pattern as `Run`. After a successful `daemonize()` call, the calling code runs in a fully detached daemon process; the original parent has already exited via `_exit(0)`.
+`process_tools::lifecycle::daemon` (Unix only) provides two capabilities: PID file management (write/read/remove) and POSIX double-fork daemonization via `daemonize()`. `DaemonizeOptions` follows the same `Former`-derived builder pattern as `Run`. After a successful `daemonize()` call, the calling code runs in a fully detached daemon process; the original parent has already exited with a clean POSIX exit.
 
 ### Operations
 
@@ -33,12 +33,12 @@
 
 ### Error Handling
 
-| Function | `Ok` meaning | `Err` meaning |
-|----------|-------------|---------------|
-| `write_pidfile(path, pid)` | PID written | File cannot be created or written |
-| `read_pidfile(path)` | PID read and parsed | File not found, or content not a valid integer |
-| `remove_pidfile(path)` | File deleted | File not found or cannot be removed |
-| `daemonize(opts)` | Caller is now the daemon process | `fork` or `setsid` failed; FD operations failed; another daemon holds the PID file lock (`AlreadyExists`) |
+| Function | Success | Failure |
+|----------|---------|---------|
+| `write_pidfile( path, pid )` | PID written | File cannot be created or written |
+| `read_pidfile( path )` | PID read and parsed | File not found, or content not a valid integer |
+| `remove_pidfile( path )` | File deleted | File not found or cannot be removed |
+| `daemonize( opts )` | Caller is now the daemon process | `fork` or `setsid` failed; FD operations failed; another daemon holds the PID file lock (exclusive lock error) |
 
 ### Known Pitfalls Addressed
 
@@ -52,7 +52,7 @@ Five pitfalls from the double-fork daemonization pattern are addressed in the im
 
 ### Compatibility Guarantees
 
-- **Platform:** Unix only (`#[cfg(unix)]`). The entire `daemon` sub-module is absent on non-Unix targets — no fallback stub, unlike `check`.
+- **Platform:** Unix only. The entire `daemon` sub-module is absent on non-Unix targets — no fallback stub, unlike `check`.
 - **PID file format:** decimal integer, no newline. See invariant `003_pidfile_format.md`.
 - **`daemonize()` irreversibility:** after successful return, the parent process has exited. This cannot be undone.
 - **Singleton lock lifetime:** the `flock` held after `daemonize()` is intentionally leaked for the daemon's lifetime; the OS releases it on process exit.

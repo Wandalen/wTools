@@ -36,3 +36,4 @@ Blanket implementation — never implemented manually. Gated behind the `async_t
 | doc | `docs/api/003_async_try_from.md` | AsyncTryFrom that this blanket derives from |
 | doc | `docs/invariant/001_send_bounds.md` | Thread-safety bounds enforced by this blanket impl |
 | doc | `docs/invariant/002_blanket_impl_chain.md` | Non-conflict invariant for blanket impls |
+| doc | `docs/pattern/001_std_mirror_pattern.md` | Std mirror pattern governing this blanket's derivation model |

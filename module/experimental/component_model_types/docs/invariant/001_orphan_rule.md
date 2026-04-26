@@ -25,6 +25,6 @@ Attempting to implement Assign for a standard library type in this crate fails c
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/popular_types/std_types.rs` | PopularType marker — signals to the macro layer which types need generated impls |
+| source | `src/popular_types/std_types.rs` | PopularType marker — signals to the macro layer which types need generated implementations |
 | doc | [api/001_assign_trait.md](../api/001_assign_trait.md) | The Assign trait this constraint applies to |
-| doc | `component_model_meta/docs/algorithm/001_popular_type_generation.md` | Macro-side workaround generating impls in user crates |
+| doc | `component_model_meta/docs/algorithm/001_popular_type_generation.md` | Macro-side workaround generating implementations in user crates |

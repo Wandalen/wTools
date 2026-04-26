@@ -9,7 +9,7 @@ Design and API documentation for `async_from`.
 | File | Responsibility |
 |--------|----------------|
 | `feature/` | Feature scope, design rationale, and cross-references for user-facing capabilities |
-| `api/` | Public trait contracts — operations, bounds, and compatibility guarantees |
+| `api/` | Public trait contracts — operations, error handling, and compatibility guarantees |
 | `invariant/` | Correctness properties with enforcement mechanism and violation consequences |
 | `pattern/` | Architectural design patterns governing the API surface |
 | `entities.md` | Cross-entity index of all doc entity types and doc instances |

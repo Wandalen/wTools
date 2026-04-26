@@ -7,12 +7,6 @@
 - **In Scope**: cta_type_same_size, cta_type_same_align, cta_ptr_same_size, cta_mem_same_size.
 - **Out of Scope**: Runtime memory comparison, pointer identity, compile-time condition assertions.
 
-### Cross-References
-
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | [feature/003_memory_layout_assertions.md](../feature/003_memory_layout_assertions.md) | Memory layout assertions feature context |
-
 ### Abstract
 
 A macro set for verifying memory size and alignment properties at compile time. Available when the diagnostics_memory_layout feature is enabled. All assertions produce compile errors on failure; no runtime code is emitted.
@@ -38,3 +32,11 @@ Assertion failure produces a compile_error with a message identifying the compar
 ### Compatibility Guarantees
 
 All four macros are stable across minor versions. The type-level and value-level groupings are permanent. The diagnostics_memory_layout feature name is permanent. The compile_error message format is not guaranteed stable across major versions.
+
+### Cross-References
+
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | [feature/003_memory_layout_assertions.md](../feature/003_memory_layout_assertions.md) | Memory layout assertions feature context |
+| source | [src/diag/layout.rs](../../src/diag/layout.rs) | Memory layout assertion macro implementations |
+| test | [tests/inc/layout_test.rs](../../tests/inc/layout_test.rs) | Behavioral tests for memory layout assertion macros |

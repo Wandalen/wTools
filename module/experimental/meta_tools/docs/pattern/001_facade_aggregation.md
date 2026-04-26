@@ -50,8 +50,8 @@ Do not apply when:
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| Source | `src/lib.rs` | Top-level feature-gated re-exports |
-| Source | `src/dependency.rs` | All dependency imports and explicit re-exports |
-| Source | `Cargo.toml` | Mandatory vs optional dependency declarations |
-| Doc | `docs/feature/003_module_interface.md` | Why `mod_interface_meta` is a mandatory dependency |
-| Doc | `docs/api/001_macros.md` | Complete macro API surface |
+| source | `src/lib.rs` | Top-level feature-gated re-exports |
+| source | `src/dependency.rs` | All dependency imports and explicit re-exports |
+| source | `Cargo.toml` | Mandatory vs optional dependency declarations |
+| doc | `docs/feature/003_module_interface.md` | Why `mod_interface_meta` is a mandatory dependency |
+| doc | `docs/api/001_macros.md` | Complete macro API surface |

@@ -2,7 +2,7 @@
 
 ### Scope
 
-- **Purpose**: Document why `interval_adapter` splits the interval interface into two traits — `NonIterableInterval` for all intervals and `IterableInterval` for bounded ones.
+- **Purpose**: Document why `interval_adapter` splits the interval interface into two traits — a base trait for all intervals and an extended trait for bounded ones only.
 - **Responsibility**: Problem statement, solution structure, applicability criteria, and consequences of the split.
 - **In Scope**: Trait hierarchy design, the type-safety argument, and the tradeoff accepted.
 - **Out of Scope**: Canonical type design (→ `pattern/002`); trait signatures (→ `api/001`); unbounded interval feature (→ `feature/002`).
@@ -12,28 +12,28 @@
 | Type | File | Responsibility |
 |------|------|----------------|
 | doc | [api/001_interval_traits.md](../api/001_interval_traits.md) | Trait signatures for both layers |
-| doc | [feature/002_non_iterable_intervals.md](../feature/002_non_iterable_intervals.md) | Feature built on NonIterableInterval |
+| doc | [feature/002_non_iterable_intervals.md](../feature/002_non_iterable_intervals.md) | Feature built on the non-iterable-interval trait |
 | doc | [invariant/001_integer_endpoints_only.md](../invariant/001_integer_endpoints_only.md) | Additional constraint enforced at the trait level |
 | doc | [pattern/002_canonical_interval_type.md](002_canonical_interval_type.md) | Complementary pattern governing the concrete type layer |
 
 ### Problem
 
-Rust's standard range types include both bounded (`Range`, `RangeInclusive`) and unbounded (`RangeFull`, `RangeFrom`, `RangeTo`) variants. A generic function that accepts any range type must either:
+Standard range types include both bounded (half-open and closed) and unbounded (fully-open, open-ended, and upper-bounded) variants. A generic function that accepts any range type must either:
 
 1. Accept only bounded ranges (losing the ability to describe unbounded intervals), or
 2. Accept all ranges — including unbounded ones — and risk creating infinite iteration loops.
 
-A single trait covering all range types cannot expose iteration without silently allowing infinite loops over `RangeFull` or `RangeFrom`.
+A single trait covering all range types cannot expose iteration without silently allowing infinite loops over fully-open or open-ended ranges.
 
 ### Solution
 
 Split the interface into two traits in a strict hierarchy: a base trait covers all interval types including unbounded ones and exposes only bound-query operations; an extended trait adds an iteration requirement and is implemented only by types that also support the iteration protocol — bounded ranges only.
 
-- `NonIterableInterval` is implemented for all range types, including unbounded ones.
-- `IterableInterval` is implemented only for types that also support the iteration protocol — bounded ranges only.
-- Unbounded types (`RangeFull`, `RangeFrom`, `RangeTo`, `RangeToInclusive`) never implement `IterableInterval`.
+- The base trait is implemented for all range types, including unbounded ones.
+- The extended trait is implemented only for types that also support the iteration protocol — bounded ranges only.
+- Fully-open, open-ended, and upper-bounded range types never implement the extended trait.
 
-The compiler enforces the split: a function taking `impl IterableInterval` cannot be called with a `RangeFull` argument. The error appears at the call site, not inside the function body.
+The compiler enforces the split: a function parameterized on the extended trait cannot be called with a fully-open range argument. The error appears at the call site, not inside the function body.
 
 ### Applicability
 
@@ -47,8 +47,8 @@ Apply this pattern when designing an abstraction over a heterogeneous collection
 **Benefits:**
 - Compiler prevents passing unbounded intervals to functions that iterate — no infinite loops at runtime.
 - Functions that only query bounds can accept both bounded and unbounded intervals uniformly.
-- The hierarchy is extensible: a third trait (e.g., `BidirectionalInterval`) could extend `IterableInterval`.
+- The hierarchy is extensible: a third trait (e.g., a bidirectional interval trait) could extend the extended trait.
 
 **Tradeoff:**
-- Callers must choose between `NonIterableInterval` and `IterableInterval` when writing generic functions.
+- Callers must choose between the base and extended trait when writing generic functions.
 - The split adds conceptual complexity for users unfamiliar with the rationale.

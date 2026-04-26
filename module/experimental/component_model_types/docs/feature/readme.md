@@ -12,3 +12,4 @@
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
 | 001 | [Component Assignment](001_component_assignment.md) | Type-safe generic assignment of components by value type | ✅ |
+| 002 | [No-Std Support](002_no_std_support.md) | Drop standard library for embedded use via no_std and use_alloc flags | ✅ |

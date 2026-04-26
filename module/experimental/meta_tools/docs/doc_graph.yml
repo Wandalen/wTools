@@ -1,0 +1,91 @@
+meta:
+  description: Cross-reference graph of all doc instances in meta_tools
+  node_count: 6
+  edge_count: 12
+  component_count: 1
+  generated: 2026_04_26
+
+nodes:
+  - id: feature/001
+    file: feature/001_macro_iteration.md
+    label: "Macro Iteration"
+    entity: feature
+  - id: feature/002
+    file: feature/002_trait_impl_generation.md
+    label: "Trait Implementation Generation"
+    entity: feature
+  - id: feature/003
+    file: feature/003_module_interface.md
+    label: "Module Interface Pattern"
+    entity: feature
+  - id: feature/004
+    file: feature/004_identifier_concatenation.md
+    label: "Identifier Concatenation"
+    entity: feature
+  - id: api/001
+    file: api/001_macros.md
+    label: "Macros"
+    entity: api
+  - id: pattern/001
+    file: pattern/001_facade_aggregation.md
+    label: "Facade Aggregation"
+    entity: pattern
+
+edges:
+  # feature/001 outgoing (1)
+  - from: feature/001
+    to: api/001
+    via: cross_references
+  # feature/002 outgoing (1)
+  - from: feature/002
+    to: api/001
+    via: cross_references
+  # feature/003 outgoing (2)
+  - from: feature/003
+    to: api/001
+    via: cross_references
+  - from: feature/003
+    to: pattern/001
+    via: cross_references
+  # feature/004 outgoing (1)
+  - from: feature/004
+    to: api/001
+    via: cross_references
+  # api/001 outgoing (5)
+  - from: api/001
+    to: feature/001
+    via: cross_references
+  - from: api/001
+    to: feature/002
+    via: cross_references
+  - from: api/001
+    to: feature/003
+    via: cross_references
+  - from: api/001
+    to: feature/004
+    via: cross_references
+  - from: api/001
+    to: pattern/001
+    via: cross_references
+  # pattern/001 outgoing (2)
+  - from: pattern/001
+    to: api/001
+    via: cross_references
+  - from: pattern/001
+    to: feature/003
+    via: cross_references
+
+components:
+  - id: 1
+    label: All meta_tools doc instances
+    size: 6
+    isolated: false
+    nodes:
+      - feature/001
+      - feature/002
+      - feature/003
+      - feature/004
+      - api/001
+      - pattern/001
+
+dangling_refs: []

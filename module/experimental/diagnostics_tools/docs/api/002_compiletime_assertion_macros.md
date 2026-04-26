@@ -7,12 +7,6 @@
 - **In Scope**: The cta_true macro and its two invocation forms (with and without a custom message).
 - **Out of Scope**: Memory layout assertions, runtime assertion behavior.
 
-### Cross-References
-
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | [feature/002_compiletime_assertions.md](../feature/002_compiletime_assertions.md) | Compile-time assertions feature context |
-
 ### Abstract
 
 A macro set for asserting cfg conditions at compile time. Available when the diagnostics_compiletime_assertions feature is enabled. All evaluation happens during compilation — no runtime code is generated.
@@ -34,3 +28,11 @@ Assertion failure produces a compile_error with a message identifying the failed
 ### Compatibility Guarantees
 
 The cta_true macro and its two invocation forms are stable across minor versions. The diagnostics_compiletime_assertions feature name is permanent. The compile_error message format (including stringified condition text) is not guaranteed stable across major versions.
+
+### Cross-References
+
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | [feature/002_compiletime_assertions.md](../feature/002_compiletime_assertions.md) | Compile-time assertions feature context |
+| source | [src/diag/cta.rs](../../src/diag/cta.rs) | Compile-time assertion macro implementations |
+| test | [tests/inc/cta_test.rs](../../tests/inc/cta_test.rs) | Behavioral tests for compile-time assertion macros |

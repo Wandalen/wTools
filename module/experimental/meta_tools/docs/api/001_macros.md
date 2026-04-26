@@ -9,7 +9,7 @@
 
 ### Abstract
 
-`meta_tools` exposes no types or functions — only macros. The public API is controlled by five feature flags, all on by default: `enabled` propagates activation to sub-crate deps (and activates their optional dependencies via the `crate/enabled` feature syntax), while the four capability flags (`meta_for_each`, `meta_impls_index`, `mod_interface`, `meta_idents_concat`) gate the actual macro re-exports. Disabling a capability flag removes its crate from the dependency tree entirely.
+`meta_tools` exposes no types or functions — only macros. The public API is controlled by five feature flags, all opt-in (`default = []`): activate the full set via the `full` feature, or enable individual capabilities as needed. `enabled` propagates activation to sub-crate deps (and activates their optional dependencies via the `crate/enabled` feature syntax), while the four capability flags (`meta_for_each`, `meta_impls_index`, `mod_interface`, `meta_idents_concat`) gate the actual macro re-exports. Disabling a capability flag removes its crate from the dependency tree entirely.
 
 All macros are accessible via `use meta_tools::*`. The `meta_tools::dependency` sub-module provides explicit per-dependency namespace access for disambiguation when glob imports conflict.
 
@@ -69,13 +69,14 @@ Semantic versioning. The macro names `for_each!`, `impls!`, `mod_interface!`, an
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| Source | `src/lib.rs` | Feature-gated glob re-exports of all namespaces |
-| Source | `src/dependency.rs` | All macro imports and explicit re-exports |
-| Source | `src/exposed.rs` | Exposed namespace re-exports |
-| Test | `tests/meta_tools_tests.rs` | Main macro test harness |
-| Test | `tests/corner_cases_comprehensive.rs` | Edge-case coverage for `for_each!` and `meta_idents_concat!` |
-| Test | `tests/inc/indents_concat_test.rs` | Identifier concatenation tests |
-| Doc | `docs/feature/001_macro_iteration.md` | Scope of the `for_each!` feature |
-| Doc | `docs/feature/002_trait_impl_generation.md` | Scope of the impl generation features |
-| Doc | `docs/feature/003_module_interface.md` | Scope of the `mod_interface!` feature |
-| Doc | `docs/feature/004_identifier_concatenation.md` | Scope of the `meta_idents_concat!` feature |
+| source | `src/lib.rs` | Feature-gated glob re-exports of all namespaces |
+| source | `src/dependency.rs` | All macro imports and explicit re-exports |
+| source | `src/exposed.rs` | Exposed namespace re-exports |
+| test | `tests/meta_tools_tests.rs` | Main macro test harness |
+| test | `tests/corner_cases_comprehensive.rs` | Edge-case coverage for `for_each!` and `meta_idents_concat!` |
+| test | `tests/inc/indents_concat_test.rs` | Identifier concatenation tests |
+| doc | `docs/feature/001_macro_iteration.md` | Scope of the `for_each!` feature |
+| doc | `docs/feature/002_trait_impl_generation.md` | Scope of the impl generation features |
+| doc | `docs/feature/003_module_interface.md` | Scope of the `mod_interface!` feature |
+| doc | `docs/feature/004_identifier_concatenation.md` | Scope of the `meta_idents_concat!` feature |
+| doc | `docs/pattern/001_facade_aggregation.md` | Facade structure governing the macro API surface |

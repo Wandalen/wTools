@@ -27,17 +27,17 @@
 
 ### Error Handling
 
-`run()` and `run_with_shell()` both return `Result<Report, Report>`. The `Err` variant is never a bare error — it is always a fully-populated `Report`. Failures originate from:
+Both executors return either a success report or a failure report — the failure variant is never a bare error, always a fully-populated `Report`. Failures originate from:
 
-- Binary not found or not executable → `report.error = Err(...)`, returned as `Err(report)`
-- Non-zero exit code → `report.error = Err("Process was finished with error code: ...")`, returned as `Err(report)`
-- Non-UTF-8 stdout or stderr → `report.error = Err("Found invalid UTF-8")`, returned as `Err(report)`
+- Binary not found or not executable — report is fully populated and returned as failure
+- Non-zero exit code — report carries the exit error message and is returned as failure
+- Non-UTF-8 stdout or stderr — report carries the encoding error and is returned as failure
 
-Callers can match on `Result` and apply identical display logic to both branches. See invariant `001_result_contract.md`.
+Callers apply identical display logic to both outcomes. See invariant `001_result_contract.md`.
 
 ### Compatibility Guarantees
 
-- **Platform:** cross-platform. Direct execution (`std::process::Command`) works on all targets. Shell execution (`run_with_shell`) selects `sh -c` on Unix and `cmd /C` on Windows at compile time.
+- **Platform:** cross-platform. Direct execution works on all targets via the standard process spawning API. Shell execution (`run_with_shell`) selects `sh -c` on Unix and `cmd /C` on Windows at compile time.
 - **Stability:** stable since 0.1.0. Field names and builder method names are stable.
 - **`joining_streams` default:** `false`. This default will not change without a semver bump.
 - **Environment inheritance:** the current process environment is always merged before `env_variable`. This behavior is stable.
@@ -64,5 +64,5 @@ assert!( report.out.contains( "hello" ) );
 | source | [src/process.rs](../../src/process.rs) | `Run` struct, `RunFormer` builder, and `run()` implementation |
 | doc | [feature/001_process_execution.md](../feature/001_process_execution.md) | High-level design rationale for the execution layer |
 | doc | [api/002_report_api.md](002_report_api.md) | `Report` type returned by `run()` |
-| doc | [invariant/001_result_contract.md](../invariant/001_result_contract.md) | `Result<Report, Report>` contract |
+| doc | [invariant/001_result_contract.md](../invariant/001_result_contract.md) | Uniform return type contract for subprocess invocations |
 | doc | [invariant/002_cross_platform_shell.md](../invariant/002_cross_platform_shell.md) | Shell selection invariant for `run_with_shell()` |

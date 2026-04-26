@@ -24,6 +24,7 @@ This invariant is enforced mechanically — a violation cannot occur at runtime.
 | Type | File | Responsibility |
 |------|------|----------------|
 | source | [`../../../variadic_from_meta/src/lib.rs`](../../../variadic_from_meta/src/lib.rs) | Proc-macro enforcement: field count dispatch |
+| doc | [`../../../variadic_from_meta/docs/api/001_variadic_from_derive.md`](../../../variadic_from_meta/docs/api/001_variadic_from_derive.md) | Derive macro API: boundary handling stated in the accepted struct forms contract |
 | doc | [`docs/algorithm/001_variadic_from_derive.md`](../algorithm/001_variadic_from_derive.md) | Derive algorithm describing the enforcement mechanism |
 | doc | [`docs/feature/001_variadic_construction.md`](../feature/001_variadic_construction.md) | Feature hub for variadic construction |
 | test | [`tests/compile_fail/test_4_fields.rs`](../../tests/compile_fail/test_4_fields.rs) | Confirms no From impl generated for 4-field struct |

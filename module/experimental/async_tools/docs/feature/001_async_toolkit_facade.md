@@ -18,5 +18,6 @@ The crate provides four namespace layers — own, orphan, exposed, and prelude �
 | Type | File | Responsibility |
 |------|------|----------------|
 | source | `src/lib.rs` | Namespace structure and re-export declarations |
+| test | `tests/tests.rs` | Facade re-export validation — all async conversion traits accessible via async_tools |
 | doc | `../../../async_from/docs/feature/001_infallible_async_conversion.md` | Infallible async conversion feature documentation |
 | doc | `../../../async_from/docs/feature/002_fallible_async_conversion.md` | Fallible async conversion feature documentation |

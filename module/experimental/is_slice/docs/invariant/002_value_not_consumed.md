@@ -5,15 +5,15 @@
 - **Purpose**: Guarantee that the expression passed to `is_slice` is never moved, dropped, or otherwise consumed by the macro — the caller retains full ownership after the call.
 - **Responsibility**: Documents the non-consuming evaluation invariant — its precise statement, how it is enforced, and what breaks if it is violated.
 - **In Scope**: The ownership status of the expression passed to is_slice.
-- **Out of Scope**: Borrow checker implications for the caller's subsequent use of the value (governed by Rust's ordinary borrow rules).
+- **Out of Scope**: The caller's subsequent use of the value under ordinary ownership rules.
 
 ### Invariant Statement
 
-For all expressions passed to `is_slice`: the macro takes a shared reference to the value internally, constructs a phantom type from that reference, and discards both without touching the original value. The caller's binding remains valid and fully owned after the macro call completes.
+For all expressions passed to `is_slice`: the macro takes a shared reference to the value internally, constructs a temporary type marker from that reference, and discards both without touching the original value. The caller's binding remains valid and fully owned after the macro call completes.
 
 ### Enforcement Mechanism
 
-The internal mechanism constructs a zero-sized phantom value by calling a helper function that accepts a shared reference — not the value itself. The phantom type is immediately discarded after method resolution. The original expression is therefore not touched beyond the initial borrow, which ends within the macro expansion. The Rust borrow checker enforces that the temporary borrow is well-formed and does not outlive the expression.
+The internal mechanism calls a helper that accepts a shared reference to the value — not the value itself. The temporary type marker constructed from that reference is discarded immediately after compile-time type dispatch concludes. The original expression is therefore not touched beyond the initial borrow, which ends within the macro expansion. The language's ownership system enforces that the temporary borrow is well-formed and does not outlive the expression.
 
 ### Violation Consequences
 
@@ -23,6 +23,6 @@ If the macro were to consume the expression, callers that pass non-Copy values w
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/lib.rs` | Internal mechanism — shared reference capture via does() helper |
-| doc | `docs/feature/001_slice_detection.md` | Feature whose usability this invariant protects |
-| doc | `docs/api/001_is_slice.md` | API this invariant constrains |
+| source | [src/lib.rs](../../src/lib.rs) | Internal mechanism — shared reference capture via helper |
+| doc | [feature/001_slice_detection.md](../feature/001_slice_detection.md) | Feature whose usability this invariant protects |
+| doc | [api/001_is_slice.md](../api/001_is_slice.md) | API this invariant constrains |

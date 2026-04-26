@@ -22,8 +22,7 @@ To get started with `variadic_from`, follow these simple steps:
 
     ```toml
     [dependencies]
-    variadic_from = "0.56" # Or the latest version
-    variadic_from_meta = { path = "../variadic_from_meta" } # If using from workspace
+    variadic_from = { version = "0.59", features = ["full"] }
     ```
 
 2.  **Basic Usage Example:**

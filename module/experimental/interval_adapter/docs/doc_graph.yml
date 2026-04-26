@@ -143,6 +143,7 @@ edges:
 
 components:
   - id: 1
+    label: Main Component
     size: 12
     isolated: false
     nodes:

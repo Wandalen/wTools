@@ -1,0 +1,144 @@
+generated: 2026_04_26
+dangling_refs: []
+
+nodes:
+  - id: api/001
+    file: api/001_include_md.md
+    label: include_md Macro
+  - id: api/002
+    file: api/002_include_md_section.md
+    label: include_md_section Macro
+  - id: feature/001
+    file: feature/001_file_inclusion.md
+    label: File Inclusion
+  - id: feature/002
+    file: feature/002_section_extraction.md
+    label: Section Extraction
+  - id: invariant/001
+    file: invariant/001_path_resolution.md
+    label: Path Resolution
+  - id: invariant/002
+    file: invariant/002_compile_time_errors.md
+    label: Compile-Time Errors
+  - id: invariant/003
+    file: invariant/003_size_limit.md
+    label: Size Limit
+  - id: invariant/004
+    file: invariant/004_section_extraction_rules.md
+    label: Section Extraction Rules
+
+edges:
+  - from: api/001
+    to: feature/001
+    via: cross_references
+  - from: api/001
+    to: invariant/001
+    via: cross_references
+  - from: api/001
+    to: invariant/002
+    via: cross_references
+  - from: api/001
+    to: invariant/003
+    via: cross_references
+  - from: api/002
+    to: feature/002
+    via: cross_references
+  - from: api/002
+    to: invariant/001
+    via: cross_references
+  - from: api/002
+    to: invariant/002
+    via: cross_references
+  - from: api/002
+    to: invariant/003
+    via: cross_references
+  - from: api/002
+    to: invariant/004
+    via: cross_references
+  - from: feature/001
+    to: api/001
+    via: cross_references
+  - from: feature/001
+    to: invariant/001
+    via: cross_references
+  - from: feature/001
+    to: invariant/002
+    via: cross_references
+  - from: feature/001
+    to: invariant/003
+    via: cross_references
+  - from: feature/002
+    to: api/002
+    via: cross_references
+  - from: feature/002
+    to: invariant/001
+    via: cross_references
+  - from: feature/002
+    to: invariant/002
+    via: cross_references
+  - from: feature/002
+    to: invariant/003
+    via: cross_references
+  - from: feature/002
+    to: invariant/004
+    via: cross_references
+  - from: invariant/001
+    to: api/001
+    via: cross_references
+  - from: invariant/001
+    to: api/002
+    via: cross_references
+  - from: invariant/001
+    to: feature/001
+    via: cross_references
+  - from: invariant/002
+    to: api/001
+    via: cross_references
+  - from: invariant/002
+    to: api/002
+    via: cross_references
+  - from: invariant/002
+    to: invariant/001
+    via: cross_references
+  - from: invariant/002
+    to: invariant/003
+    via: cross_references
+  - from: invariant/003
+    to: api/001
+    via: cross_references
+  - from: invariant/003
+    to: api/002
+    via: cross_references
+  - from: invariant/003
+    to: invariant/002
+    via: cross_references
+  - from: invariant/004
+    to: api/002
+    via: cross_references
+  - from: invariant/004
+    to: feature/002
+    via: cross_references
+  - from: invariant/004
+    to: invariant/002
+    via: cross_references
+  - from: invariant/001
+    to: feature/002
+    via: cross_references
+  - from: invariant/001
+    to: invariant/002
+    via: cross_references
+  - from: invariant/002
+    to: feature/001
+    via: cross_references
+  - from: invariant/002
+    to: feature/002
+    via: cross_references
+  - from: invariant/002
+    to: invariant/004
+    via: cross_references
+  - from: invariant/003
+    to: feature/001
+    via: cross_references
+  - from: invariant/003
+    to: feature/002
+    via: cross_references

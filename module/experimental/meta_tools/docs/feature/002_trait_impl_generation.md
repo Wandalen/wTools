@@ -19,8 +19,8 @@ Three levels of impl macros are provided with increasing power and compile compl
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| Source | `src/dependency.rs` | `impls_index::*` and `impls_index_meta::*` re-exports |
-| Source | `src/exposed.rs` | Exposed namespace re-exports |
-| Test | `tests/inc/mod.rs` | Cross-crate inclusion of `impls_index` test suite |
-| Test | `tests/meta_tools_tests.rs` | Main test harness; aggregates `tests_impls!` tests |
-| Doc | `docs/api/001_macros.md` | `impls!` family and test generation macro signatures |
+| source | `src/dependency.rs` | `impls_index::*` and `impls_index_meta::*` re-exports |
+| source | `src/exposed.rs` | Exposed namespace re-exports |
+| test | `tests/inc/mod.rs` | Cross-crate inclusion of `impls_index` test suite |
+| test | `tests/meta_tools_tests.rs` | Main test harness; aggregates `tests_impls!` tests |
+| doc | `docs/api/001_macros.md` | `impls!` family and test generation macro signatures |

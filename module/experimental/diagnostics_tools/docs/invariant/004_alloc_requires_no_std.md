@@ -7,12 +7,6 @@
 - **In Scope**: The use_alloc and no_std feature flags and their declared dependency relationship.
 - **Out of Scope**: Specific allocator configuration, heap sizing, or embedded linker setup.
 
-### Cross-References
-
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | [feature/004_no_std_support.md](../feature/004_no_std_support.md) | No-std feature subject to this invariant |
-
 ### Invariant Statement
 
 The use_alloc feature flag always implies and enables no_std. It is not valid to enable use_alloc without no_std — doing so would have no meaningful effect and would misrepresent the build configuration.
@@ -24,3 +18,11 @@ The use_alloc feature flag always implies and enables no_std. It is not valid to
 ### Violation Consequences
 
 Removing the no_std dependency from use_alloc would allow consumers to enable use_alloc in standard-library builds, creating a misleading configuration that silently does nothing.
+
+### Cross-References
+
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | [feature/004_no_std_support.md](../feature/004_no_std_support.md) | No-std feature subject to this invariant |
+| source | [src/lib.rs](../../src/lib.rs) | Crate entry point; conditional no_std and alloc gating |
+| test | [tests/smoke_test.rs](../../tests/smoke_test.rs) | Smoke validation of feature-flag build configurations |

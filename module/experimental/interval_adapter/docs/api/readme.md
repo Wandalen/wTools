@@ -11,5 +11,5 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | [Interval Traits](001_interval_traits.md) | `NonIterableInterval` and `IterableInterval` — unified interval interface | ✅ |
-| 002 | [Conversion Traits](002_conversion_traits.md) | `BoundExt`, `EndPointTrait`, `IntoInterval` — bound and endpoint helpers | ✅ |
+| 001 | [Interval Traits](001_interval_traits.md) | Unified interface for all interval types — bound queries and iteration | ✅ |
+| 002 | [Conversion Traits](002_conversion_traits.md) | Bound extension, endpoint constraint, and canonical conversion helpers | ✅ |

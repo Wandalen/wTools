@@ -11,5 +11,5 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | [Interval](001_interval.md) | Canonical interval representation storing `(Bound<T>, Bound<T>)` | ✅ |
-| 002 | [IntervalIterator](002_interval_iterator.md) | Closed-interval iterator produced by `Interval::into_iter()` | ✅ |
+| 001 | [Interval](001_interval.md) | Canonical interval representation storing a pair of bound values | ✅ |
+| 002 | [IntervalIterator](002_interval_iterator.md) | Closed-interval iterator produced from the canonical interval type | ✅ |

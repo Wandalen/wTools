@@ -29,10 +29,7 @@ proc-macro = true
 
 [features]
 
-default = [
-  "enabled",
-  "reflect_derive",
-]
+default = []
 
 full = [ "enabled" ]
 enabled = []

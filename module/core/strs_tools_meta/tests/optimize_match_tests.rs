@@ -9,7 +9,7 @@
 //! | TC3 | Multiple large patterns | Many long patterns | "first_match" | Sequential matching |
 //! | TC4 | Strategy: longest_match | `["a", "ab", "abc"]` | `"longest_match"` | Longest match strategy |
 //! | TC5 | Strategy: all_matches | `["a", "b"]` | `"all_matches"` | All matches strategy |
-//! | TC6 | Debug mode | "test" | default, debug | Debug output generated |
+//! | TC6 | Debug mode | "test" | debug (bare flag) | debug flag accepted; result unchanged |
 //!
 
 #[ cfg( feature = "optimize_match" ) ]
@@ -70,14 +70,12 @@ fn tc5_all_matches_strategy()
   assert_eq!( result, Some( 0 ) );
 }
 
-// TC6: Debug mode test
-// Note: Debug output goes to stderr and can be observed during manual testing
+// TC6: Debug mode test — verify debug flag accepted and result unchanged
 #[ cfg( feature = "optimize_match" ) ]
 #[ test ]
 fn tc6_debug_mode()
 {
-  let result = optimize_match!( "test_string", "test" );
-  
+  let result = optimize_match!( "test_string", "test", debug );
   assert_eq!( result, Some( 0 ) );
 }
 

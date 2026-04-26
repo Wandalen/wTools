@@ -17,8 +17,8 @@ Callers invoke `mod_interface!` with a list of `layer <name>;` declarations. The
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| Source | `src/dependency.rs` | `mod_interface_meta::mod_interface` re-export (unconditional) |
-| Source | `src/meta/mod.rs` | `mod_interface!` usage demonstrating the pattern |
-| Test | `tests/inc/mod.rs` | Cross-crate inclusion of `mod_interface` test suite |
-| Doc | `docs/api/001_macros.md` | `mod_interface!` macro signature |
-| Doc | `docs/pattern/001_facade_aggregation.md` | Context: why `mod_interface_meta` is a mandatory dependency |
+| source | `src/dependency.rs` | `mod_interface_meta::mod_interface` re-export (unconditional) |
+| source | `src/meta/mod.rs` | `mod_interface!` usage demonstrating the pattern |
+| test | `tests/inc/mod.rs` | Cross-crate inclusion of `mod_interface` test suite |
+| doc | `docs/api/001_macros.md` | `mod_interface!` macro signature |
+| doc | `docs/pattern/001_facade_aggregation.md` | Context: why `mod_interface_meta` is a mandatory dependency |

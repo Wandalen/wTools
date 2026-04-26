@@ -24,5 +24,6 @@ A coherence conflict would produce a compile error for any type simultaneously a
 | Type | File | Responsibility |
 |------|------|----------------|
 | source | `src/lib.rs` | Blanket impl for AsyncInto and AsyncTryInto |
+| test | `tests/inc/basic_test.rs` | Exercises AsyncInto and AsyncTryInto blanket impls without conflict |
 | doc | `docs/api/002_async_into.md` | AsyncInto blanket impl |
 | doc | `docs/api/004_async_try_into.md` | AsyncTryInto blanket impl |

@@ -2,65 +2,43 @@
 
 ### Scope
 
-- **Purpose**: Enable writing generic functions that accept any Rust range or interval type as a parameter without committing to a concrete type.
-- **Responsibility**: Documents the pattern of using `IterableInterval` or `NonIterableInterval` as a generic bound, including all supported input types and usage examples.
-- **In Scope**: `impl IterableInterval` and `impl NonIterableInterval` function parameters, supported input types, and conversion examples.
+- **Purpose**: Enable writing generic functions that accept any interval type as a parameter without committing to a concrete type.
+- **Responsibility**: Documents the pattern of using the iterable-interval and non-iterable-interval bounds as generic function parameters, including all supported input types and conversion examples.
+- **In Scope**: Iterable-interval and non-iterable-interval function parameters, supported input types, and canonical conversion examples.
 - **Out of Scope**: Iterator step behavior (→ `data_structure/002`); unbounded intervals (→ `feature/002`); no_std context (→ `feature/003`).
 
 ### Abstract
 
-Instead of accepting `Range<i32>` or `RangeInclusive<i32>` specifically, callers write `impl IterableInterval<i32>`. The function then accepts any bounded interval type — including standard ranges, tuples, arrays, and the canonical `Interval<T>` — without any change to the call site.
+Instead of accepting a specific bounded range type, callers declare a generic function parameter bounded by the iterable-interval trait. The function then accepts any bounded interval type — including standard ranges, tuples, arrays, and the canonical interval type — without any change to the call site.
 
 ### Design
 
-| Use case | Recommended bound | Notes |
-|----------|------------------|-------|
-| Iterate over values | `impl IterableInterval<T>` | Function body uses `for i in interval { ... }` |
-| Query bounds only | `impl NonIterableInterval<T>` | Accepts bounded and unbounded intervals |
-| Store interval generically | `Interval<T>` | Convert with `.into_interval()` or `.canonical()` |
+| Use case | Bound to use | Notes |
+|----------|--------------|-------|
+| Iterate over values | Iterable-interval bound | Enables iteration in the function body |
+| Query bounds only | Non-iterable-interval bound | Accepts both bounded and unbounded intervals |
+| Store interval generically | Canonical interval type | Convert at the call site via the conversion method |
 
 #### Usage Example
 
-```rust
-use interval_adapter::IterableInterval;
-
-fn print_range( interval : impl IterableInterval ) {
-  for i in interval {
-    println!( "{i}" );
-  }
-}
-
-// All four call sites produce identical output:
-print_range( 0..4 );           // Range — half-open
-print_range( 0..=3 );          // RangeInclusive — closed
-print_range( ( 0, 3 ) );       // Tuple — both endpoints included
-print_range( [ 0, 3 ] );       // Array — both endpoints included
-```
+Declare the function parameter with the iterable-interval bound. Callers may pass any bounded interval representation — half-open ranges, closed ranges, tuples, or two-element arrays. The function body iterates over the values using the standard iteration protocol; all four representations produce identical output.
 
 #### Converting to Canonical Form
 
-When a function must store or return an interval, convert to `Interval<T>`:
-
-```rust
-use interval_adapter::{ IntoInterval, Interval };
-
-fn clamp_to( range : impl IntoInterval< i32 > ) -> Interval< i32 > {
-  range.into_interval()
-}
-```
+When a function must store or return an interval, declare the parameter with the conversion trait bound and return the canonical interval type. Any interval type converts at the call site via the conversion method.
 
 ### Constraints
 
-- Generic parameters using `impl IterableInterval` are monomorphized — each concrete type produces a separate instantiation.
-- Trait objects (`dyn IterableInterval`) are not supported without `IntoIterator` being object-safe; use `Interval<T>` for dynamic dispatch scenarios.
+- Generic parameters using the iterable-interval bound are monomorphized — each concrete type produces a separate instantiation.
+- Trait objects over the iterable-interval bound are not supported because the iteration protocol is not object-safe; use the canonical interval type for dynamic dispatch scenarios.
 - Tuples and arrays as intervals always treat both endpoints as included (closed on both sides).
 
 ### Cross-References
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| doc | [api/001_interval_traits.md](../api/001_interval_traits.md) | IterableInterval and NonIterableInterval signatures |
-| doc | [api/002_conversion_traits.md](../api/002_conversion_traits.md) | IntoInterval for canonical conversion |
+| doc | [api/001_interval_traits.md](../api/001_interval_traits.md) | Iterable-interval and non-iterable-interval trait signatures |
+| doc | [api/002_conversion_traits.md](../api/002_conversion_traits.md) | Conversion trait for canonical interval creation |
 | doc | [data_structure/001_interval.md](../data_structure/001_interval.md) | Storage type for converted intervals |
-| doc | [feature/002_non_iterable_intervals.md](002_non_iterable_intervals.md) | Accepting unbounded intervals via NonIterableInterval |
+| doc | [feature/002_non_iterable_intervals.md](002_non_iterable_intervals.md) | Accepting unbounded intervals via the non-iterable-interval bound |
 | doc | [invariant/003_no_set_operations.md](../invariant/003_no_set_operations.md) | Set operations absent from the interval interface |

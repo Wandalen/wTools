@@ -20,6 +20,9 @@ The trait pair targets conversions that are infallible but require async work â€
 | source | `src/lib.rs` | AsyncFrom and AsyncInto trait definitions and blanket impl |
 | test | `tests/inc/basic_test.rs` | Integration tests for AsyncFrom and AsyncInto |
 | test | `tests/additional_corner_cases_test.rs` | Readme examples and infallible conversion corner cases |
+| test | `tests/manual_corner_cases_test.rs` | Edge cases for AsyncFrom and AsyncInto (boundaries, overflow) |
+| test | `tests/send_bounds_validation_test.rs` | Thread-safety bounds for blanket impls in multi-threaded runtimes |
+| doc | `docs/feature/002_fallible_async_conversion.md` | Complementary fallible conversion feature |
 | doc | `docs/api/001_async_from.md` | AsyncFrom public API contract |
 | doc | `docs/api/002_async_into.md` | AsyncInto public API contract |
 | doc | `docs/invariant/001_send_bounds.md` | Thread-safety requirement on async trait methods |

@@ -170,5 +170,5 @@ cargo run --example 007_performance_and_simd --features simd
 
 - [API Documentation](https://docs.rs/strs_tools)
 - [Architecture Details](./architecture.md)
-- [Performance Benchmarks](./benchmarks/readme.md)
+- [Performance Benchmarks](./benches/readme.md)
 - [Migration Guide](./changelog.md)

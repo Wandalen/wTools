@@ -3,17 +3,17 @@
 ### Scope
 
 - **Purpose**: Guarantee that callers are never left without diagnostic context when a subprocess invocation fails.
-- **Responsibility**: Enforces that both branches of `Result<Report, Report>` carry a fully populated `Report`.
+- **Responsibility**: Enforces that both the success and failure branches carry a fully populated report.
 - **In Scope**: `run()` and `run_with_shell()` return type; field population ordering in `process.rs` before the success/failure branch.
 - **Out of Scope**: `Report` field definitions (→ `api/002`); shell selection logic (→ `invariant/002`).
 
 ### Invariant Statement
 
-`run()` returns `Result<Report, Report>`. Both the `Ok` and `Err` variants carry a fully populated `Report` containing the command, working directory, stdout, stderr, and error field. This ensures callers never lose diagnostic context on failure: `Err(report)` contains the same fields as `Ok(report)`, with `report.error` set to the failure cause. Code that matches on `Result` can apply identical logging or display logic regardless of branch.
+`run()` returns a result where both the success and failure branches carry a fully populated report containing the command, working directory, stdout, stderr, and error field. This ensures callers never lose diagnostic context on failure — the failure branch contains the same fields as the success branch, with the error field set to the failure cause. Code that handles the result can apply identical logging or display logic regardless of branch.
 
 ### Enforcement Mechanism
 
-In `process.rs`, `Report` is constructed and populated with `command`, `current_path`, stdout, and stderr before the success/failure branch is evaluated. Every error return path (`Err(report)`) uses the same `report` variable. There is no code path that returns `Err` with a bare error type.
+In `process.rs`, `Report` is constructed and populated with `command`, `current_path`, stdout, and stderr before the success/failure branch is evaluated. Every error return path uses the same populated report variable. There is no code path that returns a bare error without a fully populated report.
 
 Verification command:
 
@@ -25,7 +25,7 @@ grep -n "Result<Report," src/process.rs
 
 ### Violation Consequences
 
-If a failure path returned only `Err(Error)` (not `Err(Report)`), callers could not retrieve stdout/stderr context from the failed invocation. Error diagnosis would require separate state to reconstruct what was executed. The uniform `Result<Report, Report>` type allows a single `match` arm to handle both outcomes with identical display code.
+If a failure path returned only a bare error (not a full report), callers could not retrieve stdout/stderr context from the failed invocation. Error diagnosis would require separate state to reconstruct what was executed. The uniform return type — a report on both branches — allows a single handler to process both outcomes with identical display code.
 
 ### Example
 

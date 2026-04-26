@@ -1,24 +1,5 @@
 # Doc Entities
 
-## Entity Tree
-
-```
-docs/
-├── algorithm/                  Collection Entity   1st
-├── api/                        Collection Entity   1st
-├── feature/                    Collection Entity   1st
-└── invariant/                  Collection Entity   1st
-```
-
-## Entities
-
-| Entity | Type | Latent? | Purpose |
-|--------|------|---------|---------|
-| [algorithm/](algorithm/) | Collection | | Code generation procedures for FromN trait impls |
-| [api/](api/) | Collection | | Public programmatic interfaces for variadic construction |
-| [feature/](feature/) | Collection | | Navigational hubs for user-facing variadic capabilities |
-| [invariant/](invariant/) | Collection | | Correctness properties that must always hold |
-
 ## Master Doc Entities Table
 
 | Type | Purpose | Master File | Instances |

@@ -5,7 +5,7 @@
 - **Purpose**: Document how Assign implementations for standard library types (Duration, PathBuf) are generated in user crates without violating the orphan rule.
 - **Responsibility**: Explains the string-matching approach, which types are recognized, and what implementations each produces.
 - **In Scope**: The matching logic, the recognized type names, and the generated implementation shapes for Duration and PathBuf.
-- **Out of Scope**: The Assign trait definition (→ `component_model_types/docs/api/001_assign_trait.md`); the orphan rule constraint (→ `component_model_types/docs/invariant/001_orphan_rule.md`).
+- **Out of Scope**: The Assign trait definition (→ `component_model_types/docs/api/` — to create); the orphan rule constraint (→ `component_model_types/docs/invariant/` — to create).
 
 ### Abstract
 
@@ -21,18 +21,20 @@ The recognition step uses the rendered string representation of each field's typ
 
 **Recognition table:**
 
-| Display string | Recognized as | Generated Assign impls |
-|----------------|---------------|----------------------|
-| `"Duration"` | `std::time::Duration` | From unsigned 64-bit integer (seconds), from 64-bit float (seconds), from (unsigned 64-bit integer, unsigned 32-bit integer) (secs + nanos) |
-| `"PathBuf"` | `std::path::PathBuf` | From string reference, from owned string |
+| Matched name | Standard library type | Generated Assign impls |
+|-------------|----------------------|----------------------|
+| Duration | Standard library time duration | From unsigned 64-bit integer (seconds), from 64-bit float (seconds), from (unsigned 64-bit integer, unsigned 32-bit integer) (secs + nanos) |
+| PathBuf | Standard library path buffer | From string reference, from owned string |
 
-**Important limitation:** Recognition is by short name only — a user-defined type named `Duration` will also trigger the generated impls. This is a known limitation of the string-matching approach. It is documented and accepted: false positives are rare in practice, and the types triggering them are structurally compatible anyway.
+**Important limitation:** Recognition is by short name only — a user-defined type named Duration will also trigger the generated impls. This is a known limitation of the string-matching approach. It is documented and accepted: false positives are rare in practice, and the types triggering them are structurally compatible anyway.
 
 ### Cross-References
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/popular_types.rs` | Implementation of `generate_popular_type_assigns()` |
+| source | `src/popular_types.rs` | Popular type recognition and Assign impl generation |
 | source | `src/component/component_model.rs` | Call site — invoked during ComponentModel derive expansion |
+| test | `tests/smoke_test.rs` | Integration coverage for popular type Assign impls |
 | doc | [api/001_derive_macros.md](../api/001_derive_macros.md) | Derive macro that invokes this algorithm |
-| doc | `component_model_types/docs/invariant/001_orphan_rule.md` | The constraint this algorithm works around |
+| doc | [algorithm/002_type_deduplication.md](002_type_deduplication.md) | Companion algorithm — type dedup applied to the same generated impls |
+| doc | `component_model_types/docs/invariant/` | The orphan rule constraint this algorithm works around (to create) |

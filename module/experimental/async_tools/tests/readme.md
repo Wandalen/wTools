@@ -9,6 +9,7 @@ Validates the async_tools facade crate — that all re-exported traits from the 
 | File | Responsibility |
 |------|----------------|
 | `tests.rs` | Test harness entry point delegating to async_from test suite |
+| `manual/readme.md` | Manual testing plan (not applicable for this facade crate) |
 
 ### Domain Map
 

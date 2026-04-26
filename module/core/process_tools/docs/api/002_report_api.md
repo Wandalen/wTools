@@ -9,7 +9,7 @@
 
 ### Abstract
 
-`Report` is the universal return type for all subprocess invocations. It bundles the command string, working directory, stdout, stderr, and result into one struct so callers never lose context on either success or failure. It implements `Display` for CLI-friendly human-readable output and `Clone` via manual implementation (because `Error` is not `Clone`).
+`Report` is the universal return type for all subprocess invocations. It bundles the command string, working directory, stdout, stderr, and result into one struct so callers never lose context on either success or failure. It implements `Display` for CLI-friendly human-readable output and `Clone` via manual implementation (because the error field type is not cloneable by default).
 
 ### Operations
 

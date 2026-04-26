@@ -1,0 +1,256 @@
+meta:
+  description: Cross-reference graph for all doc instances in benchkit
+  node_count: 13
+  edge_count: 37
+  component_count: 1
+  generated: 2026_04_26
+
+nodes:
+  - id: api/001
+    file: api/001_benchkit_api.md
+    label: benchkit Public API
+    entity: api
+
+  - id: feature/001
+    file: feature/001_measurement_timing.md
+    label: Measurement and Timing
+    entity: feature
+
+  - id: feature/002
+    file: feature/002_data_generation.md
+    label: Data Generation
+    entity: feature
+
+  - id: feature/003
+    file: feature/003_markdown_reports.md
+    label: Markdown Reports
+    entity: feature
+
+  - id: feature/004
+    file: feature/004_performance_analysis.md
+    label: Performance Analysis
+    entity: feature
+
+  - id: invariant/001
+    file: invariant/001_benches_directory.md
+    label: Benches Directory Mandate
+    entity: invariant
+
+  - id: invariant/002
+    file: invariant/002_exact_section_match.md
+    label: Exact Section Match
+    entity: invariant
+
+  - id: invariant/003
+    file: invariant/003_performance_nfr.md
+    label: Performance Overhead Constraint
+    entity: invariant
+
+  - id: invariant/004
+    file: invariant/004_usability_nfr.md
+    label: Integration Ease Constraint
+    entity: invariant
+
+  - id: invariant/005
+    file: invariant/005_compatibility_nfr.md
+    label: Platform and Environment Compatibility
+    entity: invariant
+
+  - id: invariant/006
+    file: invariant/006_reliability_nfr.md
+    label: Measurement Reproducibility
+    entity: invariant
+
+  - id: pattern/001
+    file: pattern/001_toolkit_not_framework.md
+    label: Toolkit Not Framework
+    entity: pattern
+
+  - id: pattern/002
+    file: pattern/002_markdown_first_reporting.md
+    label: Markdown-First Reporting
+    entity: pattern
+
+edges:
+  # api/001 outbound
+  - from: api/001
+    to: feature/001
+    via: cross_references
+
+  - from: api/001
+    to: feature/002
+    via: cross_references
+
+  - from: api/001
+    to: feature/003
+    via: cross_references
+
+  - from: api/001
+    to: feature/004
+    via: cross_references
+
+  - from: api/001
+    to: pattern/002
+    via: cross_references
+
+  # feature/001 outbound
+  - from: feature/001
+    to: api/001
+    via: cross_references
+
+  - from: feature/001
+    to: invariant/001
+    via: cross_references
+
+  - from: feature/001
+    to: invariant/003
+    via: cross_references
+
+  - from: feature/001
+    to: invariant/004
+    via: cross_references
+
+  - from: feature/001
+    to: invariant/005
+    via: cross_references
+
+  - from: feature/001
+    to: invariant/006
+    via: cross_references
+
+  - from: feature/001
+    to: pattern/001
+    via: cross_references
+
+  # feature/002 outbound
+  - from: feature/002
+    to: api/001
+    via: cross_references
+
+  - from: feature/002
+    to: pattern/001
+    via: cross_references
+
+  # feature/003 outbound
+  - from: feature/003
+    to: api/001
+    via: cross_references
+
+  - from: feature/003
+    to: invariant/002
+    via: cross_references
+
+  - from: feature/003
+    to: pattern/001
+    via: cross_references
+
+  - from: feature/003
+    to: pattern/002
+    via: cross_references
+
+  # feature/004 outbound
+  - from: feature/004
+    to: api/001
+    via: cross_references
+
+  - from: feature/004
+    to: invariant/006
+    via: cross_references
+
+  - from: feature/004
+    to: pattern/001
+    via: cross_references
+
+  # invariant/001 outbound
+  - from: invariant/001
+    to: feature/001
+    via: cross_references
+
+  # invariant/002 outbound
+  - from: invariant/002
+    to: feature/003
+    via: cross_references
+
+  # invariant/003 outbound
+  - from: invariant/003
+    to: feature/001
+    via: cross_references
+
+  # invariant/004 outbound
+  - from: invariant/004
+    to: feature/001
+    via: cross_references
+
+  - from: invariant/004
+    to: pattern/001
+    via: cross_references
+
+  # invariant/005 outbound
+  - from: invariant/005
+    to: feature/001
+    via: cross_references
+
+  # invariant/006 outbound
+  - from: invariant/006
+    to: feature/001
+    via: cross_references
+
+  - from: invariant/006
+    to: feature/004
+    via: cross_references
+
+  # pattern/001 outbound
+  - from: pattern/001
+    to: feature/001
+    via: cross_references
+
+  - from: pattern/001
+    to: feature/002
+    via: cross_references
+
+  - from: pattern/001
+    to: feature/003
+    via: cross_references
+
+  - from: pattern/001
+    to: feature/004
+    via: cross_references
+
+  - from: pattern/001
+    to: invariant/004
+    via: cross_references
+
+  # pattern/002 outbound
+  - from: pattern/002
+    to: feature/003
+    via: cross_references
+
+  - from: pattern/002
+    to: invariant/002
+    via: cross_references
+
+  - from: pattern/002
+    to: api/001
+    via: cross_references
+
+components:
+  - id: 1
+    label: Full benchkit documentation graph
+    size: 13
+    isolated: false
+    nodes:
+      - api/001
+      - feature/001
+      - feature/002
+      - feature/003
+      - feature/004
+      - invariant/001
+      - invariant/002
+      - invariant/003
+      - invariant/004
+      - invariant/005
+      - invariant/006
+      - pattern/001
+      - pattern/002
+
+dangling_refs: []

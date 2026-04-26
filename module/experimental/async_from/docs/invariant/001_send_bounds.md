@@ -25,5 +25,9 @@ Without thread-safety constraints, futures produced by async conversions could b
 |------|------|----------------|
 | source | `src/lib.rs` | Thread-safety where clauses on AsyncInto and AsyncTryInto blanket impls |
 | test | `tests/send_bounds_validation_test.rs` | Multi-thread runtime tests exercising thread-safety constraints |
-| doc | `docs/api/002_async_into.md` | AsyncInto blanket impl subject to this invariant |
-| doc | `docs/api/004_async_try_into.md` | AsyncTryInto blanket impl subject to this invariant |
+| doc | `docs/api/001_async_from.md` | AsyncFrom — source trait whose derived blanket impl is subject to this invariant |
+| doc | `docs/api/002_async_into.md` | AsyncInto blanket impl directly subject to this invariant |
+| doc | `docs/api/003_async_try_from.md` | AsyncTryFrom — source trait whose derived blanket impl is subject to this invariant |
+| doc | `docs/api/004_async_try_into.md` | AsyncTryInto blanket impl directly subject to this invariant |
+| doc | `docs/feature/001_infallible_async_conversion.md` | Feature exposing the blanket impl governed by this invariant |
+| doc | `docs/feature/002_fallible_async_conversion.md` | Feature exposing the blanket impl governed by this invariant |

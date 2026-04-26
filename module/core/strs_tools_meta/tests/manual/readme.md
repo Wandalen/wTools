@@ -51,8 +51,8 @@ cargo test --test corner_cases_test --all-features -- --nocapture
    - This is CORRECT and consistent with Rust stdlib
 
 3. **Strategy parameter simplified**: `longest_match` and `all_matches` currently generate same code as `first_match`
-   - This is DOCUMENTED in exploration report
-   - Not a bug - planned enhancement opportunity
+   - Formally documented in `docs/invariant/003_strategy_param_no_op.md`
+   - Not a bug — planned enhancement; behavior will differ when true strategy dispatch is implemented
 
 ### Manual Verification Steps
 

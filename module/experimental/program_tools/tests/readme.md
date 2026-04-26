@@ -1,30 +1,31 @@
 # Tests Directory
 
-This directory contains all tests for the program_tools crate, organized by domain and test type per test_organization.rulebook.md standards.
+### Scope
 
-## File Responsibility Table
+All tests for the `program_tools` crate, organized by domain and test type.
+
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|
 | `smoke_test.rs` | Verify crate compiles and basic imports work |
 | `tests.rs` | Test suite entry point and module organization |
-| `inc/mod.rs` | Test module registration for inc/ directory |
-| `inc/basic.rs` | Validate basic builder API with complete chain |
-| `inc/corner_cases_test.rs` | Comprehensive edge case validation for all data structures |
-| `tool/asset.rs` | Test asset management utilities |
+| `inc/` | Core builder API and edge case tests (see `inc/readme.md`) |
+| `tool/asset.rs` | WIP legacy asset utilities — not compiled into any test suite |
 | `asset/err_out_test/err_out_err.rs` | Error output test asset |
 | `asset/err_out_test/out_err_out.rs` | Output error test asset |
+| `manual/` | Manual testing plans and documentation |
 
-## Test Organization
+### Test Organization
 
 Tests are organized following domain-based structure:
 
 - **`inc/`**: Core functionality tests (builder API, data structures)
-- **`tool/`**: Test utilities and helpers
+- **`tool/`**: Test utilities and helpers (WIP, not yet wired)
 - **`asset/`**: Test assets and fixtures
 - **`manual/`**: Manual testing plans and documentation
 
-## Running Tests
+### Running Tests
 
 Execute tests using standard commands:
 
@@ -41,7 +42,7 @@ cargo test --test tests
 cargo test source_empty_file_path
 ```
 
-## Test Coverage
+### Test Coverage
 
 Current test coverage spans:
 

@@ -5,7 +5,7 @@
 - **Purpose**: Provide the primary async conversion trait for fallible conversions from a source type to the implementing type.
 - **Responsibility**: Defines the AsyncTryFrom trait contract — its associated error type, the single required method, and the result-based return.
 - **In Scope**: AsyncTryFrom trait, the associated error type, the async fallible conversion method, and feature flag `async_try_from`.
-- **Out of Scope**: Blanket implementation details (see `docs/api/004_async_try_into.md`) and infallible conversions.
+- **Out of Scope**: Blanket implementation details (see `docs/api/004_async_try_into.md`) and infallible conversions (see `docs/api/001_async_from.md`).
 
 ### Abstract
 
@@ -32,6 +32,7 @@ Gated behind the `async_try_from` feature flag, which is independent of `async_f
 | test | `tests/manual_corner_cases_test.rs` | Edge cases and error propagation |
 | test | `tests/additional_corner_cases_test.rs` | AsyncTryFrom corner cases (leading zeros, spaces, floats, unicode, hex) |
 | doc | `docs/feature/002_fallible_async_conversion.md` | Feature scope and design rationale |
+| doc | `docs/api/001_async_from.md` | Infallible async conversion counterpart |
 | doc | `docs/api/004_async_try_into.md` | AsyncTryInto blanket derived from this trait |
 | doc | `docs/invariant/001_send_bounds.md` | Thread-safety constraint on blanket impl |
 | doc | `docs/pattern/001_std_mirror_pattern.md` | Std mirror design pattern |

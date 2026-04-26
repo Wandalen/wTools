@@ -34,4 +34,7 @@ No feature flags required. No external runtime dependencies (see invariant/002_z
 | test | `tests/inc/test_cases.rs` | Full coverage: primitives, Box, closures, Fn/FnMut/FnOnce, path syntax |
 | doc | `docs/feature/001_trait_implementation_check.md` | End-to-end feature context |
 | doc | `docs/api/002_instance_of.md` | Alias macro with identical semantics |
-| doc | `docs/invariant/001_value_not_consumed.md` | Non-consuming evaluation guarantee |
+| doc | `docs/invariant/001_value_not_consumed.md`        | Non-consuming evaluation guarantee                                                     |
+| doc | `docs/invariant/002_zero_runtime_dependencies.md` | Zero runtime dependency constraint                                                     |
+| doc | `docs/invariant/003_fn_trait_limitation.md`        | Compile error when checked against callable traits on named function items             |
+| doc | `docs/pattern/001_autoref_specialization.md`       | Internal mechanism this macro implements                                               |

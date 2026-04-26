@@ -25,12 +25,7 @@ all-features = false
 proc-macro = true
 
 [features]
-default = [
-  "enabled",
-
-  "optimize_split",
-  "optimize_match",
-]
+default = []
 full = [
   "enabled",
 

@@ -28,18 +28,7 @@ features = [ "full" ]
 all-features = false
 
 [features]
-# Default feature set - no_std compatible with essential functionality
-# For std environments with SIMD, use "full" feature set instead
-default = [
-  "enabled",
-  "no_std",
-  "use_alloc",
-  "string_indentation",
-  "string_isolate",
-  "string_split",
-  "string_parse_number",
-  "compile_time_optimizations",
-]
+default = []
 
 # Full feature set - includes everything for maximum functionality in std environments
 full = [

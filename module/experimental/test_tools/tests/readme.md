@@ -2,7 +2,7 @@
 
 This directory contains comprehensive tests for the `test_tools` crate, verifying all functional requirements, user stories, and implementation details.
 
-### Responsibility Table
+## Responsibility Table
 
 | File | Responsibility |
 |------|----------------|
@@ -12,14 +12,17 @@ This directory contains comprehensive tests for the `test_tools` crate, verifyin
 | `cargo_execution_tests.rs` | Test SmokeModuleTest cargo command execution functionality (Task 020) |
 | `cargo_toml_config_tests.rs` | Test SmokeModuleTest Cargo.toml configuration generation (Task 017) |
 | `cleanup_functionality_tests.rs` | Test SmokeModuleTest cleanup functionality and error handling (Task 023) |
+| `collection_constructors_edge_cases.rs` | Test collection constructor macro edge cases |
 | `conditional_execution_tests.rs` | Test conditional execution behavior under different feature flags (Task 026) |
 | `debug_assertion_availability_test.rs` | Verify debug assertions are available in test_tools |
 | `local_published_smoke_tests.rs` | Test SmokeModuleTest with both local and published crate versions (Task 035) |
 | `macro_ambiguity_test.rs` | Document vec! macro ambiguity patterns and resolution strategies |
 | `mod_interface_aggregation_tests.rs` | Test mod_interface pattern aggregation functionality (Task 008) |
+| `readme_example_verification_test.rs` | Verify readme code examples compile and run |
 | `single_dependency_access_tests.rs` | Test single-dependency access and isolation (Task 029) |
 | `smoke_module_test_creation.rs` | Test SmokeModuleTest instance creation and initialization (Task 014) |
 | `smoke_test.rs` | Comprehensive smoke testing of the test_tools crate |
+| `smoke_test_edge_cases.rs` | Test SmokeModuleTest edge cases and error paths |
 | `smoke_test_form_main_bug.rs` | Bug reproducer: form() must wrap code lacking fn main() (issue-smoke-form-missing-main) |
 | `standalone_basic_test.rs` | Basic standalone build verification without dependencies |
 | `standalone_build_tests.rs` | Test standalone build mode functionality (Task 038) |

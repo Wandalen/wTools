@@ -68,3 +68,5 @@ edges:
   - {from: invariant/003, to: feature/003, via: cross_references }
   - {from: feature/004, to: invariant/004, via: cross_references }
   - {from: invariant/004, to: feature/004, via: cross_references }
+
+dangling_refs: []
