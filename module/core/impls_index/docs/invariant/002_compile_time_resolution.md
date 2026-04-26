@@ -4,7 +4,7 @@
 
 - **Purpose**: Guarantee that all `impls_index` macro operations introduce zero runtime overhead.
 - **Responsibility**: Define the compile-time-only invariant for all macros in the crate.
-- **In Scope**: All macros — indexing, invocation, and utilities; the `no_std` declaration.
+- **In Scope**: All macros — indexing, invocation, and utilities; the no-standard-library declaration.
 - **Out of Scope**: Runtime behavior of the generated functions themselves (the generated code is user-authored).
 
 ### Invariant Statement

@@ -9,11 +9,11 @@
 
 ### Invariant Statement
 
-All user-supplied file paths must be validated via `genfile_core::validate_path()` to reject `..` segments. No shell commands may be constructed from user input. Binary file content must be safely encoded without data leakage. Sensitive parameter values must not appear in logs or error messages.
+All user-supplied file paths must be validated via a path validation function to reject `..` segments. No shell commands may be constructed from user input. Binary file content must be safely encoded without data leakage. Sensitive parameter values must not appear in logs or error messages.
 
 ### Enforcement Mechanism
 
-`genfile_core::validate_path()` is called on all paths received from command arguments before use. No `std::process::Command` or shell execution occurs with user-supplied data. Security-focused integration tests verify traversal rejection. Code review enforces no injection patterns.
+A path validation function is called on all paths received from command arguments before use. No shell execution occurs with user-supplied data. Security-focused integration tests verify traversal rejection. Code review enforces no injection patterns.
 
 ### Violation Consequences
 

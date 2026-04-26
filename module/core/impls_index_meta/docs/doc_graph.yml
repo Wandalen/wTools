@@ -1,6 +1,6 @@
 meta:
   description: Cross-reference graph for all doc instances in impls_index_meta
-  generated: 2026_04_25
+  generated: 2026-04-25
   node_count: 2
   edge_count: 2
   component_count: 1
@@ -18,16 +18,17 @@ nodes:
 edges:
   - from: feature/001
     to: invariant/001
-    label: compile-time only guarantee for this feature
+    via: cross_references
   - from: invariant/001
     to: feature/001
-    label: the generation feature this invariant governs
+    via: cross_references
 
 components:
   - id: 1
+    label: macro_codegen
     size: 2
     isolated: false
-    members:
+    nodes:
       - feature/001
       - invariant/001
 

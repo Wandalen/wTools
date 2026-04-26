@@ -3,7 +3,7 @@ meta:
   node_count: 6
   edge_count: 18
   component_count: 1
-  generated: 2026-04-25
+  generated: 2026_04_25
 
 nodes:
   - id: algorithm/001
@@ -39,82 +39,82 @@ nodes:
 edges:
   - from: feature/001
     to: api/001
-    label: cross-reference
+    via: cross_references
 
   - from: feature/001
     to: api/002
-    label: cross-reference
+    via: cross_references
 
   - from: feature/001
     to: algorithm/001
-    label: cross-reference
+    via: cross_references
 
   - from: feature/001
     to: invariant/001
-    label: cross-reference
+    via: cross_references
 
   - from: feature/001
     to: invariant/002
-    label: cross-reference
+    via: cross_references
 
   - from: api/001
     to: api/002
-    label: cross-reference
+    via: cross_references
 
   - from: api/001
     to: algorithm/001
-    label: cross-reference
+    via: cross_references
 
   - from: api/001
     to: feature/001
-    label: cross-reference
+    via: cross_references
 
   - from: api/002
     to: api/001
-    label: cross-reference
+    via: cross_references
 
   - from: api/002
     to: invariant/002
-    label: cross-reference
+    via: cross_references
 
   - from: api/002
     to: feature/001
-    label: cross-reference
+    via: cross_references
 
   - from: algorithm/001
     to: api/001
-    label: cross-reference
+    via: cross_references
 
   - from: algorithm/001
     to: invariant/001
-    label: cross-reference
+    via: cross_references
 
   - from: algorithm/001
     to: feature/001
-    label: cross-reference
+    via: cross_references
 
   - from: invariant/001
     to: algorithm/001
-    label: cross-reference
+    via: cross_references
 
   - from: invariant/001
     to: feature/001
-    label: cross-reference
+    via: cross_references
 
   - from: invariant/002
     to: api/002
-    label: cross-reference
+    via: cross_references
 
   - from: invariant/002
     to: feature/001
-    label: cross-reference
+    via: cross_references
 
 components:
   - id: 1
     label: Main corpus
     size: 6
     isolated: false
-    members:
+    nodes:
       - algorithm/001
       - api/001
       - api/002

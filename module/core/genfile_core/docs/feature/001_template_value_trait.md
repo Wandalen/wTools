@@ -3,7 +3,7 @@
 ### Scope
 
 - **Purpose**: Provides a trait that any value type implements to participate in template rendering.
-- **Responsibility**: Documents the `TemplateValue` trait contract and its role in the library.
+- **Responsibility**: Documents the template value trait contract and its role in the library.
 - **In Scope**: Trait definition, required methods, and custom implementation support.
 - **Out of Scope**: Concrete value types (→ 002), rendering mechanics (→ 006, 007).
 

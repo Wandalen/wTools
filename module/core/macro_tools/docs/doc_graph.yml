@@ -3,7 +3,7 @@ meta:
   node_count: 12
   edge_count: 20
   component_count: 5
-  generated: 2026-04-25
+  generated: 2026_04_25
 
 nodes:
   - id: api/001
@@ -56,33 +56,33 @@ nodes:
     entity: pattern
 
 edges:
-  - { from: feature/001, to: api/001,       label: cross-reference }
-  - { from: feature/001, to: api/002,       label: cross-reference }
+  - { from: feature/001, to: api/001,       via: cross_references }
+  - { from: feature/001, to: api/002,       via: cross_references }
   - { from: feature/001, to: pattern/002,   via: cross_references }
   - { from: feature/001, to: feature/005,   via: cross_references }
-  - { from: feature/005, to: invariant/002, label: cross-reference }
+  - { from: feature/005, to: invariant/002, via: cross_references }
   - { from: feature/005, to: feature/001,   via: cross_references }
   - { from: api/001,     to: feature/001,   via: cross_references }
-  - { from: api/001,     to: api/002,       label: cross-reference }
+  - { from: api/001,     to: api/002,       via: cross_references }
   - { from: api/001,     to: pattern/002,   via: cross_references }
   - { from: api/001,     to: pattern/001,   via: cross_references }
   - { from: api/002,     to: feature/001,   via: cross_references }
-  - { from: api/002,     to: api/001,       label: cross-reference }
+  - { from: api/002,     to: api/001,       via: cross_references }
   - { from: api/002,     to: pattern/002,   via: cross_references }
-  - { from: pattern/001, to: invariant/001, label: cross-reference }
-  - { from: pattern/001, to: api/001,       label: cross-reference }
-  - { from: pattern/002, to: api/001,       label: cross-reference }
-  - { from: pattern/002, to: api/002,       label: cross-reference }
+  - { from: pattern/001, to: invariant/001, via: cross_references }
+  - { from: pattern/001, to: api/001,       via: cross_references }
+  - { from: pattern/002, to: api/001,       via: cross_references }
+  - { from: pattern/002, to: api/002,       via: cross_references }
   - { from: pattern/002, to: feature/001,   via: cross_references }
-  - { from: invariant/001, to: pattern/001, label: cross-reference }
-  - { from: invariant/002, to: feature/005, label: cross-reference }
+  - { from: invariant/001, to: pattern/001, via: cross_references }
+  - { from: invariant/002, to: feature/005, via: cross_references }
 
 components:
   - id: 1
     label: Attribute parsing and pattern cluster
     size: 8
     isolated: false
-    members:
+    nodes:
       - api/001
       - api/002
       - feature/001
@@ -96,7 +96,7 @@ components:
     label: Type Analysis
     size: 1
     isolated: true
-    members:
+    nodes:
       - feature/002
     gap: >
       feature/002 (Type Analysis) has no doc-to-doc cross-references because it is a
@@ -108,7 +108,7 @@ components:
     label: Generic Parameters
     size: 1
     isolated: true
-    members:
+    nodes:
       - feature/003
     gap: >
       feature/003 (Generic Parameters) has no doc-to-doc cross-references because it is a
@@ -120,7 +120,7 @@ components:
     label: Syntax Tree Helpers
     size: 1
     isolated: true
-    members:
+    nodes:
       - feature/004
     gap: >
       feature/004 (Syntax Tree Helpers) has no doc-to-doc cross-references because it is a
@@ -133,7 +133,7 @@ components:
     label: Code Generation Support
     size: 1
     isolated: true
-    members:
+    nodes:
       - feature/006
     gap: >
       feature/006 (Code Generation Support) has no doc-to-doc cross-references because it is a

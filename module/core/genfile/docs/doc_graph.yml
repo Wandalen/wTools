@@ -72,75 +72,86 @@ nodes:
     entity: invariant
 
 edges:
-  - {from: invariant/001, to: feature/010, label: cross-reference }
-  - {from: invariant/003, to: feature/006, label: cross-reference }
-  - {from: invariant/004, to: feature/006, label: cross-reference }
+  - {from: invariant/001, to: feature/010, via: cross_references}
+  - {from: invariant/003, to: feature/006, via: cross_references}
+  - {from: invariant/004, to: feature/006, via: cross_references}
 
 components:
   - id: 1
     label: performance-repl
     size: 2
     isolated: false
-    members: [invariant/001, feature/010]
+    nodes: [invariant/001, feature/010]
   - id: 2
     label: security-materialization
     size: 3
     isolated: false
-    members: [invariant/003, invariant/004, feature/006]
+    nodes: [invariant/003, invariant/004, feature/006]
   - id: 3
     label: archive-lifecycle
     size: 1
     isolated: true
-    members: [feature/001]
+    nodes: [feature/001]
+    gap: Foundational archive lifecycle; would connect via invariant cross-referencing load/save latency bounds
   - id: 4
     label: file-content
     size: 1
     isolated: true
-    members: [feature/002]
+    nodes: [feature/002]
+    gap: Standalone file operations; would connect via feature/001 dependency on loaded archive
   - id: 5
     label: param-definition
     size: 1
     isolated: true
-    members: [feature/003]
+    nodes: [feature/003]
+    gap: Standalone parameter metadata; would connect via feature/004 value-definition dependency
   - id: 6
     label: param-value
     size: 1
     isolated: true
-    members: [feature/004]
+    nodes: [feature/004]
+    gap: Standalone value management; would connect via feature/003 definition-value dependency
   - id: 7
     label: content-source
     size: 1
     isolated: true
-    members: [feature/005]
+    nodes: [feature/005]
+    gap: Standalone content sourcing; would connect via feature/007 internalization step in pack
   - id: 8
     label: archive-serialization
     size: 1
     isolated: true
-    members: [feature/007]
+    nodes: [feature/007]
+    gap: Standalone serialization; would connect via feature/005 content internalization dependency
   - id: 9
     label: archive-analysis
     size: 1
     isolated: true
-    members: [feature/008]
+    nodes: [feature/008]
+    gap: Standalone analysis; would connect via invariant/005 coverage verification
   - id: 10
     label: help-system
     size: 1
     isolated: true
-    members: [feature/009]
+    nodes: [feature/009]
+    gap: Framework-provided help with no cross-references; would connect via invariant/002 usability compliance
   - id: 11
     label: usability
     size: 1
     isolated: true
-    members: [invariant/002]
+    nodes: [invariant/002]
+    gap: CLI convention invariant; would connect if feature docs cross-referenced usability contract
   - id: 12
     label: testing-coverage
     size: 1
     isolated: true
-    members: [invariant/005]
+    nodes: [invariant/005]
+    gap: Testing meta-invariant; would connect if feature docs cross-referenced coverage requirements
   - id: 13
     label: documentation
     size: 1
     isolated: true
-    members: [invariant/006]
+    nodes: [invariant/006]
+    gap: Documentation meta-invariant; would connect if feature docs cross-referenced documentation requirements
 
 dangling_refs: []

@@ -13,7 +13,7 @@ All errors must use the format `[ERROR] [CONTEXT]: message`. Exit codes must fol
 
 ### Enforcement Mechanism
 
-Integration tests assert on exit codes and error message format. The `crate::error` module enforces the format via helper functions. `genfile_core::validate_path()` is used for all user-supplied paths.
+Integration tests assert on exit codes and error message format. A dedicated error module enforces the format via helper functions. All user-supplied paths pass through a validation function that rejects traversal patterns.
 
 ### Violation Consequences
 

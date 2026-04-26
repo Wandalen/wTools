@@ -17,3 +17,4 @@ Values can be set for any defined parameter; setting an undefined parameter prod
 |------|------|----------------|
 | source | `src/handlers/value.rs` | Handler implementations for value commands |
 | config | `commands/value.yaml` | Authoritative command specs for value group |
+| test | `tests/param_value_commands_test.rs` | Integration tests for value management commands |

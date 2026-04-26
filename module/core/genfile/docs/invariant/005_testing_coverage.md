@@ -9,11 +9,11 @@
 
 ### Invariant Statement
 
-Code coverage must be ≥80% measured by `cargo tarpaulin`. All 24 commands must have integration tests. Tests must use `CARGO_MANIFEST_DIR`-based path resolution for cross-platform compatibility. Total test suite execution must complete within 30 seconds.
+Code coverage must be ≥80% measured by a coverage tool. All 24 commands must have integration tests. Tests must use manifest-directory-based path resolution for cross-platform compatibility. Total test suite execution must complete within 30 seconds.
 
 ### Enforcement Mechanism
 
-`tests/test_utils.rs` provides `project_dir()` using `env!("CARGO_MANIFEST_DIR")` for portable path resolution. Each command group has a corresponding test file. `repl_command()` supports both Unix (sh pipe) and Windows (temp file redirect) execution.
+A shared test utilities module provides portable project directory resolution for cross-platform compatibility. Each command group has a corresponding test file. REPL test helpers support both Unix and Windows execution paths.
 
 ### Violation Consequences
 

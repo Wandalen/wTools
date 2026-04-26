@@ -4,8 +4,8 @@
 
 | Type | Purpose | Master File | Instances |
 |------|---------|-------------|----------:|
-| `feature/` | Functional requirements and capabilities | [feature/readme.md](feature/readme.md) | 17 |
-| `invariant/` | Non-functional constraints with measurable thresholds | [invariant/readme.md](invariant/readme.md) | 7 |
+| `feature/` | Index of all feature doc instances for genfile_core | [feature/readme.md](feature/readme.md) | 17 |
+| `invariant/` | Index of all invariant doc instances for genfile_core | [invariant/readme.md](invariant/readme.md) | 7 |
 
 ## Master Doc Instances Table
 

@@ -17,3 +17,4 @@ Internalization fetches all external content references (file paths, URLs) and e
 |------|------|----------------|
 | source | `src/handlers/content.rs` | Handler implementations for content commands |
 | config | `commands/content.yaml` | Authoritative command specs for content group |
+| test | `tests/content_commands_test.rs` | Integration tests for content source commands |

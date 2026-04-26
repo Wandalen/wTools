@@ -45,80 +45,80 @@ edges:
   # feature/001 cross-references
   - from: feature/001
     to: api/001
-    label: cross-reference
+    via: cross_references
   - from: feature/001
     to: invariant/001
-    label: cross-reference
+    via: cross_references
   - from: feature/001
     to: invariant/002
-    label: cross-reference
+    via: cross_references
   - from: feature/001
     to: integration/003
-    label: cross-reference
+    via: cross_references
 
   # api/001 cross-references
   - from: api/001
     to: feature/001
-    label: cross-reference
+    via: cross_references
   - from: api/001
     to: invariant/002
-    label: cross-reference
+    via: cross_references
   - from: api/001
     to: integration/003
-    label: cross-reference
+    via: cross_references
 
   # invariant/001 cross-references
   - from: invariant/001
     to: feature/001
-    label: cross-reference
+    via: cross_references
   - from: invariant/001
     to: integration/003
-    label: cross-reference
+    via: cross_references
   - from: invariant/001
     to: integration/002
-    label: cross-reference
+    via: cross_references
 
   # invariant/002 cross-references
   - from: invariant/002
     to: api/001
-    label: cross-reference
+    via: cross_references
   - from: invariant/002
     to: feature/001
-    label: cross-reference
+    via: cross_references
 
   # integration/001 cross-references
   - from: integration/001
     to: api/001
-    label: cross-reference
+    via: cross_references
   - from: integration/001
     to: feature/001
-    label: cross-reference
+    via: cross_references
 
   # integration/002 cross-references
   - from: integration/002
     to: invariant/001
-    label: cross-reference
+    via: cross_references
   - from: integration/002
     to: feature/001
-    label: cross-reference
+    via: cross_references
 
   # integration/003 cross-references
   - from: integration/003
     to: invariant/001
-    label: cross-reference
+    via: cross_references
   - from: integration/003
     to: feature/001
-    label: cross-reference
+    via: cross_references
   - from: integration/003
     to: api/001
-    label: cross-reference
+    via: cross_references
 
 components:
   - id: 1
     label: former_meta doc corpus
     size: 7
     isolated: false
-    members:
+    nodes:
       - api/001
       - feature/001
       - integration/001

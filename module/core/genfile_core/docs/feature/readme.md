@@ -4,7 +4,7 @@
 
 - **Purpose**: Documents functional requirements and user-facing capabilities of the genfile_core library.
 - **Responsibility**: Index of all feature doc instances for genfile_core.
-- **In Scope**: Functional requirements and capabilities of the genfile_core library.
+- **In Scope**: Template value types, parameters, renderers, file system abstractions, generation pipeline, error handling, and archive structure.
 - **Out of Scope**: Non-functional constraints (→ `invariant/`), API contracts (→ `api/`).
 
 ### Overview Table

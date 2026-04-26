@@ -9,7 +9,7 @@
 
 ### Design
 
-When invoked with no arguments, genfile starts a REPL that reads commands line-by-line from stdin. Each command is processed via the same pipeline as CLI mode. Archive state persists across commands within the session via session-scoped storage (a workaround for the CLI framework's current limitation: stateless execution contexts). The session ends on `quit`, `exit`, or EOF. History navigation is supported when the enhanced REPL capability is active.
+When invoked with no arguments, genfile starts a REPL that reads commands line-by-line from stdin. Each command is processed via the same pipeline as CLI mode. Archive state persists across commands within the session via session-scoped storage. The session ends on `quit`, `exit`, or EOF. History navigation is available in interactive sessions.
 
 ### Cross-References
 
@@ -18,3 +18,4 @@ When invoked with no arguments, genfile starts a REPL that reads commands line-b
 | source | `src/repl.rs` | REPL loop implementation |
 | source | `src/handlers/shared_state.rs` | Thread-local archive state backing the session |
 | source | `src/main.rs` | Entry point that dispatches to REPL or CLI mode |
+| test | `tests/repl_exit_code_bug_test.rs` | REPL exit code and session behavior tests |

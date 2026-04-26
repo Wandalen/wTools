@@ -17,3 +17,4 @@ The pack command internalizes all external content references (file refs, URL re
 |------|------|----------------|
 | source | `src/handlers/pack.rs` | Handler implementation for `.pack` command |
 | config | `commands/pack.yaml` | Authoritative command spec |
+| test | `tests/archive_commands_test.rs` | Integration tests covering pack command |

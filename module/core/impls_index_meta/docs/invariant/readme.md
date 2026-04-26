@@ -11,4 +11,4 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | Compile-Time Only | All macro errors are compile-time; no runtime panics or failures | Active |
+| 001 | [Compile-Time Only](001_compile_time_only.md) | All macro errors are compile-time; no runtime panics or failures | ✅ |

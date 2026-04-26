@@ -9,7 +9,7 @@
 
 ### Design
 
-Universal help (`.` or `.help`) lists all registered non-help commands with their hints and examples. Per-command help (e.g., `.archive.new.help`) shows the command description, all parameters with kinds and defaults, and usage examples. Help commands are filtered from the command listing to avoid noise. The unilang framework auto-generates help commands for every registered command; genfile does not implement help handlers manually.
+Universal help (`.` or `.help`) lists all registered non-help commands with their hints and examples. Per-command help (e.g., `.archive.new.help`) shows the command description, all parameters with kinds and defaults, and usage examples. Help commands are auto-generated for every registered command and filtered from command listings to avoid noise.
 
 ### Cross-References
 

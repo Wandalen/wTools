@@ -341,190 +341,190 @@ edges:
     label: body-link
   - from: algorithm/003
     to: invariant/001
-    label: cross-reference
+    via: cross_references
   - from: algorithm/004
     to: feature/005
-    label: cross-reference
+    via: cross_references
   - from: algorithm/004
     to: api/003
-    label: cross-reference
+    via: cross_references
   - from: algorithm/004
     to: algorithm/002
     label: body-link
   - from: algorithm/005
     to: feature/005
-    label: cross-reference
+    via: cross_references
   - from: algorithm/005
     to: invariant/004
-    label: cross-reference
+    via: cross_references
 
   # api cross-references
   - from: api/001
     to: input_type/001
-    label: cross-reference
+    via: cross_references
   - from: api/001
     to: input_type/002
-    label: cross-reference
+    via: cross_references
   - from: api/002
     to: builder/001
-    label: cross-reference
+    via: cross_references
   - from: api/002
     to: builder/002
-    label: cross-reference
+    via: cross_references
   - from: api/004
     to: trait/001
-    label: cross-reference
+    via: cross_references
   - from: api/004
     to: trait/002
-    label: cross-reference
+    via: cross_references
 
   # builder cross-references
   - from: builder/001
     to: api/002
-    label: cross-reference
+    via: cross_references
   - from: builder/001
     to: input_type/001
-    label: cross-reference
+    via: cross_references
   - from: builder/002
     to: api/002
-    label: cross-reference
+    via: cross_references
   - from: builder/002
     to: input_type/002
-    label: cross-reference
+    via: cross_references
 
   # algorithm/006 cross-references
   - from: algorithm/006
     to: variant/033
-    label: cross-reference
+    via: cross_references
   - from: variant/033
     to: algorithm/006
-    label: cross-reference
+    via: cross_references
 
   # feature cross-references
   - from: feature/001
     to: algorithm/001
-    label: cross-reference
+    via: cross_references
   - from: feature/001
     to: feature/005
-    label: cross-reference
+    via: cross_references
   - from: feature/002
     to: algorithm/002
-    label: cross-reference
+    via: cross_references
   - from: feature/002
     to: feature/005
-    label: cross-reference
+    via: cross_references
   - from: feature/003
     to: trait/001
-    label: cross-reference
+    via: cross_references
   - from: feature/005
     to: algorithm/004
-    label: cross-reference
+    via: cross_references
   - from: feature/005
     to: algorithm/005
-    label: cross-reference
+    via: cross_references
   - from: feature/005
     to: invariant/003
-    label: cross-reference
+    via: cross_references
   - from: feature/005
     to: invariant/004
-    label: cross-reference
+    via: cross_references
   - from: feature/005
     to: api/003
-    label: cross-reference
+    via: cross_references
   - from: feature/005
     to: feature/002
-    label: cross-reference
+    via: cross_references
   - from: feature/004
     to: api/003
-    label: cross-reference
+    via: cross_references
 
   # input_model cross-references
   - from: input_model/001
     to: input_type/001
-    label: cross-reference
+    via: cross_references
   - from: input_model/002
     to: input_type/002
-    label: cross-reference
+    via: cross_references
 
   # input_type cross-references
   - from: input_type/001
     to: input_model/001
-    label: cross-reference
+    via: cross_references
   - from: input_type/001
     to: api/001
-    label: cross-reference
+    via: cross_references
   - from: input_type/002
     to: input_model/002
-    label: cross-reference
+    via: cross_references
   - from: input_type/002
     to: api/001
-    label: cross-reference
+    via: cross_references
 
   # invariant cross-references
   - from: invariant/001
     to: builder/001
-    label: cross-reference
+    via: cross_references
   - from: invariant/001
     to: builder/002
-    label: cross-reference
+    via: cross_references
   - from: invariant/002
     to: algorithm/001
     label: body-link
   - from: invariant/002
     to: algorithm/003
-    label: cross-reference
+    via: cross_references
   - from: invariant/003
     to: feature/005
-    label: cross-reference
+    via: cross_references
   - from: invariant/004
     to: feature/005
-    label: cross-reference
+    via: cross_references
   - from: invariant/004
     to: algorithm/005
-    label: cross-reference
+    via: cross_references
 
   # pattern cross-references
   - from: pattern/001
     to: feature/001
-    label: cross-reference
+    via: cross_references
   - from: pattern/001
     to: api/004
-    label: cross-reference
+    via: cross_references
   - from: pattern/001
     to: api/001
-    label: cross-reference
+    via: cross_references
   - from: pattern/001
     to: api/002
-    label: cross-reference
+    via: cross_references
   - from: pattern/002
     to: invariant/001
-    label: cross-reference
+    via: cross_references
   - from: pattern/003
     to: trait/001
-    label: cross-reference
+    via: cross_references
   - from: pattern/003
     to: trait/002
-    label: cross-reference
+    via: cross_references
   - from: pattern/003
     to: trait/003
-    label: cross-reference
+    via: cross_references
   - from: pattern/003
     to: api/004
-    label: cross-reference
+    via: cross_references
   - from: pattern/004
     to: api/003
-    label: cross-reference
+    via: cross_references
   - from: pattern/004
     to: builder/001
-    label: cross-reference
+    via: cross_references
   - from: pattern/004
     to: builder/002
-    label: cross-reference
+    via: cross_references
 
   # trait cross-references
   - from: trait/001
     to: feature/003
-    label: cross-reference
+    via: cross_references
   - from: trait/002
     to: trait/001
     label: body-link
@@ -538,316 +538,316 @@ edges:
   # formatter cross-references
   - from: formatter/001
     to: api/004
-    label: cross-reference
+    via: cross_references
   - from: formatter/001
     to: trait/001
-    label: cross-reference
+    via: cross_references
   - from: formatter/001
     to: trait/002
-    label: cross-reference
+    via: cross_references
   - from: formatter/001
     to: variant/001
-    label: cross-reference
+    via: cross_references
   - from: formatter/001
     to: variant/002
-    label: cross-reference
+    via: cross_references
   - from: formatter/001
     to: variant/003
-    label: cross-reference
+    via: cross_references
   - from: formatter/001
     to: variant/004
-    label: cross-reference
+    via: cross_references
   - from: formatter/001
     to: variant/005
-    label: cross-reference
+    via: cross_references
   - from: formatter/001
     to: variant/006
-    label: cross-reference
+    via: cross_references
   - from: formatter/001
     to: variant/007
-    label: cross-reference
+    via: cross_references
   - from: formatter/001
     to: variant/008
-    label: cross-reference
+    via: cross_references
   - from: formatter/001
     to: variant/009
-    label: cross-reference
+    via: cross_references
   - from: formatter/002
     to: api/004
-    label: cross-reference
+    via: cross_references
   - from: formatter/002
     to: trait/002
-    label: cross-reference
+    via: cross_references
   - from: formatter/002
     to: variant/010
-    label: cross-reference
+    via: cross_references
   - from: formatter/002
     to: variant/011
-    label: cross-reference
+    via: cross_references
   - from: formatter/003
     to: api/004
-    label: cross-reference
+    via: cross_references
   - from: formatter/003
     to: input_model/002
-    label: cross-reference
+    via: cross_references
   - from: formatter/003
     to: input_type/002
-    label: cross-reference
+    via: cross_references
   - from: formatter/003
     to: variant/012
-    label: cross-reference
+    via: cross_references
   - from: formatter/003
     to: variant/013
-    label: cross-reference
+    via: cross_references
   - from: formatter/003
     to: variant/014
-    label: cross-reference
+    via: cross_references
   - from: formatter/004
     to: api/004
-    label: cross-reference
+    via: cross_references
   - from: formatter/004
     to: trait/001
-    label: cross-reference
+    via: cross_references
   - from: formatter/004
     to: variant/015
-    label: cross-reference
+    via: cross_references
   - from: formatter/005
     to: api/004
-    label: cross-reference
+    via: cross_references
   - from: formatter/005
     to: trait/001
-    label: cross-reference
+    via: cross_references
   - from: formatter/005
     to: variant/016
-    label: cross-reference
+    via: cross_references
   - from: formatter/005
     to: variant/017
-    label: cross-reference
+    via: cross_references
   - from: formatter/006
     to: api/004
-    label: cross-reference
+    via: cross_references
   - from: formatter/006
     to: trait/001
-    label: cross-reference
+    via: cross_references
   - from: formatter/006
     to: variant/018
-    label: cross-reference
+    via: cross_references
   - from: formatter/007
     to: api/004
-    label: cross-reference
+    via: cross_references
   - from: formatter/007
     to: trait/001
-    label: cross-reference
+    via: cross_references
   - from: formatter/007
     to: variant/019
-    label: cross-reference
+    via: cross_references
   - from: formatter/008
     to: api/004
-    label: cross-reference
+    via: cross_references
   - from: formatter/008
     to: trait/001
-    label: cross-reference
+    via: cross_references
   - from: formatter/008
     to: variant/020
-    label: cross-reference
+    via: cross_references
   - from: formatter/008
     to: variant/021
-    label: cross-reference
+    via: cross_references
   - from: formatter/008
     to: variant/022
-    label: cross-reference
+    via: cross_references
   - from: formatter/008
     to: variant/023
-    label: cross-reference
+    via: cross_references
   - from: formatter/009
     to: api/004
-    label: cross-reference
+    via: cross_references
   - from: formatter/009
     to: trait/001
-    label: cross-reference
+    via: cross_references
   - from: formatter/009
     to: variant/024
-    label: cross-reference
+    via: cross_references
   - from: formatter/009
     to: variant/025
-    label: cross-reference
+    via: cross_references
   - from: formatter/009
     to: variant/026
-    label: cross-reference
+    via: cross_references
   - from: formatter/009
     to: variant/027
-    label: cross-reference
+    via: cross_references
   - from: formatter/010
     to: api/004
-    label: cross-reference
+    via: cross_references
   - from: formatter/010
     to: trait/001
-    label: cross-reference
+    via: cross_references
   - from: formatter/010
     to: variant/028
-    label: cross-reference
+    via: cross_references
   - from: formatter/010
     to: variant/029
-    label: cross-reference
+    via: cross_references
   - from: formatter/010
     to: variant/030
-    label: cross-reference
+    via: cross_references
   - from: formatter/010
     to: variant/031
-    label: cross-reference
+    via: cross_references
   - from: formatter/010
     to: variant/032
-    label: cross-reference
+    via: cross_references
   - from: formatter/010
     to: variant/033
-    label: cross-reference
+    via: cross_references
 
   # variant cross-references (all 33 variants reference data_structure/001)
   - from: variant/001
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/002
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/003
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/004
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/005
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/006
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/007
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/008
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/009
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/010
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/011
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/012
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/013
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/014
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/015
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/016
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/017
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/018
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/019
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/020
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/021
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/022
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/023
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/024
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/025
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/026
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/027
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/028
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/029
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/030
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/031
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/032
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
   - from: variant/033
     to: data_structure/001
-    label: cross-reference
+    via: cross_references
 
 components:
   - id: 1
     size: 5
     isolated: false
-    members: [feature/005, algorithm/004, algorithm/005, invariant/003, invariant/004]
+    nodes: [feature/005, algorithm/004, algorithm/005, invariant/003, invariant/004]
 
   - id: 2
     size: 5
     isolated: false
-    members: [feature/001, feature/002, algorithm/001, algorithm/002, algorithm/003]
+    nodes: [feature/001, feature/002, algorithm/001, algorithm/002, algorithm/003]
 
   - id: 3
     size: 4
     isolated: false
-    members: [feature/003, trait/001, trait/002, trait/003]
+    nodes: [feature/003, trait/001, trait/002, trait/003]
 
   - id: 4
     size: 6
     isolated: false
-    members: [input_model/001, input_model/002, input_type/001, input_type/002, builder/001, builder/002]
+    nodes: [input_model/001, input_model/002, input_type/001, input_type/002, builder/001, builder/002]
 
   - id: 5
     size: 5
     isolated: false
-    members: [api/001, api/002, api/003, api/004, feature/004]
+    nodes: [api/001, api/002, api/003, api/004, feature/004]
 
   - id: 6
     size: 2
     isolated: false
-    members: [invariant/001, invariant/002]
+    nodes: [invariant/001, invariant/002]
 
   - id: 7
     size: 4
     isolated: false
-    members: [pattern/001, pattern/002, pattern/003, pattern/004]
+    nodes: [pattern/001, pattern/002, pattern/003, pattern/004]
 
   - id: 8
     size: 1
     isolated: false
-    members: [data_structure/001]
+    nodes: [data_structure/001]
 
   - id: 9
     size: 34
     isolated: false
-    members:
+    nodes:
       - variant/001
       - variant/002
       - variant/003
@@ -886,7 +886,7 @@ components:
   - id: 10
     size: 10
     isolated: false
-    members:
+    nodes:
       - formatter/001
       - formatter/002
       - formatter/003

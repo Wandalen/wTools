@@ -3,7 +3,7 @@ meta:
   node_count: 2
   edge_count: 2
   component_count: 1
-  generated: 2026-04-26
+  generated: 2026_04_26
 
 nodes:
   - id: feature/001
@@ -17,7 +17,7 @@ nodes:
     entity: invariant
 
 edges:
-  - { from: feature/001,   to: invariant/001, label: cross-reference }
+  - { from: feature/001,   to: invariant/001, via: cross_references }
   - { from: invariant/001, to: feature/001,   via: cross_references }
 
 components:
@@ -25,7 +25,7 @@ components:
     label: typing_tools documentation corpus
     size: 2
     isolated: false
-    members:
+    nodes:
       - feature/001
       - invariant/001
 

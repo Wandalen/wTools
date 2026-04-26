@@ -3,7 +3,7 @@ meta:
   node_count: 8
   edge_count: 18
   component_count: 1
-  generated: 2026-04-25
+  generated: 2026_04_25
 
 nodes:
   - id: api/001
@@ -48,45 +48,45 @@ nodes:
 
 edges:
   # feature/001 outbound
-  - { from: feature/001, to: api/001,     label: cross-reference }
-  - { from: feature/001, to: pattern/001, label: cross-reference }
+  - { from: feature/001, to: api/001,     via: cross_references }
+  - { from: feature/001, to: pattern/001, via: cross_references }
 
   # feature/002 outbound
-  - { from: feature/002, to: api/001,     label: cross-reference }
-  - { from: feature/002, to: feature/005, label: cross-reference }
+  - { from: feature/002, to: api/001,     via: cross_references }
+  - { from: feature/002, to: feature/005, via: cross_references }
 
   # feature/003 outbound
-  - { from: feature/003, to: api/001,     label: cross-reference }
+  - { from: feature/003, to: api/001,     via: cross_references }
 
   # feature/004 outbound
-  - { from: feature/004, to: api/001,     label: cross-reference }
+  - { from: feature/004, to: api/001,     via: cross_references }
 
   # feature/005 outbound
-  - { from: feature/005, to: api/001,     label: cross-reference }
-  - { from: feature/005, to: feature/002, label: cross-reference }
+  - { from: feature/005, to: api/001,     via: cross_references }
+  - { from: feature/005, to: feature/002, via: cross_references }
 
   # feature/006 outbound
-  - { from: feature/006, to: api/001,     label: cross-reference }
+  - { from: feature/006, to: api/001,     via: cross_references }
 
   # api/001 outbound
-  - { from: api/001, to: feature/001, label: cross-reference }
-  - { from: api/001, to: feature/002, label: cross-reference }
-  - { from: api/001, to: feature/003, label: cross-reference }
-  - { from: api/001, to: feature/004, label: cross-reference }
-  - { from: api/001, to: feature/005, label: cross-reference }
-  - { from: api/001, to: feature/006, label: cross-reference }
-  - { from: api/001, to: pattern/001, label: cross-reference }
+  - { from: api/001, to: feature/001, via: cross_references }
+  - { from: api/001, to: feature/002, via: cross_references }
+  - { from: api/001, to: feature/003, via: cross_references }
+  - { from: api/001, to: feature/004, via: cross_references }
+  - { from: api/001, to: feature/005, via: cross_references }
+  - { from: api/001, to: feature/006, via: cross_references }
+  - { from: api/001, to: pattern/001, via: cross_references }
 
   # pattern/001 outbound
-  - { from: pattern/001, to: feature/001, label: cross-reference }
-  - { from: pattern/001, to: api/001,     label: cross-reference }
+  - { from: pattern/001, to: feature/001, via: cross_references }
+  - { from: pattern/001, to: api/001,     via: cross_references }
 
 components:
   - id: 1
     label: workspace_tools documentation corpus
     size: 8
     isolated: false
-    members:
+    nodes:
       - api/001
       - feature/001
       - feature/002

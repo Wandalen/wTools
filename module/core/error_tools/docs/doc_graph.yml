@@ -3,7 +3,7 @@ meta:
   node_count: 9
   edge_count: 20
   component_count: 1
-  generated: 2026-04-25
+  generated: 2026_04_25
 nodes:
   - id: feature/001
     file: feature/001_error_facade.md
@@ -42,30 +42,30 @@ nodes:
     label: Alloc Feature Requires No-Std
     entity: invariant
 edges:
-  - {from: feature/001, to: feature/002, label: cross-reference }
-  - {from: feature/001, to: feature/003, label: cross-reference }
-  - {from: feature/001, to: feature/004, label: cross-reference }
-  - {from: feature/001, to: api/001, label: cross-reference }
-  - {from: feature/001, to: api/002, label: cross-reference }
-  - {from: feature/001, to: invariant/001, label: cross-reference }
-  - {from: feature/001, to: invariant/002, label: cross-reference }
-  - {from: feature/002, to: feature/001, label: cross-reference }
-  - {from: feature/002, to: invariant/002, label: cross-reference }
-  - {from: feature/003, to: feature/001, label: cross-reference }
-  - {from: feature/003, to: invariant/002, label: cross-reference }
-  - {from: feature/004, to: feature/001, label: cross-reference }
-  - {from: feature/004, to: invariant/003, label: cross-reference }
-  - {from: api/001, to: feature/001, label: cross-reference }
-  - {from: api/002, to: feature/001, label: cross-reference }
-  - {from: invariant/001, to: feature/001, label: cross-reference }
-  - {from: invariant/002, to: feature/001, label: cross-reference }
-  - {from: invariant/002, to: feature/002, label: cross-reference }
-  - {from: invariant/002, to: feature/003, label: cross-reference }
-  - {from: invariant/003, to: feature/004, label: cross-reference }
+  - {from: feature/001, to: feature/002, via: cross_references }
+  - {from: feature/001, to: feature/003, via: cross_references }
+  - {from: feature/001, to: feature/004, via: cross_references }
+  - {from: feature/001, to: api/001, via: cross_references }
+  - {from: feature/001, to: api/002, via: cross_references }
+  - {from: feature/001, to: invariant/001, via: cross_references }
+  - {from: feature/001, to: invariant/002, via: cross_references }
+  - {from: feature/002, to: feature/001, via: cross_references }
+  - {from: feature/002, to: invariant/002, via: cross_references }
+  - {from: feature/003, to: feature/001, via: cross_references }
+  - {from: feature/003, to: invariant/002, via: cross_references }
+  - {from: feature/004, to: feature/001, via: cross_references }
+  - {from: feature/004, to: invariant/003, via: cross_references }
+  - {from: api/001, to: feature/001, via: cross_references }
+  - {from: api/002, to: feature/001, via: cross_references }
+  - {from: invariant/001, to: feature/001, via: cross_references }
+  - {from: invariant/002, to: feature/001, via: cross_references }
+  - {from: invariant/002, to: feature/002, via: cross_references }
+  - {from: invariant/002, to: feature/003, via: cross_references }
+  - {from: invariant/003, to: feature/004, via: cross_references }
 components:
   - id: 1
     label: error_tools
     size: 9
     isolated: false
-    members: [feature/001, feature/002, feature/003, feature/004, api/001, api/002, invariant/001, invariant/002, invariant/003]
+    nodes: [feature/001, feature/002, feature/003, feature/004, api/001, api/002, invariant/001, invariant/002, invariant/003]
 dangling_refs: []

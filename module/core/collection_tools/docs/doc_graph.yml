@@ -42,78 +42,78 @@ edges:
   # api/001 cross-references
   - from: api/001
     to: feature/001
-    label: cross-reference
+    via: cross_references
   - from: api/001
     to: feature/002
-    label: cross-reference
+    via: cross_references
   - from: api/001
     to: invariant/001
-    label: cross-reference
+    via: cross_references
   - from: api/001
     to: invariant/002
-    label: cross-reference
+    via: cross_references
 
   # feature/001 cross-references
   - from: feature/001
     to: api/001
-    label: cross-reference
+    via: cross_references
   - from: feature/001
     to: feature/002
-    label: cross-reference
+    via: cross_references
   - from: feature/001
     to: invariant/001
-    label: cross-reference
+    via: cross_references
   - from: feature/001
     to: invariant/002
-    label: cross-reference
+    via: cross_references
 
   # feature/002 cross-references
   - from: feature/002
     to: api/001
-    label: cross-reference
+    via: cross_references
   - from: feature/002
     to: feature/001
-    label: cross-reference
+    via: cross_references
   - from: feature/002
     to: invariant/001
-    label: cross-reference
+    via: cross_references
   - from: feature/002
     to: invariant/002
-    label: cross-reference
+    via: cross_references
 
   # invariant/001 cross-references
   - from: invariant/001
     to: api/001
-    label: cross-reference
+    via: cross_references
   - from: invariant/001
     to: feature/001
-    label: cross-reference
+    via: cross_references
   - from: invariant/001
     to: feature/002
-    label: cross-reference
+    via: cross_references
   - from: invariant/001
     to: invariant/002
-    label: cross-reference
+    via: cross_references
 
   # invariant/002 cross-references
   - from: invariant/002
     to: api/001
-    label: cross-reference
+    via: cross_references
   - from: invariant/002
     to: feature/001
-    label: cross-reference
+    via: cross_references
   - from: invariant/002
     to: feature/002
-    label: cross-reference
+    via: cross_references
   - from: invariant/002
     to: invariant/001
-    label: cross-reference
+    via: cross_references
 
 components:
   - id: 1
     label: Collection Tools Cluster
     size: 5
     isolated: false
-    members: [api/001, feature/001, feature/002, invariant/001, invariant/002]
+    nodes: [api/001, feature/001, feature/002, invariant/001, invariant/002]
 
 dangling_refs: []

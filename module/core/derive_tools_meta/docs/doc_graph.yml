@@ -91,7 +91,7 @@ components:
   - id: 1
     size: 6
     isolated: false
-    members:
+    nodes:
       - feature/001
       - api/001
       - invariant/001

@@ -9,7 +9,7 @@
 
 ### Design
 
-Analysis commands operate on the currently loaded archive without modifying it. `.analyze` produces a comprehensive report of files, parameters, and completeness status. `.discover.parameters` scans template content via regex to find all `{{param}}` placeholders, whether or not they are formally defined. `.status` gives a quick readiness summary. `.info` displays archive metadata including version, description, and author.
+Analysis commands operate on the currently loaded archive without modifying it. `.analyze` produces a comprehensive report of files, parameters, and completeness status. `.discover.parameters` scans template content to find all `{{param}}` placeholders, whether or not they are formally defined. `.status` gives a quick readiness summary. `.info` displays archive metadata including version, description, and author.
 
 ### Cross-References
 
@@ -17,3 +17,4 @@ Analysis commands operate on the currently loaded archive without modifying it. 
 |------|------|----------------|
 | source | `src/handlers/analysis.rs` | Handler implementations for analysis commands |
 | config | `commands/analysis.yaml` | Authoritative command specs for analysis group |
+| test | `tests/analysis_test.rs` | Integration tests for analysis commands |

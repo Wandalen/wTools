@@ -34,53 +34,53 @@ nodes:
 edges:
   - from: feature/001
     to: invariant/001
-    label: cross-reference
+    via: cross_references
   - from: feature/001
     to: invariant/002
-    label: cross-reference
+    via: cross_references
   - from: feature/001
     to: api/001
-    label: cross-reference
+    via: cross_references
   - from: feature/002
     to: feature/001
-    label: cross-reference
+    via: cross_references
   - from: feature/002
     to: invariant/001
-    label: cross-reference
+    via: cross_references
   - from: feature/003
     to: feature/002
-    label: cross-reference
+    via: cross_references
   - from: api/001
     to: feature/001
-    label: cross-reference
+    via: cross_references
   - from: api/001
     to: invariant/001
-    label: cross-reference
+    via: cross_references
   - from: api/001
     to: invariant/002
-    label: cross-reference
+    via: cross_references
   - from: feature/002
     to: api/001
-    label: cross-reference
+    via: cross_references
   - from: invariant/001
     to: feature/001
-    label: cross-reference
+    via: cross_references
   - from: invariant/001
     to: api/001
-    label: cross-reference
+    via: cross_references
   - from: invariant/002
     to: feature/001
-    label: cross-reference
+    via: cross_references
   - from: invariant/002
     to: api/001
-    label: cross-reference
+    via: cross_references
 
 components:
   - id: 1
     label: Core graph
     size: 6
     isolated: false
-    members:
+    nodes:
       - feature/001
       - feature/002
       - feature/003

@@ -13,4 +13,4 @@
 |----|------|---------|--------|
 | 001 | [Function Indexing](001_function_indexing.md) | Wrap functions in named macros for explicit code structure | ✅ |
 | 002 | [Test Indexing](002_test_indexing.md) | Index test functions with automatic test attribute injection | ✅ |
-| 003 | [Function Utilities](003_function_utilities.md) | Manipulate function definitions as token trees | ✅ |
+| 003 | [Function Utilities](003_function_utilities.md) | Manipulate function definitions for macro composition | ✅ |

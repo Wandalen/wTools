@@ -5,7 +5,7 @@
 - **Purpose**: Define the API contract for macros that invoke indexed function macros to emit actual function definitions.
 - **Responsibility**: Document operations, error handling, and compatibility for `index!` and `tests_index!`.
 - **In Scope**: `index!` invocation syntax, rename support, `tests_index!` alias.
-- **Out of Scope**: Function wrapping (→ `api/001`), token-tree utilities (→ `api/003`).
+- **Out of Scope**: Function wrapping (→ `api/001`), function definition utilities (→ `api/003`).
 
 ### Abstract
 

@@ -37,28 +37,28 @@ nodes:
 
 edges:
   - { from: algorithm/001, to: invariant/001,  via: cross_references }
-  - { from: algorithm/001, to: feature/001,    label: cross-reference }
+  - { from: algorithm/001, to: feature/001,    via: cross_references }
   - { from: api/001,       to: invariant/001,  via: cross_references }
-  - { from: api/001,       to: format/001,     label: cross-reference }
-  - { from: api/001,       to: api/002,        label: cross-reference }
-  - { from: api/001,       to: api/003,        label: cross-reference }
+  - { from: api/001,       to: format/001,     via: cross_references }
+  - { from: api/001,       to: api/002,        via: cross_references }
+  - { from: api/001,       to: api/003,        via: cross_references }
   - { from: api/002,       to: invariant/001,  via: cross_references }
-  - { from: api/002,       to: api/001,        label: cross-reference }
-  - { from: api/002,       to: api/003,        label: cross-reference }
-  - { from: api/003,       to: api/001,        label: cross-reference }
-  - { from: api/003,       to: api/002,        label: cross-reference }
-  - { from: api/003,       to: feature/001,    label: cross-reference }
+  - { from: api/002,       to: api/001,        via: cross_references }
+  - { from: api/002,       to: api/003,        via: cross_references }
+  - { from: api/003,       to: api/001,        via: cross_references }
+  - { from: api/003,       to: api/002,        via: cross_references }
+  - { from: api/003,       to: feature/001,    via: cross_references }
   - { from: feature/001,   to: invariant/001,  via: cross_references }
-  - { from: feature/001,   to: api/001,        label: cross-reference }
-  - { from: feature/001,   to: api/002,        label: cross-reference }
-  - { from: feature/001,   to: api/003,        label: cross-reference }
-  - { from: feature/001,   to: format/001,     label: cross-reference }
+  - { from: feature/001,   to: api/001,        via: cross_references }
+  - { from: feature/001,   to: api/002,        via: cross_references }
+  - { from: feature/001,   to: api/003,        via: cross_references }
+  - { from: feature/001,   to: format/001,     via: cross_references }
   - { from: feature/001,   to: algorithm/001,  via: cross_references }
-  - { from: format/001,    to: feature/001,    label: cross-reference }
-  - { from: format/001,    to: api/001,        label: cross-reference }
+  - { from: format/001,    to: feature/001,    via: cross_references }
+  - { from: format/001,    to: api/001,        via: cross_references }
   - { from: format/001,    to: invariant/001,  via: cross_references }
-  - { from: invariant/001, to: feature/001,    label: cross-reference }
-  - { from: invariant/001, to: api/001,        label: cross-reference }
+  - { from: invariant/001, to: feature/001,    via: cross_references }
+  - { from: invariant/001, to: api/001,        via: cross_references }
   - { from: invariant/001, to: algorithm/001,  via: cross_references }
 
 components:
@@ -66,7 +66,7 @@ components:
     label: Main corpus
     size: 7
     isolated: false
-    members:
+    nodes:
       - algorithm/001
       - api/001
       - api/002

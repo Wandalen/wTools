@@ -145,7 +145,7 @@ components:
   - id: 1
     size: 12
     isolated: false
-    members:
+    nodes:
       - api/001
       - api/002
       - data_structure/001

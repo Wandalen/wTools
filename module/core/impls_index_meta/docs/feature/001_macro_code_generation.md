@@ -22,6 +22,10 @@ Parsing collects all function items from the token stream. Code emission convert
 
 ### Cross-References
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | `../invariant/001_compile_time_only.md` | Compile-time only guarantee for this feature |
+| Type   | File                                    | Responsibility                                        |
+|--------|-----------------------------------------|-------------------------------------------------------|
+| source | `../../src/lib.rs`                      | Crate entry; feature-gated `impls3` proc-macro export |
+| source | `../../src/impls.rs`                    | Parser and code emitter — full implementation         |
+| test   | `../../tests/smoke_test.rs`             | Basic macro expansion smoke verification              |
+| test   | `../../tests/corner_cases_test.rs`      | Optional-marker and edge-case expansion tests         |
+| doc    | `../invariant/001_compile_time_only.md` | Compile-time only guarantee for this feature          |

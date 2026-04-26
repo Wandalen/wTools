@@ -31,36 +31,36 @@ edges:
   # feature/001 outgoing
   - from: feature/001
     to: api/001
-    label: cross-references AsyncFrom API
+    via: cross_referencess AsyncFrom API
   - from: feature/001
     to: api/002
-    label: cross-references AsyncInto API
+    via: cross_referencess AsyncInto API
   - from: feature/001
     to: invariant/001
-    label: cross-references Send bounds invariant
+    via: cross_referencess Send bounds invariant
   - from: feature/001
     to: pattern/001
-    label: cross-references std mirror pattern
+    via: cross_referencess std mirror pattern
   # feature/002 outgoing
   - from: feature/002
     to: api/003
-    label: cross-references AsyncTryFrom API
+    via: cross_referencess AsyncTryFrom API
   - from: feature/002
     to: api/004
-    label: cross-references AsyncTryInto API
+    via: cross_referencess AsyncTryInto API
   - from: feature/002
     to: invariant/001
-    label: cross-references Send bounds invariant
+    via: cross_referencess Send bounds invariant
   - from: feature/002
     to: pattern/001
-    label: cross-references std mirror pattern
+    via: cross_referencess std mirror pattern
   # api/001 outgoing
   - from: api/001
     to: feature/001
-    label: cross-references infallible feature
+    via: cross_referencess infallible feature
   - from: api/001
     to: api/002
-    label: cross-references AsyncInto blanket
+    via: cross_referencess AsyncInto blanket
   - from: api/001
     to: invariant/001
     label: governed by Send bounds invariant
@@ -73,7 +73,7 @@ edges:
     label: blanket impl derived from AsyncFrom
   - from: api/002
     to: feature/001
-    label: cross-references infallible feature
+    via: cross_referencess infallible feature
   - from: api/002
     to: invariant/001
     label: enforces Send bounds
@@ -83,10 +83,10 @@ edges:
   # api/003 outgoing
   - from: api/003
     to: feature/002
-    label: cross-references fallible feature
+    via: cross_referencess fallible feature
   - from: api/003
     to: api/004
-    label: cross-references AsyncTryInto blanket
+    via: cross_referencess AsyncTryInto blanket
   - from: api/003
     to: invariant/001
     label: governed by Send bounds invariant
@@ -99,7 +99,7 @@ edges:
     label: blanket impl derived from AsyncTryFrom
   - from: api/004
     to: feature/002
-    label: cross-references fallible feature
+    via: cross_referencess fallible feature
   - from: api/004
     to: invariant/001
     label: enforces Send bounds
@@ -109,34 +109,34 @@ edges:
   # invariant/001 outgoing
   - from: invariant/001
     to: api/002
-    label: cross-references AsyncInto blanket impl
+    via: cross_referencess AsyncInto blanket impl
   - from: invariant/001
     to: api/004
-    label: cross-references AsyncTryInto blanket impl
+    via: cross_referencess AsyncTryInto blanket impl
   # invariant/002 outgoing
   - from: invariant/002
     to: api/002
-    label: cross-references AsyncInto blanket impl
+    via: cross_referencess AsyncInto blanket impl
   - from: invariant/002
     to: api/004
-    label: cross-references AsyncTryInto blanket impl
+    via: cross_referencess AsyncTryInto blanket impl
   # pattern/001 outgoing
   - from: pattern/001
     to: api/001
-    label: cross-references AsyncFrom API
+    via: cross_referencess AsyncFrom API
   - from: pattern/001
     to: api/002
-    label: cross-references AsyncInto API
+    via: cross_referencess AsyncInto API
   - from: pattern/001
     to: api/003
-    label: cross-references AsyncTryFrom API
+    via: cross_referencess AsyncTryFrom API
   - from: pattern/001
     to: api/004
-    label: cross-references AsyncTryInto API
+    via: cross_referencess AsyncTryInto API
 
 components:
   - id: main
-    members:
+    nodes:
       - feature/001
       - feature/002
       - api/001

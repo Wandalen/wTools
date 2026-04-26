@@ -9,11 +9,11 @@
 
 ### Invariant Statement
 
-The `readme.md` must include a quick start guide and at least one end-to-end workflow example. All public items must have doc comments. All documentation examples must compile and run. `RUSTDOCFLAGS="-D warnings" cargo test --doc --all-features` must produce zero warnings.
+The `readme.md` must include a quick start guide and at least one end-to-end workflow example. All public items must have doc comments. All documentation examples must compile and run. Doc-test validation must produce zero warnings.
 
 ### Enforcement Mechanism
 
-`#![deny(missing_docs)]` in `src/lib.rs` enforces doc comment coverage at compile time. `cargo test --doc` validates all doc examples. README is manually reviewed for completeness during release.
+A compile-time lint enforces doc comment coverage on all public items. Doc-test validation ensures all documentation examples compile and run. README is manually reviewed for completeness during release.
 
 ### Violation Consequences
 
@@ -23,5 +23,5 @@ Missing documentation is the primary barrier to adoption. Users cannot discover 
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `src/lib.rs` | `#![deny(missing_docs)]` enforcement |
+| source | `src/lib.rs` | Compile-time missing-docs lint enforcement |
 | doc | `docs/cli/readme.md` | CLI design documentation for contributors |

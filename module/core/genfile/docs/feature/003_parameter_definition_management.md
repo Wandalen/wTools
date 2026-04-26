@@ -17,3 +17,4 @@ Parameters are defined with a name, optional description, a mandatory flag, and 
 |------|------|----------------|
 | source | `src/handlers/parameter.rs` | Handler implementations for parameter commands |
 | config | `commands/parameter.yaml` | Authoritative command specs for parameter group |
+| test | `tests/param_value_commands_test.rs` | Integration tests covering parameter definition commands |
