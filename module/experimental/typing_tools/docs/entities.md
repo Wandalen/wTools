@@ -4,8 +4,8 @@
 
 | Type | Purpose | Master File | Instances |
 |------|---------|-------------|----------:|
-| `feature/` | Navigational hubs linking all artifacts for user-facing features | [feature/readme.md](feature/readme.md) | 1 |
-| `invariant/` | Documents correctness properties the crate must maintain | [invariant/readme.md](invariant/readme.md) | 1 |
+| `feature/` | Index of feature doc instances for the typing_tools crate. | [feature/readme.md](feature/readme.md) | 1 |
+| `invariant/` | Index of invariant doc instances for the typing_tools crate. | [invariant/readme.md](invariant/readme.md) | 1 |
 
 ## Master Doc Instances Table
 

@@ -60,7 +60,7 @@ cargo clippy --all-targets --all-features -- -D warnings
 
 ## Test Coverage
 
-- **197 total tests** across all test files
+- **192 total tests** across all test files
 - **18 tests** for cargo execution (Task 020)
 - **13 tests** for Cargo.toml configuration (Task 017)
 - **11 tests** for cleanup functionality (Task 023)

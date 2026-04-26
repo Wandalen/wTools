@@ -25,3 +25,5 @@ Any addition to dependencies makes the crate unsuitable as a zero-cost diagnosti
 |------|------|----------------|
 | config | `Cargo.toml` | Authoritative dependencies declaration — must remain empty |
 | doc | `docs/feature/001_trait_implementation_check.md` | Feature whose lightweight design this invariant protects |
+| doc | `docs/api/001_implements.md` | Primary macro this invariant constrains |
+| doc | `docs/api/002_instance_of.md` | Alias macro equally constrained |

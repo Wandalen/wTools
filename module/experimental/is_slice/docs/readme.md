@@ -9,7 +9,7 @@ Design and API documentation for `is_slice`.
 | File | Responsibility |
 |------|----------------|
 | `api/` | Document public macro APIs and their contracts |
-| `doc_graph.yml` | Record cross-reference graph linking all doc instances |
-| `entities.md` | Index all doc instances across entity types |
-| `feature/` | Document navigation hubs for user-facing features |
+| `doc_graph.yml` | Cross-reference graph linking all doc instances |
+| `entities.md` | Cross-entity index of all doc instances |
+| `feature/` | Navigation hubs for user-facing features |
 | `invariant/` | Document correctness invariants |

@@ -31,14 +31,14 @@ No runtime errors. Any invalid expression produces a compile-time error. The mac
 
 ### Compatibility Guarantees
 
-No feature flags required. No standard library required — only core (see [invariant/001_no_std.md](../invariant/001_no_std.md)). The expression is never consumed (see [invariant/002_value_not_consumed.md](../invariant/002_value_not_consumed.md)). Available whenever the `enabled` feature is active.
+No feature flags required. No standard library required — only core (see `docs/invariant/001_no_std.md`). The expression is never consumed (see `docs/invariant/002_value_not_consumed.md`). Available whenever the `enabled` feature is active.
 
 ### Cross-References
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | [src/lib.rs](../../src/lib.rs) | Macro definition — type-level discrimination mechanism |
-| test | [tests/inc/slice_tests.rs](../../tests/inc/slice_tests.rs) | 15 test cases across all discrimination categories |
-| doc | [feature/001_slice_detection.md](../feature/001_slice_detection.md) | End-to-end feature context |
-| doc | [invariant/001_no_std.md](../invariant/001_no_std.md) | No standard library requirement |
-| doc | [invariant/002_value_not_consumed.md](../invariant/002_value_not_consumed.md) | Non-consuming evaluation guarantee |
+| source | `src/lib.rs` | Macro definition — type-level discrimination mechanism |
+| test | `tests/inc/slice_tests.rs` | 15 test cases across all discrimination categories |
+| doc | `docs/feature/001_slice_detection.md` | End-to-end feature context |
+| doc | `docs/invariant/001_no_std.md` | No standard library requirement |
+| doc | `docs/invariant/002_value_not_consumed.md` | Non-consuming evaluation guarantee |

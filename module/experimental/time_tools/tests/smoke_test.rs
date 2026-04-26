@@ -1,3 +1,4 @@
+#![ cfg( feature = "enabled" ) ]
 //! Smoke testing of the package.
 //!
 //! Verifies basic functionality works after installation/compilation.

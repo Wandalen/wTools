@@ -14,7 +14,7 @@ A minimal, zero-dependency crate providing simple functions for obtaining curren
 <!-- {{# generate.module{} #}} -->
 
 ```rust
-# #[ cfg( not( feature = "no_std" ) ) ]
+# #[ cfg( all( feature = "time_now", not( feature = "no_std" ) ) ) ]
 # {
 use time_tools ::*;
 
@@ -44,7 +44,7 @@ Returns current time in **milliseconds** since UNIX epoch.
 This is the default and most commonly used function.
 
 ```rust
-# #[ cfg( not( feature = "no_std" ) ) ]
+# #[ cfg( all( feature = "time_now", not( feature = "no_std" ) ) ) ]
 # {
 use time_tools ::now ::now;
 
@@ -66,7 +66,7 @@ Returns current time in **milliseconds** since UNIX epoch.
 Explicit milliseconds module, functionally identical to `now()`.
 
 ```rust
-# #[ cfg( not( feature = "no_std" ) ) ]
+# #[ cfg( all( feature = "time_now", not( feature = "no_std" ) ) ) ]
 # {
 use time_tools ::ms;
 
@@ -88,7 +88,7 @@ Returns current time in **seconds** since UNIX epoch.
 Use for coarse-grained timing where second precision is sufficient.
 
 ```rust
-# #[ cfg( not( feature = "no_std" ) ) ]
+# #[ cfg( all( feature = "time_now", not( feature = "no_std" ) ) ) ]
 # {
 use time_tools ::s;
 
@@ -110,7 +110,7 @@ Returns current time in **nanoseconds** since UNIX epoch.
 Use for high-precision timing within a single process. Note that this is still wall-clock time, not monotonic.
 
 ```rust
-# #[ cfg( not( feature = "no_std" ) ) ]
+# #[ cfg( all( feature = "time_now", not( feature = "no_std" ) ) ) ]
 # {
 use time_tools ::ns;
 
@@ -130,7 +130,7 @@ println!( "Current time: {} nanoseconds", timestamp_ns );
 ### Basic Time Retrieval
 
 ```rust
-# #[ cfg( not( feature = "no_std" ) ) ]
+# #[ cfg( all( feature = "time_now", not( feature = "no_std" ) ) ) ]
 # {
 use time_tools ::*;
 
@@ -147,7 +147,7 @@ let nanoseconds = ns ::now();
 ### Cross-Unit Conversion Verification
 
 ```rust
-# #[ cfg( not( feature = "no_std" ) ) ]
+# #[ cfg( all( feature = "time_now", not( feature = "no_std" ) ) ) ]
 # {
 use time_tools ::*;
 
@@ -164,7 +164,7 @@ assert_eq!( now_ns / 1_000_000, now_ms );
 ### Measuring Elapsed Time
 
 ```rust
-# #[ cfg( not( feature = "no_std" ) ) ]
+# #[ cfg( all( feature = "time_now", not( feature = "no_std" ) ) ) ]
 # {
 use time_tools ::*;
 
@@ -183,7 +183,7 @@ println!( "Operation took {} ms", elapsed_ms );
 ### Integration with std::time::Duration
 
 ```rust
-# #[ cfg( not( feature = "no_std" ) ) ]
+# #[ cfg( all( feature = "time_now", not( feature = "no_std" ) ) ) ]
 # {
 use time_tools ::*;
 use std ::time ::Duration;
@@ -202,7 +202,7 @@ println!( "Elapsed: {:?}", duration );
 ### High-Precision Timing
 
 ```rust
-# #[ cfg( not( feature = "no_std" ) ) ]
+# #[ cfg( all( feature = "time_now", not( feature = "no_std" ) ) ) ]
 # {
 use time_tools ::ns;
 
@@ -220,7 +220,7 @@ println!( "Operation took {} nanoseconds", elapsed_ns );
 ### Simple Logging with Timestamps
 
 ```rust
-# #[ cfg( not( feature = "no_std" ) ) ]
+# #[ cfg( all( feature = "time_now", not( feature = "no_std" ) ) ) ]
 # {
 use time_tools ::now ::now;
 
@@ -256,8 +256,8 @@ log_event( "Processing complete" );
 
 | Feature | Default | Description |
 |---------|---------|-------------|
-| `enabled` | Yes | Master switch for the crate |
-| `time_now` | Yes | Enable time retrieval functions |
+| `enabled` | No | Master switch for the crate |
+| `time_now` | No | Enable time retrieval functions |
 | `no_std` | No | Enable no_std compatibility (disables time functions) |
 | `use_alloc` | No | Enable allocation in no_std mode |
 | `chrono` | No | Reserved for future chrono integration |
@@ -280,7 +280,7 @@ log_event( "Processing complete" );
 ## To add to your project
 
 ```sh
-cargo add time_tools
+cargo add time_tools --features full
 ```
 
 ## Try out from the repository
@@ -288,6 +288,5 @@ cargo add time_tools
 ```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd examples/time_tools_trivial
-cargo run
+cargo run --example time_tools_trivial --features time_tools/full
 ```

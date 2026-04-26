@@ -25,6 +25,7 @@
 
 | Type | File | Responsibility |
 |------|------|----------------|
+| source | `src/action/feed.rs` | Business logic for feed listing |
 | source | `src/action/frame.rs` | Business logic for download and list operations |
 | source | `src/command/frame.rs` | wca command builders for frame commands |
 | source | `src/command/feed.rs` | wca command builder for feed list |

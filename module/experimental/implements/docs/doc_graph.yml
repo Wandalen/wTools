@@ -1,7 +1,7 @@
 meta:
   description: Cross-reference graph for all doc instances in implements
   node_count: 7
-  edge_count: 30
+  edge_count: 32
   component_count: 1
   generated: 2026_04_26
 
@@ -64,6 +64,8 @@ edges:
   - { from: invariant/001, to: api/001,       via: cross_references }
   - { from: invariant/001, to: api/002,       via: cross_references }
   - { from: invariant/002, to: feature/001,   via: cross_references }
+  - { from: invariant/002, to: api/001,       via: cross_references }
+  - { from: invariant/002, to: api/002,       via: cross_references }
   - { from: invariant/003, to: feature/001,   via: cross_references }
   - { from: invariant/003, to: api/001,       via: cross_references }
   - { from: invariant/003, to: api/002,       via: cross_references }

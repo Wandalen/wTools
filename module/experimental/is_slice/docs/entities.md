@@ -4,9 +4,9 @@
 
 | Type | Purpose | Master File | Instances |
 |------|---------|-------------|----------:|
-| `api/` | Master index for all is_slice macro API doc instances. | [api/readme.md](api/readme.md) | 1 |
-| `feature/` | Master index for all slice detection feature doc instances. | [feature/readme.md](feature/readme.md) | 1 |
-| `invariant/` | Master index for all is_slice correctness invariant doc instances. | [invariant/readme.md](invariant/readme.md) | 2 |
+| `api/` | Index of API doc instances for the is_slice crate. | [api/readme.md](api/readme.md) | 1 |
+| `feature/` | Index of feature doc instances for the is_slice crate. | [feature/readme.md](feature/readme.md) | 1 |
+| `invariant/` | Index of invariant doc instances for the is_slice crate. | [invariant/readme.md](invariant/readme.md) | 2 |
 
 ## Master Doc Instances Table
 

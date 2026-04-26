@@ -13,7 +13,7 @@ For all build configurations: no macro from a sub-crate is reachable through typ
 
 ### Enforcement Mechanism
 
-Each namespace re-export in `src/typing.rs` is wrapped in a cfg attribute keyed to the respective typing feature. The Rust compiler enforces that any path through the own/orphan/exposed/prelude stack reaching a sub-crate item is blocked unless the feature is enabled. Because each sub-crate dependency is declared as optional, the linker also excludes unactivated sub-crates from the build entirely.
+Each namespace re-export in `src/typing.rs` is wrapped in a conditional compilation guard keyed to the respective typing feature. The compiler enforces that any path through the own/orphan/exposed/prelude stack reaching a sub-crate item is blocked unless the feature is enabled. Because each sub-crate dependency is declared as optional, the linker also excludes unactivated sub-crates from the build entirely.
 
 ### Violation Consequences
 

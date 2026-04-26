@@ -20,8 +20,8 @@ This document serves as the **single source of truth** for all project work.
 | 12 | 012 | 2304 | 8 | 6 | 4 | Development | ✅ (Completed) | [Implement API Stability Facade](completed/012_implement_api_stability_facade.md) | Implement stable facade pattern to insulate test_tools API from breaking changes in constituent crates (FR-3) |
 | 13 | 017 | 2304 | 8 | 6 | 3 | Testing | ✅ (Completed) | [Write Tests for Cargo.toml Configuration](completed/017_write_tests_for_cargo_toml_config.md) | Write failing tests to verify SmokeModuleTest can configure temporary project dependencies for local/published versions (FR-5) |
 | 14 | 018 | 2304 | 8 | 6 | 4 | Development | ✅ (Completed) | [Implement Cargo.toml Configuration](completed/018_implement_cargo_toml_config.md) | Implement ability for SmokeModuleTest to configure temporary project Cargo.toml for local/published dependencies (FR-5) |
-| 15 | 023 | 2304 | 8 | 6 | 3 | Testing | 🔄 (Planned) | [Write Tests for Cleanup Functionality](023_write_tests_for_cleanup.md) | Write failing tests to verify SmokeModuleTest cleans up temporary files on completion/failure (FR-7) |
-| 16 | 024 | 2304 | 8 | 6 | 4 | Development | 🔄 (Planned) | [Implement Cleanup Functionality](024_implement_cleanup.md) | Implement SmokeModuleTest cleanup of temporary files and directories regardless of success/failure (FR-7) |
+| 15 | 023 | 2304 | 8 | 6 | 3 | Testing | ✅ (Completed) | [Write Tests for Cleanup Functionality](completed/023_write_tests_for_cleanup.md) | Write failing tests to verify SmokeModuleTest cleans up temporary files on completion/failure (FR-7) |
+| 16 | 024 | 2304 | 8 | 6 | 4 | Development | ✅ (Completed) | [Implement Cleanup Functionality](completed/024_implement_cleanup.md) | Implement SmokeModuleTest cleanup of temporary files and directories regardless of success/failure (FR-7) |
 | 17 | 026 | 2304 | 8 | 6 | 3 | Testing | 🔄 (Planned) | [Write Tests for Conditional Smoke Test Execution](026_write_tests_for_conditional_execution.md) | Write failing tests to verify smoke tests execute conditionally based on WITH_SMOKE env var or CI/CD detection (FR-8) |
 | 18 | 027 | 2304 | 8 | 6 | 4 | Development | 🔄 (Planned) | [Implement Conditional Smoke Test Execution](027_implement_conditional_execution.md) | Implement conditional execution of smoke tests triggered by WITH_SMOKE environment variable or CI/CD detection (FR-8) |
 | 19 | 029 | 2304 | 8 | 6 | 4 | Testing | 🔄 (Planned) | [Write Tests for Single Dependency Access](029_write_tests_for_single_dependency.md) | Write failing tests to verify developers can access all testing utilities through single test_tools dependency (US-1) |
@@ -63,8 +63,8 @@ This document serves as the **single source of truth** for all project work.
 *   ✅ [Implement API Stability Facade](completed/012_implement_api_stability_facade.md)
 *   ✅ [Write Tests for Cargo.toml Configuration](completed/017_write_tests_for_cargo_toml_config.md)
 *   ✅ [Implement Cargo.toml Configuration](completed/018_implement_cargo_toml_config.md)
-*   🔄 [Write Tests for Cleanup Functionality](023_write_tests_for_cleanup.md)
-*   🔄 [Implement Cleanup Functionality](024_implement_cleanup.md)
+*   ✅ [Write Tests for Cleanup Functionality](completed/023_write_tests_for_cleanup.md)
+*   ✅ [Implement Cleanup Functionality](completed/024_implement_cleanup.md)
 *   🔄 [Write Tests for Conditional Smoke Test Execution](026_write_tests_for_conditional_execution.md)
 *   🔄 [Implement Conditional Smoke Test Execution](027_implement_conditional_execution.md)
 *   🔄 [Write Tests for Single Dependency Access](029_write_tests_for_single_dependency.md)

@@ -3,7 +3,7 @@
 ### Scope
 
 - **Purpose**: Document the correctness properties that is_slice must maintain across all versions and callers.
-- **Responsibility**: Master index for all is_slice correctness invariant doc instances.
+- **Responsibility**: Index of invariant doc instances for the is_slice crate.
 - **In Scope**: Properties that, if violated, would break callers or undermine the crate's design guarantees.
 - **Out of Scope**: Feature documentation (→ feature/), API contracts (→ api/), implementation details.
 

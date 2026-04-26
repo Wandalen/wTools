@@ -1,3 +1,4 @@
+#![ cfg( feature = "enabled" ) ]
 //! Core functionality tests for `time_tools`.
 //!
 //! Tests time retrieval functions across different unit variants.

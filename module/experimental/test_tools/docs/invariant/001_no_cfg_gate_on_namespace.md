@@ -27,3 +27,4 @@ Hiding a namespace module behind a doctest cfg gate causes the test runner (whic
 | test | `tests/smoke_test.rs` | Verifies all namespace imports work |
 | task | `task/completed/001_fix_test_compilation_failures.md` | Task that resolved 147 E0432 errors |
 | doc | `docs/feature/001_test_aggregation_facade.md` | Feature that owns these namespace modules |
+| doc | `docs/pattern/001_namespace_layers.md` | Pattern that applies this namespace invariant |

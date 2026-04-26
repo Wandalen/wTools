@@ -18,5 +18,5 @@
 | feature | 001 | Trait Implementation Check | [feature/001_trait_implementation_check.md](feature/001_trait_implementation_check.md) |
 | invariant | 001 | Value Not Consumed | [invariant/001_value_not_consumed.md](invariant/001_value_not_consumed.md) |
 | invariant | 002 | Zero Runtime Dependencies | [invariant/002_zero_runtime_dependencies.md](invariant/002_zero_runtime_dependencies.md) |
-| invariant | 003 | Fn Trait Limitation       | [invariant/003_fn_trait_limitation.md](invariant/003_fn_trait_limitation.md)               |
-| pattern   | 001 | Autoref Specialization    | [pattern/001_autoref_specialization.md](pattern/001_autoref_specialization.md)             |
+| invariant | 003 | Fn Trait Limitation | [invariant/003_fn_trait_limitation.md](invariant/003_fn_trait_limitation.md) |
+| pattern | 001 | Autoref Specialization | [pattern/001_autoref_specialization.md](pattern/001_autoref_specialization.md) |

@@ -30,14 +30,7 @@ no-default-features = false
 # = features
 
 [features]
-default = [
-  "enabled",
-  "standalone_build",  # Use standalone_build as default to break circular dependencies
-  # "normal_build",    # COMMENTED OUT: Disabled to break circular dependencies
-  "process_tools",
-  "process_environment_is_cicd",
-  "integration",
-]
+default = []
 full = [ "enabled" ]
 # CRITICAL: This feature controls doctest-specific behavior but can break test compilation
 # if used incorrectly. See REGRESSION PREVENTION notes below.

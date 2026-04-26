@@ -218,11 +218,6 @@ mod private
 //
 // }
 
-// xxx: use module namespaces
-// #[ cfg( feature = "enabled" ) ]
-// #[ cfg( not( feature = "no_std" ) ) ]
-// pub use test::{ compiletime, helper, smoke_test };
-
 #[ cfg( feature = "enabled" ) ]
 pub mod test;
 
@@ -230,7 +225,7 @@ pub mod test;
 #[ cfg( feature = "enabled" ) ]
 pub mod behavioral_equivalence;
 
-/// Aggegating submodules without using cargo, but including their entry files directly.
+/// Aggregating submodules without using cargo, but including their entry files directly.
 ///
 /// We don't want to run doctest of included files, because all of the are relative to submodule.
 /// So we disable doctests of such submodules with `#[ cfg( not( doctest ) ) ]`.

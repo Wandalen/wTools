@@ -27,14 +27,7 @@ all-features = false
 
 [features]
 
-default = [
-  "enabled",
-
-  "typing_implements",
-  "typing_is_slice",
-  "typing_inspect_type",
-  # "nightly",
-]
+default = []
 
 full = [
   "enabled",
@@ -48,17 +41,17 @@ no_std = []
 use_alloc = [ "no_std" ]
 enabled = []
 
-typing_inspect_type = [ "inspect_type/enabled" ]
-typing_is_slice = [ "is_slice/enabled" ]
-typing_implements = [ "implements/enabled" ]
+typing_inspect_type = [ "dep:inspect_type", "inspect_type/enabled" ]
+typing_is_slice = [ "dep:is_slice", "is_slice/enabled" ]
+typing_implements = [ "dep:implements", "implements/enabled" ]
 # nightly = [ "inspect_type/nightly" ]
 
 [dependencies]
 
 ## internal
-inspect_type = { workspace = true }
-is_slice = { workspace = true }
-implements = { workspace = true }
+inspect_type = { workspace = true, optional = true }
+is_slice = { workspace = true, optional = true }
+implements = { workspace = true, optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }

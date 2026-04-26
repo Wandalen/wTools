@@ -7,6 +7,10 @@
 //!
 //! All times are measured from UNIX epoch (1970-01-01 00:00:00 UTC).
 
+#[ cfg( not( feature = "enabled" ) ) ]
+fn main() {}
+
+#[ cfg( feature = "enabled" ) ]
 fn main()
 {
   #[ cfg( not( feature = "no_std" ) ) ]
@@ -48,10 +52,10 @@ fn main()
   println!( "  ns / 1_000_000 == ms:  {eq} (diff: {diff_ms})",
     eq = ns_to_ms == ms
   );
- }
+  }
 
- #[ cfg( feature = "no_std" ) ]
- {
-   println!( "Time functions require standard library (no_std mode active)" );
- }
+  #[ cfg( feature = "no_std" ) ]
+  {
+    println!( "Time functions require standard library (no_std mode active)" );
+  }
 }

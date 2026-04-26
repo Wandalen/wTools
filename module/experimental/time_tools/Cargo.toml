@@ -33,11 +33,7 @@ all-features = false
 # ]
 
 [features]
-default = [
-  "enabled",
-
-  "time_now",
-]
+default = []
 full = [
   "enabled",
 

@@ -3,7 +3,7 @@ meta:
   node_count: 6
   edge_count: 12
   component_count: 1
-  generated: 2026_04_26
+  generated: 2026_04_27
 
 nodes:
   - id: api/001
@@ -46,6 +46,8 @@ edges:
   - {from: invariant/002, to: feature/002, via: cross_references }
 
 components:
-  - id: main
+  - id: 1
+    label: Main
+    size: 6
+    isolated: false
     nodes: [api/001, feature/001, feature/002, feature/003, invariant/001, invariant/002]
-    note: Single connected component — all doc instances are reachable from any entry point

@@ -23,6 +23,6 @@ If the macro were to consume the expression, callers that pass non-Copy values w
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | [src/lib.rs](../../src/lib.rs) | Internal mechanism — shared reference capture via helper |
-| doc | [feature/001_slice_detection.md](../feature/001_slice_detection.md) | Feature whose usability this invariant protects |
-| doc | [api/001_is_slice.md](../api/001_is_slice.md) | API this invariant constrains |
+| source | `src/lib.rs` | Internal mechanism — shared reference capture via helper |
+| doc | `docs/feature/001_slice_detection.md` | Feature whose usability this invariant protects |
+| doc | `docs/api/001_is_slice.md` | API this invariant constrains |

@@ -23,6 +23,6 @@ Removing the no-standard-library declaration or introducing any standard library
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | [src/lib.rs](../../src/lib.rs) | Unconditional no-standard-library declaration at crate root |
-| doc | [feature/001_slice_detection.md](../feature/001_slice_detection.md) | Feature whose portability this invariant enables |
-| doc | [api/001_is_slice.md](../api/001_is_slice.md) | API whose compatibility guarantee depends on this invariant |
+| source | `src/lib.rs` | Unconditional no-standard-library declaration at crate root |
+| doc | `docs/feature/001_slice_detection.md` | Feature whose portability this invariant enables |
+| doc | `docs/api/001_is_slice.md` | API whose compatibility guarantee depends on this invariant |
