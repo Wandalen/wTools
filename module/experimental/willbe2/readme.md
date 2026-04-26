@@ -5,29 +5,25 @@
 
 Utility to publish multi-crate and multi-workspace environments and maintain their consistency.
 
-<!-- qqq : xxx : write -->
+`willbe2` is a binary alias for [willbe](../willbe/readme.md). It re-exports the entire `willbe` library API and delegates all CLI commands to the core `willbe` implementation. Use this crate when you need the `willbe2` binary name.
 
-<!-- ### Basic use-case
+### Basic use-case
 
-```rust
-use willbe2::*;
-
-fn main()
-{
-}
+```bash
+cargo install willbe2 --features full
+willbe2 .list
 ```
 
 ### To add to your project
 
 ```bash
-cargo add willbe2
+cargo add willbe2 --features full
 ```
 
 ### Try out from the repository
 
-``` shell test
+```shell
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd examples/willbe2_trivial
-cargo run
-``` -->
+cargo run --manifest-path module/experimental/willbe2/Cargo.toml --features enabled -- .list
+```

@@ -5,13 +5,7 @@
 - **Purpose**: Document the public API surfaces exposed by willbe.
 - **Responsibility**: Registry and overview of all API doc instances.
 - **In Scope**: CLI binary interface (commands, parameters, exit codes), Rust library API (public functions, types, modules).
-- **Out of Scope**: Internal implementation details, architectural patterns (see `../pattern/`), feature behavior (see `../feature/`).
-
-### Files
-
-| File | Responsibility |
-|------|----------------|
-| `procedure.md` | Instance creation and deprecation procedure |
+- **Out of Scope**: Internal implementation details, architectural patterns (see `../pattern/`), feature behavior (see `../feature/`). Instance lifecycle governed by `procedure.md`.
 
 ### Overview Table
 
