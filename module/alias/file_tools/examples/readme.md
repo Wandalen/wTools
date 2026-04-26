@@ -2,10 +2,6 @@
 
 Usage examples demonstrating file_tools crate functionality.
 
-## Status
-
-⚠️ **PENDING IMPLEMENTATION**: Examples are placeholders pending specification definition.
-
 ## Available Examples
 
 ### basic_usage.rs
@@ -16,12 +12,6 @@ Demonstrates fundamental file manipulation operations.
 ```bash
 cargo run --example basic_usage --features full
 ```
-
-**Will demonstrate:**
-- File reading operations
-- File writing operations
-- Path manipulation utilities
-- Error handling patterns
 
 ## Example Requirements
 

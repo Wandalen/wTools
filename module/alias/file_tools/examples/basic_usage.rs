@@ -1,20 +1,8 @@
-//! Basic usage example for `file_tools` crate.
+//! Basic usage example for the `file_tools` crate.
 //!
-//! This example demonstrates fundamental file manipulation operations
-//! once the crate functionality is implemented per specification.
-//!
-//! ## Status
-//!
-//! ⚠️ **PENDING IMPLEMENTATION**: This example is a placeholder.
-//! Real functionality will be added once specification is defined.
-//!
-//! ## Expected Usage
-//!
-//! Once implemented, this example should demonstrate:
-//! - Basic file reading operations
-//! - Basic file writing operations
-//! - Simple path manipulation
-//! - Error handling patterns
+//! Demonstrates the `fs_tools` API re-exported through `file_tools`:
+//! path traversal (searching upward for files/directories) and
+//! temporary directory construction.
 //!
 //! ## Running This Example
 //!
@@ -25,24 +13,34 @@
 #[ cfg( feature = "enabled" ) ]
 fn main()
 {
-  // TODO: Replace with actual file manipulation demonstration
-  // once functionality is implemented per specification
+  // --- Path traversal: search upward for a file ---
+  let cargo_path = file_tools::path::file_upward_find
+  (
+    std::path::Path::new( "." ),
+    "Cargo.toml",
+    10,
+  );
+  println!( "Cargo.toml found at: {cargo_path:?}" );
 
-  println!( "file_tools basic usage example" );
-  println!( "Status: Pending implementation" );
-  println!();
-  println!( "This example will demonstrate:" );
-  println!( "  - File reading operations" );
-  println!( "  - File writing operations" );
-  println!( "  - Path manipulation utilities" );
-  println!( "  - Error handling patterns" );
-  println!();
-  println!( "Waiting for specification to define functionality..." );
+  // --- Path traversal: search upward for a directory ---
+  let src_path = file_tools::path::dir_upward_find
+  (
+    std::path::Path::new( "." ),
+    "src",
+    10,
+  );
+  println!( "src/ found at: {src_path:?}" );
+
+  // --- TempDir: construct a temporary directory path ---
+  let mut tmp = file_tools::fs::TempDir::new();
+  tmp.base_path = std::env::temp_dir();
+  tmp.prefix_path = std::path::PathBuf::from( "file_tools_example_" );
+  println!( "TempDir path: {}", tmp.full_path().display() );
 }
 
 #[ cfg( not( feature = "enabled" ) ) ]
 fn main()
 {
-  println!( "Example requires 'enabled' feature" );
+  println!( "Example requires 'enabled' feature." );
   println!( "Run with: cargo run --example basic_usage --features enabled" );
 }

@@ -1,47 +1,53 @@
-//! Smoke testing of the package.
+//! Smoke testing of the `file_tools` alias crate.
 //!
-//! Verifies that the public API surface is accessible and functional.
-//! These tests ensure basic module imports and function calls work correctly.
+//! Verifies that `fs_tools` public API is correctly re-exported through `file_tools`.
+//! Each test uses a distinct API surface to confirm the re-export is complete.
 //!
 //! ## Test Matrix
 //!
 //! | Test Case | Scenario | Expected | Status |
 //! |-----------|----------|----------|--------|
-//! | `local_smoke_test` | Import and call `f1()` from local crate | Function callable, no panic | ✅ |
-//! | `published_smoke_test` | Import and call `f1()` from published API surface | Function callable, no panic | ✅ |
+//! | `local_smoke_test` | Path search API accessible via re-export | Returns Some for known file | ✅ |
+//! | `published_smoke_test` | `TempDir` API accessible via re-export | `full_path()` returns non-empty path | ✅ |
 //!
 //! ## Corner Cases Covered
 //!
-//! - ✅ Module imports (both local and published)
-//! - ✅ Function accessibility
-//! - ✅ Feature-gated API (enabled feature)
+//! - ✅ Module re-export accessible (`file_tools::path`, `file_tools::fs`)
+//! - ✅ Feature-gated availability (enabled feature required)
+//! - ✅ Real assertions — not just compilation checks
 
-/// Verifies that the local crate's public API is accessible.
+/// Verifies path traversal API is accessible through the re-export.
 ///
-/// This test imports the crate directly and calls its exported functions,
-/// ensuring the module compiles and links correctly in local development.
-///
-/// The test succeeds if `f1()` executes without panic. Any panic will cause
-/// test failure, providing loud failure feedback.
+/// Calls `file_tools::path::file_upward_find` starting from the current
+/// directory and searching for "Cargo.toml". The crate's own Cargo.toml
+/// is always reachable upward from the test working directory.
 #[ test ]
 #[ cfg( feature = "enabled" ) ]
 fn local_smoke_test()
 {
-  // Calling f1() - if it panics, the test fails loudly
-  file_tools::f1();
+  let result = file_tools::path::file_upward_find
+  (
+    std::path::Path::new( "." ),
+    "Cargo.toml",
+    10,
+  );
+  assert!( result.is_some(), "Smoke test failed: file_upward_find did not find Cargo.toml" );
 }
 
-/// Verifies that the published API surface is accessible.
+/// Verifies `TempDir` API is accessible through the re-export.
 ///
-/// This test simulates usage of the published crate, ensuring that
-/// consumers can import and use the public API as documented.
-///
-/// The test succeeds if `f1()` executes without panic. Any panic will cause
-/// test failure, providing loud failure feedback.
+/// Constructs a `file_tools::fs::TempDir`, sets its public path fields,
+/// and confirms `full_path()` returns the assembled non-empty path.
+/// No directory is created on disk.
 #[ test ]
 #[ cfg( feature = "enabled" ) ]
 fn published_smoke_test()
 {
-  // Calling f1() - if it panics, the test fails loudly
-  file_tools::f1();
+  let mut tmp = file_tools::fs::TempDir::new();
+  tmp.base_path = std::env::temp_dir();
+  tmp.prefix_path = std::path::PathBuf::from( "file_tools_smoke_" );
+  assert!(
+    !tmp.full_path().as_os_str().is_empty(),
+    "Smoke test failed: TempDir produced an empty path",
+  );
 }

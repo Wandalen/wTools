@@ -10,8 +10,7 @@ Tests are organized by functional domain (what is being tested) rather than by m
 
 | File | Responsibility |
 |------|----------------|
-| `smoke_test.rs` | Validate API accessibility |
-| `placeholder_test.rs` | Test placeholder function behavior |
+| `smoke_test.rs` | Verify fs_tools re-export API is accessible |
 | `manual/` | Document manual testing procedures |
 
 ## Adding New Tests
@@ -44,8 +43,3 @@ All tests in this suite MUST:
 - Include test matrix documentation in file-level comments
 - Be under 1500 lines per file (target 750-1000 lines)
 
-## Current Test Coverage
-
-- ✅ Basic smoke tests (API accessibility)
-- ✅ Placeholder function behavior (side effects, concurrency, stability)
-- ⏳ File manipulation utilities (pending implementation)

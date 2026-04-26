@@ -15,6 +15,11 @@ Collection of algorithms and structures to handle files properly.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
+include = [
+  "/Cargo.toml",
+  "/readme.md",
+  "/license",
+]
 
 [lints]
 workspace = true
@@ -24,13 +29,15 @@ features = [ "full" ]
 all-features = false
 
 [features]
-default = []
-full = [ "enabled" ]
-no_std = []
-use_alloc = [ "no_std" ]
-enabled = []
+default   = []
+full      = [ "enabled", "dep:fs_tools", "fs_tools/full" ]
+enabled   = [ "dep:fs_tools", "fs_tools/enabled" ]
+glob      = [ "enabled", "dep:fs_tools", "fs_tools/glob" ]
+no_std    = [ "fs_tools/no_std" ]
+use_alloc = [ "no_std", "fs_tools/use_alloc" ]
 
 [dependencies]
+fs_tools = { workspace = true, optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }
