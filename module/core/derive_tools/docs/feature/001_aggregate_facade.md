@@ -36,13 +36,9 @@ minimizes compile time and dependency surface for consumers that need only a sub
 
 | Type | File | Responsibility |
 |------|------|----------------|
+| source | `../../src/lib.rs` | Re-export declarations for all aggregated derive macros |
+| test | `../../tests/inc/all_test.rs` | Primary integration test suite covering all aggregated macros |
 | doc | `../api/001_workspace_derives.md` | Workspace derive macros re-exported by this facade |
 | doc | `../api/002_external_derives.md` | External derive packages re-exported by this facade |
 | doc | `../invariant/001_pure_facade.md` | Why this crate must not implement its own macros |
 | doc | `../integration/001_derive_tools_meta.md` | Workspace companion implementing the custom macros |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Overview, Scope, Architecture, and Design Rationale sections; spec.md has been deleted — Sources entry retained as migration record. |

@@ -39,8 +39,3 @@ namespace would all become unavailable, breaking existing consumers.
 | doc | `../feature/001_aggregate_facade.md` | Behavioral description of the aggregate facade |
 | doc | `../integration/001_derive_tools_meta.md` | The correct location for custom derive implementations |
 
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Design Rationale: Why No Custom Implementations and Out-of-Scope sections; spec.md has been deleted — Sources entry retained as migration record. |

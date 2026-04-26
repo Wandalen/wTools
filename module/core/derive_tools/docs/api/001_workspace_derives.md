@@ -39,6 +39,24 @@ different argument counts, enabling multi-argument construction patterns.
 **Trait object cloning macro** — generates the support necessary to clone a value
 through a trait object, compatible with no-std environments.
 
+### Error Handling
+
+All macros in this group fail at compile time; no runtime errors are produced.
+
+**Structural mismatch** — delegation and indexing macros require a struct with exactly one named inner field. Applying them to a type with zero or multiple fields, or to an enum, produces a derive error at the attribute site.
+
+**Feature gate absent** — each macro is compiled only when its dedicated feature flag is active. Using a macro without the corresponding flag causes a missing-item compile error. Activate the required feature in `Cargo.toml` to resolve.
+
+**Trait prerequisite unmet** — reference conversion macros generate trait implementations that depend on traits of the inner type. If those bounds are not satisfied, a trait-bound error appears at the use site.
+
+### Compatibility Guarantees
+
+Macro names and their attribute forms are stable across patch and minor versions. Changes to generated code behavior require a major version bump.
+
+Feature flag names are stable within a major version. A flag valid in one minor version remains valid in all subsequent minor versions of the same major version.
+
+Macros require the Rust 2021 edition. The minimum supported Rust version follows the workspace MSRV.
+
 ### Cross-References
 
 | Type | File | Responsibility |
@@ -46,9 +64,3 @@ through a trait object, compatible with no-std environments.
 | doc | `../feature/001_aggregate_facade.md` | Aggregate facade context for these macros |
 | doc | `002_external_derives.md` | External derives available in the same facade |
 | doc | `../integration/001_derive_tools_meta.md` | Crate that implements these macros |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Public API: Workspace Derives section; spec.md has been deleted — Sources entry retained as migration record. |

@@ -32,15 +32,29 @@ and perfect-hash-based lookups.
 **Display and parsing macros** — generate display formatting and string parsing implementations
 driven by a format pattern string. Applicable to both structs and enums.
 
+### Error Handling
+
+All macros in this group fail at compile time; no runtime errors are produced.
+
+**Type constraint violation** — arithmetic and conversion macros require the target type to contain an inner type implementing the relevant standard traits. Applying them to types that do not satisfy those bounds causes a trait-bound compile error at the derive site.
+
+**Enum-only restriction** — enum variant and string utility macros must be applied to enum types. Applying them to structs or unions produces a compile error.
+
+**Format pattern mismatch** — display and parsing macros derive from a user-supplied format pattern attribute. A pattern referencing field names that do not exist in the type causes a compile error.
+
+**Feature gate absent** — each external package is an optional dependency gated by a dedicated feature flag. Using a macro without its flag activated causes a missing-dependency compile error.
+
+### Compatibility Guarantees
+
+Re-export names are stable across patch and minor versions. If an upstream package renames a macro, a major version bump is required in this crate to avoid silent breakage for consumers.
+
+Each external package dependency is independently versioned. Activating one package's feature flag does not affect the others.
+
+Version constraints for each external package are declared in `Cargo.toml`. Consumers receive the version chosen by the workspace and do not control external package versions directly.
+
 ### Cross-References
 
 | Type | File | Responsibility |
 |------|------|----------------|
 | doc | `../feature/001_aggregate_facade.md` | Aggregate facade context for these macros |
 | doc | `001_workspace_derives.md` | Workspace-internal derives available in the same facade |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Public API: External Derives sections; spec.md has been deleted — Sources entry retained as migration record. |

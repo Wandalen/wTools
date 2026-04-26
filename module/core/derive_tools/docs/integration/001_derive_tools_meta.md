@@ -27,6 +27,14 @@ under its own namespace via feature-gated `pub use` statements. Each macro in
 Consumers depend on `derive_tools` and activate the `derive_tools_meta` macros via
 the corresponding feature flags — they do not reference `derive_tools_meta` directly.
 
+### Error Handling
+
+Errors in proc-macro execution are reported at the call site in the consumer crate. The compiler identifies the derive attribute that triggered the failing macro and surfaces the error message from `derive_tools_meta` at that location.
+
+**Version mismatch** — if `derive_tools` and `derive_tools_meta` are not in sync, a macro may exist in `derive_tools_meta` but lack the corresponding `pub use` and feature gate in `derive_tools`, causing a missing-item compile error for the consumer. Both crates must be updated together on any macro addition or removal.
+
+**Feature flag inconsistency** — activating a feature in `derive_tools` that depends on a macro absent from the pinned version of `derive_tools_meta` causes a path-not-found compile error. Coordinated version bumps in both crates prevent this.
+
 ### Compatibility Requirements
 
 The macro interface exposed by `derive_tools_meta` is the stable contract. Changes to
@@ -40,9 +48,3 @@ macro names or behavior in `derive_tools_meta` require coordinated updates to
 | doc | `../feature/001_aggregate_facade.md` | Aggregate facade that re-exports these macros |
 | doc | `../api/001_workspace_derives.md` | Specific macros re-exported from derive_tools_meta |
 | doc | `../invariant/001_pure_facade.md` | Why this crate and derive_tools are separate |
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../../spec.md](../../spec.md) | Dependencies and Consumers section; spec.md has been deleted — Sources entry retained as migration record. |
