@@ -13,28 +13,20 @@
 
 ### Operations
 
-| Symbol | Kind | Signature | Notes |
-|--------|------|-----------|-------|
-| `Report::command` | field | `String` | Command as executed (binary + args joined) |
-| `Report::current_path` | field | `PathBuf` | Working directory used for the invocation |
-| `Report::out` | field | `String` | Captured stdout (empty string if none) |
-| `Report::err` | field | `String` | Captured stderr; empty when `joining_streams = true` |
-| `Report::error` | field | `Result<(), Error>` | `Ok(())` on zero exit code; `Err(cause)` on failure |
-| `Display::fmt()` | trait impl | `(&self, &mut Formatter) -> fmt::Result` | Renders command, path, and indented output blocks |
-| `Clone::clone()` | trait impl | `(&self) -> Self` | Stringifies `error` to preserve message across clone |
-| `Default::default()` | trait impl | `() -> Self` | All fields empty/default; `error = Ok(())` |
+| Symbol | Kind | Notes |
+|--------|------|-------|
+| `Report::command` | field | Command as executed (binary + args joined) |
+| `Report::current_path` | field | Working directory used for the invocation |
+| `Report::out` | field | Captured stdout (empty string if none) |
+| `Report::err` | field | Captured stderr; empty when `joining_streams = true` |
+| `Report::error` | field | Success on zero exit code; error cause on failure |
+| `Display::fmt()` | trait impl | Renders command, path, and indented output blocks |
+| `Clone::clone()` | trait impl | Stringifies error to preserve message across clone |
+| `Default::default()` | trait impl | All fields empty/default; error field starts as success |
 
 ### Error Handling
 
-`Report` itself does not fail. All failure information is carried inside the `error: Result<(), Error>` field. Callers inspect this field to distinguish success from failure:
-
-```rust
-if let Err( cause ) = &report.error {
-  eprintln!( "failed: {}", cause );
-}
-```
-
-The `run()` function returns `Err(Report)` when `report.error` is `Err`. Callers that receive `Err(report)` can safely read `report.out`, `report.err`, and `report.command` — they are always populated before the error path is taken.
+`Report` itself does not fail. All failure information is carried inside the `error` field. Callers inspect the error field to distinguish success from failure — a non-success value means the process exited with an error or could not be started. The `run()` function returns the report wrapped in a failure result when the error field is set. Callers that receive a failed report can safely read all output fields — they are always populated before the error path is taken.
 
 ### Compatibility Guarantees
 

@@ -13,18 +13,7 @@ When `libc::kill(pid, 0)` returns `-1` with `errno == EPERM`, `check::is_process
 
 ### Enforcement Mechanism
 
-In `check.rs`, the errno match handles `EPERM` explicitly:
-
-```rust
-match err.raw_os_error()
-{
-  Some( libc::ESRCH ) => Ok( false ),  // no such process
-  Some( libc::EPERM ) => Ok( true ),   // exists, no permission to signal
-  _ => Err( err ),                     // unexpected errno
-}
-```
-
-`ESRCH` ("no such process") is the only path that maps to `Ok(false)`. `EPERM` is an explicit `Ok(true)` path, not a fallthrough.
+Within `is_process_alive()`, the OS error code is matched against three named cases: `ESRCH` ("no such process") maps to dead, `EPERM` ("operation not permitted") maps to alive, and any other error is propagated as an unexpected failure. `ESRCH` is the only path that means dead. `EPERM` is an explicit alive path, not a fallthrough.
 
 Verification:
 

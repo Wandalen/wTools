@@ -24,4 +24,6 @@ Any addition to [dependencies] makes the crate unsuitable as a zero-cost diagnos
 | Type | File | Responsibility |
 |------|------|----------------|
 | config | `Cargo.toml` | Authoritative [dependencies] declaration — must remain empty |
+| doc | `docs/api/001_inspect_to_str_type_of.md` | Macro whose std-only implementation this invariant governs |
+| doc | `docs/api/002_inspect_type_of.md` | Macro whose std-only implementation this invariant governs |
 | doc | `docs/feature/001_type_inspection.md` | Feature whose lightweight design this invariant protects |

@@ -678,5 +678,5 @@ When reporting issues from manual testing:
 
 - Terminal control sequences: <https://en.wikipedia.org/wiki/ANSI_escape_code>
 - Rust termion crate: <https://docs.rs/termion/>
-- Main spec: `../../spec.md`
+- Feature doc: `../../docs/feature/001_multiline_input.md`
 - Examples: `../../examples/`

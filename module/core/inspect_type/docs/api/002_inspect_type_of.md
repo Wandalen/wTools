@@ -32,4 +32,5 @@ Same as inspect_to_str_type_of: stable since Rust 1.76, no feature flags, no ext
 | test | `tests/example_produces_output_test.rs` | Verifies examples produce expected stdout output |
 | doc | `docs/feature/001_type_inspection.md` | End-to-end feature context |
 | doc | `docs/api/001_inspect_to_str_type_of.md` | String-mode variant this macro wraps |
+| doc | `docs/invariant/001_zero_dependencies.md` | Zero runtime dependency constraint this macro satisfies |
 | doc | `docs/invariant/002_fixed_output_format.md` | Output format invariant |

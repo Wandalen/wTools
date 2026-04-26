@@ -1,7 +1,7 @@
 meta:
   description: Cross-reference graph for all doc instances in inspect_type
   node_count: 5
-  edge_count: 13
+  edge_count: 18
   component_count: 1
   generated: 2026_04_25
 
@@ -36,15 +36,20 @@ edges:
   - { from: feature/001, to: api/002,      via: cross_references }
   - { from: feature/001, to: invariant/001, via: cross_references }
   - { from: feature/001, to: invariant/002, via: cross_references }
-  - { from: api/001,     to: feature/001,  via: cross_references }
-  - { from: api/001,     to: api/002,      via: cross_references }
+  - { from: api/001,     to: feature/001,   via: cross_references }
+  - { from: api/001,     to: api/002,       via: cross_references }
+  - { from: api/001,     to: invariant/001, via: cross_references }
   - { from: api/001,     to: invariant/002, via: cross_references }
-  - { from: api/002,     to: feature/001,  via: cross_references }
-  - { from: api/002,     to: api/001,      via: cross_references }
+  - { from: api/002,     to: feature/001,   via: cross_references }
+  - { from: api/002,     to: api/001,       via: cross_references }
+  - { from: api/002,     to: invariant/001, via: cross_references }
   - { from: api/002,     to: invariant/002, via: cross_references }
+  - { from: invariant/001, to: api/001,     via: cross_references }
+  - { from: invariant/001, to: api/002,     via: cross_references }
   - { from: invariant/001, to: feature/001, via: cross_references }
-  - { from: invariant/002, to: api/001,    via: cross_references }
-  - { from: invariant/002, to: api/002,    via: cross_references }
+  - { from: invariant/002, to: api/001,     via: cross_references }
+  - { from: invariant/002, to: api/002,     via: cross_references }
+  - { from: invariant/002, to: feature/001, via: cross_references }
 
 components:
   - id: 1

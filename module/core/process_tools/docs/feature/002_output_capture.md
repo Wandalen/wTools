@@ -19,7 +19,7 @@
 
 The `Display` impl prefixes the command with `>` and the working directory with `@`, then indents stdout/stderr with two spaces (replacing `\n` with `\n  `). Whitespace-only output blocks are suppressed. This format is designed for inline subprocess tracing in CLI tool output.
 
-`Clone` cannot be derived because `error_tools::Error` is not `Clone`. The manual impl stringifies the error via `.to_string()` to preserve the failure message across the clone boundary, accepting the loss of the original error type.
+`Clone` cannot be derived because the error field type is not cloneable. The manual impl preserves the failure message across the clone boundary by converting the error to its string representation, accepting the loss of the original error type.
 
 ### Example
 

@@ -15,23 +15,21 @@
 
 **PID file management:**
 
-| Symbol | Kind | Signature | Notes |
-|--------|------|-----------|-------|
-| `write_pidfile()` | free fn | `(path: &Path, pid: u32) -> io::Result<()>` | Writes PID as decimal string; no newline |
-| `read_pidfile()` | free fn | `(path: &Path) -> io::Result<u32>` | Reads and parses PID; trims whitespace |
-| `remove_pidfile()` | free fn | `(path: &Path) -> io::Result<()>` | Deletes PID file |
+| Symbol | Kind | Notes |
+|--------|------|-------|
+| `write_pidfile( path, pid )` | free fn | Writes PID as decimal string; no newline |
+| `read_pidfile( path )` | free fn | Reads and parses PID; trims whitespace |
+| `remove_pidfile( path )` | free fn | Deletes PID file |
 
 **Daemonization:**
 
-| Symbol | Kind | Signature | Notes |
-|--------|------|-----------|-------|
-| `DaemonizeOptions` | struct | `Former`-derived builder | Fields: `pid_file: Option<PathBuf>`, `working_dir: PathBuf` |
-| `DaemonizeOptions::former()` | constructor | `() -> DaemonizeOptionsFormer` | Entry point for building options |
-| `daemonize()` | free fn | `(options: &DaemonizeOptions) -> io::Result<()>` | POSIX double-fork; irreversible — caller becomes the daemon |
+| Symbol | Kind | Notes |
+|--------|------|-------|
+| `DaemonizeOptions` | struct | Former-derived builder; holds optional PID file path and working directory |
+| `DaemonizeOptions::former()` | constructor | Entry point for building options |
+| `daemonize( options )` | free fn | POSIX double-fork; irreversible — caller becomes the daemon |
 
-`DaemonizeOptions` fields:
-- `pid_file: Option<PathBuf>` — path to write PID file with `flock` singleton guard; skipped when `None`
-- `working_dir: PathBuf` — working directory after daemonization; defaults to `/`
+`DaemonizeOptions` takes an optional PID file path (skipped when absent, written with exclusive-lock singleton protection when set) and a working directory (defaults to the filesystem root).
 
 ### Error Handling
 

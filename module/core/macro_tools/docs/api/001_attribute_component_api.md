@@ -1,4 +1,4 @@
-# API: Attribute Component
+# API: Attribute Component API
 
 ### Scope
 - **Purpose**: Define the contract for types that parse from a single named attribute.

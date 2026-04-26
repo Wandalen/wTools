@@ -1,7 +1,7 @@
 meta:
   description: Cross-reference graph for all doc instances in process_tools
   node_count: 18
-  edge_count: 52
+  edge_count: 54
   component_count: 1
   generated: 2026_04_18
 
@@ -113,6 +113,7 @@ edges:
   - { from: api/002,     to: invariant/001, via: cross_references }
   # api/003 cross-references
   - { from: api/003,     to: feature/004,   via: cross_references }
+  - { from: api/003,     to: guide/002,     via: cross_references }
   # api/004 cross-references
   - { from: api/004,     to: feature/005,   via: cross_references }
   - { from: api/004,     to: api/005,       via: cross_references }
@@ -134,6 +135,8 @@ edges:
   - { from: guide/001,   to: api/006,       via: cross_references }
   - { from: guide/001,   to: invariant/003, via: cross_references }
   - { from: guide/001,   to: invariant/004, via: cross_references }
+  # feature/004 cross-references (additional)
+  - { from: feature/004, to: guide/002,     via: cross_references }
   # guide/002 cross-references
   - { from: guide/002,   to: api/003,       via: cross_references }
   - { from: guide/002,   to: feature/004,   via: cross_references }

@@ -355,7 +355,7 @@ pub trait ClipboardOps {
 
 ## References
 
-- Spec: `../spec.md`
+- Feature doc: `../docs/feature/001_multiline_input.md`
 - Testing strategy: `../tests/readme.md`
 - TerminalOps trait: `../src/terminal.rs`
 - MockTerminal implementation: `../tests/common/mock_terminal.rs`

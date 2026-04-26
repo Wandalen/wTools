@@ -33,4 +33,5 @@ Stable as of Rust 1.76. No feature flags required. No external runtime dependenc
 | test | `tests/corner_cases_test.rs` | Full type coverage across 16 categories including format assertions |
 | doc | `docs/feature/001_type_inspection.md` | End-to-end feature context |
 | doc | `docs/api/002_inspect_type_of.md` | Print-mode variant wrapping this macro |
+| doc | `docs/invariant/001_zero_dependencies.md` | Zero runtime dependency constraint this macro satisfies |
 | doc | `docs/invariant/002_fixed_output_format.md` | Output format invariant |

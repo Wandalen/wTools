@@ -1,0 +1,85 @@
+meta:
+  description: Cross-reference graph for all doc instances in multiline_input
+  node_count: 6
+  edge_count: 12
+  component_count: 1
+  generated: 2026_04_26
+
+nodes:
+  - id: feature/001
+    file: feature/001_multiline_input.md
+    label: Multiline Input
+    entity: feature
+
+  - id: invariant/001
+    file: invariant/001_terminal_minimum_size.md
+    label: Terminal Minimum Size
+    entity: invariant
+
+  - id: pattern/001
+    file: pattern/001_trait_based_di.md
+    label: Trait-Based Dependency Injection
+    entity: pattern
+
+  - id: pattern/002
+    file: pattern/002_test_double_terminal.md
+    label: Test Double Terminal
+    entity: pattern
+
+  - id: pattern/003
+    file: pattern/003_progressive_api_disclosure.md
+    label: Progressive API Disclosure
+    entity: pattern
+
+  - id: pattern/004
+    file: pattern/004_domain_based_test_organization.md
+    label: Domain-Based Test Organization
+    entity: pattern
+
+edges:
+  - from: feature/001
+    to: invariant/001
+    via: cross_references
+  - from: invariant/001
+    to: feature/001
+    via: cross_references
+  - from: feature/001
+    to: pattern/001
+    via: cross_references
+  - from: pattern/001
+    to: feature/001
+    via: cross_references
+  - from: feature/001
+    to: pattern/002
+    via: cross_references
+  - from: pattern/002
+    to: feature/001
+    via: cross_references
+  - from: feature/001
+    to: pattern/003
+    via: cross_references
+  - from: pattern/003
+    to: feature/001
+    via: cross_references
+  - from: feature/001
+    to: pattern/004
+    via: cross_references
+  - from: pattern/004
+    to: feature/001
+    via: cross_references
+  - from: pattern/001
+    to: pattern/002
+    via: cross_references
+  - from: pattern/002
+    to: pattern/001
+    via: cross_references
+
+components:
+  - id: 1
+    nodes:
+      - feature/001
+      - invariant/001
+      - pattern/001
+      - pattern/002
+      - pattern/003
+      - pattern/004

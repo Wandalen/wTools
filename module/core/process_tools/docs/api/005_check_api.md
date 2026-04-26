@@ -13,19 +13,19 @@ Three free functions in `process_tools::lifecycle::check` probe process liveness
 
 ### Operations
 
-| Symbol | Kind | Signature | Notes |
-|--------|------|-----------|-------|
-| `is_process_alive()` | free fn | `(pid: i32) -> io::Result<bool>` | `kill(pid,0)` probe; `EPERM` → `Ok(true)` |
-| `wait_for_exit()` | free fn | `(pid: i32, timeout: Duration) -> io::Result<()>` | Polls at 50 ms; `Err(TimedOut)` on timeout |
-| `is_pidfile_alive()` | free fn | `(path: &Path) -> io::Result<bool>` | Reads PID from file, then calls `is_process_alive()` |
+| Symbol | Kind | Notes |
+|--------|------|-------|
+| `is_process_alive( pid )` | free fn | `kill(pid,0)` probe; `EPERM` → alive |
+| `wait_for_exit( pid, timeout )` | free fn | Polls at 50 ms; fails with timeout error on timeout |
+| `is_pidfile_alive( path )` | free fn | Reads PID from file, then calls `is_process_alive()` |
 
 ### Error Handling
 
-| Function | `Ok` meaning | `Err` meaning |
-|----------|-------------|---------------|
-| `is_process_alive(pid)` | `true` = alive, `false` = dead | `pid ≤ 0` (`InvalidInput`), or unexpected errno |
-| `wait_for_exit(pid, timeout)` | Process exited within timeout | `TimedOut` if still alive; propagates `is_process_alive` errors |
-| `is_pidfile_alive(path)` | PID in file is alive (`true`) or dead (`false`) | File not found, content not a valid integer, or `is_process_alive` error |
+| Function | Success | Failure |
+|----------|---------|---------|
+| `is_process_alive( pid )` | `true` = alive, `false` = dead | Invalid PID value, or unexpected OS error |
+| `wait_for_exit( pid, timeout )` | Process exited within timeout | Timeout exceeded while process still alive; propagates liveness check errors |
+| `is_pidfile_alive( path )` | PID in file is alive (`true`) or dead (`false`) | File not found, content not a valid integer, or liveness check error |
 
 **Critical:** `EPERM` from `kill(pid, 0)` means the process IS alive — the caller lacks send permission. This returns `Ok(true)`, not `Err`. See invariant `004_eperm_means_alive.md`. Treating `EPERM` as "not alive" is the most common misuse of this function.
 

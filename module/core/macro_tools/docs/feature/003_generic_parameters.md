@@ -34,3 +34,6 @@ from the original source tokens.
 | test | `tests/test_generic_params_no_trailing_commas.rs` | Trailing comma edge cases |
 | test | `tests/test_generic_param_utilities.rs` | Utility function correctness |
 | test | `tests/test_trailing_comma_issue.rs` | Trailing comma regression |
+| doc | `docs/feature/001_attribute_parsing.md` | Attribute parsing — primary capability using generic parameters |
+| doc | `docs/feature/002_type_analysis.md` | Type analysis — related type-level analysis |
+| doc | `docs/feature/004_syntax_tree_helpers.md` | Syntax tree helpers for item and struct parsing |

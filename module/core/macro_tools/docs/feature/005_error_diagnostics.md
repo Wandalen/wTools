@@ -25,3 +25,4 @@ attribute values do not match their expected forms.
 | test | `tests/inc/equation_test.rs` | Equation parsing correctness |
 | doc | `docs/invariant/002_span_aware_errors.md` | Invariant that all errors must carry spans |
 | doc | `docs/feature/001_attribute_parsing.md` | Primary consumer: attribute parsing produces span-aware errors |
+| doc | `docs/feature/006_code_generation_support.md` | Compile-time string formatting — out of scope for error diagnostics |

@@ -13,11 +13,11 @@ Three free functions in `process_tools::lifecycle::signal` provide bidirectional
 
 ### Operations
 
-| Symbol | Kind | Signature | Notes |
-|--------|------|-----------|-------|
-| `signal_name()` | free fn | `(signal: i32) -> &'static str` | Returns `"UNKNOWN"` for unmapped numbers |
-| `signal_number()` | free fn | `(name: &str) -> Option<i32>` | Case-sensitive; `None` for unrecognized names |
-| `all_signals()` | free fn | `() -> &'static [(i32, &'static str)]` | Full table as `(number, name)` pairs |
+| Symbol | Kind | Notes |
+|--------|------|-------|
+| `signal_name( number )` | free fn | Returns `"UNKNOWN"` for unmapped numbers |
+| `signal_number( name )` | free fn | Case-sensitive; returns nothing for unrecognized names |
+| `all_signals()` | free fn | Full table as number/name pairs |
 
 ### Error Handling
 

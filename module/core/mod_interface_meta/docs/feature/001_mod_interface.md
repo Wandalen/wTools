@@ -9,17 +9,9 @@
 
 ### Design
 
-The macro accepts a body of namespace directives and generates four named namespace modules: own, orphan, exposed, prelude. Each module re-exports the one below it, forming a cascade where items declared at a lower layer are accessible from all higher layers.
+The macro generates a four-layer cascade of namespace modules at compile time, automating visibility propagation that would otherwise require manually written re-exports at every module boundary. Each directive maps an item to a named visibility layer; the generated cascade handles propagation to parent modules automatically.
 
-Namespace directives assign items to layers based on their intended propagation:
-- Own: item accessible only within this module; not propagated to parent modules.
-- Orphan: item propagated to the immediate parent module.
-- Exposed: item propagated to all ancestor modules.
-- Prelude: item propagated to all ancestors and intended for glob import.
-
-The layer directive integrates an existing submodule into the parent's cascade. The submodule's orphan, exposed, and prelude namespaces are wired into the parent's corresponding namespaces following the propagation invariant.
-
-This crate (`mod_interface_meta`) is the proc-macro companion and should not be used directly. The `mod_interface` facade crate re-exports the macro with documentation.
+This crate (`mod_interface_meta`) is the proc-macro companion; use the `mod_interface` facade crate for direct access.
 
 ### Cross-References
 

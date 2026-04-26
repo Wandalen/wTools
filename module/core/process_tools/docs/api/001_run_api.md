@@ -13,17 +13,17 @@
 
 ### Operations
 
-| Symbol | Kind | Signature | Notes |
-|--------|------|-----------|-------|
-| `Run::former()` | constructor | `() -> RunFormer` | Entry point for all subprocess invocations |
-| `RunFormer::bin_path()` | builder | `(impl Into<PathBuf>) -> Self` | Path to the executable |
-| `RunFormer::current_path()` | builder | `(impl Into<PathBuf>) -> Self` | Working directory for the spawned process |
-| `RunFormer::args()` | builder | `(Vec<OsString>) -> Self` | Command-line arguments |
-| `RunFormer::joining_streams()` | builder | `(bool) -> Self` | `true` = merge stderr into stdout via duct |
-| `RunFormer::env_variable()` | builder | `(HashMap<String,String>) -> Self` | Extra env vars merged over current environment |
-| `RunFormer::run()` | executor | `() -> Result<Report, Report>` | Spawns process; returns full report on both branches |
-| `RunFormer::run_with_shell()` | executor | `(&str) -> Result<Report, Report>` | Wraps command in `sh -c` (Unix) or `cmd /C` (Windows) |
-| `run()` (free fn) | executor | `(Run) -> Result<Report, Report>` | Consumes a formed `Run`; internal dispatch |
+| Symbol | Kind | Notes |
+|--------|------|-------|
+| `Run::former()` | constructor | Entry point for all subprocess invocations |
+| `RunFormer::bin_path( path )` | builder | Path to the executable |
+| `RunFormer::current_path( path )` | builder | Working directory for the spawned process |
+| `RunFormer::args( args )` | builder | Command-line arguments |
+| `RunFormer::joining_streams( flag )` | builder | `true` = merge stderr into stdout via duct |
+| `RunFormer::env_variable( vars )` | builder | Extra env vars merged over current environment |
+| `RunFormer::run()` | executor | Spawns process; returns full report on both branches |
+| `RunFormer::run_with_shell( cmd )` | executor | Wraps command in `sh -c` (Unix) or `cmd /C` (Windows) |
+| `run( config )` (free fn) | executor | Consumes a formed `Run`; internal dispatch |
 
 ### Error Handling
 

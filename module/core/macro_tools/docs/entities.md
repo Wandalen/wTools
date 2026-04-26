@@ -4,10 +4,10 @@
 
 | Type | Purpose | Master File | Instances |
 |------|---------|-------------|----------:|
-| `api/` | Public trait and type contracts consumer crates depend on | [api/readme.md](api/readme.md) | 2 |
-| `feature/` | User-facing macro toolkit capabilities with artifact navigation | [feature/readme.md](feature/readme.md) | 6 |
-| `invariant/` | Correctness properties that must hold regardless of usage | [invariant/readme.md](invariant/readme.md) | 2 |
-| `pattern/` | Architectural patterns for proc-macro development | [pattern/readme.md](pattern/readme.md) | 2 |
+| `api/` | List all stable programmatic interface contracts exposed by macro_tools. | [api/readme.md](api/readme.md) | 2 |
+| `feature/` | Collect source, test, and doc references for each capability in one place. | [feature/readme.md](feature/readme.md) | 6 |
+| `invariant/` | List all design invariants that callers and contributors must preserve. | [invariant/readme.md](invariant/readme.md) | 2 |
+| `pattern/` | List reusable solutions to recurring proc-macro development problems. | [pattern/readme.md](pattern/readme.md) | 2 |
 
 ## Master Doc Instances Table
 

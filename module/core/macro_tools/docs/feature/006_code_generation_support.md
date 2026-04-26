@@ -14,8 +14,8 @@ clauses or assembling associated type assignments. Typed generation helpers prod
 tokens for specific kinds of constructs in a reusable form. Iterator composition
 utilities support processing field lists and parameter sequences during code generation
 without rewriting iteration logic per consumer. Compile-time string formatting uses
-a constant-evaluation approach to produce error text without heap allocation, enabling
-diagnostics inside const contexts. Keyword definitions provide a uniform way to declare
+a constant-evaluation approach to produce error text without dynamic memory allocation,
+enabling diagnostics in compile-time evaluation contexts. Keyword definitions provide a uniform way to declare
 and recognise custom syntax keywords across consumers.
 
 ### Cross-References
@@ -32,3 +32,5 @@ and recognise custom syntax keywords across consumers.
 | test | `tests/inc/tokens_test.rs` | Token stream utility correctness |
 | test | `tests/inc/derive_test.rs` | Derive helper correctness |
 | test | `tests/inc/compile_time_test.rs` | Compile-time utility correctness |
+| doc | `docs/feature/001_attribute_parsing.md` | Attribute parsing — primary consumer of generated token streams |
+| doc | `docs/feature/005_error_diagnostics.md` | Error diagnostics — related error reporting |

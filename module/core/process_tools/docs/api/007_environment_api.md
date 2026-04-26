@@ -13,9 +13,9 @@
 
 ### Operations
 
-| Symbol | Kind | Signature | Notes |
-|--------|------|-----------|-------|
-| `is_cicd()` | free fn | `() -> bool` | `#[must_use]`, `#[cfg(feature = "process_environment_is_cicd")]` |
+| Symbol | Kind | Notes |
+|--------|------|-------|
+| `is_cicd()` | free fn | `#[must_use]`; requires `process_environment_is_cicd` feature |
 
 **Detection table** — variables checked, in order:
 

@@ -13,11 +13,11 @@ Three free functions in `process_tools::exit_status` construct a `std::process::
 
 ### Operations
 
-| Symbol | Kind | Signature | Notes |
-|--------|------|-----------|-------|
-| `synthetic_exit_status()` | free fn | `(code: i32) -> ExitStatus` | Platform-encodes `code`; valid range 0–255 |
-| `synthetic_success_status()` | free fn | `() -> ExitStatus` | Equivalent to `synthetic_exit_status(0)` |
-| `synthetic_failure_status()` | free fn | `() -> ExitStatus` | Equivalent to `synthetic_exit_status(1)` |
+| Symbol | Kind | Notes |
+|--------|------|-------|
+| `synthetic_exit_status( code )` | free fn | Platform-encodes the code; valid range 0–255 |
+| `synthetic_success_status()` | free fn | Equivalent to `synthetic_exit_status(0)` |
+| `synthetic_failure_status()` | free fn | Equivalent to `synthetic_exit_status(1)` |
 
 **Platform encoding detail:**
 
@@ -68,3 +68,4 @@ assert_eq!( custom.code(), Some( 42 ) );
 |------|------|----------------|
 | source | [src/exit_status.rs](../../src/exit_status.rs) | `synthetic_exit_status` and convenience wrapper implementations |
 | doc | [feature/004_exit_status_synthesis.md](../feature/004_exit_status_synthesis.md) | Design rationale and platform encoding explanation |
+| doc | [guide/002_test_exit_status.md](../guide/002_test_exit_status.md) | Practical guide for using these functions as test fixtures |

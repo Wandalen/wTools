@@ -14,8 +14,8 @@ utilities handle case conversion (snake, camel, pascal), generation from string 
 and combination of multiple identifier fragments. Name and path utilities operate on
 qualified name nodes. Punctuated sequence utilities simplify operations on comma-separated
 or semicolon-separated lists without manual iterator management. Phantom type helpers
-generate marker type tokens for lifetime or type parameters that appear only in trait
-bounds and not in any struct field, satisfying the compiler's variance requirements.
+generate marker type tokens for parameters that appear only in type constraints
+and not in stored fields, satisfying type parameterization requirements.
 
 ### Cross-References
 
@@ -36,3 +36,6 @@ bounds and not in any struct field, satisfying the compiler's variance requireme
 | test | `tests/inc/ident_and_generic_params_test.rs` | Identifier and generic parameter interaction |
 | test | `tests/inc/ident_new_from_cased_str_test.rs` | Identifier construction from cased strings |
 | test | `tests/inc/phantom_test.rs` | PhantomData token generation correctness |
+| doc | `docs/feature/001_attribute_parsing.md` | Attribute parsing — primary capability using syntax tree helpers |
+| doc | `docs/feature/002_type_analysis.md` | Type analysis — related capability |
+| doc | `docs/feature/003_generic_parameters.md` | Generic parameter handling — related capability |

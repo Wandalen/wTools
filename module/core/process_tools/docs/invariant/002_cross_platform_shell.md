@@ -13,21 +13,7 @@
 
 ### Enforcement Mechanism
 
-The platform branch lives exclusively in `RunFormer::run_with_shell()` in `process.rs`:
-
-```rust
-let ( program, args ) =
-if cfg!( target_os = "windows" )
-{
-  ( "cmd", [ "/C", exec_path ] )
-}
-else
-{
-  ( "sh", [ "-c", exec_path ] )
-};
-```
-
-No other function performs this selection. Call sites use only `run_with_shell(cmd)` without any `cfg!` guard.
+The platform branch lives exclusively in `RunFormer::run_with_shell()` in `process.rs`. At compile time it selects the native shell — Windows uses the command interpreter with the `/C` flag and Unix uses the POSIX shell with `-c` — so call sites require no platform guards. No other function performs this selection. Call sites use only `run_with_shell(cmd)` without any compile-time platform check.
 
 Verification command:
 

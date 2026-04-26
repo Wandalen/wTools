@@ -27,3 +27,4 @@ Changing the format is a breaking change for all callers that parse or assert th
 | test | `tests/corner_cases_test.rs` | Assertions on format correctness (category 11: Macro Output Format) |
 | doc | `docs/api/001_inspect_to_str_type_of.md` | String-mode API that produces this format |
 | doc | `docs/api/002_inspect_type_of.md` | Print-mode API that produces and emits this format |
+| doc | `docs/feature/001_type_inspection.md` | Feature whose output format this invariant governs |

@@ -32,4 +32,8 @@ Span-aware errors are produced at the exact token position of malformed attribut
 | doc | `docs/api/001_attribute_component_api.md` | AttributeComponent and AttributePropertyComponent trait contract |
 | doc | `docs/api/002_assign_api.md` | Assign trait contract |
 | doc | `docs/pattern/002_property_based_attributes.md` | Design pattern behind this system |
+| doc | `docs/feature/002_type_analysis.md` | Type analysis capability — related but out of scope for attribute parsing |
+| doc | `docs/feature/003_generic_parameters.md` | Generic parameter handling — related but out of scope for attribute parsing |
+| doc | `docs/feature/004_syntax_tree_helpers.md` | Syntax tree helpers — related but out of scope for attribute parsing |
 | doc | `docs/feature/005_error_diagnostics.md` | Error creation used for attribute parse failures |
+| doc | `docs/feature/006_code_generation_support.md` | Code generation support — downstream consumer of parsed attributes |

@@ -200,7 +200,7 @@ cargo run --example basic_usage
 
 ## Documentation
 
-For complete specification and implementation details, see [spec.md](spec.md).
+For architecture and design details, see [docs/architecture.md](docs/architecture.md).
 
 For API documentation: `cargo doc --open`
 
@@ -218,7 +218,7 @@ cargo tarpaulin --out Html
 
 Contributions welcome! Please:
 
-1. Read [spec.md](spec.md) for architecture details
+1. Read [docs/architecture.md](docs/architecture.md) for architecture details
 2. Write tests for new features
 3. Follow existing code style
 4. Update documentation

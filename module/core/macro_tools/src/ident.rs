@@ -72,10 +72,10 @@ mod private
   /// let got_snake_raw = macro_tools ::ident ::cased_ident_from_ident( &ident_keyword, Case ::Snake );
   /// assert_eq!( got_snake_raw.to_string(), "r#fn" );
   ///
-  /// // Convert a normal identifier that becomes a keyword in the new case
-  /// let ident_struct = format_ident!( "struct" );
-  /// let got_pascal_keyword = macro_tools ::ident ::cased_ident_from_ident( &ident_struct, Case ::Pascal );
-  /// assert_eq!( got_pascal_keyword.to_string(), "Struct" ); // qqq: "Struct" is not a keyword, so `r#` is not added.
+  /// // Convert a raw identifier: the raw prefix is preserved in the output.
+  /// let ident_raw_struct = format_ident!( "r#struct" );
+  /// let got_pascal_raw = macro_tools ::ident ::cased_ident_from_ident( &ident_raw_struct, Case ::Pascal );
+  /// assert_eq!( got_pascal_raw.to_string(), "r#Struct" ); // Raw prefix is always preserved.
   /// ```
   #[ must_use ]
   pub fn cased_ident_from_ident(original: &syn ::Ident, case: convert_case ::Case) -> syn ::Ident
@@ -86,13 +86,72 @@ mod private
 
   let cased_str = core_str.to_case(case);
 
-  if kw ::is(&cased_str)
+  // If the cased form is not a valid identifier (e.g. kebab produces "my-var"),
+  // fall back to the original identifier unchanged.
+  let is_valid_ident =
   {
-   syn ::Ident ::new_raw(&cased_str, original.span())
- } else {
-   syn ::Ident ::new(&cased_str, original.span())
- }
+    let mut chars = cased_str.chars();
+    match chars.next()
+    {
+      Some( c ) if c == '_' || c.is_alphabetic() => chars.all( | c | c == '_' || c.is_alphanumeric() ),
+      _ => false,
+    }
+  };
+  if !is_valid_ident
+  {
+    return original.clone();
+  }
+
+  if kw ::is( core_str ) || kw ::is( &cased_str )
+  {
+    syn ::Ident ::new_raw( &cased_str, original.span() )
+  }
+  else
+  {
+    syn ::Ident ::new( &cased_str, original.span() )
+  }
 }
+
+  /// Creates an identifier from a string, validating identifier syntax and handling keyword escaping.
+  ///
+  /// If `raw` is `true` or the string is a Rust keyword, produces a raw identifier (`r#name`).
+  ///
+  /// # Errors
+  ///
+  /// Returns `Err` if the string is empty or contains characters invalid for a Rust identifier.
+  pub fn new_ident_from_cased_str
+  (
+    s : &str,
+    span : proc_macro2 ::Span,
+    raw : bool,
+  ) -> crate ::Result< syn ::Ident >
+  {
+    if s.is_empty()
+    {
+      return Err( syn ::Error ::new( span, "identifier string must not be empty" ) );
+    }
+    let valid =
+    {
+      let mut chars = s.chars();
+      match chars.next()
+      {
+        Some( c ) if c == '_' || c.is_alphabetic() => chars.all( | c | c == '_' || c.is_alphanumeric() ),
+        _ => false,
+      }
+    };
+    if !valid
+    {
+      return Err( syn ::Error ::new( span, format!( "invalid identifier: {s:?}" ) ) );
+    }
+    if raw || kw ::is( s )
+    {
+      Ok( syn ::Ident ::new_raw( s, span ) )
+    }
+    else
+    {
+      Ok( syn ::Ident ::new( s, span ) )
+    }
+  }
 }
 
 #[ doc( inline ) ]
@@ -111,6 +170,8 @@ pub mod own
   pub use private ::ident_maybe_raw;
   #[ doc( inline ) ]
   pub use private ::cased_ident_from_ident;
+  #[ doc( inline ) ]
+  pub use private ::new_ident_from_cased_str;
 }
 
 /// Orphan namespace of the module.
