@@ -5,8 +5,8 @@ The grammar subsystem defines the type model for command registration: command d
 ### Scope
 
 - **Purpose**: Provides the vocabulary for declaring CLI command structure and argument types.
-- **Responsibility**: Documents Command, Dictionary, Type, Value, and ValueDescription interfaces.
-- **In Scope**: Command struct fields, Dictionary registration and lookup, Type/Value enums, Order.
+- **Responsibility**: Documents Command, Dictionary, Type, Value, and value descriptor interfaces.
+- **In Scope**: Command fields, Dictionary registration and lookup, type and value variants, command ordering.
 - **Out of Scope**: Type casting logic (see feature/003), verification process (see api/003).
 
 ### Abstract
@@ -15,15 +15,15 @@ The grammar module provides three core abstractions: Command defines a single CL
 
 ### Operations
 
-Command construction uses the former builder: phrase sets the command name, hint and long_hint provide help text, subject and property define typed parameters with optionality, and routine attaches the execution closure.
+Command construction uses the former builder: phrase sets the command name, brief hint and extended hint provide help text, subject and property define typed parameters with optionality, and routine attaches the execution closure.
 
-Dictionary provides register for adding commands, command for exact lookup, search for prefix matching (used by dot commands), and commands for ordered iteration in either registration order or alphabetical order.
+Dictionary provides registration for adding commands, exact lookup, prefix search (used by dot commands), and ordered iteration in either registration order or alphabetical order.
 
-ValueDescription pairs a hint string with a Type and an optional flag, used for both subjects and properties. PropertyDescription extends this with alias support.
+A value descriptor pairs a hint string with a type and an optional required-flag, used for both subjects and properties. A property descriptor extends this with alias support.
 
 ### Error Handling
 
-Dictionary lookup returns Option for missing commands. Type casting via TryCast returns Result, with errors indicating the expected type and actual string that failed conversion.
+Dictionary lookup returns an absent result for missing commands. Type casting returns either a typed value or an error indicating the expected type and the actual string that failed conversion.
 
 ### Compatibility Guarantees
 

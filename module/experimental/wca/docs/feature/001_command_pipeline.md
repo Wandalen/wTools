@@ -11,11 +11,11 @@ The core architecture processes CLI input through three sequential stages: parsi
 
 ### Design
 
-Input enters as a raw string or token sequence. The Parser splits it into one or more ParsedCommand values containing a name, positional subjects, and key-value properties as untyped strings. The Verifier matches each ParsedCommand against a Dictionary of registered Commands, performs type casting on subjects and properties, and produces VerifiedCommand values with typed arguments. The Executor dispatches each VerifiedCommand to its registered Routine, optionally providing a shared Context.
+Input enters as a raw string or token sequence. The Parser splits it into one or more intermediate command representations containing a name, positional subjects, and key-value properties as untyped strings. The Verifier matches each parsed command against a Dictionary of registered Commands, performs type casting on subjects and properties, and produces verified commands with typed arguments. The Executor dispatches each verified command to its registered routine, optionally providing a shared Context.
 
-CommandsAggregator orchestrates all three stages in a single perform call, hiding the pipeline seams from callers. Consumers needing finer control can drive Parser, Verifier, and Executor independently, as unitore does.
+CommandsAggregator orchestrates all three stages in a single pipeline run, hiding the pipeline seams from callers. Consumers needing finer control can drive Parser, Verifier, and Executor independently, as unitore does.
 
-The pipeline supports multi-command programs: a single input string may contain multiple dot-prefixed commands separated by arguments, all parsed into a Program container and executed sequentially.
+The pipeline supports multi-command programs: a single input string may contain multiple dot-prefixed commands separated by arguments, all parsed into a program and executed sequentially.
 
 ### Cross-References
 

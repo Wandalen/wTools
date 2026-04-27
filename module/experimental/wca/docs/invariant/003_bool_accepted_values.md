@@ -15,7 +15,7 @@ When the verifier casts a string argument to the Bool type, only the strings `1`
 
 ### Enforcement Mechanism
 
-The TryCast implementation for Bool in the type system module performs an exact string match against the four accepted literals. On match, it returns the corresponding Value variant. On mismatch, it returns a type cast error containing the expected type name and the actual string that failed conversion. This error propagates through the verifier as a validation error.
+The type-casting mechanism for Bool in the type system module performs an exact string match against the four accepted literals. On match, it returns the corresponding typed boolean value. On mismatch, it returns a type cast error containing the expected type name and the actual string that failed conversion. This error propagates through the verifier as a validation error.
 
 ### Violation Consequences
 

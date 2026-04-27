@@ -1,23 +1,23 @@
 # API: Verifier
 
-The verifier validates parsed commands against the registered grammar, performing type casting and producing typed VerifiedCommand values.
+The verifier validates parsed commands against the registered grammar, performing type casting and producing verified command values.
 
 ### Scope
 
 - **Purpose**: Provides the validation layer between parsing and execution.
 - **Responsibility**: Documents the Verifier interface, type casting process, and error conditions.
-- **In Scope**: to_program(), to_command(), subject extraction, property extraction, internal command bypass.
+- **In Scope**: Program validation, command validation, subject extraction, property extraction, internal command bypass.
 - **Out of Scope**: Parsing (see api/001 via Parser), execution (see api/004).
 
 ### Abstract
 
-The Verifier is a unit struct with two primary operations: to_program validates a full program of parsed commands, and to_command validates a single parsed command. Both require a Dictionary reference to look up the expected grammar.
+The Verifier exposes two primary operations: program validation and command validation. Both require a Dictionary reference to look up the expected grammar.
 
 ### Operations
 
-The to_command operation matches a ParsedCommand against the Dictionary by phrase name, extracts and type-casts subjects and properties according to the Command definition, and produces a VerifiedCommand. Internal commands (names ending in dot or question mark) bypass normal verification and produce a VerifiedCommand with the internal_command flag set.
+The command validation operation matches a parsed command against the Dictionary by phrase name, extracts and type-casts subjects and properties according to the command definition, and produces a verified command. Internal commands (names ending in dot or question mark) bypass normal verification and produce a verified command with the internal flag set.
 
-Subject extraction iterates the declared subjects, casting each positional argument from string to the declared Type. Missing required subjects produce an error. Extra subjects beyond the declared count are ignored.
+Subject extraction iterates the declared subjects, casting each positional argument from string to the declared type. Missing required subjects produce an error. Extra subjects beyond the declared count are ignored.
 
 Property extraction iterates the declared properties, looking up each by name (or alias) in the parsed properties map, and casting the value. Unknown properties are silently ignored.
 
@@ -25,11 +25,11 @@ When the on_unknown_suggest feature is enabled, unknown command names trigger a 
 
 ### Error Handling
 
-Verification produces errors for: unknown command name, missing required subject, type cast failure on subject or property value. All errors are wrapped in ValidationError::Verifier.
+Verification produces errors for: unknown command name, missing required subject, type cast failure on subject or property value. All errors are wrapped in a single verifier error category.
 
 ### Compatibility Guarantees
 
-Verifier is a public unit struct. The to_program and to_command methods are the stable interface. VerifiedCommand fields (phrase, internal_command, args, props) are public and stable.
+Verifier is a public type with a stable validation interface. The verified command output type and its fields (phrase, internal flag, args, props) are public and stable.
 
 ### Cross-References
 

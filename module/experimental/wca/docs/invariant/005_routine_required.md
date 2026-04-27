@@ -15,7 +15,7 @@ When the executor dispatches a verified command to its routine, it must find a R
 
 ### Enforcement Mechanism
 
-The executor looks up the command in the Dictionary by phrase name, then accesses the routine field. If the routine is not present, the executor constructs an execution error and returns it immediately. The error propagates to the caller as an Execution variant of the top-level Error enum. A dedicated test verifies this behavior by registering a command without a routine and asserting that execution produces the expected error.
+The executor looks up the command in the Dictionary by phrase name, then accesses the routine field. If the routine is not present, the executor constructs an execution error and returns it immediately. The error propagates to the caller as an execution error. A dedicated test verifies this behavior by registering a command without a routine and asserting that execution produces the expected error.
 
 ### Violation Consequences
 

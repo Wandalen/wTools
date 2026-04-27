@@ -8,11 +8,11 @@ Design, API, and invariant documentation for the wca crate.
 
 | File | Responsibility |
 |------|----------------|
-| entities.md | Master index of all doc entity types and instances |
-| doc_graph.yml | Cross-reference graph across all 17 doc instances |
-| feature/ | Behavioral feature documentation (7 instances) |
-| api/ | Public interface documentation (5 instances) |
-| invariant/ | Correctness property documentation (5 instances) |
+| `entities.md` | Master index of all doc entity types and instances |
+| `doc_graph.yml` | Cross-reference graph of all doc instances |
+| `feature/` | Behavioral feature documentation |
+| `api/` | Public interface documentation |
+| `invariant/` | Correctness property documentation |
 
 ### System Actors
 

@@ -5,16 +5,16 @@
 - **Purpose**: Document the `will` CLI commands, parameters, and binary entry points available to workspace maintainers.
 - **Responsibility**: Complete reference for all willbe CLI commands with their parameters and usage.
 - **In Scope**: Binary names, command syntax, parameters with types and defaults, exit codes, dry-run behavior.
-- **Out of Scope**: Implementation details (see `../../src/`), architectural patterns (see `../pattern/`), usage workflows (see `../feature/`).
+- **Out of Scope**: Implementation details, architectural patterns (see `../pattern/`), usage workflows (see `../feature/`).
 
 ### Abstract
 
-willbe exposes three binary entry points (`will`, `willbe`, `cargo-will`) that delegate to the same command logic via the `wca` framework. Commands are prefixed with `.` following wca conventions.
+willbe exposes three binary entry points (`will`, `willbe`, `cargo-will`) that delegate to the same command logic via the `wca` (workspace command aggregator) framework. Commands are prefixed with `.` following wca conventions.
 
 ### Operations
 
 **`.publish [path_glob] [dry:bool]`**
-Publish workspace crates in topological dependency order. `path_glob` filters which crates to consider (default: all crates under current directory). `dry:1` prints the publish plan without executing; `dry:0` (default) executes. On execution, each package is version-bumped in Cargo.toml, committed with `git commit -m <crate>-v<version>`, and pushed before the `cargo publish` call.
+Publish workspace crates in topological dependency order. `path_glob` filters which crates to consider (default: all crates under current directory). `dry:1` prints the publish plan without executing; `dry:0` (default) executes. On execution, each package is version-bumped, committed to git with a version tag message, and pushed to the remote, then published to the crate registry.
 
 **`.test [path_glob] [power:int] [dry:bool]`**
 Run tests across workspace crates. `power` controls feature combination breadth (1=default features only, higher values test more combinations). `path_glob` and `dry` behave as in `.publish`.
@@ -82,6 +82,6 @@ Semantic versioning. No backward compatibility guarantees while willbe is at `0.
 | source | `../../src/command/deploy_renew.rs` | .deploy.renew command definition |
 | source | `../../src/command/crate_doc.rs` | .crate.doc command definition |
 | source | `../../src/action/publish.rs` | Publish action implementation |
-| doc | `../feature/001_workspace_management.md` | Feature-level workspace management documentation |
-| doc | `../feature/002_enhanced_publish_algorithm.md` | Enhanced publish algorithm (not implemented, legacy) |
-| doc | `../pattern/001_layer_architecture.md` | Five-layer source architecture |
+| doc | [feature/001_workspace_management.md](../feature/001_workspace_management.md) | Feature-level workspace management documentation |
+| doc | [feature/002_enhanced_publish_algorithm.md](../feature/002_enhanced_publish_algorithm.md) | Enhanced publish algorithm (not implemented, legacy) |
+| doc | [pattern/001_layer_architecture.md](../pattern/001_layer_architecture.md) | Five-layer source architecture |

@@ -6,12 +6,12 @@ The input abstraction provides polymorphic entry points for feeding command stri
 
 - **Purpose**: Decouples callers from a specific input format, accepting strings, string vectors, or interactive prompts.
 - **Responsibility**: Documents the IntoInput trait, Input newtype, and supported conversion paths.
-- **In Scope**: IntoInput trait, Input(Vec<String>) newtype, &str splitting, Vec<String> passthrough, ask() prompt.
+- **In Scope**: Input conversion trait, token sequence newtype, whitespace-split string conversion, vector passthrough, interactive stdin prompt.
 - **Out of Scope**: How input is parsed into commands (see api/003 via Parser).
 
 ### Abstract
 
-Input is a newtype wrapping a vector of strings, representing the raw tokens to be parsed. The IntoInput trait provides conversion from multiple source types, enabling callers to pass input in the most convenient form.
+Input is a type wrapping a vector of strings, representing the raw tokens to be parsed. The IntoInput trait provides conversion from multiple source types, enabling callers to pass input in the most convenient form.
 
 ### Operations
 
@@ -34,5 +34,5 @@ IntoInput and Input are public types. The conversion semantics (split-on-space f
 | Type | File | Responsibility |
 |------|------|----------------|
 | source | `src/ca/input.rs` | Input, IntoInput, ask() |
-| doc | [api/001_commands_aggregator.md](001_commands_aggregator.md) | perform() accepts IntoInput |
+| doc | [api/001_commands_aggregator.md](001_commands_aggregator.md) | Pipeline entry point accepts this input interface |
 | doc | [invariant/002_colon_property_syntax.md](../invariant/002_colon_property_syntax.md) | Why Vec input is needed for colon subjects |

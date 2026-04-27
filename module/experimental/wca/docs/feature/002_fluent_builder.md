@@ -6,18 +6,18 @@ The builder pattern provides a method-chaining interface for registering command
 
 - **Purpose**: Enables ergonomic command registration without manual struct construction.
 - **Responsibility**: Documents the builder chain, subformers, and form-time side effects.
-- **In Scope**: CommandsAggregator::former(), command/subject/property/routine chain, mutator.
+- **In Scope**: Aggregator builder entry point, command registration chain, form-time mutator.
 - **Out of Scope**: Pipeline execution (see feature/001), type definitions (see feature/003).
 
 ### Design
 
-CommandsAggregator uses the Former derive macro to generate a builder. Callers chain .command(name) to open a CommandAsSubformer, then .subject(), .property(), and .routine() to define each command, closing with .end(). After all commands are registered, .perform() calls form() and returns the immutable aggregator.
+CommandsAggregator uses the Former derive macro to generate a builder. Callers open a command builder by name, then chain declarations for subjects, properties, and routines before closing the subformer. After all commands are registered, a final call forms the aggregator and returns it immutably.
 
 A custom mutator runs at form-time to auto-generate help content for all registered commands, injecting help entries into the Dictionary before the aggregator is sealed.
 
 The builder accepts help_variants to control which help modes are available, order to set command listing sort, context for shared state, and callback for post-execution hooks.
 
-willbe uses this pattern to register 13 commands in a single chain. unitore bypasses CommandsAggregator and builds Dictionary directly via Dictionary::former().
+willbe uses this pattern to register 13 commands in a single chain. unitore bypasses CommandsAggregator and builds a Dictionary directly using the Dictionary builder.
 
 ### Cross-References
 

@@ -1,179 +1,245 @@
-generated: 2026_04_27
-via: cross_references
+meta:
+  generated: 2026_04_27
+  via: cross_references
 
 nodes:
   - id: feature/001
     file: feature/001_command_pipeline.md
-    title: Command Pipeline
+    label: Command Pipeline
+    entity: feature
   - id: feature/002
     file: feature/002_fluent_builder.md
-    title: Fluent Builder
+    label: Fluent Builder
+    entity: feature
   - id: feature/003
     file: feature/003_type_system.md
-    title: Type System
+    label: Type System
+    entity: feature
   - id: feature/004
     file: feature/004_help_system.md
-    title: Help System
+    label: Help System
+    entity: feature
   - id: feature/005
     file: feature/005_command_routing.md
-    title: Command Routing
+    label: Command Routing
+    entity: feature
   - id: feature/006
     file: feature/006_context_sharing.md
-    title: Context Sharing
+    label: Context Sharing
+    entity: feature
   - id: feature/007
     file: feature/007_fuzzy_suggest.md
-    title: Fuzzy Suggest
+    label: Fuzzy Suggest
+    entity: feature
   - id: api/001
     file: api/001_commands_aggregator.md
-    title: Commands Aggregator
+    label: Commands Aggregator
+    entity: api
   - id: api/002
     file: api/002_grammar.md
-    title: Grammar
+    label: Grammar
+    entity: api
   - id: api/003
     file: api/003_verifier.md
-    title: Verifier
+    label: Verifier
+    entity: api
   - id: api/004
     file: api/004_executor.md
-    title: Executor
+    label: Executor
+    entity: api
   - id: api/005
     file: api/005_input.md
-    title: Input
+    label: Input
+    entity: api
   - id: invariant/001
     file: invariant/001_dot_prefix_required.md
-    title: Dot Prefix Required
+    label: Dot Prefix Required
+    entity: invariant
   - id: invariant/002
     file: invariant/002_colon_property_syntax.md
-    title: Colon Property Syntax
+    label: Colon Property Syntax
+    entity: invariant
   - id: invariant/003
     file: invariant/003_bool_accepted_values.md
-    title: Bool Accepted Values
+    label: Bool Accepted Values
+    entity: invariant
   - id: invariant/004
     file: invariant/004_help_no_execute.md
-    title: Help No Execute
+    label: Help No Execute
+    entity: invariant
   - id: invariant/005
     file: invariant/005_routine_required.md
-    title: Routine Required
+    label: Routine Required
+    entity: invariant
 
 edges:
   # feature/001 ↔ api/001
   - from: feature/001
     to: api/001
+    via: cross_references
   - from: api/001
     to: feature/001
+    via: cross_references
   # feature/001 ↔ feature/002
   - from: feature/001
     to: feature/002
+    via: cross_references
   - from: feature/002
     to: feature/001
+    via: cross_references
   # feature/001 ↔ invariant/001
   - from: feature/001
     to: invariant/001
+    via: cross_references
   - from: invariant/001
     to: feature/001
+    via: cross_references
   # feature/001 ↔ invariant/002
   - from: feature/001
     to: invariant/002
+    via: cross_references
   - from: invariant/002
     to: feature/001
+    via: cross_references
   # feature/002 ↔ api/001
   - from: feature/002
     to: api/001
+    via: cross_references
   - from: api/001
     to: feature/002
+    via: cross_references
   # feature/002 ↔ invariant/005
   - from: feature/002
     to: invariant/005
+    via: cross_references
   - from: invariant/005
     to: feature/002
+    via: cross_references
   # feature/003 ↔ api/002
   - from: feature/003
     to: api/002
+    via: cross_references
   - from: api/002
     to: feature/003
+    via: cross_references
   # feature/003 ↔ invariant/003
   - from: feature/003
     to: invariant/003
+    via: cross_references
   - from: invariant/003
     to: feature/003
+    via: cross_references
   # feature/004 ↔ feature/005
   - from: feature/004
     to: feature/005
+    via: cross_references
   - from: feature/005
     to: feature/004
+    via: cross_references
   # feature/004 ↔ invariant/004
   - from: feature/004
     to: invariant/004
+    via: cross_references
   - from: invariant/004
     to: feature/004
+    via: cross_references
   # feature/005 ↔ api/004
   - from: feature/005
     to: api/004
+    via: cross_references
   - from: api/004
     to: feature/005
+    via: cross_references
   # feature/005 ↔ invariant/001
   - from: feature/005
     to: invariant/001
+    via: cross_references
   - from: invariant/001
     to: feature/005
+    via: cross_references
   # feature/005 ↔ invariant/004
   - from: feature/005
     to: invariant/004
+    via: cross_references
   - from: invariant/004
     to: feature/005
+    via: cross_references
   # feature/006 ↔ api/004
   - from: feature/006
     to: api/004
+    via: cross_references
   - from: api/004
     to: feature/006
+    via: cross_references
   # feature/006 ↔ invariant/005
   - from: feature/006
     to: invariant/005
+    via: cross_references
   - from: invariant/005
     to: feature/006
+    via: cross_references
   # feature/007 ↔ api/003
   - from: feature/007
     to: api/003
+    via: cross_references
   - from: api/003
     to: feature/007
+    via: cross_references
   # api/001 ↔ api/005
   - from: api/001
     to: api/005
+    via: cross_references
   - from: api/005
     to: api/001
+    via: cross_references
   # api/002 ↔ invariant/003
   - from: api/002
     to: invariant/003
+    via: cross_references
   - from: invariant/003
     to: api/002
+    via: cross_references
   # api/002 ↔ invariant/005
   - from: api/002
     to: invariant/005
+    via: cross_references
   - from: invariant/005
     to: api/002
+    via: cross_references
   # api/003 ↔ invariant/001
   - from: api/003
     to: invariant/001
+    via: cross_references
   - from: invariant/001
     to: api/003
+    via: cross_references
   # api/004 ↔ invariant/004
   - from: api/004
     to: invariant/004
+    via: cross_references
   - from: invariant/004
     to: api/004
+    via: cross_references
   # api/004 ↔ invariant/005
   - from: api/004
     to: invariant/005
+    via: cross_references
   - from: invariant/005
     to: api/004
+    via: cross_references
   # api/005 ↔ invariant/002
   - from: api/005
     to: invariant/002
+    via: cross_references
   - from: invariant/002
     to: api/005
+    via: cross_references
 
 components:
   - id: 1
-    name: main
+    label: main
+    size: 17
+    isolated: false
     nodes:
       - feature/001
       - feature/002
@@ -192,4 +258,3 @@ components:
       - invariant/003
       - invariant/004
       - invariant/005
-    count: 17

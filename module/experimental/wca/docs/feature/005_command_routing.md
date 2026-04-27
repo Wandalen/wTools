@@ -17,7 +17,7 @@ The list-all command (a single dot character) prints all registered commands. Th
 
 The prefix-search command (a name followed by a dot) lists all commands whose names begin with that prefix. The detail command (a name followed by dot and question mark) shows detailed information for matching commands.
 
-Internal commands bypass normal verification. The executor detects them by checking whether the command name ends with a dot or question mark, and routes them to exec_internal_command instead of exec_command. This means they do not require a registered Command entry in the Dictionary.
+Internal commands bypass normal verification. The executor detects them by checking whether the command name ends with a dot or question mark, and routes them to the internal command handler instead of the user command handler. This means they do not require a registered Command entry in the Dictionary.
 
 ### Cross-References
 

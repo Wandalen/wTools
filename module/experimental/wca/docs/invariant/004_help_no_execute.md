@@ -15,7 +15,7 @@ When a user requests help — whether via the global help variant, a dot-suffix 
 
 ### Enforcement Mechanism
 
-The verifier marks internal commands (dot-suffix, question-mark-suffix) with the internal_command flag on the VerifiedCommand. The executor checks this flag before dispatch: internal commands are routed to exec_internal_command, which implements help display, while user commands are routed to exec_command, which invokes the routine. These are mutually exclusive paths. A dedicated regression test (marked as bug_reproducer) verifies that requesting help for a command with a side-effecting routine does not trigger that routine.
+The verifier marks internal commands (dot-suffix, question-mark-suffix) with an internal flag. The executor checks this flag before dispatch: internal commands are routed to the help display handler, while user commands are routed to the routine invocation handler. These are mutually exclusive paths. A dedicated regression test (marked as bug_reproducer) verifies that requesting help for a command with a side-effecting routine does not trigger that routine.
 
 ### Violation Consequences
 

@@ -34,6 +34,9 @@ exclude = [
   "module/core/unilang",
   "module/core/unilang_benchmarks",
   "module/core/cargo_unilang",
+
+  # Deprecated crates — parked here before final deletion
+  "module/deprecated/*",
 ]
 # default-members = [ "module/core/wtools" ]
 
@@ -543,12 +546,6 @@ path = "module/experimental/wca"
 [workspace.dependencies.willbe]
 version = "~0.35.0"
 path = "module/experimental/willbe"
-
-[workspace.dependencies.willbe2]
-version = "~0.2.0"
-path = "module/experimental/willbe2"
-default-features = false
-
 
 ## lang
 
