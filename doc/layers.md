@@ -36,79 +36,79 @@ Total: 69 crates (3 alias + 34 core + 1 deprecated + 31 experimental)
 | `↓L` | Internal deps on crates in **lower** layers — expected, healthy flow |
 | `↑L` | Internal deps on crates in **higher** layers — architectural violation; should be zero |
 | `State` | Current lifecycle: `stable` (mature, actively used), `experimental` (API may change), `deprecated` (slated for removal) |
-| `Target` | Desired outcome: `maintain` (keep as-is), `stabilize` (promote toward stable), `remove` (delete from workspace) |
+| `Target` | Desired lifecycle (same values as State); delta from State shows required action |
 
 | Crate | Module | L# | Layer | Purpose | Deps | Int | =L | ↓L | ↑L | State | Target |
 |-------|--------|----|-------|---------|------|-----|----|----|-----|-------|--------|
-| `error_tools` | core | 1 | Foundation | Provide a unified error handling namespace across the workspace | 2 | 0 | 0 | 0 | 0 | stable | maintain |
-| `data_type` | experimental | 1 | Foundation | Supply foundational type aliases and primal data structures | 3 | 2 | 0 | 0 | 2 | experimental | stabilize |
-| `diagnostics_tools` | experimental | 1 | Foundation | Provide runtime assertion helpers with rich diagnostic context | 1 | 0 | 0 | 0 | 0 | deprecated | remove |
-| `mem_tools` | experimental | 1 | Foundation | Offer safe memory introspection and alignment utilities | 0 | 0 | 0 | 0 | 0 | deprecated | remove |
-| `asbytes` | core | 2 | Primitives | Enable zero-copy viewing of POD types as byte slices | 1 | 0 | 0 | 0 | 0 | deprecated | remove |
-| `deterministic_rand` | core | 2 | Primitives | Generate hierarchical seeded random numbers with switchable determinism | 6 | 2 | 0 | 0 | 2 | deprecated | remove |
-| `implements` | experimental | 2 | Primitives | Answer at compile time whether a type implements a trait | 0 | 0 | 0 | 0 | 0 | experimental | stabilize |
-| `inspect_type` | core | 2 | Primitives | Print exact Rust type names and sizes at compile time | 0 | 0 | 0 | 0 | 0 | stable | maintain |
-| `interval_adapter` | experimental | 2 | Primitives | Unify open, closed, and half-open range types behind one adapter | 0 | 0 | 0 | 0 | 0 | experimental | stabilize |
-| `is_slice` | experimental | 2 | Primitives | Answer at compile time whether an expression is a slice | 0 | 0 | 0 | 0 | 0 | experimental | stabilize |
-| `time_tools` | experimental | 2 | Primitives | Provide minimal time measurement and timestamp utilities | 0 | 0 | 0 | 0 | 0 | deprecated | remove |
-| `typing_tools` | experimental | 2 | Primitives | Express compile-time type constraints and type guards | 3 | 3 | 3 | 0 | 0 | deprecated | remove |
-| `winterval` | experimental | 2 | Primitives | Re-export interval_adapter as a standalone dependency | 1 | 1 | 1 | 0 | 0 | deprecated | remove |
-| `macro_tools` | core | 3 | Macro Framework | Supply all primitives needed to author procedural macros | 9 | 4 | 0 | 1 | 3 | stable | maintain |
-| `meta_tools` | experimental | 3 | Macro Framework | Provide token-level macro utilities for metaprogramming | 6 | 5 | 2 | 0 | 3 | deprecated | remove |
-| `clone_dyn_meta` | core | 3 | Macro Framework | Generate clone_dyn derive implementation (use clone_dyn directly) | 2 | 2 | 1 | 0 | 1 | stable | maintain |
-| `component_model_meta` | experimental | 3 | Macro Framework | Generate component_model derive implementation (use component_model directly) | 3 | 2 | 1 | 0 | 1 | experimental | stabilize |
-| `derive_tools_meta` | core | 3 | Macro Framework | Generate derive_tools implementations (use derive_tools directly) | 3 | 3 | 1 | 0 | 2 | stable | maintain |
-| `former_meta` | core | 3 | Macro Framework | Generate former builder derive implementation (use former directly) | 5 | 4 | 1 | 0 | 3 | stable | maintain |
-| `impls_index_meta` | core | 3 | Macro Framework | Generate impls_index macro wrappers (use impls_index directly) | 1 | 1 | 1 | 0 | 0 | deprecated | remove |
-| `mod_interface_meta` | core | 3 | Macro Framework | Generate mod_interface namespace macros (use mod_interface directly) | 2 | 2 | 1 | 0 | 1 | stable | maintain |
-| `reflect_tools_meta` | experimental | 3 | Macro Framework | Generate reflect_tools introspection code (use reflect_tools directly) | 1 | 1 | 1 | 0 | 0 | deprecated | remove |
-| `strs_tools_meta` | core | 3 | Macro Framework | Generate strs_tools compile-time operations (use strs_tools directly) | 1 | 1 | 1 | 0 | 0 | deprecated | remove |
-| `variadic_from_meta` | core | 3 | Macro Framework | Generate variadic_from From impls (use variadic_from directly) | 1 | 1 | 1 | 0 | 0 | stable | maintain |
-| `clone_dyn` | core | 4 | Patterns | Make dyn trait objects cloneable via a single derive macro | 2 | 2 | 1 | 1 | 0 | stable | maintain |
-| `clone_dyn_types` | core | 4 | Patterns | Expose shared trait contracts consumed by clone_dyn users | 0 | 0 | 0 | 0 | 0 | stable | maintain |
-| `component_model` | experimental | 4 | Patterns | Enable type-driven field assignment on complex objects | 2 | 2 | 1 | 1 | 0 | experimental | stabilize |
-| `component_model_types` | experimental | 4 | Patterns | Expose shared traits for the component_model pattern | 1 | 1 | 0 | 0 | 1 | experimental | stabilize |
-| `derive_tools` | core | 4 | Patterns | Add Into, TryInto, IsVariant, and other missing std derives | 6 | 3 | 2 | 1 | 0 | stable | maintain |
-| `former` | core | 4 | Patterns | Build complex objects with nested subformers via one derive | 4 | 4 | 1 | 1 | 2 | stable | maintain |
-| `former_types` | core | 4 | Patterns | Expose compile-time trait contracts reused by former consumers | 2 | 2 | 1 | 0 | 1 | stable | maintain |
-| `impls_index` | core | 4 | Patterns | Wrap impl methods in named macros for navigable indexing | 1 | 1 | 0 | 1 | 0 | deprecated | remove |
-| `mod_interface` | core | 4 | Patterns | Replace dozens of pub use declarations with a single macro | 1 | 1 | 0 | 1 | 0 | stable | maintain |
-| `reflect_tools` | experimental | 4 | Patterns | Inspect struct fields by name and type at runtime | 3 | 3 | 1 | 1 | 1 | deprecated | remove |
-| `variadic_from` | core | 4 | Patterns | Derive From implementations for tuples of 1 to N elements | 1 | 1 | 0 | 1 | 0 | stable | maintain |
-| `async_from` | experimental | 5 | Collections | Provide async versions of From, Into, TryFrom, and TryInto | 1 | 0 | 0 | 0 | 0 | deprecated | remove |
-| `async_tools` | experimental | 5 | Collections | Supply practical helpers for async task spawning and joining | 2 | 1 | 1 | 0 | 0 | deprecated | remove |
-| `collection_tools` | core | 5 | Collections | Create std collections inline with ergonomic literal macros | 1 | 0 | 0 | 0 | 0 | stable | maintain |
-| `for_each` | experimental | 5 | Collections | Apply any macro to every item in a compile-time list | 0 | 0 | 0 | 0 | 0 | deprecated | remove |
-| `iter_tools` | experimental | 5 | Collections | Expose the full itertools combinator library via workspace facade | 2 | 1 | 0 | 1 | 0 | experimental | stabilize |
-| `cli_fmt` | core | 6 | String & Format | Structure and colorize CLI terminal output consistently | 1 | 1 | 1 | 0 | 0 | deprecated | remove |
-| `color_tools` | core | 6 | String & Format | Add ANSI color and text escape formatting to terminal output | 1 | 0 | 0 | 0 | 0 | deprecated | remove |
-| `data_fmt` | core | 6 | String & Format | Render data as aligned tables and nested tree structures | 9 | 3 | 2 | 1 | 0 | deprecated | remove |
-| `format_tools` | core | 6 | String & Format | Extend std formatting with structural display and string helpers | 3 | 3 | 0 | 3 | 0 | deprecated | remove |
-| `include_md` | experimental | 6 | String & Format | Include a markdown file or named section at compile time | 0 | 0 | 0 | 0 | 0 | deprecated | remove |
-| `strs_tools` | core | 6 | String & Format | Manipulate strings with splitting, indentation, and pattern tools | 9 | 2 | 0 | 2 | 0 | deprecated | remove |
-| `wstring_tools` | alias | 6 | String & Format | Alias — recommended single dependency for all string utilities | 1 | 1 | 1 | 0 | 0 | deprecated | remove |
-| `config_hierarchy` | core | 7 | Path & Process | Load layered YAML config with environment variable overrides | 6 | 1 | 0 | 1 | 0 | deprecated | remove |
-| `config_hierarchy` | experimental | 7 | Path & Process | Evolve config_hierarchy with experimental extensions | 6 | 1 | 0 | 1 | 0 | deprecated | remove |
-| `fs_tools` | experimental | 7 | Path & Process | Read, write, and traverse files with ergonomic error context | 1 | 0 | 0 | 0 | 0 | deprecated | remove |
-| `process_tools` | core | 7 | Path & Process | Spawn child processes and capture output reliably | 6 | 4 | 0 | 4 | 0 | stable | maintain |
-| `program_tools` | experimental | 7 | Path & Process | Compile and run a Rust source file on demand | 5 | 5 | 1 | 4 | 0 | deprecated | remove |
-| `pth` | core | 7 | Path & Process | Normalize, resolve, and join paths with workspace-aware helpers | 5 | 2 | 0 | 2 | 0 | stable | maintain |
-| `workspace_tools` | core | 7 | Path & Process | Resolve paths relative to workspace root from any execution context | 11 | 0 | 0 | 0 | 0 | deprecated | remove |
-| `file_tools` | alias | 7 | Path & Process | Alias — recommended single dependency for all filesystem utilities | 1 | 1 | 1 | 0 | 0 | deprecated | remove |
-| `benchkit` | experimental | 8 | Tooling | Benchmark performance and publish markdown reports | 9 | 1 | 0 | 1 | 0 | experimental | stabilize |
-| `crates_tools` | core | 8 | Tooling | Parse Cargo.toml and analyze crate metadata programmatically | 3 | 0 | 0 | 0 | 0 | stable | maintain |
-| `genfile_core` | core | 8 | Tooling | Materialize project scaffolding from versioned template archives | 9 | 3 | 0 | 3 | 0 | stable | maintain |
-| `genfile` | core | 8 | Tooling | Manage code generation template archives from the command line | 4 | 3 | 1 | 2 | 0 | deprecated | remove |
-| `multiline_input` | core | 8 | Tooling | Read multi-line terminal input with readline and paste handling | 4 | 1 | 0 | 1 | 0 | deprecated | remove |
-| `multiline_input` | experimental | 8 | Tooling | Evolve multiline_input with experimental input handling | 4 | 1 | 0 | 1 | 0 | deprecated | remove |
-| `test_tools` | experimental | 8 | Tooling | Provide rich assertions and test organization for nextest | 11 | 3 | 0 | 3 | 0 | experimental | stabilize |
-| `wca` | experimental | 8 | Tooling | Define CLI commands as Rust functions with help and errors built in | 7 | 4 | 0 | 4 | 0 | experimental | stabilize |
-| `sqlx_query` | experimental | 9 | Application | Switch between SQLx compile-time and runtime query macros by feature | 0 | 0 | 0 | 0 | 0 | deprecated | remove |
-| `unitore` | experimental | 9 | Application | Subscribe to RSS and Atom feeds with configurable update intervals | 20 | 3 | 0 | 3 | 0 | experimental | stabilize |
-| `willbe` | experimental | 9 | Application | Publish, version-bump, and consistency-check a Cargo workspace | 40 | 14 | 0 | 14 | 0 | experimental | stabilize |
-| `willbe2` | deprecated | 9 | Application | Reimagine willbe with improved architecture | 1 | 1 | 1 | 0 | 0 | deprecated | remove |
-| `wtools` | experimental | 9 | Application | Aggregate the complete workspace toolkit in one dependency | 12 | 11 | 0 | 11 | 0 | deprecated | remove |
-| `proper_tools` | alias | 9 | Application | Alias — recommended starting point for general-purpose wTools use | 0 | 0 | 0 | 0 | 0 | deprecated | remove |
+| `error_tools` | core | 1 | Foundation | Provide a unified error handling namespace across the workspace | 2 | 0 | 0 | 0 | 0 | stable | stable |
+| `data_type` | experimental | 1 | Foundation | Supply foundational type aliases and primal data structures | 3 | 2 | 0 | 0 | 2 | experimental | stable |
+| `diagnostics_tools` | experimental | 1 | Foundation | Provide runtime assertion helpers with rich diagnostic context | 1 | 0 | 0 | 0 | 0 | deprecated | deprecated |
+| `mem_tools` | experimental | 1 | Foundation | Offer safe memory introspection and alignment utilities | 0 | 0 | 0 | 0 | 0 | deprecated | deprecated |
+| `asbytes` | core | 2 | Primitives | Enable zero-copy viewing of POD types as byte slices | 1 | 0 | 0 | 0 | 0 | deprecated | deprecated |
+| `deterministic_rand` | core | 2 | Primitives | Generate hierarchical seeded random numbers with switchable determinism | 6 | 2 | 0 | 0 | 2 | deprecated | deprecated |
+| `implements` | experimental | 2 | Primitives | Answer at compile time whether a type implements a trait | 0 | 0 | 0 | 0 | 0 | experimental | stable |
+| `inspect_type` | core | 2 | Primitives | Print exact Rust type names and sizes at compile time | 0 | 0 | 0 | 0 | 0 | stable | stable |
+| `interval_adapter` | experimental | 2 | Primitives | Unify open, closed, and half-open range types behind one adapter | 0 | 0 | 0 | 0 | 0 | experimental | stable |
+| `is_slice` | experimental | 2 | Primitives | Answer at compile time whether an expression is a slice | 0 | 0 | 0 | 0 | 0 | experimental | stable |
+| `time_tools` | experimental | 2 | Primitives | Provide minimal time measurement and timestamp utilities | 0 | 0 | 0 | 0 | 0 | deprecated | deprecated |
+| `typing_tools` | experimental | 2 | Primitives | Express compile-time type constraints and type guards | 3 | 3 | 3 | 0 | 0 | deprecated | deprecated |
+| `winterval` | experimental | 2 | Primitives | Re-export interval_adapter as a standalone dependency | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated |
+| `macro_tools` | core | 3 | Macro Framework | Supply all primitives needed to author procedural macros | 9 | 4 | 0 | 1 | 3 | stable | stable |
+| `meta_tools` | experimental | 3 | Macro Framework | Provide token-level macro utilities for metaprogramming | 6 | 5 | 2 | 0 | 3 | deprecated | deprecated |
+| `clone_dyn_meta` | core | 3 | Macro Framework | Generate clone_dyn derive implementation (use clone_dyn directly) | 2 | 2 | 1 | 0 | 1 | stable | stable |
+| `component_model_meta` | experimental | 3 | Macro Framework | Generate component_model derive implementation (use component_model directly) | 3 | 2 | 1 | 0 | 1 | experimental | stable |
+| `derive_tools_meta` | core | 3 | Macro Framework | Generate derive_tools implementations (use derive_tools directly) | 3 | 3 | 1 | 0 | 2 | stable | stable |
+| `former_meta` | core | 3 | Macro Framework | Generate former builder derive implementation (use former directly) | 5 | 4 | 1 | 0 | 3 | stable | stable |
+| `impls_index_meta` | core | 3 | Macro Framework | Generate impls_index macro wrappers (use impls_index directly) | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated |
+| `mod_interface_meta` | core | 3 | Macro Framework | Generate mod_interface namespace macros (use mod_interface directly) | 2 | 2 | 1 | 0 | 1 | stable | stable |
+| `reflect_tools_meta` | experimental | 3 | Macro Framework | Generate reflect_tools introspection code (use reflect_tools directly) | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated |
+| `strs_tools_meta` | core | 3 | Macro Framework | Generate strs_tools compile-time operations (use strs_tools directly) | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated |
+| `variadic_from_meta` | core | 3 | Macro Framework | Generate variadic_from From impls (use variadic_from directly) | 1 | 1 | 1 | 0 | 0 | stable | stable |
+| `clone_dyn` | core | 4 | Patterns | Make dyn trait objects cloneable via a single derive macro | 2 | 2 | 1 | 1 | 0 | stable | stable |
+| `clone_dyn_types` | core | 4 | Patterns | Expose shared trait contracts consumed by clone_dyn users | 0 | 0 | 0 | 0 | 0 | stable | stable |
+| `component_model` | experimental | 4 | Patterns | Enable type-driven field assignment on complex objects | 2 | 2 | 1 | 1 | 0 | experimental | stable |
+| `component_model_types` | experimental | 4 | Patterns | Expose shared traits for the component_model pattern | 1 | 1 | 0 | 0 | 1 | experimental | stable |
+| `derive_tools` | core | 4 | Patterns | Add Into, TryInto, IsVariant, and other missing std derives | 6 | 3 | 2 | 1 | 0 | stable | stable |
+| `former` | core | 4 | Patterns | Build complex objects with nested subformers via one derive | 4 | 4 | 1 | 1 | 2 | stable | stable |
+| `former_types` | core | 4 | Patterns | Expose compile-time trait contracts reused by former consumers | 2 | 2 | 1 | 0 | 1 | stable | stable |
+| `impls_index` | core | 4 | Patterns | Wrap impl methods in named macros for navigable indexing | 1 | 1 | 0 | 1 | 0 | deprecated | deprecated |
+| `mod_interface` | core | 4 | Patterns | Replace dozens of pub use declarations with a single macro | 1 | 1 | 0 | 1 | 0 | stable | stable |
+| `reflect_tools` | experimental | 4 | Patterns | Inspect struct fields by name and type at runtime | 3 | 3 | 1 | 1 | 1 | deprecated | deprecated |
+| `variadic_from` | core | 4 | Patterns | Derive From implementations for tuples of 1 to N elements | 1 | 1 | 0 | 1 | 0 | stable | stable |
+| `async_from` | experimental | 5 | Collections | Provide async versions of From, Into, TryFrom, and TryInto | 1 | 0 | 0 | 0 | 0 | deprecated | deprecated |
+| `async_tools` | experimental | 5 | Collections | Supply practical helpers for async task spawning and joining | 2 | 1 | 1 | 0 | 0 | deprecated | deprecated |
+| `collection_tools` | core | 5 | Collections | Create std collections inline with ergonomic literal macros | 1 | 0 | 0 | 0 | 0 | stable | stable |
+| `for_each` | experimental | 5 | Collections | Apply any macro to every item in a compile-time list | 0 | 0 | 0 | 0 | 0 | deprecated | deprecated |
+| `iter_tools` | experimental | 5 | Collections | Expose the full itertools combinator library via workspace facade | 2 | 1 | 0 | 1 | 0 | experimental | stable |
+| `cli_fmt` | core | 6 | String & Format | Structure and colorize CLI terminal output consistently | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated |
+| `color_tools` | core | 6 | String & Format | Add ANSI color and text escape formatting to terminal output | 1 | 0 | 0 | 0 | 0 | deprecated | deprecated |
+| `data_fmt` | core | 6 | String & Format | Render data as aligned tables and nested tree structures | 9 | 3 | 2 | 1 | 0 | deprecated | deprecated |
+| `format_tools` | core | 6 | String & Format | Extend std formatting with structural display and string helpers | 3 | 3 | 0 | 3 | 0 | deprecated | deprecated |
+| `include_md` | experimental | 6 | String & Format | Include a markdown file or named section at compile time | 0 | 0 | 0 | 0 | 0 | deprecated | deprecated |
+| `strs_tools` | core | 6 | String & Format | Manipulate strings with splitting, indentation, and pattern tools | 9 | 2 | 0 | 2 | 0 | deprecated | deprecated |
+| `wstring_tools` | alias | 6 | String & Format | Alias — recommended single dependency for all string utilities | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated |
+| `config_hierarchy` | core | 7 | Path & Process | Load layered YAML config with environment variable overrides | 6 | 1 | 0 | 1 | 0 | deprecated | deprecated |
+| `config_hierarchy` | experimental | 7 | Path & Process | Evolve config_hierarchy with experimental extensions | 6 | 1 | 0 | 1 | 0 | deprecated | deprecated |
+| `fs_tools` | experimental | 7 | Path & Process | Read, write, and traverse files with ergonomic error context | 1 | 0 | 0 | 0 | 0 | deprecated | deprecated |
+| `process_tools` | core | 7 | Path & Process | Spawn child processes and capture output reliably | 6 | 4 | 0 | 4 | 0 | stable | stable |
+| `program_tools` | experimental | 7 | Path & Process | Compile and run a Rust source file on demand | 5 | 5 | 1 | 4 | 0 | deprecated | deprecated |
+| `pth` | core | 7 | Path & Process | Normalize, resolve, and join paths with workspace-aware helpers | 5 | 2 | 0 | 2 | 0 | stable | stable |
+| `workspace_tools` | core | 7 | Path & Process | Resolve paths relative to workspace root from any execution context | 11 | 0 | 0 | 0 | 0 | deprecated | deprecated |
+| `file_tools` | alias | 7 | Path & Process | Alias — recommended single dependency for all filesystem utilities | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated |
+| `benchkit` | experimental | 8 | Tooling | Benchmark performance and publish markdown reports | 9 | 1 | 0 | 1 | 0 | experimental | stable |
+| `crates_tools` | core | 8 | Tooling | Parse Cargo.toml and analyze crate metadata programmatically | 3 | 0 | 0 | 0 | 0 | stable | stable |
+| `genfile_core` | core | 8 | Tooling | Materialize project scaffolding from versioned template archives | 9 | 3 | 0 | 3 | 0 | stable | stable |
+| `genfile` | core | 8 | Tooling | Manage code generation template archives from the command line | 4 | 3 | 1 | 2 | 0 | deprecated | deprecated |
+| `multiline_input` | core | 8 | Tooling | Read multi-line terminal input with readline and paste handling | 4 | 1 | 0 | 1 | 0 | deprecated | deprecated |
+| `multiline_input` | experimental | 8 | Tooling | Evolve multiline_input with experimental input handling | 4 | 1 | 0 | 1 | 0 | deprecated | deprecated |
+| `test_tools` | experimental | 8 | Tooling | Provide rich assertions and test organization for nextest | 11 | 3 | 0 | 3 | 0 | experimental | stable |
+| `wca` | experimental | 8 | Tooling | Define CLI commands as Rust functions with help and errors built in | 7 | 4 | 0 | 4 | 0 | experimental | stable |
+| `sqlx_query` | experimental | 9 | Application | Switch between SQLx compile-time and runtime query macros by feature | 0 | 0 | 0 | 0 | 0 | deprecated | deprecated |
+| `unitore` | experimental | 9 | Application | Subscribe to RSS and Atom feeds with configurable update intervals | 20 | 3 | 0 | 3 | 0 | experimental | stable |
+| `willbe` | experimental | 9 | Application | Publish, version-bump, and consistency-check a Cargo workspace | 40 | 14 | 0 | 14 | 0 | experimental | stable |
+| `willbe2` | deprecated | 9 | Application | Reimagine willbe with improved architecture | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated |
+| `wtools` | experimental | 9 | Application | Aggregate the complete workspace toolkit in one dependency | 12 | 11 | 0 | 11 | 0 | deprecated | deprecated |
+| `proper_tools` | alias | 9 | Application | Alias — recommended starting point for general-purpose wTools use | 0 | 0 | 0 | 0 | 0 | deprecated | deprecated |
 
 
 ## Deprecation Candidates
@@ -180,7 +180,7 @@ Per-crate attributes for promotion and publishing.
 - **module** — source directory under `module/`: `alias`, `core`, `deprecated`, or `experimental`
 - **layer** — layer number and name from the Layer Summary table
 - **state** — current lifecycle: `stable` (mature, actively used), `experimental` (API may change), `deprecated` (slated for removal)
-- **target** — desired outcome: `maintain` (keep as-is), `stabilize` (promote toward stable), `remove` (delete from workspace)
+- **target** — desired lifecycle (same values as state); when state ≠ target, action is needed
 - **purpose** — one-sentence statement matching the Crate Layer Assignments table
 - **deps** / **int** / **=L** / **↓L** / **↑L** — dep stats matching the Crate Layer Assignments columns
 - **version** — current version from Cargo.toml; tracks release state
@@ -199,7 +199,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 1 · Foundation
 - **state**: stable
-- **target**: maintain
+- **target**: stable
 - **purpose**: Provide a unified error handling namespace across the workspace
 - **deps**: 2 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.39.0
@@ -212,7 +212,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 1 · Foundation
 - **state**: experimental
-- **target**: stabilize
+- **target**: stable
 - **purpose**: Supply foundational type aliases and primal data structures
 - **deps**: 3 · **int**: 2 · **=L**: 0 · **↓L**: 0 · **↑L**: 2
 - **version**: 0.25.0
@@ -225,7 +225,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 1 · Foundation
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Provide runtime assertion helpers with rich diagnostic context
 - **deps**: 1 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.11.0
@@ -238,7 +238,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 1 · Foundation
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Offer safe memory introspection and alignment utilities
 - **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.9.0
@@ -255,7 +255,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 2 · Primitives
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Enable zero-copy viewing of POD types as byte slices
 - **deps**: 1 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.2.0
@@ -268,7 +268,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 2 · Primitives
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Generate hierarchical seeded random numbers with switchable determinism
 - **deps**: 6 · **int**: 2 · **=L**: 0 · **↓L**: 0 · **↑L**: 2
 - **version**: 0.7.0
@@ -281,7 +281,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 2 · Primitives
 - **state**: experimental
-- **target**: stabilize
+- **target**: stable
 - **purpose**: Answer at compile time whether a type implements a trait
 - **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.13.0
@@ -294,7 +294,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 2 · Primitives
 - **state**: stable
-- **target**: maintain
+- **target**: stable
 - **purpose**: Print exact Rust type names and sizes at compile time
 - **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.16.0
@@ -307,7 +307,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 2 · Primitives
 - **state**: experimental
-- **target**: stabilize
+- **target**: stable
 - **purpose**: Unify open, closed, and half-open range types behind one adapter
 - **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.42.0
@@ -320,7 +320,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 2 · Primitives
 - **state**: experimental
-- **target**: stabilize
+- **target**: stable
 - **purpose**: Answer at compile time whether an expression is a slice
 - **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.14.0
@@ -333,7 +333,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 2 · Primitives
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Provide minimal time measurement and timestamp utilities
 - **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.2.0
@@ -346,7 +346,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 2 · Primitives
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Express compile-time type constraints and type guards
 - **deps**: 3 · **int**: 3 · **=L**: 3 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.11.0
@@ -359,7 +359,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 2 · Primitives
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Re-export interval_adapter as a standalone dependency
 - **deps**: 1 · **int**: 1 · **=L**: 1 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.3.0
@@ -376,7 +376,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 3 · Macro Framework
 - **state**: stable
-- **target**: maintain
+- **target**: stable
 - **purpose**: Supply all primitives needed to author procedural macros
 - **deps**: 9 · **int**: 4 · **=L**: 0 · **↓L**: 1 · **↑L**: 3
 - **version**: 0.85.0
@@ -389,7 +389,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 3 · Macro Framework
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Provide token-level macro utilities for metaprogramming
 - **deps**: 6 · **int**: 5 · **=L**: 2 · **↓L**: 0 · **↑L**: 3
 - **version**: 0.12.0
@@ -402,7 +402,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 3 · Macro Framework
 - **state**: stable
-- **target**: maintain
+- **target**: stable
 - **purpose**: Generate clone_dyn derive implementation (use clone_dyn directly)
 - **deps**: 2 · **int**: 2 · **=L**: 1 · **↓L**: 0 · **↑L**: 1
 - **version**: 0.58.0
@@ -415,7 +415,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 3 · Macro Framework
 - **state**: experimental
-- **target**: stabilize
+- **target**: stable
 - **purpose**: Generate component_model derive implementation (use component_model directly)
 - **deps**: 3 · **int**: 2 · **=L**: 1 · **↓L**: 0 · **↑L**: 1
 - **version**: 0.17.0
@@ -428,7 +428,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 3 · Macro Framework
 - **state**: stable
-- **target**: maintain
+- **target**: stable
 - **purpose**: Generate derive_tools implementations (use derive_tools directly)
 - **deps**: 3 · **int**: 3 · **=L**: 1 · **↓L**: 0 · **↑L**: 2
 - **version**: 0.63.0
@@ -441,7 +441,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 3 · Macro Framework
 - **state**: stable
-- **target**: maintain
+- **target**: stable
 - **purpose**: Generate former builder derive implementation (use former directly)
 - **deps**: 5 · **int**: 4 · **=L**: 1 · **↓L**: 0 · **↑L**: 3
 - **version**: 2.43.0
@@ -454,7 +454,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 3 · Macro Framework
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Generate impls_index macro wrappers (use impls_index directly)
 - **deps**: 1 · **int**: 1 · **=L**: 1 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.13.0
@@ -467,7 +467,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 3 · Macro Framework
 - **state**: stable
-- **target**: maintain
+- **target**: stable
 - **purpose**: Generate mod_interface namespace macros (use mod_interface directly)
 - **deps**: 2 · **int**: 2 · **=L**: 1 · **↓L**: 0 · **↑L**: 1
 - **version**: 0.59.0
@@ -480,7 +480,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 3 · Macro Framework
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Generate reflect_tools introspection code (use reflect_tools directly)
 - **deps**: 1 · **int**: 1 · **=L**: 1 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.7.0
@@ -493,7 +493,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 3 · Macro Framework
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Generate strs_tools compile-time operations (use strs_tools directly)
 - **deps**: 1 · **int**: 1 · **=L**: 1 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.18.0
@@ -506,7 +506,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 3 · Macro Framework
 - **state**: stable
-- **target**: maintain
+- **target**: stable
 - **purpose**: Generate variadic_from From impls (use variadic_from directly)
 - **deps**: 1 · **int**: 1 · **=L**: 1 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.30.0
@@ -523,7 +523,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 4 · Patterns
 - **state**: stable
-- **target**: maintain
+- **target**: stable
 - **purpose**: Make dyn trait objects cloneable via a single derive macro
 - **deps**: 2 · **int**: 2 · **=L**: 1 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.62.0
@@ -536,7 +536,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 4 · Patterns
 - **state**: stable
-- **target**: maintain
+- **target**: stable
 - **purpose**: Expose shared trait contracts consumed by clone_dyn users
 - **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.48.0
@@ -549,7 +549,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 4 · Patterns
 - **state**: experimental
-- **target**: stabilize
+- **target**: stable
 - **purpose**: Enable type-driven field assignment on complex objects
 - **deps**: 2 · **int**: 2 · **=L**: 1 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.17.0
@@ -562,7 +562,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 4 · Patterns
 - **state**: experimental
-- **target**: stabilize
+- **target**: stable
 - **purpose**: Expose shared traits for the component_model pattern
 - **deps**: 1 · **int**: 1 · **=L**: 0 · **↓L**: 0 · **↑L**: 1
 - **version**: 0.27.0
@@ -575,7 +575,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 4 · Patterns
 - **state**: stable
-- **target**: maintain
+- **target**: stable
 - **purpose**: Add Into, TryInto, IsVariant, and other missing std derives
 - **deps**: 6 · **int**: 3 · **=L**: 2 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.65.0
@@ -588,7 +588,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 4 · Patterns
 - **state**: stable
-- **target**: maintain
+- **target**: stable
 - **purpose**: Build complex objects with nested subformers via one derive
 - **deps**: 4 · **int**: 4 · **=L**: 1 · **↓L**: 1 · **↑L**: 2
 - **version**: 2.45.0
@@ -601,7 +601,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 4 · Patterns
 - **state**: stable
-- **target**: maintain
+- **target**: stable
 - **purpose**: Expose compile-time trait contracts reused by former consumers
 - **deps**: 2 · **int**: 2 · **=L**: 1 · **↓L**: 0 · **↑L**: 1
 - **version**: 2.38.0
@@ -614,7 +614,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 4 · Patterns
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Wrap impl methods in named macros for navigable indexing
 - **deps**: 1 · **int**: 1 · **=L**: 0 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.11.0
@@ -627,7 +627,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 4 · Patterns
 - **state**: stable
-- **target**: maintain
+- **target**: stable
 - **purpose**: Replace dozens of pub use declarations with a single macro
 - **deps**: 1 · **int**: 1 · **=L**: 0 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.61.0
@@ -640,7 +640,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 4 · Patterns
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Inspect struct fields by name and type at runtime
 - **deps**: 3 · **int**: 3 · **=L**: 1 · **↓L**: 1 · **↑L**: 1
 - **version**: 0.7.0
@@ -653,7 +653,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 4 · Patterns
 - **state**: stable
-- **target**: maintain
+- **target**: stable
 - **purpose**: Derive From implementations for tuples of 1 to N elements
 - **deps**: 1 · **int**: 1 · **=L**: 0 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.59.0
@@ -670,7 +670,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 5 · Collections
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Provide async versions of From, Into, TryFrom, and TryInto
 - **deps**: 1 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.2.0
@@ -683,7 +683,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 5 · Collections
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Supply practical helpers for async task spawning and joining
 - **deps**: 2 · **int**: 1 · **=L**: 1 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.1.0
@@ -696,7 +696,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 5 · Collections
 - **state**: stable
-- **target**: maintain
+- **target**: stable
 - **purpose**: Create std collections inline with ergonomic literal macros
 - **deps**: 1 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.38.0
@@ -709,7 +709,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 5 · Collections
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Apply any macro to every item in a compile-time list
 - **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.10.0
@@ -722,7 +722,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 5 · Collections
 - **state**: experimental
-- **target**: stabilize
+- **target**: stable
 - **purpose**: Expose the full itertools combinator library via workspace facade
 - **deps**: 2 · **int**: 1 · **=L**: 0 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.50.0
@@ -739,7 +739,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 6 · String & Format
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Structure and colorize CLI terminal output consistently
 - **deps**: 1 · **int**: 1 · **=L**: 1 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.4.0
@@ -752,7 +752,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 6 · String & Format
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Add ANSI color and text escape formatting to terminal output
 - **deps**: 1 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.4.0
@@ -765,7 +765,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 6 · String & Format
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Render data as aligned tables and nested tree structures
 - **deps**: 9 · **int**: 3 · **=L**: 2 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.2.0
@@ -778,7 +778,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 6 · String & Format
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Extend std formatting with structural display and string helpers
 - **deps**: 3 · **int**: 3 · **=L**: 0 · **↓L**: 3 · **↑L**: 0
 - **version**: 0.6.0
@@ -791,7 +791,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 6 · String & Format
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Include a markdown file or named section at compile time
 - **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.1.0
@@ -804,7 +804,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 6 · String & Format
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Manipulate strings with splitting, indentation, and pattern tools
 - **deps**: 9 · **int**: 2 · **=L**: 0 · **↓L**: 2 · **↑L**: 0
 - **version**: 0.45.0
@@ -817,7 +817,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: alias
 - **layer**: 6 · String & Format
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Alias — recommended single dependency for all string utilities
 - **deps**: 1 · **int**: 1 · **=L**: 1 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.2.0
@@ -834,7 +834,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 7 · Path & Process
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Load layered YAML config with environment variable overrides
 - **deps**: 6 · **int**: 1 · **=L**: 0 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.4.0
@@ -847,7 +847,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 7 · Path & Process
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Evolve config_hierarchy with experimental extensions
 - **deps**: 6 · **int**: 1 · **=L**: 0 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.5.0
@@ -860,7 +860,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 7 · Path & Process
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Read, write, and traverse files with ergonomic error context
 - **deps**: 1 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.2.0
@@ -873,7 +873,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 7 · Path & Process
 - **state**: stable
-- **target**: maintain
+- **target**: stable
 - **purpose**: Spawn child processes and capture output reliably
 - **deps**: 6 · **int**: 4 · **=L**: 0 · **↓L**: 4 · **↑L**: 0
 - **version**: 0.32.0
@@ -886,7 +886,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 7 · Path & Process
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Compile and run a Rust source file on demand
 - **deps**: 5 · **int**: 5 · **=L**: 1 · **↓L**: 4 · **↑L**: 0
 - **version**: 0.1.0
@@ -899,7 +899,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 7 · Path & Process
 - **state**: stable
-- **target**: maintain
+- **target**: stable
 - **purpose**: Normalize, resolve, and join paths with workspace-aware helpers
 - **deps**: 5 · **int**: 2 · **=L**: 0 · **↓L**: 2 · **↑L**: 0
 - **version**: 0.37.0
@@ -912,7 +912,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 7 · Path & Process
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Resolve paths relative to workspace root from any execution context
 - **deps**: 11 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.12.0
@@ -925,7 +925,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: alias
 - **layer**: 7 · Path & Process
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Alias — recommended single dependency for all filesystem utilities
 - **deps**: 1 · **int**: 1 · **=L**: 1 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.1.0
@@ -942,7 +942,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 8 · Tooling
 - **state**: experimental
-- **target**: stabilize
+- **target**: stable
 - **purpose**: Benchmark performance and publish markdown reports
 - **deps**: 9 · **int**: 1 · **=L**: 0 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.20.0
@@ -955,7 +955,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 8 · Tooling
 - **state**: stable
-- **target**: maintain
+- **target**: stable
 - **purpose**: Parse Cargo.toml and analyze crate metadata programmatically
 - **deps**: 3 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.25.0
@@ -968,7 +968,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 8 · Tooling
 - **state**: stable
-- **target**: maintain
+- **target**: stable
 - **purpose**: Materialize project scaffolding from versioned template archives
 - **deps**: 9 · **int**: 3 · **=L**: 0 · **↓L**: 3 · **↑L**: 0
 - **version**: 0.10.0
@@ -981,7 +981,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 8 · Tooling
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Manage code generation template archives from the command line
 - **deps**: 4 · **int**: 3 · **=L**: 1 · **↓L**: 2 · **↑L**: 0
 - **version**: 0.4.0
@@ -994,7 +994,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: core
 - **layer**: 8 · Tooling
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Read multi-line terminal input with readline and paste handling
 - **deps**: 4 · **int**: 1 · **=L**: 0 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.2.0
@@ -1007,7 +1007,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 8 · Tooling
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Evolve multiline_input with experimental input handling
 - **deps**: 4 · **int**: 1 · **=L**: 0 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.2.0
@@ -1020,7 +1020,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 8 · Tooling
 - **state**: experimental
-- **target**: stabilize
+- **target**: stable
 - **purpose**: Provide rich assertions and test organization for nextest
 - **deps**: 11 · **int**: 3 · **=L**: 0 · **↓L**: 3 · **↑L**: 0
 - **version**: 0.16.0
@@ -1033,7 +1033,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 8 · Tooling
 - **state**: experimental
-- **target**: stabilize
+- **target**: stable
 - **purpose**: Define CLI commands as Rust functions with help and errors built in
 - **deps**: 7 · **int**: 4 · **=L**: 0 · **↓L**: 4 · **↑L**: 0
 - **version**: 0.46.0
@@ -1050,7 +1050,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 9 · Application
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Switch between SQLx compile-time and runtime query macros by feature
 - **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.2.1
@@ -1063,7 +1063,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 9 · Application
 - **state**: experimental
-- **target**: stabilize
+- **target**: stable
 - **purpose**: Subscribe to RSS and Atom feeds with configurable update intervals
 - **deps**: 20 · **int**: 3 · **=L**: 0 · **↓L**: 3 · **↑L**: 0
 - **version**: 0.1.0
@@ -1076,7 +1076,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 9 · Application
 - **state**: experimental
-- **target**: stabilize
+- **target**: stable
 - **purpose**: Publish, version-bump, and consistency-check a Cargo workspace
 - **deps**: 40 · **int**: 14 · **=L**: 0 · **↓L**: 14 · **↑L**: 0
 - **version**: 0.35.0
@@ -1089,7 +1089,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: deprecated
 - **layer**: 9 · Application
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Reimagine willbe with improved architecture
 - **deps**: 1 · **int**: 1 · **=L**: 1 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.2.0
@@ -1102,7 +1102,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 9 · Application
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Aggregate the complete workspace toolkit in one dependency
 - **deps**: 12 · **int**: 11 · **=L**: 0 · **↓L**: 11 · **↑L**: 0
 - **version**: 0.2.20
@@ -1115,7 +1115,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: alias
 - **layer**: 9 · Application
 - **state**: deprecated
-- **target**: remove
+- **target**: deprecated
 - **purpose**: Alias — recommended starting point for general-purpose wTools use
 - **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.1.0
