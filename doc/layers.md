@@ -53,7 +53,7 @@ Total: 69 crates (3 alias + 34 core + 1 deprecated + 31 experimental)
 | `is_slice` | experimental | 2 | Primitives | Answer at compile time whether an expression is a slice | 0 | 0 | 0 | 0 | 0 | experimental | stable | TDCFREMS |
 | `time_tools` | experimental | 2 | Primitives | Provide minimal time measurement and timestamp utilities | 0 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFRE·S |
 | `typing_tools` | experimental | 2 | Primitives | Express compile-time type constraints and type guards | 3 | 3 | 3 | 0 | 0 | deprecated | deprecated | TDCFREMS |
-| `winterval` | experimental | 2 | Primitives | Re-export interval_adapter as a standalone dependency | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | T·C·REMS |
+| `winterval` | experimental | 2 | Primitives | Re-export interval_adapter as a standalone dependency | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDC·REMS |
 | `macro_tools` | core | 3 | Macro Framework | Supply all primitives needed to author procedural macros | 9 | 4 | 0 | 1 | 3 | stable | stable | TD··RE·S |
 | `meta_tools` | experimental | 3 | Macro Framework | Provide token-level macro utilities for metaprogramming | 6 | 5 | 2 | 0 | 3 | deprecated | deprecated | TD·FREM· |
 | `clone_dyn_meta` | core | 3 | Macro Framework | Implement #[clone_dyn] attribute macro backend (use clone_dyn crate directly) | 2 | 2 | 1 | 0 | 1 | stable | stable | TD·FR·MS |
@@ -83,13 +83,13 @@ Total: 69 crates (3 alias + 34 core + 1 deprecated + 31 experimental)
 | `iter_tools` | experimental | 5 | Collections | Expose the full itertools combinator library via workspace facade | 2 | 1 | 0 | 1 | 0 | experimental | stable | TDC·RE·S |
 | `cli_fmt` | core | 6 | String & Format | Process CLI command output with head/tail filtering, width truncation, and stream merging | 1 | 1 | 1 | 0 | 0 | experimental | stable | TDCFREMS |
 | `color_tools` | core | 6 | String & Format | Wrap text with typed ANSI color for terminal and HTML rendering | 1 | 0 | 0 | 0 | 0 | experimental | stable | TDCFREMS |
-| `data_fmt` | core | 6 | String & Format | Render data as aligned tables and nested tree structures | 9 | 3 | 2 | 1 | 0 | deprecated | deprecated | TDCFREM· |
+| `data_fmt` | core | 6 | String & Format | Render data as aligned tables and nested tree structures | 9 | 3 | 2 | 1 | 0 | experimental | stable | TDCFREMS |
 | `format_tools` | core | 6 | String & Format | Extend std formatting with structural display and string helpers | 3 | 3 | 0 | 3 | 0 | deprecated | deprecated | TDCFRE·· |
 | `include_md` | experimental | 6 | String & Format | Include a markdown file or named section at compile time | 0 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFR·MS |
 | `strs_tools` | core | 6 | String & Format | Manipulate strings with splitting, indentation, and pattern tools | 9 | 2 | 0 | 2 | 0 | experimental | stable | TDCFRE·S |
 | `wstring_tools` | alias | 6 | String & Format | Alias — recommended single dependency for all string utilities | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDC·REMS |
-| `config_hierarchy` | core | 7 | Path & Process | Resolve hierarchical config across runtime, env, file, and default sources | 6 | 1 | 0 | 1 | 0 | experimental | stable | TDC·REM· |
-| `config_hierarchy` | experimental | 7 | Path & Process | Resolve hierarchical config across runtime, env, file, and default sources | 6 | 1 | 0 | 1 | 0 | experimental | stable | TDC·REM· |
+| `config_hierarchy` | core | 7 | Path & Process | Resolve hierarchical config across runtime, env, file, and default sources | 6 | 1 | 0 | 1 | 0 | experimental | stable | TDC·REMS |
+| `config_hierarchy` | experimental | 7 | Path & Process | Resolve hierarchical config across runtime, env, file, and default sources | 6 | 1 | 0 | 1 | 0 | experimental | stable | TDC·REMS |
 | `fs_tools` | experimental | 7 | Path & Process | Read, write, and traverse files with ergonomic error context | 1 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDC·REMS |
 | `process_tools` | core | 7 | Path & Process | Spawn child processes and capture output reliably | 6 | 4 | 0 | 4 | 0 | stable | stable | TDCFR·MS |
 | `program_tools` | experimental | 7 | Path & Process | Compile and run a Rust source file on demand | 5 | 5 | 1 | 4 | 0 | deprecated | deprecated | TDCFR·MS |
@@ -121,7 +121,6 @@ Unreachable from any application (willbe, unitore, wca) or test infrastructure (
 | `asbytes` | core | Zero dependents; no crate in the workspace uses it | — |
 | `async_from` | experimental | Sole dependent `async_tools` is itself deprecated | — |
 | `async_tools` | experimental | `private` module is empty; re-exports `async_from` with zero added API | — |
-| `data_fmt` | core | Sole dependent `config_hierarchy` is unreachable from applications | — |
 | `deterministic_rand` | core | Zero dependents; ↑L=2 anomaly; no crate in the workspace uses it | — |
 | `diagnostics_tools` | experimental | Sole dependent is `wtools` (deprecated) | — |
 | `file_tools` | alias | Alias; zero dependents; underlying `fs_tools` also deprecated | — |
@@ -179,6 +178,7 @@ All 8 criteria met — can be promoted to stable without prerequisite work.
 | `is_slice` | 2 | TDCFREMS |
 | `cli_fmt` | 6 | TDCFREMS |
 | `color_tools` | 6 | TDCFREMS |
+| `data_fmt` | 6 | TDCFREMS |
 | `benchkit` | 8 | TDCFREMS |
 
 ### Blocked — by criteria count
@@ -193,6 +193,8 @@ All 8 criteria met — can be promoted to stable without prerequisite work.
 | `component_model_meta` | 3 | TD·FR·MS | C, E |
 | `component_model` | 4 | TDC·RE·S | F, M |
 | `iter_tools` | 5 | TDC·RE·S | F, M |
+| `config_hierarchy` (core) | 7 | TDC·REMS | F |
+| `config_hierarchy` (experimental) | 7 | TDC·REMS | F |
 | `wca` | 8 | TDC·RE·S | F, M |
 | `data_type` | 1 | TD··RE·S | C, F, M |
 | `unitore` | 9 | TDC·R··S | F, E, M |
@@ -203,7 +205,7 @@ All 8 criteria met — can be promoted to stable without prerequisite work.
 | Criterion | Failing | Crates |
 |-----------|---------|--------|
 | M (Markers) | 9 | data_type, interval_adapter, component_model, iter_tools, strs_tools, test_tools, wca, unitore, willbe |
-| F (Features) | 6 | data_type, component_model, iter_tools, wca, unitore, willbe |
+| F (Features) | 8 | data_type, component_model, iter_tools, config_hierarchy (core), config_hierarchy (experimental), wca, unitore, willbe |
 | E (Examples) | 4 | component_model_meta, strs_tools_meta, unitore, willbe |
 | C (Clean) | 3 | data_type, component_model_meta, component_model_types |
 
@@ -432,7 +434,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 2 · Primitives
 - **state**: deprecated
 - **target**: deprecated
-- **readiness**: T·C·REMS
+- **readiness**: TDC·REMS
 - **purpose**: Re-export interval_adapter as a standalone dependency
 - **deps**: 1 · **int**: 1 · **=L**: 1 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.3.0
@@ -866,9 +868,9 @@ Per-crate attributes for promotion and publishing.
 #### `data_fmt`
 - **module**: core
 - **layer**: 6 · String & Format
-- **state**: deprecated
-- **target**: deprecated
-- **readiness**: TDCFREM·
+- **state**: experimental
+- **target**: stable
+- **readiness**: TDCFREMS
 - **purpose**: Render data as aligned tables and nested tree structures
 - **deps**: 9 · **int**: 3 · **=L**: 2 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.2.0
@@ -929,7 +931,7 @@ Per-crate attributes for promotion and publishing.
 - **deps**: 1 · **int**: 1 · **=L**: 1 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.2.0
 - **no_std**: yes
-- **keywords**: fundamental, general-purpose, string, manipulation, utilities
+- **keywords**: fundamental, general-purpose
 - **categories**: algorithms, development-tools
 - **pitch**: All wTools string utilities in one alias — the recommended single dependency for all string handling needs.
 
@@ -942,7 +944,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 7 · Path & Process
 - **state**: experimental
 - **target**: stable
-- **readiness**: TDC·REM·
+- **readiness**: TDC·REMS
 - **purpose**: Resolve hierarchical config across runtime, env, file, and default sources
 - **deps**: 6 · **int**: 1 · **=L**: 0 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.4.0
@@ -956,7 +958,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 7 · Path & Process
 - **state**: experimental
 - **target**: stable
-- **readiness**: TDC·REM·
+- **readiness**: TDC·REMS
 - **purpose**: Resolve hierarchical config across runtime, env, file, and default sources
 - **deps**: 6 · **int**: 1 · **=L**: 0 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.5.0
@@ -1044,8 +1046,8 @@ Per-crate attributes for promotion and publishing.
 - **purpose**: Alias — recommended single dependency for all filesystem utilities
 - **deps**: 1 · **int**: 1 · **=L**: 1 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.1.0
-- **no_std**: no
-- **keywords**: fundamental, general-purpose, filesystem, file, path
+- **no_std**: yes
+- **keywords**: fundamental, general-purpose
 - **categories**: algorithms, development-tools
 - **pitch**: All wTools file system utilities in one alias — the recommended single dependency for all file handling needs.
 
