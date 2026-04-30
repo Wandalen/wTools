@@ -14,7 +14,7 @@ description = """
 Variadic from, proc-macro part.
 """
 categories = [ "algorithms", "development-tools" ]
-keywords = [ "fundamental", "general-purpose" ]
+keywords = [ "fundamental", "general-purpose", "from", "variadic", "proc-macro" ]
 
 [lints]
 workspace = true

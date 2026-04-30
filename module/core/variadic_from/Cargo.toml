@@ -15,7 +15,7 @@ description = """
 Variadic from.
 """
 categories = [ "algorithms", "development-tools" ]
-keywords = [ "fundamental", "general-purpose" ]
+keywords = [ "fundamental", "general-purpose", "from", "variadic", "tuple" ]
 
 [lints]
 workspace = true
