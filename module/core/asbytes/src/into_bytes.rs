@@ -66,7 +66,7 @@ mod private
   #[ inline ]
   fn into_bytes(self) -> Vec< u8 > 
   {
-   // Since T: Pod, [T; N] is Copy (or moves if T isn't Copy, but Pod implies Copy usually).
+   // T: Pod implies T: Copy unconditionally (via AnyBitPattern supertrait).
    // Get a byte slice view using cast_slice (requires &self)
    // and then clone it into a Vec.
    bytemuck ::cast_slice( &self ).to_vec()
@@ -157,17 +157,13 @@ pub use own :: *;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod own 
+pub mod own
 {
   use super :: *;
 
   #[ doc( inline ) ]
   pub use orphan :: *;
 }
-
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-pub use own :: *;
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]

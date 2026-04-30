@@ -11,15 +11,10 @@
 mod private {
   #[ allow( unused_imports ) ]
   use crate::*;
-  use crate::process::environment;
-  // zzz : comment out
-  // pub mod environment
-  // {
-  //   pub fn is_cicd() -> bool
-  //   {
-  //     false
-  //   }
-  // }
+  #[ cfg( feature = "process_environment_is_cicd" ) ]
+  fn is_in_ci() -> bool { crate::process::environment::is_cicd() }
+  #[ cfg( not( feature = "process_environment_is_cicd" ) ) ]
+  fn is_in_ci() -> bool { false }
 
   /// Context for smoke testing of a module.
   #[ derive( Debug ) ]
@@ -923,12 +918,12 @@ mod private {
     let run_local = match with_smoke.as_deref() {
       Some("1" | "local") => true,
       Some("published") => false,
-      _ => environment::is_cicd(), // Default behavior
+      _ => is_in_ci(), // Default behavior
     };
     let run_published = match with_smoke.as_deref() {
       Some("1" | "published") => true,
       Some("local") => false,
-      _ => environment::is_cicd(), // Default behavior
+      _ => is_in_ci(), // Default behavior
     };
     
     println!("📋 Smoke testing plan:");
@@ -1016,7 +1011,7 @@ mod private {
     let should_run = if let Ok(value) = std::env::var("WITH_SMOKE") {
       matches!(value.as_str(), "1" | "local")
     } else {
-      environment::is_cicd()
+      is_in_ci()
     };
     
     if should_run {
@@ -1055,7 +1050,7 @@ mod private {
     let should_run = if let Ok(value) = std::env::var("WITH_SMOKE") {
       matches!(value.as_str(), "1" | "published")
     } else {
-      environment::is_cicd()
+      is_in_ci()
     };
     
     if should_run {

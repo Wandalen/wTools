@@ -191,8 +191,10 @@ pub use table_tree::RowBuilder;
 #[ cfg( feature = "enabled" ) ]
 pub use formatters::{ Format, FormatError };
 
-// Conditional formatter exports (feature-gated)
-#[ cfg( any(
+// Conditional formatter exports — all require `enabled` because `mod formatters`
+// is gated on `enabled`. Without it the module doesn't exist and the re-exports
+// would fail to compile even though the format sub-feature is active.
+#[ cfg( all( feature = "enabled", any(
   feature = "table_plain",
   feature = "table_minimal",
   feature = "table_bordered",
@@ -202,51 +204,51 @@ pub use formatters::{ Format, FormatError };
   feature = "table_csv",
   feature = "table_tsv",
   feature = "table_compact"
-) ) ]
+) ) ) ]
 pub use formatters::TableFormatter;
 
-#[ cfg( any(
+#[ cfg( all( feature = "enabled", any(
   feature = "expanded_postgres",
   feature = "expanded_property"
-) ) ]
+) ) ) ]
 pub use formatters::ExpandedFormatter;
 
-#[ cfg( any(
+#[ cfg( all( feature = "enabled", any(
   feature = "tree_hierarchical",
   feature = "tree_aligned",
   feature = "tree_aggregated"
-) ) ]
+) ) ) ]
 pub use formatters::TreeFormatter;
 
-#[ cfg( feature = "format_logfmt" ) ]
+#[ cfg( all( feature = "enabled", feature = "format_logfmt" ) ) ]
 pub use formatters::LogfmtFormatter;
 
-#[ cfg( any(
+#[ cfg( all( feature = "enabled", any(
   feature = "html_minimal",
   feature = "html_bootstrap",
   feature = "html_tailwind",
   feature = "html_custom"
-) ) ]
+) ) ) ]
 pub use formatters::{ HtmlFormatter, HtmlVariant };
 
-#[ cfg( any(
+#[ cfg( all( feature = "enabled", any(
   feature = "sql_ansi",
   feature = "sql_postgres",
   feature = "sql_mysql",
   feature = "sql_sqlite"
-) ) ]
+) ) ) ]
 pub use formatters::{ SqlFormatter, SqlVariant };
 
-#[ cfg( feature = "format_json" ) ]
+#[ cfg( all( feature = "enabled", feature = "format_json" ) ) ]
 pub use formatters::JsonFormatter;
 
-#[ cfg( feature = "format_yaml" ) ]
+#[ cfg( all( feature = "enabled", feature = "format_yaml" ) ) ]
 pub use formatters::YamlFormatter;
 
-#[ cfg( feature = "format_toml" ) ]
+#[ cfg( all( feature = "enabled", feature = "format_toml" ) ) ]
 pub use formatters::TomlFormatter;
 
-#[ cfg( feature = "format_text" ) ]
+#[ cfg( all( feature = "enabled", feature = "format_text" ) ) ]
 pub use formatters::{ TextFormatter, TextVariant };
 
 // Color themes (feature-gated)

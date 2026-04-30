@@ -5,7 +5,7 @@ Manual testing for the `fs_tools` alias crate (re-exports `file_tools::*`).
 ### Scope
 
 Verify all `file_tools` exports are accessible through `fs_tools`. Exhaustive
-file-manipulation corner-case testing lives in `file_tools/tests/manual/readme.md`.
+file-manipulation corner-case testing lives in `file_tools/tests/`.
 
 ### Checklist
 

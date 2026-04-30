@@ -25,15 +25,15 @@ features = [ "full" ]
 all-features = false
 
 [features]
-default = [ "enabled" ]
-full = [ "enabled", "network" ]
+default = []
+full = [ "enabled" ]
 enabled = [ "dep:flate2", "dep:tar", "network" ]
 network = [ "dep:ureq" ]
 
 [dependencies]
 flate2 = { workspace = true, optional = true }
 tar = { workspace = true, optional = true }
-ureq = { version = "~2.9", optional = true }
+ureq = { workspace = true, optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }

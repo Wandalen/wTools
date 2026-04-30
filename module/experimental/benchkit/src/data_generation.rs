@@ -4,7 +4,6 @@
 //! test datasets for benchmarking. Supports pattern-based generation,
 //! scaling, and various data complexity levels.
 
-use crate ::generators ::DataSize;
 use std ::collections ::HashMap;
 
 /// Advanced data generator with pattern-based generation capabilities
@@ -13,8 +12,8 @@ pub struct DataGenerator
 {
   /// Pattern template for data generation (e.g., "item{},field{}")
   pub pattern: Option< String >,
-  /// Target size 
-  pub size: Option< DataSize >,
+  /// Target size in items
+  pub size: Option< usize >,
   /// Target size in bytes (alternative to size)
   pub size_bytes: Option< usize >,
   /// Number of repetitions for pattern-based generation
@@ -76,7 +75,7 @@ impl DataGenerator
   /// Set target size for generated data
   pub fn size(mut self, size: usize) -> Self
   {
-  self.size = Some(DataSize ::Custom(size));
+  self.size = Some(size);
   self
  }
 
@@ -124,13 +123,13 @@ impl DataGenerator
    (Some(pattern), _, _, Some(reps)) => self.generate_pattern_string(pattern, *reps),
    
    // Pattern-based generation with size target
-   (Some(pattern), Some(size), _, _) => self.generate_sized_pattern_string(pattern, size.size()),
-   
+   (Some(pattern), Some(size), _, _) => self.generate_sized_pattern_string(pattern, *size),
+
    // Pattern-based generation with byte size target
    (Some(pattern), _, Some(bytes), _) => self.generate_sized_pattern_string_bytes(pattern, *bytes),
-   
+
    // Size-based generation without pattern
-   (None, Some(size), _, _) => self.generate_sized_string_items(size.size()),
+   (None, Some(size), _, _) => self.generate_sized_string_items(*size),
    
    // Byte size-based generation without pattern
    (None, _, Some(bytes), _) => self.generate_sized_string_bytes(*bytes),

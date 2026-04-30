@@ -11,12 +11,14 @@ use super :: *;
 // | T1.2 | Path access          | Can access base_path field                 |
 // | T1.3 | Default values       | Fields initialize to empty `PathBuf`       |
 //
-// Note: `TempDir` is only available when `no_std` feature is disabled.
+// Note: `TempDir` is available whenever `enabled` feature is set. The lib.rs
+// `cfg_attr` ensures the crate stays in std mode when `enabled` is active,
+// even if `no_std` feature is also set (e.g. with `--all-features`).
 
 /// Tests that `TempDir` can be created with `new()`.
 /// Test Combination: T1.1
 #[ test ]
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "enabled" ) ]
 fn temp_dir_creation()
 {
   let temp_dir = the_module::TempDir::new();
@@ -27,7 +29,7 @@ fn temp_dir_creation()
 /// Tests that `TempDir` fields are accessible.
 /// Test Combination: T1.2
 #[ test ]
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "enabled" ) ]
 fn temp_dir_path_access()
 {
   let temp_dir = the_module::TempDir::new();
@@ -40,7 +42,7 @@ fn temp_dir_path_access()
 /// Tests default initialization values.
 /// Test Combination: T1.3
 #[ test ]
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "enabled" ) ]
 fn temp_dir_defaults()
 {
   let temp_dir = the_module::TempDir::new();

@@ -19,6 +19,7 @@ keywords = [ "fundamental", "general-purpose" ]
 exclude = [
   "benches/"
 ]
+autobenches = false
 
 [lints]
 workspace = true
@@ -151,7 +152,7 @@ unicode-width = "0.1"
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }
-benchkit = { workspace = true }
+benchkit = { workspace = true, features = [ "enabled" ] }
 ctor = { version = "0.2" }
 
 [[bench]]

@@ -1,5 +1,5 @@
 # fs_tools Docs
 
-### Scope
+## Scope
 
 Design and API documentation for `fs_tools`.

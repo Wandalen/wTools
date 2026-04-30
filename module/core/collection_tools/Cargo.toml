@@ -33,12 +33,7 @@ use_alloc = [
   "hashbrown",
 ]
 
-default = [
-  "enabled",
-
-  "collection_constructors",
-  "collection_into_constructors",
-]
+default = []
 
 full = [
   "enabled",
@@ -53,7 +48,6 @@ enabled = []
 collection_constructors = []
 # Collection constructors, using `into()` under the hood, like `into_hmap!( "key" => "val" )`
 collection_into_constructors = []
-# qqq : is this feature used? seems not. if yes, what is it responsible for? discuss -- not needed, removed
 
 [dependencies]
 

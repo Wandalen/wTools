@@ -32,7 +32,7 @@ features = [ "full" ]
 all_features = false
 
 [features]
-default = [ "enabled" ]
+default = []
 full = [ "enabled", "glob" ]
 no_std = []
 use_alloc = [ "no_std" ]
@@ -44,4 +44,4 @@ glob = { workspace = true, optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }
-tempfile = "3.8"
+tempfile = { workspace = true }

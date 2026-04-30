@@ -1,8 +1,9 @@
 # Docs
 
-## Scope
+### Scope
 
-Design and API documentation for `crates_tools`.
+- **In Scope**: Feature guides, behavioral invariants, and API surface for the `crates_tools` crate.
+- **Out of Scope**: Source code, test infrastructure, example code.
 
 ### Responsibility Table
 

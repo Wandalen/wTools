@@ -63,11 +63,6 @@ pub mod own
   pub use bytemuck ::allocation;
 }
 
-#[ cfg( feature = "enabled" ) ]
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-pub use own::*;
-
 /// Orphan namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]

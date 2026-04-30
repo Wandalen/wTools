@@ -799,6 +799,9 @@ version = "~1.0"
 [workspace.dependencies.tar]
 version = "~0.4"
 
+[workspace.dependencies.ureq]
+version = "^2.9"
+
 [workspace.dependencies.strip-ansi-escapes]
 version = "0.1.1"
 

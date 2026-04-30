@@ -16,6 +16,3 @@ mod vec;
 
 mod components;
 mod namespace_test;
-
-// qqq: make subdirectory for each container -- done
-// qqq: don't put tests otsude of directory `inc` -- done

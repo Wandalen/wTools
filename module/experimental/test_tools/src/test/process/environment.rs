@@ -62,6 +62,7 @@ pub mod own
 {
   use super :: *;
 
+  #[ cfg( feature = "process_environment_is_cicd" ) ]
   #[ doc( inline ) ]
   pub use { private ::is_cicd };
 }

@@ -7,18 +7,11 @@
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 #![ cfg_attr( not( doc ), doc = "Collection tools for Rust" ) ]
 #![ allow( clippy::mod_module_files ) ]
-// #[ cfg( feature = "enabled" ) ]
-// #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
-// extern crate alloc;
 
 /// Module containing all collection macros
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 pub mod collection;
-
-// #[ cfg( feature = "enabled" ) ]
-// #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
-// pub use collection :: *;
 
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
@@ -107,11 +100,3 @@ pub mod prelude
 pub mod prelude
 {
 }
-
-// pub use own ::collection as xxx;
-// pub use hmap as xxx;
-// pub use own ::HashMap as xxx;
-// pub fn x()
-// {
-//   let x: HashMap< usize, usize > = hmap!{};
-// }

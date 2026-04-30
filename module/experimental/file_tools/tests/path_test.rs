@@ -1,6 +1,6 @@
 //! Tests for path traversal utilities.
 
-#![ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
+#![ cfg( feature = "enabled" ) ]
 //!
 //! # Purpose
 //!
@@ -10,22 +10,18 @@
 //!
 //! # Conditional Compilation
 //!
-//! This test file requires `#![ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]`
-//! because the path module functions are only exported when both conditions are met:
-//! - `feature = "enabled"` - Activates path utilities
-//! - `not( feature = "no_std" )` - Requires std library for filesystem operations
+//! This test file requires `#![ cfg( feature = "enabled" ) ]` because path
+//! module functions are only exported when the `enabled` feature is active.
 //!
-//! **Why this matters:** Running tests with `--all-features` activates BOTH `enabled`
-//! and `no_std` features simultaneously. Since path functions use `std::fs` and `std::io`,
-//! they cannot exist in `no_std` mode. The conditional compilation on this test file
-//! ensures tests are skipped (not failed) when `no_std` is active.
+//! **Why `enabled` alone is sufficient:** `src/fs/lib.rs` applies `no_std` only
+//! when `all(feature = "no_std", not(feature = "enabled"))`. When `enabled` is
+//! set, the crate always uses std — regardless of whether `no_std` is also set.
+//! This means path functions (which require `std::fs` and `std::io`) are available
+//! with `--all-features` because `enabled` overrides the `no_std` attribute.
 //!
-//! **Root Cause:** Feature flags are not mutually exclusive in Cargo. `--all-features`
-//! activates all features listed in Cargo.toml regardless of logical conflicts.
-//!
-//! **Fix Applied:** Added conditional compilation attribute matching the path module's
-//! export conditions. Without this, tests would fail to compile with unresolved imports
-//! when `--all-features` is used.
+//! **Previous condition** `all(feature = "enabled", not(feature = "no_std"))` was
+//! a pre-fix guard that caused the entire file to be silently skipped with
+//! `--all-features`. The lib.rs fix made that guard stale.
 //!
 //! # Test Organization
 //!
