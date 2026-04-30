@@ -22,6 +22,9 @@ This document serves as the **single source of truth** for all project work.
 | 006 | 006 | 160 | 5 | 8 | 1 | Documentation | ✅ Completed | [Fix Documentation Mismatch](completed/documentation_reality_mismatch.md) | Updated CROSS_CRATE_TESTING.md to reflect current working state: 2/6 crates working, recent fixes documented |
 | 016 | 016 | 160 | 5 | 8 | 1 | Documentation | ✅ Completed | [Update documentation](completed/016_update_documentation.md) | Updated documentation to reflect comprehensive testing achievements |
 | 008 | 008 | 120 | 6 | 5 | 8 | Refactoring | ⏸️ Deferred | [No-std Refactoring](no_std_refactoring_task.md) | Deferred: Requires 8+ hours of complex refactoring (too large for fast-tasks) |
+| 017 | 017 | — | — | — | — | Bug Fix | 📥 Inbox | [Bump version for breaking default change](017_bump_version_for_breaking_default_change.md) | Bump to 0.40.0 — default = [] is breaking vs published 0.39.0 |
+| 018 | 018 | — | — | — | — | Bug Fix | 📥 Inbox | [Exclude dev artifacts from publish](018_exclude_dev_artifacts_from_publish.md) | Add exclude = ["task/**"] to Cargo.toml to drop dev files from crates.io |
+| 019 | 019 | — | — | — | — | Bug Fix | 📥 Inbox | [Fix examples/readme.md heading level](019_fix_examples_readme_heading_level.md) | Restore ## Responsibility Table (was downgraded to ### skipping a level) |
 
 ## Phases
 

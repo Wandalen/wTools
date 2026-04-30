@@ -10,6 +10,9 @@
 | [`documentation_reality_mismatch.md`](completed/documentation_reality_mismatch.md) | ✅ Completed | Low | @AI |
 | `pretty_error_display_task.md` | ❌ Deleted (YAGNI) | — | — |
 | [`no_std_refactoring_task.md`](./no_std_refactoring_task.md) | ⏸️ Deferred | High | @user |
+| [`017_bump_version_for_breaking_default_change.md`](./017_bump_version_for_breaking_default_change.md) | 📥 Inbox | High | @user |
+| [`018_exclude_dev_artifacts_from_publish.md`](./018_exclude_dev_artifacts_from_publish.md) | 📥 Inbox | Medium | @user |
+| [`019_fix_examples_readme_heading_level.md`](./019_fix_examples_readme_heading_level.md) | 📥 Inbox | Low | @user |
 | [`normalize_completed_20250726T220108.md`](./normalize_completed_20250726T220108.md) | ✅ Completed | High | @user |
 
 ---
