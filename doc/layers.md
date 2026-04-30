@@ -43,9 +43,9 @@ Total: 69 crates (3 alias + 34 core + 1 deprecated + 31 experimental)
 |-------|--------|----|-------|---------|------|-----|----|----|-----|-------|--------|-----------|
 | `error_tools` | core | 1 | Foundation | Provide a unified error handling namespace across the workspace | 2 | 0 | 0 | 0 | 0 | stable | stable | TDCFREMS |
 | `diagnostics_tools` | experimental | 1 | Foundation | Supply runtime and compile-time assertion macros with colored diff output | 1 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFRE·S |
-| `mem_tools` | experimental | 1 | Foundation | Compare memory addresses, sizes, and byte contents across heterogeneous reference pairs | 0 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDC·REMS |
+| `mem_tools` | experimental | 1 | Foundation | Compare memory addresses, sizes, and byte contents across heterogeneous reference pairs | 0 | 0 | 0 | 0 | 0 | experimental | experimental | TDC·REMS |
 | `asbytes` | core | 2 | Primitives | View or consume POD data as bytes via bytemuck-backed traits | 1 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFREMS |
-| `deterministic_rand` | core | 2 | Primitives | Generate hierarchical seeded random numbers with switchable determinism | 6 | 2 | 0 | 0 | 2 | deprecated | deprecated | TD·FRE·S |
+| `deterministic_rand` | core | 2 | Primitives | Generate hierarchical seeded random numbers with switchable determinism | 6 | 2 | 0 | 0 | 2 | experimental | experimental | TD·FRE·S |
 | `implements` | experimental | 2 | Primitives | Answer at compile time whether a type implements a trait | 0 | 0 | 0 | 0 | 0 | experimental | stable | TDCFREMS |
 | `inspect_type` | core | 2 | Primitives | Print the Rust type name and byte size of any expression at runtime | 0 | 0 | 0 | 0 | 0 | stable | stable | TDCFREMS |
 | `interval_adapter` | experimental | 2 | Primitives | Provide uniform interval trait coverage over all Rust range variants — bounded, half-open, and unbounded | 0 | 0 | 0 | 0 | 0 | experimental | stable | TDCFRE·S |
@@ -61,7 +61,7 @@ Total: 69 crates (3 alias + 34 core + 1 deprecated + 31 experimental)
 | `former_meta` | core | 3 | Macro Framework | Generate former builder derive implementation (use former directly) | 5 | 4 | 1 | 0 | 3 | stable | stable | TD··R··S |
 | `impls_index_meta` | core | 3 | Macro Framework | Generate impls_index macro wrappers (use impls_index directly) | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFR·MS |
 | `mod_interface_meta` | core | 3 | Macro Framework | Generate mod_interface namespace macros (use mod_interface directly) | 2 | 2 | 1 | 0 | 1 | stable | stable | TD··R··S |
-| `reflect_tools_meta` | experimental | 3 | Macro Framework | Implement #[derive(Reflect)] proc-macro backend (use reflect_tools directly) | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFR·MS |
+| `reflect_tools_meta` | experimental | 3 | Macro Framework | Implement #[derive(Reflect)] proc-macro backend (use reflect_tools directly) | 1 | 1 | 1 | 0 | 0 | experimental | experimental | TDCFR·MS |
 | `strs_tools_meta` | core | 3 | Macro Framework | Generate optimize_split! and optimize_match! proc macro implementations (use strs_tools directly) | 1 | 1 | 1 | 0 | 0 | experimental | stable | TDCFR·MS |
 | `variadic_from_meta` | core | 3 | Macro Framework | Generate variadic_from From impls (use variadic_from directly) | 1 | 1 | 1 | 0 | 0 | stable | stable | TDCFR··S |
 | `clone_dyn` | core | 4 | Patterns | Make Box<dyn Trait> cloneable via a single attribute macro | 2 | 2 | 1 | 1 | 0 | stable | stable | TDC·REMS |
@@ -73,29 +73,29 @@ Total: 69 crates (3 alias + 34 core + 1 deprecated + 31 experimental)
 | `former_types` | core | 4 | Patterns | Expose compile-time trait contracts reused by former consumers | 2 | 2 | 1 | 0 | 1 | stable | stable | TD·FRE·S |
 | `impls_index` | core | 4 | Patterns | Wrap impl methods in named macros for navigable indexing | 1 | 1 | 0 | 1 | 0 | deprecated | deprecated | TDC·RE·· |
 | `mod_interface` | core | 4 | Patterns | Organize module items into five propagation layers with a single declarative macro | 1 | 1 | 0 | 1 | 0 | stable | stable | TDC·REMS |
-| `reflect_tools` | experimental | 4 | Patterns | Reflect any value at runtime — type identity, container detection, ordering, and key-value element iteration | 3 | 3 | 1 | 1 | 1 | deprecated | deprecated | TD··RE·· |
+| `reflect_tools` | experimental | 4 | Patterns | Reflect any value at runtime — type identity, container detection, ordering, and key-value element iteration | 3 | 3 | 1 | 1 | 1 | experimental | experimental | TD··RE·S |
 | `variadic_from` | core | 4 | Patterns | Construct structs from 1–3 typed arguments via From1/From2/From3 traits and VariadicFrom derive | 1 | 1 | 0 | 1 | 0 | stable | stable | TDCFREMS |
-| `async_from` | experimental | 5 | Collections | Provide async versions of From, Into, TryFrom, and TryInto | 1 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFR··S |
-| `async_tools` | experimental | 5 | Collections | Re-export async_from conversion traits and async_trait macro via a unified namespace facade | 2 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFREM· |
+| `async_from` | experimental | 5 | Collections | Provide async versions of From, Into, TryFrom, and TryInto | 1 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFR··S |
+| `async_tools` | experimental | 5 | Collections | Re-export async_from conversion traits and async_trait macro via a unified namespace facade | 2 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFREMS |
 | `collection_tools` | core | 5 | Collections | Provide ergonomic literal macros for inline collection construction, portable to no_std | 1 | 0 | 0 | 0 | 0 | stable | stable | TDC·RE·S |
-| `for_each` | experimental | 5 | Collections | Apply any macro to every item in a compile-time list | 0 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFREMS |
+| `for_each` | experimental | 5 | Collections | Apply any macro to every item in a compile-time list | 0 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFREMS |
 | `iter_tools` | experimental | 5 | Collections | Re-export itertools combinators and provide clonable boxed iterators with stop-on-first-error mapping | 2 | 1 | 0 | 1 | 0 | experimental | stable | TDC·RE·S |
 | `cli_fmt` | core | 6 | String & Format | Process CLI command output with head/tail filtering, width truncation, and stream merging | 1 | 1 | 1 | 0 | 0 | experimental | stable | TDCFR·MS |
 | `color_tools` | core | 6 | String & Format | Wrap text with typed ANSI color for terminal and HTML rendering | 1 | 0 | 0 | 0 | 0 | experimental | stable | TDCFREMS |
 | `data_fmt` | core | 6 | String & Format | Render structured data in multiple visual, text, and serialization formats | 9 | 3 | 2 | 1 | 0 | experimental | stable | TDCFREMS |
 | `data_type` | experimental | 6 | String & Format | Aggregate interval, collection, and sum-type re-exports under one unified facade namespace | 3 | 2 | 0 | 2 | 0 | experimental | stable | TDC·RE·S |
-| `format_tools` | core | 6 | String & Format | Extend std formatting with structural display and string helpers | 3 | 3 | 0 | 3 | 0 | deprecated | deprecated | TDCFRE·· |
+| `format_tools` | core | 6 | String & Format | Extend std formatting with structural display and string helpers | 3 | 3 | 0 | 3 | 0 | deprecated | deprecated | TDCFRE·S |
 | `include_md` | experimental | 6 | String & Format | Include a markdown file or named section at compile time | 0 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFR·MS |
 | `strs_tools` | core | 6 | String & Format | Split, indent, and transform strings with ANSI utilities and SIMD acceleration | 9 | 2 | 0 | 2 | 0 | experimental | stable | TDCFRE·S |
 | `wstring_tools` | alias | 6 | String & Format | Alias — recommended single dependency for all string utilities | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDC·REMS |
 | `config_hierarchy` | core | 7 | Path & Process | Resolve hierarchical config across runtime, env, file, and default sources | 6 | 1 | 0 | 1 | 0 | experimental | stable | TDC·R·MS |
 | `config_hierarchy` | experimental | 7 | Path & Process | Resolve hierarchical config across runtime, env, file, and default sources | 6 | 1 | 0 | 1 | 0 | experimental | stable | TDC·R·MS |
-| `fs_tools` | experimental | 7 | Path & Process | RAII temp directories, glob re-export, and upward path traversal | 1 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDC·REMS |
+| `file_tools` | experimental | 7 | Path & Process | RAII temp directories, glob re-export, and upward path traversal | 1 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDC·REMS |
 | `process_tools` | core | 7 | Path & Process | Run subprocesses with captured I/O, probe process liveness, and daemonize Unix services | 6 | 4 | 0 | 4 | 0 | stable | stable | TDCFR·MS |
-| `program_tools` | experimental | 7 | Path & Process | Builder types for in-memory Rust program representation: Source, Program, and Plan | 5 | 5 | 1 | 4 | 0 | deprecated | deprecated | TDCFR·MS |
+| `program_tools` | experimental | 7 | Path & Process | Builder types for in-memory Rust program representation: Source, Program, and Plan | 5 | 5 | 1 | 4 | 0 | experimental | experimental | TDCFR·MS |
 | `pth` | core | 7 | Path & Process | Syntactic path manipulation — normalize, join, query extensions, and typed path wrappers | 5 | 2 | 0 | 2 | 0 | stable | stable | TDC·R··S |
 | `workspace_tools` | core | 7 | Path & Process | Resolve workspace-relative paths and optionally load configuration, manage secrets, and discover resources | 11 | 0 | 0 | 0 | 0 | experimental | stable | TDCFR·MS |
-| `file_tools` | alias | 7 | Path & Process | Alias — recommended single dependency for all filesystem utilities | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFREM· |
+| `fs_tools` | alias | 7 | Path & Process | Alias — recommended single dependency for all filesystem utilities | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFREM· |
 | `benchkit` | experimental | 8 | Tooling | Benchmark performance and publish markdown reports | 9 | 1 | 0 | 1 | 0 | experimental | stable | TDCFREMS |
 | `crates_tools` | core | 8 | Tooling | Download and decode .crate archives for in-memory content inspection | 3 | 0 | 0 | 0 | 0 | experimental | stable | TDC·REMS |
 | `genfile_core` | core | 8 | Tooling | Render parameterized template archives to output files with a pluggable engine and file system abstraction | 9 | 3 | 0 | 3 | 0 | stable | stable | TDC·REMS |
@@ -104,7 +104,7 @@ Total: 69 crates (3 alias + 34 core + 1 deprecated + 31 experimental)
 | `multiline_input` | experimental | 8 | Tooling | Collect multiline terminal input with interactive key editing and Builder-configured validation | 4 | 1 | 0 | 1 | 0 | experimental | stable | T·CFREMS |
 | `test_tools` | experimental | 8 | Tooling | Aggregate workspace testing utilities into one dev-dependency via a circular-dependency-safe standalone build mode | 11 | 3 | 0 | 3 | 0 | experimental | stable | TDCFRE·S |
 | `wca` | experimental | 8 | Tooling | Aggregate CLI commands as typed Rust routines with a parse-verify-execute pipeline | 7 | 4 | 0 | 4 | 0 | experimental | stable | TDC·RE·S |
-| `sqlx_query` | experimental | 9 | Application | Switch between SQLx compile-time and runtime query macros by feature | 0 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFR·MS |
+| `sqlx_query` | experimental | 9 | Application | Switch between SQLx compile-time and runtime query macros by feature | 0 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFR·MS |
 | `unitore` | experimental | 9 | Application | Subscribe to RSS and Atom feeds from TOML configs, persist entries in embedded SQL, and browse from the terminal | 20 | 3 | 0 | 3 | 0 | experimental | stable | TDC·R··S |
 | `willbe` | experimental | 9 | Application | Publish multi-crate workspaces in topological order, run feature-matrix tests, generate CI/CD workflows, and renew readme headers | 40 | 14 | 0 | 14 | 0 | experimental | stable | TDC·R··S |
 | `willbe2` | deprecated | 9 | Application | Expose the willbe workspace tool under the willbe2 binary and crate name via complete re-export | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFR·MS |
@@ -118,25 +118,17 @@ Unreachable from any application (willbe, unitore, wca) or test infrastructure (
 
 | Crate | Module | Signal | Superseded By |
 |-------|--------|--------|---------------|
-| `async_from` | experimental | Sole dependent `async_tools` is itself deprecated | — |
 | `async_tools` | experimental | `private` module is empty; re-exports `async_from` with zero added API | — |
-| `deterministic_rand` | core | Zero dependents; ↑L=2 anomaly; no crate in the workspace uses it | — |
 | `diagnostics_tools` | experimental | Sole dependent is `wtools` (deprecated) | — |
-| `file_tools` | alias | Alias; zero dependents; underlying `fs_tools` also deprecated | — |
-| `for_each` | experimental | Sole dependent `meta_tools` is deprecated | — |
-| `format_tools` | core | Zero dependents; entire reflect→format chain is dead | — |
-| `fs_tools` | experimental | Sole dependent `file_tools` (alias) is deprecated | — |
+| `fs_tools` | alias | Alias; zero dependents; underlying `file_tools` also deprecated | — |
+| `format_tools` | core | Zero dependents; reflect_tools is experimental but no other live crate references format_tools | — |
+| `file_tools` | experimental | Sole dependent `fs_tools` (alias) is deprecated | — |
 | `genfile` | core | Zero dependents; CLI wrapper around `genfile_core` (kept via `willbe`) | `genfile_core` directly |
 | `impls_index` | core | Only dependents are `meta_tools` (deprecated) and `wtools` (deprecated) | — |
 | `impls_index_meta` | core | Only dependents are `impls_index` (deprecated) and `meta_tools` (deprecated) | — |
-| `mem_tools` | experimental | Sole dependent is `wtools` (deprecated) | — |
 | `meta_tools` | experimental | ↑L=3 arch violation; sole dependent is `wtools` (deprecated) | — |
 | `multiline_input` | core | Excluded from workspace (Cargo.toml exclude); moved to module/experimental | `multiline_input` (experimental) |
-| `program_tools` | experimental | "Data structures only; compilation/execution planned" — YAGNI; zero dependents | — |
 | `proper_tools` | alias | Alias; no dependencies; `enabled` feature declares nothing | — |
-| `reflect_tools` | experimental | Sole dependent `format_tools` is deprecated; entire chain dead | — |
-| `reflect_tools_meta` | experimental | Sole dependent `reflect_tools` is deprecated | — |
-| `sqlx_query` | experimental | Zero dependents; `unitore` does not reference it in Cargo.toml or source | — |
 | `time_tools` | experimental | Sole dependent is `wtools` (deprecated) | — |
 | `typing_tools` | experimental | Sole dependent is `wtools` (deprecated) | — |
 | `willbe2` | deprecated | Entire `src/lib.rs` is `pub use ::willbe::*`; zero independent development | `willbe` |
@@ -148,11 +140,11 @@ Unreachable from any application (willbe, unitore, wca) or test infrastructure (
 
 Complete dependency chains where every crate is unreachable:
 
-1. `reflect_tools_meta` → `reflect_tools` → `format_tools` → (nobody)
-2. `for_each` → `meta_tools` → `wtools` → (nobody)
+1. `format_tools` → (nobody)
+2. `meta_tools` → `wtools` → (nobody)
 3. `impls_index_meta` → `impls_index` → `wtools` → (nobody)
-4. `fs_tools` → `file_tools` → (nobody)
-5. `async_from` → `async_tools` → (nobody)
+4. `file_tools` → `fs_tools` → (nobody)
+5. `async_tools` → (nobody)
 
 ### Cleanup Artifact
 
@@ -287,8 +279,8 @@ Per-crate attributes for promotion and publishing.
 #### `mem_tools`
 - **module**: experimental
 - **layer**: 1 · Foundation
-- **state**: deprecated
-- **target**: deprecated
+- **state**: experimental
+- **target**: experimental
 - **readiness**: TDC·REMS
 - **purpose**: Compare memory addresses, sizes, and byte contents across heterogeneous reference pairs
 - **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
@@ -319,8 +311,8 @@ Per-crate attributes for promotion and publishing.
 #### `deterministic_rand`
 - **module**: core
 - **layer**: 2 · Primitives
-- **state**: deprecated
-- **target**: deprecated
+- **state**: experimental
+- **target**: experimental
 - **readiness**: TD·FRE·S
 - **purpose**: Generate hierarchical seeded random numbers with switchable determinism
 - **deps**: 6 · **int**: 2 · **=L**: 0 · **↓L**: 0 · **↑L**: 2
@@ -547,8 +539,8 @@ Per-crate attributes for promotion and publishing.
 #### `reflect_tools_meta`
 - **module**: experimental
 - **layer**: 3 · Macro Framework
-- **state**: deprecated
-- **target**: deprecated
+- **state**: experimental
+- **target**: experimental
 - **readiness**: TDCFR·MS
 - **purpose**: Implement #[derive(Reflect)] proc-macro backend (use reflect_tools directly)
 - **deps**: 1 · **int**: 1 · **=L**: 1 · **↓L**: 0 · **↑L**: 0
@@ -719,16 +711,16 @@ Per-crate attributes for promotion and publishing.
 #### `reflect_tools`
 - **module**: experimental
 - **layer**: 4 · Patterns
-- **state**: deprecated
-- **target**: deprecated
-- **readiness**: TD··RE··
+- **state**: experimental
+- **target**: experimental
+- **readiness**: TD··RE·S
 - **purpose**: Reflect any value at runtime — type identity, container detection, ordering, and key-value element iteration
 - **deps**: 3 · **int**: 3 · **=L**: 1 · **↓L**: 1 · **↑L**: 1
 - **version**: 0.7.0
 - **no_std**: no
 - **keywords**: fundamental, general-purpose, reflection, introspection
 - **categories**: algorithms, development-tools
-- **pitch**: Runtime type introspection via Instance/Entity traits — reflect any value to query type name, container status, ordering, and iterate key-value elements over collection types; entire consumer chain deprecated.
+- **pitch**: Runtime type introspection via Instance/Entity traits — reflect any value to query type name, container status, ordering, and iterate key-value elements over collection types.
 
 #### `variadic_from`
 - **module**: core
@@ -751,8 +743,8 @@ Per-crate attributes for promotion and publishing.
 #### `async_from`
 - **module**: experimental
 - **layer**: 5 · Collections
-- **state**: deprecated
-- **target**: deprecated
+- **state**: experimental
+- **target**: experimental
 - **readiness**: TDCFR··S
 - **purpose**: Provide async versions of From, Into, TryFrom, and TryInto
 - **deps**: 1 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
@@ -767,7 +759,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 5 · Collections
 - **state**: deprecated
 - **target**: deprecated
-- **readiness**: TDCFREM·
+- **readiness**: TDCFREMS
 - **purpose**: Re-export async_from conversion traits and async_trait macro via a unified namespace facade
 - **deps**: 2 · **int**: 1 · **=L**: 1 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.1.0
@@ -793,8 +785,8 @@ Per-crate attributes for promotion and publishing.
 #### `for_each`
 - **module**: experimental
 - **layer**: 5 · Collections
-- **state**: deprecated
-- **target**: deprecated
+- **state**: experimental
+- **target**: experimental
 - **readiness**: TDCFREMS
 - **purpose**: Apply any macro to every item in a compile-time list
 - **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
@@ -883,7 +875,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 6 · String & Format
 - **state**: deprecated
 - **target**: deprecated
-- **readiness**: TDCFRE··
+- **readiness**: TDCFRE·S
 - **purpose**: Extend std formatting with structural display and string helpers
 - **deps**: 3 · **int**: 3 · **=L**: 0 · **↓L**: 3 · **↑L**: 0
 - **version**: 0.6.0
@@ -966,7 +958,7 @@ Per-crate attributes for promotion and publishing.
 - **categories**: config, filesystem
 - **pitch**: Trait-based 6-level configuration resolution with source tracking, type detection, and atomic file operations — every value knows where it came from.
 
-#### `fs_tools`
+#### `file_tools`
 - **module**: experimental
 - **layer**: 7 · Path & Process
 - **state**: deprecated
@@ -997,8 +989,8 @@ Per-crate attributes for promotion and publishing.
 #### `program_tools`
 - **module**: experimental
 - **layer**: 7 · Path & Process
-- **state**: deprecated
-- **target**: deprecated
+- **state**: experimental
+- **target**: experimental
 - **readiness**: TDCFR·MS
 - **purpose**: Builder types for in-memory Rust program representation: Source, Program, and Plan
 - **deps**: 5 · **int**: 5 · **=L**: 1 · **↓L**: 4 · **↑L**: 0
@@ -1036,7 +1028,7 @@ Per-crate attributes for promotion and publishing.
 - **categories**: filesystem, development-tools
 - **pitch**: One crate resolves your Cargo workspace root from any context — tests, CI, or installed binary — and optionally loads TOML/JSON/YAML config, manages memory-safe secrets, and discovers resources via glob patterns.
 
-#### `file_tools`
+#### `fs_tools`
 - **module**: alias
 - **layer**: 7 · Path & Process
 - **state**: deprecated
@@ -1173,8 +1165,8 @@ Per-crate attributes for promotion and publishing.
 #### `sqlx_query`
 - **module**: experimental
 - **layer**: 9 · Application
-- **state**: deprecated
-- **target**: deprecated
+- **state**: experimental
+- **target**: experimental
 - **readiness**: TDCFR·MS
 - **purpose**: Switch between SQLx compile-time and runtime query macros by feature
 - **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
