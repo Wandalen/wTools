@@ -14,7 +14,7 @@ Runtime type reflection system providing traits, descriptors, and utilities for 
 use reflect_tools::*;
 
 let value = vec![ 1i32, 2, 3 ];
-let entity = value.reflect();
+let entity = reflect( &value );
 println!( "{}", entity.type_name() );    // "Vec"
 println!( "{}", entity.len() );          // 3
 println!( "{}", entity.is_container() ); // true

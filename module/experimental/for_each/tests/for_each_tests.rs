@@ -1,3 +1,8 @@
+//! Test aggregator for the `for_each` crate.
+//!
+//! Imports the public API surface under the `the_module` alias and delegates
+//! to the functional test modules in `inc/`.
+
 #![ allow( missing_docs ) ]
 #![ allow( non_snake_case ) ]
 #![ allow( unused_variables ) ]

@@ -195,32 +195,6 @@ pub fn component_model( input: proc_macro ::TokenStream ) -> Result< proc_macro2
  }
  }
   
-  // Generate ComponentFrom implementations for unique field types
-  for field in unique_fields.iter()
-  {
-  let field_name = field.ident.as_ref().unwrap();
-  let field_type = &field.ty;
-  
-  let _component_from_impl = quote ::quote!
-  {
-   impl From< &#struct_name #ty_generics > for #field_type
-   where
-  #field_type: Clone,
-  #where_clause
-   {
-  #[ inline( always ) ]
-  fn from( src: &#struct_name #ty_generics ) -> Self
-  {
-   src.#field_name.clone()
- }
- }
- };
-  
-  // For now, skip to avoid conflicts with existing From implementations
-  // TODO: Add proper conflict detection and resolution
-  // result.extend( component_from_impl );
- }
-
   if debug
   {
   let about = format!("derive: ComponentModel\nstructure: {struct_name}");

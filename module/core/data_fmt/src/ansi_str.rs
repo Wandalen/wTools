@@ -86,7 +86,6 @@ pub use strs_tools::ansi::pad_to_width;
 ///
 /// **Note:** only CSI sequences terminated by ASCII alphabetic chars are handled;
 /// rare non-color sequences (e.g., cursor repositioning) are best-effort.
-#[ allow( dead_code ) ]
 pub( crate ) fn unicode_visual_len( s : &str ) -> usize
 {
   let mut len = 0usize;
@@ -109,7 +108,6 @@ pub( crate ) fn unicode_visual_len( s : &str ) -> usize
 /// Returns `s` unchanged if already at or above `width` display columns.
 /// Uses `unicode_visual_len` for display-width measurement, ensuring correct
 /// padding for CJK characters and emoji.
-#[ allow( dead_code ) ]
 pub( crate ) fn pad_unicode_width( s : &str, width : usize, align_right : bool ) -> String
 {
   let content_width = unicode_visual_len( s );

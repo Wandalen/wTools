@@ -99,7 +99,7 @@ mem_use_alloc = [ "mem", "mem_tools/use_alloc" ]
 
 # typing
 
-typing = [ "typing_tools" ]
+typing = [ "typing_tools", "typing_tools/enabled" ]
 typing_default = [
   "typing",
   "typing_inspect_type",
@@ -346,7 +346,7 @@ dt_interval = [ "dt", "data_type/dt_interval" ]
 
 # diagnostics
 
-diagnostics = [ "diagnostics_tools" ]
+diagnostics = [ "diagnostics_tools", "diagnostics_tools/enabled" ]
 diagnostics_full = [
   "diagnostics",
   "diagnostics_runtime_assertions",

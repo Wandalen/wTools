@@ -30,7 +30,7 @@ full = [
   "async_from",
   "async_try_from",
 ]
-enabled = []
+enabled = [ "async_from/enabled" ]
 async_from = [ "async_from/async_from" ]
 async_try_from = [ "async_from/async_try_from" ]
 

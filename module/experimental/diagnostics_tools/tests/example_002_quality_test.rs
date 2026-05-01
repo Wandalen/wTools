@@ -41,8 +41,10 @@ fn example_002_demonstrates_actual_diff_output()
 
   use std ::process ::Command;
 
+  // `a_id!` expands to `$crate::dependency::pretty_assertions::assert_eq!` which requires
+  // the `diagnostics_runtime_assertions` feature; run with all features to satisfy it.
   let output = Command ::new( "cargo" )
-    .args( [ "run", "--example", "002_better_error_messages" ] )
+    .args( [ "run", "--example", "002_better_error_messages", "--all-features" ] )
     .current_dir( env!( "CARGO_MANIFEST_DIR" ) )
     .output()
     .expect( "Failed to execute example 002" );

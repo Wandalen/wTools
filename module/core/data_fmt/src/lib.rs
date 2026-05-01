@@ -12,10 +12,19 @@
 //!   SQL (4), YAML, TOML, Logfmt, Text (6)
 //! - **String Output**: All formatters return `String`, no direct console output
 
+// Inlining every public item in a 30+ type / 10-formatter library adds noise
+// without measurable gain — the lint is too aggressive for a library of this size.
 #![ allow( clippy::missing_inline_in_public_items ) ]
+// Formatter return values (String) are naturally consumed inline; must_use would
+// force callers to bind every format() call even when the result is immediately used.
 #![ allow( clippy::must_use_candidate ) ]
+// This crate requires heap allocation so std is the correct import root;
+// migrating to core:: is noise without benefit for a std-only library.
 #![ allow( clippy::std_instead_of_core ) ]
+// String assembly patterns in formatters vary for readability; format+push
+// alternatives are not consistently cleaner in rendering-heavy code.
 #![ allow( clippy::format_push_string ) ]
+// Standard feature-gate: suppress all unused warnings when `enabled` is off.
 #![ cfg_attr( not( feature = "enabled" ), allow( unused ) ) ]
 //!
 //! The library supports 10 output formats across 33 variants:
@@ -255,7 +264,10 @@ pub use formatters::{ TextFormatter, TextVariant };
 #[ cfg( feature = "themes" ) ]
 pub use themes::{ ColorTheme, ColorThemeBuilder };
 
-// Backward compatibility trait
+// Backward compatibility trait — deprecated since v0.1.0.
+// Retained until all callers migrate to the `Format` trait.
+// Remove in the next breaking release (v0.3.0).
+// qqq: open a tracking issue once migration timeline is confirmed.
 #[ allow( deprecated ) ]
 #[ cfg( feature = "enabled" ) ]
 pub use formatters::TableShapedFormatter;

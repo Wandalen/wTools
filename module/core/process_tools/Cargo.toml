@@ -27,26 +27,32 @@ all-features = false
 default = []
 full = [ "enabled", "process_environment_is_cicd" ]
 enabled = [
+  "dep:mod_interface",
   "mod_interface/enabled",
+  "dep:former",
   "former/enabled",
+  "dep:error_tools",
   "error_tools/enabled",
+  "dep:iter_tools",
   "iter_tools/enabled",
+  "dep:duct",
+  "dep:libc",
 ]
 
 process_environment_is_cicd = []
 
 
 [dependencies]
-mod_interface = { workspace = true }
-former = { workspace = true, features = [ "derive_former" ] }
-error_tools = { workspace = true, features = [ "error_untyped" ] }
-iter_tools = { workspace = true }
+mod_interface = { workspace = true, optional = true }
+former = { workspace = true, features = [ "derive_former" ], optional = true }
+error_tools = { workspace = true, features = [ "error_untyped" ], optional = true }
+iter_tools = { workspace = true, optional = true }
 
 ## external
-duct = "0.13.7"
-libc = { workspace = true }
+duct = { version = "0.13.7", optional = true }
+libc = { workspace = true, optional = true }
 
 
 [dev-dependencies]
-test_tools = { workspace = true, features = [ "full" ] }
+test_tools = { workspace = true, features = [ "full", "standalone_build" ] }
 assert_fs = { version = "1.1.1" }

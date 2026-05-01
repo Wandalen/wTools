@@ -10,6 +10,7 @@ mod private
 {
 
   use crate :: *;
+  use rand :: { RngCore, SeedableRng };
   #[ cfg(not(feature = "no_std")) ]
   use std ::sync :: { Arc, Mutex, RwLock };
   use rand_chacha ::ChaCha8Rng;

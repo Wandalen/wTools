@@ -82,7 +82,6 @@ impl TextBuffer
   }
 
   /// Get line at index
-  #[ allow( dead_code ) ]
   pub fn line( &self, index: usize ) -> Option< &str >
   {
     self.lines.get( index ).map( |s| s.as_str() )
@@ -279,7 +278,6 @@ impl TextBuffer
   }
 
   /// Get display width of line (accounts for wide chars)
-  #[ allow( dead_code ) ]
   pub fn line_display_width( &self, line_index: usize ) -> usize
   {
     self.lines.get( line_index )
@@ -288,7 +286,6 @@ impl TextBuffer
   }
 
   /// Get display width of current line
-  #[ allow( dead_code ) ]
   pub fn current_line_display_width( &self ) -> usize
   {
     self.line_display_width( self.cursor_line )

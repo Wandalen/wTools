@@ -25,31 +25,12 @@ features = [ "full" ]
 all-features = false
 
 
-# include = [
-#   "/rust/impl/meta/for_each",
-#   "/Cargo.toml",
-#   "/readme.md",
-#   "/License",
-# ]
-
 [features]
 default = []
 full = [ "enabled" ]
 no_std = []
 use_alloc = [ "no_std" ]
 enabled = []
-
-# [lib]
-# name = "for_each"
-# path = "src/meta/for_each/for_each_lib.rs"
-#
-# [[test]]
-# name = "for_each_test"
-# path = "tests/meta/for_each_tests.rs"
-#
-# [[test]]
-# name = "for_each_smoke_test"
-# path = "tests/_integration_test/smoke_test.rs"
 
 [[example]]
 name = "for_each_trivial"
@@ -64,4 +45,4 @@ required-features = [ "enabled" ]
 [dependencies]
 
 [dev-dependencies]
-test_tools = { workspace = true, features = [ "full" ] }
+test_tools = { workspace = true, features = [ "full", "standalone_build" ] }

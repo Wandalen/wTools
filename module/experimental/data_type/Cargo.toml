@@ -75,4 +75,4 @@ interval_adapter = { workspace = true }
 collection_tools = { workspace = true }
 
 [dev-dependencies]
-test_tools = { workspace = true, features = [ "full" ] }
+test_tools = { workspace = true, features = [ "full", "standalone_build" ] }

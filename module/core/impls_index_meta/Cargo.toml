@@ -29,13 +29,13 @@ all-features = false
 default = []
 full = [ "enabled" ]
 # The 'enabled' feature activates core dependencies
-enabled = [ "macro_tools/enabled" ]
+enabled = [ "dep:macro_tools", "macro_tools/enabled" ]
 
 [lib]
 proc-macro = true
 
 [dependencies]
 # Use macro_tools as per Design Rulebook requirement - provides syn, quote, proc-macro2 re-exports
-macro_tools = { workspace = true, features = [ "enabled" ] }
+macro_tools = { workspace = true, optional = true }
 
 [dev-dependencies]

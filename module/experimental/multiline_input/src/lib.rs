@@ -1,3 +1,4 @@
+#![ cfg( feature = "enabled" ) ]
 //! Multiline terminal input with rich editing capabilities
 //!
 //! This crate provides a simple way to collect multiline text input from the terminal
@@ -79,7 +80,7 @@
 //!
 //! ## Example Test with MockTerminal
 //!
-//! ```ignore
+//! ```text
 //! use multiline_input::Builder;
 //! // Note: MockTerminal is in tests/common/mock_terminal.rs
 //!

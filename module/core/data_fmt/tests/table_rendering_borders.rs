@@ -48,8 +48,6 @@
 
 #![ cfg( feature = "enabled" ) ]
 
-mod inc;
-
 use data_fmt::{ RowBuilder, TableFormatter, TableConfig };
 
 // ---------------------------------------------------------------------------

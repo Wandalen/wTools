@@ -10,15 +10,10 @@ keywords = [ "terminal", "input", "multiline", "cli", "interactive" ]
 categories = [ "command-line-interface", "text-editors" ]
 
 [ dependencies ]
-# Terminal control and raw mode
-crossterm = { workspace = true }
-
-# Error handling (mandatory per PRO rulebook)
-error_tools = { workspace = true, features = [ "enabled", "error_typed" ] }
-
-# Optional: Line editing enhancements
-unicode-width = { workspace = true }
-unicode-segmentation = { workspace = true }
+crossterm = { workspace = true, optional = true }
+error_tools = { workspace = true, optional = true }
+unicode-width = { workspace = true, optional = true }
+unicode-segmentation = { workspace = true, optional = true }
 
 [ dev-dependencies ]
 tempfile = { workspace = true }
@@ -29,6 +24,6 @@ path = "src/lib.rs"
 
 [ features ]
 default = []
-enabled = []
+enabled = [ "dep:crossterm", "dep:error_tools", "error_tools/enabled", "error_tools/error_typed", "dep:unicode-width", "dep:unicode-segmentation" ]
 full = [ "enabled", "color" ]
-color = []  # Enable colored output
+color = []

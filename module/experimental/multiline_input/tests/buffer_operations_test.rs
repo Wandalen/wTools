@@ -1,3 +1,4 @@
+#![ cfg( feature = "enabled" ) ]
 //! Buffer operations tests
 //!
 //! ## Domain

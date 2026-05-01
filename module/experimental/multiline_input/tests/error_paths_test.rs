@@ -1,3 +1,4 @@
+#![ cfg( feature = "enabled" ) ]
 //! Error Path Tests
 //!
 //! ## Purpose

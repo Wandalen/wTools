@@ -47,5 +47,4 @@ anyhow = { workspace = true, optional = true }
 thiserror = { workspace = true, optional = true }
 
 [dev-dependencies]
-test_tools = { workspace = true, features = [ "full" ] }
-# xxx : qqq : review
+test_tools = { workspace = true, features = [ "full", "standalone_build" ] }

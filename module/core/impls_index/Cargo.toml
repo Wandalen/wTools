@@ -25,15 +25,15 @@ features = [ "full" ]
 all-features = false
 
 [features]
-default = [ "enabled" ]
+default = []
 full = [ "enabled" ]
-enabled = [ "impls_index_meta/enabled" ]
+enabled = [ "dep:impls_index_meta", "impls_index_meta/enabled" ]
 # Declared to satisfy cfg checks from test_tools dependency macros
 diagnostics_runtime_assertions = []
 
 [dependencies]
-impls_index_meta = { workspace = true }
+impls_index_meta = { workspace = true, optional = true }
 
 [dev-dependencies]
-test_tools = { workspace = true, features = [ "full" ] }
+test_tools = { workspace = true, features = [ "full", "standalone_build" ] }
 #tempdir = { version = "0.3.7" }

@@ -22,18 +22,26 @@ pub use hrng_deterministic as hrng;
 pub use hrng_non_deterministic as hrng;
 
 pub use rand;
+pub use rand::Rng;
+pub use rand::distributions;
+
+// xxx: mod_interface v0.61.0 regression: `use super::hrng` inside mod_interface! tries to
+// access inaccessible `private` sub-modules of the aliased module. Re-export directly until
+// mod_interface supports aliased-module imports.
+pub use hrng::Hrng;
+
+/// Private namespace — required by `mod_interface` for crate-root invocations.
+mod private {}
 
 mod_interface! {
 
-  use super::hrng;
-
-  // xxx: make it working
+  // xxx: make it working — feature-conditional use inside mod_interface! not yet supported
   // #[ cfg( feature = "determinism" ) ]
   // use super ::hrng_deterministic as hrng;
   // #[ cfg( not( feature = "determinism" ) ) ]
   // use super ::hrng_non_deterministic as hrng;
 
-  // xxx: make it working
+  // xxx: make it working — aliased layer import not yet supported
   // #[ cfg( feature = "determinism" ) ]
   // layer hrng_deterministic as hrng;
   // #[ cfg( not( feature = "determinism" ) ) ]

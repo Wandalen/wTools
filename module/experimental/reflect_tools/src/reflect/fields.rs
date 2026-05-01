@@ -135,6 +135,8 @@ pub mod orphan
   use super :: *;
   #[ doc( inline ) ]
   pub use exposed :: *;
+  #[ doc( inline ) ]
+  pub use private :: TypeName;
 }
 
 /// Exposed namespace of the module.
@@ -148,7 +150,6 @@ pub mod exposed
   _IteratorTrait,
   IteratorTrait,
   Fields,
-  TypeName,
  };
 }
 

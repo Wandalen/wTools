@@ -1,3 +1,4 @@
+#![ cfg( feature = "enabled" ) ]
 //! Experimenting.
 
 include!("../../../../module/step/meta/src/module/terminal.rs");

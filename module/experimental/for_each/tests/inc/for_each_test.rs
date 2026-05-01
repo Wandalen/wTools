@@ -1,3 +1,8 @@
+//! Functional tests for `for_each!`, `braces_unwrap!`, and `identity!` macros.
+//!
+//! Covers all three invocation styles (function-style, map-style, callbackless),
+//! all 16 brace-combination arms of `braces_unwrap!`, and higher-order macro composition.
+
 #![ allow( unused_variables ) ]
 #![ allow( unused_assignments ) ]
 #![ allow( unexpected_cfgs ) ]

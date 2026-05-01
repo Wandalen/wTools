@@ -60,6 +60,6 @@ textdistance = { version = "1.0", optional = true } # fuzzy commands search
 indexmap = "2.2.6"
 
 [dev-dependencies]
-test_tools = { workspace = true, features = [ "full" ] }
+test_tools = { workspace = true, features = [ "full", "standalone_build" ] }
 assert_fs = "1.0"
 criterion = "0.5"

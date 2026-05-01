@@ -1,7 +1,6 @@
 //! Key event parsing and handling
 
-use crossterm::event::{ self, Event, KeyCode, KeyModifiers, KeyEvent };
-use std::time::Duration;
+use crossterm::event::{ KeyCode, KeyModifiers, KeyEvent };
 use crate::buffer::TextBuffer;
 
 /// Action to take based on key event
@@ -16,44 +15,6 @@ pub enum KeyAction
 
   /// Continue editing (no special action)
   Continue,
-}
-
-/// Read and parse next key event
-///
-/// Blocks until key event is available or timeout
-pub fn read_key( timeout: Option< Duration > ) -> std::io::Result< KeyEvent >
-{
-  loop
-  {
-    let has_event = if let Some( timeout ) = timeout
-    {
-      event::poll( timeout )?
-    }
-    else
-    {
-      // Block indefinitely
-      event::poll( Duration::from_secs( 86400 ) )?
-    };
-
-    if has_event
-    {
-      if let Event::Key( key_event ) = event::read()?
-      {
-        // Only handle key press events, ignore release
-        if key_event.kind == event::KeyEventKind::Press
-        {
-          return Ok( key_event );
-        }
-      }
-    }
-    else if timeout.is_some()
-    {
-      return Err( std::io::Error::new(
-        std::io::ErrorKind::TimedOut,
-        "Key read timeout"
-      ) );
-    }
-  }
 }
 
 /// Handle key event and update buffer

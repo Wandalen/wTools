@@ -1,3 +1,4 @@
+#![ cfg( feature = "enabled" ) ]
 //! Procedural macro compilation tests for `impls_index_meta`.
 //!
 //! ## Test Matrix

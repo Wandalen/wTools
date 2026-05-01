@@ -1,4 +1,8 @@
 //! Tests for formatters, traits, generic types, and write support
+//!
+//! Covers `TableShapedFormatter` (deprecated since v0.1.0) to ensure backward compat
+//! is maintained until removal in the next breaking release.
+//! qqq: Remove this file's deprecated allow when `TableShapedFormatter` is deleted (v0.3.0).
 
 #![ cfg( feature = "enabled" ) ]
 #![ allow( deprecated ) ]

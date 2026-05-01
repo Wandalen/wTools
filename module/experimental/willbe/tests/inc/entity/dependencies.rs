@@ -36,8 +36,7 @@ fn arrange(asset_name: &str) -> (TempDir, Workspace)
 
 // a -> b -> c
 #[ test ]
-#[ ignore = "Missing test fixtures in module/experimental/willbe/" ]
-fn chain_of_three_packages() 
+fn chain_of_three_packages()
 {
   // Arrange
   let (temp, mut workspace) = arrange("chain_of_packages");
@@ -67,8 +66,7 @@ fn chain_of_three_packages()
 
 // a -> b -> c
 #[ test ]
-#[ ignore = "Missing test fixtures in module/experimental/willbe/" ]
-fn chain_of_three_packages_topologically_sorted() 
+fn chain_of_three_packages_topologically_sorted()
 {
   // Arrange
   let (temp, mut workspace) = arrange("chain_of_packages");
@@ -118,8 +116,7 @@ fn chain_of_three_packages_topologically_sorted()
 
 // a -> ( remote, b )
 #[ test ]
-#[ ignore = "Missing test fixtures in module/experimental/willbe/" ]
-fn package_with_remote_dependency() 
+fn package_with_remote_dependency()
 {
   // Arrange
   let (temp, mut workspace) = arrange("package_with_remote_dependency");
@@ -138,8 +135,7 @@ fn package_with_remote_dependency()
 
 // a -> b -> a
 #[ test ]
-#[ ignore = "Missing test fixtures in module/experimental/willbe/" ]
-fn workspace_with_cyclic_dependency() 
+fn workspace_with_cyclic_dependency()
 {
   // Arrange
   let (temp, mut workspace) = arrange("workspace_with_cyclic_dependency");

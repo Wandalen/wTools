@@ -12,7 +12,7 @@ use the_module ::cta_mem_same_size;
 
 tests_impls! {
 
-  #[ cfg( any( feature = "diagnostics_compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) ) ]
+  #[ cfg( feature = "diagnostics_memory_layout" ) ]
   fn cta_type_same_size_pass()
   {
   struct Int( i16 );
@@ -23,7 +23,7 @@ tests_impls! {
 
   //
 
-  #[ cfg( any( feature = "diagnostics_compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) ) ]
+  #[ cfg( feature = "diagnostics_memory_layout" ) ]
   fn cta_type_same_align_pass()
   {
   struct Int1( i16 );
@@ -35,7 +35,7 @@ tests_impls! {
   // cta_type_same_align!( Int1, i32 );
  }
 
-  #[ cfg( any( feature = "diagnostics_compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) ) ]
+  #[ cfg( feature = "diagnostics_memory_layout" ) ]
   fn cta_ptr_same_size_pass()
   {
   struct Int( i16 );
@@ -50,7 +50,7 @@ tests_impls! {
   // cta_ptr_same_size!( &ins1, &13_i32 );
  }
 
-  #[ cfg( any( feature = "diagnostics_compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) ) ]
+  #[ cfg( feature = "diagnostics_memory_layout" ) ]
   fn cta_mem_same_size_pass()
   {
   struct Int( i16 );

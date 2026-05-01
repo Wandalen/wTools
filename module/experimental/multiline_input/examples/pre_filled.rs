@@ -1,9 +1,12 @@
 //! Example with pre-filled text for editing
 
-use multiline_input::Builder;
+#[ cfg( not( feature = "enabled" ) ) ]
+fn main() {}
 
+#[ cfg( feature = "enabled" ) ]
 fn main()
 {
+  use multiline_input::Builder;
   println!( "Edit Pre-filled Text" );
   println!( "Modify the TODO list below\n" );
 

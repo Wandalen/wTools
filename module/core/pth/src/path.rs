@@ -296,17 +296,6 @@ mod private
   ///
   /// See `tests/inc/path_normalize.rs` for comprehensive test coverage (287 lines, 12+ test cases).
   ///
-  /// # Migration
-  ///
-  /// Replace calls:
-  /// ```ignore
-  /// // Old (deprecated):
-  /// let path = path::canonicalize("./foo")?.into();
-  ///
-  /// // New:
-  /// let path = path::normalize_unchecked("./foo");
-  /// ```
-  ///
   /// # Errors
   ///
   /// Currently never returns an error. The `Result` return type is maintained for backward compatibility.

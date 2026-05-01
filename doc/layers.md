@@ -90,7 +90,7 @@ Total: 69 crates (3 alias + 34 core + 1 deprecated + 31 experimental)
 | `wstring_tools` | alias | 6 | String & Format | Alias — recommended single dependency for all string utilities | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDC·REMS |
 | `config_hierarchy` | core | 7 | Path & Process | Resolve hierarchical config across runtime, env, file, and default sources | 6 | 1 | 0 | 1 | 0 | experimental | stable | TDC·R·MS |
 | `config_hierarchy` | experimental | 7 | Path & Process | Resolve hierarchical config across runtime, env, file, and default sources | 6 | 1 | 0 | 1 | 0 | experimental | stable | TDC·R·MS |
-| `file_tools` | experimental | 7 | Path & Process | RAII temp directories, glob re-export, and upward path traversal | 1 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDC·REMS |
+| `file_tools` | experimental | 7 | Path & Process | RAII temp directories, glob re-export, and upward path traversal | 1 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFREMS |
 | `process_tools` | core | 7 | Path & Process | Run subprocesses with captured I/O, probe process liveness, and daemonize Unix services | 6 | 4 | 0 | 4 | 0 | stable | stable | TDCFR·MS |
 | `program_tools` | experimental | 7 | Path & Process | Builder types for in-memory Rust program representation: Source, Program, and Plan | 5 | 5 | 1 | 4 | 0 | experimental | experimental | TDCFR·MS |
 | `pth` | core | 7 | Path & Process | Syntactic path manipulation — normalize, join, query extensions, and typed path wrappers | 5 | 2 | 0 | 2 | 0 | stable | stable | TDC·R··S |

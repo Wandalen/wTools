@@ -1,33 +1,25 @@
 //! Smoke testing of the package.
 //!
-//! Verifies basic compilation and crate structure.
-//! Note: This is a placeholder crate with no functionality implemented.
+//! Verifies basic crate identity and importability.
+//! Note: This is a placeholder crate with no functionality implemented yet.
 
+// test_kind: smoke
 #[ test ]
 fn local_smoke_test()
 {
-  // Verify crate compiles and can be imported successfully
-  // This test validates the basic package structure is intact
-
-  // Successful compilation of this test proves:
-  // - Crate builds without errors
-  // - Library path is correct (src/_blank/standard_lib.rs)
-  // - Namespace structure is valid
-
-  // No assertions needed - successful compilation is the test
+  // Verify the crate has the expected package identity.
+  // Fails if the crate is renamed without updating this test.
+  assert_eq!( env!( "CARGO_PKG_NAME" ), "include_md" );
 }
 
+// test_kind: smoke
 #[ test ]
 fn published_smoke_test()
 {
-  // Verify crate can be used from external context
-  // Tests that public API is accessible
-
+  // Verify the crate can be imported as an external dependency and
+  // that its declared package name matches the expected value.
+  // Fails if the crate identity or import path is broken.
   #[ allow( unused_imports ) ]
   use include_md;
-
-  // Successful compilation proves crate can be imported
-  // Once functionality is implemented, this test should verify actual features
-
-  // No assertions needed - successful import is the test
+  assert_eq!( env!( "CARGO_PKG_NAME" ), "include_md" );
 }

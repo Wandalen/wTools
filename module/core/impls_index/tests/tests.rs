@@ -1,3 +1,4 @@
+#![ cfg( feature = "enabled" ) ]
 //! All tests.
 
 #![allow(unused_imports)]

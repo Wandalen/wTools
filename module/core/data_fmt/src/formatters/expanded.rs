@@ -280,6 +280,8 @@ impl Default for ExpandedFormatter
   }
 }
 
+// Backward compat: implement deprecated TableShapedFormatter trait — remove with lib.rs re-export.
+// qqq: remove when TableShapedFormatter is deleted in the next breaking release.
 #[ allow( deprecated ) ]
 impl super::TableShapedFormatter for ExpandedFormatter
 {

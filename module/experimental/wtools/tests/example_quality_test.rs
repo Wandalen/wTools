@@ -191,11 +191,3 @@ fn example_uses_conditional_imports()
   );
 }
 
-/// Test: Verify example compiles with minimal features
-#[ test ]
-#[ ignore = "This is a compilation test, run manually with: cargo build --example wtools_trivial --no-default-features --features typing" ]
-fn example_compiles_with_minimal_features()
-{
-  // This test verifies the example can compile with just the typing feature.
-  // Run manually: cargo build --example wtools_trivial --no-default-features --features typing
-}

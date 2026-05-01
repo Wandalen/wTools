@@ -48,7 +48,7 @@ pretty_assertions = { workspace = true, optional = true }
 
 [dev-dependencies]
 trybuild = { workspace = true }
-test_tools = { workspace = true, features = [ "full" ] }
+test_tools = { workspace = true, features = [ "full", "standalone_build" ] }
 strip-ansi-escapes = { workspace = true }
 serde_json = { workspace = true }
 

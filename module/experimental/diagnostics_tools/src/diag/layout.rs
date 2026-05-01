@@ -1,5 +1,5 @@
-#[ cfg( feature = "diagnostics_compiletime_assertions" ) ]
-mod private 
+#[ cfg( feature = "diagnostics_memory_layout" ) ]
+mod private
 {
 
   ///
@@ -100,7 +100,7 @@ pub mod exposed
 pub mod prelude 
 {
   use super :: *;
-  #[ cfg( feature = "diagnostics_compiletime_assertions" ) ]
+  #[ cfg( feature = "diagnostics_memory_layout" ) ]
   #[ doc( inline ) ]
   pub use private :: { cta_type_same_size, cta_type_same_align, cta_ptr_same_size, cta_mem_same_size };
 }

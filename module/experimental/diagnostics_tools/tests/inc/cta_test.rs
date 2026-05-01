@@ -6,7 +6,7 @@ use the_module ::cta_true;
 
 tests_impls! {
 
-  #[ cfg( any( feature = "diagnostics_compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) ) ]
+  #[ cfg( feature = "diagnostics_compiletime_assertions" ) ]
   fn cta_true_pass()
   {
   // test.case( "check feature, true" );

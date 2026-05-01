@@ -14,7 +14,7 @@ mod private
   untyped :: { Error, bail },
   // Result,
  };
-  use collection_tools ::collection ::HashMap;
+  use std ::collections ::HashMap;
   // Explicit import for Result and its variants for pattern matching
   use std ::result ::Result ::Ok;
 
@@ -79,7 +79,7 @@ mod private
   {
   /// Converts the parsing result into a vector of values.
   /// ``` rust
-  /// use collection_tools ::HashMap;
+  /// use std ::collections ::HashMap;
   /// use willbe ::query :: { ParseResult, Value };
   ///
   /// let params = HashMap ::from( [ ( "v1".to_string(), Value ::Int( 1 ) ), ( "v2".to_string(), Value ::Int( 2 ) ), ( "v3".to_string(), Value ::Int( 3 ) ) ] );
@@ -102,7 +102,7 @@ mod private
 
   /// Converts the parsing result into a hashmap, using a vector of names as keys.
   /// ```rust
-  ///  use collection_tools ::HashMap;
+  ///  use std ::collections ::HashMap;
   ///  use willbe ::query :: { ParseResult, Value };
   ///
   ///  let params = vec![ Value ::Int( 1 ), Value ::Int( 2 ), Value ::Int( 3 ) ];
@@ -145,7 +145,7 @@ mod private
   /// Parses an input string and returns a parsing result.
   /// ```rust
   /// use willbe ::query :: { parse, Value };
-  /// use collection_tools ::HashMap;
+  /// use std ::collections ::HashMap;
   ///
   /// assert_eq!( parse( "()" ).unwrap().into_vec(), vec![] );
   ///

@@ -1,3 +1,4 @@
+#![ cfg( feature = "enabled" ) ]
 //! Integration workflow tests
 //!
 //! ## Domain

@@ -1,4 +1,4 @@
-error: Does not hold :
+error: Does not hold:
          feature = "unknown"
  --> tests/inc/snipet/cta_true_fail.rs:5:3
   |

@@ -98,7 +98,6 @@ impl RawModeGuard
   }
 
   /// Check if raw mode is currently enabled
-  #[ allow( dead_code ) ]
   pub fn is_enabled( &self ) -> bool
   {
     self.was_enabled
@@ -135,21 +134,6 @@ impl RealTerminal
     }
   }
 
-  /// Save cursor position
-  #[ allow( dead_code ) ]
-  pub fn save_cursor( &mut self ) -> io::Result< () >
-  {
-    execute!( self.stdout, cursor::SavePosition )?;
-    Ok( () )
-  }
-
-  /// Restore cursor position
-  #[ allow( dead_code ) ]
-  pub fn restore_cursor( &mut self ) -> io::Result< () >
-  {
-    execute!( self.stdout, cursor::RestorePosition )?;
-    Ok( () )
-  }
 }
 
 impl TerminalOps for RealTerminal

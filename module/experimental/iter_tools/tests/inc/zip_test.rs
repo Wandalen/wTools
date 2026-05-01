@@ -40,7 +40,7 @@ use the_module::*;
 
 //
 
-/// Test zip with equal length iterators (normal case from feature/001_itertools_reexports.md)
+/// Test zip with equal length iterators (normal case from `feature/001_itertools_reexports.md`)
 #[ test ]
 #[ cfg( feature = "enabled" ) ]
 fn zip_equal_length()

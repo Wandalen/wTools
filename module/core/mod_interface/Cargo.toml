@@ -45,4 +45,4 @@ path = "examples/mod_interface_debug/src/main.rs"
 mod_interface_meta = { workspace = true }
 
 [dev-dependencies]
-test_tools = { workspace = true, features = [ "full" ] }
+test_tools = { workspace = true, features = [ "full", "standalone_build" ] }

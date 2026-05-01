@@ -79,7 +79,7 @@
 //!
 //! ## Example Test with MockTerminal
 //!
-//! ```ignore
+//! ```text
 //! use multiline_input::Builder;
 //! // Note: MockTerminal is in tests/common/mock_terminal.rs
 //!

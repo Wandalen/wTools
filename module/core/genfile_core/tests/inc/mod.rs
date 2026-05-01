@@ -22,8 +22,6 @@ mod template_error_test;
 #[ cfg( feature = "archive" ) ]
 mod integration_test;
 
-// mod builder_test; // Disabled: FR21 deferred until Former UX improves
-
 #[ cfg( feature = "archive" ) ]
 mod archive_test;
 

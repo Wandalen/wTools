@@ -1,3 +1,4 @@
+#![ cfg( feature = "enabled" ) ]
 //! Comprehensive corner case tests for `impls_index_meta`.
 //!
 //! ## Test Matrix

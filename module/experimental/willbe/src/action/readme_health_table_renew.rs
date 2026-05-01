@@ -13,7 +13,7 @@ mod private
   use convert_case ::Casing;
   use toml_edit ::Document;
   use regex ::bytes ::Regex;
-  use collection_tools ::collection ::HashMap;
+  use std ::collections ::HashMap;
 
   use error ::
   {

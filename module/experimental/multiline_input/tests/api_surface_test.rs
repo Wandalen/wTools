@@ -1,3 +1,4 @@
+#![ cfg( feature = "enabled" ) ]
 //! Public API surface tests
 //!
 //! ## Domain

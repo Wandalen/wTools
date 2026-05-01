@@ -2,6 +2,7 @@
 #[ allow( ambiguous_glob_reexports ) ]
 mod private
 {
+  #[ cfg( feature = "mod_interface" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::mod_interface:: *;
