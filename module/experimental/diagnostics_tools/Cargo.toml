@@ -27,7 +27,7 @@ all-features = false
 
 
 [features]
-default = []
+default = [ "enabled", "diagnostics_runtime_assertions" ]
 full = [
   "enabled",
 

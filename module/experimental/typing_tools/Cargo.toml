@@ -27,7 +27,7 @@ all-features = false
 
 [features]
 
-default = []
+default = [ "enabled", "typing_implements", "typing_is_slice", "typing_inspect_type" ]
 
 full = [
   "enabled",

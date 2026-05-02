@@ -33,7 +33,11 @@ use_alloc = [
   "hashbrown",
 ]
 
-default = []
+default = [
+  "enabled",
+  "collection_constructors",
+  "collection_into_constructors",
+]
 
 full = [
   "enabled",

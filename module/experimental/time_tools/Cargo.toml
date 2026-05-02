@@ -33,7 +33,7 @@ all-features = false
 # ]
 
 [features]
-default = []
+default = [ "enabled" ]
 full = [
   "enabled",
 

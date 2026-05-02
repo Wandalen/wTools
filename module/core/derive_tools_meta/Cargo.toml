@@ -28,7 +28,21 @@ all-features = false
 proc-macro = true
 
 [features]
-default = []
+default = [
+  "enabled",
+  "derive_deref_mut",
+  "derive_deref",
+  "derive_from",
+  "derive_new",
+  "derive_index",
+  "derive_index_mut",
+  "derive_inner_from",
+  "derive_as_ref",
+  "derive_as_mut",
+  "derive_variadic_from",
+  "derive_not",
+  "derive_phantom",
+]
 full = [
   "enabled",
 
@@ -43,7 +57,7 @@ full = [
   "derive_as_mut",
   "derive_variadic_from",
   "derive_not",
-  "derive_phantom"
+  "derive_phantom",
 ]
 enabled = [ "macro_tools/enabled", "iter_tools/enabled", "component_model_types/enabled" ]
 

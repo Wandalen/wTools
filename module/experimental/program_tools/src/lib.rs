@@ -16,6 +16,6 @@ mod private
 #[ cfg( feature = "enabled" ) ]
 mod_interface::mod_interface!
 {
-  /// Compile and run a Rust program.
+  /// Builder types for program representation.
   layer program;
 }

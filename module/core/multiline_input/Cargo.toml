@@ -28,7 +28,7 @@ name = "multiline_input"
 path = "src/lib.rs"
 
 [ features ]
-default = []
+default = [ "enabled" ]
 enabled = []
 full = [ "enabled", "color" ]
 color = []  # Enable colored output

@@ -27,7 +27,7 @@ all-features = false
 
 
 [features]
-default = []
+default = [ "enabled" ]
 full = [ "enabled" ]
 enabled = [ "dep:interval_adapter", "interval_adapter/enabled" ]
 no_std = []

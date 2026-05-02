@@ -25,7 +25,7 @@ features = [ "full" ]
 all-features = false
 
 [features]
-default = []
+default = [ "enabled" ]
 full = [ "enabled" ]
 enabled = [ "dep:impls_index_meta", "impls_index_meta/enabled" ]
 # Declared to satisfy cfg checks from test_tools dependency macros

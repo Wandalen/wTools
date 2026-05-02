@@ -1,5 +1,6 @@
 //! All tests.
 
+#![ cfg( feature = "enabled" ) ]
 // #![ cfg_attr( feature = "type_name_of_val", feature( type_name_of_val ) ) ]
 // // #![ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
 #![allow(unused_imports)]

@@ -29,7 +29,7 @@ features = [ "full" ]
 all-features = false
 
 [features]
-default = []
+default = [ "enabled", "string_indentation", "string_parse_number" ]
 
 # Full feature set - includes everything for maximum functionality in std environments
 full = [

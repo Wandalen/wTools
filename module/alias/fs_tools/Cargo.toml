@@ -30,7 +30,7 @@ features = [ "full" ]
 all-features = false
 
 [features]
-default   = []
+default   = [ "enabled" ]
 full      = [ "enabled", "dep:file_tools", "file_tools/full" ]
 enabled   = [ "dep:file_tools", "file_tools/enabled" ]
 glob      = [ "enabled", "dep:file_tools", "file_tools/glob" ]

@@ -30,6 +30,6 @@ test_tools = { workspace = true, features = [ "full" ] }
 variadic_from = { workspace = true, features = [ "full" ] }
 
 [features]
-default = []
+default = [ "enabled" ]
 full = [ "enabled" ]
 enabled = []

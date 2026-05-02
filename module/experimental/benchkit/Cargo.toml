@@ -24,7 +24,7 @@ all-features = false
 # = features
 
 [features]
-default = []
+default = [ "enabled" ]
 
 full = [
   "enabled",

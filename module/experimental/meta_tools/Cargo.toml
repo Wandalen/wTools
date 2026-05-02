@@ -25,7 +25,7 @@ features = [ "full" ]
 all-features = false
 
 [features]
-default = []
+default = [ "enabled" ]
 full = [
   "enabled",
 
@@ -43,7 +43,7 @@ enabled = [
 ]
 
 meta_for_each = [ "for_each/enabled", "dep:for_each" ]
-meta_impls_index = [ "impls_index/enabled", "dep:impls_index" ]
+meta_impls_index = [ "impls_index/enabled", "dep:impls_index", "dep:impls_index_meta" ]
 mod_interface = [ "mod_interface/enabled", "dep:mod_interface" ]
 
 # meta_constructors = [ "literally" ]
@@ -57,7 +57,7 @@ paste = { workspace = true, optional = true, default-features = false }
 ## internal
 for_each = { workspace = true, optional = true }
 impls_index = { workspace = true, optional = true }
-impls_index_meta = { workspace = true }
+impls_index_meta = { workspace = true, optional = true }
 mod_interface = { workspace = true, optional = true }
 mod_interface_meta = { workspace = true, features = [ "enabled" ] }
 

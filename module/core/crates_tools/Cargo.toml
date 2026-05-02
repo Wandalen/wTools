@@ -25,7 +25,7 @@ features = [ "full" ]
 all-features = false
 
 [features]
-default = []
+default = [ "enabled" ]
 full = [ "enabled" ]
 enabled = [ "dep:flate2", "dep:tar", "network" ]
 network = [ "dep:ureq" ]

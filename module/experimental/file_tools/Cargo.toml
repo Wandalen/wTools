@@ -32,7 +32,7 @@ features = [ "full" ]
 all_features = false
 
 [features]
-default = []
+default = [ "enabled", "glob" ]
 full = [ "enabled", "glob" ]
 no_std = []
 use_alloc = [ "no_std" ]

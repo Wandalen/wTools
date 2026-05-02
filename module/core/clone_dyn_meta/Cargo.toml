@@ -29,7 +29,7 @@ all-features = false
 proc-macro = true
 
 [features]
-default = []
+default = [ "enabled" ]
 full = [ "enabled" ]
 enabled = [ "dep:macro_tools", "macro_tools/enabled", "dep:component_model_types", "component_model_types/enabled" ]
 

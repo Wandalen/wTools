@@ -29,14 +29,14 @@ proc-macro = true
 
 [features]
 
-default = []
+default = [ "enabled", "reflect_derive" ]
 
-full = [ "enabled" ]
+full = [ "enabled", "reflect_derive" ]
 enabled = []
 reflect_derive = []
 
 [dependencies]
-macro_tools = { workspace = true, features = [ "default" ] }
+macro_tools = { workspace = true, features = [ "enabled", "attr" ] }
 # iter_tools = { workspace = true, features = [ "full" ] }
 # xxx : qqq : optimize features set
 

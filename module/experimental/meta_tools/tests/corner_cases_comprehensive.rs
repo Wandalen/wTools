@@ -8,7 +8,9 @@
 //! - **Empty `for_each`**: Requires at least one element
 //! - **Nested macros**: Macro nesting is not supported
 
-use meta_tools :: *;
+use meta_tools as the_module;
+#[ allow( unused_imports ) ]
+use the_module :: *;
 
 #[ test ]
 fn corner_case_single_element()

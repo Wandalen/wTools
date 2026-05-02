@@ -28,7 +28,7 @@ proc-macro = true
 
 [features]
 
-default = []
+default = [ "enabled" ]
 full = [
   "enabled",
 

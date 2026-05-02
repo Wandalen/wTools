@@ -28,7 +28,14 @@ all-features = false
 [features]
 default = [ "enabled" ]
 full = [ "enabled", "on_unknown_suggest" ]
-enabled = []
+enabled = [
+  "dep:error_tools",
+  "dep:mod_interface",
+  "dep:iter_tools",
+  "dep:former",
+  "dep:log",
+  "dep:indexmap",
+]
 
 # diagnostics features from test_tools
 diagnostics_runtime_assertions = []
@@ -42,22 +49,41 @@ on_unknown_suggest = [ "dep:textdistance" ]
 [[bench]]
 name = "bench"
 harness = false
+required-features = [ "enabled" ]
+
+[[example]]
+name = "wca_trivial"
+required-features = [ "enabled" ]
+
+[[example]]
+name = "wca_fluent"
+required-features = [ "enabled" ]
+
+[[example]]
+name = "wca_shortcut"
+required-features = [ "enabled" ]
+
+[[example]]
+name = "wca_custom_error"
+required-features = [ "enabled" ]
+
+[[example]]
+name = "wca_suggest"
+required-features = [ "enabled", "on_unknown_suggest" ]
 
 [dependencies]
 
 ## internal
-error_tools = { workspace = true, features = [ "enabled", "error_typed", "error_untyped" ] }
-mod_interface = { workspace = true, features = [ "enabled" ] }
-iter_tools = { workspace = true, features = [ "enabled" ] }
-former = { workspace = true, features = [ "enabled", "derive_former" ] }
-# xxx : aaa : optimize set of features
-# aaa : done.
+error_tools = { workspace = true, optional = true, features = [ "enabled", "error_typed", "error_untyped" ] }
+mod_interface = { workspace = true, optional = true, features = [ "enabled" ] }
+iter_tools = { workspace = true, optional = true, features = [ "enabled" ] }
+former = { workspace = true, optional = true, features = [ "enabled", "derive_former" ] }
 
 ## external
-log = "0.4"
+log = { version = "0.4", optional = true }
 #closure = "0.3"
 textdistance = { version = "1.0", optional = true } # fuzzy commands search
-indexmap = "2.2.6"
+indexmap = { version = "2.2.6", optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full", "standalone_build" ] }

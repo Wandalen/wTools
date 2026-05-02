@@ -11,10 +11,10 @@ documentation = "https://docs.rs/program_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/experimental/program_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/experimental/program_tools"
 description = """
-Compile and run a Rust program.
+Builder types for in-memory Rust program representation: Source, Program, and Plan.
 """
-categories = [ "algorithms", "development-tools" ]
-keywords = [ "fundamental", "general-purpose" ]
+categories = [ "data-structures", "development-tools" ]
+keywords = [ "program", "builder", "representation", "source", "plan" ]
 
 [lints]
 workspace = true
@@ -26,7 +26,7 @@ all-features = false
 
 
 [features]
-default = []
+default = [ "enabled" ]
 full = [
   "enabled"
  ]
@@ -46,10 +46,5 @@ pth = { workspace = true }
 error_tools = { workspace = true, features = [ "error_untyped" ] } # qqq : xxx : rid of error_untyped
 iter_tools = { workspace = true }
 
-# ## external
-# duct = "0.13.7"
-
-
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }
-# assert_fs = { version = "1.1.1" }

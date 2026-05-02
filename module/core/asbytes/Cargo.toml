@@ -24,7 +24,7 @@ features = [ "full" ]
 all-features = false
 
 [features]
-default = []
+default = [ "enabled" ]
 full = [
   "enabled",
   "as_bytes",

@@ -22,11 +22,11 @@ mod private
     pub source : Vec< Source >,
   }
 
-  /// Plan for compiling and running a Rust program.
+  /// Top-level program execution configuration.
   #[ derive( Debug, Former ) ]
   pub struct Plan
   {
-    /// Program to be compiled and executed.
+    /// Embedded program definition.
     #[ subform_scalar ]
     pub program : Program,
   }

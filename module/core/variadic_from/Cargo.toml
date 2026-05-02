@@ -28,7 +28,11 @@ all-features = false
 
 [features]
 
-default = []
+default = [
+  "enabled",
+  "derive_variadic_from",
+  "type_variadic_from",
+]
 
 full = [
   "enabled",

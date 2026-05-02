@@ -19,7 +19,9 @@ pub mod dependency
 mod private
 {
 
+  #[ cfg( any( feature = "async_from", feature = "async_try_from" ) ) ]
   pub use async_trait::async_trait;
+  #[ cfg( feature = "async_try_from" ) ]
   use core::fmt::Debug;
 
   /// Trait for asynchronous conversions from a type `T`.

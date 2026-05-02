@@ -24,7 +24,7 @@ features = [ "full" ]
 all-features = false
 
 [features]
-default = []
+default = [ "enabled", "external_content", "parameter_discovery" ]
 full = [
   "enabled",
   "external_content",

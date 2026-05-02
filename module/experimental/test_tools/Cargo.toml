@@ -30,7 +30,7 @@ no-default-features = false
 # = features
 
 [features]
-default = []
+default = [ "enabled" ]
 full = [ "enabled" ]
 # CRITICAL: This feature controls doctest-specific behavior but can break test compilation
 # if used incorrectly. See REGRESSION PREVENTION notes below.

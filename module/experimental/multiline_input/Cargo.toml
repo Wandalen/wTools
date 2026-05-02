@@ -23,7 +23,7 @@ name = "multiline_input"
 path = "src/lib.rs"
 
 [ features ]
-default = []
+default = [ "enabled" ]
 enabled = [ "dep:crossterm", "dep:error_tools", "error_tools/enabled", "error_tools/error_typed", "dep:unicode-width", "dep:unicode-segmentation" ]
 full = [ "enabled", "color" ]
 color = []

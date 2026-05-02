@@ -21,7 +21,7 @@ name = "config_hierarchy"
 path = "src/lib.rs"
 
 [features]
-default = []
+default = [ "enabled", "file_ops" ]
 full = [
   "enabled",
   "file_ops",

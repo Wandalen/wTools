@@ -127,6 +127,9 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  // Explicit import takes precedence over both glob imports below, resolving E0659
+  // that arises when meta_tools::exposed::* also re-exports `prelude` (from mod_interface).
+  use super::prelude;
   use super::*;
   #[ doc( inline ) ]
   pub use prelude::*;

@@ -1,3 +1,4 @@
+#![ cfg_attr( not( feature = "enabled" ), allow( unused ) ) ]
 #![ doc( html_logo_url = "https: //raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc
 (
@@ -26,12 +27,15 @@
 //! 4. **Explicit Exposure** : Lists all exposed items explicitly in `mod_interface!`
 //!    following the explicit exposure rule.
 
+#[ cfg( feature = "enabled" ) ]
 use mod_interface ::mod_interface;
 
+#[ cfg( feature = "enabled" ) ]
 pub mod ca;
 
 mod private {}
 
+#[ cfg( feature = "enabled" ) ]
 crate ::mod_interface!
 {
   exposed use ca ::grammar;
@@ -43,7 +47,7 @@ crate ::mod_interface!
   exposed use ca ::aggregator;
   exposed use ca ::help;
   exposed use ca ::formatter;
-  
+
   // Re-export commonly used types at root level
   exposed use ca ::aggregator :: { CommandsAggregator, Order, Error, ValidationError };
   exposed use ca ::grammar :: { Type, Value, Command, Dictionary, types ::TryCast };
