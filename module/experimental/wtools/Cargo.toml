@@ -41,6 +41,7 @@ iter_default = [
 ]
 iter_full = [
   "iter",
+  "iter_tools/full",
   # "iter_use_std",
   # "iter_use_alloc",
 ]

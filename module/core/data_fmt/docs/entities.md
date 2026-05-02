@@ -8,7 +8,7 @@
 | `api/` | Registry and overview of all API doc instances | [api/readme.md](api/readme.md) | 4 |
 | `builder/` | Registry and overview of all builder doc instances | [builder/readme.md](builder/readme.md) | 2 |
 | `data_structure/` | Registry and overview of all data structure doc instances | [data_structure/readme.md](data_structure/readme.md) | 1 |
-| `feature/` | Registry and overview of all feature doc instances | [feature/readme.md](feature/readme.md) | 5 |
+| `feature/` | Registry and overview of all feature doc instances | [feature/readme.md](feature/readme.md) | 6 |
 | `formatter/` | Registry and overview of all formatter doc instances | [formatter/readme.md](formatter/readme.md) | 10 |
 | `input_model/` | Registry and overview of all input model doc instances | [input_model/readme.md](input_model/readme.md) | 2 |
 | `input_type/` | Registry and overview of all input type doc instances | [input_type/readme.md](input_type/readme.md) | 2 |
@@ -39,6 +39,7 @@
 | feature | 003 | Unified Format Interface | [feature/003_unified_format_interface.md](feature/003_unified_format_interface.md) |
 | feature | 004 | Color Themes | [feature/004_color_themes.md](feature/004_color_themes.md) |
 | feature | 005 | Auto-Fit | [feature/005_auto_fit.md](feature/005_auto_fit.md) |
+| feature | 006 | API Cleanup v0.3.0 | [feature/006_api_cleanup_v030.md](feature/006_api_cleanup_v030.md) |
 | formatter | 001 | TableFormatter | [formatter/001_table_formatter.md](formatter/001_table_formatter.md) |
 | formatter | 002 | ExpandedFormatter | [formatter/002_expanded_formatter.md](formatter/002_expanded_formatter.md) |
 | formatter | 003 | TreeFormatter | [formatter/003_tree_formatter.md](formatter/003_tree_formatter.md) |

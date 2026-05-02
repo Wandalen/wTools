@@ -104,6 +104,7 @@ full = [
   "derive_is_variant",
   "derive_unwrap",
   # "derive_convert_case",
+  "derive_into",
 
   "derive_display",
   "derive_from_str",

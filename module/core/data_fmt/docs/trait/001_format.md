@@ -14,6 +14,7 @@
 | source | `src/formatters/format_trait.rs` | Format trait definition |
 | test | `tests/unified_format_trait.rs` | Format trait tests |
 | doc | `../feature/003_unified_format_interface.md` | Feature-level documentation |
+| doc | `../feature/006_api_cleanup_v030.md` | v0.3.0 cleanup — adds ExpandedFormatter coverage |
 
 ### Signature
 
@@ -40,7 +41,7 @@
 
 | Formatter | Reason | Alternative |
 |-----------|--------|-------------|
-| `ExpandedFormatter` | Uses deprecated `TableShapedFormatter` only | via the deprecated `TableShapedFormatter` interface |
+| `ExpandedFormatter` | Uses deprecated `TableShapedFormatter` only | via the deprecated `TableShapedFormatter` interface (to resolve in v0.3.0 — see `../feature/006_api_cleanup_v030.md`) |
 | `TreeFormatter` | Requires generic `T` + render closure | Direct methods: `format()`, `format_aligned()`, `format_with_aggregation()` |
 
 ### Input Type

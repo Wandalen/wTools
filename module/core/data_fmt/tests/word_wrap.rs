@@ -1,7 +1,10 @@
 //! Word wrap utility tests — `WrapFormatter` / `WrapConfig` / `BreakStrategy` / `Overflow`.
 //!
 //! T01–T20 correspond to rows in the Test Matrix from task 004.
-//! Bug reproducers (`// test_kind: bug_reproducer`) are appended at the end.
+//! Additional non-T tests: `defaults_match_spec`, `indent_counts_toward_width` (property checks).
+//! Bug reproducers (`// test_kind: bug_reproducer`) are appended after T01–T20.
+//! Algorithm spec coverage tests (AC-N) verify `docs/algorithm/` spec cases; these may also
+//! document implementation bug fixes (e.g., `ansi_codes_excluded_from_wrap_point_calculation`).
 //! All tests are written TDD: Red state first, then implementation added.
 
 #![ cfg( feature = "enabled" ) ]
@@ -452,4 +455,27 @@ fn expand_tabs_bug_zero_width_keeps_tab()
     "tab_width=0 must remove tabs, got: {result:?}"
   );
   assert!( joined.contains( "hello" ) && joined.contains( "world" ) );
+}
+
+/// AC-5 — `word_wrapping/002`: ANSI escape bytes excluded from visual wrap budget.
+///
+/// `"\x1b[32mgreen text\x1b[0m"` = 10 visible chars, 19 bytes. With `width=15`
+/// the content fits visually and must NOT wrap; ANSI codes must be preserved intact.
+///
+/// **Bug history**: `wrap_words` in `src/wrap.rs` called `char_count(word)` which
+/// counted ANSI escape bytes as visual width. Fixed to `unicode_visual_len(word)`.
+/// Failure mode: word split at byte-count boundary → `["\x1b[32mgreen", "text\x1b[0m"]`
+/// instead of `["\x1b[32mgreen text\x1b[0m"]`.
+#[ test ]
+fn ansi_codes_excluded_from_wrap_point_calculation()
+{
+  let ansi_text = "\x1b[32mgreen text\x1b[0m"; // 10 visual chars, 19 bytes
+  let fmt = WrapFormatter::with_config( WrapConfig::new().width( 15 ) );
+  let result = fmt.wrap( ansi_text );
+  assert_eq!(
+    result.len(), 1,
+    "ANSI-colored text within visual budget must not wrap: {result:?}",
+  );
+  assert!( result[ 0 ].contains( "\x1b[32m" ), "ANSI prefix must be preserved: {result:?}" );
+  assert!( result[ 0 ].contains( "\x1b[0m" ), "ANSI reset must be preserved: {result:?}" );
 }

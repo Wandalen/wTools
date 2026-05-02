@@ -31,7 +31,11 @@ default = [
   "iter_trait",
   "iter_ext",
 ]
-full = [ "enabled" ]
+full = [
+  "enabled",
+  "iter_trait",
+  "iter_ext",
+]
 no_std = []
 use_alloc = [ "itertools/use_alloc" ]
 enabled = [ "dep:itertools", "dep:clone_dyn_types", "clone_dyn_types/enabled" ]

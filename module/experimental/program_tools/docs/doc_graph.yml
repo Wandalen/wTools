@@ -1,0 +1,106 @@
+generated: 2026_05_02
+
+nodes:
+  - feature/001
+  - feature/002
+  - feature/003
+  - feature/004
+  - feature/005
+  - api/001
+  - api/002
+  - api/003
+  - api/004
+  - invariant/001
+  - invariant/002
+  - invariant/003
+  - invariant/004
+  - pattern/001
+  - pattern/002
+
+edges:
+  # feature/001 (Script Execution) — central hub
+  - { from: feature/001, to: api/001,      via: cross_references }
+  - { from: api/001,     to: feature/001,  via: cross_references }
+  - { from: feature/001, to: api/002,      via: cross_references }
+  - { from: api/002,     to: feature/001,  via: cross_references }
+  - { from: feature/001, to: feature/002,  via: cross_references }
+  - { from: feature/002, to: feature/001,  via: cross_references }
+  - { from: feature/001, to: feature/003,  via: cross_references }
+  - { from: feature/003, to: feature/001,  via: cross_references }
+  - { from: feature/001, to: feature/004,  via: cross_references }
+  - { from: feature/004, to: feature/001,  via: cross_references }
+  - { from: feature/001, to: invariant/001, via: cross_references }
+  - { from: invariant/001, to: feature/001, via: cross_references }
+  - { from: feature/001, to: invariant/002, via: cross_references }
+  - { from: invariant/002, to: feature/001, via: cross_references }
+  - { from: feature/001, to: invariant/004, via: cross_references }
+  - { from: invariant/004, to: feature/001, via: cross_references }
+  - { from: feature/001, to: pattern/001,  via: cross_references }
+  - { from: pattern/001, to: feature/001,  via: cross_references }
+
+  # feature/002 (Output Capture)
+  - { from: feature/002, to: api/003,      via: cross_references }
+  - { from: api/003,     to: feature/002,  via: cross_references }
+  - { from: feature/002, to: feature/004,  via: cross_references }
+  - { from: feature/004, to: feature/002,  via: cross_references }
+  - { from: feature/002, to: invariant/003, via: cross_references }
+  - { from: invariant/003, to: feature/002, via: cross_references }
+  - { from: feature/002, to: invariant/004, via: cross_references }
+  - { from: invariant/004, to: feature/002, via: cross_references }
+
+  # feature/003 (Artifact Management)
+  - { from: feature/003, to: invariant/001, via: cross_references }
+  - { from: invariant/001, to: feature/003, via: cross_references }
+  - { from: feature/003, to: invariant/002, via: cross_references }
+  - { from: invariant/002, to: feature/003, via: cross_references }
+  - { from: feature/003, to: feature/005,  via: cross_references }
+  - { from: feature/005, to: feature/003,  via: cross_references }
+
+  # feature/004 (Programmatic Test Integration)
+  - { from: feature/004, to: api/002,      via: cross_references }
+  - { from: api/002,     to: feature/004,  via: cross_references }
+  - { from: feature/004, to: api/003,      via: cross_references }
+  - { from: api/003,     to: feature/004,  via: cross_references }
+
+  # feature/005 (Configuration Surface)
+  - { from: feature/005, to: api/001,      via: cross_references }
+  - { from: api/001,     to: feature/005,  via: cross_references }
+  - { from: feature/005, to: api/004,      via: cross_references }
+  - { from: api/004,     to: feature/005,  via: cross_references }
+  - { from: feature/005, to: pattern/002,  via: cross_references }
+  - { from: pattern/002, to: feature/005,  via: cross_references }
+
+  # api/001 (Builder API)
+  - { from: api/001,     to: pattern/001,  via: cross_references }
+  - { from: pattern/001, to: api/001,      via: cross_references }
+  - { from: api/001,     to: pattern/002,  via: cross_references }
+  - { from: pattern/002, to: api/001,      via: cross_references }
+
+  # api/002 (Runner API)
+  - { from: api/002,     to: api/001,      via: cross_references }
+  - { from: api/001,     to: api/002,      via: cross_references }
+  - { from: api/002,     to: api/003,      via: cross_references }
+  - { from: api/003,     to: api/002,      via: cross_references }
+  - { from: api/002,     to: api/004,      via: cross_references }
+  - { from: api/004,     to: api/002,      via: cross_references }
+  - { from: api/002,     to: invariant/001, via: cross_references }
+  - { from: invariant/001, to: api/002,    via: cross_references }
+  - { from: api/002,     to: invariant/004, via: cross_references }
+  - { from: invariant/004, to: api/002,    via: cross_references }
+
+  # api/003 (Output API)
+  - { from: api/003,     to: invariant/003, via: cross_references }
+  - { from: invariant/003, to: api/003,    via: cross_references }
+
+  # api/004 (CLI Interface)
+  - { from: api/004,     to: pattern/002,  via: cross_references }
+
+  # invariant/001 (Cleanup Guarantee)
+  - { from: invariant/001, to: invariant/002, via: cross_references }
+  - { from: invariant/002, to: invariant/001, via: cross_references }
+  - { from: invariant/001, to: pattern/001,  via: cross_references }
+  - { from: pattern/001,  to: invariant/001, via: cross_references }
+
+  # invariant/002 (Execution Isolation)
+  - { from: invariant/002, to: invariant/003, via: cross_references }
+  - { from: invariant/003, to: invariant/002, via: cross_references }

@@ -51,7 +51,31 @@ default = [
   "typ",
   "typed",
 ]
-full = [ "enabled" ]
+full = [
+  "enabled",
+  "attr",
+  "attr_prop",
+  "components",
+  "ct",
+  "container_kind",
+  "derive",
+  "diag",
+  "equation",
+  "generic_args",
+  "generic_params",
+  "ident",
+  "item",
+  "item_struct",
+  "name",
+  "kw",
+  "phantom",
+  "punctuated",
+  "quantifier",
+  "struct_like",
+  "tokens",
+  "typ",
+  "typed",
+]
 
 enabled = [
   "component_model_types/enabled",

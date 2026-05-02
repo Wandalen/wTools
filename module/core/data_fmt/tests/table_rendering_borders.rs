@@ -407,10 +407,14 @@ fn test_t014_m01_single_column_unicode_box_no_mid_junction_chars()
   );
 }
 
-/// T014-M02 — Header-only table (0 data rows) with `grid()`: no panic, no inter-row separators.
+/// T014-M02 — Empty tree (`RowBuilder` with no rows) with `grid()`: no panic, empty output.
 ///
-/// When there are no data rows the inter-row separator loop is never entered;
-/// top/bottom borders and header separator must still render correctly.
+/// `RowBuilder::new(headers).build()` with no rows produces an empty root `TreeNode`
+/// (headers are NOT embedded in the tree until rows are added). The formatter sees
+/// zero headers and zero rows and must return `""` per EC-1 (empty table → empty string).
+///
+/// Fix( issue-empty-table ): `format_internal` early-exits when both headers and rows
+/// are empty, so no stray border lines are emitted.
 #[ test ]
 fn test_t014_m02_header_only_table_grid_no_panic()
 {
@@ -418,17 +422,18 @@ fn test_t014_m02_header_only_table_grid_no_panic()
 
   let output = TableFormatter::with_config( TableConfig::grid() ).format( &tree );
 
-  // Must not panic; structure: top_border + header + header_sep + bottom_border
-  let plus_lines : Vec<_> = output.lines().filter( |l| l.starts_with( '+' ) ).collect();
+  // Must not panic; empty tree → empty string (EC-1)
   assert_eq!(
-    plus_lines.len(), 3,
-    "T014-M02: header-only grid must have 3 '+' lines (top + header_sep + bottom); got {}\nFull output:\n{output}",
-    plus_lines.len()
+    output, "",
+    "T014-M02: empty tree (no rows in RowBuilder) must render to empty string with grid config",
   );
 }
 
-/// T014-M03 — Header-only table (0 data rows) with `unicode_box()`: no panic,
-/// bottom border uses `└`/`┘` corners (not `├`/`┤`).
+/// T014-M03 — Empty tree (`RowBuilder` with no rows) with `unicode_box()`: no panic, empty output.
+///
+/// Same empty-tree invariant as T014-M02, but with `unicode_box()` config.
+/// Verifies that no stray Unicode border characters (`┌`, `└`, `├`) are emitted
+/// when the table has no content.
 #[ test ]
 fn test_t014_m03_header_only_table_unicode_no_panic()
 {
@@ -436,22 +441,9 @@ fn test_t014_m03_header_only_table_unicode_no_panic()
 
   let output = TableFormatter::with_config( TableConfig::unicode_box() ).format( &tree );
 
-  // Must not panic and output must contain expected corners
-  assert!(
-    output.contains( '┌' ),
-    "T014-M03: header-only unicode_box must start with ┌\nFull output:\n{output}"
-  );
-  assert!(
-    output.contains( '└' ),
-    "T014-M03: header-only unicode_box must end with └ (bottom corner, not ├)\nFull output:\n{output}"
-  );
-  // Must NOT use mid-line chars as the bottom border (common mistake)
-  let last_non_empty = output
-    .lines()
-    .rfind( |l| !l.is_empty() )
-    .expect( "no non-empty lines" );
-  assert!(
-    last_non_empty.starts_with( '└' ),
-    "T014-M03: last line must start with └ (bottom border), got: {last_non_empty:?}\nFull output:\n{output}"
+  // Must not panic; empty tree → empty string (EC-1)
+  assert_eq!(
+    output, "",
+    "T014-M03: empty tree (no rows in RowBuilder) must render to empty string with unicode_box config",
   );
 }

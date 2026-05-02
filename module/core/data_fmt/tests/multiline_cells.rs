@@ -605,3 +605,25 @@ fn test_multiline_cell_column_width_is_max_line_width()
     sub_line2.len(), sub_line2
   );
 }
+
+/// AC-1 — `multiline_cell_rendering/001`: single-line cells are unchanged.
+///
+/// Ensures the multiline rendering path is transparent when no `\n` chars are
+/// present — default config output is byte-identical to explicit `plain()` config;
+/// the row produces exactly 1 data line (no phantom extra lines).
+#[ test ]
+fn single_line_cells_unchanged()
+{
+  let tree = RowBuilder::new( vec![ "Name".into(), "Value".into() ] )
+    .add_row( vec![ "Alice".into(), "42".into() ] )
+    .build();
+  let output_default = TableFormatter::new().format( &tree );
+  let output_explicit = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
+  assert_eq!(
+    output_default, output_explicit,
+    "single-line table must render byte-identically with default and plain config",
+  );
+  // header + separator + exactly 1 data line
+  let data_lines : Vec< &str > = output_default.lines().skip( 2 ).collect();
+  assert_eq!( data_lines.len(), 1, "single-line row must produce exactly 1 data line" );
+}

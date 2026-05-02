@@ -211,6 +211,11 @@ impl TableFormatter
   )
   -> String
   {
+    // Fix( issue-empty-table ): return empty string when there is nothing to render.
+    // Root cause: format_single_line_row unconditionally appends '\n' even for zero-column
+    // slices, so header + separator both emit bare newlines → "\n\n".
+    // Pitfall: empty RowBuilder has no headers in the tree (extract_headers → None → []).
+    if headers.is_empty() && rows.is_empty() { return String::new(); }
     let mut output = String::with_capacity( INITIAL_CAPACITY );
 
     // Calculate natural column widths (uses .text for ANSI-free measurement)

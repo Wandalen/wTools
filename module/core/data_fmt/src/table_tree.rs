@@ -272,6 +272,12 @@ impl RowBuilder
   ///
   /// Returns a `TreeNode<String>` structure for use with legacy formatters.
   /// For new code, prefer `build_view()` which returns the canonical `TableView`.
+  ///
+  /// **Pitfall**: headers are NOT embedded in the returned tree unless at least one
+  /// row was added first. Calling `build()` on an empty `RowBuilder` produces a root
+  /// `TreeNode` with zero children — `extract_headers()` returns `None` and the
+  /// formatter produces an empty string (EC-1). Use `build_view()` to get a structure
+  /// that preserves headers even with zero data rows.
   pub fn build( self ) -> TreeNode< String >
   {
     self.root

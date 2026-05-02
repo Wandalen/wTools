@@ -11,10 +11,10 @@ documentation = "https://docs.rs/program_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/experimental/program_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/experimental/program_tools"
 description = """
-Builder types for in-memory Rust program representation: Source, Program, and Plan.
+Rust script runner — compile and execute Rust files as scripts with output capture.
 """
-categories = [ "data-structures", "development-tools" ]
-keywords = [ "program", "builder", "representation", "source", "plan" ]
+categories = [ "development-tools::testing", "development-tools::build-utils" ]
+keywords = [ "script", "runner", "testing", "execute", "compile" ]
 
 [lints]
 workspace = true
@@ -32,19 +32,31 @@ full = [
  ]
 
 enabled = [
+  "dep:mod_interface",
   "mod_interface/enabled",
+  "dep:former",
   "former/enabled",
-  "pth/enabled",
+  "dep:error_tools",
   "error_tools/enabled",
-  "iter_tools/enabled",
+  "error_tools/error_untyped",
+  "dep:clap",
 ]
 
 [dependencies]
-mod_interface = { workspace = true }
-former = { workspace = true, features = [ "derive_former" ] }
-pth = { workspace = true }
-error_tools = { workspace = true, features = [ "error_untyped" ] } # qqq : xxx : rid of error_untyped
-iter_tools = { workspace = true }
+mod_interface = { workspace = true, optional = true }
+former = { workspace = true, features = [ "derive_former" ], optional = true }
+error_tools = { workspace = true, features = [ "error_untyped" ], optional = true }
+clap = { workspace = true, features = [ "derive" ], optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }
+
+[[bin]]
+name = "program_tools"
+path = "src/main.rs"
+required-features = [ "enabled" ]
+
+[[example]]
+name = "basic"
+path = "examples/basic.rs"
+required-features = [ "enabled" ]

@@ -82,7 +82,7 @@ Total: 69 crates (3 alias + 34 core + 1 deprecated + 31 experimental)
 | `iter_tools` | experimental | 5 | Collections | Re-export itertools combinators and provide clonable boxed iterators with stop-on-first-error mapping | 2 | 1 | 0 | 1 | 0 | experimental | stable | TDC·RE·S |
 | `cli_fmt` | core | 6 | String & Format | Process CLI command output with head/tail filtering, width truncation, and stream merging | 1 | 1 | 1 | 0 | 0 | experimental | stable | TDCFR·MS |
 | `color_tools` | core | 6 | String & Format | Wrap text with typed ANSI color for terminal and HTML rendering | 1 | 0 | 0 | 0 | 0 | experimental | stable | TDCFREMS |
-| `data_fmt` | core | 6 | String & Format | Render structured data in multiple visual, text, and serialization formats | 9 | 3 | 2 | 1 | 0 | experimental | stable | TDCFREMS |
+| `data_fmt` | core | 6 | String & Format | Render structured data in multiple visual, text, and serialization formats | 9 | 3 | 2 | 1 | 0 | stable | stable | TDCFREMS |
 | `data_type` | experimental | 6 | String & Format | Aggregate interval, collection, and sum-type re-exports under one unified facade namespace | 3 | 2 | 0 | 2 | 0 | experimental | stable | TDC·RE·S |
 | `format_tools` | core | 6 | String & Format | Extend std formatting with structural display and string helpers | 3 | 3 | 0 | 3 | 0 | deprecated | deprecated | TDCFRE·S |
 | `include_md` | experimental | 6 | String & Format | Include a markdown file or named section at compile time | 0 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFR·MS |
@@ -92,7 +92,7 @@ Total: 69 crates (3 alias + 34 core + 1 deprecated + 31 experimental)
 | `config_hierarchy` | experimental | 7 | Path & Process | Resolve hierarchical config across runtime, env, file, and default sources | 6 | 1 | 0 | 1 | 0 | experimental | stable | TDC·R·MS |
 | `file_tools` | experimental | 7 | Path & Process | RAII temp directories, glob re-export, and upward path traversal | 1 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFREMS |
 | `process_tools` | core | 7 | Path & Process | Run subprocesses with captured I/O, probe process liveness, and daemonize Unix services | 6 | 4 | 0 | 4 | 0 | stable | stable | TDCFR·MS |
-| `program_tools` | experimental | 7 | Path & Process | Builder types for in-memory Rust program representation: Source, Program, and Plan | 5 | 5 | 1 | 4 | 0 | experimental | experimental | TDCFR·MS |
+| `program_tools` | experimental | 7 | Path & Process | Rust script runner — compile and execute Rust files as scripts with output capture | 3 | 3 | 0 | 3 | 0 | experimental | experimental | TDCFREMS |
 | `pth` | core | 7 | Path & Process | Syntactic path manipulation — normalize, join, query extensions, and typed path wrappers | 5 | 2 | 0 | 2 | 0 | stable | stable | TDC·R··S |
 | `workspace_tools` | core | 7 | Path & Process | Resolve workspace-relative paths and optionally load configuration, manage secrets, and discover resources | 11 | 0 | 0 | 0 | 0 | experimental | stable | TDCFR·MS |
 | `fs_tools` | alias | 7 | Path & Process | Alias — recommended single dependency for all filesystem utilities | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFREM· |
@@ -165,7 +165,6 @@ All 8 criteria met — can be promoted to stable without prerequisite work.
 | `implements` | 2 | TDCFREMS |
 | `is_slice` | 2 | TDCFREMS |
 | `color_tools` | 6 | TDCFREMS |
-| `data_fmt` | 6 | TDCFREMS |
 | `benchkit` | 8 | TDCFREMS |
 
 ### Blocked — by criteria count
@@ -845,7 +844,7 @@ Per-crate attributes for promotion and publishing.
 #### `data_fmt`
 - **module**: core
 - **layer**: 6 · String & Format
-- **state**: experimental
+- **state**: stable
 - **target**: stable
 - **readiness**: TDCFREMS
 - **purpose**: Render structured data in multiple visual, text, and serialization formats
@@ -991,14 +990,14 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 7 · Path & Process
 - **state**: experimental
 - **target**: experimental
-- **readiness**: TDCFR·MS
-- **purpose**: Builder types for in-memory Rust program representation: Source, Program, and Plan
-- **deps**: 5 · **int**: 5 · **=L**: 1 · **↓L**: 4 · **↑L**: 0
+- **readiness**: TDCFREMS
+- **purpose**: Rust script runner — compile and execute Rust files as scripts with output capture
+- **deps**: 3 · **int**: 3 · **=L**: 0 · **↓L**: 3 · **↑L**: 0
 - **version**: 0.1.0
 - **no_std**: no
-- **keywords**: program, builder, representation, source, plan
-- **categories**: data-structures, development-tools
-- **pitch**: In-memory data model for Rust program construction: composable Source/Program/Plan builders for defining multi-file programs before file I/O or compilation.
+- **keywords**: script, runner, testing, execute, compile
+- **categories**: development-tools::testing, development-tools::build-utils
+- **pitch**: Run any Rust file or Cargo project as a script with one call — builds the execution plan, invokes Cargo, and returns stdout/stderr with assertion methods designed for test code.
 
 #### `pth`
 - **module**: core

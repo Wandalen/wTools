@@ -5,7 +5,7 @@ Multi-format data visualization library — 10 formatters, 33 variants, granular
 Build your data structure once, output as table, tree, expanded, JSON, HTML, SQL, YAML, TOML, logfmt, or text.
 
 ```toml
-data_fmt = { version = "0.1", features = ["all_formats"] }
+data_fmt = { version = "0.2", features = ["all_formats"] }
 ```
 
 ## Why data_fmt?

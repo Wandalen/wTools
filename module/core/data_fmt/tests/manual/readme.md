@@ -1,6 +1,7 @@
 # Manual Testing Plan for data_fmt
 
-This document describes manual testing procedures for verifying column truncation and multiline cell features in data_fmt.
+This document describes manual testing procedures for verifying column truncation
+and multiline cell features in data_fmt.
 
 ## Features Under Test
 
@@ -24,273 +25,158 @@ This document describes manual testing procedures for verifying column truncatio
 
 ## Test Cases
 
-### TC-001: Basic Column Truncation
+### TC-001: basic column truncation
 
-**Objective**: Verify basic truncation with default marker
-
-**Steps**:
-1. Create table with long cell content (>20 chars)
-2. Set `max_column_width` to 20
-3. Render and inspect output
-
-**Expected**:
-- Content truncated to 17 chars + "..." = 20 total
-- No ANSI codes counted toward limit
-- Output visually readable
-
-**Status**: [ ] Pass [ ] Fail
+**Given:** A table with a cell containing more than 20 characters.
+**When:** `max_column_width` is set to 20 and the table is rendered in a terminal.
+**Then:** Content is truncated to 17 visible characters plus `"..."` marker
+(20 total); ANSI codes are not counted toward the limit; output is visually
+readable.
 
 ---
 
-### TC-002: ANSI Code Preservation in Truncation
+### TC-002: ANSI code preservation in truncation
 
-**Objective**: Verify ANSI color codes preserved after truncation
-
-**Steps**:
-1. Create cell with ANSI colored text exceeding limit
-2. Apply truncation with `max_column_width`
-3. Verify output contains ANSI codes before truncated text
-
-**Expected**:
-- Color codes present in output
-- Visual length (excluding codes) equals limit
-- Color rendering works in terminal
-
-**Status**: [ ] Pass [ ] Fail
+**Given:** A cell with ANSI colored text whose visual length exceeds the
+configured `max_column_width`.
+**When:** The table is rendered with truncation active.
+**Then:** The ANSI color codes appear in the output before the truncated text;
+the visual length (excluding codes) equals `max_column_width`; terminal color
+rendering is not broken.
 
 ---
 
-### TC-003: Custom Truncation Marker
+### TC-003: custom truncation marker
 
-**Objective**: Verify custom markers work correctly
-
-**Steps**:
-1. Set `truncation_marker` to "…" (single unicode char)
-2. Truncate long content
-3. Verify marker appears
-
-**Expected**:
-- Custom marker used instead of "..."
-- Visual length calculation accounts for unicode
-- Marker visually distinct
-
-**Status**: [ ] Pass [ ] Fail
+**Given:** `truncation_marker` is set to `"…"` (a single unicode ellipsis
+character); a cell exceeds the configured limit.
+**When:** The table is rendered.
+**Then:** The custom marker `"…"` appears at the end of the truncated content
+instead of `"..."`; visual width calculation accounts for the unicode marker's
+display width.
 
 ---
 
-### TC-004: Marker Longer Than Limit
+### TC-004: marker longer than limit (edge case)
 
-**Objective**: Edge case - marker itself exceeds `max_column_width`
-
-**Steps**:
-1. Set `max_column_width` to 5
-2. Set `truncation_marker` to "........." (9 chars)
-3. Attempt truncation
-
-**Expected**:
-- Graceful handling via `saturating_sub`
-- Returns marker only (or empty + marker)
-- No panic or error
-
-**Status**: [ ] Pass [ ] Fail
+**Given:** `max_column_width` is 5; `truncation_marker` is `"........."` (9
+characters, longer than the limit).
+**When:** The table is rendered.
+**Then:** Truncation is handled gracefully via `saturating_sub`; no panic
+occurs; output is non-empty and the marker is emitted without corrupting
+adjacent columns.
 
 ---
 
-### TC-005: Exact Fit (No Truncation)
+### TC-005: exact fit — no truncation applied
 
-**Objective**: Content exactly at limit should NOT truncate
-
-**Steps**:
-1. Create cell with exactly 20 characters
-2. Set `max_column_width` to 20
-3. Render
-
-**Expected**:
-- Full content displayed
-- No truncation marker added
-- Visual length = 20
-
-**Status**: [ ] Pass [ ] Fail
+**Given:** A cell containing exactly 20 visible characters; `max_column_width`
+is set to 20.
+**When:** The table is rendered.
+**Then:** The full cell content is displayed without any truncation marker;
+visual length equals exactly 20; no extra characters appended.
 
 ---
 
-### TC-006: Basic Multiline Cell
+### TC-006: basic multiline cell rendering
 
-**Objective**: Single cell with multiple lines renders correctly
-
-**Steps**:
-1. Create cell with "Line1\nLine2\nLine3"
-2. Render with plain style
-3. Inspect output structure
-
-**Expected**:
-- Three visual lines in table
-- Column separators on each line
-- Proper alignment maintained
-
-**Status**: [ ] Pass [ ] Fail
+**Given:** A single cell containing `"Line1\nLine2\nLine3"`.
+**When:** Rendered with plain table style.
+**Then:** Three physical lines are emitted for that cell within the row;
+column separators appear on each line; other cells in the row are padded to
+match the 3-line height.
 
 ---
 
-### TC-007: Multiline Row with Mixed Heights
+### TC-007: multiline row with mixed cell heights
 
-**Objective**: Row with cells of different line counts
-
-**Steps**:
-1. Create row: ["A", "B\nC\nD", "E"]
-2. Render table
-3. Check alignment
-
-**Expected**:
-- Row height = 3 (max lines in any cell)
-- "A" and "E" padded to 3 lines
-- Vertical alignment of column separators
-
-**Status**: [ ] Pass [ ] Fail
+**Given:** A row with cells `["A", "B\nC\nD", "E"]` (heights 1, 3, 1).
+**When:** Rendered.
+**Then:** Row height is 3 (the maximum); cells `"A"` and `"E"` are padded to
+3 lines with empty continuation lines; column separators align vertically
+across all 3 physical lines.
 
 ---
 
-### TC-008: Multiline with ANSI Colors
+### TC-008: multiline cell with ANSI color codes
 
-**Objective**: ANSI codes in multiline cells
-
-**Steps**:
-1. Create cell: "\x1b[31mRed\x1b[0m\n\x1b[32mGreen\x1b[0m"
-2. Render
-3. Verify colors display
-
-**Expected**:
-- Red text on line 1
-- Green text on line 2
-- Alignment unaffected by ANSI codes
-
-**Status**: [ ] Pass [ ] Fail
+**Given:** A cell containing `"\x1b[31mRed\x1b[0m\n\x1b[32mGreen\x1b[0m"`.
+**When:** Rendered.
+**Then:** Sub-line 0 renders in red; sub-line 1 renders in green; ANSI codes
+do not affect the visual column alignment; both lines align with adjacent cells.
 
 ---
 
-### TC-009: Empty Lines in Multiline Cell
+### TC-009: empty logical lines within a multiline cell
 
-**Objective**: Cells with empty lines between content
-
-**Steps**:
-1. Create cell: "Line1\n\nLine3" (empty line 2)
-2. Render
-3. Check spacing
-
-**Expected**:
-- Three lines rendered
-- Middle line empty but space preserved
-- No collapsing of empty lines
-
-**Status**: [ ] Pass [ ] Fail
+**Given:** A cell containing `"Line1\n\nLine3"` (an empty line 2 between content).
+**When:** Rendered.
+**Then:** Three physical sub-lines are emitted; sub-line 1 is blank with correct
+column-width padding; the blank line is not collapsed.
 
 ---
 
-### TC-010: Multiline + Truncation Combined
+### TC-010: multiline combined with truncation
 
-**Objective**: Both features active simultaneously
-
-**Steps**:
-1. Create multiline cell with long lines: "Very long first line\nShort"
-2. Set `max_column_width` to 20
-3. Render
-
-**Expected**:
-- First line truncated to 17 chars + "..."
-- Second line displayed fully (not truncated)
-- Each line independently evaluated
-
-**Status**: [ ] Pass [ ] Fail
+**Given:** A cell containing `"Very long first line that exceeds the limit\nShort"`;
+`max_column_width` is 20.
+**When:** Rendered.
+**Then:** Sub-line 0 is truncated to 17 characters + `"..."` marker; sub-line 1
+(`"Short"`) is displayed fully without truncation; each sub-line is evaluated
+for truncation independently.
 
 ---
 
-### TC-011: Multiline + Truncation + ANSI
+### TC-011: multiline + truncation + ANSI codes combined
 
-**Objective**: All three features combined
-
-**Steps**:
-1. Create cell: "\x1b[31mVery long red text here\x1b[0m\n\x1b[32mShort green\x1b[0m"
-2. Set `max_column_width` to 20
-3. Render with terminal color support
-
-**Expected**:
-- Line 1: Red color preserved, truncated with marker
-- Line 2: Green color preserved, no truncation
-- Visual length correct on both lines
-
-**Status**: [ ] Pass [ ] Fail
+**Given:** A cell containing
+`"\x1b[31mVery long red text here\x1b[0m\n\x1b[32mShort green\x1b[0m"`;
+`max_column_width` is 20.
+**When:** Rendered.
+**Then:** Sub-line 0: red color preserved; truncated with marker at visual
+position 20; ANSI reset included. Sub-line 1: green color preserved; not
+truncated. Visual length calculation excludes escape bytes on both lines.
 
 ---
 
-### TC-012: Multiline in CSV Format
+### TC-012: multiline cells in CSV format
 
-**Objective**: Verify multiline disabled in CSV (newlines literal)
-
-**Steps**:
-1. Create cell with "A\nB"
-2. Format with `CsvFormatter`
-3. Check output
-
-**Expected**:
-- Output contains literal `\n` characters
-- No actual line break in CSV
-- CSV remains single-line per record
-
-**Status**: [ ] Pass [ ] Fail
+**Given:** A cell containing `"A\nB"` formatted with `CsvFormatter`.
+**When:** Rendered.
+**Then:** The `\n` is escaped as a literal `\n` sequence (not a physical line
+break); the CSV output remains single-line per record; the CSV remains parseable
+by standard parsers.
 
 ---
 
-### TC-013: Truncation Backward Compatibility
+### TC-013: truncation backward compatibility
 
-**Objective**: Default behavior unchanged when feature not configured
-
-**Steps**:
-1. Create table with long content
-2. Render WITHOUT setting `max_column_width`
-3. Compare to v0.4.0 behavior
-
-**Expected**:
-- Full content displayed
-- No truncation applied
-- Identical to previous version output
-
-**Status**: [ ] Pass [ ] Fail
+**Given:** A table with long cell content rendered without any `max_column_width`
+setting.
+**When:** Rendered.
+**Then:** Full cell content is displayed; no truncation is applied; output is
+identical to v0.4.0 behavior (truncation is disabled by default).
 
 ---
 
-### TC-014: Multiple Columns with Truncation
+### TC-014: per-column independent truncation
 
-**Objective**: Truncation applied independently per column
-
-**Steps**:
-1. Create table with 3 columns
-2. Set `max_column_width` to 15
-3. Add rows with varying content lengths
-
-**Expected**:
-- Each column truncated independently
-- Truncation applied to cells exceeding limit
-- Cells under limit displayed fully
-
-**Status**: [ ] Pass [ ] Fail
+**Given:** A table with 3 columns; `max_column_width` set to 15; rows with
+varying cell lengths across all columns.
+**When:** Rendered.
+**Then:** Each column's cells are independently evaluated against the limit;
+cells under 15 characters display fully; cells over 15 characters are truncated;
+truncation in one column does not affect adjacent columns.
 
 ---
 
-### TC-015: Headers with Truncation
+### TC-015: headers truncated by max_column_width
 
-**Objective**: Headers also respect `max_column_width`
-
-**Steps**:
-1. Create table with long header names
-2. Set `max_column_width` to 20
-3. Render
-
-**Expected**:
-- Long headers truncated
-- Short headers displayed fully
-- Consistent truncation rules for headers and data
-
-**Status**: [ ] Pass [ ] Fail
+**Given:** A table with at least one header name longer than `max_column_width`;
+`max_column_width` is 20.
+**When:** Rendered.
+**Then:** Long headers are truncated using the same rules as data cells; short
+headers display fully; consistent truncation behavior for both headers and data.
 
 ---
 
@@ -298,25 +184,25 @@ This document describes manual testing procedures for verifying column truncatio
 
 These tests require human visual verification in a terminal:
 
-### VI-001: Terminal Color Display
-- Run test with ANSI colored output
-- Verify colors render correctly
-- Check truncation doesn't break color sequences
+### VI-001: terminal color display
+- Run test with ANSI colored output.
+- Verify colors render correctly.
+- Check truncation does not break color sequences.
 
-### VI-002: Unicode Truncation Marker
-- Use unicode markers (…, →, ⋯)
-- Verify correct display in terminal
-- Check width calculation accurate
+### VI-002: unicode truncation marker
+- Use unicode markers (`…`, `→`, `⋯`).
+- Verify correct display in terminal.
+- Check width calculation is accurate.
 
-### VI-003: Table Border Alignment
-- Render multiline cells with bordered style
-- Verify borders align correctly across all lines
-- Check corner characters position correctly
+### VI-003: table border alignment
+- Render multiline cells with bordered style.
+- Verify borders align correctly across all sub-lines.
+- Check corner characters position correctly.
 
-### VI-004: Markdown Table Format
-- Render multiline cells with markdown style
-- Verify markdown syntax valid
-- Check alignment characters (`|`, `-`) position correctly
+### VI-004: markdown table format
+- Render multiline cells with markdown style.
+- Verify markdown syntax is valid.
+- Check alignment characters (`|`, `-`) are positioned correctly.
 
 ## Test Execution
 
@@ -326,8 +212,6 @@ These tests require human visual verification in a terminal:
 - data_fmt installed
 
 ### Running Tests
-
-Execute manual test programs in this directory:
 
 ```bash
 # Run all manual tests via the combined runner
@@ -341,38 +225,25 @@ cargo run --example verify_combined
 
 ### Recording Results
 
-Update each test case status in this document:
-- [x] Pass - Feature works as expected
-- [ ] Fail - Issue found (document in Issues section below)
+Update each test case status above:
+- Pass — feature works as expected
+- Fail — issue found (document in Issues section below)
 
 ## Issues Found
 
 Document any issues discovered during manual testing:
 
-### Issue Template
 ```
-**ID**: ISSUE-XXX
-**Test Case**: TC-XXX
-**Severity**: Critical | High | Medium | Low
-**Description**: [What went wrong]
-**Steps to Reproduce**: [Exact steps]
-**Expected**: [What should happen]
-**Actual**: [What actually happened]
-**Fix Applied**: [Description of fix] or [Not yet fixed]
+ID: ISSUE-XXX
+Test Case: TC-XXX
+Severity: Critical | High | Medium | Low
+Description: [What went wrong]
+Steps to Reproduce: [Exact steps]
+Expected: [What should happen]
+Actual: [What actually happened]
+Fix Applied: [Description of fix] or [Not yet fixed]
 ```
-
----
 
 ## Completion Criteria
 
-All tests marked Pass, zero issues with severity Critical or High remaining.
-
-**Test Results Summary**:
-- Total Tests: 15 functional + 4 visual = 19
-- Passed: ___ / 19
-- Failed: ___ / 19
-- Issues Found: ___
-- Issues Fixed: ___
-- Issues Remaining: ___
-
-**Sign-off**: Manual testing complete when all criteria met and documented.
+All test cases pass; zero issues with severity Critical or High remaining.

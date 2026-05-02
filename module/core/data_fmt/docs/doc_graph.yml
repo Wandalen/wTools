@@ -1,8 +1,8 @@
 meta:
   description: Cross-reference graph for all doc instances in data_fmt
-  generated: 2026_04_18
-  node_count: 76
-  edge_count: 148
+  generated: 2026_05_02
+  node_count: 77
+  edge_count: 152
   component_count: 10
 
 nodes:
@@ -86,6 +86,10 @@ nodes:
   - id: feature/005
     file: feature/005_auto_fit.md
     label: Auto-Fit
+    entity: feature
+  - id: feature/006
+    file: feature/006_api_cleanup_v030.md
+    label: API Cleanup v0.3.0
     entity: feature
 
   # formatter (10)
@@ -401,6 +405,18 @@ edges:
     via: cross_references
 
   # feature cross-references
+  - from: feature/006
+    to: trait/001
+    via: cross_references
+  - from: feature/006
+    to: trait/002
+    via: cross_references
+  - from: feature/006
+    to: api/002
+    via: cross_references
+  - from: feature/006
+    to: formatter/002
+    via: cross_references
   - from: feature/001
     to: algorithm/001
     via: cross_references
@@ -815,9 +831,9 @@ components:
     nodes: [feature/001, feature/002, algorithm/001, algorithm/002, algorithm/003]
 
   - id: 3
-    size: 4
+    size: 5
     isolated: false
-    nodes: [feature/003, trait/001, trait/002, trait/003]
+    nodes: [feature/003, feature/006, trait/001, trait/002, trait/003]
 
   - id: 4
     size: 6

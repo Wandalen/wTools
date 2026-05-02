@@ -2,7 +2,7 @@
 
 #![ cfg( feature = "enabled" ) ]
 
-use data_fmt::{ TreeNode, RowBuilder, TableShapedView };
+use data_fmt::{ TreeNode, RowBuilder, TableShapedView, TableFormatter };
 
 // =============================================================================
 // TreeNode Tests
@@ -189,4 +189,75 @@ fn test_table_tree_builder_headers()
   let headers = tree.extract_headers().unwrap();
   assert_eq!( headers.len(), 3 );
   assert_eq!( headers, vec![ "A", "B", "C" ] );
+}
+
+// IC-1 — invariant/001: row shorter than headers triggers assert!
+// Enforcement: src/table_tree.rs:52 validate_row_length()
+#[ test ]
+#[ should_panic( expected = "row length 2 doesn't match headers length 3" ) ]
+fn row_builder_panics_when_row_shorter_than_headers()
+{
+  // panic fires inside add_row before the return value is produced; let _ silences must_use
+  let _ = RowBuilder::new( vec![ "A".into(), "B".into(), "C".into() ] )
+    .add_row( vec![ "x".into(), "y".into() ] );
+}
+
+// IC-2 — invariant/001: row longer than headers triggers assert!
+// Enforcement: src/table_tree.rs:52 validate_row_length()
+#[ test ]
+#[ should_panic( expected = "row length 4 doesn't match headers length 3" ) ]
+fn row_builder_panics_when_row_longer_than_headers()
+{
+  let _ = RowBuilder::new( vec![ "A".into(), "B".into(), "C".into() ] )
+    .add_row( vec![ "x".into(), "y".into(), "z".into(), "w".into() ] );
+}
+
+/// IC-3 — `invariant/001` EC-1: empty table renders to empty string.
+///
+/// `RowBuilder::new(headers).build()` with no rows produces a root `TreeNode` with
+/// zero children — headers are NOT embedded until rows are added. `extract_headers()`
+/// returns `None` → the formatter receives `headers=[]`, `rows=[]`.
+///
+/// **Bug history**: `format_single_line_row` unconditionally appended `'\n'` even
+/// for a zero-column slice, so header + separator each emitted a bare newline →
+/// `"\n\n"` instead of `""`. Fixed with early-exit in `format_internal`.
+/// Failure mode: `assert_eq!(output, "")` fails with `left: "\n\n"`.
+#[ test ]
+fn empty_table_renders_to_empty_string()
+{
+  let tree = RowBuilder::new( vec![ "Name".into(), "Value".into() ] )
+    .build();
+  let output = TableFormatter::new().format( &tree );
+  assert_eq!(
+    output, "",
+    "empty RowBuilder (no rows) must render to empty string, got: {output:?}",
+  );
+}
+
+/// IC-4 — `invariant/001` EC-3: single-row table renders without error.
+///
+/// Sanity check that a minimal table (1 header row + 1 data row) produces the
+/// expected three non-empty output lines: column header, separator, data row.
+/// Cell values must appear verbatim in the output.
+#[ test ]
+fn single_row_table_renders_without_error()
+{
+  let tree = RowBuilder::new( vec![ "Name".into(), "Score".into() ] )
+    .add_row( vec![ "Alice".into(), "99".into() ] )
+    .build();
+  let output = TableFormatter::new().format( &tree );
+  assert!(
+    output.contains( "Alice" ),
+    "single-row output must contain first cell value: {output:?}",
+  );
+  assert!(
+    output.contains( "99" ),
+    "single-row output must contain second cell value: {output:?}",
+  );
+  // header line + separator + 1 data line = 3 non-empty lines
+  let non_empty : Vec< &str > = output.lines().filter( | l | !l.trim().is_empty() ).collect();
+  assert_eq!(
+    non_empty.len(), 3,
+    "single-row table must have exactly 3 non-empty lines (header+sep+data): {output:?}",
+  );
 }

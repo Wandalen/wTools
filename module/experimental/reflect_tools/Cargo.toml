@@ -32,7 +32,11 @@ default = [
   "reflect_newtype",
 ]
 
-full = [ "enabled" ]
+full = [
+  "enabled",
+  "reflect_types",
+  "reflect_newtype",
+]
 enabled = [
   "reflect_tools_meta/enabled",
   "derive_tools/enabled",

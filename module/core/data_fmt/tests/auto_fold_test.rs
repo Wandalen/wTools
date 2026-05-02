@@ -42,6 +42,7 @@
 //! T22: explicit `column_flex` mixed Fixed/Flex triggers fold
 //! T23: `bug_reproducer` — `Bare` fold style wraps long continuation lines
 //! T24: `bug_reproducer` — `fold_point=0` preserves first column in header
+//! T25: fold output is idempotent across repeated `format()` calls
 
 #![ cfg( feature = "enabled" ) ]
 use data_fmt::{ RowBuilder, TableFormatter, TableConfig, ColumnFlex, FoldStyle, DecoratedText };
@@ -765,5 +766,21 @@ fn fold_point_zero_preserves_first_column_in_header()
   assert!(
     has_continuation_lines( &output, DEFAULT_INDENT ),
     "second column must fold to continuation lines, got:\n{output}",
+  );
+}
+
+// --- T25: Fold output is idempotent across repeated format() calls ---
+// invariant/004 Invariant 3: determine_fold_point is a pure function; no
+// mutable state in TableFormatter should cause output to differ between calls.
+#[ test ]
+fn fold_output_is_idempotent_on_repeated_calls()
+{
+  let tree = fold_table_single_row();
+  let formatter = TableFormatter::with_config( fold_config() );
+  let output1 = formatter.format( &tree );
+  let output2 = formatter.format( &tree );
+  assert_eq!(
+    output1, output2,
+    "fold output must be byte-identical on repeated calls with identical input",
   );
 }

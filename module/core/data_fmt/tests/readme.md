@@ -13,6 +13,7 @@ Contains all functional and integration tests for data_fmt library. Tests valida
 
 | File | Responsibility |
 |------|----------------|
+| `docs/` | Formal test surface spec files (algorithm + invariant) |
 | `inc/` | Shared test utilities and helpers |
 | `aligned_tree_basic.rs` | Test basic aligned tree formatting |
 | `aligned_tree_configuration.rs` | Test aligned tree configuration options |
@@ -25,7 +26,7 @@ Contains all functional and integration tests for data_fmt library. Tests valida
 | `decorated_cells_test.rs` | Test per-cell DecoratedText coloring and per-line ANSI reset invariant |
 | `flatten_config.rs` | Test FlattenConfig customization |
 | `fluent_api.rs` | Test fluent RowBuilder API |
-| `formatters.rs` | Test TableShapedFormatter trait and ExpandedFormatter coloring behaviors |
+| `formatters.rs` | Test ExpandedFormatter key-value rendering, TableShapedFormatter trait, and generic TableView support |
 | `html.rs` | Test HTML output format |
 | `logfmt.rs` | Test logfmt output format |
 | `manual/` | Store manual testing procedures |
@@ -57,19 +58,19 @@ Contains all functional and integration tests for data_fmt library. Tests valida
 | `auto_fold_test.rs` | Test column folding with auto-fold continuation lines (task 020) |
 
 ## Test Files
-- **data.rs** (14 tests) - Core data structures (`TreeNode`, `RowBuilder`, `TableView` trait)
+- **data.rs** (18 tests) - Core data structures (`TreeNode`, `RowBuilder`, `TableView` trait)
 - **builder.rs** (15 tests) - `TreeBuilder` path-based construction, batch creation
-- **fluent_api.rs** (8 tests) - Fluent RowBuilder API, config builder patterns, builder-formatter integration
-- **formatters.rs** (12 tests) - TableShapedFormatter trait, generic TableView, Write trait support, ExpandedFormatter key-color corner cases
+- **fluent_api.rs** (9 tests) - Fluent RowBuilder API, config builder patterns, builder-formatter integration
+- **formatters.rs** (26 tests) - ExpandedFormatter key-value rendering, TableShapedFormatter trait, generic TableView, and Write trait support
 - **flatten_config.rs** (4 tests) - FlattenConfig customization and integration
 
 ## Test Coverage by Category
 
-### Core Data Structures (data.rs - 14 tests)
+### Core Data Structures (data.rs - 18 tests)
 - TreeNode creation, manipulation, cloning, debug output
 - Structure validation: deep nesting, wide trees, large trees (100 nodes)
 - RowBuilder construction, header management, row addition
-- Edge cases: empty trees, single nodes
+- Edge cases: empty trees, single nodes, empty table → empty string (IC-3), single-row sanity (IC-4)
 
 ### Tree Building (builder.rs - 15 tests)
 - Basic construction and empty trees
@@ -79,16 +80,16 @@ Contains all functional and integration tests for data_fmt library. Tests valida
 - Batch creation: `from_items()`, `from_pathbufs()`
 - Fluent API chaining
 
-### Fluent APIs (fluent_api.rs - 8 tests)
+### Fluent APIs (fluent_api.rs - 9 tests)
 - Fluent RowBuilder API: single/multiple chains, custom row names, mixed with mutable API
 - Config builders: TreeConfig, TableConfig, ExpandedConfig fluent APIs
 - Integration: fluent builder with formatter trait polymorphism
 
-### Formatters & Traits (formatters.rs - 12 tests)
+### Formatters & Traits (formatters.rs - 26 tests)
 - TableShapedFormatter trait: polymorphism with `Box<dyn>`, reference usage
 - Generic TableView: works with integers, floats, custom Display types
 - Write trait support: stdout output, multiple formatters, zero-allocation I/O
-- Generic type integration with formatters
+- ExpandedFormatter property/postgres styles: alignment, padding, multiple records, color variants
 - ExpandedFormatter key-color: empty key_color guard, property_style() defaults, RESET-before-newline invariant, multi-record coloring
 
 ### Tree Flattening (flatten_config.rs - 4 tests)

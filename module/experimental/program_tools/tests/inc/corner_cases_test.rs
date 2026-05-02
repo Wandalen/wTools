@@ -6,7 +6,7 @@
 //! ## Test Categories
 //!
 //! - **SOURCE Corner Cases**: Empty fields, large data, special characters
-//! - **PROGRAM Corner Cases**: Zero sources, single source, duplicates
+//! - **PROGRAM Corner Cases**: Zero sources, single source, three sources, insertion order, duplicates
 //! - **PLAN Corner Cases**: Minimal configurations
 //! - **DEBUG Trait**: Formatting validation
 //! - **NAMESPACE**: Import path validation
@@ -183,6 +183,65 @@ fn program_duplicate_file_paths()
   assert_eq!( program.source[ 1 ].data, "// version 2" );
 }
 
+/// Test PROGRAM-003: Program with three sources.
+///
+/// Validates that Program builder correctly accumulates three sources
+/// and all are accessible by index.
+#[ test ]
+fn program_three_sources()
+{
+  use the_module::program;
+
+  let program = program::Program::former()
+    .source()
+      .file_path( "a.rs" )
+      .data( "// a" )
+      .end()
+    .source()
+      .file_path( "b.rs" )
+      .data( "// b" )
+      .end()
+    .source()
+      .file_path( "c.rs" )
+      .data( "// c" )
+      .end()
+    .form();
+
+  assert_eq!( program.source.len(), 3 );
+  assert_eq!( program.source[ 0 ].file_path, "a.rs" );
+  assert_eq!( program.source[ 1 ].file_path, "b.rs" );
+  assert_eq!( program.source[ 2 ].file_path, "c.rs" );
+}
+
+/// Test PROGRAM-005: Insertion order preserved across three sources.
+///
+/// Validates that the source collection retains the order in which sources
+/// were added via successive `.source()` builder calls.
+#[ test ]
+fn program_insertion_order_preserved()
+{
+  use the_module::program;
+
+  let program = program::Program::former()
+    .source()
+      .file_path( "first.rs" )
+      .data( "// first" )
+      .end()
+    .source()
+      .file_path( "second.rs" )
+      .data( "// second" )
+      .end()
+    .source()
+      .file_path( "third.rs" )
+      .data( "// third" )
+      .end()
+    .form();
+
+  assert_eq!( program.source[ 0 ].file_path, "first.rs" );
+  assert_eq!( program.source[ 1 ].file_path, "second.rs" );
+  assert_eq!( program.source[ 2 ].file_path, "third.rs" );
+}
+
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // PLAN Corner Cases
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -259,6 +318,31 @@ fn debug_trait_all_structs()
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // NAMESPACE Validation
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/// Test NAMESPACE-001: Exposed module namespace accessibility.
+///
+/// Validates that Source, Program, and Plan types are accessible via
+/// `the_module::program` import path (the exposed module).
+#[ test ]
+fn namespace_exposed_module_imports()
+{
+  // Validates compilation: if it compiles, module namespace is correct.
+
+  use the_module::program;
+
+  let _source: program::Source = program::Source::former()
+    .file_path( "test.rs" )
+    .data( "code" )
+    .form();
+
+  let _program: program::Program = program::Program::former()
+    .form();
+
+  let _plan: program::Plan = program::Plan::former()
+    .program()
+      .end()
+    .form();
+}
 
 /// Test NAMESPACE-002: Prelude namespace accessibility.
 ///

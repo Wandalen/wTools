@@ -3,7 +3,7 @@
 //! ## What This Tests
 //!
 //! Verifies that `TableFormatter` auto-wraps flex-column cells at their budget
-//! boundary when table width exceeds terminal width. Covers all 22 scenarios
+//! boundary when table width exceeds terminal width. Covers all 23 scenarios
 //! from the Task 019 test matrix.
 //!
 //! ## Test Matrix
@@ -16,6 +16,7 @@
 //! T19–T20: Heuristic auto-classification
 //! T21: Sub-row detail + wrapping
 //! T22: Format trait path (`build_view`)
+//! T23: All-Fixed columns sum exceeds terminal — graceful overflow
 
 #![ cfg( feature = "enabled" ) ]
 use data_fmt::{ RowBuilder, TableFormatter, TableConfig, ColumnFlex, Format, DecoratedText };
@@ -571,4 +572,36 @@ fn auto_wrap_format_trait_path()
     data_lines.len() > 1,
     "Format trait path should produce wrapped output"
   );
+}
+
+// --- T23: All-Fixed columns sum exceeds terminal — graceful overflow ---
+// invariant: Fixed columns are never truncated by budget allocation; output may
+// exceed terminal width but must not panic and must contain all cell content.
+#[ test ]
+fn auto_wrap_all_fixed_columns_exceed_terminal()
+{
+  let content_a = "aaaa bbbb cccc dddd eeee ffff gggg hhhh iiii jjjj";
+  let content_b = "1111 2222 3333 4444 5555 6666 7777 8888 9999 0000";
+  let content_c = "AAAA BBBB CCCC DDDD EEEE FFFF GGGG HHHH IIII JJJJ";
+  let tree = RowBuilder::new( vec![ "A".into(), "B".into(), "C".into() ] )
+    .add_row( vec![ content_a.into(), content_b.into(), content_c.into() ] )
+    .build();
+
+  // All three columns forced Fixed; each is ~49 chars wide, total >> 40
+  let formatter = TableFormatter::with_config(
+    TableConfig::plain()
+      .terminal_width( Some( 40 ) )
+      .column_flex( vec![ ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed ] )
+  );
+  // Must not panic; output must be non-empty and contain all cell words
+  let output = formatter.format( &tree );
+  assert!( !output.is_empty(), "all-Fixed overflow must produce non-empty output" );
+  // All cell content must appear somewhere in the output (possibly across wrapped lines)
+  for word in [ "aaaa", "hhhh", "1111", "9999", "AAAA", "JJJJ" ]
+  {
+    assert!(
+      output.contains( word ),
+      "all-Fixed cell content word '{word}' must appear in output",
+    );
+  }
 }
