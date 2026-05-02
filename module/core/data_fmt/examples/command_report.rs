@@ -12,7 +12,7 @@ fn main() {}
 #[ cfg( feature = "enabled" ) ]
 fn main()
 {
-  use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig };
+  use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig, Format };
   // Command execution data
   let report = RowBuilder::new( vec![
     "Command".into(),
@@ -32,12 +32,12 @@ fn main()
     "10 seconds".into(),
     "0".into(),
   ])
-  .build();
+  .build_view();
 
   // Format as property list (colon separator, aligned values, gray keys)
   // property_style() automatically enables gray key coloring for better readability
   let formatter = ExpandedFormatter::with_config( ExpandedConfig::property_style() );
-  let output = formatter.format( &report );
+  let output = formatter.format( &report ).unwrap_or_default();
 
   println!( "{output}" );
 }

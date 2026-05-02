@@ -36,7 +36,7 @@
 
 mod inc;
 
-use data_fmt::{ RowBuilder, TableFormatter, TableConfig };
+use data_fmt::{ RowBuilder, TableFormatter, TableConfig, Format };
 use inc::sample_data;
 
 // =============================================================================
@@ -48,7 +48,7 @@ fn test_plain_style_output()
 {
   let tree = sample_data();
   let formatter = TableFormatter::with_config( TableConfig::plain() );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   println!( "Plain style output:\n{output}" );
 
@@ -75,10 +75,10 @@ fn test_plain_style_alignment()
   let tree = RowBuilder::new( vec![ "COUNT".into(), "MEMORY".into() ] )
     .add_row( vec![ "45".into(), "12.4GB".into() ] )
     .add_row( vec![ "68".into(), "7.1GB".into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::with_config( TableConfig::plain() );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   println!( "Plain style with alignment:\n{output}" );
 
@@ -100,7 +100,7 @@ fn test_minimal_style_output()
 {
   let tree = sample_data();
   let formatter = TableFormatter::with_config( TableConfig::minimal() );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   println!( "Minimal style output:\n{output}" );
 
@@ -126,7 +126,7 @@ fn test_csv_style_output()
 {
   let tree = sample_data();
   let formatter = TableFormatter::with_config( TableConfig::csv() );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   println!( "CSV style output:\n{output}" );
 
@@ -144,7 +144,7 @@ fn test_tsv_style_output()
 {
   let tree = sample_data();
   let formatter = TableFormatter::with_config( TableConfig::tsv() );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   println!( "TSV style output:\n{output}" );
 

@@ -45,25 +45,21 @@
 //! ```
 //! # #[ cfg( feature = "enabled" ) ]
 //! # {
-//! use data_fmt::{ RowBuilder, TableFormatter, ExpandedFormatter, TreeFormatter };
+//! use data_fmt::{ RowBuilder, TableFormatter, ExpandedFormatter, Format };
 //!
 //! // Create tabular data
-//! let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
+//! let view = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
 //!   .add_row( vec![ "Alice".into(), "30".into() ] )
 //!   .add_row( vec![ "Bob".into(), "25".into() ] )
-//!   .build();
+//!   .build_view();
 //!
 //! // Table format
 //! let table_fmt = TableFormatter::new();
-//! let output = table_fmt.format( &tree );
+//! let _ = table_fmt.format( &view );
 //!
 //! // Expanded format
 //! let expanded_fmt = ExpandedFormatter::new();
-//! let output = expanded_fmt.format( &tree );
-//!
-//! // Tree format (table-shaped tree)
-//! let data_fmt = TreeFormatter::default();
-//! let output = data_fmt.format( &tree, Clone::clone );
+//! let _ = expanded_fmt.format( &view );
 //! # }
 //! ```
 //!
@@ -72,17 +68,17 @@
 //! ```
 //! # #[ cfg( feature = "enabled" ) ]
 //! # {
-//! use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig };
+//! use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig, Format };
 //!
-//! let tree = RowBuilder::new( vec![ "Name".into(), "Score".into() ] )
+//! let view = RowBuilder::new( vec![ "Name".into(), "Score".into() ] )
 //!   .add_row( vec![ "Alice".into(), "95".into() ] )
-//!   .build();
+//!   .build_view();
 //!
 //! // Gray keys for terminal output (PostgreSQL style)
 //! let formatter = ExpandedFormatter::with_config(
 //!   ExpandedConfig::new().colorize_keys( true )
 //! );
-//! let output = formatter.format( &tree );
+//! let output = formatter.format( &view ).unwrap_or_default();
 //! # }
 //! ```
 //!
@@ -91,15 +87,15 @@
 //! ```
 //! # #[ cfg( feature = "enabled" ) ]
 //! # {
-//! use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig };
+//! use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig, Format };
 //!
-//! let tree = RowBuilder::new( vec![ "Command".into(), "Status".into() ] )
+//! let view = RowBuilder::new( vec![ "Command".into(), "Status".into() ] )
 //!   .add_row( vec![ "build".into(), "success".into() ] )
-//!   .build();
+//!   .build_view();
 //!
 //! // Property list style: no record headers, colon separator
 //! let formatter = ExpandedFormatter::with_config( ExpandedConfig::property_style() );
-//! let output = formatter.format( &tree );
+//! let output = formatter.format( &view ).unwrap_or_default();
 //! // Output:
 //! // Command: build
 //! // Status:  success
@@ -148,15 +144,15 @@
 //! ```
 //! # #[ cfg( feature = "enabled" ) ]
 //! # {
-//! use data_fmt::{ RowBuilder, TableFormatter };
+//! use data_fmt::{ RowBuilder, TableFormatter, Format };
 //!
-//! let tree = RowBuilder::new( vec![ "File".into(), "Lines".into() ] )
+//! let view = RowBuilder::new( vec![ "File".into(), "Lines".into() ] )
 //!   .add_row( vec![ "main.rs".into(), "100".into() ] )
 //!   .add_row( vec![ "lib.rs".into(), "200".into() ] )
-//!   .build();
+//!   .build_view();
 //!
 //! let formatter = TableFormatter::new();
-//! let output = formatter.format( &tree );
+//! let output = formatter.format( &view ).unwrap_or_default();
 //! println!( "{}", output );
 //! # }
 //! ```
@@ -264,10 +260,3 @@ pub use formatters::{ TextFormatter, TextVariant };
 #[ cfg( feature = "themes" ) ]
 pub use themes::{ ColorTheme, ColorThemeBuilder };
 
-// Backward compatibility trait — deprecated since v0.1.0.
-// Retained until all callers migrate to the `Format` trait.
-// Remove in the next breaking release (v0.3.0).
-// qqq: open a tracking issue once migration timeline is confirmed.
-#[ allow( deprecated ) ]
-#[ cfg( feature = "enabled" ) ]
-pub use formatters::TableShapedFormatter;

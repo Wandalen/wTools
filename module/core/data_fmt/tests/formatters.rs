@@ -1,39 +1,33 @@
 //! Tests for formatters, traits, generic types, and write support
-//!
-//! Covers `TableShapedFormatter` (deprecated since v0.1.0) to ensure backward compat
-//! is maintained until removal in the next breaking release.
-//! qqq: Remove this file's deprecated allow when `TableShapedFormatter` is deleted (v0.3.0).
 
 #![ cfg( feature = "enabled" ) ]
-#![ allow( deprecated ) ]
 
 use data_fmt::
 {
   TreeNode, RowBuilder, TableShapedView,
-  formatters::TableShapedFormatter,
-  TableFormatter, ExpandedFormatter,
+  Format, TableFormatter, ExpandedFormatter,
 };
 
 // =============================================================================
-// TableShapedFormatter Trait Tests
+// Format Trait Tests
 // =============================================================================
 
 #[ test ]
-fn test_table_shaped_formatter_trait_polymorphism()
+fn test_format_trait_polymorphism()
 {
-  let tree = RowBuilder::new( vec![ "Name".into(), "Score".into() ] )
+  let view = RowBuilder::new( vec![ "Name".into(), "Score".into() ] )
     .add_row( vec![ "Alice".into(), "95".into() ] )
-    .build();
+    .build_view();
 
   // Use trait object for polymorphism
-  let formatters : Vec< Box< dyn TableShapedFormatter > > = vec![
+  let formatters : Vec< Box< dyn Format > > = vec![
     Box::new( TableFormatter::new() ),
     Box::new( ExpandedFormatter::new() ),
   ];
 
   for formatter in formatters
   {
-    let output = formatter.format( &tree );
+    let output = formatter.format( &view ).unwrap_or_default();
     assert!( !output.is_empty() );
     assert!( output.contains( "Alice" ) );
     assert!( output.contains( "95" ) );
@@ -41,20 +35,20 @@ fn test_table_shaped_formatter_trait_polymorphism()
 }
 
 #[ test ]
-fn test_table_shaped_formatter_trait_reference()
+fn test_format_trait_reference()
 {
-  let tree = RowBuilder::new( vec![ "Col".into() ] )
+  let view = RowBuilder::new( vec![ "Col".into() ] )
     .add_row( vec![ "data".into() ] )
-    .build();
+    .build_view();
 
   let table_fmt = TableFormatter::new();
   let expanded_fmt = ExpandedFormatter::new();
 
-  let table_ref : &dyn TableShapedFormatter = &table_fmt;
-  let expanded_ref : &dyn TableShapedFormatter = &expanded_fmt;
+  let table_ref : &dyn Format = &table_fmt;
+  let expanded_ref : &dyn Format = &expanded_fmt;
 
-  let table_output = table_ref.format( &tree );
-  let expanded_output = expanded_ref.format( &tree );
+  let table_output = table_ref.format( &view ).unwrap_or_default();
+  let expanded_output = expanded_ref.format( &view ).unwrap_or_default();
 
   assert!( table_output.contains( "data" ) );
   assert!( expanded_output.contains( "data" ) );
@@ -170,14 +164,14 @@ fn test_write_trait_to_stdout()
   use data_fmt::{ RowBuilder, TableFormatter };
   use std::io::Cursor;
 
-  let tree = RowBuilder::new( vec![ "Col".into() ] )
+  let view = RowBuilder::new( vec![ "Col".into() ] )
     .add_row( vec![ "Data".into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::new();
   let mut buffer = Cursor::new( Vec::new() );
 
-  formatter.write_to( &tree, &mut buffer ).unwrap();
+  formatter.write_to( &view, &mut buffer ).unwrap();
 
   let output = String::from_utf8( buffer.into_inner() ).unwrap();
   assert!( output.contains( "Data" ) );
@@ -190,18 +184,18 @@ fn test_write_trait_multiple_formatters()
   use data_fmt::{ RowBuilder, TableFormatter, ExpandedFormatter };
   use std::io::Cursor;
 
-  let tree = RowBuilder::new( vec![ "X".into() ] )
+  let view = RowBuilder::new( vec![ "X".into() ] )
     .add_row( vec![ "Y".into() ] )
-    .build();
+    .build_view();
 
   // Test TableFormatter
   let mut buf1 = Cursor::new( Vec::new() );
-  TableFormatter::new().write_to( &tree, &mut buf1 ).unwrap();
+  TableFormatter::new().write_to( &view, &mut buf1 ).unwrap();
   let out1 = String::from_utf8( buf1.into_inner() ).unwrap();
 
   // Test ExpandedFormatter
   let mut buf2 = Cursor::new( Vec::new() );
-  ExpandedFormatter::new().write_to( &tree, &mut buf2 ).unwrap();
+  ExpandedFormatter::new().write_to( &view, &mut buf2 ).unwrap();
   let out2 = String::from_utf8( buf2.into_inner() ).unwrap();
 
   assert!( out1.contains( 'Y' ) );
@@ -220,10 +214,10 @@ fn test_expanded_formatter_no_color_by_default()
 
   let tree = RowBuilder::new( vec![ "Name".into(), "Status".into() ] )
     .add_row( vec![ "server1".into(), "online".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::new();
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Verify NO ANSI codes in default output
   assert!( !output.contains( "\x1b[" ) );
@@ -238,7 +232,7 @@ fn test_expanded_formatter_with_colored_keys()
 
   let tree = RowBuilder::new( vec![ "Name".into(), "Status".into() ] )
     .add_row( vec![ "server1".into(), "online".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
@@ -246,7 +240,7 @@ fn test_expanded_formatter_with_colored_keys()
       .key_color( "\x1b[90m".into() )
   );
 
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Verify ANSI codes present
   assert!( output.contains( "\x1b[90m" ) );  // Gray color
@@ -264,7 +258,7 @@ fn test_expanded_formatter_custom_color()
 
   let tree = RowBuilder::new( vec![ "Name".into() ] )
     .add_row( vec![ "Alice".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
@@ -272,7 +266,7 @@ fn test_expanded_formatter_custom_color()
       .key_color( "\x1b[34m".to_string() )  // Blue
   );
 
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Verify custom color code present
   assert!( output.contains( "\x1b[34m" ) );  // Blue color
@@ -288,14 +282,14 @@ fn test_expanded_formatter_color_disabled_explicitly()
 
   let tree = RowBuilder::new( vec![ "Key".into() ] )
     .add_row( vec![ "Value".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
       .colorize_keys( false )  // Explicitly disabled
   );
 
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Verify NO ANSI codes
   assert!( !output.contains( "\x1b[" ) );
@@ -310,13 +304,13 @@ fn test_expanded_formatter_property_style_basic()
 
   let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
     .add_row( vec![ "Alice".into(), "30".into() ] )
-    .build();
+    .build_view();
 
   // property_style() now has colors by default - disable for plain output testing
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::property_style().colorize_keys( false )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   assert!( output.contains( "Name: Alice" ) );
   assert!( output.contains( "Age:  30" ) );  // Note extra space for alignment
@@ -331,13 +325,13 @@ fn test_expanded_formatter_property_style_alignment()
 
   let tree = RowBuilder::new( vec![ "ID".into(), "Description".into() ] )
     .add_row( vec![ "1".into(), "Test".into() ] )
-    .build();
+    .build_view();
 
   // Disable colors for plain output testing
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::property_style().colorize_keys( false )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Values should align (Description is longer key)
   assert!( output.contains( "ID:          1" ) );
@@ -352,13 +346,13 @@ fn test_expanded_formatter_property_style_multiple_records()
   let tree = RowBuilder::new( vec![ "Name".into() ] )
     .add_row( vec![ "Alice".into() ] )
     .add_row( vec![ "Bob".into() ] )
-    .build();
+    .build_view();
 
   // Disable colors for plain output testing
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::property_style().colorize_keys( false )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Should have blank line between records
   assert!( output.contains( "Name: Alice\n\nName: Bob" ) );
@@ -371,7 +365,7 @@ fn test_expanded_formatter_property_style_with_colors()
 
   let tree = RowBuilder::new( vec![ "Key".into() ] )
     .add_row( vec![ "Value".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config
   (
@@ -379,7 +373,7 @@ fn test_expanded_formatter_property_style_with_colors()
       .colorize_keys( true )
       .key_color( "\x1b[90m".into() )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   assert!( output.contains( "\x1b[90mKey:\x1b[0m" ) );
   assert!( output.contains( "Value" ) );
@@ -392,13 +386,13 @@ fn test_expanded_formatter_property_style_no_colors()
 
   let tree = RowBuilder::new( vec![ "Key".into() ] )
     .add_row( vec![ "Value".into() ] )
-    .build();
+    .build_view();
 
   // Disable colors explicitly if needed
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::property_style().colorize_keys( false )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   assert!( !output.contains( "\x1b[" ) );
   assert!( output.contains( "Key:" ) );
@@ -412,14 +406,14 @@ fn test_expanded_formatter_padding_side_before()
 
   let tree = RowBuilder::new( vec![ "A".into(), "LongKey".into() ] )
     .add_row( vec![ "1".into(), "2".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
       .padding_side( PaddingSide::BeforeSeparator )
       .key_value_separator( " | ".to_string() )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Keys padded before separator
   assert!( output.contains( "A       |" ) );
@@ -433,14 +427,14 @@ fn test_expanded_formatter_padding_side_after()
 
   let tree = RowBuilder::new( vec![ "A".into(), "LongKey".into() ] )
     .add_row( vec![ "1".into(), "2".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
       .padding_side( PaddingSide::AfterSeparator )
       .key_value_separator( ": ".to_string() )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Values padded after separator
   // separator `: ` has 1 trailing space, longest key gets just that space
@@ -456,12 +450,12 @@ fn test_expanded_formatter_no_record_separator()
   let tree = RowBuilder::new( vec![ "Name".into() ] )
     .add_row( vec![ "Alice".into() ] )
     .add_row( vec![ "Bob".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new().record_separator( String::new() )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   assert!( !output.contains( "RECORD" ) );
   assert!( !output.contains( '[' ) );
@@ -475,12 +469,12 @@ fn test_expanded_formatter_custom_record_separator()
 
   let tree = RowBuilder::new( vec![ "Name".into() ] )
     .add_row( vec![ "Alice".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new().record_separator( "=== Entry {} ===".to_string() )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   assert!( output.contains( "=== Entry 1 ===" ) );
 }
@@ -521,14 +515,14 @@ fn test_expanded_colorize_keys_empty_key_color_suppresses_ansi()
 
   let tree = RowBuilder::new( vec![ "Key".into(), "Other".into() ] )
     .add_row( vec![ "v1".into(), "v2".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
       .colorize_keys( true )
       .key_color( String::new() )   // empty string: guard must block ANSI
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   assert!(
     !output.contains( '\x1b' ),
@@ -555,10 +549,10 @@ fn test_expanded_property_style_default_colorizes_keys()
 
   let tree = RowBuilder::new( vec![ "Name".into(), "Status".into() ] )
     .add_row( vec![ "alice".into(), "ok".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config( ExpandedConfig::property_style() );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // property_style() has colorize_keys=true and key_color="\x1b[90m" (gray)
   assert!(
@@ -587,14 +581,14 @@ fn test_expanded_colorized_key_reset_before_newline()
 
   let tree = RowBuilder::new( vec![ "Alpha".into(), "Beta".into(), "Gamma".into() ] )
     .add_row( vec![ "1".into(), "2".into(), "3".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
       .colorize_keys( true )
       .key_color( "\x1b[90m".into() )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Every line that contains the ANSI color prefix must have RESET before \n.
   // The invariant: ...color...text...\x1b[0m\n — never ...color...text...\n\x1b[0m
@@ -631,14 +625,14 @@ fn test_expanded_colorized_keys_all_records()
     .add_row( vec![ "row0".into() ] )
     .add_row( vec![ "row1".into() ] )
     .add_row( vec![ "row2".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
       .colorize_keys( true )
       .key_color( "\x1b[90m".into() )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // 3 records × 1 field each = 3 colored key lines
   let colored_key_count = output.lines()

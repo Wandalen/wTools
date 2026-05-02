@@ -4,12 +4,13 @@
 //!
 //! ### `PostgreSQL` Style (default)
 //! ```
-//! # use data_fmt::{ RowBuilder, ExpandedFormatter };
-//! # let tree = RowBuilder::new(vec!["Name".into(), "Age".into()])
+//! # use data_fmt::{ RowBuilder, ExpandedFormatter, Format };
+//! # let view = RowBuilder::new(vec!["Name".into(), "Age".into()])
 //! #   .add_row(vec!["Alice".into(), "30".into()])
 //! #   .add_row(vec!["Bob".into(), "25".into()])
-//! #   .build();
+//! #   .build_view();
 //! let formatter = ExpandedFormatter::new();
+//! # let _ = formatter.format( &view );
 //! // -[ RECORD 1 ]
 //! // Name | Alice
 //! // Age  | 30
@@ -20,12 +21,13 @@
 //!
 //! ### Property List Style
 //! ```
-//! # use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig };
-//! # let tree = RowBuilder::new(vec!["Name".into(), "Age".into()])
+//! # use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig, Format };
+//! # let view = RowBuilder::new(vec!["Name".into(), "Age".into()])
 //! #   .add_row(vec!["Alice".into(), "30".into()])
 //! #   .add_row(vec!["Bob".into(), "25".into()])
-//! #   .build();
+//! #   .build_view();
 //! let formatter = ExpandedFormatter::with_config( ExpandedConfig::property_style() );
+//! # let _ = formatter.format( &view );
 //! // Name: Alice
 //! // Age:  30
 //! //
@@ -33,8 +35,7 @@
 //! // Age:  25
 //! ```
 
-use crate::{ TreeNode, ExpandedConfig };
-use crate::data::TableShapedView;
+use crate::{ TreeNode, ExpandedConfig, TableView };
 use crate::ansi_str::visual_len;
 use color_tools::DecoratedText;
 
@@ -49,15 +50,15 @@ const INITIAL_CAPACITY : usize = 512;
 /// # Examples
 ///
 /// ```
-/// use data_fmt::{ RowBuilder, ExpandedFormatter };
+/// use data_fmt::{ RowBuilder, ExpandedFormatter, Format };
 ///
-/// let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
+/// let view = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
 ///   .add_row( vec![ "Alice".into(), "30".into() ] )
 ///   .add_row( vec![ "Bob".into(), "25".into() ] )
-///   .build();
+///   .build_view();
 ///
 /// let formatter = ExpandedFormatter::new();
-/// let output = formatter.format( &tree );
+/// let output = formatter.format( &view ).unwrap_or_default();
 ///
 /// assert!( output.contains( "-[ RECORD 1 ]" ) );
 /// assert!( output.contains( "Name | Alice" ) );
@@ -88,130 +89,6 @@ impl ExpandedFormatter
     }
   }
 
-  /// Format table-shaped tree as vertical records
-  ///
-  /// Each row is displayed as a separate record block with key-value pairs.
-  /// Record names come from row node names in the tree.
-  ///
-  /// # Examples
-  ///
-  /// ```
-  /// use data_fmt::{ RowBuilder, ExpandedFormatter };
-  ///
-  /// let tree = RowBuilder::new( vec![ "ID".into(), "Name".into() ] )
-  ///   .add_row( vec![ "1".into(), "Alice".into() ] )
-  ///   .build();
-  ///
-  /// let formatter = ExpandedFormatter::new();
-  /// let output = formatter.format( &tree );
-  ///
-  /// assert!( output.contains( "ID   | 1" ) );
-  /// assert!( output.contains( "Name | Alice" ) );
-  /// ```
-  pub fn format( &self, tree : &TreeNode< String > ) -> String
-  {
-    let mut output = String::with_capacity( INITIAL_CAPACITY );
-
-    let headers = tree.extract_headers().unwrap_or_default();
-    if headers.is_empty()
-    {
-      return output;
-    }
-
-    // Calculate max key width for alignment
-    let max_key_width = headers.iter()
-      .map( | h | visual_len( h ) )
-      .max()
-      .unwrap_or( 0 );
-
-    // Format each row as a record
-    for ( idx, row_node ) in tree.children.iter().enumerate()
-    {
-      let record_name = &row_node.name;
-
-      // Record separator (if configured)
-      // Fix(show_record_numbers_unimplemented): show_record_numbers was stored in config but
-      // never read — the method always replaced {} with the row number regardless of the flag.
-      // Root cause: incomplete implementation; field set but no conditional in format().
-      // Pitfall: config-field tests that only check struct values cannot catch a formatter
-      // that silently ignores a field — always test formatter output, not just config state.
-      if !self.config.record_separator.is_empty()
-      {
-        let record_label = if self.config.show_record_numbers { record_name.as_str() } else { "" };
-        output.push_str( &self.config.record_separator.replace( "{}", record_label ) );
-        output.push( '\n' );
-      }
-      else if idx > 0
-      {
-        // Blank line between records when no separator header
-        output.push( '\n' );
-      }
-
-      // Key-value pairs
-      for cell in &row_node.children
-      {
-        output.push_str( &self.config.indent_prefix );
-        let key = &cell.name;
-        let value = cell.data.as_ref().map_or( "", String::as_str );
-        let key_width = visual_len( key );
-
-        match self.config.padding_side
-        {
-          crate::PaddingSide::BeforeSeparator =>
-          {
-            // PostgreSQL style: "Name   | Value"
-            let padding_needed = max_key_width - key_width;
-
-            // Apply color to key if enabled
-            if self.config.colorize_keys && !self.config.key_color.is_empty()
-            {
-              let key_padded = format!( "{}{}", key, " ".repeat( padding_needed ) );
-              output.push_str( &DecoratedText::from( key_padded ).with_color( self.config.key_color.clone() ).render() );
-            }
-            else
-            {
-              output.push_str( key );
-              output.push_str( &" ".repeat( padding_needed ) );
-            }
-
-            output.push_str( &self.config.key_value_separator );
-            output.push_str( value );
-          }
-
-          crate::PaddingSide::AfterSeparator =>
-          {
-            // Property style: "Name: Value"
-            let padding_needed = max_key_width - key_width;
-
-            // Separate separator into non-space and trailing space parts
-            let sep_trimmed = self.config.key_value_separator.trim_end();
-            let sep_trailing_spaces = self.config.key_value_separator.len() - sep_trimmed.len();
-
-            // Apply color to key+separator (without trailing spaces) if enabled
-            if self.config.colorize_keys && !self.config.key_color.is_empty()
-            {
-              let key_with_sep = format!( "{key}{sep_trimmed}" );
-              output.push_str( &DecoratedText::from( key_with_sep ).with_color( self.config.key_color.clone() ).render() );
-            }
-            else
-            {
-              output.push_str( key );
-              output.push_str( sep_trimmed );
-            }
-
-            // Add trailing separator spaces + alignment padding
-            output.push_str( &" ".repeat( sep_trailing_spaces + padding_needed ) );
-            output.push_str( value );
-          }
-        }
-
-        output.push( '\n' );
-      }
-    }
-
-    output
-  }
-
   /// Format hierarchical tree as vertical records (flattened)
   ///
   /// Flattens hierarchical tree to table with columns: path, name, depth, data.
@@ -234,7 +111,7 @@ impl ExpandedFormatter
   pub fn format_tree< T : std::fmt::Display >( &self, tree : &TreeNode< T > ) -> String
   {
     let flattened = crate::conversions::flatten_to_table_tree( tree );
-    self.format( &flattened )
+    super::Format::format( self, &flattened ).unwrap_or_default()
   }
 
   /// Write formatted expanded view directly to a writer
@@ -249,26 +126,112 @@ impl ExpandedFormatter
   /// use data_fmt::{ RowBuilder, ExpandedFormatter };
   /// use std::io::Cursor;
   ///
-  /// let tree = RowBuilder::new( vec![ "Key".into() ] )
+  /// let view = RowBuilder::new( vec![ "Key".into() ] )
   ///   .add_row( vec![ "Value".into() ] )
-  ///   .build();
+  ///   .build_view();
   ///
   /// let formatter = ExpandedFormatter::new();
   /// let mut buffer = Cursor::new( Vec::new() );
-  /// formatter.write_to( &tree, &mut buffer ).unwrap();
+  /// formatter.write_to( &view, &mut buffer ).unwrap();
   ///
   /// let output = String::from_utf8( buffer.into_inner() ).unwrap();
   /// assert!( output.contains( "Value" ) );
   /// ```
   pub fn write_to< W : std::io::Write >(
     &self,
-    tree : &TreeNode< String >,
+    data : &TableView,
     writer : &mut W
   )
   -> std::io::Result< () >
   {
-    let output = self.format( tree );
+    let output = self.format_view( data );
     writer.write_all( output.as_bytes() )
+  }
+
+  fn format_view( &self, data : &TableView ) -> String
+  {
+    let headers = &data.metadata.column_names;
+    if headers.is_empty()
+    {
+      return String::new();
+    }
+
+    let max_key_width = headers.iter()
+      .map( | h | visual_len( h ) )
+      .max()
+      .unwrap_or( 0 );
+
+    let mut output = String::with_capacity( INITIAL_CAPACITY );
+
+    for ( idx, row ) in data.rows.iter().enumerate()
+    {
+      let record_name = ( idx + 1 ).to_string();
+
+      if !self.config.record_separator.is_empty()
+      {
+        let record_label = if self.config.show_record_numbers { record_name.as_str() } else { "" };
+        output.push_str( &self.config.record_separator.replace( "{}", record_label ) );
+        output.push( '\n' );
+      }
+      else if idx > 0
+      {
+        output.push( '\n' );
+      }
+
+      for ( key, cell ) in headers.iter().zip( row.iter() )
+      {
+        output.push_str( &self.config.indent_prefix );
+        let value = cell.render();  // Fix(P1): .render() not .data.as_ref().map_or("", ..)
+        let key_width = visual_len( key );
+
+        match self.config.padding_side
+        {
+          crate::PaddingSide::BeforeSeparator =>
+          {
+            let padding_needed = max_key_width - key_width;
+
+            if self.config.colorize_keys && !self.config.key_color.is_empty()
+            {
+              let key_padded = format!( "{}{}", key, " ".repeat( padding_needed ) );
+              output.push_str( &DecoratedText::from( key_padded ).with_color( self.config.key_color.clone() ).render() );
+            }
+            else
+            {
+              output.push_str( key );
+              output.push_str( &" ".repeat( padding_needed ) );
+            }
+
+            output.push_str( &self.config.key_value_separator );
+            output.push_str( &value );
+          }
+
+          crate::PaddingSide::AfterSeparator =>
+          {
+            let padding_needed = max_key_width - key_width;
+            let sep_trimmed = self.config.key_value_separator.trim_end();
+            let sep_trailing_spaces = self.config.key_value_separator.len() - sep_trimmed.len();
+
+            if self.config.colorize_keys && !self.config.key_color.is_empty()
+            {
+              let key_with_sep = format!( "{key}{sep_trimmed}" );
+              output.push_str( &DecoratedText::from( key_with_sep ).with_color( self.config.key_color.clone() ).render() );
+            }
+            else
+            {
+              output.push_str( key );
+              output.push_str( sep_trimmed );
+            }
+
+            output.push_str( &" ".repeat( sep_trailing_spaces + padding_needed ) );
+            output.push_str( &value );
+          }
+        }
+
+        output.push( '\n' );
+      }
+    }
+
+    output
   }
 }
 
@@ -280,13 +243,11 @@ impl Default for ExpandedFormatter
   }
 }
 
-// Backward compat: implement deprecated TableShapedFormatter trait — remove with lib.rs re-export.
-// qqq: remove when TableShapedFormatter is deleted in the next breaking release.
-#[ allow( deprecated ) ]
-impl super::TableShapedFormatter for ExpandedFormatter
+impl super::Format for ExpandedFormatter
 {
-  fn format( &self, tree : &TreeNode< String > ) -> String
+  fn format( &self, data : &TableView ) -> Result< String, super::FormatError >
   {
-    self.format( tree )
+    Ok( self.format_view( data ) )
   }
 }
+

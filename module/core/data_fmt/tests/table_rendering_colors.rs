@@ -44,7 +44,7 @@
 
 mod inc;
 
-use data_fmt::{ RowBuilder, TableFormatter, TableConfig };
+use data_fmt::{ RowBuilder, TableFormatter, TableConfig, Format };
 use inc::sample_data;
 
 // ---------------------------------------------------------------------------
@@ -61,7 +61,7 @@ fn test_t013_p01_colorize_header_wraps_header_in_escape_codes()
     .colorize_header( true )
     .header_color( "\x1b[1m".to_string() );
 
-  let output = TableFormatter::with_config( config ).format( &tree );
+  let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
   // Header is the first non-border line; for plain() it is the first line
   let header_line = output.lines().next().expect( "output is empty" );
@@ -86,13 +86,13 @@ fn test_t013_p02_alternating_rows_colors_even_odd()
     .add_row( vec![ "row0".into() ] )
     .add_row( vec![ "row1".into() ] )
     .add_row( vec![ "row2".into() ] )
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .alternating_rows( true )
     .row_colors( "\x1b[31m".to_string(), "\x1b[32m".to_string() );
 
-  let output = TableFormatter::with_config( config ).format( &tree );
+  let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
   // With plain(): line 0=header, line 1=sep, line 2=row0, line 3=row1, line 4=row2
   let lines : Vec< &str > = output.lines().collect();
@@ -123,7 +123,7 @@ fn test_t013_p03_header_and_row_coloring_independent()
 {
   let tree = RowBuilder::new( vec![ "A".into() ] )
     .add_row( vec![ "x".into() ] )
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .colorize_header( true )
@@ -131,7 +131,7 @@ fn test_t013_p03_header_and_row_coloring_independent()
     .alternating_rows( true )
     .row_colors( "\x1b[31m".to_string(), "\x1b[32m".to_string() );
 
-  let output = TableFormatter::with_config( config ).format( &tree );
+  let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
   let lines : Vec< &str > = output.lines().collect();
   assert!( lines.len() >= 3, "Expected header + sep + data row" );
@@ -162,7 +162,7 @@ fn test_t013_p03_header_and_row_coloring_independent()
 fn test_t013_p04_default_config_no_escape_codes()
 {
   let tree = sample_data();
-  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
 
   assert!(
     !output.contains( '\x1b' ),
@@ -185,7 +185,7 @@ fn test_t013_p05_reset_appears_before_newline()
     .colorize_header( true )
     .header_color( "\x1b[1m".to_string() );
 
-  let output = TableFormatter::with_config( config ).format( &tree );
+  let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
   // RESET must directly precede the newline in the colored header line
   assert!(
@@ -208,7 +208,7 @@ fn test_t013_p05_reset_appears_before_newline()
 fn test_t013_n01_no_alternating_rows_no_escape_codes()
 {
   let tree = sample_data();
-  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
 
   // With plain() defaults, no color fields are set
   let has_escape = output.lines().skip( 2 ).any( |l| l.contains( '\x1b' ) );
@@ -230,7 +230,7 @@ fn test_t013_n02_empty_color_strings_suppress_escapes()
     .alternating_rows( true )
     .row_colors( String::new(), String::new() );
 
-  let output = TableFormatter::with_config( config ).format( &tree );
+  let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
   assert!(
     !output.contains( '\x1b' ),
@@ -247,13 +247,13 @@ fn test_t013_n03_single_row_only_color1()
 {
   let tree = RowBuilder::new( vec![ "A".into() ] )
     .add_row( vec![ "x".into() ] )
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .alternating_rows( true )
     .row_colors( "\x1b[31m".to_string(), String::new() );
 
-  let output = TableFormatter::with_config( config ).format( &tree );
+  let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
   // Should not panic; row 0 (even) gets color1
   assert!(
@@ -273,7 +273,7 @@ fn test_t013_n04_theme_applied_produces_colored_output()
   let tree = sample_data();
   let config = ColorTheme::dark().apply_to_table( TableConfig::plain() );
 
-  let output = TableFormatter::with_config( config ).format( &tree );
+  let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
   // dark() header_color = "\x1b[1;36m" (bright cyan bold)
   assert!(
@@ -297,7 +297,7 @@ fn test_t013_n05_grid_borders_and_colors_coexist()
     .colorize_header( true )
     .header_color( "\x1b[1m".to_string() );
 
-  let output = TableFormatter::with_config( config ).format( &tree );
+  let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
   // Grid top border must still be present
   let first_line = output.lines().next().expect( "output is empty" );
@@ -355,13 +355,13 @@ fn test_t013_m01_multiline_data_row_reset_before_each_newline()
 {
   let tree = RowBuilder::new( vec![ "Col".into() ] )
     .add_row( vec![ "Line1\nLine2".into() ] )
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .alternating_rows( true )
     .row_colors( "\x1b[31m".to_string(), "\x1b[32m".to_string() );
 
-  let output = TableFormatter::with_config( config ).format( &tree );
+  let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
   // Every line that starts with a color escape MUST end with RESET.
   // A line starting with color but missing RESET means a \n was emitted
@@ -396,13 +396,13 @@ fn test_t013_m02_multiline_header_reset_before_each_newline()
 {
   let tree = RowBuilder::new( vec![ "Header\nSubheader".into() ] )
     .add_row( vec![ "value".into() ] )
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .colorize_header( true )
     .header_color( "\x1b[1m".to_string() );
 
-  let output = TableFormatter::with_config( config ).format( &tree );
+  let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
   // Every line that starts with a color escape MUST end with RESET
   for ( idx, line ) in output.lines().enumerate()
@@ -424,13 +424,13 @@ fn test_t013_n06_header_colored_data_uncolored_single_row()
 {
   let tree = RowBuilder::new( vec![ "A".into(), "B".into() ] )
     .add_row( vec![ "x".into(), "y".into() ] )
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .colorize_header( true )
     .header_color( "\x1b[1m".to_string() );
 
-  let output = TableFormatter::with_config( config ).format( &tree );
+  let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
   // Must not panic; header must be colored
   assert!(
@@ -460,7 +460,7 @@ fn test_t013_m03_colorize_header_false_ignores_header_color()
     .colorize_header( false )
     .header_color( "\x1b[1m".to_string() );
 
-  let output = TableFormatter::with_config( config ).format( &tree );
+  let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
   assert!(
     !output.contains( '\x1b' ),
@@ -476,13 +476,13 @@ fn test_t013_m04_alternating_only_color2_even_rows_uncolored()
   let tree = RowBuilder::new( vec![ "A".into() ] )
     .add_row( vec![ "row0".into() ] )
     .add_row( vec![ "row1".into() ] )
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .alternating_rows( true )
     .row_colors( String::new(), "\x1b[32m".to_string() );
 
-  let output = TableFormatter::with_config( config ).format( &tree );
+  let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
   let lines : Vec<&str> = output.lines().collect();
   // plain(): line 0=header, line 1=sep, line 2=row0 (even), line 3=row1 (odd)
@@ -511,7 +511,7 @@ fn test_t013_m05_empty_header_color_with_flag_true_suppresses_escapes()
     .colorize_header( true )
     .header_color( String::new() );
 
-  let output = TableFormatter::with_config( config ).format( &tree );
+  let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
   assert!(
     !output.contains( '\x1b' ),
@@ -534,13 +534,13 @@ fn test_t013_m06_multiline_colored_row_correct_width_and_reset()
   // Correct column width = max(3, 5) = 5
   let tree = RowBuilder::new( vec![ "Col".into() ] )
     .add_row( vec![ "Line1\nLine2".into() ] )
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .alternating_rows( true )
     .row_colors( "\x1b[31m".to_string(), "\x1b[32m".to_string() );
 
-  let output = TableFormatter::with_config( config ).format( &tree );
+  let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
   // Width invariant: each non-empty, non-ANSI line must be 5 chars (column width 5)
   // Strip ANSI from lines for width checking

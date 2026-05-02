@@ -65,4 +65,3 @@ Version 0.1.0, marked experimental. Flag names, subcommand structure, and exit c
 | doc | `docs/api/002_runner_api.md` | Programmatic runner that the CLI delegates to |
 | doc | `docs/pattern/002_layered_configuration.md` | Override precedence: CLI flags at the top layer |
 | test | `tests/inc/cli_test.rs` | CLI integration tests: happy path, error handling, flag validation |
-| test | `tests/inc/cli_test.rs` | CLI integration tests: TC-1, TC-3, TC-4, TC-5 |

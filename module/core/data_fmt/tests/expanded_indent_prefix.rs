@@ -3,7 +3,7 @@
 
 #![ cfg( feature = "enabled" ) ]
 
-use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig };
+use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig, Format };
 
 /// T01: Property style default — no indent, lines start at column 0.
 #[ test ]
@@ -11,10 +11,10 @@ fn test_expanded_indent_prefix_t01_property_default_no_indent()
 {
   let tree = RowBuilder::new( vec![ "Key".into(), "Val".into() ] )
     .add_row( vec![ "alice".into(), "30".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config( ExpandedConfig::property_style() );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Lines must NOT start with whitespace
   for line in output.lines()
@@ -35,14 +35,14 @@ fn test_expanded_indent_prefix_t02_property_two_space_indent()
 {
   let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
     .add_row( vec![ "Alice".into(), "30".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config
   (
     ExpandedConfig::property_style()
       .indent_prefix( "  ".into() )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   for line in output.lines()
   {
@@ -64,14 +64,14 @@ fn test_expanded_indent_prefix_t03_postgres_indent_separator_unaffected()
   let tree = RowBuilder::new( vec![ "Name".into(), "Val".into() ] )
     .add_row( vec![ "a".into(), "1".into() ] )
     .add_row( vec![ "b".into(), "2".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config
   (
     ExpandedConfig::postgres_style()
       .indent_prefix( "  ".into() )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   for line in output.lines()
   {
@@ -103,14 +103,14 @@ fn test_expanded_indent_prefix_t04_two_records_custom_prefix()
   let tree = RowBuilder::new( vec![ "K".into(), "V".into() ] )
     .add_row( vec![ "x".into(), "1".into() ] )
     .add_row( vec![ "y".into(), "2".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config
   (
     ExpandedConfig::property_style()
       .indent_prefix( "> ".into() )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   let kv_lines : Vec< &str > = output.lines()
     .filter( | l | !l.is_empty() )
@@ -133,14 +133,14 @@ fn test_expanded_indent_prefix_t04_two_records_custom_prefix()
 fn test_expanded_indent_prefix_t05_empty_data_no_panic()
 {
   let tree = RowBuilder::new( vec![ "A".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config
   (
     ExpandedConfig::property_style()
       .indent_prefix( "  ".into() )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   assert!( output.trim().is_empty(), "empty data should produce empty output, got: {output:?}" );
 }
@@ -151,7 +151,7 @@ fn test_expanded_indent_prefix_t06_explicit_empty_string()
 {
   let tree = RowBuilder::new( vec![ "Key".into() ] )
     .add_row( vec![ "val".into() ] )
-    .build();
+    .build_view();
 
   let with_explicit_empty = ExpandedFormatter::with_config
   (
@@ -160,8 +160,8 @@ fn test_expanded_indent_prefix_t06_explicit_empty_string()
   );
   let without = ExpandedFormatter::with_config( ExpandedConfig::property_style() );
 
-  let out_a = with_explicit_empty.format( &tree );
-  let out_b = without.format( &tree );
+  let out_a = with_explicit_empty.format( &tree ).unwrap_or_default();
+  let out_b = without.format( &tree ).unwrap_or_default();
 
   assert_eq!( out_a, out_b, "explicit empty prefix must be identical to default" );
 }
@@ -172,7 +172,7 @@ fn test_expanded_indent_prefix_t07_colorize_keys_indent_before_color()
 {
   let tree = RowBuilder::new( vec![ "Name".into() ] )
     .add_row( vec![ "Alice".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config
   (
@@ -181,7 +181,7 @@ fn test_expanded_indent_prefix_t07_colorize_keys_indent_before_color()
       .key_color( "\x1b[90m".into() )
       .indent_prefix( "  ".into() )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   for line in output.lines()
   {

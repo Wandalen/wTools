@@ -12,7 +12,7 @@ fn main() {}
 #[ cfg( feature = "enabled" ) ]
 fn main()
 {
-  use data_fmt::{ RowBuilder, ExpandedFormatter };
+  use data_fmt::{ RowBuilder, ExpandedFormatter, Format };
   println!( "=== ExpandedFormatter: Vertical Record Display ===" );
   println!( "Best for: Database query inspection, detailed record view, wide tables\n" );
 
@@ -41,11 +41,11 @@ fn main()
     "16 cores".into(),
     "active".into()
   ])
-  .build();
+  .build_view();
 
   // Render as expanded records (PostgreSQL \x mode)
   let formatter = ExpandedFormatter::new();
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   println!( "{output}" );
 

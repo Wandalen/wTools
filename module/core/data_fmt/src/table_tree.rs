@@ -1,6 +1,5 @@
 //! Table-shaped tree construction helpers
 
-use crate::TreeNode;
 use color_tools::DecoratedText;
 
 /// Builder for constructing table-shaped trees
@@ -13,18 +12,17 @@ use color_tools::DecoratedText;
 /// ```
 /// use data_fmt::RowBuilder;
 ///
-/// let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
+/// let view = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
 ///   .add_row( vec![ "Alice".into(), "30".into() ] )
 ///   .add_row( vec![ "Bob".into(), "25".into() ] )
-///   .build();
+///   .build_view();
 ///
-/// assert_eq!( tree.children.len(), 2 );
-/// assert_eq!( tree.children[ 0 ].name, "1" );
+/// assert_eq!( view.rows.len(), 2 );
+/// assert_eq!( view.rows[ 0 ][ 0 ].render(), "Alice" );
 /// ```
 #[ derive( Debug ) ]
 pub struct RowBuilder
 {
-  root : TreeNode< String >,
   headers : Vec< String >,
   row_count : usize,
   rows : Vec< Vec< DecoratedText > >,
@@ -38,7 +36,6 @@ impl RowBuilder
   {
     Self
     {
-      root : TreeNode::new( "root".to_string(), None ),
       headers,
       row_count : 0,
       rows : Vec::new(),
@@ -70,12 +67,12 @@ impl RowBuilder
   /// ```
   /// use data_fmt::RowBuilder;
   ///
-  /// let tree = RowBuilder::new( vec![ "A".into(), "B".into() ] )
+  /// let view = RowBuilder::new( vec![ "A".into(), "B".into() ] )
   ///   .add_row( vec![ "1".into(), "2".into() ] )
   ///   .add_row( vec![ "3".into(), "4".into() ] )
-  ///   .build();
+  ///   .build_view();
   ///
-  /// assert_eq!( tree.children.len(), 2 );
+  /// assert_eq!( view.rows.len(), 2 );
   /// ```
   #[ must_use ]
   #[ allow( clippy::needless_pass_by_value ) ]
@@ -118,12 +115,13 @@ impl RowBuilder
   /// ```
   /// use data_fmt::RowBuilder;
   ///
-  /// let tree = RowBuilder::new( vec![ "Name".into() ] )
+  /// let view = RowBuilder::new( vec![ "Name".into() ] )
   ///   .add_row_with_name( "Alice".into(), vec![ "30".into() ] )
   ///   .add_row_with_name( "Bob".into(), vec![ "25".into() ] )
-  ///   .build();
+  ///   .build_view();
   ///
-  /// assert_eq!( tree.children[ 0 ].name, "Alice" );
+  /// assert_eq!( view.rows.len(), 2 );
+  /// assert_eq!( view.rows[ 0 ][ 0 ].render(), "30" );
   /// ```
   #[ must_use ]
   #[ allow( clippy::needless_pass_by_value ) ]
@@ -221,22 +219,9 @@ impl RowBuilder
   }
 
   /// Internal row addition (no validation)
-  fn add_row_internal( &mut self, row_name : String, row : Vec< DecoratedText >, detail : Option< DecoratedText > )
+  fn add_row_internal( &mut self, _row_name : String, row : Vec< DecoratedText >, detail : Option< DecoratedText > )
   {
     self.row_details.push( detail );
-
-    // Build TreeNode structure for backward compatibility
-    let mut row_node = TreeNode::new( row_name, None );
-
-    for ( header, value ) in self.headers.iter().zip( row.iter() )
-    {
-      let cell_node = TreeNode::new( header.clone(), Some( value.render() ) );
-      row_node.children.push( cell_node );
-    }
-
-    self.root.children.push( row_node );
-
-    // Store row data for TableView (after tree nodes are built)
     self.rows.push( row );
   }
 
@@ -268,18 +253,4 @@ impl RowBuilder
     )
   }
 
-  /// Build the final tree (for backward compatibility)
-  ///
-  /// Returns a `TreeNode<String>` structure for use with legacy formatters.
-  /// For new code, prefer `build_view()` which returns the canonical `TableView`.
-  ///
-  /// **Pitfall**: headers are NOT embedded in the returned tree unless at least one
-  /// row was added first. Calling `build()` on an empty `RowBuilder` produces a root
-  /// `TreeNode` with zero children — `extract_headers()` returns `None` and the
-  /// formatter produces an empty string (EC-1). Use `build_view()` to get a structure
-  /// that preserves headers even with zero data rows.
-  pub fn build( self ) -> TreeNode< String >
-  {
-    self.root
-  }
 }

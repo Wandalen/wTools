@@ -312,3 +312,165 @@ fn cli_run_compilation_error_exits_nonzero()
     "expected compiler diagnostics in stderr for broken code",
   );
 }
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// TC-9 / TC-10: Help flags exit zero
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/// Test TC-9: `program_tools --help` exits 0 with usage text.
+///
+/// Clap must emit help text and exit 0 for the top-level `--help` flag.
+#[ test ]
+fn cli_help_exits_zero()
+{
+  let output = run_cli( &[ "--help" ] );
+
+  assert_eq!
+  (
+    output.status.code(),
+    Some( 0 ),
+    "expected exit code 0 for --help",
+  );
+  let stdout = String::from_utf8_lossy( &output.stdout );
+  assert!
+  (
+    !stdout.is_empty(),
+    "expected usage text in stdout for --help",
+  );
+}
+
+/// Test TC-10: `program_tools run --help` exits 0 with subcommand usage text.
+///
+/// Clap must emit the `run` subcommand's help and exit 0.
+#[ test ]
+fn cli_run_help_exits_zero()
+{
+  let output = run_cli( &[ "run", "--help" ] );
+
+  assert_eq!
+  (
+    output.status.code(),
+    Some( 0 ),
+    "expected exit code 0 for 'run --help'",
+  );
+  let stdout = String::from_utf8_lossy( &output.stdout );
+  assert!
+  (
+    !stdout.is_empty(),
+    "expected usage text in stdout for 'run --help'",
+  );
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// TC-11: No subcommand
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/// Test TC-11: `program_tools` with no subcommand exits non-zero.
+///
+/// Clap requires a subcommand; omitting it must produce a usage error, not a
+/// successful no-op run.
+#[ test ]
+fn cli_no_subcommand_exits_nonzero()
+{
+  let output = run_cli( &[] );
+
+  assert_ne!
+  (
+    output.status.code(),
+    Some( 0 ),
+    "expected non-zero exit code when no subcommand is given",
+  );
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// TC-12: --capture flag
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/// Test TC-12: `--capture` flag collects script stdout and makes it available.
+///
+/// With `--capture`, the runner buffers the script's output and the CLI then
+/// `print!`s it to its own stdout. Verifies the capture→print path end-to-end.
+#[ test ]
+fn cli_capture_flag_collects_stdout()
+{
+  use std::path::PathBuf;
+
+  let pid = std::process::id();
+  let tmp : PathBuf = std::env::temp_dir()
+    .join( format!( "pt_cli_tc12_{pid}" ) );
+  std::fs::create_dir_all( &tmp ).expect( "failed to create tmp dir" );
+  let source = tmp.join( "capture.rs" );
+  std::fs::write( &source, r#"fn main() { println!( "captured output" ); }"# )
+    .expect( "failed to write source" );
+
+  let output = run_cli
+  (
+    &[ "run", "--capture", source.to_str().expect( "path is valid UTF-8" ) ]
+  );
+  std::fs::remove_dir_all( &tmp ).ok();
+
+  assert_eq!
+  (
+    output.status.code(),
+    Some( 0 ),
+    "expected exit code 0 with --capture; stderr: {}",
+    String::from_utf8_lossy( &output.stderr ),
+  );
+  let stdout = String::from_utf8_lossy( &output.stdout );
+  assert!
+  (
+    stdout.contains( "captured output" ),
+    "expected 'captured output' in CLI stdout when using --capture; got: {stdout}",
+  );
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// TC-13: --env flag
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/// Test TC-13: `--env KEY=VALUE` passes an environment variable to the script.
+///
+/// Verifies the full CLI→RunOptions→subprocess env-var injection path.
+#[ test ]
+fn cli_env_flag_passes_env_var_to_script()
+{
+  use std::path::PathBuf;
+
+  let pid = std::process::id();
+  let tmp : PathBuf = std::env::temp_dir()
+    .join( format!( "pt_cli_tc13_{pid}" ) );
+  std::fs::create_dir_all( &tmp ).expect( "failed to create tmp dir" );
+  let source = tmp.join( "env_test.rs" );
+  std::fs::write
+  (
+    &source,
+    r#"fn main() { println!( "{}", std::env::var( "PT_CLI_VAR" ).unwrap_or( "MISSING".to_string() ) ); }"#,
+  )
+  .expect( "failed to write source" );
+
+  let output = run_cli
+  (
+    &[
+      "run",
+      "--capture",
+      "--env",
+      "PT_CLI_VAR=from_cli_flag",
+      source.to_str().expect( "path is valid UTF-8" ),
+    ]
+  );
+  std::fs::remove_dir_all( &tmp ).ok();
+
+  assert_eq!
+  (
+    output.status.code(),
+    Some( 0 ),
+    "expected exit code 0; stderr: {}",
+    String::from_utf8_lossy( &output.stderr ),
+  );
+  let stdout = String::from_utf8_lossy( &output.stdout );
+  assert!
+  (
+    stdout.contains( "from_cli_flag" ),
+    "expected env var value in stdout; got: {stdout}",
+  );
+}

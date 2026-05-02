@@ -70,7 +70,7 @@
 //! ```
 
 #![ cfg( feature = "enabled" ) ]
-use data_fmt::{ truncate_cell, pad_to_width, RowBuilder, TableFormatter, TableConfig };
+use data_fmt::{ truncate_cell, pad_to_width, RowBuilder, TableFormatter, TableConfig, Format };
 
 /// Bug reproducer for issue-003: Cyrillic filenames misalign in column padding.
 ///
@@ -713,9 +713,9 @@ fn test_t015_p01_cjk_column_width_uses_display_width()
 {
   let tree = RowBuilder::new( vec![ "H".into() ] )
     .add_row( vec![ "日本語".into() ] )   // 3 chars, 6 display width
-    .build();
+    .build_view();
 
-  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
   let header_line = output.lines().find( | l | l.contains( 'H' ) )
     .expect( "must have header row" );
 
@@ -735,9 +735,9 @@ fn test_t015_p02_emoji_column_width_uses_display_width()
 {
   let tree = RowBuilder::new( vec![ "H".into() ] )
     .add_row( vec![ "🎉🎊".into() ] )   // 2 emoji, each = 2 display width = 4 total
-    .build();
+    .build_view();
 
-  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
   let header_line = output.lines().find( | l | l.contains( 'H' ) )
     .expect( "must have header row" );
 
@@ -762,9 +762,9 @@ fn test_t015_p03_five_cjk_chars_measured_as_10_display_columns()
 {
   let tree = RowBuilder::new( vec![ "AAAAAAAAAA".into() ] )  // 10 ASCII chars
     .add_row( vec![ "こんにちは".into() ] )                  // 5 chars, 10 display width
-    .build();
+    .build_view();
 
-  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
   let _header_line = output.lines().find( | l | l.contains( 'A' ) )
     .expect( "must have header row" );
   let data_line = output.lines().find( | l | l.contains( 'こ' ) )
@@ -796,9 +796,9 @@ fn test_t015_p04_ansi_colored_cjk_width_strips_escape_codes()
 
   let tree = RowBuilder::new( vec![ "H".into() ] )
     .add_row( vec![ colored_cjk.into() ] )
-    .build();
+    .build_view();
 
-  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
   let header_line = output.lines().find( | l | l.contains( 'H' ) )
     .expect( "must have header row" );
 
@@ -826,9 +826,9 @@ fn test_t015_p05_padding_based_on_display_width()
 {
   let tree = RowBuilder::new( vec![ "HHHHH".into() ] )
     .add_row( vec![ "A".into() ] )
-    .build();
+    .build_view();
 
-  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
   let data_line = output.lines().find( | l | l.contains( 'A' ) )
     .expect( "must have data row" );
 
@@ -847,10 +847,10 @@ fn test_t015_n03_ascii_only_table_output_unchanged()
   let tree = RowBuilder::new( vec![ "Name".into(), "Value".into() ] )
     .add_row( vec![ "Alice".into(), "42".into() ] )
     .add_row( vec![ "Bob".into(), "999".into() ] )
-    .build();
+    .build_view();
 
   // Both before and after Task 015, ASCII output should be identical
-  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
 
   assert!( output.contains( "Alice" ), "ASCII table must contain data; output:\n{output}" );
   assert!( output.contains( "Name" ), "ASCII table must contain headers; output:\n{output}" );
@@ -875,9 +875,9 @@ fn test_t015_n04_empty_content_padded_to_column_width()
 {
   let tree = RowBuilder::new( vec![ "HHH".into() ] )
     .add_row( vec![ String::new().into() ] )
-    .build();
+    .build_view();
 
-  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
   let data_line = output.lines()
     .find( | l | !l.contains( "HHH" ) && !l.contains( '-' ) && !l.is_empty() )
     .expect( "must have empty-cell data row" );
@@ -897,9 +897,9 @@ fn test_t015_n05_wider_content_not_shrunk_by_padding()
 {
   let tree = RowBuilder::new( vec![ "H".into() ] )
     .add_row( vec![ "ABCDE".into() ] )
-    .build();
+    .build_view();
 
-  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
   let data_line = output.lines().find( | l | l.contains( "ABCDE" ) )
     .expect( "must have data row" );
 
@@ -928,10 +928,10 @@ fn test_t015_n06_malformed_ansi_content_no_panic()
   {
     let tree = RowBuilder::new( vec![ "H".into() ] )
       .add_row( vec![ content.clone().into() ] )
-      .build();
+      .build_view();
 
     // Must not panic
-    let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
+    let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
     assert!(
       !output.is_empty(),
       "Malformed ANSI content must render without panic; content={content:?}; output:\n{output}"
@@ -947,11 +947,11 @@ fn test_t015_n07_min_column_width_with_cjk_content()
 {
   let tree = RowBuilder::new( vec![ "H".into() ] )
     .add_row( vec![ "日".into() ] )   // 1 char, 2 display width
-    .build();
+    .build_view();
 
   let output = TableFormatter::with_config(
     TableConfig::plain().min_column_width( 5 )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   let header_line = output.lines().find( | l | l.contains( 'H' ) )
     .expect( "must have header row" );

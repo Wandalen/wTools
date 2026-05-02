@@ -15,13 +15,13 @@
 #[ cfg( feature = "themes" ) ]
 mod theme_tests
 {
-  use data_fmt::{ ColorTheme, TableConfig, ExpandedConfig, TreeConfig, TableFormatter, RowBuilder };
+  use data_fmt::{ ColorTheme, TableConfig, ExpandedConfig, TreeConfig, TableFormatter, RowBuilder, TableView, Format };
 
-  fn sample_row() -> data_fmt::TreeNode< String >
+  fn sample_row() -> TableView
   {
     RowBuilder::new( vec![ "Name".into(), "Value".into() ] )
       .add_row( vec![ "Alice".into(), "42".into() ] )
-      .build()
+      .build_view()
   }
 
   #[ test ]
@@ -81,7 +81,7 @@ mod theme_tests
     // but are not yet rendered by TableFormatter (reserved for future theme-driven rendering).
     let theme = ColorTheme::dark();
     let config = theme.apply_to_table( TableConfig::bordered() );
-    let output = TableFormatter::with_config( config ).format( &sample_row() );
+    let output = TableFormatter::with_config( config ).format( &sample_row() ).unwrap_or_default();
 
     assert!( output.contains( "Alice" ), "themed config must render data; output:\n{output}" );
     assert!( output.contains( '|' ), "bordered base must be preserved; output:\n{output}" );
@@ -115,7 +115,7 @@ mod theme_tests
     // (Color fields are stored but not yet rendered by TableFormatter.)
     let theme = ColorTheme::dark();
     let config = theme.apply_to_table( TableConfig::bordered() );
-    let output = TableFormatter::with_config( config ).format( &sample_row() );
+    let output = TableFormatter::with_config( config ).format( &sample_row() ).unwrap_or_default();
 
     assert!( output.contains( "Alice" ), "theme-configured table must render data; output:\n{output}" );
   }
@@ -203,7 +203,7 @@ mod theme_tests
 
     // inner_padding=2 with outer_padding=true and bordered() base:
     // rows should start with "|  " (border + 2 inner padding spaces)
-    let output = TableFormatter::with_config( config ).format( &sample_row() );
+    let output = TableFormatter::with_config( config ).format( &sample_row() ).unwrap_or_default();
     assert!(
       output.lines().any( | l | l.starts_with( "|  " ) ),
       "inner_padding=2 preserved after theme application; output:\n{output}"
@@ -241,7 +241,7 @@ mod theme_tests
     // None theme: apply_to_table() must not panic and must render data correctly.
     let theme = ColorTheme::none();
     let config = theme.apply_to_table( TableConfig::bordered() );
-    let output = TableFormatter::with_config( config ).format( &sample_row() );
+    let output = TableFormatter::with_config( config ).format( &sample_row() ).unwrap_or_default();
 
     assert!( output.contains( "Alice" ), "none-themed config must render data; output:\n{output}" );
   }
@@ -263,8 +263,8 @@ mod theme_tests
 
     // Both preserve inner_padding=2: output contains "|  " (ANSI-colored rows start with escape
     // codes, so contains() is required rather than starts_with()).
-    let dark_output = TableFormatter::with_config( dark_config ).format( &sample_row() );
-    let light_output = TableFormatter::with_config( light_config ).format( &sample_row() );
+    let dark_output = TableFormatter::with_config( dark_config ).format( &sample_row() ).unwrap_or_default();
+    let light_output = TableFormatter::with_config( light_config ).format( &sample_row() ).unwrap_or_default();
 
     assert!(
       dark_output.lines().any( | l | l.contains( "|  " ) ),
@@ -288,7 +288,7 @@ mod theme_tests
 
     // inner_padding=3 preserved: output contains "|   " (border + 3 spaces). Uses contains()
     // because nord theme activates ANSI coloring, prepending escape codes before the border char.
-    let output = TableFormatter::with_config( config ).format( &sample_row() );
+    let output = TableFormatter::with_config( config ).format( &sample_row() ).unwrap_or_default();
     assert!(
       output.lines().any( | l | l.contains( "|   " ) ),
       "inner_padding=3 preserved after nord theme application; output:\n{output}"

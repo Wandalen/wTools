@@ -174,13 +174,15 @@ pub trait TableShapedView
   /// # Examples
   ///
   /// ```
-  /// use data_fmt::{ RowBuilder, TableShapedView };
+  /// use data_fmt::{ TreeNode, TableShapedView };
   ///
-  /// let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
-  ///   .add_row( vec![ "Alice".into(), "30".into() ] )
-  ///   .build();
+  /// let mut root = TreeNode::new( "root".to_string(), None::< String > );
+  /// let mut row = TreeNode::new( "1".to_string(), None );
+  /// row.children.push( TreeNode::new( "Name".to_string(), Some( "Alice".to_string() ) ) );
+  /// row.children.push( TreeNode::new( "Age".to_string(), Some( "30".to_string() ) ) );
+  /// root.children.push( row );
   ///
-  /// let headers = tree.extract_headers().unwrap();
+  /// let headers = root.extract_headers().unwrap();
   /// assert_eq!( headers, vec![ "Name", "Age" ] );
   /// ```
   fn extract_headers( &self ) -> Option< Vec< String > >;
@@ -190,13 +192,14 @@ pub trait TableShapedView
   /// # Examples
   ///
   /// ```
-  /// use data_fmt::{ RowBuilder, TableShapedView };
+  /// use data_fmt::{ TreeNode, TableShapedView };
   ///
-  /// let tree = RowBuilder::new( vec![ "Name".into() ] )
-  ///   .add_row( vec![ "Alice".into() ] )
-  ///   .build();
+  /// let mut root = TreeNode::new( "root".to_string(), None::< String > );
+  /// let mut row = TreeNode::new( "1".to_string(), None );
+  /// row.children.push( TreeNode::new( "Name".to_string(), Some( "Alice".to_string() ) ) );
+  /// root.children.push( row );
   ///
-  /// assert!( tree.is_table_shaped() );
+  /// assert!( root.is_table_shaped() );
   /// ```
   fn is_table_shaped( &self ) -> bool;
 
@@ -207,13 +210,15 @@ pub trait TableShapedView
   /// # Examples
   ///
   /// ```
-  /// use data_fmt::{ RowBuilder, TableShapedView };
+  /// use data_fmt::{ TreeNode, TableShapedView };
   ///
-  /// let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
-  ///   .add_row( vec![ "Alice".into(), "30".into() ] )
-  ///   .build();
+  /// let mut root = TreeNode::new( "root".to_string(), None::< String > );
+  /// let mut row = TreeNode::new( "1".to_string(), None );
+  /// row.children.push( TreeNode::new( "Name".to_string(), Some( "Alice".to_string() ) ) );
+  /// row.children.push( TreeNode::new( "Age".to_string(), Some( "30".to_string() ) ) );
+  /// root.children.push( row );
   ///
-  /// let rows = tree.to_rows();
+  /// let rows = root.to_rows();
   /// assert_eq!( rows.len(), 1 );
   /// assert_eq!( rows[ 0 ], vec![ "Alice", "30" ] );
   /// ```
@@ -378,40 +383,4 @@ impl TableView
     Self { metadata, rows, row_details }
   }
 
-  /// Convert to `TreeNode` for backward compatibility with visual formatters
-  pub fn to_tree_node( &self ) -> TreeNode< Vec< String > >
-  {
-    let mut root = TreeNode::new( "table".to_string(), None );
-
-    // Add header row
-    let mut header_row = TreeNode::new( "row_0".to_string(), None );
-    for col_name in &self.metadata.column_names
-    {
-      let col_node = TreeNode::new(
-        col_name.clone(),
-        Some( vec![ col_name.clone() ] )
-      );
-      header_row.children.push( col_node );
-    }
-    root.children.push( header_row );
-
-    // Add data rows
-    for ( row_idx, row_data ) in self.rows.iter().enumerate()
-    {
-      let mut row_node = TreeNode::new( format!( "row_{}", row_idx + 1 ), None );
-      for ( col_idx, cell_value ) in row_data.iter().enumerate()
-      {
-        let col_name = self.metadata.column_names.get( col_idx )
-          .map_or( "", std::string::String::as_str );
-        let col_node = TreeNode::new(
-          col_name.to_string(),
-          Some( vec![ cell_value.render() ] )
-        );
-        row_node.children.push( col_node );
-      }
-      root.children.push( row_node );
-    }
-
-    root
-  }
 }

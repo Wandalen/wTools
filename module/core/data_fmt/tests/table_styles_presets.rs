@@ -62,7 +62,7 @@ mod inc;
 use data_fmt::
 {
   RowBuilder, TableFormatter, TableConfig,
-  BorderVariant, HeaderSeparatorVariant, ColumnSeparator,
+  BorderVariant, HeaderSeparatorVariant, ColumnSeparator, Format,
 };
 use inc::sample_data;
 
@@ -96,7 +96,7 @@ fn test_column_separator_enum_defaults()
 fn test_plain_style_config()
 {
   let tree = sample_data();
-  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
 
   // Plain: no borders, space-separated, dash header separator
   assert!( !output.contains( '|' ), "plain must not have | borders; output:\n{output}" );
@@ -109,7 +109,7 @@ fn test_plain_style_config()
 fn test_minimal_style_config()
 {
   let tree = sample_data();
-  let output = TableFormatter::with_config( TableConfig::minimal() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::minimal() ).format( &tree ).unwrap_or_default();
 
   // Minimal: no borders, no header separator
   assert!( !output.contains( '|' ), "minimal must not have | borders; output:\n{output}" );
@@ -122,7 +122,7 @@ fn test_minimal_style_config()
 fn test_bordered_style_config()
 {
   let tree = sample_data();
-  let output = TableFormatter::with_config( TableConfig::bordered() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::bordered() ).format( &tree ).unwrap_or_default();
 
   // Bordered: ASCII pipe borders, AsciiGrid separator, inner_padding=1
   assert!( output.contains( '|' ), "bordered must have | borders; output:\n{output}" );
@@ -134,7 +134,7 @@ fn test_bordered_style_config()
 fn test_markdown_style_config()
 {
   let tree = sample_data();
-  let output = TableFormatter::with_config( TableConfig::markdown() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::markdown() ).format( &tree ).unwrap_or_default();
 
   // Markdown: | column separators, Markdown separator row (|---|)
   assert!( output.contains( '|' ), "markdown must have | column separators; output:\n{output}" );
@@ -149,7 +149,7 @@ fn test_markdown_style_config()
 fn test_grid_style_config()
 {
   let tree = sample_data();
-  let output = TableFormatter::with_config( TableConfig::grid() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::grid() ).format( &tree ).unwrap_or_default();
 
   // Grid: AsciiGrid header separator produces |---|---| (pipe+dash, no + intersection)
   // border_variant is stored but not yet rendered by TableFormatter
@@ -162,7 +162,7 @@ fn test_grid_style_config()
 fn test_unicode_box_style_config()
 {
   let tree = sample_data();
-  let output = TableFormatter::with_config( TableConfig::unicode_box() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::unicode_box() ).format( &tree ).unwrap_or_default();
 
   // Unicode box: Unicode box-drawing characters
   assert!( output.contains( '│' ), "unicode_box must have │ column separators; output:\n{output}" );
@@ -177,7 +177,7 @@ fn test_unicode_box_style_config()
 fn test_csv_style_config()
 {
   let tree = sample_data();
-  let output = TableFormatter::with_config( TableConfig::csv() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::csv() ).format( &tree ).unwrap_or_default();
 
   // CSV: comma-separated, no borders, no header separator
   assert!( output.contains( ',' ), "csv must have comma separators; output:\n{output}" );
@@ -190,7 +190,7 @@ fn test_csv_style_config()
 fn test_tsv_style_config()
 {
   let tree = sample_data();
-  let output = TableFormatter::with_config( TableConfig::tsv() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::tsv() ).format( &tree ).unwrap_or_default();
 
   // TSV: tab-separated, no borders
   assert!( output.contains( '\t' ), "tsv must have tab separators; output:\n{output}" );
@@ -202,7 +202,7 @@ fn test_tsv_style_config()
 fn test_compact_style_config()
 {
   let tree = sample_data();
-  let output = TableFormatter::with_config( TableConfig::compact() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::compact() ).format( &tree ).unwrap_or_default();
 
   // Compact: single-space separator, no borders, no header separator
   assert!( !output.contains( '|' ), "compact must not have | borders; output:\n{output}" );
@@ -223,7 +223,7 @@ fn test_table_config_builder_border_style()
   // the setter must compile and not affect data rendering
   let output = TableFormatter::with_config(
     TableConfig::new().border_variant( BorderVariant::None )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   assert!( output.contains( "Alice" ), "border_variant setter must not break rendering; output:\n{output}" );
 }
@@ -234,7 +234,7 @@ fn test_table_config_builder_header_separator()
   let tree = sample_data();
   let output = TableFormatter::with_config(
     TableConfig::new().header_separator_variant( HeaderSeparatorVariant::Dash )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   // Dash separator → dash line between header and rows
   assert!( output.contains( "---" ), "Dash separator must produce dash line; output:\n{output}" );
@@ -247,7 +247,7 @@ fn test_table_config_builder_column_separator()
   let tree = sample_data();
   let output = TableFormatter::with_config(
     TableConfig::new().column_separator( ColumnSeparator::Spaces( 4 ) )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   // Spaces(4) → no | separator in output
   assert!( !output.contains( '|' ), "Spaces separator must not produce | chars; output:\n{output}" );
@@ -265,7 +265,7 @@ fn test_table_config_builder_padding()
     TableConfig::bordered()
       .outer_padding( true )
       .inner_padding( 2 )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   // With outer_padding=true and inner_padding=2, rows start with |  (border + 2 spaces)
   assert!(
@@ -278,7 +278,7 @@ fn test_table_config_builder_padding()
     TableConfig::bordered()
       .outer_padding( false )
       .inner_padding( 2 )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   // With outer_padding=false, rows should NOT start with |  (no extra spaces)
   assert!(
@@ -302,7 +302,7 @@ fn test_table_config_builder_colors()
       .header_color( "\x1b[36m".to_string() )
       .alternating_rows( true )
       .row_colors( "\x1b[0m".to_string(), "\x1b[48;5;236m".to_string() )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   assert!( output.contains( "Alice" ), "color-configured table must still render data; output:\n{output}" );
 }
@@ -313,13 +313,13 @@ fn test_table_config_builder_width_constraints()
   // max_column_width and truncation_marker ARE used by the formatter
   let tree = RowBuilder::new( vec![ "Column".into() ] )
     .add_row( vec![ "This is a long string".into() ] )
-    .build();
+    .build_view();
 
   let output = TableFormatter::with_config(
     TableConfig::new()
       .max_column_width( Some( 8 ) )
       .truncation_marker( "…".to_string() )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   // max_column_width=8 truncates long content; "…" marker appears
   assert!(
@@ -337,7 +337,7 @@ fn test_table_config_builder_chaining()
       .colorize_header( true )
       .header_color( "\x1b[1;36m".to_string() )
       .min_column_width( 5 )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   // plain() base is preserved: no | borders
   assert!( !output.contains( '|' ), "chained from plain() must not have | borders; output:\n{output}" );
@@ -353,7 +353,7 @@ fn test_table_config_builder_chaining()
 fn test_unicode_box_behavioral_output()
 {
   let tree = sample_data();
-  let output = TableFormatter::with_config( TableConfig::unicode_box() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::unicode_box() ).format( &tree ).unwrap_or_default();
   let lines : Vec< &str > = output.lines().collect();
   assert!(
     lines.iter().any( | l | l.contains( '│' ) ),
@@ -370,7 +370,7 @@ fn test_unicode_box_behavioral_output()
 fn test_bordered_behavioral_output()
 {
   let tree = sample_data();
-  let output = TableFormatter::with_config( TableConfig::bordered() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::bordered() ).format( &tree ).unwrap_or_default();
   let lines : Vec< &str > = output.lines().collect();
   assert!(
     lines.iter().any( | l | l.contains( '|' ) ),
@@ -387,7 +387,7 @@ fn test_bordered_behavioral_output()
 fn test_plain_behavioral_output()
 {
   let tree = sample_data();
-  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
   let lines : Vec< &str > = output.lines().collect();
   assert!(
     !lines.iter().any( | l | l.contains( '│' ) ),
@@ -404,7 +404,7 @@ fn test_plain_behavioral_output()
 fn test_default_config_uses_spaces_not_pipe()
 {
   let tree = sample_data();
-  let output = TableFormatter::with_config( TableConfig::new() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::new() ).format( &tree ).unwrap_or_default();
   assert!(
     !output.contains( '│' ),
     "default config must not produce Unicode │ column separators; output:\n{output}"
@@ -458,8 +458,8 @@ fn bug_reproducer_issue_011_unicode_box_column_separator_mismatch()
   let tree = RowBuilder::new( vec![ "Name".into(), "Score".into() ] )
     .add_row( vec![ "Alice".into(), "95".into() ] )
     .add_row( vec![ "Bob".into(), "87".into() ] )
-    .build();
-  let output = TableFormatter::with_config( TableConfig::unicode_box() ).format( &tree );
+    .build_view();
+  let output = TableFormatter::with_config( TableConfig::unicode_box() ).format( &tree ).unwrap_or_default();
   let lines : Vec< &str > = output.lines().collect();
   // Data rows must have `│` column separators (not spaces)
   assert!(

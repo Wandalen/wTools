@@ -432,3 +432,244 @@ fn explicit_parameters_all_fields()
   assert_eq!( program.source[ 0 ].file_path, "file1.rs" );
   assert_eq!( program.source[ 1 ].file_path, "file2.rs" );
 }
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// CapturedOutput Corner Cases
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/// Test CAPTURED-001: `CapturedOutput::default()` has zero `exit_status` and empty buffers.
+///
+/// Validates that the derived Default impl initialises all fields to their
+/// zero values — no magic defaults are silently applied.
+#[ test ]
+fn captured_output_default_has_zero_values()
+{
+  use the_module::CapturedOutput;
+
+  let out = CapturedOutput::default();
+  assert_eq!( out.exit_status, 0 );
+  assert!( out.stdout.is_empty() );
+  assert!( out.stderr.is_empty() );
+}
+
+/// Test CAPTURED-002: `stdout_str` on invalid UTF-8 bytes uses lossy replacement.
+///
+/// Bytes 0xFF and 0xFE are not valid UTF-8. `from_utf8_lossy` replaces them
+/// with the Unicode replacement character (U+FFFD) rather than panicking.
+#[ test ]
+fn captured_output_lossy_utf8_stdout()
+{
+  use the_module::CapturedOutput;
+
+  // 0xFF is never valid UTF-8; lossy decode must not panic
+  let out = CapturedOutput { exit_status : 0, stdout : vec![ 0xFF, 0xFE ], stderr : vec![] };
+  let decoded = out.stdout_str();
+  // The string should be non-empty (replacement chars) and must not contain the raw bytes
+  assert!( !decoded.is_empty(), "lossy decode should produce a non-empty string" );
+  // Replacement char U+FFFD appears for each invalid byte sequence
+  assert!( decoded.contains( '\u{FFFD}' ), "expected replacement char for invalid UTF-8" );
+}
+
+/// Test CAPTURED-003: `stderr_str` on invalid UTF-8 bytes uses lossy replacement.
+#[ test ]
+fn captured_output_lossy_utf8_stderr()
+{
+  use the_module::CapturedOutput;
+
+  let out = CapturedOutput { exit_status : 1, stdout : vec![], stderr : vec![ 0xC0, 0x80 ] };
+  let decoded = out.stderr_str();
+  assert!( !decoded.is_empty() );
+  assert!( decoded.contains( '\u{FFFD}' ) );
+}
+
+/// Test CAPTURED-004: `stdout_contains` with an empty needle always returns true.
+///
+/// This is Rust's standard `str::contains` semantics — every string contains
+/// the empty string.  Documents this edge case explicitly so callers are not
+/// surprised.
+#[ test ]
+fn captured_output_stdout_contains_empty_needle()
+{
+  use the_module::CapturedOutput;
+
+  let out = CapturedOutput { exit_status : 0, stdout : b"hello".to_vec(), stderr : vec![] };
+  assert!( out.stdout_contains( "" ), "empty needle must always match (str::contains semantics)" );
+
+  let empty_out = CapturedOutput { exit_status : 0, stdout : vec![], stderr : vec![] };
+  assert!( empty_out.stdout_contains( "" ), "empty needle on empty stdout must also match" );
+}
+
+/// Test CAPTURED-005: `stderr_eq` returns true for exact match, false otherwise.
+///
+/// Mirrors the coverage in PRED-001 but for stderr, which was previously untested.
+#[ test ]
+fn captured_output_stderr_eq_exact_match()
+{
+  use the_module::CapturedOutput;
+
+  let out = CapturedOutput
+  {
+    exit_status : 1,
+    stdout : vec![],
+    stderr : b"error\n".to_vec(),
+  };
+  assert!( out.stderr_eq( "error\n" ) );
+  assert!( !out.stderr_eq( "error" ) );   // missing newline
+  assert!( !out.stderr_eq( "other\n" ) ); // different content
+}
+
+/// Test CAPTURED-006: `assert_exit_ok` does not panic when exit status is zero.
+///
+/// Verifies the success path of the assertion method — panics only on non-zero.
+#[ test ]
+fn captured_output_assert_exit_ok_no_panic()
+{
+  use the_module::CapturedOutput;
+
+  let out = CapturedOutput { exit_status : 0, stdout : vec![], stderr : vec![] };
+  out.assert_exit_ok(); // must not panic
+}
+
+/// Test CAPTURED-007: `assert_stdout_empty` and `assert_stderr_empty` do not panic on empty buffers.
+#[ test ]
+fn captured_output_assert_empty_no_panic()
+{
+  use the_module::CapturedOutput;
+
+  let out = CapturedOutput { exit_status : 0, stdout : vec![], stderr : vec![] };
+  out.assert_stdout_empty(); // must not panic
+  out.assert_stderr_empty(); // must not panic
+}
+
+/// Test CAPTURED-008: `CapturedOutput` implements `Clone` and produces an independent copy.
+///
+/// Mutating the clone must not affect the original.
+#[ test ]
+fn captured_output_clone_is_independent()
+{
+  use the_module::CapturedOutput;
+
+  let original = CapturedOutput { exit_status : 42, stdout : b"hi\n".to_vec(), stderr : vec![] };
+  let mut cloned = original.clone();
+  cloned.exit_status = 0;
+  cloned.stdout.clear();
+
+  assert_eq!( original.exit_status, 42 );
+  assert_eq!( original.stdout, b"hi\n" );
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// RunOptions Corner Cases
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/// Test RUNOPTS-001: `RunOptions::default()` has sensible sentinel values.
+///
+/// Empty strings act as "use default" sentinels — they are replaced at run
+/// time by the runner's `effective_*` helpers. Validates the contract.
+#[ test ]
+fn run_options_default_sentinel_values()
+{
+  use the_module::RunOptions;
+
+  let opts = RunOptions::default();
+  assert_eq!( opts.build_profile, "" );
+  assert_eq!( opts.cargo_path, "" );
+  assert_eq!( opts.edition, "" );
+  assert_eq!( opts.package_name, "" );
+  assert!( opts.target_dir.is_none() );
+  assert!( opts.timeout_ms.is_none() );
+  assert!( opts.features.is_empty() );
+  assert!( opts.env_vars.is_empty() );
+  assert!( opts.capture, "capture must default to true" );
+  assert!( opts.cleanup, "cleanup must default to true" );
+}
+
+/// Test RUNOPTS-002: `RunOptions` implements `Clone` and produces an independent copy.
+#[ test ]
+fn run_options_clone_is_independent()
+{
+  use the_module::RunOptions;
+
+  let original = RunOptions { timeout_ms : Some( 5_000 ), capture : false, ..Default::default() };
+  let mut cloned = original.clone();
+  cloned.timeout_ms = None;
+  cloned.capture = true;
+
+  assert_eq!( original.timeout_ms, Some( 5_000 ) );
+  assert!( !original.capture );
+}
+
+/// Test RUNOPTS-003: `RunOptions` implements `Debug` and formats without panic.
+#[ test ]
+fn run_options_debug_formatting()
+{
+  use the_module::RunOptions;
+
+  let opts = RunOptions::default();
+  let formatted = format!( "{opts:?}" );
+  assert!( !formatted.is_empty() );
+  assert!( formatted.contains( "RunOptions" ) );
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Program manifest field
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/// Test PROGRAM-006: Program manifest field stores and retrieves custom TOML.
+///
+/// When `manifest` is `Some`, the runner uses it verbatim instead of generating
+/// a default. This test validates the builder sets the field correctly.
+#[ test ]
+fn program_manifest_field_stored()
+{
+  use the_module::program;
+
+  let toml = "[package]\nname = \"custom\"\nversion = \"0.1.0\"\nedition = \"2021\"\n\n[dependencies]\n";
+  let prog = program::Program::former()
+    .manifest( toml.to_string() )
+    .form();
+
+  assert_eq!( prog.manifest.as_deref(), Some( toml ) );
+}
+
+/// Test PROGRAM-007: Program manifest field is `None` by default (runner generates it).
+#[ test ]
+fn program_manifest_defaults_to_none()
+{
+  use the_module::program;
+
+  let prog = program::Program::former().form();
+  assert!( prog.manifest.is_none() );
+}
+
+/// Test PLAN-002: Plan with `run_options` set stores the options.
+#[ test ]
+fn plan_with_run_options_stored()
+{
+  use the_module::{ program, RunOptions };
+
+  let opts = RunOptions { timeout_ms : Some( 1_000 ), capture : false, ..Default::default() };
+  let plan = program::Plan::former()
+    .program()
+      .end()
+    .run_options( opts )
+    .form();
+
+  let stored = plan.run_options.expect( "run_options must be Some when explicitly set" );
+  assert_eq!( stored.timeout_ms, Some( 1_000 ) );
+  assert!( !stored.capture );
+}
+
+/// Test PLAN-003: Plan without `run_options` has `None` (runner uses Default).
+#[ test ]
+fn plan_without_run_options_is_none()
+{
+  use the_module::program;
+
+  let plan = program::Plan::former()
+    .program()
+      .end()
+    .form();
+
+  assert!( plan.run_options.is_none() );
+}

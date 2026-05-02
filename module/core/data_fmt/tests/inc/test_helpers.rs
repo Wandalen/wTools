@@ -16,7 +16,7 @@
 
 #![ allow( dead_code ) ]
 
-use data_fmt::{ RowBuilder, TreeNode };
+use data_fmt::{ RowBuilder, TableView };
 
 /// Create sample table data for testing
 ///
@@ -26,10 +26,10 @@ use data_fmt::{ RowBuilder, TreeNode };
 /// - Bob, 25, LA
 ///
 /// Used across table formatting tests for consistency.
-pub fn sample_data() -> TreeNode< String >
+pub fn sample_data() -> TableView
 {
   RowBuilder::new( vec![ "NAME".into(), "AGE".into(), "CITY".into() ] )
     .add_row( vec![ "Alice".into(), "30".into(), "NYC".into() ] )
     .add_row( vec![ "Bob".into(), "25".into(), "LA".into() ] )
-    .build()
+    .build_view()
 }

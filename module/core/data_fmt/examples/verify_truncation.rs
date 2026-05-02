@@ -10,7 +10,7 @@ fn main() {}
 #[ allow( clippy::too_many_lines ) ]
 fn main()
 {
-  use data_fmt::{ RowBuilder, TableFormatter, TableConfig };
+  use data_fmt::{ RowBuilder, TableFormatter, TableConfig, Format };
   println!( "╔═══════════════════════════════════════════════════════════════════╗" );
   println!( "║  MANUAL TEST 001: Column Truncation                               ║" );
   println!( "╚═══════════════════════════════════════════════════════════════════╝\n" );
@@ -22,13 +22,13 @@ fn main()
       .add_row( vec![ "Short".into() ] )
       .add_row( vec![ "This is a very long description that exceeds twenty characters".into() ] )
       .add_row( vec![ "Exactly20Characters!".into() ] )
-      .build();
+      .build_view();
 
     let config = TableConfig::plain()
       .max_column_width( Some( 20 ) );
 
     let formatter = TableFormatter::with_config( config );
-    let output = formatter.format( &data );
+    let output = formatter.format( &data ).unwrap_or_default();
 
     println!( "{output}" );
     println!( "Expected:" );
@@ -45,13 +45,13 @@ fn main()
       .add_row( vec![ "\x1b[31mThis is red text that is very long and should be truncated\x1b[0m".into() ] )
       .add_row( vec![ "\x1b[32mShort green\x1b[0m".into() ] )
       .add_row( vec![ "\x1b[34mBlue text here is also quite long and needs truncation applied\x1b[0m".into() ] )
-      .build();
+      .build_view();
 
     let config = TableConfig::plain()
       .max_column_width( Some( 25 ) );
 
     let formatter = TableFormatter::with_config( config );
-    let output = formatter.format( &data );
+    let output = formatter.format( &data ).unwrap_or_default();
 
     println!( "{output}" );
     println!( "Expected:" );
@@ -67,14 +67,14 @@ fn main()
   {
     let data = RowBuilder::new( vec![ "Content".into() ] )
       .add_row( vec![ "Very long content that will be truncated with custom marker".into() ] )
-      .build();
+      .build_view();
 
     let config = TableConfig::plain()
       .max_column_width( Some( 20 ) )
       .truncation_marker( "→".to_string() );
 
     let formatter = TableFormatter::with_config( config );
-    let output = formatter.format( &data );
+    let output = formatter.format( &data ).unwrap_or_default();
 
     println!( "{output}" );
     println!( "Expected:" );
@@ -88,14 +88,14 @@ fn main()
   {
     let data = RowBuilder::new( vec![ "Text".into() ] )
       .add_row( vec![ "Content".into() ] )
-      .build();
+      .build_view();
 
     let config = TableConfig::plain()
       .max_column_width( Some( 5 ) )
       .truncation_marker( ".........".to_string() );
 
     let formatter = TableFormatter::with_config( config );
-    let output = formatter.format( &data );
+    let output = formatter.format( &data ).unwrap_or_default();
 
     println!( "{output}" );
     println!( "Expected:" );
@@ -112,13 +112,13 @@ fn main()
       .add_row( vec![ "ExactlyTwentyChars!!".into() ] )      // 20 chars
       .add_row( vec![ "TwentyOneCharacters!!".into() ] )     // 21 chars (added one !)
       .add_row( vec![ "NineteenCharacter!!".into() ] )       // 19 chars
-      .build();
+      .build_view();
 
     let config = TableConfig::plain()
       .max_column_width( Some( 20 ) );
 
     let formatter = TableFormatter::with_config( config );
-    let output = formatter.format( &data );
+    let output = formatter.format( &data ).unwrap_or_default();
 
     println!( "{output}" );
     println!( "Expected:" );
@@ -133,11 +133,11 @@ fn main()
   {
     let data = RowBuilder::new( vec![ "Description".into() ] )
       .add_row( vec![ "This is a very long description that would normally be truncated but should display fully without config".into() ] )
-      .build();
+      .build_view();
 
     let config = TableConfig::plain();
     let formatter = TableFormatter::with_config( config );
-    let output = formatter.format( &data );
+    let output = formatter.format( &data ).unwrap_or_default();
 
     println!( "{output}" );
     println!( "Expected:" );
@@ -154,13 +154,13 @@ fn main()
       .add_row( vec![ "Alice".into(), "Short desc".into(), "Active".into() ] )
       .add_row( vec![ "Bob".into(), "Very long description that exceeds limit".into(), "Inactive today".into() ] )
       .add_row( vec![ "Charlie".into(), "Another long description here too".into(), "OK".into() ] )
-      .build();
+      .build_view();
 
     let config = TableConfig::plain()
       .max_column_width( Some( 15 ) );
 
     let formatter = TableFormatter::with_config( config );
-    let output = formatter.format( &data );
+    let output = formatter.format( &data ).unwrap_or_default();
 
     println!( "{output}" );
     println!( "Expected:" );
@@ -176,13 +176,13 @@ fn main()
     let data = RowBuilder::new( vec![ "VeryLongHeaderNameThatExceedsLimit".into(), "Short".into() ] )
       .add_row( vec![ "Data 1".into(), "Value 1".into() ] )
       .add_row( vec![ "Data 2".into(), "Value 2".into() ] )
-      .build();
+      .build_view();
 
     let config = TableConfig::plain()
       .max_column_width( Some( 20 ) );
 
     let formatter = TableFormatter::with_config( config );
-    let output = formatter.format( &data );
+    let output = formatter.format( &data ).unwrap_or_default();
 
     println!( "{output}" );
     println!( "Expected:" );
