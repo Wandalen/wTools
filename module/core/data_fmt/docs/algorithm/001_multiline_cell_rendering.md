@@ -7,12 +7,17 @@
 - **In Scope**: Cell splitting, row height measurement, sub-line rendering with padding and borders.
 - **Out of Scope**: Word wrapping within cells (see `algorithm/002_word_wrapping.md`).
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/table/mod.rs` | TableFormatter multiline cell rendering |
-| test | `tests/multiline_cells.rs` | Multiline cell rendering test suite |
+| File | Relationship |
+|------|--------------|
+| `src/formatters/table/mod.rs` | TableFormatter multiline cell rendering |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| `tests/multiline_cells.rs` | Multiline cell rendering test suite |
 
 ### Abstract
 

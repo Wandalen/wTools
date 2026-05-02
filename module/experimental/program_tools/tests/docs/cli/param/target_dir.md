@@ -12,6 +12,7 @@
 **Given:** A compilable single-file program; no `--target-dir` flag
 **When:** `program_tools run main.rs`
 **Then:** Exit code `0`; no persistent target directory remains after the run; artifacts are inside the temp workspace and removed with it
+**Note**: In project mode (`run ./my_project/`), no temporary workspace is created; `--target-dir` absent means Cargo uses its implicit target directory inside the project directory, which is not cleaned up by the runner
 **Commands:** run
 
 ### EC-2 (Divergence B): Persistent path — artifacts retained

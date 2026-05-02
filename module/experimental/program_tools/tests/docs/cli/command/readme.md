@@ -11,4 +11,4 @@
 
 | Name | Purpose | Status |
 |------|---------|--------|
-| `run.md` | `command` spec for `run` | ⏳ |
+| `run.md` | `command` spec for `run` | ✅ |

@@ -6,9 +6,18 @@
 //! ## Test Categories
 //!
 //! - **TC-1**: Happy path — single Rust file executes and forwards stdout
+//! - **TC-2**: Happy path — existing Cargo project directory runs via `run_project`
 //! - **TC-3**: Missing `<TARGET>` argument — clap rejects, exits non-zero
 //! - **TC-4**: Non-existent path — binary prints error and exits 1
 //! - **TC-5**: Unknown flag — clap rejects, exits non-zero
+//! - **TC-6**: Non-zero target exit code forwarded verbatim (not normalised to 1)
+//! - **TC-7**: Infrastructure error — `--cargo /nonexistent` exits 1 with diagnostic
+//! - **TC-8**: Compilation error — compiler diagnostics appear in stderr, exits non-zero
+//! - **TC-9**: `--help` exits 0 with usage text in stdout
+//! - **TC-10**: `run --help` exits 0 with subcommand usage text
+//! - **TC-11**: No subcommand — clap requires one; exits non-zero
+//! - **TC-12**: `--capture` flag collects script stdout via capture→print path
+//! - **TC-13**: `--env KEY=VALUE` injects env var into the script process
 
 #[ allow( unused_imports ) ]
 use super::*;

@@ -3,10 +3,12 @@
 //! ## Test Categories
 //!
 //! - **OUTPUT Predicates**: `CapturedOutput` field accessors and predicate methods (no cargo)
-//! - **RUN SOURCE**: `run_source` executes inline Rust code via cargo
-//! - **RUN FILE**: `run_file` reads a file from disk and executes it
+//! - **RUN SOURCE**: `run_source` — hello world, compile errors, exit codes, stderr, multiline
+//! - **RUN FILE**: `run_file` — disk execution, missing source, invalid Rust
 //! - **RUN PROJECT**: `run_project` error handling for missing manifest
-//! - **TIMEOUT**: `timeout_ms` enforcement — fires on infinite loops, skips on generous budgets
+//! - **TIMEOUT**: capture-mode and forwarding-mode enforcement; zero-budget fires immediately
+//! - **ENV VARS**: `split_once('=')` parsing — no-equals ignored, value preserved past first `=`
+//! - **CLEANUP**: `cleanup=false` leaves workspace on disk; PID-scoped to avoid concurrent races
 
 #[ allow( unused_imports ) ]
 use super::*;

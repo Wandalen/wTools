@@ -25,13 +25,14 @@ Every knob that controls execution behavior is a named parameter in the RunOptio
 | `env_vars` | empty | `--env` | collection | Subprocess environment variable assignments; each flag/call appends one entry |
 | `edition` | `2021` | `--edition` | scalar | Rust edition for generated manifests only; ignored for project mode |
 | `package_name` | `script` | `--name` | scalar | Package name for generated manifests only; ignored for project mode |
-| `capture` | `true` (API) / forwarding (CLI) | `--capture` | scalar | Whether output is captured into the return value or forwarded to the terminal |
-| `cleanup` | `true` | `--keep` | scalar | Whether to remove the temp workspace after the run; `--keep` sets to false |
+| `capture` | `true` (API) / forwarding (CLI) | `--capture` | bool | Whether output is captured into the return value or forwarded to the terminal; CLI exposes this as a boolean presence flag (no value argument) |
+| `cleanup` | `true` | `--keep` | bool | Whether to remove the temp workspace after the run; `--keep` (boolean presence flag) sets to false |
 
 **Notes**:
 - `edition` and `package_name` apply only when the runner generates a manifest. They are ignored in project mode.
 - `target_dir` set to a persistent path persists artifacts across runs. Unset (OS temp) means artifacts are removed with the workspace during cleanup.
 - `capture` default differs by channel: the programmatic API defaults to `true` (return value populated for test assertions); the CLI defaults to forwarding (live terminal output for interactive use). In forwarding mode, stdout and stderr are written to the terminal and the captured output fields are empty.
+- `cleanup` applies only when the runner creates a temporary workspace (single-file and `run_source` modes). In project mode (`run_project`), no temporary workspace is created, so `--keep` has no effect and cleanup does not run.
 
 ### Cross-References
 

@@ -19,3 +19,11 @@
 **When:** Both `program_tools run a.rs` and `program_tools run b.rs` run concurrently
 **Then:** Both exit `0`; each run produces only its own correct output; workspace directories are distinct; neither run's sources appear in the other's workspace
 **Commands:** run
+
+### Cross-References
+
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | `docs/invariant/002_execution_isolation.md` | Canonical execution isolation contract |
+| test | `tests/inc/runner_test.rs` | Integration tests verifying per-run workspace isolation |
+| param | `tests/docs/cli/param/target_dir.md` | `--target-dir` flag: shared cache without workspace pollution |

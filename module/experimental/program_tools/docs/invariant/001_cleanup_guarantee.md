@@ -19,6 +19,10 @@ Script execution creates temporary directories containing Cargo manifests, sourc
 
 Cleanup is implemented as an explicit conditional call after the run completes. `execute_in_workspace` is called without propagating its result immediately; the workspace is removed via `std::fs::remove_dir_all` before the result is returned. This ensures cleanup executes regardless of whether the run succeeded or returned an infrastructure error. If the caller sets `run_options.cleanup = false`, cleanup is skipped and the workspace is left for the caller to inspect. If the caller configures a persistent target directory, that directory is not removed and is the caller's responsibility.
 
+### Scope Exception: Project Mode
+
+This invariant applies to single-file and multi-file execution modes only. When the caller invokes `run_project(dir, opts)` or passes a directory target via the CLI, no temporary workspace is created — the project's own directory is used as-is. Consequently, there is no workspace to clean up, and the `cleanup` field (and `--keep` flag) have no effect in project mode.
+
 ### Violations
 
 If cleanup fails — for example, because the OS denies directory removal — the error is silently discarded and disk space leaks. Callers running in disk-constrained environments should monitor for accumulated orphaned directories under the system temp root with names matching `program_tools_<pid>_<nanos>` and sweep them periodically.

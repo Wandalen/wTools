@@ -2,49 +2,49 @@
 
 ### Scope
 
-- **Purpose**: Verify `--capture` controls whether subprocess output is forwarded live or captured for programmatic access.
-- **Responsibility**: Edge cases for absent (forwarding default), captured mode, piped vs terminal, and invalid value.
-- **In Scope**: CLI default of `forwarding`; `captured` mode collecting stdout/stderr; invalid value rejection.
-- **Out of Scope**: API default (API uses `captured` by default — see `docs/feature/005_configuration_surface.md`); output format (→ `command/run.md`).
+- **Purpose**: Verify `--capture` switches output mode between forwarding (default) and buffered.
+- **Responsibility**: Edge cases for absent (forwarding), present (buffered), non-zero exit with capture, `--env` interaction, stderr-only program, and unknown variant flag.
+- **In Scope**: CLI forwarding default; capture mode stdout and stderr buffering; `--capture` is a boolean presence flag (no value argument accepted).
+- **Out of Scope**: API default (`true` — see `docs/feature/005_configuration_surface.md`); timeout interaction with capture (→ `param/timeout.md` EC-2).
 
 ### EC-1 (Divergence A): Absent — output forwarded to terminal
 
-**Given:** A program that prints to stdout and stderr
-**When:** `program_tools run prog.rs` (no `--capture`)
-**Then:** Exit code `0`; output appears on the caller's terminal in real time; no buffering artefacts
+**Given:** A program that prints to stdout; no `--capture` flag
+**When:** `program_tools run prog.rs`
+**Then:** Exit code `0`; output flows directly to the caller's terminal in real time; no buffering occurs
 **Commands:** run
 
-### EC-2 (Divergence B): `--capture captured` — output collected
+### EC-2 (Divergence B): Present — output captured and buffered
 
-**Given:** The same program that prints to stdout and stderr
-**When:** `program_tools run --capture captured prog.rs`
-**Then:** Exit code `0`; stdout and stderr of the subprocess are captured and surfaced in the tool's result; output does not appear on terminal during execution
+**Given:** A program that prints to stdout; `--capture` flag present (presence flag — no value argument)
+**When:** `program_tools run --capture prog.rs`
+**Then:** Exit code `0`; stdout and stderr are captured into the runner's buffers; the CLI re-emits stdout via print and stderr via eprint after execution completes
 **Commands:** run
 
-### EC-3: `--capture forwarding` — explicit forwarding
+### EC-3: Capture with non-zero exit program
 
-**Given:** A program that prints to stdout
-**When:** `program_tools run --capture forwarding prog.rs`
-**Then:** Exit code `0`; behaviour is identical to omitting the flag; output forwarded live
+**Given:** A program that prints to stdout then exits non-zero; `--capture` flag
+**When:** `program_tools run --capture exit_fail.rs`
+**Then:** Exit code non-zero (forwarded from program); any output produced before exit is captured; capture mode does not suppress or alter the exit code
 **Commands:** run
 
-### EC-4: Invalid value
+### EC-4: Capture with `--env` flag
 
-**Given:** Any compilable program
-**When:** `program_tools run --capture buffered prog.rs`
-**Then:** Exit code `1`; `stderr` contains an error describing the invalid capture mode; `stdout` is empty
+**Given:** A program that reads an env var and prints it; `--capture` and `--env KEY=VALUE`
+**When:** `program_tools run --capture --env KEY=VALUE prog.rs`
+**Then:** Exit code `0`; the env var is visible to the child process; captured stdout contains the expected env var value
 **Commands:** run
 
-### EC-5: Captured mode — stderr also captured
+### EC-5: Capture mode — stderr written by program re-emitted via eprint
 
-**Given:** A program that writes only to stderr
-**When:** `program_tools run --capture captured stderr_prog.rs`
-**Then:** Exit code `0`; stderr content is captured and accessible; nothing appears on the caller's terminal
+**Given:** A program that writes only to stderr; `--capture` flag
+**When:** `program_tools run --capture stderr_prog.rs`
+**Then:** Exit code `0`; stderr is captured into the buffer and re-emitted to the caller's terminal via eprint after execution completes; stdout is empty; both streams are re-emitted — not suppressed
 **Commands:** run
 
-### EC-6: Duplicate flag — behaviour documented
+### EC-6: Unknown variant flag `--no-capture` rejected
 
-**Given:** A compilable single-file program
-**When:** `program_tools run --capture forwarding --capture captured prog.rs`
-**Then:** Exit code `0` with last value winning, OR exit code `1` with duplicate-flag error; behaviour is consistent and documented
+**Given:** Any compilable program; `--no-capture` flag (not a defined CLI flag)
+**When:** `program_tools run --no-capture prog.rs`
+**Then:** Exit code `2`; `stderr` contains a clap error referencing the unrecognised flag; `stdout` is empty
 **Commands:** run

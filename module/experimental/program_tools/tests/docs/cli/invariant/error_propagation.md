@@ -19,3 +19,11 @@
 **When:** `program_tools run broken.rs`
 **Then:** Exit code non-zero; `stderr` contains the compiler error output (at minimum the first fatal error); `stdout` is empty or contains only compile-step output; the tool does not silently succeed
 **Commands:** run
+
+### Cross-References
+
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | `docs/invariant/004_error_propagation.md` | Canonical error propagation contract |
+| test | `tests/inc/runner_test.rs` | Integration tests verifying error surfacing from build and execution |
+| test | `tests/inc/cli_test.rs` | CLI-level tests: TC-7 (Cargo not found), TC-8 (compilation error) |

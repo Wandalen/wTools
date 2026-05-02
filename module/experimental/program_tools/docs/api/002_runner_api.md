@@ -36,6 +36,10 @@ The runner accepts a completed plan and executes it: allocating a temporary work
 
 Infrastructure failures return a structured error: workspace allocation failure, file write failure, Cargo binary not found, manifest generation failure. Cargo compilation errors are NOT infrastructure failures — they produce non-zero exit status and compiler output in the stderr buffer of the captured output. This distinction enables callers to assert on expected compilation failures (e.g., testing that invalid code is rejected).
 
+### Known Limitations
+
+**Capture mode with timeout — child process not killed on expiry**: When `capture = true` and `timeout_ms` is set, the runner spawns a background thread to read the child's output pipes. If the timeout expires, the background thread continues holding the pipe; the child process is not killed and runs to natural completion. In forwarding mode (`capture = false`) with a timeout, the child is killed correctly on expiry. Callers that require hard process termination on timeout must use forwarding mode.
+
 ### Compatibility Guarantees
 
 Version 0.1.0, marked experimental. The execution function names and signatures are expected to evolve as the feature set grows. The captured output type fields are intended to be stable but may gain additional fields before stabilization.

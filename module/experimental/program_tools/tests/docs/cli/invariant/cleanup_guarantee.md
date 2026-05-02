@@ -24,3 +24,14 @@
 **When:** `program_tools run broken.rs` terminates with a build error
 **Then:** Exit code non-zero; no temp workspace directory exists on disk; the invariant holds on the build-failure path
 **Commands:** run
+
+**Note — project mode exception**: This invariant applies to single-file and multi-file mode only. In project mode (`run ./my_project/`), no temporary workspace is created; there is nothing to clean up, and the `--keep` flag has no effect.
+
+### Cross-References
+
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | `docs/invariant/001_cleanup_guarantee.md` | Canonical cleanup guarantee contract |
+| test | `tests/inc/runner_test.rs` | Integration tests verifying workspace cleanup behavior |
+| param | `tests/docs/cli/param/keep.md` | `--keep` flag: opt-out from cleanup |
+| param | `tests/docs/cli/param/target_dir.md` | `--target-dir` flag: persistent artifact directory |

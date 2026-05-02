@@ -37,7 +37,7 @@ program_tools run
 ```
 
 **Expected behavior:**
-- Exits with code `1`
+- Exits with code `2` (clap usage error)
 - `stderr` contains a usage error referencing the missing required `<TARGET>` argument
 - `stdout` is empty
 
@@ -61,7 +61,7 @@ program_tools run --not-a-real-flag main.rs
 ```
 
 **Expected behavior:**
-- Exits with code `1`
+- Exits with code `2` (clap usage error)
 - `stderr` contains an error referencing the unrecognised flag
 - `stdout` is empty
 
@@ -102,3 +102,65 @@ program_tools run broken.rs
 - Exits with a non-zero code (Cargo's exit code for compilation failure)
 - `stderr` contains Cargo's compiler diagnostic output (contains `error[E...]:` or similar)
 - `stdout` is empty
+
+## TC-9 — Top-level `--help` exits zero with usage text
+
+**Command:**
+```
+program_tools --help
+```
+
+**Expected behavior:**
+- Exits with code `0`
+- `stdout` contains usage text
+- `stderr` is empty
+
+## TC-10 — `run --help` exits zero with subcommand usage text
+
+**Command:**
+```
+program_tools run --help
+```
+
+**Expected behavior:**
+- Exits with code `0`
+- `stdout` contains the `run` subcommand's usage text
+- `stderr` is empty
+
+## TC-11 — No subcommand exits non-zero
+
+**Command:**
+```
+program_tools
+```
+
+**Expected behavior:**
+- Exits with a non-zero code
+- `stderr` contains a clap usage error (subcommand required)
+- `stdout` is empty or contains help text
+
+## TC-12 — `--capture` flag enables buffered output mode
+
+**Command:**
+```
+program_tools run --capture main.rs
+```
+(where `main.rs` prints to stdout)
+
+**Expected behavior:**
+- Exits with code `0`
+- `stdout` contains the program's output (captured and re-emitted by the CLI)
+- `--capture` is a boolean presence flag — no value argument required
+
+## TC-13 — `--env KEY=VALUE` injects environment variable into script
+
+**Command:**
+```
+program_tools run --capture --env PT_VAR=hello main.rs
+```
+(where `main.rs` reads and prints `PT_VAR`)
+
+**Expected behavior:**
+- Exits with code `0`
+- `stdout` contains the env var value (`hello`)
+- The env var is visible to the child process via `std::env::var`

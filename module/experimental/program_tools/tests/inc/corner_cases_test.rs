@@ -6,11 +6,13 @@
 //! ## Test Categories
 //!
 //! - **SOURCE Corner Cases**: Empty fields, large data, special characters
-//! - **PROGRAM Corner Cases**: Zero sources, single source, three sources, insertion order, duplicates
-//! - **PLAN Corner Cases**: Minimal configurations
+//! - **PROGRAM Corner Cases**: Zero sources, single source, three sources, insertion order, duplicates, manifest field
+//! - **PLAN Corner Cases**: Minimal configurations, `run_options` stored vs `None`
 //! - **DEBUG Trait**: Formatting validation
 //! - **NAMESPACE**: Import path validation
 //! - **EXPLICIT Parameters**: Default vs explicit behavior
+//! - **`CapturedOutput` Corner Cases**: Default values, lossy UTF-8, empty needle, clone independence, assertion no-panics
+//! - **`RunOptions` Corner Cases**: Sentinel defaults, clone independence, Debug formatting
 
 #[ allow( unused_imports ) ]
 use super::*;

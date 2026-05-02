@@ -46,7 +46,7 @@ program_tools run [OPTIONS] <TARGET>
 - The target program's non-zero exit code is forwarded when the program itself exits non-zero
 
 **Output behavior (default)**:
-The target program's stdout and stderr are forwarded directly to the terminal in real time. The CLI does not buffer or suppress output. Pass `--capture` to suppress forwarding and instead print a structured summary after completion.
+The target program's stdout and stderr are forwarded directly to the terminal in real time. The CLI does not buffer or suppress output. Pass `--capture` to buffer stdout and stderr during execution and re-emit them after completion (stdout via print, stderr via eprint).
 
 ### Error Handling
 

@@ -43,16 +43,19 @@ cargo test source_empty_file_path
 
 Current test coverage spans:
 
-- Source builder API (empty fields, large data, special characters)
-- Program builder API (zero sources, single source, three sources, insertion order, duplicates)
-- Plan builder API (minimal plan, complete nested chain)
-- Debug trait implementation for all structs
-- Namespace accessibility (exposed and prelude imports)
-- Explicit parameter handling
-- CapturedOutput predicate methods (exit_ok, stdout_eq, stdout_contains, stderr_contains)
-- Runner integration: run_source executes inline Rust code via cargo
-- Runner integration: run_file reads a file from disk and executes it
-- Runner error handling: run_file on missing file returns Err
-- Runner error handling: run_project on missing Cargo.toml returns Err
+- Source builder API: empty fields, large data, special characters
+- Program builder API: zero/single/three sources, insertion order, duplicates, manifest field
+- Plan builder API: minimal plan, complete nested chain, `run_options` stored vs `None`
+- Debug trait, namespace accessibility, and explicit parameter handling
+- `CapturedOutput` corner cases: default values, lossy UTF-8, empty needle, clone, assertion no-panics
+- `RunOptions` corner cases: sentinel defaults, clone independence, Debug formatting
+- `CapturedOutput` predicate methods: `exit_ok`, `stdout_eq`, `stdout_contains`, `stderr_contains`
+- `run_source`: hello world, compile error, exit code forwarding, stderr capture, multiline stdout
+- `run_file`: disk execution, missing source path, invalid Rust compile error
+- `run_project`: error handling for missing Cargo.toml
+- Timeout enforcement: capture mode and forwarding mode; zero budget fires immediately
+- Env var injection: `KEY=VALUE` split, no-`=` ignored, `=` in value preserved
+- Cleanup: `cleanup=false` leaves workspace on disk (PID-scoped to avoid concurrent races)
+- CLI binary TC-1–TC-13: happy path, project dir, argument errors, exit code forwarding, help flags, `--capture`, `--env`
 
 See `manual/readme.md` for the manual testing plan and `docs/cli/` for CLI test surface specs.

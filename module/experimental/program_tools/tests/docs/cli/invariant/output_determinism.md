@@ -19,3 +19,10 @@
 **When:** `program_tools run main.rs` invoked twice in sequence
 **Then:** Both runs exit `0`; `stderr` content is identical across both runs (excluding any framework-level timing lines); the invariant holds for stderr
 **Commands:** run
+
+### Cross-References
+
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | `docs/invariant/003_output_determinism.md` | Canonical output determinism contract |
+| test | `tests/inc/runner_test.rs` | Integration tests verifying run_source and run_file output correctness |
