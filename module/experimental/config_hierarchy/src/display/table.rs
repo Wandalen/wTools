@@ -106,9 +106,9 @@ where
     ] );
   }
 
-  let tree = builder.build();
+  let tree = builder.build_view();
   let formatter = TableFormatter::with_config( TableConfig::default() );
-  let _ = write!( output, "{}", formatter.format( &tree ) );
+  let _ = write!( output, "{}", data_fmt::Format::format( &formatter, &tree ).unwrap_or_default() );
 
   // Add sources table if enabled
   if options.include_sources
@@ -192,9 +192,9 @@ pub fn format_sources_table< P : ConfigPaths >() -> String
     "(hardcoded defaults)".into(),
   ] );
 
-  let sources_tree = sources_builder.build();
+  let sources_tree = sources_builder.build_view();
   let formatter = TableFormatter::with_config( TableConfig::default() );
-  let _ = write!( output, "{}", formatter.format( &sources_tree ) );
+  let _ = write!( output, "{}", data_fmt::Format::format( &formatter, &sources_tree ).unwrap_or_default() );
 
   output
 }
