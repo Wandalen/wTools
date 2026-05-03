@@ -56,6 +56,11 @@ name = "program_tools"
 path = "src/main.rs"
 required-features = [ "enabled" ]
 
+[[bin]]
+name = "pt"
+path = "src/main.rs"
+required-features = [ "enabled" ]
+
 [[example]]
 name = "basic"
 path = "examples/basic.rs"

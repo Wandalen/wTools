@@ -49,7 +49,7 @@ Total: 69 crates (3 alias + 34 core + 1 deprecated + 31 experimental)
 | `implements` | experimental | 2 | Primitives | Answer at compile time whether a type implements a trait | 0 | 0 | 0 | 0 | 0 | experimental | stable | TDCFREMS |
 | `inspect_type` | core | 2 | Primitives | Print the Rust type name and byte size of any expression at runtime | 0 | 0 | 0 | 0 | 0 | stable | stable | TDCFREMS |
 | `interval_adapter` | experimental | 2 | Primitives | Provide uniform interval trait coverage over all Rust range variants — bounded, half-open, and unbounded | 0 | 0 | 0 | 0 | 0 | experimental | stable | TDCFRE·S |
-| `is_slice` | experimental | 2 | Primitives | Answer at compile time whether an expression is a slice | 0 | 0 | 0 | 0 | 0 | experimental | stable | TDCFREMS |
+| `is_slice` | experimental | 2 | Primitives | Answer at compile time whether an expression is a slice | 0 | 0 | 0 | 0 | 0 | experimental | deprecated | TDCFREMS |
 | `time_tools` | experimental | 2 | Primitives | Provide current UNIX epoch timestamps at second, millisecond, and nanosecond resolution | 0 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFRE·S |
 | `typing_tools` | experimental | 2 | Primitives | Aggregate implements, is_slice, and inspect_type into one dependency with per-sub-crate feature flags | 3 | 3 | 3 | 0 | 0 | deprecated | deprecated | TDCFREMS |
 | `winterval` | experimental | 2 | Primitives | Re-export interval_adapter as a standalone dependency | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDC·REMS |
@@ -83,7 +83,7 @@ Total: 69 crates (3 alias + 34 core + 1 deprecated + 31 experimental)
 | `cli_fmt` | core | 6 | String & Format | Process CLI command output with head/tail filtering, width truncation, and stream merging | 1 | 1 | 1 | 0 | 0 | experimental | stable | TDCFR·MS |
 | `color_tools` | core | 6 | String & Format | Wrap text with typed ANSI color for terminal and HTML rendering | 1 | 0 | 0 | 0 | 0 | experimental | stable | TDCFREMS |
 | `data_fmt` | core | 6 | String & Format | Render structured data in multiple visual, text, and serialization formats | 9 | 3 | 2 | 1 | 0 | stable | stable | TDCFREMS |
-| `data_type` | experimental | 6 | String & Format | Aggregate interval, collection, and sum-type re-exports under one unified facade namespace | 3 | 2 | 0 | 2 | 0 | experimental | stable | TDC·RE·S |
+| `data_type` | experimental | 6 | String & Format | Aggregate interval, collection, and sum-type re-exports under one unified facade namespace | 3 | 2 | 0 | 2 | 0 | experimental | deprecated | TDC·RE·S |
 | `format_tools` | core | 6 | String & Format | Extend std formatting with structural display and string helpers | 3 | 3 | 0 | 3 | 0 | deprecated | deprecated | TDCFRE·S |
 | `include_md` | experimental | 6 | String & Format | Include a markdown file or named section at compile time | 0 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFR·MS |
 | `strs_tools` | core | 6 | String & Format | Split, indent, and transform strings with ANSI utilities and SIMD acceleration | 9 | 2 | 0 | 2 | 0 | experimental | stable | TDCFRE·S |
@@ -102,11 +102,11 @@ Total: 69 crates (3 alias + 34 core + 1 deprecated + 31 experimental)
 | `genfile` | core | 8 | Tooling | Manage code generation template archives from the command line | 4 | 3 | 1 | 2 | 0 | deprecated | deprecated | TDC·REMS |
 | `multiline_input` | core | 8 | Tooling | Collect multiline terminal input with interactive key editing and Builder-configured validation | 4 | 1 | 0 | 1 | 0 | deprecated | deprecated | TDCFR·MS |
 | `multiline_input` | experimental | 8 | Tooling | Collect multiline terminal input with interactive key editing and Builder-configured validation | 4 | 1 | 0 | 1 | 0 | experimental | stable | T·CFREMS |
-| `test_tools` | experimental | 8 | Tooling | Aggregate workspace testing utilities into one dev-dependency via a circular-dependency-safe standalone build mode | 11 | 3 | 0 | 3 | 0 | experimental | stable | TDCFRE·S |
+| `test_tools` | experimental | 8 | Tooling | Aggregate workspace testing utilities into one dev-dependency via a circular-dependency-safe standalone build mode | 11 | 3 | 0 | 3 | 0 | experimental | stable | TDCFRE·· |
 | `wca` | experimental | 8 | Tooling | Aggregate CLI commands as typed Rust routines with a parse-verify-execute pipeline | 7 | 4 | 0 | 4 | 0 | experimental | stable | TDC·RE·S |
-| `sqlx_query` | experimental | 9 | Application | Switch between SQLx compile-time and runtime query macros by feature | 0 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFR·MS |
+| `sqlx_query` | experimental | 9 | Application | Switch between SQLx compile-time and runtime query macros by feature | 0 | 0 | 0 | 0 | 0 | experimental | deprecated | TDCFR·MS |
 | `unitore` | experimental | 9 | Application | Subscribe to RSS and Atom feeds from TOML configs, persist entries in embedded SQL, and browse from the terminal | 20 | 3 | 0 | 3 | 0 | experimental | stable | TDC·R··S |
-| `willbe` | experimental | 9 | Application | Publish multi-crate workspaces in topological order, run feature-matrix tests, generate CI/CD workflows, and renew readme headers | 40 | 14 | 0 | 14 | 0 | experimental | stable | TDC·R··S |
+| `willbe` | experimental | 9 | Application | Publish multi-crate workspaces in topological order, run feature-matrix tests, generate CI/CD workflows, and renew readme headers | 40 | 14 | 0 | 14 | 0 | experimental | stable | TDC·R··· |
 | `willbe2` | deprecated | 9 | Application | Expose the willbe workspace tool under the willbe2 binary and crate name via complete re-export | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFR·MS |
 | `wtools` | experimental | 9 | Application | Re-export ten general-purpose utility categories under feature-gated module aliases | 12 | 11 | 0 | 11 | 0 | deprecated | deprecated | TDC·REM· |
 | `proper_tools` | alias | 9 | Application | Alias — recommended starting point for general-purpose wTools use | 0 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFREMS |
@@ -119,6 +119,7 @@ Unreachable from any application (willbe, unitore, wca) or test infrastructure (
 | Crate | Module | Signal | Superseded By |
 |-------|--------|--------|---------------|
 | `async_tools` | experimental | `private` module is empty; re-exports `async_from` with zero added API | — |
+| `data_type` | experimental | Pure facade re-exporting `collection_tools` + `interval_adapter` + `either`; zero unique logic; `willbe` must migrate to direct deps | direct deps on constituent crates |
 | `diagnostics_tools` | experimental | Sole dependent is `wtools` (deprecated) | — |
 | `fs_tools` | alias | Alias; zero dependents; underlying `file_tools` also deprecated | — |
 | `format_tools` | core | Zero dependents; reflect_tools is experimental but no other live crate references format_tools | — |
@@ -129,6 +130,7 @@ Unreachable from any application (willbe, unitore, wca) or test infrastructure (
 | `meta_tools` | experimental | ↑L=3 arch violation; sole dependent is `wtools` (deprecated) | — |
 | `multiline_input` | core | Excluded from workspace (Cargo.toml exclude); moved to module/experimental | `multiline_input` (experimental) |
 | `proper_tools` | alias | Alias; no dependencies; `enabled` feature declares nothing | — |
+| `sqlx_query` | experimental | Feature-flag toggle between two sqlx macros; 0 deps; 0 workspace consumers; trivially inlineable | — |
 | `time_tools` | experimental | Sole dependent is `wtools` (deprecated) | — |
 | `typing_tools` | experimental | Sole dependent is `wtools` (deprecated) | — |
 | `willbe2` | deprecated | Entire `src/lib.rs` is `pub use ::willbe::*`; zero independent development | `willbe` |
@@ -145,6 +147,7 @@ Complete dependency chains where every crate is unreachable:
 3. `impls_index_meta` → `impls_index` → `wtools` → (nobody)
 4. `file_tools` → `fs_tools` → (nobody)
 5. `async_tools` → (nobody)
+6. `sqlx_query` → (nobody)
 
 ### Cleanup Artifact
 
@@ -163,7 +166,6 @@ All 8 criteria met — can be promoted to stable without prerequisite work.
 | Crate | L# | Readiness |
 |-------|----|-----------|
 | `implements` | 2 | TDCFREMS |
-| `is_slice` | 2 | TDCFREMS |
 | `color_tools` | 6 | TDCFREMS |
 | `benchkit` | 8 | TDCFREMS |
 
@@ -177,7 +179,7 @@ All 8 criteria met — can be promoted to stable without prerequisite work.
 | `cli_fmt` | 6 | TDCFR·MS | E |
 | `strs_tools` | 6 | TDCFRE·S | M |
 | `workspace_tools` | 7 | TDCFR·MS | E |
-| `test_tools` | 8 | TDCFRE·S | M |
+| `test_tools` | 8 | TDCFRE·· | M, S |
 | `crates_tools` | 8 | TDC·REMS | F |
 | `multiline_input` | 8 | T·CFREMS | D |
 | `component_model_meta` | 3 | TD·FR·MS | C, E |
@@ -186,18 +188,18 @@ All 8 criteria met — can be promoted to stable without prerequisite work.
 | `config_hierarchy` (core) | 7 | TDC·R·MS | F, E |
 | `config_hierarchy` (experimental) | 7 | TDC·R·MS | F, E |
 | `wca` | 8 | TDC·RE·S | F, M |
-| `data_type` | 6 | TDC·RE·S | F, M |
 | `unitore` | 9 | TDC·R··S | F, E, M |
-| `willbe` | 9 | TDC·R··S | F, E, M |
+| `willbe` | 9 | TDC·R··· | F, E, M, S |
 
 ### Blocker Frequency
 
 | Criterion | Failing | Crates |
 |-----------|---------|--------|
-| M (Markers) | 9 | data_type, interval_adapter, component_model, iter_tools, strs_tools, test_tools, wca, unitore, willbe |
-| F (Features) | 9 | crates_tools, data_type, component_model, iter_tools, config_hierarchy (core), config_hierarchy (experimental), wca, unitore, willbe |
+| M (Markers) | 8 | interval_adapter, component_model, iter_tools, strs_tools, test_tools, wca, unitore, willbe |
+| F (Features) | 8 | crates_tools, component_model, iter_tools, config_hierarchy (core), config_hierarchy (experimental), wca, unitore, willbe |
 | E (Examples) | 8 | component_model_meta, strs_tools_meta, cli_fmt, workspace_tools, config_hierarchy (core), config_hierarchy (experimental), unitore, willbe |
 | C (Clean) | 2 | component_model_meta, component_model_types |
+| S (Stable deps) | 2 | test_tools, willbe |
 | D (Documented) | 1 | multiline_input (experimental) |
 
 ### Stable Crates with Gaps
@@ -222,6 +224,91 @@ Already-stable crates that do not meet all 8 criteria. Not promotion blockers, b
 | `mod_interface` | TDC·REMS | F |
 | `genfile_core` | TDC·REMS | F |
 | `process_tools` | TDCFR·MS | E |
+
+## Usefulness Assessment
+
+Utility ranking for 49 non-deprecated crates. Evaluates: internal dependent count, external adopter value, unique functionality (not trivially replaceable), API surface depth.
+
+### Tier Definitions
+
+| Tier | Label | Criteria | Count |
+|------|-------|----------|-------|
+| 1 | Core | Essential to workspace; 5+ internal dependents; breakage cascades widely | 10 |
+| 2 | High | Significant standalone utility; meaningful API surface; active consumers | 14 |
+| 3 | Moderate | Useful in domain; narrower audience; some unique functionality | 15 |
+| 4 | Low | Thin wrapper or narrow utility; few/zero consumers; easy to inline | 7 |
+| 5 | Minimal | Stub, unimplemented, or fully supersedable; future deprecation review candidate | 2 |
+
+### Ranked by Tier
+
+| Crate | L# | Tier | Signal |
+|-------|----|------|--------|
+| `error_tools` | 1 | 1 | Unified error handling; near-universal workspace dep |
+| `macro_tools` | 3 | 1 | Proc-macro framework; used by all `_meta` crates |
+| `mod_interface` | 4 | 1 | Module organization framework; used by many crates |
+| `mod_interface_meta` | 3 | 1 | Builds mod_interface |
+| `former` | 4 | 1 | Builder pattern; ubiquitous across workspace |
+| `former_meta` | 3 | 1 | Builds former |
+| `former_types` | 4 | 1 | Compile-time contracts reused by all former consumers |
+| `derive_tools` | 4 | 1 | Adds missing std derives; widely used |
+| `derive_tools_meta` | 3 | 1 | Builds derive_tools |
+| `collection_tools` | 5 | 1 | Ergonomic collection literal macros; broadly used |
+| `willbe` | 9 | 2 | THE main workspace application; publish + CI/CD |
+| `wca` | 8 | 2 | CLI aggregation framework; used by willbe + unitore |
+| `unitore` | 9 | 2 | RSS/Atom feed application; standalone product |
+| `test_tools` | 8 | 2 | Test harness; used by many crates in dev-deps |
+| `process_tools` | 7 | 2 | Subprocess execution; essential for willbe |
+| `pth` | 7 | 2 | Path manipulation; essential for willbe |
+| `data_fmt` | 6 | 2 | Structured data rendering; rich multi-format API |
+| `workspace_tools` | 7 | 2 | Workspace resolution, config loading, secrets |
+| `genfile_core` | 8 | 2 | Template rendering engine; used by willbe |
+| `clone_dyn` | 4 | 2 | Makes Box<dyn Trait> cloneable; unique capability |
+| `clone_dyn_types` | 4 | 2 | CloneDyn trait; supports clone_dyn ecosystem |
+| `clone_dyn_meta` | 3 | 2 | Builds clone_dyn |
+| `variadic_from` | 4 | 2 | Multi-arg construction; decent standalone utility |
+| `variadic_from_meta` | 3 | 2 | Builds variadic_from |
+| `config_hierarchy` (core) | 7 | 3 | Hierarchical config resolution; real-world utility |
+| `config_hierarchy` (experimental) | 7 | 3 | Hierarchical config resolution; real-world utility |
+| `iter_tools` | 5 | 3 | itertools re-export + clonable boxed iterators |
+| `strs_tools` | 6 | 3 | String split/indent/transform with ANSI + SIMD |
+| `strs_tools_meta` | 3 | 3 | Builds strs_tools |
+| `color_tools` | 6 | 3 | ANSI color wrapping for terminal and HTML |
+| `interval_adapter` | 2 | 3 | Uniform interval trait over all range variants |
+| `benchkit` | 8 | 3 | Benchmark performance + markdown reports |
+| `component_model` | 4 | 3 | Type-driven field assignment pattern |
+| `component_model_types` | 4 | 3 | Shared traits for component_model |
+| `component_model_meta` | 3 | 3 | Builds component_model |
+| `crates_tools` | 8 | 3 | Download and decode .crate archives |
+| `implements` | 2 | 3 | Compile-time trait-check mechanism; unique |
+| `inspect_type` | 2 | 3 | Runtime type name + size printing; simple but unique |
+| `program_tools` | 7 | 3 | Rust script runner; compile + execute Rust files |
+| `multiline_input` (experimental) | 8 | 3 | Interactive multiline terminal input |
+| `cli_fmt` | 6 | 4 | Thin output filtering wrapper; 0 external deps |
+| `for_each` | 5 | 4 | Thin compile-time list macro; easily inlined |
+| `async_from` | 5 | 4 | Trivial async trait definitions; 0 live internal deps |
+| `deterministic_rand` | 2 | 4 | No workspace consumer; niche use case |
+| `mem_tools` | 1 | 4 | Trivial std memory wrappers; 0 live internal deps |
+| `reflect_tools` | 4 | 4 | Runtime reflection; incomplete implementation |
+| `reflect_tools_meta` | 3 | 4 | Stub returning empty TokenStream; no real logic |
+| `asbytes` | 2 | 5 | Thin bytemuck wrapper; trivially replaceable by direct dep |
+| `include_md` | 6 | 5 | Unimplemented stub; 0 logic; 0 consumers |
+
+### Tier Distribution by Layer
+
+| L# | Layer | T1 | T2 | T3 | T4 | T5 | Total |
+|----|-------|----|----|----|----|-----|-------|
+| 1 | Foundation | 1 | 0 | 0 | 1 | 0 | 2 |
+| 2 | Primitives | 0 | 0 | 3 | 1 | 1 | 5 |
+| 3 | Macro Framework | 4 | 2 | 2 | 1 | 0 | 9 |
+| 4 | Patterns | 4 | 3 | 2 | 1 | 0 | 10 |
+| 5 | Collections | 1 | 0 | 1 | 2 | 0 | 4 |
+| 6 | String & Format | 0 | 1 | 2 | 1 | 1 | 5 |
+| 7 | Path & Process | 0 | 3 | 2 | 0 | 0 | 5 |
+| 8 | Tooling | 0 | 3 | 3 | 0 | 0 | 6 |
+| 9 | Application | 0 | 2 | 0 | 0 | 0 | 2 |
+| | **Total** | **10** | **14** | **15** | **7** | **2** | **48** |
+
+Note: config_hierarchy counted once in tier table totals. Main ranked table lists both entries separately (49 rows).
 
 ## Crate Profiles
 
@@ -367,7 +454,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 2 · Primitives
 - **state**: experimental
-- **target**: stable
+- **target**: deprecated
 - **readiness**: TDCFREMS
 - **purpose**: Answer at compile time whether an expression is a slice
 - **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
@@ -859,7 +946,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 6 · String & Format
 - **state**: experimental
-- **target**: stable
+- **target**: deprecated
 - **readiness**: TDC·RE·S
 - **purpose**: Aggregate interval, collection, and sum-type re-exports under one unified facade namespace
 - **deps**: 3 · **int**: 2 · **=L**: 0 · **↓L**: 2 · **↑L**: 0
@@ -1165,7 +1252,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 9 · Application
 - **state**: experimental
-- **target**: experimental
+- **target**: deprecated
 - **readiness**: TDCFR·MS
 - **purpose**: Switch between SQLx compile-time and runtime query macros by feature
 - **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
@@ -1194,7 +1281,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 9 · Application
 - **state**: experimental
 - **target**: stable
-- **readiness**: TDC·R··S
+- **readiness**: TDC·R···
 - **purpose**: Publish multi-crate workspaces in topological order, run feature-matrix tests, generate CI/CD workflows, and renew readme headers
 - **deps**: 40 · **int**: 14 · **=L**: 0 · **↓L**: 14 · **↑L**: 0
 - **version**: 0.35.0

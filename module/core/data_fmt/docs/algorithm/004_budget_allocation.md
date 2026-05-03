@@ -7,15 +7,18 @@
 - **In Scope**: Column classification, fixed/flex partitioning, budget distribution with remainder, minimum width clamping.
 - **Out of Scope**: Cell wrapping within budgets (see `algorithm/002_word_wrapping.md`), fold detection (see `algorithm/005_column_fold_detection.md`).
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/table/mod.rs` | `classify_columns`, `compute_column_budgets` |
-| source | `src/config.rs` | `ColumnFlex` enum, `terminal_width` field |
-| test | `tests/auto_wrap_test.rs` | Budget allocation test scenarios (T02–T05, T14–T15) |
-| doc | `../feature/005_auto_fit.md` | Auto-fit feature overview and pipeline |
-| doc | `../api/003_config_types.md` | `ColumnFlex`, `TableConfig` field reference |
+| File | Relationship |
+|------|--------------|
+| `src/formatters/table/mod.rs` | `classify_columns`, `compute_column_budgets` |
+| `src/config.rs` | `ColumnFlex` enum, `terminal_width` field |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| `tests/auto_wrap_test.rs` | Budget allocation test scenarios (T02–T05, T14–T15) |
 
 ### Abstract
 

@@ -16,7 +16,7 @@
 |----|------|--------|
 | IC-1 | RowBuilder panics when row is shorter than headers | ✅ |
 | IC-2 | RowBuilder panics when row is longer than headers | ✅ |
-| IC-3 | headers-only table renders header row and separator | ✅ |
+| IC-3 | empty RowBuilder (no rows) renders to empty string | ✅ |
 | IC-4 | single-row table renders without error | ✅ |
 
 ---
@@ -41,17 +41,16 @@
 
 ---
 
-### IC-3: headers-only table renders header row and separator
+### IC-3: empty `RowBuilder` (no rows) renders to empty string
 
-- **Given:** A `RowBuilder` with 2 headers and no rows added, built with `.build_view()`.
+- **Given:** A `RowBuilder` with 2 headers and no rows added, built with `.build()`.
 - **When:** Rendered with `TableFormatter`.
-- **Then:** Output contains the header row and separator line (at most 2 lines); no data
-  rows are emitted; no panic. Only a truly empty table (zero columns) renders to `""`.
+- **Then:** Output is `""`; no partial table structure, header row, or separator is
+  emitted; no panic.
 - **Note:** Covered by `empty_table_renders_to_empty_string` in `tests/data.rs`.
-  Also validated by T17 (`auto_wrap_test`) and T20 (`auto_fold_test`).
-  Implementation: `format_internal` early-exits when `headers.is_empty()`
-  (`src/formatters/table/mod.rs`). Prior guard was `rows.is_empty()`, which suppressed
-  headers — changed so callers always see the column structure for empty result sets.
+  Implementation: `format_internal` early-exits when both `headers` and `rows` are
+  empty (`src/formatters/table/mod.rs`); `.build()` on an empty `RowBuilder` produces
+  a root `TreeNode` with zero children since headers are not stored until `add_row`.
 
 ---
 

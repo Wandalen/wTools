@@ -7,16 +7,18 @@
 - **In Scope**: Cumulative width scan, fold point identification, primary vs overflow partitioning, continuation line format selection.
 - **Out of Scope**: Budget allocation for primary columns (see `algorithm/004_budget_allocation.md`), cell wrapping (see `algorithm/002_word_wrapping.md`).
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/table/mod.rs` | `determine_fold_point`, `render_fold_continuation`, `should_auto_fold` |
-| source | `src/config.rs` | `FoldStyle` enum, `auto_fold`/`fold_style`/`fold_indent` fields |
-| test | `tests/auto_fold_test.rs` | Column folding test scenarios (24 tests) |
-| doc | `../feature/005_auto_fit.md` | Auto-fit feature overview — Strategy 1 |
-| doc | `../invariant/004_column_fold_invariants.md` | Fold behavioral guarantees |
-| task | `../../task/completed/020_column_folding_with_auto_fold.md` | Implementation task (completed) |
+| File | Relationship |
+|------|--------------|
+| `src/formatters/table/mod.rs` | `determine_fold_point`, `render_fold_continuation`, `should_auto_fold` |
+| `src/config.rs` | `FoldStyle` enum, `auto_fold`/`fold_style`/`fold_indent` fields |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| `tests/auto_fold_test.rs` | Column folding test scenarios (24 tests) |
 
 ### Abstract
 

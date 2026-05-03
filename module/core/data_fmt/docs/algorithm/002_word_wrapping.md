@@ -7,13 +7,17 @@
 - **In Scope**: Hard, Word, and WordThenHard break strategies, indent model, overflow policy, and known fixes.
 - **Out of Scope**: Table-level column width calculation (see `algorithm/001_multiline_cell_rendering.md`).
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/wrap.rs` | WrapFormatter implementation |
-| test | `tests/word_wrap.rs` | Word wrapping test suite |
-| doc | `../feature/002_word_wrap.md` | Feature-level word wrap documentation |
+| File | Relationship |
+|------|--------------|
+| `src/wrap.rs` | WrapFormatter implementation |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| `tests/word_wrap.rs` | Word wrapping test suite |
 
 ### Abstract
 

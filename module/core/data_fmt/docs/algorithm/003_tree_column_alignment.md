@@ -7,12 +7,17 @@
 - **In Scope**: Prefix length formula, column width measurement, aligned rendering, depth limiting.
 - **Out of Scope**: Tree node construction and data model (see `invariant/001_data_model.md`).
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/tree.rs` | TreeFormatter column alignment |
-| test | `tests/aligned_tree_basic.rs` | Tree alignment test suite |
+| File | Relationship |
+|------|--------------|
+| `src/formatters/tree.rs` | TreeFormatter column alignment |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| `tests/aligned_tree_basic.rs` | Tree alignment test suite |
 
 ### Abstract
 

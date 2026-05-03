@@ -13,7 +13,7 @@ The CLI wraps the programmatic runner behind a command-line interface, making ev
 
 ### Operations
 
-**Binary name**: `program_tools`
+**Binary names**: `program_tools` (canonical) and `pt` (alias)
 
 **Subcommand: `run`**
 

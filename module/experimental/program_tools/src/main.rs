@@ -6,7 +6,7 @@ use program_tools::{ run, run_project, RunOptions };
 use program_tools::program::Plan;
 
 #[ derive( Parser ) ]
-#[ command( name = "program_tools", about = "Run Rust files and projects as scripts." ) ]
+#[ command( name = env!( "CARGO_BIN_NAME" ), about = "Run Rust files and projects as scripts." ) ]
 struct Cli
 {
   #[ command( subcommand ) ]

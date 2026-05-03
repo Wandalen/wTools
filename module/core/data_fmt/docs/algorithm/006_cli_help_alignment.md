@@ -7,13 +7,17 @@
 - **In Scope**: Section header detection, key-width measurement, description alignment, indentation, blank line insertion.
 - **Out of Scope**: Other text variants (see `../variant/028_text_bullets.md` and siblings), table column alignment (see `003_tree_column_alignment.md`).
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/text.rs` | TextFormatter CliHelp variant implementation |
-| test | `tests/text.rs` | Text output tests including CliHelp |
-| doc | `../variant/033_text_cli_help.md` | Variant attribute descriptor for CliHelp |
+| File | Relationship |
+|------|--------------|
+| `src/formatters/text.rs` | TextFormatter CliHelp variant implementation |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| `tests/text.rs` | Text output tests including CliHelp |
 
 ### Abstract
 

@@ -9,7 +9,7 @@
 
 1. Confirm the algorithm belongs here — verify it fits **In Scope** in `readme.md` (non-trivial, used by formatters, has measurable complexity). Simple one-liners or delegated library calls do not qualify.
 2. Assign the next unused NNN from the **Overview Table** in `readme.md` (e.g., if 005 is the last row, assign 006).
-3. Create `docs/algorithm/NNN_name.md` with the following sections in order: `### Scope`, `### Cross-References`, `### Trigger Condition`, `### Algorithm` (pseudocode), `### Complexity`.
+3. Create `docs/algorithm/NNN_name.md` with the following sections in order: `### Scope`, `### Sources`, `### Tests`, `### Trigger Condition`, `### Algorithm` (pseudocode), `### Complexity`.
 4. Add a row to the **Overview Table** in `readme.md`:
    `| NNN | [Name](NNN_name.md) | One-line purpose | 🔄 |`
 5. Add a row to `docs/entities.md` **Master Doc Instances Table**:
@@ -18,7 +18,7 @@
 7. Add a node to `docs/doc_graph.yml` under `nodes`:
    `- id: algorithm/NNN, file: algorithm/NNN_name.md, label: Name, entity: algorithm, status: planned`
 8. Update `node_count` in `doc_graph.yml` `meta`.
-9. Add edges for every doc listed in the new instance's `### Cross-References`; update `edge_count` in `meta`.
+9. Add edges for every file listed in the new instance's `### Sources` and `### Tests`; update `edge_count` in `meta`.
 10. Update or add the new node to the appropriate `components` entry; update `size`.
 
 ### Procedure: Deprecate Instance
