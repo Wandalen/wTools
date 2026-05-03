@@ -18,10 +18,10 @@ async fn config_delete() -> Result< () >
 {
 
   let path = std ::path ::PathBuf ::from( "./tests/fixtures/test_config.toml" );
-  let temp_path = pth ::path ::unique_folder_name().unwrap();
+  let temp_path = std ::env ::temp_dir().join( pth ::path ::unique_folder_name().unwrap() );
 
   let config = Config ::default()
-  .path( format!( "./{temp_path}" ) )
+  .path( temp_path.to_string_lossy().to_string() )
   .temporary( true )
   ;
 

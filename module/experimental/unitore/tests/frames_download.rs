@@ -22,10 +22,10 @@ use error_tools ::untyped ::Result;
 #[ tokio ::test ]
 async fn test_save() -> Result< () >
 {
-  let temp_path = pth ::path ::unique_folder_name().unwrap();
+  let temp_path = std ::env ::temp_dir().join( pth ::path ::unique_folder_name().unwrap() );
 
   let config = Config ::default()
-  .path( format!( "./{temp_path}" ) )
+  .path( temp_path.to_string_lossy().to_string() )
   .temporary( true )
   ;
 
@@ -54,10 +54,10 @@ async fn test_save() -> Result< () >
 #[ tokio ::test ]
 async fn test_update() -> Result< () >
 {
-  let temp_path = pth ::path ::unique_folder_name().unwrap();
+  let temp_path = std ::env ::temp_dir().join( pth ::path ::unique_folder_name().unwrap() );
 
   let config = Config ::default()
-  .path( format!( "./{temp_path}" ) )
+  .path( temp_path.to_string_lossy().to_string() )
   .temporary( true )
   ;
 

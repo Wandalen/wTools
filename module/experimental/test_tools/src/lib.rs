@@ -143,10 +143,11 @@ pub mod dependency
   pub use super::standalone::collection_tools;
 }
 
+#[ cfg( feature = "enabled" ) ]
 mod private
 {
   //! Private implementation details for API stability facade
-  
+
   /// Verifies API stability facade is properly configured
   /// This function ensures all stability mechanisms are in place
   pub fn verify_api_stability_facade() -> bool
