@@ -18,6 +18,7 @@ Layers are ordered bottom-up: lower layers have fewer internal dependencies; hig
 | 9 | Application | 6 | willbe, unitore, wtools, sqlx, aggregators |
 
 Total: 69 crates (0 alias + 30 core + 20 deprecated + 19 experimental)
+Note: 22 additional legacy crates (formerly in `module/postponed/`) are co-located in `module/deprecated/` but have no layer assignments and are excluded from this table.
 
 ## Crate Layer Assignments
 

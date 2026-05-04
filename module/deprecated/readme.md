@@ -1,8 +1,12 @@
 # deprecated/
 
-Crates parked here after being marked deprecated in `doc/layers.md`. Excluded from the workspace (`Cargo.toml` exclude list). Not compiled, not tested, not published. Retained only to preserve git history and docs before final deletion.
+Excluded from the workspace (`Cargo.toml` exclude list). Not compiled, not tested, not published. Retained only to preserve git history before final deletion.
 
-## Responsibility Table
+Two groups co-located here:
+- **Architecture-tracked** (20): assigned layers in `doc/layers.md`; targeted for deprecation via reachability analysis
+- **Legacy postponed** (22): pre-architecture crates that were never assigned layers; moved here from `module/postponed/`
+
+## Architecture-Tracked (20)
 
 | Path | Responsibility |
 |------|----------------|
@@ -26,6 +30,11 @@ Crates parked here after being marked deprecated in `doc/layers.md`. Excluded fr
 | `winterval/` | Deprecated alias for interval_adapter |
 | `wstring_tools/` | Deprecated alias for string utilities |
 | `wtools/` | Deprecated ten-category utility aggregate |
+
+## Legacy Postponed (22)
+
+| Path | Responsibility |
+|------|----------------|
 | `automata_tools/` | Postponed automata / state-machine utilities |
 | `cargo_will/` | Postponed cargo workspace publish tool (predecessor to willbe) |
 | `fundamental_data_type/` | Postponed fundamental data type primitives |

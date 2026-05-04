@@ -4,7 +4,7 @@ members = [
   "module/alias/*",
   "module/core/*",
   "module/experimental/*",
-  # NOTE: module/move directory is now empty - all crates moved to core or postponed
+  # NOTE: module/move directory is now empty - all crates moved to core or experimental
 ]
 exclude = [
   # Exclude all hyphen-prefixed files (temporary files, private scripts)
@@ -178,11 +178,6 @@ default-features = false
 [workspace.dependencies.include_md]
 version = "~0.1.0"
 path = "module/experimental/include_md"
-default-features = false
-
-[workspace.dependencies.type_constructor]
-version = "~0.3.0"
-path = "module/postponed/type_constructor"
 default-features = false
 
 [workspace.dependencies.variadic_from]
@@ -460,21 +455,6 @@ path = "module/experimental/async_from"
 
 ## graphs tools
 
-[workspace.dependencies.graphs_tools]
-version = "~0.3.0"
-path = "module/postponed/graphs_tools"
-default-features = false
-
-[workspace.dependencies.automata_tools]
-version = "~0.2.0"
-path = "module/postponed/automata_tools"
-default-features = false
-
-[workspace.dependencies.wautomata]
-version = "~0.2.0"
-path = "module/postponed/wautomata"
-default-features = false
-
 ## ca
 
 [workspace.dependencies.wca]
@@ -488,16 +468,6 @@ version = "~0.35.0"
 path = "module/experimental/willbe"
 
 ## lang
-
-
-## plot
-[workspace.dependencies.wplot]
-version = "~0.2.0"
-path = "module/postponed/wplot"
-
-[workspace.dependencies.plot_interface]
-version = "~0.1.3"
-path = "module/postponed/plot_interface"
 
 
 ## unsorted
