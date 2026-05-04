@@ -13,3 +13,4 @@ Design and API documentation for `mod_interface`.
 | `api/` | DSL operations and directive contract for the mod_interface! macro |
 | `pattern/` | Architectural patterns governing the five-layer cascade and crate structure |
 | `entities.md` | Cross-entity index: all doc entity types and doc instances |
+| `doc_graph.yml` | Cross-entity dependency graph for all doc instances |

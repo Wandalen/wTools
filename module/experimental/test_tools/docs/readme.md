@@ -8,6 +8,7 @@ Design and API documentation for `test_tools`.
 
 | File | Responsibility |
 |------|----------------|
+| `readme.md` | Document docs/ organization and entity index |
 | `feature/` | Navigational hubs for user-facing features |
 | `invariant/` | Correctness properties that must always hold |
 | `pattern/` | Reusable design patterns applied in the implementation |

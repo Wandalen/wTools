@@ -22,9 +22,7 @@ Test modules for genfile_core crate, organized by functional domain.
 | content_source_test.rs | ContentSource resolution and custom storage | 539 lines, feature-gated |
 | content_source_example.rs | ContentSource usage examples and patterns | 300 lines, feature-gated |
 | workflow_example.rs | Complete workflow demonstrations and serialization | 381 lines, feature-gated |
-| builder_test.rs | Builder pattern API tests | 230 lines, disabled (FR21 deferred) |
-
-**Total**: 4,386 lines across 17 test modules
+**Total**: 4,156 lines across 16 test modules
 
 ## Unique Responsibility Verification
 
@@ -44,7 +42,6 @@ Each test file has a distinct responsibility answering ONE question:
 - **content_source_test.rs**: "How do content sources work?" (resolution/storage)
 - **content_source_example.rs**: "How to use content sources?" (usage patterns)
 - **workflow_example.rs**: "How to build complete workflows?" (end-to-end examples)
-- **builder_test.rs**: "How does builder API work?" (currently deferred)
 
 **One-Second Test Result**: ✅ No overlap detected - each file has unique Input→Output signature
 

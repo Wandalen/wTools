@@ -45,9 +45,14 @@ A typed configuration value in one of four categories: boolean, integer, floatin
 
 O(1) per value — all checks are constant-time string comparisons or scalar parses. No allocation except for the string fallback case.
 
-### Cross-References
+### Features
 
-| Type | File                                  | Responsibility                                             |
-|------|---------------------------------------|------------------------------------------------------------|
-| doc  | invariant/001_resolution_hierarchy.md | Invariant whose levels this algorithm is applied at        |
-| doc  | feature/001_config_hierarchy.md       | Feature that includes type detection as a resolution step  |
+| File | Relationship |
+|------|--------------|
+| [feature/001_config_hierarchy.md](../feature/001_config_hierarchy.md) | Feature that includes type detection as a resolution step |
+
+### Invariants
+
+| File | Relationship |
+|------|--------------|
+| [invariant/001_resolution_hierarchy.md](../invariant/001_resolution_hierarchy.md) | Invariant whose levels this algorithm is applied at |

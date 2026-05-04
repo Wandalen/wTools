@@ -4,23 +4,19 @@ This directory contains all functional and integration tests for the crate.
 
 ### Responsibility Table
 
-| Test Suite | Responsibility | In Scope | Out of Scope (See) |
-|------------|----------------|----------|-------------------|
-| `hierarchy_*.rs` | Configuration hierarchy | Hierarchical configuration resolution and precedence | Basic operations (→ basic_operations tests), Scope operations (→ scope_operations tests) |
-| `basic_operations_*.rs` | Basic configuration operations | Core configuration operations and functionality | Hierarchy (→ hierarchy tests), Type detection (→ type_detection tests) |
-| `configurability_*.rs` | ConfigPaths customization | Custom trait implementations, path/env var customization | Basic operations (→ basic_operations tests), Path standards (→ path_standards tests) |
-| `scope_operations_*.rs` | Scope-based operations | Scope-specific configuration operations and resolution | Hierarchy (→ hierarchy tests), Basic operations (→ basic_operations tests) |
-| `type_detection_*.rs` | Type detection and inference | Configuration value type detection and inference | Basic operations (→ basic_operations tests) |
-| `dual_pattern_*.rs` | Dual pattern support | Dual configuration pattern handling | Hierarchy (→ hierarchy tests), Basic operations (→ basic_operations tests) |
-| `path_standards_*.rs` | Path standardization | Configuration file path standards and resolution | Hierarchy (→ hierarchy tests), Configurability (→ configurability tests) |
-| `display_*.rs` | Display and formatting | Configuration display and output formatting | Basic operations (→ basic_operations tests) |
-| `feature_*.rs` | Feature-gated functionality | Feature-specific configuration operations | Hierarchy (→ hierarchy tests), Basic operations (→ basic_operations tests) |
-| `edge_cases_*.rs` | Edge case handling | Edge cases, special values, boundary conditions | Basic operations (→ basic_operations tests), Hierarchy (→ hierarchy tests) |
-| `concurrent_access_*.rs` | Concurrency and thread safety | Concurrent configuration access, thread safety | Basic operations (→ basic_operations tests) |
-
-## Organization (11 test files)
-
-Tests organized by domain (see Responsibility Table above).
+| File | Responsibility |
+|------|----------------|
+| `basic_operations_tests.rs` | Core configuration operations and functionality |
+| `concurrent_access_tests.rs` | Concurrent configuration access and thread safety |
+| `configurability_tests.rs` | Custom trait implementations and path/env var customization |
+| `display_tests.rs` | Configuration display and output formatting |
+| `dual_pattern_tests.rs` | Dual configuration pattern handling |
+| `edge_cases_tests.rs` | Edge cases, special values, and boundary conditions |
+| `feature_tests.rs` | Feature-gated functionality |
+| `hierarchy_tests.rs` | Hierarchical configuration resolution and precedence |
+| `path_standards_tests.rs` | Configuration file path standards and resolution |
+| `scope_operations_tests.rs` | Scope-specific configuration operations and resolution |
+| `type_detection_tests.rs` | Configuration value type detection and inference |
 
 ### Scope
 

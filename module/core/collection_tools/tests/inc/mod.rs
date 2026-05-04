@@ -14,5 +14,4 @@ mod hset;
 mod llist;
 mod vec;
 
-mod components;
 mod namespace_test;

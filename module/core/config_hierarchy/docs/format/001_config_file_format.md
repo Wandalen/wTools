@@ -65,10 +65,20 @@ The format version is recorded as `"1.0"` in the metadata section. Files missing
 
 Only YAML format is supported. Config files in other serialization formats (JSON, TOML) placed at discovered paths are not read. The filename used for discovery must match the format's expected extension.
 
-### Cross-References
+### APIs
 
-| Type | File                                  | Responsibility                                          |
-|------|---------------------------------------|---------------------------------------------------------|
-| doc  | feature/001_config_hierarchy.md       | Feature that reads and writes files in this format      |
-| doc  | api/001_config_paths_trait.md         | Controls the filename and path used for config files    |
-| doc  | invariant/001_resolution_hierarchy.md | Invariant governing which files are loaded at each level |
+| File | Relationship |
+|------|--------------|
+| [api/001_config_paths_trait.md](../api/001_config_paths_trait.md) | Controls the filename and path used for config files |
+
+### Features
+
+| File | Relationship |
+|------|--------------|
+| [feature/001_config_hierarchy.md](../feature/001_config_hierarchy.md) | Feature that reads and writes files in this format |
+
+### Invariants
+
+| File | Relationship |
+|------|--------------|
+| [invariant/001_resolution_hierarchy.md](../invariant/001_resolution_hierarchy.md) | Invariant governing which files are loaded at each level |

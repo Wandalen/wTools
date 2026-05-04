@@ -2,6 +2,10 @@
 //!
 //! Implementation of value management operations (set, list, clear)
 
+// Handler functions are registered via unilang::CommandRegistry::command_add_runtime,
+// which requires fn(VerifiedCommand, ExecutionContext) -> ... by value.
+#![ allow( clippy::needless_pass_by_value ) ]
+
 use unilang::semantic::VerifiedCommand;
 use unilang::data::{ OutputData, ErrorData };
 use unilang::interpreter::ExecutionContext;
@@ -10,6 +14,9 @@ use genfile_core::Value;
 use super::shared_state::{ get_current_archive, set_current_archive };
 
 /// Handler for .value.set command
+///
+/// # Errors
+/// Returns usage error if required parameters are missing or no archive is loaded.
 pub fn set_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext
@@ -42,6 +49,9 @@ pub fn set_handler(
 }
 
 /// Handler for .value.list command
+///
+/// # Errors
+/// Returns usage error if no archive is loaded.
 pub fn list_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext
@@ -52,19 +62,14 @@ pub fn list_handler(
   let archive = get_current_archive()
     .ok_or_else( || crate::error::usage_error( "No archive loaded" ) )?;
 
-  // Access values if they exist
-  let values = match &archive.values
+  let Some( values ) = &archive.values else
   {
-    Some( v ) => v,
-    None =>
+    return Ok( OutputData
     {
-      return Ok( OutputData
-      {
-        content : "No values set".to_string(),
-        format : "text".to_string(),
-        execution_time_ms : None,
-      } );
-    }
+      content : "No values set".to_string(),
+      format : "text".to_string(),
+      execution_time_ms : None,
+    } );
   };
 
   // Count values
@@ -100,6 +105,9 @@ pub fn list_handler(
 }
 
 /// Handler for .value.clear command
+///
+/// # Errors
+/// Returns usage error if no archive is loaded.
 pub fn clear_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext

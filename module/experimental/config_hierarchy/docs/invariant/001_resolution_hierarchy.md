@@ -73,10 +73,27 @@ The ordering is enforced structurally in `src/hierarchy.rs`:
 
 If the `sources` slice is assembled in incorrect order (e.g., for hypothetical future direct use), lower-priority values silently override higher-priority values. There is no runtime check on ordering — the invariant is maintained exclusively by the implementation in `src/hierarchy.rs`.
 
-### Cross-References
+### Algorithms
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | `../feature/001_config_hierarchy.md` | Feature this invariant governs |
-| doc | `../api/001_config_paths_trait.md` | Methods controlling env var format and path construction |
-| doc | `../algorithm/001_type_detection.md` | Type detection applied to values found at each level |
+| File | Relationship |
+|------|--------------|
+| [algorithm/001_type_detection.md](../algorithm/001_type_detection.md) | Type detection applied to values found at each level |
+
+### APIs
+
+| File | Relationship |
+|------|--------------|
+| [api/001_config_paths_trait.md](../api/001_config_paths_trait.md) | Methods controlling env var format and path construction |
+| [api/002_config_defaults_trait.md](../api/002_config_defaults_trait.md) | Defaults are the lowest-priority level (priority 6) |
+
+### Features
+
+| File | Relationship |
+|------|--------------|
+| [feature/001_config_hierarchy.md](../feature/001_config_hierarchy.md) | Feature this invariant governs |
+
+### Formats
+
+| File | Relationship |
+|------|--------------|
+| [format/001_config_file_format.md](../format/001_config_file_format.md) | Format of files loaded at each level |

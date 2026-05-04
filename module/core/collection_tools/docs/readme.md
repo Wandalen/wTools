@@ -1,6 +1,6 @@
 # Docs
 
-## Scope
+### Scope
 
 Design and API documentation for `collection_tools`. Organized as typed doc entity instances: features describe what the crate does, invariants define behavioral contracts, and API docs reference the public interface.
 

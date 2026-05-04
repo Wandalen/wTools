@@ -57,10 +57,20 @@ The crate does not validate the file structure on read beyond what `serde_yaml` 
 
 **TOML and JSON are not supported as config file formats.** The `file_ops` feature uses `serde_yaml` exclusively. Placing a `config.json` or `config.toml` at a discovered path will not be read — only the filename returned by `ConfigPaths::local_config_filename()` (default `"config.yaml"`) is loaded.
 
-### Cross-References
+### APIs
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | `../feature/001_config_hierarchy.md` | Feature that uses this file format |
-| doc | `../api/001_config_paths_trait.md` | local_config_filename() controls the filename |
-| doc | `../invariant/001_resolution_hierarchy.md` | Files at these paths feed into resolution |
+| File | Relationship |
+|------|--------------|
+| [api/001_config_paths_trait.md](../api/001_config_paths_trait.md) | local_config_filename() controls the filename |
+
+### Features
+
+| File | Relationship |
+|------|--------------|
+| [feature/001_config_hierarchy.md](../feature/001_config_hierarchy.md) | Feature that uses this file format |
+
+### Invariants
+
+| File | Relationship |
+|------|--------------|
+| [invariant/001_resolution_hierarchy.md](../invariant/001_resolution_hierarchy.md) | Files at these paths feed into resolution |

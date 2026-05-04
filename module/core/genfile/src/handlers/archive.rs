@@ -2,6 +2,10 @@
 //!
 //! Implementation of archive lifecycle operations.
 
+// Handler functions are registered via unilang::CommandRegistry::command_add_runtime,
+// which requires fn(VerifiedCommand, ExecutionContext) -> ... by value.
+#![ allow( clippy::needless_pass_by_value ) ]
+
 use unilang::semantic::VerifiedCommand;
 use unilang::data::{ OutputData, ErrorData };
 use unilang::interpreter::ExecutionContext;
@@ -14,6 +18,9 @@ use super::shared_state::{ get_current_archive, set_current_archive };
 /// Handler for .archive.new command
 ///
 /// Creates a new empty template archive with the given name and description.
+///
+/// # Errors
+/// Returns usage error if required parameters are missing.
 pub fn new_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext
@@ -54,6 +61,10 @@ pub fn new_handler(
 /// Handler for .archive.load command
 ///
 /// Loads an archive from a JSON or YAML file.
+///
+/// # Errors
+/// Returns usage error if required parameters are missing.
+/// Returns format error if the file cannot be read or parsed.
 pub fn load_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext
@@ -100,6 +111,11 @@ pub fn load_handler(
 /// Handler for .archive.save command
 ///
 /// Saves the current archive to a JSON or YAML file.
+///
+/// # Errors
+/// Returns usage error if required parameters are missing or no archive is loaded.
+/// Returns format error if the archive cannot be serialized or written.
+#[ allow( clippy::too_many_lines ) ]
 pub fn save_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext
@@ -171,6 +187,12 @@ pub fn save_handler(
 /// Handler for .`archive.from_directory` command
 ///
 /// Creates an archive from a filesystem directory.
+///
+/// # Errors
+/// Returns usage error if required parameters are missing.
+/// Returns file error if the source directory does not exist or is not a directory.
+/// Returns format error if archive creation fails.
+#[ allow( clippy::too_many_lines ) ]
 pub fn from_directory_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext

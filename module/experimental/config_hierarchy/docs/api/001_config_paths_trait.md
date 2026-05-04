@@ -11,47 +11,6 @@
 
 `ConfigPaths` is one of the three traits users implement to configure `ConfigManager< D, P, V >`. It controls all path derivation — where config files live, what they are named, how environment variables are formatted, and which OS-specific directories to use as fallbacks. Only `app_name()` is required; all other 14 methods have sensible defaults derived from the app name.
 
-### Interface
-
-```rust
-pub trait ConfigPaths
-{
-  // Required
-  fn app_name() -> &'static str;
-
-  // Environment variable configuration
-  fn env_var_prefix() -> &'static str { /* app_name().to_uppercase() — see Pitfall */ }
-  fn env_var_separator() -> &'static str { "_" }
-  fn env_var_casing() -> EnvVarCasing { EnvVarCasing::UpperCase }
-
-  // Local path configuration
-  fn local_permanent_prefix() -> &'static str { "." }
-  fn local_temporary_prefix() -> &'static str { "-" }
-  fn local_config_filename() -> &'static str { "config.yaml" }
-
-  // Global path configuration
-  fn global_persistent_dir() -> &'static str { ".persistent" }
-  fn global_config_filename() -> &'static str { "config.yaml" }
-
-  // Environment variable names for path roots
-  fn pro_env_var() -> &'static str { "PRO" }
-  fn home_env_var() -> &'static str { "HOME" }
-  fn xdg_config_home_var() -> &'static str { "XDG_CONFIG_HOME" }
-  fn appdata_var() -> &'static str { "APPDATA" }
-
-  // OS-specific path bases
-  fn linux_config_base() -> &'static str { ".config" }
-  fn macos_config_base() -> &'static str { "Library/Application Support" }
-}
-
-pub enum EnvVarCasing
-{
-  UpperCase,        // MYAPP_TIMEOUT (default)
-  LowerCase,        // myapp_timeout
-  PreserveAppName,  // myapp_TIMEOUT (preserve app_name casing, uppercase param)
-}
-```
-
 ### Operations
 
 #### Path Derivation Table
@@ -104,26 +63,29 @@ Path discovery functions return `Err(String)` when `app_name()` fails validation
 
 ### Pitfall
 
-The default implementation of `env_var_prefix()` uses `Box::leak()`:
+The default `env_var_prefix()` allocates a new heap string on every call and never frees it, accumulating unbounded memory. Override `env_var_prefix()` with a static string literal when called in a loop or performance-sensitive path.
 
-```rust
-fn env_var_prefix() -> &'static str
-{
-  Box::leak( Self::app_name().to_uppercase().into_boxed_str() )
-}
-```
+### APIs
 
-This allocates a new string on **every call** and never frees it. Applications calling `env_var_prefix()` in a tight loop will accumulate unbounded memory. Override `env_var_prefix()` with a static string literal to avoid this:
+| File | Relationship |
+|------|--------------|
+| [api/002_config_defaults_trait.md](../api/002_config_defaults_trait.md) | Companion required trait |
+| [api/003_config_validator_trait.md](../api/003_config_validator_trait.md) | Companion optional trait |
 
-```rust
-fn env_var_prefix() -> &'static str { "MYAPP" }
-```
+### Features
 
-### Cross-References
+| File | Relationship |
+|------|--------------|
+| [feature/001_config_hierarchy.md](../feature/001_config_hierarchy.md) | Feature this trait is part of |
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | `../invariant/001_resolution_hierarchy.md` | Path formulas defined by this trait govern the invariant |
-| doc | `../format/001_config_file_format.md` | Files at these paths use this format |
-| doc | `../api/002_config_defaults_trait.md` | Companion required trait |
-| doc | `../api/003_config_validator_trait.md` | Companion optional trait |
+### Formats
+
+| File | Relationship |
+|------|--------------|
+| [format/001_config_file_format.md](../format/001_config_file_format.md) | Files at these paths use this format |
+
+### Invariants
+
+| File | Relationship |
+|------|--------------|
+| [invariant/001_resolution_hierarchy.md](../invariant/001_resolution_hierarchy.md) | Path formulas defined by this trait govern the invariant |

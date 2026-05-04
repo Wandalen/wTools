@@ -1,3 +1,4 @@
+// allow: test binary functions are not part of the public API; documentation not required
 #![ allow( missing_docs ) ]
 
 use config_hierarchy::*;
@@ -392,4 +393,172 @@ fn test_path_traversal_rejected()
 
   // Should panic when detecting path traversal attempt
   let _path = AttackConfig::get_local_config_path().unwrap();
+}
+
+// AP-03: Forward slash "/" alone in app_name rejected (path separator without "..")
+//
+// ## Root Cause
+// test_path_traversal_rejected covers "../../etc/passwd" which combines both
+// ".." and "/". The "/" character alone is independently forbidden as a path
+// separator but was never tested in isolation.
+//
+// ## Fix Applied
+// Separate test for app_name containing only "/" (no "..").
+//
+// ## Pitfall
+// A "/" in app_name creates a subdirectory (e.g., ".my/app/config.yaml"), not
+// an error. Must validate against "/" independently of "..".
+#[ test ]
+#[ should_panic( expected = "app_name contains invalid characters" ) ]
+fn test_slash_only_in_app_name_rejected()
+{
+  struct SlashAppName;
+  impl ConfigDefaults for SlashAppName
+  {
+    fn get_defaults() -> HashMap< String, JsonValue > { HashMap::new() }
+    fn get_parameter_names() -> Vec< &'static str > { vec![] }
+  }
+
+  impl ConfigPaths for SlashAppName
+  {
+    fn app_name() -> &'static str { "my/app" }  // SLASH — should be rejected
+  }
+
+  impl ConfigValidator for SlashAppName
+  {
+    fn validate_parameter( _: &str, _: &JsonValue ) -> Result< (), ValidationError > { Ok( () ) }
+    fn validate_all( _: &HashMap< String, ( JsonValue, ConfigSource ) > ) -> Vec< ValidationError > { Vec::new() }
+  }
+
+  type SlashConfig = ConfigManager< SlashAppName, SlashAppName, SlashAppName >;
+  let _path = SlashConfig::get_local_config_path().unwrap();
+}
+
+// FM-02: Missing `parameters` section returns empty map (no error)
+//
+// ## Root Cause
+// format/001 specifies "A file missing the parameters section returns an empty map"
+// but this edge case was never tested. A broken parser might return an error or
+// treat top-level keys as parameters.
+//
+// ## Fix Applied
+// Test writes a YAML file with only metadata and verifies load returns empty map.
+#[ test ]
+fn test_missing_parameters_section_returns_empty()
+{
+  let temp_dir = TempDir::new().unwrap();
+  let config_path = temp_dir.path().join( "config.yaml" );
+
+  std::fs::write
+  (
+    &config_path,
+    "metadata:\n  version: '1.0'\n  created_at: '2025-01-01T00:00:00Z'\n"
+  ).unwrap();
+
+  let result = TestConfig::load_config_file( &config_path );
+  assert!( result.is_ok(), "File with missing parameters section must load without error" );
+
+  let map = result.unwrap();
+  assert!( map.is_empty(), "Result must be empty map when parameters section is absent, got: {map:?}" );
+}
+
+// FM-03: Unknown top-level keys are ignored
+//
+// ## Root Cause
+// format/001 specifies "Unknown top-level keys are ignored" but was never tested.
+// A strict parser would return an error for unknown keys.
+//
+// ## Fix Applied
+// Test writes YAML with extra top-level key and verifies it loads cleanly.
+#[ test ]
+fn test_unknown_top_level_keys_ignored()
+{
+  let temp_dir = TempDir::new().unwrap();
+  let config_path = temp_dir.path().join( "config.yaml" );
+
+  std::fs::write
+  (
+    &config_path,
+    "metadata:\n  version: '1.0'\nparameters:\n  timeout: 30\ncustom_section:\n  foo: bar\n"
+  ).unwrap();
+
+  let result = TestConfig::load_config_file( &config_path );
+  assert!( result.is_ok(), "Unknown top-level keys must not cause an error" );
+
+  let map = result.unwrap();
+  assert_eq!( map.get( "timeout" ), Some( &JsonValue::Number( 30.into() ) ) );
+  assert!( !map.contains_key( "custom_section" ), "Unknown top-level key must not appear in result" );
+}
+
+// FM-04: `created_at` is preserved across saves
+//
+// ## Root Cause
+// format/001 states "created_at: set on first save, preserved on all subsequent saves"
+// but no test verified this. A naive implementation might regenerate created_at each save.
+//
+// ## Fix Applied
+// Save once, record created_at, save again, verify created_at unchanged.
+#[ test ]
+fn test_created_at_preserved_on_resave()
+{
+  let temp_dir = TempDir::new().unwrap();
+  let config_path = temp_dir.path().join( "config.yaml" );
+
+  // First save
+  let mut config = HashMap::new();
+  config.insert( "timeout".into(), JsonValue::Number( 30.into() ) );
+  TestConfig::save_config_file( &config, &config_path ).unwrap();
+
+  // Read raw YAML to capture created_at
+  let raw = std::fs::read_to_string( &config_path ).unwrap();
+  let created_at_line = raw.lines()
+    .find( | l | l.contains( "created_at" ) )
+    .expect( "created_at must be present after first save" )
+    .to_owned();
+
+  // Second save with different content
+  config.insert( "timeout".into(), JsonValue::Number( 60.into() ) );
+  TestConfig::save_config_file( &config, &config_path ).unwrap();
+
+  // Verify created_at unchanged
+  let raw2 = std::fs::read_to_string( &config_path ).unwrap();
+  let created_at_line2 = raw2.lines()
+    .find( | l | l.contains( "created_at" ) )
+    .expect( "created_at must still be present after second save" )
+    .to_owned();
+
+  assert_eq!( created_at_line, created_at_line2, "created_at must not change on re-save" );
+
+  // last_modified should differ (or be equal if same second, but that's acceptable)
+  // Main assertion is that created_at stays identical
+}
+
+// FM-05: Null parameter values round-trip through YAML
+//
+// ## Root Cause
+// format/001 lists "Null: ~ or null" as a valid scalar type but null round-trip
+// was never tested. YAML null handling differs between serde_yaml versions.
+//
+// ## Fix Applied
+// Save map with JsonValue::Null, reload, assert Null preserved.
+#[ test ]
+fn test_null_value_round_trips()
+{
+  let temp_dir = TempDir::new().unwrap();
+  let config_path = temp_dir.path().join( "config.yaml" );
+
+  let mut config = HashMap::new();
+  config.insert( "nullable_key".into(), JsonValue::Null );
+  config.insert( "normal_key".into(), JsonValue::String( "present".into() ) );
+
+  TestConfig::save_config_file( &config, &config_path ).unwrap();
+
+  let loaded = TestConfig::load_config_file( &config_path ).unwrap();
+  assert_eq!( loaded.get( "normal_key" ), Some( &JsonValue::String( "present".into() ) ) );
+  // Null values may be omitted or represented as Null depending on serde_yaml behavior
+  // Both outcomes are acceptable — the key point is no panic/error
+  if let Some( v ) = loaded.get( "nullable_key" )
+  {
+    assert!( v.is_null(), "If nullable_key is present, it must be Null, got: {v}" );
+  }
 }

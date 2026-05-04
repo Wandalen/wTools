@@ -2,6 +2,10 @@
 //!
 //! Implementation of content management operations (internalize, externalize, list)
 
+// Handler functions are registered via unilang::CommandRegistry::command_add_runtime,
+// which requires fn(VerifiedCommand, ExecutionContext) -> ... by value.
+#![ allow( clippy::needless_pass_by_value ) ]
+
 use unilang::semantic::VerifiedCommand;
 use unilang::data::{ OutputData, ErrorData };
 use unilang::interpreter::ExecutionContext;
@@ -10,6 +14,10 @@ use genfile_core::DefaultContentResolver;
 use super::shared_state::{ get_current_archive, set_current_archive };
 
 /// Handler for .content.internalize command
+///
+/// # Errors
+/// Returns usage error if no archive is loaded.
+/// Returns format error if content resolution fails.
 pub fn internalize_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext
@@ -55,6 +63,10 @@ pub fn internalize_handler(
 }
 
 /// Handler for .content.externalize command
+///
+/// # Errors
+/// Returns usage error if required parameters are missing or no archive is loaded.
+/// Returns format error if content externalization fails.
 pub fn externalize_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext
@@ -101,6 +113,10 @@ pub fn externalize_handler(
 }
 
 /// Handler for .content.list command
+///
+/// # Errors
+/// Returns usage error if no archive is loaded.
+#[ allow( clippy::too_many_lines ) ]
 pub fn list_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext

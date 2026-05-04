@@ -49,12 +49,12 @@ Note: 22 additional legacy crates (formerly in `module/postponed/`) are co-locat
 | `deterministic_rand` | core | 2 | Primitives | Generate hierarchical seeded random numbers with switchable determinism | 6 | 2 | 0 | 0 | 2 | experimental | experimental | TD·FRE·S |
 | `implements` | experimental | 2 | Primitives | Answer at compile time whether a type implements a trait | 0 | 0 | 0 | 0 | 0 | experimental | stable | TDCFREMS |
 | `inspect_type` | core | 2 | Primitives | Print the Rust type name and byte size of any expression at runtime | 0 | 0 | 0 | 0 | 0 | stable | stable | TDCFREMS |
-| `interval_adapter` | deprecated | 2 | Primitives | Provide uniform interval trait coverage over all Rust range variants — bounded, half-open, and unbounded | 0 | 0 | 0 | 0 | 0 | experimental | deprecated | TDCFRE·S |
+| `interval_adapter` | experimental | 2 | Primitives | Provide uniform interval trait coverage over all Rust range variants — bounded, half-open, and unbounded | 0 | 0 | 0 | 0 | 0 | experimental | stable | TDCFRE·S |
 | `is_slice` | deprecated | 2 | Primitives | Answer at compile time whether an expression is a slice | 0 | 0 | 0 | 0 | 0 | experimental | deprecated | TDCFREMS |
 | `time_tools` | deprecated | 2 | Primitives | Provide current UNIX epoch timestamps at second, millisecond, and nanosecond resolution | 0 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFRE·S |
 | `typing_tools` | deprecated | 2 | Primitives | Aggregate implements, is_slice, and inspect_type into one dependency with per-sub-crate feature flags | 3 | 3 | 3 | 0 | 0 | deprecated | deprecated | TDCFREMS |
 | `winterval` | deprecated | 2 | Primitives | Re-export interval_adapter as a standalone dependency | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDC·REMS |
-| `macro_tools` | core | 3 | Macro Framework | Supply all primitives needed to author procedural macros | 9 | 4 | 0 | 1 | 3 | stable | stable | TD··RE·· |
+| `macro_tools` | core | 3 | Macro Framework | Supply all primitives needed to author procedural macros | 9 | 4 | 0 | 1 | 3 | stable | stable | TD··RE·S |
 | `meta_tools` | deprecated | 3 | Macro Framework | Bundle for_each, impls_index, mod_interface, and identifier-concat macros into one opt-in facade crate | 6 | 5 | 2 | 0 | 3 | deprecated | deprecated | TD·FREM· |
 | `clone_dyn_meta` | core | 3 | Macro Framework | Implement #[clone_dyn] attribute macro backend (use clone_dyn crate directly) | 2 | 2 | 1 | 0 | 1 | stable | stable | TD·FR·MS |
 | `component_model_meta` | experimental | 3 | Macro Framework | Implement proc-macro backends for Assign, ComponentModel, and related derives (use component_model directly) | 3 | 2 | 1 | 0 | 1 | experimental | stable | TD·FR·MS |
@@ -78,7 +78,7 @@ Note: 22 additional legacy crates (formerly in `module/postponed/`) are co-locat
 | `variadic_from` | core | 4 | Patterns | Construct structs from 1–3 typed arguments via From1/From2/From3 traits and VariadicFrom derive | 1 | 1 | 0 | 1 | 0 | stable | stable | TDCFREMS |
 | `async_from` | experimental | 5 | Collections | Provide async versions of From, Into, TryFrom, and TryInto | 1 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFR··S |
 | `async_tools` | deprecated | 5 | Collections | Re-export async_from conversion traits and async_trait macro via a unified namespace facade | 2 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFREMS |
-| `collection_tools` | core | 5 | Collections | Provide ergonomic literal macros for inline collection construction, portable to no_std | 1 | 0 | 0 | 0 | 0 | stable | stable | TDC·RE·S |
+| `collection_tools` | core | 5 | Collections | Provide ergonomic literal macros for inline collection construction, portable to no_std | 1 | 0 | 0 | 0 | 0 | stable | stable | TDCFREMS |
 | `for_each` | experimental | 5 | Collections | Apply any macro to every item in a compile-time list | 0 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFREMS |
 | `iter_tools` | deprecated | 5 | Collections | Re-export itertools combinators and provide clonable boxed iterators with stop-on-first-error mapping | 2 | 1 | 0 | 1 | 0 | deprecated | deprecated | TDC·RE·S |
 | `wtools` | core | 5 | Collections | Thin collections aggregator; re-exports collection_tools macros and constructors | 1 | 1 | 1 | 0 | 0 | experimental | stable | T·CFREMS |
@@ -125,7 +125,6 @@ Unreachable from any application (willbe, unitore, wca) or test infrastructure (
 | `fs_tools` | deprecated | Alias; zero dependents; underlying `file_tools` also deprecated | — |
 | `format_tools` | deprecated | Zero dependents; reflect_tools is experimental but no other live crate references format_tools | — |
 | `file_tools` | deprecated | Sole dependent `fs_tools` (alias) is deprecated | — |
-| `interval_adapter` | deprecated | Only live dependent is `macro_tools` (stable); dep appears unused in macro_tools source — removal is trivial | — |
 | `impls_index` | deprecated | Only dependent is `meta_tools` (deprecated) | — |
 | `impls_index_meta` | deprecated | Only dependents are `impls_index` (deprecated) and `meta_tools` (deprecated) | — |
 | `is_slice` | deprecated | Redundant with `implements!` macro + marker traits; sole dependent is `typing_tools` (deprecated) | `implements!` |
@@ -138,6 +137,7 @@ Unreachable from any application (willbe, unitore, wca) or test infrastructure (
 | `willbe2` | deprecated | Entire `src/lib.rs` is `pub use ::willbe::*`; zero independent development | `willbe` |
 | `winterval` | deprecated | Alias for `interval_adapter`; zero dependents within workspace | `interval_adapter` |
 | `wstring_tools` | deprecated | Alias; zero dependents | — |
+| `iter_tools` | deprecated | Functionality migrated to `macro_tools` (IterTrait, BoxedIter) and direct `itertools` dep; zero dependents | `itertools`, `macro_tools` |
 
 ### Dead-End Chains
 
@@ -179,7 +179,6 @@ All 8 criteria met — can be promoted to stable without prerequisite work.
 | `multiline_input` | 8 | T·CFREMS | D |
 | `component_model_meta` | 3 | TD·FR·MS | C, E |
 | `component_model` | 4 | TDC·RE·S | F, M |
-| `iter_tools` | 5 | TDC·RE·S | F, M |
 | `config_hierarchy` (core) | 7 | TDC·R·MS | F, E |
 | `config_hierarchy` (experimental) | 7 | TDC·R·MS | F, E |
 | `wca` | 8 | TDC·RE·S | F, M |
@@ -190,8 +189,8 @@ All 8 criteria met — can be promoted to stable without prerequisite work.
 
 | Criterion | Failing | Crates |
 |-----------|---------|--------|
-| M (Markers) | 7 | component_model, iter_tools, strs_tools, test_tools, wca, unitore, willbe |
-| F (Features) | 9 | crates_tools, component_model, iter_tools, config_hierarchy (core), config_hierarchy (experimental), genfile, wca, unitore, willbe |
+| M (Markers) | 6 | component_model, strs_tools, test_tools, wca, unitore, willbe |
+| F (Features) | 8 | crates_tools, component_model, config_hierarchy (core), config_hierarchy (experimental), genfile, wca, unitore, willbe |
 | E (Examples) | 8 | component_model_meta, strs_tools_meta, cli_fmt, workspace_tools, config_hierarchy (core), config_hierarchy (experimental), unitore, willbe |
 | C (Clean) | 2 | component_model_meta, component_model_types |
 | S (Stable deps) | 2 | test_tools, willbe |
@@ -206,14 +205,13 @@ Already-stable crates that do not meet all 8 criteria. Not promotion blockers, b
 | `derive_tools_meta` | TD··R··S | C, F, E, M |
 | `former_meta` | TD··R··S | C, F, E, M |
 | `mod_interface_meta` | TD··R··S | C, F, E, M |
-| `macro_tools` | TD··RE·· | C, F, M, S |
+| `macro_tools` | TD··RE·S | C, F, M |
 | `former` | TD··RE·S | C, F, M |
 | `pth` | TDC·R··S | F, E, M |
 | `clone_dyn_meta` | TD·FR·MS | C, E |
 | `variadic_from_meta` | TDCFR··S | E, M |
 | `clone_dyn_types` | TDC·RE·S | F, M |
 | `derive_tools` | TDC·RE·S | F, M |
-| `collection_tools` | TDC·RE·S | F, M |
 | `former_types` | TD·FRE·S | C, M |
 | `clone_dyn` | TDC·REMS | F |
 | `mod_interface` | TDC·REMS | F |
@@ -231,8 +229,8 @@ Utility ranking for 50 non-deprecated crates. Evaluates: internal dependent coun
 |------|-------|----------|-------|
 | 1 | Core | Essential to workspace; 5+ internal dependents; breakage cascades widely | 10 |
 | 2 | High | Significant standalone utility; meaningful API surface; active consumers | 15 |
-| 3 | Moderate | Useful in domain; narrower audience; some unique functionality | 14 |
-| 4 | Low | Thin wrapper or narrow utility; few/zero consumers; easy to inline | 8 |
+| 3 | Moderate | Useful in domain; narrower audience; some unique functionality | 13 |
+| 4 | Low | Thin wrapper or narrow utility; few/zero consumers; easy to inline | 9 |
 | 5 | Minimal | Stub, unimplemented, or fully supersedable; future deprecation review candidate | 2 |
 
 ### Ranked by Tier
@@ -266,7 +264,6 @@ Utility ranking for 50 non-deprecated crates. Evaluates: internal dependent coun
 | `variadic_from_meta` | 3 | 2 | Builds variadic_from |
 | `config_hierarchy` (core) | 7 | 3 | Hierarchical config resolution; real-world utility |
 | `config_hierarchy` (experimental) | 7 | 3 | Hierarchical config resolution; real-world utility |
-| `iter_tools` | 5 | 3 | itertools re-export + clonable boxed iterators |
 | `strs_tools` | 6 | 3 | String split/indent/transform with ANSI + SIMD |
 | `strs_tools_meta` | 3 | 3 | Builds strs_tools |
 | `color_tools` | 6 | 3 | ANSI color wrapping for terminal and HTML |
@@ -282,6 +279,7 @@ Utility ranking for 50 non-deprecated crates. Evaluates: internal dependent coun
 | `cli_fmt` | 6 | 4 | Thin output filtering wrapper; 0 external deps |
 | `for_each` | 5 | 4 | Thin compile-time list macro; easily inlined |
 | `async_from` | 5 | 4 | Trivial async trait definitions; 0 live internal deps |
+| `interval_adapter` | 2 | 4 | Range normalization traits; sole internal dep is macro_tools |
 | `deterministic_rand` | 2 | 4 | No workspace consumer; niche use case |
 | `mem_tools` | 1 | 4 | Trivial std memory wrappers; 0 live internal deps |
 | `reflect_tools` | 4 | 4 | Runtime reflection; incomplete implementation |
@@ -295,15 +293,15 @@ Utility ranking for 50 non-deprecated crates. Evaluates: internal dependent coun
 | L# | Layer | T1 | T2 | T3 | T4 | T5 | Total |
 |----|-------|----|----|----|----|-----|-------|
 | 1 | Foundation | 1 | 0 | 0 | 1 | 0 | 2 |
-| 2 | Primitives | 0 | 0 | 2 | 1 | 1 | 4 |
+| 2 | Primitives | 0 | 0 | 2 | 2 | 1 | 5 |
 | 3 | Macro Framework | 4 | 2 | 2 | 1 | 0 | 9 |
 | 4 | Patterns | 4 | 3 | 2 | 1 | 0 | 10 |
-| 5 | Collections | 1 | 0 | 1 | 3 | 0 | 5 |
+| 5 | Collections | 1 | 0 | 0 | 3 | 0 | 4 |
 | 6 | String & Format | 0 | 1 | 2 | 1 | 1 | 5 |
 | 7 | Path & Process | 0 | 3 | 2 | 0 | 0 | 5 |
 | 8 | Tooling | 0 | 4 | 3 | 0 | 0 | 7 |
 | 9 | Application | 0 | 2 | 0 | 0 | 0 | 2 |
-| | **Total** | **10** | **15** | **14** | **8** | **2** | **49** |
+| | **Total** | **10** | **15** | **13** | **9** | **2** | **49** |
 
 Note: config_hierarchy counted once in tier table totals. Main ranked table lists both entries separately (50 rows).
 
@@ -434,10 +432,10 @@ Per-crate attributes for promotion and publishing.
 - **pitch**: Print the exact Rust type name and byte size of any expression — the fastest runtime type-debugging shortcut.
 
 #### `interval_adapter`
-- **module**: deprecated
+- **module**: experimental
 - **layer**: 2 · Primitives
 - **state**: experimental
-- **target**: deprecated
+- **target**: stable
 - **readiness**: TDCFRE·S
 - **purpose**: Provide uniform interval trait coverage over all Rust range variants — bounded, half-open, and unbounded
 - **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
@@ -856,7 +854,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 5 · Collections
 - **state**: stable
 - **target**: stable
-- **readiness**: TDC·RE·S
+- **readiness**: TDCFREMS
 - **purpose**: Provide ergonomic literal macros for inline collection construction, portable to no_std
 - **deps**: 1 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.38.0
@@ -880,18 +878,18 @@ Per-crate attributes for promotion and publishing.
 - **pitch**: Apply any macro to every item in a compile-time list — fills the gap macro_rules! can't close for list-driven codegen.
 
 #### `iter_tools`
-- **module**: experimental
+- **module**: deprecated
 - **layer**: 5 · Collections
-- **state**: experimental
-- **target**: stable
+- **state**: deprecated
+- **target**: deprecated
 - **readiness**: TDC·RE·S
-- **purpose**: Re-export itertools combinators and provide clonable boxed iterators with stop-on-first-error mapping
+- **purpose**: DEPRECATED — functionality migrated to macro_tools (IterTrait, BoxedIter) and direct itertools dependency
 - **deps**: 2 · **int**: 1 · **=L**: 0 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.50.0
 - **no_std**: yes
 - **keywords**: fundamental, general-purpose, iterator, itertools, combinators
 - **categories**: algorithms, development-tools
-- **pitch**: All itertools combinators re-exported plus heap-allocated clonable boxed iterators and stop-on-first-error item mapping — the complete iterator utilities stack in one dependency.
+- **pitch**: DEPRECATED. Use itertools directly for combinators; use macro_tools for IterTrait and BoxedIter types.
 
 #### `wtools`
 - **module**: core

@@ -4,7 +4,7 @@ Test suite for wtools aggregating crate validating public API re-exports and exa
 
 ## Organization
 
-Tests are organized in flat structure focused on aggregating crate verification rather than functional domain testing (functional tests belong in constituent crates: iter_tools, meta_tools, etc.).
+Tests are organized in flat structure focused on aggregating crate verification rather than functional domain testing (functional tests belong in the constituent crate: collection_tools).
 
 ### Responsibility Table
 
@@ -17,7 +17,7 @@ Tests are organized in flat structure focused on aggregating crate verification 
 
 ## Test Strategy
 
-This is an aggregating crate that re-exports from multiple constituent crates (iter_tools, meta_tools, mem_tools, typing_tools, time_tools, strs_tools, error_tools, derive_tools, data_type, diagnostics_tools).
+This is a thin re-export crate that forwards collection_tools macros and types (hmap!, hset!, bmap!, bset!, HashMap, HashSet, BTreeMap, BTreeSet, etc.).
 
 **Testing Philosophy**:
 - Minimal wrapper-specific tests only (smoke tests, example validation, readme accuracy)
@@ -32,7 +32,7 @@ Comprehensive functional testing happens in constituent crates. Testing here wou
 
 Before adding new test:
 1. **Question**: Does this test functionality or aggregation?
-   - Functionality → Add to constituent crate (iter_tools/tests/, meta_tools/tests/, etc.)
+   - Functionality → Add to constituent crate (collection_tools/tests/)
    - Aggregation/re-export → May add here
 2. **Check duplication**: Is this already tested in constituent crate?
    - Yes → Don't duplicate, reference constituent test

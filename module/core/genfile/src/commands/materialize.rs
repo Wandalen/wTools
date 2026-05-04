@@ -15,6 +15,9 @@ use unilang::data::
 };
 
 /// Register materialize commands
+///
+/// # Errors
+/// Returns an error if command registration fails.
 #[ allow( deprecated ) ]
 pub fn register( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core::error::Error > >
 {

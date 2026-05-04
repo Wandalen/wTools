@@ -37,8 +37,7 @@ tests/
     ├── archive_advanced_test.rs # Advanced archive operations tests
     ├── content_source_test.rs   # Content source tests
     ├── content_source_example.rs # Content source usage examples
-    ├── workflow_example.rs      # Complete workflow examples
-    └── builder_test.rs          # Builder pattern tests (FR21 deferred)
+    └── workflow_example.rs      # Complete workflow examples
 ```
 
 ## Test Domain Map
@@ -52,9 +51,7 @@ tests/
 | **Content Sources** | content_source_test, content_source_example | ~20 | External content resolution, storage backends |
 | **Security** | security.rs | 27 | Path traversal validation, malicious path detection |
 | **Integration** | integration_test, workflow_example | ~15 | End-to-end workflows, multi-component integration |
-| **Builder Pattern** | builder_test | 0 | Deferred until Former UX improves (FR21) |
-
-**Total**: 169 passing tests across 8 functional domains
+**Total**: 169 passing tests across 7 functional domains
 
 ## Scope
 
@@ -139,7 +136,7 @@ All tests must pass with zero warnings before merge.
 
 ## Test Coverage Status
 
-**Current Coverage**: 169 tests (100% of FR1-FR20 excluding deferred FR21)
+**Current Coverage**: 169 tests (100% of FR1-FR20)
 
 | Spec Requirement | Coverage | Notes |
 |------------------|----------|-------|
@@ -147,21 +144,15 @@ All tests must pass with zero warnings before merge.
 | FR18 (Security) | 100% | 27 dedicated path traversal tests |
 | FR19 (Serialization) | 100% | JSON/YAML roundtrip tests |
 | FR20 (External Content) | 100% | Content source resolution tests |
-| FR21 (Builder API) | 0% | Deferred until Former UX improves |
 
 ## Known Test Gaps
 
-1. **Builder Pattern Tests** (`tests/inc/builder_test.rs` disabled):
-   - Reason: FR21 deferred until Former crate UX improves
-   - Tracking: See `tests/inc/mod.rs` line 25 comment
-   - Re-enable: When Former stabilizes builder API ergonomics
-
-2. **Large Archive Performance**:
+1. **Large Archive Performance**:
    - Current tests use small archives (<10 files, <10KB total)
    - Performance testing deferred to benchkit integration
    - Not a correctness concern, only performance characterization
 
-3. **Real Network Content Sources**:
+2. **Real Network Content Sources**:
    - Tests use mock resolvers, not real HTTP/file I/O
    - Integration tests in downstream crates validate real I/O
    - Conscious decision to maintain environmental independence

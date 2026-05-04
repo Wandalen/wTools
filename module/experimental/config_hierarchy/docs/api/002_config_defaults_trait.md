@@ -11,22 +11,6 @@
 
 `ConfigDefaults` is one of the three traits users implement to configure `ConfigManager< D, P, V >`. It defines the lowest-priority source in the resolution hierarchy: the application's built-in fallback values. It also declares the set of known parameter names, which drives `resolve_all_config` to enumerate the full parameter space.
 
-### Interface
-
-```rust
-pub trait ConfigDefaults
-{
-  /// Returns application default values as key-value pairs.
-  fn get_defaults() -> HashMap< String, JsonValue >;
-
-  /// Returns the list of all known parameter names.
-  ///
-  /// Used by `resolve_all_config` to enumerate parameters.
-  /// Parameters not in this list are only resolved if found in a file or runtime map.
-  fn get_parameter_names() -> Vec< &'static str >;
-}
-```
-
 ### Operations
 
 #### `get_defaults()`
@@ -36,33 +20,6 @@ Returns a `HashMap< String, JsonValue >` mapping parameter names to their defaul
 #### `get_parameter_names()`
 
 Returns the canonical list of parameter names the application cares about. `resolve_all_config< D, P >()` iterates this list to resolve each parameter. Parameters in config files or runtime maps but not in this list are still resolved — they are picked up in a secondary scan of global and local config files by `resolve_all_config`.
-
-### Example
-
-```rust
-use config_hierarchy::ConfigDefaults;
-use std::collections::HashMap;
-use serde_json::Value as JsonValue;
-
-struct AppDefaults;
-
-impl ConfigDefaults for AppDefaults
-{
-  fn get_defaults() -> HashMap< String, JsonValue >
-  {
-    let mut map = HashMap::new();
-    map.insert( "timeout".to_string(), JsonValue::Number( 30.into() ) );
-    map.insert( "retries".to_string(), JsonValue::Number( 3.into() ) );
-    map.insert( "debug".to_string(), JsonValue::Bool( false ) );
-    map
-  }
-
-  fn get_parameter_names() -> Vec< &'static str >
-  {
-    vec![ "timeout", "retries", "debug" ]
-  }
-}
-```
 
 ### Error Handling
 
@@ -74,10 +31,21 @@ Neither method returns a `Result`. Both are expected to be pure and infallible. 
 - Removing a parameter from `get_parameter_names()` without removing it from `get_defaults()` means it is no longer enumerated but still available if directly resolved by name
 - Changing a default value changes only the fallback — higher-priority sources are unaffected
 
-### Cross-References
+### APIs
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | `../invariant/001_resolution_hierarchy.md` | Defaults are the lowest-priority level (priority 6) |
-| doc | `../api/001_config_paths_trait.md` | Companion required trait |
-| doc | `../api/003_config_validator_trait.md` | Companion optional trait |
+| File | Relationship |
+|------|--------------|
+| [api/001_config_paths_trait.md](../api/001_config_paths_trait.md) | Companion required trait |
+| [api/003_config_validator_trait.md](../api/003_config_validator_trait.md) | Companion optional trait |
+
+### Features
+
+| File | Relationship |
+|------|--------------|
+| [feature/001_config_hierarchy.md](../feature/001_config_hierarchy.md) | Feature this trait is part of |
+
+### Invariants
+
+| File | Relationship |
+|------|--------------|
+| [invariant/001_resolution_hierarchy.md](../invariant/001_resolution_hierarchy.md) | Defaults are the lowest-priority level (priority 6) |

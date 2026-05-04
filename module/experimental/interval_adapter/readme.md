@@ -1,4 +1,3 @@
-# DEPRECATED: interval_adapter
 <!-- {{# generate.module_header{} #}} -->
 
 # Module :: `interval_adapter`

@@ -3,7 +3,7 @@
 Excluded from the workspace (`Cargo.toml` exclude list). Not compiled, not tested, not published. Retained only to preserve git history before final deletion.
 
 Two groups co-located here:
-- **Architecture-tracked** (20): assigned layers in `doc/layers.md`; targeted for deprecation via reachability analysis
+- **Architecture-tracked** (19): assigned layers in `doc/layers.md`; targeted for deprecation via reachability analysis
 - **Legacy postponed** (22): pre-architecture crates that were never assigned layers; moved here from `module/postponed/`
 
 ## Architecture-Tracked (19)
@@ -18,7 +18,7 @@ Two groups co-located here:
 | `fs_tools/` | Deprecated alias for file_tools |
 | `impls_index/` | Deprecated impl-method named macro wrappers |
 | `impls_index_meta/` | Deprecated proc-macro backend for impls_index |
-| `interval_adapter/` | Deprecated interval trait coverage over range variants |
+| `iter_tools/` | Deprecated iterator utilities; migrated to macro_tools + itertools |
 | `is_slice/` | Deprecated compile-time slice check (superseded by implements!) |
 | `meta_tools/` | Deprecated macro bundle facade |
 | `multiline_input/` | Deprecated core multiline terminal input (moved to experimental) |

@@ -21,7 +21,7 @@ name = "config_hierarchy"
 path = "src/lib.rs"
 
 [features]
-default = [ "enabled", "file_ops" ]
+default = [ "enabled" ]
 full = [
   "enabled",
   "file_ops",
@@ -72,6 +72,7 @@ required-features = ["file_ops"]
 [[test]]
 name = "type_detection_tests"
 path = "tests/type_detection_tests.rs"
+required-features = ["enabled"]
 
 [[test]]
 name = "concurrent_access_tests"
@@ -86,6 +87,7 @@ required-features = ["file_ops"]
 [[test]]
 name = "path_standards_tests"
 path = "tests/path_standards_tests.rs"
+required-features = ["enabled"]
 
 [[test]]
 name = "dual_pattern_tests"
@@ -95,11 +97,12 @@ required-features = ["file_ops"]
 [[test]]
 name = "feature_tests"
 path = "tests/feature_tests.rs"
+required-features = ["enabled"]
 
 [[test]]
 name = "display_tests"
 path = "tests/display_tests.rs"
-required-features = ["display"]
+required-features = ["enabled", "display"]
 
 [[test]]
 name = "scope_operations_tests"
@@ -109,3 +112,14 @@ required-features = ["file_ops"]
 [[test]]
 name = "configurability_tests"
 path = "tests/configurability_tests.rs"
+required-features = ["enabled"]
+
+[[test]]
+name = "validator_tests"
+path = "tests/validator_tests.rs"
+required-features = ["enabled"]
+
+[[example]]
+name = "basic_usage"
+path = "examples/basic_usage.rs"
+required-features = [ "enabled", "file_ops" ]

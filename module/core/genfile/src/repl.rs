@@ -22,25 +22,24 @@ use std::io::{ self, Write };
 /// # Parameters
 ///
 /// - `pipeline`: Command processor
-/// - `state`: Shared archive state
 ///
 /// # Examples
 ///
 /// ```no_run
 /// use unilang::pipeline::Pipeline;
 /// use unilang::registry::CommandRegistry;
-/// use genfile::state::ArchiveState;
 /// use genfile::repl::run_repl;
 ///
 /// let registry = CommandRegistry::new();
 /// let pipeline = Pipeline::new( registry );
-/// let state = ArchiveState::new();
 ///
-/// run_repl( &pipeline, state ).unwrap();
+/// run_repl( &pipeline ).unwrap();
 /// ```
+///
+/// # Errors
+/// Returns an error if reading from stdin fails.
 pub fn run_repl(
   pipeline : &Pipeline,
-  _state : crate::state::ArchiveState
 ) -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "genfile REPL v0.1.0" );

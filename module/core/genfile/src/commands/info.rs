@@ -18,6 +18,9 @@ use unilang::data::
 };
 
 /// Register analysis commands
+///
+/// # Errors
+/// Returns an error if command registration fails.
 #[ allow( deprecated ) ]
 pub fn register( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core::error::Error > >
 {

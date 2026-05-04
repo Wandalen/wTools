@@ -19,9 +19,6 @@ mod private {
   #[allow(unused_imports)]
   use crate::standalone::{error_tools, collection_tools, mem_tools};
   
-  // COMMENTED OUT: Dependencies disabled to break circular dependencies
-  // #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
-  // use ::{error_tools, collection_tools, mem_tools};
 
   /// Trait for systematic behavioral equivalence verification
   pub trait BehavioralEquivalence<T> {

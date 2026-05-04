@@ -37,9 +37,9 @@ where
   let separator = P::env_var_separator();
 
   // Apply casing based on P::env_var_casing()
-  // Note: UpperCase and PreserveAppName both uppercase parameters, but differ in prefix handling
-  // (UpperCase uppercases prefix, PreserveAppName preserves app_name casing in prefix)
-  #[allow(clippy::match_same_arms)]
+  // allow: UpperCase and PreserveAppName intentionally produce identical param_part —
+  // they are semantically distinct variants that differ only in prefix casing
+  #[ allow( clippy::match_same_arms ) ]
   let param_part = match P::env_var_casing()
   {
     EnvVarCasing::UpperCase => param_name.to_uppercase(),

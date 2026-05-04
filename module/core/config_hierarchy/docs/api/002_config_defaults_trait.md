@@ -31,10 +31,21 @@ Neither operation returns an error. Both are expected to be pure and infallible.
 - Removing a parameter from the names list without removing it from the defaults map means it is no longer enumerated but still available if directly resolved by name
 - Changing a default value changes only the fallback — higher-priority sources are unaffected
 
-### Cross-References
+### APIs
 
-| Type | File                                  | Responsibility                                       |
-|------|---------------------------------------|------------------------------------------------------|
-| doc  | invariant/001_resolution_hierarchy.md | Defaults are the lowest-priority level (priority 6)  |
-| doc  | api/001_config_paths_trait.md         | Companion required trait for path configuration      |
-| doc  | api/003_config_validator_trait.md     | Companion optional trait for validation              |
+| File | Relationship |
+|------|--------------|
+| [api/001_config_paths_trait.md](../api/001_config_paths_trait.md) | Companion required trait for path configuration |
+| [api/003_config_validator_trait.md](../api/003_config_validator_trait.md) | Companion optional trait for validation |
+
+### Features
+
+| File | Relationship |
+|------|--------------|
+| [feature/001_config_hierarchy.md](../feature/001_config_hierarchy.md) | Feature this trait is part of |
+
+### Invariants
+
+| File | Relationship |
+|------|--------------|
+| [invariant/001_resolution_hierarchy.md](../invariant/001_resolution_hierarchy.md) | Defaults are the lowest-priority level (priority 6) |

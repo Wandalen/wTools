@@ -3,18 +3,11 @@
 //! Command-line interface for `genfile_core` library providing template archive
 //! creation, management, and materialization capabilities.
 
-#![allow( clippy::needless_pass_by_value )]
-#![allow( clippy::missing_errors_doc )]
-#![allow( clippy::too_many_lines )]
-#![allow( clippy::manual_let_else )]
-#![allow( clippy::unnecessary_wraps )]
-
 use unilang::pipeline::Pipeline;
 use unilang::interpreter::ExecutionContext;
 
 mod commands;
 mod handlers;
-mod state;
 mod error;
 mod repl;
 
@@ -30,13 +23,10 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
   // Create pipeline for command processing
   let pipeline = Pipeline::new( registry );
 
-  // Create archive state for REPL mode
-  let state = state::ArchiveState::new();
-
   // If no arguments provided, start REPL mode
   if argv.len() == 1
   {
-    return repl::run_repl( &pipeline, state );
+    return repl::run_repl( &pipeline );
   }
 
   // Otherwise, process single command in CLI mode

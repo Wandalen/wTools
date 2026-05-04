@@ -2,6 +2,10 @@
 //!
 //! Implementation of parameter management operations (add, list, remove)
 
+// Handler functions are registered via unilang::CommandRegistry::command_add_runtime,
+// which requires fn(VerifiedCommand, ExecutionContext) -> ... by value.
+#![ allow( clippy::needless_pass_by_value ) ]
+
 use unilang::semantic::VerifiedCommand;
 use unilang::data::{ OutputData, ErrorData };
 use unilang::interpreter::ExecutionContext;
@@ -10,6 +14,9 @@ use genfile_core::ParameterDescriptor;
 use super::shared_state::{ get_current_archive, set_current_archive };
 
 /// Handler for .parameter.add command
+///
+/// # Errors
+/// Returns usage error if required parameters are missing or no archive is loaded.
 pub fn add_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext
@@ -62,6 +69,9 @@ pub fn add_handler(
 }
 
 /// Handler for .parameter.list command
+///
+/// # Errors
+/// Returns usage error if no archive is loaded.
 pub fn list_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext
@@ -111,6 +121,10 @@ pub fn list_handler(
 }
 
 /// Handler for .parameter.remove command
+///
+/// # Errors
+/// Returns usage error if required parameters are missing or no archive is loaded.
+/// Returns file error if the specified parameter is not found.
 pub fn remove_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext

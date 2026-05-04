@@ -4,7 +4,7 @@
 
 - **Purpose**: Document the public macro API — signatures, behavior, and guarantees.
 - **Responsibility**: Registry and overview of all API doc instances.
-- **In Scope**: All 16 variadic constructor macros; collection type re-exports.
+- **In Scope**: All variadic constructor macros (9 strict + 9 into); collection type re-exports.
 - **Out of Scope**: Behavioral invariants (see `invariant/`), feature guides (see `feature/`).
 
 ### Overview Table

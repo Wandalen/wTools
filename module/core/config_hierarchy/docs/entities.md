@@ -5,7 +5,7 @@
 | Type          | Purpose                                                              | Master File                                   | Instances |
 |---------------|----------------------------------------------------------------------|-----------------------------------------------|----------:|
 | `algorithm/`  | Documents each algorithm's inputs, computational logic, and outputs  | [algorithm/readme.md](algorithm/readme.md)    |         1 |
-| `api/`        | Documents each trait's operations, error handling, and compatibility  | [api/readme.md](api/readme.md)                |         3 |
+| `api/`        | Documents each trait's operations, error handling, and compatibility guarantees | [api/readme.md](api/readme.md)                |         3 |
 | `feature/`    | Cross-references all source, test, and doc artifacts for each feature | [feature/readme.md](feature/readme.md)       |         1 |
 | `format/`     | Documents each format's data model, encoding structure, and compatibility | [format/readme.md](format/readme.md)      |         1 |
 | `invariant/`  | Documents each invariant's statement, enforcement mechanism, and consequences | [invariant/readme.md](invariant/readme.md) |     1 |

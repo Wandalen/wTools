@@ -34,10 +34,15 @@ The validation error type carries the parameter name and a human-readable error 
 - Adding new validation rules in the per-parameter hook is non-breaking for callers; existing configs that were valid remain valid unless the new rule rejects them
 - Switching from the no-op implementation to a real validator is a non-breaking API change but may reject configs that were previously accepted
 
-### Cross-References
+### APIs
 
-| Type | File                                  | Responsibility                                       |
-|------|---------------------------------------|------------------------------------------------------|
-| doc  | api/001_config_paths_trait.md         | Companion required trait for path configuration      |
-| doc  | api/002_config_defaults_trait.md      | Companion required trait for default values          |
-| doc  | feature/001_config_hierarchy.md       | Feature this validation contract is part of          |
+| File | Relationship |
+|------|--------------|
+| [api/001_config_paths_trait.md](../api/001_config_paths_trait.md) | Companion required trait for path configuration |
+| [api/002_config_defaults_trait.md](../api/002_config_defaults_trait.md) | Companion required trait for default values |
+
+### Features
+
+| File | Relationship |
+|------|--------------|
+| [feature/001_config_hierarchy.md](../feature/001_config_hierarchy.md) | Feature this validation contract is part of |

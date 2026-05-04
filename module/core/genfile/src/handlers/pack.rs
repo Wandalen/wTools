@@ -27,6 +27,10 @@
 //! - Committed to version control
 //! - Distributed without dependency on source directories
 
+// Handler functions are registered via unilang::CommandRegistry::command_add_runtime,
+// which requires fn(VerifiedCommand, ExecutionContext) -> ... by value.
+#![ allow( clippy::needless_pass_by_value ) ]
+
 use unilang::semantic::VerifiedCommand;
 use unilang::data::{ OutputData, ErrorData };
 use unilang::interpreter::ExecutionContext;
@@ -42,6 +46,12 @@ use genfile_core::TemplateArchive;
 /// - `output` - Output file path
 /// - `verbosity` - Output verbosity (0-5, default: 1)
 /// - `dry` - Dry run mode (default: 0)
+///
+/// # Errors
+/// Returns usage error if required parameters are missing.
+/// Returns file error if the input path does not exist or is not a directory.
+/// Returns format error if packing or saving the archive fails.
+#[ allow( clippy::too_many_lines ) ]
 pub fn pack_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext

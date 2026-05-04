@@ -36,10 +36,12 @@ diagnostics_runtime_assertions = []
 [[example]]
 name = "mod_interface_trivial"
 path = "examples/mod_interface_trivial/src/main.rs"
+required-features = [ "enabled" ]
 
 [[example]]
 name = "mod_interface_debug"
 path = "examples/mod_interface_debug/src/main.rs"
+required-features = [ "enabled" ]
 
 [dependencies]
 mod_interface_meta = { workspace = true }

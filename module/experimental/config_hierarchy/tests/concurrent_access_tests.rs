@@ -1,3 +1,4 @@
+// allow: test binary functions are not part of the public API; documentation not required
 #![ allow( missing_docs ) ]
 
 use config_hierarchy::*;

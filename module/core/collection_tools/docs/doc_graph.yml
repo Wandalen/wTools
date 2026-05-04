@@ -1,7 +1,7 @@
 meta:
   module: collection_tools
   description: Cross-entity dependency graph for collection_tools documentation
-  generated: 2026_04_25
+  last_updated: 2026_05_04
   node_count: 5
   edge_count: 20
   component_count: 1
@@ -42,72 +42,72 @@ edges:
   # api/001 cross-references
   - from: api/001
     to: feature/001
-    via: cross_references
+    via: typed_reference
   - from: api/001
     to: feature/002
-    via: cross_references
+    via: typed_reference
   - from: api/001
     to: invariant/001
-    via: cross_references
+    via: typed_reference
   - from: api/001
     to: invariant/002
-    via: cross_references
+    via: typed_reference
 
   # feature/001 cross-references
   - from: feature/001
     to: api/001
-    via: cross_references
+    via: typed_reference
   - from: feature/001
     to: feature/002
-    via: cross_references
+    via: typed_reference
   - from: feature/001
     to: invariant/001
-    via: cross_references
+    via: typed_reference
   - from: feature/001
     to: invariant/002
-    via: cross_references
+    via: typed_reference
 
   # feature/002 cross-references
   - from: feature/002
     to: api/001
-    via: cross_references
+    via: typed_reference
   - from: feature/002
     to: feature/001
-    via: cross_references
+    via: typed_reference
   - from: feature/002
     to: invariant/001
-    via: cross_references
+    via: typed_reference
   - from: feature/002
     to: invariant/002
-    via: cross_references
+    via: typed_reference
 
   # invariant/001 cross-references
   - from: invariant/001
     to: api/001
-    via: cross_references
+    via: typed_reference
   - from: invariant/001
     to: feature/001
-    via: cross_references
+    via: typed_reference
   - from: invariant/001
     to: feature/002
-    via: cross_references
+    via: typed_reference
   - from: invariant/001
     to: invariant/002
-    via: cross_references
+    via: typed_reference
 
   # invariant/002 cross-references
   - from: invariant/002
     to: api/001
-    via: cross_references
+    via: typed_reference
   - from: invariant/002
     to: feature/001
-    via: cross_references
+    via: typed_reference
   - from: invariant/002
     to: feature/002
-    via: cross_references
+    via: typed_reference
   - from: invariant/002
     to: invariant/001
-    via: cross_references
+    via: typed_reference
 
 components:
   - id: 1

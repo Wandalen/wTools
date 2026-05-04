@@ -47,9 +47,14 @@ A `serde_json::Value` (`JsonValue`) in one of four variants: `Bool`, `Number` (i
 
 O(1) per value — all checks are constant-time string comparisons or scalar parses. No allocation except for the `String` fallback case.
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | `../invariant/001_resolution_hierarchy.md` | Applied at resolution levels 2 (env) and 3–5 (file values) |
-| doc | `../feature/001_config_hierarchy.md` | Feature that uses this type detection algorithm |
+| File | Relationship |
+|------|--------------|
+| [feature/001_config_hierarchy.md](../feature/001_config_hierarchy.md) | Feature that uses this type detection algorithm |
+
+### Invariants
+
+| File | Relationship |
+|------|--------------|
+| [invariant/001_resolution_hierarchy.md](../invariant/001_resolution_hierarchy.md) | Applied at resolution levels 2 (env) and 3–5 (file values) |

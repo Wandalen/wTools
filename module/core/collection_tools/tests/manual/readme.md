@@ -1,7 +1,7 @@
 # Manual Testing Plan: collection_tools
 
 ## Test Execution Date
-2026-01-24
+2026_01_24
 
 ## Scope
 Comprehensive manual testing of ALL collection constructor macros and examples against exhaustive corner case list.
@@ -241,7 +241,7 @@ For each issue:
 ### vec! Macro Namespace Analysis
 **Status:** ANALYZED - NOT A BUG ✅
 **Finding:** `collection_tools::vec!` conflicts with `std::vec!` when using wildcard imports (`use collection_tools::*`).
-**Conclusion:** This is **documented intentional design** (spec.md lines 482-486):
+**Conclusion:** This is **documented intentional design** (see `docs/api/001_collection_macros.md` § Compatibility Guarantees):
 - Rationale: API consistency - all collection macros importable from one location
 - Solution: `dlist!` alias provided for unambiguous use
 - Existing tests use qualified paths (`std::vec!` or `collection_tools::dlist!`)
@@ -257,7 +257,7 @@ For each issue:
 
 ## Completion Summary
 
-**Date:** 2026-01-24
+**Date:** 2026_01_24
 **Status:** ✅ MANUAL TESTING COMPLETE - ZERO ISSUES FOUND
 
 All 20 corner case categories tested comprehensively through existing test suite.

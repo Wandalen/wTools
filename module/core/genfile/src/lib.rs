@@ -19,19 +19,11 @@
 //! ```
 
 #![deny( missing_docs )]
-#![allow( unused_imports )]
-#![allow( clippy::needless_pass_by_value )]
-#![allow( clippy::missing_errors_doc )]
-#![allow( clippy::too_many_lines )]
-#![allow( clippy::manual_let_else )]
-#![allow( clippy::unnecessary_wraps )]
 
 #[ cfg( feature = "enabled" ) ]
 pub mod commands;
 #[ cfg( feature = "enabled" ) ]
 pub mod handlers;
-#[ cfg( feature = "enabled" ) ]
-pub mod state;
 #[ cfg( feature = "enabled" ) ]
 pub mod error;
 #[ cfg( feature = "enabled" ) ]
@@ -46,7 +38,6 @@ pub mod prelude
   {
     commands,
     handlers,
-    state,
     error,
     repl,
   };

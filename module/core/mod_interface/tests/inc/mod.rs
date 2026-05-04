@@ -50,5 +50,3 @@ mod derive
 }
 
 mod trybuild_test;
-
-// xxx: enable

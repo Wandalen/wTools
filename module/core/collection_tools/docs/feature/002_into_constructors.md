@@ -4,33 +4,57 @@
 
 - **Purpose**: Enable collection initialization from heterogeneous elements that share a common `Into<T>` target type.
 - **Responsibility**: Document the into-based constructor macros and their type annotation requirements.
-- **In Scope**: `into_vec!`, `into_hmap!`, `into_hset!`, `into_bmap!`, `into_bset!`, `into_llist!`, `into_vecd!`, `into_dlist!` macros; `.into()` coercion contract; type annotation requirements.
+- **In Scope**: 9 into-based constructor macros for heterogeneous element initialization; coercion via the Into trait; explicit type annotation requirements.
 - **Out of Scope**: Strict constructors (see `001_collection_constructors.md`); no_std collection source (see `../invariant/001_no_std_alloc.md`).
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/collection/hash_map.rs` | `into_hmap!` implementation |
-| source | `src/collection/hash_set.rs` | `into_hset!` implementation |
-| source | `src/collection/btree_map.rs` | `into_bmap!` implementation |
-| source | `src/collection/btree_set.rs` | `into_bset!` implementation |
-| source | `src/collection/linked_list.rs` | `into_llist!` implementation |
-| source | `src/collection/vec_deque.rs` | `into_vecd!` implementation |
-| source | `src/collection/vector.rs` | `into_vec!` implementation |
-| source | `src/collection/mod.rs` | `count!` macro used for capacity pre-allocation |
-| test | `tests/smoke_test.rs` | Smoke tests including into-based constructor macros |
-| test | `tests/inc/hmap.rs` | `into_hmap!` macro tests |
-| test | `tests/inc/hset.rs` | `into_hset!` macro tests |
-| test | `tests/inc/vec.rs` | `into_vec!` macro tests |
-| test | `tests/inc/bmap.rs` | `into_bmap!` macro tests |
-| test | `tests/inc/bset.rs` | `into_bset!` macro tests |
-| test | `tests/inc/llist.rs` | `into_llist!` macro tests |
-| test | `tests/inc/deque.rs` | `into_vecd!` macro tests |
-| doc | `../api/001_collection_macros.md` | Complete macro signature contract |
-| doc | `001_collection_constructors.md` | Strict-type counterpart |
-| doc | `../invariant/001_no_std_alloc.md` | Invariant governing HashMap/HashSet source (out of scope here; see invariant for full coverage) |
-| doc | `../invariant/002_capacity_preallocated.md` | Invariant guaranteeing pre-allocation |
+| File | Relationship |
+|------|-------------|
+| `src/collection/binary_heap.rs` | `into_heap!` implementation |
+| `src/collection/hash_map.rs` | `into_hmap!` implementation |
+| `src/collection/hash_set.rs` | `into_hset!` implementation |
+| `src/collection/btree_map.rs` | `into_bmap!` implementation |
+| `src/collection/btree_set.rs` | `into_bset!` implementation |
+| `src/collection/linked_list.rs` | `into_llist!` implementation |
+| `src/collection/vec_deque.rs` | `into_vecd!` implementation |
+| `src/collection/vector.rs` | `into_vec!` and `into_dlist!` implementation |
+| `src/collection/mod.rs` | `count!` macro used for capacity pre-allocation |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| `tests/heap_macro_availability_test.rs` | Bug reproducer — into_heap! public API accessibility |
+| `tests/inc/heap.rs` | `into_heap!` macro tests |
+| `tests/inc/hmap.rs` | `into_hmap!` macro tests |
+| `tests/inc/hset.rs` | `into_hset!` macro tests |
+| `tests/inc/vec.rs` | `into_vec!` and `into_dlist!` macro tests |
+| `tests/inc/bmap.rs` | `into_bmap!` macro tests |
+| `tests/inc/bset.rs` | `into_bset!` macro tests |
+| `tests/inc/llist.rs` | `into_llist!` macro tests |
+| `tests/inc/deque.rs` | `into_vecd!` macro tests |
+| `tests/manual_corner_cases_test.rs` | Heterogeneous types, capacity, and move-semantics corner cases |
+| `tests/docs/feature/02_into_constructors.md` | Test spec for this feature |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| `../api/001_collection_macros.md` | Complete macro signature contract |
+
+### Features
+
+| File | Relationship |
+|------|-------------|
+| `001_collection_constructors.md` | Strict-type counterpart |
+
+### Invariants
+
+| File | Relationship |
+|------|-------------|
+| `../invariant/001_no_std_alloc.md` | Invariant governing HashMap/HashSet allocation source |
+| `../invariant/002_capacity_preallocated.md` | Invariant guaranteeing pre-allocation |
 
 ### Design
 
@@ -49,6 +73,7 @@ Each strict macro has an into-based counterpart:
 - `into_bset!( e1, e2, e3 )` — `BTreeSet<T>` via `.into()` on each element
 - `into_llist!( e1, e2, e3 )` — `LinkedList<T>` via `.into()` on each element
 - `into_vecd!( e1, e2, e3 )` — `VecDeque<T>` via `.into()` on each element
+- `into_heap!( e1, e2, e3 )` — `BinaryHeap<T>` via `.into()` on each element (max-heap ordering)
 - `into_dlist!( e1, e2, e3 )` — alias for `into_vec!`
 
 #### Type Annotations

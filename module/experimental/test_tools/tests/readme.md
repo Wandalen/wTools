@@ -6,6 +6,9 @@ This directory contains comprehensive tests for the `test_tools` crate, verifyin
 
 | File | Responsibility |
 |------|----------------|
+| `readme.md` | Document tests/ organization and running instructions |
+| `manual/` | Manual testing plans and corner case scenarios |
+| `inc/` | Aggregated tests from dependency crates (error_tools, collection_tools, etc.) |
 | `api_stability_facade_tests.rs` | Test API stability facade functionality (Task 011) |
 | `behavioral_equivalence_tests.rs` | Test behavioral equivalence between direct and re-exported items (Task 032) |
 | `behavioral_equivalence_verification_tests.rs` | Enhanced verification of behavioral equivalence with comprehensive coverage (Task 033) |
@@ -27,7 +30,6 @@ This directory contains comprehensive tests for the `test_tools` crate, verifyin
 | `standalone_basic_test.rs` | Basic standalone build verification without dependencies |
 | `standalone_build_tests.rs` | Test standalone build mode functionality (Task 038) |
 | `tests.rs` | Main test aggregation entry point |
-| `inc/` | Aggregated tests from dependency crates (error_tools, collection_tools, etc.) |
 
 ## Test Organization
 

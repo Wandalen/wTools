@@ -1,3 +1,4 @@
+// allow: test binary functions are not part of the public API; documentation not required
 #![ allow( missing_docs ) ]
 
 use config_hierarchy::detect_and_convert_value;
@@ -89,4 +90,35 @@ fn test_whitespace_string()
 {
   assert_eq!( detect_and_convert_value( "   " ), JsonValue::String( "   ".into() ) );
   assert_eq!( detect_and_convert_value( "\n" ), JsonValue::String( "\n".into() ) );
+}
+
+// AC-05: Non-finite floats (NaN, ±Inf) fall through to String
+//
+// ## Root Cause
+// algorithm/001 Step 3 specifies: "Success and value is finite → Number;
+// Non-finite (NaN, ±Inf) → fall through to string". f64::parse("NaN") and
+// f64::parse("Inf") SUCCEED, so without the is_finite() guard they would
+// silently produce unserializable JsonValue::Number variants.
+//
+// ## Why Not Caught
+// String fallback tests covered "hello" and unicode but not the specific
+// float-parses-but-is-non-finite edge case.
+//
+// ## Fix Applied
+// Tests verify the finite-check guard in type_detection.rs returns String.
+//
+// ## Prevention
+// Every documented edge case in an algorithm doc must have a corresponding test.
+//
+// ## Pitfall
+// f64::parse("NaN") returns Ok. The is_finite() guard is what routes it to String.
+// Without the guard, non-finite floats become unserializable JSON.
+#[ test ]
+fn test_non_finite_float_fallback()
+{
+  assert_eq!( detect_and_convert_value( "NaN" ),  JsonValue::String( "NaN".into() ) );
+  assert_eq!( detect_and_convert_value( "Inf" ),  JsonValue::String( "Inf".into() ) );
+  assert_eq!( detect_and_convert_value( "-Inf" ), JsonValue::String( "-Inf".into() ) );
+  assert_eq!( detect_and_convert_value( "inf" ),  JsonValue::String( "inf".into() ) );
+  assert_eq!( detect_and_convert_value( "nan" ),  JsonValue::String( "nan".into() ) );
 }

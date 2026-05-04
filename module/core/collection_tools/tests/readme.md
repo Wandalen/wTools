@@ -1,23 +1,27 @@
 # Collection Tools Tests
 
-Test suite for collection_tools crate.
+### Scope
 
-## Test Files
+Test suite for the `collection_tools` crate.
+
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|
 | `heap_macro_availability_test.rs` | Verifies heap macro public API accessibility (bug reproducer for issue-1) |
-| `manual_corner_cases_test.rs` | Comprehensive collection macro corner case tests (empty collections, heap ordering, heterogeneous types, complex types, move semantics) |
-| `smoke_test.rs` | Smoke testing (disabled due to circular dependency) |
+| `manual_corner_cases_test.rs` | Comprehensive collection macro corner case tests |
+| `no_std_alloc_test.rs` | Invariant tests for no_std allocation selection (cfg-gated on use_alloc feature) |
 | `tests.rs` | Test aggregation entry point |
-| `inc/` | Subdirectory containing modular collection tests |
+| `docs/` | Test spec surface for each doc entity instance |
+| `inc/` | Modular per-collection-type constructor tests |
+| `manual/` | Manual testing plan and execution records |
 
-## Test Organization
+### Test Organization
 
-### Bug Reproducer Tests
+#### Bug Reproducer Tests
 - `heap_macro_availability_test.rs`: Permanent regression test for Issue #1 (heap macro accessibility bug)
 
-### Corner Case Tests
+#### Corner Case Tests
 - `manual_corner_cases_test.rs`: Comprehensive edge case coverage
   - Empty collections (all 8 collection types)
   - Single element collections
@@ -31,22 +35,11 @@ Test suite for collection_tools crate.
   - Complex nested types (Vec<Vec<T>>, HashMap<K, Vec<V>>, tuples, Options, Results)
   - Non-Copy types and move semantics (String, Box, custom structs)
 
-### Modular Tests (`inc/`)
-The `inc/` subdirectory contains modular tests for each collection type:
-- `bmap.rs` - BTreeMap constructor tests
-- `bset.rs` - BTreeSet constructor tests
-- `deque.rs` - VecDeque constructor tests
-- `heap.rs` - BinaryHeap constructor tests
-- `hmap.rs` - HashMap constructor tests
-- `hset.rs` - HashSet constructor tests
-- `llist.rs` - LinkedList constructor tests
-- `vec.rs` - Vec constructor tests
-- `namespace_test.rs` - Namespace exposure verification
-- `components.rs` - Component-based testing utilities
-- `mod.rs` - Module aggregation
+#### Modular Tests (`inc/`)
+See `inc/readme.md` for the full responsibility table.
 
-## Test Coverage
+### Test Coverage
 
-- **Functional Tests**: 95+ tests across all collection constructors (8 empty + 38 new corner cases + existing tests)
-- **Doc Tests**: 60 documentation examples
-- **Edge Cases**: Empty collections, single elements, trailing commas, capacity, duplicates, large collections, heap ordering, heterogeneous types, nested types, move semantics
+- **Functional Tests**: Coverage across all collection constructors — empty, single-element, trailing-comma, capacity, duplicate-key, large collections, heap ordering, heterogeneous types, nested types, move semantics
+- **Doc Tests**: Documentation examples in readme.md and source doc comments
+- **Invariant Tests**: no_std allocation selection (use_alloc feature), capacity pre-allocation

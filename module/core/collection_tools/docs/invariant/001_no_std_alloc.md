@@ -7,16 +7,38 @@
 - **In Scope**: `HashMap` and `HashSet` source selection; `no_std` + `use_alloc` feature interaction; `hashbrown` dependency activation.
 - **Out of Scope**: Other collection types (always from `std` or `alloc`); capacity pre-allocation behavior (see `002_capacity_preallocated.md`).
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/collection/hash_map.rs` | Conditional `HashMap` re-export |
-| source | `src/collection/hash_set.rs` | Conditional `HashSet` re-export |
-| doc | `../api/001_collection_macros.md` | Collection type re-export table |
-| doc | `../feature/001_collection_constructors.md` | Strict macros whose HashMap/HashSet depend on this invariant |
-| doc | `../feature/002_into_constructors.md` | Into-based macros whose HashMap/HashSet depend on this invariant |
-| doc | `002_capacity_preallocated.md` | Sibling invariant governing capacity pre-allocation |
+| File | Relationship |
+|------|-------------|
+| `src/collection/hash_map.rs` | Conditional `HashMap` re-export (std vs hashbrown) |
+| `src/collection/hash_set.rs` | Conditional `HashSet` re-export (std vs hashbrown) |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| `tests/no_std_alloc_test.rs` | Type-identity tests for hashbrown path (cfg-gated on use_alloc) |
+| `tests/docs/invariant/01_no_std_alloc.md` | Test spec for this invariant |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| `../api/001_collection_macros.md` | Collection type re-export table |
+
+### Features
+
+| File | Relationship |
+|------|-------------|
+| `../feature/001_collection_constructors.md` | Strict macros whose HashMap/HashSet depend on this invariant |
+| `../feature/002_into_constructors.md` | Into-based macros whose HashMap/HashSet depend on this invariant |
+
+### Invariants
+
+| File | Relationship |
+|------|-------------|
+| `002_capacity_preallocated.md` | Sibling invariant governing capacity pre-allocation |
 
 ### Invariant Statement
 

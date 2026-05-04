@@ -65,11 +65,27 @@ Local config discovery silently skips invalid application names to avoid breakin
 
 The default implementation of `env_var_prefix` derives the prefix dynamically by uppercasing the application name on every call. This involves a heap allocation that is never freed. Applications calling `env_var_prefix` in a tight loop will accumulate unbounded memory. Override `env_var_prefix` with a fixed string literal to avoid this.
 
-### Cross-References
+### APIs
 
-| Type | File                                  | Responsibility                                           |
-|------|---------------------------------------|----------------------------------------------------------|
-| doc  | invariant/001_resolution_hierarchy.md | Path formulas defined by this trait govern the invariant |
-| doc  | format/001_config_file_format.md      | Files at these paths use this format                     |
-| doc  | api/002_config_defaults_trait.md      | Companion required trait                                 |
-| doc  | api/003_config_validator_trait.md     | Companion optional trait                                 |
+| File | Relationship |
+|------|--------------|
+| [api/002_config_defaults_trait.md](../api/002_config_defaults_trait.md) | Companion required trait |
+| [api/003_config_validator_trait.md](../api/003_config_validator_trait.md) | Companion optional trait |
+
+### Features
+
+| File | Relationship |
+|------|--------------|
+| [feature/001_config_hierarchy.md](../feature/001_config_hierarchy.md) | Feature this trait is part of |
+
+### Formats
+
+| File | Relationship |
+|------|--------------|
+| [format/001_config_file_format.md](../format/001_config_file_format.md) | Files at these paths use this format |
+
+### Invariants
+
+| File | Relationship |
+|------|--------------|
+| [invariant/001_resolution_hierarchy.md](../invariant/001_resolution_hierarchy.md) | Path formulas defined by this trait govern the invariant |
