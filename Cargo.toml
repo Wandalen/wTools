@@ -1,10 +1,8 @@
 [workspace]
 resolver = "2"
 members = [
-  "module/alias/*",
   "module/core/*",
   "module/experimental/*",
-  # NOTE: module/move directory is now empty - all crates moved to core or experimental
 ]
 exclude = [
   # Exclude all hyphen-prefixed files (temporary files, private scripts)
@@ -13,25 +11,8 @@ exclude = [
   # Exclude non-workspace module groups
   "module/step/*",
 
-  # Exclude stub directories remaining after crate moves to module/experimental
-  # These dirs have no Cargo.toml but exist on disk (matched by members globs)
-  "module/alias/winterval",
-  "module/core/async_tools",
-  "module/core/component_model_types",
-  "module/core/meta_tools",
-  "module/core/reflect_tools",
-  "module/core/sqlx_query",
-  "module/core/unilang_parser",
-  "module/core/unitore",
-  "module/core/wca",
-  "module/core/willbe",
-  "module/core/wtools",
-
-  # Exclude module/core stubs that still have Cargo.toml (crate moved to module/experimental)
+  # Exclude module/core stub that still has Cargo.toml (active crate is in module/experimental)
   "module/core/config_hierarchy",
-  "module/core/unilang",
-  "module/core/unilang_benchmarks",
-  "module/core/cargo_unilang",
 
   # Deprecated crates — parked here before final deletion
   "module/deprecated/*",

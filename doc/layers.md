@@ -11,11 +11,11 @@ Layers are ordered bottom-up: lower layers have fewer internal dependencies; hig
 | 2 | Primitives | 9 | Bytes, rand, type checks, intervals, time |
 | 3 | Macro Framework | 11 | All proc-macro (`_meta`) crates + macro_tools |
 | 4 | Patterns | 11 | Builder, module org, clone dyn, reflect, component model |
-| 5 | Collections | 5 | Containers, iterators, async traits |
+| 5 | Collections | 6 | Containers, iterators, async traits |
 | 6 | String & Format | 8 | Strings, colors, data display, markdown, type aggregation |
 | 7 | Path & Process | 8 | Paths, filesystem, processes, workspace, config |
 | 8 | Tooling | 8 | Testing, benchmarking, genfile, CLI, crates analysis |
-| 9 | Application | 6 | willbe, unitore, wtools, sqlx, aggregators |
+| 9 | Application | 5 | willbe, unitore, sqlx, aggregators |
 
 Total: 69 crates (0 alias + 30 core + 20 deprecated + 19 experimental)
 Note: 22 additional legacy crates (formerly in `module/postponed/`) are co-located in `module/deprecated/` but have no layer assignments and are excluded from this table.
@@ -81,6 +81,7 @@ Note: 22 additional legacy crates (formerly in `module/postponed/`) are co-locat
 | `collection_tools` | core | 5 | Collections | Provide ergonomic literal macros for inline collection construction, portable to no_std | 1 | 0 | 0 | 0 | 0 | stable | stable | TDC·RE·S |
 | `for_each` | experimental | 5 | Collections | Apply any macro to every item in a compile-time list | 0 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFREMS |
 | `iter_tools` | experimental | 5 | Collections | Re-export itertools combinators and provide clonable boxed iterators with stop-on-first-error mapping | 2 | 1 | 0 | 1 | 0 | experimental | stable | TDC·RE·S |
+| `wtools` | core | 5 | Collections | Thin collections aggregator; re-exports collection_tools macros and constructors | 1 | 1 | 1 | 0 | 0 | experimental | stable | T·CFREMS |
 | `cli_fmt` | core | 6 | String & Format | Process CLI command output with head/tail filtering, width truncation, and stream merging | 1 | 1 | 1 | 0 | 0 | experimental | stable | TDCFR·MS |
 | `color_tools` | core | 6 | String & Format | Wrap text with typed ANSI color for terminal and HTML rendering | 1 | 0 | 0 | 0 | 0 | experimental | stable | TDCFREMS |
 | `data_fmt` | core | 6 | String & Format | Render structured data in multiple visual, text, and serialization formats | 9 | 3 | 2 | 1 | 0 | stable | stable | TDCFREMS |
@@ -109,7 +110,6 @@ Note: 22 additional legacy crates (formerly in `module/postponed/`) are co-locat
 | `unitore` | experimental | 9 | Application | Subscribe to RSS and Atom feeds from TOML configs, persist entries in embedded SQL, and browse from the terminal | 20 | 3 | 0 | 3 | 0 | experimental | stable | TDC·R··S |
 | `willbe` | experimental | 9 | Application | Publish multi-crate workspaces in topological order, run feature-matrix tests, generate CI/CD workflows, and renew readme headers | 40 | 14 | 0 | 14 | 0 | experimental | stable | TDC·R··· |
 | `willbe2` | deprecated | 9 | Application | Expose the willbe workspace tool under the willbe2 binary and crate name via complete re-export | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFR·MS |
-| `wtools` | deprecated | 9 | Application | Re-export ten general-purpose utility categories under feature-gated module aliases | 12 | 11 | 0 | 11 | 0 | deprecated | deprecated | TDC·REM· |
 | `proper_tools` | deprecated | 9 | Application | Alias — recommended starting point for general-purpose wTools use | 0 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFREMS |
 
 
@@ -121,41 +121,34 @@ Unreachable from any application (willbe, unitore, wca) or test infrastructure (
 |-------|--------|--------|---------------|
 | `async_tools` | deprecated | `private` module is empty; re-exports `async_from` with zero added API | — |
 | `data_type` | deprecated | Pure facade re-exporting `collection_tools` + `interval_adapter` + `either`; zero unique logic; `willbe` must migrate to direct deps | direct deps on constituent crates |
-| `diagnostics_tools` | deprecated | Sole dependent is `wtools` (deprecated) | — |
+| `diagnostics_tools` | deprecated | Zero dependents | — |
 | `fs_tools` | deprecated | Alias; zero dependents; underlying `file_tools` also deprecated | — |
 | `format_tools` | deprecated | Zero dependents; reflect_tools is experimental but no other live crate references format_tools | — |
 | `file_tools` | deprecated | Sole dependent `fs_tools` (alias) is deprecated | — |
 | `interval_adapter` | deprecated | Only live dependent is `macro_tools` (stable); dep appears unused in macro_tools source — removal is trivial | — |
-| `impls_index` | deprecated | Only dependents are `meta_tools` (deprecated) and `wtools` (deprecated) | — |
+| `impls_index` | deprecated | Only dependent is `meta_tools` (deprecated) | — |
 | `impls_index_meta` | deprecated | Only dependents are `impls_index` (deprecated) and `meta_tools` (deprecated) | — |
 | `is_slice` | deprecated | Redundant with `implements!` macro + marker traits; sole dependent is `typing_tools` (deprecated) | `implements!` |
-| `meta_tools` | deprecated | ↑L=3 arch violation; sole dependent is `wtools` (deprecated) | — |
+| `meta_tools` | deprecated | ↑L=3 arch violation; zero dependents | — |
 | `multiline_input` | deprecated | Excluded from workspace (Cargo.toml exclude); moved to module/experimental | `multiline_input` (experimental) |
 | `proper_tools` | deprecated | Alias; no dependencies; `enabled` feature declares nothing | — |
 | `sqlx_query` | deprecated | Feature-flag toggle between two sqlx macros; 0 deps; 0 workspace consumers; trivially inlineable | — |
-| `time_tools` | deprecated | Sole dependent is `wtools` (deprecated) | — |
-| `typing_tools` | deprecated | Sole dependent is `wtools` (deprecated) | — |
+| `time_tools` | deprecated | Zero dependents | — |
+| `typing_tools` | deprecated | Zero dependents | — |
 | `willbe2` | deprecated | Entire `src/lib.rs` is `pub use ::willbe::*`; zero independent development | `willbe` |
 | `winterval` | deprecated | Alias for `interval_adapter`; zero dependents within workspace | `interval_adapter` |
 | `wstring_tools` | deprecated | Alias; zero dependents | — |
-| `wtools` | deprecated | Aggregate; zero dependents; sole consumer of 10 other deprecated crates | — |
 
 ### Dead-End Chains
 
 Complete dependency chains where every crate is unreachable:
 
 1. `format_tools` → (nobody)
-2. `meta_tools` → `wtools` → (nobody)
-3. `impls_index_meta` → `impls_index` → `wtools` → (nobody)
+2. `meta_tools` → (nobody)
+3. `impls_index_meta` → `impls_index` → (nobody)
 4. `file_tools` → `fs_tools` → (nobody)
 5. `async_tools` → (nobody)
 6. `sqlx_query` → (nobody)
-
-### Cleanup Artifact
-
-| Path | Reason |
-|------|--------|
-| `module/alias/winterval/` | Empty directory; no `Cargo.toml`; never compiled; leftover stub |
 
 ## Promotion Readiness
 
@@ -180,6 +173,7 @@ All 8 criteria met — can be promoted to stable without prerequisite work.
 | `cli_fmt` | 6 | TDCFR·MS | E |
 | `strs_tools` | 6 | TDCFRE·S | M |
 | `workspace_tools` | 7 | TDCFR·MS | E |
+| `wtools` | 5 | T·CFREMS | D |
 | `test_tools` | 8 | TDCFRE·· | M, S |
 | `crates_tools` | 8 | TDC·REMS | F |
 | `multiline_input` | 8 | T·CFREMS | D |
@@ -201,7 +195,7 @@ All 8 criteria met — can be promoted to stable without prerequisite work.
 | E (Examples) | 8 | component_model_meta, strs_tools_meta, cli_fmt, workspace_tools, config_hierarchy (core), config_hierarchy (experimental), unitore, willbe |
 | C (Clean) | 2 | component_model_meta, component_model_types |
 | S (Stable deps) | 2 | test_tools, willbe |
-| D (Documented) | 1 | multiline_input (experimental) |
+| D (Documented) | 2 | multiline_input (experimental), wtools |
 
 ### Stable Crates with Gaps
 
@@ -229,7 +223,7 @@ Already-stable crates that do not meet all 8 criteria. Not promotion blockers, b
 
 ## Usefulness Assessment
 
-Utility ranking for 49 non-deprecated crates. Evaluates: internal dependent count, external adopter value, unique functionality (not trivially replaceable), API surface depth.
+Utility ranking for 50 non-deprecated crates. Evaluates: internal dependent count, external adopter value, unique functionality (not trivially replaceable), API surface depth.
 
 ### Tier Definitions
 
@@ -238,7 +232,7 @@ Utility ranking for 49 non-deprecated crates. Evaluates: internal dependent coun
 | 1 | Core | Essential to workspace; 5+ internal dependents; breakage cascades widely | 10 |
 | 2 | High | Significant standalone utility; meaningful API surface; active consumers | 15 |
 | 3 | Moderate | Useful in domain; narrower audience; some unique functionality | 14 |
-| 4 | Low | Thin wrapper or narrow utility; few/zero consumers; easy to inline | 7 |
+| 4 | Low | Thin wrapper or narrow utility; few/zero consumers; easy to inline | 8 |
 | 5 | Minimal | Stub, unimplemented, or fully supersedable; future deprecation review candidate | 2 |
 
 ### Ranked by Tier
@@ -292,6 +286,7 @@ Utility ranking for 49 non-deprecated crates. Evaluates: internal dependent coun
 | `mem_tools` | 1 | 4 | Trivial std memory wrappers; 0 live internal deps |
 | `reflect_tools` | 4 | 4 | Runtime reflection; incomplete implementation |
 | `reflect_tools_meta` | 3 | 4 | Stub returning empty TokenStream; no real logic |
+| `wtools` | 5 | 4 | Thin re-export facade for collection_tools; zero internal dependents |
 | `asbytes` | 2 | 5 | Thin bytemuck wrapper; trivially replaceable by direct dep |
 | `include_md` | 6 | 5 | Unimplemented stub; 0 logic; 0 consumers |
 
@@ -303,14 +298,14 @@ Utility ranking for 49 non-deprecated crates. Evaluates: internal dependent coun
 | 2 | Primitives | 0 | 0 | 2 | 1 | 1 | 4 |
 | 3 | Macro Framework | 4 | 2 | 2 | 1 | 0 | 9 |
 | 4 | Patterns | 4 | 3 | 2 | 1 | 0 | 10 |
-| 5 | Collections | 1 | 0 | 1 | 2 | 0 | 4 |
+| 5 | Collections | 1 | 0 | 1 | 3 | 0 | 5 |
 | 6 | String & Format | 0 | 1 | 2 | 1 | 1 | 5 |
 | 7 | Path & Process | 0 | 3 | 2 | 0 | 0 | 5 |
 | 8 | Tooling | 0 | 4 | 3 | 0 | 0 | 7 |
 | 9 | Application | 0 | 2 | 0 | 0 | 0 | 2 |
-| | **Total** | **10** | **15** | **14** | **7** | **2** | **48** |
+| | **Total** | **10** | **15** | **14** | **8** | **2** | **49** |
 
-Note: config_hierarchy counted once in tier table totals. Main ranked table lists both entries separately (49 rows).
+Note: config_hierarchy counted once in tier table totals. Main ranked table lists both entries separately (50 rows).
 
 ## Crate Profiles
 
@@ -898,6 +893,20 @@ Per-crate attributes for promotion and publishing.
 - **categories**: algorithms, development-tools
 - **pitch**: All itertools combinators re-exported plus heap-allocated clonable boxed iterators and stop-on-first-error item mapping — the complete iterator utilities stack in one dependency.
 
+#### `wtools`
+- **module**: core
+- **layer**: 5 · Collections
+- **state**: experimental
+- **target**: stable
+- **readiness**: T·CFREMS
+- **purpose**: Thin collections aggregator; re-exports collection_tools macros and constructors
+- **deps**: 1 · **int**: 1 · **=L**: 1 · **↓L**: 0 · **↑L**: 0
+- **version**: 0.2.20
+- **no_std**: yes
+- **keywords**: collections, hashmap, hashset, general-purpose
+- **categories**: data-structures, development-tools
+- **pitch**: Single entry-point for collection utilities — add wtools and get all collection_tools macros (hmap!, hset!, …) with no_std/hashbrown support by default.
+
 ---
 
 ### Layer 6 · String & Format
@@ -1305,20 +1314,6 @@ Per-crate attributes for promotion and publishing.
 - **keywords**: willbe, alias, workspace, publish, binary
 - **categories**: development-tools, development-tools::cargo-plugins
 - **pitch**: Install willbe2 to run the full willbe workspace tool under the willbe2 binary name — all API and CLI functionality is delegated entirely to willbe.
-
-#### `wtools`
-- **module**: deprecated
-- **layer**: 9 · Application
-- **state**: deprecated
-- **target**: deprecated
-- **readiness**: TDC·REM·
-- **purpose**: Re-export ten general-purpose utility categories under feature-gated module aliases
-- **deps**: 12 · **int**: 11 · **=L**: 0 · **↓L**: 11 · **↑L**: 0
-- **version**: 0.2.20
-- **no_std**: yes
-- **keywords**: fundamental, general-purpose, toolkit, wtools, all-in-one
-- **categories**: algorithms, development-tools
-- **pitch**: One dep for all ten wTools general-purpose categories — iter, meta, mem, typing, time, string, error, derive, dt, and diagnostics — each opt-in via feature flag.
 
 #### `proper_tools`
 - **module**: deprecated

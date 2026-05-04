@@ -6,7 +6,7 @@ Two groups co-located here:
 - **Architecture-tracked** (20): assigned layers in `doc/layers.md`; targeted for deprecation via reachability analysis
 - **Legacy postponed** (22): pre-architecture crates that were never assigned layers; moved here from `module/postponed/`
 
-## Architecture-Tracked (20)
+## Architecture-Tracked (19)
 
 | Path | Responsibility |
 |------|----------------|
@@ -29,7 +29,6 @@ Two groups co-located here:
 | `willbe2/` | Deprecated transparent re-export of willbe |
 | `winterval/` | Deprecated alias for interval_adapter |
 | `wstring_tools/` | Deprecated alias for string utilities |
-| `wtools/` | Deprecated ten-category utility aggregate |
 
 ## Legacy Postponed (22)
 

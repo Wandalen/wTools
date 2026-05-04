@@ -169,19 +169,18 @@ fn example_file_exists()
   );
 }
 
-/// Test: Verify example uses correct import pattern
+/// Test: Verify example demonstrates collection macros
 #[ test ]
-fn example_uses_conditional_imports()
+fn example_uses_collection_macros()
 {
   let example_path = examples_dir().join( "wtools_trivial.rs" );
   let content = fs::read_to_string( &example_path )
     .expect( "Failed to read example file" );
 
-  // Verify example has proper feature-gated imports
+  // Verify example uses a collection macro from collection_tools
   assert!(
-    content.contains( "#[ cfg( any( feature = \"typing_implements\", feature = \"typing\") ) ]" )
-      || content.contains( "#[cfg(any(feature = \"typing_implements\", feature = \"typing\"))]" ),
-    "Example should use conditional compilation for typing features"
+    content.contains( "hmap!" ) || content.contains( "hset!" ) || content.contains( "vec!" ),
+    "Example should demonstrate at least one collection macro (hmap!, hset!, vec!)"
   );
 
   // Verify it imports from wtools
