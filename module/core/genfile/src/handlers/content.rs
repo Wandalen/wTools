@@ -48,7 +48,7 @@ pub fn internalize_handler(
   // Perform internalization
   let resolver = DefaultContentResolver::new();
   archive.internalize( &resolver )
-    .map_err( | e | crate::error::format_error( e, "CONTENT" ) )?;
+    .map_err( | e | crate::error::format_error( &e, "CONTENT" ) )?;
 
   set_current_archive( archive );
 
@@ -98,7 +98,7 @@ pub fn externalize_handler(
 
   // Perform externalization
   archive.externalize( base_path )
-    .map_err( | e | crate::error::format_error( e, "CONTENT" ) )?;
+    .map_err( | e | crate::error::format_error( &e, "CONTENT" ) )?;
 
   set_current_archive( archive );
 

@@ -35,7 +35,7 @@
 
 use std::fs;
 
-mod test_utils;
+mod cli_runner;
 
 // FR6: Template Materialization Tests
 
@@ -92,7 +92,7 @@ fn materialize_renders_templates_with_parameters()
     destination.display()
   );
 
-  let output = test_utils::repl_command( &script )
+  let output = cli_runner::repl_command( &script )
     .output()
     .expect( "Materialize workflow should execute" );
 
@@ -165,7 +165,7 @@ fn materialize_fails_without_mandatory_parameters()
     destination.display()
   );
 
-  let output = test_utils::repl_command( &script )
+  let output = cli_runner::repl_command( &script )
     .output()
     .expect( "Command should execute" );
 
@@ -223,7 +223,7 @@ fn materialize_dry_run_preview()
     destination.display()
   );
 
-  let output = test_utils::repl_command( &script )
+  let output = cli_runner::repl_command( &script )
     .output()
     .expect( "Dry run should execute" );
 
@@ -255,7 +255,7 @@ fn materialize_without_archive_returns_error()
   let _ = fs::remove_dir_all( &destination );
 
   // Try to materialize without loading archive first
-  let output = test_utils::cargo_run_command( &[ ".materialize",
+  let output = cli_runner::cargo_run_command( &[ ".materialize",
       &format!( "destination::{}", destination.display() ),
     ] )
     .output()
@@ -326,7 +326,7 @@ fn unpack_preserves_template_variables()
     destination.display()
   );
 
-  let output = test_utils::repl_command( &script )
+  let output = cli_runner::repl_command( &script )
     .output()
     .expect( "Unpack workflow should execute" );
 
@@ -391,7 +391,7 @@ fn unpack_dry_run_preview()
     destination.display()
   );
 
-  let output = test_utils::repl_command( &script )
+  let output = cli_runner::repl_command( &script )
     .output()
     .expect( "Dry run should execute" );
 
@@ -423,7 +423,7 @@ fn unpack_without_archive_returns_error()
   let _ = fs::remove_dir_all( &destination );
 
   // Try to unpack without loading archive first
-  let output = test_utils::cargo_run_command( &[ ".unpack",
+  let output = cli_runner::cargo_run_command( &[ ".unpack",
       &format!( "destination::{}", destination.display() ),
     ] )
     .output()

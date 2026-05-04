@@ -9,6 +9,11 @@
 | `feature/` | Feature specifications — what the crate does and why | [feature/readme.md](feature/readme.md) | 1 |
 | `format/` | Format documentation — data model and encoding structure | [format/readme.md](format/readme.md) | 1 |
 | `invariant/` | Behavioral contracts that must always hold | [invariant/readme.md](invariant/readme.md) | 1 |
+| `tests/docs/algorithm/` | Test specs for `docs/algorithm/` instances | [tests/docs/algorithm/readme.md](../tests/docs/algorithm/readme.md) | 1 |
+| `tests/docs/api/` | Test specs for `docs/api/` instances | [tests/docs/api/readme.md](../tests/docs/api/readme.md) | 3 |
+| `tests/docs/feature/` | Test specs for `docs/feature/` instances | [tests/docs/feature/readme.md](../tests/docs/feature/readme.md) | 1 |
+| `tests/docs/format/` | Test specs for `docs/format/` instances | [tests/docs/format/readme.md](../tests/docs/format/readme.md) | 1 |
+| `tests/docs/invariant/` | Test specs for `docs/invariant/` instances | [tests/docs/invariant/readme.md](../tests/docs/invariant/readme.md) | 1 |
 
 ## Master Doc Instances Table
 

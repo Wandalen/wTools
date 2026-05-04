@@ -4,7 +4,7 @@
 
 use std::fs;
 
-mod test_utils;
+mod cli_runner;
 
 #[ test ]
 fn content_list_shows_inline_files()
@@ -15,7 +15,7 @@ fn content_list_shows_inline_files()
                 .content.list\n\
                 exit";
 
-  let output = test_utils::repl_command( script )
+  let output = cli_runner::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
@@ -48,7 +48,7 @@ fn content_externalize_creates_file_refs()
     archive_path.display()
   );
 
-  let output = test_utils::repl_command( &script )
+  let output = cli_runner::repl_command( &script )
     .output()
     .expect( "Command should execute" );
 
@@ -88,7 +88,7 @@ fn content_internalize_converts_refs_to_inline()
     content_dir.display()
   );
 
-  let output = test_utils::repl_command( &script )
+  let output = cli_runner::repl_command( &script )
     .output()
     .expect( "Command should execute" );
 
@@ -119,7 +119,7 @@ fn content_externalize_dry_run()
     content_dir.display()
   );
 
-  let output = test_utils::repl_command( &script )
+  let output = cli_runner::repl_command( &script )
     .output()
     .expect( "Command should execute" );
 
@@ -148,7 +148,7 @@ fn content_internalize_dry_run()
     content_dir.display()
   );
 
-  let output = test_utils::repl_command( &script )
+  let output = cli_runner::repl_command( &script )
     .output()
     .expect( "Command should execute" );
 
@@ -181,7 +181,7 @@ fn content_list_filter_by_type()
     content_dir.display()
   );
 
-  let output = test_utils::repl_command( &script )
+  let output = cli_runner::repl_command( &script )
     .output()
     .expect( "Command should execute" );
 
@@ -202,7 +202,7 @@ fn content_list_without_archive_returns_error()
 {
   let script = ".content.list\nexit";
 
-  let output = test_utils::repl_command( script )
+  let output = cli_runner::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
@@ -218,7 +218,7 @@ fn content_externalize_without_archive_returns_error()
 {
   let script = ".content.externalize base_path::/tmp/test\nexit";
 
-  let output = test_utils::repl_command( script )
+  let output = cli_runner::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
@@ -234,7 +234,7 @@ fn content_internalize_without_archive_returns_error()
 {
   let script = ".content.internalize\nexit";
 
-  let output = test_utils::repl_command( script )
+  let output = cli_runner::repl_command( script )
     .output()
     .expect( "Command should execute" );
 

@@ -31,15 +31,18 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
 
   // Otherwise, process single command in CLI mode
   let ctx = ExecutionContext::default();
-  // TODO: Pass state through ExecutionContext when API supports it
-  // For now, handlers will use thread-local or global state
+  // Workaround(issue-001): ExecutionContext has no state field; handlers use thread-local state.
+  // Root cause: unilang::ExecutionContext is a plain default-constructible marker; no user data slot.
+  // Pitfall: If unilang adds context state later, update all handler registrations to pass state.
 
   let result = pipeline.process_command_from_argv( &argv[ 1.. ], ctx );
 
   if !result.success
   {
     eprintln!( "{}", result.error.unwrap_or_default() );
-    // TODO: Map error types to exit codes when API supports it
+    // Workaround(issue-004): All errors exit with code 1; error category not exposed by unilang.
+    // Root cause: unilang::ErrorData has no error-category field; can't distinguish user vs system errors.
+    // Pitfall: When unilang exposes error category, map to: user-input=2, system=3, internal=4.
     std::process::exit( 1 );
   }
 

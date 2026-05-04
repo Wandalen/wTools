@@ -7,7 +7,7 @@ mirrors a `docs/` entity type and contains test spec files for each instance in 
 
 ### Responsibility Table
 
-| Directory | Responsibility |
+| File | Responsibility |
 |-----------|----------------|
 | `algorithm/` | Test specs for `docs/algorithm/` instances |
 | `api/` | Test specs for `docs/api/` instances |

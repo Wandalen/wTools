@@ -3,7 +3,7 @@ meta:
   node_count: 7
   edge_count: 28
   component_count: 1
-  last_updated: 2026-04-25
+  last_updated: 2026_04_25
 
 nodes:
   - id: algorithm/001

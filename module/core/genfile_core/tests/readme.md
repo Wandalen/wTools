@@ -20,6 +20,7 @@ tests/
 ├── tests.rs                     # Test harness entry point
 ├── smoke_test.rs                # Minimal smoke test
 ├── security.rs                  # Security/path traversal validation tests
+├── manual/                      # Manual testing plan and procedures
 └── inc/                         # Main test modules (domain-organized)
     ├── readme.md                # Responsibility table for inc/ modules
     ├── mod.rs                   # Module declarations

@@ -29,7 +29,7 @@ This directory contains comprehensive tests for the `test_tools` crate, verifyin
 | `smoke_test_form_main_bug.rs` | Bug reproducer: form() must wrap code lacking fn main() (issue-smoke-form-missing-main) |
 | `standalone_basic_test.rs` | Basic standalone build verification without dependencies |
 | `standalone_build_tests.rs` | Test standalone build mode functionality (Task 038) |
-| `tests.rs` | Main test aggregation entry point |
+| `dep_conformance_test.rs` | Aggregates dependency re-export conformance tests |
 
 ## Test Organization
 

@@ -773,7 +773,7 @@ pub mod mem_tools {
     let mem1 = core::ptr::from_ref::<T1>(src1).cast::<u8>();
     let mem2 = core::ptr::from_ref::<T2>(src2).cast::<u8>();
 
-    // Safety: Pointers are valid, both regions have same size
+    // SAFETY: Pointers are valid, both regions have same size
     unsafe { memcmp(mem1, mem2, core::mem::size_of_val(src1)) == 0 }
   }
   
@@ -1354,25 +1354,21 @@ macro_rules! fns {
 
 
 /// Placeholder function `f1` for `impls_index` test compatibility
-#[allow(dead_code)]
 pub fn f1() {
   println!("f1");
 }
 
 /// Placeholder function `f2` for `impls_index` test compatibility
-#[allow(dead_code)]
 pub fn f2() {
   println!("f2");
 }
 
 /// Placeholder function `f1b` for `impls_index` test compatibility
-#[allow(dead_code)]
 pub fn f1b() {
   println!("f1b()");
 }
 
 /// Placeholder function `f2b` for `impls_index` test compatibility
-#[allow(dead_code)]
 pub fn f2b() {
   println!("f2b()");
 }

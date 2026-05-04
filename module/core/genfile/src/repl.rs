@@ -76,8 +76,9 @@ pub fn run_repl(
 
         // Create execution context
         let ctx = ExecutionContext::default();
-        // TODO: Pass state through ExecutionContext when API supports it
-        // For now, state is available via module-level access
+        // Workaround(issue-001): ExecutionContext has no state field; handlers use thread-local state.
+        // Root cause: unilang::ExecutionContext is a plain default-constructible marker; no user data slot.
+        // Pitfall: If unilang adds context state later, update all handler registrations to pass state.
 
         // Process command through pipeline
         let result = pipeline.process_command( input, ctx );

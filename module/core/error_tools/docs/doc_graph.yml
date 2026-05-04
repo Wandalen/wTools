@@ -42,26 +42,26 @@ nodes:
     label: Alloc Feature Requires No-Std
     entity: invariant
 edges:
-  - {from: feature/001, to: feature/002, via: cross_references }
-  - {from: feature/001, to: feature/003, via: cross_references }
-  - {from: feature/001, to: feature/004, via: cross_references }
-  - {from: feature/001, to: api/001, via: cross_references }
-  - {from: feature/001, to: api/002, via: cross_references }
-  - {from: feature/001, to: invariant/001, via: cross_references }
-  - {from: feature/001, to: invariant/002, via: cross_references }
-  - {from: feature/002, to: feature/001, via: cross_references }
-  - {from: feature/002, to: invariant/002, via: cross_references }
-  - {from: feature/003, to: feature/001, via: cross_references }
-  - {from: feature/003, to: invariant/002, via: cross_references }
-  - {from: feature/004, to: feature/001, via: cross_references }
-  - {from: feature/004, to: invariant/003, via: cross_references }
-  - {from: api/001, to: feature/001, via: cross_references }
-  - {from: api/002, to: feature/001, via: cross_references }
-  - {from: invariant/001, to: feature/001, via: cross_references }
-  - {from: invariant/002, to: feature/001, via: cross_references }
-  - {from: invariant/002, to: feature/002, via: cross_references }
-  - {from: invariant/002, to: feature/003, via: cross_references }
-  - {from: invariant/003, to: feature/004, via: cross_references }
+  - {from: feature/001, to: feature/002, via: typed_reference }
+  - {from: feature/001, to: feature/003, via: typed_reference }
+  - {from: feature/001, to: feature/004, via: typed_reference }
+  - {from: feature/001, to: api/001, via: typed_reference }
+  - {from: feature/001, to: api/002, via: typed_reference }
+  - {from: feature/001, to: invariant/001, via: typed_reference }
+  - {from: feature/001, to: invariant/002, via: typed_reference }
+  - {from: feature/002, to: feature/001, via: typed_reference }
+  - {from: feature/002, to: invariant/002, via: typed_reference }
+  - {from: feature/003, to: feature/001, via: typed_reference }
+  - {from: feature/003, to: invariant/002, via: typed_reference }
+  - {from: feature/004, to: feature/001, via: typed_reference }
+  - {from: feature/004, to: invariant/003, via: typed_reference }
+  - {from: api/001, to: feature/001, via: typed_reference }
+  - {from: api/002, to: feature/001, via: typed_reference }
+  - {from: invariant/001, to: feature/001, via: typed_reference }
+  - {from: invariant/002, to: feature/001, via: typed_reference }
+  - {from: invariant/002, to: feature/002, via: typed_reference }
+  - {from: invariant/002, to: feature/003, via: typed_reference }
+  - {from: invariant/003, to: feature/004, via: typed_reference }
 components:
   - id: 1
     label: error_tools

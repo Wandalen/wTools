@@ -1,4 +1,4 @@
-generated: 2026_04_26
+last_updated: 2026_04_26
 nodes:
   - id: api/001_assign_trait
     label: Assign Trait System
@@ -18,28 +18,28 @@ nodes:
 edges:
   - from: api/001_assign_trait
     to: feature/001_component_assignment
-    via: cross_references
+    via: typed_reference
   - from: feature/001_component_assignment
     to: api/001_assign_trait
-    via: cross_references
+    via: typed_reference
   - from: api/001_assign_trait
     to: invariant/001_orphan_rule
-    via: cross_references
+    via: typed_reference
   - from: invariant/001_orphan_rule
     to: api/001_assign_trait
-    via: cross_references
+    via: typed_reference
   - from: feature/001_component_assignment
     to: invariant/001_orphan_rule
-    via: cross_references
+    via: typed_reference
   - from: feature/001_component_assignment
     to: invariant/002_types_crate_pattern
-    via: cross_references
+    via: typed_reference
   - from: invariant/002_types_crate_pattern
     to: feature/001_component_assignment
-    via: cross_references
+    via: typed_reference
   - from: invariant/002_types_crate_pattern
     to: api/001_assign_trait
-    via: cross_references
+    via: typed_reference
   - from: feature/002_no_std_support
     to: feature/001_component_assignment
-    via: cross_references
+    via: typed_reference

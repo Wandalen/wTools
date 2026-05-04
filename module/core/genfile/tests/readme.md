@@ -11,7 +11,8 @@
 | materialization_test.rs | Template materialization and unpack integration tests |
 | analysis_test.rs | Archive analysis and inspection integration tests |
 | repl_exit_code_bug_test.rs | REPL exit code behavior regression tests |
-| test_utils.rs | Cross-platform process execution helpers for tests |
+| cli_runner.rs | Cross-platform process execution helpers for tests |
+| manual/ | Manual testing plan and procedures |
 
 ## Overview
 
@@ -36,8 +37,8 @@ Tests are organized by functional domain (not by methodology):
 **Current:** All tests are **integration tests** that spawn `cargo run` processes to test the complete CLI application end-to-end.
 
 ```rust
-// Example pattern used throughout test suite (see test_utils.rs)
-let output = test_utils::cargo_run_command( &[ ".archive.new", "name::test" ] )
+// Example pattern used throughout test suite (see cli_runner.rs)
+let output = cli_runner::cargo_run_command( &[ ".archive.new", "name::test" ] )
   .output()
   .expect( "Failed to execute command" );
 ```

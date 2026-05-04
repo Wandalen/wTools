@@ -15,7 +15,7 @@
 | AC-02 | boolean_false_all_variants | nominal | ✅ |
 | AC-03 | integer_string_to_number | nominal | ✅ |
 | AC-04 | finite_float_to_number | nominal | ✅ |
-| AC-05 | nan_inf_fall_through_to_string | edge | ⏳ |
+| AC-05 | nan_inf_fall_through_to_string | edge | ✅ |
 | AC-06 | everything_else_falls_through | nominal | ✅ |
 
 ---
@@ -53,7 +53,7 @@
 - **Given:** Inputs `"NaN"`, `"Inf"`, `"-Inf"` — these parse as `f64` but are non-finite
 - **When:** `detect_and_convert_value()` is called
 - **Then:** Returns `JsonValue::String` with the original text — NOT `JsonValue::Number` (non-finite f64 cannot be serialized as JSON Number)
-- **Tests:** `tests/type_detection_tests.rs::test_non_finite_float_fallback` ⏳ (not yet written)
+- **Tests:** `tests/type_detection_tests.rs::test_non_finite_float_fallback`
 
 ### AC-06: all other inputs fall through to String
 

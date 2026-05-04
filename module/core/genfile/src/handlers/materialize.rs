@@ -125,7 +125,7 @@ pub fn materialize_handler(
 
   // Materialize templates to destination
   let report = archive.materialize( destination )
-    .map_err( | e | crate::error::format_error( e, "MATERIALIZE" ) )?;
+    .map_err( | e | crate::error::format_error( &e, "MATERIALIZE" ) )?;
 
   let total_files = report.files_created.len() + report.files_updated.len() + report.files_skipped.len();
 

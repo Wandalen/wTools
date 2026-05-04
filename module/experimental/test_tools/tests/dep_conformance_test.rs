@@ -23,10 +23,9 @@
 //! - Aggregated tests verify that re-exports work correctly from consumer perspective
 //!
 
-#![allow(unused_imports)]
-
 include!("../../../../module/step/meta/src/module/aggregating.rs");
 
+#[ allow( unused_imports ) ]
 use test_tools as the_module;
 
 mod inc;

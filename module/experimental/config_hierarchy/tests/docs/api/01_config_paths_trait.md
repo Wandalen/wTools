@@ -14,12 +14,12 @@
 |----|------|----------|--------|
 | AP-01 | only_app_name_required | nominal | ✅ |
 | AP-02 | empty_app_name_rejected | security | ✅ |
-| AP-03 | slash_in_app_name_rejected | security | ⏳ |
+| AP-03 | slash_in_app_name_rejected | security | ✅ |
 | AP-04 | dotdot_in_app_name_rejected | security | ✅ |
 | AP-05 | custom_env_var_prefix_used | behavioral_divergence | ✅ |
-| AP-06 | preserve_app_name_casing | behavioral_divergence | ⏳ |
+| AP-06 | preserve_app_name_casing | behavioral_divergence | ✅ |
 | AP-07 | custom_local_permanent_prefix | behavioral_divergence | ✅ |
-| AP-08 | xdg_config_home_fallback | nominal | ⏳ |
+| AP-08 | xdg_config_home_fallback | nominal | ✅ |
 
 ---
 
@@ -42,7 +42,7 @@
 - **Given:** A `ConfigPaths` implementation returning `"my/app"` from `app_name()` (forward slash without `..`)
 - **When:** `get_local_config_path()` is called
 - **Then:** Returns `Err` containing `"app_name contains invalid characters"` — `/` alone is a path separator
-- **Tests:** `tests/edge_cases_tests.rs::test_slash_only_in_app_name_rejected` ⏳ (not yet written)
+- **Tests:** `tests/edge_cases_tests.rs::test_slash_only_in_app_name_rejected`
 
 ### AP-04: app_name containing ".." rejected
 
@@ -63,7 +63,7 @@
 - **Given:** `ConfigPaths` overrides `env_var_casing()` → `EnvVarCasing::PreserveAppName`; `app_name()` → `"myApp"`; env var `MYPREFIX__TIMEOUT=42` set
 - **When:** `resolve_config_value("timeout", &{})` is called
 - **Then:** Env var name uses the app prefix as-is and uppercases only the param part — `MYPREFIX__TIMEOUT` is looked up
-- **Tests:** `tests/configurability_tests.rs::custom_env_var_casing_preserve_app_name` ⏳ (not yet written)
+- **Tests:** `tests/configurability_tests.rs::custom_env_var_casing_preserve_app_name`
 
 ### AP-07: custom local_permanent_prefix() is actually used
 
@@ -77,4 +77,4 @@
 - **Given:** `PRO` env var is unset; `XDG_CONFIG_HOME=/tmp/xdg_test` is set
 - **When:** `get_global_config_path()` is called
 - **Then:** Returns a path under `/tmp/xdg_test/` — OS fallback activated
-- **Tests:** `tests/configurability_tests.rs::xdg_config_home_used_as_fallback` ⏳ (not yet written)
+- **Tests:** `tests/configurability_tests.rs::xdg_config_home_used_as_fallback`

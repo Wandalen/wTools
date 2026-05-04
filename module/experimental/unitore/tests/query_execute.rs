@@ -4,10 +4,9 @@ use feed_rs ::parser as feed_parser;
 use unitore ::
 {
   feed_config ::SubscriptionConfig,
-  sled_adapter :: { FeedStorage, Store, MockStore },
+  sled_adapter :: { FeedStorage, Store },
   entity :: { config ::ConfigStore, feed ::FeedStore },
-  action :: { query :: { self, QueryReport }, config },
-  command ::query ::QueryCommand,
+  action :: { query, config },
 };
 use gluesql ::
 {
@@ -15,72 +14,32 @@ use gluesql ::
   core ::chrono ::NaiveDateTime,
   gluesql_sled_storage ::sled,
 };
-use wca :: { VerifiedCommand, CommandsAggregator, Type, Dictionary, Executor };
-use wca ::parser ::Parser;
-use wca ::verifier ::Verifier;
 use error_tools ::untyped ::Result;
-use mockall ::predicate;
 use std ::path ::PathBuf;
 
-#[ test ]
-fn query_execute() -> Result< () >
+#[ tokio ::test ]
+async fn query_execute() -> Result< () >
 {
-  // init parser
-  let parser = Parser;
-
-  // init converter
-  let dictionary = &Dictionary ::former()
-  .command( QueryCommand ::execute()? )
-  .form()
+  let temp_path = std ::env ::temp_dir().join( pth ::path ::unique_folder_name().unwrap() );
+  let config = sled ::Config ::default()
+  .path( temp_path.to_string_lossy().to_string() )
+  .temporary( true )
   ;
-  let verifier = Verifier;
 
-  // init executor
-  let executor = Executor ::former().form();
-  let args = vec![ ".query.execute".to_string(), "SELECT title FROM frame".into() ];
-  let raw_program = parser.parse( args ).unwrap();
-  let grammar_program = verifier.to_program( dictionary, raw_program ).unwrap();
+  let mut storage = FeedStorage ::init_storage( &config ).await?;
 
-  let res = executor.program( dictionary, grammar_program );
-  assert!( res.is_ok() );
+  // Verify storage-level query returns correct structure on empty table.
+  let result = storage.query_execute( "SELECT title FROM frame".to_string() ).await?;
+  assert!( !result.0.is_empty() );
+  let Select { labels, rows } = &result.0[ 0 ]
+  else { panic!( "Expected Select payload" ); };
+  assert_eq!( labels[ 0 ], "title" );
+  assert!( rows.is_empty() );
 
-  // test action
-  let rt  = tokio ::runtime ::Runtime ::new()?;
-  let ca = CommandsAggregator ::former()
-  .command( "query.execute" )
-  .hint( "hint" )
-  .long_hint( "long_hint" )
-  .subject().hint( "SQL query" ).kind( Type ::String ).optional( false ).end()
-  .routine( move | o: VerifiedCommand |
-   {
-  let mut f_store = MockStore ::new();
-  f_store
-  .expect_query_execute()
-  .with( predicate ::eq( "SELECT title FROM frame".to_string() ) )
-  .times( 1 )
-  .returning( | _ | Ok( QueryReport
-   (
-  vec!
-  [
-   Select { labels: vec![ Str( "title".to_string() ).into() ], rows: Vec ::new() }
- ]
- )
- ) )
-  ;
-  _ = rt.block_on( async move
-  {
-   let query_arg = o.args
-   .get_owned :: < String >( 0 )
-   ;
+  // Verify the action function delegates to storage correctly.
+  let action_result = query ::query_execute( storage.clone(), "SELECT title FROM frame".to_string() ).await;
+  assert!( action_result.is_ok() );
 
-   let query_str = query_arg.unwrap();
-   query ::query_execute( f_store, query_str ).await
- } );
- } )
-  .end()
-  .perform();
-  let entries = ca.perform( vec![ ".query.execute".to_string(), "SELECT title FROM frame".into() ] );
-  assert!( entries.is_ok() );
   Ok( () )
 }
 

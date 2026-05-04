@@ -208,8 +208,9 @@ where
         }
         WriteMode ::TomlExtend =>
         {
-          // TODO: Implement TOML smart merging (FR12, FR19)
-          // For now, just write (will implement in follow-up)
+          // Workaround(issue-005): TomlExtend falls back to full rewrite; merging not implemented.
+          // Root cause: TOML-aware merging requires parsing both files; not yet integrated with genfile_core.
+          // Pitfall: Existing TOML keys in the destination file are silently overwritten (FR12, FR19 gap).
           self.filesystem.write( &file_desc.file_path, &rendered )?;
         }
       }

@@ -14,7 +14,7 @@
 |----|------|----------|--------|
 | IN-01 | priority_ordering_enforced | invariant | ✅ |
 | IN-02 | depth_beats_pattern_within_local | invariant | ⏳ |
-| IN-03 | local_config_overrides_global | invariant | ⏳ |
+| IN-03 | local_config_overrides_global | invariant | ✅ |
 | IN-04 | no_merging_first_wins | invariant | ✅ |
 
 ---
@@ -38,7 +38,7 @@
 - **Given:** Both a local config file and a global config file exist with different values for the same parameter; no runtime or env override
 - **When:** `resolve_config_value()` is called with `file_ops` feature
 - **Then:** Local config value returned — L3/L4 (Local) beats L5 (Global)
-- **Tests:** `tests/hierarchy_tests.rs::test_local_config_overrides_global` ⏳ (not yet written)
+- **Tests:** `tests/hierarchy_tests.rs::test_local_config_overrides_global`
 
 ### IN-04: no merging — first source wins completely
 

@@ -73,7 +73,7 @@ pub mod private {
     /// Append item of `OpType` to current value. If current type is `Primitive`, then it will be converted to
     /// `Vector`.
     /// # Panics
-    /// qqq: doc
+    /// Panics if `self` or `item` is `OpType::Map` — use `insert` to add items to map variants.
     #[ must_use ]
     pub fn append(mut self, item: OpType<T>) -> OpType<T> {
       let mut mut_item = item;

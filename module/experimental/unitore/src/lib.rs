@@ -8,5 +8,15 @@ pub mod action;
 pub mod entity;
 pub mod sled_adapter;
 
-// qqq: src/Readmу.md with file structure please
-// aaa: added readme.md
+/// Empty cell value for table display.
+pub const EMPTY_CELL: &str = "";
+
+/// General report trait for commands return type.
+pub trait Report: core ::fmt ::Display + core ::fmt ::Debug
+{
+  /// Print report of executed command.
+  fn report( &self )
+  {
+  println!( "{self}" );
+ }
+}

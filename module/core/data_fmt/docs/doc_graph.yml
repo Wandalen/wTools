@@ -345,202 +345,202 @@ edges:
     label: body-link
   - from: algorithm/003
     to: invariant/001
-    via: cross_references
+    via: typed_reference
   - from: algorithm/004
     to: feature/005
-    via: cross_references
+    via: typed_reference
   - from: algorithm/004
     to: api/003
-    via: cross_references
+    via: typed_reference
   - from: algorithm/004
     to: algorithm/002
     label: body-link
   - from: algorithm/005
     to: feature/005
-    via: cross_references
+    via: typed_reference
   - from: algorithm/005
     to: invariant/004
-    via: cross_references
+    via: typed_reference
 
   # api cross-references
   - from: api/001
     to: input_type/001
-    via: cross_references
+    via: typed_reference
   - from: api/001
     to: input_type/002
-    via: cross_references
+    via: typed_reference
   - from: api/002
     to: builder/001
-    via: cross_references
+    via: typed_reference
   - from: api/002
     to: builder/002
-    via: cross_references
+    via: typed_reference
   - from: api/004
     to: trait/001
-    via: cross_references
+    via: typed_reference
   - from: api/004
     to: trait/002
-    via: cross_references
+    via: typed_reference
 
   # builder cross-references
   - from: builder/001
     to: api/002
-    via: cross_references
+    via: typed_reference
   - from: builder/001
     to: input_type/001
-    via: cross_references
+    via: typed_reference
   - from: builder/002
     to: api/002
-    via: cross_references
+    via: typed_reference
   - from: builder/002
     to: input_type/002
-    via: cross_references
+    via: typed_reference
 
   # algorithm/006 cross-references
   - from: algorithm/006
     to: variant/033
-    via: cross_references
+    via: typed_reference
   - from: variant/033
     to: algorithm/006
-    via: cross_references
+    via: typed_reference
 
   # feature cross-references
   - from: feature/006
     to: trait/001
-    via: cross_references
+    via: typed_reference
   - from: feature/006
     to: trait/002
-    via: cross_references
+    via: typed_reference
   - from: feature/006
     to: api/002
-    via: cross_references
+    via: typed_reference
   - from: feature/006
     to: formatter/002
-    via: cross_references
+    via: typed_reference
   - from: feature/001
     to: algorithm/001
-    via: cross_references
+    via: typed_reference
   - from: feature/001
     to: feature/005
-    via: cross_references
+    via: typed_reference
   - from: feature/002
     to: algorithm/002
-    via: cross_references
+    via: typed_reference
   - from: feature/002
     to: feature/005
-    via: cross_references
+    via: typed_reference
   - from: feature/003
     to: trait/001
-    via: cross_references
+    via: typed_reference
   - from: feature/005
     to: algorithm/004
-    via: cross_references
+    via: typed_reference
   - from: feature/005
     to: algorithm/005
-    via: cross_references
+    via: typed_reference
   - from: feature/005
     to: invariant/003
-    via: cross_references
+    via: typed_reference
   - from: feature/005
     to: invariant/004
-    via: cross_references
+    via: typed_reference
   - from: feature/005
     to: api/003
-    via: cross_references
+    via: typed_reference
   - from: feature/005
     to: feature/002
-    via: cross_references
+    via: typed_reference
   - from: feature/004
     to: api/003
-    via: cross_references
+    via: typed_reference
 
   # input_model cross-references
   - from: input_model/001
     to: input_type/001
-    via: cross_references
+    via: typed_reference
   - from: input_model/002
     to: input_type/002
-    via: cross_references
+    via: typed_reference
 
   # input_type cross-references
   - from: input_type/001
     to: input_model/001
-    via: cross_references
+    via: typed_reference
   - from: input_type/001
     to: api/001
-    via: cross_references
+    via: typed_reference
   - from: input_type/002
     to: input_model/002
-    via: cross_references
+    via: typed_reference
   - from: input_type/002
     to: api/001
-    via: cross_references
+    via: typed_reference
 
   # invariant cross-references
   - from: invariant/001
     to: builder/001
-    via: cross_references
+    via: typed_reference
   - from: invariant/001
     to: builder/002
-    via: cross_references
+    via: typed_reference
   - from: invariant/002
     to: algorithm/001
     label: body-link
   - from: invariant/002
     to: algorithm/003
-    via: cross_references
+    via: typed_reference
   - from: invariant/003
     to: feature/005
-    via: cross_references
+    via: typed_reference
   - from: invariant/004
     to: feature/005
-    via: cross_references
+    via: typed_reference
   - from: invariant/004
     to: algorithm/005
-    via: cross_references
+    via: typed_reference
 
   # pattern cross-references
   - from: pattern/001
     to: feature/001
-    via: cross_references
+    via: typed_reference
   - from: pattern/001
     to: api/004
-    via: cross_references
+    via: typed_reference
   - from: pattern/001
     to: api/001
-    via: cross_references
+    via: typed_reference
   - from: pattern/001
     to: api/002
-    via: cross_references
+    via: typed_reference
   - from: pattern/002
     to: invariant/001
-    via: cross_references
+    via: typed_reference
   - from: pattern/003
     to: trait/001
-    via: cross_references
+    via: typed_reference
   - from: pattern/003
     to: trait/002
-    via: cross_references
+    via: typed_reference
   - from: pattern/003
     to: trait/003
-    via: cross_references
+    via: typed_reference
   - from: pattern/003
     to: api/004
-    via: cross_references
+    via: typed_reference
   - from: pattern/004
     to: api/003
-    via: cross_references
+    via: typed_reference
   - from: pattern/004
     to: builder/001
-    via: cross_references
+    via: typed_reference
   - from: pattern/004
     to: builder/002
-    via: cross_references
+    via: typed_reference
 
   # trait cross-references
   - from: trait/001
     to: feature/003
-    via: cross_references
+    via: typed_reference
   - from: trait/002
     to: trait/001
     label: body-link
@@ -554,270 +554,270 @@ edges:
   # formatter cross-references
   - from: formatter/001
     to: api/004
-    via: cross_references
+    via: typed_reference
   - from: formatter/001
     to: trait/001
-    via: cross_references
+    via: typed_reference
   - from: formatter/001
     to: trait/002
-    via: cross_references
+    via: typed_reference
   - from: formatter/001
     to: variant/001
-    via: cross_references
+    via: typed_reference
   - from: formatter/001
     to: variant/002
-    via: cross_references
+    via: typed_reference
   - from: formatter/001
     to: variant/003
-    via: cross_references
+    via: typed_reference
   - from: formatter/001
     to: variant/004
-    via: cross_references
+    via: typed_reference
   - from: formatter/001
     to: variant/005
-    via: cross_references
+    via: typed_reference
   - from: formatter/001
     to: variant/006
-    via: cross_references
+    via: typed_reference
   - from: formatter/001
     to: variant/007
-    via: cross_references
+    via: typed_reference
   - from: formatter/001
     to: variant/008
-    via: cross_references
+    via: typed_reference
   - from: formatter/001
     to: variant/009
-    via: cross_references
+    via: typed_reference
   - from: formatter/002
     to: api/004
-    via: cross_references
+    via: typed_reference
   - from: formatter/002
     to: trait/002
-    via: cross_references
+    via: typed_reference
   - from: formatter/002
     to: variant/010
-    via: cross_references
+    via: typed_reference
   - from: formatter/002
     to: variant/011
-    via: cross_references
+    via: typed_reference
   - from: formatter/003
     to: api/004
-    via: cross_references
+    via: typed_reference
   - from: formatter/003
     to: input_model/002
-    via: cross_references
+    via: typed_reference
   - from: formatter/003
     to: input_type/002
-    via: cross_references
+    via: typed_reference
   - from: formatter/003
     to: variant/012
-    via: cross_references
+    via: typed_reference
   - from: formatter/003
     to: variant/013
-    via: cross_references
+    via: typed_reference
   - from: formatter/003
     to: variant/014
-    via: cross_references
+    via: typed_reference
   - from: formatter/004
     to: api/004
-    via: cross_references
+    via: typed_reference
   - from: formatter/004
     to: trait/001
-    via: cross_references
+    via: typed_reference
   - from: formatter/004
     to: variant/015
-    via: cross_references
+    via: typed_reference
   - from: formatter/005
     to: api/004
-    via: cross_references
+    via: typed_reference
   - from: formatter/005
     to: trait/001
-    via: cross_references
+    via: typed_reference
   - from: formatter/005
     to: variant/016
-    via: cross_references
+    via: typed_reference
   - from: formatter/005
     to: variant/017
-    via: cross_references
+    via: typed_reference
   - from: formatter/006
     to: api/004
-    via: cross_references
+    via: typed_reference
   - from: formatter/006
     to: trait/001
-    via: cross_references
+    via: typed_reference
   - from: formatter/006
     to: variant/018
-    via: cross_references
+    via: typed_reference
   - from: formatter/007
     to: api/004
-    via: cross_references
+    via: typed_reference
   - from: formatter/007
     to: trait/001
-    via: cross_references
+    via: typed_reference
   - from: formatter/007
     to: variant/019
-    via: cross_references
+    via: typed_reference
   - from: formatter/008
     to: api/004
-    via: cross_references
+    via: typed_reference
   - from: formatter/008
     to: trait/001
-    via: cross_references
+    via: typed_reference
   - from: formatter/008
     to: variant/020
-    via: cross_references
+    via: typed_reference
   - from: formatter/008
     to: variant/021
-    via: cross_references
+    via: typed_reference
   - from: formatter/008
     to: variant/022
-    via: cross_references
+    via: typed_reference
   - from: formatter/008
     to: variant/023
-    via: cross_references
+    via: typed_reference
   - from: formatter/009
     to: api/004
-    via: cross_references
+    via: typed_reference
   - from: formatter/009
     to: trait/001
-    via: cross_references
+    via: typed_reference
   - from: formatter/009
     to: variant/024
-    via: cross_references
+    via: typed_reference
   - from: formatter/009
     to: variant/025
-    via: cross_references
+    via: typed_reference
   - from: formatter/009
     to: variant/026
-    via: cross_references
+    via: typed_reference
   - from: formatter/009
     to: variant/027
-    via: cross_references
+    via: typed_reference
   - from: formatter/010
     to: api/004
-    via: cross_references
+    via: typed_reference
   - from: formatter/010
     to: trait/001
-    via: cross_references
+    via: typed_reference
   - from: formatter/010
     to: variant/028
-    via: cross_references
+    via: typed_reference
   - from: formatter/010
     to: variant/029
-    via: cross_references
+    via: typed_reference
   - from: formatter/010
     to: variant/030
-    via: cross_references
+    via: typed_reference
   - from: formatter/010
     to: variant/031
-    via: cross_references
+    via: typed_reference
   - from: formatter/010
     to: variant/032
-    via: cross_references
+    via: typed_reference
   - from: formatter/010
     to: variant/033
-    via: cross_references
+    via: typed_reference
 
   # variant cross-references (all 33 variants reference data_structure/001)
   - from: variant/001
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/002
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/003
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/004
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/005
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/006
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/007
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/008
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/009
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/010
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/011
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/012
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/013
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/014
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/015
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/016
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/017
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/018
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/019
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/020
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/021
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/022
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/023
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/024
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/025
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/026
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/027
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/028
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/029
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/030
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/031
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/032
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
   - from: variant/033
     to: data_structure/001
-    via: cross_references
+    via: typed_reference
 
 components:
   - id: 1

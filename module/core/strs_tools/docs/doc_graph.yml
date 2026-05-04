@@ -1,4 +1,4 @@
-generated: 2026_04_26
+last_updated: 2026_04_26
 nodes:
   - id: F-001
     file: feature/001_string_splitting.md
@@ -76,127 +76,127 @@ nodes:
 edges:
   - from: F-001
     to: A-001
-    via: cross_references
+    via: typed_reference
   - from: A-001
     to: F-001
-    via: cross_references
+    via: typed_reference
   - from: F-001
     to: I-001
-    via: cross_references
+    via: typed_reference
   - from: I-001
     to: F-001
-    via: cross_references
+    via: typed_reference
   - from: F-001
     to: G-002
-    via: cross_references
+    via: typed_reference
   - from: G-002
     to: F-001
-    via: cross_references
+    via: typed_reference
   - from: F-001
     to: G-003
-    via: cross_references
+    via: typed_reference
   - from: G-003
     to: F-001
-    via: cross_references
+    via: typed_reference
   - from: F-002
     to: A-002
-    via: cross_references
+    via: typed_reference
   - from: A-002
     to: F-002
-    via: cross_references
+    via: typed_reference
   - from: F-003
     to: A-002
-    via: cross_references
+    via: typed_reference
   - from: A-002
     to: F-003
-    via: cross_references
+    via: typed_reference
   - from: F-004
     to: A-002
-    via: cross_references
+    via: typed_reference
   - from: A-002
     to: F-004
-    via: cross_references
+    via: typed_reference
   - from: F-005
     to: A-002
-    via: cross_references
+    via: typed_reference
   - from: A-002
     to: F-005
-    via: cross_references
+    via: typed_reference
   - from: F-006
     to: A-002
-    via: cross_references
+    via: typed_reference
   - from: A-002
     to: F-006
-    via: cross_references
+    via: typed_reference
   - from: F-007
     to: G-001
-    via: cross_references
+    via: typed_reference
   - from: G-001
     to: F-007
-    via: cross_references
+    via: typed_reference
   - from: F-007
     to: I-003
-    via: cross_references
+    via: typed_reference
   - from: I-003
     to: F-007
-    via: cross_references
+    via: typed_reference
   - from: F-008
     to: A-003
-    via: cross_references
+    via: typed_reference
   - from: A-003
     to: F-008
-    via: cross_references
+    via: typed_reference
   - from: A-001
     to: I-001
-    via: cross_references
+    via: typed_reference
   - from: I-001
     to: A-001
-    via: cross_references
+    via: typed_reference
   - from: G-001
     to: I-003
-    via: cross_references
+    via: typed_reference
   - from: I-003
     to: G-001
-    via: cross_references
+    via: typed_reference
   - from: G-002
     to: G-003
-    via: cross_references
+    via: typed_reference
   - from: G-003
     to: G-002
-    via: cross_references
+    via: typed_reference
   - from: I-002
     to: F-007
-    via: cross_references
+    via: typed_reference
   - from: F-007
     to: I-002
-    via: cross_references
+    via: typed_reference
   - from: I-004
     to: F-001
-    via: cross_references
+    via: typed_reference
   - from: F-001
     to: I-004
-    via: cross_references
+    via: typed_reference
   - from: I-004
     to: F-002
-    via: cross_references
+    via: typed_reference
   - from: F-002
     to: I-004
-    via: cross_references
+    via: typed_reference
   - from: I-004
     to: F-003
-    via: cross_references
+    via: typed_reference
   - from: F-003
     to: I-004
-    via: cross_references
+    via: typed_reference
   - from: I-004
     to: F-004
-    via: cross_references
+    via: typed_reference
   - from: F-004
     to: I-004
-    via: cross_references
+    via: typed_reference
   - from: I-004
     to: I-002
-    via: cross_references
+    via: typed_reference
   - from: I-002
     to: I-004
-    via: cross_references
+    via: typed_reference

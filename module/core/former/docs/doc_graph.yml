@@ -83,78 +83,78 @@ nodes:
 
 edges:
   # algorithm/001 outgoing
-  - { from: algorithm/001, to: feature/002, via: cross_references }
-  - { from: algorithm/001, to: api/002, via: cross_references }
+  - { from: algorithm/001, to: feature/002, via: typed_reference }
+  - { from: algorithm/001, to: api/002, via: typed_reference }
 
   # api/001 outgoing
-  - { from: api/001, to: api/002, via: cross_references }
-  - { from: api/001, to: feature/006, via: cross_references }
-  - { from: api/001, to: feature/007, via: cross_references }
+  - { from: api/001, to: api/002, via: typed_reference }
+  - { from: api/001, to: feature/006, via: typed_reference }
+  - { from: api/001, to: feature/007, via: typed_reference }
 
   # api/002 outgoing
-  - { from: api/002, to: api/001, via: cross_references }
-  - { from: api/002, to: feature/003, via: cross_references }
-  - { from: api/002, to: feature/004, via: cross_references }
-  - { from: api/002, to: feature/005, via: cross_references }
-  - { from: api/002, to: feature/006, via: cross_references }
+  - { from: api/002, to: api/001, via: typed_reference }
+  - { from: api/002, to: feature/003, via: typed_reference }
+  - { from: api/002, to: feature/004, via: typed_reference }
+  - { from: api/002, to: feature/005, via: typed_reference }
+  - { from: api/002, to: feature/006, via: typed_reference }
 
   # feature/001 outgoing
-  - { from: feature/001, to: api/001, via: cross_references }
-  - { from: feature/001, to: api/002, via: cross_references }
-  - { from: feature/001, to: pattern/001, via: cross_references }
-  - { from: feature/001, to: invariant/001, via: cross_references }
+  - { from: feature/001, to: api/001, via: typed_reference }
+  - { from: feature/001, to: api/002, via: typed_reference }
+  - { from: feature/001, to: pattern/001, via: typed_reference }
+  - { from: feature/001, to: invariant/001, via: typed_reference }
 
   # feature/002 outgoing
-  - { from: feature/002, to: algorithm/001, via: cross_references }
-  - { from: feature/002, to: api/001, via: cross_references }
-  - { from: feature/002, to: api/002, via: cross_references }
-  - { from: feature/002, to: pattern/001, via: cross_references }
-  - { from: feature/002, to: invariant/001, via: cross_references }
-  - { from: feature/002, to: invariant/002, via: cross_references }
-  - { from: feature/002, to: invariant/003, via: cross_references }
+  - { from: feature/002, to: algorithm/001, via: typed_reference }
+  - { from: feature/002, to: api/001, via: typed_reference }
+  - { from: feature/002, to: api/002, via: typed_reference }
+  - { from: feature/002, to: pattern/001, via: typed_reference }
+  - { from: feature/002, to: invariant/001, via: typed_reference }
+  - { from: feature/002, to: invariant/002, via: typed_reference }
+  - { from: feature/002, to: invariant/003, via: typed_reference }
 
   # feature/003 outgoing
-  - { from: feature/003, to: feature/001, via: cross_references }
-  - { from: feature/003, to: api/002, via: cross_references }
-  - { from: feature/003, to: pattern/002, via: cross_references }
+  - { from: feature/003, to: feature/001, via: typed_reference }
+  - { from: feature/003, to: api/002, via: typed_reference }
+  - { from: feature/003, to: pattern/002, via: typed_reference }
 
   # feature/004 outgoing
-  - { from: feature/004, to: feature/001, via: cross_references }
-  - { from: feature/004, to: api/002, via: cross_references }
-  - { from: feature/004, to: pattern/002, via: cross_references }
+  - { from: feature/004, to: feature/001, via: typed_reference }
+  - { from: feature/004, to: api/002, via: typed_reference }
+  - { from: feature/004, to: pattern/002, via: typed_reference }
 
   # feature/005 outgoing
-  - { from: feature/005, to: feature/001, via: cross_references }
-  - { from: feature/005, to: api/002, via: cross_references }
-  - { from: feature/005, to: pattern/002, via: cross_references }
+  - { from: feature/005, to: feature/001, via: typed_reference }
+  - { from: feature/005, to: api/002, via: typed_reference }
+  - { from: feature/005, to: pattern/002, via: typed_reference }
 
   # feature/006 outgoing
-  - { from: feature/006, to: api/001, via: cross_references }
-  - { from: feature/006, to: api/002, via: cross_references }
+  - { from: feature/006, to: api/001, via: typed_reference }
+  - { from: feature/006, to: api/002, via: typed_reference }
 
   # feature/007 outgoing
-  - { from: feature/007, to: api/001, via: cross_references }
+  - { from: feature/007, to: api/001, via: typed_reference }
 
   # invariant/001 outgoing
-  - { from: invariant/001, to: feature/001, via: cross_references }
-  - { from: invariant/001, to: feature/002, via: cross_references }
+  - { from: invariant/001, to: feature/001, via: typed_reference }
+  - { from: invariant/001, to: feature/002, via: typed_reference }
 
   # invariant/002 outgoing
-  - { from: invariant/002, to: feature/002, via: cross_references }
+  - { from: invariant/002, to: feature/002, via: typed_reference }
 
   # invariant/003 outgoing
-  - { from: invariant/003, to: feature/002, via: cross_references }
+  - { from: invariant/003, to: feature/002, via: typed_reference }
 
   # pattern/001 outgoing
-  - { from: pattern/001, to: feature/001, via: cross_references }
-  - { from: pattern/001, to: feature/002, via: cross_references }
-  - { from: pattern/001, to: pattern/002, via: cross_references }
+  - { from: pattern/001, to: feature/001, via: typed_reference }
+  - { from: pattern/001, to: feature/002, via: typed_reference }
+  - { from: pattern/001, to: pattern/002, via: typed_reference }
 
   # pattern/002 outgoing
-  - { from: pattern/002, to: pattern/001, via: cross_references }
-  - { from: pattern/002, to: feature/003, via: cross_references }
-  - { from: pattern/002, to: feature/004, via: cross_references }
-  - { from: pattern/002, to: feature/005, via: cross_references }
+  - { from: pattern/002, to: pattern/001, via: typed_reference }
+  - { from: pattern/002, to: feature/003, via: typed_reference }
+  - { from: pattern/002, to: feature/004, via: typed_reference }
+  - { from: pattern/002, to: feature/005, via: typed_reference }
 
 components:
   - id: 1

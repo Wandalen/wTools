@@ -15,7 +15,7 @@
 | AP-01 | defaults_are_lowest_priority | nominal | ✅ |
 | AP-02 | param_absent_from_defaults_returns_null | boundary | ✅ |
 | AP-03 | parameter_names_drives_resolve_all | nominal | ✅ |
-| AP-04 | undeclared_file_param_included_in_resolve_all | secondary_scan | ⏳ |
+| AP-04 | undeclared_file_param_included_in_resolve_all | secondary_scan | ✅ |
 | AP-05 | param_in_defaults_not_in_names_directly_resolvable | boundary | ✅ |
 
 ---
@@ -46,7 +46,7 @@
 - **Given:** Global config file contains `"extra_param" → "from_file"`; `get_parameter_names()` does not list `"extra_param"`
 - **When:** `resolve_all_config(&{})` is called
 - **Then:** Result map contains `"extra_param"` — secondary scan of config files picks it up
-- **Tests:** `tests/hierarchy_tests.rs::test_resolve_all_includes_undeclared_config_file_params` ⏳ (not yet written)
+- **Tests:** `tests/hierarchy_tests.rs::test_resolve_all_includes_undeclared_config_file_params`
 
 ### AP-05: param in defaults but not in parameter_names still resolvable directly
 

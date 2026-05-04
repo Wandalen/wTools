@@ -44,7 +44,7 @@ Note: 22 additional legacy crates (formerly in `module/postponed/`) are co-locat
 |-------|--------|----|-------|---------|------|-----|----|----|-----|-------|--------|-----------|
 | `error_tools` | core | 1 | Foundation | Provide a unified error handling namespace across the workspace | 2 | 0 | 0 | 0 | 0 | stable | stable | TDCFREMS |
 | `diagnostics_tools` | deprecated | 1 | Foundation | Supply runtime and compile-time assertion macros with colored diff output | 1 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFRE·S |
-| `mem_tools` | experimental | 1 | Foundation | Compare memory addresses, sizes, and byte contents across heterogeneous reference pairs | 0 | 0 | 0 | 0 | 0 | experimental | experimental | TDC·REMS |
+| `mem_tools` | experimental | 1 | Foundation | Compare memory addresses, sizes, and byte contents across heterogeneous reference pairs | 0 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFREMS |
 | `asbytes` | core | 2 | Primitives | View or consume POD data as bytes via bytemuck-backed traits | 1 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFREMS |
 | `deterministic_rand` | core | 2 | Primitives | Generate hierarchical seeded random numbers with switchable determinism | 6 | 2 | 0 | 0 | 2 | experimental | experimental | TD·FRE·S |
 | `implements` | experimental | 2 | Primitives | Answer at compile time whether a type implements a trait | 0 | 0 | 0 | 0 | 0 | experimental | stable | TDCFREMS |
@@ -65,7 +65,7 @@ Note: 22 additional legacy crates (formerly in `module/postponed/`) are co-locat
 | `reflect_tools_meta` | experimental | 3 | Macro Framework | Implement #[derive(Reflect)] proc-macro backend (use reflect_tools directly) | 1 | 1 | 1 | 0 | 0 | experimental | experimental | TDCFR·MS |
 | `strs_tools_meta` | core | 3 | Macro Framework | Generate optimize_split! and optimize_match! proc macro implementations (use strs_tools directly) | 1 | 1 | 1 | 0 | 0 | experimental | stable | TDCFR·MS |
 | `variadic_from_meta` | core | 3 | Macro Framework | Generate variadic_from From impls (use variadic_from directly) | 1 | 1 | 1 | 0 | 0 | stable | stable | TDCFR··S |
-| `clone_dyn` | core | 4 | Patterns | Make Box<dyn Trait> cloneable via a single attribute macro | 2 | 2 | 1 | 1 | 0 | stable | stable | TDC·REMS |
+| `clone_dyn` | core | 4 | Patterns | Make Box<dyn Trait> cloneable via a single attribute macro | 2 | 2 | 1 | 1 | 0 | stable | stable | TDCFREMS |
 | `clone_dyn_types` | core | 4 | Patterns | Supply the CloneDyn trait and clone_into_box for type-erased Box cloning | 0 | 0 | 0 | 0 | 0 | stable | stable | TDC·RE·S |
 | `component_model` | experimental | 4 | Patterns | Enable type-driven field assignment on complex objects | 2 | 2 | 1 | 1 | 0 | experimental | stable | TDC·RE·S |
 | `component_model_types` | experimental | 4 | Patterns | Expose shared traits for the component_model pattern | 1 | 1 | 0 | 0 | 1 | experimental | stable | TD·FREMS |
@@ -73,7 +73,7 @@ Note: 22 additional legacy crates (formerly in `module/postponed/`) are co-locat
 | `former` | core | 4 | Patterns | Build complex objects with nested subformers via one derive | 4 | 4 | 1 | 1 | 2 | stable | stable | TD··RE·S |
 | `former_types` | core | 4 | Patterns | Expose compile-time trait contracts reused by former consumers | 2 | 2 | 1 | 0 | 1 | stable | stable | TD·FRE·S |
 | `impls_index` | deprecated | 4 | Patterns | Wrap impl methods in named macros for navigable indexing | 1 | 1 | 0 | 1 | 0 | deprecated | deprecated | TDC·RE·· |
-| `mod_interface` | core | 4 | Patterns | Organize module items into five propagation layers with a single declarative macro | 1 | 1 | 0 | 1 | 0 | stable | stable | TDC·REMS |
+| `mod_interface` | core | 4 | Patterns | Organize module items into five propagation layers with a single declarative macro | 1 | 1 | 0 | 1 | 0 | stable | stable | TDCFREMS |
 | `reflect_tools` | experimental | 4 | Patterns | Reflect any value at runtime — type identity, container detection, ordering, and key-value element iteration | 3 | 3 | 1 | 1 | 1 | experimental | experimental | TD··RE·S |
 | `variadic_from` | core | 4 | Patterns | Construct structs from 1–3 typed arguments via From1/From2/From3 traits and VariadicFrom derive | 1 | 1 | 0 | 1 | 0 | stable | stable | TDCFREMS |
 | `async_from` | experimental | 5 | Collections | Provide async versions of From, Into, TryFrom, and TryInto | 1 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFR··S |
@@ -88,10 +88,10 @@ Note: 22 additional legacy crates (formerly in `module/postponed/`) are co-locat
 | `data_type` | deprecated | 6 | String & Format | Aggregate interval, collection, and sum-type re-exports under one unified facade namespace | 3 | 2 | 0 | 2 | 0 | experimental | deprecated | TDC·RE·S |
 | `format_tools` | deprecated | 6 | String & Format | Extend std formatting with structural display and string helpers | 3 | 3 | 0 | 3 | 0 | deprecated | deprecated | TDCFRE·S |
 | `include_md` | experimental | 6 | String & Format | Include a markdown file or named section at compile time | 0 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFR·MS |
-| `strs_tools` | core | 6 | String & Format | Split, indent, and transform strings with ANSI utilities and SIMD acceleration | 9 | 2 | 0 | 2 | 0 | experimental | stable | TDCFRE·S |
+| `strs_tools` | core | 6 | String & Format | Split, indent, and transform strings with ANSI utilities and SIMD acceleration | 9 | 2 | 0 | 2 | 0 | experimental | stable | TDCFREMS |
 | `wstring_tools` | deprecated | 6 | String & Format | Alias — recommended single dependency for all string utilities | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDC·REMS |
 | `config_hierarchy` | core | 7 | Path & Process | Resolve hierarchical config across runtime, env, file, and default sources | 6 | 1 | 0 | 1 | 0 | experimental | stable | TDC·R·MS |
-| `config_hierarchy` | experimental | 7 | Path & Process | Resolve hierarchical config across runtime, env, file, and default sources | 6 | 1 | 0 | 1 | 0 | experimental | stable | TDC·R·MS |
+| `config_hierarchy` | experimental | 7 | Path & Process | Resolve hierarchical config across runtime, env, file, and default sources | 6 | 1 | 0 | 1 | 0 | experimental | stable | TDCFREMS |
 | `file_tools` | deprecated | 7 | Path & Process | RAII temp directories, glob re-export, and upward path traversal | 1 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFREMS |
 | `process_tools` | core | 7 | Path & Process | Run subprocesses with captured I/O, probe process liveness, and daemonize Unix services | 6 | 4 | 0 | 4 | 0 | stable | stable | TDCFR·MS |
 | `program_tools` | experimental | 7 | Path & Process | Rust script runner — compile and execute Rust files as scripts with output capture | 3 | 3 | 0 | 3 | 0 | experimental | experimental | TDCFREMS |
@@ -99,9 +99,9 @@ Note: 22 additional legacy crates (formerly in `module/postponed/`) are co-locat
 | `workspace_tools` | core | 7 | Path & Process | Resolve workspace-relative paths and optionally load configuration, manage secrets, and discover resources | 11 | 0 | 0 | 0 | 0 | experimental | stable | TDCFR·MS |
 | `fs_tools` | deprecated | 7 | Path & Process | Alias — recommended single dependency for all filesystem utilities | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFREM· |
 | `benchkit` | experimental | 8 | Tooling | Benchmark performance and publish markdown reports | 9 | 1 | 0 | 1 | 0 | experimental | stable | TDCFREMS |
-| `crates_tools` | core | 8 | Tooling | Download and decode .crate archives for in-memory content inspection | 3 | 0 | 0 | 0 | 0 | experimental | stable | TDC·REMS |
-| `genfile_core` | core | 8 | Tooling | Render parameterized template archives to output files with a pluggable engine and file system abstraction | 9 | 3 | 0 | 3 | 0 | stable | stable | TDC·REMS |
-| `genfile` | core | 8 | Tooling | Manage code generation template archives from the command line | 4 | 3 | 1 | 2 | 0 | experimental | stable | TDC·REMS |
+| `crates_tools` | core | 8 | Tooling | Download and decode .crate archives for in-memory content inspection | 3 | 0 | 0 | 0 | 0 | experimental | stable | TDCFREMS |
+| `genfile_core` | core | 8 | Tooling | Render parameterized template archives to output files with a pluggable engine and file system abstraction | 9 | 3 | 0 | 3 | 0 | stable | stable | TDCFREMS |
+| `genfile` | core | 8 | Tooling | Manage code generation template archives from the command line | 4 | 3 | 1 | 2 | 0 | experimental | stable | TDCFREMS |
 | `multiline_input` | deprecated | 8 | Tooling | Collect multiline terminal input with interactive key editing and Builder-configured validation | 4 | 1 | 0 | 1 | 0 | deprecated | deprecated | TDCFR·MS |
 | `multiline_input` | experimental | 8 | Tooling | Collect multiline terminal input with interactive key editing and Builder-configured validation | 4 | 1 | 0 | 1 | 0 | experimental | stable | T·CFREMS |
 | `test_tools` | experimental | 8 | Tooling | Aggregate workspace testing utilities into one dev-dependency via a circular-dependency-safe standalone build mode | 11 | 3 | 0 | 3 | 0 | experimental | stable | TDCFRE·· |
@@ -162,6 +162,10 @@ All 8 criteria met — can be promoted to stable without prerequisite work.
 |-------|----|-----------|
 | `implements` | 2 | TDCFREMS |
 | `color_tools` | 6 | TDCFREMS |
+| `strs_tools` | 6 | TDCFREMS |
+| `config_hierarchy` (experimental) | 7 | TDCFREMS |
+| `genfile` | 8 | TDCFREMS |
+| `crates_tools` | 8 | TDCFREMS |
 | `benchkit` | 8 | TDCFREMS |
 
 ### Blocked — by criteria count
@@ -171,16 +175,13 @@ All 8 criteria met — can be promoted to stable without prerequisite work.
 | `strs_tools_meta` | 3 | TDCFR·MS | E |
 | `component_model_types` | 4 | TD·FREMS | C |
 | `cli_fmt` | 6 | TDCFR·MS | E |
-| `strs_tools` | 6 | TDCFRE·S | M |
 | `workspace_tools` | 7 | TDCFR·MS | E |
 | `wtools` | 5 | T·CFREMS | D |
 | `test_tools` | 8 | TDCFRE·· | M, S |
-| `crates_tools` | 8 | TDC·REMS | F |
 | `multiline_input` | 8 | T·CFREMS | D |
 | `component_model_meta` | 3 | TD·FR·MS | C, E |
 | `component_model` | 4 | TDC·RE·S | F, M |
 | `config_hierarchy` (core) | 7 | TDC·R·MS | F, E |
-| `config_hierarchy` (experimental) | 7 | TDC·R·MS | F, E |
 | `wca` | 8 | TDC·RE·S | F, M |
 | `unitore` | 9 | TDC·R··S | F, E, M |
 | `willbe` | 9 | TDC·R··· | F, E, M, S |
@@ -189,9 +190,9 @@ All 8 criteria met — can be promoted to stable without prerequisite work.
 
 | Criterion | Failing | Crates |
 |-----------|---------|--------|
-| M (Markers) | 6 | component_model, strs_tools, test_tools, wca, unitore, willbe |
-| F (Features) | 8 | crates_tools, component_model, config_hierarchy (core), config_hierarchy (experimental), genfile, wca, unitore, willbe |
-| E (Examples) | 8 | component_model_meta, strs_tools_meta, cli_fmt, workspace_tools, config_hierarchy (core), config_hierarchy (experimental), unitore, willbe |
+| M (Markers) | 5 | component_model, test_tools, wca, unitore, willbe |
+| F (Features) | 5 | component_model, config_hierarchy (core), wca, unitore, willbe |
+| E (Examples) | 7 | component_model_meta, strs_tools_meta, cli_fmt, workspace_tools, config_hierarchy (core), unitore, willbe |
 | C (Clean) | 2 | component_model_meta, component_model_types |
 | S (Stable deps) | 2 | test_tools, willbe |
 | D (Documented) | 2 | multiline_input (experimental), wtools |
@@ -213,10 +214,6 @@ Already-stable crates that do not meet all 8 criteria. Not promotion blockers, b
 | `clone_dyn_types` | TDC·RE·S | F, M |
 | `derive_tools` | TDC·RE·S | F, M |
 | `former_types` | TD·FRE·S | C, M |
-| `clone_dyn` | TDC·REMS | F |
-| `mod_interface` | TDC·REMS | F |
-| `genfile_core` | TDC·REMS | F |
-| `genfile` | TDC·REMS | F |
 | `process_tools` | TDCFR·MS | E |
 
 ## Usefulness Assessment
@@ -362,7 +359,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 1 · Foundation
 - **state**: experimental
 - **target**: experimental
-- **readiness**: TDC·REMS
+- **readiness**: TDCFREMS
 - **purpose**: Compare memory addresses, sizes, and byte contents across heterogeneous reference pairs
 - **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.9.0
@@ -668,7 +665,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 4 · Patterns
 - **state**: stable
 - **target**: stable
-- **readiness**: TDC·REMS
+- **readiness**: TDCFREMS
 - **purpose**: Make Box<dyn Trait> cloneable via a single attribute macro
 - **deps**: 2 · **int**: 2 · **=L**: 1 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.62.0
@@ -780,7 +777,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 4 · Patterns
 - **state**: stable
 - **target**: stable
-- **readiness**: TDC·REMS
+- **readiness**: TDCFREMS
 - **purpose**: Organize module items into five propagation layers with a single declarative macro
 - **deps**: 1 · **int**: 1 · **=L**: 0 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.61.0
@@ -998,7 +995,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 6 · String & Format
 - **state**: experimental
 - **target**: stable
-- **readiness**: TDCFRE·S
+- **readiness**: TDCFREMS
 - **purpose**: Split, indent, and transform strings with ANSI utilities and SIMD acceleration
 - **deps**: 9 · **int**: 2 · **=L**: 0 · **↓L**: 2 · **↑L**: 0
 - **version**: 0.45.0
@@ -1044,7 +1041,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 7 · Path & Process
 - **state**: experimental
 - **target**: stable
-- **readiness**: TDC·R·MS
+- **readiness**: TDCFREMS
 - **purpose**: Resolve hierarchical config across runtime, env, file, and default sources
 - **deps**: 6 · **int**: 1 · **=L**: 0 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.5.0
@@ -1160,7 +1157,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 8 · Tooling
 - **state**: experimental
 - **target**: stable
-- **readiness**: TDC·REMS
+- **readiness**: TDCFREMS
 - **purpose**: Download and decode .crate archives for in-memory content inspection
 - **deps**: 3 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.25.0
@@ -1174,7 +1171,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 8 · Tooling
 - **state**: stable
 - **target**: stable
-- **readiness**: TDC·REMS
+- **readiness**: TDCFREMS
 - **purpose**: Render parameterized template archives to output files with a pluggable engine and file system abstraction
 - **deps**: 9 · **int**: 3 · **=L**: 0 · **↓L**: 3 · **↑L**: 0
 - **version**: 0.10.0
@@ -1188,7 +1185,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 8 · Tooling
 - **state**: experimental
 - **target**: stable
-- **readiness**: TDC·REMS
+- **readiness**: TDCFREMS
 - **purpose**: Manage code generation template archives from the command line
 - **deps**: 4 · **int**: 3 · **=L**: 1 · **↓L**: 2 · **↑L**: 0
 - **version**: 0.4.0

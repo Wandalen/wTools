@@ -23,4 +23,4 @@ Untested commands may silently regress. Platform-specific test failures on Windo
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| test | `tests/test_utils.rs` | Cross-platform test infrastructure |
+| test | `tests/cli_runner.rs` | Cross-platform test infrastructure |

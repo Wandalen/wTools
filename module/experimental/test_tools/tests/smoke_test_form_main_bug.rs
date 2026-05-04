@@ -48,8 +48,6 @@
 
 // test_kind: bug_reproducer(issue-smoke-form-missing-main)
 
-#![ allow( unused_crate_dependencies ) ]
-
 use test_tools::SmokeModuleTest;
 
 /// Verify: code without `fn main()` gets wrapped in `fn main()` by `form()`.

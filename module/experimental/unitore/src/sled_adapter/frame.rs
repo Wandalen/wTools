@@ -13,8 +13,7 @@ use gluesql ::
  },
   prelude ::SledStorage,
 };
-use entity ::frame :: { FrameStore, Frame };
-use action ::frame :: { SelectedEntries, FramesReport, ListReport };
+use entity ::frame :: { FrameStore, Frame, SelectedEntries, FramesReport, ListReport };
 use sled_adapter ::FeedStorage;
 use itertools ::Itertools;
 

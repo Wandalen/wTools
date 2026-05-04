@@ -8,6 +8,7 @@
 //! - Isolation between local and global configs
 //! - Edge cases specific to scope handling
 
+// allow: test binary functions are not part of the public API; documentation not required
 #![ allow( missing_docs ) ]
 
 use config_hierarchy::*;

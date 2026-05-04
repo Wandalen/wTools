@@ -83,7 +83,7 @@ pub fn pack_handler(
     .unwrap_or( "archive" );
 
   let archive = TemplateArchive::pack_from_dir( archive_name, input )
-    .map_err( | e | crate::error::format_error( e, "PACK" ) )?;
+    .map_err( | e | crate::error::format_error( &e, "PACK" ) )?;
 
   let file_count = archive.file_count();
   let archive_name = archive.name.clone();
@@ -122,7 +122,7 @@ pub fn pack_handler(
 
   // Save archive to output file
   archive.save_to_file( output )
-    .map_err( | e | crate::error::format_error( e, "PACK" ) )?;
+    .map_err( | e | crate::error::format_error( &e, "PACK" ) )?;
 
   // Format output based on verbosity
   let output_content = match verbosity

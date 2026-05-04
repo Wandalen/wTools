@@ -78,7 +78,7 @@ pub fn load_handler(
   // Load archive from file
   let path_buf = path;
   let archive = TemplateArchive::load_from_file( path_buf )
-    .map_err( | e | crate::error::format_error( e, "ARCHIVE" ) )?;
+    .map_err( | e | crate::error::format_error( &e, "ARCHIVE" ) )?;
 
   let archive_name = archive.name.clone();
   let file_count = archive.file_count();
@@ -158,9 +158,11 @@ pub fn save_handler(
   }
 
   // Save archive to file
-  // TODO: Implement format-specific saving once genfile_core supports it
+  // Workaround(issue-002): Format parameter is accepted but ignored; always saves as JSON.
+  // Root cause: TemplateArchive::save_to_file has no format parameter in the genfile_core API.
+  // Pitfall: The `format` and `pretty` args are silently unused; YAML save requests produce JSON.
   archive.save_to_file( path_buf )
-    .map_err( | e | crate::error::format_error( e, "ARCHIVE" ) )?;
+    .map_err( | e | crate::error::format_error( &e, "ARCHIVE" ) )?;
 
   // Format output based on verbosity
   let output = match verbosity
@@ -227,9 +229,11 @@ pub fn from_directory_handler(
     .and_then( | n | n.to_str() )
     .unwrap_or( "archive" );
 
-  // TODO: Implement mode selection (inline vs reference) when genfile_core supports it
+  // Workaround(issue-003): Mode parameter is accepted but ignored; always packs inline.
+  // Root cause: TemplateArchive::pack_from_dir always inlines content; no reference mode in API.
+  // Pitfall: The `mode`, `recursive`, `include_pattern`, `exclude_pattern` args are silently unused.
   let archive = TemplateArchive::pack_from_dir( archive_name, source_path )
-    .map_err( | e | crate::error::format_error( e, "ARCHIVE" ) )?;
+    .map_err( | e | crate::error::format_error( &e, "ARCHIVE" ) )?;
 
   let file_count = archive.file_count();
 

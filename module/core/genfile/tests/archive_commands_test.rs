@@ -4,7 +4,7 @@
 
 use std::fs;
 
-mod test_utils;
+mod cli_runner;
 
 #[ test ]
 fn archive_new_creates_empty_archive()
@@ -17,7 +17,7 @@ fn archive_new_creates_empty_archive()
   let _ = fs::remove_file( &archive_path );
 
   // Test: Create new archive, save it, then load and verify
-  let output = test_utils::cargo_run_command( &[ ".archive.new", "name::test-archive", "description::Test archive" ] )
+  let output = cli_runner::cargo_run_command( &[ ".archive.new", "name::test-archive", "description::Test archive" ] )
     .output()
     .expect( "Failed to execute command" );
 
@@ -46,7 +46,7 @@ fn archive_save_and_load_roundtrip()
     archive_path.display()
   );
 
-  let output = test_utils::repl_command( &create_script )
+  let output = cli_runner::repl_command( &create_script )
     .output()
     .expect( "Failed to create and save archive" );
 
@@ -65,7 +65,7 @@ fn archive_save_and_load_roundtrip()
     archive_path.display()
   );
 
-  let output = test_utils::repl_command( &{load_script} )
+  let output = cli_runner::repl_command( &{load_script} )
     .output()
     .expect( "Failed to load archive" );
 
@@ -103,7 +103,7 @@ fn archive_from_directory_packs_files()
     archive_path.display()
   );
 
-  let output = test_utils::repl_command( &{script} )
+  let output = cli_runner::repl_command( &{script} )
     .output()
     .expect( "Failed to pack directory" );
 
@@ -140,7 +140,7 @@ fn archive_save_with_different_verbosity_levels()
     archive_path.display()
   );
 
-  let output = test_utils::repl_command( &{script} )
+  let output = cli_runner::repl_command( &{script} )
     .output()
     .expect( "Failed with verbosity 0" );
 
@@ -160,7 +160,7 @@ fn archive_save_with_different_verbosity_levels()
     archive_path.display()
   );
 
-  let output = test_utils::repl_command( &{script} )
+  let output = cli_runner::repl_command( &{script} )
     .output()
     .expect( "Failed with verbosity 2" );
 
@@ -177,7 +177,7 @@ fn archive_save_with_different_verbosity_levels()
 fn archive_load_nonexistent_file_returns_error()
 {
   let script = ".archive.load path::/tmp/nonexistent_archive_12345.json\nexit";
-  let output = test_utils::repl_command( script )
+  let output = cli_runner::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
@@ -189,7 +189,7 @@ fn archive_load_nonexistent_file_returns_error()
 fn archive_save_without_loaded_archive_returns_error()
 {
   let script = ".archive.save path::/tmp/test.json\nexit";
-  let output = test_utils::repl_command( script )
+  let output = cli_runner::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
@@ -204,7 +204,7 @@ fn archive_save_without_loaded_archive_returns_error()
 fn archive_from_directory_nonexistent_returns_error()
 {
   let script = ".archive.from_directory source::/tmp/nonexistent_dir_12345\nexit";
-  let output = test_utils::repl_command( script )
+  let output = cli_runner::repl_command( script )
     .output()
     .expect( "Command should execute" );
 
@@ -269,7 +269,7 @@ fn pack_creates_portable_archive_from_directory()
   fs::write( source_dir.join( "file2.rs" ), "fn main() { println!(\"{{project_name}}\"); }" ).expect( "Should write file2" );
 
   // Run pack command
-  let output = test_utils::cargo_run_command( &[ ".pack",
+  let output = cli_runner::cargo_run_command( &[ ".pack",
       &format!( "input::{}", source_dir.display() ),
       &format!( "output::{}", output_path.display() ),
     ] )
@@ -320,7 +320,7 @@ fn pack_with_verbosity_levels()
   fs::write( source_dir.join( "test.txt" ), "test content" ).expect( "Should write test file" );
 
   // Test verbosity::0 (silent)
-  let output_v0 = test_utils::cargo_run_command( &[ ".pack",
+  let output_v0 = cli_runner::cargo_run_command( &[ ".pack",
       &format!( "input::{}", source_dir.display() ),
       &format!( "output::{}", output_path.display() ),
       "verbosity::0",
@@ -335,7 +335,7 @@ fn pack_with_verbosity_levels()
   let _ = fs::remove_file( &output_path );
 
   // Test verbosity::2 (detailed)
-  let output_v2 = test_utils::cargo_run_command( &[ ".pack",
+  let output_v2 = cli_runner::cargo_run_command( &[ ".pack",
       &format!( "input::{}", source_dir.display() ),
       &format!( "output::{}", output_path.display() ),
       "verbosity::2",
@@ -373,7 +373,7 @@ fn pack_dry_run_preview()
   fs::write( source_dir.join( "test.txt" ), "test" ).expect( "Should write test file" );
 
   // Run pack with dry::1
-  let output = test_utils::cargo_run_command( &[ ".pack",
+  let output = cli_runner::cargo_run_command( &[ ".pack",
       &format!( "input::{}", source_dir.display() ),
       &format!( "output::{}", output_path.display() ),
       "dry::1",
@@ -407,7 +407,7 @@ fn pack_nonexistent_input_returns_error()
   let _ = fs::remove_file( &output_path );
 
   // Run pack with nonexistent input
-  let output = test_utils::cargo_run_command( &[ ".pack",
+  let output = cli_runner::cargo_run_command( &[ ".pack",
       &format!( "input::{}", nonexistent.display() ),
       &format!( "output::{}", output_path.display() ),
     ] )

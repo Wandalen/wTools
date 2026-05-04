@@ -47,144 +47,144 @@ edges:
   # feature/001 outgoing (5)
   - from: feature/001
     to: feature/002
-    via: cross_references
+    via: typed_reference
   - from: feature/001
     to: api/001
-    via: cross_references
+    via: typed_reference
   - from: feature/001
     to: api/002
-    via: cross_references
+    via: typed_reference
   - from: feature/001
     to: invariant/001
-    via: cross_references
+    via: typed_reference
   - from: feature/001
     to: pattern/001
-    via: cross_references
+    via: typed_reference
   # feature/002 outgoing (5)
   - from: feature/002
     to: feature/001
-    via: cross_references
+    via: typed_reference
   - from: feature/002
     to: api/003
-    via: cross_references
+    via: typed_reference
   - from: feature/002
     to: api/004
-    via: cross_references
+    via: typed_reference
   - from: feature/002
     to: invariant/001
-    via: cross_references
+    via: typed_reference
   - from: feature/002
     to: pattern/001
-    via: cross_references
+    via: typed_reference
   # api/001 outgoing (5)
   - from: api/001
     to: feature/001
-    via: cross_references
+    via: typed_reference
   - from: api/001
     to: api/002
-    via: cross_references
+    via: typed_reference
   - from: api/001
     to: api/003
-    via: cross_references
+    via: typed_reference
   - from: api/001
     to: invariant/001
-    via: cross_references
+    via: typed_reference
   - from: api/001
     to: pattern/001
-    via: cross_references
+    via: typed_reference
   # api/002 outgoing (5)
   - from: api/002
     to: api/001
-    via: cross_references
+    via: typed_reference
   - from: api/002
     to: feature/001
-    via: cross_references
+    via: typed_reference
   - from: api/002
     to: invariant/001
-    via: cross_references
+    via: typed_reference
   - from: api/002
     to: invariant/002
-    via: cross_references
+    via: typed_reference
   - from: api/002
     to: pattern/001
-    via: cross_references
+    via: typed_reference
   # api/003 outgoing (5)
   - from: api/003
     to: api/001
-    via: cross_references
+    via: typed_reference
   - from: api/003
     to: feature/002
-    via: cross_references
+    via: typed_reference
   - from: api/003
     to: api/004
-    via: cross_references
+    via: typed_reference
   - from: api/003
     to: invariant/001
-    via: cross_references
+    via: typed_reference
   - from: api/003
     to: pattern/001
-    via: cross_references
+    via: typed_reference
   # api/004 outgoing (5)
   - from: api/004
     to: api/003
-    via: cross_references
+    via: typed_reference
   - from: api/004
     to: feature/002
-    via: cross_references
+    via: typed_reference
   - from: api/004
     to: invariant/001
-    via: cross_references
+    via: typed_reference
   - from: api/004
     to: invariant/002
-    via: cross_references
+    via: typed_reference
   - from: api/004
     to: pattern/001
-    via: cross_references
+    via: typed_reference
   # invariant/001 outgoing (6)
   - from: invariant/001
     to: api/001
-    via: cross_references
+    via: typed_reference
   - from: invariant/001
     to: api/002
-    via: cross_references
+    via: typed_reference
   - from: invariant/001
     to: api/003
-    via: cross_references
+    via: typed_reference
   - from: invariant/001
     to: api/004
-    via: cross_references
+    via: typed_reference
   - from: invariant/001
     to: feature/001
-    via: cross_references
+    via: typed_reference
   - from: invariant/001
     to: feature/002
-    via: cross_references
+    via: typed_reference
   # invariant/002 outgoing (2)
   - from: invariant/002
     to: api/002
-    via: cross_references
+    via: typed_reference
   - from: invariant/002
     to: api/004
-    via: cross_references
+    via: typed_reference
   # pattern/001 outgoing (6)
   - from: pattern/001
     to: api/001
-    via: cross_references
+    via: typed_reference
   - from: pattern/001
     to: api/002
-    via: cross_references
+    via: typed_reference
   - from: pattern/001
     to: api/003
-    via: cross_references
+    via: typed_reference
   - from: pattern/001
     to: api/004
-    via: cross_references
+    via: typed_reference
   - from: pattern/001
     to: feature/001
-    via: cross_references
+    via: typed_reference
   - from: pattern/001
     to: feature/002
-    via: cross_references
+    via: typed_reference
 
 components:
   - id: 1

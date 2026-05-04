@@ -72,9 +72,9 @@ nodes:
     entity: invariant
 
 edges:
-  - {from: invariant/001, to: feature/010, via: cross_references}
-  - {from: invariant/003, to: feature/006, via: cross_references}
-  - {from: invariant/004, to: feature/006, via: cross_references}
+  - {from: invariant/001, to: feature/010, via: typed_reference}
+  - {from: invariant/003, to: feature/006, via: typed_reference}
+  - {from: invariant/004, to: feature/006, via: typed_reference}
 
 components:
   - id: 1

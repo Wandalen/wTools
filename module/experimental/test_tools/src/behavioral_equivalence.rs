@@ -14,11 +14,6 @@
 /// Define a private namespace for all its items.
 mod private {
   
-  // Conditional imports for standalone vs normal mode
-  #[cfg(feature = "standalone_build")]
-  #[allow(unused_imports)]
-  use crate::standalone::{error_tools, collection_tools, mem_tools};
-  
 
   /// Trait for systematic behavioral equivalence verification
   pub trait BehavioralEquivalence<T> {
