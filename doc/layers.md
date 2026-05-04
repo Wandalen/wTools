@@ -17,7 +17,7 @@ Layers are ordered bottom-up: lower layers have fewer internal dependencies; hig
 | 8 | Tooling | 8 | Testing, benchmarking, genfile, CLI, crates analysis |
 | 9 | Application | 6 | willbe, unitore, wtools, sqlx, aggregators |
 
-Total: 69 crates (3 alias + 34 core + 1 deprecated + 31 experimental)
+Total: 69 crates (0 alias + 30 core + 20 deprecated + 19 experimental)
 
 ## Crate Layer Assignments
 
@@ -42,24 +42,24 @@ Total: 69 crates (3 alias + 34 core + 1 deprecated + 31 experimental)
 | Crate | Module | L# | Layer | Purpose | Deps | Int | =L | ↓L | ↑L | State | Target | Readiness |
 |-------|--------|----|-------|---------|------|-----|----|----|-----|-------|--------|-----------|
 | `error_tools` | core | 1 | Foundation | Provide a unified error handling namespace across the workspace | 2 | 0 | 0 | 0 | 0 | stable | stable | TDCFREMS |
-| `diagnostics_tools` | experimental | 1 | Foundation | Supply runtime and compile-time assertion macros with colored diff output | 1 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFRE·S |
+| `diagnostics_tools` | deprecated | 1 | Foundation | Supply runtime and compile-time assertion macros with colored diff output | 1 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFRE·S |
 | `mem_tools` | experimental | 1 | Foundation | Compare memory addresses, sizes, and byte contents across heterogeneous reference pairs | 0 | 0 | 0 | 0 | 0 | experimental | experimental | TDC·REMS |
 | `asbytes` | core | 2 | Primitives | View or consume POD data as bytes via bytemuck-backed traits | 1 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFREMS |
 | `deterministic_rand` | core | 2 | Primitives | Generate hierarchical seeded random numbers with switchable determinism | 6 | 2 | 0 | 0 | 2 | experimental | experimental | TD·FRE·S |
 | `implements` | experimental | 2 | Primitives | Answer at compile time whether a type implements a trait | 0 | 0 | 0 | 0 | 0 | experimental | stable | TDCFREMS |
 | `inspect_type` | core | 2 | Primitives | Print the Rust type name and byte size of any expression at runtime | 0 | 0 | 0 | 0 | 0 | stable | stable | TDCFREMS |
-| `interval_adapter` | experimental | 2 | Primitives | Provide uniform interval trait coverage over all Rust range variants — bounded, half-open, and unbounded | 0 | 0 | 0 | 0 | 0 | experimental | deprecated | TDCFRE·S |
-| `is_slice` | experimental | 2 | Primitives | Answer at compile time whether an expression is a slice | 0 | 0 | 0 | 0 | 0 | experimental | deprecated | TDCFREMS |
-| `time_tools` | experimental | 2 | Primitives | Provide current UNIX epoch timestamps at second, millisecond, and nanosecond resolution | 0 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFRE·S |
-| `typing_tools` | experimental | 2 | Primitives | Aggregate implements, is_slice, and inspect_type into one dependency with per-sub-crate feature flags | 3 | 3 | 3 | 0 | 0 | deprecated | deprecated | TDCFREMS |
-| `winterval` | experimental | 2 | Primitives | Re-export interval_adapter as a standalone dependency | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDC·REMS |
+| `interval_adapter` | deprecated | 2 | Primitives | Provide uniform interval trait coverage over all Rust range variants — bounded, half-open, and unbounded | 0 | 0 | 0 | 0 | 0 | experimental | deprecated | TDCFRE·S |
+| `is_slice` | deprecated | 2 | Primitives | Answer at compile time whether an expression is a slice | 0 | 0 | 0 | 0 | 0 | experimental | deprecated | TDCFREMS |
+| `time_tools` | deprecated | 2 | Primitives | Provide current UNIX epoch timestamps at second, millisecond, and nanosecond resolution | 0 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFRE·S |
+| `typing_tools` | deprecated | 2 | Primitives | Aggregate implements, is_slice, and inspect_type into one dependency with per-sub-crate feature flags | 3 | 3 | 3 | 0 | 0 | deprecated | deprecated | TDCFREMS |
+| `winterval` | deprecated | 2 | Primitives | Re-export interval_adapter as a standalone dependency | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDC·REMS |
 | `macro_tools` | core | 3 | Macro Framework | Supply all primitives needed to author procedural macros | 9 | 4 | 0 | 1 | 3 | stable | stable | TD··RE·· |
-| `meta_tools` | experimental | 3 | Macro Framework | Bundle for_each, impls_index, mod_interface, and identifier-concat macros into one opt-in facade crate | 6 | 5 | 2 | 0 | 3 | deprecated | deprecated | TD·FREM· |
+| `meta_tools` | deprecated | 3 | Macro Framework | Bundle for_each, impls_index, mod_interface, and identifier-concat macros into one opt-in facade crate | 6 | 5 | 2 | 0 | 3 | deprecated | deprecated | TD·FREM· |
 | `clone_dyn_meta` | core | 3 | Macro Framework | Implement #[clone_dyn] attribute macro backend (use clone_dyn crate directly) | 2 | 2 | 1 | 0 | 1 | stable | stable | TD·FR·MS |
 | `component_model_meta` | experimental | 3 | Macro Framework | Implement proc-macro backends for Assign, ComponentModel, and related derives (use component_model directly) | 3 | 2 | 1 | 0 | 1 | experimental | stable | TD·FR·MS |
 | `derive_tools_meta` | core | 3 | Macro Framework | Generate derive_tools implementations (use derive_tools directly) | 3 | 3 | 1 | 0 | 2 | stable | stable | TD··R··S |
 | `former_meta` | core | 3 | Macro Framework | Generate former builder derive implementation (use former directly) | 5 | 4 | 1 | 0 | 3 | stable | stable | TD··R··S |
-| `impls_index_meta` | core | 3 | Macro Framework | Generate impls_index macro wrappers (use impls_index directly) | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFR·MS |
+| `impls_index_meta` | deprecated | 3 | Macro Framework | Generate impls_index macro wrappers (use impls_index directly) | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFR·MS |
 | `mod_interface_meta` | core | 3 | Macro Framework | Generate mod_interface namespace macros (use mod_interface directly) | 2 | 2 | 1 | 0 | 1 | stable | stable | TD··R··S |
 | `reflect_tools_meta` | experimental | 3 | Macro Framework | Implement #[derive(Reflect)] proc-macro backend (use reflect_tools directly) | 1 | 1 | 1 | 0 | 0 | experimental | experimental | TDCFR·MS |
 | `strs_tools_meta` | core | 3 | Macro Framework | Generate optimize_split! and optimize_match! proc macro implementations (use strs_tools directly) | 1 | 1 | 1 | 0 | 0 | experimental | stable | TDCFR·MS |
@@ -71,45 +71,45 @@ Total: 69 crates (3 alias + 34 core + 1 deprecated + 31 experimental)
 | `derive_tools` | core | 4 | Patterns | Add Into, TryInto, IsVariant, and other missing std derives | 6 | 3 | 2 | 1 | 0 | stable | stable | TDC·RE·S |
 | `former` | core | 4 | Patterns | Build complex objects with nested subformers via one derive | 4 | 4 | 1 | 1 | 2 | stable | stable | TD··RE·S |
 | `former_types` | core | 4 | Patterns | Expose compile-time trait contracts reused by former consumers | 2 | 2 | 1 | 0 | 1 | stable | stable | TD·FRE·S |
-| `impls_index` | core | 4 | Patterns | Wrap impl methods in named macros for navigable indexing | 1 | 1 | 0 | 1 | 0 | deprecated | deprecated | TDC·RE·· |
+| `impls_index` | deprecated | 4 | Patterns | Wrap impl methods in named macros for navigable indexing | 1 | 1 | 0 | 1 | 0 | deprecated | deprecated | TDC·RE·· |
 | `mod_interface` | core | 4 | Patterns | Organize module items into five propagation layers with a single declarative macro | 1 | 1 | 0 | 1 | 0 | stable | stable | TDC·REMS |
 | `reflect_tools` | experimental | 4 | Patterns | Reflect any value at runtime — type identity, container detection, ordering, and key-value element iteration | 3 | 3 | 1 | 1 | 1 | experimental | experimental | TD··RE·S |
 | `variadic_from` | core | 4 | Patterns | Construct structs from 1–3 typed arguments via From1/From2/From3 traits and VariadicFrom derive | 1 | 1 | 0 | 1 | 0 | stable | stable | TDCFREMS |
 | `async_from` | experimental | 5 | Collections | Provide async versions of From, Into, TryFrom, and TryInto | 1 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFR··S |
-| `async_tools` | experimental | 5 | Collections | Re-export async_from conversion traits and async_trait macro via a unified namespace facade | 2 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFREMS |
+| `async_tools` | deprecated | 5 | Collections | Re-export async_from conversion traits and async_trait macro via a unified namespace facade | 2 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFREMS |
 | `collection_tools` | core | 5 | Collections | Provide ergonomic literal macros for inline collection construction, portable to no_std | 1 | 0 | 0 | 0 | 0 | stable | stable | TDC·RE·S |
 | `for_each` | experimental | 5 | Collections | Apply any macro to every item in a compile-time list | 0 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFREMS |
 | `iter_tools` | experimental | 5 | Collections | Re-export itertools combinators and provide clonable boxed iterators with stop-on-first-error mapping | 2 | 1 | 0 | 1 | 0 | experimental | stable | TDC·RE·S |
 | `cli_fmt` | core | 6 | String & Format | Process CLI command output with head/tail filtering, width truncation, and stream merging | 1 | 1 | 1 | 0 | 0 | experimental | stable | TDCFR·MS |
 | `color_tools` | core | 6 | String & Format | Wrap text with typed ANSI color for terminal and HTML rendering | 1 | 0 | 0 | 0 | 0 | experimental | stable | TDCFREMS |
 | `data_fmt` | core | 6 | String & Format | Render structured data in multiple visual, text, and serialization formats | 9 | 3 | 2 | 1 | 0 | stable | stable | TDCFREMS |
-| `data_type` | experimental | 6 | String & Format | Aggregate interval, collection, and sum-type re-exports under one unified facade namespace | 3 | 2 | 0 | 2 | 0 | experimental | deprecated | TDC·RE·S |
-| `format_tools` | core | 6 | String & Format | Extend std formatting with structural display and string helpers | 3 | 3 | 0 | 3 | 0 | deprecated | deprecated | TDCFRE·S |
+| `data_type` | deprecated | 6 | String & Format | Aggregate interval, collection, and sum-type re-exports under one unified facade namespace | 3 | 2 | 0 | 2 | 0 | experimental | deprecated | TDC·RE·S |
+| `format_tools` | deprecated | 6 | String & Format | Extend std formatting with structural display and string helpers | 3 | 3 | 0 | 3 | 0 | deprecated | deprecated | TDCFRE·S |
 | `include_md` | experimental | 6 | String & Format | Include a markdown file or named section at compile time | 0 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFR·MS |
 | `strs_tools` | core | 6 | String & Format | Split, indent, and transform strings with ANSI utilities and SIMD acceleration | 9 | 2 | 0 | 2 | 0 | experimental | stable | TDCFRE·S |
-| `wstring_tools` | alias | 6 | String & Format | Alias — recommended single dependency for all string utilities | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDC·REMS |
+| `wstring_tools` | deprecated | 6 | String & Format | Alias — recommended single dependency for all string utilities | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDC·REMS |
 | `config_hierarchy` | core | 7 | Path & Process | Resolve hierarchical config across runtime, env, file, and default sources | 6 | 1 | 0 | 1 | 0 | experimental | stable | TDC·R·MS |
 | `config_hierarchy` | experimental | 7 | Path & Process | Resolve hierarchical config across runtime, env, file, and default sources | 6 | 1 | 0 | 1 | 0 | experimental | stable | TDC·R·MS |
-| `file_tools` | experimental | 7 | Path & Process | RAII temp directories, glob re-export, and upward path traversal | 1 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFREMS |
+| `file_tools` | deprecated | 7 | Path & Process | RAII temp directories, glob re-export, and upward path traversal | 1 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFREMS |
 | `process_tools` | core | 7 | Path & Process | Run subprocesses with captured I/O, probe process liveness, and daemonize Unix services | 6 | 4 | 0 | 4 | 0 | stable | stable | TDCFR·MS |
 | `program_tools` | experimental | 7 | Path & Process | Rust script runner — compile and execute Rust files as scripts with output capture | 3 | 3 | 0 | 3 | 0 | experimental | experimental | TDCFREMS |
 | `pth` | core | 7 | Path & Process | Syntactic path manipulation — normalize, join, query extensions, and typed path wrappers | 5 | 2 | 0 | 2 | 0 | stable | stable | TDC·R··S |
 | `workspace_tools` | core | 7 | Path & Process | Resolve workspace-relative paths and optionally load configuration, manage secrets, and discover resources | 11 | 0 | 0 | 0 | 0 | experimental | stable | TDCFR·MS |
-| `fs_tools` | alias | 7 | Path & Process | Alias — recommended single dependency for all filesystem utilities | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFREM· |
+| `fs_tools` | deprecated | 7 | Path & Process | Alias — recommended single dependency for all filesystem utilities | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFREM· |
 | `benchkit` | experimental | 8 | Tooling | Benchmark performance and publish markdown reports | 9 | 1 | 0 | 1 | 0 | experimental | stable | TDCFREMS |
 | `crates_tools` | core | 8 | Tooling | Download and decode .crate archives for in-memory content inspection | 3 | 0 | 0 | 0 | 0 | experimental | stable | TDC·REMS |
 | `genfile_core` | core | 8 | Tooling | Render parameterized template archives to output files with a pluggable engine and file system abstraction | 9 | 3 | 0 | 3 | 0 | stable | stable | TDC·REMS |
-| `genfile` | core | 8 | Tooling | Manage code generation template archives from the command line | 4 | 3 | 1 | 2 | 0 | deprecated | deprecated | TDC·REMS |
-| `multiline_input` | core | 8 | Tooling | Collect multiline terminal input with interactive key editing and Builder-configured validation | 4 | 1 | 0 | 1 | 0 | deprecated | deprecated | TDCFR·MS |
+| `genfile` | core | 8 | Tooling | Manage code generation template archives from the command line | 4 | 3 | 1 | 2 | 0 | experimental | stable | TDC·REMS |
+| `multiline_input` | deprecated | 8 | Tooling | Collect multiline terminal input with interactive key editing and Builder-configured validation | 4 | 1 | 0 | 1 | 0 | deprecated | deprecated | TDCFR·MS |
 | `multiline_input` | experimental | 8 | Tooling | Collect multiline terminal input with interactive key editing and Builder-configured validation | 4 | 1 | 0 | 1 | 0 | experimental | stable | T·CFREMS |
 | `test_tools` | experimental | 8 | Tooling | Aggregate workspace testing utilities into one dev-dependency via a circular-dependency-safe standalone build mode | 11 | 3 | 0 | 3 | 0 | experimental | stable | TDCFRE·· |
 | `wca` | experimental | 8 | Tooling | Aggregate CLI commands as typed Rust routines with a parse-verify-execute pipeline | 7 | 4 | 0 | 4 | 0 | experimental | stable | TDC·RE·S |
-| `sqlx_query` | experimental | 9 | Application | Switch between SQLx compile-time and runtime query macros by feature | 0 | 0 | 0 | 0 | 0 | experimental | deprecated | TDCFR·MS |
+| `sqlx_query` | deprecated | 9 | Application | Switch between SQLx compile-time and runtime query macros by feature | 0 | 0 | 0 | 0 | 0 | experimental | deprecated | TDCFR·MS |
 | `unitore` | experimental | 9 | Application | Subscribe to RSS and Atom feeds from TOML configs, persist entries in embedded SQL, and browse from the terminal | 20 | 3 | 0 | 3 | 0 | experimental | stable | TDC·R··S |
 | `willbe` | experimental | 9 | Application | Publish multi-crate workspaces in topological order, run feature-matrix tests, generate CI/CD workflows, and renew readme headers | 40 | 14 | 0 | 14 | 0 | experimental | stable | TDC·R··· |
 | `willbe2` | deprecated | 9 | Application | Expose the willbe workspace tool under the willbe2 binary and crate name via complete re-export | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFR·MS |
-| `wtools` | experimental | 9 | Application | Re-export ten general-purpose utility categories under feature-gated module aliases | 12 | 11 | 0 | 11 | 0 | deprecated | deprecated | TDC·REM· |
-| `proper_tools` | alias | 9 | Application | Alias — recommended starting point for general-purpose wTools use | 0 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFREMS |
+| `wtools` | deprecated | 9 | Application | Re-export ten general-purpose utility categories under feature-gated module aliases | 12 | 11 | 0 | 11 | 0 | deprecated | deprecated | TDC·REM· |
+| `proper_tools` | deprecated | 9 | Application | Alias — recommended starting point for general-purpose wTools use | 0 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFREMS |
 
 
 ## Deprecation Candidates
@@ -118,26 +118,25 @@ Unreachable from any application (willbe, unitore, wca) or test infrastructure (
 
 | Crate | Module | Signal | Superseded By |
 |-------|--------|--------|---------------|
-| `async_tools` | experimental | `private` module is empty; re-exports `async_from` with zero added API | — |
-| `data_type` | experimental | Pure facade re-exporting `collection_tools` + `interval_adapter` + `either`; zero unique logic; `willbe` must migrate to direct deps | direct deps on constituent crates |
-| `diagnostics_tools` | experimental | Sole dependent is `wtools` (deprecated) | — |
-| `fs_tools` | alias | Alias; zero dependents; underlying `file_tools` also deprecated | — |
-| `format_tools` | core | Zero dependents; reflect_tools is experimental but no other live crate references format_tools | — |
-| `file_tools` | experimental | Sole dependent `fs_tools` (alias) is deprecated | — |
-| `genfile` | core | Zero dependents; CLI wrapper around `genfile_core` (kept via `willbe`) | `genfile_core` directly |
-| `interval_adapter` | experimental | Only live dependent is `macro_tools` (stable); dep appears unused in macro_tools source — removal is trivial | — |
-| `impls_index` | core | Only dependents are `meta_tools` (deprecated) and `wtools` (deprecated) | — |
-| `impls_index_meta` | core | Only dependents are `impls_index` (deprecated) and `meta_tools` (deprecated) | — |
-| `meta_tools` | experimental | ↑L=3 arch violation; sole dependent is `wtools` (deprecated) | — |
-| `multiline_input` | core | Excluded from workspace (Cargo.toml exclude); moved to module/experimental | `multiline_input` (experimental) |
-| `proper_tools` | alias | Alias; no dependencies; `enabled` feature declares nothing | — |
-| `sqlx_query` | experimental | Feature-flag toggle between two sqlx macros; 0 deps; 0 workspace consumers; trivially inlineable | — |
-| `time_tools` | experimental | Sole dependent is `wtools` (deprecated) | — |
-| `typing_tools` | experimental | Sole dependent is `wtools` (deprecated) | — |
+| `async_tools` | deprecated | `private` module is empty; re-exports `async_from` with zero added API | — |
+| `data_type` | deprecated | Pure facade re-exporting `collection_tools` + `interval_adapter` + `either`; zero unique logic; `willbe` must migrate to direct deps | direct deps on constituent crates |
+| `diagnostics_tools` | deprecated | Sole dependent is `wtools` (deprecated) | — |
+| `fs_tools` | deprecated | Alias; zero dependents; underlying `file_tools` also deprecated | — |
+| `format_tools` | deprecated | Zero dependents; reflect_tools is experimental but no other live crate references format_tools | — |
+| `file_tools` | deprecated | Sole dependent `fs_tools` (alias) is deprecated | — |
+| `interval_adapter` | deprecated | Only live dependent is `macro_tools` (stable); dep appears unused in macro_tools source — removal is trivial | — |
+| `impls_index` | deprecated | Only dependents are `meta_tools` (deprecated) and `wtools` (deprecated) | — |
+| `impls_index_meta` | deprecated | Only dependents are `impls_index` (deprecated) and `meta_tools` (deprecated) | — |
+| `meta_tools` | deprecated | ↑L=3 arch violation; sole dependent is `wtools` (deprecated) | — |
+| `multiline_input` | deprecated | Excluded from workspace (Cargo.toml exclude); moved to module/experimental | `multiline_input` (experimental) |
+| `proper_tools` | deprecated | Alias; no dependencies; `enabled` feature declares nothing | — |
+| `sqlx_query` | deprecated | Feature-flag toggle between two sqlx macros; 0 deps; 0 workspace consumers; trivially inlineable | — |
+| `time_tools` | deprecated | Sole dependent is `wtools` (deprecated) | — |
+| `typing_tools` | deprecated | Sole dependent is `wtools` (deprecated) | — |
 | `willbe2` | deprecated | Entire `src/lib.rs` is `pub use ::willbe::*`; zero independent development | `willbe` |
-| `winterval` | experimental | Alias for `interval_adapter`; zero dependents within workspace | `interval_adapter` |
-| `wstring_tools` | alias | Alias; zero dependents | — |
-| `wtools` | experimental | Aggregate; zero dependents; sole consumer of 10 other deprecated crates | — |
+| `winterval` | deprecated | Alias for `interval_adapter`; zero dependents within workspace | `interval_adapter` |
+| `wstring_tools` | deprecated | Alias; zero dependents | — |
+| `wtools` | deprecated | Aggregate; zero dependents; sole consumer of 10 other deprecated crates | — |
 
 ### Dead-End Chains
 
@@ -196,7 +195,7 @@ All 8 criteria met — can be promoted to stable without prerequisite work.
 | Criterion | Failing | Crates |
 |-----------|---------|--------|
 | M (Markers) | 7 | component_model, iter_tools, strs_tools, test_tools, wca, unitore, willbe |
-| F (Features) | 8 | crates_tools, component_model, iter_tools, config_hierarchy (core), config_hierarchy (experimental), wca, unitore, willbe |
+| F (Features) | 9 | crates_tools, component_model, iter_tools, config_hierarchy (core), config_hierarchy (experimental), genfile, wca, unitore, willbe |
 | E (Examples) | 8 | component_model_meta, strs_tools_meta, cli_fmt, workspace_tools, config_hierarchy (core), config_hierarchy (experimental), unitore, willbe |
 | C (Clean) | 2 | component_model_meta, component_model_types |
 | S (Stable deps) | 2 | test_tools, willbe |
@@ -223,18 +222,19 @@ Already-stable crates that do not meet all 8 criteria. Not promotion blockers, b
 | `clone_dyn` | TDC·REMS | F |
 | `mod_interface` | TDC·REMS | F |
 | `genfile_core` | TDC·REMS | F |
+| `genfile` | TDC·REMS | F |
 | `process_tools` | TDCFR·MS | E |
 
 ## Usefulness Assessment
 
-Utility ranking for 48 non-deprecated crates. Evaluates: internal dependent count, external adopter value, unique functionality (not trivially replaceable), API surface depth.
+Utility ranking for 49 non-deprecated crates. Evaluates: internal dependent count, external adopter value, unique functionality (not trivially replaceable), API surface depth.
 
 ### Tier Definitions
 
 | Tier | Label | Criteria | Count |
 |------|-------|----------|-------|
 | 1 | Core | Essential to workspace; 5+ internal dependents; breakage cascades widely | 10 |
-| 2 | High | Significant standalone utility; meaningful API surface; active consumers | 14 |
+| 2 | High | Significant standalone utility; meaningful API surface; active consumers | 15 |
 | 3 | Moderate | Useful in domain; narrower audience; some unique functionality | 14 |
 | 4 | Low | Thin wrapper or narrow utility; few/zero consumers; easy to inline | 7 |
 | 5 | Minimal | Stub, unimplemented, or fully supersedable; future deprecation review candidate | 2 |
@@ -262,6 +262,7 @@ Utility ranking for 48 non-deprecated crates. Evaluates: internal dependent coun
 | `data_fmt` | 6 | 2 | Structured data rendering; rich multi-format API |
 | `workspace_tools` | 7 | 2 | Workspace resolution, config loading, secrets |
 | `genfile_core` | 8 | 2 | Template rendering engine; used by willbe |
+| `genfile` | 8 | 2 | CLI for template archives; wraps genfile_core |
 | `clone_dyn` | 4 | 2 | Makes Box<dyn Trait> cloneable; unique capability |
 | `clone_dyn_types` | 4 | 2 | CloneDyn trait; supports clone_dyn ecosystem |
 | `clone_dyn_meta` | 3 | 2 | Builds clone_dyn |
@@ -303,11 +304,11 @@ Utility ranking for 48 non-deprecated crates. Evaluates: internal dependent coun
 | 5 | Collections | 1 | 0 | 1 | 2 | 0 | 4 |
 | 6 | String & Format | 0 | 1 | 2 | 1 | 1 | 5 |
 | 7 | Path & Process | 0 | 3 | 2 | 0 | 0 | 5 |
-| 8 | Tooling | 0 | 3 | 3 | 0 | 0 | 6 |
+| 8 | Tooling | 0 | 4 | 3 | 0 | 0 | 7 |
 | 9 | Application | 0 | 2 | 0 | 0 | 0 | 2 |
-| | **Total** | **10** | **14** | **14** | **7** | **2** | **47** |
+| | **Total** | **10** | **15** | **14** | **7** | **2** | **48** |
 
-Note: config_hierarchy counted once in tier table totals. Main ranked table lists both entries separately (48 rows).
+Note: config_hierarchy counted once in tier table totals. Main ranked table lists both entries separately (49 rows).
 
 ## Crate Profiles
 
@@ -348,7 +349,7 @@ Per-crate attributes for promotion and publishing.
 - **pitch**: One import replaces separate anyhow and thiserror dependencies across your entire workspace with no runtime overhead.
 
 #### `diagnostics_tools`
-- **module**: experimental
+- **module**: deprecated
 - **layer**: 1 · Foundation
 - **state**: deprecated
 - **target**: deprecated
@@ -436,7 +437,7 @@ Per-crate attributes for promotion and publishing.
 - **pitch**: Print the exact Rust type name and byte size of any expression — the fastest runtime type-debugging shortcut.
 
 #### `interval_adapter`
-- **module**: experimental
+- **module**: deprecated
 - **layer**: 2 · Primitives
 - **state**: experimental
 - **target**: deprecated
@@ -450,7 +451,7 @@ Per-crate attributes for promotion and publishing.
 - **pitch**: Two complementary traits — one for all range kinds, one for iterable ones — make any Rust range interchangeable as a function parameter.
 
 #### `is_slice`
-- **module**: experimental
+- **module**: deprecated
 - **layer**: 2 · Primitives
 - **state**: experimental
 - **target**: deprecated
@@ -464,7 +465,7 @@ Per-crate attributes for promotion and publishing.
 - **pitch**: `is_slice!(x)` — compile-time check whether an expression is a slice, for use in type guards.
 
 #### `time_tools`
-- **module**: experimental
+- **module**: deprecated
 - **layer**: 2 · Primitives
 - **state**: deprecated
 - **target**: deprecated
@@ -478,7 +479,7 @@ Per-crate attributes for promotion and publishing.
 - **pitch**: Current UNIX epoch timestamp in seconds, milliseconds, and nanoseconds — four retrieval functions, zero dependencies.
 
 #### `typing_tools`
-- **module**: experimental
+- **module**: deprecated
 - **layer**: 2 · Primitives
 - **state**: deprecated
 - **target**: deprecated
@@ -492,7 +493,7 @@ Per-crate attributes for promotion and publishing.
 - **pitch**: One dependency for all type-checking macros — implements, is_slice, and inspect_type each activated independently via per-sub-crate feature flags.
 
 #### `winterval`
-- **module**: experimental
+- **module**: deprecated
 - **layer**: 2 · Primitives
 - **state**: deprecated
 - **target**: deprecated
@@ -524,7 +525,7 @@ Per-crate attributes for promotion and publishing.
 - **pitch**: Everything a proc-macro author needs — syn parsing, token generation, and structured error reporting in one toolkit.
 
 #### `meta_tools`
-- **module**: experimental
+- **module**: deprecated
 - **layer**: 3 · Macro Framework
 - **state**: deprecated
 - **target**: deprecated
@@ -594,7 +595,7 @@ Per-crate attributes for promotion and publishing.
 - **pitch**: Proc-macro backend for former — do not depend on directly; use former instead.
 
 #### `impls_index_meta`
-- **module**: core
+- **module**: deprecated
 - **layer**: 3 · Macro Framework
 - **state**: deprecated
 - **target**: deprecated
@@ -766,7 +767,7 @@ Per-crate attributes for promotion and publishing.
 - **pitch**: Compile-time trait contracts for former — import when you need to name builder types in your own interfaces.
 
 #### `impls_index`
-- **module**: core
+- **module**: deprecated
 - **layer**: 4 · Patterns
 - **state**: deprecated
 - **target**: deprecated
@@ -840,7 +841,7 @@ Per-crate attributes for promotion and publishing.
 - **pitch**: Async versions of the standard conversion traits — From, Into, TryFrom, TryInto — for types that need to await.
 
 #### `async_tools`
-- **module**: experimental
+- **module**: deprecated
 - **layer**: 5 · Collections
 - **state**: deprecated
 - **target**: deprecated
@@ -942,7 +943,7 @@ Per-crate attributes for promotion and publishing.
 - **pitch**: Multi-format data rendering — 10 formatters, 33 variants from aligned tables to JSON/YAML/HTML/SQL — with granular feature flags for minimal binary size.
 
 #### `data_type`
-- **module**: experimental
+- **module**: deprecated
 - **layer**: 6 · String & Format
 - **state**: experimental
 - **target**: deprecated
@@ -956,7 +957,7 @@ Per-crate attributes for promotion and publishing.
 - **pitch**: One import for Either sum types, interval ranges, and collection macros from a single versioned facade crate.
 
 #### `format_tools`
-- **module**: core
+- **module**: deprecated
 - **layer**: 6 · String & Format
 - **state**: deprecated
 - **target**: deprecated
@@ -998,7 +999,7 @@ Per-crate attributes for promotion and publishing.
 - **pitch**: Comprehensive string toolkit — splitting, indentation, ANSI terminal utilities, command parsing, number parsing, and parser integration with optional SIMD acceleration.
 
 #### `wstring_tools`
-- **module**: alias
+- **module**: deprecated
 - **layer**: 6 · String & Format
 - **state**: deprecated
 - **target**: deprecated
@@ -1044,7 +1045,7 @@ Per-crate attributes for promotion and publishing.
 - **pitch**: Trait-based 6-level configuration resolution with source tracking, type detection, and atomic file operations — every value knows where it came from.
 
 #### `file_tools`
-- **module**: experimental
+- **module**: deprecated
 - **layer**: 7 · Path & Process
 - **state**: deprecated
 - **target**: deprecated
@@ -1114,7 +1115,7 @@ Per-crate attributes for promotion and publishing.
 - **pitch**: One crate resolves your Cargo workspace root from any context — tests, CI, or installed binary — and optionally loads TOML/JSON/YAML config, manages memory-safe secrets, and discovers resources via glob patterns.
 
 #### `fs_tools`
-- **module**: alias
+- **module**: deprecated
 - **layer**: 7 · Path & Process
 - **state**: deprecated
 - **target**: deprecated
@@ -1176,8 +1177,8 @@ Per-crate attributes for promotion and publishing.
 #### `genfile`
 - **module**: core
 - **layer**: 8 · Tooling
-- **state**: deprecated
-- **target**: deprecated
+- **state**: experimental
+- **target**: stable
 - **readiness**: TDC·REMS
 - **purpose**: Manage code generation template archives from the command line
 - **deps**: 4 · **int**: 3 · **=L**: 1 · **↓L**: 2 · **↑L**: 0
@@ -1188,7 +1189,7 @@ Per-crate attributes for promotion and publishing.
 - **pitch**: Create and materialize code generation template archives from the command line — genfile_core made interactive.
 
 #### `multiline_input` (core)
-- **module**: core
+- **module**: deprecated
 - **layer**: 8 · Tooling
 - **state**: deprecated
 - **target**: deprecated
@@ -1248,7 +1249,7 @@ Per-crate attributes for promotion and publishing.
 ### Layer 9 · Application
 
 #### `sqlx_query`
-- **module**: experimental
+- **module**: deprecated
 - **layer**: 9 · Application
 - **state**: experimental
 - **target**: deprecated
@@ -1304,7 +1305,7 @@ Per-crate attributes for promotion and publishing.
 - **pitch**: Install willbe2 to run the full willbe workspace tool under the willbe2 binary name — all API and CLI functionality is delegated entirely to willbe.
 
 #### `wtools`
-- **module**: experimental
+- **module**: deprecated
 - **layer**: 9 · Application
 - **state**: deprecated
 - **target**: deprecated
@@ -1318,7 +1319,7 @@ Per-crate attributes for promotion and publishing.
 - **pitch**: One dep for all ten wTools general-purpose categories — iter, meta, mem, typing, time, string, error, derive, dt, and diagnostics — each opt-in via feature flag.
 
 #### `proper_tools`
-- **module**: alias
+- **module**: deprecated
 - **layer**: 9 · Application
 - **state**: deprecated
 - **target**: deprecated

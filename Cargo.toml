@@ -30,7 +30,6 @@ exclude = [
 
   # Exclude module/core stubs that still have Cargo.toml (crate moved to module/experimental)
   "module/core/config_hierarchy",
-  "module/core/multiline_input",
   "module/core/unilang",
   "module/core/unilang_benchmarks",
   "module/core/cargo_unilang",
@@ -119,33 +118,20 @@ large_enum_variant = "allow"
 struct_excessive_bools = "allow"
 
 
-## top level
-
-[workspace.dependencies.wtools]
-version = "~0.2.20"
-path = "module/experimental/wtools"
-default-features = false
-
-
 
 ## data_type
 
 [workspace.dependencies.data_type]
 version = "~0.25.0"
-path = "module/experimental/data_type"
+path = "module/deprecated/data_type"
 default-features = false
 
 [workspace.dependencies.interval_adapter]
 version = "~0.42.0"
-path = "module/experimental/interval_adapter"
+path = "module/deprecated/interval_adapter"
 default-features = false
 # features = [ "enabled" ]
 
-[workspace.dependencies.winterval]
-version = "~0.3.0"
-path = "module/experimental/winterval"
-default-features = false
-# features = [ "enabled" ]
 
 [workspace.dependencies.collection_tools]
 version = "~0.38.0"
@@ -179,19 +165,6 @@ path = "module/experimental/reflect_tools_meta"
 default-features = false
 # features = [ "enabled" ]
 
-[workspace.dependencies.format_tools]
-version = "~0.6.0"
-path = "module/core/format_tools"
-default-features = false
-# features = [ "enabled" ]
-# xxx : remove features, maybe
-
-# [workspace.dependencies.format_tools]
-# version = "~0.1.0"
-# path = "module/core/format_tools"
-# default-features = false
-# features = [ "enabled" ]
-# # xxx : remove features, maybe
 
 [workspace.dependencies.color_tools]
 version          = "~0.4.0"
@@ -255,7 +228,7 @@ default-features = false
 
 [workspace.dependencies.diagnostics_tools]
 version = "~0.11.0"
-path = "module/experimental/diagnostics_tools"
+path = "module/deprecated/diagnostics_tools"
 default-features = false
 
 
@@ -268,11 +241,6 @@ default-features = false
 
 
 ## meta
-
-[workspace.dependencies.meta_tools]
-version = "~0.12.0"
-path = "module/experimental/meta_tools"
-default-features = false
 
 [workspace.dependencies.for_each]
 version = "~0.10.0"
@@ -311,12 +279,12 @@ default-features = false
 
 [workspace.dependencies.impls_index]
 version = "~0.11.0"
-path = "module/core/impls_index"
+path = "module/deprecated/impls_index"
 default-features = false
 
 [workspace.dependencies.impls_index_meta]
 version = "~0.13.0"
-path = "module/core/impls_index_meta"
+path = "module/deprecated/impls_index_meta"
 default-features = false
 
 [workspace.dependencies.mod_interface]
@@ -351,19 +319,12 @@ path = "module/core/macro_tools"
 default-features = false
 
 
-## time
-
-[workspace.dependencies.time_tools]
-version = "~0.2.0"
-path = "module/experimental/time_tools"
-default-features = false
-
 
 ## typing
 
 [workspace.dependencies.typing_tools]
 version = "~0.11.0"
-path = "module/experimental/typing_tools"
+path = "module/deprecated/typing_tools"
 default-features = false
 
 [workspace.dependencies.implements]
@@ -378,7 +339,7 @@ default-features = false
 
 [workspace.dependencies.is_slice]
 version = "~0.14.0"
-path = "module/experimental/is_slice"
+path = "module/deprecated/is_slice"
 default-features = false
 
 [workspace.dependencies.asbytes]
@@ -425,27 +386,9 @@ version = "~0.18.0"
 path = "module/core/strs_tools_meta"
 default-features = false
 
-[workspace.dependencies.wstring_tools]
-version = "~0.2.0"
-path = "module/alias/wstring_tools"
-
 
 ## fs tools / path tools
 
-[workspace.dependencies.file_tools]
-version = "~0.2.0"
-path = "module/experimental/file_tools"
-default-features = false
-
-[workspace.dependencies.fs_tools]
-version = "~0.1.0"
-path = "module/alias/fs_tools"
-default-features = false
-
-[workspace.dependencies.proper_tools]
-version = "~0.1.0"
-path = "module/alias/proper_tools"
-default-features = false
 
 [workspace.dependencies.pth]
 version = "~0.37.0"
@@ -515,9 +458,6 @@ path = "module/experimental/test_tools"
 version = "~0.2.0"
 path = "module/experimental/async_from"
 
-[workspace.dependencies.async_tools]
-version = "~0.1.0"
-path = "module/experimental/async_tools"
 
 ## graphs tools
 
@@ -563,9 +503,6 @@ path = "module/postponed/plot_interface"
 
 ## unsorted
 
-[workspace.dependencies.sqlx_query]
-version = "~0.2.1"
-path = "module/experimental/sqlx_query"
 
 [workspace.dependencies.unitore]
 version = "~0.1.0"
