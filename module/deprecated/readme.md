@@ -26,3 +26,25 @@ Crates parked here after being marked deprecated in `doc/layers.md`. Excluded fr
 | `winterval/` | Deprecated alias for interval_adapter |
 | `wstring_tools/` | Deprecated alias for string utilities |
 | `wtools/` | Deprecated ten-category utility aggregate |
+| `automata_tools/` | Postponed automata / state-machine utilities |
+| `cargo_will/` | Postponed cargo workspace publish tool (predecessor to willbe) |
+| `fundamental_data_type/` | Postponed fundamental data type primitives |
+| `graphs_tools/` | Postponed graph data structures and algorithms |
+| `instance_of/` | Postponed instance-of type check macro |
+| `multilayer/` | Postponed multilayer architecture utilities |
+| `non_std/` | Postponed no-std compatibility shims |
+| `plot_interface/` | Postponed plotting interface abstraction |
+| `proc_macro_tools/` | Postponed proc-macro development utilities |
+| `refiner/` | Postponed value refinement and validation utilities |
+| `std_tools/` | Postponed std library extension utilities |
+| `std_x/` | Postponed std extensions and replacements |
+| `type_constructor/` | Postponed type construction macros |
+| `unilang_instruction_parser/` | Postponed instruction parser for unilang |
+| `_video_experiment/` | Postponed video/media experiment (crate: video_experiment) |
+| `wautomata/` | Postponed automata variant (alias/predecessor of automata_tools) |
+| `werror/` | Postponed error handling (predecessor to error_tools) |
+| `wplot/` | Postponed plot utilities (predecessor to wplot/plot_interface) |
+| `wproc_macro/` | Postponed proc-macro utilities (predecessor to proc_macro_tools) |
+| `wpublisher/` | Postponed workspace publisher (predecessor to willbe) |
+| `wtest/` | Postponed test utilities (predecessor to test_tools) |
+| `wtest_basic/` | Postponed basic test utilities (predecessor to test_tools) |
