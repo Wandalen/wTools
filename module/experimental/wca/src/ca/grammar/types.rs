@@ -7,7 +7,7 @@ mod private
   Display,
   Formatter
  };
-  use iter_tools ::Itertools;
+  use ::itertools ::Itertools;
 
   /// Available types that can be converted to a `Value`
   ///

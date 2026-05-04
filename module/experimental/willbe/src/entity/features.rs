@@ -5,7 +5,7 @@ mod private
   use crate :: *;
   use collection_tools ::collection :: { BTreeSet, HashSet };
   use error ::untyped :: { bail }; // xxx
-  use iter_tools ::iter ::Itertools;
+  use ::itertools ::Itertools;
 
   /// Generates a powerset of the features available in the given `package`,
   /// filtered according to specified inclusion and exclusion criteria,

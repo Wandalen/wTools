@@ -80,7 +80,7 @@ Note: 22 additional legacy crates (formerly in `module/postponed/`) are co-locat
 | `async_tools` | deprecated | 5 | Collections | Re-export async_from conversion traits and async_trait macro via a unified namespace facade | 2 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFREMS |
 | `collection_tools` | core | 5 | Collections | Provide ergonomic literal macros for inline collection construction, portable to no_std | 1 | 0 | 0 | 0 | 0 | stable | stable | TDC·RE·S |
 | `for_each` | experimental | 5 | Collections | Apply any macro to every item in a compile-time list | 0 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFREMS |
-| `iter_tools` | experimental | 5 | Collections | Re-export itertools combinators and provide clonable boxed iterators with stop-on-first-error mapping | 2 | 1 | 0 | 1 | 0 | experimental | stable | TDC·RE·S |
+| `iter_tools` | deprecated | 5 | Collections | Re-export itertools combinators and provide clonable boxed iterators with stop-on-first-error mapping | 2 | 1 | 0 | 1 | 0 | deprecated | deprecated | TDC·RE·S |
 | `wtools` | core | 5 | Collections | Thin collections aggregator; re-exports collection_tools macros and constructors | 1 | 1 | 1 | 0 | 0 | experimental | stable | T·CFREMS |
 | `cli_fmt` | core | 6 | String & Format | Process CLI command output with head/tail filtering, width truncation, and stream merging | 1 | 1 | 1 | 0 | 0 | experimental | stable | TDCFR·MS |
 | `color_tools` | core | 6 | String & Format | Wrap text with typed ANSI color for terminal and HTML rendering | 1 | 0 | 0 | 0 | 0 | experimental | stable | TDCFREMS |

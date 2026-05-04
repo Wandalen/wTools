@@ -16,7 +16,7 @@ mod private
     untyped ::{ Error, Context, format_err },
   };
   use former ::Former;
-  use iter_tools ::iter ::Itertools;
+  use ::itertools ::Itertools;
 
   ///
   /// Executes a process with the given parameters.

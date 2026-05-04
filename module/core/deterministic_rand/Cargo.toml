@@ -31,11 +31,11 @@ full = [ "enabled", "determinism" ]
 no_std = []
 use_alloc = [ "no_std" ]
 enabled = []
-determinism = [ "rand_chacha", "rand_seeder", "iter_tools" ]
+determinism = [ "rand_chacha", "rand_seeder", "dep:itertools" ]
 
 [dependencies]
 mod_interface = { workspace = true, features = [ "default" ] }
-iter_tools = { workspace = true, features = [ "default" ], optional = true }
+itertools = { workspace = true, features = [ "use_std" ], optional = true }
 rand = { workspace = true }
 rand_chacha = { workspace = true, optional = true }
 rand_seeder = { workspace = true, optional = true }

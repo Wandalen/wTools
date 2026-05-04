@@ -33,8 +33,7 @@ enabled = [
   "former/enabled",
   "dep:error_tools",
   "error_tools/enabled",
-  "dep:iter_tools",
-  "iter_tools/enabled",
+  "dep:itertools",
   "dep:duct",
   "dep:libc",
 ]
@@ -46,7 +45,7 @@ process_environment_is_cicd = []
 mod_interface = { workspace = true, optional = true }
 former = { workspace = true, features = [ "derive_former" ], optional = true }
 error_tools = { workspace = true, features = [ "error_untyped" ], optional = true }
-iter_tools = { workspace = true, optional = true }
+itertools = { workspace = true, features = [ "use_std" ], optional = true }
 
 ## external
 duct = { version = "0.13.7", optional = true }

@@ -39,7 +39,6 @@ enabled = [
   "crates_tools/enabled",
   "error_tools/enabled",
   "former/enabled",
-  "iter_tools/enabled",
   "mod_interface/enabled",
   "wca/enabled",
   "pth/enabled",
@@ -91,7 +90,7 @@ error_tools = { workspace = true, features = [ "error_typed", "error_untyped" ] 
 genfile_core = { workspace = true, features = [ "enabled" ] }
 former = { workspace = true, features = [ "default" ] }
 component_model = { workspace = true, features = [ "default" ] }
-iter_tools = { workspace = true, features = [ "default" ] }
+itertools = { workspace = true, features = [ "use_std" ] }
 mod_interface = { workspace = true, features = [ "default" ] }
 wca = { workspace = true, features = [ "default" ] }
 pth = { workspace = true, features = [ "default", "path_utf8", "path_unique_folder_name" ] }

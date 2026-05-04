@@ -13,7 +13,7 @@ mod private
   #[ cfg( feature = "determinism" ) ]
   use alloc ::vec ::IntoIter;
   #[ cfg( feature = "determinism" ) ]
-  use iter_tools ::exposed ::Itertools;
+  use ::itertools ::Itertools;
 
   /// Extensions of iterator to sort items of the iterator. Replaced by a no-op when determinism is switched off.
   /// Useful, for example, to eliminate non-deterministic iteration of `HashMap` and `HashSet` keys.

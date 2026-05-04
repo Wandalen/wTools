@@ -64,7 +64,7 @@ mod private
  };
   use error ::untyped ::bail;
   // qqq: group dependencies
-  use iter_tools ::iter ::Itertools;
+  use ::itertools ::Itertools;
   use genfile_core ::
   {
   TemplateArchive,

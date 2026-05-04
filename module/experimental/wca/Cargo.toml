@@ -22,7 +22,7 @@ keywords = [ "wtools", "CLI", "CUI", "user-interface" ]
 workspace = true
 
 [package.metadata.docs.rs]
-features = [ "full", "error_tools/enabled", "strs_tools/enabled", "mod_interface/enabled", "iter_tools/enabled", "former/enabled" ]
+features = [ "full", "error_tools/enabled", "strs_tools/enabled", "mod_interface/enabled", "former/enabled" ]
 all-features = false
 
 [features]
@@ -31,7 +31,7 @@ full = [ "enabled", "on_unknown_suggest" ]
 enabled = [
   "dep:error_tools",
   "dep:mod_interface",
-  "dep:iter_tools",
+  "dep:itertools",
   "dep:former",
   "dep:log",
   "dep:indexmap",
@@ -76,7 +76,7 @@ required-features = [ "enabled", "on_unknown_suggest" ]
 ## internal
 error_tools = { workspace = true, optional = true, features = [ "enabled", "error_typed", "error_untyped" ] }
 mod_interface = { workspace = true, optional = true, features = [ "enabled" ] }
-iter_tools = { workspace = true, optional = true, features = [ "enabled" ] }
+itertools = { workspace = true, optional = true, features = [ "use_std" ] }
 former = { workspace = true, optional = true, features = [ "enabled", "derive_former" ] }
 
 ## external

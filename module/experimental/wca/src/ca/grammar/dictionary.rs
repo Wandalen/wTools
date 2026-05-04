@@ -5,7 +5,7 @@ mod private
   use crate :: *;
   use former ::Former;
   use indexmap ::IndexMap;
-  use iter_tools ::Itertools;
+  use ::itertools ::Itertools;
   use grammar ::Command;
   use crate ::ca ::Order;
 
