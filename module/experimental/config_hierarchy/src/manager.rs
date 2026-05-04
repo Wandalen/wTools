@@ -181,20 +181,23 @@ where
 
     let app_name = P::app_name();
 
-    // Check for temp config first (-{app}/config.yaml)
+    // Check for temp config first ({temp_prefix}{app}/{filename})
+    // Fix(issue-BUG2): use trait methods instead of hardcoded "-", ".", "config.yaml"
+    // Root cause: hardcoded defaults silently ignored custom ConfigPaths implementations.
+    // Pitfall: every path-construction in ConfigManager must delegate to P trait methods.
     let temp_config_path = current_dir
-      .join( format!( "-{app_name}" ) )
-      .join( "config.yaml" );
+      .join( format!( "{}{app_name}", P::local_temporary_prefix() ) )
+      .join( P::local_config_filename() );
 
     if temp_config_path.exists()
     {
       return save_config_file( config, &temp_config_path );
     }
 
-    // Check for perm config (.{app}/config.yaml)
+    // Check for perm config ({perm_prefix}{app}/{filename})
     let perm_config_path = current_dir
-      .join( format!( ".{app_name}" ) )
-      .join( "config.yaml" );
+      .join( format!( "{}{app_name}", P::local_permanent_prefix() ) )
+      .join( P::local_config_filename() );
 
     if perm_config_path.exists()
     {

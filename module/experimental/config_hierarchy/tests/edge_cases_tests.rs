@@ -276,6 +276,73 @@ fn test_empty_app_name_rejected()
   let _path = EmptyConfig::get_local_config_path().unwrap();
 }
 
+// Bug reproducer: atomic_config_modify promotes flat-format metadata fields to parameters
+//
+// ## Root Cause
+// `atomic_config_modify` falls back to flat-format parsing when no `parameters` section
+// exists. Unlike `load_config_file`, the flat-format fallback does NOT skip the metadata
+// fields "version", "last_modified", and "metadata". They get included in the config map
+// and written into the `parameters` section of the upgraded format, corrupting the config.
+//
+// ## Why Not Caught
+// The skip-logic in `load_config_file` was not replicated in `atomic_config_modify`.
+// Tests only modified the canonical format (with `parameters:` section) and never
+// exercised the flat-format fallback path of `atomic_config_modify`.
+//
+// ## Fix Applied
+// Added the same metadata field filter to the flat-format fallback in `atomic_config_modify`.
+//
+// ## Prevention
+// Both flat-format parsing paths must apply the same filters. Extract into helper.
+//
+// ## Pitfall
+// Wherever flat-format YAML parsing is duplicated, each copy must apply identical filters.
+#[ test ]
+fn test_atomic_modify_flat_format_skips_metadata_fields()
+{
+  let temp_dir = TempDir::new().unwrap();
+  let config_path = temp_dir.path().join( "config.yaml" );
+
+  // Write flat-format YAML (old format — no `parameters` section)
+  std::fs::write
+  (
+    &config_path,
+    "version: '1.0'\nlast_modified: '2023-01-01T00:00:00Z'\ntimeout: 30\n"
+  ).unwrap();
+
+  atomic_config_modify( &config_path, | config |
+  {
+    config.insert( "timeout".into(), JsonValue::Number( 60.into() ) );
+    Ok( () )
+  }).unwrap();
+
+  let loaded = load_config_file( &config_path ).unwrap();
+
+  // Metadata fields must NOT be promoted to config parameters
+  assert!
+  (
+    !loaded.contains_key( "version" ),
+    "version must not be promoted to config parameter"
+  );
+  assert!
+  (
+    !loaded.contains_key( "last_modified" ),
+    "last_modified must not be promoted to config parameter"
+  );
+  assert!
+  (
+    !loaded.contains_key( "metadata" ),
+    "metadata must not be promoted to config parameter"
+  );
+
+  // The actual config parameter must still be present
+  assert_eq!
+  (
+    loaded.get( "timeout" ),
+    Some( &JsonValue::Number( 60.into() ) )
+  );
+}
+
 // Bug reproducer: Path traversal via app_name
 //
 // ## Root Cause

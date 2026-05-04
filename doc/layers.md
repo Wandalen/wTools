@@ -48,12 +48,12 @@ Total: 69 crates (3 alias + 34 core + 1 deprecated + 31 experimental)
 | `deterministic_rand` | core | 2 | Primitives | Generate hierarchical seeded random numbers with switchable determinism | 6 | 2 | 0 | 0 | 2 | experimental | experimental | TD·FRE·S |
 | `implements` | experimental | 2 | Primitives | Answer at compile time whether a type implements a trait | 0 | 0 | 0 | 0 | 0 | experimental | stable | TDCFREMS |
 | `inspect_type` | core | 2 | Primitives | Print the Rust type name and byte size of any expression at runtime | 0 | 0 | 0 | 0 | 0 | stable | stable | TDCFREMS |
-| `interval_adapter` | experimental | 2 | Primitives | Provide uniform interval trait coverage over all Rust range variants — bounded, half-open, and unbounded | 0 | 0 | 0 | 0 | 0 | experimental | stable | TDCFRE·S |
+| `interval_adapter` | experimental | 2 | Primitives | Provide uniform interval trait coverage over all Rust range variants — bounded, half-open, and unbounded | 0 | 0 | 0 | 0 | 0 | experimental | deprecated | TDCFRE·S |
 | `is_slice` | experimental | 2 | Primitives | Answer at compile time whether an expression is a slice | 0 | 0 | 0 | 0 | 0 | experimental | deprecated | TDCFREMS |
 | `time_tools` | experimental | 2 | Primitives | Provide current UNIX epoch timestamps at second, millisecond, and nanosecond resolution | 0 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFRE·S |
 | `typing_tools` | experimental | 2 | Primitives | Aggregate implements, is_slice, and inspect_type into one dependency with per-sub-crate feature flags | 3 | 3 | 3 | 0 | 0 | deprecated | deprecated | TDCFREMS |
 | `winterval` | experimental | 2 | Primitives | Re-export interval_adapter as a standalone dependency | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDC·REMS |
-| `macro_tools` | core | 3 | Macro Framework | Supply all primitives needed to author procedural macros | 9 | 4 | 0 | 1 | 3 | stable | stable | TD··RE·S |
+| `macro_tools` | core | 3 | Macro Framework | Supply all primitives needed to author procedural macros | 9 | 4 | 0 | 1 | 3 | stable | stable | TD··RE·· |
 | `meta_tools` | experimental | 3 | Macro Framework | Bundle for_each, impls_index, mod_interface, and identifier-concat macros into one opt-in facade crate | 6 | 5 | 2 | 0 | 3 | deprecated | deprecated | TD·FREM· |
 | `clone_dyn_meta` | core | 3 | Macro Framework | Implement #[clone_dyn] attribute macro backend (use clone_dyn crate directly) | 2 | 2 | 1 | 0 | 1 | stable | stable | TD·FR·MS |
 | `component_model_meta` | experimental | 3 | Macro Framework | Implement proc-macro backends for Assign, ComponentModel, and related derives (use component_model directly) | 3 | 2 | 1 | 0 | 1 | experimental | stable | TD·FR·MS |
@@ -125,6 +125,7 @@ Unreachable from any application (willbe, unitore, wca) or test infrastructure (
 | `format_tools` | core | Zero dependents; reflect_tools is experimental but no other live crate references format_tools | — |
 | `file_tools` | experimental | Sole dependent `fs_tools` (alias) is deprecated | — |
 | `genfile` | core | Zero dependents; CLI wrapper around `genfile_core` (kept via `willbe`) | `genfile_core` directly |
+| `interval_adapter` | experimental | Only live dependent is `macro_tools` (stable); dep appears unused in macro_tools source — removal is trivial | — |
 | `impls_index` | core | Only dependents are `meta_tools` (deprecated) and `wtools` (deprecated) | — |
 | `impls_index_meta` | core | Only dependents are `impls_index` (deprecated) and `meta_tools` (deprecated) | — |
 | `meta_tools` | experimental | ↑L=3 arch violation; sole dependent is `wtools` (deprecated) | — |
@@ -173,7 +174,6 @@ All 8 criteria met — can be promoted to stable without prerequisite work.
 
 | Crate | L# | Readiness | Blockers |
 |-------|----|-----------|----------|
-| `interval_adapter` | 2 | TDCFRE·S | M |
 | `strs_tools_meta` | 3 | TDCFR·MS | E |
 | `component_model_types` | 4 | TD·FREMS | C |
 | `cli_fmt` | 6 | TDCFR·MS | E |
@@ -195,7 +195,7 @@ All 8 criteria met — can be promoted to stable without prerequisite work.
 
 | Criterion | Failing | Crates |
 |-----------|---------|--------|
-| M (Markers) | 8 | interval_adapter, component_model, iter_tools, strs_tools, test_tools, wca, unitore, willbe |
+| M (Markers) | 7 | component_model, iter_tools, strs_tools, test_tools, wca, unitore, willbe |
 | F (Features) | 8 | crates_tools, component_model, iter_tools, config_hierarchy (core), config_hierarchy (experimental), wca, unitore, willbe |
 | E (Examples) | 8 | component_model_meta, strs_tools_meta, cli_fmt, workspace_tools, config_hierarchy (core), config_hierarchy (experimental), unitore, willbe |
 | C (Clean) | 2 | component_model_meta, component_model_types |
@@ -211,7 +211,7 @@ Already-stable crates that do not meet all 8 criteria. Not promotion blockers, b
 | `derive_tools_meta` | TD··R··S | C, F, E, M |
 | `former_meta` | TD··R··S | C, F, E, M |
 | `mod_interface_meta` | TD··R··S | C, F, E, M |
-| `macro_tools` | TD··RE·S | C, F, M |
+| `macro_tools` | TD··RE·· | C, F, M, S |
 | `former` | TD··RE·S | C, F, M |
 | `pth` | TDC·R··S | F, E, M |
 | `clone_dyn_meta` | TD·FR·MS | C, E |
@@ -227,7 +227,7 @@ Already-stable crates that do not meet all 8 criteria. Not promotion blockers, b
 
 ## Usefulness Assessment
 
-Utility ranking for 49 non-deprecated crates. Evaluates: internal dependent count, external adopter value, unique functionality (not trivially replaceable), API surface depth.
+Utility ranking for 48 non-deprecated crates. Evaluates: internal dependent count, external adopter value, unique functionality (not trivially replaceable), API surface depth.
 
 ### Tier Definitions
 
@@ -235,7 +235,7 @@ Utility ranking for 49 non-deprecated crates. Evaluates: internal dependent coun
 |------|-------|----------|-------|
 | 1 | Core | Essential to workspace; 5+ internal dependents; breakage cascades widely | 10 |
 | 2 | High | Significant standalone utility; meaningful API surface; active consumers | 14 |
-| 3 | Moderate | Useful in domain; narrower audience; some unique functionality | 15 |
+| 3 | Moderate | Useful in domain; narrower audience; some unique functionality | 14 |
 | 4 | Low | Thin wrapper or narrow utility; few/zero consumers; easy to inline | 7 |
 | 5 | Minimal | Stub, unimplemented, or fully supersedable; future deprecation review candidate | 2 |
 
@@ -273,7 +273,6 @@ Utility ranking for 49 non-deprecated crates. Evaluates: internal dependent coun
 | `strs_tools` | 6 | 3 | String split/indent/transform with ANSI + SIMD |
 | `strs_tools_meta` | 3 | 3 | Builds strs_tools |
 | `color_tools` | 6 | 3 | ANSI color wrapping for terminal and HTML |
-| `interval_adapter` | 2 | 3 | Uniform interval trait over all range variants |
 | `benchkit` | 8 | 3 | Benchmark performance + markdown reports |
 | `component_model` | 4 | 3 | Type-driven field assignment pattern |
 | `component_model_types` | 4 | 3 | Shared traits for component_model |
@@ -298,7 +297,7 @@ Utility ranking for 49 non-deprecated crates. Evaluates: internal dependent coun
 | L# | Layer | T1 | T2 | T3 | T4 | T5 | Total |
 |----|-------|----|----|----|----|-----|-------|
 | 1 | Foundation | 1 | 0 | 0 | 1 | 0 | 2 |
-| 2 | Primitives | 0 | 0 | 3 | 1 | 1 | 5 |
+| 2 | Primitives | 0 | 0 | 2 | 1 | 1 | 4 |
 | 3 | Macro Framework | 4 | 2 | 2 | 1 | 0 | 9 |
 | 4 | Patterns | 4 | 3 | 2 | 1 | 0 | 10 |
 | 5 | Collections | 1 | 0 | 1 | 2 | 0 | 4 |
@@ -306,9 +305,9 @@ Utility ranking for 49 non-deprecated crates. Evaluates: internal dependent coun
 | 7 | Path & Process | 0 | 3 | 2 | 0 | 0 | 5 |
 | 8 | Tooling | 0 | 3 | 3 | 0 | 0 | 6 |
 | 9 | Application | 0 | 2 | 0 | 0 | 0 | 2 |
-| | **Total** | **10** | **14** | **15** | **7** | **2** | **48** |
+| | **Total** | **10** | **14** | **14** | **7** | **2** | **47** |
 
-Note: config_hierarchy counted once in tier table totals. Main ranked table lists both entries separately (49 rows).
+Note: config_hierarchy counted once in tier table totals. Main ranked table lists both entries separately (48 rows).
 
 ## Crate Profiles
 
@@ -440,7 +439,7 @@ Per-crate attributes for promotion and publishing.
 - **module**: experimental
 - **layer**: 2 · Primitives
 - **state**: experimental
-- **target**: stable
+- **target**: deprecated
 - **readiness**: TDCFRE·S
 - **purpose**: Provide uniform interval trait coverage over all Rust range variants — bounded, half-open, and unbounded
 - **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
@@ -515,7 +514,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 3 · Macro Framework
 - **state**: stable
 - **target**: stable
-- **readiness**: TD··RE·S
+- **readiness**: TD··RE··
 - **purpose**: Supply all primitives needed to author procedural macros
 - **deps**: 9 · **int**: 4 · **=L**: 0 · **↓L**: 1 · **↑L**: 3
 - **version**: 0.85.0
