@@ -16,11 +16,11 @@ invariant does not apply to the 6 macros covering these types.
 
 | ID | Name | Category | Status |
 |----|------|----------|--------|
-| IN-01 | vec_capacity_exactly_n | vec | ⏳ |
-| IN-02 | hashmap_capacity_at_least_n | hashmap | ⏳ |
-| IN-03 | empty_collection_capacity_zero | boundary | ⏳ |
-| IN-04 | into_vec_also_preallocates | into | ⏳ |
-| IN-05 | vecdeque_and_heap_also_preallocate | extended | ⏳ |
+| IN-01 | vec_capacity_exactly_n | vec | ✅ |
+| IN-02 | hashmap_capacity_at_least_n | hashmap | ✅ |
+| IN-03 | empty_collection_capacity_zero | boundary | ✅ |
+| IN-04 | into_vec_also_preallocates | into | ✅ |
+| IN-05 | vecdeque_and_heap_also_preallocate | extended | ✅ |
 
 ---
 

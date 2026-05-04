@@ -12,12 +12,12 @@
 
 | ID | Name | Category | Status |
 |----|------|----------|--------|
-| FT-01 | heterogeneous_types_coerced | nominal | ⏳ |
-| FT-02 | type_annotation_required_for_maps | annotation | ⏳ |
-| FT-03 | into_dlist_alias_equals_into_vec | alias | ⏳ |
-| FT-04 | empty_construction_all_nine_into_macros | boundary | ⏳ |
-| FT-05 | into_vec_capacity_preallocated | capacity | ⏳ |
-| FT-06 | feature_gate_independent_of_strict | gate | ⏳ |
+| FT-01 | heterogeneous_types_coerced | nominal | ✅ |
+| FT-02 | type_annotation_required_for_maps | annotation | ⚠️ compile-fail |
+| FT-03 | into_dlist_alias_equals_into_vec | alias | ✅ |
+| FT-04 | empty_construction_all_nine_into_macros | boundary | ✅ |
+| FT-05 | into_vec_capacity_preallocated | capacity | ✅ |
+| FT-06 | feature_gate_independent_of_strict | gate | ⚠️ compile-fail |
 
 ---
 

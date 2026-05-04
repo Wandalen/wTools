@@ -58,7 +58,7 @@ required-features = [ "enabled" ]
 
 [[bin]]
 name = "pt"
-path = "src/main.rs"
+path = "src/bin/pt.rs"
 required-features = [ "enabled" ]
 
 [[example]]

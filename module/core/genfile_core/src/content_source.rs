@@ -507,7 +507,7 @@ impl ContentResolver for DefaultContentResolver
 ///
 /// # Examples
 ///
-/// ```rust,ignore
+/// ```rust,no_run
 /// use genfile_core::{ DefaultContentStorage, ContentStorage, FileContent };
 /// use std::path::Path;
 ///

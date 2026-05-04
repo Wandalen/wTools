@@ -15,10 +15,10 @@ those cases. IN-01 is covered by the standard test suite (default features).
 
 | ID | Name | Category | Status |
 |----|------|----------|--------|
-| IN-01 | std_config_hashmap_is_std | nominal | ⏳ |
-| IN-02 | use_alloc_hashmap_is_hashbrown | no_std | ⏳ |
-| IN-03 | use_alloc_hashset_is_hashbrown | no_std | ⏳ |
-| IN-04 | use_alloc_other_types_from_alloc | no_std | ⏳ |
+| IN-01 | std_config_hashmap_is_std | nominal | ✅ |
+| IN-02 | use_alloc_hashmap_is_hashbrown | no_std | ✅ |
+| IN-03 | use_alloc_hashset_is_hashbrown | no_std | ✅ |
+| IN-04 | use_alloc_other_types_from_alloc | no_std | ✅ |
 
 ---
 

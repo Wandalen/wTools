@@ -1005,7 +1005,7 @@ impl TemplateArchive
   ///
   /// # Examples
   ///
-  /// ```rust,ignore
+  /// ```rust,no_run
   /// use genfile_core::{ TemplateArchive, DefaultContentResolver, HandlebarsRenderer, RealFileSystem };
   /// use std::path::Path;
   ///
@@ -1116,7 +1116,7 @@ impl TemplateArchive
   ///
   /// # Examples
   ///
-  /// ```rust,ignore
+  /// ```rust,no_run
   /// use genfile_core::{ TemplateArchive, DefaultContentResolver, DefaultContentStorage, HandlebarsRenderer };
   /// use std::path::Path;
   ///
@@ -1228,7 +1228,7 @@ impl TemplateArchive
   ///
   /// # Examples
   ///
-  /// ```rust,ignore
+  /// ```rust,no_run
   /// use genfile_core::TemplateArchive;
   /// use std::path::Path;
   ///
@@ -1299,7 +1299,7 @@ impl TemplateArchive
   ///
   /// # Examples
   ///
-  /// ```rust,ignore
+  /// ```rust,no_run
   /// use genfile_core::{ TemplateArchive, DefaultContentResolver };
   ///
   /// let mut archive = TemplateArchive::new( "test" );
@@ -1353,7 +1353,7 @@ impl TemplateArchive
   ///
   /// # Examples
   ///
-  /// ```rust,ignore
+  /// ```rust,no_run
   /// use genfile_core::TemplateArchive;
   /// use std::path::Path;
   ///
@@ -1414,7 +1414,7 @@ impl TemplateArchive
   ///
   /// # Examples
   ///
-  /// ```rust,ignore
+  /// ```rust,no_run
   /// use genfile_core::TemplateArchive;
   /// use std::path::Path;
   ///
@@ -1441,7 +1441,7 @@ impl TemplateArchive
   ///
   /// # Examples
   ///
-  /// ```rust,ignore
+  /// ```rust,no_run
   /// use genfile_core::TemplateArchive;
   /// use std::path::Path;
   ///

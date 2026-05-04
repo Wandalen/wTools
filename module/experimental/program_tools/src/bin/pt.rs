@@ -1,4 +1,4 @@
-//! CLI entry point: `program_tools run [OPTIONS] <TARGET>`.
+//! Short-alias entry point: `pt run [OPTIONS] <TARGET>`.
 
 #[ cfg( not( feature = "enabled" ) ) ]
 fn main() {}

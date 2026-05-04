@@ -6,7 +6,7 @@ Test specification surface for `docs/feature/` doc entity instances.
 
 ### Responsibility Table
 
-| File | Responsibility |
-|------|----------------|
-| `01_collection_constructors.md` | Strict constructor macro test spec |
-| `02_into_constructors.md` | Into-based constructor macro test spec |
+| Name | Purpose | Status |
+|------|---------|--------|
+| `01_collection_constructors.md` | `feature` spec for `001_collection_constructors` | ✅ |
+| `02_into_constructors.md` | `feature` spec for `002_into_constructors` | ✅ |

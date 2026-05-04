@@ -11,16 +11,16 @@
 
 | ID | Name | Category | Status |
 |----|------|----------|--------|
-| AP-01 | strict_macros_accessible_from_root | accessibility | ⏳ |
-| AP-02 | strict_macros_accessible_from_exposed | accessibility | ⏳ |
-| AP-03 | into_macros_accessible_from_root | accessibility | ⏳ |
-| AP-04 | into_macros_accessible_from_exposed | accessibility | ⏳ |
-| AP-05 | aliases_equal_base_macros | alias | ⏳ |
-| AP-06 | zero_element_valid_all_macros | boundary | ⏳ |
-| AP-07 | trailing_comma_all_macros | syntax | ⏳ |
-| AP-08 | type_reexports_full_std_api | reexport | ⏳ |
-| AP-09 | features_independent | gate | ⏳ |
-| AP-10 | expansion_contract_with_capacity_then_insert | contract | ⏳ |
+| AP-01 | strict_macros_accessible_from_root | accessibility | ✅ |
+| AP-02 | strict_macros_accessible_from_exposed | accessibility | ✅ |
+| AP-03 | into_macros_accessible_from_root | accessibility | ✅ |
+| AP-04 | into_macros_accessible_from_exposed | accessibility | ✅ |
+| AP-05 | aliases_equal_base_macros | alias | ✅ |
+| AP-06 | zero_element_valid_all_macros | boundary | ✅ |
+| AP-07 | trailing_comma_all_macros | syntax | ✅ |
+| AP-08 | type_reexports_full_std_api | reexport | ✅ |
+| AP-09 | features_independent | gate | ⚠️ compile-fail |
+| AP-10 | expansion_contract_with_capacity_then_insert | contract | ✅ |
 
 ---
 

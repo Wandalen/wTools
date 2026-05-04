@@ -6,7 +6,7 @@
 ///
 /// # Examples
 ///
-/// ```rust,ignore
+/// ```rust,no_run
 /// use genfile_core::Error;
 ///
 /// fn process() -> Result< (), Error >

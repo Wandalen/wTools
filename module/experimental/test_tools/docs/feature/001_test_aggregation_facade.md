@@ -20,7 +20,7 @@ In standalone mode, transient dependency sources are included via path attribute
 | Type | File | Responsibility |
 |------|------|----------------|
 | source | `src/lib.rs` | Root aggregation module with namespace layers |
-| source | `src/standalone.rs` | Standalone mode implementation |
+| source | `src/standalone/mod.rs` | Standalone mode implementation |
 | test | `tests/smoke_test.rs` | Comprehensive aggregation smoke test |
 | test | `tests/api_stability_facade_tests.rs` | API stability facade verification |
 | test | `tests/mod_interface_aggregation_tests.rs` | Namespace aggregation tests |

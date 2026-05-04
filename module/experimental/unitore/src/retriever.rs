@@ -11,9 +11,6 @@ use hyper ::body ::Bytes;
 use feed_rs ::parser as feed_parser;
 use error_tools :: { untyped ::Result, untyped ::Context };
 
-// qqq: purpose of trait if any?
-// aaa: removed unnecessary trait
-
 /// Feed client for fetching feed.
 #[ derive( Debug ) ]
 pub struct FeedClient;

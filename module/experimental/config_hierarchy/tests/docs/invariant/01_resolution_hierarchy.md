@@ -13,7 +13,7 @@
 | ID | Name | Category | Status |
 |----|------|----------|--------|
 | IN-01 | priority_ordering_enforced | invariant | ✅ |
-| IN-02 | depth_beats_pattern_within_local | invariant | ⏳ |
+| IN-02 | depth_beats_pattern_within_local | invariant | ✅ |
 | IN-03 | local_config_overrides_global | invariant | ✅ |
 | IN-04 | no_merging_first_wins | invariant | ✅ |
 
@@ -31,7 +31,7 @@
 - **Given:** A permanent (`.app`) config in the current directory and a temporary (`-app`) config in a parent directory
 - **When:** `resolve_config_value()` is called with `file_ops` feature
 - **Then:** Current directory value returned — L3 (LocalCurrent) beats L4 (LocalParent) regardless of temp vs. perm pattern
-- **Tests:** `tests/hierarchy_tests.rs::test_local_current_overrides_local_parent` ⏳ (not yet written)
+- **Tests:** `tests/hierarchy_tests.rs::test_local_current_overrides_local_parent`
 
 ### IN-03: local config overrides global config
 

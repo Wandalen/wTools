@@ -6,6 +6,6 @@ Test specification surface for `docs/api/` doc entity instances.
 
 ### Responsibility Table
 
-| File | Responsibility |
-|------|----------------|
-| `01_collection_macros.md` | Collection constructor macros API test spec |
+| Name | Purpose | Status |
+|------|---------|--------|
+| `01_collection_macros.md` | `api` spec for `001_collection_macros` | ✅ |

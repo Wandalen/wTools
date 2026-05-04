@@ -11,12 +11,12 @@ use serde_json ::Value as JsonValue;
 ///
 /// # Examples
 ///
-/// ```rust,ignore
+/// ```rust
 /// use genfile_core::{ TemplateRenderer, HandlebarsRenderer, Error, Values, Value };
 ///
 /// let renderer = HandlebarsRenderer::new();
 /// let template = "Hello {{name}}!";
-/// let mut values = Values::new();
+/// let mut values : Values< Value > = Values::new();
 /// values.insert( "name", Value::String( "World".into() ) );
 ///
 /// let result = renderer.render( template, &values.to_serializable() )?;

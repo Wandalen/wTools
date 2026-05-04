@@ -22,3 +22,8 @@ mod_interface::mod_interface!
   /// Script execution runner.
   layer runner;
 }
+
+#[ cfg( feature = "enabled" ) ]
+pub mod cli;
+#[ cfg( feature = "enabled" ) ]
+pub use cli::run_cli;

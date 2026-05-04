@@ -1,5 +1,4 @@
 //! Runs unitore command executor.
-//! qqq: ? aaa: added documantation.
 
 pub use unitore ::executor;
 

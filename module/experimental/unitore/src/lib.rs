@@ -1,4 +1,5 @@
 //! Feed client
+#![ cfg_attr( not( feature = "enabled" ), allow( unused ) ) ]
 pub mod retriever;
 pub mod feed_config;
 pub mod executor;

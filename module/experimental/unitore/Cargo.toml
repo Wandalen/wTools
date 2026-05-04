@@ -22,12 +22,8 @@ workspace = true
 features = [ "full" ]
 
 [features]
-default = [
-  "enabled",
-]
-full = [
-  "enabled",
-]
+default = [ "enabled" ]
+full = [ "enabled" ]
 enabled = []
 
 [dependencies]

@@ -6,10 +6,9 @@
 ///
 /// # Examples
 ///
-/// ```rust,ignore
+/// ```rust
 /// use genfile_core::ParameterDescriptor;
 ///
-/// // Direct construction
 /// let param = ParameterDescriptor
 /// {
 ///   parameter: "project_name".into(),
@@ -17,13 +16,8 @@
 ///   default_value: None,
 ///   description: Some( "Name of the project".into() ),
 /// };
-///
-/// // Builder pattern
-/// let param = ParameterDescriptor::former()
-///   .parameter( "project_name" )
-///   .is_mandatory( true )
-///   .description( "Name of the project" )
-///   .form();
+/// assert_eq!( param.parameter, "project_name" );
+/// assert!( param.is_mandatory );
 /// ```
 #[derive(Debug, Clone)]
 #[cfg_attr(any(feature = "json", feature = "yaml"), derive(serde::Serialize, serde::Deserialize))]
@@ -45,10 +39,9 @@ pub struct ParameterDescriptor
 ///
 /// # Examples
 ///
-/// ```rust,ignore
+/// ```rust
 /// use genfile_core:: { Parameters, ParameterDescriptor };
 ///
-/// // Direct construction
 /// let params = Parameters
 /// {
 ///   descriptors: vec!
@@ -62,20 +55,7 @@ pub struct ParameterDescriptor
 ///     },
 ///   ],
 /// };
-///
-/// // Builder pattern
-/// let params = Parameters::former()
-///   .descriptors( vec!
-///   [
-///     ParameterDescriptor::former()
-///       .parameter( "name" )
-///       .is_mandatory( true )
-///       .form(),
-///   ])
-///   .form();
-///
-/// let mandatory = params.list_mandatory();
-/// assert_eq!( mandatory.len(), 1 );
+/// assert_eq!( params.descriptors.len(), 1 );
 /// ```
 #[derive(Debug, Clone, Default)]
 #[cfg_attr(any(feature = "json", feature = "yaml"), derive(serde::Serialize, serde::Deserialize))]
@@ -95,7 +75,7 @@ impl Parameters
   ///
   /// # Examples
   ///
-  /// ```rust,ignore
+  /// ```rust
   /// use genfile_core:: { Parameters, ParameterDescriptor };
   ///
   /// let params = Parameters

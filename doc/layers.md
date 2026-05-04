@@ -67,7 +67,7 @@ Note: 22 additional legacy crates (formerly in `module/postponed/`) are co-locat
 | `variadic_from_meta` | core | 3 | Macro Framework | Generate variadic_from From impls (use variadic_from directly) | 1 | 1 | 1 | 0 | 0 | stable | stable | TDCFR··S |
 | `clone_dyn` | core | 4 | Patterns | Make Box<dyn Trait> cloneable via a single attribute macro | 2 | 2 | 1 | 1 | 0 | stable | stable | TDCFREMS |
 | `clone_dyn_types` | core | 4 | Patterns | Supply the CloneDyn trait and clone_into_box for type-erased Box cloning | 0 | 0 | 0 | 0 | 0 | stable | stable | TDC·RE·S |
-| `component_model` | experimental | 4 | Patterns | Enable type-driven field assignment on complex objects | 2 | 2 | 1 | 1 | 0 | experimental | stable | TDC·RE·S |
+| `component_model` | experimental | 4 | Patterns | Enable type-driven field assignment on complex objects | 2 | 2 | 1 | 1 | 0 | experimental | stable | TDCFRE·S |
 | `component_model_types` | experimental | 4 | Patterns | Expose shared traits for the component_model pattern | 1 | 1 | 0 | 0 | 1 | experimental | stable | TD·FREMS |
 | `derive_tools` | core | 4 | Patterns | Add Into, TryInto, IsVariant, and other missing std derives | 6 | 3 | 2 | 1 | 0 | stable | stable | TDC·RE·S |
 | `former` | core | 4 | Patterns | Build complex objects with nested subformers via one derive | 4 | 4 | 1 | 1 | 2 | stable | stable | TD··RE·S |
@@ -105,10 +105,10 @@ Note: 22 additional legacy crates (formerly in `module/postponed/`) are co-locat
 | `multiline_input` | deprecated | 8 | Tooling | Collect multiline terminal input with interactive key editing and Builder-configured validation | 4 | 1 | 0 | 1 | 0 | deprecated | deprecated | TDCFR·MS |
 | `multiline_input` | experimental | 8 | Tooling | Collect multiline terminal input with interactive key editing and Builder-configured validation | 4 | 1 | 0 | 1 | 0 | experimental | stable | T·CFREMS |
 | `test_tools` | experimental | 8 | Tooling | Aggregate workspace testing utilities into one dev-dependency via a circular-dependency-safe standalone build mode | 11 | 3 | 0 | 3 | 0 | experimental | stable | TDCFRE·· |
-| `wca` | experimental | 8 | Tooling | Aggregate CLI commands as typed Rust routines with a parse-verify-execute pipeline | 7 | 4 | 0 | 4 | 0 | experimental | stable | TDC·RE·S |
+| `wca` | experimental | 8 | Tooling | Aggregate CLI commands as typed Rust routines with a parse-verify-execute pipeline | 7 | 4 | 0 | 4 | 0 | experimental | stable | TDCFRE·S |
 | `sqlx_query` | deprecated | 9 | Application | Switch between SQLx compile-time and runtime query macros by feature | 0 | 0 | 0 | 0 | 0 | experimental | deprecated | TDCFR·MS |
-| `unitore` | experimental | 9 | Application | Subscribe to RSS and Atom feeds from TOML configs, persist entries in embedded SQL, and browse from the terminal | 20 | 3 | 0 | 3 | 0 | experimental | stable | TDC·R··S |
-| `willbe` | experimental | 9 | Application | Publish multi-crate workspaces in topological order, run feature-matrix tests, generate CI/CD workflows, and renew readme headers | 40 | 14 | 0 | 14 | 0 | experimental | stable | TDC·R··· |
+| `unitore` | experimental | 9 | Application | Subscribe to RSS and Atom feeds from TOML configs, persist entries in embedded SQL, and browse from the terminal | 20 | 3 | 0 | 3 | 0 | experimental | stable | TDCFR··S |
+| `willbe` | experimental | 9 | Application | Publish multi-crate workspaces in topological order, run feature-matrix tests, generate CI/CD workflows, and renew readme headers | 40 | 14 | 0 | 14 | 0 | experimental | stable | TDCFR··· |
 | `willbe2` | deprecated | 9 | Application | Expose the willbe workspace tool under the willbe2 binary and crate name via complete re-export | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFR·MS |
 | `proper_tools` | deprecated | 9 | Application | Alias — recommended starting point for general-purpose wTools use | 0 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFREMS |
 
@@ -180,18 +180,18 @@ All 8 criteria met — can be promoted to stable without prerequisite work.
 | `test_tools` | 8 | TDCFRE·· | M, S |
 | `multiline_input` | 8 | T·CFREMS | D |
 | `component_model_meta` | 3 | TD·FR·MS | C, E |
-| `component_model` | 4 | TDC·RE·S | F, M |
+| `component_model` | 4 | TDCFRE·S | M |
 | `config_hierarchy` (core) | 7 | TDC·R·MS | F, E |
-| `wca` | 8 | TDC·RE·S | F, M |
-| `unitore` | 9 | TDC·R··S | F, E, M |
-| `willbe` | 9 | TDC·R··· | F, E, M, S |
+| `wca` | 8 | TDCFRE·S | M |
+| `unitore` | 9 | TDCFR··S | E, M |
+| `willbe` | 9 | TDCFR··· | E, M, S |
 
 ### Blocker Frequency
 
 | Criterion | Failing | Crates |
 |-----------|---------|--------|
 | M (Markers) | 5 | component_model, test_tools, wca, unitore, willbe |
-| F (Features) | 5 | component_model, config_hierarchy (core), wca, unitore, willbe |
+| F (Features) | 1 | config_hierarchy (core) |
 | E (Examples) | 7 | component_model_meta, strs_tools_meta, cli_fmt, workspace_tools, config_hierarchy (core), unitore, willbe |
 | C (Clean) | 2 | component_model_meta, component_model_types |
 | S (Stable deps) | 2 | test_tools, willbe |
@@ -693,7 +693,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 4 · Patterns
 - **state**: experimental
 - **target**: stable
-- **readiness**: TDC·RE·S
+- **readiness**: TDCFRE·S
 - **purpose**: Enable type-driven field assignment on complex objects
 - **deps**: 2 · **int**: 2 · **=L**: 1 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.17.0
@@ -1227,7 +1227,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 8 · Tooling
 - **state**: experimental
 - **target**: stable
-- **readiness**: TDCFRE·S
+- **readiness**: TDCFRE··
 - **purpose**: Aggregate workspace testing utilities into one dev-dependency via a circular-dependency-safe standalone build mode
 - **deps**: 11 · **int**: 3 · **=L**: 0 · **↓L**: 3 · **↑L**: 0
 - **version**: 0.16.0
@@ -1241,7 +1241,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 8 · Tooling
 - **state**: experimental
 - **target**: stable
-- **readiness**: TDC·RE·S
+- **readiness**: TDCFRE·S
 - **purpose**: Aggregate CLI commands as typed Rust routines with a parse-verify-execute pipeline
 - **deps**: 7 · **int**: 4 · **=L**: 0 · **↓L**: 4 · **↑L**: 0
 - **version**: 0.46.0
@@ -1273,7 +1273,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 9 · Application
 - **state**: experimental
 - **target**: stable
-- **readiness**: TDC·R··S
+- **readiness**: TDCFR··S
 - **purpose**: Subscribe to RSS and Atom feeds from TOML configs, persist entries in embedded SQL, and browse from the terminal
 - **deps**: 20 · **int**: 3 · **=L**: 0 · **↓L**: 3 · **↑L**: 0
 - **version**: 0.1.0
@@ -1287,7 +1287,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 9 · Application
 - **state**: experimental
 - **target**: stable
-- **readiness**: TDC·R···
+- **readiness**: TDCFR···
 - **purpose**: Publish multi-crate workspaces in topological order, run feature-matrix tests, generate CI/CD workflows, and renew readme headers
 - **deps**: 40 · **int**: 14 · **=L**: 0 · **↓L**: 14 · **↑L**: 0
 - **version**: 0.35.0

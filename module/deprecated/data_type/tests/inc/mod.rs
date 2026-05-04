@@ -14,5 +14,5 @@ mod either_test;
 // mod type_constructor;
 
 #[ cfg(feature = "dt_interval") ]
-#[ path = "../../../interval_adapter/tests/inc/mod.rs" ]
+#[ path = "../../../../experimental/interval_adapter/tests/inc/mod.rs" ]
 mod interval_test;

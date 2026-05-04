@@ -20,5 +20,5 @@ use winterval as the_module;
 #[ allow(unused_imports) ]
 use test_tools::exposed :: *;
 
-#[ path = "../../interval_adapter/tests/inc/mod.rs" ]
+#[ path = "../../../experimental/interval_adapter/tests/inc/mod.rs" ]
 mod inc;

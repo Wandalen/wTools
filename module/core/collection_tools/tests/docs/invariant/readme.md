@@ -6,7 +6,7 @@ Test specification surface for `docs/invariant/` doc entity instances.
 
 ### Responsibility Table
 
-| File | Responsibility |
-|------|----------------|
-| `01_no_std_alloc.md` | No-std allocation selection invariant test spec |
-| `02_capacity_preallocated.md` | Capacity pre-allocation invariant test spec |
+| Name | Purpose | Status |
+|------|---------|--------|
+| `01_no_std_alloc.md` | `invariant` spec for `001_no_std_alloc` | ✅ |
+| `02_capacity_preallocated.md` | `invariant` spec for `002_capacity_preallocated` | ✅ |
