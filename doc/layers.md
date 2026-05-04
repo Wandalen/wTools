@@ -127,6 +127,7 @@ Unreachable from any application (willbe, unitore, wca) or test infrastructure (
 | `interval_adapter` | deprecated | Only live dependent is `macro_tools` (stable); dep appears unused in macro_tools source — removal is trivial | — |
 | `impls_index` | deprecated | Only dependents are `meta_tools` (deprecated) and `wtools` (deprecated) | — |
 | `impls_index_meta` | deprecated | Only dependents are `impls_index` (deprecated) and `meta_tools` (deprecated) | — |
+| `is_slice` | deprecated | Redundant with `implements!` macro + marker traits; sole dependent is `typing_tools` (deprecated) | `implements!` |
 | `meta_tools` | deprecated | ↑L=3 arch violation; sole dependent is `wtools` (deprecated) | — |
 | `multiline_input` | deprecated | Excluded from workspace (Cargo.toml exclude); moved to module/experimental | `multiline_input` (experimental) |
 | `proper_tools` | deprecated | Alias; no dependencies; `enabled` feature declares nothing | — |
