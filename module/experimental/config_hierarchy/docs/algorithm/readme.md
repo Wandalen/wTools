@@ -2,13 +2,14 @@
 
 ### Scope
 
-- **What**: Detection and resolution algorithms used internally by config_hierarchy
-- **Who**: Contributors modifying resolution or type-detection logic
-- **When**: Modifying src/type_detection.rs or src/hierarchy.rs
-- **Out of scope**: User-facing trait contracts (→ api/)
+- **Purpose**: Specify detection and resolution algorithms used internally by config_hierarchy.
+- **Responsibility**: Internal algorithm specifications for type detection and hierarchical resolution.
+- **In Scope**: Type detection heuristics and resolution waterfall logic.
+- **Out of Scope**: User-facing trait contracts (→ api/)
 
 ### Overview Table
 
-| NNN | Name | Status |
-|-----|------|--------|
-| 001 | Type Detection | active |
+| ID | Name | Purpose | Status |
+|----|------|---------|--------|
+| 001 | [Type Detection](001_type_detection.md) | Heuristic inference of config value types | ✅ |
+| 002 | [Resolution Waterfall](002_resolution_waterfall.md) | Hierarchical config source precedence | ✅ |

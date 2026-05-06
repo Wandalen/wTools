@@ -562,3 +562,56 @@ fn test_null_value_round_trips()
     assert!( v.is_null(), "If nullable_key is present, it must be Null, got: {v}" );
   }
 }
+
+// FP-02: last_modified is updated on every save
+//
+// ## Root Cause
+// save_config_file always calls chrono::Utc::now().to_rfc3339() for last_modified —
+// every invocation produces a new timestamp. Without a dedicated test, a naive
+// implementation that caches last_modified (like created_at) would be undetected.
+//
+// ## Fix Applied
+// Verified that save_config_file calls build_config_yaml_string with a fresh
+// `chrono::Utc::now()` on every call. No code change needed — test adds coverage.
+//
+// ## Pitfall
+// Distinguish last_modified (always updated) from created_at (preserved after first save).
+// Both fields live in the same metadata block but have opposite preservation semantics.
+#[ test ]
+fn test_last_modified_updated_on_every_save()
+{
+  let temp_dir = TempDir::new().unwrap();
+  let config_path = temp_dir.path().join( "config.yaml" );
+
+  // First save
+  let mut config = HashMap::new();
+  config.insert( "key".into(), JsonValue::String( "value1".into() ) );
+  TestConfig::save_config_file( &config, &config_path ).unwrap();
+
+  // Capture last_modified timestamp from raw YAML after first save
+  let raw1 = std::fs::read_to_string( &config_path ).unwrap();
+  let last_modified1 = raw1.lines()
+    .find( | l | l.contains( "last_modified" ) )
+    .expect( "last_modified must be present after first save" )
+    .to_owned();
+
+  // Brief pause ensures a distinct timestamp even on low-resolution OS clocks
+  std::thread::sleep( core::time::Duration::from_millis( 10 ) );
+
+  // Second save with different content
+  config.insert( "key".into(), JsonValue::String( "value2".into() ) );
+  TestConfig::save_config_file( &config, &config_path ).unwrap();
+
+  // Capture last_modified after second save
+  let raw2 = std::fs::read_to_string( &config_path ).unwrap();
+  let last_modified2 = raw2.lines()
+    .find( | l | l.contains( "last_modified" ) )
+    .expect( "last_modified must still be present after second save" )
+    .to_owned();
+
+  assert_ne!(
+    last_modified1,
+    last_modified2,
+    "last_modified must change on every save — first: {last_modified1}, second: {last_modified2}"
+  );
+}

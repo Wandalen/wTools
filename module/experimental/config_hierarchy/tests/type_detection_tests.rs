@@ -92,6 +92,42 @@ fn test_whitespace_string()
   assert_eq!( detect_and_convert_value( "\n" ), JsonValue::String( "\n".into() ) );
 }
 
+// AC-07: "0" maps to boolean false, not integer zero
+//
+// ## Root Cause
+// "0" appears in both the boolean-false literal table AND parses as a valid i64.
+// The boolean check runs BEFORE the integer check in the algorithm step order.
+//
+// ## Pitfall
+// A naive "is this parseable as i64?" check before the bool table lookup would
+// silently break the documented ordering invariant (booleans have higher priority).
+#[ test ]
+fn test_zero_is_boolean_not_integer()
+{
+  let result = detect_and_convert_value( "0" );
+  assert_eq!( result, JsonValue::Bool( false ), "\"0\" must map to Bool(false) — boolean check precedes integer" );
+  assert!( !result.is_number(), "\"0\" must NOT be Number(0) — step order: bool before int" );
+}
+
+// AC-08: integer string overflowing i64 cascades to float Number
+//
+// ## Root Cause
+// "99999999999999999999" is too large for i64 but within f64 range.
+// i64 parse fails → f64 parse succeeds → is_finite() guard passes → float Number returned.
+//
+// ## Pitfall
+// Without a float cascade after i64 failure, this would silently fall through to String,
+// losing numeric type information for large-but-representable numbers.
+#[ test ]
+fn test_integer_overflow_cascades_to_float()
+{
+  let result = detect_and_convert_value( "99999999999999999999" );
+  assert!( result.is_number(), "i64-overflow string must cascade to float Number, not String" );
+  let f = result.as_f64().expect( "cascaded Number must be expressible as f64" );
+  assert!( f.is_finite(), "cascaded float must be finite" );
+  assert!( f > 0.0, "cascaded float must be positive" );
+}
+
 // AC-05: Non-finite floats (NaN, ±Inf) fall through to String
 //
 // ## Root Cause

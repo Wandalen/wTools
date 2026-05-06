@@ -1,61 +1,92 @@
 # GenFile CLI Documentation
 
-Complete CLI reference for the genfile template archive management tool.
+### Scope
 
-## Quick Navigation
+- **In Scope:** Commands, parameters, types, parameter groups, and workflow documentation for genfile CLI
+- **Out of Scope:** Implementation internals, Rust API, test infrastructure — see `src/` and `tests/`
+- **Audience:** CLI users, integrators, and contributors referencing genfile operations
+- **Responsibility:** Authoritative CLI documentation for the genfile template archive management tool
+
+### Completion Matrix
+
+| File | L1 | L2 | L3 | L4 | L5 | Status |
+|------|----|----|----|----|----|----|
+| readme.md | ✅ | ✅ | ➖ | ➖ | ➖ | Complete |
+| command/readme.md | ✅ | ✅ | ✅ | ➖ | ➖ | Complete |
+| command/archive.md | ➖ | ➖ | ✅ | ➖ | ➖ | Complete |
+| command/content.md | ➖ | ➖ | ✅ | ➖ | ➖ | Complete |
+| command/file.md | ➖ | ➖ | ✅ | ➖ | ➖ | Complete |
+| command/param_mgmt.md | ➖ | ➖ | ✅ | ➖ | ➖ | Complete |
+| command/value.md | ➖ | ➖ | ✅ | ➖ | ➖ | Complete |
+| command/operations.md | ➖ | ➖ | ✅ | ➖ | ➖ | Complete |
+| param.md | ✅ | ✅ | ✅ | ➖ | ➖ | Complete |
+| dictionary.md | ➖ | ✅ | ✅ | ➖ | ➖ | Complete |
+| type.md | ➖ | ➖ | ✅ | ➖ | ➖ | Complete |
+| param_group.md | ➖ | ➖ | ✅ | ➖ | ➖ | Complete |
+| env_param.md | ➖ | ➖ | ✅ | ➖ | ➖ | Complete |
+| config_param.md | ➖ | ➖ | ✅ | ➖ | ➖ | Complete |
+| workflow_scenario.md | ➖ | ➖ | ✅ | ➖ | ➖ | Complete |
+| format.md | ➖ | ➖ | ✅ | ➖ | ➖ | Complete |
+| tutorial.md | ➖ | ➖ | ✅ | ➖ | ➖ | Complete |
+| maintenance.md | ➖ | ➖ | ✅ | ➖ | ➖ | Complete |
+
+**Current Level:** L3 (Content Complete)
+**Design Completeness:** 60%
+**Implementation Status:** 100% ✅ all commands implemented
+
+### Quick Navigation
 
 **By Layer:**
-- [Commands](commands.md) - All available operations (24 commands)
-- [Parameters](params.md) - Input controls and configuration (23 parameters)
-- [Types](types.md) - Type system and validation rules (15 types)
-- [Parameter Groups](parameter_groups.md) - Reusable parameter sets (3 groups)
-- [Dictionary](dictionary.md) - Domain terminology glossary (9 terms)
+- [Commands](command/readme.md) - All available operations
+- [Parameters](param.md) - Input controls and configuration
+- [Types](type.md) - Type system and validation rules
+- [Parameter Groups](param_group.md) - Reusable parameter sets
+- [Dictionary](dictionary.md) - Domain terminology glossary
 
 **By Namespace:**
-- [Archive Operations](commands/archive.md) - Create, load, save archives (4 commands)
-- [Content Management](commands/content.md) - Inline/reference content control (3 commands)
-- [File Operations](commands/file.md) - Add, remove, list files (4 commands)
-- [Parameter Management](commands/param_mgmt.md) - Define parameters (3 commands)
-- [Value Operations](commands/value.md) - Set parameter values (3 commands)
-- [Core Operations](commands/operations.md) - Materialize, pack, analyze (7 commands)
+- [Archive Operations](command/archive.md) - Create, load, save archives
+- [Content Management](command/content.md) - Inline/reference content control
+- [File Operations](command/file.md) - Add, remove, list files
+- [Parameter Management](command/param_mgmt.md) - Define parameters
+- [Value Operations](command/value.md) - Set parameter values
+- [Core Operations](command/operations.md) - Materialize, pack, analyze
 
 **By Use Case:**
-- Creating archives: [.archive.new](commands/archive.md#command-5-archivenew), [.archive.from_directory](commands/archive.md#command-8-archivefromdirectory)
-- Managing content: [.file.add](commands/file.md#command-12-fileadd), [.content.internalize](commands/content.md#command-9-contentinternalize)
-- Rendering templates: [.materialize](commands/operations.md#command-16-materialize), [.unpack](commands/operations.md#command-17-unpack)
+- Creating archives: [.archive.new](command/archive.md#command--5-archivenew), [.archive.from_directory](command/archive.md#command--8-archivefromdirectory)
+- Managing content: [.file.add](command/file.md#command--12-fileadd), [.content.internalize](command/content.md#command--9-contentinternalize)
+- Rendering templates: [.materialize](command/operations.md#command--16-materialize), [.unpack](command/operations.md#command--17-unpack)
+
+**Configuration:**
+- [Environment Variables](env_param.md) - Session-level parameter defaults
+- [Config File](config_param.md) - Persistent parameter defaults
 
 **Learning:**
-- [Tutorial](tutorial.md) - Hands-on lessons for beginners (4 lessons, 45-60 minutes)
+- [Tutorial](tutorial.md) - Hands-on lessons for beginners
+- [Workflow Scenarios](workflow_scenario.md) - End-to-end usage patterns
+- [Parameter Groups](param_group.md) - Shared parameter sets and semantic coherence
 
-## Documentation Principles
-
-This documentation follows systematic CLI design principles:
-
-1. **Three-Layer Separation:** Commands, parameters, and types in orthogonal layers
-2. **Type Safety:** All parameters use semantic newtypes (VerbosityLevel not u8)
-3. **Bidirectional Cross-References:** Commands ↔ parameters ↔ types
-4. **Semantic Parameter Groups:** Universal Output Control, Universal Execution Control, Filesystem Filtering
-5. **Namespace Structure:** Entity-driven organization (archive, content, file, parameter, value)
-
-## Documentation Structure
+### Documentation Structure
 
 ```
 docs/cli/
-├── readme.md              # This file (navigation hub)
+├── readme.md              # This file (navigation hub + Completion Matrix)
 ├── tutorial.md            # Hands-on lessons for beginners
-├── commands.md            # Commands index table
-├── commands/              # Namespace-organized command specs
-│   ├── readme.md          # Namespace index
-│   ├── archive.md         # Archive lifecycle (4 commands)
-│   ├── content.md         # Content management (3 commands)
-│   ├── file.md            # File operations (4 commands)
-│   ├── param_mgmt.md      # Parameter definitions (3 commands)
-│   ├── value.md           # Parameter values (3 commands)
-│   └── operations.md      # Core operations (7 commands)
-├── params.md              # Parameter specifications (23 parameters)
-├── types.md               # Type system definitions (15 types)
-├── parameter_groups.md    # Shared parameter sets (3 groups)
-├── dictionary.md          # Domain terminology (9 terms)
+├── command/               # Namespace-organized command specifications
+│   ├── readme.md          # Commands index (all commands) + Quick Reference
+│   ├── archive.md         # Archive lifecycle
+│   ├── content.md         # Content management
+│   ├── file.md            # File operations
+│   ├── param_mgmt.md      # Parameter definitions
+│   ├── value.md           # Parameter values
+│   └── operations.md      # Core operations
+├── param.md               # Parameter specifications
+├── type.md                # Type system definitions
+├── param_group.md         # Shared parameter sets
+├── dictionary.md          # Domain terminology
+├── env_param.md           # Environment variable parameter mechanism
+├── config_param.md        # Configuration file parameter mechanism
+├── workflow_scenario.md   # Multi-command usage scenarios
+├── format.md              # Output format catalog
 └── maintenance.md         # Update procedures when commands change
 ```
 
@@ -63,16 +94,20 @@ docs/cli/
 
 | File | Responsibility |
 |------|----------------|
-| [commands.md](commands.md) | Index of all 24 commands by namespace |
-| [params.md](params.md) | Specifications for all 23 parameters |
-| [types.md](types.md) | Semantic type definitions for 15 types |
-| [parameter_groups.md](parameter_groups.md) | Three shared parameter group definitions |
-| [dictionary.md](dictionary.md) | Domain terminology glossary (9 terms) |
-| [tutorial.md](tutorial.md) | Hands-on beginner lessons (4 lessons) |
+| [command/readme.md](command/readme.md) | Command index and Quick Reference |
+| [param.md](param.md) | Parameter specifications and constraints |
+| [type.md](type.md) | Semantic type definitions and validation rules |
+| [param_group.md](param_group.md) | Shared parameter group definitions |
+| [dictionary.md](dictionary.md) | Domain terminology glossary |
+| [tutorial.md](tutorial.md) | Hands-on beginner lessons |
+| [env_param.md](env_param.md) | Environment variable configuration mechanism |
+| [config_param.md](config_param.md) | Configuration file mechanism and discovery |
+| [workflow_scenario.md](workflow_scenario.md) | End-to-end multi-command usage scenarios |
+| [format.md](format.md) | Output format catalog and verbosity behavior |
 | [maintenance.md](maintenance.md) | Update procedures when commands change |
-| [commands/](commands/readme.md) | Namespace-organized command specifications |
+| [command/](command/readme.md) | Namespace-organized command specifications |
 
-## Quick Start
+### Quick Start
 
 **Create archive from directory:**
 ```bash
@@ -92,7 +127,7 @@ genfile .materialize destination::"./output"
 genfile .materialize destination::"./preview" dry::1 verbosity::2
 ```
 
-## Common Workflows
+### Common Workflows
 
 **Create archive from scratch:**
 ```bash
@@ -128,7 +163,6 @@ genfile .archive.load path::"template.yaml"
 # Set parameter values
 genfile .value.set name::project_name value::"my-app"
 genfile .value.set name::version value::"1.0.0"
-genfile .value.set name::author value::"John Doe"
 
 # Check readiness
 genfile .status
@@ -137,98 +171,15 @@ genfile .status
 genfile .materialize destination::"./output" verbosity::2
 ```
 
-## Implementation Notes
+### Documentation Principles
 
-**For Developers:** See [types.md](types.md) for newtype validation logic and parsing rules.
+1. **Three-Layer Separation:** Commands, parameters, and types in orthogonal layers
+2. **Type Safety:** All parameters use semantic newtypes (VerbosityLevel not u8)
+3. **Bidirectional Cross-References:** Commands ↔ parameters ↔ types
+4. **Semantic Parameter Groups:** Universal Output Control, Universal Execution Control, Filesystem Filtering
+5. **Namespace Structure:** Entity Signals score ≥8 for command entity → namespace structure selected
 
-**For Users:** See [dictionary.md](dictionary.md) for domain terminology explanations.
+### Further Reading
 
-## Parameter Groups Overview
-
-### Universal Output Control
-- **Parameter:** [`verbosity::`](params.md#parameter-1-verbosity)
-- **Used By:** ALL 24 commands
-- **Purpose:** Control output detail level (0-5)
-- **Default:** 1 (normal)
-
-### Universal Execution Control
-- **Parameter:** [`dry::`](params.md#parameter-2-dry)
-- **Used By:** 6 write operations
-- **Purpose:** Preview mode (show changes without executing)
-- **Default:** 0 (execute)
-
-### Filesystem Filtering
-- **Parameters:** [`recursive::`](params.md#parameter-10-recursive), [`include_pattern::`](params.md#parameter-17-includepattern), [`exclude_pattern::`](params.md#parameter-21-excludepattern)
-- **Used By:** [.archive.from_directory](commands/archive.md#command-8-archivefromdirectory)
-- **Purpose:** Control file discovery and filtering
-
-## Navigation Tips
-
-**Find Commands:**
-1. By name: Use [commands index](commands.md#commands-index)
-2. By namespace: Use [namespace groups](commands.md#namespace-groups)
-3. By functionality: Use [quick navigation](commands.md#quick-navigation)
-
-**Find Parameters:**
-1. By name: Use [parameters index](params.md#parameters-index)
-2. By category: Use [parameter categories](params.md#parameter-categories)
-3. By frequency: Use [by frequency](params.md#quick-navigation)
-
-**Find Types:**
-1. By name: Use [types index](types.md#types-index)
-2. By category: Use [type categories](types.md#type-categories)
-
-**Find Concepts:**
-1. Use [dictionary](dictionary.md) for domain terminology
-
-## Documentation Statistics
-
-| Layer | Files | Entities | Total Lines |
-|-------|-------|----------|-------------|
-| Commands | 7 | 24 commands | ~2,600 |
-| Parameters | 1 | 23 parameters | ~1,500 |
-| Types | 1 | 15 types | ~1,200 |
-| Parameter Groups | 1 | 3 groups | ~400 |
-| Dictionary | 1 | 9 terms | ~500 |
-| Tutorial | 1 | 4 lessons | ~650 |
-| Navigation | 2 | - | ~200 |
-| **Total** | **14** | **77 entities** | **~7,050** |
-
-## Architecture Compliance
-
-**Principle 1: Structure Follows Scale**
-- ✅ 24 commands ≥20 threshold → namespace structure used
-- ✅ 6 namespace files (archive, content, file, param_mgmt, value, operations)
-
-**Principle 2: Type Safety is Universal**
-- ✅ 15 semantic newtypes defined
-- ✅ All parameters wrapped in semantic types
-- ✅ No bare primitives (String, u8, bool) in parameter specifications
-
-**Principle 3: Cross-References are Bidirectional**
-- ✅ Commands list parameters used
-- ✅ Parameters list commands using them
-- ✅ Types list parameters using them
-- ✅ All cross-references include links
-
-**Principle 4: Parameter Groups Must Be Semantically Coherent**
-- ✅ 3 groups defined with semantic coherence test
-- ✅ "Why NOT X" rationale for excluded parameters
-- ✅ All groups pass semantic coherence test
-
-**Principle 5: Documentation Serves Two Audiences**
-- ✅ types.md for implementers (validation, parsing)
-- ✅ commands.md, params.md for users (usage, examples)
-- ✅ Clear separation maintained
-
-## Further Reading
-
-- [CLI Design Rulebook](https://github.com/Wandalen/wTools/blob/master/module/experimental/willbe/asset/template/module_template/docs/cli_design.md) - Design principles
 - [GenFile Core](../../src/lib.rs) - Implementation
 - [Tests](../../tests/) - Usage examples
-
----
-
-**Documentation Version:** 1.0.0
-**Last Updated:** 2026-04-25
-**CLI Version:** genfile 0.4.0

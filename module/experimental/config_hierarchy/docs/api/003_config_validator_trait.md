@@ -9,7 +9,7 @@
 
 ### Abstract
 
-`ConfigValidator` is the optional third trait users implement to configure `ConfigManager< D, P, V >`. It provides two validation hooks: single-parameter validation and cross-parameter validation. Applications that do not need validation use `ConfigManager< D, P, NoValidator >` instead of implementing this trait.
+`ConfigValidator` is the optional third trait users implement to configure the manager type. It provides two validation hooks: single-parameter validation and cross-parameter validation. Applications that do not need validation use `NoValidator` as the third type parameter instead of implementing this trait.
 
 ### Operations
 
@@ -40,9 +40,23 @@ A built-in no-op type satisfying the `ConfigValidator` contract. Its per-paramet
 |------|--------------|
 | [api/001_config_paths_trait.md](../api/001_config_paths_trait.md) | Companion required trait |
 | [api/002_config_defaults_trait.md](../api/002_config_defaults_trait.md) | Companion required trait |
+| [api/004_config_manager.md](../api/004_config_manager.md) | Manager type that takes this trait as a type parameter |
 
 ### Features
 
 | File | Relationship |
 |------|--------------|
 | [feature/001_config_hierarchy.md](../feature/001_config_hierarchy.md) | Feature that uses this validation contract |
+
+### Sources
+
+| File | Relationship |
+|------|--------------|
+| [src/traits.rs](../../src/traits.rs) | `ConfigValidator` trait and `NoValidator` implementation |
+| [src/manager.rs](../../src/manager.rs) | validate_parameter() and validate_all() call sites |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| [tests/validator_tests.rs](../../tests/validator_tests.rs) | Full validator and NoValidator test coverage |

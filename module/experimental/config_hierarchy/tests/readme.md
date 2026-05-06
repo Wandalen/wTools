@@ -18,6 +18,8 @@ This directory contains all functional and integration tests for the crate.
 | `scope_operations_tests.rs` | Scope-specific configuration operations and resolution |
 | `type_detection_tests.rs` | Configuration value type detection and inference |
 | `validator_tests.rs` | ConfigValidator trait and NoValidator no-op implementation |
+| `docs/` | Test specification surface for all `docs/` entity instances |
+| `manual/` | Manual testing plan and procedures |
 
 ### Scope
 

@@ -9,9 +9,9 @@
 
 ### Abstract
 
-Config files use YAML with two top-level sections: `metadata` (automatically managed by the crate) and `parameters` (user-defined key-value pairs). Only YAML is supported — JSON and TOML are not valid config file formats for this crate. The `file_ops` feature must be enabled for file reading and writing.
+Config files use YAML with two top-level sections: `metadata` (automatically managed by the crate) and `parameters` (user-defined key-value pairs). Only YAML is supported — JSON and TOML are not valid config file formats for this crate. The `file_ops` feature must be enabled for file reading and writing; YAML parsing is performed by the underlying YAML library layer.
 
-### Structure
+### Data Model
 
 ```yaml
 metadata:
@@ -30,7 +30,7 @@ parameters:
 
 #### `metadata` section
 
-Automatically generated and managed by `save_config_file()` and `atomic_config_modify()`. Do not edit manually unless migrating existing files.
+Automatically generated and managed by the save and atomic-modify operations. Do not edit manually unless migrating existing files.
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -49,13 +49,29 @@ User-defined configuration key-value pairs. Keys are strings; values may be any 
 
 YAML sequences and mappings are not supported as parameter values — only scalars.
 
+### Encoding Structure
+
+- Encoding: UTF-8, no BOM
+- Line endings: LF (`\n`)
+- Indentation: 2-space YAML indentation
+- Top-level keys: exactly two — `metadata` and `parameters`; additional top-level keys are ignored on read
+- Scalar values only in `parameters` — YAML sequences and mappings are not supported as parameter values
+
+### Version Compatibility
+
+- `version: "1.0"` is the only supported format version
+- Files lacking a `metadata` section are read as legacy flat format — all top-level keys are treated as parameters
+- Files lacking a `parameters` section return an empty parameter map
+- Unknown top-level keys are silently ignored, preserving forward compatibility
+- The `created_at` field is preserved verbatim on every save — the write path reads the existing value before overwriting
+
 ### Validation
 
-The crate does not validate the file structure on read beyond what `serde_yaml` enforces. A file missing the `metadata` section is read successfully (metadata fields default to absent). A file missing the `parameters` section returns an empty map. Unknown top-level keys are ignored.
+The crate does not validate the file structure on read beyond what the YAML parser enforces. A file missing the `metadata` section is read successfully (metadata fields default to absent). A file missing the `parameters` section returns an empty map. Unknown top-level keys are ignored.
 
 ### Pitfall
 
-**TOML and JSON are not supported as config file formats.** The `file_ops` feature uses `serde_yaml` exclusively. Placing a `config.json` or `config.toml` at a discovered path will not be read — only the filename returned by `ConfigPaths::local_config_filename()` (default `"config.yaml"`) is loaded.
+**TOML and JSON are not supported as config file formats.** The `file_ops` feature uses YAML exclusively. Placing a `config.json` or `config.toml` at a discovered path will not be read — only the filename returned by `ConfigPaths::local_config_filename()` (default `"config.yaml"`) is loaded.
 
 ### APIs
 
@@ -74,3 +90,18 @@ The crate does not validate the file structure on read beyond what `serde_yaml` 
 | File | Relationship |
 |------|--------------|
 | [invariant/001_resolution_hierarchy.md](../invariant/001_resolution_hierarchy.md) | Files at these paths feed into resolution |
+| [invariant/002_file_persistence_contracts.md](../invariant/002_file_persistence_contracts.md) | Contracts governing write operations on this format |
+
+### Sources
+
+| File | Relationship |
+|------|--------------|
+| [src/file_ops.rs](../../src/file_ops.rs) | YAML read/write, metadata handling, atomic save |
+| [src/conversion.rs](../../src/conversion.rs) | YAML-to-JSON and JSON-to-YAML conversion |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| [tests/basic_operations_tests.rs](../../tests/basic_operations_tests.rs) | File load/save round-trip tests |
+| [tests/edge_cases_tests.rs](../../tests/edge_cases_tests.rs) | Legacy format, metadata preservation, missing-section cases |

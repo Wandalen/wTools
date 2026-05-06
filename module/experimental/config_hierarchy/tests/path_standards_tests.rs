@@ -200,3 +200,71 @@ fn test_config_manager_uses_standard_paths()
 
   std::env::remove_var( "PRO" );
 }
+
+// AN-03: Backslash in app_name is rejected (Windows path separator)
+//
+// ## Root Cause
+// validate_app_name checks for '/' and '\' independently. A name like "my\app"
+// would create ".my\app/config.yaml" on Linux (valid filename!) but escape the
+// intended directory on Windows. Rejected on all platforms for portability.
+//
+// ## Fix Applied
+// validate_app_name returns Err when app_name.contains('\\') — same as '/' check.
+//
+// ## Pitfall
+// On Linux, '\' is not a path separator, so the OS would accept "my\app" as a
+// directory name. Validation must be stricter than the OS to ensure portability.
+#[ test ]
+#[ should_panic( expected = "app_name contains invalid characters" ) ]
+fn test_backslash_in_app_name_rejected()
+{
+  struct BackslashAppName;
+  impl ConfigDefaults for BackslashAppName
+  {
+    fn get_defaults() -> HashMap< String, JsonValue > { HashMap::new() }
+    fn get_parameter_names() -> Vec< &'static str > { vec![] }
+  }
+
+  impl ConfigPaths for BackslashAppName
+  {
+    fn app_name() -> &'static str { "my\\app" }  // BACKSLASH — should be rejected
+  }
+
+  impl ConfigValidator for BackslashAppName
+  {
+    fn validate_parameter( _: &str, _: &JsonValue ) -> Result< (), config_hierarchy::ValidationError > { Ok( () ) }
+    fn validate_all( _: &HashMap< String, ( JsonValue, config_hierarchy::ConfigSource ) > ) -> Vec< config_hierarchy::ValidationError > { Vec::new() }
+  }
+
+  type BackslashConfig = ConfigManager< BackslashAppName, BackslashAppName, BackslashAppName >;
+  let _path = BackslashConfig::get_local_config_path().unwrap();
+}
+
+// AN-06: Valid app_name with hyphens and underscores is accepted
+//
+// ## Root Cause
+// validate_app_name rejects '/', '\', and '..'. Hyphens and underscores are common
+// in application names (e.g., "my-app_v2") and must NOT be rejected.
+//
+// ## Fix Applied
+// No code change needed — validation already allows hyphens and underscores.
+// This test verifies the constraint is appropriately narrow (not over-blocking).
+//
+// ## Pitfall
+// Do not widen the rejection set beyond the documented forbidden characters.
+// Over-validation rejects valid names and breaks legitimate use cases.
+#[ test ]
+fn test_valid_hyphen_underscore_name_accepted()
+{
+  struct HyphenUnderscoreApp;
+  impl ConfigPaths for HyphenUnderscoreApp
+  {
+    fn app_name() -> &'static str { "my-app_v2" }
+  }
+
+  let result = config_hierarchy::get_local_config_path::< HyphenUnderscoreApp >();
+  assert!( result.is_ok(), "app_name with hyphens and underscores must be accepted, got: {:?}", result.err() );
+
+  let path_str = result.unwrap().to_string_lossy().to_string();
+  assert!( path_str.contains( ".my-app_v2" ), "Path must use dotted app_name, got: {path_str}" );
+}

@@ -457,3 +457,44 @@ fn xdg_config_home_used_as_fallback()
   if let Ok( v ) = original_xdg { env::set_var( "XDG_CONFIG_HOME", v ); } else { env::remove_var( "XDG_CONFIG_HOME" ); }
   let _ = std::fs::remove_dir_all( &xdg_dir );
 }
+
+/// Verifies `ConfigManager` occupies zero bytes at runtime
+///
+/// **What**: `size_of::< ConfigManager< D, P, V > >()` returns 0 for any valid type combination
+/// **Why**: Proves zero-cost composition — type parameters carry no runtime storage cost
+/// **Validates**: All three type params use only `PhantomData` — impossible to fake with a stored field
+#[test]
+fn config_manager_has_zero_size()
+{
+  use config_hierarchy::{ ConfigManager, ConfigDefaults, ConfigValidator, ValidationError, ConfigSource };
+  use core::mem;
+  use std::collections::HashMap;
+  use serde_json::Value as JsonValue;
+
+  struct ZeroD;
+  impl ConfigDefaults for ZeroD
+  {
+    fn get_defaults() -> HashMap< String, JsonValue > { HashMap::new() }
+    fn get_parameter_names() -> Vec< &'static str > { vec![] }
+  }
+
+  struct ZeroP;
+  impl ConfigPaths for ZeroP
+  {
+    fn app_name() -> &'static str { "zero_size_test" }
+  }
+
+  struct ZeroV;
+  impl ConfigValidator for ZeroV
+  {
+    fn validate_parameter( _: &str, _: &JsonValue ) -> Result< (), ValidationError > { Ok( () ) }
+    fn validate_all( _: &HashMap< String, ( JsonValue, ConfigSource ) > ) -> Vec< ValidationError > { Vec::new() }
+  }
+
+  // ConfigManager<D,P,V> holds only PhantomData<D>, PhantomData<P>, PhantomData<V> — zero runtime bytes
+  assert_eq!(
+    mem::size_of::< ConfigManager< ZeroD, ZeroP, ZeroV > >(),
+    0,
+    "ConfigManager must occupy zero bytes — it is a zero-cost abstraction with no stored fields"
+  );
+}

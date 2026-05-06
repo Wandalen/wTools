@@ -121,6 +121,10 @@ See [`docs/`](docs/) for complete specifications:
 | [Algorithm: Type Detection](docs/algorithm/001_type_detection.md) | String-to-type conversion rules |
 | [Format: Config File Format](docs/format/001_config_file_format.md) | YAML file structure and fields |
 
+## Tasks
+
+See [`task/`](task/) for active implementation work items.
+
 ## License
 
 MIT

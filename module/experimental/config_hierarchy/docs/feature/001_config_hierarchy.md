@@ -9,15 +9,15 @@
 
 ### Design
 
-Provides a reusable, trait-based configuration framework for CLI applications that need to resolve settings from multiple sources with clear precedence rules, automatic type detection, source tracking, and validation. Users implement three traits (`ConfigDefaults`, `ConfigPaths`, `ConfigValidator`) and compose a zero-cost `ConfigManager< D, P, V >` type from them. All methods on `ConfigManager` are static — the struct holds no data beyond `PhantomData` markers.
+Provides a reusable, trait-based configuration framework for CLI applications that need to resolve settings from multiple sources with clear precedence rules, automatic type detection, source tracking, and validation. Users implement three configurable traits (path config, defaults, and validation) and compose a zero-cost manager type from them. All manager operations are stateless — the type carries no runtime data.
 
 ### Behavior
 
 #### Configuration Resolution
 
-- Resolves a single parameter from all sources following the 6-level priority hierarchy (see invariant/001)
-- Resolves all parameters into a complete `HashMap< String, ( JsonValue, ConfigSource ) >`
-- Tracks source provenance for every resolved value via `ConfigSource` enum
+- Resolves a single parameter from all sources following the 6-level priority hierarchy (see [invariant/001](../invariant/001_resolution_hierarchy.md))
+- Resolves all parameters into a configuration map with per-value source labels
+- Tracks source provenance for every resolved value
 - Handles missing files and missing values gracefully without panicking
 - Supports runtime parameter overrides as highest-priority input
 
@@ -28,41 +28,38 @@ Requires `file_ops` feature.
 - Loads YAML configuration files from discovered paths
 - Saves configuration with automatic metadata generation (`created_at`, `last_modified`)
 - Deletes configuration files when requested
-- Supports atomic read-modify-write via `atomic_config_modify()`
-- Uses `fs2` file locking to prevent concurrent write corruption
+- Supports atomic read-modify-write via a file-locked transaction helper
+- Uses advisory file locking to prevent concurrent write corruption
 
 #### Path Discovery
 
 - Resolves global configuration under `$PRO/.persistent/.{app_name}/config.yaml`
-- Discovers local configurations using dual-pattern support:
-  - `-{app_name}/{config_filename}` — temporary, gitignored (higher priority within same directory)
-  - `.{app_name}/{config_filename}` — permanent, version-controlled (lower priority within same directory)
+- Discovers local configurations using dual-pattern scanning — temporary and permanent variants — with depth-based priority ordering (see [invariant/001 § Dual-Pattern Rule](../invariant/001_resolution_hierarchy.md))
 - Walks parent directories from CWD to filesystem root, nearest ancestor first
-- Directory depth takes absolute precedence over pattern type
 
 #### Validation
 
-- Single-parameter validation via `ConfigValidator::validate_parameter()`
-- Cross-parameter validation via `ConfigValidator::validate_all()`
+- Single-parameter validation via the validator trait's per-parameter hook
+- Cross-parameter validation via the validator trait's cross-parameter hook
 - Both methods called independently; all errors collected before reporting
-- `NoValidator` stub available for applications not needing validation
+- A built-in no-op validator is available for applications not needing validation (see [api/003](../api/003_config_validator_trait.md))
 
 #### Type Detection
 
 Automatic string-to-typed-value conversion applied to all env var and file values:
 
-- Boolean: `"true"` / `"yes"` / `"1"` / `"on"` → `Bool(true)` (case-insensitive)
-- Boolean: `"false"` / `"no"` / `"0"` / `"off"` → `Bool(false)` (case-insensitive)
-- Integer: `"42"`, `"-100"` → `Number`
-- Float: `"3.14"`, `"1.23e-4"` → `Number`
-- Fallback: all other strings → `String`
+- Boolean: `"true"` / `"yes"` / `"1"` / `"on"` → boolean true (case-insensitive)
+- Boolean: `"false"` / `"no"` / `"0"` / `"off"` → boolean false (case-insensitive)
+- Integer: `"42"`, `"-100"` → integer number
+- Float: `"3.14"`, `"1.23e-4"` → float number
+- Fallback: all other strings → string
 
 #### Concurrency Control
 
 Requires `file_ops` feature.
 
-- File-based advisory locking via `fs2`
-- `atomic_config_modify()` provides transaction-like read-modify-write
+- File-based advisory locking
+- Atomic read-modify-write helper provides transaction-like access
 - Safe concurrent reads from multiple processes
 
 ### Security
@@ -73,23 +70,24 @@ Requires `file_ops` feature.
 - Must not contain `/` or `\` — prevents directory traversal
 - Must not contain `..` — prevents path traversal attacks
 
-Path discovery functions return `Err(String)` for invalid app names. `discover_local_configs()` silently skips invalid app names to avoid breaking the discovery loop.
+Path discovery functions return `Err(String)` for invalid app names. The local config discovery loop silently skips invalid app names to avoid breaking the walk.
 
 **Recommended values**: alphanumeric characters, hyphens, underscores (`my-app`, `my_app_123`). Unicode is supported; whitespace should be avoided (works but causes shell issues).
 
 ### Rationale
 
-1. **Zero-cost abstractions** — `PhantomData`-based generics; `ConfigManager` has no runtime storage
+1. **Zero-cost abstractions** — compile-time generic composition; the manager type has no runtime storage
 2. **Trait-based customization** — Applications control all behavior via three traits; the crate provides only wiring
 3. **Fail-safe defaults** — Missing files and missing keys handled without error propagation
 4. **Explicit source tracking** — Every resolved value carries its provenance for debugging
-5. **No mocking in tests** — All 109 tests use real file I/O via `tempfile` crate
+5. **No mocking in tests** — All tests use real file I/O via temporary directories
 
 ### Algorithms
 
 | File | Relationship |
 |------|--------------|
 | [algorithm/001_type_detection.md](../algorithm/001_type_detection.md) | Type detection algorithm applied during resolution |
+| [algorithm/002_resolution_waterfall.md](../algorithm/002_resolution_waterfall.md) | 6-level resolution waterfall algorithm |
 
 ### APIs
 
@@ -98,6 +96,7 @@ Path discovery functions return `Err(String)` for invalid app names. `discover_l
 | [api/001_config_paths_trait.md](../api/001_config_paths_trait.md) | Required trait for path configuration |
 | [api/002_config_defaults_trait.md](../api/002_config_defaults_trait.md) | Required trait for default values |
 | [api/003_config_validator_trait.md](../api/003_config_validator_trait.md) | Optional trait for validation |
+| [api/004_config_manager.md](../api/004_config_manager.md) | Primary public type composing all three traits |
 
 ### Formats
 
@@ -110,6 +109,14 @@ Path discovery functions return `Err(String)` for invalid app names. `discover_l
 | File | Relationship |
 |------|--------------|
 | [invariant/001_resolution_hierarchy.md](../invariant/001_resolution_hierarchy.md) | Resolution order this feature implements |
+| [invariant/002_file_persistence_contracts.md](../invariant/002_file_persistence_contracts.md) | File write contracts this feature must uphold |
+| [invariant/003_app_name_constraints.md](../invariant/003_app_name_constraints.md) | App name validation rules this feature enforces |
+
+### Patterns
+
+| File | Relationship |
+|------|--------------|
+| [pattern/001_zero_cost_composition.md](../pattern/001_zero_cost_composition.md) | Composition pattern used by the manager type |
 
 ### Sources
 
@@ -126,6 +133,9 @@ Path discovery functions return `Err(String)` for invalid app names. `discover_l
 | [src/conversion.rs](../../src/conversion.rs) | Value conversion utilities |
 | [src/error.rs](../../src/error.rs) | Error type definitions |
 | [src/display/mod.rs](../../src/display/mod.rs) | Display formatting entry point |
+| [src/display/table.rs](../../src/display/table.rs) | Table format display implementation |
+| [src/display/json.rs](../../src/display/json.rs) | JSON format display implementation |
+| [src/display/yaml.rs](../../src/display/yaml.rs) | YAML format display implementation |
 
 ### Tests
 
@@ -142,3 +152,4 @@ Path discovery functions return `Err(String)` for invalid app names. `discover_l
 | [tests/edge_cases_tests.rs](../../tests/edge_cases_tests.rs) | Edge case coverage |
 | [tests/scope_operations_tests.rs](../../tests/scope_operations_tests.rs) | Scope operations tests |
 | [tests/display_tests.rs](../../tests/display_tests.rs) | Display formatting tests |
+| [tests/validator_tests.rs](../../tests/validator_tests.rs) | ConfigValidator trait and NoValidator tests |

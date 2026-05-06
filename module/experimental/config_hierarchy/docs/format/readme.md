@@ -2,13 +2,13 @@
 
 ### Scope
 
-- **What**: Configuration file format specifications for config_hierarchy
-- **Who**: Users authoring config files; implementors parsing them
-- **When**: Writing or parsing config files on disk
-- **Out of scope**: Resolution priority (→ invariant/), trait contracts (→ api/)
+- **Purpose**: Specify the on-disk file format for configuration files consumed by config_hierarchy.
+- **Responsibility**: Format specifications for YAML config files and their key-value conventions.
+- **In Scope**: YAML structure, key conventions, and supported value types.
+- **Out of Scope**: Resolution priority (→ invariant/), trait contracts (→ api/)
 
 ### Overview Table
 
-| NNN | Name | Status |
-|-----|------|--------|
-| 001 | Config File Format | active |
+| ID | Name | Purpose | Status |
+|----|------|---------|--------|
+| 001 | [Config File Format](001_config_file_format.md) | YAML configuration file structure and conventions | ✅ |

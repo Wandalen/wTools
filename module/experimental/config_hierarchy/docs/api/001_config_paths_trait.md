@@ -4,12 +4,12 @@
 
 - **Purpose**: Define the contract for supplying path and naming configuration to ConfigManager.
 - **Responsibility**: Document all path derivation methods, defaults, env var naming, and OS-specific fallbacks.
-- **In Scope**: All 15 ConfigPaths methods; path derivation formulas; env var naming; only app_name() is required.
+- **In Scope**: All `ConfigPaths` methods; path derivation formulas; env var naming; only app_name() is required.
 - **Out of Scope**: Default values (→ api/002), validation (→ api/003), file format (→ format/001).
 
 ### Abstract
 
-`ConfigPaths` is one of the three traits users implement to configure `ConfigManager< D, P, V >`. It controls all path derivation — where config files live, what they are named, how environment variables are formatted, and which OS-specific directories to use as fallbacks. Only `app_name()` is required; all other 14 methods have sensible defaults derived from the app name.
+`ConfigPaths` is one of the three traits users implement to configure the manager type. It controls all path derivation — where config files live, what they are named, how environment variables are formatted, and which OS-specific directories to use as fallbacks. Only `app_name()` is required; all other methods have sensible defaults derived from the app name.
 
 ### Operations
 
@@ -23,6 +23,8 @@ With default settings and `app_name() = "myapp"`:
 | Local temporary | `{local_temporary_prefix}{app_name}/{local_config_filename}` | `-myapp/config.yaml` |
 | Global | `${pro_env_var}/{global_persistent_dir}/{local_permanent_prefix}{app_name}/{global_config_filename}` | `$PRO/.persistent/.myapp/config.yaml` |
 | Env var | `{env_var_prefix}{env_var_separator}{param_name_cased}` | `MYAPP_TIMEOUT` |
+
+The env var naming formula is an invariant — see [invariant/001 § Environment Variable Format](../invariant/001_resolution_hierarchy.md) for the contract.
 
 Note: `local_permanent_prefix` (default `"."`) is applied to `app_name` in the global path too — producing `.myapp` not `myapp`.
 
@@ -53,7 +55,7 @@ Path discovery functions return `Err(String)` when `app_name()` fails validation
 - Contains `/` or `\`
 - Contains `..`
 
-`discover_local_configs()` silently skips invalid app names to avoid breaking the discovery loop. No other methods on `ConfigPaths` are validated at call time.
+The local config discovery loop silently skips invalid app names to avoid breaking the discovery walk. No other methods on `ConfigPaths` are validated at call time.
 
 ### Compatibility Guarantees
 
@@ -71,6 +73,7 @@ The default `env_var_prefix()` allocates a new heap string on every call and nev
 |------|--------------|
 | [api/002_config_defaults_trait.md](../api/002_config_defaults_trait.md) | Companion required trait |
 | [api/003_config_validator_trait.md](../api/003_config_validator_trait.md) | Companion optional trait |
+| [api/004_config_manager.md](../api/004_config_manager.md) | Manager type that takes this trait as a type parameter |
 
 ### Features
 
@@ -89,3 +92,18 @@ The default `env_var_prefix()` allocates a new heap string on every call and nev
 | File | Relationship |
 |------|--------------|
 | [invariant/001_resolution_hierarchy.md](../invariant/001_resolution_hierarchy.md) | Path formulas defined by this trait govern the invariant |
+| [invariant/003_app_name_constraints.md](../invariant/003_app_name_constraints.md) | Validation rules that app_name() must satisfy |
+
+### Sources
+
+| File | Relationship |
+|------|--------------|
+| [src/traits.rs](../../src/traits.rs) | `ConfigPaths` trait definition and all default implementations |
+| [src/path_discovery.rs](../../src/path_discovery.rs) | Path derivation functions consuming `ConfigPaths` methods |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| [tests/configurability_tests.rs](../../tests/configurability_tests.rs) | Custom trait implementation tests |
+| [tests/path_standards_tests.rs](../../tests/path_standards_tests.rs) | Path construction standards tests |

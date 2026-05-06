@@ -41,7 +41,7 @@ Environment variable names are constructed as:
 
 With defaults: `{APP_NAME}_{PARAM_NAME_UPPERCASE}` — e.g., `MYAPP_TIMEOUT`.
 
-All three components are customizable via `ConfigPaths` methods.
+All three components are customizable via `ConfigPaths` methods. See [api/001_config_paths_trait.md](../api/001_config_paths_trait.md) for the method signatures controlling each component.
 
 #### Global Path Construction
 
@@ -62,22 +62,22 @@ OS-specific fallback path (when `$PRO` is not set):
 
 ### Enforcement Mechanism
 
-The ordering is enforced structurally in `src/hierarchy.rs`:
+The ordering is enforced structurally in the resolution implementation:
 
-- `resolve_config_value< D, P >()` checks each level in order via early return
-- The first `return` reached short-circuits all lower-priority checks
-- `discover_local_configs_internal< P >()` returns paths tagged with depth (`0` = current, `1+` = parent), preserving depth-beats-pattern ordering
-- Within each depth, the temporary pattern (`-`) is placed before the permanent pattern (`.`) in the returned slice
+- The resolution function checks each level in order via early return — the first level that yields a value short-circuits all lower-priority checks
+- The path discovery function returns config paths tagged with directory depth (`0` = current, `1+` = parent ancestor), preserving depth-beats-pattern ordering
+- Within each depth level, the temporary pattern is placed before the permanent pattern
 
 ### Violation Consequences
 
-If the `sources` slice is assembled in incorrect order (e.g., for hypothetical future direct use), lower-priority values silently override higher-priority values. There is no runtime check on ordering — the invariant is maintained exclusively by the implementation in `src/hierarchy.rs`.
+If the sources are assembled in incorrect order (e.g., for hypothetical future direct use), lower-priority values silently override higher-priority values. There is no runtime check on ordering — the invariant is maintained exclusively by the resolution implementation.
 
 ### Algorithms
 
 | File | Relationship |
 |------|--------------|
 | [algorithm/001_type_detection.md](../algorithm/001_type_detection.md) | Type detection applied to values found at each level |
+| [algorithm/002_resolution_waterfall.md](../algorithm/002_resolution_waterfall.md) | Algorithm that implements this priority ordering |
 
 ### APIs
 
@@ -85,6 +85,7 @@ If the `sources` slice is assembled in incorrect order (e.g., for hypothetical f
 |------|--------------|
 | [api/001_config_paths_trait.md](../api/001_config_paths_trait.md) | Methods controlling env var format and path construction |
 | [api/002_config_defaults_trait.md](../api/002_config_defaults_trait.md) | Defaults are the lowest-priority level (priority 6) |
+| [api/004_config_manager.md](../api/004_config_manager.md) | Manager type whose resolution operations must follow this ordering |
 
 ### Features
 
@@ -97,3 +98,18 @@ If the `sources` slice is assembled in incorrect order (e.g., for hypothetical f
 | File | Relationship |
 |------|--------------|
 | [format/001_config_file_format.md](../format/001_config_file_format.md) | Format of files loaded at each level |
+
+### Sources
+
+| File | Relationship |
+|------|--------------|
+| [src/hierarchy.rs](../../src/hierarchy.rs) | 6-level waterfall resolution implementation |
+| [src/path_discovery.rs](../../src/path_discovery.rs) | Local config discovery with depth tagging |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| [tests/hierarchy_tests.rs](../../tests/hierarchy_tests.rs) | Resolution priority ordering and early-return tests |
+| [tests/dual_pattern_tests.rs](../../tests/dual_pattern_tests.rs) | Dual-pattern and depth-beats-pattern tests |
+| [tests/path_standards_tests.rs](../../tests/path_standards_tests.rs) | Path discovery and depth tagging tests |

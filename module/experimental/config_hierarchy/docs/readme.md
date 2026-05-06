@@ -2,6 +2,13 @@
 
 ### Scope
 
+- **What**: Behavioral specifications and design documentation for config_hierarchy
+- **Who**: Developers implementing, extending, or reviewing crate behavior
+- **When**: Before and during feature implementation; when auditing behavioral requirements
+- **Out of scope**: Test specifications (→ tests/docs/), implementation code (→ src/)
+
+### Responsibility Table
+
 | File | Responsibility |
 |------|----------------|
 | `algorithm/` | Detection and resolution algorithms |
@@ -11,3 +18,4 @@
 | `feature/` | Feature behavioral specifications |
 | `format/` | Configuration file format specifications |
 | `invariant/` | System invariants and constraints |
+| `pattern/` | Reusable design patterns in the implementation |
