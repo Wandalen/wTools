@@ -19,7 +19,7 @@
 | AP-06 | zero_element_valid_all_macros | boundary | ✅ |
 | AP-07 | trailing_comma_all_macros | syntax | ✅ |
 | AP-08 | type_reexports_full_std_api | reexport | ✅ |
-| AP-09 | features_independent | gate | ⚠️ compile-fail |
+| AP-09 | features_independent | gate | ✅ |
 | AP-10 | expansion_contract_with_capacity_then_insert | contract | ✅ |
 
 ---

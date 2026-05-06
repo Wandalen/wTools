@@ -13,11 +13,11 @@ Layers are ordered bottom-up: lower layers have fewer internal dependencies; hig
 | 4 | Patterns | 11 | Builder, module org, clone dyn, reflect, component model |
 | 5 | Collections | 6 | Containers, iterators, async traits |
 | 6 | String & Format | 8 | Strings, colors, data display, markdown, type aggregation |
-| 7 | Path & Process | 8 | Paths, filesystem, processes, workspace, config |
+| 7 | Path & Process | 7 | Paths, filesystem, processes, workspace, config |
 | 8 | Tooling | 8 | Testing, benchmarking, genfile, CLI, crates analysis |
 | 9 | Application | 5 | willbe, unitore, sqlx, aggregators |
 
-Total: 69 crates (0 alias + 30 core + 20 deprecated + 19 experimental)
+Total: 68 crates (0 alias + 29 core + 20 deprecated + 19 experimental)
 Note: 22 additional legacy crates (formerly in `module/postponed/`) are co-located in `module/deprecated/` but have no layer assignments and are excluded from this table.
 
 ## Crate Layer Assignments
@@ -90,7 +90,6 @@ Note: 22 additional legacy crates (formerly in `module/postponed/`) are co-locat
 | `include_md` | experimental | 6 | String & Format | Include a markdown file or named section at compile time | 0 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFR·MS |
 | `strs_tools` | core | 6 | String & Format | Split, indent, and transform strings with ANSI utilities and SIMD acceleration | 9 | 2 | 0 | 2 | 0 | experimental | stable | TDCFREMS |
 | `wstring_tools` | deprecated | 6 | String & Format | Alias — recommended single dependency for all string utilities | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDC·REMS |
-| `config_hierarchy` | core | 7 | Path & Process | Resolve hierarchical config across runtime, env, file, and default sources | 6 | 1 | 0 | 1 | 0 | experimental | stable | TDC·R·MS |
 | `config_hierarchy` | experimental | 7 | Path & Process | Resolve hierarchical config across runtime, env, file, and default sources | 6 | 1 | 0 | 1 | 0 | experimental | stable | TDCFREMS |
 | `file_tools` | deprecated | 7 | Path & Process | RAII temp directories, glob re-export, and upward path traversal | 1 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFREMS |
 | `process_tools` | core | 7 | Path & Process | Run subprocesses with captured I/O, probe process liveness, and daemonize Unix services | 6 | 4 | 0 | 4 | 0 | stable | stable | TDCFR·MS |
@@ -181,7 +180,6 @@ All 8 criteria met — can be promoted to stable without prerequisite work.
 | `multiline_input` | 8 | T·CFREMS | D |
 | `component_model_meta` | 3 | TD·FR·MS | C, E |
 | `component_model` | 4 | TDCFRE·S | M |
-| `config_hierarchy` (core) | 7 | TDC·R·MS | F, E |
 | `wca` | 8 | TDCFRE·S | M |
 | `unitore` | 9 | TDCFR··S | E, M |
 | `willbe` | 9 | TDCFR··· | E, M, S |
@@ -191,8 +189,8 @@ All 8 criteria met — can be promoted to stable without prerequisite work.
 | Criterion | Failing | Crates |
 |-----------|---------|--------|
 | M (Markers) | 5 | component_model, test_tools, wca, unitore, willbe |
-| F (Features) | 1 | config_hierarchy (core) |
-| E (Examples) | 7 | component_model_meta, strs_tools_meta, cli_fmt, workspace_tools, config_hierarchy (core), unitore, willbe |
+| F (Features) | 0 | — |
+| E (Examples) | 6 | component_model_meta, strs_tools_meta, cli_fmt, workspace_tools, unitore, willbe |
 | C (Clean) | 2 | component_model_meta, component_model_types |
 | S (Stable deps) | 2 | test_tools, willbe |
 | D (Documented) | 2 | multiline_input (experimental), wtools |
@@ -218,7 +216,7 @@ Already-stable crates that do not meet all 8 criteria. Not promotion blockers, b
 
 ## Usefulness Assessment
 
-Utility ranking for 50 non-deprecated crates. Evaluates: internal dependent count, external adopter value, unique functionality (not trivially replaceable), API surface depth.
+Utility ranking for 49 non-deprecated crates. Evaluates: internal dependent count, external adopter value, unique functionality (not trivially replaceable), API surface depth.
 
 ### Tier Definitions
 
@@ -259,7 +257,6 @@ Utility ranking for 50 non-deprecated crates. Evaluates: internal dependent coun
 | `clone_dyn_meta` | 3 | 2 | Builds clone_dyn |
 | `variadic_from` | 4 | 2 | Multi-arg construction; decent standalone utility |
 | `variadic_from_meta` | 3 | 2 | Builds variadic_from |
-| `config_hierarchy` (core) | 7 | 3 | Hierarchical config resolution; real-world utility |
 | `config_hierarchy` (experimental) | 7 | 3 | Hierarchical config resolution; real-world utility |
 | `strs_tools` | 6 | 3 | String split/indent/transform with ANSI + SIMD |
 | `strs_tools_meta` | 3 | 3 | Builds strs_tools |
@@ -300,7 +297,6 @@ Utility ranking for 50 non-deprecated crates. Evaluates: internal dependent coun
 | 9 | Application | 0 | 2 | 0 | 0 | 0 | 2 |
 | | **Total** | **10** | **15** | **13** | **9** | **2** | **49** |
 
-Note: config_hierarchy counted once in tier table totals. Main ranked table lists both entries separately (50 rows).
 
 ## Crate Profiles
 
@@ -1021,20 +1017,6 @@ Per-crate attributes for promotion and publishing.
 ---
 
 ### Layer 7 · Path & Process
-
-#### `config_hierarchy` (core)
-- **module**: core
-- **layer**: 7 · Path & Process
-- **state**: experimental
-- **target**: stable
-- **readiness**: TDC·R·MS
-- **purpose**: Resolve hierarchical config across runtime, env, file, and default sources
-- **deps**: 6 · **int**: 1 · **=L**: 0 · **↓L**: 1 · **↑L**: 0
-- **version**: 0.4.0
-- **no_std**: no
-- **keywords**: config, configuration, hierarchy, yaml, settings
-- **categories**: config, filesystem
-- **pitch**: Trait-based 6-level configuration resolution with source tracking, type detection, and atomic file operations — every value knows where it came from.
 
 #### `config_hierarchy` (experimental)
 - **module**: experimental

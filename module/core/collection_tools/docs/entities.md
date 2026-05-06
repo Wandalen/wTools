@@ -7,6 +7,9 @@
 | `api/` | Registry and overview of all API doc instances | [api/readme.md](api/readme.md) | 1 |
 | `feature/` | Registry and overview of all feature doc instances | [feature/readme.md](feature/readme.md) | 2 |
 | `invariant/` | Registry and overview of all invariant doc instances | [invariant/readme.md](invariant/readme.md) | 2 |
+| `tests/docs/api/` | Test spec surface for api/ doc instances | [../tests/docs/api/readme.md](../tests/docs/api/readme.md) | 1 |
+| `tests/docs/feature/` | Test spec surface for feature/ doc instances | [../tests/docs/feature/readme.md](../tests/docs/feature/readme.md) | 2 |
+| `tests/docs/invariant/` | Test spec surface for invariant/ doc instances | [../tests/docs/invariant/readme.md](../tests/docs/invariant/readme.md) | 2 |
 
 ## Master Doc Instances Table
 

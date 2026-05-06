@@ -8,10 +8,13 @@ Test suite for the `collection_tools` crate.
 
 | File | Responsibility |
 |------|----------------|
+| `compile_fail_test.rs` | trybuild runner for into/FT-02 (type annotation required) |
+| `feature_gate_compile_fail_test.rs` | Subprocess cargo check for FT-07, into/FT-06, AP-09 (feature gate isolation) |
 | `heap_macro_availability_test.rs` | Verifies heap macro public API accessibility (bug reproducer for issue-1) |
 | `manual_corner_cases_test.rs` | Comprehensive collection macro corner case tests |
 | `no_std_alloc_test.rs` | Invariant tests for no_std allocation selection (cfg-gated on use_alloc feature) |
 | `tests.rs` | Test aggregation entry point |
+| `compile_fail/` | trybuild compile-fail fixtures (.rs + .stderr golden files) |
 | `docs/` | Test spec surface for each doc entity instance |
 | `inc/` | Modular per-collection-type constructor tests |
 | `manual/` | Manual testing plan and execution records |

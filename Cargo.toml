@@ -11,9 +11,6 @@ exclude = [
   # Exclude non-workspace module groups
   "module/step/*",
 
-  # Exclude module/core stub that still has Cargo.toml (active crate is in module/experimental)
-  "module/core/config_hierarchy",
-
   # Deprecated crates — parked here before final deletion
   "module/deprecated/*",
 ]
@@ -470,6 +467,11 @@ path = "module/core/crates_tools"
 [workspace.dependencies.benchkit]
 version = "~0.20.0"
 path = "module/experimental/benchkit"
+
+[workspace.dependencies.multiline_input]
+version = "~0.2.0"
+path = "module/experimental/multiline_input"
+default-features = false
 
 ## steps
 

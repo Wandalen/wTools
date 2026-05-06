@@ -18,7 +18,7 @@
 | FT-04 | dlist_alias_equals_vec | alias | ✅ |
 | FT-05 | empty_construction_all_types | boundary | ✅ |
 | FT-06 | trailing_comma_all_nine_macros | syntax | ✅ |
-| FT-07 | feature_gate_enforced | gate | ⚠️ compile-fail |
+| FT-07 | feature_gate_enforced | gate | ✅ |
 
 ---
 

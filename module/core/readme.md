@@ -16,14 +16,11 @@ Workspace crates providing core wtools functionality.
 | `derive_tools_meta/` | Procedural macros for `derive_tools`. |
 | `deterministic_rand/` | Deterministic random number generation. |
 | `error_tools/` | Workspace-standard error handling. |
-| `format_tools/` | Formatting utilities and display helpers. |
 | `former/` | Builder pattern derive macro. |
 | `former_meta/` | Procedural macros for `former`. |
 | `former_types/` | Types and traits for `former`. |
 | `genfile/` | File generation utilities. |
 | `genfile_core/` | Core library for file generation. |
-| `impls_index/` | Trait implementation index utilities. |
-| `impls_index_meta/` | Procedural macros for `impls_index`. |
 | `inspect_type/` | Type inspection at runtime utilities. |
 | `macro_tools/` | Macro development utilities. |
 | `mod_interface/` | Module interface generation macros. |
@@ -36,3 +33,4 @@ Workspace crates providing core wtools functionality.
 | `variadic_from/` | Variadic `From` trait implementations. |
 | `variadic_from_meta/` | Procedural macros for `variadic_from`. |
 | `workspace_tools/` | Workspace management utilities. |
+| `wtools/` | Thin re-export of collection_tools macros. |
