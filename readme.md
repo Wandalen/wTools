@@ -1,5 +1,9 @@
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://stand-with-ukraine.pp.ua)
 
+<div align="center">
+
+<br>
+
 ![wTools](./asset/img/logo_v3_trans_wide.png)
 
 <!--{ generate.main_header.start() }-->
@@ -9,11 +13,120 @@
 [![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/wTools)
 <!--{ generate.main_header.end }-->
 
-Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.
+**General-purpose tools for Rust. Extend the language without spoiling it.**
 
-[Architectural layer map](doc/layers.md) — crates organized by dependency layer with coupling metrics.
+</div>
 
-### Rust tools
+---
+
+49 crates across [9 architectural layers](doc/layers.md). Each one is independent, small, and focused — use one, use many, or use them all. No monolith, no lock-in.
+
+## Quick Start
+
+Add what you need to `Cargo.toml`:
+
+```toml
+[dependencies]
+former = "2.45"              # builder pattern via derive
+collection_tools = "0.38"    # hmap!, hset!, bmap! constructors
+error_tools = "0.39"         # unified error handling
+derive_tools = "0.65"        # enhanced derive macros
+```
+
+Build complex structs step by step:
+
+```rust
+use former::Former;
+
+#[ derive( Debug, Former ) ]
+pub struct UserProfile
+{
+  age : i32,
+  username : String,
+  bio : Option< String >,
+}
+
+let profile = UserProfile::former()
+.age( 30 )
+.username( "JohnDoe".to_string() )
+.bio( "Developer".to_string() )
+.form();
+```
+
+Create collections without boilerplate:
+
+```rust
+use collection_tools::*;
+
+let map = hmap!{ "alice" => 1, "bob" => 2 };
+let set = hset!{ 1, 2, 3 };
+```
+
+## Crates
+
+### Core — 28 crates
+
+| Crate | Stability | Status | What it does |
+|-------|:---------:|:------:|--------------|
+| [`cli_fmt`](module/core/cli_fmt) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=cli_fmt)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | CLI output formatting utilities for command-line applications |
+| [`clone_dyn`](module/core/clone_dyn) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=clone_dyn)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Derive to clone dyn structures. |
+| [`clone_dyn_meta`](module/core/clone_dyn_meta) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=clone_dyn_meta)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Derive to clone dyn structures. |
+| [`clone_dyn_types`](module/core/clone_dyn_types) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=clone_dyn_types)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Derive to clone dyn structures. |
+| [`collection_tools`](module/core/collection_tools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=collection_tools)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | General purpose tools to manipulate collections( containers like Vec/HashMap/HashSet ). |
+| [`color_tools`](module/core/color_tools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=color_tools)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Typed text-with-optional-ANSI-color abstraction |
+| [`crates_tools`](module/core/crates_tools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=crates_tools)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Tools to analyse crate files. |
+| [`data_fmt`](module/core/data_fmt) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=data_fmt)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Multi-format data visualization library with 10 formatters, 33 variants, and granular f... |
+| [`derive_tools`](module/core/derive_tools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=derive_tools)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | A collection of derive macros designed to enhance STD. |
+| [`derive_tools_meta`](module/core/derive_tools_meta) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=derive_tools_meta)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Collection of derives which extend STD. Its meta module. Don't use directly. |
+| [`error_tools`](module/core/error_tools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=error_tools)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Basic exceptions handling mechanism |
+| [`former`](module/core/former) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=former)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | A flexible implementation of the Builder pattern supporting nested builders and collect... |
+| [`former_meta`](module/core/former_meta) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=former_meta)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | A flexible implementation of the Builder pattern supporting nested builders and collect... |
+| [`former_types`](module/core/former_types) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=former_types)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | A flexible implementation of the Builder pattern supporting nested builders and collect... |
+| [`genfile`](module/core/genfile) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=genfile)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | CLI for genfile_core template archive management - create, manage, and materialize code... |
+| [`genfile_core`](module/core/genfile_core) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=genfile_core)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | File generation tools for code generation and template materialization. |
+| [`inspect_type`](module/core/inspect_type) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=inspect_type)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Diagnostic-purpose tools to inspect type of a variable and its size. |
+| [`macro_tools`](module/core/macro_tools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=macro_tools)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Tools for writing procedural macroses. |
+| [`mod_interface`](module/core/mod_interface) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=mod_interface)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Protocol of modularity unifying interface of a module and introducing layers. |
+| [`mod_interface_meta`](module/core/mod_interface_meta) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=mod_interface_meta)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Protocol of modularity unifying interface of a module and introducing layers. |
+| [`process_tools`](module/core/process_tools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=process_tools)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Collection of algorithms and structures to handle processes properly. |
+| [`pth`](module/core/pth) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=pth)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Collection of algorithms and structures to handle paths properly. |
+| [`strs_tools`](module/core/strs_tools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=strs_tools)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Tools to manipulate strings. |
+| [`strs_tools_meta`](module/core/strs_tools_meta) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=strs_tools_meta)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Procedural macros for strs_tools compile-time optimizations. Its meta module. Don't use... |
+| [`variadic_from`](module/core/variadic_from) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=variadic_from)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Variadic from. |
+| [`variadic_from_meta`](module/core/variadic_from_meta) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=variadic_from_meta)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Variadic from, proc-macro part. |
+| [`workspace_tools`](module/core/workspace_tools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=workspace_tools)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Reliable workspace-relative path resolution for Rust projects. Automatically finds your... |
+| [`wtools`](module/core/wtools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=wtools)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Single entry-point for collection utilities. Re-exports collection_tools: variadic cons... |
+
+### Experimental — 21 crates
+
+| Crate | Stability | Status | What it does |
+|-------|:---------:|:------:|--------------|
+| [`asbytes`](module/experimental/asbytes) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=asbytes)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Traits for viewing data as byte slices or consuming data into byte vectors. Relies on b... |
+| [`async_from`](module/experimental/async_from) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=async_from)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Async version of From, Into, TryFrom, TryInto. |
+| [`benchkit`](module/experimental/benchkit) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=benchkit)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Lightweight benchmarking toolkit focused on practical performance analysis and report g... |
+| [`component_model`](module/experimental/component_model) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=component_model)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Revolutionary type-safe component assignment for Rust. Build complex objects with zero ... |
+| [`component_model_meta`](module/experimental/component_model_meta) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=component_model_meta)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | A flexible implementation of the Builder pattern supporting nested builders and collect... |
+| [`component_model_types`](module/experimental/component_model_types) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=component_model_types)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Component model. |
+| [`config_hierarchy`](module/experimental/config_hierarchy) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=config_hierarchy)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Generic hierarchical configuration management with 6-level priority system and source t... |
+| [`deterministic_rand`](module/experimental/deterministic_rand) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=deterministic_rand)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Hierarchical random number generators for concurrent simulations with switchable determ... |
+| [`for_each`](module/experimental/for_each) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=for_each)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Apply macro for each element of a list. |
+| [`implements`](module/experimental/implements) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=implements)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Macro to answer the question: does it implement a trait? |
+| [`include_md`](module/experimental/include_md) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=include_md)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Include markdown file or its section. |
+| [`interval_adapter`](module/experimental/interval_adapter) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=interval_adapter)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Interval adapter for both open/closed implementations of intervals ( ranges ). |
+| [`mem_tools`](module/experimental/mem_tools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=mem_tools)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Collection of tools to manipulate memory. |
+| [`multiline_input`](module/experimental/multiline_input) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=multiline_input)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Terminal multiline input with rich editing (ENTER to submit, CTRL+ENTER for newline) |
+| [`program_tools`](module/experimental/program_tools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=program_tools)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Rust script runner — compile and execute Rust files as scripts with output capture. |
+| [`reflect_tools`](module/experimental/reflect_tools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=reflect_tools)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Collection of mechanisms for reflection. |
+| [`reflect_tools_meta`](module/experimental/reflect_tools_meta) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=reflect_tools_meta)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Collection of mechanisms for reflection. Its meta module. Don't use directly. |
+| [`test_tools`](module/experimental/test_tools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=test_tools)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Tools for writing and running tests. |
+| [`unitore`](module/experimental/unitore) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=unitore)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Feed reader with the ability to set updates frequency. |
+| [`wca`](module/experimental/wca) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=wca)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | The tool to make CLI ( commands user interface ). It is able to aggregate external bina... |
+| [`willbe`](module/experimental/willbe) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=willbe)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) | Utility to publish multi-crate and multi-workspace environments and maintain their cons... |
+
+<details>
+<summary><strong>Detailed CI status (master + alpha branches, docs, samples)</strong></summary>
+
+#### Core Crates
 
 <!--{ generate.healthtable( 'module/core' ) } -->
 | Module | Stability | master | alpha | Docs | Sample |
@@ -48,7 +161,7 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 | [wtools](module/core/wtools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=wtools)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml?query=branch%3Amaster) | [![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=alpha&job=wtools)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml?query=branch%3Aalpha) | [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/wtools) | [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module%2Fcore%2Fwtools%2Fexamples%2Fwtools_trivial.rs,RUN_POSTFIX=--example%20wtools_trivial/https://github.com/Wandalen/wTools) |
 <!--{ generate.healthtable.end } -->
 
-### Experimental tools
+#### Experimental Crates
 
 <!--{ generate.healthtable( 'module/experimental' ) } -->
 | Module | Stability | master | alpha | Docs | Sample |
@@ -75,3 +188,9 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 | [unitore](module/experimental/unitore) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=unitore)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml?query=branch%3Amaster) | [![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=alpha&job=unitore)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml?query=branch%3Aalpha) | [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/unitore) |  |
 | [willbe](module/experimental/willbe) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=willbe)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml?query=branch%3Amaster) | [![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=alpha&job=willbe)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml?query=branch%3Aalpha) | [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/willbe) |  |
 <!--{ generate.healthtable.end } -->
+
+</details>
+
+## License
+
+MIT. See [license](license) for details.
