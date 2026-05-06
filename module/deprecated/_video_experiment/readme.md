@@ -1,5 +1,4 @@
 # DEPRECATED: video_experiment
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: video_experiment
 <!--{ generate.module_header.start() }-->

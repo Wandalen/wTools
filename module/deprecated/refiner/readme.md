@@ -1,5 +1,4 @@
 # DEPRECATED: refiner
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: refiner
 <!--{ generate.module_header.start() }-->

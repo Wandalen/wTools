@@ -187,6 +187,11 @@ mod private
   &self.module_name
  )
    {
+  let example_name = name
+  .file_stem()
+  .and_then( | s | s.to_str() )
+  .unwrap_or( "" )
+  .to_owned();
   let relative_path = pth ::path ::path_relative
   (
    workspace_path.into(),
@@ -204,7 +209,7 @@ mod private
   (
    " [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={},RUN_POSTFIX=--example%20{}/https://github.com/{})",
    p,
-   p,
+   example_name,
    repo_url
  )
  }

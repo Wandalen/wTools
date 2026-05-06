@@ -8,8 +8,8 @@ authors = [
 license = "MIT"
 readme = "readme.md"
 documentation = "https://docs.rs/async_tools"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/experimental/async_tools"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/experimental/async_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/async_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/async_tools"
 description = """
 Toolkit for asynchronous programming.
 """

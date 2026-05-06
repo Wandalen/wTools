@@ -1,5 +1,4 @@
 # DEPRECATED: std_tools
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: std_tools
 <!--{ generate.module_header.start() }-->

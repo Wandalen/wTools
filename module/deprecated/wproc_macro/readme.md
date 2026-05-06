@@ -1,5 +1,4 @@
 # DEPRECATED: wproc_macro
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: wproc_macro
 <!--{ generate.module_header.start() }-->

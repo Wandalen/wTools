@@ -1,5 +1,4 @@
 # DEPRECATED: fundamental_data_type
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: fundamental_data_type
 <!--{ generate.module_header.start() }-->

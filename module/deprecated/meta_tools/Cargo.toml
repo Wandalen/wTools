@@ -9,8 +9,8 @@ authors = [
 license = "MIT"
 readme = "readme.md"
 documentation = "https://docs.rs/meta_tools"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/experimental/meta_tools"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/experimental/meta_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/meta_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/meta_tools"
 description = """
 Collection of general purpose meta tools.
 """

@@ -1,4 +1,3 @@
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: `component_model_meta`
 <!--{ generate.module_header.start() }-->

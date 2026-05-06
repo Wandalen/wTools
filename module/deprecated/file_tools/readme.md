@@ -1,5 +1,4 @@
 # DEPRECATED: file_tools
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: file_tools
 <!--{ generate.module_header.start() }-->

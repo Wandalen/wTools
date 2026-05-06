@@ -9,8 +9,8 @@ authors = [
 license = "MIT"
 readme = "readme.md"
 documentation = "https://docs.rs/fundamental_data_type"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/core/fundamental_data_type"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/fundamental_data_type"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/fundamental_data_type"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/fundamental_data_type"
 description = """
 A collection of derive macros designed to enhance STD.
 """

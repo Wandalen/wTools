@@ -1,5 +1,4 @@
 # DEPRECATED: winterval
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: winterval
 <!--{ generate.module_header.start() }-->

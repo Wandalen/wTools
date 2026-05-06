@@ -10,8 +10,8 @@ authors = [
 license = "MIT"
 readme = "readme.md"
 documentation = "https://docs.rs/typing_tools"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/experimental/typing_tools"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/experimental/typing_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/typing_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/typing_tools"
 description = """
 Collection of general purpose tools for type checking.
 """

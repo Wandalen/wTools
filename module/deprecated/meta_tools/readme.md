@@ -1,5 +1,4 @@
 # DEPRECATED: meta_tools
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: `meta_tools`
 <!--{ generate.module_header.start() }-->

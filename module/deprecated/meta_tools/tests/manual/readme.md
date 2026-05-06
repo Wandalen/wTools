@@ -26,7 +26,7 @@ This document defines the comprehensive manual testing plan for the meta_tools c
 - Clean build environment
 
 ### setup steps
-1. Navigate to crate root: `cd /home/user1/pro/lib/wip_core/wtools/dev/module/experimental/meta_tools`
+1. Navigate to crate root: `cd /home/user1/pro/lib/wip_core/wtools/dev/module/deprecated/meta_tools`
 2. Clean build: `cargo clean`
 3. Build with all features: `cargo build --all-features`
 4. Verify tests pass: `w3 .test l::3`

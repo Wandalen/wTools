@@ -1,5 +1,4 @@
 # DEPRECATED: wplot
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: wplot
 <!--{ generate.module_header.start() }-->

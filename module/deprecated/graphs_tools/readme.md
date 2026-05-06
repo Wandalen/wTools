@@ -1,5 +1,4 @@
 # DEPRECATED: graphs_tools
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: graphs_tools
 <!--{ generate.module_header.start() }-->

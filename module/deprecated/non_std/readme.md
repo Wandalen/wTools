@@ -1,5 +1,4 @@
 # DEPRECATED: non_std
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: non_std
 <!--{ generate.module_header.start() }-->

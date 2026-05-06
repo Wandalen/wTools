@@ -1,5 +1,4 @@
 # DEPRECATED: time_tools
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: time_tools
 <!--{ generate.module_header.start() }-->

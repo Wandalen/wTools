@@ -9,8 +9,8 @@ authors = [
 license = "MIT"
 readme = "readme.md"
 documentation = "https://docs.rs/wtest_basic"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/core/wtest_basic"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/wtest_basic"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/wtest_basic"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/wtest_basic"
 description = """
 Tools for writing tests. The most basic things.
 """

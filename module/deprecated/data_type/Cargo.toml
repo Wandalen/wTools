@@ -9,8 +9,8 @@ authors = [
 license = "MIT"
 readme = "readme.md"
 documentation = "https://docs.rs/data_type"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/experimental/data_type"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/experimental/data_type"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/data_type"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/data_type"
 description = """
 Collection of primal data types.
 """

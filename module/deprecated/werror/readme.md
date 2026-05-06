@@ -1,5 +1,4 @@
 # DEPRECATED: werror
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: werror
 <!--{ generate.module_header.start() }-->

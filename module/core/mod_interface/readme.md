@@ -1,4 +1,3 @@
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: `mod_interface`
 <!--{ generate.module_header.start() }-->

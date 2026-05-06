@@ -1,5 +1,4 @@
 # DEPRECATED: typing_tools
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: `typing_tools`
 <!--{ generate.module_header.start() }-->

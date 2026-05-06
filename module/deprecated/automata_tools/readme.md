@@ -1,5 +1,4 @@
 # DEPRECATED: automata_tools
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: automata_tools
 <!--{ generate.module_header.start() }-->

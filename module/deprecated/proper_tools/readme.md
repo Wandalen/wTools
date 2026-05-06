@@ -1,5 +1,4 @@
 # DEPRECATED: proper_tools
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: proper_tools
 <!--{ generate.module_header.start() }-->

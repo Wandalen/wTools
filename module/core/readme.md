@@ -4,7 +4,6 @@ Workspace crates providing core wtools functionality.
 
 | Directory | Responsibility |
 |-----------|----------------|
-| `asbytes/` | Conversion of types to byte slices. |
 | `cli_fmt/` | CLI output formatting utilities. |
 | `color_tools/` | Typed text with optional ANSI color abstraction. |
 | `clone_dyn/` | Dynamic dispatch cloning for trait objects. |
@@ -14,7 +13,6 @@ Workspace crates providing core wtools functionality.
 | `crates_tools/` | Crate management and analysis utilities. |
 | `derive_tools/` | Derive macro utilities and extensions. |
 | `derive_tools_meta/` | Procedural macros for `derive_tools`. |
-| `deterministic_rand/` | Deterministic random number generation. |
 | `error_tools/` | Workspace-standard error handling. |
 | `former/` | Builder pattern derive macro. |
 | `former_meta/` | Procedural macros for `former`. |

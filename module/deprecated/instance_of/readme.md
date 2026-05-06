@@ -1,5 +1,4 @@
 # DEPRECATED: instance_of
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: instance_of
 <!--{ generate.module_header.start() }-->

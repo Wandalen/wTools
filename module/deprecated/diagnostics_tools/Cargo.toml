@@ -9,8 +9,8 @@ authors = [
 license = "MIT"
 readme = "readme.md"
 documentation = "https://docs.rs/diagnostics_tools"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/experimental/diagnostics_tools"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/experimental/diagnostics_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/diagnostics_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/diagnostics_tools"
 description = """
 Diagnostics tools.
 """

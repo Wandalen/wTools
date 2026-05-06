@@ -9,8 +9,8 @@ authors = [
 license = "MIT"
 readme = "readme.md"
 documentation = "https://docs.rs/refiner"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/core/refiner"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/refiner"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/refiner"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/refiner"
 description = """
 Utility to operate files from a command line.
 """

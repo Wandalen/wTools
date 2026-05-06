@@ -1,5 +1,4 @@
 # DEPRECATED: multilayer
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: multilayer
 <!--{ generate.module_header.start() }-->

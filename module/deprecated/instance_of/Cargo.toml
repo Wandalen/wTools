@@ -9,8 +9,8 @@ authors = [
 license = "MIT"
 readme = "readme.md"
 documentation = "https://docs.rs/instance_of"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/alias/instance_of"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/alias/instance_of"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/instance_of"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/instance_of"
 description = """
 Macro to answer the question: does it implement a trait?
 """

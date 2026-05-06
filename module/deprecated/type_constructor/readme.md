@@ -1,5 +1,4 @@
 # DEPRECATED: type_constructor
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: type_constructor
 <!--{ generate.module_header.start() }-->

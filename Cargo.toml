@@ -316,7 +316,7 @@ default-features = false
 
 [workspace.dependencies.asbytes]
 version = "~0.2.0"
-path = "module/core/asbytes"
+path = "module/experimental/asbytes"
 default-features = false
 
 
@@ -458,7 +458,7 @@ default-features = false
 
 [workspace.dependencies.deterministic_rand]
 version = "~0.7.0"
-path = "module/core/deterministic_rand"
+path = "module/experimental/deterministic_rand"
 
 [workspace.dependencies.crates_tools]
 version = "~0.25.0"

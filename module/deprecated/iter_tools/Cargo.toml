@@ -9,8 +9,8 @@ authors = [
 license = "MIT"
 readme = "readme.md"
 documentation = "https://docs.rs/iter_tools"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/experimental/iter_tools"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/experimental/iter_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/iter_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/iter_tools"
 description = """
 DEPRECATED. Use itertools directly and macro_tools for IterTrait/BoxedIter.
 """

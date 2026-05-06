@@ -1,5 +1,4 @@
 # DEPRECATED: wautomata
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: wautomata
 <!--{ generate.module_header.start() }-->

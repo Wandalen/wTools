@@ -1,5 +1,4 @@
 # DEPRECATED: std_x
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: std_x
 <!--{ generate.module_header.start() }-->

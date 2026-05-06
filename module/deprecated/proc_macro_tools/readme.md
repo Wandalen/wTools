@@ -1,5 +1,4 @@
 # DEPRECATED: proc_macro_tools
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: proc_macro_tools
 <!--{ generate.module_header.start() }-->

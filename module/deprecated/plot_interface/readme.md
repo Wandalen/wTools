@@ -1,5 +1,4 @@
 # DEPRECATED: plot_interface
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: plot_interface
 <!--{ generate.module_header.start() }-->

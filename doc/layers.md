@@ -17,7 +17,7 @@ Layers are ordered bottom-up: lower layers have fewer internal dependencies; hig
 | 8 | Tooling | 8 | Testing, benchmarking, genfile, CLI, crates analysis |
 | 9 | Application | 5 | willbe, unitore, sqlx, aggregators |
 
-Total: 68 crates (0 alias + 29 core + 20 deprecated + 19 experimental)
+Total: 68 crates (0 alias + 28 core + 19 deprecated + 21 experimental)
 Note: 22 additional legacy crates (formerly in `module/postponed/`) are co-located in `module/deprecated/` but have no layer assignments and are excluded from this table.
 
 ## Crate Layer Assignments
@@ -45,8 +45,8 @@ Note: 22 additional legacy crates (formerly in `module/postponed/`) are co-locat
 | `error_tools` | core | 1 | Foundation | Provide a unified error handling namespace across the workspace | 2 | 0 | 0 | 0 | 0 | stable | stable | TDCFREMS |
 | `diagnostics_tools` | deprecated | 1 | Foundation | Supply runtime and compile-time assertion macros with colored diff output | 1 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFRE·S |
 | `mem_tools` | experimental | 1 | Foundation | Compare memory addresses, sizes, and byte contents across heterogeneous reference pairs | 0 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFREMS |
-| `asbytes` | core | 2 | Primitives | View or consume POD data as bytes via bytemuck-backed traits | 1 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFREMS |
-| `deterministic_rand` | core | 2 | Primitives | Generate hierarchical seeded random numbers with switchable determinism | 6 | 2 | 0 | 0 | 2 | experimental | experimental | TD·FRE·S |
+| `asbytes` | experimental | 2 | Primitives | View or consume POD data as bytes via bytemuck-backed traits | 1 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFREMS |
+| `deterministic_rand` | experimental | 2 | Primitives | Generate hierarchical seeded random numbers with switchable determinism | 6 | 2 | 0 | 0 | 2 | experimental | experimental | TD·FRE·S |
 | `implements` | experimental | 2 | Primitives | Answer at compile time whether a type implements a trait | 0 | 0 | 0 | 0 | 0 | experimental | stable | TDCFREMS |
 | `inspect_type` | core | 2 | Primitives | Print the Rust type name and byte size of any expression at runtime | 0 | 0 | 0 | 0 | 0 | stable | stable | TDCFREMS |
 | `interval_adapter` | experimental | 2 | Primitives | Provide uniform interval trait coverage over all Rust range variants — bounded, half-open, and unbounded | 0 | 0 | 0 | 0 | 0 | experimental | stable | TDCFRE·S |
@@ -369,7 +369,7 @@ Per-crate attributes for promotion and publishing.
 ### Layer 2 · Primitives
 
 #### `asbytes`
-- **module**: core
+- **module**: experimental
 - **layer**: 2 · Primitives
 - **state**: experimental
 - **target**: experimental
@@ -383,7 +383,7 @@ Per-crate attributes for promotion and publishing.
 - **pitch**: Two traits — AsBytes for borrowing and IntoBytes for consuming — turn any POD type into bytes, zero-copy and without unsafe.
 
 #### `deterministic_rand`
-- **module**: core
+- **module**: experimental
 - **layer**: 2 · Primitives
 - **state**: experimental
 - **target**: experimental

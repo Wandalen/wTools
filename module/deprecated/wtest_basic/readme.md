@@ -1,5 +1,4 @@
 # DEPRECATED: wtest_basic
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: wtest_basic
 <!--{ generate.module_header.start() }-->

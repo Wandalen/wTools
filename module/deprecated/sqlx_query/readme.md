@@ -1,5 +1,4 @@
 # DEPRECATED: sqlx_query
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: sqlx_query
 <!--{ generate.module_header.start() }-->

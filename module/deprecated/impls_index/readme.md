@@ -1,5 +1,4 @@
 # DEPRECATED: impls_index
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: `impls_index`
 <!--{ generate.module_header.start() }-->

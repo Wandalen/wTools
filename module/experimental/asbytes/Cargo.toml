@@ -8,8 +8,8 @@ authors = [
 license = "MIT"
 readme = "readme.md"
 documentation = "https://docs.rs/asbytes"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/core/asbytes"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/asbytes"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/experimental/asbytes"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/experimental/asbytes"
 description = """
 Traits for viewing data as byte slices or consuming data into byte vectors. Relies on bytemuck for POD safety.
 """

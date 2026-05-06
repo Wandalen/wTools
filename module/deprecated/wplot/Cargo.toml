@@ -9,8 +9,8 @@ authors = [
 license = "MIT"
 readme = "readme.md"
 documentation = "https://docs.rs/wplot"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/postponed/wplot"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/postponed/wplot"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/wplot"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/wplot"
 description = """
 Plot interface.
 """

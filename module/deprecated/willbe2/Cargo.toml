@@ -9,8 +9,8 @@ authors = [
 license = "MIT"
 readme = "readme.md"
 documentation = "https://docs.rs/willbe2"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/experimental/willbe2"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/experimental/willbe2"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/willbe2"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/willbe2"
 description = """
 Utility to publish multi-crate and multi-workspace environments and maintain their consistency.
 """

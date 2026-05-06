@@ -58,7 +58,7 @@ For each issue found:
 
 Run full test suite to ensure all fixes work:
 ```bash
-cd /home/user1/pro/lib/wip_core/wtools/dev/module/experimental/wtools
+cd /home/user1/pro/lib/wip_core/wtools/dev/module/core/wtools
 ctest3
 ```
 

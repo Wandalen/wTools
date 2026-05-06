@@ -9,8 +9,8 @@ authors = [
 license = "MIT"
 readme = "readme.md"
 documentation = "https://docs.rs/type_constructor"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/core/type_constructor"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/type_constructor"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/type_constructor"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/type_constructor"
 description = """
 Fundamental data types and type constructors, like Single, Pair, Many.
 """

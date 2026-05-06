@@ -9,8 +9,8 @@ authors = [
 license = "MIT"
 readme = "readme.md"
 documentation = "https://docs.rs/cargo-will"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/alias/cargo-will"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/alias/cargo-will"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/cargo_will-will"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/deprecated/cargo_will-will"
 description = """
 Utility to publish multi-crate and multi-workspace environments and maintain their consistency.
 """

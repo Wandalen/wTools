@@ -1,4 +1,3 @@
-<!-- {{# generate.module_header{} #}} -->
 
 # DEPRECATED: `iter_tools`
 <!--{ generate.module_header.start() }-->
