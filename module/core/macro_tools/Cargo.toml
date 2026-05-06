@@ -15,10 +15,7 @@ description = """
 Tools for writing procedural macroses.
 """
 categories = [ "algorithms", "development-tools" ]
-keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
+keywords = [ "fundamental", "general-purpose", "proc-macro", "syn", "quote" ]
 
 [lints]
 workspace = true
@@ -54,13 +51,36 @@ default = [
   "typ",
   "typed",
 ]
-full = [ "enabled" ]
+full = [
+  "enabled",
+  "attr",
+  "attr_prop",
+  "components",
+  "ct",
+  "container_kind",
+  "derive",
+  "diag",
+  "equation",
+  "generic_args",
+  "generic_params",
+  "ident",
+  "item",
+  "item_struct",
+  "name",
+  "kw",
+  "phantom",
+  "punctuated",
+  "quantifier",
+  "struct_like",
+  "tokens",
+  "typ",
+  "typed",
+]
 
 enabled = [
   "component_model_types/enabled",
   "interval_adapter/enabled",
   "clone_dyn_types/enabled",
-  "iter_tools/enabled",
 ]
 
 attr = [ "diag", "quantifier" ]
@@ -114,9 +134,9 @@ convert_case = { workspace = true, default-features = false, features = [] }
 
 ## internal
 interval_adapter = { workspace = true, features = [] }
-iter_tools = { workspace = true, features = [ "iter_trait" ] }
+itertools = { workspace = true, features = [ "use_std" ] }
 clone_dyn_types = { workspace = true, features = [] }
 component_model_types = { workspace = true, features = [ "types_component_assign" ] }
 
 [dev-dependencies]
-test_tools = { workspace = true, features = [ "full" ] } # Added test_tools dependency
+test_tools = { workspace = true, features = [ "full", "standalone_build" ] }

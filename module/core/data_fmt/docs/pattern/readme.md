@@ -7,6 +7,12 @@
 - **In Scope**: Three-layer architecture, design principles, formatter design, config builder pattern.
 - **Out of Scope**: API signatures (see `api/`), behavioral contracts (see `invariant/`), algorithm pseudocode (see `algorithm/`).
 
+### Infrastructure
+
+| File | Responsibility |
+|------|----------------|
+| `procedure.md` | Operational procedure for creating and updating pattern doc instances |
+
 ### Overview Table
 
 | ID | Name | Purpose | Status |

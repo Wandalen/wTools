@@ -11,13 +11,10 @@ documentation = "https://docs.rs/program_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/experimental/program_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/experimental/program_tools"
 description = """
-Compile and run a Rust program.
+Rust script runner — compile and execute Rust files as scripts with output capture.
 """
-categories = [ "algorithms", "development-tools" ]
-keywords = [ "fundamental", "general-purpose" ]
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
+categories = [ "development-tools::testing", "development-tools::build-utils" ]
+keywords = [ "script", "runner", "testing", "execute", "compile" ]
 
 [lints]
 workspace = true
@@ -29,33 +26,42 @@ all-features = false
 
 
 [features]
-default = [
-  "enabled",
-
-]
+default = [ "enabled" ]
 full = [
   "enabled"
  ]
 
 enabled = [
+  "dep:mod_interface",
   "mod_interface/enabled",
+  "dep:former",
   "former/enabled",
-  "pth/enabled",
+  "dep:error_tools",
   "error_tools/enabled",
-  "iter_tools/enabled",
+  "error_tools/error_untyped",
+  "dep:clap",
 ]
 
 [dependencies]
-mod_interface = { workspace = true }
-former = { workspace = true, features = [ "derive_former" ] }
-pth = { workspace = true }
-error_tools = { workspace = true, features = [ "error_untyped" ] } # qqq : xxx : rid of error_untyped
-iter_tools = { workspace = true }
-
-# ## external
-# duct = "0.13.7"
-
+mod_interface = { workspace = true, optional = true }
+former = { workspace = true, features = [ "derive_former" ], optional = true }
+error_tools = { workspace = true, features = [ "error_untyped" ], optional = true }
+clap = { workspace = true, features = [ "derive" ], optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }
-# assert_fs = { version = "1.1.1" }
+
+[[bin]]
+name = "program_tools"
+path = "src/main.rs"
+required-features = [ "enabled" ]
+
+[[bin]]
+name = "pt"
+path = "src/bin/pt.rs"
+required-features = [ "enabled" ]
+
+[[example]]
+name = "basic"
+path = "examples/basic.rs"
+required-features = [ "enabled" ]

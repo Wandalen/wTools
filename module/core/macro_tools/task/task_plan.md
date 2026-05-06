@@ -31,7 +31,6 @@
 ### Relevant Context
 *   Control Files to Reference (if they exist):
     *   `./roadmap.md`
-    *   `./spec.md`
     *   `./spec_addendum.md`
 *   Files to Include (for AI's reference, if `read_file` is planned):
     *   `module/core/macro_tools/src/lib.rs`

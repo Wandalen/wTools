@@ -1,0 +1,52 @@
+meta:
+  description: Cross-reference graph for all doc instances in is_slice
+  node_count: 4
+  edge_count: 10
+  component_count: 1
+  generated: 2026_04_26
+
+nodes:
+  - id: feature/001
+    file: feature/001_slice_detection.md
+    label: Slice Detection
+    entity: feature
+
+  - id: api/001
+    file: api/001_is_slice.md
+    label: is_slice
+    entity: api
+
+  - id: invariant/001
+    file: invariant/001_no_std.md
+    label: No Standard Library Required
+    entity: invariant
+
+  - id: invariant/002
+    file: invariant/002_value_not_consumed.md
+    label: Value Not Consumed
+    entity: invariant
+
+edges:
+  - { from: feature/001,   to: api/001,       via: typed_reference }
+  - { from: feature/001,   to: invariant/001, via: typed_reference }
+  - { from: feature/001,   to: invariant/002, via: typed_reference }
+  - { from: api/001,       to: feature/001,   via: typed_reference }
+  - { from: api/001,       to: invariant/001, via: typed_reference }
+  - { from: api/001,       to: invariant/002, via: typed_reference }
+  - { from: invariant/001, to: feature/001,   via: typed_reference }
+  - { from: invariant/001, to: api/001,       via: typed_reference }
+  - { from: invariant/002, to: feature/001,   via: typed_reference }
+  - { from: invariant/002, to: api/001,       via: typed_reference }
+
+components:
+  - id: 1
+    label: is_slice documentation corpus
+    size: 4
+    isolated: false
+    nodes:
+      - feature/001
+      - api/001
+      - invariant/001
+      - invariant/002
+
+dangling_refs: []

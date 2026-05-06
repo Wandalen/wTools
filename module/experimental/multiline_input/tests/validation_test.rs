@@ -1,3 +1,4 @@
+#![ cfg( feature = "enabled" ) ]
 //! Input validation tests
 //!
 //! ## Domain

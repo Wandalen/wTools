@@ -19,7 +19,7 @@ Flat module structure with selected submodules for complex subsystems. Each modu
 - **Compile-time tools**: ct - Const-time string formatting integration
 - **Component model**: components - Re-export component model types
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

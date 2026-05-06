@@ -11,7 +11,7 @@
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `../architecture.md` | Original combined architecture document (retained per migration rules) |
+| doc | `../architecture.md` | Original combined architecture document (retained per migration rules) |
 | doc | `../feature/001_table_formatting.md` | Table formatting feature consuming Layer 3 |
 | doc | `../api/004_formatters.md` | Formatter API surface in Layer 3 |
 | doc | `../api/001_data_types.md` | Data types in Layer 1 |
@@ -27,19 +27,19 @@ A strict three-layer architecture separates concerns: data representation, ergon
 
 #### Layer 1: Data (TreeNode)
 
-`TreeNode< T >` is the single data structure serving both hierarchical and tabular use cases. Hierarchical trees use `data = None` for directories and `data = Some(T)` for files. Table-shaped trees encode rows as children of root, with each row's children named after columns.
+`TreeNode` is the single data structure serving both hierarchical and tabular use cases. Hierarchical trees use absent data for directory nodes and present data for leaf nodes. Table-shaped trees encode rows as children of root, with each row's children named after columns.
 
 #### Layer 2: Builders and Traits
 
 Ergonomic construction and generic extraction for table-shaped trees:
 
 - `RowBuilder` — fluent and mutable APIs for building table-shaped trees
-- `TableShapedView` trait — generic extraction of headers and rows from any `TreeNode< T >` where `T : Display`
+- `TableShapedView` trait — generic extraction of headers and rows from any tree node whose data supports display formatting
 - `TableView` — canonical interchange struct holding `headers` and `rows` for format-agnostic code
 
 #### Layer 3: Formatters
 
-Format-specific renderers that consume `TreeNode< T >` or `TableView`:
+Format-specific renderers that consume `TreeNode` or `TableView`:
 
 - `TableFormatter` — horizontal tabular display (9 style presets)
 - `ExpandedFormatter` — vertical record display (PostgreSQL and property styles)
@@ -50,35 +50,22 @@ Format-specific renderers that consume `TreeNode< T >` or `TableView`:
 - `JsonFormatter`, `YamlFormatter`, `TomlFormatter` — serialization formats
 - `TextFormatter` — plain text output (6 styles)
 
-All formatters implement the `Format` trait for a unified API.
+Eight of ten formatters implement the `Format` trait for a unified API; `ExpandedFormatter` and `TreeFormatter` use legacy or direct-dispatch paths.
 
 #### Module File Structure
 
-```
-src/
-  lib.rs                     # Re-exports public API
-  data.rs                    # TreeNode, TableView struct, TableShapedView trait
-  builder.rs                 # TreeBuilder (hierarchical)
-  table_tree.rs              # RowBuilder (table-shaped)
-  config.rs                  # TreeConfig, TableConfig, ExpandedConfig
-  conversions.rs             # Tree<->Table conversions, FlattenConfig
-  ansi_str.rs                # visual_len, pad_to_width, truncate_cell
-  wrap.rs                    # WrapConfig, WrapFormatter, BreakStrategy, Overflow
-  themes.rs                  # ColorTheme predefined and custom themes
-  formatters/
-    mod.rs                   # TableShapedFormatter trait (deprecated), Format trait re-export
-    format_trait.rs          # Format trait, FormatError
-    tree.rs                  # TreeFormatter with format() and format_aligned()
-    table/                   # TableFormatter (split into directory)
-    expanded.rs              # ExpandedFormatter
-    logfmt.rs                # LogfmtFormatter
-    html.rs                  # HtmlFormatter
-    sql.rs                   # SqlFormatter
-    json.rs                  # JsonFormatter
-    yaml.rs                  # YamlFormatter
-    toml_fmt.rs              # TomlFormatter
-    text.rs                  # TextFormatter
-```
+| Module | Responsibility |
+|--------|----------------|
+| `lib.rs` | Re-exports public API |
+| `data.rs` | Core data types and view trait |
+| `builder.rs` | TreeBuilder for hierarchical trees |
+| `table_tree.rs` | RowBuilder for table-shaped trees |
+| `config.rs` | All configuration types |
+| `conversions.rs` | Tree-to-table conversion utilities |
+| `ansi_str.rs` | ANSI-aware string width utilities |
+| `wrap.rs` | Word-wrap config and formatter |
+| `themes.rs` | Color theme definitions |
+| `formatters/` | Per-formatter modules, one per formatter type |
 
 ### Applicability
 
@@ -86,10 +73,4 @@ Apply this pattern when organizing a library that renders the same data in multi
 
 ### Consequences
 
-The three-layer separation ensures formatters remain interchangeable: the same `TreeNode< T >` or `TableView` can be passed to any formatter without modification. Layer 2's `TableShapedView` trait decouples formatter logic from tree internals, so table-shaped formatters operate on flat vectors of strings rather than traversing tree structure directly. This enables the mutual replaceability design principle. The cost is that the tree encoding for tabular data is non-obvious — callers must use the builders rather than constructing trees directly.
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../architecture.md](../architecture.md) | Original source; sections "Three-Layer Architecture" and "Module File Structure" extracted into this instance |
+The three-layer separation ensures formatters remain interchangeable: the same `TreeNode` or `TableView` can be passed to any formatter without modification. Layer 2's `TableShapedView` trait decouples formatter logic from tree internals, so table-shaped formatters operate on flat vectors of strings rather than traversing tree structure directly. This enables the mutual replaceability design principle. The cost is that the tree encoding for tabular data is non-obvious — callers must use the builders rather than constructing trees directly.

@@ -16,7 +16,7 @@
 
 ### Design
 
-Detection is purely environment-variable-based: the function calls `std::env::var()` for each known CI variable and returns `true` on the first hit. No process introspection, no filesystem reads, no external calls. This makes the function `O(n)` in the number of CI platforms checked and free of I/O side effects.
+Detection is purely environment-variable-based: the function checks each known CI variable for presence and returns true on the first hit. No process introspection, no filesystem reads, no external calls. This makes the function linear in the number of CI platforms checked and free of I/O side effects.
 
 The feature is included in both `default` and `full`, so projects get `is_cicd()` without any special configuration. Callers that don't need CI detection can exclude it by using `default-features = false` and omitting `process_environment_is_cicd` from their explicit features list.
 
@@ -42,5 +42,5 @@ The supported variables (`CI`, `GITHUB_ACTIONS`, `GITLAB_CI`, `TRAVIS`, `CIRCLEC
 |------|------|----------------|
 | source | [src/environment.rs](../../src/environment.rs) | `is_cicd()` implementation and CI variable list |
 | test | [tests/inc/environment_is_cicd.rs](../../tests/inc/environment_is_cicd.rs) | CI variable detection tests |
-| api | [api/007_environment_api.md](../api/007_environment_api.md) | `is_cicd()` function signature and detection contract |
-| feature | [feature/001_process_execution.md](001_process_execution.md) | Primary execution feature; CI detection complements it |
+| doc | [api/007_environment_api.md](../api/007_environment_api.md) | `is_cicd()` function signature and detection contract |
+| doc | [feature/001_process_execution.md](001_process_execution.md) | Primary execution feature; CI detection complements it |

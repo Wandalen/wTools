@@ -19,6 +19,10 @@
 //! - 1: Summary (default, user-friendly)
 //! - 2+: Detailed (includes lists, breakdowns)
 
+// Handler functions are registered via unilang::CommandRegistry::command_add_runtime,
+// which requires fn(VerifiedCommand, ExecutionContext) -> ... by value.
+#![ allow( clippy::needless_pass_by_value ) ]
+
 use unilang::semantic::VerifiedCommand;
 use unilang::data::{ OutputData, ErrorData };
 use unilang::interpreter::ExecutionContext;
@@ -30,6 +34,10 @@ use core::fmt::Write as _;
 ///
 /// # Parameters
 /// - `verbosity` - Output verbosity (0-5, default: 1)
+///
+/// # Errors
+/// Returns state error if no archive is loaded.
+#[ allow( clippy::too_many_lines ) ]
 pub fn info_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext
@@ -118,6 +126,10 @@ pub fn info_handler(
 ///
 /// # Parameters
 /// - `verbosity` - Output verbosity (0-5, default: 1)
+///
+/// # Errors
+/// Returns state error if no archive is loaded.
+#[ allow( clippy::too_many_lines ) ]
 pub fn discover_parameters_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext
@@ -208,6 +220,10 @@ pub fn discover_parameters_handler(
 ///
 /// # Parameters
 /// - `verbosity` - Output verbosity (0-5, default: 1)
+///
+/// # Errors
+/// Returns state error if no archive is loaded.
+#[ allow( clippy::too_many_lines ) ]
 pub fn status_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext
@@ -329,6 +345,10 @@ pub fn status_handler(
 ///
 /// # Parameters
 /// - `verbosity` - Output verbosity (0-5, default: 1)
+///
+/// # Errors
+/// Returns state error if no archive is loaded.
+#[ allow( clippy::too_many_lines ) ]
 pub fn analyze_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext

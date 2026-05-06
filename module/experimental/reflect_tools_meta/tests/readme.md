@@ -6,14 +6,14 @@ Tests organized by functionality: smoke tests for basic crate health, derive com
 
 The Reflect derive implementation is a stub (returns empty `TokenStream`), so tests focus on compilation success and macro infrastructure rather than runtime behavior.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|
-| `readme.md` | Document test organization and adding new tests guidance |
 | `smoke_test.rs` | Validate crate compilation in local and published contexts |
 | `reflect_derive_test.rs` | Test Reflect derive compilation for common struct variations |
 | `corner_cases_test.rs` | Test Reflect derive compilation for edge cases and boundary conditions |
+| [manual/](manual/readme.md) | Manual testing procedures and session results |
 
 ## Directory Structure
 
@@ -22,7 +22,8 @@ tests/
 ├── readme.md              # This file
 ├── smoke_test.rs          # Basic smoke tests (local + published)
 ├── reflect_derive_test.rs # Reflect derive compilation tests
-└── corner_cases_test.rs   # Corner case and edge case compilation tests
+├── corner_cases_test.rs   # Corner case and edge case compilation tests
+└── manual/                # Manual testing procedures and results
 ```
 
 ### Scope
@@ -51,6 +52,7 @@ Validates procedural macro functionality for `reflect_tools_meta` crate. Provide
 | Basic health | `smoke_test.rs` | Crate compiles, local + published modes work |
 | Derive compilation | `reflect_derive_test.rs` | Reflect macro compiles for common struct types |
 | Edge cases | `corner_cases_test.rs` | Reflect macro handles boundary conditions and unusual syntax |
+| Manual testing | `manual/readme.md` | Debug output verification and edge case compilation procedures |
 | Runtime behavior | (future) | Entity trait implementations when stub replaced |
 
 ## Adding New Tests
@@ -79,8 +81,6 @@ Future derive-specific test files MUST document comprehensive test matrix coveri
 - Boundary conditions (maximum field count, complex generics)
 - Error conditions (invalid attributes, conflicting derives)
 - Special cases (lifetimes, where clauses, PhantomData)
-
-See test_organization.rulebook.md § Test Matrix Documentation for detailed requirements.
 
 ## Known Issues
 

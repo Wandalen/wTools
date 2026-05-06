@@ -159,7 +159,7 @@ pub struct MyStruct {
 With `former_diagnostics_print_generated` feature:
 ```toml
 [dependencies]
-former = { version = "2.31", features = ["former_diagnostics_print_generated"] }
+former = { version = "2.45", features = ["former_diagnostics_print_generated"] }
 ```
 
 Then:
@@ -195,8 +195,9 @@ assert_former_exists::<MyStructFormerDefinition>();
 
 When autocomplete fails, refer to:
 - [examples/](../examples/) directory
-- [spec.md](../spec.md) for generated API reference
-- [advanced.md](../advanced.md) for subformer patterns
+- [api/001_item_attributes.md](api/001_item_attributes.md) for item-level attribute reference
+- [api/002_field_attributes.md](api/002_field_attributes.md) for field-level attribute reference
+- [pattern/002_subformer_composition.md](pattern/002_subformer_composition.md) for subformer patterns
 
 ### Use `cargo expand`
 
@@ -237,10 +238,6 @@ Feature requests: https://github.com/intellij-rust/intellij-rust/issues
 2. **Former-specific LSP plugin**: Custom language server
    - Effort: High (6+ months development)
    - Benefit: Perfect autocomplete, go-to-definition
-
-3. **Documentation generation**: Auto-generate docs for formers
-   - Status: Planned for Former v3.0
-   - Would add rustdoc comments to generated methods
 
 ---
 

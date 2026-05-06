@@ -7,5 +7,6 @@ mod private
 
 crate ::mod_interface!
 {
-  exposed use ::iter_tools :: { Itertools, IterTrait };
+  exposed use ::itertools :: { Itertools };
+  exposed use ::macro_tools :: { IterTrait };
 }

@@ -1,0 +1,195 @@
+meta:
+  description: Cross-reference graph for all doc instances in genfile_core
+  node_count: 24
+  edge_count: 32
+  component_count: 5
+  generated: 2026_04_25
+
+nodes:
+  - id: feature/001
+    file: feature/001_template_value_trait.md
+    label: Template Value Trait
+    entity: feature
+  - id: feature/002
+    file: feature/002_default_value_type.md
+    label: Default Value Type
+    entity: feature
+  - id: feature/003
+    file: feature/003_parameter_definition.md
+    label: Parameter Definition
+    entity: feature
+  - id: feature/004
+    file: feature/004_parameter_collection.md
+    label: Parameter Collection
+    entity: feature
+  - id: feature/005
+    file: feature/005_value_storage.md
+    label: Value Storage
+    entity: feature
+  - id: feature/006
+    file: feature/006_template_renderer_trait.md
+    label: Template Renderer Trait
+    entity: feature
+  - id: feature/007
+    file: feature/007_handlebars_renderer.md
+    label: Handlebars Renderer
+    entity: feature
+  - id: feature/008
+    file: feature/008_file_descriptor.md
+    label: File Descriptor
+    entity: feature
+  - id: feature/009
+    file: feature/009_write_mode_support.md
+    label: Write Mode Support
+    entity: feature
+  - id: feature/010
+    file: feature/010_file_system_trait.md
+    label: File System Trait
+    entity: feature
+  - id: feature/011
+    file: feature/011_real_file_system.md
+    label: Real File System
+    entity: feature
+  - id: feature/012
+    file: feature/012_memory_file_system.md
+    label: Memory File System
+    entity: feature
+  - id: feature/013
+    file: feature/013_template_holder.md
+    label: Template Holder
+    entity: feature
+  - id: feature/014
+    file: feature/014_template_generation.md
+    label: Template Generation
+    entity: feature
+  - id: feature/015
+    file: feature/015_missing_mandatory_detection.md
+    label: Missing Mandatory Detection
+    entity: feature
+  - id: feature/016
+    file: feature/016_typed_errors.md
+    label: Typed Errors
+    entity: feature
+  - id: feature/017
+    file: feature/017_archive_self_containment.md
+    label: Archive Self-Containment
+    entity: feature
+  - id: invariant/001
+    file: invariant/001_rendering_performance.md
+    label: Rendering Performance
+    entity: invariant
+  - id: invariant/002
+    file: invariant/002_memory_efficiency.md
+    label: Memory Efficiency
+    entity: invariant
+  - id: invariant/003
+    file: invariant/003_test_coverage.md
+    label: Test Coverage
+    entity: invariant
+  - id: invariant/004
+    file: invariant/004_compilation_impact.md
+    label: Compilation Impact
+    entity: invariant
+  - id: invariant/005
+    file: invariant/005_documentation_coverage.md
+    label: Documentation Coverage
+    entity: invariant
+  - id: invariant/006
+    file: invariant/006_error_message_quality.md
+    label: Error Message Quality
+    entity: invariant
+  - id: invariant/007
+    file: invariant/007_backward_compatibility.md
+    label: Backward Compatibility
+    entity: invariant
+
+edges:
+  - { from: feature/001, to: feature/002, via: typed_reference }
+  - { from: feature/002, to: feature/001, via: typed_reference }
+  - { from: feature/002, to: feature/005, via: typed_reference }
+  - { from: feature/003, to: feature/004, via: typed_reference }
+  - { from: feature/004, to: feature/003, via: typed_reference }
+  - { from: feature/004, to: feature/015, via: typed_reference }
+  - { from: feature/005, to: feature/001, via: typed_reference }
+  - { from: feature/005, to: feature/014, via: typed_reference }
+  - { from: feature/006, to: feature/007, via: typed_reference }
+  - { from: feature/006, to: feature/014, via: typed_reference }
+  - { from: feature/007, to: feature/006, via: typed_reference }
+  - { from: feature/007, to: invariant/001, via: typed_reference }
+  - { from: feature/008, to: feature/009, via: typed_reference }
+  - { from: feature/008, to: feature/014, via: typed_reference }
+  - { from: feature/009, to: feature/008, via: typed_reference }
+  - { from: feature/009, to: feature/010, via: typed_reference }
+  - { from: feature/010, to: feature/011, via: typed_reference }
+  - { from: feature/010, to: feature/012, via: typed_reference }
+  - { from: feature/011, to: feature/010, via: typed_reference }
+  - { from: feature/012, to: feature/010, via: typed_reference }
+  - { from: feature/012, to: invariant/002, via: typed_reference }
+  - { from: feature/013, to: feature/014, via: typed_reference }
+  - { from: feature/014, to: feature/013, via: typed_reference }
+  - { from: feature/014, to: feature/015, via: typed_reference }
+  - { from: feature/015, to: feature/004, via: typed_reference }
+  - { from: feature/015, to: feature/014, via: typed_reference }
+  - { from: feature/016, to: feature/014, via: typed_reference }
+  - { from: feature/016, to: invariant/006, via: typed_reference }
+  - { from: feature/017, to: feature/014, via: typed_reference }
+  - { from: invariant/001, to: feature/007, via: typed_reference }
+  - { from: invariant/002, to: feature/012, via: typed_reference }
+  - { from: invariant/006, to: feature/016, via: typed_reference }
+
+components:
+  - id: 1
+    label: Main feature/invariant cluster
+    size: 20
+    isolated: false
+    nodes:
+      - feature/001
+      - feature/002
+      - feature/003
+      - feature/004
+      - feature/005
+      - feature/006
+      - feature/007
+      - feature/008
+      - feature/009
+      - feature/010
+      - feature/011
+      - feature/012
+      - feature/013
+      - feature/014
+      - feature/015
+      - feature/016
+      - feature/017
+      - invariant/001
+      - invariant/002
+      - invariant/006
+
+  - id: 2
+    label: Test Coverage invariant
+    size: 1
+    isolated: true
+    nodes: [ invariant/003 ]
+    gap: Test Coverage references only the tests/ directory — no doc-type edge connects it to the main cluster; coverage is a process metric not tied to any specific feature.
+
+  - id: 3
+    label: Compilation Impact invariant
+    size: 1
+    isolated: true
+    nodes: [ invariant/004 ]
+    gap: Compilation Impact references only Cargo.toml configuration — no doc-type edge connects it to the main cluster; build time is a workspace-level metric not tied to any specific feature.
+
+  - id: 4
+    label: Documentation Coverage invariant
+    size: 1
+    isolated: true
+    nodes: [ invariant/005 ]
+    gap: Documentation Coverage references only src/lib.rs source — no doc-type edge connects it to the main cluster; it governs all public items uniformly rather than any one feature.
+
+  - id: 5
+    label: Backward Compatibility invariant
+    size: 1
+    isolated: true
+    nodes: [ invariant/007 ]
+    gap: Backward Compatibility references only Cargo.toml configuration — no doc-type edge connects it to the main cluster; semver compliance spans the entire public API rather than any specific feature.
+
+dangling_refs: []

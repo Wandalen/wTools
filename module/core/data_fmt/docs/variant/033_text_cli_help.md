@@ -14,6 +14,7 @@
 | source | `src/formatters/text.rs` | TextFormatter implementation |
 | test | `tests/text.rs` | Text output tests |
 | doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
+| doc | `../algorithm/006_cli_help_alignment.md` | Two-pass section detection and description alignment algorithm |
 
 ### Identity & Classification
 
@@ -94,20 +95,6 @@
 - **works_in_ci**: Yes
 - **copy_paste_friendly**: Yes
 
-### Data Structure Convention
-
-For CliHelp variant, input data follows specific conventions:
-
-- **Section header**: First column is all uppercase (or uppercase + whitespace + underscores), second column is empty
-- **Key-description pair**: Both columns populated - first is key/term, second is description
-- **Simple line**: Only first column populated - rendered as indented line
-
-### Formatting Algorithm
-
-Two-pass algorithm:
-1. **First pass**: Scan all rows to identify section headers and calculate maximum key width
-2. **Second pass**: Format output with proper indentation, alignment, and blank lines
-
 ### Example Output
 
 ```
@@ -128,36 +115,3 @@ EXAMPLES:
   myapp build --verbose
   myapp test --config test.toml
 ```
-
-### Example Code
-
-```rust
-use data_fmt::{ RowBuilder, TextFormatter, TextVariant, Format };
-
-let help_view = RowBuilder::new( vec![ "Term".into(), "Description".into() ] )
-  .add_row( vec![ "USAGE".into(), "".into() ] )
-  .add_row( vec![ "myapp [options]".into(), "".into() ] )
-  .add_row( vec![ "OPTIONS".into(), "".into() ] )
-  .add_row( vec![ "--verbose".into(), "Enable verbose output".into() ] )
-  .add_row( vec![ "--help".into(), "Show this help message".into() ] )
-  .build_view();
-
-let formatter = TextFormatter::cli_help();
-let output = formatter.format( &help_view ).unwrap();
-```
-
-### Key Features
-
-- **Section headers**: Automatically detected and formatted with colon suffix
-- **Description alignment**: All descriptions align to longest key + 2 spaces
-- **Blank line separators**: Automatically added between sections for readability
-- **Configurable indentation**: Default 2 spaces, customizable via `.with_indent()`
-- **Mixed content**: Supports section headers, aligned pairs, and simple lines in same output
-
-### Use Cases
-
-- CLI application help text (`--help` output)
-- Command documentation in terminal UIs
-- Configuration parameter descriptions
-- API endpoint documentation in CLI tools
-- Plugin/extension help systems

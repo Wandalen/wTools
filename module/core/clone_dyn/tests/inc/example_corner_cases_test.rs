@@ -43,8 +43,6 @@
 
 #[ allow( unused_imports ) ]
 use super :: *;
-#[ allow( unused_imports ) ]
-use test_tools ::a_id;
 
 /// Iterator trait with `CloneDyn` bound for testing
 #[ the_module ::clone_dyn ]

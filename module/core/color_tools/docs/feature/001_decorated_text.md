@@ -56,11 +56,12 @@ color_tools = { workspace = true, features = [ "enabled", "serde_support" ] }
 
 ### Cross-References
 
-| Entity | File | Relationship |
-|--------|------|-------------|
-| invariant/001 | [Transparent Conversion](../invariant/001_transparent_conversion.md) | `From<T>` zero-overhead guarantee |
-| invariant/002 | [Render Reset Contract](../invariant/002_render_reset_contract.md) | Reset-only-when-colored guarantee |
-| invariant/003 | [Emptiness Semantics](../invariant/003_emptiness_semantics.md) | `is_empty()` tests text, not render |
-| invariant/004 | [Render Is Canonical](../invariant/004_render_is_canonical.md) | Single rendering path guarantee |
-| feature/002 | [serde Support](002_serde_support.md) | Optional serde extension |
-| api/001 | [DecoratedText Type](../api/001_decorated_text_type.md) | Public API reference |
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | [Transparent Conversion](../invariant/001_transparent_conversion.md) | `From<T>` zero-overhead guarantee |
+| doc | [Render Reset Contract](../invariant/002_render_reset_contract.md) | Reset-only-when-colored guarantee |
+| doc | [Emptiness Semantics](../invariant/003_emptiness_semantics.md) | `is_empty()` tests text, not render |
+| doc | [Render Is Canonical](../invariant/004_render_is_canonical.md) | Single rendering path guarantee |
+| doc | [serde Support](002_serde_support.md) | Optional serde extension |
+| doc | [HTML Rendering](003_html_rendering.md) | HTML rendering extension |
+| doc | [DecoratedText Type](../api/001_decorated_text_type.md) | Public API reference |

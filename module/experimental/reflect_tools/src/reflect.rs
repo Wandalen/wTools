@@ -121,6 +121,8 @@ pub mod orphan
   use super :: *;
   #[ doc( inline ) ]
   pub use exposed :: *;
+  #[ doc( inline ) ]
+  pub use super ::axiomatic ::orphan :: { Entity, KeyVal };
 }
 
 /// Exposed namespace of the module.

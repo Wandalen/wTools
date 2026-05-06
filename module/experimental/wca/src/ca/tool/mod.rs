@@ -10,8 +10,6 @@ crate ::mod_interface!
 
 
 
-  use ::iter_tools;
-
   // use ::strs_tools as string; // xxx: check
   // use ::error_tools as error;
   // use ::mod_interface;

@@ -3,7 +3,7 @@
 #![ doc(
   html_favicon_url = "https: //raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
 ) ]
-#![ doc( html_root_url = "https: //docs.rs/_blank/latest/_blank/" ) ]
+#![ doc( html_root_url = "https://docs.rs/include_md/latest/include_md/" ) ]
 // #![ deny( rust_2018_idioms ) ]
 // #![ deny( missing_debug_implementations ) ]
 // #![ deny( missing_docs ) ]
@@ -12,7 +12,7 @@
 // #![ feature( trace_macros ) ]
 
 //!
-//! ___.
+//! Include a markdown file or its section at compile time.
 //!
 
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]

@@ -7,23 +7,22 @@
 - **In Scope**: Column classification, fixed/flex partitioning, budget distribution with remainder, minimum width clamping.
 - **Out of Scope**: Cell wrapping within budgets (see `algorithm/002_word_wrapping.md`), fold detection (see `algorithm/005_column_fold_detection.md`).
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/table/mod.rs` | `classify_columns`, `compute_column_budgets` |
-| source | `src/config.rs` | `ColumnFlex` enum, `terminal_width` field |
-| test | `tests/auto_wrap_test.rs` | Budget allocation test scenarios (T02–T05, T14–T15) |
-| doc | `../feature/005_auto_fit.md` | Auto-fit feature overview and pipeline |
-| doc | `../api/003_config_types.md` | `ColumnFlex`, `TableConfig` field reference |
+| File | Relationship |
+|------|--------------|
+| `src/formatters/table/mod.rs` | `classify_columns`, `compute_column_budgets` |
+| `src/config.rs` | `ColumnFlex` enum, `terminal_width` field |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| `tests/auto_wrap_test.rs` | Budget allocation test scenarios (T02–T05, T14–T15) |
 
 ### Abstract
 
 An O(C) algorithm that distributes available terminal width among table columns so flex columns receive a wrapping budget. Fixed columns (narrow content, max cell width ≤ 12) retain their natural width. Flex columns (wide content) share the remaining budget equally, with remainder characters distributed left-to-right. No flex column is expanded beyond its natural content width.
-
-### Related Tasks
-
-- [`task/019`](../../task/019_cell_auto_wrapping_with_budget_allocation.md) — Implementation task
 
 ### Trigger Condition
 

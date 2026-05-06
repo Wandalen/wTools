@@ -1,8 +1,7 @@
 #[ allow( unused_imports ) ]
 use super :: *;
 
-// xxx: qqq: wrong
-#[ cfg(all(feature = "no_std", feature = "use_alloc")) ]
+#[ cfg(feature = "use_alloc") ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 pub use crate ::dependency ::hashbrown ::hash_map :: *;

@@ -1,4 +1,7 @@
-# genfile
+# Module :: `genfile`
+<!--{ generate.module_header.start() }-->
+ [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=genfile)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) [![docs.rs](https://img.shields.io/docsrs/genfile?color=e3e8f0&logo=docs.rs)](https://docs.rs/genfile) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+<!--{ generate.module_header.end }-->
 
 [![Crates.io](https://img.shields.io/crates/v/genfile.svg)](https://crates.io/crates/genfile)
 [![docs.rs](https://docs.rs/genfile/badge.svg)](https://docs.rs/genfile)
@@ -45,7 +48,7 @@ genfile
 ```
 
 ```
-genfile REPL v0.1.0
+genfile REPL v0.4.0
 Type '.help' for help, 'exit' to quit
 
 genfile[0]> .archive.new name::"api-scaffold"
@@ -73,7 +76,6 @@ Complete command-line interface reference:
 ### API Documentation
 
 - [API Documentation](https://docs.rs/genfile) - Complete Rust API reference
-- [Specification](spec.md) - Detailed architecture and design
 - [Examples](https://github.com/Wandalen/wTools/tree/master/module/core/genfile/examples) - Usage examples
 
 ## Architecture
@@ -113,9 +115,9 @@ These YAML files serve as the **authoritative specification** for all commands, 
 
 ## Development Status
 
-Current version: **0.2.0**
+Current version: **0.4.0**
 
-All core features implemented and tested (53 integration tests, 100% passing):
+All core features implemented and tested (74 integration tests, 100% passing):
 
 - ✅ Archive lifecycle management (FR1: `.archive.*`)
 - ✅ File operations (FR2: `.file.*`)

@@ -1,7 +1,7 @@
-
-# strs_tools
-
-[![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=strs_tools)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) [![docs.rs](https://img.shields.io/docsrs/strs_tools?color=e3e8f0&logo=docs.rs)](https://docs.rs/strs_tools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+# Module :: `strs_tools`
+<!--{ generate.module_header.start() }-->
+ [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=strs_tools)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) [![docs.rs](https://img.shields.io/docsrs/strs_tools?color=e3e8f0&logo=docs.rs)](https://docs.rs/strs_tools) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module%2Fcore%2Fstrs_tools%2Fexamples%2Fparser_manual_testing.rs,RUN_POSTFIX=--example%20parser_manual_testing/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+<!--{ generate.module_header.end }-->
 
 Advanced string manipulation tools with SIMD acceleration and intelligent parsing.
 
@@ -170,5 +170,5 @@ cargo run --example 007_performance_and_simd --features simd
 
 - [API Documentation](https://docs.rs/strs_tools)
 - [Architecture Details](./architecture.md)
-- [Performance Benchmarks](./benchmarks/readme.md)
+- [Performance Benchmarks](./benches/readme.md)
 - [Migration Guide](./changelog.md)

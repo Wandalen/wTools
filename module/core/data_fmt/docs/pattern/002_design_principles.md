@@ -11,7 +11,7 @@
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| source | `../architecture.md` | Original combined architecture document (retained per migration rules) |
+| doc | `../architecture.md` | Original combined architecture document (retained per migration rules) |
 | doc | `../invariant/001_data_model.md` | Invariants derived from these principles |
 
 ### Problem
@@ -24,15 +24,15 @@ Eleven named principles constrain specific design dimensions. Each principle gov
 
 | # | Principle | Scope |
 |---|-----------|-------|
-| 1 | **Single Data Structure** — `TreeNode< T >` for all data (hierarchical and tabular) | Data layer |
+| 1 | **Single Data Structure** — `TreeNode` for all data (hierarchical and tabular) | Data layer |
 | 2 | **Unified Format Interface** — same API for all formatters via Format trait | Formatter layer |
 | 3 | **Canonical Data Format** — `TableView` struct for format-agnostic code | Builders layer |
 | 4 | **Granular Features** — zero-cost abstractions with optional formatters | Build system |
 | 5 | **Mutual Replaceability** — any data can be displayed in any format | Cross-layer |
 | 6 | **Minimal Dependencies** — core has zero dependencies, formatters are optional | Build system |
-| 7 | **Generic** — works with any data type via `TreeNode< T >` | Data layer |
+| 7 | **Generic** — works with any data type via `TreeNode` | Data layer |
 | 8 | **ANSI-Aware** — proper alignment with color codes | Formatter layer |
-| 9 | **Flexible Output** — String return and `io::Write` support | Formatter layer |
+| 9 | **Flexible Output** — string return and write-target support | Formatter layer |
 | 10 | **Helper Traits** — ergonomic builders and traits for table-shaped trees | Builders layer |
 | 11 | **Modular Architecture** — separated concerns across 16 source modules | Code structure |
 
@@ -43,9 +43,3 @@ Invoke these principles when evaluating new feature proposals, choosing between 
 ### Consequences
 
 Principles 1 and 5 (Single Data Structure + Mutual Replaceability) together enforce that no formatter receives a data type it cannot handle, keeping the API surface minimal. Principles 4 and 6 (Granular Features + Minimal Dependencies) ensure users pay only for what they enable. Principle 8 (ANSI-Aware) is non-negotiable for terminal-facing output where naive string length breaks column alignment. Decisions that violate any principle must be explicitly documented.
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../architecture.md](../architecture.md) | Original source; section "Design Principles" extracted into this instance |

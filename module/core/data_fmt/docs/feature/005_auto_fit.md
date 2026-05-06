@@ -15,7 +15,6 @@
 | source | `src/config.rs` | ColumnFlex, FoldStyle enums; auto-fit TableConfig fields |
 | source | `src/wrap.rs` | WrapFormatter for cell wrapping |
 | test | `tests/auto_wrap_test.rs` | Auto-wrap test suite (22 cases) |
-| test | `tests/terminal_width_test.rs` | Terminal width three-tier fallback tests (to create) |
 | test | `tests/auto_fold_test.rs` | Column folding test suite (22 tests) |
 | doc | `../algorithm/004_budget_allocation.md` | Budget allocation algorithm |
 | doc | `../algorithm/005_column_fold_detection.md` | Column fold detection algorithm |
@@ -24,12 +23,6 @@
 | doc | `../api/003_config_types.md` | TableConfig field reference and builder API |
 
 ### Design
-
-#### Related Tasks
-
-- [`task/019`](../../task/019_cell_auto_wrapping_with_budget_allocation.md) — Auto-wrap implementation task
-- [`task/020`](../../task/020_column_folding_with_auto_fold.md) — Column folding implementation task
-- [`task/021`](../../task/021_terminal_width_detection_tests.md) — Terminal detection test task
 
 #### Motivation
 
@@ -111,21 +104,11 @@ The auto-fit pipeline begins by resolving the effective terminal width. The `res
 
 #### Tier 1 — Explicit Override
 
-```rust
-let config = TableConfig::plain()
-  .terminal_width( Some( 80 ) );
-```
-
 When `terminal_width` is `Some(w)`, that value is used directly. A value of `0` is clamped to `1` to prevent division-by-zero in budget allocation.
 
 #### Tier 2 — Runtime Auto-Detection
 
-```toml
-# Cargo.toml
-data_fmt = { version = "0.12", features = ["terminal_size"] }
-```
-
-When the `terminal_size` cargo feature is enabled and `terminal_width` is `None`, the formatter queries `terminal_size::terminal_size()` at render time. This returns the actual terminal dimensions when stdout is connected to a TTY. Falls through to Tier 3 when:
+Enable the `terminal_size` cargo feature to activate runtime detection. When the `terminal_size` cargo feature is enabled and `terminal_width` is `None`, the formatter queries `terminal_size::terminal_size()` at render time. This returns the actual terminal dimensions when stdout is connected to a TTY. Falls through to Tier 3 when:
 - stdout is redirected to a file or pipe (not a TTY)
 - the platform doesn't support terminal size queries
 
@@ -146,28 +129,18 @@ When neither Tier 1 nor Tier 2 produces a width, the formatter uses **120 column
 
 All fields have sensible defaults — auto-fit works without any configuration.
 
-| Field | Type | Default | Status | Behavior |
-|-------|------|---------|--------|----------|
-| `terminal_width` | `Option<usize>` | `None` (auto-detect) | ✅ | Target width for budget allocation |
-| `auto_wrap` | `bool` | `true` | ✅ | Enable Strategy 2 (cell wrapping at budget) |
-| `column_flex` | `Vec<ColumnFlex>` | `vec![]` (auto-classify) | ✅ | Per-column flex classification |
-| `auto_fold` | `bool` | `true` | ✅ | Enable Strategy 1 (column folding) |
-| `fold_style` | `FoldStyle` | `Labeled` | ✅ | Continuation line format |
-| `fold_indent` | `String` | `"    "` (4 spaces) | ✅ | Indent prefix for continuation lines |
+| Field | Default | Status | Behavior |
+|-------|---------|--------|----------|
+| `terminal_width` | `None` (auto-detect) | ✅ | Target width for budget allocation |
+| `auto_wrap` | `true` | ✅ | Enable Strategy 2 (cell wrapping at budget) |
+| `column_flex` | `[]` (auto-classify) | ✅ | Per-column flex classification |
+| `auto_fold` | `true` | ✅ | Enable Strategy 1 (column folding) |
+| `fold_style` | `Labeled` | ✅ | Continuation line format |
+| `fold_indent` | `"    "` (4 spaces) | ✅ | Indent prefix for continuation lines |
 
 #### Disabling Auto-Fit
 
-```rust
-// Disable wrapping only (folding still active)
-let config = TableConfig::plain()
-  .auto_wrap( false );
-
-// Disable only folding
-let config = TableConfig::plain().auto_fold( false );
-
-// Disable both
-let config = TableConfig::plain().auto_wrap( false ).auto_fold( false );
-```
+Auto-fit can be partially or fully disabled via `TableConfig` builder methods: set `auto_wrap(false)` to disable Strategy 2 only, `auto_fold(false)` to disable Strategy 1 only, or both to restore unlimited-width pre-auto-fit behavior.
 
 #### Progressive Degradation
 

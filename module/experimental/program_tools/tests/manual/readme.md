@@ -1,16 +1,16 @@
 # Manual Testing Plan: program_tools
 
-## Scope
+### Scope
 
-This crate implements **data structures only** (Source, Program, Plan) with Former builder pattern integration. No compilation or execution functionality is currently implemented (see spec.md:60-98).
+Manual testing plan for the `program_tools` data structure layer (Source, Program, Plan with Former builder pattern) and runner API (run_source, run_file, run_project, CapturedOutput). See `docs/feature/` and `docs/api/` for full specifications.
 
-## Testing Objectives
+### Testing Objectives
 
 Validate builder API construction for all three data structures across comprehensive corner cases including edge cases, empty inputs, large data, and special characters.
 
-## Manual Test Cases
+### Manual Test Cases
 
-### 1. Source Builder API
+#### 1. Source Builder API
 
 **Test Case 1.1: Empty file_path**
 ```rust
@@ -76,7 +76,7 @@ println!("Special chars: {:?}", source);
 // Status: ✅ PASS if exact preservation
 ```
 
-### 2. Program Builder API
+#### 2. Program Builder API
 
 **Test Case 2.1: Zero sources (empty program)**
 ```rust
@@ -141,7 +141,7 @@ println!("Duplicate paths: {:?}", program.source);
 // Status: ✅ PASS if both exist with same path
 ```
 
-### 3. Plan Builder API
+#### 3. Plan Builder API
 
 **Test Case 3.1: Minimal plan (program with zero sources)**
 ```rust
@@ -188,7 +188,7 @@ let plan = Plan::former()
 // Status: ✅ PASS if compiles (Former guarantees)
 ```
 
-### 4. Debug Trait Validation
+#### 4. Debug Trait Validation
 
 **Test Case 4.1: Debug formatting for all structs**
 ```rust
@@ -221,7 +221,7 @@ println!("Plan: {:?}", plan);
 // Status: ✅ PASS if no panics
 ```
 
-### 5. Namespace Validation
+#### 5. Namespace Validation
 
 **Test Case 5.1: Exposed namespace**
 ```rust
@@ -246,9 +246,9 @@ use program_tools::prelude::*;
 // Status: ℹ️ CHECK documentation for prelude contents
 ```
 
-## Manual Execution Instructions
+### Manual Execution Instructions
 
-Since this crate has no executable examples and no execution functionality, manual testing requires:
+All cases are now covered by automated tests. For ad-hoc manual verification:
 
 1. **Create temporary test binary:**
    ```bash
@@ -272,40 +272,43 @@ Since this crate has no executable examples and no execution functionality, manu
 
 5. **Verify output matches expected behavior**
 
-## Test Results Tracking
+### Test Results Tracking
 
 | Test ID | Description | Status | Notes |
 |---------|-------------|--------|-------|
-| 1.1 | Empty file_path | ⏳ Pending | |
-| 1.2 | Empty data | ⏳ Pending | |
-| 1.3 | Both empty | ⏳ Pending | |
-| 1.4 | Large data | ⏳ Pending | |
-| 1.5 | Special chars | ⏳ Pending | |
-| 2.1 | Zero sources | ⏳ Pending | |
-| 2.2 | Single source | ⏳ Pending | |
-| 2.3 | Multiple sources | ⏳ Pending | Partially covered by tests/inc/basic.rs |
-| 2.4 | Duplicate paths | ⏳ Pending | |
-| 3.1 | Minimal plan | ⏳ Pending | |
-| 3.2 | Complete chain | ✅ Covered | tests/inc/basic.rs |
-| 3.3 | Nested end() | ✅ Covered | Verified by type system |
-| 4.1 | Debug trait | ⏳ Pending | |
-| 5.1 | Exposed namespace | ✅ Covered | tests/inc/basic.rs uses the_module |
-| 5.2 | Prelude namespace | ⏳ Pending | |
+| 1.1 | Empty file_path | Covered | `corner_cases_test::source_empty_file_path` |
+| 1.2 | Empty data | Covered | `corner_cases_test::source_empty_data` |
+| 1.3 | Both empty | Covered | `corner_cases_test::source_both_fields_empty` |
+| 1.4 | Large data | Covered | `corner_cases_test::source_large_data` |
+| 1.5 | Special chars | Covered | `corner_cases_test::source_special_characters` |
+| 2.1 | Zero sources | Covered | `corner_cases_test::program_zero_sources` |
+| 2.2 | Single source | Covered | `corner_cases_test::program_single_source` |
+| 2.3 | Multiple sources | Covered | `basic::basic` |
+| 2.4 | Duplicate paths | Covered | `corner_cases_test::program_duplicate_file_paths` |
+| 3.1 | Minimal plan | Covered | `corner_cases_test::plan_minimal_with_empty_program` |
+| 3.2 | Complete chain | Covered | `basic::basic` |
+| 3.3 | Nested end() | Covered | Verified by type system |
+| 4.1 | Debug trait | Covered | `corner_cases_test::debug_trait_all_structs` |
+| 5.1 | Exposed namespace | Covered | `basic::basic` |
+| 5.2 | Prelude namespace | Covered | `corner_cases_test::namespace_prelude_imports` |
 
-## Known Limitations
+### Implemented Runner API
 
-Per spec.md:60-98, the following are **intentionally NOT implemented**:
-- Compilation execution (no cargo/rustc)
-- Process management (no spawning/capture)
-- Cargo.toml generation
-- Incremental compilation
-- Cross-compilation
-- IDE integration
+The following capabilities are now implemented and covered by automated tests in `tests/inc/runner_test.rs`:
+
+- Script compilation and execution via `run_source`, `run_file`, `run_project` (`api/002`)
+- Output capture into `CapturedOutput` with predicate and assertion methods (`feature/002`, `api/003`)
+- Isolated temp workspaces with RAII cleanup (`feature/003`)
+- Forwarding mode (`capture=false`) via `cmd.status()` / `try_wait()` — output streams to terminal
+- Timeout enforcement via `timeout_ms` (`runner_test::run_timeout_fires`, `run_timeout_does_not_fire`)
+  - Capture mode: channel + background thread; child not killed on timeout (v0.1.0 limitation)
+  - Forwarding mode: polling `try_wait()` + `child.kill()` on expiry
+
+Not yet implemented:
+
+- CLI interface `program_tools run` (`api/004`)
 - Async execution
-- Security sandboxing
 
-Manual testing focuses ONLY on data structure construction via Former builders.
+### Conclusion
 
-## Conclusion
-
-This manual testing plan validates the builder API for program_tools' data structures. Most corner cases should be converted to automated tests in tests/inc/ to prevent regressions. Manual testing serves to verify behavior before adding automated coverage.
+All data-structure corner cases are automated in `tests/inc/corner_cases_test.rs`. Runner and output API integration tests are in `tests/inc/runner_test.rs`. This plan serves as a reference for test design rationale.

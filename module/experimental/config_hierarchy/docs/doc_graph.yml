@@ -1,0 +1,147 @@
+meta:
+  description: Cross-reference graph for all doc instances in config_hierarchy
+  node_count: 12
+  edge_count: 62
+  component_count: 1
+  last_updated: 2026_05_06
+
+nodes:
+  - id: algorithm/001
+    file: algorithm/001_type_detection.md
+    label: Type Detection
+    entity: algorithm
+  - id: algorithm/002
+    file: algorithm/002_resolution_waterfall.md
+    label: Resolution Waterfall
+    entity: algorithm
+  - id: api/001
+    file: api/001_config_paths_trait.md
+    label: ConfigPaths Trait
+    entity: api
+  - id: api/002
+    file: api/002_config_defaults_trait.md
+    label: ConfigDefaults Trait
+    entity: api
+  - id: api/003
+    file: api/003_config_validator_trait.md
+    label: ConfigValidator Trait
+    entity: api
+  - id: api/004
+    file: api/004_config_manager.md
+    label: ConfigManager Type
+    entity: api
+  - id: feature/001
+    file: feature/001_config_hierarchy.md
+    label: Config Hierarchy
+    entity: feature
+  - id: format/001
+    file: format/001_config_file_format.md
+    label: Config File Format
+    entity: format
+  - id: invariant/001
+    file: invariant/001_resolution_hierarchy.md
+    label: Resolution Hierarchy
+    entity: invariant
+  - id: invariant/002
+    file: invariant/002_file_persistence_contracts.md
+    label: File Persistence Contracts
+    entity: invariant
+  - id: invariant/003
+    file: invariant/003_app_name_constraints.md
+    label: App Name Constraints
+    entity: invariant
+  - id: pattern/001
+    file: pattern/001_zero_cost_composition.md
+    label: Zero-Cost Composition
+    entity: pattern
+
+edges:
+  # --- original 28 edges (existing corpus) ---
+  - { from: algorithm/001, to: invariant/001,  via: typed_reference }
+  - { from: algorithm/001, to: feature/001,    via: typed_reference }
+  - { from: api/001,       to: invariant/001,  via: typed_reference }
+  - { from: api/001,       to: format/001,     via: typed_reference }
+  - { from: api/001,       to: api/002,        via: typed_reference }
+  - { from: api/001,       to: api/003,        via: typed_reference }
+  - { from: api/002,       to: invariant/001,  via: typed_reference }
+  - { from: api/002,       to: api/001,        via: typed_reference }
+  - { from: api/002,       to: api/003,        via: typed_reference }
+  - { from: api/003,       to: api/001,        via: typed_reference }
+  - { from: api/003,       to: api/002,        via: typed_reference }
+  - { from: api/003,       to: feature/001,    via: typed_reference }
+  - { from: feature/001,   to: invariant/001,  via: typed_reference }
+  - { from: feature/001,   to: api/001,        via: typed_reference }
+  - { from: feature/001,   to: api/002,        via: typed_reference }
+  - { from: feature/001,   to: api/003,        via: typed_reference }
+  - { from: feature/001,   to: format/001,     via: typed_reference }
+  - { from: feature/001,   to: algorithm/001,  via: typed_reference }
+  - { from: format/001,    to: feature/001,    via: typed_reference }
+  - { from: format/001,    to: api/001,        via: typed_reference }
+  - { from: format/001,    to: invariant/001,  via: typed_reference }
+  - { from: invariant/001, to: feature/001,    via: typed_reference }
+  - { from: invariant/001, to: api/001,        via: typed_reference }
+  - { from: invariant/001, to: algorithm/001,  via: typed_reference }
+  - { from: api/001,       to: feature/001,    via: typed_reference }
+  - { from: api/002,       to: feature/001,    via: typed_reference }
+  - { from: invariant/001, to: api/002,        via: typed_reference }
+  - { from: invariant/001, to: format/001,     via: typed_reference }
+  # --- algorithm/002 edges (bidirectional with algorithm/001, feature/001, invariant/001, api/004) ---
+  - { from: algorithm/002, to: algorithm/001,  via: typed_reference }
+  - { from: algorithm/001, to: algorithm/002,  via: typed_reference }
+  - { from: algorithm/002, to: feature/001,    via: typed_reference }
+  - { from: feature/001,   to: algorithm/002,  via: typed_reference }
+  - { from: algorithm/002, to: invariant/001,  via: typed_reference }
+  - { from: invariant/001, to: algorithm/002,  via: typed_reference }
+  - { from: algorithm/002, to: api/004,        via: typed_reference }
+  - { from: api/004,       to: algorithm/002,  via: typed_reference }
+  # --- api/004 edges (bidirectional with api/001, api/002, api/003, feature/001, invariant/001, invariant/002, invariant/003, pattern/001) ---
+  - { from: api/004,       to: api/001,        via: typed_reference }
+  - { from: api/001,       to: api/004,        via: typed_reference }
+  - { from: api/004,       to: api/002,        via: typed_reference }
+  - { from: api/002,       to: api/004,        via: typed_reference }
+  - { from: api/004,       to: api/003,        via: typed_reference }
+  - { from: api/003,       to: api/004,        via: typed_reference }
+  - { from: api/004,       to: feature/001,    via: typed_reference }
+  - { from: feature/001,   to: api/004,        via: typed_reference }
+  - { from: api/004,       to: invariant/001,  via: typed_reference }
+  - { from: invariant/001, to: api/004,        via: typed_reference }
+  - { from: api/004,       to: invariant/002,  via: typed_reference }
+  - { from: invariant/002, to: api/004,        via: typed_reference }
+  - { from: api/004,       to: invariant/003,  via: typed_reference }
+  - { from: invariant/003, to: api/004,        via: typed_reference }
+  - { from: api/004,       to: pattern/001,    via: typed_reference }
+  - { from: pattern/001,   to: api/004,        via: typed_reference }
+  # --- invariant/002 edges (bidirectional with feature/001, format/001) ---
+  - { from: invariant/002, to: feature/001,    via: typed_reference }
+  - { from: feature/001,   to: invariant/002,  via: typed_reference }
+  - { from: invariant/002, to: format/001,     via: typed_reference }
+  - { from: format/001,    to: invariant/002,  via: typed_reference }
+  # --- invariant/003 edges (bidirectional with api/001, feature/001) ---
+  - { from: invariant/003, to: api/001,        via: typed_reference }
+  - { from: api/001,       to: invariant/003,  via: typed_reference }
+  - { from: invariant/003, to: feature/001,    via: typed_reference }
+  - { from: feature/001,   to: invariant/003,  via: typed_reference }
+  # --- pattern/001 edges (bidirectional with feature/001) ---
+  - { from: pattern/001,   to: feature/001,    via: typed_reference }
+  - { from: feature/001,   to: pattern/001,    via: typed_reference }
+
+components:
+  - id: 1
+    label: Main corpus
+    size: 12
+    isolated: false
+    nodes:
+      - algorithm/001
+      - algorithm/002
+      - api/001
+      - api/002
+      - api/003
+      - api/004
+      - feature/001
+      - format/001
+      - invariant/001
+      - invariant/002
+      - invariant/003
+      - pattern/001
+
+dangling_refs: []

@@ -5,7 +5,7 @@
 - **Purpose**: Document the five-layer decomposition that organizes all willbe source modules and establishes dependency direction rules.
 - **Responsibility**: Authoritative description of the layer boundaries and the rationale for the separation.
 - **In Scope**: Layer definitions (CLI, Command, Action, Entity, Tool), module file assignment per layer, inter-layer dependency rules.
-- **Out of Scope**: Per-command implementation details (see `../../src/`), API signatures (see `../api/`), feature behavior (see `../feature/`).
+- **Out of Scope**: Per-command implementation details, API signatures (see `../api/`), feature behavior (see `../feature/`).
 
 ### Problem
 
@@ -18,7 +18,8 @@ Five layers with strict downward dependency flow:
 ```
 ┌────────────────────────────────────────────┐
 │  CLI Layer  (src/bin/)                     │
-│  Binary entry points: will, willbe         │
+│  Binary entry points: will, willbe,        │
+│  cargo-will                                │
 ├────────────────────────────────────────────┤
 │  Command Layer  (src/command/)             │
 │  CLI argument parsing via wca              │
@@ -60,3 +61,5 @@ Each layer may only depend on layers below it. The CLI layer calls Command; Comm
 | source | `../../src/action/` | Action layer: business logic |
 | source | `../../src/entity/` | Entity layer: domain models |
 | source | `../../src/tool/` | Tool layer: cargo, git, graph utilities |
+| doc | [api/001_cli_interface.md](../api/001_cli_interface.md) | CLI command reference (all 13 commands) |
+| doc | [feature/001_workspace_management.md](../feature/001_workspace_management.md) | Feature-level workspace management documentation |

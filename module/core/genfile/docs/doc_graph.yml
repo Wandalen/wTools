@@ -1,0 +1,157 @@
+meta:
+  description: Cross-reference graph for all doc instances in genfile
+  node_count: 16
+  edge_count: 3
+  component_count: 13
+  generated: 2026_04_25
+
+nodes:
+  - id: feature/001
+    file: feature/001_archive_lifecycle_management.md
+    label: Archive Lifecycle Management
+    entity: feature
+  - id: feature/002
+    file: feature/002_file_content_operations.md
+    label: File Content Operations
+    entity: feature
+  - id: feature/003
+    file: feature/003_parameter_definition_management.md
+    label: Parameter Definition Management
+    entity: feature
+  - id: feature/004
+    file: feature/004_parameter_value_management.md
+    label: Parameter Value Management
+    entity: feature
+  - id: feature/005
+    file: feature/005_content_source_management.md
+    label: Content Source Management
+    entity: feature
+  - id: feature/006
+    file: feature/006_template_materialization.md
+    label: Template Materialization
+    entity: feature
+  - id: feature/007
+    file: feature/007_archive_serialization.md
+    label: Archive Serialization
+    entity: feature
+  - id: feature/008
+    file: feature/008_archive_analysis.md
+    label: Archive Analysis
+    entity: feature
+  - id: feature/009
+    file: feature/009_help_system.md
+    label: Help System
+    entity: feature
+  - id: feature/010
+    file: feature/010_repl_mode.md
+    label: REPL Mode
+    entity: feature
+  - id: invariant/001
+    file: invariant/001_performance.md
+    label: Performance
+    entity: invariant
+  - id: invariant/002
+    file: invariant/002_usability.md
+    label: Usability
+    entity: invariant
+  - id: invariant/003
+    file: invariant/003_error_handling.md
+    label: Error Handling
+    entity: invariant
+  - id: invariant/004
+    file: invariant/004_security.md
+    label: Security
+    entity: invariant
+  - id: invariant/005
+    file: invariant/005_testing_coverage.md
+    label: Testing Coverage
+    entity: invariant
+  - id: invariant/006
+    file: invariant/006_documentation.md
+    label: Documentation
+    entity: invariant
+
+edges:
+  - {from: invariant/001, to: feature/010, via: typed_reference}
+  - {from: invariant/003, to: feature/006, via: typed_reference}
+  - {from: invariant/004, to: feature/006, via: typed_reference}
+
+components:
+  - id: 1
+    label: performance-repl
+    size: 2
+    isolated: false
+    nodes: [invariant/001, feature/010]
+  - id: 2
+    label: security-materialization
+    size: 3
+    isolated: false
+    nodes: [invariant/003, invariant/004, feature/006]
+  - id: 3
+    label: archive-lifecycle
+    size: 1
+    isolated: true
+    nodes: [feature/001]
+    gap: Foundational archive lifecycle; would connect via invariant cross-referencing load/save latency bounds
+  - id: 4
+    label: file-content
+    size: 1
+    isolated: true
+    nodes: [feature/002]
+    gap: Standalone file operations; would connect via feature/001 dependency on loaded archive
+  - id: 5
+    label: param-definition
+    size: 1
+    isolated: true
+    nodes: [feature/003]
+    gap: Standalone parameter metadata; would connect via feature/004 value-definition dependency
+  - id: 6
+    label: param-value
+    size: 1
+    isolated: true
+    nodes: [feature/004]
+    gap: Standalone value management; would connect via feature/003 definition-value dependency
+  - id: 7
+    label: content-source
+    size: 1
+    isolated: true
+    nodes: [feature/005]
+    gap: Standalone content sourcing; would connect via feature/007 internalization step in pack
+  - id: 8
+    label: archive-serialization
+    size: 1
+    isolated: true
+    nodes: [feature/007]
+    gap: Standalone serialization; would connect via feature/005 content internalization dependency
+  - id: 9
+    label: archive-analysis
+    size: 1
+    isolated: true
+    nodes: [feature/008]
+    gap: Standalone analysis; would connect via invariant/005 coverage verification
+  - id: 10
+    label: help-system
+    size: 1
+    isolated: true
+    nodes: [feature/009]
+    gap: Framework-provided help with no cross-references; would connect via invariant/002 usability compliance
+  - id: 11
+    label: usability
+    size: 1
+    isolated: true
+    nodes: [invariant/002]
+    gap: CLI convention invariant; would connect if feature docs cross-referenced usability contract
+  - id: 12
+    label: testing-coverage
+    size: 1
+    isolated: true
+    nodes: [invariant/005]
+    gap: Testing meta-invariant; would connect if feature docs cross-referenced coverage requirements
+  - id: 13
+    label: documentation
+    size: 1
+    isolated: true
+    nodes: [invariant/006]
+    gap: Documentation meta-invariant; would connect if feature docs cross-referenced documentation requirements
+
+dangling_refs: []

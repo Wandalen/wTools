@@ -18,7 +18,7 @@
 
 #### visual_len Behavior
 
-`visual_len` counts visible Unicode codepoints, excluding ANSI escape sequences. Measurement uses character count via `chars().count()`, not display width. ANSI sequences contribute zero to the count. The invariant: ANSI escape sequences are always excluded from width measurement; only printable characters are counted.
+`visual_len` counts visible Unicode codepoints by character count, excluding ANSI escape sequences. ANSI sequences contribute zero to the count; only printable characters are counted. This is a char-count measurement, not an East Asian Width display-column count — wide characters (CJK, emoji) each count as 1, not 2. The invariant: ANSI escape sequences are always excluded from width measurement. Known limitation: column widths calculated via `visual_len` are narrower than required for CJK and emoji content, which each occupy 2 terminal display columns.
 
 #### Character Width Reference
 
@@ -37,7 +37,7 @@
 
 `pad_to_width` uses the East Asian Width property (via the `unicode-width` crate) for terminal column measurement, not raw character count. Wide characters (CJK, emoji) count as 2 display columns. Normal characters (ASCII, Cyrillic, Latin) count as 1. Zero-width characters (combining marks) count as 0. ANSI escape sequences count as 0. When text display width already meets or exceeds the target width, the text is returned unchanged. The `align_right` parameter controls whether padding is prepended (right-align) or appended (left-align).
 
-**Fix(issue-003)**: Previous implementation mixed character-count-based padding with display-width-based formatting, causing misalignment with wide Unicode characters. Always use display width for terminal alignment, not char count.
+**Fix(issue-003)**: Previous implementation mixed character-count-based padding with display-width-based formatting, causing misalignment with wide Unicode characters. `pad_to_width` was fixed to use East Asian Width display columns for padding calculations. Column width measurement via `visual_len` still uses char count; CJK and emoji column overflow is a known remaining limitation.
 
 #### ANSI Reset Invariant
 
@@ -51,7 +51,7 @@ For cells containing newlines, each sub-line is wrapped separately. The row buff
 
 #### DecoratedText Detail-Line Rule
 
-When rendering `DecoratedText` detail lines, always iterate over `ct.text.lines()` — never call `ct.render().lines()`. Calling `render()` produces `color_prefix + text + ANSI_RESET` as a single string. Calling `.lines()` on that result splits within the text but places the ANSI_RESET token only after the last sub-line, causing intermediate lines to bleed the terminal's background color across line boundaries. The correct approach iterates the raw text lines and wraps each independently with its own color/reset pair.
+When rendering `DecoratedText` detail lines, always iterate over the raw text lines — never render first and then split on line breaks. Rendering produces color prefix + text + ANSI_RESET as a single string; splitting that result places the ANSI_RESET only after the last sub-line, causing intermediate lines to bleed the terminal's background color across line boundaries. The correct approach iterates the raw text lines and wraps each independently with its own color/reset pair.
 
 ### Enforcement Mechanism
 

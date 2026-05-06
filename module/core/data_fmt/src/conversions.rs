@@ -100,7 +100,7 @@ impl FlattenConfig
 /// let flattened = conversions::flatten_to_table_tree( &tree );
 /// // Returns table-shaped tree with path/name/depth/data columns
 /// ```
-pub fn flatten_to_table_tree< T : std::fmt::Display >( tree : &TreeNode< T > ) -> TreeNode< String >
+pub fn flatten_to_table_tree< T : std::fmt::Display >( tree : &TreeNode< T > ) -> crate::TableView
 {
   flatten_to_table_tree_with_config( tree, &FlattenConfig::default() )
 }
@@ -125,7 +125,7 @@ pub fn flatten_to_table_tree_with_config< T : std::fmt::Display >(
   tree : &TreeNode< T >,
   config : &FlattenConfig
 )
--> TreeNode< String >
+-> crate::TableView
 {
   let ( path_name, name_name, depth_name, data_name ) = config.column_names.clone().unwrap_or
   (
@@ -141,7 +141,7 @@ pub fn flatten_to_table_tree_with_config< T : std::fmt::Display >(
   let mut builder = RowBuilder::new( headers );
 
   traverse_and_flatten_with_config( tree, &mut builder, "", 0, config );
-  builder.build()
+  builder.build_view()
 }
 
 /// DFS traversal with custom config

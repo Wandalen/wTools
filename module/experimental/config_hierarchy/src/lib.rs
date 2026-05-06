@@ -1,4 +1,5 @@
 #![ cfg_attr( doc, doc = include_str!( "../readme.md" ) ) ]
+#![ cfg_attr( not( feature = "enabled" ), allow( unused ) ) ]
 #![ deny( missing_docs ) ]
 
 //! Generic hierarchical configuration with 6-level priority and source tracking
@@ -36,7 +37,7 @@ pub use error::ValidationError;
 #[ cfg( feature = "enabled" ) ]
 pub use source::ConfigSource;
 #[ cfg( feature = "enabled" ) ]
-pub use traits::{ ConfigDefaults, ConfigPaths, ConfigValidator, EnvVarCasing };
+pub use traits::{ ConfigDefaults, ConfigPaths, ConfigValidator, EnvVarCasing, NoValidator };
 #[ cfg( feature = "enabled" ) ]
 pub use type_detection::detect_and_convert_value;
 #[ cfg( feature = "enabled" ) ]

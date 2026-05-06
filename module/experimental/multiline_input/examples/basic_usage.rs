@@ -1,9 +1,12 @@
 //! Basic usage example for multiline_input crate
 
-use multiline_input::collect;
+#[ cfg( not( feature = "enabled" ) ) ]
+fn main() {}
 
+#[ cfg( feature = "enabled" ) ]
 fn main()
 {
+  use multiline_input::collect;
   println!( "Multiline Input Example" );
   println!( "Press ENTER to submit, CTRL+ENTER for newline, ESC to cancel\n" );
 

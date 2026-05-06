@@ -4,7 +4,7 @@
 
 Backlog of planned tasks for data_fmt, awaiting prioritization into active development.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

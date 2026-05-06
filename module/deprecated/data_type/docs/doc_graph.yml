@@ -1,0 +1,60 @@
+meta:
+  description: Cross-reference graph for all doc instances in data_type
+  node_count: 6
+  edge_count: 17
+  component_count: 1
+  generated: 2026_04_26
+
+nodes:
+  - id: api/001
+    file: api/001_namespace_chain.md
+    label: Namespace Chain
+    entity: api
+  - id: feature/001
+    file: feature/001_either_type.md
+    label: Either Type
+    entity: feature
+  - id: feature/002
+    file: feature/002_interval_integration.md
+    label: Interval Integration
+    entity: feature
+  - id: feature/003
+    file: feature/003_collection_integration.md
+    label: Collection Integration
+    entity: feature
+  - id: invariant/001
+    file: invariant/001_pure_aggregator.md
+    label: Pure Aggregator
+    entity: invariant
+  - id: pattern/001
+    file: pattern/001_facade_reexport.md
+    label: Facade Re-export
+    entity: pattern
+
+edges:
+  - {from: api/001,      to: feature/001,   via: typed_reference }
+  - {from: api/001,      to: feature/002,   via: typed_reference }
+  - {from: api/001,      to: feature/003,   via: typed_reference }
+  - {from: api/001,      to: pattern/001,   via: typed_reference }
+  - {from: feature/001,  to: api/001,       via: typed_reference }
+  - {from: feature/001,  to: invariant/001, via: typed_reference }
+  - {from: feature/002,  to: api/001,       via: typed_reference }
+  - {from: feature/002,  to: invariant/001, via: typed_reference }
+  - {from: feature/003,  to: api/001,       via: typed_reference }
+  - {from: feature/003,  to: invariant/001, via: typed_reference }
+  - {from: invariant/001, to: api/001,      via: typed_reference }
+  - {from: invariant/001, to: feature/001,  via: typed_reference }
+  - {from: invariant/001, to: feature/002,  via: typed_reference }
+  - {from: invariant/001, to: feature/003,  via: typed_reference }
+  - {from: invariant/001, to: pattern/001,  via: typed_reference }
+  - {from: pattern/001,  to: api/001,       via: typed_reference }
+  - {from: pattern/001,  to: invariant/001, via: typed_reference }
+
+components:
+  - id: 1
+    label: Core
+    nodes: [api/001, feature/001, feature/002, feature/003, invariant/001, pattern/001]
+    size: 6
+    isolated: false
+
+dangling_refs: []

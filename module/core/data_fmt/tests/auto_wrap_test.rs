@@ -3,7 +3,7 @@
 //! ## What This Tests
 //!
 //! Verifies that `TableFormatter` auto-wraps flex-column cells at their budget
-//! boundary when table width exceeds terminal width. Covers all 22 scenarios
+//! boundary when table width exceeds terminal width. Covers all 23 scenarios
 //! from the Task 019 test matrix.
 //!
 //! ## Test Matrix
@@ -16,6 +16,7 @@
 //! T19–T20: Heuristic auto-classification
 //! T21: Sub-row detail + wrapping
 //! T22: Format trait path (`build_view`)
+//! T23: All-Fixed columns sum exceeds terminal — graceful overflow
 
 #![ cfg( feature = "enabled" ) ]
 use data_fmt::{ RowBuilder, TableFormatter, TableConfig, ColumnFlex, Format, DecoratedText };
@@ -28,7 +29,7 @@ fn auto_wrap_natural_fit_no_wrapping()
   let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
     .add_row( vec![ DecoratedText::from( "Alice" ), DecoratedText::from( "30" ) ] )
     .add_row( vec![ DecoratedText::from( "Bob" ), DecoratedText::from( "25" ) ] )
-    .build();
+    .build_view();
 
   let fmt_wrap = TableFormatter::with_config(
     TableConfig::plain().terminal_width( Some( 120 ) )
@@ -37,8 +38,8 @@ fn auto_wrap_natural_fit_no_wrapping()
     TableConfig::plain().auto_wrap( false )
   );
 
-  let output_wrap = fmt_wrap.format( &tree );
-  let output_no_wrap = fmt_no_wrap.format( &tree );
+  let output_wrap = fmt_wrap.format( &tree ).unwrap_or_default();
+  let output_no_wrap = fmt_no_wrap.format( &tree ).unwrap_or_default();
   assert_eq!( output_wrap, output_no_wrap, "no wrapping when table fits naturally" );
 }
 
@@ -50,12 +51,12 @@ fn auto_wrap_wraps_flex_column()
   let long_path = "this/is/a/very/long/path/that/exceeds/the/terminal/width/significantly";
   let tree = RowBuilder::new( vec![ "ID".into(), "Path".into() ] )
     .add_row( vec![ DecoratedText::from( "1" ), long_path.into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain().terminal_width( Some( 40 ) )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // The output should contain multiple lines for the single data row
   // because the Path column wraps
@@ -83,12 +84,12 @@ fn auto_wrap_all_fixed_no_wrapping()
 {
   let tree = RowBuilder::new( vec![ "A".into(), "B".into(), "C".into() ] )
     .add_row( vec![ DecoratedText::from( "x" ), DecoratedText::from( "y" ), DecoratedText::from( "z" ) ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain().terminal_width( Some( 60 ) )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // With all short columns (≤12 chars), all classified as Fixed — no wrapping
   let data_lines : Vec< &str > = output.lines().skip( 2 ).collect();
@@ -104,12 +105,12 @@ fn auto_wrap_two_flex_columns_share_budget()
   let long2 = "1111 2222 3333 4444 5555 6666 7777 8888";
   let tree = RowBuilder::new( vec![ "ID".into(), "Col1".into(), "Col2".into() ] )
     .add_row( vec![ DecoratedText::from( "1" ), long1.into(), long2.into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain().terminal_width( Some( 50 ) )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Both flex columns should wrap
   let data_lines : Vec< &str > = output.lines().skip( 2 ).collect();
@@ -131,7 +132,7 @@ fn auto_wrap_explicit_column_flex_override()
       long_content.into(),
       long_content.into(),
     ] )
-    .build();
+    .build_view();
 
   // Only middle column is Flex — only it should wrap
   let formatter = TableFormatter::with_config(
@@ -139,7 +140,7 @@ fn auto_wrap_explicit_column_flex_override()
       .terminal_width( Some( 60 ) )
       .column_flex( vec![ ColumnFlex::Fixed, ColumnFlex::Flex, ColumnFlex::Fixed ] )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // The output should contain newlines from wrapping the middle column
   assert!(
@@ -156,7 +157,7 @@ fn auto_wrap_false_is_byte_identical()
   let long_path = "this/is/a/very/long/path/that/definitely/exceeds/eighty/columns/wide";
   let tree = RowBuilder::new( vec![ "ID".into(), "Path".into() ] )
     .add_row( vec![ DecoratedText::from( "1" ), long_path.into() ] )
-    .build();
+    .build_view();
 
   let fmt_disabled = TableFormatter::with_config(
     TableConfig::plain().auto_wrap( false )
@@ -165,8 +166,8 @@ fn auto_wrap_false_is_byte_identical()
     TableConfig::plain().auto_wrap( false ).terminal_width( Some( 40 ) )
   );
 
-  let output1 = fmt_disabled.format( &tree );
-  let output2 = fmt_default_no_term.format( &tree );
+  let output1 = fmt_disabled.format( &tree ).unwrap_or_default();
+  let output2 = fmt_default_no_term.format( &tree ).unwrap_or_default();
   assert_eq!( output1, output2, "auto_wrap(false) must produce identical output regardless of terminal_width" );
 
   // Should be single data line (no wrapping)
@@ -182,12 +183,12 @@ fn csv_preset_auto_disables_wrapping()
   let long = "this,is,a,very,long,value,that,exceeds,terminal,width";
   let tree = RowBuilder::new( vec![ "ID".into(), "Data".into() ] )
     .add_row( vec![ DecoratedText::from( "1" ), long.into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::with_config(
     TableConfig::csv().terminal_width( Some( 30 ) )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // CSV should never wrap
   let lines : Vec< &str > = output.lines().collect();
@@ -203,12 +204,12 @@ fn tsv_preset_auto_disables_wrapping()
   let long = "this\tvalue\tis\tvery\tlong\tand\texceeds\tterminal\twidth\tboundary";
   let tree = RowBuilder::new( vec![ "ID".into(), "Data".into() ] )
     .add_row( vec![ DecoratedText::from( "1" ), long.into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::with_config(
     TableConfig::tsv().terminal_width( Some( 30 ) )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // TSV should never wrap
   let lines : Vec< &str > = output.lines().collect();
@@ -223,12 +224,12 @@ fn auto_wrap_multiline_alignment()
   let long = "alpha bravo charlie delta echo foxtrot golf hotel india";
   let tree = RowBuilder::new( vec![ "ID".into(), "Description".into() ] )
     .add_row( vec![ DecoratedText::from( "1" ), long.into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain().terminal_width( Some( 40 ) )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // All data lines (after header + separator) should have consistent column alignment
   let lines : Vec< &str > = output.lines().collect();
@@ -252,12 +253,12 @@ fn auto_wrap_ansi_colors_preserved()
   let colored = "\x1b[32mgreen text that is quite long and should wrap at budget\x1b[0m";
   let tree = RowBuilder::new( vec![ "ID".into(), "Status".into() ] )
     .add_row( vec![ DecoratedText::from( "1" ), colored.into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain().terminal_width( Some( 40 ) )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Should not panic and should produce output
   assert!( !output.is_empty(), "ANSI colored content should render" );
@@ -277,12 +278,12 @@ fn auto_wrap_bordered_style()
   let long = "bordered content that should wrap within the budget allocation";
   let tree = RowBuilder::new( vec![ "ID".into(), "Content".into() ] )
     .add_row( vec![ DecoratedText::from( "1" ), long.into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::with_config(
     TableConfig::bordered().terminal_width( Some( 50 ) )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Every line should have border pipes
   for line in output.lines()
@@ -307,12 +308,12 @@ fn auto_wrap_unicode_box_style()
   let long = "unicode box content that should wrap within the budget allocation";
   let tree = RowBuilder::new( vec![ "ID".into(), "Content".into() ] )
     .add_row( vec![ DecoratedText::from( "1" ), long.into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::with_config(
     TableConfig::unicode_box().terminal_width( Some( 50 ) )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Data rows should have unicode box character borders
   for line in output.lines()
@@ -335,12 +336,12 @@ fn auto_wrap_with_existing_newlines()
   let content_with_newline = "first line\nsecond line that is long enough to wrap at budget";
   let tree = RowBuilder::new( vec![ "ID".into(), "Content".into() ] )
     .add_row( vec![ DecoratedText::from( "1" ), content_with_newline.into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain().terminal_width( Some( 40 ) )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Manual newlines should be preserved AND long lines should wrap further
   let data_lines : Vec< &str > = output.lines().skip( 2 ).collect();
@@ -358,14 +359,14 @@ fn auto_wrap_min_column_width_wins()
   let long = "content that should respect minimum column width setting";
   let tree = RowBuilder::new( vec![ "ID".into(), "Data".into() ] )
     .add_row( vec![ DecoratedText::from( "1" ), long.into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
       .terminal_width( Some( 20 ) )
       .min_column_width( 15 )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Should not panic; min_column_width floor takes precedence
   assert!( !output.is_empty(), "should handle min_column_width > budget gracefully" );
@@ -387,7 +388,7 @@ fn auto_wrap_column_widths_override_bypass()
   let long = "this should not be wrapped because column_widths is explicitly set";
   let tree = RowBuilder::new( vec![ "ID".into(), "Data".into() ] )
     .add_row( vec![ DecoratedText::from( "1" ), long.into() ] )
-    .build();
+    .build_view();
 
   let fmt_override = TableFormatter::with_config(
     TableConfig::plain()
@@ -400,8 +401,8 @@ fn auto_wrap_column_widths_override_bypass()
       .column_widths( vec![ 5, 70 ] )
   );
 
-  let output1 = fmt_override.format( &tree );
-  let output2 = fmt_no_wrap.format( &tree );
+  let output1 = fmt_override.format( &tree ).unwrap_or_default();
+  let output2 = fmt_no_wrap.format( &tree ).unwrap_or_default();
   assert_eq!(
     output1, output2,
     "explicit column_widths should bypass auto-wrap"
@@ -416,12 +417,12 @@ fn auto_wrap_single_row()
   let long = "single row content that must wrap at the budget boundary cleanly";
   let tree = RowBuilder::new( vec![ "ID".into(), "Description".into() ] )
     .add_row( vec![ DecoratedText::from( "1" ), long.into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain().terminal_width( Some( 40 ) )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   let data_lines : Vec< &str > = output.lines().skip( 2 ).collect();
   assert!(
@@ -446,9 +447,11 @@ fn auto_wrap_empty_table_headers_only()
   );
   let output = Format::format( &formatter, &view ).unwrap();
 
-  // Should not crash; headers should render
-  assert!( !output.is_empty(), "empty table should render headers" );
-  assert!( output.contains( "ID" ), "header should appear" );
+  // IC-3 invariant: no columns → ""; columns + no rows → header + separator.
+  // build_view() makes headers accessible; formatter renders them even with no data.
+  assert!( !output.is_empty(), "headers-only table must render header row" );
+  assert!( output.contains( "ID" ), "header column name must appear" );
+  assert!( output.lines().count() <= 2, "must have at most header + separator lines" );
 }
 
 // --- T18: terminal_width(Some(0)) edge case ---
@@ -458,12 +461,12 @@ fn auto_wrap_terminal_width_zero()
 {
   let tree = RowBuilder::new( vec![ "A".into(), "B".into() ] )
     .add_row( vec![ DecoratedText::from( "x" ), DecoratedText::from( "y" ) ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain().terminal_width( Some( 0 ) )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Should not panic
   assert!( !output.is_empty(), "terminal_width=0 should not panic" );
@@ -478,7 +481,7 @@ fn auto_wrap_heuristic_short_is_fixed()
   let tree = RowBuilder::new( vec![ "ID".into(), "Name".into(), "Age".into() ] )
     .add_row( vec![ DecoratedText::from( "1" ), DecoratedText::from( "Alice" ), DecoratedText::from( "30" ) ] )
     .add_row( vec![ DecoratedText::from( "2" ), DecoratedText::from( "Bob" ), DecoratedText::from( "25" ) ] )
-    .build();
+    .build_view();
 
   let fmt_wrap = TableFormatter::with_config(
     TableConfig::plain().terminal_width( Some( 30 ) )
@@ -487,8 +490,8 @@ fn auto_wrap_heuristic_short_is_fixed()
     TableConfig::plain().auto_wrap( false )
   );
 
-  let output_wrap = fmt_wrap.format( &tree );
-  let output_no_wrap = fmt_no_wrap.format( &tree );
+  let output_wrap = fmt_wrap.format( &tree ).unwrap_or_default();
+  let output_no_wrap = fmt_no_wrap.format( &tree ).unwrap_or_default();
   assert_eq!(
     output_wrap, output_no_wrap,
     "short columns (≤12 chars) should be Fixed and not wrap"
@@ -503,12 +506,12 @@ fn auto_wrap_heuristic_long_is_flex()
   let long = "this is definitely longer than twelve characters";
   let tree = RowBuilder::new( vec![ "ID".into(), "Description".into() ] )
     .add_row( vec![ DecoratedText::from( "1" ), long.into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain().terminal_width( Some( 40 ) )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Long column (>12 chars) auto-classified as Flex, should wrap
   let data_lines : Vec< &str > = output.lines().skip( 2 ).collect();
@@ -571,4 +574,36 @@ fn auto_wrap_format_trait_path()
     data_lines.len() > 1,
     "Format trait path should produce wrapped output"
   );
+}
+
+// --- T23: All-Fixed columns sum exceeds terminal — graceful overflow ---
+// invariant: Fixed columns are never truncated by budget allocation; output may
+// exceed terminal width but must not panic and must contain all cell content.
+#[ test ]
+fn auto_wrap_all_fixed_columns_exceed_terminal()
+{
+  let content_a = "aaaa bbbb cccc dddd eeee ffff gggg hhhh iiii jjjj";
+  let content_b = "1111 2222 3333 4444 5555 6666 7777 8888 9999 0000";
+  let content_c = "AAAA BBBB CCCC DDDD EEEE FFFF GGGG HHHH IIII JJJJ";
+  let tree = RowBuilder::new( vec![ "A".into(), "B".into(), "C".into() ] )
+    .add_row( vec![ content_a.into(), content_b.into(), content_c.into() ] )
+    .build_view();
+
+  // All three columns forced Fixed; each is ~49 chars wide, total >> 40
+  let formatter = TableFormatter::with_config(
+    TableConfig::plain()
+      .terminal_width( Some( 40 ) )
+      .column_flex( vec![ ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed ] )
+  );
+  // Must not panic; output must be non-empty and contain all cell words
+  let output = formatter.format( &tree ).unwrap_or_default();
+  assert!( !output.is_empty(), "all-Fixed overflow must produce non-empty output" );
+  // All cell content must appear somewhere in the output (possibly across wrapped lines)
+  for word in [ "aaaa", "hhhh", "1111", "9999", "AAAA", "JJJJ" ]
+  {
+    assert!(
+      output.contains( word ),
+      "all-Fixed cell content word '{word}' must appear in output",
+    );
+  }
 }

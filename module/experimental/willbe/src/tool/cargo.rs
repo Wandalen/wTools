@@ -75,12 +75,12 @@ mod private
   impl PackOptions
   {
   #[ allow( clippy ::if_not_else ) ]
-  fn to_pack_args( &self ) -> Vec< String >
+  fn to_pack_args( &self, toolchain: &str ) -> Vec< String >
   {
    // Building the full path to Cargo.toml
    let manifest_path = self.path.join( "Cargo.toml" );
    let normalized_manifest_path = manifest_path.to_string_lossy().replace( '\\', "/" );
-   [ "run".to_string(), self.channel.to_string(), "cargo".into(), "package".into() ]
+   [ "run".to_string(), toolchain.to_string(), "cargo".into(), "package".into() ]
    .into_iter()
    // clearly show the way to the manifesto
    .chain( Some( "--manifest-path".to_string() ) )
@@ -115,8 +115,12 @@ mod private
   // qqq: use typed error
   pub fn pack( args: PackOptions ) -> error ::untyped ::Result< process ::Report >
   {
-  
-  let ( program, options ) = ( "rustup", args.to_pack_args() );
+  // Fix(issue-NNN): Resolve actual rustup toolchain identifier before invoking `rustup run`.
+  // Root cause: "rustup run stable" requires the "stable" alias; version-pinned toolchains
+  // (e.g. "1.94.1-aarch64-unknown-linux-gnu") do not register that alias.
+  // Pitfall: Channel::Stable formats as "stable" but that string only works when the alias exists.
+  let toolchain = crate ::channel ::toolchain_name( args.channel, &args.path )?;
+  let ( program, options ) = ( "rustup", args.to_pack_args( &toolchain ) );
 
   if args.dry
   {

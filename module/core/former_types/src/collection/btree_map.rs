@@ -68,19 +68,19 @@ where
 
 // = definition
 
-/// Represents the formation definition for a hash map-like collection within the former framework.
+/// Represents the formation definition for a binary tree map-like collection within the former framework.
 ///
-/// This structure defines the essential elements required to form a hash map-like collection, detailing
+/// This structure defines the essential elements required to form a binary tree map-like collection, detailing
 /// the key and value types, the contextual environment during formation, the final formed type, and the
-/// behavior at the end of the formation process. It facilitates customization and extension of hash map
+/// behavior at the end of the formation process. It facilitates customization and extension of binary tree map
 /// formation within any system that implements complex data management operations.
 ///
 /// # Type Parameters
-/// - `K` : The key type of the hash map.
-/// - `E` : The value type of the hash map.
+/// - `K` : The key type of the binary tree map.
+/// - `E` : The value type of the binary tree map.
 /// - `Context` : The optional context provided during the formation process.
 /// - `Formed` : The type of the entity produced, typically a `BTreeMap< K, E >`.
-/// - `End` : A trait defining the end behavior of the formation process, managing how the hash map is finalized.
+/// - `End` : A trait defining the end behavior of the formation process, managing how the binary tree map is finalized.
 ///
 #[ derive( Debug, Default ) ]
 pub struct BTreeMapDefinition< K, E, Context = (), Formed = BTreeMap<K, E >, End = ReturnStorage>
@@ -113,9 +113,9 @@ where
 /// consistency of type relations throughout the former lifecycle.
 ///
 /// # Type Parameters
-/// - `K` : The key type of the hash map.
-/// - `E` : The value type of the hash map.
-/// - `Context` : The operational context in which the hash map is formed.
+/// - `K` : The key type of the binary tree map.
+/// - `E` : The value type of the binary tree map.
+/// - `Context` : The operational context in which the binary tree map is formed.
 /// - `Formed` : The type produced, typically mirroring the structure of a `BTreeMap< K, E >`.
 #[ derive( Debug, Default ) ]
 pub struct BTreeMapDefinitionTypes< K, E, Context = (), Formed = BTreeMap<K, E >> 
@@ -180,26 +180,26 @@ where
 
 // = subformer
 
-/// Provides a streamlined builder interface for constructing hash map-like collections.
+/// Provides a streamlined builder interface for constructing binary tree map-like collections.
 ///
-/// `BTreeMapFormer` is a type alias that configures the `CollectionFormer` specifically for hash maps,
-/// facilitating a more intuitive and flexible way to build and manipulate hash maps within custom data structures.
-/// This type alias simplifies the usage of hash maps in builder patterns by encapsulating complex generic parameters
+/// `BTreeMapFormer` is a type alias that configures the `CollectionFormer` specifically for binary tree maps,
+/// facilitating a more intuitive and flexible way to build and manipulate binary tree maps within custom data structures.
+/// This type alias simplifies the usage of binary tree maps in builder patterns by encapsulating complex generic parameters
 /// and leveraging the `BTreeMapDefinition` to handle the construction logic. It supports fluent chaining of key-value
-/// insertions and can be customized with various end actions to finalize the hash map upon completion.
+/// insertions and can be customized with various end actions to finalize the binary tree map upon completion.
 ///
-/// The alias helps reduce boilerplate code and enhances readability, making the construction of hash maps in
+/// The alias helps reduce boilerplate code and enhances readability, making the construction of binary tree maps in
 /// a builder pattern both efficient and expressive.
 pub type BTreeMapFormer< K, E, Context, Formed, End > = CollectionFormer< (K, E), BTreeMapDefinition<K, E, Context, Formed, End >>;
 
 // = extension
 
-/// Provides an extension method for hash maps to facilitate the use of the builder pattern.
+/// Provides an extension method for binary tree maps to facilitate the use of the builder pattern.
 ///
 /// This trait extends the `BTreeMap` type, enabling it to use the `BTreeMapFormer` interface directly.
-/// It allows for fluent, expressive construction and manipulation of hash maps, integrating seamlessly
+/// It allows for fluent, expressive construction and manipulation of binary tree maps, integrating seamlessly
 /// with the builder pattern provided by the `former` framework. It's a convenience trait that simplifies
-/// creating configured hash map builders with default settings.
+/// creating configured binary tree map builders with default settings.
 ///
 pub trait BTreeMapExt< K, E > : sealed ::Sealed
 where

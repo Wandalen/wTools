@@ -18,7 +18,7 @@ mod private
   use grammar :: { Command, Dictionary };
   use executor ::Routine;
 
-  use iter_tools ::Itertools;
+  use ::itertools ::Itertools;
   use std ::rc ::Rc;
   use error_tools ::untyped ::format_err;
   use former ::Former;

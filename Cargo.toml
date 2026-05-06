@@ -1,42 +1,19 @@
 [workspace]
 resolver = "2"
 members = [
-  "module/alias/*",
   "module/core/*",
   "module/experimental/*",
-  # NOTE: module/move directory is now empty - all crates moved to core or postponed
 ]
 exclude = [
   # Exclude all hyphen-prefixed files (temporary files, private scripts)
   "-*",
 
   # Exclude non-workspace module groups
-  "module/postponed/*",
   "module/step/*",
 
-  # Exclude stub directories remaining after crate moves to module/experimental
-  # These dirs have no Cargo.toml but exist on disk (matched by members globs)
-  "module/alias/winterval",
-  "module/core/async_tools",
-  "module/core/component_model_types",
-  "module/core/meta_tools",
-  "module/core/reflect_tools",
-  "module/core/sqlx_query",
-  "module/core/unilang_parser",
-  "module/core/unitore",
-  "module/core/wca",
-  "module/core/willbe",
-  "module/core/wtools",
-
-  # Exclude module/core stubs that still have Cargo.toml (crate moved to module/experimental)
-  "module/core/config_hierarchy",
-  "module/core/multiline_input",
-  "module/core/unilang",
-  "module/core/unilang_benchmarks",
-  "module/core/cargo_unilang",
+  # Deprecated crates — parked here before final deletion
+  "module/deprecated/*",
 ]
-dev-dependencies = {}
-build-dependencies = {}
 # default-members = [ "module/core/wtools" ]
 
 [workspace.package]
@@ -118,20 +95,12 @@ large_enum_variant = "allow"
 struct_excessive_bools = "allow"
 
 
-## top level
-
-[workspace.dependencies.wtools]
-version = "~0.2.20"
-path = "module/experimental/wtools"
-default-features = false
-
-
 
 ## data_type
 
 [workspace.dependencies.data_type]
 version = "~0.25.0"
-path = "module/experimental/data_type"
+path = "module/deprecated/data_type"
 default-features = false
 
 [workspace.dependencies.interval_adapter]
@@ -140,11 +109,6 @@ path = "module/experimental/interval_adapter"
 default-features = false
 # features = [ "enabled" ]
 
-[workspace.dependencies.winterval]
-version = "~0.3.0"
-path = "module/experimental/winterval"
-default-features = false
-# features = [ "enabled" ]
 
 [workspace.dependencies.collection_tools]
 version = "~0.38.0"
@@ -178,19 +142,6 @@ path = "module/experimental/reflect_tools_meta"
 default-features = false
 # features = [ "enabled" ]
 
-[workspace.dependencies.format_tools]
-version = "~0.6.0"
-path = "module/core/format_tools"
-default-features = false
-# features = [ "enabled" ]
-# xxx : remove features, maybe
-
-# [workspace.dependencies.format_tools]
-# version = "~0.1.0"
-# path = "module/core/format_tools"
-# default-features = false
-# features = [ "enabled" ]
-# # xxx : remove features, maybe
 
 [workspace.dependencies.color_tools]
 version          = "~0.4.0"
@@ -198,18 +149,13 @@ path             = "module/core/color_tools"
 default-features = false
 
 [workspace.dependencies.data_fmt]
-version = "~0.2.0"
+version = "~0.3.0"
 path = "module/core/data_fmt"
 default-features = false
 
 [workspace.dependencies.include_md]
 version = "~0.1.0"
 path = "module/experimental/include_md"
-default-features = false
-
-[workspace.dependencies.type_constructor]
-version = "~0.3.0"
-path = "module/postponed/type_constructor"
 default-features = false
 
 [workspace.dependencies.variadic_from]
@@ -254,7 +200,7 @@ default-features = false
 
 [workspace.dependencies.diagnostics_tools]
 version = "~0.11.0"
-path = "module/experimental/diagnostics_tools"
+path = "module/deprecated/diagnostics_tools"
 default-features = false
 
 
@@ -262,16 +208,11 @@ default-features = false
 
 [workspace.dependencies.iter_tools]
 version = "~0.50.0"
-path = "module/experimental/iter_tools"
+path = "module/deprecated/iter_tools"
 default-features = false
 
 
 ## meta
-
-[workspace.dependencies.meta_tools]
-version = "~0.12.0"
-path = "module/experimental/meta_tools"
-default-features = false
 
 [workspace.dependencies.for_each]
 version = "~0.10.0"
@@ -310,12 +251,13 @@ default-features = false
 
 [workspace.dependencies.impls_index]
 version = "~0.11.0"
-path = "module/core/impls_index"
+path = "module/deprecated/impls_index"
 default-features = false
 
 [workspace.dependencies.impls_index_meta]
 version = "~0.13.0"
-path = "module/core/impls_index_meta"
+path = "module/deprecated/impls_index_meta"
+default-features = false
 
 [workspace.dependencies.mod_interface]
 version = "~0.61.0"
@@ -349,19 +291,12 @@ path = "module/core/macro_tools"
 default-features = false
 
 
-## time
-
-[workspace.dependencies.time_tools]
-version = "~0.2.0"
-path = "module/experimental/time_tools"
-default-features = false
-
 
 ## typing
 
 [workspace.dependencies.typing_tools]
 version = "~0.11.0"
-path = "module/experimental/typing_tools"
+path = "module/deprecated/typing_tools"
 default-features = false
 
 [workspace.dependencies.implements]
@@ -376,12 +311,12 @@ default-features = false
 
 [workspace.dependencies.is_slice]
 version = "~0.14.0"
-path = "module/experimental/is_slice"
+path = "module/deprecated/is_slice"
 default-features = false
 
 [workspace.dependencies.asbytes]
 version = "~0.2.0"
-path = "module/core/asbytes"
+path = "module/experimental/asbytes"
 default-features = false
 
 
@@ -423,27 +358,9 @@ version = "~0.18.0"
 path = "module/core/strs_tools_meta"
 default-features = false
 
-[workspace.dependencies.wstring_tools]
-version = "~0.2.0"
-path = "module/alias/wstring_tools"
-
 
 ## fs tools / path tools
 
-[workspace.dependencies.fs_tools]
-version = "~0.2.0"
-path = "module/experimental/fs_tools"
-default-features = false
-
-[workspace.dependencies.file_tools]
-version = "~0.1.0"
-path = "module/alias/file_tools"
-default-features = false
-
-[workspace.dependencies.proper_tools]
-version = "~0.1.0"
-path = "module/alias/proper_tools"
-default-features = false
 
 [workspace.dependencies.pth]
 version = "~0.37.0"
@@ -513,26 +430,8 @@ path = "module/experimental/test_tools"
 version = "~0.2.0"
 path = "module/experimental/async_from"
 
-[workspace.dependencies.async_tools]
-version = "~0.1.0"
-path = "module/experimental/async_tools"
 
 ## graphs tools
-
-[workspace.dependencies.graphs_tools]
-version = "~0.3.0"
-path = "module/postponed/graphs_tools"
-default-features = false
-
-[workspace.dependencies.automata_tools]
-version = "~0.2.0"
-path = "module/postponed/automata_tools"
-default-features = false
-
-[workspace.dependencies.wautomata]
-version = "~0.2.0"
-path = "module/postponed/wautomata"
-default-features = false
 
 ## ca
 
@@ -546,30 +445,11 @@ path = "module/experimental/wca"
 version = "~0.35.0"
 path = "module/experimental/willbe"
 
-[workspace.dependencies.willbe2]
-version = "~0.2.0"
-path = "module/experimental/willbe2"
-default-features = false
-
-
 ## lang
-
-
-## plot
-[workspace.dependencies.wplot]
-version = "~0.2.0"
-path = "module/postponed/wplot"
-
-[workspace.dependencies.plot_interface]
-version = "~0.1.3"
-path = "module/postponed/plot_interface"
 
 
 ## unsorted
 
-[workspace.dependencies.sqlx_query]
-version = "~0.2.1"
-path = "module/experimental/sqlx_query"
 
 [workspace.dependencies.unitore]
 version = "~0.1.0"
@@ -578,7 +458,7 @@ default-features = false
 
 [workspace.dependencies.deterministic_rand]
 version = "~0.7.0"
-path = "module/core/deterministic_rand"
+path = "module/experimental/deterministic_rand"
 
 [workspace.dependencies.crates_tools]
 version = "~0.25.0"
@@ -587,6 +467,11 @@ path = "module/core/crates_tools"
 [workspace.dependencies.benchkit]
 version = "~0.20.0"
 path = "module/experimental/benchkit"
+
+[workspace.dependencies.multiline_input]
+version = "~0.2.0"
+path = "module/experimental/multiline_input"
+default-features = false
 
 ## steps
 
@@ -688,6 +573,9 @@ version = "0.3.31"
 
 [workspace.dependencies.futures-util]
 version = "0.3.31"
+
+[workspace.dependencies.futures]
+version = "0.3"
 
 [workspace.dependencies.regex]
 version = "1.11.1"
@@ -801,6 +689,9 @@ version = "~1.0"
 [workspace.dependencies.tar]
 version = "~0.4"
 
+[workspace.dependencies.ureq]
+version = "^2.9"
+
 [workspace.dependencies.strip-ansi-escapes]
 version = "0.1.1"
 
@@ -831,6 +722,9 @@ version = "0.11"
 
 [workspace.dependencies.crossterm]
 version = "0.29.0"
+
+[workspace.dependencies.terminal_size]
+version = "0.4"
 
 [workspace.dependencies.unicode-width]
 version = "0.2.2"

@@ -16,7 +16,7 @@ use crate ::Error;
 ///
 /// # Examples
 ///
-/// ```rust,ignore
+/// ```rust
 /// use genfile_core::{ FileSystem, MemoryFileSystem };
 /// use std::path::PathBuf;
 ///
@@ -161,15 +161,14 @@ impl FileSystem for MemoryFileSystem
 ///
 /// # Examples
 ///
-/// ```rust,ignore
+/// ```rust,no_run
 /// use genfile_core::{ FileSystem, RealFileSystem };
 /// use std::path::PathBuf;
 ///
 /// let mut fs = RealFileSystem::new();
 ///
 /// // Actual file I/O
-/// fs.write( &PathBuf::from( "output.txt" ), "content" )?;
-/// # Ok::<(), genfile_core::Error>(())
+/// fs.write( &PathBuf::from( "output.txt" ), "content" ).unwrap();
 /// ```
 #[ derive( Debug ) ]
 pub struct RealFileSystem;

@@ -15,9 +15,6 @@ Revolutionary type-safe component assignment for Rust. Build complex objects wit
 """
 categories = [ "rust-patterns", "development-tools", "api-bindings", "config" ]
 keywords = [ "builder-pattern", "type-safe", "zero-cost", "fluent-api", "configuration" ]
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
 
 [lints]
 workspace = true
@@ -34,7 +31,7 @@ use_alloc = [ "no_std", "component_model_types/use_alloc", "collection_tools/use
 # no_std = [ "collection_tools/no_std" ]
 # use_alloc = [ "no_std", "collection_tools/use_alloc" ]
 
-default = [ "enabled", "full" ]
+default = [ "enabled" ]
 full = [
   "enabled",
 

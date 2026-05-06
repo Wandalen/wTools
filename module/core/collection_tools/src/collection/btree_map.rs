@@ -76,7 +76,7 @@ macro_rules! bmap
   {{
   let mut _map = $crate ::collection ::BTreeMap ::new();
   $(
-   let _ = _map.insert( $key , $value );
+   let _ = _map.insert( $key, $value );
  )*
   _map
  }};

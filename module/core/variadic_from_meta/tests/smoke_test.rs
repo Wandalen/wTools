@@ -11,7 +11,7 @@
 //! ## Coverage Status
 //!
 //! - **Smoke Tests**: ✅ Implemented (this file)
-//! - **Comprehensive Tests**: See `derive_test.rs` for full conformance checks per spec §10
+//! - **Comprehensive Tests**: See `derive_test.rs` for conformance checks per [`docs/api/001_variadic_from_derive.md`](../docs/api/001_variadic_from_derive.md)
 //!
 //! ## Related Tests
 //!

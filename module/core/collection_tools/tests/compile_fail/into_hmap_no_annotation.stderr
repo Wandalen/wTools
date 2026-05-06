@@ -1,0 +1,37 @@
+error[E0283]: type annotations needed for `Hmap<_, _>`
+  --> tests/compile_fail/into_hmap_no_annotation.rs:15:7
+   |
+15 |   let _m = collection_tools ::into_hmap!{ "a" => 1 };
+   |       ^^   -----------------------------------------
+   |            |                              |
+   |            |                              type must be known at this point
+   |            required by a bound introduced by this call
+   |
+   = note: cannot satisfy `_: From<&str>`
+   = note: required for `&str` to implement `Into<_>`
+help: consider giving `_m` an explicit type, where the placeholders `_` are specified
+   |
+15 |   let _m: Hmap<_, _> = collection_tools ::into_hmap!{ "a" => 1 };
+   |         ++++++++++++
+
+error[E0283]: type annotations needed for `Hmap<_, _>`
+  --> tests/compile_fail/into_hmap_no_annotation.rs:15:7
+   |
+15 |   let _m = collection_tools ::into_hmap!{ "a" => 1 };
+   |       ^^   -----------------------------------------
+   |            |                                     |
+   |            |                                     type must be known at this point
+   |            required by a bound introduced by this call
+   |
+   = note: multiple `impl`s satisfying `_: From<i32>` found in the following crates: `core`, `std`:
+           - impl From<i32> for AtomicI32;
+           - impl From<i32> for f128;
+           - impl From<i32> for f64;
+           - impl From<i32> for i128;
+           - impl From<i32> for i64;
+           - impl From<i32> for std::sys::process::unix::unix::ExitStatus;
+   = note: required for `i32` to implement `Into<_>`
+help: consider giving `_m` an explicit type, where the placeholders `_` are specified
+   |
+15 |   let _m: Hmap<_, _> = collection_tools ::into_hmap!{ "a" => 1 };
+   |         ++++++++++++

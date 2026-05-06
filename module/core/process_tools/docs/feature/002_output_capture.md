@@ -15,11 +15,11 @@
 
 ### Design
 
-`Report` is unconditionally populated before the exit-code check. In `run()`, `command`, `current_path`, stdout, and stderr are stored into the report struct before the success/failure branch. The divergence happens only at the very end — after all fields are filled. This means `Err(report)` is never a partially-filled struct, so callers can apply identical display or logging logic regardless of branch.
+`Report` is unconditionally populated before the exit-code check. In `run()`, `command`, `current_path`, stdout, and stderr are stored into the report struct before the success/failure branch. The divergence happens only at the very end — after all fields are filled. This means the failure path never carries a partially-filled report, so callers can apply identical display or logging logic regardless of branch.
 
 The `Display` impl prefixes the command with `>` and the working directory with `@`, then indents stdout/stderr with two spaces (replacing `\n` with `\n  `). Whitespace-only output blocks are suppressed. This format is designed for inline subprocess tracing in CLI tool output.
 
-`Clone` cannot be derived because `error_tools::Error` is not `Clone`. The manual impl stringifies the error via `.to_string()` to preserve the failure message across the clone boundary, accepting the loss of the original error type.
+`Clone` cannot be derived because the error field type is not cloneable. The manual impl preserves the failure message across the clone boundary by converting the error to its string representation, accepting the loss of the original error type.
 
 ### Example
 
@@ -50,6 +50,6 @@ println!( "{}", report );
 |------|------|----------------|
 | source | [src/process.rs](../../src/process.rs) | `Report` struct, `Display` impl, `Clone` impl |
 | test | [tests/inc/process_run.rs](../../tests/inc/process_run.rs) | `Report` field population and display tests |
-| api | [api/002_report_api.md](../api/002_report_api.md) | Defines fields and method surface of `Report` |
-| invariant | [invariant/001_result_contract.md](../invariant/001_result_contract.md) | Guarantees `Report` is always fully populated on both branches |
-| feature | [feature/001_process_execution.md](001_process_execution.md) | Execution layer that produces `Report` values |
+| doc | [api/002_report_api.md](../api/002_report_api.md) | Defines fields and method surface of `Report` |
+| doc | [invariant/001_result_contract.md](../invariant/001_result_contract.md) | Guarantees `Report` is always fully populated on both branches |
+| doc | [feature/001_process_execution.md](001_process_execution.md) | Execution layer that produces `Report` values |

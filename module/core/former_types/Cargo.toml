@@ -15,9 +15,6 @@ A flexible implementation of the Builder pattern supporting nested builders and 
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
 
 [lints]
 workspace = true
@@ -31,11 +28,7 @@ all-features = false
 no_std = [ "collection_tools/no_std" ]
 use_alloc = [ "no_std", "collection_tools/use_alloc" ]
 
-default = [
-  "enabled",
-
-  "types_former",
-]
+default = [ "enabled", "types_former" ]
 full = [
   "enabled",
 

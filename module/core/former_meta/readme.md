@@ -1,4 +1,3 @@
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: `former_meta`
 <!--{ generate.module_header.start() }-->

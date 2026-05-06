@@ -126,9 +126,3 @@ The schema defines 46 attributes across 10 groups. Every variant doc instance fi
 ### Operations
 
 Variant doc instances consume this schema by filling out all 46 attributes in an attribute table. Attributes are referenced by name (column 2) — variant docs must use the exact attribute names defined here. When comparing variants, readers join on attribute name to produce side-by-side comparisons. When adding a new variant, the author consults this doc to know which attributes to document and what value vocabulary is expected for each.
-
-### Sources
-
-| File | Notes |
-|------|-------|
-| [../variant_attributes.md](../variant_attributes.md) | Original combined source document; all 46 attribute definitions extracted into this doc instance |

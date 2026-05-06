@@ -70,7 +70,7 @@ match check::wait_for_exit( pid_i32, Duration::from_secs( 30 ) )
 
 ### Notes
 
-- `is_pidfile_alive` returns `Err(NotFound)` when the PID file does not exist. Distinguish "daemon never started" from other errors by checking `e.kind()`.
+- `is_pidfile_alive` returns a not-found error when the PID file does not exist. Distinguish "daemon never started" from other errors by inspecting the error kind.
 - `EPERM` from `kill(pid, 0)` is treated as alive — privileged daemons will correctly appear alive to unprivileged monitors. See invariant `004_eperm_means_alive.md`.
 - The PID file format is a plain decimal integer. Files written by system init scripts via `echo $PID > file` are compatible due to whitespace trimming. See invariant `003_pidfile_format.md`.
 - Use `DaemonizeOptions::pid_file` with `daemonize()` to have the PID file written automatically with `flock` singleton protection — preventing duplicate daemon instances at the OS level.
@@ -79,7 +79,7 @@ match check::wait_for_exit( pid_i32, Duration::from_secs( 30 ) )
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| api | [api/005_check_api.md](../api/005_check_api.md) | `is_process_alive()`, `wait_for_exit()`, `is_pidfile_alive()` |
-| api | [api/006_daemon_api.md](../api/006_daemon_api.md) | `write_pidfile()`, `read_pidfile()`, `remove_pidfile()`, `daemonize()` |
-| invariant | [invariant/003_pidfile_format.md](../invariant/003_pidfile_format.md) | PID file decimal format contract |
-| invariant | [invariant/004_eperm_means_alive.md](../invariant/004_eperm_means_alive.md) | EPERM interpretation for privileged daemons |
+| doc | [api/005_check_api.md](../api/005_check_api.md) | `is_process_alive()`, `wait_for_exit()`, `is_pidfile_alive()` |
+| doc | [api/006_daemon_api.md](../api/006_daemon_api.md) | `write_pidfile()`, `read_pidfile()`, `remove_pidfile()`, `daemonize()` |
+| doc | [invariant/003_pidfile_format.md](../invariant/003_pidfile_format.md) | PID file decimal format contract |
+| doc | [invariant/004_eperm_means_alive.md](../invariant/004_eperm_means_alive.md) | EPERM interpretation for privileged daemons |

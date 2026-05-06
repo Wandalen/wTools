@@ -64,7 +64,7 @@ mod test_component_from_person
     {
       count: 100,
       label: "test".into(),
-      ratio: 3.14,
+      ratio: 1.5,
     };
 
     let count: i32 = From::from( &obj );
@@ -73,7 +73,7 @@ mod test_component_from_person
 
     assert_eq!( count, 100 );
     assert_eq!( label, "test" );
-    assert_eq!( ratio, 3.14 );
+    assert!( ( ratio - 1.5_f64 ).abs() < f64::EPSILON );
   }
 
   #[test]
@@ -121,7 +121,7 @@ mod test_component_assign_person
       name: String,
     }
 
-    let mut person: Person = Default::default();
+    let mut person = Person::default();
     person.assign( 13 );
     person.assign( "John" );
     assert_eq!( person, Person { age: 13, name: "John".to_string() } );
@@ -223,7 +223,7 @@ mod test_from_components_options
       #[ inline( always ) ]
       fn from( src: &Options1 ) -> Self
       {
-        src.field1.clone()
+        src.field1
       }
     }
 
@@ -241,7 +241,7 @@ mod test_from_components_options
       #[ inline( always ) ]
       fn from( src: &Options1 ) -> Self
       {
-        src.field3.clone()
+        src.field3
       }
     }
 
@@ -367,7 +367,7 @@ mod test_component_model_config
 
     assert_eq!( config.host, "localhost" );
     assert_eq!( config.port, 8080 );
-    assert_eq!( config.enabled, true );
+    assert!( config.enabled );
 
     // Use fluent builder pattern (auto-generated)
     let config2 = Config::default()
@@ -377,7 +377,7 @@ mod test_component_model_config
 
     assert_eq!( config2.host, "api.example.com" );
     assert_eq!( config2.port, 3000 );
-    assert_eq!( config2.enabled, false );
+    assert!( !config2.enabled );
   }
 
   #[test]
@@ -419,8 +419,8 @@ mod test_component_model_config
 
     assert_eq!( config.field1, 1 );
     assert_eq!( config.field2, "two" );
-    assert_eq!( config.field3, 3.0 );
-    assert_eq!( config.field4, true );
+    assert!( ( config.field3 - 3.0_f64 ).abs() < f64::EPSILON );
+    assert!( config.field4 );
     assert_eq!( config.field5, 5 );
   }
 
@@ -444,8 +444,8 @@ mod test_component_model_config
 
     assert_eq!( obj.x, 10 );
     assert_eq!( obj.y, 20 );
-    assert_eq!( obj.flag1, true );
-    assert_eq!( obj.flag2, false );
+    assert!( obj.flag1 );
+    assert!( !obj.flag2 );
   }
 
   // ISSUE FOUND: ComponentModel doesn't support tuple structs

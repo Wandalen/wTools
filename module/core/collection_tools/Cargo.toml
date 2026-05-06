@@ -35,7 +35,6 @@ use_alloc = [
 
 default = [
   "enabled",
-
   "collection_constructors",
   "collection_into_constructors",
 ]
@@ -53,7 +52,6 @@ enabled = []
 collection_constructors = []
 # Collection constructors, using `into()` under the hood, like `into_hmap!( "key" => "val" )`
 collection_into_constructors = []
-# qqq : is this feature used? seems not. if yes, what is it responsible for? discuss -- not needed, removed
 
 [dependencies]
 
@@ -63,3 +61,4 @@ hashbrown = { workspace = true, optional = true, default-features = false, featu
 [dev-dependencies]
 # test_tools = { workspace = true, features = [ "full" ] }  # REMOVED: Creates circular dependency via collection_tools → test_tools → impls_index_meta → macro_tools → component_model_types → collection_tools
 # former = { workspace = true }
+trybuild = { workspace = true }

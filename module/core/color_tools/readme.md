@@ -1,4 +1,7 @@
-# `color_tools`
+# Module :: `color_tools`
+<!--{ generate.module_header.start() }-->
+ [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=color_tools)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) [![docs.rs](https://img.shields.io/docsrs/color_tools?color=e3e8f0&logo=docs.rs)](https://docs.rs/color_tools) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module%2Fcore%2Fcolor_tools%2Fexamples%2Fbasic.rs,RUN_POSTFIX=--example%20basic/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+<!--{ generate.module_header.end }-->
 
 Typed text-with-optional-ANSI-color abstraction.
 
@@ -32,6 +35,7 @@ println!( "{warn}" );  // prints yellow text to terminal
 |---|---|---|
 | `enabled` | no | Compile the crate |
 | `serde_support` | no | Derive `Serialize`/`Deserialize` for `DecoratedText` |
+| `html_support`  | no | Add `render_html()` to `DecoratedText` and `to_css()` to `Color` |
 
 ## Directory Structure
 

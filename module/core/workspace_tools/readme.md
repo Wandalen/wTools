@@ -1,4 +1,7 @@
-# workspace_tools
+# Module :: `workspace_tools`
+<!--{ generate.module_header.start() }-->
+ [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=workspace_tools)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) [![docs.rs](https://img.shields.io/docsrs/workspace_tools?color=e3e8f0&logo=docs.rs)](https://docs.rs/workspace_tools) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module%2Fcore%2Fworkspace_tools%2Fexamples%2Fresource_discovery.rs,RUN_POSTFIX=--example%20resource_discovery/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+<!--{ generate.module_header.end }-->
 
 [![Crates.io](https://img.shields.io/crates/v/workspace_tools.svg)](https://crates.io/crates/workspace_tools)
 [![Documentation](https://docs.rs/workspace_tools/badge.svg)](https://docs.rs/workspace_tools)
@@ -133,9 +136,19 @@ your-project/
 
 ## 🔧 Optional Features
 
-Enable additional functionality as needed in your `Cargo.toml`:
+Add features to your `Cargo.toml` dependency declaration:
 
-**Serde Integration** (`serde`) - *enabled by default*
+```toml
+workspace_tools = { version = "0.12", features = ["serde", "glob"] }
+```
+
+Or via cargo:
+
+```bash
+cargo add workspace_tools -F serde
+```
+
+**Serde Integration** (`serde`)
 Load `.toml`, `.json`, and `.yaml` files directly into structs.
 
 ```rust
@@ -401,85 +414,6 @@ let configs = ws.find_resources( "config/**/*.{toml,json,yaml}" )?;
 // Find configuration files with priority ordering
 let config_path = ws.find_config( "app" )?; // Looks for app.toml, app.json, app.yaml
 ```
-
----
-
-## 🏗️ Internal Architecture
-
-`workspace_tools` follows strict design principles to ensure maintainability and code quality:
-
-### DRY Compliance Through Helper Functions
-
-All configuration and validation operations are built on a foundation of reusable internal helpers that eliminate code duplication:
-
-**Format Detection and Parsing (serde feature)**
-- `detect_format()` - detect file format from extension (toml/json/yaml)
-- `read_file_to_string()` - read file with consistent error wrapping
-- `parse_content()` - parse configuration based on detected format
-- `serialize_content()` - serialize configuration to target format
-
-**Validation Helpers (validation feature)**
-- `parse_to_json()` - convert any format (toml/json/yaml) to JSON for validation
-- `validate_against_schema()` - validate JSON against JSON Schema with detailed errors
-
-These helpers provide:
-- **Single source of truth**: Format handling logic exists in exactly one place
-- **Consistent error messages**: All file operations produce uniform error context
-- **Easy extensibility**: Adding new formats requires updating only 2-3 functions
-- **Reduced complexity**: Public API functions reduced from 25-40 lines to 4-17 lines each
-
-### Type-Safe Secure Conversion Pattern
-
-The secure feature uses a trait-based pattern for converting plain types to memory-protected types:
-
-```rust
-trait AsSecure
-{
-  type Secure;
-  fn into_secure( self ) -> Self::Secure;
-}
-
-impl AsSecure for String
-{
-  type Secure = SecretString;
-  fn into_secure( self ) -> Self::Secure { SecretString::new( self ) }
-}
-
-impl AsSecure for HashMap< String, String >
-{
-  type Secure = HashMap< String, SecretString >;
-  fn into_secure( self ) -> Self::Secure { /* convert all values */ }
-}
-```
-
-All `_secure()` methods follow the identical pattern:
-```rust
-pub fn load_secret_key_secure( &self, key: &str, file: &str ) -> Result< SecretString >
-{
-  self.load_secret_key( key, file ).map( AsSecure::into_secure )
-}
-```
-
-Benefits:
-- **Zero duplication**: All 5 secure wrappers share identical implementation pattern
-- **Type safety**: Compiler enforces correct conversions
-- **Clear intent**: `.map(AsSecure::into_secure)` explicitly shows conversion
-- **Extensible**: New secure types only require implementing the trait
-
-### Code Quality Metrics
-
-After comprehensive refactoring (2025-10-04):
-- **~127 lines of duplicated code eliminated** across 4 refactoring phases
-- **13 functions simplified** with 60% average complexity reduction
-- **8 internal helpers** providing single source of truth for common operations
-- **100% DRY compliance** in configuration, validation, secure conversion, and file I/O code
-- **Zero breaking changes**: All refactoring internal to maintain API stability
-
-Refactoring phases completed:
-- Phase 1: Configuration/validation helpers (100 lines saved)
-- Phase 2: Secure conversion trait pattern (15 lines saved)
-- Phase 2.5: File reading consolidation (5 lines saved)
-- Phase 2.6: Format detection consolidation (3 lines saved + removed obsolete helper)
 
 ---
 

@@ -1,49 +1,14 @@
 # Doc Entities
 
-## Entity Tree
-
-```
-docs/                            structural container
-├── algorithm/                   Collection Entity   1st
-├── api/                         Collection Entity   1st
-├── builder/                     Collection Entity   1st
-├── data_structure/              Collection Entity   1st
-├── feature/                     Collection Entity   1st
-├── formatter/                   Collection Entity   1st
-├── input_model/                 Collection Entity   1st
-├── input_type/                  Collection Entity   1st
-├── invariant/                   Collection Entity   1st
-├── pattern/                     Collection Entity   1st
-├── trait/                       Collection Entity   1st
-└── variant/                     Collection Entity   1st
-```
-
-## Entities
-
-| Entity | Type | Latent? | Purpose |
-|--------|------|---------|---------|
-| [algorithm/](algorithm/) | Collection | | Registry of algorithm doc instances |
-| [api/](api/) | Collection | | Registry of API doc instances |
-| [builder/](builder/) | Collection | | Registry of builder doc instances |
-| [data_structure/](data_structure/) | Collection | | Registry of data structure doc instances |
-| [feature/](feature/) | Collection | | Registry of feature doc instances |
-| [formatter/](formatter/) | Collection | | Registry of formatter doc instances |
-| [input_model/](input_model/) | Collection | | Registry of input model doc instances |
-| [input_type/](input_type/) | Collection | | Registry of input type doc instances |
-| [invariant/](invariant/) | Collection | | Registry of invariant doc instances |
-| [pattern/](pattern/) | Collection | | Registry of pattern doc instances |
-| [trait/](trait/) | Collection | | Registry of trait doc instances |
-| [variant/](variant/) | Collection | | Registry of variant doc instances |
-
 ## Master Doc Entities Table
 
 | Type | Purpose | Master File | Instances |
 |------|---------|-------------|----------:|
-| `algorithm/` | Registry and overview of all algorithm doc instances | [algorithm/readme.md](algorithm/readme.md) | 5 |
+| `algorithm/` | Registry and overview of all algorithm doc instances | [algorithm/readme.md](algorithm/readme.md) | 6 |
 | `api/` | Registry and overview of all API doc instances | [api/readme.md](api/readme.md) | 4 |
 | `builder/` | Registry and overview of all builder doc instances | [builder/readme.md](builder/readme.md) | 2 |
 | `data_structure/` | Registry and overview of all data structure doc instances | [data_structure/readme.md](data_structure/readme.md) | 1 |
-| `feature/` | Registry and overview of all feature doc instances | [feature/readme.md](feature/readme.md) | 5 |
+| `feature/` | Registry and overview of all feature doc instances | [feature/readme.md](feature/readme.md) | 6 |
 | `formatter/` | Registry and overview of all formatter doc instances | [formatter/readme.md](formatter/readme.md) | 10 |
 | `input_model/` | Registry and overview of all input model doc instances | [input_model/readme.md](input_model/readme.md) | 2 |
 | `input_type/` | Registry and overview of all input type doc instances | [input_type/readme.md](input_type/readme.md) | 2 |
@@ -61,6 +26,7 @@ docs/                            structural container
 | algorithm | 003 | Tree Column Alignment | [algorithm/003_tree_column_alignment.md](algorithm/003_tree_column_alignment.md) |
 | algorithm | 004 | Budget Allocation | [algorithm/004_budget_allocation.md](algorithm/004_budget_allocation.md) |
 | algorithm | 005 | Column Fold Detection | [algorithm/005_column_fold_detection.md](algorithm/005_column_fold_detection.md) |
+| algorithm | 006 | CLI Help Alignment | [algorithm/006_cli_help_alignment.md](algorithm/006_cli_help_alignment.md) |
 | api | 001 | Data Types | [api/001_data_types.md](api/001_data_types.md) |
 | api | 002 | Builders | [api/002_builders.md](api/002_builders.md) |
 | api | 003 | Config Types | [api/003_config_types.md](api/003_config_types.md) |
@@ -73,6 +39,7 @@ docs/                            structural container
 | feature | 003 | Unified Format Interface | [feature/003_unified_format_interface.md](feature/003_unified_format_interface.md) |
 | feature | 004 | Color Themes | [feature/004_color_themes.md](feature/004_color_themes.md) |
 | feature | 005 | Auto-Fit | [feature/005_auto_fit.md](feature/005_auto_fit.md) |
+| feature | 006 | API Cleanup v0.3.0 | [feature/006_api_cleanup_v030.md](feature/006_api_cleanup_v030.md) |
 | formatter | 001 | TableFormatter | [formatter/001_table_formatter.md](formatter/001_table_formatter.md) |
 | formatter | 002 | ExpandedFormatter | [formatter/002_expanded_formatter.md](formatter/002_expanded_formatter.md) |
 | formatter | 003 | TreeFormatter | [formatter/003_tree_formatter.md](formatter/003_tree_formatter.md) |

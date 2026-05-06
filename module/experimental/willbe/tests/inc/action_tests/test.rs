@@ -198,8 +198,11 @@ fn plan()
 
   // Check available toolchains to avoid environmental dependency
   let available = available_channels(&abs).unwrap();
-  let mut channels_to_test = [ Channel ::Stable ].into_iter().collect :: < std ::collections ::HashSet< _ > >();
-  if available.contains(&Channel ::Nightly)
+  let nightly_available = available.contains(&Channel ::Nightly);
+  let mut channels_to_test = available;
+  channels_to_test.clear();
+  channels_to_test.insert(Channel ::Stable);
+  if nightly_available
   {
     channels_to_test.insert(Channel ::Nightly);
  }
@@ -236,7 +239,7 @@ fn plan()
  ));
 
   // Only check nightly variants if nightly is available
-  if channels_to_test.contains(&Channel ::Nightly)
+  if nightly_available
   {
     assert!(rep
     .contains_key(

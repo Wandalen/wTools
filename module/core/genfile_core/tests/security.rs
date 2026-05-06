@@ -2,6 +2,8 @@
 //!
 //! Tests for path traversal prevention and other security features.
 
+#![ cfg( feature = "enabled" ) ]
+
 use genfile_core::
 {
   TemplateArchive,

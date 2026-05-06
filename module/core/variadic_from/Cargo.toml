@@ -15,10 +15,7 @@ description = """
 Variadic from.
 """
 categories = [ "algorithms", "development-tools" ]
-keywords = [ "fundamental", "general-purpose" ]
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
+keywords = [ "fundamental", "general-purpose", "from", "variadic", "tuple" ]
 
 [lints]
 workspace = true
@@ -33,7 +30,6 @@ all-features = false
 
 default = [
   "enabled",
-
   "derive_variadic_from",
   "type_variadic_from",
 ]
@@ -59,4 +55,4 @@ variadic_from_meta = { workspace = true }
 [dev-dependencies]
 
 test_tools = { workspace = true, features = [ "full" ] }
-trybuild = { version = "1.0", features = ["diff"] }
+trybuild = { workspace = true, features = ["diff"] }

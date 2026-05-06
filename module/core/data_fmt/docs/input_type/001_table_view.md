@@ -18,52 +18,25 @@
 
 ### Type Definition
 
-```rust
-pub struct TableView
-{
-  pub metadata : TableMetadata,
-  pub rows : Vec< Vec< String > >,
-  pub row_details : Vec< Option< DecoratedText > >,
-}
-```
+`TableView` has three public fields: `metadata` holds column names and type classifications; `rows` holds cell data as a matrix of strings; `row_details` holds an optional per-row annotation line parallel to `rows`.
 
 ### Components
 
-| Field | Type | Role |
-|-------|------|------|
-| `metadata` | `TableMetadata` | Column names and data types |
-| `rows` | `Vec<Vec<String>>` | Cell data, one inner vec per row |
-| `row_details` | `Vec<Option<DecoratedText>>` | Optional per-row annotation line (parallel to `rows`) |
+| Field | Role |
+|-------|------|
+| `metadata` | Column names and data types |
+| `rows` | Cell data, one inner vec per row |
+| `row_details` | Optional per-row annotation line (parallel to `rows`) |
 
-`TableMetadata` contains:
-- `column_names: Vec<String>` — header labels
-- `column_types: Vec<DataType>` — per-column semantic types (String, Integer, Boolean, Path)
+`TableMetadata` carries column names and per-column semantic type classifications (`String`, `Integer`, `Boolean`, `Path`).
 
 ### Construction
 
-```rust
-// Via RowBuilder (preferred)
-let view = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
-  .add_row( vec![ "Alice".into(), "30".into() ] )
-  .build_view();
-
-// Direct construction
-let view = TableView::new(
-  TableMetadata::new( vec![ "Name".into(), "Age".into() ] ),
-  vec![ vec![ "Alice".into(), "30".into() ] ],
-);
-```
+The preferred construction path is `RowBuilder::build_view()`, which validates row length at each insertion. `TableView::new()` and `TableView::with_details()` allow direct construction when the caller already holds a headers vector and a row matrix.
 
 ### Trait
 
-Consumed by `Format` trait:
-
-```rust
-pub trait Format
-{
-  fn format( &self, data : &TableView ) -> Result< String, FormatError >;
-}
-```
+Consumed by the `Format` trait — see `../trait/001_format.md`.
 
 ### Formatter Coverage
 
@@ -84,4 +57,4 @@ pub trait Format
 
 ### Backward Compatibility
 
-`TableView::to_tree_node()` converts back to `TreeNode<Vec<String>>` for formatters that don't implement `Format`.
+`TableView::to_tree_node()` produces the legacy tree-encoded format for formatters that don't implement `Format`.

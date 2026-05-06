@@ -585,6 +585,7 @@ pub mod own
   pub use orphan :: *;
 }
 
+#[ allow( unused_imports ) ]
 pub use own :: *;
 
 /// Parented namespace of the module.

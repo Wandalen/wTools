@@ -1,4 +1,4 @@
-//! Comprehensive corner case tests for crates_tools
+//! Comprehensive corner case tests for `crates_tools`
 //!
 //! ## Purpose
 //!
@@ -89,8 +89,7 @@ fn test_invalid_version_format()
   // Should return error (404 from crates.io), not panic
   assert!(
    result.is_err(),
-   "Invalid version '{}' should return Err, not panic",
-   invalid_version
+   "Invalid version '{invalid_version}' should return Err, not panic"
   );
  }
 }
@@ -315,7 +314,7 @@ fn test_unicode_filenames()
 
   for filename in &test_filenames
   {
-   let content = format!("content of {}", filename);
+   let content = format!("content of {filename}");
    let content_bytes = content.as_bytes();
 
    let mut header = tar ::Header ::new_gnu();
@@ -344,13 +343,13 @@ fn test_unicode_filenames()
   for filename in &test_filenames
   {
   let content = archive.content_bytes(filename)
-   .unwrap_or_else(|| panic!("Should find file: {}", filename));
+   .unwrap_or_else(|| panic!("Should find file: {filename}"));
 
-  let expected = format!("content of {}", filename);
+  let expected = format!("content of {filename}");
   let actual = core ::str ::from_utf8(content)
    .expect("Content should be valid UTF-8");
 
-  assert_eq!(actual, expected, "Content should match for {}", filename);
+  assert_eq!(actual, expected, "Content should match for {filename}");
  }
 }
 
@@ -409,9 +408,9 @@ fn test_special_characters_in_filenames()
   for filename in &test_filenames
   {
   let content = archive.content_bytes(filename)
-   .unwrap_or_else(|| panic!("Should find file: {}", filename));
+   .unwrap_or_else(|| panic!("Should find file: {filename}"));
 
-  assert_eq!(content, b"test content", "Content should match for {}", filename);
+  assert_eq!(content, b"test content", "Content should match for {filename}");
  }
 }
 
@@ -532,10 +531,9 @@ fn test_null_bytes_in_content()
   // Verify UTF-8 validation (actually null bytes ARE valid UTF-8, interesting!)
   // But in practice, text files with nulls are treated as binary
   let utf8_result = core ::str ::from_utf8(content);
-  if utf8_result.is_ok()
+  if let Ok(text) = utf8_result
   {
   // If it's valid UTF-8, verify the null bytes are there
-  let text = utf8_result.unwrap();
   assert!(text.contains('\0'), "Null characters should be in string");
  }
 }
@@ -549,7 +547,7 @@ fn test_null_bytes_in_content()
 /// ## Corner Case Analysis
 ///
 /// **Risk**: Any panic in library code is unacceptable for production use.
-/// **Expected**: All error conditions should return Result::Err, never panic.
+/// **Expected**: All error conditions should return `Result::Err`, never panic.
 /// **Priority**: P0 (Critical) - fundamental reliability requirement
 #[ cfg(feature = "enabled") ]
 #[ test ]
@@ -566,6 +564,5 @@ fn test_no_panics_on_error_conditions()
   let _ = CrateArchive ::decode(vec![ 0xFF, 0xFF, 0xFF ]);
   let _ = CrateArchive ::decode(vec![]);
 
-  // If we reach here without panicking, test passes
-  assert!(true, "All error conditions handled without panic");
+  // Reaching here without panicking means all error conditions are handled
 }

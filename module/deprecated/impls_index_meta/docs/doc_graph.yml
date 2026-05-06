@@ -1,0 +1,35 @@
+meta:
+  description: Cross-reference graph for all doc instances in impls_index_meta
+  generated: 2026-04-25
+  node_count: 2
+  edge_count: 2
+  component_count: 1
+
+nodes:
+  - id: feature/001
+    file: feature/001_macro_code_generation.md
+    label: Macro Code Generation
+    entity: feature
+  - id: invariant/001
+    file: invariant/001_compile_time_only.md
+    label: Compile-Time Only
+    entity: invariant
+
+edges:
+  - from: feature/001
+    to: invariant/001
+    via: typed_reference
+  - from: invariant/001
+    to: feature/001
+    via: typed_reference
+
+components:
+  - id: 1
+    label: macro_codegen
+    size: 2
+    isolated: false
+    nodes:
+      - feature/001
+      - invariant/001
+
+dangling_refs: []

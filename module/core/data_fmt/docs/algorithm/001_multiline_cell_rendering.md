@@ -7,12 +7,17 @@
 - **In Scope**: Cell splitting, row height measurement, sub-line rendering with padding and borders.
 - **Out of Scope**: Word wrapping within cells (see `algorithm/002_word_wrapping.md`).
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/table/mod.rs` | TableFormatter multiline cell rendering |
-| test | `tests/multiline_cells.rs` | Multiline cell rendering test suite |
+| File | Relationship |
+|------|--------------|
+| `src/formatters/table/mod.rs` | TableFormatter multiline cell rendering |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| `tests/multiline_cells.rs` | Multiline cell rendering test suite |
 
 ### Abstract
 
@@ -26,49 +31,25 @@ A two-pass algorithm for rendering table rows that contain newline characters. P
 
 Activated when any cell in the row contains a literal `\n` character **and** the format is not CSV/TSV (data formats escape `\n` instead).
 
-```
-has_multiline = !is_csv_or_tsv && cells.iter().any( |c| c.contains('\n') )
-```
-
 ### Algorithm
 
 Two-pass approach: measure all cell heights first, then render line-by-line.
 
 #### Pass 1 — Measure
 
-Split every cell on `\n` into a `Vec<&str>`. The row height is the maximum line count across all cells.
+Split every cell on `\n` into sub-lines. The row height is the maximum line count across all cells.
 
-```
-split_cells : Vec<Vec<&str>> = cells.iter()
-  .map( |cell| cell.lines().collect() )
-  .collect()
-
-row_height = split_cells.iter()
-  .map( |lines| lines.len() )
-  .max()
-  .unwrap_or( 1 )
-```
+1. Split every cell on `\n` to produce a list of sub-lines per column.
+2. Compute row height as the maximum sub-line count across all columns (minimum 1).
 
 #### Pass 2 — Render
 
 Iterate from `line_idx = 0` to `row_height - 1`. For each sub-line index, emit one physical output line containing every column's content at that sub-line index. Cells with fewer lines than `row_height` produce empty padding at missing indices.
 
-```
-for line_idx in 0..row_height:
-  [optional: leading border pipe]
-  for col_idx in 0..num_columns:
-    line = split_cells[col_idx].get(line_idx).unwrap_or("")
-    line = truncate(line) if max_column_width set
-    output += pad_unicode_width(line, column_widths[col_idx], align_right)
-    output += column_separator  (except after last column)
-  [optional: trailing border pipe]
-  output += '\n'
-```
-
 #### Key Properties
 
 - **Row height is per-row** — different rows can have different heights.
-- **Column widths** are computed from the maximum single-line width inside each cell (`cell.lines().map(visual_len).max()`), not from raw string length.
+- **Column widths** are computed from the maximum single-line display width inside each cell, not from raw string length.
 - **Truncation** is applied per sub-line independently, not per cell.
 - **Border pipes** (for AsciiGrid, Markdown, Unicode styles) are emitted on every sub-line, maintaining visual box continuity.
 - **ANSI codes** are preserved; alignment uses `visual_len()` which excludes escape sequences from width.

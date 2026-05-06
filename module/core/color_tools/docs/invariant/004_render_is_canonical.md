@@ -33,8 +33,8 @@ If `Display` bypassed `.render()`, `format!("{ct}")` and `String::from(ct)` coul
 
 ### Cross-References
 
-| Entity | File | Relationship |
-|--------|------|-------------|
-| feature/001 | [DecoratedText](../feature/001_decorated_text.md) | Parent feature |
-| invariant/002 | [Render Reset Contract](002_render_reset_contract.md) | Sibling — render behavior |
-| api/001 | [DecoratedText Type](../api/001_decorated_text_type.md) | Documents the trait impls |
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | [DecoratedText](../feature/001_decorated_text.md) | Parent feature |
+| doc | [Render Reset Contract](002_render_reset_contract.md) | Sibling — render behavior |
+| doc | [DecoratedText Type](../api/001_decorated_text_type.md) | Documents the trait impls |

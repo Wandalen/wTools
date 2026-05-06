@@ -1,5 +1,13 @@
 # Manual Testing Plan for test_tools
 
+## Responsibility Table
+
+| File | Responsibility |
+|------|----------------|
+| `readme.md` | Document manual/ testing plan and procedures |
+| `smoke_test_corner_cases.rs` | Manual smoke test corner case explorations |
+| `test_empty_code.rs` | Manual test for empty code string edge case |
+
 This document describes comprehensive manual testing procedures for the test_tools crate.
 
 ## Test Coverage Areas

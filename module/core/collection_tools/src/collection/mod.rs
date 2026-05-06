@@ -52,7 +52,6 @@ pub mod own
   #[ doc( inline ) ]
   #[ allow( clippy ::useless_attribute, clippy ::pub_use ) ]
   pub use orphan :: *;
-  // xxx2: check
 }
 
 /// Parented namespace of the module.
@@ -117,7 +116,6 @@ pub mod exposed
   BTreeMap as Bmap, BTreeSet as Bset,
  };
 
-  // qqq: cover by tests presence of all containers immidiately in collection_tools :: * and in collection_tools ::exposed :: *
 }
 
 /// Prelude to use essentials: `use my_module ::prelude :: *`.

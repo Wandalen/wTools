@@ -1,3 +1,4 @@
+#![ cfg( feature = "enabled" ) ]
 //! Builder configuration tests
 //!
 //! ## Domain

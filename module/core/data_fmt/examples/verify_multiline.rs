@@ -10,7 +10,7 @@ fn main() {}
 #[ allow( clippy::too_many_lines ) ]
 fn main()
 {
-  use data_fmt::{ RowBuilder, TableFormatter, TableConfig };
+  use data_fmt::{ RowBuilder, TableFormatter, TableConfig, Format };
   println!( "╔═══════════════════════════════════════════════════════════════════╗" );
   println!( "║  MANUAL TEST 002: Multiline Cells                                 ║" );
   println!( "╚═══════════════════════════════════════════════════════════════════╝\n" );
@@ -20,11 +20,11 @@ fn main()
   {
     let data = RowBuilder::new( vec![ "Address".into() ] )
       .add_row( vec![ "123 Main St\nApt 4B\nBoston, MA 02101".into() ] )
-      .build();
+      .build_view();
 
     let config = TableConfig::plain();
     let formatter = TableFormatter::with_config( config );
-    let output = formatter.format( &data );
+    let output = formatter.format( &data ).unwrap_or_default();
 
     println!( "{output}" );
     println!( "Expected:" );
@@ -39,11 +39,11 @@ fn main()
   {
     let data = RowBuilder::new( vec![ "Col1".into(), "Col2".into(), "Col3".into() ] )
       .add_row( vec![ "A".into(), "B\nC\nD".into(), "E".into() ] )
-      .build();
+      .build_view();
 
     let config = TableConfig::plain();
     let formatter = TableFormatter::with_config( config );
-    let output = formatter.format( &data );
+    let output = formatter.format( &data ).unwrap_or_default();
 
     println!( "{output}" );
     println!( "Expected:" );
@@ -58,11 +58,11 @@ fn main()
   {
     let data = RowBuilder::new( vec![ "Status".into() ] )
       .add_row( vec![ "\x1b[31mError\x1b[0m\n\x1b[33mWarning\x1b[0m\n\x1b[32mSuccess\x1b[0m".into() ] )
-      .build();
+      .build_view();
 
     let config = TableConfig::plain();
     let formatter = TableFormatter::with_config( config );
-    let output = formatter.format( &data );
+    let output = formatter.format( &data ).unwrap_or_default();
 
     println!( "{output}" );
     println!( "Expected:" );
@@ -78,11 +78,11 @@ fn main()
   {
     let data = RowBuilder::new( vec![ "Content".into() ] )
       .add_row( vec![ "Line1\n\nLine3".into() ] )
-      .build();
+      .build_view();
 
     let config = TableConfig::plain();
     let formatter = TableFormatter::with_config( config );
-    let output = formatter.format( &data );
+    let output = formatter.format( &data ).unwrap_or_default();
 
     println!( "{output}" );
     println!( "Expected:" );
@@ -97,11 +97,11 @@ fn main()
   {
     let data = RowBuilder::new( vec![ "Name".into(), "Address".into() ] )
       .add_row( vec![ "Alice".into(), "123 Main\nApt 4B".into() ] )
-      .build();
+      .build_view();
 
     let config = TableConfig::csv();
     let formatter = TableFormatter::with_config( config );
-    let output = formatter.format( &data );
+    let output = formatter.format( &data ).unwrap_or_default();
 
     println!( "{output}" );
     println!( "Expected:" );
@@ -118,11 +118,11 @@ fn main()
       .add_row( vec![ "Item 1".into(), "Single line".into(), "OK".into() ] )
       .add_row( vec![ "Item 2".into(), "Line 1\nLine 2\nLine 3".into(), "Pending\nReview".into() ] )
       .add_row( vec![ "Item 3".into(), "Two lines\nHere".into(), "Done".into() ] )
-      .build();
+      .build_view();
 
     let config = TableConfig::plain();
     let formatter = TableFormatter::with_config( config );
-    let output = formatter.format( &data );
+    let output = formatter.format( &data ).unwrap_or_default();
 
     println!( "{output}" );
     println!( "Expected:" );
@@ -139,11 +139,11 @@ fn main()
     let data = RowBuilder::new( vec![ "Name".into(), "Info".into() ] )
       .add_row( vec![ "Alice".into(), "Line 1\nLine 2".into() ] )
       .add_row( vec![ "Bob".into(), "Single".into() ] )
-      .build();
+      .build_view();
 
     let config = TableConfig::bordered();
     let formatter = TableFormatter::with_config( config );
-    let output = formatter.format( &data );
+    let output = formatter.format( &data ).unwrap_or_default();
 
     println!( "{output}" );
     println!( "Expected:" );
@@ -159,11 +159,11 @@ fn main()
     let data = RowBuilder::new( vec![ "Task".into(), "Description".into() ] )
       .add_row( vec![ "Task 1".into(), "First line\nSecond line".into() ] )
       .add_row( vec![ "Task 2".into(), "Single".into() ] )
-      .build();
+      .build_view();
 
     let config = TableConfig::markdown();
     let formatter = TableFormatter::with_config( config );
-    let output = formatter.format( &data );
+    let output = formatter.format( &data ).unwrap_or_default();
 
     println!( "{output}" );
     println!( "Expected:" );

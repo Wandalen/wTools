@@ -3,18 +3,11 @@
 //! Command-line interface for `genfile_core` library providing template archive
 //! creation, management, and materialization capabilities.
 
-#![allow( clippy::needless_pass_by_value )]
-#![allow( clippy::missing_errors_doc )]
-#![allow( clippy::too_many_lines )]
-#![allow( clippy::manual_let_else )]
-#![allow( clippy::unnecessary_wraps )]
-
 use unilang::pipeline::Pipeline;
 use unilang::interpreter::ExecutionContext;
 
 mod commands;
 mod handlers;
-mod state;
 mod error;
 mod repl;
 
@@ -30,26 +23,26 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
   // Create pipeline for command processing
   let pipeline = Pipeline::new( registry );
 
-  // Create archive state for REPL mode
-  let state = state::ArchiveState::new();
-
   // If no arguments provided, start REPL mode
   if argv.len() == 1
   {
-    return repl::run_repl( &pipeline, state );
+    return repl::run_repl( &pipeline );
   }
 
   // Otherwise, process single command in CLI mode
   let ctx = ExecutionContext::default();
-  // TODO: Pass state through ExecutionContext when API supports it
-  // For now, handlers will use thread-local or global state
+  // Workaround(issue-001): ExecutionContext has no state field; handlers use thread-local state.
+  // Root cause: unilang::ExecutionContext is a plain default-constructible marker; no user data slot.
+  // Pitfall: If unilang adds context state later, update all handler registrations to pass state.
 
   let result = pipeline.process_command_from_argv( &argv[ 1.. ], ctx );
 
   if !result.success
   {
     eprintln!( "{}", result.error.unwrap_or_default() );
-    // TODO: Map error types to exit codes when API supports it
+    // Workaround(issue-004): All errors exit with code 1; error category not exposed by unilang.
+    // Root cause: unilang::ErrorData has no error-category field; can't distinguish user vs system errors.
+    // Pitfall: When unilang exposes error category, map to: user-input=2, system=3, internal=4.
     std::process::exit( 1 );
   }
 

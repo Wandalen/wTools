@@ -1,0 +1,63 @@
+meta:
+  module: mod_interface
+  last_updated: 2026_05_04
+  node_count: 5
+  edge_count: 12
+  component_count: 1
+
+nodes:
+  # api (1)
+  - id: api/001
+    file: api/001_mod_interface_macro.md
+    label: mod_interface Macro DSL
+    entity: api
+    status: implemented
+
+  # feature (1)
+  - id: feature/001
+    file: feature/001_layered_module_interface.md
+    label: Layered Module Interface
+    entity: feature
+    status: implemented
+
+  # invariant (1)
+  - id: invariant/001
+    file: invariant/001_propagation_rules.md
+    label: Propagation Rules
+    entity: invariant
+    status: implemented
+
+  # pattern (2)
+  - id: pattern/001
+    file: pattern/001_exposure_level_cascade.md
+    label: Exposure Level Cascade
+    entity: pattern
+    status: implemented
+  - id: pattern/002
+    file: pattern/002_absorption_pattern.md
+    label: Absorption Pattern
+    entity: pattern
+    status: implemented
+
+edges:
+  # api/001 references feature/001, invariant/001, pattern/002
+  - { from: api/001, to: feature/001, via: typed_reference }
+  - { from: api/001, to: invariant/001, via: typed_reference }
+  - { from: api/001, to: pattern/002, via: typed_reference }
+
+  # feature/001 references api/001, invariant/001, pattern/001, pattern/002
+  - { from: feature/001, to: api/001, via: typed_reference }
+  - { from: feature/001, to: invariant/001, via: typed_reference }
+  - { from: feature/001, to: pattern/001, via: typed_reference }
+  - { from: feature/001, to: pattern/002, via: typed_reference }
+
+  # invariant/001 references feature/001
+  - { from: invariant/001, to: feature/001, via: typed_reference }
+
+  # pattern/001 references feature/001, invariant/001
+  - { from: pattern/001, to: feature/001, via: typed_reference }
+  - { from: pattern/001, to: invariant/001, via: typed_reference }
+
+  # pattern/002 references feature/001, pattern/001
+  - { from: pattern/002, to: feature/001, via: typed_reference }
+  - { from: pattern/002, to: pattern/001, via: typed_reference }

@@ -207,6 +207,51 @@ fn hset_trailing_comma()
   assert_eq!( got, exp );
 }
 
+#[ cfg( feature = "collection_constructors" ) ]
+#[ test ]
+fn bmap_trailing_comma()
+{
+  let got = the_module::bmap! { 1 => 10, 2 => 20, };
+  let exp = the_module::bmap! { 1 => 10, 2 => 20 };
+  assert_eq!( got, exp );
+}
+
+#[ cfg( feature = "collection_constructors" ) ]
+#[ test ]
+fn bset_trailing_comma()
+{
+  let got = the_module::bset! { 1, 2, 3, };
+  let exp = the_module::bset! { 1, 2, 3 };
+  assert_eq!( got, exp );
+}
+
+#[ cfg( feature = "collection_constructors" ) ]
+#[ test ]
+fn llist_trailing_comma()
+{
+  let got = the_module::llist! { 1, 2, 3, };
+  let exp = the_module::llist! { 1, 2, 3 };
+  assert_eq!( got, exp );
+}
+
+#[ cfg( feature = "collection_constructors" ) ]
+#[ test ]
+fn deque_trailing_comma()
+{
+  let got = the_module::deque! { 1, 2, 3, };
+  let exp = the_module::deque! { 1, 2, 3 };
+  assert_eq!( got, exp );
+}
+
+#[ cfg( feature = "collection_constructors" ) ]
+#[ test ]
+fn heap_trailing_comma()
+{
+  let got = the_module::heap! { 3, 1, 2, };
+  let exp = the_module::heap! { 3, 1, 2 };
+  assert_eq!( got.into_sorted_vec(), exp.into_sorted_vec() );
+}
+
 // ============================================================================
 // Capacity Pre-allocation Tests
 // ============================================================================
@@ -216,8 +261,8 @@ fn hset_trailing_comma()
 fn vec_capacity_preallocated()
 {
   let vec = the_module::vec![ 1, 2, 3, 4, 5 ];
-  // Capacity should be at least the number of elements (might be more due to allocator)
-  assert!( vec.capacity() >= 5, "Expected capacity >= 5, got {}", vec.capacity() );
+  // Vec::with_capacity(N) gives exactly N — not just >= N.
+  assert_eq!( vec.capacity(), 5, "Expected exact capacity 5, got {}", vec.capacity() );
 }
 
 #[ cfg( feature = "collection_constructors" ) ]
@@ -225,8 +270,50 @@ fn vec_capacity_preallocated()
 fn hmap_capacity_preallocated()
 {
   let map = the_module::hmap! { 1 => 10, 2 => 20, 3 => 30, 4 => 40, 5 => 50 };
-  // HashMap capacity is at least the number of elements
+  // HashMap::with_capacity(N) rounds up due to load factor — only >= N is guaranteed.
   assert!( map.capacity() >= 5, "Expected capacity >= 5, got {}", map.capacity() );
+}
+
+#[ cfg( feature = "collection_constructors" ) ]
+#[ test ]
+fn hset_capacity_preallocated()
+{
+  let set = the_module::hset! { 1, 2, 3, 4, 5 };
+  assert!( set.capacity() >= 5, "Expected capacity >= 5, got {}", set.capacity() );
+}
+
+#[ cfg( feature = "collection_constructors" ) ]
+#[ test ]
+fn deque_capacity_preallocated()
+{
+  let deque = the_module::deque! { 1, 2, 3, 4, 5 };
+  // VecDeque::with_capacity(N) gives exactly N.
+  assert_eq!( deque.capacity(), 5, "Expected exact capacity 5, got {}", deque.capacity() );
+}
+
+#[ cfg( feature = "collection_constructors" ) ]
+#[ test ]
+fn heap_capacity_preallocated()
+{
+  let heap = the_module::heap! { 1, 2, 3, 4, 5 };
+  // BinaryHeap::with_capacity(N) gives exactly N.
+  assert_eq!( heap.capacity(), 5, "Expected exact capacity 5, got {}", heap.capacity() );
+}
+
+#[ cfg( feature = "collection_constructors" ) ]
+#[ test ]
+fn vec_empty_capacity_zero()
+{
+  let vec : the_module::Vec< i32 > = the_module::vec![];
+  assert_eq!( vec.capacity(), 0, "Expected capacity 0 for empty vec, got {}", vec.capacity() );
+}
+
+#[ cfg( feature = "collection_constructors" ) ]
+#[ test ]
+fn hmap_empty_capacity_zero()
+{
+  let map : the_module::HashMap< i32, i32 > = the_module::hmap! {};
+  assert_eq!( map.capacity(), 0, "Expected capacity 0 for empty hmap, got {}", map.capacity() );
 }
 
 // ============================================================================
@@ -641,4 +728,223 @@ fn hmap_with_custom_non_copy_values()
   };
   assert_eq!( got.len(), 2 );
   assert_eq!( got.get( &1 ).unwrap().data, "value1" );
+}
+
+// ============================================================================
+// Into Constructor Capacity Tests
+// ============================================================================
+
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ test ]
+fn into_vec_capacity_preallocated()
+{
+  let got : the_module::Vec< i32 > = the_module::into_vec![ 1, 2, 3, 4, 5 ];
+  // into_vec! calls Vec::with_capacity(N) same as vec! — exact capacity expected.
+  assert_eq!( got.capacity(), 5, "Expected exact capacity 5, got {}", got.capacity() );
+}
+
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ test ]
+fn into_hmap_capacity_preallocated()
+{
+  let got : the_module::HashMap< i32, i32 > = the_module::into_hmap! { 1 => 10, 2 => 20, 3 => 30 };
+  assert!( got.capacity() >= 3, "Expected capacity >= 3, got {}", got.capacity() );
+}
+
+// ============================================================================
+// Alias Equality Tests — dlist! = vec!, into_dlist! = into_vec!
+// ============================================================================
+
+#[ cfg( feature = "collection_constructors" ) ]
+#[ test ]
+fn dlist_alias_equals_vec()
+{
+  // dlist! is a pub use alias for vec!; both must produce identical Vec values.
+  let vec_result   = the_module ::vec![ 1, 2, 3 ];
+  let dlist_result = the_module ::dlist![ 1, 2, 3 ];
+  assert_eq!( vec_result, dlist_result );
+}
+
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ test ]
+fn into_dlist_alias_equals_into_vec()
+{
+  // into_dlist! is a pub use alias for into_vec!; results must be equal.
+  let a : the_module ::Vec< String > = the_module ::into_vec![ "a", "b" ];
+  let b : the_module ::Vec< String > = the_module ::into_dlist![ "a", "b" ];
+  assert_eq!( a, b );
+}
+
+// ============================================================================
+// dlist! Specific Tests
+// ============================================================================
+
+#[ cfg( feature = "collection_constructors" ) ]
+#[ test ]
+fn dlist_empty()
+{
+  let got : the_module ::Vec< i32 > = the_module ::dlist![];
+  assert!( got.is_empty() );
+  assert_eq!( got.len(), 0 );
+}
+
+#[ cfg( feature = "collection_constructors" ) ]
+#[ test ]
+fn dlist_trailing_comma()
+{
+  let got = the_module ::dlist![ 1, 2, 3, ];
+  let exp = the_module ::dlist![ 1, 2, 3 ];
+  assert_eq!( got, exp );
+}
+
+// ============================================================================
+// Into-macro Empty Construction — all 9 into-macros
+// ============================================================================
+
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ test ]
+fn into_macros_empty_all_nine()
+{
+  // Each macro tested in its own block to avoid similar-names lint across different collection types.
+  { let col : the_module ::Vec< i32 >           = the_module ::into_vec![]; assert!( col.is_empty() ); }
+  { let col : the_module ::Vec< i32 >           = the_module ::into_dlist![]; assert!( col.is_empty() ); }
+  { let col : the_module ::HashMap< i32, i32 >  = the_module ::into_hmap!{}; assert!( col.is_empty() ); }
+  { let col : the_module ::HashSet< i32 >       = the_module ::into_hset!{}; assert!( col.is_empty() ); }
+  { let col : the_module ::BTreeMap< i32, i32 > = the_module ::into_bmap!{}; assert!( col.is_empty() ); }
+  { let col : the_module ::BTreeSet< i32 >      = the_module ::into_bset!{}; assert!( col.is_empty() ); }
+  { let col : the_module ::LinkedList< i32 >    = the_module ::into_llist!{}; assert!( col.is_empty() ); }
+  { let col : the_module ::VecDeque< i32 >      = the_module ::into_vecd!{}; assert!( col.is_empty() ); }
+  { let col : the_module ::BinaryHeap< i32 >    = the_module ::into_heap!{}; assert!( col.is_empty() ); }
+}
+
+// ============================================================================
+// Into-macro Trailing Comma — all 9 into-macros
+// ============================================================================
+
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ test ]
+fn into_vec_trailing_comma()
+{
+  let got : the_module ::Vec< i32 > = the_module ::into_vec![ 1, 2, 3, ];
+  let exp : the_module ::Vec< i32 > = the_module ::into_vec![ 1, 2, 3 ];
+  assert_eq!( got, exp );
+}
+
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ test ]
+fn into_dlist_trailing_comma()
+{
+  let got : the_module ::Vec< i32 > = the_module ::into_dlist![ 1, 2, 3, ];
+  let exp : the_module ::Vec< i32 > = the_module ::into_dlist![ 1, 2, 3 ];
+  assert_eq!( got, exp );
+}
+
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ test ]
+fn into_hmap_trailing_comma()
+{
+  let got : the_module ::HashMap< i32, i32 > = the_module ::into_hmap!{ 1 => 10, 2 => 20, };
+  let exp : the_module ::HashMap< i32, i32 > = the_module ::into_hmap!{ 1 => 10, 2 => 20 };
+  assert_eq!( got, exp );
+}
+
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ test ]
+fn into_hset_trailing_comma()
+{
+  let got : the_module ::HashSet< i32 > = the_module ::into_hset!{ 1, 2, 3, };
+  let exp : the_module ::HashSet< i32 > = the_module ::into_hset!{ 1, 2, 3 };
+  assert_eq!( got, exp );
+}
+
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ test ]
+fn into_bmap_trailing_comma()
+{
+  let got : the_module ::BTreeMap< i32, i32 > = the_module ::into_bmap!{ 1 => 10, 2 => 20, };
+  let exp : the_module ::BTreeMap< i32, i32 > = the_module ::into_bmap!{ 1 => 10, 2 => 20 };
+  assert_eq!( got, exp );
+}
+
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ test ]
+fn into_bset_trailing_comma()
+{
+  let got : the_module ::BTreeSet< i32 > = the_module ::into_bset!{ 1, 2, 3, };
+  let exp : the_module ::BTreeSet< i32 > = the_module ::into_bset!{ 1, 2, 3 };
+  assert_eq!( got, exp );
+}
+
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ test ]
+fn into_llist_trailing_comma()
+{
+  let got : the_module ::LinkedList< i32 > = the_module ::into_llist!{ 1, 2, 3, };
+  let exp : the_module ::LinkedList< i32 > = the_module ::into_llist!{ 1, 2, 3 };
+  assert_eq!( got, exp );
+}
+
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ test ]
+fn into_vecd_trailing_comma()
+{
+  let got : the_module ::VecDeque< i32 > = the_module ::into_vecd!{ 1, 2, 3, };
+  let exp : the_module ::VecDeque< i32 > = the_module ::into_vecd!{ 1, 2, 3 };
+  assert_eq!( got, exp );
+}
+
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ test ]
+fn into_heap_trailing_comma()
+{
+  let got : the_module ::BinaryHeap< i32 > = the_module ::into_heap!{ 3, 1, 2, };
+  let exp : the_module ::BinaryHeap< i32 > = the_module ::into_heap!{ 3, 1, 2 };
+  assert_eq!( got.into_sorted_vec(), exp.into_sorted_vec() );
+}
+
+// ============================================================================
+// Type Identity — IN-01: std config HashMap = std::collections::HashMap
+// ============================================================================
+
+// Under default features (std mode, no use_alloc), collection_tools::HashMap
+// is a re-export of std::collections::HashMap. The direct assignment below
+// compiles only when both sides name the same concrete type.
+#[ cfg( not( feature = "use_alloc" ) ) ]
+#[ test ]
+fn std_hashmap_is_std_collections()
+{
+  let map : std::collections::HashMap< u32, u32 > = the_module ::HashMap ::new();
+  assert!( map.is_empty() );
+}
+
+// ============================================================================
+// Full HashMap API Surface — AP-08
+// ============================================================================
+
+#[ test ]
+fn hashmap_full_api_surface()
+{
+  let mut m = the_module ::HashMap ::new();
+  m.insert( 1u32, "one" );
+  m.insert( 2u32, "two" );
+  m.insert( 3u32, "three" );
+  // len and is_empty
+  assert_eq!( m.len(), 3 );
+  assert!( !m.is_empty() );
+  // contains_key
+  assert!( m.contains_key( &1u32 ) );
+  assert!( !m.contains_key( &99u32 ) );
+  // get
+  assert_eq!( m.get( &1u32 ), Some( &"one" ) );
+  // insert — returns previous value for duplicate key
+  let prev = m.insert( 1u32, "ONE" );
+  assert_eq!( prev, Some( "one" ) );
+  assert_eq!( m.get( &1u32 ), Some( &"ONE" ) );
+  // remove
+  let removed = m.remove( &2u32 );
+  assert_eq!( removed, Some( "two" ) );
+  assert_eq!( m.len(), 2 );
+  // iter — count key-value pairs remaining
+  let pair_count = m.iter().count();
+  assert_eq!( pair_count, 2 );
 }

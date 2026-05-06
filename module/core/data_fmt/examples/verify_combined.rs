@@ -10,7 +10,7 @@ fn main() {}
 #[ allow( clippy::too_many_lines ) ]
 fn main()
 {
-  use data_fmt::{ RowBuilder, TableFormatter, TableConfig };
+  use data_fmt::{ RowBuilder, TableFormatter, TableConfig, Format };
   println!( "╔═══════════════════════════════════════════════════════════════════╗" );
   println!( "║  MANUAL TEST 003: Combined Features (Multiline + Truncation)      ║" );
   println!( "╚═══════════════════════════════════════════════════════════════════╝\n" );
@@ -20,13 +20,13 @@ fn main()
   {
     let data = RowBuilder::new( vec![ "Content".into() ] )
       .add_row( vec![ "Very long first line that exceeds the limit\nShort second line".into() ] )
-      .build();
+      .build_view();
 
     let config = TableConfig::plain()
       .max_column_width( Some( 25 ) );
 
     let formatter = TableFormatter::with_config( config );
-    let output = formatter.format( &data );
+    let output = formatter.format( &data ).unwrap_or_default();
 
     println!( "{output}" );
     println!( "Expected:" );
@@ -43,13 +43,13 @@ fn main()
       .add_row( vec![
         "\x1b[31mVery long red text that needs truncation applied here\x1b[0m\n\x1b[32mShort green line\x1b[0m\n\x1b[34mAnother long blue line that also exceeds the width limit\x1b[0m".into()
       ] )
-      .build();
+      .build_view();
 
     let config = TableConfig::plain()
       .max_column_width( Some( 30 ) );
 
     let formatter = TableFormatter::with_config( config );
-    let output = formatter.format( &data );
+    let output = formatter.format( &data ).unwrap_or_default();
 
     println!( "{output}" );
     println!( "Expected:" );
@@ -79,13 +79,13 @@ fn main()
         "Another multiline description here\nWith a second line".into(),
         "Done".into()
       ] )
-      .build();
+      .build_view();
 
     let config = TableConfig::plain()
       .max_column_width( Some( 25 ) );
 
     let formatter = TableFormatter::with_config( config );
-    let output = formatter.format( &data );
+    let output = formatter.format( &data ).unwrap_or_default();
 
     println!( "{output}" );
     println!( "Expected:" );
@@ -107,13 +107,13 @@ fn main()
         "First long line here\nSecond long line here\nThird".into(),
         "Another long line\nAnd another one\nShort".into()
       ] )
-      .build();
+      .build_view();
 
     let config = TableConfig::plain()
       .max_column_width( Some( 20 ) );
 
     let formatter = TableFormatter::with_config( config );
-    let output = formatter.format( &data );
+    let output = formatter.format( &data ).unwrap_or_default();
 
     println!( "{output}" );
     println!( "Expected:" );
@@ -143,13 +143,13 @@ fn main()
         "\x1b[33mWARN\x1b[0m".into(),
         "Retrying connection (attempt 1 of 3)".into()
       ] )
-      .build();
+      .build_view();
 
     let config = TableConfig::plain()
       .max_column_width( Some( 40 ) );
 
     let formatter = TableFormatter::with_config( config );
-    let output = formatter.format( &data );
+    let output = formatter.format( &data ).unwrap_or_default();
 
     println!( "{output}" );
     println!( "Expected:" );
@@ -173,13 +173,13 @@ fn main()
         "Bob".into(),
         "456 Oak St".into()
       ] )
-      .build();
+      .build_view();
 
     let config = TableConfig::bordered()
       .max_column_width( Some( 20 ) );
 
     let formatter = TableFormatter::with_config( config );
-    let output = formatter.format( &data );
+    let output = formatter.format( &data ).unwrap_or_default();
 
     println!( "{output}" );
     println!( "Expected:" );

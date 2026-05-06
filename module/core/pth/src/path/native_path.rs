@@ -9,9 +9,10 @@
 ///
 /// # Usage
 ///
-/// ```rust,ignore
+/// ```rust
 /// use pth::NativePath;
-/// let path: NativePath = NativePath::try_from("/some/path")?;
+/// let path : NativePath = NativePath ::try_from( "/some/path" ).unwrap();
+/// let _ = path;
 /// ```
 ///
 /// # Note

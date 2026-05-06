@@ -11,7 +11,7 @@
 //! | TC5 | Preserve delimiters | "," | preserve_delimiters=true | Include delimiters in result |
 //! | TC6 | Preserve empty | "," | preserve_empty=true | Include empty segments |
 //! | TC7 | Multiple delimiters simple | `[",", ";"]` | default | Multi-delimiter optimization |
-//! | TC8 | Debug mode | "," | debug | Debug output generated |
+//! | TC8 | Debug mode | "," | debug (bare flag) | debug flag accepted; result unchanged |
 //!
 
 #[ cfg( feature = "optimize_split" ) ]
@@ -65,10 +65,12 @@ fn tc3_multiple_delimiters()
 fn tc4_complex_delimiters()
 {
   let result = optimize_split!( "a,b->c ::d", [ ",", "->", " :: " ] );
-  
-  // Should generate complex pattern fallback
-  assert!( result.len() >= 3 );
+  // " :: " (space-colon-colon-space) does not match "c ::d" (no trailing space)
+  // Result: 3 segments split only on "," and "->"
+  assert_eq!( result.len(), 3 );
   assert_eq!( result[ 0 ], "a" );
+  assert_eq!( result[ 1 ], "b" );
+  assert_eq!( result[ 2 ], "c ::d" );
 }
 
 // TC5: Preserve delimiters option
@@ -111,14 +113,12 @@ fn tc7_multiple_delimiters_simple()
   assert_eq!( result[ 2 ], "c" );
 }
 
-// TC8: Debug mode test
-// Note: Debug functionality test without console output pollution
+// TC8: Debug mode test — verify debug flag accepted and result unchanged
 #[ cfg( feature = "optimize_split" ) ]
 #[ test ]
 fn tc8_debug_mode()
 {
-  let result = optimize_split!( "a,b,c", "," );
-  
+  let result = optimize_split!( "a,b,c", ",", debug );
   assert_eq!( result.len(), 3 );
   assert_eq!( result[ 0 ], "a" );
   assert_eq!( result[ 1 ], "b" );

@@ -26,26 +26,22 @@ use crate ::
 ///
 /// # Examples
 ///
-/// ```rust,ignore
-/// use genfile_core::{ Template, HandlebarsRenderer, MemoryFileSystem, Value, FileDescriptor, WriteMode };
+/// ```rust
+/// use genfile_core::{ Template, HandlebarsRenderer, MemoryFileSystem, Value, FileDescriptor, WriteMode, FileSystem };
 /// use std::path::PathBuf;
 ///
 /// let renderer = HandlebarsRenderer::new();
 /// let mut filesystem = MemoryFileSystem::new();
-///
-/// // Set up template
 /// filesystem.write( &PathBuf::from( "template.hbs" ), "Hello {{name}}!" )?;
 ///
-/// let mut template = Template::new( renderer, filesystem );
+/// let mut template : Template< Value, _, _ > = Template::new( renderer, filesystem );
 /// template.insert_value( "name", Value::String( "World".into() ) );
-///
 /// template.add_file( FileDescriptor
 /// {
 ///   file_path: PathBuf::from( "output.txt" ),
 ///   template_path: PathBuf::from( "template.hbs" ),
 ///   write_mode: WriteMode::Rewrite,
 /// });
-///
 /// template.materialize()?;
 /// # Ok::<(), genfile_core::Error>(())
 /// ```
@@ -184,8 +180,10 @@ where
   ///
   /// # Examples
   ///
-  /// ```rust,ignore
-  /// template.materialize()?;
+  /// ```rust,no_run
+  /// # use genfile_core::{ Template, HandlebarsRenderer, MemoryFileSystem, Value };
+  /// # let mut template : Template< Value, _, _ > = Template::new( HandlebarsRenderer::new(), MemoryFileSystem::new() );
+  /// template.materialize().unwrap();
   /// ```
   pub fn materialize( &mut self ) -> Result< (), Error >
   {
@@ -208,8 +206,9 @@ where
         }
         WriteMode ::TomlExtend =>
         {
-          // TODO: Implement TOML smart merging (FR12, FR19)
-          // For now, just write (will implement in follow-up)
+          // Workaround(issue-005): TomlExtend falls back to full rewrite; merging not implemented.
+          // Root cause: TOML-aware merging requires parsing both files; not yet integrated with genfile_core.
+          // Pitfall: Existing TOML keys in the destination file are silently overwritten (FR12, FR19 gap).
           self.filesystem.write( &file_desc.file_path, &rendered )?;
         }
       }

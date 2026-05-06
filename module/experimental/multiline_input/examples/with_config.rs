@@ -1,9 +1,12 @@
 //! Example showing full configuration options
 
-use multiline_input::Builder;
+#[ cfg( not( feature = "enabled" ) ) ]
+fn main() {}
 
+#[ cfg( feature = "enabled" ) ]
 fn main()
 {
+  use multiline_input::Builder;
   println!( "Multiline Input with Configuration" );
   println!( "Min 10 chars, max 500 chars, with line numbers and status\n" );
 

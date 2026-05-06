@@ -28,7 +28,10 @@ fn corner_empty_string_preserve_empty_false()
 {
   let result = optimize_split!( "", ",", preserve_empty = false );
   println!( "Empty string (preserve_empty=false): {result:?}" );
-  // Expected: empty vec or vec![""] depending on implementation
+  // The simple split().collect() path is used when no options are active.
+  // str::split() always yields at least one segment, so [""] is returned even
+  // for empty input; preserve_empty=false only filters in the manual-loop path.
+  assert_eq!( result, vec![ "" ] );
 }
 
 #[ cfg( feature = "optimize_split" ) ]
@@ -46,7 +49,8 @@ fn corner_only_delimiters()
 {
   let result = optimize_split!( ",,,", "," );
   println!( "Only delimiters result: {result:?}" );
-  // Default: splits into empty segments
+  // Default preserve_empty=true: matches str::split() → 4 empty segments
+  assert_eq!( result, vec![ "", "", "", "" ] );
 }
 
 #[ cfg( feature = "optimize_split" ) ]
@@ -64,7 +68,8 @@ fn corner_delimiter_at_start()
 {
   let result = optimize_split!( ",abc", "," );
   println!( "Delimiter at start: {result:?}" );
-  // Expected: vec!["", "abc"] or vec!["abc"] depending on preserve_empty
+  // Default preserve_empty=true: leading delimiter produces empty first segment
+  assert_eq!( result, vec![ "", "abc" ] );
 }
 
 #[ cfg( feature = "optimize_split" ) ]
@@ -73,7 +78,8 @@ fn corner_delimiter_at_end()
 {
   let result = optimize_split!( "abc,", "," );
   println!( "Delimiter at end: {result:?}" );
-  // Expected: vec!["abc", ""] or vec!["abc"] depending on preserve_empty
+  // Default preserve_empty=true: trailing delimiter produces empty last segment
+  assert_eq!( result, vec![ "abc", "" ] );
 }
 
 #[ cfg( feature = "optimize_split" ) ]
@@ -82,7 +88,8 @@ fn corner_consecutive_delimiters()
 {
   let result = optimize_split!( "a,,b", "," );
   println!( "Consecutive delimiters: {result:?}" );
-  // Default behavior - what should happen?
+  // Default preserve_empty=true: consecutive delimiters produce empty middle segment
+  assert_eq!( result, vec![ "a", "", "b" ] );
 }
 
 #[ cfg( feature = "optimize_split" ) ]
@@ -118,7 +125,11 @@ fn corner_overlapping_delimiters()
 {
   let result = optimize_split!( "aabaabc", [ "a", "ab", "abc" ] );
   println!( "Overlapping delimiters: {result:?}" );
-  // Test which delimiter takes priority
+  // ComplexPattern regex tries alternates left-to-right; "a" wins over "ab"/"abc"
+  // "a" is a delimiter — no segment should equal standalone "a"
+  assert!( result.iter().all( | s | *s != "a" ) );
+  // "b"/"bc" appear between "a"s and must survive in some segment
+  assert!( result.iter().any( | s | s.contains( 'b' ) ) );
 }
 
 #[ cfg( feature = "optimize_split" ) ]
@@ -134,18 +145,22 @@ fn corner_whitespace_delimiters()
 #[ test ]
 fn corner_many_delimiters_threshold()
 {
-  // Test with exactly 8 delimiters (threshold)
+  // Test with exactly 8 delimiters (threshold) — stays in MultipleCharDelimiters path
   let result = optimize_split!( "a1b2c3d4e5f6g7h", [ "1", "2", "3", "4", "5", "6", "7", "8" ] );
   println!( "8 delimiters (threshold): {result:?}" );
+  // "8" not in source; splits on "1"-"7" only → 8 segments
+  assert_eq!( result, vec![ "a", "b", "c", "d", "e", "f", "g", "h" ] );
 }
 
 #[ cfg( feature = "optimize_split" ) ]
 #[ test ]
 fn corner_many_delimiters_over_threshold()
 {
-  // Test with 9 delimiters (over threshold -> ComplexPattern)
+  // Test with 9 delimiters (over threshold → ComplexPattern path)
   let result = optimize_split!( "a1b2c3d4e5f6g7h8i", [ "1", "2", "3", "4", "5", "6", "7", "8", "9" ] );
   println!( "9 delimiters (over threshold): {result:?}" );
+  // All digits 1-8 present in source; "9" absent; ComplexPattern → 9 segments
+  assert_eq!( result, vec![ "a", "b", "c", "d", "e", "f", "g", "h", "i" ] );
 }
 
 // ============================================================================
@@ -167,7 +182,8 @@ fn corner_match_empty_pattern()
 {
   let result = optimize_match!( "test", "" );
   println!( "Match empty pattern: {result:?}" );
-  // Expected: Some(0) - empty string matches at start?
+  // Matches Rust str::find("") behavior: empty pattern matches at byte position 0
+  assert_eq!( result, Some( 0 ) );
 }
 
 #[ cfg( feature = "optimize_match" ) ]
@@ -248,18 +264,22 @@ fn corner_match_overlapping_patterns()
 #[ test ]
 fn corner_match_many_patterns_threshold()
 {
-  // Test with exactly 16 patterns (threshold)
+  // Test with exactly 16 patterns (threshold) — stays in TrieBasedMatch path
   let result = optimize_match!( "test08data", [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16" ] );
   println!( "16 patterns (threshold): {result:?}" );
+  // "08" appears at byte position 4 in "test08data"
+  assert_eq!( result, Some( 4 ) );
 }
 
 #[ cfg( feature = "optimize_match" ) ]
 #[ test ]
 fn corner_match_many_patterns_over_threshold()
 {
-  // Test with 17 patterns (over threshold -> SequentialMatch)
+  // Test with 17 patterns (over threshold → SequentialMatch path)
   let result = optimize_match!( "test17data", [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17" ] );
   println!( "17 patterns (over threshold): {result:?}" );
+  // "17" appears at byte position 4 in "test17data"
+  assert_eq!( result, Some( 4 ) );
 }
 
 #[ cfg( feature = "optimize_match" ) ]
@@ -268,5 +288,7 @@ fn corner_match_longest_match_strategy()
 {
   let result = optimize_match!( "testing", [ "test", "testing" ], strategy = "longest_match" );
   println!( "Longest match strategy: {result:?}" );
-  // Should prioritize "testing" over "test"
+  // strategy param is a no-op (see docs/invariant/003_strategy_param_no_op.md)
+  // both "test" and "testing" match at position 0; first-pattern order → Some(0)
+  assert_eq!( result, Some( 0 ) );
 }

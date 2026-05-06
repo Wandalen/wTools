@@ -4,7 +4,7 @@
 
 use data_fmt::
 {
-  TreeBuilder, TableShapedView,
+  TreeBuilder, Format,
   conversions::{ flatten_to_table_tree_with_config, FlattenConfig },
   TableFormatter,
 };
@@ -26,10 +26,10 @@ fn test_flatten_config_column_selection()
     .include_depth( false );
 
   let flattened = flatten_to_table_tree_with_config( &tree, &config );
-  let headers = flattened.extract_headers().unwrap();
+  let headers = flattened.metadata.column_names.clone();
 
   assert_eq!( headers, vec![ "name", "data" ] );
-  assert_eq!( flattened.children.len(), 3 ); // root, dir, file.txt
+  assert_eq!( flattened.rows.len(), 3 ); // root, dir, file.txt
 }
 
 #[ test ]
@@ -43,7 +43,7 @@ fn test_flatten_config_custom_column_names()
     .column_names( "Full Path".into(), "File Name".into(), "Level".into(), "Size".into() );
 
   let flattened = flatten_to_table_tree_with_config( &tree, &config );
-  let headers = flattened.extract_headers().unwrap();
+  let headers = flattened.metadata.column_names.clone();
 
   assert_eq!( headers, vec![ "Full Path", "File Name", "Level", "Size" ] );
 }
@@ -61,14 +61,13 @@ fn test_flatten_config_path_only()
     .include_data( false );
 
   let flattened = flatten_to_table_tree_with_config( &tree, &config );
-  let headers = flattened.extract_headers().unwrap();
+  let headers = flattened.metadata.column_names.clone();
 
   assert_eq!( headers, vec![ "path" ] );
 
-  let rows = flattened.to_rows();
-  assert!( rows[ 0 ][ 0 ].contains( "root" ) );
-  assert!( rows[ 1 ][ 0 ].contains( "root/a" ) );
-  assert!( rows[ 2 ][ 0 ].contains( "root/a/b" ) );
+  assert!( flattened.rows[ 0 ][ 0 ].render().contains( "root" ) );
+  assert!( flattened.rows[ 1 ][ 0 ].render().contains( "root/a" ) );
+  assert!( flattened.rows[ 2 ][ 0 ].render().contains( "root/a/b" ) );
 }
 
 #[ test ]
@@ -86,7 +85,7 @@ fn test_flatten_config_with_table_formatter()
 
   let flattened = flatten_to_table_tree_with_config( &tree, &config );
   let formatter = TableFormatter::new();
-  let output = formatter.format( &flattened );
+  let output = Format::format( &formatter, &flattened ).unwrap();
 
   assert!( output.contains( "File" ) );
   assert!( output.contains( "Lines" ) );

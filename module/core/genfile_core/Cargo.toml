@@ -15,9 +15,6 @@ File generation tools for code generation and template materialization.
 """
 categories = [ "development-tools", "template-engine" ]
 keywords = [ "fundamental", "general-purpose", "template", "codegen" ]
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
 
 [lints]
 workspace = true
@@ -27,26 +24,19 @@ features = [ "full" ]
 all-features = false
 
 [features]
-default = [
-  "archive",
-  "template",
-  "renderer",
-  "filesystem",
-  "serialization",
-  "binary",
-]
-
+default = [ "enabled", "external_content", "parameter_discovery" ]
 full = [
-  "archive",
-  "template",
-  "renderer",
-  "filesystem",
-  "serialization",
-  "json",
-  "yaml",
-  "binary",
+  "enabled",
   "external_content",
   "parameter_discovery",
+]
+enabled = [
+  "archive",
+  "template",
+  "renderer",
+  "filesystem",
+  "serialization",
+  "binary",
 ]
 
 # High-level archive API with self-contained template archives
@@ -54,9 +44,6 @@ archive = [
   "renderer",
   "filesystem",
   "dep:serde",
-  "error_tools/enabled",
-  "collection_tools/enabled",
-  "mod_interface/enabled",
 ]
 
 # Low-level template API with custom value types and renderers
@@ -64,26 +51,16 @@ template = [
   "renderer",
   "filesystem",
   "dep:serde",
-  "error_tools/enabled",
-  "collection_tools/enabled",
-  "mod_interface/enabled",
 ]
 
 # Template rendering support (Handlebars)
 renderer = [
   "dep:handlebars",
   "dep:serde_json",
-  "error_tools/enabled",
-  "collection_tools/enabled",
-  "mod_interface/enabled",
 ]
 
 # Filesystem abstractions (Real + Memory)
-filesystem = [
-  "error_tools/enabled",
-  "collection_tools/enabled",
-  "mod_interface/enabled",
-]
+filesystem = []
 
 # JSON and YAML serialization support
 serialization = [ "json", "yaml" ]
@@ -125,9 +102,6 @@ serde_json = { version = "1.0", optional = true }
 serde_yaml = { version = "0.9", optional = true }
 base64 = { version = "0.22", optional = true }
 regex = { version = "1.11", optional = true }
-error_tools = { workspace = true, features = [ "error_typed" ] }
-collection_tools = { workspace = true }
-mod_interface = { workspace = true }
 
 [dev-dependencies]
 

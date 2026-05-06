@@ -16,9 +16,6 @@ A flexible implementation of the Builder pattern supporting nested builders and 
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
 
 [lints]
 workspace = true
@@ -38,16 +35,12 @@ use_alloc = [ "no_std", "former_types/use_alloc", "collection_tools/use_alloc" ]
 default = [
   "enabled",
   "derive_former",
-  # "derive_components",
-  # "derive_component_from",
-  # "derive_component_assign",
-  # "derive_components_assign",
-  # "derive_from_components",
   "types_former",
-  # "types_component_assign",
 ]
 full = [
-  "default",
+  "enabled",
+  "derive_former",
+  "types_former",
   "performance",
 ]
 
@@ -76,7 +69,7 @@ collection_tools = { workspace = true, features = [ "collection_constructors" ] 
 benchkit = { workspace = true, optional = true, features = [ "enabled", "markdown_reports", "data_generators" ] }
 
 [dev-dependencies]
-test_tools = { workspace = true, features = [ "full" ] }
+test_tools = { workspace = true, features = [ "full", "standalone_build" ] }
 collection_tools = { workspace = true, features = [ "collection_constructors" ] }
 
 [[bench]]

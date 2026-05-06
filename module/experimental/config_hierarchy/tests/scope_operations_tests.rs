@@ -8,6 +8,7 @@
 //! - Isolation between local and global configs
 //! - Edge cases specific to scope handling
 
+// allow: test binary functions are not part of the public API; documentation not required
 #![ allow( missing_docs ) ]
 
 use config_hierarchy::*;
@@ -725,4 +726,92 @@ fn test_overwrite_global_multiple_times()
   assert_eq!( loaded.get( "iteration" ), Some( &JsonValue::Number( 4.into() ) ) );
 
   std::env::remove_var( "PRO" );
+}
+
+// Bug reproducer: save_local_config uses hardcoded prefixes/filename instead of trait methods
+//
+// ## Root Cause
+// `ConfigManager::save_local_config()` hardcodes temp prefix ("-"), perm prefix ("."),
+// and filename ("config.yaml") when constructing paths to detect existing config files.
+// It calls `P::app_name()` correctly but ignores `P::local_temporary_prefix()`,
+// `P::local_permanent_prefix()`, and `P::local_config_filename()`.
+//
+// ## Why Not Caught
+// All existing tests use default `ConfigPaths` where the hardcoded defaults ("-", ".",
+// "config.yaml") match the trait defaults. Custom implementations are never tested
+// through `save_local_config`, only through path-discovery functions.
+//
+// ## Fix Applied
+// Replace hardcoded strings with `P::local_temporary_prefix()`, `P::local_permanent_prefix()`,
+// and `P::local_config_filename()` calls in `manager.rs` `save_local_config`.
+//
+// ## Prevention
+// All path-construction in `ConfigManager` must use `P` trait methods, never hardcoded defaults.
+//
+// ## Pitfall
+// Methods correct for default `ConfigPaths` silently break any custom implementation.
+#[ test ]
+#[ serial ]
+fn test_save_local_config_uses_custom_paths_trait_methods()
+{
+  use config_hierarchy::{ ConfigDefaults, ConfigPaths, ConfigValidator, ConfigManager, ValidationError, ConfigSource, EnvVarCasing };
+
+  struct BugDefaults;
+  impl ConfigDefaults for BugDefaults
+  {
+    fn get_defaults() -> HashMap< String, JsonValue > { HashMap::new() }
+    fn get_parameter_names() -> Vec< &'static str > { vec![] }
+  }
+
+  struct BugPaths;
+  impl ConfigPaths for BugPaths
+  {
+    fn app_name() -> &'static str { "myapp" }
+    fn local_temporary_prefix() -> &'static str { "_TEMP_" }
+    fn local_permanent_prefix() -> &'static str { "_PERM_" }
+    fn local_config_filename() -> &'static str { "settings.toml" }
+    fn env_var_casing() -> EnvVarCasing { EnvVarCasing::UpperCase }
+  }
+
+  struct BugValidator;
+  impl ConfigValidator for BugValidator
+  {
+    fn validate_parameter( _: &str, _: &JsonValue ) -> Result< (), ValidationError > { Ok( () ) }
+    fn validate_all( _: &HashMap< String, ( JsonValue, ConfigSource ) > ) -> Vec< ValidationError > { Vec::new() }
+  }
+
+  type BugConfig = ConfigManager< BugDefaults, BugPaths, BugValidator >;
+
+  let temp_dir = TempDir::new().unwrap();
+  let _old_dir = std::env::current_dir().unwrap();
+  std::env::set_current_dir( temp_dir.path() ).unwrap();
+
+  // Create the custom temp config dir and file so save_local_config finds it
+  let custom_temp_dir = temp_dir.path().join( "_TEMP_myapp" );
+  std::fs::create_dir_all( &custom_temp_dir ).unwrap();
+  let custom_temp_file = custom_temp_dir.join( "settings.toml" );
+  std::fs::write( &custom_temp_file, "" ).unwrap();
+
+  let mut config = HashMap::new();
+  config.insert( "key".into(), JsonValue::String( "value".into() ) );
+  BugConfig::save_local_config( &config ).unwrap();
+
+  // Must save to the custom path, not the hardcoded default
+  let loaded = load_config_file( &custom_temp_file ).unwrap();
+  assert_eq!
+  (
+    loaded.get( "key" ),
+    Some( &JsonValue::String( "value".into() ) ),
+    "save_local_config must save to custom temp path (_TEMP_myapp/settings.toml)"
+  );
+
+  // Must NOT create the hardcoded fallback path
+  let default_temp = temp_dir.path().join( "-myapp" ).join( "config.yaml" );
+  assert!
+  (
+    !default_temp.exists(),
+    "save_local_config must not create hardcoded default path (-myapp/config.yaml)"
+  );
+
+  std::env::set_current_dir( "/tmp" ).unwrap();
 }

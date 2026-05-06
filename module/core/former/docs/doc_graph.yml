@@ -1,0 +1,181 @@
+meta:
+  description: Cross-reference graph for all doc instances in the former crate
+  node_count: 15
+  edge_count: 44
+  component_count: 1
+  generated: 2026_04_25
+
+nodes:
+  - id: algorithm/001
+    file: algorithm/001_variant_constructor_logic.md
+    label: Variant Constructor Logic
+    entity: algorithm
+
+  - id: api/001
+    file: api/001_item_attributes.md
+    label: Item Attributes
+    entity: api
+
+  - id: api/002
+    file: api/002_field_attributes.md
+    label: Field Attributes
+    entity: api
+
+  - id: feature/001
+    file: feature/001_struct_former.md
+    label: Struct Former
+    entity: feature
+
+  - id: feature/002
+    file: feature/002_enum_former.md
+    label: Enum Former
+    entity: feature
+
+  - id: feature/003
+    file: feature/003_subform_scalar.md
+    label: Scalar Subformer
+    entity: feature
+
+  - id: feature/004
+    file: feature/004_subform_collection.md
+    label: Collection Subformer
+    entity: feature
+
+  - id: feature/005
+    file: feature/005_subform_entry.md
+    label: Entry Subformer
+    entity: feature
+
+  - id: feature/006
+    file: feature/006_standalone_constructors.md
+    label: Standalone Constructors
+    entity: feature
+
+  - id: feature/007
+    file: feature/007_debug_attribute.md
+    label: Debug Attribute
+    entity: feature
+
+  - id: invariant/001
+    file: invariant/001_owned_types_only.md
+    label: Owned Types Only
+    entity: invariant
+
+  - id: invariant/002
+    file: invariant/002_no_generic_enums.md
+    label: No Generic Enums
+    entity: invariant
+
+  - id: invariant/003
+    file: invariant/003_single_variant_enum.md
+    label: Single Variant Enum
+    entity: invariant
+
+  - id: pattern/001
+    file: pattern/001_builder_pattern.md
+    label: Builder Pattern
+    entity: pattern
+
+  - id: pattern/002
+    file: pattern/002_subformer_composition.md
+    label: Subformer Composition
+    entity: pattern
+
+edges:
+  # algorithm/001 outgoing
+  - { from: algorithm/001, to: feature/002, via: typed_reference }
+  - { from: algorithm/001, to: api/002, via: typed_reference }
+
+  # api/001 outgoing
+  - { from: api/001, to: api/002, via: typed_reference }
+  - { from: api/001, to: feature/006, via: typed_reference }
+  - { from: api/001, to: feature/007, via: typed_reference }
+
+  # api/002 outgoing
+  - { from: api/002, to: api/001, via: typed_reference }
+  - { from: api/002, to: feature/003, via: typed_reference }
+  - { from: api/002, to: feature/004, via: typed_reference }
+  - { from: api/002, to: feature/005, via: typed_reference }
+  - { from: api/002, to: feature/006, via: typed_reference }
+
+  # feature/001 outgoing
+  - { from: feature/001, to: api/001, via: typed_reference }
+  - { from: feature/001, to: api/002, via: typed_reference }
+  - { from: feature/001, to: pattern/001, via: typed_reference }
+  - { from: feature/001, to: invariant/001, via: typed_reference }
+
+  # feature/002 outgoing
+  - { from: feature/002, to: algorithm/001, via: typed_reference }
+  - { from: feature/002, to: api/001, via: typed_reference }
+  - { from: feature/002, to: api/002, via: typed_reference }
+  - { from: feature/002, to: pattern/001, via: typed_reference }
+  - { from: feature/002, to: invariant/001, via: typed_reference }
+  - { from: feature/002, to: invariant/002, via: typed_reference }
+  - { from: feature/002, to: invariant/003, via: typed_reference }
+
+  # feature/003 outgoing
+  - { from: feature/003, to: feature/001, via: typed_reference }
+  - { from: feature/003, to: api/002, via: typed_reference }
+  - { from: feature/003, to: pattern/002, via: typed_reference }
+
+  # feature/004 outgoing
+  - { from: feature/004, to: feature/001, via: typed_reference }
+  - { from: feature/004, to: api/002, via: typed_reference }
+  - { from: feature/004, to: pattern/002, via: typed_reference }
+
+  # feature/005 outgoing
+  - { from: feature/005, to: feature/001, via: typed_reference }
+  - { from: feature/005, to: api/002, via: typed_reference }
+  - { from: feature/005, to: pattern/002, via: typed_reference }
+
+  # feature/006 outgoing
+  - { from: feature/006, to: api/001, via: typed_reference }
+  - { from: feature/006, to: api/002, via: typed_reference }
+
+  # feature/007 outgoing
+  - { from: feature/007, to: api/001, via: typed_reference }
+
+  # invariant/001 outgoing
+  - { from: invariant/001, to: feature/001, via: typed_reference }
+  - { from: invariant/001, to: feature/002, via: typed_reference }
+
+  # invariant/002 outgoing
+  - { from: invariant/002, to: feature/002, via: typed_reference }
+
+  # invariant/003 outgoing
+  - { from: invariant/003, to: feature/002, via: typed_reference }
+
+  # pattern/001 outgoing
+  - { from: pattern/001, to: feature/001, via: typed_reference }
+  - { from: pattern/001, to: feature/002, via: typed_reference }
+  - { from: pattern/001, to: pattern/002, via: typed_reference }
+
+  # pattern/002 outgoing
+  - { from: pattern/002, to: pattern/001, via: typed_reference }
+  - { from: pattern/002, to: feature/003, via: typed_reference }
+  - { from: pattern/002, to: feature/004, via: typed_reference }
+  - { from: pattern/002, to: feature/005, via: typed_reference }
+
+components:
+  - id: 1
+    label: Former documentation corpus
+    size: 15
+    isolated: false
+    nodes:
+      - algorithm/001
+      - api/001
+      - api/002
+      - feature/001
+      - feature/002
+      - feature/003
+      - feature/004
+      - feature/005
+      - feature/006
+      - feature/007
+      - invariant/001
+      - invariant/002
+      - invariant/003
+      - pattern/001
+      - pattern/002
+
+dangling_refs: []

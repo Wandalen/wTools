@@ -1,8 +1,22 @@
 # genfile Test Suite
 
+### Responsibility Table
+
+| File | Responsibility |
+|------|----------------|
+| archive_commands_test.rs | Archive lifecycle CLI command integration tests |
+| file_commands_test.rs | File management CLI command integration tests |
+| param_value_commands_test.rs | Parameter and value CLI command integration tests |
+| content_commands_test.rs | Content transformation CLI command integration tests |
+| materialization_test.rs | Template materialization and unpack integration tests |
+| analysis_test.rs | Archive analysis and inspection integration tests |
+| repl_exit_code_bug_test.rs | REPL exit code behavior regression tests |
+| cli_runner.rs | Cross-platform process execution helpers for tests |
+| manual/ | Manual testing plan and procedures |
+
 ## Overview
 
-Current test coverage: **53 integration tests** across 6 test files covering **24 implemented commands** (89% of total 27 planned commands).
+Current test coverage: across 7 test files covering **24 implemented commands** (89% of total 27 planned commands).
 
 ## Test Organization
 
@@ -14,6 +28,7 @@ Tests are organized by functional domain (not by methodology):
 - `content_commands_test.rs` (271 lines) - Content transformation operations
 - `materialization_test.rs` (468 lines) - Template materialization and raw unpacking
 - `analysis_test.rs` (319 lines) - Archive analysis and inspection
+- `repl_exit_code_bug_test.rs` - REPL exit code behavior regression tests
 
 ## Test Methodology
 
@@ -22,10 +37,8 @@ Tests are organized by functional domain (not by methodology):
 **Current:** All tests are **integration tests** that spawn `cargo run` processes to test the complete CLI application end-to-end.
 
 ```rust
-// Example pattern used throughout test suite
-let output = std::process::Command::new( "cargo" )
-  .args( [ "run", "--quiet", "--", ".archive.new", "name::test" ] )
-  .current_dir( "/home/user1/pro/lib/wTools/module/core/genfile" )
+// Example pattern used throughout test suite (see cli_runner.rs)
+let output = cli_runner::cargo_run_command( &[ ".archive.new", "name::test" ] )
   .output()
   .expect( "Failed to execute command" );
 ```
@@ -44,7 +57,7 @@ let output = std::process::Command::new( "cargo" )
 **Unit Tests:** None currently exist for:
 - Individual handler functions (handlers/archive.rs, handlers/file.rs, etc.)
 - Error handling paths in isolation
-- State management behavior (ArchiveState vs shared_state)
+- State management behavior via shared_state thread-locals
 
 **Unimplemented Commands (3):** No tests for:
 - `.help`, `.` (help system - FR9)
@@ -88,14 +101,13 @@ w3 .test l::3
 
 1. **Add Unit Tests:** Create handler-level unit tests for isolated testing
 2. **Implement Missing Command Tests:** Add tests for unimplemented commands (use TDD)
-3. **Test State Management:** Add tests validating ArchiveState behavior
-4. **Performance Tests:** Consider adding benchmarks for command execution
+3. **Performance Tests:** Consider adding benchmarks for command execution
 5. **Manual Testing Plan:** Document manual test scenarios in `tests/manual/readme.md`
 
 ## Test File Size Guidelines
 
 Per test_organization.rulebook.md:
-- ✅ All test files under 1500 lines (max is 271 lines)
+- ✅ All test files under 1500 lines (max is 468 lines)
 - ✅ Tests organized by domain, not methodology
 - ✅ Clear naming: `*_test.rs` suffix
 

@@ -1,8 +1,8 @@
 //! Send bounds validation tests
 //!
 //! This file validates that async conversion traits work correctly with Send bounds
-//! in multi-threaded async runtimes. Per spec.md lines 341-346, Send bounds are
-//! CRITICAL for compatibility with tokio and other multi-threaded runtimes.
+//! in multi-threaded async runtimes. Per `docs/invariant/001_send_bounds.md`, Send bounds are
+//! required for compatibility with tokio and other multi-threaded runtimes.
 //!
 //! ## Root Cause
 //! Send bounds were required in blanket implementations but never explicitly tested.
@@ -26,7 +26,7 @@ use async_from::{ async_trait, AsyncFrom, AsyncInto, AsyncTryFrom, AsyncTryInto 
 ///
 /// **What This Tests**: `AsyncFrom` futures can be sent between threads
 ///
-/// **Why Critical**: Per spec.md, most async runtimes are multi-threaded.
+/// **Why Critical**: Per `docs/invariant/001_send_bounds.md`, most async runtimes are multi-threaded.
 /// Futures must implement Send to move between threads.
 #[ tokio::test( flavor = "multi_thread", worker_threads = 2 ) ]
 async fn test_async_from_send_bounds()

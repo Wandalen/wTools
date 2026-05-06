@@ -1,0 +1,72 @@
+meta:
+  description: Cross-reference graph for all doc instances in diagnostics_tools
+  node_count: 11
+  edge_count: 16
+  component_count: 1
+  generated: 2026_04_26
+
+nodes:
+  - id: feature/001
+    file: feature/001_runtime_assertions.md
+    label: Runtime Assertions
+    entity: feature
+  - id: feature/002
+    file: feature/002_compiletime_assertions.md
+    label: Compile-Time Assertions
+    entity: feature
+  - id: feature/003
+    file: feature/003_memory_layout_assertions.md
+    label: Memory Layout Assertions
+    entity: feature
+  - id: feature/004
+    file: feature/004_no_std_support.md
+    label: No-Std Support
+    entity: feature
+  - id: api/001
+    file: api/001_runtime_assertion_macros.md
+    label: Runtime Assertion Macros
+    entity: api
+  - id: api/002
+    file: api/002_compiletime_assertion_macros.md
+    label: Compile-Time Assertion Macros
+    entity: api
+  - id: api/003
+    file: api/003_memory_layout_macros.md
+    label: Memory Layout Assertion Macros
+    entity: api
+  - id: invariant/001
+    file: invariant/001_debug_variants_release_noop.md
+    label: Debug Variants Are No-Ops in Release Builds
+    entity: invariant
+  - id: invariant/002
+    file: invariant/002_pretty_diff_output.md
+    label: Equality Assertions Produce Colored Diff Output
+    entity: invariant
+  - id: invariant/003
+    file: invariant/003_compiletime_zero_overhead.md
+    label: Compile-Time Assertions Introduce No Runtime Overhead
+    entity: invariant
+  - id: invariant/004
+    file: invariant/004_alloc_requires_no_std.md
+    label: Alloc Feature Requires No-Std
+    entity: invariant
+
+edges:
+  - {from: feature/001, to: api/001, via: typed_reference }
+  - {from: api/001, to: feature/001, via: typed_reference }
+  - {from: feature/002, to: api/002, via: typed_reference }
+  - {from: api/002, to: feature/002, via: typed_reference }
+  - {from: feature/003, to: api/003, via: typed_reference }
+  - {from: api/003, to: feature/003, via: typed_reference }
+  - {from: feature/001, to: invariant/001, via: typed_reference }
+  - {from: invariant/001, to: feature/001, via: typed_reference }
+  - {from: feature/001, to: invariant/002, via: typed_reference }
+  - {from: invariant/002, to: feature/001, via: typed_reference }
+  - {from: feature/002, to: invariant/003, via: typed_reference }
+  - {from: invariant/003, to: feature/002, via: typed_reference }
+  - {from: feature/003, to: invariant/003, via: typed_reference }
+  - {from: invariant/003, to: feature/003, via: typed_reference }
+  - {from: feature/004, to: invariant/004, via: typed_reference }
+  - {from: invariant/004, to: feature/004, via: typed_reference }
+
+dangling_refs: []

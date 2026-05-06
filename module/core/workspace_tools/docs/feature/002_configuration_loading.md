@@ -1,0 +1,31 @@
+# Feature: Configuration Loading
+
+### Scope
+
+- **Purpose**: Load typed configuration from TOML, JSON, and YAML files located relative to the workspace root using serde deserialization.
+- **Responsibility**: Detect file format by extension, deserialize file content into caller-defined structs, and support layered merging where later files override earlier ones.
+- **In Scope**: Typed configuration loading, format detection, layered merge, priority search, and writing configuration to disk (all require `serde` feature).
+- **Out of Scope**: Schema validation (see `feature/005_configuration_validation.md`), config file watching or hot-reload, remote configuration sources, encryption of config values.
+
+### Design
+
+Format detection is entirely extension-driven: `.toml` → TOML, `.json` → JSON, `.yaml`/`.yml` → YAML. No explicit format argument is required; the loader tries each extension in order until a file is found.
+
+Layered merging follows a last-wins rule: configs are deserialized into the same target type and merged in declaration order, with each subsequent file overriding keys from earlier files. This enables a `base.toml` + `dev.toml` pattern where environment-specific files override shared defaults.
+
+Config search uses a priority order — workspace-local `config/` directory first, then the workspace root — allowing per-project overrides of shared defaults without moving files.
+
+Typed configuration can be serialized back to TOML and written to a workspace-relative path, enabling tools that mutate and persist configuration programmatically.
+
+### Cross-References
+
+| Type | File | Responsibility |
+|------|------|----------------|
+| source | `src/lib.rs` | Config loading, merging, and format detection impl |
+| config | `Cargo.toml` | `serde` feature flag and its optional dependency declarations |
+| test | `tests/serde_integration_tests.rs` | Integration with serde for configuration deserialization |
+| test | `tests/comprehensive_test_suite.rs` | Full coverage matrix including config loading |
+| test | `tests/feature_combination_tests.rs` | Feature flag combination correctness |
+| task | `task/completed/005_serde_integration.md` | Initial serde configuration loading implementation |
+| doc | `docs/api/001_workspace.md` | Configuration loading method signatures |
+| doc | `docs/feature/005_configuration_validation.md` | Schema validation on top of config loading |

@@ -32,7 +32,7 @@
 
 #![ cfg( feature = "enabled" ) ]
 
-use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig };
+use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig, Format };
 
 // ── A: show_record_numbers behavior ──────────────────────────────────────────
 
@@ -63,13 +63,13 @@ fn test_expanded_show_record_numbers_false_suppresses_number()
   let tree = RowBuilder::new( vec![ "Key".into() ] )
     .add_row( vec![ "v1".into() ] )
     .add_row( vec![ "v2".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
       .show_record_numbers( false )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // No row numbers in separator lines
   assert!
@@ -97,13 +97,13 @@ fn test_expanded_show_record_numbers_true_keeps_number()
   let tree = RowBuilder::new( vec![ "Key".into() ] )
     .add_row( vec![ "v1".into() ] )
     .add_row( vec![ "v2".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
       .show_record_numbers( true )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   assert!
   (
@@ -125,14 +125,14 @@ fn test_expanded_show_record_numbers_false_empty_separator_no_effect()
   let tree = RowBuilder::new( vec![ "Key".into() ] )
     .add_row( vec![ "v1".into() ] )
     .add_row( vec![ "v2".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
       .record_separator( String::new() )
       .show_record_numbers( false )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   assert!
   (
@@ -148,14 +148,14 @@ fn test_expanded_show_record_numbers_false_separator_without_placeholder()
 {
   let tree = RowBuilder::new( vec![ "Key".into() ] )
     .add_row( vec![ "v1".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
       .record_separator( "---".to_string() )
       .show_record_numbers( false )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   assert!
   (
@@ -172,14 +172,14 @@ fn test_expanded_show_record_numbers_false_with_indent_prefix()
   let tree = RowBuilder::new( vec![ "K".into() ] )
     .add_row( vec![ "v".into() ] )
     .add_row( vec![ "w".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
       .show_record_numbers( false )
       .indent_prefix( "  ".into() )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   for line in output.lines()
   {
@@ -215,13 +215,13 @@ fn test_expanded_before_separator_alignment_with_indent()
 {
   let tree = RowBuilder::new( vec![ "A".into(), "LongKey".into() ] )
     .add_row( vec![ "1".into(), "2".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
       .indent_prefix( ">> ".into() )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Key "A" (1 char) padded to width of "LongKey" (7 chars) = 6 extra spaces
   assert!
@@ -242,7 +242,7 @@ fn test_expanded_after_separator_alignment_with_indent()
 {
   let tree = RowBuilder::new( vec![ "A".into(), "LongKey".into() ] )
     .add_row( vec![ "x".into(), "y".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
@@ -251,7 +251,7 @@ fn test_expanded_after_separator_alignment_with_indent()
       .colorize_keys( false )
       .padding_side( data_fmt::PaddingSide::AfterSeparator )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // "A" (1 char) gets padding = max_key_width(7) - 1 = 6, plus 1 trailing sep space = 7 spaces
   assert!
@@ -272,19 +272,19 @@ fn test_expanded_write_to_matches_format_with_indent()
 {
   use std::io::Cursor;
 
-  let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
+  let view = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
     .add_row( vec![ "Alice".into(), "30".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::property_style()
       .indent_prefix( "  ".into() )
   );
 
-  let via_format = formatter.format( &tree );
+  let via_format = Format::format( &formatter, &view ).unwrap();
 
   let mut buf = Cursor::new( Vec::new() );
-  formatter.write_to( &tree, &mut buf ).unwrap();
+  formatter.write_to( &view, &mut buf ).unwrap();
   let via_write = String::from_utf8( buf.into_inner() ).unwrap();
 
   assert_eq!
@@ -301,13 +301,13 @@ fn test_expanded_indent_prefix_with_empty_cell_value()
 {
   let tree = RowBuilder::new( vec![ "Key".into() ] )
     .add_row( vec![ "".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
       .indent_prefix( "  ".into() )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Line must start with indent and contain the key
   assert!
@@ -328,10 +328,10 @@ fn test_expanded_property_style_blank_line_between_records_only()
     .add_row( vec![ "a".into() ] )
     .add_row( vec![ "b".into() ] )
     .add_row( vec![ "c".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config( ExpandedConfig::property_style() );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Must NOT start with a blank line
   assert!
@@ -362,13 +362,13 @@ fn test_expanded_no_separator_blank_lines_between_records()
   let tree = RowBuilder::new( vec![ "K".into() ] )
     .add_row( vec![ "a".into() ] )
     .add_row( vec![ "b".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
       .record_separator( String::new() )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   assert!(
     !output.starts_with( '\n' ),
@@ -387,13 +387,13 @@ fn test_expanded_single_record_empty_separator_no_blanks()
 {
   let tree = RowBuilder::new( vec![ "K".into() ] )
     .add_row( vec![ "v".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
       .record_separator( String::new() )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   let blank_line_count = output.lines().filter( | l | l.trim().is_empty() ).count();
   assert_eq!(
@@ -411,13 +411,13 @@ fn test_expanded_separator_without_placeholder_verbatim()
   let tree = RowBuilder::new( vec![ "K".into() ] )
     .add_row( vec![ "v1".into() ] )
     .add_row( vec![ "v2".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
       .record_separator( "---".to_string() )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Both record separators are "---" (no number)
   let sep_count = output.lines().filter( | l | *l == "---" ).count();
@@ -433,12 +433,12 @@ fn test_expanded_single_column_no_padding()
 {
   let tree = RowBuilder::new( vec![ "Title".into() ] )
     .add_row( vec![ "Hello".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // "Title" should appear without trailing spaces before separator
   assert!
@@ -454,12 +454,12 @@ fn test_expanded_all_same_width_keys_no_extra_padding()
 {
   let tree = RowBuilder::new( vec![ "Aaa".into(), "Bbb".into(), "Ccc".into() ] )
     .add_row( vec![ "1".into(), "2".into(), "3".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // All keys are 3 chars — no trailing spaces before separator
   assert!( output.contains( "Aaa |" ), "got:\n{output}" );
@@ -475,13 +475,13 @@ fn test_expanded_tab_indent_prefix()
 {
   let tree = RowBuilder::new( vec![ "Name".into() ] )
     .add_row( vec![ "Alice".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
       .indent_prefix( "\t".into() )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   for line in output.lines()
   {
@@ -502,13 +502,13 @@ fn test_expanded_unicode_indent_prefix()
 {
   let tree = RowBuilder::new( vec![ "Name".into() ] )
     .add_row( vec![ "Alice".into() ] )
-    .build();
+    .build_view();
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
       .indent_prefix( "→ ".into() )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   for line in output.lines()
   {

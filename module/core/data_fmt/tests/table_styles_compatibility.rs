@@ -39,7 +39,7 @@ mod inc;
 use data_fmt::
 {
   RowBuilder, TableFormatter, TableConfig,
-  BorderVariant, HeaderSeparatorVariant, ColumnSeparator,
+  BorderVariant, HeaderSeparatorVariant, ColumnSeparator, Format,
 };
 use inc::sample_data;
 
@@ -52,7 +52,7 @@ fn test_default_behavior_unchanged()
 {
   let tree = sample_data();
   let formatter = TableFormatter::new();
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Default is now plain style (changed in v0.4.0 refactoring)
   assert!( output.contains( "----" ) ); // Dash separator
@@ -67,14 +67,20 @@ fn test_default_behavior_unchanged()
 #[ test ]
 fn test_empty_table_plain_style()
 {
-  // Empty table (no rows, no headers) should produce minimal output
-  let tree = RowBuilder::new( vec![ "Col".into() ] ).build();
+  // Headers-only table (no data rows) still renders the header row and separator (IC-3).
+  let tree = RowBuilder::new( vec![ "Col".into() ] ).build_view();
   let formatter = TableFormatter::with_config( TableConfig::plain() );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
-  // Empty table with no rows returns empty (this is expected behavior)
-  // The table has headers defined but no data rows, so TableView returns empty headers
-  assert!( output.trim().is_empty() || output == "\n\n", "Empty table should produce minimal output" );
+  assert!(
+    output.contains( "Col" ),
+    "headers-only table must render header row, got: {output:?}",
+  );
+  // plain: header + separator = 2 lines
+  assert!(
+    output.lines().count() <= 2,
+    "headers-only plain table must have at most 2 lines, got: {output:?}",
+  );
 }
 
 #[ test ]
@@ -82,10 +88,10 @@ fn test_single_row_plain_style()
 {
   let tree = RowBuilder::new( vec![ "Name".into() ] )
     .add_row( vec![ "Alice".into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::with_config( TableConfig::plain() );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   assert!( output.contains( "Name" ) );
   assert!( output.contains( "Alice" ) );
@@ -98,10 +104,10 @@ fn test_wide_table_plain_style()
     "COL1".into(), "COL2".into(), "COL3".into(), "COL4".into(), "COL5".into(),
   ])
     .add_row( vec![ "A".into(), "B".into(), "C".into(), "D".into(), "E".into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::with_config( TableConfig::plain() );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   assert!( output.contains( "COL1" ) );
   assert!( output.contains( "COL5" ) );
@@ -119,7 +125,7 @@ fn test_custom_separator_spaces()
     .column_separator( ColumnSeparator::Spaces( 4 ) ); // 4 spaces
 
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   println!( "Custom 4-space separator:\n{output}" );
 
@@ -140,10 +146,10 @@ fn test_header_separator_alignment_with_padding()
   let tree = RowBuilder::new( vec![ "Crate".into(), "Type".into(), "Name".into() ] )
     .add_row( vec![ "mindful".into(), "Binary".into(), "mindful".into() ] )
     .add_row( vec![ "wflow".into(), "Binary".into(), "wflow".into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::with_config( TableConfig::bordered() ); // Uses bordered config with inner_padding=1
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   println!( "Header separator alignment test:\n{output}" );
 
@@ -186,10 +192,10 @@ fn test_default_table_no_double_pipes()
   // Regression test: ensure default formatter doesn't produce double pipes like ||
   let tree = RowBuilder::new( vec![ "A".into(), "B".into() ] )
     .add_row( vec![ "1".into(), "2".into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::new();
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Should NOT have double pipes anywhere
   assert!(

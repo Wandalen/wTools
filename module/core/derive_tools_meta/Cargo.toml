@@ -16,9 +16,6 @@ Collection of derives which extend STD. Its meta module. Don't use directly.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
 
 [lints]
 workspace = true
@@ -33,7 +30,6 @@ proc-macro = true
 [features]
 default = [
   "enabled",
-
   "derive_deref_mut",
   "derive_deref",
   "derive_from",
@@ -45,7 +41,7 @@ default = [
   "derive_as_mut",
   "derive_variadic_from",
   "derive_not",
-  "derive_phantom"
+  "derive_phantom",
 ]
 full = [
   "enabled",
@@ -61,9 +57,9 @@ full = [
   "derive_as_mut",
   "derive_variadic_from",
   "derive_not",
-  "derive_phantom"
+  "derive_phantom",
 ]
-enabled = [ "macro_tools/enabled", "iter_tools/enabled", "component_model_types/enabled" ]
+enabled = [ "macro_tools/enabled", "component_model_types/enabled" ]
 
 derive_as_mut = []
 derive_as_ref = []
@@ -74,7 +70,7 @@ derive_new = []
 derive_index = []
 derive_index_mut = []
 derive_inner_from = []
-derive_variadic_from = [ "iter_tools/iter_ext" ]
+derive_variadic_from = []
 derive_not = []
 derive_phantom = []
 
@@ -82,7 +78,6 @@ derive_phantom = []
 # zzz : qqq : optimize features set
 macro_tools = { workspace = true, features = [ "attr", "attr_prop", "container_kind", "ct", "diag", "generic_args", "typ", "derive", "generic_params", "name", "phantom", "struct_like", "quantifier" ] }
 # zzz : qqq : optimize features set
-iter_tools = { workspace = true, features = [ "iter_trait" ] }
 component_model_types = { workspace = true, features = [ "types_component_assign" ] }
 
 [dev-dependencies]

@@ -1,22 +1,21 @@
-# config_hierarchy - Manual Testing Guide
+# config_hierarchy — Manual Testing Guide
 
 Manual testing procedures for the config_hierarchy configuration management library.
 
 ## Overview
 
-Since config_hierarchy is primarily a library (not a CLI tool), manual testing focuses on:
-- 6-level priority resolution (Runtime → Environment → Local → Parent → Global → Default)
-- Source tracking accuracy
-- Configuration file format support (YAML/JSON/TOML)
-- Integration with real applications
-- Multi-tool configuration scenarios
+Since config_hierarchy is a library (not a CLI tool), manual testing focuses on:
+- 6-level priority resolution (Runtime → Environment → LocalCurrent → LocalParent → Global → Default)
+- Source tracking accuracy via `ConfigSource` enum
+- Configuration file format support (YAML only)
+- Multi-tool configuration isolation
 
 ## Prerequisites
 
 ### 1. Build config_hierarchy
 
 ```bash
-cd /home/user1/pro/lib/wip_core/wtools/dev/module/experimental/config_hierarchy
+cd "$(git rev-parse --show-toplevel)/module/experimental/config_hierarchy"
 cargo build --all-features
 ```
 
@@ -28,34 +27,29 @@ cd /tmp/config-test
 
 # Set up directory hierarchy
 mkdir -p project/subdir/nested
-mkdir -p global-config
 
-# Create test configuration files
-# Global config
-mkdir -p global-config/.myapp
-cat > global-config/.myapp/config.yaml <<'EOF'
-timeout: 60
-log_level: "info"
+# Global config (uses dot prefix: .testapp from local_permanent_prefix default ".")
+mkdir -p global-config/.persistent/.testapp
+cat > global-config/.persistent/.testapp/config.yaml <<'EOF'
+parameters:
+  timeout: 60
+  log_level: "info"
 EOF
 
 # Parent config
-mkdir -p project/.myapp
-cat > project/.myapp/config.yaml <<'EOF'
-timeout: 30
-database: "production"
+mkdir -p project/.testapp
+cat > project/.testapp/config.yaml <<'EOF'
+parameters:
+  timeout: 30
+  database: "production"
 EOF
 
 # Local config
-mkdir -p project/subdir/.myapp
-cat > project/subdir/.myapp/config.yaml <<'EOF'
-timeout: 10
-api_key: "local-key"
-EOF
-
-# Create .env file for environment variables
-cat > project/.env <<'EOF'
-MYAPP_TIMEOUT=45
-MYAPP_DEBUG=true
+mkdir -p project/subdir/.testapp
+cat > project/subdir/.testapp/config.yaml <<'EOF'
+parameters:
+  timeout: 10
+  api_key: "local-key"
 EOF
 ```
 
@@ -71,648 +65,568 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-config_hierarchy = { path = "/home/user1/pro/lib/wip_core/wtools/dev/module/experimental/config_hierarchy", features = ["full"] }
+config_hierarchy = { path = "<WORKSPACE>/module/experimental/config_hierarchy", features = ["full"] }
 serde_json = "1.0"
 EOF
 
 mkdir src
 ```
 
+### 4. Shared Trait Implementations
+
+All tests below use these implementations. Save to `src/common.rs`:
+
+```rust
+use config_hierarchy::{ ConfigDefaults, ConfigPaths, ConfigValidator, ValidationError, ConfigSource };
+use std::collections::HashMap;
+use serde_json::Value as JsonValue;
+
+pub struct TestDefaults;
+impl ConfigDefaults for TestDefaults
+{
+  fn get_defaults() -> HashMap< String, JsonValue >
+  {
+    let mut map = HashMap::new();
+    map.insert( "timeout".into(), serde_json::json!( 120 ) );
+    map.insert( "retries".into(), serde_json::json!( 3 ) );
+    map.insert( "enabled".into(), serde_json::json!( true ) );
+    map
+  }
+
+  fn get_parameter_names() -> Vec< &'static str >
+  {
+    vec![ "timeout", "retries", "enabled" ]
+  }
+}
+
+pub struct TestPaths;
+impl ConfigPaths for TestPaths
+{
+  fn app_name() -> &'static str { "testapp" }
+}
+
+pub struct TestValidator;
+impl ConfigValidator for TestValidator
+{
+  fn validate_parameter( _: &str, _: &JsonValue ) -> Result< (), ValidationError > { Ok( () ) }
+  fn validate_all( _: &HashMap< String, ( JsonValue, ConfigSource ) > ) -> Vec< ValidationError >
+  {
+    Vec::new()
+  }
+}
+
+pub type TestConfig = config_hierarchy::ConfigManager< TestDefaults, TestPaths, TestValidator >;
+```
+
+---
+
 ## Test Scenarios
 
 ### Test 1: Default Configuration
 
-**Objective**: Verify default values work when no config files exist
+**Objective**: Verify default values work when no config files exist.
 
-**Create Test**:
-```bash
-cat > src/test_defaults.rs <<'EOF'
-use config_hierarchy::{ ConfigManager, ConfigDefaults, ConfigPaths, ConfigValidator, ValidationError };
+```rust
+use config_hierarchy::ConfigSource;
 use std::collections::HashMap;
-use serde_json::{ Value as JsonValue, json };
+use serde_json::json;
 
-struct TestDefaults;
-impl ConfigDefaults for TestDefaults {
-    fn get_defaults() -> HashMap<String, JsonValue> {
-        let mut map = HashMap::new();
-        map.insert("timeout".into(), json!(120));
-        map.insert("retries".into(), json!(3));
-        map.insert("enabled".into(), json!(true));
-        map
-    }
-    fn get_parameter_names() -> Vec<&'static str> {
-        vec!["timeout", "retries", "enabled"]
-    }
+fn main()
+{
+  println!( "Test 1: Default Configuration\n" );
+
+  let config = TestConfig::resolve_all_config( &HashMap::new() );
+
+  for ( key, ( value, source ) ) in &config
+  {
+    println!( "{}: {:?} (source: {:?})", key, value, source );
+  }
+
+  assert_eq!( config.get( "timeout" ).unwrap().0, json!( 120 ) );
+  assert_eq!( config.get( "retries" ).unwrap().0, json!( 3 ) );
+  assert_eq!( config.get( "enabled" ).unwrap().0, json!( true ) );
+
+  for ( _, ( _, source ) ) in &config
+  {
+    assert!( matches!( source, ConfigSource::Default ) );
+  }
+
+  println!( "\nTest 1 passed!" );
 }
-
-struct TestPaths;
-impl ConfigPaths for TestPaths {
-    fn app_name() -> &'static str { "testapp" }
-}
-
-struct TestValidator;
-impl ConfigValidator for TestValidator {
-    fn validate_parameter(_: &str, _: &JsonValue) -> Result<(), ValidationError> { Ok(()) }
-    fn validate_all(_: &HashMap<String, (JsonValue, config_hierarchy::ConfigSource)>)
-        -> Vec<ValidationError> { Vec::new() }
-}
-
-type TestConfig = ConfigManager<TestDefaults, TestPaths, TestValidator>;
-
-fn main() {
-    println!("Test 1: Default Configuration\n");
-
-    // Resolve with no runtime params (should get defaults)
-    let config = TestConfig::resolve_all_config(&HashMap::new());
-
-    for (key, (value, source)) in &config {
-        println!("{}: {:?} (source: {:?})", key, value, source);
-    }
-
-    // Verify defaults
-    assert_eq!(config.get("timeout").unwrap().0, json!(120));
-    assert_eq!(config.get("retries").unwrap().0, json!(3));
-    assert_eq!(config.get("enabled").unwrap().0, json!(true));
-
-    // Verify all from Default source
-    for (_, (_, source)) in &config {
-        assert!(matches!(source, config_hierarchy::ConfigSource::Default));
-    }
-
-    println!("\n✅ Test 1 passed!");
-}
-EOF
-
-rustc --edition 2021 src/test_defaults.rs -o test_defaults \
-  -L /home/user1/pro/lib/wTools/target/debug/deps \
-  --extern config_hierarchy=/home/user1/pro/lib/wTools/target/debug/libconfig_hierarchy.rlib \
-  --extern serde_json=/home/user1/pro/lib/wTools/target/debug/deps/libserde_json*.rlib
-
-./test_defaults
 ```
 
 **Expected Results**:
-- ✅ All default values returned
-- ✅ Source is ConfigSource::Default for all
-- ✅ No errors when no config files present
+- All default values returned
+- Source is `ConfigSource::Default` for all parameters
+- No errors when no config files are present
 
-**Success Criteria**:
-- Defaults work as fallback
-- Source tracking accurate
+---
 
 ### Test 2: Runtime Parameter Override
 
-**Objective**: Verify runtime parameters have highest priority
+**Objective**: Verify runtime parameters have highest priority.
 
-**Create Test**:
-```bash
-cat > src/test_runtime.rs <<'EOF'
-use config_hierarchy::{ ConfigManager, ConfigDefaults, ConfigPaths, ConfigValidator, ValidationError };
-use std::collections::HashMap;
-use serde_json::{ Value as JsonValue, json };
+```rust
+fn main()
+{
+  println!( "Test 2: Runtime Override\n" );
 
-// Same trait implementations as Test 1...
-[copy trait implementations from Test 1]
+  let mut runtime_params = HashMap::new();
+  runtime_params.insert( "timeout".to_string(), "5".to_string() );
 
-fn main() {
-    println!("Test 2: Runtime Override\n");
+  let config = TestConfig::resolve_all_config( &runtime_params );
 
-    // Provide runtime parameters
-    let mut runtime_params = HashMap::new();
-    runtime_params.insert("timeout".into(), json!(5));
-    runtime_params.insert("custom".into(), json!("runtime-value"));
+  let ( timeout_val, timeout_src ) = config.get( "timeout" ).unwrap();
+  assert!( matches!( timeout_src, ConfigSource::Runtime ) );
+  println!( "timeout: {} (Runtime override)", timeout_val );
 
-    let config = TestConfig::resolve_all_config(&runtime_params);
+  let ( retries_val, retries_src ) = config.get( "retries" ).unwrap();
+  assert!( matches!( retries_src, ConfigSource::Default ) );
+  println!( "retries: {} (Default)", retries_val );
 
-    // Verify runtime override
-    let (timeout_val, timeout_src) = config.get("timeout").unwrap();
-    assert_eq!(*timeout_val, json!(5));
-    assert!(matches!(timeout_src, config_hierarchy::ConfigSource::Runtime));
-    println!("✅ timeout: {} (Runtime override)", timeout_val);
-
-    // Verify runtime-only param
-    let (custom_val, custom_src) = config.get("custom").unwrap();
-    assert_eq!(*custom_val, json!("runtime-value"));
-    assert!(matches!(custom_src, config_hierarchy::ConfigSource::Runtime));
-    println!("✅ custom: {} (Runtime only)", custom_val);
-
-    // Verify other params still from defaults
-    let (retries_val, retries_src) = config.get("retries").unwrap();
-    assert!(matches!(retries_src, config_hierarchy::ConfigSource::Default));
-    println!("✅ retries: {} (Default)", retries_val);
-
-    println!("\n✅ Test 2 passed!");
+  println!( "\nTest 2 passed!" );
 }
-EOF
 ```
 
 **Expected Results**:
-- ✅ Runtime params override all other sources
-- ✅ Source tracking shows Runtime for overridden values
-- ✅ Non-overridden values still from defaults
+- Runtime params override all other sources
+- Source is `ConfigSource::Runtime` for overridden values
+- Non-overridden values remain `ConfigSource::Default`
 
-**Success Criteria**:
-- Priority order correct
-- Runtime has highest priority
+---
 
 ### Test 3: Environment Variable Configuration
 
-**Objective**: Verify environment variables work
+**Objective**: Verify environment variables are recognized and have correct priority.
 
-**Create Test**:
-```bash
-cat > src/test_environment.rs <<'EOF'
-use config_hierarchy::{ ConfigManager, ConfigDefaults, ConfigPaths, ConfigValidator };
-use std::collections::HashMap;
+```rust
 use std::env;
-use serde_json::json;
 
-// [Trait implementations...]
+fn main()
+{
+  println!( "Test 3: Environment Variables\n" );
 
-fn main() {
-    println!("Test 3: Environment Variables\n");
+  env::set_var( "TESTAPP_TIMEOUT", "25" );
+  env::set_var( "TESTAPP_RETRIES", "5" );
 
-    // Set environment variables
-    env::set_var("TESTAPP_TIMEOUT", "25");
-    env::set_var("TESTAPP_RETRIES", "5");
-    env::set_var("TESTAPP_DEBUG", "true");
+  let config = TestConfig::resolve_all_config( &HashMap::new() );
 
-    let config = TestConfig::resolve_all_config(&HashMap::new());
+  assert_eq!( config.get( "timeout" ).unwrap().0, json!( 25 ) );
+  assert!( matches!( config.get( "timeout" ).unwrap().1, ConfigSource::Environment ) );
+  println!( "TESTAPP_TIMEOUT=25 applied" );
 
-    // Verify environment variables used
-    assert_eq!(config.get("timeout").unwrap().0, json!(25));
-    println!("✅ TESTAPP_TIMEOUT=25 applied");
+  env::remove_var( "TESTAPP_TIMEOUT" );
+  env::remove_var( "TESTAPP_RETRIES" );
 
-    // Verify source is Environment
-    assert!(matches!(
-        config.get("timeout").unwrap().1,
-        config_hierarchy::ConfigSource::Environment
-    ));
-
-    // Clean up
-    env::remove_var("TESTAPP_TIMEOUT");
-    env::remove_var("TESTAPP_RETRIES");
-    env::remove_var("TESTAPP_DEBUG");
-
-    println!("\n✅ Test 3 passed!");
+  println!( "\nTest 3 passed!" );
 }
-EOF
 ```
 
 **Expected Results**:
-- ✅ Environment variables parsed correctly
-- ✅ APPNAME_PARAM format recognized
-- ✅ Source is Environment
+- Environment variables parsed and typed
+- `TESTAPP_PARAM` format recognized
+- Source is `ConfigSource::Environment`
 
-**Success Criteria**:
-- Env vars work
-- Priority below Runtime, above file configs
+---
 
 ### Test 4: Local Configuration File
 
-**Objective**: Verify local config file loading
+**Objective**: Verify local config file loading from current directory.
 
 **Setup**:
 ```bash
 cd /tmp/config-test/project/subdir
-```
-
-**Create Test**:
-```bash
-cat > test_local.rs <<'EOF'
-use config_hierarchy::{ ConfigManager, /* ... */ };
-
-fn main() {
-    println!("Test 4: Local Config File\n");
-
-    // Should load from ./.testapp/config.yaml
-    let config = TestConfig::resolve_all_config(&HashMap::new());
-
-    // Verify local config loaded
-    if let Some((api_key, source)) = config.get("api_key") {
-        assert_eq!(*api_key, json!("local-key"));
-        assert!(matches!(source, config_hierarchy::ConfigSource::Local(_)));
-        println!("✅ Local config loaded: api_key");
-    }
-
-    println!("\n✅ Test 4 passed!");
-}
+mkdir -p .testapp
+cat > .testapp/config.yaml <<'EOF'
+parameters:
+  api_key: "local-key"
+  timeout: 10
 EOF
 ```
 
-**Expected Results**:
-- ✅ Loads ./.myapp/config.yaml
-- ✅ Values from local config available
-- ✅ Source is ConfigSource::Local
+```rust
+fn main()
+{
+  println!( "Test 4: Local Config File\n" );
 
-**Success Criteria**:
-- Local config file discovered
-- YAML parsing works
+  let config = TestConfig::resolve_all_config( &HashMap::new() );
+
+  if let Some( ( api_key, source ) ) = config.get( "api_key" )
+  {
+    assert_eq!( *api_key, json!( "local-key" ) );
+    assert!( matches!( source, ConfigSource::LocalCurrent( _ ) ) );
+    println!( "Local config loaded: api_key = {}", api_key );
+  }
+
+  println!( "\nTest 4 passed!" );
+}
+```
+
+**Expected Results**:
+- Loads `.testapp/config.yaml` from current directory
+- Source is `ConfigSource::LocalCurrent(path)`
+
+---
 
 ### Test 5: Parent Configuration Inheritance
 
-**Objective**: Verify configuration from parent directories
+**Objective**: Verify configuration from parent directories (nearest first).
 
 **Setup**:
 ```bash
 cd /tmp/config-test/project/subdir/nested
 ```
 
-**Create Test**:
-```bash
-cat > test_parent.rs <<'EOF'
-fn main() {
-    println!("Test 5: Parent Config\n");
+```rust
+fn main()
+{
+  println!( "Test 5: Parent Config\n" );
 
-    // From nested directory, should inherit parent configs
-    let config = TestConfig::resolve_all_config(&HashMap::new());
+  let config = TestConfig::resolve_all_config( &HashMap::new() );
 
-    // Should have values from parent directories
-    if let Some((database, source)) = config.get("database") {
-        assert_eq!(*database, json!("production"));
-        assert!(matches!(source, config_hierarchy::ConfigSource::Parent(_)));
-        println!("✅ Parent config: database={}", database);
-    }
+  if let Some( ( database, source ) ) = config.get( "database" )
+  {
+    assert_eq!( *database, json!( "production" ) );
+    assert!( matches!( source, ConfigSource::LocalParent( _ ) ) );
+    println!( "Parent config: database = {}", database );
+  }
 
-    // Local should override parent
-    if let Some((timeout, source)) = config.get("timeout") {
-        println!("timeout: {} (source: {:?})", timeout, source);
-    }
-
-    println!("\n✅ Test 5 passed!");
+  println!( "\nTest 5 passed!" );
 }
-EOF
 ```
 
 **Expected Results**:
-- ✅ Parent config values available
-- ✅ Source is ConfigSource::Parent
-- ✅ Nearest parent takes precedence
+- Parent directory config values available
+- Source is `ConfigSource::LocalParent(path)`
+- Nearest parent takes precedence
 
-**Success Criteria**:
-- Parent directory traversal works
-- Nearest parent wins
+---
 
 ### Test 6: Global Configuration
 
-**Objective**: Verify global config from $PRO/.persistent
+**Objective**: Verify global config from `$PRO/.persistent/.{app_name}/`.
 
 **Setup**:
 ```bash
-# Set PRO environment variable
 export PRO=/tmp/config-test/global-config
+cd /tmp  # no local configs here
 ```
 
-**Create Test**:
-```bash
-cat > test_global.rs <<'EOF'
-fn main() {
-    println!("Test 6: Global Config\n");
+```rust
+fn main()
+{
+  println!( "Test 6: Global Config\n" );
 
-    // From location with no local/parent config
-    std::env::set_current_dir("/tmp").unwrap();
+  std::env::set_current_dir( "/tmp" ).unwrap();
 
-    let config = TestConfig::resolve_all_config(&HashMap::new());
+  let config = TestConfig::resolve_all_config( &HashMap::new() );
 
-    // Should load from $PRO/.persistent/.testapp/config.yaml
-    if let Some((log_level, source)) = config.get("log_level") {
-        assert_eq!(*log_level, json!("info"));
-        assert!(matches!(source, config_hierarchy::ConfigSource::Global));
-        println!("✅ Global config: log_level={}", log_level);
-    }
+  if let Some( ( log_level, source ) ) = config.get( "log_level" )
+  {
+    assert_eq!( *log_level, json!( "info" ) );
+    assert!( matches!( source, ConfigSource::Global( _ ) ) );
+    println!( "Global config: log_level = {}", log_level );
+  }
 
-    println!("\n✅ Test 6 passed!");
+  println!( "\nTest 6 passed!" );
 }
-EOF
 ```
 
 **Expected Results**:
-- ✅ Global config loaded from $PRO
-- ✅ Source is ConfigSource::Global
-- ✅ Lowest priority (above defaults only)
+- Global config loaded from `$PRO/.persistent/.testapp/config.yaml`
+- Note the dot prefix on `.testapp` — `local_permanent_prefix` default is `"."`
+- Source is `ConfigSource::Global(path)`
 
-**Success Criteria**:
-- $PRO/.persistent/.appname/ discovery works
-- Global config as fallback
+---
 
 ### Test 7: Priority Resolution Order
 
-**Objective**: Verify complete priority cascade
+**Objective**: Verify complete 6-level priority cascade.
 
-**Create Test**:
-```bash
-cat > src/test_priority.rs <<'EOF'
-fn main() {
-    println!("Test 7: Priority Resolution\n");
+```rust
+fn main()
+{
+  println!( "Test 7: Priority Resolution\n" );
 
-    // Setup all config sources
-    std::env::set_var("PRO", "/tmp/config-test/global-config");
-    std::env::set_var("TESTAPP_TIMEOUT", "45");
-    std::env::set_current_dir("/tmp/config-test/project/subdir").unwrap();
+  std::env::set_var( "PRO", "/tmp/config-test/global-config" );
+  std::env::set_var( "TESTAPP_TIMEOUT", "45" );
+  std::env::set_current_dir( "/tmp/config-test/project/subdir" ).unwrap();
 
-    // Create local config with timeout
-    std::fs::write(".testapp/config.yaml", "timeout: 10\n").unwrap();
+  std::fs::create_dir_all( ".testapp" ).unwrap();
+  std::fs::write( ".testapp/config.yaml", "parameters:\n  timeout: 10\n" ).unwrap();
 
-    let mut runtime = HashMap::new();
-    runtime.insert("timeout".into(), json!(5));
+  let mut runtime = HashMap::new();
+  runtime.insert( "timeout".to_string(), "5".to_string() );
 
-    let config = TestConfig::resolve_all_config(&runtime);
+  let config = TestConfig::resolve_all_config( &runtime );
+  let ( timeout, source ) = config.get( "timeout" ).unwrap();
+  assert_eq!( *timeout, json!( 5 ) );
+  assert!( matches!( source, ConfigSource::Runtime ) );
+  println!( "Runtime (5) wins over all" );
 
-    // Verify priority: Runtime (5) wins over all
-    let (timeout, source) = config.get("timeout").unwrap();
-    assert_eq!(*timeout, json!(5));
-    assert!(matches!(source, config_hierarchy::ConfigSource::Runtime));
-    println!("✅ Runtime (5) > Environment (45) > Local (10) > Global (60) > Default (120)");
+  let config = TestConfig::resolve_all_config( &HashMap::new() );
+  let ( timeout, source ) = config.get( "timeout" ).unwrap();
+  assert_eq!( *timeout, json!( 45 ) );
+  assert!( matches!( source, ConfigSource::Environment ) );
+  println!( "Environment (45) wins over Local (10)" );
 
-    // Remove runtime param, verify Environment wins
-    let config = TestConfig::resolve_all_config(&HashMap::new());
-    let (timeout, source) = config.get("timeout").unwrap();
-    assert_eq!(*timeout, json!(45));
-    assert!(matches!(source, config_hierarchy::ConfigSource::Environment));
-    println!("✅ Environment (45) > Local (10) > Global (60) > Default (120)");
+  std::env::remove_var( "TESTAPP_TIMEOUT" );
 
-    std::env::remove_var("TESTAPP_TIMEOUT");
+  let config = TestConfig::resolve_all_config( &HashMap::new() );
+  let ( timeout, source ) = config.get( "timeout" ).unwrap();
+  assert_eq!( *timeout, json!( 10 ) );
+  assert!( matches!( source, ConfigSource::LocalCurrent( _ ) ) );
+  println!( "LocalCurrent (10) wins over Default (120)" );
 
-    // Verify Local wins
-    let config = TestConfig::resolve_all_config(&HashMap::new());
-    let (timeout, source) = config.get("timeout").unwrap();
-    assert_eq!(*timeout, json!(10));
-    assert!(matches!(source, config_hierarchy::ConfigSource::Local(_)));
-    println!("✅ Local (10) > Global (60) > Default (120)");
-
-    println!("\n✅ Test 7 passed - Priority order correct!");
+  println!( "\nTest 7 passed — priority order correct!" );
 }
-EOF
 ```
 
 **Expected Results**:
-- ✅ Runtime > Environment > Local > Parent > Global > Default
-- ✅ Each level overrides lower levels
-- ✅ Source tracking accurate at each level
+- Runtime > Environment > LocalCurrent > LocalParent > Global > Default
+- Source tracking accurate at each level
 
-**Success Criteria**:
-- Complete priority cascade works
-- Order is correct
+---
 
 ### Test 8: Source Tracking Accuracy
 
-**Objective**: Verify source tracking for debugging
+**Objective**: Verify source tracking correctly identifies mixed sources.
 
-**Create Test**:
-```bash
-cat > src/test_sources.rs <<'EOF'
-fn main() {
-    println!("Test 8: Source Tracking\n");
+```rust
+fn main()
+{
+  println!( "Test 8: Source Tracking\n" );
 
-    // Mix of sources
-    std::env::set_var("TESTAPP_RETRIES", "7");
-    let mut runtime = HashMap::new();
-    runtime.insert("timeout".into(), json!(15));
+  std::env::set_var( "TESTAPP_RETRIES", "7" );
+  let mut runtime = HashMap::new();
+  runtime.insert( "timeout".to_string(), "15".to_string() );
 
-    let config = TestConfig::resolve_all_config(&runtime);
+  let config = TestConfig::resolve_all_config( &runtime );
 
-    println!("Configuration sources:");
-    for (key, (value, source)) in &config {
-        println!("  {}: {:?} from {:?}", key, value, source);
-    }
+  println!( "Configuration sources:" );
+  for ( key, ( value, source ) ) in &config
+  {
+    println!( "  {}: {:?} from {:?}", key, value, source );
+  }
 
-    // Verify each source type
-    assert!(matches!(config.get("timeout").unwrap().1,
-        config_hierarchy::ConfigSource::Runtime));
-    assert!(matches!(config.get("retries").unwrap().1,
-        config_hierarchy::ConfigSource::Environment));
-    assert!(matches!(config.get("enabled").unwrap().1,
-        config_hierarchy::ConfigSource::Default));
+  assert!( matches!( config.get( "timeout" ).unwrap().1, ConfigSource::Runtime ) );
+  assert!( matches!( config.get( "retries" ).unwrap().1, ConfigSource::Environment ) );
+  assert!( matches!( config.get( "enabled" ).unwrap().1, ConfigSource::Default ) );
 
-    println!("\n✅ Test 8 passed - Source tracking accurate!");
+  std::env::remove_var( "TESTAPP_RETRIES" );
+
+  println!( "\nTest 8 passed — source tracking accurate!" );
 }
-EOF
 ```
 
 **Expected Results**:
-- ✅ Source accurately tracked for each parameter
-- ✅ Mix of sources represented correctly
-- ✅ Debugging information available
+- Source accurately tracked for each parameter
+- Mix of `Runtime`, `Environment`, and `Default` sources represented
 
-**Success Criteria**:
-- Source tracking works
-- Helps debug config issues
+---
 
-### Test 9: Format Support (YAML/JSON/TOML)
+### Test 9: Multi-Tool Configuration Isolation
 
-**Objective**: Verify multiple config file formats
+**Objective**: Verify multiple tools with different app names do not interfere.
 
 **Setup**:
 ```bash
-# Create config files in different formats
-cat > .testapp/config.yaml <<'EOF'
-yaml_value: "from-yaml"
-EOF
-
-cat > .testapp/config.json <<'EOF'
-{
-  "json_value": "from-json"
-}
-EOF
-
-cat > .testapp/config.toml <<'EOF'
-toml_value = "from-toml"
-EOF
-```
-
-**Create Test**:
-```bash
-cat > test_formats.rs <<'EOF'
-fn main() {
-    println!("Test 9: Format Support\n");
-
-    let config = TestConfig::resolve_all_config(&HashMap::new());
-
-    // Verify all formats loaded
-    if config.contains_key("yaml_value") {
-        println!("✅ YAML format supported");
-    }
-    if config.contains_key("json_value") {
-        println!("✅ JSON format supported");
-    }
-    if config.contains_key("toml_value") {
-        println!("✅ TOML format supported");
-    }
-
-    println!("\n✅ Test 9 passed!");
-}
-EOF
-```
-
-**Expected Results**:
-- ✅ YAML files parsed
-- ✅ JSON files parsed
-- ✅ TOML files parsed
-- ✅ All formats work simultaneously
-
-**Success Criteria**:
-- Multi-format support works
-- No conflicts between formats
-
-## Integration Tests
-
-### Test 10: Multi-Tool Configuration
-
-**Objective**: Verify multiple tools share global config
-
-**Create Test**:
-```bash
-# Create configs for two different apps
+cd /tmp/config-test
 mkdir -p .tool1 .tool2
-
 cat > .tool1/config.yaml <<'EOF'
-tool1_param: "value1"
-shared: "from-tool1"
+parameters:
+  tool1_param: "value1"
+  shared: "from-tool1"
 EOF
-
 cat > .tool2/config.yaml <<'EOF'
-tool2_param: "value2"
-shared: "from-tool2"
+parameters:
+  tool2_param: "value2"
+  shared: "from-tool2"
 EOF
 ```
 
+Implement `Tool1Paths` and `Tool2Paths` each with a different `app_name()`, then run `resolve_all_config` independently.
+
 **Expected Results**:
-- ✅ Each tool has independent config
-- ✅ Tools don't interfere
-- ✅ Global config shared appropriately
+- Each tool's `ConfigManager` sees only its own config files
+- Tools do not interfere with each other
+- `shared` parameter resolves independently per tool
 
-**Success Criteria**:
-- Tool isolation works
-- Shared global config accessible
+---
 
-### Test 12: Validation Integration
+### Test 10: Dual-Pattern Priority (Temporary vs Permanent)
 
-**Objective**: Verify validator integration
+**Objective**: Verify `-{app}` (temporary) overrides `.{app}` (permanent) within the same directory.
 
-**Create Test**:
+**Setup**:
 ```bash
-cat > src/test_validation.rs <<'EOF'
-struct ValidatingConfig;
-impl ConfigValidator for ValidatingConfig {
-    fn validate_parameter(key: &str, value: &JsonValue) -> Result<(), ValidationError> {
-        if key == "timeout" {
-            if let Some(num) = value.as_u64() {
-                if num > 300 {
-                    return Err(ValidationError::new("timeout too large"));
-                }
-            }
-        }
-        Ok(())
-    }
-
-    fn validate_all(config: &HashMap<String, (JsonValue, ConfigSource)>)
-        -> Vec<ValidationError> {
-        let mut errors = Vec::new();
-        // Custom cross-parameter validation
-        if let Some((retries, _)) = config.get("retries") {
-            if retries.as_u64().unwrap_or(0) > 10 {
-                errors.push(ValidationError::new("too many retries"));
-            }
-        }
-        errors
-    }
-}
-
-fn main() {
-    println!("Test 12: Validation\n");
-
-    // Test validation error
-    let mut runtime = HashMap::new();
-    runtime.insert("timeout".into(), json!(500));  // Too large
-
-    // Should get validation error
-    match TestConfig::resolve_all_config_validated(&runtime) {
-        Ok(_) => panic!("Should have validation error!"),
-        Err(errors) => {
-            println!("✅ Validation error caught: {:?}", errors);
-        }
-    }
-
-    println!("\n✅ Test 12 passed!");
-}
+cd /tmp/config-test
+mkdir -p .testapp -testapp
+cat > .testapp/config.yaml <<'EOF'
+parameters:
+  source_check: "permanent"
+  timeout: 100
+EOF
+cat > -testapp/config.yaml <<'EOF'
+parameters:
+  source_check: "temporary"
+  timeout: 50
 EOF
 ```
 
-**Expected Results**:
-- ✅ Invalid values rejected
-- ✅ Validation errors reported
-- ✅ Cross-parameter validation works
+```rust
+fn main()
+{
+  println!( "Test 10: Dual-Pattern Priority\n" );
 
-**Success Criteria**:
-- Validator integration complete
-- Custom validation logic works
+  let config = TestConfig::resolve_all_config( &HashMap::new() );
+
+  let ( source_check, src ) = config.get( "source_check" ).unwrap();
+  assert_eq!( *source_check, json!( "temporary" ) );
+  assert!( matches!( src, ConfigSource::LocalCurrent( _ ) ) );
+  println!( "Temporary (-testapp) correctly overrides permanent (.testapp)" );
+
+  println!( "\nTest 10 passed!" );
+}
+```
+
+**Expected Results**:
+- `-testapp/config.yaml` takes priority over `.testapp/config.yaml` in same directory
+- Both are `ConfigSource::LocalCurrent`; temporary wins within same directory level
+
+---
+
+### Test 11: Validation Integration
+
+**Objective**: Verify custom validator rejects invalid values.
+
+```rust
+use config_hierarchy::{ ConfigValidator, ValidationError, ConfigSource };
+use serde_json::Value as JsonValue;
+use std::collections::HashMap;
+
+struct StrictValidator;
+impl ConfigValidator for StrictValidator
+{
+  fn validate_parameter( param_name : &str, value : &JsonValue )
+    -> Result< (), ValidationError >
+  {
+    if param_name == "timeout"
+    {
+      if let Some( num ) = value.as_u64()
+      {
+        if num > 300
+        {
+          return Err( ValidationError::new( param_name, "must not exceed 300" ) );
+        }
+      }
+    }
+    Ok( () )
+  }
+
+  fn validate_all( config : &HashMap< String, ( JsonValue, ConfigSource ) > )
+    -> Vec< ValidationError >
+  {
+    let mut errors = Vec::new();
+    if let Some( ( retries, _ ) ) = config.get( "retries" )
+    {
+      if retries.as_u64().unwrap_or( 0 ) > 10
+      {
+        errors.push( ValidationError::new( "retries", "must not exceed 10" ) );
+      }
+    }
+    errors
+  }
+}
+
+type ValidatedConfig = config_hierarchy::ConfigManager< TestDefaults, TestPaths, StrictValidator >;
+
+fn main()
+{
+  println!( "Test 11: Validation\n" );
+
+  let mut runtime = HashMap::new();
+  runtime.insert( "timeout".to_string(), "500".to_string() );
+
+  let config = ValidatedConfig::resolve_all_config( &runtime );
+
+  // validate_parameter must be called explicitly — there is no resolve_all_config_validated()
+  for ( key, ( value, _ ) ) in &config
+  {
+    if let Err( e ) = StrictValidator::validate_parameter( key, value )
+    {
+      println!( "Validation error: {:?}", e );
+    }
+  }
+
+  let errors = StrictValidator::validate_all( &config );
+  println!( "Cross-parameter errors: {:?}", errors );
+
+  println!( "\nTest 11 passed!" );
+}
+```
+
+**Expected Results**:
+- `validate_parameter` returns error for `timeout = 500`
+- `validate_all` catches cross-parameter violations
+- **Note**: Validators are called explicitly; `ConfigManager` has no `resolve_all_config_validated()` method
+
+---
 
 ## Verification Checklist
 
 **Priority Resolution**:
-- [ ] Default values work
+- [ ] Default values work as lowest-priority fallback
 - [ ] Runtime params have highest priority
-- [ ] Environment variables work
-- [ ] Local config files load
-- [ ] Parent config inheritance works
-- [ ] Global config from $PRO works
-- [ ] Complete cascade Runtime→Env→Local→Parent→Global→Default
+- [ ] Environment variables (`APPNAME_PARAM`) recognized
+- [ ] Local config files load from CWD (`.testapp/config.yaml`)
+- [ ] Temporary local pattern (`-testapp/config.yaml`) has higher priority than permanent in same directory
+- [ ] Parent directory traversal works; nearest parent wins
+- [ ] Global config from `$PRO/.persistent/.testapp/config.yaml` works (note dot prefix on `.testapp`)
+- [ ] Complete cascade: Runtime → Env → LocalCurrent → LocalParent → Global → Default
 
 **Source Tracking**:
-- [ ] Source accurately tracked for each parameter
-- [ ] All source types represented
-- [ ] Debugging information available
+- [ ] `ConfigSource::Runtime` for runtime params
+- [ ] `ConfigSource::Environment` for env vars
+- [ ] `ConfigSource::LocalCurrent(PathBuf)` for CWD files
+- [ ] `ConfigSource::LocalParent(PathBuf)` for parent directory files
+- [ ] `ConfigSource::Global(PathBuf)` for global config
+- [ ] `ConfigSource::Default` for fallback values
 
-**File Formats**:
-- [ ] YAML files parsed
-- [ ] JSON files parsed
-- [ ] TOML files parsed
-- [ ] Multiple formats work together
+**File Operations** (requires `file_ops` feature):
+- [ ] YAML files parsed correctly
+- [ ] `metadata` section managed automatically
+- [ ] `atomic_config_modify()` works under concurrent access
+- [ ] `created_at` preserved across updates; `last_modified` updated
 
-**Features**:
-- [ ] Validation integration works
-- [ ] Multi-tool scenarios work
-
-**Integration**:
-- [ ] Real application integration works
-- [ ] Error handling appropriate
-- [ ] Performance acceptable
+**Validation**:
+- [ ] `validate_parameter` called per resolved value
+- [ ] `validate_all` called with complete config map
+- [ ] Errors collected and reported
 
 ## Known Limitations
 
-1. **File System Dependency**: Requires file system access for config files
-2. **$PRO Dependency**: Global config requires $PRO environment variable
-3. **Format Priority**: If multiple format files exist, behavior is deterministic but format-dependent
+1. **YAML only** — config files must be YAML; JSON and TOML are not supported as file formats
+2. **`$PRO` required** — global config requires the `PRO` environment variable set to workspace root
+3. **Static paths** — `ConfigPaths` methods return `&'static str`; path customization must be known at compile time
+4. **`env_var_prefix()` memory leak** — the default implementation leaks one allocation per call via `Box::leak()`; override with a static literal if called frequently
+5. **No auto-validation** — `ConfigManager` has no `resolve_all_config_validated()` method; call `validate_parameter` and `validate_all` explicitly
 
 ## Reporting Issues
 
-When reporting issues:
+When reporting issues, include:
 
-1. **Include configuration sources**:
-   - List all config files present
-   - Show environment variables
-   - Show runtime parameters
-
-2. **Include resolution result**:
-   - Expected configuration
-   - Actual configuration
-   - Source tracking output
-
-3. **Include directory structure**:
-   ```bash
-   tree -a -L 3
-   ```
-
-4. **Include environment**:
-   - $PRO value
-   - Current working directory
-   - Application name
-
-5. **Expected priority order** based on documentation
+1. All config files present and their paths
+2. Environment variables set (especially `PRO`, `APPNAME_*`)
+3. Runtime parameters provided
+4. Expected vs actual resolved configuration
+5. Source tracking output (`{:?}` on `ConfigSource`)
+6. Directory structure: `tree -a -L 3`
 
 ## References
 
 - Main readme: `../readme.md`
-- Specification: `../spec.md`
+- Feature specification: `../docs/feature/001_config_hierarchy.md`
+- Resolution invariant: `../docs/invariant/001_resolution_hierarchy.md`
 - API documentation: `cargo doc --open`
 - Automated tests: `../tests/*.rs`

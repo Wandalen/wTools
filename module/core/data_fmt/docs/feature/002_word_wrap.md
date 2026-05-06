@@ -20,17 +20,7 @@
 
 #### BreakStrategy Enum
 
-Controls how lines are broken when text exceeds the configured width.
-
-```rust
-#[ derive( Debug, Clone, Default, PartialEq ) ]
-pub enum BreakStrategy
-{
-  Word,
-  Hard,
-  #[ default ] WordThenHard,
-}
-```
+Controls how lines are broken when text exceeds the configured width. Three variants:
 
 | Variant | Description |
 |---------|-------------|
@@ -40,16 +30,7 @@ pub enum BreakStrategy
 
 #### Overflow Enum
 
-Controls what happens when output exceeds `max_lines`.
-
-```rust
-#[ derive( Debug, Clone, PartialEq ) ]
-pub enum Overflow
-{
-  Truncate,
-  Ellipsis( String ),
-}
-```
+Controls what happens when output exceeds `max_lines`. Two variants:
 
 | Variant | Description |
 |---------|-------------|
@@ -58,17 +39,17 @@ pub enum Overflow
 
 #### WrapConfig Fields and Defaults
 
-| Field | Type | Default |
-|-------|------|---------|
-| `width` | `usize` | `80` |
-| `initial_indent` | `String` | `""` |
-| `subsequent_indent` | `String` | `""` |
-| `break_strategy` | `BreakStrategy` | `WordThenHard` |
-| `break_long_words` | `bool` | `true` |
-| `preserve_newlines` | `bool` | `true` |
-| `max_lines` | `Option< usize >` | `None` |
-| `overflow` | `Overflow` | `Truncate` |
-| `tab_width` | `usize` | `4` |
+| Field | Default |
+|-------|---------|
+| `width` | `80` |
+| `initial_indent` | `""` |
+| `subsequent_indent` | `""` |
+| `break_strategy` | `WordThenHard` |
+| `break_long_words` | `true` |
+| `preserve_newlines` | `true` |
+| `max_lines` | `None` |
+| `overflow` | `Truncate` |
+| `tab_width` | `4` |
 
 #### Builder Methods
 
@@ -87,20 +68,7 @@ All builder methods are `#[ must_use ]` and return `Self`:
 
 #### WrapFormatter
 
-```rust
-pub struct WrapFormatter
-{
-  config : WrapConfig,
-}
-
-impl WrapFormatter
-{
-  pub fn new() -> Self;
-  pub fn with_config( config : WrapConfig ) -> Self;
-  pub fn wrap( &self, text : &str ) -> Vec< String >;
-  pub fn wrap_joined( &self, text : &str ) -> String;  // wrap().join( "\n" )
-}
-```
+`WrapFormatter` wraps text according to a `WrapConfig`. Four methods:
 
 - `new()` -- creates a formatter with default `WrapConfig`.
 - `with_config( config )` -- creates a formatter with the given config.

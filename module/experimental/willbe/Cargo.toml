@@ -18,9 +18,6 @@ Utility to publish multi-crate and multi-workspace environments and maintain the
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 default-run = "will"
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
 
 [lints]
 workspace = true
@@ -42,7 +39,6 @@ enabled = [
   "crates_tools/enabled",
   "error_tools/enabled",
   "former/enabled",
-  "iter_tools/enabled",
   "mod_interface/enabled",
   "wca/enabled",
   "pth/enabled",
@@ -90,15 +86,15 @@ assert_fs = "1.1.3"
 ## internal
 # qqq : optimize features
 crates_tools = { workspace = true }
-error_tools = { workspace = true, features = [ "default", "error_typed", "error_untyped" ] }
-genfile_core = { workspace = true, features = [ "default" ] }
+error_tools = { workspace = true, features = [ "error_typed", "error_untyped" ] }
+genfile_core = { workspace = true, features = [ "enabled" ] }
 former = { workspace = true, features = [ "default" ] }
 component_model = { workspace = true, features = [ "default" ] }
-iter_tools = { workspace = true, features = [ "default" ] }
+itertools = { workspace = true, features = [ "use_std" ] }
 mod_interface = { workspace = true, features = [ "default" ] }
 wca = { workspace = true, features = [ "default" ] }
 pth = { workspace = true, features = [ "default", "path_utf8", "path_unique_folder_name" ] }
-process_tools = { workspace = true, features = [ "default" ] }
+process_tools = { workspace = true, features = [ "enabled" ] }
 derive_tools = { workspace = true, features = [ "default" ] }  # derive_tools is a basic dependency required for compilation.
 data_type = { workspace = true, features = [ "either" ] }
 collection_tools = { workspace = true, features = [ "collection_constructors", "collection_into_constructors" ] }

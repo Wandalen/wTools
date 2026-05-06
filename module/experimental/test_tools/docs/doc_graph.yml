@@ -1,0 +1,61 @@
+meta:
+  generated: 2026_04_26
+  crate: test_tools
+  doc_entity_count: 5
+
+nodes:
+  - id: feature/001
+    file: feature/001_test_aggregation_facade.md
+    label: Test Aggregation Facade
+    type: feature
+  - id: feature/002
+    file: feature/002_smoke_module_test.md
+    label: SmokeModuleTest
+    type: feature
+  - id: invariant/001
+    file: invariant/001_no_cfg_gate_on_namespace.md
+    label: No cfg Gate on Namespace Modules
+    type: invariant
+  - id: invariant/002
+    file: invariant/002_no_vec_macro_reexport.md
+    label: No vec! Reexport at Crate Root
+    type: invariant
+  - id: pattern/001
+    file: pattern/001_namespace_layers.md
+    label: Namespace Layers
+    type: pattern
+
+edges:
+  - from: feature/001
+    to: invariant/001
+    via: typed_reference
+  - from: invariant/001
+    to: feature/001
+    via: typed_reference
+  - from: feature/001
+    to: invariant/002
+    via: typed_reference
+  - from: invariant/002
+    to: feature/001
+    via: typed_reference
+  - from: feature/001
+    to: pattern/001
+    via: typed_reference
+  - from: pattern/001
+    to: feature/001
+    via: typed_reference
+  - from: pattern/001
+    to: invariant/001
+    via: typed_reference
+  - from: invariant/001
+    to: pattern/001
+    via: typed_reference
+
+components:
+  - id: main
+    nodes: [feature/001, invariant/001, invariant/002, pattern/001]
+  - id: gap
+    nodes: [feature/002]
+    note: SmokeModuleTest has no doc-to-doc cross-references; cross-references are to source and test files only
+
+dangling_refs: []

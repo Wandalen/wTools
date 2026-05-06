@@ -2,7 +2,7 @@
 
 Test fixture modules for validating four-layer namespace generation.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|---------------|

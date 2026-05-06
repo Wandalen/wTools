@@ -2,7 +2,7 @@
 
 Low-level utilities for external tool interaction and system operations.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|---------------|

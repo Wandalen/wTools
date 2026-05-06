@@ -7,19 +7,19 @@ How to choose the right cargo features for your use case.
 ### I want everything
 
 ```toml
-data_fmt = { version = "0.5.0", features = ["all_formats"] }
+data_fmt = { version = "0.2.0", features = ["all_formats"] }
 ```
 
 ### I want minimal binary size
 
 ```toml
-data_fmt = { version = "0.5.0", default-features = false, features = ["table_plain"] }
+data_fmt = { version = "0.2.0", default-features = false, features = ["table_plain"] }
 ```
 
 ### I want default formatters only
 
 ```toml
-data_fmt = "0.5.0"
+data_fmt = "0.2.0"
 # Includes: table_plain, expanded_postgres, tree_hierarchical, format_logfmt
 ```
 
@@ -82,7 +82,7 @@ What do you need to format?
 ### CLI Tool (process monitor, system status)
 
 ```toml
-data_fmt = { version = "0.5.0", default-features = false, features = ["table_plain"] }
+data_fmt = { version = "0.2.0", default-features = false, features = ["table_plain"] }
 ```
 
 **Size**: ~100 KB
@@ -91,7 +91,7 @@ data_fmt = { version = "0.5.0", default-features = false, features = ["table_pla
 ### Data Export Pipeline
 
 ```toml
-data_fmt = { version = "0.5.0", default-features = false, features = [
+data_fmt = { version = "0.2.0", default-features = false, features = [
   "table_csv",
   "table_tsv",
   "format_json",
@@ -105,7 +105,7 @@ data_fmt = { version = "0.5.0", default-features = false, features = [
 ### Documentation Generator
 
 ```toml
-data_fmt = { version = "0.5.0", default-features = false, features = [
+data_fmt = { version = "0.2.0", default-features = false, features = [
   "table_markdown",
   "html_minimal",
   "format_json"
@@ -118,7 +118,7 @@ data_fmt = { version = "0.5.0", default-features = false, features = [
 ### Database Administration Tool (PostgreSQL)
 
 ```toml
-data_fmt = { version = "0.5.0", default-features = false, features = [
+data_fmt = { version = "0.2.0", default-features = false, features = [
   "table_bordered",
   "expanded_postgres",
   "sql_postgres",
@@ -132,7 +132,7 @@ data_fmt = { version = "0.5.0", default-features = false, features = [
 ### Web Application (Bootstrap UI)
 
 ```toml
-data_fmt = { version = "0.5.0", default-features = false, features = [
+data_fmt = { version = "0.2.0", default-features = false, features = [
   "html_bootstrap",
   "format_json"
 ] }
@@ -144,7 +144,7 @@ data_fmt = { version = "0.5.0", default-features = false, features = [
 ### Configuration File Manager
 
 ```toml
-data_fmt = { version = "0.5.0", default-features = false, features = [
+data_fmt = { version = "0.2.0", default-features = false, features = [
   "format_json",
   "format_yaml",
   "format_toml"
@@ -157,7 +157,7 @@ data_fmt = { version = "0.5.0", default-features = false, features = [
 ### Log Analysis Tool
 
 ```toml
-data_fmt = { version = "0.5.0", default-features = false, features = [
+data_fmt = { version = "0.2.0", default-features = false, features = [
   "table_plain",
   "format_logfmt",
   "format_json"
@@ -170,7 +170,7 @@ data_fmt = { version = "0.5.0", default-features = false, features = [
 ### Full-Featured Application
 
 ```toml
-data_fmt = { version = "0.5.0", features = ["all_formats"] }
+data_fmt = { version = "0.2.0", features = ["all_formats"] }
 ```
 
 **Size**: ~500 KB
@@ -223,7 +223,7 @@ data_fmt = { version = "0.5.0", features = ["all_formats"] }
 By default, auto-fit uses a hardcoded 120-column fallback when `terminal_width` is not set explicitly. Enable `terminal_size` for runtime detection:
 
 ```toml
-data_fmt = { version = "0.12", features = ["table_plain", "terminal_size"] }
+data_fmt = { version = "0.2.0", features = ["table_plain", "terminal_size"] }
 ```
 
 See `feature/005_auto_fit.md § Terminal Width Detection` for the full three-tier fallback algorithm.
@@ -257,53 +257,6 @@ Convenience features that enable multiple variants:
 | Config | `format_json`, `format_yaml`, `format_toml` | ~140 KB | 3 | 3 |
 | Full | `all_formats` | ~500 KB | 10 | 33 |
 
-## Migration from v0.4.0
-
-### No changes needed (meta-features remain)
-
-```toml
-# v0.4.0 (still works in v0.5.0)
-data_fmt = { version = "0.4.0", features = ["format_json"] }
-
-# v0.5.0 (identical behavior via meta-feature)
-data_fmt = { version = "0.5.0", features = ["format_json"] }
-```
-
-### Optimize for smaller binary
-
-```toml
-# v0.4.0 (enables all table variants)
-data_fmt = { version = "0.4.0" }
-
-# v0.5.0 (enable only needed variants)
-data_fmt = { version = "0.5.0", default-features = false, features = [
-  "table_plain",
-  "table_csv"
-] }
-```
-
-### Granular variant selection (new in v0.5.0)
-
-```toml
-# Now possible: PostgreSQL-specific tools
-data_fmt = { version = "0.5.0", default-features = false, features = [
-  "table_bordered",
-  "sql_postgres"
-] }
-
-# Now possible: Bootstrap-only HTML
-data_fmt = { version = "0.5.0", default-features = false, features = [
-  "html_bootstrap"
-] }
-
-# Now possible: Export pipeline only
-data_fmt = { version = "0.5.0", default-features = false, features = [
-  "table_csv",
-  "table_tsv",
-  "format_json",
-  "format_yaml"
-] }
-```
 
 ## Troubleshooting
 
@@ -313,7 +266,7 @@ data_fmt = { version = "0.5.0", default-features = false, features = [
 
 **Solution**:
 ```toml
-data_fmt = { version = "0.5.0", features = ["table_csv"] }
+data_fmt = { version = "0.2.0", features = ["table_csv"] }
 ```
 
 ### Compilation error: "cannot find type `HtmlVariant`"
@@ -323,10 +276,10 @@ data_fmt = { version = "0.5.0", features = ["table_csv"] }
 **Solution**:
 ```toml
 # Enable at least one HTML variant
-data_fmt = { version = "0.5.0", features = ["html_minimal"] }
+data_fmt = { version = "0.2.0", features = ["html_minimal"] }
 
 # Or enable all HTML variants
-data_fmt = { version = "0.5.0", features = ["format_html"] }
+data_fmt = { version = "0.2.0", features = ["format_html"] }
 ```
 
 ### Binary size larger than expected
@@ -336,10 +289,10 @@ data_fmt = { version = "0.5.0", features = ["format_html"] }
 **Solution**: Use granular features instead
 ```toml
 # Instead of this (includes 4 formatters)
-data_fmt = "0.5.0"
+data_fmt = "0.2.0"
 
 # Use this (only what you need)
-data_fmt = { version = "0.5.0", default-features = false, features = [
+data_fmt = { version = "0.2.0", default-features = false, features = [
   "table_plain",
   "format_json"
 ] }

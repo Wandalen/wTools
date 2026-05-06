@@ -17,21 +17,25 @@ The tool to make CLI ( commands user interface ). It is able to aggregate extern
 """
 categories = [ "command-line-interface", "command-line-utilities" ]
 keywords = [ "wtools", "CLI", "CUI", "user-interface" ]
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
 
 [lints]
 workspace = true
 
 [package.metadata.docs.rs]
-features = [ "full", "error_tools/enabled", "strs_tools/enabled", "mod_interface/enabled", "iter_tools/enabled", "former/enabled" ]
+features = [ "full", "error_tools/enabled", "strs_tools/enabled", "mod_interface/enabled", "former/enabled" ]
 all-features = false
 
 [features]
 default = [ "enabled" ]
 full = [ "enabled", "on_unknown_suggest" ]
-enabled = []
+enabled = [
+  "dep:error_tools",
+  "dep:mod_interface",
+  "dep:itertools",
+  "dep:former",
+  "dep:log",
+  "dep:indexmap",
+]
 
 # diagnostics features from test_tools
 diagnostics_runtime_assertions = []
@@ -45,24 +49,43 @@ on_unknown_suggest = [ "dep:textdistance" ]
 [[bench]]
 name = "bench"
 harness = false
+required-features = [ "enabled" ]
+
+[[example]]
+name = "wca_trivial"
+required-features = [ "enabled" ]
+
+[[example]]
+name = "wca_fluent"
+required-features = [ "enabled" ]
+
+[[example]]
+name = "wca_shortcut"
+required-features = [ "enabled" ]
+
+[[example]]
+name = "wca_custom_error"
+required-features = [ "enabled" ]
+
+[[example]]
+name = "wca_suggest"
+required-features = [ "enabled", "on_unknown_suggest" ]
 
 [dependencies]
 
 ## internal
-error_tools = { workspace = true, features = [ "enabled", "error_typed", "error_untyped" ] }
-mod_interface = { workspace = true, features = [ "enabled" ] }
-iter_tools = { workspace = true, features = [ "enabled" ] }
-former = { workspace = true, features = [ "enabled", "derive_former" ] }
-# xxx : aaa : optimize set of features
-# aaa : done.
+error_tools = { workspace = true, optional = true, features = [ "enabled", "error_typed", "error_untyped" ] }
+mod_interface = { workspace = true, optional = true, features = [ "enabled" ] }
+itertools = { workspace = true, optional = true, features = [ "use_std" ] }
+former = { workspace = true, optional = true, features = [ "enabled", "derive_former" ] }
 
 ## external
-log = "0.4"
+log = { version = "0.4", optional = true }
 #closure = "0.3"
 textdistance = { version = "1.0", optional = true } # fuzzy commands search
-indexmap = "2.2.6"
+indexmap = { version = "2.2.6", optional = true }
 
 [dev-dependencies]
-test_tools = { workspace = true, features = [ "full" ] }
+test_tools = { workspace = true, features = [ "full", "standalone_build" ] }
 assert_fs = "1.0"
 criterion = "0.5"

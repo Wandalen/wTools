@@ -2,7 +2,7 @@
 #![doc(
   html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
 )]
-#![doc(html_root_url = "https://docs.rs/clone_dyn_meta/latest/clone_dyn_meta/")]
+#![doc(html_root_url = "https://docs.rs/reflect_tools_meta/latest/reflect_tools_meta/")]
 // #![ allow( non_snake_case ) ]
 // #![ allow( non_upper_case_globals ) ]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
@@ -60,15 +60,14 @@ mod implementation
 /// and returns empty `TokenStream`. Full Entity trait generation is pending.
 /// See parent `reflect_tools` crate for complete reflection functionality.
 ///
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "reflect_derive" ) ]
-#[ proc_macro_derive(Reflect, attributes(debug)) ]
-pub fn derive_reflect(input: proc_macro::TokenStream) -> proc_macro::TokenStream 
+#[ cfg( all( feature = "enabled", feature = "reflect_derive" ) ) ]
+#[ proc_macro_derive( Reflect, attributes( debug ) ) ]
+pub fn derive_reflect( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = implementation::reflect::reflect(input);
-  match result 
+  let result = implementation::reflect::reflect( input );
+  match result
   {
-  Ok(stream) => stream.into(),
-  Err(err) => err.to_compile_error().into(),
- }
+    Ok( stream ) => stream.into(),
+    Err( err ) => err.to_compile_error().into(),
+  }
 }

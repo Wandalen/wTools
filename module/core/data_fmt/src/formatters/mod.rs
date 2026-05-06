@@ -1,7 +1,5 @@
 //! Formatting implementations for different display modes
 
-use crate::TreeNode;
-
 // Core format trait (always available)
 mod format_trait;
 pub use format_trait::{ Format, FormatError };
@@ -112,49 +110,3 @@ mod text;
 #[ cfg( feature = "format_text" ) ]
 pub use text::{ TextFormatter, TextVariant };
 
-/// Common trait for formatters that work with table-shaped trees.
-///
-/// # Deprecation
-///
-/// Use the `Format` trait from `data_fmt::formatters` with `TableView` instead.
-/// `TableShapedFormatter` operates on `TreeNode<String>` directly, bypassing
-/// the unified `Format` interface.
-///
-/// # Examples
-///
-/// ```
-/// # #[ cfg( feature = "enabled" ) ]
-/// # {
-/// use data_fmt::{ RowBuilder, formatters::TableShapedFormatter, TableFormatter, ExpandedFormatter };
-///
-/// let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
-///   .add_row( vec![ "Alice".into(), "30".into() ] )
-///   .build();
-///
-/// // Use formatters through the trait
-/// #[ allow( deprecated ) ]
-/// let table : &dyn TableShapedFormatter = &TableFormatter::new();
-/// #[ allow( deprecated ) ]
-/// let expanded : &dyn TableShapedFormatter = &ExpandedFormatter::new();
-///
-/// let table_output = table.format( &tree );
-/// let expanded_output = expanded.format( &tree );
-/// # }
-/// ```
-#[ deprecated(
-  since = "0.1.0",
-  note  = "Use the `Format` trait from `data_fmt::formatters` with `TableView` instead."
-) ]
-pub trait TableShapedFormatter
-{
-  /// Format a table-shaped tree as a string
-  ///
-  /// # Arguments
-  ///
-  /// * `tree` - A table-shaped `TreeNode<String>` to format
-  ///
-  /// # Returns
-  ///
-  /// Formatted string representation
-  fn format( &self, tree : &TreeNode< String > ) -> String;
-}

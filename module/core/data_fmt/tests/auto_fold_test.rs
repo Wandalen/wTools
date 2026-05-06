@@ -42,9 +42,10 @@
 //! T22: explicit `column_flex` mixed Fixed/Flex triggers fold
 //! T23: `bug_reproducer` — `Bare` fold style wraps long continuation lines
 //! T24: `bug_reproducer` — `fold_point=0` preserves first column in header
+//! T25: fold output is idempotent across repeated `format()` calls
 
 #![ cfg( feature = "enabled" ) ]
-use data_fmt::{ RowBuilder, TableFormatter, TableConfig, ColumnFlex, FoldStyle, DecoratedText };
+use data_fmt::{ RowBuilder, TableFormatter, TableConfig, ColumnFlex, FoldStyle, DecoratedText, Format };
 
 // --- Shared helpers ---
 
@@ -64,7 +65,7 @@ fn fold_config() -> TableConfig
 }
 
 /// Standard 6-column table: ID + Name + File (primary) + Path + Rules + Source (overflow at fold)
-fn fold_table_single_row() -> data_fmt::TreeNode< String >
+fn fold_table_single_row() -> data_fmt::TableView
 {
   RowBuilder::new( vec![
     "ID".into(), "Name".into(), "File".into(),
@@ -78,7 +79,7 @@ fn fold_table_single_row() -> data_fmt::TreeNode< String >
     "120".into(),
     "/home/user/src/".into(),
   ] )
-  .build()
+  .build_view()
 }
 
 /// Helper: check that output contains at least one line starting with the given indent
@@ -100,7 +101,7 @@ fn table_fits_no_fold_occurs()
       ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
     ] )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   assert!(
     !has_continuation_lines( &output, DEFAULT_INDENT ),
@@ -115,7 +116,7 @@ fn six_col_table_overflows_narrow_terminal()
 {
   let tree = fold_table_single_row();
   let formatter = TableFormatter::with_config( fold_config() );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   assert!(
     has_continuation_lines( &output, DEFAULT_INDENT ),
@@ -132,7 +133,7 @@ fn labeled_fold_produces_continuation()
   let formatter = TableFormatter::with_config(
     fold_config().fold_style( FoldStyle::Labeled )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   assert!(
     output.contains( "    Path: /home/user/governance/" ),
@@ -149,7 +150,7 @@ fn bare_fold_style_renders_values_without_labels()
   let formatter = TableFormatter::with_config(
     fold_config().fold_style( FoldStyle::Bare )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Bare style should include the value but NOT "Path:"
   assert!(
@@ -171,7 +172,7 @@ fn stacked_fold_style_each_column_on_own_line()
   let formatter = TableFormatter::with_config(
     fold_config().fold_style( FoldStyle::Stacked )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Stacked: each overflow column on its own line with label
   assert!(
@@ -189,7 +190,7 @@ fn custom_fold_indent_appears_on_continuation_lines()
   let formatter = TableFormatter::with_config(
     fold_config().fold_indent( ">>> ".to_string() )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   assert!(
     output.contains( ">>> Path: " ),
@@ -210,7 +211,7 @@ fn auto_fold_false_disables_folding()
   let formatter = TableFormatter::with_config(
     fold_config().auto_fold( false )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   assert!(
     !has_continuation_lines( &output, DEFAULT_INDENT ),
@@ -227,7 +228,7 @@ fn csv_preset_auto_disables_folding()
   let formatter = TableFormatter::with_config(
     TableConfig::csv().terminal_width( Some( 40 ) )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // CSV must not fold — splitting CSV fields corrupts data
   assert!(
@@ -249,7 +250,7 @@ fn tsv_preset_auto_disables_folding()
   let formatter = TableFormatter::with_config(
     TableConfig::tsv().terminal_width( Some( 40 ) )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   assert!(
     !has_continuation_lines( &output, DEFAULT_INDENT ),
@@ -271,14 +272,14 @@ fn fold_plus_wrap_combination()
     "short".into(),
     "this/is/a/very/very/very/long/path/that/exceeds/even/the/fold/budget/width".into(),
   ] )
-  .build();
+  .build_view();
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
       .terminal_width( Some( 40 ) )
       .column_flex( vec![ ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed ] )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Continuation lines must exist for the overflow "Path" column
   assert!(
@@ -314,10 +315,10 @@ fn multiple_rows_fold_at_same_point()
     "b3".into(), "security".into(), "sec.md".into(),
     "/path/to/sec/".into(), "40".into(), "/src/sec/".into(),
   ] )
-  .build();
+  .build_view();
 
   let formatter = TableFormatter::with_config( fold_config() );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // All 3 data rows should have continuation lines
   let continuation_count = output.lines().filter( | l | l.starts_with( DEFAULT_INDENT ) ).count();
@@ -342,10 +343,10 @@ fn mixed_rows_only_overflowing_rows_have_continuation()
     "b1".into(), "governance".into(), "gov.md".into(),
     "/home/user/governance/".into(), "120".into(), "/home/user/src/".into(),
   ] )
-  .build();
+  .build_view();
 
   let formatter = TableFormatter::with_config( fold_config() );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   assert!(
     has_continuation_lines( &output, DEFAULT_INDENT ),
@@ -368,7 +369,7 @@ fn single_overflow_column_produces_one_continuation_line()
         ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
       ] )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Only "Source" column folds
   let continuation_lines : Vec< &str > = output.lines()
@@ -399,7 +400,7 @@ fn very_narrow_terminal_all_columns_fold_except_first()
         ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
       ] )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // At terminal=10, Name (width=10) pushes cumulative to 16 > 10 → fold_point=1
   // Continuation lines for Name, File, Path, Rules, Source
@@ -465,14 +466,14 @@ fn fold_with_alternating_colors_continuation_lines_exist()
     "b2".into(), "engineering".into(), "eng.md".into(),
     "/path/to/eng/".into(), "80".into(), "/src/eng/".into(),
   ] )
-  .build();
+  .build_view();
 
   let formatter = TableFormatter::with_config(
     fold_config()
       .alternating_rows( true )
       .row_colors( "\x1b[48;5;236m".to_string(), "\x1b[48;5;237m".to_string() )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Fold behavior must still work with alternating colors enabled
   assert!(
@@ -495,7 +496,7 @@ fn fold_with_bordered_style_primary_bordered_continuation_plain()
         ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
       ] )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   assert!(
     has_continuation_lines( &output, DEFAULT_INDENT ),
@@ -517,7 +518,7 @@ fn fold_with_unicode_box_style_continuation_outside_box()
         ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
       ] )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   assert!(
     has_continuation_lines( &output, DEFAULT_INDENT ),
@@ -532,7 +533,7 @@ fn header_row_never_folds()
 {
   let tree = fold_table_single_row();
   let formatter = TableFormatter::with_config( fold_config() );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
   let lines : Vec< &str > = output.lines().collect();
 
   // Header is first line, it must contain all 6 column names
@@ -557,9 +558,9 @@ fn header_row_never_folds()
 #[ test ]
 fn empty_table_headers_only_narrow_terminal()
 {
-  // Must use build_view() so headers are accessible via TableView.
-  // build() on a headers-only RowBuilder produces a root with no children;
-  // extract_headers() returns None and format() produces empty output.
+  // IC-3: columns + no rows → header + separator only (no continuation lines).
+  // build_view() stores headers in TableView.metadata.column_names; formatter renders
+  // the header row and separator even when there are no data rows.
   let view = RowBuilder::new( vec![
     "ID".into(), "Name".into(), "File".into(),
     "Path".into(), "Rules".into(), "Source".into(),
@@ -574,10 +575,10 @@ fn empty_table_headers_only_narrow_terminal()
     !has_continuation_lines( &output, DEFAULT_INDENT ),
     "headers-only table must not produce continuation lines, got:\n{output}",
   );
-  // Output must still have the header line
+  // Output must still have the header line (IC-3: header + separator rendered even without rows)
   assert!(
     output.contains( "ID" ),
-    "headers-only output must include header row, got:\n{output}",
+    "headers-only output must include header row (IC-3), got:\n{output}",
   );
 }
 
@@ -633,7 +634,7 @@ fn explicit_column_flex_mixed_triggers_fold_at_fixed_overflow()
     "Governance and quality enforcement".into(),
     "/home/user/".into(),
   ] )
-  .build();
+  .build_view();
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
@@ -643,7 +644,7 @@ fn explicit_column_flex_mixed_triggers_fold_at_fixed_overflow()
         ColumnFlex::Flex, ColumnFlex::Flex, ColumnFlex::Flex,
       ] )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // With headers "Purpose" (7 chars) and "Owner" (5 chars) wider than their 2-char Flex budget,
   // columns must still render in some form — either folded or as continuation lines
@@ -690,7 +691,7 @@ fn bare_fold_style_wraps_long_continuation_line()
       "short".into(),
       "this/is/a/very/very/very/long/path/that/exceeds/the/terminal/width/entirely".into(),
     ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
@@ -698,7 +699,7 @@ fn bare_fold_style_wraps_long_continuation_line()
       .fold_style( FoldStyle::Bare )
       .column_flex( vec![ ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed ] )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   assert!(
     has_continuation_lines( &output, DEFAULT_INDENT ),
@@ -747,14 +748,14 @@ fn fold_point_zero_preserves_first_column_in_header()
   // and the header row renders as just "||\n" (empty pipes).
   let tree = RowBuilder::new( vec![ "VeryLongColumnName".into(), "B".into() ] )
     .add_row( vec![ "wide_value_here".into(), "x".into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
       .terminal_width( Some( 3 ) )
       .column_flex( vec![ ColumnFlex::Fixed, ColumnFlex::Fixed ] )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // Header must contain the first column name even at an impossibly narrow terminal
   assert!(
@@ -765,5 +766,21 @@ fn fold_point_zero_preserves_first_column_in_header()
   assert!(
     has_continuation_lines( &output, DEFAULT_INDENT ),
     "second column must fold to continuation lines, got:\n{output}",
+  );
+}
+
+// --- T25: Fold output is idempotent across repeated format() calls ---
+// invariant/004 Invariant 3: determine_fold_point is a pure function; no
+// mutable state in TableFormatter should cause output to differ between calls.
+#[ test ]
+fn fold_output_is_idempotent_on_repeated_calls()
+{
+  let tree = fold_table_single_row();
+  let formatter = TableFormatter::with_config( fold_config() );
+  let output1 = formatter.format( &tree ).unwrap_or_default();
+  let output2 = formatter.format( &tree ).unwrap_or_default();
+  assert_eq!(
+    output1, output2,
+    "fold output must be byte-identical on repeated calls with identical input",
   );
 }

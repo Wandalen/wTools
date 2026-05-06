@@ -4,30 +4,16 @@
 
 - **Purpose**: Ensure platform-specific shell selection never leaks into caller code so automation scripts require no platform guards.
 - **Responsibility**: Enforces that `RunFormer::run_with_shell()` is the sole location of the Unix/Windows shell branch in this crate.
-- **In Scope**: Shell selection logic in `run_with_shell()`; guarantee that no call sites contain `cfg!(target_os)` for shell choice.
+- **In Scope**: Shell selection logic in `run_with_shell()`; guarantee that no call sites contain compile-time platform guards for shell choice.
 - **Out of Scope**: Shell command syntax differences; environment variable handling; output capture.
 
 ### Invariant Statement
 
-`run_with_shell(exec_path)` always invokes the platform-native shell: `sh -c` on Unix and `cmd /C` on Windows, determined via `cfg!(target_os)` at compile time. Callers pass a shell command string and receive a `Report` identical in structure to direct execution. No platform-detection logic leaks into call sites — the abstraction is complete.
+`run_with_shell(exec_path)` always invokes the platform-native shell: `sh -c` on Unix and `cmd /C` on Windows, determined at compile time. Callers pass a shell command string and receive a `Report` identical in structure to direct execution. No platform-detection logic leaks into call sites — the abstraction is complete.
 
 ### Enforcement Mechanism
 
-The platform branch lives exclusively in `RunFormer::run_with_shell()` in `process.rs`:
-
-```rust
-let ( program, args ) =
-if cfg!( target_os = "windows" )
-{
-  ( "cmd", [ "/C", exec_path ] )
-}
-else
-{
-  ( "sh", [ "-c", exec_path ] )
-};
-```
-
-No other function performs this selection. Call sites use only `run_with_shell(cmd)` without any `cfg!` guard.
+The platform branch lives exclusively in `RunFormer::run_with_shell()` in `process.rs`. At compile time it selects the native shell — Windows uses the command interpreter with the `/C` flag and Unix uses the POSIX shell with `-c` — so call sites require no platform guards. No other function performs this selection. Call sites use only `run_with_shell(cmd)` without any compile-time platform check.
 
 Verification command:
 
@@ -39,7 +25,7 @@ grep -rn "run_with_shell" src/
 
 ### Violation Consequences
 
-If callers had to choose the shell themselves, cross-platform automation code would need a `cfg!(target_os)` guard at every invocation. Shell feature usage (pipes, redirections, environment variable expansion) would diverge silently across platforms when callers forget the guard. The invariant keeps that complexity at one location.
+If callers had to choose the shell themselves, cross-platform automation code would need a platform guard at every invocation. Shell feature usage (pipes, redirections, environment variable expansion) would diverge silently across platforms when callers forget the guard. The invariant keeps that complexity at one location.
 
 ### Example
 
@@ -60,5 +46,5 @@ assert!( report.out.contains( "hello" ) );
 | Type | File | Responsibility |
 |------|------|----------------|
 | source | [src/process.rs](../../src/process.rs) | `RunFormer::run_with_shell()` platform branch implementation |
-| api | [api/001_run_api.md](../api/001_run_api.md) | `RunFormer::run_with_shell()` definition |
-| feature | [feature/001_process_execution.md](../feature/001_process_execution.md) | Design rationale for the unified execution API |
+| doc | [api/001_run_api.md](../api/001_run_api.md) | `RunFormer::run_with_shell()` definition |
+| doc | [feature/001_process_execution.md](../feature/001_process_execution.md) | Design rationale for the unified execution API |

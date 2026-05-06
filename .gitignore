@@ -34,3 +34,6 @@ Cargo.lock
 rustc-ice-*.txt
 .roo
 .roomodes
+
+# strs_tools binary artifacts
+module/core/strs_tools/test_default_import

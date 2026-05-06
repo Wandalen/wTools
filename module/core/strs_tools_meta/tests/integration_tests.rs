@@ -1,16 +1,21 @@
 //! Integration tests for `strs_tools_meta` procedural macros
 //!
-//! # Test Matrix Summary
-//! 
-//! This file provides the main entry point for integration tests.
-//! Detailed Test Matrices are contained in individual test modules :
-//! 
-//! - `optimize_split_tests` : Tests for `optimize_split` macro
-//! - `optimize_match_tests` : Tests for `optimize_match` macro
+//! Verifies combined usage of `optimize_split` and `optimize_match` macros
+//! within the same expansion context.
 //!
+//! Unit tests for each macro individually: see `optimize_split_tests.rs`
+//! and `optimize_match_tests.rs`. Edge cases: see `corner_cases_test.rs`.
 
-#[ cfg( feature = "optimize_split" ) ]
-mod optimize_split_tests;
+#[ cfg( all( feature = "optimize_split", feature = "optimize_match" ) ) ]
+use strs_tools_meta ::{ optimize_split, optimize_match };
 
-#[ cfg( feature = "optimize_match" ) ]
-mod optimize_match_tests;
+/// Both macros usable in the same scope without conflict.
+#[ cfg( all( feature = "optimize_split", feature = "optimize_match" ) ) ]
+#[ test ]
+fn integration_both_macros_in_same_scope()
+{
+  let parts = optimize_split!( "http://example.com/path", "/" );
+  let matched = optimize_match!( "http://example.com/path", "example" );
+  assert_eq!( parts[ 0 ], "http:" );
+  assert!( matched.is_some() );
+}

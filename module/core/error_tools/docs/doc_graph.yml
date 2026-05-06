@@ -1,0 +1,71 @@
+meta:
+  description: Cross-reference graph for all doc instances in error_tools
+  node_count: 9
+  edge_count: 20
+  component_count: 1
+  generated: 2026_04_25
+nodes:
+  - id: feature/001
+    file: feature/001_error_facade.md
+    label: Error Facade
+    entity: feature
+  - id: feature/002
+    file: feature/002_typed_errors.md
+    label: Typed Errors
+    entity: feature
+  - id: feature/003
+    file: feature/003_untyped_errors.md
+    label: Untyped Errors
+    entity: feature
+  - id: feature/004
+    file: feature/004_no_std_support.md
+    label: No-Std Support
+    entity: feature
+  - id: api/001
+    file: api/001_err_with_trait.md
+    label: Error-With-Report Operation Set
+    entity: api
+  - id: api/002
+    file: api/002_debug_assertions.md
+    label: Debug Assertion Macros
+    entity: api
+  - id: invariant/001
+    file: invariant/001_exclusive_dependency.md
+    label: Exclusive Error Dependency
+    entity: invariant
+  - id: invariant/002
+    file: invariant/002_zero_cost_facade.md
+    label: Zero-Cost Facade
+    entity: invariant
+  - id: invariant/003
+    file: invariant/003_alloc_requirement.md
+    label: Alloc Feature Requires No-Std
+    entity: invariant
+edges:
+  - {from: feature/001, to: feature/002, via: typed_reference }
+  - {from: feature/001, to: feature/003, via: typed_reference }
+  - {from: feature/001, to: feature/004, via: typed_reference }
+  - {from: feature/001, to: api/001, via: typed_reference }
+  - {from: feature/001, to: api/002, via: typed_reference }
+  - {from: feature/001, to: invariant/001, via: typed_reference }
+  - {from: feature/001, to: invariant/002, via: typed_reference }
+  - {from: feature/002, to: feature/001, via: typed_reference }
+  - {from: feature/002, to: invariant/002, via: typed_reference }
+  - {from: feature/003, to: feature/001, via: typed_reference }
+  - {from: feature/003, to: invariant/002, via: typed_reference }
+  - {from: feature/004, to: feature/001, via: typed_reference }
+  - {from: feature/004, to: invariant/003, via: typed_reference }
+  - {from: api/001, to: feature/001, via: typed_reference }
+  - {from: api/002, to: feature/001, via: typed_reference }
+  - {from: invariant/001, to: feature/001, via: typed_reference }
+  - {from: invariant/002, to: feature/001, via: typed_reference }
+  - {from: invariant/002, to: feature/002, via: typed_reference }
+  - {from: invariant/002, to: feature/003, via: typed_reference }
+  - {from: invariant/003, to: feature/004, via: typed_reference }
+components:
+  - id: 1
+    label: error_tools
+    size: 9
+    isolated: false
+    nodes: [feature/001, feature/002, feature/003, feature/004, api/001, api/002, invariant/001, invariant/002, invariant/003]
+dangling_refs: []

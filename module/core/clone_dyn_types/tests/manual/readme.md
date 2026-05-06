@@ -20,7 +20,7 @@ This document describes manual testing procedures for the `clone_dyn_types` crat
 
 1. **Test with all features enabled:**
    ```bash
-   cd /home/user1/pro/lib/wip_core/wtools/dev/module/core/clone_dyn_types
+   cd ../..
    cargo run --example clone_dyn_types_trivial --all-features
    ```
 
@@ -111,7 +111,7 @@ This document describes manual testing procedures for the `clone_dyn_types` crat
    {
      fn clone( &self ) -> Self
      {
-       clone_dyn_types ::clone_into_box(&**self)
+       clone_dyn_types::clone_into_box( &**self )
      }
    }
    ```
@@ -154,7 +154,7 @@ This document describes manual testing procedures for the `clone_dyn_types` crat
 
 1. **Understand the mechanism:**
    - Fat pointer extracted from trait object reference
-   - Underlying value cloned via `CloneDyn::clone_into_box_dyn`
+   - Underlying value cloned via `CloneDyn::__clone_dyn` (doc-hidden internal method)
    - New fat pointer constructed with same vtable
 
 2. **Verify via documentation:**
@@ -182,7 +182,7 @@ This document describes manual testing procedures for the `clone_dyn_types` crat
 
 2. **Verify trait requirements:**
    - Trait is object-safe (can be used in trait objects)
-   - Has associated method `clone_into_box_dyn`
+   - Has doc-hidden internal method `__clone_dyn`; `clone_into_box` is a free function (not a method)
    - Types implementing CloneDyn can be cloned via trait objects
 
 3. **Test trait bound enforcement:**

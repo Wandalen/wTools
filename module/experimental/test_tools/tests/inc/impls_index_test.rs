@@ -13,6 +13,7 @@
 
 #[ allow( unused_imports ) ]
 use super :: *;
+#[ allow( unused_imports ) ]
 use ::test_tools as the_module;
 
 #[ cfg( feature = "enabled" ) ]

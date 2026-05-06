@@ -22,7 +22,7 @@ mod private
  },
   // Result
  };
-  use iter_tools ::iter ::Itertools;
+  use ::itertools ::Itertools;
 
   /// Used to store arguments for running tests.
   ///

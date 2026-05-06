@@ -9,7 +9,7 @@
 
 ### Invariant Statement
 
-A PID file managed by this crate contains exactly one decimal integer representing a process ID, optionally surrounded by ASCII whitespace (spaces, tabs, newlines). Any function that writes a PID file in this crate must write a plain decimal integer. Any function that reads a PID file must accept this format via `.trim().parse()`. No other format — hex, binary, padded, quoted, newline-only — is defined or accepted.
+A PID file managed by this crate contains exactly one decimal integer representing a process ID, optionally surrounded by ASCII whitespace (spaces, tabs, newlines). Any function that writes a PID file in this crate must write a plain decimal integer. Any function that reads a PID file must accept this format by trimming surrounding whitespace and parsing the result as a decimal integer. No other format — hex, binary, padded, quoted, newline-only — is defined or accepted.
 
 ### Enforcement Mechanism
 
@@ -26,7 +26,7 @@ grep -n "to_string\|trim.*parse\|parse.*trim" \
 
 ### Violation Consequences
 
-If `write_pidfile` were changed to write a hex value (e.g., `format!("0x{:x}", pid)`), `read_pidfile` and `is_pidfile_alive` would return `Err(InvalidData)` silently on the next read — the parse error is not a compile-time failure. The cross-module format contract has no type-level enforcement; this invariant is the sole documentation of the requirement.
+If `write_pidfile` were changed to write a hex value, `read_pidfile` and `is_pidfile_alive` would silently return a parse error on the next read — there is no compile-time check for this contract. The cross-module format agreement has no type-level enforcement; this invariant is the sole documentation of the requirement.
 
 ### Cross-References
 
@@ -34,5 +34,5 @@ If `write_pidfile` were changed to write a hex value (e.g., `format!("0x{:x}", p
 |------|------|----------------|
 | source | [src/lifecycle/daemon.rs](../../src/lifecycle/daemon.rs) | `write_pidfile()`, `read_pidfile()`, `write_pidfile_locked()` |
 | source | [src/lifecycle/check.rs](../../src/lifecycle/check.rs) | `is_pidfile_alive()` reads PID files written by the daemon module |
-| api | [api/006_daemon_api.md](../api/006_daemon_api.md) | PID file management function signatures |
-| api | [api/005_check_api.md](../api/005_check_api.md) | `is_pidfile_alive()` reads the format defined by this invariant |
+| doc | [api/006_daemon_api.md](../api/006_daemon_api.md) | PID file management function signatures |
+| doc | [api/005_check_api.md](../api/005_check_api.md) | `is_pidfile_alive()` reads the format defined by this invariant |

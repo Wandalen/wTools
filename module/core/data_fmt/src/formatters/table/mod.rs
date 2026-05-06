@@ -95,7 +95,6 @@
 //! ```
 
 use crate::{ TreeNode, TableConfig };
-use crate::data::TableShapedView;
 use crate::ansi_str::{ unicode_visual_len, pad_unicode_width };
 use color_tools::DecoratedText;
 
@@ -148,34 +147,6 @@ impl TableFormatter
     }
   }
 
-  /// Format table-shaped tree
-  ///
-  /// Extracts headers and rows from tree using `TableView` trait.
-  ///
-  /// # Examples
-  ///
-  /// ```
-  /// use data_fmt::{ RowBuilder, TableFormatter };
-  ///
-  /// let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
-  ///   .add_row( vec![ "Alice".into(), "30".into() ] )
-  ///   .build();
-  ///
-  /// let formatter = TableFormatter::new();
-  /// let output = formatter.format( &tree );
-  ///
-  /// assert!( output.contains( "Name" ) );
-  /// assert!( output.contains( "Alice" ) );
-  /// ```
-  pub fn format( &self, tree : &TreeNode< String > ) -> String
-  {
-    let headers = tree.extract_headers().unwrap_or_default();
-    let rows : Vec< Vec< DecoratedText > > = tree.to_rows().into_iter()
-      .map( | r | r.into_iter().map( DecoratedText::from ).collect() )
-      .collect();
-    self.format_internal( &headers, &rows, &[] )
-  }
-
   /// Format hierarchical tree as table (flattened)
   ///
   /// Flattens hierarchical tree to table with columns: path, name, depth, data.
@@ -198,7 +169,7 @@ impl TableFormatter
   pub fn format_tree< T : std::fmt::Display >( &self, tree : &TreeNode< T > ) -> String
   {
     let flattened = crate::conversions::flatten_to_table_tree( tree );
-    self.format( &flattened )
+    super::Format::format( self, &flattened ).unwrap_or_default()
   }
 
   /// Internal implementation of table formatting
@@ -211,6 +182,13 @@ impl TableFormatter
   )
   -> String
   {
+    // Fix( issue-empty-table ): return empty string only when no columns are defined.
+    // Root cause: format_single_line_row unconditionally appends '\n' for zero-column
+    // slices, producing bare newlines → "\n\n" for a table with zero columns.
+    // Pitfall: guarding on rows.is_empty() is too aggressive — headers-only tables
+    // should render header + separator as a useful "empty state" display.
+    // IC-3: no columns → empty string; columns + no rows → header + separator only.
+    if headers.is_empty() { return String::new(); }
     let mut output = String::with_capacity( INITIAL_CAPACITY );
 
     // Calculate natural column widths (uses .text for ANSI-free measurement)
@@ -1066,35 +1044,26 @@ impl TableFormatter
   /// use data_fmt::{ RowBuilder, TableFormatter };
   /// use std::io::Cursor;
   ///
-  /// let tree = RowBuilder::new( vec![ "Name".into() ] )
+  /// let view = RowBuilder::new( vec![ "Name".into() ] )
   ///   .add_row( vec![ "Alice".into() ] )
-  ///   .build();
+  ///   .build_view();
   ///
   /// let formatter = TableFormatter::new();
   /// let mut buffer = Cursor::new( Vec::new() );
-  /// formatter.write_to( &tree, &mut buffer ).unwrap();
+  /// formatter.write_to( &view, &mut buffer ).unwrap();
   ///
   /// let output = String::from_utf8( buffer.into_inner() ).unwrap();
   /// assert!( output.contains( "Alice" ) );
   /// ```
   pub fn write_to< W : std::io::Write >(
     &self,
-    tree : &TreeNode< String >,
+    data : &crate::TableView,
     writer : &mut W
   )
   -> std::io::Result< () >
   {
-    let output = self.format( tree );
+    let output = super::Format::format( self, data ).unwrap_or_default();
     writer.write_all( output.as_bytes() )
-  }
-}
-
-#[ allow( deprecated ) ]
-impl super::TableShapedFormatter for TableFormatter
-{
-  fn format( &self, tree : &TreeNode< String > ) -> String
-  {
-    self.format( tree )
   }
 }
 

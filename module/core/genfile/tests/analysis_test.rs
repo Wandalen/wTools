@@ -22,7 +22,7 @@
 
 use std::fs;
 
-mod test_utils;
+mod cli_runner;
 
 // FR8: Archive Analysis Tests
 
@@ -66,7 +66,7 @@ fn info_displays_archive_metadata()
     archive_path.display()
   );
 
-  let output = test_utils::repl_command( &script )
+  let output = cli_runner::repl_command( &script )
     .output()
     .expect( "Info workflow should execute" );
 
@@ -129,7 +129,7 @@ fn discover_parameters_finds_template_variables()
     archive_path.display()
   );
 
-  let output = test_utils::repl_command( &script )
+  let output = cli_runner::repl_command( &script )
     .output()
     .expect( "Discover workflow should execute" );
 
@@ -191,7 +191,7 @@ fn status_shows_archive_readiness()
     archive_path.display()
   );
 
-  let output = test_utils::repl_command( &script )
+  let output = cli_runner::repl_command( &script )
     .output()
     .expect( "Status workflow should execute" );
 
@@ -249,7 +249,7 @@ fn analyze_provides_comprehensive_overview()
     archive_path.display()
   );
 
-  let output = test_utils::repl_command( &script )
+  let output = cli_runner::repl_command( &script )
     .output()
     .expect( "Analyze workflow should execute" );
 
@@ -289,7 +289,7 @@ fn analysis_commands_require_loaded_archive()
 
   for cmd in commands
   {
-    let output = test_utils::cargo_run_command( &[ cmd ] )
+    let output = cli_runner::cargo_run_command( &[ cmd ] )
       .output()
       .expect( "Command should execute" );
 

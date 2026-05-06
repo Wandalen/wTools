@@ -17,14 +17,14 @@
 //!   may differ in an interactive terminal session where Tier 2 activates first
 
 #![ cfg( feature = "enabled" ) ]
-use data_fmt::{ RowBuilder, TableFormatter, TableConfig, TreeNode };
+use data_fmt::{ RowBuilder, TableFormatter, TableConfig, TableView, Format };
 
 // --- Test helpers ---
 
 /// Build a wide 5-column table with natural width ≈ 160 chars.
 /// Headers are intentionally short (≤ 7 chars) so that at a 40-col terminal the
 /// column widths are budget-constrained, not header-constrained.
-fn wide_table() -> TreeNode< String >
+fn wide_table() -> TableView
 {
   RowBuilder::new( vec![
     "ID".into(),
@@ -47,11 +47,11 @@ fn wide_table() -> TreeNode< String >
     "Another detailed description with lots of text to ensure terminal overflow".into(),
     "inactive".into(),
   ] )
-  .build()
+  .build_view()
 }
 
 /// Build a narrow 5-column table with natural width < 40 chars
-fn narrow_table() -> TreeNode< String >
+fn narrow_table() -> TableView
 {
   RowBuilder::new( vec![
     "ID".into(),
@@ -66,7 +66,7 @@ fn narrow_table() -> TreeNode< String >
   .add_row( vec![
     "2".into(), "xyz".into(), "prod".into(), "beta".into(), "off".into(),
   ] )
-  .build()
+  .build_view()
 }
 
 fn max_visual_line_width( output : &str ) -> usize
@@ -83,7 +83,7 @@ fn default_config_respects_120_column_fallback()
 {
   let tree = wide_table();
   let formatter = TableFormatter::with_config( TableConfig::plain() );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   let max_width = max_visual_line_width( &output );
   assert!(
@@ -101,7 +101,7 @@ fn explicit_80_column_terminal_width_constrains_output()
   let formatter = TableFormatter::with_config(
     TableConfig::plain().terminal_width( Some( 80 ) )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   let max_width = max_visual_line_width( &output );
   assert!(
@@ -119,7 +119,7 @@ fn explicit_40_column_terminal_width_aggressive_wrap()
   let formatter = TableFormatter::with_config(
     TableConfig::plain().terminal_width( Some( 40 ) )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   let max_width = max_visual_line_width( &output );
   assert!(
@@ -144,7 +144,7 @@ fn zero_terminal_width_clamped_no_panic()
     TableConfig::plain().terminal_width( Some( 0 ) )
   );
   // Must not panic — resolve_terminal_width clamps 0 → 1
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
   assert!( !output.is_empty(), "output should not be empty even with zero width config" );
 }
 
@@ -155,11 +155,11 @@ fn narrow_table_unaffected_by_wide_terminal_width()
 {
   let output_constrained = TableFormatter::with_config(
     TableConfig::plain().terminal_width( Some( 80 ) )
-  ).format( &narrow_table() );
+  ).format( &narrow_table() ).unwrap_or_default();
 
   let output_unconstrained = TableFormatter::with_config(
     TableConfig::plain().auto_wrap( false )
-  ).format( &narrow_table() );
+  ).format( &narrow_table() ).unwrap_or_default();
 
   assert_eq!(
     output_constrained, output_unconstrained,
@@ -176,7 +176,7 @@ fn auto_wrap_false_bypasses_terminal_detection()
   let formatter = TableFormatter::with_config(
     TableConfig::plain().terminal_width( Some( 80 ) ).auto_wrap( false )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   let max_width = max_visual_line_width( &output );
   assert!(
@@ -194,7 +194,7 @@ fn csv_preset_bypasses_auto_fit_regardless_of_terminal_width()
   let formatter = TableFormatter::with_config(
     TableConfig::csv().terminal_width( Some( 80 ) )
   );
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   // CSV values must not be wrapped or truncated — splitting CSV fields corrupts data
   let long_path = "/home/user1/projects/long-project-name/src/module/file.rs";

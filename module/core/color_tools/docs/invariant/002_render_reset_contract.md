@@ -31,8 +31,8 @@ Injecting escape codes into uncolored renders corrupts plain-text consumers (log
 
 ### Cross-References
 
-| Entity | File | Relationship |
-|--------|------|-------------|
-| feature/001 | [DecoratedText](../feature/001_decorated_text.md) | Parent feature |
-| invariant/001 | [Transparent Conversion](001_transparent_conversion.md) | Sibling — conversion guarantee |
-| invariant/004 | [Render Is Canonical](004_render_is_canonical.md) | Sibling — render delegation |
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | [DecoratedText](../feature/001_decorated_text.md) | Parent feature |
+| doc | [Transparent Conversion](001_transparent_conversion.md) | Sibling — conversion guarantee |
+| doc | [Render Is Canonical](004_render_is_canonical.md) | Sibling — render delegation |

@@ -5,8 +5,7 @@ use super :: *;
 
 #[ cfg(feature = "std") ]
 #[ test ]
-#[ allow( unused_variables ) ] // Variables are used by a_id! macro but compiler can't detect it
-fn basic() 
+fn basic()
 {
   use the_module ::string ::indentation;
 
@@ -15,7 +14,7 @@ fn basic()
   let src = "a\nbc";
   let exp = "---a\n---bc";
   let got = indentation("---", src, "");
-  a_id!(got, exp);
+  assert_eq!(got, exp);
  }
 
   /* test.case( "empty string" ) */
@@ -23,7 +22,7 @@ fn basic()
   let src = "";
   let exp = "";
   let got = indentation("---", src, "");
-  a_id!(got, exp);
+  assert_eq!(got, exp);
  }
 
   /* test.case( "two strings" ) */
@@ -31,7 +30,7 @@ fn basic()
   let src = "a\nb";
   let exp = "---a+++\n---b+++";
   let got = indentation("---", src, "+++");
-  a_id!(got, exp);
+  assert_eq!(got, exp);
  }
 
   /* test.case( "last empty" ) */
@@ -40,7 +39,7 @@ fn basic()
   let exp = "---a+++\n---+++";
   let got = indentation("---", src, "+++");
   // println!( "got: '{}'", got );
-  a_id!(got, exp);
+  assert_eq!(got, exp);
  }
 
   /* test.case( "first empty" ) */
@@ -49,7 +48,7 @@ fn basic()
   let exp = "---+++\n---b+++";
   let got = indentation("---", src, "+++");
   // println!( "got: '{}'", got );
-  a_id!(got, exp);
+  assert_eq!(got, exp);
  }
 
   /* test.case( "two empty string" ) */
@@ -58,6 +57,6 @@ fn basic()
   let exp = "---+++\n---+++";
   let got = indentation("---", src, "+++");
   // println!( "got: '{}'", got );
-  a_id!(got, exp);
+  assert_eq!(got, exp);
  }
 }

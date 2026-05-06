@@ -9,9 +9,6 @@ repository = "https://github.com/Wandalen/wTools"
 documentation = "https://docs.rs/cli_fmt"
 keywords = [ "cli", "command-line", "output", "formatting", "display" ]
 categories = [ "command-line-utilities", "development-tools" ]
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
 
 [lints]
 workspace = true
@@ -22,8 +19,8 @@ strs_tools = { workspace = true, features = [ "ansi", "string_split", "std" ], o
 [dev-dependencies]
 
 [features]
-# Default provides core functionality including output module
-default = [ "enabled", "std", "output" ]
+# No default features — all functionality is opt-in
+default = [ "enabled", "output", "ansi_unicode" ]
 
 # Master switch - activates core dependencies
 enabled = [ "dep:strs_tools" ]

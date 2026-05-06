@@ -12,7 +12,7 @@ fn main() {}
 #[ cfg( feature = "enabled" ) ]
 fn main()
 {
-  use data_fmt::{ RowBuilder, TableFormatter };
+  use data_fmt::{ RowBuilder, TableFormatter, Format };
   println!( "=== TableFormatter: Horizontal Tabular Display ===" );
   println!( "Best for: Spreadsheet-like data, comparing multiple rows\n" );
 
@@ -22,11 +22,11 @@ fn main()
   builder.add_row_mut( vec![ "Mouse".into(), "156".into(), "$15".into() ] );
   builder.add_row_mut( vec![ "Keyboard".into(), "89".into(), "$45".into() ] );
   builder.add_row_mut( vec![ "Monitor".into(), "34".into(), "$299".into() ] );
-  let tree = builder.build();
+  let tree = builder.build_view();
 
   // Render as table
   let formatter = TableFormatter::new();
-  let output = formatter.format( &tree );
+  let output = formatter.format( &tree ).unwrap_or_default();
 
   println!( "{output}" );
 

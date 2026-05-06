@@ -170,6 +170,15 @@ where
         {
           if let serde_yaml::Value::String( key_str ) = key
           {
+            // Fix(issue-BUG1): skip metadata fields — same filter as load_config_file
+            // Root cause: flat-format fallback was not filtering metadata fields,
+            //   causing "version", "last_modified", "metadata" to be promoted to
+            //   config parameters on the next save.
+            // Pitfall: every flat-format parsing path must apply identical filters.
+            if key_str == "version" || key_str == "last_modified" || key_str == "metadata"
+            {
+              continue;
+            }
             parsed_config.insert( key_str.clone(), yaml_to_json( value.clone() ) );
           }
         }

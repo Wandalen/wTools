@@ -1,5 +1,6 @@
 //! Test suite for the `strs_tools` crate.
 
+// allow: the_module alias may not be used in all cfg combinations; required for inc/ sub-modules
 #[ allow( unused_imports ) ]
 use strs_tools as the_module;
 mod inc;

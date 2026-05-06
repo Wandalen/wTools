@@ -16,9 +16,6 @@ Derive to clone dyn structures.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
 
 [lints]
 workspace = true
@@ -34,11 +31,11 @@ proc-macro = true
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-enabled = [ "macro_tools/enabled", "component_model_types/enabled" ]
+enabled = [ "dep:macro_tools", "macro_tools/enabled", "dep:component_model_types", "component_model_types/enabled" ]
 
 [dependencies]
-macro_tools = { workspace = true, features = [ "attr", "attr_prop", "ct", "diag", "generic_params", "punctuated", "phantom", "item_struct", "quantifier" ] } # qqq : optimize set of features
-component_model_types = { workspace = true, features = [ "types_component_assign" ] }
+macro_tools = { workspace = true, optional = true, features = [ "attr", "attr_prop", "ct", "diag", "generic_params", "punctuated", "phantom", "item_struct", "quantifier" ] } # qqq : optimize set of features
+component_model_types = { workspace = true, optional = true, features = [ "types_component_assign" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }

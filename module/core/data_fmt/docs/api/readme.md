@@ -7,6 +7,12 @@
 - **In Scope**: Data types, builders, config types, formatter APIs.
 - **Out of Scope**: Behavioral invariants (see `invariant/`), feature guides (see `feature/`).
 
+### Infrastructure
+
+| File | Responsibility |
+|------|----------------|
+| `procedure.md` | Operational procedure for creating and updating API doc instances |
+
 ### Overview Table
 
 | ID | Name | Purpose | Status |

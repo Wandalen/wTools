@@ -4,12 +4,12 @@
 
 - **Purpose:** Show how to construct `ExitStatus` values in tests without spawning real processes.
 - **Responsibility:** Documents the pattern for using `synthetic_exit_status()` and its wrappers to simulate process success/failure outcomes in test code.
-- **In Scope:** Using `synthetic_success_status()`, `synthetic_failure_status()`, and `synthetic_exit_status()` as test fixtures; valid code range; `#[must_use]` behavior.
+- **In Scope:** Using `synthetic_success_status()`, `synthetic_failure_status()`, and `synthetic_exit_status()` as test fixtures; valid code range; must-use behavior.
 - **Out of Scope:** Process spawning (→ `api/001`); PID-based monitoring (→ `api/005`); actual exit code propagation from real processes.
 
 ### Abstract
 
-`std::process::ExitStatus` has no public constructor. Code that works with `ExitStatus` values — for example, test assertions against exit code semantics — normally requires spawning a real process. `synthetic_exit_status()` and its convenience wrappers provide direct construction without spawning, enabling isolated unit tests.
+`ExitStatus` has no public constructor. Code that works with exit status values — for example, test assertions against exit code semantics — normally requires spawning a real process. `synthetic_exit_status()` and its convenience wrappers provide direct construction without spawning, enabling isolated unit tests.
 
 ### Pattern
 
@@ -38,12 +38,12 @@ assert!( !custom.success() );
 ### Notes
 
 - **Valid range is 0–255.** On Unix, only the low 8 bits are preserved in the POSIX `waitpid` status word. `synthetic_exit_status(256)` produces `code() == Some(0)` yet `success() == false` — inconsistent semantics. Validate input range before calling if the code comes from external input.
-- **All three functions are `#[must_use]`.** Constructing an `ExitStatus` and not using it is a compile-time warning.
-- **Platform encoding is hidden.** Unix uses `code << 8` (POSIX waitpid format); Windows uses `code as u32` directly. Callers pass the same `i32` on all platforms and get consistent `code()` and `success()` behavior.
+- **All three functions are must-use.** Constructing an exit status and not using it is a compile-time warning.
+- **Platform encoding is hidden.** Unix shifts the code left by 8 bits (POSIX waitpid format); Windows uses the code value directly. Callers pass the same integer on all platforms and get consistent `code()` and `success()` behavior.
 
 ### Cross-References
 
 | Type | File | Responsibility |
 |------|------|----------------|
-| api | [api/003_exit_status_api.md](../api/003_exit_status_api.md) | Full function signatures and platform encoding detail |
-| feature | [feature/004_exit_status_synthesis.md](../feature/004_exit_status_synthesis.md) | Design rationale for synthetic status construction |
+| doc | [api/003_exit_status_api.md](../api/003_exit_status_api.md) | Full function signatures and platform encoding detail |
+| doc | [feature/004_exit_status_synthesis.md](../feature/004_exit_status_synthesis.md) | Design rationale for synthetic status construction |

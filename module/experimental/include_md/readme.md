@@ -1,4 +1,3 @@
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: include_md
 <!--{ generate.module_header.start() }-->
@@ -9,16 +8,7 @@ Include markdown file or its section.
 
 **⚠️ Status: Placeholder Crate**
 
-This crate is currently a placeholder with no functionality implemented. The `include_md!` macro and related features described below are planned but not yet available. See `spec.md` for the complete specification of intended functionality.
-
-### Basic use-case (Planned)
-
-<!-- {{# generate.module{} #}} -->
-
-```rust
-use include_md::*;
-
-```
+This crate is currently a placeholder with no functionality implemented.
 
 ### To add to your project
 
@@ -26,9 +16,3 @@ use include_md::*;
 cargo add include_md
 ```
 
-### Try out from the repository
-
-``` shell test
-# Note: Example not yet implemented
-# Planned location: sample/rust/include_md_trivial
-```

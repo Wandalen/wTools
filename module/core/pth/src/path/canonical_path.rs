@@ -9,9 +9,10 @@
 ///
 /// # Usage
 ///
-/// ```rust,ignore
+/// ```rust
 /// use pth::CanonicalPath;
-/// let path: CanonicalPath = CanonicalPath::try_from("/some/path")?;
+/// let path : CanonicalPath = CanonicalPath ::try_from( "/some/path" ).unwrap();
+/// let _ = path;
 /// ```
 ///
 /// # Note

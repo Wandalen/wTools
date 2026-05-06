@@ -24,8 +24,8 @@ impl ConfigCommand
   #[ tokio ::main ]
   async fn add_command( o: VerifiedCommand )
   {
-   // qqq: could we print something on None value?
-   let Some( path ) = o.args.get_owned :: < PathBuf >( 0 ) else { return; };
+   let Some( path ) = o.args.get_owned :: < PathBuf >( 0 )
+   else { println!( "Error: config path argument is required." ); return; };
 
    let path_to_storage = std ::env ::var( "UNITORE_STORAGE_PATH" ).ok()
    .unwrap_or_else( || String ::from( "./_data" ) );
@@ -75,9 +75,9 @@ impl ConfigCommand
   #[ tokio ::main ]
   async fn delete_command( o: VerifiedCommand )
   {
-   // qqq: could we print something on None value?
-   let Some( path ) = o.args.get_owned :: < PathBuf >( 0 ) else { return; };
-   
+   let Some( path ) = o.args.get_owned :: < PathBuf >( 0 )
+   else { println!( "Error: config path argument is required." ); return; };
+
    let path_to_storage = std ::env ::var( "UNITORE_STORAGE_PATH" ).ok()
    .unwrap_or_else( || String ::from( "./_data" ) );
    let config = Config ::default().path( path_to_storage );
@@ -125,7 +125,7 @@ impl ConfigCommand
    "List all config files saved in storage.\n",
    "    Example: .config.list",
  ))
-   .routine( move | o: VerifiedCommand |
+   .routine( move | _o: VerifiedCommand |
    {
   let res = rt.block_on( async move
    {
@@ -138,7 +138,7 @@ impl ConfigCommand
   ;
   
   let feed_storage = FeedStorage ::init_storage( &config ).await?;
-  config_list( feed_storage, &o.args ).await
+  config_list( feed_storage ).await
  });
    match res
    {

@@ -1,0 +1,131 @@
+meta:
+  description: Cross-reference graph for all doc instances in pth
+  node_count: 7
+  edge_count: 18
+  component_count: 1
+  generated: 2026_04_26
+
+nodes:
+  - id: api/001
+    file: api/001_path_functions_api.md
+    label: Path Functions
+    entity: api
+
+  - id: api/002
+    file: api/002_type_wrappers_api.md
+    label: Type Wrappers
+    entity: api
+
+  - id: api/003
+    file: api/003_conversion_traits_api.md
+    label: Conversion Traits
+    entity: api
+
+  - id: feature/001
+    file: feature/001_path_normalization.md
+    label: Path Normalization
+    entity: feature
+
+  - id: feature/002
+    file: feature/002_path_type_system.md
+    label: Path Type System
+    entity: feature
+
+  - id: invariant/001
+    file: invariant/001_zero_dependencies.md
+    label: Zero Dependencies
+    entity: invariant
+
+  - id: invariant/002
+    file: invariant/002_fixed_output_format.md
+    label: Fixed Output Format
+    entity: invariant
+
+edges:
+  - from: api/001
+    to: invariant/001
+    via: typed_reference
+
+  - from: api/001
+    to: invariant/002
+    via: typed_reference
+
+  - from: api/001
+    to: feature/001
+    via: typed_reference
+
+  - from: api/002
+    to: invariant/001
+    via: typed_reference
+
+  - from: api/002
+    to: api/003
+    via: typed_reference
+
+  - from: api/002
+    to: feature/002
+    via: typed_reference
+
+  - from: api/003
+    to: api/002
+    via: typed_reference
+
+  - from: api/003
+    to: feature/002
+    via: typed_reference
+
+  - from: feature/001
+    to: api/001
+    via: typed_reference
+
+  - from: feature/001
+    to: invariant/001
+    via: typed_reference
+
+  - from: feature/001
+    to: invariant/002
+    via: typed_reference
+
+  - from: feature/002
+    to: api/002
+    via: typed_reference
+
+  - from: feature/002
+    to: api/003
+    via: typed_reference
+
+  - from: feature/002
+    to: invariant/001
+    via: typed_reference
+
+  - from: invariant/001
+    to: api/001
+    via: typed_reference
+
+  - from: invariant/001
+    to: feature/001
+    via: typed_reference
+
+  - from: invariant/002
+    to: api/001
+    via: typed_reference
+
+  - from: invariant/002
+    to: feature/001
+    via: typed_reference
+
+components:
+  - id: 1
+    label: pth documentation corpus
+    size: 7
+    isolated: false
+    nodes:
+      - api/001
+      - api/002
+      - api/003
+      - feature/001
+      - feature/002
+      - invariant/001
+      - invariant/002
+
+dangling_refs: []

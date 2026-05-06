@@ -12,7 +12,7 @@
 - **Version introduced:** 0.30.0
 - **Stability:** experimental
 - **Module path:** `process_tools::lifecycle`
-- **Platform:** `check` and `signal` are Unix-only (`#[cfg(unix)]`); `daemon` is Unix-only
+- **Platform:** `check` is Unix-only; `signal` is cross-platform; `daemon` is Unix-only
 
 ### Design
 
@@ -20,11 +20,11 @@ The `lifecycle` layer is organized into three cohesive sub-modules, each with a 
 
 **`check`** — PID-based process probing. Uses POSIX `kill(pid, 0)` (signal 0, null signal) to test process existence without sending a real signal. `EPERM` is treated as alive (the process exists but the caller lacks send permission). `wait_for_exit()` polls at 50 ms intervals rather than using `waitpid()` because the lifecycle layer owns no child process handle — it monitors arbitrary PIDs. `is_pidfile_alive()` composes file reading with the PID probe for daemon monitoring workflows.
 
-**`signal`** — Bidirectional POSIX signal table. A single `const SIGNALS: &[(i32, &str)]` slice is the single source of truth for both the name→number and number→name lookups. This prevents the two lookup directions from drifting out of sync. Signal numbers are Linux-specific; macOS/BSD differ for some user signals.
+**`signal`** — Bidirectional POSIX signal table. A single static signal table is the single source of truth for both the name→number and number→name lookups. This prevents the two lookup directions from drifting out of sync. Signal numbers are Linux-specific; macOS/BSD differ for some user signals. The signal module is cross-platform — lookup is pure data with no OS calls.
 
 **`daemon`** — Unix process daemonization. Covers the standard double-fork daemonization sequence and PID file management. Marked experimental because daemonization is complex, platform-specific, and interacts poorly with multi-threaded code.
 
-All `check` and `signal` functions compile only on Unix; the non-Unix stubs return `Err(Unsupported)` to preserve a callable API without silent no-ops.
+All `check` functions compile only on Unix; on non-Unix targets the stubs return an unsupported-platform error to preserve a callable API without silent no-ops.
 
 ### Example
 
@@ -58,8 +58,9 @@ All `check` and `signal` functions compile only on Unix; the non-Unix stubs retu
 | test | [tests/lifecycle_check_test.rs](../../tests/lifecycle_check_test.rs) | PID probe and wait_for_exit tests |
 | test | [tests/lifecycle_signal_test.rs](../../tests/lifecycle_signal_test.rs) | Signal name/number lookup tests |
 | test | [tests/lifecycle_daemon_test.rs](../../tests/lifecycle_daemon_test.rs) | Daemonization and PID file tests |
-| api | [api/004_signal_api.md](../api/004_signal_api.md) | Signal name/number lookup function signatures |
-| api | [api/005_check_api.md](../api/005_check_api.md) | Process liveness check function signatures |
-| api | [api/006_daemon_api.md](../api/006_daemon_api.md) | Daemonization and PID file management API |
-| feature | [feature/004_exit_status_synthesis.md](004_exit_status_synthesis.md) | Lifecycle outcomes can be represented as synthetic exit statuses |
-| feature | [feature/001_process_execution.md](001_process_execution.md) | Execution layer; lifecycle covers the post-spawn monitoring gap |
+| doc | [api/004_signal_api.md](../api/004_signal_api.md) | Signal name/number lookup function signatures |
+| doc | [api/005_check_api.md](../api/005_check_api.md) | Process liveness check function signatures |
+| doc | [api/006_daemon_api.md](../api/006_daemon_api.md) | Daemonization and PID file management API |
+| doc | [feature/004_exit_status_synthesis.md](004_exit_status_synthesis.md) | Lifecycle outcomes can be represented as synthetic exit statuses |
+| doc | [feature/001_process_execution.md](001_process_execution.md) | Execution layer; lifecycle covers the post-spawn monitoring gap |
+| task | [task/completed/001_extract_process_utilities_from_wplan.md](../../task/completed/001_extract_process_utilities_from_wplan.md) | Task that established the lifecycle module structure |

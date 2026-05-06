@@ -72,7 +72,7 @@
 //! - Integration tests: Real-world usage with colored output
 
 #![ cfg( feature = "enabled" ) ]
-use data_fmt::{ RowBuilder, TableFormatter, TableConfig };
+use data_fmt::{ RowBuilder, TableFormatter, TableConfig, Format };
 
 // ============================================================================
 // Basic Truncation Tests
@@ -83,14 +83,14 @@ fn test_truncate_long_cell_basic()
 {
   let data = RowBuilder::new( vec![ "Name".into() ] )
     .add_row( vec![ "Very long content that definitely exceeds the limit".into() ] )
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .max_column_width( Some( 20 ) )
     .truncation_marker( "...".to_string() );
 
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should contain truncation marker
   assert!( output.contains( "..." ), "Output should contain truncation marker" );
@@ -107,14 +107,14 @@ fn test_no_truncation_when_fits()
 {
   let data = RowBuilder::new( vec![ "Name".into() ] )
     .add_row( vec![ "Short".into() ] )
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .max_column_width( Some( 20 ) )
     .truncation_marker( "...".to_string() );
 
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should contain full text
   assert!( output.contains( "Short" ), "Output should contain full text" );
@@ -134,14 +134,14 @@ fn test_truncation_exact_fit()
   // Content exactly at max width - should NOT truncate
   let data = RowBuilder::new( vec![ "Name".into() ] )
     .add_row( vec![ "Exactly20Characters!".into() ] )  // 20 chars
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .max_column_width( Some( 20 ) )
     .truncation_marker( "...".to_string() );
 
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should contain full text
   assert!( output.contains( "Exactly20Characters!" ), "Exact fit should not truncate" );
@@ -153,14 +153,14 @@ fn test_truncation_one_over_limit()
   // Content one character over limit - should truncate
   let data = RowBuilder::new( vec![ "Name".into() ] )
     .add_row( vec![ "TwentyOneCharacters!!".into() ] )  // 21 chars
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .max_column_width( Some( 20 ) )
     .truncation_marker( "...".to_string() );
 
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should be truncated
   assert!( output.contains( "..." ), "One over should truncate" );
@@ -179,14 +179,14 @@ fn test_truncation_preserves_ansi_codes()
 
   let data = RowBuilder::new( vec![ "Name".into() ] )
     .add_row( vec![ colored.into() ] )
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .max_column_width( Some( 15 ) )
     .truncation_marker( "...".to_string() );
 
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should contain ANSI codes (color preserved)
   assert!( output.contains( "\x1b[31m" ), "Should preserve ANSI color codes" );
@@ -214,13 +214,13 @@ fn test_truncation_multiple_ansi_codes()
 
   let data = RowBuilder::new( vec![ "Colors".into() ] )
     .add_row( vec![ colored.into() ] )
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .max_column_width( Some( 15 ) );
 
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should contain truncation
   assert!( output.contains( "..." ), "Should truncate multicolor text" );
@@ -241,13 +241,13 @@ fn test_truncation_empty_string()
 {
   let data = RowBuilder::new( vec![ "Name".into() ] )
     .add_row( vec![ String::new().into() ] )
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .max_column_width( Some( 20 ) );
 
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should handle empty string gracefully
   assert!( !output.contains( "..." ), "Empty string should not show marker" );
@@ -259,14 +259,14 @@ fn test_truncation_marker_longer_than_limit()
   // Edge case: marker itself is longer than max width
   let data = RowBuilder::new( vec![ "Name".into() ] )
     .add_row( vec![ "Some text".into() ] )
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .max_column_width( Some( 5 ) )
     .truncation_marker( "...TRUNCATED".to_string() );  // 12 chars, longer than limit
 
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should handle gracefully (either show just marker or empty)
   // The exact behavior is implementation-defined, but shouldn't panic
@@ -278,13 +278,13 @@ fn test_truncation_very_small_limit()
 {
   let data = RowBuilder::new( vec![ "Name".into() ] )
     .add_row( vec![ "Text".into() ] )
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .max_column_width( Some( 1 ) );
 
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should handle very small limits
   assert!( output.contains( "..." ), "Should truncate with small limit" );
@@ -296,13 +296,13 @@ fn test_truncation_unicode_characters()
   // Unicode characters should count as visual width correctly
   let data = RowBuilder::new( vec![ "Name".into() ] )
     .add_row( vec![ "Hello 世界 and more text here".into() ] )
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .max_column_width( Some( 15 ) );
 
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should truncate (total visual length > 15)
   assert!( output.contains( "..." ), "Should truncate unicode text" );
@@ -320,13 +320,13 @@ fn test_truncation_with_bordered_style()
       "Alice".into(),
       "Very long description that should be truncated".into()
     ])
-    .build();
+    .build_view();
 
   let config = TableConfig::bordered()
     .max_column_width( Some( 20 ) );
 
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should contain borders and truncation
   assert!( output.contains( '|' ), "Should have borders" );
@@ -342,13 +342,13 @@ fn test_truncation_with_markdown_style()
       "Item".into(),
       "Very long value text here that exceeds limit".into()
     ])
-    .build();
+    .build_view();
 
   let config = TableConfig::markdown()
     .max_column_width( Some( 20 ) );
 
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should be valid markdown with truncation
   assert!( output.contains( '|' ), "Should have markdown pipes" );
@@ -360,13 +360,13 @@ fn test_truncation_with_grid_style()
 {
   let data = RowBuilder::new( vec![ "Column".into() ] )
     .add_row( vec![ "Long text that needs truncation here".into() ] )
-    .build();
+    .build_view();
 
   let config = TableConfig::grid()
     .max_column_width( Some( 20 ) );
 
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should have grid-style borders (pipes and dashes) and truncation
   assert!( output.contains( '|' ), "Should have grid pipes" );
@@ -382,13 +382,13 @@ fn test_truncation_with_csv_style()
       "Item".into(),
       "Very long value that should be truncated".into()
     ])
-    .build();
+    .build_view();
 
   let config = TableConfig::csv()
     .max_column_width( Some( 20 ) );
 
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // CSV should still work with truncation
   assert!( output.contains( ',' ), "Should have CSV commas" );
@@ -408,13 +408,13 @@ fn test_truncation_multiple_columns()
       "This is a very long text in column 2".into(),
       "Another long text in column 3 here".into()
     ])
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .max_column_width( Some( 15 ) );
 
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Both long columns should be truncated
   let truncation_count = output.matches( "..." ).count();
@@ -438,13 +438,13 @@ fn test_truncation_headers_and_data()
       "Data".into(),
       "Very long data text here".into()
     ])
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .max_column_width( Some( 15 ) );
 
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Both header and data should be truncated where needed
   let lines : Vec<&str> = output.lines().collect();
@@ -467,14 +467,14 @@ fn test_truncation_custom_marker()
 {
   let data = RowBuilder::new( vec![ "Name".into() ] )
     .add_row( vec![ "Very long content here that will be truncated".into() ] )
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .max_column_width( Some( 20 ) )
     .truncation_marker( " [more]".to_string() );
 
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should use custom marker
   assert!( output.contains( "[more]" ), "Should use custom truncation marker" );
@@ -486,14 +486,14 @@ fn test_truncation_empty_marker()
 {
   let data = RowBuilder::new( vec![ "Name".into() ] )
     .add_row( vec![ "Very long content that exceeds the width limit here".into() ] )
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .max_column_width( Some( 20 ) )
     .truncation_marker( String::new() );
 
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should truncate without marker
   assert!(

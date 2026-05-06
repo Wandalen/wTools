@@ -1,0 +1,84 @@
+last_updated: 2026_04_26
+nodes:
+  - id: feature/001
+    file: feature/001_itertools_reexports.md
+  - id: feature/002
+    file: feature/002_clonable_boxed_iterators.md
+  - id: feature/003
+    file: feature/003_iter_ext.md
+  - id: api/001
+    file: api/001_iter_traits.md
+  - id: api/002
+    file: api/002_iter_ext.md
+  - id: api/003
+    file: api/003_reexports.md
+  - id: invariant/001
+    file: invariant/001_clone_contract.md
+  - id: invariant/002
+    file: invariant/002_module_pattern.md
+  - id: invariant/003
+    file: invariant/003_no_std_compatibility.md
+edges:
+  - from: feature/001
+    to: api/003
+    via: typed_reference
+  - from: feature/001
+    to: invariant/002
+    via: typed_reference
+  - from: feature/001
+    to: invariant/003
+    via: typed_reference
+  - from: feature/002
+    to: api/001
+    via: typed_reference
+  - from: feature/002
+    to: invariant/001
+    via: typed_reference
+  - from: feature/002
+    to: invariant/002
+    via: typed_reference
+  - from: feature/003
+    to: api/002
+    via: typed_reference
+  - from: feature/003
+    to: invariant/002
+    via: typed_reference
+  - from: api/001
+    to: feature/002
+    via: typed_reference
+  - from: api/001
+    to: invariant/001
+    via: typed_reference
+  - from: api/002
+    to: feature/003
+    via: typed_reference
+  - from: api/002
+    to: api/001
+    via: typed_reference
+  - from: api/003
+    to: feature/001
+    via: typed_reference
+  - from: api/003
+    to: invariant/003
+    via: typed_reference
+  - from: invariant/001
+    to: feature/002
+    via: typed_reference
+  - from: invariant/001
+    to: api/001
+    via: typed_reference
+  - from: invariant/002
+    to: feature/001
+    via: typed_reference
+  - from: invariant/002
+    to: feature/002
+    via: typed_reference
+  - from: invariant/002
+    to: feature/003
+    via: typed_reference
+  - from: invariant/003
+    to: feature/001
+    via: typed_reference
+  - from: invariant/003
+    to: api/003
+    via: typed_reference

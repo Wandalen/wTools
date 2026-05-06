@@ -1,0 +1,71 @@
+meta:
+  description: Cross-reference graph for all doc instances in asbytes
+  node_count: 5
+  edge_count: 18
+  component_count: 1
+  generated: 2026_04_25
+
+nodes:
+  - id: api/001
+    file: api/001_as_bytes_trait.md
+    label: AsBytes Trait
+    entity: api
+
+  - id: api/002
+    file: api/002_into_bytes_trait.md
+    label: IntoBytes Trait
+    entity: api
+
+  - id: feature/001
+    file: feature/001_byte_conversion.md
+    label: Byte Conversion
+    entity: feature
+
+  - id: invariant/001
+    file: invariant/001_pod_safety.md
+    label: POD Safety
+    entity: invariant
+
+  - id: invariant/002
+    file: invariant/002_native_endian.md
+    label: Native Byte Order
+    entity: invariant
+
+edges:
+  # api/001 cross-references
+  - { from: api/001, to: feature/001,    via: typed_reference }
+  - { from: api/001, to: api/002,        via: typed_reference }
+  - { from: api/001, to: invariant/001,  via: typed_reference }
+  - { from: api/001, to: invariant/002,  via: typed_reference }
+  # api/002 cross-references
+  - { from: api/002, to: feature/001,    via: typed_reference }
+  - { from: api/002, to: api/001,        via: typed_reference }
+  - { from: api/002, to: invariant/001,  via: typed_reference }
+  - { from: api/002, to: invariant/002,  via: typed_reference }
+  # feature/001 cross-references
+  - { from: feature/001, to: api/001,       via: typed_reference }
+  - { from: feature/001, to: api/002,       via: typed_reference }
+  - { from: feature/001, to: invariant/001, via: typed_reference }
+  - { from: feature/001, to: invariant/002, via: typed_reference }
+  # invariant/001 cross-references
+  - { from: invariant/001, to: feature/001, via: typed_reference }
+  - { from: invariant/001, to: api/001,     via: typed_reference }
+  - { from: invariant/001, to: api/002,     via: typed_reference }
+  # invariant/002 cross-references
+  - { from: invariant/002, to: feature/001, via: typed_reference }
+  - { from: invariant/002, to: api/001,     via: typed_reference }
+  - { from: invariant/002, to: api/002,     via: typed_reference }
+
+components:
+  - id: 1
+    label: Full byte conversion documentation graph
+    size: 5
+    isolated: false
+    nodes:
+      - api/001
+      - api/002
+      - feature/001
+      - invariant/001
+      - invariant/002
+
+dangling_refs: []

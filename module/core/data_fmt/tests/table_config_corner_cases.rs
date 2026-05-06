@@ -76,7 +76,7 @@
 use data_fmt::
 {
   RowBuilder, TableFormatter, TableConfig,
-  ColumnSeparator,
+  ColumnSeparator, Format,
 };
 
 // ============================================================================
@@ -91,10 +91,10 @@ fn test_new_and_default_produce_identical_output()
 {
   let tree = RowBuilder::new( vec![ "X".into(), "Y".into() ] )
     .add_row( vec![ "a".into(), "b".into() ] )
-    .build();
+    .build_view();
 
-  let out_new = TableFormatter::with_config( TableConfig::new() ).format( &tree );
-  let out_default = TableFormatter::with_config( TableConfig::default() ).format( &tree );
+  let out_new = TableFormatter::with_config( TableConfig::new() ).format( &tree ).unwrap_or_default();
+  let out_default = TableFormatter::with_config( TableConfig::default() ).format( &tree ).unwrap_or_default();
 
   assert_eq!(
     out_new, out_default,
@@ -113,12 +113,12 @@ fn test_inner_padding_zero_removes_cell_spaces()
 {
   let tree = RowBuilder::new( vec![ "A".into(), "B".into() ] )
     .add_row( vec![ "1".into(), "2".into() ] )
-    .build();
+    .build_view();
 
   // Use bordered() as base (inner_padding defaults to 1 there) then override to 0
   let output = TableFormatter::with_config(
     TableConfig::bordered().inner_padding( 0 )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   // With inner_padding=0, rows should start with "|" immediately (no "|  " prefix)
   // bordered() + AsciiGrid separator → rows have leading pipe
@@ -144,11 +144,11 @@ fn test_inner_padding_three_adds_cell_spaces()
 {
   let tree = RowBuilder::new( vec![ "X".into() ] )
     .add_row( vec![ "val".into() ] )
-    .build();
+    .build_view();
 
   let output = TableFormatter::with_config(
     TableConfig::bordered().inner_padding( 3 )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   // With inner_padding=3 + bordered + AsciiGrid → rows start with "|   " (pipe + 3 spaces)
   assert!(
@@ -164,16 +164,16 @@ fn test_outer_padding_false_with_spaces_separator()
 {
   let tree = RowBuilder::new( vec![ "Name".into(), "Val".into() ] )
     .add_row( vec![ "Alice".into(), "42".into() ] )
-    .build();
+    .build_view();
 
   // plain() has outer_padding=true by default; override it
   let output_no_outer = TableFormatter::with_config(
     TableConfig::plain().outer_padding( false )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   let output_with_outer = TableFormatter::with_config(
     TableConfig::plain().outer_padding( true )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   // With outer_padding=false and Spaces(2) separator, content should differ from outer=true
   // Both must contain data
@@ -193,11 +193,11 @@ fn test_column_separator_pipe_character_appears_in_output()
 {
   let tree = RowBuilder::new( vec![ "Col1".into(), "Col2".into() ] )
     .add_row( vec![ "x".into(), "y".into() ] )
-    .build();
+    .build_view();
 
   let output = TableFormatter::with_config(
     TableConfig::new().column_separator( ColumnSeparator::Character( '|' ) )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   assert!(
     output.contains( '|' ),
@@ -216,11 +216,11 @@ fn test_max_column_width_none_preserves_full_content()
   let long_content = "This is a very long string that would be truncated if max_column_width were set";
   let tree = RowBuilder::new( vec![ "Col".into() ] )
     .add_row( vec![ long_content.into() ] )
-    .build();
+    .build_view();
 
   let output = TableFormatter::with_config(
     TableConfig::plain().max_column_width( None )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   assert!(
     output.contains( long_content ),
@@ -239,17 +239,17 @@ fn test_align_right_mixed_produces_different_padding()
 {
   let tree = RowBuilder::new( vec![ "A".into(), "B".into(), "C".into() ] )
     .add_row( vec![ "123".into(), "abc".into(), "999".into() ] )
-    .build();
+    .build_view();
 
   let output_mixed = TableFormatter::with_config(
     TableConfig::plain()
       .align_right( vec![ true, false, true ] )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   let output_all_left = TableFormatter::with_config(
     TableConfig::plain()
       .align_right( vec![ false, false, false ] )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   // Both must contain data
   assert!( output_mixed.contains( "123" ), "mixed alignment must contain data; output:\n{output_mixed}" );
@@ -272,9 +272,9 @@ fn test_unicode_box_single_column_uses_unicode_separator()
   let tree = RowBuilder::new( vec![ "Name".into() ] )
     .add_row( vec![ "Alice".into() ] )
     .add_row( vec![ "Bob".into() ] )
-    .build();
+    .build_view();
 
-  let output = TableFormatter::with_config( TableConfig::unicode_box() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::unicode_box() ).format( &tree ).unwrap_or_default();
   let lines : Vec< &str > = output.lines().collect();
 
   // Data rows must use │
@@ -309,9 +309,9 @@ fn test_unicode_box_five_columns_all_use_unicode_separator()
     "C1".into(), "C2".into(), "C3".into(), "C4".into(), "C5".into(),
   ])
     .add_row( vec![ "a".into(), "b".into(), "c".into(), "d".into(), "e".into() ] )
-    .build();
+    .build_view();
 
-  let output = TableFormatter::with_config( TableConfig::unicode_box() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::unicode_box() ).format( &tree ).unwrap_or_default();
 
   // Every data row must contain │
   for line in output.lines()
@@ -339,9 +339,9 @@ fn test_unicode_box_no_plain_dash_separator()
 {
   let tree = RowBuilder::new( vec![ "X".into(), "Y".into() ] )
     .add_row( vec![ "1".into(), "2".into() ] )
-    .build();
+    .build_view();
 
-  let output = TableFormatter::with_config( TableConfig::unicode_box() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::unicode_box() ).format( &tree ).unwrap_or_default();
 
   // Find the separator line (index 2: top_border=0, header=1, sep=2)
   // After border rendering, unicode_box produces: top_border → header → sep → rows → bottom
@@ -381,12 +381,12 @@ fn test_align_right_empty_vec_means_left_aligned()
 {
   let tree = RowBuilder::new( vec![ "A".into(), "B".into() ] )
     .add_row( vec![ "hi".into(), "world".into() ] )
-    .build();
+    .build_view();
 
   // Empty align_right should not panic and should produce output
   let output = TableFormatter::with_config(
     TableConfig::plain().align_right( vec![] )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   assert!(
     output.contains( "hi" ) && output.contains( "world" ),
@@ -400,12 +400,12 @@ fn test_align_right_fewer_entries_than_columns_no_panic()
 {
   let tree = RowBuilder::new( vec![ "A".into(), "B".into(), "C".into() ] )
     .add_row( vec![ "1".into(), "2".into(), "3".into() ] )
-    .build();
+    .build_view();
 
   // Only specify alignment for first column — columns 2 and 3 get default (left)
   let output = TableFormatter::with_config(
     TableConfig::plain().align_right( vec![ true ] )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   assert!(
     output.contains( '1' ) && output.contains( '2' ) && output.contains( '3' ),
@@ -419,12 +419,12 @@ fn test_align_right_more_entries_than_columns_no_panic()
 {
   let tree = RowBuilder::new( vec![ "A".into() ] )
     .add_row( vec![ "x".into() ] )
-    .build();
+    .build_view();
 
   // Specify alignment for 5 columns but table only has 1
   let output = TableFormatter::with_config(
     TableConfig::plain().align_right( vec![ true, false, true, false, true ] )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   assert!(
     output.contains( 'x' ),
@@ -442,12 +442,12 @@ fn test_column_widths_wider_than_content_adds_padding()
 {
   let tree = RowBuilder::new( vec![ "N".into() ] )
     .add_row( vec![ "A".into() ] )
-    .build();
+    .build_view();
 
   // Force a 20-char column for 1-char content
   let output = TableFormatter::with_config(
     TableConfig::plain().column_widths( vec![ 20 ] )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   // The row should be padded to 20 chars for the column (plus any outer padding)
   assert!(
@@ -470,12 +470,12 @@ fn test_column_widths_narrower_than_content_no_panic()
 {
   let tree = RowBuilder::new( vec![ "Header".into() ] )
     .add_row( vec![ "Very long content".into() ] )
-    .build();
+    .build_view();
 
   // Force 3-char column for 17-char content
   let output = TableFormatter::with_config(
     TableConfig::plain().column_widths( vec![ 3 ] )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   // Must not panic and must render data (content will overflow width but that's OK)
   assert!(
@@ -490,15 +490,15 @@ fn test_column_widths_empty_vec_uses_auto_sizing()
 {
   let tree = RowBuilder::new( vec![ "Col".into() ] )
     .add_row( vec![ "DataValue".into() ] )
-    .build();
+    .build_view();
 
   let output_auto = TableFormatter::with_config(
     TableConfig::plain().column_widths( vec![] )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   let output_default = TableFormatter::with_config(
     TableConfig::plain()
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   // Both should produce identical output (empty override = auto-sizing)
   assert_eq!(
@@ -517,7 +517,7 @@ fn test_single_column_single_row_renders()
 {
   let tree = RowBuilder::new( vec![ "Col".into() ] )
     .add_row( vec![ "Val".into() ] )
-    .build();
+    .build_view();
 
   for ( name, config ) in [
     ( "plain", TableConfig::plain() ),
@@ -527,7 +527,7 @@ fn test_single_column_single_row_renders()
     ( "markdown", TableConfig::markdown() ),
   ]
   {
-    let output = TableFormatter::with_config( config ).format( &tree );
+    let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
     assert!(
       output.contains( "Val" ),
       "{name} must render single-column/single-row table; output:\n{output}"
@@ -548,9 +548,9 @@ fn test_single_column_many_rows_renders_all()
   {
     builder.add_row_mut( vec![ format!( "row{i}" ).into() ] );
   }
-  let tree = builder.build();
+  let tree = builder.build_view();
 
-  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
 
   for i in 0..10
   {
@@ -569,9 +569,9 @@ fn test_many_columns_single_row_renders_all()
     "H1".into(), "H2".into(), "H3".into(), "H4".into(), "H5".into(), "H6".into(),
   ])
     .add_row( vec![ "a".into(), "b".into(), "c".into(), "d".into(), "e".into(), "f".into() ] )
-    .build();
+    .build_view();
 
-  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
 
   for col in [ "H1", "H2", "H3", "H4", "H5", "H6", "a", "b", "c", "d", "e", "f" ]
   {
@@ -590,7 +590,7 @@ fn test_empty_cell_content_renders_without_panic()
   let tree = RowBuilder::new( vec![ "A".into(), "B".into() ] )
     .add_row( vec![ String::new().into(), "value".into() ] )
     .add_row( vec![ "content".into(), String::new().into() ] )
-    .build();
+    .build_view();
 
   for ( name, config ) in [
     ( "plain", TableConfig::plain() ),
@@ -598,7 +598,7 @@ fn test_empty_cell_content_renders_without_panic()
     ( "unicode_box", TableConfig::unicode_box() ),
   ]
   {
-    let output = TableFormatter::with_config( config ).format( &tree );
+    let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
     assert!(
       output.contains( "value" ) && output.contains( "content" ),
       "{name} must render rows with empty cells; output:\n{output}"
@@ -612,9 +612,9 @@ fn test_header_with_empty_column_name_renders()
 {
   let tree = RowBuilder::new( vec![ String::new(), "Value".into() ] )
     .add_row( vec![ "key".into(), "42".into() ] )
-    .build();
+    .build_view();
 
-  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
 
   assert!(
     output.contains( "key" ) && output.contains( "42" ),
@@ -629,9 +629,9 @@ fn test_very_long_cell_content_renders_without_truncation_by_default()
   let long = "x".repeat( 120 );
   let tree = RowBuilder::new( vec![ "Col".into() ] )
     .add_row( vec![ long.clone().into() ] )
-    .build();
+    .build_view();
 
-  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
 
   assert!(
     output.contains( &long ),
@@ -651,12 +651,12 @@ fn test_max_column_width_zero_no_panic()
 {
   let tree = RowBuilder::new( vec![ "Col".into() ] )
     .add_row( vec![ "some text".into() ] )
-    .build();
+    .build_view();
 
   // Should not panic regardless of output
   let output = TableFormatter::with_config(
     TableConfig::plain().max_column_width( Some( 0 ) )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   assert!( !output.is_empty(), "max_column_width(0) must produce non-empty output; output:{output:?}" );
 }
@@ -670,13 +670,13 @@ fn test_truncation_at_exact_max_width_no_truncation_marker()
   // 10 chars exactly at the limit
   let tree = RowBuilder::new( vec![ "Col".into() ] )
     .add_row( vec![ "0123456789".into() ] )  // exactly 10 chars
-    .build();
+    .build_view();
 
   let output = TableFormatter::with_config(
     TableConfig::plain()
       .max_column_width( Some( 10 ) )
       .truncation_marker( "...".to_string() )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   assert!(
     output.contains( "0123456789" ),
@@ -701,7 +701,7 @@ fn test_all_nine_presets_render_data_without_panic()
 {
   let tree = RowBuilder::new( vec![ "Name".into(), "Val".into() ] )
     .add_row( vec![ "Alice".into(), "1".into() ] )
-    .build();
+    .build_view();
 
   let presets = [
     ( "plain",       TableConfig::plain() ),
@@ -717,7 +717,7 @@ fn test_all_nine_presets_render_data_without_panic()
 
   for ( name, config ) in presets
   {
-    let output = TableFormatter::with_config( config ).format( &tree );
+    let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
     assert!(
       output.contains( "Alice" ),
       "{name} preset must render data 'Alice'; output:\n{output}"
@@ -735,10 +735,10 @@ fn test_compact_denser_than_plain()
 {
   let tree = RowBuilder::new( vec![ "A".into(), "B".into(), "C".into() ] )
     .add_row( vec![ "x".into(), "y".into(), "z".into() ] )
-    .build();
+    .build_view();
 
-  let compact_out = TableFormatter::with_config( TableConfig::compact() ).format( &tree );
-  let plain_out   = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
+  let compact_out = TableFormatter::with_config( TableConfig::compact() ).format( &tree ).unwrap_or_default();
+  let plain_out   = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
 
   // compact should produce shorter lines than plain (1-space vs 2-space separator)
   let compact_data : Vec< &str > = compact_out.lines()
@@ -770,11 +770,11 @@ fn test_min_column_width_raises_short_content_to_floor()
 {
   let tree = RowBuilder::new( vec![ "H".into() ] )
     .add_row( vec![ "abc".into() ] )
-    .build();
+    .build_view();
 
   let output = TableFormatter::with_config(
     TableConfig::plain().min_column_width( 10 )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   let data_line = output.lines().find( | l | l.contains( "abc" ) )
     .expect( "must have data row with 'abc'" );
@@ -792,13 +792,13 @@ fn test_min_column_width_with_max_column_width_both_honored()
 {
   let tree = RowBuilder::new( vec![ "H".into() ] )
     .add_row( vec![ "ab".into() ] )
-    .build();
+    .build_view();
 
   let output = TableFormatter::with_config(
     TableConfig::plain()
       .min_column_width( 5 )
       .max_column_width( Some( 20 ) )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   let data_line = output.lines().find( | l | l.contains( "ab" ) )
     .expect( "must have data row with 'ab'" );
@@ -822,12 +822,12 @@ fn test_min_column_width_zero_is_no_op()
 {
   let tree = RowBuilder::new( vec![ "H".into() ] )
     .add_row( vec![ "xyz".into() ] )
-    .build();
+    .build_view();
 
-  let output_default = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
+  let output_default = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
   let output_zero    = TableFormatter::with_config(
     TableConfig::plain().min_column_width( 0 )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   assert_eq!(
     output_default, output_zero,
@@ -842,13 +842,13 @@ fn test_min_column_width_at_exact_match_no_over_expansion()
 {
   let tree = RowBuilder::new( vec![ "H".into() ] )
     .add_row( vec![ "12345678".into() ] )   // exactly 8 chars
-    .build();
+    .build_view();
 
   let output_with_floor = TableFormatter::with_config(
     TableConfig::plain().min_column_width( 8 )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
-  let output_no_floor = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
+  let output_no_floor = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
 
   // Content is already 8 chars; floor of 8 changes nothing
   assert_eq!(
@@ -865,13 +865,13 @@ fn test_min_column_width_wins_over_max_column_width_for_short_content()
 {
   let tree = RowBuilder::new( vec![ "H".into() ] )
     .add_row( vec![ "a".into() ] )
-    .build();
+    .build_view();
 
   let output = TableFormatter::with_config(
     TableConfig::plain()
       .min_column_width( 5 )
       .max_column_width( Some( 3 ) )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   let data_line = output.lines().find( | l | l.contains( 'a' ) )
     .expect( "must have data row" );
@@ -891,11 +891,11 @@ fn test_min_column_width_does_not_shrink_wider_content()
   let content = "x".repeat( 15 );
   let tree = RowBuilder::new( vec![ "H".into() ] )
     .add_row( vec![ content.clone().into() ] )
-    .build();
+    .build_view();
 
   let output = TableFormatter::with_config(
     TableConfig::plain().min_column_width( 10 )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   let data_line = output.lines().find( | l | l.contains( &content ) )
     .expect( "must have data row with 15-char content" );
@@ -914,19 +914,19 @@ fn test_column_widths_override_bypasses_min_column_width()
 {
   let tree = RowBuilder::new( vec![ "H".into() ] )
     .add_row( vec![ "a".into() ] )
-    .build();
+    .build_view();
 
   // Override forces width=2; floor of 10 must NOT apply
   let output_override = TableFormatter::with_config(
     TableConfig::plain()
       .column_widths( vec![ 2 ] )
       .min_column_width( 10 )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   // No override (min=10 applies): column = 10
   let output_floor_only = TableFormatter::with_config(
     TableConfig::plain().min_column_width( 10 )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   // Override output should be shorter (width=2) than floor-only (width=10)
   let override_line = output_override.lines().find( | l | l.contains( 'a' ) )
@@ -948,11 +948,11 @@ fn test_min_column_width_applied_when_content_is_empty()
   // Header "H" (1 char), data row with empty cell (0 chars) → column width = 1 without floor
   let tree = RowBuilder::new( vec![ "H".into() ] )
     .add_row( vec![ "".into() ] )  // empty cell → column width = max(1, 0) = 1
-    .build();
+    .build_view();
 
   let output = TableFormatter::with_config(
     TableConfig::plain().min_column_width( 5 )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   let header_line = output.lines().find( | l | l.contains( 'H' ) )
     .expect( "must have header row containing 'H'" );
@@ -970,12 +970,12 @@ fn test_min_column_width_large_value_no_panic()
 {
   let tree = RowBuilder::new( vec![ "H".into() ] )
     .add_row( vec![ "v".into() ] )
-    .build();
+    .build_view();
 
   // Should not panic; rendering with very wide columns is allowed
   let output = TableFormatter::with_config(
     TableConfig::plain().min_column_width( 10_000 )
-  ).format( &tree );
+  ).format( &tree ).unwrap_or_default();
 
   assert!(
     output.contains( 'v' ),
@@ -1028,9 +1028,9 @@ fn test_unicode_box_all_lines_same_display_width()
   let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
     .add_row( vec![ "Alice".into(), "30".into() ] )
     .add_row( vec![ "Bob".into(), "25".into() ] )
-    .build();
+    .build_view();
 
-  let output = TableFormatter::with_config( TableConfig::unicode_box() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::unicode_box() ).format( &tree ).unwrap_or_default();
   let lines : Vec< &str > = output.lines().filter( | l | !l.is_empty() ).collect();
 
   // Expected structure: top_border + header + header_sep + data*2 + bottom = 6 lines
@@ -1088,9 +1088,9 @@ fn test_markdown_all_lines_same_display_width()
 {
   let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
     .add_row( vec![ "Alice".into(), "30".into() ] )
-    .build();
+    .build_view();
 
-  let output = TableFormatter::with_config( TableConfig::markdown() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::markdown() ).format( &tree ).unwrap_or_default();
   let lines : Vec< &str > = output.lines().filter( | l | !l.is_empty() ).collect();
 
   assert!(
@@ -1119,9 +1119,9 @@ fn test_bordered_all_lines_same_display_width()
 {
   let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
     .add_row( vec![ "Alice".into(), "30".into() ] )
-    .build();
+    .build_view();
 
-  let output = TableFormatter::with_config( TableConfig::bordered() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::bordered() ).format( &tree ).unwrap_or_default();
   let lines : Vec< &str > = output.lines().filter( | l | !l.is_empty() ).collect();
 
   assert!( lines.len() >= 3 );
@@ -1146,9 +1146,9 @@ fn test_grid_all_lines_same_display_width()
   let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
     .add_row( vec![ "Alice".into(), "30".into() ] )
     .add_row( vec![ "Bob".into(), "25".into() ] )
-    .build();
+    .build_view();
 
-  let output = TableFormatter::with_config( TableConfig::grid() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::grid() ).format( &tree ).unwrap_or_default();
   let lines : Vec< &str > = output.lines().filter( | l | !l.is_empty() ).collect();
 
   assert!( lines.len() >= 5 );

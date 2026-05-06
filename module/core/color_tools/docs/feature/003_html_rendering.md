@@ -63,7 +63,7 @@ The field is skipped during serde serialization (`#[serde(skip)]`) to preserve J
 
 ### Cross-References
 
-| Entity | File | Relationship |
-|--------|------|-------------|
-| feature/001 | [DecoratedText](001_decorated_text.md) | Parent feature — base type this feature extends |
-| api/001 | [DecoratedText Type](../api/001_decorated_text_type.md) | `render_html()` and `named_color` in the API reference |
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | [DecoratedText](001_decorated_text.md) | Parent feature — base type this feature extends |
+| doc | [DecoratedText Type](../api/001_decorated_text_type.md) | `render_html()` and `named_color` in the API reference |

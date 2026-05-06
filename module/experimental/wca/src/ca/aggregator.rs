@@ -29,7 +29,7 @@ mod private
  };
   use former ::StoragePreform;
   use error_tools ::untyped ::Error as wError;
-  use iter_tools ::Itertools;
+  use ::itertools ::Itertools;
 
   /// Order of commands and properties.
   #[ derive( Debug, Default, Clone, Copy, Eq, PartialOrd, PartialEq ) ]

@@ -1,0 +1,106 @@
+last_updated: 2026_05_02
+
+nodes:
+  - feature/001
+  - feature/002
+  - feature/003
+  - feature/004
+  - feature/005
+  - api/001
+  - api/002
+  - api/003
+  - api/004
+  - invariant/001
+  - invariant/002
+  - invariant/003
+  - invariant/004
+  - pattern/001
+  - pattern/002
+
+edges:
+  # feature/001 (Script Execution) — central hub
+  - { from: feature/001, to: api/001,      via: typed_reference }
+  - { from: api/001,     to: feature/001,  via: typed_reference }
+  - { from: feature/001, to: api/002,      via: typed_reference }
+  - { from: api/002,     to: feature/001,  via: typed_reference }
+  - { from: feature/001, to: feature/002,  via: typed_reference }
+  - { from: feature/002, to: feature/001,  via: typed_reference }
+  - { from: feature/001, to: feature/003,  via: typed_reference }
+  - { from: feature/003, to: feature/001,  via: typed_reference }
+  - { from: feature/001, to: feature/004,  via: typed_reference }
+  - { from: feature/004, to: feature/001,  via: typed_reference }
+  - { from: feature/001, to: invariant/001, via: typed_reference }
+  - { from: invariant/001, to: feature/001, via: typed_reference }
+  - { from: feature/001, to: invariant/002, via: typed_reference }
+  - { from: invariant/002, to: feature/001, via: typed_reference }
+  - { from: feature/001, to: invariant/004, via: typed_reference }
+  - { from: invariant/004, to: feature/001, via: typed_reference }
+  - { from: feature/001, to: pattern/001,  via: typed_reference }
+  - { from: pattern/001, to: feature/001,  via: typed_reference }
+
+  # feature/002 (Output Capture)
+  - { from: feature/002, to: api/003,      via: typed_reference }
+  - { from: api/003,     to: feature/002,  via: typed_reference }
+  - { from: feature/002, to: feature/004,  via: typed_reference }
+  - { from: feature/004, to: feature/002,  via: typed_reference }
+  - { from: feature/002, to: invariant/003, via: typed_reference }
+  - { from: invariant/003, to: feature/002, via: typed_reference }
+  - { from: feature/002, to: invariant/004, via: typed_reference }
+  - { from: invariant/004, to: feature/002, via: typed_reference }
+
+  # feature/003 (Artifact Management)
+  - { from: feature/003, to: invariant/001, via: typed_reference }
+  - { from: invariant/001, to: feature/003, via: typed_reference }
+  - { from: feature/003, to: invariant/002, via: typed_reference }
+  - { from: invariant/002, to: feature/003, via: typed_reference }
+  - { from: feature/003, to: feature/005,  via: typed_reference }
+  - { from: feature/005, to: feature/003,  via: typed_reference }
+
+  # feature/004 (Programmatic Test Integration)
+  - { from: feature/004, to: api/002,      via: typed_reference }
+  - { from: api/002,     to: feature/004,  via: typed_reference }
+  - { from: feature/004, to: api/003,      via: typed_reference }
+  - { from: api/003,     to: feature/004,  via: typed_reference }
+
+  # feature/005 (Configuration Surface)
+  - { from: feature/005, to: api/001,      via: typed_reference }
+  - { from: api/001,     to: feature/005,  via: typed_reference }
+  - { from: feature/005, to: api/004,      via: typed_reference }
+  - { from: api/004,     to: feature/005,  via: typed_reference }
+  - { from: feature/005, to: pattern/002,  via: typed_reference }
+  - { from: pattern/002, to: feature/005,  via: typed_reference }
+
+  # api/001 (Builder API)
+  - { from: api/001,     to: pattern/001,  via: typed_reference }
+  - { from: pattern/001, to: api/001,      via: typed_reference }
+  - { from: api/001,     to: pattern/002,  via: typed_reference }
+  - { from: pattern/002, to: api/001,      via: typed_reference }
+
+  # api/002 (Runner API)
+  - { from: api/002,     to: api/001,      via: typed_reference }
+  - { from: api/001,     to: api/002,      via: typed_reference }
+  - { from: api/002,     to: api/003,      via: typed_reference }
+  - { from: api/003,     to: api/002,      via: typed_reference }
+  - { from: api/002,     to: api/004,      via: typed_reference }
+  - { from: api/004,     to: api/002,      via: typed_reference }
+  - { from: api/002,     to: invariant/001, via: typed_reference }
+  - { from: invariant/001, to: api/002,    via: typed_reference }
+  - { from: api/002,     to: invariant/004, via: typed_reference }
+  - { from: invariant/004, to: api/002,    via: typed_reference }
+
+  # api/003 (Output API)
+  - { from: api/003,     to: invariant/003, via: typed_reference }
+  - { from: invariant/003, to: api/003,    via: typed_reference }
+
+  # api/004 (CLI Interface)
+  - { from: api/004,     to: pattern/002,  via: typed_reference }
+
+  # invariant/001 (Cleanup Guarantee)
+  - { from: invariant/001, to: invariant/002, via: typed_reference }
+  - { from: invariant/002, to: invariant/001, via: typed_reference }
+  - { from: invariant/001, to: pattern/001,  via: typed_reference }
+  - { from: pattern/001,  to: invariant/001, via: typed_reference }
+
+  # invariant/002 (Execution Isolation)
+  - { from: invariant/002, to: invariant/003, via: typed_reference }
+  - { from: invariant/003, to: invariant/002, via: typed_reference }

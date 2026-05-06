@@ -1,0 +1,49 @@
+meta:
+  description: Cross-reference graph for all doc instances in clone_dyn
+  node_count: 5
+  edge_count: 10
+  component_count: 1
+  generated: 2026_04_25
+
+nodes:
+  - id: feature/001
+    file: feature/001_macro_usage.md
+    label: Macro-Based Cloning
+    entity: feature
+  - id: feature/002
+    file: feature/002_manual_impl.md
+    label: Manual Clone Implementation
+    entity: feature
+  - id: invariant/001
+    file: invariant/001_box_only.md
+    label: Box-Only Restriction
+    entity: invariant
+  - id: invariant/002
+    file: invariant/002_quality_standards.md
+    label: Quality Standards
+    entity: invariant
+  - id: api/001
+    file: api/001_facade_api.md
+    label: Facade Public Surface
+    entity: api
+
+edges:
+  - { from: feature/001, to: feature/002, via: typed_reference }
+  - { from: feature/001, to: invariant/001, via: typed_reference }
+  - { from: feature/001, to: api/001, via: typed_reference }
+  - { from: feature/002, to: feature/001, via: typed_reference }
+  - { from: feature/002, to: api/001, via: typed_reference }
+  - { from: invariant/001, to: feature/001, via: typed_reference }
+  - { from: invariant/001, to: api/001, via: typed_reference }
+  - { from: invariant/002, to: api/001, via: typed_reference }
+  - { from: api/001, to: feature/001, via: typed_reference }
+  - { from: api/001, to: invariant/001, via: typed_reference }
+
+components:
+  - id: 1
+    label: clone_dyn documentation corpus
+    size: 5
+    isolated: false
+    nodes: [feature/001, feature/002, invariant/001, invariant/002, api/001]
+
+dangling_refs: []

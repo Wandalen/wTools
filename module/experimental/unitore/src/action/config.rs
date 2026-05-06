@@ -85,7 +85,7 @@ pub async fn config_delete( mut storage: FeedStorage< SledStorage >, path: &Path
 ///
 /// # Errors
 /// Returns error if operation fails.
-pub async fn config_list( mut storage: FeedStorage< SledStorage >, _args: &wca ::executor ::Args ) -> Result< impl Report >
+pub async fn config_list( mut storage: FeedStorage< SledStorage > ) -> Result< impl Report >
 {
   Ok( ConfigReport ::new( storage.config_list().await? ) )
 }
@@ -112,8 +112,6 @@ impl core ::fmt ::Display for ConfigReport
 {
   fn fmt( &self, f: &mut core ::fmt ::Formatter< '_ > ) -> core ::fmt ::Result
   {
-  const EMPTY_CELL: &str = "";
-
   match &self.payload
   {
    Payload ::Insert( number ) =>

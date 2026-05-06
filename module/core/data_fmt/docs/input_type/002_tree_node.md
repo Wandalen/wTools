@@ -2,7 +2,7 @@
 
 ### Scope
 
-- **Purpose**: Document the `TreeNode<T>` generic Rust struct used for both hierarchical and legacy tabular input.
+- **Purpose**: Document the `TreeNode` generic struct used for both hierarchical and legacy tabular input.
 - **Responsibility**: Document TreeNode struct definition, specializations, and trait implementations.
 - **In Scope**: Struct fields, type parameter specializations, trait implementations, and usage patterns.
 - **Out of Scope**: Conceptual shape (see `../input_model/`), formatter behavior (see `../feature/`).
@@ -18,20 +18,13 @@
 
 ### Type Definition
 
-```rust
-pub struct TreeNode< T >
-{
-  pub name : String,
-  pub data : Option< T >,
-  pub children : Vec< TreeNode< T > >,
-}
-```
+`TreeNode` has three public fields: `name` holds the node label; `data` holds an optional payload — absent for directory (intermediate) nodes and present for leaf nodes; `children` holds a list of child nodes of the same type.
 
 ### Specializations
 
 The same struct serves three distinct roles depending on the type parameter:
 
-#### TreeNode<String> — Legacy Tabular
+#### Specialization: Legacy Tabular (String data)
 
 Tables encoded as trees: root has row children, each row has column-named children with cell data.
 
@@ -49,7 +42,7 @@ root
 - **Consumed by:** `TableShapedFormatter` trait (deprecated — Table, Expanded)
 - **Input model:** Tabular (legacy encoding)
 
-#### TreeNode<T> — Generic Hierarchical
+#### Specialization: Generic Hierarchical (typed data)
 
 File trees, dependency graphs, or any hierarchy with typed leaf data.
 
@@ -62,11 +55,11 @@ root
     └── test.rs → 50
 ```
 
-- **Produced by:** `TreeBuilder<T>::build()`
-- **Consumed by:** `TreeFormatter::format( tree, render_fn )`
+- **Produced by:** `TreeBuilder::build()`
+- **Consumed by:** `TreeFormatter::format()`
 - **Input model:** Hierarchical
 
-#### TreeNode<ColumnData> — Multi-Column Hierarchical
+#### Specialization: Multi-Column Hierarchical (ColumnData)
 
 Tree nodes with multiple aligned columns per leaf.
 
@@ -76,14 +69,16 @@ root
 └── api_openai     v0.2.0   (api/openai)
 ```
 
-- **Produced by:** Manual construction or `TreeBuilder<ColumnData>`
-- **Consumed by:** `TreeFormatter::format_aligned( tree )`
+- **Produced by:** Manual construction or `TreeBuilder`
+- **Consumed by:** `TreeFormatter::format_aligned()`
 - **Input model:** Hierarchical (multi-column variant)
 
 ### Trait Implementations
 
-| Trait | Bound | Purpose |
-|-------|-------|---------|
-| `TableShapedView` | `T: Display` | Extract headers, rows, check table shape |
-| `Debug` | always | Debug formatting |
-| `Clone` | always | Value cloning |
+| Trait | Purpose |
+|-------|---------|
+| `TableShapedView` | Extract headers, rows, check table shape |
+| `Debug` | Debug formatting |
+| `Clone` | Value cloning |
+
+`TableShapedView` requires the node's data type to implement display formatting to convert leaf values to strings during row extraction.

@@ -1,3 +1,4 @@
+#![ cfg( feature = "enabled" ) ]
 //! Terminal abstraction tests
 //!
 //! ## Domain

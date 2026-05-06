@@ -1,9 +1,12 @@
 //! Example with custom validation
 
-use multiline_input::collect_validated;
+#[ cfg( not( feature = "enabled" ) ) ]
+fn main() {}
 
+#[ cfg( feature = "enabled" ) ]
 fn main()
 {
+  use multiline_input::collect_validated;
   println!( "Multiline Input with Validation" );
   println!( "Message must not contain 'spam'\n" );
 

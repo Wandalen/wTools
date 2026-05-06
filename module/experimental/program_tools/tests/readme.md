@@ -1,30 +1,28 @@
 # Tests Directory
 
-This directory contains all tests for the program_tools crate, organized by domain and test type per test_organization.rulebook.md standards.
+### Scope
 
-## File Responsibility Table
+All tests for the `program_tools` crate, organized by domain and test type.
+
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|
 | `smoke_test.rs` | Verify crate compiles and basic imports work |
 | `tests.rs` | Test suite entry point and module organization |
-| `inc/mod.rs` | Test module registration for inc/ directory |
-| `inc/basic.rs` | Validate basic builder API with complete chain |
-| `inc/corner_cases_test.rs` | Comprehensive edge case validation for all data structures |
-| `tool/asset.rs` | Test asset management utilities |
-| `asset/err_out_test/err_out_err.rs` | Error output test asset |
-| `asset/err_out_test/out_err_out.rs` | Output error test asset |
+| `inc/` | Builder API, runner integration, and output API tests (see `inc/readme.md`) |
+| `manual/` | Manual testing plans and documentation |
+| `docs/` | CLI test surface specs: command, param, invariant |
 
-## Test Organization
+### Test Organization
 
 Tests are organized following domain-based structure:
 
-- **`inc/`**: Core functionality tests (builder API, data structures)
-- **`tool/`**: Test utilities and helpers
-- **`asset/`**: Test assets and fixtures
+- **`inc/`**: Core functionality tests (builder API, runner integration, output API)
 - **`manual/`**: Manual testing plans and documentation
+- **`docs/`**: CLI test surface specs (commands, parameters, invariants)
 
-## Running Tests
+### Running Tests
 
 Execute tests using standard commands:
 
@@ -41,15 +39,23 @@ cargo test --test tests
 cargo test source_empty_file_path
 ```
 
-## Test Coverage
+### Test Coverage
 
 Current test coverage spans:
 
-- Source builder API (empty fields, large data, special characters)
-- Program builder API (zero sources, single source, multiple sources, duplicates)
-- Plan builder API (minimal plan, complete nested chain)
-- Debug trait implementation for all structs
-- Namespace accessibility (exposed and prelude imports)
-- Explicit parameter handling
+- Source builder API: empty fields, large data, special characters
+- Program builder API: zero/single/three sources, insertion order, duplicates, manifest field
+- Plan builder API: minimal plan, complete nested chain, `run_options` stored vs `None`
+- Debug trait, namespace accessibility, and explicit parameter handling
+- `CapturedOutput` corner cases: default values, lossy UTF-8, empty needle, clone, assertion no-panics
+- `RunOptions` corner cases: sentinel defaults, clone independence, Debug formatting
+- `CapturedOutput` predicate methods: `exit_ok`, `stdout_eq`, `stdout_contains`, `stderr_contains`
+- `run_source`: hello world, compile error, exit code forwarding, stderr capture, multiline stdout
+- `run_file`: disk execution, missing source path, invalid Rust compile error
+- `run_project`: error handling for missing Cargo.toml
+- Timeout enforcement: capture mode and forwarding mode; zero budget fires immediately
+- Env var injection: `KEY=VALUE` split, no-`=` ignored, `=` in value preserved
+- Cleanup: `cleanup=false` leaves workspace on disk (PID-scoped to avoid concurrent races)
+- CLI binary TC-1–TC-13: happy path, project dir, argument errors, exit code forwarding, help flags, `--capture`, `--env`
 
-See `manual/readme.md` for comprehensive manual testing plan covering all corner cases.
+See `manual/readme.md` for the manual testing plan and `docs/cli/` for CLI test surface specs.

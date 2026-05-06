@@ -35,15 +35,15 @@ row 1:    [ "Bob",   "25",   "London"  ]
 
 ### Downstream Connections
 
-**Rust types representing this model:**
+**Data structures representing this model:**
 
 | Type | Role |
 |------|------|
 | `TableView` | Canonical representation (modern path) |
-| `TreeNode<String>` | Legacy representation (table encoded as tree) |
+| table-encoded tree | Legacy representation |
 
-Both are produced by `RowBuilder`: `build_view()` returns `TableView`; `build()` returns `TreeNode<String>`.
+Both are produced by `RowBuilder`: `build_view()` returns `TableView`; `build()` returns a table-encoded tree.
 
 **Formatters that consume tabular input:**
 
-All 10 formatters accept tabular input — 8 via the `Format` trait (`&TableView`) and 2 via the deprecated `TableShapedFormatter` (`&TreeNode<String>`).
+All 10 formatters accept tabular input — 8 via the `Format` trait (using `TableView`) and 2 via the deprecated `TableShapedFormatter` (using a table-encoded tree).

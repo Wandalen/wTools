@@ -23,7 +23,8 @@ tests/
 ├── not_derive_test.rs             # Comprehensive Not derive behavior tests
 ├── inner_from_derive_test.rs      # Comprehensive InnerFrom derive behavior tests
 ├── variadic_from_derive_test.rs   # Comprehensive VariadicFrom derive behavior tests
-└── derive_integration_test.rs     # Integration tests for multiple derives working together
+├── derive_integration_test.rs     # Integration tests for multiple derives working together
+└── doc_example_syntax_validation_test.rs  # Validates correct attribute syntax in doc examples
 ```
 
 ### Scope
@@ -61,6 +62,7 @@ Validates procedural macro functionality for `derive_tools_meta` crate. Currentl
 | Derive: InnerFrom | `inner_from_derive_test.rs` | InnerFrom derive macro: inherent method for single-field conversion |
 | Derive: VariadicFrom | `variadic_from_derive_test.rs` | VariadicFrom derive macro: inherent method for structs and enum variants |
 | Integration | `derive_integration_test.rs` | Multiple derives working together: combinations, std derives, nested types |
+| Doc examples | `doc_example_syntax_validation_test.rs` | AsMut/AsRef/Deref/DerefMut: correct attribute syntax (no parameter) |
 
 ## Adding New Tests
 

@@ -6,25 +6,30 @@ This directory contains comprehensive tests for the `test_tools` crate, verifyin
 
 | File | Responsibility |
 |------|----------------|
+| `readme.md` | Document tests/ organization and running instructions |
+| `manual/` | Manual testing plans and corner case scenarios |
+| `inc/` | Aggregated tests from dependency crates (error_tools, collection_tools, etc.) |
 | `api_stability_facade_tests.rs` | Test API stability facade functionality (Task 011) |
 | `behavioral_equivalence_tests.rs` | Test behavioral equivalence between direct and re-exported items (Task 032) |
 | `behavioral_equivalence_verification_tests.rs` | Enhanced verification of behavioral equivalence with comprehensive coverage (Task 033) |
 | `cargo_execution_tests.rs` | Test SmokeModuleTest cargo command execution functionality (Task 020) |
 | `cargo_toml_config_tests.rs` | Test SmokeModuleTest Cargo.toml configuration generation (Task 017) |
 | `cleanup_functionality_tests.rs` | Test SmokeModuleTest cleanup functionality and error handling (Task 023) |
+| `collection_constructors_edge_cases.rs` | Test collection constructor macro edge cases |
 | `conditional_execution_tests.rs` | Test conditional execution behavior under different feature flags (Task 026) |
 | `debug_assertion_availability_test.rs` | Verify debug assertions are available in test_tools |
 | `local_published_smoke_tests.rs` | Test SmokeModuleTest with both local and published crate versions (Task 035) |
 | `macro_ambiguity_test.rs` | Document vec! macro ambiguity patterns and resolution strategies |
 | `mod_interface_aggregation_tests.rs` | Test mod_interface pattern aggregation functionality (Task 008) |
+| `readme_example_verification_test.rs` | Verify readme code examples compile and run |
 | `single_dependency_access_tests.rs` | Test single-dependency access and isolation (Task 029) |
 | `smoke_module_test_creation.rs` | Test SmokeModuleTest instance creation and initialization (Task 014) |
 | `smoke_test.rs` | Comprehensive smoke testing of the test_tools crate |
+| `smoke_test_edge_cases.rs` | Test SmokeModuleTest edge cases and error paths |
 | `smoke_test_form_main_bug.rs` | Bug reproducer: form() must wrap code lacking fn main() (issue-smoke-form-missing-main) |
 | `standalone_basic_test.rs` | Basic standalone build verification without dependencies |
 | `standalone_build_tests.rs` | Test standalone build mode functionality (Task 038) |
-| `tests.rs` | Main test aggregation entry point |
-| `inc/` | Aggregated tests from dependency crates (error_tools, collection_tools, etc.) |
+| `dep_conformance_test.rs` | Aggregates dependency re-export conformance tests |
 
 ## Test Organization
 
@@ -57,7 +62,7 @@ cargo clippy --all-targets --all-features -- -D warnings
 
 ## Test Coverage
 
-- **197 total tests** across all test files
+- **192 total tests** across all test files
 - **18 tests** for cargo execution (Task 020)
 - **13 tests** for Cargo.toml configuration (Task 017)
 - **11 tests** for cleanup functionality (Task 023)

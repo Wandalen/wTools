@@ -1,6 +1,6 @@
 [package]
 name = "data_fmt"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = [ "wandalen <wandalen@obox.systems>" ]
 license = "MIT"
@@ -17,8 +17,8 @@ error_tools   = { workspace = true, optional = true }
 # ANSI-aware string utilities (from strs_tools)
 strs_tools    = { workspace = true, features = [ "ansi" ], optional = true }
 color_tools   = { workspace = true, features = [ "enabled" ], optional = true }
-unicode-width = { version = "0.1", optional = true }
-terminal_size = { version = "0.4", optional = true }
+unicode-width = { workspace = true, optional = true }
+terminal_size = { workspace = true, optional = true }
 
 # Optional dependencies for data format serialization
 serde = { workspace = true, features = ["derive"], optional = true }
@@ -33,7 +33,7 @@ serde_yaml = { workspace = true }
 toml = { workspace = true }
 
 [features]
-default = []
+default = [ "enabled" ]
 full          = [ "enabled", "all_formats", "terminal_size" ]
 terminal_size = [ "dep:terminal_size" ]
 enabled = [
@@ -75,18 +75,20 @@ tree_aligned = []
 tree_aggregated = []
 
 # TextFormatter (all 5 variants: Bullets, Numbered, Sections, KeyValue, Compact)
-format_text = []
+format_text = [ "enabled" ]
 
 # JsonFormatter (Pretty/Compact modes at runtime)
-format_json = [ "serde_support", "dep:serde_json" ]
+format_json = [ "enabled", "serde_support", "dep:serde_json" ]
 
 # YamlFormatter
-format_yaml = [ "serde_support", "dep:serde_yaml" ]
+format_yaml = [ "enabled", "serde_support", "dep:serde_yaml" ]
 
 # TomlFormatter
-format_toml = [ "serde_support", "dep:toml" ]
+format_toml = [ "enabled", "serde_support", "dep:toml" ]
 
-# LogfmtFormatter
+# LogfmtFormatter — note: format_logfmt is already included in `enabled` itself,
+# so this feature CANNOT activate `enabled` (would be circular). The formatters::
+# LogfmtFormatter export in lib.rs is guarded with `all(enabled, format_logfmt)`.
 format_logfmt = []
 
 # HtmlFormatter variants
@@ -105,19 +107,19 @@ sql_sqlite = []
 themes = []
 
 # Meta-features for convenience
-format_table_visual = [ "table_plain", "table_minimal", "table_bordered", "table_markdown", "table_grid", "table_unicode", "table_compact" ]
-format_table_export = [ "table_csv", "table_tsv" ]
+format_table_visual = [ "enabled", "table_plain", "table_minimal", "table_bordered", "table_markdown", "table_grid", "table_unicode", "table_compact" ]
+format_table_export = [ "enabled", "table_csv", "table_tsv" ]
 format_table = [ "format_table_visual", "format_table_export" ]
 
-format_expanded = [ "expanded_postgres", "expanded_property" ]
+format_expanded = [ "enabled", "expanded_postgres", "expanded_property" ]
 
-format_tree = [ "tree_hierarchical", "tree_aligned", "tree_aggregated" ]
+format_tree = [ "enabled", "tree_hierarchical", "tree_aligned", "tree_aggregated" ]
 
-format_html_basic = [ "html_minimal", "html_custom" ]
-format_html_frameworks = [ "html_bootstrap", "html_tailwind" ]
+format_html_basic = [ "enabled", "html_minimal", "html_custom" ]
+format_html_frameworks = [ "enabled", "html_bootstrap", "html_tailwind" ]
 format_html = [ "format_html_basic", "format_html_frameworks" ]
 
-format_sql = [ "sql_ansi", "sql_postgres", "sql_mysql", "sql_sqlite" ]
+format_sql = [ "enabled", "sql_ansi", "sql_postgres", "sql_mysql", "sql_sqlite" ]
 
 # Convenience meta-bundles
 format_meta_visual = [ "format_table", "format_expanded", "format_tree", "format_logfmt" ]

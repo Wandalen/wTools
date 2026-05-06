@@ -55,6 +55,9 @@ pub mod info;
 /// - Materialization (.materialize, .unpack) - See commands/materialize.yaml
 /// - Serialization (.pack) - See commands/pack.yaml
 /// - Analysis (.info, .status, .analyze, .discover.*) - See commands/analysis.yaml
+///
+/// # Errors
+/// Returns an error if any command module registration fails.
 #[ allow( deprecated ) ]
 pub fn create_registry() -> Result< CommandRegistry, Box< dyn core::error::Error > >
 {

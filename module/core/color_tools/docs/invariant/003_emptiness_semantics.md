@@ -30,7 +30,7 @@ If `is_empty()` tested `render()` output, colored-but-empty text would report no
 
 ### Cross-References
 
-| Entity | File | Relationship |
-|--------|------|-------------|
-| feature/001 | [DecoratedText](../feature/001_decorated_text.md) | Parent feature |
-| invariant/002 | [Render Reset Contract](002_render_reset_contract.md) | Sibling — render behavior |
+| Type | File | Responsibility |
+|------|------|----------------|
+| doc | [DecoratedText](../feature/001_decorated_text.md) | Parent feature |
+| doc | [Render Reset Contract](002_render_reset_contract.md) | Sibling — render behavior |

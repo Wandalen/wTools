@@ -2,6 +2,10 @@
 //!
 //! Implementation of archive lifecycle operations.
 
+// Handler functions are registered via unilang::CommandRegistry::command_add_runtime,
+// which requires fn(VerifiedCommand, ExecutionContext) -> ... by value.
+#![ allow( clippy::needless_pass_by_value ) ]
+
 use unilang::semantic::VerifiedCommand;
 use unilang::data::{ OutputData, ErrorData };
 use unilang::interpreter::ExecutionContext;
@@ -14,6 +18,9 @@ use super::shared_state::{ get_current_archive, set_current_archive };
 /// Handler for .archive.new command
 ///
 /// Creates a new empty template archive with the given name and description.
+///
+/// # Errors
+/// Returns usage error if required parameters are missing.
 pub fn new_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext
@@ -54,6 +61,10 @@ pub fn new_handler(
 /// Handler for .archive.load command
 ///
 /// Loads an archive from a JSON or YAML file.
+///
+/// # Errors
+/// Returns usage error if required parameters are missing.
+/// Returns format error if the file cannot be read or parsed.
 pub fn load_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext
@@ -67,7 +78,7 @@ pub fn load_handler(
   // Load archive from file
   let path_buf = path;
   let archive = TemplateArchive::load_from_file( path_buf )
-    .map_err( | e | crate::error::format_error( e, "ARCHIVE" ) )?;
+    .map_err( | e | crate::error::format_error( &e, "ARCHIVE" ) )?;
 
   let archive_name = archive.name.clone();
   let file_count = archive.file_count();
@@ -100,6 +111,11 @@ pub fn load_handler(
 /// Handler for .archive.save command
 ///
 /// Saves the current archive to a JSON or YAML file.
+///
+/// # Errors
+/// Returns usage error if required parameters are missing or no archive is loaded.
+/// Returns format error if the archive cannot be serialized or written.
+#[ allow( clippy::too_many_lines ) ]
 pub fn save_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext
@@ -142,9 +158,11 @@ pub fn save_handler(
   }
 
   // Save archive to file
-  // TODO: Implement format-specific saving once genfile_core supports it
+  // Workaround(issue-002): Format parameter is accepted but ignored; always saves as JSON.
+  // Root cause: TemplateArchive::save_to_file has no format parameter in the genfile_core API.
+  // Pitfall: The `format` and `pretty` args are silently unused; YAML save requests produce JSON.
   archive.save_to_file( path_buf )
-    .map_err( | e | crate::error::format_error( e, "ARCHIVE" ) )?;
+    .map_err( | e | crate::error::format_error( &e, "ARCHIVE" ) )?;
 
   // Format output based on verbosity
   let output = match verbosity
@@ -171,6 +189,12 @@ pub fn save_handler(
 /// Handler for .`archive.from_directory` command
 ///
 /// Creates an archive from a filesystem directory.
+///
+/// # Errors
+/// Returns usage error if required parameters are missing.
+/// Returns file error if the source directory does not exist or is not a directory.
+/// Returns format error if archive creation fails.
+#[ allow( clippy::too_many_lines ) ]
 pub fn from_directory_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext
@@ -205,9 +229,11 @@ pub fn from_directory_handler(
     .and_then( | n | n.to_str() )
     .unwrap_or( "archive" );
 
-  // TODO: Implement mode selection (inline vs reference) when genfile_core supports it
+  // Workaround(issue-003): Mode parameter is accepted but ignored; always packs inline.
+  // Root cause: TemplateArchive::pack_from_dir always inlines content; no reference mode in API.
+  // Pitfall: The `mode`, `recursive`, `include_pattern`, `exclude_pattern` args are silently unused.
   let archive = TemplateArchive::pack_from_dir( archive_name, source_path )
-    .map_err( | e | crate::error::format_error( e, "ARCHIVE" ) )?;
+    .map_err( | e | crate::error::format_error( &e, "ARCHIVE" ) )?;
 
   let file_count = archive.file_count();
 

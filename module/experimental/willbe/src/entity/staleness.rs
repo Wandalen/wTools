@@ -135,10 +135,10 @@ mod private
   ///
   /// Complete set of package names that need publishing (including cascades)
   #[must_use]
-  pub fn compute_transitive_closure< S: ::std::hash::BuildHasher >
+  pub fn compute_transitive_closure< S : ::std::hash::BuildHasher >
   (
     workspace: &Workspace,
-    initial_set: &::std::collections::HashSet< String, S >,
+    initial_set: &collection ::HashSet< String, S >,
   )
   -> collection ::HashSet< String >
   {
@@ -191,10 +191,10 @@ mod private
   ///
   /// `HashMap` mapping package names to their list of stale dependencies
   #[must_use]
-  pub fn detect_stale_dependencies< S: ::std::hash::BuildHasher >
+  pub fn detect_stale_dependencies< S : ::std::hash::BuildHasher >
   (
     workspace: &Workspace,
-    publishing: &::std::collections::HashSet< String, S >,
+    publishing: &collection ::HashSet< String, S >,
   )
   -> collection ::HashMap< String, Vec< stale_dependency ::StaleDependency > >
   {

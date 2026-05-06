@@ -59,9 +59,8 @@ fn into_constructor()
   let _got: Vec< &str > = the_module ::exposed ::into_dlist!("b");
 }
 
-// qqq: implement similar test for all containers -- done
 #[ test ]
-fn iters() 
+fn iters()
 {
   struct MyContainer 
   {
@@ -72,7 +71,6 @@ fn iters()
   {
   type Item = i32;
   type IntoIter = the_module ::vector ::IntoIter< i32 >;
-  // qqq: should work -- works
 
   fn into_iter(self) -> Self ::IntoIter 
   {

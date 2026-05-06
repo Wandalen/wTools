@@ -6,7 +6,7 @@ This directory contains all functional and integration tests for the willbe crat
 
 Tests follow domain-based organization mirroring the source code structure. The `inc/` subdirectory contains modular test files organized by functional area (action tests, command tests, entity tests, tool tests, publishing tests).
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

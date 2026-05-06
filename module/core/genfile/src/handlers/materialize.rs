@@ -17,6 +17,10 @@
 //! Dry run mode previews what would be done without creating files, preventing
 //! accidental overwrites. Critical for user confidence.
 
+// Handler functions are registered via unilang::CommandRegistry::command_add_runtime,
+// which requires fn(VerifiedCommand, ExecutionContext) -> ... by value.
+#![ allow( clippy::needless_pass_by_value ) ]
+
 use unilang::semantic::VerifiedCommand;
 use unilang::data::{ OutputData, ErrorData };
 use unilang::interpreter::ExecutionContext;
@@ -30,6 +34,13 @@ use core::fmt::Write as _;
 /// - `destination` - Output directory path
 /// - `verbosity` - Output verbosity (0-5, default: 1)
 /// - `dry` - Dry run mode (default: 0)
+///
+/// # Errors
+/// Returns usage error if required parameters are missing.
+/// Returns state error if no archive is loaded.
+/// Returns validation error if mandatory parameter values are missing.
+/// Returns format error if materialization fails.
+#[ allow( clippy::too_many_lines ) ]
 pub fn materialize_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext
@@ -114,7 +125,7 @@ pub fn materialize_handler(
 
   // Materialize templates to destination
   let report = archive.materialize( destination )
-    .map_err( | e | crate::error::format_error( e, "MATERIALIZE" ) )?;
+    .map_err( | e | crate::error::format_error( &e, "MATERIALIZE" ) )?;
 
   let total_files = report.files_created.len() + report.files_updated.len() + report.files_skipped.len();
 
@@ -173,6 +184,12 @@ pub fn materialize_handler(
 /// - `destination` - Output directory path
 /// - `verbosity` - Output verbosity (0-5, default: 1)
 /// - `dry` - Dry run mode (default: 0)
+///
+/// # Errors
+/// Returns usage error if required parameters are missing.
+/// Returns state error if no archive is loaded.
+/// Returns file error if the destination directory cannot be created or files cannot be written.
+#[ allow( clippy::too_many_lines ) ]
 pub fn unpack_handler(
   cmd : VerifiedCommand,
   _ctx : ExecutionContext

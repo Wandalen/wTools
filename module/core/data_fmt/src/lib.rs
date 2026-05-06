@@ -12,10 +12,19 @@
 //!   SQL (4), YAML, TOML, Logfmt, Text (6)
 //! - **String Output**: All formatters return `String`, no direct console output
 
+// Inlining every public item in a 30+ type / 10-formatter library adds noise
+// without measurable gain — the lint is too aggressive for a library of this size.
 #![ allow( clippy::missing_inline_in_public_items ) ]
+// Formatter return values (String) are naturally consumed inline; must_use would
+// force callers to bind every format() call even when the result is immediately used.
 #![ allow( clippy::must_use_candidate ) ]
+// This crate requires heap allocation so std is the correct import root;
+// migrating to core:: is noise without benefit for a std-only library.
 #![ allow( clippy::std_instead_of_core ) ]
+// String assembly patterns in formatters vary for readability; format+push
+// alternatives are not consistently cleaner in rendering-heavy code.
 #![ allow( clippy::format_push_string ) ]
+// Standard feature-gate: suppress all unused warnings when `enabled` is off.
 #![ cfg_attr( not( feature = "enabled" ), allow( unused ) ) ]
 //!
 //! The library supports 10 output formats across 33 variants:
@@ -36,25 +45,21 @@
 //! ```
 //! # #[ cfg( feature = "enabled" ) ]
 //! # {
-//! use data_fmt::{ RowBuilder, TableFormatter, ExpandedFormatter, TreeFormatter };
+//! use data_fmt::{ RowBuilder, TableFormatter, ExpandedFormatter, Format };
 //!
 //! // Create tabular data
-//! let tree = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
+//! let view = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
 //!   .add_row( vec![ "Alice".into(), "30".into() ] )
 //!   .add_row( vec![ "Bob".into(), "25".into() ] )
-//!   .build();
+//!   .build_view();
 //!
 //! // Table format
 //! let table_fmt = TableFormatter::new();
-//! let output = table_fmt.format( &tree );
+//! let _ = table_fmt.format( &view );
 //!
 //! // Expanded format
 //! let expanded_fmt = ExpandedFormatter::new();
-//! let output = expanded_fmt.format( &tree );
-//!
-//! // Tree format (table-shaped tree)
-//! let data_fmt = TreeFormatter::default();
-//! let output = data_fmt.format( &tree, Clone::clone );
+//! let _ = expanded_fmt.format( &view );
 //! # }
 //! ```
 //!
@@ -63,17 +68,17 @@
 //! ```
 //! # #[ cfg( feature = "enabled" ) ]
 //! # {
-//! use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig };
+//! use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig, Format };
 //!
-//! let tree = RowBuilder::new( vec![ "Name".into(), "Score".into() ] )
+//! let view = RowBuilder::new( vec![ "Name".into(), "Score".into() ] )
 //!   .add_row( vec![ "Alice".into(), "95".into() ] )
-//!   .build();
+//!   .build_view();
 //!
 //! // Gray keys for terminal output (PostgreSQL style)
 //! let formatter = ExpandedFormatter::with_config(
 //!   ExpandedConfig::new().colorize_keys( true )
 //! );
-//! let output = formatter.format( &tree );
+//! let output = formatter.format( &view ).unwrap_or_default();
 //! # }
 //! ```
 //!
@@ -82,15 +87,15 @@
 //! ```
 //! # #[ cfg( feature = "enabled" ) ]
 //! # {
-//! use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig };
+//! use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig, Format };
 //!
-//! let tree = RowBuilder::new( vec![ "Command".into(), "Status".into() ] )
+//! let view = RowBuilder::new( vec![ "Command".into(), "Status".into() ] )
 //!   .add_row( vec![ "build".into(), "success".into() ] )
-//!   .build();
+//!   .build_view();
 //!
 //! // Property list style: no record headers, colon separator
 //! let formatter = ExpandedFormatter::with_config( ExpandedConfig::property_style() );
-//! let output = formatter.format( &tree );
+//! let output = formatter.format( &view ).unwrap_or_default();
 //! // Output:
 //! // Command: build
 //! // Status:  success
@@ -139,15 +144,15 @@
 //! ```
 //! # #[ cfg( feature = "enabled" ) ]
 //! # {
-//! use data_fmt::{ RowBuilder, TableFormatter };
+//! use data_fmt::{ RowBuilder, TableFormatter, Format };
 //!
-//! let tree = RowBuilder::new( vec![ "File".into(), "Lines".into() ] )
+//! let view = RowBuilder::new( vec![ "File".into(), "Lines".into() ] )
 //!   .add_row( vec![ "main.rs".into(), "100".into() ] )
 //!   .add_row( vec![ "lib.rs".into(), "200".into() ] )
-//!   .build();
+//!   .build_view();
 //!
 //! let formatter = TableFormatter::new();
-//! let output = formatter.format( &tree );
+//! let output = formatter.format( &view ).unwrap_or_default();
 //! println!( "{}", output );
 //! # }
 //! ```
@@ -191,8 +196,10 @@ pub use table_tree::RowBuilder;
 #[ cfg( feature = "enabled" ) ]
 pub use formatters::{ Format, FormatError };
 
-// Conditional formatter exports (feature-gated)
-#[ cfg( any(
+// Conditional formatter exports — all require `enabled` because `mod formatters`
+// is gated on `enabled`. Without it the module doesn't exist and the re-exports
+// would fail to compile even though the format sub-feature is active.
+#[ cfg( all( feature = "enabled", any(
   feature = "table_plain",
   feature = "table_minimal",
   feature = "table_bordered",
@@ -202,58 +209,54 @@ pub use formatters::{ Format, FormatError };
   feature = "table_csv",
   feature = "table_tsv",
   feature = "table_compact"
-) ) ]
+) ) ) ]
 pub use formatters::TableFormatter;
 
-#[ cfg( any(
+#[ cfg( all( feature = "enabled", any(
   feature = "expanded_postgres",
   feature = "expanded_property"
-) ) ]
+) ) ) ]
 pub use formatters::ExpandedFormatter;
 
-#[ cfg( any(
+#[ cfg( all( feature = "enabled", any(
   feature = "tree_hierarchical",
   feature = "tree_aligned",
   feature = "tree_aggregated"
-) ) ]
+) ) ) ]
 pub use formatters::TreeFormatter;
 
-#[ cfg( feature = "format_logfmt" ) ]
+#[ cfg( all( feature = "enabled", feature = "format_logfmt" ) ) ]
 pub use formatters::LogfmtFormatter;
 
-#[ cfg( any(
+#[ cfg( all( feature = "enabled", any(
   feature = "html_minimal",
   feature = "html_bootstrap",
   feature = "html_tailwind",
   feature = "html_custom"
-) ) ]
+) ) ) ]
 pub use formatters::{ HtmlFormatter, HtmlVariant };
 
-#[ cfg( any(
+#[ cfg( all( feature = "enabled", any(
   feature = "sql_ansi",
   feature = "sql_postgres",
   feature = "sql_mysql",
   feature = "sql_sqlite"
-) ) ]
+) ) ) ]
 pub use formatters::{ SqlFormatter, SqlVariant };
 
-#[ cfg( feature = "format_json" ) ]
+#[ cfg( all( feature = "enabled", feature = "format_json" ) ) ]
 pub use formatters::JsonFormatter;
 
-#[ cfg( feature = "format_yaml" ) ]
+#[ cfg( all( feature = "enabled", feature = "format_yaml" ) ) ]
 pub use formatters::YamlFormatter;
 
-#[ cfg( feature = "format_toml" ) ]
+#[ cfg( all( feature = "enabled", feature = "format_toml" ) ) ]
 pub use formatters::TomlFormatter;
 
-#[ cfg( feature = "format_text" ) ]
+#[ cfg( all( feature = "enabled", feature = "format_text" ) ) ]
 pub use formatters::{ TextFormatter, TextVariant };
 
 // Color themes (feature-gated)
 #[ cfg( feature = "themes" ) ]
 pub use themes::{ ColorTheme, ColorThemeBuilder };
 
-// Backward compatibility trait
-#[ allow( deprecated ) ]
-#[ cfg( feature = "enabled" ) ]
-pub use formatters::TableShapedFormatter;

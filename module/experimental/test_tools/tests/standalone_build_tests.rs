@@ -51,7 +51,7 @@ mod standalone_build_tests
   #[ test ]
   fn test_path_attributes_for_direct_source_inclusion()
   {
-  // Test that standalone.rs successfully includes source files via #[ path ] attributes
+  // Test that standalone/ module successfully includes source files via #[ path ] attributes
   // This is the core mechanism for breaking circular dependencies
   
   #[ cfg(all(feature = "standalone_build", not(feature = "normal_build"))) ]

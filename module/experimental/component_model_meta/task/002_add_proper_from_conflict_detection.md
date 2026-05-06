@@ -28,8 +28,7 @@ Add proper conflict detection and resolution for From implementations in Compone
 4. **User Control**: Attributes to control generation
 
 ## 📍 **Source Location**
-File: `/home/user1/pro/lib/wTools/module/core/component_model_meta/src/component/component_model.rs`
-Line: 216
+File: `module/experimental/component_model_meta/src/component/component_model.rs`
 
 ## 🏷️ **Labels**
 - **Type**: Bug Fix/Feature Enhancement  

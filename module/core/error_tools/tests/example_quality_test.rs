@@ -83,7 +83,7 @@ fn test_trivial_example_compiles_and_runs()
 {
   // Verify the example compiles
   let output = std ::process ::Command ::new( "cargo" )
-    .args( [ "build", "--example", "error_tools_trivial" ] )
+    .args( [ "build", "--example", "error_tools_trivial", "--all-features" ] )
     .current_dir( env!( "CARGO_MANIFEST_DIR" ) )
     .output()
     .expect( "Failed to compile example" );
@@ -96,7 +96,7 @@ fn test_trivial_example_compiles_and_runs()
 
   // Verify the example runs
   let output = std ::process ::Command ::new( "cargo" )
-    .args( [ "run", "--example", "error_tools_trivial" ] )
+    .args( [ "run", "--example", "error_tools_trivial", "--all-features" ] )
     .current_dir( env!( "CARGO_MANIFEST_DIR" ) )
     .output()
     .expect( "Failed to run example" );

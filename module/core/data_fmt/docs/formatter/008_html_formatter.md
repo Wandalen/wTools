@@ -23,7 +23,7 @@
 
 | Trait | Status | Note |
 |-------|--------|------|
-| `Format` | ✅ Active | Takes `&TableView`, returns `Result<String, FormatError>` |
+| `Format` | ✅ Active | Takes a `TableView`, returns formatted string or error |
 
 ### Input
 
@@ -40,6 +40,6 @@ Selection mechanism: pass an `HtmlVariant` enum value to `HtmlFormatter::with_va
 | minimal | `HtmlVariant::Minimal` | `html_minimal` |
 | bootstrap | `HtmlVariant::Bootstrap` | `html_bootstrap` |
 | tailwind | `HtmlVariant::Tailwind` | `html_tailwind` |
-| custom | `HtmlVariant::Custom(class_string)` | `html_custom` |
+| custom | `HtmlVariant::Custom` (with a CSS class string) | `html_custom` |
 
-`HtmlVariant::Custom` takes a `String` of CSS class names applied to the `<table>` element. Each variant is independently feature-gated; unused variants add no binary overhead.
+`HtmlVariant::Custom` takes a string of CSS class names applied to the `<table>` element. Each variant is independently feature-gated; unused variants add no binary overhead.

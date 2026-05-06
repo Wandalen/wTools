@@ -37,10 +37,5 @@ mod private
 
 the_module ::mod_interface!
 {
-
-  // exposed( crate ) use macro1;
-  // xxx: macro re-export not working - needs investigation
-  // exposed( crate ) use macro2;
-  // exposed( crate ) use macro3;
-
+  // Tracked in task/backlog/004 — macro re-export via mod_interface! not yet supported.
 }

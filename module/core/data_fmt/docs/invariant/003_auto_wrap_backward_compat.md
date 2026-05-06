@@ -14,19 +14,12 @@
 | source | `src/formatters/table/mod.rs` | `should_auto_wrap` guard, `format_internal` pipeline |
 | test | `tests/auto_wrap_test.rs` | T06 (`auto_wrap_false_is_byte_identical`) |
 | doc | `../feature/005_auto_fit.md` | Auto-fit feature: "when auto_wrap is false — no wrapping triggered" |
-| task | `../../task/019_cell_auto_wrapping_with_budget_allocation.md` | Implementation task — Acceptance Criteria |
 
 ### Invariant Statement
 
 When `TableConfig::auto_wrap(false)` is set, the output of `TableFormatter::format()` must be **byte-identical** to the output produced before the auto-wrap feature was added, for all 9 table style presets (`plain`, `minimal`, `bordered`, `markdown`, `grid`, `unicode_box`, `csv`, `tsv`, `compact`) and for any input data.
 
-Formally: for any `headers`, `rows`, and preset `P`:
-
-```
-let old_config = P();              // pre-auto-wrap config
-let new_config = P().auto_wrap(false);
-assert_eq!( format(old_config, data), format(new_config, data) );
-```
+Formally: for any headers, rows, and preset `P`, the output produced by `P()` must be byte-identical to the output produced by `P().auto_wrap(false)`.
 
 ### Enforcement Mechanism
 

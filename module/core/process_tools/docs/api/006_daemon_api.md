@@ -9,38 +9,36 @@
 
 ### Abstract
 
-`process_tools::lifecycle::daemon` (Unix only) provides two capabilities: PID file management (write/read/remove) and POSIX double-fork daemonization via `daemonize()`. `DaemonizeOptions` follows the same `Former`-derived builder pattern as `Run`. After a successful `daemonize()` call, the calling code runs in a fully detached daemon process; the original parent has already exited via `_exit(0)`.
+`process_tools::lifecycle::daemon` (Unix only) provides two capabilities: PID file management (write/read/remove) and POSIX double-fork daemonization via `daemonize()`. `DaemonizeOptions` follows the same `Former`-derived builder pattern as `Run`. After a successful `daemonize()` call, the calling code runs in a fully detached daemon process; the original parent has already exited with a clean POSIX exit.
 
 ### Operations
 
 **PID file management:**
 
-| Symbol | Kind | Signature | Notes |
-|--------|------|-----------|-------|
-| `write_pidfile()` | free fn | `(path: &Path, pid: u32) -> io::Result<()>` | Writes PID as decimal string; no newline |
-| `read_pidfile()` | free fn | `(path: &Path) -> io::Result<u32>` | Reads and parses PID; trims whitespace |
-| `remove_pidfile()` | free fn | `(path: &Path) -> io::Result<()>` | Deletes PID file |
+| Symbol | Kind | Notes |
+|--------|------|-------|
+| `write_pidfile( path, pid )` | free fn | Writes PID as decimal string; no newline |
+| `read_pidfile( path )` | free fn | Reads and parses PID; trims whitespace |
+| `remove_pidfile( path )` | free fn | Deletes PID file |
 
 **Daemonization:**
 
-| Symbol | Kind | Signature | Notes |
-|--------|------|-----------|-------|
-| `DaemonizeOptions` | struct | `Former`-derived builder | Fields: `pid_file: Option<PathBuf>`, `working_dir: PathBuf` |
-| `DaemonizeOptions::former()` | constructor | `() -> DaemonizeOptionsFormer` | Entry point for building options |
-| `daemonize()` | free fn | `(options: &DaemonizeOptions) -> io::Result<()>` | POSIX double-fork; irreversible — caller becomes the daemon |
+| Symbol | Kind | Notes |
+|--------|------|-------|
+| `DaemonizeOptions` | struct | Former-derived builder; holds optional PID file path and working directory |
+| `DaemonizeOptions::former()` | constructor | Entry point for building options |
+| `daemonize( options )` | free fn | POSIX double-fork; irreversible — caller becomes the daemon |
 
-`DaemonizeOptions` fields:
-- `pid_file: Option<PathBuf>` — path to write PID file with `flock` singleton guard; skipped when `None`
-- `working_dir: PathBuf` — working directory after daemonization; defaults to `/`
+`DaemonizeOptions` takes an optional PID file path (skipped when absent, written with exclusive-lock singleton protection when set) and a working directory (defaults to the filesystem root).
 
 ### Error Handling
 
-| Function | `Ok` meaning | `Err` meaning |
-|----------|-------------|---------------|
-| `write_pidfile(path, pid)` | PID written | File cannot be created or written |
-| `read_pidfile(path)` | PID read and parsed | File not found, or content not a valid integer |
-| `remove_pidfile(path)` | File deleted | File not found or cannot be removed |
-| `daemonize(opts)` | Caller is now the daemon process | `fork` or `setsid` failed; FD operations failed; another daemon holds the PID file lock (`AlreadyExists`) |
+| Function | Success | Failure |
+|----------|---------|---------|
+| `write_pidfile( path, pid )` | PID written | File cannot be created or written |
+| `read_pidfile( path )` | PID read and parsed | File not found, or content not a valid integer |
+| `remove_pidfile( path )` | File deleted | File not found or cannot be removed |
+| `daemonize( opts )` | Caller is now the daemon process | `fork` or `setsid` failed; FD operations failed; another daemon holds the PID file lock (exclusive lock error) |
 
 ### Known Pitfalls Addressed
 
@@ -54,7 +52,7 @@ Five pitfalls from the double-fork daemonization pattern are addressed in the im
 
 ### Compatibility Guarantees
 
-- **Platform:** Unix only (`#[cfg(unix)]`). The entire `daemon` sub-module is absent on non-Unix targets — no fallback stub, unlike `check`.
+- **Platform:** Unix only. The entire `daemon` sub-module is absent on non-Unix targets — no fallback stub, unlike `check`.
 - **PID file format:** decimal integer, no newline. See invariant `003_pidfile_format.md`.
 - **`daemonize()` irreversibility:** after successful return, the parent process has exited. This cannot be undone.
 - **Singleton lock lifetime:** the `flock` held after `daemonize()` is intentionally leaked for the daemon's lifetime; the OS releases it on process exit.
@@ -88,7 +86,7 @@ daemon::daemonize( &opts ).expect( "daemonization failed" );
 | Type | File | Responsibility |
 |------|------|----------------|
 | source | [src/lifecycle/daemon.rs](../../src/lifecycle/daemon.rs) | Double-fork daemonization and PID file management |
-| feature | [feature/005_lifecycle_management.md](../feature/005_lifecycle_management.md) | Design rationale for the daemon sub-module |
-| invariant | [invariant/003_pidfile_format.md](../invariant/003_pidfile_format.md) | PID file decimal format shared with the check module |
-| api | [api/005_check_api.md](005_check_api.md) | `is_pidfile_alive()` reads PID files written by this module |
-| guide | [guide/001_daemon_monitoring.md](../guide/001_daemon_monitoring.md) | End-to-end daemon monitoring workflow |
+| doc | [feature/005_lifecycle_management.md](../feature/005_lifecycle_management.md) | Design rationale for the daemon sub-module |
+| doc | [invariant/003_pidfile_format.md](../invariant/003_pidfile_format.md) | PID file decimal format shared with the check module |
+| doc | [api/005_check_api.md](005_check_api.md) | `is_pidfile_alive()` reads PID files written by this module |
+| doc | [guide/001_daemon_monitoring.md](../guide/001_daemon_monitoring.md) | End-to-end daemon monitoring workflow |

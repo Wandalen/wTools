@@ -1,3 +1,4 @@
+#![ cfg( feature = "enabled" ) ]
 //! Key event handling tests
 //!
 //! ## Domain

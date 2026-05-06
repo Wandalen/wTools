@@ -16,13 +16,8 @@ use gluesql ::
 };
 use entity ::
 {
-  feed :: { Feed, FeedStore },
-  frame ::FrameStore,
-};
-use action ::
-{
-  feed ::FeedsReport,
-  frame :: { UpdateReport, SelectedEntries, FramesReport },
+  feed :: { Feed, FeedStore, FeedsReport },
+  frame :: { FrameStore, UpdateReport, SelectedEntries, FramesReport },
 };
 use sled_adapter ::FeedStorage;
 use itertools ::Itertools;

@@ -6,7 +6,7 @@ use super :: *;
 #[ allow( clippy ::pub_use ) ]
 pub use alloc ::collections ::linked_list :: *;
 
-/// Creates a `LinkedList` from a llist of elements.
+/// Creates a `LinkedList` from a linked list of elements.
 ///
 /// The `llist` macro facilitates the creation of a `LinkedList` with initial elements.
 ///
@@ -16,7 +16,7 @@ pub use alloc ::collections ::linked_list :: *;
 ///
 /// # Syntax
 ///
-/// The macro can be called with a comma-separated llist of elements. A trailing comma is optional.
+/// The macro can be called with a comma-separated list of elements. A trailing comma is optional.
 ///
 /// ```rust
 /// # use collection_tools :: { LinkedList, llist };
@@ -32,7 +32,7 @@ pub use alloc ::collections ::linked_list :: *;
 ///
 /// # Parameters
 ///
-/// - `$( $key: expr ),* $( , )?` : A comma-separated llist of elements to insert into the `LinkedList`.
+/// - `$( $key: expr ),* $( , )?` : A comma-separated list of elements to insert into the `LinkedList`.
 ///   Each element can be of any type that implements the `Into< T >` trait, where `T` is the
 ///   type stored in the `LinkedList`.
 ///
@@ -82,7 +82,7 @@ macro_rules! llist
  }};
 }
 
-/// Creates a `LinkedList` from a llist of elements.
+/// Creates a `LinkedList` from a linked list of elements.
 ///
 /// The `into_llist` macro facilitates the creation of a `LinkedList` with initial elements.
 /// Elements passed to the macro are automatically converted into the llist's element type
@@ -98,7 +98,7 @@ macro_rules! llist
 ///
 /// # Syntax
 ///
-/// The macro can be called with a comma-separated llist of elements. A trailing comma is optional.
+/// The macro can be called with a comma-separated list of elements. A trailing comma is optional.
 ///
 /// ```rust
 /// # use collection_tools :: { LinkedList, into_llist };
@@ -114,7 +114,7 @@ macro_rules! llist
 ///
 /// # Parameters
 ///
-/// - `$( $key: expr ),* $( , )?` : A comma-separated llist of elements to insert into the `LinkedList`.
+/// - `$( $key: expr ),* $( , )?` : A comma-separated list of elements to insert into the `LinkedList`.
 ///   Each element can be of any type that implements the `Into< T >` trait, where `T` is the
 ///   type stored in the `LinkedList`.
 ///

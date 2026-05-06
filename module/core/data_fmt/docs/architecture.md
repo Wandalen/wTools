@@ -107,3 +107,34 @@ let config = TreeConfig::new()
 ```
 
 Config structs: `TreeConfig`, `TableConfig`, `ExpandedConfig`. Each formatter accepts its corresponding config at construction time.
+
+## Concept Quick Reference
+
+| Concept | Kind | Role |
+|---------|------|------|
+| `TableView` | struct | Tabular input type — canonical flat table (headers + rows + optional row details) |
+| `TreeNode< T >` | struct | Hierarchical input type — recursive named-node tree with typed leaf payloads |
+| `RowBuilder` | struct | Builds `TableView`; validates row lengths at insertion |
+| `TreeBuilder< T >` | struct | Builds `TreeNode< T >` from path-based insertions |
+| `Format` | trait | Unified rendering contract: `fn format(&self, data: &TableView)` |
+| `FormatError` | enum | Error type returned by `Format::format()` — `Serialization`, `InvalidData`, `UnsupportedOperation` |
+| `TableFormatter` | struct | Implements `Format`; holds `TableConfig`; 9 visual table styles |
+| `ExpandedFormatter` | struct | Does NOT implement `Format` (uses deprecated `TableShapedFormatter`); holds `ExpandedConfig` |
+| `TreeFormatter` | struct | Does NOT implement `Format`; direct-dispatch generic methods; holds `TreeConfig` |
+| `LogfmtFormatter` | struct | Implements `Format`; no config state |
+| `HtmlFormatter` | struct | Implements `Format`; holds `HtmlVariant` |
+| `SqlFormatter` | struct | Implements `Format`; holds `SqlVariant` |
+| `JsonFormatter` | struct | Implements `Format`; no config state; requires `serde_support` |
+| `YamlFormatter` | struct | Implements `Format`; no config state; requires `serde_support` |
+| `TomlFormatter` | struct | Implements `Format`; no config state; requires `serde_support` |
+| `TextFormatter` | struct | Implements `Format`; holds `TextVariant` |
+| `TableConfig` | struct | Formatter parameters for `TableFormatter` — style, wrap, width, padding, etc. |
+| `ExpandedConfig` | struct | Formatter parameters for `ExpandedFormatter` |
+| `TreeConfig` | struct | Formatter parameters for `TreeFormatter` — branch symbols, depth, indentation |
+| `TableMetadata` | struct | Column names and per-column `DataType` semantic labels |
+| `ColumnData` | struct | Multi-column leaf payload for aligned tree formatting |
+| `DecoratedText` | struct | ANSI-aware string cell (from `color_tools`) — carries text + optional color |
+| `WrapFormatter` | struct | Word-wrap pre-processor; not a `Format` implementor; wraps cell content before table formatting |
+| `TableShapedView` | trait | Deprecated: extracts headers/rows from `TreeNode< T where T: Display >`; use `RowBuilder::build_view()` instead |
+
+**Pipeline summary**: `RowBuilder` → `TableView` → `Format::format()` → `String`

@@ -103,7 +103,7 @@
 //! or if alternative display (expanded format, tree format) would be better.
 
 #![ cfg( feature = "enabled" ) ]
-use data_fmt::{ RowBuilder, TableFormatter, TableConfig };
+use data_fmt::{ RowBuilder, TableFormatter, TableConfig, Format };
 
 // ============================================================================
 // Basic Multiline Tests
@@ -114,10 +114,10 @@ fn test_single_cell_two_lines()
 {
   let data = RowBuilder::new( vec![ "Name".into() ] )
     .add_row( vec![ "Line 1\nLine 2".into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::new();
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should contain both lines
   assert!( output.contains( "Line 1" ), "Should contain first line" );
@@ -140,10 +140,10 @@ fn test_single_cell_three_lines()
 {
   let data = RowBuilder::new( vec![ "Data".into() ] )
     .add_row( vec![ "First\nSecond\nThird".into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::new();
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // All three lines should appear
   assert!( output.contains( "First" ) );
@@ -160,10 +160,10 @@ fn test_multiple_columns_different_heights()
       "Line 1\nLine 2\nLine 3".into(),  // 3 lines
       "A\nB".into()                     // 2 lines
     ])
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::new();
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // All content should be present
   assert!( output.contains( "Single" ) );
@@ -192,10 +192,10 @@ fn test_mixed_single_and_multiline_rows()
     .add_row( vec![ "Alice".into(), "30".into() ] )  // Single-line row
     .add_row( vec![ "Bob".into(), "Age: 25\nCity: NYC".into() ] )  // Multiline row
     .add_row( vec![ "Charlie".into(), "35".into() ] )  // Single-line row
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::new();
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // All data should be present
   assert!( output.contains( "Alice" ) );
@@ -212,10 +212,10 @@ fn test_empty_lines_in_multiline_cell()
 {
   let data = RowBuilder::new( vec![ "Text".into() ] )
     .add_row( vec![ "Line 1\n\nLine 3".into() ] )  // Empty line in middle
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::new();
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should contain both non-empty lines
   assert!( output.contains( "Line 1" ) );
@@ -244,10 +244,10 @@ fn test_multiline_maintains_column_alignment()
       "A\nB\nC".into(),
       "Line 1\nLine 2\nLine 3".into()
     ])
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::new();
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Check that columns are aligned
   let data_lines : Vec<&str> = output.lines()
@@ -271,10 +271,10 @@ fn test_multiline_with_shorter_cells_padded()
       "One line".into(),  // 1 line
       "First\nSecond\nThird".into()  // 3 lines
     ])
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::new();
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should render 3 data lines
   let data_lines : Vec<&str> = output.lines()
@@ -311,11 +311,11 @@ fn test_multiline_with_bordered_style()
       "Alice".into(),
       "Age: 30\nCity: Boston".into()
     ])
-    .build();
+    .build_view();
 
   let config = TableConfig::bordered();
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should have borders on each line
   let data_lines : Vec<&str> = output.lines()
@@ -337,11 +337,11 @@ fn test_multiline_with_markdown_style()
       "Task".into(),
       "First step\nSecond step".into()
     ])
-    .build();
+    .build_view();
 
   let config = TableConfig::markdown();
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should be valid markdown
   assert!( output.contains( '|' ), "Should have markdown pipes" );
@@ -354,11 +354,11 @@ fn test_multiline_with_plain_style()
 {
   let data = RowBuilder::new( vec![ "Name".into() ] )
     .add_row( vec![ "Alice\nBob".into() ] )
-    .build();
+    .build_view();
 
   let config = TableConfig::plain();
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should contain both lines with plain formatting
   assert!( output.contains( "Alice" ) );
@@ -376,10 +376,10 @@ fn test_multiline_with_ansi_colors()
 
   let data = RowBuilder::new( vec![ "Colors".into() ] )
     .add_row( vec![ colored.into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::new();
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should preserve ANSI codes
   assert!( output.contains( "\x1b[31m" ), "Should preserve red color code" );
@@ -402,11 +402,11 @@ fn test_multiline_in_csv_keeps_literal_newlines()
       "Alice".into(),
       "123 Main St\nApt 4B".into()
     ])
-    .build();
+    .build_view();
 
   let config = TableConfig::csv();
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // CSV should NOT split into multiple lines - newlines should be literal
   // or escaped. Check that it's still CSV-formatted.
@@ -426,10 +426,10 @@ fn test_cell_with_only_newlines()
 {
   let data = RowBuilder::new( vec![ "Data".into() ] )
     .add_row( vec![ "\n\n".into() ] )  // Only newlines
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::new();
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should handle gracefully without panicking
   assert!( !output.is_empty(), "Should produce some output" );
@@ -447,10 +447,10 @@ fn test_very_tall_cell()
 
   let data = RowBuilder::new( vec![ "Tall".into() ] )
     .add_row( vec![ content.into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::new();
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should contain first and last lines
   assert!( output.contains( "Line 1" ) );
@@ -473,10 +473,10 @@ fn test_multiline_with_unicode()
 {
   let data = RowBuilder::new( vec![ "Text".into() ] )
     .add_row( vec![ "Hello 世界\nКириллица\nΕλληνικά".into() ] )
-    .build();
+    .build_view();
 
   let formatter = TableFormatter::new();
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Should handle unicode correctly
   assert!( output.contains( "世界" ) );
@@ -495,13 +495,13 @@ fn test_multiline_with_truncation()
     .add_row( vec![
       "Very long first line that exceeds limit\nShort second line".into()
     ])
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .max_column_width( Some( 20 ) );
 
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // First line should be truncated
   assert!( output.contains( "..." ), "Long line should be truncated" );
@@ -517,13 +517,13 @@ fn test_multiline_each_line_truncated_independently()
     .add_row( vec![
       "This is a very long first line\nThis is another very long second line".into()
     ])
-    .build();
+    .build_view();
 
   let config = TableConfig::plain()
     .max_column_width( Some( 15 ) );
 
   let formatter = TableFormatter::with_config( config );
-  let output = formatter.format( &data );
+  let output = formatter.format( &data ).unwrap_or_default();
 
   // Both lines should be truncated independently
   let marker_count = output.matches( "..." ).count();
@@ -575,9 +575,9 @@ fn test_multiline_cell_column_width_is_max_line_width()
   // Buggy column width   = max(3, unicode_visual_len("Line1\nLine2")) = max(3, 11) = 11
   let tree = RowBuilder::new( vec![ "Col".into() ] )
     .add_row( vec![ "Line1\nLine2".into() ] )
-    .build();
+    .build_view();
 
-  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree );
+  let output = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
   let lines : Vec<&str> = output.lines().collect();
 
   // line[0]=header, line[1]=separator, line[2]=sub-line1, line[3]=sub-line2
@@ -604,4 +604,26 @@ fn test_multiline_cell_column_width_is_max_line_width()
     "Sub-line2 must be 5 chars, got {} ({:?})\nFull output:\n{output:?}",
     sub_line2.len(), sub_line2
   );
+}
+
+/// AC-1 — `multiline_cell_rendering/001`: single-line cells are unchanged.
+///
+/// Ensures the multiline rendering path is transparent when no `\n` chars are
+/// present — default config output is byte-identical to explicit `plain()` config;
+/// the row produces exactly 1 data line (no phantom extra lines).
+#[ test ]
+fn single_line_cells_unchanged()
+{
+  let tree = RowBuilder::new( vec![ "Name".into(), "Value".into() ] )
+    .add_row( vec![ "Alice".into(), "42".into() ] )
+    .build_view();
+  let output_default = TableFormatter::new().format( &tree ).unwrap_or_default();
+  let output_explicit = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
+  assert_eq!(
+    output_default, output_explicit,
+    "single-line table must render byte-identically with default and plain config",
+  );
+  // header + separator + exactly 1 data line
+  let data_lines : Vec< &str > = output_default.lines().skip( 2 ).collect();
+  assert_eq!( data_lines.len(), 1, "single-line row must produce exactly 1 data line" );
 }

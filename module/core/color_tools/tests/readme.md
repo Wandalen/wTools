@@ -1,6 +1,6 @@
 # Tests
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|---------------|

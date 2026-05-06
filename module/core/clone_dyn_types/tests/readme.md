@@ -8,20 +8,27 @@ Tests organized by functional domain (generic types, slices, trait objects) rath
 
 ```
 tests/
-├── readme.md              # This file
-├── smoke_test.rs          # Basic smoke tests (no external dependencies)
-├── tests.rs               # Main test suite (4 modules)
-└── inc/                   # Test module declarations
-    └── mod.rs             # Module aggregator (external tests disabled)
+├── readme.md                        # This file
+├── smoke_test.rs                    # Basic smoke tests (no external dependencies)
+├── tests.rs                         # Main test suite (6 modules)
+├── clone_arrays_test.rs             # Array cloning tests
+├── clone_tuples_test.rs             # Tuple cloning tests
+├── additional_corner_cases_test.rs  # Iterator edge case tests
+└── inc/                             # Test module declarations
+    └── mod.rs                       # Module aggregator (external tests disabled)
 ```
 
 ### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|
-| `smoke_test.rs` | Validates basic clone() and clone_into_box() functionality without external dependencies |
-| `tests.rs` | Validates comprehensive CloneDyn trait implementations across type categories (generic types, slices, str slices, trait objects) |
-| `inc/mod.rs` | Manages external test integration (currently disabled due to circular dependency) |
+| `smoke_test.rs` | Validate clone() and clone_into_box() without external dependencies |
+| `tests.rs` | Validate CloneDyn impls across generic, slice, str, and trait-object categories |
+| `clone_arrays_test.rs` | Validate array cloning for sizes 0 through 128 via blanket impl |
+| `clone_tuples_test.rs` | Validate tuple cloning for arities 0 through 12 and mixed element types |
+| `additional_corner_cases_test.rs` | Validate iterator edge cases: partial, double-ended, large, empty |
+| `inc/` | Manage external test integration (disabled: circular dependency) |
+| `manual/` | Manual testing procedures for example compilation and helper functions |
 
 ### Scope
 
@@ -58,6 +65,9 @@ Validates clone_dyn_types runtime functionality covering CloneDyn trait implemen
 | Trait objects | `tests.rs::clone_trait_objects` | Box<dyn Trait> cloning with CloneDyn bound |
 | Corner cases | `tests.rs::clone_corner_cases` | Single-element slices, large slices, non-Copy types, ZSTs, Drop types, very long strings |
 | Iterator examples | `tests.rs::clone_iterator_from_example` | Iterator trait from example (Some/None cases, independence) |
+| Arrays | `clone_arrays_test.rs::clone_arrays` | Array cloning [T; N] for sizes 0, 1, 3, 8, 16, 32, 64, 128 |
+| Tuples | `clone_tuples_test.rs::clone_tuples` | Tuple cloning for arities 0–12, mixed types, nested tuples |
+| Iterator corner cases | `additional_corner_cases_test.rs` | Iterator edge cases: partial consumption, double-ended, len accuracy, large, empty |
 
 ## Adding New Tests
 
@@ -69,6 +79,15 @@ Validates clone_dyn_types runtime functionality covering CloneDyn trait implemen
 
 **Q: Testing trait object with multiple bounds (e.g., CloneDyn + Send)?**
 → Add to `tests.rs::clone_trait_objects` module
+
+**Q: Testing new array size or element type?**
+→ Add to `clone_arrays_test.rs::clone_arrays` module
+
+**Q: Testing new tuple arity or element type combination?**
+→ Add to `clone_tuples_test.rs::clone_tuples` module
+
+**Q: Testing iterator edge cases (partial consumption, double-ended, etc.)?**
+→ Add to `additional_corner_cases_test.rs`
 
 **Q: Testing helper function edge cases?**
 → Add to `smoke_test.rs` for basic cases, or relevant domain module in `tests.rs`

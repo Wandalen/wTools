@@ -1,0 +1,205 @@
+meta:
+  description: Cross-reference graph of all doc instances in async_from
+  node_count: 9
+  edge_count: 44
+  component_count: 1
+  generated: 2026_04_26
+
+nodes:
+  - id: feature/001
+    file: feature/001_infallible_async_conversion.md
+    label: "Infallible Async Conversion"
+    entity: feature
+  - id: feature/002
+    file: feature/002_fallible_async_conversion.md
+    label: "Fallible Async Conversion"
+    entity: feature
+  - id: api/001
+    file: api/001_async_from.md
+    label: "AsyncFrom"
+    entity: api
+  - id: api/002
+    file: api/002_async_into.md
+    label: "AsyncInto"
+    entity: api
+  - id: api/003
+    file: api/003_async_try_from.md
+    label: "AsyncTryFrom"
+    entity: api
+  - id: api/004
+    file: api/004_async_try_into.md
+    label: "AsyncTryInto"
+    entity: api
+  - id: invariant/001
+    file: invariant/001_send_bounds.md
+    label: "Send Bounds on Async Conversions"
+    entity: invariant
+  - id: invariant/002
+    file: invariant/002_blanket_impl_chain.md
+    label: "Blanket Impl Non-Conflict"
+    entity: invariant
+  - id: pattern/001
+    file: pattern/001_std_mirror_pattern.md
+    label: "Std Mirror Pattern"
+    entity: pattern
+
+edges:
+  # feature/001 outgoing (5)
+  - from: feature/001
+    to: feature/002
+    via: typed_reference
+  - from: feature/001
+    to: api/001
+    via: typed_reference
+  - from: feature/001
+    to: api/002
+    via: typed_reference
+  - from: feature/001
+    to: invariant/001
+    via: typed_reference
+  - from: feature/001
+    to: pattern/001
+    via: typed_reference
+  # feature/002 outgoing (5)
+  - from: feature/002
+    to: feature/001
+    via: typed_reference
+  - from: feature/002
+    to: api/003
+    via: typed_reference
+  - from: feature/002
+    to: api/004
+    via: typed_reference
+  - from: feature/002
+    to: invariant/001
+    via: typed_reference
+  - from: feature/002
+    to: pattern/001
+    via: typed_reference
+  # api/001 outgoing (5)
+  - from: api/001
+    to: feature/001
+    via: typed_reference
+  - from: api/001
+    to: api/002
+    via: typed_reference
+  - from: api/001
+    to: api/003
+    via: typed_reference
+  - from: api/001
+    to: invariant/001
+    via: typed_reference
+  - from: api/001
+    to: pattern/001
+    via: typed_reference
+  # api/002 outgoing (5)
+  - from: api/002
+    to: api/001
+    via: typed_reference
+  - from: api/002
+    to: feature/001
+    via: typed_reference
+  - from: api/002
+    to: invariant/001
+    via: typed_reference
+  - from: api/002
+    to: invariant/002
+    via: typed_reference
+  - from: api/002
+    to: pattern/001
+    via: typed_reference
+  # api/003 outgoing (5)
+  - from: api/003
+    to: api/001
+    via: typed_reference
+  - from: api/003
+    to: feature/002
+    via: typed_reference
+  - from: api/003
+    to: api/004
+    via: typed_reference
+  - from: api/003
+    to: invariant/001
+    via: typed_reference
+  - from: api/003
+    to: pattern/001
+    via: typed_reference
+  # api/004 outgoing (5)
+  - from: api/004
+    to: api/003
+    via: typed_reference
+  - from: api/004
+    to: feature/002
+    via: typed_reference
+  - from: api/004
+    to: invariant/001
+    via: typed_reference
+  - from: api/004
+    to: invariant/002
+    via: typed_reference
+  - from: api/004
+    to: pattern/001
+    via: typed_reference
+  # invariant/001 outgoing (6)
+  - from: invariant/001
+    to: api/001
+    via: typed_reference
+  - from: invariant/001
+    to: api/002
+    via: typed_reference
+  - from: invariant/001
+    to: api/003
+    via: typed_reference
+  - from: invariant/001
+    to: api/004
+    via: typed_reference
+  - from: invariant/001
+    to: feature/001
+    via: typed_reference
+  - from: invariant/001
+    to: feature/002
+    via: typed_reference
+  # invariant/002 outgoing (2)
+  - from: invariant/002
+    to: api/002
+    via: typed_reference
+  - from: invariant/002
+    to: api/004
+    via: typed_reference
+  # pattern/001 outgoing (6)
+  - from: pattern/001
+    to: api/001
+    via: typed_reference
+  - from: pattern/001
+    to: api/002
+    via: typed_reference
+  - from: pattern/001
+    to: api/003
+    via: typed_reference
+  - from: pattern/001
+    to: api/004
+    via: typed_reference
+  - from: pattern/001
+    to: feature/001
+    via: typed_reference
+  - from: pattern/001
+    to: feature/002
+    via: typed_reference
+
+components:
+  - id: 1
+    label: All async_from doc instances
+    size: 9
+    isolated: false
+    nodes:
+      - feature/001
+      - feature/002
+      - api/001
+      - api/002
+      - api/003
+      - api/004
+      - invariant/001
+      - invariant/002
+      - pattern/001
+
+dangling_refs: []

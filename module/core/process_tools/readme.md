@@ -1,4 +1,3 @@
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: `process_tools`
 <!--{ generate.module_header.start() }-->

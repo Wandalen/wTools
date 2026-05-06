@@ -108,17 +108,16 @@ fn test_tree_builder_from_items()
   use data_fmt::TreeBuilder;
 
   #[ derive( Clone ) ]
-  #[ allow( dead_code ) ]
   struct FileItem
   {
     path : String,
-    size : u64,
+    _size : u64,
   }
 
   let items = vec![
-    FileItem { path : "src/main.rs".to_string(), size : 100 },
-    FileItem { path : "src/lib.rs".to_string(), size : 200 },
-    FileItem { path : "tests/test.rs".to_string(), size : 50 },
+    FileItem { path : "src/main.rs".to_string(), _size : 100 },
+    FileItem { path : "src/lib.rs".to_string(), _size : 200 },
+    FileItem { path : "tests/test.rs".to_string(), _size : 50 },
   ];
 
   let tree = TreeBuilder::from_items( &items, | item | {

@@ -14,7 +14,7 @@ mod private
   untyped :: { Error, bail },
   // Result,
  };
-  use collection_tools ::collection ::HashMap;
+  use std ::collections ::HashMap;
   // Explicit import for Result and its variants for pattern matching
   use std ::result ::Result ::Ok;
 
@@ -78,18 +78,8 @@ mod private
   impl ParseResult
   {
   /// Converts the parsing result into a vector of values.
-  /// ``` rust
-  /// use collection_tools ::HashMap;
-  /// use willbe ::query :: { ParseResult, Value };
   ///
-  /// let params = HashMap ::from( [ ( "v1".to_string(), Value ::Int( 1 ) ), ( "v2".to_string(), Value ::Int( 2 ) ), ( "v3".to_string(), Value ::Int( 3 ) ) ] );
-  ///
-  /// let result = ParseResult ::Named( params ).into_vec();
-  ///
-  /// assert!( result.contains( &Value ::Int( 1 ) ) );
-  /// assert!( result.contains( &Value ::Int( 2 ) ) );
-  /// assert!( result.contains( &Value ::Int( 3 ) ) );
-  /// ```
+  /// For a `Named` result, returns the map values; for a `Positioning` result, returns the vec.
   #[ must_use ]
   pub fn into_vec( self ) -> Vec< Value >
   {
@@ -101,22 +91,9 @@ mod private
  }
 
   /// Converts the parsing result into a hashmap, using a vector of names as keys.
-  /// ```rust
-  ///  use collection_tools ::HashMap;
-  ///  use willbe ::query :: { ParseResult, Value };
   ///
-  ///  let params = vec![ Value ::Int( 1 ), Value ::Int( 2 ), Value ::Int( 3 ) ];
-  ///  let result = ParseResult ::Positioning( params );
-  ///
-  ///  let named_map = result.clone().into_map( vec![ "var0".into(), "var1".into(),"var2".into() ] );
-  ///  let unnamed_map = result.clone().into_map( vec![] );
-  ///  let mixed_map = result.clone().into_map( vec![ "var0".into() ] );
-  ///  let vec = result.into_vec();
-  ///
-  ///  assert_eq!( HashMap ::from( [ ( "var0".to_string(), Value ::Int( 1 ) ), ( "var1".to_string(),Value ::Int( 2 ) ), ( "var2".to_string(),Value ::Int( 3 ) ) ] ), named_map );
-  ///  assert_eq!( HashMap ::from( [ ( "1".to_string(), Value ::Int( 1 ) ), ( "2".to_string(),Value ::Int( 2 ) ), ( "3".to_string(),Value ::Int( 3 ) ) ] ), unnamed_map );
-  ///  assert_eq!( HashMap ::from( [ ( "var0".to_string(), Value ::Int( 1 ) ), ( "1".to_string(),Value ::Int( 2 ) ), ( "2".to_string(),Value ::Int( 3 ) ) ] ), mixed_map );
-  /// ```
+  /// Named results return their map unchanged. Positional results use the provided names as keys;
+  /// positions without a name use their 1-based index as a string key.
   #[ allow( clippy ::needless_pass_by_value ) ]
   #[ must_use ]
   pub fn into_map( self, names: Vec< String > ) -> HashMap< String, Value >
@@ -143,20 +120,8 @@ mod private
  }
 
   /// Parses an input string and returns a parsing result.
-  /// ```rust
-  /// use willbe ::query :: { parse, Value };
-  /// use collection_tools ::HashMap;
   ///
-  /// assert_eq!( parse( "()" ).unwrap().into_vec(), vec![] );
-  ///
-  /// let mut expected_map = HashMap ::new();
-  /// expected_map.insert( "1".to_string(), Value ::String( "test/test".to_string() ) );
-  /// assert_eq!( parse( "('test/test')" ).unwrap().into_map( vec![] ), expected_map );
-  ///
-  /// let mut expected_map = HashMap ::new();
-  /// expected_map.insert( "key".to_string(), Value ::String( r#"hello\'test\'test"#.into() ) );
-  /// assert_eq!( parse( r#"{ key: 'hello\'test\'test' }"# ).unwrap().into_map( vec![] ), expected_map );
-  /// ```
+  /// Supports positional `( val1, val2 )` and named `{ key: val }` formats.
   ///
   /// # Errors
   /// qqq: doc

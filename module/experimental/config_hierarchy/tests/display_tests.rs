@@ -328,10 +328,10 @@ fn test_table_tree_fmt_reexports()
 
   let builder = TreeRowBuilder::new( vec![ "Col1".into(), "Col2".into() ] );
   let builder = builder.add_row( vec![ "val1".into(), "val2".into() ] );
-  let tree = builder.build();
+  let tree = builder.build_view();
 
   let formatter = TreeTableFormatter::with_config( TreeTableConfig::default() );
-  let output = formatter.format( &tree );
+  let output = data_fmt::Format::format( &formatter, &tree ).unwrap_or_default();
 
   assert!( output.contains( "Col1" ) );
   assert!( output.contains( "val1" ) );

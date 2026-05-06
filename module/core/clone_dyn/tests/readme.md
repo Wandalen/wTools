@@ -27,6 +27,7 @@ tests/
 | `smoke_test.rs` | Validates basic crate loading and compilation for both local and published crate variants |
 | `tests.rs` | Aggregates all functional test modules and provides unified test entry point |
 | `inc/` | Contains domain-specific test implementations organized by trait cloning patterns (basic, parametrized, manual) |
+| `manual/` | Manual testing procedures for example compilation and feature flag combinations |
 
 ### Scope
 

@@ -9,6 +9,15 @@
 #[ allow( unused_imports ) ]
 use macro_tools::prelude::*;
 
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( any(
+  feature = "derive_components",
+  feature = "derive_component_from",
+  feature = "derive_from_components",
+  feature = "derive_component_assign",
+  feature = "derive_components_assign",
+  feature = "derive_component_model",
+))]
 /// Popular type support for derive macro generation
 mod popular_types;
 

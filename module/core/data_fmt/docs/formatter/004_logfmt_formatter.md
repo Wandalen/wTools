@@ -20,7 +20,7 @@
 
 | Trait | Status | Note |
 |-------|--------|------|
-| `Format` | ✅ Active | Takes `&TableView`, returns `Result<String, FormatError>` |
+| `Format` | ✅ Active | Takes a `TableView`, returns formatted string or error |
 
 ### Input
 

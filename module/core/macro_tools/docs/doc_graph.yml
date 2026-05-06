@@ -1,0 +1,115 @@
+meta:
+  description: Cross-reference graph for all doc instances in macro_tools
+  node_count: 12
+  edge_count: 36
+  component_count: 1
+  generated: 2026_04_30
+
+nodes:
+  - id: api/001
+    file: api/001_attribute_component_api.md
+    label: Attribute Component API
+    entity: api
+  - id: api/002
+    file: api/002_assign_api.md
+    label: Assign API
+    entity: api
+  - id: feature/001
+    file: feature/001_attribute_parsing.md
+    label: Attribute Parsing
+    entity: feature
+  - id: feature/002
+    file: feature/002_type_analysis.md
+    label: Type Analysis
+    entity: feature
+  - id: feature/003
+    file: feature/003_generic_parameters.md
+    label: Generic Parameters
+    entity: feature
+  - id: feature/004
+    file: feature/004_syntax_tree_helpers.md
+    label: Syntax Tree Helpers
+    entity: feature
+  - id: feature/005
+    file: feature/005_error_diagnostics.md
+    label: Error Diagnostics
+    entity: feature
+  - id: feature/006
+    file: feature/006_code_generation_support.md
+    label: Code Generation Support
+    entity: feature
+  - id: invariant/001
+    file: invariant/001_unified_versioning.md
+    label: Unified Versioning
+    entity: invariant
+  - id: invariant/002
+    file: invariant/002_span_aware_errors.md
+    label: Span-Aware Errors
+    entity: invariant
+  - id: pattern/001
+    file: pattern/001_abstraction_layer.md
+    label: Abstraction Layer
+    entity: pattern
+  - id: pattern/002
+    file: pattern/002_property_based_attributes.md
+    label: Property-Based Attributes
+    entity: pattern
+
+edges:
+  - { from: feature/001, to: api/001,       via: typed_reference }
+  - { from: feature/001, to: api/002,       via: typed_reference }
+  - { from: feature/001, to: pattern/002,   via: typed_reference }
+  - { from: feature/001, to: feature/002,   via: typed_reference }
+  - { from: feature/001, to: feature/003,   via: typed_reference }
+  - { from: feature/001, to: feature/004,   via: typed_reference }
+  - { from: feature/001, to: feature/005,   via: typed_reference }
+  - { from: feature/001, to: feature/006,   via: typed_reference }
+  - { from: feature/002, to: feature/001,   via: typed_reference }
+  - { from: feature/002, to: feature/003,   via: typed_reference }
+  - { from: feature/002, to: feature/004,   via: typed_reference }
+  - { from: feature/003, to: feature/001,   via: typed_reference }
+  - { from: feature/003, to: feature/002,   via: typed_reference }
+  - { from: feature/003, to: feature/004,   via: typed_reference }
+  - { from: feature/004, to: feature/001,   via: typed_reference }
+  - { from: feature/004, to: feature/002,   via: typed_reference }
+  - { from: feature/004, to: feature/003,   via: typed_reference }
+  - { from: feature/005, to: invariant/002, via: typed_reference }
+  - { from: feature/005, to: feature/001,   via: typed_reference }
+  - { from: feature/005, to: feature/006,   via: typed_reference }
+  - { from: feature/006, to: feature/001,   via: typed_reference }
+  - { from: feature/006, to: feature/005,   via: typed_reference }
+  - { from: api/001,     to: feature/001,   via: typed_reference }
+  - { from: api/001,     to: api/002,       via: typed_reference }
+  - { from: api/001,     to: pattern/002,   via: typed_reference }
+  - { from: api/001,     to: pattern/001,   via: typed_reference }
+  - { from: api/002,     to: feature/001,   via: typed_reference }
+  - { from: api/002,     to: api/001,       via: typed_reference }
+  - { from: api/002,     to: pattern/002,   via: typed_reference }
+  - { from: pattern/001, to: invariant/001, via: typed_reference }
+  - { from: pattern/001, to: api/001,       via: typed_reference }
+  - { from: pattern/002, to: api/001,       via: typed_reference }
+  - { from: pattern/002, to: api/002,       via: typed_reference }
+  - { from: pattern/002, to: feature/001,   via: typed_reference }
+  - { from: invariant/001, to: pattern/001, via: typed_reference }
+  - { from: invariant/002, to: feature/005, via: typed_reference }
+
+components:
+  - id: 1
+    label: macro_tools documentation corpus
+    size: 12
+    isolated: false
+    nodes:
+      - api/001
+      - api/002
+      - feature/001
+      - feature/002
+      - feature/003
+      - feature/004
+      - feature/005
+      - feature/006
+      - invariant/001
+      - invariant/002
+      - pattern/001
+      - pattern/002
+
+dangling_refs: []

@@ -99,19 +99,6 @@
 //! - **Task 003 : ** Added this embedded documentation to prevent regressions
 //!
 
-// xxx: remove
-//! ```rust
-//! println!("-- doc test: printing Cargo feature environment variables --");
-//!  for (key, val) in std::env::vars()
-//!    {
-//!  if key.starts_with("CARGO_FEATURE_")
-//!    {
-//!         println!("{}={}", key, val);
-//! }
-//! }
-//! ```
-
-// xxx2: try to repurpose top-level lib.rs fiel for only top level features
 
 /// Namespace with dependencies.
 #[ allow( unused_imports ) ]
@@ -156,10 +143,11 @@ pub mod dependency
   pub use super::standalone::collection_tools;
 }
 
+#[ cfg( feature = "enabled" ) ]
 mod private
 {
   //! Private implementation details for API stability facade
-  
+
   /// Verifies API stability facade is properly configured
   /// This function ensures all stability mechanisms are in place
   pub fn verify_api_stability_facade() -> bool
@@ -180,61 +168,6 @@ mod private
  }
 }
 
-//
-
-// #[ cfg( feature = "enabled" ) ]
-// // #[ cfg( not( feature = "no_std" ) ) ]
-// ::meta_tools ::mod_interface!
-// {
-//   // #![ debug ]
-//
-//   own use super ::dependency :: *;
-//
-//   layer test;
-//
-//   // xxx: comment out
-//   use super::exposed::meta;
-//   use super::exposed::mem;
-//   use super::exposed::typing;
-//   use super::exposed::dt;
-//   use super::exposed::diagnostics;
-//   use super::exposed::collection;
-//   // use super ::exposed ::process;
-//
-//   // prelude use ::rustversion :: { nightly, stable };
-//
-//   // // xxx: eliminate need to do such things, putting itself to proper category
-//   // exposed use super ::test ::compiletime;
-//   // exposed use super ::test ::helper;
-//   // exposed use super ::test ::smoke_test;
-//
-//   prelude use ::meta_tools as meta;
-//   prelude use ::mem_tools as mem;
-//   prelude use ::typing_tools as typing;
-//   prelude use ::data_type as dt;
-//   prelude use ::diagnostics_tools as diagnostics;
-//   prelude use ::collection_tools as collection;
-//   // prelude use ::process_tools as process;
-//
-//   use ::collection_tools; // xxx: do that for all dependencies
-//
-//   prelude use ::meta_tools ::
-//   {
-//     impls,
-//     index,
-//     tests_impls,
-//     tests_impls_optional,
-//     tests_index,
-// };
-//
-//   prelude use ::typing_tools::{ implements };
-//
-// }
-
-// xxx: use module namespaces
-// #[ cfg( feature = "enabled" ) ]
-// #[ cfg( not( feature = "no_std" ) ) ]
-// pub use test::{ compiletime, helper, smoke_test };
 
 #[ cfg( feature = "enabled" ) ]
 pub mod test;
@@ -243,7 +176,7 @@ pub mod test;
 #[ cfg( feature = "enabled" ) ]
 pub mod behavioral_equivalence;
 
-/// Aggegating submodules without using cargo, but including their entry files directly.
+/// Aggregating submodules without using cargo, but including their entry files directly.
 ///
 /// We don't want to run doctest of included files, because all of the are relative to submodule.
 /// So we disable doctests of such submodules with `#[ cfg( not( doctest ) ) ]`.

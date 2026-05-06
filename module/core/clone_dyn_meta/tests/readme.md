@@ -9,6 +9,7 @@ Tests focus on smoke validation ensuring the procedural macro crate compiles and
 ```
 tests/
 ├── readme.md        # This file
+├── manual/          # Manual testing plan and execution history
 └── smoke_test.rs    # Smoke tests (local + published builds)
 ```
 
@@ -17,6 +18,7 @@ tests/
 | File | Responsibility |
 |------|----------------|
 | `smoke_test.rs` | Validate macro crate loads correctly for both local and published build configurations |
+| `manual/` | Manual testing plan and exhaustive corner-case test execution history |
 
 ### Scope
 

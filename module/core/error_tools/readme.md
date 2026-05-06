@@ -1,8 +1,7 @@
-<!-- {{# generate.module_header{} #}} -->
 
 # Module :: `error_tools`
 <!--{ generate.module_header.start() }-->
- [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=error_tools)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) [![docs.rs](https://img.shields.io/docsrs/error_tools?color=e3e8f0&logo=docs.rs)](https://docs.rs/error_tools) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module%2Fcore%2Ferror_tools%2Fexamples%2Ferror_tools_trivial.rs,RUN_POSTFIX=--example%20module%2Fcore%2Ferror_tools%2Fexamples%2Ferror_tools_trivial.rs/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+ [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=error_tools)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) [![docs.rs](https://img.shields.io/docsrs/error_tools?color=e3e8f0&logo=docs.rs)](https://docs.rs/error_tools) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module%2Fcore%2Ferror_tools%2Fexamples%2Ferror_tools_trivial.rs,RUN_POSTFIX=--example%20error_tools_trivial/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 <!--{ generate.module_header.end }-->
 
 A unified error handling facade that provides a consistent interface for both typed and untyped error handling in Rust. `error_tools` acts as a standardized wrapper around the popular `thiserror` and `anyhow` crates, enabling you to write error-handling code once and use it consistently across different contexts.
@@ -83,7 +82,7 @@ fn main()
 
 Run this example:
 ```sh
-cargo run --example error_tools_trivial
+cargo run --features full --example error_tools_trivial
 ```
 
 ### 2. Working with Context
@@ -317,19 +316,24 @@ fn main()
 
 ```toml
 [dependencies]
-error_tools = { version = "0.38", features = [ "error_typed" ] }  # Only typed errors
+error_tools = { version = "0.39", features = [ "enabled" ] }                          # All API surface
 # or
-error_tools = { version = "0.38", features = [ "error_untyped" ] }  # Only untyped errors  
+error_tools = { version = "0.39", features = [ "enabled", "error_typed" ] }           # API + typed errors only
 # or
-error_tools = { version = "0.38" }  # Both (default)
+error_tools = { version = "0.39", features = [ "enabled", "error_untyped" ] }         # API + untyped errors only
+# or
+error_tools = { version = "0.39", features = [ "full" ] }                             # Everything (enabled + typed + untyped)
 ```
 
+**Opt-in model:** `default` is empty — no features are active unless you opt in. This prevents accidental activation when error_tools appears as a transitive dependency.
+
 **Available Features:**
-- `default` - Enables both `error_typed` and `error_untyped`
+- `enabled` - Activates all API surface (`ErrWith`, `ResultWithReport`, `debug_assert_*` macros)
+- `full` - Activates `enabled` + `error_typed` + `error_untyped`
 - `error_typed` - Enables `thiserror` integration for structured errors
 - `error_untyped` - Enables `anyhow` integration for flexible errors
 - `no_std` - Enables `no_std` support
-- `use_alloc` - Enables allocation support in `no_std` environments
+- `use_alloc` - Enables allocation support in `no_std` environments (requires `no_std`)
 
 ## Migration Guide
 
@@ -378,16 +382,16 @@ Explore these runnable examples in the repository:
 
 ```sh
 # Basic usage patterns
-cargo run --example error_tools_trivial
+cargo run --features full --example error_tools_trivial
 
 # Migration from anyhow
-cargo run --example replace_anyhow
+cargo run --features full --example replace_anyhow
 
 # Migration from thiserror  
-cargo run --example replace_thiserror
+cargo run --features full --example replace_thiserror
 
 # Using the ErrWith trait
-cargo run --example err_with_example
+cargo run --features full --example err_with_example
 ```
 
 ## Best Practices
@@ -520,9 +524,21 @@ cargo add error_tools
 ```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cargo run --example error_tools_trivial
+cargo run --features full --example error_tools_trivial
 # Or try the specific examples
-cargo run --example replace_anyhow
-cargo run --example replace_thiserror
-cargo run --example err_with_example
+cargo run --features full --example replace_anyhow
+cargo run --features full --example replace_thiserror
+cargo run --features full --example err_with_example
 ```
+
+## Responsibility Table
+
+| Path | Responsibility |
+|------|----------------|
+| `docs/` | Architecture and design documentation by dimension |
+| `examples/` | Runnable usage demonstrations |
+| `src/` | Crate implementation source |
+| `task/` | Implementation task files |
+| `tests/` | Integration and unit test suite |
+| `Cargo.toml` | Crate manifest and feature declarations |
+| `readme.md` | User-facing onboarding and quick-start guide |

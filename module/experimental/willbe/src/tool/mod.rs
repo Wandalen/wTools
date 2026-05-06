@@ -66,9 +66,5 @@ crate ::mod_interface!
   Former,
  };
 
-  exposed use ::component_model ::
-  {
-  Assign,
- };
 
 }

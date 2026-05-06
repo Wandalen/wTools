@@ -1,6 +1,6 @@
 # CLI Terminology Dictionary
 
-Domain-specific terminology for genfile template archive management. Defines 9 core concepts used throughout documentation.
+Domain-specific terminology for genfile template archive management.
 
 **Purpose:** Remove terminology barriers for new users and clarify domain concepts.
 
@@ -21,7 +21,7 @@ Domain-specific terminology for genfile template archive management. Defines 9 c
 - YAML: `.yaml`/`.yml` extension, always human-readable
 
 **Related:**
-- [.archive.* commands](commands/archive.md) - Archive lifecycle management
+- [.archive.* commands](command/archive.md) - Archive lifecycle management
 - [template](#template) - Files within archive
 - [materialization](#materialization) - Rendering archive to filesystem
 
@@ -61,7 +61,7 @@ Domain-specific terminology for genfile template archive management. Defines 9 c
 **Related:**
 - [materialization](#materialization) - Rendering process
 - [parameter](#parameter) - Variables for substitution
-- [.file.* commands](commands/file.md) - File management
+- [.file.* commands](command/file.md) - File management
 
 **Example:**
 ```rust
@@ -99,8 +99,8 @@ fn main()
 - `mandatory`: Whether value required for materialization
 
 **Related:**
-- [.parameter.* commands](commands/param_mgmt.md) - Parameter definition management
-- [.value.* commands](commands/value.md) - Parameter value management
+- [.parameter.* commands](command/param_mgmt.md) - Parameter definition management
+- [.value.* commands](command/value.md) - Parameter value management
 - [template](#template) - Where parameters are used
 
 **Example:**
@@ -136,7 +136,7 @@ parameters:
 - Can be previewed with `dry::1` flag
 
 **Related:**
-- [.materialize command](commands/operations.md#command-16-materialize) - Materialization command
+- [.materialize command](command/operations.md#command-16-materialize) - Materialization command
 - [template](#template) - What gets rendered
 - [parameter](#parameter) - What gets substituted
 
@@ -176,12 +176,12 @@ genfile .materialize destination::"./output"
 - Use when: working with local templates, minimizing archive size
 
 **Conversion:**
-- [.content.internalize](commands/content.md#command-9-contentinternalize) - Reference → Inline
-- [.content.externalize](commands/content.md#command-10-contentexternalize) - Inline → Reference
+- [.content.internalize](command/content.md#command-9-contentinternalize) - Reference → Inline
+- [.content.externalize](command/content.md#command-10-contentexternalize) - Inline → Reference
 
 **Related:**
-- [.archive.from_directory mode::](commands/archive.md#command-8-archivefromdirectory) - Choose mode during creation
-- [.content.* commands](commands/content.md) - Content management
+- [.archive.from_directory mode::](command/archive.md#command-8-archivefromdirectory) - Choose mode during creation
+- [.content.* commands](command/content.md) - Content management
 
 **Comparison:**
 
@@ -223,8 +223,8 @@ genfile .archive.save path::"lightweight.json"
 - Read operations ignore dry flag (no side effects anyway)
 
 **Related:**
-- [dry:: parameter](params.md#parameter-2-dry) - Parameter documentation
-- [Universal Execution Control](parameter_groups.md#group-2-universal-execution-control) - Parameter group
+- [dry:: parameter](param.md#parameter-2-dry) - Parameter documentation
+- [Universal Execution Control](param_group.md#group-2-universal-execution-control) - Parameter group
 
 **Example:**
 ```bash
@@ -252,13 +252,13 @@ genfile .materialize destination::"./output" dry::0
 - `5` - Ultra-trace: All events and state changes
 
 **Characteristics:**
-- Universal parameter (appears in all 24 commands)
+- Universal parameter (appears in all commands)
 - Default is 1 (balanced output)
 - Controlled by `verbosity::` parameter
 
 **Related:**
-- [verbosity:: parameter](params.md#parameter-1-verbosity) - Parameter documentation
-- [Universal Output Control](parameter_groups.md#group-1-universal-output-control) - Parameter group
+- [verbosity:: parameter](param.md#parameter-1-verbosity) - Parameter documentation
+- [Universal Output Control](param_group.md#group-1-universal-output-control) - Parameter group
 
 **Use Cases:**
 - `verbosity::0` - CI/CD pipelines (quiet)
@@ -306,9 +306,9 @@ genfile .materialize destination::"./output" verbosity::2
 - `**/target/**` - All files in target directories (any depth)
 
 **Related:**
-- [include_pattern:: parameter](params.md#parameter-17-includepattern) - Inclusion patterns
-- [exclude_pattern:: parameter](params.md#parameter-21-excludepattern) - Exclusion patterns
-- [Filesystem Filtering](parameter_groups.md#group-3-filesystem-filtering) - Pattern group
+- [include_pattern:: parameter](param.md#parameter-17-includepattern) - Inclusion patterns
+- [exclude_pattern:: parameter](param.md#parameter-21-excludepattern) - Exclusion patterns
+- [Filesystem Filtering](param_group.md#group-3-filesystem-filtering) - Pattern group
 
 **Notes:**
 - Case-sensitive on Unix, case-insensitive on Windows
@@ -358,8 +358,8 @@ genfile .archive.from_directory \
 - Override with `format::` parameter
 
 **Related:**
-- [format:: parameter](params.md#parameter-19-format) - Format selection
-- [.archive.save](commands/archive.md#command-7-archivesave) - Saving with format control
+- [format:: parameter](param.md#parameter-19-format) - Format selection
+- [.archive.save](command/archive.md#command-7-archivesave) - Saving with format control
 
 **Recommendation:**
 - **JSON:** Machine consumption, CI/CD, performance-critical
@@ -382,9 +382,9 @@ genfile .archive.save path::"compact.json" pretty::0
 
 ---
 
-## See Also
+### See Also
 
-- [Commands Reference](commands.md) - Command documentation
-- [Parameters Reference](params.md) - Parameter documentation
-- [Types Reference](types.md) - Type system
-- [Parameter Groups](parameter_groups.md) - Shared parameter sets
+- [Commands Reference](command/readme.md) - Command documentation
+- [Parameters Reference](param.md) - Parameter documentation
+- [Types Reference](type.md) - Type system
+- [Parameter Groups](param_group.md) - Shared parameter sets

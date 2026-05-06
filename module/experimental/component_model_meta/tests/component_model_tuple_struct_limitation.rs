@@ -1,22 +1,22 @@
-//! Bug reproducer for ComponentModel tuple struct limitation
+//! Bug reproducer for `ComponentModel` tuple struct limitation
 //!
 //! # Root Cause
 //!
-//! ComponentModel macro explicitly rejects tuple structs with error "ComponentModel requires named fields"
+//! `ComponentModel` macro explicitly rejects tuple structs with error "`ComponentModel` requires named fields"
 //! at `component_model.rs:37`. The implementation uses pattern matching on `syn::Fields::Named`
 //! and returns `syn_err!` for all other field types (Unit, Unnamed).
 //!
 //! # Why Not Caught
 //!
-//! No test coverage existed for ComponentModel with tuple structs. The limitation is intentional
+//! No test coverage existed for `ComponentModel` with tuple structs. The limitation is intentional
 //! in the implementation but completely undocumented in the public API (src/lib.rs lines 544-591).
-//! Users attempting to use ComponentModel with tuple structs get a compile error with no prior
+//! Users attempting to use `ComponentModel` with tuple structs get a compile error with no prior
 //! warning from documentation.
 //!
 //! # Fix Applied
 //!
 //! DOCUMENTATION FIX NEEDED (not yet applied):
-//! Add "Limitations" section to ComponentModel documentation in src/lib.rs explaining:
+//! Add "Limitations" section to `ComponentModel` documentation in src/lib.rs explaining:
 //! - Only works with named-field structs
 //! - Does not support tuple structs (use ComponentAssign/ComponentFrom instead)
 //! - Does not support unit structs
@@ -33,7 +33,7 @@
 //! struct Point(i32, i32); // ERROR: ComponentModel requires named fields
 //! ```
 //!
-//! For tuple structs, use ComponentAssign or ComponentFrom instead.
+//! For tuple structs, use `ComponentAssign` or `ComponentFrom` instead.
 //! ```
 //!
 //! # Prevention

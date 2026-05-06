@@ -12,19 +12,5 @@ mod layer_b;
 
 mod private {}
 
-// xxx: qqq: make it working
-
-// the_module ::mod_interface!
-// {
-//
-//   /// layer_a
-//   priv use super ::layer_a;
-//
-//   /// layer_b
-//   priv use super ::layer_b;
-//
-// }
-//
-// //
-//
-// include!( "../../only_test/layer_simple_only_test.rs" );
+// Tracked in task/backlog/003 — `priv use super::child` private-visibility directive
+// not yet implemented in mod_interface!.

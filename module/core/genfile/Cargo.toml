@@ -15,9 +15,6 @@ CLI for genfile_core template archive management - create, manage, and materiali
 """
 categories = [ "command-line-utilities", "development-tools" ]
 keywords = [ "template", "codegen", "cli", "scaffolding", "generator" ]
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
 
 [lints]
 workspace = true
@@ -31,9 +28,6 @@ default = [ "enabled" ]
 full = [ "enabled" ]
 enabled = []
 
-[build-dependencies]
-# Build-time YAML processing
-walkdir = "2"
 
 [dependencies]
 # Core functionality

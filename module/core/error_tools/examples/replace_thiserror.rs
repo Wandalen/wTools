@@ -23,17 +23,17 @@ impl From< std ::io ::Error > for DataError
 {
   fn from( err: std ::io ::Error ) -> Self
   {
-  DataError ::Io( err, PathBuf ::new() )
- }
+    DataError ::Io( err, PathBuf ::new() )
+  }
 }
 
 fn process_data( path: &PathBuf ) -> Result< i32, DataError >
 {
   let content = std ::fs ::read_to_string( path )
-  .map_err( | e | DataError ::Io( e, path.clone() ) )?;
+    .map_err( | e | DataError ::Io( e, path.clone() ) )?;
 
   content.trim().parse :: < i32 >()
-  .map_err( | _ | DataError ::Parse( "Could not parse content as integer".into() ) )
+    .map_err( | _ | DataError ::Parse( "Could not parse content as integer".into() ) )
 }
 
 fn main()
@@ -45,16 +45,16 @@ fn main()
   let path1 = PathBuf ::from( "data.txt" );
   match process_data( &path1 )
   {
-  Ok( num ) => println!( "Processed data: {num}" ),
-  Err( e ) => println!( "An error occurred: {e}" ),
- }
+    Ok( num ) => println!( "Processed data: {num}" ),
+    Err( e ) => println!( "An error occurred: {e}" ),
+  }
 
   let path2 = PathBuf ::from( "invalid_data.txt" );
   match process_data( &path2 )
   {
-  Ok( _ ) => (),
-  Err( e ) => println!( "Correctly handled parsing error: {e}" ),
- }
+    Ok( _ ) => (),
+    Err( e ) => println!( "Correctly handled parsing error: {e}" ),
+  }
 
   // Clean up dummy files
   _ = std ::fs ::remove_file( "data.txt" );

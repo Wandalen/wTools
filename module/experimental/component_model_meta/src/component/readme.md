@@ -2,7 +2,7 @@
 
 This directory contains procedural macro implementations for the component model pattern.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

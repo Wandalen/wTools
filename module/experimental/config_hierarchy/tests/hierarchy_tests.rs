@@ -1,3 +1,4 @@
+// allow: test binary functions are not part of the public API; documentation not required
 #![ allow( missing_docs ) ]
 
 use config_hierarchy::*;
@@ -223,4 +224,177 @@ fn test_type_detection_in_hierarchy()
   assert_eq!( value, JsonValue::Bool( true ) );
 
   env::remove_var( "TESTAPP_BOOL_PARAM" );
+}
+
+// IN-03: Local config (L3/L4) overrides global config (L5)
+//
+// ## Root Cause (of original gap)
+// invariant/001 defines L3 (LocalCurrent) > L5 (Global) but no test exercised
+// a scenario where both a local file and a global file provide the same param.
+//
+// ## Fix Applied
+// Test creates both a global config file and a local config file in a temp CWD,
+// verifying the local value wins and source is LocalCurrent.
+#[ test ]
+#[ serial ]
+fn test_local_config_overrides_global()
+{
+  use std::fs;
+
+  let global_dir = TempDir::new().unwrap();
+  let local_dir  = TempDir::new().unwrap();
+
+  let original_pro = env::var( "PRO" );
+  env::set_var( "PRO", global_dir.path() );
+
+  // Write global config
+  let mut global_config = HashMap::new();
+  global_config.insert( "param1".into(), JsonValue::String( "global_value".into() ) );
+  TestConfig::save_global_config( &global_config ).unwrap();
+
+  // Write local config in the temp directory
+  let local_app_dir = local_dir.path().join( ".testapp" );
+  fs::create_dir_all( &local_app_dir ).unwrap();
+  let local_path = local_app_dir.join( "config.yaml" );
+  let mut local_config = HashMap::new();
+  local_config.insert( "param1".into(), JsonValue::String( "local_value".into() ) );
+  TestConfig::save_config_file( &local_config, &local_path ).unwrap();
+
+  // Change CWD to local_dir so the local config is discovered
+  let original_dir = env::current_dir().unwrap();
+  env::set_current_dir( local_dir.path() ).unwrap();
+
+  let runtime_params = HashMap::new();
+  let ( value, source ) = TestConfig::resolve_config_value( "param1", &runtime_params );
+
+  assert_eq!( value, JsonValue::String( "local_value".into() ), "Local config must override global" );
+  assert!( matches!( source, ConfigSource::LocalCurrent( _ ) ), "Source must be LocalCurrent, got: {source:?}" );
+
+  // Restore
+  env::set_current_dir( original_dir ).unwrap();
+  if let Ok( v ) = original_pro { env::set_var( "PRO", v ); } else { env::remove_var( "PRO" ); }
+}
+
+// IN-02: Directory depth beats pattern type within local configs
+//
+// ## Root Cause (of original gap)
+// invariant/001 defines L3 (LocalCurrent, depth=0) > L4 (LocalParent, depth>0)
+// regardless of temporary vs permanent pattern type. No test exercised a case
+// where a permanent config at depth=0 competes with a temporary config at depth=1.
+//
+// ## Fix Applied
+// Creates a child CWD with a permanent (.testapp) config and places a temporary
+// (-testapp) config in the parent dir one level up. Verifies the child permanent
+// config wins and source is LocalCurrent — proving depth beats pattern type.
+#[ test ]
+#[ serial ]
+fn test_local_current_overrides_local_parent()
+{
+  use std::fs;
+
+  // Parent dir gets a TEMPORARY (-testapp) local config (would be L4 LocalParent)
+  let parent_dir = TempDir::new().unwrap();
+  let temp_app_dir = parent_dir.path().join( "-testapp" );
+  fs::create_dir_all( &temp_app_dir ).unwrap();
+  let parent_config_path = temp_app_dir.join( "config.yaml" );
+  let mut parent_config = HashMap::new();
+  parent_config.insert( "param1".into(), JsonValue::String( "parent_temp_value".into() ) );
+  TestConfig::save_config_file( &parent_config, &parent_config_path ).unwrap();
+
+  // Child dir (inside parent) gets a PERMANENT (.testapp) local config (L3 LocalCurrent)
+  let child_dir = parent_dir.path().join( "child" );
+  fs::create_dir_all( &child_dir ).unwrap();
+  let perm_app_dir = child_dir.join( ".testapp" );
+  fs::create_dir_all( &perm_app_dir ).unwrap();
+  let child_config_path = perm_app_dir.join( "config.yaml" );
+  let mut child_config = HashMap::new();
+  child_config.insert( "param1".into(), JsonValue::String( "current_perm_value".into() ) );
+  TestConfig::save_config_file( &child_config, &child_config_path ).unwrap();
+
+  // Change CWD to child dir: depth=0 is permanent, depth=1 is temporary
+  let original_dir     = env::current_dir().unwrap();
+  let original_pro     = env::var( "PRO" );
+  let original_home    = env::var( "HOME" );
+  let original_xdg     = env::var( "XDG_CONFIG_HOME" );
+  let original_appdata = env::var( "APPDATA" );
+
+  env::set_current_dir( &child_dir ).unwrap();
+  // Unset global config vars so only local configs are consulted
+  env::remove_var( "PRO" );
+  env::remove_var( "HOME" );
+  env::remove_var( "XDG_CONFIG_HOME" );
+  env::remove_var( "APPDATA" );
+
+  let runtime_params = HashMap::new();
+  let ( value, source ) = TestConfig::resolve_config_value( "param1", &runtime_params );
+
+  assert_eq!
+  (
+    value,
+    JsonValue::String( "current_perm_value".into() ),
+    "Current-dir permanent config must override parent-dir temporary config (depth beats pattern type)"
+  );
+  assert!
+  (
+    matches!( source, ConfigSource::LocalCurrent( _ ) ),
+    "Source must be LocalCurrent (depth=0), not LocalParent; got: {source:?}"
+  );
+
+  // Restore
+  env::set_current_dir( original_dir ).unwrap();
+  if let Ok( v ) = original_pro     { env::set_var( "PRO", v );             } else { env::remove_var( "PRO" );             }
+  if let Ok( v ) = original_home    { env::set_var( "HOME", v );            } else { env::remove_var( "HOME" );            }
+  if let Ok( v ) = original_xdg     { env::set_var( "XDG_CONFIG_HOME", v ); } else { env::remove_var( "XDG_CONFIG_HOME" ); }
+  if let Ok( v ) = original_appdata { env::set_var( "APPDATA", v );         } else { env::remove_var( "APPDATA" );         }
+}
+
+// AP-04 (api/002): resolve_all includes params found in config files but not in get_parameter_names()
+//
+// ## Root Cause (of original gap)
+// api/002 documents the secondary scan behavior but no test exercised it.
+// A broken secondary scan would silently drop all undeclared config file params.
+//
+// ## Fix Applied
+// Test writes a global config file with a key not in get_parameter_names(),
+// then verifies resolve_all_config() returns it via the secondary scan.
+#[ test ]
+#[ serial ]
+fn test_resolve_all_includes_undeclared_config_file_params()
+{
+  let temp_dir = TempDir::new().unwrap();
+  let original_pro = env::var( "PRO" );
+  let original_home = env::var( "HOME" );
+  let original_xdg = env::var( "XDG_CONFIG_HOME" );
+  let original_appdata = env::var( "APPDATA" );
+
+  env::set_var( "PRO", temp_dir.path() );
+  // Unset fallback paths so global config uses PRO
+  env::remove_var( "HOME" );
+  env::remove_var( "XDG_CONFIG_HOME" );
+  env::remove_var( "APPDATA" );
+
+  // Write global config with "extra_param" not declared in get_parameter_names()
+  let mut config = HashMap::new();
+  config.insert( "extra_param".into(), JsonValue::String( "from_global_file".into() ) );
+  TestConfig::save_global_config( &config ).unwrap();
+
+  let runtime_params = HashMap::new();
+  let all_config = TestConfig::resolve_all_config( &runtime_params );
+
+  assert!
+  (
+    all_config.contains_key( "extra_param" ),
+    "resolve_all must include params from config files not in get_parameter_names()"
+  );
+  assert_eq!
+  (
+    all_config[ "extra_param" ].0,
+    JsonValue::String( "from_global_file".into() )
+  );
+
+  // Restore
+  if let Ok( v ) = original_pro { env::set_var( "PRO", v ); } else { env::remove_var( "PRO" ); }
+  if let Ok( v ) = original_home { env::set_var( "HOME", v ); } else { env::remove_var( "HOME" ); }
+  if let Ok( v ) = original_xdg { env::set_var( "XDG_CONFIG_HOME", v ); } else { env::remove_var( "XDG_CONFIG_HOME" ); }
+  if let Ok( v ) = original_appdata { env::set_var( "APPDATA", v ); } else { env::remove_var( "APPDATA" ); }
 }

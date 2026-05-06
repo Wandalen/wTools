@@ -2,12 +2,12 @@
 
 ### Scope
 
-- **Purpose**: Document each formatter struct — the Rust rendering component that converts `TableView` or `TreeNode<T>` into a specific output format family.
+- **Purpose**: Document each formatter — the rendering component that converts structured data into a specific output format family.
 - **Responsibility**: Registry and overview of all formatter doc instances.
 - **In Scope**: Trait implementations, accepted input types, variant selection mechanism, feature flag, deprecation status.
 - **Out of Scope**: Per-variant preset details (see `../variant/`), operation signatures (see `../api/004_formatters.md`), format output semantics (see `../variant/`).
 
-#### Type-Specific Requirements
+### Type-Specific Requirements
 
 Every formatter doc instance must contain these sections in order:
 
@@ -18,6 +18,12 @@ Every formatter doc instance must contain these sections in order:
 | Trait | `### Trait` | Which trait(s) implemented; deprecation status of each |
 | Input | `### Input` | Accepted Rust input type(s); which path each serves |
 | Variants | `### Variants` | Variant list with selection mechanism per variant |
+
+### Infrastructure
+
+| File | Responsibility |
+|------|----------------|
+| `procedure.md` | Operational procedure for creating and updating formatter doc instances |
 
 ### Overview Table
 
@@ -41,4 +47,4 @@ Every formatter doc instance must contain these sections in order:
 - [trait/001_format.md](../trait/001_format.md) — `Format` trait contract and implementor matrix
 - [trait/002_table_shaped_formatter.md](../trait/002_table_shaped_formatter.md) — deprecated `TableShapedFormatter` trait
 - [input_type/001_table_view.md](../input_type/001_table_view.md) — `TableView` input type
-- [input_type/002_tree_node.md](../input_type/002_tree_node.md) — `TreeNode<T>` input type
+- [input_type/002_tree_node.md](../input_type/002_tree_node.md) — `TreeNode` input type

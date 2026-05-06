@@ -2,11 +2,10 @@
 
 Task tracking for the `wca` crate.
 
-## File Responsibility Table
+### Responsibility Table
 
-| Entry | Responsibility |
-|-------|----------------|
-| `001_fix_smoke_test_import.md` | Fix phantom `use include_md` import in smoke test |
+| File | Responsibility |
+|------|----------------|
 | `backlog/` | Tasks reviewed but not yet promoted to active |
 | `completed/` | Tasks that passed validation |
 

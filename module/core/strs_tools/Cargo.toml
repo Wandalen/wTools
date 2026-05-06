@@ -19,9 +19,7 @@ keywords = [ "fundamental", "general-purpose" ]
 exclude = [
   "benches/"
 ]
-dependencies = {}
-dev-dependencies = {}
-build-dependencies = {}
+autobenches = false
 
 [lints]
 workspace = true
@@ -31,18 +29,7 @@ features = [ "full" ]
 all-features = false
 
 [features]
-# Default feature set - no_std compatible with essential functionality
-# For std environments with SIMD, use "full" feature set instead
-default = [
-  "enabled",
-  "no_std",
-  "use_alloc",
-  "string_indentation",
-  "string_isolate",
-  "string_split",
-  "string_parse_number",
-  "compile_time_optimizations",
-]
+default = [ "enabled", "string_indentation", "string_parse_number" ]
 
 # Full feature set - includes everything for maximum functionality in std environments
 full = [
@@ -165,7 +152,7 @@ unicode-width = "0.1"
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }
-benchkit = { workspace = true }
+benchkit = { workspace = true, features = [ "enabled" ] }
 ctor = { version = "0.2" }
 
 [[bench]]

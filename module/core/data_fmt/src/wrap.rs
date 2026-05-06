@@ -247,6 +247,8 @@ impl Default for WrapFormatter
 
 // --- private helpers ---
 
+use crate::ansi_str::unicode_visual_len;
+
 fn char_count( s : &str ) -> usize
 {
   s.chars().count()
@@ -373,7 +375,7 @@ fn wrap_words( words : &[ &str ], config : &WrapConfig, first_line_idx : usize )
   let mut pending_width = 0_usize;
   for &word in words
   {
-    let word_width = char_count( word );
+    let word_width = unicode_visual_len( word );
     let line_idx = first_line_idx + lines.len();
     let avail = available_for( line_idx, config );
     if pending.is_empty()

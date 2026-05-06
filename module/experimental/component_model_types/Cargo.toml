@@ -7,9 +7,9 @@ authors = [
 ]
 license = "MIT"
 readme = "readme.md"
-documentation = "https://docs.rs/component_model"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/core/component_model"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/component_model"
+documentation = "https://docs.rs/component_model_types"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/experimental/component_model_types"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/experimental/component_model_types"
 description = """
 Component model.
 """
@@ -28,10 +28,7 @@ all-features = false
 no_std = [ "collection_tools/no_std" ]
 use_alloc = [ "no_std", "collection_tools/use_alloc" ]
 
-default = [
-  "enabled",
-  "types_component_assign",
-]
+default = [ "enabled" ]
 full = [
   "enabled",
 

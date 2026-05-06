@@ -2,7 +2,7 @@
 
 File path type wrappers providing type safety and domain semantics.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|---------------|

@@ -14,10 +14,11 @@
 | source | `src/formatters/format_trait.rs` | Format trait definition |
 | test | `tests/unified_format_trait.rs` | Format trait tests |
 | doc | `../feature/003_unified_format_interface.md` | Feature-level documentation |
+| doc | `../feature/006_api_cleanup_v030.md` | v0.3.0 cleanup — adds ExpandedFormatter coverage |
 
 ### Signature
 
-`Format` is a trait with one required method: `format( &self, data : &TableView ) -> Result< String, FormatError >`. Takes an immutable reference to self and an immutable reference to `TableView`; returns a formatted string or a `FormatError`.
+`Format` is a trait with one required method. It accepts an immutable reference to a `TableView` and returns either a formatted string or a `FormatError`.
 
 ### Error Type
 
@@ -40,7 +41,7 @@
 
 | Formatter | Reason | Alternative |
 |-----------|--------|-------------|
-| `ExpandedFormatter` | Uses deprecated `TableShapedFormatter` only | `TableShapedFormatter::format( &TreeNode<String> )` — deprecated |
+| `ExpandedFormatter` | Uses deprecated `TableShapedFormatter` only | via the deprecated `TableShapedFormatter` interface (to resolve in v0.3.0 — see `../feature/006_api_cleanup_v030.md`) |
 | `TreeFormatter` | Requires generic `T` + render closure | Direct methods: `format()`, `format_aligned()`, `format_with_aggregation()` |
 
 ### Input Type
@@ -49,14 +50,4 @@
 
 ### Usage
 
-```rust
-use data_fmt::{ RowBuilder, Format };
-
-let view = RowBuilder::new( vec![ "Name".into() ] )
-  .add_row( vec![ "Alice".into() ] )
-  .build_view();
-
-// Any Format implementor works
-let formatter = TableFormatter::new();
-let output = Format::format( &formatter, &view )?;
-```
+Any `Format`-implementing formatter accepts a `TableView` produced by `RowBuilder::build_view()`. The caller invokes the formatter's `format` method, which returns a formatted string or a `FormatError`.

@@ -25,7 +25,7 @@ Since clone_dyn_meta is a procedural macro crate (compile-time code generation),
 **Steps:**
 ```bash
 # Navigate to crate root
-cd /home/user1/pro/lib/wip_core/wtools/dev/module/core/clone_dyn_meta
+cd ../..
 
 # Run documentation tests
 cargo test --doc --all-features
@@ -53,44 +53,9 @@ cargo test --doc --all-features
 
 ### Procedure 2: Parent Crate Example Execution
 
-**Purpose:** Verify macro generates correct code for real-world usage through clone_dyn facade crate
+**Purpose:** Verify macro generates correct code through clone_dyn facade crate integration.
 
-**Steps:**
-```bash
-# Navigate to parent clone_dyn crate
-cd /home/user1/pro/lib/wip_core/wtools/dev/module/core/clone_dyn
-
-# Run trivial example
-cargo run --example clone_dyn_trivial --all-features
-```
-
-**Expected Result:**
-- Example compiles successfully
-- Example executes without panic
-- Output demonstrates trait object cloning:
-  ```
-  1
-  2
-  3
-  1
-  2
-  3
-  ```
-- First triplet (1,2,3) from cloned iterator
-- Second triplet (1,2,3) from original iterator
-
-**Pass Criteria:**
-- ✅ Exit code 0
-- ✅ Output matches expected pattern
-- ✅ No runtime errors or panics
-- ✅ Demonstrates CloneDyn trait functionality
-
-**Corner Cases Tested:**
-- Generic trait with lifetime parameters (IterTrait<'a, T>)
-- Trait with multiple supertraits (Iterator + ExactSizeIterator + DoubleEndedIterator)
-- Where clause constraints
-- Trait object cloning (Box<dyn IterTrait>)
-- Real-world iterator use case
+**Procedure:** See [`../../../clone_dyn/tests/manual/readme.md`](../../../clone_dyn/tests/manual/readme.md) — Procedure 1 (Example Compilation and Execution). All steps, expected output, and pass criteria apply identically here.
 
 ---
 
@@ -101,7 +66,7 @@ cargo run --example clone_dyn_trivial --all-features
 **Steps:**
 ```bash
 # Navigate to clone_dyn_meta crate root
-cd /home/user1/pro/lib/wip_core/wtools/dev/module/core/clone_dyn_meta
+cd ../..
 
 # Run smoke tests
 cargo nextest run --all-features
@@ -133,7 +98,7 @@ cargo nextest run --all-features
 **Steps:**
 ```bash
 # Navigate to crate root
-cd /home/user1/pro/lib/wip_core/wtools/dev/module/core/clone_dyn_meta
+cd ../..
 
 # Run full test suite (level 3)
 w3 .test l::3
@@ -221,7 +186,7 @@ w3 .test l::3
 
 ### Session 1: 2026-01-21
 
-**Tester:** Claude Sonnet 4.5
+**Tester:** AI-assisted
 **Command:** `/test_manual` with exhaustive corner case analysis
 
 **Results:**
@@ -247,7 +212,7 @@ All manual testing procedures passed with zero issues. The clone_dyn_meta crate 
 
 ### Session 2: 2026-01-24
 
-**Tester:** Claude Sonnet 4.5
+**Tester:** AI-assisted
 **Command:** `/test_manual` with all procedures re-executed following test_clean success
 
 **Results:**
@@ -280,6 +245,6 @@ All manual testing procedures passed with zero issues. Clone_dyn_meta remains in
 - Discovery of edge cases not covered by existing tests
 
 **Related Documentation:**
-- Parent crate: `/home/user1/pro/lib/wip_core/wtools/dev/module/core/clone_dyn/`
-- Specification: `spec.md`
+- Parent crate: `../../../clone_dyn/`
+- Specification: `../../docs/feature/001_clone_dyn_macro.md`
 - Test documentation: `tests/readme.md`

@@ -2,7 +2,7 @@
 
 This directory contains all tests for the mem_tools crate.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

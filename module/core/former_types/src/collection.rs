@@ -279,7 +279,6 @@ mod private
   /// {
   ///   type Item = i32;
   ///   type IntoIter = std ::vec ::IntoIter< i32 >;
-  ///   // qqq: zzz: make sure collection_tools has itearators -- done
   ///
   ///   fn into_iter( self ) -> Self ::IntoIter
   ///   {

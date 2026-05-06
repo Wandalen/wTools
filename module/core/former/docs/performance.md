@@ -264,7 +264,7 @@ Former supports `no_std` with `use_alloc` feature:
 
 ```toml
 [dependencies]
-former = { version = "2.31", default-features = false, features = ["use_alloc"] }
+former = { version = "2.45", default-features = false, features = ["use_alloc"] }
 ```
 
 Benefits:
@@ -426,14 +426,6 @@ Avoid Former if:
 ### Q: Does Former work with `#[inline(always)]`?
 
 **A**: Former-generated setters are already annotated with `#[inline]`, which is sufficient for LLVM to inline them in release builds.
-
----
-
-## Further Reading
-
-- [Benchmarking Infrastructure](../benches/README.md) - Run benchmarks yourself
-- [Specification § 9: Performance Characteristics](../spec.md#9-performance-characteristics) - Formal guarantees
-- [Advanced Usage](../advanced.md#custom-definitions) - Customizing for performance
 
 ---
 

@@ -33,8 +33,12 @@ mod if_enabled
   mod generic_params_ref_test; // Added new test file
   #[ cfg( feature = "generic_params" ) ]
   mod generic_params_test;
+  #[ cfg( all( feature = "ident", feature = "generic_params" ) ) ]
+  mod ident_and_generic_params_test;
   #[ cfg( feature = "ident" ) ]
   mod ident_cased_test;
+  #[ cfg( feature = "ident" ) ]
+  mod ident_new_from_cased_str_test;
   #[ cfg( feature = "ident" ) ] // Use new feature name
   mod ident_test;
   #[ cfg( feature = "item_struct" ) ]

@@ -8,20 +8,22 @@ This directory contains comprehensive integration tests for the `optimize_split`
 
 ## Organization
 
-Tests are organized by macro functionality with dedicated test modules for each procedural macro. The `integration_tests.rs` file serves as the main entry point importing feature-gated test modules.
+Tests are organized by macro functionality with dedicated test binaries for each procedural macro. `integration_tests.rs` tests both macros together in the same expansion context.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|
-| `integration_tests.rs` | Aggregate test modules for integration |
+| `integration_tests.rs` | Test both macros used in same expansion context |
 | `optimize_match_tests.rs` | Test optimize_match macro |
 | `optimize_split_tests.rs` | Test optimize_split macro |
+| `corner_cases_test.rs` | Test edge cases for both macros |
 
 ## Test Coverage
 
-- **optimize_split macro**: 10 test cases covering single-char delimiters, multi-char delimiters, multiple delimiters, preserve options, debug mode, and parameter validation
-- **optimize_match macro**: 10 test cases covering single pattern, multiple patterns, matching strategies (first_match, longest_match, all_matches), debug mode, and parameter validation
+- **optimize_split macro** (`optimize_split_tests.rs`): 10 test cases — single-char delimiter, multi-char delimiter, multiple delimiters, preserve options, debug mode, parameter validation
+- **optimize_match macro** (`optimize_match_tests.rs`): 10 test cases — single pattern, multiple patterns, matching strategies, debug mode, parameter validation
+- **corner cases** (`corner_cases_test.rs`): 28 tests — empty input, boundary positions, Unicode, UTF-8 emoji, overlapping patterns/delimiters, optimization threshold edges (8/9 split, 16/17 match)
 
 ## Running Tests
 

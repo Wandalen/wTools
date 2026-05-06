@@ -11,7 +11,11 @@ use test_tools::*;
 /// Expected: Should fail at form() or perform() stage with clear error message
 /// Run: cargo test --test smoke_test_corner_cases -- --exact test_nonexistent_dependency --nocapture
 #[test]
-#[ignore] // Manual test - run explicitly
+#[ignore]
+// DISABLED: 2026-05-04
+// REASON: Requires human verification, network access, and explicit invocation
+// RE-ENABLE: Run individually with `cargo test --test smoke_test_corner_cases -- --exact <name> --nocapture --ignored`
+// APPROVED: manual_test_suite
 fn test_nonexistent_dependency()
 {
   let mut smoke_test = SmokeModuleTest::new("this_crate_definitely_does_not_exist_12345");
@@ -36,7 +40,11 @@ fn test_nonexistent_dependency()
 /// Expected: Should fail gracefully with clear error about invalid version
 /// Run: cargo test --test smoke_test_corner_cases -- --exact test_malformed_version --nocapture
 #[test]
-#[ignore] // Manual test - run explicitly
+#[ignore]
+// DISABLED: 2026-05-04
+// REASON: Requires human verification, network access, and explicit invocation
+// RE-ENABLE: Run individually with `cargo test --test smoke_test_corner_cases -- --exact <name> --nocapture --ignored`
+// APPROVED: manual_test_suite
 fn test_malformed_version()
 {
   let mut smoke_test = SmokeModuleTest::new("serde");
@@ -65,7 +73,11 @@ fn test_malformed_version()
 /// Expected: Should succeed (valid empty Rust project)
 /// Run: cargo test --test smoke_test_corner_cases -- --exact test_empty_code --nocapture
 #[test]
-#[ignore] // Manual test - run explicitly
+#[ignore]
+// DISABLED: 2026-05-04
+// REASON: Requires human verification, network access, and explicit invocation
+// RE-ENABLE: Run individually with `cargo test --test smoke_test_corner_cases -- --exact <name> --nocapture --ignored`
+// APPROVED: manual_test_suite
 fn test_empty_code()
 {
   let mut smoke_test = SmokeModuleTest::new("serde");
@@ -90,7 +102,11 @@ fn test_empty_code()
 /// Expected: cargo test should fail, cargo run should fail
 /// Run: cargo test --test smoke_test_corner_cases -- --exact test_code_with_panic --nocapture
 #[test]
-#[ignore] // Manual test - run explicitly
+#[ignore]
+// DISABLED: 2026-05-04
+// REASON: Requires human verification, network access, and explicit invocation
+// RE-ENABLE: Run individually with `cargo test --test smoke_test_corner_cases -- --exact <name> --nocapture --ignored`
+// APPROVED: manual_test_suite
 fn test_code_with_panic()
 {
   let mut smoke_test = SmokeModuleTest::new("serde");
@@ -119,7 +135,11 @@ fn test_code_with_panic()
 /// Expected: Should handle gracefully (may be slow)
 /// Run: cargo test --test smoke_test_corner_cases -- --exact test_large_code --nocapture
 #[test]
-#[ignore] // Manual test - run explicitly
+#[ignore]
+// DISABLED: 2026-05-04
+// REASON: Requires human verification, network access, and explicit invocation
+// RE-ENABLE: Run individually with `cargo test --test smoke_test_corner_cases -- --exact <name> --nocapture --ignored`
+// APPROVED: manual_test_suite
 fn test_large_code()
 {
   let mut smoke_test = SmokeModuleTest::new("serde");
@@ -155,7 +175,11 @@ fn test_large_code()
 /// Expected: Should fail at compile time with clear error
 /// Run: cargo test --test smoke_test_corner_cases -- --exact test_nonexistent_item --nocapture
 #[test]
-#[ignore] // Manual test - run explicitly
+#[ignore]
+// DISABLED: 2026-05-04
+// REASON: Requires human verification, network access, and explicit invocation
+// RE-ENABLE: Run individually with `cargo test --test smoke_test_corner_cases -- --exact <name> --nocapture --ignored`
+// APPROVED: manual_test_suite
 fn test_nonexistent_item()
 {
   let mut smoke_test = SmokeModuleTest::new("serde");
@@ -184,7 +208,11 @@ fn test_nonexistent_item()
 /// Expected: Should handle gracefully (second call is no-op or returns error)
 /// Run: cargo test --test smoke_test_corner_cases -- --exact test_multiple_cleanup --nocapture
 #[test]
-#[ignore] // Manual test - run explicitly
+#[ignore]
+// DISABLED: 2026-05-04
+// REASON: Requires human verification, network access, and explicit invocation
+// RE-ENABLE: Run individually with `cargo test --test smoke_test_corner_cases -- --exact <name> --nocapture --ignored`
+// APPROVED: manual_test_suite
 fn test_multiple_cleanup()
 {
   let mut smoke_test = SmokeModuleTest::new("serde");
@@ -210,7 +238,11 @@ fn test_multiple_cleanup()
 /// Expected: Should handle gracefully (nothing to clean or error)
 /// Run: cargo test --test smoke_test_corner_cases -- --exact test_cleanup_without_form --nocapture
 #[test]
-#[ignore] // Manual test - run explicitly
+#[ignore]
+// DISABLED: 2026-05-04
+// REASON: Requires human verification, network access, and explicit invocation
+// RE-ENABLE: Run individually with `cargo test --test smoke_test_corner_cases -- --exact <name> --nocapture --ignored`
+// APPROVED: manual_test_suite
 fn test_cleanup_without_form()
 {
   let mut smoke_test = SmokeModuleTest::new("serde");
@@ -230,7 +262,11 @@ fn test_cleanup_without_form()
 /// Expected: Should handle or sanitize special characters in filesystem paths
 /// Run: cargo test --test smoke_test_corner_cases -- --exact test_special_chars_name --nocapture
 #[test]
-#[ignore] // Manual test - run explicitly
+#[ignore]
+// DISABLED: 2026-05-04
+// REASON: Requires human verification, network access, and explicit invocation
+// RE-ENABLE: Run individually with `cargo test --test smoke_test_corner_cases -- --exact <name> --nocapture --ignored`
+// APPROVED: manual_test_suite
 fn test_special_chars_name()
 {
   // Note: SmokeModuleTest uses dependency_name in path, so test with special chars in dependency name
@@ -257,7 +293,11 @@ fn test_special_chars_name()
 /// Expected: Should handle pre-release versions (if they exist)
 /// Run: cargo test --test smoke_test_corner_cases -- --exact test_prerelease_version --nocapture
 #[test]
-#[ignore] // Manual test - run explicitly
+#[ignore]
+// DISABLED: 2026-05-04
+// REASON: Requires human verification, network access, and explicit invocation
+// RE-ENABLE: Run individually with `cargo test --test smoke_test_corner_cases -- --exact <name> --nocapture --ignored`
+// APPROVED: manual_test_suite
 fn test_prerelease_version()
 {
   let mut smoke_test = SmokeModuleTest::new("serde");

@@ -6,7 +6,7 @@ Incremental unit tests organized by module functionality. Each test file validat
 
 Tests are domain-based, mirroring source module structure. One test file per source module for focused validation.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

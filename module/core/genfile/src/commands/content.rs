@@ -14,6 +14,9 @@ use unilang::data::
 };
 
 /// Register all content commands
+///
+/// # Errors
+/// Returns an error if command registration fails.
 pub fn register( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core::error::Error > >
 {
   register_internalize( registry )?;

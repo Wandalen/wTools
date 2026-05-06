@@ -4,10 +4,10 @@
 
 | Type | Purpose | Master File | Instances |
 |------|---------|-------------|----------:|
-| `api/` | Public API surface: type signatures, function contracts, return type semantics | [api/readme.md](api/readme.md) | 7 |
-| `feature/` | Functional capabilities: what each feature does, why it exists | [feature/readme.md](feature/readme.md) | 5 |
-| `guide/` | Cross-module usage workflows and integration patterns | [guide/readme.md](guide/readme.md) | 2 |
-| `invariant/` | Behavioral contracts and platform guarantees | [invariant/readme.md](invariant/readme.md) | 4 |
+| `api/` | Collect one doc instance per public type or function group; specify operations, error handling, and compatibility guarantees | [api/readme.md](api/readme.md) | 7 |
+| `feature/` | Collect one doc instance per discrete user-visible capability; link to related api/ and invariant/ instances | [feature/readme.md](feature/readme.md) | 5 |
+| `guide/` | Collect one guide per coherent usage scenario, showing how to combine features from two or more modules to accomplish a real task | [guide/readme.md](guide/readme.md) | 2 |
+| `invariant/` | Collect one doc instance per invariant; specify enforcement mechanism and violation consequences | [invariant/readme.md](invariant/readme.md) | 4 |
 
 ## Master Doc Instances Table
 

@@ -332,6 +332,36 @@ pub trait ConfigPaths
   fn macos_config_base() -> &'static str { "Library/Application Support" }
 }
 
+/// Pass-through validator that accepts all configuration values without validation
+///
+/// Use when the application needs no validation:
+///
+/// ```
+/// use config_hierarchy::{ ConfigValidator, NoValidator };
+/// use serde_json::Value as JsonValue;
+/// use std::collections::HashMap;
+///
+/// assert!( NoValidator::validate_parameter( "any", &JsonValue::Null ).is_ok() );
+/// assert!( NoValidator::validate_all( &HashMap::new() ).is_empty() );
+/// ```
+#[ derive( Debug ) ]
+pub struct NoValidator;
+
+impl ConfigValidator for NoValidator
+{
+  fn validate_parameter( _param_name : &str, _value : &JsonValue )
+    -> Result< (), ValidationError >
+  {
+    Ok( () )
+  }
+
+  fn validate_all( _config : &HashMap< String, ( JsonValue, ConfigSource ) > )
+    -> Vec< ValidationError >
+  {
+    Vec::new()
+  }
+}
+
 /// Provides application-specific validation logic
 ///
 /// # Example

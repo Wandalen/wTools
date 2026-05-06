@@ -2,7 +2,7 @@
 
 Test modules for entity layer functionality.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

@@ -6,10 +6,10 @@ Design and API documentation for `color_tools`. Organized as typed doc entity in
 
 See [entities.md](entities.md) for the complete registry of all doc instances.
 
-## Responsibility Table
+### Responsibility Table
 
-| Entity | Responsibility |
-|--------|---------------|
+| File | Responsibility |
+|------|---------------|
 | [entities.md](entities.md) | Master registry of all doc entity types and instances |
 | [doc_graph.yml](doc_graph.yml) | Cross-reference graph linking all doc instances |
 | [feature/](feature/readme.md) | Feature documentation — what the crate does and why |

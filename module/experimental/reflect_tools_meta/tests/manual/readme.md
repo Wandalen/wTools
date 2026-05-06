@@ -23,7 +23,7 @@ Before running manual tests:
 
 1. **Environment Setup:**
    ```bash
-   cd /home/user1/pro/lib/wip_core/wtools/dev/module/experimental/reflect_tools_meta
+   cd <crate_root>
    ```
 
 2. **Verification Command:**
@@ -65,7 +65,7 @@ Before running manual tests:
 
 2. **Compile with Debug Output:**
    ```bash
-   cd /home/user1/pro/lib/wip_core/wtools/dev/module/experimental/reflect_tools_meta
+   cd <crate_root>
    rustc --edition 2021 --extern reflect_tools_meta=target/debug/libreflect_tools_meta.so \
      /tmp/test_debug_manual.rs 2>&1 | grep -A 10 "context"
    ```
@@ -188,7 +188,7 @@ When implementation is complete, test these error scenarios:
 
 1. **Run Level 3 Tests:**
    ```bash
-   cd /home/user1/pro/lib/wip_core/wtools/dev/module/experimental/reflect_tools_meta
+   cd <crate_root>
    RUSTFLAGS="-D warnings" cargo nextest run --all-features && \
    RUSTDOCFLAGS="-D warnings" cargo test --doc --all-features && \
    cargo clippy --all-targets --all-features -- -D warnings
@@ -211,9 +211,8 @@ When implementation is complete, test these error scenarios:
 
 ## Manual Testing Results
 
-### Session 1: 2026-01-21
+### Session 1: 2026_01_21
 
-**Tester:** Claude (Automated Agent)
 **Duration:** ~1 hour
 **Procedures Executed:** 1, 5
 
@@ -298,5 +297,5 @@ Consider automating these manual procedures:
 - Error handling implementation added
 - Integration with parent crate changes
 
-**Last Updated:** 2026-01-21
+**Last Updated:** 2026_01_21
 **Next Review:** When implementation moves beyond stub

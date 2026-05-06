@@ -1,7 +1,7 @@
-<!-- {{# generate.module_header{} #}} -->
-
-# Module :: genfile
-[![experimental](https://raster.shields.io/static/v1?label=stability&message=experimental&color=orange&logoColor=eee)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModulegenfilePush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModulegenfilePush.yml) [![docs.rs](https://img.shields.io/docsrs/genfile?color=e3e8f0&logo=docs.rs)](https://docs.rs/genfile) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+# Module :: genfile_core
+<!--{ generate.module_header.start() }-->
+ [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=genfile_core)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) [![docs.rs](https://img.shields.io/docsrs/genfile_core?color=e3e8f0&logo=docs.rs)](https://docs.rs/genfile_core) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module%2Fcore%2Fgenfile_core%2Fexamples%2Farchive_with_parameters.rs,RUN_POSTFIX=--example%20archive_with_parameters/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+<!--{ generate.module_header.end }-->
 
 A trait-based template processing and file generation library for Rust. **genfile** provides self-contained template archives with parameter storage, pluggable rendering engines, and testable in-memory file systems.
 
@@ -118,7 +118,7 @@ let restored = TemplateArchive::from_json( &json ).unwrap();
 
 ### External Content Sources
 
-```rust,ignore
+```rust,no_run
 use genfile_core::{ TemplateArchive, FileRef, UrlRef, WriteMode };
 use std::path::PathBuf;
 
@@ -141,7 +141,7 @@ archive.add_file_from(
 
 ### Custom Storage Backend
 
-```rust,ignore
+```rust,no_run
 use genfile_core::{ TemplateArchive, ContentStorage, FileContent, HandlebarsRenderer };
 use std::path::Path;
 
@@ -160,7 +160,7 @@ impl ContentStorage for CloudStorage
 
 ### Parameter Discovery and Analysis
 
-```rust,ignore
+```rust,no_run
 use genfile_core::{ TemplateArchive, ParameterDescriptor, WriteMode };
 use std::path::PathBuf;
 

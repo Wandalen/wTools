@@ -5,13 +5,7 @@
 - **Purpose**: Document what willbe capabilities do and how to use them.
 - **Responsibility**: Registry and overview of all feature doc instances.
 - **In Scope**: Workspace management, multi-crate publishing, CI/CD generation, enhanced publish algorithm.
-- **Out of Scope**: API signatures (see `../api/`), architectural patterns (see `../pattern/`).
-
-### Files
-
-| File | Responsibility |
-|------|----------------|
-| `procedure.md` | Instance creation and deprecation procedure |
+- **Out of Scope**: API signatures (see `../api/`), architectural patterns (see `../pattern/`). Instance lifecycle governed by `procedure.md`.
 
 ### Overview Table
 

@@ -4,7 +4,7 @@
 
 Archive of cancelled tasks that were abandoned before completion.
 
-## Responsibility Table
+### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|

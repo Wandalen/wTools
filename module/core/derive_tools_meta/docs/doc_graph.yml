@@ -1,0 +1,102 @@
+meta:
+  description: Cross-reference graph for all doc instances in derive_tools_meta
+  generated: 2026_04_25
+  node_count: 6
+  edge_count: 18
+  component_count: 1
+
+nodes:
+  - id: feature/001
+    file: feature/001_derive_macros.md
+    label: Derive Macros
+    entity: feature
+  - id: api/001
+    file: api/001_derive_api.md
+    label: Derive API
+    entity: api
+  - id: invariant/001
+    file: invariant/001_proc_macro_separation.md
+    label: Proc-Macro Crate Separation
+    entity: invariant
+  - id: invariant/002
+    file: invariant/002_selective_compilation.md
+    label: Selective Compilation
+    entity: invariant
+  - id: integration/001
+    file: integration/001_macro_tools.md
+    label: macro_tools
+    entity: integration
+  - id: integration/002
+    file: integration/002_derive_tools.md
+    label: derive_tools
+    entity: integration
+
+edges:
+  - from: feature/001
+    to: api/001
+    label: interface of macros described here
+  - from: feature/001
+    to: invariant/001
+    label: why this crate is separate from derive_tools
+  - from: feature/001
+    to: invariant/002
+    label: selective compilation contract
+  - from: feature/001
+    to: integration/002
+    label: consumer facade for macros
+  - from: api/001
+    to: feature/001
+    label: behavioral description of the macro collection
+  - from: api/001
+    to: invariant/001
+    label: why this crate does not provide a public API directly
+  - from: api/001
+    to: integration/001
+    label: macro_tools dependency used for syntax parsing
+  - from: api/001
+    to: integration/002
+    label: derive_tools as the stable public API layer
+  - from: invariant/001
+    to: feature/001
+    label: macros governed by this invariant
+  - from: invariant/001
+    to: api/001
+    label: public interface declared by this crate
+  - from: invariant/001
+    to: integration/002
+    label: consumer facade required by this invariant
+  - from: invariant/002
+    to: feature/001
+    label: full macro collection covered by this contract
+  - from: invariant/002
+    to: api/001
+    label: per-flag availability documented here
+  - from: integration/001
+    to: api/001
+    label: macros implemented using macro_tools
+  - from: integration/001
+    to: feature/001
+    label: behavioral description of macros
+  - from: integration/002
+    to: invariant/001
+    label: why this crate and derive_tools are separate
+  - from: integration/002
+    to: feature/001
+    label: macro collection re-exported by derive_tools
+  - from: integration/002
+    to: api/001
+    label: macro interface re-exported by derive_tools
+
+components:
+  - id: 1
+    size: 6
+    isolated: false
+    nodes:
+      - feature/001
+      - api/001
+      - invariant/001
+      - invariant/002
+      - integration/001
+      - integration/002
+
+dangling_refs: []

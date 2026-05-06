@@ -9,32 +9,32 @@
 
 ### Abstract
 
-Three free functions in `process_tools::lifecycle::signal` provide bidirectional lookup over a static Linux POSIX signal table. A single `const SIGNALS: &[(i32, &str)]` slice is the sole source of truth for both directions, preventing name-number drift. All three functions are `#[must_use]` and infallible.
+Three free functions in `process_tools::lifecycle::signal` provide bidirectional lookup over a static Linux POSIX signal table. A single static table is the sole source of truth for both directions, preventing name-number drift. All three functions are must-use and infallible.
 
 ### Operations
 
-| Symbol | Kind | Signature | Notes |
-|--------|------|-----------|-------|
-| `signal_name()` | free fn | `(signal: i32) -> &'static str` | Returns `"UNKNOWN"` for unmapped numbers |
-| `signal_number()` | free fn | `(name: &str) -> Option<i32>` | Case-sensitive; `None` for unrecognized names |
-| `all_signals()` | free fn | `() -> &'static [(i32, &'static str)]` | Full table as `(number, name)` pairs |
+| Symbol | Kind | Notes |
+|--------|------|-------|
+| `signal_name( number )` | free fn | Returns `"UNKNOWN"` for unmapped numbers |
+| `signal_number( name )` | free fn | Case-sensitive; returns nothing for unrecognized names |
+| `all_signals()` | free fn | Full table as number/name pairs |
 
 ### Error Handling
 
-All three functions are infallible at the Rust type level:
+All three functions are infallible:
 
-- `signal_name()` returns `"UNKNOWN"` rather than `Err` for unmapped numbers.
-- `signal_number()` returns `None` rather than `Err` for unrecognized names.
-- `all_signals()` always returns a non-empty slice.
+- `signal_name()` returns `"UNKNOWN"` rather than failing for unmapped numbers.
+- `signal_number()` returns nothing rather than failing for unrecognized names.
+- `all_signals()` always returns a non-empty table.
 
 No panics, no allocations, no I/O.
 
 ### Compatibility Guarantees
 
-- **Platform:** all targets — signal lookup is pure data, not gated on `#[cfg(unix)]`.
+- **Platform:** all targets — signal lookup is pure data, not gated on a Unix compilation flag.
 - **Signal table scope:** Linux signal numbers only. macOS/BSD differ for some user signals (e.g., `SIGUSR1` = 10 on Linux, 30 on macOS). The table is authoritative for Linux; use with care on macOS/BSD.
 - **Stability:** stable since 0.30.0. Table contents and ordering will not change without a major version bump.
-- **`#[must_use]`:** all three functions. Unused return values are a compile-time warning.
+- **Must-use:** all three functions. Unused return values are a compile-time warning.
 
 ### Example
 
@@ -57,5 +57,5 @@ assert!( table.len() >= 25 );
 | Type | File | Responsibility |
 |------|------|----------------|
 | source | [src/lifecycle/signal.rs](../../src/lifecycle/signal.rs) | Signal table and bidirectional lookup implementation |
-| feature | [feature/005_lifecycle_management.md](../feature/005_lifecycle_management.md) | Design rationale for the single-source-of-truth signal table |
-| api | [api/005_check_api.md](005_check_api.md) | PID liveness checking (uses signal concepts but not this table) |
+| doc | [feature/005_lifecycle_management.md](../feature/005_lifecycle_management.md) | Design rationale for the single-source-of-truth signal table |
+| doc | [api/005_check_api.md](005_check_api.md) | PID liveness checking (uses signal concepts but not this table) |

@@ -37,7 +37,7 @@ pub mod own
   use crate::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use crate::orphan::*; // Changed to crate::orphan::*
+  pub use crate::orphan::*;
 }
 
 /// Parented namespace of the module.
@@ -48,7 +48,7 @@ pub mod orphan
   use crate::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use crate ::exposed :: *; // Changed to crate ::exposed :: *
+  pub use crate ::exposed :: *;
 }
 
 /// Exposed namespace of the module.
@@ -59,7 +59,7 @@ pub mod exposed
   use crate::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use crate ::prelude :: *; // Changed to crate ::prelude :: *
+  pub use crate ::prelude :: *;
 }
 
 /// Prelude to use essentials: `use my_module ::prelude :: *`.
@@ -70,7 +70,7 @@ pub mod prelude
   use crate::*;
   #[ doc( inline ) ]
   #[ cfg( feature = "types_component_assign" ) ]
-  pub use crate ::component :: *; // Changed to crate ::component :: *
+  pub use crate ::component :: *;
   #[ doc( inline ) ]
   #[ cfg( feature = "types_component_assign" ) ]
   pub use crate ::popular_types :: *;

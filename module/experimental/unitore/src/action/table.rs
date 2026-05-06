@@ -247,8 +247,6 @@ pub async fn tables_list( mut storage: FeedStorage< SledStorage > ) -> Result< i
   storage.tables_list().await
 }
 
-const EMPTY_CELL: &str = "";
-
 /// Information about execution of table columns commands.
 #[ derive( Debug ) ]
 pub struct TablesColumnsReport( pub Vec< ColumnsReport > );

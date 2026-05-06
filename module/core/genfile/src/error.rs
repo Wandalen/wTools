@@ -22,11 +22,11 @@ use unilang::data::{ ErrorData, ErrorCode };
 /// use genfile_core::Error;
 ///
 /// let err = Error::Fs( std::io::Error::from( std::io::ErrorKind::NotFound ) );
-/// let error_data = format_error( err, "FILE" );
+/// let error_data = format_error( &err, "FILE" );
 /// assert!( error_data.message.contains( "[ERROR] [FILE]:" ) );
 /// ```
-#[must_use] 
-pub fn format_error( error : genfile_core::Error, context : &str ) -> ErrorData
+#[must_use]
+pub fn format_error( error : &genfile_core::Error, context : &str ) -> ErrorData
 {
   let message = format!( "[ERROR] [{}]: {}", context.to_uppercase(), error );
 
