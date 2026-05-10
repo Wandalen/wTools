@@ -1,30 +1,13 @@
 # Output Format Catalog
 
-Output format specifications for genfile CLI commands across verbosity levels.
+Output format specifications for genfile CLI commands: archive serialization formats and output presentation conventions.
 
 ### Scope
 
-- **In Scope:** Output structure, verbosity level behavior, exit codes, and format conventions for all command categories
-- **Out of Scope:** Archive serialization formats (JSON/YAML) — see [Dictionary: Serialization Format](dictionary.md#serialization-format); type validation formats — see [Types](type.md)
+- **In Scope:** Output structure, verbosity level behavior, exit codes, format conventions for all command categories, and archive serialization format catalog
+- **Out of Scope:** Type validation rules — see [Types](type.md); parameter group semantics — see [Parameter Groups](param_group.md)
 - **Audience:** CLI users, integrators parsing genfile output, and tool authors building on top of genfile
-- **Responsibility:** Authoritative reference for what genfile prints and when
-
----
-
-### Verbosity Level Behavior
-
-All commands respect the `verbosity::` parameter. Higher levels add more detail without removing lower-level output.
-
-| Level | Name | Output Includes |
-|-------|------|----------------|
-| 0 | Silent | Errors only |
-| 1 | Normal | Summary line(s) per operation (default) |
-| 2 | Verbose | Per-item progress, totals, and counts |
-| 3 | Debug | Internal decisions and state changes |
-| 4 | Trace | Function-level call tracking |
-| 5 | Ultra-trace | All events and data flow |
-
-Levels 3–5 are intended for development and troubleshooting. Normal use requires only 0–2.
+- **Responsibility:** Authoritative reference for what genfile prints and when, and how archives are encoded on disk
 
 ---
 
@@ -55,78 +38,7 @@ Exit code 1 always includes a human-readable error message on stderr. Exit code 
 
 **Counts:** Human-readable counts use plain integers without padding. File sizes use human-readable units (B, KB, MB).
 
----
-
-### Format by Command Category
-
-### Read Commands (`.info`, `.status`, `.file.list`, `.parameter.list`, `.value.list`, `.analyze`, `.content.list`, `.file.show`)
-
-Read commands produce structured summary output. They never modify state.
-
-**Normal (verbosity 1):**
-```
-Archive: <name>
-Files: <N> (inline: <N>, reference: <N>)
-Parameters: <N> (mandatory: <N>, optional: <N>)
-```
-
-**Verbose (verbosity 2):** Adds per-item listings with metadata.
-
-**Silent (verbosity 0):** Produces no output on success (exit code 0 only).
-
----
-
-### Write Commands (`.archive.save`, `.content.internalize`, `.content.externalize`, `.materialize`, `.unpack`, `.pack`)
-
-Write commands report what was written.
-
-**Normal (verbosity 1):**
-```
-<Action> <count> files to <destination>
-```
-
-**Verbose (verbosity 2):** Lists each file processed with size.
-
-**Dry run (any verbosity):**
-```
-[DRY RUN] Would <action> <count> files to <destination>
-[DRY RUN] No changes made
-```
-
----
-
-### Creation Commands (`.archive.new`, `.archive.from_directory`, `.file.add`, `.parameter.add`, `.value.set`)
-
-Creation commands confirm what was created or set.
-
-**Normal (verbosity 1):**
-```
-Created <entity>: <name>
-```
-or
-```
-Added <entity>: <name> (<metadata>)
-```
-
-**Verbose (verbosity 2):** Adds field-by-field confirmation.
-
----
-
-### Discovery Commands (`.discover.parameters`)
-
-Reports discovered items and actions taken.
-
-**Normal (verbosity 1):**
-```
-Discovered <N> parameters: <name1>, <name2>, ...
-Added <N> parameter definitions
-```
-
-**Verbose (verbosity 2):** Lists which files each parameter was found in.
-
----
-
-### Stderr vs Stdout
+**Streams:**
 
 | Stream | Content |
 |--------|---------|
@@ -135,9 +47,188 @@ Added <N> parameter definitions
 
 This separation allows piping stdout for programmatic processing while errors remain visible.
 
-### See Also
+---
 
-- [Parameters](param.md) — `verbosity::` and `dry::` parameter specifications
-- [Types](type.md) — `VerbosityLevel` type definition
-- [Parameter Groups](param_group.md) — Universal Output Control and Universal Execution Control groups
-- [Workflow Scenarios](workflow_scenario.md) — Output in context of complete workflows
+### Output Presentation Format Catalog
+
+Named output rendering modes controlled by `verbosity::` and `dry::`. See [VerbosityLevel](type.md#type--1-verbositylevel) for the complete level constant table.
+
+---
+
+### Format :: F03. Silent Mode
+
+- **ID:** F03
+- **Output context:** All 24 commands
+- **Trigger:** `verbosity::0`
+- **Structure:** No stdout output on success; errors and warnings still appear on stderr
+- **Rendering source:** TBD
+- **Example:**
+```
+(no output — exit code signals success or failure)
+```
+
+**Notes:** Safe for scripting and CI pipelines where only exit codes matter.
+
+---
+
+### Format :: F04. Standard Mode
+
+- **ID:** F04
+- **Output context:** All 24 commands (default)
+- **Trigger:** `verbosity::1` — default; parameter may be omitted
+- **Structure:** One or a few summary lines per operation; command-category conventions:
+  - *Read commands* (`.info`, `.status`, `.file.list`, `.parameter.list`, `.value.list`, `.analyze`, `.content.list`, `.file.show`): structured summary block
+  - *Write commands* (`.archive.save`, `.content.internalize`, `.content.externalize`, `.materialize`, `.unpack`, `.pack`): action + count line
+  - *Creation commands* (`.archive.new`, `.archive.from_directory`, `.file.add`, `.parameter.add`, `.value.set`): confirmation line per created entity
+  - *Discovery commands* (`.discover.parameters`): discovered item count with names
+- **Rendering source:** TBD
+- **Example (read — `.info`):**
+```
+Archive: my-template
+Files: 12 (inline: 4, reference: 8)
+Parameters: 3 (mandatory: 1, optional: 2)
+```
+- **Example (write — `.materialize`):**
+```
+Materialized 12 files to ./output
+```
+- **Example (creation — `.archive.new`):**
+```
+Created archive 'rust-cli-template'
+Files: 0
+Parameters: 0
+```
+
+---
+
+### Format :: F05. Verbose Mode
+
+- **ID:** F05
+- **Output context:** All 24 commands
+- **Trigger:** `verbosity::2`
+- **Structure:** Extends F04 with per-item listings, size metadata, content mode, and `[INFO]` prefixed progress lines
+- **Rendering source:** TBD
+- **Example (`.archive.load`):**
+```
+[INFO] Reading archive from backup.yaml
+[INFO] Detected format: YAML
+[INFO] Loaded archive 'backup-template'
+Files: 15 (inline: 3, reference: 12)
+Parameters: 6 (mandatory: 2, optional: 4)
+```
+- **Example (`.archive.from_directory`):**
+```
+[INFO] Scanning ./src
+[INFO] Include: **/*.{rs,toml,md} | Exclude: **/target/**
+[INFO] Mode: inline
+Matched 67 files — Added 67 files (234 KB)
+```
+
+---
+
+### Format :: F06. Debug Mode
+
+- **ID:** F06
+- **Output context:** All 24 commands (intended for development and troubleshooting only)
+- **Trigger:** `verbosity::3` (Debug), `verbosity::4` (Trace), `verbosity::5` (Ultra-trace)
+- **Structure:** Extends F05 with internal state, decisions, and function-level call tracking; `[DEBUG]` prefix on each internal detail line; levels 4-5 add progressively lower-level event detail
+- **Rendering source:** TBD
+- **Example:**
+```
+[DEBUG] archive::load called with path="backup.yaml"
+[DEBUG] detected format from extension: YAML
+[INFO] Reading archive from backup.yaml
+[INFO] Detected format: YAML
+[INFO] Loaded archive 'backup-template'
+Files: 15 (inline: 3, reference: 12)
+```
+
+**Notes:** Levels 3-5 are not suitable for CI/CD output parsing. Use verbosity::0-2 in automation.
+
+---
+
+### Format :: F07. Dry Run Overlay
+
+- **ID:** F07
+- **Output context:** Write commands only — `.archive.save`, `.content.internalize`, `.content.externalize`, `.materialize`, `.unpack`, `.pack`, `.value.clear`, `.discover.parameters`
+- **Trigger:** `dry::1` — combinable with any verbosity level (F03-F06)
+- **Structure:** All action lines prefixed with `[DRY RUN]`; closing line `[DRY RUN] No changes made`; no filesystem writes or archive modifications occur; full validation still runs (errors in dry mode predict errors in real execution)
+- **Rendering source:** TBD
+- **Example (`.materialize dry::1 verbosity::2`):**
+```
+[DRY RUN] Would materialize to ./preview
+[INFO] Files to create: src/main.rs, src/lib.rs, ...
+[INFO] Substitutions: project_name -> "my-app", version -> "1.0.0"
+[DRY RUN] No files created
+```
+- **Example (`.archive.save dry::1`):**
+```
+[DRY RUN] Would save archive to test.json
+[DRY RUN] No changes made
+```
+
+---
+
+### Archive Serialization Format Catalog
+
+The following formats are supported for archive persistence (`.archive.save`, `.archive.load`, `.pack`).
+
+---
+
+### Format :: F01. JSON
+
+- **ID:** F01
+- **Output context:** `.archive.save`, `.archive.load`, `.pack` — JSON serialization of the archive on disk
+- **Trigger:** `.json` file extension, or `format::json` parameter (default format)
+- **Structure:** UTF-8 JSON object with `name`, `description`, `files` array, and `parameters` array at top level
+- **Rendering source:** `serde_json` — pretty-printed by default (`pretty::1`), compact with `pretty::0`
+- **Example:**
+```json
+{
+  "name": "rust-cli-template",
+  "description": "Rust CLI project template",
+  "files": [
+    {
+      "path": "src/main.rs",
+      "content": "fn main() { println!(\"Hello, {{project_name}}!\"); }",
+      "mode": "inline"
+    }
+  ],
+  "parameters": [
+    { "name": "project_name", "mandatory": true, "default": null, "description": "Project name" }
+  ]
+}
+```
+
+**Notes:**
+- Compact mode (`pretty::0`) removes all whitespace — suitable for CI and embedded use
+- Reference-mode files store `"path"` instead of `"content"`
+
+---
+
+### Format :: F02. YAML
+
+- **ID:** F02
+- **Output context:** `.archive.save`, `.archive.load`, `.pack` — YAML serialization of the archive on disk
+- **Trigger:** `.yaml` or `.yml` file extension, or `format::yaml` parameter
+- **Structure:** UTF-8 YAML mapping with `name`, `description`, `files` sequence, and `parameters` sequence at top level
+- **Rendering source:** `serde_yaml` — always human-readable (no compact mode)
+- **Example:**
+```yaml
+name: rust-cli-template
+description: Rust CLI project template
+files:
+  - path: src/main.rs
+    content: "fn main() { println!(\"Hello, {{project_name}}!\"); }"
+    mode: inline
+parameters:
+  - name: project_name
+    mandatory: true
+    default: null
+    description: Project name
+```
+
+**Notes:**
+- YAML is always human-readable — no compact/pretty distinction
+- Better suited for hand-editing and version control review than JSON
+- Slower to parse than JSON for large archives

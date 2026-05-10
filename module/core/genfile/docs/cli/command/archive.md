@@ -9,53 +9,47 @@ Archive lifecycle management commands for creating, loading, saving, and managin
 
 | # | Command | Purpose | Params | Complexity |
 |---|---------|---------|--------|------------|
-| 5 | [.archive.new](#command-5-archivenew) | Create empty archive | 3 | Low |
-| 6 | [.archive.load](#command-6-archiveload) | Load from file | 2 | Low |
-| 7 | [.archive.save](#command-7-archivesave) | Save to file | 5 | Medium |
-| 8 | [.archive.from_directory](#command-8-archivefromdirectory) | Create from filesystem | 7 | High |
+| 5 | [.archive.new](#command--5-archivenew) | Create empty archive | 3 | 5 |
+| 6 | [.archive.load](#command--6-archiveload) | Load from file | 2 | 4 |
+| 7 | [.archive.save](#command--7-archivesave) | Save to file | 5 | 7 |
+| 8 | [.archive.from_directory](#command--8-archivefrom_directory) | Create from filesystem | 6 | 8 |
 
 ---
 
 ### Command :: 5. `.archive.new`
 
+### Description
+
 Creates a new empty template archive with basic metadata. Use this when starting a new template project from scratch rather than importing existing files.
 
-**Syntax:**
+-- **Parameters:** name::, description::, verbosity::
+-- **Exit Codes:** 0 (success) | 1 (invalid name format) | 2 (runtime error)
+
+### Syntax
+
 ```bash
 genfile .archive.new name::"template-name"
 genfile .archive.new name::"api-scaffold" description::"REST API template"
 genfile .archive.new name::"my-template" description::"Project template" verbosity::2
 ```
 
-**Parameters:**
+### Parameters
 
-| Parameter | Type | Description | Default | Required |
-|-----------|------|-------------|---------|----------|
-| `name::` | [IdentifierString](../type.md#type-identifierstring) | Archive name (alphanumeric + underscore) | - | ✅ Yes |
-| `description::` | [DescriptionText](../type.md#type-descriptiontext) | Human-readable archive description | `""` | No |
-| `verbosity::` | [VerbosityLevel](../type.md#type-verbositylevel) | Output detail level (0-5) | `1` | No |
+| Parameter | Type | Default | Required | Purpose |
+|-----------|------|---------|----------|---------|
+| `name::` | [IdentifierString](../type.md#type--6-identifierstring) | — | ✅ Yes | Archive name (alphanumeric + underscore) |
+| `description::` | [DescriptionText](../type.md#type--7-descriptiontext) | `""` | No | Human-readable archive description |
+| `verbosity::` | [VerbosityLevel](../type.md#type--1-verbositylevel) | `1` | No | Output detail level (0-5) |
 
-<small>*`verbosity::` is part of [Universal Output Control](../param_group.md#group-1-universal-output-control) parameter group*</small>
+### Examples
 
-**Behavior:**
-- Creates in-memory archive with provided metadata
-- Initializes empty file list and parameter definitions
-- Does NOT persist to disk (use `.archive.save` afterwards)
-- Idempotent: No (creates new archive each time)
-
-**Examples:**
-
-**Basic usage:**
 ```bash
 genfile .archive.new name::"rust-cli-template"
 # Output:
 # Created archive 'rust-cli-template'
 # Files: 0
 # Parameters: 0
-```
 
-**With description:**
-```bash
 genfile .archive.new name::"web-app" description::"Full-stack web application template"
 # Output:
 # Created archive 'web-app'
@@ -64,123 +58,123 @@ genfile .archive.new name::"web-app" description::"Full-stack web application te
 # Parameters: 0
 ```
 
-**Verbose output:**
-```bash
-genfile .archive.new name::"minimal" verbosity::3
-# Output (verbosity 3):
-# [DEBUG] Initializing archive metadata
-# [DEBUG] Archive name: minimal
-# [DEBUG] Description: (empty)
-# [INFO] Created archive 'minimal'
-# [DEBUG] Files: 0
-# [DEBUG] Parameters: 0
-# [DEBUG] Archive ready for file additions
-```
+### Notes
 
-**Exit Codes:** 0 (success) | 1 (invalid name format) | 2 (runtime error)
-
-**Interactions:**
-- Typical workflow: `.archive.new` → `.file.add` (multiple) → `.parameter.add` (multiple) → `.archive.save`
-- Alternative: Use `.archive.from_directory` instead of `.archive.new` when starting from existing files
-
-**Notes:**
-- Archive name must be valid identifier (alphanumeric + underscore, no spaces)
-- Empty description is allowed (defaults to empty string)
+- Archive name must be a valid identifier (alphanumeric + underscore, no spaces)
 - Archive exists only in memory until `.archive.save` is called
+- Does not persist to disk — use `.archive.save` afterwards
+- Typical workflow: `.archive.new` → `.file.add` (multiple) → `.parameter.add` (multiple) → `.archive.save`
 
-**Related Commands:**
-- [.archive.save](#command-7-archivesave) - Persist archive to disk
-- [.archive.from_directory](#command-8-archivefromdirectory) - Alternative: create from existing directory
-- [.file.add](file.md#command-12-fileadd) - Add files to archive
-- [.parameter.add](param_mgmt.md#command-19-parameteradd) - Add parameters to archive
+### Related Commands
+
+| # | Command | Relationship |
+|---|---------|-------------|
+| 7 | [`.archive.save`](#command--7-archivesave) | Persist in-memory archive to disk |
+| 8 | [`.archive.from_directory`](#command--8-archivefrom_directory) | Alternative creation from existing directory |
+| 12 | [`.file.add`](file.md#command--12-fileadd) | Add files to newly created archive |
+| 19 | [`.parameter.add`](param_mgmt.md#command--19-parameteradd) | Add parameters to newly created archive |
+
+### Referenced Parameter Groups
+
+| # | Group | Membership | Parameters Bound |
+|---|-------|------------|-----------------|
+| 1 | [Universal Output Control](../param_group.md#group--1-universal-output-control) | Full | `verbosity::` |
+
+---
+
+**Category:** Write
+**Complexity:** 5
+**API Requirement:** None
+**Idempotent:** No
+**Risk Level:** Low
 
 ---
 
 ### Command :: 6. `.archive.load`
 
+### Description
+
 Loads an existing template archive from JSON or YAML file into memory. Use this to work with previously saved archives.
 
-**Syntax:**
+-- **Parameters:** path::, verbosity::
+-- **Exit Codes:** 0 (success) | 1 (file not found) | 2 (invalid archive format)
+
+### Syntax
+
 ```bash
 genfile .archive.load path::"template.json"
 genfile .archive.load path::"./archives/api.yaml"
 genfile .archive.load path::"backup.yaml" verbosity::2
 ```
 
-**Parameters:**
+### Parameters
 
-| Parameter | Type | Description | Default | Required |
-|-----------|------|-------------|---------|----------|
-| `path::` | [FilePath](../type.md#type-filepath) | Path to archive file (JSON or YAML) | - | ✅ Yes |
-| `verbosity::` | [VerbosityLevel](../type.md#type-verbositylevel) | Output detail level (0-5) | `1` | No |
+| Parameter | Type | Default | Required | Purpose |
+|-----------|------|---------|----------|---------|
+| `path::` | [FilePath](../type.md#type--3-filepath) | — | ✅ Yes | Path to archive file (JSON or YAML) |
+| `verbosity::` | [VerbosityLevel](../type.md#type--1-verbositylevel) | `1` | No | Output detail level (0-5) |
 
-<small>*`verbosity::` is part of [Universal Output Control](../param_group.md#group-1-universal-output-control) parameter group*</small>
+### Examples
 
-**Behavior:**
-- Auto-detects format from file extension (.json, .yaml, .yml)
-- Replaces current in-memory archive (if any)
-- Validates archive structure during load
-- Idempotent: Yes (multiple loads produce same state)
-
-**Examples:**
-
-**Load JSON archive:**
 ```bash
 genfile .archive.load path::"template.json"
 # Output:
 # Loaded archive 'my-template' from template.json
 # Files: 12
 # Parameters: 5
-```
 
-**Load YAML archive:**
-```bash
-genfile .archive.load path::"./archives/api.yaml"
-# Output:
-# Loaded archive 'rest-api-scaffold' from ./archives/api.yaml
-# Files: 24
-# Parameters: 8
-```
-
-**With verbose output:**
-```bash
 genfile .archive.load path::"backup.yaml" verbosity::2
-# Output (verbosity 2):
+# Output:
 # [INFO] Reading archive from backup.yaml
 # [INFO] Detected format: YAML
-# [INFO] Parsing archive structure...
-# [INFO] Validating file entries: 15 files
-# [INFO] Validating parameters: 6 parameters
 # [INFO] Loaded archive 'backup-template'
 # Files: 15 (inline: 3, reference: 12)
 # Parameters: 6 (mandatory: 2, optional: 4)
 ```
 
-**Exit Codes:** 0 (success) | 1 (file not found) | 2 (invalid archive format)
+### Notes
 
-**Interactions:**
-- Typical workflow: `.archive.load` → `.value.set` (multiple) → `.materialize`
-- Alternative workflow: `.archive.load` → modify archive → `.archive.save`
+- Auto-detects format from file extension: `.json` → JSON, `.yaml`/`.yml` → YAML
+- Loading replaces the current in-memory archive without confirmation
+- Validates archive structure during load — fails with exit code 2 if malformed
+- For reference-mode content, source files must still exist on disk
 
-**Notes:**
-- File must exist and be readable
-- Format auto-detection uses extension (.json → JSON, .yaml/.yml → YAML)
-- Loading replaces current archive without warning (no confirmation prompt)
-- For reference-mode content, source files must still exist
+### Related Commands
 
-**Related Commands:**
-- [.archive.save](#command-7-archivesave) - Save modified archive
-- [.materialize](operations.md#command-16-materialize) - Render loaded archive
-- [.info](operations.md#command-1-info) - Inspect loaded archive
-- [.content.internalize](content.md#command-9-contentinternalize) - Convert references to inline
+| # | Command | Relationship |
+|---|---------|-------------|
+| 7 | [`.archive.save`](#command--7-archivesave) | Save modified archive after loading |
+| 1 | [`.info`](operations.md#command--1-info) | Inspect loaded archive metadata |
+| 16 | [`.materialize`](operations.md#command--16-materialize) | Render loaded archive to filesystem |
+| 9 | [`.content.internalize`](content.md#command--9-contentinternalize) | Convert reference content to inline after load |
+
+### Referenced Parameter Groups
+
+| # | Group | Membership | Parameters Bound |
+|---|-------|------------|-----------------|
+| 1 | [Universal Output Control](../param_group.md#group--1-universal-output-control) | Full | `verbosity::` |
+
+---
+
+**Category:** Write
+**Complexity:** 4
+**API Requirement:** None
+**Idempotent:** Yes
+**Risk Level:** Low
 
 ---
 
 ### Command :: 7. `.archive.save`
 
-Saves current in-memory archive to JSON or YAML file. Use this to persist archive changes or export in different formats.
+### Description
 
-**Syntax:**
+Saves the current in-memory archive to a JSON or YAML file. Use this to persist archive changes or export in a different format.
+
+-- **Parameters:** path::, format::, pretty::, verbosity::, dry::
+-- **Exit Codes:** 0 (success) | 1 (invalid path) | 2 (write error or permission denied)
+
+### Syntax
+
 ```bash
 genfile .archive.save path::"output.json"
 genfile .archive.save path::"template.yaml" format::yaml
@@ -188,86 +182,83 @@ genfile .archive.save path::"backup.json" pretty::1 dry::1
 genfile .archive.save path::"compact.json" pretty::0 verbosity::2
 ```
 
-**Parameters:**
+### Parameters
 
-| Parameter | Type | Description | Default | Required |
-|-----------|------|-------------|---------|----------|
-| `path::` | [OutputPath](../type.md#type-outputpath) | Output file path | - | ✅ Yes |
-| `format::` | [SerializationFormat](../type.md#type-serializationformat) | Serialization format (json \| yaml) | `json` | No |
-| `pretty::` | [PrettyPrintFlag](../type.md#type-prettyprintflag) | Pretty-print JSON (0 or 1) | `1` | No |
-| `verbosity::` | [VerbosityLevel](../type.md#type-verbositylevel) | Output detail level (0-5) | `1` | No |
-| `dry::` | [DryRunFlag](../type.md#type-dryrunflag) | Preview mode (0 or 1) | `0` | No |
+| Parameter | Type | Default | Required | Purpose |
+|-----------|------|---------|----------|---------|
+| `path::` | [OutputPath](../type.md#type--4-outputpath) | — | ✅ Yes | Output file path |
+| `format::` | [SerializationFormat](../type.md#type--11-serializationformat) | `json` | No | Serialization format (`json` \| `yaml`) |
+| `pretty::` | [PrettyPrintFlag](../type.md#type--14-prettyprintflag) | `1` | No | Pretty-print JSON (0 or 1) |
+| `verbosity::` | [VerbosityLevel](../type.md#type--1-verbositylevel) | `1` | No | Output detail level (0-5) |
+| `dry::` | [DryRunFlag](../type.md#type--2-dryrunflag) | `0` | No | Preview mode (0 or 1) |
 
-<small>*`verbosity::` is part of [Universal Output Control](../param_group.md#group-1-universal-output-control) parameter group*</small>
-<small>*`dry::` is part of [Universal Execution Control](../param_group.md#group-2-universal-execution-control) parameter group*</small>
+### Examples
 
-**Behavior:**
-- Auto-detects format from extension if `format::` not specified
-- Creates parent directories if needed
-- Overwrites existing file without confirmation
-- Idempotent: No (writes to disk each time)
-
-**Examples:**
-
-**Save to JSON (default format):**
 ```bash
 genfile .archive.save path::"template.json"
 # Output:
 # Saved archive to template.json (JSON, 2.4 KB)
-```
 
-**Save to YAML:**
-```bash
 genfile .archive.save path::"template.yaml" format::yaml
 # Output:
 # Saved archive to template.yaml (YAML, 1.8 KB)
-```
 
-**Compact JSON (no pretty-print):**
-```bash
 genfile .archive.save path::"compact.json" pretty::0
 # Output:
 # Saved archive to compact.json (JSON compact, 1.2 KB)
-```
 
-**Dry run preview:**
-```bash
 genfile .archive.save path::"test.json" dry::1 verbosity::2
-# Output (dry run):
+# Output:
 # [DRY RUN] Would save archive to test.json
 # [INFO] Format: JSON (pretty-printed)
 # [INFO] Estimated size: 2.4 KB
-# [INFO] Files to save: 12 (inline: 4, reference: 8)
-# [INFO] Parameters to save: 5
 # [DRY RUN] No changes made
 ```
 
-**Exit Codes:** 0 (success) | 1 (invalid path) | 2 (write error, disk full, permissions)
+### Notes
 
-**Interactions:**
-- Conflicts with: None
-- Enhances: Combine with `dry::1` to preview before actual save
-- Dependencies: Requires loaded or created archive in memory
+- Format auto-detected from extension if `format::` not specified: `.json` → JSON, `.yaml`/`.yml` → YAML
+- Pretty-print only affects JSON — YAML is always human-readable
+- Overwrites existing file without confirmation — use `dry::1` to preview first
+- Requires a loaded or created archive in memory; fails if none exists
 
-**Notes:**
-- Pretty-print only affects JSON (YAML is always formatted)
-- Format auto-detection: `.json` → JSON, `.yaml`/`.yml` → YAML
-- Overwrites existing files without warning (use `dry::1` to preview)
-- For reference-mode content, only paths are saved (not file contents)
+### Related Commands
 
-**Related Commands:**
-- [.archive.load](#command-6-archiveload) - Load saved archive
-- [.archive.new](#command-5-archivenew) - Create archive to save
-- [.content.internalize](content.md#command-9-contentinternalize) - Ensure portable save
-- [.pack](operations.md#command-18-pack) - Alternative: one-step directory → archive file
+| # | Command | Relationship |
+|---|---------|-------------|
+| 6 | [`.archive.load`](#command--6-archiveload) | Load archive that was previously saved |
+| 5 | [`.archive.new`](#command--5-archivenew) | Create new archive to save |
+| 9 | [`.content.internalize`](content.md#command--9-contentinternalize) | Ensure portable save by inlining reference content |
+| 18 | [`.pack`](operations.md#command--18-pack) | One-step alternative: directory → archive file |
+
+### Referenced Parameter Groups
+
+| # | Group | Membership | Parameters Bound |
+|---|-------|------------|-----------------|
+| 1 | [Universal Output Control](../param_group.md#group--1-universal-output-control) | Full | `verbosity::` |
+| 2 | [Universal Execution Control](../param_group.md#group--2-universal-execution-control) | Full | `dry::` |
+
+---
+
+**Category:** Write
+**Complexity:** 7
+**API Requirement:** None
+**Idempotent:** No
+**Risk Level:** High
 
 ---
 
 ### Command :: 8. `.archive.from_directory`
 
-Creates template archive by scanning filesystem directory and importing files. Use this when converting existing project structure into reusable template.
+### Description
 
-**Syntax:**
+Creates a template archive by scanning a filesystem directory and importing its files. Use this when converting an existing project structure into a reusable template.
+
+-- **Parameters:** source::, mode::, recursive::, include_pattern::, exclude_pattern::, verbosity::
+-- **Exit Codes:** 0 (success) | 1 (source directory not found) | 2 (permission denied or I/O error)
+
+### Syntax
+
 ```bash
 genfile .archive.from_directory source::"./templates"
 genfile .archive.from_directory source::"./src" mode::inline
@@ -275,70 +266,37 @@ genfile .archive.from_directory source::"./project" recursive::1 include_pattern
 genfile .archive.from_directory source::"./code" exclude_pattern::"**/target/**" verbosity::2
 ```
 
-**Parameters:**
+### Parameters
 
-| Parameter | Type | Description | Default | Required |
-|-----------|------|-------------|---------|----------|
-| `source::` | [DirectoryPath](../type.md#type-directorypath) | Source directory to scan | - | ✅ Yes |
-| `mode::` | [ContentMode](../type.md#type-contentmode) | Content mode (inline \| reference) | `reference` | No |
-| `recursive::` | [RecursiveFlag](../type.md#type-recursiveflag) | Scan subdirectories (0 or 1) | `1` | No |
-| `include_pattern::` | [PatternString](../type.md#type-patternstring) | Include files matching glob pattern | `null` | No |
-| `exclude_pattern::` | [PatternString](../type.md#type-patternstring) | Exclude files matching glob pattern | `null` | No |
-| `verbosity::` | [VerbosityLevel](../type.md#type-verbositylevel) | Output detail level (0-5) | `1` | No |
+| Parameter | Type | Default | Required | Purpose |
+|-----------|------|---------|----------|---------|
+| `source::` | [DirectoryPath](../type.md#type--5-directorypath) | — | ✅ Yes | Source directory to scan |
+| `mode::` | [ContentMode](../type.md#type--10-contentmode) | `reference` | No | Content storage mode (`inline` \| `reference`) |
+| `recursive::` | [RecursiveFlag](../type.md#type--13-recursiveflag) | `1` | No | Scan subdirectories (0 or 1) |
+| `include_pattern::` | [PatternString](../type.md#type--8-patternstring) | `null` | No | Include only files matching glob pattern |
+| `exclude_pattern::` | [PatternString](../type.md#type--8-patternstring) | `null` | No | Exclude files matching glob pattern |
+| `verbosity::` | [VerbosityLevel](../type.md#type--1-verbositylevel) | `1` | No | Output detail level (0-5) |
 
-<small>*`recursive::`, `include_pattern::`, `exclude_pattern::` are part of [Filesystem Filtering](../param_group.md#group-3-filesystem-filtering) parameter group*</small>
-<small>*`verbosity::` is part of [Universal Output Control](../param_group.md#group-1-universal-output-control) parameter group*</small>
+### Examples
 
-**Behavior:**
-- Scans source directory and adds all matching files to archive
-- Creates archive in memory (not persisted until `.archive.save`)
-- Mode determines content storage: inline (embedded) or reference (file paths)
-- Recursive scan is enabled by default
-- Glob patterns use `**` for any subdirectory, `*` for any file
-
-**Examples:**
-
-**Basic usage (reference mode, recursive):**
 ```bash
 genfile .archive.from_directory source::"./templates"
 # Output:
 # Scanning ./templates (recursive, reference mode)
 # Added 24 files
 # Archive created in memory (use .archive.save to persist)
-```
 
-**Inline mode (portable archive):**
-```bash
 genfile .archive.from_directory source::"./src" mode::inline
 # Output:
 # Scanning ./src (recursive, inline mode)
-# Reading file contents...
 # Added 12 files (total content: 48 KB)
-# Archive created in memory (use .archive.save to persist)
-```
 
-**Include only Rust files:**
-```bash
 genfile .archive.from_directory source::"./project" include_pattern::"**/*.rs"
 # Output:
 # Scanning ./project (recursive, pattern: **/*.rs)
-# Matched 34 files
-# Skipped 156 files (pattern mismatch)
+# Matched 34 files, skipped 156 files
 # Added 34 files
-```
 
-**Exclude build artifacts:**
-```bash
-genfile .archive.from_directory source::"./workspace" exclude_pattern::"**/target/**"
-# Output:
-# Scanning ./workspace (recursive, exclude: **/target/**)
-# Matched 89 files
-# Excluded 2,341 files (target directories)
-# Added 89 files
-```
-
-**Complex filtering:**
-```bash
 genfile .archive.from_directory \
   source::"./src" \
   include_pattern::"**/*.{rs,toml,md}" \
@@ -347,80 +305,39 @@ genfile .archive.from_directory \
   verbosity::2
 # Output:
 # [INFO] Scanning ./src
-# [INFO] Include pattern: **/*.{rs,toml,md}
-# [INFO] Exclude pattern: **/target/**
-# [INFO] Content mode: inline
-# Matched 67 files
-# Excluded 1,234 files (target + pattern mismatch)
-# Reading file contents...
-# Added 67 files (total content: 234 KB)
+# [INFO] Include: **/*.{rs,toml,md} | Exclude: **/target/**
+# [INFO] Mode: inline
+# Matched 67 files — Added 67 files (234 KB)
 ```
 
-**Exit Codes:** 0 (success) | 1 (source directory not found) | 2 (permission denied, I/O error)
+### Notes
 
-**Interactions:**
-- Conflicts with: None
-- Enhances: Combine `include_pattern::` and `exclude_pattern::` for precise filtering
-- Dependencies: Source directory must exist and be readable
-
-**Notes:**
+- Creates archive in memory only — use `.archive.save` to persist to disk
+- Recursive scan is enabled by default (`recursive::1`)
+- Include and exclude patterns use `**` for any subdirectory, `*` for any filename segment
 - Glob patterns are case-sensitive on Unix, case-insensitive on Windows
-- Recursive scan follows symlinks (be careful with circular links)
-- Empty directories are not added to archive (only files)
-- Binary files can be included (use inline mode for portability)
-- Very large files in inline mode can create huge archives
+- Binary files can be included — use inline mode for portability
 
-**Related Commands:**
-- [.archive.save](#command-7-archivesave) - Persist created archive
-- [.pack](operations.md#command-18-pack) - Alternative: one-step directory → archive file
-- [.content.internalize](content.md#command-9-contentinternalize) - Convert reference → inline later
-- [.file.list](file.md#command-14-filelist) - List files in created archive
+### Related Commands
+
+| # | Command | Relationship |
+|---|---------|-------------|
+| 7 | [`.archive.save`](#command--7-archivesave) | Persist the created archive to disk |
+| 18 | [`.pack`](operations.md#command--18-pack) | One-step alternative: directory → saved archive |
+| 9 | [`.content.internalize`](content.md#command--9-contentinternalize) | Convert reference content to inline after creation |
+| 14 | [`.file.list`](file.md#command--14-filelist) | List files in the created archive |
+
+### Referenced Parameter Groups
+
+| # | Group | Membership | Parameters Bound |
+|---|-------|------------|-----------------|
+| 1 | [Universal Output Control](../param_group.md#group--1-universal-output-control) | Full | `verbosity::` |
+| 2 | [Filesystem Filtering](../param_group.md#group--3-filesystem-filtering) | Full | `recursive::`, `include_pattern::`, `exclude_pattern::` |
 
 ---
 
-### Common Workflows
-
-**Create archive from scratch:**
-```bash
-# 1. Create empty archive
-genfile .archive.new name::"my-template"
-
-# 2. Add files
-genfile .file.add path::"main.rs" from_file::"src/main.rs"
-genfile .file.add path::"readme.md" content::"# {{project_name}}"
-
-# 3. Add parameters
-genfile .parameter.add name::project_name mandatory::true
-
-# 4. Save
-genfile .archive.save path::"template.yaml"
-```
-
-**Convert directory to archive:**
-```bash
-# One-step: use .pack
-genfile .pack input::"./templates" output::"template.json"
-
-# OR two-step: use .archive.from_directory + .archive.save
-genfile .archive.from_directory source::"./templates" mode::inline
-genfile .archive.save path::"template.json" pretty::1
-```
-
-**Load and modify archive:**
-```bash
-# Load existing
-genfile .archive.load path::"template.yaml"
-
-# Modify (add files, parameters, etc.)
-genfile .file.add path::"new-file.rs" content::"// new file"
-
-# Save changes
-genfile .archive.save path::"template-v2.yaml"
-```
-
-### See Also
-
-- [Content Management](content.md) - Control inline vs reference content
-- [File Operations](file.md) - Manage individual files
-- [Operations](operations.md) - Materialize, pack, analyze archives
-- [Parameters Reference](../param.md) - Complete parameter documentation
+**Category:** Write
+**Complexity:** 8
+**API Requirement:** None
+**Idempotent:** No
+**Risk Level:** Low

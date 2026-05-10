@@ -9,32 +9,32 @@
 
 ### Commands Index
 
-| # | Command | Purpose | Params | Example |
-|---|---------|---------|--------|---------|
-| 1 | `.info` | Display archive metadata and statistics | 1 | `genfile .info` |
-| 2 | `.discover.parameters` | Auto-detect template parameters from content | 2 | `genfile .discover.parameters verbosity::2` |
-| 3 | `.status` | Archive readiness check with validation | 1 | `genfile .status` |
-| 4 | `.analyze` | Comprehensive archive structure analysis | 2 | `genfile .analyze verbosity::2` |
-| 5 | `.archive.new` | Create new empty template archive | 3 | `genfile .archive.new name::"my-template"` |
-| 6 | `.archive.load` | Load archive from JSON or YAML file | 2 | `genfile .archive.load path::"template.yaml"` |
-| 7 | `.archive.save` | Save current archive to JSON or YAML file | 5 | `genfile .archive.save path::"out.json"` |
-| 8 | `.archive.from_directory` | Create archive from filesystem directory | 7 | `genfile .archive.from_directory source::"./src"` |
-| 9 | `.content.internalize` | Convert file references to inline content | 2 | `genfile .content.internalize dry::1` |
-| 10 | `.content.externalize` | Convert inline content to file references | 3 | `genfile .content.externalize output_dir::"./files"` |
-| 11 | `.content.list` | List files by content storage mode | 2 | `genfile .content.list` |
-| 12 | `.file.add` | Add file to current archive | 5 | `genfile .file.add path::"main.rs" from_file::"src/main.rs"` |
-| 13 | `.file.remove` | Remove file from archive | 2 | `genfile .file.remove path::"old.rs"` |
-| 14 | `.file.list` | List all files in archive | 1 | `genfile .file.list` |
-| 15 | `.file.show` | Display file content from archive | 2 | `genfile .file.show path::"main.rs"` |
-| 16 | `.materialize` | Render template archive to destination with parameter substitution | 3 | `genfile .materialize destination::"./output"` |
-| 17 | `.unpack` | Unpack raw template files without rendering | 3 | `genfile .unpack destination::"./template-files"` |
-| 18 | `.pack` | Create portable archive from directory with inline content | 4 | `genfile .pack input::"./templates" output::"archive.json"` |
-| 19 | `.parameter.add` | Add parameter definition to archive with metadata | 5 | `genfile .parameter.add name::project_name mandatory::true` |
-| 20 | `.parameter.list` | List all parameter definitions in archive | 1 | `genfile .parameter.list` |
-| 21 | `.parameter.remove` | Remove parameter definition from archive | 2 | `genfile .parameter.remove name::old_param` |
-| 22 | `.value.set` | Set parameter value for template rendering | 3 | `genfile .value.set name::project_name value::"my-app"` |
-| 23 | `.value.list` | List all parameter values | 1 | `genfile .value.list` |
-| 24 | `.value.clear` | Clear all parameter values | 2 | `genfile .value.clear` |
+| # | Command | Purpose | Params | Namespace |
+|---|---------|---------|--------|-----------|
+| 1 | `.info` | Display archive metadata and statistics | 1 | [operations.md](operations.md#command--1-info) |
+| 2 | `.discover.parameters` | Auto-detect template parameters from content | 2 | [operations.md](operations.md#command--2-discoverparameters) |
+| 3 | `.status` | Archive readiness check with validation | 1 | [operations.md](operations.md#command--3-status) |
+| 4 | `.analyze` | Comprehensive archive structure analysis | 2 | [operations.md](operations.md#command--4-analyze) |
+| 5 | `.archive.new` | Create new empty template archive | 3 | [archive.md](archive.md#command--5-archivenew) |
+| 6 | `.archive.load` | Load archive from JSON or YAML file | 2 | [archive.md](archive.md#command--6-archiveload) |
+| 7 | `.archive.save` | Save current archive to JSON or YAML file | 5 | [archive.md](archive.md#command--7-archivesave) |
+| 8 | `.archive.from_directory` | Create archive from filesystem directory | 7 | [archive.md](archive.md#command--8-archivefrom_directory) |
+| 9 | `.content.internalize` | Convert file references to inline content | 2 | [content.md](content.md#command--9-contentinternalize) |
+| 10 | `.content.externalize` | Convert inline content to file references | 3 | [content.md](content.md#command--10-contentexternalize) |
+| 11 | `.content.list` | List files by content storage mode | 2 | [content.md](content.md#command--11-contentlist) |
+| 12 | `.file.add` | Add file to current archive | 5 | [file.md](file.md#command--12-fileadd) |
+| 13 | `.file.remove` | Remove file from archive | 2 | [file.md](file.md#command--13-fileremove) |
+| 14 | `.file.list` | List all files in archive | 1 | [file.md](file.md#command--14-filelist) |
+| 15 | `.file.show` | Display file content from archive | 2 | [file.md](file.md#command--15-fileshow) |
+| 16 | `.materialize` | Render template archive to destination with parameter substitution | 3 | [operations.md](operations.md#command--16-materialize) |
+| 17 | `.unpack` | Unpack raw template files without rendering | 3 | [operations.md](operations.md#command--17-unpack) |
+| 18 | `.pack` | Create portable archive from directory with inline content | 4 | [operations.md](operations.md#command--18-pack) |
+| 19 | `.parameter.add` | Add parameter definition to archive with metadata | 5 | [param_mgmt.md](param_mgmt.md#command--19-parameteradd) |
+| 20 | `.parameter.list` | List all parameter definitions in archive | 1 | [param_mgmt.md](param_mgmt.md#command--20-parameterlist) |
+| 21 | `.parameter.remove` | Remove parameter definition from archive | 2 | [param_mgmt.md](param_mgmt.md#command--21-parameterremove) |
+| 22 | `.value.set` | Set parameter value for template rendering | 3 | [value.md](value.md#command--22-valueset) |
+| 23 | `.value.list` | List all parameter values | 1 | [value.md](value.md#command--23-valuelist) |
+| 24 | `.value.clear` | Clear all parameter values | 2 | [value.md](value.md#command--24-valueclear) |
 
 ### Quick Reference
 

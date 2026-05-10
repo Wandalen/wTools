@@ -25,13 +25,15 @@ Current test coverage: across 9 test files covering **21 implemented commands** 
 
 Tests are organized by functional domain (not by methodology):
 
-- `archive_commands_test.rs` (430 lines) - Archive lifecycle operations
-- `file_commands_test.rs` (214 lines) - File management operations
-- `param_value_commands_test.rs` (230 lines) - Parameter and value operations
-- `content_commands_test.rs` (246 lines) - Content transformation operations
-- `materialization_test.rs` (447 lines) - Template materialization and raw unpacking
-- `analysis_test.rs` (307 lines) - Archive analysis and inspection
-- `repl_exit_code_bug_test.rs` - REPL exit code behavior regression tests
+- `archive_commands_test.rs` — Archive lifecycle operations
+- `file_commands_test.rs` — File management operations
+- `param_value_commands_test.rs` — Parameter and value operations
+- `content_commands_test.rs` — Content transformation operations
+- `materialization_test.rs` — Template materialization and raw unpacking
+- `analysis_test.rs` — Archive analysis and inspection
+- `repl_exit_code_bug_test.rs` — REPL exit code behavior regression tests
+- `invariant_test.rs` — Error format, exit codes, path traversal, coverage checks
+- `help_system_test.rs` — Help system placeholder (FR9 deferred)
 
 ## Test Methodology
 
@@ -105,12 +107,11 @@ w3 .test l::3
 1. **Add Unit Tests:** Create handler-level unit tests for isolated testing
 2. **Implement Missing Command Tests:** Add tests for unimplemented commands (use TDD)
 3. **Performance Tests:** Consider adding benchmarks for command execution
-4. **Test Spec Coverage:** Implement `tests/docs/` test surface spec files
-5. **Manual Testing Plan:** Document manual test scenarios in `tests/manual/readme.md`
+4. **Manual Testing Plan:** Document manual test scenarios in `tests/manual/readme.md`
 
 ## Test File Size Guidelines
 
-- ✅ All test files under 1500 lines (max is 447 lines)
+- ✅ All test files under 1500 lines
 - ✅ Tests organized by domain, not methodology
 - ✅ Clear naming: `*_test.rs` suffix
 

@@ -6,13 +6,13 @@
 
 ---
 
-## Overview
+### Overview
 
 This guide provides comprehensive instructions for maintaining the GenFile CLI documentation system. Follow these procedures to keep documentation accurate, consistent, and synchronized with code changes.
 
 ---
 
-## Maintenance Scripts
+### Maintenance Scripts
 
 ### Available Scripts
 
@@ -35,7 +35,7 @@ bash -update_stats.sh
 
 ---
 
-## When to Update Documentation
+### When to Update Documentation
 
 ### Trigger 1: New Command Added
 
@@ -118,7 +118,7 @@ bash -update_stats.sh
 
 ---
 
-## Documentation Structure
+### Documentation Structure
 
 ### File Organization
 
@@ -155,7 +155,7 @@ docs/cli/
 
 ---
 
-## Quality Checklist
+### Quality Checklist
 
 ### Before Committing Documentation Changes
 
@@ -196,7 +196,7 @@ docs/cli/
 
 ---
 
-## Common Maintenance Tasks
+### Common Maintenance Tasks
 
 ### Task 1: Add New Command to Archive Namespace
 
@@ -278,7 +278,7 @@ bash -validate_links.sh
 
 ---
 
-## Consistency Guidelines
+### Consistency Guidelines
 
 ### Terminology Standards
 
@@ -308,8 +308,8 @@ genfile .materialize path::"output/" dry::false           # Wrong parameter name
 
 **Correct:**
 ```markdown
-[verbosity::](param.md#parameter-1-verbosity)
-[VerbosityLevel](type.md#type-1-verbositylevel)
+[verbosity::](param.md#parameter--1-verbosity)
+[VerbosityLevel](type.md#type--1-verbositylevel)
 ```
 
 **Incorrect:**
@@ -320,7 +320,7 @@ genfile .materialize path::"output/" dry::false           # Wrong parameter name
 
 ---
 
-## Troubleshooting
+### Troubleshooting
 
 ### Issue 1: Link Validation Fails
 
@@ -376,7 +376,7 @@ vim docs/cli/command/operations.md
 
 ---
 
-## Scheduled Maintenance
+### Scheduled Maintenance
 
 ### Weekly Tasks (10 minutes)
 
@@ -401,7 +401,7 @@ vim docs/cli/command/operations.md
 
 ---
 
-## Quality Metrics
+### Quality Metrics
 
 ### Target Metrics
 
@@ -433,7 +433,7 @@ bash -validate_links.sh
 
 ---
 
-## Emergency Procedures
+### Emergency Procedures
 
 ### Critical Documentation Issue Found
 
@@ -456,7 +456,7 @@ bash -validate_links.sh
 
 ---
 
-## Best Practices
+### Best Practices
 
 ### DO ✅
 
@@ -478,7 +478,7 @@ bash -validate_links.sh
 
 ---
 
-## Getting Help
+### Getting Help
 
 ### Resources
 
@@ -494,7 +494,7 @@ For documentation questions or issues:
 
 ---
 
-## Version History
+### Version History
 
 | Version | Date | Changes |
 |---------|------|---------|

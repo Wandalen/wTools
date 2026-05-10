@@ -30,8 +30,8 @@
 | tutorial.md | ➖ | ➖ | ✅ | ➖ | ➖ | Complete |
 | maintenance.md | ➖ | ➖ | ✅ | ➖ | ➖ | Complete |
 
-**Current Level:** L3 (Content Complete)
-**Design Completeness:** 60%
+**Current Level:** L3 (Specification Complete)
+**Design Completeness:** 75%
 **Implementation Status:** 100% ✅ all commands implemented
 
 ### Quick Navigation
@@ -52,7 +52,7 @@
 - [Core Operations](command/operations.md) - Materialize, pack, analyze
 
 **By Use Case:**
-- Creating archives: [.archive.new](command/archive.md#command--5-archivenew), [.archive.from_directory](command/archive.md#command--8-archivefromdirectory)
+- Creating archives: [.archive.new](command/archive.md#command--5-archivenew), [.archive.from_directory](command/archive.md#command--8-archivefrom_directory)
 - Managing content: [.file.add](command/file.md#command--12-fileadd), [.content.internalize](command/content.md#command--9-contentinternalize)
 - Rendering templates: [.materialize](command/operations.md#command--16-materialize), [.unpack](command/operations.md#command--17-unpack)
 
@@ -125,50 +125,6 @@ genfile .materialize destination::"./output"
 **Preview changes (dry run):**
 ```bash
 genfile .materialize destination::"./preview" dry::1 verbosity::2
-```
-
-### Common Workflows
-
-**Create archive from scratch:**
-```bash
-# 1. Create empty archive
-genfile .archive.new name::"my-template"
-
-# 2. Add files
-genfile .file.add path::"main.rs" from_file::"src/main.rs"
-genfile .file.add path::"readme.md" content::"# {{project_name}}"
-
-# 3. Add parameters
-genfile .parameter.add name::project_name mandatory::true
-
-# 4. Save
-genfile .archive.save path::"template.yaml"
-```
-
-**Convert directory to portable archive:**
-```bash
-# One-step approach
-genfile .pack input::"./templates" output::"template.json"
-
-# OR two-step approach
-genfile .archive.from_directory source::"./templates" mode::inline
-genfile .archive.save path::"template.json" pretty::1
-```
-
-**Load, modify, and materialize:**
-```bash
-# Load existing archive
-genfile .archive.load path::"template.yaml"
-
-# Set parameter values
-genfile .value.set name::project_name value::"my-app"
-genfile .value.set name::version value::"1.0.0"
-
-# Check readiness
-genfile .status
-
-# Materialize
-genfile .materialize destination::"./output" verbosity::2
 ```
 
 ### Documentation Principles

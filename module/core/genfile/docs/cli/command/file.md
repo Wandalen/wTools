@@ -9,139 +9,175 @@ File management commands for adding, removing, listing, and inspecting files in 
 
 | # | Command | Purpose | Params | Complexity |
 |---|---------|---------|--------|------------|
-| 12 | [.file.add](#command-12-fileadd) | Add file | 5 | Medium |
-| 13 | [.file.remove](#command-13-fileremove) | Remove file | 2 | Low |
-| 14 | [.file.list](#command-14-filelist) | List files | 1 | Low |
-| 15 | [.file.show](#command-15-fileshow) | Show content | 2 | Low |
+| 12 | [.file.add](#command--12-fileadd) | Add file to archive | 5 | 7 |
+| 13 | [.file.remove](#command--13-fileremove) | Remove file from archive | 2 | 4 |
+| 14 | [.file.list](#command--14-filelist) | List all files with metadata | 1 | 1 |
+| 15 | [.file.show](#command--15-fileshow) | Display file content from archive | 2 | 4 |
 
 ---
 
 ### Command :: 12. `.file.add`
 
-Adds file to current archive with specified content or from filesystem source. Use this to build archive incrementally.
+### Description
 
-**Syntax:**
+Adds a file to the current archive with specified content or from a filesystem source. Use this to build an archive incrementally, one file at a time.
+
+-- **Parameters:** path::, content::, from_file::, write_mode::, verbosity::
+-- **Exit Codes:** 0 (success) | 1 (invalid path or missing content source) | 2 (file read error)
+
+### Syntax
+
 ```bash
 genfile .file.add path::"src/main.rs" content::"fn main() {}"
 genfile .file.add path::"readme.md" from_file::"./README.md"
 genfile .file.add path::"config.toml" content::"[package]" write_mode::rewrite
 ```
 
-**Parameters:**
+### Parameters
 
-| Parameter | Type | Description | Default | Required |
-|-----------|------|-------------|---------|----------|
-| `path::` | [FilePath](../type.md#type-filepath) | File path within archive | - | ✅ Yes |
-| `content::` | [ContentString](../type.md#type-contentstring) | File content (text) | - | Conditional |
-| `from_file::` | [FilePath](../type.md#type-filepath) | Source file to read content from | `null` | Conditional |
-| `write_mode::` | [WriteMode](../type.md#type-writemode) | Write mode (rewrite \| append \| skip) | - | No |
-| `verbosity::` | [VerbosityLevel](../type.md#type-verbositylevel) | Output detail level (0-5) | `1` | No |
+| Parameter | Type | Default | Required | Purpose |
+|-----------|------|---------|----------|---------|
+| `path::` | [FilePath](../type.md#type--3-filepath) | — | ✅ Yes | File path within the archive |
+| `content::` | [ContentString](../type.md#type--9-contentstring) | `null` | No | File content as a string |
+| `from_file::` | [FilePath](../type.md#type--3-filepath) | `null` | No | Source file to read content from |
+| `write_mode::` | [WriteMode](../type.md#type--12-writemode) | `rewrite` | No | Behavior when file already exists (rewrite \| append \| skip) |
+| `verbosity::` | [VerbosityLevel](../type.md#type--1-verbositylevel) | `1` | No | Output detail level (0-5) |
 
-<small>*Must provide either `content::` OR `from_file::` (not both)*</small>
-<small>*`verbosity::` is part of [Universal Output Control](../param_group.md#group-1-universal-output-control) parameter group*</small>
+### Examples
 
-**Behavior:**
-- Adds file to archive in-memory structure
-- Content can be specified directly or read from file
-- Write mode controls behavior when file already exists
-- Does not modify filesystem (only archive)
-
-**Examples:**
-
-**Direct content:**
 ```bash
 genfile .file.add path::"main.rs" content::"fn main() { println!(\"Hello\"); }"
 # Output:
 # Added file: main.rs (27 bytes)
-```
 
-**From filesystem:**
-```bash
 genfile .file.add path::"readme.md" from_file::"./README.md"
 # Output:
 # Added file: readme.md (1.2 KB, read from ./README.md)
+
+genfile .file.add path::"config.toml" content::"[package]" write_mode::skip
+# Output:
+# Skipped: config.toml (already exists)
 ```
 
-**Exit Codes:** 0 (success) | 1 (invalid path/content) | 2 (file read error)
+### Notes
 
-**Interactions:**
-- Conflicts with: Using both `content::` and `from_file::` simultaneously
-- Dependencies: `from_file::` requires source file to exist
+- Exactly one of `content::` or `from_file::` must be provided; using both simultaneously is an error
+- `from_file::` requires the source file to exist at invocation time
+- `write_mode::rewrite` overwrites an existing archive entry; `skip` leaves it unchanged; `append` appends to existing content
+- Operation modifies the in-memory archive only — does not write to the filesystem
 
-**Related Commands:**
-- [.file.remove](#command-13-fileremove) - Remove file from archive
-- [.file.list](#command-14-filelist) - List files in archive
-- [.archive.from_directory](archive.md#command-8-archivefromdirectory) - Bulk file addition
+### Related Commands
+
+| # | Command | Relationship |
+|---|---------|-------------|
+| 13 | [`.file.remove`](#command--13-fileremove) | Remove a file from the archive |
+| 14 | [`.file.list`](#command--14-filelist) | List files to confirm addition |
+| 8 | [`.archive.from_directory`](archive.md#command--8-archivefrom_directory) | Bulk file addition from a directory |
+
+### Referenced Parameter Groups
+
+| # | Group | Membership | Parameters Bound |
+|---|-------|------------|-----------------|
+| 1 | [Universal Output Control](../param_group.md#group--1-universal-output-control) | Full | `verbosity::` |
+
+---
+
+**Category:** Write
+**Complexity:** 7
+**API Requirement:** None
+**Idempotent:** No
+**Risk Level:** Low
 
 ---
 
 ### Command :: 13. `.file.remove`
 
-Removes file from current archive. Use this to remove unwanted files from archive.
+### Description
 
-**Syntax:**
+Removes a file from the current in-memory archive. Use this to delete unwanted files before saving or materializing.
+
+-- **Parameters:** path::, verbosity::
+-- **Exit Codes:** 0 (success) | 1 (file not found in archive) | 2 (runtime error)
+
+### Syntax
+
 ```bash
 genfile .file.remove path::"old_file.rs"
 genfile .file.remove path::"temp.txt" verbosity::2
 ```
 
-**Parameters:**
+### Parameters
 
-| Parameter | Type | Description | Default | Required |
-|-----------|------|-------------|---------|----------|
-| `path::` | [FilePath](../type.md#type-filepath) | File path to remove | - | ✅ Yes |
-| `verbosity::` | [VerbosityLevel](../type.md#type-verbositylevel) | Output detail level (0-5) | `1` | No |
+| Parameter | Type | Default | Required | Purpose |
+|-----------|------|---------|----------|---------|
+| `path::` | [FilePath](../type.md#type--3-filepath) | — | ✅ Yes | Archive path of the file to remove |
+| `verbosity::` | [VerbosityLevel](../type.md#type--1-verbositylevel) | `1` | No | Output detail level (0-5) |
 
-<small>*`verbosity::` is part of [Universal Output Control](../param_group.md#group-1-universal-output-control) parameter group*</small>
+### Examples
 
-**Behavior:**
-- Removes file from archive structure
-- File must exist in archive (error if not found)
-- Does not modify filesystem
-
-**Examples:**
-
-**Basic usage:**
 ```bash
 genfile .file.remove path::"temp.rs"
 # Output:
 # Removed file: temp.rs
+
+genfile .file.remove path::"src/old_impl.rs" verbosity::2
+# Output:
+# Removed file: src/old_impl.rs (was 3.2 KB, inline)
 ```
 
-**Exit Codes:** 0 (success) | 1 (file not found in archive) | 2 (runtime error)
+### Notes
 
-**Related Commands:**
-- [.file.add](#command-12-fileadd) - Add file to archive
-- [.file.list](#command-14-filelist) - List files to identify removal targets
+- File must exist in the archive; fails with exit code 1 if the path is not found
+- Operation modifies the in-memory archive only — does not delete files from the filesystem
+- Use `.file.list` first to confirm the exact archive path before removing
+
+### Related Commands
+
+| # | Command | Relationship |
+|---|---------|-------------|
+| 12 | [`.file.add`](#command--12-fileadd) | Add a file to the archive |
+| 14 | [`.file.list`](#command--14-filelist) | List files to identify removal targets |
+
+### Referenced Parameter Groups
+
+| # | Group | Membership | Parameters Bound |
+|---|-------|------------|-----------------|
+| 1 | [Universal Output Control](../param_group.md#group--1-universal-output-control) | Full | `verbosity::` |
+
+---
+
+**Category:** Write
+**Complexity:** 4
+**API Requirement:** None
+**Idempotent:** No
+**Risk Level:** Low
 
 ---
 
 ### Command :: 14. `.file.list`
 
-Lists all files in current archive with metadata. Use this to inspect archive contents.
+### Description
 
-**Syntax:**
+Lists all files in the current archive with path, size, and content mode metadata. Use this to inspect archive contents before saving, materializing, or editing.
+
+-- **Parameters:** verbosity::
+-- **Exit Codes:** 0 (success) | 2 (runtime error)
+
+### Syntax
+
 ```bash
 genfile .file.list
 genfile .file.list verbosity::2
 ```
 
-**Parameters:**
+### Parameters
 
-| Parameter | Type | Description | Default | Required |
-|-----------|------|-------------|---------|----------|
-| `verbosity::` | [VerbosityLevel](../type.md#type-verbositylevel) | Output detail level (0-5) | `1` | No |
+| Parameter | Type | Default | Required | Purpose |
+|-----------|------|---------|----------|---------|
+| `verbosity::` | [VerbosityLevel](../type.md#type--1-verbositylevel) | `1` | No | Output detail level (0-5) |
 
-<small>*`verbosity::` is part of [Universal Output Control](../param_group.md#group-1-universal-output-control) parameter group*</small>
+### Examples
 
-**Behavior:**
-- Lists all files with paths and sizes
-- Shows content mode (inline vs reference)
-- Sorted alphabetically by path
-
-**Examples:**
-
-**Basic listing:**
 ```bash
 genfile .file.list
 # Output:
@@ -150,43 +186,65 @@ genfile .file.list
 #   src/lib.rs (8.1 KB, reference)
 #   readme.md (2.5 KB, inline)
 #   ...
+
+genfile .file.list verbosity::2
+# Includes per-file parameter placeholder counts and last-modified info
 ```
 
-**Exit Codes:** 0 (success) | 2 (runtime error)
+### Notes
 
-**Related Commands:**
-- [.content.list](content.md#command-11-contentlist) - List by content mode
-- [.file.show](#command-15-fileshow) - Show file content
+- Files are sorted alphabetically by archive path
+- Content mode (inline vs reference) is shown for each file
+- Reference files display path only (no size; content is not embedded in archive)
+
+### Related Commands
+
+| # | Command | Relationship |
+|---|---------|-------------|
+| 11 | [`.content.list`](content.md#command--11-contentlist) | List files grouped by content mode |
+| 15 | [`.file.show`](#command--15-fileshow) | Display content of a specific file |
+
+### Referenced Parameter Groups
+
+| # | Group | Membership | Parameters Bound |
+|---|-------|------------|-----------------|
+| 1 | [Universal Output Control](../param_group.md#group--1-universal-output-control) | Full | `verbosity::` |
+
+---
+
+**Category:** Query
+**Complexity:** 1
+**API Requirement:** None
+**Idempotent:** Yes
+**Risk Level:** Low
 
 ---
 
 ### Command :: 15. `.file.show`
 
-Displays file content from archive. Use this to inspect file contents without materialization.
+### Description
 
-**Syntax:**
+Displays the content of a single file from the archive to stdout. Use this to inspect file contents or verify placeholder syntax without materializing.
+
+-- **Parameters:** path::, verbosity::
+-- **Exit Codes:** 0 (success) | 1 (file not found in archive) | 2 (read error)
+
+### Syntax
+
 ```bash
 genfile .file.show path::"main.rs"
 genfile .file.show path::"config.toml" verbosity::2
 ```
 
-**Parameters:**
+### Parameters
 
-| Parameter | Type | Description | Default | Required |
-|-----------|------|-------------|---------|----------|
-| `path::` | [FilePath](../type.md#type-filepath) | File path to show | - | ✅ Yes |
-| `verbosity::` | [VerbosityLevel](../type.md#type-verbositylevel) | Output detail level (0-5) | `1` | No |
+| Parameter | Type | Default | Required | Purpose |
+|-----------|------|---------|----------|---------|
+| `path::` | [FilePath](../type.md#type--3-filepath) | — | ✅ Yes | Archive path of the file to display |
+| `verbosity::` | [VerbosityLevel](../type.md#type--1-verbositylevel) | `1` | No | Output detail level (0-5) |
 
-<small>*`verbosity::` is part of [Universal Output Control](../param_group.md#group-1-universal-output-control) parameter group*</small>
+### Examples
 
-**Behavior:**
-- Displays file content to stdout
-- Works with both inline and reference files
-- For reference files, reads from filesystem
-
-**Examples:**
-
-**Show file:**
 ```bash
 genfile .file.show path::"main.rs"
 # Output:
@@ -194,18 +252,35 @@ genfile .file.show path::"main.rs"
 # fn main() {
 #     println!("Hello, {{project_name}}!");
 # }
+
+genfile .file.show path::"config.toml" verbosity::2
+# Includes content mode, size, and parameter placeholder list
 ```
 
-**Exit Codes:** 0 (success) | 1 (file not found) | 2 (read error)
+### Notes
 
-**Related Commands:**
-- [.file.list](#command-14-filelist) - List available files
-- [.file.add](#command-12-fileadd) - Add files to show
+- Works with both inline files (content embedded) and reference files (read from filesystem)
+- For reference files, the source file must exist at its recorded path
+- Placeholder tokens (`{{name}}`) are displayed as-is — no substitution occurs
+
+### Related Commands
+
+| # | Command | Relationship |
+|---|---------|-------------|
+| 14 | [`.file.list`](#command--14-filelist) | List available files to find the right path |
+| 12 | [`.file.add`](#command--12-fileadd) | Add or replace the file shown |
+| 16 | [`.materialize`](operations.md#command--16-materialize) | Render files with placeholder substitution |
+
+### Referenced Parameter Groups
+
+| # | Group | Membership | Parameters Bound |
+|---|-------|------------|-----------------|
+| 1 | [Universal Output Control](../param_group.md#group--1-universal-output-control) | Full | `verbosity::` |
 
 ---
 
-### See Also
-
-- [Archive Operations](archive.md) - Archive lifecycle
-- [Content Management](content.md) - Content mode control
-- [Parameters Reference](../param.md) - Parameter documentation
+**Category:** Query
+**Complexity:** 4
+**API Requirement:** None
+**Idempotent:** Yes
+**Risk Level:** Low

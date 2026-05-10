@@ -22,7 +22,7 @@
 - **Given:** Any command that produces an error is run (e.g., load a nonexistent file)
 - **When:** The error output is examined
 - **Then:** Error message matches `[ERROR] [CONTEXT]: message` pattern; no bare unformatted errors
-- **Tests:** `tests/archive_commands_test.rs`
+- **Tests:** `tests/invariant_test.rs`
 
 ### IN-02: failed command exits with nonzero exit code
 
@@ -30,7 +30,7 @@
 - **When:** Exit code is captured
 - **Then:** Exit code is 1 (runtime error) or 2 (usage error); never 0 on failure
 - **Behavioral Divergence:** Invalid path → exit 1; success → exit 0
-- **Tests:** `tests/archive_commands_test.rs`, `tests/repl_exit_code_bug_test.rs`
+- **Tests:** `tests/invariant_test.rs`, `tests/repl_exit_code_bug_test.rs`
 
 ### IN-03: path traversal sequences are rejected
 

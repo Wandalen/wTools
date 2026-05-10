@@ -21,7 +21,7 @@
 - **Given:** The full test suite is run
 - **When:** Each of the 24 commands is checked for test coverage
 - **Then:** Every command appears at least once as the subject of a test function
-- **Tests:** none — see task/001_fill_test_surface_gaps.md (help commands IN-01 gap)
+- **Tests:** `tests/invariant_test.rs`
 
 ### IN-02: tests use manifest-directory-relative paths
 

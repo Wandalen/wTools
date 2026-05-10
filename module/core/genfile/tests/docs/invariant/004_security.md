@@ -30,7 +30,7 @@
 - **Given:** genfile binary is available
 - **When:** `.archive.load path::../../etc/passwd` is run
 - **Then:** Exit code 1; error indicates path validation failure
-- **Tests:** `tests/archive_commands_test.rs`
+- **Tests:** `tests/invariant_test.rs`
 
 ### IN-03: sensitive parameter values absent from error output
 
