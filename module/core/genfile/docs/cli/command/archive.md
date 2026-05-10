@@ -254,7 +254,7 @@ genfile .archive.save path::"test.json" dry::1 verbosity::2
 
 Creates a template archive by scanning a filesystem directory and importing its files. Use this when converting an existing project structure into a reusable template.
 
--- **Parameters:** source::, mode::, recursive::, include_pattern::, exclude_pattern::, verbosity::
+-- **Parameters:** source::, mode::, recursive::, include_pattern::, exclude_pattern::, verbosity::, dry::
 -- **Exit Codes:** 0 (success) | 1 (source directory not found) | 2 (permission denied or I/O error)
 
 ### Syntax
@@ -264,6 +264,7 @@ genfile .archive.from_directory source::"./templates"
 genfile .archive.from_directory source::"./src" mode::inline
 genfile .archive.from_directory source::"./project" recursive::1 include_pattern::"**/*.rs"
 genfile .archive.from_directory source::"./code" exclude_pattern::"**/target/**" verbosity::2
+genfile .archive.from_directory source::"./project" dry::1
 ```
 
 ### Parameters
@@ -276,6 +277,7 @@ genfile .archive.from_directory source::"./code" exclude_pattern::"**/target/**"
 | `include_pattern::` | [PatternString](../type.md#type--8-patternstring) | `null` | No | Include only files matching glob pattern |
 | `exclude_pattern::` | [PatternString](../type.md#type--8-patternstring) | `null` | No | Exclude files matching glob pattern |
 | `verbosity::` | [VerbosityLevel](../type.md#type--1-verbositylevel) | `1` | No | Output detail level (0-5) |
+| `dry::` | [DryRunFlag](../type.md#type--2-dryrunflag) | `0` | No | Preview mode (0 or 1) |
 
 ### Examples
 
@@ -308,6 +310,12 @@ genfile .archive.from_directory \
 # [INFO] Include: **/*.{rs,toml,md} | Exclude: **/target/**
 # [INFO] Mode: inline
 # Matched 67 files — Added 67 files (234 KB)
+
+genfile .archive.from_directory source::"./project" dry::1
+# Output:
+# [DRY RUN] Would scan ./project (recursive, reference mode)
+# [DRY RUN] Would add 24 files
+# [DRY RUN] No archive created
 ```
 
 ### Notes
@@ -332,12 +340,13 @@ genfile .archive.from_directory \
 | # | Group | Membership | Parameters Bound |
 |---|-------|------------|-----------------|
 | 1 | [Universal Output Control](../param_group.md#group--1-universal-output-control) | Full | `verbosity::` |
-| 2 | [Filesystem Filtering](../param_group.md#group--3-filesystem-filtering) | Full | `recursive::`, `include_pattern::`, `exclude_pattern::` |
+| 2 | [Universal Execution Control](../param_group.md#group--2-universal-execution-control) | Full | `dry::` |
+| 3 | [Filesystem Filtering](../param_group.md#group--3-filesystem-filtering) | Full | `recursive::`, `include_pattern::`, `exclude_pattern::` |
 
 ---
 
 **Category:** Write
-**Complexity:** 8
+**Complexity:** 9
 **API Requirement:** None
 **Idempotent:** No
 **Risk Level:** Low

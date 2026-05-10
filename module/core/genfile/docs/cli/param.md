@@ -14,7 +14,7 @@ Complete parameter listing for the genfile CLI.
 | # | Parameter | Type | Default | Commands | Purpose |
 |---|-----------|------|---------|----------|---------|
 | 1 | [`verbosity::`](#parameter--1-verbosity) | [VerbosityLevel](type.md#type--1-verbositylevel) | `1` | 24 | Output detail control |
-| 2 | [`dry::`](#parameter--2-dry) | [DryRunFlag](type.md#type--2-dryrunflag) | `0` | 7 | Preview mode flag |
+| 2 | [`dry::`](#parameter--2-dry) | [DryRunFlag](type.md#type--2-dryrunflag) | `0` | 10 | Preview mode flag |
 | 3 | [`path::`](#parameter--3-path) | [FilePath](type.md#type--3-filepath) | — | 5 | File path (input/output) |
 | 4 | [`name::`](#parameter--4-name) | [IdentifierString](type.md#type--6-identifierstring) | — | 4 | Entity identifier |
 | 5 | [`destination::`](#parameter--5-destination) | [OutputPath](type.md#type--4-outputpath) | — | 2 | Output directory path |
@@ -118,9 +118,12 @@ genfile .materialize destination::"./output"                    # Execute (dry::
 
 | # | Command | Default | Notes |
 |---|---------|---------|-------|
+| 2 | [`.discover.parameters`](command/operations.md#command--2-discoverparameters) | `0` | Previews parameter detection |
+| 4 | [`.analyze`](command/operations.md#command--4-analyze) | `0` | Previews analysis |
 | 7 | [`.archive.save`](command/archive.md#command--7-archivesave) | `0` | Previews file write |
 | 8 | [`.archive.from_directory`](command/archive.md#command--8-archivefrom_directory) | `0` | Previews directory scan |
 | 9 | [`.content.internalize`](command/content.md#command--9-contentinternalize) | `0` | Previews content read |
+| 10 | [`.content.externalize`](command/content.md#command--10-contentexternalize) | `0` | Previews content externalization |
 | 16 | [`.materialize`](command/operations.md#command--16-materialize) | `0` | Previews file generation |
 | 17 | [`.unpack`](command/operations.md#command--17-unpack) | `0` | Previews file extraction |
 | 18 | [`.pack`](command/operations.md#command--18-pack) | `0` | Previews pack operation |
@@ -130,7 +133,7 @@ genfile .materialize destination::"./output"                    # Execute (dry::
 
 | # | Group | Membership | Co-members |
 |---|-------|------------|------------|
-| 1 | [Universal Execution Control](param_group.md#group--2-universal-execution-control) | Full | — (sole member) |
+| 2 | [Universal Execution Control](param_group.md#group--2-universal-execution-control) | Full | — (sole member) |
 
 ---
 
@@ -446,7 +449,7 @@ genfile .archive.from_directory source::"./config" recursive::0  # Top-level onl
 
 | # | Group | Membership | Co-members |
 |---|-------|------------|------------|
-| 1 | [Filesystem Filtering](param_group.md#group--3-filesystem-filtering) | Full | [`include_pattern::`](#parameter--17-include_pattern), [`exclude_pattern::`](#parameter--21-exclude_pattern) |
+| 3 | [Filesystem Filtering](param_group.md#group--3-filesystem-filtering) | Full | [`include_pattern::`](#parameter--17-include_pattern), [`exclude_pattern::`](#parameter--21-exclude_pattern) |
 
 ---
 
@@ -714,7 +717,7 @@ genfile .archive.from_directory source::"./project" \
 
 | # | Group | Membership | Co-members |
 |---|-------|------------|------------|
-| 1 | [Filesystem Filtering](param_group.md#group--3-filesystem-filtering) | Full | [`recursive::`](#parameter--10-recursive), [`exclude_pattern::`](#parameter--21-exclude_pattern) |
+| 3 | [Filesystem Filtering](param_group.md#group--3-filesystem-filtering) | Full | [`recursive::`](#parameter--10-recursive), [`exclude_pattern::`](#parameter--21-exclude_pattern) |
 
 ---
 
@@ -874,7 +877,7 @@ genfile .archive.from_directory source::"./workspace" \
 
 | # | Group | Membership | Co-members |
 |---|-------|------------|------------|
-| 1 | [Filesystem Filtering](param_group.md#group--3-filesystem-filtering) | Full | [`recursive::`](#parameter--10-recursive), [`include_pattern::`](#parameter--17-include_pattern) |
+| 3 | [Filesystem Filtering](param_group.md#group--3-filesystem-filtering) | Full | [`recursive::`](#parameter--10-recursive), [`include_pattern::`](#parameter--17-include_pattern) |
 
 ---
 

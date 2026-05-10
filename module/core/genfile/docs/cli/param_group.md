@@ -57,30 +57,30 @@ Semantically coherent parameter sets shared across commands. Groups reduce dupli
 
 | # | Command | Membership | Excluded Params | Notes |
 |---|---------|------------|-----------------|-------|
-| 1 | [`.info`](command/operations.md#command--1-info) | verbosity:: | — | — |
-| 2 | [`.discover.parameters`](command/operations.md#command--2-discoverparameters) | verbosity:: | — | — |
-| 3 | [`.status`](command/operations.md#command--3-status) | verbosity:: | — | — |
-| 4 | [`.analyze`](command/operations.md#command--4-analyze) | verbosity:: | — | — |
-| 5 | [`.archive.new`](command/archive.md#command--5-archivenew) | verbosity:: | — | — |
-| 6 | [`.archive.load`](command/archive.md#command--6-archiveload) | verbosity:: | — | — |
-| 7 | [`.archive.save`](command/archive.md#command--7-archivesave) | verbosity:: | — | — |
-| 8 | [`.archive.from_directory`](command/archive.md#command--8-archivefrom_directory) | verbosity:: | — | — |
-| 9 | [`.content.internalize`](command/content.md#command--9-contentinternalize) | verbosity:: | — | — |
-| 10 | [`.content.externalize`](command/content.md#command--10-contentexternalize) | verbosity:: | — | — |
-| 11 | [`.content.list`](command/content.md#command--11-contentlist) | verbosity:: | — | — |
-| 12 | [`.file.add`](command/file.md#command--12-fileadd) | verbosity:: | — | — |
-| 13 | [`.file.remove`](command/file.md#command--13-fileremove) | verbosity:: | — | — |
-| 14 | [`.file.list`](command/file.md#command--14-filelist) | verbosity:: | — | — |
-| 15 | [`.file.show`](command/file.md#command--15-fileshow) | verbosity:: | — | — |
-| 16 | [`.materialize`](command/operations.md#command--16-materialize) | verbosity:: | — | — |
-| 17 | [`.unpack`](command/operations.md#command--17-unpack) | verbosity:: | — | — |
-| 18 | [`.pack`](command/operations.md#command--18-pack) | verbosity:: | — | — |
-| 19 | [`.parameter.add`](command/param_mgmt.md#command--19-parameteradd) | verbosity:: | — | — |
-| 20 | [`.parameter.list`](command/param_mgmt.md#command--20-parameterlist) | verbosity:: | — | — |
-| 21 | [`.parameter.remove`](command/param_mgmt.md#command--21-parameterremove) | verbosity:: | — | — |
-| 22 | [`.value.set`](command/value.md#command--22-valueset) | verbosity:: | — | — |
-| 23 | [`.value.list`](command/value.md#command--23-valuelist) | verbosity:: | — | — |
-| 24 | [`.value.clear`](command/value.md#command--24-valueclear) | verbosity:: | — | — |
+| 1 | [`.info`](command/operations.md#command--1-info) | Full | — | — |
+| 2 | [`.discover.parameters`](command/operations.md#command--2-discoverparameters) | Full | — | — |
+| 3 | [`.status`](command/operations.md#command--3-status) | Full | — | — |
+| 4 | [`.analyze`](command/operations.md#command--4-analyze) | Full | — | — |
+| 5 | [`.archive.new`](command/archive.md#command--5-archivenew) | Full | — | — |
+| 6 | [`.archive.load`](command/archive.md#command--6-archiveload) | Full | — | — |
+| 7 | [`.archive.save`](command/archive.md#command--7-archivesave) | Full | — | — |
+| 8 | [`.archive.from_directory`](command/archive.md#command--8-archivefrom_directory) | Full | — | — |
+| 9 | [`.content.internalize`](command/content.md#command--9-contentinternalize) | Full | — | — |
+| 10 | [`.content.externalize`](command/content.md#command--10-contentexternalize) | Full | — | — |
+| 11 | [`.content.list`](command/content.md#command--11-contentlist) | Full | — | — |
+| 12 | [`.file.add`](command/file.md#command--12-fileadd) | Full | — | — |
+| 13 | [`.file.remove`](command/file.md#command--13-fileremove) | Full | — | — |
+| 14 | [`.file.list`](command/file.md#command--14-filelist) | Full | — | — |
+| 15 | [`.file.show`](command/file.md#command--15-fileshow) | Full | — | — |
+| 16 | [`.materialize`](command/operations.md#command--16-materialize) | Full | — | — |
+| 17 | [`.unpack`](command/operations.md#command--17-unpack) | Full | — | — |
+| 18 | [`.pack`](command/operations.md#command--18-pack) | Full | — | — |
+| 19 | [`.parameter.add`](command/param_mgmt.md#command--19-parameteradd) | Full | — | — |
+| 20 | [`.parameter.list`](command/param_mgmt.md#command--20-parameterlist) | Full | — | — |
+| 21 | [`.parameter.remove`](command/param_mgmt.md#command--21-parameterremove) | Full | — | — |
+| 22 | [`.value.set`](command/value.md#command--22-valueset) | Full | — | — |
+| 23 | [`.value.list`](command/value.md#command--23-valuelist) | Full | — | — |
+| 24 | [`.value.clear`](command/value.md#command--24-valueclear) | Full | — | — |
 
 #### Referenced Tests
 
@@ -143,13 +143,16 @@ genfile .archive.from_directory source::"./src" verbosity::3
 
 | # | Command | Membership | Excluded Params | Notes |
 |---|---------|------------|-----------------|-------|
-| 7 | [`.archive.save`](command/archive.md#command--7-archivesave) | dry:: | — | Previews file write |
-| 8 | [`.archive.from_directory`](command/archive.md#command--8-archivefrom_directory) | dry:: | — | Previews directory scan |
-| 9 | [`.content.internalize`](command/content.md#command--9-contentinternalize) | dry:: | — | Previews content read |
-| 16 | [`.materialize`](command/operations.md#command--16-materialize) | dry:: | — | Previews file generation |
-| 17 | [`.unpack`](command/operations.md#command--17-unpack) | dry:: | — | Previews file extraction |
-| 18 | [`.pack`](command/operations.md#command--18-pack) | dry:: | — | Previews pack operation |
-| 24 | [`.value.clear`](command/value.md#command--24-valueclear) | dry:: | — | Previews value deletion |
+| 2 | [`.discover.parameters`](command/operations.md#command--2-discoverparameters) | Full | — | Previews parameter detection |
+| 4 | [`.analyze`](command/operations.md#command--4-analyze) | Full | — | Previews analysis |
+| 7 | [`.archive.save`](command/archive.md#command--7-archivesave) | Full | — | Previews file write |
+| 8 | [`.archive.from_directory`](command/archive.md#command--8-archivefrom_directory) | Full | — | Previews directory scan |
+| 9 | [`.content.internalize`](command/content.md#command--9-contentinternalize) | Full | — | Previews content read |
+| 10 | [`.content.externalize`](command/content.md#command--10-contentexternalize) | Full | — | Previews content externalization |
+| 16 | [`.materialize`](command/operations.md#command--16-materialize) | Full | — | Previews file generation |
+| 17 | [`.unpack`](command/operations.md#command--17-unpack) | Full | — | Previews file extraction |
+| 18 | [`.pack`](command/operations.md#command--18-pack) | Full | — | Previews pack operation |
+| 24 | [`.value.clear`](command/value.md#command--24-valueclear) | Full | — | Previews value deletion |
 
 #### Referenced Tests
 
@@ -214,7 +217,7 @@ genfile .archive.save path::"out.json"   # preview only
 
 | # | Command | Membership | Excluded Params | Notes |
 |---|---------|------------|-----------------|-------|
-| 8 | [`.archive.from_directory`](command/archive.md#command--8-archivefrom_directory) | recursive::, include_pattern::, exclude_pattern:: | source::, mode::, dry::, verbosity:: | Only command using this group |
+| 8 | [`.archive.from_directory`](command/archive.md#command--8-archivefrom_directory) | Full | — | Only command using this group |
 
 #### Referenced Tests
 
