@@ -428,3 +428,111 @@ fn pack_nonexistent_input_returns_error()
   // Clean up
   let _ = fs::remove_file( &output_path );
 }
+
+// FT-03 (feature/001): Load reads archive saved with .yaml extension
+//
+// WHY: load_from_file always parses as JSON. Since JSON is a valid subset of
+// YAML, saving to a .yaml path produces a JSON file with that extension.
+// Loading it back should succeed because the parser reads JSON bytes regardless
+// of extension. Proves that save→load round-trip works with .yaml paths.
+#[ test ]
+fn test_load_reads_yaml_archive_by_extension()
+{
+  let temp_dir = std::env::temp_dir();
+  let yaml_path = temp_dir.join( "test_yaml_archive.yaml" );
+
+  // Clean up
+  let _ = fs::remove_file( &yaml_path );
+
+  // Create, save to .yaml path, then reload
+  let save_script = format!(
+    ".archive.new name::yaml-test description::\"YAML path test\"\n\
+     .file.add path::readme.txt content::hello\n\
+     .archive.save path::{}\n\
+     exit",
+    yaml_path.display()
+  );
+
+  let save_output = cli_runner::repl_command( &save_script )
+    .output()
+    .expect( "Save to .yaml path should execute" );
+
+  assert!( save_output.status.success(), "Save to .yaml path should succeed" );
+  assert!( yaml_path.exists(), "Archive file should exist at .yaml path" );
+
+  // Load the .yaml path back
+  let load_script = format!(
+    ".archive.load path::{} verbosity::2\n\
+     exit",
+    yaml_path.display()
+  );
+
+  let load_output = cli_runner::repl_command( &load_script )
+    .output()
+    .expect( "Load from .yaml path should execute" );
+
+  let stdout = String::from_utf8_lossy( &load_output.stdout );
+  assert!(
+    load_output.status.success(),
+    "Load from .yaml path should succeed. stdout: {stdout}"
+  );
+  assert!( stdout.contains( "yaml-test" ), "Should load archive with correct name" );
+
+  // Clean up
+  let _ = fs::remove_file( &yaml_path );
+}
+
+// FT-04 (feature/007): Pack output loads correctly in a new session
+//
+// WHY: Proves the full portability guarantee — a packed archive can be loaded
+// in a fresh session (no prior state) and its file content is intact.
+#[ test ]
+fn test_pack_output_loads_in_new_session()
+{
+  let temp_dir = std::env::temp_dir();
+  let source_dir = temp_dir.join( "test_pack_reload_source" );
+  let archive_path = temp_dir.join( "test_pack_reload.json" );
+
+  // Clean up
+  let _ = fs::remove_dir_all( &source_dir );
+  let _ = fs::remove_file( &archive_path );
+
+  // Create source files
+  fs::create_dir_all( &source_dir ).expect( "Should create source dir" );
+  fs::write( source_dir.join( "main.rs" ), "fn main() { println!(\"{{name}}\"); }" )
+    .expect( "Should write main.rs" );
+
+  // Pack the directory
+  let pack_output = cli_runner::cargo_run_command( &[ ".pack",
+      &format!( "input::{}", source_dir.display() ),
+      &format!( "output::{}", archive_path.display() ),
+    ] )
+    .output()
+    .expect( "Pack should execute" );
+
+  assert!( pack_output.status.success(), "Pack should succeed" );
+  assert!( archive_path.exists(), "Archive should be created" );
+
+  // Load in a new session (separate REPL invocation)
+  let load_script = format!(
+    ".archive.load path::{} verbosity::2\n\
+     .file.list\n\
+     exit",
+    archive_path.display()
+  );
+
+  let load_output = cli_runner::repl_command( &load_script )
+    .output()
+    .expect( "Load should execute" );
+
+  let stdout = String::from_utf8_lossy( &load_output.stdout );
+  assert!(
+    load_output.status.success(),
+    "Load of packed archive should succeed. stdout: {stdout}"
+  );
+  assert!( stdout.contains( "main.rs" ), "Loaded archive should contain main.rs" );
+
+  // Clean up
+  let _ = fs::remove_dir_all( &source_dir );
+  let _ = fs::remove_file( &archive_path );
+}

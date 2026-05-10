@@ -11,10 +11,20 @@
 
 Parameters are defined with a name, optional description, a mandatory flag, and an optional default value. Parameter names are validated as alphanumeric with underscores. Listing supports filtering to mandatory-only. Removal validates the parameter exists before deletion. Parameters persist inside the archive and are serialized with it.
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/handlers/parameter.rs` | Handler implementations for parameter commands |
-| config | `commands/parameter.yaml` | Authoritative command specs for parameter group |
-| test | `tests/param_value_commands_test.rs` | Integration tests covering parameter definition commands |
+| File | Relationship |
+|------|--------------|
+| [`feature/004_parameter_value_management.md`](004_parameter_value_management.md) | Runtime value assignment for defined parameters |
+
+### Sources
+
+| File | Relationship |
+|------|--------------|
+| [`src/handlers/parameter.rs`](../../src/handlers/parameter.rs) | Handler implementations for parameter commands |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| [`tests/param_value_commands_test.rs`](../../tests/param_value_commands_test.rs) | Integration tests covering parameter definition commands |

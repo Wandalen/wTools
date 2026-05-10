@@ -11,10 +11,21 @@
 
 Materialization validates that all mandatory parameters have values, then renders each template file by substituting parameter values via the template engine, writing outputs to the destination directory. Static files are copied verbatim. Unpack copies raw archive content without rendering, useful for inspecting or extracting archives without substitution. Both operations support dry-run mode for preview without writing.
 
-### Cross-References
+### Invariants
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/handlers/materialize.rs` | Handler implementations for materialize/unpack commands |
-| config | `commands/materialize.yaml` | Authoritative command specs |
-| test | `tests/materialization_test.rs` | Integration tests for materialize and unpack commands |
+| File | Relationship |
+|------|--------------|
+| [`invariant/003_error_handling.md`](../invariant/003_error_handling.md) | Path validation constraint that materialization must enforce |
+| [`invariant/004_security.md`](../invariant/004_security.md) | Security constraint guarding output paths during generation |
+
+### Sources
+
+| File | Relationship |
+|------|--------------|
+| [`src/handlers/materialize.rs`](../../src/handlers/materialize.rs) | Handler implementations for materialize/unpack commands |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| [`tests/materialization_test.rs`](../../tests/materialization_test.rs) | Integration tests for materialize and unpack commands |

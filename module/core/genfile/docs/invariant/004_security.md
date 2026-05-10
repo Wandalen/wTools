@@ -19,9 +19,14 @@ A path validation function is called on all paths received from command argument
 
 Path traversal allows an attacker to overwrite arbitrary files outside the intended output directory during materialization, potentially overwriting system files or source code.
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/handlers/materialize.rs` | Primary path validation call site |
-| doc | `docs/feature/006_template_materialization.md` | Feature where path validation is critical |
+| File | Relationship |
+|------|--------------|
+| [`feature/006_template_materialization.md`](../feature/006_template_materialization.md) | Feature where path validation constraint is most critical |
+
+### Sources
+
+| File | Relationship |
+|------|--------------|
+| [`src/handlers/materialize.rs`](../../src/handlers/materialize.rs) | Primary path validation call site |

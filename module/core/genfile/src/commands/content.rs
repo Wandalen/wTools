@@ -26,7 +26,6 @@ pub fn register( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core:
 }
 
 /// Register .content.internalize command
-#[ allow( deprecated ) ]
 fn register_internalize( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core::error::Error > >
 {
   let cmd = CommandDefinition::new
@@ -65,7 +64,6 @@ fn register_internalize( registry : &mut CommandRegistry ) -> Result< (), Box< d
 }
 
 /// Register .content.externalize command
-#[ allow( deprecated ) ]
 fn register_externalize( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core::error::Error > >
 {
   let cmd = CommandDefinition::new
@@ -106,7 +104,6 @@ fn register_externalize( registry : &mut CommandRegistry ) -> Result< (), Box< d
 }
 
 /// Register .content.list command
-#[ allow( deprecated ) ]
 fn register_list( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core::error::Error > >
 {
   let cmd = CommandDefinition::new

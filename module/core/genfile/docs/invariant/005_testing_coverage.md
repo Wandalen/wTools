@@ -19,8 +19,14 @@ A shared test utilities module provides portable project directory resolution fo
 
 Untested commands may silently regress. Platform-specific test failures on Windows block adoption on non-Linux development environments. Slow test suites discourage running tests locally.
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| test | `tests/cli_runner.rs` | Cross-platform test infrastructure |
+| File | Relationship |
+|------|--------------|
+| [`feature/008_archive_analysis.md`](../feature/008_archive_analysis.md) | Analysis commands whose coverage this invariant governs |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| [`tests/cli_runner.rs`](../../tests/cli_runner.rs) | Cross-platform test infrastructure |

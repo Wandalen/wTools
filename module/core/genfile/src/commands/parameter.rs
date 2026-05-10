@@ -17,7 +17,6 @@ use unilang::data::
 ///
 /// # Errors
 /// Returns an error if command registration fails.
-#[ allow( deprecated ) ]
 pub fn register( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core::error::Error > >
 {
   register_add( registry )?;
@@ -27,7 +26,6 @@ pub fn register( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core:
 }
 
 /// Register .parameter.add command
-#[ allow( deprecated ) ]
 fn register_add( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core::error::Error > >
 {
   let cmd = CommandDefinition::new
@@ -74,7 +72,6 @@ fn register_add( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core:
 }
 
 /// Register .parameter.list command
-#[ allow( deprecated ) ]
 fn register_list( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core::error::Error > >
 {
   let cmd = CommandDefinition::new
@@ -109,7 +106,6 @@ fn register_list( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core
 }
 
 /// Register .parameter.remove command
-#[ allow( deprecated ) ]
 fn register_remove( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core::error::Error > >
 {
   let cmd = CommandDefinition::new

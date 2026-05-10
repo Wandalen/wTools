@@ -2,10 +2,10 @@
 
 ### Scope
 
-- **In Scope:** Commands, parameters, types, parameter groups, and workflow documentation for genfile CLI
-- **Out of Scope:** Implementation internals, Rust API, test infrastructure — see `src/` and `tests/`
-- **Audience:** CLI users, integrators, and contributors referencing genfile operations
-- **Responsibility:** Authoritative CLI documentation for the genfile template archive management tool
+- **Purpose**: Authoritative CLI documentation for the genfile template archive management tool
+- **Responsibility**: Documents all commands, parameters, types, parameter groups, and workflow scenarios
+- **In Scope**: Commands, parameters, types, parameter groups, and workflow documentation for genfile CLI
+- **Out of Scope**: Implementation internals, Rust API, test infrastructure — see `src/` and `tests/`
 
 ### Completion Matrix
 

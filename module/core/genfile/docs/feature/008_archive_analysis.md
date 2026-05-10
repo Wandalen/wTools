@@ -11,10 +11,20 @@
 
 Analysis commands operate on the currently loaded archive without modifying it. `.analyze` produces a comprehensive report of files, parameters, and completeness status. `.discover.parameters` scans template content to find all `{{param}}` placeholders, whether or not they are formally defined. `.status` gives a quick readiness summary. `.info` displays archive metadata including version, description, and author.
 
-### Cross-References
+### Invariants
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/handlers/analysis.rs` | Handler implementations for analysis commands |
-| config | `commands/analysis.yaml` | Authoritative command specs for analysis group |
-| test | `tests/analysis_test.rs` | Integration tests for analysis commands |
+| File | Relationship |
+|------|--------------|
+| [`invariant/005_testing_coverage.md`](../invariant/005_testing_coverage.md) | Coverage constraint that analysis commands must satisfy |
+
+### Sources
+
+| File | Relationship |
+|------|--------------|
+| [`src/handlers/analysis.rs`](../../src/handlers/analysis.rs) | Handler implementations for analysis commands |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| [`tests/analysis_test.rs`](../../tests/analysis_test.rs) | Integration tests for analysis commands |

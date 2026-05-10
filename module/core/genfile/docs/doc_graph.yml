@@ -1,9 +1,9 @@
 meta:
   description: Cross-reference graph for all doc instances in genfile
   node_count: 16
-  edge_count: 3
-  component_count: 13
-  generated: 2026_04_25
+  edge_count: 18
+  component_count: 7
+  last_updated: 2026_05_10
 
 nodes:
   - id: feature/001
@@ -72,86 +72,65 @@ nodes:
     entity: invariant
 
 edges:
+  # Invariant → Feature references (existing, bidirectional)
   - {from: invariant/001, to: feature/010, via: typed_reference}
+  - {from: feature/010, to: invariant/001, via: typed_reference}
   - {from: invariant/003, to: feature/006, via: typed_reference}
+  - {from: feature/006, to: invariant/003, via: typed_reference}
   - {from: invariant/004, to: feature/006, via: typed_reference}
+  - {from: feature/006, to: invariant/004, via: typed_reference}
+  # Feature → Feature semantic dependencies
+  - {from: feature/002, to: feature/001, via: typed_reference}
+  - {from: feature/001, to: feature/002, via: typed_reference}
+  - {from: feature/004, to: feature/003, via: typed_reference}
+  - {from: feature/003, to: feature/004, via: typed_reference}
+  - {from: feature/007, to: feature/005, via: typed_reference}
+  - {from: feature/005, to: feature/007, via: typed_reference}
+  # Usability invariant → Help system feature
+  - {from: invariant/002, to: feature/009, via: typed_reference}
+  - {from: feature/009, to: invariant/002, via: typed_reference}
+  # Testing coverage invariant → Archive analysis feature
+  - {from: invariant/005, to: feature/008, via: typed_reference}
+  - {from: feature/008, to: invariant/005, via: typed_reference}
+  # Documentation invariant → Help system feature
+  - {from: invariant/006, to: feature/009, via: typed_reference}
+  - {from: feature/009, to: invariant/006, via: typed_reference}
 
 components:
   - id: 1
-    label: performance-repl
+    label: archive-file-operations
     size: 2
     isolated: false
-    nodes: [invariant/001, feature/010]
+    nodes: [feature/001, feature/002]
   - id: 2
-    label: security-materialization
+    label: parameter-value
+    size: 2
+    isolated: false
+    nodes: [feature/003, feature/004]
+  - id: 3
+    label: content-serialization
+    size: 2
+    isolated: false
+    nodes: [feature/005, feature/007]
+  - id: 4
+    label: materialization-safety
     size: 3
     isolated: false
-    nodes: [invariant/003, invariant/004, feature/006]
-  - id: 3
-    label: archive-lifecycle
-    size: 1
-    isolated: true
-    nodes: [feature/001]
-    gap: Foundational archive lifecycle; would connect via invariant cross-referencing load/save latency bounds
-  - id: 4
-    label: file-content
-    size: 1
-    isolated: true
-    nodes: [feature/002]
-    gap: Standalone file operations; would connect via feature/001 dependency on loaded archive
+    nodes: [feature/006, invariant/003, invariant/004]
   - id: 5
-    label: param-definition
-    size: 1
-    isolated: true
-    nodes: [feature/003]
-    gap: Standalone parameter metadata; would connect via feature/004 value-definition dependency
+    label: analysis-coverage
+    size: 2
+    isolated: false
+    nodes: [feature/008, invariant/005]
   - id: 6
-    label: param-value
-    size: 1
-    isolated: true
-    nodes: [feature/004]
-    gap: Standalone value management; would connect via feature/003 definition-value dependency
+    label: help-documentation
+    size: 3
+    isolated: false
+    nodes: [feature/009, invariant/002, invariant/006]
   - id: 7
-    label: content-source
-    size: 1
-    isolated: true
-    nodes: [feature/005]
-    gap: Standalone content sourcing; would connect via feature/007 internalization step in pack
-  - id: 8
-    label: archive-serialization
-    size: 1
-    isolated: true
-    nodes: [feature/007]
-    gap: Standalone serialization; would connect via feature/005 content internalization dependency
-  - id: 9
-    label: archive-analysis
-    size: 1
-    isolated: true
-    nodes: [feature/008]
-    gap: Standalone analysis; would connect via invariant/005 coverage verification
-  - id: 10
-    label: help-system
-    size: 1
-    isolated: true
-    nodes: [feature/009]
-    gap: Framework-provided help with no cross-references; would connect via invariant/002 usability compliance
-  - id: 11
-    label: usability
-    size: 1
-    isolated: true
-    nodes: [invariant/002]
-    gap: CLI convention invariant; would connect if feature docs cross-referenced usability contract
-  - id: 12
-    label: testing-coverage
-    size: 1
-    isolated: true
-    nodes: [invariant/005]
-    gap: Testing meta-invariant; would connect if feature docs cross-referenced coverage requirements
-  - id: 13
-    label: documentation
-    size: 1
-    isolated: true
-    nodes: [invariant/006]
-    gap: Documentation meta-invariant; would connect if feature docs cross-referenced documentation requirements
+    label: repl-performance
+    size: 2
+    isolated: false
+    nodes: [feature/010, invariant/001]
 
 dangling_refs: []

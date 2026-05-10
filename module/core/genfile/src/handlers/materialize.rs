@@ -104,7 +104,13 @@ pub fn materialize_handler(
         let more = if file_count > 5 { format!( "\n  ... and {} more files", file_count - 5 ) } else { String::new() };
 
         format!(
-          "Dry run: Would materialize templates\\n\\\n          Destination: {}\\n\\\n          Archive: {}\\n\\\n          Files: {}\\n\\\n          Parameters: {}\\n\\\n          Files to create:\\n\\\n          {}{}",
+          "Dry run: Would materialize templates\n\
+          Destination: {}\n\
+          Archive: {}\n\
+          Files: {}\n\
+          Parameters: {}\n\
+          Files to create:\n\
+          {}{}",
           destination.display(),
           archive.name,
           file_count,
@@ -137,7 +143,12 @@ pub fn materialize_handler(
     _ =>
     {
       let mut details = format!(
-        "Materialized templates\\n\\\n        Archive: {}\\n\\\n        Destination: {}\\n\\\n        Created: {}\\n\\\n        Updated: {}\\n\\\n        Skipped: {}",
+        "Materialized templates\n\
+        Archive: {}\n\
+        Destination: {}\n\
+        Created: {}\n\
+        Updated: {}\n\
+        Skipped: {}",
         archive.name,
         destination.display(),
         report.files_created.len(),
@@ -147,19 +158,19 @@ pub fn materialize_handler(
 
       if verbosity >= 3 && !report.files_created.is_empty()
       {
-        details.push_str( "\\n\\nCreated files:\\n" );
+        details.push_str( "\n\nCreated files:\n" );
         for file in &report.files_created
         {
-          let _ = write!( &mut details, "  - {}\\n", file.display() );
+          let _ = writeln!( &mut details, "  - {}", file.display() );
         }
       }
 
       if verbosity >= 3 && !report.files_updated.is_empty()
       {
-        details.push_str( "\\nUpdated files:\\n" );
+        details.push_str( "\nUpdated files:\n" );
         for file in &report.files_updated
         {
-          let _ = write!( &mut details, "  - {}\\n", file.display() );
+          let _ = writeln!( &mut details, "  - {}", file.display() );
         }
       }
 
@@ -229,7 +240,13 @@ pub fn unpack_handler(
         let more = if file_count > 5 { format!( "\n  ... and {} more files", file_count - 5 ) } else { String::new() };
 
         format!(
-          "Dry run: Would unpack templates\\n\\\n          Destination: {}\\n\\\n          Archive: {}\\n\\\n          Files: {}\\n\\\n          Mode: raw (no rendering)\\n\\\n          Files to create:\\n\\\n          {}{}",
+          "Dry run: Would unpack templates\n\
+          Destination: {}\n\
+          Archive: {}\n\
+          Files: {}\n\
+          Mode: raw (no rendering)\n\
+          Files to create:\n\
+          {}{}",
           destination.display(),
           archive.name,
           file_count,
@@ -291,7 +308,11 @@ pub fn unpack_handler(
     _ =>
     {
       let mut details = format!(
-        "Unpacked templates\\n\\\n        Archive: {}\\n\\\n        Destination: {}\\n\\\n        Files: {}\\n\\\n        Mode: raw (no rendering)",
+        "Unpacked templates\n\
+        Archive: {}\n\
+        Destination: {}\n\
+        Files: {}\n\
+        Mode: raw (no rendering)",
         archive.name,
         destination.display(),
         files_created.len()
@@ -299,10 +320,10 @@ pub fn unpack_handler(
 
       if verbosity >= 3 && !files_created.is_empty()
       {
-        details.push_str( "\\n\\nCreated files:\\n" );
+        details.push_str( "\n\nCreated files:\n" );
         for file in &files_created
         {
-          let _ = write!( &mut details, "  - {}\\n", file.display() );
+          let _ = writeln!( &mut details, "  - {}", file.display() );
         }
       }
 

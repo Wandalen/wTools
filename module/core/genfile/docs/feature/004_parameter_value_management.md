@@ -11,10 +11,20 @@
 
 Values can be set for any defined parameter; setting an undefined parameter produces a validation error. Values persist in the archive's stored values map and are serialized with the archive. Clearing reverts all values to defaults (or unset for mandatory parameters). Values are validated against parameter definitions at set-time.
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/handlers/value.rs` | Handler implementations for value commands |
-| config | `commands/value.yaml` | Authoritative command specs for value group |
-| test | `tests/param_value_commands_test.rs` | Integration tests for value management commands |
+| File | Relationship |
+|------|--------------|
+| [`feature/003_parameter_definition_management.md`](003_parameter_definition_management.md) | Parameter metadata that runtime values are validated against |
+
+### Sources
+
+| File | Relationship |
+|------|--------------|
+| [`src/handlers/value.rs`](../../src/handlers/value.rs) | Handler implementations for value commands |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| [`tests/param_value_commands_test.rs`](../../tests/param_value_commands_test.rs) | Integration tests for value management commands |

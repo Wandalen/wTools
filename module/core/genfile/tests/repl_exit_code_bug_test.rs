@@ -205,3 +205,82 @@ fn repl_exits_with_nonzero_when_any_command_fails()
     String::from_utf8_lossy( &result.stderr )
   );
 }
+
+// FT-01 (feature/010): REPL starts and accepts commands when given no CLI arguments
+//
+// WHY: The documented quick start shows interactive use. Running `genfile` with
+// no arguments must enter REPL mode and accept the `exit` command cleanly.
+#[test]
+fn test_repl_starts_on_no_arguments()
+{
+  use std::io::Write;
+
+  let child = std::process::Command::new( "cargo" )
+    .args( [ "run", "--quiet", "--release" ] )
+    .stdin( std::process::Stdio::piped() )
+    .current_dir( env!( "CARGO_MANIFEST_DIR" ) )
+    .stdout( std::process::Stdio::piped() )
+    .stderr( std::process::Stdio::piped() )
+    .spawn()
+    .expect( "Failed to spawn genfile process" );
+
+  child.stdin
+    .as_ref()
+    .unwrap()
+    .write_all( b"exit\n" )
+    .expect( "Failed to write to stdin" );
+
+  let result = child.wait_with_output().expect( "Failed to wait for process" );
+
+  assert!(
+    result.status.success(),
+    "REPL with only 'exit' command should succeed. \
+     Exit code: {:?}, stderr: {}",
+    result.status.code(),
+    String::from_utf8_lossy( &result.stderr )
+  );
+}
+
+// FT-02 (feature/010): REPL state (loaded archive) persists across commands in one session
+//
+// WHY: The REPL is stateful — .archive.new creates an archive visible to .file.add
+// without re-loading. Tests that the thread-local shared state survives between
+// successive commands in the same REPL invocation.
+#[test]
+fn test_archive_state_persists_across_commands()
+{
+  use std::io::Write;
+
+  let child = std::process::Command::new( "cargo" )
+    .args( [ "run", "--quiet", "--release" ] )
+    .stdin( std::process::Stdio::piped() )
+    .current_dir( env!( "CARGO_MANIFEST_DIR" ) )
+    .stdout( std::process::Stdio::piped() )
+    .stderr( std::process::Stdio::piped() )
+    .spawn()
+    .expect( "Failed to spawn genfile process" );
+
+  child.stdin
+    .as_ref()
+    .unwrap()
+    .write_all(
+      b".archive.new name::state-test\n\
+        .file.add path::x.txt content::hello\n\
+        .file.list\n\
+        exit\n"
+    )
+    .expect( "Failed to write to stdin" );
+
+  let result = child.wait_with_output().expect( "Failed to wait for process" );
+
+  let stdout = String::from_utf8_lossy( &result.stdout );
+  assert!(
+    result.status.success(),
+    "REPL state persistence test should succeed. stdout: {stdout}, stderr: {}",
+    String::from_utf8_lossy( &result.stderr )
+  );
+  assert!(
+    stdout.contains( "x.txt" ),
+    "file.list should show file added earlier in same session. stdout: {stdout}"
+  );
+}

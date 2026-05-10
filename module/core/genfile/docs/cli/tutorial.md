@@ -103,14 +103,14 @@ genfile .archive.load path::"./my_first.genfile" verbosity::2
 
 ```bash
 # Create archive with dry run enabled
-genfile .archive.new name::"test_archive" dry_run::true verbosity::2
+genfile .archive.new name::"test_archive" dry::true verbosity::2
 
 # Expected output:
 # [DRY RUN] Would create archive: test_archive
 # [DRY RUN] No changes made
 
 # Try saving (nothing written)
-genfile .archive.save path::"./test.genfile" dry_run::true verbosity::2
+genfile .archive.save path::"./test.genfile" dry::true verbosity::2
 
 # Expected output:
 # [DRY RUN] Would save to: ./test.genfile
@@ -118,11 +118,11 @@ genfile .archive.save path::"./test.genfile" dry_run::true verbosity::2
 ```
 
 **What happened?**
-- `dry_run::true` simulates operations
+- `dry::true` simulates operations
 - Nothing written to disk or memory
 - Perfect for testing commands
 
-**Pro Tip:** Always use `dry_run::true` when testing complex operations.
+**Pro Tip:** Always use `dry::true` when testing complex operations.
 
 ### Lesson 1 Review
 
@@ -130,7 +130,7 @@ genfile .archive.save path::"./test.genfile" dry_run::true verbosity::2
 - ✓ Create archives with `.archive.new`
 - ✓ Save archives with `.archive.save`
 - ✓ Load archives with `.archive.load`
-- ✓ Test safely with `dry_run::true`
+- ✓ Test safely with `dry::true`
 
 **Next:** Lesson 2 adds files to your archives.
 
@@ -310,7 +310,7 @@ Every `{placeholder}` in your templates should have a corresponding parameter de
 - Optional flag (required vs optional)
 
 **Parameter Operations:**
-- `.parameter.define` - Create parameter definition
+- `.parameter.add` - Create parameter definition
 - `.parameter.list` - Show all parameters
 - `.value.set` - Assign value to parameter
 - `.value.list` - Show current values
@@ -324,7 +324,7 @@ Every `{placeholder}` in your templates should have a corresponding parameter de
 genfile .archive.load path::"./project_template.genfile" verbosity::1
 
 # Define project_name parameter (required)
-genfile .parameter.define \
+genfile .parameter.add \
   name::"project_name" \
   description::"Name of the project" \
   optional::false \
@@ -337,7 +337,7 @@ genfile .parameter.define \
 # Default: None
 
 # Define description parameter with default
-genfile .parameter.define \
+genfile .parameter.add \
   name::"description" \
   description::"Project description text" \
   optional::true \
@@ -427,8 +427,8 @@ genfile .value.list verbosity::2
 ```bash
 # Preview materialization (dry run)
 genfile .materialize \
-  output_dir::"./output" \
-  dry_run::true \
+  destination::"./output" \
+  dry::true \
   verbosity::3
 
 # Expected output:
@@ -469,10 +469,10 @@ genfile .materialize \
 ### Lesson 3 Review
 
 **What you learned:**
-- ✓ Define parameters with `.parameter.define`
+- ✓ Define parameters with `.parameter.add`
 - ✓ Set required vs optional parameters
 - ✓ Assign values with `.value.set`
-- ✓ Preview materialization with `dry_run::true`
+- ✓ Preview materialization with `dry::true`
 
 **Next:** Lesson 4 covers real-world workflows.
 
@@ -531,20 +531,20 @@ genfile .file.add \
   verbosity::1
 
 # Step 5: Define parameters
-genfile .parameter.define \
+genfile .parameter.add \
   name::"crate_name" \
   description::"Rust crate name" \
   optional::false \
   verbosity::1
 
-genfile .parameter.define \
+genfile .parameter.add \
   name::"version" \
   description::"Initial version" \
   optional::true \
   default::"0.1.0" \
   verbosity::1
 
-genfile .parameter.define \
+genfile .parameter.add \
   name::"description" \
   description::"Crate description" \
   optional::true \
@@ -586,14 +586,14 @@ genfile .value.set name::"description" value::"A friendly greeting app" verbosit
 
 # Step 3: Preview (optional but recommended)
 genfile .materialize \
-  output_dir::"./hello_world" \
-  dry_run::true \
+  destination::"./hello_world" \
+  dry::true \
   verbosity::2
 
 # Step 4: Actually create files
 genfile .materialize \
-  output_dir::"./hello_world" \
-  dry_run::false \
+  destination::"./hello_world" \
+  dry::false \
   verbosity::3
 
 # Expected output:
@@ -690,13 +690,13 @@ genfile .archive.save \
 # One-liner: Create archive, add files, save
 genfile .archive.new name::"quick_template" verbosity::0 && \
   genfile .file.add path::"file.txt" content::"Hello {name}!" verbosity::0 && \
-  genfile .parameter.define name::"name" optional::false verbosity::0 && \
+  genfile .parameter.add name::"name" mandatory::true verbosity::0 && \
   genfile .archive.save path::"./quick.genfile" verbosity::1
 
 # One-liner: Load, set values, materialize
 genfile .archive.load path::"./quick.genfile" verbosity::0 && \
   genfile .value.set name::"name" value::"World" verbosity::0 && \
-  genfile .materialize output_dir::"./output" verbosity::2
+  genfile .materialize destination::"./output" verbosity::2
 
 # Expected output:
 # ✓ Created: ./output/file.txt
@@ -724,9 +724,9 @@ genfile .archive.load path::"./quick.genfile" verbosity::0 && \
 
 ### Additional Resources
 
-1. **[Commands Reference](commands.md)** - Complete command documentation
-2. **[Parameters Reference](params.md)** - All parameter specifications
-3. **[Type System](types.md)** - For implementers and advanced users
+1. **[Commands Reference](command/readme.md)** - Complete command documentation
+2. **[Parameters Reference](param.md)** - All parameter specifications
+3. **[Type System](type.md)** - For implementers and advanced users
 4. **[Dictionary](dictionary.md)** - Domain terminology
 
 ### Common Patterns
@@ -760,7 +760,7 @@ genfile .archive.load path::"./templates/api_v1.1.0.genfile"
 for project in app1 app2 app3; do
   genfile .archive.load path::"./template.genfile" verbosity::0
   genfile .value.set name::"project_name" value::"$project" verbosity::0
-  genfile .materialize output_dir::"./$project" verbosity::1
+  genfile .materialize destination::"./$project" verbosity::1
 done
 ```
 
@@ -792,9 +792,9 @@ Practice loading, modifying, and resaving archives:
 
 ### Getting Help
 
-**Documentation:** All commands documented in [commands.md](commands.md)
+**Documentation:** All commands documented in [command/readme.md](command/readme.md)
 
-**Examples:** See [commands/operations.md](commands/operations.md) for `.materialize` workflows
+**Examples:** See [command/operations.md](command/operations.md) for `.materialize` workflows
 
 **Issues:** Common problems and solutions in [maintenance.md](maintenance.md)
 

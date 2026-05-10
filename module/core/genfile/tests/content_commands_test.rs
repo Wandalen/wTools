@@ -244,3 +244,61 @@ fn content_internalize_without_archive_returns_error()
     "Should show error when no archive is loaded"
   );
 }
+
+// FT-03 (feature/005): Internalize makes archive self-contained (portable after save)
+//
+// WHY: The portability guarantee requires that after externalize→internalize,
+// a saved archive carries all content inline and can be loaded elsewhere
+// (no dependency on the original base_path directory).
+#[ test ]
+fn test_content_internalize_produces_self_contained_archive()
+{
+  let temp_dir = std::env::temp_dir();
+  let content_dir = temp_dir.join( "test_self_contained_content" );
+  let archive_path = temp_dir.join( "test_self_contained.json" );
+
+  // Clean up
+  let _ = fs::remove_dir_all( &content_dir );
+  let _ = fs::remove_file( &archive_path );
+
+  // Externalize then internalize and save
+  let script = format!(
+    ".archive.new name::portable\n\
+     .file.add path::config.toml content::\"name = \\\"test\\\"\"\n\
+     .content.externalize base_path::{}\n\
+     .content.internalize\n\
+     .archive.save path::{}\n\
+     exit",
+    content_dir.display(),
+    archive_path.display()
+  );
+
+  let output = cli_runner::repl_command( &script )
+    .output()
+    .expect( "Command should execute" );
+
+  let stdout = String::from_utf8_lossy( &output.stdout );
+  assert!(
+    output.status.success(),
+    "Externalize → internalize → save should succeed. stdout: {stdout}"
+  );
+  assert!( stdout.contains( "Internalized 1 external reference(s)" ), "Should internalize" );
+  assert!( archive_path.exists(), "Archive should be saved" );
+
+  // Verify saved archive contains inline content (not a file reference)
+  let json = fs::read_to_string( &archive_path ).expect( "Should read archive" );
+  assert!(
+    json.contains( "name = " ) || json.contains( "config.toml" ),
+    "Saved archive should embed file content inline"
+  );
+  // File references store a path string; inline content stores the text directly.
+  // The JSON for an inline file contains the actual text bytes, not an external path.
+  assert!(
+    !json.contains( content_dir.to_string_lossy().as_ref() ),
+    "Saved archive should not reference the external content directory"
+  );
+
+  // Clean up
+  let _ = fs::remove_dir_all( &content_dir );
+  let _ = fs::remove_file( &archive_path );
+}

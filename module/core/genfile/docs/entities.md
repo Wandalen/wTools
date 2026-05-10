@@ -4,8 +4,15 @@
 
 | Type | Purpose | Master File | Instances |
 |------|---------|-------------|----------:|
+| `cli/` | CLI command, parameter, and type reference | [cli/readme.md](cli/readme.md) | 10 |
+| `cli/command/` | Namespace-organized command specifications | [cli/command/readme.md](cli/command/readme.md) | 6 |
 | `feature/` | Functional requirements and capabilities | [feature/readme.md](feature/readme.md) | 10 |
 | `invariant/` | Non-functional constraints with measurable thresholds | [invariant/readme.md](invariant/readme.md) | 6 |
+| `tests/docs/cli/command/` | Test surface specs for CLI command docs | [tests/docs/cli/command/readme.md](../tests/docs/cli/command/readme.md) | 0 |
+| `tests/docs/cli/param/` | Test surface specs for CLI parameter docs | [tests/docs/cli/param/readme.md](../tests/docs/cli/param/readme.md) | 0 |
+| `tests/docs/cli/param_group/` | Test surface specs for CLI parameter group docs | [tests/docs/cli/param_group/readme.md](../tests/docs/cli/param_group/readme.md) | 0 |
+| `tests/docs/feature/` | Test surface specs for feature doc instances | [tests/docs/feature/readme.md](../tests/docs/feature/readme.md) | 10 |
+| `tests/docs/invariant/` | Test surface specs for invariant doc instances | [tests/docs/invariant/readme.md](../tests/docs/invariant/readme.md) | 6 |
 
 ## Master Doc Instances Table
 
