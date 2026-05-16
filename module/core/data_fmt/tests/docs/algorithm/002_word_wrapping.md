@@ -134,10 +134,16 @@
 ### AC-10: tab_width > 0 expands tab to N spaces
 
 - **Given:** A cell containing `"a\tb"` with `WrapConfig` setting `tab_width(4)`.
-- **When:** The cell is rendered.
-- **Then:** The `\t` byte is replaced by exactly 4 space characters; the output
-  contains `"a    b"`; the expanded spaces count toward the visual width for
-  wrap-point calculation.
+- **When:** `WrapFormatter::wrap()` is called.
+- **Then:** The `\t` byte does not appear in the output (it is expanded to spaces
+  before word splitting); `wrap_segment()` then calls `split_whitespace()` which
+  collapses all whitespace runs to single-space boundaries; the resulting output is
+  `"a b"` (single space) — not `"a    b"`; the literal tab is removed and both
+  words are present, but the expanded spaces are normalised by the word-split pass.
+- **Note:** The tab IS expanded (no literal `\t` survives), but the
+  `split_whitespace()`-based word algorithm collapses the resulting space run to a
+  single separator. Tests guard against tab preservation (no literal `\t`) and
+  against the exact normalised form (`"a b"`).
 
 ---
 

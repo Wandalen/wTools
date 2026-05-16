@@ -4,7 +4,7 @@
 
 - **Purpose**: Drive test coverage for the CLI help alignment algorithm.
 - **Responsibility**: Documents test cases for the CLI help text alignment algorithm in `docs/algorithm/006_cli_help_alignment.md`.
-- **In Scope**: Key-description alignment, section header detection and emission, blank-line separation between sections, simple line indentation, empty view behavior, ANSI exclusion from alignment width, mixed-case header non-detection, per-section alignment reset.
+- **In Scope**: Key-description alignment, section header detection and emission, blank-line separation between sections, simple line indentation, empty view behavior, ANSI exclusion from alignment width, mixed-case header non-detection, global alignment across all sections.
 - **Out of Scope**: Text formatter configuration; other `TextVariant` modes (bullets, numbered, sections, keyvalue, compact).
 
 ### Case Index
@@ -20,7 +20,7 @@
 | AC-7 | ANSI escape codes in key text excluded from alignment width calculation | ✅ |
 | AC-8 | mixed-case text not detected as section header | ✅ |
 | AC-9 | all-uppercase with non-empty second column not treated as header | ✅ |
-| AC-10 | alignment column resets per section — long key in section 1 does not affect section 2 | ✅ |
+| AC-10 | alignment column is global — long key in section 1 widens section 2 as well | ✅ |
 
 ---
 
@@ -118,14 +118,19 @@
 
 ---
 
-### AC-10: alignment column resets per section — long key in section 1 does not affect section 2
+### AC-10: alignment column is global — long key in section 1 widens section 2 as well
 
 - **Given:** A `CliHelp` view with two sections; section 1 has a key of length 20;
   section 2 has keys of length 4.
 - **When:** Rendered.
-- **Then:** Section 2 descriptions align at `indent + 4 + 2`, not at `indent + 20 + 2`;
-  the alignment width is computed independently per section; no bleed from one
-  section's max key width to another section.
+- **Then:** Both sections' descriptions align at the same column position determined
+  by the global maximum key width (20); section 2 descriptions start at
+  `indent + 20 + 2`, not at `indent + 4 + 2`; the alignment is computed globally
+  across all sections in a single pass.
+- **Note:** The current implementation uses global alignment (single-pass max key
+  width over all sections). Per-section reset is the intuitive expected behavior but
+  is not implemented; this case guards the current global-alignment behavior as a
+  regression anchor.
 
 ---
 

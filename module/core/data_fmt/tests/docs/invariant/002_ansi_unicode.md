@@ -17,7 +17,7 @@
 | IN-4 | every colored output line ends with ANSI reset before newline | ✅ |
 | IN-5 | multiline cells receive per-sub-line color wrapping | ✅ |
 | IN-6 | DecoratedText detail lines iterate raw text, not rendered output | ✅ |
-| IN-7 | CJK characters in cells cause visual overflow beyond allocated column width | ✅ |
+| IN-7 | CJK characters allocated correct column width via East Asian Width | ✅ |
 | IN-8 | ANSI codes combined with CJK characters — width measurement excludes both | ✅ |
 
 ---
@@ -43,10 +43,10 @@
   `unicode_width::UnicodeWidthStr::width`) so the CJK cell is padded to the
   correct terminal-column width; the column separator does not shift leftward
   relative to ASCII rows; no misalignment in the padding characters themselves.
-- **Note (known limitation):** Column width *measurement* uses `visual_len` (char
-  count, not East Asian Width) — CJK cells wider than their char count may overflow
-  allocated column space even with correct padding. `pad_to_width` correctness
-  does not compensate for the measurement gap. Root fix: Fix(issue-003) in
+- **Note:** Column width allocation uses `unicode_visual_len` (East Asian Width)
+  via `calculate_column_widths_for_rows()`, so `pad_to_width` and column allocation
+  are both EAW-aware. The `visual_len` function (char count) is used in a separate
+  path (`truncate_cell`) — that is the known limitation tracked as issue-003 in
   `src/ansi_str.rs`.
 
 ---
