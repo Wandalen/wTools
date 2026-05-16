@@ -7,14 +7,23 @@
 - **In Scope**: Header row guarantee, data format bypass, fold determinism given identical input and config.
 - **Out of Scope**: Budget allocation algorithm (see `algorithm/004_budget_allocation.md`), fold rendering details (see `algorithm/005_column_fold_detection.md`).
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/table/mod.rs` | `determine_fold_point`, `should_auto_fold`, header rendering guard |
-| test | `tests/auto_fold_test.rs` | T08, T09, T19 |
-| doc | `../feature/005_auto_fit.md` | Auto-fit Strategy 1 description |
-| task | `../../task/completed/020_column_folding_with_auto_fold.md` | Implementation task (completed) |
+| File | Relationship |
+|------|-------------|
+| [005_auto_fit.md](../feature/005_auto_fit.md) | Auto-fit Strategy 1 description |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/formatters/table/mod.rs`](../../src/formatters/table/mod.rs) | `determine_fold_point`, `should_auto_fold`, header rendering guard |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/auto_fold_test.rs`](../../tests/auto_fold_test.rs) | T08, T09, T19 |
 
 ### Invariant Statement
 

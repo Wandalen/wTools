@@ -7,14 +7,29 @@
 - **In Scope**: Trait implementation, serde dependency, feature flag.
 - **Out of Scope**: Variant output details (see `../variant/019_toml_standard.md`), operation signatures (see `../api/004_formatters.md`).
 
-### Cross-References
+### Traits
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/toml_fmt.rs` | `TomlFormatter` implementation |
-| doc | `../api/004_formatters.md` | Operation signatures |
-| doc | `../trait/001_format.md` | `Format` trait contract |
-| doc | `../variant/019_toml_standard.md` | Variant: standard |
+| File | Relationship |
+|------|-------------|
+| [001_format.md](../trait/001_format.md) | `Format` trait contract |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [004_formatters.md](../api/004_formatters.md) | Operation signatures |
+
+### Variants
+
+| File | Relationship |
+|------|-------------|
+| [019_toml_standard.md](../variant/019_toml_standard.md) | Variant: standard |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/formatters/toml_fmt.rs`](../../src/formatters/toml_fmt.rs) | `TomlFormatter` implementation |
 
 ### Trait
 

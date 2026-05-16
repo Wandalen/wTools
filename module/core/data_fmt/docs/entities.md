@@ -16,6 +16,9 @@
 | `pattern/` | Registry and overview of all pattern doc instances | [pattern/readme.md](pattern/readme.md) | 4 |
 | `trait/` | Registry and overview of all trait doc instances | [trait/readme.md](trait/readme.md) | 3 |
 | `variant/` | Registry and overview of all variant doc instances | [variant/readme.md](variant/readme.md) | 33 |
+| `tests/docs/algorithm/` | Test spec coverage for algorithm doc instances | [tests/docs/algorithm/readme.md](../tests/docs/algorithm/readme.md) | 6 |
+| `tests/docs/invariant/` | Test spec coverage for invariant doc instances | [tests/docs/invariant/readme.md](../tests/docs/invariant/readme.md) | 4 |
+| `tests/docs/feature/` | Test spec coverage for feature doc instances | [tests/docs/feature/readme.md](../tests/docs/feature/readme.md) | 6 |
 
 ## Master Doc Instances Table
 
@@ -98,3 +101,19 @@
 | variant | 031 | Text KeyValue | [variant/031_text_keyvalue.md](variant/031_text_keyvalue.md) |
 | variant | 032 | Text Compact | [variant/032_text_compact.md](variant/032_text_compact.md) |
 | variant | 033 | Text CliHelp | [variant/033_text_cli_help.md](variant/033_text_cli_help.md) |
+| tests/docs/algorithm | 001 | Multiline Cell Rendering | [tests/docs/algorithm/001_multiline_cell_rendering.md](../tests/docs/algorithm/001_multiline_cell_rendering.md) |
+| tests/docs/algorithm | 002 | Word Wrapping | [tests/docs/algorithm/002_word_wrapping.md](../tests/docs/algorithm/002_word_wrapping.md) |
+| tests/docs/algorithm | 003 | Tree Column Alignment | [tests/docs/algorithm/003_tree_column_alignment.md](../tests/docs/algorithm/003_tree_column_alignment.md) |
+| tests/docs/algorithm | 004 | Budget Allocation | [tests/docs/algorithm/004_budget_allocation.md](../tests/docs/algorithm/004_budget_allocation.md) |
+| tests/docs/algorithm | 005 | Column Fold Detection | [tests/docs/algorithm/005_column_fold_detection.md](../tests/docs/algorithm/005_column_fold_detection.md) |
+| tests/docs/algorithm | 006 | CLI Help Alignment | [tests/docs/algorithm/006_cli_help_alignment.md](../tests/docs/algorithm/006_cli_help_alignment.md) |
+| tests/docs/invariant | 001 | Data Model | [tests/docs/invariant/001_data_model.md](../tests/docs/invariant/001_data_model.md) |
+| tests/docs/invariant | 002 | ANSI and Unicode | [tests/docs/invariant/002_ansi_unicode.md](../tests/docs/invariant/002_ansi_unicode.md) |
+| tests/docs/invariant | 003 | Auto-Wrap Backward Compatibility | [tests/docs/invariant/003_auto_wrap_backward_compat.md](../tests/docs/invariant/003_auto_wrap_backward_compat.md) |
+| tests/docs/invariant | 004 | Column Fold Invariants | [tests/docs/invariant/004_column_fold_invariants.md](../tests/docs/invariant/004_column_fold_invariants.md) |
+| tests/docs/feature | 001 | Table Formatting | [tests/docs/feature/001_table_formatting.md](../tests/docs/feature/001_table_formatting.md) |
+| tests/docs/feature | 002 | Word Wrap | [tests/docs/feature/002_word_wrap.md](../tests/docs/feature/002_word_wrap.md) |
+| tests/docs/feature | 003 | Unified Format Interface | [tests/docs/feature/003_unified_format_interface.md](../tests/docs/feature/003_unified_format_interface.md) |
+| tests/docs/feature | 004 | Color Themes | [tests/docs/feature/004_color_themes.md](../tests/docs/feature/004_color_themes.md) |
+| tests/docs/feature | 005 | Auto-Fit | [tests/docs/feature/005_auto_fit.md](../tests/docs/feature/005_auto_fit.md) |
+| tests/docs/feature | 006 | API Cleanup v0.3.0 | [tests/docs/feature/006_api_cleanup_v030.md](../tests/docs/feature/006_api_cleanup_v030.md) |

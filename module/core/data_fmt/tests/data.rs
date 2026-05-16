@@ -277,3 +277,119 @@ fn single_row_table_renders_without_error()
     "single-row table must have exactly 3 non-empty lines (header+sep+data): {output:?}",
   );
 }
+
+/// IN-5 — `invariant/001`: `row_details` vector length always equals `rows` vector length.
+///
+/// `RowBuilder` maintains two parallel vectors: `rows` and `row_details`. Every call
+/// to `add_row_mut` or `add_row_with_detail_mut` pushes to both simultaneously via
+/// `add_row_internal`, guaranteeing `row_details.len() == rows.len()` at all times.
+/// Rows without an explicit detail store `None`; rows with a detail store `Some`.
+#[ test ]
+fn row_details_length_equals_rows_length_in5()
+{
+  let mut builder = RowBuilder::new( vec![ "Name".into(), "Score".into() ] );
+  // Row 0: no detail → None in row_details
+  builder.add_row_mut( vec![ "Alice".into(), "90".into() ] );
+  // Row 1: with detail → Some in row_details
+  builder.add_row_with_detail_mut( vec![ "Bob".into(), "85".into() ], Some( "needs review".into() ) );
+  // Row 2: no detail → None in row_details
+  builder.add_row_mut( vec![ "Carol".into(), "95".into() ] );
+  let view = builder.build_view();
+
+  assert_eq!(
+    view.row_details.len(), view.rows.len(),
+    "row_details and rows must be the same length; parallel vectors must stay in sync",
+  );
+  assert_eq!( view.rows.len(), 3, "builder must have 3 rows" );
+  assert!( view.row_details[ 0 ].is_none(), "row 0 added without detail must have None" );
+  assert!( view.row_details[ 1 ].is_some(), "row 1 added with detail must have Some" );
+  assert!( view.row_details[ 2 ].is_none(), "row 2 added without detail must have None" );
+}
+
+/// IN-6 — `invariant/001`: `TableShapedView` extracts headers and rows from a display-capable tree.
+///
+/// `TreeNode<T: Display>` implements `TableShapedView`. The tree has a root whose direct
+/// children are rows; each row's children are column cells (name = column header, data = cell
+/// value). `extract_headers()` reads column names from the first row; `to_rows()` maps each
+/// row's cell data to strings. Extracted headers and rows must exactly match the source tree,
+/// with no missing or duplicated rows. The rendered table must be structurally valid.
+#[ test ]
+fn table_shaped_view_extracts_headers_and_rows_in6()
+{
+  use data_fmt::TableShapedView;
+
+  let mut root = TreeNode::new( "root".to_string(), None::< String > );
+
+  let mut row1 = TreeNode::new( "1".to_string(), None );
+  row1.children.push( TreeNode::new( "Name".to_string(), Some( "Alice".to_string() ) ) );
+  row1.children.push( TreeNode::new( "Score".to_string(), Some( "90".to_string() ) ) );
+
+  let mut row2 = TreeNode::new( "2".to_string(), None );
+  row2.children.push( TreeNode::new( "Name".to_string(), Some( "Bob".to_string() ) ) );
+  row2.children.push( TreeNode::new( "Score".to_string(), Some( "85".to_string() ) ) );
+
+  root.children.push( row1 );
+  root.children.push( row2 );
+
+  assert!( root.is_table_shaped(), "tree must be recognized as table-shaped" );
+
+  let headers = root.extract_headers().expect( "table-shaped tree must produce headers" );
+  assert_eq!( headers, vec![ "Name", "Score" ], "extracted headers must match column names" );
+
+  let extracted = root.to_rows();
+  assert_eq!( extracted.len(), 2, "must extract exactly 2 rows — no missing or duplicate rows" );
+  assert_eq!( extracted[ 0 ], vec![ "Alice", "90" ], "first row data must match source" );
+  assert_eq!( extracted[ 1 ], vec![ "Bob", "85" ], "second row data must match source" );
+
+  // Render via RowBuilder to verify structural validity (column count consistent across all rows)
+  let mut builder = RowBuilder::new( headers );
+  for row in &extracted
+  {
+    builder.add_row_mut( row.iter().map( | s | s.as_str().into() ).collect() );
+  }
+  let view = builder.build_view();
+  let output = TableFormatter::new().format( &view ).unwrap_or_default();
+  assert!( output.contains( "Name" ), "output must contain header column Name: {output:?}" );
+  assert!( output.contains( "Alice" ), "output must contain cell value Alice: {output:?}" );
+  assert!( output.contains( "Bob" ), "output must contain cell value Bob: {output:?}" );
+}
+
+/// IN-7 — `invariant/001`: empty tree formatted without tree-structure artifacts.
+///
+/// A `TreeNode` with no children passed to `TreeFormatter::format()` or
+/// `TreeFormatter::format_aligned()` produces minimal output — either an empty
+/// string or just the root name on a single line. No tree-structure connector
+/// characters (`├──`, `└──`, `│`) are emitted; no column separator artifacts
+/// appear; no panic occurs.
+// test_kind: standard
+#[ test ]
+fn empty_tree_formatted_returns_minimal_output_in7()
+{
+  use data_fmt::{ TreeFormatter, ColumnData };
+
+  let formatter = TreeFormatter::new();
+
+  // format() with no children and no data
+  let root : TreeNode< u64 > = TreeNode::new( "root".to_string(), None );
+  let output = formatter.format( &root, u64::to_string );
+  // Must not emit tree-structure connector characters
+  assert!( !output.contains( "├" ), "empty tree must not emit branch connectors: {output:?}" );
+  assert!( !output.contains( "└" ), "empty tree must not emit end connectors: {output:?}" );
+  assert!( !output.contains( "│" ), "empty tree must not emit continuation bars: {output:?}" );
+  // Output is minimal — at most one line (root name) with no column-padding artifacts
+  assert!(
+    output.lines().count() <= 1,
+    "empty tree must produce at most one output line, got: {output:?}",
+  );
+
+  // format_aligned() with no children and no data
+  let root_aligned : TreeNode< ColumnData > = TreeNode::new( "root".to_string(), None );
+  let output_aligned = formatter.format_aligned( &root_aligned );
+  assert!( !output_aligned.contains( "├" ), "empty aligned tree must not emit branch connectors: {output_aligned:?}" );
+  assert!( !output_aligned.contains( "└" ), "empty aligned tree must not emit end connectors: {output_aligned:?}" );
+  assert!( !output_aligned.contains( "│" ), "empty aligned tree must not emit continuation bars: {output_aligned:?}" );
+  assert!(
+    output_aligned.lines().count() <= 1,
+    "empty aligned tree must produce at most one output line, got: {output_aligned:?}",
+  );
+}

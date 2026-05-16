@@ -1,15 +1,19 @@
-# Algorithm Test Specs
+# Algorithm Test Spec Doc Entity
 
-One spec file per algorithm element from `docs/algorithm/`. Each spec contains
-at least 4 AC-N test cases in Given/When/Then format.
+### Scope
 
-## Overview Table
+- **Purpose**: Provide test coverage specifications for all algorithm doc instances.
+- **Responsibility**: Registry and overview of all algorithm test spec instances.
+- **In Scope**: AC-N correctness test cases in Given/When/Then format for all 6 algorithm elements; minimum 4 cases per spec; edge cases and error paths documented in source algorithm docs.
+- **Out of Scope**: Algorithm performance and benchmarks (see `benches/`), manual test procedures (see `tests/manual/`).
 
-| Name | Purpose | Status |
-|------|---------|--------|
-| `01_multiline_cell_rendering.md` | `algorithm` spec for multiline cell rendering | ✅ |
-| `02_word_wrapping.md` | `algorithm` spec for word wrapping | ✅ |
-| `03_tree_column_alignment.md` | `algorithm` spec for tree column alignment | ✅ |
-| `04_budget_allocation.md` | `algorithm` spec for budget allocation | ✅ |
-| `05_column_fold_detection.md` | `algorithm` spec for column fold detection | ✅ |
-| `06_cli_help_alignment.md` | `algorithm` spec for CLI help text alignment | ✅ |
+### Overview Table
+
+| ID | Name | Purpose | Status |
+|----|------|---------|--------|
+| 001 | [Multiline Cell Rendering](001_multiline_cell_rendering.md) | Algorithm spec for multiline cell rendering | ⏳ |
+| 002 | [Word Wrapping](002_word_wrapping.md) | Algorithm spec for word wrapping | ⏳ |
+| 003 | [Tree Column Alignment](003_tree_column_alignment.md) | Algorithm spec for tree column alignment | ⏳ |
+| 004 | [Budget Allocation](004_budget_allocation.md) | Algorithm spec for budget allocation | ⏳ |
+| 005 | [Column Fold Detection](005_column_fold_detection.md) | Algorithm spec for column fold detection | ⏳ |
+| 006 | [CLI Help Alignment](006_cli_help_alignment.md) | Algorithm spec for CLI help text alignment | ⏳ |

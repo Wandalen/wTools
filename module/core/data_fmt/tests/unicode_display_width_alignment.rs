@@ -963,3 +963,187 @@ fn test_t015_n07_min_column_width_with_cjk_content()
     "min_column_width(5) + CJK content: column must be ≥ 5; header_line={header_line:?}; output:\n{output}"
   );
 }
+
+// =============================================================================
+// IN-4 through IN-8: ANSI and Unicode Invariant Tests
+// =============================================================================
+
+/// IN-4 — `invariant/002`: every colored output line ends with ANSI reset before newline.
+///
+/// A table row where a cell carries an ANSI color via `with_color` produces output lines
+/// that each contain the reset sequence `\x1b[0m`, preventing color bleed across lines.
+// test_kind: standard
+#[ test ]
+fn colored_output_line_ends_with_ansi_reset_in4()
+{
+  use data_fmt::DecoratedText;
+
+  let view = RowBuilder::new( vec![ "H".into() ] )
+    .add_row( vec![ DecoratedText::from( "green" ).with_color( "\x1b[32m" ) ] )
+    .build_view();
+
+  let output = TableFormatter::with_config( TableConfig::plain() ).format( &view ).unwrap_or_default();
+
+  assert!(
+    output.contains( "\x1b[32m" ),
+    "colored cell must appear in output:\n{output:?}",
+  );
+  for line in output.lines()
+  {
+    if line.contains( '\x1b' )
+    {
+      assert!(
+        line.contains( "\x1b[0m" ),
+        "every line with ANSI color must contain reset '\\x1b[0m':\n  line={line:?}\n  full output:\n{output:?}",
+      );
+    }
+  }
+}
+
+/// IN-5 — `invariant/002`: multiline cells receive per-sub-line color wrapping.
+///
+/// A cell with raw ANSI on sub-line 0 and plain text on sub-line 1. Sub-line 0 preserves
+/// original ANSI sequences; sub-line 1 contains only its plain text — no injected codes;
+/// sequences from sub-line 0 do not copy across to sub-line 1.
+// test_kind: standard
+#[ test ]
+fn multiline_cell_per_sub_line_color_wrapping_in5()
+{
+  use data_fmt::DecoratedText;
+
+  // Raw ANSI on sub-line 0, plain text on sub-line 1 — no with_color() called
+  let cell_text = "\x1b[31mred-line1\x1b[0m\nline2";
+  let view = RowBuilder::new( vec![ "H".into() ] )
+    .add_row( vec![ DecoratedText::from( cell_text ) ] )
+    .build_view();
+
+  let output = TableFormatter::with_config( TableConfig::plain() ).format( &view ).unwrap_or_default();
+
+  // Sub-line 0: original ANSI codes must appear on its line
+  let sub0 = output.lines().find( | l | l.contains( "red-line1" ) )
+    .expect( "sub-line 0 with 'red-line1' must appear in output" );
+  assert!(
+    sub0.contains( "\x1b[31m" ),
+    "sub-line 0 must contain original color code:\n  line={sub0:?}\n  output:\n{output:?}",
+  );
+
+  // Sub-line 1: must not carry color codes injected from sub-line 0
+  let sub1 = output.lines().find( | l | l.contains( "line2" ) )
+    .expect( "sub-line 1 with 'line2' must appear in output" );
+  assert!(
+    !sub1.contains( "\x1b[31m" ),
+    "sub-line 1 must not receive color code from sub-line 0:\n  line={sub1:?}\n  output:\n{output:?}",
+  );
+}
+
+/// IN-6 — `invariant/002`: `DecoratedText` detail lines iterate raw text, not rendered output.
+///
+/// A row detail whose text contains `\n`-separated segments with embedded ANSI codes and no
+/// color override. Each segment is emitted verbatim — no double-wrapping, no additional
+/// rendering pass applied by the formatter.
+// test_kind: standard
+#[ test ]
+fn detail_lines_iterate_raw_text_not_rendered_in6()
+{
+  use data_fmt::DecoratedText;
+
+  // Detail has raw ANSI in text, no with_color() override → segments emitted as-is
+  let detail = DecoratedText::from( "\x1b[33myellow-seg\x1b[0m\nplain-seg" );
+  let view = RowBuilder::new( vec![ "H".into() ] )
+    .add_row_with_detail( vec![ "data".into() ], Some( detail ) )
+    .build_view();
+
+  let output = TableFormatter::with_config( TableConfig::plain() ).format( &view ).unwrap_or_default();
+
+  // First segment: raw ANSI codes preserved verbatim (not double-wrapped)
+  assert!(
+    output.contains( "\x1b[33myellow-seg\x1b[0m" ),
+    "raw ANSI code in first detail segment must appear verbatim:\n{output:?}",
+  );
+
+  // Second segment: no injected color from the formatter
+  let plain_line = output.lines().find( | l | l.contains( "plain-seg" ) )
+    .expect( "second detail segment must appear in output" );
+  assert!(
+    !plain_line.contains( "\x1b[33m" ),
+    "plain detail segment must not receive injected color:\n  line={plain_line:?}\n  output:\n{output:?}",
+  );
+}
+
+/// IN-7 — `invariant/002`: CJK column width uses East Asian Width (display width, not char count).
+///
+/// `"中文"` has char count 2 but display width 4. The formatter correctly measures column
+/// width via `unicode_visual_len` (East Asian Width), so the column is allocated 4 display
+/// columns — matching the CJK cell's visual footprint. Both the CJK line and the ASCII
+/// sibling "ab" (padded to 4) have the same display width (4). This is a regression guard
+/// verifying that East Asian Width remains the measurement basis for column allocation.
+///
+/// Note: `visual_len` (char count) is used by `truncate_cell` — that separate path is the
+/// known limitation for issue-003. Column width allocation correctly uses display width.
+// test_kind: standard
+#[ test ]
+fn cjk_column_width_uses_east_asian_width_in7()
+{
+  use unicode_width::UnicodeWidthStr;
+
+  // "中文" (char count 2, display width 4) and "ab" (char count 2, display width 2)
+  // Column width = max(display_width("H")=1, display_width("中文")=4, display_width("ab")=2) = 4
+  let view = RowBuilder::new( vec![ "H".into() ] )
+    .add_row( vec![ "中文".into() ] )
+    .add_row( vec![ "ab".into() ] )
+    .build_view();
+
+  let output = TableFormatter::with_config( TableConfig::plain() ).format( &view ).unwrap_or_default();
+
+  let cjk_line = output.lines().find( | l | l.contains( "中文" ) )
+    .expect( "CJK data row must appear in output" );
+  let ascii_line = output.lines().find( | l | l.contains( "ab" ) )
+    .expect( "ASCII data row must appear in output" );
+
+  // Column width = 4 (East Asian Width of "中文"). Both lines must have the same display width.
+  // CJK: "中文" (4 display) = column width 4 → no overflow
+  // ASCII: "ab  " (ab + 2 spaces = 4 display) = column width 4 → correct padding
+  let cjk_display = UnicodeWidthStr::width( cjk_line );
+  let ascii_display = UnicodeWidthStr::width( ascii_line );
+  assert_eq!(
+    cjk_display, ascii_display,
+    "CJK and ASCII rows must have equal display width (East Asian Width used for column allocation):\n  CJK line display={cjk_display}: {cjk_line:?}\n  ASCII line display={ascii_display}: {ascii_line:?}\n  output:\n{output:?}",
+  );
+  // Column width must reflect CJK display width (4), not char count (2)
+  assert!(
+    cjk_display >= 4,
+    "column must be at least 4 display cols (CJK display width); got {cjk_display}:\n{output:?}",
+  );
+}
+
+/// IN-8 — `invariant/002`: ANSI codes combined with CJK — width measured as char count.
+///
+/// `"\x1b[32m中文\x1b[0m"` is measured as width 2 by `visual_len`: ANSI bytes are
+/// stripped, then chars are counted (not display width). A plain "ab" cell is also 2.
+/// Both measurement deficiencies are additive: ANSI exclusion + EAW gap coexist.
+///
+/// Known limitation: measurement uses char count, not East Asian Width. Fix tracked as
+/// issue-003 in `src/ansi_str.rs`.
+// test_kind: standard
+#[ test ]
+fn ansi_plus_cjk_width_measured_as_char_count_in8()
+{
+  use data_fmt::visual_len;
+
+  let vl_plain = visual_len( "ab" );
+  let vl_ansi_cjk = visual_len( "\x1b[32m中文\x1b[0m" );
+
+  // Both measured as 2: ANSI bytes stripped, char count = 2 for both
+  assert_eq!(
+    vl_plain,
+    vl_ansi_cjk,
+    "visual_len of ANSI+CJK must equal visual_len of same-char-count ASCII:\n  visual_len('ab')={vl_plain}, visual_len('\\x1b[32m中文\\x1b[0m')={vl_ansi_cjk}",
+  );
+
+  // Measurement is char count (2), not byte count (~15) or display width (4)
+  assert_eq!(
+    vl_ansi_cjk,
+    2,
+    "ANSI+CJK visual_len must be char count (2), not byte count or display width:\n  got={vl_ansi_cjk}",
+  );
+}

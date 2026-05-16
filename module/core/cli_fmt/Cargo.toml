@@ -20,7 +20,7 @@ strs_tools = { workspace = true, features = [ "ansi", "string_split", "std" ], o
 
 [features]
 # No default features — all functionality is opt-in
-default = [ "enabled", "output", "ansi_unicode" ]
+default = [ "enabled", "output", "ansi_unicode", "cli_help_template" ]
 
 # Master switch - activates core dependencies
 enabled = [ "dep:strs_tools" ]
@@ -31,6 +31,7 @@ ansi_unicode = [ "strs_tools/ansi_unicode" ]
 
 # Individual modules
 output = [ "enabled", "std", "string_split" ]
+cli_help_template = [ "enabled" ]
 
 # Composite features - enables all functionality
-full = [ "enabled", "output", "ansi_unicode" ]
+full = [ "enabled", "output", "ansi_unicode", "cli_help_template" ]

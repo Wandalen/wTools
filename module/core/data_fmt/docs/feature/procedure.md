@@ -18,7 +18,7 @@
 7. Add a node to `docs/doc_graph.yml` under `nodes`:
    `- id: feature/NNN, file: feature/NNN_name.md, label: Name, entity: feature, status: planned`
 8. Update `node_count` in `doc_graph.yml` `meta`.
-9. Add edges for every doc listed in the new instance's `### Cross-References`; update `edge_count` in `meta`.
+9. Add edges for every file listed in the new instance's cross-reference sections; update `edge_count` in `meta`.
 10. Update or add the new node to the appropriate `components` entry; update `size`.
 
 ### Procedure: Deprecate Instance

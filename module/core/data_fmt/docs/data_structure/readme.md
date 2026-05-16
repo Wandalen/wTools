@@ -7,12 +7,6 @@
 - **In Scope**: Attribute schemas, field inventories, canonical structural type descriptions used by multiple components.
 - **Out of Scope**: Rust type signatures (see `api/`), behavioral contracts (see `invariant/`), individual variant specifications (see `variant/`).
 
-### Infrastructure
-
-| File | Responsibility |
-|------|----------------|
-| `procedure.md` | Operational procedure for creating and updating data structure doc instances |
-
 ### Overview Table
 
 | ID | Name | Purpose | Status |

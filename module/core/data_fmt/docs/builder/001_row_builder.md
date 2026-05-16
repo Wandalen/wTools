@@ -4,17 +4,32 @@
 
 - **Purpose**: Document RowBuilder construction helper API and usage patterns.
 - **Responsibility**: Describe how to build tabular data via fluent and mutable builder chains.
-- **In Scope**: Builder methods, dual output paths, usage examples, input model reference.
+- **In Scope**: Builder methods, usage examples, input model reference.
 - **Out of Scope**: Input type internals (see `../input_type/`), public API signatures (see `../api/`).
 
-### Cross-References
+### APIs
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/builder.rs` | RowBuilder implementation |
-| test | `tests/builder.rs` | Builder tests |
-| doc | `../api/002_builders.md` | Public API surface |
-| doc | `../input_type/001_table_view.md` | Output type documentation |
+| File | Relationship |
+|------|-------------|
+| [002_builders.md](../api/002_builders.md) | Public API surface |
+
+### InputTypes
+
+| File | Relationship |
+|------|-------------|
+| [001_table_view.md](../input_type/001_table_view.md) | Output type documentation |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/builder.rs`](../../src/builder.rs) | RowBuilder implementation |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/builder.rs`](../../tests/builder.rs) | Builder tests |
 
 ### Construction API
 
@@ -27,18 +42,11 @@
 | `add_row_with_name_mut( name, row )` | no | Same, mutable reference |
 | `add_row_with_detail( row, detail )` | yes | Append row with `DecoratedText` annotation |
 | `add_row_with_detail_mut( row, detail )` | no | Same, mutable reference |
-| `build_view()` | yes | `TableView` (modern path) |
-| `build()` | yes | table-encoded tree (legacy path) |
+| `build_view()` | yes | `TableView` |
 
-### Dual Output
+### Output
 
-The builder maintains both representations internally in parallel:
-
-```text
-RowBuilder
-├── rows (+ row_details)  → build_view() → TableView
-└── root tree             → build()      → tree structure
-```
+The builder accumulates rows and produces a `TableView` via `build_view()`, consumed by any `Format`-trait formatter.
 
 ### Input Model
 
@@ -46,7 +54,7 @@ Tabular — see `input_model/tabular.md`.
 
 ### Usage
 
-Construct a builder with `RowBuilder::new( headers )`, add rows via `add_row` or `add_row_mut`, then finalize. Call `build_view()` for the modern `Format`-trait path (8 formatters), or `build()` for the legacy `TableShapedFormatter` path (2 formatters).
+Construct a builder with `RowBuilder::new( headers )`, add rows via `add_row` or `add_row_mut`, then finalize with `build_view()`. Pass the resulting `TableView` to any `Format`-trait formatter (9 formatters).
 
 ### Invariants
 

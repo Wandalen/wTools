@@ -7,17 +7,32 @@
 - **In Scope**: Trait implementation, `SqlVariant` enum values, table name parameter, per-variant feature flags.
 - **Out of Scope**: Variant output details (see `../variant/024_sql_ansi.md` through `027_sql_sqlite.md`), operation signatures (see `../api/004_formatters.md`).
 
-### Cross-References
+### Traits
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/sql.rs` | `SqlFormatter` and `SqlVariant` implementation |
-| doc | `../api/004_formatters.md` | Operation signatures |
-| doc | `../trait/001_format.md` | `Format` trait contract |
-| doc | `../variant/024_sql_ansi.md` | Variant: ansi |
-| doc | `../variant/025_sql_postgresql.md` | Variant: postgresql |
-| doc | `../variant/026_sql_mysql.md` | Variant: mysql |
-| doc | `../variant/027_sql_sqlite.md` | Variant: sqlite |
+| File | Relationship |
+|------|-------------|
+| [001_format.md](../trait/001_format.md) | `Format` trait contract |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [004_formatters.md](../api/004_formatters.md) | Operation signatures |
+
+### Variants
+
+| File | Relationship |
+|------|-------------|
+| [024_sql_ansi.md](../variant/024_sql_ansi.md) | Variant: ansi |
+| [025_sql_postgresql.md](../variant/025_sql_postgresql.md) | Variant: postgresql |
+| [026_sql_mysql.md](../variant/026_sql_mysql.md) | Variant: mysql |
+| [027_sql_sqlite.md](../variant/027_sql_sqlite.md) | Variant: sqlite |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/formatters/sql.rs`](../../src/formatters/sql.rs) | `SqlFormatter` and `SqlVariant` implementation |
 
 ### Trait
 

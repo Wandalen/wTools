@@ -9,7 +9,7 @@
 
 1. Confirm the surface belongs here — verify it fits **In Scope** in `readme.md` (public type signatures, method contracts, configuration options). Behavioral guarantees go in `invariant/`; usage guides go in `feature/`.
 2. Assign the next unused NNN from the **Overview Table** in `readme.md`.
-3. Create `docs/api/NNN_name.md` with the following sections in order: `### Scope`, `### Cross-References`, and type-specific sections documenting struct fields, method signatures, and constructor APIs.
+3. Create `docs/api/NNN_name.md` with the following sections in order: `### Scope`, typed cross-reference H3 sections (see existing instances for applicable types), and type-specific sections documenting struct fields, method signatures, and constructor APIs.
 4. Add a row to the **Overview Table** in `readme.md`:
    `| NNN | [Name](NNN_name.md) | One-line purpose | 🔄 |`
 5. Add a row to `docs/entities.md` **Master Doc Instances Table**:
@@ -18,7 +18,7 @@
 7. Add a node to `docs/doc_graph.yml` under `nodes`:
    `- id: api/NNN, file: api/NNN_name.md, label: Name, entity: api, status: planned`
 8. Update `node_count` in `doc_graph.yml` `meta`.
-9. Add edges for every doc listed in the new instance's `### Cross-References`; update `edge_count` in `meta`.
+9. Add edges for every file listed in the new instance's cross-reference sections; update `edge_count` in `meta`.
 10. Update or add the new node to the appropriate `components` entry; update `size`.
 
 ### Procedure: Deprecate Instance

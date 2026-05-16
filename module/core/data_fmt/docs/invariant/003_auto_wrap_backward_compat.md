@@ -7,13 +7,23 @@
 - **In Scope**: `auto_wrap(false)` behavior guarantee, all 9 table presets, byte-level identity.
 - **Out of Scope**: Auto-fold backward compatibility (separate invariant), auto-wrap-enabled rendering behavior (see `feature/005_auto_fit.md`).
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/table/mod.rs` | `should_auto_wrap` guard, `format_internal` pipeline |
-| test | `tests/auto_wrap_test.rs` | T06 (`auto_wrap_false_is_byte_identical`) |
-| doc | `../feature/005_auto_fit.md` | Auto-fit feature: "when auto_wrap is false — no wrapping triggered" |
+| File | Relationship |
+|------|-------------|
+| [005_auto_fit.md](../feature/005_auto_fit.md) | Auto-fit feature: "when auto_wrap is false — no wrapping triggered" |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/formatters/table/mod.rs`](../../src/formatters/table/mod.rs) | `should_auto_wrap` guard, `format_internal` pipeline |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/auto_wrap_test.rs`](../../tests/auto_wrap_test.rs) | T06 (`auto_wrap_false_is_byte_identical`) |
 
 ### Invariant Statement
 

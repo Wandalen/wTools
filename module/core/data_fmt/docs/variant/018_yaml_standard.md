@@ -7,13 +7,23 @@
 - **In Scope**: All 46 variant attributes, example output, feature flag, compatibility.
 - **Out of Scope**: Formatter implementation (see source), attribute schema (see `../data_structure/001_variant_attributes.md`).
 
-### Cross-References
+### DataStructures
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/yaml.rs` | YamlFormatter implementation |
-| test | `tests/yaml.rs` | YAML output tests |
-| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
+| File | Relationship |
+|------|-------------|
+| [001_variant_attributes.md](../data_structure/001_variant_attributes.md) | Attribute definitions for all 46 variant attributes |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/formatters/yaml.rs`](../../src/formatters/yaml.rs) | YamlFormatter implementation |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/yaml.rs`](../../tests/yaml.rs) | YAML output tests |
 
 ### Identity & Classification
 

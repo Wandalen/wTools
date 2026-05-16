@@ -627,3 +627,139 @@ fn single_line_cells_unchanged()
   let data_lines : Vec< &str > = output_default.lines().skip( 2 ).collect();
   assert_eq!( data_lines.len(), 1, "single-line row must produce exactly 1 data line" );
 }
+
+/// AC-7 — `001_multiline_cell_rendering`: CSV format escapes newlines instead of rendering sub-lines.
+///
+/// `TableConfig::csv()` replaces embedded `\n` characters with the literal two-character
+/// sequence `\n` (backslash + n) before emitting the row. A data row with a multiline
+/// cell occupies exactly one physical output line; the `"first"` and `"second"` segments
+/// appear on the same line, not as separate sub-line rows.
+// test_kind: standard
+#[ test ]
+fn csv_tsv_newline_escape_ac7()
+{
+  let view = RowBuilder::new( vec![ "Col".into() ] )
+    .add_row( vec![ "first\nsecond".into() ] )
+    .build_view();
+  let output = TableFormatter::with_config( TableConfig::csv() )
+    .format( &view )
+    .expect( "CSV formatting must not fail" );
+
+  // If the cell were split, "first" would appear on a line without "second".
+  // Assert no such line exists — both segments must be co-located on one line.
+  assert!(
+    !output.lines().any( | l | l.contains( "first" ) && !l.contains( "second" ) ),
+    "CSV must not split multiline cell into sub-lines; 'first' and 'second' must be on the same line:\n{output:?}",
+  );
+  // Both segments must be present in the output (neither is lost in escaping)
+  assert!( output.contains( "first" ), "CSV output must contain 'first':\n{output:?}" );
+  assert!( output.contains( "second" ), "CSV output must contain 'second':\n{output:?}" );
+}
+
+/// AC-8 — `001_multiline_cell_rendering`: sub-row detail lines appear after all multiline sub-lines.
+///
+/// When a row contains a multiline cell (`"line1\nline2"`) and a sub-row detail annotation,
+/// the renderer emits all cell sub-lines consecutively first, then the detail annotation
+/// below. The detail is never interleaved between sub-lines.
+// test_kind: standard
+#[ test ]
+fn subrow_detail_after_multiline_sublines_ac8()
+{
+  let view = RowBuilder::new( vec![ "Content".into() ] )
+    .add_row_with_detail( vec![ "line1\nline2".into() ], Some( "detail annotation".into() ) )
+    .build_view();
+  let output = TableFormatter::new()
+    .format( &view )
+    .expect( "formatting must not fail" );
+
+  let lines : Vec< &str > = output.lines().collect();
+  let pos_line1 = lines.iter().position( | l | l.contains( "line1" ) )
+    .expect( "output must contain 'line1'" );
+  let pos_line2 = lines.iter().position( | l | l.contains( "line2" ) )
+    .expect( "output must contain 'line2'" );
+  let pos_detail = lines.iter().position( | l | l.contains( "detail annotation" ) )
+    .expect( "output must contain 'detail annotation'" );
+
+  assert!(
+    pos_line1 < pos_detail,
+    "'line1' (at {pos_line1}) must appear before detail annotation (at {pos_detail}):\n{output:?}",
+  );
+  assert!(
+    pos_line2 < pos_detail,
+    "'line2' (at {pos_line2}) must appear before detail annotation (at {pos_detail}) — detail must not interleave sub-lines:\n{output:?}",
+  );
+}
+
+/// AC-9 — `001_multiline_cell_rendering`: truncation marker applied to truncated sub-lines.
+///
+/// A cell containing `"line1\nline2\nline3"` in a column with `max_column_width=4`
+/// causes all three sub-lines (each 5 chars) to be truncated with `"..."`. The
+/// truncation marker appears on every oversized sub-line, including the last one.
+/// All three sub-lines appear in the output — no sub-line is dropped silently.
+// test_kind: standard
+#[ test ]
+fn truncation_marker_on_last_sub_line_ac9()
+{
+  let view = RowBuilder::new( vec![ "Col".into() ] )
+    .add_row( vec![ "line1\nline2\nline3".into() ] )
+    .build_view();
+
+  let config = TableConfig::plain().max_column_width( Some( 4 ) );
+  let output = TableFormatter::with_config( config )
+    .format( &view )
+    .expect( "formatting must not fail" );
+
+  // Truncation marker must be present (at least one truncated sub-line)
+  assert!(
+    output.contains( "..." ),
+    "truncation marker must appear when lines exceed max_column_width:\n{output:?}",
+  );
+
+  // All three sub-lines are kept — count non-header lines containing truncation or short content
+  // header + separator = 2 leading lines; each of the 3 sub-lines is a physical row
+  let data_lines : Vec< &str > = output.lines().skip( 2 ).collect();
+  assert_eq!(
+    data_lines.len(), 3,
+    "all three sub-lines must appear in output (none dropped): {output:?}",
+  );
+
+  // Last sub-line (index 2) must carry the truncation marker
+  assert!(
+    data_lines[ 2 ].contains( "..." ),
+    "last kept sub-line must have truncation marker; got: {:?}\nFull output:\n{output:?}",
+    data_lines[ 2 ],
+  );
+}
+
+/// AC-10 — `001_multiline_cell_rendering`: three or more embedded newlines produce correct sub-line count.
+///
+/// A cell containing `"a\nb\nc\nd"` (three embedded `\n`, four logical lines)
+/// produces exactly four physical sub-lines in the rendered output. The row height
+/// equals 4; no sub-line is dropped or duplicated.
+// test_kind: standard
+#[ test ]
+fn three_newlines_produce_four_sub_lines_ac10()
+{
+  let view = RowBuilder::new( vec![ "Col".into() ] )
+    .add_row( vec![ "a\nb\nc\nd".into() ] )
+    .build_view();
+
+  let output = TableFormatter::with_config( TableConfig::plain() )
+    .format( &view )
+    .expect( "formatting must not fail" );
+
+  // All four logical lines must be present
+  let lines : Vec< &str > = output.lines().collect();
+  assert!( output.contains( 'a' ), "sub-line 'a' must appear:\n{output:?}" );
+  assert!( output.contains( 'b' ), "sub-line 'b' must appear:\n{output:?}" );
+  assert!( output.contains( 'c' ), "sub-line 'c' must appear:\n{output:?}" );
+  assert!( output.contains( 'd' ), "sub-line 'd' must appear:\n{output:?}" );
+
+  // Skip header + separator; data rows = 4 sub-lines
+  let data_lines : Vec< &str > = lines.iter().skip( 2 ).copied().collect();
+  assert_eq!(
+    data_lines.len(), 4,
+    "three embedded newlines must produce exactly 4 physical sub-lines (not {}):\n{output:?}",
+    data_lines.len(),
+  );
+}

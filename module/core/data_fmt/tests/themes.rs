@@ -295,4 +295,31 @@ mod theme_tests
     );
     assert!( output.contains( "Alice" ), "themed config must render data; output:\n{output}" );
   }
+
+  /// FT-5 — `feature/004`: `themes` feature flag gates the theme API at compile time.
+  ///
+  /// This test exists only when `themes` feature is enabled (enclosing
+  /// `#[cfg(feature = "themes")]` module). Its compilation demonstrates that `ColorTheme`
+  /// and `apply_to_table()` are accessible when the feature is active. When the feature is
+  /// inactive, this entire module is excluded and the symbols are absent — the crate
+  /// compiles cleanly with only `enabled`.
+  // test_kind: standard
+  #[ test ]
+  fn themes_feature_flag_gates_api_at_compile_time_ft5()
+  {
+    // ColorTheme is accessible when the themes feature is enabled (this test compiles)
+    let theme = ColorTheme::dark();
+
+    // Applying the theme to a TableConfig produces colored output
+    let config = theme.apply_to_table( TableConfig::plain() );
+    let output = TableFormatter::with_config( config ).format( &sample_row() ).unwrap_or_default();
+
+    // Themed output must contain ANSI color codes (feature active and theme applied)
+    assert!(
+      output.contains( '\x1b' ),
+      "themes feature active: colored output must contain ANSI escape codes:\n{output:?}",
+    );
+    // Data must still appear
+    assert!( output.contains( "Alice" ), "themed output must contain data:\n{output:?}" );
+  }
 }

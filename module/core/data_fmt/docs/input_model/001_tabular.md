@@ -7,13 +7,23 @@
 - **In Scope**: Headers, rows, row details, invariants, Rust type mapping, and builder entry points.
 - **Out of Scope**: Rust type details (see `../input_type/`), construction APIs (see `../builder/`).
 
-### Cross-References
+### InputTypes
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/data.rs` | TableView definition |
-| test | `tests/data.rs` | Data model tests |
-| doc | `../input_type/001_table_view.md` | Rust type documentation |
+| File | Relationship |
+|------|-------------|
+| [001_table_view.md](../input_type/001_table_view.md) | Rust type documentation |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/data.rs`](../../src/data.rs) | TableView definition |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/data.rs`](../../tests/data.rs) | Data model tests |
 
 ### Data Shape
 
@@ -35,15 +45,10 @@ row 1:    [ "Bob",   "25",   "London"  ]
 
 ### Downstream Connections
 
-**Data structures representing this model:**
+**Data structure representing this model:**
 
-| Type | Role |
-|------|------|
-| `TableView` | Canonical representation (modern path) |
-| table-encoded tree | Legacy representation |
-
-Both are produced by `RowBuilder`: `build_view()` returns `TableView`; `build()` returns a table-encoded tree.
+`TableView` is the canonical representation, produced by `RowBuilder::build_view()`.
 
 **Formatters that consume tabular input:**
 
-All 10 formatters accept tabular input — 8 via the `Format` trait (using `TableView`) and 2 via the deprecated `TableShapedFormatter` (using a table-encoded tree).
+All 9 tabular formatters implement the `Format` trait and consume `TableView` directly. `TreeFormatter` is excluded — it consumes hierarchical input only.

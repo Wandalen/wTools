@@ -7,14 +7,29 @@
 - **In Scope**: Builder methods, path semantics, batch construction, downstream formatter compatibility.
 - **Out of Scope**: Input type internals (see `../input_type/`), public API signatures (see `../api/`).
 
-### Cross-References
+### APIs
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/builder.rs` | TreeBuilder implementation |
-| test | `tests/builder.rs` | Builder tests |
-| doc | `../api/002_builders.md` | Public API surface |
-| doc | `../input_type/002_tree_node.md` | Output type documentation |
+| File | Relationship |
+|------|-------------|
+| [002_builders.md](../api/002_builders.md) | Public API surface |
+
+### InputTypes
+
+| File | Relationship |
+|------|-------------|
+| [002_tree_node.md](../input_type/002_tree_node.md) | Output type documentation |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/builder.rs`](../../src/builder.rs) | TreeBuilder implementation |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/builder.rs`](../../tests/builder.rs) | Builder tests |
 
 ### Construction API
 

@@ -1,61 +1,38 @@
 # Trait: TableShapedFormatter
 
+> **Removed in v0.3.0.** Use the `Format` trait with `RowBuilder::build_view()` instead.
+
 ### Scope
 
-- **Purpose**: Document the TableShapedFormatter interface contract, implementors, and coverage.
-- **Responsibility**: Define the legacy formatting trait and its relationship to the modern Format trait.
-- **In Scope**: Trait definition, implementor table, input type, migration path to Format trait.
-- **Out of Scope**: Formatter implementation (see `../feature/`), variant output (see `../variant/`).
+- **Purpose**: Document the removed TableShapedFormatter interface contract for historical reference.
+- **Responsibility**: Record the legacy formatting trait, its former implementors, and the migration path.
+- **In Scope**: Former trait signature, former implementors, migration guide.
+- **Out of Scope**: Active formatter contracts (see `001_format.md`), formatter implementation (see `../feature/`).
 
-### Cross-References
+### Sources
+| File | Relationship |
+|------|-------------|
+| `src/formatters/mod.rs` | Former trait definition — removed in v0.3.0 |
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/mod.rs` | TableShapedFormatter trait definition |
-| test | `tests/formatters.rs` | Formatter trait tests |
+### Tests
+| File | Relationship |
+|------|-------------|
+| `tests/formatters.rs` | Tests migrated off deprecated API in v0.3.0 |
 
 ### Signature
 
-> **Deprecated since 0.1.0.** Use `Format` trait with `RowBuilder::build_view()` instead.
+`TableShapedFormatter` had one method: took `&self` and `&TreeNode< String >` (table-encoded tree); returned a formatted `String` without error handling. Formatting was infallible — no error wrapper.
 
-`TableShapedFormatter` has one method. It takes an immutable reference to self and an immutable reference to a table-encoded tree; returns a formatted string without error handling. Unlike `Format`, formatting is infallible — there is no error wrapper.
+### Former Implementors
 
-### Implementors
-
-| Formatter | Also Implements `Format` |
-|-----------|:------------------------:|
+| Formatter | Also Implemented `Format` |
+|-----------|:-------------------------:|
 | `TableFormatter` | yes |
-| `ExpandedFormatter` | **no** |
-
-### Coverage Gaps
-
-| Formatter | Status | Note |
-|-----------|--------|------|
-| `ExpandedFormatter` | Implements `TableShapedFormatter` but not `Format` | No modern `Format` impl exists — callers must continue using the deprecated path |
-| All other formatters | Do not implement `TableShapedFormatter` | Intentional — they implement `Format` directly with the modern `TableView` input |
-
-### Input Type
-
-Table-encoded tree — a tree where:
-- Root's children are rows (named `"1"`, `"2"`, ...)
-- Each row's children are cells (named by column header, data = cell value)
-
-Produced by `RowBuilder::build()`.
-
-### Relationship to Format Trait
-
-`TableShapedFormatter` is the older interface. `Format` is the modern replacement.
-
-| Aspect | `TableShapedFormatter` | `Format` |
-|--------|----------------------|----------|
-| Input | table-encoded tree | `&TableView` |
-| Output | formatted string (infallible) | formatted string or error |
-| Implementors | 2 | 8 |
-| Error handling | None (infallible) | `FormatError` |
-| Status | **Deprecated** | Current |
+| `ExpandedFormatter` | yes (since v0.3.0) |
 
 ### Migration Path
 
-For `TableFormatter`: switch from `TableShapedFormatter::format()` to `Format::format()` by changing `build()` to `build_view()`.
-
-For `ExpandedFormatter`: no `Format` impl exists yet — must continue using `TableShapedFormatter` with `RowBuilder::build()`.
+For all callers:
+1. Replace `RowBuilder::build()` with `RowBuilder::build_view()` to get a `TableView`.
+2. Replace `TableShapedFormatter::format( &tree )` with `Format::format( &formatter, &view ).unwrap()`.
+3. Remove `use data_fmt::formatters::TableShapedFormatter` import.

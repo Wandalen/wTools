@@ -7,40 +7,54 @@
 - **In Scope**: Trait implementations, input paths, `TableConfig` preset mechanism, per-variant feature flags.
 - **Out of Scope**: Variant output details (see `../variant/001_table_plain.md` through `009_table_compact.md`), operation signatures (see `../api/004_formatters.md`).
 
-### Cross-References
+### Traits
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/table/mod.rs` | `TableFormatter` implementation |
-| source | `src/config.rs` | `TableConfig` struct and preset methods |
-| doc | `../api/004_formatters.md` | Operation signatures |
-| doc | `../trait/001_format.md` | `Format` trait contract |
-| doc | `../trait/002_table_shaped_formatter.md` | Deprecated `TableShapedFormatter` trait |
-| doc | `../variant/001_table_plain.md` | Variant: plain |
-| doc | `../variant/002_table_minimal.md` | Variant: minimal |
-| doc | `../variant/003_table_bordered.md` | Variant: bordered |
-| doc | `../variant/004_table_markdown.md` | Variant: markdown |
-| doc | `../variant/005_table_grid.md` | Variant: grid |
-| doc | `../variant/006_table_unicode_box.md` | Variant: unicode_box |
-| doc | `../variant/007_table_csv.md` | Variant: csv |
-| doc | `../variant/008_table_tsv.md` | Variant: tsv |
-| doc | `../variant/009_table_compact.md` | Variant: compact |
+| File | Relationship |
+|------|-------------|
+| [001_format.md](../trait/001_format.md) | `Format` trait contract |
+| [002_table_shaped_formatter.md](../trait/002_table_shaped_formatter.md) | `TableShapedFormatter` — removed in v0.3.0 |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [004_formatters.md](../api/004_formatters.md) | Operation signatures |
+
+### Variants
+
+| File | Relationship |
+|------|-------------|
+| [001_table_plain.md](../variant/001_table_plain.md) | Variant: plain |
+| [002_table_minimal.md](../variant/002_table_minimal.md) | Variant: minimal |
+| [003_table_bordered.md](../variant/003_table_bordered.md) | Variant: bordered |
+| [004_table_markdown.md](../variant/004_table_markdown.md) | Variant: markdown |
+| [005_table_grid.md](../variant/005_table_grid.md) | Variant: grid |
+| [006_table_unicode_box.md](../variant/006_table_unicode_box.md) | Variant: unicode_box |
+| [007_table_csv.md](../variant/007_table_csv.md) | Variant: csv |
+| [008_table_tsv.md](../variant/008_table_tsv.md) | Variant: tsv |
+| [009_table_compact.md](../variant/009_table_compact.md) | Variant: compact |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/formatters/table/mod.rs`](../../src/formatters/table/mod.rs) | `TableFormatter` implementation |
+| [`src/config.rs`](../../src/config.rs) | `TableConfig` struct and preset methods |
 
 ### Trait
 
 | Trait | Status | Note |
 |-------|--------|------|
-| `Format` | ✅ Active | Primary path — takes a `TableView`, returns formatted string or error |
-| `TableShapedFormatter` | ⚠️ Deprecated since 0.1.0 | Legacy path — takes a table-encoded tree, returns formatted string |
+| `Format` | ✅ Active | Takes a `TableView`, returns formatted string or error |
+| `TableShapedFormatter` | ❌ Removed in v0.3.0 | Use the `Format` trait instead |
 
-`TableFormatter` is the only formatter implementing both traits. New code must use `Format`.
+New code must use `Format`.
 
 ### Input
 
 | Input Type | Path | Via |
 |------------|------|-----|
 | `TableView` | Modern | `Format` trait |
-| table-encoded tree | Legacy (deprecated) | `TableShapedFormatter` trait |
 
 ### Variants
 

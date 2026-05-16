@@ -7,13 +7,23 @@
 - **In Scope**: All 46 variant attributes, example output, feature flag, compatibility.
 - **Out of Scope**: Formatter implementation (see source), attribute schema (see `../data_structure/001_variant_attributes.md`).
 
-### Cross-References
+### DataStructures
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/table/mod.rs` | TableFormatter implementation |
-| test | `tests/table_styles_presets.rs` | Preset configuration and output tests |
-| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
+| File | Relationship |
+|------|-------------|
+| [001_variant_attributes.md](../data_structure/001_variant_attributes.md) | Attribute definitions for all 46 variant attributes |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/formatters/table/mod.rs`](../../src/formatters/table/mod.rs) | TableFormatter implementation |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/table_styles_presets.rs`](../../tests/table_styles_presets.rs) | Preset configuration and output tests |
 
 ### Identity & Classification
 

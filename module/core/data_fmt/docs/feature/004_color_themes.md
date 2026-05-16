@@ -7,14 +7,24 @@
 - **In Scope**: Theme definitions, usage patterns, custom theme builder, terminal compatibility, and feature flag integration.
 - **Out of Scope**: Algorithm details (see `../algorithm/`), API signatures (see `../api/`).
 
-### Cross-References
+### APIs
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/themes.rs` | Theme definitions |
-| test | `tests/themes.rs` | Theme application tests |
-| test | `tests/table_rendering_colors.rs` | Color rendering tests |
-| doc | `../api/003_config_types.md` | Config types that themes apply to |
+| File | Relationship |
+|------|-------------|
+| [003_config_types.md](../api/003_config_types.md) | Config types that themes apply to |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/themes.rs`](../../src/themes.rs) | Theme definitions |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/themes.rs`](../../tests/themes.rs) | Theme application tests |
+| [`tests/table_rendering_colors.rs`](../../tests/table_rendering_colors.rs) | Color rendering tests |
 
 ### Design
 

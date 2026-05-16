@@ -7,12 +7,12 @@
 - **In Scope**: All 46 per-variant attributes organized by group; attribute name, purpose, and example values for each.
 - **Out of Scope**: Per-variant attribute values (see `variant/NNN_*.md` files), formatter implementation (see `feature/`).
 
-### Cross-References
+### Docs
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc  | `../variant/readme.md` | Variant doc entity master file — consumes this schema |
-| source | `../variant_attributes.md` | Original combined source document (retained per migration rules) |
+| File | Relationship |
+|------|-------------|
+| [readme.md](../variant/readme.md) | Variant doc entity master file — consumes this schema |
+| [variant_attributes.md](../variant_attributes.md) | Original combined source document |
 
 ### Abstract
 

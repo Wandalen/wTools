@@ -40,6 +40,10 @@
 #[ cfg( feature = "output" ) ]
 pub mod output;
 
+/// CLI help text rendering.
+#[ cfg( feature = "cli_help_template" ) ]
+pub mod help;
+
 /// Namespace with dependencies.
 pub mod dependency
 {
@@ -52,6 +56,8 @@ pub mod own
 {
   #[ cfg( feature = "output" ) ]
   pub use super::output::orphan::*;
+  #[ cfg( feature = "cli_help_template" ) ]
+  pub use super::help::orphan::*;
 }
 
 /// Orphan namespace of the module.
@@ -71,4 +77,6 @@ pub mod prelude
 {
   #[ cfg( feature = "output" ) ]
   pub use super::output::orphan::*;
+  #[ cfg( feature = "cli_help_template" ) ]
+  pub use super::help::orphan::*;
 }

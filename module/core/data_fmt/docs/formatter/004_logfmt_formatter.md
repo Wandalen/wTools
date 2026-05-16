@@ -7,14 +7,29 @@
 - **In Scope**: Trait implementation, input type, feature flag.
 - **Out of Scope**: Variant output details (see `../variant/015_logfmt_standard.md`), operation signatures (see `../api/004_formatters.md`).
 
-### Cross-References
+### Traits
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/logfmt.rs` | `LogfmtFormatter` implementation |
-| doc | `../api/004_formatters.md` | Operation signatures |
-| doc | `../trait/001_format.md` | `Format` trait contract |
-| doc | `../variant/015_logfmt_standard.md` | Variant: standard |
+| File | Relationship |
+|------|-------------|
+| [001_format.md](../trait/001_format.md) | `Format` trait contract |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [004_formatters.md](../api/004_formatters.md) | Operation signatures |
+
+### Variants
+
+| File | Relationship |
+|------|-------------|
+| [015_logfmt_standard.md](../variant/015_logfmt_standard.md) | Variant: standard |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/formatters/logfmt.rs`](../../src/formatters/logfmt.rs) | `LogfmtFormatter` implementation |
 
 ### Trait
 

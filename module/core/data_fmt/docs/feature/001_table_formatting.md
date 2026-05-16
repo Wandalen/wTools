@@ -7,15 +7,30 @@
 - **In Scope**: Style presets, multiline cells, truncation, coloring, borders, sub-rows, auto-fit overview, and column width calculation.
 - **Out of Scope**: Algorithm details (see `../algorithm/`), API signatures (see `../api/`).
 
-### Cross-References
+### Algorithms
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/table/mod.rs` | TableFormatter implementation |
-| test | `tests/table_rendering_borders.rs` | Border and style rendering tests |
-| test | `tests/table_styles_presets.rs` | Preset configuration tests |
-| doc | `../algorithm/001_multiline_cell_rendering.md` | Multiline cell algorithm |
-| doc | `005_auto_fit.md` | Terminal-aware auto-wrapping and column folding |
+| File | Relationship |
+|------|-------------|
+| [001_multiline_cell_rendering.md](../algorithm/001_multiline_cell_rendering.md) | Multiline cell algorithm |
+
+### Features
+
+| File | Relationship |
+|------|-------------|
+| [005_auto_fit.md](005_auto_fit.md) | Terminal-aware auto-wrapping and column folding |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/formatters/table/mod.rs`](../../src/formatters/table/mod.rs) | TableFormatter implementation |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/table_rendering_borders.rs`](../../tests/table_rendering_borders.rs) | Border and style rendering tests |
+| [`tests/table_styles_presets.rs`](../../tests/table_styles_presets.rs) | Preset configuration tests |
 
 ### Design
 
@@ -37,20 +52,7 @@
 
 #### Multiline Cells
 
-When any cell contains `\n`, the formatter activates multiline rendering automatically using a two-pass algorithm.
-
-**Pass 1 -- measure**: Split every cell on `\n` and record the maximum line count across cells in the row. That count becomes the row height.
-
-**Pass 2 -- render**: Iterate from line 0 to row height. For each sub-line index, emit one physical output line containing the corresponding sub-line of every cell (or blank padding for cells with fewer lines). Column separators and borders are applied to each physical line.
-
-Behavior details:
-
-- Row height is per-row -- different rows can have different heights.
-- Column widths are computed from the maximum single-line display width inside each cell, not from the raw string length.
-- Shorter cells are padded with empty strings to match the row height.
-- ANSI codes are preserved and alignment uses `visual_len()` (color codes excluded from width).
-- Single-line cells work identically to pre-multiline behavior.
-- CSV/TSV formats disable multiline rendering and keep `\n` as literal characters.
+When any cell contains `\n`, the formatter activates multiline rendering automatically using a two-pass algorithm. See [`001_multiline_cell_rendering.md`](../algorithm/001_multiline_cell_rendering.md) for full algorithm specification.
 
 #### Column Truncation
 

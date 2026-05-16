@@ -7,12 +7,17 @@
 - **In Scope**: All 11 named principles with descriptions; purpose of the principle set as a whole.
 - **Out of Scope**: Layer decomposition (see `001_three_layer_architecture.md`), formatter design (see `003_formatter_design.md`).
 
-### Cross-References
+### Invariants
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | `../architecture.md` | Original combined architecture document (retained per migration rules) |
-| doc | `../invariant/001_data_model.md` | Invariants derived from these principles |
+| File | Relationship |
+|------|-------------|
+| [001_data_model.md](../invariant/001_data_model.md) | Invariants derived from these principles |
+
+### Docs
+
+| File | Relationship |
+|------|-------------|
+| [`../architecture.md`](../architecture.md) | Original combined architecture document (retained per migration rules) |
 
 ### Problem
 

@@ -472,3 +472,47 @@ fn bug_reproducer_issue_011_unicode_box_column_separator_mismatch()
     "unicode_box header separator must use ┼ or ├, not plain dashes; output:\n{output}"
   );
 }
+
+/// FT-7 — `feature/001`: `min_column_width` raises column width to configured floor.
+///
+/// A table where the natural column content width is 3 characters; `min_column_width(10)`
+/// is configured. The column must be at least 10 characters wide in the output — the cell
+/// value is padded with spaces to the minimum width.
+// test_kind: standard
+#[ test ]
+fn min_column_width_raises_column_to_floor_ft7()
+{
+  // Natural width of "abc" = 3, "xyz" = 3 → natural column width = 3
+  // With min_column_width(10): column floor raised to 10
+  let view = RowBuilder::new( vec![ "H".into() ] )
+    .add_row( vec![ "abc".into() ] )
+    .add_row( vec![ "xyz".into() ] )
+    .build_view();
+
+  let config_natural = TableConfig::plain();
+  let config_min = TableConfig::plain().min_column_width( 10 );
+
+  let out_natural = TableFormatter::with_config( config_natural ).format( &view ).unwrap_or_default();
+  let out_min = TableFormatter::with_config( config_min ).format( &view ).unwrap_or_default();
+
+  // With min_column_width(10): data line must be at least 10 characters wide
+  let data_line = out_min.lines().find( | l | l.contains( "abc" ) )
+    .expect( "data row with 'abc' must appear in output" );
+  assert!(
+    data_line.len() >= 10,
+    "min_column_width(10): data line must be ≥ 10 chars wide; got {}: {data_line:?}\noutput:\n{out_min}",
+    data_line.len(),
+  );
+
+  // Natural output is narrower (no floor applied)
+  let data_line_nat = out_natural.lines().find( | l | l.contains( "abc" ) )
+    .expect( "natural output must contain data row" );
+  assert!(
+    data_line.len() > data_line_nat.len(),
+    "min_column_width(10) must produce wider output than natural:\n  natural line={data_line_nat:?}\n  floored line={data_line:?}",
+  );
+
+  // Both column values remain present
+  assert!( out_min.contains( "abc" ), "floored output must contain 'abc':\n{out_min}" );
+  assert!( out_min.contains( "xyz" ), "floored output must contain 'xyz':\n{out_min}" );
+}

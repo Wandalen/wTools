@@ -4,25 +4,17 @@
 
 - **Purpose**: Define the conceptual data shapes the library accepts as input.
 - **Responsibility**: Registry and overview of all input model doc instances.
-- **In Scope**: Tabular and hierarchical data shapes, their invariants, and downstream connections.
-- **Out of Scope**: Rust type details (see `input_type/`), construction APIs (see `builder/`).
+- **In Scope**: Abstract, pre-type-system conceptual data shapes — tabular and hierarchical — their structural rules and downstream connections.
+- **Out of Scope**: Concrete Rust struct/enum type definitions (see `input_type/`), construction APIs (see `builder/`).
 
-### Type-Specific Requirements
-
-Every input_model doc instance must contain these sections in order:
+Required instance sections (in order):
 
 | Section | Heading | Required Content |
 |---------|---------|-----------------|
 | Scope | `### Scope` | 4 bullets: Purpose / Responsibility / In Scope / Out of Scope |
-| Cross-References | `### Cross-References` | Table: Type / File / Responsibility |
+| Typed References | `### InputTypes`, `### Sources`, `### Tests` | Per-type `| File | Relationship |` table; `### Sources` and `### Tests` always last |
 | Data Shape | `### Data Shape` | Structural description of the model: what it carries, how it is organized, any structural rules |
 | Downstream Connections | `### Downstream Connections` | Which input types represent this model; which formatters consume it |
-
-### Infrastructure
-
-| File | Responsibility |
-|------|----------------|
-| `procedure.md` | Operational procedure for creating and updating input model doc instances |
 
 ### Overview Table
 

@@ -27,6 +27,7 @@ Validates core CLI output processing functionality including stream merging, hea
 |------|----------------|
 | `readme.md` | Document test organization and navigation |
 | `output.rs` | Validate CLI output processing behavior |
+| `help.rs` | Validate CliHelpTemplate rendering and CliHelpStyle defaults |
 
 ## Organization Principles
 

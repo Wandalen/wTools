@@ -17,7 +17,7 @@
 
 | File | Relationship |
 |------|--------------|
-| `tests/text.rs` | Text output tests including CliHelp |
+| `tests/text_cli_help.rs` | CLI help alignment test suite |
 
 ### Abstract
 

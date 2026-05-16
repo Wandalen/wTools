@@ -7,12 +7,17 @@
 - **In Scope**: Trait definition, method table, blanket impl, pipeline role, relationship to TableView.
 - **Out of Scope**: Formatter implementation (see `../feature/`), variant output (see `../variant/`).
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/table_tree.rs` | TableShapedView implementation |
-| test | `tests/formatters.rs` | View extraction tests |
+| File | Relationship |
+|------|-------------|
+| [`src/table_tree.rs`](../../src/table_tree.rs) | TableShapedView implementation |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/formatters.rs`](../../tests/formatters.rs) | View extraction tests |
 
 ### Signature
 
