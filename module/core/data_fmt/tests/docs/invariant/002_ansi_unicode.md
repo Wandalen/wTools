@@ -4,7 +4,7 @@
 
 - **Purpose**: Drive test coverage for the ANSI and Unicode handling invariants.
 - **Responsibility**: Documents test cases for ANSI escape code and Unicode width invariants in `docs/invariant/002_ansi_unicode.md`.
-- **In Scope**: ANSI exclusion from width measurement, East Asian Width padding, ANSI verbatim preservation, per-line reset, per-sub-line color wrapping, `DecoratedText` iteration, CJK measurement gap.
+- **In Scope**: ANSI exclusion from width measurement, East Asian Width padding, ANSI verbatim preservation, per-line reset, per-sub-line color wrapping, `DecoratedText` iteration, CJK column allocation via EAW, `visual_len` char-count gap in truncation path.
 - **Out of Scope**: Color theme feature behavior (see `feature/004`); auto-wrap backward compatibility (see `invariant/003`).
 
 ### Case Index
@@ -95,29 +95,33 @@
 
 ---
 
-### IN-7: CJK characters in cells cause visual overflow beyond allocated column width
+### IN-7: CJK characters allocated correct column width via East Asian Width
 
-- **Given:** A table where one cell contains CJK characters (e.g. `"中文"`, char
-  count 2 but display width 4) and column width is allocated based on char count.
+- **Given:** A table with one column containing `"中文"` (char count 2, display
+  width 4) in one row and `"ab"` in another row; both in the same single column.
 - **When:** Rendered with `TableFormatter`.
-- **Then:** The CJK cell visually overflows its allocated column space by the
-  number of extra display columns (i.e. char_count mismatch with East Asian Width);
-  this is a known limitation documented in `docs/invariant/002_ansi_unicode.md`;
-  the test asserts the overflow occurs as a regression guard against unexpected
-  behavior changes.
-- **Note:** Known limitation — `visual_len` uses char count not East Asian Width.
-  Fix tracked as issue-003 in `src/ansi_str.rs`.
+- **Then:** Column width is allocated using `unicode_visual_len` (East Asian Width),
+  so the column is 4 display columns wide; the CJK row (`"中文"`) and the padded
+  ASCII row (`"ab  "`) have equal display widths — no visual overflow occurs; the
+  column separator aligns correctly on both rows.
+- **Note:** `calculate_column_widths_for_rows()` uses East Asian Width for column
+  measurement (via `unicode_visual_len`). The `visual_len` char-count path only
+  affects `truncate_cell` — tracked as issue-003 in `src/ansi_str.rs`.
 
 ---
 
 ### IN-8: ANSI codes combined with CJK characters — width measurement excludes both
 
-- **Given:** A cell containing `"\x1b[32m中文\x1b[0m"` (ANSI codes wrapping CJK
-  characters).
-- **When:** Column width is measured for layout purposes.
-- **Then:** ANSI bytes are excluded from the measurement; the measurement reflects
-  the CJK char count (2) not the display width (4) and not the byte count; the
-  combined ANSI+CJK measurement gap is additive (both deficiencies apply simultaneously).
+- **Given:** The `visual_len()` function (char-count measurement, used in the
+  `truncate_cell` path) is called on `"\x1b[32m中文\x1b[0m"` and on `"ab"`.
+- **When:** `visual_len()` is invoked directly on the ANSI+CJK string.
+- **Then:** ANSI bytes are stripped before counting; the result is char count 2
+  (not display width 4 and not byte count); `visual_len("ab")` equals
+  `visual_len("\x1b[32m中文\x1b[0m")` — both are 2; the two deficiencies of
+  `visual_len` (ANSI exclusion + EAW gap) are additive in this code path.
+- **Note:** Column width *allocation* uses `unicode_visual_len` (East Asian Width)
+  and is not affected by this gap. The `visual_len` char-count limitation only
+  impacts `truncate_cell` — tracked as issue-003 in `src/ansi_str.rs`.
 
 ---
 

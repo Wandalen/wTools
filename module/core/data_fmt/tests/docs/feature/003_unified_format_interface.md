@@ -53,15 +53,16 @@
 
 ### FT-5: TreeFormatter dispatches directly (not via Format trait)
 
-- **Given:** A `TreeNode` tree built with `TreeBuilder`; `TreeFormatter` configured
-  with a `TreeConfig`.
-- **When:** `TreeFormatter::format_tree(&tree)` is called directly (not via
-  `Format::format()`).
-- **Then:** The call succeeds and returns a non-empty string; `TreeFormatter` does
-  NOT implement the `Format` trait (trait objects of `Format` cannot dispatch to
-  `TreeFormatter`); the direct dispatch API is the only way to invoke it.
-- **Note:** Distinguishes `TreeFormatter` (direct dispatch only) from the nine
-  `Format` implementors listed in FT-2.
+- **Given:** A `TreeNode< u64 >` tree with a root and one child; `TreeFormatter`
+  created with `TreeFormatter::new()` or `TreeFormatter::with_config(TreeConfig::new())`.
+- **When:** `TreeFormatter::format(&root, u64::to_string)` and
+  `TreeFormatter::format_aligned(&root)` are called directly (not via `Format::format()`).
+- **Then:** Both calls succeed and return non-empty strings containing node content;
+  `TreeFormatter` does NOT implement the `Format` trait; trait objects of `Format`
+  cannot dispatch to `TreeFormatter`; direct dispatch is the only invocation path.
+- **Note:** Distinguishes `TreeFormatter` (direct dispatch only, two methods:
+  `format()` for generic data and `format_aligned()` for `ColumnData`) from the
+  nine `Format` trait implementors listed in FT-2.
 
 ---
 

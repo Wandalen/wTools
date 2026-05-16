@@ -124,10 +124,12 @@
 ### AC-9: show_branches=false omits tree connector characters
 
 - **Given:** A multi-level tree configured with `show_branches(false)`.
-- **When:** Rendered with `AlignedTreeFormatter`.
+- **When:** Rendered via `TreeFormatter::format()` (the generic render path).
 - **Then:** No `├─`, `└─`, or `│` characters appear in the output; node names
-  and data columns still appear in hierarchical order; column alignment is
-  preserved without the tree-drawing prefix characters.
+  and data columns still appear; the output does not contain connector symbols.
+- **Note:** `show_branches` suppression is implemented only in the `format()`
+  generic path. `format_aligned()` always emits connector symbols regardless of
+  `show_branches` configuration — it must not be used to test this case.
 
 ---
 

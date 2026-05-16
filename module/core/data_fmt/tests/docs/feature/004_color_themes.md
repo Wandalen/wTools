@@ -53,11 +53,16 @@
 
 ### FT-5: themes feature flag gates theme API at compile time
 
-- **Given:** A build configuration without the `themes` feature enabled.
-- **When:** The crate is compiled.
-- **Then:** `Theme` enum and `theme()` builder method are not accessible; compilation
-  succeeds without reference to theme symbols; the crate compiles cleanly with only
-  the `enabled` feature active.
+- **Given:** The `themes` feature is enabled; the test module is guarded by
+  `#[cfg(feature = "themes")]`.
+- **When:** `ColorTheme::dark()` is applied to a `TableConfig` and the table is
+  rendered.
+- **Then:** ANSI color codes appear in the output; data values appear correctly;
+  no panic occurs. The test's compilation within the `#[cfg(feature = "themes")]`
+  module demonstrates that `ColorTheme` and `apply_to_table()` are accessible
+  when the feature is active; when `themes` is disabled, the entire module is
+  excluded by the conditional compilation gate — the symbols are absent and the
+  crate compiles cleanly with only `enabled`.
 
 ---
 

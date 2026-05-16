@@ -4,7 +4,7 @@
 
 - **Purpose**: Drive test coverage for the auto-fit feature.
 - **Responsibility**: Documents test cases for the combined auto-wrap and auto-fold auto-fit pipeline in `docs/feature/005_auto_fit.md`.
-- **In Scope**: Natural fit (no auto-fit), flex column wrapping, column folding with Labeled style, `auto_wrap(false)` opt-out, `terminal_width` override, CSV/TSV bypass, `COLUMNS` env var detection, Strategy 2→1 ordering.
+- **In Scope**: Natural fit (no auto-fit), flex column wrapping, column folding with Labeled style, `auto_wrap(false)` opt-out, `terminal_width` override, CSV/TSV bypass, tty-query tier (Tier 1) coverage, 120-column fallback (Tier 2).
 - **Out of Scope**: Budget allocation algorithm details (see `algorithm/004`); fold detection algorithm details (see `algorithm/005`).
 
 ### Case Index
@@ -17,8 +17,8 @@
 | FT-4 | auto_wrap(false) disables cell wrapping strategy | ✅ |
 | FT-5 | terminal_width override takes priority over auto-detection | ✅ |
 | FT-6 | CSV and TSV presets disable auto-fit automatically | ✅ |
-| FT-7 | COLUMNS env var used as terminal width when set | ✅ |
-| FT-8 | Strategy 2 (tty query) attempted before Strategy 1 (COLUMNS env var) | ✅ |
+| FT-7 | explicit terminal_width(60) constrains output to 60 columns | ✅ |
+| FT-8 | tty-query tier traversed before 120-column fallback | ✅ |
 
 ---
 
@@ -70,26 +70,32 @@
 
 ---
 
-### FT-7: COLUMNS env var used as terminal width when set
+### FT-7: explicit terminal_width(60) constrains output to 60 columns
 
-- **Given:** The `COLUMNS` environment variable is set to `"60"` and no
-  `terminal_width` override is provided in `TableConfig`; the table content
-  is wider than 60 but narrower than 120 columns.
+- **Given:** A `TableConfig` with `terminal_width(Some(60))` (Tier 0 explicit
+  override); the table content is wider than 60 but narrower than 120 columns.
 - **When:** The table is rendered.
-- **Then:** The formatter uses 60 as the effective terminal width (Strategy 1 —
-  `COLUMNS` env var); content that exceeds 60 columns triggers auto-fit; output
-  fits within 60 characters per line.
+- **Then:** The formatter uses 60 as the effective terminal width; content that
+  exceeds 60 columns triggers auto-fit; all output lines fit within 60 characters.
+- **Note:** `resolve_terminal_width()` does NOT consult the `COLUMNS` environment
+  variable — that strategy is not implemented. The 60-column budget is provided via
+  the explicit `terminal_width(Some(60))` override, which is semantically equivalent
+  to what `COLUMNS=60` detection would supply if it were implemented.
 
 ---
 
-### FT-8: Strategy 2 (tty query) attempted before Strategy 1 (COLUMNS env var)
+### FT-8: tty-query tier traversed before 120-column fallback
 
-- **Given:** The terminal is a real TTY with a known width of 80 columns; the
-  `COLUMNS` environment variable is NOT set; no `terminal_width` override.
+- **Given:** No `terminal_width` override in `TableConfig`; running in a non-TTY
+  environment (e.g. `cargo nextest`); the table content is narrower than 120 columns.
 - **When:** The table is rendered.
-- **Then:** The formatter uses the TTY width (80 columns) as the effective terminal
-  width; Strategy 2 (tty query via `terminal_size`) takes priority when available;
-  Strategy 1 (`COLUMNS` env var) is consulted only when Strategy 2 fails.
+- **Then:** `resolve_terminal_width()` traverses Tier 1 (tty query via
+  `terminal_size` crate), which returns `None` in non-TTY; Tier 2 (120-column
+  hardcoded fallback) then activates; the narrow table renders fully without
+  wrapping or folding; all output lines are within 120 columns.
+- **Note:** The three-tier resolution order is: Tier 0 (explicit `Some(w)` config
+  override) → Tier 1 (`terminal_size` tty query) → Tier 2 (120 fallback). No
+  `COLUMNS` env var tier exists in the current implementation.
 
 ---
 

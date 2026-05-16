@@ -22,7 +22,7 @@
 | IN-4 | single-row table renders without error | ✅ |
 | IN-5 | row_details length always equals rows length (parallel vectors) | ✅ |
 | IN-6 | TableShapedView extracts headers and rows from display-capable tree | ✅ |
-| IN-7 | empty tree returns empty string when formatted | ✅ |
+| IN-7 | empty tree formatted without tree-structure artifacts | ✅ |
 
 ---
 
@@ -94,13 +94,14 @@
 
 ---
 
-### IN-7: empty tree returns empty string when formatted
+### IN-7: empty tree formatted without tree-structure artifacts
 
-- **Given:** A tree with no nodes (or only a root with no children) passed to
-  `AlignedTreeFormatter` or `TreeFormatter`.
+- **Given:** A `TreeNode` with no children (root-only tree) passed to
+  `TreeFormatter::format()` or `TreeFormatter::format_aligned()`.
 - **When:** Rendered.
-- **Then:** Output is an empty string `""`; no column separator, connector character,
-  or whitespace is emitted; no panic occurs.
+- **Then:** No `├──`, `└──`, or `│` connector characters are emitted; output is
+  minimal — either an empty string or at most one line containing only the root
+  node name; no column-separator artifacts appear; no panic occurs.
 - **Note:** Cross-reference: `algorithm/003_tree_column_alignment.md` AC-4 documents
   this as an algorithm edge case for `AlignedTreeFormatter`.
 

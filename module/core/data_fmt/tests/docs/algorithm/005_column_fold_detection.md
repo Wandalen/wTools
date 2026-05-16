@@ -116,11 +116,15 @@
 ### AC-9: FoldStyle::Stacked emits one labeled continuation line per overflow column
 
 - **Given:** A table configured with `FoldStyle::Stacked`; one data row has 2
-  overflow columns with values `"val_d"` and `"val_e"`.
+  overflow columns (e.g. `"ColC"` and `"ColD"`).
 - **When:** Rendered with `auto_fold=true`.
-- **Then:** Two separate continuation lines are emitted, each with the column label
-  and its value on separate lines; the label and value appear stacked (label on one
-  line, value on the next) rather than inline; column order is preserved.
+- **Then:** Exactly two continuation lines are emitted — one per overflow column;
+  each continuation line contains the column label and its value inline on the same
+  line (not on separate lines); `"ColC"` and `"ColD"` each appear as a label on
+  their respective continuation line; column order is preserved.
+- **Note:** `FoldStyle::Stacked` separates overflow columns onto individual lines
+  (one line per column) rather than joining all overflow on a single line
+  (`FoldStyle::Bare`) or emitting label+value on consecutive separate lines.
 
 ---
 

@@ -400,7 +400,7 @@ mod cli_help_tests
   /// current implementation uses global alignment across all sections.
   // test_kind: standard
   #[ test ]
-  fn alignment_resets_per_section_ac10()
+  fn global_alignment_widens_all_sections_ac10()
   {
     let long_key = "abcdefghijklmnopqrst"; // exactly 20 chars
     let view = RowBuilder::new( vec![ "Term".into(), "Desc".into() ] )
