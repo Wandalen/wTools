@@ -56,7 +56,7 @@ data_fmt                              cli_fmt
 `CliHelpTemplate` holds one style value and one data value. Constructed via `new(style, data)`; rendered via `render() -> String`, which produces the complete help text. The rendering algorithm:
 
 1. Apply TTY detection: ANSI codes active only when `tty_detect = true` and stdout IS a TTY; zero all color fields otherwise.
-2. Emit tagline: `{color_tagline}{binary} — {tagline}{color_reset}`.
+2. Emit header section: `{color_tagline}Usage:{color_reset} {binary} <command>`, a blank line, the tagline text (no color), a blank line, then `{color_tagline}Commands:{color_reset}`.
 3. For each group: emit group header with `grp_indent` and `color_group`, then each entry with `cmd_indent` and left-padded to `cmd_name_width + col_gap`.
 4. If options present: emit `Options:` header, each option with `opt_indent` padded to `opt_name_width + col_gap`, colored with `color_option`.
 5. If examples present: emit `Examples:` header, each example with `example_indent`, colored with `color_example`. When an example entry has an annotation, append `  # {annotation}` after the invocation.

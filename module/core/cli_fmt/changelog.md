@@ -10,7 +10,7 @@
 
 **Fixed:** `ExampleEntry.desc` silently dropped — `emit_examples()` ignored the field entirely (issue-T09).
 
-**Tests:** 9 integration tests (T01–T09); T09 is a bug reproducer for the desc silent-drop fix.
+**Tests:** 9 integration tests for help module (T01–T09); T09 is a bug reproducer for the desc silent-drop fix. 2 new output tests added to fill gaps identified in test surface audit: `width_exact_boundary` (FT-11 — exact-boundary non-truncation) and `process_output_head_lines_omitted` (FT-12 — accurate lines_omitted under head filtering). Total: 42 integration tests.
 
 ## [v0.4.0 | 2026-04-19] Dependency version bump
 
