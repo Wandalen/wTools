@@ -731,4 +731,5 @@ version = "0.2.2"
 
 [patch.crates-io]
 former_meta = { path = "module/core/former_meta" }
+strs_tools = { path = "module/core/strs_tools" }
 # const_format = { version = "0.2.32", default-features = false, features = [] }
