@@ -1,5 +1,11 @@
 # Tasks
 
+### Scope
+
+**Responsibilities:** Track all development tasks and decisions for the data_fmt crate.
+**In Scope:** Active task files (NNN_*.md), actor registries, per-actor action plans, backlog, completed and cancelled tasks, and the decision log.
+**Out of Scope:** Library source code (src/), tests (tests/), behavioral documentation (docs/).
+
 ### Responsibility Table
 
 | File | Responsibility |
@@ -10,6 +16,7 @@
 | `cancelled/` | Abandoned tasks with cancellation rationale |
 | `completed/` | Finished tasks with completion evidence |
 | `decisions.md` | Decision log for data_fmt |
+| `002_fill_test_coverage_gaps.md` | Active task: implement 56 remaining ⬜ test cases across all doc entity surfaces |
 
 ## Tasks Index
 

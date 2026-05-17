@@ -6,6 +6,7 @@
 //! # Modules
 //!
 //! - `output` - Process command output (head/tail filtering, width truncation, stream merging)
+//! - `help` - Typed, configurable CLI help text renderer (`CliHelpTemplate`, `CliHelpStyle`, `CliHelpData`)
 //!
 //! # Architecture
 //!
@@ -68,7 +69,6 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  #[ cfg( feature = "output" ) ]
   pub use super::own::*;
 }
 

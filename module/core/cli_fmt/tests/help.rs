@@ -15,6 +15,7 @@
 //! | T06 | empty examples vec | default style | no "Examples:" section emitted |
 //! | T07 | single group, single cmd | default style, tty_detect=false | binary in output; group+cmd appear; no ANSI |
 //! | T08 | struct construction only | N/A | CliHelpStyle::default() field values match print_usage() |
+//! | T09 | ExampleEntry with desc=Some vs None | tty_detect=false | desc=Some renders `# text` inline; desc=None renders no `#` |
 
 use cli_fmt::help::*;
 
@@ -70,8 +71,8 @@ fn no_tty_style() -> CliHelpStyle
 /// T01: With `tty_detect=false`, command names are left-padded to `cmd_name_width`
 /// (20) and option names are padded to `opt_name_width` (18). No ANSI codes emitted.
 ///
-/// Column widths: cmd = cmd_name_width(20) + col_gap(2) = 22 chars total;
-/// opt = opt_name_width(18) + col_gap(2) = 20 chars total.
+/// Column widths: cmd = `cmd_name_width`(20) + `col_gap`(2) = 22 chars total;
+/// opt = `opt_name_width`(18) + `col_gap`(2) = 20 chars total.
 #[ test ]
 fn test_column_alignment()
 {
@@ -231,4 +232,56 @@ fn test_style_default_fields()
   assert_eq!( s.opt_name_width, 18 );
   assert_eq!( s.col_gap,        2  );
   assert_eq!( s.example_indent, 2  );
+}
+
+// ── T09 ─ ExampleEntry.desc renders inline when Some ─────────────────────────
+
+/// T09: When `ExampleEntry.desc` is `Some(text)`, the rendered output appends
+/// `  # {text}` on the same line as the invocation.
+///
+/// When `desc` is `None`, the invocation line has no `#` annotation.
+///
+/// # Root Cause
+/// `emit_examples()` previously ignored `ExampleEntry.desc` entirely, making the
+/// `desc: Option<String>` field a silent no-op despite being documented as
+/// "Optional annotation line appended after the invocation."
+///
+/// # Why Not Caught
+/// The `two_group_data()` fixture used `desc: Some("run one")` but no test
+/// asserted that "run one" appeared in the rendered output, so the silent drop
+/// went undetected across all T01–T08 tests.
+///
+/// # Fix Applied
+/// `emit_examples()` now branches on `ex.desc`: `Some(text)` → appends `  # {text}`
+/// after the invocation on the same line; `None` → emits the invocation unchanged.
+///
+/// # Prevention
+/// Any new `Option`-typed field on a data struct must have at least one test
+/// asserting the `Some` branch is visible in rendered output.
+///
+/// # Pitfall
+/// Forgetting to test `Some` paths on `Option` fields in renderers leads to
+/// documented-but-broken API contracts that only surface during manual testing.
+#[ test ]
+fn test_example_desc_rendered()
+{
+  let out = CliHelpTemplate::new( no_tty_style(), two_group_data() ).render();
+
+  // First example has desc=Some("run one") — must appear as `# run one` on its line.
+  let first_line = out.lines()
+    .find( |l| l.contains( "myapp cmd-one" ) )
+    .unwrap_or_default();
+  assert!(
+    first_line.contains( "# run one" ),
+    "ExampleEntry with desc=Some must render '# run one' on the invocation line, got:\n{first_line:?}",
+  );
+
+  // Second example has desc=None — its line must not contain `#`.
+  let second_line = out.lines()
+    .find( |l| l.contains( "myapp cmd-two" ) )
+    .unwrap_or_default();
+  assert!(
+    !second_line.contains( '#' ),
+    "ExampleEntry with desc=None must not render '#' on the invocation line, got:\n{second_line:?}",
+  );
 }

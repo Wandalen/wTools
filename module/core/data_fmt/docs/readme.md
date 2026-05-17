@@ -1,7 +1,10 @@
 # Docs
 
-## Scope
-Contains technical documentation for the data_fmt library implementation.
+### Scope
+
+**Responsibilities:** Define behavioral requirements and document data_fmt architecture, algorithms, and design decisions.
+**In Scope:** Typed doc entity instances (feature/, invariant/, api/, algorithm/, formatter/, trait/, variant/, builder/, pattern/, data_structure/, input_model/, input_type/), architecture docs, development notes, entities index, and doc dependency graph.
+**Out of Scope:** Test code (tests/), production source (src/), usage examples (examples/), task tracking (task/).
 
 ### Responsibility Table
 

@@ -11,7 +11,7 @@
 
 | File | Relationship |
 |------|--------------|
-| `src/formatters/table/mod.rs` | `classify_columns`, `compute_column_budgets` |
+| `src/formatters/table/auto_fit.rs` | `classify_columns`, `compute_column_budgets` |
 | `src/config.rs` | `ColumnFlex` enum, `terminal_width` field |
 
 ### Tests
@@ -19,6 +19,7 @@
 | File | Relationship |
 |------|--------------|
 | `tests/auto_wrap_test.rs` | Budget allocation test scenarios (T02–T05, T14–T15) |
+| `tests/auto_wrap_budget_test.rs` | Budget allocation acceptance criteria (BA AC-6–AC-8) |
 
 ### Abstract
 

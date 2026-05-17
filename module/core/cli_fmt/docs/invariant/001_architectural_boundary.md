@@ -5,7 +5,7 @@
 - **Purpose**: Define the separation boundary between `cli_fmt` and `strs_tools`.
 - **Responsibility**: Document which processing belongs in each crate and why CLI-specific policy must not migrate to general-purpose utilities.
 - **In Scope**: Boundary placement rules, enforcement mechanism, and violation consequences.
-- **Out of Scope**: Processing logic itself — see `feature/001_output_processing.md`.
+- **Out of Scope**: Processing logic and behavior — see `feature/` instances.
 
 ### Invariant Statement
 
@@ -19,7 +19,7 @@ decisions embedded in `strs_tools` would impose unwanted assumptions on non-CLI 
 ### Enforcement Mechanism
 
 - `cli_fmt` depends on `strs_tools` — the dependency is one-directional only.
-- `strs_tools` carries no stream concepts, head/tail conventions, or output-transparency types.
+- `strs_tools` carries no stream concepts, head/tail conventions, output-transparency types, or CLI-help-rendering types (`CliHelpTemplate`, `CliHelpStyle`, `CliHelpData`, etc.).
 - New CLI-specific utilities belong in `cli_fmt`.
 - New general-purpose text or ANSI utilities belong in `strs_tools`.
 - Feature flags in `cli_fmt` are independent of `strs_tools` feature flags.
@@ -31,9 +31,29 @@ which would inherit CLI assumptions they do not need. Placing general text utili
 `cli_fmt` prevents their reuse outside CLI applications and increases coupling between
 the two crates.
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | [`../feature/001_output_processing.md`](../feature/001_output_processing.md) | The CLI-specific behavior governed by this boundary |
-| doc | [`../api/001_output_api.md`](../api/001_output_api.md) | Public interface whose types encode the boundary |
+| File | Relationship |
+|------|-------------|
+| [`../feature/001_output_processing.md`](../feature/001_output_processing.md) | CLI output processing — governed by this boundary |
+| [`../feature/002_cli_help_template.md`](../feature/002_cli_help_template.md) | CLI help template rendering — governed by this boundary |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [`../api/001_output_api.md`](../api/001_output_api.md) | Output processing interface — types encode this boundary |
+| [`../api/002_help_api.md`](../api/002_help_api.md) | Help template interface — types encode this boundary |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| `Cargo.toml` | Dependency declarations enforce one-directional cli_fmt → strs_tools dependency |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| `tests/output.rs` | Output pipeline tests confirm CLI-specific processing stays within cli_fmt |
+| `tests/help.rs` | Help rendering tests confirm cli_fmt carries no data_fmt reverse dependency |

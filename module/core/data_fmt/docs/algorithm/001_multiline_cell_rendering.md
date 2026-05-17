@@ -11,7 +11,8 @@
 
 | File | Relationship |
 |------|--------------|
-| `src/formatters/table/mod.rs` | TableFormatter multiline cell rendering |
+| `src/formatters/table/rendering.rs` | `format_multiline_row` — multiline cell rendering |
+| `src/formatters/table/mod.rs` | `format_row` — dispatches to `format_multiline_row` |
 
 ### Tests
 
@@ -25,7 +26,7 @@ A two-pass algorithm for rendering table rows that contain newline characters. P
 
 ### Source Location
 
-`src/formatters/table/mod.rs` — `format_multiline_row()` (lines 510-613), called from `format_row()` (lines 391-403).
+`src/formatters/table/rendering.rs` — `format_multiline_row()` (lines 118–215), called from `format_row()` in `src/formatters/table/mod.rs` (line 403).
 
 ### Trigger Condition
 

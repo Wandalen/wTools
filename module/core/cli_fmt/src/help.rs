@@ -4,7 +4,7 @@
 //! column-aligned, ANSI-colored help text from structured data without coupling
 //! to `data_fmt`.
 
-use std::fmt::Write as _;
+use core::fmt::Write as _;
 use std::io::IsTerminal;
 
 // ─── Style ───────────────────────────────────────────────────────────────────
@@ -12,7 +12,7 @@ use std::io::IsTerminal;
 /// Visual and color style parameters for CLI help rendering.
 ///
 /// `CliHelpStyle::default()` reproduces the layout and ANSI codes used by
-/// `claude_profile::print_usage()` (cmd_indent=4, cmd_name_width=20, etc.).
+/// `claude_profile::print_usage()` (`cmd_indent=4`, `cmd_name_width=20`, etc.).
 #[ derive( Debug, Clone ) ]
 pub struct CliHelpStyle
 {
@@ -40,12 +40,13 @@ pub struct CliHelpStyle
   pub color_example  : &'static str,
   /// ANSI reset sequence applied after each colored span.
   pub color_reset    : &'static str,
-  /// When `true`, suppress all ANSI codes when stdout is not a terminal.
+  /// When `true`, suppress ANSI codes when stdout is not a terminal; when `false`, always suppress.
   pub tty_detect     : bool,
 }
 
 impl Default for CliHelpStyle
 {
+  #[ inline ]
   fn default() -> Self
   {
     Self
@@ -141,6 +142,8 @@ pub struct CliHelpTemplate
 impl CliHelpTemplate
 {
   /// Create a new template from style and data parameters.
+  #[ inline ]
+  #[ must_use ]
   pub fn new( style : CliHelpStyle, data : CliHelpData ) -> Self
   {
     Self { style, data }
@@ -149,8 +152,10 @@ impl CliHelpTemplate
   /// Render the full help text to a `String`.
   ///
   /// When `style.tty_detect` is `true` and stdout is not a TTY, all ANSI
-  /// color codes are suppressed. Set `tty_detect = false` to control color
-  /// output solely through the color fields (set to `""` to disable colors).
+  /// color codes are suppressed. Set `tty_detect = false` to always suppress
+  /// ANSI codes regardless of TTY state (color fields are ignored).
+  #[ inline ]
+  #[ must_use ]
   pub fn render( &self ) -> String
   {
     let use_color = self.style.tty_detect && std::io::stdout().is_terminal();
@@ -209,6 +214,11 @@ impl CliHelpTemplate
     }
   }
 
+  // Fix(issue-T09): render ExampleEntry.desc when Some — was silently dropped
+  // Root cause: emit_examples() emitted only ex.invocation unconditionally,
+  //   ignoring desc: Option<String> despite being documented as annotation field
+  // Pitfall: Option-typed renderer fields need a test asserting the Some branch
+  //   appears in output — compiling without error is not proof it renders
   fn emit_examples( &self, out : &mut String, bold : &str, ex_color : &str, rst : &str )
   {
     let s  = &self.style;
@@ -217,7 +227,14 @@ impl CliHelpTemplate
     let _ = writeln!( out, "{bold}Examples:{rst}" );
     for ex in &self.data.examples
     {
-      let _ = writeln!( out, "{ei}{ex_color}{}{rst}", ex.invocation );
+      if let Some( ref desc ) = ex.desc
+      {
+        let _ = writeln!( out, "{ei}{ex_color}{}  # {desc}{rst}", ex.invocation );
+      }
+      else
+      {
+        let _ = writeln!( out, "{ei}{ex_color}{}{rst}", ex.invocation );
+      }
     }
   }
 }

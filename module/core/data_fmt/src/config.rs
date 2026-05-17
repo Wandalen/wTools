@@ -223,6 +223,9 @@ pub enum FoldStyle
 /// `column_separator: Spaces(2)`, NOT `ColumnSeparator::default()` which is `Character('|')`.
 /// Use `bordered()` if pipe-separated output is required without an explicit setter call.
 #[ derive( Debug, Clone ) ]
+// TableConfig contains multiple independent boolean display toggles (auto_wrap, auto_fold,
+// show_header, outer_padding, etc.); each controls a distinct rendering axis and a
+// bitfield or enum wrapper would reduce API discoverability without design gain.
 #[ allow( clippy::struct_excessive_bools ) ]
 pub struct TableConfig
 {

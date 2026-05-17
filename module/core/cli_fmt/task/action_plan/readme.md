@@ -2,12 +2,6 @@
 
 Per-actor action plans for the cli_fmt task system.
 
-### Responsibility Table
-
-| File | Responsibility |
-|------|----------------|
-| `001_dev.md` | Development executor action plan |
-
 ## Index
 
 | Order | Actor | Format | Last Updated |

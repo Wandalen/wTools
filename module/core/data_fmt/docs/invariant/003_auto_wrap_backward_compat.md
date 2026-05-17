@@ -17,7 +17,8 @@
 
 | File | Relationship |
 |------|-------------|
-| [`src/formatters/table/mod.rs`](../../src/formatters/table/mod.rs) | `should_auto_wrap` guard, `format_internal` pipeline |
+| [`src/formatters/table/auto_fit.rs`](../../src/formatters/table/auto_fit.rs) | `should_auto_wrap` guard |
+| [`src/formatters/table/mod.rs`](../../src/formatters/table/mod.rs) | `format_internal` pipeline |
 
 ### Tests
 

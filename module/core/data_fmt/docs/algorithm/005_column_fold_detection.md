@@ -11,14 +11,15 @@
 
 | File | Relationship |
 |------|--------------|
-| `src/formatters/table/mod.rs` | `determine_fold_point`, `render_fold_continuation`, `should_auto_fold` |
+| `src/formatters/table/auto_fit.rs` | `determine_fold_point`, `render_fold_continuation`, `should_auto_fold` |
 | `src/config.rs` | `FoldStyle` enum, `auto_fold`/`fold_style`/`fold_indent` fields |
 
 ### Tests
 
 | File | Relationship |
 |------|--------------|
-| `tests/auto_fold_test.rs` | Column folding test scenarios (24 tests) |
+| `tests/auto_fold_test.rs` | Column folding test scenarios T01–T25 (25 tests) |
+| `tests/auto_fold_acceptance_test.rs` | Fold acceptance criteria CF AC-6–AC-8 + additional (7 tests) |
 
 ### Abstract
 

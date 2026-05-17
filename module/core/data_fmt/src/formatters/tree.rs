@@ -385,6 +385,9 @@ impl TreeFormatter
   }
 
   /// Format a single node with column alignment
+  // Each parameter is a distinct rendering input (node, buffer, column_widths, prefix,
+  // child_prefix, is_last, depth); no natural grouping exists without adding allocation
+  // overhead on this hot recursive path.
   #[ allow( clippy::too_many_arguments ) ]
   fn format_aligned_node(
     &self,
@@ -691,6 +694,9 @@ impl TreeFormatter
   }
 
   /// Format node with aggregation support (recursive)
+  // Aggregation traversal requires node, buffer, prefix, depth, grand_total, is_root,
+  // plus three typed callbacks (aggregate_fn, convert_to_f64, render_file/directory);
+  // a context struct would add an allocation on every recursive call.
   #[ allow( clippy::too_many_arguments ) ]
   fn format_node_with_aggregation< T, V, A, C, F, D >(
     &self,

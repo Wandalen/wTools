@@ -9,11 +9,17 @@ Contains all functional and integration tests for data_fmt library. Tests valida
 - Tests cover Tasks 012-015: min_column_width floor, ANSI coloring, border variants, Unicode display width
 - Test files kept under 1000 lines per file (warning threshold); mandatory split at 1500 lines
 
+### Scope
+
+**Responsibilities:** Verify data_fmt correctness across all formatter families, builders, and data structures.
+**In Scope:** Functional tests for all 10 formatter families (Table 9 styles, Tree 3 modes, Expanded, JSON, YAML, TOML, HTML, SQL, Logfmt, Text 6 variants), RowBuilder/TreeBuilder APIs, ANSI-aware alignment, auto-fit pipeline, Unicode display-width, word-wrap, and all config presets.
+**Out of Scope:** Performance benchmarks (benches/), manual test scripts (manual/), test surface specification documents (docs/), and library usage examples (examples/).
+
 ### Responsibility Table
 
 | File | Responsibility |
 |------|----------------|
-| `docs/` | Formal test surface spec files (algorithm + invariant) |
+| `docs/` | Test surface spec files for all 12 doc entity types |
 | `inc/` | Shared test utilities and helpers |
 | `aligned_tree_basic.rs` | Test basic aligned tree formatting |
 | `aligned_tree_configuration.rs` | Test aligned tree configuration options |
@@ -36,13 +42,15 @@ Contains all functional and integration tests for data_fmt library. Tests valida
 | `sql.rs` | Test SQL output format |
 | `table_styles_compatibility.rs` | Test table style compatibility |
 | `table_styles_outputs.rs` | Test table style outputs |
-| `table_config_corner_cases.rs` | Test TableConfig API corner cases and edge conditions |
+| `table_config_corner_cases.rs` | Test TableConfig API corner cases: builder chain, padding, alignment, width overrides, presets |
+| `table_config_validation_test.rs` | min_column_width floor enforcement and table-line alignment correctness tests |
 | `table_rendering_borders.rs` | Test border variant rendering: top/bottom borders, inter-row separators, AsciiGrid corners |
 | `table_rendering_colors.rs` | Test ANSI header coloring and alternating-row coloring |
 | `table_styles_presets.rs` | Test table style presets |
 | `text_cli_help.rs` | Test CLI help text formatting |
 | `themes.rs` | Test visual themes |
-| `unicode_display_width_alignment.rs` | Test Unicode display width alignment |
+| `unicode_display_width_alignment.rs` | Bug reproducers for issue-003: Cyrillic, CJK, emoji, mixed-width alignment |
+| `unicode_display_width_table.rs` | Task 015 display width fix: CJK/emoji table alignment and padding correctness |
 | `unified_format_trait.rs` | Test unified format trait |
 | `verify_alignment_correct.rs` | Verify alignment correctness |
 | `word_wrap.rs` | Test `WrapFormatter` / `WrapConfig` / `BreakStrategy` / `Overflow` including bug reproducers |
@@ -53,9 +61,11 @@ Contains all functional and integration tests for data_fmt library. Tests valida
 | `expanded_indent_prefix.rs` | Test ExpandedConfig indent_prefix field behavior |
 | `expanded_behavior.rs` | Test ExpandedFormatter corner cases: show_record_numbers, alignment, spacing |
 | `sub_row_test.rs` | Test sub-row detail lines (tasks 017–018): API, rendering, config, backward compat, ANSI colorization |
-| `auto_wrap_test.rs` | Test cell auto-wrapping with terminal-aware budget allocation (task 019) |
+| `auto_wrap_test.rs` | Test cell auto-wrapping T01–T23: natural fit, flex columns, disable modes, rendering, edge cases |
+| `auto_wrap_budget_test.rs` | Budget allocation acceptance criteria (BA AC-6–AC-8) and invariant tests (WC IN-3) |
 | `terminal_width_test.rs` | Test terminal width detection three-tier fallback (task 021) |
-| `auto_fold_test.rs` | Test column folding with auto-fold continuation lines (task 020) |
+| `auto_fold_test.rs` | Column folding T01–T25: basic fold, fold styles, combinations, bug reproducers |
+| `auto_fold_acceptance_test.rs` | Column fold acceptance criteria (CF AC-6–AC-8): Bare style, per-row fold, single overflow |
 | `expanded_format_trait.rs` | Tests ExpandedFormatter via unified Format trait |
 
 ## Test Files

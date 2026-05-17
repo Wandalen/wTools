@@ -31,7 +31,9 @@
 
 | File | Relationship |
 |------|-------------|
-| [`src/formatters/table/mod.rs`](../../src/formatters/table/mod.rs) | Auto-wrap budget allocation and fold rendering |
+| [`src/formatters/table/mod.rs`](../../src/formatters/table/mod.rs) | `format_internal` orchestration; dispatches to auto_fit and rendering |
+| [`src/formatters/table/auto_fit.rs`](../../src/formatters/table/auto_fit.rs) | Column classification, budget allocation, fold detection and rendering |
+| [`src/formatters/table/rendering.rs`](../../src/formatters/table/rendering.rs) | Row and border rendering primitives used during fold output |
 | [`src/config.rs`](../../src/config.rs) | ColumnFlex, FoldStyle enums; auto-fit TableConfig fields |
 | [`src/wrap.rs`](../../src/wrap.rs) | WrapFormatter for cell wrapping |
 
@@ -39,8 +41,10 @@
 
 | File | Relationship |
 |------|-------------|
-| [`tests/auto_wrap_test.rs`](../../tests/auto_wrap_test.rs) | Auto-wrap test suite (22 cases) |
-| [`tests/auto_fold_test.rs`](../../tests/auto_fold_test.rs) | Column folding test suite (22 tests) |
+| [`tests/auto_wrap_test.rs`](../../tests/auto_wrap_test.rs) | Auto-wrap test suite T01–T23 (23 tests) |
+| [`tests/auto_wrap_budget_test.rs`](../../tests/auto_wrap_budget_test.rs) | Budget allocation acceptance criteria BA AC-6–AC-8 + invariant WC IN-3 (13 tests) |
+| [`tests/auto_fold_test.rs`](../../tests/auto_fold_test.rs) | Column folding test suite T01–T25 (25 tests) |
+| [`tests/auto_fold_acceptance_test.rs`](../../tests/auto_fold_acceptance_test.rs) | Fold acceptance criteria CF AC-6–AC-8 + additional (7 tests) |
 
 ### Design
 

@@ -17,7 +17,8 @@
 
 | File | Relationship |
 |------|-------------|
-| [`src/formatters/table/mod.rs`](../../src/formatters/table/mod.rs) | `determine_fold_point`, `should_auto_fold`, header rendering guard |
+| [`src/formatters/table/auto_fit.rs`](../../src/formatters/table/auto_fit.rs) | `determine_fold_point`, `should_auto_fold` |
+| [`src/formatters/table/mod.rs`](../../src/formatters/table/mod.rs) | header rendering guard (header path bypasses fold logic) |
 
 ### Tests
 

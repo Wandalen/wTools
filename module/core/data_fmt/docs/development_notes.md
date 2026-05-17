@@ -557,7 +557,7 @@ consistency; struct literals do not.
 
 ### Bug Description
 
-`format_header_separator()` in `src/formatters/table/mod.rs` renders the `AsciiGrid` header
+`format_header_separator()` in `src/formatters/table/rendering.rs` renders the `AsciiGrid` header
 separator line with `'|'` as corner/junction characters, producing:
 
 ```

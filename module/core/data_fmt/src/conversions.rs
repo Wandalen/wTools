@@ -4,6 +4,8 @@ use crate::{ TreeNode, RowBuilder, DecoratedText };
 
 /// Formatter parameters for tree flattening
 #[ derive( Debug, Clone ) ]
+// include_path/name/depth/data are four independent column-selection toggles with no
+// natural grouping; a bitmask or enum would obscure domain intent without benefit.
 #[ allow( clippy::struct_excessive_bools ) ]
 pub struct FlattenConfig
 {

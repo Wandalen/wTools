@@ -2,12 +2,6 @@
 
 Registry of all actors in the cli_fmt task system.
 
-### Responsibility Table
-
-| File | Responsibility |
-|------|----------------|
-| `001_dev.md` | Development executor actor record |
-
 ## Registry Index
 
 | Canonical | Name | Role | Aliases | Notes |
