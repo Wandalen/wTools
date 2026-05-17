@@ -58,7 +58,7 @@ Validates CLI output processing and help template rendering. Tests are organized
 - **T04** Name not truncated: `cmd_name_width` is minimum padding, not a hard cap
 - **T05** No Options section: omitted when `options` vec is empty
 - **T06** No Examples section: omitted when `examples` vec is empty
-- **T07** Single group: binary, group header, and command name all appear
+- **T07** Single group: `Usage: {binary}` and `Commands:` headers appear; group and command name appear; no ANSI
 - **T08** `CliHelpStyle::default()` field values match reference implementation layout
 - **T09** `ExampleEntry.desc` rendered: `Some` appends `# text`; `None` emits no `#` (bug reproducer)
 
