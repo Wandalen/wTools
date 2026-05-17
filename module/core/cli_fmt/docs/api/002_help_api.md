@@ -82,7 +82,7 @@ an error or panic.
 
 **`CliHelpTemplate::render(&self) -> String`** — renders the complete help text:
 1. ANSI codes are active only when `style.tty_detect = true` and stdout IS a TTY; otherwise all color fields are treated as empty strings.
-2. Emits usage line and tagline.
+2. Emits header section: `{color_tagline}Usage:{color_reset} {binary} <command>`, a blank line, the tagline text (no color), a blank line, then `{color_tagline}Commands:{color_reset}`.
 3. Emits each command group with its entries, names padded to `cmd_name_width`.
 4. If `options` is non-empty: emits `Options:` section with names padded to `opt_name_width`.
 5. If `examples` is non-empty: emits `Examples:` section; each `ExampleEntry.desc = Some(text)` appends `  # {text}` to the invocation line; `None` emits the invocation bare.

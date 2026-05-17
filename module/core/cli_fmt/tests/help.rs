@@ -13,7 +13,7 @@
 //! | T04 | cmd_name_width=10, 11-char name | custom style | name not truncated |
 //! | T05 | empty options vec | default style | no "Options:" section emitted |
 //! | T06 | empty examples vec | default style | no "Examples:" section emitted |
-//! | T07 | single group, single cmd | default style, tty_detect=false | binary in output; group+cmd appear; no ANSI |
+//! | T07 | single group, single cmd | default style, tty_detect=false | `Usage: {binary}` header, `Commands:` header, group+cmd appear; no ANSI |
 //! | T08 | struct construction only | N/A | CliHelpStyle::default() field values match print_usage() |
 //! | T09 | ExampleEntry with desc=Some vs None | tty_detect=false | desc=Some renders `# text` inline; desc=None renders no `#` |
 
@@ -189,9 +189,9 @@ fn test_no_examples_section()
 
 // ── T07 ─ single group: binary name, group header, command visible ────────────
 
-/// T07: With a single group and command, the binary name appears in the usage
-/// line, the group header and command name appear in the body, and no ANSI
-/// codes are emitted when `tty_detect=false`.
+/// T07: The rendered output contains `"Usage: {binary}"` and `"Commands:"` —
+/// verifying the structured header format specified in `feature/002` and `api/002`.
+/// Group header and command name appear in the body. No ANSI codes with `tty_detect=false`.
 #[ test ]
 fn test_single_group_binary_name()
 {
@@ -208,9 +208,10 @@ fn test_single_group_binary_name()
     examples : vec![],
   };
   let out = CliHelpTemplate::new( no_tty_style(), data ).render();
-  assert!( out.contains( "myapp" ),  "binary name must appear in output, got:\n{out}"  );
-  assert!( out.contains( "Cmds" ),   "group header must appear in output, got:\n{out}" );
-  assert!( out.contains( "run" ),    "command name must appear in output, got:\n{out}" );
+  assert!( out.contains( "Usage: myapp" ), "Usage: header with binary must appear, got:\n{out}" );
+  assert!( out.contains( "Commands:" ),    "Commands: header must appear, got:\n{out}"          );
+  assert!( out.contains( "Cmds" ),         "group header must appear in output, got:\n{out}"    );
+  assert!( out.contains( "run" ),          "command name must appear in output, got:\n{out}"    );
   assert!(
     !out.contains( "\x1b[" ),
     "no ANSI codes with tty_detect=false, got:\n{out}",
