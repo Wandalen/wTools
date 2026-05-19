@@ -7,17 +7,32 @@
 - **In Scope**: Trait implementation, `HtmlVariant` enum values, per-variant feature flags.
 - **Out of Scope**: Variant output details (see `../variant/020_html_minimal.md` through `023_html_custom.md`), operation signatures (see `../api/004_formatters.md`).
 
-### Cross-References
+### Traits
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/html.rs` | `HtmlFormatter` and `HtmlVariant` implementation |
-| doc | `../api/004_formatters.md` | Operation signatures |
-| doc | `../trait/001_format.md` | `Format` trait contract |
-| doc | `../variant/020_html_minimal.md` | Variant: minimal |
-| doc | `../variant/021_html_bootstrap.md` | Variant: bootstrap |
-| doc | `../variant/022_html_tailwind.md` | Variant: tailwind |
-| doc | `../variant/023_html_custom.md` | Variant: custom |
+| File | Relationship |
+|------|-------------|
+| [001_format.md](../trait/001_format.md) | `Format` trait contract |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [004_formatters.md](../api/004_formatters.md) | Operation signatures |
+
+### Variants
+
+| File | Relationship |
+|------|-------------|
+| [020_html_minimal.md](../variant/020_html_minimal.md) | Variant: minimal |
+| [021_html_bootstrap.md](../variant/021_html_bootstrap.md) | Variant: bootstrap |
+| [022_html_tailwind.md](../variant/022_html_tailwind.md) | Variant: tailwind |
+| [023_html_custom.md](../variant/023_html_custom.md) | Variant: custom |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/formatters/html.rs`](../../src/formatters/html.rs) | `HtmlFormatter` and `HtmlVariant` implementation |
 
 ### Trait
 

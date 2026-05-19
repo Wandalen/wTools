@@ -7,14 +7,20 @@
 - **In Scope**: TreeNode design invariants, RowBuilder contracts, TableView interchange format, edge case contracts.
 - **Out of Scope**: Rendering algorithms (see `algorithm/` docs) and ANSI/Unicode handling (see `invariant/002_ansi_unicode.md`).
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/data.rs` | Core data type definitions |
-| source | `src/builder.rs` | Builder contract enforcement |
-| test | `tests/data.rs` | Data type invariant tests |
-| test | `tests/builder.rs` | Builder contract tests |
+| File | Relationship |
+|------|-------------|
+| [`src/data.rs`](../../src/data.rs) | Core data type definitions (`TreeNode<T>`) |
+| [`src/builder.rs`](../../src/builder.rs) | `TreeBuilder<T>` — path-based tree construction |
+| [`src/table_tree.rs`](../../src/table_tree.rs) | `RowBuilder` — row-length enforcement (`validate_row_length`) |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/data.rs`](../../tests/data.rs) | Data type invariant tests |
+| [`tests/builder.rs`](../../tests/builder.rs) | Builder contract tests |
 
 ### Invariant Statement
 

@@ -30,9 +30,26 @@ A configurable suffix marks truncated lines. Width of zero disables truncation e
 The result always includes metadata: count of lines removed by head/tail filtering, and
 a flag indicating whether any line was truncated by the width limit.
 
-### Cross-References
+### APIs
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | [`../api/001_output_api.md`](../api/001_output_api.md) | Public contract for the output processing function and types |
-| doc | [`../invariant/001_architectural_boundary.md`](../invariant/001_architectural_boundary.md) | Why CLI-specific policy belongs here, not in strs_tools |
+| File | Relationship |
+|------|-------------|
+| [`../api/001_output_api.md`](../api/001_output_api.md) | Public contract for the output processing function and types |
+
+### Invariants
+
+| File | Relationship |
+|------|-------------|
+| [`../invariant/001_architectural_boundary.md`](../invariant/001_architectural_boundary.md) | Boundary principle governing which logic belongs here |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| `src/output.rs` | Three-stage pipeline implementation — stream selection, line filtering, width truncation |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| `tests/output.rs` | Pipeline correctness across filtering, truncation, and stream ordering (33 tests) |

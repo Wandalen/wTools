@@ -7,14 +7,23 @@
 - **In Scope**: Trait definition, error variants, implementor table, non-implementors, usage example.
 - **Out of Scope**: Formatter implementation (see `../feature/`), variant output (see `../variant/`).
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/format_trait.rs` | Format trait definition |
-| test | `tests/unified_format_trait.rs` | Format trait tests |
-| doc | `../feature/003_unified_format_interface.md` | Feature-level documentation |
-| doc | `../feature/006_api_cleanup_v030.md` | v0.3.0 cleanup — adds ExpandedFormatter coverage |
+| File | Relationship |
+|------|-------------|
+| [003_unified_format_interface.md](../feature/003_unified_format_interface.md) | Feature-level documentation |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/formatters/format_trait.rs`](../../src/formatters/format_trait.rs) | Format trait definition |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/unified_format_trait.rs`](../../tests/unified_format_trait.rs) | Format trait tests |
 
 ### Signature
 
@@ -29,6 +38,7 @@
 | Formatter | Feature Gate | Dependencies |
 |-----------|-------------|--------------|
 | `TableFormatter` | `table_*` (9 flags) | none |
+| `ExpandedFormatter` | `format_expanded` | none |
 | `LogfmtFormatter` | `format_logfmt` | none |
 | `HtmlFormatter` | `html_*` (4 flags) | none |
 | `SqlFormatter` | `sql_*` (4 flags) | none |
@@ -41,7 +51,6 @@
 
 | Formatter | Reason | Alternative |
 |-----------|--------|-------------|
-| `ExpandedFormatter` | Uses deprecated `TableShapedFormatter` only | via the deprecated `TableShapedFormatter` interface (to resolve in v0.3.0 — see `../feature/006_api_cleanup_v030.md`) |
 | `TreeFormatter` | Requires generic `T` + render closure | Direct methods: `format()`, `format_aligned()`, `format_with_aggregation()` |
 
 ### Input Type

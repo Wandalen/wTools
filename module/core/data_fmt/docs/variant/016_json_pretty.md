@@ -7,13 +7,23 @@
 - **In Scope**: All 46 variant attributes, example output, feature flag, compatibility.
 - **Out of Scope**: Formatter implementation (see source), attribute schema (see `../data_structure/001_variant_attributes.md`).
 
-### Cross-References
+### DataStructures
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/json.rs` | JsonFormatter implementation |
-| test | `tests/json.rs` | JSON output tests |
-| doc | `../data_structure/001_variant_attributes.md` | Attribute definitions for all 46 variant attributes |
+| File | Relationship |
+|------|-------------|
+| [001_variant_attributes.md](../data_structure/001_variant_attributes.md) | Attribute definitions for all 46 variant attributes |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/formatters/json.rs`](../../src/formatters/json.rs) | JsonFormatter implementation |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/json.rs`](../../tests/json.rs) | JSON output tests |
 
 ### Identity & Classification
 

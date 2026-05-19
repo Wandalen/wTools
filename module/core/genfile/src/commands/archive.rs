@@ -17,7 +17,6 @@ use unilang::data::
 ///
 /// # Errors
 /// Returns an error if command registration fails.
-#[ allow( deprecated ) ]
 pub fn register( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core::error::Error > >
 {
   register_new( registry )?;
@@ -28,7 +27,6 @@ pub fn register( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core:
 }
 
 /// Register .archive.new command
-#[ allow( deprecated ) ]
 fn register_new( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core::error::Error > >
 {
   let cmd = CommandDefinition::new
@@ -68,7 +66,6 @@ fn register_new( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core:
 }
 
 /// Register .archive.load command
-#[ allow( deprecated ) ]
 fn register_load( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core::error::Error > >
 {
   let cmd = CommandDefinition::new
@@ -105,7 +102,6 @@ fn register_load( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core
 }
 
 /// Register .archive.save command
-#[ allow( deprecated ) ]
 fn register_save( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core::error::Error > >
 {
   let cmd = CommandDefinition::new
@@ -151,7 +147,6 @@ fn register_save( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core
 }
 
 /// Register `.archive.from_directory` command
-#[ allow( deprecated ) ]
 fn register_from_directory( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core::error::Error > >
 {
   let cmd = CommandDefinition::new

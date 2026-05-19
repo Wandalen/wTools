@@ -7,14 +7,24 @@
 - **In Scope**: Builder API shape, config struct names, construction at formatter time.
 - **Out of Scope**: Per-config field details (see `api/003_config_types.md`), builder helper types (see `builder/`).
 
-### Cross-References
+### APIs
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | `../architecture.md` | Original combined architecture document (retained per migration rules) |
-| doc | `../api/003_config_types.md` | Config type API signatures |
-| doc | `../builder/001_row_builder.md` | RowBuilder construction helper |
-| doc | `../builder/002_tree_builder.md` | TreeBuilder construction helper |
+| File | Relationship |
+|------|-------------|
+| [003_config_types.md](../api/003_config_types.md) | Config type API signatures |
+
+### Builders
+
+| File | Relationship |
+|------|-------------|
+| [001_row_builder.md](../builder/001_row_builder.md) | RowBuilder construction helper |
+| [002_tree_builder.md](../builder/002_tree_builder.md) | TreeBuilder construction helper |
+
+### Docs
+
+| File | Relationship |
+|------|-------------|
+| [`../architecture.md`](../architecture.md) | Original combined architecture document (retained per migration rules) |
 
 ### Problem
 

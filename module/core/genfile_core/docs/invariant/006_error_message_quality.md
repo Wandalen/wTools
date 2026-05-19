@@ -19,9 +19,14 @@ Manual review during code review; supplemented by error message tests that asser
 
 Opaque error messages cause users to give up or file bugs that cannot be reproduced because the failure context is lost. Diagnostic context is mandatory for a library intended for automation use.
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/error.rs` | Typed error enum and display implementations |
-| doc | `docs/feature/016_typed_errors.md` | Typed error variants documented here |
+| File | Relationship |
+|------|--------------|
+| [`feature/016_typed_errors.md`](../feature/016_typed_errors.md) | Typed error variants that must satisfy this constraint |
+
+### Sources
+
+| File | Relationship |
+|------|--------------|
+| [`src/error.rs`](../../src/error.rs) | Typed error enum and display implementations |

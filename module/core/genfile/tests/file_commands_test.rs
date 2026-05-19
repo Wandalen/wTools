@@ -212,3 +212,47 @@ fn file_add_without_content_or_from_file_returns_error()
     "Should show error when neither content nor from_file is provided"
   );
 }
+
+// FT-05 (feature/002): Add binary file — non-UTF-8 content stored as binary
+//
+// WHY: Template archives may include non-text assets (images, fonts).
+// file.add detects non-UTF-8 bytes and stores them as FileContent::Binary.
+// file.show must report binary size rather than raw bytes.
+#[ test ]
+fn test_file_add_binary_file()
+{
+  let temp_dir = std::env::temp_dir();
+  let binary_path = temp_dir.join( "test_binary_image.png" );
+
+  // Clean up
+  let _ = fs::remove_file( &binary_path );
+
+  // Write PNG magic bytes (non-UTF-8, unambiguous binary)
+  let binary_content : Vec< u8 > = vec![ 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A ];
+  fs::write( &binary_path, &binary_content ).expect( "Should write binary file" );
+
+  let script = format!(
+    ".archive.new name::test\n\
+     .file.add path::logo.png from_file::{}\n\
+     .file.show path::logo.png\n\
+     exit",
+    binary_path.display()
+  );
+
+  let output = cli_runner::repl_command( &script )
+    .output()
+    .expect( "Command should execute" );
+
+  let stdout = String::from_utf8_lossy( &output.stdout );
+  assert!(
+    stdout.contains( "Added file: logo.png" ),
+    "Should add binary file. stdout: {stdout}"
+  );
+  assert!(
+    stdout.contains( "[Binary" ) || stdout.contains( "bytes" ),
+    "file.show should indicate binary content. stdout: {stdout}"
+  );
+
+  // Clean up
+  let _ = fs::remove_file( &binary_path );
+}

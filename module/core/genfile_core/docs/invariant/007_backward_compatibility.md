@@ -19,8 +19,8 @@ Run `cargo semver-checks` before publishing any minor or patch release. Any API 
 
 Breaking changes in minor/patch releases invalidate dependent projects' `Cargo.lock` guarantees, cause compilation failures for downstream users, and erode trust in the library's stability.
 
-### Cross-References
+### Configs
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| config | `Cargo.toml` | Version declaration governing semver policy |
+| File | Relationship |
+|------|--------------|
+| [`Cargo.toml`](../../Cargo.toml) | Version declaration governing semver policy |

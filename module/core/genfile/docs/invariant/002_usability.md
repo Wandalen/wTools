@@ -13,14 +13,20 @@ All commands must follow dot-prefix naming with snake_case segments. All paramet
 
 ### Enforcement Mechanism
 
-CLI compliance audit against cli.rulebook.md standards. Automated tests verify naming conventions. Manual review checks error message quality and dry-run behavior. The `commands/*.yaml` files serve as authoritative command specs checked against the rulebook.
+CLI compliance audit against cli.rulebook.md standards. Automated tests verify naming conventions. Manual review checks error message quality and dry-run behavior. Command definitions in `src/commands/*.rs` serve as the authoritative spec for CLI structure.
 
 ### Violation Consequences
 
 Inconsistent CLI conventions frustrate users who internalize patterns from one command and expect them elsewhere. Non-standard error messages leave users unable to diagnose failures.
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | `docs/cli/readme.md` | CLI design documentation |
+| File | Relationship |
+|------|--------------|
+| [`feature/009_help_system.md`](../feature/009_help_system.md) | Help system that must conform to CLI usability conventions |
+
+### Docs
+
+| File | Relationship |
+|------|--------------|
+| [`docs/cli/readme.md`](../cli/readme.md) | CLI design documentation |

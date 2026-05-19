@@ -6,6 +6,7 @@
 //! # Modules
 //!
 //! - `output` - Process command output (head/tail filtering, width truncation, stream merging)
+//! - `help` - Typed, configurable CLI help text renderer (`CliHelpTemplate`, `CliHelpStyle`, `CliHelpData`)
 //!
 //! # Architecture
 //!
@@ -33,12 +34,14 @@
 //! ```
 
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
-#![ warn( rust_2018_idioms ) ]
-#![ warn( missing_docs ) ]
 
 /// CLI output processing.
 #[ cfg( feature = "output" ) ]
 pub mod output;
+
+/// CLI help text rendering.
+#[ cfg( feature = "cli_help_template" ) ]
+pub mod help;
 
 /// Namespace with dependencies.
 pub mod dependency
@@ -52,6 +55,8 @@ pub mod own
 {
   #[ cfg( feature = "output" ) ]
   pub use super::output::orphan::*;
+  #[ cfg( feature = "cli_help_template" ) ]
+  pub use super::help::orphan::*;
 }
 
 /// Orphan namespace of the module.
@@ -62,7 +67,6 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  #[ cfg( feature = "output" ) ]
   pub use super::own::*;
 }
 
@@ -71,4 +75,6 @@ pub mod prelude
 {
   #[ cfg( feature = "output" ) ]
   pub use super::output::orphan::*;
+  #[ cfg( feature = "cli_help_template" ) ]
+  pub use super::help::orphan::*;
 }

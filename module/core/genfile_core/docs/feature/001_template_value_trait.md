@@ -11,10 +11,20 @@
 
 The library exposes a template value trait with three required methods: conversion to a template string, construction from a string, and emptiness check. Any custom value type implements this trait to participate in template rendering without coupling to a specific CLI framework or value representation. The built-in value type implements this trait as the default option.
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/value.rs` | Trait definition and built-in value type implementation |
-| test | `tests/` | Value trait contract tests |
-| doc | `docs/feature/002_default_value_type.md` | Built-in value type that implements this trait |
+| File | Relationship |
+|------|--------------|
+| [`feature/002_default_value_type.md`](002_default_value_type.md) | Built-in value type that implements this trait |
+
+### Sources
+
+| File | Relationship |
+|------|--------------|
+| [`src/value.rs`](../../src/value.rs) | Trait definition |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| [`tests/inc/value_test.rs`](../../tests/inc/value_test.rs) | Value trait contract tests |

@@ -1,28 +1,25 @@
 # Test Surface Specs
 
-## Scope
+### Scope
 
-Formal test specification documents for all algorithm and invariant test surface
-elements defined in `docs/algorithm/` and `docs/invariant/`.
+- **Purpose**: House test surface specification documents for doc entity test coverage.
+- **Responsibility**: Root directory for test-aligned documentation specs.
+- **In Scope**: All 12 doc entity type surfaces: algorithm (006), api (004), builder (002), data_structure (001), feature (006), formatter (010), input_model (002), input_type (002), invariant (004), pattern (004), trait (003), variant (033) — covering all instances from corresponding `docs/` directories.
+- **Out of Scope**: Test code organization (see `tests/readme.md`), manual testing procedures (see `tests/manual/readme.md`).
 
-**In Scope:**
-- `algorithm/001` Multiline Cell Rendering
-- `algorithm/002` Word Wrapping
-- `algorithm/003` Tree Column Alignment
-- `algorithm/004` Budget Allocation
-- `algorithm/005` Column Fold Detection
-- `algorithm/006` CLI Help Alignment
-- `invariant/001` Data Model
-- `invariant/002` ANSI and Unicode
-- `invariant/003` Auto-Wrap Backward Compatibility
-- `invariant/004` Column Fold Invariants
-
-**Out of Scope:** Test code organization (see `tests/readme.md`), manual testing
-procedures (see `tests/manual/readme.md`).
-
-## Overview Table
+### Responsibility Table
 
 | Directory | Responsibility |
 |-----------|----------------|
 | `algorithm/` | Algorithm correctness spec files; AC-N cases, min 4 per spec |
-| `invariant/` | Invariant enforcement spec files; IC-N cases, min 2 per spec |
+| `api/` | API contract verification spec files; AP-N cases, min 4 per spec |
+| `builder/` | Builder API contract spec files; BL-N cases, min 4 per spec |
+| `data_structure/` | Data structure contract spec files; DS-N cases, min 4 per spec |
+| `feature/` | Feature behavioral spec files; FT-N cases, min 4 per spec |
+| `formatter/` | Formatter output contract spec files; FM-N cases, min 4 per spec |
+| `input_model/` | Input model contract spec files; IM-N cases, min 4 per spec |
+| `input_type/` | Input type contract spec files; IV-N cases, min 4 per spec |
+| `invariant/` | Invariant enforcement spec files; IN-N cases, min 2 per spec |
+| `pattern/` | Design pattern verification spec files; PT-N cases, min 3 per spec |
+| `trait/` | Trait contract spec files; TR-N cases, min 4 per spec |
+| `variant/` | Variant output contract spec files; VT-N cases, min 4 per spec |

@@ -25,7 +25,7 @@ A two-phase algorithm for rendering tree nodes with multi-column data so that co
 
 ### Source Location
 
-`src/formatters/tree.rs` — `format_aligned()` (lines 255-295) orchestrates the two phases. Phase 1: `calculate_column_widths()` (lines 298-317) + `traverse_for_widths()` (lines 320-368). Phase 2: `format_aligned_node()` (lines 388-492).
+`src/formatters/tree.rs` — `format_aligned()` (lines 255-295) orchestrates the two phases. Phase 1: `calculate_column_widths()` (lines 298-317) + `traverse_for_widths()` (lines 320-369). Phase 2: `format_aligned_node()` (lines 392-497).
 
 ### Problem
 

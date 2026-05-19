@@ -8,3 +8,4 @@ Archive of completed tasks for data_fmt.
 
 | File | Responsibility |
 |------|----------------|
+| `001_migrate_decorated_text_strict.md` | DecoratedText strict migration task |

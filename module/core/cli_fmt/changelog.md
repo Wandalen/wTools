@@ -1,5 +1,17 @@
 # Changelog
 
+## [v0.5.0 | 2026-05-17] Add cli_help_template module
+
+**Added:** `cli_help_template` feature — typed, configurable CLI help text renderer.
+- `CliHelpStyle` — 13 style parameters (indents, column widths, ANSI color codes) with opinionated defaults
+- `CliHelpData` — typed sections: binary name, tagline, command groups, options, examples
+- `CliHelpTemplate::render() -> String` — column-aligned, ANSI-colored, TTY-conditional output
+- `ExampleEntry.desc: Option<String>` — optional inline annotation rendered as `  # {text}` suffix
+
+**Fixed:** `ExampleEntry.desc` silently dropped — `emit_examples()` ignored the field entirely (issue-T09).
+
+**Tests:** 9 integration tests for help module (T01–T09); T09 is a bug reproducer for the desc silent-drop fix. 2 new output tests added to fill gaps identified in test surface audit: `width_exact_boundary` (FT-11 — exact-boundary non-truncation) and `process_output_head_lines_omitted` (FT-12 — accurate lines_omitted under head filtering). Total: 42 integration tests.
+
 ## [v0.4.0 | 2026-04-19] Dependency version bump
 
 **Updated:** Dependency version alignment with workspace release.

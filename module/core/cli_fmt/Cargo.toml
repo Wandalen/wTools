@@ -1,6 +1,6 @@
 [package]
 name = "cli_fmt"
-version = "0.4.0"
+version = "0.5.0"
 edition = "2021"
 authors = [ "wTools Contributors" ]
 license = "MIT"
@@ -10,17 +10,14 @@ documentation = "https://docs.rs/cli_fmt"
 keywords = [ "cli", "command-line", "output", "formatting", "display" ]
 categories = [ "command-line-utilities", "development-tools" ]
 
-[lints]
-workspace = true
-
 [dependencies]
-strs_tools = { workspace = true, features = [ "ansi", "string_split", "std" ], optional = true }
+strs_tools = { version = "~0.45.0", features = [ "ansi", "string_split", "std" ], optional = true }
 
 [dev-dependencies]
 
 [features]
 # No default features — all functionality is opt-in
-default = [ "enabled", "output", "ansi_unicode" ]
+default = [ "enabled", "output", "ansi_unicode", "cli_help_template" ]
 
 # Master switch - activates core dependencies
 enabled = [ "dep:strs_tools" ]
@@ -31,6 +28,7 @@ ansi_unicode = [ "strs_tools/ansi_unicode" ]
 
 # Individual modules
 output = [ "enabled", "std", "string_split" ]
+cli_help_template = []
 
 # Composite features - enables all functionality
-full = [ "enabled", "output", "ansi_unicode" ]
+full = [ "enabled", "output", "ansi_unicode", "cli_help_template" ]

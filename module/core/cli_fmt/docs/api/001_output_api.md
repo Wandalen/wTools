@@ -51,9 +51,26 @@ Both public functions are infallible. They perform no I/O and accept any string 
 
 The function signatures, configuration fields, and result structure are stable across patch and minor versions. New configuration options may be added in minor versions with backward-compatible defaults. Changes to existing option semantics require a major version bump.
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | [`../feature/001_output_processing.md`](../feature/001_output_processing.md) | Behavioral description of output processing |
-| doc | [`../invariant/001_architectural_boundary.md`](../invariant/001_architectural_boundary.md) | Why these types live here and not in strs_tools |
+| File | Relationship |
+|------|-------------|
+| [`../feature/001_output_processing.md`](../feature/001_output_processing.md) | Behavioral description of output processing |
+
+### Invariants
+
+| File | Relationship |
+|------|-------------|
+| [`../invariant/001_architectural_boundary.md`](../invariant/001_architectural_boundary.md) | Boundary principle this API implements |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| `src/output.rs` | Implementation of process_output, merge_streams, and all API types |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| `tests/output.rs` | API contract verification across processing configurations |

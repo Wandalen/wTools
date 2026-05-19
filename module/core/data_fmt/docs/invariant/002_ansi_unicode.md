@@ -7,12 +7,17 @@
 - **In Scope**: Character width measurement, display-width-aware padding, ANSI reset guarantees, per-line color wrapping.
 - **Out of Scope**: Data model contracts (see `invariant/001_data_model.md`) and formatting algorithms (see `algorithm/` docs).
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/ansi_str.rs` | ANSI escape handling implementation |
-| test | `tests/unicode_display_width_alignment.rs` | Unicode width and ANSI handling tests |
+| File | Relationship |
+|------|-------------|
+| [`src/ansi_str.rs`](../../src/ansi_str.rs) | ANSI escape handling implementation |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/unicode_display_width_alignment.rs`](../../tests/unicode_display_width_alignment.rs) | Unicode width and ANSI handling tests |
 
 ### Invariant Statement
 

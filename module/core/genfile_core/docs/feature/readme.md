@@ -4,7 +4,7 @@
 
 - **Purpose**: Documents functional requirements and user-facing capabilities of the genfile_core library.
 - **Responsibility**: Index of all feature doc instances for genfile_core.
-- **In Scope**: Template value types, parameters, renderers, file system abstractions, generation pipeline, error handling, and archive structure.
+- **In Scope**: Template value types, parameters, renderers, file system abstractions, generation pipeline, error handling, archive structure, and content source model.
 - **Out of Scope**: Non-functional constraints (→ `invariant/`), API contracts (→ `api/`).
 
 ### Overview Table
@@ -28,3 +28,4 @@
 | 015 | [Missing Mandatory Detection](015_missing_mandatory_detection.md) | Detection of unfilled required parameters | ✅ |
 | 016 | [Typed Errors](016_typed_errors.md) | Comprehensive typed error enum for all failure modes | ✅ |
 | 017 | [Archive Self-Containment](017_archive_self_containment.md) | Self-contained archive with embedded parameter values | ✅ |
+| 018 | [Content Source Model](018_content_source_model.md) | External content source abstraction with pluggable resolution and storage | ✅ |

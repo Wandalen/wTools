@@ -7,7 +7,7 @@
 
 ---
 
-## Overview
+### Overview
 
 This tutorial guides you through GenFile CLI fundamentals with hands-on examples. By the end, you'll understand:
 
@@ -20,15 +20,15 @@ This tutorial guides you through GenFile CLI fundamentals with hands-on examples
 
 ---
 
-## Lesson 1: Archive Basics (15 minutes)
+### Lesson 1: Archive Basics (15 minutes)
 
-### What You'll Learn
+#### What You'll Learn
 
 - Create and manage template archives
 - Save and load archives from disk
 - Understand archive operations
 
-### Concepts
+#### Concepts
 
 **What is a Template Archive?**
 
@@ -37,10 +37,9 @@ A template archive is a structured container for file templates with parameters 
 **Core Operations:**
 - `.archive.new` - Create archive
 - `.archive.save` - Write to disk
-- `.archive.load` - Read from disk
-- `.archive.close` - Reset current archive
+- `.archive.load` - Read from disk (loading replaces any current in-memory archive)
 
-### Exercise 1.1: Your First Archive
+#### Exercise 1.1: Your First Archive
 
 **Goal:** Create a simple archive and save it.
 
@@ -49,9 +48,10 @@ A template archive is a structured container for file templates with parameters 
 genfile .archive.new name::"my_first_archive" description::"My first template archive" verbosity::2
 
 # Expected output:
-# ✓ Archive created: my_first_archive
+# Created archive 'my_first_archive'
 # Description: My first template archive
-# Status: Empty (0 files, 0 parameters)
+# Files: 0
+# Parameters: 0
 ```
 
 **What happened?**
@@ -59,103 +59,92 @@ genfile .archive.new name::"my_first_archive" description::"My first template ar
 - Set name and description
 - `verbosity::2` shows detailed output
 
-**Try this:** Change `verbosity::3` to see even more details.
+**Try this:** Change to `verbosity::3` to see even more details.
 
-### Exercise 1.2: Save and Load
+#### Exercise 1.2: Save and Load
 
 **Goal:** Persist your archive to disk and reload it.
 
 ```bash
 # Step 1: Save current archive to disk
-genfile .archive.save path::"./my_first.genfile" verbosity::2
+genfile .archive.save path::"./my_first.yaml" verbosity::2
 
 # Expected output:
-# ✓ Archive saved: ./my_first.genfile
-# Size: 245 bytes
-# Format: TOML
+# Saved archive to ./my_first.yaml (YAML, 245 bytes)
 
-# Step 2: Close current archive (clear memory)
-genfile .archive.close verbosity::1
+# Step 2: Reload from disk (replaces current in-memory archive)
+genfile .archive.load path::"./my_first.yaml" verbosity::2
 
 # Expected output:
-# ✓ Archive closed
-
-# Step 3: Reload from disk
-genfile .archive.load path::"./my_first.genfile" verbosity::2
-
-# Expected output:
-# ✓ Archive loaded: ./my_first.genfile
-# Name: my_first_archive
+# Loaded archive 'my_first_archive' from ./my_first.yaml
 # Files: 0
 # Parameters: 0
 ```
 
 **What happened?**
-1. Saved in-memory archive to TOML file
-2. Cleared memory state
-3. Restored archive from disk
+1. Saved in-memory archive to YAML file
+2. Reloaded archive from disk — `.archive.load` always replaces the current in-memory state
 
 **Checkpoint:** You now understand the archive lifecycle!
 
-### Exercise 1.3: Dry Run Mode
+#### Exercise 1.3: Dry Run Mode
 
 **Goal:** Test operations without making changes.
 
 ```bash
-# Create archive with dry run enabled
-genfile .archive.new name::"test_archive" dry_run::true verbosity::2
+# Create archive first
+genfile .archive.new name::"test_archive" verbosity::1
+
+# Preview save without writing (dry run)
+genfile .archive.save path::"./test.yaml" dry::1 verbosity::2
 
 # Expected output:
-# [DRY RUN] Would create archive: test_archive
+# [DRY RUN] Would save archive to ./test.yaml
+# [INFO] Format: YAML
+# [INFO] Estimated size: ~200 bytes
 # [DRY RUN] No changes made
-
-# Try saving (nothing written)
-genfile .archive.save path::"./test.genfile" dry_run::true verbosity::2
-
-# Expected output:
-# [DRY RUN] Would save to: ./test.genfile
-# [DRY RUN] No file written
 ```
 
 **What happened?**
-- `dry_run::true` simulates operations
-- Nothing written to disk or memory
-- Perfect for testing commands
+- `dry::1` simulates operations without writing anything
+- Use `dry::0` (or omit `dry::`) for real execution
+- Useful for validating operations before committing
 
-**Pro Tip:** Always use `dry_run::true` when testing complex operations.
+**Pro Tip:** Always preview with `dry::1` when testing complex operations.
 
-### Lesson 1 Review
+#### Lesson 1 Review
 
 **What you learned:**
 - ✓ Create archives with `.archive.new`
 - ✓ Save archives with `.archive.save`
 - ✓ Load archives with `.archive.load`
-- ✓ Test safely with `dry_run::true`
+- ✓ Preview safely with `dry::1`
 
 **Next:** Lesson 2 adds files to your archives.
 
 ---
 
-## Lesson 2: Working with Files (15 minutes)
+### Lesson 2: Working with Files (15 minutes)
 
-### What You'll Learn
+#### What You'll Learn
 
 - Add files to archives
-- Use template variables
+- Use template variables with `{{placeholder}}` syntax
 - Define file structure
 
-### Concepts
+#### Concepts
 
 **Template Files vs Regular Files:**
 
-Template files contain placeholders like `{project_name}` that get replaced during materialization. Regular files are static content.
+Template files contain placeholders like `{{project_name}}` that get replaced during materialization. Regular files are static content. Genfile uses double-brace mustache syntax for all placeholders.
 
 **File Operations:**
 - `.file.add` - Add template with path and content
 - `.file.remove` - Remove file from archive
 - `.file.list` - Show all files in archive
+- `.file.show` - Display file content
 
-### Exercise 2.1: Add Your First File
+#### Exercise 2.1: Add Your First File
 
 **Goal:** Create archive with a template README file.
 
@@ -166,22 +155,21 @@ genfile .archive.new name::"readme_template" verbosity::1
 # Step 2: Add README template with placeholder
 genfile .file.add \
   path::"readme.md" \
-  content::"# {project_name}\n\nWelcome to {project_name}!\n\n## Description\n\n{description}" \
+  content::"# {{project_name}}\n\nWelcome to {{project_name}}!\n\n## Description\n\n{{description}}" \
   verbosity::2
 
 # Expected output:
-# ✓ File added: readme.md
-# Content size: 78 bytes
-# Placeholders detected: project_name, description
+# Added file: readme.md
+# Content size: 82 bytes
 # Archive status: 1 file, 0 parameters
 ```
 
 **What happened?**
 - Added `readme.md` template to archive
-- Content includes `{project_name}` and `{description}` placeholders
-- Placeholders detected but not yet defined
+- Content uses `{{project_name}}` and `{{description}}` placeholders (double braces)
+- Placeholders will be replaced during `.materialize`
 
-### Exercise 2.2: List Files
+#### Exercise 2.2: List Files
 
 **Goal:** View all files in current archive.
 
@@ -191,17 +179,10 @@ genfile .file.list verbosity::2
 # Expected output:
 # Archive: readme_template
 # Files (1):
-#   [1] readme.md (78 bytes, 2 placeholders)
-#       Placeholders: project_name, description
+#   [1] readme.md (82 bytes)
 ```
 
-**What you see:**
-- File count
-- File path
-- Content size
-- Detected placeholders
-
-### Exercise 2.3: Add Multiple Files
+#### Exercise 2.3: Add Multiple Files
 
 **Goal:** Create multi-file project template.
 
@@ -209,13 +190,13 @@ genfile .file.list verbosity::2
 # Add main source file
 genfile .file.add \
   path::"src/main.rs" \
-  content::"fn main() {\n    println!(\"Hello from {project_name}!\");\n}" \
+  content::'fn main()\n{\n  println!( "Hello from {{project_name}}!" );\n}' \
   verbosity::1
 
 # Add configuration file
 genfile .file.add \
-  path::"config.toml" \
-  content::"[project]\nname = \"{project_name}\"\nversion = \"{version}\"" \
+  path::"config.yaml" \
+  content::"project:\n  name: {{project_name}}\n  version: {{version}}" \
   verbosity::1
 
 # List all files
@@ -224,27 +205,26 @@ genfile .file.list verbosity::2
 # Expected output:
 # Archive: readme_template
 # Files (3):
-#   [1] readme.md (78 bytes)
-#   [2] src/main.rs (56 bytes)
-#   [3] config.toml (52 bytes)
-# Total placeholders: project_name, description, version
+#   [1] readme.md (82 bytes)
+#   [2] src/main.rs (60 bytes)
+#   [3] config.yaml (48 bytes)
 ```
 
 **What happened?**
 - Added 3 files to archive
 - Each file can have different placeholders
-- Archive now has structure: readme.md, src/, config.toml
+- Archive now has structure: readme.md, src/, config.yaml
 
-### Exercise 2.4: Remove a File
+#### Exercise 2.4: Remove a File
 
 **Goal:** Remove unwanted file from archive.
 
 ```bash
 # Remove config file
-genfile .file.remove path::"config.toml" verbosity::2
+genfile .file.remove path::"config.yaml" verbosity::2
 
 # Expected output:
-# ✓ File removed: config.toml
+# Removed file: config.yaml
 # Archive status: 2 files remaining
 
 # Verify removal
@@ -256,107 +236,120 @@ genfile .file.list verbosity::1
 #   src/main.rs
 ```
 
-**What happened?**
-- Removed `config.toml` from archive
-- Other files unchanged
-- Archive now has 2 files
+#### Exercise 2.5: Show File Content
 
-### Exercise 2.5: Save Multi-File Archive
+**Goal:** Inspect template content for a specific file.
+
+```bash
+genfile .file.show path::"readme.md" verbosity::2
+
+# Expected output:
+# File: readme.md (82 bytes)
+# ---
+# # {{project_name}}
+#
+# Welcome to {{project_name}}!
+#
+# ## Description
+#
+# {{description}}
+# ---
+```
+
+#### Exercise 2.6: Save Multi-File Archive
 
 **Goal:** Persist your template for reuse.
 
 ```bash
 # Save complete archive
-genfile .archive.save path::"./project_template.genfile" verbosity::2
+genfile .archive.save path::"./project_template.yaml" verbosity::2
 
 # Expected output:
-# ✓ Archive saved: ./project_template.genfile
-# Size: 1.2 KB
+# Saved archive to ./project_template.yaml (YAML, 1.2 KB)
 # Files: 2
-# Format: TOML
 ```
 
 **Checkpoint:** You can now create reusable file templates!
 
-### Lesson 2 Review
+#### Lesson 2 Review
 
 **What you learned:**
 - ✓ Add files with `.file.add`
 - ✓ List files with `.file.list`
+- ✓ Show file content with `.file.show`
 - ✓ Remove files with `.file.remove`
-- ✓ Use placeholders like `{project_name}` in content
-- ✓ Create multi-file templates
+- ✓ Use `{{placeholder}}` syntax in content (double braces)
 
 **Next:** Lesson 3 defines parameters for placeholders.
 
 ---
 
-## Lesson 3: Parameters and Values (15 minutes)
+### Lesson 3: Parameters and Values (15 minutes)
 
-### What You'll Learn
+#### What You'll Learn
 
 - Define parameters for placeholders
 - Set parameter values
 - Validate parameter constraints
 
-### Concepts
+#### Concepts
 
 **Parameters Define Placeholders:**
 
-Every `{placeholder}` in your templates should have a corresponding parameter definition that specifies:
-- Name (matches placeholder)
+Every `{{placeholder}}` in your templates should have a corresponding parameter definition that specifies:
+- Name (matches placeholder without braces)
 - Description (what it represents)
 - Default value (optional)
-- Optional flag (required vs optional)
+- `mandatory::true/false` — whether a value is required for materialization
 
 **Parameter Operations:**
-- `.parameter.define` - Create parameter definition
+- `.parameter.add` - Create parameter definition
 - `.parameter.list` - Show all parameters
 - `.value.set` - Assign value to parameter
 - `.value.list` - Show current values
 
-### Exercise 3.1: Define Parameters
+#### Exercise 3.1: Define Parameters
 
 **Goal:** Define parameters for template placeholders.
 
 ```bash
 # Load previous archive
-genfile .archive.load path::"./project_template.genfile" verbosity::1
+genfile .archive.load path::"./project_template.yaml" verbosity::1
 
-# Define project_name parameter (required)
-genfile .parameter.define \
-  name::"project_name" \
+# Define project_name parameter (mandatory)
+genfile .parameter.add \
+  name::project_name \
   description::"Name of the project" \
-  optional::false \
+  mandatory::true \
   verbosity::2
 
 # Expected output:
-# ✓ Parameter defined: project_name
+# Added parameter: project_name
 # Description: Name of the project
-# Required: Yes
-# Default: None
+# Mandatory: Yes
+# Default: (none)
 
-# Define description parameter with default
-genfile .parameter.define \
-  name::"description" \
+# Define description parameter with default (optional)
+genfile .parameter.add \
+  name::description \
   description::"Project description text" \
-  optional::true \
+  mandatory::false \
   default::"A new project" \
   verbosity::2
 
 # Expected output:
-# ✓ Parameter defined: description
+# Added parameter: description
 # Description: Project description text
-# Required: No
+# Mandatory: No
 # Default: "A new project"
 ```
 
 **What happened?**
 - Defined 2 parameters matching template placeholders
-- `project_name` is required (no default)
-- `description` is optional (has default)
+- `project_name` is mandatory (no default — must be set before `.materialize`)
+- `description` is optional (has default — safe to omit)
 
-### Exercise 3.2: List Parameters
+#### Exercise 3.2: List Parameters
 
 **Goal:** View all defined parameters.
 
@@ -366,41 +359,31 @@ genfile .parameter.list verbosity::2
 # Expected output:
 # Archive: readme_template
 # Parameters (2):
-#   [1] project_name (required)
+#   [1] project_name (mandatory)
 #       Description: Name of the project
-#       Used in: readme.md, src/main.rs
 #
 #   [2] description (optional)
 #       Description: Project description text
 #       Default: "A new project"
-#       Used in: readme.md
 ```
 
-**What you see:**
-- All defined parameters
-- Required vs optional status
-- Default values
-- Which files use each parameter
-
-### Exercise 3.3: Set Parameter Values
+#### Exercise 3.3: Set Parameter Values
 
 **Goal:** Assign values to parameters for materialization.
 
 ```bash
 # Set project name
 genfile .value.set \
-  name::"project_name" \
+  name::project_name \
   value::"my_awesome_app" \
   verbosity::2
 
 # Expected output:
-# ✓ Value set: project_name = "my_awesome_app"
-# Status: Valid
-# Required parameter: Satisfied
+# Set value: project_name = "my_awesome_app"
 
 # Set custom description
 genfile .value.set \
-  name::"description" \
+  name::description \
   value::"An amazing application" \
   verbosity::1
 
@@ -411,82 +394,61 @@ genfile .value.list verbosity::2
 # Parameter Values (2):
 #   project_name = "my_awesome_app"
 #   description = "An amazing application"
-#
-# Validation: ✓ All required parameters set
 ```
 
-**What happened?**
-- Set values for both parameters
-- Values validated against definitions
-- Archive ready for materialization
-
-### Exercise 3.4: Materialization Preview
+#### Exercise 3.4: Materialization Preview
 
 **Goal:** See what files would be generated.
 
 ```bash
 # Preview materialization (dry run)
 genfile .materialize \
-  output_dir::"./output" \
-  dry_run::true \
-  verbosity::3
+  destination::"./output" \
+  dry::1 \
+  verbosity::2
 
 # Expected output:
 # [DRY RUN] Would create: ./output/readme.md
-# Content preview:
-# ---
-# # my_awesome_app
-#
-# Welcome to my_awesome_app!
-#
-# ## Description
-#
-# An amazing application
-# ---
-#
 # [DRY RUN] Would create: ./output/src/main.rs
-# Content preview:
-# ---
-# fn main() {
-#     println!("Hello from my_awesome_app!");
-# }
-# ---
-#
-# [DRY RUN] Summary:
-# - 2 files would be created
-# - 0 directories would be created
-# - No actual changes made
+# [DRY RUN] Summary: 2 files, no changes made
+
+# Execute for real
+genfile .materialize destination::"./output" verbosity::2
+
+# Expected output:
+# Created: ./output/readme.md
+# Created: ./output/src/main.rs
+# Materialized 2 files to ./output
 ```
 
 **What you see:**
 - Full preview of generated files
-- All placeholders replaced with values
-- Directory structure
-- No files actually created (dry run)
+- All `{{placeholders}}` replaced with values
+- No files created during dry run
 
 **Checkpoint:** You understand the full parameter → value → materialization flow!
 
-### Lesson 3 Review
+#### Lesson 3 Review
 
 **What you learned:**
-- ✓ Define parameters with `.parameter.define`
-- ✓ Set required vs optional parameters
+- ✓ Define parameters with `.parameter.add`
+- ✓ Use `mandatory::true` for required and `mandatory::false` for optional
 - ✓ Assign values with `.value.set`
-- ✓ Preview materialization with `dry_run::true`
+- ✓ Preview materialization with `dry::1`
 
 **Next:** Lesson 4 covers real-world workflows.
 
 ---
 
-## Lesson 4: Real-World Workflows (15 minutes)
+### Lesson 4: Real-World Workflows (15 minutes)
 
-### What You'll Learn
+#### What You'll Learn
 
 - Complete end-to-end workflows
 - Content management strategies
 - Archive organization patterns
 
-### Concepts
+#### Concepts
 
 **Production Workflow:**
 
@@ -496,12 +458,7 @@ genfile .materialize \
 4. Materialize to disk
 5. Save archive for reuse
 
-**Content Operations:**
-- `.content.get` - Retrieve file content
-- `.content.inspect` - Analyze content
-- `.content.replace` - Update file content
-
-### Exercise 4.1: Create Rust Project Template
+#### Exercise 4.1: Create Rust Project Template
 
 **Goal:** Build reusable Rust project template from scratch.
 
@@ -515,192 +472,165 @@ genfile .archive.new \
 # Step 2: Add Cargo.toml
 genfile .file.add \
   path::"Cargo.toml" \
-  content::"[package]\nname = \"{crate_name}\"\nversion = \"{version}\"\nedition = \"2021\"\n\n[dependencies]" \
+  content::'[package]\nname = "{{crate_name}}"\nversion = "{{version}}"\nedition = "2021"\n\n[dependencies]' \
   verbosity::1
 
 # Step 3: Add main.rs
 genfile .file.add \
   path::"src/main.rs" \
-  content::"fn main()\n{\n  println!( \"Welcome to {crate_name} v{version}!\" );\n}" \
+  content::'fn main()\n{\n  println!( "Welcome to {{crate_name}} v{{version}}!" );\n}' \
   verbosity::1
 
 # Step 4: Add README
 genfile .file.add \
   path::"readme.md" \
-  content::"# {crate_name}\n\n{description}\n\n## Installation\n\n```bash\ncargo install {crate_name}\n```" \
+  content::'# {{crate_name}}\n\n{{description}}\n\n## Installation\n\n```bash\ncargo install {{crate_name}}\n```' \
   verbosity::1
 
 # Step 5: Define parameters
-genfile .parameter.define \
-  name::"crate_name" \
+genfile .parameter.add \
+  name::crate_name \
   description::"Rust crate name" \
-  optional::false \
+  mandatory::true \
   verbosity::1
 
-genfile .parameter.define \
-  name::"version" \
+genfile .parameter.add \
+  name::version \
   description::"Initial version" \
-  optional::true \
+  mandatory::false \
   default::"0.1.0" \
   verbosity::1
 
-genfile .parameter.define \
-  name::"description" \
+genfile .parameter.add \
+  name::description \
   description::"Crate description" \
-  optional::true \
+  mandatory::false \
   default::"A Rust binary application" \
   verbosity::1
 
 # Step 6: Save reusable template
 genfile .archive.save \
-  path::"./templates/rust_binary.genfile" \
+  path::"./templates/rust_binary.yaml" \
   verbosity::2
 
 # Expected output:
-# ✓ Archive saved: ./templates/rust_binary.genfile
+# Saved archive to ./templates/rust_binary.yaml (YAML)
 # Files: 3 (Cargo.toml, src/main.rs, readme.md)
-# Parameters: 3 (1 required, 2 optional)
-# Ready for reuse
+# Parameters: 3 (1 mandatory, 2 optional)
 ```
 
 **What you created:**
 - Complete Rust project template
 - 3 files with proper structure
-- 3 parameters (1 required, 2 with defaults)
-- Saved for reuse
+- 3 parameters (1 mandatory, 2 with defaults)
 
-### Exercise 4.2: Use Template for New Project
+#### Exercise 4.2: Use Template for New Project
 
 **Goal:** Generate actual project from template.
 
 ```bash
 # Step 1: Load template
 genfile .archive.load \
-  path::"./templates/rust_binary.genfile" \
+  path::"./templates/rust_binary.yaml" \
   verbosity::1
 
 # Step 2: Set values for specific project
-genfile .value.set name::"crate_name" value::"hello_world" verbosity::1
-genfile .value.set name::"version" value::"0.1.0" verbosity::1
-genfile .value.set name::"description" value::"A friendly greeting app" verbosity::1
+genfile .value.set name::crate_name value::"hello_world" verbosity::1
+genfile .value.set name::version value::"0.1.0" verbosity::1
+genfile .value.set name::description value::"A friendly greeting app" verbosity::1
 
-# Step 3: Preview (optional but recommended)
+# Step 3: Preview (recommended)
 genfile .materialize \
-  output_dir::"./hello_world" \
-  dry_run::true \
+  destination::"./hello_world" \
+  dry::1 \
   verbosity::2
 
 # Step 4: Actually create files
 genfile .materialize \
-  output_dir::"./hello_world" \
-  dry_run::false \
-  verbosity::3
+  destination::"./hello_world" \
+  verbosity::2
 
 # Expected output:
-# ✓ Created: ./hello_world/Cargo.toml
-# ✓ Created: ./hello_world/src/main.rs
-# ✓ Created: ./hello_world/readme.md
-#
-# Summary:
-# - 3 files created
-# - 1 directory created (src/)
-# - Total size: 428 bytes
-#
-# Next steps:
-# cd hello_world && cargo build
+# Created: ./hello_world/Cargo.toml
+# Created: ./hello_world/src/main.rs
+# Created: ./hello_world/readme.md
+# Materialized 3 files to ./hello_world
 ```
 
 **What happened:**
 1. Loaded reusable template
 2. Customized for specific project
 3. Generated complete project structure
-4. Ready to build and run
+4. Ready to build: `cd hello_world && cargo build`
 
-**Try it:** Run `cd hello_world && cargo build && cargo run`
+#### Exercise 4.3: Inspect and Update Template Content
 
-### Exercise 4.3: Content Management
-
-**Goal:** Inspect and modify template content.
+**Goal:** Review a template file and update its content.
 
 ```bash
-# Load template again
+# Load template
 genfile .archive.load \
-  path::"./templates/rust_binary.genfile" \
+  path::"./templates/rust_binary.yaml" \
   verbosity::1
 
 # Inspect main.rs content
-genfile .content.get \
+genfile .file.show \
   path::"src/main.rs" \
   verbosity::2
 
 # Expected output:
 # File: src/main.rs
-# Content (78 bytes):
 # ---
 # fn main()
 # {
-#   println!( "Welcome to {crate_name} v{version}!" );
+#   println!( "Welcome to {{crate_name}} v{{version}}!" );
 # }
 # ---
-# Placeholders: crate_name, version
 
-# Analyze content structure
-genfile .content.inspect \
+# Update content: remove old file and add updated version
+genfile .file.remove path::"src/main.rs" verbosity::1
+
+genfile .file.add \
   path::"src/main.rs" \
-  verbosity::3
-
-# Expected output:
-# File: src/main.rs
-# Analysis:
-#   Size: 78 bytes
-#   Lines: 4
-#   Placeholders: 2 (crate_name, version)
-#   Language: Rust (detected from extension)
-#   Syntax valid: Yes
-
-# Update content
-genfile .content.replace \
-  path::"src/main.rs" \
-  content::"fn main()\n{\n  println!( \"=== {crate_name} v{version} ===\"  );\n  println!( \"Status: Ready!\" );\n}" \
+  content::'fn main()\n{\n  println!( "=== {{crate_name}} v{{version}} ===" );\n  println!( "Status: Ready!" );\n}' \
   verbosity::2
 
-# Expected output:
-# ✓ Content replaced: src/main.rs
-# Old size: 78 bytes
-# New size: 112 bytes
-# Change: +34 bytes
+# Verify updated content
+genfile .file.show path::"src/main.rs" verbosity::1
 
 # Save updated template
 genfile .archive.save \
-  path::"./templates/rust_binary.genfile" \
+  path::"./templates/rust_binary.yaml" \
   verbosity::1
 ```
 
 **What happened:**
-- Retrieved file content
-- Analyzed content structure
-- Updated template
+- Inspected file content with `.file.show`
+- Replaced content by removing and re-adding with `.file.remove` + `.file.add`
 - Saved changes
 
-### Exercise 4.4: Advanced Workflow
+#### Exercise 4.4: Advanced Workflow
 
 **Goal:** Combine operations for efficient workflow.
 
 ```bash
-# One-liner: Create archive, add files, save
+# Chain: Create archive, add files, save
 genfile .archive.new name::"quick_template" verbosity::0 && \
-  genfile .file.add path::"file.txt" content::"Hello {name}!" verbosity::0 && \
-  genfile .parameter.define name::"name" optional::false verbosity::0 && \
-  genfile .archive.save path::"./quick.genfile" verbosity::1
+  genfile .file.add path::"file.txt" content::"Hello {{name}}!" verbosity::0 && \
+  genfile .parameter.add name::name mandatory::true verbosity::0 && \
+  genfile .archive.save path::"./quick.yaml" verbosity::1
 
-# One-liner: Load, set values, materialize
-genfile .archive.load path::"./quick.genfile" verbosity::0 && \
-  genfile .value.set name::"name" value::"World" verbosity::0 && \
-  genfile .materialize output_dir::"./output" verbosity::2
+# Chain: Load, set values, materialize
+genfile .archive.load path::"./quick.yaml" verbosity::0 && \
+  genfile .value.set name::name value::"World" verbosity::0 && \
+  genfile .materialize destination::"./output" verbosity::2
 
 # Expected output:
-# ✓ Created: ./output/file.txt
-# Content: Hello World!
+# Created: ./output/file.txt
+# Materialized 1 file to ./output
+
+# Result file content:
+# Hello World!
 ```
 
 **What you learned:**
@@ -708,28 +638,30 @@ genfile .archive.load path::"./quick.genfile" verbosity::0 && \
 - Use `verbosity::0` for quiet mode
 - Create rapid workflows
 
-### Lesson 4 Review
+#### Lesson 4 Review
 
 **What you learned:**
 - ✓ Build complete project templates
 - ✓ Reuse templates for multiple projects
-- ✓ Manage content with `.content.*` commands
+- ✓ Inspect content with `.file.show`
+- ✓ Update content with `.file.remove` + `.file.add`
 - ✓ Chain commands for efficient workflows
 
 **You're now proficient with GenFile CLI!**
 
 ---
 
-## What's Next?
+### What's Next?
 
-### Additional Resources
+#### Additional Resources
 
-1. **[Commands Reference](commands.md)** - Complete command documentation
-2. **[Parameters Reference](params.md)** - All parameter specifications
-3. **[Type System](types.md)** - For implementers and advanced users
+1. **[Commands Reference](command/readme.md)** - Complete command documentation
+2. **[Parameters Reference](param.md)** - All parameter specifications
+3. **[Type System](type.md)** - For implementers and advanced users
 4. **[Dictionary](dictionary.md)** - Domain terminology
+5. **[Workflow Scenarios](workflow_scenario.md)** - End-to-end usage patterns
 
-### Common Patterns
+#### Common Patterns
 
 **Pattern 1: Team Template Library**
 ```bash
@@ -737,42 +669,41 @@ genfile .archive.load path::"./quick.genfile" verbosity::0 && \
 mkdir -p ~/.genfile/templates
 
 # Save team templates
-genfile .archive.save path::"~/.genfile/templates/rust_lib.genfile"
-genfile .archive.save path::"~/.genfile/templates/react_component.genfile"
+genfile .archive.save path::"~/.genfile/templates/rust_lib.yaml"
 
 # Team members can load
-genfile .archive.load path::"~/.genfile/templates/rust_lib.genfile"
+genfile .archive.load path::"~/.genfile/templates/rust_lib.yaml"
 ```
 
 **Pattern 2: Versioned Archives**
 ```bash
 # Save with version in filename
-genfile .archive.save path::"./templates/api_v1.0.0.genfile"
-genfile .archive.save path::"./templates/api_v1.1.0.genfile"
+genfile .archive.save path::"./templates/api_v1.0.0.yaml"
+genfile .archive.save path::"./templates/api_v1.1.0.yaml"
 
 # Load specific version
-genfile .archive.load path::"./templates/api_v1.1.0.genfile"
+genfile .archive.load path::"./templates/api_v1.1.0.yaml"
 ```
 
 **Pattern 3: Batch Materialization**
 ```bash
 # Create multiple projects from same template
 for project in app1 app2 app3; do
-  genfile .archive.load path::"./template.genfile" verbosity::0
-  genfile .value.set name::"project_name" value::"$project" verbosity::0
-  genfile .materialize output_dir::"./$project" verbosity::1
+  genfile .archive.load path::"./template.yaml" verbosity::0
+  genfile .value.set name::project_name value::"$project" verbosity::0
+  genfile .materialize destination::"./$project" verbosity::1
 done
 ```
 
-### Practice Exercises
+#### Practice Exercises
 
 **Exercise A: Web API Template**
 
 Create a template for REST API projects with:
-- `server.py` with `{api_name}` and `{port}` placeholders
+- `server.py` with `{{api_name}}` and `{{port}}` placeholders
 - `readme.md` with documentation
 - `requirements.txt` with dependencies
-- Parameters: api_name (required), port (default: 8000), description (optional)
+- Parameters: api_name (mandatory), port (default: 8000), description (optional)
 
 **Exercise B: Multi-Language Template**
 
@@ -790,32 +721,26 @@ Practice loading, modifying, and resaving archives:
 3. Update parameter definitions
 4. Save as new version
 
-### Getting Help
+#### Getting Help
 
-**Documentation:** All commands documented in [commands.md](commands.md)
+**Documentation:** All commands documented in [command/readme.md](command/readme.md)
 
-**Examples:** See [commands/operations.md](commands/operations.md) for `.materialize` workflows
+**Examples:** See [command/operations.md](command/operations.md) for `.materialize` workflows
 
 **Issues:** Common problems and solutions in [maintenance.md](maintenance.md)
 
-**Verbosity Levels:**
-- `verbosity::0` - Silent (only errors)
-- `verbosity::1` - Minimal (success/failure)
-- `verbosity::2` - Standard (detailed info)
-- `verbosity::3` - Verbose (all details)
-- `verbosity::4` - Debug (internal state)
-- `verbosity::5` - Trace (everything)
+**Verbosity:** See [VerbosityLevel](type.md#type--1-verbositylevel) for the complete 0-5 level reference
 
 ---
 
-## Congratulations!
+### Congratulations!
 
 You've completed the GenFile CLI tutorial. You now understand:
 
 - ✓ Archive lifecycle (create, save, load)
-- ✓ File management (add, remove, list)
-- ✓ Parameter definitions and values
-- ✓ Content operations
+- ✓ File management (add, remove, list, show)
+- ✓ Parameter definitions (`mandatory::true/false`) and values
+- ✓ `{{placeholder}}` mustache syntax
 - ✓ Complete workflows from template to materialization
 
 **You're ready to create production templates!**
@@ -823,5 +748,4 @@ You've completed the GenFile CLI tutorial. You now understand:
 ---
 
 **Tutorial Version:** 1.0.0
-**Last Updated:** 2026-02-08
-**Feedback:** Report issues or suggestions via project repository
+**Last Updated:** 2026-05-10

@@ -7,15 +7,30 @@
 - **In Scope**: Trait implementation, serde dependency, pretty/compact variant selection via constructor, feature flag.
 - **Out of Scope**: Variant output details (see `../variant/016_json_pretty.md`, `017_json_compact.md`), operation signatures (see `../api/004_formatters.md`).
 
-### Cross-References
+### Traits
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/json.rs` | `JsonFormatter` implementation |
-| doc | `../api/004_formatters.md` | Operation signatures |
-| doc | `../trait/001_format.md` | `Format` trait contract |
-| doc | `../variant/016_json_pretty.md` | Variant: pretty |
-| doc | `../variant/017_json_compact.md` | Variant: compact |
+| File | Relationship |
+|------|-------------|
+| [001_format.md](../trait/001_format.md) | `Format` trait contract |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [004_formatters.md](../api/004_formatters.md) | Operation signatures |
+
+### Variants
+
+| File | Relationship |
+|------|-------------|
+| [016_json_pretty.md](../variant/016_json_pretty.md) | Variant: pretty |
+| [017_json_compact.md](../variant/017_json_compact.md) | Variant: compact |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/formatters/json.rs`](../../src/formatters/json.rs) | `JsonFormatter` implementation |
 
 ### Trait
 

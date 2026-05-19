@@ -7,14 +7,29 @@
 - **In Scope**: Struct fields, TableMetadata, construction patterns, Format trait consumption, and backward compatibility.
 - **Out of Scope**: Conceptual shape (see `../input_model/`), formatter behavior (see `../feature/`).
 
-### Cross-References
+### InputModels
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/data.rs` | TableView struct definition |
-| test | `tests/data.rs` | TableView tests |
-| doc | `../input_model/001_tabular.md` | Conceptual data shape |
-| doc | `../api/001_data_types.md` | Public API surface |
+| File | Relationship |
+|------|-------------|
+| [001_tabular.md](../input_model/001_tabular.md) | Conceptual data shape |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [001_data_types.md](../api/001_data_types.md) | Public API surface |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/data.rs`](../../src/data.rs) | TableView struct definition |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/data.rs`](../../tests/data.rs) | TableView tests |
 
 ### Type Definition
 
@@ -50,11 +65,8 @@ Consumed by the `Format` trait — see `../trait/001_format.md`.
 | `YamlFormatter` | yes |
 | `TomlFormatter` | yes |
 | `TextFormatter` | yes |
-| `ExpandedFormatter` | **no** |
+| `ExpandedFormatter` | yes |
 | `TreeFormatter` | **no** |
 
-8 of 10 formatters accept `TableView` via `Format`.
+9 of 10 formatters accept `TableView` via `Format`.
 
-### Backward Compatibility
-
-`TableView::to_tree_node()` produces the legacy tree-encoded format for formatters that don't implement `Format`.

@@ -7,14 +7,29 @@
 - **In Scope**: Break strategies, overflow handling, WrapConfig fields, WrapFormatter API, and behavior contracts.
 - **Out of Scope**: Algorithm details (see `../algorithm/`), API signatures (see `../api/`).
 
-### Cross-References
+### Algorithms
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/wrap.rs` | WrapFormatter implementation |
-| test | `tests/word_wrap.rs` | Word wrap test suite |
-| doc | `../algorithm/002_word_wrapping.md` | Word wrapping algorithm |
-| doc | `005_auto_fit.md` | Auto-fit uses WrapFormatter for cell budget wrapping |
+| File | Relationship |
+|------|-------------|
+| [002_word_wrapping.md](../algorithm/002_word_wrapping.md) | Word wrapping algorithm |
+
+### Features
+
+| File | Relationship |
+|------|-------------|
+| [005_auto_fit.md](005_auto_fit.md) | Auto-fit uses WrapFormatter for cell budget wrapping |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/wrap.rs`](../../src/wrap.rs) | WrapFormatter implementation |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/word_wrap.rs`](../../tests/word_wrap.rs) | Word wrap test suite |
 
 ### Design
 

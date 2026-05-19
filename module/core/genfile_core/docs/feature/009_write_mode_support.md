@@ -11,11 +11,21 @@
 
 The write mode is a discriminated type where the rewrite variant unconditionally overwrites an existing file or creates a new one. It is stored inside the file descriptor and consumed by the file system layer during generation. Additional modes (e.g., merge, skip-if-exists) may be added in future versions.
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/file_descriptor.rs` | Write mode type definition |
-| test | `tests/` | Write mode behavior tests |
-| doc | `docs/feature/008_file_descriptor.md` | Descriptor that carries the write mode |
-| doc | `docs/feature/010_file_system_trait.md` | Trait that executes the write |
+| File | Relationship |
+|------|--------------|
+| [`feature/008_file_descriptor.md`](008_file_descriptor.md) | Descriptor that carries the write mode |
+| [`feature/010_file_system_trait.md`](010_file_system_trait.md) | Trait that executes the write |
+
+### Sources
+
+| File | Relationship |
+|------|--------------|
+| [`src/file_descriptor.rs`](../../src/file_descriptor.rs) | Write mode type definition |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| [`tests/inc/file_descriptor_test.rs`](../../tests/inc/file_descriptor_test.rs) | Write mode behavior tests |

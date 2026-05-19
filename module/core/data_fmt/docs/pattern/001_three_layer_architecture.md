@@ -7,15 +7,25 @@
 - **In Scope**: Layer definitions (Data, Builders & Traits, Formatters), module file layout, inter-layer relationships.
 - **Out of Scope**: Per-formatter details (see `feature/`), API signatures (see `api/`), formatter design patterns (see `003_formatter_design.md`).
 
-### Cross-References
+### APIs
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | `../architecture.md` | Original combined architecture document (retained per migration rules) |
-| doc | `../feature/001_table_formatting.md` | Table formatting feature consuming Layer 3 |
-| doc | `../api/004_formatters.md` | Formatter API surface in Layer 3 |
-| doc | `../api/001_data_types.md` | Data types in Layer 1 |
-| doc | `../api/002_builders.md` | Builders in Layer 2 |
+| File | Relationship |
+|------|-------------|
+| [004_formatters.md](../api/004_formatters.md) | Formatter API surface in Layer 3 |
+| [001_data_types.md](../api/001_data_types.md) | Data types in Layer 1 |
+| [002_builders.md](../api/002_builders.md) | Builders in Layer 2 |
+
+### Docs
+
+| File | Relationship |
+|------|-------------|
+| [architecture.md](../architecture.md) | Original combined architecture document (retained per migration rules) |
+
+### Features
+
+| File | Relationship |
+|------|-------------|
+| [001_table_formatting.md](../feature/001_table_formatting.md) | Table formatting feature consuming Layer 3 |
 
 ### Problem
 
@@ -50,7 +60,7 @@ Format-specific renderers that consume `TreeNode` or `TableView`:
 - `JsonFormatter`, `YamlFormatter`, `TomlFormatter` — serialization formats
 - `TextFormatter` — plain text output (6 styles)
 
-Eight of ten formatters implement the `Format` trait for a unified API; `ExpandedFormatter` and `TreeFormatter` use legacy or direct-dispatch paths.
+Nine of ten formatters implement the `Format` trait for a unified API; `TreeFormatter` uses direct method dispatch without the trait.
 
 #### Module File Structure
 

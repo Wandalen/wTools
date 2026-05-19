@@ -9,7 +9,7 @@
 
 1. Confirm the pattern belongs here — verify it fits **In Scope** in `readme.md`. API signatures go in `api/`; behavioral contracts go in `invariant/`; algorithm pseudocode goes in `algorithm/`.
 2. Assign the next unused NNN from the **Overview Table** in `readme.md` (extends the current maximum, respecting category groupings in `### Organization`).
-3. Create `docs/pattern/NNN_name.md` with all required sections per **Type-Specific Requirements** in `readme.md` (Scope, Cross-References, Description, Structure, Rationale).
+3. Create `docs/pattern/NNN_name.md` with all required sections per **Type-Specific Requirements** in `readme.md` (Scope, typed cross-reference sections, Description, Structure, Rationale).
 4. Add a row to the **Overview Table** in `readme.md` in the correct category position:
    `| NNN | [Name](NNN_name.md) | One-line purpose | 🔄 |`
 5. Update `### Organization` in `readme.md` to include the new NNN in the correct category range.
@@ -20,7 +20,7 @@
    `- id: pattern/NNN, file: pattern/NNN_name.md, label: Name, entity: pattern, status: active`
 9. Add the new node to the `pattern-catalog` component's `nodes` list; update `size`.
 10. Update `node_count` in `doc_graph.yml` `meta`.
-11. Add edges for every doc listed in the new instance's `### Cross-References`; update `edge_count` in `meta`.
+11. Add edges for every file listed in the new instance's cross-reference sections; update `edge_count` in `meta`.
 
 ### Procedure: Deprecate Instance
 

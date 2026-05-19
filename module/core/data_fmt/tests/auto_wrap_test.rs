@@ -17,6 +17,9 @@
 //! T21: Sub-row detail + wrapping
 //! T22: Format trait path (`build_view`)
 //! T23: All-Fixed columns sum exceeds terminal — graceful overflow
+//!
+//! Additional acceptance criteria (BA AC-6, AC-7, AC-8) and invariant tests
+//! (WC IN-3) are in `auto_wrap_budget_test.rs`.
 
 #![ cfg( feature = "enabled" ) ]
 use data_fmt::{ RowBuilder, TableFormatter, TableConfig, ColumnFlex, Format, DecoratedText };

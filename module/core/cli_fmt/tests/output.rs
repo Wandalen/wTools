@@ -1,3 +1,4 @@
+#![ cfg( feature = "output" ) ]
 //! CLI output processing tests.
 //!
 //! Ported from `unilang::output` module tests.
@@ -28,9 +29,9 @@
 //! Consumers must perform boundary detection before calling truncate functions.
 //!
 //! **Tests Validating Fix:**
-//! - `width_no_truncation_needed`: Short text stays unchanged
-//! - `width_custom_suffix`: Exact-width with ANSI codes not truncated
-//! - Integration tests with combined head/tail/width processing
+//! - `width_no_truncation_needed`: Line well below `max_width` not truncated
+//! - `width_exact_boundary`: Line exactly at `max_width` (`len == max_width`) not truncated — precise reproducer
+//! - `width_custom_suffix`: Long line truncated with custom suffix `"..."`
 //!
 //! ## Test Matrix
 //!
@@ -48,9 +49,11 @@
 //! | width | no truncation needed | ✓ |
 //! | width | truncation with arrow | ✓ |
 //! | width | zero disables | ✓ |
+//! | width | exact boundary (len == max_width) | ✓ |
 //! | ANSI | preserves escape codes | ✓ |
 //! | ANSI | adds reset on truncate | ✓ |
 //! | integration | combined operations | ✓ |
+//! | integration | head lines_omitted via process_output | ✓ |
 
 use cli_fmt::output::*;
 use strs_tools::string::lines::*;
@@ -141,7 +144,9 @@ fn select_streams_both_empty()
 {
   let config = OutputConfig::default();
   let result = process_output( "", "", &config );
-  assert_eq!( result.content, "" );
+  assert_eq!( result.content,       "" );
+  assert_eq!( result.lines_omitted, 0  );
+  assert!(    !result.width_truncated  );
 }
 
 // ============================================================================
@@ -300,6 +305,19 @@ fn width_custom_suffix()
   assert!( result.content.contains( "..." ) );
 }
 
+// test_kind: bug_reproducer(issue-none)
+#[ test ]
+fn width_exact_boundary()
+{
+  // Line of exactly max_width visible chars must NOT be truncated.
+  // This is the precise edge case of the original boundary detection bug:
+  // truncate() was invoked even when visual_len(line) == max_width.
+  let config = OutputConfig::default().with_width( 10 );
+  let result = process_output( "0123456789", "", &config );
+  assert!( result.content.starts_with( "0123456789" ) );
+  assert!( !result.width_truncated );
+}
+
 // ============================================================================
 // ANSI preservation tests
 // ============================================================================
@@ -381,4 +399,14 @@ fn merge_streams_ordering()
   // Test that stderr appears before stdout
   let result = merge_streams( "stdout", "stderr", &StreamFilter::Both );
   assert_eq!( result, "stderr\nstdout" );
+}
+
+#[ test ]
+fn process_output_head_lines_omitted()
+{
+  // Verify lines_omitted is computed correctly when process_output applies head-only filtering.
+  let config = OutputConfig::default().with_head( 2 );
+  let result = process_output( "line1\nline2\nline3\nline4\nline5", "", &config );
+  assert_eq!( result.lines_omitted, 3 );
+  assert_eq!( result.content, "line1\nline2" );
 }

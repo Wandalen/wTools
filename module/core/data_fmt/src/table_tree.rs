@@ -75,6 +75,8 @@ impl RowBuilder
   /// assert_eq!( view.rows.len(), 2 );
   /// ```
   #[ must_use ]
+  // Vec<DecoratedText> ownership transfers into self.rows via push(); taking a
+  // reference would force a per-row clone — the lint fires incorrectly here.
   #[ allow( clippy::needless_pass_by_value ) ]
   pub fn add_row( mut self, row : Vec< DecoratedText > ) -> Self
   {
@@ -93,6 +95,7 @@ impl RowBuilder
   /// # Panics
   ///
   /// Panics if row length doesn't match headers length
+  // Vec<DecoratedText> ownership transfers into self.rows via push(); see add_row.
   #[ allow( clippy::needless_pass_by_value ) ]
   pub fn add_row_mut( &mut self, row : Vec< DecoratedText > )
   {
@@ -124,6 +127,7 @@ impl RowBuilder
   /// assert_eq!( view.rows[ 0 ][ 0 ].render(), "30" );
   /// ```
   #[ must_use ]
+  // Vec<DecoratedText> ownership transfers into self.rows via push(); see add_row.
   #[ allow( clippy::needless_pass_by_value ) ]
   pub fn add_row_with_name( mut self, row_name : String, row : Vec< DecoratedText > ) -> Self
   {
@@ -140,6 +144,7 @@ impl RowBuilder
   /// # Panics
   ///
   /// Panics if row length doesn't match headers length
+  // Vec<DecoratedText> ownership transfers into self.rows via push(); see add_row.
   #[ allow( clippy::needless_pass_by_value ) ]
   pub fn add_row_with_name_mut( &mut self, row_name : String, row : Vec< DecoratedText > )
   {
@@ -168,6 +173,8 @@ impl RowBuilder
   /// assert_eq!( view.row_details[ 0 ], Some( data_fmt::DecoratedText::from( "note" ) ) );
   /// ```
   #[ must_use ]
+  // Vec<DecoratedText> and Option<DecoratedText> ownership transfer into
+  // self.rows/row_details via push(); taking references would require clones.
   #[ allow( clippy::needless_pass_by_value ) ]
   pub fn add_row_with_detail
   (
@@ -204,6 +211,7 @@ impl RowBuilder
   ///
   /// assert_eq!( view.row_details[ 0 ], Some( data_fmt::DecoratedText::from( "note" ) ) );
   /// ```
+  // Ownership of row/detail transfers into self.rows/row_details via push(); see add_row_with_detail.
   #[ allow( clippy::needless_pass_by_value ) ]
   pub fn add_row_with_detail_mut
   (

@@ -15,7 +15,9 @@ Multi-command usage scenarios covering common genfile workflows from start to fi
 
 **Goal:** Build a new reusable template archive starting from nothing.
 
-**When to use:** When you want to create a template without an existing directory structure to import from.
+**Commands:** `.archive.new`, `.file.add`, `.parameter.add`, `.archive.save`, `.analyze`
+
+**Expected Outcome:** A named YAML archive file on disk containing template files with placeholders and parameter definitions; `.analyze` confirms valid structure.
 
 ```bash
 # 1. Create empty archive
@@ -53,7 +55,9 @@ genfile .analyze verbosity::2
 
 **Goal:** Convert an existing project structure into a reusable template.
 
-**When to use:** When you have a working project and want to templatize it.
+**Commands:** `.archive.from_directory`, `.file.list`, `.parameter.list`, `.parameter.remove`, `.parameter.add`, `.archive.save`
+
+**Expected Outcome:** A portable JSON archive with all project files embedded inline, parameter definitions reflecting existing placeholders, and mandatory parameters explicitly marked.
 
 ```bash
 # 1. Import directory (inline mode for portability)
@@ -86,7 +90,9 @@ genfile .archive.save path::"project-template.json" pretty::1
 
 **Goal:** Generate a concrete project from an existing template archive.
 
-**When to use:** When you want to create a new project from a template.
+**Commands:** `.archive.load`, `.status`, `.parameter.list`, `.value.set`, `.materialize`
+
+**Expected Outcome:** Destination directory populated with rendered files; all `{{placeholder}}` tokens replaced by the supplied parameter values.
 
 ```bash
 # 1. Load the template
@@ -118,7 +124,9 @@ ls -la ./my-new-app/
 
 **Goal:** Modify an existing template archive by adding files, adjusting parameters, and saving a new version.
 
-**When to use:** When a template needs updates after initial creation.
+**Commands:** `.archive.load`, `.analyze`, `.file.add`, `.parameter.add`, `.file.remove`, `.archive.save`
+
+**Expected Outcome:** A new versioned archive file saved to disk incorporating the added files and updated parameter definitions, with obsolete entries removed.
 
 ```bash
 # 1. Load existing template
@@ -149,7 +157,9 @@ genfile .archive.save path::"project-template-v2.json" pretty::1
 
 **Goal:** Create a single portable archive file from a template directory to share with others.
 
-**When to use:** When you want to distribute a template as a single self-contained file.
+**Commands:** `.pack`, `.archive.load`, `.info`, `.file.list`
+
+**Expected Outcome:** A single self-contained JSON archive file with all file contents embedded inline, ready to distribute and materialize without requiring source files.
 
 ```bash
 # One-step pack (inline mode, handles directory → archive file)
@@ -174,7 +184,9 @@ genfile .file.list
 
 **Goal:** Use genfile in automated pipelines for consistent project generation.
 
-**When to use:** Scaffolding new services, generating config files, or templating infrastructure code in CI/CD.
+**Commands:** `.archive.load`, `.value.set`, `.status`, `.materialize`
+
+**Expected Outcome:** Generated project directory at `services/${SERVICE_NAME}` with all template files rendered using CI-supplied environment variables; exit code 0 on success.
 
 ```bash
 #!/bin/bash
@@ -203,9 +215,3 @@ genfile .materialize destination::"${OUTPUT_DIR}" verbosity::0
 echo "Generated service at ${OUTPUT_DIR}"
 ```
 
-### See Also
-
-- [Commands](command/readme.md) — Complete command reference
-- [Parameters](param.md) — Parameter specifications
-- [Tutorial](tutorial.md) — Step-by-step beginner guide
-- [Dictionary](dictionary.md) — Domain terminology

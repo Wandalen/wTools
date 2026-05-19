@@ -7,12 +7,6 @@
 - **In Scope**: Multiline cell rendering, word wrapping, tree column alignment, budget allocation, fold detection, CLI help alignment.
 - **Out of Scope**: Simple formatting logic, configuration details (see `api/config_types`).
 
-### Infrastructure
-
-| File | Responsibility |
-|------|----------------|
-| `procedure.md` | Operational procedure for creating and updating algorithm doc instances |
-
 ### Overview Table
 
 | ID | Name | Purpose | Status |

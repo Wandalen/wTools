@@ -7,14 +7,29 @@
 - **In Scope**: Struct fields, type parameter specializations, trait implementations, and usage patterns.
 - **Out of Scope**: Conceptual shape (see `../input_model/`), formatter behavior (see `../feature/`).
 
-### Cross-References
+### InputModels
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/data.rs` | TreeNode struct definition |
-| test | `tests/data.rs` | TreeNode tests |
-| doc | `../input_model/002_hierarchical.md` | Conceptual data shape |
-| doc | `../api/001_data_types.md` | Public API surface |
+| File | Relationship |
+|------|-------------|
+| [002_hierarchical.md](../input_model/002_hierarchical.md) | Conceptual data shape |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [001_data_types.md](../api/001_data_types.md) | Public API surface |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/data.rs`](../../src/data.rs) | TreeNode struct definition |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/data.rs`](../../tests/data.rs) | TreeNode tests |
 
 ### Type Definition
 
@@ -26,21 +41,9 @@ The same struct serves three distinct roles depending on the type parameter:
 
 #### Specialization: Legacy Tabular (String data)
 
-Tables encoded as trees: root has row children, each row has column-named children with cell data.
+> **Removed in v0.3.0.** `RowBuilder::build()` and `TableShapedFormatter` were both removed. Use `RowBuilder::build_view()` and the `Format` trait instead.
 
-```text
-root
-├── row_1
-│   ├── Name: "Alice"
-│   └── Age: "30"
-└── row_2
-    ├── Name: "Bob"
-    └── Age: "25"
-```
-
-- **Produced by:** `RowBuilder::build()`
-- **Consumed by:** `TableShapedFormatter` trait (deprecated — Table, Expanded)
-- **Input model:** Tabular (legacy encoding)
+Tables encoded as trees: root has row children, each row has column-named children with cell data. This specialization is retained as historical reference only.
 
 #### Specialization: Generic Hierarchical (typed data)
 

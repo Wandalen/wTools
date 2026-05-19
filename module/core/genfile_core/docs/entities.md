@@ -4,8 +4,8 @@
 
 | Type | Purpose | Master File | Instances |
 |------|---------|-------------|----------:|
-| `feature/` | Index of all feature doc instances for genfile_core | [feature/readme.md](feature/readme.md) | 17 |
-| `invariant/` | Index of all invariant doc instances for genfile_core | [invariant/readme.md](invariant/readme.md) | 7 |
+| `feature/` | Functional requirements and capabilities of the library | [feature/readme.md](feature/readme.md) | 18 |
+| `invariant/` | Non-functional constraints with measurable thresholds | [invariant/readme.md](invariant/readme.md) | 7 |
 
 ## Master Doc Instances Table
 
@@ -28,6 +28,7 @@
 | feature | 015 | Missing Mandatory Detection | [feature/015_missing_mandatory_detection.md](feature/015_missing_mandatory_detection.md) |
 | feature | 016 | Typed Errors | [feature/016_typed_errors.md](feature/016_typed_errors.md) |
 | feature | 017 | Archive Self-Containment | [feature/017_archive_self_containment.md](feature/017_archive_self_containment.md) |
+| feature | 018 | Content Source Model | [feature/018_content_source_model.md](feature/018_content_source_model.md) |
 | invariant | 001 | Rendering Performance | [invariant/001_rendering_performance.md](invariant/001_rendering_performance.md) |
 | invariant | 002 | Memory Efficiency | [invariant/002_memory_efficiency.md](invariant/002_memory_efficiency.md) |
 | invariant | 003 | Test Coverage | [invariant/003_test_coverage.md](invariant/003_test_coverage.md) |

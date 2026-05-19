@@ -68,9 +68,9 @@ Saved archive to: api.json
 Complete command-line interface reference:
 - **[CLI Documentation](docs/cli/readme.md)** - Comprehensive CLI reference (24 commands, 23 parameters, 15 types)
   - [Quick Start Guide](docs/cli/readme.md#quick-start) - Common workflows and examples
-  - [Commands Reference](docs/cli/commands.md) - All commands indexed by namespace
-  - [Parameters Reference](docs/cli/params.md) - Complete parameter specifications
-  - [Type System](docs/cli/types.md) - Type definitions for implementers
+  - [Commands Reference](docs/cli/command/readme.md) - All commands indexed by namespace
+  - [Parameters Reference](docs/cli/param.md) - Complete parameter specifications
+  - [Type System](docs/cli/type.md) - Type definitions for implementers
   - [Tutorial](docs/cli/readme.md#common-workflows) - Step-by-step learning guide
 
 ### API Documentation
@@ -85,24 +85,6 @@ genfile is built on:
 - **unilang** - Universal CLI framework with REPL support
 - **error_tools** - Structured error handling
 
-### Command Specifications
-
-All command definitions are maintained as YAML specifications in `commands/*.yaml`:
-
-```
-commands/
-├── archive.yaml       - Archive lifecycle (.archive.*)
-├── file.yaml          - File operations (.file.*)
-├── parameter.yaml     - Parameter management (.parameter.*)
-├── value.yaml         - Value management (.value.*)
-├── content.yaml       - Content management (.content.*)
-├── materialize.yaml   - Template materialization (.materialize, .unpack)
-├── pack.yaml          - Archive serialization (.pack)
-└── analysis.yaml      - Analysis and introspection (.info, .status, .analyze, .discover.*)
-```
-
-These YAML files serve as the **authoritative specification** for all commands, including arguments, descriptions, examples, and functional requirement mappings. The Rust implementation in `src/commands/` registers handlers that implement these specifications.
-
 ## Commands Overview
 
 | Category | Commands |
@@ -112,6 +94,10 @@ These YAML files serve as the **authoritative specification** for all commands, 
 | Parameters | `.parameter.add`, `.parameter.list`, `.parameter.remove` |
 | Values | `.value.set`, `.value.list`, `.value.clear` |
 | Content | `.content.internalize`, `.content.externalize`, `.content.list` |
+| Materialization | `.materialize`, `.unpack` |
+| Serialization | `.pack` |
+| Analysis | `.info`, `.status`, `.analyze`, `.discover.parameters` |
+| Help | `.help`, `.`, `.command.help` |
 
 ## Development Status
 

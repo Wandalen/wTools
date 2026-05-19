@@ -19,8 +19,8 @@ Run `cargo tarpaulin --all-features` and verify reported line coverage is ≥ 80
 
 Coverage below 80% indicates under-tested paths that may contain latent bugs. Template generation, error handling, and serialization paths are the highest-risk areas; they must be thoroughly covered.
 
-### Cross-References
+### Tests
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| test | `tests/` | Primary test suite that drives coverage |
+| File | Relationship |
+|------|--------------|
+| [`tests/tests.rs`](../../tests/tests.rs) | Primary test suite that drives coverage |

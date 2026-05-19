@@ -7,30 +7,22 @@
 - **In Scope**: Trait implementations, accepted input types, variant selection mechanism, feature flag, deprecation status.
 - **Out of Scope**: Per-variant preset details (see `../variant/`), operation signatures (see `../api/004_formatters.md`), format output semantics (see `../variant/`).
 
-### Type-Specific Requirements
-
-Every formatter doc instance must contain these sections in order:
+Required instance sections (in order):
 
 | Section | Heading | Required Content |
 |---------|---------|-----------------|
 | Scope | `### Scope` | 4 bullets: Purpose / Responsibility / In Scope / Out of Scope |
-| Cross-References | `### Cross-References` | Table: Type / File / Responsibility |
+| Typed References | `### Features`, `### Traits`, `### Variants`, `### Sources`, `### Tests` | Per-type `| File | Relationship |` table; `### Sources` and `### Tests` always last |
 | Trait | `### Trait` | Which trait(s) implemented; deprecation status of each |
 | Input | `### Input` | Accepted Rust input type(s); which path each serves |
 | Variants | `### Variants` | Variant list with selection mechanism per variant |
-
-### Infrastructure
-
-| File | Responsibility |
-|------|----------------|
-| `procedure.md` | Operational procedure for creating and updating formatter doc instances |
 
 ### Overview Table
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
 | 001 | [TableFormatter](001_table_formatter.md) | Horizontal tabular display; 9 style variants via `TableConfig` presets | ✅ |
-| 002 | [ExpandedFormatter](002_expanded_formatter.md) | Vertical key-value records; deprecated `TableShapedFormatter` path only | ✅ |
+| 002 | [ExpandedFormatter](002_expanded_formatter.md) | Vertical key-value records; implements `Format` trait (v0.3.0) | ✅ |
 | 003 | [TreeFormatter](003_tree_formatter.md) | Hierarchical box-drawing; no trait — direct method dispatch | ✅ |
 | 004 | [LogfmtFormatter](004_logfmt_formatter.md) | Structured log `key=value` output; single variant | ✅ |
 | 005 | [JsonFormatter](005_json_formatter.md) | JSON array of row objects via serde; pretty and compact variants | ✅ |

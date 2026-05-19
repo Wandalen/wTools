@@ -7,14 +7,24 @@
 - **In Scope**: Type definitions, field semantics, construction methods, and trait impls on data types.
 - **Out of Scope**: Behavioral invariants (see `../invariant/`), construction patterns (see `../builder/`).
 
-### Cross-References
+### InputTypes
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/data.rs` | Core data type definitions |
-| test | `tests/data.rs` | Data type tests |
-| doc | `../input_type/001_table_view.md` | TableView type details |
-| doc | `../input_type/002_tree_node.md` | TreeNode type details |
+| File | Relationship |
+|------|-------------|
+| [001_table_view.md](../input_type/001_table_view.md) | TableView type details |
+| [002_tree_node.md](../input_type/002_tree_node.md) | TreeNode type details |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/data.rs`](../../src/data.rs) | Core data type definitions |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/data.rs`](../../tests/data.rs) | Data type tests |
 
 ### Abstract
 

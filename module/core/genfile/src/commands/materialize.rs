@@ -18,7 +18,6 @@ use unilang::data::
 ///
 /// # Errors
 /// Returns an error if command registration fails.
-#[ allow( deprecated ) ]
 pub fn register( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core::error::Error > >
 {
   register_materialize( registry )?;
@@ -27,7 +26,6 @@ pub fn register( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core:
 }
 
 /// Register .materialize command
-#[ allow( deprecated ) ]
 fn register_materialize( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core::error::Error > >
 {
   let cmd = CommandDefinition::new
@@ -68,7 +66,6 @@ fn register_materialize( registry : &mut CommandRegistry ) -> Result< (), Box< d
 }
 
 /// Register .unpack command
-#[ allow( deprecated ) ]
 fn register_unpack( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core::error::Error > >
 {
   let cmd = CommandDefinition::new

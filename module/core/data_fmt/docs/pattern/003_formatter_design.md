@@ -7,15 +7,25 @@
 - **In Scope**: `Format` trait, `TableShapedFormatter` trait, `TableShapedView` decoupling, `format()`/`write_to()` output surface.
 - **Out of Scope**: Per-formatter configuration (see `api/003_config_types.md`), formatter list (see `001_three_layer_architecture.md`).
 
-### Cross-References
+### Traits
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | `../architecture.md` | Original combined architecture document (retained per migration rules) |
-| doc | `../trait/001_format.md` | Format trait definition |
-| doc | `../trait/002_table_shaped_formatter.md` | TableShapedFormatter trait definition |
-| doc | `../trait/003_table_shaped_view.md` | TableShapedView trait definition |
-| doc | `../api/004_formatters.md` | Formatter API surface |
+| File | Relationship |
+|------|-------------|
+| [001_format.md](../trait/001_format.md) | Format trait definition |
+| [002_table_shaped_formatter.md](../trait/002_table_shaped_formatter.md) | TableShapedFormatter trait — removed in v0.3.0 |
+| [003_table_shaped_view.md](../trait/003_table_shaped_view.md) | TableShapedView trait definition |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [004_formatters.md](../api/004_formatters.md) | Formatter API surface |
+
+### Docs
+
+| File | Relationship |
+|------|-------------|
+| [`../architecture.md`](../architecture.md) | Original combined architecture document (retained per migration rules) |
 
 ### Problem
 

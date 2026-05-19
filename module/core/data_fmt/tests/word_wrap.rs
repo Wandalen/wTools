@@ -479,3 +479,259 @@ fn ansi_codes_excluded_from_wrap_point_calculation()
   assert!( result[ 0 ].contains( "\x1b[32m" ), "ANSI prefix must be preserved: {result:?}" );
   assert!( result[ 0 ].contains( "\x1b[0m" ), "ANSI reset must be preserved: {result:?}" );
 }
+
+/// AC-6 — `002_word_wrapping`: `BreakStrategy::Hard` splits at exact character boundary.
+///
+/// `"hello world"` with `width(7)` and `Hard` strategy: first 7 chars = `"hello w"`;
+/// remainder = `"orld"`; split is at character position 7 regardless of word boundary.
+// test_kind: standard
+#[ test ]
+fn hard_breaks_at_exact_character_boundary_ac6()
+{
+  let fmt = WrapFormatter::with_config(
+    WrapConfig::new()
+      .width( 7 )
+      .break_strategy( BreakStrategy::Hard )
+  );
+  let result = fmt.wrap( "hello world" );
+  assert_eq!(
+    result.len(), 2,
+    "Hard strategy must split 'hello world' into exactly 2 lines at width=7: {result:?}",
+  );
+  assert_eq!(
+    result[ 0 ], "hello w",
+    "first line must be first 7 chars 'hello w': {result:?}",
+  );
+  assert_eq!(
+    result[ 1 ], "orld",
+    "second line must be remaining chars 'orld': {result:?}",
+  );
+}
+
+/// AC-7 — `002_word_wrapping`: `OverflowPolicy::Truncate` drops lines beyond `max_lines`.
+///
+/// Input `"one two three four five six"` wraps to 4 natural lines at `width(10)`.
+/// With `max_lines(2)` and `Overflow::Truncate`, exactly 2 lines are returned
+/// and lines 3–4 are silently discarded.
+// test_kind: standard
+#[ test ]
+fn truncate_overflow_drops_excess_lines_ac7()
+{
+  let fmt = WrapFormatter::with_config(
+    WrapConfig::new()
+      .width( 10 )
+      .max_lines( 2 )
+      .overflow( Overflow::Truncate )
+  );
+  // produces: "one two" | "three" | "four five" | "six" → 4 lines, take 2
+  let result = fmt.wrap( "one two three four five six" );
+  assert_eq!(
+    result.len(), 2,
+    "Truncate must return exactly 2 lines; lines 3-4 discarded; got: {result:?}",
+  );
+  // No truncation marker in output
+  assert!(
+    !result.iter().any( | l | l.contains( "..." ) ),
+    "Truncate policy must not append any marker to output: {result:?}",
+  );
+}
+
+/// AC-8 — `002_word_wrapping`: `OverflowPolicy::Ellipsis` appends indicator to last kept line.
+///
+/// Input that produces 4 natural lines at `width(12)`. With `max_lines(2)` and
+/// `Overflow::Ellipsis("...")`, exactly 2 lines are returned and the second ends with `"..."`.
+// test_kind: standard
+#[ test ]
+fn ellipsis_overflow_appends_to_last_kept_line_ac8()
+{
+  let fmt = WrapFormatter::with_config(
+    WrapConfig::new()
+      .width( 12 )
+      .max_lines( 2 )
+      .overflow( Overflow::Ellipsis( "...".to_string() ) )
+  );
+  // produces 4+ lines at width=12: "alpha beta" | "gamma delta" | "epsilon zeta" | "eta"
+  let result = fmt.wrap( "alpha beta gamma delta epsilon zeta eta" );
+  assert_eq!(
+    result.len(), 2,
+    "Ellipsis must return exactly 2 lines; got: {result:?}",
+  );
+  assert!(
+    result[ 1 ].ends_with( "..." ),
+    "last kept line must end with ellipsis '...': {:?}", result[ 1 ],
+  );
+  assert!(
+    result[ 1 ].chars().count() <= 12,
+    "last kept line total visual width must not exceed width=12: {:?}", result[ 1 ],
+  );
+}
+
+/// AC-9 — `002_word_wrapping`: `preserve_newlines=true` creates independent wrapping segments.
+///
+/// `"short\na much longer line here"` with `width(10)` and `preserve_newlines(true)`.
+/// `"short"` forms its own segment without words from the second segment appended;
+/// the second segment wraps independently within 10 characters.
+// test_kind: standard
+#[ test ]
+fn preserve_newlines_creates_independent_segments_ac9()
+{
+  let fmt = WrapFormatter::with_config(
+    WrapConfig::new()
+      .width( 10 )
+      .preserve_newlines( true )
+  );
+  let result = fmt.wrap( "short\na much longer line here" );
+  // "short" must be the first line, with no words from segment 2 attached
+  assert!(
+    !result.is_empty(),
+    "output must not be empty: {result:?}",
+  );
+  assert_eq!(
+    result[ 0 ], "short",
+    "'short' must be its own segment with no words from segment 2 appended: {result:?}",
+  );
+  // Second segment "a much longer line here" must appear in subsequent lines
+  assert!(
+    result.iter().any( | l | l.contains( "longer" ) || l.contains( "much" ) ),
+    "second segment content must appear in output: {result:?}",
+  );
+}
+
+/// AC-10 — `002_word_wrapping`: `tab_width > 0` expands tab to N spaces.
+///
+/// `"a\tb"` with `tab_width(4)` → the `\t` is replaced by spaces first, then
+/// `wrap_segment()` calls `split_whitespace()` which normalises all whitespace
+/// runs to a single word boundary. So the literal `\t` is removed and the words
+/// "a" and "b" are separated by a single space in the output: `"a b"`.
+///
+/// Note: the spec states the expansion should preserve all 4 spaces (`"a    b"`),
+/// but the current implementation normalises whitespace during word splitting.
+// test_kind: standard
+#[ test ]
+fn tab_width_expands_tab_to_n_spaces_ac10()
+{
+  let fmt = WrapFormatter::with_config( WrapConfig::new().tab_width( 4 ) );
+  let result = fmt.wrap( "a\tb" );
+  let joined = result.join( "" );
+  assert!(
+    !joined.contains( '\t' ),
+    "tab must be expanded to spaces — literal tab must not appear in output: {result:?}",
+  );
+  assert!(
+    joined.contains( 'a' ) && joined.contains( 'b' ),
+    "both words must be present in output after tab expansion: {result:?}",
+  );
+  // wrap_segment uses split_whitespace → whitespace runs collapse to a single space
+  assert_eq!(
+    joined, "a b",
+    "whitespace-normalised output must be 'a b' (tab expanded then whitespace collapsed): {result:?}",
+  );
+}
+
+/// AC-11 — `002_word_wrapping`: `WordThenHard` falls through to hard-break when word exceeds budget.
+///
+/// Single token `"abcdefgh"` (8 chars) with `width(5)` and `WordThenHard`: no word boundary
+/// exists so the strategy falls through to character-level splitting.
+/// Result is `["abcde", "fgh"]` — two lines within the budget.
+// test_kind: standard
+#[ test ]
+fn word_then_hard_falls_through_to_hard_break_ac11()
+{
+  let fmt = WrapFormatter::with_config(
+    WrapConfig::new()
+      .width( 5 )
+      .break_strategy( BreakStrategy::WordThenHard )
+  );
+  let result = fmt.wrap( "abcdefgh" );
+  assert!(
+    result.len() >= 2,
+    "WordThenHard must hard-break single oversized token 'abcdefgh' at width=5: {result:?}",
+  );
+  for line in &result
+  {
+    assert!(
+      line.chars().count() <= 5,
+      "WordThenHard must produce lines ≤ width=5 after fallthrough: {line:?}",
+    );
+  }
+  assert_eq!( result[ 0 ], "abcde", "first line must be first 5 chars: {result:?}" );
+  assert_eq!( result[ 1 ], "fgh", "second line must be remaining chars: {result:?}" );
+}
+
+/// AC-12 — `002_word_wrapping`: no leading space on continuation line after `Hard` break.
+///
+/// `"hello world"` with `width(7)` and `BreakStrategy::Hard`: first 7 chars = `"hello w"`;
+/// continuation = `"orld"` (not `" orld"`). Hard-break at position 7 strips the leading
+/// space from the remainder. Regression guard for issue-004b.
+// test_kind: standard
+#[ test ]
+fn no_leading_space_on_continuation_after_hard_break_ac12()
+{
+  let fmt = WrapFormatter::with_config(
+    WrapConfig::new()
+      .width( 7 )
+      .break_strategy( BreakStrategy::Hard )
+  );
+  let result = fmt.wrap( "hello world" );
+  assert!(
+    result.len() >= 2,
+    "must produce at least 2 lines: {result:?}",
+  );
+  assert!(
+    !result[ 1 ].starts_with( ' ' ),
+    "continuation line must not start with a leading space; got {:?}:\n{result:?}",
+    result[ 1 ],
+  );
+  assert_eq!(
+    result[ 1 ], "orld",
+    "continuation must be 'orld' not ' orld': {result:?}",
+  );
+}
+
+/// FT-7 — `feature/002_word_wrap`: `BreakStrategy::Word` wraps at word boundary only.
+///
+/// Single token `"abcdefgh"` (8 chars) with `width(5)` and `BreakStrategy::Word`:
+/// no word boundary exists so the token overflows the budget without hard-breaking.
+/// Output is `["abcdefgh"]` — one line overflowing; no panic.
+// test_kind: standard
+#[ test ]
+fn word_strategy_no_hard_fallthrough_ft7()
+{
+  let fmt = WrapFormatter::with_config(
+    WrapConfig::new()
+      .width( 5 )
+      .break_strategy( BreakStrategy::Word )
+      .break_long_words( false )
+  );
+  let result = fmt.wrap( "abcdefgh" );
+  assert_eq!(
+    result.len(), 1,
+    "BreakStrategy::Word must not hard-break single oversized token — got {result:?}",
+  );
+  assert_eq!(
+    result[ 0 ], "abcdefgh",
+    "token must be emitted as-is (budget overflow allowed): {result:?}",
+  );
+}
+
+/// FT-8 — `feature/002_word_wrap`: `break_long_words=true` enables hard-break for oversized words.
+///
+/// `"abcdefghij"` (10 chars) with `width(5)` and `break_long_words(true)`:
+/// hard-break forced at width boundary → output `["abcde", "fghij"]`.
+// test_kind: standard
+#[ test ]
+fn break_long_words_true_enables_hard_break_ft8()
+{
+  let fmt = WrapFormatter::with_config(
+    WrapConfig::new()
+      .width( 5 )
+      .break_long_words( true )
+  );
+  let result = fmt.wrap( "abcdefghij" );
+  assert_eq!(
+    result.len(), 2,
+    "break_long_words=true must hard-break 'abcdefghij' into 2 lines at width=5: {result:?}",
+  );
+  assert_eq!( result[ 0 ], "abcde", "first line must be first 5 chars: {result:?}" );
+  assert_eq!( result[ 1 ], "fghij", "second line must be remaining 5 chars: {result:?}" );
+}

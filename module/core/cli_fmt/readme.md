@@ -16,6 +16,7 @@ for the `cli_fmt` vs `strs_tools` design boundary.
 ## Modules
 
 - `output` — Process command output with head/tail filtering, width truncation, and stream merging
+- `help` — Render structured CLI help text from typed data with configurable style and TTY-conditional ANSI
 
 ## Usage
 
@@ -33,9 +34,10 @@ println!( "{}", result.content );
 ## Features
 
 - `enabled` — master switch; activates core dependencies
-- `output` — output processing module (requires `enabled`)
-- `full` — enables all functionality (`enabled` + `output` + `ansi_unicode`)
-- `ansi_unicode` — grapheme-based Unicode width support (opt-in)
+- `output` — CLI output processing (head/tail filtering, width truncation, stream merging)
+- `cli_help_template` — typed CLI help renderer (`CliHelpStyle`, `CliHelpData`, `CliHelpTemplate`)
+- `ansi_unicode` — grapheme-based Unicode width via `unicode-segmentation` (opt-in)
+- `full` — enables all functionality (`enabled` + `output` + `ansi_unicode` + `cli_help_template`)
 
 ## License
 

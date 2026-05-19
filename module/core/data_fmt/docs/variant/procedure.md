@@ -9,7 +9,7 @@
 
 1. Confirm the variant belongs here — verify it fits **In Scope** in `readme.md` (per-variant output specification). Formatter implementation goes in `feature/`; attribute schema reference is in `data_structure/001_variant_attributes.md`.
 2. Assign the next unused NNN from the **Overview Table** in `readme.md` (extends the current maximum, respecting the category groupings in `### Organization`).
-3. Create `docs/variant/NNN_name.md` with all 14 required sections per **Type-Specific Requirements** in `readme.md` (Scope, Cross-References, Identity & Classification, Build & Dependencies, Character Set & Encoding, Visual Structure, Data Representation, Output Characteristics, Usage Context, Technical Details, API & Construction, Performance & Size, Compatibility, Example Output).
+3. Create `docs/variant/NNN_name.md` with all 14 required sections per **Type-Specific Requirements** in `readme.md` (Scope, typed cross-reference sections, Identity & Classification, Build & Dependencies, Character Set & Encoding, Visual Structure, Data Representation, Output Characteristics, Usage Context, Technical Details, API & Construction, Performance & Size, Compatibility, Example Output).
 4. Add a row to the **Overview Table** in `readme.md` in the correct category position:
    `| NNN | [Name](NNN_name.md) | One-line purpose | 🔄 |`
 5. Update `### Organization` in `readme.md` to include the new NNN in the correct category range.
@@ -20,7 +20,7 @@
    `- id: variant/NNN, file: variant/NNN_name.md, label: Name, entity: variant, status: planned`
 9. Add the new node to the `variant-catalog` component's `nodes` list; update `size`.
 10. Update `node_count` in `doc_graph.yml` `meta`.
-11. Add edges for every doc listed in the new instance's `### Cross-References`; update `edge_count` in `meta`.
+11. Add edges for every file listed in the new instance's cross-reference sections; update `edge_count` in `meta`.
 
 ### Procedure: Deprecate Instance
 

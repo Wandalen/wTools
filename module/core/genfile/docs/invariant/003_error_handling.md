@@ -19,9 +19,14 @@ Integration tests assert on exit codes and error message format. A dedicated err
 
 Inconsistent exit codes break shell scripts and CI pipelines that check `$?`. Silent failures hide bugs during automation. Unvalidated paths are a security vulnerability enabling directory traversal attacks.
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/error.rs` | Error formatting helpers enforcing the message format |
-| doc | `docs/feature/006_template_materialization.md` | Primary user of path validation |
+| File | Relationship |
+|------|--------------|
+| [`feature/006_template_materialization.md`](../feature/006_template_materialization.md) | Primary feature where path validation and error format are enforced |
+
+### Sources
+
+| File | Relationship |
+|------|--------------|
+| [`src/error.rs`](../../src/error.rs) | Error formatting helpers enforcing the message format |

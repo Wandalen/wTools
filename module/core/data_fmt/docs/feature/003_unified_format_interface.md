@@ -7,13 +7,23 @@
 - **In Scope**: Format trait, TableView interchange, formatter registry, feature bundles, and usage patterns.
 - **Out of Scope**: Algorithm details (see `../algorithm/`), API signatures (see `../api/`).
 
-### Cross-References
+### Traits
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/format_trait.rs` | Format trait definition |
-| test | `tests/unified_format_trait.rs` | Format trait tests |
-| doc | `../trait/001_format.md` | Format trait contract |
+| File | Relationship |
+|------|-------------|
+| [001_format.md](../trait/001_format.md) | Format trait contract |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/formatters/format_trait.rs`](../../src/formatters/format_trait.rs) | Format trait definition |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/unified_format_trait.rs`](../../tests/unified_format_trait.rs) | Format trait tests |
 
 ### Design
 
@@ -34,7 +44,7 @@ The canonical data format consumed by all formatters. It holds a `TableMetadata`
 
 The `Format` trait defines a single method that accepts a `TableView` reference and returns a formatted string or an error.
 
-Eight of ten formatters implement `Format`. `ExpandedFormatter` uses the deprecated `TableShapedFormatter` path; `TreeFormatter` uses direct method dispatch. Callers build a `TableView` once and pass it to any `Format`-implementing formatter.
+Nine of ten formatters implement `Format`. `TreeFormatter` uses direct method dispatch. Callers build a `TableView` once and pass it to any `Format`-implementing formatter.
 
 #### Formatter Registry
 
@@ -72,10 +82,3 @@ Standard workspace integration uses the `enabled` feature for core dependencies 
 
 Build data once with `RowBuilder::build_view()` to produce a `TableView`, then pass it to any `Format`-implementing formatter. Each formatter is conditionally available based on its feature flag; callers wrap formatter code in the appropriate `cfg(feature = "...")` guard.
 
-#### Migration from TreeNode
-
-The existing `RowBuilder` API is unchanged. The new `build_view()` method is additive.
-
-- `RowBuilder::build()` -- still returns a table-encoded tree (unchanged).
-- `RowBuilder::build_view()` -- returns `TableView` (new).
-- `TableView::to_tree_node()` -- converts back to `TreeNode` for backward compatibility.

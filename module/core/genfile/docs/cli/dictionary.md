@@ -136,7 +136,7 @@ parameters:
 - Can be previewed with `dry::1` flag
 
 **Related:**
-- [.materialize command](command/operations.md#command-16-materialize) - Materialization command
+- [.materialize command](command/operations.md#command--16-materialize) - Materialization command
 - [template](#template) - What gets rendered
 - [parameter](#parameter) - What gets substituted
 
@@ -176,11 +176,11 @@ genfile .materialize destination::"./output"
 - Use when: working with local templates, minimizing archive size
 
 **Conversion:**
-- [.content.internalize](command/content.md#command-9-contentinternalize) - Reference → Inline
-- [.content.externalize](command/content.md#command-10-contentexternalize) - Inline → Reference
+- [.content.internalize](command/content.md#command--9-contentinternalize) - Reference → Inline
+- [.content.externalize](command/content.md#command--10-contentexternalize) - Inline → Reference
 
 **Related:**
-- [.archive.from_directory mode::](command/archive.md#command-8-archivefromdirectory) - Choose mode during creation
+- [.archive.from_directory mode::](command/archive.md#command--8-archivefrom_directory) - Choose mode during creation
 - [.content.* commands](command/content.md) - Content management
 
 **Comparison:**
@@ -223,8 +223,8 @@ genfile .archive.save path::"lightweight.json"
 - Read operations ignore dry flag (no side effects anyway)
 
 **Related:**
-- [dry:: parameter](param.md#parameter-2-dry) - Parameter documentation
-- [Universal Execution Control](param_group.md#group-2-universal-execution-control) - Parameter group
+- [dry:: parameter](param.md#parameter--2-dry) - Parameter documentation
+- [Universal Execution Control](param_group.md#group--2-universal-execution-control) - Parameter group
 
 **Example:**
 ```bash
@@ -243,22 +243,15 @@ genfile .materialize destination::"./output" dry::0
 
 **Definition:** Output detail control using 0-5 scale where higher values show more information.
 
-**Levels:**
-- `0` - Silent: Errors only (for scripting)
-- `1` - Normal: Summary output (default)
-- `2` - Verbose: Detailed progress and results
-- `3` - Debug: Internal operations and decisions
-- `4` - Trace: Function calls and data flow
-- `5` - Ultra-trace: All events and state changes
-
 **Characteristics:**
 - Universal parameter (appears in all commands)
-- Default is 1 (balanced output)
+- Scale from 0 (silent/errors only) to 5 (ultra-trace/all events); default is 1
 - Controlled by `verbosity::` parameter
 
 **Related:**
-- [verbosity:: parameter](param.md#parameter-1-verbosity) - Parameter documentation
-- [Universal Output Control](param_group.md#group-1-universal-output-control) - Parameter group
+- [VerbosityLevel](type.md#type--1-verbositylevel) - Complete level definitions with constants
+- [verbosity:: parameter](param.md#parameter--1-verbosity) - Parameter documentation
+- [Universal Output Control](param_group.md#group--1-universal-output-control) - Parameter group
 
 **Use Cases:**
 - `verbosity::0` - CI/CD pipelines (quiet)
@@ -306,9 +299,9 @@ genfile .materialize destination::"./output" verbosity::2
 - `**/target/**` - All files in target directories (any depth)
 
 **Related:**
-- [include_pattern:: parameter](param.md#parameter-17-includepattern) - Inclusion patterns
-- [exclude_pattern:: parameter](param.md#parameter-21-excludepattern) - Exclusion patterns
-- [Filesystem Filtering](param_group.md#group-3-filesystem-filtering) - Pattern group
+- [include_pattern:: parameter](param.md#parameter--17-include_pattern) - Inclusion patterns
+- [exclude_pattern:: parameter](param.md#parameter--21-exclude_pattern) - Exclusion patterns
+- [Filesystem Filtering](param_group.md#group--3-filesystem-filtering) - Pattern group
 
 **Notes:**
 - Case-sensitive on Unix, case-insensitive on Windows
@@ -358,8 +351,8 @@ genfile .archive.from_directory \
 - Override with `format::` parameter
 
 **Related:**
-- [format:: parameter](param.md#parameter-19-format) - Format selection
-- [.archive.save](command/archive.md#command-7-archivesave) - Saving with format control
+- [format:: parameter](param.md#parameter--19-format) - Format selection
+- [.archive.save](command/archive.md#command--7-archivesave) - Saving with format control
 
 **Recommendation:**
 - **JSON:** Machine consumption, CI/CD, performance-critical

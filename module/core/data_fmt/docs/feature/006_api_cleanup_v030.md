@@ -7,21 +7,41 @@
 - **In Scope**: Removed APIs (TableShapedFormatter trait, RowBuilder::build(), format(&TreeNode), to_tree_node()), added API (impl Format for ExpandedFormatter), internal cleanup (conversions.rs, write_to signatures, ansi_str comment).
 - **Out of Scope**: Formatter algorithm details (see `../algorithm/`), variant output examples (see `../variant/`), stable promotion (see `../../../doc/layers.md`).
 
-### Cross-References
+### Traits
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/expanded.rs` | ExpandedFormatter Format impl to add |
-| source | `src/formatters/mod.rs` | TableShapedFormatter trait to remove |
-| source | `src/table_tree.rs` | RowBuilder::build() and root field to remove |
-| source | `src/data.rs` | TableView::to_tree_node() to remove |
-| source | `src/conversions.rs` | flatten_to_table_tree return type fix |
-| test | `tests/formatters.rs` | Tests to migrate off deprecated APIs |
-| test | `tests/fluent_api.rs` | Tests to migrate off deprecated APIs |
-| doc | `../trait/001_format.md` | Format trait — gains ExpandedFormatter coverage |
-| doc | `../trait/002_table_shaped_formatter.md` | Deprecated trait — to be deleted |
-| doc | `../formatter/002_expanded_formatter.md` | ExpandedFormatter — gains Format impl |
-| doc | `../api/002_builders.md` | Builders API — build() removed |
+| File | Relationship |
+|------|-------------|
+| [001_format.md](../trait/001_format.md) | Format trait — gains ExpandedFormatter coverage |
+| [002_table_shaped_formatter.md](../trait/002_table_shaped_formatter.md) | Deprecated trait — to be deleted |
+
+### Formatters
+
+| File | Relationship |
+|------|-------------|
+| [002_expanded_formatter.md](../formatter/002_expanded_formatter.md) | ExpandedFormatter — gains Format impl |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [002_builders.md](../api/002_builders.md) | Builders API — build() removed |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/formatters/expanded.rs`](../../src/formatters/expanded.rs) | ExpandedFormatter Format impl to add |
+| [`src/formatters/mod.rs`](../../src/formatters/mod.rs) | TableShapedFormatter trait to remove |
+| [`src/table_tree.rs`](../../src/table_tree.rs) | RowBuilder::build() and root field to remove |
+| [`src/data.rs`](../../src/data.rs) | TableView::to_tree_node() to remove |
+| [`src/conversions.rs`](../../src/conversions.rs) | flatten_to_table_tree return type fix |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/formatters.rs`](../../tests/formatters.rs) | Tests to migrate off deprecated APIs |
+| [`tests/fluent_api.rs`](../../tests/fluent_api.rs) | Tests to migrate off deprecated APIs |
 
 ### Design
 

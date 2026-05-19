@@ -11,9 +11,21 @@
 
 Universal help (`.` or `.help`) lists all registered non-help commands with their hints and examples. Per-command help (e.g., `.archive.new.help`) shows the command description, all parameters with kinds and defaults, and usage examples. Help commands are auto-generated for every registered command and filtered from command listings to avoid noise.
 
-### Cross-References
+### Invariants
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/commands/mod.rs` | Registry that enables auto-generated help |
-| doc | `docs/cli/readme.md` | CLI documentation including help system overview |
+| File | Relationship |
+|------|--------------|
+| [`invariant/002_usability.md`](../invariant/002_usability.md) | Usability constraint that help system format must satisfy |
+| [`invariant/006_documentation.md`](../invariant/006_documentation.md) | Documentation completeness constraint enforced through help |
+
+### Docs
+
+| File | Relationship |
+|------|--------------|
+| [`docs/cli/readme.md`](../cli/readme.md) | CLI documentation including help system overview |
+
+### Sources
+
+| File | Relationship |
+|------|--------------|
+| [`src/commands/mod.rs`](../../src/commands/mod.rs) | Registry that enables auto-generated help |

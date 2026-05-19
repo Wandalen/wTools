@@ -7,19 +7,34 @@
 - **In Scope**: Trait implementation, `TextVariant` enum values, runtime-only variant selection, shared feature flag.
 - **Out of Scope**: Variant output details (see `../variant/028_text_bullets.md` through `033_text_cli_help.md`), operation signatures (see `../api/004_formatters.md`).
 
-### Cross-References
+### Traits
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/text.rs` | `TextFormatter` and `TextVariant` implementation |
-| doc | `../api/004_formatters.md` | Operation signatures |
-| doc | `../trait/001_format.md` | `Format` trait contract |
-| doc | `../variant/028_text_bullets.md` | Variant: bullets |
-| doc | `../variant/029_text_numbered.md` | Variant: numbered |
-| doc | `../variant/030_text_sections.md` | Variant: sections |
-| doc | `../variant/031_text_keyvalue.md` | Variant: keyvalue |
-| doc | `../variant/032_text_compact.md` | Variant: compact |
-| doc | `../variant/033_text_cli_help.md` | Variant: cli_help |
+| File | Relationship |
+|------|-------------|
+| [001_format.md](../trait/001_format.md) | `Format` trait contract |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [004_formatters.md](../api/004_formatters.md) | Operation signatures |
+
+### Variants
+
+| File | Relationship |
+|------|-------------|
+| [028_text_bullets.md](../variant/028_text_bullets.md) | Variant: bullets |
+| [029_text_numbered.md](../variant/029_text_numbered.md) | Variant: numbered |
+| [030_text_sections.md](../variant/030_text_sections.md) | Variant: sections |
+| [031_text_keyvalue.md](../variant/031_text_keyvalue.md) | Variant: keyvalue |
+| [032_text_compact.md](../variant/032_text_compact.md) | Variant: compact |
+| [033_text_cli_help.md](../variant/033_text_cli_help.md) | Variant: cli_help |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/formatters/text.rs`](../../src/formatters/text.rs) | `TextFormatter` and `TextVariant` implementation |
 
 ### Trait
 

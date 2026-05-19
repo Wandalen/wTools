@@ -60,17 +60,6 @@ pub fn usage_error( message : impl Into< String > ) -> ErrorData
   }
 }
 
-/// Format parameter-related error
-pub fn _parameter_error( message : impl Into< String > ) -> ErrorData
-{
-  ErrorData
-  {
-    code : ErrorCode::UnknownParameter,
-    message : format!( "[ERROR] [PARAMETER]: {}", message.into() ),
-    source : None,
-  }
-}
-
 /// Format file-related error
 pub fn file_error( message : impl Into< String > ) -> ErrorData
 {

@@ -445,3 +445,66 @@ fn unpack_without_archive_returns_error()
   // Clean up
   let _ = fs::remove_dir_all( &destination );
 }
+
+// FT-05 (feature/006): Path traversal sequences in destination cause failure
+//
+// WHY: Materialization must not allow `..` in the user-supplied destination to
+// escape the intended output directory and overwrite arbitrary paths.
+// validate_path() is called on file paths within the archive, but NOT on the
+// destination argument itself. A destination like `/tmp/safe/../../../etc/target`
+// resolves outside `/tmp` and either causes a permission-denied error or touches
+// paths the user did not intend. Either way the command must fail.
+//
+// SECURITY NOTE: This is a defense-in-depth test. The OS-level permission check
+// already prevents writing to `/etc` as a non-root user. The test verifies that
+// the materialization operation fails AND that no file escapes to `/etc`.
+#[ test ]
+fn test_path_traversal_destination_rejected()
+{
+  let temp_dir = std::env::temp_dir();
+  let source_dir = temp_dir.join( "test_traversal_source" );
+  let archive_path = temp_dir.join( "test_traversal_archive.json" );
+  // Path that traverses up from /tmp and attempts to write to /etc
+  let traversal_destination = "/tmp/traversal_safe/../../../etc/mat_traversal_test";
+
+  // Clean up
+  let _ = fs::remove_dir_all( &source_dir );
+  let _ = fs::remove_file( &archive_path );
+  let _ = std::fs::remove_dir_all( "/etc/mat_traversal_test" );
+
+  // Create a minimal template archive
+  fs::create_dir_all( &source_dir ).expect( "Should create source dir" );
+  fs::write( source_dir.join( "file.txt" ), "hello" ).expect( "Should write template" );
+
+  let script = format!(
+    ".pack input::{} output::{}\n\
+     .archive.load path::{}\n\
+     .materialize destination::{}\n\
+     exit",
+    source_dir.display(),
+    archive_path.display(),
+    archive_path.display(),
+    traversal_destination
+  );
+
+  let output = cli_runner::repl_command( &script )
+    .output()
+    .expect( "Command should execute" );
+
+  // The operation must fail (either validation error or permission denied)
+  assert!(
+    !output.status.success(),
+    "Path traversal in destination must cause failure. stdout: {}",
+    String::from_utf8_lossy( &output.stdout )
+  );
+
+  // Verify no files escaped to /etc
+  assert!(
+    !std::path::Path::new( "/etc/mat_traversal_test" ).exists(),
+    "Should not create directories under /etc via path traversal"
+  );
+
+  // Clean up
+  let _ = fs::remove_dir_all( &source_dir );
+  let _ = fs::remove_file( &archive_path );
+}

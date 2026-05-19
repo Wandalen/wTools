@@ -7,18 +7,28 @@
 - **In Scope**: RowBuilder and TreeBuilder public methods, FlattenConfig, flatten functions.
 - **Out of Scope**: Behavioral invariants (see `../invariant/`), construction patterns (see `../builder/`).
 
-### Cross-References
+### Builders
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/builder.rs` | Builder implementation |
-| test | `tests/builder.rs` | Builder API tests |
-| doc | `../builder/001_row_builder.md` | RowBuilder construction patterns |
-| doc | `../builder/002_tree_builder.md` | TreeBuilder construction patterns |
+| File | Relationship |
+|------|-------------|
+| [001_row_builder.md](../builder/001_row_builder.md) | RowBuilder construction patterns |
+| [002_tree_builder.md](../builder/002_tree_builder.md) | TreeBuilder construction patterns |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/builder.rs`](../../src/builder.rs) | Builder implementation |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/builder.rs`](../../tests/builder.rs) | Builder API tests |
 
 ### Abstract
 
-Three builder types and two conversion functions form the construction API. `RowBuilder` assembles tabular data row by row from headers and string values, producing either `TableView` (modern path) or `TreeNode< String >` (legacy path). `TreeBuilder< T >` assembles hierarchical trees from path-based insertions, creating intermediate directory nodes automatically. `FlattenConfig` and the `flatten_to_table_tree` functions convert a hierarchical `TreeNode< T >` into a flat table-shaped tree, extracting path, name, depth, and data as columns.
+Three builder types and two conversion functions form the construction API. `RowBuilder` assembles tabular data row by row from headers and string values, producing `TableView` for the `Format` trait path. `TreeBuilder< T >` assembles hierarchical trees from path-based insertions, creating intermediate directory nodes automatically. `FlattenConfig` and the `flatten_to_table_tree` functions convert a hierarchical `TreeNode< T >` into a flat table-shaped tree, extracting path, name, depth, and data as columns.
 
 ### Operations
 
@@ -30,7 +40,7 @@ Fluent and mutable builder for constructing table-shaped data from headers and r
 
 **Mutable API** (for loop-based construction): `add_row_mut( &mut self, row )`, `add_row_with_name_mut( &mut self, name, row )`, `add_row_with_detail_mut( &mut self, row, detail )`.
 
-**Terminal operations**: `build_view( self ) -> TableView` (modern path; use with `Format` trait) and `build( self ) -> TreeNode< String >` (legacy path; use with `TableShapedFormatter`).
+**Terminal operation**: `build_view( self ) -> TableView` (use with `Format` trait).
 
 #### TreeBuilder< T >
 
@@ -42,7 +52,7 @@ Configuration for which columns to include when flattening a hierarchical tree t
 
 #### Flatten Functions
 
-`flatten_to_table_tree< T : Display >( tree : &TreeNode< T > ) -> TreeNode< String >` produces a table-shaped tree with four default columns. `flatten_to_table_tree_with_config< T : Display >( tree, config : &FlattenConfig ) -> TreeNode< String >` applies a `FlattenConfig` to control column inclusion and naming. Both perform a DFS traversal emitting one row per node.
+`flatten_to_table_tree< T : Display >( tree : &TreeNode< T > ) -> TableView` produces a table view with four default columns. `flatten_to_table_tree_with_config< T : Display >( tree, config : &FlattenConfig ) -> TableView` applies a `FlattenConfig` to control column inclusion and naming. Both perform a DFS traversal emitting one row per node.
 
 ### Error Handling
 
@@ -50,4 +60,4 @@ Builder construction does not return `Result`. `RowBuilder` panics if a row's le
 
 ### Compatibility Guarantees
 
-`RowBuilder::build()` and `RowBuilder::build_view()` are both stable and present; callers can migrate incrementally from the legacy `build()` path to `build_view()` without removing existing code. The fluent and mutable APIs are additive — callers using `add_row` continue working after new `add_row_with_detail` methods were introduced. `FlattenConfig` defaults all fields to `true` for maximum column inclusion; new optional columns added in future versions will also default to `true`.
+`RowBuilder::build_view()` is stable. `RowBuilder::build()` was removed in v0.3.0; callers must use `build_view()` with the `Format` trait. The fluent and mutable APIs are additive — callers using `add_row` continue working after new `add_row_with_detail` methods were introduced. `FlattenConfig` defaults all fields to `true` for maximum column inclusion; new optional columns added in future versions will also default to `true`.

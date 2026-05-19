@@ -7,13 +7,23 @@
 - **In Scope**: Node structure, leaf data, invariants, specializations, and builder entry points.
 - **Out of Scope**: Rust type details (see `../input_type/`), construction APIs (see `../builder/`).
 
-### Cross-References
+### InputTypes
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/data.rs` | TreeNode definition |
-| test | `tests/data.rs` | Data model tests |
-| doc | `../input_type/002_tree_node.md` | Rust type documentation |
+| File | Relationship |
+|------|-------------|
+| [002_tree_node.md](../input_type/002_tree_node.md) | Rust type documentation |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/data.rs`](../../src/data.rs) | TreeNode definition |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/data.rs`](../../tests/data.rs) | Data model tests |
 
 ### Data Shape
 

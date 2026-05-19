@@ -2,7 +2,12 @@
 
 Semantically coherent parameter sets shared across commands. Groups reduce duplication and clarify common patterns.
 
-**Governance Principle:** Semantic Coherence — parameters share PURPOSE, not just frequency.
+### Scope
+
+- **In Scope:** Semantic parameter groups with shared purpose, invariants, and cross-reference tables
+- **Out of Scope:** Individual parameter specifications (see [Parameters](param.md)), command-specific parameters not part of any group
+- **Audience:** CLI users and integrators who rely on consistent parameter behavior across commands
+- **Governance Principle:** Semantic Coherence — parameters belong in the same group ONLY if they share PURPOSE, not just frequency of co-occurrence.
 
 ### Groups Index
 
@@ -16,108 +21,211 @@ Semantically coherent parameter sets shared across commands. Groups reduce dupli
 
 ### Group :: 1. Universal Output Control
 
-Controls output presentation verbosity and detail level across all commands.
+**Pattern:** Every command accepts `verbosity::` to control how much output it produces. The value is an integer 0–5. The default (1) provides balanced output for interactive use.
 
-- **Parameters:** [`verbosity::`](param.md#parameter--1-verbosity) — Output detail level (0-5 scale)
-- **Applicability:** Universal (all commands)
-- **Semantic Coherence Test:** "Does this parameter control output presentation detail?" — YES for `verbosity::` ✅
+**Purpose:** Controls output presentation verbosity and detail level across all commands.
 
-### Referenced Commands
+**Applicability:** Universal — all 24 commands implement this group.
 
-All commands implement this group.
+#### Semantic Coherence Test
 
-### Excluded Parameters
+**Test:** "Does this parameter control output presentation detail?"
+
+- `verbosity::` — YES ✅ — directly controls how much output is produced
+
+#### Why NOT Included
 
 - `dry::` — Controls execution mode (preview vs real), NOT output detail
 - `format::` — Controls serialization format (JSON vs YAML), NOT verbosity
 - `pretty::` — Controls JSON formatting (compact vs pretty), NOT verbosity level
 - `filter::` — Controls content filtering, NOT output presentation
 
-### Notes
+#### Invariants
 
-- Default value (1) provides balanced output for most use cases
-- Silent mode (0) useful for scripting (errors only)
-- Debug modes (3-5) intended for development/troubleshooting
-- Every command respects this parameter consistently
+- Every command must accept `verbosity::` — no command may exclude it
+- Default value (1) is consistent across all commands
+- Level 0 produces no output except errors — safe for scripting
+- Levels 3-5 are for development/troubleshooting only; not suitable for CI/CD output parsing
+
+#### Referenced Parameters
+
+| # | Parameter | Type | Default | Role in Group |
+|---|-----------|------|---------|---------------|
+| 1 | [`verbosity::`](param.md#parameter--1-verbosity) | [VerbosityLevel](type.md#type--1-verbositylevel) | `1` | Output detail level (0=silent, 5=ultra-trace) |
+
+#### Referenced Commands
+
+| # | Command | Membership | Excluded Params | Notes |
+|---|---------|------------|-----------------|-------|
+| 1 | [`.info`](command/operations.md#command--1-info) | Full | — | — |
+| 2 | [`.discover.parameters`](command/operations.md#command--2-discoverparameters) | Full | — | — |
+| 3 | [`.status`](command/operations.md#command--3-status) | Full | — | — |
+| 4 | [`.analyze`](command/operations.md#command--4-analyze) | Full | — | — |
+| 5 | [`.archive.new`](command/archive.md#command--5-archivenew) | Full | — | — |
+| 6 | [`.archive.load`](command/archive.md#command--6-archiveload) | Full | — | — |
+| 7 | [`.archive.save`](command/archive.md#command--7-archivesave) | Full | — | — |
+| 8 | [`.archive.from_directory`](command/archive.md#command--8-archivefrom_directory) | Full | — | — |
+| 9 | [`.content.internalize`](command/content.md#command--9-contentinternalize) | Full | — | — |
+| 10 | [`.content.externalize`](command/content.md#command--10-contentexternalize) | Full | — | — |
+| 11 | [`.content.list`](command/content.md#command--11-contentlist) | Full | — | — |
+| 12 | [`.file.add`](command/file.md#command--12-fileadd) | Full | — | — |
+| 13 | [`.file.remove`](command/file.md#command--13-fileremove) | Full | — | — |
+| 14 | [`.file.list`](command/file.md#command--14-filelist) | Full | — | — |
+| 15 | [`.file.show`](command/file.md#command--15-fileshow) | Full | — | — |
+| 16 | [`.materialize`](command/operations.md#command--16-materialize) | Full | — | — |
+| 17 | [`.unpack`](command/operations.md#command--17-unpack) | Full | — | — |
+| 18 | [`.pack`](command/operations.md#command--18-pack) | Full | — | — |
+| 19 | [`.parameter.add`](command/param_mgmt.md#command--19-parameteradd) | Full | — | — |
+| 20 | [`.parameter.list`](command/param_mgmt.md#command--20-parameterlist) | Full | — | — |
+| 21 | [`.parameter.remove`](command/param_mgmt.md#command--21-parameterremove) | Full | — | — |
+| 22 | [`.value.set`](command/value.md#command--22-valueset) | Full | — | — |
+| 23 | [`.value.list`](command/value.md#command--23-valuelist) | Full | — | — |
+| 24 | [`.value.clear`](command/value.md#command--24-valueclear) | Full | — | — |
+
+#### Referenced Tests
+
+| # | Test Spec | Scope |
+|---|-----------|-------|
+| 1 | [001_universal_output_control.md](../../tests/docs/cli/param_group/001_universal_output_control.md) | Universal Output Control group invariants |
+
+#### Typical Patterns
+
+```bash
+# Silent mode for scripting
+genfile .archive.save path::"out.json" verbosity::0
+
+# Default interactive mode (1 is the default, can be omitted)
+genfile .archive.load path::"template.yaml"
+
+# Verbose for understanding operations
+genfile .materialize destination::"./output" verbosity::2
+
+# Debug for troubleshooting
+genfile .archive.from_directory source::"./src" verbosity::3
+```
 
 ---
 
 ### Group :: 2. Universal Execution Control
 
-Controls whether operations execute normally or run in preview mode without making changes.
+**Pattern:** Write operations accept `dry::` to toggle between preview mode (1) and real execution (0). Dry mode shows what would happen without making changes.
 
-- **Parameters:** [`dry::`](param.md#parameter--2-dry) — Preview mode flag (0=execute, 1=preview)
-- **Applicability:** Write operations only
-- **Semantic Coherence Test:** "Does this parameter control execution vs preview mode?" — YES for `dry::` ✅
+**Purpose:** Controls whether operations execute normally or run in preview mode without making changes.
 
-### Referenced Commands
+**Applicability:** Write operations only — commands with side effects (file writes, archive modifications).
 
-| # | Command | File |
-|---|---------|------|
-| 7 | [.archive.save](command/archive.md) | archive.md |
-| 8 | [.archive.from_directory](command/archive.md) | archive.md |
-| 9 | [.content.internalize](command/content.md) | content.md |
-| 16 | [.materialize](command/operations.md) | operations.md |
-| 17 | [.unpack](command/operations.md) | operations.md |
-| 18 | [.pack](command/operations.md) | operations.md |
+#### Semantic Coherence Test
 
-### Excluded Parameters
+**Test:** "Does this parameter control execution vs preview mode?"
+
+- `dry::` — YES ✅ — directly toggles between real and preview execution
+
+#### Why NOT Included
 
 - `verbosity::` — Controls output detail, NOT execution mode
 - `mandatory::` — Parameter metadata, NOT execution control
-- Read operations (`.info`, `.status`, `.file.list`, etc.) — No side effects, dry mode meaningless
+- Read operations (`.info`, `.status`, `.file.list`, etc.) — No side effects; dry mode is meaningless for these
 
-### Notes
+#### Invariants
 
 - Only appears in commands with side effects (file writes, archive modifications)
-- Default (0) ensures real execution unless explicitly previewed
-- Combines well with `verbosity::2+` for detailed previews
+- Default (0) ensures real execution unless explicitly previewed — no accidental dry runs
+- Exit codes are identical between dry and real execution (both reflect what would happen)
+- Dry mode performs full validation — errors in dry mode predict errors in real execution
 
-### Typical Workflow
+#### Referenced Parameters
+
+| # | Parameter | Type | Default | Role in Group |
+|---|-----------|------|---------|---------------|
+| 2 | [`dry::`](param.md#parameter--2-dry) | [DryRunFlag](type.md#type--2-dryrunflag) | `0` | Preview mode toggle (0=execute, 1=preview) |
+
+#### Referenced Commands
+
+| # | Command | Membership | Excluded Params | Notes |
+|---|---------|------------|-----------------|-------|
+| 2 | [`.discover.parameters`](command/operations.md#command--2-discoverparameters) | Full | — | Previews parameter detection |
+| 4 | [`.analyze`](command/operations.md#command--4-analyze) | Full | — | Previews analysis |
+| 7 | [`.archive.save`](command/archive.md#command--7-archivesave) | Full | — | Previews file write |
+| 8 | [`.archive.from_directory`](command/archive.md#command--8-archivefrom_directory) | Full | — | Previews directory scan |
+| 9 | [`.content.internalize`](command/content.md#command--9-contentinternalize) | Full | — | Previews content read |
+| 10 | [`.content.externalize`](command/content.md#command--10-contentexternalize) | Full | — | Previews content externalization |
+| 16 | [`.materialize`](command/operations.md#command--16-materialize) | Full | — | Previews file generation |
+| 17 | [`.unpack`](command/operations.md#command--17-unpack) | Full | — | Previews file extraction |
+| 18 | [`.pack`](command/operations.md#command--18-pack) | Full | — | Previews pack operation |
+| 24 | [`.value.clear`](command/value.md#command--24-valueclear) | Full | — | Previews value deletion |
+
+#### Referenced Tests
+
+| # | Test Spec | Scope |
+|---|-----------|-------|
+| 1 | [002_universal_execution_control.md](../../tests/docs/cli/param_group/002_universal_execution_control.md) | Universal Execution Control group invariants |
+
+#### Typical Patterns
 
 ```bash
 # 1. Preview operation
 genfile .materialize destination::"./output" dry::1 verbosity::2
 
-# 2. Review preview output
+# 2. Review preview output, then execute
+genfile .materialize destination::"./output"
 
-# 3. Execute for real
-genfile .materialize destination::"./output" dry::0
+# CI/CD: enable dry-run globally via environment
+export GENFILE_DRY=1
+genfile .archive.save path::"out.json"   # preview only
 ```
 
 ---
 
 ### Group :: 3. Filesystem Filtering
 
-Controls filesystem traversal depth and file inclusion/exclusion patterns for directory scanning.
+**Pattern:** Directory scan commands accept filtering parameters to control which files are included. Include patterns act as a whitelist; exclude patterns act as a blacklist. Both can be combined.
 
-- **Parameters:**
-  - [`recursive::`](param.md#parameter--10-recursive) — Subdirectory traversal flag (0=flat, 1=recursive)
-  - [`include_pattern::`](param.md#parameter--17-include_pattern) — Glob pattern for file inclusion
-  - [`exclude_pattern::`](param.md#parameter--21-exclude_pattern) — Glob pattern for file exclusion
-- **Applicability:** `.archive.from_directory` only
-- **Semantic Coherence Test:** "Does this parameter control filesystem discovery scope or filtering?" — YES for all three ✅
+**Purpose:** Controls filesystem traversal depth and file inclusion/exclusion patterns for directory scanning.
 
-### Referenced Commands
+**Applicability:** `.archive.from_directory` only — the sole command that scans a filesystem directory.
 
-| # | Command | File |
-|---|---------|------|
-| 8 | [.archive.from_directory](command/archive.md) | archive.md |
+#### Semantic Coherence Test
 
-### Excluded Parameters
+**Test:** "Does this parameter control filesystem discovery scope or filtering?"
+
+- `recursive::` — YES ✅ — controls traversal depth (flat vs recursive)
+- `include_pattern::` — YES ✅ — controls which files are included (whitelist glob)
+- `exclude_pattern::` — YES ✅ — controls which files are excluded (blacklist glob)
+
+#### Why NOT Included
 
 - `source::` — Specifies starting directory, NOT filtering strategy
 - `mode::` — Controls content storage (inline vs reference), NOT filesystem discovery
 - `filter::` — Used in `.content.list` for archive filtering, NOT filesystem filtering
 
-### Interaction Model
+#### Invariants
 
-1. `recursive::1` enables subdirectory traversal
-2. `include_pattern::` applied first (whitelist)
-3. `exclude_pattern::` applied second (blacklist)
-4. Result: Only files matching include AND NOT matching exclude
+- `include_pattern::` is applied before `exclude_pattern::` (whitelist then blacklist)
+- A file must match `include_pattern::` AND NOT match `exclude_pattern::` to be included
+- When both patterns are absent, all files are included (no filtering)
+- `recursive::0` (flat mode) disregards any `include_pattern::` that uses `**` — patterns still applied but subdirectories not traversed
 
-### Examples
+#### Referenced Parameters
+
+| # | Parameter | Type | Default | Role in Group |
+|---|-----------|------|---------|---------------|
+| 10 | [`recursive::`](param.md#parameter--10-recursive) | [RecursiveFlag](type.md#type--13-recursiveflag) | `1` | Subdirectory traversal (0=flat, 1=recursive) |
+| 17 | [`include_pattern::`](param.md#parameter--17-include_pattern) | [PatternString](type.md#type--8-patternstring) | `null` | Glob pattern for file inclusion (whitelist) |
+| 21 | [`exclude_pattern::`](param.md#parameter--21-exclude_pattern) | [PatternString](type.md#type--8-patternstring) | `null` | Glob pattern for file exclusion (blacklist) |
+
+#### Referenced Commands
+
+| # | Command | Membership | Excluded Params | Notes |
+|---|---------|------------|-----------------|-------|
+| 8 | [`.archive.from_directory`](command/archive.md#command--8-archivefrom_directory) | Full | — | Only command using this group |
+
+#### Referenced Tests
+
+| # | Test Spec | Scope |
+|---|-----------|-------|
+| 1 | [003_filesystem_filtering.md](../../tests/docs/cli/param_group/003_filesystem_filtering.md) | Filesystem Filtering group invariants |
+
+#### Typical Patterns
 
 ```bash
 # Include only Rust files
@@ -132,30 +240,16 @@ genfile .archive.from_directory \
   recursive::1 \
   exclude_pattern::"**/target/**"
 
-# Complex filtering
+# Complex filtering: Rust/TOML/Markdown, excluding target
 genfile .archive.from_directory \
   source::"./src" \
   recursive::1 \
   include_pattern::"**/*.{rs,toml,md}" \
   exclude_pattern::"**/target/**"
+
+# Flat scan (top-level only)
+genfile .archive.from_directory \
+  source::"./templates" \
+  recursive::0
 ```
 
----
-
-### Semantic Coherence Principle
-
-Parameters belong in the same group ONLY if they share semantic purpose.
-
-**Test:** "Does parameter X control [group purpose]?"
-**Rule:** Answer must be YES for ALL parameters in the group.
-
-**Counter-example (hypothetical "Common Parameters"):**
-- Question: "Does this parameter appear frequently?"
-- `verbosity::`, `dry::`, `path::` all answer YES — but they mix output control, execution control, and I/O paths.
-- Co-occurrence ≠ semantic relationship.
-
-### See Also
-
-- [Parameters](param.md) - Individual parameter specifications
-- [Commands](command/readme.md) - Command usage patterns
-- [Types](type.md) - Type system and validation

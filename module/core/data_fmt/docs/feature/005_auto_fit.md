@@ -7,20 +7,44 @@
 - **In Scope**: Cell auto-wrapping, column folding, terminal width detection, progressive degradation, and feature interactions.
 - **Out of Scope**: Algorithm details (see `../algorithm/`), API signatures (see `../api/`).
 
-### Cross-References
+### Algorithms
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/table/mod.rs` | Auto-wrap budget allocation and fold rendering |
-| source | `src/config.rs` | ColumnFlex, FoldStyle enums; auto-fit TableConfig fields |
-| source | `src/wrap.rs` | WrapFormatter for cell wrapping |
-| test | `tests/auto_wrap_test.rs` | Auto-wrap test suite (22 cases) |
-| test | `tests/auto_fold_test.rs` | Column folding test suite (22 tests) |
-| doc | `../algorithm/004_budget_allocation.md` | Budget allocation algorithm |
-| doc | `../algorithm/005_column_fold_detection.md` | Column fold detection algorithm |
-| doc | `../invariant/003_auto_wrap_backward_compat.md` | auto_wrap(false) backward compatibility guarantee |
-| doc | `../invariant/004_column_fold_invariants.md` | Fold behavioral invariants |
-| doc | `../api/003_config_types.md` | TableConfig field reference and builder API |
+| File | Relationship |
+|------|-------------|
+| [004_budget_allocation.md](../algorithm/004_budget_allocation.md) | Budget allocation algorithm |
+| [005_column_fold_detection.md](../algorithm/005_column_fold_detection.md) | Column fold detection algorithm |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [003_config_types.md](../api/003_config_types.md) | TableConfig field reference and builder API |
+
+### Invariants
+
+| File | Relationship |
+|------|-------------|
+| [003_auto_wrap_backward_compat.md](../invariant/003_auto_wrap_backward_compat.md) | auto_wrap(false) backward compatibility guarantee |
+| [004_column_fold_invariants.md](../invariant/004_column_fold_invariants.md) | Fold behavioral invariants |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/formatters/table/mod.rs`](../../src/formatters/table/mod.rs) | `format_internal` orchestration; dispatches to auto_fit and rendering |
+| [`src/formatters/table/auto_fit.rs`](../../src/formatters/table/auto_fit.rs) | Column classification, budget allocation, fold detection and rendering |
+| [`src/formatters/table/rendering.rs`](../../src/formatters/table/rendering.rs) | Row and border rendering primitives used during fold output |
+| [`src/config.rs`](../../src/config.rs) | ColumnFlex, FoldStyle enums; auto-fit TableConfig fields |
+| [`src/wrap.rs`](../../src/wrap.rs) | WrapFormatter for cell wrapping |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/auto_wrap_test.rs`](../../tests/auto_wrap_test.rs) | Auto-wrap test suite T01–T23 (23 tests) |
+| [`tests/auto_wrap_budget_test.rs`](../../tests/auto_wrap_budget_test.rs) | Budget allocation acceptance criteria BA AC-6–AC-8 + invariant WC IN-3 (13 tests) |
+| [`tests/auto_fold_test.rs`](../../tests/auto_fold_test.rs) | Column folding test suite T01–T25 (25 tests) |
+| [`tests/auto_fold_acceptance_test.rs`](../../tests/auto_fold_acceptance_test.rs) | Fold acceptance criteria CF AC-6–AC-8 + additional (7 tests) |
 
 ### Design
 

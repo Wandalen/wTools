@@ -7,25 +7,44 @@
 - **In Scope**: No-trait interface, generic input type specializations, method-level variant selection, feature flags.
 - **Out of Scope**: Variant output details (see `../variant/012_tree_hierarchical.md` through `014_tree_aggregated.md`), operation signatures (see `../api/004_formatters.md`).
 
-### Cross-References
+### APIs
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/formatters/tree.rs` | `TreeFormatter` implementation |
-| source | `src/config.rs` | `TreeConfig`, `TreeSymbols` |
-| doc | `../api/004_formatters.md` | Operation signatures |
-| doc | `../input_model/002_hierarchical.md` | Hierarchical input model |
-| doc | `../input_type/002_tree_node.md` | `TreeNode` type specializations |
-| doc | `../variant/012_tree_hierarchical.md` | Variant: hierarchical |
-| doc | `../variant/013_tree_aligned.md` | Variant: aligned |
-| doc | `../variant/014_tree_aggregated.md` | Variant: aggregated |
+| File | Relationship |
+|------|-------------|
+| [004_formatters.md](../api/004_formatters.md) | Operation signatures |
+
+### InputModels
+
+| File | Relationship |
+|------|-------------|
+| [002_hierarchical.md](../input_model/002_hierarchical.md) | Hierarchical input model |
+
+### InputTypes
+
+| File | Relationship |
+|------|-------------|
+| [002_tree_node.md](../input_type/002_tree_node.md) | `TreeNode` type specializations |
+
+### Variants
+
+| File | Relationship |
+|------|-------------|
+| [012_tree_hierarchical.md](../variant/012_tree_hierarchical.md) | Variant: hierarchical |
+| [013_tree_aligned.md](../variant/013_tree_aligned.md) | Variant: aligned |
+| [014_tree_aggregated.md](../variant/014_tree_aggregated.md) | Variant: aggregated |
+
+### Sources
+
+| File | Relationship |
+|------|-------------|
+| [`src/formatters/tree.rs`](../../src/formatters/tree.rs) | `TreeFormatter` implementation |
+| [`src/config.rs`](../../src/config.rs) | `TreeConfig`, `TreeSymbols` |
 
 ### Trait
 
 | Trait | Status | Note |
 |-------|--------|------|
 | `Format` | ❌ Not implemented | Generic render closure cannot fit `Format` signature |
-| `TableShapedFormatter` | ❌ Not implemented | Operates on hierarchical tree data, not the table-encoded tree format |
 
 `TreeFormatter` implements no shared trait. Variant selection is done by calling the appropriate method directly. It cannot be used polymorphically through any interface.
 

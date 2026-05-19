@@ -482,3 +482,54 @@ fn test_format_error_display()
   let display = format!( "{err}" );
   assert!( display.contains( "Invalid data" ) );
 }
+
+/// FT-5 — `feature/003`: `TreeFormatter` dispatches directly (not via `Format` trait).
+///
+/// `TreeFormatter::format()` and `TreeFormatter::format_aligned()` are called directly.
+/// Both return non-empty strings with node content. `TreeFormatter` does NOT implement
+/// the `Format` trait — direct dispatch is the only invocation path.
+// test_kind: standard
+#[ test ]
+fn tree_formatter_direct_dispatch_not_format_trait_ft5()
+{
+  use data_fmt::{ TreeNode, TreeFormatter, TreeConfig, ColumnData };
+
+  // Build a simple tree: root with one child carrying generic data
+  let mut root : TreeNode< u64 > = TreeNode::new( "root".to_string(), None );
+  root.children.push( TreeNode::new( "child".to_string(), Some( 42u64 ) ) );
+
+  // Direct dispatch via format() — NOT Format::format()
+  let formatter = TreeFormatter::new();
+  let output = formatter.format( &root, u64::to_string );
+
+  assert!(
+    !output.is_empty(),
+    "TreeFormatter::format() direct dispatch must produce non-empty output:\n{output:?}",
+  );
+  assert!(
+    output.contains( "42" ) || output.contains( "child" ),
+    "direct dispatch output must contain child node data:\n{output:?}",
+  );
+
+  // Direct dispatch via format_aligned() with ColumnData
+  let mut root_aligned : TreeNode< ColumnData > = TreeNode::new( "root".to_string(), None );
+  root_aligned.children.push( TreeNode::new( "item".to_string(),
+    Some( ColumnData::new( vec![ "val_a".to_string(), "val_b".to_string() ] ) )
+  ) );
+
+  let fmt_aligned = TreeFormatter::with_config( TreeConfig::new() );
+  let out_aligned = fmt_aligned.format_aligned( &root_aligned );
+
+  assert!(
+    !out_aligned.is_empty(),
+    "TreeFormatter::format_aligned() direct dispatch must produce non-empty output:\n{out_aligned:?}",
+  );
+  assert!(
+    out_aligned.contains( "val_a" ),
+    "format_aligned() output must contain column data:\n{out_aligned:?}",
+  );
+
+  // TreeFormatter does NOT implement the Format trait — this would not compile:
+  // let _: &dyn Format = &formatter;  // compile error: Format not implemented
+  // The absence of the impl is the architectural contract for direct-dispatch-only use.
+}

@@ -19,8 +19,8 @@ Measured via integration tests that time command sequences end-to-end. Standalon
 
 Excessive latency makes the CLI unsuitable for interactive use in REPL mode and for CI/CD automation where many commands are chained together.
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | `docs/feature/010_repl_mode.md` | REPL startup is one of the measured targets |
+| File | Relationship |
+|------|--------------|
+| [`feature/010_repl_mode.md`](../feature/010_repl_mode.md) | REPL mode whose startup latency this invariant bounds |

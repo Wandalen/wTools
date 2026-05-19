@@ -9,7 +9,7 @@
 
 1. Confirm the type belongs here — verify it fits **In Scope** in `readme.md` (Rust type carrying input data). Conceptual shapes go in `input_model/`; output behavior goes in `variant/`.
 2. Assign the next unused NNN from the **Overview Table** in `readme.md`.
-3. Create `docs/input_type/NNN_name.md` with the following sections in order per **Type-Specific Requirements** in `readme.md`: `### Scope`, `### Cross-References`, `### Type Definition`, `### Specializations`.
+3. Create `docs/input_type/NNN_name.md` with the following sections in order per **Type-Specific Requirements** in `readme.md`: `### Scope`, typed cross-reference H3 sections (see existing instances), `### Type Definition`, `### Specializations`.
 4. Add a row to the **Overview Table** in `readme.md`:
    `| NNN | [Name](NNN_name.md) | One-line purpose | 🔄 |`
 5. Add a row to `docs/entities.md` **Master Doc Instances Table**:
@@ -18,7 +18,7 @@
 7. Add a node to `docs/doc_graph.yml` under `nodes`:
    `- id: input_type/NNN, file: input_type/NNN_name.md, label: Name, entity: input_type, status: planned`
 8. Update `node_count` in `doc_graph.yml` `meta`.
-9. Add edges for every doc listed in the new instance's `### Cross-References`; update `edge_count` in `meta`.
+9. Add edges for every file listed in the new instance's cross-reference sections; update `edge_count` in `meta`.
 10. Update or add the new node to the appropriate `components` entry; update `size`.
 
 ### Procedure: Deprecate Instance

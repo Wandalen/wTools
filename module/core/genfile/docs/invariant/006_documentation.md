@@ -19,9 +19,20 @@ A compile-time lint enforces doc comment coverage on all public items. Doc-test 
 
 Missing documentation is the primary barrier to adoption. Users cannot discover commands or understand parameters without a working quick start. Broken examples erode confidence in the library.
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/lib.rs` | Compile-time missing-docs lint enforcement |
-| doc | `docs/cli/readme.md` | CLI design documentation for contributors |
+| File | Relationship |
+|------|--------------|
+| [`feature/009_help_system.md`](../feature/009_help_system.md) | Help system that must provide complete command documentation |
+
+### Docs
+
+| File | Relationship |
+|------|--------------|
+| [`docs/cli/readme.md`](../cli/readme.md) | CLI design documentation for contributors |
+
+### Sources
+
+| File | Relationship |
+|------|--------------|
+| [`src/lib.rs`](../../src/lib.rs) | Compile-time missing-docs lint enforcement |

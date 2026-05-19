@@ -7,12 +7,17 @@
 - **In Scope**: Config struct fields, preset constructors, builder setters, width calculation order.
 - **Out of Scope**: Behavioral invariants (see `../invariant/`), construction patterns (see `../builder/`).
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/config.rs` | Configuration type definitions |
-| test | `tests/table_config_corner_cases.rs` | Config edge case tests |
+| File | Relationship |
+|------|-------------|
+| [`src/config.rs`](../../src/config.rs) | Configuration type definitions |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/table_config_corner_cases.rs`](../../tests/table_config_corner_cases.rs) | Config edge case tests |
 
 ### Abstract
 

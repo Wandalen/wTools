@@ -11,24 +11,29 @@
 | materialization_test.rs | Template materialization and unpack integration tests |
 | analysis_test.rs | Archive analysis and inspection integration tests |
 | repl_exit_code_bug_test.rs | REPL exit code behavior regression tests |
+| help_system_test.rs | Help system tests (FR9 — all deferred pending implementation) |
+| invariant_test.rs | Behavioral invariant integration tests (error format, security, coverage) |
 | cli_runner.rs | Cross-platform process execution helpers for tests |
+| docs/ | Test surface spec files for doc instance coverage verification |
 | manual/ | Manual testing plan and procedures |
 
 ## Overview
 
-Current test coverage: across 7 test files covering **24 implemented commands** (89% of total 27 planned commands).
+Current test coverage: across 9 test files covering **21 implemented commands** (3 help-system commands deferred — FR9 not yet implemented).
 
 ## Test Organization
 
 Tests are organized by functional domain (not by methodology):
 
-- `archive_commands_test.rs` (243 lines) - Archive lifecycle operations
-- `file_commands_test.rs` (242 lines) - File management operations
-- `param_value_commands_test.rs` (267 lines) - Parameter and value operations
-- `content_commands_test.rs` (271 lines) - Content transformation operations
-- `materialization_test.rs` (468 lines) - Template materialization and raw unpacking
-- `analysis_test.rs` (319 lines) - Archive analysis and inspection
-- `repl_exit_code_bug_test.rs` - REPL exit code behavior regression tests
+- `archive_commands_test.rs` — Archive lifecycle operations
+- `file_commands_test.rs` — File management operations
+- `param_value_commands_test.rs` — Parameter and value operations
+- `content_commands_test.rs` — Content transformation operations
+- `materialization_test.rs` — Template materialization and raw unpacking
+- `analysis_test.rs` — Archive analysis and inspection
+- `repl_exit_code_bug_test.rs` — REPL exit code behavior regression tests
+- `invariant_test.rs` — Error format, exit codes, path traversal, coverage checks
+- `help_system_test.rs` — Help system placeholder (FR9 deferred)
 
 ## Test Methodology
 
@@ -102,12 +107,11 @@ w3 .test l::3
 1. **Add Unit Tests:** Create handler-level unit tests for isolated testing
 2. **Implement Missing Command Tests:** Add tests for unimplemented commands (use TDD)
 3. **Performance Tests:** Consider adding benchmarks for command execution
-5. **Manual Testing Plan:** Document manual test scenarios in `tests/manual/readme.md`
+4. **Manual Testing Plan:** Document manual test scenarios in `tests/manual/readme.md`
 
 ## Test File Size Guidelines
 
-Per test_organization.rulebook.md:
-- ✅ All test files under 1500 lines (max is 468 lines)
+- ✅ All test files under 1500 lines
 - ✅ Tests organized by domain, not methodology
 - ✅ Clear naming: `*_test.rs` suffix
 

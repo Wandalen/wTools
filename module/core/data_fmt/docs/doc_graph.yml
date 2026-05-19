@@ -2,7 +2,7 @@ meta:
   description: Cross-reference graph for all doc instances in data_fmt
   generated: 2026_05_02
   node_count: 77
-  edge_count: 152
+  edge_count: 149
   component_count: 10
 
 nodes:
@@ -66,7 +66,7 @@ nodes:
     label: Variant Attributes
     entity: data_structure
 
-  # feature (5)
+  # feature (6)
   - id: feature/001
     file: feature/001_table_formatting.md
     label: Table Formatting
@@ -378,9 +378,6 @@ edges:
   - from: api/004
     to: trait/001
     via: typed_reference
-  - from: api/004
-    to: trait/002
-    via: typed_reference
 
   # builder cross-references
   - from: builder/001
@@ -477,12 +474,6 @@ edges:
     via: typed_reference
 
   # invariant cross-references
-  - from: invariant/001
-    to: builder/001
-    via: typed_reference
-  - from: invariant/001
-    to: builder/002
-    via: typed_reference
   - from: invariant/002
     to: algorithm/001
     label: body-link
@@ -592,7 +583,7 @@ edges:
     to: api/004
     via: typed_reference
   - from: formatter/002
-    to: trait/002
+    to: trait/001
     via: typed_reference
   - from: formatter/002
     to: variant/010

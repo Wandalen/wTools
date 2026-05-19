@@ -7,22 +7,14 @@
 - **In Scope**: `RowBuilder`, `TreeBuilder`, their APIs and output types.
 - **Out of Scope**: Input type internals (see `input_type/`), formatter behavior (see `feature/`).
 
-### Type-Specific Requirements
-
-Every builder doc instance must contain these sections in order:
+Required instance sections (in order):
 
 | Section | Heading | Required Content |
 |---------|---------|-----------------|
 | Scope | `### Scope` | 4 bullets: Purpose / Responsibility / In Scope / Out of Scope |
-| Cross-References | `### Cross-References` | Table: Type / File / Responsibility |
+| Typed References | `### APIs`, `### InputTypes`, `### Sources`, `### Tests` | Per-type `| File | Relationship |` table; `### Sources` and `### Tests` always last |
 | Construction API | `### Construction API` | Constructor signatures, fluent methods, output type, minimal usage example |
 | Invariants | `### Invariants` | Pre/post conditions enforced at construction time |
-
-### Infrastructure
-
-| File | Responsibility |
-|------|----------------|
-| `procedure.md` | Operational procedure for creating and updating builder doc instances |
 
 ### Overview Table
 

@@ -7,14 +7,12 @@
 - **In Scope**: Per-variant attribute descriptors (46 attributes each), example output, feature flags.
 - **Out of Scope**: Formatter implementation (see `feature/`), attribute definitions (see `data_structure/001_variant_attributes.md`).
 
-### Type-Specific Requirements
-
-Every variant doc instance must contain these sections in order:
+Required instance sections (in order):
 
 | Section | Heading | Required Content |
 |---------|---------|-----------------|
 | Scope | `### Scope` | 4 bullets: Purpose / Responsibility / In Scope / Out of Scope |
-| Cross-References | `### Cross-References` | Table: Type / File / Responsibility |
+| Typed References | `### Formatters`, `### Sources`, `### Tests` | Per-type `| File | Relationship |` table; `### Sources` and `### Tests` always last |
 | Identity & Classification | `### Identity & Classification` | formatter, variant, is_default, category |
 | Build & Dependencies | `### Build & Dependencies` | feature_flag, runtime_deps, zero_dependency |
 | Character Set & Encoding | `### Character Set & Encoding` | charset, border_charset, requires_unicode_terminal, supports_ansi_colors |
@@ -27,12 +25,6 @@ Every variant doc instance must contain these sections in order:
 | Performance & Size | `### Performance & Size` | output_overhead, memory_efficiency |
 | Compatibility | `### Compatibility` | works_on_windows, works_in_ci, copy_paste_friendly |
 | Example Output | `### Example Output` | Fenced code block showing representative rendered output |
-
-### Infrastructure
-
-| File | Responsibility |
-|------|----------------|
-| `procedure.md` | Operational procedure for creating and updating variant doc instances |
 
 ### Overview Table
 
