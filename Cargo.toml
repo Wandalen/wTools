@@ -245,7 +245,7 @@ path = "module/experimental/component_model_meta"
 default-features = false
 
 [workspace.dependencies.component_model_types]
-version = "~0.27.0"
+version = "~0.28.0"
 path = "module/experimental/component_model_types"
 default-features = false
 
