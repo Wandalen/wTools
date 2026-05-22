@@ -111,7 +111,7 @@ default-features = false
 
 
 [workspace.dependencies.collection_tools]
-version = "~0.51.0"
+version = "~0.52.0"
 path = "module/core/collection_tools"
 default-features = false
 
