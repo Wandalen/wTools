@@ -40,6 +40,10 @@
 #[ cfg( feature = "output" ) ]
 pub mod output;
 
+/// Structured CLI help template: data model + colour-aware renderer.
+#[ cfg( feature = "cli_help_template" ) ]
+pub mod help;
+
 /// Namespace with dependencies.
 pub mod dependency
 {
