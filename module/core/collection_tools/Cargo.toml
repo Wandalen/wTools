@@ -1,6 +1,6 @@
 [package]
 name = "collection_tools"
-version = "0.66.0"
+version = "0.67.0"
 edition = "2021"
 authors = [
   "Kostiantyn Mysnyk <wandalen@obox.systems>",
