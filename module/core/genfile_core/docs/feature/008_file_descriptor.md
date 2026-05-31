@@ -11,11 +11,21 @@
 
 A file descriptor pairs a relative output path with content (either a template string for rendering or static content to copy verbatim) and a write mode controlling how the file is written. The template flag determines whether the renderer is invoked. Descriptors are constructed via the former builder pattern.
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/file_descriptor.rs` | File descriptor struct and builder |
-| test | `tests/` | File descriptor construction and field tests |
-| doc | `docs/feature/009_write_mode_support.md` | Write mode type referenced by this descriptor |
-| doc | `docs/feature/014_template_generation.md` | Iterates descriptors during generation |
+| File | Relationship |
+|------|--------------|
+| [feature/009_write_mode_support.md](009_write_mode_support.md) | Write mode type referenced by this descriptor |
+| [feature/014_template_generation.md](014_template_generation.md) | Iterates descriptors during generation |
+
+### Sources
+
+| File | Relationship |
+|------|--------------|
+| `src/file_descriptor.rs` | File descriptor struct and builder |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| `tests/inc/file_descriptor_test.rs` | File descriptor construction and field tests |

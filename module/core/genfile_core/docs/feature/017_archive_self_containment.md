@@ -11,10 +11,20 @@
 
 A template archive is self-contained: it stores parameter values alongside template files and metadata in a single JSON or YAML document. Loading an archive restores all parameter values, so no external state is needed for generation. External content references (file or URL references) are allowed only for file content, not for parameter values. The archive can be internalized — converting all external content references to inline — to produce a fully portable, single-file artifact.
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/archive.rs` | Template archive struct and serialization logic |
-| test | `tests/` | Archive self-containment and serialization tests |
-| doc | `docs/feature/014_template_generation.md` | Generation using an archive's stored values |
+| File | Relationship |
+|------|--------------|
+| [feature/014_template_generation.md](014_template_generation.md) | Generation using an archive's stored values |
+
+### Sources
+
+| File | Relationship |
+|------|--------------|
+| `src/archive.rs` | Template archive struct and serialization logic |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| `tests/inc/archive_test.rs` | Archive self-containment and serialization tests |

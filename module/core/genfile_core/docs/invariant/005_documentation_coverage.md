@@ -19,8 +19,14 @@ Run `RUSTDOCFLAGS="-D warnings" cargo test --doc --all-features`. The missing-do
 
 Missing documentation makes the library harder to adopt. Users cannot understand behavior from the generated documentation alone and must read source code, increasing integration friction.
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/lib.rs` | Missing documentation attribute enforcement |
+| File | Relationship |
+|------|--------------|
+| `src/lib.rs` | Missing documentation attribute enforcement |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| `tests/tests.rs` | Doc test invocations that exercise documentation coverage |

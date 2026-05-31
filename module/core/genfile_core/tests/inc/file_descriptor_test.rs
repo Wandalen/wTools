@@ -1,4 +1,4 @@
-/// Tests for `FileDescriptor` and `WriteMode` (FR10, FR11, FR12)
+/// Tests for `FileDescriptor` and `WriteMode` (docs/feature/008, docs/feature/009)
 use super :: *;
 use std ::path ::PathBuf;
 
@@ -7,7 +7,7 @@ use std ::path ::PathBuf;
 #[ test ]
 fn file_descriptor_holds_paths()
 {
-  // FR10: FileDescriptor must hold file_path and template_path
+  // docs/feature/008: FileDescriptor must hold file_path and template_path
   let file_path = PathBuf ::from( "/output/test.txt" );
   let template_path = PathBuf ::from( "/templates/test.hbs" );
   let write_mode = WriteMode ::Rewrite;
@@ -26,7 +26,7 @@ fn file_descriptor_holds_paths()
 #[ test ]
 fn file_descriptor_holds_write_mode()
 {
-  // FR10: FileDescriptor must hold write_mode
+  // docs/feature/008: FileDescriptor must hold write_mode
   let descriptor = FileDescriptor
   {
     file_path: PathBuf ::from( "output.txt" ),
@@ -44,7 +44,7 @@ fn file_descriptor_holds_write_mode()
 #[ test ]
 fn write_mode_has_rewrite_variant()
 {
-  // FR11: WriteMode must have Rewrite variant
+  // docs/feature/009: WriteMode must have Rewrite variant
   let mode = WriteMode ::Rewrite;
 
   match mode
@@ -57,7 +57,7 @@ fn write_mode_has_rewrite_variant()
 #[ test ]
 fn write_mode_has_toml_extend_variant()
 {
-  // FR11: WriteMode must have TomlExtend variant
+  // docs/feature/009: WriteMode must have TomlExtend variant
   let mode = WriteMode ::TomlExtend;
 
   match mode

@@ -1,4 +1,4 @@
-/// Tests for Values storage system (FR5, FR6, FR7)
+/// Tests for Values storage system (docs/feature/005)
 use super :: *;
 
 //
@@ -6,7 +6,7 @@ use super :: *;
 #[ test ]
 fn values_stores_hashmap()
 {
-  // FR5: Must store HashMap of parameter names to Option<V> values
+  // docs/feature/005: Must store HashMap of parameter names to Option<V> values
   let mut values = Values ::< Value >::new();
 
   // Initially empty
@@ -22,7 +22,7 @@ fn values_stores_hashmap()
 #[ test ]
 fn values_insert_if_empty_only_when_none()
 {
-  // FR5: insert_if_empty(key, value) must only insert if key has None value
+  // docs/feature/005: insert_if_empty(key, value) must only insert if key has None value
   let mut values = Values ::< Value >::new();
 
   // First insert should succeed
@@ -41,7 +41,7 @@ fn values_insert_if_empty_only_when_none()
 #[ test ]
 fn values_insert_if_empty_with_explicit_none()
 {
-  // FR5: insert_if_empty should insert if key exists but value is None
+  // docs/feature/005: insert_if_empty should insert if key exists but value is None
   let mut values = Values ::< Value >::new();
 
   // Insert explicit None
@@ -55,7 +55,7 @@ fn values_insert_if_empty_with_explicit_none()
 #[ test ]
 fn values_to_serializable()
 {
-  // FR5: to_serializable() must convert all values to BTreeMap<String, serde_json::Value>
+  // docs/feature/005: to_serializable() must convert all values to BTreeMap<String, serde_json::Value>
   let mut values = Values ::< Value >::new();
 
   values.insert( "name", Value ::String( "genfile".into() ) );
@@ -76,7 +76,7 @@ fn values_to_serializable()
 #[ test ]
 fn values_to_serializable_handles_none()
 {
-  // FR5: to_serializable should handle None values
+  // docs/feature/005: to_serializable should handle None values
   let mut values = Values ::< Value >::new();
 
   values.insert( "has_value", Value ::String( "test".into() ) );
@@ -92,7 +92,7 @@ fn values_to_serializable_handles_none()
 #[ test ]
 fn values_generic_over_template_value()
 {
-  // FR5: Must support generic V: TemplateValue type parameter
+  // docs/feature/005: Must support generic V: TemplateValue type parameter
 
   // Custom value type
   #[ derive( Clone, serde ::Serialize ) ]
@@ -150,14 +150,14 @@ fn values_has_value_checks_if_set()
   assert!( !values.has_value( "never_added" ) );
 }
 
-// FR6: Interactive Prompting tests
+// docs/feature/005: Interactive Prompting tests
 // Note: Actual stdin interaction can't be tested in unit tests
 // We test the logic but skip interactive parts
 
 #[ test ]
 fn values_skip_prompt_if_value_present()
 {
-  // FR6: Must skip prompting if value already present
+  // docs/feature/005: Must skip prompting if value already present
   let mut values = Values ::< Value >::new();
 
   values.insert( "param", Value ::String( "existing".into() ) );
@@ -169,7 +169,7 @@ fn values_skip_prompt_if_value_present()
 #[ test ]
 fn values_needs_prompt_if_none()
 {
-  // FR6: Should indicate prompt needed if value is None
+  // docs/feature/005: Should indicate prompt needed if value is None
   let mut values = Values ::< Value >::new();
 
   values.insert_none( "param" );
@@ -178,7 +178,7 @@ fn values_needs_prompt_if_none()
   assert!( values.needs_prompt( "param" ) );
 }
 
-// FR7: TOML Parameter Persistence tests
+// docs/feature/005: TOML Parameter Persistence tests
 
 #[ test ]
 fn values_can_be_created_empty()

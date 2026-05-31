@@ -9,12 +9,28 @@
 
 ### Design
 
-The template holder is the low-level orchestrator. It holds a list of file descriptors, a parameter collection, a value map, a renderer, and a file system. Generic type parameters enable compile-time specialization for specific value types, renderers, and file systems. Most consumers prefer the higher-level archive API; the template holder is for cases requiring custom types.
+The template holder is the low-level orchestrator. It holds a list of file descriptors, a parameter collection, a value map, a renderer, and a file system. The holder is parameterized over value type, renderer, and file system — each can be swapped independently without changing the calling code. Most consumers prefer the higher-level archive API; the template holder is for cases requiring custom types.
 
-### Cross-References
+### APIs
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/template.rs` | Template holder struct definition and implementation |
-| test | `tests/` | Template holder construction and composition tests |
-| doc | `docs/feature/014_template_generation.md` | Generation operations on this struct |
+| File | Relationship |
+|------|--------------|
+| [api/003_generation_api.md](../api/003_generation_api.md) | API contract for the template holder interface |
+
+### Features
+
+| File | Relationship |
+|------|--------------|
+| [feature/014_template_generation.md](014_template_generation.md) | Generation operations on this struct |
+
+### Sources
+
+| File | Relationship |
+|------|--------------|
+| `src/template.rs` | Template holder struct definition and implementation |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| `tests/inc/template_test.rs` | Template holder construction and composition tests |

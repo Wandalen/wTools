@@ -1,13 +1,14 @@
-/// Tests for `FileSystem` trait and implementations (FR13, FR14, FR15)
+/// Tests for `FileSystem` trait and implementations (docs/feature/010, docs/feature/011, docs/feature/012)
 use super :: *;
 use std ::path ::PathBuf;
+use std ::time ::{ SystemTime, UNIX_EPOCH };
 
 //
 
 #[ test ]
 fn filesystem_trait_is_implementable()
 {
-  // FR13: FileSystem trait must be implementable
+  // docs/feature/010: FileSystem trait must be implementable
   struct TestFs;
 
   impl FileSystem for TestFs
@@ -36,7 +37,7 @@ fn filesystem_trait_is_implementable()
 #[ test ]
 fn memory_filesystem_reads_and_writes()
 {
-  // FR14: MemoryFileSystem must store files in HashMap
+  // docs/feature/011: MemoryFileSystem must store files in HashMap
   let mut fs = MemoryFileSystem ::new();
 
   let path = PathBuf ::from( "test.txt" );
@@ -55,7 +56,7 @@ fn memory_filesystem_reads_and_writes()
 #[ test ]
 fn memory_filesystem_exists_check()
 {
-  // FR14: MemoryFileSystem must implement exists()
+  // docs/feature/011: MemoryFileSystem must implement exists()
   let mut fs = MemoryFileSystem ::new();
 
   let path = PathBuf ::from( "test.txt" );
@@ -71,7 +72,7 @@ fn memory_filesystem_exists_check()
 #[ test ]
 fn memory_filesystem_read_nonexistent_returns_error()
 {
-  // FR14: Reading nonexistent file should return error
+  // docs/feature/011: Reading nonexistent file should return error
   let fs = MemoryFileSystem ::new();
 
   let result = fs.read( &PathBuf ::from( "nonexistent.txt" ) );
@@ -87,14 +88,14 @@ fn memory_filesystem_read_nonexistent_returns_error()
 #[ test ]
 fn real_filesystem_can_be_created()
 {
-  // FR15: RealFileSystem must be creatable
+  // docs/feature/012: RealFileSystem must be creatable
   let _fs = RealFileSystem ::new();
 }
 
 #[ test ]
 fn filesystem_trait_has_read_method()
 {
-  // FR13: FileSystem must have read() method
+  // docs/feature/010: FileSystem must have read() method
   let fs = MemoryFileSystem ::new();
 
   // Type signature check - should return Result<String, Error>
@@ -104,7 +105,7 @@ fn filesystem_trait_has_read_method()
 #[ test ]
 fn filesystem_trait_has_write_method()
 {
-  // FR13: FileSystem must have write() method
+  // docs/feature/010: FileSystem must have write() method
   let mut fs = MemoryFileSystem ::new();
 
   // Type signature check - should accept path and content, return Result<(), Error>
@@ -114,7 +115,7 @@ fn filesystem_trait_has_write_method()
 #[ test ]
 fn filesystem_trait_has_exists_method()
 {
-  // FR13: FileSystem must have exists() method
+  // docs/feature/010: FileSystem must have exists() method
   let fs = MemoryFileSystem ::new();
 
   // Type signature check - should return bool
@@ -124,7 +125,7 @@ fn filesystem_trait_has_exists_method()
 #[ test ]
 fn memory_filesystem_multiple_files()
 {
-  // FR14: MemoryFileSystem should handle multiple files
+  // docs/feature/011: MemoryFileSystem should handle multiple files
   let mut fs = MemoryFileSystem ::new();
 
   fs.write( &PathBuf ::from( "file1.txt" ), "content1" ).unwrap();
@@ -137,7 +138,7 @@ fn memory_filesystem_multiple_files()
 #[ test ]
 fn memory_filesystem_overwrite_existing_file()
 {
-  // FR14: Writing to existing path should overwrite
+  // docs/feature/011: Writing to existing path should overwrite
   let mut fs = MemoryFileSystem ::new();
 
   let path = PathBuf ::from( "test.txt" );
@@ -145,4 +146,59 @@ fn memory_filesystem_overwrite_existing_file()
   fs.write( &path, "updated" ).unwrap();
 
   assert_eq!( fs.read( &path ).unwrap(), "updated" );
+}
+
+#[ test ]
+fn real_file_system_write_creates_parent_dirs_and_file()
+{
+  // docs/feature/011: RealFileSystem::write() must create parent directories before writing
+  let ts = SystemTime ::now().duration_since( UNIX_EPOCH ).unwrap().subsec_nanos();
+  let root = std ::env ::temp_dir().join( format!( "genfile_test_{ts}" ) );
+  let nested = root.join( "a" ).join( "b" ).join( "output.txt" );
+
+  let mut fs = RealFileSystem ::new();
+  fs.write( &nested, "hello" ).expect( "write should create parents and file" );
+
+  assert!( nested.exists(), "file should exist on disk after write" );
+  assert!( fs.exists( &nested ) );
+
+  std ::fs ::remove_dir_all( &root ).ok();
+}
+
+#[ test ]
+fn real_file_system_read_returns_written_bytes()
+{
+  // docs/feature/011: RealFileSystem::read() must return byte-for-byte identical content
+  let ts = SystemTime ::now().duration_since( UNIX_EPOCH ).unwrap().subsec_nanos();
+  let path = std ::env ::temp_dir().join( format!( "genfile_rw_{ts}.txt" ) );
+
+  let content = "line1\nline2\nspecial: <>&\"'\n";
+
+  let mut fs = RealFileSystem ::new();
+  fs.write( &path, content ).unwrap();
+  let read_back = fs.read( &path ).unwrap();
+
+  assert_eq!( read_back, content );
+
+  std ::fs ::remove_file( &path ).ok();
+}
+
+#[ test ]
+fn memory_file_system_create_directory_all_is_noop()
+{
+  // docs/feature/012: MemoryFileSystem stores only file paths — writing a nested path
+  // must NOT create phantom directory entries accessible via read()
+  // (MemoryFileSystem has no create_directory_all method; this no-op behavior is verified
+  //  by confirming the parent path is not stored as a separate entry in the in-memory map)
+  let mut fs = MemoryFileSystem ::new();
+
+  let nested = PathBuf ::from( "a/b/c.txt" );
+  fs.write( &nested, "data" ).unwrap();
+
+  // The file itself is readable
+  assert_eq!( fs.read( &nested ).unwrap(), "data" );
+
+  // Parent path "a/b" is NOT a stored entry — read returns error
+  let parent = PathBuf ::from( "a/b" );
+  assert!( fs.read( &parent ).is_err(), "MemoryFileSystem must not create phantom directory entries" );
 }

@@ -4,6 +4,7 @@
 
 | Type | Purpose | Master File | Instances |
 |------|---------|-------------|----------:|
+| `api/` | Index of all API doc instances for genfile_core | [api/readme.md](api/readme.md) | 4 |
 | `feature/` | Index of all feature doc instances for genfile_core | [feature/readme.md](feature/readme.md) | 17 |
 | `invariant/` | Index of all invariant doc instances for genfile_core | [invariant/readme.md](invariant/readme.md) | 7 |
 
@@ -11,6 +12,10 @@
 
 | Entity | ID | Name | File |
 |--------|----|------|------|
+| api | 001 | Template Value API | [api/001_template_value_api.md](api/001_template_value_api.md) |
+| api | 002 | Parameter API | [api/002_parameter_api.md](api/002_parameter_api.md) |
+| api | 003 | Generation API | [api/003_generation_api.md](api/003_generation_api.md) |
+| api | 004 | Error Contract | [api/004_error_contract.md](api/004_error_contract.md) |
 | feature | 001 | Template Value Trait | [feature/001_template_value_trait.md](feature/001_template_value_trait.md) |
 | feature | 002 | Default Value Type | [feature/002_default_value_type.md](feature/002_default_value_type.md) |
 | feature | 003 | Parameter Definition | [feature/003_parameter_definition.md](feature/003_parameter_definition.md) |

@@ -1,4 +1,4 @@
-/// Tests for Parameters system (FR3, FR4)
+/// Tests for Parameters system (docs/feature/003, docs/feature/004)
 use super :: *;
 
 //
@@ -6,7 +6,7 @@ use super :: *;
 #[ test ]
 fn parameter_descriptor_stores_name()
 {
-  // FR3: ParameterDescriptor must store parameter name
+  // docs/feature/003: ParameterDescriptor must store parameter name
   let param = ParameterDescriptor
   {
     parameter: "project_name".into(),
@@ -23,7 +23,7 @@ fn parameter_descriptor_stores_name()
 #[ test ]
 fn parameter_descriptor_mandatory_flag()
 {
-  // FR3: Must support mandatory flag (bool)
+  // docs/feature/003: Must support mandatory flag (bool)
   let mandatory = ParameterDescriptor
   {
     parameter: "required_param".into(),
@@ -47,7 +47,7 @@ fn parameter_descriptor_mandatory_flag()
 #[ test ]
 fn parameter_descriptor_default_value()
 {
-  // FR3: Must support optional default value
+  // docs/feature/003: Must support optional default value
   let with_default = ParameterDescriptor
   {
     parameter: "region".into(),
@@ -64,7 +64,7 @@ fn parameter_descriptor_default_value()
 #[ test ]
 fn parameter_descriptor_description()
 {
-  // FR3: Must support optional description
+  // docs/feature/003: Must support optional description
   let with_desc = ParameterDescriptor
   {
     parameter: "api_key".into(),
@@ -80,7 +80,7 @@ fn parameter_descriptor_description()
 #[ test ]
 fn parameters_collection_stores_multiple()
 {
-  // FR4: Must store multiple ParameterDescriptor instances
+  // docs/feature/004: Must store multiple ParameterDescriptor instances
   let params = Parameters
   {
     descriptors: vec!
@@ -116,7 +116,7 @@ fn parameters_collection_stores_multiple()
 #[ test ]
 fn parameters_list_mandatory()
 {
-  // FR4: Must provide list_mandatory() method returning only mandatory parameter names
+  // docs/feature/004: Must provide list_mandatory() method returning only mandatory parameter names
   let params = Parameters
   {
     descriptors: vec!

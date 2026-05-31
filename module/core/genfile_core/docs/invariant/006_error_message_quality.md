@@ -19,9 +19,26 @@ Manual review during code review; supplemented by error message tests that asser
 
 Opaque error messages cause users to give up or file bugs that cannot be reproduced because the failure context is lost. Diagnostic context is mandatory for a library intended for automation use.
 
-### Cross-References
+### APIs
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/error.rs` | Typed error enum and display implementations |
-| doc | `docs/feature/016_typed_errors.md` | Typed error variants documented here |
+| File | Relationship |
+|------|--------------|
+| [api/004_error_contract.md](../api/004_error_contract.md) | API contract governing these error messages |
+
+### Features
+
+| File | Relationship |
+|------|--------------|
+| [feature/016_typed_errors.md](../feature/016_typed_errors.md) | Typed error variants documented here |
+
+### Sources
+
+| File | Relationship |
+|------|--------------|
+| `src/error.rs` | Typed error enum and display implementations |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| `tests/inc/template_error_test.rs` | Error message context assertion tests |

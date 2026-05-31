@@ -19,8 +19,14 @@ Measured via benchmark tests using `criterion` or equivalent. Handlebars renders
 
 Exceeding 100ms renders genfile_core unsuitable as a dependency for interactive tools like `willbe`, which must respond quickly to user commands. Performance regressions are caught by benchmark comparisons in CI.
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | `docs/feature/007_handlebars_renderer.md` | The renderer whose performance this bounds |
+| File | Relationship |
+|------|--------------|
+| [feature/007_handlebars_renderer.md](../feature/007_handlebars_renderer.md) | The renderer whose performance this bounds |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| `tests/inc/renderer_test.rs` | Rendering tests that exercise the performance-critical path |

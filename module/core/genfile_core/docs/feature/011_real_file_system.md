@@ -11,10 +11,20 @@
 
 The real file system implementation uses standard I/O operations. On write, it creates all parent directories before writing the file. On read, it reads bytes from the given path. All OS errors are wrapped in a typed filesystem error variant for uniform handling upstream.
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/filesystem.rs` | Real file system implementation |
-| test | `tests/` | Real file system I/O operation tests |
-| doc | `docs/feature/010_file_system_trait.md` | Trait that the real file system implements |
+| File | Relationship |
+|------|--------------|
+| [feature/010_file_system_trait.md](010_file_system_trait.md) | Trait that this implementation fulfills |
+
+### Sources
+
+| File | Relationship |
+|------|--------------|
+| `src/filesystem.rs` | Real file system implementation |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| `tests/inc/filesystem_test.rs` | Real file system I/O operation tests |

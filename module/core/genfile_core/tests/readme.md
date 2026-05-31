@@ -2,6 +2,18 @@
 
 Comprehensive test suite for the genfile_core template processing library.
 
+## Responsibility Table
+
+| File | Responsibility |
+|------|----------------|
+| `readme.md` | Test suite organization guide |
+| `docs/` | Test spec documents for all doc entity surfaces |
+| `tests.rs` | Test harness entry point; declares `mod inc` |
+| `smoke_test.rs` | Standalone smoke test for crate compilability |
+| `security.rs` | Path traversal prevention tests |
+| `manual/` | Manual testing plan and procedures |
+| `inc/` | Domain-organized test modules |
+
 ## Organization Principles
 
 This test suite follows domain-based organization as specified in `test_organization.rulebook.md`:
@@ -17,6 +29,7 @@ This test suite follows domain-based organization as specified in `test_organiza
 ```
 tests/
 ├── readme.md                    # This file - organizational guide
+├── docs/                        # Test spec documents for all doc entity surfaces
 ├── tests.rs                     # Test harness entry point
 ├── smoke_test.rs                # Minimal smoke test
 ├── security.rs                  # Security/path traversal validation tests
@@ -24,7 +37,6 @@ tests/
 └── inc/                         # Main test modules (domain-organized)
     ├── readme.md                # Responsibility table for inc/ modules
     ├── mod.rs                   # Module declarations
-    ├── basic_test.rs            # Basic smoke tests
     ├── value_test.rs            # Value type tests
     ├── parameter_test.rs        # Parameter descriptor tests
     ├── values_test.rs           # Values collection tests
@@ -52,7 +64,7 @@ tests/
 | **Content Sources** | content_source_test, content_source_example | ~20 | External content resolution, storage backends |
 | **Security** | security.rs | 27 | Path traversal validation, malicious path detection |
 | **Integration** | integration_test, workflow_example | ~15 | End-to-end workflows, multi-component integration |
-**Total**: 169 passing tests across 7 functional domains
+*(Test count changes with every addition — see CI for current totals)*
 
 ## Scope
 
@@ -61,7 +73,7 @@ tests/
 The test suite validates:
 
 1. **Functional Correctness**: All public API operations produce expected results
-2. **Security Compliance**: Path traversal attacks are detected and blocked (FR18)
+2. **Security Compliance**: Path traversal attacks are detected and blocked (see `docs/feature/016_typed_errors.md`, security domain)
 3. **Error Handling**: Invalid inputs produce appropriate error messages
 4. **Serialization**: JSON/YAML roundtrip preservation for Archive and ContentSource
 5. **Feature Gates**: Conditional functionality compiles correctly under all feature combinations
@@ -72,7 +84,7 @@ The test suite validates:
 
 - ✅ All trait implementations (TemplateRenderer, FileSystem, TemplateValue, etc.)
 - ✅ Core data structures (Archive, Template, Values, Parameter, FileDescriptor)
-- ✅ Path traversal security validation (FR18)
+- ✅ Path traversal security validation (see `security.rs`)
 - ✅ External content source resolution and storage
 - ✅ Template rendering with Handlebars engine
 - ✅ Archive internalization and materialization
@@ -86,7 +98,7 @@ The test suite validates:
 - ❌ Performance benchmarking (see benchkit crate for performance tests)
 - ❌ Network operations (external content sources use mock resolvers in tests)
 - ❌ Concurrency/thread safety (single-threaded template processing)
-- ❌ Builder pattern API (FR21 deferred until Former crate UX improves)
+- ❌ Builder pattern API (deferred until Former crate UX improves)
 - ❌ Cross-platform filesystem behavior differences (tests use MemoryFileSystem)
 - ❌ Unicode normalization edge cases (not a library responsibility)
 - ❌ Handlebars renderer internals (third-party crate responsibility)
@@ -137,14 +149,15 @@ All tests must pass with zero warnings before merge.
 
 ## Test Coverage Status
 
-**Current Coverage**: 169 tests (100% of FR1-FR20)
+**Current Coverage**: 169 tests across `docs/feature/` instances 001–017
 
-| Spec Requirement | Coverage | Notes |
-|------------------|----------|-------|
-| FR1-FR17 | 100% | Core functionality fully tested |
-| FR18 (Security) | 100% | 27 dedicated path traversal tests |
-| FR19 (Serialization) | 100% | JSON/YAML roundtrip tests |
-| FR20 (External Content) | 100% | Content source resolution tests |
+| Doc Instance | Coverage | Notes |
+|--------------|----------|-------|
+| feature/001–017 | ≥1 test each | Core functionality covered per doc entity |
+| invariant/001–007 | Partial | Performance/build constraints need dedicated benchmark infrastructure |
+| Security (`validate_path`) | 100% | 27 dedicated path traversal tests in `security.rs` |
+| Serialization (archive) | 100% | JSON/YAML roundtrip tests in `archive_test.rs` |
+| External Content | 100% | Content source resolution tests in `content_source_test.rs` |
 
 ## Known Test Gaps
 

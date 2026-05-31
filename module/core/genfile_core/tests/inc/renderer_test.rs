@@ -1,4 +1,4 @@
-/// Tests for `TemplateRenderer` trait and `HandlebarsRenderer` (FR8, FR9)
+/// Tests for `TemplateRenderer` trait and `HandlebarsRenderer` (docs/feature/006, docs/feature/007)
 use super :: *;
 
 //
@@ -6,7 +6,7 @@ use super :: *;
 #[ test ]
 fn handlebars_renderer_variable_substitution()
 {
-  // FR9: Must support variable substitution: {{variable_name}}
+  // docs/feature/007: Must support variable substitution: {{variable_name}}
   let renderer = HandlebarsRenderer ::new();
   let template = "Hello {{name}}!";
 
@@ -21,7 +21,7 @@ fn handlebars_renderer_variable_substitution()
 #[ test ]
 fn handlebars_renderer_multiple_variables()
 {
-  // FR9: Must support multiple variable substitutions
+  // docs/feature/007: Must support multiple variable substitutions
   let renderer = HandlebarsRenderer ::new();
   let template = "Project: {{name}}, Version: {{version}}";
 
@@ -37,7 +37,7 @@ fn handlebars_renderer_multiple_variables()
 #[ test ]
 fn handlebars_renderer_conditional_logic()
 {
-  // FR9: Must support conditional logic: {{#if condition}}
+  // docs/feature/007: Must support conditional logic: {{#if condition}}
   let renderer = HandlebarsRenderer ::new();
   let template = "{{#if enabled}}Feature is on{{else}}Feature is off{{/if}}";
 
@@ -60,7 +60,7 @@ fn handlebars_renderer_conditional_logic()
 #[ test ]
 fn handlebars_renderer_no_html_escaping()
 {
-  // FR9: Must disable HTML escaping (use no_escape)
+  // docs/feature/007: Must disable HTML escaping (use no_escape)
   let renderer = HandlebarsRenderer ::new();
   let template = "{{content}}";
 
@@ -76,7 +76,7 @@ fn handlebars_renderer_no_html_escaping()
 #[ test ]
 fn handlebars_renderer_invalid_template_returns_error()
 {
-  // FR9: Must return Error::Render on invalid template syntax
+  // docs/feature/007: Must return Error::Render on invalid template syntax
   let renderer = HandlebarsRenderer ::new();
   let template = "{{unclosed";
 
@@ -110,7 +110,7 @@ fn handlebars_renderer_missing_variable_renders_empty()
 #[ test ]
 fn template_renderer_trait_is_implementable()
 {
-  // FR8: Multiple renderer implementations must be possible
+  // docs/feature/006: Multiple renderer implementations must be possible
 
   // Simple custom renderer for testing
   struct CustomRenderer;
@@ -139,7 +139,7 @@ fn template_renderer_trait_is_implementable()
 #[ test ]
 fn handlebars_renderer_handles_numbers()
 {
-  // FR9: Must correctly render number values
+  // docs/feature/007: Must correctly render number values
   let renderer = HandlebarsRenderer ::new();
   let template = "Count: {{count}}, Age: {{age}}";
 
@@ -155,7 +155,7 @@ fn handlebars_renderer_handles_numbers()
 #[ test ]
 fn handlebars_renderer_handles_lists()
 {
-  // FR9: Must correctly render list values
+  // docs/feature/007: Must correctly render list values
   let renderer = HandlebarsRenderer ::new();
   let template = "Items: {{items}}";
 

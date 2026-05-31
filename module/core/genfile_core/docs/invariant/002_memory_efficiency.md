@@ -19,8 +19,14 @@ Measured via memory profiling during test suite execution. The in-memory design 
 
 Exceeding 10MB heap for typical workloads makes genfile_core an unsuitable library for memory-constrained environments or tools that process many templates concurrently.
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| doc | `docs/feature/012_memory_file_system.md` | Primary testing workload for this constraint |
+| File | Relationship |
+|------|--------------|
+| [feature/012_memory_file_system.md](../feature/012_memory_file_system.md) | Primary testing workload for this constraint |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| `tests/inc/filesystem_test.rs` | In-memory file system tests that drive heap allocation |

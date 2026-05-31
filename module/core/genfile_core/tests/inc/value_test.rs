@@ -1,4 +1,4 @@
-/// Tests for `TemplateValue` trait and Value enum (FR1, FR2)
+/// Tests for `TemplateValue` trait and Value enum (docs/feature/001, docs/feature/002)
 use super :: *;
 
 //
@@ -6,7 +6,7 @@ use super :: *;
 #[ test ]
 fn template_value_trait_string_conversion()
 {
-  // FR1: TemplateValue trait must define to_template_string method
+  // docs/feature/001: TemplateValue trait must define to_template_string method
   let value = Value ::String( "test".into() );
   assert_eq!( value.to_template_string(), "test" );
 }
@@ -14,7 +14,7 @@ fn template_value_trait_string_conversion()
 #[ test ]
 fn template_value_trait_from_string()
 {
-  // FR1: TemplateValue trait must define from_string method
+  // docs/feature/001: TemplateValue trait must define from_string method
   let value = Value ::from_string( "test value".into() );
   assert_eq!( value.to_template_string(), "test value" );
 }
@@ -22,7 +22,7 @@ fn template_value_trait_from_string()
 #[ test ]
 fn template_value_trait_is_empty()
 {
-  // FR1: TemplateValue trait must define is_empty method
+  // docs/feature/001: TemplateValue trait must define is_empty method
   let empty = Value ::String( String::new() );
   let non_empty = Value ::String( "value".into() );
 
@@ -33,7 +33,7 @@ fn template_value_trait_is_empty()
 #[ test ]
 fn value_enum_string_variant()
 {
-  // FR2: Must support String variant
+  // docs/feature/002: Must support String variant
   let value = Value ::String( "hello world".into() );
   assert_eq!( value.to_template_string(), "hello world" );
   assert!( !value.is_empty() );
@@ -42,7 +42,7 @@ fn value_enum_string_variant()
 #[ test ]
 fn value_enum_number_variant()
 {
-  // FR2: Must support Number variant (i64)
+  // docs/feature/002: Must support Number variant (i64)
   let value = Value ::Number( 42 );
   assert_eq!( value.to_template_string(), "42" );
   assert!( !value.is_empty() );
@@ -54,7 +54,7 @@ fn value_enum_number_variant()
 #[ test ]
 fn value_enum_bool_variant()
 {
-  // FR2: Must support Bool variant
+  // docs/feature/002: Must support Bool variant
   let true_value = Value ::Bool( true );
   let false_value = Value ::Bool( false );
 
@@ -66,7 +66,7 @@ fn value_enum_bool_variant()
 #[ test ]
 fn value_enum_list_variant()
 {
-  // FR2: Must support List variant (Vec<String>)
+  // docs/feature/002: Must support List variant (Vec<String>)
   let list = Value ::List( vec![ "one".into(), "two".into(), "three".into() ] );
   // List should join with commas for template rendering
   assert_eq!( list.to_template_string(), "one, two, three" );
@@ -112,7 +112,7 @@ impl TemplateValue for CustomValue
 #[ test ]
 fn custom_template_value_implementation()
 {
-  // FR1: Trait must be implementable for custom value types
+  // docs/feature/001: Trait must be implementable for custom value types
   let custom = CustomValue( "test".into() );
   assert_eq!( custom.to_template_string(), "custom:test" );
   assert!( !custom.is_empty() );

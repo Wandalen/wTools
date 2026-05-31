@@ -11,11 +11,21 @@
 
 The template renderer trait defines a render method accepting a template string and a serializable value map, returning a rendered string or an error. This abstraction allows consumers to swap rendering engines (e.g., Tera, Minijinja, custom) without changing calling code. The default implementation uses Handlebars; custom renderers implement the trait directly.
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/renderer.rs` | Template renderer trait definition |
-| test | `tests/` | Template renderer trait implementation tests |
-| doc | `docs/feature/007_handlebars_renderer.md` | Default implementation of this trait |
-| doc | `docs/feature/014_template_generation.md` | Consumes a renderer during generation |
+| File | Relationship |
+|------|--------------|
+| [feature/007_handlebars_renderer.md](007_handlebars_renderer.md) | Default implementation of this trait |
+| [feature/014_template_generation.md](014_template_generation.md) | Consumes a renderer during generation |
+
+### Sources
+
+| File | Relationship |
+|------|--------------|
+| `src/renderer.rs` | Template renderer trait definition |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| `tests/inc/renderer_test.rs` | Template renderer trait implementation tests |

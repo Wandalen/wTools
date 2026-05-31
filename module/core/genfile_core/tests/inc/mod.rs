@@ -1,6 +1,5 @@
 use genfile_core :: *;
 
-mod basic_test;
 mod value_test;
 mod parameter_test;
 mod values_test;

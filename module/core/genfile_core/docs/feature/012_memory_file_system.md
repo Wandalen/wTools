@@ -11,11 +11,26 @@
 
 The in-memory file system stores file content in a map from path to byte vector. Writes add or replace entries; reads return the stored bytes or an error for missing paths. The create-directory-all operation is a no-op since in-memory storage requires no directory creation. No real filesystem operations are performed, making tests fast and side-effect free.
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/filesystem.rs` | In-memory file system implementation |
-| test | `tests/` | In-memory file system round-trip tests |
-| doc | `docs/feature/010_file_system_trait.md` | Trait that the in-memory file system implements |
-| doc | `docs/invariant/002_memory_efficiency.md` | Memory ceiling that applies to this implementation |
+| File | Relationship |
+|------|--------------|
+| [feature/010_file_system_trait.md](010_file_system_trait.md) | Trait that this implementation fulfills |
+
+### Invariants
+
+| File | Relationship |
+|------|--------------|
+| [invariant/002_memory_efficiency.md](../invariant/002_memory_efficiency.md) | Memory ceiling that applies to this implementation |
+
+### Sources
+
+| File | Relationship |
+|------|--------------|
+| `src/filesystem.rs` | In-memory file system implementation |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| `tests/inc/filesystem_test.rs` | In-memory file system round-trip tests |

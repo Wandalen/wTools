@@ -13,14 +13,14 @@ Core library code must maintain a minimum of 80% line coverage, measured by `car
 
 ### Enforcement Mechanism
 
-Run `cargo tarpaulin --all-features` and verify reported line coverage is ≥ 80%. The crate currently has 188+ tests providing high coverage; formal measurement is pending. This invariant is enforced in CI on coverage-enabled runs.
+Run `cargo tarpaulin --all-features` and verify reported line coverage is ≥ 80%. Formal CI integration of coverage measurement is pending; currently verified on demand.
 
 ### Violation Consequences
 
 Coverage below 80% indicates under-tested paths that may contain latent bugs. Template generation, error handling, and serialization paths are the highest-risk areas; they must be thoroughly covered.
 
-### Cross-References
+### Tests
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| test | `tests/` | Primary test suite that drives coverage |
+| File | Relationship |
+|------|--------------|
+| `tests/tests.rs` | Primary test suite that drives coverage measurement |
