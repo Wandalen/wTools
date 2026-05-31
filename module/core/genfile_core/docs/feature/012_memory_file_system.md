@@ -15,22 +15,22 @@ The in-memory file system stores file content in a map from path to byte vector.
 
 | File | Relationship |
 |------|--------------|
-| [`feature/010_file_system_trait.md`](010_file_system_trait.md) | Trait that the in-memory file system implements |
+| [feature/010_file_system_trait.md](010_file_system_trait.md) | Trait that this implementation fulfills |
 
 ### Invariants
 
 | File | Relationship |
 |------|--------------|
-| [`invariant/002_memory_efficiency.md`](../invariant/002_memory_efficiency.md) | Memory ceiling that applies to this implementation |
+| [invariant/002_memory_efficiency.md](../invariant/002_memory_efficiency.md) | Memory ceiling that applies to this implementation |
 
 ### Sources
 
 | File | Relationship |
 |------|--------------|
-| [`src/filesystem.rs`](../../src/filesystem.rs) | In-memory file system implementation |
+| `src/filesystem.rs` | In-memory file system implementation |
 
 ### Tests
 
 | File | Relationship |
 |------|--------------|
-| [`tests/inc/filesystem_test.rs`](../../tests/inc/filesystem_test.rs) | In-memory file system round-trip tests |
+| `tests/inc/filesystem_test.rs` | In-memory file system round-trip tests |

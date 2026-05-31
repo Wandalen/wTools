@@ -1,9 +1,9 @@
 meta:
   description: Cross-reference graph for all doc instances in genfile_core
-  node_count: 25
-  edge_count: 38
+  node_count: 29
+  edge_count: 61
   component_count: 5
-  last_updated: 2026_05_10
+  generated: 2026_05_31
 
 nodes:
   - id: feature/001
@@ -78,6 +78,22 @@ nodes:
     file: feature/018_content_source_model.md
     label: Content Source Model
     entity: feature
+  - id: api/001
+    file: api/001_template_value_api.md
+    label: Template Value API
+    entity: api
+  - id: api/002
+    file: api/002_parameter_api.md
+    label: Parameter API
+    entity: api
+  - id: api/003
+    file: api/003_generation_api.md
+    label: Generation API
+    entity: api
+  - id: api/004
+    file: api/004_error_contract.md
+    label: Error Contract
+    entity: api
   - id: invariant/001
     file: invariant/001_rendering_performance.md
     label: Rendering Performance
@@ -146,13 +162,42 @@ edges:
   - { from: invariant/002, to: feature/012, via: typed_reference }
   - { from: invariant/002, to: feature/018, via: typed_reference }
   - { from: invariant/006, to: feature/016, via: typed_reference }
+  # C2 bidirectionality fixes
+  - { from: feature/001, to: feature/005, via: typed_reference }
+  - { from: feature/010, to: feature/009, via: typed_reference }
+  - { from: feature/014, to: feature/005, via: typed_reference }
+  - { from: feature/014, to: feature/006, via: typed_reference }
+  - { from: feature/014, to: feature/008, via: typed_reference }
+  - { from: feature/014, to: feature/016, via: typed_reference }
+  - { from: feature/014, to: feature/017, via: typed_reference }
+  # api/ bidirectional edges
+  - { from: api/001, to: feature/001, via: typed_reference }
+  - { from: feature/001, to: api/001, via: typed_reference }
+  - { from: api/001, to: feature/002, via: typed_reference }
+  - { from: feature/002, to: api/001, via: typed_reference }
+  - { from: api/002, to: feature/003, via: typed_reference }
+  - { from: feature/003, to: api/002, via: typed_reference }
+  - { from: api/002, to: feature/004, via: typed_reference }
+  - { from: feature/004, to: api/002, via: typed_reference }
+  - { from: api/003, to: feature/013, via: typed_reference }
+  - { from: feature/013, to: api/003, via: typed_reference }
+  - { from: api/003, to: feature/014, via: typed_reference }
+  - { from: feature/014, to: api/003, via: typed_reference }
+  - { from: api/004, to: feature/016, via: typed_reference }
+  - { from: feature/016, to: api/004, via: typed_reference }
+  - { from: api/004, to: invariant/006, via: typed_reference }
+  - { from: invariant/006, to: api/004, via: typed_reference }
 
 components:
   - id: 1
-    label: Main feature/invariant cluster
-    size: 21
+    label: Main feature/invariant/api cluster
+    size: 25
     isolated: false
     nodes:
+      - api/001
+      - api/002
+      - api/003
+      - api/004
       - feature/001
       - feature/002
       - feature/003

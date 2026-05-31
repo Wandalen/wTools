@@ -23,4 +23,10 @@ Missing documentation makes the library harder to adopt. Users cannot understand
 
 | File | Relationship |
 |------|--------------|
-| [`src/lib.rs`](../../src/lib.rs) | Missing documentation attribute enforcement |
+| `src/lib.rs` | Missing documentation attribute enforcement |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| `tests/tests.rs` | Doc test invocations that exercise documentation coverage |

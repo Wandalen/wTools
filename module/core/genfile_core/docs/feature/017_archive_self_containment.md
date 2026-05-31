@@ -15,17 +15,17 @@ A template archive is self-contained: it stores parameter values alongside templ
 
 | File | Relationship |
 |------|--------------|
-| [`feature/014_template_generation.md`](014_template_generation.md) | Generation using an archive's stored values |
-| [`feature/018_content_source_model.md`](018_content_source_model.md) | External content source abstraction for archive file content references |
+| [feature/014_template_generation.md](014_template_generation.md) | Generation using an archive's stored values |
+| [feature/018_content_source_model.md](018_content_source_model.md) | External content source abstraction for archive file content references |
 
 ### Sources
 
 | File | Relationship |
 |------|--------------|
-| [`src/archive.rs`](../../src/archive.rs) | Template archive struct and serialization logic |
+| `src/archive/` | Template archive struct and serialization logic |
 
 ### Tests
 
 | File | Relationship |
 |------|--------------|
-| [`tests/inc/archive_test.rs`](../../tests/inc/archive_test.rs) | Archive self-containment and serialization tests |
+| `tests/inc/archive_test.rs` | Archive self-containment and serialization tests |

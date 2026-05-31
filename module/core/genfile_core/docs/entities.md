@@ -4,6 +4,7 @@
 
 | Type | Purpose | Master File | Instances |
 |------|---------|-------------|----------:|
+| `api/` | Public API contracts and programmatic interface surface | [api/readme.md](api/readme.md) | 4 |
 | `feature/` | Functional requirements and capabilities of the library | [feature/readme.md](feature/readme.md) | 18 |
 | `invariant/` | Non-functional constraints with measurable thresholds | [invariant/readme.md](invariant/readme.md) | 7 |
 
@@ -11,6 +12,10 @@
 
 | Entity | ID | Name | File |
 |--------|----|------|------|
+| api | 001 | Template Value API | [api/001_template_value_api.md](api/001_template_value_api.md) |
+| api | 002 | Parameter API | [api/002_parameter_api.md](api/002_parameter_api.md) |
+| api | 003 | Generation API | [api/003_generation_api.md](api/003_generation_api.md) |
+| api | 004 | Error Contract | [api/004_error_contract.md](api/004_error_contract.md) |
 | feature | 001 | Template Value Trait | [feature/001_template_value_trait.md](feature/001_template_value_trait.md) |
 | feature | 002 | Default Value Type | [feature/002_default_value_type.md](feature/002_default_value_type.md) |
 | feature | 003 | Parameter Definition | [feature/003_parameter_definition.md](feature/003_parameter_definition.md) |

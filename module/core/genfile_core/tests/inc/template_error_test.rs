@@ -1,4 +1,4 @@
-/// Error path and edge case tests for Template (additional coverage)
+/// Error path and edge case tests for Template (docs/feature/015, docs/feature/016)
 use super :: *;
 use std ::path ::PathBuf;
 
@@ -322,4 +322,69 @@ fn template_special_characters_in_values()
 
   // Should NOT be escaped because we use no_escape
   assert_eq!( template.filesystem().read( &output_path ).unwrap(), "<>&\"'" );
+}
+
+#[ test ]
+fn check_missing_mandatory_returns_empty_when_all_filled()
+{
+  // docs/feature/015: When all mandatory params have values, missing list is empty
+  let renderer = HandlebarsRenderer ::new();
+  let filesystem = MemoryFileSystem ::new();
+
+  let mut template: Template< Value, _, _ > = Template ::new( renderer, filesystem );
+  template.insert_value( "name", Value ::String( "test".into() ) );
+  template.insert_value( "version", Value ::String( "1.0".into() ) );
+
+  let params = Parameters
+  {
+    descriptors: vec!
+    [
+      ParameterDescriptor { parameter: "name".into(), is_mandatory: true, default_value: None, description: None },
+      ParameterDescriptor { parameter: "version".into(), is_mandatory: true, default_value: None, description: None },
+    ],
+  };
+
+  let missing: Vec< &str > = params.list_mandatory()
+    .into_iter()
+    .filter( |name| !template.has_value( name ) )
+    .collect();
+
+  assert!( missing.is_empty(), "Expected no missing params, got: {missing:?}" );
+}
+
+#[ test ]
+fn check_missing_mandatory_returns_names_when_mandatory_missing()
+{
+  // docs/feature/015: Mandatory params with no value appear in missing list
+  let renderer = HandlebarsRenderer ::new();
+  let filesystem = MemoryFileSystem ::new();
+
+  let mut template: Template< Value, _, _ > = Template ::new( renderer, filesystem );
+  // Only provide "name" — omit "version"
+  template.insert_value( "name", Value ::String( "test".into() ) );
+
+  let params = Parameters
+  {
+    descriptors: vec!
+    [
+      ParameterDescriptor { parameter: "name".into(), is_mandatory: true, default_value: None, description: None },
+      ParameterDescriptor { parameter: "version".into(), is_mandatory: true, default_value: None, description: None },
+    ],
+  };
+
+  let missing: Vec< &str > = params.list_mandatory()
+    .into_iter()
+    .filter( |name| !template.has_value( name ) )
+    .collect();
+
+  assert_eq!( missing, vec![ "version" ] );
+}
+
+#[ test ]
+fn error_missing_parameters_message_includes_param_name()
+{
+  // docs/feature/016: Error::MissingParameters display must include the parameter names
+  let err = Error ::MissingParameters( vec![ "output_dir".into() ] );
+  let msg = err.to_string();
+  assert!( msg.contains( "output_dir" ), "Error message '{msg}' does not contain 'output_dir'" );
 }

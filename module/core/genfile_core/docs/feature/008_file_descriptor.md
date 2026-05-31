@@ -15,18 +15,18 @@ A file descriptor pairs a relative output path with content (either a template s
 
 | File | Relationship |
 |------|--------------|
-| [`feature/009_write_mode_support.md`](009_write_mode_support.md) | Write mode type referenced by this descriptor |
-| [`feature/014_template_generation.md`](014_template_generation.md) | Iterates descriptors during generation |
-| [`feature/018_content_source_model.md`](018_content_source_model.md) | Content source abstraction carried by this descriptor's optional reference |
+| [feature/009_write_mode_support.md](009_write_mode_support.md) | Write mode type referenced by this descriptor |
+| [feature/014_template_generation.md](014_template_generation.md) | Iterates descriptors during generation |
+| [feature/018_content_source_model.md](018_content_source_model.md) | Content source abstraction carried by this descriptor's optional reference |
 
 ### Sources
 
 | File | Relationship |
 |------|--------------|
-| [`src/file_descriptor.rs`](../../src/file_descriptor.rs) | File descriptor struct and builder |
+| `src/file_descriptor.rs` | File descriptor struct and builder |
 
 ### Tests
 
 | File | Relationship |
 |------|--------------|
-| [`tests/inc/file_descriptor_test.rs`](../../tests/inc/file_descriptor_test.rs) | File descriptor construction and field tests |
+| `tests/inc/file_descriptor_test.rs` | File descriptor construction and field tests |

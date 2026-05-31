@@ -30,5 +30,8 @@ ansi_unicode = [ "strs_tools/ansi_unicode" ]
 output = [ "enabled", "std", "string_split" ]
 cli_help_template = []
 
+# Structured CLI help template (data model + colour-aware renderer)
+cli_help_template = []
+
 # Composite features - enables all functionality
 full = [ "enabled", "output", "ansi_unicode", "cli_help_template" ]

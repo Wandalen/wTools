@@ -15,17 +15,17 @@ The template renderer trait defines a render method accepting a template string 
 
 | File | Relationship |
 |------|--------------|
-| [`feature/007_handlebars_renderer.md`](007_handlebars_renderer.md) | Default implementation of this trait |
-| [`feature/014_template_generation.md`](014_template_generation.md) | Consumes a renderer during generation |
+| [feature/007_handlebars_renderer.md](007_handlebars_renderer.md) | Default implementation of this trait |
+| [feature/014_template_generation.md](014_template_generation.md) | Consumes a renderer during generation |
 
 ### Sources
 
 | File | Relationship |
 |------|--------------|
-| [`src/renderer.rs`](../../src/renderer.rs) | Template renderer trait definition |
+| `src/renderer.rs` | Template renderer trait definition |
 
 ### Tests
 
 | File | Relationship |
 |------|--------------|
-| [`tests/inc/renderer_test.rs`](../../tests/inc/renderer_test.rs) | Template renderer trait implementation tests |
+| `tests/inc/renderer_test.rs` | Template renderer trait implementation tests |

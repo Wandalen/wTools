@@ -14,7 +14,7 @@ A trait-based template processing and file generation library for Rust. **genfil
 - **Security**: Path traversal validation prevents directory escape attacks
 - **External Content**: Support for `FileRef` and `UrlRef` with custom resolvers and storage backends
 - **Template Engine**: Default Handlebars renderer with support for custom engines
-- **215 Tests**: Comprehensive test coverage including 27 security tests
+- **Comprehensive Tests**: Full coverage including dedicated path traversal security tests
 
 ## Quick Start
 
@@ -231,7 +231,7 @@ assert!( validate_path( Path::new( "../etc/passwd" ) ).is_err() );
 assert!( validate_path( Path::new( "foo/../../bar" ) ).is_err() );
 ```
 
-27 dedicated security tests ensure protection against malicious paths.
+Dedicated security tests ensure protection against malicious paths.
 
 ## Testing
 
@@ -259,6 +259,19 @@ fn test_generation()
   assert!( fs.exists( Path::new( "/output/README.md" ) ) );
 }
 ```
+
+## Repository Structure
+
+| Entry | Responsibility |
+|-------|----------------|
+| `src/` | Library source — production code only |
+| `tests/` | All integration and functional tests |
+| `examples/` | Runnable usage demonstrations |
+| `docs/` | Behavioral requirements and project knowledge |
+| `task/` | Crate task management — work items and index |
+| `Cargo.toml` | Crate manifest and feature declarations |
+| `readme.md` | User-facing onboarding and quick start |
+| `license` | MIT license text |
 
 ## Links
 

@@ -23,5 +23,11 @@ Exceeding 10MB heap for typical workloads makes genfile_core an unsuitable libra
 
 | File | Relationship |
 |------|--------------|
-| [`feature/012_memory_file_system.md`](../feature/012_memory_file_system.md) | Primary testing workload for this constraint |
-| [`feature/018_content_source_model.md`](../feature/018_content_source_model.md) | External content sources defer loading until materialization, avoiding premature heap growth |
+| [feature/012_memory_file_system.md](../feature/012_memory_file_system.md) | Primary testing workload for this constraint |
+| [feature/018_content_source_model.md](../feature/018_content_source_model.md) | External content sources defer loading until materialization, avoiding premature heap growth |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| `tests/inc/filesystem_test.rs` | In-memory file system tests that drive heap allocation |

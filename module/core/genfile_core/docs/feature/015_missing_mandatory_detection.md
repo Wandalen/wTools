@@ -15,17 +15,17 @@ Before generation, the system compares the mandatory parameter list from the par
 
 | File | Relationship |
 |------|--------------|
-| [`feature/004_parameter_collection.md`](004_parameter_collection.md) | List-mandatory method used for detection |
-| [`feature/014_template_generation.md`](014_template_generation.md) | Generation step that this check precedes |
+| [feature/004_parameter_collection.md](004_parameter_collection.md) | List-mandatory method used here |
+| [feature/014_template_generation.md](014_template_generation.md) | Triggered before generation |
 
 ### Sources
 
 | File | Relationship |
 |------|--------------|
-| [`src/template.rs`](../../src/template.rs) | Missing-mandatory detection implementation |
+| `src/template.rs` | Missing-mandatory detection implementation |
 
 ### Tests
 
 | File | Relationship |
 |------|--------------|
-| [`tests/inc/template_error_test.rs`](../../tests/inc/template_error_test.rs) | Missing mandatory parameter detection tests |
+| `tests/inc/template_error_test.rs` | Missing mandatory parameter detection tests |

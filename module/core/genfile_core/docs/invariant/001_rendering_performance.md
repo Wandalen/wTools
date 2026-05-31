@@ -23,4 +23,10 @@ Exceeding 100ms renders genfile_core unsuitable as a dependency for interactive 
 
 | File | Relationship |
 |------|--------------|
-| [`feature/007_handlebars_renderer.md`](../feature/007_handlebars_renderer.md) | The renderer whose performance this invariant bounds |
+| [feature/007_handlebars_renderer.md](../feature/007_handlebars_renderer.md) | The renderer whose performance this bounds |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| `tests/inc/renderer_test.rs` | Rendering tests that exercise the performance-critical path |

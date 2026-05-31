@@ -39,7 +39,7 @@
 #[ cfg( feature = "output" ) ]
 pub mod output;
 
-/// CLI help text rendering.
+/// Structured CLI help template: data model + colour-aware renderer.
 #[ cfg( feature = "cli_help_template" ) ]
 pub mod help;
 

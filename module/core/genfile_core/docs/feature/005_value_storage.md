@@ -15,17 +15,17 @@ The value storage wraps a map of parameter names to optional values. The insert-
 
 | File | Relationship |
 |------|--------------|
-| [`feature/001_template_value_trait.md`](001_template_value_trait.md) | Trait bound required by the value storage container |
-| [`feature/014_template_generation.md`](014_template_generation.md) | Consumes the value storage during generation |
+| [feature/001_template_value_trait.md](001_template_value_trait.md) | Trait bound required by the value storage container |
+| [feature/014_template_generation.md](014_template_generation.md) | Consumes the value storage during generation |
 
 ### Sources
 
 | File | Relationship |
 |------|--------------|
-| [`src/values.rs`](../../src/values.rs) | Value storage container implementation |
+| `src/values.rs` | Value storage container implementation |
 
 ### Tests
 
 | File | Relationship |
 |------|--------------|
-| [`tests/inc/values_test.rs`](../../tests/inc/values_test.rs) | Value storage insertion and serialization tests |
+| `tests/inc/values_test.rs` | Value storage insertion and serialization tests |

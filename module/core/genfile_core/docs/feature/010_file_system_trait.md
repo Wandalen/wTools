@@ -15,17 +15,18 @@ The file system trait defines three operations: write (file path + bytes → dis
 
 | File | Relationship |
 |------|--------------|
-| [`feature/011_real_file_system.md`](011_real_file_system.md) | Production implementation of this trait |
-| [`feature/012_memory_file_system.md`](012_memory_file_system.md) | In-memory testing implementation of this trait |
+| [feature/009_write_mode_support.md](009_write_mode_support.md) | Write mode variant that this trait executes |
+| [feature/011_real_file_system.md](011_real_file_system.md) | Production implementation of this trait |
+| [feature/012_memory_file_system.md](012_memory_file_system.md) | In-memory testing implementation |
 
 ### Sources
 
 | File | Relationship |
 |------|--------------|
-| [`src/filesystem.rs`](../../src/filesystem.rs) | File system trait definition |
+| `src/filesystem.rs` | File system trait definition |
 
 ### Tests
 
 | File | Relationship |
 |------|--------------|
-| [`tests/inc/filesystem_test.rs`](../../tests/inc/filesystem_test.rs) | File system trait implementation tests |
+| `tests/inc/filesystem_test.rs` | File system trait implementation tests |

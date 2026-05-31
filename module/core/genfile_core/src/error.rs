@@ -75,7 +75,7 @@ impl From< std ::io ::Error > for Error
   }
 }
 
-#[cfg(feature = "renderer")]
+#[ cfg( feature = "renderer" ) ]
 impl From< handlebars ::RenderError > for Error
 {
   fn from( err: handlebars ::RenderError ) -> Self
@@ -84,7 +84,7 @@ impl From< handlebars ::RenderError > for Error
   }
 }
 
-#[cfg(feature = "renderer")]
+#[ cfg( feature = "renderer" ) ]
 impl From< handlebars ::TemplateError > for Error
 {
   fn from( err: handlebars ::TemplateError ) -> Self

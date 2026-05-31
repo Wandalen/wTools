@@ -1,4 +1,4 @@
-/// Tests for Template holder (FR16, FR17, FR18, FR19)
+/// Tests for Template holder (docs/feature/013, docs/feature/014, docs/feature/016, docs/feature/017)
 use super :: *;
 use std ::path ::PathBuf;
 
@@ -7,7 +7,7 @@ use std ::path ::PathBuf;
 #[ test ]
 fn template_can_be_created()
 {
-  // FR16, FR17: Template must hold renderer and filesystem
+  // docs/feature/013, docs/feature/014: Template must hold renderer and filesystem
   let renderer = HandlebarsRenderer ::new();
   let filesystem = MemoryFileSystem ::new();
 
@@ -20,7 +20,7 @@ fn template_can_be_created()
 #[ test ]
 fn template_holds_values()
 {
-  // FR17: Template must hold values
+  // docs/feature/014: Template must hold values
   let renderer = HandlebarsRenderer ::new();
   let filesystem = MemoryFileSystem ::new();
 
@@ -37,7 +37,7 @@ fn template_holds_values()
 #[ test ]
 fn template_materialize_simple()
 {
-  // FR18: Template::materialize() must render template and write to file
+  // docs/feature/016: Template::materialize() must render template and write to file
   let renderer = HandlebarsRenderer ::new();
   let mut filesystem = MemoryFileSystem ::new();
 
@@ -70,7 +70,7 @@ fn template_materialize_simple()
 #[ test ]
 fn template_materialize_multiple_files()
 {
-  // FR18: Should handle multiple file descriptors
+  // docs/feature/016: Should handle multiple file descriptors
   let renderer = HandlebarsRenderer ::new();
   let mut filesystem = MemoryFileSystem ::new();
 
@@ -104,7 +104,7 @@ fn template_materialize_multiple_files()
 #[ test ]
 fn template_rewrite_mode_replaces_content()
 {
-  // FR18: Rewrite mode should completely replace file content
+  // docs/feature/016: Rewrite mode should completely replace file content
   let renderer = HandlebarsRenderer ::new();
   let mut filesystem = MemoryFileSystem ::new();
 

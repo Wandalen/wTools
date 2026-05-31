@@ -15,22 +15,22 @@ The handlebars renderer wraps the Handlebars engine with HTML escaping disabled,
 
 | File | Relationship |
 |------|--------------|
-| [`feature/006_template_renderer_trait.md`](006_template_renderer_trait.md) | Trait that this renderer implements |
+| [feature/006_template_renderer_trait.md](006_template_renderer_trait.md) | Trait that this renderer implements |
 
 ### Invariants
 
 | File | Relationship |
 |------|--------------|
-| [`invariant/001_rendering_performance.md`](../invariant/001_rendering_performance.md) | Performance bound that applies to this renderer |
+| [invariant/001_rendering_performance.md](../invariant/001_rendering_performance.md) | Performance bound that applies to this renderer |
 
 ### Sources
 
 | File | Relationship |
 |------|--------------|
-| [`src/renderer.rs`](../../src/renderer.rs) | Handlebars renderer implementation |
+| `src/renderer.rs` | Handlebars renderer implementation |
 
 ### Tests
 
 | File | Relationship |
 |------|--------------|
-| [`tests/inc/renderer_test.rs`](../../tests/inc/renderer_test.rs) | Handlebars rendering and template substitution tests |
+| `tests/inc/renderer_test.rs` | Handlebars rendering and template substitution tests |

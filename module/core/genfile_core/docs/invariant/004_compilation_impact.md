@@ -19,8 +19,8 @@ Compared by measuring clean build time of a reference crate (e.g., `willbe`) bef
 
 A large compilation overhead discourages adoption and slows CI across the wTools workspace. Every unnecessary dependency added to genfile_core propagates this cost to all dependents.
 
-### Configs
+### Sources
 
 | File | Relationship |
 |------|--------------|
-| [`Cargo.toml`](../../Cargo.toml) | Dependency declarations that drive compilation cost |
+| `Cargo.toml` | Dependency declarations that drive compilation cost |

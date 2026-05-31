@@ -11,21 +11,27 @@
 
 The parameter collection wraps a list of parameter descriptors. It provides a method returning the names of all parameters marked mandatory, which the generation layer uses to detect missing values before rendering. The collection supports the builder pattern for construction.
 
+### APIs
+
+| File | Relationship |
+|------|--------------|
+| [api/002_parameter_api.md](../api/002_parameter_api.md) | API contract for the parameter collection |
+
 ### Features
 
 | File | Relationship |
 |------|--------------|
-| [`feature/003_parameter_definition.md`](003_parameter_definition.md) | Individual descriptors stored in this collection |
-| [`feature/015_missing_mandatory_detection.md`](015_missing_mandatory_detection.md) | Uses the list-mandatory method to detect gaps |
+| [feature/003_parameter_definition.md](003_parameter_definition.md) | Individual descriptors stored in this collection |
+| [feature/015_missing_mandatory_detection.md](015_missing_mandatory_detection.md) | Uses the list-mandatory method to detect gaps |
 
 ### Sources
 
 | File | Relationship |
 |------|--------------|
-| [`src/parameter.rs`](../../src/parameter.rs) | Parameter collection implementation |
+| `src/parameter.rs` | Parameter collection implementation |
 
 ### Tests
 
 | File | Relationship |
 |------|--------------|
-| [`tests/inc/parameter_test.rs`](../../tests/inc/parameter_test.rs) | Parameter collection and mandatory listing tests |
+| `tests/inc/parameter_test.rs` | Parameter collection and mandatory listing tests |

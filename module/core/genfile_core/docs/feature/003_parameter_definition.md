@@ -11,20 +11,26 @@
 
 A parameter descriptor stores metadata for a single template parameter: its name, whether it is mandatory, an optional default value, and an optional description. Parameters are constructed via the former builder pattern. The mandatory flag drives validation in the collection layer — parameters without values at generation time cause an error when mandatory.
 
+### APIs
+
+| File | Relationship |
+|------|--------------|
+| [api/002_parameter_api.md](../api/002_parameter_api.md) | API contract for the parameter descriptor |
+
 ### Features
 
 | File | Relationship |
 |------|--------------|
-| [`feature/004_parameter_collection.md`](004_parameter_collection.md) | Collection containing these descriptors |
+| [feature/004_parameter_collection.md](004_parameter_collection.md) | Collection containing these descriptors |
 
 ### Sources
 
 | File | Relationship |
 |------|--------------|
-| [`src/parameter.rs`](../../src/parameter.rs) | Parameter descriptor struct and builder |
+| `src/parameter.rs` | Parameter descriptor struct and builder |
 
 ### Tests
 
 | File | Relationship |
 |------|--------------|
-| [`tests/inc/parameter_test.rs`](../../tests/inc/parameter_test.rs) | Parameter descriptor construction and attribute tests |
+| `tests/inc/parameter_test.rs` | Parameter descriptor construction and attribute tests |
