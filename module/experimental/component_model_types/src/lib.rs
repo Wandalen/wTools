@@ -17,13 +17,6 @@ mod component;
 #[ cfg( feature = "types_component_assign" ) ]
 pub mod popular_types;
 
-/// Namespace with dependencies.
-#[ cfg( feature = "enabled" ) ]
-pub mod dependency
-{
-  pub use ::collection_tools;
-}
-
 #[ doc( inline ) ]
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]

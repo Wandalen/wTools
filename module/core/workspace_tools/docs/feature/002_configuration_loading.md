@@ -17,15 +17,35 @@ Config search uses a priority order — workspace-local `config/` directory firs
 
 Typed configuration can be serialized back to TOML and written to a workspace-relative path, enabling tools that mutate and persist configuration programmatically.
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/lib.rs` | Config loading, merging, and format detection impl |
-| config | `Cargo.toml` | `serde` feature flag and its optional dependency declarations |
-| test | `tests/serde_integration_tests.rs` | Integration with serde for configuration deserialization |
-| test | `tests/comprehensive_test_suite.rs` | Full coverage matrix including config loading |
-| test | `tests/feature_combination_tests.rs` | Feature flag combination correctness |
-| task | `task/completed/005_serde_integration.md` | Initial serde configuration loading implementation |
-| doc | `docs/api/001_workspace.md` | Configuration loading method signatures |
-| doc | `docs/feature/005_configuration_validation.md` | Schema validation on top of config loading |
+| File | Relationship |
+|------|-------------|
+| [src/lib.rs](../../src/lib.rs) | Config loading, merging, and format detection impl |
+| [Cargo.toml](../../Cargo.toml) | `serde` feature flag and optional dependency declarations |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [tests/serde_integration_tests.rs](../../tests/serde_integration_tests.rs) | Integration with serde for configuration deserialization |
+| [tests/comprehensive_test_suite.rs](../../tests/comprehensive_test_suite.rs) | Full coverage matrix including config loading |
+| [tests/feature_combination_tests.rs](../../tests/feature_combination_tests.rs) | Feature flag combination correctness |
+
+### Tasks
+
+| File | Relationship |
+|------|-------------|
+| [task/completed/005_serde_integration.md](../../task/completed/005_serde_integration.md) | Initial serde configuration loading implementation |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [api/001_workspace.md](../api/001_workspace.md) | Configuration loading method signatures |
+
+### Features
+
+| File | Relationship |
+|------|-------------|
+| [feature/005_configuration_validation.md](../feature/005_configuration_validation.md) | Schema validation on top of config loading |

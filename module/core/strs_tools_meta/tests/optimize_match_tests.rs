@@ -117,6 +117,19 @@ fn tc9_no_match()
 fn tc10_empty_input()
 {
   let result = optimize_match!( "", "test" );
-  
+
   assert_eq!( result, None );
+}
+
+// IN-1: All three strategy values produce identical output — strategy parameter is discarded.
+// See: tests/docs/invariant/003_strategy_param_no_op.md
+#[ cfg( feature = "optimize_match" ) ]
+#[ test ]
+fn tc_all_strategy_values_equivalent()
+{
+  let a = optimize_match!( "test", "t", strategy = "first_match" );
+  let b = optimize_match!( "test", "t", strategy = "longest_match" );
+  let c = optimize_match!( "test", "t", strategy = "all_matches" );
+  assert_eq!( a, b );
+  assert_eq!( b, c );
 }

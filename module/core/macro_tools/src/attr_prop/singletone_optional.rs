@@ -39,7 +39,8 @@ impl< Marker > AttributePropertyOptionalSingletone< Marker >
 {
   /// Return bool value: on/off, use argument as default if it's `None`.
   /// # Panics
-  /// qqq: doc
+  ///
+  /// Does not panic — `None` is handled by returning `default`.
   #[ inline ]
   #[ must_use ]
   pub fn value(self, default: bool) -> bool

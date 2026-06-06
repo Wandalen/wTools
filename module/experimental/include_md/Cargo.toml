@@ -37,25 +37,30 @@ default = [ "enabled" ]
 full = [ "enabled" ]
 no_std = []
 use_alloc = [ "no_std" ]
-enabled = []
+enabled = [ "dep:macro_tools", "macro_tools/enabled" ]
 
 [lib]
 name = "include_md"
-path = "src/_blank/standard_lib.rs"
+path = "src/lib.rs"
+proc-macro = true
 
-# [[test]]
-# name = "include_md_test"
-# path = "tests/include_md/include_md_tests.rs"
+[[test]]
+name = "file_inclusion"
+path = "tests/file_inclusion.rs"
+required-features = [ "enabled" ]
 
-# [[test]]
-# name = "include_md_smoke_test"
-# path = "tests/_integration_test/smoke_test.rs"
+[[test]]
+name = "section_extraction"
+path = "tests/section_extraction.rs"
+required-features = [ "enabled" ]
 
-# [[example]]
-# name = "include_md_trivial"
-# path = "sample/move/include_md_trivial/src/main.rs"
+[[example]]
+name = "include_md_trivial"
+path = "examples/include_md_trivial.rs"
+required-features = [ "enabled" ]
 
 [dependencies]
+macro_tools = { workspace = true, optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }

@@ -23,17 +23,27 @@ All failure modes produce compile-time errors — no runtime panics, no propagat
 
 Path resolution is identical to the standard compile-time file inclusion built-in: paths resolve relative to the source file, not the working directory or crate root. Output is a compile-time constant; any consumer that accepts a string literal accepts the macro output without modification.
 
-### Cross-References
-
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/_blank/standard_lib.rs` | Placeholder; future home of macro entry points |
-| doc | [feature/001_file_inclusion.md](../feature/001_file_inclusion.md) | User-facing design rationale for file inclusion |
-| doc | [invariant/001_path_resolution.md](../invariant/001_path_resolution.md) | Path resolution contract this macro upholds |
-| doc | [invariant/002_compile_time_errors.md](../invariant/002_compile_time_errors.md) | Compile-time error contract |
-| doc | [invariant/003_size_limit.md](../invariant/003_size_limit.md) | 10 MB file size constraint |
-
 ### Sources
+
+| File | Responsibility |
+|------|----------------|
+| `src/lib.rs` | Implements `include_md!` — argument parsing, size assertion emission, `include_str!` delegation |
+
+### Features
+
+| File | Responsibility |
+|------|----------------|
+| [feature/001_file_inclusion.md](../feature/001_file_inclusion.md) | User-facing design rationale for file inclusion |
+
+### Invariants
+
+| File | Responsibility |
+|------|----------------|
+| [invariant/001_path_resolution.md](../invariant/001_path_resolution.md) | Path resolution contract this macro upholds |
+| [invariant/002_compile_time_errors.md](../invariant/002_compile_time_errors.md) | Compile-time error contract |
+| [invariant/003_size_limit.md](../invariant/003_size_limit.md) | 10 MB file size constraint |
+
+### Provenance
 
 | File | Notes |
 |------|-------|

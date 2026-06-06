@@ -5,8 +5,11 @@
 - **Executor Type:** any
 - **Actor:** null
 - **Claimed At:** null
-- **Status:** ✅ (Completed)
+- **Reopen Count:** 0
+- **State:** ✅ (Completed)
 - **Closes:** null
+- **Blocked Reason:** null
+- **Dir:** .
 - **Validated By:** author-inline
 - **Validation Date:** 2026-05-17
 
@@ -14,7 +17,7 @@
 
 Add the two pending test functions identified in the output processing test surface audit to `tests/output.rs`, so that FT-11 (exact-width boundary non-truncation) and FT-12 (process_output head limit reports accurate lines_omitted count) are covered by automated tests (Motivated: the audit of `tests/docs/feature/01_output_processing.md` found FT-11 and FT-12 marked ⏳ — the boundary-detection fix and the head/lines_omitted interaction were documented in spec but had no corresponding test, leaving regressions undetectable; Observable: two new test functions `width_exact_boundary` and `process_output_head_lines_omitted` exist in `tests/output.rs`, confirmed by `grep -c "fn width_exact_boundary\|fn process_output_head_lines_omitted" /home/user1/pro/lib/wip_core/wtools/dev/module/core/cli_fmt/tests/output.rs`; Scoped: `tests/output.rs` only — no changes to source, docs, or other test files; Testable: `cargo nextest run --manifest-path /home/user1/pro/lib/wip_core/wtools/dev/module/core/cli_fmt/Cargo.toml --features output --test output 2>&1 | tail -3`).
 
-The boundary-detection fix (issue-none, documented at top of `tests/output.rs`) ensures that a line whose visible length equals `max_width` is not truncated. The existing test `width_no_truncation_needed` covers a well-below-width case (10 chars, width=50) but not the exact-boundary case (10 chars, width=10), which is where the pre-fix bug manifested.
+The boundary-detection fix (BUG-005, documented at top of `tests/output.rs`) ensures that a line whose visible length equals `max_width` is not truncated. The existing test `width_no_truncation_needed` covers a well-below-width case (10 chars, width=50) but not the exact-boundary case (10 chars, width=10), which is where the pre-fix bug manifested.
 
 The `lines_omitted` accuracy for the `with_head()` path is verified by `combined_head_and_width` only indirectly (head=2 + 4 lines = lines_omitted=2). FT-12 requires a clean, width-free case: 5-line input, head=2, lines_omitted must be 3.
 
@@ -52,10 +55,10 @@ Execute in order. Do not skip or reorder steps.
 
 ## Test Matrix
 
-| Input Scenario | Config Under Test | Expected Behavior |
-|----------------|-------------------|-------------------|
-| `"0123456789"` (10 visible chars) | `OutputConfig::default().with_width(10)` | `result.width_truncated == false`; content starts with `"0123456789"` intact |
-| `"line1\nline2\nline3\nline4\nline5"` (5 lines) | `OutputConfig::default().with_head(2)` | `result.content` contains `"line1"` and `"line2"` only; `result.lines_omitted == 3` |
+| # | Input Scenario | Config Under Test | Expected Behavior |
+|---|----------------|-------------------|-------------------|
+| T01 | `"0123456789"` (10 visible chars) | `OutputConfig::default().with_width(10)` | `result.width_truncated == false`; content starts with `"0123456789"` intact |
+| T02 | `"line1\nline2\nline3\nline4\nline5"` (5 lines) | `OutputConfig::default().with_head(2)` | `result.content` contains `"line1"` and `"line2"` only; `result.lines_omitted == 3` |
 
 ## Acceptance Criteria
 
@@ -72,42 +75,30 @@ Execute in order. Do not skip or reorder steps.
 Desired answer for every question is YES.
 
 **FT-11 coverage**
-- [x] Does `width_exact_boundary` exist in `tests/output.rs`?
-- [x] Does it use input of exactly `max_width` visible chars?
-- [x] Does it assert `result.width_truncated == false`?
+- [x] C1 — Does `width_exact_boundary` exist in `tests/output.rs`?
+- [x] C2 — Does it use input of exactly `max_width` visible chars?
+- [x] C3 — Does it assert `result.width_truncated == false`?
 
 **FT-12 coverage**
-- [x] Does `process_output_head_lines_omitted` exist in `tests/output.rs`?
-- [x] Does it use a 5-line input with `with_head(2)`?
-- [x] Does it assert `result.lines_omitted == 3`?
+- [x] C4 — Does `process_output_head_lines_omitted` exist in `tests/output.rs`?
+- [x] C5 — Does it use a 5-line input with `with_head(2)`?
+- [x] C6 — Does it assert `result.lines_omitted == 3`?
 
 **Test suite**
-- [x] Does `cargo nextest run --features output --test output` pass with 0 failures?
+- [x] C7 — Does `cargo nextest run --features output --test output` pass with 0 failures?
 
 **Spec update**
-- [x] Are FT-11 and FT-12 ⏳ markers removed from `01_output_processing.md`?
-- [x] Is `01_output_processing.md` status ✅ in `tests/docs/feature/readme.md`?
+- [x] C8 — Are FT-11 and FT-12 ⏳ markers removed from `01_output_processing.md`?
+- [x] C9 — Is `01_output_processing.md` status ✅ in `tests/docs/feature/readme.md`?
 
 **Out of Scope confirmation**
-- [x] Is `src/output.rs` unchanged (no production code edits)?
-- [x] Is `tests/help.rs` unchanged?
+- [x] C10 — Is `src/output.rs` unchanged (no production code edits)?
+- [x] C11 — Is `tests/help.rs` unchanged?
 
 ### Measurements
 
-**M1 — output test suite passes**
-Command: `cargo nextest run --manifest-path /home/user1/pro/lib/wip_core/wtools/dev/module/core/cli_fmt/Cargo.toml --features output --test output 2>&1 | tail -3`
-Result: 33 tests pass, 0 failed *(verified 2026-05-17)*
-
-**M2 — new tests exist**
-Command: `grep -c "fn width_exact_boundary\|fn process_output_head_lines_omitted" /home/user1/pro/lib/wip_core/wtools/dev/module/core/cli_fmt/tests/output.rs`
-Result: `2` *(verified 2026-05-17)*
-
-**AF1 — boundary assertion present**
-Command: `grep -c "width_truncated" /home/user1/pro/lib/wip_core/wtools/dev/module/core/cli_fmt/tests/output.rs`
-Result: `7` (≥ 3 required) *(verified 2026-05-17)*
-
-**AF2 — lines_omitted assertion in new test**
-Result: `process_output_head_lines_omitted` asserts `result.lines_omitted == 3` *(verified 2026-05-17)*
+- [x] M1 — output test suite passes: `cargo nextest run --manifest-path /home/user1/pro/lib/wip_core/wtools/dev/module/core/cli_fmt/Cargo.toml --features output --test output 2>&1 | tail -3` → 33 tests pass, 0 failed *(verified 2026-05-17)*
+- [x] M2 — new tests exist: `grep -c "fn width_exact_boundary\|fn process_output_head_lines_omitted" /home/user1/pro/lib/wip_core/wtools/dev/module/core/cli_fmt/tests/output.rs` → `2` *(verified 2026-05-17)*
 
 ### Invariants
 
@@ -123,3 +114,12 @@ Result: `process_output_head_lines_omitted` asserts `result.lines_omitted == 3` 
 **Completed:** 2026-05-17
 
 Added `width_exact_boundary` (FT-11) and `process_output_head_lines_omitted` (FT-12) to `tests/output.rs`. Both tests cover the precise boundary cases identified in the test surface audit: exact-width boundary detection (the pre-fix bug's precise trigger) and accurate `lines_omitted` reporting under pure head filtering. Test matrix in the module doc comment updated. FT-11 and FT-12 spec entries in `tests/docs/feature/01_output_processing.md` reflect the new tests; feature spec readme updated to ✅.
+
+### Validation Results
+
+Validation run 2026-05-17: 33 output tests pass (M1), both new test functions exist (M2=2), boundary assertions present (AF1=7), lines_omitted asserted in new test (AF2). Full test suite green (I1). Source file `src/output.rs` unchanged.
+
+## History
+
+- **[2026-05-17]** `CREATED` — Task filed. Goal: fill output test coverage gaps for FT-11 and FT-12.
+- **[2026-05-17]** `COMPLETED` — width_exact_boundary and process_output_head_lines_omitted added; 33 output tests pass.

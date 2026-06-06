@@ -7,7 +7,6 @@ mod private
   use collection_tools :: collection;
 
   use table :: *;
-  // qqq: for Bohdan no asterisk imports, but in special cases
   use std ::
   {
   fmt,
@@ -91,7 +90,6 @@ mod private
   /// `variants_cap` - Maximum of subset in powerset
   ///
   /// # Errors
-  /// qqq: doc
   #[ allow( clippy ::needless_pass_by_value, clippy ::too_many_arguments ) ]
   pub fn try_from< 'a >
   (
@@ -193,8 +191,6 @@ mod private
 
   table.add_row( row );
  }
-   // aaa: for Petro: bad, DRY
-   // aaa: replace with method
    writeln!( f, "{table}" )?;
    Ok( () )
  }
@@ -358,17 +354,13 @@ mod private
   {
   fn as_rustup_args( &self, toolchain: &str ) -> Vec< String >
   {
-   debug_assert!( !self.with_default_features ); // aaa: remove later
-   debug_assert!( !self.with_all_features ); // aaa: remove later
+   debug_assert!( !self.with_default_features );
+   debug_assert!( !self.with_all_features );
    [ "run".into(), toolchain.to_string(), "cargo".into(), "test".into() ]
    .into_iter()
    .chain( if self.optimization == optimization ::Optimization ::Release { Some( "--release".into() ) } else { None } )
    .chain( if self.with_default_features { None } else { Some( "--no-default-features".into() ) } )
-   // aaa: for Petro: bad, --no-default-features is always enabled!
-   // aaa: add `debug_assert!( !self.with_default_features )`
    .chain( if self.with_all_features { Some( "--all-features".into() ) } else { None } )
-   // aaa: for Petro: bad, --all-features is always disabled!
-   // aaa: add `debug_assert!( !self.with_all_features )`
    .chain( if self.enable_features.is_empty() { None }
    else
    {
@@ -393,7 +385,6 @@ mod private
   /// or an error if the command fails to execute.
   ///
   /// # Errors
-  /// qqq: doc
   #[ allow( clippy ::needless_pass_by_value ) ]
   pub fn run_rec< P >( path: P, options: SingleTestOptions ) -> Result< Report, Report >
   // xxx
@@ -466,8 +457,6 @@ mod private
   pub with_progress: bool,
  }
 
-  // aaa: for Petro: remove after Former fix
-  // aaa: done
 
   #[ allow( clippy ::missing_fields_in_debug ) ]
   impl fmt ::Debug for TestOptions
@@ -509,7 +498,7 @@ mod private
   /// actually executing them.
   pub dry: bool,
   /// A string containing the name of the package being tested.
-  pub package_name: PackageName, /* aaa: for Petro: bad, reuse newtype / aaa: add newtype*/
+  pub package_name: PackageName,
   /// A `BTreeMap` where the keys are `channel ::Channel` enums representing the channels
   ///   for which the tests were run, and the values are nested `BTreeMap` where the keys are
   ///   feature names and the values are `Report` structs representing the test results for
@@ -593,8 +582,6 @@ mod private
 
   table.add_row( row );
  }
-   // aaa: for Petro: bad, DRY
-   // aaa: replace with method
    writeln!( f, "{table}" )?;
    writeln!( f, "  {}", generate_summary_message( failed, success ) )?;
 
@@ -643,8 +630,6 @@ mod private
    // if self.dry
    // {
    //   writeln!( f, "\nYou can execute the plan with 'will .test dry: 0'." )?;
-   //   // aaa: for Petro: bad. should be exact command with exact parameters / при виклику зовнішніх команд повинен бути вивід у консоль про цей виклик і його аргументи за виключенням коли ційлий блок виводу прихований (у моєму випадку при фейлі)
-   //   // aaa: coment in because its redundant, this behavior already implemented
    // return Ok( () )
    // }
    if self.success_reports.is_empty() && self.failure_reports.is_empty()
@@ -680,10 +665,8 @@ mod private
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
   ///
   /// # Errors
-  /// qqq: doc
   ///
   /// # Panics
-  /// qqq: doc
   pub fn run( options: &PackageTestOptions< '_ > )
   -> ResultWithReport< TestReport, TestError >
   // -> Result< TestReport, ( TestReport, TestError ) >
@@ -759,10 +742,8 @@ mod private
 
   /// Run tests for given packages.
   /// # Errors
-  /// qqq: doc
   ///
   /// # Panics
-  /// qqq: doc
   pub fn tests_run( args: &TestOptions )
   -> ResultWithReport< TestsReport, TestError >
   // -> Result< TestsReport, ( TestsReport, TestError ) >

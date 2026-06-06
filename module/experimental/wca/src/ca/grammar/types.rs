@@ -46,7 +46,7 @@ mod private
   {
   /// return casted value
   /// # Errors
-  /// qqq: doc
+  /// Returns an error if the string value cannot be cast to the expected type.
   fn try_cast( &self, value: String ) -> error_tools ::untyped ::Result< T >;
  }
 
@@ -205,8 +205,6 @@ mod private
    .map( | val | kind.try_cast( val.into() ) )
    .collect();
    let values = values?;
-   // aaa: avoid using fish notation whenever possible. review whole crate
-   // aaa: done
    Ok( Value ::List( values ) )
  },
  }

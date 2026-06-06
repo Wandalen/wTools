@@ -52,8 +52,6 @@ mod private
   /// List workspace packages.
   ///
   /// # Errors
-  /// qqq: doc
-  // qqq: typed error
   pub fn list( o: VerifiedCommand ) -> error ::untyped ::Result< () >
   {
   let path_to_workspace: PathBuf = o.args

@@ -77,7 +77,6 @@ mod private
   /// Do not support interactive mode.
   ///
   /// # Errors
-  /// qqq: doc
   pub fn run(args: Vec< String >) -> Result< (), error ::untyped ::Error >
   {
   #[ cfg(feature = "tracing") ]

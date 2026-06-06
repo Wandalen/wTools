@@ -102,7 +102,6 @@ pub mod dependency
 #[ cfg( feature = "enabled" ) ]
 pub use own::*;
 
-// qqq: put every file of the first level under feature
 
 /// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]

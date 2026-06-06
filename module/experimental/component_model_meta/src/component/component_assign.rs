@@ -90,7 +90,7 @@ pub fn component_assign(input: proc_macro ::TokenStream) -> Result< proc_macro2 
 ///
 /// # Example of generated code for a tuple struct field
 ///
-/// ```rust, ignore
+/// ```text
 /// impl< IntoT > Assign< i32, IntoT > for TupleStruct
 /// where
 ///   IntoT: Into< i32 >,

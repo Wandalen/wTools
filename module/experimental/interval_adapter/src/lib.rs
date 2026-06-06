@@ -24,8 +24,6 @@ mod private
   use core::cmp::{ PartialEq, Eq };
   use core::ops::{ Sub, Add };
 
-  // xxx: seal it
-
   #[ allow( clippy::wrong_self_convention ) ]
   /// Extend bound adding few methods.
   pub trait BoundExt< T >
@@ -245,7 +243,9 @@ mod private
  }
  }
 
-  /// qqq: Documentation
+  /// Iterator over a closed interval, yielding each endpoint value in ascending order.
+  ///
+  /// Constructed via `IntoIterator` on `Interval<T>`. Advances by 1 at each step.
   #[ derive( Debug ) ]
   pub struct IntervalIterator< T >
   where
@@ -544,7 +544,7 @@ mod private
   // =
   // from for std
   // =
-  /// qqq: documentation
+  /// Implement `From<$Type>` for `Interval<T>` for all standard Rust range types.
   macro_rules! impl_interval_from
   {
   {} => {};

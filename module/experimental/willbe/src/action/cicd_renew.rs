@@ -27,7 +27,6 @@ mod private
   #[ derive( Debug, Error ) ]
   pub enum CiCdGenerateError
   {
-  // qqq: rid of the branch
   #[ error( "Common error: {0}" ) ]
   Common( #[ from ] error ::untyped ::Error ),
   #[ error( "I/O error: {0}" ) ]
@@ -42,13 +41,10 @@ mod private
   Render( #[ from ] RenderError ),
  }
 
-  // qqq: for Petro: should return Report and typed error in Result
   /// Generate workflows for modules in .github/workflows directory.
   /// # Errors
-  /// qqq: doc
   ///
   /// # Panics
-  /// qqq: doc
   #[ allow( clippy ::too_many_lines, clippy ::result_large_err ) ]
   pub fn action( base_path: &Path ) -> Result< (), CiCdGenerateError >
   {
@@ -218,7 +214,7 @@ mod private
  }
 
   /// Create and write or rewrite content in file.
-  pub fn file_write( filename: &Path, content: &str ) -> error ::untyped ::Result< () > // qqq: use typed error
+  pub fn file_write( filename: &Path, content: &str ) -> error ::untyped ::Result< () >
   {
   if let Some( folder ) = filename.parent()
   {
@@ -249,7 +245,6 @@ mod private
   packages: impl Iterator< Item = WorkspacePackageRef< 'a > >,
  )
   -> error ::untyped ::Result< UsernameAndRepository >
-  // qqq: use typed error
   {
    let mut contents = String ::new();
    File ::open( cargo_toml_path )?.read_to_string( &mut contents )?;

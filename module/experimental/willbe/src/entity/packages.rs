@@ -10,7 +10,6 @@ mod private
   // use workspace ::WorkspacePackageRef< '_ >;
   // use Dependency;
 
-  // aaa: poor description // aaa: removed
 
   /// A configuration struct for specifying optional filters when using the
   /// `filter` function. It allows users to provide custom filtering
@@ -72,7 +71,7 @@ mod private
   /// * `dependency_filter` : When specified, it's used with each package and its dependencies to decide
   ///   which dependencies should be included in the return for that package. If not provided, all
   ///   dependencies for a package are included.
-  pub fn filter< 'a >   // aaa: for Bohdan: for Petro: bad. don't use PackageMetadata directly, use its abstraction only!
+  pub fn filter< 'a >
   (
   // packages: &[ WorkspacePackageRef< '_ > ],
   packages: impl Iterator< Item = WorkspacePackageRef< 'a > >,

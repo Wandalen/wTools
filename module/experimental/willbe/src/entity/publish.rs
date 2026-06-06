@@ -417,7 +417,6 @@ mod private
   /// * `Result< PublishReport >` - The result of the publishing operation, including information about the publish, version bump, and git operations.
   ///
   /// # Errors
-  /// qqq: doc
   #[ allow( clippy ::option_map_unit_fn, clippy ::result_large_err ) ]
   pub fn perform_package_publish( instruction: PackagePublishInstruction ) -> ResultWithReport< PublishReport, Error >
   {
@@ -437,7 +436,6 @@ mod private
   publish.dry = dry;
 
   report.get_info = Some( cargo ::pack( pack ).err_with_report( &report )? );
-  // aaa: redundant field? // aaa: removed
   let bump_report = version ::bump( bump ).err_with_report( &report )?;
   report.bump = Some( bump_report.clone() );
 
@@ -488,9 +486,7 @@ mod private
   /// Returns a `Result` containing a vector of `PublishReport` if successful, else an error.
   ///
   /// # Errors
-  /// qqq: doc
   pub fn perform_packages_publish( plan: PublishPlan ) -> error ::untyped ::Result< Vec< PublishReport > >
-  // qqq: use typed error
   {
   let mut report = vec![];
   for package in plan.plans

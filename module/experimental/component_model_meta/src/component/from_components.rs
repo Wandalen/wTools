@@ -12,7 +12,7 @@ use macro_tools :: { attr, diag, item_struct, Result, proc_macro2 ::TokenStream 
 ///
 /// # Example of generated code for a tuple struct
 ///
-/// ```ignore
+/// ```text
 /// impl< T > From< T > for TargetTuple
 /// where
 ///   T: Clone,

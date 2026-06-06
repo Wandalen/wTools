@@ -12,7 +12,6 @@ mod private
   use collection_tools ::collection ::HashSet;
   use similar :: { TextDiff, ChangeTag };
 
-  // use similar :: *; // qqq: for Bohdan: bad
 
   /// These files are ignored because they can be safely changed without affecting functionality
   ///
@@ -73,7 +72,6 @@ mod private
   ///
   /// Returns a new instance of the struct with the excluded items removed from the internal report.
   /// # Panics
-  /// qqq: doc
   #[ must_use ]
   pub fn exclude< Is, I >( mut self, items: Is ) -> Self
   where
@@ -160,7 +158,6 @@ mod private
   ///
   /// A `DiffReport` struct, representing the unique and shared attributes of the two crate archives.
   /// # Panics
-  /// qqq: doc
   #[ must_use ]
   pub fn crate_diff( left: &CrateArchive, right: &CrateArchive ) -> DiffReport
   {

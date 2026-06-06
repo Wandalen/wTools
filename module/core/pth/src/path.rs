@@ -38,7 +38,6 @@ mod private
   /// assert_eq!( path ::is_glob( "file[0-9].txt" ), true ); // Unescaped brackets indicate a glob pattern
   /// assert_eq!( path ::is_glob( "file\\[0-9].txt" ), false ); // Escaped brackets, not a glob pattern
   /// ```
-  // qqq: xxx: should probably be Path
   #[ must_use ]
   pub fn is_glob( path: &str ) -> bool
   {
@@ -420,7 +419,6 @@ mod private
   /// # Errors
   ///
   /// Returns an error if any path cannot be converted to a valid path representation.
-  // qqq: make macro paths_join!( ... )
   pub fn iter_join< 'a ,I, P >( paths: I ) -> Result< PathBuf, io::Error >
   where
   I: Iterator< Item = P >,
@@ -572,7 +570,6 @@ mod private
   /// assert_eq!( extensions, expected );
   /// ```
   ///
-  // qqq: xxx: should return iterator
   pub fn exts( path: impl AsRef< std ::path ::Path > ) -> std ::vec ::Vec< std ::string ::String >
   {
   #[ cfg( feature = "no_std" ) ]
@@ -754,7 +751,6 @@ mod private
   /// assert_eq!( common_path, Some( "/a/b/".to_string() ) );
   /// ```
   ///
-  // xxx: qqq: should probably be PathBuf?
   pub fn path_common< 'a, I >( paths: I ) -> Option< std ::string ::String >
   where
   I: Iterator< Item = &'a str >,
@@ -844,7 +840,6 @@ mod private
   ///
   /// * `path` - A mutable reference to a string representing the path to be cleaned.
   ///
-  // xxx: qqq: should probably be Path?
   fn path_remove_dots( path: &mut std ::string ::String )
   {
   let mut cleaned_parts = vec![];
@@ -868,7 +863,6 @@ mod private
   ///
   /// * `path` - A mutable reference to a string representing the path to be cleaned.
   ///
-  // xxx: qqq: should probably be Path?
   fn path_remove_double_dots( path: &mut std ::string ::String )
   {
   #[ cfg( feature = "no_std" ) ]

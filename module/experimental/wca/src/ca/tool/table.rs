@@ -97,9 +97,7 @@ use error_tools ::untyped ::Result;
   ///
   /// * `error ::untyped ::Result< String, Error >` - A `error ::untyped ::Result` containing the formatted table as a `String`, or an `Error` if the table is invalid.
   /// # Errors
-  /// qqq: doc
-  // aaa: use typed error
-  // aaa: done
+  /// Returns an error if the table data fails validation.
   pub fn format_table< IntoTable >( table: IntoTable ) -> Result< String, FormatTableError >
   where
   IntoTable: Into< Table >,

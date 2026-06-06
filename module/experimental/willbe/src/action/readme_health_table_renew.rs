@@ -56,7 +56,6 @@ mod private
   #[ derive( Debug, Error ) ]
   pub enum HealthTableRenewError
   {
-  // qqq: rid of the branch
   #[ error( "Common error: {0}" ) ]
   Common( #[ from ] error ::untyped ::Error ),
   #[ error( "I/O error: {0}" ) ]
@@ -88,8 +87,6 @@ mod private
   Deprecated,
  }
 
-  // aaa: qqq: derive?
-  // aaa: add
 
   /// Retrieves the stability level of a package from its `Cargo.toml` file.
   fn stability_get( package_path: &Path ) -> Result< Stability, HealthTableRenewError >
@@ -112,7 +109,6 @@ mod private
  }
   else
   {
-   // qqq: for Petro: use typed error
    Err( HealthTableRenewError ::Common( error ::untyped ::Error ::msg( "Cannot find Cargo.toml" ) ) )
  }
  }
@@ -129,8 +125,6 @@ mod private
   branches: Option< Vec< String > >,
   /// workspace root
   workspace_root: PathBuf,
-  // aaa: for Petro: is not that path?
-  // aaa: done
  }
 
   /// Structure that holds the parameters for generating a table.
@@ -257,12 +251,8 @@ mod private
   /// Anything between the opening and closing tag will be destroyed.
   ///
   /// # Errors
-  /// qqq: doc
   ///
   /// # Panics
-  /// qqq: doc
-  // aaa: for Petro: typed errors
-  // aaa: done
   pub fn readme_health_table_renew( path: &Path ) -> Result< (), HealthTableRenewError >
   {
   regexes_initialize();
@@ -379,10 +369,8 @@ mod private
    {
   Some
   (
-   // qqq: use new-type. for example `CrateDir`
    stability_get
    (
-  // qqq: the folder name may not match the package name
   &workspace.workspace_root().join( &table_parameters.base_path )?.join( &package_name )?
  )?
  )
@@ -401,8 +389,6 @@ mod private
   parameters.core_url = repo_url( &module_path.clone().try_into()? )
   .context
   (
-   // aaa: for Petro: unreadable: check other lines of code which are long
-   // aaa: done
    format_err!
    (
   "Can not find Cargo.toml in {} or Fail to extract repository url from git remote.\n\
@@ -455,8 +441,7 @@ ensure that at least one remotest is present in git. ",
    {
   false
  }
- } // aaa: rid of unwraps
-  // aaa: done
+ }
  )
  );
   let module_dependency_filter: Option< Box< dyn Fn( WorkspacePackageRef< '_ >, DependencyRef< '_ > ) -> bool > > = Some

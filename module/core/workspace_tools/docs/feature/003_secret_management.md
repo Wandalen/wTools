@@ -17,25 +17,40 @@ The `secure` feature wraps secrets in a memory-safe handle that requires an expl
 
 Template-based injection reads a config file, replaces named placeholders with values from the secrets file, and returns the rendered string. This avoids embedding secrets in config files on disk.
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/lib.rs` | Secrets loading, fallback chain, and memory-safe secret impl |
-| config | `Cargo.toml` | `secrets` and `secure` feature flags and their optional dependency declarations |
-| test | `tests/centralized_secrets_test.rs` | Centralized secret management integration |
-| test | `tests/corner_cases_critical.rs` | Critical corner cases in secret fallback |
-| test | `tests/corner_cases_parsing.rs` | Content parsing edge cases (format variations, quoting) |
-| test | `tests/enhanced_secret_parsing_tests.rs` | Export statements and dotenv format parsing |
-| test | `tests/secret_directory_verification_test.rs` | Secret directory usage verification |
-| test | `tests/secrecy_integration_tests.rs` | Memory-safe secret handling (secrecy crate) |
-| test | `tests/secrecy_optimization_tests.rs` | Advanced secrecy features (SecretInjectable, validation) |
-| test | `tests/test_fallback_integration.rs` | Secret fallback chain integration |
-| test | `tests/test_new_secrets_api_methods.rs` | Path-aware secret API methods |
-| test | `tests/reproduce_secrets_api_ux_issue.rs` | Reproduction of reported API UX issues |
-| task | `task/completed/017_enhanced_secret_parsing.md` | Enhanced parsing implementation |
-| task | `task/completed/018_write_tests_for_secrecy_integration.md` | Secrecy integration tests |
-| task | `task/completed/019_implement_secrecy_integration.md` | SecretString integration |
-| task | `task/completed/020_refactor_and_optimize_secrecy_implementation.md` | Secrecy refactor |
-| task | `task/completed/023_extend_workspace_resolution_for_installed_applications.md` | Secrets fallback chain |
-| doc | `docs/api/001_workspace.md` | Secret management method signatures |
+| File | Relationship |
+|------|-------------|
+| [src/lib.rs](../../src/lib.rs) | Secrets loading, fallback chain, and memory-safe secret impl |
+| [Cargo.toml](../../Cargo.toml) | `secrets` and `secure` feature flags and optional dependency declarations |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [tests/centralized_secrets_test.rs](../../tests/centralized_secrets_test.rs) | Centralized secret management integration |
+| [tests/corner_cases_critical.rs](../../tests/corner_cases_critical.rs) | Critical corner cases in secret fallback |
+| [tests/corner_cases_parsing.rs](../../tests/corner_cases_parsing.rs) | Content parsing edge cases (format variations, quoting) |
+| [tests/enhanced_secret_parsing_tests.rs](../../tests/enhanced_secret_parsing_tests.rs) | Export statements and dotenv format parsing |
+| [tests/secret_directory_verification_test.rs](../../tests/secret_directory_verification_test.rs) | Secret directory usage verification |
+| [tests/secrecy_integration_tests.rs](../../tests/secrecy_integration_tests.rs) | Memory-safe secret handling (secrecy crate) |
+| [tests/secrecy_optimization_tests.rs](../../tests/secrecy_optimization_tests.rs) | Advanced secrecy features (SecretInjectable, validation) |
+| [tests/test_fallback_integration.rs](../../tests/test_fallback_integration.rs) | Secret fallback chain integration |
+| [tests/test_new_secrets_api_methods.rs](../../tests/test_new_secrets_api_methods.rs) | Path-aware secret API methods |
+| [tests/reproduce_secrets_api_ux_issue.rs](../../tests/reproduce_secrets_api_ux_issue.rs) | Reproduction of reported API UX issues |
+
+### Tasks
+
+| File | Relationship |
+|------|-------------|
+| [task/completed/017_enhanced_secret_parsing.md](../../task/completed/017_enhanced_secret_parsing.md) | Enhanced parsing implementation |
+| [task/completed/018_write_tests_for_secrecy_integration.md](../../task/completed/018_write_tests_for_secrecy_integration.md) | Secrecy integration tests |
+| [task/completed/019_implement_secrecy_integration.md](../../task/completed/019_implement_secrecy_integration.md) | SecretString integration |
+| [task/completed/020_refactor_and_optimize_secrecy_implementation.md](../../task/completed/020_refactor_and_optimize_secrecy_implementation.md) | Secrecy refactor |
+| [task/completed/023_extend_workspace_resolution_for_installed_applications.md](../../task/completed/023_extend_workspace_resolution_for_installed_applications.md) | Secrets fallback chain |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [api/001_workspace.md](../api/001_workspace.md) | Secret management method signatures |

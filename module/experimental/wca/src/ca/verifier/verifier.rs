@@ -91,7 +91,7 @@ mod private
   ///
   /// Converts all namespaces into it with `to_namespace` method.
   /// # Errors
-  /// qqq: doc
+  /// Returns an error if any command in the program fails verification.
   pub fn to_program
   (
    &self,
@@ -99,8 +99,6 @@ mod private
    raw_program: Program< ParsedCommand >
  )
   -> Result< Program< VerifiedCommand >, VerificationError >
-  // aaa: use typed error
-  // aaa: done
   {
    let commands: Result< Vec< VerifiedCommand >, VerificationError > = raw_program.commands
    .into_iter()
@@ -166,8 +164,6 @@ mod private
    { Some( variant ) } else { None }
  }
 
-  // aaa: use typed error
-  // aaa: done.
   fn extract_subjects( command: &Command, raw_command: &ParsedCommand, used_properties: &[ &String ] )
   ->
   Result< Vec< Value >, SubjectError >
@@ -203,8 +199,6 @@ mod private
    Ok( subjects )
  }
 
-   // aaa: use typed error
-   // aaa: done.
   #[ allow( clippy ::manual_map ) ]
   fn extract_properties( command: &Command, raw_command: HashMap< String, String > )
   ->
@@ -254,11 +248,9 @@ mod private
   ///
   /// Make sure that this command is described in the grammar and matches it(command itself and all it options too).
   /// # Errors
-  /// qqq: doc
+  /// Returns an error if the command is not found in the dictionary or its arguments do not match the expected signature.
   /// # Panics
-  /// qqq: doc
-  // aaa: use typed error
-  // aaa: done.
+  /// Panics if a matched command exists in the dictionary but help content generation fails unexpectedly.
   pub fn to_command( &self, dictionary: &Dictionary, raw_command: ParsedCommand )
   ->
   Result< VerifiedCommand, VerificationError >

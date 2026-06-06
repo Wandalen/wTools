@@ -1,7 +1,7 @@
 
 # Module :: `component_model_meta`
 <!--{ generate.module_header.start() }-->
- [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=component_model_meta)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) [![docs.rs](https://img.shields.io/docsrs/component_model_meta?color=e3e8f0&logo=docs.rs)](https://docs.rs/component_model_meta) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+ [![stable](https://raster.shields.io/static/v1?label=&message=stable&color=brightgreen)](https://github.com/emersion/stability-badges#stable) [![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/workspace_push.yml?label=&branch=master&job=component_model_meta)](https://github.com/Wandalen/wTools/actions/workflows/workspace_push.yml) [![docs.rs](https://img.shields.io/docsrs/component_model_meta?color=e3e8f0&logo=docs.rs)](https://docs.rs/component_model_meta) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 <!--{ generate.module_header.end }-->
 
 A flexible implementation of the Builder pattern supporting nested builders and collection-specific subcomponent_models. Implementation of its derive macro. Should not be used independently, instead use `module::component_model` which relies on the module.

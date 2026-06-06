@@ -44,16 +44,26 @@ Compile-time optimization eliminates runtime strategy dispatch overhead:
 
 ### Sources
 
-| File | Notes |
-|------|-------|
+| File | Relationship |
+|------|-------------|
 | `spec.md` (git `c13cf485~1`) | Original spec; deleted without migration in `c13cf485`. §Public API covered both macros combined — split into separate instances. Module structure diagram retained in `readme.md` only. |
+| [`../../src/lib.rs`](../../src/lib.rs) | `optimize_split_impl`, `analyze_split_pattern`, `generate_*_split` |
 
-### Cross-References
+### Tests
 
-| Type | File | Notes |
-|------|------|-------|
-| source | `../../src/lib.rs` | `optimize_split_impl`, `analyze_split_pattern`, `generate_*_split` |
-| test | `../../tests/optimize_split_tests.rs` | TC1–TC10 unit tests |
-| test | `../../tests/corner_cases_test.rs` | Edge case and threshold boundary tests |
-| doc | `../api/001_optimize_split_api.md` | Call interface |
-| doc | `../invariant/001_split_strategy_thresholds.md` | Strategy selection thresholds |
+| File | Relationship |
+|------|-------------|
+| [`../../tests/optimize_split_tests.rs`](../../tests/optimize_split_tests.rs) | TC1–TC10 unit tests |
+| [`../../tests/corner_cases_test.rs`](../../tests/corner_cases_test.rs) | Edge case and threshold boundary tests |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [`../api/001_optimize_split_api.md`](../api/001_optimize_split_api.md) | Call interface |
+
+### Invariants
+
+| File | Relationship |
+|------|-------------|
+| [`../invariant/001_split_strategy_thresholds.md`](../invariant/001_split_strategy_thresholds.md) | Strategy selection thresholds |

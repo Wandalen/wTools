@@ -214,7 +214,8 @@ impl CliHelpTemplate
     }
   }
 
-  // Fix(issue-T09): render ExampleEntry.desc when Some — was silently dropped
+  // BUG-007 task/bug/closed/007_example_desc_silent_drop.md — desc field ignored in emit_examples
+  // Fix(BUG-007): render ExampleEntry.desc when Some — was silently dropped
   // Root cause: emit_examples() emitted only ex.invocation unconditionally,
   //   ignoring desc: Option<String> despite being documented as annotation field
   // Pitfall: Option-typed renderer fields need a test asserting the Some branch

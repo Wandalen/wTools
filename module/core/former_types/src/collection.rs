@@ -345,7 +345,8 @@ mod private
   /// Begins the construction process of a collection with optional initial storage and context,
   /// setting up an `on_end` completion handler to finalize the collection's construction.
   /// # Panics
-  /// qqq: doc
+  ///
+  /// Does not panic — `storage` is initialized with `Default::default()` when `None`.
   #[ inline( always ) ]
   pub fn begin
   (
@@ -369,7 +370,8 @@ mod private
   /// Provides a variation of the `begin` method allowing for coercion of the end handler,
   /// facilitating ease of integration with different end conditions.
   /// # Panics
-  /// qqq: docs
+  ///
+  /// Does not panic — `storage` is initialized with `Default::default()` when `None`.
   #[ inline( always ) ]
   pub fn begin_coercing< IntoEnd >
   (
@@ -394,7 +396,8 @@ mod private
 
   /// Finalizes the building process, returning the formed or a context incorporating it.
   /// # Panics
-  /// qqq: doc
+  ///
+  /// Panics if called after `on_end` has already been consumed (i.e., `end` called twice on the same builder).
   #[ inline( always ) ]
   pub fn end( mut self ) -> Definition ::Formed
   {

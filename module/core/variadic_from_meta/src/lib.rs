@@ -118,7 +118,7 @@ impl< 'a > VariadicFromContext< 'a >
       return true;
     }
     let first_type = &self.field_types[ 0 ];
-    // qqq: fragile — token-string comparison; aliases and fully-qualified paths will not match even for the same type
+    // Fragile: token-string comparison — aliases and fully-qualified paths will not match.
     self
     .field_types
     .iter()
@@ -133,7 +133,7 @@ impl< 'a > VariadicFromContext< 'a >
       return true;
     }
     let first_type = &self.field_types[ start_idx ];
-    // qqq: fragile — token-string comparison; aliases and fully-qualified paths will not match even for the same type
+    // Fragile: token-string comparison — aliases and fully-qualified paths will not match.
     self.field_types[ start_idx.. ]
     .iter()
     .all( |ty| ty.to_token_stream().to_string() == first_type.to_token_stream().to_string() )
@@ -141,7 +141,7 @@ impl< 'a > VariadicFromContext< 'a >
 }
 
 /// Returns true when the type is `String` under token-string comparison.
-// qqq: fragile — matches only the bare path `String`; `std::string::String` or type aliases will not match
+// Fragile: matches only the bare path `String`; fully-qualified paths and type aliases will not match.
 fn is_type_string( ty : &syn::Type ) -> bool
 {
   ty.to_token_stream().to_string() == quote! { String }.to_string()

@@ -316,8 +316,6 @@ crate ::mod_interface!
   /// Combination of two commands `main_header` and `readme_modules_headers_renew`.
   layer readme_headers_renew;
   /// Generates health table in main readme.md file of workspace.
-  // aaa: for Petro: what a table??
-  // aaa: add more details to documentation
   layer readme_health_table_renew;
   /// Run all tests
   layer test;

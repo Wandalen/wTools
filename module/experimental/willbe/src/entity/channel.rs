@@ -80,8 +80,6 @@ mod private
   /// Retrieves the set of rust channels available via the local rustup installation.
   ///
   /// # Errors
-  /// qqq: doc
-  // qqq: typed error
   pub fn available_channels< P >( path: P ) -> error ::untyped ::Result< HashSet< Channel > >
   where
   P: AsRef< Path >,
@@ -105,7 +103,6 @@ mod private
   ///
   /// # Errors
   /// Returns an error when no toolchain is found for the requested channel.
-  // qqq: typed error
   pub fn toolchain_name< P >( channel: Channel, path: P ) -> error ::untyped ::Result< String >
   where
   P: AsRef< Path >,

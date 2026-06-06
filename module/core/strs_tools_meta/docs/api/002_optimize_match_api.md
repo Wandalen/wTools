@@ -41,16 +41,26 @@
 
 ### Sources
 
-| File | Notes |
-|------|-------|
+| File | Relationship |
+|------|-------------|
 | `spec.md` (git `c13cf485~1`) | §Public API `optimize_match!` section. Original example used incorrect pipe syntax (`"pattern1" \| "pattern2"`) — corrected to array literal here. `strategy` no-op not documented in original — added as `invariant/003`. |
+| [`../../src/lib.rs`](../../src/lib.rs) | `optimize_match` entry point, `optimize_match_impl` |
 
-### Cross-References
+### Tests
 
-| Type | File | Notes |
-|------|------|-------|
-| source | `../../src/lib.rs` | `optimize_match` entry point, `optimize_match_impl` |
-| test | `../../tests/optimize_match_tests.rs` | TC1–TC10 |
-| doc | `../feature/002_compile_time_match.md` | Behavioral design and parameter semantics |
-| doc | `../invariant/002_match_strategy_thresholds.md` | Strategy selection thresholds |
-| doc | `../invariant/003_strategy_param_no_op.md` | `strategy` parameter no-op invariant |
+| File | Relationship |
+|------|-------------|
+| [`../../tests/optimize_match_tests.rs`](../../tests/optimize_match_tests.rs) | TC1–TC10 |
+
+### Features
+
+| File | Relationship |
+|------|-------------|
+| [`../feature/002_compile_time_match.md`](../feature/002_compile_time_match.md) | Behavioral design and parameter semantics |
+
+### Invariants
+
+| File | Relationship |
+|------|-------------|
+| [`../invariant/002_match_strategy_thresholds.md`](../invariant/002_match_strategy_thresholds.md) | Strategy selection thresholds |
+| [`../invariant/003_strategy_param_no_op.md`](../invariant/003_strategy_param_no_op.md) | `strategy` parameter no-op invariant |

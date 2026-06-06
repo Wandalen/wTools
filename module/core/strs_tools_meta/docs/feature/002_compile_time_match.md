@@ -47,17 +47,27 @@ Note: `TrieBasedMatch` is named aspirationally. A true compile-time trie is a pl
 
 ### Sources
 
-| File | Notes |
-|------|-------|
+| File | Relationship |
+|------|-------------|
 | `spec.md` (git `c13cf485~1`) | Original spec; deleted without migration in `c13cf485`. Usage example in §Public API used incorrect pipe syntax (`"p1" \| "p2"`) — corrected to array literal in this instance and in `api/002`. `strategy` parameter no-op not documented in original — added as `invariant/003`. |
+| [`../../src/lib.rs`](../../src/lib.rs) | `optimize_match_impl`, `analyze_match_pattern`, `generate_*_match` |
 
-### Cross-References
+### Tests
 
-| Type | File | Notes |
-|------|------|-------|
-| source | `../../src/lib.rs` | `optimize_match_impl`, `analyze_match_pattern`, `generate_*_match` |
-| test | `../../tests/optimize_match_tests.rs` | TC1–TC10 unit tests |
-| test | `../../tests/corner_cases_test.rs` | Edge case and threshold boundary tests |
-| doc | `../api/002_optimize_match_api.md` | Call interface |
-| doc | `../invariant/002_match_strategy_thresholds.md` | Strategy selection thresholds |
-| doc | `../invariant/003_strategy_param_no_op.md` | `strategy` parameter no-op invariant |
+| File | Relationship |
+|------|-------------|
+| [`../../tests/optimize_match_tests.rs`](../../tests/optimize_match_tests.rs) | TC1–TC10 unit tests |
+| [`../../tests/corner_cases_test.rs`](../../tests/corner_cases_test.rs) | Edge case and threshold boundary tests |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [`../api/002_optimize_match_api.md`](../api/002_optimize_match_api.md) | Call interface |
+
+### Invariants
+
+| File | Relationship |
+|------|-------------|
+| [`../invariant/002_match_strategy_thresholds.md`](../invariant/002_match_strategy_thresholds.md) | Strategy selection thresholds |
+| [`../invariant/003_strategy_param_no_op.md`](../invariant/003_strategy_param_no_op.md) | `strategy` parameter no-op invariant |

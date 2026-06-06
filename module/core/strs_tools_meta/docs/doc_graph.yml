@@ -3,7 +3,7 @@ meta:
   node_count: 7
   edge_count: 18
   component_count: 1
-  generated: 2026_04_26
+  last_updated: 2026_06_06
 
 nodes:
   - id: feature/001

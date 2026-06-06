@@ -335,20 +335,16 @@ mod private
 
   /// Creates deploy template
   /// # Errors
-  /// qqq: doc
   pub fn deploy_renew
   (
   path: &Path,
   mut template: TemplateArchive
  )
   -> error ::untyped ::Result< () >
-  // qqq: typed error
   {
   if load_existing_params( &mut template, path ).is_none()
   {
    let current_dir = std ::env ::current_dir()?;
-   // qqq: for Petro: use file_name
-   // qqq: for Kos: bad description
    let current_dir = current_dir
    .components()
    .next_back()

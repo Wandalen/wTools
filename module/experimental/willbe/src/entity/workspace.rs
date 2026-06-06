@@ -3,7 +3,6 @@ mod private
 {
 
   use crate :: *;
-  // qqq: for Bohdan: bad
   // use std :: *;
   use std ::slice;
   use former ::Former;
@@ -101,7 +100,6 @@ mod private
   /// Returns the path to workspace root
   ///
   /// # Panics
-  /// qqq: doc
   #[ must_use ]
   pub fn workspace_root( &self ) -> CrateDir
   {
@@ -119,7 +117,6 @@ mod private
   /// Find a package by its manifest file path
   ///
   /// # Panics
-  /// qqq: doc
   pub fn package_find_by_manifest< P >( &self, manifest_file: P ) -> Option< WorkspacePackageRef< '_ > >
   where
    P: AsRef< std ::path ::Path >,

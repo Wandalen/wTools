@@ -17,7 +17,7 @@
 //! - ✅ Basic `Assign` trait implementation with `Into` conversion
 //! - ✅ Explicit type specification via `AssignWithType`
 //! - ✅ `Option` extension (`None` → `Some` transition)
-//! - ✅ Crate dependency loading (`collection_tools` integration)
+//! - ✅ Crate compilation verified via `Assign` + `AssignWithType` trait access
 
 /// Verifies `Assign` trait basic functionality with `Into` conversion.
 ///
@@ -117,18 +117,26 @@ fn smoke_test_option_ext()
   assert_eq!( opt_struct.unwrap().name, "test_name" );
 }
 
-/// Verifies crate compiles and dependency loading works.
+/// Verifies crate compiles and core traits are accessible.
 ///
 /// Tests that:
 /// 1. Crate compiles successfully
-/// 2. `collection_tools` dependency accessible via re-export
-/// 3. Basic types from dependencies instantiate correctly
+/// 2. `Assign` trait accessible from public API
+/// 3. `AssignWithType` trait accessible from public API
 ///
-/// Dependency namespace accessible when `enabled` feature is active.
+/// Public API accessible when `types_component_assign` feature is active.
 #[ test ]
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( all( feature = "enabled", feature = "types_component_assign" ) ) ]
 fn smoke_test_crate_loads()
 {
-  // Minimal test that crate compiles and loads
-  let _ = component_model_types :: dependency :: collection_tools :: Vec ::< i32 > :: new();
+  // Verify Assign and AssignWithType traits are accessible
+  use component_model_types :: { Assign, AssignWithType };
+  struct Dummy { val: i32 }
+  impl Assign< i32, i32 > for Dummy
+  {
+    fn assign( &mut self, component : i32 ) { self.val = component; }
+  }
+  let mut d = Dummy { val: 0 };
+  d.assign_with_type :: < i32, i32 >( 42 );
+  assert_eq!( d.val, 42 );
 }

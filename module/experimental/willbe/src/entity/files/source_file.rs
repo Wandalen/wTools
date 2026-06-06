@@ -234,7 +234,6 @@ impl CodeItems for SourceFile
 {
   fn items( &self ) -> impl IterTrait< '_, syn ::Item >
   {
-  // xxx: use closures instead of expect
   let content = fs ::read_to_string( self.as_ref() ).unwrap_or_else( | _ | panic!( "Failed to parse file {self}" ) );
   let parsed: syn ::File = syn ::parse_file( &content ).unwrap_or_else( | _ |  panic!( "Failed to parse file {self}" ) );
   parsed.items.into_iter()

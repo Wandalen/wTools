@@ -24,7 +24,8 @@ mod private
   /// assert_eq!( got, Some( "Option".to_string() ) );
   /// ```
   /// # Panics
-  /// qqq: doc
+  ///
+  /// Does not panic — returns `None` for non-path types and empty segment lists.
   #[ must_use ]
   pub fn type_rightmost(ty: &syn ::Type) -> Option< String >
   {
@@ -57,7 +58,8 @@ mod private
   /// // < i32
   /// ```
   /// # Panics
-  /// qqq: doc
+  ///
+  /// May panic if the `range` bounds exceed the count of actual type parameters in `ty`.
   #[ allow( clippy ::cast_possible_wrap, clippy ::needless_pass_by_value ) ]
   pub fn type_parameters(ty: &syn ::Type, range: impl NonIterableInterval) -> Vec< &syn ::Type >
   {
@@ -141,7 +143,8 @@ mod private
   /// // Option< i32 >
   /// ```
   /// # Errors
-  /// qqq: docs
+  ///
+  /// Returns `Err` if `ty` has no generic type parameters.
   pub fn parameter_first(ty: &syn ::Type) -> Result< &syn ::Type >
   {
   typ ::type_parameters(ty, 0..=0)

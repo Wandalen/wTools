@@ -11,4 +11,4 @@
 
 | Name | Purpose | Status |
 |------|---------|--------|
-| `01_architectural_boundary.md` | Invariant test spec for Architectural Boundary | ✅ |
+| `001_architectural_boundary.md` | Invariant test spec for Architectural Boundary | ✅ |

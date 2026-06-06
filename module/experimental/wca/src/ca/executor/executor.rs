@@ -10,9 +10,6 @@ mod private
   use error_tools ::dependency ::thiserror;
   use executor :: { Routine, Context };
 
-  // aaa: for Bohdan: how is it useful? where is it used?
-  // aaa: `ExecutorType` has been removed
-
   #[ derive( Debug, error_tools ::typed ::Error ) ]
   pub enum CommandError
   {
@@ -48,9 +45,7 @@ mod private
   ///
   /// A `Result` with `Ok( () )` if the execution was successful, or an `Err` containing an error message if an error occurred.
   /// # Errors
-  /// qqq: doc
-  // aaa: use typed error
-  // aaa: done
+  /// Returns an error if any command in the program fails to execute.
   pub fn program( &self, dictionary: &Dictionary, program: Program< VerifiedCommand > )
   -> Result< (), Box< CommandError > >
   {
@@ -75,11 +70,9 @@ mod private
   ///
   /// Returns a Result indicating success or failure. If successful, returns `Ok(())`, otherwise returns an error.
   /// # Errors
-  /// qqq: doc
+  /// Returns an error if the command routine fails.
   /// # Panics
-  /// qqq: doc
-  // aaa: use typed error
-  // aaa: done
+  /// Panics if the command routine is not found in the dictionary.
   pub fn command( &self, dictionary: &Dictionary, command: VerifiedCommand )
   // fix clippy error
   -> Result< (), Box< CommandError > >
@@ -96,13 +89,8 @@ mod private
   .map_err( | error | Box ::new( CommandError ::User { command, error } ) )
  }
  }
-
-  // aaa: for Bohdan: probably redundant
-  // aaa: removed `parallel_execution_loop`
  }
 
-  // qqq: use typed error
-  // aaa: should it be typed? it is user command with unknown error type
   // fix clippy error
   fn exec_command( command: VerifiedCommand, routine: Routine, ctx: Context )
   -> error_tools ::error ::untyped ::Result< () >
@@ -123,8 +111,6 @@ mod private
   CommandNotFound { user_input: String },
  }
 
-  // aaa: use typed error
-  // aaa: done
   #[ allow( clippy ::needless_pass_by_value ) ]
   // fix clippy error
   fn exec_internal_command( dictionary: &Dictionary, command: VerifiedCommand )

@@ -7,10 +7,6 @@ mod private
   /// A `Program` consists of one or more commannd
   ///
   /// The program can be executed by iterating over each commands and executing it
-  // aaa: xxx: for Bohdan: Commands should be here instead of Namespace
-  // aaa: remove concept Namespace
-  // aaa: introduce concept Dictionary for grammar
-  // aaa: done
   #[ derive( Debug, Clone, PartialEq, Eq ) ]
   pub struct Program< Command >
   {

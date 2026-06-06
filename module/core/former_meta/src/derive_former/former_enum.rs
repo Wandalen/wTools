@@ -143,7 +143,6 @@ mod unit_variant_handler;
 // Ensure EnumVariantHandlerContext and EnumVariantFieldInfo structs are defined
 // or re-exported for use by submodules.
 // These will remain in this file.
-// qqq: Define EnumVariantFieldInfo struct
 #[ allow( dead_code ) ] // Suppress warnings about unused fields
 pub(super) struct EnumVariantFieldInfo
 {
@@ -153,7 +152,6 @@ pub(super) struct EnumVariantFieldInfo
   pub is_constructor_arg: bool,
 }
 
-// qqq: Define EnumVariantHandlerContext struct
 #[ allow( dead_code ) ] // Suppress warnings about unused fields
 pub(super) struct EnumVariantHandlerContext< 'a >
 {
@@ -189,7 +187,6 @@ pub(super) fn former_for_enum(
   let generics = &ast.generics;
   // let struct_attrs = ItemAttributes ::from_attrs( ast.attrs.iter() )?; // REMOVED: Use passed item_attributes
   let struct_attrs = item_attributes; // Use the passed-in item_attributes
-   // qqq: Ensure ItemAttributes and FieldAttributes are accessible/imported
 
   // Diagnostic print for has_debug status (has_debug is now correctly determined by the caller)
 
@@ -205,7 +202,6 @@ pub(super) fn former_for_enum(
   let variant_attrs = FieldAttributes ::from_attrs(variant.attrs.iter())?;
   let variant_field_info: Vec< Result< EnumVariantFieldInfo >> =  match &variant.fields 
   {
-   // qqq: Logic to populate variant_field_info (from previous plan)
    syn ::Fields ::Named(f) => f
   .named
   .iter()

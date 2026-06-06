@@ -15,8 +15,13 @@ strs_tools = { version = "~0.45.0", features = [ "ansi", "string_split", "std" ]
 
 [dev-dependencies]
 
+[[example]]
+name = "basic_usage"
+path = "examples/basic_usage.rs"
+required-features = [ "enabled", "output", "cli_help_template" ]
+
 [features]
-# No default features — all functionality is opt-in
+# Default features enable the full public API surface
 default = [ "enabled", "output", "ansi_unicode", "cli_help_template" ]
 
 # Master switch - activates core dependencies
@@ -30,7 +35,7 @@ ansi_unicode = [ "strs_tools/ansi_unicode" ]
 output = [ "enabled", "std", "string_split" ]
 
 # Structured CLI help template (data model + colour-aware renderer)
-cli_help_template = []
+cli_help_template = [ "std" ]
 
 # Composite features - enables all functionality
 full = [ "enabled", "output", "ansi_unicode", "cli_help_template" ]

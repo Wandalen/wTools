@@ -3,7 +3,7 @@ meta:
   node_count: 8
   edge_count: 18
   component_count: 1
-  generated: 2026_04_25
+  last_updated: 2026_04_25
 
 nodes:
   - id: api/001

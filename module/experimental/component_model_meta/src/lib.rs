@@ -220,7 +220,7 @@ pub fn component_assign(input: proc_macro::TokenStream) -> proc_macro::TokenStre
 ///
 /// An example when we encapsulate parameters passed to a function in a struct.
 ///
-/// ```rust, ignore
+/// ```text
 /// use component_model :: { Assign, ComponentsAssign };
 ///
 /// #[ derive( Default, Assign, ComponentsAssign ) ]
@@ -279,7 +279,7 @@ pub fn component_assign(input: proc_macro::TokenStream) -> proc_macro::TokenStre
 ///
 /// Which expands approximately into :
 ///
-/// ```rust, ignore
+/// ```text
 /// use component_model :: { Assign, ComponentsAssign };
 ///
 /// #[ derive( Default ) ]

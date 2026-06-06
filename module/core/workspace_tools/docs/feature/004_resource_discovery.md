@@ -15,12 +15,22 @@ Results are returned as an ordered list of absolute paths. Ordering follows the 
 
 The feature's design is intentionally minimal — a single method with a single responsibility. More complex operations (filtering, transformation, content reading) are left to callers to avoid scope creep.
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/lib.rs` | Glob-based resource discovery impl |
-| config | `Cargo.toml` | `glob` feature flag and its optional dependency declaration |
-| test | `tests/comprehensive_test_suite.rs` | Full coverage including glob patterns |
-| test | `tests/feature_combination_tests.rs` | Feature flag combination correctness |
-| doc | `docs/api/001_workspace.md` | `find_resources()` method signature |
+| File | Relationship |
+|------|-------------|
+| [src/lib.rs](../../src/lib.rs) | Glob-based resource discovery impl |
+| [Cargo.toml](../../Cargo.toml) | `glob` feature flag and optional dependency declaration |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [tests/comprehensive_test_suite.rs](../../tests/comprehensive_test_suite.rs) | Full coverage including glob patterns |
+| [tests/feature_combination_tests.rs](../../tests/feature_combination_tests.rs) | Feature flag combination correctness |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [api/001_workspace.md](../api/001_workspace.md) | `find_resources()` method signature |

@@ -1,35 +1,18 @@
-# Documentation
+# Docs
 
-## Scope
+### Scope
 
-Persistent development knowledge for the multiline_input crate.
+Design and API documentation for `multiline_input`. Organized as typed doc entity instances: features describe what the crate does, invariants define behavioral contracts, and API docs reference the public interface.
 
-This directory contains architecture decisions, design explorations, and investigation results that explain WHY the crate is designed the way it is.
+See [entities.md](entities.md) for the complete registry of all doc instances.
 
-## Organization
+### Responsibility Table
 
-- `architecture.md` - Core design decisions and their rationale
-
-## Navigation
-
-**For understanding the crate**:
-- **Why trait-based DI?** See `architecture.md` → Trait-Based Dependency Injection
-- **Why MockTerminal?** See `architecture.md` → Non-Fragile Testing Solution
-- **Testing strategy?** See `../tests/readme.md`
-- **Requirements?** See `../spec.md`
-
-## Content Guidelines
-
-**Suitable for docs/**:
-- Architecture decision records (ADRs)
-- Design explorations and investigations
-- Performance analysis
-- Security considerations
-- Historical context for design decisions
-
-**NOT suitable for docs/** (belongs elsewhere):
-- Project onboarding → `../readme.md`
-- Requirements → `../spec.md`
-- Testing strategy → `../tests/readme.md`
-- Implementation details → source code comments
-- Temporary investigations → `./-knowledge/`
+| File | Responsibility |
+|------|----------------|
+| [entities.md](entities.md) | Master registry of all doc entity types and instances |
+| [doc_graph.yml](doc_graph.yml) | Cross-reference graph linking all doc instances |
+| [feature/](feature/readme.md) | Feature documentation — what the crate does and when to use it |
+| [invariant/](invariant/readme.md) | Invariant documentation — behavioral contracts that must always hold |
+| [api/](api/readme.md) | API reference — public interface signatures and contracts |
+| [architecture.md](architecture.md) | Architecture decision records explaining key design choices |

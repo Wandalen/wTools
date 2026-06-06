@@ -48,10 +48,8 @@ mod private
   /// * A `Result` containing the formatted string or a `std ::fmt ::Error` if formatting fails.
   ///
   /// # Errors
-  /// qqq: doc
   ///
   /// # Panics
-  /// qqq: doc
   pub fn display_with_spacer( &self, spacer: &str ) -> Result< String, std ::fmt ::Error >
   {
    let mut f = String ::new();

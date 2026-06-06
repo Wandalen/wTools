@@ -134,7 +134,6 @@ mod private
   temp: bool
  )
   -> Result< publish ::PublishPlan, error ::untyped ::Error >
-  // qqq: use typed error
   {
   let mut paths = collection ::HashSet ::new();
   // find all packages by specified folders
@@ -142,7 +141,6 @@ mod private
   {
    let current_path = AbsolutePath ::try_from
    (
-  // qqq: dont use canonicalizefunction. path does not have exist
   fs ::canonicalize( pattern.as_str() )?
  )?;
    // let current_path = AbsolutePath ::try_from( std ::path ::PathBuf ::from( pattern ) )?;
@@ -156,7 +154,6 @@ mod private
  }
   else
   {
-   // qqq: patterns can point to different workspaces. Current solution take first random path from list.
    // A problem may arise if a user provides paths to packages from different workspaces
    // and we do not check whether all packages are within the same workspace
    // In the current solution, we'll choose the workspace related to the first package
@@ -269,7 +266,6 @@ mod private
   pub fn publish( plan: publish ::PublishPlan )
   ->
   ResultWithReport< PublishReport, error ::untyped ::Error >
-  // qqq: use typed error
   {
   let mut report = PublishReport ::default();
   let temp = plan.base_temp_dir.clone();

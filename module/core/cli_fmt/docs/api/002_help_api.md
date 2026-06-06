@@ -119,4 +119,4 @@ All public struct fields and the `new` / `render` signatures are stable across p
 
 | File | Relationship |
 |------|-------------|
-| `tests/help.rs` | T01–T09: column alignment, TTY detection, section omission, desc annotation |
+| `tests/help.rs` | T01–T14: column alignment, TTY detection, section omission, desc annotation, color defaults, edge cases, data_fmt absence |

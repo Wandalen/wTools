@@ -301,7 +301,7 @@ impl ItemAttributes
   pub fn storage_fields( &self ) -> &syn ::punctuated ::Punctuated< syn ::Field, syn ::token ::Comma >
   {
   self.storage_fields.as_ref().map_or_else(
-   // qqq: find better solutioin. avoid leaking
+   // Note: leaks a minimal allocation to provide a static-lifetime empty punctuated list when no storage fields are present.
    || &*Box ::leak(Box ::new(syn ::punctuated ::Punctuated ::new())),
    |attr| &attr.fields,
  )

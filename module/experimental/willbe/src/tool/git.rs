@@ -11,7 +11,6 @@ mod private
 
   use process_tools ::process :: *;
   // use error ::err;
-  // qqq: group dependencies
 
   /// Adds changes to the Git staging area.
   ///
@@ -27,7 +26,6 @@ mod private
   /// # Errors
   ///
   /// Returns an error if the `git add` command fails.
-  // qqq: should be typed error, apply err_with
   #[ cfg_attr
   (
   feature = "tracing",
@@ -35,7 +33,6 @@ mod private
  )]
   pub fn add< P, Os, O >( path: P, objects: Os, dry: bool )
   -> error ::untyped ::Result< Report >
-  // qqq: use typed error
   where
   P: AsRef< Path >,
   Os: AsRef< [ O ] >,
@@ -43,7 +40,6 @@ mod private
   {
   let objects = objects.as_ref().iter().map( std ::convert ::AsRef ::as_ref );
 
-  // qqq: for Bohdan: don't enlarge length of lines artificially
   let ( program, args ) : ( _, Vec< _ > ) = ( "git", Some( "add" ).into_iter().chain( objects ).collect() );
 
   if dry
@@ -85,7 +81,6 @@ mod private
   /// # Errors
   ///
   /// Returns an error if the `git commit` command fails.
-  // qqq: should be typed error, apply err_with
   #[ cfg_attr
   (
   feature = "tracing",
@@ -96,7 +91,6 @@ mod private
  )
  )]
   pub fn commit< P, M >( path: P, message: M, dry: bool ) -> error ::untyped ::Result< Report >
-  // qqq: don't use 1-prameter Result
   where
   P: AsRef< Path >,
   M: AsRef< str >,
@@ -141,10 +135,8 @@ mod private
   /// # Errors
   ///
   /// Returns an error if the `git push` command fails.
-  // qqq: should be typed error, apply err_with
   #[ cfg_attr( feature = "tracing", tracing ::instrument( skip( path ), fields( path = %path.as_ref().display() ) ) ) ]
   pub fn push< P >( path: P, dry: bool ) -> error ::untyped ::Result< Report >
-  // qqq: don't use 1-prameter Result
   where
   P: AsRef< Path >,
   {
@@ -188,11 +180,8 @@ mod private
   /// git reset command wrapper
   ///
   /// # Errors
-  /// qqq: doc
-  // qqq: should be typed error, apply err_with
   pub fn reset< P >( path: P, hard: bool, commits_count: usize, dry: bool )
   -> error ::untyped ::Result< Report >
-  // qqq: don't use 1-prameter Result
   where
   P: AsRef< Path >,
   {
@@ -243,9 +232,6 @@ mod private
   /// A `Result` containing a `Report`, which represents the result of the command execution.
   ///
   /// # Errors
-  /// qqq: doc
-  // qqq: should be typed error, apply err_with
-  // qqq: don't use 1-prameter Result
   pub fn ls_remote_url< P >( path: P ) -> error ::untyped ::Result< Report >
   where
   P: AsRef< Path >,

@@ -42,7 +42,6 @@ mod private
   /// ```
   ///
   /// # Errors
-  /// qqq: doc
   #[ allow( clippy ::too_many_arguments ) ]
   pub fn features_powerset
   (
@@ -55,7 +54,6 @@ mod private
   with_none_features: bool,
   variants_cap: u32,
  )
-  // qqq: for Petro: typed error
   -> error ::untyped ::Result< HashSet< BTreeSet< String > > >
   {
   let mut features_powerset = HashSet ::new();

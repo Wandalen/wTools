@@ -37,7 +37,6 @@ pub struct ManifestFile( AbsolutePath );
 
 impl ManifestFile
 {
-  // aaa: bad: for Petro: why clone?
   // /// Returns an absolute path.
   // pub fn absolute_path( &self ) -> AbsolutePath
   // {

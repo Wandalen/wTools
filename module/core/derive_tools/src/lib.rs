@@ -83,8 +83,6 @@ mod derive_more
   #[ cfg( feature = "derive_unwrap" ) ]
   pub use ::derive_more::Unwrap;
 
-  // qqq: list all
-  // qqq: make sure all features of derive_more is reexported
 }
 
 #[ doc( inline ) ]
@@ -166,7 +164,6 @@ pub mod exposed
   #[ cfg( feature = "derive_strum" ) ]
   #[ doc( inline ) ]
   pub use ::strum :: *;
-  // qqq: xxx: name all
 
   #[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
   #[ doc( inline ) ]

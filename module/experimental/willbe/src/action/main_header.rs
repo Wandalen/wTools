@@ -87,7 +87,7 @@ mod private
   {
   /// Represents a common error.
   #[ error( "Common error: {0}" ) ]
-  Common( #[ from ] error ::untyped ::Error ), // qqq: rid of
+  Common( #[ from ] error ::untyped ::Error ),
   /// Represents an I/O error.
   #[ error( "I/O error: {0}" ) ]
   IO( #[ from ] std ::io ::Error ),
@@ -113,8 +113,6 @@ mod private
   /// Create `HeaderParameters` instance from the folder where Cargo.toml is stored.
   fn from_cargo_toml( workspace: &Workspace ) -> Result< Self, MainHeaderRenewError >
   {
-   // aaa: for Petro: too long lines, review all files
-   // aaa: done
    let repository_url = workspace
    .repository_url()
    .ok_or_else :: < error ::untyped ::Error, _ >
@@ -201,10 +199,8 @@ mod private
   /// ```
   ///
   /// # Errors
-  /// qqq: doc
   ///
   /// # Panics
-  /// qqq: doc
   #[ allow( clippy ::uninlined_format_args ) ]
   pub fn action( crate_dir: CrateDir )
   // -> Result< MainHeaderRenewReport, ( MainHeaderRenewReport, MainHeaderRenewError ) >
@@ -252,8 +248,6 @@ mod private
   .unwrap_or_default();
 
   // _ = query ::parse( raw_params ).context( "Fail to parse arguments" );
-  // qqq: for Petro: why ignored?
-  // aaa: commented
 
   let header = header_param.to_header().err_with_report( &report )?;
   let content: String = TAGS_TEMPLATE.get().unwrap().replace

@@ -10,8 +10,6 @@ mod private
   /// Generates header to main readme.md file.
   ///
   /// # Errors
-  /// qqq: doc
-  // qqq: typed error
   pub fn readme_header_renew() -> error ::untyped ::Result< () >
   {
   let abs_path = AbsolutePath ::try_from( std ::env ::current_dir()? )?;

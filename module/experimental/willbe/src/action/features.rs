@@ -68,10 +68,8 @@ mod private
 
   /// List features
   /// # Errors
-  /// qqq: doc
   pub fn features( FeaturesOptions { crate_dir, with_features_deps } : FeaturesOptions )
   -> error ::untyped ::Result< FeaturesReport >
-  // qqq: typed error
   {
   let workspace = Workspace ::try_from( crate_dir.clone() ).context( "Failed to find workspace" )?;
   let packages = workspace.packages().filter
@@ -86,10 +84,8 @@ mod private
   {
    false
  }
- } // aaa: remove unwrap
-   // aaa: done
+ }
  );
-  // ).collect :: < Vec< _ > >(); qqq: rid of. put type at var
   let mut report = FeaturesReport
   {
    with_features_deps,
@@ -115,4 +111,3 @@ crate ::mod_interface!
   orphan use FeaturesOptions;
   orphan use FeaturesReport;
 }
-// qqq: don't use orphan here

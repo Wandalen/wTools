@@ -151,7 +151,6 @@ mod private
   //   right: &'static str,
   // }
 
-  // // qqq: for Mykyta: make facade, abstract and move out tree printing. or reuse ready solution for tree printing
   // // stick to single responsibility
   // const UTF8_SYMBOLS: Symbols = Symbols
   // {
@@ -304,7 +303,6 @@ mod private
  }
  }
 
-  // aaa: for Bohdan: descirption // aaa: done
   /// The `DependencyId` struct encapsulates the essential attributes of a dependency,
   #[ derive( Debug, Clone, PartialEq, Eq, Hash ) ]
   pub struct DependencyId
@@ -337,15 +335,10 @@ mod private
   for dependency in package.dependencies()
   {
 
-   // aaa: for Bohdan: bad: suboptimal
-   // aaa: Is that what you had in mind?
    let dep_crate_dir = dependency.crate_dir();
    if dep_crate_dir.is_some() && !args.dependency_sources.contains( &DependencySource ::Local ) { continue; }
    if dep_crate_dir.is_none() && !args.dependency_sources.contains( &DependencySource ::Remote ) { continue; }
 
-   // aaa: extend test coverage. NewType. Description
-   // aaa: NewType ✅ Description ✅ test coverage ❌ how to test structure without logic?
-   // qqq: extend test coverage. NewType. Description
    let dep_id = DependencyId
    {
   name: dependency.name(),
@@ -462,8 +455,7 @@ mod private
   #[ allow( clippy ::too_many_lines ) ]
   #[ cfg_attr( feature = "tracing", tracing ::instrument ) ]
   pub fn list_all( args: ListOptions )
-  -> ResultWithReport< ListReport, error ::untyped ::Error > // qqq: should be specific error
-  // qqq: use typed error
+  -> ResultWithReport< ListReport, error ::untyped ::Error >
   {
   let mut report = ListReport ::default();
 
@@ -504,11 +496,7 @@ mod private
    let mut package_report = tool ::ListNodeReport
    {
   name: package.name().to_string(),
-  // aaa: for Bohdan: too long lines
-  // aaa: moved out
   version,
-  // aaa: for Bohdan: don't put multiline if into struct constructor
-  // aaa: moved out
   crate_dir,
   duplicate: false,
   normal_dependencies: vec![],
@@ -551,7 +539,6 @@ mod private
   .clone()
   .map
   (
-   // aaa: is it safe to use unwrap here
    // unwrap is safe because Version has less information than VersionReq
    | p |
    DependencyId
@@ -655,7 +642,6 @@ mod private
   {
    name.push( ' ' );
    name.push_str( &p.manifest_file()?.to_string() );
-   // aaa: is it safe to use unwrap here? // aaa: should be safe, but now returns an error
  }
  }
    std ::result ::Result :: < String, crate ::entity ::files ::PathError > ::Ok( name )

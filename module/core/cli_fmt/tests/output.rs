@@ -3,7 +3,7 @@
 //!
 //! Ported from `unilang::output` module tests.
 //!
-//! ## Critical Bug Fix: Width Truncation Boundary Detection (issue-none)
+//! ## Critical Bug Fix: Width Truncation Boundary Detection (BUG-005)
 //!
 //! **Bug (pre-migration):** Text exactly matching `max_width` was incorrectly truncated.
 //!
@@ -28,10 +28,9 @@
 //! **Pitfall:** `TruncateOptions` is designed for unconditional truncation (reserves suffix space).
 //! Consumers must perform boundary detection before calling truncate functions.
 //!
-//! **Tests Validating Fix:**
-//! - `width_no_truncation_needed`: Line well below `max_width` not truncated
+//! **Bug Reproducer (BUG-005):**
 //! - `width_exact_boundary`: Line exactly at `max_width` (`len == max_width`) not truncated — precise reproducer
-//! - `width_custom_suffix`: Long line truncated with custom suffix `"..."`
+//!   See `task/bug/closed/005_width_truncation_boundary.md`
 //!
 //! ## Test Matrix
 //!
@@ -54,6 +53,29 @@
 //! | ANSI | adds reset on truncate | ✓ |
 //! | integration | combined operations | ✓ |
 //! | integration | head lines_omitted via process_output | ✓ |
+//! | is_default | stream_filter discriminant | ✓ |
+//! | is_default | width_suffix discriminant | ✓ |
+//! | is_default | unicode_aware discriminant | ✓ |
+//! | boundary | head(0) produces empty | ✓ |
+//! | boundary | tail(0) produces empty | ✓ |
+//! | boundary | width=1 truncates | ✓ |
+//! | unicode | unicode_aware=true code path | ✓ |
+//! | merge | stderr trailing newline no double-newline | ✓ |
+//! | config | OutputConfig::new() matches default | ✓ |
+//! | OutputConfig | has_processing for tail | ✓ |
+//! | OutputConfig | has_processing for width | ✓ |
+//! | StreamFilter | empty stdout in Both mode | ✓ |
+//! | StreamFilter | empty stderr in Both mode | ✓ |
+//! | StreamFilter | both streams empty | ✓ |
+//! | head | exact count returns all | ✓ |
+//! | head | on empty input | ✓ |
+//! | tail | exact count returns all | ✓ |
+//! | tail | on empty input | ✓ |
+//! | head+tail | sum equals total | ✓ |
+//! | width | custom suffix | ✓ |
+//! | integration | combined streams+head+width | ✓ |
+//! | is_default | tail discriminant | ✓ |
+//! | is_default | width discriminant | ✓ |
 
 use cli_fmt::output::*;
 use strs_tools::string::lines::*;
@@ -262,7 +284,6 @@ fn head_tail_exact_fit()
 // Width truncation tests
 // ============================================================================
 
-// test_kind: bug_reproducer(issue-none)
 #[ test ]
 fn width_no_truncation_needed()
 {
@@ -293,7 +314,6 @@ fn width_zero_disables()
   assert!( !result.width_truncated );
 }
 
-// test_kind: bug_reproducer(issue-none)
 #[ test ]
 fn width_custom_suffix()
 {
@@ -305,7 +325,8 @@ fn width_custom_suffix()
   assert!( result.content.contains( "..." ) );
 }
 
-// test_kind: bug_reproducer(issue-none)
+// BUG-005 task/bug/closed/005_width_truncation_boundary.md — exact-width line incorrectly truncated
+// test_kind: bug_reproducer(BUG-005)
 #[ test ]
 fn width_exact_boundary()
 {
@@ -377,6 +398,23 @@ fn combined_tail_and_width()
   assert_eq!( result.lines_omitted, 2 );
   let lines : Vec< &str > = result.content.lines().collect();
   assert_eq!( lines.len(), 2 );
+  // Verify the LAST two lines were retained (not the first two)
+  assert!(
+    result.content.contains( "line3" ),
+    "tail(2) must retain line3 (3rd line), got:\n{}", result.content
+  );
+  assert!(
+    result.content.contains( "line4" ),
+    "tail(2) must retain line4 (4th line), got:\n{}", result.content
+  );
+  assert!(
+    !result.content.contains( "line1" ),
+    "tail(2) must drop line1 (1st line), got:\n{}", result.content
+  );
+  assert!(
+    !result.content.contains( "line2" ),
+    "tail(2) must drop line2 (2nd line), got:\n{}", result.content
+  );
 }
 
 #[ test ]
@@ -409,4 +447,178 @@ fn process_output_head_lines_omitted()
   let result = process_output( "line1\nline2\nline3\nline4\nline5", "", &config );
   assert_eq!( result.lines_omitted, 3 );
   assert_eq!( result.content, "line1\nline2" );
+}
+
+// ============================================================================
+// is_default() discriminant tests — one test per non-default field
+// ============================================================================
+
+// FT-18 / P10: is_default() checks stream_filter == Both
+#[ test ]
+fn is_default_stream_filter()
+{
+  let config = OutputConfig::default().with_stream_filter( StreamFilter::Stdout );
+  assert!(
+    !config.is_default(),
+    "config with stream_filter=Stdout must not satisfy is_default()"
+  );
+}
+
+// FT-18 / P10: is_default() checks width_suffix == "→"
+#[ test ]
+fn is_default_width_suffix()
+{
+  let config = OutputConfig::default().with_suffix( "..." );
+  assert!(
+    !config.is_default(),
+    "config with width_suffix='...' must not satisfy is_default()"
+  );
+}
+
+// FT-18 / P10: is_default() checks !unicode_aware
+#[ test ]
+fn is_default_unicode_aware()
+{
+  let config = OutputConfig::default().with_unicode_aware( true );
+  assert!(
+    !config.is_default(),
+    "config with unicode_aware=true must not satisfy is_default()"
+  );
+}
+
+// FT-24: is_default() checks tail field
+#[ test ]
+fn is_default_tail()
+{
+  let config = OutputConfig::default().with_tail( 2 );
+  assert!(
+    !config.is_default(),
+    "config with tail=2 must not satisfy is_default()"
+  );
+}
+
+// FT-25: is_default() checks width field
+#[ test ]
+fn is_default_width()
+{
+  let config = OutputConfig::default().with_width( 5 );
+  assert!(
+    !config.is_default(),
+    "config with width=5 must not satisfy is_default()"
+  );
+}
+
+// ============================================================================
+// Boundary value tests
+// ============================================================================
+
+// FT-15 / P11: head(0) retains nothing, reports all lines omitted
+#[ test ]
+fn head_zero_produces_empty()
+{
+  let config = OutputConfig::default().with_head( 0 );
+  let result = process_output( "a\nb\nc", "", &config );
+  assert!(
+    result.content.is_empty(),
+    "head(0) must produce empty content, got:\n{:?}", result.content
+  );
+  assert_eq!(
+    result.lines_omitted, 3,
+    "head(0) on 3-line input must report 3 lines omitted"
+  );
+}
+
+// FT-16 / P11: tail(0) retains nothing, reports all lines omitted
+#[ test ]
+fn tail_zero_produces_empty()
+{
+  let config = OutputConfig::default().with_tail( 0 );
+  let result = process_output( "a\nb\nc", "", &config );
+  assert!(
+    result.content.is_empty(),
+    "tail(0) must produce empty content, got:\n{:?}", result.content
+  );
+  assert_eq!(
+    result.lines_omitted, 3,
+    "tail(0) on 3-line input must report 3 lines omitted"
+  );
+}
+
+// FT-17 / P18: width=1 is not short-circuited — truncation fires
+#[ test ]
+fn width_one_truncates()
+{
+  // width=0 short-circuits (no truncation); width=1 must not.
+  // Note: at width=1 the suffix "→" (visual width 1) would exceed the budget,
+  // so the implementation omits it — only width_truncated matters here.
+  let config = OutputConfig::default().with_width( 1 );
+  let result = process_output( "hello", "", &config );
+  assert!(
+    result.width_truncated,
+    "width=1 must trigger truncation for 'hello' (5 visible chars), got:\n{:?}", result.content
+  );
+}
+
+// ============================================================================
+// Unicode-aware width measurement test
+// ============================================================================
+
+// FT-13 / P02: unicode_aware=true exercises the grapheme-based truncation branch
+#[ test ]
+fn unicode_aware_truncation()
+{
+  // "café" is 4 visible chars (c-a-f-é); é is a multi-byte UTF-8 code point.
+  // With width=3, visual width (4) > limit (3) — truncation must fire.
+  // The unicode_aware=true flag routes through truncate_lines_unicode (ansi_unicode feature).
+  let config = OutputConfig::default()
+    .with_unicode_aware( true )
+    .with_width( 3 );
+  let result = process_output( "café", "", &config );
+  assert!(
+    result.width_truncated,
+    "unicode_aware=true must trigger truncation when visual width (4) > max_width (3), got:\n{:?}", result.content
+  );
+}
+
+// ============================================================================
+// merge_streams edge cases
+// ============================================================================
+
+// FT-14 / P08: stderr ending with '\n' — no double-newline separator inserted
+#[ test ]
+fn merge_streams_stderr_trailing_newline()
+{
+  // When stderr ends with '\n', the newline already serves as a stream boundary.
+  // merge_streams must NOT insert an additional '\n', avoiding "err\n\nout".
+  let result = merge_streams( "out", "err\n", &StreamFilter::Both );
+  assert_eq!(
+    result, "err\nout",
+    "stderr with trailing newline must not produce double-newline separator, got:\n{result:?}"
+  );
+  assert!(
+    !result.contains( "\n\n" ),
+    "result must not contain double-newline sequence, got:\n{result:?}"
+  );
+}
+
+// ============================================================================
+// OutputConfig::new() equivalence
+// ============================================================================
+
+// AP-6 / P16: new() is a named alias for default() — all fields must match
+#[ test ]
+fn output_config_new_matches_default()
+{
+  let from_new     = OutputConfig::new();
+  let from_default = OutputConfig::default();
+  assert_eq!( from_new.head,          from_default.head,          "head field must match" );
+  assert_eq!( from_new.tail,          from_default.tail,          "tail field must match" );
+  assert_eq!( from_new.width,         from_default.width,         "width field must match" );
+  assert_eq!( from_new.width_suffix,  from_default.width_suffix,  "width_suffix field must match" );
+  assert_eq!( from_new.stream_filter, from_default.stream_filter, "stream_filter field must match" );
+  assert_eq!( from_new.unicode_aware, from_default.unicode_aware, "unicode_aware field must match" );
+  assert!(
+    from_new.is_default(),
+    "OutputConfig::new() must satisfy is_default()"
+  );
 }

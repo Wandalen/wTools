@@ -5,8 +5,11 @@
 - **Executor Type:** any
 - **Actor:** null
 - **Claimed At:** null
-- **Status:** ✅ (Completed)
+- **Reopen Count:** 0
+- **State:** ✅ (Completed)
 - **Closes:** null
+- **Blocked Reason:** null
+- **Dir:** .
 - **Validated By:** author-inline
 - **Validation Date:** 2026-05-17
 
@@ -150,3 +153,8 @@ Formal validation run 2026-05-17 via `w3 .test level::3` (local nextest + worksp
 - **Total**: 44 tests, 0 failures, 0 warnings
 
 All Checklist items (C1–C14, I2, AF1–AF4 statically; M1, M2, I1, AF4 by test run), Measurements, and Invariants fully verified. C15 remains non-verifiable (requires reading external crates). No `data_fmt` dependency introduced.
+
+## History
+
+- **[2026-05-17]** `CREATED` — Task filed. Goal: implement CliHelpTemplate typed CLI help renderer in cli_fmt.
+- **[2026-05-17]** `COMPLETED` — All 9 tests pass (T01–T09 including T09 bug reproducer). Validated via w3 .test level::3.

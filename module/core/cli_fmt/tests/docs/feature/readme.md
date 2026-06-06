@@ -11,5 +11,5 @@
 
 | Name | Purpose | Status |
 |------|---------|--------|
-| `01_output_processing.md` | Feature test spec for Output Processing | ✅ |
-| `02_cli_help_template.md` | Feature test spec for CLI Help Template | ✅ |
+| `001_output_processing.md` | Feature test spec for Output Processing | ✅ |
+| `002_cli_help_template.md` | Feature test spec for CLI Help Template | ✅ |

@@ -26,7 +26,8 @@ mod private
   /// let fields = derive.named_fields( &ast );
   /// ```
   /// # Errors
-  /// qqq: doc
+  ///
+  /// Returns `Err` if the derive input is not a struct with named fields.
   pub fn named_fields(ast: &syn ::DeriveInput) -> crate ::Result< &Punctuated<syn ::Field, syn ::token ::Comma >>
   {
   let fields =  match ast.data 

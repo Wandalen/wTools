@@ -52,14 +52,34 @@ Do not apply when:
 - The last-resort cwd fallback may silently resolve to an unexpected directory if no higher-priority strategy succeeds.
 - Additional resolution strategies require a priority decision that affects behavior in all environments.
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/lib.rs` | `resolve()`, `resolve_with_extended_fallbacks()`, all `from_*()` methods |
-| test | `tests/workspace_tests.rs` | Resolution strategy correctness |
-| test | `tests/task_022_installed_app_resolution.rs` | Installed-app resolution (strategies 4–6) |
-| test | `tests/test_fallback_integration.rs` | Fallback chain integration |
-| task | `task/completed/023_extend_workspace_resolution_for_installed_applications.md` | Added strategies 4–6 |
-| doc | `docs/feature/001_workspace_root_resolution.md` | Feature scope and usage |
-| doc | `docs/api/001_workspace.md` | Named constructor signatures |
+| File | Relationship |
+|------|-------------|
+| [src/lib.rs](../../src/lib.rs) | `resolve()`, `resolve_with_extended_fallbacks()`, all `from_*()` methods |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [tests/workspace_tests.rs](../../tests/workspace_tests.rs) | Resolution strategy correctness |
+| [tests/task_022_installed_app_resolution.rs](../../tests/task_022_installed_app_resolution.rs) | Installed-app resolution (strategies 4–6) |
+| [tests/test_fallback_integration.rs](../../tests/test_fallback_integration.rs) | Fallback chain integration |
+
+### Tasks
+
+| File | Relationship |
+|------|-------------|
+| [task/completed/023_extend_workspace_resolution_for_installed_applications.md](../../task/completed/023_extend_workspace_resolution_for_installed_applications.md) | Added strategies 4–6 |
+
+### Features
+
+| File | Relationship |
+|------|-------------|
+| [feature/001_workspace_root_resolution.md](../feature/001_workspace_root_resolution.md) | Feature scope and usage |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [api/001_workspace.md](../api/001_workspace.md) | Named constructor signatures |

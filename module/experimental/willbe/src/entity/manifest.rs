@@ -46,7 +46,6 @@ mod private
   /// Path to `Cargo.toml`
   // pub manifest_file: AbsolutePath,
   pub manifest_file: ManifestFile,
-  // aaa: for Bohdan: for Petro: why not ManifestFile?
   /// Strict type of `Cargo.toml` manifest.
   pub data: toml_edit ::Document,
   // pub data: Option< toml_edit ::Document >,
@@ -110,7 +109,6 @@ mod private
 
   /// Path to directory where `Cargo.toml` located.
   /// # Panics
-  /// qqq: doc
   #[ must_use ]
   pub fn crate_dir( &self ) -> CrateDir
   {
@@ -120,7 +118,6 @@ mod private
 
   /// Store manifest.
   /// # Errors
-  /// qqq: doc
   pub fn store( &self ) -> io ::Result< () >
   {
    fs ::write( &self.manifest_file, self.data.to_string() )?;
@@ -274,15 +271,12 @@ mod private
 
   /// Retrieves the repository URL of a package from its `Cargo.toml` file.
   /// # Errors
-  /// qqq: doc
-  // qqq: use typed error
   pub fn repo_url( crate_dir: &CrateDir ) -> error ::untyped ::Result< String >
   {
   let path = crate_dir.clone().manifest_file().inner().inner();
   if path.exists()
   {
    let mut contents = String ::new();
-   // qqq: zzz: for Petro: redundant read and parse
    fs ::File ::open( path )?.read_to_string( &mut contents )?;
    let doc = contents.parse :: < toml_edit ::Document >()?;
 

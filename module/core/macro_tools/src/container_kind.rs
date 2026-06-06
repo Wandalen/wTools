@@ -40,7 +40,8 @@ mod private
   /// assert_eq!( kind, container_kind ::ContainerKind ::HashMap );
   /// ```
   /// # Panics
-  /// qqq: doc
+  ///
+  /// Does not panic — missing path segments return `ContainerKind ::No` early.
   #[ must_use ]
   pub fn of_type(ty: &syn ::Type) -> ContainerKind
   {
@@ -77,7 +78,8 @@ mod private
   /// assert_eq!( optional, true );
   /// ```
   /// # Panics
-  /// qqq: doc
+  ///
+  /// Does not panic — all `None` cases are guarded before use.
   #[ must_use ]
   pub fn of_optional(ty: &syn ::Type) -> (ContainerKind, bool)
   {

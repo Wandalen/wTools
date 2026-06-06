@@ -23,9 +23,6 @@ mod private
   use error_tools ::untyped ::format_err;
   use former ::Former;
 
-  // aaa: for Bohdan: it should transparent mechanist which patch list of commands, not a stand-alone mechanism
-  // aaa: it is
-
   /// Enum `LevelOfDetail` specifies the granularity of detail for rendering or processing :
   #[ derive( Debug, Default, Copy, Clone, PartialEq, Eq ) ]
   pub enum LevelOfDetail
@@ -73,16 +70,13 @@ mod private
   pub order: Order,
  }
 
-  // aaa: for Barsik: make possible to change properties order
-  // aaa: order option
-
   /// Generates help content as a formatted string based on a given dictionary and options.
   ///
   /// This function takes a `Dictionary` of terms or commands and a `HelpGeneratorOptions`
   /// struct to customize the help output, generating a user-friendly help message
   /// or guide in `String` format.
   /// # Panics
-  /// qqq: doc
+  /// Panics if the internal table formatting fails for the command properties.
   #[ must_use ]
   #[ allow( clippy ::match_same_arms ) ]
   pub fn generate_help_content( dictionary: &Dictionary, o: HelpGeneratorOptions< '_ > ) -> String

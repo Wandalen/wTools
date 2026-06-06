@@ -19,7 +19,6 @@ mod private
   {
   /// Converts the object to its code representation.
   /// # Errors
-  /// qqq: doc
   fn as_code( &self ) -> std ::io ::Result< Cow< '_, str > >;
  }
 

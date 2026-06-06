@@ -209,35 +209,6 @@ mod private
  }
  }
 
-  // qqq: zzz: make that working
-  //
-  //   impl< T > syn ::parse ::Parse
-  //   for Many< T >
-  //   where
-  //     T: Element + WhileDelimiter,
-  //   {
-  //     fn parse( input: syn ::parse ::ParseStream< '_ > ) -> syn ::Result< Self >
-  //     {
-  //       let mut result = Self ::new();
-  //       loop
-  //       {
-  //         let lookahead = input.lookahead1();
-  //         let token = < T as WhileDelimiter > ::Delimiter ::default().into();
-  //         if !lookahead.peek( token )
-  //         {
-  //           break;
-  // }
-  //         result.0.push( input.parse()? );
-  // }
-  //       Ok( result )
-  // }
-  // }
-  //
-  //   impl WhileDelimiter for AttributesInner
-  //   {
-  //     type Peek = syn ::token ::Pound;
-  //     type Delimiter = syn ::token ::Pound;
-  // }
   //   impl WhileDelimiter for AttributesOuter
   //   {
   //     type Peek = syn ::token ::Pound;

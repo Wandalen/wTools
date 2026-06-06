@@ -33,6 +33,7 @@
 //! # }
 //! ```
 
+#![ cfg_attr( not( feature = "enabled" ), allow( unused ) ) ]
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 
 /// CLI output processing.
@@ -67,6 +68,7 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ allow( unused_imports ) ]
   pub use super::own::*;
 }
 

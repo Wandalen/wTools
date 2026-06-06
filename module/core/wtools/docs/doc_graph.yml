@@ -1,0 +1,11 @@
+last_updated: 2026_06_06
+
+nodes:
+  - id: feature/001_collection_tools_facade.md
+    via: typed_reference
+    links:
+      - api/001_collection_tools_re_export.md
+  - id: api/001_collection_tools_re_export.md
+    via: typed_reference
+    links:
+      - feature/001_collection_tools_facade.md

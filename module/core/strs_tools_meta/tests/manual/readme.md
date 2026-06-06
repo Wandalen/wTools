@@ -22,7 +22,7 @@ cargo test --test corner_cases_test --all-features -- --nocapture
 
 ### Test Coverage Summary
 
-**optimize_split! Corner Cases** (17 tests):
+**optimize_split! Corner Cases** (15 tests):
 - Empty string handling
 - Delimiter boundary cases (start, end, consecutive)
 - Unicode and multi-byte UTF-8 (emoji, accents)
@@ -31,7 +31,7 @@ cargo test --test corner_cases_test --all-features -- --nocapture
 - Whitespace delimiter handling (\n, \t)
 - preserve_empty and preserve_delimiters options
 
-**optimize_match! Corner Cases** (11 tests):
+**optimize_match! Corner Cases** (13 tests):
 - Empty input/pattern handling
 - Match position cases (start, middle, end)
 - Multiple occurrence behavior (returns first)
@@ -79,8 +79,8 @@ cargo test --test corner_cases_test --all-features -- --nocapture
 
 | Category | Tests | Passed | Failed | Notes |
 |----------|-------|--------|--------|-------|
-| Corner Cases (split) | 17 | 17 | 0 | All edge cases validated |
-| Corner Cases (match) | 11 | 11 | 0 | All edge cases validated |
+| Corner Cases (split) | 15 | 15 | 0 | All edge cases validated |
+| Corner Cases (match) | 13 | 13 | 0 | All edge cases validated |
 | UTF-8 Handling | 4 | 4 | 0 | Emoji and accents work correctly |
 | Threshold Edges | 4 | 4 | 0 | Optimization transitions correct |
 

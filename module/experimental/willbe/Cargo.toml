@@ -43,7 +43,6 @@ enabled = [
   "wca/enabled",
   "pth/enabled",
   "process_tools/enabled",
-  "data_type/enabled",
   "collection_tools/enabled",
   "macro_tools/enabled",
 ]
@@ -96,9 +95,13 @@ wca = { workspace = true, features = [ "default" ] }
 pth = { workspace = true, features = [ "default", "path_utf8", "path_unique_folder_name" ] }
 process_tools = { workspace = true, features = [ "enabled" ] }
 derive_tools = { workspace = true, features = [ "default" ] }  # derive_tools is a basic dependency required for compilation.
-data_type = { workspace = true, features = [ "either" ] }
+either = { version = "~1.6" }
 collection_tools = { workspace = true, features = [ "collection_constructors", "collection_into_constructors" ] }
 macro_tools = { workspace = true, features = [ "default" ] }
+
+[[example]]
+name = "willbe_trivial"
+required-features = [ "enabled" ]
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }

@@ -17,18 +17,38 @@ Standard directory accessors implement convention over configuration: the five n
 
 Named single-strategy constructors expose each resolution strategy individually. Callers who know their execution context can bypass the full fallback chain by choosing the constructor that matches their context.
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/lib.rs` | Workspace struct, resolution methods, path accessors, normalization logic |
-| test | `tests/workspace_tests.rs` | Core workspace creation, resolution, and path operations |
-| test | `tests/path_operations_comprehensive_tests.rs` | Path manipulation, normalization, and canonicalization |
-| test | `tests/path_normalization_tests.rs` | Workspace root path normalization (trailing components) |
-| test | `tests/cargo_integration_tests.rs` | Integration with cargo workspace and metadata |
-| test | `tests/cross_platform_compatibility_tests.rs` | Platform-specific path handling |
-| task | `task/completed/001_cargo_integration.md` | Cargo auto-detection implementation |
-| task | `task/completed/022_fix_workspace_root_path_normalization.md` | Path normalization bug fix |
-| task | `task/completed/023_extend_workspace_resolution_for_installed_applications.md` | Extended fallback chain |
-| doc | `docs/pattern/001_workspace_resolution_fallback.md` | Fallback chain strategy and rationale |
-| doc | `docs/api/001_workspace.md` | Full public API surface |
+| File | Relationship |
+|------|-------------|
+| [src/lib.rs](../../src/lib.rs) | Workspace struct, resolution methods, path accessors, normalization logic |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [tests/workspace_tests.rs](../../tests/workspace_tests.rs) | Core workspace creation, resolution, and path operations |
+| [tests/path_operations_comprehensive_tests.rs](../../tests/path_operations_comprehensive_tests.rs) | Path manipulation, normalization, and canonicalization |
+| [tests/path_normalization_tests.rs](../../tests/path_normalization_tests.rs) | Workspace root path normalization (trailing components) |
+| [tests/cargo_integration_tests.rs](../../tests/cargo_integration_tests.rs) | Integration with cargo workspace and metadata |
+| [tests/cross_platform_compatibility_tests.rs](../../tests/cross_platform_compatibility_tests.rs) | Platform-specific path handling |
+
+### Tasks
+
+| File | Relationship |
+|------|-------------|
+| [task/completed/001_cargo_integration.md](../../task/completed/001_cargo_integration.md) | Cargo auto-detection implementation |
+| [task/completed/022_fix_workspace_root_path_normalization.md](../../task/completed/022_fix_workspace_root_path_normalization.md) | Path normalization bug fix |
+| [task/completed/023_extend_workspace_resolution_for_installed_applications.md](../../task/completed/023_extend_workspace_resolution_for_installed_applications.md) | Extended fallback chain |
+
+### Patterns
+
+| File | Relationship |
+|------|-------------|
+| [pattern/001_workspace_resolution_fallback.md](../pattern/001_workspace_resolution_fallback.md) | Fallback chain strategy and rationale |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [api/001_workspace.md](../api/001_workspace.md) | Full public API surface |

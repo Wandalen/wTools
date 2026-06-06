@@ -6,13 +6,29 @@
 
 Include markdown file or its section.
 
-**⚠️ Status: Placeholder Crate**
-
-This crate is currently a placeholder with no functionality implemented.
-
 ### To add to your project
 
 ```shell
 cargo add include_md
 ```
+
+## Quick Start
+
+Include a complete markdown file as a compile-time string constant:
+
+```rust
+let content = include_md ::include_md!( "../readme.md" );
+println!( "{content}" );
+```
+
+Include only a named section from a markdown file:
+
+```rust
+let section = include_md ::include_md_section!( "readme.md", "## Quick Start" );
+println!( "{section}" );
+```
+
+Paths for `include_md!` resolve relative to the source file (same as `include_str!`).
+Paths for `include_md_section!` resolve relative to `CARGO_MANIFEST_DIR` (crate root).
+Both macros reject files larger than 10 MB at compile time.
 

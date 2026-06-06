@@ -51,7 +51,8 @@ mod private
   /// assert!( contains_debug, "Expected to find 'debug' attribute" );
   /// ```
   /// # Errors
-  /// qqq: doc
+  ///
+  /// Returns `Err( syn ::Error )` if an attribute has an unexpected or malformed format.
   pub fn has_debug< 'a >(attrs: impl Iterator< Item = &'a syn ::Attribute >) -> syn ::Result< bool >
   {
   for attr in attrs 
@@ -194,7 +195,8 @@ mod private
   /// - `Err( syn ::Error )` if an unknown or improperly formatted attribute is encountered.
   ///
   /// # Errors
-  /// qqq: doc
+  ///
+  /// Returns `Err( syn ::Error )` if an attribute has an unexpected or malformed format.
   pub fn has_deref< 'a >(attrs: impl Iterator< Item = &'a syn ::Attribute >) -> syn ::Result< bool >
   {
   for attr in attrs 
@@ -229,7 +231,8 @@ mod private
   /// - `Err( syn ::Error )` if an unknown or improperly formatted attribute is encountered.
   ///
   /// # Errors
-  /// qqq: doc
+  ///
+  /// Returns `Err( syn ::Error )` if an attribute has an unexpected or malformed format.
   pub fn has_deref_mut< 'a >(attrs: impl Iterator< Item = &'a syn ::Attribute >) -> syn ::Result< bool >
   {
   for attr in attrs 
@@ -264,7 +267,8 @@ mod private
   /// - `Err( syn ::Error )` if an unknown or improperly formatted attribute is encountered.
   ///
   /// # Errors
-  /// qqq: doc
+  ///
+  /// Returns `Err( syn ::Error )` if an attribute has an unexpected or malformed format.
   pub fn has_from< 'a >(attrs: impl Iterator< Item = &'a syn ::Attribute >) -> syn ::Result< bool >
   {
   for attr in attrs 
@@ -299,7 +303,8 @@ mod private
   /// - `Err( syn ::Error )` if an unknown or improperly formatted attribute is encountered.
   ///
   /// # Errors
-  /// qqq: doc
+  ///
+  /// Returns `Err( syn ::Error )` if an attribute has an unexpected or malformed format.
   pub fn has_index_mut< 'a >(attrs: impl Iterator< Item = &'a syn ::Attribute >) -> syn ::Result< bool >
   {
   for attr in attrs 
@@ -333,7 +338,8 @@ mod private
   /// - `Err( syn ::Error )` if an unknown or improperly formatted attribute is encountered.
   ///
   /// # Errors
-  /// qqq: doc
+  ///
+  /// Returns `Err( syn ::Error )` if an attribute has an unexpected or malformed format.
   pub fn has_as_mut< 'a >(attrs: impl Iterator< Item = &'a syn ::Attribute >) -> syn ::Result< bool >
   {
   for attr in attrs 
@@ -599,7 +605,8 @@ mod private
   /// A `syn ::Result` containing the constructed component if successful, or an error if the parsing fails.
   ///
   /// # Errors
-  /// qqq: doc
+  ///
+  /// Returns `Err( syn ::Error )` if the attribute cannot be parsed into the implementing type.
   fn from_meta(attr: &syn ::Attribute) -> syn ::Result< Self >;
 
   // zzz: redo maybe

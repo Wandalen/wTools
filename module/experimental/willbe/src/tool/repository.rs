@@ -11,7 +11,6 @@ mod private
   /// `None` if no README file is found in any of these locations.
   ///
   /// # Errors
-  /// qqq: doc
   pub fn readme_path( dir_path: &std ::path ::Path ) -> Result< std ::path ::PathBuf, std ::io ::Error >
   {
   if let Some( path ) = readme_in_dir_find( &dir_path.join( ".github" ) )

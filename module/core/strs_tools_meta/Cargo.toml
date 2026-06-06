@@ -37,6 +37,14 @@ enabled = []
 optimize_split = [ "dep:macro_tools" ]
 optimize_match = [ "dep:macro_tools" ]
 
+[[example]]
+name = "split_basic"
+required-features = [ "optimize_split" ]
+
+[[example]]
+name = "match_basic"
+required-features = [ "optimize_match" ]
+
 [dependencies]
 macro_tools = { workspace = true, features = [ "attr", "ct", "diag", "typ", "derive", "enabled" ], optional = true }
 

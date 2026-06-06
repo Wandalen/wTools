@@ -10,8 +10,6 @@ mod private
   /// Generate headers for workspace members
   ///
   /// # Errors
-  /// qqq: doc
-  // qqq: typed error
   pub fn readme_modules_headers_renew() -> error ::untyped ::Result< () >
   {
   let current_path = AbsolutePath ::try_from( std ::env ::current_dir()? )?;
@@ -27,7 +25,6 @@ mod private
    {
   eprintln!( "{report}" );
   Err( error ::untyped ::Error ::from( e ).context( "Fail to generate modules headers." ) )
-  // qqq: use typed error
  }
  }
  }

@@ -13,9 +13,9 @@ mod private
   struct ReadmeHeadersRenewReport
   {
   main_header_renew_report: action ::MainHeaderRenewReport,
-  main_header_renew_error: Option< action ::MainHeaderRenewError >, // aaa: for Petro: typed error // aaa: done
+  main_header_renew_error: Option< action ::MainHeaderRenewError >,
   modules_headers_renew_report: action ::ModulesHeadersRenewReport,
-  modules_headers_renew_error: Option< action ::ModulesHeadersRenewError >, // aaa: for Petro: typed error // aaa: done
+  modules_headers_renew_error: Option< action ::ModulesHeadersRenewError >,
  }
 
   impl Display for ReadmeHeadersRenewReport
@@ -70,8 +70,7 @@ mod private
 
   /// Aggregates two commands: `generate_modules_headers` & `generate_main_header`
   /// # Errors
-  /// qqq: doc
-  pub fn readme_headers_renew() -> error ::untyped ::Result< () > // qqq: use typed error
+  pub fn readme_headers_renew() -> error ::untyped ::Result< () >
   {
   let mut report = ReadmeHeadersRenewReport ::default();
   // let absolute_path = AbsolutePath ::try_from( std ::env ::current_dir()? )?;

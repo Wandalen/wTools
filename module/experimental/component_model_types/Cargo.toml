@@ -25,8 +25,8 @@ all-features = false
 
 [features]
 
-no_std = [ "collection_tools/no_std" ]
-use_alloc = [ "no_std", "collection_tools/use_alloc" ]
+no_std = []
+use_alloc = [ "no_std" ]
 
 default = [ "enabled" ]
 full = [
@@ -34,14 +34,12 @@ full = [
 
   "types_component_assign",
 ]
-enabled = [ "collection_tools/enabled" ]
+enabled = []
 
 types_component_assign = []
 
 
 [dependencies]
-collection_tools = { workspace = true, features = [ "collection_constructors" ] }
-# qqq : optimize also make sure collection_tools expose enough features
 
 
 [dev-dependencies]

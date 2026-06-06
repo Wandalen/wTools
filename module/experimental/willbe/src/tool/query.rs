@@ -124,11 +124,8 @@ mod private
   /// Supports positional `( val1, val2 )` and named `{ key: val }` formats.
   ///
   /// # Errors
-  /// qqq: doc
   ///
   /// # Panics
-  /// qqq: doc
-  // qqq: use typed error
   pub fn parse( input_string: &str ) -> error ::untyped ::Result< ParseResult >
   {
   if input_string.len() < 2
@@ -180,7 +177,6 @@ mod private
   result
  }
 
-  // qqq: use typed error
   fn parse_to_map(input: Vec< String > ) -> error ::untyped ::Result< HashMap< String, Value > >
   {
   let mut map = HashMap ::new();
@@ -232,7 +228,6 @@ mod private
   Ok( map )
  }
 
-  // qqq: use typed error
   #[ allow( clippy ::unnecessary_wraps ) ]
   fn parse_to_vec( input: Vec< String > ) -> error ::untyped ::Result< Vec< Value > >
   {

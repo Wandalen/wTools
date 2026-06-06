@@ -63,7 +63,6 @@ mod private
   path :: { Path, PathBuf },
  };
   use error ::untyped ::bail;
-  // qqq: group dependencies
   use ::itertools ::Itertools;
   use genfile_core ::
   {
@@ -211,13 +210,9 @@ mod private
  }
 
   // zzz
-  // qqq: for Petro: should return report
-  // qqq: for Petro: should have typed error
   /// Creates workspace template
   /// # Errors
-  /// qqq: doc
   /// # Panics
-  /// qqq: doc
   pub fn action
   (
   path: &Path,
@@ -225,7 +220,7 @@ mod private
   repository_url: String,
   branches: Vec< String >
  )
-  -> error ::untyped ::Result< () > // qqq: use typed error
+  -> error ::untyped ::Result< () >
   {
   if fs ::read_dir( path )?.count() != 0
   {

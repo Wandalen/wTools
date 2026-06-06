@@ -9,8 +9,6 @@ mod private
   /// Generate table.
   ///
   /// # Errors
-  /// qqq: doc
-  // qqq: typed error
   pub fn readme_health_table_renew() -> error ::untyped ::Result< () >
   {
   action ::readme_health_table_renew

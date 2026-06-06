@@ -29,8 +29,7 @@ mod private
   /// Publish package.
   ///
   /// # Errors
-  /// qqq: doc
-  pub fn publish( o: VerifiedCommand ) -> error ::untyped ::Result< () > // qqq: use typed error
+  pub fn publish( o: VerifiedCommand ) -> error ::untyped ::Result< () >
   {
   // Fix(issue-publish-pathbuf-cast): Previously attempted to cast args[0] to PathBuf,
   // but command definition specifies subject as List<String>. This caused panic when
@@ -91,8 +90,6 @@ mod private
    let prop = if prop_line.is_empty() { String ::new() } else { format!(" {prop_line}" ) };
    let line = format!("will .publish{args}{prop} dry: 0" );
    println!("To apply plan, call the command `{}`", line.blue() );
-   // aaa: for Petro: for Bohdan: bad. should be exact command with exact parameters
-   // aaa: it`s already works
  }
 
   Ok( () )

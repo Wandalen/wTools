@@ -5,9 +5,6 @@ mod private
   use crate :: *;
   use crate ::ca ::Value;
 
-  // aaa: group
-  // aaa: done
-
   use std ::
   {
   collections ::HashMap,
@@ -135,12 +132,6 @@ mod private
    &self.0
  }
  }
-
-  // aaa: make 0-arguments, 1-argument, 2-arguments, 3 arguments versions
-  // aaa: done. now it works with the following variants :
-  // fn(), fn(args), fn(props), fn(args, props), fn(context), fn(context, args), fn(context, props), fn(context, args, props)
-
-  // aaa: why not public? // aaa: described
 
   // These type aliases are kept private to hide implementation details and prevent misuse.
   // Exposing them would risk complicating the API and limit future refactoring flexibility.
@@ -310,9 +301,6 @@ mod private
  }
  }
 
-  // aaa: why Rc is necessary? why not just box?
-  // aaa: to be able to clone Routines
-
   impl PartialEq for Routine
   {
   fn eq( &self, other: &Self ) -> bool
@@ -336,8 +324,6 @@ mod private
   fn into_result( self ) -> error_tools ::untyped ::Result< () >;
  }
 
-  // xxx
-  // aaa: This is an untyped error because we want to provide a common interface for all commands, while also allowing users to propagate their own specific custom errors.
   impl IntoResult for core ::convert ::Infallible 
   { fn into_result( self ) -> error_tools ::untyped ::Result< () > { Ok( () ) } }
   impl IntoResult for () 
@@ -357,7 +343,6 @@ mod private
    {
   self.map_err( | e | error_tools ::untyped ::format_err!( "{e}" ))
  }
-   // xxx: aaa: ?
  }
  }
 }

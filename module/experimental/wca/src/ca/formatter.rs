@@ -82,8 +82,6 @@ mod private
   format!( "\n- {}{} - {} `[{:?}]`", if value.optional { "`< optional >` " } else { "" }, value.hint, name, value.kind )
  )
    .join( "\n" );
-   // aaa: for Bohdan: toooooo log lines. 130 is max
-   // aaa: done.
 
    format!
    (

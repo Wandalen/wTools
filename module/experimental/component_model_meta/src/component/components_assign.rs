@@ -96,7 +96,7 @@ pub fn components_assign(input: proc_macro ::TokenStream) -> Result< proc_macro2
 ///
 /// ### Output example
 ///
-/// ```ignore
+/// ```text
 /// IntoT: Into< i32 >
 /// ```
 ///
@@ -113,7 +113,7 @@ fn generate_trait_bounds(field_type: &syn ::Type) -> Result< proc_macro2 ::Token
 ///
 /// ### Output example
 ///
-/// ```ignore
+/// ```text
 /// T: component_model ::Assign< i32, IntoT >,
 /// ```
 ///
@@ -131,7 +131,7 @@ fn generate_impl_bounds(field_type: &syn ::Type) -> Result< proc_macro2 ::TokenS
 ///
 /// Output example
 ///
-/// ```ignore
+/// ```text
 /// component_model ::Assign :: < i32, _ > ::assign( self.component.clone() );
 /// ```
 ///

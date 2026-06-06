@@ -13,7 +13,6 @@ mod private
   "type", "unsafe", "use", "where", "while", "async", "await", "dyn", "box", "try", "macro",
  ];
 
-  // qqq: cover by test
   /// Check is string a keyword.
   #[ must_use ]
   pub fn is(src: &str) -> bool

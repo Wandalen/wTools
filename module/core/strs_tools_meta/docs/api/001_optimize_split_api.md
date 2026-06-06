@@ -44,15 +44,25 @@
 
 ### Sources
 
-| File | Notes |
-|------|-------|
+| File | Relationship |
+|------|-------------|
 | `spec.md` (git `c13cf485~1`) | §Public API `optimize_split!` section. Feature Flags table reflected BLOCKING `default` violation — corrected in `Cargo.toml`; this instance documents post-fix defaults. |
+| [`../../src/lib.rs`](../../src/lib.rs) | `optimize_split` entry point, `optimize_split_impl` |
 
-### Cross-References
+### Tests
 
-| Type | File | Notes |
-|------|------|-------|
-| source | `../../src/lib.rs` | `optimize_split` entry point, `optimize_split_impl` |
-| test | `../../tests/optimize_split_tests.rs` | TC1–TC10 |
-| doc | `../feature/001_compile_time_split.md` | Behavioral design and parameter semantics |
-| doc | `../invariant/001_split_strategy_thresholds.md` | Strategy selection thresholds |
+| File | Relationship |
+|------|-------------|
+| [`../../tests/optimize_split_tests.rs`](../../tests/optimize_split_tests.rs) | TC1–TC10 |
+
+### Features
+
+| File | Relationship |
+|------|-------------|
+| [`../feature/001_compile_time_split.md`](../feature/001_compile_time_split.md) | Behavioral design and parameter semantics |
+
+### Invariants
+
+| File | Relationship |
+|------|-------------|
+| [`../invariant/001_split_strategy_thresholds.md`](../invariant/001_split_strategy_thresholds.md) | Strategy selection thresholds |

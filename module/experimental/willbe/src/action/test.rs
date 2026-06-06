@@ -6,8 +6,6 @@ mod private
   use entity ::test :: { TestPlan, TestOptions, TestsReport, tests_run };
 
   // use test :: *;
-  // qqq: for Petro: no asterisks imports
-  // qqq: for Petro: bad: not clear what is imported, there are multiple filles with name test
 
   use collection_tools ::collection ::HashSet;
   use std :: { env, fs };
@@ -67,21 +65,15 @@ mod private
   /// The function also has the ability to run tests in parallel using `Rayon` crate.
   /// The result of the tests is written to the structure `TestsReport` and returned as a result of the function execution.
   /// # Errors
-  /// qqq: doc
   ///
   /// # Panics
-  /// qqq: doc
   // zzz: it probably should not be here
-  // xxx: use newtype
   #[ allow( clippy ::too_many_lines ) ]
   pub fn test( o: TestsCommandOptions, dry: bool )
   -> ResultWithReport< TestsReport, Error >
-  // qqq: for Petro: typed error
   // -> Result< TestsReport, ( TestsReport, Error ) >
   {
 
-  // aaa: incapsulate progress bar logic into some function of struct. don't keep it here
-  // aaa: done
 
   let mut report = TestsReport ::default();
   // fail fast if some additional installations required
@@ -90,8 +82,6 @@ mod private
   let channels_diff: Vec< _ > = o.channels.difference( &channels ).collect();
   if !channels_diff.is_empty()
   {
-   // aaa: for Petro: non readable
-   // aaa: readable and with actual command
    return Err
    (
   (
@@ -131,22 +121,16 @@ Try to install it with `rustup install {}` command(-s)",
   let with_progress = false;
 
   // zzz: watch and review after been ready
-  // aaa: for Petro: use relevant entity. use either, implement TryFrom< Either< CrateDir, ManifestFile > >
-  // aaa: done
-  // qqq: for Petro: nonsense
   let path = match EitherDirOrFile ::try_from( o.dir.as_ref() ).map_err( | e | ( report.clone(), e.into() ) )?.inner()
   {
-   data_type ::Either ::Left( crate_dir ) => crate_dir,
-   data_type ::Either ::Right( manifest ) => CrateDir ::from( manifest )
+   either ::Either ::Left( crate_dir ) => crate_dir,
+   either ::Either ::Right( manifest ) => CrateDir ::from( manifest )
  };
 
   #[ allow( clippy ::useless_conversion ) ]
   let workspace = Workspace
   ::try_from( CrateDir ::try_from( path.clone() ).err_with_report( &report )? )
   .err_with_report( &report )?
-  // xxx: clone?
-  // aaa: for Petro: use trait !everywhere!
-  // aaa: !When I wrote this solution, pr with this changes was not yet ready.!
   ;
 
   // let packages = needed_packages( &workspace );
@@ -163,8 +147,6 @@ Try to install it with `rustup install {}` command(-s)",
    .unwrap()
    .starts_with( path.as_ref() )
  )
-  // aaa: for Petro: too long line
-  // aaa: done
   ;
 
   let plan = TestPlan ::try_from
@@ -182,8 +164,6 @@ Try to install it with `rustup install {}` command(-s)",
  ).err_with_report( &report )?;
 
   println!( "{plan}" );
-  // aaa: split on two functions for create plan and for execute
-  // aaa: it's already separated, look line: 203 : let result = tests_run( &options );
 
   let temp_path =  if temp
   {

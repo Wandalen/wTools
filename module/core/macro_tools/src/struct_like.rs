@@ -322,7 +322,8 @@ mod private
 
   /// Extracts the name of each field.
   /// # Panics
-  /// qqq: docs
+  ///
+  /// Panics if called on an enum with unnamed fields and the iterator dereferences a missing ident.
   // pub fn field_names< 'a >( &'a self ) -> Option< impl IterTrait< 'a, &'a syn ::Ident > + '_ >
   #[ must_use ]
   pub fn field_names( &self ) -> Option< BoxedIter<'_, &syn ::Ident >>

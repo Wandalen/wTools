@@ -45,10 +45,61 @@ tempfile = { workspace = true, optional = true }
 serde = { workspace = true, features = [ "derive" ], optional = true }
 serde_json = { workspace = true, optional = true }
 serde_yaml = { workspace = true, optional = true }
-jsonschema = { version = "0.20", optional = true }
-schemars = { version = "0.8", optional = true }
-secrecy = { version = "0.8", optional = true, features = [ "serde" ] }
-zeroize = { version = "1.7", optional = true }
+jsonschema = { workspace = true, optional = true }
+schemars = { workspace = true, optional = true }
+secrecy = { workspace = true, optional = true, features = [ "serde" ] }
+zeroize = { workspace = true, optional = true }
+
+[[example]]
+name = "000_hello_workspace"
+
+[[example]]
+name = "001_standard_directories"
+
+[[example]]
+name = "002_path_operations"
+
+[[example]]
+name = "003_error_handling"
+
+[[example]]
+name = "004_resource_discovery"
+required-features = [ "glob" ]
+
+[[example]]
+name = "005_secret_management"
+required-features = [ "secrets" ]
+
+[[example]]
+name = "006_improved_secrets_api"
+required-features = [ "secrets" ]
+
+[[example]]
+name = "006_testing_integration"
+
+[[example]]
+name = "007_real_world_cli_app"
+
+[[example]]
+name = "008_web_service_integration"
+
+[[example]]
+name = "009_advanced_patterns"
+
+[[example]]
+name = "010_cargo_and_serde_integration"
+required-features = [ "serde" ]
+
+[[example]]
+name = "resource_discovery"
+required-features = [ "glob" ]
+
+[[example]]
+name = "secret_management"
+required-features = [ "secrets" ]
+
+[[example]]
+name = "workspace_basic_usage"
 
 [dev-dependencies]
 # Test utilities - using minimal local dependencies only

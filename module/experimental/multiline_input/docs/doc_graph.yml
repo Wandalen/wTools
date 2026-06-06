@@ -1,0 +1,25 @@
+last_updated: 2026_06_06
+
+nodes:
+  - id: feature/001_multiline_text_collection.md
+    via: typed_reference
+    links:
+      - api/001_multiline_input.md
+      - invariant/001_raw_mode_cleanup.md
+      - feature/002_terminal_abstraction.md
+  - id: feature/002_terminal_abstraction.md
+    via: typed_reference
+    links:
+      - api/001_multiline_input.md
+      - feature/001_multiline_text_collection.md
+  - id: invariant/001_raw_mode_cleanup.md
+    via: typed_reference
+    links:
+      - feature/001_multiline_text_collection.md
+      - api/001_multiline_input.md
+  - id: api/001_multiline_input.md
+    via: typed_reference
+    links:
+      - feature/001_multiline_text_collection.md
+      - feature/002_terminal_abstraction.md
+      - invariant/001_raw_mode_cleanup.md

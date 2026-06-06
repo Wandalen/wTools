@@ -95,9 +95,9 @@ mod private
   pub struct CrateId
   {
   /// The name of the crate.
-  pub name: String, // qqq: that should be Arc< str >
+  pub name: String,
   /// The absolute path to the crate, if available.
-  pub crate_dir: Option< CrateDir >, // qqq: that should be Option< Arc< CrateDir > >
+  pub crate_dir: Option< CrateDir >,
   // pub path: Option< AbsolutePath >,
  }
 
@@ -165,22 +165,18 @@ mod private
  }
  }
 
-  // qqq: for Bohdan: poor description
   /// Recursive implementation of the `list` function
   /// # Errors
-  /// qqq: doc
   ///
   /// # Panics
-  /// qqq: doc
   #[ allow( clippy ::needless_pass_by_value, clippy ::implicit_hasher ) ]
   pub fn list_rec
   (
-  workspace: &Workspace, // aaa: for Bohdan: no mut // aaa: no mut
+  workspace: &Workspace,
   package: &Package< '_ >,
   graph: &mut collection ::HashMap< CrateId, collection ::HashSet< CrateId > >,
   opts: DependenciesOptions
  )
-  // qqq: use typed error
   -> error ::untyped ::Result< CrateId >
   {
   let DependenciesOptions
@@ -242,8 +238,6 @@ mod private
   ///
   /// If the operation is successful, returns a vector of `PathBuf` objects, where each `PathBuf` represents the path to a local dependency of the specified package.
   /// # Errors
-  /// qqq: doc
-  // qqq: typed error?
   #[ allow( clippy ::needless_pass_by_value ) ]
   pub fn list
   (
@@ -251,7 +245,6 @@ mod private
   package: &Package< '_ >,
   opts: DependenciesOptions
  )
-  // qqq: use typed error
   -> error ::untyped ::Result< Vec< CrateId > >
   {
   let mut graph = collection ::HashMap ::new();
@@ -275,8 +268,6 @@ mod private
  }
    DependenciesSort ::Topological =>
    {
-  // aaa: too long line
-  // aaa: splited
   graph ::toposort( graph ::construct( &graph ) )
   .map_err( | err | format_err!( "{err}" ) )?
   .into_iter()

@@ -6,7 +6,6 @@ mod private
   use crate :: *;
 
   // use crate ::tool :: *;
-  // qqq: bad: for Bohdan: asterist only crate :: * and prelude :: *
 
   use std ::
   {
@@ -30,7 +29,6 @@ mod private
   use crate ::entity ::package :: { Package, publish_need };
   // Explicit import for Result and its variants for pattern matching
   use std ::result ::Result :: { Ok, Err };
-  // qqq: for Bohdan: bad: tools can't depend on entitties!
 
   #[ derive( Debug, Error ) ]
   pub enum GraphError< T: Debug >
@@ -48,7 +46,6 @@ mod private
   /// The graph with all accepted packages
   ///
   /// # Panics
-  /// qqq: doc
   #[ allow( clippy ::implicit_hasher ) ]
   #[ must_use ]
   pub fn construct< PackageIdentifier >
@@ -96,7 +93,6 @@ mod private
   /// If there is a cycle in the dependency graph
   ///
   /// # Errors
-  /// qqq: doc
   #[ allow( clippy ::needless_pass_by_value ) ]
   pub fn toposort< 'a, PackageIdentifier: Clone + std ::fmt ::Debug >
   (
@@ -115,8 +111,6 @@ mod private
   .collect()
  ),
    Err( index ) => Err( GraphError ::Cycle( ( *graph.index( index.node_id() ) ).clone() ) ),
-   // aaa: for Bohdan: bad, make proper error handling
-   // aaa: now returns `GraphError`
  }
  }
 
@@ -131,7 +125,6 @@ mod private
   /// The function returns a vector of vectors, where each inner vector represents a group of nodes that can be executed in parallel. Tasks within each group are sorted in topological order.
   ///
   /// # Panics
-  /// qqq: doc
   #[ must_use ]
   #[ allow( clippy ::needless_pass_by_value ) ]
   pub fn topological_sort_with_grouping< 'a, PackageIdentifier: Clone + std ::fmt ::Debug >
@@ -207,7 +200,6 @@ mod private
   /// * `N` must implement the `PartialEq` trait.
   ///
   /// # Panics
-  /// qqq: doc
   #[ allow( clippy ::single_match, clippy ::map_entry ) ]
   pub fn subgraph< N, E >( graph: &Graph< N, E >, roots: &[ N ] ) -> Graph< NodeIndex, EdgeIndex >
   where
@@ -288,7 +280,6 @@ mod private
   /// - A package name from the graph cannot be found in the `package_map`.
   /// - The graph is inconsistent and a node index is invalid.
   /// - The `publish_need` check panics (e.g., due to network issues).
-  // qqq: for Bohdan: typed error
   #[ allow( clippy ::single_match, clippy ::needless_pass_by_value, clippy ::implicit_hasher ) ]
   pub fn remove_not_required_to_publish
   (
@@ -299,7 +290,6 @@ mod private
   temp_path: Option< PathBuf >,
  )
   -> error ::untyped ::Result< Graph< String, String > >
-  // qqq: use typed error!
   {
   let mut nodes = HashSet ::new();
   let mut cleared_graph = Graph ::new();
@@ -318,7 +308,6 @@ mod private
   for root in roots
   {
    let root = graph.node_indices().find( | &i | graph[ i ] == *root ).unwrap();
-   // qqq: no unwraps. simulate crash here and check output. it should be verbal
    let mut dfs = DfsPostOrder ::new( &graph, root );
    'main: while let Some( n ) = dfs.next( &graph )
    {

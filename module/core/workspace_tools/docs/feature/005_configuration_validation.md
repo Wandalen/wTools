@@ -15,14 +15,34 @@ Schema generation derives from the target type definition at runtime via an anno
 
 The `validation` feature depends on `serde` — enabling validation automatically enables configuration loading, ensuring callers do not need to manage feature dependency manually.
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/lib.rs` | Schema-validated config loading impl |
-| config | `Cargo.toml` | `validation` feature flag (implies `serde`) and its optional dependency declarations |
-| test | `tests/config_validation_tests.rs` | Schema-based configuration validation |
-| test | `tests/validation_boundary_tests.rs` | Input validation and boundary condition handling |
-| task | `task/completed/003_config_validation.md` | Initial schema validation implementation |
-| doc | `docs/api/001_workspace.md` | `load_config_with_validation()` method signature |
-| doc | `docs/feature/002_configuration_loading.md` | Underlying config loading (serde feature) |
+| File | Relationship |
+|------|-------------|
+| [src/lib.rs](../../src/lib.rs) | Schema-validated config loading impl |
+| [Cargo.toml](../../Cargo.toml) | `validation` feature flag (implies `serde`) and optional dependency declarations |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [tests/config_validation_tests.rs](../../tests/config_validation_tests.rs) | Schema-based configuration validation |
+| [tests/validation_boundary_tests.rs](../../tests/validation_boundary_tests.rs) | Input validation and boundary condition handling |
+
+### Tasks
+
+| File | Relationship |
+|------|-------------|
+| [task/completed/003_config_validation.md](../../task/completed/003_config_validation.md) | Initial schema validation implementation |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [api/001_workspace.md](../api/001_workspace.md) | `load_config_with_validation()` method signature |
+
+### Features
+
+| File | Relationship |
+|------|-------------|
+| [feature/002_configuration_loading.md](../feature/002_configuration_loading.md) | Underlying config loading (serde feature) |

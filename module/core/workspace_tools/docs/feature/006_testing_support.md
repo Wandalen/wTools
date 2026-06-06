@@ -15,12 +15,22 @@ The function pre-creates the standard sub-directories (`config/`, `data/`, `logs
 
 Tests can run in parallel because each call produces an independent temporary directory. There is no shared global state — test isolation is structural, not mutex-based.
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/lib.rs` | Testing utility module and temporary workspace factory |
-| config | `Cargo.toml` | `testing` feature flag and its optional dependency declaration |
-| test | `tests/testing_integration_examples.rs` | Testing utilities integration |
-| test | `tests/comprehensive_test_suite.rs` | Uses test workspace for isolation |
-| doc | `docs/api/001_workspace.md` | `testing` module API |
+| File | Relationship |
+|------|-------------|
+| [src/lib.rs](../../src/lib.rs) | Testing utility module and temporary workspace factory |
+| [Cargo.toml](../../Cargo.toml) | `testing` feature flag and optional dependency declaration |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [tests/testing_integration_examples.rs](../../tests/testing_integration_examples.rs) | Testing utilities integration |
+| [tests/comprehensive_test_suite.rs](../../tests/comprehensive_test_suite.rs) | Uses test workspace for isolation |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [api/001_workspace.md](../api/001_workspace.md) | `testing` module API |

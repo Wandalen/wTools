@@ -19,7 +19,6 @@ pub mod dependency
 mod private
 {
 
-  // xxx: ?
   // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   extern crate alloc;
   // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
@@ -206,8 +205,6 @@ mod private
    let mut ptr = ref_dyn as *const T;
    #[ allow( clippy::borrow_as_ptr ) ]
    let data_ptr = &mut ptr as *mut *const T as *mut *mut (); // don't change it
-          // qqq: xxx: after atabilization try `&raw mut ptr` instead
-          // let data_ptr = &raw mut ptr as *mut *mut (); // fix clippy
    *data_ptr = < T as CloneDyn >::__clone_dyn(ref_dyn, DontCallMe);
    Box::from_raw(ptr as *mut T)
  }

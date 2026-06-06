@@ -5,6 +5,7 @@
 //!
 //! This is a meta module for `strs_tools`. Don't use directly.
 
+#![ cfg_attr( not( feature = "enabled" ), allow( unused ) ) ]
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 
@@ -18,10 +19,10 @@ use macro_tools::
 use proc_macro::TokenStream;
 
 /// Analyze string patterns at compile time and generate optimized split code.
-/// 
+///
 /// This macro examines delimiter patterns and input characteristics to select
 /// the most efficient splitting strategy at compile time.
-/// 
+///
 /// # Examples
 ///
 /// Basic usage with different delimiter patterns. See `tests/optimize_split_tests.rs`
@@ -49,7 +50,7 @@ use proc_macro::TokenStream;
 /// let result = strs_tools_meta::optimize_split!(data, [",", "->", "::"], preserve_delimiters = true);
 /// assert_eq!( result, vec![ "a", ",", "b", "->", "c", "::", "d" ] );
 /// ```
-/// 
+///
 /// # Debug Mode
 ///
 /// The `debug` parameter enables diagnostic output during macro expansion.
@@ -59,7 +60,7 @@ use proc_macro::TokenStream;
 pub fn optimize_split( input: TokenStream ) -> TokenStream
 {
   let result = optimize_split_impl( input );
-  match result 
+  match result
   {
     Ok( tokens ) => tokens.into(),
     Err( e ) => e.to_compile_error().into(),
@@ -101,7 +102,7 @@ pub fn optimize_split( input: TokenStream ) -> TokenStream
 pub fn optimize_match( input: TokenStream ) -> TokenStream
 {
   let result = optimize_match_impl( input );
-  match result 
+  match result
   {
     Ok( tokens ) => tokens.into(),
     Err( e ) => e.to_compile_error().into(),
@@ -125,6 +126,7 @@ fn optimize_match_impl( input: TokenStream ) -> Result< macro_tools::proc_macro2
 /// Input structure for `optimize_split` macro
 #[ cfg( feature = "optimize_split" ) ]
 #[ derive( Debug ) ]
+// Three independent parser flags (debug, preserve_delimiters, preserve_empty) — no meaningful bitfield encoding.
 #[ allow( clippy::struct_excessive_bools ) ]
 struct OptimizeSplitInput
 {
@@ -142,12 +144,12 @@ impl syn::parse::Parse for OptimizeSplitInput
   {
     let source: Expr = input.parse()?;
     input.parse::< syn::Token![,] >()?;
-    
+
     let mut delimiters = Vec::new();
     let mut preserve_delimiters = false;
     let mut preserve_empty = false;
     let mut debug = false;
-    
+
     // Parse delimiter(s)
     if input.peek( syn::token::Bracket )
     {
@@ -170,19 +172,22 @@ impl syn::parse::Parse for OptimizeSplitInput
       let lit: LitStr = input.parse()?;
       delimiters.push( lit.value() );
     }
-    
+
     // Parse optional parameters
     while !input.is_empty()
     {
       input.parse::< syn::Token![,] >()?;
-      
+
       let ident: syn::Ident = input.parse()?;
-      
-      if ident.to_string().as_str() == "debug" {
+
+      if ident.to_string().as_str() == "debug"
+      {
         debug = true;
-      } else {
+      }
+      else
+      {
         input.parse::< syn::Token![=] >()?;
-        
+
         match ident.to_string().as_str()
         {
           "preserve_delimiters" =>
@@ -202,7 +207,7 @@ impl syn::parse::Parse for OptimizeSplitInput
         }
       }
     }
-    
+
     Ok( OptimizeSplitInput
     {
       source,
@@ -232,11 +237,11 @@ impl syn::parse::Parse for OptimizeMatchInput
   {
     let source: Expr = input.parse()?;
     input.parse::< syn::Token![,] >()?;
-    
+
     let mut patterns = Vec::new();
     let mut strategy = "first_match".to_string();
     let mut debug = false;
-    
+
     // Parse pattern(s)
     if input.peek( syn::token::Bracket )
     {
@@ -259,14 +264,14 @@ impl syn::parse::Parse for OptimizeMatchInput
       let lit: LitStr = input.parse()?;
       patterns.push( lit.value() );
     }
-    
+
     // Parse optional parameters
     while !input.is_empty()
     {
       input.parse::< syn::Token![,] >()?;
-      
+
       let ident: syn::Ident = input.parse()?;
-      
+
       match ident.to_string().as_str()
       {
         "debug" =>
@@ -285,7 +290,7 @@ impl syn::parse::Parse for OptimizeMatchInput
         }
       }
     }
-    
+
     Ok( OptimizeMatchInput
     {
       source,
@@ -301,12 +306,12 @@ impl syn::parse::Parse for OptimizeMatchInput
 fn generate_optimized_split( input: &OptimizeSplitInput ) -> macro_tools::proc_macro2::TokenStream
 {
   let optimization = analyze_split_pattern( &input.delimiters );
-  
+
   if input.debug
   {
     eprintln!( "optimize_split! debug: pattern={:?}, optimization={optimization:?}", input.delimiters );
   }
-  
+
   match optimization
   {
     SplitOptimization::SingleCharDelimiter( delim ) => generate_single_char_split( input, &delim ),
@@ -323,7 +328,7 @@ fn generate_single_char_split( input: &OptimizeSplitInput, delim: &str ) -> macr
   let preserve_delimiters = input.preserve_delimiters;
   let preserve_empty = input.preserve_empty;
   let delim_char = delim.chars().next().unwrap();
-  
+
   if preserve_delimiters || preserve_empty
   {
     quote!
@@ -334,7 +339,7 @@ fn generate_single_char_split( input: &OptimizeSplitInput, delim: &str ) -> macr
         let delim = #delim_char;
         let mut result = Vec::new();
         let mut start = 0;
-        
+
         for ( i, ch ) in src.char_indices()
         {
           if ch == delim
@@ -351,13 +356,13 @@ fn generate_single_char_split( input: &OptimizeSplitInput, delim: &str ) -> macr
             start = i + 1;
           }
         }
-        
+
         let final_segment = &src[ start.. ];
         if #preserve_empty || !final_segment.is_empty()
         {
           result.push( final_segment );
         }
-        
+
         result
       }
     }
@@ -384,7 +389,7 @@ fn generate_multi_delimiter_split( input: &OptimizeSplitInput ) -> macro_tools::
   let preserve_delimiters = input.preserve_delimiters;
   let preserve_empty = input.preserve_empty;
   let delim_array = delimiters.iter().collect::< Vec< _ > >();
-  
+
   quote!
   {
     {
@@ -395,12 +400,12 @@ fn generate_multi_delimiter_split( input: &OptimizeSplitInput ) -> macro_tools::
       let mut start = 0;
       let mut i = 0;
       let _src_bytes = src.as_bytes();
-      
+
       while i < src.len()
       {
         let mut found_delimiter = None;
         let mut delim_len = 0;
-        
+
         // Check for any delimiter at current position
         for delim in &delimiters
         {
@@ -411,7 +416,7 @@ fn generate_multi_delimiter_split( input: &OptimizeSplitInput ) -> macro_tools::
             break;
           }
         }
-        
+
         if let Some( delim ) = found_delimiter
         {
           let segment = &src[ start..i ];
@@ -431,13 +436,13 @@ fn generate_multi_delimiter_split( input: &OptimizeSplitInput ) -> macro_tools::
           i += 1;
         }
       }
-      
+
       let final_segment = &src[ start.. ];
       if #preserve_empty || !final_segment.is_empty()
       {
         result.push( final_segment );
       }
-      
+
       result
     }
   }
@@ -452,7 +457,7 @@ fn generate_complex_pattern_split( input: &OptimizeSplitInput ) -> macro_tools::
   let preserve_delimiters = input.preserve_delimiters;
   let preserve_empty = input.preserve_empty;
   let delim_array = delimiters.iter().collect::< Vec< _ > >();
-  
+
   quote!
   {
     {
@@ -461,12 +466,12 @@ fn generate_complex_pattern_split( input: &OptimizeSplitInput ) -> macro_tools::
       let delimiters = [ #( #delim_array ),* ];
       let mut result = Vec::new();
       let mut remaining = src;
-      
+
       loop
       {
         let mut min_pos = None;
         let mut best_delim = "";
-        
+
         for delim in &delimiters
         {
           if let Some( pos ) = remaining.find( delim )
@@ -478,7 +483,7 @@ fn generate_complex_pattern_split( input: &OptimizeSplitInput ) -> macro_tools::
             }
           }
         }
-        
+
         if let Some( pos ) = min_pos
         {
           let segment = &remaining[ ..pos ];
@@ -501,7 +506,7 @@ fn generate_complex_pattern_split( input: &OptimizeSplitInput ) -> macro_tools::
           break;
         }
       }
-      
+
       result
     }
   }
@@ -514,14 +519,14 @@ fn generate_optimized_match( input: &OptimizeMatchInput ) -> macro_tools::proc_m
   let source = &input.source;
   let patterns = &input.patterns;
   let strategy = &input.strategy;
-  
+
   let optimization = analyze_match_pattern( patterns, strategy );
-  
+
   if input.debug
   {
     eprintln!( "optimize_match! debug: patterns={patterns:?}, strategy={strategy:?}, optimization={optimization:?}" );
   }
-  
+
   match optimization
   {
     MatchOptimization::SinglePattern( pattern ) =>
@@ -535,7 +540,7 @@ fn generate_optimized_match( input: &OptimizeMatchInput ) -> macro_tools::proc_m
         }
       }
     },
-    
+
     MatchOptimization::TrieBasedMatch =>
     {
       // Generate trie-based pattern matching
@@ -561,7 +566,7 @@ fn generate_optimized_match( input: &OptimizeMatchInput ) -> macro_tools::proc_m
         }
       }
     },
-    
+
     MatchOptimization::SequentialMatch =>
     {
       // Generate sequential pattern matching
@@ -661,8 +666,9 @@ fn build_compile_time_trie( patterns: &[ String ] ) -> Vec< macro_tools::proc_ma
 {
   // Simplified trie construction for demonstration
   // In a full implementation, this would build an optimal trie structure
-  patterns.iter().map( |pattern| {
-    let bytes: Vec< u8 > = pattern.bytes().collect();
+  patterns.iter().map( | pattern |
+  {
+    let bytes : Vec< u8 > = pattern.bytes().collect();
     quote! { &[ #( #bytes ),* ] }
   } ).collect()
 }

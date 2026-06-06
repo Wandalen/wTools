@@ -98,7 +98,8 @@ mod private
   /// assert_eq!( macro_tools ::code_to_str!( got ), "default = 31".to_string() );
   /// ```
   /// # Errors
-  /// qqq: doc
+  ///
+  /// Returns `Err` if the attribute is not formatted as a valid `key = value` equation.
   pub fn from_meta(attr: &syn ::Attribute) -> Result< Equation >
   {
   let meta = &attr.meta;

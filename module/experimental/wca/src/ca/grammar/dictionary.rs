@@ -9,8 +9,6 @@ mod private
   use grammar ::Command;
   use crate ::ca ::Order;
 
-  // xxx: `Former` does not handle this situation well
-
   // /// A collection of commands.
   // ///
   // /// This structure holds a hashmap of commands where each command is mapped to its name.

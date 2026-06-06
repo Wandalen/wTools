@@ -86,7 +86,7 @@ standalone_error_tools = [ "dep:anyhow", "dep:thiserror", "error_typed", "error_
 standalone_collection_tools = [ "dep:hashbrown", "collection_constructors", "collection_into_constructors" ]
 standalone_impls_index = []  # Empty - impls_index_meta moved to dev-dependencies to break circular dependency
 standalone_mem_tools = []
-standalone_typing_tools = [ "typing_implements", "typing_is_slice", "typing_inspect_type" ]
+standalone_typing_tools = [ "typing_implements", "typing_inspect_type" ]
 standalone_diagnostics_tools = [ "diagnostics_runtime_assertions", "diagnostics_compiletime_assertions", "diagnostics_memory_layout" ]
 
 # error_tools
@@ -104,7 +104,6 @@ collection_into_constructors = []  # Enables into_heap!, into_vec!, etc.
 # like "could not find `heap` in `the_module`". See Task 002 resolution.
 # typing_tools
 typing_inspect_type = [ "inspect_type/enabled" ]
-typing_is_slice = [ "is_slice/enabled" ]
 typing_implements = [ "implements/enabled" ]
 # diagnostics_tools
 diagnostics_runtime_assertions = [ "dep:pretty_assertions" ] # run-time assertions
@@ -149,7 +148,6 @@ hashbrown = { workspace = true, optional = true }
 # impls_index_meta = { workspace = true, optional = true }
 # typing_tools
 inspect_type = { workspace = true, optional = true }
-is_slice = { workspace = true, optional = true }
 implements = { workspace = true, optional = true }
 # diagnostics_tools
 pretty_assertions = { workspace = true, optional = true }

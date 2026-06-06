@@ -124,7 +124,6 @@ mod private
 
   /// Path to `Cargo.toml`
   /// # Panics
-  /// qqq: doc
   #[ must_use ]
   pub fn manifest_file( &self ) -> ManifestFile
   {
@@ -137,7 +136,6 @@ mod private
 
   /// Path to folder with `Cargo.toml`
   /// # Panics
-  /// qqq: doc
   #[ must_use ]
   pub fn crate_dir( &self ) -> CrateDir
   {
@@ -199,7 +197,6 @@ mod private
 
   /// Returns the `Manifest`
   /// # Errors
-  /// qqq: doc
   pub fn manifest( &self ) -> Result< Manifest, PackageError >
   {
    match self
@@ -207,7 +204,7 @@ mod private
   Package ::Manifest( package ) => Ok( *package.clone() ), // fix clippy
   Package ::WorkspacePackageRef( package ) => Manifest ::try_from
   (
-   package.manifest_file().map_err( | _ | PackageError ::LocalPath )? // qqq: use trait
+   package.manifest_file().map_err( | _ | PackageError ::LocalPath )?
  )
   .map_err( | _ | PackageError ::WorkspacePackageRef ),
  }
@@ -260,7 +257,6 @@ mod private
   let remote_package = match CrateArchive ::download_crates_io( name, version )
   {
    Ok( archive ) => archive,
-   // qqq: fix. we don't have to know about the http status code
    Err( ureq ::Error ::Status( 403, _ ) ) => return Result ::Ok( true ),
    _ => return Err( PackageError ::LoadRemotePackage ),
  };

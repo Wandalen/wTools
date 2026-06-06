@@ -31,16 +31,25 @@ A threshold change not reflected in tests causes silent strategy misclassificati
 
 ### Sources
 
-| File | Notes |
-|------|-------|
+| File | Relationship |
+|------|-------------|
 | `spec.md` (git `c13cf485~1`) | Original spec contained no threshold documentation. Thresholds derived from `src/lib.rs:analyze_split_pattern`. |
-| `../../src/lib.rs` | Authoritative threshold implementation — `analyze_split_pattern()` |
+| [`../../src/lib.rs`](../../src/lib.rs) | Authoritative threshold implementation — `analyze_split_pattern()`, `SplitOptimization` enum |
 
-### Cross-References
+### Tests
 
-| Type | File | Notes |
-|------|------|-------|
-| source | `../../src/lib.rs` | `analyze_split_pattern`, `SplitOptimization` enum |
-| test | `../../tests/corner_cases_test.rs` | `corner_many_delimiters_threshold`, `corner_many_delimiters_over_threshold` |
-| doc | `../feature/001_compile_time_split.md` | Feature design context |
-| doc | `../api/001_optimize_split_api.md` | Public interface |
+| File | Relationship |
+|------|-------------|
+| [`../../tests/corner_cases_test.rs`](../../tests/corner_cases_test.rs) | `corner_many_delimiters_threshold`, `corner_many_delimiters_over_threshold` |
+
+### Features
+
+| File | Relationship |
+|------|-------------|
+| [`../feature/001_compile_time_split.md`](../feature/001_compile_time_split.md) | Feature design context |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [`../api/001_optimize_split_api.md`](../api/001_optimize_split_api.md) | Public interface |

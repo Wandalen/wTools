@@ -30,8 +30,6 @@ mod private
    Context,
  },
  };
-  // aaa: for Petro: group properly, don't repeat std ::
-  // aaa: done
   use std ::path ::PathBuf;
   use convert_case :: { Case, Casing };
   // use rayon ::scope_fifo;
@@ -103,7 +101,7 @@ mod private
   {
   /// Represents a common error.
   #[ error( "Common error: {0}" ) ]
-  Common(#[ from ] error ::untyped ::Error ), // qqq: rid of
+  Common(#[ from ] error ::untyped ::Error ),
   /// Represents an I/O error.
   #[ error( "I/O error: {0}" ) ]
   IO( #[ from ] std ::io ::Error ),
@@ -202,8 +200,6 @@ mod private
   // fix clippy
   #[ cfg( target_os = "windows" ) ]
   let relative_path = relative_path.replace( '\\', "/" );
-  // aaa: for Petro: use path_toools
-  // aaa: used
   let p = relative_path.replace( '/',"%2F" );
   format!
   (
@@ -255,10 +251,8 @@ mod private
   /// ```
   ///
   /// # Errors
-  /// qqq: doc
   ///
   /// # Panics
-  /// qqq: doc
   pub fn readme_modules_headers_renew( crate_dir: CrateDir )
   -> ResultWithReport< ModulesHeadersRenewReport, ModulesHeadersRenewError >
   // -> Result< ModulesHeadersRenewReport, ( ModulesHeadersRenewReport, ModulesHeadersRenewError ) >
@@ -269,7 +263,6 @@ mod private
   .err_with_report( &report )?;
   let discord_url = workspace.discord_url();
 
-  // qqq: inspect each collect in willbe and rid of most of them
 
   let paths: Vec< AbsolutePath > = workspace
   .packages()
@@ -327,7 +320,6 @@ mod private
    .unwrap_or_default();
 
    _ = query ::parse( raw_params ).context( "Fail to parse raw params." );
-   // qqq: for Petro: why ignored?
 
    let content = header_content_generate
    (
@@ -353,7 +345,6 @@ mod private
   raw_params: &str,
   workspace_root: &str
  )
-  // qqq: use typed error
   -> error ::untyped ::Result< Cow< 'a, str > >
   {
   let header = header.to_header( workspace_root )?;

@@ -55,13 +55,13 @@ impl ItemAttributes
   {
   result.skip = AttributePropertyOptionalSingletone ::from(true);
  } else {
-  // qqq: unknown attribute, but it is not an error, because it can be an attribute for other derive.
+  // Not an error: attribute may be intended for a different derive macro.
   // syn_err!( meta.path.span(), "Unknown attribute `#[ from( {} ) ]`", meta.path.to_token_stream() );
  }
    Ok(())
  })?;
  } else {
-  // qqq: unknown attribute, but it is not an error, because it can be an attribute for other derive.
+  // Not an error: attribute may be intended for a different derive macro.
  }
  }
 

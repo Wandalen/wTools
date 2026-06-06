@@ -11,5 +11,5 @@
 
 | Name | Purpose | Status |
 |------|---------|--------|
-| `01_output_api.md` | API test spec for Output API | ✅ |
-| `02_help_api.md` | API test spec for Help Template API | ✅ |
+| `001_output_api.md` | API test spec for Output API | ✅ |
+| `002_help_api.md` | API test spec for Help Template API | ✅ |

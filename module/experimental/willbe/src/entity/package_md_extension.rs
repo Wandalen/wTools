@@ -10,22 +10,18 @@ mod private
   {
   /// Package name
   /// # Errors
-  /// qqq: doc
   fn name( &self ) -> Result< &str, package ::PackageError >;
 
   /// Stability
   /// # Errors
-  /// qqq: doc
   fn stability( &self ) -> Result< action ::readme_health_table_renew ::Stability, package ::PackageError >;
 
   /// Repository
   /// # Errors
-  /// qqq: doc
   fn repository( &self ) -> Result< Option< String >, package ::PackageError >;
 
   /// Discord url
   /// # Errors
-  /// qqq: doc
   fn discord_url( &self ) -> Result< Option< String >, package ::PackageError >;
  }
   // fix clippy
@@ -33,10 +29,8 @@ mod private
   {
   /// Package name
   /// # Errors
-  /// qqq: doc
   ///
   /// # Panics
-  /// qqq: doc
   pub fn name( &self ) -> Result< &str, package ::PackageError >
   {
    match self
@@ -60,13 +54,8 @@ mod private
   /// Stability
   ///
   /// # Errors
-  /// qqq: doc
   pub fn stability( &self ) -> Result< action ::readme_health_table_renew ::Stability, package ::PackageError >
   {
-   // aaa: for Petro: bad: first of all it should be in trait. also there is duplicated code
-   // aaa: done
-   // aaa: for Petro: review other similar places
-   // aaa: done
    match self
    {
   Self ::Manifest( _ ) =>
@@ -98,7 +87,6 @@ mod private
   /// Repository
   ///
   /// # Errors
-  /// qqq: doc
   pub fn repository( &self ) -> Result< Option< String >, package ::PackageError >
   {
    match self
@@ -127,7 +115,6 @@ mod private
   /// Discord url
   ///
   /// # Errors
-  /// qqq: doc
   pub fn discord_url( &self ) -> Result< Option< String >, package ::PackageError >
   {
    match self

@@ -12,8 +12,9 @@ mod private
   /// Find paths.
   ///
   /// # Panics
-  /// qqq: doc
-  /* xxx: check */
+  ///
+  /// Panics if the glob pattern is invalid or the base directory cannot be walked.
+  ///
   #[ allow( clippy ::useless_conversion ) ]
   pub fn find< P, S >( base_dir: P, patterns: &[ S ] ) -> Vec< PathBuf >
   where

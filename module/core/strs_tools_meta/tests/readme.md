@@ -18,11 +18,14 @@ Tests are organized by macro functionality with dedicated test binaries for each
 | `optimize_match_tests.rs` | Test optimize_match macro |
 | `optimize_split_tests.rs` | Test optimize_split macro |
 | `corner_cases_test.rs` | Test edge cases for both macros |
+| `compile_fail_test.rs` | Compile-fail tests for non-literal delimiter and pattern |
+| `manual/` | Manual testing plan and known-behavior documentation |
+| `docs/` | Test surface spec files (feature/, api/, invariant/) |
 
 ## Test Coverage
 
 - **optimize_split macro** (`optimize_split_tests.rs`): 10 test cases — single-char delimiter, multi-char delimiter, multiple delimiters, preserve options, debug mode, parameter validation
-- **optimize_match macro** (`optimize_match_tests.rs`): 10 test cases — single pattern, multiple patterns, matching strategies, debug mode, parameter validation
+- **optimize_match macro** (`optimize_match_tests.rs`): 11 test cases — single pattern, multiple patterns, matching strategies, debug mode, parameter validation, strategy equivalence
 - **corner cases** (`corner_cases_test.rs`): 28 tests — empty input, boundary positions, Unicode, UTF-8 emoji, overlapping patterns/delimiters, optimization threshold edges (8/9 split, 16/17 match)
 
 ## Running Tests

@@ -77,9 +77,6 @@ mod private
   Execution( wError ),
  }
 
-  // xxx: aaa: aaa2: for Bohdan: one level is obviously redundant
-  // Program< Namespace< ExecutableCommand_ > > -> Program< ExecutableCommand_ >
-  // aaa: done. The concept of `Namespace` has been removed
   #[ allow( clippy ::type_complexity ) ]
   struct CommandsAggregatorCallback( Box< dyn Fn( &str, &Program< VerifiedCommand > ) > );
 
@@ -172,7 +169,7 @@ mod private
   ///
   /// * `name` - The name of the command.
   /// # Panics
-  /// qqq: doc
+  /// Panics if called outside of a `Former` building context.
   pub fn command< IntoName >( self, name: IntoName ) -> CommandAsSubformer< Self, impl CommandAsSubformerEnd< Self > >
   where
    IntoName: Into< String >,
@@ -242,8 +239,6 @@ mod private
    self.storage.help_generator = Some( HelpGeneratorFn ::new( func ) );
    self
  }
-  // aaa: it is good access method, but formed structure should not have help_generator anymore
-  // aaa: mutator used
 
   /// Set callback function that will be executed after validation state
   ///
@@ -276,7 +271,7 @@ mod private
   ///
   /// Takes a string with program and executes it
   /// # Errors
-  /// qqq: doc
+  /// Returns an error if parsing, verification, or execution of the program fails.
   pub fn perform< S >( &self, program: S ) -> Result< (), Error >
   where
    S: IntoInput

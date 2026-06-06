@@ -40,8 +40,6 @@ mod private
  }
  }
 
-  // aaa: for Bohdan: should not be here // aaa: done
-  // aaa: for Bohdan: documentation // aaa: done
   /// The `GitOptions` struct represents a set of options used to perform a Git commit operation.
   #[ derive( Debug, Clone ) ]
   pub struct GitOptions
@@ -59,10 +57,8 @@ mod private
 
   /// Performs a Git commit operation using the provided options
   /// # Errors
-  /// qqq: doc
   #[ allow( clippy ::needless_pass_by_value ) ]
   pub fn perform_git_commit( o: GitOptions ) -> error ::untyped ::Result< ExtendedGitReport >
-  // qqq: use typed error
   {
   use tool ::git;
   let mut report = ExtendedGitReport ::default();

@@ -42,16 +42,16 @@ Validates CLI output processing and help template rendering. Tests are organized
 
 ## Test Coverage
 
-`output.rs` (33 tests):
-- **OutputConfig Tests**: Default configuration, has_processing detection, builder pattern
-- **Stream Selection Tests**: stdout-only, stderr-only, both streams, stderr-before-stdout ordering
-- **Head Tests**: Truncate to N lines, exceeds total lines behavior
-- **Tail Tests**: Last N lines, exceeds total lines behavior
-- **Combined Head+Tail Tests**: Combined filtering, overlap handling
-- **Width Tests**: No truncation needed, truncation with suffix, zero width handling, ANSI preservation, exact boundary (`len == max_width`)
-- **Integration Tests**: Combined operations testing, `lines_omitted` correctness via `process_output`
+`output.rs` (44 tests):
+- **OutputConfig Tests**: Default configuration, has_processing detection, builder pattern, is_default discriminant tests (stream_filter, width_suffix, unicode_aware, tail, width)
+- **Stream Selection Tests**: stdout-only, stderr-only, both streams, both-with-empty-stdout, both-with-empty-stderr, stderr-before-stdout ordering
+- **Head Tests**: Truncate to N lines, exceeds total, exact count, empty input
+- **Tail Tests**: Last N lines, exceeds total, exact count, empty input
+- **Combined Head+Tail Tests**: No-overlap filtering, overlapping windows (all retained), exact-fit boundary
+- **Width Tests**: No truncation needed, truncation with arrow suffix, custom suffix, zero width handling, ANSI preservation with and without truncation, exact boundary (`len == max_width`)
+- **Integration Tests**: Combined operations testing, combined both-streams+head+width, `lines_omitted` correctness via `process_output`
 
-`help.rs` (9 tests):
+`help.rs` (14 tests):
 - **T01** Column alignment: cmd/opt names padded to configured widths, no ANSI in no-TTY mode
 - **T02** No ANSI codes: `tty_detect=false` suppresses all escape sequences
 - **T03** Explicit `tty_detect=false`: equivalent behavior to T01
@@ -59,10 +59,15 @@ Validates CLI output processing and help template rendering. Tests are organized
 - **T05** No Options section: omitted when `options` vec is empty
 - **T06** No Examples section: omitted when `examples` vec is empty
 - **T07** Single group: `Usage: {binary}` and `Commands:` headers appear; group and command name appear; no ANSI
-- **T08** `CliHelpStyle::default()` field values match reference implementation layout
+- **T08** `CliHelpStyle::default()` layout field values match reference implementation
 - **T09** `ExampleEntry.desc` rendered: `Some` appends `# text`; `None` emits no `#` (bug reproducer)
+- **T10** `CliHelpStyle::default()` color fields and `tty_detect` match API contract values
+- **T11** Empty groups vec: render succeeds without panic; binary name and tagline appear
+- **T12** `opt_name_width` is minimum padding, not a hard cap
+- **T13** `CliHelpStyle::default()` (tty_detect=true) in non-TTY process: no ANSI codes in output
+- **T14** `Cargo.toml` does not contain `"data_fmt"` — AC-4 dependency-absence regression guard
 
-Total: 42 integration tests + 4 doc tests = 46 tests
+Total: 58 integration tests + 4 doc tests = 62 tests
 
 ## Test Execution
 
@@ -84,6 +89,6 @@ cargo test --test output
 - CLI output processing tests: `output.rs`
 - CLI help template tests: `help.rs`
 - Test spec documents (doc entity → test case mapping): `docs/`
-- Test matrix and bug documentation: See `output.rs` file header (lines 5-57)
+- Test matrix and bug documentation: See `output.rs` file header (lines 5-79)
 - Bug reproducer documentation: See `output.rs` lines 5-35 (width truncation boundary detection)
-- Help test matrix: See `help.rs` file header (lines 8-18)
+- Help test matrix: See `help.rs` file header (lines 8-25)

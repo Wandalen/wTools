@@ -327,8 +327,6 @@ mod private
    #attrs1
    #attrs2
    pub use __all__ :: #path;
-   // pub use super :: #path;
-   // xxx: remove super?
  });
 
   Ok(())

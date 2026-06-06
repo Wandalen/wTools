@@ -1,3 +1,5 @@
+#![ cfg( feature = "cli_help_template" ) ]
+
 //! CLI help template rendering tests.
 //!
 //! Tests for `CliHelpTemplate`, `CliHelpStyle`, `CliHelpData`, and related types
@@ -16,6 +18,11 @@
 //! | T07 | single group, single cmd | default style, tty_detect=false | `Usage: {binary}` header, `Commands:` header, group+cmd appear; no ANSI |
 //! | T08 | struct construction only | N/A | CliHelpStyle::default() field values match print_usage() |
 //! | T09 | ExampleEntry with desc=Some vs None | tty_detect=false | desc=Some renders `# text` inline; desc=None renders no `#` |
+//! | T10 | CliHelpStyle::default() color fields | struct construction only | all 5 color fields + tty_detect match documented API defaults |
+//! | T11 | groups: vec![], one option | default style, tty_detect=false | render succeeds; binary/tagline present; no group text |
+//! | T12 | opt_name_width=10, 12-char opt name | custom style | option name not truncated |
+//! | T13 | CliHelpStyle::default() (tty_detect=true), non-TTY process | default style | no ANSI codes in output — TTY probe returns false under nextest |
+//! | T14 | Cargo.toml content | string check | `"data_fmt"` absent — AC-4 regression guard |
 
 use cli_fmt::help::*;
 
@@ -284,5 +291,103 @@ fn test_example_desc_rendered()
   assert!(
     !second_line.contains( '#' ),
     "ExampleEntry with desc=None must not render '#' on the invocation line, got:\n{second_line:?}",
+  );
+}
+
+// ── T10 ─ CliHelpStyle::default() color fields and tty_detect ─────────────────
+
+/// T10: All 6 previously untested `CliHelpStyle::default()` fields — 5 ANSI color
+/// codes plus `tty_detect` — must match the values documented in `api/002_help_api.md`.
+///
+/// T08 only covers the 7 layout fields (indents, widths, gap). T10 covers the
+/// remaining 6 fields that form the API contract for color and TTY behaviour.
+#[ test ]
+fn test_style_color_defaults()
+{
+  let s = CliHelpStyle::default();
+  assert_eq!( s.color_tagline, "\x1b[1m",           "color_tagline must be bold ANSI code"          );
+  assert_eq!( s.color_group,   "\x1b[33m\x1b[1m",  "color_group must be yellow+bold ANSI codes"    );
+  assert_eq!( s.color_option,  "\x1b[1;36m",        "color_option must be bold cyan ANSI code"      );
+  assert_eq!( s.color_example, "\x1b[2m",            "color_example must be dim ANSI code"           );
+  assert_eq!( s.color_reset,   "\x1b[0m",            "color_reset must be ANSI reset sequence"       );
+  assert!( s.tty_detect,                              "tty_detect must be true by default"            );
+}
+
+// ── T11 ─ empty groups vec renders without panic ──────────────────────────────
+
+/// T11: `CliHelpData` with `groups: vec![]` must render without panic.
+/// The binary name and tagline must appear; no group-specific content emitted.
+#[ test ]
+fn test_empty_groups()
+{
+  let data = CliHelpData
+  {
+    binary  : "app".into(),
+    tagline : "test tool".into(),
+    groups  : vec![],
+    options  : vec![ OptionEntry { name : "verbose::bool".into(), desc : "Enable verbose".into() } ],
+    examples : vec![],
+  };
+  let out = CliHelpTemplate::new( no_tty_style(), data ).render();
+  assert!( !out.is_empty(),        "render with empty groups must return non-empty string"  );
+  assert!( out.contains( "app" ),       "binary name must appear in output, got:\n{out}"   );
+  assert!( out.contains( "test tool" ), "tagline must appear in output, got:\n{out}"        );
+}
+
+// ── T12 ─ opt_name_width is minimum padding, not truncation limit ─────────────
+
+/// T12: `opt_name_width` is a minimum padding width, not a hard truncation limit.
+/// A 12-char option name with `opt_name_width=10` must appear intact in output.
+///
+/// Mirrors T04 which tests the same property for `cmd_name_width`.
+#[ test ]
+fn test_opt_name_not_truncated()
+{
+  let style = CliHelpStyle { opt_name_width : 10, tty_detect : false, ..CliHelpStyle::default() };
+  let data  = CliHelpData
+  {
+    binary   : "app".into(),
+    tagline  : "test".into(),
+    groups   : vec![],
+    options  : vec![ OptionEntry { name : "format::json".into(), desc : "format specifier".into() } ],
+    examples : vec![],
+  };
+  let out = CliHelpTemplate::new( style, data ).render();
+  assert!(
+    out.contains( "format::json" ),
+    "12-char option name must not be truncated when opt_name_width=10, got:\n{out}",
+  );
+}
+
+// ── T13 ─ tty_detect=true suppresses ANSI in non-TTY test environment ─────────
+
+/// T13 (FT-10): `CliHelpStyle::default()` has `tty_detect=true`. Under nextest
+/// the process stdout is not a TTY, so the TTY probe returns false and all ANSI
+/// codes must be suppressed — same observable result as `tty_detect=false`.
+///
+/// This is the only test that exercises the TTY-probe code path through
+/// `CliHelpStyle::default()` rather than an explicit `tty_detect=false` override.
+#[ test ]
+fn test_tty_detect_true_suppresses_ansi_in_non_tty()
+{
+  let out = CliHelpTemplate::new( CliHelpStyle::default(), two_group_data() ).render();
+  assert!(
+    !out.contains( "\x1b[" ),
+    "tty_detect=true in non-TTY test environment must suppress ANSI codes, got:\n{out}"
+  );
+}
+
+// ── T14 ─ data_fmt crate is not a dependency ──────────────────────────────────
+
+/// T14 (FT-11): `cli_fmt` must not list `data_fmt` as a dependency.
+/// The help renderer uses only `strs_tools` primitives for string manipulation.
+/// This is a regression guard for AC-4 of `docs/feature/002_cli_help_template.md`.
+#[ test ]
+fn test_no_data_fmt_dependency()
+{
+  let cargo = include_str!( "../Cargo.toml" );
+  assert!(
+    !cargo.contains( "data_fmt" ),
+    "cli_fmt must not depend on data_fmt — uses strs_tools primitives only"
   );
 }

@@ -131,11 +131,11 @@ fn tc8_debug_mode()
 fn tc9_explicit_parameters()
 {
   let result = optimize_split!(
-  "a,b,c",
-  ",",
-  preserve_delimiters = false,
-  preserve_empty = false
- );
+    "a,b,c",
+    ",",
+    preserve_delimiters = false,
+    preserve_empty = false
+  );
   
   assert_eq!( result.len(), 3 );
   assert_eq!( result[ 0 ], "a" );
@@ -149,11 +149,11 @@ fn tc9_explicit_parameters()
 fn tc10_default_value_equivalence()
 {
   let result_explicit = optimize_split!(
-  "a,b,c",
-  ",",
-  preserve_delimiters = false,
-  preserve_empty = false
- );
+    "a,b,c",
+    ",",
+    preserve_delimiters = false,
+    preserve_empty = false
+  );
   
   let result_default = optimize_split!( "a,b,c", "," );
   

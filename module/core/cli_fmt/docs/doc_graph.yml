@@ -1,0 +1,51 @@
+last_updated: 2026_06_06
+
+nodes:
+  - id: api/001
+    file: api/001_output_api.md
+  - id: api/002
+    file: api/002_help_api.md
+  - id: feature/001
+    file: feature/001_output_processing.md
+  - id: feature/002
+    file: feature/002_cli_help_template.md
+  - id: invariant/001
+    file: invariant/001_architectural_boundary.md
+
+edges:
+  - from: feature/001
+    to: api/001
+    via: typed_reference
+  - from: feature/001
+    to: invariant/001
+    via: typed_reference
+  - from: feature/002
+    to: api/002
+    via: typed_reference
+  - from: feature/002
+    to: invariant/001
+    via: typed_reference
+  - from: api/001
+    to: feature/001
+    via: typed_reference
+  - from: api/001
+    to: invariant/001
+    via: typed_reference
+  - from: api/002
+    to: feature/002
+    via: typed_reference
+  - from: api/002
+    to: invariant/001
+    via: typed_reference
+  - from: invariant/001
+    to: feature/001
+    via: typed_reference
+  - from: invariant/001
+    to: feature/002
+    via: typed_reference
+  - from: invariant/001
+    to: api/001
+    via: typed_reference
+  - from: invariant/001
+    to: api/002
+    via: typed_reference

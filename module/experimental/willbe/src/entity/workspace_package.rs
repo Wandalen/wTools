@@ -12,7 +12,6 @@ mod private
   borrow ::Cow,
  };
 
-  // xxx: qqq: Deref, DerefMut, AsRef, AsMut
 
   /// Facade for `cargo_metadata ::Package`
   #[ derive( Debug, Clone, Copy ) ]
@@ -61,7 +60,6 @@ mod private
   /// Path to the manifest Cargo.toml
   ///
   /// # Errors
-  /// qqq: doc
   pub fn manifest_file( &self ) -> Result< ManifestFile, PathError >
   {
    self.inner.manifest_path.as_path().try_into()
@@ -70,10 +68,8 @@ mod private
   /// Path to the directory with manifest Cargo.toml.
   ///
   /// # Errors
-  /// qqq: doc
   ///
   /// # Panics
-  /// qqq: docs
   pub fn crate_dir( &self ) -> Result< CrateDir, PathError >
   {
    // SAFE because `manifest_path containing the Cargo.toml`
@@ -204,7 +200,6 @@ mod private
    filename.push_str( "_rs" );
  }
 
-  // qqq: xxx: use callbacks instead of expect
 
   results.push( format!( "// === Begin of File {}", source.as_ref().display() ) );
   results.push( format!( "mod {filename}\n{{\n" ) );

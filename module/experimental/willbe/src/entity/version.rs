@@ -111,8 +111,6 @@ mod private
  }
  }
 
-  // qqq: we have to replace the implementation above with the implementation below, don't we?
-  // qqq: for Bohdan: duplication?
 
   /// `BumpOptions` manages the details necessary for the version bump process for crates.
   /// This includes the directory of the crate whose version is being bumped, the old and new version numbers,
@@ -192,9 +190,6 @@ mod private
   ///
   ///
   /// # Errors
-  /// qqq: doc
-  // qqq: should be typed error, apply err_with
-  // qqq: don't use 1-prameter Result
   pub fn bump( o: BumpOptions ) -> Result< ExtendedBumpReport >
   {
   let mut report = ExtendedBumpReport ::default();
@@ -288,12 +283,9 @@ mod private
   /// Returns `Ok(())` if the version is reverted successfully. Returns `Err` with an error message if there is any issue with reverting the version.
   ///
   /// # Errors
-  /// qqq: doc
   ///
   /// # Panics
-  /// qqq: doc
-  // qqq: don't use 1-prameter Result
-  pub fn revert( report: &ExtendedBumpReport ) -> error ::untyped ::Result< () > // qqq: use typed error
+  pub fn revert( report: &ExtendedBumpReport ) -> error ::untyped ::Result< () >
   {
   let Some( name ) = report.name.as_ref() else { return Ok( () ) };
   let Some( old_version ) = report.old_version.as_ref() else { return Ok( () ) };
@@ -381,7 +373,6 @@ mod private
   Ok( () )
  }
 
-  // qqq: for Bohdan: not used? why is it needed?
   /// Bump version by manifest.
   /// It takes data from the manifest and increments the version number according to the semantic versioning scheme.
   /// It then writes the updated manifest file back to the same path, unless the flag is set to true, in which case it only returns the new version number as a string.
@@ -397,10 +388,8 @@ mod private
   /// - `Err` - if the manifest file cannot be read, written, parsed.
   ///
   /// # Errors
-  /// qqq: doc
   ///
   /// # Panics
-  /// qqq: doc
   pub fn manifest_bump( manifest: &mut Manifest, dry: bool ) -> Result< BumpReport, manifest ::ManifestError >
   {
   let mut report = BumpReport ::default();

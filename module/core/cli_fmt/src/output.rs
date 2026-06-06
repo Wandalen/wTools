@@ -309,7 +309,8 @@ pub fn merge_streams( stdout : &str, stderr : &str, filter : &StreamFilter ) -> 
     StreamFilter::Stderr => stderr.to_string(),
     StreamFilter::Both =>
     {
-      // Fix(issue-stderr-ordering): stderr MUST appear before stdout
+      // BUG-006 task/bug/closed/006_stderr_stream_ordering.md — stdout was placed before stderr
+      // Fix(BUG-006): stderr MUST appear before stdout
       // Root cause: Alphabetical ordering (stdout first) violated CLI convention
       //             that errors should be visible immediately without scrolling.
       // Pitfall: Stream ordering is easy to overlook in tests. Always test not
@@ -337,7 +338,7 @@ pub fn merge_streams( stdout : &str, stderr : &str, filter : &StreamFilter ) -> 
 // Internal implementation functions
 // ============================================================================
 
-#[ cfg( feature = "string_split" ) ]
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
 fn apply_line_filtering(
   content : &str,
   head_opt : Option< usize >,

@@ -140,22 +140,37 @@ Display messages include actionable context: the offending path, key name, or er
 
 The public API follows semantic versioning. The error type is non-exhaustive — new variants may be added in minor releases without a major version bump. Feature flags are strictly additive — enabling additional features never removes or changes existing methods. Methods present without any feature gate are stable across all minor releases.
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/lib.rs` | Entire public API implementation |
-| config | `Cargo.toml` | All feature flags (`serde`, `glob`, `secrets`, `secure`, `validation`, `testing`) and their optional dependency declarations |
-| test | `tests/workspace_tests.rs` | Core creation and path methods |
-| test | `tests/error_handling_comprehensive_tests.rs` | WorkspaceError variants and Display |
-| test | `tests/serde_integration_tests.rs` | Configuration loading methods |
-| test | `tests/secrecy_integration_tests.rs` | Memory-safe secret methods |
-| test | `tests/comprehensive_test_suite.rs` | Full API coverage matrix |
-| test | `tests/backward_compatibility_validation.rs` | API stability across versions |
-| doc | `docs/feature/001_workspace_root_resolution.md` | Root resolution feature scope |
-| doc | `docs/feature/002_configuration_loading.md` | Configuration loading feature scope |
-| doc | `docs/feature/003_secret_management.md` | Secret management feature scope |
-| doc | `docs/feature/004_resource_discovery.md` | Resource discovery feature scope |
-| doc | `docs/feature/005_configuration_validation.md` | Configuration validation feature scope |
-| doc | `docs/feature/006_testing_support.md` | Testing support feature scope |
-| doc | `docs/pattern/001_workspace_resolution_fallback.md` | Resolution strategy design |
+| File | Relationship |
+|------|-------------|
+| [src/lib.rs](../../src/lib.rs) | Entire public API implementation |
+| [Cargo.toml](../../Cargo.toml) | All feature flags and optional dependency declarations |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [tests/workspace_tests.rs](../../tests/workspace_tests.rs) | Core creation and path methods |
+| [tests/error_handling_comprehensive_tests.rs](../../tests/error_handling_comprehensive_tests.rs) | WorkspaceError variants and Display |
+| [tests/serde_integration_tests.rs](../../tests/serde_integration_tests.rs) | Configuration loading methods |
+| [tests/secrecy_integration_tests.rs](../../tests/secrecy_integration_tests.rs) | Memory-safe secret methods |
+| [tests/comprehensive_test_suite.rs](../../tests/comprehensive_test_suite.rs) | Full API coverage matrix |
+| [tests/backward_compatibility_validation.rs](../../tests/backward_compatibility_validation.rs) | API stability across versions |
+
+### Features
+
+| File | Relationship |
+|------|-------------|
+| [feature/001_workspace_root_resolution.md](../feature/001_workspace_root_resolution.md) | Root resolution feature scope |
+| [feature/002_configuration_loading.md](../feature/002_configuration_loading.md) | Configuration loading feature scope |
+| [feature/003_secret_management.md](../feature/003_secret_management.md) | Secret management feature scope |
+| [feature/004_resource_discovery.md](../feature/004_resource_discovery.md) | Resource discovery feature scope |
+| [feature/005_configuration_validation.md](../feature/005_configuration_validation.md) | Configuration validation feature scope |
+| [feature/006_testing_support.md](../feature/006_testing_support.md) | Testing support feature scope |
+
+### Patterns
+
+| File | Relationship |
+|------|-------------|
+| [pattern/001_workspace_resolution_fallback.md](../pattern/001_workspace_resolution_fallback.md) | Resolution strategy design |

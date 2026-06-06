@@ -47,31 +47,31 @@ Note: 22 additional legacy crates (formerly in `module/postponed/`) are co-locat
 | `mem_tools` | experimental | 1 | Foundation | Compare memory addresses, sizes, and byte contents across heterogeneous reference pairs | 0 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFREMS |
 | `asbytes` | experimental | 2 | Primitives | View or consume POD data as bytes via bytemuck-backed traits | 1 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFREMS |
 | `deterministic_rand` | experimental | 2 | Primitives | Generate hierarchical seeded random numbers with switchable determinism | 6 | 2 | 0 | 0 | 2 | experimental | experimental | TD·FRE·S |
-| `implements` | experimental | 2 | Primitives | Answer at compile time whether a type implements a trait | 0 | 0 | 0 | 0 | 0 | experimental | stable | TDCFREMS |
+| `implements` | experimental | 2 | Primitives | Answer at compile time whether a type implements a trait | 0 | 0 | 0 | 0 | 0 | stable | stable | TDCFREMS |
 | `inspect_type` | core | 2 | Primitives | Print the Rust type name and byte size of any expression at runtime | 0 | 0 | 0 | 0 | 0 | stable | stable | TDCFREMS |
-| `interval_adapter` | experimental | 2 | Primitives | Provide uniform interval trait coverage over all Rust range variants — bounded, half-open, and unbounded | 0 | 0 | 0 | 0 | 0 | experimental | stable | TDCFRE·S |
+| `interval_adapter` | experimental | 2 | Primitives | Provide uniform interval trait coverage over all Rust range variants — bounded, half-open, and unbounded | 0 | 0 | 0 | 0 | 0 | stable | stable | TDCFREMS |
 | `is_slice` | deprecated | 2 | Primitives | Answer at compile time whether an expression is a slice | 0 | 0 | 0 | 0 | 0 | experimental | deprecated | TDCFREMS |
 | `time_tools` | deprecated | 2 | Primitives | Provide current UNIX epoch timestamps at second, millisecond, and nanosecond resolution | 0 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFRE·S |
 | `typing_tools` | deprecated | 2 | Primitives | Aggregate implements, is_slice, and inspect_type into one dependency with per-sub-crate feature flags | 3 | 3 | 3 | 0 | 0 | deprecated | deprecated | TDCFREMS |
 | `winterval` | deprecated | 2 | Primitives | Re-export interval_adapter as a standalone dependency | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDC·REMS |
-| `macro_tools` | core | 3 | Macro Framework | Supply all primitives needed to author procedural macros | 9 | 4 | 0 | 1 | 3 | stable | stable | TD··RE·S |
+| `macro_tools` | core | 3 | Macro Framework | Supply all primitives needed to author procedural macros | 9 | 4 | 0 | 1 | 3 | stable | stable | TD··REMS |
 | `meta_tools` | deprecated | 3 | Macro Framework | Bundle for_each, impls_index, mod_interface, and identifier-concat macros into one opt-in facade crate | 6 | 5 | 2 | 0 | 3 | deprecated | deprecated | TD·FREM· |
 | `clone_dyn_meta` | core | 3 | Macro Framework | Implement #[clone_dyn] attribute macro backend (use clone_dyn crate directly) | 2 | 2 | 1 | 0 | 1 | stable | stable | TD·FR·MS |
-| `component_model_meta` | experimental | 3 | Macro Framework | Implement proc-macro backends for Assign, ComponentModel, and related derives (use component_model directly) | 3 | 2 | 1 | 0 | 1 | experimental | stable | TD·FR·MS |
-| `derive_tools_meta` | core | 3 | Macro Framework | Generate derive_tools implementations (use derive_tools directly) | 3 | 3 | 1 | 0 | 2 | stable | stable | TD··R··S |
-| `former_meta` | core | 3 | Macro Framework | Generate former builder derive implementation (use former directly) | 5 | 4 | 1 | 0 | 3 | stable | stable | TD··R··S |
+| `component_model_meta` | experimental | 3 | Macro Framework | Implement proc-macro backends for Assign, ComponentModel, and related derives (use component_model directly) | 3 | 2 | 1 | 0 | 1 | stable | stable | TD·FR·MS |
+| `derive_tools_meta` | core | 3 | Macro Framework | Generate derive_tools implementations (use derive_tools directly) | 3 | 3 | 1 | 0 | 2 | stable | stable | TD··R·MS |
+| `former_meta` | core | 3 | Macro Framework | Generate former builder derive implementation (use former directly) | 5 | 4 | 1 | 0 | 3 | stable | stable | TD··R·MS |
 | `impls_index_meta` | deprecated | 3 | Macro Framework | Generate impls_index macro wrappers (use impls_index directly) | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFR·MS |
-| `mod_interface_meta` | core | 3 | Macro Framework | Generate mod_interface namespace macros (use mod_interface directly) | 2 | 2 | 1 | 0 | 1 | stable | stable | TD··R··S |
+| `mod_interface_meta` | core | 3 | Macro Framework | Generate mod_interface namespace macros (use mod_interface directly) | 2 | 2 | 1 | 0 | 1 | stable | stable | TD··R·MS |
 | `reflect_tools_meta` | experimental | 3 | Macro Framework | Implement #[derive(Reflect)] proc-macro backend (use reflect_tools directly) | 1 | 1 | 1 | 0 | 0 | experimental | experimental | TDCFR·MS |
-| `strs_tools_meta` | core | 3 | Macro Framework | Generate optimize_split! and optimize_match! proc macro implementations (use strs_tools directly) | 1 | 1 | 1 | 0 | 0 | experimental | stable | TDCFR·MS |
-| `variadic_from_meta` | core | 3 | Macro Framework | Generate variadic_from From impls (use variadic_from directly) | 1 | 1 | 1 | 0 | 0 | stable | stable | TDCFR··S |
+| `strs_tools_meta` | core | 3 | Macro Framework | Generate optimize_split! and optimize_match! proc macro implementations (use strs_tools directly) | 1 | 1 | 1 | 0 | 0 | stable | stable | TDCFREMS |
+| `variadic_from_meta` | core | 3 | Macro Framework | Generate variadic_from From impls (use variadic_from directly) | 1 | 1 | 1 | 0 | 0 | stable | stable | TDCFR·MS |
 | `clone_dyn` | core | 4 | Patterns | Make Box<dyn Trait> cloneable via a single attribute macro | 2 | 2 | 1 | 1 | 0 | stable | stable | TDCFREMS |
-| `clone_dyn_types` | core | 4 | Patterns | Supply the CloneDyn trait and clone_into_box for type-erased Box cloning | 0 | 0 | 0 | 0 | 0 | stable | stable | TDC·RE·S |
-| `component_model` | experimental | 4 | Patterns | Enable type-driven field assignment on complex objects | 2 | 2 | 1 | 1 | 0 | experimental | stable | TDCFRE·S |
-| `component_model_types` | experimental | 4 | Patterns | Expose shared traits for the component_model pattern | 1 | 1 | 0 | 0 | 1 | experimental | stable | TD·FREMS |
-| `derive_tools` | core | 4 | Patterns | Add Into, TryInto, IsVariant, and other missing std derives | 6 | 3 | 2 | 1 | 0 | stable | stable | TDC·RE·S |
-| `former` | core | 4 | Patterns | Build complex objects with nested subformers via one derive | 4 | 4 | 1 | 1 | 2 | stable | stable | TD··RE·S |
-| `former_types` | core | 4 | Patterns | Expose compile-time trait contracts reused by former consumers | 2 | 2 | 1 | 0 | 1 | stable | stable | TD·FRE·S |
+| `clone_dyn_types` | core | 4 | Patterns | Supply the CloneDyn trait and clone_into_box for type-erased Box cloning | 0 | 0 | 0 | 0 | 0 | stable | stable | TDC·REMS |
+| `component_model` | experimental | 4 | Patterns | Enable type-driven field assignment on complex objects | 2 | 2 | 1 | 1 | 0 | stable | stable | TDCFREMS |
+| `component_model_types` | experimental | 4 | Patterns | Expose shared traits for the component_model pattern | 0 | 0 | 0 | 0 | 0 | stable | stable | TDCFREMS |
+| `derive_tools` | core | 4 | Patterns | Add Into, TryInto, IsVariant, and other missing std derives | 6 | 3 | 2 | 1 | 0 | stable | stable | TDC·REMS |
+| `former` | core | 4 | Patterns | Build complex objects with nested subformers via one derive | 4 | 4 | 1 | 1 | 2 | stable | stable | TD··REMS |
+| `former_types` | core | 4 | Patterns | Expose compile-time trait contracts reused by former consumers | 2 | 2 | 1 | 0 | 1 | stable | stable | TD·FREMS |
 | `impls_index` | deprecated | 4 | Patterns | Wrap impl methods in named macros for navigable indexing | 1 | 1 | 0 | 1 | 0 | deprecated | deprecated | TDC·RE·· |
 | `mod_interface` | core | 4 | Patterns | Organize module items into five propagation layers with a single declarative macro | 1 | 1 | 0 | 1 | 0 | stable | stable | TDCFREMS |
 | `reflect_tools` | experimental | 4 | Patterns | Reflect any value at runtime — type identity, container detection, ordering, and key-value element iteration | 3 | 3 | 1 | 1 | 1 | experimental | experimental | TD··RE·S |
@@ -81,33 +81,33 @@ Note: 22 additional legacy crates (formerly in `module/postponed/`) are co-locat
 | `collection_tools` | core | 5 | Collections | Provide ergonomic literal macros for inline collection construction, portable to no_std | 1 | 0 | 0 | 0 | 0 | stable | stable | TDCFREMS |
 | `for_each` | experimental | 5 | Collections | Apply any macro to every item in a compile-time list | 0 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFREMS |
 | `iter_tools` | deprecated | 5 | Collections | Re-export itertools combinators and provide clonable boxed iterators with stop-on-first-error mapping | 2 | 1 | 0 | 1 | 0 | deprecated | deprecated | TDC·RE·S |
-| `wtools` | core | 5 | Collections | Thin collections aggregator; re-exports collection_tools macros and constructors | 1 | 1 | 1 | 0 | 0 | experimental | stable | T·CFREMS |
-| `cli_fmt` | core | 6 | String & Format | Process CLI command output with head/tail filtering, width truncation, and stream merging | 1 | 1 | 1 | 0 | 0 | experimental | stable | TDCFR·MS |
-| `color_tools` | core | 6 | String & Format | Wrap text with typed ANSI color for terminal and HTML rendering | 1 | 0 | 0 | 0 | 0 | experimental | stable | TDCFREMS |
+| `wtools` | core | 5 | Collections | Thin collections aggregator; re-exports collection_tools macros and constructors | 1 | 1 | 1 | 0 | 0 | stable | stable | TDCFREMS |
+| `cli_fmt` | core | 6 | String & Format | Process CLI command output with head/tail filtering, width truncation, and stream merging | 1 | 1 | 1 | 0 | 0 | stable | stable | TDCFREMS |
+| `color_tools` | core | 6 | String & Format | Wrap text with typed ANSI color for terminal and HTML rendering | 1 | 0 | 0 | 0 | 0 | stable | stable | TDCFREMS |
 | `data_fmt` | core | 6 | String & Format | Render structured data in multiple visual, text, and serialization formats | 9 | 3 | 2 | 1 | 0 | stable | stable | TDCFREMS |
 | `data_type` | deprecated | 6 | String & Format | Aggregate interval, collection, and sum-type re-exports under one unified facade namespace | 3 | 2 | 0 | 2 | 0 | experimental | deprecated | TDC·RE·S |
 | `format_tools` | deprecated | 6 | String & Format | Extend std formatting with structural display and string helpers | 3 | 3 | 0 | 3 | 0 | deprecated | deprecated | TDCFRE·S |
-| `include_md` | experimental | 6 | String & Format | Include a markdown file or named section at compile time | 0 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFR·MS |
-| `strs_tools` | core | 6 | String & Format | Split, indent, and transform strings with ANSI utilities and SIMD acceleration | 9 | 2 | 0 | 2 | 0 | experimental | stable | TDCFREMS |
+| `include_md` | experimental | 6 | String & Format | Include a markdown file or named section at compile time | 0 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFREMS |
+| `strs_tools` | core | 6 | String & Format | Split, indent, and transform strings with ANSI utilities and SIMD acceleration | 9 | 2 | 0 | 2 | 0 | stable | stable | TDCFREMS |
 | `wstring_tools` | deprecated | 6 | String & Format | Alias — recommended single dependency for all string utilities | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDC·REMS |
-| `config_hierarchy` | experimental | 7 | Path & Process | Resolve hierarchical config across runtime, env, file, and default sources | 6 | 1 | 0 | 1 | 0 | experimental | stable | TDCFREMS |
+| `config_hierarchy` | experimental | 7 | Path & Process | Resolve hierarchical config across runtime, env, file, and default sources | 6 | 1 | 0 | 1 | 0 | stable | stable | TDCFREMS |
 | `file_tools` | deprecated | 7 | Path & Process | RAII temp directories, glob re-export, and upward path traversal | 1 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFREMS |
 | `process_tools` | core | 7 | Path & Process | Run subprocesses with captured I/O, probe process liveness, and daemonize Unix services | 6 | 4 | 0 | 4 | 0 | stable | stable | TDCFR·MS |
 | `program_tools` | experimental | 7 | Path & Process | Rust script runner — compile and execute Rust files as scripts with output capture | 3 | 3 | 0 | 3 | 0 | experimental | experimental | TDCFREMS |
-| `pth` | core | 7 | Path & Process | Syntactic path manipulation — normalize, join, query extensions, and typed path wrappers | 5 | 2 | 0 | 2 | 0 | stable | stable | TDC·R··S |
-| `workspace_tools` | core | 7 | Path & Process | Resolve workspace-relative paths and optionally load configuration, manage secrets, and discover resources | 11 | 0 | 0 | 0 | 0 | experimental | stable | TDCFR·MS |
+| `pth` | core | 7 | Path & Process | Syntactic path manipulation — normalize, join, query extensions, and typed path wrappers | 5 | 2 | 0 | 2 | 0 | stable | stable | TDC·R·MS |
+| `workspace_tools` | core | 7 | Path & Process | Resolve workspace-relative paths and optionally load configuration, manage secrets, and discover resources | 11 | 0 | 0 | 0 | 0 | stable | stable | TDCFREMS |
 | `fs_tools` | deprecated | 7 | Path & Process | Alias — recommended single dependency for all filesystem utilities | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFREM· |
-| `benchkit` | experimental | 8 | Tooling | Benchmark performance and publish markdown reports | 9 | 1 | 0 | 1 | 0 | experimental | stable | TDCFREMS |
-| `crates_tools` | core | 8 | Tooling | Download and decode .crate archives for in-memory content inspection | 3 | 0 | 0 | 0 | 0 | experimental | stable | TDCFREMS |
+| `benchkit` | experimental | 8 | Tooling | Benchmark performance and publish markdown reports | 9 | 1 | 0 | 1 | 0 | stable | stable | TDCFREMS |
+| `crates_tools` | core | 8 | Tooling | Download and decode .crate archives for in-memory content inspection | 3 | 0 | 0 | 0 | 0 | stable | stable | TDCFREMS |
 | `genfile_core` | core | 8 | Tooling | Render parameterized template archives to output files with a pluggable engine and file system abstraction | 9 | 3 | 0 | 3 | 0 | stable | stable | TDCFREMS |
-| `genfile` | core | 8 | Tooling | Manage code generation template archives from the command line | 4 | 3 | 1 | 2 | 0 | experimental | stable | TDCFREMS |
+| `genfile` | core | 8 | Tooling | Manage code generation template archives from the command line | 4 | 3 | 1 | 2 | 0 | stable | stable | TDCFREMS |
 | `multiline_input` | deprecated | 8 | Tooling | Collect multiline terminal input with interactive key editing and Builder-configured validation | 4 | 1 | 0 | 1 | 0 | deprecated | deprecated | TDCFR·MS |
-| `multiline_input` | experimental | 8 | Tooling | Collect multiline terminal input with interactive key editing and Builder-configured validation | 4 | 1 | 0 | 1 | 0 | experimental | stable | T·CFREMS |
-| `test_tools` | experimental | 8 | Tooling | Aggregate workspace testing utilities into one dev-dependency via a circular-dependency-safe standalone build mode | 11 | 3 | 0 | 3 | 0 | experimental | stable | TDCFRE·· |
-| `wca` | experimental | 8 | Tooling | Aggregate CLI commands as typed Rust routines with a parse-verify-execute pipeline | 7 | 4 | 0 | 4 | 0 | experimental | stable | TDCFRE·S |
+| `multiline_input` | experimental | 8 | Tooling | Collect multiline terminal input with interactive key editing and Builder-configured validation | 4 | 1 | 0 | 1 | 0 | stable | stable | TDCFREMS |
+| `test_tools` | experimental | 8 | Tooling | Aggregate workspace testing utilities into one dev-dependency via a circular-dependency-safe standalone build mode | 11 | 3 | 0 | 3 | 0 | stable | stable | TDCFREMS |
+| `wca` | experimental | 8 | Tooling | Aggregate CLI commands as typed Rust routines with a parse-verify-execute pipeline | 7 | 4 | 0 | 4 | 0 | stable | stable | TDCFREMS |
 | `sqlx_query` | deprecated | 9 | Application | Switch between SQLx compile-time and runtime query macros by feature | 0 | 0 | 0 | 0 | 0 | experimental | deprecated | TDCFR·MS |
-| `unitore` | experimental | 9 | Application | Subscribe to RSS and Atom feeds from TOML configs, persist entries in embedded SQL, and browse from the terminal | 20 | 3 | 0 | 3 | 0 | experimental | stable | TDCFR··S |
-| `willbe` | experimental | 9 | Application | Publish multi-crate workspaces in topological order, run feature-matrix tests, generate CI/CD workflows, and renew readme headers | 40 | 14 | 0 | 14 | 0 | experimental | stable | TDCFR··· |
+| `unitore` | deprecated | 9 | Application | Subscribe to RSS and Atom feeds from TOML configs, persist entries in embedded SQL, and browse from the terminal | 20 | 3 | 0 | 3 | 0 | deprecated | deprecated | TDCFR··S |
+| `willbe` | experimental | 9 | Application | Publish multi-crate workspaces in topological order, run feature-matrix tests, generate CI/CD workflows, and renew readme headers | 40 | 14 | 0 | 14 | 0 | stable | stable | TDCFREMS |
 | `willbe2` | deprecated | 9 | Application | Expose the willbe workspace tool under the willbe2 binary and crate name via complete re-export | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFR·MS |
 | `proper_tools` | deprecated | 9 | Application | Alias — recommended starting point for general-purpose wTools use | 0 | 0 | 0 | 0 | 0 | deprecated | deprecated | TDCFREMS |
 
@@ -159,41 +159,24 @@ All 8 criteria met — can be promoted to stable without prerequisite work.
 
 | Crate | L# | Readiness |
 |-------|----|-----------|
-| `implements` | 2 | TDCFREMS |
-| `color_tools` | 6 | TDCFREMS |
-| `strs_tools` | 6 | TDCFREMS |
-| `config_hierarchy` (experimental) | 7 | TDCFREMS |
-| `genfile` | 8 | TDCFREMS |
-| `crates_tools` | 8 | TDCFREMS |
-| `benchkit` | 8 | TDCFREMS |
+| — | — | — |
 
 ### Blocked — by criteria count
 
 | Crate | L# | Readiness | Blockers |
 |-------|----|-----------|----------|
-| `strs_tools_meta` | 3 | TDCFR·MS | E |
-| `component_model_types` | 4 | TD·FREMS | C |
-| `cli_fmt` | 6 | TDCFR·MS | E |
-| `workspace_tools` | 7 | TDCFR·MS | E |
-| `wtools` | 5 | T·CFREMS | D |
-| `test_tools` | 8 | TDCFRE·· | M, S |
-| `multiline_input` | 8 | T·CFREMS | D |
-| `component_model_meta` | 3 | TD·FR·MS | C, E |
-| `component_model` | 4 | TDCFRE·S | M |
-| `wca` | 8 | TDCFRE·S | M |
-| `unitore` | 9 | TDCFR··S | E, M |
-| `willbe` | 9 | TDCFR··· | E, M, S |
+| — | — | — | — |
 
 ### Blocker Frequency
 
 | Criterion | Failing | Crates |
 |-----------|---------|--------|
-| M (Markers) | 5 | component_model, test_tools, wca, unitore, willbe |
+| M (Markers) | 0 | — |
 | F (Features) | 0 | — |
-| E (Examples) | 6 | component_model_meta, strs_tools_meta, cli_fmt, workspace_tools, unitore, willbe |
-| C (Clean) | 2 | component_model_meta, component_model_types |
-| S (Stable deps) | 2 | test_tools, willbe |
-| D (Documented) | 2 | multiline_input (experimental), wtools |
+| E (Examples) | 0 | — |
+| C (Clean) | 0 | — |
+| S (Stable deps) | 0 | — |
+| D (Documented) | 0 | — |
 
 ### Stable Crates with Gaps
 
@@ -201,17 +184,17 @@ Already-stable crates that do not meet all 8 criteria. Not promotion blockers, b
 
 | Crate | Readiness | Missing |
 |-------|-----------|---------|
-| `derive_tools_meta` | TD··R··S | C, F, E, M |
-| `former_meta` | TD··R··S | C, F, E, M |
-| `mod_interface_meta` | TD··R··S | C, F, E, M |
-| `macro_tools` | TD··RE·S | C, F, M |
-| `former` | TD··RE·S | C, F, M |
-| `pth` | TDC·R··S | F, E, M |
+| `derive_tools_meta` | TD··R·MS | C, F, E |
+| `former_meta` | TD··R·MS | C, F, E |
+| `mod_interface_meta` | TD··R·MS | C, F, E |
+| `macro_tools` | TD··REMS | C, F |
+| `former` | TD··REMS | C, F |
+| `pth` | TDC·R·MS | F, E |
 | `clone_dyn_meta` | TD·FR·MS | C, E |
-| `variadic_from_meta` | TDCFR··S | E, M |
-| `clone_dyn_types` | TDC·RE·S | F, M |
-| `derive_tools` | TDC·RE·S | F, M |
-| `former_types` | TD·FRE·S | C, M |
+| `variadic_from_meta` | TDCFR·MS | E |
+| `clone_dyn_types` | TDC·REMS | F |
+| `derive_tools` | TDC·REMS | F |
+| `former_types` | TD·FREMS | C |
 | `process_tools` | TDCFR·MS | E |
 
 ## Usefulness Assessment
@@ -280,7 +263,7 @@ Utility ranking for 49 non-deprecated crates. Evaluates: internal dependent coun
 | `reflect_tools_meta` | 3 | 4 | Stub returning empty TokenStream; no real logic |
 | `wtools` | 5 | 4 | Thin re-export facade for collection_tools; zero internal dependents |
 | `asbytes` | 2 | 5 | Thin bytemuck wrapper; trivially replaceable by direct dep |
-| `include_md` | 6 | 5 | Unimplemented stub; 0 logic; 0 consumers |
+| `include_md` | 6 | 5 | Compile-time markdown inclusion proc-macros; 0 consumers in workspace |
 
 ### Tier Distribution by Layer
 
@@ -399,7 +382,7 @@ Per-crate attributes for promotion and publishing.
 #### `implements`
 - **module**: experimental
 - **layer**: 2 · Primitives
-- **state**: experimental
+- **state**: stable
 - **target**: stable
 - **readiness**: TDCFREMS
 - **purpose**: Answer at compile time whether a type implements a trait
@@ -427,9 +410,9 @@ Per-crate attributes for promotion and publishing.
 #### `interval_adapter`
 - **module**: experimental
 - **layer**: 2 · Primitives
-- **state**: experimental
+- **state**: stable
 - **target**: stable
-- **readiness**: TDCFRE·S
+- **readiness**: TDCFREMS
 - **purpose**: Provide uniform interval trait coverage over all Rust range variants — bounded, half-open, and unbounded
 - **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.42.0
@@ -503,7 +486,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 3 · Macro Framework
 - **state**: stable
 - **target**: stable
-- **readiness**: TD··RE··
+- **readiness**: TD··REMS
 - **purpose**: Supply all primitives needed to author procedural macros
 - **deps**: 9 · **int**: 4 · **=L**: 0 · **↓L**: 1 · **↑L**: 3
 - **version**: 0.85.0
@@ -543,7 +526,7 @@ Per-crate attributes for promotion and publishing.
 #### `component_model_meta`
 - **module**: experimental
 - **layer**: 3 · Macro Framework
-- **state**: experimental
+- **state**: stable
 - **target**: stable
 - **readiness**: TD·FR·MS
 - **purpose**: Implement proc-macro backends for Assign, ComponentModel, and related derives (use component_model directly)
@@ -552,14 +535,14 @@ Per-crate attributes for promotion and publishing.
 - **no_std**: no
 - **keywords**: fundamental, general-purpose, builder-pattern, component, proc-macro
 - **categories**: algorithms, development-tools
-- **pitch**: Proc-macro backend for component_model — do not depend on directly; use component_model instead.
+- **pitch**: Proc-macro backend for component_model — do not depend on directly; use component_model instead. Note: ↑L=1 (depends on component_model_types L4) is an inherent architectural constraint for proc-macro meta crates, consistent with clone_dyn_meta/derive_tools_meta/former_meta.
 
 #### `derive_tools_meta`
 - **module**: core
 - **layer**: 3 · Macro Framework
 - **state**: stable
 - **target**: stable
-- **readiness**: TD··R··S
+- **readiness**: TD··R·MS
 - **purpose**: Generate derive_tools implementations (use derive_tools directly)
 - **deps**: 3 · **int**: 3 · **=L**: 1 · **↓L**: 0 · **↑L**: 2
 - **version**: 0.63.0
@@ -573,7 +556,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 3 · Macro Framework
 - **state**: stable
 - **target**: stable
-- **readiness**: TD··R··S
+- **readiness**: TD··R·MS
 - **purpose**: Generate former builder derive implementation (use former directly)
 - **deps**: 5 · **int**: 4 · **=L**: 1 · **↓L**: 0 · **↑L**: 3
 - **version**: 2.43.0
@@ -601,7 +584,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 3 · Macro Framework
 - **state**: stable
 - **target**: stable
-- **readiness**: TD··R··S
+- **readiness**: TD··R·MS
 - **purpose**: Generate mod_interface namespace macros (use mod_interface directly)
 - **deps**: 2 · **int**: 2 · **=L**: 1 · **↓L**: 0 · **↑L**: 1
 - **version**: 0.59.0
@@ -627,9 +610,9 @@ Per-crate attributes for promotion and publishing.
 #### `strs_tools_meta`
 - **module**: core
 - **layer**: 3 · Macro Framework
-- **state**: experimental
+- **state**: stable
 - **target**: stable
-- **readiness**: TDCFR·MS
+- **readiness**: TDCFREMS
 - **purpose**: Generate optimize_split! and optimize_match! proc macro implementations (use strs_tools directly)
 - **deps**: 1 · **int**: 1 · **=L**: 1 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.18.0
@@ -643,7 +626,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 3 · Macro Framework
 - **state**: stable
 - **target**: stable
-- **readiness**: TDCFR··S
+- **readiness**: TDCFR·MS
 - **purpose**: Generate variadic_from From impls (use variadic_from directly)
 - **deps**: 1 · **int**: 1 · **=L**: 1 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.30.0
@@ -675,7 +658,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 4 · Patterns
 - **state**: stable
 - **target**: stable
-- **readiness**: TDC·RE·S
+- **readiness**: TDC·REMS
 - **purpose**: Supply the CloneDyn trait and clone_into_box for type-erased Box cloning
 - **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.48.0
@@ -687,9 +670,9 @@ Per-crate attributes for promotion and publishing.
 #### `component_model`
 - **module**: experimental
 - **layer**: 4 · Patterns
-- **state**: experimental
+- **state**: stable
 - **target**: stable
-- **readiness**: TDCFRE·S
+- **readiness**: TDCFREMS
 - **purpose**: Enable type-driven field assignment on complex objects
 - **deps**: 2 · **int**: 2 · **=L**: 1 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.17.0
@@ -701,11 +684,11 @@ Per-crate attributes for promotion and publishing.
 #### `component_model_types`
 - **module**: experimental
 - **layer**: 4 · Patterns
-- **state**: experimental
+- **state**: stable
 - **target**: stable
-- **readiness**: TD·FREMS
+- **readiness**: TDCFREMS
 - **purpose**: Expose shared traits for the component_model pattern
-- **deps**: 1 · **int**: 1 · **=L**: 0 · **↓L**: 0 · **↑L**: 1
+- **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.27.0
 - **no_std**: yes
 - **keywords**: fundamental, general-purpose, builder-pattern
@@ -717,7 +700,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 4 · Patterns
 - **state**: stable
 - **target**: stable
-- **readiness**: TDC·RE·S
+- **readiness**: TDC·REMS
 - **purpose**: Add Into, TryInto, IsVariant, and other missing std derives
 - **deps**: 6 · **int**: 3 · **=L**: 2 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.65.0
@@ -731,7 +714,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 4 · Patterns
 - **state**: stable
 - **target**: stable
-- **readiness**: TD··RE·S
+- **readiness**: TD··REMS
 - **purpose**: Build complex objects with nested subformers via one derive
 - **deps**: 4 · **int**: 4 · **=L**: 1 · **↓L**: 1 · **↑L**: 2
 - **version**: 2.45.0
@@ -745,7 +728,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 4 · Patterns
 - **state**: stable
 - **target**: stable
-- **readiness**: TD·FRE·S
+- **readiness**: TD·FREMS
 - **purpose**: Expose compile-time trait contracts reused by former consumers
 - **deps**: 2 · **int**: 2 · **=L**: 1 · **↓L**: 0 · **↑L**: 1
 - **version**: 2.38.0
@@ -887,9 +870,9 @@ Per-crate attributes for promotion and publishing.
 #### `wtools`
 - **module**: core
 - **layer**: 5 · Collections
-- **state**: experimental
+- **state**: stable
 - **target**: stable
-- **readiness**: T·CFREMS
+- **readiness**: TDCFREMS
 - **purpose**: Thin collections aggregator; re-exports collection_tools macros and constructors
 - **deps**: 1 · **int**: 1 · **=L**: 1 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.2.20
@@ -905,12 +888,12 @@ Per-crate attributes for promotion and publishing.
 #### `cli_fmt`
 - **module**: core
 - **layer**: 6 · String & Format
-- **state**: experimental
+- **state**: stable
 - **target**: stable
-- **readiness**: TDCFR·MS
+- **readiness**: TDCFREMS
 - **purpose**: Process CLI command output with head/tail filtering, width truncation, and stream merging
 - **deps**: 1 · **int**: 1 · **=L**: 1 · **↓L**: 0 · **↑L**: 0
-- **version**: 0.4.0
+- **version**: 0.6.0
 - **no_std**: no
 - **keywords**: cli, command-line, output, formatting, display
 - **categories**: command-line-utilities, development-tools
@@ -919,7 +902,7 @@ Per-crate attributes for promotion and publishing.
 #### `color_tools`
 - **module**: core
 - **layer**: 6 · String & Format
-- **state**: experimental
+- **state**: stable
 - **target**: stable
 - **readiness**: TDCFREMS
 - **purpose**: Wrap text with typed ANSI color for terminal and HTML rendering
@@ -977,7 +960,7 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 6 · String & Format
 - **state**: experimental
 - **target**: experimental
-- **readiness**: TDCFR·MS
+- **readiness**: TDCFREMS
 - **purpose**: Include a markdown file or named section at compile time
 - **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.1.0
@@ -989,7 +972,7 @@ Per-crate attributes for promotion and publishing.
 #### `strs_tools`
 - **module**: core
 - **layer**: 6 · String & Format
-- **state**: experimental
+- **state**: stable
 - **target**: stable
 - **readiness**: TDCFREMS
 - **purpose**: Split, indent, and transform strings with ANSI utilities and SIMD acceleration
@@ -1021,7 +1004,7 @@ Per-crate attributes for promotion and publishing.
 #### `config_hierarchy` (experimental)
 - **module**: experimental
 - **layer**: 7 · Path & Process
-- **state**: experimental
+- **state**: stable
 - **target**: stable
 - **readiness**: TDCFREMS
 - **purpose**: Resolve hierarchical config across runtime, env, file, and default sources
@@ -1054,7 +1037,7 @@ Per-crate attributes for promotion and publishing.
 - **readiness**: TDCFR·MS
 - **purpose**: Run subprocesses with captured I/O, probe process liveness, and daemonize Unix services
 - **deps**: 6 · **int**: 4 · **=L**: 0 · **↓L**: 4 · **↑L**: 0
-- **version**: 0.32.0
+- **version**: 0.33.0
 - **no_std**: no
 - **keywords**: process, subprocess, spawn, daemonize, lifecycle
 - **categories**: os, development-tools
@@ -1079,10 +1062,10 @@ Per-crate attributes for promotion and publishing.
 - **layer**: 7 · Path & Process
 - **state**: stable
 - **target**: stable
-- **readiness**: TDC·R··S
+- **readiness**: TDC·R·MS
 - **purpose**: Syntactic path manipulation — normalize, join, query extensions, and typed path wrappers
 - **deps**: 5 · **int**: 2 · **=L**: 0 · **↓L**: 2 · **↑L**: 0
-- **version**: 0.37.0
+- **version**: 0.38.0
 - **no_std**: yes
 - **keywords**: fundamental, general-purpose, path, normalize, join
 - **categories**: algorithms, development-tools
@@ -1091,9 +1074,9 @@ Per-crate attributes for promotion and publishing.
 #### `workspace_tools`
 - **module**: core
 - **layer**: 7 · Path & Process
-- **state**: experimental
+- **state**: stable
 - **target**: stable
-- **readiness**: TDCFR·MS
+- **readiness**: TDCFREMS
 - **purpose**: Resolve workspace-relative paths and optionally load configuration, manage secrets, and discover resources
 - **deps**: 11 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
 - **version**: 0.12.0
@@ -1123,7 +1106,7 @@ Per-crate attributes for promotion and publishing.
 #### `benchkit`
 - **module**: experimental
 - **layer**: 8 · Tooling
-- **state**: experimental
+- **state**: stable
 - **target**: stable
 - **readiness**: TDCFREMS
 - **purpose**: Benchmark performance and publish markdown reports
@@ -1137,7 +1120,7 @@ Per-crate attributes for promotion and publishing.
 #### `crates_tools`
 - **module**: core
 - **layer**: 8 · Tooling
-- **state**: experimental
+- **state**: stable
 - **target**: stable
 - **readiness**: TDCFREMS
 - **purpose**: Download and decode .crate archives for in-memory content inspection
@@ -1165,7 +1148,7 @@ Per-crate attributes for promotion and publishing.
 #### `genfile`
 - **module**: core
 - **layer**: 8 · Tooling
-- **state**: experimental
+- **state**: stable
 - **target**: stable
 - **readiness**: TDCFREMS
 - **purpose**: Manage code generation template archives from the command line
@@ -1193,23 +1176,23 @@ Per-crate attributes for promotion and publishing.
 #### `multiline_input` (experimental)
 - **module**: experimental
 - **layer**: 8 · Tooling
-- **state**: experimental
+- **state**: stable
 - **target**: stable
-- **readiness**: T·CFREMS
+- **readiness**: TDCFREMS
 - **purpose**: Collect multiline terminal input with interactive key editing and Builder-configured validation
 - **deps**: 4 · **int**: 1 · **=L**: 0 · **↓L**: 1 · **↑L**: 0
 - **version**: 0.2.0
 - **no_std**: no
 - **keywords**: terminal, input, multiline, cli, interactive
 - **categories**: command-line-interface, text-editors
-- **pitch**: The active workspace version of multiline_input — ENTER to submit, CTRL+ENTER for newlines, Builder API, 4 usage examples, and 9 test files; blocked on docs/ instances (D criterion).
+- **pitch**: Collect multiline terminal text with ENTER-to-submit, CTRL+ENTER newlines, trait-based terminal abstraction, Builder API, 4 usage examples, and 9 test files.
 
 #### `test_tools`
 - **module**: experimental
 - **layer**: 8 · Tooling
-- **state**: experimental
+- **state**: stable
 - **target**: stable
-- **readiness**: TDCFRE··
+- **readiness**: TDCFREMS
 - **purpose**: Aggregate workspace testing utilities into one dev-dependency via a circular-dependency-safe standalone build mode
 - **deps**: 11 · **int**: 3 · **=L**: 0 · **↓L**: 3 · **↑L**: 0
 - **version**: 0.16.0
@@ -1221,12 +1204,12 @@ Per-crate attributes for promotion and publishing.
 #### `wca`
 - **module**: experimental
 - **layer**: 8 · Tooling
-- **state**: experimental
+- **state**: stable
 - **target**: stable
-- **readiness**: TDCFRE·S
+- **readiness**: TDCFREMS
 - **purpose**: Aggregate CLI commands as typed Rust routines with a parse-verify-execute pipeline
 - **deps**: 7 · **int**: 4 · **=L**: 0 · **↓L**: 4 · **↑L**: 0
-- **version**: 0.46.0
+- **version**: 0.47.0
 - **no_std**: no
 - **keywords**: cli, command, aggregator, cui, wtools
 - **categories**: command-line-interface, command-line-utilities
@@ -1251,10 +1234,10 @@ Per-crate attributes for promotion and publishing.
 - **pitch**: Feature-flag switch between SQLx compile-time `query!` and runtime `query` — same call site, swappable modes.
 
 #### `unitore`
-- **module**: experimental
+- **module**: deprecated
 - **layer**: 9 · Application
-- **state**: experimental
-- **target**: stable
+- **state**: deprecated
+- **target**: deprecated
 - **readiness**: TDCFR··S
 - **purpose**: Subscribe to RSS and Atom feeds from TOML configs, persist entries in embedded SQL, and browse from the terminal
 - **deps**: 20 · **int**: 3 · **=L**: 0 · **↓L**: 3 · **↑L**: 0
@@ -1267,12 +1250,12 @@ Per-crate attributes for promotion and publishing.
 #### `willbe`
 - **module**: experimental
 - **layer**: 9 · Application
-- **state**: experimental
+- **state**: stable
 - **target**: stable
-- **readiness**: TDCFR···
+- **readiness**: TDCFREMS
 - **purpose**: Publish multi-crate workspaces in topological order, run feature-matrix tests, generate CI/CD workflows, and renew readme headers
 - **deps**: 40 · **int**: 14 · **=L**: 0 · **↓L**: 14 · **↑L**: 0
-- **version**: 0.35.0
+- **version**: 0.36.0
 - **no_std**: no
 - **keywords**: workspace, publish, cargo, cicd, consistency
 - **categories**: development-tools, development-tools::cargo-plugins

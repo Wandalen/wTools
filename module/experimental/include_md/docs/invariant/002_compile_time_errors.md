@@ -19,20 +19,35 @@ Every error path inside the macro implementation terminates by emitting a compil
 
 A runtime panic or propagated error would move a build-time configuration mistake into production code paths, making it observable only at runtime. Compile-time rejection makes broken invocations impossible to ship: a build that compiles is guaranteed to have valid, accessible, correctly-encoded files at all invocation sites.
 
-### Cross-References
-
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/_blank/standard_lib.rs` | Placeholder; future home of macro entry points |
-| doc | [api/001_include_md.md](../api/001_include_md.md) | Full-file macro error handling section |
-| doc | [api/002_include_md_section.md](../api/002_include_md_section.md) | Section macro error handling section |
-| doc | [invariant/001_path_resolution.md](001_path_resolution.md) | Path resolution contract (feeds file-not-found errors) |
-| doc | [invariant/003_size_limit.md](003_size_limit.md) | Size limit contract (feeds oversized-file errors) |
-| doc | [feature/001_file_inclusion.md](../feature/001_file_inclusion.md) | File inclusion feature; all error conditions feed into this invariant |
-| doc | [feature/002_section_extraction.md](../feature/002_section_extraction.md) | Section extraction feature; all error conditions feed into this invariant |
-| doc | [invariant/004_section_extraction_rules.md](004_section_extraction_rules.md) | Section extraction rules; heading-not-found is one of the covered error conditions |
-
 ### Sources
+
+| File | Responsibility |
+|------|----------------|
+| `src/lib.rs` | Implements compile-time error emission for both macros via `syn::Error::to_compile_error()` |
+
+### Apis
+
+| File | Responsibility |
+|------|----------------|
+| [api/001_include_md.md](../api/001_include_md.md) | Full-file macro error handling section |
+| [api/002_include_md_section.md](../api/002_include_md_section.md) | Section macro error handling section |
+
+### Features
+
+| File | Responsibility |
+|------|----------------|
+| [feature/001_file_inclusion.md](../feature/001_file_inclusion.md) | File inclusion feature; all error conditions feed into this invariant |
+| [feature/002_section_extraction.md](../feature/002_section_extraction.md) | Section extraction feature; all error conditions feed into this invariant |
+
+### Invariants
+
+| File | Responsibility |
+|------|----------------|
+| [invariant/001_path_resolution.md](001_path_resolution.md) | Path resolution contract (feeds file-not-found errors) |
+| [invariant/003_size_limit.md](003_size_limit.md) | Size limit contract (feeds oversized-file errors) |
+| [invariant/004_section_extraction_rules.md](004_section_extraction_rules.md) | Section extraction rules; heading-not-found is one of the covered error conditions |
+
+### Provenance
 
 | File | Notes |
 |------|-------|

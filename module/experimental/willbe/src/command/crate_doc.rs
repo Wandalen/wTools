@@ -23,7 +23,6 @@ mod private
   {
   let path_arg: PathBuf = o.args.get_owned( 0 ).unwrap_or_else( || "./".into() );
 
-  // qqq: xxx: refactor this block
   //       Use the requested `pth ::absolute ::join` function (see qqq in pth/src/lib.rs)
   //       to simplify this path resolution. The call should look something like :
   //       `let absolute_path = pth ::absolute ::join( ( CurrentPath, path_arg.clone() ) )?`

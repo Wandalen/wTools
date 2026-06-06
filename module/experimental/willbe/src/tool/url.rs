@@ -31,8 +31,6 @@ mod private
 
   /// Extracts the username and repository name from a given URL.
   /// # Errors
-  /// qqq: doc
-  // qqq: use typed error
   pub fn git_info_extract( url: &str ) -> error ::untyped ::Result< String >
   {
   let parts: Vec< &str > = url.split( '/' ).collect();

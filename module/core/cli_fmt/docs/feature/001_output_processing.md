@@ -52,4 +52,4 @@ a flag indicating whether any line was truncated by the width limit.
 
 | File | Relationship |
 |------|-------------|
-| `tests/output.rs` | Pipeline correctness across filtering, truncation, and stream ordering (33 tests) |
+| `tests/output.rs` | Pipeline correctness across filtering, truncation, and stream ordering (44 tests) |

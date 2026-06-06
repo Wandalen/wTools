@@ -39,9 +39,7 @@ mod private
   ///
   /// Returns a `Result` with a `Program` containing the parsed commands if successful, or an error if parsing fails.
   /// # Errors
-  /// qqq: doc
-  // aaa: use typed error
-  // aaa: done.
+  /// Returns an error if the input contains invalid command syntax or unexpected tokens.
   pub fn parse< As, A >( &self, args: As ) -> Result< Program< ParsedCommand >, ParserError >
   where
    As: IntoIterator< Item = A >,
@@ -99,7 +97,6 @@ mod private
 
    false
  }
-  // aaa: use typed error
   fn parse_command( args: &[ String ] ) -> Result< ( ParsedCommand, usize ), ParserError >
   {
    if args.is_empty()
@@ -139,8 +136,6 @@ mod private
 
 
   // returns ( subjects, properties, relative_end_pos )
-  // aaa: use typed error
-  // aaa: done
   fn parse_command_args( args: &[ String ] ) -> Result< ParsedArgs, ParserError >
   {
    let mut i = 0;

@@ -14,15 +14,15 @@ use std ::path ::Path;
 //   Result,
 // };
 
-/// Wrapper over `data_type ::Either< CrateDir, ManifestFile >` with util methods.
+/// Wrapper over `either ::Either< CrateDir, ManifestFile >` with util methods.
 #[ derive( Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug ) ]
-pub struct EitherDirOrFile( data_type ::Either< CrateDir, ManifestFile > );
+pub struct EitherDirOrFile( either ::Either< CrateDir, ManifestFile > );
 
 impl EitherDirOrFile
 {
-  /// Returns inner type which is an `data_type ::Either`< `CrateDir`, `ManifestFile` >.
+  /// Returns inner type which is an `either ::Either`< `CrateDir`, `ManifestFile` >.
   #[ must_use ]
-  pub fn inner( self ) -> data_type ::Either< CrateDir, ManifestFile >
+  pub fn inner( self ) -> either ::Either< CrateDir, ManifestFile >
   {
   self.0
  }
@@ -37,11 +37,11 @@ impl TryFrom< &Path > for EitherDirOrFile
   {
   if value.file_name() == Some( "Cargo.toml".as_ref() )
   {
-   Result ::Ok( Self( data_type ::Either ::Right( ManifestFile ::try_from( value )? ) ) )
+   Result ::Ok( Self( either ::Either ::Right( ManifestFile ::try_from( value )? ) ) )
  }
   else
   {
-   Result ::Ok( Self( data_type ::Either ::Left( CrateDir ::try_from( value )? ) ) )
+   Result ::Ok( Self( either ::Either ::Left( CrateDir ::try_from( value )? ) ) )
  }
  }
 }
@@ -52,8 +52,8 @@ impl AsRef< Path > for EitherDirOrFile
   {
   match &self.0
   {
-   data_type ::Either ::Left( crate_dir ) => crate_dir.as_ref(),
-   data_type ::Either ::Right( manifest_path ) => manifest_path.as_ref(),
+   either ::Either ::Left( crate_dir ) => crate_dir.as_ref(),
+   either ::Either ::Right( manifest_path ) => manifest_path.as_ref(),
  }
  }
 }
@@ -64,8 +64,8 @@ impl AsMut< Path > for EitherDirOrFile
   {
   match &mut self.0
   {
-   data_type ::Either ::Left( crate_dir ) => crate_dir.as_mut(),
-   data_type ::Either ::Right( manifest_path ) => manifest_path.as_mut(),
+   either ::Either ::Left( crate_dir ) => crate_dir.as_mut(),
+   either ::Either ::Right( manifest_path ) => manifest_path.as_mut(),
  }
  }
 }

@@ -291,9 +291,9 @@ pub fn not(input: proc_macro::TokenStream) -> proc_macro::TokenStream
 }
 
 // ///\n// /// Implement `PhantomData` for a structure.\n// ///\n// /// ### Sample.\n// ///\n// /// ```text\n// /// use derive_tools ::PhantomData;\n// ///\n// /// #\[ derive\( PhantomData \) \]\n// /// struct MyStruct< T >\( core ::marker ::PhantomData< T > \);\n// ///\n// /// let my_struct = MyStruct :: \< i32 >\( core ::marker ::PhantomData \);\n// /// dbg!\( my_struct \);\n// /// ```\n// ///\n// /// To learn more about the feature, study the module \[`derive_tools ::PhantomData`\]\(https: //docs.rs/derive_tools/latest/derive_tools/phantom_data/index.html\)\.
-// qqq: This derive is currently generating invalid code by attempting to implement `core ::marker ::PhantomData` as a trait.
-// It needs to be re-designed to correctly handle `PhantomData` usage, likely by adding a field to the struct.
-// Temporarily disabling to allow other tests to pass.
+// Note: PhantomData derive is disabled — the current implementation generates invalid code
+// (attempts to implement `core::marker::PhantomData` as a trait). Needs redesign to correctly
+// handle PhantomData usage, likely by adding a field to the struct.
 // #[ proc_macro_derive( PhantomData, attributes( phantom_data ) ]
 // pub fn phantom_data( input: proc_macro::TokenStream ) -> proc_macro::TokenStream
 // {

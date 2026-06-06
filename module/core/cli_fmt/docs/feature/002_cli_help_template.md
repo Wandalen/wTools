@@ -3,69 +3,27 @@
 ### Scope
 
 - **Purpose**: Provide a typed, configurable template that renders structured CLI help output from two disjoint parameter sets — style and data — producing ANSI-colored, column-aligned text suitable for terminal display.
-- **Responsibility**: Document the `CliHelpStyle`, `CliHelpData`, and `CliHelpTemplate` types; the style/data separation rationale; the rendering algorithm; and why this belongs in `cli_fmt` rather than `data_fmt`.
-- **In Scope**: `CliHelpStyle` (13 style parameters with defaults); `CliHelpData` (typed sections: binary, tagline, groups, options, examples); `CliHelpTemplate::render() -> String`; ANSI color roles with TTY-conditional output; dependency architecture (parallel with `data_fmt`, no cross-dependency); feature flag `cli_help_template`.
-- **Out of Scope**: `data_fmt` `TextFormatter::CliHelp` path (separate consumer, `TableView`-based); unilang `HelpGenerator` (registry-coupled, separate concern); per-command help (unilang pipeline concern); API contract — see `api/002_help_api.md`.
+- **Responsibility**: Document the style/data separation rationale, dependency architecture, and why CLI help rendering belongs in cli_fmt rather than data_fmt.
+- **In Scope**: Style configuration (13 layout and color parameters); structured content model (binary name, tagline, command groups, options, examples); TTY-conditional ANSI output; dependency architecture (parallel with data_fmt, no cross-dependency); feature flag.
+- **Out of Scope**: Type field details and rendering procedure — see `api/002_help_api.md`; data_fmt table-based help path; per-command help (unilang pipeline concern).
 
 ### Design
 
-**Separation principle:** CLI help rendering is domain-specific — it encodes CLI presentation conventions (column alignment, color roles, TTY detection, indent hierarchy). This is not general-purpose data formatting. `data_fmt` operates on `TableView` (untyped row/column structures) and is domain-agnostic. Adding CLI help rendering to `data_fmt` would impose CLI-domain assumptions on a generic library. `cli_fmt` already holds the boundary for CLI-specific utilities (see `docs/invariant/001_architectural_boundary.md`). `CliHelpTemplate` belongs here.
+**Separation principle:** CLI help rendering is domain-specific — it encodes CLI presentation conventions (column alignment, color roles, TTY detection, indent hierarchy). This is not general-purpose data formatting. The data_fmt crate operates on untyped row/column structures and is domain-agnostic. Adding CLI help rendering to data_fmt would impose CLI-domain assumptions on a generic library. cli_fmt already holds the boundary for CLI-specific utilities (see `docs/invariant/001_architectural_boundary.md`). The help template belongs here.
 
-**Dependency architecture:**
+**Dependency architecture:** data_fmt and cli_fmt are parallel crates — neither depends on the other. Both are consumed independently by downstream applications. This prevents coupling between domain-specific CLI rendering and generic data formatting.
 
-```
-data_fmt                              cli_fmt
-(TextFormatter::CliHelp               (CliHelpTemplate, CliHelpStyle,
- for TableView consumers)              CliHelpData — this feature)
-        │                                       │
-        └─────── independent ──────────────────┘
-                 both used by
-              claude_profile
-           (imports cli_fmt directly;
-            print_usage() → CliHelpTemplate::render())
-```
+**Style/data separation:** The template splits configuration into two independent parameter sets. Style parameters (13 fields) control layout and color — indents, column widths, gaps, ANSI color codes, and TTY detection. Data parameters hold structured content — binary name, tagline, command groups, global options, and usage examples. This separation allows the same content to be rendered with different visual styles without rebuilding the data, and vice versa.
 
-`data_fmt` and `cli_fmt` are parallel crates. Neither depends on the other.
+**TTY-conditional output:** Colors are active only when the TTY detection flag is enabled and stdout is a terminal. When output is piped or redirected, all color codes are suppressed. This follows CLI convention for machine-readable output.
 
-**Style parameters (`CliHelpStyle`):**
+**Column padding:** Name columns use minimum-width padding — names shorter than the configured width are padded; names longer are not truncated. This ensures alignment across entries without clipping long names.
 
-| Field | Default | Purpose |
-|-------|---------|---------|
-| `cmd_indent` | `4` | Left margin for command names |
-| `cmd_name_width` | `20` | Minimum column width for command names |
-| `grp_indent` | `2` | Left margin for group headers |
-| `opt_indent` | `2` | Left margin for option names |
-| `opt_name_width` | `18` | Minimum column width for option names |
-| `col_gap` | `2` | Gap between name column and description column |
-| `example_indent` | `2` | Left margin for example lines |
-| `color_tagline` | `"\x1b[1m"` | ANSI code for section headers and the usage line (bold) |
-| `color_group` | `"\x1b[33m\x1b[1m"` | ANSI codes for group headers (yellow+bold) |
-| `color_option` | `"\x1b[1;36m"` | ANSI code for option names (bold cyan) |
-| `color_example` | `"\x1b[2m"` | ANSI code for example lines (dim) |
-| `color_reset` | `"\x1b[0m"` | ANSI reset sequence |
-| `tty_detect` | `true` | When true, colors active only when stdout is a terminal; when false, always suppress colors |
+**Conditional sections:** Options and Examples sections are omitted entirely when their content lists are empty, producing cleaner output for simple tools.
 
-`CliHelpStyle::default()` produces the same visual result as the hardcoded `print_usage()` in `claude_profile/src/lib.rs`. ANSI codes are active only when `tty_detect = true` and stdout IS a TTY; when `tty_detect = false` or stdout is not a TTY (piped, redirected), all color fields are treated as empty strings.
+**Feature flag:** The `cli_help_template` feature flag enables this module. Included in the default feature set when the crate is enabled.
 
-**Value parameters (`CliHelpData`):**
-
-`CliHelpData` holds five sections: the binary name (e.g. `"clp"`), a one-line tagline, a list of command groups, a list of global option entries, and a list of example entries. Each command group has a name and an ordered list of command entries (name + description). Each option entry has a name and description. Each example entry has an invocation string and an optional inline annotation.
-
-**Template and rendering:**
-
-`CliHelpTemplate` holds one style value and one data value. Constructed via `new(style, data)`; rendered via `render() -> String`, which produces the complete help text. The rendering algorithm:
-
-1. Apply TTY detection: ANSI codes active only when `tty_detect = true` and stdout IS a TTY; zero all color fields otherwise.
-2. Emit header section: `{color_tagline}Usage:{color_reset} {binary} <command>`, a blank line, the tagline text (no color), a blank line, then `{color_tagline}Commands:{color_reset}`.
-3. For each group: emit group header with `grp_indent` and `color_group`, then each entry with `cmd_indent` and left-padded to `cmd_name_width + col_gap`.
-4. If options present: emit `Options:` header, each option with `opt_indent` padded to `opt_name_width + col_gap`, colored with `color_option`.
-5. If examples present: emit `Examples:` header, each example with `example_indent`, colored with `color_example`. When an example entry has an annotation, append `  # {annotation}` after the invocation.
-
-Column padding: `{name:<width}` where `width = field_name_width + col_gap`. Descriptions that exceed terminal width are not wrapped (out of scope for this feature; wrapping is a separate concern).
-
-**Feature flag:**
-
-`cli_help_template` in `cli_fmt/Cargo.toml` enables this module. Default feature set includes it when `enabled` is active.
+For complete type definitions, field defaults, and the rendering procedure, see [`api/002_help_api.md`](../api/002_help_api.md).
 
 ### Acceptance Criteria
 
@@ -98,4 +56,4 @@ Column padding: `{name:<width}` where `width = field_name_width + col_gap`. Desc
 
 | File | Relationship |
 |------|-------------|
-| `tests/help.rs` | T01–T09: column alignment, TTY detection, section omission, desc annotation |
+| `tests/help.rs` | T01–T14: column alignment, TTY detection, section omission, desc annotation, color defaults, edge cases, data_fmt absence |

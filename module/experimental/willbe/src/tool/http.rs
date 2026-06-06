@@ -18,12 +18,9 @@ mod private
   /// Get data of remote package.
   ///
   /// # Errors
-  /// qqq: doc
   ///
   /// # Panics
-  /// qqq: docs
   ///
-  // qqq: typed error
   pub fn download< 'a >( name: &'a str, version: &'a str ) -> error ::untyped ::Result< Vec< u8 > >
   {
   let agent: Agent = ureq ::AgentBuilder ::new()

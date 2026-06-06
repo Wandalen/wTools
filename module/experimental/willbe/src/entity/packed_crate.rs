@@ -34,7 +34,6 @@ mod private
   ///
   /// This function is currently infallible as it only performs path joining and string formatting.
   /// The `Result` is kept for API consistency.
-  // qqq: typed error
   pub fn local_path< 'a >( name: &'a str, version: &'a str, target_dir: &std ::path ::Path ) -> error ::untyped ::Result< PathBuf >
   {
   let buf = format!( "package/{name}-{version}.crate" );
@@ -47,11 +46,8 @@ mod private
   /// Get data of remote package from crates.io.
   ///
   /// # Errors
-  /// qqq: doc
   ///
   /// # Panics
-  /// qqq: doc
-  // qqq: typed error
   pub fn download< 'a >( name: &'a str, version: &'a str ) -> error ::untyped ::Result< Vec< u8 > >
   {
   let agent: Agent = ureq ::AgentBuilder ::new()

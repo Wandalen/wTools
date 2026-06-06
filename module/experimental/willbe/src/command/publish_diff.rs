@@ -8,7 +8,6 @@ mod private
   use wca ::VerifiedCommand;
 
   // use error ::Result;
-  // qqq: group dependencies
   // use pth ::AbsolutePath;
 
   #[ derive( former ::Former ) ]
@@ -32,8 +31,7 @@ mod private
   /// Returns an error if there is an issue with the command.
   ///
   /// # Panics
-  /// qqq: doc
-  pub fn publish_diff( o: VerifiedCommand ) -> error ::untyped ::Result< () > // qqq: use typed error
+  pub fn publish_diff( o: VerifiedCommand ) -> error ::untyped ::Result< () >
   {
   let path: PathBuf = o.args.get_owned( 0 ).unwrap_or( std ::env ::current_dir()? );
   let PublishDiffProperties { keep_archive } = o.props.try_into()?;
@@ -46,7 +44,6 @@ mod private
   println!( "{}", action ::publish_diff( o )? );
   if let Some( keep ) = keep_archive
   {
-   // qqq: dont use canonicalizefunction. path does not have exist
    let keep = AbsolutePath ::try_from( fs ::canonicalize( keep )? ).unwrap();
    println!( "Remote version of the package was saved at `{}`", keep.as_ref().display() );
  }

@@ -1,11 +1,4 @@
-# Entities
-
-## Scope
-
-- **In Scope**: Registry of all active doc entity types in `strs_tools_meta`; instance counts and status.
-- **Out of Scope**: Individual instance content (see each instance file).
-- **Boundary**: This file is an index; doc instances are authoritative for their content.
-- **Status**: Active.
+# Doc Entities
 
 ## Master Doc Entities Table
 
@@ -14,6 +7,9 @@
 | 1 | feature | `feature/` | 2 | Active |
 | 2 | api | `api/` | 2 | Active |
 | 3 | invariant | `invariant/` | 3 | Active |
+| 4 | feature (test surface) | `tests/docs/feature/` | 2 | Active |
+| 5 | api (test surface) | `tests/docs/api/` | 2 | Active |
+| 6 | invariant (test surface) | `tests/docs/invariant/` | 3 | Active |
 
 ## Master Doc Instances Table
 
@@ -26,3 +22,10 @@
 | 5 | invariant/001 | `invariant/001_split_strategy_thresholds.md` | invariant | Active |
 | 6 | invariant/002 | `invariant/002_match_strategy_thresholds.md` | invariant | Active |
 | 7 | invariant/003 | `invariant/003_strategy_param_no_op.md` | invariant | Active |
+| 8 | tests/docs/feature/001 | `tests/docs/feature/001_compile_time_split.md` | feature (test surface) | Active |
+| 9 | tests/docs/feature/002 | `tests/docs/feature/002_compile_time_match.md` | feature (test surface) | Active |
+| 10 | tests/docs/api/001 | `tests/docs/api/001_optimize_split_api.md` | api (test surface) | Active |
+| 11 | tests/docs/api/002 | `tests/docs/api/002_optimize_match_api.md` | api (test surface) | Active |
+| 12 | tests/docs/invariant/001 | `tests/docs/invariant/001_split_strategy_thresholds.md` | invariant (test surface) | Active |
+| 13 | tests/docs/invariant/002 | `tests/docs/invariant/002_match_strategy_thresholds.md` | invariant (test surface) | Active |
+| 14 | tests/docs/invariant/003 | `tests/docs/invariant/003_strategy_param_no_op.md` | invariant (test surface) | Active |

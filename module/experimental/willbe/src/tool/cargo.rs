@@ -13,16 +13,12 @@ mod private
   use former ::Former;
   use process_tools ::process;
   // use process_tools ::process :: *;
-  // qqq: for Bohdan: bad
   // use error ::Result;
-  // qqq: group dependencies
 
-  // qqq: for Bohdan: bad: tools can't depend on entitties!
   use crate ::channel ::Channel;
   // Explicit import for Result and its variants for pattern matching
   use std ::result ::Result :: { Ok, Err };
 
-  // aaa: documentation /// aaa: documented
 
   /// Represents options for packaging a project.
   ///
@@ -46,10 +42,8 @@ mod private
   /// This field is set to `true` by default, meaning that packaging will proceed even if there are uncommitted changes.
   #[ former( default = true ) ]
   pub( crate ) allow_dirty: bool,
-  // qqq: rename to checking_changes
   /// Flag indicating whether to skip verification checks.
   #[ former( default = false ) ]
-  // aaa: don't abuse negative form, rename to checking_consistency
   // renamed and changed logic
   pub( crate ) checking_consistency: bool,
   
@@ -111,8 +105,6 @@ mod private
   track_caller,
   tracing ::instrument( fields( caller = ?{ let x = std ::panic ::Location ::caller(); ( x.file(), x.line() ) } ) )
  )]
-  // qqq: should be typed error, apply err_with
-  // qqq: use typed error
   pub fn pack( args: PackOptions ) -> error ::untyped ::Result< process ::Report >
   {
   // Fix(issue-NNN): Resolve actual rustup toolchain identifier before invoking `rustup run`.
@@ -189,7 +181,6 @@ mod private
   tracing ::instrument( fields( caller = ?{ let x = std ::panic ::Location ::caller(); ( x.file(), x.line() ) } ) )
  )]
   pub fn publish( args: &PublishOptions ) -> error ::untyped ::Result< process ::Report >
-  // qqq: use typed error
   {
   
   let ( program, arguments) = ( "cargo", args.as_publish_args() );

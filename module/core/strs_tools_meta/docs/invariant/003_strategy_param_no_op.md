@@ -32,17 +32,32 @@ If a future change makes `strategy` effective, this invariant must be retired an
 
 ### Sources
 
-| File | Notes |
-|------|-------|
+| File | Relationship |
+|------|-------------|
 | `spec.md` (git `c13cf485~1`) | Original spec made no mention of `strategy` being a no-op — gap in original documentation. |
-| `../../tests/manual/readme.md` | §Known Behavior item 3: "Strategy parameter simplified" — informal predecessor of this invariant. |
+| [`../../tests/manual/readme.md`](../../tests/manual/readme.md) | §Known Behavior item 3: "Strategy parameter simplified" — informal predecessor of this invariant. |
+| [`../../src/lib.rs`](../../src/lib.rs) | `analyze_match_pattern`, `_strategy` parameter |
 
-### Cross-References
+### Tests
 
-| Type | File | Notes |
-|------|------|-------|
-| source | `../../src/lib.rs` | `analyze_match_pattern`, `_strategy` parameter |
-| test | `../../tests/optimize_match_tests.rs` | `tc8_default_value_equivalence` (partial coverage) |
-| doc | `../feature/002_compile_time_match.md` | Feature design |
-| doc | `../api/002_optimize_match_api.md` | API interface |
-| doc | `002_match_strategy_thresholds.md` | Related: threshold selection |
+| File | Relationship |
+|------|-------------|
+| [`../../tests/optimize_match_tests.rs`](../../tests/optimize_match_tests.rs) | `tc8_default_value_equivalence` (partial coverage) |
+
+### Features
+
+| File | Relationship |
+|------|-------------|
+| [`../feature/002_compile_time_match.md`](../feature/002_compile_time_match.md) | Feature design |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [`../api/002_optimize_match_api.md`](../api/002_optimize_match_api.md) | API interface |
+
+### Invariants
+
+| File | Relationship |
+|------|-------------|
+| [`002_match_strategy_thresholds.md`](002_match_strategy_thresholds.md) | Related: threshold selection |

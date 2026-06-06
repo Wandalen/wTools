@@ -22,11 +22,10 @@ mod private
  }
 
   /// Retrieves the names of each field, if they exist.
-  /// # Errors
-  /// qqq: doc
   /// # Panics
-  /// qqq: error
-  #[ allow( clippy ::match_wildcard_for_single_variants ) ]
+  ///
+  /// Does not panic — named fields always carry an identifier in valid Rust source.
+    #[ allow( clippy ::match_wildcard_for_single_variants ) ]
   #[ must_use ]
   pub fn field_names(t: &syn ::ItemStruct) -> Option< BoxedIter<'_, &syn ::Ident >>
   {
@@ -66,7 +65,8 @@ mod private
   /// Returns `Some` with the field identifier for named fields, or `None` for unnamed fields.
   /// Returns an error if the struct has no fields
   /// # Errors
-  /// qqq: doc
+  ///
+  /// Returns `Err` if the struct has no fields or has an unrecognized field structure.
   #[ allow( clippy ::match_wildcard_for_single_variants ) ]
   pub fn first_field_name(t: &syn ::ItemStruct) -> Result< Option< syn ::Ident >>
   {

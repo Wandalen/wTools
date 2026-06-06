@@ -40,7 +40,6 @@ mod private
   pub struct PropertyDescription
   {
   name: String,
-  // xxx: how to re-use ValueDescriptionFormer without additional end?
   // #[ subform_scalar ]
   // value: ValueDescription,
   /// providing guidance to the user for entering a valid value
@@ -107,8 +106,6 @@ mod private
   /// Map of aliases.
   // Aliased key -> Original key
   pub properties_aliases: HashMap< String, String >,
-  // aaa: make it usable and remove default(?)
-  // aaa: it is usable
   /// The type `Routine` represents the specific implementation of the routine.
   #[ scalar( setter = false ) ]
   #[ former( default = Routine ::from( Handler :: < (), error_tools ::untyped ::Result< () > > ::from( ||
@@ -218,7 +215,7 @@ mod private
   ///
   /// * `name` - The name of the property. It should implement the `Into< String >` trait.
   /// # Panics
-  /// qqq: doc
+  /// Panics if called outside of a `Former` building context.
   pub fn property< IntoName >( self, name: IntoName )
   -> PropertyDescriptionAsSubformer< Self, impl PropertyDescriptionAsSubformerEnd< Self > >
   where
@@ -268,6 +265,3 @@ crate ::mod_interface!
   own use CommandFormerStorage;
 
 }
-
-// aaa: use orphan instead of exposed for ALL files in the folder, dont use prelude for structs
-// aaa: done.

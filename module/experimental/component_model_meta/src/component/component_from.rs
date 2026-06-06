@@ -84,7 +84,7 @@ pub fn component_from(input: proc_macro ::TokenStream) -> Result< proc_macro2 ::
 ///
 /// # Example of generated code for a tuple struct field
 ///
-/// ```rust, ignore
+/// ```text
 /// impl From< &TupleStruct > for i32
 /// {
 ///   #[ inline( always ) ]

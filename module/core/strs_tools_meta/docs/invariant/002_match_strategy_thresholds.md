@@ -31,17 +31,31 @@ Threshold misclassification is silent and functionally transparent until true tr
 
 ### Sources
 
-| File | Notes |
-|------|-------|
+| File | Relationship |
+|------|-------------|
 | `spec.md` (git `c13cf485~1`) | Original spec contained no threshold documentation. Thresholds derived from `src/lib.rs:analyze_match_pattern`. |
-| `../../src/lib.rs` | Authoritative threshold implementation — `analyze_match_pattern()` |
+| [`../../src/lib.rs`](../../src/lib.rs) | Authoritative threshold implementation — `analyze_match_pattern()`, `MatchOptimization` enum |
 
-### Cross-References
+### Tests
 
-| Type | File | Notes |
-|------|------|-------|
-| source | `../../src/lib.rs` | `analyze_match_pattern`, `MatchOptimization` enum |
-| test | `../../tests/corner_cases_test.rs` | `corner_match_many_patterns_threshold`, `corner_match_many_patterns_over_threshold` |
-| doc | `../feature/002_compile_time_match.md` | Feature design context |
-| doc | `../api/002_optimize_match_api.md` | Public interface |
-| doc | `003_strategy_param_no_op.md` | Related: strategy parameter no-op |
+| File | Relationship |
+|------|-------------|
+| [`../../tests/corner_cases_test.rs`](../../tests/corner_cases_test.rs) | `corner_match_many_patterns_threshold`, `corner_match_many_patterns_over_threshold` |
+
+### Features
+
+| File | Relationship |
+|------|-------------|
+| [`../feature/002_compile_time_match.md`](../feature/002_compile_time_match.md) | Feature design context |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [`../api/002_optimize_match_api.md`](../api/002_optimize_match_api.md) | Public interface |
+
+### Invariants
+
+| File | Relationship |
+|------|-------------|
+| [`003_strategy_param_no_op.md`](003_strategy_param_no_op.md) | Related: strategy parameter no-op |

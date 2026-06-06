@@ -11,7 +11,6 @@ mod private
   use crates_tools ::CrateArchive;
   use action ::list ::ListReport;
   use error ::untyped ::Result;
-  // qqq: group dependencies
   use diff :: { DiffReport, crate_diff };
   use error ::untyped ::format_err;
   use tool ::ListNodeReport;
@@ -114,7 +113,6 @@ mod private
   /// encounters an unexpected structure.
   #[ cfg_attr( feature = "tracing", tracing ::instrument ) ]
   pub fn publish_diff( o: PublishDiffOptions ) -> Result< PublishDiffReport >
-  // qqq: don't use 1-prameter Result
   {
   let path = AbsolutePath ::try_from( o.path )?;
   let dir = CrateDir ::try_from( path.clone() )?;
@@ -150,7 +148,6 @@ mod private
    .unwrap()
    .clone()
    .absolute_path();
-   // aaa: looks bad. use ready newtypes // aaa: removed
    let dir = CrateDir ::try_from( path.clone() )?;
 
    let package = package ::Package ::try_from( dir.clone() )?;

@@ -9,7 +9,6 @@ mod private
   use colored ::Colorize;
   use wca ::VerifiedCommand;
   // use error ::Result;
-  // qqq: group dependencies
   use pth ::AbsolutePath;
   use std ::path ::PathBuf;
   use action ::test ::TestsCommandOptions;
@@ -55,9 +54,7 @@ mod private
 
   /// run tests in specified crate
   /// # Errors
-  /// qqq: doc
-  // qqq: don't use 1-prameter Result
-  pub fn test( o: VerifiedCommand ) -> error ::untyped ::Result< () > // qqq: use typed error
+  pub fn test( o: VerifiedCommand ) -> error ::untyped ::Result< () >
   {
   let args_line = format!
   (
@@ -75,7 +72,6 @@ mod private
   .collect :: < Vec< _ > >().join(" ");
 
   let path: PathBuf = o.args.get_owned( 0 ).unwrap_or_else( || "./".into() );
-  // qqq: dont use canonicalizefunction. path does not have exist
   let path = AbsolutePath ::try_from( fs ::canonicalize( path )? )?;
   let TestsProperties
   {
