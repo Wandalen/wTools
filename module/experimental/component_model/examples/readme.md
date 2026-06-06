@@ -34,6 +34,7 @@ Then follow the **Learning Path** below for a structured progression.
 | Example | Focus | Description |
 |---------|--------|-------------|
 | **[boolean_assignment_error.rs](./boolean_assignment_error.rs)** | Type Ambiguity | Demonstrates solutions for boolean field ambiguity |
+| **[boolean_ambiguity_solution.rs](./boolean_ambiguity_solution.rs)** | Boolean Fix | Field-specific methods to resolve boolean ambiguity |
 | **[debug_macro_output.rs](./debug_macro_output.rs)** | Macro Debugging | Inspect generated code with `#[debug]` attribute |
 
 ## 🚀 Running Examples
@@ -116,7 +117,7 @@ All examples demonstrate these derives:
 
 ## 📖 **Complete Example List**
 
-All 8 examples currently available:
+All 9 examples currently available:
 
 1. `component_model_trivial.rs` - Quick 30-second introduction
 2. `000_basic_assignment.rs` - Type-driven field assignment fundamentals
@@ -125,7 +126,8 @@ All 8 examples currently available:
 5. `003_component_from.rs` - Advanced order-independent assignment
 6. `004_working_example.rs` - Real-world configuration management
 7. `boolean_assignment_error.rs` - Handling type ambiguity with booleans
-8. `debug_macro_output.rs` - Inspecting macro-generated code
+8. `boolean_ambiguity_solution.rs` - Field-specific methods to resolve boolean ambiguity
+9. `debug_macro_output.rs` - Inspecting macro-generated code
 
 ---
 

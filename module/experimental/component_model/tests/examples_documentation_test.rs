@@ -90,6 +90,7 @@ fn examples_readme_accuracy()
     "003_component_from.rs",
     "004_working_example.rs",
     "boolean_assignment_error.rs",
+    "boolean_ambiguity_solution.rs",
     "debug_macro_output.rs",
   ];
 
