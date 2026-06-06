@@ -331,7 +331,7 @@ default-features = false
 ## genfile
 
 [workspace.dependencies.genfile_core]
-version = "~0.11.0"
+version = "~0.12.0"
 path = "module/core/genfile_core"
 default-features = false
 
