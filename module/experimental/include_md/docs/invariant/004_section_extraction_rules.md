@@ -13,7 +13,7 @@ Section extraction follows exactly four rules, applied unconditionally:
 
 1. **Heading match is case-sensitive and exact.** The heading argument must match the file heading verbatim, including all leading marker characters and any trailing whitespace. No normalization, case folding, or partial matching is performed.
 
-2. **Section boundary is level-aware and inclusive.** Extraction begins at the matched heading line and ends immediately before the next heading of equal or greater depth. All content between those boundaries — including all nested subsections of any depth — is included in the output.
+2. **Section boundary is level-aware and inclusive.** Extraction begins at the matched heading line and ends immediately before the next heading of equal or lesser depth value (same or fewer `#` marks — same or higher significance level). All content between those boundaries — including all nested subsections of any depth — is included in the output.
 
 3. **First occurrence wins for duplicate headings.** When the same heading string appears more than once in the file, the first occurrence is extracted without error. No error is raised for duplicates.
 

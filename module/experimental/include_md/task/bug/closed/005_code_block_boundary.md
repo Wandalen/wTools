@@ -97,11 +97,11 @@ code path.
 
 `src/lib.rs::extract_section`:
 
-Added `in_code_block: bool` local variable. On each line inside the section, if the line starts
-with ` ``` ` or `~~~` (3+ backticks or tildes), the flag toggles. The `heading_level` boundary
-check is skipped entirely while `in_code_block` is true. The fence-opener line itself is always
-pushed to the result (before the toggle could affect the boundary check — the toggle happens first,
-but boundary check is `if !in_code_block`).
+Added `in_code_block: bool` local variable. Execution order per line: (1) toggle `in_code_block`
+if the line starts with ` ``` ` or `~~~`; (2) run the boundary check only under `if !in_code_block`;
+(3) unconditionally push the line to result. A fence opener sets `in_code_block = true`, which
+suppresses the immediately following boundary check, and the opener itself is always included in
+the output because step 3 runs regardless of fence state.
 
 ## Prevention
 

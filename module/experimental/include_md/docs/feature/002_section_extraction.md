@@ -13,7 +13,7 @@ Allows precise embedding of one section from a larger markdown file without spli
 
 Heading matching is case-sensitive and exact: the heading argument must match the file heading verbatim, including leading marker characters and any trailing whitespace. This avoids the ambiguity that case-insensitive matching would introduce for markdown files with mixed-case headings of the same text.
 
-Section boundaries are level-aware: extraction ends at the next heading of equal or greater depth, capturing all nested subsections within the matched section's scope. This means a top-level section heading captures its entire tree of subsections as a self-contained unit, matching the reader's natural expectation.
+Section boundaries are level-aware: extraction ends at the next heading of equal or lesser depth value (same or fewer `#` marks — same or higher significance level), capturing all nested subsections within the matched section's scope. This means a top-level section heading captures its entire tree of subsections as a self-contained unit, matching the reader's natural expectation.
 
 When a heading appears multiple times in the file, the first occurrence is extracted without error. This is deterministic and predictable; raising an error on duplicates would break on common markdown patterns like repeated subheadings within different sections.
 
