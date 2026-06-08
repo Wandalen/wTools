@@ -14,7 +14,7 @@
 
 #![ cfg( feature = "enabled" ) ]
 
-use include_md ::include_md;
+use include_md::include_md;
 use std ::path ::PathBuf;
 
 // ------------------------------------------------------------------ positive
@@ -91,7 +91,7 @@ fn missing_file_is_compile_error()
   assert!(
     check_compile_fails
     (
-      "fn main() { let _ = include_md ::include_md!( \"fixture/does_not_exist.md\" ); }",
+      "fn main() { let _ = include_md::include_md!( \"fixture/does_not_exist.md\" ); }",
       &[ "enabled" ],
     ),
     "include_md! must not compile when the file does not exist",
@@ -105,7 +105,7 @@ fn no_args_is_compile_error()
   assert!(
     check_compile_fails
     (
-      "fn main() { let _ = include_md ::include_md!(); }",
+      "fn main() { let _ = include_md::include_md!(); }",
       &[ "enabled" ],
     ),
     "include_md! must not compile with no arguments",
@@ -119,7 +119,7 @@ fn two_args_is_compile_error()
   assert!(
     check_compile_fails
     (
-      "fn main() { let _ = include_md ::include_md!( \"a.md\", \"b\" ); }",
+      "fn main() { let _ = include_md::include_md!( \"a.md\", \"b\" ); }",
       &[ "enabled" ],
     ),
     "include_md! must not compile with two arguments",
@@ -154,7 +154,7 @@ fn oversized_file_is_compile_error()
 
   // Use an absolute path so `include_bytes!` can locate the file from any source directory.
   let abs = big_file.to_string_lossy().into_owned();
-  let code = format!( "fn main() {{ let _ = include_md ::include_md!( \"{abs}\" ); }}" );
+  let code = format!( "fn main() {{ let _ = include_md::include_md!( \"{abs}\" ); }}" );
   let result = check_compile_fails( &code, &[ "enabled" ] );
   let _ = std ::fs ::remove_dir_all( &tmp_dir );
   assert!( result, "include_md! must not compile when the file exceeds 10 MB" );
@@ -174,7 +174,7 @@ fn invalid_utf8_is_compile_error()
   std ::fs ::write( &invalid_file, [ 0xFF_u8, 0xFE, 0x00 ] ).expect( "write invalid UTF-8" );
 
   let abs = invalid_file.to_string_lossy().into_owned();
-  let code = format!( "fn main() {{ let _ = include_md ::include_md!( \"{abs}\" ); }}" );
+  let code = format!( "fn main() {{ let _ = include_md::include_md!( \"{abs}\" ); }}" );
   let result = check_compile_fails( &code, &[ "enabled" ] );
   let _ = std ::fs ::remove_dir_all( &tmp_dir );
   assert!( result, "include_md! must not compile when the file contains invalid UTF-8" );

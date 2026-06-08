@@ -17,14 +17,14 @@ cargo add include_md
 Include a complete markdown file as a compile-time string constant:
 
 ```rust
-let content = include_md ::include_md!( "../readme.md" );
+let content = include_md::include_md!( "../readme.md" );
 println!( "{content}" );
 ```
 
 Include only a named section from a markdown file:
 
 ```rust
-let section = include_md ::include_md_section!( "readme.md", "## Quick Start" );
+let section = include_md::include_md_section!( "readme.md", "## Quick Start" );
 println!( "{section}" );
 ```
 

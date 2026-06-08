@@ -22,7 +22,7 @@
 
 #![ cfg( feature = "enabled" ) ]
 
-use include_md ::include_md_section;
+use include_md::include_md_section;
 use std ::path ::PathBuf;
 
 // ------------------------------------------------------------------ positive
@@ -298,7 +298,7 @@ fn missing_file_is_compile_error()
   assert!(
     check_compile_fails
     (
-      "fn main() { let _ = include_md ::include_md_section!( \"does_not_exist.md\", \"# X\" ); }",
+      "fn main() { let _ = include_md::include_md_section!( \"does_not_exist.md\", \"# X\" ); }",
       &[ "enabled" ],
     ),
     "include_md_section! must not compile when the file does not exist",
@@ -314,7 +314,7 @@ fn heading_not_found_is_compile_error()
   let manifest_dir = env!( "CARGO_MANIFEST_DIR" );
   let abs_fixture = format!( "{manifest_dir}/tests/fixture/multi_section.md" );
   let code = format!(
-    "fn main() {{ let _ = include_md ::include_md_section!( \"{abs_fixture}\", \"## DoesNotExist__XYZ\" ); }}"
+    "fn main() {{ let _ = include_md::include_md_section!( \"{abs_fixture}\", \"## DoesNotExist__XYZ\" ); }}"
   );
   assert!(
     check_compile_fails( &code, &[ "enabled" ] ),
@@ -330,7 +330,7 @@ fn wrong_case_heading_is_compile_error()
   let abs_fixture = format!( "{manifest_dir}/tests/fixture/multi_section.md" );
   // Fixture has "# Introduction" (capital I); lowercase should not match.
   let code = format!(
-    "fn main() {{ let _ = include_md ::include_md_section!( \"{abs_fixture}\", \"# introduction\" ); }}"
+    "fn main() {{ let _ = include_md::include_md_section!( \"{abs_fixture}\", \"# introduction\" ); }}"
   );
   assert!(
     check_compile_fails( &code, &[ "enabled" ] ),
@@ -345,7 +345,7 @@ fn no_args_is_compile_error()
   assert!(
     check_compile_fails
     (
-      "fn main() { let _ = include_md ::include_md_section!(); }",
+      "fn main() { let _ = include_md::include_md_section!(); }",
       &[ "enabled" ],
     ),
     "include_md_section! must not compile with no arguments",
@@ -359,7 +359,7 @@ fn one_arg_is_compile_error()
   assert!(
     check_compile_fails
     (
-      "fn main() { let _ = include_md ::include_md_section!( \"fixture/multi_section.md\" ); }",
+      "fn main() { let _ = include_md::include_md_section!( \"fixture/multi_section.md\" ); }",
       &[ "enabled" ],
     ),
     "include_md_section! must not compile with only one argument",
@@ -373,7 +373,7 @@ fn three_args_is_compile_error()
   assert!(
     check_compile_fails
     (
-      "fn main() { let _ = include_md ::include_md_section!( \"a.md\", \"# X\", \"extra\" ); }",
+      "fn main() { let _ = include_md::include_md_section!( \"a.md\", \"# X\", \"extra\" ); }",
       &[ "enabled" ],
     ),
     "include_md_section! must not compile with three arguments",
@@ -411,7 +411,7 @@ fn oversized_file_is_compile_error()
   let abs = big_file.to_string_lossy().into_owned();
   let code = format!
   (
-    "fn main() {{ let _ = include_md ::include_md_section!( \"{abs}\", \"# Heading\" ); }}"
+    "fn main() {{ let _ = include_md::include_md_section!( \"{abs}\", \"# Heading\" ); }}"
   );
   let result = check_compile_fails( &code, &[ "enabled" ] );
   let _ = std ::fs ::remove_dir_all( &tmp_dir );
@@ -434,7 +434,7 @@ fn invalid_utf8_is_compile_error()
   let abs = invalid_file.to_string_lossy().into_owned();
   let code = format!
   (
-    "fn main() {{ let _ = include_md ::include_md_section!( \"{abs}\", \"# Heading\" ); }}"
+    "fn main() {{ let _ = include_md::include_md_section!( \"{abs}\", \"# Heading\" ); }}"
   );
   let result = check_compile_fails( &code, &[ "enabled" ] );
   let _ = std ::fs ::remove_dir_all( &tmp_dir );
