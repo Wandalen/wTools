@@ -215,7 +215,7 @@ default-features = false
 ## meta
 
 [workspace.dependencies.for_each]
-version = "~0.10.0"
+version = "~0.11.0"
 path = "module/experimental/for_each"
 default-features = false
 
