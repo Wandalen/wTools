@@ -191,7 +191,7 @@ default-features = false
 ## mem
 
 [workspace.dependencies.mem_tools]
-version = "~0.9.0"
+version = "~0.10.0"
 path = "module/experimental/mem_tools"
 default-features = false
 
