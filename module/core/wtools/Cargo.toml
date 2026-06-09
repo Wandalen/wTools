@@ -1,6 +1,6 @@
 [package]
 name = "wtools"
-version = "0.2.20"
+version = "0.3.0"
 edition = "2021"
 authors = [
   "Kostiantyn Mysnyk <wandalen@obox.systems>",
