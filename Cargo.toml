@@ -300,7 +300,7 @@ path = "module/deprecated/typing_tools"
 default-features = false
 
 [workspace.dependencies.implements]
-version = "~0.13.0"
+version = "~0.14.0"
 path = "module/experimental/implements"
 default-features = false
 
