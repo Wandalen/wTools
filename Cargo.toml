@@ -427,7 +427,7 @@ path = "module/experimental/test_tools"
 ## async
 
 [workspace.dependencies.async_from]
-version = "~0.2.0"
+version = "~0.3.0"
 path = "module/experimental/async_from"
 
 
