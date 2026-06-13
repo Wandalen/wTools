@@ -1,7 +1,7 @@
 # module/experimental/willbe/Cargo.toml
 [package]
 name = "willbe"
-version = "0.37.0"
+version = "0.38.0"
 edition = "2021"
 authors = [
   "Kostiantyn Mysnyk <wandalen@obox.systems>",
