@@ -381,7 +381,7 @@ path = "module/core/process_tools"
 default-features = false
 
 [workspace.dependencies.program_tools]
-version = "~0.2.0"
+version = "~0.3.0"
 path = "module/experimental/program_tools"
 default-features = false
 
