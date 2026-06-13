@@ -5,7 +5,7 @@
 - **Executor Type:** any
 - **Actor:** dev
 - **Claimed At:** 2026-05-16
-- **Status:** ✅ (Completed)
+- **Status:** ✅ (Complete)
 
 ## Goal
 
@@ -236,6 +236,15 @@ Result (2026-06-13): 15. ✅
 Check: `grep -c "auto_wrap(false)" tests/auto_wrap_test.rs`
 Expected: count increases by ≥ 8 (one per new backward-compat case: IN-3 through IN-10). Why: prevents implementing only the original 2 cases (IN-3, IN-4) while omitting the 6 new preset cases added to the spec.
 Result (2026-06-13): The check file is wrong — backward compat cases (IN-3 through IN-10) are in `tests/auto_wrap_budget_test.rs`, not `tests/auto_wrap_test.rs`. `auto_wrap_test.rs` returns 2 (spaces variant: `auto_wrap( false )`). `auto_wrap_budget_test.rs` contains all 8 preset compat cases (unicode_box, markdown, minimal, bordered, grid, csv, tsv, compact). All 8 confirmed present. ✅
+
+## Verification Record
+
+- **Date:** 2026-06-13
+- **Method:** MAAV — two independent Agent subagents (conformance + adversarial)
+- **Test result:** 605/605 tests pass; 4/4 jobs clean (nextest, workspace nextest, doc tests, clippy)
+- **Conformance:** all 16 checks pass — every spec case confirmed ✅ in `tests/docs/`; no ⬜ remaining
+- **Adversarial:** no behavioral regressions found; FC-4 gap documented as N/A in test spec (not a missing test)
+- **Verdict:** ✅ Complete
 
 ## Outcomes
 

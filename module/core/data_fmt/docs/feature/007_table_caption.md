@@ -61,7 +61,56 @@ The line carries the title `"Needs Review"` and two caption fields `"28 PRs"` an
 
 #### Construction
 
-A caption is created with a title string. Additional metadata items (caption fields) are appended with a builder method and joined by a fixed field separator character. The caption is attached to any table configuration via a builder setter. The default state is no caption, producing output identical to pre-caption behavior. All formatting parameters (field separator, rule character, lead width) are fixed constants — see `algorithm/007_caption_rendering.md` for the complete rendering algorithm.
+```rust
+// Type definition (src/config.rs)
+pub struct TableCaption {
+    title  : String,
+    fields : Vec<String>,
+    // Formatting is fixed: field_sep = '·' (U+00B7), rule_char = '─' (U+2500), lead_width = 3
+}
+
+impl TableCaption {
+    pub fn new(title: impl Into<String>) -> Self
+    pub fn field(mut self, f: impl Into<String>) -> Self
+}
+
+// Integration on TableConfig (src/config.rs)
+impl TableConfig {
+    pub fn caption(mut self, caption: TableCaption) -> Self
+}
+```
+
+**Minimal usage:**
+```rust
+let config = TableConfig::plain()
+    .caption(TableCaption::new("Needs Review"));
+// ─── Needs Review ──────────────────────────────────────────────────────────────
+// Name   Age
+// -----  ---
+// Alice  30
+```
+
+**With caption fields:**
+```rust
+let config = TableConfig::plain()
+    .caption(
+        TableCaption::new("Needs Review")
+            .field("28 PRs")
+            .field("15 repos")
+    );
+// ─── Needs Review · 28 PRs · 15 repos ─────────────────────────────────────────
+```
+
+#### Rendering Algorithm
+
+The caption is rendered immediately before the table top border (or header row when no top border exists). The rendering steps are:
+
+1. Build the content string: `title` followed by `" {field_sep} {field}"` for each caption field.
+2. Build the lead: `rule_char` × `lead_width` + ` ` (e.g., `"─── "`).
+3. Build the trailing rule: compute `trail_width = terminal_width - lead_width - 1 - content.chars().count() - 1` (subtracting lead chars, the space after lead, content char-count, and one trailing space). Use `.chars().count()`, not `.len()` — `·` (U+00B7) and `─` (U+2500) are multi-byte in UTF-8. Clamp `trail_width` to 0 if negative.
+4. Emit: `lead + content + " " + rule_char × trail_width + "\n"`.
+
+Terminal width is resolved via the same four-tier chain used by auto-fit: `TableConfig::terminal_width` override (Tier 0) → `$COLUMNS` env var (Tier 1) → `terminal_size` crate, feature-gated (Tier 2) → fallback 120 (Tier 3).
 
 #### Interaction with Other Features
 
