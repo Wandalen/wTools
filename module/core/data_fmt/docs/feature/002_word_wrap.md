@@ -33,9 +33,9 @@
 
 ### Design
 
-#### BreakStrategy Enum
+#### Break Strategy
 
-Controls how lines are broken when text exceeds the configured width. Three variants:
+Controls how lines are broken when text exceeds the configured width. Three modes:
 
 | Variant | Description |
 |---------|-------------|
@@ -43,14 +43,14 @@ Controls how lines are broken when text exceeds the configured width. Three vari
 | `Hard` | Split at exactly `width` characters regardless of word boundaries |
 | `WordThenHard` | Word-boundary first; hard-break only when a single token exceeds available width (default) |
 
-#### Overflow Enum
+#### Overflow Policy
 
-Controls what happens when output exceeds `max_lines`. Two variants:
+Controls what happens when output exceeds `max_lines`. Two modes:
 
-| Variant | Description |
-|---------|-------------|
-| `Truncate` | Discard lines beyond `max_lines` |
-| `Ellipsis( String )` | Append the given string to the last kept line, truncating content so total line length does not exceed `width` |
+| Mode | Description |
+|------|-------------|
+| Truncate | Discard lines beyond `max_lines` |
+| Ellipsis (suffix string) | Append the given suffix string to the last kept line, truncating content so total line length does not exceed `width` |
 
 #### WrapConfig Fields and Defaults
 
@@ -68,7 +68,7 @@ Controls what happens when output exceeds `max_lines`. Two variants:
 
 #### Builder Methods
 
-All builder methods are `#[ must_use ]` and return `Self`:
+All builder methods return self, enabling method chaining:
 
 1. `width`
 2. `initial_indent`
@@ -97,5 +97,5 @@ All builder methods are `#[ must_use ]` and return `Self`:
 3. `preserve_newlines=true`: `\n` in input is a hard break; wrapping restarts with `subsequent_indent`.
 4. `preserve_newlines=false`: `\n` treated as a single space.
 5. `tab_width`: each `\t` in input expanded to `tab_width` spaces before processing.
-6. `max_lines=Some(n)` + `Overflow::Truncate`: output has at most `n` lines.
-7. `max_lines=Some(n)` + `Overflow::Ellipsis(s)`: last kept line has `s` appended, truncating content so the total line length does not exceed `width`.
+6. `max_lines=Some(n)` + Truncate overflow: output has at most `n` lines.
+7. `max_lines=Some(n)` + Ellipsis overflow: last kept line has the suffix string appended, truncating content so the total line length does not exceed `width`.

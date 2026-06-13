@@ -54,7 +54,7 @@
 - **Then:** `determine_fold_point` returns 1 (not 0) due to `.max(1)` clamp; column
   0 appears in the primary header; all other columns appear in continuation lines;
   no panic and no empty header row.
-- **Note:** Covered by `bug_reproducer` issue-fold-point-zero.
+- **Note:** Covered by `bug_reproducer` BUG-007.
 
 ---
 

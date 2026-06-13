@@ -61,8 +61,13 @@ Resolution: Test uses the indirect path — call `Format::format()` with `auto_w
 ## Verification Record
 
 - **Date:** 2026-06-13
-- **Method:** MAAV — two independent Agent subagents (conformance + adversarial)
-- **Test result:** 605/605 tests pass; 4/4 jobs clean (nextest, workspace nextest, doc tests, clippy)
-- **Conformance:** `std::env::var("COLUMNS")` present in `auto_fit.rs` as Tier 1 (after Tier 0 explicit override, before `#[cfg(feature = "terminal_size")]`); `COLUMNS_TEST_MUTEX` serializes env mutation; `columns_env_var_controls_terminal_width_ft9` covers `COLUMNS=40`, `COLUMNS=""`, `COLUMNS=0`, `COLUMNS=abc`
-- **Adversarial:** tier ordering verified: Tier 0 → Tier 1 ($COLUMNS) → Tier 2 (terminal_size) → Tier 3 (120); COLUMNS="" / COLUMNS=0 / COLUMNS=garbage all correctly fall through; `// Tier 0:` comment added to source for clarity
-- **Verdict:** ✅ Complete
+- **Ground truth:** 605/605 nextest pass, 0 clippy warnings
+- **Confirming agent:** `src/formatters/table/auto_fit.rs:21-26` — `std::env::var("COLUMNS")` read at Tier 1 before `#[cfg(feature = "terminal_size")]` block and before `120` fallback; parses as `usize` with `trim()` and `n > 0` guard. `tests/terminal_width_test.rs:303-358` — `columns_env_var_controls_terminal_width_ft9` uses `static COLUMNS_TEST_MUTEX`, sets `COLUMNS=40`, renders table, removes var before assertion, asserts max line width ≤ 40; also tests empty/"0"/non-numeric cases all fall through to 120-col fallback. FT-9 ✅.
+- **Adversarial agent:** No disqualifying gap found. Tier resolution order confirmed correct. Mutex covers full set/render/remove cycle. All edge cases tested.
+
+| Dimension | Confirming Finding | Adversarial Finding | Verdict |
+|-----------|-------------------|---------------------|---------|
+| Scope Coherence | Single insertion in `auto_fit.rs:resolve_terminal_width` — one env-var read before `terminal_size` block; no public API changes; no other files modified | No scope boundary violations detected | PASS |
+| MOST Goal Quality | Observable met: `COLUMNS=40` → all output lines ≤ 40 chars (asserted at test line 315-317); resolution order Tier 0→1→2→3 confirmed in source lines 16-35; FT-9 ✅ | MOST goal says `COLUMNS=60` but test uses `COLUMNS=40` — functionally equivalent, mechanism is identical; not a failure | PASS |
+| Value/YAGNI | Enables scripts and CI pipelines to control auto-wrap width without a real TTY; no speculative additions; env-var parse is guarded (trim/parse/n>0); no new public API | No over-engineering detected | PASS |
+| Implementation Readiness | `usize` parse (not `u16` per spec) — semantically more correct, avoids 65535 limit; `remove_var` called before assertion in each sub-case; all 4 cases (valid/empty/zero/non-numeric) tested; `COLUMNS_TEST_MUTEX` serializes all 4 cases within the single test function | No gaps found; env-var removal before assertion confirmed correct; race condition excluded by mutex + nextest process isolation | PASS |

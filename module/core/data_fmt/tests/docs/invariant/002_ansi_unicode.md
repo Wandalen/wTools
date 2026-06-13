@@ -46,7 +46,7 @@
 - **Note:** Column width allocation uses `unicode_visual_len` (East Asian Width)
   via `calculate_column_widths_for_rows()`, so `pad_to_width` and column allocation
   are both EAW-aware. The `visual_len` function (char count) is used in a separate
-  path (`truncate_cell`) — that is the known limitation tracked as issue-003 in
+  path (`truncate_cell`) — that is the known limitation tracked as BUG-001 in
   `src/ansi_str.rs`.
 
 ---
@@ -106,7 +106,7 @@
   column separator aligns correctly on both rows.
 - **Note:** `calculate_column_widths_for_rows()` uses East Asian Width for column
   measurement (via `unicode_visual_len`). The `visual_len` char-count path only
-  affects `truncate_cell` — tracked as issue-003 in `src/ansi_str.rs`.
+  affects `truncate_cell` — tracked as BUG-001 in `src/ansi_str.rs`.
 
 ---
 
@@ -121,7 +121,7 @@
   `visual_len` (ANSI exclusion + EAW gap) are additive in this code path.
 - **Note:** Column width *allocation* uses `unicode_visual_len` (East Asian Width)
   and is not affected by this gap. The `visual_len` char-count limitation only
-  impacts `truncate_cell` — tracked as issue-003 in `src/ansi_str.rs`.
+  impacts `truncate_cell` — tracked as BUG-001 in `src/ansi_str.rs`.
 
 ---
 
@@ -135,4 +135,4 @@
 
 | File | Relationship |
 |------|-------------|
-| [`tests/unicode_display_width_alignment.rs`](../../unicode_display_width_alignment.rs) | Invariant test implementation (14 bug_reproducers, issue-003) |
+| [`tests/unicode_display_width_alignment.rs`](../../unicode_display_width_alignment.rs) | Invariant test implementation (7 bug_reproducers, BUG-001) |

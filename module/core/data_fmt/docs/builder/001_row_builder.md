@@ -13,7 +13,7 @@
 |------|-------------|
 | [002_builders.md](../api/002_builders.md) | Public API surface |
 
-### InputTypes
+### Input Types
 
 | File | Relationship |
 |------|-------------|
@@ -48,9 +48,11 @@
 
 The builder accumulates rows and produces a `TableView` via `build_view()`, consumed by any `Format`-trait formatter.
 
-### Input Model
+### Input Models
 
-Tabular — see `input_model/tabular.md`.
+| File | Relationship |
+|------|-------------|
+| [001_tabular.md](../input_model/001_tabular.md) | Tabular data model that this builder produces rows for |
 
 ### Usage
 

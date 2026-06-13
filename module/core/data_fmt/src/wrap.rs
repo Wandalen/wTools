@@ -266,7 +266,7 @@ fn available_for( line_idx : usize, config : &WrapConfig ) -> usize
 
 fn expand_tabs( text : &str, tab_width : usize ) -> String
 {
-  // Fix( issue-004a ): removed early return for tab_width==0.
+  // Fix(BUG-002): removed early return for tab_width==0.
   // Root cause: returning `text.to_string()` kept literal `\t` instead of
   // deleting it; `tab_width=0` means "replace with 0 spaces" (i.e. delete).
   // Pitfall: `split_whitespace` masks the bug for Word/WordThenHard strategies,
@@ -294,7 +294,7 @@ fn hard_break_str( text : &str, config : &WrapConfig, first_line_idx : usize ) -
       .nth( avail )
       .map_or( remaining.len(), | ( i, _ ) | i );
     lines.push( format!( "{indent}{}", &remaining[ ..byte_end ] ) );
-    // Fix( issue-004b ): trim leading spaces after extracting each chunk.
+    // Fix(BUG-002): trim leading spaces after extracting each chunk.
     // Root cause: `words.join(" ")` inserts inter-word spaces; after slicing out
     // `avail` chars the leftover may start with a space from the separator,
     // causing the next chunk to begin with that space (e.g. " worl" instead of "world").
@@ -317,7 +317,7 @@ fn push_overlong_word(
     || config.break_long_words;
   if hard_break
   {
-    // Fix( issue-004c ): compute `avail` per output line inside the loop.
+    // Fix(BUG-002): compute `avail` per output line inside the loop.
     // Root cause: the old code computed `avail` once from `line_idx` (the first line)
     // then passed the same chunk size to `hard_chunks`; continuation chunks landed on
     // lines with `subsequent_indent`, so `indent + chunk` exceeded `width`.

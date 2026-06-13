@@ -328,7 +328,7 @@ fn indent_counts_toward_width()
 // --- Bug reproducer tests ---
 
 /// Reproduces leading-space corruption on continuation lines when
-/// `BreakStrategy::Hard` splits input containing inter-word spaces (issue-004b).
+/// `BreakStrategy::Hard` splits input containing inter-word spaces (BUG-002).
 ///
 /// ## Root Cause
 /// `hard_break_str` operates on `words.join(" ")`, a single string with literal
@@ -352,7 +352,7 @@ fn indent_counts_toward_width()
 /// ## Pitfall
 /// Hard-break logic that operates on a pre-joined string treats inter-word
 /// separators as data characters; always strip them after each slice.
-// test_kind: bug_reproducer(issue-004b)
+// test_kind: bug_reproducer(BUG-002)
 #[ test ]
 fn hard_break_bug_continuation_line_leading_space()
 {
@@ -368,7 +368,7 @@ fn hard_break_bug_continuation_line_leading_space()
 }
 
 /// Reproduces overlong-word chunks exceeding `width` when `subsequent_indent`
-/// is longer than `initial_indent` (issue-004c).
+/// is longer than `initial_indent` (BUG-002).
 ///
 /// ## Root Cause
 /// `push_overlong_word` computed `avail` once from the first line index, then
@@ -394,7 +394,7 @@ fn hard_break_bug_continuation_line_leading_space()
 /// ## Pitfall
 /// "Compute once, loop many" is wrong whenever indent may differ between line 0
 /// and subsequent lines. Always derive per-line geometry inside the loop.
-// test_kind: bug_reproducer(issue-004c)
+// test_kind: bug_reproducer(BUG-002)
 #[ test ]
 fn push_overlong_word_bug_subsequent_indent_overflow()
 {
@@ -415,7 +415,7 @@ fn push_overlong_word_bug_subsequent_indent_overflow()
   }
 }
 
-/// Reproduces `\t` characters surviving in output when `tab_width=0` (issue-004a).
+/// Reproduces `\t` characters surviving in output when `tab_width=0` (BUG-002).
 ///
 /// ## Root Cause
 /// `expand_tabs` contained an early return `if tab_width == 0 { return text.to_string(); }`
@@ -443,7 +443,7 @@ fn push_overlong_word_bug_subsequent_indent_overflow()
 /// Treating a zero-valued numeric argument as "no-op" is often wrong. For
 /// `tab_width`, zero means "expand to 0 spaces" (delete), not "skip expansion".
 /// Verify zero-value semantics explicitly before adding early-return guards.
-// test_kind: bug_reproducer(issue-004a)
+// test_kind: bug_reproducer(BUG-002)
 #[ test ]
 fn expand_tabs_bug_zero_width_keeps_tab()
 {
@@ -662,7 +662,7 @@ fn word_then_hard_falls_through_to_hard_break_ac11()
 ///
 /// `"hello world"` with `width(7)` and `BreakStrategy::Hard`: first 7 chars = `"hello w"`;
 /// continuation = `"orld"` (not `" orld"`). Hard-break at position 7 strips the leading
-/// space from the remainder. Regression guard for issue-004b.
+/// space from the remainder. Regression guard for BUG-002.
 // test_kind: standard
 #[ test ]
 fn no_leading_space_on_continuation_after_hard_break_ac12()

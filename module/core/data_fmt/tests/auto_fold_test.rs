@@ -681,7 +681,7 @@ fn explicit_column_flex_mixed_triggers_fold_at_fixed_overflow()
 /// `Bare` wraps across word or slash boundaries in the raw value — no label prefix is
 /// preserved on continuation lines, so multi-line bare output reads as bare text fragments.
 ///
-// test_kind: bug_reproducer(issue-bare-fold-no-wrap)
+// test_kind: bug_reproducer(BUG-006)
 #[ test ]
 fn bare_fold_style_wraps_long_continuation_line()
 {
@@ -740,7 +740,7 @@ fn bare_fold_style_wraps_long_continuation_line()
 /// hit this path. After the fix, `fold_point=1=column_widths.len()` so no folding
 /// occurs — the table renders at natural width (correct; can't fold further).
 ///
-// test_kind: bug_reproducer(issue-fold-point-zero)
+// test_kind: bug_reproducer(BUG-007)
 #[ test ]
 fn fold_point_zero_preserves_first_column_in_header()
 {

@@ -53,9 +53,11 @@
 |-----------|--------|-------------|
 | `TreeFormatter` | Requires generic `T` + render closure | Direct methods: `format()`, `format_aligned()`, `format_with_aggregation()` |
 
-### Input Type
+### Input Types
 
-`TableView` — see `input_type/table_view.md`.
+| File | Relationship |
+|------|-------------|
+| [001_table_view.md](../input_type/001_table_view.md) | Canonical input type consumed by this trait |
 
 ### Usage
 

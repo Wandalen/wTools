@@ -14,7 +14,7 @@
 //! - T012-N05: very large min value — no panic
 //!
 //! ### 10. Alignment: all lines in a table must have equal char-widths
-//! - `unicode_box()` all lines same display width (regression for issue-align)
+//! - `unicode_box()` all lines same display width (regression for BUG-005)
 //! - `markdown()` all lines same display width
 //! - `bordered()` (`AsciiGrid`) all lines same display width
 //! - `grid()` (`AsciiGrid` with borders) all lines same display width

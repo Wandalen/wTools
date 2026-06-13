@@ -412,7 +412,7 @@ fn test_t014_m01_single_column_unicode_box_no_mid_junction_chars()
 /// `RowBuilder::new(headers).build_view()` with no rows produces a `TableView` with
 /// headers but no data rows. The formatter renders header + separator only (IC-3).
 ///
-/// Fix( issue-empty-table ): `format_internal` early-exits when `headers.is_empty()`,
+/// Fix(BUG-008): `format_internal` early-exits when `headers.is_empty()`,
 /// so a truly empty call returns `""`. Headers-only tables still render their columns.
 #[ test ]
 fn test_t014_m02_header_only_table_grid_no_panic()

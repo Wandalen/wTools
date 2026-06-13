@@ -3,6 +3,12 @@
 This document describes manual testing procedures for verifying column truncation
 and multiline cell features in data_fmt.
 
+### Responsibility Table
+
+| File | Responsibility |
+|------|----------------|
+| `readme.md` | Manual testing plan: test cases, procedures, and completion criteria |
+
 ## Features Under Test
 
 ### 1. Column Truncation (`max_column_width`)

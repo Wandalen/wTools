@@ -124,7 +124,7 @@ The auto-fit pipeline begins by resolving the effective terminal width. The `res
 |----------|--------|-----------|---------|
 | 0 | `terminal_width` config field | Caller sets `TableConfig::terminal_width( Some(80) )` | Fixed width for tests or embedded use |
 | 1 | `$COLUMNS` environment variable | `COLUMNS` is set to a positive integer | CI/CD pipelines, scripts, non-TTY environments |
-| 2 | `terminal_size` crate | Feature `terminal_size` enabled and stdout is a TTY | Runtime detection via `terminal_size::terminal_size()` |
+| 2 | `terminal_size` crate | Feature `terminal_size` enabled and stdout is a TTY | Runtime detection via the terminal size library |
 | 3 | Hardcoded fallback | None of the above | 120 columns |
 
 #### Tier 0 — Explicit Override
@@ -139,7 +139,7 @@ When `terminal_width` is `None`, `resolve_terminal_width()` reads the `COLUMNS` 
 
 Enable the `terminal_size` cargo feature to activate runtime detection. When the `terminal_size` cargo feature is enabled and `terminal_width` is `None`, the formatter queries `terminal_size::terminal_size()` at render time. This returns the actual terminal dimensions when stdout is connected to a TTY. Falls through to Tier 3 when:
 - stdout is redirected to a file or pipe (not a TTY)
-- the platform doesn't support terminal size queries
+- the platform does not support terminal size queries
 
 #### Tier 3 — Hardcoded Fallback
 
@@ -184,7 +184,7 @@ Strategy 2 (✅ implemented); Strategy 1 (✅ implemented).
 
 #### Interaction with Existing Features
 
-- **Column truncation** (`max_column_width`): When `auto_wrap` is true and `ColumnOverflow::Wrap` applies, wrapping takes precedence over truncation for flex columns. Fixed columns and explicit `ColumnOverflow::Truncate` still truncate.
+- **Column truncation** (`max_column_width`): When `auto_wrap` is true and wrap overflow mode applies, wrapping takes precedence over truncation for flex columns. Fixed columns and columns with explicit truncate overflow still truncate.
 - **Multiline cells**: Auto-wrapped cells produce multiline output via the same pipeline as manual `\n` cells.
 - **Sub-row detail lines**: Detail lines are emitted after all row content lines (including wrapped lines) and after any folded continuation lines.
 - **ANSI coloring**: Wrapped and folded lines respect the per-line color/reset algorithm (no ANSI bleed).

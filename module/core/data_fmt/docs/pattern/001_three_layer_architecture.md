@@ -15,12 +15,6 @@
 | [001_data_types.md](../api/001_data_types.md) | Data types in Layer 1 |
 | [002_builders.md](../api/002_builders.md) | Builders in Layer 2 |
 
-### Docs
-
-| File | Relationship |
-|------|-------------|
-| [architecture.md](../architecture.md) | Original combined architecture document (retained per migration rules) |
-
 ### Features
 
 | File | Relationship |

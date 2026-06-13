@@ -7,13 +7,6 @@
 - **In Scope**: All 46 per-variant attributes organized by group; attribute name, purpose, and example values for each.
 - **Out of Scope**: Per-variant attribute values (see `variant/NNN_*.md` files), formatter implementation (see `feature/`).
 
-### Docs
-
-| File | Relationship |
-|------|-------------|
-| [readme.md](../variant/readme.md) | Variant doc entity master file — consumes this schema |
-| [variant_attributes.md](../variant_attributes.md) | Original combined source document |
-
 ### Abstract
 
 A 46-attribute schema describing every output format variant in the library. Attributes are organized across 10 groups covering identity, build requirements, character encoding, visual structure, data representation, output characteristics, usage context, technical details, API surface, performance, and compatibility. Every variant doc instance fills out all 46 attributes to enable uniform comparison and selection across formatters.

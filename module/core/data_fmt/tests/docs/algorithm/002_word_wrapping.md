@@ -22,7 +22,7 @@
 | AC-9 | preserve_newlines creates independent wrapping segments per input line | ✅ |
 | AC-10 | tab_width > 0 expands tab to N spaces | ✅ |
 | AC-11 | WordThenHard falls through to hard-break when word exceeds budget | ✅ |
-| AC-12 | no leading space on continuation line after hard break (issue-004b) | ✅ |
+| AC-12 | no leading space on continuation line after hard break (BUG-002) | ✅ |
 
 ---
 
@@ -55,7 +55,7 @@
   are both present; `tab_width=0` means "expand tabs to zero spaces" (i.e. delete
   the tab character), not a no-op.
 - **Note:** Covered by `expand_tabs_bug_zero_width_keeps_tab` (`bug_reproducer`
-  issue-004a) in `tests/word_wrap.rs`.
+  BUG-002) in `tests/word_wrap.rs`.
 
 ---
 
@@ -94,7 +94,7 @@
 - **When:** `wrap()` is called.
 - **Then:** Line 1 is `"hello w"` (exactly 7 chars) and line 2 is `"orld"`;
   the split occurs at exactly 7 visible characters regardless of word boundaries;
-  no leading space appears at the start of line 2 (Fix issue-004b).
+  no leading space appears at the start of line 2 (Fix BUG-002).
 
 ---
 
@@ -158,14 +158,14 @@
 
 ---
 
-### AC-12: no leading space on continuation line after hard break (issue-004b)
+### AC-12: no leading space on continuation line after hard break (BUG-002)
 
 - **Given:** A `WrapFormatter` with `break_strategy(BreakStrategy::Hard)` and
   `width(7)`; input `"hello world"` (space at position 5).
 - **When:** `wrap()` is called.
 - **Then:** Line 2 begins with `"orld"` not `" orld"`; no leading space is inserted
   at the start of a continuation line when the break falls mid-word after a space.
-- **Note:** Regression guard for issue-004b; the bug was a leading-space artifact
+- **Note:** Regression guard for BUG-002; the bug was a leading-space artifact
   from the split-at-boundary implementation.
 
 ---

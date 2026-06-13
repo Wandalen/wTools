@@ -18,19 +18,31 @@
 
 | File | Relationship |
 |------|-------------|
-| [`tests/docs/feature/007_table_caption.md`](../../tests/docs/feature/007_table_caption.md) | Test spec — FC-N cases |
+| [`tests/table_caption_test.rs`](../../tests/table_caption_test.rs) | Test implementation — FC-1 through FC-6 |
 
-### Vocabulary
+### Features
 
-| Term | Definition |
-|------|-----------|
-| **caption** | The full titled-rule line printed above the table header |
-| **title** | The primary text in the caption — e.g., `"Needs Review"` |
-| **caption field** | An additional metadata item appended to the title with the field separator — e.g., `"28 PRs"` |
-| **field separator** | The character placed between caption fields — default `·` (U+00B7 MIDDLE DOT) |
-| **rule character** | The horizontal fill character used for the rule sections — default `─` (U+2500 BOX DRAWINGS LIGHT HORIZONTAL) |
-| **lead width** | The number of rule characters emitted before the title text — default 3 |
-| **titled rule** | The visual format: `─── Title · Field1 · Field2 ──────────────...` filling the terminal width |
+| File | Relationship |
+|------|-------------|
+| [001_table_formatting.md](001_table_formatting.md) | Feature extended by table caption |
+
+### Algorithms
+
+| File | Relationship |
+|------|-------------|
+| [007_caption_rendering.md](../algorithm/007_caption_rendering.md) | Algorithm implementing caption line assembly |
+
+### Invariants
+
+| File | Relationship |
+|------|-------------|
+| [005_caption.md](../invariant/005_caption.md) | Behavioral guarantees for caption rendering |
+
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [003_config_types.md](../api/003_config_types.md) | `TableCaption` and `TableConfig::caption()` API surface |
 
 ### Design
 
@@ -47,7 +59,7 @@ Wandalen/cgtools                 129  open   NEED REVIEW : 3d line dash
 
 The line carries the title `"Needs Review"` and two caption fields `"28 PRs"` and `"15 repos"`. The rule chars fill the remainder of the terminal width, creating a visually prominent section separator.
 
-#### API
+#### Construction
 
 ```rust
 // Type definition (src/config.rs)
@@ -107,18 +119,4 @@ Terminal width is resolved via the same four-tier chain used by auto-fit: `Table
 - **All 9 table styles**: `caption` is style-agnostic — it renders the same titled rule regardless of `BorderVariant`.
 - **`auto_wrap(false)`**: Terminal width is still used for the trailing rule calculation; caption always fills to the resolved terminal width.
 
-#### Invariants
-
-- A `None` caption (default) emits no additional output — zero impact on existing tables.
-- The caption line never exceeds the resolved terminal width (trailing rule is clamped to 0 if content already exceeds terminal width).
-- The caption appears on exactly one output line ending with `\n`.
-
-### Acceptance Criteria
-
-| ID | Criterion |
-|----|-----------|
-| AC-1 | `TableConfig::plain().caption(TableCaption::new("T"))` renders a line starting with `"─── T "` before the first table line |
-| AC-2 | The caption line total length equals the resolved terminal width (or content length + lead + 1 trailing space when content exceeds terminal width) |
-| AC-3 | Each `.field("F")` call appends ` · F` to the content string |
-| AC-4 | A table with no caption (`TableConfig::plain()`) produces output identical to current behavior — no regression |
-| AC-5 | Caption renders above the top border for `grid` and `unicode_box`, and above the header row for `plain`, `bordered`, and `markdown` |
+See `invariant/005_caption.md` for no-caption passthrough, width ceiling, and single-line output guarantees.

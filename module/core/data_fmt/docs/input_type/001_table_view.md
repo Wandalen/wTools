@@ -7,7 +7,7 @@
 - **In Scope**: Struct fields, TableMetadata, construction patterns, Format trait consumption, and backward compatibility.
 - **Out of Scope**: Conceptual shape (see `../input_model/`), formatter behavior (see `../feature/`).
 
-### InputModels
+### Input Models
 
 | File | Relationship |
 |------|-------------|
@@ -49,9 +49,11 @@
 
 The preferred construction path is `RowBuilder::build_view()`, which validates row length at each insertion. `TableView::new()` and `TableView::with_details()` allow direct construction when the caller already holds a headers vector and a row matrix.
 
-### Trait
+### Traits
 
-Consumed by the `Format` trait — see `../trait/001_format.md`.
+| File | Relationship |
+|------|-------------|
+| [001_format.md](../trait/001_format.md) | `Format` trait that consumes `TableView` as its input type |
 
 ### Formatter Coverage
 

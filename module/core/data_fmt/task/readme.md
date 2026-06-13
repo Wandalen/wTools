@@ -12,6 +12,7 @@
 |------|----------------|
 | `actors/` | Actors registry (executor records) |
 | `action_plan/` | Per-actor action plans |
+| `bug/` | Bug tracking files (BUG-NNN) for all reported and resolved defects |
 | `backlog/` | Candidate tasks not yet prioritized |
 | `cancelled/` | Abandoned tasks with cancellation rationale |
 | `completed/` | Finished tasks with completion evidence |

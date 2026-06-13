@@ -456,7 +456,7 @@ fn t18_single_row_with_detail()
 // T19 — multi-line detail: every line gets indent prefix
 // =============================================================================
 
-/// Fix(issue-multiline-detail): continuation lines of a multi-line detail
+/// Fix(BUG-013): continuation lines of a multi-line detail
 /// must each receive the indent prefix, not just the first line.
 ///
 /// Root cause: single `push_str(indent) + push_str(detail)` emitted the

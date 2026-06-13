@@ -1,12 +1,12 @@
 meta:
   description: Cross-reference graph for all doc instances in data_fmt
-  generated: 2026_05_02
-  node_count: 77
-  edge_count: 149
+  last_updated: 2026_06_13
+  node_count: 80
+  edge_count: 163
   component_count: 10
 
 nodes:
-  # algorithm (6)
+  # algorithm (7)
   - id: algorithm/001
     file: algorithm/001_multiline_cell_rendering.md
     label: Multiline Cell Rendering
@@ -30,6 +30,10 @@ nodes:
   - id: algorithm/006
     file: algorithm/006_cli_help_alignment.md
     label: CLI Help Alignment
+    entity: algorithm
+  - id: algorithm/007
+    file: algorithm/007_caption_rendering.md
+    label: Caption Rendering
     entity: algorithm
 
   # api (4)
@@ -66,7 +70,7 @@ nodes:
     label: Variant Attributes
     entity: data_structure
 
-  # feature (6)
+  # feature (7)
   - id: feature/001
     file: feature/001_table_formatting.md
     label: Table Formatting
@@ -90,6 +94,10 @@ nodes:
   - id: feature/006
     file: feature/006_api_cleanup_v030.md
     label: API Cleanup v0.3.0
+    entity: feature
+  - id: feature/007
+    file: feature/007_table_caption.md
+    label: Table Caption
     entity: feature
 
   # formatter (10)
@@ -154,7 +162,7 @@ nodes:
     label: TreeNode
     entity: input_type
 
-  # invariant (4)
+  # invariant (5)
   - id: invariant/001
     file: invariant/001_data_model.md
     label: Data Model
@@ -170,6 +178,10 @@ nodes:
   - id: invariant/004
     file: invariant/004_column_fold_invariants.md
     label: Column Fold Invariants
+    entity: invariant
+  - id: invariant/005
+    file: invariant/005_caption.md
+    label: Caption Rendering
     entity: invariant
 
   # pattern (4)
@@ -339,10 +351,58 @@ nodes:
     entity: variant
 
 edges:
+  # algorithm/007 cross-references
+  - from: algorithm/007
+    to: feature/007
+    via: typed_reference
+  - from: invariant/005
+    to: feature/007
+    via: typed_reference
+  - from: invariant/005
+    to: algorithm/007
+    via: typed_reference
+
+  # algorithm/001 cross-references (Wave 2)
+  - from: algorithm/001
+    to: feature/001
+    via: typed_reference
+  - from: algorithm/001
+    to: invariant/002
+    via: typed_reference
+
+  # algorithm/002 cross-references (Wave 2)
+  - from: algorithm/002
+    to: feature/002
+    via: typed_reference
+
+  # algorithm/003 cross-references (Wave 2)
+  - from: algorithm/003
+    to: invariant/002
+    via: typed_reference
+
+  # feature/007 cross-references (Wave 2)
+  - from: feature/007
+    to: feature/001
+    via: typed_reference
+  - from: feature/007
+    to: algorithm/007
+    via: typed_reference
+  - from: feature/007
+    to: invariant/005
+    via: typed_reference
+  - from: feature/007
+    to: api/003
+    via: typed_reference
+
+  # feature/001 reverse (Wave 2)
+  - from: feature/001
+    to: feature/007
+    via: typed_reference
+
   # algorithm cross-references
   - from: algorithm/002
     to: feature/005
-    label: body-link
+    via: typed_reference
   - from: algorithm/003
     to: invariant/001
     via: typed_reference
@@ -354,7 +414,7 @@ edges:
     via: typed_reference
   - from: algorithm/004
     to: algorithm/002
-    label: body-link
+    via: typed_reference
   - from: algorithm/005
     to: feature/005
     via: typed_reference
@@ -476,7 +536,7 @@ edges:
   # invariant cross-references
   - from: invariant/002
     to: algorithm/001
-    label: body-link
+    via: typed_reference
   - from: invariant/002
     to: algorithm/003
     via: typed_reference
@@ -534,13 +594,13 @@ edges:
     via: typed_reference
   - from: trait/002
     to: trait/001
-    label: body-link
+    via: typed_reference
   - from: trait/003
     to: trait/002
-    label: body-link
+    via: typed_reference
   - from: trait/003
     to: input_model/001
-    label: body-link
+    via: typed_reference
 
   # formatter cross-references
   - from: formatter/001
@@ -810,6 +870,14 @@ edges:
     to: data_structure/001
     via: typed_reference
 
+  # feature/007 cross-references
+  - from: feature/007
+    to: api/003
+    via: typed_reference
+  - from: api/003
+    to: feature/007
+    via: typed_reference
+
 components:
   - id: 1
     size: 5
@@ -832,9 +900,9 @@ components:
     nodes: [input_model/001, input_model/002, input_type/001, input_type/002, builder/001, builder/002]
 
   - id: 5
-    size: 5
+    size: 8
     isolated: false
-    nodes: [api/001, api/002, api/003, api/004, feature/004]
+    nodes: [api/001, api/002, api/003, api/004, feature/004, feature/007, algorithm/007, invariant/005]
 
   - id: 6
     size: 2

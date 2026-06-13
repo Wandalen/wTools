@@ -80,5 +80,5 @@ Standard workspace integration uses the `enabled` feature for core dependencies 
 
 #### Usage Pattern
 
-Build data once with `RowBuilder::build_view()` to produce a `TableView`, then pass it to any `Format`-implementing formatter. Each formatter is conditionally available based on its feature flag; callers wrap formatter code in the appropriate `cfg(feature = "...")` guard.
+Build data once with the row builder to produce a tabular view, then pass it to any formatter implementing the unified interface. Each formatter is conditionally available based on its feature flag; callers activate only the formatters they need.
 

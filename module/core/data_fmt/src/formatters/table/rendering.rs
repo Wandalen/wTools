@@ -229,7 +229,7 @@ impl TableFormatter
       }
       crate::config::ColumnSeparator::String( s ) =>
       {
-        output.push_str( s );
+        output.push_str( &self.apply_border_color( s ) );
       }
     }
   }
@@ -284,7 +284,7 @@ impl TableFormatter
       HeaderSeparatorVariant::AsciiGrid =>
       {
         // Grid-style separator matching border rule format: +-----|-----+
-        // Fix(issue-014): corners changed from '|' to '+' for AsciiGrid consistency.
+        // Fix(BUG-004): corners changed from '|' to '+' for AsciiGrid consistency.
         // Root cause: '|' was hardcoded, mismatching the '+' used in border rules.
         // Pitfall: only change the corner/junction chars here; data row pipes stay '|'.
         output.push_str( &self.apply_border_color( "+" ) );
@@ -310,7 +310,7 @@ impl TableFormatter
       }
       HeaderSeparatorVariant::Unicode =>
       {
-        // Fix(issue-align): delegate to format_unicode_horizontal_rule so outer
+        // Fix(BUG-005): delegate to format_unicode_horizontal_rule so outer
         // padding is added only at the two outer edges — matching data row layout.
         // Root cause: `width + 2` added padding around every column junction,
         //   producing separators that were 2*(N-1) chars wider than data rows.
@@ -320,7 +320,7 @@ impl TableFormatter
       }
       HeaderSeparatorVariant::Markdown =>
       {
-        // Fix(issue-align): delegate to format_ascii_horizontal_rule for the same
+        // Fix(BUG-005): delegate to format_ascii_horizontal_rule for the same
         // outer-edge-only padding reason as the Unicode branch above.
         self.format_ascii_horizontal_rule( output, column_widths, '|', '-', '|', '|' );
       }

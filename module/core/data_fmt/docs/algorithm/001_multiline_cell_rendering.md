@@ -11,22 +11,30 @@
 
 | File | Relationship |
 |------|--------------|
-| `src/formatters/table/rendering.rs` | `format_multiline_row` — multiline cell rendering |
-| `src/formatters/table/mod.rs` | `format_row` — dispatches to `format_multiline_row` |
+| [`src/formatters/table/rendering.rs`](../../src/formatters/table/rendering.rs) | `format_multiline_row` — multiline cell rendering |
+| [`src/formatters/table/mod.rs`](../../src/formatters/table/mod.rs) | `format_row` — dispatches to `format_multiline_row` |
 
 ### Tests
 
 | File | Relationship |
 |------|--------------|
-| `tests/multiline_cells.rs` | Multiline cell rendering test suite |
+| [`tests/multiline_cells.rs`](../../tests/multiline_cells.rs) | Multiline cell rendering test suite |
+
+### Features
+
+| File | Relationship |
+|------|-------------|
+| [001_table_formatting.md](../feature/001_table_formatting.md) | Feature this algorithm implements |
+
+### Invariants
+
+| File | Relationship |
+|------|-------------|
+| [002_ansi_unicode.md](../invariant/002_ansi_unicode.md) | ANSI-aware alignment invariants respected by this algorithm |
 
 ### Abstract
 
 A two-pass algorithm for rendering table rows that contain newline characters. Pass 1 measures the maximum line count across all cells in the row to determine row height. Pass 2 emits one physical output line per sub-line index, padding shorter cells with empty space to maintain column alignment and border continuity across all sub-lines.
-
-### Source Location
-
-`src/formatters/table/rendering.rs` — `format_multiline_row()` (lines 118–215), called from `format_row()` in `src/formatters/table/mod.rs` (line 403).
 
 ### Trigger Condition
 

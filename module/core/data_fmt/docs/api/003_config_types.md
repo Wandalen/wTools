@@ -35,7 +35,7 @@ Controls the separator line drawn below the header row. Five variants: `None`, `
 
 #### ColumnSeparator
 
-Controls the delimiter between columns. Three variants: `Spaces( usize )` (N space characters between columns), `Character( char )` (single character such as `|`, `,`, or `\t`), `String( String )` (arbitrary multi-character separator).
+Controls the delimiter between columns. Three variants: `Spaces` (N space characters between columns, count specified), `Character` (single character such as `|`, `,`, or `\t`), `String` (arbitrary multi-character separator).
 
 #### PaddingSide
 
@@ -49,6 +49,10 @@ Per-column classification for the auto-fit budget allocation algorithm. `Fixed` 
 
 Controls how overflow columns are formatted in continuation lines. `Labeled` (default) emits `"ColName: value"` pairs. `Bare` joins all overflow values on one line. `Stacked` emits one labeled line per overflow column.
 
+#### TableCaption
+
+Carries caption data for the titled-rule line rendered above a table. Two fields: `title` (the primary label text) and `fields` (zero or more additional metadata strings appended with the field separator). Constructor: `new(title)`. Builder setter: `field(value)` appends one field and returns `Self`. Formatting constants (field separator `·` U+00B7, rule character `─` U+2500, lead width 3) are fixed and not configurable. Attached to `TableConfig` via the `caption(caption)` builder setter. When absent (default), no caption line is emitted — output is identical to pre-caption behavior.
+
 #### TableConfig
 
 All fields are private; accessed via preset constructors and builder setters. Nine preset constructors: `plain()`, `minimal()`, `bordered()`, `markdown()`, `grid()`, `unicode_box()`, `csv()`, `tsv()`, `compact()`. All return fully configured instances. Builder setters cover: column widths, alignment, border variant, header separator variant, column separator, outer and inner padding, header coloring, alternating row colors, min/max column width, truncation marker, sub-row indent, terminal width, auto-wrap, column flex assignments, auto-fold, fold style, fold indent, border color, and caption. All setters are `#[ must_use ]` and return `Self`.
@@ -57,7 +61,7 @@ All fields are private; accessed via preset constructors and builder setters. Ni
 
 #### ExpandedConfig
 
-Controls `ExpandedFormatter` output. Fields: `record_separator`, `key_value_separator`, `show_record_numbers`, `colorize_keys`, `key_color`, `padding_side`, `indent_prefix`. Two preset constructors: `new()` / `postgres_style()` (aligned keys, pipe separator) and `property_style()` (colon separator, after-separator padding). All builder setters return `Self` and are `#[ must_use ]`.
+Controls `ExpandedFormatter` output. Fields: `record_separator`, `key_value_separator`, `show_record_numbers`, `colorize_keys`, `key_color`, `padding_side`, `indent_prefix`. Two preset constructors: `new()` / `postgres_style()` (aligned keys, pipe separator) and `property_style()` (colon separator, after-separator padding). All builder setters return self, enabling method chaining.
 
 #### TableCaption
 
@@ -65,7 +69,7 @@ Builder type for the optional titled-rule line rendered above a table. Construct
 
 #### TreeConfig
 
-Controls `TreeFormatter` output. Six fields: `show_branches` (draw branch connector symbols), `show_root` (render root node), `indent_size` (spaces per depth level, default 4), `max_depth` (depth cutoff), `column_separator` (string between aligned columns), `min_column_width` (minimum per-column display width). Constructor: `new()`. All builder setters return `Self` and are `#[ must_use ]`.
+Controls `TreeFormatter` output. Six fields: `show_branches` (draw branch connector symbols), `show_root` (render root node), `indent_size` (spaces per depth level, default 4), `max_depth` (depth cutoff), `column_separator` (string between aligned columns), `min_column_width` (minimum per-column display width). Constructor: `new()`. All builder setters return self, enabling method chaining.
 
 ### Error Handling
 
