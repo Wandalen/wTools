@@ -21,7 +21,10 @@
 
 #![ cfg( feature = "enabled" ) ]
 
-use data_fmt::{ RowBuilder, TableFormatter, TableConfig, Format };
+use data_fmt::{
+  RowBuilder, TableFormatter, TableConfig, TableCaption, Format,
+  CAPTION_FIELD_SEP, CAPTION_RULE_CHAR, CAPTION_LEAD_WIDTH,
+};
 
 // ============================================================================
 // 9. min_column_width Floor Enforcement (Task 012)
@@ -427,5 +430,165 @@ fn test_grid_all_lines_same_display_width()
       "grid line {idx} has width {w}, expected {first_width}\n  line: {line:?}\nFull output:\n{output}"
     );
   }
+}
+
+// ============================================================================
+// API contract tests: TableCaption + TableConfig caption/border_color fields
+// (tests/docs/api/003_config_types.md — AP-1 through AP-6)
+// ============================================================================
+
+fn two_col_view_cv() -> data_fmt::TableView
+{
+  RowBuilder::new( vec![ "Name".into(), "Val".into() ] )
+    .add_row( vec![ "Alice".into(), "1".into() ] )
+    .build_view()
+}
+
+/// AP-1 — `api/003`: `TableCaption::new` stores title; no fields rendered on caption line.
+// test_kind: standard
+#[ test ]
+fn table_caption_new_stores_title_no_fields_ap1()
+{
+  let config = TableConfig::plain()
+    .terminal_width( Some( 40 ) )
+    .caption( TableCaption::new( "Active Sessions" ) );
+  let output = TableFormatter::with_config( config )
+    .format( &two_col_view_cv() )
+    .unwrap_or_default();
+
+  let caption_line = output.lines().next().unwrap_or( "" );
+  // Title present in caption line
+  assert!(
+    caption_line.contains( "Active Sessions" ),
+    "AP-1: caption line must contain the title; got: '{caption_line}'",
+  );
+  // No field separator — confirms empty fields collection
+  assert!(
+    !caption_line.contains( CAPTION_FIELD_SEP ),
+    "AP-1: caption line must not contain field separator when no fields are set; got: '{caption_line}'",
+  );
+}
+
+/// AP-2 — `api/003`: `TableCaption::field` appends fields in order via builder chain.
+// test_kind: standard
+#[ test ]
+fn table_caption_field_builder_appends_in_order_ap2()
+{
+  let caption = TableCaption::new( "R" )
+    .field( "10 items" )
+    .field( "3 repos" );
+  let config = TableConfig::plain()
+    .terminal_width( Some( 40 ) )
+    .caption( caption );
+  let output = TableFormatter::with_config( config )
+    .format( &two_col_view_cv() )
+    .unwrap_or_default();
+
+  let caption_line = output.lines().next().unwrap_or( "" );
+  // Both fields appear in order with field separator
+  assert!(
+    caption_line.contains( "R · 10 items · 3 repos" ),
+    "AP-2: caption line must contain 'R · 10 items · 3 repos' in order; got: '{caption_line}'",
+  );
+}
+
+/// AP-3 — `api/003`: `TableConfig::caption` attaches caption; absent caption produces no caption line.
+// test_kind: standard
+#[ test ]
+fn table_config_caption_builder_ap3()
+{
+  let view = two_col_view_cv();
+
+  // With caption: first line is the titled rule
+  let output_with = TableFormatter::with_config(
+    TableConfig::plain().caption( TableCaption::new( "T" ) )
+  )
+  .format( &view )
+  .unwrap_or_default();
+
+  assert!(
+    output_with.lines().next().unwrap_or( "" ).starts_with( "─── T" ),
+    "AP-3: config with caption must start with titled rule; got:\n{output_with}",
+  );
+
+  // Without caption: first line is NOT a titled rule (no '─' prefix)
+  let output_without = TableFormatter::with_config( TableConfig::plain() )
+    .format( &view )
+    .unwrap_or_default();
+
+  assert!(
+    !output_without.lines().next().unwrap_or( "" ).starts_with( '─' ),
+    "AP-3: config without caption must not produce a titled rule; got:\n{output_without}",
+  );
+}
+
+/// AP-4 — `api/003`: `TableConfig::border_color` stores ANSI color; default has no border color.
+// test_kind: standard
+#[ test ]
+fn table_config_border_color_builder_ap4()
+{
+  let border_code = "\x1b[2;37m";
+
+  // With border_color: borders are ANSI-decorated
+  let output_colored = TableFormatter::with_config(
+    TableConfig::bordered().border_color( border_code.to_string() )
+  )
+  .format( &two_col_view_cv() )
+  .unwrap_or_default();
+
+  assert!(
+    output_colored.contains( border_code ),
+    "AP-4: bordered table with border_color must contain the ANSI code; output:\n{output_colored}",
+  );
+
+  // Without border_color: no ANSI codes on borders (plain bordered has none)
+  let output_plain = TableFormatter::with_config( TableConfig::bordered() )
+    .format( &two_col_view_cv() )
+    .unwrap_or_default();
+
+  assert!(
+    !output_plain.contains( border_code ),
+    "AP-4: bordered table without border_color must not contain the border ANSI code; output:\n{output_plain}",
+  );
+}
+
+/// AP-5 — `api/003`: all nine preset constructors default caption to `None` (no caption line emitted).
+// test_kind: standard
+#[ test ]
+fn all_presets_default_caption_none_ap5()
+{
+  let view = two_col_view_cv();
+
+  for ( label, config ) in [
+    ( "plain",       TableConfig::plain() ),
+    ( "minimal",     TableConfig::minimal() ),
+    ( "bordered",    TableConfig::bordered() ),
+    ( "markdown",    TableConfig::markdown() ),
+    ( "grid",        TableConfig::grid() ),
+    ( "unicode_box", TableConfig::unicode_box() ),
+    ( "csv",         TableConfig::csv() ),
+    ( "tsv",         TableConfig::tsv() ),
+    ( "compact",     TableConfig::compact() ),
+  ]
+  {
+    let output = TableFormatter::with_config( config )
+      .format( &view )
+      .unwrap_or_default();
+
+    assert!(
+      !output.starts_with( '─' ),
+      "AP-5: {label} preset must not emit a caption line by default; output:\n{output}",
+    );
+  }
+}
+
+/// AP-6 — `api/003`: `CAPTION_FIELD_SEP`, `CAPTION_RULE_CHAR`, `CAPTION_LEAD_WIDTH` have expected values.
+// test_kind: standard
+#[ test ]
+fn caption_constants_have_expected_values_ap6()
+{
+  assert_eq!( CAPTION_FIELD_SEP, '·', "AP-6: CAPTION_FIELD_SEP must be U+00B7 MIDDLE DOT" );
+  assert_eq!( CAPTION_RULE_CHAR, '─', "AP-6: CAPTION_RULE_CHAR must be U+2500 BOX DRAWINGS LIGHT HORIZONTAL" );
+  assert_eq!( CAPTION_LEAD_WIDTH, 3,  "AP-6: CAPTION_LEAD_WIDTH must be 3" );
 }
 

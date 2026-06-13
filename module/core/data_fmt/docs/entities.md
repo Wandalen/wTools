@@ -8,7 +8,7 @@
 | `api/` | Registry and overview of all API doc instances | [api/readme.md](api/readme.md) | 4 |
 | `builder/` | Registry and overview of all builder doc instances | [builder/readme.md](builder/readme.md) | 2 |
 | `data_structure/` | Registry and overview of all data structure doc instances | [data_structure/readme.md](data_structure/readme.md) | 1 |
-| `feature/` | Registry and overview of all feature doc instances | [feature/readme.md](feature/readme.md) | 6 |
+| `feature/` | Registry and overview of all feature doc instances | [feature/readme.md](feature/readme.md) | 7 |
 | `formatter/` | Registry and overview of all formatter doc instances | [formatter/readme.md](formatter/readme.md) | 10 |
 | `input_model/` | Registry and overview of all input model doc instances | [input_model/readme.md](input_model/readme.md) | 2 |
 | `input_type/` | Registry and overview of all input type doc instances | [input_type/readme.md](input_type/readme.md) | 2 |
@@ -18,7 +18,7 @@
 | `variant/` | Registry and overview of all variant doc instances | [variant/readme.md](variant/readme.md) | 33 |
 | `tests/docs/algorithm/` | Test spec coverage for algorithm doc instances | [tests/docs/algorithm/readme.md](../tests/docs/algorithm/readme.md) | 6 |
 | `tests/docs/invariant/` | Test spec coverage for invariant doc instances | [tests/docs/invariant/readme.md](../tests/docs/invariant/readme.md) | 4 |
-| `tests/docs/feature/` | Test spec coverage for feature doc instances | [tests/docs/feature/readme.md](../tests/docs/feature/readme.md) | 6 |
+| `tests/docs/feature/` | Test spec coverage for feature doc instances | [tests/docs/feature/readme.md](../tests/docs/feature/readme.md) | 7 |
 
 ## Master Doc Instances Table
 
@@ -43,6 +43,7 @@
 | feature | 004 | Color Themes | [feature/004_color_themes.md](feature/004_color_themes.md) |
 | feature | 005 | Auto-Fit | [feature/005_auto_fit.md](feature/005_auto_fit.md) |
 | feature | 006 | API Cleanup v0.3.0 | [feature/006_api_cleanup_v030.md](feature/006_api_cleanup_v030.md) |
+| feature | 007 | Table Caption | [feature/007_table_caption.md](feature/007_table_caption.md) |
 | formatter | 001 | TableFormatter | [formatter/001_table_formatter.md](formatter/001_table_formatter.md) |
 | formatter | 002 | ExpandedFormatter | [formatter/002_expanded_formatter.md](formatter/002_expanded_formatter.md) |
 | formatter | 003 | TreeFormatter | [formatter/003_tree_formatter.md](formatter/003_tree_formatter.md) |
@@ -117,3 +118,4 @@
 | tests/docs/feature | 004 | Color Themes | [tests/docs/feature/004_color_themes.md](../tests/docs/feature/004_color_themes.md) |
 | tests/docs/feature | 005 | Auto-Fit | [tests/docs/feature/005_auto_fit.md](../tests/docs/feature/005_auto_fit.md) |
 | tests/docs/feature | 006 | API Cleanup v0.3.0 | [tests/docs/feature/006_api_cleanup_v030.md](../tests/docs/feature/006_api_cleanup_v030.md) |
+| tests/docs/feature | 007 | Table Caption | [tests/docs/feature/007_table_caption.md](../tests/docs/feature/007_table_caption.md) |

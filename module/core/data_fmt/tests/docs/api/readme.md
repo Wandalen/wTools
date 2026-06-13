@@ -11,3 +11,4 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
+| 003 | [config_types](003_config_types.md) | API contracts for `TableConfig` builder additions (`border_color`, `caption`) and `TableCaption` type | 6 ✅ |

@@ -35,7 +35,7 @@ What do you need to format?
 │  ├─ For GitHub README → table_markdown
 │  ├─ For database output → table_bordered
 │  ├─ For formal reports → table_grid
-│  ├─ For modern terminals → table_unicode
+│  ├─ For modern terminals (Unicode confirmed) → table_unicode  ⚠ narrow compatibility
 │  ├─ For narrow terminals → table_compact
 │  └─ For maximum simplicity → table_minimal
 │

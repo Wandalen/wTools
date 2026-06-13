@@ -18,6 +18,7 @@
 | FT-5 | alternating row colors apply correct codes to each row | ✅ |
 | FT-6 | sub-row detail lines appear after all row content lines | ✅ |
 | FT-7 | min_column_width raises column width to configured floor | ✅ |
+| FT-8 | inner_padding applies symmetrically to both sides of every cell | ✅ |
 
 ---
 
@@ -77,6 +78,18 @@
 - **Then:** The column is at least 10 characters wide in the output; the cell value
   is padded with spaces to the minimum width; column separators appear at the
   correct position respecting the floor.
+
+---
+
+### FT-8: inner_padding applies symmetrically to both sides of every cell
+
+- **Given:** A `TableConfig` with `inner_padding = 1` (any of `bordered()`, `markdown()`,
+  `grid()`, `unicode_box()`); a table with two or more columns.
+- **When:** The table is rendered.
+- **Then:** Every cell carries one space before and one space after its content — including
+  cells adjacent to inter-column separators; a two-column bordered table produces
+  `| col1 | col2 |`, not `| col1| col2 |`; horizontal-rule lines widen by
+  `2 × inner_padding` per column to stay aligned with data rows.
 
 ---
 

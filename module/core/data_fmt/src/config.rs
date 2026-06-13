@@ -192,6 +192,62 @@ pub enum FoldStyle
   Stacked,
 }
 
+/// Character placed between caption fields in a titled rule line (`·` U+00B7)
+pub const CAPTION_FIELD_SEP : char = '·';
+
+/// Character used for the horizontal rule fill in a caption line (`─` U+2500)
+pub const CAPTION_RULE_CHAR : char = '─';
+
+/// Number of rule characters emitted before the title text in a caption
+pub const CAPTION_LEAD_WIDTH : usize = 3;
+
+/// A titled rule to be rendered above a table
+///
+/// Carries a title and optional caption fields separated by [`CAPTION_FIELD_SEP`].
+/// Rendered as: `─── Title · Field1 · Field2 ──────...` filling terminal width.
+#[ derive( Debug, Clone ) ]
+pub struct TableCaption
+{
+  title  : String,
+  fields : Vec< String >,
+}
+
+impl TableCaption
+{
+  /// Create a new caption with the given title
+  #[ must_use ]
+  pub fn new( title : impl Into< String > ) -> Self
+  {
+    Self
+    {
+      title  : title.into(),
+      fields : Vec::new(),
+    }
+  }
+
+  /// Append a caption field — appears after the title separated by [`CAPTION_FIELD_SEP`]
+  #[ must_use ]
+  pub fn field( mut self, f : impl Into< String > ) -> Self
+  {
+    self.fields.push( f.into() );
+    self
+  }
+
+  /// Build the rendered content string: `"title · field1 · field2 ..."`
+  pub( crate ) fn content_str( &self ) -> String
+  {
+    let mut s = self.title.clone();
+    for f in &self.fields
+    {
+      s.push( ' ' );
+      s.push( CAPTION_FIELD_SEP );
+      s.push( ' ' );
+      s.push_str( f );
+    }
+    s
+  }
+}
+
 /// Formatter parameters for table output
 ///
 /// Defines customizable parameters including borders, separators, padding,
@@ -275,6 +331,10 @@ pub struct TableConfig
   fold_style : FoldStyle,
   /// Indent prefix for continuation lines
   fold_indent : String,
+  /// ANSI escape code applied to every border/separator character (None = no coloring)
+  border_color : Option< String >,
+  /// Optional titled rule rendered above the table (None = no caption)
+  caption : Option< TableCaption >,
 }
 
 impl Default for TableConfig
@@ -306,6 +366,8 @@ impl Default for TableConfig
       auto_fold   : true,
       fold_style  : FoldStyle::Labeled,
       fold_indent : "    ".to_string(),
+      border_color : None,
+      caption : None,
     }
   }
 }
@@ -631,6 +693,22 @@ impl TableConfig
     self.fold_indent = indent;
     self
   }
+
+  /// Set ANSI escape code applied to every border/separator character
+  #[ must_use ]
+  pub fn border_color( mut self, color : String ) -> Self
+  {
+    self.border_color = Some( color );
+    self
+  }
+
+  /// Attach a titled rule rendered above the table
+  #[ must_use ]
+  pub fn caption( mut self, c : TableCaption ) -> Self
+  {
+    self.caption = Some( c );
+    self
+  }
 }
 
 /// Internal accessors for formatters (pub(crate) methods, not fields — satisfies AF1).
@@ -776,6 +854,18 @@ impl TableConfig
   pub( crate ) fn fold_indent_val( &self ) -> &str
   {
     &self.fold_indent
+  }
+
+  /// ANSI escape code for border coloring (accessor)
+  pub( crate ) fn border_color_str( &self ) -> Option< &str >
+  {
+    self.border_color.as_deref()
+  }
+
+  /// Caption reference (accessor)
+  pub( crate ) fn caption_ref( &self ) -> Option< &TableCaption >
+  {
+    self.caption.as_ref()
   }
 }
 

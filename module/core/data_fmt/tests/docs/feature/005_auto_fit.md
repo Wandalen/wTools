@@ -4,7 +4,7 @@
 
 - **Purpose**: Drive test coverage for the auto-fit feature.
 - **Responsibility**: Documents test cases for the combined auto-wrap and auto-fold auto-fit pipeline in `docs/feature/005_auto_fit.md`.
-- **In Scope**: Natural fit (no auto-fit), flex column wrapping, column folding with Labeled style, `auto_wrap(false)` opt-out, `terminal_width` override, CSV/TSV bypass, tty-query tier (Tier 1) coverage, 120-column fallback (Tier 2).
+- **In Scope**: Natural fit (no auto-fit), flex column wrapping, column folding with Labeled style, `auto_wrap(false)` opt-out, `terminal_width` override, CSV/TSV bypass, `$COLUMNS` environment variable tier (Tier 1), tty-query tier (Tier 2) coverage, 120-column fallback (Tier 3).
 - **Out of Scope**: Budget allocation algorithm details (see `algorithm/004`); fold detection algorithm details (see `algorithm/005`).
 
 ### Case Index
@@ -19,6 +19,7 @@
 | FT-6 | CSV and TSV presets disable auto-fit automatically | ✅ |
 | FT-7 | explicit terminal_width(60) constrains output to 60 columns | ✅ |
 | FT-8 | tty-query tier traversed before 120-column fallback | ✅ |
+| FT-9 | COLUMNS env var controls auto-fit terminal width in non-TTY environments | ✅ |
 
 ---
 
@@ -77,10 +78,8 @@
 - **When:** The table is rendered.
 - **Then:** The formatter uses 60 as the effective terminal width; content that
   exceeds 60 columns triggers auto-fit; all output lines fit within 60 characters.
-- **Note:** `resolve_terminal_width()` does NOT consult the `COLUMNS` environment
-  variable — that strategy is not implemented. The 60-column budget is provided via
-  the explicit `terminal_width(Some(60))` override, which is semantically equivalent
-  to what `COLUMNS=60` detection would supply if it were implemented.
+- **Note:** The Tier 0 explicit `terminal_width(Some(60))` override takes priority over
+  all other tiers including the `COLUMNS` env var (Tier 1) and the tty-query (Tier 2).
 
 ---
 
@@ -89,13 +88,31 @@
 - **Given:** No `terminal_width` override in `TableConfig`; running in a non-TTY
   environment (e.g. `cargo nextest`); the table content is narrower than 120 columns.
 - **When:** The table is rendered.
-- **Then:** `resolve_terminal_width()` traverses Tier 1 (tty query via
-  `terminal_size` crate), which returns `None` in non-TTY; Tier 2 (120-column
-  hardcoded fallback) then activates; the narrow table renders fully without
-  wrapping or folding; all output lines are within 120 columns.
-- **Note:** The three-tier resolution order is: Tier 0 (explicit `Some(w)` config
-  override) → Tier 1 (`terminal_size` tty query) → Tier 2 (120 fallback). No
-  `COLUMNS` env var tier exists in the current implementation.
+- **Then:** `resolve_terminal_width()` traverses Tier 1 (`$COLUMNS` env var),
+  which returns `None` when `COLUMNS` is unset; Tier 2 (tty query via
+  `terminal_size` crate) then queries the TTY, which also returns `None` in
+  non-TTY environments; Tier 3 (120-column hardcoded fallback) activates; the
+  narrow table renders fully without wrapping or folding; all output lines are
+  within 120 columns.
+- **Note:** Resolution order is: Tier 0 (explicit `Some(w)` config override) →
+  Tier 1 (`$COLUMNS` env var) → Tier 2 (`terminal_size` tty query) → Tier 3
+  (120 fallback). In non-TTY test environments Tier 2 returns `None`, so Tier 3
+  activates and the narrow table renders without wrapping or folding.
+
+---
+
+### FT-9: COLUMNS env var controls auto-fit terminal width in non-TTY environments
+
+- **Given:** `COLUMNS=40` is set in the process environment; a table whose natural total
+  row width is ~90 characters; no explicit `terminal_width` override in `TableConfig`.
+- **When:** The table is rendered with `auto_wrap(true)` (default).
+- **Then:** `resolve_terminal_width()` reads `COLUMNS`, parses `40` as a positive `u16`,
+  and returns `40` as the effective width; the auto-fit pipeline treats the terminal as
+  40 columns wide; all output lines fit within 40 characters; setting `COLUMNS` to an
+  empty string, a non-numeric value, or `0` causes the env var to be ignored and
+  resolution falls through to Tier 2 (tty query) and then Tier 3 (120 fallback).
+- **Note:** This test must serialize access to the `COLUMNS` env var (via `Mutex` or
+  `#[serial]`) to prevent interference with parallel test threads.
 
 ---
 

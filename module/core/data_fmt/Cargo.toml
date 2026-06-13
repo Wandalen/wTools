@@ -107,7 +107,7 @@ sql_sqlite = []
 themes = []
 
 # Meta-features for convenience
-format_table_visual = [ "enabled", "table_plain", "table_minimal", "table_bordered", "table_markdown", "table_grid", "table_unicode", "table_compact" ]
+format_table_visual = [ "enabled", "table_plain", "table_minimal", "table_bordered", "table_markdown", "table_grid", "table_unicode", "table_compact", "dep:terminal_size" ]
 format_table_export = [ "enabled", "table_csv", "table_tsv" ]
 format_table = [ "format_table_visual", "format_table_export" ]
 

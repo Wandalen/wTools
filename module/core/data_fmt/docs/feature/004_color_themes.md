@@ -94,7 +94,7 @@ Themes work with all three visual formatter configs. Applying a theme to a confi
 
 Themes automatically configure the relevant fields on each config type:
 
-- **Table config**: header color, alternating row colors, border colors
+- **Table config**: header color, alternating row colors, border colors — all border and separator characters (`|`, `+`, box-drawing chars, horizontal-rule fill) are ANSI-decorated with `ColorTheme::border_color` when non-empty
 - **Expanded config**: key color, record separator colors
 - **Tree config**: branch symbol colors, data colors
 

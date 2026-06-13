@@ -73,11 +73,19 @@
 
 ### Usage Context
 
-- **primary_use_case**: Modern terminal UIs
+- **primary_use_case**: Modern terminal UIs with confirmed Unicode support
 - **terminal_optimized**: Yes
 - **file_export_suitable**: No
 - **streaming_friendly**: No
 - **grep_friendly**: No
+
+### Usage Guidance
+
+**Prefer `plain` instead for general CLI tools.** `unicode_box` requires a Unicode-capable terminal; box-drawing characters render as garbled symbols in many CI pipelines, Windows consoles, and legacy terminals. Use `unicode_box` only when:
+- The target terminal is known to support Unicode box-drawing (e.g., a controlled TUI application)
+- The visual polish of full borders justifies the reduced compatibility
+
+For process monitors, status dashboards, and any tool that may run in CI or be piped: use `TableConfig::plain()` (the library default).
 
 ### Technical Details
 

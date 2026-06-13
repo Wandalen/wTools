@@ -202,10 +202,11 @@ mod theme_tests
     );
 
     // inner_padding=2 with outer_padding=true and bordered() base:
-    // rows should start with "|  " (border + 2 inner padding spaces)
+    // rows contain 2 spaces after the border pipe. With border_color set the pipe is ANSI-decorated,
+    // so the pattern is "\x1b[0m  " (ANSI reset followed by 2 spaces).
     let output = TableFormatter::with_config( config ).format( &sample_row() ).unwrap_or_default();
     assert!(
-      output.lines().any( | l | l.starts_with( "|  " ) ),
+      output.lines().any( | l | l.contains( "|  " ) || l.contains( "\x1b[0m  " ) ),
       "inner_padding=2 preserved after theme application; output:\n{output}"
     );
   }
@@ -261,17 +262,17 @@ mod theme_tests
       "dark and light themes should have different header colors"
     );
 
-    // Both preserve inner_padding=2: output contains "|  " (ANSI-colored rows start with escape
-    // codes, so contains() is required rather than starts_with()).
+    // Both preserve inner_padding=2: output contains "|  " or "\x1b[0m  " (when border_color is set,
+    // the border pipe is ANSI-decorated so the literal "|  " is replaced by the reset+spaces pattern).
     let dark_output = TableFormatter::with_config( dark_config ).format( &sample_row() ).unwrap_or_default();
     let light_output = TableFormatter::with_config( light_config ).format( &sample_row() ).unwrap_or_default();
 
     assert!(
-      dark_output.lines().any( | l | l.contains( "|  " ) ),
+      dark_output.lines().any( | l | l.contains( "|  " ) || l.contains( "\x1b[0m  " ) ),
       "dark theme preserves inner_padding=2; output:\n{dark_output}"
     );
     assert!(
-      light_output.lines().any( | l | l.contains( "|  " ) ),
+      light_output.lines().any( | l | l.contains( "|  " ) || l.contains( "\x1b[0m  " ) ),
       "light theme preserves inner_padding=2; output:\n{light_output}"
     );
   }
@@ -286,11 +287,11 @@ mod theme_tests
         .min_column_width( 20 )
     );
 
-    // inner_padding=3 preserved: output contains "|   " (border + 3 spaces). Uses contains()
-    // because nord theme activates ANSI coloring, prepending escape codes before the border char.
+    // inner_padding=3 preserved: output contains "|   " or "\x1b[0m   " (when border_color is set,
+    // the border pipe is ANSI-decorated so the literal "|   " is replaced by the reset+spaces pattern).
     let output = TableFormatter::with_config( config ).format( &sample_row() ).unwrap_or_default();
     assert!(
-      output.lines().any( | l | l.contains( "|   " ) ),
+      output.lines().any( | l | l.contains( "|   " ) || l.contains( "\x1b[0m   " ) ),
       "inner_padding=3 preserved after nord theme application; output:\n{output}"
     );
     assert!( output.contains( "Alice" ), "themed config must render data; output:\n{output}" );
@@ -321,5 +322,70 @@ mod theme_tests
     );
     // Data must still appear
     assert!( output.contains( "Alice" ), "themed output must contain data:\n{output:?}" );
+  }
+
+  /// FT-6 — `feature/004`: `apply_to_table` forwards `border_color` so separator characters carry theme ANSI code.
+  // test_kind: standard
+  #[ test ]
+  fn apply_to_table_forwards_border_color_ft6()
+  {
+    let view = RowBuilder::new( vec![ "A".into(), "B".into() ] )
+      .add_row( vec![ "x".into(), "y".into() ] )
+      .build_view();
+
+    let config = ColorTheme::dark().apply_to_table( TableConfig::bordered() );
+    let output = TableFormatter::with_config( config ).format( &view ).unwrap_or_default();
+
+    // Every horizontal-rule line (ANSI-stripped form starts with '+') must contain an ANSI code.
+    let rule_lines : Vec< &str > = output.lines()
+      .filter( | l |
+      {
+        // Strip simple ESC[...m sequences to reveal raw chars
+        let mut stripped = String::new();
+        let mut chars = l.chars().peekable();
+        while let Some( ch ) = chars.next()
+        {
+          if ch == '\x1b'
+          {
+            // Skip ESC[...m sequence
+            for c in chars.by_ref()
+            {
+              if c == 'm' { break; }
+            }
+          }
+          else
+          {
+            stripped.push( ch );
+          }
+        }
+        stripped.starts_with( '+' )
+      } )
+      .collect();
+
+    assert!(
+      !rule_lines.is_empty(),
+      "bordered table through dark theme must produce '+' rule lines; output:\n{output:?}",
+    );
+
+    for line in &rule_lines
+    {
+      assert!(
+        line.contains( '\x1b' ),
+        "every '+' rule line must contain ANSI code when border_color is set; line:\n{line:?}\noutput:\n{output:?}",
+      );
+    }
+
+    // A plain bordered table (no theme) must NOT have ANSI on rule lines
+    let plain_output = TableFormatter::with_config( TableConfig::bordered() )
+      .format( &view )
+      .unwrap_or_default();
+    let plain_rule = plain_output.lines().find( | l | l.starts_with( '+' ) );
+    if let Some( plain_line ) = plain_rule
+    {
+      assert!(
+        !plain_line.contains( '\x1b' ),
+        "unthemed bordered table must not have ANSI on rule lines; line:\n{plain_line:?}",
+      );
+    }
   }
 }

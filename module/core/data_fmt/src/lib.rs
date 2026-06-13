@@ -182,6 +182,8 @@ pub use color_tools::DecoratedText;
 pub use config::{
   TreeConfig, TableConfig, ExpandedConfig, PaddingSide, TreeSymbols,
   BorderVariant, HeaderSeparatorVariant, ColumnSeparator, ColumnFlex, FoldStyle,
+  TableCaption,
+  CAPTION_FIELD_SEP, CAPTION_RULE_CHAR, CAPTION_LEAD_WIDTH,
 };
 #[ cfg( feature = "enabled" ) ]
 pub use ansi_str::{ visual_len, pad_to_width, truncate_cell };

@@ -34,7 +34,7 @@ impl TableFormatter
       {
         '|'
       };
-      output.push( border_char );
+      output.push_str( &self.apply_border_color( &border_char.to_string() ) );
     }
 
     for ( idx, cell ) in cells.iter().enumerate()
@@ -43,7 +43,7 @@ impl TableFormatter
       let align_right = self.config.col_align_right().get( idx ).copied().unwrap_or( false );
 
       // Add padding before cell if outer_padding enabled (skip for CSV/TSV)
-      if idx == 0 && self.config.has_outer_padding() && should_pad
+      if self.config.has_outer_padding() && should_pad
       {
         output.push_str( &" ".repeat( self.config.cell_inner_padding() ) );
       }
@@ -79,16 +79,16 @@ impl TableFormatter
         output.push_str( &cell_content );
       }
 
+      // Add padding after cell if outer_padding enabled (skip for CSV/TSV)
+      if self.config.has_outer_padding() && should_pad
+      {
+        output.push_str( &" ".repeat( self.config.cell_inner_padding() ) );
+      }
+
       // Add column separator (except after last column)
       if idx < cells.len() - 1
       {
         self.append_column_separator( output );
-      }
-
-      // Add padding after last cell if outer_padding enabled (skip for CSV/TSV)
-      if idx == cells.len() - 1 && self.config.has_outer_padding() && should_pad
-      {
-        output.push_str( &" ".repeat( self.config.cell_inner_padding() ) );
       }
     }
 
@@ -103,7 +103,7 @@ impl TableFormatter
       {
         '|'
       };
-      output.push( border_char );
+      output.push_str( &self.apply_border_color( &border_char.to_string() ) );
     }
 
     output.push( '\n' );
@@ -155,7 +155,7 @@ impl TableFormatter
         {
           '|'
         };
-        output.push( border_char );
+        output.push_str( &self.apply_border_color( &border_char.to_string() ) );
       }
 
       for ( col_idx, cell_lines ) in split_cells.iter().enumerate()
@@ -165,7 +165,7 @@ impl TableFormatter
         let align_right = self.config.col_align_right().get( col_idx ).copied().unwrap_or( false );
 
         // Add padding before cell if outer_padding enabled
-        if col_idx == 0 && self.config.has_outer_padding()
+        if self.config.has_outer_padding()
         {
           output.push_str( &" ".repeat( self.config.cell_inner_padding() ) );
         }
@@ -183,16 +183,16 @@ impl TableFormatter
         // Pad and render line
         output.push_str( &pad_unicode_width( &line_content, width, align_right ) );
 
+        // Add padding after cell if outer_padding enabled
+        if self.config.has_outer_padding()
+        {
+          output.push_str( &" ".repeat( self.config.cell_inner_padding() ) );
+        }
+
         // Add column separator (except after last column)
         if col_idx < cells.len() - 1
         {
           self.append_column_separator( output );
-        }
-
-        // Add padding after last cell if outer_padding enabled
-        if col_idx == cells.len() - 1 && self.config.has_outer_padding()
-        {
-          output.push_str( &" ".repeat( self.config.cell_inner_padding() ) );
         }
       }
 
@@ -207,7 +207,7 @@ impl TableFormatter
         {
           '|'
         };
-        output.push( border_char );
+        output.push_str( &self.apply_border_color( &border_char.to_string() ) );
       }
 
       output.push( '\n' );
@@ -225,12 +225,24 @@ impl TableFormatter
       }
       crate::config::ColumnSeparator::Character( ch ) =>
       {
-        output.push( *ch );
+        output.push_str( &self.apply_border_color( &ch.to_string() ) );
       }
       crate::config::ColumnSeparator::String( s ) =>
       {
         output.push_str( s );
       }
+    }
+  }
+
+  /// Wrap `s` with ANSI escape code when `border_color` is configured.
+  ///
+  /// Returns `code + s + reset` when `border_color` is set, else `s.to_string()`.
+  fn apply_border_color( &self, s : &str ) -> String
+  {
+    match self.config.border_color_str()
+    {
+      Some( code ) => format!( "{code}{s}\x1b[0m" ),
+      None => s.to_string(),
     }
   }
 
@@ -250,21 +262,21 @@ impl TableFormatter
         // Plain dashes under each column
         for ( idx, &width ) in column_widths.iter().enumerate()
         {
-          if idx == 0 && self.config.has_outer_padding()
+          if self.config.has_outer_padding()
           {
             output.push_str( &" ".repeat( self.config.cell_inner_padding() ) );
           }
 
           output.push_str( &"-".repeat( width ) );
 
+          if self.config.has_outer_padding()
+          {
+            output.push_str( &" ".repeat( self.config.cell_inner_padding() ) );
+          }
+
           if idx < column_widths.len() - 1
           {
             self.append_column_separator( output );
-          }
-
-          if idx == column_widths.len() - 1 && self.config.has_outer_padding()
-          {
-            output.push_str( &" ".repeat( self.config.cell_inner_padding() ) );
           }
         }
         output.push( '\n' );
@@ -275,26 +287,24 @@ impl TableFormatter
         // Fix(issue-014): corners changed from '|' to '+' for AsciiGrid consistency.
         // Root cause: '|' was hardcoded, mismatching the '+' used in border rules.
         // Pitfall: only change the corner/junction chars here; data row pipes stay '|'.
-        output.push( '+' );
-        for ( idx, &width ) in column_widths.iter().enumerate()
+        output.push_str( &self.apply_border_color( "+" ) );
+        for &width in column_widths
         {
-          // Leading padding for first column
-          if idx == 0 && self.config.has_outer_padding()
+          if self.config.has_outer_padding()
           {
-            output.push_str( &"-".repeat( self.config.cell_inner_padding() ) );
+            output.push_str( &self.apply_border_color( &"-".repeat( self.config.cell_inner_padding() ) ) );
           }
 
           // Dashes for content width
-          output.push_str( &"-".repeat( width ) );
+          output.push_str( &self.apply_border_color( &"-".repeat( width ) ) );
 
-          // Trailing padding for last column (before the plus!)
-          if idx == column_widths.len() - 1 && self.config.has_outer_padding()
+          if self.config.has_outer_padding()
           {
-            output.push_str( &"-".repeat( self.config.cell_inner_padding() ) );
+            output.push_str( &self.apply_border_color( &"-".repeat( self.config.cell_inner_padding() ) ) );
           }
 
           // Column junction as '+' (after all content)
-          output.push( '+' );
+          output.push_str( &self.apply_border_color( "+" ) );
         }
         output.push( '\n' );
       }
@@ -335,19 +345,20 @@ impl TableFormatter
     right : char
   )
   {
-    output.push( left );
+    output.push_str( &self.apply_border_color( &left.to_string() ) );
     for ( idx, &width ) in widths.iter().enumerate()
     {
-      if idx == 0 && self.config.has_outer_padding()
+      if self.config.has_outer_padding()
       {
-        output.push_str( &fill.to_string().repeat( self.config.cell_inner_padding() ) );
+        output.push_str( &self.apply_border_color( &fill.to_string().repeat( self.config.cell_inner_padding() ) ) );
       }
-      output.push_str( &fill.to_string().repeat( width ) );
-      if idx == widths.len() - 1 && self.config.has_outer_padding()
+      output.push_str( &self.apply_border_color( &fill.to_string().repeat( width ) ) );
+      if self.config.has_outer_padding()
       {
-        output.push_str( &fill.to_string().repeat( self.config.cell_inner_padding() ) );
+        output.push_str( &self.apply_border_color( &fill.to_string().repeat( self.config.cell_inner_padding() ) ) );
       }
-      output.push( if idx < widths.len() - 1 { mid } else { right } );
+      let sep = if idx < widths.len() - 1 { mid } else { right };
+      output.push_str( &self.apply_border_color( &sep.to_string() ) );
     }
     output.push( '\n' );
   }
@@ -368,19 +379,20 @@ impl TableFormatter
     right : char
   )
   {
-    output.push( left );
+    output.push_str( &self.apply_border_color( &left.to_string() ) );
     for ( idx, &width ) in widths.iter().enumerate()
     {
-      if idx == 0 && self.config.has_outer_padding()
+      if self.config.has_outer_padding()
       {
-        output.push_str( &fill.to_string().repeat( self.config.cell_inner_padding() ) );
+        output.push_str( &self.apply_border_color( &fill.to_string().repeat( self.config.cell_inner_padding() ) ) );
       }
-      output.push_str( &fill.to_string().repeat( width ) );
-      if idx == widths.len() - 1 && self.config.has_outer_padding()
+      output.push_str( &self.apply_border_color( &fill.to_string().repeat( width ) ) );
+      if self.config.has_outer_padding()
       {
-        output.push_str( &fill.to_string().repeat( self.config.cell_inner_padding() ) );
+        output.push_str( &self.apply_border_color( &fill.to_string().repeat( self.config.cell_inner_padding() ) ) );
       }
-      output.push( if idx < widths.len() - 1 { mid } else { right } );
+      let sep = if idx < widths.len() - 1 { mid } else { right };
+      output.push_str( &self.apply_border_color( &sep.to_string() ) );
     }
     output.push( '\n' );
   }

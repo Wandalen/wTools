@@ -221,6 +221,9 @@ impl TableFormatter
     let primary_widths : &[ usize ] = &column_widths[ ..fold_point ];
     let primary_headers : &[ String ] = &headers[ ..fold_point ];
 
+    // Caption titled rule — rendered before top border when present
+    self.render_caption_if_present( &mut output );
+
     // Top border (AsciiGrid / Unicode only)
     self.format_top_border_if_needed( &mut output, primary_widths );
 
@@ -500,6 +503,30 @@ impl TableFormatter
       let cells_rendered : Vec< String > = cells.iter().map( DecoratedText::render ).collect();
       self.format_single_line_row( output, &cells_rendered, column_widths, true );
     }
+  }
+
+  /// Render the caption titled rule into `output`, or return early if no caption is set.
+  ///
+  /// Format: `─── content ──────...` filling `resolve_terminal_width()` columns.
+  /// Uses `.chars().count()` (not `.len()`) because `·` and `─` are multi-byte in UTF-8.
+  fn render_caption_if_present( &self, output : &mut String )
+  {
+    let Some( caption ) = self.config.caption_ref() else { return };
+    let content = caption.content_str();
+    let tw = self.resolve_terminal_width();
+    let lead_width = crate::config::CAPTION_LEAD_WIDTH;
+    let rule_char  = crate::config::CAPTION_RULE_CHAR;
+    // used = lead_width + 1 (space) + content chars + 1 (trailing space)
+    let used = lead_width + 1 + content.chars().count() + 1;
+    let trail = tw.saturating_sub( used );
+    let lead  : String = std::iter::repeat_n( rule_char, lead_width ).collect();
+    let trail_str : String = std::iter::repeat_n( rule_char, trail ).collect();
+    output.push_str( &lead );
+    output.push( ' ' );
+    output.push_str( &content );
+    output.push( ' ' );
+    output.push_str( &trail_str );
+    output.push( '\n' );
   }
 
 }

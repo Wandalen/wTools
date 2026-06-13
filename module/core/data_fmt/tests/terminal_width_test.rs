@@ -9,7 +9,8 @@
 //!
 //! ## Tier Coverage
 //!
-//! - Tier 1 (explicit `Some(w)` override): tests 2–7
+//! - Tier 0 (explicit `Some(w)` override): tests 2–7
+//! - Tier 1 (`$COLUMNS` env var): FT-9
 //! - Tier 2 (`terminal_size` crate query): verified by compilation with
 //!   `--features terminal_size`; not unit-tested deterministically because
 //!   `cargo nextest` redirects stdout so `terminal_size::terminal_size()` returns None
@@ -210,12 +211,7 @@ fn csv_preset_bypasses_auto_fit_regardless_of_terminal_width()
   );
 }
 
-// --- FT-7: 60-column effective width constrains output (simulates COLUMNS=60 detection) ---
-//
-// Note: `resolve_terminal_width` does not currently consult the `COLUMNS` environment
-// variable (no Tier-3 env-var strategy implemented). The 60-col effective width is
-// exercised here via the explicit `terminal_width(Some(60))` config override, which is
-// semantically equivalent to what COLUMNS=60 detection would provide.
+// --- FT-7: 60-column effective width constrains output ---
 
 /// FT-7 — `feature/005`: 60-column effective terminal width constrains output to 60 cols.
 ///
@@ -245,18 +241,20 @@ fn sixty_column_effective_width_constrains_output_ft7()
   );
 }
 
-// --- FT-8: tty query (Tier 2) attempted before env-var fallback (Tier 1) ---
+// --- FT-8: tty query (Tier 2) attempted before 120-col fallback (Tier 3) ---
 //
-// The three-tier resolution order is:
+// Four-tier resolution order (feature/005):
 //   Tier 0: explicit `terminal_width(Some(w))` config override (highest priority)
-//   Tier 1: `terminal_size` crate tty query (Strategy 2 in feature/005 terminology)
-//   Tier 2: 120-column hardcoded fallback (Strategy 1 / COLUMNS not yet implemented)
+//   Tier 1: `$COLUMNS` environment variable (see FT-9)
+//   Tier 2: `terminal_size` crate tty query
+//   Tier 3: 120-column hardcoded fallback
 //
-// In cargo nextest (non-TTY), Tier 1 returns None → Tier 2 (120) activates.
-// This test verifies that the tty-query tier IS attempted (confirmed by compilation
-// with `--features terminal_size`) and that the 120-col fallback is the final tier.
+// In cargo nextest (non-TTY, COLUMNS unset), Tier 1 and Tier 2 both return None →
+// Tier 3 (120) activates.  This test verifies that the tty-query tier IS attempted
+// (confirmed by compilation with `--features terminal_size`) and that the 120-col
+// fallback is the final tier.
 
-/// FT-8 — `feature/005`: tty query (Tier 1) is attempted before 120-col fallback (Tier 2).
+/// FT-8 — `feature/005`: tty query (Tier 2) is attempted before 120-col fallback (Tier 3).
 ///
 /// In non-TTY test environments `terminal_size::terminal_size()` returns `None`, so the
 /// fallback activates. This test verifies the resolution chain produces the 120-col fallback
@@ -276,10 +274,85 @@ fn tty_query_attempted_before_120_fallback_ft8()
   assert!( output.contains( "abc" ), "narrow table data must appear unmodified:\n{output}" );
   assert!( output.contains( "xyz" ), "narrow table data must appear unmodified:\n{output}" );
 
-  // Max line width must be within 120-col budget (Tier 2 fallback active in CI/non-TTY)
+  // Max line width must be within 120-col budget (Tier 3 fallback active in CI/non-TTY)
   let max_width = max_visual_line_width( &output );
   assert!(
     max_width <= 122, // 2-col tolerance
     "fallback 120-col budget must constrain output (max_width={max_width}):\n{output}",
+  );
+}
+
+// --- FT-9: $COLUMNS env var controls auto-fit terminal width ---
+//
+// Serialize env-var mutations against cargo test (non-nextest) parallel threads.
+// cargo nextest spawns one process per test so the mutex is redundant there; it is
+// retained for cargo test compatibility.
+
+use std::sync::Mutex;
+
+/// Guards COLUMNS mutation from other threads in the same process.
+static COLUMNS_TEST_MUTEX : Mutex< () > = Mutex::new( () );
+
+/// FT-9 — `feature/005`: `$COLUMNS` env var controls auto-fit terminal width (Tier 1).
+///
+/// When `COLUMNS=40` is set, `resolve_terminal_width()` returns `40`; all output lines
+/// fit within 40 characters. Empty, non-numeric, or zero `COLUMNS` values are ignored
+/// and resolution falls through to Tier 2 (`terminal_size`) then Tier 3 (120 fallback).
+// test_kind: standard
+#[ test ]
+fn columns_env_var_controls_terminal_width_ft9()
+{
+  let _guard = COLUMNS_TEST_MUTEX.lock().unwrap_or_else( std::sync::PoisonError::into_inner );
+
+  // --- Valid COLUMNS=40: auto-fit triggers at 40-col budget ---
+  std::env::set_var( "COLUMNS", "40" );
+  let output_40 = TableFormatter::with_config( TableConfig::plain() )
+    .format( &wide_table() )
+    .unwrap_or_default();
+  std::env::remove_var( "COLUMNS" );
+
+  let max_40 = max_visual_line_width( &output_40 );
+  assert!(
+    max_40 <= 42, // 2-col tolerance for separator rounding
+    "COLUMNS=40 must constrain output to 40 cols; max line width = {max_40}\n{output_40}",
+  );
+
+  // --- COLUMNS="" (empty): ignored, falls through to 120-col fallback ---
+  std::env::set_var( "COLUMNS", "" );
+  let output_empty = TableFormatter::with_config( TableConfig::plain() )
+    .format( &narrow_table() )
+    .unwrap_or_default();
+  std::env::remove_var( "COLUMNS" );
+
+  let max_empty = max_visual_line_width( &output_empty );
+  assert!(
+    max_empty <= 122,
+    "empty COLUMNS must fall through to 120-col fallback; max line width = {max_empty}\n{output_empty}",
+  );
+
+  // --- COLUMNS=0: ignored (zero disallowed), falls through to 120-col fallback ---
+  std::env::set_var( "COLUMNS", "0" );
+  let output_zero = TableFormatter::with_config( TableConfig::plain() )
+    .format( &narrow_table() )
+    .unwrap_or_default();
+  std::env::remove_var( "COLUMNS" );
+
+  let max_zero = max_visual_line_width( &output_zero );
+  assert!(
+    max_zero <= 122,
+    "COLUMNS=0 must fall through to 120-col fallback; max line width = {max_zero}\n{output_zero}",
+  );
+
+  // --- COLUMNS=notanumber: ignored, falls through to 120-col fallback ---
+  std::env::set_var( "COLUMNS", "notanumber" );
+  let output_nan = TableFormatter::with_config( TableConfig::plain() )
+    .format( &narrow_table() )
+    .unwrap_or_default();
+  std::env::remove_var( "COLUMNS" );
+
+  let max_nan = max_visual_line_width( &output_nan );
+  assert!(
+    max_nan <= 122,
+    "non-numeric COLUMNS must fall through to 120-col fallback; max line width = {max_nan}\n{output_nan}",
   );
 }

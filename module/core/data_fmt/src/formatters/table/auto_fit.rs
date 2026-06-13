@@ -17,6 +17,14 @@ impl TableFormatter
     {
       return if w == 0 { 1 } else { w };
     }
+    // Tier 1: $COLUMNS environment variable — unset or unparseable falls through
+    if let Ok( val ) = std::env::var( "COLUMNS" )
+    {
+      if let Ok( n ) = val.trim().parse::< usize >()
+      {
+        if n > 0 { return n; }
+      }
+    }
     #[ cfg( feature = "terminal_size" ) ]
     {
       if let Some( ( terminal_size::Width( w ), _ ) ) = terminal_size::terminal_size()

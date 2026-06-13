@@ -174,11 +174,19 @@ impl ColorTheme
   /// Configures header colors and alternating row colors.
   pub fn apply_to_table( &self, config : TableConfig ) -> TableConfig
   {
-    config
+    let config = config
       .colorize_header( !self.header_color.is_empty() )
       .header_color( self.header_color.clone() )
       .alternating_rows( !self.row_color2.is_empty() )
-      .row_colors( self.row_color1.clone(), self.row_color2.clone() )
+      .row_colors( self.row_color1.clone(), self.row_color2.clone() );
+    if self.border_color.is_empty()
+    {
+      config
+    }
+    else
+    {
+      config.border_color( self.border_color.clone() )
+    }
   }
 
   /// Apply theme to `ExpandedConfig`

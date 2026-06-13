@@ -16,6 +16,7 @@
 | FT-3 | custom theme built from color components applies correctly | ✅ |
 | FT-4 | every colored line ends with ANSI reset sequence | ✅ |
 | FT-5 | themes feature flag gates theme API at compile time | ✅ |
+| FT-6 | apply_to_table forwards border_color so separator characters carry theme ANSI code | ✅ |
 
 ---
 
@@ -63,6 +64,17 @@
   when the feature is active; when `themes` is disabled, the entire module is
   excluded by the conditional compilation gate — the symbols are absent and the
   crate compiles cleanly with only `enabled`.
+
+---
+
+### FT-6: apply_to_table forwards border_color so separator characters carry theme ANSI code
+
+- **Given:** A `TableConfig` produced by `ColorTheme::dark().apply_to_table(TableConfig::bordered())`.
+- **When:** A two-column table is rendered.
+- **Then:** Every border separator character (`|`, `+`, horizontal-rule fill) in the output is
+  wrapped in the dark theme's `border_color` ANSI code followed by `\x1b[0m`; cell content
+  lines do not carry the border-color code; a `TableConfig::bordered()` rendered without any
+  theme produces identical plain output to a baseline with no `\x1b[` codes on border chars.
 
 ---
 

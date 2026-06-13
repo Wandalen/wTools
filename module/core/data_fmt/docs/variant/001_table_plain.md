@@ -73,11 +73,15 @@
 
 ### Usage Context
 
-- **primary_use_case**: CLI tools output (ps, top, pmon)
+- **primary_use_case**: CLI tools output (ps, top, pmon) — recommended default for all terminal tools
 - **terminal_optimized**: Yes
 - **file_export_suitable**: Partial
 - **streaming_friendly**: Yes
 - **grep_friendly**: Yes
+
+### Usage Guidance
+
+**This is the recommended default variant.** `plain` works on every terminal, CI pipeline, Windows console, and log system without Unicode or border compatibility concerns. `TableConfig::default()` returns this variant. Prefer `plain` unless a specific downstream requirement (e.g., Markdown export, HTML generation, known-Unicode TUI) requires a more structured style.
 
 ### Technical Details
 

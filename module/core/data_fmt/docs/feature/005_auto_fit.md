@@ -118,17 +118,22 @@ Auto-classification applies when `column_flex` is empty (default). Callers can o
 
 #### Terminal Width Detection
 
-The auto-fit pipeline begins by resolving the effective terminal width. The `resolve_terminal_width()` method uses a three-tier fallback:
+The auto-fit pipeline begins by resolving the effective terminal width. The `resolve_terminal_width()` method uses a four-tier fallback:
 
 | Priority | Source | Condition | Example |
 |----------|--------|-----------|---------|
-| 1 | `terminal_width` config field | Caller sets `TableConfig::terminal_width( Some(80) )` | Fixed width for tests or embedded use |
+| 0 | `terminal_width` config field | Caller sets `TableConfig::terminal_width( Some(80) )` | Fixed width for tests or embedded use |
+| 1 | `$COLUMNS` environment variable | `COLUMNS` is set to a positive integer | CI/CD pipelines, scripts, non-TTY environments |
 | 2 | `terminal_size` crate | Feature `terminal_size` enabled and stdout is a TTY | Runtime detection via `terminal_size::terminal_size()` |
-| 3 | Hardcoded fallback | Neither of the above | 120 columns |
+| 3 | Hardcoded fallback | None of the above | 120 columns |
 
-#### Tier 1 — Explicit Override
+#### Tier 0 — Explicit Override
 
 When `terminal_width` is `Some(w)`, that value is used directly. A value of `0` is clamped to `1` to prevent division-by-zero in budget allocation.
+
+#### Tier 1 — `$COLUMNS` Environment Variable
+
+When `terminal_width` is `None`, `resolve_terminal_width()` reads the `COLUMNS` environment variable. If it is set to a positive integer (e.g., `COLUMNS=80`), that value is returned immediately. Invalid, empty, or zero values are silently ignored and resolution falls through to Tier 2.
 
 #### Tier 2 — Runtime Auto-Detection
 
@@ -138,16 +143,16 @@ Enable the `terminal_size` cargo feature to activate runtime detection. When the
 
 #### Tier 3 — Hardcoded Fallback
 
-When neither Tier 1 nor Tier 2 produces a width, the formatter uses **120 columns** — a reasonable default for modern terminals.
+When none of Tier 0–2 produce a width, the formatter uses **120 columns** — a reasonable default for modern terminals.
 
 #### When to Use Each Tier
 
 | Scenario | Recommended Tier |
 |----------|-----------------|
-| Unit/integration tests | Tier 1: explicit width for deterministic output |
+| Unit/integration tests | Tier 0: explicit width for deterministic output |
+| CI/CD log output | Tier 1: set `COLUMNS=120` in pipeline env |
 | Interactive CLI tools | Tier 2: enable `terminal_size` feature for responsive layout |
-| Libraries producing strings | Tier 1 or Tier 3: caller decides width; no TTY assumption |
-| CI/CD log output | Tier 3: 120 column fallback is usually appropriate |
+| Libraries producing strings | Tier 0 or Tier 3: caller decides width; no TTY assumption |
 
 #### Configuration
 

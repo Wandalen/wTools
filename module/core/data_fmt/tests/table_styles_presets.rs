@@ -516,3 +516,39 @@ fn min_column_width_raises_column_to_floor_ft7()
   assert!( out_min.contains( "abc" ), "floored output must contain 'abc':\n{out_min}" );
   assert!( out_min.contains( "xyz" ), "floored output must contain 'xyz':\n{out_min}" );
 }
+
+// FT-8: inner_padding applies symmetrically to both sides of every cell
+#[ test ]
+fn test_cell_padding_all_separators()
+{
+  // Two-column table with headers "col1" and "col2" and one data row.
+  // All four inner_padding-enabled presets must produce spaces around every cell,
+  // not just the outermost edges.
+  let view = RowBuilder::new( vec![ "col1".into(), "col2".into() ] )
+    .add_row( vec![ "a".into(), "b".into() ] )
+    .build_view();
+
+  // bordered and grid use ASCII pipe separators
+  for ( label, config ) in [
+    ( "bordered", TableConfig::bordered() ),
+    ( "grid",     TableConfig::grid() ),
+    ( "markdown", TableConfig::markdown() ),
+  ]
+  {
+    let output = TableFormatter::with_config( config ).format( &view ).unwrap_or_default();
+    // Header row must contain spaces on both sides of inter-cell separator
+    assert!(
+      output.contains( "| col1 | col2 |" ),
+      "{label}: header row must contain '| col1 | col2 |'; output:\n{output}",
+    );
+  }
+
+  // unicode_box uses box-drawing pipe character
+  let output = TableFormatter::with_config( TableConfig::unicode_box() )
+    .format( &view )
+    .unwrap_or_default();
+  assert!(
+    output.contains( "│ col1 │ col2 │" ),
+    "unicode_box: header row must contain '│ col1 │ col2 │'; output:\n{output}",
+  );
+}
