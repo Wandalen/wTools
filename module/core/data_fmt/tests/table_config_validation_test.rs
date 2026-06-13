@@ -257,7 +257,7 @@ fn test_min_column_width_large_value_no_panic()
 
 /// All lines in a `unicode_box()` table must have the same display width.
 ///
-/// ## Root Cause (Bug)
+/// ## Root Cause
 ///
 /// `format_header_separator()` Unicode branch used `width + 2` per column
 /// (`"─".repeat(width + 2)`), adding 2 extra fill characters per column.
@@ -288,6 +288,7 @@ fn test_min_column_width_large_value_no_panic()
 ///
 /// Do NOT add inner_padding around every column junction — only at the two outer
 /// table edges. Middle `│` / `┼` / `+` chars are junction-only, not padded.
+// test_kind: bug_reproducer(BUG-005)
 #[ cfg_attr( not( test ), allow( dead_code ) ) ]
 #[ cfg_attr( test, test ) ]
 #[ cfg_attr( test, cfg_attr( test, allow( clippy::all, warnings ) ) ) ]
@@ -323,7 +324,7 @@ fn test_unicode_box_all_lines_same_display_width()
 
 /// All lines in a `markdown()` table must have the same display width.
 ///
-/// ## Root Cause (Bug)
+/// ## Root Cause
 ///
 /// `format_header_separator()` Markdown branch used the same `width + 2`
 /// per-column pattern as the Unicode branch — adding 2 extra `'-'` chars per

@@ -111,7 +111,7 @@ fn test_created_at_preserved_last_modified_updated()
   TestConfig::save_config_file( &config, &config_path ).unwrap();
 
   let content1 = std::fs::read_to_string( &config_path ).unwrap();
-  let yaml1 : serde_yaml::Value = serde_yaml::from_str( &content1 ).unwrap();
+  let yaml1 : serde_yaml_ng::Value = serde_yaml_ng::from_str( &content1 ).unwrap();
 
   std::thread::sleep( std::time::Duration::from_millis( 10 ) );
 
@@ -119,7 +119,7 @@ fn test_created_at_preserved_last_modified_updated()
   TestConfig::save_config_file( &config, &config_path ).unwrap();
 
   let content2 = std::fs::read_to_string( &config_path ).unwrap();
-  let yaml2 : serde_yaml::Value = serde_yaml::from_str( &content2 ).unwrap();
+  let yaml2 : serde_yaml_ng::Value = serde_yaml_ng::from_str( &content2 ).unwrap();
 
   let created1 = yaml1[ "metadata" ][ "created_at" ].as_str().unwrap();
   let created2 = yaml2[ "metadata" ][ "created_at" ].as_str().unwrap();
@@ -344,7 +344,7 @@ fn test_save_with_corrupted_existing_file()
 
   // Verify new content is valid YAML
   let content = std::fs::read_to_string( &config_path ).unwrap();
-  let parsed : Result< serde_yaml::Value, _ > = serde_yaml::from_str( &content );
+  let parsed : Result< serde_yaml_ng::Value, _ > = serde_yaml_ng::from_str( &content );
   assert!( parsed.is_ok(), "Saved content should be valid YAML" );
 
   // Verify content

@@ -15,7 +15,6 @@
 //! ```
 
 use crate::{ TableView, formatters::{ Format, FormatError } };
-use std::collections::HashMap;
 
 /// YAML output formatter
 ///
@@ -65,23 +64,9 @@ impl Format for YamlFormatter
 {
   fn format( &self, data : &TableView ) -> Result< String, FormatError >
   {
-    // Convert TableView to Vec<HashMap<String, String>>
-    // Each row becomes an object with column names as keys
-    let column_names = &data.metadata.column_names;
+    let rows = super::table_view_to_row_maps( data );
 
-    let rows : Vec< HashMap< String, String > > = data.rows
-      .iter()
-      .map( | row |
-      {
-        column_names
-          .iter()
-          .zip( row.iter() )
-          .map( | ( name, value ) | ( name.clone(), value.text.clone() ) )
-          .collect()
-      })
-      .collect();
-
-    serde_yaml::to_string( &rows )
+    serde_yaml_ng::to_string( &rows )
       .map_err( | e | FormatError::Serialization( e.to_string() ) )
   }
 }

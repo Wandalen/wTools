@@ -21,8 +21,9 @@ pub enum FormatError
 
 /// Unified formatting interface for all output formats
 ///
-/// All formatters (table, json, yaml, text, etc.) implement this trait
-/// to provide a consistent interface for formatting `TableView` data.
+/// All data-representation formatters implement this trait to provide a
+/// consistent interface for formatting `TableView` data. `TreeFormatter` is
+/// excluded — its generic render-closure parameter cannot fit this signature.
 ///
 /// # Examples
 ///

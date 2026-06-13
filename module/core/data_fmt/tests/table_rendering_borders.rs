@@ -191,21 +191,34 @@ fn test_t014_p05_grid_inter_row_separators()
 // T014-N: Negative / edge tests
 // ---------------------------------------------------------------------------
 
-/// T014-N01 — `AsciiGrid` header separator uses `+` corners, NOT `|` corners.
-///
-/// Bug: `format_header_separator()` pushed `'|'` for the leading and per-column
-/// delimiters in the `AsciiGrid` branch, producing `|---|` instead of `+---+`.
-/// This test verifies the fix.
-///
 /// ## Root Cause
-/// The `'|'` literal was hardcoded in three `output.push('|')` calls within the
-/// `HeaderSeparatorVariant::AsciiGrid` match arm. Only the internal junction `'+'`
-/// was correct; the corners were wrong.
+///
+/// `'|'` was hardcoded in three `output.push( '|' )` calls inside the
+/// `HeaderSeparatorVariant::AsciiGrid` arm of `format_header_separator()`
+/// (`src/formatters/table/rendering.rs`). Only the internal junction `'+'` was
+/// correct; the leading and trailing corner characters were wrong.
+///
+/// ## Why Not Caught
+///
+/// Existing `AsciiGrid` tests checked that separator lines were present and
+/// contained `'-'`, but never asserted the leading character. A `|---|` line
+/// passes a `contains( '-' )` check, so the wrong corner went undetected.
+///
+/// ## Fix Applied
+///
+/// Three `output.push( '|' )` calls changed to `output.push_str( "+" )` for
+/// the leading and trailing corner positions in the `AsciiGrid` separator arm.
+///
+/// ## Prevention
+///
+/// For each new border variant, assert both the separator structural character
+/// and that no other variant's characters leak onto separator-only lines.
 ///
 /// ## Pitfall
-/// Do NOT confuse the header separator (horizontal dashes) with the data row pipe
-/// separators. Data rows always use `'|'` for column separation — those must NOT
-/// be changed. Only the header separator corner characters change.
+///
+/// Data rows always use `'|'` for column separation — only the header
+/// separator corner characters change. Do not confuse the two.
+// test_kind: bug_reproducer(BUG-004)
 #[ test ]
 fn test_t014_n01_ascii_grid_header_sep_uses_plus_corners()
 {
@@ -407,13 +420,33 @@ fn test_t014_m01_single_column_unicode_box_no_mid_junction_chars()
   );
 }
 
-/// T014-M02 — Headers-only table (`RowBuilder` with no rows) with `grid()`: renders header.
+/// ## Root Cause
 ///
-/// `RowBuilder::new(headers).build_view()` with no rows produces a `TableView` with
-/// headers but no data rows. The formatter renders header + separator only (IC-3).
+/// `format_single_line_row` unconditionally appended `'\n'` for zero-column slices.
+/// A table with no columns caused `format_internal` to call it twice (header row +
+/// separator row), yielding `"\n\n"` instead of `""`.
 ///
-/// Fix(BUG-008): `format_internal` early-exits when `headers.is_empty()`,
-/// so a truly empty call returns `""`. Headers-only tables still render their columns.
+/// ## Why Not Caught
+///
+/// No test passed a zero-column `TableView` to the formatter. The `RowBuilder`
+/// API naturally encourages at least one column, so this edge case was invisible.
+///
+/// ## Fix Applied
+///
+/// Added an early return `String::new()` at the entry of `format_internal` in
+/// `src/formatters/table/mod.rs` when `headers.is_empty()`.
+///
+/// ## Prevention
+///
+/// Test formatters against zero-column inputs explicitly. The IC-3 invariant
+/// (no columns → empty string) must be asserted, not just assumed.
+///
+/// ## Pitfall
+///
+/// Guarding on `rows.is_empty()` would be too aggressive — a headers-only
+/// table (no data rows) must still render the header + separator. Only
+/// zero-column tables produce empty output.
+// test_kind: bug_reproducer(BUG-008)
 #[ test ]
 fn test_t014_m02_header_only_table_grid_no_panic()
 {

@@ -61,7 +61,8 @@
 - **Then:** Both calls produce byte-equal strings; no internal mutable state
   accumulates between calls; fold point, continuation labels, and column widths
   are identical across both outputs.
-- **Note:** Covers repeated-call idempotency in `tests/auto_fold_test.rs`.
+- **Note:** Covered by `fold_output_is_idempotent_on_repeated_calls` (T25) in
+  `tests/auto_fold_test.rs`.
 
 ---
 

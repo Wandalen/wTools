@@ -107,7 +107,7 @@ mod table_format_tests
     let output = Format::format( &formatter, &view ).unwrap();
 
     // Empty table should produce minimal output
-    assert!( output.trim().is_empty() || output.len() < 10 );
+    assert!( output.trim().is_empty() || output.len() < 10, "empty table should produce minimal output; got {} bytes:\n{output}", output.len() );
   }
 }
 
@@ -132,8 +132,8 @@ mod json_format_tests
     let output = Format::format( &formatter, &view ).unwrap();
 
     // Should be array format: [{"Name": "Alice", "Age": "30"}]
-    assert!( output.starts_with( '[' ) );
-    assert!( output.trim().ends_with( ']' ) );
+    assert!( output.starts_with( '[' ), "JSON output should start with '['; got:\n{output}" );
+    assert!( output.trim().ends_with( ']' ), "JSON output should end with ']'; got:\n{output}" );
     assert!( output.contains( "\"Name\"" ) );
     assert!( output.contains( "\"Alice\"" ) );
     assert!( output.contains( "\"Age\"" ) );
@@ -151,7 +151,7 @@ mod json_format_tests
     let compact = JsonFormatter::compact().format( &view ).unwrap();
 
     // Pretty should have more newlines
-    assert!( pretty.matches( '\n' ).count() > compact.matches( '\n' ).count() );
+    assert!( pretty.matches( '\n' ).count() > compact.matches( '\n' ).count(), "pretty JSON should have more newlines than compact; pretty={}, compact={}", pretty.matches( '\n' ).count(), compact.matches( '\n' ).count() );
 
     // Both should have same data
     assert!( pretty.contains( "\"X\"" ) );
@@ -210,7 +210,7 @@ mod yaml_format_tests
     let output = Format::format( &formatter, &view ).unwrap();
 
     // Should be YAML list format with keys
-    assert!( output.contains( '-' ) );
+    assert!( output.contains( '-' ), "YAML output should contain list marker '-':\n{output}" );
     assert!( output.contains( "Name:" ) );
     assert!( output.contains( "Age:" ) );
     assert!( output.contains( "Alice" ) );
@@ -228,10 +228,10 @@ mod yaml_format_tests
     let output = Format::format( &formatter, &view ).unwrap();
 
     // YAML should use dashes and colons, not JSON braces
-    assert!( !output.contains( '{' ) );
+    assert!( !output.contains( '{' ), "YAML output should not contain JSON-style '{{' braces:\n{output}" );
     // Note: YAML may use [] for empty arrays, which is fine
-    assert!( output.contains( '-' ) || output.contains( "[]" ) );
-    assert!( output.contains( ':' ) );
+    assert!( output.contains( '-' ) || output.contains( "[]" ), "YAML output should contain '-' or '[]':\n{output}" );
+    assert!( output.contains( ':' ), "YAML output should contain ':' key-value separator:\n{output}" );
   }
 }
 
@@ -436,7 +436,7 @@ fn test_empty_table_all_formats()
   {
     use data_fmt::{ TableFormatter, TableConfig, Format };
     let formatter = TableFormatter::with_config( TableConfig::plain() );
-    assert!( Format::format( &formatter, &view ).is_ok() );
+    assert!( Format::format( &formatter, &view ).is_ok(), "TableFormatter should handle empty table without error" );
   }
 
   #[ cfg( feature = "format_json" ) ]
@@ -451,7 +451,7 @@ fn test_empty_table_all_formats()
   {
     use data_fmt::{ YamlFormatter, Format };
     let formatter = YamlFormatter::new();
-    assert!( Format::format( &formatter, &view ).is_ok() );
+    assert!( Format::format( &formatter, &view ).is_ok(), "YamlFormatter should handle empty table without error" );
   }
 
   #[ cfg( feature = "format_text" ) ]
@@ -459,7 +459,7 @@ fn test_empty_table_all_formats()
     use data_fmt::TextFormatter;
     let formatter = TextFormatter::bullets();
     let output = Format::format( &formatter, &view ).unwrap();
-    assert!( output.is_empty() || output.trim().is_empty() );
+    assert!( output.is_empty() || output.trim().is_empty(), "TextFormatter bullets on empty table should produce empty output; got:\n{output}" );
   }
 }
 

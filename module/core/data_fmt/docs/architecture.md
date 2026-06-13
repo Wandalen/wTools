@@ -66,16 +66,23 @@ src/
   data.rs                    # TreeNode, TableView struct, TableShapedView trait
   builder.rs                 # TreeBuilder (hierarchical)
   table_tree.rs              # RowBuilder (table-shaped)
-  config.rs                  # TreeConfig, TableConfig, ExpandedConfig
+  config/
+    mod.rs                   # Public re-exports from config sub-modules
+    tree_config.rs           # TreeConfig, TreeSymbols
+    table_config.rs          # TableConfig and all supporting types
+    expanded_config.rs       # ExpandedConfig
   conversions.rs             # Tree<->Table conversions, FlattenConfig
   ansi_str.rs                # visual_len, pad_to_width, truncate_cell
   wrap.rs                    # WrapConfig, WrapFormatter, BreakStrategy, Overflow
   themes.rs                  # ColorTheme predefined and custom themes
   formatters/
-    mod.rs                   # TableShapedFormatter trait (deprecated), Format trait re-export
+    mod.rs                   # Format trait re-export; `table_view_to_row_maps` shared helper
     format_trait.rs          # Format trait, FormatError
     tree.rs                  # TreeFormatter with format() and format_aligned()
     table/                   # TableFormatter (split into directory)
+      mod.rs                 # TableFormatter impl; format() entry point
+      auto_fit.rs            # Column width budget allocation
+      rendering.rs           # Cell rendering: borders, separators, rules
     expanded.rs              # ExpandedFormatter
     logfmt.rs                # LogfmtFormatter
     html.rs                  # HtmlFormatter
@@ -92,7 +99,7 @@ src/
 
 `TreeFormatter` renders `TreeNode< T >` directly using method-level generics rather than relying on `TableShapedView`. Its `format()` and `format_aligned()` methods accept `&TreeNode< T >` where `T : Display`, producing box-drawing output with configurable symbols and indentation.
 
-The `TableShapedFormatter` trait is deprecated (since 0.1.0). The `Format` trait is the canonical interface for all formatters. See `docs/trait/002_table_shaped_formatter.md` for migration guidance.
+The `TableShapedFormatter` trait was removed in v0.3.0. The `Format` trait is the canonical interface for all formatters.
 
 All formatters support both `format()` (returns `String`) and `write_to()` (writes to any `io::Write`).
 
@@ -119,8 +126,8 @@ Config structs: `TreeConfig`, `TableConfig`, `ExpandedConfig`. Each formatter ac
 | `Format` | trait | Unified rendering contract: `fn format(&self, data: &TableView)` |
 | `FormatError` | enum | Error type returned by `Format::format()` — `Serialization`, `InvalidData`, `UnsupportedOperation` |
 | `TableFormatter` | struct | Implements `Format`; holds `TableConfig`; 9 visual table styles |
-| `ExpandedFormatter` | struct | Does NOT implement `Format` (uses deprecated `TableShapedFormatter`); holds `ExpandedConfig` |
-| `TreeFormatter` | struct | Does NOT implement `Format`; direct-dispatch generic methods; holds `TreeConfig` |
+| `ExpandedFormatter` | struct | Implements `Format`; holds `ExpandedConfig` |
+| `TreeFormatter` | struct | Does NOT implement `Format`; direct-dispatch generic methods (`format()`, `format_aligned()`); holds `TreeConfig` |
 | `LogfmtFormatter` | struct | Implements `Format`; no config state |
 | `HtmlFormatter` | struct | Implements `Format`; holds `HtmlVariant` |
 | `SqlFormatter` | struct | Implements `Format`; holds `SqlVariant` |
@@ -135,6 +142,6 @@ Config structs: `TreeConfig`, `TableConfig`, `ExpandedConfig`. Each formatter ac
 | `ColumnData` | struct | Multi-column leaf payload for aligned tree formatting |
 | `DecoratedText` | struct | ANSI-aware string cell (from `color_tools`) — carries text + optional color |
 | `WrapFormatter` | struct | Word-wrap pre-processor; not a `Format` implementor; wraps cell content before table formatting |
-| `TableShapedView` | trait | Deprecated: extracts headers/rows from `TreeNode< T where T: Display >`; use `RowBuilder::build_view()` instead |
+| `TableShapedView` | trait | Extracts headers/rows from `TreeNode< T where T: Display >`; use `RowBuilder::build_view()` for canonical table-from-data flow |
 
 **Pipeline summary**: `RowBuilder` → `TableView` → `Format::format()` → `String`

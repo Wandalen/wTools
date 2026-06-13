@@ -11,4 +11,5 @@
 
 | File | Responsibility |
 |------|----------------|
+| `open/` | Open bugs awaiting fix |
 | `closed/` | Closed bugs with fix evidence |

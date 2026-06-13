@@ -310,32 +310,38 @@ impl TableFormatter
       }
       HeaderSeparatorVariant::Unicode =>
       {
-        // Fix(BUG-005): delegate to format_unicode_horizontal_rule so outer
+        // Fix(BUG-005): delegate to format_horizontal_rule so outer
         // padding is added only at the two outer edges — matching data row layout.
         // Root cause: `width + 2` added padding around every column junction,
         //   producing separators that were 2*(N-1) chars wider than data rows.
         // Pitfall: never replicate the padding logic inline here; always delegate
-        //   to format_unicode_horizontal_rule to keep both paths in sync.
-        self.format_unicode_horizontal_rule( output, column_widths, '├', '─', '┼', '┤' );
+        //   to format_horizontal_rule to keep both paths in sync.
+        self.format_horizontal_rule( output, column_widths, '├', '─', '┼', '┤' );
       }
       HeaderSeparatorVariant::Markdown =>
       {
-        // Fix(BUG-005): delegate to format_ascii_horizontal_rule for the same
+        // Fix(BUG-005): delegate to format_horizontal_rule for the same
         // outer-edge-only padding reason as the Unicode branch above.
-        self.format_ascii_horizontal_rule( output, column_widths, '|', '-', '|', '|' );
+        self.format_horizontal_rule( output, column_widths, '|', '-', '|', '|' );
       }
     }
   }
 
-  /// Render one ASCII horizontal rule line with parameterized corner/fill/mid chars.
+  /// Render one horizontal rule line with parameterized corner/fill/mid chars.
   ///
-  /// Used for top border, bottom border, header separator, and inter-row separators
-  /// in `BorderVariant::AsciiGrid`. Outer padding (`cell_inner_padding` spaces) is
-  /// replaced by `fill` characters at the table's outer edges.
+  /// Works for both ASCII and Unicode box-drawing characters — Unicode fill chars
+  /// like `'─'` are multi-byte but `fill.to_string().repeat(n)` counts chars, not
+  /// bytes, so it is correct for both cases.
+  ///
+  /// Used for top border, bottom border, header separator, and inter-row separators.
+  /// Outer padding (`cell_inner_padding` spaces) is replaced by `fill` characters
+  /// at the table's outer edges.
   ///
   /// Example: `widths=[1,1]`, `outer_padding=1`, left='+', fill='-', mid='+', right='+'
   /// → `+--+--+`
-  fn format_ascii_horizontal_rule(
+  ///
+  /// Example: top border → `┌──┬──┐`, bottom border → `└──┴──┘`
+  fn format_horizontal_rule(
     &self,
     output : &mut String,
     widths : &[ usize ],
@@ -363,103 +369,57 @@ impl TableFormatter
     output.push( '\n' );
   }
 
-  /// Render one Unicode box-drawing horizontal rule line with parameterized chars.
+  /// Dispatch a horizontal border rule based on `BorderVariant`.
   ///
-  /// Same structure as `format_ascii_horizontal_rule`; `'─'` is multi-byte but
-  /// `fill.to_string().repeat(n)` counts chars, not bytes, so it works correctly.
-  ///
-  /// Example: top border → `┌──┬──┐`, bottom → `└──┴──┘`
-  fn format_unicode_horizontal_rule(
+  /// `ascii_chars` = `[left, fill, mid, right]` for `AsciiGrid`.
+  /// `unicode_chars` = `[left, fill, mid, right]` for `Unicode`.
+  /// `None`, `Ascii`, and `Markdown` border variants are no-ops.
+  fn format_border_rule(
     &self,
     output : &mut String,
     widths : &[ usize ],
-    left : char,
-    fill : char,
-    mid : char,
-    right : char
+    ascii_chars : [ char; 4 ],
+    unicode_chars : [ char; 4 ],
   )
   {
-    output.push_str( &self.apply_border_color( &left.to_string() ) );
-    for ( idx, &width ) in widths.iter().enumerate()
+    use crate::config::BorderVariant;
+    match self.config.bdr_variant()
     {
-      if self.config.has_outer_padding()
+      BorderVariant::AsciiGrid =>
       {
-        output.push_str( &self.apply_border_color( &fill.to_string().repeat( self.config.cell_inner_padding() ) ) );
+        let [ l, f, m, r ] = ascii_chars;
+        self.format_horizontal_rule( output, widths, l, f, m, r );
       }
-      output.push_str( &self.apply_border_color( &fill.to_string().repeat( width ) ) );
-      if self.config.has_outer_padding()
+      BorderVariant::Unicode =>
       {
-        output.push_str( &self.apply_border_color( &fill.to_string().repeat( self.config.cell_inner_padding() ) ) );
+        let [ l, f, m, r ] = unicode_chars;
+        self.format_horizontal_rule( output, widths, l, f, m, r );
       }
-      let sep = if idx < widths.len() - 1 { mid } else { right };
-      output.push_str( &self.apply_border_color( &sep.to_string() ) );
+      BorderVariant::None | BorderVariant::Ascii | BorderVariant::Markdown => {}
     }
-    output.push( '\n' );
   }
 
   /// Emit top border if the border variant requires one.
   ///
-  /// `AsciiGrid` → `+---+---+`  (ASCII horizontal rule)
-  /// `Unicode`   → `┌───┬───┐`  (Unicode box-drawing top)
-  /// Others      → no-op
+  /// `AsciiGrid` → `+---+---+`, `Unicode` → `┌───┬───┐`, others → no-op
   pub( super ) fn format_top_border_if_needed( &self, output : &mut String, widths : &[ usize ] )
   {
-    use crate::config::BorderVariant;
-    match self.config.bdr_variant()
-    {
-      BorderVariant::AsciiGrid =>
-      {
-        self.format_ascii_horizontal_rule( output, widths, '+', '-', '+', '+' );
-      }
-      BorderVariant::Unicode =>
-      {
-        self.format_unicode_horizontal_rule( output, widths, '┌', '─', '┬', '┐' );
-      }
-      _ => {}
-    }
+    self.format_border_rule( output, widths, [ '+', '-', '+', '+' ], [ '┌', '─', '┬', '┐' ] );
   }
 
   /// Emit bottom border if the border variant requires one.
   ///
-  /// `AsciiGrid` → `+---+---+`
-  /// `Unicode`   → `└───┴───┘`
-  /// Others      → no-op
+  /// `AsciiGrid` → `+---+---+`, `Unicode` → `└───┴───┘`, others → no-op
   pub( super ) fn format_bottom_border_if_needed( &self, output : &mut String, widths : &[ usize ] )
   {
-    use crate::config::BorderVariant;
-    match self.config.bdr_variant()
-    {
-      BorderVariant::AsciiGrid =>
-      {
-        self.format_ascii_horizontal_rule( output, widths, '+', '-', '+', '+' );
-      }
-      BorderVariant::Unicode =>
-      {
-        self.format_unicode_horizontal_rule( output, widths, '└', '─', '┴', '┘' );
-      }
-      _ => {}
-    }
+    self.format_border_rule( output, widths, [ '+', '-', '+', '+' ], [ '└', '─', '┴', '┘' ] );
   }
 
   /// Emit an inter-row separator if the border variant requires one.
   ///
-  /// `AsciiGrid` → `+---+---+`
-  /// `Unicode`   → `├───┼───┤`  (same character set as header separator)
-  /// Others      → no-op
+  /// `AsciiGrid` → `+---+---+`, `Unicode` → `├───┼───┤`, others → no-op
   pub( super ) fn format_inter_row_sep_if_needed( &self, output : &mut String, widths : &[ usize ] )
   {
-    use crate::config::BorderVariant;
-    match self.config.bdr_variant()
-    {
-      BorderVariant::AsciiGrid =>
-      {
-        self.format_ascii_horizontal_rule( output, widths, '+', '-', '+', '+' );
-      }
-      BorderVariant::Unicode =>
-      {
-        self.format_unicode_horizontal_rule( output, widths, '├', '─', '┼', '┤' );
-      }
-      _ => {}
-    }
+    self.format_border_rule( output, widths, [ '+', '-', '+', '+' ], [ '├', '─', '┼', '┤' ] );
   }
 }

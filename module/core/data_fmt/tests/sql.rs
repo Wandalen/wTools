@@ -24,7 +24,7 @@ mod sql_tests
     assert!( sql.contains( "VALUES" ) );
     assert!( sql.contains( "('Alice', 30, 'NYC')" ) );
     assert!( sql.contains( "('Bob', 25, 'LA')" ) );
-    assert!( sql.ends_with( ';' ) );
+    assert!( sql.ends_with( ';' ), "SQL statement must end with ';'; got:\n{sql}" );
   }
 
   #[ test ]
@@ -111,7 +111,7 @@ mod sql_tests
       .add_row( vec![ "Bob".into(), String::new().into(), "555-1234".into() ] )
       .build_view();
 
-    let formatter = SqlFormatter::new( "contacts" ).empty_as_null( true );
+    let formatter = SqlFormatter::new( "contacts" ).with_empty_as_null( true );
     let sql = formatter.format( &view ).unwrap();
 
     assert!( sql.contains( "('Alice', 'alice@example.com', NULL)" ) );

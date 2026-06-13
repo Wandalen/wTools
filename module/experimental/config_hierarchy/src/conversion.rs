@@ -5,12 +5,12 @@ use serde_json::Value as JsonValue;
 /// Only available with `file_ops` feature
 #[ cfg( feature = "file_ops" ) ]
 #[ inline ]
-pub fn yaml_to_json( yaml : serde_yaml::Value ) -> JsonValue
+pub fn yaml_to_json( yaml : serde_yaml_ng::Value ) -> JsonValue
 {
   match yaml
   {
-    serde_yaml::Value::Bool( b ) => JsonValue::Bool( b ),
-    serde_yaml::Value::Number( n ) =>
+    serde_yaml_ng::Value::Bool( b ) => JsonValue::Bool( b ),
+    serde_yaml_ng::Value::Number( n ) =>
     {
       if let Some( i ) = n.as_i64()
       {
@@ -25,24 +25,24 @@ pub fn yaml_to_json( yaml : serde_yaml::Value ) -> JsonValue
         JsonValue::Null
       }
     },
-    serde_yaml::Value::String( s ) => JsonValue::String( s ),
-    serde_yaml::Value::Sequence( seq ) =>
+    serde_yaml_ng::Value::String( s ) => JsonValue::String( s ),
+    serde_yaml_ng::Value::Sequence( seq ) =>
     {
       JsonValue::Array( seq.into_iter().map( yaml_to_json ).collect() )
     },
-    serde_yaml::Value::Mapping( map ) =>
+    serde_yaml_ng::Value::Mapping( map ) =>
     {
       let mut obj = serde_json::Map::new();
       for ( k, v ) in map
       {
-        if let serde_yaml::Value::String( key_str ) = k
+        if let serde_yaml_ng::Value::String( key_str ) = k
         {
           obj.insert( key_str, yaml_to_json( v ) );
         }
       }
       JsonValue::Object( obj )
     },
-    serde_yaml::Value::Null | serde_yaml::Value::Tagged( _ ) => JsonValue::Null,
+    serde_yaml_ng::Value::Null | serde_yaml_ng::Value::Tagged( _ ) => JsonValue::Null,
   }
 }
 
@@ -51,40 +51,40 @@ pub fn yaml_to_json( yaml : serde_yaml::Value ) -> JsonValue
 /// Only available with `file_ops` feature
 #[ cfg( feature = "file_ops" ) ]
 #[ inline ]
-pub fn json_to_yaml( json : JsonValue ) -> serde_yaml::Value
+pub fn json_to_yaml( json : JsonValue ) -> serde_yaml_ng::Value
 {
   match json
   {
-    JsonValue::Null => serde_yaml::Value::Null,
-    JsonValue::Bool( b ) => serde_yaml::Value::Bool( b ),
+    JsonValue::Null => serde_yaml_ng::Value::Null,
+    JsonValue::Bool( b ) => serde_yaml_ng::Value::Bool( b ),
     JsonValue::Number( n ) =>
     {
       if let Some( i ) = n.as_i64()
       {
-        serde_yaml::Value::Number( i.into() )
+        serde_yaml_ng::Value::Number( i.into() )
       }
       else if let Some( f ) = n.as_f64()
       {
-        serde_yaml::Value::Number( serde_yaml::Number::from( f ) )
+        serde_yaml_ng::Value::Number( serde_yaml_ng::Number::from( f ) )
       }
       else
       {
-        serde_yaml::Value::Null
+        serde_yaml_ng::Value::Null
       }
     },
-    JsonValue::String( s ) => serde_yaml::Value::String( s ),
+    JsonValue::String( s ) => serde_yaml_ng::Value::String( s ),
     JsonValue::Array( arr ) =>
     {
-      serde_yaml::Value::Sequence( arr.into_iter().map( json_to_yaml ).collect() )
+      serde_yaml_ng::Value::Sequence( arr.into_iter().map( json_to_yaml ).collect() )
     },
     JsonValue::Object( obj ) =>
     {
-      let mut map = serde_yaml::Mapping::new();
+      let mut map = serde_yaml_ng::Mapping::new();
       for ( k, v ) in obj
       {
-        map.insert( serde_yaml::Value::String( k ), json_to_yaml( v ) );
+        map.insert( serde_yaml_ng::Value::String( k ), json_to_yaml( v ) );
       }
-      serde_yaml::Value::Mapping( map )
+      serde_yaml_ng::Value::Mapping( map )
     },
   }
 }

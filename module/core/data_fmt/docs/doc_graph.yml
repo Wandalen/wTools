@@ -2,8 +2,8 @@ meta:
   description: Cross-reference graph for all doc instances in data_fmt
   last_updated: 2026_06_13
   node_count: 80
-  edge_count: 163
-  component_count: 10
+  edge_count: 162
+  component_count: 1
 
 nodes:
   # algorithm (7)
@@ -870,59 +870,63 @@ edges:
     to: data_structure/001
     via: typed_reference
 
-  # feature/007 cross-references
-  - from: feature/007
-    to: api/003
-    via: typed_reference
+  # api/003 → feature/007 bidirectionality
   - from: api/003
     to: feature/007
     via: typed_reference
 
 components:
   - id: 1
-    size: 5
-    isolated: false
-    nodes: [feature/005, algorithm/004, algorithm/005, invariant/003, invariant/004]
-
-  - id: 2
-    size: 5
-    isolated: false
-    nodes: [feature/001, feature/002, algorithm/001, algorithm/002, algorithm/003]
-
-  - id: 3
-    size: 5
-    isolated: false
-    nodes: [feature/003, feature/006, trait/001, trait/002, trait/003]
-
-  - id: 4
-    size: 6
-    isolated: false
-    nodes: [input_model/001, input_model/002, input_type/001, input_type/002, builder/001, builder/002]
-
-  - id: 5
-    size: 8
-    isolated: false
-    nodes: [api/001, api/002, api/003, api/004, feature/004, feature/007, algorithm/007, invariant/005]
-
-  - id: 6
-    size: 2
-    isolated: false
-    nodes: [invariant/001, invariant/002]
-
-  - id: 7
-    size: 4
-    isolated: false
-    nodes: [pattern/001, pattern/002, pattern/003, pattern/004]
-
-  - id: 8
-    size: 1
-    isolated: false
-    nodes: [data_structure/001]
-
-  - id: 9
-    size: 34
+    size: 80
     isolated: false
     nodes:
+      - algorithm/001
+      - algorithm/002
+      - algorithm/003
+      - algorithm/004
+      - algorithm/005
+      - algorithm/006
+      - algorithm/007
+      - api/001
+      - api/002
+      - api/003
+      - api/004
+      - builder/001
+      - builder/002
+      - data_structure/001
+      - feature/001
+      - feature/002
+      - feature/003
+      - feature/004
+      - feature/005
+      - feature/006
+      - feature/007
+      - formatter/001
+      - formatter/002
+      - formatter/003
+      - formatter/004
+      - formatter/005
+      - formatter/006
+      - formatter/007
+      - formatter/008
+      - formatter/009
+      - formatter/010
+      - input_model/001
+      - input_model/002
+      - input_type/001
+      - input_type/002
+      - invariant/001
+      - invariant/002
+      - invariant/003
+      - invariant/004
+      - invariant/005
+      - pattern/001
+      - pattern/002
+      - pattern/003
+      - pattern/004
+      - trait/001
+      - trait/002
+      - trait/003
       - variant/001
       - variant/002
       - variant/003
@@ -956,21 +960,5 @@ components:
       - variant/031
       - variant/032
       - variant/033
-      - algorithm/006
-
-  - id: 10
-    size: 10
-    isolated: false
-    nodes:
-      - formatter/001
-      - formatter/002
-      - formatter/003
-      - formatter/004
-      - formatter/005
-      - formatter/006
-      - formatter/007
-      - formatter/008
-      - formatter/009
-      - formatter/010
 
 dangling_refs: []

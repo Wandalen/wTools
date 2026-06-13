@@ -2237,7 +2237,7 @@ impl Workspace
         .map_err( | e | WorkspaceError::SerdeError( format!( "toml error: {e}" ) ) ),
       "json" => serde_json ::from_str( content )
         .map_err( | e | WorkspaceError::SerdeError( format!( "json error: {e}" ) ) ),
-      "yaml" | "yml" => serde_yaml ::from_str( content )
+      "yaml" | "yml" => serde_yaml_ng ::from_str( content )
         .map_err( | e | WorkspaceError::SerdeError( format!( "yaml error: {e}" ) ) ),
       _ => Err( WorkspaceError::ConfigurationError(
         format!( "unsupported format: {format}" )
@@ -2256,7 +2256,7 @@ impl Workspace
         .map_err( | e | WorkspaceError::SerdeError( format!( "toml error: {e}" ) ) ),
       "json" => serde_json ::to_string_pretty( config )
         .map_err( | e | WorkspaceError::SerdeError( format!( "json error: {e}" ) ) ),
-      "yaml" | "yml" => serde_yaml ::to_string( config )
+      "yaml" | "yml" => serde_yaml_ng ::to_string( config )
         .map_err( | e | WorkspaceError::SerdeError( format!( "yaml error: {e}" ) ) ),
       _ => Err( WorkspaceError::ConfigurationError(
         format!( "unsupported format: {format}" )
@@ -2494,7 +2494,7 @@ impl Workspace
         .map_err( | e | WorkspaceError::SerdeError( format!( "json parse: {e}" ) ) ),
       "yaml" | "yml" =>
       {
-        let yaml_value: serde_yaml ::Value = serde_yaml ::from_str( content )
+        let yaml_value: serde_yaml_ng ::Value = serde_yaml_ng ::from_str( content )
           .map_err( | e | WorkspaceError::SerdeError( format!( "yaml parse: {e}" ) ) )?;
         serde_json ::to_value( yaml_value )
           .map_err( | e | WorkspaceError::SerdeError( format!( "yaml→json: {e}" ) ) )

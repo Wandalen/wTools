@@ -4,7 +4,7 @@
 
 - **Purpose**: Drive test coverage for the flex budget allocation algorithm.
 - **Responsibility**: Documents test cases for the flex budget allocation algorithm in `docs/algorithm/004_budget_allocation.md`.
-- **In Scope**: All-flex natural width, single flex cap, all-Fixed graceful overflow, mixed fixed+flex allocation, CSV/TSV bypass, remainder distribution, budget floor clamping, 12-char threshold boundary.
+- **In Scope**: All-flex natural width, single flex cap, all-Fixed graceful overflow, mixed fixed+flex allocation, CSV/TSV bypass, remainder distribution, budget floor clamping, 12-char threshold boundary (Fixed) and 13-char boundary (Flex).
 - **Out of Scope**: Column fold detection (see `algorithm/005`); terminal width auto-detection (see `feature/005`).
 
 ### Case Index
@@ -21,6 +21,7 @@
 | AC-8 | flex budget floored at minimum when terminal too narrow | ✅ |
 | AC-9 | 12-character threshold boundary — column at exactly 12 chars uses Fixed | ✅ |
 | AC-10 | overhead exceeds terminal width — all flex columns clamped to floor | ✅ |
+| AC-11 | 13-character threshold boundary — column at exactly 13 chars uses Flex | ✅ |
 
 ---
 
@@ -132,6 +133,20 @@
 - **Then:** No panic occurs; each flex column receives the floor budget (minimum
   of 1 or `min_column_width`); the formatter does not produce negative budgets;
   output is non-empty even when total width necessarily exceeds terminal.
+
+---
+
+### AC-11: 13-character threshold boundary — column at exactly 13 chars uses Flex
+
+- **Given:** A table where one column's maximum cell content is exactly 13 visible
+  characters (one above the 12-char threshold for the auto-flex heuristic).
+- **When:** Column flex classification is applied.
+- **Then:** The column is treated as `ColumnFlex::Flex` (not Fixed); it participates
+  in budget redistribution; its budget may be reduced if the total width exceeds
+  terminal width.
+  (Source: `docs/algorithm/004_budget_allocation.md` — "> 12 chars → Flex".)
+- **Note:** This is the complementary boundary to AC-9 (12 chars → Fixed). Together
+  they prove the threshold is `> 12`, not `≥ 12` or `> 13`.
 
 ---
 

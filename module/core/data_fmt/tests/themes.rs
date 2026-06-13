@@ -48,11 +48,11 @@ mod theme_tests
   {
     let theme = ColorTheme::none();
 
-    assert!( theme.header_color.is_empty() );
-    assert!( theme.border_color.is_empty() );
-    assert!( theme.row_color1.is_empty() );
-    assert!( theme.row_color2.is_empty() );
-    assert!( theme.branch_color.is_empty() );
+    assert!( theme.header_color.is_empty(), "expected empty header_color for none theme" );
+    assert!( theme.border_color.is_empty(), "expected empty border_color for none theme" );
+    assert!( theme.row_color1.is_empty(), "expected empty row_color1 for none theme" );
+    assert!( theme.row_color2.is_empty(), "expected empty row_color2 for none theme" );
+    assert!( theme.branch_color.is_empty(), "expected empty branch_color for none theme" );
   }
 
   #[ test ]
@@ -93,7 +93,7 @@ mod theme_tests
     let theme = ColorTheme::monokai();
     let config = theme.apply_to_expanded( ExpandedConfig::new() );
 
-    assert!( config.colorize_keys );
+    assert!( config.colorize_keys, "expected colorize_keys=true after applying monokai theme" );
     assert_eq!( config.key_color, theme.header_color );
   }
 
@@ -105,7 +105,7 @@ mod theme_tests
 
     // TreeConfig currently doesnt have color fields, so this is a no-op
     // Just verify it doesnt panic and returns a valid config
-    assert!( config.show_branches );
+    assert!( config.show_branches, "expected show_branches=true as default on returned TreeConfig" );
   }
 
   #[ test ]
@@ -127,8 +127,8 @@ mod theme_tests
     let config = theme.apply_to_expanded( ExpandedConfig::new() );
 
     // Config should have color settings from theme
-    assert!( config.colorize_keys );
-    assert!( !config.key_color.is_empty() );
+    assert!( config.colorize_keys, "expected colorize_keys=true after applying solarized theme" );
+    assert!( !config.key_color.is_empty(), "expected non-empty key_color after applying solarized theme" );
   }
 
   #[ test ]

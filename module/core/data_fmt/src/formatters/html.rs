@@ -151,7 +151,7 @@ impl HtmlFormatter
 
   /// Set table ID attribute
   #[ must_use ]
-  pub fn table_id( mut self, id : impl Into< String > ) -> Self
+  pub fn with_table_id( mut self, id : impl Into< String > ) -> Self
   {
     self.table_id = Some( id.into() );
     self
@@ -159,7 +159,7 @@ impl HtmlFormatter
 
   /// Enable/disable HTML wrapper (html, body tags)
   #[ must_use ]
-  pub fn include_wrapper( mut self, enabled : bool ) -> Self
+  pub fn with_include_wrapper( mut self, enabled : bool ) -> Self
   {
     self.include_wrapper = enabled;
     self

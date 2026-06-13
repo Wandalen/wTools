@@ -283,20 +283,35 @@ mod cli_help_tests
     assert_eq!( output.trim(), "SECTION:" );
   }
 
-  /// AC-7 — `006_cli_help_alignment`: ANSI escape codes in key text do not cause panic.
+  /// AC-7 — `006_cli_help_alignment`: ANSI escape codes excluded from alignment width.
   ///
-  /// A key containing ANSI color codes (`"\x1b[32m--verbose\x1b[0m"`, visual width 9)
-  /// is rendered without crashing; the ANSI codes are preserved verbatim in the output.
+  /// ## Root Cause
+  /// `format_cli_help()` computed `max_key_width` using `.len()` (UTF-8 byte count).
+  /// ANSI escape bytes inflated the measured key width, shifting all sibling descriptions
+  /// rightward by the invisible byte overhead. BUG-014.
   ///
-  /// **Note:** The current implementation uses byte count for alignment instead of
-  /// `visual_len`; this means the alignment column is wider than expected with ANSI keys.
-  /// This test verifies no panic and ANSI preservation — the alignment width is not
-  /// asserted here because the current behavior (byte count) is a known limitation.
-  // test_kind: standard
+  /// ## Why Not Caught
+  /// The prior test only verified no-panic and verbatim ANSI preservation; it never
+  /// asserted the visual column position of description values.
+  ///
+  /// ## Fix Applied
+  /// Both `.len()` calls in `format_cli_help()` replaced with `visual_len()`, which
+  /// strips ANSI sequences before counting characters.
+  ///
+  /// ## Prevention
+  /// Use `visual_len()` for any alignment computation on user-visible strings; reserve
+  /// `.len()` for byte-level operations (buffer sizing, serialization).
+  ///
+  /// ## Pitfall
+  /// A string with ANSI escape codes has `.len()` >> visual width; using `.len()` for
+  /// column alignment inflates the description column by the ANSI byte overhead,
+  /// making all sibling plain-text descriptions appear far too indented.
+  // test_kind: bug_reproducer(BUG-014)
   #[ test ]
-  fn ansi_key_does_not_panic_ansi_preserved_ac7()
+  fn ansi_key_alignment_uses_visual_len_not_byte_count_ac7()
   {
-    let ansi_key = "\x1b[32m--verbose\x1b[0m"; // visual width 9, byte count ~20
+    // ansi_key: visual width 9 ("--verbose"), byte count 18 ("\x1b[32m"=5 + "--verbose"=9 + "\x1b[0m"=4)
+    let ansi_key = "\x1b[32m--verbose\x1b[0m";
     let view = RowBuilder::new( vec![ "Term".into(), "Desc".into() ] )
       .add_row( vec![ "OPTIONS".into(), "".into() ] )
       .add_row( vec![ ansi_key.into(), "Show verbose output".into() ] )
@@ -315,9 +330,21 @@ mod cli_help_tests
       output.contains( "\x1b[0m" ),
       "ANSI reset code must be preserved in output:\n{output:?}",
     );
-    // Description values must appear
-    assert!( output.contains( "Show verbose output" ), "key description must appear:\n{output:?}" );
-    assert!( output.contains( "Show this help" ), "second key description must appear:\n{output:?}" );
+
+    // Core alignment invariant: descriptions must align at indent(2) + max_visual_key_width(9) + gap(2) = 13
+    // The --help row has no ANSI, so its raw byte position equals its visual column position
+    let lines : Vec< &str > = output.lines().collect();
+    let help_line = lines.iter()
+      .find( | l | l.contains( "Show this help" ) )
+      .expect( "--help description line must appear in output" );
+    let desc_col = help_line.find( "Show this help" )
+      .expect( "description must be present on --help line" );
+    assert_eq!(
+      desc_col,
+      13,
+      "--help description must start at col 13 (indent=2 + visual_key_max=9 + gap=2); \
+       byte-count bug would put it at col 22:\n{output:?}",
+    );
   }
 
   /// AC-8 — `006_cli_help_alignment`: mixed-case text is not detected as a section header.

@@ -65,7 +65,7 @@ Seven feature-gated formatters, all implementing `Format`:
 | `HtmlFormatter` | `format_html` | None | HTML `<table>` with CSS variants |
 | `SqlFormatter` | `format_sql` | None | SQL `INSERT` statements |
 | `JsonFormatter` | `format_json` | serde, serde_json | JSON array of row objects |
-| `YamlFormatter` | `format_yaml` | serde, serde_yaml | YAML sequence of mappings |
+| `YamlFormatter` | `format_yaml` | serde, serde_yaml_ng | YAML sequence of mappings |
 | `TomlFormatter` | `format_toml` | serde, toml | TOML array of tables |
 | `TextFormatter` | `format_text` | None | Plain text (6 styles) |
 

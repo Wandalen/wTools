@@ -60,6 +60,10 @@
 - **Given:** A `TableConfig` with `terminal_width(Some(60))` and a table that would fit in 80 but not 60 columns.
 - **When:** The table is rendered (even when run in a wider terminal or no TTY).
 - **Then:** The formatter uses 60 as the effective width; auto-fit activates as if the terminal is 60 columns wide; output fits within 60 characters per line.
+- **Note:** FT-5 and FT-7 both test `terminal_width(Some(60))` with wrapping as the
+  observable effect. FT-5 establishes the priority principle (override beats detection);
+  FT-7 is a concrete measurement test (line count ≤ 60). Both are useful: FT-5 tests
+  the tier ordering contract; FT-7 tests the output constraint.
 
 ---
 
@@ -112,7 +116,9 @@
   empty string, a non-numeric value, or `0` causes the env var to be ignored and
   resolution falls through to Tier 2 (tty query) and then Tier 3 (120 fallback).
 - **Note:** This test must serialize access to the `COLUMNS` env var (via `Mutex` or
-  `#[serial]`) to prevent interference with parallel test threads.
+  `#[serial]`) to prevent interference with parallel test threads. Invalid `COLUMNS`
+  values (empty string, non-numeric, `"0"`) must each fall through to the next tier
+  — this behavior is part of the same test case assertion, not a separate case.
 
 ---
 

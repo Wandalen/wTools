@@ -85,7 +85,7 @@ fn main()
     .add_row( vec![ "Carol".into(), "carol@example.com".into(), "555-5678".into() ] )
     .build_view();
 
-  let formatter = SqlFormatter::new( "contacts" ).empty_as_null( true );
+  let formatter = SqlFormatter::new( "contacts" ).with_empty_as_null( true );
   let sql = formatter.format( &null_view ).unwrap();
   println!( "{sql}\n" );
   println!( "Note: Empty strings become NULL when empty_as_null is enabled.\n" );

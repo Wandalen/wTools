@@ -122,7 +122,7 @@ v0.2.x only had `show_borders: bool` - binary choice between bordered and border
 
 ### Problem: Dependency Bloat
 
-**User Feedback**: Projects using only `TableFormatter` shouldn't need to pull in serde ecosystem (serde, serde_json, serde_yaml, toml) just to format tables.
+**User Feedback**: Projects using only `TableFormatter` shouldn't need to pull in serde ecosystem (serde, serde_json, serde_yaml_ng, toml) just to format tables.
 
 ### Solution: Granular Feature Flags
 

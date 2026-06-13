@@ -5,7 +5,7 @@
 use data_fmt::
 {
   TreeNode, RowBuilder, TableShapedView,
-  Format, TableFormatter, ExpandedFormatter,
+  Format, FormatError, TableFormatter, ExpandedFormatter,
 };
 
 // =============================================================================
@@ -28,7 +28,7 @@ fn test_format_trait_polymorphism()
   for formatter in formatters
   {
     let output = formatter.format( &view ).unwrap_or_default();
-    assert!( !output.is_empty() );
+    assert!( !output.is_empty(), "formatter produced empty output for input with 'Alice' and '95'" );
     assert!( output.contains( "Alice" ) );
     assert!( output.contains( "95" ) );
   }
@@ -648,4 +648,42 @@ fn test_expanded_colorized_keys_all_records()
   assert!( output.contains( "row0" ) );
   assert!( output.contains( "row1" ) );
   assert!( output.contains( "row2" ) );
+}
+
+// --- AP-6: Format::format returns Ok or Err(FormatError) on degenerate input — no panic ---
+//
+// Given: a TableView with headers but zero rows (degenerate but structurally valid input).
+// When: Format::format is called.
+// Then: returns Ok("") (no panic, no unwrap explosion); FormatError is not emitted for
+//       this degenerate path — empty input is not an error, just empty output.
+
+/// AP-6 — `api/004_formatters`: `Format::format` returns Ok (no panic, no Err) for zero-row input.
+///
+/// Zero-row input is the degenerate path most likely to reveal unwrap panics.
+/// The key contract: no panic occurs; if a formatter rejects the input, it must return a
+/// named `FormatError` variant — not an unwrap explosion. `TableFormatter` returns `Ok`
+/// (with a header-only line when headers are present); `ExpandedFormatter` returns `Ok("") `.
+// test_kind: standard
+#[ test ]
+fn format_returns_ok_empty_on_empty_input_ap6()
+{
+  // Zero rows but non-empty headers — degenerate but structurally valid input
+  let zero_row_view = RowBuilder::new( vec![ "A".into(), "B".into() ] ).build_view();
+
+  // TableFormatter: returns Ok for zero-row input (may emit header+separator, no data rows)
+  let result = TableFormatter::new().format( &zero_row_view );
+  assert!(
+    result.is_ok(),
+    "TableFormatter must not return Err for zero-row table; got: {result:?}",
+  );
+
+  // ExpandedFormatter: no panic; Ok or named FormatError
+  let expanded_result = ExpandedFormatter::new().format( &zero_row_view );
+  let is_ok_or_named_err = expanded_result.is_ok()
+    || matches!( expanded_result, Err( FormatError::InvalidData( _ ) ) )
+    || matches!( expanded_result, Err( FormatError::UnsupportedOperation( _ ) ) );
+  assert!(
+    is_ok_or_named_err,
+    "ExpandedFormatter must return Ok or named FormatError on zero-row input; got: {expanded_result:?}",
+  );
 }

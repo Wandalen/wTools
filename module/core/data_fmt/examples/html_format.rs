@@ -57,15 +57,15 @@ fn main()
   // Example 5: With table ID
   println!( "5. With Table ID:\n" );
   let formatter = HtmlFormatter::with_variant( HtmlVariant::Bootstrap )
-    .table_id( "products-table" );
+    .with_table_id( "products-table" );
   let html = formatter.format( &view ).unwrap();
   println!( "{html}\n" );
 
   // Example 6: Complete HTML document
   println!( "6. Complete HTML Document:\n" );
   let formatter = HtmlFormatter::with_variant( HtmlVariant::Bootstrap )
-    .table_id( "products" )
-    .include_wrapper( true );
+    .with_table_id( "products" )
+    .with_include_wrapper( true );
   let html = formatter.format( &view ).unwrap();
   println!( "{html}\n" );
 

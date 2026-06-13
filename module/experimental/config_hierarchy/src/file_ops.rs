@@ -32,21 +32,21 @@ pub fn load_config_file( path : &Path ) -> Result< HashMap< String, JsonValue >,
     return Ok( HashMap::new() );
   }
 
-  let yaml_value : serde_yaml::Value = serde_yaml::from_str( &content )
+  let yaml_value : serde_yaml_ng::Value = serde_yaml_ng::from_str( &content )
     .map_err( | e | format!( "Failed to parse YAML in {}: {e}", path.display() ) )?;
 
   let mut config = HashMap::new();
 
-  if let serde_yaml::Value::Mapping( map ) = yaml_value
+  if let serde_yaml_ng::Value::Mapping( map ) = yaml_value
   {
     // Look for parameters section first
-    if let Some( params_value ) = map.get( serde_yaml::Value::String( "parameters".to_string() ) )
+    if let Some( params_value ) = map.get( serde_yaml_ng::Value::String( "parameters".to_string() ) )
     {
-      if let serde_yaml::Value::Mapping( params_map ) = params_value
+      if let serde_yaml_ng::Value::Mapping( params_map ) = params_value
       {
         for ( key, value ) in params_map
         {
-          if let serde_yaml::Value::String( key_str ) = key
+          if let serde_yaml_ng::Value::String( key_str ) = key
           {
             config.insert( key_str.clone(), yaml_to_json( value.clone() ) );
           }
@@ -58,7 +58,7 @@ pub fn load_config_file( path : &Path ) -> Result< HashMap< String, JsonValue >,
       // Fallback: old flat format
       for ( key, value ) in map
       {
-        if let serde_yaml::Value::String( key_str ) = key
+        if let serde_yaml_ng::Value::String( key_str ) = key
         {
           // Skip metadata fields
           if key_str == "version" || key_str == "last_modified" || key_str == "metadata"
@@ -142,21 +142,21 @@ where
   }
   else
   {
-    let yaml_value : serde_yaml::Value = serde_yaml::from_str( &content )
+    let yaml_value : serde_yaml_ng::Value = serde_yaml_ng::from_str( &content )
       .map_err( | e | format!( "Failed to parse YAML in {}: {e}", config_path.display() ) )?;
 
     let mut parsed_config = HashMap::new();
 
-    if let serde_yaml::Value::Mapping( map ) = yaml_value
+    if let serde_yaml_ng::Value::Mapping( map ) = yaml_value
     {
       // Look for parameters section first
-      if let Some( params_value ) = map.get( serde_yaml::Value::String( "parameters".to_string() ) )
+      if let Some( params_value ) = map.get( serde_yaml_ng::Value::String( "parameters".to_string() ) )
       {
-        if let serde_yaml::Value::Mapping( params_map ) = params_value
+        if let serde_yaml_ng::Value::Mapping( params_map ) = params_value
         {
           for ( key, value ) in params_map
           {
-            if let serde_yaml::Value::String( key_str ) = key
+            if let serde_yaml_ng::Value::String( key_str ) = key
             {
               parsed_config.insert( key_str.clone(), yaml_to_json( value.clone() ) );
             }
@@ -168,7 +168,7 @@ where
       {
         for ( key, value ) in &map
         {
-          if let serde_yaml::Value::String( key_str ) = key
+          if let serde_yaml_ng::Value::String( key_str ) = key
           {
             // Fix(issue-BUG1): skip metadata fields — same filter as load_config_file
             // Root cause: flat-format fallback was not filtering metadata fields,
@@ -269,15 +269,15 @@ fn extract_created_at_timestamp( config_path : &Path ) -> Option< String >
 #[ inline ]
 fn extract_created_at_from_yaml_string( content : &str ) -> Option< String >
 {
-  let yaml_value : serde_yaml::Value = serde_yaml::from_str( content ).ok()?;
+  let yaml_value : serde_yaml_ng::Value = serde_yaml_ng::from_str( content ).ok()?;
 
-  if let serde_yaml::Value::Mapping( map ) = yaml_value
+  if let serde_yaml_ng::Value::Mapping( map ) = yaml_value
   {
-    if let Some( serde_yaml::Value::Mapping( metadata_map ) ) =
-      map.get( serde_yaml::Value::String( "metadata".to_string() ) )
+    if let Some( serde_yaml_ng::Value::Mapping( metadata_map ) ) =
+      map.get( serde_yaml_ng::Value::String( "metadata".to_string() ) )
     {
-      if let Some( serde_yaml::Value::String( created_str ) ) =
-        metadata_map.get( serde_yaml::Value::String( "created_at".to_string() ) )
+      if let Some( serde_yaml_ng::Value::String( created_str ) ) =
+        metadata_map.get( serde_yaml_ng::Value::String( "created_at".to_string() ) )
       {
         return Some( created_str.clone() );
       }
@@ -292,46 +292,46 @@ fn extract_created_at_from_yaml_string( content : &str ) -> Option< String >
 fn build_config_yaml_string( config : &HashMap< String, JsonValue >, created_at : Option< String > ) -> Result< String, String >
 {
   // Create YAML structure
-  let mut root_map = serde_yaml::Mapping::new();
+  let mut root_map = serde_yaml_ng::Mapping::new();
 
   // Metadata section
-  let mut metadata_map = serde_yaml::Mapping::new();
+  let mut metadata_map = serde_yaml_ng::Mapping::new();
   metadata_map.insert(
-    serde_yaml::Value::String( "version".to_string() ),
-    serde_yaml::Value::String( "1.0".to_string() )
+    serde_yaml_ng::Value::String( "version".to_string() ),
+    serde_yaml_ng::Value::String( "1.0".to_string() )
   );
 
   let timestamp = chrono::Utc::now().to_rfc3339();
   metadata_map.insert(
-    serde_yaml::Value::String( "created_at".to_string() ),
-    serde_yaml::Value::String( created_at.unwrap_or_else( || timestamp.clone() ) )
+    serde_yaml_ng::Value::String( "created_at".to_string() ),
+    serde_yaml_ng::Value::String( created_at.unwrap_or_else( || timestamp.clone() ) )
   );
   metadata_map.insert(
-    serde_yaml::Value::String( "last_modified".to_string() ),
-    serde_yaml::Value::String( timestamp )
+    serde_yaml_ng::Value::String( "last_modified".to_string() ),
+    serde_yaml_ng::Value::String( timestamp )
   );
 
   root_map.insert(
-    serde_yaml::Value::String( "metadata".to_string() ),
-    serde_yaml::Value::Mapping( metadata_map )
+    serde_yaml_ng::Value::String( "metadata".to_string() ),
+    serde_yaml_ng::Value::Mapping( metadata_map )
   );
 
   // Parameters section
-  let mut params_map = serde_yaml::Mapping::new();
+  let mut params_map = serde_yaml_ng::Mapping::new();
   for ( key, value ) in config
   {
     params_map.insert(
-      serde_yaml::Value::String( key.clone() ),
+      serde_yaml_ng::Value::String( key.clone() ),
       json_to_yaml( value.clone() )
     );
   }
 
   root_map.insert(
-    serde_yaml::Value::String( "parameters".to_string() ),
-    serde_yaml::Value::Mapping( params_map )
+    serde_yaml_ng::Value::String( "parameters".to_string() ),
+    serde_yaml_ng::Value::Mapping( params_map )
   );
 
-  let yaml_value = serde_yaml::Value::Mapping( root_map );
-  serde_yaml::to_string( &yaml_value )
+  let yaml_value = serde_yaml_ng::Value::Mapping( root_map );
+  serde_yaml_ng::to_string( &yaml_value )
     .map_err( | e | format!( "Failed to serialize YAML: {e}" ) )
 }

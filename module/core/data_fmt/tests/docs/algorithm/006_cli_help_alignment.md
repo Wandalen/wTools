@@ -91,8 +91,9 @@
 - **Then:** The alignment column is computed from visual key width (9) not raw byte
   count; descriptions for all keys start at `indent + 9 + 2`; the ANSI codes are
   preserved verbatim in the output without double-encoding.
-- **Note:** Known bug — current implementation uses byte count instead of `visual_len`
-  for alignment; this case should be tagged `bug_reproducer` once the fix is in.
+- **Note:** Known bug (BUG-014) — current implementation uses byte count instead of
+  `visual_len` for alignment; this case should be tagged `bug_reproducer(BUG-014)`
+  once the fix is in. See `task/bug/open/014_cli_help_alignment_ansi_byte_width.md`.
 
 ---
 

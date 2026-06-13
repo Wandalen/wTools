@@ -93,3 +93,35 @@ fn test_flatten_config_with_table_formatter()
   assert!( output.contains( "150" ) );
   assert!( !output.contains( "project/src" ) ); // path excluded
 }
+
+// --- AP-7: FlattenConfig defaults all fields to true; custom names override defaults ---
+//
+// Given: FlattenConfig::default() (all include flags = true, column_names = None).
+// When: field values are inspected, and custom names are set via column_names().
+// Then: all four include flags are true; custom names appear in the resulting TableView metadata.
+
+/// AP-7 — `api/002_builders`: `FlattenConfig` defaults all fields to true; custom names override.
+// test_kind: standard
+#[ test ]
+fn flatten_config_defaults_all_true_custom_names_override_ap7()
+{
+  // FlattenConfig::default() must have all include flags = true
+  let cfg = FlattenConfig::default();
+  assert!( cfg.include_path, "include_path must default to true" );
+  assert!( cfg.include_name, "include_name must default to true" );
+  assert!( cfg.include_depth, "include_depth must default to true" );
+  assert!( cfg.include_data, "include_data must default to true" );
+
+  // Custom column names must override defaults and appear in the resulting TableView
+  let custom = FlattenConfig::new()
+    .column_names( "P".into(), "N".into(), "D".into(), "V".into() );
+  let tree = TreeBuilder::new( "root" )
+    .insert( &[ "leaf" ], 1 )
+    .build();
+  let view = flatten_to_table_tree_with_config( &tree, &custom );
+  assert_eq!(
+    view.metadata.column_names,
+    vec![ "P", "N", "D", "V" ],
+    "custom column names must replace default names in TableView metadata",
+  );
+}

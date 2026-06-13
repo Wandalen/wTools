@@ -91,5 +91,5 @@
 
 | File | Relationship |
 |------|-------------|
-| [`tests/table_caption_test.rs`](../../table_caption_test.rs) | TableCaption behavioral tests (FC-1..6) |
-| [`tests/table_config_validation_test.rs`](../../table_config_validation_test.rs) | TableConfig builder and preset validation |
+| [`tests/table_caption_test.rs`](../../table_caption_test.rs) | TableCaption rendering tests (see `tests/docs/feature/007_table_caption.md` FT-1..FT-6) |
+| [`tests/table_config_validation_test.rs`](../../table_config_validation_test.rs) | TableConfig builder and preset validation (AP-1..AP-6) |

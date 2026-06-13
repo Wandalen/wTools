@@ -16,7 +16,6 @@
 //! ```
 
 use crate::{ TableView, formatters::{ Format, FormatError } };
-use std::collections::HashMap;
 
 /// TOML output formatter
 ///
@@ -65,27 +64,13 @@ impl Format for TomlFormatter
 {
   fn format( &self, data : &TableView ) -> Result< String, FormatError >
   {
-    // Convert TableView to Vec<HashMap<String, String>>
-    // Each row becomes a table with column names as keys
-    let column_names = &data.metadata.column_names;
-
-    let rows : Vec< HashMap< String, String > > = data.rows
-      .iter()
-      .map( | row |
-      {
-        column_names
-          .iter()
-          .zip( row.iter() )
-          .map( | ( name, value ) | ( name.clone(), value.text.clone() ) )
-          .collect()
-      })
-      .collect();
+    let rows = super::table_view_to_row_maps( data );
 
     // TOML requires wrapping in a structure for array of tables
     #[ derive( serde::Serialize ) ]
     struct TomlWrapper
     {
-      row : Vec< HashMap< String, String > >,
+      row : Vec< std::collections::HashMap< String, String > >,
     }
 
     let wrapper = TomlWrapper { row : rows };

@@ -2,7 +2,7 @@
 
 ### Scope
 
-- **Purpose**: Render tabular data as a YAML sequence of mappings, using serde_yaml for serialization.
+- **Purpose**: Render tabular data as a YAML sequence of mappings, using serde_yaml_ng for serialization.
 - **Responsibility**: Document the `YamlFormatter` struct — its `Format` trait implementation, serde dependency, and single variant.
 - **In Scope**: Trait implementation, serde dependency, feature flag.
 - **Out of Scope**: Variant output details (see `../variant/018_yaml_standard.md`), operation signatures (see `../api/004_formatters.md`).

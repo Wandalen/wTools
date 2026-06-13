@@ -735,3 +735,35 @@ fn break_long_words_true_enables_hard_break_ft8()
   assert_eq!( result[ 0 ], "abcde", "first line must be first 5 chars: {result:?}" );
   assert_eq!( result[ 1 ], "fghij", "second line must be remaining 5 chars: {result:?}" );
 }
+
+// --- AC-13: tab character at the wrap boundary — tab expanded before split, not stranded ---
+//
+// Given: WrapFormatter with tab_width=4 and width=10; input "hello\tworld".
+// When: wrap() is called.
+// Then: no literal \t in output; tab expanded to spaces before word split;
+//       split_whitespace() normalises expanded spaces to a single separator;
+//       both "hello" and "world" appear in output.
+
+/// AC-13 — `algorithm/002_word_wrapping`: tab expanded to spaces before wrap-point calculation.
+// test_kind: standard
+#[ test ]
+fn tab_at_wrap_boundary_expanded_before_split_ac13()
+{
+  // "hello\tworld" — tab falls near position 5 (after "hello")
+  // tab_width=4 → expanded to "hello    world" (4 spaces); split_whitespace normalises → "hello world"
+  let fmt = WrapFormatter::with_config( WrapConfig::new().width( 10 ) );
+  let result = fmt.wrap( "hello\tworld" );
+
+  // No literal tab in any output line
+  for line in &result
+  {
+    assert!(
+      !line.contains( '\t' ),
+      "tab must be expanded before word split; literal \\t must not survive: {result:?}",
+    );
+  }
+  // Both words must appear in the joined output
+  let joined = result.join( "" );
+  assert!( joined.contains( "hello" ), "word 'hello' must appear in output: {result:?}" );
+  assert!( joined.contains( "world" ), "word 'world' must appear in output: {result:?}" );
+}

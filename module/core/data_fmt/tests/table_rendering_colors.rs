@@ -316,7 +316,7 @@ fn test_t013_n05_grid_borders_and_colors_coexist()
 
 /// T013-M01 — Multiline data row with alternating color: RESET before EVERY `\n`.
 ///
-/// ## Root Cause (Bug)
+/// ## Root Cause
 ///
 /// `format_internal()` wraps an entire row's temp-buffer output with a single
 /// `color…RESET` pair. When the row contains multiline cells, `format_row`
@@ -350,6 +350,7 @@ fn test_t013_n05_grid_borders_and_colors_coexist()
 /// `.lines()` yields `["content"]` → output is identical to the previous
 /// single-wrap path. Do NOT special-case single-line rows — let `.lines()`
 /// handle both uniformly.
+// test_kind: bug_reproducer(BUG-009)
 #[ test ]
 fn test_t013_m01_multiline_data_row_reset_before_each_newline()
 {
@@ -519,14 +520,35 @@ fn test_t013_m05_empty_header_color_with_flag_true_suppresses_escapes()
   );
 }
 
-/// T013-M06 — Multiline data row with alternating color: column width is the
-/// MAX single-line width (not sum), AND RESET appears before every `\n`.
+/// ## Root Cause
 ///
-/// Integration test combining both fixes:
-/// 1. Column width fix (BUG-011): `calculate_column_widths_for_rows`
-///    must use per-line max, not total-string width.
-/// 2. Color wrap fix (BUG-009): each sub-line gets its own
-///    `color + content + RESET + \n` wrapping.
+/// `calculate_column_widths_for_rows` called `.len()` on the full cell string,
+/// counting all characters including the embedded `'\n'`. For `"Line1\nLine2"`
+/// (11 chars total) this produced a column width of 11 instead of 5 (the max
+/// single-line display width).
+///
+/// ## Why Not Caught
+///
+/// All existing column-width tests used single-line cell content. No test
+/// measured the column width produced by a cell with an embedded newline.
+///
+/// ## Fix Applied
+///
+/// `calculate_column_widths_for_rows` updated to iterate `.lines()` on each
+/// cell string and take the maximum display width across all sub-lines
+/// (`src/formatters/table/mod.rs`).
+///
+/// ## Prevention
+///
+/// Add multiline-cell cases to any test that measures column widths. Invariant:
+/// column width = max display width of any single visual line, never total
+/// string length.
+///
+/// ## Pitfall
+///
+/// This test also exercises BUG-009 (RESET-before-newline). A RESET assertion
+/// failure may mask a width failure — check both assertion groups independently.
+// test_kind: bug_reproducer(BUG-011)
 #[ test ]
 fn test_t013_m06_multiline_colored_row_correct_width_and_reset()
 {

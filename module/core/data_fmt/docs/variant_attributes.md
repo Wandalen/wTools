@@ -22,7 +22,7 @@ This document defines all 46 attributes used to describe each output format vari
    - Example: `default`, `format_json`, `format_html`, `format_sql`
 
 6. **runtime_deps** - Runtime dependencies
-   - Example: `None`, `serde`, `serde+serde_json`, `serde+serde_yaml`
+   - Example: `None`, `serde`, `serde+serde_json`, `serde+serde_yaml_ng`
 
 7. **zero_dependency** - Whether variant needs zero external crates
    - Example: `Yes`, `No`

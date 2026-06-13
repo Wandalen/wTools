@@ -24,3 +24,4 @@
 | `011_multiline_width_calculation.md` | BUG-011: Column width used total string length instead of max single-line width |
 | `012_expanded_render_method.md` | BUG-012: ExpandedFormatter accessed raw cell data bypassing ANSI color render |
 | `013_multiline_detail_indent.md` | BUG-013: Multi-line detail indent prefix missing on continuation lines |
+| `014_cli_help_alignment_ansi_byte_width.md` | BUG-014: CLI help key width uses byte count instead of visual_len |

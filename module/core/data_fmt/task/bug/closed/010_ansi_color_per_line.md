@@ -23,4 +23,5 @@ Always iterate `.text.lines()` and emit `color + line + RESET` per output line i
 
 ## Test Reference
 
-Covered by `tests/decorated_cells_test.rs` — per-line ANSI reset invariant tests.
+`tests/sub_row_test.rs` — `t30_colored_multiline_detail_per_line_ansi`
+(`// test_kind: bug_reproducer(BUG-010)`).

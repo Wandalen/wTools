@@ -54,7 +54,7 @@ fn test_aligned_tree_empty_columns()
   let formatter = TreeFormatter::new();
   let output = formatter.format_aligned( &root );
 
-  assert!( output.contains( "value" ) );
+  assert!( output.contains( "value" ), "expected \"value\" in output:\n{output}" );
 }
 
 #[ test ]
@@ -83,9 +83,9 @@ fn test_aligned_tree_unicode_columns()
   let formatter = TreeFormatter::new();
   let output = formatter.format_aligned( &root );
 
-  assert!( output.contains( "日本語" ) );
-  assert!( output.contains( "emoji_😀" ) );
-  assert!( output.contains( "Русский" ) );
+  assert!( output.contains( "日本語" ), "expected \"日本語\" in output:\n{output}" );
+  assert!( output.contains( "emoji_😀" ), "expected \"emoji_😀\" in output:\n{output}" );
+  assert!( output.contains( "Русский" ), "expected \"Русский\" in output:\n{output}" );
 }
 
 #[ test ]
@@ -114,8 +114,8 @@ fn test_aligned_tree_long_values()
   let formatter = TreeFormatter::new();
   let output = formatter.format_aligned( &root );
 
-  assert!( output.contains( &long_string ) );
-  assert!( output.contains( "short" ) );
+  assert!( output.contains( &long_string ), "expected long_string in output:\n{output}" );
+  assert!( output.contains( "short" ), "expected \"short\" in output:\n{output}" );
 }
 
 // =============================================================================
@@ -172,10 +172,10 @@ fn test_aligned_tree_crate_list_simulation()
   let output = formatter.format_aligned( &root );
 
   // Verify structure
-  assert!( output.contains( "api_ollama" ) );
-  assert!( output.contains( "unikit" ) );
-  assert!( output.contains( "llm_contract" ) );
-  assert!( output.contains( "uni_gemini" ) );
+  assert!( output.contains( "api_ollama" ), "expected \"api_ollama\" in output:\n{output}" );
+  assert!( output.contains( "unikit" ), "expected \"unikit\" in output:\n{output}" );
+  assert!( output.contains( "llm_contract" ), "expected \"llm_contract\" in output:\n{output}" );
+  assert!( output.contains( "uni_gemini" ), "expected \"uni_gemini\" in output:\n{output}" );
 
   // Verify alignment - all versions should start at same column
   let lines : Vec< &str > = output.lines().collect();
@@ -219,9 +219,9 @@ fn test_aligned_tree_no_data_nodes()
   // Debug output to see what's actually generated
   // eprintln!( "Output:\n{}", output );
 
-  assert!( output.contains( "no_data" ) );
+  assert!( output.contains( "no_data" ), "expected \"no_data\" in output:\n{output}" );
   // "with_data" is the node name, but node names aren't shown when there's data
   // Only the column data is shown
-  assert!( output.contains( "name" ) );
-  assert!( output.contains( "value" ) );
+  assert!( output.contains( "name" ), "expected \"name\" in output:\n{output}" );
+  assert!( output.contains( "value" ), "expected \"value\" in output:\n{output}" );
 }
