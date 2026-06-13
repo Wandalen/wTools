@@ -117,7 +117,7 @@ impl SqlFormatter
 
   /// Enable/disable empty string to NULL conversion
   #[ must_use ]
-  pub fn empty_as_null( mut self, enabled : bool ) -> Self
+  pub fn with_empty_as_null( mut self, enabled : bool ) -> Self
   {
     self.empty_as_null = enabled;
     self

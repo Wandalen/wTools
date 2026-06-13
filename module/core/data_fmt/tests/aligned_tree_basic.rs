@@ -52,7 +52,7 @@ fn test_aligned_tree_empty()
   let formatter = TreeFormatter::new();
   let output = formatter.format_aligned( &tree );
 
-  assert!( output.contains( "root" ) );
+  assert!( output.contains( "root" ), "expected \"root\" in output:\n{output}" );
   assert_eq!( output.lines().count(), 1 );
 }
 
@@ -72,9 +72,9 @@ fn test_aligned_tree_single_child_two_columns()
   let formatter = TreeFormatter::new();
   let output = formatter.format_aligned( &root );
 
-  assert!( output.contains( "name1" ) );
-  assert!( output.contains( "value1" ) );
-  assert!( output.contains( "├──" ) || output.contains( "└──" ) );
+  assert!( output.contains( "name1" ), "expected \"name1\" in output:\n{output}" );
+  assert!( output.contains( "value1" ), "expected \"value1\" in output:\n{output}" );
+  assert!( output.contains( "├──" ) || output.contains( "└──" ), "expected tree connector in output:\n{output}" );
 }
 
 #[ test ]
@@ -94,9 +94,9 @@ fn test_aligned_tree_single_child_three_columns()
   let formatter = TreeFormatter::new();
   let output = formatter.format_aligned( &root );
 
-  assert!( output.contains( "api_ollama" ) );
-  assert!( output.contains( "v0.1.0" ) );
-  assert!( output.contains( "(api/ollama)" ) );
+  assert!( output.contains( "api_ollama" ), "expected \"api_ollama\" in output:\n{output}" );
+  assert!( output.contains( "v0.1.0" ), "expected \"v0.1.0\" in output:\n{output}" );
+  assert!( output.contains( "(api/ollama)" ), "expected \"(api/ollama)\" in output:\n{output}" );
 }
 
 #[ test ]
@@ -126,8 +126,8 @@ fn test_aligned_tree_two_siblings_alignment()
   let output = formatter.format_aligned( &root );
 
   // Verify both nodes present
-  assert!( output.contains( "short" ) );
-  assert!( output.contains( "longer_name" ) );
+  assert!( output.contains( "short" ), "expected \"short\" in output:\n{output}" );
+  assert!( output.contains( "longer_name" ), "expected \"longer_name\" in output:\n{output}" );
 
   // Check that columns are aligned by verifying positions
   let lines : Vec< &str > = output.lines().collect();
@@ -173,9 +173,9 @@ fn test_aligned_tree_two_levels()
   let formatter = TreeFormatter::new();
   let output = formatter.format_aligned( &root );
 
-  assert!( output.contains( "parent_name" ) );
-  assert!( output.contains( "child_name" ) );
-  assert!( output.contains( "│" ) || output.contains( ' ' ) ); // Continuation or space
+  assert!( output.contains( "parent_name" ), "expected \"parent_name\" in output:\n{output}" );
+  assert!( output.contains( "child_name" ), "expected \"child_name\" in output:\n{output}" );
+  assert!( output.contains( "│" ) || output.contains( ' ' ), "expected continuation or space in output:\n{output}" ); // Continuation or space
 }
 
 #[ test ]
@@ -211,10 +211,10 @@ fn test_aligned_tree_deep_nesting()
   let formatter = TreeFormatter::new();
   let output = formatter.format_aligned( &root );
 
-  assert!( output.contains( "level1" ) );
-  assert!( output.contains( "level2" ) );
-  assert!( output.contains( "level3" ) );
-  assert!( output.contains( "level4" ) );
+  assert!( output.contains( "level1" ), "expected \"level1\" in output:\n{output}" );
+  assert!( output.contains( "level2" ), "expected \"level2\" in output:\n{output}" );
+  assert!( output.contains( "level3" ), "expected \"level3\" in output:\n{output}" );
+  assert!( output.contains( "level4" ), "expected \"level4\" in output:\n{output}" );
   assert_eq!( output.lines().count(), 4 ); // 4 levels (root not shown by default)
 }
 
@@ -241,7 +241,7 @@ fn test_aligned_tree_many_siblings()
   let formatter = TreeFormatter::new();
   let output = formatter.format_aligned( &root );
 
-  assert!( output.contains( "name_0" ) );
-  assert!( output.contains( "name_9" ) );
+  assert!( output.contains( "name_0" ), "expected \"name_0\" in output:\n{output}" );
+  assert!( output.contains( "name_9" ), "expected \"name_9\" in output:\n{output}" );
   assert_eq!( output.lines().count(), 10 ); // 10 children (root not shown by default)
 }

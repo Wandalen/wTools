@@ -43,7 +43,7 @@
 | `HtmlFormatter` | `html_*` (4 flags) | none |
 | `SqlFormatter` | `sql_*` (4 flags) | none |
 | `JsonFormatter` | `format_json` | serde, serde_json |
-| `YamlFormatter` | `format_yaml` | serde, serde_yaml |
+| `YamlFormatter` | `format_yaml` | serde, serde_yaml_ng |
 | `TomlFormatter` | `format_toml` | serde, toml |
 | `TextFormatter` | `format_text` | none |
 

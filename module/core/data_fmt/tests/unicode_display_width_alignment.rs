@@ -73,7 +73,7 @@
 //! `unicode_display_width_table.rs`.
 
 #![ cfg( feature = "enabled" ) ]
-use data_fmt::{ truncate_cell, pad_to_width };
+use data_fmt::{ truncate_cell, pad_to_width, visual_len, RowBuilder, TableFormatter, Format };
 
 /// Bug reproducer for BUG-001: Cyrillic filenames misalign in column padding.
 ///
@@ -684,4 +684,78 @@ fn bug_reproducer_truncate_mixed_width()
     truncated.contains( ".." ),
     "Truncated text should contain marker '..' but got '{truncated}'"
   );
+}
+
+// --- IN-9: ANSI-only cell (no visible characters) — column width is zero, no extra padding ---
+//
+// Given: a cell containing only ANSI escape codes with no visible characters.
+// When: visual_len() is called on the string, and the cell is rendered in a table.
+// Then: visual_len() returns 0; ANSI codes are preserved verbatim; adjacent rows define column width.
+
+/// IN-9 — `invariant/002_ansi_unicode`: ANSI-only cell contributes zero to column width measurement.
+// test_kind: standard
+#[ test ]
+fn ansi_only_cell_zero_visual_width_in9()
+{
+  let ansi_only = "\x1b[32m\x1b[0m"; // ANSI color-on + reset; no visible characters
+
+  // visual_len strips ANSI sequences and counts remaining chars → 0
+  assert_eq!(
+    visual_len( ansi_only ), 0,
+    "ANSI-only string must have visual_len = 0; got {}",
+    visual_len( ansi_only ),
+  );
+
+  // Table rendering: ANSI-only cell in one row + visible cell in another row (same column)
+  // Column width is determined by the visible row ("abc"), not the ANSI-only row.
+  let view = RowBuilder::new( vec![ "Col".into() ] )
+    .add_row( vec![ ansi_only.into() ] )
+    .add_row( vec![ "abc".into() ] )
+    .build_view();
+  let output = TableFormatter::new().format( &view ).unwrap_or_default();
+
+  // No panic; output non-empty (header + separator + data rows)
+  assert!( !output.is_empty(), "table with ANSI-only cell must produce non-empty output" );
+  // ANSI codes preserved verbatim in output
+  assert!(
+    output.contains( "\x1b[32m" ),
+    "ANSI codes in ANSI-only cell must be preserved verbatim in output",
+  );
+  // Visible cell present
+  assert!( output.contains( "abc" ), "visible cell must appear in output" );
+}
+
+// --- IN-10: combining character sequences — visual width equals base character width ---
+//
+// Given: a cell containing a base character followed by a combining mark (e.g. "e\u{0301}" = é).
+// When: the column width is computed via unicode_visual_len (East Asian Width).
+// Then: the combining mark contributes 0 to display width; column width = 1 (same as base alone).
+
+/// IN-10 — `invariant/002_ansi_unicode`: combining marks have zero display width; column width equals base.
+// test_kind: standard
+#[ test ]
+fn combining_marks_visual_width_equals_base_width_in10()
+{
+  use unicode_width::UnicodeWidthStr;
+
+  // e + combining acute accent (U+0301) = decomposed grapheme; display width = 1
+  let combining = "e\u{0301}"; // 2 code points, EAW width 1 (combining mark = 0)
+
+  // pad_to_width uses EAW internally: for combining (width 1), adds 4 spaces to reach target 5
+  let padded = pad_to_width( combining, 5, false );
+  assert_eq!(
+    UnicodeWidthStr::width( padded.as_str() ), 5,
+    "combining grapheme (EAW=1) padded to 5 must have display width 5; \
+     got: {} for '{}'",
+    UnicodeWidthStr::width( padded.as_str() ),
+    padded,
+  );
+
+  // Table rendering: combining cell and ASCII 'e' cell in same column must align
+  let view = RowBuilder::new( vec![ "A".into() ] )
+    .add_row( vec![ combining.into() ] )
+    .add_row( vec![ "e".into() ] )
+    .build_view();
+  let output = TableFormatter::new().format( &view ).unwrap_or_default();
+  assert!( !output.is_empty(), "combining mark table must render without panic" );
 }

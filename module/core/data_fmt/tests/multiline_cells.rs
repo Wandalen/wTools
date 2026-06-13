@@ -763,3 +763,43 @@ fn three_newlines_produce_four_sub_lines_ac10()
     data_lines.len(),
   );
 }
+
+// --- AC-11: whitespace-only sub-lines are preserved as non-empty padding lines ---
+//
+// Given: a cell containing "first\n   \nsecond" where the middle segment is 3 spaces.
+// When: rendered with TableFormatter.
+// Then: the whitespace-only middle sub-line is preserved (not collapsed); between
+//       "first" and "second" in the output there is exactly one intervening physical line.
+
+/// AC-11 — `algorithm/001_multiline_cell_rendering`: whitespace-only sub-lines preserved, not collapsed.
+// test_kind: standard
+#[ test ]
+fn whitespace_only_sub_lines_preserved_not_collapsed_ac11()
+{
+  let view = RowBuilder::new( vec![ "Col".into() ] )
+    .add_row( vec![ "first\n   \nsecond".into() ] )
+    .build_view();
+
+  let output = TableFormatter::with_config( TableConfig::plain() )
+    .format( &view )
+    .expect( "formatting must not fail" );
+
+  // Both visible segments must appear
+  assert!( output.contains( "first" ), "'first' segment must appear in output:\n{output:?}" );
+  assert!( output.contains( "second" ), "'second' segment must appear in output:\n{output:?}" );
+
+  // The whitespace-only sub-line must not be collapsed: exactly one physical line
+  // must separate "first" from "second" in the rendered output.
+  let lines : Vec< &str > = output.lines().collect();
+  let first_idx = lines.iter().position( | l | l.contains( "first" ) )
+    .expect( "'first' must appear in output lines" );
+  let second_idx = lines.iter().position( | l | l.contains( "second" ) )
+    .expect( "'second' must appear in output lines" );
+  assert_eq!(
+    second_idx - first_idx, 2,
+    "whitespace-only sub-line must produce one physical line between 'first' and 'second' \
+     (gap = 2); got gap = {}:\n\n{}",
+    second_idx - first_idx,
+    output,
+  );
+}

@@ -29,7 +29,7 @@ The schema defines 46 attributes across 10 groups. Every variant doc instance fi
 | # | Attribute | Purpose | Example Values |
 |---|-----------|---------|----------------|
 | 5 | `feature_flag` | Cargo feature required to enable this variant | `default`, `format_json`, `format_html`, `format_sql` |
-| 6 | `runtime_deps` | Runtime crate dependencies | `None`, `serde`, `serde+serde_json`, `serde+serde_yaml` |
+| 6 | `runtime_deps` | Runtime crate dependencies | `None`, `serde`, `serde+serde_json`, `serde+serde_yaml_ng` |
 | 7 | `zero_dependency` | Whether variant needs zero external crates | `Yes`, `No` |
 
 #### Character Set & Encoding

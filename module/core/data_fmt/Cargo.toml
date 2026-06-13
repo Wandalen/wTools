@@ -23,13 +23,13 @@ terminal_size = { workspace = true, optional = true }
 # Optional dependencies for data format serialization
 serde = { workspace = true, features = ["derive"], optional = true }
 serde_json = { workspace = true, optional = true }
-serde_yaml = { workspace = true, optional = true }
+serde_yaml_ng = { workspace = true, optional = true }
 toml = { workspace = true, optional = true }
 
 [dev-dependencies]
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
-serde_yaml = { workspace = true }
+serde_yaml_ng = { workspace = true }
 toml = { workspace = true }
 
 [features]
@@ -81,7 +81,7 @@ format_text = [ "enabled" ]
 format_json = [ "enabled", "serde_support", "dep:serde_json" ]
 
 # YamlFormatter
-format_yaml = [ "enabled", "serde_support", "dep:serde_yaml" ]
+format_yaml = [ "enabled", "serde_support", "dep:serde_yaml_ng" ]
 
 # TomlFormatter
 format_toml = [ "enabled", "serde_support", "dep:toml" ]

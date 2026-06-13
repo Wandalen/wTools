@@ -23,5 +23,6 @@ Never replicate the padding logic inline in separator branches. Always delegate 
 
 ## Test Reference
 
-Covered by `tests/table_styles_presets.rs` and `tests/table_styles_outputs.rs` — alignment
-correctness assertions for multi-column tables.
+`tests/table_config_validation_test.rs` — `test_unicode_box_all_lines_same_display_width`
+(`// test_kind: bug_reproducer(BUG-005)`); and `test_markdown_all_lines_same_display_width`
+for the Markdown branch.

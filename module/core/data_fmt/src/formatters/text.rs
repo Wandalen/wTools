@@ -79,7 +79,7 @@
 //! # }
 //! ```
 
-use crate::{ TableView, formatters::{ Format, FormatError } };
+use crate::{ TableView, ansi_str::visual_len, formatters::{ Format, FormatError } };
 
 /// Text output style
 #[ derive( Debug, Clone, Copy, PartialEq, Eq ) ]
@@ -338,9 +338,15 @@ fn format_cli_help( data : &TableView, indent : usize ) -> String
     sections.push( ( idx, is_section ) );
 
     // Calculate max key width for aligned rows (non-section rows with descriptions)
+    // Fix(BUG-014): use visual_len() instead of .len() so ANSI escape bytes in key
+    // strings don't inflate the alignment column beyond the visible key width.
+    // Root cause: .len() returns UTF-8 byte count; ANSI escape sequences are 4–7 bytes
+    // each with zero visual width, shifting all sibling descriptions far to the right.
+    // Pitfall: never use .len() on user-visible strings for column alignment — use
+    // visual_len() (strips ANSI, counts chars) or unicode_visual_len() (EAW-aware).
     if !is_section && !second_col.is_empty()
     {
-      max_key_width = max_key_width.max( first_col.len() );
+      max_key_width = max_key_width.max( visual_len( first_col ) );
     }
   }
 
@@ -380,7 +386,7 @@ fn format_cli_help( data : &TableView, indent : usize ) -> String
         output.push_str( first_col );
 
         // Padding to align descriptions
-        let padding_needed = max_key_width - first_col.len() + 2; // +2 for spacing
+        let padding_needed = max_key_width.saturating_sub( visual_len( first_col ) ) + 2; // +2 for spacing
         output.push_str( &" ".repeat( padding_needed ) );
         output.push_str( second_col );
         output.push( '\n' );

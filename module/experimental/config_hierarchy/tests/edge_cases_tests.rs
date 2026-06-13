@@ -537,7 +537,7 @@ fn test_created_at_preserved_on_resave()
 //
 // ## Root Cause
 // format/001 lists "Null: ~ or null" as a valid scalar type but null round-trip
-// was never tested. YAML null handling differs between serde_yaml versions.
+// was never tested. YAML null handling differs between serde_yaml_ng versions.
 //
 // ## Fix Applied
 // Save map with JsonValue::Null, reload, assert Null preserved.
@@ -555,7 +555,7 @@ fn test_null_value_round_trips()
 
   let loaded = TestConfig::load_config_file( &config_path ).unwrap();
   assert_eq!( loaded.get( "normal_key" ), Some( &JsonValue::String( "present".into() ) ) );
-  // Null values may be omitted or represented as Null depending on serde_yaml behavior
+  // Null values may be omitted or represented as Null depending on serde_yaml_ng behavior
   // Both outcomes are acceptable — the key point is no panic/error
   if let Some( v ) = loaded.get( "nullable_key" )
   {

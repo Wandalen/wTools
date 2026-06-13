@@ -57,7 +57,7 @@ Nine of ten formatters implement `Format`. `TreeFormatter` uses direct method di
 | `HtmlFormatter` | `format_html` | None | Web tables (HTML) |
 | `SqlFormatter` | `format_sql` | None | SQL INSERT statements |
 | `JsonFormatter` | `format_json` | serde, serde_json | Data interchange, APIs |
-| `YamlFormatter` | `format_yaml` | serde, serde_yaml | Configuration files |
+| `YamlFormatter` | `format_yaml` | serde, serde_yaml_ng | Configuration files |
 | `TomlFormatter` | `format_toml` | serde, toml | Rust config files |
 | `TextFormatter` | `format_text` | None | Human-readable lists |
 

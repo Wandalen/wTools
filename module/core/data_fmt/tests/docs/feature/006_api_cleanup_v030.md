@@ -25,7 +25,9 @@
 - **Given:** The current state of `src/` and `tests/` after the v0.3.0 cleanup.
 - **When:** `TableShapedFormatter` symbol is searched in `src/` and `tests/`.
 - **Then:** Zero matches are returned; the deprecated trait is fully removed from the codebase.
-- **Note:** Verified via runtime search — absence is a behavioral guarantee, not just a code-style preference.
+- **Note:** Verified via runtime search (e.g. `grep -r "TableShapedFormatter" src/ tests/`) —
+  absence is a behavioral guarantee enforced by search, not a compile-time contract.
+  The test asserts the search produces zero matches.
 
 ---
 
@@ -34,6 +36,8 @@
 - **Given:** The current state of `src/` and `tests/` after the v0.3.0 cleanup.
 - **When:** `allow(deprecated)` attribute is searched in `src/` and `tests/`.
 - **Then:** Zero matches are returned; no code suppresses deprecation warnings for the removed APIs.
+- **Note:** Verified via runtime search (e.g. `grep -r "allow(deprecated)" src/ tests/`);
+  absence is enforced by search, not by compilation alone.
 
 ---
 

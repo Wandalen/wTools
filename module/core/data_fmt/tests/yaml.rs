@@ -22,7 +22,7 @@ mod yaml_tests
     let yaml = formatter.format( &view ).unwrap();
 
     // Should be YAML list (starts with -)
-    assert!( yaml.contains( '-' ) );
+    assert!( yaml.contains( '-' ), "expected YAML list marker '-' in output:\n{yaml}" );
 
     // Should contain column names as keys
     assert!( yaml.contains( "Name:" ) );
@@ -34,7 +34,7 @@ mod yaml_tests
     assert!( yaml.contains( "Bob" ) );
 
     // Should NOT have JSON brackets (YAML uses dashes for lists)
-    assert!( !yaml.contains( '{' ) );
+    assert!( !yaml.contains( '{' ), "expected no JSON-style '{{' braces in YAML output:\n{yaml}" );
   }
 
   #[ test ]
@@ -83,7 +83,7 @@ mod yaml_tests
     let yaml_str = formatter.format( &view ).unwrap();
 
     // Parse back to verify structure
-    let parsed : Vec< HashMap< String, String > > = serde_yaml::from_str( &yaml_str )
+    let parsed : Vec< HashMap< String, String > > = serde_yaml_ng::from_str( &yaml_str )
       .expect( "Output should be valid YAML list of objects" );
 
     assert_eq!( parsed.len(), 2 );

@@ -90,6 +90,26 @@ mod sql;
 pub use sql::{ SqlFormatter, SqlVariant };
 
 // Data serialization formatters (feature-gated)
+
+/// Build a `Vec<HashMap<String, String>>` from `TableView` by zipping column names
+/// with row cell text — shared by json, yaml, and toml formatters.
+#[ cfg( any( feature = "format_json", feature = "format_yaml", feature = "format_toml" ) ) ]
+fn table_view_to_row_maps( data : &crate::TableView ) -> Vec< std::collections::HashMap< String, String > >
+{
+  let column_names = &data.metadata.column_names;
+  data.rows
+    .iter()
+    .map( | row |
+    {
+      column_names
+        .iter()
+        .zip( row.iter() )
+        .map( | ( name, value ) | ( name.clone(), value.text.clone() ) )
+        .collect()
+    })
+    .collect()
+}
+
 #[ cfg( feature = "format_json" ) ]
 mod json;
 #[ cfg( feature = "format_json" ) ]

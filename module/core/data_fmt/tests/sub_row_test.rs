@@ -89,7 +89,7 @@ fn t01_add_row_no_detail()
 
   // header + separator + data row = 3 lines
   assert_eq!( lines.len(), 3, "expected exactly 3 lines, got:\n{out}" );
-  assert!( lines[ 2 ].contains( "Alice" ) );
+  assert!( lines[ 2 ].contains( "Alice" ), "expected \"Alice\" in row 2; got:\n{}", lines[ 2 ] );
 }
 
 // =============================================================================
@@ -186,8 +186,8 @@ fn t06_both_rows_have_detail()
 
   let out = plain_output( &view );
 
-  assert!( out.contains( "  detail-a" ) );
-  assert!( out.contains( "  detail-b" ) );
+  assert!( out.contains( "  detail-a" ), "expected \"  detail-a\" in output:\n{out}" );
+  assert!( out.contains( "  detail-b" ), "expected \"  detail-b\" in output:\n{out}" );
 
   // detail-a must appear before detail-b
   let pos_a = out.find( "detail-a" ).unwrap();
@@ -423,7 +423,7 @@ fn t17_table_view_new_backward_compat()
   );
 
   // row_details should be empty
-  assert!( view.row_details.is_empty() );
+  assert!( view.row_details.is_empty(), "expected empty row_details for old-form TableView" );
 
   // Must render without sub-rows
   let out = plain_output( &view );
@@ -456,14 +456,31 @@ fn t18_single_row_with_detail()
 // T19 — multi-line detail: every line gets indent prefix
 // =============================================================================
 
-/// Fix(BUG-013): continuation lines of a multi-line detail
-/// must each receive the indent prefix, not just the first line.
+/// ## Root Cause
 ///
-/// Root cause: single `push_str(indent) + push_str(detail)` emitted the
-/// indent only before the first `\n`; subsequent lines started at column 0.
+/// Single `push_str( indent ) + push_str( detail )` emitted the indent only
+/// before the entire string; continuation lines started at column 0 with no prefix.
 ///
-/// Pitfall: always use `.lines()` iteration when emitting user-provided
-/// strings that may contain newlines — same pattern as colored row rendering.
+/// ## Why Not Caught
+///
+/// All prior sub-row detail tests used single-line strings. The per-line indent
+/// invariant was never exercised on multi-line detail content.
+///
+/// ## Fix Applied
+///
+/// The sub-row rendering loop in `src/formatters/table/mod.rs` was refactored to
+/// iterate `ct.text.lines()` and emit `indent + line + '\n'` for every line.
+///
+/// ## Prevention
+///
+/// Any code that emits user-provided text with a per-line prefix must iterate
+/// `.lines()` — a single `push_str` cannot apply per-line prefixes correctly.
+///
+/// ## Pitfall
+///
+/// Same pattern as colored row rendering (BUG-009/BUG-010): only `.lines()`
+/// iteration guarantees per-line prefix application for embedded-newline content.
+// test_kind: bug_reproducer(BUG-013)
 #[ test ]
 fn t19_multiline_detail_all_lines_indented()
 {
@@ -733,13 +750,38 @@ fn t29_colored_detail_ansi_codes()
 
 // =============================================================================
 // T30 — colored multiline detail: each sub-line gets its own ANSI wrap
-//
-// Algorithm 3 (per-line wrapping): each line in ct.text.lines() is wrapped
-// independently — color + line + RESET + \n. A single .render() call would
-// place the RESET only after the last sub-line, causing terminal bleed.
-// This test is the integration-level proof that Algorithm 3 is in effect.
 // =============================================================================
 
+/// ## Root Cause
+///
+/// The sub-row detail rendering called `ct.render()` on the whole multiline
+/// colored string, producing `color + "line_a\nline_b" + RESET`. The `'\n'`
+/// sits inside the color sequence; the next terminal line sees itself as still
+/// inside the color context, causing background-color bleed.
+///
+/// ## Why Not Caught
+///
+/// All prior colored detail tests used single-line strings. The per-line
+/// RESET invariant was never exercised on multi-line colored detail content.
+///
+/// ## Fix Applied
+///
+/// The sub-row rendering loop in `src/formatters/table/mod.rs` was refactored
+/// to iterate `ct.text.lines()` and emit `color + line + RESET + '\n'` per
+/// output line, ensuring RESET appears before every line boundary.
+///
+/// ## Prevention
+///
+/// Any code emitting colored user-provided text must iterate `.lines()` and
+/// apply `color + line + RESET` per output line — never wrap the whole
+/// multi-line string with a single trailing RESET.
+///
+/// ## Pitfall
+///
+/// `ct.render()` places RESET at the very end. Splitting the rendered result
+/// by `'\n'` leaves intermediate lines without RESET. Always iterate
+/// `.text.lines()` and emit color/RESET per line independently.
+// test_kind: bug_reproducer(BUG-010)
 #[ test ]
 fn t30_colored_multiline_detail_per_line_ansi()
 {

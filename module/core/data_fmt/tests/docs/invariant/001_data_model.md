@@ -4,7 +4,7 @@
 
 - **Purpose**: Drive test coverage for the data model structural invariants.
 - **Responsibility**: Documents test cases for the data model invariants in `docs/invariant/001_data_model.md`.
-- **In Scope**: Row length validation (panic on mismatch), empty builder output, single-row rendering, parallel row/row_details vectors, `TableShapedView` extraction, empty tree output.
+- **In Scope**: Row length validation (panic on mismatch), empty builder output, single-row rendering, parallel row/row_details vectors, `TableShapedView` extraction, empty tree output, zero-column RowBuilder behavior.
 - **Out of Scope**: ANSI/unicode invariants (see `invariant/002`); auto-wrap backward compatibility (see `invariant/003`).
 
 ### Enforcement Mechanism
@@ -23,6 +23,7 @@
 | IN-5 | row_details length always equals rows length (parallel vectors) | ✅ |
 | IN-6 | TableShapedView extracts headers and rows from display-capable tree | ✅ |
 | IN-7 | empty tree formatted without tree-structure artifacts | ✅ |
+| IN-8 | zero-column RowBuilder produces empty output without panic | ✅ |
 
 ---
 
@@ -79,6 +80,10 @@
   without an explicit detail have `None` entries; the two vectors remain in sync
   throughout — no index-out-of-bounds access can occur when pairing a row with its
   detail during rendering.
+- **Verification:** This invariant is structural — enforced by construction in
+  `src/table_tree.rs:add_row()`, which always pushes both a row and a detail
+  entry atomically; verified by inspecting `TableView::rows()` and
+  `TableView::row_details()` lengths after multiple `add_row` calls.
 
 ---
 
@@ -104,6 +109,16 @@
   node name; no column-separator artifacts appear; no panic occurs.
 - **Note:** Cross-reference: `algorithm/003_tree_column_alignment.md` AC-4 documents
   this as an algorithm edge case for `AlignedTreeFormatter`.
+
+---
+
+### IN-8: zero-column RowBuilder produces empty output without panic
+
+- **Given:** A `RowBuilder` constructed with zero headers (`RowBuilder::new(vec![])`)
+  and no rows added.
+- **When:** The builder is finalized with `build_view()` and passed to `TableFormatter`.
+- **Then:** Output is `""`; no panic occurs; the formatter handles the degenerate
+  zero-column case the same as the zero-row case; no partial header row is emitted.
 
 ---
 

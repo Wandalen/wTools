@@ -33,7 +33,10 @@
 - **Then:** The output of the `auto_wrap=false` formatter is byte-identical to the
   output of the baseline formatter; disabling `auto_wrap` is a true opt-out with
   no side effects.
-- **Note:** Covered by `auto_wrap_false_is_byte_identical` in `tests/auto_wrap_test.rs`.
+- **Note:** Covered by `auto_wrap_false_is_byte_identical` (T06) in
+  `tests/auto_wrap_test.rs`. The baseline is a fresh formatter with no `auto_wrap`
+  or `terminal_width` call (not a snapshot of pre-wrap code); byte-identity holds
+  because `auto_wrap=false` disables the budget-allocation pass entirely.
 
 ---
 
@@ -60,6 +63,10 @@
 - **Then:** The output of the `auto_wrap=false` formatter is byte-identical to the
   baseline formatter; the unicode box-drawing characters are unaffected by the
   `auto_wrap=false` setting.
+- **Coverage note:** `auto_wrap_unicode_box_style` (T12) in `tests/auto_wrap_test.rs`
+  tests unicode_box with wrapping enabled but does NOT provide a dedicated
+  `auto_wrap=false` byte-identity assertion. Mechanism coverage is provided by T06
+  (IN-1), which confirms `auto_wrap=false` disables the budget pass for all presets.
 
 ---
 
@@ -72,6 +79,8 @@
 - **Then:** The output of the `auto_wrap=false` formatter is byte-identical to the
   baseline formatter; the markdown pipe-and-dash separators are unaffected by the
   `auto_wrap=false` setting.
+- **Coverage note:** No dedicated `auto_wrap=false` byte-identity test for markdown.
+  Mechanism coverage via T06 (IN-1).
 
 ---
 
@@ -84,6 +93,8 @@
 - **Then:** The output of the `auto_wrap=false` formatter is byte-identical to the
   baseline formatter; the minimal border style is unaffected by the `auto_wrap=false`
   setting.
+- **Coverage note:** No dedicated `auto_wrap=false` byte-identity test for minimal.
+  Mechanism coverage via T06 (IN-1).
 
 ---
 
@@ -96,6 +107,9 @@
 - **Then:** The output of the `auto_wrap=false` formatter is byte-identical to the
   baseline formatter; the bordered-style separators are unaffected by the
   `auto_wrap=false` setting.
+- **Coverage note:** `auto_wrap_bordered_style` (T11) in `tests/auto_wrap_test.rs`
+  tests bordered with wrapping enabled but does NOT provide a dedicated
+  `auto_wrap=false` byte-identity assertion. Mechanism coverage via T06 (IN-1).
 
 ---
 
@@ -108,6 +122,8 @@
 - **Then:** The output of the `auto_wrap=false` formatter is byte-identical to the
   baseline formatter; the grid-style borders are unaffected by the `auto_wrap=false`
   setting.
+- **Coverage note:** No dedicated `auto_wrap=false` byte-identity test for grid.
+  Mechanism coverage via T06 (IN-1).
 
 ---
 
@@ -121,6 +137,9 @@
   baseline formatter; the CSV preset auto-bypasses `auto_wrap` regardless of setting
   (data format integrity guard), so both configurations produce identical well-formed
   CSV output.
+- **Coverage note:** `csv_preset_auto_disables_wrapping` (T07) in
+  `tests/auto_wrap_test.rs` verifies that CSV bypasses auto-wrap regardless of
+  the `auto_wrap` flag — this is the closest existing test.
 
 ---
 
@@ -134,6 +153,9 @@
   baseline formatter; the TSV preset auto-bypasses `auto_wrap` regardless of setting
   (data format integrity guard), so both configurations produce identical well-formed
   TSV output.
+- **Coverage note:** `tsv_preset_auto_disables_wrapping` (T08) in
+  `tests/auto_wrap_test.rs` verifies that TSV bypasses auto-wrap regardless of
+  the `auto_wrap` flag — this is the closest existing test.
 
 ---
 
@@ -146,6 +168,8 @@
 - **Then:** The output of the `auto_wrap=false` formatter is byte-identical to the
   baseline formatter; the compact border style is unaffected by the `auto_wrap=false`
   setting.
+- **Coverage note:** No dedicated `auto_wrap=false` byte-identity test for compact.
+  Mechanism coverage via T06 (IN-1).
 
 ---
 

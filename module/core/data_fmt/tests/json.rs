@@ -22,21 +22,21 @@ mod json_tests
     let json = formatter.format( &view ).unwrap();
 
     // Should be pretty-printed (contains newlines)
-    assert!( json.contains( '\n' ) );
+    assert!( json.contains( '\n' ), "expected newlines in pretty output:\n{json}" );
 
     // Should be array of objects format
-    assert!( json.starts_with( '[' ) );
-    assert!( json.trim().ends_with( ']' ) );
+    assert!( json.starts_with( '[' ), "expected '[' at start of output:\n{json}" );
+    assert!( json.trim().ends_with( ']' ), "expected ']' at end of output:\n{json}" );
 
     // Should contain column names as keys
-    assert!( json.contains( "\"Name\"" ) );
-    assert!( json.contains( "\"Age\"" ) );
+    assert!( json.contains( "\"Name\"" ), "expected key \"Name\" in output:\n{json}" );
+    assert!( json.contains( "\"Age\"" ), "expected key \"Age\" in output:\n{json}" );
 
     // Should contain data
-    assert!( json.contains( "\"Alice\"" ) );
-    assert!( json.contains( "\"30\"" ) );
-    assert!( json.contains( "\"Bob\"" ) );
-    assert!( json.contains( "\"25\"" ) );
+    assert!( json.contains( "\"Alice\"" ), "expected value \"Alice\" in output:\n{json}" );
+    assert!( json.contains( "\"30\"" ), "expected value \"30\" in output:\n{json}" );
+    assert!( json.contains( "\"Bob\"" ), "expected value \"Bob\" in output:\n{json}" );
+    assert!( json.contains( "\"25\"" ), "expected value \"25\" in output:\n{json}" );
   }
 
   #[ test ]
@@ -54,10 +54,10 @@ mod json_tests
     assert!( newline_count == 0, "Compact format should have no newlines" );
 
     // Should be array format: [{"A":"1"}]
-    assert!( json.starts_with( '[' ) );
-    assert!( json.ends_with( ']' ) );
-    assert!( json.contains( "\"A\"" ) );
-    assert!( json.contains( "\"1\"" ) );
+    assert!( json.starts_with( '[' ), "expected '[' at start of compact output:\n{json}" );
+    assert!( json.ends_with( ']' ), "expected ']' at end of compact output:\n{json}" );
+    assert!( json.contains( "\"A\"" ), "expected key \"A\" in compact output:\n{json}" );
+    assert!( json.contains( "\"1\"" ), "expected value \"1\" in compact output:\n{json}" );
   }
 
   #[ test ]
@@ -81,7 +81,7 @@ mod json_tests
     let formatter = JsonFormatter::new()
       .with_pretty( false );
 
-    assert!( !formatter.pretty );
+    assert!( !formatter.pretty, "expected pretty=false after with_pretty(false)" );
   }
 
   #[ test ]

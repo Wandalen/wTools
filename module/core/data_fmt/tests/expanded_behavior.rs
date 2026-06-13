@@ -36,27 +36,34 @@ use data_fmt::{ RowBuilder, ExpandedFormatter, ExpandedConfig, Format };
 
 // ── A: show_record_numbers behavior ──────────────────────────────────────────
 
-/// A1: `show_record_numbers(false)` must suppress the row number from the separator.
+/// ## Root Cause
 ///
-/// ## Bug Reproducer
+/// `show_record_numbers` was stored in `ExpandedConfig` but never read in
+/// `ExpandedFormatter::format()`. The method always called
+/// `record_separator.replace( "{}", record_name )` regardless of the flag,
+/// so `show_record_numbers( false )` had zero effect on formatted output.
 ///
-/// **Root Cause**: `show_record_numbers` field was stored in `ExpandedConfig` but
-/// never read in `ExpandedFormatter::format()`. The method always called
-/// `record_separator.replace("{}", record_name)` regardless of the flag, so setting
-/// `show_record_numbers(false)` had zero effect on output.
+/// ## Why Not Caught
 ///
-/// **Why Not Caught**: The only existing test (`test_expanded_config_builder_methods`)
-/// verified the builder set the struct field but did NOT verify the formatter output.
-/// A config-only test cannot catch a formatter that ignores a field.
+/// The only existing test verified the builder set the struct field but did NOT
+/// verify formatter output. A config-only struct test cannot detect a formatter
+/// that silently ignores a field it was given.
 ///
-/// **Fix Applied**: `format()` now passes `""` as the replacement when
-/// `show_record_numbers` is `false`, so `"-[ RECORD {} ]"` becomes `"-[ RECORD  ]"`.
+/// ## Fix Applied
 ///
-/// **Prevention**: For every config field, write both (a) a builder/struct test and
-/// (b) a formatter-output test confirming the field actually changes rendered output.
+/// `format()` now passes `""` as the replacement string when `show_record_numbers`
+/// is `false`, so `"-[ RECORD {} ]"` renders as `"-[ RECORD  ]"` (empty slot).
 ///
-/// **Pitfall**: Config builder tests that only check struct fields are insufficient —
-/// they cannot detect that a formatter silently ignores a field.
+/// ## Prevention
+///
+/// For every config field write both (a) a builder/struct test and (b) a
+/// formatter-output test confirming the field changes rendered output.
+///
+/// ## Pitfall
+///
+/// Config builder tests that only check struct fields are insufficient — they
+/// cannot detect a formatter that silently ignores a field.
+// test_kind: bug_reproducer(BUG-012)
 #[ test ]
 fn test_expanded_show_record_numbers_false_suppresses_number()
 {

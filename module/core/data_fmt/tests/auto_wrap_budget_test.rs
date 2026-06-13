@@ -383,6 +383,46 @@ fn twelve_char_threshold_column_treated_as_fixed_ac9()
   );
 }
 
+// --- BA AC-11: 13-character threshold boundary — column at exactly 13 chars uses Flex ---
+
+/// AC-11 — `004_budget_allocation`: column whose max cell content is exactly 13 visible
+/// characters is classified as `Flex` by the auto-flex heuristic (threshold > 12).
+///
+/// With a narrow `terminal_width`, the Flex budget for this column is less than 13 chars,
+/// causing content wrapping. This proves the threshold is `> 12` (not `>= 12`), complementing
+/// AC-9 which proves 12-char content is Fixed.
+// test_kind: standard
+#[ test ]
+fn thirteen_char_threshold_column_treated_as_flex_ac11()
+{
+  // Column A: exactly 13-char content → auto-heuristic → Flex (13 > 12)
+  let flex_val = "abcdefghijklm"; // exactly 13 chars
+  // Column B: 1-char anchor → auto-heuristic → Fixed (1 ≤ 12)
+  let anchor_val = "X";
+
+  let view = RowBuilder::new( vec![ "A".into(), "B".into() ] )
+    .add_row( vec![ flex_val.into(), anchor_val.into() ] )
+    .build_view();
+
+  // terminal_width(10): narrower than the 13-char content.
+  // If A is Flex: budget ≈ 10 − overhead(2) − fixed(1) = 7 → wrapping → "abcdefghijklm" split.
+  // If A were Fixed: "abcdefghijklm" would appear verbatim.
+  let formatter = TableFormatter::with_config(
+    TableConfig::plain()
+      .terminal_width( Some( 10 ) )
+      .auto_wrap( true )
+  );
+  let output = formatter.format( &view ).expect( "must not fail for 13-char threshold test" );
+
+  assert!( !output.is_empty(), "output must be non-empty:\n{output:?}" );
+  // 13-char content must be wrapped (Flex budget < 13) — must not appear as unbroken string
+  assert!(
+    !output.contains( flex_val ),
+    "13-char column must be treated as Flex and content wrapped; \
+     '{flex_val}' must not appear unbroken at terminal_width=10:\n{output:?}",
+  );
+}
+
 // --- BA AC-10: overhead exceeds terminal width — all flex columns clamped to floor ---
 
 /// AC-10 — `004_budget_allocation`: when fixed column widths plus separator overhead

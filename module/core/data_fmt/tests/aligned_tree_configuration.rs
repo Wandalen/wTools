@@ -66,10 +66,10 @@ fn test_aligned_tree_mixed_column_counts()
   let formatter = TreeFormatter::new();
   let output = formatter.format_aligned( &root );
 
-  assert!( output.contains( "name1" ) );
-  assert!( output.contains( "name2" ) );
-  assert!( output.contains( "name3" ) );
-  assert!( output.contains( "extra2" ) );
+  assert!( output.contains( "name1" ), "expected \"name1\" in output:\n{output}" );
+  assert!( output.contains( "name2" ), "expected \"name2\" in output:\n{output}" );
+  assert!( output.contains( "name3" ), "expected \"name3\" in output:\n{output}" );
+  assert!( output.contains( "extra2" ), "expected \"extra2\" in output:\n{output}" );
 }
 
 // =============================================================================
@@ -94,7 +94,7 @@ fn test_aligned_tree_custom_separator()
   let formatter = TreeFormatter::with_config( config );
   let output = formatter.format_aligned( &root );
 
-  assert!( output.contains( " | " ) );
+  assert!( output.contains( " | " ), "expected \" | \" separator in output:\n{output}" );
 }
 
 #[ test ]
@@ -120,7 +120,7 @@ fn test_aligned_tree_min_column_width()
   let data_line = lines.iter().find( | l | l.contains( 'a' ) ).unwrap();
 
   // Check that line is longer than it would be without min width
-  assert!( data_line.len() > 15 ); // "├──a" + spacing + "b" + spacing
+  assert!( data_line.len() > 15, "expected line longer than 15 chars with min_column_width=10; got: {data_line:?}" ); // "├──a" + spacing + "b" + spacing
 }
 
 // =============================================================================

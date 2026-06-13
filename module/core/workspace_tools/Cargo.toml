@@ -27,7 +27,7 @@ all-features = false
 default = [ "enabled" ]
 full = [ "enabled", "serde", "glob", "secrets", "secure", "validation", "testing" ]
 enabled = []
-serde = [ "dep:serde", "dep:serde_json", "dep:serde_yaml" ]
+serde = [ "dep:serde", "dep:serde_json", "dep:serde_yaml_ng" ]
 glob = [ "dep:glob" ]
 secrets = []
 secure = [ "secrets", "dep:secrecy", "dep:zeroize" ]
@@ -44,7 +44,7 @@ glob = { workspace = true, optional = true }
 tempfile = { workspace = true, optional = true }
 serde = { workspace = true, features = [ "derive" ], optional = true }
 serde_json = { workspace = true, optional = true }
-serde_yaml = { workspace = true, optional = true }
+serde_yaml_ng = { workspace = true, optional = true }
 jsonschema = { workspace = true, optional = true }
 schemars = { workspace = true, optional = true }
 secrecy = { workspace = true, optional = true, features = [ "serde" ] }

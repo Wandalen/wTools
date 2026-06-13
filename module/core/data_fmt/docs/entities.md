@@ -17,9 +17,17 @@
 | `trait/` | Registry and overview of all trait doc instances | [trait/readme.md](trait/readme.md) | 3 |
 | `variant/` | Registry and overview of all variant doc instances | [variant/readme.md](variant/readme.md) | 33 |
 | `tests/docs/algorithm/` | Test spec coverage for algorithm doc instances | [tests/docs/algorithm/readme.md](../tests/docs/algorithm/readme.md) | 7 |
-| `tests/docs/api/` | Test spec coverage for API doc instances | [tests/docs/api/readme.md](../tests/docs/api/readme.md) | 1 |
+| `tests/docs/api/` | Test spec coverage for API doc instances | [tests/docs/api/readme.md](../tests/docs/api/readme.md) | 4 |
+| `tests/docs/builder/` | Test spec coverage for builder doc instances | [tests/docs/builder/readme.md](../tests/docs/builder/readme.md) | 0 |
+| `tests/docs/data_structure/` | Test spec coverage for data structure doc instances | [tests/docs/data_structure/readme.md](../tests/docs/data_structure/readme.md) | 0 |
 | `tests/docs/feature/` | Test spec coverage for feature doc instances | [tests/docs/feature/readme.md](../tests/docs/feature/readme.md) | 7 |
+| `tests/docs/formatter/` | Test spec coverage for formatter doc instances | [tests/docs/formatter/readme.md](../tests/docs/formatter/readme.md) | 0 |
+| `tests/docs/input_model/` | Test spec coverage for input model doc instances | [tests/docs/input_model/readme.md](../tests/docs/input_model/readme.md) | 0 |
+| `tests/docs/input_type/` | Test spec coverage for input type doc instances | [tests/docs/input_type/readme.md](../tests/docs/input_type/readme.md) | 0 |
 | `tests/docs/invariant/` | Test spec coverage for invariant doc instances | [tests/docs/invariant/readme.md](../tests/docs/invariant/readme.md) | 5 |
+| `tests/docs/pattern/` | Test spec coverage for pattern doc instances | [tests/docs/pattern/readme.md](../tests/docs/pattern/readme.md) | 0 |
+| `tests/docs/trait/` | Test spec coverage for trait doc instances | [tests/docs/trait/readme.md](../tests/docs/trait/readme.md) | 0 |
+| `tests/docs/variant/` | Test spec coverage for variant doc instances | [tests/docs/variant/readme.md](../tests/docs/variant/readme.md) | 0 |
 
 ## Master Doc Instances Table
 
@@ -112,7 +120,10 @@
 | tests/docs/algorithm | 005 | Column Fold Detection | [tests/docs/algorithm/005_column_fold_detection.md](../tests/docs/algorithm/005_column_fold_detection.md) |
 | tests/docs/algorithm | 006 | CLI Help Alignment | [tests/docs/algorithm/006_cli_help_alignment.md](../tests/docs/algorithm/006_cli_help_alignment.md) |
 | tests/docs/algorithm | 007 | Caption Rendering | [tests/docs/algorithm/007_caption_rendering.md](../tests/docs/algorithm/007_caption_rendering.md) |
+| tests/docs/api | 001 | Data Types | [tests/docs/api/001_data_types.md](../tests/docs/api/001_data_types.md) |
+| tests/docs/api | 002 | Builders | [tests/docs/api/002_builders.md](../tests/docs/api/002_builders.md) |
 | tests/docs/api | 003 | Config Types | [tests/docs/api/003_config_types.md](../tests/docs/api/003_config_types.md) |
+| tests/docs/api | 004 | Formatters | [tests/docs/api/004_formatters.md](../tests/docs/api/004_formatters.md) |
 | tests/docs/feature | 001 | Table Formatting | [tests/docs/feature/001_table_formatting.md](../tests/docs/feature/001_table_formatting.md) |
 | tests/docs/feature | 002 | Word Wrap | [tests/docs/feature/002_word_wrap.md](../tests/docs/feature/002_word_wrap.md) |
 | tests/docs/feature | 003 | Unified Format Interface | [tests/docs/feature/003_unified_format_interface.md](../tests/docs/feature/003_unified_format_interface.md) |

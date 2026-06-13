@@ -84,11 +84,7 @@ impl TableFormatter
     if !self.config.is_auto_wrap() { return false; }
     if !self.config.col_widths_override().is_empty() { return false; }
     if column_widths.is_empty() { return false; }
-    let is_csv_or_tsv = matches!(
-      self.config.col_sep(),
-      crate::config::ColumnSeparator::Character( ',' | '\t' )
-    );
-    if is_csv_or_tsv { return false; }
+    if self.config.is_csv_or_tsv() { return false; }
     let total = self.compute_total_row_width( column_widths );
     let terminal = self.resolve_terminal_width();
     total > terminal
@@ -103,11 +99,7 @@ impl TableFormatter
     if !self.config.is_auto_fold() { return false; }
     if !self.config.is_auto_wrap() { return false; }
     if !self.config.col_widths_override().is_empty() { return false; }
-    let is_csv_or_tsv = matches!(
-      self.config.col_sep(),
-      crate::config::ColumnSeparator::Character( ',' | '\t' )
-    );
-    !is_csv_or_tsv
+    !self.config.is_csv_or_tsv()
   }
 
   /// Classify columns as Fixed or Flex using explicit config or auto-heuristic

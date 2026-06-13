@@ -9,7 +9,7 @@ Library source files. Each file owns one cohesive responsibility; `lib.rs` re-ex
 |------|----------------|
 | `lib.rs` | Crate root: module declarations, feature gates, public re-exports |
 | `data.rs` | Core data types: `TreeNode`, `TableView` trait, `ColumnData` |
-| `config.rs` | Configuration types: `TreeConfig`, `TableConfig`, `ExpandedConfig`, style enums |
+| `config/` | Configuration types: `TreeConfig`, `TableConfig`, `ExpandedConfig`, style enums |
 | `builder.rs` | `TreeBuilder`: path-based tree construction from string slices |
 | `table_tree.rs` | `RowBuilder`: fluent builder for table-shaped tree data |
 | `conversions.rs` | Tree↔table conversions and `FlattenConfig` for selective column flattening |

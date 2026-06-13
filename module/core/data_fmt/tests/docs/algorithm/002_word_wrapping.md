@@ -4,7 +4,7 @@
 
 - **Purpose**: Drive test coverage for the word wrapping algorithm.
 - **Responsibility**: Documents test cases for the word wrapping algorithm in `docs/algorithm/002_word_wrapping.md`.
-- **In Scope**: Break strategies (Word, Hard, WordThenHard), overflow policies (Truncate, Ellipsis), tab expansion, ANSI exclusion from wrap-point calculation, preserve_newlines semantics.
+- **In Scope**: Break strategies (Word, Hard, WordThenHard), overflow policies (Truncate, Ellipsis), tab expansion, ANSI exclusion from wrap-point calculation, preserve_newlines semantics, tab at wrap boundary.
 - **Out of Scope**: Budget allocation (see `algorithm/004`); feature-level wrap configuration (see `feature/002`).
 
 ### Case Index
@@ -23,6 +23,7 @@
 | AC-10 | tab_width > 0 expands tab to N spaces | ✅ |
 | AC-11 | WordThenHard falls through to hard-break when word exceeds budget | ✅ |
 | AC-12 | no leading space on continuation line after hard break (BUG-002) | ✅ |
+| AC-13 | tab character at the wrap boundary — tab expanded before split, not stranded on continuation | ✅ |
 
 ---
 
@@ -167,6 +168,18 @@
   at the start of a continuation line when the break falls mid-word after a space.
 - **Note:** Regression guard for BUG-002; the bug was a leading-space artifact
   from the split-at-boundary implementation.
+
+---
+
+### AC-13: tab character at the wrap boundary — tab expanded before split, not stranded
+
+- **Given:** A `WrapFormatter` with `tab_width(4)` and `width(10)`; input text
+  `"hello\tworld"` where the tab falls near the wrap boundary.
+- **When:** `wrap()` is called.
+- **Then:** The tab is expanded to spaces before the wrap-point calculation; the
+  resulting space sequence does not appear at the start of the continuation line
+  (leading whitespace from `split_whitespace()` normalisation); the tab is never
+  passed as a literal `\t` to the word-split pass; both words appear in output.
 
 ---
 

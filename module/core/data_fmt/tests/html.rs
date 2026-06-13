@@ -76,7 +76,7 @@ mod html_tests
       .add_row( vec![ "Data".into() ] )
       .build_view();
 
-    let formatter = HtmlFormatter::new().table_id( "my-table" );
+    let formatter = HtmlFormatter::new().with_table_id( "my-table" );
     let html = formatter.format( &view ).unwrap();
 
     assert!( html.contains( " id=\"my-table\"" ) );
@@ -126,7 +126,7 @@ mod html_tests
       .add_row( vec![ "Data".into() ] )
       .build_view();
 
-    let formatter = HtmlFormatter::new().include_wrapper( true );
+    let formatter = HtmlFormatter::new().with_include_wrapper( true );
     let html = formatter.format( &view ).unwrap();
 
     assert!( html.contains( "<!DOCTYPE html>" ) );
@@ -211,8 +211,8 @@ mod html_tests
       .build_view();
 
     let formatter = HtmlFormatter::with_variant( HtmlVariant::Bootstrap )
-      .table_id( "results" )
-      .include_wrapper( true );
+      .with_table_id( "results" )
+      .with_include_wrapper( true );
 
     let html = formatter.format( &view ).unwrap();
 

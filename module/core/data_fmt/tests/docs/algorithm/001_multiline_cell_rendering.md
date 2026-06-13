@@ -4,7 +4,7 @@
 
 - **Purpose**: Drive test coverage for the multiline cell rendering algorithm.
 - **Responsibility**: Documents test cases for the multiline cell rendering algorithm in `docs/algorithm/001_multiline_cell_rendering.md`.
-- **In Scope**: Cell height calculation, sub-line splitting on `\n`, padding to row height, border emission per sub-line, ANSI preservation across sub-lines, CSV/TSV escape behavior, sub-row detail ordering.
+- **In Scope**: Cell height calculation, sub-line splitting on `\n`, padding to row height, border emission per sub-line, ANSI preservation across sub-lines, CSV/TSV escape behavior, sub-row detail ordering, whitespace-only sub-lines.
 - **Out of Scope**: Word-wrap budget allocation (see `algorithm/004`); column fold detection (see `algorithm/005`).
 
 ### Case Index
@@ -21,6 +21,7 @@
 | AC-8 | sub-row detail lines appear after all multiline sub-lines | ✅ |
 | AC-9 | truncation marker applied to last sub-line when cell truncated | ✅ |
 | AC-10 | three or more embedded newlines produce correct sub-line count | ✅ |
+| AC-11 | whitespace-only sub-lines are preserved as non-empty padding lines | ✅ |
 
 ---
 
@@ -128,6 +129,20 @@
 - **When:** The row is rendered with `TableFormatter`.
 - **Then:** Exactly 4 physical sub-lines are produced for that cell; the row
   height equals 4; no sub-line is dropped or duplicated.
+
+---
+
+### AC-11: whitespace-only sub-lines are preserved as non-empty padding lines
+
+- **Given:** A cell containing `"first\n   \nsecond"` where the middle segment is
+  three spaces (whitespace only, not an empty string).
+- **When:** The row is rendered with `TableFormatter`.
+- **Then:** The whitespace-only middle segment is preserved as-is (three-space string);
+  it is NOT collapsed to an empty line or stripped; the column separator appears on
+  that sub-line; adjacent cells produce their correct padding line for that sub-line.
+- **Note:** Distinguishes the whitespace-only case from the empty-string case
+  (`"first\n\nsecond"`) and from padding lines produced by the height-equalization
+  algorithm.
 
 ---
 

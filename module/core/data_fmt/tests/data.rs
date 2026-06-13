@@ -393,3 +393,42 @@ fn empty_tree_formatted_returns_minimal_output_in7()
     "empty aligned tree must produce at most one output line, got: {output_aligned:?}",
   );
 }
+
+// --- IN-8: zero-column RowBuilder produces empty output without panic ---
+//
+// Given: RowBuilder::new(vec![]) with zero headers and no rows added.
+// When: build_view() is called and passed to TableFormatter.
+// Then: output is "" — same early-exit path as zero-row case; no panic.
+
+/// IN-8 — `invariant/001_data_model`: zero-column `RowBuilder` produces empty output without panic.
+// test_kind: standard
+#[ test ]
+fn zero_column_row_builder_produces_empty_output_in8()
+{
+  let view = RowBuilder::new( vec![] ).build_view();
+  let output = TableFormatter::new()
+    .format( &view )
+    .unwrap_or_default();
+  assert!(
+    output.is_empty(),
+    "zero-column table must produce empty output without panic; got: {output:?}",
+  );
+}
+
+// --- AP-7 (api/001_data_types): TreeNode children vec starts empty; push produces expected count ---
+
+/// AP-7 — `api/001_data_types`: `TreeNode` children vec starts empty; push produces expected count.
+// test_kind: standard
+#[ test ]
+fn tree_node_children_push_produces_expected_count_ap7()
+{
+  let mut node = TreeNode::new( "root".to_string(), None::< String > );
+  assert!( node.children.is_empty(), "fresh TreeNode must have no children" );
+
+  node.children.push( TreeNode::new( "child1".to_string(), None::< String > ) );
+  node.children.push( TreeNode::new( "child2".to_string(), None::< String > ) );
+
+  assert_eq!( node.children.len(), 2, "after two pushes, children.len() must be 2" );
+  assert_eq!( node.children[ 0 ].name, "child1", "first child accessible by index" );
+  assert_eq!( node.children[ 1 ].name, "child2", "second child accessible by index" );
+}

@@ -1,252 +1,7 @@
-//! Formatter parameter types and configuration structures
-//!
-//! Defines formatter parameters and their preset combinations (Config types).
-//! Each formatter has customizable parameters that control its output format.
+//! `TableConfig` and `PaddingSide` formatter parameter types
 
-/// Formatter parameters for tree output
-///
-/// Defines customizable parameters for tree rendering including branch symbols,
-/// indentation, depth limits, and column formatting.
-#[ derive( Debug, Clone ) ]
-pub struct TreeConfig
-{
-  /// Show branch symbols (├──, └──, │)
-  pub show_branches : bool,
-  /// Show root node name
-  pub show_root : bool,
-  /// Number of spaces per indentation level
-  pub indent_size : usize,
-  /// Maximum depth to display (None = unlimited)
-  pub max_depth : Option< usize >,
-  /// Column separator for aligned format (default: "  ")
-  pub column_separator : String,
-  /// Minimum column width for aligned format (default: 0)
-  pub min_column_width : usize,
-  /// ANSI color code for branch symbols (default: none)
-  pub branch_color : String,
-}
-
-impl Default for TreeConfig
-{
-  fn default() -> Self
-  {
-    Self
-    {
-      show_branches : true,
-      show_root : false,
-      indent_size : 4,
-      max_depth : None,
-      column_separator : "  ".to_string(),
-      min_column_width : 0,
-      branch_color : String::new(),
-    }
-  }
-}
-
-impl TreeConfig
-{
-  /// Create new config with defaults
-  pub fn new() -> Self
-  {
-    Self::default()
-  }
-
-  /// Set whether to show branch symbols
-  #[ must_use ]
-  pub fn show_branches( mut self, show : bool ) -> Self
-  {
-    self.show_branches = show;
-    self
-  }
-
-  /// Set whether to show root node
-  #[ must_use ]
-  pub fn show_root( mut self, show : bool ) -> Self
-  {
-    self.show_root = show;
-    self
-  }
-
-  /// Set indentation size in spaces
-  #[ must_use ]
-  pub fn indent_size( mut self, size : usize ) -> Self
-  {
-    self.indent_size = size;
-    self
-  }
-
-  /// Set maximum display depth
-  #[ must_use ]
-  pub fn max_depth( mut self, depth : Option< usize > ) -> Self
-  {
-    self.max_depth = depth;
-    self
-  }
-
-  /// Set column separator for aligned format
-  #[ must_use ]
-  pub fn column_separator( mut self, separator : String ) -> Self
-  {
-    self.column_separator = separator;
-    self
-  }
-
-  /// Set minimum column width for aligned format
-  #[ must_use ]
-  pub fn min_column_width( mut self, width : usize ) -> Self
-  {
-    self.min_column_width = width;
-    self
-  }
-
-  /// Set ANSI color code for branch symbols
-  #[ must_use ]
-  pub fn branch_color( mut self, color : impl Into< String > ) -> Self
-  {
-    self.branch_color = color.into();
-    self
-  }
-}
-
-/// Border rendering variant for tables
-#[ derive( Debug, Clone, Copy, PartialEq, Eq, Default ) ]
-pub enum BorderVariant
-{
-  /// No borders, space-separated columns
-  None,
-  /// ASCII borders with pipes: | + -
-  #[ default ]
-  Ascii,
-  /// Full ASCII grid with row separators: +---+
-  AsciiGrid,
-  /// Unicode box drawing: ┌─┬─┐ ├─┼─┤ └─┴─┘
-  Unicode,
-  /// Markdown table format: | col | col |
-  Markdown,
-}
-
-/// Header separator line variant
-#[ derive( Debug, Clone, Copy, PartialEq, Eq, Default ) ]
-pub enum HeaderSeparatorVariant
-{
-  /// No separator line below header
-  None,
-  /// Dashes only: -----
-  Dash,
-  /// ASCII grid separator: +-----+
-  #[ default ]
-  AsciiGrid,
-  /// Unicode separator: ├─────┤
-  Unicode,
-  /// Markdown separator: |-----|
-  Markdown,
-}
-
-/// Column separator parameter
-#[ derive( Debug, Clone, PartialEq, Eq ) ]
-pub enum ColumnSeparator
-{
-  /// N spaces between columns
-  Spaces( usize ),
-  /// Single character separator (|, ,, \t, etc.)
-  Character( char ),
-  /// Custom string separator
-  String( String ),
-}
-
-impl Default for ColumnSeparator
-{
-  fn default() -> Self
-  {
-    Self::Character( '|' )
-  }
-}
-
-/// Column flexibility classification for auto-wrapping budget allocation
-///
-/// Determines how a column's width is handled during auto-fit:
-/// - `Fixed`: keeps natural content width, never wrapped
-/// - `Flex`: shrinks to fit the terminal budget, content wraps at budget boundary
-#[ derive( Debug, Clone, Copy, PartialEq, Eq ) ]
-pub enum ColumnFlex
-{
-  /// Keep natural content width; never wrapped by auto-fit
-  Fixed,
-  /// Shrink to fit budget; content wraps at budget boundary
-  Flex,
-}
-
-/// Determines how overflow columns are rendered as continuation lines below a row.
-///
-/// Used with `TableConfig::fold_style` to control the format of continuation lines
-/// when `auto_fold` moves overflow columns below the primary table row.
-#[ derive( Debug, Clone, Copy, PartialEq, Eq, Default ) ]
-pub enum FoldStyle
-{
-  /// Values only — no column labels on continuation lines.
-  Bare,
-  /// `"ColName: value"` pairs — default continuation format.
-  #[ default ]
-  Labeled,
-  /// Each overflow column on its own indented line with label.
-  Stacked,
-}
-
-/// Character placed between caption fields in a titled rule line (`·` U+00B7)
-pub const CAPTION_FIELD_SEP : char = '·';
-
-/// Character used for the horizontal rule fill in a caption line (`─` U+2500)
-pub const CAPTION_RULE_CHAR : char = '─';
-
-/// Number of rule characters emitted before the title text in a caption
-pub const CAPTION_LEAD_WIDTH : usize = 3;
-
-/// A titled rule to be rendered above a table
-///
-/// Carries a title and optional caption fields separated by [`CAPTION_FIELD_SEP`].
-/// Rendered as: `─── Title · Field1 · Field2 ──────...` filling terminal width.
-#[ derive( Debug, Clone ) ]
-pub struct TableCaption
-{
-  title  : String,
-  fields : Vec< String >,
-}
-
-impl TableCaption
-{
-  /// Create a new caption with the given title
-  #[ must_use ]
-  pub fn new( title : impl Into< String > ) -> Self
-  {
-    Self
-    {
-      title  : title.into(),
-      fields : Vec::new(),
-    }
-  }
-
-  /// Append a caption field — appears after the title separated by [`CAPTION_FIELD_SEP`]
-  #[ must_use ]
-  pub fn field( mut self, f : impl Into< String > ) -> Self
-  {
-    self.fields.push( f.into() );
-    self
-  }
-
-  /// Build the rendered content string: `"title · field1 · field2 ..."`
-  pub( crate ) fn content_str( &self ) -> String
-  {
-    let mut s = self.title.clone();
-    for f in &self.fields
-    {
-      s.push( ' ' );
-      s.push( CAPTION_FIELD_SEP );
-      s.push( ' ' );
-      s.push_str( f );
-    }
-    s
-  }
-}
+use super::{ BorderVariant, HeaderSeparatorVariant, ColumnSeparator, ColumnFlex, FoldStyle };
+use super::TableCaption;
 
 /// Formatter parameters for table output
 ///
@@ -409,124 +164,86 @@ impl TableConfig
   /// Maximum simplicity and information density
   pub fn minimal() -> Self
   {
-    Self
-    {
-      border_variant : BorderVariant::None,
-      header_separator_variant : HeaderSeparatorVariant::None,
-      column_separator : ColumnSeparator::Spaces( 2 ),
-      outer_padding : true,
-      inner_padding : 0,
-      ..Self::default()
-    }
+    Self::default()
+      .header_separator_variant( HeaderSeparatorVariant::None )
   }
 
   /// Bordered variant: traditional pipe-separated table
   /// PostgreSQL-style output
   pub fn bordered() -> Self
   {
-    Self
-    {
-      border_variant : BorderVariant::Ascii,
-      header_separator_variant : HeaderSeparatorVariant::AsciiGrid,
-      column_separator : ColumnSeparator::Character( '|' ),
-      outer_padding : true,
-      inner_padding : 1,
-      ..Self::default()
-    }
+    Self::default()
+      .border_variant( BorderVariant::Ascii )
+      .header_separator_variant( HeaderSeparatorVariant::AsciiGrid )
+      .column_separator( ColumnSeparator::Character( '|' ) )
+      .inner_padding( 1 )
   }
 
   /// Markdown variant: GitHub-flavored Markdown table
   /// Ready for documentation and README files
   pub fn markdown() -> Self
   {
-    Self
-    {
-      border_variant : BorderVariant::Markdown,
-      header_separator_variant : HeaderSeparatorVariant::Markdown,
-      column_separator : ColumnSeparator::Character( '|' ),
-      outer_padding : true,
-      inner_padding : 1,
-      ..Self::default()
-    }
+    Self::default()
+      .border_variant( BorderVariant::Markdown )
+      .header_separator_variant( HeaderSeparatorVariant::Markdown )
+      .column_separator( ColumnSeparator::Character( '|' ) )
+      .inner_padding( 1 )
   }
 
   /// Grid variant: full ASCII box with intersections
   /// Maximum visual clarity for formal reports
   pub fn grid() -> Self
   {
-    Self
-    {
-      border_variant : BorderVariant::AsciiGrid,
-      header_separator_variant : HeaderSeparatorVariant::AsciiGrid,
-      column_separator : ColumnSeparator::Character( '|' ),
-      outer_padding : true,
-      inner_padding : 1,
-      ..Self::default()
-    }
+    Self::default()
+      .border_variant( BorderVariant::AsciiGrid )
+      .header_separator_variant( HeaderSeparatorVariant::AsciiGrid )
+      .column_separator( ColumnSeparator::Character( '|' ) )
+      .inner_padding( 1 )
   }
 
   /// Unicode box variant: Unicode box-drawing characters
   /// Modern, professional appearance for terminal UIs
   pub fn unicode_box() -> Self
   {
-    Self
-    {
-      border_variant : BorderVariant::Unicode,
-      header_separator_variant : HeaderSeparatorVariant::Unicode,
-      column_separator : ColumnSeparator::Character( '│' ),
-      outer_padding : true,
-      inner_padding : 1,
-      ..Self::default()
-    }
+    Self::default()
+      .border_variant( BorderVariant::Unicode )
+      .header_separator_variant( HeaderSeparatorVariant::Unicode )
+      .column_separator( ColumnSeparator::Character( '│' ) )
+      .inner_padding( 1 )
   }
 
   /// CSV variant: comma-separated values
   /// Standard format for data export and Excel import
   pub fn csv() -> Self
   {
-    Self
-    {
-      border_variant : BorderVariant::None,
-      header_separator_variant : HeaderSeparatorVariant::None,
-      column_separator : ColumnSeparator::Character( ',' ),
-      outer_padding : false,
-      inner_padding : 0,
-      auto_wrap : false,
-      auto_fold : false,
-      ..Self::default()
-    }
+    Self::default()
+      .header_separator_variant( HeaderSeparatorVariant::None )
+      .column_separator( ColumnSeparator::Character( ',' ) )
+      .outer_padding( false )
+      .auto_wrap( false )
+      .auto_fold( false )
   }
 
   /// TSV variant: tab-separated values
   /// Excel and spreadsheet compatible
   pub fn tsv() -> Self
   {
-    Self
-    {
-      border_variant : BorderVariant::None,
-      header_separator_variant : HeaderSeparatorVariant::None,
-      column_separator : ColumnSeparator::Character( '\t' ),
-      outer_padding : false,
-      inner_padding : 0,
-      auto_wrap : false,
-      auto_fold : false,
-      ..Self::default()
-    }
+    Self::default()
+      .header_separator_variant( HeaderSeparatorVariant::None )
+      .column_separator( ColumnSeparator::Character( '\t' ) )
+      .outer_padding( false )
+      .auto_wrap( false )
+      .auto_fold( false )
   }
 
   /// Compact variant: single-space separator, minimal padding
   /// Maximum information density for narrow terminals
   pub fn compact() -> Self
   {
-    Self
-    {
-      border_variant : BorderVariant::None,
-      header_separator_variant : HeaderSeparatorVariant::None,
-      column_separator : ColumnSeparator::Spaces( 1 ),
-      outer_padding : false,
-      inner_padding : 0,
-      ..Self::default()
-    }
+    Self::default()
+      .header_separator_variant( HeaderSeparatorVariant::None )
+      .column_separator( ColumnSeparator::Spaces( 1 ) )
+      .outer_padding( false )
   }
 
   // Builder methods for new fields
@@ -867,6 +584,12 @@ impl TableConfig
   {
     self.caption.as_ref()
   }
+
+  /// Whether column separator is comma or tab (CSV/TSV mode disables padding and ANSI)
+  pub( crate ) fn is_csv_or_tsv( &self ) -> bool
+  {
+    matches!( self.column_separator, ColumnSeparator::Character( ',' | '\t' ) )
+  }
 }
 
 /// Where to place alignment padding in key-value pairs
@@ -881,160 +604,4 @@ pub enum PaddingSide
   /// Pad values after separator: "Name: Value"
   /// Separators follow keys immediately, values align at same column
   AfterSeparator,
-}
-
-/// Formatter parameters for expanded (vertical record) output
-///
-/// Defines customizable parameters for vertical key-value display including
-/// record separators, key-value separators, and color options.
-#[ derive( Debug, Clone ) ]
-pub struct ExpandedConfig
-{
-  /// Record separator line (empty string disables record headers)
-  pub record_separator : String,
-  /// Key-value separator
-  pub key_value_separator : String,
-  /// Show record numbers in separator
-  pub show_record_numbers : bool,
-  /// Enable ANSI color for keys
-  pub colorize_keys : bool,
-  /// ANSI color code for keys; pre-loaded with `"\x1b[90m"` (gray) by default.
-  /// Override via `.key_color()` builder or set to `String::new()` to disable.
-  pub key_color : String,
-  /// Where to place padding for alignment
-  pub padding_side : PaddingSide,
-  /// Prefix string prepended to each key-value line (default: empty)
-  pub indent_prefix : String,
-}
-
-impl Default for ExpandedConfig
-{
-  fn default() -> Self
-  {
-    Self
-    {
-      record_separator : "-[ RECORD {} ]".to_string(),
-      key_value_separator : " | ".to_string(),
-      show_record_numbers : true,
-      colorize_keys : false,
-      key_color : "\x1b[90m".to_string(),  // Gray — default color when colorize_keys is enabled
-      padding_side : PaddingSide::BeforeSeparator,
-      indent_prefix : String::new(),
-    }
-  }
-}
-
-impl ExpandedConfig
-{
-  /// Create new config with defaults (`PostgreSQL` \x style)
-  pub fn new() -> Self
-  {
-    Self::default()
-  }
-
-  /// Create config for `PostgreSQL` \x style (default)
-  pub fn postgres_style() -> Self
-  {
-    Self::new()
-  }
-
-  /// Create config for property list style
-  /// Default: gray colored keys, colon separator, no record headers
-  pub fn property_style() -> Self
-  {
-    Self
-    {
-      record_separator : String::new(),
-      key_value_separator : ": ".to_string(),
-      show_record_numbers : false,
-      colorize_keys : true,
-      key_color : "\x1b[90m".to_string(),  // Gray — default color when colorize_keys is enabled
-      padding_side : PaddingSide::AfterSeparator,
-      indent_prefix : String::new(),
-    }
-  }
-
-  /// Set record separator format string
-  #[ must_use ]
-  pub fn record_separator( mut self, separator : String ) -> Self
-  {
-    self.record_separator = separator;
-    self
-  }
-
-  /// Set key-value separator
-  #[ must_use ]
-  pub fn key_value_separator( mut self, separator : String ) -> Self
-  {
-    self.key_value_separator = separator;
-    self
-  }
-
-  /// Set whether to show record numbers
-  #[ must_use ]
-  pub fn show_record_numbers( mut self, show : bool ) -> Self
-  {
-    self.show_record_numbers = show;
-    self
-  }
-
-  /// Enable or disable colored keys
-  #[ must_use ]
-  pub fn colorize_keys( mut self, enable : bool ) -> Self
-  {
-    self.colorize_keys = enable;
-    self
-  }
-
-  /// Set custom ANSI color code for keys
-  #[ must_use ]
-  pub fn key_color( mut self, color : String ) -> Self
-  {
-    self.key_color = color;
-    self
-  }
-
-  /// Set padding side for alignment
-  #[ must_use ]
-  pub fn padding_side( mut self, side : PaddingSide ) -> Self
-  {
-    self.padding_side = side;
-    self
-  }
-
-  /// Set indent prefix prepended to each key-value line
-  #[ must_use ]
-  pub fn indent_prefix( mut self, prefix : String ) -> Self
-  {
-    self.indent_prefix = prefix;
-    self
-  }
-}
-
-/// Tree symbols used for rendering
-#[ derive( Debug, Clone ) ]
-pub struct TreeSymbols
-{
-  /// Branch connector: ├──
-  pub branch : &'static str,
-  /// Last branch connector: └──
-  pub last_branch : &'static str,
-  /// Vertical line: │
-  pub vertical : &'static str,
-  /// Space for indentation
-  pub space : &'static str,
-}
-
-impl Default for TreeSymbols
-{
-  fn default() -> Self
-  {
-    Self
-    {
-      branch : "├──",
-      last_branch : "└──",
-      vertical : "│",
-      space : "    ",
-    }
-  }
 }

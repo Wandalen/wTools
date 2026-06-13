@@ -4,7 +4,7 @@
 
 - **Purpose**: Drive test coverage for the ANSI and Unicode handling invariants.
 - **Responsibility**: Documents test cases for ANSI escape code and Unicode width invariants in `docs/invariant/002_ansi_unicode.md`.
-- **In Scope**: ANSI exclusion from width measurement, East Asian Width padding, ANSI verbatim preservation, per-line reset, per-sub-line color wrapping, `DecoratedText` iteration, CJK column allocation via EAW, `visual_len` char-count gap in truncation path.
+- **In Scope**: ANSI exclusion from width measurement, East Asian Width padding, ANSI verbatim preservation, per-line reset, per-sub-line color wrapping, `DecoratedText` iteration, CJK column allocation via EAW, `visual_len` char-count gap in truncation path, ANSI-only cell (no visible chars), combining character sequences.
 - **Out of Scope**: Color theme feature behavior (see `feature/004`); auto-wrap backward compatibility (see `invariant/003`).
 
 ### Case Index
@@ -19,6 +19,8 @@
 | IN-6 | DecoratedText detail lines iterate raw text, not rendered output | ✅ |
 | IN-7 | CJK characters allocated correct column width via East Asian Width | ✅ |
 | IN-8 | ANSI codes combined with CJK characters — width measurement excludes both | ✅ |
+| IN-9 | ANSI-only cell (no visible characters) — column width is zero, no extra padding | ✅ |
+| IN-10 | combining character sequences — visual width equals base character width | ✅ |
 
 ---
 
@@ -122,6 +124,29 @@
 - **Note:** Column width *allocation* uses `unicode_visual_len` (East Asian Width)
   and is not affected by this gap. The `visual_len` char-count limitation only
   impacts `truncate_cell` — tracked as BUG-001 in `src/ansi_str.rs`.
+
+---
+
+### IN-9: ANSI-only cell (no visible characters) — column width is zero, no extra padding
+
+- **Given:** A table where one cell contains only ANSI escape codes with no visible
+  characters (e.g. `"\x1b[32m\x1b[0m"`).
+- **When:** The column width is computed and the cell is rendered.
+- **Then:** The column width allocated for that cell is 0 visible columns; no
+  extra spaces are inserted beyond the cell's position; the ANSI codes are preserved
+  verbatim; adjacent rows with visible content define the column width normally.
+
+---
+
+### IN-10: combining character sequences — visual width equals base character width
+
+- **Given:** A table cell containing a base character followed by one or more Unicode
+  combining marks (e.g. `"e\u0301"` = `é` as two code points, or `"a\u0308"` = `ä`);
+  display width per Unicode standard is 1 (same as the base character alone).
+- **When:** The column width is computed via `unicode_visual_len`.
+- **Then:** The combining mark does not add to the visual width; the column is
+  allocated 1 column for the combined grapheme, not 2; the cell renders without
+  overflow or misalignment relative to ASCII-only rows of the same apparent length.
 
 ---
 

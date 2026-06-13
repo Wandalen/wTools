@@ -40,6 +40,11 @@
 - **Given:** A build configuration without `format_json` enabled.
 - **When:** The crate is compiled.
 - **Then:** `JsonFormatter` is not accessible; the binary includes no serde or serde_json code; compilation succeeds with zero errors.
+- **Note:** This case is verified by a compile-fail or subprocess `cargo check` test
+  (not a standard `#[test]` fn) because it requires a separate build with different
+  features. The test spawns `cargo check --no-default-features` (or similar) and
+  asserts `JsonFormatter` is not in scope. A standard in-process test cannot
+  unload a feature once compiled in.
 
 ---
 

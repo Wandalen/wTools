@@ -33,7 +33,7 @@ full = [
 enabled = ["dep:serde", "dep:serde_json"]
 
 # File operations (needs YAML, locking, timestamps)
-file_ops = [ "dep:serde_yaml", "dep:fs2", "dep:chrono" ]
+file_ops = [ "dep:serde_yaml_ng", "dep:fs2", "dep:chrono" ]
 
 # Display foundation
 display = []
@@ -41,14 +41,14 @@ display = []
 # Display formatters
 display_table = [ "display", "dep:data_fmt" ]
 display_json = [ "display" ]
-display_yaml = [ "display", "dep:serde_yaml" ]
+display_yaml = [ "display", "dep:serde_yaml_ng" ]
 
 [dependencies]
 serde = { workspace = true, features = [ "derive" ], optional = true }
 serde_json = { workspace = true, optional = true }
 
 # Optional - file operations
-serde_yaml = { workspace = true, optional = true }
+serde_yaml_ng = { workspace = true, optional = true }
 chrono = { workspace = true, features = [ "clock" ], optional = true }
 fs2 = { workspace = true, optional = true }
 
