@@ -17,4 +17,4 @@
 | 004 | [Color Themes](004_color_themes.md) | Predefined color themes and custom theme creation | ✅ |
 | 005 | [Auto-Fit](005_auto_fit.md) | Terminal-aware auto-fit: cell wrapping (✅), column folding (✅) | ✅ |
 | 006 | [API Cleanup v0.3.0](006_api_cleanup_v030.md) | Remove deprecated paths, add ExpandedFormatter Format impl | ✅ |
-| 007 | [Table Caption](007_table_caption.md) | Titled rule line above table carrying title and caption fields | ⏳ |
+| 007 | [Table Caption](007_table_caption.md) | Titled rule line above table carrying title and caption fields | ✅ |

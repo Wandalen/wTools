@@ -13,6 +13,7 @@ impl TableFormatter
   /// Resolve effective terminal width from config or fallback
   pub( super ) fn resolve_terminal_width( &self ) -> usize
   {
+    // Tier 0: explicit override via `terminal_width(Some(w))` — takes priority over all
     if let Some( w ) = self.config.term_width()
     {
       return if w == 0 { 1 } else { w };
@@ -25,6 +26,7 @@ impl TableFormatter
         if n > 0 { return n; }
       }
     }
+    // Tier 2: terminal_size crate (runtime detection) — feature-gated
     #[ cfg( feature = "terminal_size" ) ]
     {
       if let Some( ( terminal_size::Width( w ), _ ) ) = terminal_size::terminal_size()
@@ -32,6 +34,7 @@ impl TableFormatter
         return w as usize;
       }
     }
+    // Tier 3: hardcoded fallback
     120
   }
 

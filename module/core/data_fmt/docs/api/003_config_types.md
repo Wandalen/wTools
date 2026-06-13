@@ -21,7 +21,7 @@
 
 ### Abstract
 
-Three config structs and six supporting enums form the configuration API. `TableConfig` governs all `TableFormatter` rendering parameters: borders, separators, column sizing, coloring, and auto-fit. `ExpandedConfig` controls `ExpandedFormatter` key-value presentation. `TreeConfig` controls `TreeFormatter` structure and indentation. The six enum types — `BorderVariant`, `HeaderSeparatorVariant`, `ColumnSeparator`, `PaddingSide`, `ColumnFlex`, and `FoldStyle` — are embedded in the config structs or passed as builder arguments.
+Three config structs, one caption builder type, and six supporting enums form the configuration API. `TableConfig` governs all `TableFormatter` rendering parameters: borders, separators, column sizing, coloring, auto-fit, and optional caption. `TableCaption` is a builder type for the titled-rule line rendered above a table. `ExpandedConfig` controls `ExpandedFormatter` key-value presentation. `TreeConfig` controls `TreeFormatter` structure and indentation. The six enum types — `BorderVariant`, `HeaderSeparatorVariant`, `ColumnSeparator`, `PaddingSide`, `ColumnFlex`, and `FoldStyle` — are embedded in the config structs or passed as builder arguments.
 
 ### Operations
 
@@ -51,13 +51,17 @@ Controls how overflow columns are formatted in continuation lines. `Labeled` (de
 
 #### TableConfig
 
-All fields are private; accessed via preset constructors and builder setters. Nine preset constructors: `plain()`, `minimal()`, `bordered()`, `markdown()`, `grid()`, `unicode_box()`, `csv()`, `tsv()`, `compact()`. All return fully configured instances. Builder setters cover: column widths, alignment, border variant, header separator variant, column separator, outer and inner padding, header coloring, alternating row colors, min/max column width, truncation marker, sub-row indent, terminal width, auto-wrap, column flex assignments, auto-fold, fold style, and fold indent. All setters are `#[ must_use ]` and return `Self`.
+All fields are private; accessed via preset constructors and builder setters. Nine preset constructors: `plain()`, `minimal()`, `bordered()`, `markdown()`, `grid()`, `unicode_box()`, `csv()`, `tsv()`, `compact()`. All return fully configured instances. Builder setters cover: column widths, alignment, border variant, header separator variant, column separator, outer and inner padding, header coloring, alternating row colors, min/max column width, truncation marker, sub-row indent, terminal width, auto-wrap, column flex assignments, auto-fold, fold style, fold indent, border color, and caption. All setters are `#[ must_use ]` and return `Self`.
 
 **Width calculation order** (when auto-fit fields are combined): (1) content-driven max per column; (2) cap at `max_column_width` if set; (3) raise to `min_column_width` floor if non-zero; (4) `column_widths` override replaces all calculated widths; (5) auto-fit budget shrinks flex columns to terminal budget; (6) auto-fold moves remaining overflow columns to continuation lines.
 
 #### ExpandedConfig
 
 Controls `ExpandedFormatter` output. Fields: `record_separator`, `key_value_separator`, `show_record_numbers`, `colorize_keys`, `key_color`, `padding_side`, `indent_prefix`. Two preset constructors: `new()` / `postgres_style()` (aligned keys, pipe separator) and `property_style()` (colon separator, after-separator padding). All builder setters return `Self` and are `#[ must_use ]`.
+
+#### TableCaption
+
+Builder type for the optional titled-rule line rendered above a table. Construct with `TableCaption::new(title: impl Into<String>)` and chain zero or more `.field(f: impl Into<String>)` calls to append caption fields. The resulting value is attached to `TableConfig` via `.caption(TableCaption::new("..."))`. The caption renders as `─── Title · Field1 · Field2 ─────` filling the resolved terminal width. Three formatting constants are publicly exported: `CAPTION_FIELD_SEP` (`·`, U+00B7), `CAPTION_RULE_CHAR` (`─`, U+2500), and `CAPTION_LEAD_WIDTH` (`3`). When no caption is set (the default `None`), table output is byte-identical to the pre-caption baseline.
 
 #### TreeConfig
 

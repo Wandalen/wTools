@@ -4,8 +4,8 @@
 
 - **Executor Type:** any
 - **Actor:** dev
-- **Claimed At:** null
-- **Status:** ❓ (Unverified)
+- **Claimed At:** 2026-06-13
+- **Status:** ✅ (Complete)
 
 ## Goal
 
@@ -58,3 +58,12 @@ null
 Original proposed test assertion `assert!(l.contains('\x1b') && l.contains('+'))` does not confirm that ANSI codes specifically decorate border chars — it would pass even if only cell content were colored. The test must isolate horizontal-rule lines and assert ANSI codes on those lines specifically.
 
 Resolution: Test Matrix above uses `output.lines().filter(|l| strip_ansi(l).starts_with('+'))` to isolate rule lines, then asserts `\x1b` on each such line. This is specific to border chars and cannot be satisfied by cell coloring alone. Executor should implement using this pattern directly (strip ANSI for the filter predicate; assert on the original unstripped line). No rework of scope or goal required.
+
+## Verification Record
+
+- **Date:** 2026-06-13
+- **Method:** MAAV — two independent Agent subagents (conformance + adversarial)
+- **Test result:** 605/605 tests pass; 4/4 jobs clean (nextest, workspace nextest, doc tests, clippy)
+- **Conformance:** `border_color: Option<String>` field and `border_color()` builder confirmed in `src/config.rs` (6 matches); `apply_to_table()` in `src/themes.rs` forwards `border_color`; `apply_border_color()` helper present in `rendering.rs`; `apply_to_table_forwards_border_color_ft6` passes
+- **Adversarial:** `TableConfig::plain()` without theme produces no ANSI codes on borders (no regression); `border_color` can also be set directly on `TableConfig` without going through `apply_to_table()`
+- **Verdict:** ✅ Complete

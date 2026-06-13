@@ -14,6 +14,7 @@
 | FC-1 | title-only caption renders titled rule before table | ✅ |
 | FC-2 | caption fields appear joined by field separator | ✅ |
 | FC-3 | caption line fills to terminal width with rule chars | ✅ |
+| FC-4 | *(not assigned — reserved ID, no case defined)* | N/A |
 | FC-5 | no-caption config produces identical output to current behavior | ✅ |
 | FC-6 | caption renders before top border for grid and unicode_box styles | ✅ |
 

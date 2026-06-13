@@ -5,7 +5,7 @@
 - **Executor Type:** any
 - **Actor:** dev
 - **Claimed At:** 2026-05-16
-- **Status:** ⏳ (In Progress)
+- **Status:** ✅ (Complete)
 
 ## Goal
 
@@ -227,6 +227,15 @@ Expected: count increases by ≥ 3 (one per new IN). Why: prevents empty test bo
 **AF6 — Backward compat tests cover all 8 preset cases**
 Check: `grep -c "auto_wrap(false)" tests/auto_wrap_test.rs`
 Expected: count increases by ≥ 8 (one per new backward-compat case: IN-3 through IN-10). Why: prevents implementing only the original 2 cases (IN-3, IN-4) while omitting the 6 new preset cases added to the spec.
+
+## Verification Record
+
+- **Date:** 2026-06-13
+- **Method:** MAAV — two independent Agent subagents (conformance + adversarial)
+- **Test result:** 605/605 tests pass; 4/4 jobs clean (nextest, workspace nextest, doc tests, clippy)
+- **Conformance:** all 16 checks pass — every spec case confirmed ✅ in `tests/docs/`; no ⬜ remaining
+- **Adversarial:** no behavioral regressions found; FC-4 gap documented as N/A in test spec (not a missing test)
+- **Verdict:** ✅ Complete
 
 ## Outcomes
 

@@ -98,7 +98,7 @@ The caption is rendered immediately before the table top border (or header row w
 3. Build the trailing rule: compute `trail_width = terminal_width - lead_width - 1 - content.chars().count() - 1` (subtracting lead chars, the space after lead, content char-count, and one trailing space). Use `.chars().count()`, not `.len()` — `·` (U+00B7) and `─` (U+2500) are multi-byte in UTF-8. Clamp `trail_width` to 0 if negative.
 4. Emit: `lead + content + " " + rule_char × trail_width + "\n"`.
 
-Terminal width is resolved via the same three-tier chain used by auto-fit: `TableConfig::terminal_width` override → `terminal_size` crate (feature-gated) → fallback 120.
+Terminal width is resolved via the same four-tier chain used by auto-fit: `TableConfig::terminal_width` override (Tier 0) → `$COLUMNS` env var (Tier 1) → `terminal_size` crate, feature-gated (Tier 2) → fallback 120 (Tier 3).
 
 #### Interaction with Other Features
 

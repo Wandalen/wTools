@@ -4,8 +4,8 @@
 
 - **Executor Type:** any
 - **Actor:** dev
-- **Claimed At:** null
-- **Status:** ❓ (Unverified)
+- **Claimed At:** 2026-06-13
+- **Status:** ✅ (Complete)
 
 ## Goal
 
@@ -57,3 +57,12 @@ null
 `resolve_terminal_width` is `pub(super)`, so it cannot be unit-tested by calling it directly from `tests/`. Additionally, env-var mutation is process-global and will race in a parallel test run if not serialized.
 
 Resolution: Test uses the indirect path — call `Format::format()` with `auto_wrap(true)` and assert on rendered line lengths. Env-var mutation is serialized via a `static Mutex` guard or `#[serial]` from `serial_test`. Work Procedure step 3 covers the serialization decision. No rework of scope or goal required; the test approach is executable as-is.
+
+## Verification Record
+
+- **Date:** 2026-06-13
+- **Method:** MAAV — two independent Agent subagents (conformance + adversarial)
+- **Test result:** 605/605 tests pass; 4/4 jobs clean (nextest, workspace nextest, doc tests, clippy)
+- **Conformance:** `std::env::var("COLUMNS")` present in `auto_fit.rs` as Tier 1 (after Tier 0 explicit override, before `#[cfg(feature = "terminal_size")]`); `COLUMNS_TEST_MUTEX` serializes env mutation; `columns_env_var_controls_terminal_width_ft9` covers `COLUMNS=40`, `COLUMNS=""`, `COLUMNS=0`, `COLUMNS=abc`
+- **Adversarial:** tier ordering verified: Tier 0 → Tier 1 ($COLUMNS) → Tier 2 (terminal_size) → Tier 3 (120); COLUMNS="" / COLUMNS=0 / COLUMNS=garbage all correctly fall through; `// Tier 0:` comment added to source for clarity
+- **Verdict:** ✅ Complete

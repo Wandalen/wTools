@@ -11,7 +11,7 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | [Data Model](001_data_model.md) | Invariant spec for data model enforcement | ⏳ |
-| 002 | [ANSI and Unicode](002_ansi_unicode.md) | Invariant spec for ANSI and Unicode measurement | ⏳ |
-| 003 | [Auto-Wrap Backward Compatibility](003_auto_wrap_backward_compat.md) | Invariant spec for auto-wrap backward compatibility | ⏳ |
+| 001 | [Data Model](001_data_model.md) | Invariant spec for data model enforcement | ✅ |
+| 002 | [ANSI and Unicode](002_ansi_unicode.md) | Invariant spec for ANSI and Unicode measurement | ✅ |
+| 003 | [Auto-Wrap Backward Compatibility](003_auto_wrap_backward_compat.md) | Invariant spec for auto-wrap backward compatibility | ✅ |
 | 004 | [Column Fold Invariants](004_column_fold_invariants.md) | Invariant spec for column fold behavioral guarantees | ✅ |
