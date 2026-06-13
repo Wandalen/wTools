@@ -174,10 +174,10 @@ fn test_header_separator_alignment_with_padding()
   );
 
   // Verify separator has correct structure: +dashes+dashes+dashes+
-  // Fix(issue-014): AsciiGrid corner chars changed from '|' to '+'.
+  // Fix(BUG-004): AsciiGrid corner chars changed from '|' to '+'.
   let separator = lines[ 1 ];
-  assert!( separator.starts_with( '+' ), "Separator should start with '+' (not '|') after fix-014" );
-  assert!( separator.ends_with( '+' ), "Separator should end with '+' (not '|') after fix-014" );
+  assert!( separator.starts_with( '+' ), "Separator should start with '+' (not '|') after BUG-004" );
+  assert!( separator.ends_with( '+' ), "Separator should end with '+' (not '|') after BUG-004" );
 
   // Separator should only contain '+' and '-'
   assert!(

@@ -182,7 +182,7 @@ impl TableFormatter
   )
   -> String
   {
-    // Fix( issue-empty-table ): return empty string only when no columns are defined.
+    // Fix(BUG-008): return empty string only when no columns are defined.
     // Root cause: format_single_line_row unconditionally appends '\n' for zero-column
     // slices, producing bare newlines → "\n\n" for a table with zero columns.
     // Pitfall: guarding on rows.is_empty() is too aggressive — headers-only tables
@@ -257,7 +257,11 @@ impl TableFormatter
           .collect();
         let mut row_buf = String::new();
         self.format_row( &mut row_buf, &plain_cells, primary_widths, false );
-        // Fix(issue-multiline-color): wrap each output line with row color individually.
+        // Fix(BUG-009): wrap each output line with row color individually.
+        // Root cause: single color/RESET wrap around the whole row buffer left `\n` chars
+        //   inside the color sequence, causing background-color bleed across sub-lines.
+        // Pitfall: never wrap row_buf as a whole — always iterate .lines() and emit
+        //   color + line + RESET per output line.
         let reset = self.config.color_reset_str();
         for line in row_buf.lines()
         {
@@ -286,7 +290,7 @@ impl TableFormatter
 
       // Sub-row detail line(s) — indent every line; apply per-line ANSI color when set.
       //
-      // Fix(issue-ansi-color-per-line): iterate ct.text.lines() and wrap each line
+      // Fix(BUG-010): iterate ct.text.lines() and wrap each line
       //   individually with color + line + RESET.
       // Root cause: calling ct.render() then .lines() would place the ANSI RESET
       //   at the very end of the whole block; any intermediate \n would cause terminal
@@ -328,7 +332,7 @@ impl TableFormatter
 
   /// Format the header row, applying ANSI color per-line when header colorization is enabled.
   ///
-  /// # Fix(issue-multiline-color)
+  /// # Fix(BUG-009)
   ///
   /// Iterates `.lines()` instead of single-pair wrap to avoid background-color bleed.
   /// Root cause: `trim_end_matches('\n')` + single wrap left intermediate `\n` chars inside
@@ -441,7 +445,7 @@ impl TableFormatter
   /// For multi-line cells: per-line iteration — `color + line + RESET` per line — preventing
   ///   background-color bleed across `\n` boundaries.
   ///
-  /// # Fix(issue-ansi-color-per-line)
+  /// # Fix(BUG-010)
   ///
   /// Root cause: calling `ct.render()` on a multi-line colored cell produces
   ///   `color + "line_a\nline_b" + RESET`. The `\n` appears inside the color sequence,
@@ -478,7 +482,7 @@ impl TableFormatter
     if has_multiline
     {
       // Per-line color wrapping: emit color+line+RESET for each sub-line to prevent
-      // background-color bleed across \n boundaries (Fix issue-ansi-color-per-line).
+      // background-color bleed across \n boundaries (Fix BUG-010).
       let cells_colored : Vec< String > = cells.iter()
         .map( | ct |
         {
@@ -557,7 +561,7 @@ impl TableFormatter
 
     // Consider header widths (unicode display-width, ANSI-stripped)
     //
-    // Fix(issue-multiline-width): use max single-line width, not total string width.
+    // Fix(BUG-011): use max single-line width, not total string width.
     // Root cause: `unicode_visual_len(cell)` on a multiline string counts `\n` as
     //   1 display column (via `ch.width().unwrap_or(1)`), producing a column that is
     //   wider than its widest single line (e.g., "Line1\nLine2" → 11 instead of 5).

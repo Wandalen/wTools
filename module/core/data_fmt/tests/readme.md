@@ -43,13 +43,14 @@ Contains all functional and integration tests for data_fmt library. Tests valida
 | `table_styles_compatibility.rs` | Test table style compatibility |
 | `table_styles_outputs.rs` | Test table style outputs |
 | `table_config_corner_cases.rs` | Test TableConfig API corner cases: builder chain, padding, alignment, width overrides, presets |
+| `table_caption_test.rs` | Test TableCaption type and TableConfig::caption() builder API |
 | `table_config_validation_test.rs` | min_column_width floor enforcement and table-line alignment correctness tests |
 | `table_rendering_borders.rs` | Test border variant rendering: top/bottom borders, inter-row separators, AsciiGrid corners |
 | `table_rendering_colors.rs` | Test ANSI header coloring and alternating-row coloring |
 | `table_styles_presets.rs` | Test table style presets |
 | `text_cli_help.rs` | Test CLI help text formatting |
 | `themes.rs` | Test visual themes |
-| `unicode_display_width_alignment.rs` | Bug reproducers for issue-003: Cyrillic, CJK, emoji, mixed-width alignment |
+| `unicode_display_width_alignment.rs` | Bug reproducers for BUG-001: Cyrillic, CJK, emoji, mixed-width alignment |
 | `unicode_display_width_table.rs` | Task 015 display width fix: CJK/emoji table alignment and padding correctness |
 | `unified_format_trait.rs` | Test unified format trait |
 | `verify_alignment_correct.rs` | Verify alignment correctness |

@@ -4,7 +4,7 @@
 
 - **Purpose**: Document non-trivial algorithms used by formatters with pseudocode and complexity.
 - **Responsibility**: Registry and overview of all algorithm doc instances.
-- **In Scope**: Multiline cell rendering, word wrapping, tree column alignment, budget allocation, fold detection, CLI help alignment.
+- **In Scope**: Multiline cell rendering, word wrapping, tree column alignment, budget allocation, fold detection, CLI help alignment, caption rendering.
 - **Out of Scope**: Simple formatting logic, configuration details (see `api/config_types`).
 
 ### Overview Table
@@ -17,3 +17,4 @@
 | 004 | [Budget Allocation](004_budget_allocation.md) | Terminal-width-aware column budget allocation and flex classification | ✅ |
 | 005 | [Column Fold Detection](005_column_fold_detection.md) | Fold point detection and continuation line partitioning | ✅ |
 | 006 | [CLI Help Alignment](006_cli_help_alignment.md) | Two-pass section detection and description alignment for CLI help output | ✅ |
+| 007 | [Caption Rendering](007_caption_rendering.md) | Four-step titled-rule assembly with lead prefix and clamped trailing rule width | ✅ |

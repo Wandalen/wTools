@@ -523,9 +523,9 @@ fn test_t013_m05_empty_header_color_with_flag_true_suppresses_escapes()
 /// MAX single-line width (not sum), AND RESET appears before every `\n`.
 ///
 /// Integration test combining both fixes:
-/// 1. Column width fix (issue-multiline-width): `calculate_column_widths_for_rows`
+/// 1. Column width fix (BUG-011): `calculate_column_widths_for_rows`
 ///    must use per-line max, not total-string width.
-/// 2. Color wrap fix (issue-multiline-color): each sub-line gets its own
+/// 2. Color wrap fix (BUG-009): each sub-line gets its own
 ///    `color + content + RESET + \n` wrapping.
 #[ test ]
 fn test_t013_m06_multiline_colored_row_correct_width_and_reset()

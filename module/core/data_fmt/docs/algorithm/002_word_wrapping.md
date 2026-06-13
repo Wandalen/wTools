@@ -11,21 +11,23 @@
 
 | File | Relationship |
 |------|--------------|
-| `src/wrap.rs` | WrapFormatter implementation |
+| [`src/wrap.rs`](../../src/wrap.rs) | WrapFormatter implementation |
 
 ### Tests
 
 | File | Relationship |
 |------|--------------|
-| `tests/word_wrap.rs` | Word wrapping test suite |
+| [`tests/word_wrap.rs`](../../tests/word_wrap.rs) | Word wrapping test suite |
+
+### Features
+
+| File | Relationship |
+|------|-------------|
+| [002_word_wrap.md](../feature/002_word_wrap.md) | Feature this algorithm implements |
 
 ### Abstract
 
 A text wrapping algorithm that breaks input strings into lines fitting within a configured width using configurable break strategies. Supports word-boundary breaking, hard character splitting, and a hybrid default mode that word-wraps first and hard-breaks only overlong tokens. Handles indentation, newline preservation, tab expansion, line limits, and overflow policies.
-
-### Source Location
-
-`src/wrap.rs` — `WrapFormatter::wrap()` (lines 213-240) dispatches to `wrap_words()` (lines 391-442) or `hard_break_str()` (lines 298-326). Overlong words handled by `push_overlong_word()` (lines 329-370).
 
 ### Pipeline
 
@@ -51,7 +53,7 @@ while remaining is not empty:
   indent = indent_for(line_idx)
   avail = width - char_count(indent)
   take first `avail` chars → line
-  trim leading spaces from remainder  (Fix issue-004b)
+  trim leading spaces from remainder  (Fix BUG-002)
 ```
 
 #### Word
@@ -86,7 +88,7 @@ flush any remaining pending
 
 ### Overlong Word Handling — `push_overlong_word`
 
-When `break_strategy` is `WordThenHard` or `break_long_words` is true, the word is sliced character-by-character across multiple lines. Available width is recomputed per line (Fix issue-004c: `initial_indent` and `subsequent_indent` may differ).
+When `break_strategy` is `WordThenHard` or `break_long_words` is true, the word is sliced character-by-character across multiple lines. Available width is recomputed per line (Fix BUG-002: `initial_indent` and `subsequent_indent` may differ).
 
 ```
 while remaining is not empty:
@@ -112,16 +114,6 @@ Applied after all lines are produced, when `max_lines` is set:
 |--------|----------|
 | `Truncate` | Drop lines beyond limit |
 | `Ellipsis(s)` | Truncate last kept line content and append `s`, keeping total line width ≤ `width` |
-
-### Known Fix Comments
-
-Three fixes documented in source with `Fix(issue-004x)` format:
-
-| Fix | Root Cause | Location |
-|-----|------------|----------|
-| `issue-004a` | `tab_width=0` returned raw `\t` instead of deleting it | `expand_tabs` |
-| `issue-004b` | Leading space after chunk boundary caused `" worl"` instead of `"world"` | `hard_break_str` |
-| `issue-004c` | Overlong word avail computed once, not per-line; continuation lines exceeded width | `push_overlong_word` |
 
 ### Complexity
 

@@ -6,6 +6,18 @@
 **In Scope:** Typed doc entity instances (feature/, invariant/, api/, algorithm/, formatter/, trait/, variant/, builder/, pattern/, data_structure/, input_model/, input_type/), architecture docs, development notes, entities index, and doc dependency graph.
 **Out of Scope:** Test code (tests/), production source (src/), usage examples (examples/), task tracking (task/).
 
+### Vocabulary
+
+| Term | Definition |
+|------|-----------|
+| **caption** | The titled-rule line printed above a table header — includes lead rule, title, optional caption fields, and trailing rule |
+| **title** | The primary text in a caption |
+| **caption field** | An additional metadata item appended to the caption title with the field separator |
+| **field separator** | The character placed between caption fields — fixed as `·` (U+00B7 MIDDLE DOT) |
+| **rule character** | The horizontal fill character for rule sections — fixed as `─` (U+2500 BOX DRAWINGS LIGHT HORIZONTAL) |
+| **lead width** | The number of rule characters emitted before the title text — fixed at 3 |
+| **titled rule** | The visual pattern: `─── Title · Field1 ──────...` filling the resolved terminal width |
+
 ### Responsibility Table
 
 | File | Responsibility |

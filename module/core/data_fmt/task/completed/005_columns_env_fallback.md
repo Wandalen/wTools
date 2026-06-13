@@ -5,7 +5,7 @@
 - **Executor Type:** any
 - **Actor:** dev
 - **Claimed At:** null
-- **Status:** ❓ (Unverified)
+- **Status:** ✅ (Completed)
 
 ## Goal
 
@@ -57,3 +57,17 @@ null
 `resolve_terminal_width` is `pub(super)`, so it cannot be unit-tested by calling it directly from `tests/`. Additionally, env-var mutation is process-global and will race in a parallel test run if not serialized.
 
 Resolution: Test uses the indirect path — call `Format::format()` with `auto_wrap(true)` and assert on rendered line lengths. Env-var mutation is serialized via a `static Mutex` guard or `#[serial]` from `serial_test`. Work Procedure step 3 covers the serialization decision. No rework of scope or goal required; the test approach is executable as-is.
+
+## Verification Record
+
+- **Date:** 2026-06-13
+- **Ground truth:** 605/605 nextest pass, 0 clippy warnings
+- **Confirming agent:** `src/formatters/table/auto_fit.rs:21-26` — `std::env::var("COLUMNS")` read at Tier 1 before `#[cfg(feature = "terminal_size")]` block and before `120` fallback; parses as `usize` with `trim()` and `n > 0` guard. `tests/terminal_width_test.rs:303-358` — `columns_env_var_controls_terminal_width_ft9` uses `static COLUMNS_TEST_MUTEX`, sets `COLUMNS=40`, renders table, removes var before assertion, asserts max line width ≤ 40; also tests empty/"0"/non-numeric cases all fall through to 120-col fallback. FT-9 ✅.
+- **Adversarial agent:** No disqualifying gap found. Tier resolution order confirmed correct. Mutex covers full set/render/remove cycle. All edge cases tested.
+
+| Dimension | Confirming Finding | Adversarial Finding | Verdict |
+|-----------|-------------------|---------------------|---------|
+| Scope Coherence | Single insertion in `auto_fit.rs:resolve_terminal_width` — one env-var read before `terminal_size` block; no public API changes; no other files modified | No scope boundary violations detected | PASS |
+| MOST Goal Quality | Observable met: `COLUMNS=40` → all output lines ≤ 40 chars (asserted at test line 315-317); resolution order Tier 0→1→2→3 confirmed in source lines 16-35; FT-9 ✅ | MOST goal says `COLUMNS=60` but test uses `COLUMNS=40` — functionally equivalent, mechanism is identical; not a failure | PASS |
+| Value/YAGNI | Enables scripts and CI pipelines to control auto-wrap width without a real TTY; no speculative additions; env-var parse is guarded (trim/parse/n>0); no new public API | No over-engineering detected | PASS |
+| Implementation Readiness | `usize` parse (not `u16` per spec) — semantically more correct, avoids 65535 limit; `remove_var` called before assertion in each sub-case; all 4 cases (valid/empty/zero/non-numeric) tested; `COLUMNS_TEST_MUTEX` serializes all 4 cases within the single test function | No gaps found; env-var removal before assertion confirmed correct; race condition excluded by mutex + nextest process isolation | PASS |

@@ -181,7 +181,12 @@ impl ExpandedFormatter
       for ( key, cell ) in headers.iter().zip( row.iter() )
       {
         output.push_str( &self.config.indent_prefix );
-        let value = cell.render();  // Fix(P1): .render() not .data.as_ref().map_or("", ..)
+        // Fix(BUG-012): call .render() to get color+text+RESET, not raw .data access.
+        // Root cause: .data.as_ref().map_or("", ..) returned bare text, bypassing ANSI
+        //   color wrapping and emitting plain strings for colored DecoratedText cells.
+        // Pitfall: never access .data directly for rendering — .render() is the only
+        //   correct output path as it handles both plain and colored cell values.
+        let value = cell.render();
         let key_width = visual_len( key );
 
         match self.config.padding_side

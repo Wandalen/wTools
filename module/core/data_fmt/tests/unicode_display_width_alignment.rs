@@ -75,7 +75,7 @@
 #![ cfg( feature = "enabled" ) ]
 use data_fmt::{ truncate_cell, pad_to_width };
 
-/// Bug reproducer for issue-003: Cyrillic filenames misalign in column padding.
+/// Bug reproducer for BUG-001: Cyrillic filenames misalign in column padding.
 ///
 /// ## Root Cause
 /// `pad_to_width()` pads by character count; downstream `{:<N}` formats by display
@@ -97,7 +97,7 @@ use data_fmt::{ truncate_cell, pad_to_width };
 /// ## Pitfall
 /// Cyrillic looks correct visually when rendered alone — the bug only surfaces in
 /// side-by-side column alignment where width mismatch shifts subsequent columns.
-// test_kind: bug_reproducer(issue-003)
+// test_kind: bug_reproducer(BUG-001)
 #[ test ]
 fn bug_reproducer_issue_003_cyrillic_alignment()
 {
@@ -148,7 +148,7 @@ fn bug_reproducer_issue_003_cyrillic_alignment()
   );
 }
 
-/// Bug reproducer for issue-003: CJK characters misalign with character-count padding.
+/// Bug reproducer for BUG-001: CJK characters misalign with character-count padding.
 ///
 /// ## Root Cause
 /// CJK characters have display width 2 but `pad_to_width()` counts each as width 1,
@@ -169,7 +169,7 @@ fn bug_reproducer_issue_003_cyrillic_alignment()
 /// ## Pitfall
 /// `str.chars().count()` and `UnicodeWidthStr::width()` agree for ASCII and Cyrillic
 /// but diverge for CJK (×2) and emoji (×2). Always use display width for terminals.
-// test_kind: bug_reproducer(issue-003)
+// test_kind: bug_reproducer(BUG-001)
 #[ test ]
 fn bug_reproducer_issue_003_cjk_alignment()
 {
@@ -213,7 +213,7 @@ fn bug_reproducer_issue_003_cjk_alignment()
   );
 }
 
-/// Bug reproducer for issue-003: Emoji misalign with character-count padding.
+/// Bug reproducer for BUG-001: Emoji misalign with character-count padding.
 ///
 /// ## Root Cause
 /// Emoji have display width 2; character-count padding produces half the needed
@@ -232,7 +232,7 @@ fn bug_reproducer_issue_003_cjk_alignment()
 /// ## Pitfall
 /// Some terminals render emoji as width-1; `unicode-width` follows the Unicode
 /// standard (mostly width-2). Test against the standard, not terminal behavior.
-// test_kind: bug_reproducer(issue-003)
+// test_kind: bug_reproducer(BUG-001)
 #[ test ]
 fn bug_reproducer_issue_003_emoji_alignment()
 {
@@ -344,7 +344,7 @@ fn test_ukrainian_cyrillic_alignment()
   );
 }
 
-/// Bug reproducer for issue-003: Production gdrive listing reveals padding bug.
+/// Bug reproducer for BUG-001: Production gdrive listing reveals padding bug.
 ///
 /// ## Root Cause
 /// Real-world file listing mixed ASCII and Cyrillic filenames. `pad_to_width()`
@@ -365,7 +365,7 @@ fn test_ukrainian_cyrillic_alignment()
 /// ## Pitfall
 /// The bug looked like a Cyrillic issue, but the real fix handles ALL wide scripts.
 /// A Cyrillic-only fix would have left CJK and emoji broken.
-// test_kind: bug_reproducer(issue-003)
+// test_kind: bug_reproducer(BUG-001)
 #[ test ]
 fn bug_reproducer_issue_003_realistic_file_listing()
 {
@@ -404,7 +404,7 @@ fn bug_reproducer_issue_003_realistic_file_listing()
 
 /// Test zero-width combining marks (accents, diacritics)
 ///
-/// Bug reproducer for issue-003 (zero-width variant)
+/// Bug reproducer for BUG-001 (zero-width variant)
 ///
 /// Zero-width combining marks have display width of 0 but count as separate
 /// characters. This test verifies that `pad_to_width()` correctly handles
@@ -535,7 +535,7 @@ fn test_zero_width_combining_marks()
 /// // CORRECT: Truncates to 5 display width
 /// let truncated = truncate_by_display_width( text, 5, "..." );
 /// ```
-// test_kind: bug_reproducer(issue-003)
+// test_kind: bug_reproducer(BUG-001)
 #[ test ]
 fn bug_reproducer_truncate_cjk_display_width()
 {
@@ -577,7 +577,7 @@ fn bug_reproducer_truncate_cjk_display_width()
   );
 }
 
-/// Bug reproducer for issue-003: Emoji truncation exceeds display-width target.
+/// Bug reproducer for BUG-001: Emoji truncation exceeds display-width target.
 ///
 /// ## Root Cause
 /// `truncate_cell()` counted characters, not display width. Emoji occupy 2 terminal
@@ -598,7 +598,7 @@ fn bug_reproducer_truncate_cjk_display_width()
 /// ## Pitfall
 /// After display-width truncation, the result can be 1 column SHORT of target when
 /// a wide char straddles the boundary — this is correct, not a bug.
-// test_kind: bug_reproducer(issue-003)
+// test_kind: bug_reproducer(BUG-001)
 #[ test ]
 fn bug_reproducer_truncate_emoji_display_width()
 {
@@ -635,7 +635,7 @@ fn bug_reproducer_truncate_emoji_display_width()
   );
 }
 
-/// Bug reproducer for issue-003: Mixed-width content truncation exceeds display budget.
+/// Bug reproducer for BUG-001: Mixed-width content truncation exceeds display budget.
 ///
 /// ## Root Cause
 /// When truncating mixed ASCII + CJK + emoji, character-count-based truncation
@@ -656,7 +656,7 @@ fn bug_reproducer_truncate_emoji_display_width()
 /// ## Pitfall
 /// Mixed-width strings require width-aware operations end-to-end: truncation AND
 /// padding AND alignment must all use display width, or alignment will still break.
-// test_kind: bug_reproducer(issue-003)
+// test_kind: bug_reproducer(BUG-001)
 #[ test ]
 fn bug_reproducer_truncate_mixed_width()
 {

@@ -183,7 +183,7 @@ pub fn truncate_cell( text : &str, max_width : usize, marker : &str ) -> String
 ///
 /// Does not handle newlines - use `truncate_cell` for multiline text.
 ///
-/// # Fix(issue-003)
+/// # Fix(BUG-001)
 ///
 /// Root cause: Used character count (`visual_len()`) instead of display width,
 /// causing CJK/emoji text (width=2 per char) to not truncate properly.

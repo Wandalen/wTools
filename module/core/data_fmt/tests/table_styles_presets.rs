@@ -421,7 +421,7 @@ fn test_default_config_uses_spaces_not_pipe()
 
 /// Reproduces the separator mismatch bug where Unicode header separator was paired
 /// with a non-Unicode column separator, producing `┼` in the separator row but
-/// spaces between data columns (issue-011).
+/// spaces between data columns (BUG-003).
 ///
 /// ## Root Cause
 /// `gi_infra::formatters::style::cli_table()` constructed `TableConfig` via struct
@@ -430,7 +430,7 @@ fn test_default_config_uses_spaces_not_pipe()
 /// `Spaces(2)`. The Unicode header separator emits `┼` between columns in the separator
 /// row, but data rows used spaces — producing misaligned, visually broken output.
 ///
-/// ## Why Not Caught Initially
+/// ## Why Not Caught
 /// No test verified that `unicode_box()` produces BOTH Unicode column separators (`│`)
 /// AND Unicode header separator characters (`┼`/`├`) simultaneously. Tests only checked
 /// individual preset field values (state assertions), not behavioral correctness across
@@ -447,11 +447,11 @@ fn test_default_config_uses_spaces_not_pipe()
 /// `src/config.rs` is a compile error. All callers must use presets or the builder chain.
 /// The `compile_fail` doctest in `TableConfig` guards this invariant permanently.
 ///
-/// ## Pitfall to Avoid
+/// ## Pitfall
 /// Unicode separator components are interdependent — `header_separator_variant: Unicode`
 /// requires `column_separator: Character('│')`. Always use `TableConfig::unicode_box()`
 /// rather than manually pairing Unicode header separator with a non-Unicode column separator.
-// test_kind: bug_reproducer(issue-011)
+// test_kind: bug_reproducer(BUG-003)
 #[ test ]
 fn bug_reproducer_issue_011_unicode_box_column_separator_mismatch()
 {

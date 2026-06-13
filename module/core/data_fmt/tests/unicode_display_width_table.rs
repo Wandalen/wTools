@@ -20,7 +20,7 @@
 //! T015-N06: Malformed ANSI in content → no panic
 //! T015-N07: `min_column_width` + CJK → floor applied to unicode-measured widths
 //!
-//! See `unicode_display_width_alignment.rs` for the `bug_reproducer` issue-003 tests
+//! See `unicode_display_width_alignment.rs` for the `bug_reproducer` BUG-001 tests
 //! that motivated this implementation.
 
 #![ cfg( feature = "enabled" ) ]
@@ -422,7 +422,7 @@ fn detail_lines_iterate_raw_text_not_rendered_in6()
 /// verifying that East Asian Width remains the measurement basis for column allocation.
 ///
 /// Note: `visual_len` (char count) is used by `truncate_cell` — that separate path is the
-/// known limitation for issue-003. Column width allocation correctly uses display width.
+/// known limitation for BUG-001. Column width allocation correctly uses display width.
 // test_kind: standard
 #[ test ]
 fn cjk_column_width_uses_east_asian_width_in7()
@@ -466,7 +466,7 @@ fn cjk_column_width_uses_east_asian_width_in7()
 /// Both measurement deficiencies are additive: ANSI exclusion + EAW gap coexist.
 ///
 /// Known limitation: measurement uses char count, not East Asian Width. Fix tracked as
-/// issue-003 in `src/ansi_str.rs`.
+/// BUG-001 in `src/ansi_str.rs`.
 // test_kind: standard
 #[ test ]
 fn ansi_plus_cjk_width_measured_as_char_count_in8()

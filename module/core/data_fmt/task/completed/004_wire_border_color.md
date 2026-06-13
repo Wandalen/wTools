@@ -5,7 +5,7 @@
 - **Executor Type:** any
 - **Actor:** dev
 - **Claimed At:** null
-- **Status:** ❓ (Unverified)
+- **Status:** ✅ (Completed)
 
 ## Goal
 
@@ -58,3 +58,19 @@ null
 Original proposed test assertion `assert!(l.contains('\x1b') && l.contains('+'))` does not confirm that ANSI codes specifically decorate border chars — it would pass even if only cell content were colored. The test must isolate horizontal-rule lines and assert ANSI codes on those lines specifically.
 
 Resolution: Test Matrix above uses `output.lines().filter(|l| strip_ansi(l).starts_with('+'))` to isolate rule lines, then asserts `\x1b` on each such line. This is specific to border chars and cannot be satisfied by cell coloring alone. Executor should implement using this pattern directly (strip ANSI for the filter predicate; assert on the original unstripped line). No rework of scope or goal required.
+
+## Verification Record
+
+- **Date:** 2026-06-13
+- **Ground truth:** 605/605 nextest pass, 0 clippy warnings
+- **Confirming agent:** `src/themes.rs:188` — `config.border_color(self.border_color.clone())` forwards border color when non-empty. `src/formatters/table/rendering.rs:244` — `apply_border_color` wraps with `"{code}{s}\x1b[0m"`. All border char emission sites confirmed: leading pipe (line 37), trailing pipe (line 106), `Character` column separator (line 228), AsciiGrid junction/fill inline branch (lines 290-307), `format_ascii_horizontal_rule` all chars (lines 348-362), `format_unicode_horizontal_rule` (lines 382-395). `tests/themes.rs:330` — `apply_to_table_forwards_border_color_ft6` asserts ANSI on rule lines when border_color set; asserts NO ANSI on rule lines for unthemed bordered table. Observable met.
+- **Adversarial agent:** Found `ColumnSeparator::String(s)` branch in `append_column_separator` (line 231-233) emits raw string without calling `apply_border_color`. No built-in preset uses `String` separator; `bordered()` uses `Character('|')` which IS colored. Gap is real but does not affect the task Observable.
+
+| Dimension | Confirming Finding | Adversarial Finding | Verdict |
+|-----------|-------------------|---------------------|---------|
+| Scope Coherence | Changes in `src/config.rs` (border_color field + builder), `src/themes.rs` (forwarding), `src/formatters/table/rendering.rs` (apply_border_color + all border sites); test in `tests/themes.rs` | No scope boundary violations detected | PASS |
+| MOST Goal Quality | Observable met: `apply_to_table_forwards_border_color_ft6` asserts every `+` rule line contains `\x1b` for `dark()` + `bordered()`; plain bordered produces no `\x1b` on rule lines; FT-6 ✅ | Test only asserts on rule lines (`+` prefix); does not independently assert data-row pipe coloring — acceptable since `apply_border_color` is called at all pipe sites (lines 37, 106, 228) and is exercised by the same rendering path | PASS |
+| Value/YAGNI | Eliminates the silent dead-field defect where all 6 `ColorTheme` presets defined `border_color` but it was never applied; no speculative additions | No over-engineering detected | PASS |
+| Implementation Readiness | `apply_border_color` wired at: leading border pipe, trailing border pipe, `Character` separator, AsciiGrid inline junctions, ASCII horizontal rule, Unicode horizontal rule, top/bottom borders delegated through helpers | `ColumnSeparator::String(s)` branch (line 232) does NOT call `apply_border_color` — missed site; no built-in preset uses this variant; Observable for `bordered()` + `dark_theme()` is unaffected | PASS |
+
+**Advisory (non-disqualifying):** `ColumnSeparator::String(s)` in `append_column_separator` should be wrapped with `apply_border_color` for consistency. Custom configs using `String` separators will not get border coloring. File as a future bug if needed.

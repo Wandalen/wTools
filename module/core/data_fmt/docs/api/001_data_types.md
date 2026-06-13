@@ -7,7 +7,7 @@
 - **In Scope**: Type definitions, field semantics, construction methods, and trait impls on data types.
 - **Out of Scope**: Behavioral invariants (see `../invariant/`), construction patterns (see `../builder/`).
 
-### InputTypes
+### Input Types
 
 | File | Relationship |
 |------|-------------|

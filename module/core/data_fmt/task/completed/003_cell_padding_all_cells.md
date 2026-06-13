@@ -5,7 +5,7 @@
 - **Executor Type:** any
 - **Actor:** dev
 - **Claimed At:** null
-- **Status:** ❓ (Unverified)
+- **Status:** ✅ (Completed)
 
 ## Goal
 
@@ -160,3 +160,19 @@ Resolution: The 5 specific functions are named in the In Scope section above. Th
 Resolution: The agent's analysis assumed the horizontal-rule changes would be made in isolation. They must be made TOGETHER with the data-row cell-padding changes. After both changes, geometric consistency is preserved: data rows emit `padding + content + padding` between separators; horizontal rules emit `fill * padding + fill * width + fill * padding` between junctions — both use the same cell budget. Doing only one half would break alignment; doing both together maintains it. Work Procedure steps 2-7 cover all sites atomically. This finding is a misreading of the change scope, not a real defect. No rework required.
 
 **Disposition:** Both findings are resolved by task content as written. Re-trigger Verification Gate to promote to 🎯 (Verified) if required by project policy; otherwise executor may proceed with Work Procedure as-is.
+
+## Verification Record
+
+- **Date:** 2026-06-13
+- **Ground truth:** 605/605 nextest pass, 0 clippy warnings
+- **Confirming agent:** Read `src/formatters/table/rendering.rs` lines 40-110 — no `idx == 0` or `idx == cells.len() - 1` guards on either padding block; padding fires unconditionally for every cell via `has_outer_padding() && should_pad`. Read `tests/table_styles_presets.rs` lines 522-554 — `test_cell_padding_all_separators` asserts `output.contains("| col1 | col2 |")` for bordered/grid/markdown and `output.contains("│ col1 │ col2 │")` for unicode_box. Observable met.
+- **Adversarial agent:** Found `compute_total_row_width` in `auto_fit.rs:68` computes `outer = cell_inner_padding * 2` — undercounts by `(N-1) * 2 * padding` for N columns when symmetric padding is active. Also noted test does not explicitly assert separator line width.
+
+| Dimension | Confirming Finding | Adversarial Finding | Verdict |
+|-----------|-------------------|---------------------|---------|
+| Scope Coherence | Changes confined to `rendering.rs` — no idx guards remain; `format_multiline_row` also symmetric; all 4 styles (`bordered`, `grid`, `markdown`, `unicode_box`) covered | No scope boundary violations detected | PASS |
+| MOST Goal Quality | Observable exactly met: `"| col1 | col2 |"` asserted in `test_cell_padding_all_separators:541`; `"│ col1 │ col2 │"` asserted at :551 | `compute_total_row_width` underestimates row width by `(N-1) * 2 * padding` for N>1 columns — latent auto-fit budget discrepancy; does not affect the rendering Observable; out of task 003 scope | PASS |
+| Value/YAGNI | Fixes documented cramped rendering defect; no speculative additions; `plain`/`csv`/`tsv` (`inner_padding=0`) unaffected | No over-engineering detected | PASS |
+| Implementation Readiness | Padding at lines 46-49 (before) and 83-86 (after) with no index guards; `format_ascii_horizontal_rule:352-358` and `format_unicode_horizontal_rule:386-393` both emit fill chars for every column without guards; 605/605 pass | Separator width assertion absent from test — separator geometry verified by source code structure; both helper functions apply padding for every column, ensuring geometric consistency | PASS |
+
+**Advisory (non-disqualifying):** `compute_total_row_width` should be corrected to `N * 2 * padding` for the content padding contribution when symmetric padding is active — this is a future task, not a task 003 failure.

@@ -254,7 +254,7 @@ impl TableFormatter
       let sep_total = i.saturating_mul( sep_width );
       if content_so_far + sep_total + overhead > terminal
       {
-        // Fix(issue-fold-point-zero): clamp to 1 so the first column always stays
+        // Fix(BUG-007): clamp to 1 so the first column always stays
         // in the primary table (Invariant 1: header row must never be empty).
         // Root cause: when col[0] alone exceeded terminal, fold_point=0 produced an
         //   empty primary header row with no visible column names.
@@ -350,7 +350,7 @@ impl TableFormatter
       FoldStyle::Bare =>
       {
         // All overflow values on one line without column labels.
-        // Fix(issue-bare-fold-no-wrap): wrap when the joined line exceeds terminal,
+        // Fix(BUG-006): wrap when the joined line exceeds terminal,
         //   mirroring the Labeled and Stacked wrapping guards.
         // Root cause: the Bare branch emitted joined values unconditionally without
         //   checking unicode_visual_len vs terminal, unlike the other two styles.

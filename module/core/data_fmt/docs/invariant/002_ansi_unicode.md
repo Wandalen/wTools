@@ -19,6 +19,13 @@
 |------|-------------|
 | [`tests/unicode_display_width_alignment.rs`](../../tests/unicode_display_width_alignment.rs) | Unicode width and ANSI handling tests |
 
+### Algorithms
+
+| File | Relationship |
+|------|-------------|
+| [001_multiline_cell_rendering.md](../algorithm/001_multiline_cell_rendering.md) | Algorithm that must respect ANSI exclusion from width measurement |
+| [003_tree_column_alignment.md](../algorithm/003_tree_column_alignment.md) | Algorithm that must respect ANSI exclusion from width measurement |
+
 ### Invariant Statement
 
 #### visual_len Behavior
@@ -42,7 +49,7 @@
 
 `pad_to_width` uses the East Asian Width property (via the `unicode-width` crate) for terminal column measurement, not raw character count. Wide characters (CJK, emoji) count as 2 display columns. Normal characters (ASCII, Cyrillic, Latin) count as 1. Zero-width characters (combining marks) count as 0. ANSI escape sequences count as 0. When text display width already meets or exceeds the target width, the text is returned unchanged. The `align_right` parameter controls whether padding is prepended (right-align) or appended (left-align).
 
-**Fix(issue-003)**: Previous implementation mixed character-count-based padding with display-width-based formatting, causing misalignment with wide Unicode characters. `pad_to_width` was fixed to use East Asian Width display columns for padding calculations. Column width measurement via `visual_len` still uses char count; CJK and emoji column overflow is a known remaining limitation.
+**Fix(BUG-001)**: Previous implementation mixed character-count-based padding with display-width-based formatting, causing misalignment with wide Unicode characters. `pad_to_width` was fixed to use East Asian Width display columns for padding calculations. Column width measurement via `visual_len` still uses char count; CJK and emoji column overflow is a known remaining limitation.
 
 #### ANSI Reset Invariant
 

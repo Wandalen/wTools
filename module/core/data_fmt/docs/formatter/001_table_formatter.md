@@ -41,22 +41,7 @@
 | [`src/formatters/table/mod.rs`](../../src/formatters/table/mod.rs) | `TableFormatter` implementation |
 | [`src/config.rs`](../../src/config.rs) | `TableConfig` struct and preset methods |
 
-### Trait
-
-| Trait | Status | Note |
-|-------|--------|------|
-| `Format` | ✅ Active | Takes a `TableView`, returns formatted string or error |
-| `TableShapedFormatter` | ❌ Removed in v0.3.0 | Use the `Format` trait instead |
-
-New code must use `Format`.
-
-### Input
-
-| Input Type | Path | Via |
-|------------|------|-----|
-| `TableView` | Modern | `Format` trait |
-
-### Variants
+### Variant Selection
 
 Selection mechanism: pass a `TableConfig` preset to `TableFormatter::with_config(config)`.
 
