@@ -1,6 +1,6 @@
 [package]
 name = "mod_interface_meta"
-version = "0.62.0"
+version = "0.63.1"
 edition = "2021"
 authors = [
   "Kostiantyn Mysnyk <wandalen@obox.systems>",
