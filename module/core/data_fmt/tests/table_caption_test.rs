@@ -472,7 +472,7 @@ fn display_width( s : &str ) -> usize
 /// CJK chars are 2 display columns wide. The heading line display width
 /// must match the table body display width. This verifies that heading
 /// width arithmetic uses display columns, not char count.
-// test_kind: bug_reproducer(BUG-016)
+// test_kind: bug_reproducer(BUG-015)
 #[ test ]
 fn heading_cjk_title_display_width_matches_table_body()
 {
@@ -561,6 +561,80 @@ fn heading_newline_in_field_produces_single_line()
   assert!(
     lines[ 1 ].contains( "Name" ),
     "second line must be header row; got: {:?}\nfull:\n{output}",
+    lines[ 1 ],
+  );
+}
+
+/// Corner case: CRLF and bare CR in heading title/fields are sanitized.
+///
+/// Windows-style `\r\n` and bare `\r` must be replaced with spaces,
+/// just like `\n`, to preserve the single-line heading invariant (IN-3).
+// test_kind: bug_reproducer(BUG-016)
+#[ test ]
+fn heading_crlf_and_cr_sanitized()
+{
+  let view = two_col_view();
+
+  // \r\n pair → single space (not two)
+  let output_crlf = TableFormatter::with_config(
+    TableConfig::plain().with_heading( Heading::new( "A\r\nB" ) )
+  )
+  .format( &view )
+  .unwrap_or_default();
+  let line_crlf = output_crlf.lines().next().unwrap_or( "" );
+  assert!(
+    line_crlf.contains( "A B" ),
+    "BUG-016: \\r\\n must become single space; got: {line_crlf:?}",
+  );
+
+  // bare \r → space
+  let output_cr = TableFormatter::with_config(
+    TableConfig::plain().with_heading( Heading::new( "X" ).with_field( "C\rD" ) )
+  )
+  .format( &view )
+  .unwrap_or_default();
+  let line_cr = output_cr.lines().next().unwrap_or( "" );
+  assert!(
+    line_cr.contains( "C D" ),
+    "BUG-016: bare \\r in field must become space; got: {line_cr:?}",
+  );
+}
+
+/// Corner case: headers-only table (zero data rows) with heading.
+///
+/// The heading should render correctly even when the table has no data rows.
+// test_kind: standard
+#[ test ]
+fn heading_on_headers_only_table()
+{
+  let view = RowBuilder::new( vec![ "Name".into(), "Age".into() ] )
+    .build_view();
+
+  let config = TableConfig::plain()
+    .with_heading( Heading::new( "People" ) );
+  let output = TableFormatter::with_config( config )
+    .format( &view )
+    .unwrap_or_default();
+
+  let lines : Vec< &str > = output.lines().collect();
+  assert!(
+    lines.len() >= 2,
+    "headers-only table with heading must have at least 2 lines; got {}",
+    lines.len(),
+  );
+  assert!(
+    lines[ 0 ].starts_with( "─── " ),
+    "first line must be heading; got: {0:?}",
+    lines[ 0 ],
+  );
+  assert!(
+    lines[ 0 ].contains( "People" ),
+    "heading must contain title; got: {0:?}",
+    lines[ 0 ],
+  );
+  assert!(
+    lines[ 1 ].contains( "Name" ),
+    "second line must be header row; got: {0:?}",
     lines[ 1 ],
   );
 }

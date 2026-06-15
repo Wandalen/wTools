@@ -15,4 +15,4 @@
 | 002 | [ANSI and Unicode](002_ansi_unicode.md) | Invariant spec for ANSI and Unicode measurement | ✅ |
 | 003 | [Auto-Wrap Backward Compatibility](003_auto_wrap_backward_compat.md) | Invariant spec for auto-wrap backward compatibility | ✅ |
 | 004 | [Column Fold Invariants](004_column_fold_invariants.md) | Invariant spec for column fold behavioral guarantees | ✅ |
-| 005 | [Heading Rendering](005_caption.md) | Invariant spec for heading rendering guarantees | 2 ✅ 1 ⏳ |
+| 005 | [Heading Rendering](005_caption.md) | Invariant spec for heading rendering guarantees | 3 ✅ |

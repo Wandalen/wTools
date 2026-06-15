@@ -45,11 +45,11 @@ The caption line never exceeds the rendered table width. When caption content (l
 
 #### Invariant 3 — Single Output Line
 
-The caption always occupies exactly one output line ending with a newline character. No combination of title length, caption field count, or terminal width can cause the caption to span multiple lines.
+The caption always occupies exactly one output line ending with a newline character. No combination of title length, caption field count, terminal width, or embedded line breaks can cause the caption to span multiple lines.
 
 ### Enforcement Mechanism
 
-Invariant 1 is enforced by an early-exit guard in `render_caption_if_present()` that skips the caption path entirely when the caption field on `TableConfig` is absent (`None`). Invariant 2 is enforced by the `saturating_sub` clamp applied to the trailing rule width computation using the rendered table width (`compute_total_row_width(primary_widths)`), not the terminal width. Invariant 3 is enforced by the single-string assembly in the rendering algorithm — exactly one newline character is appended at the end, and no newlines appear inside the content or lead prefix.
+Invariant 1 is enforced by an early-exit guard in `render_caption_if_present()` that skips the caption path entirely when the caption field on `TableConfig` is absent (`None`). Invariant 2 is enforced by the `saturating_sub` clamp applied to the trailing rule width computation using the rendered table width (`compute_total_row_width(primary_widths)`), not the terminal width. Invariant 3 is enforced by `sanitize_line_breaks()` in `content_str()` which replaces all line-break sequences (`\r\n`, `\r`, `\n`) with spaces before assembly, and by the single-string assembly in the rendering algorithm which appends exactly one newline at the end.
 
 ### Violation Consequences
 

@@ -9,6 +9,14 @@ pub const CAPTION_RULE_CHAR : char = '─';
 /// Number of rule characters emitted before the title text in a heading
 pub const CAPTION_LEAD_WIDTH : usize = 3;
 
+/// Replace all line-break sequences (`\r\n`, `\r`, `\n`) with a single space.
+///
+/// Order matters: `\r\n` is consumed as one pair before bare `\r` or `\n`.
+fn sanitize_line_breaks( s : &str ) -> String
+{
+  s.replace( "\r\n", " " ).replace( [ '\r', '\n' ], " " )
+}
+
 /// A titled rule to be rendered above a table
 ///
 /// Carries a title and optional heading fields separated by [`CAPTION_FIELD_SEP`].
@@ -53,13 +61,13 @@ impl Heading
   ///   produces visible line breaks in terminal output.
   pub( crate ) fn content_str( &self ) -> String
   {
-    let mut s = self.title.replace( '\n', " " );
+    let mut s = sanitize_line_breaks( &self.title );
     for f in &self.fields
     {
       s.push( ' ' );
       s.push( CAPTION_FIELD_SEP );
       s.push( ' ' );
-      s.push_str( &f.replace( '\n', " " ) );
+      s.push_str( &sanitize_line_breaks( f ) );
     }
     s
   }

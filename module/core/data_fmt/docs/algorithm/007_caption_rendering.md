@@ -29,20 +29,20 @@
 
 ### Abstract
 
-A four-step algorithm that assembles a titled rule line from a title, zero or more caption fields, a fixed lead prefix, and a trailing rule that fills to the rendered table width. The field separator and rule characters are multi-byte in UTF-8, so width is measured by character count rather than byte length. The trailing rule is clamped to zero when caption content already meets or exceeds the rendered table width.
+A four-step algorithm that assembles a titled rule line from a title, zero or more caption fields, a fixed lead prefix, and a trailing rule that fills to the rendered table width. The field separator and rule characters are multi-byte in UTF-8, so width is measured by display column count (not byte length or character count — CJK characters occupy 2 display columns each). Line breaks in title and fields are sanitized to spaces before assembly. The trailing rule is clamped to zero when caption content already meets or exceeds the rendered table width.
 
 ### Algorithm
 
-1. **Build content string**: concatenate the title, then for each caption field append " {field_separator} {field_value}". The field separator is a fixed middle dot character (U+00B7).
+1. **Build content string**: sanitize line breaks in title and each field (replace `\r\n`, `\r`, `\n` with space), then concatenate the title followed by `" {field_separator} {field_value}"` for each field. The field separator is a fixed middle dot character (U+00B7).
 2. **Build lead prefix**: repeat the rule character (U+2500 BOX DRAWINGS LIGHT HORIZONTAL) × lead_width (fixed at 3), then append one space, producing `"─── "`.
-3. **Compute trailing rule width**: `trail_width = table_width − lead_width − 1 − content_char_count − 1`, where `table_width` is the rendered display width of the table computed by `compute_total_row_width(primary_widths)` (accounts for column widths, separators, padding, and border pipes). The subtractions account for the lead chars, the space after the lead, the content character count, and one trailing space. Clamp to 0 if negative. Use character count, not byte length — both the field separator (U+00B7) and rule character (U+2500) are multi-byte in UTF-8.
+3. **Compute trailing rule width**: `trail_width = table_width − lead_width − 1 − content_display_width − 1`, where `table_width` is the rendered display width of the table computed by `compute_total_row_width(primary_widths)` (accounts for column widths, separators, per-column padding, and border pipes). The subtractions account for the lead chars, the space after the lead, the content display column count, and one trailing space. Clamp to 0 if negative. Use display column count (`unicode_visual_len`), not byte length or character count — CJK characters are 1 char but 2 display columns; both the field separator (U+00B7) and rule character (U+2500) are multi-byte in UTF-8.
 4. **Emit**: lead + content + " " + rule_char × trail_width + newline.
 
 The `table_width` is passed in from `format_internal()` where the column widths (`primary_widths`) have already been computed by the auto-fit pipeline. The `terminal_width` setting continues to influence the auto-fit column budget but does not affect caption line width.
 
 ### Key Properties
 
-- **Multi-byte safety**: the field separator and rule character are each two or more bytes in UTF-8. Width is measured in Unicode scalar values (character count), not bytes.
+- **Multi-byte safety**: the field separator and rule character are each two or more bytes in UTF-8. Width is measured in display columns (via `unicode_visual_len`), not bytes or character count — CJK characters occupy 2 display columns.
 - **Clamp at zero**: when caption content alone equals or exceeds table width, trail_width becomes 0 — the trailing rule is omitted; content is never truncated.
 - **Render position**: caption line is emitted before the table top border (or before the header row when no top border exists for the selected style).
 - **Style-agnostic**: the algorithm is identical across all 9 table style presets.

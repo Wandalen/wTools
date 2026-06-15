@@ -10,7 +10,7 @@
 
 ### Fix Applied
 
-`content_str()` now calls `.replace('\n', " ")` on both the title and each field before concatenation.
+`content_str()` delegates to `sanitize_line_breaks()` which replaces all line-break sequences (`\r\n` as pair first, then bare `\r` and `\n`) with a single space. Applied to both title and each field before concatenation.
 
 ### Pitfall
 
@@ -20,3 +20,4 @@ Any user-supplied string passed to heading content must be sanitized before widt
 
 - `tests/table_caption_test.rs::heading_newline_in_title_produces_single_line` (bug_reproducer)
 - `tests/table_caption_test.rs::heading_newline_in_field_produces_single_line` (bug_reproducer)
+- `tests/table_caption_test.rs::heading_crlf_and_cr_sanitized` (bug_reproducer)

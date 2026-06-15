@@ -107,9 +107,9 @@ let config = TableConfig::plain()
 
 The caption is rendered immediately before the table top border (or header row when no top border exists). The rendering steps are:
 
-1. Build the content string: `title` followed by `" {field_sep} {field}"` for each caption field.
+1. Build the content string: sanitize line breaks in title and each field (replace `\r\n`, `\r`, `\n` with space), then concatenate `title` followed by `" {field_sep} {field}"` for each caption field.
 2. Build the lead: `rule_char` × `lead_width` + ` ` (e.g., `"─── "`).
-3. Build the trailing rule: compute `trail_width = table_width - lead_width - 1 - content.chars().count() - 1` where `table_width` is the actual rendered display width of the table (computed by `compute_total_row_width(primary_widths)`, accounting for column widths, separators, padding, and border pipes). Use `.chars().count()`, not `.len()` — `·` (U+00B7) and `─` (U+2500) are multi-byte in UTF-8. Clamp `trail_width` to 0 if negative.
+3. Build the trailing rule: compute `trail_width = table_width - lead_width - 1 - unicode_visual_len(&content) - 1` where `table_width` is the actual rendered display width of the table (computed by `compute_total_row_width(primary_widths)`, accounting for column widths, separators, per-column padding, and border pipes). Use `unicode_visual_len` (display column count), not `.len()` or `.chars().count()` — CJK characters are 1 char but 2 display columns; `·` (U+00B7) and `─` (U+2500) are multi-byte in UTF-8. Clamp `trail_width` to 0 if negative.
 4. Emit: `lead + content + " " + rule_char × trail_width + "\n"`.
 
 The trailing rule fills to the rendered table width — not the terminal width. This ensures the caption rule aligns with the right edge of the table regardless of how wide the terminal is.
@@ -118,7 +118,7 @@ The trailing rule fills to the rendered table width — not the terminal width. 
 
 - **auto_wrap / auto_fold**: Caption rendering is independent. The caption line is not subject to column folding or cell wrapping.
 - **ANSI coloring**: Caption text is emitted as plain text. ANSI decoration is not in scope for this feature.
-- **All 9 table styles**: `caption` is style-agnostic — it renders the same titled rule regardless of `BorderVariant`.
+- **All 9 table styles**: the heading is style-agnostic — it renders the same titled rule regardless of `BorderVariant`.
 - **`terminal_width` setting**: Continues to control auto-fit column budget allocation; does not affect caption line width. Caption width is determined by actual rendered table width.
 
 See `invariant/005_caption.md` for no-caption passthrough, width ceiling, and single-line output guarantees.
