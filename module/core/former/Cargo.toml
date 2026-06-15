@@ -1,6 +1,6 @@
 [package]
 name = "former"
-version = "2.48.0"
+version = "2.49.1"
 edition = "2021"
 authors = [
   "Kostiantyn Mysnyk <wandalen@obox.systems>",
