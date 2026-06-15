@@ -1,6 +1,6 @@
 [package]
 name = "benchkit"
-version = "0.23.0"
+version = "0.24.1"
 edition = "2021"
 authors = [
   "Kostiantyn Mysnyk <wandalen@obox.systems>",
