@@ -1,6 +1,6 @@
 [package]
 name = "test_tools"
-version = "0.17.0"
+version = "0.18.1"
 edition = "2021"
 authors = [
   "Kostiantyn Mysnyk <wandalen@obox.systems>",

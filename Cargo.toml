@@ -415,7 +415,7 @@ default-features = false
 ## test
 
 [workspace.dependencies.test_tools]
-version = "~0.17.0"
+version = "~0.18.1"
 path = "module/experimental/test_tools"
 
 # [workspace.dependencies.test_tools_stable]
